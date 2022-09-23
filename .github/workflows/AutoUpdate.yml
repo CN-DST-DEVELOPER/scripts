@@ -30,9 +30,10 @@ jobs:
       - name: Check need update or not
         id: result
         run: |
-          if [ "$(git describe --abbrev=0)" != "${{ env.VERSION }}" ]; then 
+          version=$(cat ${{ github.workspace }}/temp/version.txt | grep -o [0-9]*)
+          if [ "$(git describe --abbrev=0)" != "$version" ]; then 
             echo "::set-output name=need_update::True"
-            echo "::set-output name=version::$(cat ${{ github.workspace }}/temp/version.txt | grep -o [0-9]*)"
+            echo "::set-output name=version::$version"
           fi
 
   update:
@@ -71,6 +72,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m ${{ needs.check.outputs.version }}
-          git tag ${{ needs.check.outputs.version }}
-          git push
-          git push --tags
+          git tag ${{ needs.check.outputs.version }} -m $(git log --format=format:"%H")
+          git push --follow-tags
