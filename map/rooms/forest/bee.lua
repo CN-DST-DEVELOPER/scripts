@@ -1,7 +1,7 @@
 
 AddRoom("BeeClearing", {
 					colour={r=.8,g=1,b=.8,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 					                countprefabs= {
                                         fireflies= 1,
@@ -13,7 +13,7 @@ AddRoom("BeeClearing", {
 
 AddRoom("BeeQueenBee", {
 					colour={r=.8,g=1,b=.8,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 					                countprefabs= {
                                         beequeenhive=1,

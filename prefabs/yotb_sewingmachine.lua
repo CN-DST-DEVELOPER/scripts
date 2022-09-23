@@ -49,9 +49,8 @@ local function onhit(inst, worker)
             inst.SoundEmitter:PlaySound("yotb_2021/common/sewing_machine/close")
         end
 
-        -- TODO: figure this out
-        inst.AnimState:PlayAnimation("hit_empty")
-        inst.AnimState:PushAnimation("idle_empty", false)
+        inst.AnimState:PlayAnimation("hit")
+        inst.AnimState:PushAnimation("idle", false)
     end
 end
 

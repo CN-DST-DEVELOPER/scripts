@@ -3,16 +3,26 @@ require "prefabutil"
 local assets =
 {
     Asset("ANIM", "anim/farm_plow.zip"),
+    Asset("ANIM", "anim/farm_soil.zip"),
+}
+
+local assets_item =
+{
+    Asset("ANIM", "anim/farm_plow.zip"),
 }
 
 local prefabs =
 {
-	"farm_plow_item",
-	"farm_plow_item_placer",
-	"tile_outline",
     "farm_soil_debris",
     "farm_soil",
 	"dirt_puff",
+}
+
+local prefabs_item =
+{
+	"farm_plow",
+	"farm_plow_item_placer",
+	"tile_outline",
 }
 
 local function onhammered(inst)
@@ -53,6 +63,7 @@ local function Finished(inst, force_fx)
 		SpawnPrefab("collapse_small").Transform:SetPosition(x, y, z)
 	end
 
+	inst:PushEvent("finishplowing")
     inst:Remove()
 end
 
@@ -109,7 +120,11 @@ local function dirt_anim(inst, quad, timer)
 		local _x, _z = x + offset_x, z + offset_z
 		if TheWorld.Map:CanTillSoilAtPoint(_x, 0, _z, true) then
 			TheWorld.Map:CollapseSoilAtPoint(_x, 0, _z)
-			SpawnPrefab("farm_soil").Transform:SetPosition(_x, 0, _z)
+			local soil = SpawnPrefab("farm_soil")
+			soil.Transform:SetPosition(_x, 0, _z)
+			if soil.SetPlowing ~= nil then
+				soil:SetPlowing(inst)
+			end
 		end
 	end
 
@@ -187,6 +202,7 @@ local function main_fn()
 
     inst.AnimState:SetBank("farm_plow")
     inst.AnimState:SetBuild("farm_plow")
+    inst.AnimState:OverrideSymbol("soil01", "farm_soil", "soil01")
 
     inst:AddTag("scarytoprey")
 
@@ -209,7 +225,7 @@ local function main_fn()
     MakeLargePropagator(inst)
 
     inst:AddComponent("terraformer")
-    inst.components.terraformer.turf = GROUND.FARMING_SOIL
+    inst.components.terraformer.turf = WORLD_TILES.FARMING_SOIL
 	inst.components.terraformer.onterraformfn = OnTerraform
 	inst.components.terraformer.plow = true
 
@@ -241,7 +257,7 @@ end
 
 local function can_plow_tile(inst, pt, mouseover, deployer)
 	local x, z = pt.x, pt.z
-	if not TheWorld.Map:CanPlantAtPoint(x, 0, z) or TheWorld.Map:GetTileAtPoint(x, 0, z) == GROUND.FARMING_SOIL then
+	if not TheWorld.Map:CanPlantAtPoint(x, 0, z) or TheWorld.Map:GetTileAtPoint(x, 0, z) == WORLD_TILES.FARMING_SOIL then
 		return false
 	end
 
@@ -337,7 +353,7 @@ local function placer_fn()
     return inst
 end
 
-return  Prefab("farm_plow", main_fn, assets),
-		Prefab("farm_plow_item", item_fn, assets, prefabs),
+return  Prefab("farm_plow", main_fn, assets, prefabs),
+		Prefab("farm_plow_item", item_fn, assets_item, prefabs_item),
 		Prefab("farm_plow_item_placer", placer_fn)
 

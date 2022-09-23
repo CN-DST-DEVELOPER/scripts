@@ -85,7 +85,7 @@ AddTask("CavesTEST", {
         ["BGSinkholeSwampRoom"] = 1,
 
     },
-    room_bg=GROUND.CAVE,
+    room_bg=WORLD_TILES.CAVE,
     background_room="Blank",--"BGCaveRoom",
     colour={r=1,g=0.8,b=1,a=1},
 })
@@ -106,7 +106,7 @@ AddTask("MudWorld", {
         ["PitRoom"] = 2,
     },
     background_room="BGMud",
-    room_bg=GROUND.MUD,
+    room_bg=WORLD_TILES.MUD,
     colour={r=0.6,g=0.4,b=0.0,a=0.9},
 })
 
@@ -120,7 +120,7 @@ AddTask("MudCave", {
         ["PitRoom"] = 2,
     },
     background_room="BGBatCaveRoom",
-    room_bg=GROUND.MUD,
+    room_bg=WORLD_TILES.MUD,
     colour={r=0.7,g=0.5,b=0.0,a=0.9},
 })
 
@@ -133,7 +133,7 @@ AddTask("MudLights", {
         ["PitRoom"] = 2,
     },
     background_room="WormPlantField",
-    room_bg=GROUND.MUD,
+    room_bg=WORLD_TILES.MUD,
     colour={r=0.7,g=0.5,b=0.0,a=0.9},
 })
 
@@ -145,7 +145,7 @@ AddTask("MudPit", {
         ["PitRoom"] = 4,
     },
     background_room="FernGully",
-    room_bg=GROUND.MUD,
+    room_bg=WORLD_TILES.MUD,
     colour={r=0.6,g=0.4,b=0.0,a=0.9},
 })
 
@@ -157,7 +157,7 @@ AddTask("ToadStoolTask1", {
         ["ToadstoolArenaMud"] = 1,
     },
     background_room="Blank",
-    room_bg=GROUND.MUD,
+    room_bg=WORLD_TILES.MUD,
     colour={r=1.0,g=0.0,b=0.0,a=0.9},
 })
 
@@ -169,7 +169,7 @@ AddTask("ToadStoolTask2", {
         ["ToadstoolArenaCave"] = 1,
     },
     background_room="Blank",
-    room_bg=GROUND.CAVE,
+    room_bg=WORLD_TILES.CAVE,
     colour={r=1.0,g=0.0,b=0.0,a=0.9},
 })
 
@@ -181,7 +181,7 @@ AddTask("ToadStoolTask3", {
         ["ToadstoolArenaMud"] = 1,
     },
     background_room="Blank",
-    room_bg=GROUND.MUD,
+    room_bg=WORLD_TILES.MUD,
     colour={r=1.0,g=0.0,b=0.0,a=0.9},
 })
 
@@ -199,7 +199,7 @@ AddTask("BigBatCave", {
         ["PitRoom"] = 4,
     },
     background_room="BGBatCaveRoom",
-    room_bg=GROUND.CAVE,
+    room_bg=WORLD_TILES.CAVE,
     colour={r=0.8,g=0.8,b=0.8,a=0.9},
 })
 
@@ -216,7 +216,7 @@ AddTask("RockyLand",{
         ["PitRoom"] = 2,
     },
     background_room="BGRockyCaveRoom",
-    room_bg=GROUND.CAVE,
+    room_bg=WORLD_TILES.CAVE,
     colour={r=0.5,g=0.5,b=0.5,a=0.9},
 })
 
@@ -233,7 +233,7 @@ AddTask("RedForest",{
         ["PitRoom"] = 2,
     },
     background_room="BGRedMush",
-    room_bg=GROUND.FUNGUSRED,
+    room_bg=WORLD_TILES.FUNGUSRED,
     colour={r=1.0,g=0.5,b=0.5,a=0.9},
 })
 
@@ -251,7 +251,7 @@ AddTask("GreenForest",{
         ["PitRoom"] = 2,
     },
     background_room="BGGreenMush",
-    room_bg=GROUND.FUNGUSGREEN,
+    room_bg=WORLD_TILES.FUNGUSGREEN,
     colour={r=0.5,g=1.0,b=0.5,a=0.9},
 })
 
@@ -267,7 +267,7 @@ AddTask("BlueForest",{
     },
     entrance_room = {"PitRoom"},
     background_room="BGBlueMush", -- same layout as BlueMushForest
-    room_bg=GROUND.FUNGUS,
+    room_bg=WORLD_TILES.FUNGUS,
     colour={r=0.5,g=0.5,b=1.0,a=0.9},
 })
 
@@ -280,7 +280,7 @@ AddTask("MoonCaveForest",{
 		["MoonMushForest_entrance"] = 1,
     },
     background_room="MoonMushForest",
-    room_bg=GROUND.FUNGUSMOON,
+    room_bg=WORLD_TILES.FUNGUSMOON,
     colour={r=0.3,g=0.3,b=0.3,a=0.9},
 })
 
@@ -297,7 +297,7 @@ AddTask("SpillagmiteCaverns",{
         ["PitRoom"] = 2,
     },
     background_room="BGSpillagmiteRoom",
-    room_bg=GROUND.UNDERROCK,
+    room_bg=WORLD_TILES.UNDERROCK,
     colour={r=0.3,g=0.3,b=0.3,a=0.9},
 })
 
@@ -315,7 +315,7 @@ AddTask("SwampySinkhole",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkholeSwampRoom",
-    room_bg=GROUND.SWAMP,
+    room_bg=WORLD_TILES.SWAMP,
     colour={r=0.6,g=0.1,b=0.7,a=0.9},
 })
 
@@ -329,7 +329,7 @@ AddTask("CaveSwamp",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkholeSwamp",
-    room_bg=GROUND.SWAMP,
+    room_bg=WORLD_TILES.SWAMP,
     colour={r=0.7,g=0.1,b=0.6,a=0.9},
 })
 
@@ -344,7 +344,7 @@ AddTask("UndergroundForest",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkhole",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=0.0,g=0.3,b=0.0,a=0.9},
 })
 
@@ -359,7 +359,7 @@ AddTask("PleasantSinkhole",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkhole",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=0.0,g=0.5,b=0.0,a=0.9},
 })
 
@@ -374,7 +374,7 @@ AddTask("SoggySinkhole",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkhole",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=0.0,g=0.5,b=0.0,a=0.9},
 })
 
@@ -390,7 +390,7 @@ AddTask("FungalNoiseForest",{
         ["PitRoom"] = 2,
     },
     background_room="FungusNoiseMeadow",
-    room_bg=GROUND.FUNGUS,
+    room_bg=WORLD_TILES.FUNGUS,
     colour={r=0.0,g=0.5,b=1.0,a=0.9},
 })
 
@@ -406,7 +406,7 @@ AddTask("FungalNoiseMeadow",{
         ["PitRoom"] = 2,
     },
     background_room="FungusNoiseMeadow",
-    room_bg=GROUND.FUNGUS,
+    room_bg=WORLD_TILES.FUNGUS,
     colour={r=0.0,g=0.5,b=0.8,a=0.9},
 })
 
@@ -418,7 +418,7 @@ AddTask("BatCloister",{
         ["PitRoom"] = 2,
     },
     background_room="BatCave",
-    room_bg=GROUND.CAVE,
+    room_bg=WORLD_TILES.CAVE,
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
 })
 
@@ -433,7 +433,7 @@ AddTask("RabbitTown",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkhole",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=2.0,g=0.6,b=0.0,a=0.9},
 })
 
@@ -448,7 +448,7 @@ AddTask("RabbitCity",{
         ["PitRoom"] = 2,
     },
     background_room="BGSinkhole",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=1.0,g=0.8,b=0.2,a=0.9},
 })
 
@@ -463,7 +463,7 @@ AddTask("SpiderLand",{
         ["PitRoom"] = 2,
     },
     background_room="PitRoom",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=0.2,g=0.5,b=0.2,a=0.9},
 })
 
@@ -477,7 +477,7 @@ AddTask("RabbitSpiderWar",{
         ["PitRoom"] = 2,
     },
     background_room="SparseSinkholes",
-    room_bg=GROUND.SINKHOLE,
+    room_bg=WORLD_TILES.SINKHOLE,
     colour={r=0.6,g=0.2,b=0.0,a=0.9},
 })
 
@@ -516,7 +516,7 @@ for i=1,10 do
             [startrooms[i]] = 1,
         },
         background_room="BGSinkhole",
-        room_bg=GROUND.SINKHOLE,
+        room_bg=WORLD_TILES.SINKHOLE,
         colour={r=1,g=0,b=1,a=1},
     })
 end

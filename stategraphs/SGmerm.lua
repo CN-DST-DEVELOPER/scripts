@@ -75,6 +75,34 @@ local events=
 local states=
 {
     State{
+        name = "funnyidle",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+
+            -- NOTES(JBK): Making merms less expressive than other followers but keeping core information expressed.
+            if inst.components.follower and inst.components.follower:GetLeader() ~= nil and inst.components.follower:GetLoyaltyPercent() < TUNING.MERM_LOW_LOYALTY_WARNING_PERCENT then
+                inst.AnimState:PlayAnimation("hungry")
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/hungry")
+            elseif inst:HasTag("guard") then
+                inst.AnimState:PlayAnimation("idle_angry")
+            elseif inst.components.combat:HasTarget() then
+                inst.AnimState:PlayAnimation("idle_angry")
+            else
+                inst.sg:GoToState("idle") -- Not a comedian.
+            end
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+
+    State{
         name = "idle_sit",
         tags = { "idle", "sitting" },
 
@@ -197,23 +225,9 @@ local states=
         timeline =
         {
             TimeEvent(13 * FRAMES, function(inst)
-
                 if inst.bufferedaction ~= nil then
-                    local target = inst.bufferedaction.target
-
-                    if target ~= nil and target:IsValid() then
-                        local frozen = target:HasTag("frozen")
-                        local moonglass = target:HasTag("moonglass")
-
-                        if target.Transform ~= nil then
-                            local mine_fx = (frozen and "mining_ice_fx") or (moonglass and "mining_moonglass_fx") or "mining_fx"
-                            SpawnPrefab(mine_fx).Transform:SetPosition(target.Transform:GetWorldPosition())
-                        end
-
-                        inst.SoundEmitter:PlaySound((frozen and "dontstarve_DLC001/common/iceboulder_hit") or (moonglass and "turnoftides/common/together/moon_glass/mine") or "dontstarve/wilson/use_pick_rock")
-                    end
+                    PlayMiningFX(inst, inst.bufferedaction.target)
                 end
-
                 inst:PerformBufferedAction()
             end),
         },
@@ -345,6 +359,23 @@ local states=
     },
 
     State{
+        name = "disapproval",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("idle_scared")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+
+    State{
         name = "win_yotb",
         tags = { "busy" },
 
@@ -403,7 +434,7 @@ CommonStates.AddCombatStates(states,
     },
 })
 
-CommonStates.AddIdle(states)
+CommonStates.AddIdle(states, "funnyidle")
 CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4*FRAMES, {"busy"})
 CommonStates.AddSimpleState(states, "refuse", "pig_reject", { "busy" })
 CommonStates.AddFrozenStates(states)

@@ -4,6 +4,11 @@ local assets =
 	Asset("ANIM", "anim/carnivaldecor_statue.zip"),
 }
 
+local assets_s2 =
+{
+	Asset("ANIM", "anim/carnivaldecor_statue_season2.zip"),
+}
+
 local prefabs =
 {
 	"carnival_unwrap_fx",
@@ -23,8 +28,9 @@ local rarity_decor_vale_map =
 	common		= 12,
 }
 
-local shape_rarity = 
+local shape_rarity = {
 {
+	-- season 1
 	s1 = "rare",
 	s2 = "uncommon",
 	s3 = "uncommon",
@@ -37,11 +43,29 @@ local shape_rarity =
 	s10 = "common",
 	s11 = "common",
 	s12 = "common",
+},
+{
+	-- season 2
+	s1 = "common",
+	s2 = "common",
+	s3 = "uncommon",
+	s4 = "uncommon",
+	s5 = "common",
+	s6 = "common",
+	s7 = "common",
+	s8 = "uncommon",
+	s9 = "common",
+	s10 = "uncommon",
+	s11 = "common",
+	s12 = "rare",
+},
 }
 
-local shape_weights = {}
-for shape, rarity in pairs(shape_rarity) do
-	shape_weights[shape] = rarity_weight_map[rarity]
+local shape_weights = {{}, {}}
+for season_num, season_data in pairs(shape_rarity) do
+	for shape, rarity in pairs(season_data) do
+		shape_weights[season_num][shape] = rarity_weight_map[rarity]
+	end
 end
 --[[
 local total = 0
@@ -64,21 +88,21 @@ local function onhammered(inst, worker)
 end
 
 local function SetShape(inst, shape)
-	shape = shape or weighted_random_choice(shape_weights)
+	shape = shape or weighted_random_choice(shape_weights[inst.carnival_season])
 
 	if shape == inst.shape then
 		return
 	end
 
 	if inst.shape ~= nil then
-		inst:RemoveTag("blindbox_"..tostring(shape_rarity[inst.shape]))
+		inst:RemoveTag("blindbox_"..tostring(shape_rarity[inst.carnival_season][inst.shape]))
 	end
 
 	inst.shape = shape
-	inst.components.carnivaldecor.value = rarity_decor_vale_map[ shape_rarity[shape] ]
-	inst:AddTag("blindbox_"..tostring(shape_rarity[shape]))
+	inst.components.carnivaldecor.value = rarity_decor_vale_map[ shape_rarity[inst.carnival_season][shape] ]
+	inst:AddTag("blindbox_"..tostring(shape_rarity[inst.carnival_season][shape]))
 
-    inst.AnimState:PlayAnimation(tostring(shape))
+    inst.AnimState:PlayAnimation(tostring(shape), true)
 end
 
 local function onbuilt(inst, data)
@@ -122,7 +146,7 @@ local function onload(inst, data)
 	end
 end
 
-local function fn(data)
+local function fn(data, carnival_season, bank)
     local inst = CreateEntity()
 
 	local carnival_active = IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL)
@@ -136,20 +160,23 @@ local function fn(data)
 		MakeObstaclePhysics(inst, data.physics_radius)
 	end
 
-    inst.AnimState:SetBank("carnivaldecor_statue")
-    inst.AnimState:SetBuild("carnivaldecor_statue")
+    inst.AnimState:SetBank(bank)
+    inst.AnimState:SetBuild(bank)
     inst.AnimState:PlayAnimation("s1")
 
 	inst:AddTag("carnivaldecor")
     inst:AddTag("structure")
 
 	inst.displaynamefn = GetDisplayName
+	inst:SetPrefabNameOverride("carnivaldecor_figure")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.carnival_season = carnival_season
 
 	inst:AddComponent("carnivaldecor")
 
@@ -181,6 +208,14 @@ local function fn(data)
     return inst
 end
 
+local function fn_season1(data)
+	return fn(data, 1, "carnivaldecor_statue")
+end
+
+local function fn_season2(data)
+	return fn(data, 2, "carnivaldecor_statue_season2")
+end
+
 local deployable_data = 
 {
 	OnSave = function(inst, data)
@@ -196,6 +231,9 @@ local function placer_postinit_fn(inst)
 	inst.deployhelper_key = "carnival_plaza_decor"
 end
 
-return Prefab("carnivaldecor_figure", fn, assets, prefabs),
+return Prefab("carnivaldecor_figure", fn_season1, assets, prefabs),
 	MakeDeployableKitItem("carnivaldecor_figure_kit", "carnivaldecor_figure", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL, deployspacing = DEPLOYSPACING.MEDIUM}, deployable_data),
-	MakePlacer("carnivaldecor_figure_kit_placer", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn)
+	MakePlacer("carnivaldecor_figure_kit_placer", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn),
+	Prefab("carnivaldecor_figure_season2", fn_season2, assets_s2, prefabs),
+	MakeDeployableKitItem("carnivaldecor_figure_kit_season2", "carnivaldecor_figure_season2", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL, deployspacing = DEPLOYSPACING.MEDIUM}, deployable_data),
+	MakePlacer("carnivaldecor_figure_kit_season2_placer", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn)

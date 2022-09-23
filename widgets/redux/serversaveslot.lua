@@ -3,6 +3,7 @@ local PopupDialogScreen = require "screens/redux/popupdialog"
 local Widget = require "widgets/widget"
 local Text = require "widgets/text"
 local TEMPLATES = require "widgets/redux/templates"
+local ManageServerSlotScreen = require "screens/redux/manageserverslotscreen"
 
 local intention_images = {
     [INTENTIONS.SOCIAL] = "playstyle_social.tex",
@@ -46,13 +47,11 @@ local ServerSaveSlot = Class(Widget, function(self, serverslotscreen, isservercr
         if not self.slot or not ShardSaveGameIndex:IsSlotEmpty(self.slot) then
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             self.last_focus_widget = TheFrontEnd:GetFocusWidget()
-            self.privacy:OnLoseFocus()
-            self.intention:OnLoseFocus()
-            self.pvp:OnLoseFocus()
-            self.mods:OnLoseFocus()
+            self:HideHoverText()
             TheFrontEnd:Fade(FADE_OUT, SCREEN_FADE_TIME, function()
                 TheFrontEnd:PushScreen(ServerCreationScreen(self.serverslotscreen, self.slot))
-                TheFrontEnd:Fade(FADE_IN, SCREEN_FADE_TIME)
+                self:HideHoverText()
+                TheFrontEnd:Fade(FADE_IN, SCREEN_FADE_TIME, function() self:HideHoverText() end)
             end)
         end
 	end
@@ -99,7 +98,7 @@ local ServerSaveSlot = Class(Widget, function(self, serverslotscreen, isservercr
     self.preset:SetPosition(155 + offset, -15)
     self.preset:SetRegionSize(250, 40)
 
-    local setting_icon_s = .135
+    local setting_icon_s = .10
     local setting_image_s = .8
 
     self.privacy = self.root:AddChild(TEMPLATES.ServerDetailIcon(servericons_atlas, privacy_images[PRIVACY_TYPE.PUBLIC], "brown", privacy_options[PRIVACY_TYPE.PUBLIC]))
@@ -124,6 +123,12 @@ local ServerSaveSlot = Class(Widget, function(self, serverslotscreen, isservercr
     self.mods.img:SetScale(setting_image_s)
     self.mods:Hide()
 
+    self.cloud = self.root:AddChild(TEMPLATES.ServerDetailIcon(servericons_atlas, "cloud.tex", "brown", STRINGS.UI.SERVERLISTINGSCREEN.CLOUD_SAVE_HOVER))
+    self.cloud:SetScale(setting_icon_s)
+    self.cloud.bg:SetScale(1)
+    self.cloud.img:SetScale(setting_image_s)
+    self.cloud:Hide()
+
     self.offline = self.root:AddChild(Text(NEWFONT, 25, STRINGS.UI.SERVERCREATIONSCREEN.OFFLINE_WORLD))
     self.offline:SetColour(unpack(PLAYERCOLOURS.RED))
     self.offline:SetPosition(340 + offset, -20)
@@ -131,44 +136,24 @@ local ServerSaveSlot = Class(Widget, function(self, serverslotscreen, isservercr
     self.offline:SetHAlign(ANCHOR_RIGHT)
     self.offline:Hide()
 
-    self.openfolder = self.root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "folder.tex", "", false, false, function() self:OpenFolder() end))
-    self.openfolder:SetScale(0.6)
-    self.openfolder:SetPosition(395, 18)
-    function self.openfolder.SetClusterSlot(openfolder, cluster_folder)
-        local text = subfmt(STRINGS.UI.SERVERCREATIONSCREEN.OPENSAVEFOLDER, {folder = cluster_folder})
-        if IsLinux() then
-            text = cluster_folder
-        end
-        openfolder:SetHoverText(text, {
-            font = NEWFONT_OUTLINE,
-            offset_x = 2,
-            offset_y = -45,
-            colour = UICOLOURS.WHITE,
-        })
-    end
-    self.openfolder:SetClusterSlot("Cluster_0")
-
-    self.delete = self.root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "delete.tex", STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT, false, false, function() self:OnDeleteButton() end))
-    self.delete:SetScale(0.6)
-    self.delete:SetPosition(395, -18)
+    self.manageslot = self.root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "mods.tex", STRINGS.UI.SERVERCREATIONSCREEN.MANAGE_SLOT, false, false, function() self:OnManageButton() end))
+    self.manageslot:SetScale(0.6)
+    self.manageslot:SetPosition(395, 0)
 
     if isservercreationscreen or TheInput:ControllerAttached() or IsConsole() then
-        self.openfolder:Hide()
-        self.delete:Hide()
-    end
-    if IsLinux() then
-        self.openfolder:Select()
+        self.manageslot:Hide()
     end
 
     self:SetSaveSlot(-1)
 end)
 
-function ServerSaveSlot:OpenFolder()
-    if type(self.slot) == "number" and self.slot > 0 then
-        if (IsSteam() or IsRail()) and not IsLinux() then
-            TheSim:OpenSaveFolder(self.slot)
-        end
-    end
+function ServerSaveSlot:HideHoverText()
+    self.privacy:OnLoseFocus()
+    self.intention:OnLoseFocus()
+    self.pvp:OnLoseFocus()
+    self.mods:OnLoseFocus()
+    self.cloud:OnLoseFocus()
+    self.manageslot:OnLoseFocus()
 end
 
 function ServerSaveSlot:OnGainFocus()
@@ -191,13 +176,10 @@ function ServerSaveSlot:SetSaveSlot(slot, server_data)
     self.slot = slot
     if not slot or ShardSaveGameIndex:IsSlotEmpty(slot) and not server_data then
         self.root:Hide()
-        self.cluster_folder = "Cluster_0"
         return
     else
         self.root:Show()
     end
-
-    self.cluster_folder = "Cluster_"..self.slot
 
     server_data = server_data or ShardSaveGameIndex:GetSlotServerData(self.slot)
 
@@ -218,23 +200,31 @@ function ServerSaveSlot:SetSaveSlot(slot, server_data)
         self.preset:SetString(self.serverslotscreen:GetPresetText(self.slot))
     end
 
-    local setting_icon_x = 355
-    if self.isservercreationscreen or TheInput:ControllerAttached() or IsConsole() then
-        setting_icon_x = 375
-    end
-    local setting_icon_y = 16
-
     if not server_data.online_mode then
         self.offline:Show()
     else
         self.offline:Hide()
     end
 
+    local setting_icon_x = 360
+    if self.isservercreationscreen or TheInput:ControllerAttached() or IsConsole() then
+        setting_icon_x = 375
+    end
+    local setting_icon_y = 18
+
+    if self.slot > CLOUD_SAVES_SAVE_OFFSET then
+        self.cloud:Show()
+        self.cloud:SetPosition(setting_icon_x, setting_icon_y)
+        setting_icon_x = setting_icon_x - 28
+    else
+        self.cloud:Hide()
+    end
+
     --doing this in reverse order so that we can have them left aligned
     if not IsTableEmpty(ShardSaveGameIndex:GetSlotEnabledServerMods(self.slot)) then
         self.mods:Show()
         self.mods:SetPosition(setting_icon_x, setting_icon_y)
-        setting_icon_x = setting_icon_x - 36
+        setting_icon_x = setting_icon_x - 28
     else
         self.mods:Hide()
     end
@@ -242,7 +232,7 @@ function ServerSaveSlot:SetSaveSlot(slot, server_data)
     if server_data.pvp then
         self.pvp:Show()
         self.pvp:SetPosition(setting_icon_x, setting_icon_y)
-        setting_icon_x = setting_icon_x - 36
+        setting_icon_x = setting_icon_x - 28
     else
         self.pvp:Hide()
     end
@@ -250,21 +240,35 @@ function ServerSaveSlot:SetSaveSlot(slot, server_data)
     self.intention.img:SetTexture(servericons_atlas, intention_images[server_data.intention or INTENTIONS.SOCIAL])
     self.intention:SetHoverText(intention_options[server_data.intention or INTENTIONS.SOCIAL])
     self.intention:SetPosition(setting_icon_x, setting_icon_y)
-    setting_icon_x = setting_icon_x - 36
+    setting_icon_x = setting_icon_x - 28
 
     self.privacy.img:SetTexture(servericons_atlas, privacy_images[server_data.privacy_type or PRIVACY_TYPE.PUBLIC])
     self.privacy:SetHoverText(privacy_options[server_data.privacy_type or PRIVACY_TYPE.PUBLIC])
     self.privacy:SetPosition(setting_icon_x, setting_icon_y)
-
-    self.openfolder:SetClusterSlot(self.cluster_folder)
 end
 
-function ServerSaveSlot:OnDeleteButton()
+function ServerSaveSlot:OnManageButton()
+    assert(IsNotConsole())
+
+    TheFrontEnd:PushScreen(ManageServerSlotScreen(self.slot, function(slot) self:OnDeleteButton(slot) end, function(force) self.serverslotscreen:UpdateSaveFiles(force) end))
+end
+
+function ServerSaveSlot:OnDeleteButton(slot)
+    slot = slot or self.slot
+
     local dialog_items = {
-        { text=STRINGS.UI.SERVERCREATIONSCREEN.DELETE, cb = function() ShardSaveGameIndex:DeleteSlot(self.slot, function() self.serverslotscreen:ClearSlotCache(self.slot) self.serverslotscreen:UpdateSaveFiles() TheFrontEnd:PopScreen() end) end },
+        { text=STRINGS.UI.SERVERCREATIONSCREEN.DELETE, cb = function()
+            ShardSaveGameIndex:DeleteSlot(slot, function()
+                self.serverslotscreen:ClearSlotCache(slot)
+                self.serverslotscreen:UpdateSaveFiles()
+                TheFrontEnd:PopScreen()
+                --Pop the screen a second time for the manage slot screen.
+                TheFrontEnd:PopScreen()
+            end)
+        end },
         { text=STRINGS.UI.SERVERCREATIONSCREEN.CANCEL, cb = function() TheFrontEnd:PopScreen() end },
     }
-    TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.SERVERCREATIONSCREEN.DELETE.." "..STRINGS.UI.SERVERCREATIONSCREEN.SLOT.." "..self.slot, STRINGS.UI.SERVERCREATIONSCREEN.SURE, dialog_items ) )
+    TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT, STRINGS.UI.SERVERCREATIONSCREEN.SURE, dialog_items ) )
 end
 
 function ServerSaveSlot:OnControl(control, down)
@@ -277,14 +281,12 @@ function ServerSaveSlot:OnControl(control, down)
             return true
 		elseif control == CONTROL_MAP then
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-            self:OnDeleteButton()
+            if IsConsole() then
+                self:OnDeleteButton()
+            else
+                self:OnManageButton()
+            end
             return true
-        elseif control == CONTROL_MENU_MISC_2 then
-			if not IsSteamDeck() then
-				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-				self:OpenFolder()
-	            return true
-			end
 		end
 	end
 end
@@ -294,14 +296,7 @@ function ServerSaveSlot:GetHelpText()
 	local controller_id = TheInput:GetControllerID()
 
 	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.HELP.SELECT)
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MAP) .. " " .. STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT)
-    if IsNotConsole() and not IsSteamDeck() then
-        local text = TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. subfmt(STRINGS.UI.SERVERCREATIONSCREEN.OPENSAVEFOLDER, {folder = STRINGS.UI.SERVERCREATIONSCREEN.CLUSTERSLOT})
-        if IsLinux() then
-            text = self.cluster_folder
-        end
-        table.insert(t, text)
-    end
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MAP) .. " " .. (IsConsole() and STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT or STRINGS.UI.SERVERCREATIONSCREEN.MANAGE_SLOT))
 
 	return table.concat(t, "  ")
 end

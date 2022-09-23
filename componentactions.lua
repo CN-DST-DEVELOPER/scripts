@@ -100,6 +100,30 @@ local function GetFishingAction(doer, fishing_target)
 	return nil
 end
 
+local function CheckRowOverride(doer, target)
+    -- If near an object with the 'overriderowaction' tag (e.g. ocean trawler), the object's actions supersede this.
+    if target ~= nil then
+        local doer_pos = doer:GetPosition()
+        local boat = TheWorld.Map:GetPlatformAtPoint(doer_pos.x, doer_pos.z)
+        if boat == nil then
+            return false
+        end
+
+        local target_pos = target:GetPosition()
+        local dist_to_target = VecUtil_Dist(target_pos.x, target_pos.z, doer_pos.x, doer_pos.z)
+        local boat_pos = boat:GetPosition()
+        local dist_to_boat = VecUtil_Dist(target_pos.x, target_pos.z, boat_pos.x, boat_pos.z)
+        local boatradius = boat.components.boatringdata and boat.components.boatringdata:GetRadius() or 0
+        local boat_dist_to_target = dist_to_boat - boatradius
+
+        if target:HasTag("overriderowaction") and math.min(dist_to_target, boat_dist_to_target) < TUNING.OVERRIDE_ROW_ACTION_DISTANCE then
+            return true
+        end
+    end
+
+    return false
+end
+
 -- SCENE		using an object in the world
 -- USEITEM		using an inventory item on an object in the world
 -- POINT		using an inventory item on a point in the world
@@ -112,8 +136,10 @@ local COMPONENT_ACTIONS =
     {
         activatable = function(inst, doer, actions, right)
             if inst:HasTag("inactive") then
-				if right or inst.replica.inventoryitem == nil then
-	                table.insert(actions, ACTIONS.ACTIVATE)
+				if right or (inst.replica.inventoryitem == nil and not inst:HasTag("activatable_forceright")) then
+					if not inst:HasTag("smolder") and not inst:HasTag("fire") then
+		                table.insert(actions, ACTIONS.ACTIVATE)
+					end
 				end
             end
         end,
@@ -128,8 +154,14 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        battery = function(inst, doer, actions)
+            if inst:HasTag("battery") and doer:HasTag("batteryuser") then
+                table.insert(actions, ACTIONS.CHARGE_FROM)
+            end
+        end,
+
         book = function(inst, doer, actions)
-            if doer:HasTag("reader") then
+            if doer:HasTag("reader") and not inst:HasTag("fire") and not inst:HasTag("smolder") then
                 table.insert(actions, ACTIONS.READ)
             end
         end,
@@ -197,6 +229,7 @@ local COMPONENT_ACTIONS =
             elseif not inst:HasTag("burnt")
                 and inst.replica.container:CanBeOpened()
                 and doer.replica.inventory ~= nil
+                and (not inst:HasTag("oceantrawler") or not inst:HasTag("trawler_lowered"))
                 and not (doer.replica.rider ~= nil and doer.replica.rider:IsRiding()) then
                 table.insert(actions, ACTIONS.RUMMAGE)
             end
@@ -253,12 +286,12 @@ local COMPONENT_ACTIONS =
                 table.insert(actions, ACTIONS.HAUNT)
             end
         end,
-        
+
         heavyobstacleusetarget = function(inst, doer, actions, right)
             local item = doer.replica.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
             if right and item ~= nil and item:HasTag("heavy") and inst:HasTag("can_use_heavy")
                 and (inst.use_heavy_obstacle_action_filter == nil or inst.use_heavy_obstacle_action_filter(inst, doer, item)) then
-                
+
                 table.insert(actions, ACTIONS.USE_HEAVY_OBSTACLE)
             end
         end,
@@ -268,6 +301,12 @@ local COMPONENT_ACTIONS =
                 PlantRegistryResearch(inst, doer, actions)
             end
         end,
+
+		prototyper = function(inst, doer, actions, right)
+			if not right then
+                table.insert(actions, ACTIONS.OPEN_CRAFTING)
+			end
+		end,
 
         fertilizerresearchable = function(inst, doer, actions, right)
             if right then
@@ -458,6 +497,63 @@ local COMPONENT_ACTIONS =
         steeringwheel = function(inst, doer, actions, right)
             if not inst:HasTag("occupied") and not inst:HasTag("fire") then
                 table.insert(actions, ACTIONS.STEER_BOAT)
+            end
+        end,
+
+        boatrotator = function(inst, doer, actions, right)
+            local boat = inst:GetCurrentPlatform()
+            if boat and boat:HasTag("boat") and boat.components.boatringdata and not inst:HasTag("fire") and not inst:HasTag("burnt") then
+                if boat.components.boatringdata:IsRotating() then
+                    table.insert(actions, ACTIONS.ROTATE_BOAT_STOP)
+                elseif right then
+                    table.insert(actions, ACTIONS.ROTATE_BOAT_CLOCKWISE)
+                else
+                    table.insert(actions, ACTIONS.ROTATE_BOAT_COUNTERCLOCKWISE)
+                end
+            end
+        end,
+
+        boatmagnet = function(inst, doer, actions, right)
+            if not inst:HasTag("fire") and not inst:HasTag("burnt") then
+                if not inst:HasTag("paired") then
+                    table.insert(actions, ACTIONS.BOAT_MAGNET_ACTIVATE)
+                else
+                    table.insert(actions, ACTIONS.BOAT_MAGNET_DEACTIVATE)
+                end
+            end
+        end,
+
+        boatmagnetbeacon = function(inst, doer, actions, right)
+            if right and inst:HasTag("paired") and not inst:HasTag("burnt") then
+                if inst:HasTag("turnedoff") then
+                    table.insert(actions, ACTIONS.BOAT_MAGNET_BEACON_TURN_ON)
+                else
+                    table.insert(actions, ACTIONS.BOAT_MAGNET_BEACON_TURN_OFF)
+                end
+            end
+        end,
+
+        boatcannon = function(inst, doer, actions, right)
+            if not inst:HasTag("occupied") and not inst:HasTag("fire") and not inst:HasTag("burnt") then
+                if inst:HasTag("ammoloaded") then
+                    table.insert(actions, ACTIONS.BOAT_CANNON_START_AIMING)
+                elseif right then
+                    table.insert(actions, ACTIONS.BOAT_CANNON_LOAD_AMMO)
+                end
+            end
+        end,
+
+        oceantrawler = function(inst, doer, actions, right)
+            if not inst:HasTag("fire") and not inst:HasTag("burnt") then
+                if right then
+                    if inst:HasTag("trawler_lowered") then
+                        table.insert(actions, ACTIONS.OCEAN_TRAWLER_RAISE)
+                    else
+                        table.insert(actions, ACTIONS.OCEAN_TRAWLER_LOWER)
+                    end
+                elseif inst:HasTag("trawler_fish_escaped") and not inst:HasTag("trawler_lowered") then
+                    table.insert(actions, ACTIONS.OCEAN_TRAWLER_FIX)
+                end
             end
         end,
 
@@ -688,11 +784,10 @@ local COMPONENT_ACTIONS =
         end,
 
         mightygym = function(inst, doer, actions, right)
-            if doer:HasTag("player") and doer:HasTag("strongman") and 
+            if doer:HasTag("player") and doer:HasTag("strongman") and
                 not inst:HasTag("hasstrongman") then
-                
+
                 if right and inst:HasTag("loaded") then
-                    -- TODO: unload gym action
                     table.insert(actions, ACTIONS.UNLOAD_GYM)
                 else
                     table.insert(actions, ACTIONS.ENTER_GYM)
@@ -804,9 +899,9 @@ local COMPONENT_ACTIONS =
                                             table.insert(actions, ACTIONS.FEED)
                                         end
                                     elseif target:HasTag("player") then
-                                        if TheNet:GetPVPEnabled() or 
+                                        if TheNet:GetPVPEnabled() or
                                             (target:HasTag("strongstomach") and inst:HasTag("monstermeat")) or
-                                            (inst:HasTag("spoiled") and target:HasTag("ignoresspoilage") and not 
+                                            (inst:HasTag("spoiled") and target:HasTag("ignoresspoilage") and not
                                                 (inst:HasTag("badfood") or inst:HasTag("unsafefood"))) or not -- ignoresspoilage still checks for unsage foods
                                             (inst:HasTag("badfood") or inst:HasTag("unsafefood") or inst:HasTag("spoiled")) then
                                             table.insert(actions, ACTIONS.FEEDPLAYER)
@@ -828,12 +923,12 @@ local COMPONENT_ACTIONS =
                                     table.insert(actions, ACTIONS.FEED)
                                 end
                             elseif target:HasTag("player") then
-                                if TheNet:GetPVPEnabled() or 
+                                if TheNet:GetPVPEnabled() or
                                     (target:HasTag("strongstomach") and inst:HasTag("monstermeat")) or
-                                    (inst:HasTag("spoiled") and target:HasTag("ignoresspoilage") and not 
+                                    (inst:HasTag("spoiled") and target:HasTag("ignoresspoilage") and not
                                         (inst:HasTag("badfood") or inst:HasTag("unsafefood"))) or not -- ignoresspoilage still checks for unsage foods
                                     (inst:HasTag("badfood") or inst:HasTag("unsafefood") or inst:HasTag("spoiled")) then
-                                    table.insert(actions, ACTIONS.FEEDPLAYER) 
+                                    table.insert(actions, ACTIONS.FEEDPLAYER)
                                 end
                             elseif (target:HasTag("small_livestock") or ishandfed)
                                 and target.replica.inventoryitem ~= nil
@@ -951,6 +1046,7 @@ local COMPONENT_ACTIONS =
 
         inventoryitem = function(inst, doer, target, actions, right)
             local inventoryitem = inst.replica.inventoryitem
+
             if inventoryitem ~= nil and inventoryitem:CanOnlyGoInPocket() then
                 --not tradable
             elseif inventoryitem ~= nil
@@ -989,6 +1085,8 @@ local COMPONENT_ACTIONS =
                     table.insert(actions, ACTIONS.GIVE)
                 elseif inst.prefab == "reviver" and target:HasTag("ghost") then
                     table.insert(actions, ACTIONS.GIVE)
+                elseif target:HasTag("boatcannon") and not target:HasTag("burnt") and not target:HasTag("fire") and inst:HasTag("boatcannon_ammo") and not target:HasTag("ammoloaded") then
+                    table.insert(actions, ACTIONS.BOAT_CANNON_LOAD_AMMO)
                 end
             end
         end,
@@ -1162,7 +1260,7 @@ local COMPONENT_ACTIONS =
         end,
 
         summoningitem = function(inst, doer, target, actions, right)
-			if not target.inlimbo and target.replica.follower ~= nil and target.replica.follower:GetLeader() == doer and doer:HasTag("ghostfriend_summoned") then
+			if not target.inlimbo and target.replica.follower ~= nil and target.replica.follower:GetLeader() == doer and doer:HasTag("ghostfriend_summoned") and target:HasTag("abigail") then
 				table.insert(actions, ACTIONS.CASTUNSUMMON)
 			end
         end,
@@ -1235,7 +1333,7 @@ local COMPONENT_ACTIONS =
 
         useabletargeteditem = function(inst, doer, target, actions)
             if target ~= nil then
-				if (target.prefab ~= nil and inst:HasTag(target.prefab.."_targeter") and not inst:HasTag("inuse_targeted")) 
+				if (target.prefab ~= nil and inst:HasTag(target.prefab.."_targeter") and not inst:HasTag("inuse_targeted"))
 					or (inst.UseableTargetedItem_ValidTarget ~= nil and inst.UseableTargetedItem_ValidTarget(inst, target, doer)) then
 
 					table.insert(actions, ACTIONS.USEITEMON)
@@ -1402,7 +1500,7 @@ local COMPONENT_ACTIONS =
 
         bedazzler = function(inst, doer, target, actions)
             if doer:HasTag("spiderwhisperer") and target:HasTag("spiderden") and target:HasTag("bedazzleable") and not target:HasTag("bedazzled") then
-               table.insert(actions, ACTIONS.BEDAZZLE) 
+               table.insert(actions, ACTIONS.BEDAZZLE)
             end
         end,
 
@@ -1413,26 +1511,24 @@ local COMPONENT_ACTIONS =
         end,
     },
 
-    POINT = --args: inst, doer, pos, actions, right
+    POINT = --args: inst, doer, pos, actions, right, target
     {
-        blinkstaff = function(inst, doer, pos, actions, right)
+        blinkstaff = function(inst, doer, pos, actions, right, target)
             local x,y,z = pos:Get()
-            if right and (TheWorld.Map:IsAboveGroundAtPoint(x,y,z) or TheWorld.Map:GetPlatformAtPoint(x,z) ~= nil) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") then
+            if right and (TheWorld.Map:IsAboveGroundAtPoint(x,y,z) or TheWorld.Map:GetPlatformAtPoint(x,z) ~= nil) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
                 table.insert(actions, ACTIONS.BLINK)
             end
         end,
 
-        complexprojectile = function(inst, doer, pos, actions, right)
-            if right and not TheWorld.Map:IsGroundTargetBlocked(pos) 
+        complexprojectile = function(inst, doer, pos, actions, right, target)
+            if right and not TheWorld.Map:IsGroundTargetBlocked(pos)
 				and (inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer)) then
 
-                if not inst:HasTag("dumbbell") or doer:HasTag("mightiness_mighty") then
-                    table.insert(actions, ACTIONS.TOSS)
-                end
+                table.insert(actions, ACTIONS.TOSS)
             end
         end,
 
-        deployable = function(inst, doer, pos, actions, right)
+        deployable = function(inst, doer, pos, actions, right, target)
             if right and inst.replica.inventoryitem ~= nil then
                 if CLIENT_REQUESTED_ACTION == ACTIONS.DEPLOY_TILEARRIVE or CLIENT_REQUESTED_ACTION == ACTIONS.DEPLOY then
                     --CanDeploy will still run before the actual deploy itself.
@@ -1447,31 +1543,32 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        fishingnet = function(inst, doer, pos, actions, right)
+        fishingnet = function(inst, doer, pos, actions, right, target)
             if right and CanCastFishingNetAtPoint(doer, pos.x, pos.z) then
                 table.insert(actions, ACTIONS.CAST_NET)
             end
         end,
 
-        fishingrod = function(inst, doer, pos, actions, right)
+        fishingrod = function(inst, doer, pos, actions, right, target)
 			if right and CanCastFishingNetAtPoint(doer, pos.x, pos.z) then
 				table.insert(actions, ACTIONS.FISH_OCEAN)
 			end
         end,
 
-        inventoryitem = function(inst, doer, pos, actions, right)
+        inventoryitem = function(inst, doer, pos, actions, right, target)
             if not right and inst.replica.inventoryitem:IsHeldBy(doer) then
                 table.insert(actions, ACTIONS.DROP)
             end
         end,
 
-        oar = function(inst, doer, pos, actions, right)
-            if right then
+        oar = function(inst, doer, pos, actions, right, target)
+            local override = CheckRowOverride(doer, target)
+            if right and not override then
                 Row(inst, doer, pos, actions)
             end
         end,
 
-		oceanfishingrod = function(inst, doer, pos, actions, right)
+		oceanfishingrod = function(inst, doer, pos, actions, right, target)
             if right then
 				local rod = inst.replica.oceanfishingrod
 				if rod ~= nil then
@@ -1490,7 +1587,7 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-		oceanthrowable = function(inst, doer, pos, actions, right)
+		oceanthrowable = function(inst, doer, pos, actions, right, target)
             if right then
                 if CanCastFishingNetAtPoint(doer, pos.x, pos.z) then
                     table.insert(actions, ACTIONS.OCEAN_TOSS)
@@ -1498,24 +1595,24 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-		spellcaster = function(inst, doer, pos, actions, right)
+		spellcaster = function(inst, doer, pos, actions, right, target)
             if right then
                 local cast_on_water = inst:HasTag("castonpointwater")
                 if inst:HasTag("castonpoint") then
                     local px, py, pz = pos:Get()
-                    if TheWorld.Map:IsAboveGroundAtPoint(px, py, pz, cast_on_water) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") then
+                    if TheWorld.Map:IsAboveGroundAtPoint(px, py, pz, cast_on_water) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
                         table.insert(actions, ACTIONS.CASTSPELL)
                     end
                 elseif cast_on_water then
                     local px, py, pz = pos:Get()
-                    if TheWorld.Map:IsOceanAtPoint(px, py, pz, false) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") then
+                    if TheWorld.Map:IsOceanAtPoint(px, py, pz, false) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
                         table.insert(actions, ACTIONS.CASTSPELL)
                     end
                 end
             end
         end,
 
-        terraformer = function(inst, doer, pos, actions, right)
+        terraformer = function(inst, doer, pos, actions, right, target)
             if right and
                 ((inst:HasTag("plow") and TheWorld.Map:CanPlowAtPoint(pos:Get())) or
                 (not inst:HasTag("plow") and TheWorld.Map:CanTerraformAtPoint(pos:Get()))) then
@@ -1523,7 +1620,7 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        aoespell = function(inst, doer, pos, actions, right)
+        aoespell = function(inst, doer, pos, actions, right, target)
             if right and
                 (   inst.components.aoetargeting == nil or inst.components.aoetargeting:IsEnabled()
                 ) and
@@ -1534,25 +1631,25 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        farmtiller = function(inst, doer, pos, actions, right)
+        farmtiller = function(inst, doer, pos, actions, right, target)
             if right and TheWorld.Map:CanTillSoilAtPoint(pos.x, pos.y, pos.z) then
                 table.insert(actions, ACTIONS.TILL)
             end
         end,
 
-        quagmire_tiller = function(inst, doer, pos, actions, right)
+        quagmire_tiller = function(inst, doer, pos, actions, right, target)
             if right and TheWorld.Map:CanTillSoilAtPoint(pos) then
                 table.insert(actions, ACTIONS.TILL)
             end
         end,
 
-        wateryprotection = function(inst, doer, pos, actions, right)
-            if right and TheWorld.Map:GetTileAtPoint(pos:Get()) == GROUND.FARMING_SOIL then
+        wateryprotection = function(inst, doer, pos, actions, right, target)
+            if right and TheWorld.Map:GetTileAtPoint(pos:Get()) == WORLD_TILES.FARMING_SOIL then
                 table.insert(actions, ACTIONS.POUR_WATER_GROUNDTILE)
             end
         end,
 
-        fillable = function(inst, doer, pos, actions, right)
+        fillable = function(inst, doer, pos, actions, right, target)
             if inst:HasTag("fillable_showoceanaction") and TheWorld.Map:IsOceanAtPoint(pos.x, 0, pos.z) then
                 table.insert(actions, ACTIONS.FILL_OCEAN)
             end
@@ -1580,10 +1677,8 @@ local COMPONENT_ACTIONS =
                 not (doer.components.playercontroller ~= nil and doer.components.playercontroller.isclientcontrollerattached) and
                 not TheWorld.Map:IsGroundTargetBlocked(target:GetPosition()) and
 				(inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer)) then
-                
-                if not inst:HasTag("dumbbell") or doer:HasTag("mightiness_mighty") then
-                    table.insert(actions, ACTIONS.TOSS)
-                end
+
+                table.insert(actions, ACTIONS.TOSS)
             end
         end,
 
@@ -1637,8 +1732,19 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        mightydumbbell = function(inst, doer, target, actions, right)
+            if right and doer == target then
+                if inst:HasTag("lifting") then
+                    table.insert(actions, ACTIONS.STOP_LIFT_DUMBBELL)
+                else
+                    table.insert(actions, ACTIONS.LIFT_DUMBBELL)
+                end
+            end
+        end,
+
         oar = function(inst, doer, target, actions, right)
-            if right then
+            local override = CheckRowOverride(doer, target)
+            if right and not override then
                 --Only the keyboard/mouse needs the ability to arbitrarily click on scene objects to row.
                 --The controller does not and if you allow it to, it will sometimes show the wrong ground hint text.
                 if not doer.components.playercontroller.isclientcontrollerattached then
@@ -1719,7 +1825,7 @@ local COMPONENT_ACTIONS =
                 if doer.replica.combat:CanExtinguishTarget(target, inst) or
                     doer.replica.combat:CanLightTarget(target, inst) then
                     table.insert(actions, ACTIONS.ATTACK)
-                elseif not target:HasTag("wall")
+                elseif not (target:HasTag("wall") or target:HasTag("mustforceattack"))
                     and target.replica.combat ~= nil
                     and doer.replica.combat:CanTarget(target)
                     and target.replica.combat:CanBeAttacked(doer)
@@ -1743,6 +1849,14 @@ local COMPONENT_ACTIONS =
         fillable = function(inst, doer, target, actions, right)
             if right and target:HasTag("watersource") then
                 table.insert(actions, ACTIONS.FILL)
+            end
+        end,
+
+        fencerotator = function(inst, doer, target, actions, right)
+            if (target:HasTag("fence") or target:HasTag("directionsign")) and not inst:HasTag("fire") and not inst:HasTag("burnt") then
+                if right then
+                    table.insert(actions, ACTIONS.ROTATE_FENCE)
+                end
             end
         end,
     },
@@ -1963,7 +2077,7 @@ local COMPONENT_ACTIONS =
         end,
 
         sleepingbag = function(inst, doer, actions)
-            if (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and 
+            if (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
                (not inst:HasTag("spiderden") or doer:HasTag("spiderwhisperer")) then
                 table.insert(actions, ACTIONS.SLEEPIN)
             end
@@ -2042,6 +2156,30 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        upgrademodule = function(inst, doer, actions, right)
+            if doer:HasTag("upgrademoduleowner") then
+                local success = doer.CanUpgradeWithModule == nil or doer:CanUpgradeWithModule(inst)
+
+                if success then
+                    table.insert(actions, ACTIONS.APPLYMODULE)
+                else
+                    table.insert(actions, ACTIONS.APPLYMODULE_FAIL)
+                end
+            end
+        end,
+
+        upgrademoduleremover = function(inst, doer, actions, right)
+            if doer:HasTag("upgrademoduleowner") then
+                local success = doer.CanRemoveModules == nil or doer:CanRemoveModules()
+
+                if success then
+                    table.insert(actions, ACTIONS.REMOVEMODULES)
+                else
+                    table.insert(actions, ACTIONS.REMOVEMODULES_FAIL)
+                end
+            end
+        end,
+
         useableitem = function(inst, doer, actions)
             if not inst:HasTag("inuse") and
                 inst.replica.equippable ~= nil and
@@ -2078,12 +2216,22 @@ local COMPONENT_ACTIONS =
         end,
 
         mightydumbbell = function(inst, doer, actions)
-            if doer:HasTag("player") and doer:HasTag("strongman") and 
+            if doer:HasTag("strongman") and
               (inst.replica.equippable ~= nil and inst.replica.equippable:IsEquipped()) then
                 if inst:HasTag("lifting") then
                     table.insert(actions, ACTIONS.STOP_LIFT_DUMBBELL)
                 else
                     table.insert(actions, ACTIONS.LIFT_DUMBBELL)
+                end
+            end
+        end,
+
+        boatmagnetbeacon = function(inst, doer, actions)
+            if inst:HasTag("paired") then
+                if inst:HasTag("turnedoff") then
+                    table.insert(actions, ACTIONS.BOAT_MAGNET_BEACON_TURN_ON)
+                else
+                    table.insert(actions, ACTIONS.BOAT_MAGNET_BEACON_TURN_OFF)
                 end
             end
         end,

@@ -225,6 +225,7 @@ local function fn()
 
     inst.base = SpawnPrefab("eyeturret_base")
     inst.base.entity:SetParent(inst.entity)
+    inst.highlightchildren = { inst.base }
 
     inst.syncanim = syncanim
     inst.syncanimpush = syncanimpush
@@ -268,6 +269,13 @@ local baseassets =
     Asset("ANIM", "anim/eyeball_turret_base.zip"),
 }
 
+local function OnEntityReplicated(inst)
+    local parent = inst.entity:GetParent()
+    if parent ~= nil and parent.prefab == "eyeturret" then
+        parent.highlightchildren = { inst }
+    end
+end
+
 local function basefn()
     local inst = CreateEntity()
 
@@ -284,6 +292,7 @@ local function basefn()
 	inst:AddTag("DECOR")
 
     if not TheWorld.ismastersim then
+        inst.OnEntityReplicated = OnEntityReplicated
         return inst
     end
 

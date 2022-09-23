@@ -1,7 +1,7 @@
 
 AddRoom("BGNoise", {
 					colour={r=.66,g=.66,b=.66,a=.50},
-					value = GROUND.GROUND_NOISE,
+					value = WORLD_TILES.GROUND_NOISE,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 					                countprefabs= {

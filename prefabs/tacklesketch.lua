@@ -24,6 +24,7 @@ local function onload(inst, data)
     if data ~= nil and data.sketchid ~= nil then
         inst.sketchid = data.sketchid
         inst.components.named:SetName(subfmt(STRINGS.NAMES.TACKLESKETCH, { item = STRINGS.NAMES[string.upper(SKETCHES[inst.sketchid].recipe)] }))
+	    inst.components.teacher:SetRecipe(SKETCHES[inst.sketchid].recipe)
         if SKETCHES[inst.sketchid].image ~= nil then
             inst.components.inventoryitem:ChangeImageName(SKETCHES[inst.sketchid].image)
         end
@@ -40,6 +41,10 @@ end
 
 local function GetSpecificSketchPrefab(inst)
     return SKETCHES[inst.sketchid].item.."_tacklesketch"
+end
+
+local function OnTeach(inst, learner)
+    learner:PushEvent("learnrecipe", { teacher = inst, recipe = inst.components.teacher.recipe })
 end
 
 local function fn()
@@ -72,7 +77,9 @@ local function fn()
     --Remove these tags so that they can be added properly when replicating components below
     inst:RemoveTag("_named")
 
-	inst:AddComponent("tacklesketch")
+	--inst:AddComponent("tacklesketch")
+    inst:AddComponent("teacher")
+    inst.components.teacher.onteach = OnTeach
 
     inst:AddComponent("named")
     inst:AddComponent("inspectable")
@@ -106,6 +113,7 @@ local function MakeSketchPrefab(sketchid)
         inst.sketchid = sketchid
 
         inst.components.named:SetName(subfmt(STRINGS.NAMES.TACKLESKETCH, { item = STRINGS.NAMES[string.upper(SKETCHES[sketchid].recipe)] }))
+	    inst.components.teacher:SetRecipe(SKETCHES[sketchid].recipe)
 
         if SKETCHES[sketchid].image ~= nil then
             inst.components.inventoryitem:ChangeImageName(SKETCHES[sketchid].image)

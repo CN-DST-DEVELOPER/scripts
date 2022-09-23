@@ -14,6 +14,9 @@ local HullHealth = Class(function(self, inst)
 	self.small_leak_dmg = 0.1
 	self.med_leak_dmg = 0.75
 	self.hull_dmg = 0
+	self.selfdegradingtime = 0
+	self.currentdegradetime = 0
+	self.degradefx = "degrade_fx"
 
 	for leak_idx = 1, self.leak_point_count do
 		self.leak_damage[leak_idx] = 0
@@ -23,10 +26,44 @@ local HullHealth = Class(function(self, inst)
 	self.inst:DoPeriodicTask(1, function(inst) self:UpdateHealth() end)
 end)
 
-function HullHealth:UpdateHealth()
-	if self.inst.components.health:IsDead() then return end
+function HullHealth:GetDamageMult(cat)
+	-- This is a function to collect things that will protect the boat from various effects
+	-- cat "degradedamage" sets teh multiplier on the time it takes to take a point of damage.
+	-- cat "collide" sets mulitplier on colission damage
+	local mult = 1
 
+	--local ents = self.inst.components.WalkablePlatform and self.inst.components.WalkablePlatform:GetEntitiesOnPlatform() or nil
+
+	local x,y,z = self.inst.Transform:GetWorldPosition()
+	local ents = TheSim:FindEntities(x,y,z, 4)
+
+	-- look for the pirate hat
+	if ents and #ents > 0 then
+		for i,ent in ipairs(ents)do
+			if ent:GetCurrentPlatform() and ent:GetCurrentPlatform() == self.inst then
+				if ent:HasTag("boat_health_buffer") then
+					if cat == "degradedamage" then
+						mult = 2
+						break
+					elseif cat == "collide" then
+						mult = 0.5
+						break
+					end
+				end
+			end
+		end
+	end
+	return mult
+end
+
+function HullHealth:UpdateHealth()
 	if TheWorld.Map:IsVisualGroundAtPoint(self.inst.Transform:GetWorldPosition()) then
+		if self.inst.components.boatphysics then
+			self.inst.components.boatphysics:SetHalting(true)
+		end
+		if self.inst.components.health:IsDead() then
+			return
+		end
 		self.inst.components.health:Kill()
 	end
 
@@ -63,8 +100,9 @@ end
 
 function HullHealth:GetLeakPosition(idx)
 	local angle = GetRandomWithVariance(self:GetLeakAngle(idx), self.leak_angle_variance)
-	local boat_x, boat_y, boat_z = self.inst.Transform:GetWorldPosition()
-	local pos_x, pos_z = math.cos(angle) * self.leak_radius, math.sin(angle) * GetRandomWithVariance(self.leak_radius, self.leak_radius_variance)
+	local boat_x, _, boat_z = self.inst.Transform:GetWorldPosition()
+	local leakradius = GetRandomWithVariance(self.leak_radius, self.leak_radius_variance)
+	local pos_x, pos_z = math.cos(angle) * leakradius, math.sin(angle) * leakradius
 	return pos_x + boat_x, pos_z + boat_z
 end
 
@@ -73,6 +111,9 @@ function HullHealth:GetLeakAngle(idx)
 end
 
 function HullHealth:RefreshLeakIndicator(leak_idx)
+	if self.leakproof then
+		return false
+	end
 	local leak_damage = self.leak_damage[leak_idx]
 	if leak_damage >= self.small_leak_dmg then
 		local leak_indicator = self.leak_indicators[leak_idx]
@@ -127,6 +168,19 @@ function HullHealth:OnCollide(data)
 
         local hit_adjacent_speed = boat_physics:GetVelocity() * absolute_hit_normal_overlap_percentage
 
+		-- If an area was hit with a boat bumper, have it eat the collision damage and skip processing boat hull damage
+		if hit_adjacent_speed > TUNING.BOAT.OARS.MALBATROSS.FORCE then
+			if self.inst.components.boatring ~= nil then
+				local collidedbumper = self.inst.components.boatring:GetBumperAtPoint(hit_pos_x, hit_pos_z)
+				if collidedbumper ~= nil then
+					local velocity_damage_percent = math.min(hit_adjacent_speed / TUNING.BOAT.MAX_ALLOWED_VELOCITY, 1)
+					collidedbumper:PushEvent("boatcollision")
+					collidedbumper.components.health:DoDelta(-1 * math.floor(TUNING.BOAT.MAX_HULL_HEALTH_DAMAGE * velocity_damage_percent))
+					return
+				end
+			end
+		end
+
 		if hit_adjacent_speed > 2 then
 			local leak_dmg = self.leak_damage[leak_idx]
 
@@ -145,8 +199,53 @@ function HullHealth:OnCollide(data)
 
         if hit_adjacent_speed > TUNING.BOAT.OARS.MALBATROSS.FORCE then
             local velocity_damage_percent = math.min(hit_adjacent_speed / TUNING.BOAT.MAX_ALLOWED_VELOCITY, 1)
+
+            velocity_damage_percent = velocity_damage_percent * self:GetDamageMult("collide")
+
 		    self.inst.components.health:DoDelta(-1 * math.floor(TUNING.BOAT.MAX_HULL_HEALTH_DAMAGE * velocity_damage_percent))
         end
+	end
+end
+
+function HullHealth:SetSelfDegrading(stat)
+
+
+
+
+	self.selfdegradingtime = stat
+	if 	self.selfdegradingtime > 0 then
+		self.inst:StartUpdatingComponent(self)
+	else
+		self.inst:RemoveTag("is_leaking")
+		self.inst:StopUpdatingComponent(self)
+	end
+end
+
+function HullHealth:SpawnDegadeDebris()
+	local fx = SpawnPrefab(self.degradefx)
+	local x,y,z = self.inst.Transform:GetWorldPosition()
+	local radius = math.random()*3
+	local theta = math.random() * 2*PI
+	local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
+	fx.Transform:SetPosition(x+offset.x,0,z+offset.z)
+end
+
+function HullHealth:OnUpdate(dt)
+
+	if not self.inst:HasTag("is_leaking") then
+		self.inst:AddTag("is_leaking")
+	end
+
+	self.currentdegradetime = self.currentdegradetime + dt
+
+	local debris_chance = (1/30)   / self:GetDamageMult("degradedamage")
+	if math.random()< debris_chance then
+		self:SpawnDegadeDebris()
+	end
+
+	if self.currentdegradetime >= self.selfdegradingtime * self:GetDamageMult("degradedamage") then
+		self.currentdegradetime = 0
+		self.inst.components.health:DoDelta(-1)
 	end
 end
 

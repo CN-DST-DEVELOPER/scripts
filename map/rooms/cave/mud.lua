@@ -10,7 +10,7 @@ require "map/room_functions"
 -- Light plant field
 AddRoom("LightPlantField", {
     colour={r=0.7,g=0.5,b=0.3,a=0.9},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .2,
@@ -38,7 +38,7 @@ AddRoom("LightPlantField", {
 -- Worm light field
 AddRoom("WormPlantField", {
     colour={r=0.7,g=0.5,b=0.3,a=0.9},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .15,
@@ -66,7 +66,7 @@ AddRoom("WormPlantField", {
 -- Fern gully
 AddRoom("FernGully", {
     colour={r=0.7,g=0.5,b=0.3,a=0.9},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .25,
@@ -94,7 +94,7 @@ AddRoom("FernGully", {
 -- Slurtle plains
 AddRoom("SlurtlePlains", {
     colour={r=0.7,g=0.5,b=0.3,a=0.9},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .20,
@@ -120,7 +120,7 @@ AddRoom("SlurtlePlains", {
 -- Rabbit hermit
 AddRoom("MudWithRabbit", {
     colour={r=0.7,g=0.5,b=0.3,a=0.9},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         countstaticlayouts =
@@ -148,7 +148,7 @@ AddRoom("MudWithRabbit", {
 
 local bgmud = {
     colour={r=0.7,g=0.5,b=0.3,a=0.9},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .15,

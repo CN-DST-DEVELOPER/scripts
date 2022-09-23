@@ -31,6 +31,10 @@ local function fn()
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
 
+    inst:AddComponent("repairer")
+    inst.components.repairer.repairmaterial = MATERIALS.SHELL
+    inst.components.repairer.healthrepairvalue = TUNING.REPAIR_SHELL_HEALTH
+
     MakeHauntableLaunch(inst)
 
     return inst

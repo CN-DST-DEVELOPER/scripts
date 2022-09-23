@@ -187,7 +187,7 @@ end
 
 local function OnWorked(inst, worker, workleft)
     if workleft <= 0 then
-		local snap_to_stage = not worker:HasTag("character")
+		local snap_to_stage = not (worker:HasTag("character") or worker:HasTag("shadowminion"))
         SetStage(inst, "empty", "work", snap_to_stage)
         if inst.stage == "empty" then
             inst.SoundEmitter:PlaySound("dontstarve_DLC001/common/iceboulder_smash")

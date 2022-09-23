@@ -217,6 +217,11 @@ local function GetStatus(inst)
     return inst.respawntask ~= nil and "WAITING" or nil
 end
 
+local function onstashed(inst)
+    StopRespawn(inst)
+end
+
+
 local function fn()
     local inst = CreateEntity()
 
@@ -261,9 +266,12 @@ local function fn()
     --inst.MorphNormalEyebone = MorphNormalEyebone
     inst.MorphSnowEyebone = MorphSnowEyebone
     inst.MorphShadowEyebone = MorphShadowEyebone
+    inst.StopRespawn = StopRespawn
 
     inst.OnLoad = OnLoad
     inst.OnSave = OnSave
+
+    inst.onstashed = onstashed
 
     inst.fixtask = inst:DoTaskInTime(1, FixChester)
 

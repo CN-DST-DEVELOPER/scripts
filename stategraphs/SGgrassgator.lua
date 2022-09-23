@@ -255,7 +255,7 @@ local states=
                     inst.Physics:Stop()
                     inst.Physics:SetDamping(5)
                     inst.Physics:Teleport(x, 0, z)
-                    inst.sg:GoToState("land")                    
+                    inst.sg:GoToState(inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water and "land" or "land_on_ground")
                 end
             end
         end,
@@ -274,7 +274,6 @@ local states=
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("fall_pst")
-            inst.components.locomotor:StopMoving()
         end,
 
         timeline=
@@ -287,6 +286,27 @@ local states=
         },
 
         events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        },
+    },
+
+    State{
+        name = "land_on_ground",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("fall_land")
+        end,
+
+        timeline =
+        {
+            TimeEvent(2 * FRAMES, PlayFootstep),
+            TimeEvent(26 * FRAMES, PlayFootstep),
+        },
+
+        events =
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
         },

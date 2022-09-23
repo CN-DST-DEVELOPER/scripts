@@ -237,8 +237,8 @@ local function fn()
 
     inst:AddComponent("inspectable")
 
-    MakeLargeBurnableCharacter(inst, "beefalo_body")
-    MakeLargeFreezableCharacter(inst, "beefalo_body")
+    MakeLargeBurnableCharacter(inst, "shark_parts")
+    MakeLargeFreezableCharacter(inst, "shark_parts")
 
     inst:AddComponent("timer")
 

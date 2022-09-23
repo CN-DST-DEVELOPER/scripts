@@ -23,6 +23,8 @@ local Harvestable = Class(function(self, inst)
     self.maxproduce = 1
 
     self.enabled = true
+
+    --self.can_harvest_fn = nil
 end,
 nil,
 {
@@ -40,6 +42,20 @@ function Harvestable:SetUp(product, max, time, onharvest, ongrow)
     self:SetOnGrowFn(ongrow)
     self:SetOnHarvestFn(onharvest)
     self:StartGrowing()
+end
+
+function Harvestable:SetDoMagicGrowthFn(fn)
+    self.domagicgrowthfn = fn
+end
+
+function Harvestable:IsMagicGrowable()
+    return self.domagicgrowthfn ~= nil
+end
+
+function Harvestable:DoMagicGrowth(doer)
+    if self.domagicgrowthfn ~= nil then
+        self.domagicgrowthfn(self.inst, doer)
+    end
 end
 
 function Harvestable:SetOnGrowFn(fn)
@@ -62,6 +78,10 @@ end
 
 function Harvestable:CanBeHarvested()
     return self.enabled and self.produce > 0
+end
+
+function Harvestable:SetCanHarvestFn(fn)
+    self.can_harvest_fn = fn
 end
 
 function Harvestable:Disable()
@@ -155,6 +175,13 @@ end
 
 function Harvestable:Harvest(picker)
     if self:CanBeHarvested() then
+        if self.can_harvest_fn ~= nil then
+            local can_harvest, fail_reason = self.can_harvest_fn(self.inst, picker)
+            if not can_harvest then
+                return false, fail_reason
+            end
+        end
+
         local produce = self.produce
         self.produce = 0
 

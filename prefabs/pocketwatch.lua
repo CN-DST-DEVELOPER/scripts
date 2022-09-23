@@ -170,7 +170,7 @@ local function recallmarker_ShowMarker(inst, viewer)
     inst.Network:SetClassifiedTarget(viewer)
     if viewer ~= ThePlayer then
 		-- hide it from the locally hosted server player
-        inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+        inst.AnimState:OverrideMultColour(1, 1, 1, 0)
 	end
 end
 
@@ -197,7 +197,7 @@ local function recallmarkerfn()
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
 	inst.AnimState:PlayAnimation("idle_pre")
 	inst.AnimState:PushAnimation("idle_loop", true)
-    inst.AnimState:SetMultColour(0.6, 0.6, 0.6, 0.6)
+    inst.AnimState:SetMultColour(1.0, 1.0, 1.0, 0.6)
 
 	inst:AddTag("NOBLOCK")
     inst:AddTag("FX")
@@ -310,7 +310,7 @@ local function warpmarker_SetMarkerViewer(inst, viewer)
     inst.Network:SetClassifiedTarget(viewer)
     if viewer ~= ThePlayer then
 		-- hide it from the locally hosted server player
-        inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+        inst.AnimState:OverrideMultColour(1, 1, 1, 0)
     end
 end
 
@@ -343,7 +343,7 @@ local function warpmarkerfn()
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:PlayAnimation("off")
-    inst.AnimState:SetMultColour(0.6, 0.6, 0.6, 0.6)
+    inst.AnimState:SetMultColour(1.0, 1.0, 1.0, 0.6)
 
 	inst:Hide()
 

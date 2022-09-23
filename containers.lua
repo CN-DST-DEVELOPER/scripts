@@ -180,7 +180,6 @@ params.yotb_sewingmachine =
 }
 
 function params.yotb_sewingmachine.itemtestfn(container, item, slot)
-    --TODO: check if we actually accept the item
     return item:HasTag("yotb_pattern_fragment")
 end
 
@@ -755,6 +754,7 @@ params.oceanfishingrod =
     acceptsstacks = false,
     usespecificslotsforitems = true,
     type = "hand_inv",
+    excludefromcrafting = true,
 }
 
 function params.oceanfishingrod.itemtestfn(container, item, slot)
@@ -785,6 +785,7 @@ params.slingshot =
     },
     usespecificslotsforitems = true,
     type = "hand_inv",
+    excludefromcrafting = true,
 }
 
 function params.slingshot.itemtestfn(container, item, slot)
@@ -969,6 +970,7 @@ params.alterguardianhat =
     },
     acceptsstacks = false,
     type = "hand_inv",
+    excludefromcrafting = true,
 }
 
 local AGHAT_SLOTSTART = 95
@@ -999,6 +1001,7 @@ params.pocketwatch =
         side_align_tip = 100,
     },
     type = "hand_inv",
+    excludefromcrafting = true,
 }
 
 for y = 1, 0, -1 do
@@ -1009,6 +1012,62 @@ end
 
 function params.pocketwatch.itemtestfn(container, item, slot)
 	return item:HasTag("pocketwatchpart")
+end
+
+--------------------------------------------------------------------------
+--[[ ocean_trawler ]]
+--------------------------------------------------------------------------
+
+params.ocean_trawler =
+{
+    widget =
+    {
+        slotpos =
+        {
+            Vector3(0, 100, 0),
+            Vector3(0, 20, 0),
+            Vector3(0, -60, 0),
+            Vector3(0, -140, 0),
+        },
+        animbank = "ui_cookpot_1x4",
+        animbuild = "ui_cookpot_1x4",
+        pos = Vector3(200, 0, 0),
+        side_align_tip = 100,
+    },
+    acceptsstacks = false,
+    type = "cooker",
+}
+
+function params.ocean_trawler.itemtestfn(container, item, slot)
+    return item:HasTag("cookable") or item:HasTag("oceanfish")
+end
+
+--------------------------------------------------------------------------
+--[[ bookstation ]]
+--------------------------------------------------------------------------
+
+params.bookstation =
+{
+    widget =
+    {
+        slotpos = {},
+        animbank = "ui_bookstation_4x5",
+        animbuild = "ui_bookstation_4x5",
+        pos = Vector3(0, 280, 0),
+        side_align_tip = 160,
+    },
+    type = "chest",
+}
+
+for y = 0, 4 do
+    table.insert(params.bookstation.widget.slotpos, Vector3(-114      , (-77 * y) + 37 - (y * 2), 0))
+    table.insert(params.bookstation.widget.slotpos, Vector3(-114 + 75 , (-77 * y) + 37 - (y * 2), 0))
+    table.insert(params.bookstation.widget.slotpos, Vector3(-114 + 150, (-77 * y) + 37 - (y * 2), 0))
+    table.insert(params.bookstation.widget.slotpos, Vector3(-114 + 225, (-77 * y) + 37 - (y * 2), 0))
+end
+
+function params.bookstation.itemtestfn(container, item, slot)
+    return item:HasTag("bookcabinet_item")
 end
 
 --------------------------------------------------------------------------

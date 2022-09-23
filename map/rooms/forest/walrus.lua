@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 AddRoom("WalrusHut_Plains", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.SAVANNA,
+					value = WORLD_TILES.SAVANNA,
 					contents =  {
 					                countprefabs= {
 										walrus_camp = 1
@@ -19,7 +19,7 @@ AddRoom("WalrusHut_Plains", {
 					})
 AddRoom("WalrusHut_Grassy", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 					                countprefabs= {
 										walrus_camp = 1
@@ -40,7 +40,7 @@ AddRoom("WalrusHut_Grassy", {
 					})
 AddRoom("WalrusHut_Rocky", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					contents =  {
 					                countprefabs= {
 										walrus_camp = 1

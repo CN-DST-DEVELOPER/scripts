@@ -544,8 +544,11 @@ function ChildSpawner:DoQueuedSpawn()
 end
 
 function ChildSpawner:SpawnChild(target, prefab, radius)
+    if target and (target._doesnotdrawaggro or target.components.health and target.components.health:IsInvincible()) then
+        return nil
+    end
     if not self:CanSpawn() then
-        return
+        return nil
     end
 
     local child = self:DoSpawnChild(target, prefab or self.childname, radius)
@@ -591,6 +594,11 @@ function ChildSpawner:TrySpawnEmergencyChild()
 end
 
 function ChildSpawner:GoHome( child )
+    if self.gohomevalidatefn then
+        if not self.gohomevalidatefn(self.inst) then
+            return false
+        end
+    end
     if self.childrenoutside[child] then
         self.inst:PushEvent("childgoinghome", {child = child})
         child:PushEvent("goinghome", {home = self.inst})
@@ -657,6 +665,10 @@ function ChildSpawner:OnChildKilled(child)
 end
 
 function ChildSpawner:ReleaseAllChildren(target, prefab)
+    if target and (target._doesnotdrawaggro or target.components.health and target.components.health:IsInvincible()) then
+        return
+    end
+
 	local failures = 0 -- prevent infinate loops when SpawnChild fails to spawn its child
     local children_released = {}
 

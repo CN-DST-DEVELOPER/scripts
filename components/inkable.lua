@@ -25,4 +25,12 @@ function Inkable:OnUpdate(dt)
 	end
 end
 
+function Inkable:TransferComponent(newinst)
+    local newcomponent = newinst.components.inkable
+    if self.inked then
+    	newcomponent:Ink()
+    	newcomponent.inktime = self.inktime
+    end
+end
+
 return Inkable

@@ -112,6 +112,10 @@ function SkinsItemPopUp:OnControl(control, down)
     if SkinsItemPopUp._base.OnControl(self,control, down) then
         return true
     end
+
+    if control == CONTROL_CANCEL and not down then
+        TheFrontEnd:PopScreen(self) 
+    end
 end
 
 -- Sets the item display info before revealing it

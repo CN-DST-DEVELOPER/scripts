@@ -28,7 +28,19 @@ local GiftItemToast = Class(Widget, function(self, owner)
         else
             self:DisableClick()
         end
-    end, ThePlayer)
+    end, self.owner)
+
+    --NOTE: this is triggered on the swap SOURCE. we need to stop updates because
+    --      playercontroller component is removed first, entity remove is delayed.
+    self.inst:ListenForEvent("seamlessplayerswap", function()
+        self:StopUpdating()
+    end, self.owner)
+
+    --NOTE: this is triggered on the swap TARGET.
+    self.inst:ListenForEvent("finishseamlessplayerswap", function(player, data)
+        self.do_instant = true
+        self.inst:DoTaskInTime(0, function() self.do_instant = false end)
+    end, self.owner)
 
     self.inst:ListenForEvent("continuefrompause", function() self:UpdateControllerHelp() end, TheWorld)
 
@@ -63,21 +75,20 @@ function GiftItemToast:UpdateElements()
 
             -- We don't need to move if we're already in position
             if from ~= to then
+                if self.do_instant then
+                    self.do_instant = false
+                    self.root:SetPosition(to)
+                    if self.opened and self.tab_gift.enabled then
+                        self:OnClickEnabled()
+                    end
+                    return
+                end
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/skin_drop_slide_gift_DOWN")
                 self.root:MoveTo(from, to, 1.0,
                     function()
                         --check we're still opened, cuz we don't cancel MoveTo
-                        if self.opened then
-                            --[[
-                            --V2C: sounds bad...
-                            if self:IsVisible() then
-                                TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/skin_drop_slide_gift_BOTTOM_HIT")
-                            end]]
-                            -- Not checking :IsEnabled(), because that inherits parent properties
-                            -- whereas we want to know if the immediate widget is enabled or not.
-                            if self.tab_gift.enabled then
-                                self:OnClickEnabled()
-                            end
+                        if self.opened and self.tab_gift.enabled then
+                            self:OnClickEnabled()
                         end
                     end
                 )

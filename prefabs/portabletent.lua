@@ -188,8 +188,6 @@ local function fn()
     inst.AnimState:SetBuild("tent_walter")
     inst.AnimState:PlayAnimation("idle")
 
-    inst:SetPrefabNameOverride("portabletent_item")
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

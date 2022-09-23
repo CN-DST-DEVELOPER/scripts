@@ -202,6 +202,10 @@ local function fn()
 
     ------------------
 
+    inst:AddComponent("drownable")
+
+    ------------------
+
     inst:AddComponent("inspectable")
 
     inst:AddComponent("leader")

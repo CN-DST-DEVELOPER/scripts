@@ -188,7 +188,7 @@ local function OnGroundPound(inst)
 end
 
 local function OnHitOther(inst, data)
-    if data.target ~= nil and data.target.components.inventory ~= nil then
+    if data.target ~= nil and data.target.components.inventory ~= nil and not data.target:HasTag("stronggrip") then
         local item = data.target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
         if item ~= nil then
             data.target.components.inventory:DropItem(item)
@@ -441,6 +441,10 @@ local function fn()
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODGROUP.BEARGER }, { FOODGROUP.BEARGER })
     inst.components.eater.eatwholestack = true
+
+    ------------------------------------------
+
+    inst:AddComponent("drownable")
 
     ------------------------------------------
 

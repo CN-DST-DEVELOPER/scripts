@@ -30,6 +30,7 @@ end
 local RETARGET_MUST_TAGS = { "_combat" }
 local RETARGET_CANT_TAGS = { "INLIMBO" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
+local CHESSFRIEND_RANGE_PERCENT = 0.5
 local function Retarget(inst, range)
     local homePos = inst.components.knownlocations:GetLocation("home")
     local myLeader = inst.components.follower ~= nil and inst.components.follower.leader or nil
@@ -49,9 +50,15 @@ local function Retarget(inst, range)
                 end
                 local theirLeader = guy.components.follower ~= nil and guy.components.follower.leader or nil
                 local bothFollowingSamePlayer = myLeader ~= nil and myLeader == theirLeader and myLeader:HasTag("player")
-                return not bothFollowingSamePlayer
-                    and not (guy:HasTag("chess") and theirLeader == nil)
-                    and inst.components.combat:CanTarget(guy)
+                if bothFollowingSamePlayer or (guy:HasTag("chess") and theirLeader == nil) then
+                    return false
+                end
+
+                if not guy:IsNear(inst, range * CHESSFRIEND_RANGE_PERCENT) and guy:HasTag("chessfriend") then
+                    return false
+                end
+
+                return inst.components.combat:CanTarget(guy)
             end,
             RETARGET_MUST_TAGS,
             RETARGET_CANT_TAGS,

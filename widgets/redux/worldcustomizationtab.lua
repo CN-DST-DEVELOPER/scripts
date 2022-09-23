@@ -618,6 +618,10 @@ function WorldCustomizationTab:CollectOptions()
     return ret
 end
 
+function WorldCustomizationTab:UpdateSaveSlot(slot)
+    self.slot = slot
+end
+
 function WorldCustomizationTab:SetDataForSlot(slot)
     self.allowEdit = true
     self.slot = slot

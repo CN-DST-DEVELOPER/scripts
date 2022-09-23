@@ -65,6 +65,11 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "There's nowhere to hide around here.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I think I've spent quite enough time wrangling these tiny terrors today.",
 		},
+		OPEN_CRAFTING =
+		{
+            PROFESSIONALCHEF = "It takes too long to cook a fancy meal.",
+			SHADOWMAGIC = "Hm.",
+		},
         COOK =
         {
             GENERIC = "This is no time for cooking.",
@@ -95,6 +100,16 @@ return{
         {
             GENERIC = "only_used_by_wickerbottom",
             NOBIRDS = "only_used_by_wickerbottom",
+--fallback to speech_wilson.lua             NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOFIRES =       "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOSILVICULTURE = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOHORTICULTURE = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOTENTACLEGROUND = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
         },
 
         GIVE =
@@ -128,6 +143,8 @@ return{
             SPIDERNOHAT = "As whimsical as that would be, there isn't enough space in my pocket.",
             TERRARIUM_REFUSE = "I wonder how the magic from this world might affect it?",
             TERRARIUM_COOLDOWN = "It isn't ready yet? Botheration, even tiny trees take ages to grow!",
+            NOTAMONKEY = "Odd, I could have sworn I could speak monkey at some point.",
+            QUEENBUSY = "I don't care what her title is, it's no excuse to keep me waiting!",
         },
         GIVETOPLAYER =
         {
@@ -168,6 +185,7 @@ return{
         {
             TARGETINCOMBAT = "I will not meet my end trampled beneath the hooves of an angry beefalo!",
             INUSE = "Oh botheration. I was going to use that, you know!",
+			SLEEPING = "Wake up! There are places to go, things to be done!",
         },
         SADDLE =
         {
@@ -184,6 +202,8 @@ return{
 
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "It's too dark in here... I can't make anything out.",--Likely trying to read messagebottle treasure map in caves
+
+            STASH_MAP_NOT_FOUND = "What is this gibberish? None of the islands around here are this shape.",-- Likely trying to read stash map  in world without stash
         },
         WRAPBUNDLE =
         {
@@ -200,6 +220,7 @@ return{
                 "Oh botheration, I think I grabbed the wrong carrat.",
             },
 			NO_HEAVY_LIFTING = "I might be able to manage it... if I was just a bit younger.",
+            FULL_OF_CURSES = "It won't fool me this time.",
         },
         SLAUGHTER =
         {
@@ -316,11 +337,11 @@ return{
 --fallback to speech_wilson.lua             FROZEN = "only_used_by_webber",
 --fallback to speech_wilson.lua             ALREADY_BEDAZZLED = "only_used_by_webber",
         },
-        UPGRADE = 
+        UPGRADE =
         {
 --fallback to speech_wilson.lua             BEDAZZLED = "only_used_by_webber",
         },
-		CAST_POCKETWATCH = 
+		CAST_POCKETWATCH =
 		{
 			GENERIC = "It'd be too risky.",
 			REVIVE_FAILED = "It looks like I was too late...",
@@ -341,7 +362,34 @@ return{
 --fallback to speech_wilson.lua             HUNGRY = "only_used_by_wolfang",
 --fallback to speech_wilson.lua             FULL = "only_used_by_wolfang",
         },
+
+        APPLYMODULE =
+        {
+            COOLDOWN = "only_used_by_wx78",
+            NOTENOUGHSLOTS = "only_used_by_wx78",
+        },
+        REMOVEMODULES =
+        {
+            NO_MODULES = "only_used_by_wx78",
+        },
+        CHARGE_FROM =
+        {
+            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
+            CHARGE_FULL = "only_used_by_wx78",
+        },
+
+        HARVEST =
+        {
+            DOER_ISNT_MODULE_OWNER = "Fine then, keep your secrets to yourself!",
+        },
     },
+
+	ANNOUNCE_CANNOT_BUILD =
+	{
+		NO_INGREDIENTS = "Oh botheration, I'll have to pick up a few things first.",
+		NO_TECH = "I haven't quite figured that one out yet.",
+		NO_STATION = "I won't be able to make it without a proper workstation.",
+	},
 
 	ACTIONFAIL_GENERIC = "Not in this timeline.",
 	ANNOUNCE_BOAT_LEAK = "Oh no no no! T-the boat's taking on water!!",
@@ -354,6 +402,7 @@ return{
     --waxwell and wickerbottom specific strings
     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
     --wolfgang specific
     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -462,6 +511,7 @@ return{
 	ANNOUNCE_NODAYSLEEP_CAVE = "I don't have time to waste on sleeping right now.",
 	ANNOUNCE_NOHUNGERSLEEP = "I need to find something to eat first, quickly.",
 	ANNOUNCE_NOSLEEPONFIRE = "It might be hard to sleep while I'm being roasted alive.",
+    ANNOUNCE_NOSLEEPHASPERMANENTLIGHT = "Botheration... it's too bright to sleep while that automaton's about.",
 	ANNOUNCE_NODANGERSIESTA = "There's more important things to worry about at the moment!",
 	ANNOUNCE_NONIGHTSIESTA = "Now is not the time for a siesta.",
 	ANNOUNCE_NONIGHTSIESTA_CAVE = "I'll take a break when I'm on the surface where it's safe...er.",
@@ -536,6 +586,7 @@ return{
     ANNOUNCE_REVIVED_FROM_CORPSE = "F-for a moment, I thought I was done for...",
 
     ANNOUNCE_FLARE_SEEN = "Was that a flare? I'd better hurry and see what's going on!",
+    ANNOUNCE_MEGA_FLARE_SEEN = "What are they doing?! That flare will draw everything right to them!",
     ANNOUNCE_OCEAN_SILHOUETTE_INCOMING = "I don't like the looks of that shadow...",
 
     --willow specific
@@ -601,6 +652,10 @@ return{
 --fallback to speech_wilson.lua         "only_used_by_walter",
 --fallback to speech_wilson.lua 	},
 
+    -- wx specific
+    ANNOUNCE_WX_SCANNER_NEW_FOUND = "only_used_by_wx78",
+--fallback to speech_wilson.lua     ANNOUNCE_WX_SCANNER_FOUND_NO_DATA = "only_used_by_wx78",
+
     --quagmire event
     QUAGMIRE_ANNOUNCE_NOTRECIPE = "Those ingredients didn't make anything.",
     QUAGMIRE_ANNOUNCE_MEALBURNT = "I left it on too long.",
@@ -661,6 +716,17 @@ return{
 --fallback to speech_wilson.lua         BOOK_GARDENING = "only_used_by_wurt",
 --fallback to speech_wilson.lua 		BOOK_SILVICULTURE = "only_used_by_wurt",
 --fallback to speech_wilson.lua 		BOOK_HORTICULTURE = "only_used_by_wurt",
+
+--fallback to speech_wilson.lua         BOOK_FISH = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_FIRE = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_WEB = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_TEMPERATURE = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_LIGHT = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_RAIN = "only_used_by_wurt",
+
+--fallback to speech_wilson.lua         BOOK_HORTICULTURE_UPGRADED = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_RESEARCH_STATION = "only_used_by_wurt",
+--fallback to speech_wilson.lua         BOOK_LIGHT_UPGRADED = "only_used_by_wurt",
     },
     ANNOUNCE_WEAK_RAT = "Poor thing, I think it's gotten stale.",
 
@@ -743,7 +809,7 @@ return{
 
 	ANNOUNCE_KITCOON_HIDEANDSEEK_START = "Alright go on now, let's make this quick.",
 	ANNOUNCE_KITCOON_HIDEANDSEEK_JOIN = "Perhaps I have time for one quick game...",
-	ANNOUNCE_KITCOON_HIDANDSEEK_FOUND = 
+	ANNOUNCE_KITCOON_HIDANDSEEK_FOUND =
 	{
 		"Finally!",
 		"Found you at last.",
@@ -777,6 +843,16 @@ return{
     ANNOUNCE_EYEOFTERROR_ARRIVE = "I feel a chill, did someone leave an interdimensional door open?",
     ANNOUNCE_EYEOFTERROR_FLYBACK = "Well, it's about time!",
     ANNOUNCE_EYEOFTERROR_FLYAWAY = "I suppose we must wait until sundown to finish this squabble.",
+
+    -- PIRATES
+    ANNOUNCE_CANT_ESCAPE_CURSE = "Why can't I seem to...? Oh no...",
+    ANNOUNCE_MONKEY_CURSE_1 = "And so it begins...",
+    ANNOUNCE_MONKEY_CURSE_CHANGE = "Oh botheration! I don't have time to monkey about!",
+    ANNOUNCE_MONKEY_CURSE_CHANGEBACK = "Finally! I was starting to think I'd never return to normal!",
+
+    ANNOUNCE_PIRATES_ARRIVE = "Botheration! I can hear their catchy music getting closer!",
+
+--fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
 	BATTLECRY =
 	{
@@ -849,6 +925,11 @@ return{
         BERNIE_ACTIVE = "How incredible that this isn't even the strangest thing I've seen.",
         BERNIE_BIG = "I could've sworn you were smaller...",
 
+		BOOKSTATION =
+		{
+			GENERIC = "As if I have time to sit and read!",
+			BURNT = "Oh botheration, now that it's gone I actually want to read something.",
+		},
         BOOK_BIRDS = "Time and birds sure do fly.",
         BOOK_TENTACLES = "It's enough having to deal with them in person, why read about them too?",
         BOOK_GARDENING = "Do I even want to know how long the unabridged version was?",
@@ -856,6 +937,21 @@ return{
 		BOOK_HORTICULTURE = "Say Wickerbottom, do you dabble in temporal magic as well?",
         BOOK_SLEEP = "Not to critique the writing, but that nearly put me to sleep.",
         BOOK_BRIMSTONE = "Hmph. Not if I can help it.",
+
+        BOOK_FISH = "Fishing is already time-consuming enough, I'm not reading a book too!",
+        BOOK_FIRE = "No time to read, we're burning daylight!",
+        BOOK_WEB = "Ha! Was this written by a spider? I won't let my guard down that easily.",
+        BOOK_TEMPERATURE = "I won't spend my time and energy reading all that.",
+        BOOK_LIGHT = "You know, this one might actually be worthwhile.",
+        BOOK_RAIN = "Rituals, hm? The old girl's got some tricks up her sleeve.",
+        BOOK_MOON = "Do we really want to tamper with the moon? Oh, who am I to talk?",
+        BOOK_BEES = "I don't care for bees and I don't care to read about them.",
+        
+        BOOK_HORTICULTURE_UPGRADED = "Goodness, it's even thicker than the last one.",
+        BOOK_RESEARCH_STATION = "I'll admit it's quite efficient to have everything in one book.",
+        BOOK_LIGHT_UPGRADED = "Let's keep this one close at hand, shall we?",
+
+        FIREPEN = "She should really warn people about borrowing her pens.",
 
         PLAYER =
         {
@@ -1036,6 +1132,16 @@ return{
             REVIVER = "I'm glad one of us was able to act in time!",
             GHOST = "I'm not letting things end for us here!",
             FIRESTARTER = "Hm. I must have my reasons...",
+        },
+
+        WONKEY =
+        {
+            GENERIC = "Oh my, what happened to you?",
+            ATTACKER = "You stop that, right this minute!",
+            MURDERER = "Whoever they were is gone, the beast has taken hold!",
+            REVIVER = "At least their heart's still in the right place.",
+            GHOST = "Even death can't lift the curse?",
+            FIRESTARTER = "I know you must be frustrated, but that won't solve anything!",
         },
 
 --fallback to speech_wilson.lua         MIGRATION_PORTAL =
@@ -1337,6 +1443,8 @@ return{
 		TURF_DRAGONFLY = "This might actually be useful.",
 
         TURF_SHELLBEACH = "Why am I wasting time staring at the ground?",
+
+        TURF_MONKEY_GROUND = "Why am I wasting time staring at the ground?",
 
 		POWCAKE = "This never ends well.",
         CAVE_ENTRANCE = "I never was good at leaving well enough alone.",
@@ -2780,6 +2888,8 @@ return{
 			BURNT = "One less distraction, I suppose.",
 		},
 		WARG = "I guess I was bound to run into you sooner or later.",
+        WARGLET = "I could have sworn they were bigger...",
+
 		WASPHIVE = "I'd rather not be stung within an inch of my life, thank you.",
 		WATERBALLOON = "Don't think I won't throw it!",
 		WATERMELON = "Ahh, refreshing!",
@@ -3314,6 +3424,7 @@ return{
         ICEBERG_MELTED = "It's completely melted.", --unimplemented
 
         MINIFLARE = "It'll show everyone where I am, when I am is another story.",
+        MEGAFLARE = "I'm not too keen on drawing unwanted attention.",
 
 		MOON_FISSURE =
 		{
@@ -3347,6 +3458,7 @@ return{
             BURNT = "Oh botheration, now I have to build another one!",
         },
         BOAT_ITEM = "Ohhh I hate the ocean, the time stream gets so wobbly around it.",
+        BOAT_GRASS_ITEM = "That certainly won't stand the test of time.",
         STEERINGWHEEL_ITEM = "I hope I don't forget to add that to the boat.",
         ANCHOR_ITEM = "I guess it might be useful... but I'd rather not to stay in one place for too long.",
         MAST_ITEM = "That'll be the... sail holder bit.",
@@ -3417,6 +3529,7 @@ return{
         GNARWAIL_HORN = "Who ever heard of a whale with a horn?",
 
         WALKINGPLANK = "Well that's ominous.",
+        WALKINGPLANK_GRASS = "Well that's ominous.",
         OAR = "Wouldn't a sail be much faster?",
 		OAR_DRIFTWOOD = "Wouldn't a sail be much faster?",
 
@@ -4004,6 +4117,38 @@ return{
 		},
 		CARNIVALGAME_HERDING_CHICK = "Just you wait, I'm more spry than I look!",
 
+		CARNIVALGAME_SHOOTING_KIT = "At least they're quick to assemble.",
+		CARNIVALGAME_SHOOTING_STATION =
+		{
+			GENERIC = "The mechanism won't work without a token.",
+			PLAYING = "My timing is impeccable, it's my aim that could use some work...",
+		},
+		CARNIVALGAME_SHOOTING_TARGET =
+		{
+			GENERIC = "It leads down into the game's inner workings.",
+			PLAYING = "Could they not be a bit bigger?",
+		},
+
+		CARNIVALGAME_SHOOTING_BUTTON =
+		{
+			GENERIC = "The mechanism won't work without a token.",
+			PLAYING = "Buttons are so much more efficient than levers.",
+		},
+
+		CARNIVALGAME_WHEELSPIN_KIT = "At least they're quick to assemble.",
+		CARNIVALGAME_WHEELSPIN_STATION =
+		{
+			GENERIC = "The mechanism won't work without a token.",
+			PLAYING = "It's so wonderfully efficient!",
+		},
+
+		CARNIVALGAME_PUCKDROP_KIT = "At least they're quick to assemble.",
+		CARNIVALGAME_PUCKDROP_STATION =
+		{
+			GENERIC = "The mechanism won't work without a token.",
+			PLAYING = "I'm not sure that there's any actual skill involved here.",
+		},
+
 		CARNIVAL_PRIZEBOOTH_KIT = "At least they're quick to assemble.",
 		CARNIVAL_PRIZEBOOTH =
 		{
@@ -4032,6 +4177,8 @@ return{
 		CARNIVALDECOR_LAMP = "Ah... I feel a bit better already.",
 		CARNIVALDECOR_PLANT_KIT = "A pocket-sized tree? I'm intrigued.",
 		CARNIVALDECOR_PLANT = "I guess some trees can be interesting to look at after all.",
+		CARNIVALDECOR_BANNER_KIT = "Oh, I suppose I have a moment or two to spare.",
+		CARNIVALDECOR_BANNER = "It's quite mesmerizing to watch.",
 
 		CARNIVALDECOR_FIGURE =
 		{
@@ -4040,6 +4187,7 @@ return{
 			GENERIC = "I feel as though I've seen it a few times before.",
 		},
 		CARNIVALDECOR_FIGURE_KIT = "I couldn't help it, I looked ahead and took a peek...",
+		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "I couldn't help it, I looked ahead and took a peek...",
 
         CARNIVAL_BALL = "A colorful child's toy.", --unimplemented
 		CARNIVAL_SEEDPACKET = "A little snack to keep in my pocket.",
@@ -4112,7 +4260,7 @@ return{
         BEEF_BELL = "It makes taming beefalo so much faster!",
 
 		-- YOT Catcoon
-		KITCOONDEN = 
+		KITCOONDEN =
 		{
 			GENERIC = "What a charming little house.",
             BURNT = "Well, that's that.",
@@ -4122,7 +4270,7 @@ return{
 
 		KITCOONDEN_KIT = "Did I not set that up already?",
 
-		TICOON = 
+		TICOON =
 		{
 			GENERIC = "Aha! I knew I remembered seeing orange ones!",
 			ABANDONED = "Oh don't look at me like that, it's nothing personal!",
@@ -4134,7 +4282,7 @@ return{
 			NOTHING_TO_TRACK = "Hmm, I suppose there's nothing around to track.",
 			TARGET_TOO_FAR_AWAY = "Perhaps they're somewhere else.",
 		},
-		
+
 		YOT_CATCOONSHRINE =
         {
             GENERIC = "I suppose there's time to make one little trinket, or two.",
@@ -4239,7 +4387,7 @@ return{
         POCKETWATCH_PARTS = "It's no small feat to recreate small, precise mechanisms out in the wilderness.",
         POCKETWATCH_DISMANTLER = "Everything I need for building and dismantling my lovely clocks.",
 
-        POCKETWATCH_PORTAL_ENTRANCE = 
+        POCKETWATCH_PORTAL_ENTRANCE =
 		{
 			GENERIC = "It won't stay open forever. Come along everyone, tick-tock!",
 			DIFFERENTSHARD = "It won't stay open forever. Come along everyone, tick-tock!",
@@ -4253,7 +4401,7 @@ return{
         WATERTREE_ROOT = "I should steer clear of those if I don't want to meet a watery end.",
 
         OCEANTREE_PILLAR = "It provides a nice bit of shade.",
-        
+
         OCEANVINE = "A vine. Not very noteworthy.",
         FIG = "A plump, sweet fig.",
         FIG_COOKED = "I'll admit, cooking it did help bring the sweetness out.",
@@ -4283,7 +4431,7 @@ return{
         },
 
         -- Wolfgang
-        MIGHTY_GYM = 
+        MIGHTY_GYM =
         {
             GENERIC = "I don't know where he finds the time for such things.",
             BURNT = "Well, that's that. Time to move on.",
@@ -4291,11 +4439,12 @@ return{
 
         DUMBBELL = "What a dreadfully repetitive way to spend one's time.",
         DUMBBELL_GOLDEN = "What a dreadfully repetitive way to spend one's time.",
+		DUMBBELL_MARBLE = "What a dreadfully repetitive way to spend one's time.",
         DUMBBELL_GEM = "What a dreadfully repetitive way to spend one's time.",
         POTATOSACK = "Who would want to lug this heavy thing around?",
 
 
-        TERRARIUMCHEST = 
+        TERRARIUMCHEST =
 		{
 			GENERIC = "Dimensional cross-contamination aside, it's quite a lovely chest.",
 			BURNT = "Erased from the timeline.",
@@ -4335,6 +4484,116 @@ return{
 
 		KITCOONDECOR1_KIT = "Do I really have time to fuss with this?",
 		KITCOONDECOR2_KIT = "Surely someone with more time on their hands could set it up.",
+
+        -- WX78
+        WX78MODULE_MAXHEALTH = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MAXSANITY1 = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MAXSANITY = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MOVESPEED = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MOVESPEED2 = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_HEAT = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_NIGHTVISION = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_COLD = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_TASER = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_LIGHT = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MAXHUNGER1 = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MAXHUNGER = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MUSIC = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_BEE = "Aha! I was wondering when they'd started making these.",
+        WX78MODULE_MAXHEALTH2 = "Aha! I was wondering when they'd started making these.",
+
+        WX78_SCANNER =
+        {
+            GENERIC ="Please buzz around elsewhere, you're distracting me!",
+            HUNTING = "Please buzz around elsewhere, you're distracting me!",
+            SCANNING = "Please buzz around elsewhere, you're distracting me!",
+        },
+
+        WX78_SCANNER_ITEM = "It's biding its time.",
+        WX78_SCANNER_SUCCEEDED = "I suppose you have nothing better to do than wait around?",
+
+        WX78_MODULEREMOVER = "Did the automaton make off with one of my tools?",
+
+        SCANDATA = "It's of no use to me, I won't waste time reading it.",
+
+        -- Pirates
+        BOAT_ROTATOR = "Clockwise or counter-clockwise?",
+        BOAT_ROTATOR_KIT = "I can't believe I didn't think of it sooner.",
+        BOAT_BUMPER_KELP = "Anything to prolong the life of my boat.",
+        BOAT_BUMPER_KELP_KIT = "It'll make me feel slightly safer at sea. Slightly.",
+        BOAT_BUMPER_SHELL = "Anything to prolong the life of my boat.",
+        BOAT_BUMPER_SHELL_KIT = "It'll make me feel slightly safer at sea. Slightly.",
+        BOAT_CANNON = {
+            GENERIC = "I could have sworn I loaded that cannon... maybe it hasn't happened yet.",
+            AMMOLOADED = "It never hurts to take precautions.",
+            NOAMMO = "Next time I'll remember to bring cannonballs.",
+        },
+        BOAT_CANNON_KIT = "I'd better get that on my boat sooner rather than later.",
+        CANNONBALL_ROCK_ITEM = "Pretty self-explanitory, really.",
+
+        OCEAN_TRAWLER = {
+            GENERIC = "Thank goodness, now I don't have to waste my time fishing!",
+            LOWERED = "It will catch fish while I see to more pressing matters.",
+            CAUGHT = "Well that worked nicely!",
+            ESCAPED = "Oh botheration, I didn't make it back in time.",
+            FIXED = "What a nuisance. At least it's repaired now.",
+        },
+        OCEAN_TRAWLER_KIT = "I suppose I must invest some time now to save time later.",
+
+        BOAT_MAGNET =
+        {
+            GENERIC = "This seems rather excessive.",
+            ACTIVATED = "Well, I'm pleasantly surprised to see it works!",
+        },
+        BOAT_MAGNET_KIT = "That young man certainly has some odd ideas.",
+
+        BOAT_MAGNET_BEACON =
+        {
+            GENERIC = "I'm much more comfortable working with clockwork than... whatever this is.",
+            ACTIVATED = "I suppose that means it's working.",
+        },
+        DOCK_KIT = "Can't someone with more time on their hands set it up?",
+        DOCK_WOODPOSTS_ITEM = "Are you supposed to place the support posts before or after? Oh well.",
+
+        MONKEYHUT =
+        {
+            GENERIC = "I prefer living solidly on the ground, thank you.",
+            BURNT = "What a shame. Anyway...",
+        },
+        POWDER_MONKEY = "Here to make a nuisance of yourself, are you?",
+        PRIME_MATE = "He seems to think he's in charge.",
+		LIGHTCRAB = "I'm thankful for any speck of light around here.",
+        CUTLESS = "I suppose getting hit with a block of wood will still hurt.",
+        CURSED_MONKEY_TOKEN = "That is one trinket I'd rather not have cluttering my pockets.",
+        OAR_MONKEY = "I can at least appreciate its ability to multitask.",
+        BANANABUSH = "They're much easier to pick this way.",
+        DUG_BANANABUSH = "They're much easier to pick this way.",
+        PALMCONETREE = "Have I seen that somewhere before? I can't quite recall.",
+        PALMCONE_SEED = "A future tree.",
+        PALMCONE_SAPLING = "It's about halfway through its life cycle.",
+        PALMCONE_SCALE = "I might as well put it in my pocket, it might be useful.",
+        MONKEYTAIL = "There had better not be any monkeys hiding in there.",
+        DUG_MONKEYTAIL = "There had better not be any monkeys hiding in there.",
+
+        MONKEY_MEDIUMHAT = "If I must be at sea, I might as well look the part.",
+        MONKEY_SMALLHAT = "Oh, wearing it does make one feel rather mischievous...",
+        POLLY_ROGERSHAT = "What an eccentric design... I must have it.",
+        POLLY_ROGERS = "A pocket-sized helper, what could be better?",
+
+        MONKEYISLAND_PORTAL = "This... is how it started, wasn't it?",
+        MONKEYISLAND_PORTAL_DEBRIS = "I should've remembered sooner. Too late now, I suppose.",
+        MONKEYQUEEN = "And what do you have to say for all this skullduggery, hm?",
+        MONKEYPILLAR = "As pillars go, it's hardly noteworthy.",
+        PIRATE_FLAG_POLE = "As if sea-faring wasn't hazardous enough, now there are pirates to contend with?",
+
+        BLACKFLAG = "Such an ominous color...",
+        PIRATE_STASH = "Somehow I was not expecting an actual \"X\" to be there on the ground.",
+        STASH_MAP = "It looks like I'm not the only one who forgets where I put things.",
+
+
+        BANANAJUICE = "I suppose I can spare a moment to enjoy a sip or two.",
+
+        FENCE_ROTATOR = "I appreciate specialized tools. Especially when I can still hit things with them.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

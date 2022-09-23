@@ -207,7 +207,10 @@ local states =
 	            inst.SoundEmitter:PlaySound("saltydog/creatures/cookiecutter/death")
 			end),
 			TimeEvent(16*FRAMES, function(inst)
-				inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/thunk")
+				local boat = inst:GetCurrentPlatform()
+				if boat then
+					inst.SoundEmitter:PlaySound(boat.sounds.thunk)
+				end
 			end),
 		},
     },
@@ -517,6 +520,14 @@ local states =
 
 				inst.components.cookiecutterdrill:ResumeDrilling()
 
+				if inst.target_wood.material == "grass" then
+					inst.sg.statemem.fx_grass_task = inst:DoPeriodicTask(0.3, function(i)
+						local fx = SpawnPrefab("fx_grass_boat_fluff")
+						local x,y,z = i.Transform:GetWorldPosition()
+						fx.Transform:SetPosition(i.Transform:GetWorldPosition(x+(math.random()*0.5)-0.25,0,z+(math.random()*0.5)-0.25))
+					end,0)
+				end
+
 				inst.sg.statemem.fx_task = inst:DoPeriodicTask(inst.AnimState:GetCurrentAnimationLength(), function(i) SpawnPrefab("wood_splinter_drill").Transform:SetPosition(i.Transform:GetWorldPosition()) end, 0)
 			else
 				inst.sg:GoToState("drill_pst")
@@ -532,6 +543,11 @@ local states =
 		onexit = function(inst)
 			if inst.sg.statemem.fx_task ~= nil then
 				inst.sg.statemem.fx_task:Cancel()
+				inst.sg.statemem.fx_task = nil
+			end
+			if inst.sg.statemem.fx_grass_task ~= nil then
+				inst.sg.statemem.fx_grass_task:Cancel()
+				inst.sg.statemem.fx_grass_task = nil
 			end
 			RestoreCollidesWith(inst)
 			inst.SoundEmitter:KillSound("eat_LP")
@@ -622,7 +638,6 @@ local states =
 			RestoreCollidesWith(inst)
 		end,
     },
-
 }
 
 CommonStates.AddSleepStates(states, {})

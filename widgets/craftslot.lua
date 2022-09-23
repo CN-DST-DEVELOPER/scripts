@@ -147,18 +147,17 @@ end
 
 function CraftSlot:Refresh(recipename)
 	recipename = recipename or self.recipename
-    local recipe = AllRecipes[recipename]
+    local recipe = GetValidRecipe(recipename)
 
-    local canbuild = self.owner.replica.builder:CanBuild(recipename)
-    local knows = self.owner.replica.builder:KnowsRecipe(recipename)
-    local buffered = self.owner.replica.builder:IsBuildBuffered(recipename)
-
-    local do_pulse = self.recipename == recipename and not self.canbuild and canbuild
     self.recipename = recipename
     self.recipe = recipe
     self.recipe_skins = {}
 
     if self.recipe then
+		local canbuild = self.owner.replica.builder:HasIngredients(recipe)
+		local knows = self.owner.replica.builder:KnowsRecipe(recipe)
+		local buffered = self.owner.replica.builder:IsBuildBuffered(recipename)
+
 		self.recipe_skins = Profile:GetSkinsForPrefab(self.recipe.name)
 
         self.canbuild = canbuild

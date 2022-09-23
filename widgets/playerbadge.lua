@@ -107,7 +107,7 @@ function PlayerBadge:Set(prefab, colour, ishost, userflags, base_skin)
             if skindata.skins ~= nil then
                 base_build = skindata.skins[skin_mode]
             end
-            SetSkinsOnAnim( self.head_animstate, self.prefabname, base_build, {}, skin_mode)
+            SetSkinsOnAnim( self.head_animstate, self.prefabname, base_build, {}, nil, skin_mode)
         end
     end
 

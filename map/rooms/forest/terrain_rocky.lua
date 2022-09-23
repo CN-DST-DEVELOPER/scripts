@@ -1,6 +1,6 @@
 AddRoom("BGChessRocky", {
 					colour={r=.66,g=.66,b=.66,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 									countstaticlayouts = {
@@ -21,7 +21,7 @@ AddRoom("BGChessRocky", {
 
 AddRoom("BGRocky", {
 					colour={r=.66,g=.66,b=.66,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
 					contents =  {
 					                distributepercent = .1,
@@ -39,7 +39,7 @@ AddRoom("BGRocky", {
 	-- No trees, lots of rocks, rare tallbird nest, very rare spiderden
 AddRoom("Rocky", {
 					colour={r=.55,g=.75,b=.75,a=.50},
-					value = GROUND.DIRT,
+					value = WORLD_TILES.DIRT,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 									countprefabs=
@@ -63,7 +63,7 @@ AddRoom("Rocky", {
 					})
 AddRoom("RockyBuzzards", {
 					colour={r=.55,g=.75,b=.75,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
 					contents =  {
 					                distributepercent = .1,
@@ -79,7 +79,7 @@ AddRoom("RockyBuzzards", {
 
 AddRoom("GenericRockyNoThreat", {
 					colour={r=.55,g=.75,b=.75,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 					                distributepercent = .1,
@@ -100,7 +100,7 @@ AddRoom("GenericRockyNoThreat", {
 
 AddRoom("MolesvilleRocky", {
 					colour={r=.55,g=.75,b=.75,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					contents =  {
 									distributepercent = 0.1,
 									distributeprefabs =

@@ -10,7 +10,7 @@ local BeeGuardBrain = Class(Brain, function(self, inst)
 end)
 
 local function GetQueen(inst)
-    return inst.components.entitytracker:GetEntity("queen")
+    return inst:GetQueen() -- Beeguard's function.
 end
 
 local function GetQueenPos(inst)

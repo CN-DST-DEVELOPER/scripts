@@ -105,6 +105,10 @@ function Trap:IsBaited()
     return self.isset and not self.issprung and self.bait ~= nil
 end
 
+function Trap:HasLoot()
+    return self.lootprefabs ~= nil
+end
+
 function Trap:Reset(sprung)
     self:StopUpdating()
     self.isset = false
@@ -348,12 +352,8 @@ function Trap:Harvest(doer)
         end
 
         if self.inst:IsValid() then
-            self:Reset()
-
-            if inventory ~= nil and
-                (self.inst.components.finiteuses == nil or
-                self.inst.components.finiteuses:GetUses() > 0) then
-                inventory:GiveItem(self.inst, nil, pos)
+            if self.inst.components.finiteuses == nil or self.inst.components.finiteuses:GetUses() > 0 then
+                self.inst:DoTaskInTime(0, function() self:Set() end)
             end
         end
     end

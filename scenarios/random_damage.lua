@@ -4,7 +4,7 @@ local function OnCreate(inst, scenariorunner)
         if inst.components.health then
             inst.components.health:DoDelta(math.random(-inst.components.health.maxhealth * .75, 0), 0, "dev")
         elseif inst.components.finiteuses then
-            inst.components.finiteuses.current = math.random(inst.components.finiteuses.total * .1, inst.components.finiteuses.total * .75)
+            inst.components.finiteuses.current = math.max(math.random(inst.components.finiteuses.total * .1, inst.components.finiteuses.total * .75), 1) -- At least one use!
         elseif inst.components.condition then
             inst.components.condition.current = math.random(inst.components.condition.maxcondition * .1, inst.components.condition.maxcondition * .75)
         elseif inst.components.armor then

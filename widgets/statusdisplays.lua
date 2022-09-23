@@ -77,7 +77,7 @@ local function OnSetPlayerMode(inst, self)
         self.onmightinessdelta = function(owner, data) self:MightinessDelta(data) end
         self.inst:ListenForEvent("mightinessdelta", self.onmightinessdelta, self.owner)
         self:SetMightiness(self.owner:GetMightiness())
-    end    
+    end
 
 	if self.pethealthbadge ~= nil and self.onpethealthdirty == nil then
         self.onpethealthdirty = function() self:RefreshPetHealth() end
@@ -139,6 +139,11 @@ local function OnSetGhostMode(inst, self)
         self.oninspirationdelta = nil
     end
 
+    if self.onupgrademodulesenergylevelupdated ~= nil then
+        self.inst:RemoveEventCallback("energylevelupdate", self.onupgrademodulesenergylevelupdated, self.owner)
+        self.onupgrademodulesenergylevelupdated = nil
+    end
+
     if self.onpethealthdirty ~= nil then
         self.inst:RemoveEventCallback("clientpethealthdirty", self.onpethealthdirty, self.owner)
         self.inst:RemoveEventCallback("clientpethealthsymboldirty", self.onpethealthdirty, self.owner)
@@ -170,10 +175,44 @@ local function UpdateRezButton(inst, self, enable)
     end
 end
 
+local function OnFinishSeamlessPlayerSwap(owner)
+    local self = owner.HUD.controls.status
+    self.inst:RemoveEventCallback("finishseamlessplayerswap", OnFinishSeamlessPlayerSwap, owner)
+
+    if self.modetask ~= nil then
+        self.modetask:Cancel()
+        self.modetask = nil
+    end
+    if self.isghostmode then
+        OnSetGhostMode(self.inst, self)
+    else
+        OnSetPlayerMode(self.inst, self)
+    end
+end
+
 local StatusDisplays = Class(Widget, function(self, owner)
     Widget._ctor(self, "Status")
     self:UpdateWhilePaused(false)
     self.owner = owner
+
+    if owner.isseamlessswaptarget then
+        self.inst:ListenForEvent("finishseamlessplayerswap", OnFinishSeamlessPlayerSwap, owner)
+    end
+
+    local is_splitscreen = IsSplitScreen()
+    if is_splitscreen and IsGameInstance(Instances.Player1) then
+        self.column1 = 80
+        self.column2 = 40
+        self.column3 = 0
+        self.column4 = -40
+        self.column5 = 120
+    else
+        self.column1 = -80
+        self.column2 = -40
+        self.column3 = 0
+        self.column4 = 40
+        self.column5 = -120
+    end
 
     self.wereness = nil
     self.onwerenessdelta = nil
@@ -182,25 +221,25 @@ local StatusDisplays = Class(Widget, function(self, owner)
 	self.oninspirationdelta = nil
 
     self.brain = self:AddChild(owner.CreateSanityBadge ~= nil and owner.CreateSanityBadge(owner) or SanityBadge(owner))
-    self.brain:SetPosition(0, -40, 0)
+    self.brain:SetPosition(self.column3, -40, 0)
     self.onsanitydelta = nil
 
     self.stomach = self:AddChild(owner.CreateHungerBadge ~= nil and owner.CreateHungerBadge(owner) or HungerBadge(owner))
-    self.stomach:SetPosition(-40, 20, 0)
+    self.stomach:SetPosition(self.column2, 20, 0)
     self.onhungerdelta = nil
 
     self.heart = self:AddChild(owner.CreateHealthBadge ~= nil and owner.CreateHealthBadge(owner) or HealthBadge(owner))
-    self.heart:SetPosition(40, 20, 0)
+    self.heart:SetPosition(self.column4, 20, 0)
     self.heart.effigybreaksound = "dontstarve/creatures/together/lavae/egg_deathcrack"
     self.onhealthdelta = nil
     self.healthpenalty = 0
 
-    self.moisturemeter = self:AddChild(MoistureMeter(owner))
-    self.moisturemeter:SetPosition(0, -115, 0)
+    self.moisturemeter = self:AddChild(owner.CreateMoistureMeter ~= nil and owner.CreateMoistureMeter(owner) or MoistureMeter(owner))
+    self.moisturemeter:SetPosition(self.column3, -115, 0)
     self.onmoisturedelta = nil
 
     self.boatmeter = self:AddChild(BoatMeter(owner))
-    self.boatmeter:SetPosition(-80, -40, 0)
+    self.boatmeter:SetPosition(self.column1, -40, 0)
     self.ongotonplatform = nil
     self.ongotoffplatform = nil
 
@@ -258,9 +297,9 @@ local StatusDisplays = Class(Widget, function(self, owner)
 	if owner.components.pethealthbar ~= nil then
 		if owner.prefab == "wendy" then
 			self.pethealthbadge = self:AddChild(PetHealthBadge(owner, { 254 / 255, 253 / 255, 237 / 255, 1 }, "status_abigail"))
-			self.pethealthbadge:SetPosition(40, -100, 0)
+			self.pethealthbadge:SetPosition(self.column4, -100, 0)
 
-		    self.moisturemeter:SetPosition(-40, -100, 0)
+		    self.moisturemeter:SetPosition(self.column2, -100, 0)
 		end
 	end
 
@@ -272,6 +311,12 @@ local StatusDisplays = Class(Widget, function(self, owner)
         self:AddMightiness()
     end
 
+    if owner:HasTag("upgrademoduleowner") then
+        -- Not adding the display here, but we need to move some stuff around in single player.
+        if not is_splitscreen then
+            self.moisturemeter:SetPosition(self.column1, -120, 0)
+        end
+    end
 end)
 
 function StatusDisplays:ShowStatusNumbers()
@@ -366,17 +411,17 @@ end
 function StatusDisplays:AddInspiration()
     if self.inspirationbadge == nil then
         self.inspirationbadge = self:AddChild(InspirationBadge(self.owner, { 151 / 255, 30 / 255, 180 / 255, 1 }))
-        self.inspirationbadge:SetPosition(0, -130, 0)
+        self.inspirationbadge:SetPosition(self.column3, -130, 0)
 		self:SetInspiration(self.owner:GetInspiration(), nil, false)
 
-        self.moisturemeter:SetPosition(-80, -130, 0)
+        self.moisturemeter:SetPosition(self.column1, -130, 0)
     end
 end
 
 function StatusDisplays:AddMightiness()
     if self.mightybadge == nil then
         self.mightybadge = self:AddChild(MightyBadge(self.owner))
-        self.mightybadge:SetPosition(-120, 20, 0)
+        self.mightybadge:SetPosition(self.column5, 20, 0)
         self:SetMightiness(self.owner:GetMightiness())
     end
 end
@@ -589,6 +634,8 @@ function StatusDisplays:MightinessDelta(data)
         self.previous_pulse = newpercent
     end
 end
+
+----------------------------------------------------------------------------------------------------------
 
 function StatusDisplays:SetMoisturePercent(pct)
     self.moisturemeter:SetValue(pct, self.owner:GetMaxMoisture(), self.owner:GetMoistureRateScale())

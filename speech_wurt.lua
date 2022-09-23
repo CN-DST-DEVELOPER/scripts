@@ -65,6 +65,11 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Hmm, no good hidey spots here.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Glurgh. Bored of this game.",
 		},
+		OPEN_CRAFTING =
+		{
+            PROFESSIONALCHEF = "Fancy cooking man can do it, florpt.",
+			SHADOWMAGIC = "...Don't like stories in that book.",
+		},
         COOK =
         {
             GENERIC = "Don't wanna, glort.",
@@ -93,8 +98,18 @@ return{
         --wickerbottom specific action
 --fallback to speech_wilson.lua         READ =
 --fallback to speech_wilson.lua         {
---fallback to speech_wilson.lua             GENERIC = "only_used_by_wickerbottom",
---fallback to speech_wilson.lua             NOBIRDS = "only_used_by_wickerbottom",
+--fallback to speech_wilson.lua             GENERIC = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOFIRES =       "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOSILVICULTURE = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOHORTICULTURE = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOTENTACLEGROUND = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -128,6 +143,8 @@ return{
             SPIDERNOHAT = "Spiderfolk no need hat in there.",
             TERRARIUM_REFUSE = "Glurph. Gotta try something else.",
             TERRARIUM_COOLDOWN = "There no tree inside for giving to, flurp! Will check later.",
+            NOTAMONKEY = "Me not monkey, talk to somebody else!",
+            QUEENBUSY = "Glurgh... why she gotta be so busy?",
         },
         GIVETOPLAYER =
         {
@@ -168,6 +185,7 @@ return{
         {
             TARGETINCOMBAT = "They look mad...",
             INUSE = "Let me on, florpt!",
+			SLEEPING = "WAKE UP, BIG FUZZY!",
         },
         SADDLE =
         {
@@ -184,6 +202,8 @@ return{
 
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "Grrr, can't read! Too dark here!",--Likely trying to read messagebottle treasure map in caves
+
+            STASH_MAP_NOT_FOUND = "Glurgh... can't read monkey scribbles.",-- Likely trying to read stash map  in world without stash
         },
         WRAPBUNDLE =
         {
@@ -200,6 +220,7 @@ return{
                 "That one already have owner.",
             },
 --fallback to speech_wilson.lua 			NO_HEAVY_LIFTING = "only_used_by_wanda",
+            FULL_OF_CURSES = "Nuh-uh, don't want no more stinky monkey bead thing!",
         },
         SLAUGHTER =
         {
@@ -316,11 +337,11 @@ return{
 --fallback to speech_wilson.lua             FROZEN = "only_used_by_webber",
 --fallback to speech_wilson.lua             ALREADY_BEDAZZLED = "only_used_by_webber",
         },
-        UPGRADE = 
+        UPGRADE =
         {
 --fallback to speech_wilson.lua             BEDAZZLED = "only_used_by_webber",
         },
-		CAST_POCKETWATCH = 
+		CAST_POCKETWATCH =
 		{
 --fallback to speech_wilson.lua 			GENERIC = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
@@ -341,7 +362,34 @@ return{
 --fallback to speech_wilson.lua             HUNGRY = "only_used_by_wolfang",
 --fallback to speech_wilson.lua             FULL = "only_used_by_wolfang",
         },
+
+        APPLYMODULE =
+        {
+            COOLDOWN = "only_used_by_wx78",
+            NOTENOUGHSLOTS = "only_used_by_wx78",
+        },
+        REMOVEMODULES =
+        {
+            NO_MODULES = "only_used_by_wx78",
+        },
+        CHARGE_FROM =
+        {
+            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
+            CHARGE_FULL = "only_used_by_wx78",
+        },
+
+        HARVEST =
+        {
+            DOER_ISNT_MODULE_OWNER = "Glurph. You boring!",
+        },
     },
+
+	ANNOUNCE_CANNOT_BUILD =
+	{
+		NO_INGREDIENTS = "Don't got stuff for that!",
+		NO_TECH = "Glurgh... don't know how to make...",
+		NO_STATION = "Can't make it right now, florp.",
+	},
 
 	ACTIONFAIL_GENERIC = "Grrr... can't do it, florpt.",
 	ANNOUNCE_BOAT_LEAK = "Boat getting wetter!",
@@ -354,6 +402,7 @@ return{
     --waxwell and wickerbottom specific strings
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -462,6 +511,7 @@ return{
 	ANNOUNCE_NODAYSLEEP_CAVE = "Not sleepy, florp.",
 	ANNOUNCE_NOHUNGERSLEEP = "Need food, then sleepy-time.",
 	ANNOUNCE_NOSLEEPONFIRE = "Not gonna sleep there, glort.",
+    ANNOUNCE_NOSLEEPHASPERMANENTLIGHT = "Glurgh... IRONFOLK TOO BRIGHT.",
 	ANNOUNCE_NODANGERSIESTA = "Too scary for nap!",
 	ANNOUNCE_NONIGHTSIESTA = "Don't want nap, want bedtime!",
 	ANNOUNCE_NONIGHTSIESTA_CAVE = "Glurp... too scary in here...",
@@ -536,6 +586,7 @@ return{
     ANNOUNCE_REVIVED_FROM_CORPSE = "G-glurp... that was scary.",
 
     ANNOUNCE_FLARE_SEEN = "Fire in sky??",
+    ANNOUNCE_MEGA_FLARE_SEEN = "Grrr... what that big scary fire in sky?!",
     ANNOUNCE_OCEAN_SILHOUETTE_INCOMING = "Someone coming?",
 
     --willow specific
@@ -601,6 +652,10 @@ return{
 --fallback to speech_wilson.lua         "only_used_by_walter",
 --fallback to speech_wilson.lua 	},
 
+    -- wx specific
+    ANNOUNCE_WX_SCANNER_NEW_FOUND = "only_used_by_wx78",
+--fallback to speech_wilson.lua     ANNOUNCE_WX_SCANNER_FOUND_NO_DATA = "only_used_by_wx78",
+
     --quagmire event
     QUAGMIRE_ANNOUNCE_NOTRECIPE = "Glurgh, that not gonna taste good together.",
     QUAGMIRE_ANNOUNCE_MEALBURNT = "Oops...",
@@ -661,6 +716,19 @@ return{
         BOOK_GARDENING = "So many hard words...",
 		BOOK_SILVICULTURE = "Is whole story about trees? Me know about trees!",
 		BOOK_HORTICULTURE = "So many hard words...",
+
+        BOOK_FISH = "Is best book! Has fishies in it!",
+        BOOK_FIRE = "Glurp, fire scary!",
+        BOOK_WEB = "Hey Webby-boy! Me learning all the Spiderfolk secrets!",
+        BOOK_TEMPERATURE = "The... m-measure of th... theer-mole energy...",
+        BOOK_LIGHT = "Heeyyy, these words different!",
+        BOOK_RAIN = "Can tell rain what to do? Wanna try!!",
+        BOOK_MOON = "Huh. Moon actually kinda boring.",
+        BOOK_BEES = "Aww... no honey inside...",
+
+        BOOK_HORTICULTURE_UPGRADED = "M-maybe will find easier book...",
+        BOOK_RESEARCH_STATION = "It really hard to read, but feel smart holding it, florp!",
+        BOOK_LIGHT_UPGRADED = "There more than one kind of words to learn?! Glurgh...",
     },
     ANNOUNCE_WEAK_RAT = "It not look so good...",
 
@@ -743,7 +811,7 @@ return{
 
 	ANNOUNCE_KITCOON_HIDEANDSEEK_START = "Hide now! Me coming!",
 	ANNOUNCE_KITCOON_HIDEANDSEEK_JOIN = "Wanna play too, florp!",
-	ANNOUNCE_KITCOON_HIDANDSEEK_FOUND = 
+	ANNOUNCE_KITCOON_HIDANDSEEK_FOUND =
 	{
 		"Found you, florp!",
 		"Ha ha, you easy to find.",
@@ -777,6 +845,16 @@ return{
     ANNOUNCE_EYEOFTERROR_ARRIVE = "Sky is falling, glorp!!",
     ANNOUNCE_EYEOFTERROR_FLYBACK = "Why you come back, flurt? Said go away!!",
     ANNOUNCE_EYEOFTERROR_FLYAWAY = "Y-Yeah, big eye better run away! Glurgh...",
+
+    -- PIRATES
+    ANNOUNCE_CANT_ESCAPE_CURSE = "Why throw away?! It pretty!",
+    ANNOUNCE_MONKEY_CURSE_1 = "Glurgh... what this weird feeling?",
+    ANNOUNCE_MONKEY_CURSE_CHANGE = "Hey! Where scales go?",
+    ANNOUNCE_MONKEY_CURSE_CHANGEBACK = "Yay!! Not ugly anymore, florp!",
+
+    ANNOUNCE_PIRATES_ARRIVE = "Sound like somebody having fun over there! Wanna see!",
+
+--fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
 	BATTLECRY =
 	{
@@ -849,6 +927,11 @@ return{
         BERNIE_ACTIVE = "Wanna play with it!",
         BERNIE_BIG = "Fun toy, flurp!",
 
+		BOOKSTATION =
+		{
+			GENERIC = "Glurgh. Why put books up so high?!",
+			BURNT = "D-didn't do it, promise!! Please don't be sad, Wicker-lady...",
+		},
         BOOK_BIRDS = "Read this one, Wicker-lady!",
         BOOK_TENTACLES = "Remind me of home, florp.",
         BOOK_GARDENING = "A... appled...? (Sigh)",
@@ -856,6 +939,21 @@ return{
 		BOOK_HORTICULTURE = "What does bridge have to do with plants, florp?",
         BOOK_SLEEP = "Want bedtime story!",
         BOOK_BRIMSTONE = "Where Wicker-lady? Want to know what happen next!",
+
+        BOOK_FISH = "Tell me fishy story!",
+        BOOK_FIRE = "What this one about?",
+        BOOK_WEB = "It about Spiderfolk? Why no book about Mermfolk?!",
+        BOOK_TEMPERATURE = "Tem... per... atoor?",
+        BOOK_LIGHT = "Huh? What that say?",
+        BOOK_RAIN = "What a ritual?",
+        BOOK_MOON = "Oooh, moon stuff!",
+        BOOK_BEES = "Wicker-lady! Wanna read about honey! ...Please.",
+        
+        BOOK_HORTICULTURE_UPGRADED = "Extra-ended? It look more like extra added.",
+        BOOK_RESEARCH_STATION = "Glurp... that one look extra full of words...",
+        BOOK_LIGHT_UPGRADED = "Oooh, this look fancy.",
+
+        FIREPEN = "Wicker-lady say no touch. But maybe she not looking...",
 
         PLAYER =
         {
@@ -1036,6 +1134,16 @@ return{
             REVIVER = "You kinda weird, but nice!",
             GHOST = "You need help, flort?",
             FIRESTARTER = "She start fire, not me, florp!",
+        },
+
+        WONKEY =
+        {
+            GENERIC = "Hee-hee, you funny!",
+            ATTACKER = "Hey!! Monkey not allowed to hit!",
+            MURDERER = "Grrr, you a bad monkey! Go away!",
+            REVIVER = "Thanks, monkey!",
+            GHOST = "Oh no! Did monkey eat bad fruit?",
+            FIRESTARTER = "Monkey shouldn't play with fire, flort!",
         },
 
         MIGRATION_PORTAL =
@@ -1273,7 +1381,7 @@ return{
             GENERIC = "Short and stumpy.",
             BLOOM = "Floaty lights!",
         },
-        MUSHTREE_TALL_WEBBED = "This one claimed by Spiderfolk",
+        MUSHTREE_TALL_WEBBED = "This one claimed by Spiderfolk.",
         SPORE_TALL =
         {
             GENERIC = "Pretty!",
@@ -1305,7 +1413,7 @@ return{
         SPIDERHOLE = "Spiderfolk hole!",
         SPIDERHOLE_ROCK = "All webby...",
         STALAGMITE = "Cave rock.",
-        STALAGMITE_TALL = "Big cave rock",
+        STALAGMITE_TALL = "Big cave rock.",
 
         TURF_CARPETFLOOR = "Fuzzy ground.",
         TURF_CHECKERFLOOR = "Ground bit.",
@@ -1337,6 +1445,8 @@ return{
 		TURF_DRAGONFLY = "Scaly ground!",
 
         TURF_SHELLBEACH = "Ground bit.",
+
+        TURF_MONKEY_GROUND = "Ground bit.",
 
 		POWCAKE = "Gives tummy-ache, but... smell so good...",
         CAVE_ENTRANCE = "There rocks in the way.",
@@ -2565,7 +2675,7 @@ return{
         HALLOWEENCANDY_4 = "Didn't know Spiderfolk could be tasty!",
         HALLOWEENCANDY_5 = "Will eat you in one bite, florp!",
         HALLOWEENCANDY_6 = "Taste good to me, florp.",
-        HALLOWEENCANDY_7 = "Can eat yours if you don't want them, florp",
+        HALLOWEENCANDY_7 = "Can eat yours if you don't want them, florp.",
         HALLOWEENCANDY_8 = "Yummy yum!",
         HALLOWEENCANDY_9 = "Even better than normal worm!",
         HALLOWEENCANDY_10 = "Mmm, taste like swamp!",
@@ -2780,6 +2890,8 @@ return{
 			BURNT = "Aww...",
 		},
 		WARG = "What big teeth he have!",
+        WARGLET = "What big teeth he have!",
+
 		WASPHIVE = "Look scary... but sweet stuff inside...",
 		WATERBALLOON = "Don't worry, won't throw at you... (hee-hee)",
 		WATERMELON = "Gimme!!",
@@ -3314,6 +3426,7 @@ return{
         ICEBERG_MELTED = "All melty!", --unimplemented
 
         MINIFLARE = "Sparky!",
+        MEGAFLARE = "Make big angry sparks in sky.",
 
 		MOON_FISSURE =
 		{
@@ -3347,6 +3460,7 @@ return{
             BURNT = "That seem to happen a lot...",
         },
         BOAT_ITEM = "For travel on the big pond!",
+        BOAT_GRASS_ITEM = "Little boat way easier to make, flort.",
         STEERINGWHEEL_ITEM = "This go on boat?",
         ANCHOR_ITEM = "Can make boat-stopper!",
         MAST_ITEM = "Pieces for boat thing.",
@@ -3417,6 +3531,7 @@ return{
         GNARWAIL_HORN = "Ha ha! Mine now!",
 
         WALKINGPLANK = "Jumpy board!",
+        WALKINGPLANK_GRASS = "Jumpy board!",
         OAR = "Make boat go!",
 		OAR_DRIFTWOOD = "Make boat go!",
 
@@ -3606,7 +3721,7 @@ return{
 		SISTURN =
 		{
 			GENERIC = "What in jar? Snacks?",
-			SOME_FLOWERS = "Scaleless like putting flowers here.",
+			SOME_FLOWERS = "Scale-less like putting flowers here.",
 			LOTS_OF_FLOWERS = "So is... not snack jar?",
 		},
 
@@ -3642,7 +3757,7 @@ return{
         GLOWBERRYMOUSSE = "Oooh, it glowing!!",
         VOLTGOATJELLY = "Ooooooh, it jiggly!",
         NIGHTMAREPIE = "Hee-hee, it has funny face.",
-        BONESOUP = "Don't want it, florp",
+        BONESOUP = "Don't want it, florp.",
         MASHEDPOTATOES = "Mushy mash!",
         POTATOSOUFFLE = "Wha-? This potato!!",
         MOQUECA = "There fish inside!",
@@ -3900,7 +4015,7 @@ return{
         },
 
 		FARM_PLOW = "It fighting the dirt!",
-		FARM_PLOW_ITEM = "Scaleless use it to make \"guard-in.\"",
+		FARM_PLOW_ITEM = "Scale-less use it to make \"guard-in.\"",
 		FARM_HOE = "Make hole for baby plants.",
 		GOLDEN_FARM_HOE = "Fancy digger for baby plants, florp.",
 		NUTRIENTSGOGGLESHAT = "Extra shiny plant learning hat!",
@@ -4004,6 +4119,38 @@ return{
 		},
 		CARNIVALGAME_HERDING_CHICK = "Grrr, no run away egg!",
 
+		CARNIVALGAME_SHOOTING_KIT = "It not look so hard to make, flort.",
+		CARNIVALGAME_SHOOTING_STATION =
+		{
+			GENERIC = "Won't play without shiny thing...",
+			PLAYING = "Never seen Birdfolk do that before.",
+		},
+		CARNIVALGAME_SHOOTING_TARGET =
+		{
+			GENERIC = "Where that go, florp?",
+			PLAYING = "Hee-hee, bugs go smash!",
+		},
+
+		CARNIVALGAME_SHOOTING_BUTTON =
+		{
+			GENERIC = "Won't play without shiny thing...",
+			PLAYING = "It mine!! Me press button!",
+		},
+
+		CARNIVALGAME_WHEELSPIN_KIT = "It not look so hard to make, flort.",
+		CARNIVALGAME_WHEELSPIN_STATION =
+		{
+			GENERIC = "Won't play without shiny thing...",
+			PLAYING = "Mermfolk really good at games.",
+		},
+
+		CARNIVALGAME_PUCKDROP_KIT = "It not look so hard to make, flort.",
+		CARNIVALGAME_PUCKDROP_STATION =
+		{
+			GENERIC = "Won't play without shiny thing...",
+			PLAYING = "Not allowed to take little ball? But it look fun to play with!",
+		},
+
 		CARNIVAL_PRIZEBOOTH_KIT = "Want prizes!",
 		CARNIVAL_PRIZEBOOTH =
 		{
@@ -4032,6 +4179,8 @@ return{
 		CARNIVALDECOR_LAMP = "How little light ball float like that?",
 		CARNIVALDECOR_PLANT_KIT = "Where put little tree?",
 		CARNIVALDECOR_PLANT = "How tree stay so small?",
+		CARNIVALDECOR_BANNER_KIT = "Gonna build it real good, florp!",
+		CARNIVALDECOR_BANNER = "So shinyyyy...",
 
 		CARNIVALDECOR_FIGURE =
 		{
@@ -4040,6 +4189,7 @@ return{
 			GENERIC = "Can eat it? No? Aww...",
 		},
 		CARNIVALDECOR_FIGURE_KIT = "Open up!",
+		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Open up!",
 
         CARNIVAL_BALL = "Mine!! Hee-hee-hee!", --unimplemented
 		CARNIVAL_SEEDPACKET = "Mmmm, crunchy snack.",
@@ -4112,7 +4262,7 @@ return{
         BEEF_BELL = "Big fuzzies really like bell.",
 
 		-- YOT Catcoon
-		KITCOONDEN = 
+		KITCOONDEN =
 		{
 			GENERIC = "It too tiny to fit inside...",
             BURNT = "Glurp! Didn't do it!!",
@@ -4122,7 +4272,7 @@ return{
 
 		KITCOONDEN_KIT = "Building house easy! Done it lots of times, flort.",
 
-		TICOON = 
+		TICOON =
 		{
 			GENERIC = "It big squishy kitty! Hello!",
 			ABANDONED = "Maybe we play later, okay?",
@@ -4134,7 +4284,7 @@ return{
 			NOTHING_TO_TRACK = "Guess he not smell anything around.",
 			TARGET_TOO_FAR_AWAY = "Come on squishy kitty, wanna try somewhere else!",
 		},
-		
+
 		YOT_CATCOONSHRINE =
         {
             GENERIC = "It home for shiny kitty.",
@@ -4182,7 +4332,7 @@ return{
         BIRD_MUTANT = "Ha ha! What happen to you?",
         BIRD_MUTANT_SPITTER = "Pt-ooey back at you, florp!",
 
-        WAGSTAFF_NPC = "Is another scaleless? Can't smell him, florpt...",
+        WAGSTAFF_NPC = "Is another scale-less? Can't smell him, florpt...",
         ALTERGUARDIAN_CONTAINED = "What that thing for?",
 
         WAGSTAFF_TOOL_1 = "Hmm... it have no smell, like weird scale-less.",
@@ -4239,7 +4389,7 @@ return{
         POCKETWATCH_PARTS = "Too small for Ironfolk guts...",
         POCKETWATCH_DISMANTLER = "Won't break them, florp! Promise!",
 
-        POCKETWATCH_PORTAL_ENTRANCE = 
+        POCKETWATCH_PORTAL_ENTRANCE =
 		{
 			GENERIC = "Weird tunnel.",
 			DIFFERENTSHARD = "Weird tunnel.",
@@ -4253,7 +4403,7 @@ return{
         WATERTREE_ROOT = "It just boring old root, flurt.",
 
         OCEANTREE_PILLAR = "It probably second biggest tree ever.",
-        
+
         OCEANVINE = "There some yummy fruit over there!",
         FIG = "Mmmm! Mine!",
         FIG_COOKED = "Mmm, squishy!",
@@ -4283,7 +4433,7 @@ return{
         },
 
         -- Wolfgang
-        MIGHTY_GYM = 
+        MIGHTY_GYM =
         {
             GENERIC = "Can do it too! Mermfolk super strong, flurt!",
             BURNT = "Glurp! Didn't do it!!",
@@ -4291,11 +4441,12 @@ return{
 
         DUMBBELL = "Muscly mustache man leave rocks everywhere.",
         DUMBBELL_GOLDEN = "Muscly mustache man leave rocks everywhere.",
+		DUMBBELL_MARBLE = "Muscly mustache man leave rocks everywhere.",
         DUMBBELL_GEM = "Muscly mustache man leave rocks everywhere.",
         POTATOSACK = "Snacks! Mine!!",
 
 
-        TERRARIUMCHEST = 
+        TERRARIUMCHEST =
 		{
 			GENERIC = "It smell strange, not from here.",
 			BURNT = "Didn't do it!!",
@@ -4335,6 +4486,116 @@ return{
 
 		KITCOONDECOR1_KIT = "It not hard to build, florp.",
 		KITCOONDECOR2_KIT = "It need building still!",
+
+        -- WX78
+        WX78MODULE_MAXHEALTH = "Crunchy.",
+        WX78MODULE_MAXSANITY1 = "Crunchy.",
+        WX78MODULE_MAXSANITY = "Crunchy.",
+        WX78MODULE_MOVESPEED = "Crunchy.",
+        WX78MODULE_MOVESPEED2 = "Crunchy.",
+        WX78MODULE_HEAT = "Crunchy.",
+        WX78MODULE_NIGHTVISION = "Crunchy.",
+        WX78MODULE_COLD = "Crunchy.",
+        WX78MODULE_TASER = "Crunchy.",
+        WX78MODULE_LIGHT = "Crunchy.",
+        WX78MODULE_MAXHUNGER1 = "Crunchy.",
+        WX78MODULE_MAXHUNGER = "Crunchy.",
+        WX78MODULE_MUSIC = "Crunchy.",
+        WX78MODULE_BEE = "Crunchy.",
+        WX78MODULE_MAXHEALTH2 = "Crunchy.",
+
+        WX78_SCANNER =
+        {
+            GENERIC ="Bug? No? Hmm...",
+            HUNTING = "Bug? No? Hmm...",
+            SCANNING = "Bug? No? Hmm...",
+        },
+
+        WX78_SCANNER_ITEM = "Bug? No? Hmm...",
+        WX78_SCANNER_SUCCEEDED = "Why it all blinky?",
+
+        WX78_MODULEREMOVER = "Haha! Ironfolk weird.",
+
+        SCANDATA = "Glurgh... can Wicker-lady read it?",
+
+        -- Pirates
+        BOAT_ROTATOR = "Wanna make boat spin faster! Faster!!",
+        BOAT_ROTATOR_KIT = "It boat stuff.",
+        BOAT_BUMPER_KELP = "Pretty decorations!",
+        BOAT_BUMPER_KELP_KIT = "Gonna decorate boat, florp.",
+        BOAT_BUMPER_SHELL = "Pretty decorations!",
+        BOAT_BUMPER_SHELL_KIT = "Gonna decorate boat, florp.",
+        BOAT_CANNON = {
+            GENERIC = "It not ready yet!",
+            AMMOLOADED = "Wanna play, wanna play!",
+            NOAMMO = "Glurgh... forget to bring cannon rocks...",
+        },
+        BOAT_CANNON_KIT = "Buildy bits for boat stuff.",
+        CANNONBALL_ROCK_ITEM = "Thought we not allowed to throw rocks?",
+
+        OCEAN_TRAWLER = {
+            GENERIC = "Is fishy catcher? Why?",
+            LOWERED = "Maybe fishies will wanna play!",
+            CAUGHT = "Hi fishies! Don't worry, gonna take good care of you!",
+            ESCAPED = "Fishies went home.",
+            FIXED = "Look even better now, florp.",
+        },
+        OCEAN_TRAWLER_KIT = "It something for fishies?",
+
+        BOAT_MAGNET =
+        {
+            GENERIC = "Ohhh Wicker-lady show things like that in book! It big horsey-shoe, right?",
+            ACTIVATED = "It magic!!",
+        },
+        BOAT_MAGNET_KIT = "It boat stuff? Look weird, though.",
+
+        BOAT_MAGNET_BEACON =
+        {
+            GENERIC = "Don't understand weird scale-less machines, florp.",
+            ACTIVATED = "What it doing?",
+        },
+        DOCK_KIT = "Will build nice sleeping spot for boat.",
+        DOCK_WOODPOSTS_ITEM = "Would look better with Pigman head on top, but still okay.",
+
+        MONKEYHUT =
+        {
+            GENERIC = "Mermfolk houses better, florp.",
+            BURNT = "Didn't do it! Found it like this!",
+        },
+        POWDER_MONKEY = "HEY!! That stuff MINE!",
+        PRIME_MATE = "You not look like regular monkey, florp...",
+		LIGHTCRAB = "Ooooh, how it so glowy inside? Gotta crack open shell and find out.",
+        CUTLESS = "It my sword now.",
+        CURSED_MONKEY_TOKEN = "Oooooh, pretty!",
+        OAR_MONKEY = "Smacky stick.",
+        BANANABUSH = "Monkeys mean, but know good fruit.",
+        DUG_BANANABUSH = "Monkeys mean, but know good fruit.",
+        PALMCONETREE = "It a really weird tree.",
+        PALMCONE_SEED = "Aww, it just a baby.",
+        PALMCONE_SAPLING = "It not ready yet, still growing.",
+        PALMCONE_SCALE = "That no scale, me know scales!!",
+        MONKEYTAIL = "Where weird plant come from?",
+        DUG_MONKEYTAIL = "Where weird plant come from?",
+
+        MONKEY_MEDIUMHAT = "Me captain now!",
+        MONKEY_SMALLHAT = "It ban... bander... banerana... head wrapper!",
+        POLLY_ROGERSHAT = "Birdy feathers make it more fancy.",
+        POLLY_ROGERS = "Bring me stuff, birdy!",
+
+        MONKEYISLAND_PORTAL = "Sky is broken!?",
+        MONKEYISLAND_PORTAL_DEBRIS = "Look like scale-less machine bits.",
+        MONKEYQUEEN = "Who say you get to be Queen, flort?!",
+        MONKEYPILLAR = "Hey... it not real tree!",
+        PIRATE_FLAG_POLE = "Ooooh... want flag too!",
+
+        BLACKFLAG = "It pirate flag!",
+        PIRATE_STASH = "Found it! Mine!!",
+        STASH_MAP = "It show where stuff hiding? Gonna get it first, florp!",
+
+
+        BANANAJUICE = "It sweet and slurpy, florp!",
+
+        FENCE_ROTATOR = "Spinny pokey stick!",
     },
 
     DESCRIBE_GENERIC = "What that?",

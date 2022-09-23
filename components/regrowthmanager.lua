@@ -165,18 +165,31 @@ self:SetRegrowthForType("catcoonden", TUNING.CATCOONDEN_REGROWTH_TIME, "catcoond
 				or _worldstate.isautumn and TUNING.CATCOONDEN_REGROWTH_TIME_AUTUMN_MULT
 				or 0
     end)
-self:SetRegrowthForType("flower_cave", TUNING.FLOWER_CAVE_REGROWTH_TIME, "flower_cave", function()
-        return TUNING.FLOWER_CAVE_REGROWTH_TIME_MULT
-    end)
-self:SetRegrowthForType("flower_cave_double", TUNING.FLOWER_CAVE_REGROWTH_TIME, "flower_cave_double", function()
-        return TUNING.FLOWER_CAVE_REGROWTH_TIME_MULT
-    end)
-self:SetRegrowthForType("flower_cave_triple", TUNING.FLOWER_CAVE_REGROWTH_TIME, "flower_cave_triple", function()
-        return TUNING.FLOWER_CAVE_REGROWTH_TIME_MULT
-    end)
+local function FlowerCaveRegrowth()
+    return TUNING.FLOWER_CAVE_REGROWTH_TIME_MULT
+end
+self:SetRegrowthForType("flower_cave", TUNING.FLOWER_CAVE_REGROWTH_TIME, "flower_cave", FlowerCaveRegrowth)
+self:SetRegrowthForType("flower_cave_double", TUNING.FLOWER_CAVE_REGROWTH_TIME, "flower_cave_double", FlowerCaveRegrowth)
+self:SetRegrowthForType("flower_cave_triple", TUNING.FLOWER_CAVE_REGROWTH_TIME, "flower_cave_triple", FlowerCaveRegrowth)
 self:SetRegrowthForType("lightflier_flower", TUNING.LIGHTFLIER_FLOWER_REGROWTH_TIME, "lightflier_flower", function()
         return TUNING.LIGHTFLIER_FLOWER_REGROWTH_TIME_MULT
     end)
+self:SetRegrowthForType("reeds", TUNING.REEDS_REGROWTH_TIME, "reeds", function()
+        return (
+            _worldstate.isspring and TUNING.REEDS_REGROWTH_TIME_SPRING_MULT or TUNING.REEDS_REGROWTH_TIME_BASE_MULT
+        ) * TUNING.REEDS_REGROWTH_TIME_MULT
+    end)
+local function CactusRegrowth()
+    return (
+        _worldstate.issummer and TUNING.CACTUS_REGROWTH_TIME_SUMMER_MULT or -- Bloom.
+        _worldstate.iswinter and TUNING.CACTUS_REGROWTH_TIME_WINTER_MULT or -- Hibernation.
+        TUNING.CACTUS_REGROWTH_TIME_BASE_MULT -- Generic.
+    ) * (
+        _worldstate.israining and TUNING.CACTUS_REGROWTH_RAINING_MULT or 1
+    ) * TUNING.CACTUS_REGROWTH_TIME_MULT
+end
+self:SetRegrowthForType("cactus", TUNING.CACTUS_REGROWTH_TIME, "cactus", CactusRegrowth)
+self:SetRegrowthForType("oasis_cactus", TUNING.CACTUS_REGROWTH_TIME, "oasis_cactus", CactusRegrowth)
 
 --------------------------------------------------------------------------
 --[[ Update ]]

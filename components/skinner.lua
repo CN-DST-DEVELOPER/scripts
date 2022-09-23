@@ -8,10 +8,37 @@ end)
 
 local clothing_order = { "legs", "body", "feet", "hand" }
 
-function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, skintype, default_build )
+function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_curse, skintype, default_build )
 	skintype = skintype or "normal_skin"
 	default_build = default_build or ""
 	base_skin = base_skin or ""
+
+	local monkey_pieces = {}
+	if monkey_curse ~= nil then
+		if monkey_curse == "MONKEY_CURSE_1" then
+			monkey_pieces = {
+				"foot"
+			}
+		elseif monkey_curse == "MONKEY_CURSE_2" then
+			monkey_pieces = {
+				"foot",
+				"hand"
+			}
+		elseif monkey_curse == "MONKEY_CURSE_3" then
+			monkey_pieces = {
+				"foot",
+				"hand",
+				"tail"
+			}
+		end
+	end
+	if prefab == "wonkey" then
+		monkey_pieces = {
+			"foot",
+			"hand",
+			"tail"
+		}
+	end
 
 	if skintype ~= "NO_BASE" then
 		anim_state:SetSkin(base_skin, default_build)
@@ -244,6 +271,23 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, skintype
 						end
 					end
 				end
+				if CLOTHING[name].symbol_shows then
+					for _,sym in pairs(CLOTHING[name].symbol_shows) do
+						anim_state:ShowSymbol(sym)
+					end
+				end
+			end
+		end
+		
+		if not allow_arms then
+			anim_state:ShowSymbol("arm_upper_skin") --Sometimes Wolfgang wants to show off his muscles. Make sure we can see them. /flex
+		end
+
+		for _, sym in pairs(monkey_pieces) do
+			anim_state:ShowSymbol(sym)
+			anim_state:OverrideSymbol( sym, "wonkey", sym )
+			if sym == "foot" then
+				feet_cuff_size = 3
 			end
 		end
 
@@ -289,10 +333,16 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, skintype
 			anim_state:HideSymbol("skirt")
 		end
 
-		--deal with leg boots
+		--deal with leg boots (yes, we're using the leg_build as the skinname. Sometime we override the build, but the base skin "should" have the same definition)
 		local use_leg_boot = leg_build and CLOTHING[leg_build] and CLOTHING[leg_build].has_leg_boot
 		if leg_build == foot_build and use_leg_boot then
-			anim_state:OverrideSkinSymbol("leg", leg_build, "leg_boot" )
+			local boot_symbol = "leg_boot"
+			if CLOTHING[leg_build].symbol_overrides_by_character ~= nil then
+				local alt_symbols = CLOTHING[leg_build].symbol_overrides_by_character[prefab] or CLOTHING[leg_build].symbol_overrides_by_character["default"] 
+				boot_symbol = alt_symbols["leg_boot"] or "leg_boot"
+			end
+
+			anim_state:OverrideSkinSymbol("leg", leg_build, boot_symbol )
 		end
 
 		--deal with foot nubs
@@ -360,7 +410,7 @@ function Skinner:SetSkinMode(skintype, default_build)
 
 	if self.skin_data == nil then
 		--fix for legacy saved games with already spawned players that don't have a skin_name set
-		self:SetSkinName(self.inst.prefab.."_none")
+		self:SetSkinName(self.inst.prefab.."_none", nil, true)
 	end
 
 	if skintype == "ghost_skin" then
@@ -370,7 +420,10 @@ function Skinner:SetSkinMode(skintype, default_build)
 		base_skin = self.skin_data[skintype] or default_build or self.inst.prefab
 	end
 
-	SetSkinsOnAnim( self.inst.AnimState, self.inst.prefab, base_skin, self.clothing, skintype, default_build )
+	SetSkinsOnAnim( self.inst.AnimState, self.inst.prefab, base_skin, self.clothing, self.monkey_curse, skintype, default_build )
+	if self.base_change_cb ~= nil then
+		self.base_change_cb()
+	end
 
 	self.inst.Network:SetPlayerSkin( self.skin_name or "", self.clothing["body"] or "", self.clothing["hand"] or "", self.clothing["legs"] or "", self.clothing["feet"] or "" )
 end
@@ -381,7 +434,7 @@ function Skinner:SetupNonPlayerData()
 	self:SetSkinMode("NO_BASE")
 end
 
-function Skinner:SetSkinName(skin_name, skip_beard_setup)
+function Skinner:SetSkinName(skin_name, skip_beard_setup, skip_skins_set)
     if skin_name == "" then
         skin_name = self.inst.prefab.."_none"
     end
@@ -413,7 +466,9 @@ function Skinner:SetSkinName(skin_name, skip_beard_setup)
 		end
 	end
 
-	self:SetSkinMode()
+	if not skip_skins_set then
+		self:SetSkinMode()
+	end
 end
 
 local function _InternalSetClothing(self, type, name, set_skin_mode)
@@ -432,6 +487,21 @@ local function _InternalSetClothing(self, type, name, set_skin_mode)
 		self:SetSkinMode()
 	end
 end
+
+function Skinner:SetMonkeyCurse( monkey_curse )
+	self.monkey_curse = monkey_curse
+	self:SetSkinMode()
+end
+
+function Skinner:GetMonkeyCurse()
+	return self.monkey_curse
+end
+
+function Skinner:ClearMonkeyCurse()
+	self.monkey_curse = nil	
+	self:SetSkinMode()
+end
+
 
 function Skinner:SetClothing( name )
 	if IsValidClothing(name) then

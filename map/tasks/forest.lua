@@ -14,7 +14,7 @@ AddTask("Resource-rich Tier2", {
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -27,7 +27,7 @@ AddTask("Resource-Rich", {
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -41,7 +41,7 @@ AddTask("Wasps and Frogs and bugs", {
 			["EvilFlowerPatch"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Clearing"] = 2,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -54,7 +54,7 @@ AddTask("Hounded Magic meadow", {
 			["Pondopolis"] = 2,
 			["Clearing"] = 2, -- have to have at least a few rooms for tagging
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="Clearing",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -70,7 +70,7 @@ AddTask("Waspy The hunters", {
 			["BGGrass"] = 2,
 			["BGRocky"] = 2,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -84,7 +84,7 @@ AddTask("Guarded Walrus Desolate", {
 			["WalrusHut_Rocky"] = 1,
 			["BGRocky"] = 2,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -97,7 +97,7 @@ AddTask("Walrus Desolate", {
 			["WalrusHut_Rocky"] = 1,
 			["BGRocky"] = 2,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -110,7 +110,7 @@ AddTask("Insanity-Blocked Necronomicon", {
 			["Forest"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["DeepForest"] = 2,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -122,7 +122,7 @@ AddTask("Necronomicon", {
 			["Forest"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["DeepForest"] = 2,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -139,7 +139,7 @@ AddTask("Easy Blocked Dig that rock", {
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 			["Clearing"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGNoise",
 		colour={r=0,g=0,b=1,a=1}
 	})
@@ -156,7 +156,7 @@ AddTask("Tentacle-Blocked The Deep Forest", {
 			["DeepForest"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGDeepForest",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -171,7 +171,7 @@ AddTask("The Deep Forest", {
 			["DeepForest"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGDeepForest",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -192,7 +192,7 @@ AddTask("Trapped Befriend the pigs", {
 			["DeepForest"] = function() return math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -205,7 +205,7 @@ AddTask("Pigs in the city", {
 			["Clearing"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["DeepForest"] = 1,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -218,7 +218,7 @@ AddTask("The Pigs are back in town", {
 			["Clearing"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["DeepForest"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGForest",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -233,7 +233,7 @@ AddTask("The Pigs are back in town", {
 			["CrappyDeepForest"] = 1,
 			["SpiderForest"] = 3,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGCrappyForest",
 		colour={r=1,g=1,b=0,a=1}
 	})
@@ -246,7 +246,7 @@ AddTask("The Pigs are back in town", {
 			--["Wormhole"] = 1,
 			["DeepForest"] = function() return 3 + math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=1,g=1,b=0,a=1}
 	})
@@ -260,7 +260,7 @@ AddTask("The Pigs are back in town", {
 			["CrappyDeepForest"] = 1,
 			["SpiderForest"] = 3,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGCrappyForest",
 		colour={r=1,g=1,b=0,a=1}
 	})
@@ -277,7 +277,7 @@ AddTask("Hounded Greater Plains", {
 			["WalrusHut_Plains"] = 1,
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=0,g=1,b=1,a=1}
 	})
@@ -290,7 +290,7 @@ AddTask("Greater Plains", {
 			["WalrusHut_Plains"] = 1,
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=0,g=1,b=1,a=1}
 	})
@@ -304,7 +304,7 @@ AddTask("Sanity-Blocked Great Plains", {
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Clearing"] = 2,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=0,g=1,b=1,a=1}
 	})
@@ -319,7 +319,7 @@ AddTask("Rock-Blocked HoundFields", {
 			["Moundfield"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGRocky",
 		colour={r=0,g=1,b=1,a=1}
 	})
@@ -330,7 +330,7 @@ AddTask("HoundFields", {
 			["Moundfield"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGRocky",
 		colour={r=0,g=1,b=1,a=1}
 	})
@@ -346,7 +346,7 @@ AddTask("Merms ahoy", {
 			["Marsh"] = function() return 3+math.random(SIZE_VARIATION) end,
 			["DeepForest"] = function() return 2+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -360,7 +360,7 @@ AddTask("Sane-Blocked Swamp", {
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 			["DeepForest"] = function() return 1+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})
@@ -376,7 +376,7 @@ AddTask("Guarded Squeltch", {
 			["DeepForest"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["SlightlyMermySwamp"]=1,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})
@@ -389,7 +389,7 @@ AddTask("Swamp start", {
 			["Marsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 			["SlightlyMermySwamp"]=1,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.5,b=.5,a=1}
 	})
@@ -402,7 +402,7 @@ AddTask("Tentacle-Blocked Spider Swamp", {
 			["SpiderMarsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 			["Forest"] = 2,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.5,g=.05,b=.05,a=1}
 	})
@@ -416,7 +416,7 @@ AddTask("Lots-o-Spiders", {
 			["SpiderMarsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 			["CrappyForest"] = 2,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.5,b=.05,a=1}
 	})
@@ -429,7 +429,7 @@ AddTask("Lots-o-Tentacles", {
 			["Marsh"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["SlightlyMermySwamp"] = function() return 1+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.5,a=1}
 	})
@@ -443,7 +443,7 @@ AddTask("Lots-o-Tallbirds", {
 			["BeefalowPlain"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["TallbirdNests"] = function() return 1+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=.5,g=.3,b=.05,a=1}
 	})
@@ -456,7 +456,7 @@ AddTask("Lots-o-Chessmonsters", {
 			["ChessBarrens"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["ChessMarsh"] = function() return 1+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGChessRocky",
 		colour={r=.8,g=.08,b=.05,a=1}
 	})
@@ -469,7 +469,7 @@ AddTask("Spider swamp", {
 			["SpiderMarsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 			["Forest"] = 2,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.15,g=.05,b=.7,a=1}
 	})
@@ -482,7 +482,7 @@ AddTask("Spider swamp", {
 			--["Forest"] = 1,
 			--["Nothing"] = function() return 1+math.random(SIZE_VARIATION) end,
 		--},
-		--room_bg=GROUND.IMPASSABLE,
+		--room_bg=WORLD_TILES.IMPASSABLE,
 		--colour={r=.05,g=.05,b=.05,a=1}
 	--}),
  AddTask("Sanity-Blocked Spider Queendom", {
@@ -494,7 +494,7 @@ AddTask("Spider swamp", {
 			["Graveyard"] = 1,
 			["CrappyDeepForest"] = 2,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="SpiderForest",
 		colour={r=1,g=1,b=0,a=1}
 	})
@@ -507,7 +507,7 @@ AddTask("Spider swamp", {
 			["Graveyard"] = 1,
 			["CrappyDeepForest"] = 2,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="SpiderForest",
 		colour={r=1,g=1,b=0.2,a=1}
 	})
@@ -524,7 +524,7 @@ AddTask("Guarded For a nice walk", {
 			["DeepForest"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=1,g=0,b=1,a=1}
 	})
@@ -535,7 +535,7 @@ AddTask("Mine Forest", {
 			["Trapfield"] = 4,
 			["Clearing"] = 2
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGCrappyForest",
 		colour={r=.05,g=.5,b=.05,a=1}
 	})
@@ -552,7 +552,7 @@ AddTask("Battlefield", {
 			["DeepForest"] = 1,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=.05,g=.8,b=.05,a=1}
 	})
@@ -567,7 +567,7 @@ AddTask("Guarded Forest hunters", {
 			["DeepForest"] = 1,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=.05,g=.5,b=.15,a=1}
 	})
@@ -582,7 +582,7 @@ AddTask("Trapped Forest hunters", {
 			["DeepForest"] = 1,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=.05,g=.5,b=.15,a=1}
 	})
@@ -598,7 +598,7 @@ AddTask("Walled Kill the spiders", {
 			["CrappyDeepForest"] = function() return math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=.15,g=.5,b=.15,a=1}
 	})
@@ -613,7 +613,7 @@ AddTask("Waspy Beeeees!", {
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 			["FlowerPatch"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0.3,a=1}
 	})
@@ -625,7 +625,7 @@ AddTask("Pretty Rocks Burnt", {
 			["Rocky"] = function() return math.random(SIZE_VARIATION) end,
 			["FlowerPatch"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrassBurnt",
 		colour={r=1,g=1,b=0.5,a=1}
 	})
@@ -638,7 +638,7 @@ AddTask("The charcoal forest", {
 			["BurntForest"] = function() return math.random(SIZE_VARIATION) end,
 			["BurntClearing"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrassBurnt",
 		colour={r=1,g=1,b=0.5,a=1}
 	})
@@ -657,7 +657,7 @@ AddTask("Land of Plenty", {
 			["DeepForest"] = 1,
 			["BGRocky"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=.05,g=.5,b=.05,a=1}
 	})
@@ -679,7 +679,7 @@ AddTask("The other side", {
 			["ChessMarsh"] = 1,
 			["SpiderMarsh"] = function() return 2+math.random(2) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.5,b=.05,a=1}
 	})
@@ -692,7 +692,7 @@ AddTask("Chessworld", {
 			["MarbleForest"] = function() return 1+ math.random(SIZE_VARIATION) end,
 			["ChessBarrens"] = 2,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGChessRocky",
 		colour={r=.05,g=.5,b=.05,a=1},
 	})

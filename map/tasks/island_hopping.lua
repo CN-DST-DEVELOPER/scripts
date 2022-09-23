@@ -8,7 +8,7 @@ AddTask("IslandHop_Start", { -- Sweet starting node, horrid other than that (lea
 		room_choices={
 			["SpiderMarsh"] = function() return 1+math.random(2) end,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGMarsh",
 		colour={1,.5,.5,.2},
 	})
@@ -20,7 +20,7 @@ AddTask("IslandHop_Hounds", {
 		room_choices={
 			["SpiderForest"] = function() return 1+math.random(2) end,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGBadlands",
 		colour={1,.5,.5,.2},
 	})
@@ -35,7 +35,7 @@ AddTask("IslandHop_Forest", {
 		-- room_choices={
 		-- 	["DeepForest"] = function() return 1+math.random(2) end,
 		-- },
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGDeepForest",
 		colour={1,.5,.5,.2},
 	})
@@ -50,7 +50,7 @@ AddTask("IslandHop_Savanna", {
 		-- room_choices={
 		-- 	["BeefalowPlain"] = function() return 1+math.random(2) end,
 		-- },
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGSavanna",
 		colour={1,.5,.5,.2},
 	})
@@ -62,7 +62,7 @@ AddTask("IslandHop_Rocky", {
 		room_choices={
 			["Rocky"] = function() return 1+math.random(2) end,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGRocky",
 		colour={1,.5,.5,.2},
 	})
@@ -74,7 +74,7 @@ AddTask("IslandHop_Merm", {
 		room_choices={
 			["SlightlyMermySwamp"] = function() return 1+math.random(2) end,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGMarsh",
 		colour={1,.5,.5,.2},
 	})

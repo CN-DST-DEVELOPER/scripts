@@ -1,7 +1,7 @@
 
 AddRoom("Graveyard", {
 					colour={r=.010,g=.010,b=.10,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"Town", "Mist"},
 					contents =  {
 					                countprefabs= {

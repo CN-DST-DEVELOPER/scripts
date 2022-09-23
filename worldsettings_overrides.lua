@@ -1158,6 +1158,29 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    pirateraids = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                PIRATE_RAIDS_ENABLED = false,
+            },
+            few = {
+                PIRATE_RAIDS_CHANCE_MODIFIER = 0.5,
+            },
+            --[[
+            default = {
+                PIRATE_RAIDS_CHANCE_MODIFIER = 1.0,
+            },
+            --]]
+            many = {
+                PIRATE_RAIDS_CHANCE_MODIFIER = 2.0,
+            },
+            always = {
+                PIRATE_RAIDS_CHANCE_MODIFIER = 5.0,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
 
     --animals
     butterfly = function(difficulty)
@@ -2147,6 +2170,32 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    palmconetree_regrowth = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                PALMCONETREE_REGROWTH_TIME_MULT = 0,
+            },
+            veryslow = {
+                PALMCONETREE_REGROWTH_TIME_MULT = 0.25,
+            },
+            slow = {
+                PALMCONETREE_REGROWTH_TIME_MULT = 0.5,
+            },
+            --[[
+            default = {
+                PALMCONETREE_REGROWTH_TIME_MULT = 1,
+            },
+            --]]
+            fast = {
+                PALMCONETREE_REGROWTH_TIME_MULT = 1.5,
+            },
+            veryfast = {
+                PALMCONETREE_REGROWTH_TIME_MULT = 3,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
     carrots_regrowth = function(difficulty)
         local tuning_vars =
         {
@@ -2169,6 +2218,58 @@ local applyoverrides_pre = {
             },
             veryfast = {
                 CARROT_REGROWTH_TIME_MULT = 3,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    reeds_regrowth = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                REEDS_REGROWTH_TIME_MULT = 0,
+            },
+            veryslow = {
+                REEDS_REGROWTH_TIME_MULT = 0.25,
+            },
+            slow = {
+                REEDS_REGROWTH_TIME_MULT = 0.5,
+            },
+            --[[
+            default = {
+                REEDS_REGROWTH_TIME_MULT = 1,
+            },
+            --]]
+            fast = {
+                REEDS_REGROWTH_TIME_MULT = 1.5,
+            },
+            veryfast = {
+                REEDS_REGROWTH_TIME_MULT = 3,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    cactus_regrowth = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                CACTUS_REGROWTH_TIME_MULT = 0,
+            },
+            veryslow = {
+                CACTUS_REGROWTH_TIME_MULT = 0.25,
+            },
+            slow = {
+                CACTUS_REGROWTH_TIME_MULT = 0.5,
+            },
+            --[[
+            default = {
+                CACTUS_REGROWTH_TIME_MULT = 1,
+            },
+            --]]
+            fast = {
+                CACTUS_REGROWTH_TIME_MULT = 1.5,
+            },
+            veryfast = {
+                CACTUS_REGROWTH_TIME_MULT = 3,
             },
         }
         OverrideTuningVariables(tuning_vars[difficulty])
@@ -2201,6 +2302,146 @@ local applyoverrides_pre = {
             veryfast = {
                 SALTSTACK_GROWTH_FREQUENCY = TUNING.TOTAL_DAY_TIME*2,
                 SALTSTACK_GROWTH_FREQUENCY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.5,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    --portal_resources
+    portal_spawnrate = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MONKEYISLAND_PORTAL_ENABLED = false,
+            },
+            rare = {
+                MONKEYISLAND_PORTAL_SPEWTIME = 30.0,
+            },
+            --[[
+            default = {
+                MONKEYISLAND_PORTAL_SPEWTIME = 15.0,
+            },
+            ]]
+            often = {
+                MONKEYISLAND_PORTAL_SPEWTIME = 10.0,
+            },
+            always = {
+                MONKEYISLAND_PORTAL_SPEWTIME = 5.0,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    bananabush_portalrate = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MONKEYISLAND_PORTAL_BANANABUSHWEIGHT = 0.0,
+            },
+            rare = {
+                MONKEYISLAND_PORTAL_BANANABUSHWEIGHT = 2.5,
+            },
+            --[[
+            default = {
+                MONKEYISLAND_PORTAL_BANANABUSHWEIGHT = 5.0,
+            },
+            --]]
+            often = {
+                MONKEYISLAND_PORTAL_BANANABUSHWEIGHT = 10.0,
+            },
+            always = {
+                MONKEYISLAND_PORTAL_BANANABUSHWEIGHT = 20.0,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    lightcrab_portalrate = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MONKEYISLAND_PORTAL_LIGHTCRABWEIGHT = 0.0,
+            },
+            rare = {
+                MONKEYISLAND_PORTAL_LIGHTCRABWEIGHT = 1.0,
+            },
+            --[[
+            default = {
+                MONKEYISLAND_PORTAL_LIGHTCRABWEIGHT = 2.0,
+            },
+            --]]
+            often = {
+                MONKEYISLAND_PORTAL_LIGHTCRABWEIGHT = 4.0,
+            },
+            always = {
+                MONKEYISLAND_PORTAL_LIGHTCRABWEIGHT = 8.0,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    monkeytail_portalrate = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MONKEYISLAND_PORTAL_MONKEYTAILWEIGHT = 0.0,
+            },
+            rare = {
+                MONKEYISLAND_PORTAL_MONKEYTAILWEIGHT = 2.5,
+            },
+            --[[
+            default = {
+                MONKEYISLAND_PORTAL_MONKEYTAILWEIGHT = 5.0,
+            },
+            --]]
+            often = {
+                MONKEYISLAND_PORTAL_MONKEYTAILWEIGHT = 10.0,
+            },
+            always = {
+                MONKEYISLAND_PORTAL_MONKEYTAILWEIGHT = 20.0,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    palmcone_seed_portalrate = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MONKEYISLAND_PORTAL_PALMCONE_SEEDWEIGHT = 0.0,
+            },
+            rare = {
+                MONKEYISLAND_PORTAL_PALMCONE_SEEDWEIGHT = 2.5,
+            },
+            --[[
+            default = {
+                MONKEYISLAND_PORTAL_PALMCONE_SEEDWEIGHT = 5.0,
+            },
+            --]]
+            often = {
+                MONKEYISLAND_PORTAL_PALMCONE_SEEDWEIGHT = 10.0,
+            },
+            always = {
+                MONKEYISLAND_PORTAL_PALMCONE_SEEDWEIGHT = 20.0,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    powder_monkey_portalrate = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MONKEYISLAND_PORTAL_POWDERMONKEYWEIGHT = 0.0,
+            },
+            rare = {
+                MONKEYISLAND_PORTAL_POWDERMONKEYWEIGHT = 0.5,
+            },
+            --[[
+            default = {
+                MONKEYISLAND_PORTAL_POWDERMONKEYWEIGHT = 1.0,
+            },
+            --]]
+            often = {
+                MONKEYISLAND_PORTAL_POWDERMONKEYWEIGHT = 2.0,
+            },
+            always = {
+                MONKEYISLAND_PORTAL_POWDERMONKEYWEIGHT = 4.0,
             },
         }
         OverrideTuningVariables(tuning_vars[difficulty])
@@ -2891,6 +3132,16 @@ local applyoverrides_post = {
             TheWorld:PushEvent("hounded_setdifficulty", difficulty)
         end
     end,
+    summerhounds = function(difficulty)
+        if TheWorld:HasTag("forest") then
+            TheWorld:PushEvent("hounded_setsummervariant", difficulty)
+        end
+    end,
+    winterhounds = function(difficulty)
+        if TheWorld:HasTag("forest") then
+            TheWorld:PushEvent("hounded_setwintervariant", difficulty)
+        end
+    end,
     wormattacks = function(difficulty)
         if TheWorld:HasTag("cave") then
             TheWorld:PushEvent("hounded_setdifficulty", difficulty)
@@ -3005,32 +3256,31 @@ local function areaambientdefault(prefab)
     local world = TheWorld
     if prefab == "cave" then
         -- Clear out the above ground (forest) sounds
-        world:PushEvent("overrideambientsound", { tile = GROUND.ROAD, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.ROCKY, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.DIRT, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.WOODFLOOR, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.SAVANNA, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.GRASS, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.FOREST, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.CHECKER, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.MARSH, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.IMPASSABLE, override = "ABYSS" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ROAD, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ROCKY, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.DIRT, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.WOODFLOOR, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.SAVANNA, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.GRASS, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FOREST, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.CHECKER, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.MARSH, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.IMPASSABLE, override = "ABYSS" })
     else
         -- Clear out the cave sounds
-        world:PushEvent("overrideambientsound", { tile = GROUND.CAVE, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.FUNGUSRED, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.FUNGUSGREEN, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.FUNGUS, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.SINKHOLE, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.UNDERROCK, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.MUD, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.UNDERGROUND, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.BRICK, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.BRICK_GLOW, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.TILES, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.TILES_GLOW, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.TRIM, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = GROUND.TRIM_GLOW, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.CAVE, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUSRED, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUSGREEN, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUS, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.SINKHOLE, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.UNDERROCK, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.MUD, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.BRICK, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.BRICK_GLOW, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES_GLOW, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM_GLOW, override = "ROCKY" })
     end
 end
 

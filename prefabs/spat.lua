@@ -102,6 +102,7 @@ local function EquipWeapons(inst)
         snotbomb.components.inventoryitem:SetOnDroppedFn(snotbomb.Remove)
         snotbomb:AddComponent("equippable")
         snotbomb:AddTag("snotbomb")
+        snotbomb:AddTag("nosteal")
 
         inst.components.inventory:GiveItem(snotbomb)
         inst.weaponitems.snotbomb = snotbomb
@@ -118,6 +119,7 @@ local function EquipWeapons(inst)
         meleeweapon.components.inventoryitem:SetOnDroppedFn(meleeweapon.Remove)
         meleeweapon:AddComponent("equippable")
         meleeweapon:AddTag("meleeweapon")
+        meleeweapon:AddTag("nosteal")
 
         inst.components.inventory:GiveItem(meleeweapon)
         inst.weaponitems.meleeweapon = meleeweapon

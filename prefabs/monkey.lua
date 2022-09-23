@@ -90,6 +90,7 @@ local function EquipWeapons(inst)
         thrower.persists = false
         thrower.components.inventoryitem:SetOnDroppedFn(thrower.Remove)
         thrower:AddComponent("equippable")
+        thrower:AddTag("nosteal")
         inst.components.inventory:GiveItem(thrower)
         inst.weaponitems.thrower = thrower
 
@@ -103,6 +104,7 @@ local function EquipWeapons(inst)
         hitter.persists = false
         hitter.components.inventoryitem:SetOnDroppedFn(hitter.Remove)
         hitter:AddComponent("equippable")
+        hitter:AddTag("nosteal")
         inst.components.inventory:GiveItem(hitter)
         inst.weaponitems.hitter = hitter
 
@@ -125,7 +127,7 @@ local function OnAttacked(inst, data)
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, 30, MONKEY_TAGS)
     for i, v in ipairs(ents) do
-        if v ~= inst then
+        if v ~= inst and v.components.combat then
             v.components.combat:SuggestTarget(data.attacker)
             SetHarassPlayer(v, nil)
             if v.task ~= nil then

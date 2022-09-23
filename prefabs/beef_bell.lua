@@ -6,19 +6,34 @@ local assets =
     Asset("INV_IMAGE", "beef_bell_linked"),
 }
 
-local prefabs =
-{
-    "spawn_fx_medium",
-}
-
-local TWEEN_TARGET = {0, 0, 0, 1}
-local TWEEN_TIME = 13 * FRAMES
+local function on_player_dismounted(inst, data)
+    local mount = data and data.target or nil
+    if mount and mount:IsValid() then
+        mount:PushEvent("despawn")
+    end
+end
 local function on_player_despawned(inst)
     for beef, _ in pairs(inst.components.leader.followers) do
-        local fx = SpawnPrefab("spawn_fx_medium")
-        fx.Transform:SetPosition(beef.Transform:GetWorldPosition())
+		if not beef.components.health:IsDead() then
+            beef._marked_for_despawn = true -- Used inside beefalo prefab.
+            local dismounting = false
+			if beef.components.rideable ~= nil then
+				beef.components.rideable.canride = false
+                local rider = beef.components.rideable.rider
+                if rider and rider.components.rider then
+                    dismounting = true
+                    rider.components.rider:Dismount()
+                    rider:ListenForEvent("dismounted", on_player_dismounted)
+                end
+			end
+			if beef.components.health ~= nil then
+				beef.components.health:SetInvincible(true)
+			end
 
-        beef:PushEvent("despawn")
+            if not dismounting then
+                beef:PushEvent("despawn")
+            end
+        end
     end
 end
 

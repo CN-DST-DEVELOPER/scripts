@@ -7,7 +7,7 @@ local FADE_INTERVAL = TUNING.TOTAL_DAY_TIME * 5 / 64 --64 ticks for smallbyte
 
 local function OnFadeDirty(inst)
     local alpha = (64 - inst._fade:value()) / 65
-    inst.AnimState:OverrideMultColour(alpha, alpha, alpha, alpha)
+    inst.AnimState:OverrideMultColour(1, 1, 1, alpha)
 end
 
 local function UpdateFade(inst)
@@ -17,7 +17,7 @@ local function UpdateFade(inst)
     elseif TheWorld.ismastersim then
         inst:Remove()
     else
-        inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+        inst.AnimState:OverrideMultColour(1, 1, 1, 0)
     end
 end
 

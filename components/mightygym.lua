@@ -59,7 +59,7 @@ function MightyGym:CheckForWeight()
     for i=1, 2 do
         local item = inventory:GetItemInSlot(i)
         if item then
-            self.inst.AnimState:OverrideSymbol(slot_ids[i], item.components.symbolswapdata.build, item.components.symbolswapdata.symbol)
+            self:SetWeightSymbol(item, i)
             self.inst:AddTag("loaded")
         end
     end    
@@ -70,7 +70,6 @@ local GLASS_SOUND = "wolfgang1/mightygym/moonglass_place"
 local VEGGIE_SOUND = "wolfgang1/mightygym/vegetable_place"
 local POTATOSACK_SOUND = "wolfgang1/mightygym/sack_place"
 
--- TODO: veggies and chesspieces
 local MATERIAL_SOUNDS =
 {
     --Rock
@@ -106,6 +105,25 @@ function MightyGym:SwapWeight(item,swapitem)
     self.inst.components.mightygym:LoadWeight(swapitem, slot)
 end
 
+function MightyGym:SetWeightSymbol(weight, slot)
+    if weight.components.symbolswapdata ~= nil then
+        if weight.components.symbolswapdata.is_skinned then
+            self.inst.AnimState:OverrideItemSkinSymbol(slot_ids[slot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol, weight.GUID, "swap_cavein_boulder" ) --default should never be used
+        else
+            self.inst.sg:GoToState("place_weight",{slot=slot})
+            self.inst.AnimState:OverrideSymbol(slot_ids[slot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol)
+        end
+        if self.strongman then
+            if weight.components.symbolswapdata.is_skinned then
+                self.inst.AnimState:OverrideItemSkinSymbol(slot_ids[slot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol, weight.GUID, "swap_cavein_boulder" ) --default should never be used
+            else
+                self.strongman.AnimState:OverrideSymbol(slot_ids[slot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol)
+            end
+        end
+    end
+
+end
+
 function MightyGym:LoadWeight(weight, slot)
     local inventory = self.inst.components.inventory
     local selectedslot = nil
@@ -124,22 +142,8 @@ function MightyGym:LoadWeight(weight, slot)
         end
     end
 
-    if weight.components.symbolswapdata ~= nil then
-        if weight.components.symbolswapdata.is_skinned then
-            self.inst.AnimState:OverrideItemSkinSymbol(slot_ids[selectedslot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol, weight.GUID, "swap_cavein_boulder" ) --default should never be used
-        else
-            self.inst.sg:GoToState("place_weight",{slot=selectedslot})
-            self.inst.AnimState:OverrideSymbol(slot_ids[selectedslot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol)
-        end
-        if self.strongman then
-            if weight.components.symbolswapdata.is_skinned then
-                self.inst.AnimState:OverrideItemSkinSymbol(slot_ids[selectedslot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol, weight.GUID, "swap_cavein_boulder" ) --default should never be used
-            else
-                self.strongman.AnimState:OverrideSymbol(slot_ids[selectedslot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol)
-            end
-        end
-    end
-
+    self:SetWeightSymbol(weight, selectedslot)
+    
     self.inst:AddTag("loaded")
 
     local sound = POTATOSACK_SOUND
@@ -236,7 +240,7 @@ end
 
 function MightyGym:SetSkinModeOnGym(doer, skin_mode)
     local base_skin = self.skin_base_data[skin_mode] or doer.prefab
-    SetSkinsOnAnim( self.inst.AnimState, doer.prefab, base_skin, self.skins, skin_mode )
+    SetSkinsOnAnim( self.inst.AnimState, doer.prefab, base_skin, self.skins, self.monkey_curse, skin_mode )
 end
 
 function MightyGym:StartWorkout(doer)
@@ -245,15 +249,14 @@ function MightyGym:StartWorkout(doer)
         self.strongman.gym = self.inst
         self.strongman.components.strongman:DoWorkout(self.inst)
         
-        local hunger_level = "LOW"
-        if self.weight > 6 then
-            hunger_level  = "HIGH"
-        elseif self.weight > 3 then
-            hunger_level =  "MED"
-        end
-        self.strongman.components.hunger.burnratemodifiers:SetModifier(self.inst, TUNING.MIGHTYGYM_WORKOUT_HUNGER[hunger_level])
+        local hunger_level = self.weight > 6 and TUNING.MIGHTYGYM_WORKOUT_HUNGER.HIGH
+							or self.weight > 3 and TUNING.MIGHTYGYM_WORKOUT_HUNGER.MED
+							or TUNING.MIGHTYGYM_WORKOUT_HUNGER.LOW
+		
+        self.strongman.components.hunger.burnratemodifiers:SetModifier(self.inst, hunger_level)
         
         self.skins = doer.components.skinner:GetClothing()
+        self.monkey_curse = doer.components.skinner:GetMonkeyCurse()
         self.inst.AnimState:AssignItemSkins(doer.userid, self.skins.base or "", self.skins.body or "", self.skins.hand or "", self.skins.legs or "", self.skins.feet or "")
         
         self.skin_base_data = {}
@@ -298,7 +301,7 @@ function MightyGym:CharacterEnterGym(player)
     self.inst:AddTag("fireimmune")
     self.inst.enterdirection = player.Transform:GetRotation()
     -- SWAP THE PLAYER
-    player:ApplyScale("mightiness", 1)
+    player:ApplyAnimScale("mightiness", 1)
 
     player.AnimState:AddOverrideBuild("mighty_gym")
     player.AnimState:AddOverrideBuild("fx_wolfgang")
@@ -371,7 +374,7 @@ function MightyGym:CharacterExitGym(player)
                 player.AnimState:ClearOverrideBuild("mighty_gym")
                 player.AnimState:ClearOverrideBuild("fx_wolfgang")  
                 
-                player:ApplyScale("mightiness", player.components.mightiness:GetScale())
+                player:ApplyAnimScale("mightiness", player.components.mightiness:GetScale())
 
                 MakeCharacterPhysics(player, 75, .5)
                 if player.Physics then

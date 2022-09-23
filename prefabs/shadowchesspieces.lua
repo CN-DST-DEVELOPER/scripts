@@ -395,6 +395,8 @@ local function commonfn(name, sixfaced)
     inst:AddComponent("epicscare")
     inst.components.epicscare:SetRange(TUNING.SHADOW_CHESSPIECE_EPICSCARE_RANGE)
 
+    inst:AddComponent("drownable")
+
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", StopMusic)
     inst:ListenForEvent("levelup", OnLevelUp)

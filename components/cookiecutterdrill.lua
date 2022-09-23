@@ -5,7 +5,7 @@ local CookieCutterDrill = Class(function(self, inst)
 	self.drill_duration = 10
 
 	self.leak_type = "med_leak"
-	self.drill_damage = nil
+	self.leak_damage = nil
 
 	self.sound = "turnoftides/common/together/boat/damage"
 	self.sound_intensity = 0.8
@@ -42,11 +42,9 @@ function CookieCutterDrill:FinishDrilling()
 		if self.inst.components.eater ~= nil then
 			self.inst.components.eater.lasteattime = GetTime()
 		end
-
         if self.leak_damage and boat.components.hullhealth then
             boat.components.health:DoDelta(self.leak_damage, false, self.inst)
         end
-
 		boat:PushEvent("spawnnewboatleak", {pt = pt, leak_size = "med_leak", playsoundfx = true})
 	end
 end

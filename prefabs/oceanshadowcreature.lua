@@ -212,7 +212,9 @@ local function OnDeath(inst, data)
 end
 
 local function OnAlphaChanged(inst, alpha, most_alpha)
-    inst._ripples.AnimState:OverrideMultColour(alpha, alpha, alpha, alpha)
+    if inst._ripples ~= nil and inst._ripples:IsValid() then
+        inst._ripples.AnimState:OverrideMultColour(1, 1, 1, alpha)
+    end
 end
 
 local function OnAttackOther(inst)
@@ -285,17 +287,23 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:SetMultColour(1, 1, 1, .5)
 
-    inst._ripples = SpawnPrefab("oceanhorror_ripples")
-    inst._ripples.entity:SetParent(inst.entity)
-
-    -- this is purely view related
-    inst:AddComponent("transparentonsanity")
-    inst.components.transparentonsanity.onalphachangedfn = OnAlphaChanged
+    if not TheNet:IsDedicated() then
+        -- this is purely view related
+        inst:AddComponent("transparentonsanity")
+    end
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
+    end
+
+    inst._ripples = SpawnPrefab("oceanhorror_ripples")
+    inst._ripples.entity:SetParent(inst.entity)
+
+    if inst.components.transparentonsanity ~= nil then
+        inst.components.transparentonsanity.onalphachangedfn = OnAlphaChanged
+        inst.components.transparentonsanity:ForceUpdate()
     end
 
     inst.persists = false
@@ -353,12 +361,21 @@ local function fn()
     return inst
 end
 
+local function OnRipplesReplicated(inst)
+    local parent = inst.entity:GetParent()
+    if parent ~= nil and parent.prefab == "oceanhorror" and parent.components.transparentonsanity ~= nil then
+        parent._ripples = inst
+        parent.components.transparentonsanity.onalphachangedfn = OnAlphaChanged
+        parent.components.transparentonsanity:ForceUpdate()
+    end
+end
+
 local function ripplesfn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
-    --[[Non-networked entity]]
     inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
 
     inst.AnimState:SetBank("oceanhorror")
     inst.AnimState:SetBuild("shadow_oceanhorror")
@@ -371,9 +388,12 @@ local function ripplesfn()
 
     inst.entity:SetPristine()
 
-    -- if not TheWorld.ismastersim then
-    --     return inst
-    -- end
+    if not TheWorld.ismastersim then
+        inst.OnEntityReplicated = OnRipplesReplicated
+        return inst
+    end
+
+    inst.persists = false
 
     return inst
 end

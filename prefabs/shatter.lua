@@ -24,6 +24,11 @@ local function PlayShatterAnim(proxy)
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
 
+    local parent = proxy.entity:GetParent()
+    if parent ~= nil then
+        inst.entity:SetParent(parent.entity)
+    end
+
     inst.Transform:SetFromProxy(proxy.GUID)
 
     inst.AnimState:SetBank("frozen_shatter")

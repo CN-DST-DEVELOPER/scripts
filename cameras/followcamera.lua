@@ -43,6 +43,7 @@ function FollowCamera:SetDefault()
 
     self.zoomstep = 4
     self.distancetarget = 30
+    --self.lockdistance = nil
 
     self.mindist = 15
     self.maxdist = 50 --40
@@ -141,6 +142,10 @@ function FollowCamera:PopScreenHOffset(ref)
             return
         end
     end
+end
+
+function FollowCamera:LockDistance(lock)
+    self.lockdistance = lock or nil
 end
 
 function FollowCamera:GetDistance()
@@ -275,7 +280,9 @@ function FollowCamera:Snap()
     self.currentscreenxoffset = #self.screenoffsetstack > 0 and self.screenoffsetstack[1].xoffset or 0
     self.currentpos.x, self.currentpos.y, self.currentpos.z = self.targetpos:Get()
     self.heading = self.headingtarget
-    self.distance = self.distancetarget
+    if not self.lockdistance then
+        self.distance = self.distancetarget
+    end
 
     self.pitch = lerp(self.mindistpitch, self.maxdistpitch, (self.distance - self.mindist) / (self.maxdist - self.mindist))
 

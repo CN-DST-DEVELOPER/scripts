@@ -357,6 +357,7 @@ local function base_land_wobster(build_name, nameoverride, fish_def, fadeout, co
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot(inst.fish_def.loot)
+    inst.components.lootdropper.forcewortoxsouls = true -- NOTES(JBK): Work around the issue that Wobster has a loot dropper component but some times does not drop anything when it dies.
 
     inst:AddComponent("weighable")
 	SetupWeighable(inst)

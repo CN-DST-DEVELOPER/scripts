@@ -538,7 +538,7 @@ end
 local function PushFXParams(inst, data)
     if inst._fx ~= nil then
         local alpha = data.alpha * .2
-        inst._fx.AnimState:SetMultColour(alpha, alpha, alpha, alpha)
+        inst._fx.AnimState:SetMultColour(1, 1, 1, alpha)
         inst._fx.Transform:SetRotation(data.rot)
     end
 end

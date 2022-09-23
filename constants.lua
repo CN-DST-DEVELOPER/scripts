@@ -1,6 +1,8 @@
 require "util"
 local TechTree = require("techtree")
 
+local IS_BETA = BRANCH == "staging" --or BRANCH == "dev"
+
 PI = 3.14159
 PI2 = PI*2
 DEGREES = PI/180
@@ -10,6 +12,8 @@ TILE_SCALE = 4
 
 RESOLUTION_X = 1280
 RESOLUTION_Y = 720
+
+PLAYER_REVEAL_RADIUS = 30.0 -- NOTES(JBK): Keep in sync with MiniMapRenderer.cpp!
 
 MAX_FE_SCALE = 3 --Default if you don't call SetMaxPropUpscale
 MAX_HUD_SCALE = 1.25
@@ -170,6 +174,16 @@ CONTROL_MENU_MISC_4 = 71  -- R
 CONTROL_INSPECT_SELF = 72 -- Keyboard self inspect [I]
 
 CONTROL_SERVER_PAUSE = 73
+
+CONTROL_CRAFTING_MODIFIER = 74		-- this + CONTROL_OPEN_CRAFTING to open with the search box ready to type in
+CONTROL_CRAFTING_PINLEFT = 75
+CONTROL_CRAFTING_PINRIGHT = 76
+
+CONTROL_INV_11 = 77 -- Sequence ordering difference but makes backwards compatability easier.
+CONTROL_INV_12 = 78
+CONTROL_INV_13 = 79
+CONTROL_INV_14 = 80
+CONTROL_INV_15 = 81
 
 CONTROL_CUSTOM_START = 100
 
@@ -351,12 +365,18 @@ DST_CHARACTERLIST =
     "webber",
     "winona",
     "warly",
-    --DLC chars:
     "wortox",
     "wormwood",
     "wurt",
     "walter",
     "wanda",
+    "wonkey", --hidden internal char
+}
+
+-- This is used for seamless swap characters only and can not spawn in as these characters.
+SEAMLESSSWAP_CHARACTERLIST =
+{
+    "wonkey",
 }
 
 CHARACTER_VIDEOS =
@@ -365,8 +385,8 @@ CHARACTER_VIDEOS =
 	willow = {"https://bit.ly/3rFOkU3"},
 	wendy = {"https://bit.ly/3fI3PbR"},
 	wolfgang = {"https://klei.gg/33A9mNx"},
---	wx78 = {},
---	wickerbottom = {},
+	wx78 = {"https://klei.gg/3F9qqc1"},
+	wickerbottom = {"https://klei.gg/3bCaOTL"},
 	wes = {"https://bit.ly/2QLFpn4"},
 	waxwell = {"https://bit.ly/3rF0UD0"},
 	woodie = {"https://bit.ly/3sHhUK1"},
@@ -381,6 +401,14 @@ CHARACTER_VIDEOS =
 	wanda = {"https://klei.gg/dst-wanda-short"},
 }
 
+PLAYER_SWAP_TRANSITIONS = 
+{
+	wonkey = 
+	{
+		transfrom_state = "changetomonkey_pst",
+		restore_state = "changefrommonkey_pst",
+	},
+}
 
 require("prefabskins")
 require("clothing")
@@ -558,13 +586,11 @@ OCEAN_DEPTH =
     VERY_DEEP = 4,
 }
 
--- See map_painter.h
--- PUBLIC USE SPACE FOR MODS is 70 to 89 -- Mods using values outside of this range may find themselfs conflicting with future official content
+--this table is deprecated, nothing should add into this table, or reference this table at all.
 GROUND =
 {
-	INVALID = 255,
+	INVALID = 65535,
     IMPASSABLE = 1,
-
     ROAD = 2,
     ROCKY = 3,
     DIRT = 4,
@@ -576,8 +602,6 @@ GROUND =
 	WOODFLOOR = 10,
 	CARPET = 11,
 	CHECKER = 12,
-
-	-- CAVES
 	CAVE = 13,
 	FUNGUS = 14,
 	SINKHOLE = 15,
@@ -591,34 +615,23 @@ GROUND =
     TRIM_GLOW = 23,
 	FUNGUSRED = 24,
 	FUNGUSGREEN = 25,
-
-	--EXPANDED FLOOR TILES
 	DECIDUOUS = 30,
 	DESERT_DIRT = 31,
 	SCALE = 32,
-
 	LAVAARENA_FLOOR = 33,
 	LAVAARENA_TRIM = 34,
-
 	QUAGMIRE_PEATFOREST = 35,
 	QUAGMIRE_PARKFIELD = 36,
 	QUAGMIRE_PARKSTONE = 37,
 	QUAGMIRE_GATEWAY = 38,
 	QUAGMIRE_SOIL = 39,
 	QUAGMIRE_CITYSTONE = 41,
-
 	PEBBLEBEACH = 42,
 	METEOR = 43,
     SHELLBEACH = 44,
-
     ARCHIVE = 45,
     FUNGUSMOON = 46,
-
     FARMING_SOIL = 47,
-
-	-- PUBLIC USE SPACE FOR MODS is 70 to 109 --
-
-    --NOISE -- from 110 to 127 -- TODO: move noise tile range to > 255
 	FUNGUSMOON_NOISE = 120,
 	METEORMINE_NOISE = 121,
 	METEORCOAST_NOISE = 122,
@@ -627,9 +640,7 @@ GROUND =
 	GROUND_NOISE = 125,
 	CAVE_NOISE = 126,
 	FUNGUS_NOISE = 127,
-
-	UNDERGROUND = 128, -- todo: incrase this to OCEAN_START once WALL_X have been removed
-
+	UNDERGROUND = 128,
 	WALL_ROCKY = 151,
 	WALL_DIRT = 152,
 	WALL_MARSH = 153,
@@ -643,13 +654,8 @@ GROUND =
 	WALL_HUNESTONE_GLOW = 161,
 	WALL_STONEEYE = 162,
 	WALL_STONEEYE_GLOW = 163,
-
-	FAKE_GROUND = 200, -- todo: change to 254 and retrofit maps
-
-	-- OCEAN TILES [201, 247]
-	OCEAN_START = 201, -- enum for checking if tile is ocean water
-
-	-- KLEI OCEAN TILES [201, 230]
+	FAKE_GROUND = 200,
+	OCEAN_START = 201,
 	OCEAN_COASTAL = 201,
 	OCEAN_COASTAL_SHORE = 202,
 	OCEAN_SWELL = 203,
@@ -657,23 +663,77 @@ GROUND =
 	OCEAN_BRINEPOOL = 205,
 	OCEAN_BRINEPOOL_SHORE = 206,
 	OCEAN_HAZARDOUS = 207,
-    OCEAN_WATERLOG = 208, 
-
-	-- MODS OCEAN TILES [231, 247]  <--PUBLIC USE SPACE FOR MODS --
-
-	OCEAN_END = 247, -- enum for checking if tile is ocean water
-
---	STILL_WATER_SHALLOW = 130,
---	STILL_WATER_DEEP = 131,
---	MOVING_WATER_SHALLOW = 132,
---	MOVING_WATER_DEEP = 133,
---	SALT_WATER_SHALLOW = 134,
---	SALT_WATER_DEEP = 135,
+    OCEAN_WATERLOG = 208,
+	OCEAN_END = 247,
 }
-
--- deprecated ground types
 GROUND.OCEAN_REEF = GROUND.OCEAN_BRINEPOOL
 GROUND.OCEAN_REEF_SHORE = GROUND.OCEAN_BRINEPOOL_SHORE
+
+--these are filled in via AddTile
+GROUND_NAMES = {}
+TERRAFORM_IMMUNE = {}
+GROUND_FLOORING = {} --These tiles are flooring (stuff shouldn't grow on them)
+GROUND_HARD = {} --not plantable
+
+FALLOFF_IDS = {
+    FALLOFF = 1,
+    DOCK_FALLOFF = 2,
+}
+
+GROUND_CREEP_IDS = {
+    WEBCREEP = 1,
+}
+
+INVERTED_WORLD_TILES = {
+    [65535] = "INVALID"
+}
+WORLD_TILES = {
+    INVALID = 65535,
+}
+
+function GetWorldTileMap()
+    local world_tile_map = {}
+    for name, id in pairs(WORLD_TILES) do
+        world_tile_map[name] = id
+    end
+    for name, id in pairs(GROUND) do
+        if not WORLD_TILES[name] and not INVERTED_WORLD_TILES[id] then
+            world_tile_map[name] = id
+        end
+    end
+    return world_tile_map
+end
+
+LEGACY_WORLD_TILES_LAND_START = 2
+LEGACY_WORLD_TILES_LAND_END = 127
+
+LEGACY_WORLD_TILES_NOISE_START = 110
+LEGACY_WORLD_TILES_NOISE_END = 127
+
+WORLD_TILES_LAND_START = 256
+WORLD_TILES_LAND_SIZE = 8192
+
+WORLD_TILES_LAND_ONLY_END = WORLD_TILES_LAND_START + WORLD_TILES_LAND_SIZE
+
+WORLD_TILES_NOISE_START = WORLD_TILES_LAND_ONLY_END + 1
+WORLD_TILES_NOISE_SIZE = 2048
+WORLD_TILES_NOISE_END = WORLD_TILES_NOISE_START + WORLD_TILES_NOISE_SIZE
+
+WORLD_TILES_LAND_END = WORLD_TILES_NOISE_END
+
+LEGACY_WORLD_TILES_OCEAN_START = 201
+LEGACY_WORLD_TILES_OCEAN_END = 247
+
+WORLD_TILES_OCEAN_START = WORLD_TILES_LAND_END + 1
+WORLD_TILES_OCEAN_SIZE = 4096
+WORLD_TILES_OCEAN_END = WORLD_TILES_OCEAN_START + WORLD_TILES_OCEAN_SIZE
+
+LEGACY_WORLD_TILES_IMPASSABLE_START = 128
+LEGACY_WORLD_TILES_IMPASSABLE_END = 200
+
+WORLD_TILES_IMPASSABLE_START = WORLD_TILES_OCEAN_END + 1
+WORLD_TILES_IMPASSABLE_SIZE = 4096
+WORLD_TILES_IMPASSABLE_END = WORLD_TILES_IMPASSABLE_START + WORLD_TILES_IMPASSABLE_SIZE
 
 ---------------------------------------------------------
 SPECIAL_EVENTS =
@@ -689,7 +749,9 @@ SPECIAL_EVENTS =
     YOTB = "year_of_the_beefalo",
     YOT_CATCOON = "year_of_the_catcoon",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.YOT_CATCOON
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+--WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.YOT_CATCOON or SPECIAL_EVENTS.NONE
+WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
 {
@@ -846,17 +908,48 @@ local FESTIVAL_EVENT_INFO =
 ---------------------------------------------------------
 -- Refers to holiday-specific events.
 function IsSpecialEventActive(event)
-    return WORLD_SPECIAL_EVENT == event
+    return WORLD_SPECIAL_EVENT == event or WORLD_EXTRA_EVENTS[event] == true
 end
 
 function IsAnySpecialEventActive()
-    return WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.NONE
+    return WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.NONE or not IsTableEmpty(WORLD_EXTRA_EVENTS)
+end
+
+function GetActiveSpecialEventCount()
+    return (WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.NONE and 1 or 0) + GetTableSize(WORLD_EXTRA_EVENTS)
+end
+
+function GetFirstActiveSpecialEvent()
+    if WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.NONE then
+        return WORLD_SPECIAL_EVENT
+    end
+    return next(WORLD_EXTRA_EVENTS), nil --, nil prevents the value from getting returned by next
+end
+
+function GetAllActiveEvents(special_event, extra_events)
+    local all_events = {}
+    if special_event then
+        all_events[special_event] = true
+    end
+    for event in pairs(extra_events or {}) do
+        all_events[event] = true
+    end
+    all_events[SPECIAL_EVENTS.NONE] = nil
+    return all_events
 end
 
 ---------------------------------------------------------
 -- Checks if any of the "Year of the <creature>" events are active
 function IsAny_YearOfThe_EventActive()
-	return IS_YEAR_OF_THE_SPECIAL_EVENTS[WORLD_SPECIAL_EVENT]
+	if IS_YEAR_OF_THE_SPECIAL_EVENTS[WORLD_SPECIAL_EVENT] then
+        return true
+    end
+    for special_event in pairs(WORLD_EXTRA_EVENTS) do
+        if IS_YEAR_OF_THE_SPECIAL_EVENTS[special_event] then
+            return true
+        end
+    end
+    return false
 end
 
 function GetSpecialEventSkinTag()
@@ -942,11 +1035,15 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE"
-    --"dontstarve/music/music_moonstorm_FE"
-    --"dontstarve/music/music_FE_webber"
+    "dontstarve/music/music_FE_wickerbottom"
+    --"dontstarve/music/music_FE"
+    --"dontstarve/music/music_FE_pirates"
+    --"dontstarve/music/music_FE_WX"
+    --"dontstarve/music/music__moonstorm_FE"
+    --"dontstarve/music/musicFE_webber"
     --"dontstarve/music/music_FE_wanda"
     --"terraria1/common/music_main_eot"
+
 
 ---------------------------------------------------------
 NUM_HALLOWEENCANDY = 14
@@ -1002,6 +1099,7 @@ TECH =
 
     FOODPROCESSING_ONE = { FOODPROCESSING = 1 },
 	FISHING_ONE = { FISHING = 1 },
+	FISHING_TWO = { FISHING = 2 },
 
 	HERMITCRABSHOP_ONE = { HERMITCRABSHOP = 1 },
 	HERMITCRABSHOP_THREE = { HERMITCRABSHOP = 3 },
@@ -1009,6 +1107,8 @@ TECH =
     HERMITCRABSHOP_SEVEN = { HERMITCRABSHOP = 7 },
 
     TURFCRAFTING_ONE = { TURFCRAFTING = 1 },
+    TURFCRAFTING_TWO = { TURFCRAFTING = 2 },
+	MASHTURFCRAFTING_TWO = { MASHTURFCRAFTING = 2},
 
 	WINTERSFEASTCOOKING_ONE = { WINTERSFEASTCOOKING = 1 },
 
@@ -1023,7 +1123,10 @@ TECH =
 
     LOST = { MAGIC = 10, SCIENCE = 10, ANCIENT = 10 },
 
-    SPIDERCRAFT_ONE = { SPIDERCRAFT = 1 }
+    SPIDERCRAFT_ONE = { SPIDERCRAFT = 1 },
+
+    ROBOTMODULECRAFT_ONE = { ROBOTMODULECRAFT = 1 },
+    BOOKCRAFT_ONE = { BOOKCRAFT = 1 },
 }
 
 -- See cell_data.h
@@ -1314,7 +1417,8 @@ ANIM_SORT_ORDER =
 	OCEAN_UNDERWATER = 0,
 	OCEAN_WAVES = 1,
 	OCEAN_BOAT = 2,
-	OCEAN_SKYSHADOWS = 3,
+    OCEAN_BOAT_BUMPERS = 3,
+	OCEAN_SKYSHADOWS = 4,
 }
 
 ANIM_SORT_ORDER_BELOW_GROUND =
@@ -1560,6 +1664,8 @@ UniformVariables = {}
 SamplerEffects = {}
 PostProcessorEffects = {}
 
+TileGroups = {}
+
 RESET_ACTION =
 {
 	LOAD_FRONTEND = 0,
@@ -1573,6 +1679,8 @@ ShadeTypes = {}
 
 HUD_ATLAS = "images/hud.xml"
 UI_ATLAS = "images/ui.xml"
+CRAFTING_ATLAS = "images/crafting_menu.xml"
+CRAFTING_ICONS_ATLAS = "images/crafting_menu_icons.xml"
 
 SNOW_THRESH = .015
 
@@ -1580,7 +1688,7 @@ VIBRATION_CAMERA_SHAKE = 0
 VIBRATION_BLOOD_FLASH = 1
 VIBRATION_BLOOD_OVER = 2
 
-NUM_SKIN_PRESET_SLOTS = 10
+NUM_SKIN_PRESET_SLOTS = 25
 
 --Neither of these are used anymore, kept here only for mods.
 NUM_SAVE_SLOTS = 5
@@ -1622,6 +1730,8 @@ MATERIALS =
     SCULPTURE = "sculpture",
     FOSSIL = "fossil",
     MOON_ALTAR = "moon_altar",
+    KELP = "kelp",
+    SHELL = "shell",
 }
 
 UPGRADETYPES =
@@ -1894,15 +2004,15 @@ DARKGREY = {.12, .12, .12, 1}
 
 -- A coherent palette for UI elements
 UICOLOURS = {
-    GOLD_CLICKABLE = RGB(215, 210, 157, 255), -- interactive text & menu
-    GOLD_FOCUS = RGB(251, 193, 92, 255), -- menu active item
-    GOLD_SELECTED = RGB(245, 243, 222, 255), -- titles and non-interactive important text
-    GOLD_UNIMPORTANT = RGB(213, 213, 203, 255), -- non-interactive non-important text
-    HIGHLIGHT_GOLD = RGB(243, 217, 161, 255),
+    GOLD_CLICKABLE = RGB(215, 210, 157), -- interactive text & menu
+    GOLD_FOCUS = RGB(251, 193, 92), -- menu active item
+    GOLD_SELECTED = RGB(245, 243, 222), -- titles and non-interactive important text
+    GOLD_UNIMPORTANT = RGB(213, 213, 203), -- non-interactive non-important text
+    HIGHLIGHT_GOLD = RGB(243, 217, 161),
     GOLD = GOLD,
     BROWN_MEDIUM = RGB(107, 84, 58),
     BROWN_DARK = RGB(80, 61, 39),
-    BLUE = RGB(80, 143, 244, 255),
+    BLUE = RGB(80, 143, 244),
     GREY = GREY,
     BLACK = BLACK,
     WHITE = WHITE,
@@ -2073,8 +2183,8 @@ else
         "forest",
         "cave",
     }
-    assert(SERVER_LEVEL_LOCATIONS[1] == "forest", "Invalid server start level location.")
 end
+assert(BRANCH == "dev" or SERVER_LEVEL_LOCATIONS[1] == "forest", "Invalid server start level location.")
 
 EVENTSERVER_LEVEL_LOCATIONS =
 {
@@ -2100,6 +2210,9 @@ SERVER_LEVEL_CONFIGS =
 		shard_link = true,
 	},
 }
+
+-- Mirrors constant from CloudSaves.h
+CLOUD_SAVES_SAVE_OFFSET = 100000
 
 COMMAND_PERMISSION = {
     ADMIN = "ADMIN", -- only admins see and can activate
@@ -2205,8 +2318,8 @@ INVENTORY_PROGRESS =
 	CHECK_EVENT = 2,
 	CHECK_DLC = 3,
 	CHECK_DAILY_GIFT = 4,
-	CHECK_COOKBOOK = 5,
-	CHECK_PLANTREGISTRY = 6,
+	CHECK_PENDINGKEYVALUESTORES = 5,
+	CHECK_KEYVALUESTORES = 6,
 	CHECK_INVENTORY = 7,
 }
 
@@ -2313,4 +2426,75 @@ STORM_TYPES =
     NONE = 0,
     SANDSTORM = 1,
     MOONSTORM = 2,
+}
+
+LOADING_SCREEN_TIP_OPTIONS =
+{
+    ALL = 1,
+    TIPS_ONLY = 2,
+    LORE_ONLY = 3,
+    NONE = 4,
+}
+
+LOADING_SCREEN_TIP_CATEGORIES =
+{
+    CONTROLS = 1,
+    SURVIVAL = 2,
+    LORE = 3,
+    LOADING_SCREEN = 4,
+    OTHER = 5,
+}
+
+LOADING_SCREEN_TIP_ICONS =
+{
+    CONTROLS = { atlas = "images/loading_screen_icons.xml", icon = "icon_tooltips.tex" },
+    SURVIVAL = { atlas = "images/loading_screen_icons.xml", icon = "icon_survival.tex" },
+    LORE = { atlas = "images/loading_screen_icons.xml", icon = "icon_lore.tex" },
+    LOADING_SCREEN = { atlas = "images/loading_screen_icons.xml", icon = "icon_lore.tex" },
+    OTHER = { atlas = "images/loading_screen_icons.xml", icon = "icon_survival.tex" },
+}
+
+LOADING_SCREEN_TIP_CATEGORY_WEIGHTS_START =
+{
+    CONTROLS = 4,
+    SURVIVAL = 3,
+    LORE = 1,
+    LOADING_SCREEN = 2,
+    OTHER = 0,
+}
+
+LOADING_SCREEN_TIP_CATEGORY_WEIGHTS_END =
+{
+    CONTROLS = 0.5,
+    SURVIVAL = 2,
+    LORE = 4,
+    LOADING_SCREEN = 3.5,
+    OTHER = 0,
+}
+
+LOADING_SCREEN_CONTROL_TIP_KEYS =
+{
+    TIP_ATTACK = { attack = CONTROL_ATTACK },
+    TIP_FORCE_ATTACK = { modifier = CONTROL_FORCE_ATTACK, attack = CONTROL_ATTACK },
+    TIP_HOLD_INSPECT = { inspect = CONTROL_FORCE_INSPECT},
+    TIP_HOLD_ACTION = { action = CONTROL_ACTION },
+    TIP_HOLD_PRIMARY = { primary = CONTROL_ATTACK },
+    TIP_HOLD_MOUSE = { primary = CONTROL_PRIMARY },
+    TIP_HALF_STACK = { modifier = CONTROL_FORCE_STACK, primary = CONTROL_PRIMARY },
+    TIP_DROP_ITEMS = { modifier = CONTROL_FORCE_TRADE, secondary = CONTROL_SECONDARY },
+    TIP_ROTATE_CAMERA = { rotateleft = CONTROL_ROTATE_LEFT, rotateright = CONTROL_ROTATE_RIGHT },
+    TIP_SHOW_MAP = { map = CONTROL_MAP },
+    TIP_INSPECT_SELF = { inspectself = CONTROL_INSPECT_SELF },
+    TIP_CHAT = { chat = CONTROL_TOGGLE_SAY, whisper = CONTROL_TOGGLE_WHISPER },
+    TIP_PLAYER_STATUS = { playerstatus = CONTROL_SHOW_PLAYER_STATUS },
+    TIP_INVENTORY_SLOTS = { inv_0 = CONTROL_INV_10, inv_9 = CONTROL_INV_9 },
+}
+
+-- When using a controller or on console, some control IDs are different than on non-console, but use the same tips.
+LOADING_SCREEN_CONTROLLER_ID_LOOKUP =
+{
+    [CONTROL_ATTACK] = CONTROL_CONTROLLER_ATTACK,
+    [CONTROL_ACTION] = CONTROL_CONTROLLER_ACTION,
+    [CONTROL_FORCE_INSPECT] = CONTROL_INSPECT,
+    [CONTROL_SHOW_PLAYER_STATUS] = CONTROL_MENU_MISC_4,
 }

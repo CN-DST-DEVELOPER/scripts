@@ -71,10 +71,7 @@ local function GetSpawnPoint(pt,platform)
     if TheWorld.has_ocean then
         local function TestSpawnPoint(offset)
             local spawnpoint_x, spawnpoint_y, spawnpoint_z = (pt + offset):Get()
-            local tile = _map:GetTileAtPoint(spawnpoint_x, spawnpoint_y, spawnpoint_z)
-            local allow_water = true
-            return IsOceanTile(tile) and
-                   tile ~= GROUND.OCEAN_COASTAL_SHORE and
+            return _map:IsSurroundedByWater(spawnpoint_x, spawnpoint_y, spawnpoint_z, 2) and
                    #TheSim:FindEntities(spawnpoint_x, spawnpoint_y, spawnpoint_z, RANGE-SHORTRANGE, nil, nil, SPAWNPOINT_1_ONEOF_TAGS) <= 0 and
                    #TheSim:FindEntities(spawnpoint_x, spawnpoint_y, spawnpoint_z, SHORTRANGE, nil, SPAWNPOINT_2_ONEOF_TAGS) <= 0
         end

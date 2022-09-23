@@ -184,7 +184,7 @@ end
 
 --------------------------------------------------------------------------
 
-local function makebird(name, soundname, no_feather, bank, custom_loot_setup, water_bank, tacklesketch)
+local function makebird(name, soundname, no_feather, bank, custom_loot_setup, water_bank)
     local assets =
     {
         Asset("ANIM", "anim/crow.zip"),
@@ -223,10 +223,6 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
     if name == "canary" then
         table.insert(prefabs, "canary_poisoned")
     end
-
-	if tacklesketch then
-		table.insert(prefabs, type(tacklesketch) == "string" and tacklesketch or ("oceanfishingbobber_"..name.."_tacklesketch"))
-	end
 
 	local soundbank = "dontstarve"
 	if type(soundname) == "table" then
@@ -307,9 +303,6 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
 		else
 			if not no_feather then
 				inst.components.lootdropper:AddRandomLoot("feather_"..name, name == "canary" and .1 or 1)
-			end
-			if tacklesketch then
-				inst.components.lootdropper:AddChanceLoot(type(tacklesketch) == "string" and tacklesketch or ("oceanfishingbobber_"..name.."_tacklesketch"), .01)
 			end
 			inst.components.lootdropper:AddRandomLoot(name == "quagmire_pigeon" and "quagmire_smallmeat" or "smallmeat", 1)
 			inst.components.lootdropper.numrandomloot = 1
@@ -418,9 +411,9 @@ local function puffin_loot_setup(inst, prefab_deps)
     table.insert(prefab_deps, "feather_crow")
 end
 
-return makebird("crow", "crow", nil, nil, nil, nil, true),
-    makebird("robin", "robin", nil, nil, nil, nil, true),
-    makebird("robin_winter", "junco", nil, nil, nil, nil, true),
-    makebird("canary", "canary", nil, nil, nil, nil, true),
+return makebird("crow", "crow"),
+    makebird("robin", "robin"),
+    makebird("robin_winter", "junco"),
+    makebird("canary", "canary"),
     makebird("quagmire_pigeon", "quagmire_pigeon", true),
     makebird("puffin", {name="puffin", bank="turnoftides"}, true, "puffin", puffin_loot_setup, "puffin_water")

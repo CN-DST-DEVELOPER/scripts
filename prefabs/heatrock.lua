@@ -233,7 +233,7 @@ local function fn()
     inst._onownerchange = function() OnOwnerChange(inst) end
     --
 
-    UpdateImages(inst, 1)
+    UpdateImages(inst, 3)
     OnOwnerChange(inst)
 
     MakeHauntableLaunchAndSmash(inst)

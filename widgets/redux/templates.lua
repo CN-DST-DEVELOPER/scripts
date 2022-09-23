@@ -1129,7 +1129,7 @@ function TEMPLATES.LabelTextbox(labeltext, fieldtext, width_label, width_field, 
 end
 
 -- Spinner with a label beside it
-function TEMPLATES.LabelSpinner(labeltext, spinnerdata, width_label, width_spinner, height, spacing, font, font_size, horiz_offset, onchanged_fn, colour)
+function TEMPLATES.LabelSpinner(labeltext, spinnerdata, width_label, width_spinner, height, spacing, font, font_size, horiz_offset, onchanged_fn, colour, tooltip_text)
     width_label = width_label or 220
     width_spinner = width_spinner or 150
     height = height or 40
@@ -1150,11 +1150,13 @@ function TEMPLATES.LabelSpinner(labeltext, spinnerdata, width_label, width_spinn
 
     wdg.focus_forward = wdg.spinner
 
+    wdg.tooltip_text = tooltip_text
+
     return wdg
 end
 
 -- Spinner of numbers with a label beside it
-function TEMPLATES.LabelNumericSpinner(labeltext, min, max, width_label, width_spinner, height, spacing, font, font_size, horiz_offset)
+function TEMPLATES.LabelNumericSpinner(labeltext, min, max, width_label, width_spinner, height, spacing, font, font_size, horiz_offset, tooltip_text)
     width_label = width_label or 220
     width_spinner = width_spinner or 150
     height = height or 40
@@ -1175,6 +1177,8 @@ function TEMPLATES.LabelNumericSpinner(labeltext, min, max, width_label, width_s
     wdg.spinner:SetTextColour(UICOLOURS.GOLD)
 
     wdg.focus_forward = wdg.spinner
+
+    wdg.tooltip_text = tooltip_text
 
     return wdg
 end
@@ -1199,7 +1203,7 @@ function TEMPLATES.LabelButton(onclick, labeltext, buttontext, width_label, widt
 end
 
 -- checkbox button with a label beside it
-function TEMPLATES.OptionsLabelCheckbox(onclick, labeltext, checked, width_label, width_button, height, checkbox_size, spacing, font, font_size, horiz_offset)
+function TEMPLATES.OptionsLabelCheckbox(onclick, labeltext, checked, width_label, width_button, height, checkbox_size, spacing, font, font_size, horiz_offset, tooltip_text)
     local offset = horiz_offset or 0
     local total_width = width_label + width_button + spacing
     local wdg = Widget("labelbutton")
@@ -1212,6 +1216,8 @@ function TEMPLATES.OptionsLabelCheckbox(onclick, labeltext, checked, width_label
     wdg.button:SetPosition((total_width/2)-(width_button/2) + offset, 0)
 
     wdg.focus_forward = wdg.button
+
+    wdg.tooltip_text = tooltip_text
 
     return wdg
 end
@@ -1269,7 +1275,7 @@ end
 
 function TEMPLATES.CharacterSpinner(onchanged_fn, puppet, user_profile)
     local hero_data = {}
-    for i,hero in ipairs(GetActiveCharacterList()) do
+    for i,hero in ipairs(GetFEVisibleCharacterList()) do
         table.insert(hero_data, {
                 text = STRINGS.CHARACTER_NAMES[hero] or "",
                 colour = nil,

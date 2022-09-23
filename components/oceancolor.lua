@@ -34,6 +34,14 @@ function OceanColor:Initialize(has_ocean)
     end
 end
 
+function OceanColor:OnPostInit()
+	--V2C: Hack to force it dirty
+	--     Was bugged on Clients when loading into daytime (blend = 0),
+	--     which means it won't be dirty and correct itself until dusk.
+	TheWorld.Map:SetOceanTextureBlendAmount(1)
+	TheWorld.Map:SetOceanTextureBlendAmount(self.current_ocean_texture_blend)
+end
+
 function OceanColor:OnWallUpdate(dt)
     if self.lerp >= 1 then return end
 

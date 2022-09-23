@@ -39,7 +39,7 @@ local function fn()
 
     inst:AddComponent("repairer")
     inst.components.repairer.repairmaterial = MATERIALS.WOOD
-    inst.components.repairer.healthrepairvalue = TUNING.REPAIR_BOARDS_HEALTH
+    inst.components.repairer.healthrepairvalue = TUNING.REPAIR_LOGS_HEALTH * 2
     inst.components.repairer.boatrepairsound = "turnoftides/common/together/boat/repair_with_wood"
 
     inst:AddComponent("stackable")
@@ -48,11 +48,11 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst:AddComponent("inspectable")
 
-    MakeSmallBurnable(inst, TUNING.LARGE_BURNTIME)
+    MakeSmallBurnable(inst, TUNING.MED_BURNTIME)
     MakeSmallPropagator(inst)
 
     inst:AddComponent("fuel")
-    inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
+    inst.components.fuel.fuelvalue = TUNING.MED_FUEL * 2 -- 2x logs
 
     MakeHauntableLaunch(inst)
 

@@ -39,6 +39,9 @@ local TimeMultipliers = {
     ["mushtree_moon"] = function()
         return TUNING.MOONMUSHTREE_REGROWTH_TIME_MULT * ((not TheWorld.state.iswinter and 0) or 1)
     end,
+    ["palmconetree"] = function()
+        return TUNING.PALMCONETREE_REGROWTH_TIME_MULT * ((TheWorld.state.iswinter and 0) or 1)
+    end,
 }
 
 local function DoUpdate()

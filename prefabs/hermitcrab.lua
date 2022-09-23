@@ -241,7 +241,7 @@ local function OnLoadPostPass(inst, new_ents, data)
 		inst.components.craftingstation:LearnItem("winter_ornament_boss_pearl", "hermitshop_winter_ornament_boss_pearl")
 	end
 
-    if inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_3].complete then
+    if inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_3].complete and IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
 		inst.components.craftingstation:LearnItem("winter_ornament_boss_hermithouse", "hermitshop_winter_ornament_boss_hermithouse")
 	end
 end
@@ -748,7 +748,9 @@ local function initfriendlevellisteners(inst)
             inst.components.friendlevels:CompleteTask(TASKS.FIX_HOUSE_2, data.doer)
         else
             inst.components.friendlevels:CompleteTask(TASKS.FIX_HOUSE_3, data.doer)
-			inst.components.craftingstation:LearnItem("winter_ornament_boss_hermithouse", "hermitshop_winter_ornament_boss_hermithouse")
+			if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
+				inst.components.craftingstation:LearnItem("winter_ornament_boss_hermithouse", "hermitshop_winter_ornament_boss_hermithouse")
+			end
         end
     end)
 

@@ -18,6 +18,7 @@ function Growable:GetDebugString()
 end
 
 local function ongrow(inst, self)
+    self.task = nil
     self:DoGrowth()
 end
 
@@ -96,6 +97,8 @@ function Growable:DoGrowth()
 
 		if self.stage < #self.stages or self.loopstages then
 			self:StartGrowing()
+		else
+			self:StopGrowing()
 		end
 	end
 

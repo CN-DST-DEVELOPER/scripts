@@ -137,7 +137,6 @@ function DefaultSkinSelectionPopup:GetSkinsList( item )
     return skins_list
 end
 
---TheNet:IsOnlineMode()
 function DefaultSkinSelectionPopup:GetSkinOptions( item )
     local skin_options = {}
 

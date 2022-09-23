@@ -103,7 +103,10 @@ function PeriodicSpawner:TrySpawn(prefab)
         end
     end
     local inst = nil
-    if not self.inst:GetCurrentPlatform() and not TheWorld.Map:IsVisualGroundAtPoint(x,y,z) and TheWorld.components.flotsamgenerator then
+    --V2C: using TheWorld.Map:GetPlatformAtPoint(x, z) instead of self.inst:GetCurrentPlatform()
+    --     because the spawner may not detect platforms.
+    --     e.g. Glommer is flying, and does not detect platforms, but spawns glommerfuel.
+    if TheWorld.components.flotsamgenerator ~= nil and not TheWorld.Map:IsVisualGroundAtPoint(x, y, z) and not TheWorld.Map:GetPlatformAtPoint(x, z) then
         inst = TheWorld.components.flotsamgenerator:SpawnFlotsam(Vector3(x,y,z),prefab,true)
     else
         inst = SpawnPrefab(prefab)

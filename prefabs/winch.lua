@@ -221,8 +221,11 @@ end
 local function GetCurrentWinchDepth(inst)
 	local tile = TheWorld.Map:GetTileAtPoint(inst.Transform:GetWorldPosition())
 	if tile then
-		local depthcategory = GetTileInfo(tile).ocean_depth
-		return math.max(depthcategory and TUNING.ANCHOR_DEPTH_TIMES[depthcategory] or 0, PERCEIVED_DEPTH_MINIMUM)
+		local tileinfo = GetTileInfo(tile)
+		if tileinfo then
+			local depthcategory = tileinfo.ocean_depth
+			return math.max(depthcategory and TUNING.ANCHOR_DEPTH_TIMES[depthcategory] or 0, PERCEIVED_DEPTH_MINIMUM)
+		end
 	end
 	return 0
 end

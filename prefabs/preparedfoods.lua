@@ -92,6 +92,7 @@ local function MakePreparedFood(data)
         end
 
 		inst.food_symbol_build = food_symbol_build or data.overridebuild
+		inst.food_basename = data.basename
 
         inst:AddComponent("edible")
         inst.components.edible.healthvalue = data.health

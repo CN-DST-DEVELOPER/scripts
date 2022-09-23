@@ -439,4 +439,17 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
     end
 end
 
+function Temperature:TransferComponent(newinst)
+    local newcomponent = newinst.components.temperature
+
+    newcomponent:SetTemperature(self.current)
+    local duration = nil
+    if self.bellytask then
+        duration = GetTaskRemaining(self.bellytask)
+    end
+    if duration then
+        newcomponent:SetTemperatureInBelly(self.bellytemperaturedelta,duration)
+    end
+end
+
 return Temperature

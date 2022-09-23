@@ -26,7 +26,7 @@ function Bundler:StartBundling(item)
         self.bundlinginst = SpawnPrefab(item.components.bundlemaker.bundlingprefab)
         if self.bundlinginst ~= nil then
             if self.bundlinginst.components.container ~= nil then
-                self.bundlinginst.components.container:Open(self.inst)
+                self.bundlinginst.components.container:Open(self.inst, item.skin_open_sound)
                 if self.bundlinginst.components.container:IsOpenedBy(self.inst) then
                     self.bundlinginst.entity:SetParent(self.inst.entity)
                     self.bundlinginst.persists = false

@@ -155,6 +155,7 @@ local function commonfn(pondtype)
 
     -- From watersource component
     inst:AddTag("watersource")
+    inst:AddTag("pond")
     inst:AddTag("antlion_sinkhole_blocker")
     inst:AddTag("birdblocker")
 

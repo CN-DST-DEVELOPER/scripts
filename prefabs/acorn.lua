@@ -13,12 +13,11 @@ local prefabs =
     "winter_deciduoustree",
 }
 
-local function plant(inst, growtime)
+local function plant(pt, growtime)
     local sapling = SpawnPrefab("acorn_sapling")
     sapling:StartGrowing()
-    sapling.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    sapling.Transform:SetPosition(pt:Get())
     sapling.SoundEmitter:PlaySound("dontstarve/wilson/plant_tree")
-    inst:Remove()
 end
 
 local function domonsterstop(ent)
@@ -30,12 +29,21 @@ local PACIFYTARGET_MUST_TAGS = {"birchnut", "monster"}
 local PACIFYTARGET_CANT_TAGS = {"stump", "burnt", "FX", "NOCLICK","DECOR","INLIMBO"}
 local function ondeploy(inst, pt)
     inst = inst.components.stackable:Get()
-    inst.Transform:SetPosition(pt:Get())
+    inst:Remove()
+
     local timeToGrow = GetRandomWithVariance(TUNING.ACORN_GROWTIME.base, TUNING.ACORN_GROWTIME.random)
-    plant(inst, timeToGrow)
+    plant(pt, timeToGrow)
 
     -- Pacify a nearby monster tree
-    local ent = FindEntity(inst, TUNING.DECID_MONSTER_ACORN_CHILL_RADIUS, nil, PACIFYTARGET_MUST_TAGS, PACIFYTARGET_CANT_TAGS)
+    local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.DECID_MONSTER_ACORN_CHILL_RADIUS, PACIFYTARGET_MUST_TAGS, PACIFYTARGET_CANT_TAGS)
+    local ent
+    for i, v in ipairs(ents) do
+        if v.entity:IsVisible() then
+            ent = v
+            break
+        end
+    end
+
     if ent ~= nil then
         if ent.monster_start_task ~= nil then
             ent.monster_start_task:Cancel()

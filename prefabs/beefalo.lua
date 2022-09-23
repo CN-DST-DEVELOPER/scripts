@@ -39,6 +39,7 @@ local prefabs =
     "carrat",
     "explode_reskin",
     "beefalo_carry",
+    "spawn_fx_medium",
 }
 
 local brain = require("brains/beefalobrain")
@@ -798,6 +799,8 @@ end
 local TWEEN_TARGET = {0, 0, 0, 1}
 local TWEEN_TIME = 13 * FRAMES
 fns.OnDespawnRequest = function(inst)
+    local fx = SpawnPrefab("spawn_fx_medium")
+    fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     inst._marked_for_despawn = true
     inst.components.colourtweener:StartTween(TWEEN_TARGET, TWEEN_TIME, inst.Remove)
 end

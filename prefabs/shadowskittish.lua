@@ -33,7 +33,11 @@ local function fn()
     inst.components.playerprox:SetDist(5, 8)
     inst.components.playerprox:SetOnPlayerNear(Disappear)
 
-    inst:AddComponent("transparentonsanity")
+    if not TheNet:IsDedicated() then
+        -- this is purely view related
+        inst:AddComponent("transparentonsanity")
+        inst.components.transparentonsanity:ForceUpdate()
+    end
 
     inst.deathtask = inst:DoTaskInTime(5 + 10 * math.random(), Disappear)
 

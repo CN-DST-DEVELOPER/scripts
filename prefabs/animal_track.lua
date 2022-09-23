@@ -17,7 +17,7 @@ local function fadeout(inst, duration, dt)
     if inst._fadetime > dt then
         inst._fadetime = inst._fadetime - dt
         local k = inst._fadetime / duration
-        inst.AnimState:SetMultColour(k, k, k, k)
+        inst.AnimState:SetMultColour(1, 1, 1, k)
     else
         inst:Remove()
     end

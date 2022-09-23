@@ -96,6 +96,8 @@ local function fn()
 
     inst:AddTag("archive_lockbox")
 
+    MakeInventoryFloatable(inst, "med", .24, { .82, .94, .82 })
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

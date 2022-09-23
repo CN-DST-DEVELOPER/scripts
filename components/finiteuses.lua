@@ -3,6 +3,7 @@ local FiniteUses = Class(function(self, inst)
     self.total = 100
     self.current = 100
     self.consumption = {}
+    self.ignorecombatdurabilityloss = false
 end)
 
 function FiniteUses:OnRemoveFromEntity()
@@ -17,8 +18,12 @@ function FiniteUses:GetDebugString()
     return string.format("%.2f/%d", self.current, self.total)
 end
 
+function FiniteUses:SetDoesNotStartFull(enabled) -- NOTES(JBK): Removes the assumption that the item starts at 100% uses by default for saving.
+    self.doesnotstartfull = enabled
+end
+
 function FiniteUses:OnSave()
-    if self.current ~= self.total then
+    if self.current ~= self.total or self.doesnotstartfull then
         return { uses = self.current }
     end
 end
@@ -58,12 +63,25 @@ function FiniteUses:Use(num)
     self:SetUses(self.current - (num or 1))
 end
 
+function FiniteUses:IgnoresCombatDurabilityLoss()
+    return self.ignorecombatdurabilityloss
+end
+
+function FiniteUses:SetIgnoreCombatDurabilityLoss(value)
+    self.ignorecombatdurabilityloss = value
+end
+
 function FiniteUses:OnUsedAsItem(action, doer, target)
     local uses = self.consumption[action]
     if uses ~= nil then
 		if doer ~= nil and doer:IsValid() and doer.components.efficientuser ~= nil then
 			uses = uses * (doer.components.efficientuser:GetMultiplier(action) or 1)
 		end
+
+        if self.modifyuseconsumption then
+            uses = self.modifyuseconsumption(uses, action, doer, target)
+        end
+
         self:Use(uses)
     end
 end

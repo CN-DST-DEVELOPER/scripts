@@ -44,7 +44,7 @@ local function checkIfValidGround(world, x, z, valid_tile_types, water)
 
 	if x > OCEAN_POPULATION_EDGE_DIST and x < (WIDTH - OCEAN_POPULATION_EDGE_DIST) and z > OCEAN_POPULATION_EDGE_DIST and z < (HEIGHT - OCEAN_POPULATION_EDGE_DIST) then
 		local original_tile_type = world:GetTile(x, z)
-		if original_tile_type ~= GROUND.INVALID and original_tile_type ~= GROUND.IMPASSABLE then
+		if not TileGroupManager:IsInvalidTile(original_tile_type) then
 			if valid_tile_types then
 				for i, tiletype in ipairs(valid_tile_types)do
 					if original_tile_type == tiletype then

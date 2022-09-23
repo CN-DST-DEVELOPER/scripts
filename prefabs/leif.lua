@@ -174,6 +174,9 @@ local function common_fn(build)
     inst.components.inspectable:RecordViews()
     ------------------------------------------
 
+    inst:AddComponent("drownable")
+    ------------------------------------------
+
     inst:SetBrain(brain)
 
     inst:ListenForEvent("attacked", OnAttacked)

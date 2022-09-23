@@ -234,6 +234,11 @@ local function obit_widget_update(context, widget, data, index)
 
     widget.DECEASED:SetCharacter(data.character)
 
+    local t = GetTime()
+    if (data.morgue_random_updatetime or 0) < t then
+        data.morgue_random_updatetime = t + 10
+        data.morgue_random = math.random()
+    end
     widget.CAUSE:SetTruncatedString(GetKilledByFromMorgueRow(data), widget.CAUSE._align.maxwidth, widget.CAUSE._align.maxchars, true)
     LeftAlignText(widget.CAUSE, "CAUSE")
 

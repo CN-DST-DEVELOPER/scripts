@@ -4,9 +4,11 @@ local UIAnim = require "widgets/uianim"
 local MightyBadge = Class(Badge, function(self, owner)
     Badge._ctor(self, nil, owner, { 12/255, 127/255, 86/255, 1 }, "status_wolfgang", nil, nil, true)
 
+	self.cur_mighty_state = nil
+
     self.circleframe:GetAnimState():SetBank ("status_wolfgang")
     self.circleframe:GetAnimState():SetBuild("status_wolfgang")
-    self.circleframe:GetAnimState():PlayAnimation("frame")
+	self.dont_animate_circleframe = true
 
     self.mightyarrow = self.underNumber:AddChild(UIAnim())
     self.mightyarrow:GetAnimState():SetBank("sanity_arrow")
@@ -28,8 +30,24 @@ local RATE_SCALE_ANIM =
     [RATE_SCALE.DECREASE_LOW] = "arrow_loop_decrease",
 }
 
+function MightyBadge:RefreshMightiness()
+	local mighty_state = self.owner:GetCurrentMightinessState()
+	if mighty_state ~= self.cur_mighty_state then
+		if mighty_state == "mighty" then
+			self.circleframe:GetAnimState():SetPercent("frame", 0)
+		elseif mighty_state == "normal" then
+			self.circleframe:GetAnimState():SetPercent("frame", 0.5)
+		else
+			self.circleframe:GetAnimState():SetPercent("frame", 1)
+		end
+		self.cur_mighty_state = mighty_state
+	end
+end
+
 function MightyBadge:OnUpdate(dt)
     if TheNet:IsServerPaused() then return end
+
+	self:RefreshMightiness()
 
     if self.owner.GetMightinessRateScale then
         -- Update arrow

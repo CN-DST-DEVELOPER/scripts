@@ -1,13 +1,13 @@
 
 -- functions to implement:
--- OnActivateGame
--- OnStartPlaying
--- OnUpdateGame
--- OnStopPlaying
--- SpawnRewards
--- OnDeactivateGame
--- RemoveGameItems
--- OnRemoveGame
+-- OnActivateGame		-- the game was turned on (given a token). Set up any objects that need to be used for the game. This is the "IsIntro" state on the minigame component
+-- OnStartPlaying		-- the game has been turned on and everything is ready for the player to start playing
+-- OnUpdateGame			-- do stuff while the game is active. Or skip this and hand some internal state that is activated in OnStartPlaying, eg, a DoPeriodicTask or DoTaskInTime
+-- OnStopPlaying		-- deativate any props in the game (items will be removed via RemoveGameItems). This is the "IsOutro" state on the minigame component. Return value is delay in seconds before SpawnRewards is called
+-- SpawnRewards			-- toss out the rewards. Return value is delay in seconds before OnDeactivateGame is called
+-- OnDeactivateGame		-- play the turn off anim on the station now that the rewards have been tossed out
+-- RemoveGameItems		-- delete any temperary items created by the game
+-- OnRemoveGame			-- remove any of the game's child props (the ones that are visible while the game is turned off, probably spawned in the OnBuilt handler)
 
 -- variables:
 -- _game_duration = 10 -- TUNING.CARNIVALGAME_FEEDCHICKS_GAME_DURATION

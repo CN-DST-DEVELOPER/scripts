@@ -14,8 +14,8 @@ local Reticule = Class(function(self, inst)
     self.updatepositionfn = nil
     self.reticuleprefab = "reticule"
     self.reticule = nil
-    self.validcolour = { 204 / 255, 131 / 255, 57 / 255, .3 }
-    self.invalidcolour = { 1, 0, 0, .3 }
+    self.validcolour = { 204 / 255, 131 / 255, 57 / 255, 1 }
+    self.invalidcolour = { 1, 0, 0, 1 }
     self.currentcolour = self.invalidcolour
     self.mouseenabled = false
     self.followhandler = nil
@@ -124,7 +124,7 @@ end
 
 function Reticule:UpdateColour()
     local a = self.targetpos ~= nil and self.fadealpha * self.blipalpha or self.blipalpha
-    self.reticule.AnimState:SetMultColour(self.currentcolour[1] * a, self.currentcolour[2] * a, self.currentcolour[3] * a, self.currentcolour[4] * a)
+    self.reticule.AnimState:SetMultColour(self.currentcolour[1], self.currentcolour[2], self.currentcolour[3], self.currentcolour[4] * a)
 end
 
 function Reticule:UpdatePosition(dt)

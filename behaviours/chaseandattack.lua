@@ -10,8 +10,8 @@ ChaseAndAttack = Class(BehaviourNode, function(self, inst, max_chase_time, give_
     self.distance_from_ocean_target = distance_from_ocean_target
 
     -- we need to store this function as a key to use to remove itself later
-    self.onattackfn = function(inst, data)
-        self:OnAttackOther(data.target)
+    self.onattackfn = function(inst)
+        self:OnAttackOther()
     end
 
     self.inst:ListenForEvent("onattackother", self.onattackfn)
@@ -27,7 +27,7 @@ function ChaseAndAttack:OnStop()
     self.inst:RemoveEventCallback("onmissother", self.onattackfn)
 end
 
-function ChaseAndAttack:OnAttackOther(target)
+function ChaseAndAttack:OnAttackOther()
     --print ("on attack other", target)
     self.numattacks = self.numattacks + 1
     self.startruntime = nil -- reset max chase time timer

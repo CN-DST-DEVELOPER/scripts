@@ -3,11 +3,16 @@ local assets =
     Asset("ANIM", "anim/boat_test.zip"),
 }
 
+local grass_assets =
+{
+    Asset("ANIM", "anim/boat_grass.zip"),
+}
+
 local prefabs =
 {
 }
 
-local function fn()
+local function commonfn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -41,4 +46,24 @@ local function fn()
     return inst
 end
 
-return Prefab("boatlip", fn, assets, prefabs)
+local function fn()
+    local inst = commonfn()
+    return inst
+end
+
+local function grassfn()
+    local inst = commonfn()
+
+    inst.AnimState:SetBuild("boat_grass")    
+    inst.AnimState:SetBank("boat_grass")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end    
+
+    return inst
+end
+
+return Prefab("boatlip", fn, assets, prefabs),
+    Prefab("boatlip_grass", grassfn, grass_assets, prefabs)

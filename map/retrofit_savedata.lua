@@ -78,7 +78,7 @@ local function FixNoBrinePools(savedata, world_map)
 	local function HasBrinePool(width, height)
 		for y = OCEAN_POPULATION_EDGE_DIST, height - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
 			for x = OCEAN_POPULATION_EDGE_DIST, width - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
-				if world_map:GetTile(x, y) == GROUND.OCEAN_BRINEPOOL then
+				if world_map:GetTile(x, y) == WORLD_TILES.OCEAN_BRINEPOOL then
 					return true
 				end
 			end
@@ -111,7 +111,7 @@ local function FixNoBrinePools(savedata, world_map)
 		local has_brinepools = HasBrinePool(map_width, map_height)
 		if has_brinepools then
 			print("Retrofitting for Return Of Them: Brine Pool Fixup - Brine Pool tiles found, populating with layouts...")
-			local function isbrinepooltile(tile) return tile == GROUND.OCEAN_BRINEPOOL end
+			local function isbrinepooltile(tile) return tile == WORLD_TILES.OCEAN_BRINEPOOL end
 			local num_layouts_added = 0
 			num_layouts_added = num_layouts_added + TryToAddLayout("retrofit_brinepool_tiny", 20, isbrinepooltile, savedata, world_map, NoBoatCheck).num_added
 
@@ -122,7 +122,7 @@ local function FixNoBrinePools(savedata, world_map)
 
 			local extra_brine_pools_required = 8 - math.floor(num_layouts_added/2) -- /2 because the retrofitted layouts are so small
 			if extra_brine_pools_required > 0 then
-				local function isopenoceantile(tile) return tile == GROUND.OCEAN_ROUGH or tile == GROUND.OCEAN_SWELL end
+				local function isopenoceantile(tile) return tile == WORLD_TILES.OCEAN_ROUGH or tile == WORLD_TILES.OCEAN_SWELL end
 				print("Retrofitting for Return Of Them: Brine Pools Fixup - Brine pools are not dence enough, adding some more...")
 				local num_extras_added = TryToAddLayout("BrinePool1", extra_brine_pools_required, isopenoceantile, savedata, world_map, NoBoatCheck).num_added
 				num_saltstacks = GetTableSize(savedata.ents["saltstack"])
@@ -132,7 +132,7 @@ local function FixNoBrinePools(savedata, world_map)
 			end
 		else
 			print("Retrofitting for Return Of Them: Brine Pools Fixup - No Brine Pools found, adding some now...")
-			local function isvalidtile(tile) return tile == GROUND.OCEAN_ROUGH or tile == GROUND.OCEAN_SWELL end
+			local function isvalidtile(tile) return tile == WORLD_TILES.OCEAN_ROUGH or tile == WORLD_TILES.OCEAN_SWELL end
 			local num_layouts_added = 0
 			num_layouts_added = num_layouts_added + TryToAddLayout("BrinePool1", 4, isvalidtile, savedata, world_map, NoBoatCheck).num_added
 			num_layouts_added = num_layouts_added + TryToAddLayout("BrinePool2", 2, isvalidtile, savedata, world_map, NoBoatCheck).num_added
@@ -216,6 +216,17 @@ local function DoRetrofitting(savedata, world_map)
 		savedata.retrofit_waterlogged_waterlog_place_count = nil
 		dirty = true
 	end
+
+	if savedata.retrofit_remove_ocean_brinepool_shore then
+		savedata.retrofit_remove_ocean_brinepool_shore = nil
+		world_map:Replace(WORLD_TILES.OCEAN_BRINEPOOL_SHORE, WORLD_TILES.OCEAN_BRINEPOOL)
+	end
+
+    if savedata.retrofit_moonquay_monkeyisland_setpiece then
+        savedata.retrofit_moonquay_monkeyisland_setpiece = nil
+        require("map/ocean_retrofit_island").CurseOfMoonQuayRetrofitting_MonkeyIsland(TheWorld.Map, savedata)
+        dirty = true
+    end
 
 	if dirty then
 		savedata.map.tiles = world_map:GetStringEncode()

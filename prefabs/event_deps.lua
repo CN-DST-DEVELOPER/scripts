@@ -75,17 +75,6 @@ local SPECIAL_EVENT_DEPS =
                 Asset("PKGREF", "anim/dst_menu_grotto.zip"),
             },
         },
-        backend =
-        {
-            assets =
-            {
-                Asset("ANIM", "anim/player_spooked.zip"),
-            },
-            prefabs =
-            {
-                "battreefx",
-            },
-        },
     },
 
     [SPECIAL_EVENTS.WINTERS_FEAST] =
@@ -167,7 +156,6 @@ local SPECIAL_EVENT_DEPS =
         {
             assets =
             {
-                Asset("ANIM", "anim/pig_king_elite_build.zip"),
             },
         },
     },
@@ -217,11 +205,12 @@ local SPECIAL_EVENT_DEPS =
         {
             assets =
             {
-                Asset("ANIM", "anim/dst_menu_wolfgang.zip"),
-
-                Asset("PKGREF", "anim/dst_menu_v2.zip"),
-                Asset("PKGREF", "anim/dst_menu_v2_bg.zip"),
-
+                Asset("ANIM", "anim/dst_menu_v2.zip"),
+                Asset("ANIM", "anim/dst_menu_v2_bg.zip"),
+                Asset("ANIM", "anim/dst_menu_wickerbottom.zip"),
+                
+                Asset("ANIM", "anim/dst_menu_wx.zip"),
+                Asset("PKGREF", "anim/dst_menu_wolfgang.zip"),
                 Asset("PKGREF", "anim/dst_menu_terraria.zip"),
                 Asset("PKGREF", "anim/dst_menu.zip"),
                 Asset("PKGREF", "anim/dst_menu_winona.zip"),
@@ -250,6 +239,7 @@ local SPECIAL_EVENT_DEPS =
                 Asset("PKGREF", "anim/dst_menu_moonstorm_wrench.zip"),
                 Asset("PKGREF", "anim/dst_menu_waterlogged.zip"),
                 Asset("PKGREF", "anim/dst_menu_wanda.zip"),
+                Asset("PKGREF", "anim/dst_menu_pirates.zip"),
             },
         },
     },

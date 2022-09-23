@@ -10,6 +10,7 @@ local events=
     CommonHandlers.OnStep(),
     CommonHandlers.OnLocomote(false,true),
     CommonHandlers.OnFreeze(),
+    CommonHandlers.OnSink(),
     EventHandler("attacked", function(inst) 
 		if not inst.components.health:IsDead()
 			and not CommonHandlers.HitRecoveryDelay(inst, TUNING.LEIF_HIT_RECOVERY)
@@ -219,6 +220,7 @@ CommonStates.AddWalkStates(
 
 CommonStates.AddIdle(states)
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAsoreStates(states, {washashore = "transform_ent_mad"})
 
 return StateGraph("leif", states, events, "idle", actionhandlers)
 

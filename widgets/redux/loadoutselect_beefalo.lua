@@ -15,6 +15,10 @@ require("util")
 require("networking")
 require("stringutil")
 
+local function AllowSkins()
+    return TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode()
+end
+
 local LoadoutSelect_beefalo = Class(Widget, function(self, user_profile, character, initial_skins, filter, owner_player)
     Widget._ctor(self, "LoadoutSelect_beefalo")
     self.owner_player = owner_player
@@ -52,7 +56,7 @@ local LoadoutSelect_beefalo = Class(Widget, function(self, user_profile, charact
 
     self:_LoadSavedSkins()
 
-    if not TheNet:IsOnlineMode() then
+    if not AllowSkins() then
 		self.bg_group = self.loadout_root:AddChild(Widget("bg_group"))
         self.bg_group:SetPosition(370, 10)
 
@@ -128,7 +132,7 @@ local LoadoutSelect_beefalo = Class(Widget, function(self, user_profile, charact
     end
 
     if not TheInput:ControllerAttached() then
-        if TheNet:IsOnlineMode() then
+        if AllowSkins() then
             self.presetsbutton = self.loadout_root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "save.tex", STRINGS.UI.SKIN_PRESETS.TITLE, false, false, function()
 		            self:_LoadSkinPresetsScreen()
 	            end
@@ -175,7 +179,7 @@ function LoadoutSelect_beefalo:_MakeMenu(subscreener)
 end
 
 function LoadoutSelect_beefalo:_SaveLoadout()
-    if TheNet:IsOnlineMode() then
+    if AllowSkins() then
         self.user_profile:SetSkinsForCharacter(self.currentcharacter, self.selected_skins)
     end
 end
@@ -238,7 +242,7 @@ function LoadoutSelect_beefalo:ApplySkinPresets(skins)
 end
 
 function LoadoutSelect_beefalo:_LoadSavedSkins()
-    if TheNet:IsOnlineMode() then
+    if AllowSkins() then
         self.selected_skins = self.user_profile:GetSkinsForCharacter(self.currentcharacter)
     else
         self.selected_skins = { base = self.currentcharacter.."_none" }
@@ -344,7 +348,7 @@ function LoadoutSelect_beefalo:OnControl(control, down)
             return true
         else
             ]]
-        if control == CONTROL_MENU_MISC_1 and TheNet:IsOnlineMode() then
+        if control == CONTROL_MENU_MISC_1 and AllowSkins() then
             self:_LoadSkinPresetsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
@@ -359,15 +363,13 @@ function LoadoutSelect_beefalo:RefreshInventory(animateDoodad)
 end
 
 function LoadoutSelect_beefalo:GetHelpText()
-    if TheNet:IsOnlineMode() then
+    if AllowSkins() then
 		local controller_id = TheInput:GetControllerID()
 		local t = {}
 
 --        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_3) .. " " .. STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW)
 
-        if TheNet:IsOnlineMode() then
-		    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
-        end
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
 
 		return table.concat(t, "  ")
 	else

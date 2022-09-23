@@ -131,22 +131,6 @@ function FilterBar:AddSorter()
     return btn
 end
 
-local search_subwords = function( search, str, sub_len )
-    local str_len = string.len(str)
-
-    local i = 1
-    for i=i,str_len - sub_len + 1 do
-        local sub = str:sub( i, i + sub_len - 1 )
-
-        local dist = DamLevDist( search, sub, 2 )
-        if dist < 2 then
-            return true
-        end
-    end
-
-    return false
-end
-
 local search_match = function( search, str )
     search = search:gsub(" ", "")
     str = str:gsub(" ", "")
@@ -158,11 +142,10 @@ local search_match = function( search, str )
     local sub_len = string.len(search)
 
     if sub_len > 3 then
-        if search_subwords( search, str, sub_len ) then return true end
+        if do_search_subwords( search, str, sub_len, 1 ) then return true end
 
         --Try again with 1 fewer character
-        sub_len = sub_len - 1
-        if search_subwords( search, str, sub_len ) then return true end
+        if do_search_subwords( search, str, sub_len - 1, 1 ) then return true end
     end
 
     return false

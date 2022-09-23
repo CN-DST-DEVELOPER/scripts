@@ -44,7 +44,7 @@ local function triggertrap(inst, scenariorunner, data)
         local x1 = x + radius * math.cos(theta)
         local z1 = z - radius * math.sin(theta)
 
-        if ground.Map and ground.Map:GetTileAtPoint(x1, 0, z1) ~= GROUND.IMPASSABLE then
+        if ground.Map and not TileGroupManager:IsImpassableTile(ground.Map:GetTileAtPoint(x1, 0, z1)) then
             local rock = SpawnPrefab("sanityrock")
             rock.Transform:SetPosition(x1, 0, z1)
             rock:Hide()

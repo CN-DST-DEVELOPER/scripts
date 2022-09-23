@@ -58,6 +58,8 @@ local merm_guard_brain = require "brains/mermguardbrain"
 local MAX_TARGET_SHARES = 5
 local SHARE_TARGET_DIST = 40
 
+local SLIGHTDELAY = 1
+
 local function FindInvaderFn(guy, inst)
     if guy:HasTag("NPC_contestant") then
         return nil
@@ -78,7 +80,8 @@ local function FindInvaderFn(guy, inst)
            not ((TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKing())) and
            not (leader and leader:HasTag("player")) and
            not (leader_guy and (leader_guy:HasTag("merm")) and
-           not guy:HasTag("pig"))
+           not guy:HasTag("pig") and
+           not guy:HasTag("wonkey"))
 end
 
 local function RetargetFn(inst)
@@ -134,34 +137,83 @@ local function OnAttackedByDecidRoot(inst, attacker)
     end
 end
 
+local function IsNonPlayerMerm(this)
+    return this:HasTag("merm") and not this:HasTag("player")
+end
+
 local function OnAttacked(inst, data)
 
     local attacker = data and data.attacker
     if attacker and attacker.prefab == "deciduous_root" and attacker.owner ~= nil then
         OnAttackedByDecidRoot(inst, attacker.owner)
 
-    elseif attacker and inst.components.combat:CanTarget(attacker) and attacker.prefab ~= "deciduous_root" then
+    elseif attacker and attacker.prefab ~= "deciduous_root" and inst.components.combat:CanTarget(attacker) then
+        local isguard = inst:HasTag("mermguard")
 
-        local share_target_dist = inst:HasTag("mermguard") and TUNING.MERM_GUARD_SHARE_TARGET_DIST or TUNING.MERM_SHARE_TARGET_DIST
-        local max_target_shares = inst:HasTag("mermguard") and TUNING.MERM_GUARD_MAX_TARGET_SHARES or TUNING.MERM_MAX_TARGET_SHARES
+        local share_target_dist = isguard and TUNING.MERM_GUARD_SHARE_TARGET_DIST or TUNING.MERM_SHARE_TARGET_DIST
+        local max_target_shares = isguard and TUNING.MERM_GUARD_MAX_TARGET_SHARES or TUNING.MERM_MAX_TARGET_SHARES
 
         inst.components.combat:SetTarget(attacker)
 
-        if inst.components.homeseeker and inst.components.homeseeker.home then
-            local home = inst.components.homeseeker.home
+        local home = inst.components.homeseeker and inst.components.homeseeker.home
+        if home and home.components.childspawner and inst:GetDistanceSqToInst(home) <= share_target_dist*share_target_dist then
+            max_target_shares = max_target_shares - home.components.childspawner.childreninside
+            home.components.childspawner:ReleaseAllChildren(attacker)
+        end
 
-            if home and home.components.childspawner and inst:GetDistanceSqToInst(home) <= share_target_dist*share_target_dist then
-                max_target_shares = max_target_shares - home.components.childspawner.childreninside
-                home.components.childspawner:ReleaseAllChildren(attacker)
+        inst.components.combat:ShareTarget(attacker, share_target_dist, IsNonPlayerMerm, max_target_shares)
+    end
+end
+
+local MERM_TAGS = { "merm" }
+local MERM_IGNORE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "player" }
+local function MermSort(a, b) -- Better than bubble!
+    return a.components.follower:GetLoyaltyPercent() < b.components.follower:GetLoyaltyPercent()
+end
+local function GetOtherMerms(inst, radius, maxcount)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    
+    local merms = TheSim:FindEntities(x, y, z, radius, nil, MERM_IGNORE_TAGS, MERM_TAGS)
+    local merms_highpriority = {}
+    local merms_lowpriority = {}
+
+    for _, merm in ipairs(merms) do
+        if merm ~= inst and merm:IsValid() and not merm.components.health:IsDead() then
+            local follower = merm.components.follower
+            if follower then
+                -- No leader or about to lose loyalty is high priority.
+                if follower.leader == nil or follower:GetLoyaltyPercent() < TUNING.MERM_LOW_LOYALTY_WARNING_PERCENT then
+                    table.insert(merms_highpriority, merm)
+                else
+                    table.insert(merms_lowpriority, merm)
+                end
             end
-
-            inst.components.combat:ShareTarget(attacker, share_target_dist, function(dude)
-                return (dude.components.homeseeker and dude.components.homeseeker.home and dude.components.homeseeker.home == home) or
-                        (dude:HasTag("merm") and not dude:HasTag("player") and not
-                        (dude.components.follower and dude.components.follower.leader and dude.components.follower.leader:HasTag("player")))
-            end, max_target_shares)
         end
     end
+
+    table.sort(merms_highpriority, MermSort)
+    table.sort(merms_lowpriority, MermSort)
+
+    local merms_valid = {}
+    local merms_count = 0
+    for _, merm in ipairs(merms_highpriority) do
+        if merms_count >= maxcount then
+            break
+        end
+        merms_count = merms_count + 1
+        table.insert(merms_valid, merm)
+    end
+    if merms_count < maxcount then
+        for _, merm in ipairs(merms_lowpriority) do
+            if merms_count >= maxcount then
+                break
+            end
+            merms_count = merms_count + 1
+            table.insert(merms_valid, merm)
+        end
+    end
+
+    return merms_valid
 end
 
 local function IsAbleToAccept(inst, item, giver)
@@ -191,20 +243,90 @@ local function ShouldAcceptItem(inst, item, giver)
            (item:HasTag("fish") and not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:IsCandidate(inst))))
 end
 
+local function DoCheer_Act(inst)
+    if inst.sg ~= nil and not inst.sg:HasStateTag("busy") then
+        inst.sg:GoToState("cheer")
+    end
+end
+local function DoCheer(inst)
+    inst:DoTaskInTime(math.random()*SLIGHTDELAY, DoCheer_Act)
+end
+
+local function DoDisapproval_Act(inst)
+    if inst.sg ~= nil and not inst.sg:HasStateTag("busy") then
+        inst.sg:GoToState("disapproval")
+    end
+end
+local function DoDisapproval(inst)
+    inst:DoTaskInTime(math.random()*SLIGHTDELAY, DoDisapproval_Act)
+end
+
 local function OnGetItemFromPlayer(inst, giver, item)
-
-    local loyalty_max = inst:HasTag("mermguard") and TUNING.MERM_GUARD_LOYALTY_MAXTIME or TUNING.MERM_LOYALTY_MAXTIME
-    local loyalty_per_hunger = inst:HasTag("mermguard") and TUNING.MERM_GUARD_LOYALTY_PER_HUNGER or TUNING.MERM_LOYALTY_PER_HUNGER
-
     if item.components.edible ~= nil then
+        local isguard = inst:HasTag("mermguard")
+        local hasking = TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKing() or false
+
+        -- It is better to feed guards than regulars to maintain loyalty!
+        -- This will increase loyalty time and bonuses per hunger when feeding a guard.
+        local loyalty_max = isguard and TUNING.MERM_GUARD_LOYALTY_MAXTIME or TUNING.MERM_LOYALTY_MAXTIME
+        local loyalty_per_hunger = isguard and TUNING.MERM_GUARD_LOYALTY_PER_HUNGER or TUNING.MERM_LOYALTY_PER_HUNGER
+
+        local loyalty_radius = isguard and TUNING.MERM_GUARD_FOLLOWER_RADIUS or TUNING.MERM_FOLLOWER_RADIUS
+        local loyalty_count = isguard and TUNING.MERM_GUARD_FOLLOWER_COUNT or TUNING.MERM_FOLLOWER_COUNT
+
+        -- King makes everything better keep it up!
+        if hasking then
+            loyalty_max = loyalty_max + TUNING.MERM_LOYALTY_MAXTIME_KINGBONUS
+            loyalty_per_hunger = loyalty_per_hunger + TUNING.MERM_LOYALTY_PER_HUNGER_KINGBONUS
+        end
+
+        local loyalty_time = item.components.edible:GetHunger() * loyalty_per_hunger
+
+        local hiremoremerms = false
         if inst.components.combat:TargetIs(giver) then
             inst.components.combat:SetTarget(nil)
-        elseif giver.components.leader ~= nil and not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:IsCandidate(inst)) then
+        elseif giver.components.leader ~= nil and inst.components.follower ~= nil and
+            not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:IsCandidate(inst)) then
             giver:PushEvent("makefriend")
             giver.components.leader:AddFollower(inst)
 
-            inst.components.follower:AddLoyaltyTime(item.components.edible:GetHunger() * loyalty_per_hunger)
             inst.components.follower.maxfollowtime = loyalty_max
+            inst.components.follower:AddLoyaltyTime(loyalty_time)
+
+            if item:HasTag("fish") then
+                DoCheer(inst)
+            end
+
+            hiremoremerms = true
+        end
+
+        if hiremoremerms then
+            local othermerms = GetOtherMerms(inst, loyalty_radius, loyalty_count) -- Only other merms, capped by count, and prioritized by necessity.
+            for _, v in ipairs(othermerms) do
+                local effectdone = true
+
+                if v.components.combat.target == giver then
+                    v.components.combat:SetTarget(nil)
+                elseif giver.components.leader ~= nil and v.components.follower ~= nil and
+                    not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:IsCandidate(inst)) then
+                    -- "makefriend" event fires above no matter what do not play it again here.
+                    giver.components.leader:AddFollower(v)
+
+                    -- Intentional use of cached variables here to make feeding guards better than regulars.
+                    v.components.follower.maxfollowtime = loyalty_max
+                    v.components.follower:AddLoyaltyTime(loyalty_time)
+                else
+                    effectdone = false
+                end
+
+                if effectdone then
+                    if v.components.sleeper and v.components.sleeper:IsAsleep() then
+                        v.components.sleeper:WakeUp()
+                    elseif v.DoCheer then
+                        v:DoCheer()
+                    end
+                end
+            end
         end
     end
 
@@ -320,12 +442,89 @@ local function OnTimerDone(inst, data)
     end
 end
 
+local function OnRanHome(inst)
+    if inst:IsValid() then
+        inst.runhometask = nil
+        inst.wantstoteleport = nil
+
+        local home = inst.components.homeseeker and inst.components.homeseeker:GetHome() or nil
+        if home ~= nil and home.components.childspawner ~= nil then
+            local invcmp = inst.components.inventory
+            if invcmp then
+                -- Drop equips only and place them around home!
+                local x, y, z = home.Transform:GetWorldPosition()
+                local homeradius = home:GetPhysicsRadius(1) + 1
+                for _, v in pairs(invcmp.equipslots) do
+                    local angle = math.random() * 2 * PI
+                    local pos = Vector3(x + math.cos(angle) * homeradius, 0, z - math.sin(angle) * homeradius)
+                    invcmp:DropItem(v, true, true, pos)
+                end
+            end
+            home.components.childspawner:GoHome(inst)
+        end
+    end
+end
+
+local function CancelRunHomeTask(inst)
+    if inst.runhometask ~= nil then
+        inst.runhometask:Cancel()
+        inst.runhometask = nil
+    end
+end
+
+local function OnEntitySleepMerm(inst)
+    CancelRunHomeTask(inst) -- Cancel it here in case behaviour changes due to components.
+
+    if not inst.wantstoteleport then
+        return -- It did not want to teleport anyway, bail.
+    end
+
+    if inst.components.follower and inst.components.follower.leader then
+        return -- Leader component takes care of this case by teleporting the entity to the leader.
+    end
+
+    local hometraveltime = inst.components.homeseeker and inst.components.homeseeker:GetHomeDirectTravelTime() or nil
+    if hometraveltime == nil then
+        return -- There's no home to go back to!
+    end
+
+    inst.runhometask = inst:DoTaskInTime(hometraveltime, OnRanHome)
+end
+
+local function OnMarkForTeleport(inst, data)
+    if data and data.leader then
+        -- Lost loyalty with a leader, mark home for magic poofing during off-screen "traveling" when going to entitysleep.
+        inst.wantstoteleport = true
+    end
+end
+
+local function OnUnmarkForTeleport(inst, data)
+    if data and data.leader then
+        -- Gain loyalty with a leader, remove mark home for magic poofing during off-screen "traveling" when going to entitysleep.
+        inst.wantstoteleport = nil
+    end
+end
+
 local function battlecry(combatcmp, target)
     local strtbl =
         combatcmp.inst:HasTag("guard") and
         "MERM_BATTLECRY" or
         "MERM_BATTLECRY"
     return strtbl, math.random(#STRINGS[strtbl])
+end
+
+
+local function OnSave(inst, data)
+    if inst.wantstoteleport then
+        data.wantstoteleport = true
+    end
+end
+
+local function OnLoad(inst, data)
+    if data == nil then
+        return
+    end
+    inst.wantstoteleport = data.wantstoteleport or inst.wantstoteleport
 end
 
 local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit)
@@ -365,11 +564,22 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit)
             common_postinit(inst)
         end
 
+        -- Sneak these into pristine state for optimization.
+        inst:AddTag("_named")
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
             return inst
         end
+
+        -- Remove these tags so that they can be added properly when replicating components below.
+        inst:RemoveTag("_named")
+
+        inst.DoCheer = DoCheer
+        inst.DoDisapproval = DoDisapproval
+        inst.OnSave = OnSave
+        inst.OnLoad = OnLoad
 
         inst:AddComponent("locomotor")
         -- boat hopping setup
@@ -380,7 +590,17 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit)
         inst:AddComponent("eater")
         inst.components.eater:SetDiet({ FOODGROUP.VEGETARIAN }, { FOODGROUP.VEGETARIAN })
 
+        -- Keep in sync with Wurt + mermking! But make sure no bonuses are applied!
+        inst:AddComponent("foodaffinity")
+        inst.components.foodaffinity:AddFoodtypeAffinity(FOODTYPE.VEGGIE, 1)
+        inst.components.foodaffinity:AddPrefabAffinity  ("kelp",          1) -- prevents the negative stats
+        inst.components.foodaffinity:AddPrefabAffinity  ("kelp_cooked",   1) -- prevents the negative stats
+        inst.components.foodaffinity:AddPrefabAffinity  ("durian",        1) -- prevents the negative stats
+        inst.components.foodaffinity:AddPrefabAffinity  ("durian_cooked", 1) -- prevents the negative stats
+
         inst:AddComponent("health")
+        inst.components.health:StartRegen(TUNING.MERM_HEALTH_REGEN_AMOUNT, TUNING.MERM_HEALTH_REGEN_PERIOD)
+
         inst:AddComponent("combat")
         inst.components.combat.GetBattleCryString = battlecry
         inst.components.combat.hiteffectsymbol = "pig_torso"
@@ -405,9 +625,20 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit)
         MakeMediumBurnableCharacter(inst, "pig_torso")
         MakeMediumFreezableCharacter(inst, "pig_torso")
 
+        inst:AddComponent("named")
+        inst.components.named.possiblenames = STRINGS.MERMNAMES
+        inst.components.named:PickNewName()
+
         inst:ListenForEvent("timerdone", OnTimerDone)
         inst:ListenForEvent("attacked", OnAttacked)
         inst:ListenForEvent("suggest_tree_target", SuggestTreeTarget)
+        inst:ListenForEvent("entitysleep", OnEntitySleepMerm)
+        inst:ListenForEvent("entitywake", CancelRunHomeTask)
+        -- NOTES(JBK): The following events are not mutually exclusive such that `gainloyalty` can also fire off when `startfollowing` does.
+        inst:ListenForEvent("loseloyalty", OnMarkForTeleport)
+        inst:ListenForEvent("stopfollowing", OnMarkForTeleport)
+        inst:ListenForEvent("gainloyalty", OnUnmarkForTeleport)
+        inst:ListenForEvent("startfollowing", OnUnmarkForTeleport)
 
         if master_postinit ~= nil then
             master_postinit(inst)
@@ -419,7 +650,6 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit)
     return Prefab(name, fn, assets, prefabs)
 end
 
-local SLIGHTDELAY = 1
 
 local function guard_common(inst)
     inst.AnimState:SetBuild("merm_guard_build")
@@ -515,9 +745,6 @@ local function common_master(inst)
     inst.components.lootdropper:SetLoot(merm_loot)
 
     inst.components.follower.maxfollowtime = TUNING.MERM_LOYALTY_MAXTIME
-
-    inst:ListenForEvent("attacked", OnAttacked)
-    inst:ListenForEvent("suggest_tree_target", SuggestTreeTarget)
 
     inst:ListenForEvent("onmermkingcreated",   function()
         inst:DoTaskInTime(math.random()*SLIGHTDELAY,function()

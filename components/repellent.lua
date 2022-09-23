@@ -1,6 +1,7 @@
 local Repellent = Class(function(self, inst)
     self.inst = inst
 
+	self.onlyfollowers = false
     self.repel_tags = {}
     self.ignore_tags = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
 end)
@@ -70,21 +71,34 @@ function Repellent:SetUseAmount(amount)
 	self.use_amount = amount
 end
 
+function Repellent:SetOnRepelFollowerFn(fn)
+	self.onrepelfollowerfn = fn
+end
+
+function Repellent:SetOnlyRepelsFollowers(enabled)
+	self.onlyfollowers = enabled
+end
+
 function Repellent:Repel(doer)
     for follower, v in pairs(doer.components.leader.followers) do
         if self:ValidateTargetTags(follower) then
             follower.components.follower:StopFollowing()
+			if self.onrepelfollowerfn ~= nil then
+				self.onrepelfollowerfn(self.inst, follower)
+			end
         end
     end
 
-	local x, y, z = self.inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, self.radius or 1, self.repel_tags, self.ignore_tags)
+	if not self.onlyfollowers then
+		local x, y, z = self.inst.Transform:GetWorldPosition()
+		local ents = TheSim:FindEntities(x, y, z, self.radius or 1, self.repel_tags, self.ignore_tags)
 
-    for k,v in pairs(ents) do
-    	if v.components.combat and v.components.combat:HasTarget() then
-    		v.components.combat:DropTarget()
-    	end
-    end
+		for k,v in pairs(ents) do
+			if v.components.combat and v.components.combat:HasTarget() then
+				v.components.combat:DropTarget()
+			end
+		end
+	end
 
     if self.inst.components.finiteuses then
     	self.inst.components.finiteuses:Use(self.use_amount or 1)

@@ -40,7 +40,7 @@ local events =
                     inst.components.combat:SetTarget(nil)
                 end
                 if not inst.sg:HasStateTag("howling") then
-                    inst.sg:GoToState("howl", 2)
+                    inst.sg:GoToState("howl", {count =2} )
                 end
             end
         end
@@ -60,6 +60,24 @@ local events =
         end
     end),
 }
+
+local function SpawnHound(inst)
+    local hounded = TheWorld.components.hounded
+    if hounded ~= nil then
+        local num = inst:NumHoundsToSpawn()
+        if inst.max_hound_spawns then
+            num = math.min(num,inst.max_hound_spawns)
+            inst.max_hound_spawns = inst.max_hound_spawns - num
+        end
+        local pt = inst:GetPosition()
+        for i = 1, num do
+            local hound = hounded:SummonSpawn(pt)
+            if hound ~= nil and hound.components.follower ~= nil then
+                hound.components.follower:SetLeader(inst)
+            end
+        end
+    end
+end
 
 local function PlayClayShakeSound(inst)
     inst.SoundEmitter:PlaySound("dontstarve/creatures/together/clayhound/stone_shake", nil, .6)
@@ -219,7 +237,7 @@ local states =
 
         onenter = function(inst, norepeat)
             if inst:HasTag("clay") then
-                inst.sg:GoToState("howl", norepeat and -1 or 0)
+                inst.sg:GoToState("howl", {count = norepeat and -1 or 0})
             else
                 inst.Physics:Stop()
                 inst.AnimState:PlayAnimation("taunt")
@@ -249,15 +267,24 @@ local states =
         name = "howl",
         tags = { "busy", "howling" },
 
-        onenter = function(inst, count)
+        onenter = function(inst, data)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("howl")
-            inst.sg.statemem.count = count or 0
+            if data.howl == true then
+                inst.sg.statemem.spawnhounds = true
+            else
+                inst.sg.statemem.count = data.count or 0
+            end
         end,
 
         timeline =
         {
             TimeEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.howl) end),
+            TimeEvent(10 * FRAMES, function(inst)
+                    if inst.sg.statemem.spawnhounds then
+                        SpawnHound(inst)
+                    end
+                end),
         },
 
         events =
@@ -266,10 +293,12 @@ local states =
                 inst.sg.statemem.count = 2
             end),
             EventHandler("animover", function(inst)
-                if inst.sg.statemem.count > 0 then
-                    inst.sg:GoToState("howl", inst.sg.statemem.count > 1 and inst.sg.statemem.count - 1 or -1)
-                elseif inst.sg.statemem.count == 0 and math.random() < .333 then
-                    inst.sg:GoToState("howl", inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") and -1 or 0)
+                if inst.sg.statemem.spawnhounds then
+                    inst.sg:GoToState("idle")
+                elseif inst.sg.statemem.count > 0 then
+                    inst.sg:GoToState("howl", {count= inst.sg.statemem.count > 1 and inst.sg.statemem.count - 1 or -1})
+                elseif inst.sg.statemem.count == 0 and math.random() < 0.333 then
+                    inst.sg:GoToState("howl", {count= inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") and -1 or 0 })
                 else
                     inst.sg:GoToState("idle")
                 end

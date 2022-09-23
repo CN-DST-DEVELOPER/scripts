@@ -92,10 +92,13 @@ local function fn()
     inst.AnimState:PlayAnimation("appear")
     inst.AnimState:SetMultColour(1, 1, 1, .5)
 
-    -- this is purely view related
-    inst:AddComponent("transparentonsanity")
-    inst.components.transparentonsanity.most_alpha = .8
-    inst.components.transparentonsanity.osc_amp = .1
+    if not TheNet:IsDedicated() then
+        -- this is purely view related
+        inst:AddComponent("transparentonsanity")
+        inst.components.transparentonsanity.most_alpha = .8
+        inst.components.transparentonsanity.osc_amp = .1
+        inst.components.transparentonsanity:ForceUpdate()
+    end
 
     inst.entity:SetPristine()
 

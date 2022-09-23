@@ -7,7 +7,7 @@ require "map/room_functions"
 -- Slurtle Canyon
 AddRoom("SlurtleCanyon", {
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
-    value = GROUND.CAVE_NOISE,
+    value = WORLD_TILES.CAVE_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -29,7 +29,7 @@ AddRoom("SlurtleCanyon", {
 -- Bats and Slurtles
 AddRoom("BatsAndSlurtles", {
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
-    value = GROUND.CAVE_NOISE,
+    value = WORLD_TILES.CAVE_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -57,7 +57,7 @@ AddRoom("BatsAndSlurtles", {
 -- Rocky Plains
 AddRoom("RockyPlains", {
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
-    value = GROUND.CAVE_NOISE,
+    value = WORLD_TILES.CAVE_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -84,7 +84,7 @@ AddRoom("RockyPlains", {
 -- Rocky Hatching Grounds
 AddRoom("RockyHatchingGrounds", {
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
-    value = GROUND.CAVE_NOISE,
+    value = WORLD_TILES.CAVE_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -111,7 +111,7 @@ AddRoom("RockyHatchingGrounds", {
 -- Bats and Rocky
 AddRoom("BatsAndRocky", {
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
-    value = GROUND.CAVE_NOISE,
+    value = WORLD_TILES.CAVE_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -143,7 +143,7 @@ AddRoom("BatsAndRocky", {
 
 local bgrocky = {
     colour={r=0.7,g=0.7,b=0.7,a=0.9},
-    value = GROUND.CAVE_NOISE,
+    value = WORLD_TILES.CAVE_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {

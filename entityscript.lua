@@ -251,8 +251,12 @@ function EntityScript:GetSaveRecord()
         record = {
             prefab = self.prefab,
             --id = self.GUID,
-            age = self.Network:GetPlayerAge()
+            age = self.Network:GetPlayerAge(),
         }
+
+		--if ThePlayer == self then
+		--	record.crafting_menu = TheCraftingMenuProfile:SerializeLocalClientSessionData()
+		--end
 
         local platform = self:GetCurrentPlatform()
         if platform then
@@ -322,6 +326,10 @@ function EntityScript:Show()
     self.entity:Show(false)
 end
 
+function EntityScript:IsOnWater()
+    return not self:GetCurrentPlatform() and not TheWorld.Map:IsVisualGroundAtPoint(self.Transform:GetWorldPosition())
+end
+
 function EntityScript:IsInLimbo()
     --V2C: faster than checking tag, but only valid on mastersim
     return self.inlimbo
@@ -363,6 +371,10 @@ function EntityScript:RemoveFromScene()
 end
 
 function EntityScript:ReturnToScene()
+    if not self:IsValid() then
+        print("[ERROR] Calling ReturnToScene on an invalid entity!", self.prefab) -- Keep this for debug logs to come.
+    end
+
     self.entity:RemoveTag("INLIMBO")
     self.entity:SetInLimbo(false)
     self.inlimbo = false
@@ -544,6 +556,24 @@ end
 
 function EntityScript:HasTag(tag)
     return self.entity:HasTag(tag)
+end
+
+function EntityScript:HasTags(tags)
+	for i = 1, #tags do
+		if not self.entity:HasTag(tags[i]) then
+			return false
+		end
+	end
+	return true
+end
+
+function EntityScript:HasOneOfTags(tags)
+	for i = 1, #tags do
+		if self.entity:HasTag(tags[i]) then
+			return true
+		end
+	end
+	return false
 end
 
 require("entityreplica")
@@ -1427,6 +1457,7 @@ function EntityScript:PerformBufferedAction()
         end
 
         self:PushEvent("actionfailed", { action = self.bufferedaction, reason = reason })
+
         self.bufferedaction:Fail()
         self.bufferedaction = nil
     end
@@ -1453,10 +1484,8 @@ function EntityScript:Remove()
         self.parent:RemoveChild(self)
     end
 
-    if self.platformfollowers then
-        for k,v in pairs(self.platformfollowers) do
-            k.platform = nil
-        end
+    if self.platform then
+        self.platform:RemovePlatformFollower(self)
     end
 
     OnRemoveEntity(self.GUID)
@@ -1503,6 +1532,12 @@ function EntityScript:Remove()
         for k,v in pairs(self.children) do
             k.parent = nil
             k:Remove()
+        end
+    end
+
+    if self.platformfollowers then
+        for k,v in pairs(self.platformfollowers) do
+            k.platform = nil
         end
     end
 
@@ -1595,7 +1630,7 @@ function EntityScript:GetCurrentTileType()
     local actual_tile = map:GetTile(tx, ty)
 
     if actual_tile ~= nil and tilecenter_x ~= nil and tilecenter_z ~= nil then
-        if actual_tile >= GROUND.UNDERGROUND then
+        if not TileGroupManager:IsLandTile(actual_tile) then
             local xpercent = (tilecenter_x - ptx) / TILE_SCALE + .25
             local ypercent = (tilecenter_z - ptz) / TILE_SCALE + .25
 

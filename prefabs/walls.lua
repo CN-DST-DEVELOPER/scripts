@@ -1,17 +1,14 @@
 require "prefabutil"
 
 local function OnIsPathFindingDirty(inst)
-    if inst:GetCurrentPlatform() == nil then
-        local wall_x, wall_y, wall_z = inst.Transform:GetWorldPosition()
-        if inst._ispathfinding:value() then
-            if inst._pfpos == nil then
-                inst._pfpos = Point(wall_x, wall_y, wall_z)
-                TheWorld.Pathfinder:AddWall(wall_x, wall_y, wall_z)
-            end
-        elseif inst._pfpos ~= nil then
-            TheWorld.Pathfinder:RemoveWall(wall_x, wall_y, wall_z)
-            inst._pfpos = nil
+    if inst._ispathfinding:value() then
+        if inst._pfpos == nil and inst:GetCurrentPlatform() == nil then
+            inst._pfpos = inst:GetPosition()
+            TheWorld.Pathfinder:AddWall(inst._pfpos:Get())
         end
+    elseif inst._pfpos ~= nil then
+        TheWorld.Pathfinder:RemoveWall(inst._pfpos:Get())
+        inst._pfpos = nil
     end
 end
 

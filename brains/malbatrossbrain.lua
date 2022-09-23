@@ -171,6 +171,7 @@ end
 
 local SEE_BAIT_DIST = 15
 local EAT_MUST_TAGS = {"oceanfish", "oceanfishable"}
+local OCEANTRAWLER_MUST_TAGS = {"oceantrawler"}
 local EAT_MUST_NOT_TAGS = {"INLIMBO", "outofreach", "FX"}
 local function GetEatAction(inst)
     if not inst:IsHungry() then
@@ -195,6 +196,40 @@ local function GetEatAction(inst)
                     not target:IsOnPassablePoint()
         end
         return act
+    end
+end
+
+local DIVE_ATTACK_CHANCE = 0.33
+local function LookForTrawlerAction(inst)
+    if not inst:IsHungry() then
+        return nil
+    end
+
+    -- Target ocean trawlers with fish inside them
+    local target = FindEntity(
+        inst,
+        SEE_BAIT_DIST,
+        function(found_entity)
+            return found_entity.components.container and found_entity.components.container:IsFull()
+        end,
+        OCEANTRAWLER_MUST_TAGS,
+        EAT_MUST_NOT_TAGS
+    )
+
+    if target then
+        inst:ForceFacePoint(target.Transform:GetWorldPosition())
+
+        -- Attack or dive attack
+        if math.random() < DIVE_ATTACK_CHANCE then
+            inst:PushEvent("doswoop", inst.components.combat.target)
+            return inst.components.combat.target
+        else
+            local act = BufferedAction(inst, target, ACTIONS.HAMMER)
+            act.validfn = function()
+                return target.components.container and target.components.container:IsFull()
+            end
+            return act
+        end
     end
 end
 
@@ -232,6 +267,7 @@ function MalbatrossBrain:OnStart()
 
                 ChaseAndAttack(self.inst, CHASE_TIME, CHASE_DIST),
                 DoAction(self.inst, GetEatAction, "Dive For Fish"),
+                DoAction(self.inst, LookForTrawlerAction, "Attack Fish Trawler"),
                 Wander(self.inst, GetWanderPos, 30, {minwaittime = 6}),
             }, 1)),
     }, 1)

@@ -214,7 +214,7 @@ local function NormalRetargetFn(inst)
 		table.insert(exclude_tags, "player") -- prevent spectators from auto-targeting webber
 	end
 
-    local oneof_tags = {"monster"}
+    local oneof_tags = {"monster","wonkey","pirate"}
     if not inst:HasTag("merm") then
         table.insert(oneof_tags, "merm")
     end
@@ -776,6 +776,7 @@ local function OnMoonPetrify(inst)
         local x, y, z = inst.Transform:GetWorldPosition()
         local rot = inst.Transform:GetRotation()
         local name = inst.components.named.name
+        inst.components.inventory:DropEverything()
         inst:Remove()
         local gargoyle = SpawnPrefab(gargoyles[math.random(#gargoyles)])
         gargoyle.components.named:SetName(name)
@@ -787,6 +788,7 @@ end
 
 local function OnMoonTransformed(inst, data)
     inst.components.named:SetName(data.old.components.named.name)
+    data.old.components.inventory:TransferInventory(inst)
     inst.sg:GoToState("howl")
 end
 

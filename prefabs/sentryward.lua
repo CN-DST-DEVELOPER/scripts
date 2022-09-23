@@ -56,6 +56,7 @@ local function init(inst)
     if inst.icon == nil and not inst:HasTag("burnt") then
         inst.icon = SpawnPrefab("globalmapicon")
         inst.icon.MiniMapEntity:SetIsFogRevealer(true)
+        inst.icon:AddTag("fogrevealer")
         inst.icon:TrackEntity(inst)
     end
 end

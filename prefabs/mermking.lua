@@ -14,9 +14,9 @@ local prefabs =
 local loot =
 {
     "pondfish",
-    "pondfish",
-    "pondfish",
     "froglegs",
+    "kelp",
+    "kelp",
     "kelp",
     "kelp",
 }
@@ -26,12 +26,21 @@ local trading_items =
     { prefabs = { "kelp"  },         min_count = 2, max_count = 4, reset = false, add_filler = false, },
     { prefabs = { "kelp"  },         min_count = 2, max_count = 3, reset = false, add_filler = false, },
     { prefabs = { "seeds" },         min_count = 4, max_count = 6, reset = false, add_filler = false, },
-    { prefabs = { "spoiled_food"  }, min_count = 2, max_count = 4, reset = false, add_filler = false, },
     { prefabs = { "tentaclespots" }, min_count = 1, max_count = 1, reset = false, add_filler = true,  },
+    { prefabs = { "cutreeds" },      min_count = 1, max_count = 2, reset = false, add_filler = true,  },
 
     {
-      prefabs = { "trinket_12", "trinket_3", "trinket_25", "trinket_17", "trinket_4" },
-      min_count = 1, max_count = 1, reset = false, add_filler = true,
+        prefabs = { -- These trinkets are generally good for team play, but tend to be poor for solo play.
+            -- Theme
+            "trinket_12", -- Dessicated Tentacle
+            "trinket_25", -- Air Unfreshener
+            -- Team
+            "trinket_1", -- Melted Marbles
+            -- Fishing
+            "trinket_17", -- Bent Spork
+            "trinket_8", -- Rubber Bung
+        },
+        min_count = 1, max_count = 1, reset = false, add_filler = true,
     },
 
     {
@@ -40,7 +49,7 @@ local trading_items =
     },
 }
 
-local trading_filler = { "seeds", "kelp", "seeds", "spoiled_food", "seeds", "seeds"}
+local trading_filler = { "seeds", "kelp", "seeds", "seeds"}
 
 local MAX_TARGET_SHARES = 30
 local SHARE_TARGET_DIST = 40
@@ -49,10 +58,9 @@ local function OnAttacked(inst, data)
     local attacker = data and data.attacker
     if attacker and inst.components.combat:CanTarget(attacker) then
         inst.components.combat:SetTarget(attacker)
-        local targetshares = MAX_TARGET_SHARES
         inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, function(sharer)
             return sharer:HasTag("merm") and not sharer:HasTag("player")
-        end, targetshares)
+        end, MAX_TARGET_SHARES)
     end
 end
 
@@ -89,9 +97,13 @@ local function TradeItem(inst)
 
     local selected_index = math.random(1, #inst.trading_items)
     local selected_item = inst.trading_items[selected_index]
-    local reward_count = math.random(selected_item.min_count, selected_item.max_count)
-    local filler_min = 2
-    local filler_max = 4
+
+    local isabigheavyfish = item.components.weighable and item.components.weighable:GetWeightPercent() >= TUNING.WEIGHABLE_HEAVY_WEIGHT_PERCENT or false
+    local bigheavyreward = isabigheavyfish and math.random(1, 2) or 0
+
+    local filler_min = 2 -- Not biasing minimum for filler.
+    local filler_max = 4 + bigheavyreward
+    local reward_count = math.random(selected_item.min_count, selected_item.max_count) + bigheavyreward
 
     for k = 1, reward_count do
         local reward_item = SpawnPrefab(selected_item.prefabs[math.random(1, #selected_item.prefabs)])
@@ -106,7 +118,24 @@ local function TradeItem(inst)
             launchitem(filler_item, angle)
         end
     end
+    if item:HasTag("oceanfish") then
+        local goldmin, goldmax, goldprefab = 1, 2, "goldnugget"
+        if item.prefab:find("oceanfish_medium_") == 1 then
+            goldmin, goldmax = 2, 4
+            if item.prefab == "oceanfish_medium_6_inv" or item.prefab == "oceanfish_medium_7_inv" then -- YoT events.
+                goldprefab = "lucky_goldnugget"
+            end
+        end
 
+        local amt = math.random(goldmin, goldmax) + bigheavyreward
+        for i = 1, amt do
+            local reward_item = SpawnPrefab(goldprefab)
+            reward_item.Transform:SetPosition(x, y, z)
+            launchitem(reward_item, angle)
+        end
+    end
+
+    -- Cycle out rewards.
     table.remove(inst.trading_items, selected_index)
     if #inst.trading_items == 0 or selected_item.reset then
         inst.trading_items = deepcopy(trading_items)
@@ -125,7 +154,14 @@ local function OnGetItemFromPlayer(inst, giver, item)
         end
 
         if inst.components.eater:CanEat(item) then
-            inst.sg:GoToState("eat")
+            local hunger = item.components.edible:GetHunger(inst)
+            local chews = 2 -- Most crockpot foods.
+            if hunger < TUNING.CALORIES_SMALL then -- 12.5
+                chews = 0
+            elseif hunger < TUNING.CALORIES_MEDSMALL then -- 18.75
+                chews = 1
+            end
+            inst.sg:GoToState("eat", { chews = chews, })
             inst.components.eater:Eat(item)
         else
             inst.sg:GoToState("trade")
@@ -409,6 +445,14 @@ local function fn()
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODGROUP.VEGETARIAN }, { FOODGROUP.VEGETARIAN })
+
+    -- Keep in sync with Wurt + merm! But make sure no bonuses are applied!
+    inst:AddComponent("foodaffinity")
+    inst.components.foodaffinity:AddFoodtypeAffinity(FOODTYPE.VEGGIE, 1)
+    inst.components.foodaffinity:AddPrefabAffinity  ("kelp",          1) -- prevents the negative stats
+    inst.components.foodaffinity:AddPrefabAffinity  ("kelp_cooked",   1) -- prevents the negative stats
+    inst.components.foodaffinity:AddPrefabAffinity  ("durian",        1) -- prevents the negative stats
+    inst.components.foodaffinity:AddPrefabAffinity  ("durian_cooked", 1) -- prevents the negative stats
 
     inst:AddComponent("hunger")
     inst.components.hunger:SetMax(TUNING.MERM_KING_HUNGER)

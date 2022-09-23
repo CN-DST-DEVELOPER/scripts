@@ -1,8 +1,10 @@
 local Inspectable = Class(function(self, inst)
     self.inst = inst
     inst:AddTag("inspectable")
-    self.description = nil
-    self.getspecialdescription = nil
+
+    --self.description = nil
+    --self.getspecialdescription = nil
+	--self.nameoverride = nil -- this is actually the inspect string name, not the display name of the object
 end)
 
 function Inspectable:OnRemoveFromEntity()

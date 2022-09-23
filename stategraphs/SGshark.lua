@@ -589,7 +589,7 @@ CommonStates.AddWalkStates(states,
         inst:RemoveTag("walking")
     end,
 
-    exitonenter = function(inst)
+    endonenter = function(inst)
         inst:AddTag("walking")
     end,
     endonexit = function(inst)

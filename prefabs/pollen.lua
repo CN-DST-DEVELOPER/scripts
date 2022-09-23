@@ -100,7 +100,7 @@ local function fn()
         z = z + pz
 
         -- don't spawn particles over water
-        if map:GetTileAtPoint(x, y, z) ~= GROUND.IMPASSABLE then
+        if not TileGroupManager:IsImpassableTile(map:GetTileAtPoint(x, y, z)) then
             local vx = .03 * (math.random() - .5)
             local vy = 0
             local vz = .03 * (math.random() - .5)

@@ -2,12 +2,7 @@ local assets =
 {
     Asset("ANIM", "anim/pig_king.zip"),
     Asset("SOUND", "sound/pig.fsb"),
-}
-
-local assets_minigame =
-{
-    Asset("ANIM", "anim/pig_guard_build.zip"),
-    Asset("ANIM", "anim/pig_elite_build.zip"),
+    Asset("ANIM", "anim/pig_king_elite_build.zip"),
 }
 
 local prefabs =

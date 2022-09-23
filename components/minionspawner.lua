@@ -17,24 +17,23 @@ local POS_MODIFIER = 1.2
 
 local DEFAULT_VALID_TILE_TYPES =
 {
-    [GROUND.ROAD] = true,
-    [GROUND.ROCKY] = true,
-    [GROUND.DIRT] = true,
-    [GROUND.SAVANNA] = true,
-    [GROUND.GRASS] = true,
-    [GROUND.FOREST] = true,
-    [GROUND.MARSH] = true,
-    [GROUND.WEB] = true,
-    [GROUND.WOODFLOOR] = true,
-    [GROUND.CARPET] = true,
-    [GROUND.CHECKER] = true,
+    [WORLD_TILES.ROAD] = true,
+    [WORLD_TILES.ROCKY] = true,
+    [WORLD_TILES.DIRT] = true,
+    [WORLD_TILES.SAVANNA] = true,
+    [WORLD_TILES.GRASS] = true,
+    [WORLD_TILES.FOREST] = true,
+    [WORLD_TILES.MARSH] = true,
+    [WORLD_TILES.WOODFLOOR] = true,
+    [WORLD_TILES.CARPET] = true,
+    [WORLD_TILES.CHECKER] = true,
 
     -- CAVES
-    [GROUND.CAVE] = true,
-    [GROUND.FUNGUS] = true,
-    [GROUND.SINKHOLE] = true,
-    [GROUND.UNDERROCK] = true,
-    [GROUND.MUD] = true,
+    [WORLD_TILES.CAVE] = true,
+    [WORLD_TILES.FUNGUS] = true,
+    [WORLD_TILES.SINKHOLE] = true,
+    [WORLD_TILES.UNDERROCK] = true,
+    [WORLD_TILES.MUD] = true,
 }
 
 local MinionSpawner = Class(function(self, inst)

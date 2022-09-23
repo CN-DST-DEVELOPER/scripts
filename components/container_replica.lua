@@ -4,6 +4,8 @@ local Container = Class(function(self, inst)
     self.inst = inst
 
     self._cannotbeopened = net_bool(inst.GUID, "container._cannotbeopened")
+    self._skipopensnd = net_bool(inst.GUID, "container._skipopensnd")
+    self._skipclosesnd = net_bool(inst.GUID, "container._skipclosesnd")
     self._isopen = false
     self._numslots = 0
     self.acceptsstacks = true
@@ -25,7 +27,7 @@ local Container = Class(function(self, inst)
         --Server intercepts messages and forwards to clients via classified net vars
         self._onitemget = function(inst, data)
             self.classified:SetSlotItem(data.slot, data.item, data.src_pos)
-            if self.issidewidget and
+            if inst.components.inventoryitem ~= nil and
                 inst.components.inventoryitem.owner ~= nil and
                 inst.components.inventoryitem.owner.HUD ~= nil then
                 inst.components.inventoryitem.owner:PushEvent("refreshcrafting")
@@ -33,7 +35,7 @@ local Container = Class(function(self, inst)
         end
         self._onitemlose = function(inst, data)
             self.classified:SetSlotItem(data.slot)
-            if self.issidewidget and
+            if inst.components.inventoryitem ~= nil and
                 inst.components.inventoryitem.owner ~= nil and
                 inst.components.inventoryitem.owner.HUD ~= nil then
                 inst.components.inventoryitem.owner:PushEvent("refreshcrafting")
@@ -157,21 +159,17 @@ function Container:AttachOpener(opener)
     local inv = self.issidewidget and ThePlayer ~= nil and ThePlayer.HUD ~= nil and ThePlayer.HUD.controls.inv or nil
     self.opentask = self.inst:DoTaskInTime(0, OpenContainer, self, inv ~= nil and (not inv.shown or inv.rebuild_snapping))
 
-    if self.issidewidget then
-        self.inst:ListenForEvent("itemget", OnRefreshCrafting)
-        self.inst:ListenForEvent("itemlose", OnRefreshCrafting)
-    end
+    self.inst:ListenForEvent("itemget", OnRefreshCrafting)
+    self.inst:ListenForEvent("itemlose", OnRefreshCrafting)
 end
 
 function Container:DetachOpener()
     self.inst:RemoveEventCallback("onremove", self.ondetachopener, self.opener)
     self.opener = nil
     self.ondetachopener = nil
-    if self.issidewidget then
-        self.inst:RemoveEventCallback("itemget", OnRefreshCrafting)
-        self.inst:RemoveEventCallback("itemlose", OnRefreshCrafting)
-        OnRefreshCrafting(self.inst)
-    end
+    self.inst:RemoveEventCallback("itemget", OnRefreshCrafting)
+    self.inst:RemoveEventCallback("itemlose", OnRefreshCrafting)
+    OnRefreshCrafting(self.inst)
     self:Close()
 end
 
@@ -221,28 +219,27 @@ function Container:WidgetSetup(prefab, data)
     if self.classified ~= nil then
         self.classified:InitializeSlots(self:GetNumSlots())
     end
-    if self.issidewidget then
-        if self._onputininventory == nil then
-            self._owner = nil
-            self._ondropped = function(inst)
-                if self._owner ~= nil then
-                    local owner = self._owner
-                    self._owner = nil
-                    if owner.HUD ~= nil then
-                        owner:PushEvent("refreshcrafting")
-                    end
-                end
-            end
-            self._onputininventory = function(inst, owner)
-                self._ondropped(inst)
-                self._owner = owner
-                if owner ~= nil and owner.HUD ~= nil then
+
+    if self._onputininventory == nil then
+        self._owner = nil
+        self._ondropped = function(inst)
+            if self._owner ~= nil then
+                local owner = self._owner
+                self._owner = nil
+                if owner.HUD ~= nil then
                     owner:PushEvent("refreshcrafting")
                 end
             end
-            self.inst:ListenForEvent("onputininventory", self._onputininventory)
-            self.inst:ListenForEvent("ondropped", self._ondropped)
         end
+        self._onputininventory = function(inst, owner)
+            self._ondropped(inst)
+            self._owner = owner
+            if owner ~= nil and owner.HUD ~= nil then
+                owner:PushEvent("refreshcrafting")
+            end
+        end
+        self.inst:ListenForEvent("onputininventory", self._onputininventory)
+        self.inst:ListenForEvent("ondropped", self._ondropped)
     end
 end
 
@@ -268,6 +265,22 @@ end
 
 function Container:CanBeOpened()
     return not self._cannotbeopened:value()
+end
+
+function Container:SetSkipOpenSnd(skipopensnd)
+    self._skipopensnd:set(skipopensnd)
+end
+
+function Container:ShouldSkipOpenSnd()
+    return self._skipopensnd:value()
+end
+
+function Container:SetSkipCloseSnd(skipclosesnd)
+    self._skipclosesnd:set(skipclosesnd)
+end
+
+function Container:ShouldSkipCloseSnd()
+    return self._skipclosesnd:value()
 end
 
 function Container:CanTakeItemInSlot(item, slot)
@@ -395,7 +408,11 @@ function Container:Open(doer)
         elseif not self._isopen then
             doer.HUD:OpenContainer(self.inst, self:IsSideWidget())
             if self:IsSideWidget() then
-                TheFocalPoint.SoundEmitter:PlaySound(self.inst.open_skin_sound or "dontstarve/wilson/backpack_open")
+                TheFocalPoint.SoundEmitter:PlaySound(SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or "dontstarve/wilson/backpack_open")
+            else
+                if not self:ShouldSkipOpenSnd() then
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/container_open")
+                end
             end
             self._isopen = true
         end
@@ -414,6 +431,10 @@ function Container:Close()
             ThePlayer.HUD:CloseContainer(self.inst, self:IsSideWidget())
             if self:IsSideWidget() then
                 TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/backpack_close")
+            else
+                if not self:ShouldSkipCloseSnd() then
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/container_close")
+                end
             end
         end
         self._isopen = false

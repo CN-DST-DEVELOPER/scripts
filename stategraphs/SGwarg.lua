@@ -37,7 +37,7 @@ local events =
                     inst.components.combat:SetTarget(nil)
                 end
                 if not inst.sg:HasStateTag("howling") then
-                    inst.sg:GoToState("howl", 2)
+                    inst.sg:GoToState("howl", {count=2})
                 end
             end
         end
@@ -55,6 +55,10 @@ local function SpawnHound(inst)
     local hounded = TheWorld.components.hounded
     if hounded ~= nil then
         local num = inst:NumHoundsToSpawn()
+        if inst.max_hound_spawns then
+            num = math.min(num,inst.max_hound_spawns)
+            inst.max_hound_spawns = inst.max_hound_spawns - num
+        end
         local pt = inst:GetPosition()
         for i = 1, num do
             local hound = hounded:SummonSpawn(pt)
@@ -142,11 +146,12 @@ local states =
         name = "howl",
         tags = { "busy", "howling" },
 
-        onenter = function(inst, count)
+        onenter = function(inst, data)
+
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("howl")
             inst.SoundEmitter:PlaySound(inst.sounds.howl)
-            inst.sg.statemem.count = count
+            inst.sg.statemem.count = data and data.count or nil
         end,
 
         timeline =
@@ -165,7 +170,7 @@ local states =
             end),
             EventHandler("animover", function(inst)
                 if inst.sg.statemem.count ~= nil and inst.sg.statemem.count > 1 then
-                    inst.sg:GoToState("howl", inst.sg.statemem.count - 1)
+                    inst.sg:GoToState("howl", {count=inst.sg.statemem.count - 1})
                 else
                     inst.sg:GoToState("idle")
                 end

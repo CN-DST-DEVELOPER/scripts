@@ -72,3 +72,31 @@ end
 function math.diff(a, b)
     return math.abs(a - b)
 end
+
+function ReduceAngle(rot)
+    while rot < -180 do
+        rot = rot + 360
+    end
+    while rot > 180 do
+        rot = rot - 360
+    end
+    return rot
+end
+
+function DiffAngle(rot1, rot2)
+    return math.abs(ReduceAngle(rot2 - rot1))
+end
+
+function ReduceAngleRad(rot)
+    while rot < -math.pi do
+        rot = rot + 2 * math.pi
+    end
+    while rot > math.pi do
+        rot = rot - 2 * math.pi
+    end
+    return rot
+end
+
+function DiffAngleRad(rot1, rot2)
+    return math.abs(ReduceAngleRad(rot2 - rot1))
+end

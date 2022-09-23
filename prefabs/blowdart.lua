@@ -126,7 +126,9 @@ local function sleepattack(inst, attacker, target)
         return
     end
 
-    target.SoundEmitter:PlaySound("dontstarve/wilson/blowdart_impact_sleep")
+	if target.SoundEmitter ~= nil then
+	    target.SoundEmitter:PlaySound("dontstarve/wilson/blowdart_impact_sleep")
+	end
 
     if target.components.sleeper ~= nil then
         target.components.sleeper:AddSleepiness(1, 15, inst)
@@ -171,7 +173,10 @@ local function fireattack(inst, attacker, target)
         return
     end
 
-    target.SoundEmitter:PlaySound("dontstarve/wilson/blowdart_impact_fire")
+	if target.SoundEmitter ~= nil then
+	    target.SoundEmitter:PlaySound("dontstarve/wilson/blowdart_impact_fire")
+	end
+
     target:PushEvent("attacked", {attacker = attacker, damage = 0})
     if target.components.burnable then
         target.components.burnable:Ignite(nil, attacker)

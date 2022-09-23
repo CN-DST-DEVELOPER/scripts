@@ -22,7 +22,7 @@ local DEFAULT_PERIOD = CalculatePeriod(DEFAULT_DURATION, DEFAULT_START, DEFAULT_
 
 local function PushAlpha(inst)
     local alpha = FadeToAlpha(inst._fade:value())
-    inst.AnimState:OverrideMultColour(alpha, alpha, alpha, alpha)
+    inst.AnimState:OverrideMultColour(1, 1, 1, alpha)
 end
 
 local function UpdateFade(inst)
@@ -51,6 +51,10 @@ local function startshadow(inst, time, starttint, endtint)
         inst._period:set(CalculatePeriod(time, starttint, endtint))
         OnFadeDirty(inst)
     end
+end
+
+local function PlayMeteorSound(inst)
+    inst.SoundEmitter:PlaySound("dontstarve/common/meteor_spawn")
 end
 
 local function fn()
@@ -86,7 +90,7 @@ local function fn()
         return inst
     end
 
-    inst.SoundEmitter:PlaySound("dontstarve/common/meteor_spawn")
+    inst:DoTaskInTime(0, PlayMeteorSound)
 
     inst.startfn = startshadow
 

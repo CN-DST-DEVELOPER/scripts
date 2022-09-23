@@ -189,14 +189,13 @@ function Combat:LocomotorCanAttack(reached_dest, target)
         return self.inst.components.combat:LocomotorCanAttack(reached_dest, target)
     elseif self.classified ~= nil then
         if not self:IsValidTarget(target) then
-            return false, true
+            return false, true, false
         end
 
         local range = math.max(0, target:GetPhysicsRadius(0) + self:GetAttackRangeWithWeapon() - .5)
         reached_dest = reached_dest or distsq(target:GetPosition(), self.inst:GetPosition()) <= range * range
 
         local valid = self.classified.canattack:value()
-            and not self:InCooldown()
             and (   self.inst.sg == nil or
                     not self.inst.sg:HasStateTag("busy") or
                     self.inst.sg:HasStateTag("hit")
@@ -209,9 +208,23 @@ function Combat:LocomotorCanAttack(reached_dest, target)
                             target:HasTag("birchnutdrake")
                         )
                     )
-        return reached_dest, not valid
+
+        if range > 2 and self.inst:HasTag("player") then
+            local weapon = self:GetWeapon()
+            local is_ranged_weapon = weapon ~= nil and (weapon:HasTag("projectile") or weapon:HasTag("rangedweapon"))
+
+            if not is_ranged_weapon then
+                local currentpos = self.inst:GetPosition()
+                local voidtest = currentpos + ((target:GetPosition() - currentpos):Normalize() * (self:GetAttackRangeWithWeapon() / 2))
+                if TheWorld.Map:IsNotValidGroundAtPoint(voidtest:Get()) and not TheWorld.Map:IsNotValidGroundAtPoint(target.Transform:GetWorldPosition()) then
+                    reached_dest = false
+                end
+            end
+        end
+
+        return reached_dest, not valid, self:InCooldown()
     else
-        return reached_dest, true
+        return reached_dest, true, false
     end
 end
 
@@ -382,6 +395,9 @@ function Combat:CanBeAttacked(attacker)
                 attacker:HasTag("birchnutroot") or
                 attacker:HasTag("birchnut")) then
             --Birchnut check
+            return false
+        elseif self.inst:HasTag("noplayertarget") and attacker:HasTag("player") then
+            --Can't be attacked by players
             return false
         elseif attacker ~= self.inst and self.inst:HasTag("player") then
             --Player target check

@@ -1,4 +1,4 @@
-Follow = Class(BehaviourNode, function(self, inst, target, min_dist, target_dist, max_dist, canrun)
+Follow = Class(BehaviourNode, function(self, inst, target, min_dist, target_dist, max_dist, canrun, alwayseval)
     BehaviourNode._ctor(self, "Follow")
     self.inst = inst
     self.target = target
@@ -25,6 +25,7 @@ Follow = Class(BehaviourNode, function(self, inst, target, min_dist, target_dist
 	end
 
     self.canrun = canrun ~= false
+    self.alwayseval = alwayseval ~= false
     self.currenttarget = nil
     self.action = "STAND"
 end)
@@ -81,7 +82,7 @@ function Follow:Visit()
         if self.currenttarget ~= nil then
             dist_sq, target_pos = _distsq(self.inst, self.currenttarget)
 
-			if prev_target ~= self.currenttarget then
+			if prev_target ~= self.currenttarget or self.alwayseval then
 				self:EvaluateDistances()
 			end
 

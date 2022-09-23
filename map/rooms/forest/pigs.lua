@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 AddRoom("PigTown", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"Town"},
 					contents =  {
 									countprefabs = {
@@ -24,7 +24,7 @@ AddRoom("PigTown", {
 					})
 AddRoom("PigVillage", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"Town"},
 					contents =  {
 									countstaticlayouts={
@@ -52,7 +52,7 @@ AddRoom("PigVillage", {
 					})
 AddRoom("PigKingdom", {
 					colour={r=0.8,g=.8,b=.1,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"Town"},
                     required_prefabs = {"pigking"},
 					contents =  {
@@ -76,7 +76,7 @@ AddRoom("PigKingdom", {
 					})
 AddRoom("PigCity", {
 					colour={r=0.9,g=.9,b=.2,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"Town"},
                     required_prefabs = {"pigking"},
 					contents =  {
@@ -93,7 +93,7 @@ AddRoom("PigCity", {
 					})
 AddRoom("PigCamp", {
 					colour={r=1,g=.8,b=.8,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"Town"},
 					contents =  {
 					                countprefabs= {
@@ -112,7 +112,7 @@ AddRoom("PigCamp", {
 					})
 AddRoom("PigShrine", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									countstaticlayouts={
 										["MaxPigShrine"]=1,
@@ -129,7 +129,7 @@ AddRoom("PigShrine", {
 					})
 AddRoom("Pondopolis", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 					                countprefabs= {
 					                    pond = function () return 5 + math.random(3) end

@@ -8,6 +8,8 @@ local function UpdatePosition(inst, target)
 end
 
 local function TrackEntity(inst, target, restriction, icon)
+    -- TODO(JBK): This function is not able to be ran twice without causing issues.
+    inst._target = target
     if restriction ~= nil then
         inst.MiniMapEntity:SetRestriction(restriction)
     end
@@ -30,6 +32,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+    inst:AddTag("globalmapicon")
     inst:AddTag("CLASSIFIED")
 
     inst.MiniMapEntity:SetCanUseCache(false)

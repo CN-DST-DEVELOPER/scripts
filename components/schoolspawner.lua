@@ -24,13 +24,24 @@ local _scheduledtasks = {}
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
 --------------------------------------------------------------------------
+local OCEANTRAWLER_TAGS = { "oceantrawler" }
+local function GetOceanTrawlerChanceModifier(spawnpoint)
+    local oceantrawlers = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.GNARWAIL_TEST_RADIUS, OCEANTRAWLER_TAGS)
+    for i, trawler in ipairs(oceantrawlers) do
+        if trawler.components.oceantrawler then
+            return trawler.components.oceantrawler:GetOceanTrawlerSpawnChanceModifier(spawnpoint)
+        end
+    end
+    return 1
+end
 
 local GNARWAIL_SPAWN_RADIUS = 10
 local GNARWAIL_TIMING = {8, 10} -- min 8, max 10
 local GNARWAIL_TAGS = { "gnarwail" }
-local function testforgnarwail(comp, spawnpoint)
+local function testforgnarwail(comp, spawnpoint, chancemodifier)
     local ents = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.GNARWAIL_TEST_RADIUS, GNARWAIL_TAGS)
-    if #ents < 2 and math.random() < TUNING.GNARWAIL_SPAWN_CHANCE then
+    local spawnchance = TUNING.GNARWAIL_SPAWN_CHANCE * (chancemodifier or 1)
+    if #ents < 2 and math.random() < spawnchance then
         local offset = FindSwimmableOffset(spawnpoint, math.random()*2*PI, GNARWAIL_SPAWN_RADIUS)
         if offset then
             comp.inst:DoTaskInTime(GetRandomMinMax(GNARWAIL_TIMING[1], GNARWAIL_TIMING[2]), function()
@@ -51,9 +62,10 @@ end
 local SHARK_SPAWN_RADIUS = 20
 local SHARK_TIMING = {8, 10} -- min 8, max 10
 local SHARK_TAGS = { "shark" }
-local function testforshark(comp, spawnpoint)
+local function testforshark(comp, spawnpoint, chancemodifier)
     local ents = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SHARK_TEST_RADIUS, SHARK_TAGS)
-    if #ents < 2 and math.random() < TUNING.SHARK_SPAWN_CHANCE then
+    local spawnchance = TUNING.SHARK_SPAWN_CHANCE * (chancemodifier or 1)
+    if #ents < 2 and math.random() < spawnchance then
         local offset = FindSwimmableOffset(spawnpoint, math.random()*2*PI, SHARK_SPAWN_RADIUS)
         if offset then
             comp.inst:DoTaskInTime(GetRandomMinMax(SHARK_TIMING[1], SHARK_TIMING[2]), function()
@@ -234,9 +246,10 @@ function self:SpawnSchool(spawnpoint, target, override_spawn_offset)
         self.inst:PushEvent("schoolspawned", {spawnpoint = spawnpoint})
 
         local tile_at_spawnpoint = TheWorld.Map:GetTileAtPoint(spawnpoint:Get())
-        if tile_at_spawnpoint == GROUND.OCEAN_SWELL or tile_at_spawnpoint == GROUND.OCEAN_ROUGH then
-            testforgnarwail(self, spawnpoint)
-            testforshark(self, spawnpoint)
+        if tile_at_spawnpoint == WORLD_TILES.OCEAN_SWELL or tile_at_spawnpoint == WORLD_TILES.OCEAN_ROUGH then
+            local oceantrawlerchancemodifier = GetOceanTrawlerChanceModifier(spawnpoint)
+            testforgnarwail(self, spawnpoint, oceantrawlerchancemodifier)
+            testforshark(self, spawnpoint, oceantrawlerchancemodifier)
         end
 	else
 		herd:Remove()
@@ -244,6 +257,15 @@ function self:SpawnSchool(spawnpoint, target, override_spawn_offset)
     end
 
     return count
+end
+
+function self:GetFishPrefabAtPoint(spawnpoint)
+    local schooldata = PickSchool(spawnpoint)
+    if schooldata == nil then
+        return nil
+    end
+
+    return schooldata.prefab
 end
 
 --------------------------------------------------------------------------

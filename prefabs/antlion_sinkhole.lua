@@ -1,3 +1,5 @@
+require("stategraphs/commonstates")
+
 local assets =
 {
     Asset("ANIM", "anim/antlion_sinkhole.zip"),
@@ -143,8 +145,7 @@ local function donextcollapse(inst)
                     end
                 else
                     if v.components.workable:GetWorkAction() == ACTIONS.MINE then
-                        local mine_fx = (v:HasTag("frozen") and "mining_ice_fx") or (v:HasTag("moonglass") and "mining_moonglass_fx") or "mining_fx"
-                        SpawnPrefab(mine_fx).Transform:SetPosition(v.Transform:GetWorldPosition())
+                        PlayMiningFX(inst, v, true)
                     end
                     v.components.workable:WorkedBy(inst, 1)
                 end

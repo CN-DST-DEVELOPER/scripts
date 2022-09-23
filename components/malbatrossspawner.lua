@@ -269,6 +269,7 @@ end
 --------------------------------------------------------------------------
 
 self.inst:ListenForEvent("ms_registerfishshoal", OnFishShoalAdded, TheWorld)
+self.inst:ListenForEvent("ms_unregisterfishshoal", OnFishShoalRemoved, TheWorld)
 self.inst:ListenForEvent("ms_shoalfishhooked", OnShoalFishHooked, TheWorld)
 self.inst:ListenForEvent("malbatrossremoved", OnMalbatrossKilledOrRemoved, TheWorld)
 self.inst:ListenForEvent("malbatrosskilled", OnMalbatrossKilledOrRemoved, TheWorld)

@@ -32,10 +32,12 @@ SoundEmitter.PlaySound = function(emitter, event, name, volume, ...)
         local dist = math.sqrt(distsq(pos, SoundEmitter.SoundDebug.listenerPos) )
         if dist < SoundEmitter.SoundDebug.maxDistance or name then
             local soundIcon = nil
-            if name and SoundEmitter.SoundDebug.loopingSounds[ent] and SoundEmitter.SoundDebug.loopingSounds[ent][name] then
-                soundIcon = SoundEmitter.SoundDebug.loopingSounds[ent][name].icon
-            else
-                soundIcon = SpawnPrefab("sounddebugicon")
+            if SOUNDDEBUGUI_ENABLED then
+                if name and SoundEmitter.SoundDebug.loopingSounds[ent] and SoundEmitter.SoundDebug.loopingSounds[ent][name] then
+                    soundIcon = SoundEmitter.SoundDebug.loopingSounds[ent][name].icon
+                else
+                    soundIcon = SpawnPrefab("sounddebugicon")
+                end
             end
             if soundIcon then
                 soundIcon.Transform:SetPosition(pos:Get() )

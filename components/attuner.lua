@@ -45,6 +45,16 @@ function Attuner:GetAttunedTarget(tag)
     end
 end
 
+
+function Attuner:TransferComponent(newinst)
+    for k, v in pairs(self.attuned) do
+        local ent = Ents[k]
+        local attunable = ent.components.attunable
+        attunable:UnlinkFromPlayer(self.inst, true)
+        attunable:LinkToPlayer(newinst, true)
+    end
+end
+
 --------------------------------------------------------------------------
 --proxy is attunable_classifed
 --proxy is always available to the attuned player, even on clients

@@ -7,7 +7,7 @@ require "map/room_functions"
 -- Loose village
 AddRoom("RabbitArea", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     type = NODE_TYPE.Room,
     --tags = {"ForceConnected"},
     contents =  {
@@ -35,7 +35,7 @@ AddRoom("RabbitArea", {
 -- Robust town
 AddRoom("RabbitTown", {
     colour={r=0.3,g=0.2,b=0.3,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     contents =  {
         countstaticlayouts={
             ["RabbitTown"]=1,
@@ -58,7 +58,7 @@ AddRoom("RabbitTown", {
 -- City
 AddRoom("RabbitCity", {
     colour={r=0.3,g=0.2,b=0.5,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     contents =  {
         countstaticlayouts={
             ["RabbitCity"]=1,
@@ -83,7 +83,7 @@ AddRoom("RabbitCity", {
 -- Sinkhole gathering
 AddRoom("RabbitSinkhole", {
     colour={r=.15,g=.18,b=.15,a=.50},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     type = NODE_TYPE.Room,
     custom_tiles={
         GeneratorFunction = RUNCA.GeneratorFunction,
@@ -92,13 +92,15 @@ AddRoom("RabbitSinkhole", {
             seed_mode=CA_SEED_MODE.SEED_CENTROID,
             num_random_points=1,
             translate={
-                {tile=GROUND.GRASS, items={"sapling","berrybush"}, 	item_count=5},
-                {tile=GROUND.GRASS, items={"grass", "berrybush", "rabbithouse"}, 	item_count=10},
-                {tile=GROUND.GRASS, items={"grass", "sapling", "evergreen", "rabbithouse"},	item_count=12},
-                {tile=GROUND.GRASS, items={"evergreen", "sapling", "rabbithouse"}, 		item_count=10},
-                {tile=GROUND.GRASS, items={"not_used"}, 		item_count=300},
+                {tile = WORLD_TILES.GRASS, items = {"sapling","berrybush"},                          item_count = 5},
+                {tile = WORLD_TILES.GRASS, items = {"grass", "berrybush", "rabbithouse"},            item_count = 10},
+                {tile = WORLD_TILES.GRASS, items = {"grass", "sapling", "evergreen", "rabbithouse"}, item_count = 12},
+                {tile = WORLD_TILES.GRASS, items = {"evergreen", "sapling", "rabbithouse"},          item_count = 10},
+                {tile = WORLD_TILES.GRASS, items = {"not_used"},                                     item_count = 300},
             },
-            centroid= 	{tile=GROUND.FOREST, 	items={"cavelight"},			item_count=1},
+            centroid = {
+                tile = WORLD_TILES.FOREST, items = {"cavelight"},                                    item_count = 1
+            },
         },
     },
     contents =  {
@@ -130,7 +132,7 @@ AddRoom("RabbitSinkhole", {
 -- Spider incursion (overworld spiders)
 AddRoom("SpiderIncursion", {
     colour={r=.10,g=.08,b=.05,a=.50},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     type = NODE_TYPE.Room,
     custom_tiles={
         GeneratorFunction = RUNCA.GeneratorFunction,
@@ -139,13 +141,13 @@ AddRoom("SpiderIncursion", {
             seed_mode=CA_SEED_MODE.SEED_CENTROID,
             num_random_points=1,
             translate={
-                {tile=GROUND.SINKHOLE, items={"grass"}, 		item_count=3},
-                {tile=GROUND.SINKHOLE, items={"sapling","berrybush"}, 	item_count=5},
-                {tile=GROUND.GRASS, items={"grass", "berrybush", "spiderden"}, 	item_count=10},
-                {tile=GROUND.GRASS,  items={"grass", "sapling", "evergreen", "spiderden"},	item_count=12},
-                {tile=GROUND.GRASS,items={"evergreen", "sapling", "spiderden"}, 		item_count=10},
+                {tile = WORLD_TILES.SINKHOLE, items = {"grass"},                                      item_count=3},
+                {tile = WORLD_TILES.SINKHOLE, items = {"sapling","berrybush"},                        item_count=5},
+                {tile = WORLD_TILES.GRASS,    items = {"grass", "berrybush", "spiderden"},            item_count=10},
+                {tile = WORLD_TILES.GRASS,    items = {"grass", "sapling", "evergreen", "spiderden"}, item_count=12},
+                {tile = WORLD_TILES.GRASS,    items = {"evergreen", "sapling", "spiderden"},          item_count=10},
             },
-            centroid= 	{tile=GROUND.FOREST, 	items={"cavelight"},			item_count=1},
+            centroid= 	{tile=WORLD_TILES.FOREST, 	items={"cavelight"},			item_count=1},
         },
     },
     contents =  {

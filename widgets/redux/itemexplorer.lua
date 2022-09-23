@@ -60,6 +60,9 @@ local ItemExplorer = Class(Widget, function(self, title_text, primary_item_type,
         assert(contained_items[1].is_active ~= nil or list_options.scroll_context.selection_type == nil)
     end
 
+    -- Allow no selection at all for "single" contexts.
+    self.selection_allow_nil = list_options.scroll_context.selection_allow_nil
+
     self.selected_items = {}
 
     if #contained_items == 0 then
@@ -592,8 +595,11 @@ function ItemExplorer:RefreshItems(new_item_filter_fn)
             if w.data.item_key then
                 if prev_target_key[w.data.item_key] then
                     -- Double click to preserve selection state.
+                    -- NOTES(JBK): Ignore the allowing of selecting nil to workaround menus popping up back and forth.
+                    self.ignore_selection_allow_nil = true
                     w:onclick()
                     w:onclick()
+                    self.ignore_selection_allow_nil = nil
                     break
                 end
             end
@@ -603,9 +609,10 @@ end
 
 function ItemExplorer:_OnClickWidget(item_widget)
     local item_data = item_widget.data
+    local was_active = self.last_interaction_target and item_data.is_active -- Not having a highlight means first click and no prior active state.
 
     -- if no selection type, then ignore is_active.
-    if self.scroll_list.context.selection_type and item_data.is_owned and (self.scroll_list.context.selection_type ~= "single" or not item_data.is_active) then
+    if self.scroll_list.context.selection_type and item_data.is_owned and (self.scroll_list.context.selection_type ~= "single" or not item_data.is_active) and not self.ignore_selection_allow_nil then
         self:_SetItemActiveFlag(item_data, not item_data.is_active)
     end
 
@@ -622,10 +629,10 @@ function ItemExplorer:_OnClickWidget(item_widget)
     self:_ApplyItemToMarket(self.last_interaction_target)
     self:_ApplyDataToDescription(item_data)
 
-    self:_UpdateClickedWidget(item_widget)
+    self:_UpdateClickedWidget(item_widget, was_active)
 end
 
-function ItemExplorer:_UpdateClickedWidget(item_widget)
+function ItemExplorer:_UpdateClickedWidget(item_widget, was_active)
 	--print("ItemExplorer:_UpdateClickedWidget(item_widget)", item_widget.data.item_key)
     if item_widget.data.item_key == nil then
         -- Ignore empty widgets.
@@ -658,6 +665,9 @@ function ItemExplorer:_UpdateClickedWidget(item_widget)
                     prev_data.widget:UpdateSelectionState()
 				end
             end
+        elseif was_active and self.selection_allow_nil and not self.ignore_selection_allow_nil then
+            -- Just one thing is selected and it was already selected, turn it off.
+            self:_SetItemActiveFlag(item_widget.data, false)
         end
     end
     item_widget:UpdateSelectionState()

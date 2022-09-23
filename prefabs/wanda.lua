@@ -439,6 +439,7 @@ local function master_postinit(inst)
     else
 		inst.OnLoad = onload
 		inst.OnNewSpawn = OnNewSpawn
+        inst:ListenForEvent("ms_playerseamlessswaped", OnNewSpawn)
 	end
 
 end

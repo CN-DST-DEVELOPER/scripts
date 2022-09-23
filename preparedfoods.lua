@@ -943,6 +943,22 @@ local foods =
         cooktime = 0.5,
         floater = {"med", 0.05, 0.55},
     },
+
+    bananajuice =
+    {
+        test = function(cooker, names, tags)
+            return ((names.cave_banana or 0) + (names.cave_banana_cooked or 0) >= 2)
+        end,
+        priority = 1,
+        overridebuild = "cook_pot_food10",
+        foodtype = FOODTYPE.VEGGIE,
+		health = TUNING.HEALING_MEDSMALL,
+		hunger = TUNING.CALORIES_MED,
+        perishtime = TUNING.PERISH_SLOW, 
+		sanity = TUNING.SANITY_LARGE,
+        cooktime = 0.5,
+        floater = {"med", 0.05, 0.55},
+    },
 }
 
 for k, v in pairs(foods) do

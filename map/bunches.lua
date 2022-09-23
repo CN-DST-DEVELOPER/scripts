@@ -14,7 +14,7 @@ local Bunches =
         max = 50,
         min_spacing = 8,
         valid_tile_types = {
-            GROUND.OCEAN_SWELL,
+            WORLD_TILES.OCEAN_SWELL,
         },
     },
     seastack_spawner_rough = {
@@ -24,7 +24,7 @@ local Bunches =
         max = 25,
         min_spacing = 4,
         valid_tile_types = {
-            GROUND.OCEAN_ROUGH,
+            WORLD_TILES.OCEAN_ROUGH,
         },
     },
     saltstack_spawner_rough = {
@@ -34,7 +34,7 @@ local Bunches =
         max = 9,
         min_spacing = 5,
         valid_tile_types = {
-            GROUND.OCEAN_ROUGH,
+            WORLD_TILES.OCEAN_ROUGH,
         },
     },
     wobster_den_spawner_shore = {
@@ -47,8 +47,8 @@ local Bunches =
 
                     -- We reject INVALID and IMPASSABLE out of hand.
                     -- ROCKY can appear on the mainland or moon island, so we have to look for something else.
-                    if tile ~= GROUND.INVALID and tile ~= GROUND.IMPASSABLE and tile ~= GROUND.ROCKY then
-                        if tile == GROUND.PEBBLEBEACH or tile == GROUND.METEOR or tile == GROUND.SHELLBEACH then
+                    if not TileGroupManager:IsInvalidTile(tile) and tile ~= WORLD_TILES.ROCKY then
+                        if tile == WORLD_TILES.PEBBLEBEACH or tile == WORLD_TILES.METEOR or tile == WORLD_TILES.SHELLBEACH then
                             return "moonglass_wobster_den"
                         elseif not IsOceanTile(tile) then
                             return "wobster_den"
@@ -64,7 +64,7 @@ local Bunches =
         max = 5,
         min_spacing = 3,
         valid_tile_types = {
-            GROUND.OCEAN_COASTAL,
+            WORLD_TILES.OCEAN_COASTAL,
         },
     },
     waterplant_spawner_rough =
@@ -75,8 +75,8 @@ local Bunches =
         max = 15,
         min_spacing = 7,
         valid_tile_types = {
-            GROUND.OCEAN_ROUGH,
-            GROUND.OCEAN_SWELL, -- Plants can "spill over" to swell waters.
+            WORLD_TILES.OCEAN_ROUGH,
+            WORLD_TILES.OCEAN_SWELL, -- Plants can "spill over" to swell waters.
         },
     },
 
@@ -87,7 +87,7 @@ local Bunches =
         max = 1000,
         min_spacing = 3,
         valid_tile_types = {
-            GROUND.DIRT,
+            WORLD_TILES.DIRT,
         },
     },
 
@@ -98,7 +98,7 @@ local Bunches =
         max = 500,
         min_spacing = 2,
         valid_tile_types = {
-            GROUND.DIRT,
+            WORLD_TILES.DIRT,
         },
     },
 }

@@ -271,6 +271,10 @@ function SnapshotTab:ListSnapshots()
     end
 end
 
+function SnapshotTab:UpdateSaveSlot(save_slot)
+    self.save_slot = save_slot
+end
+
 function SnapshotTab:SetDataForSlot(save_slot)
     self.save_slot = save_slot
 

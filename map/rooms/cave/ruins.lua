@@ -13,7 +13,7 @@ require "map/room_functions"
 --Wet Wilds
 AddRoom("WetWilds", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = 0.25,
@@ -32,7 +32,7 @@ AddRoom("WetWilds", {
 --Lichen Meadow
 AddRoom("LichenMeadow", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = 0.15,
@@ -57,7 +57,7 @@ AddRoom("LichenMeadow", {
 --Jungle
 AddRoom("CaveJungle", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = 0.35,
@@ -82,7 +82,7 @@ AddRoom("CaveJungle", {
 --Monkey Meadow
 AddRoom("MonkeyMeadow", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = 0.1,
@@ -107,7 +107,7 @@ AddRoom("MonkeyMeadow", {
 --Lichen Land
 AddRoom("LichenLand", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = 0.35,
@@ -124,7 +124,7 @@ AddRoom("LichenLand", {
 
 bgwilds = {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         countprefabs=
@@ -163,7 +163,7 @@ AddRoom("BGWildsRoom", Roomify(bgwilds))
 --Entrance
 AddRoom("RuinedCityEntrance", {
     colour={r=0.2,g=0.0,b=0.2,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"ForceConnected", "MazeEntrance", "Nightmare"},--"Maze",
     contents =  {
         distributepercent = .07,
@@ -179,7 +179,7 @@ AddRoom("RuinedCityEntrance", {
 --City
 AddRoom("RuinedCity", {-- Maze used to define room connectivity
     colour={r=.25,g=.28,b=.25,a=.50},
-    value = GROUND.CAVE,
+    value = WORLD_TILES.CAVE,
     tags = {"Maze", "Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
     contents =  {
@@ -207,7 +207,7 @@ AddRoom("RuinedCity", {-- Maze used to define room connectivity
 --Houses
 AddRoom("Vacant", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Nightmare"},
     contents =  {
         countstaticlayouts =
@@ -237,7 +237,7 @@ AddRoom("Vacant", {
 --Light Hut
 AddRoom("LightHut", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Nightmare"},
     contents =  {
         countstaticlayouts =
@@ -270,7 +270,7 @@ AddRoom("LightHut", {
 --Entrance
 AddRoom("MilitaryEntrance", {
     colour={r=0.2,g=0.0,b=0.2,a=0.3},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"ForceConnected", "MazeEntrance", "Nightmare"},
     contents =  {
         countstaticlayouts =
@@ -283,7 +283,7 @@ AddRoom("MilitaryEntrance", {
 --Maze
 AddRoom("MilitaryMaze",  { -- layout contents determined by maze
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.WALL_ROCKY,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"Maze", "Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 })
@@ -291,7 +291,7 @@ AddRoom("MilitaryMaze",  { -- layout contents determined by maze
 --Barracks
 AddRoom("Barracks",{
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.CAVE,
+    value = WORLD_TILES.CAVE,
     tags = {"Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeSite,
     contents =  {
@@ -321,7 +321,7 @@ AddRoom("Barracks",{
 --Bridge Entrance
 AddRoom("BridgeEntrance",{
     colour={r=0.0,g=0.2,b=0.2,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"ForceConnected", "RoadPoison", "Nightmare"},
     contents = {},
 })
@@ -329,7 +329,7 @@ AddRoom("BridgeEntrance",{
 --Worship Area
 AddRoom("Bishops",{
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeSite,
     contents =  {
@@ -343,7 +343,7 @@ AddRoom("Bishops",{
 --Sacred Barracks
 AddRoom("SacredBarracks",{
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeSite,
     contents =  {
@@ -357,7 +357,7 @@ AddRoom("SacredBarracks",{
 --Living quarters
 AddRoom("Spiral",{
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeSite,
     contents =  {
@@ -371,7 +371,7 @@ AddRoom("Spiral",{
 --BrokenAltar
 AddRoom("BrokenAltar", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeSite,
     contents =  {
@@ -384,7 +384,7 @@ AddRoom("BrokenAltar", {
 
 bgsacred = {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.BRICK,
+    value = WORLD_TILES.BRICK,
     tags = {"Nightmare"},
     contents =  {
         countprefabs=
@@ -424,7 +424,7 @@ AddRoom("BGSacredRoom", Roomify(bgsacred))
 --The Altar
 AddRoom("Altar", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"Nightmare"},
     required_prefabs = {"sacred_chest"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeSite,
@@ -444,7 +444,7 @@ AddRoom("Altar", {
 --Entrance
 AddRoom("LabyrinthEntrance", {
     colour={r=0.2,g=0.0,b=0.2,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"ForceConnected",  "LabyrinthEntrance", "Nightmare"},--"Labyrinth",
     contents =  {
         distributepercent = .2,
@@ -464,7 +464,7 @@ AddRoom("LabyrinthEntrance", {
 --Maze
 AddRoom("Labyrinth", {-- Not a real Labyrinth.. more of a maze really.
     colour={r=.25,g=.28,b=.25,a=.50},
-    value = GROUND.BRICK,
+    value = WORLD_TILES.BRICK,
     tags = {"Labyrinth", "Nightmare"},
     --internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
     contents =  {
@@ -490,7 +490,7 @@ AddRoom("Labyrinth", {-- Not a real Labyrinth.. more of a maze really.
 --Guarden
 AddRoom("RuinedGuarden", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"Nightmare"},
     required_prefabs = {"minotaur_spawner"},
     type = NODE_TYPE.Room,
@@ -511,7 +511,7 @@ AddRoom("RuinedGuarden", {
 --Atrium Maze
 AddRoom("AtriumMazeEntrance", {
     colour={r=0.2,g=0.0,b=0.2,a=0.3},
-    value = GROUND.MUD,
+    value = WORLD_TILES.MUD,
     tags = {"MazeEntrance", "RoadPoison", "Hutch_Fishbowl"},
     contents =  {
         countprefabs=
@@ -535,7 +535,7 @@ AddRoom("AtriumMazeEntrance", {
 --Atrium Maze
 AddRoom("AtriumMazeRooms",  { -- layout contents determined by maze
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.FAKE_GROUND,
+    value = WORLD_TILES.FAKE_GROUND,
     tags = {"ForceDisconnected", "Maze", "RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 })
@@ -543,7 +543,7 @@ AddRoom("AtriumMazeRooms",  { -- layout contents determined by maze
 --Archive Maze
 AddRoom("ArchiveMazeEntrance", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUSMOON,
+    value = WORLD_TILES.FUNGUSMOON,
     tags = {"MazeEntrance", "RoadPoison", "lunacyarea"},
     contents =  {
         countstaticlayouts =
@@ -570,7 +570,7 @@ AddRoom("ArchiveMazeEntrance", {
 
 AddRoom("ArchiveMazeRooms",  { -- layout contents determined by maze
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.FAKE_GROUND,
+    value = WORLD_TILES.FAKE_GROUND,
     tags = {"ForceDisconnected", "Maze", "RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 })

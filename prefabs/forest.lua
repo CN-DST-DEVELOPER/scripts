@@ -282,6 +282,7 @@ local prefabs =
     "shadowmeteor",
     "meteorwarning",
     "warg",
+    "warglet",
     "claywarg",
     "spat",
     "multiplayer_portal",
@@ -322,6 +323,7 @@ local prefabs =
 	-- ocean
     "antchovies_group",
     "boat",
+    "boat_grass",
 	"bullkelp_beachedroot",
 	"bullkelp_plant",
 	"cookiecutter",
@@ -354,6 +356,7 @@ local prefabs =
     "waveyjones",
     "shark",
     "oceanhorror",
+    "ocean_trawler",
 
     -- moon island
 	"gestalt",
@@ -417,6 +420,30 @@ local prefabs =
     -- Terraria
     "eyeofterror",
     "terrarium",
+
+    -- Pirates
+    "powder_monkey",
+    "prime_mate",
+    "monkeyisland_center",
+    "monkeyisland_direction",
+    "monkeyisland_dockgen_safeareacenter",
+    "monkeyisland_portal",
+    "monkeyqueen",
+    "monkeypillar",
+    "palmconetree",
+    "palmconetree_short",
+    "palmconetree_normal",
+    "palmconetree_tall",
+    "pirate_flag_pole",
+    "bananabush",
+    "monkeytail",
+    "dock_tile_registrator",
+	"lightcrab",
+    "dock_woodposts",
+    "fx_dock_crackle",
+    "fx_dock_pop",
+
+    "fence_rotator",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -438,39 +465,21 @@ for i, v in ipairs(monsters) do
 end
 monsters = nil
 
-local houndspawn =
-{
-    base_prefab = "hound",
-    winter_prefab = "icehound",
-    summer_prefab = "firehound",
 
-    attack_levels =
-    {
-        intro   = { warnduration = function() return 120 end, numspawns = function() return 2 end },
-        light   = { warnduration = function() return 60 end, numspawns = function() return 2 + math.random(2) end },
-        med     = { warnduration = function() return 45 end, numspawns = function() return 3 + math.random(3) end },
-        heavy   = { warnduration = function() return 30 end, numspawns = function() return 4 + math.random(3) end },
-        crazy   = { warnduration = function() return 30 end, numspawns = function() return 6 + math.random(4) end },
-    },
-
-    attack_delays =
-    {
-        rare        = function() return TUNING.TOTAL_DAY_TIME * 6, math.random() * TUNING.TOTAL_DAY_TIME * 7 end,
-        occasional  = function() return TUNING.TOTAL_DAY_TIME * 4, math.random() * TUNING.TOTAL_DAY_TIME * 7 end,
-        frequent    = function() return TUNING.TOTAL_DAY_TIME * 3, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
-    },
-
-    warning_speech = "ANNOUNCE_HOUNDS",
-
-    --Key = time, Value = sound prefab
-    warning_sound_thresholds =
-    {
-        { time = 30, sound =  "LVL4" },
-        { time = 60, sound =  "LVL3" },
-        { time = 90, sound =  "LVL2" },
-        { time = 500, sound = "LVL1" },
-    },
-}
+local function tile_physics_init(inst)
+    inst.Map:AddTileCollisionSet(
+        COLLISION.LAND_OCEAN_LIMITS,
+        TileGroups.LandTiles, false,
+        TileGroups.LandTiles, true,
+        0.25, 64
+    )
+    inst.Map:AddTileCollisionSet(
+        COLLISION.GROUND,
+        TileGroups.ImpassableTiles, true,
+        TileGroups.ImpassableTiles, false,
+        0.25, 128
+    )
+end
 
 local function common_postinit(inst)
     --Add waves
@@ -495,7 +504,8 @@ local function common_postinit(inst)
         inst:AddComponent("hallucinations")
         inst:AddComponent("wavemanager")
         inst:AddComponent("moonstormlightningmanager")
-        inst.Map:SetTransparentOcean(true)
+        inst.Map:AlwaysDrawWaves(false)
+        inst.Map:DoOceanRender(true)
     end
 end
 
@@ -506,8 +516,7 @@ local function master_postinit(inst)
     inst:AddComponent("hounded")
     inst:AddComponent("schoolspawner")
     inst:AddComponent("squidspawner")
-
-    inst.components.hounded:SetSpawnData(houndspawn)
+    inst:AddComponent("piratespawner")
 
     inst:AddComponent("worlddeciduoustreeupdater")
     inst:AddComponent("kramped")
@@ -563,4 +572,4 @@ local function master_postinit(inst)
     end
 end
 
-return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"})
+return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {tile_physics_init = tile_physics_init})

@@ -43,6 +43,7 @@ local events=
 	EventHandler("doattack", onattackfn),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
 
 	EventHandler("flyaway", function(inst)
 		if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
@@ -53,7 +54,7 @@ local events=
 
 local function DisarmTarget(inst, target)
 	local item = nil
-	if target and target.components.inventory then
+	if target and target.components.inventory and not target:HasTag("stronggrip") then
 		item = target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	end
 	if item and item.Physics then
@@ -532,5 +533,6 @@ CommonStates.AddSleepStates(states,
 		end),
 	},
 })
+CommonStates.AddSinkAndWashAsoreStates(states)
 
 return StateGraph("moose", states, events, "idle", actionhandlers)

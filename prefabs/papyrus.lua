@@ -17,6 +17,7 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
 
     inst:AddTag("cattoy")
+    inst:AddTag("bookcabinet_item")
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 

@@ -327,13 +327,7 @@ local states =
             TimeEvent(7 * FRAMES, function(inst)
                 local buffaction = inst:GetBufferedAction()
                 if buffaction ~= nil then
-                    local target = buffaction.target
-                    if target ~= nil and target:IsValid() then
-                        if target.Transform ~= nil then
-                            SpawnPrefab("mining_fx").Transform:SetPosition(target.Transform:GetWorldPosition())
-                        end
-                        inst.SoundEmitter:PlaySound(target:HasTag("frozen") and "dontstarve_DLC001/common/iceboulder_hit" or "dontstarve/wilson/use_pick_rock")
-                    end
+                    PlayMiningFX(inst, buffaction.target)
                     inst:PerformBufferedAction()
                 end
             end),

@@ -3,6 +3,7 @@ local assets =
     Asset("ANIM", "anim/boat_mast2_wip.zip"),
     Asset("INV_IMAGE", "mast_item"),
     Asset("ANIM", "anim/seafarer_mast.zip"),
+    Asset("MINIMAP_IMAGE", "mast"),
 }
 
 local malbatross_assets =
@@ -13,6 +14,7 @@ local malbatross_assets =
     Asset("ANIM", "anim/boat_mast_malbatross_build.zip"),
 
     Asset("ANIM", "anim/seafarer_mast_malbatross.zip"), -- item
+    Asset("MINIMAP_IMAGE", "mast_malbatross"),
 }
 
 local upgrade_assets =
@@ -267,6 +269,7 @@ local function onsave(inst, data)
     elseif inst._lightningrod ~= nil then
         data.lightningrod = true
         data.lightningrod_chargeleft = inst._lightningrod.chargeleft
+        data.saved_upgraded_from_item = inst.saved_upgraded_from_item
     end
 end
 
@@ -298,6 +301,7 @@ local function onload(inst, data)
                 lamp_turnon(inst)
             end
         elseif data.lightningrod ~= nil then
+            inst.saved_upgraded_from_item = data.saved_upgraded_from_item
             upgrade_lightningrod(inst, true)
             if data.lightningrod_chargeleft ~= nil and data.lightningrod_chargeleft > 0 then
                 inst._lightningrod:_setchargedfn(data.lightningrod_chargeleft)
@@ -312,6 +316,7 @@ local function fn_pre(inst)
     inst.entity:AddLight()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
+    inst.entity:AddMiniMapEntity()
     MakeObstaclePhysics(inst, .2)
 
     inst.Light:Enable(false)
@@ -370,6 +375,8 @@ local function fn()
     inst.AnimState:SetBuild("boat_mast2_wip")
     inst.AnimState:PlayAnimation("closed")
 
+    inst.MiniMapEntity:SetIcon("mast.png")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -394,6 +401,8 @@ local function malbatrossfn()
     inst.AnimState:SetBank("mast_malbatross")
     inst.AnimState:SetBuild("boat_mast_malbatross_build")
     inst.AnimState:PlayAnimation("closed")
+
+    inst.MiniMapEntity:SetIcon("mast_malbatross.png")
 
     inst.entity:SetPristine()
 

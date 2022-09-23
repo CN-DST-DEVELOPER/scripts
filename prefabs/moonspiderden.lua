@@ -157,13 +157,21 @@ end
 
 ---------------------------------------------------------------------------
 
-local function ReturnChildren(inst)
+local function OnQuakeBegin(inst)
     if inst.components.childspawner ~= nil then
-        for k, child in pairs(inst.components.childspawner.childrenoutside) do
-            if child.components.homeseeker ~= nil then
-                child.components.homeseeker:GoHome()
+        for _, child in pairs(inst.components.childspawner.childrenoutside) do
+            child._quaking = true
+            if child.components.sleeper ~= nil then
+                child.components.sleeper:WakeUp()
             end
-            child:PushEvent("gohome")
+        end
+    end
+end
+
+local function OnQuakeEnd(inst)
+    if inst.components.childspawner ~= nil then
+        for _, child in pairs(inst.components.childspawner.childrenoutside) do
+            child._quaking = nil
         end
     end
 end
@@ -331,7 +339,8 @@ local function moonspiderden_fn()
     inst.components.lootdropper:SetChanceLootTable('moon_spider_hole')
 
     inst:ListenForEvent("creepactivate", SpawnInvestigators)
-    inst:ListenForEvent("startquake", function() ReturnChildren(inst) end, TheWorld)
+    inst:ListenForEvent("startquake", function() OnQuakeBegin(inst) end, TheWorld.net)
+    inst:ListenForEvent("endquake", function() OnQuakeEnd(inst) end, TheWorld.net)
 
     MakeHauntableWork(inst)
 

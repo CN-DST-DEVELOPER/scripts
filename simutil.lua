@@ -41,6 +41,25 @@ function FindEntity(inst, radius, fn, musttags, canttags, mustoneoftags)
     end
 end
 
+function FindClosestEntity(inst, radius, ignoreheight, musttags, canttags, mustoneoftags, fn)
+    if inst ~= nil and inst:IsValid() then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, ignoreheight and 0 or y, z, radius, musttags, canttags, mustoneoftags)
+        local closestEntity = nil
+        local rangesq = radius * radius
+        for i, v in ipairs(ents) do
+            if v ~= inst and (not IsEntityDeadOrGhost(v)) and v.entity:IsVisible() and (fn == nil or fn(v, inst)) then
+                local distsq = v:GetDistanceSqToPoint(x, y, z)
+                if distsq < rangesq then
+                    rangesq = distsq
+                    closestEntity = v
+                end
+            end
+        end
+        return closestEntity, closestEntity ~= nil and rangesq or nil
+    end
+end
+
 function FindClosestPlayerInRangeSq(x, y, z, rangesq, isalive)
     local closestPlayer = nil
     for i, v in ipairs(AllPlayers) do
@@ -305,6 +324,44 @@ function FindSwimmableOffset(position, start_angle, radius, attempts, check_los,
             end)
 end
 
+local PICKUP_MUST_TAGS = { "_inventoryitem" }
+local PICKUP_CANT_TAGS = {
+    "INLIMBO", "NOCLICK", "irreplaceable", "knockbackdelayinteraction",
+    "minesprung", "mineactive", "catchable",
+    "fire", "spider", "cursed", "paired", "bundle"
+}
+-- This function looks for an item on the ground that could be ACTIONS.PICKUP (or ACTIONS.CHECKTRAP if a trap) by the owner and subsequently put into the owner's inventory.
+function FindPickupableItem(owner, radius, furthestfirst)
+    if owner == nil or owner.components.inventory == nil then
+        return nil
+    end
+    local ba = owner:GetBufferedAction()
+    local x, y, z = owner.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, radius, PICKUP_MUST_TAGS, PICKUP_CANT_TAGS)
+    local istart, iend, idiff = 1, #ents, 1
+    if furthestfirst then
+        istart, iend, idiff = iend, istart, -1
+    end
+    for i = istart, iend, idiff do
+        local v = ents[i]
+        if v.components.container == nil and -- Containers are most likely sorted and placed by the player do not pick them up.
+            v.components.bundlemaker == nil and -- Bundle creators are aesthetically placed do not pick them up.
+            v.components.inventoryitem ~= nil and
+            v.components.inventoryitem.canbepickedup and
+            v.components.inventoryitem.cangoincontainer and
+            not v.components.inventoryitem:IsHeld() and
+            (v.components.bait == nil or v.components.bait.trap == nil) and -- Do not steal baits.
+            owner.components.inventory:CanAcceptCount(v, 1) > 0 and -- TODO(JBK): This is not correct for traps but they do not have real prefabs made yet to check against.
+            (ba == nil or (ba.action ~= ACTIONS.PICKUP and ba.action ~= ACTIONS.CHECKTRAP) or ba.target ~= v) then
+            -- Only interact with traps that have something in it to take.
+            if v.components.trap == nil or v.components.trap:IsSprung() and v.components.trap:HasLoot() then
+                return v
+            end
+        end
+    end
+    return nil
+end
+
 local function _CanEntitySeeInDark(inst)
     if inst.components.playervision ~= nil then
         --component available on clients as well,
@@ -420,21 +477,41 @@ function ErodeCB(inst, erode_time, cb, restore)
     end)
 end
 
-function ApplySpecialEvent(event)
-    if event ~= nil and event ~= "default" then
-        WORLD_SPECIAL_EVENT = event
-		print("Overriding World Event to: " .. tostring(event))
-    end
-
-    --LOST tech level when event is not active
+local function ApplyEvent(event)
     for k, v in pairs(SPECIAL_EVENTS) do
-        if v ~= SPECIAL_EVENTS.NONE then
+        if v == event and v ~= SPECIAL_EVENTS.NONE then
             local tech = TECH[k]
             if tech ~= nil then
-                tech.SCIENCE = v == WORLD_SPECIAL_EVENT and 0 or 10
+                tech.SCIENCE = 0
             end
         end
     end
+end
+
+function ApplySpecialEvent(event)
+    if event == nil then
+        return
+    end
+
+    if event ~= "default" then
+        WORLD_SPECIAL_EVENT = event
+        print("Overriding World Event to: " .. tostring(event))
+    end
+
+    --LOST tech level when event is not active
+    ApplyEvent(WORLD_SPECIAL_EVENT)
+end
+
+function ApplyExtraEvent(event)
+    if event == nil or event == "default" or event == SPECIAL_EVENTS.NONE then
+        return
+    end
+
+    WORLD_EXTRA_EVENTS[event] = true
+    print("Adding extra World Event: " .. tostring(event))
+
+    --LOST tech level when event is not active
+    ApplyEvent(event)
 end
 
 local inventoryItemAtlasLookup = {}
@@ -456,10 +533,12 @@ function GetInventoryItemAtlas(imagename, no_fallback)
 	if atlas then
 		return atlas
 	end
-	local base_atlas = "images/inventoryimages1.xml"
-	local alt_atlas = "images/inventoryimages2.xml"
-	atlas = TheSim:AtlasContains(base_atlas, imagename) and base_atlas
-			or (not no_fallback or TheSim:AtlasContains(alt_atlas, imagename)) and alt_atlas
+	local images1 = "images/inventoryimages1.xml"
+	local images2 = "images/inventoryimages2.xml"
+	local images3 = "images/inventoryimages3.xml"
+	atlas =    TheSim:AtlasContains(images1, imagename) and images1
+			or TheSim:AtlasContains(images2, imagename) and images2
+			or (not no_fallback or TheSim:AtlasContains(images3, imagename)) and images3
 			or nil
 	if atlas ~= nil then
 		inventoryItemAtlasLookup[imagename] = atlas

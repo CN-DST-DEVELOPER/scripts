@@ -498,8 +498,8 @@ CommonStates.AddWalkStates = function(states, timelines, anims, softstop, delays
         tags = { "canrotate" },
 
         onenter = function(inst)
-			if fns ~= nil and fns.exitonenter ~= nil then
-				fns.exitonenter(inst)
+			if fns ~= nil and fns.endonenter ~= nil then
+				fns.endonenter(inst)
 			end
             inst.components.locomotor:StopMoving()
             if softstop == true or (type(softstop) == "function" and softstop(inst)) then
@@ -792,6 +792,7 @@ CommonStates.AddAmphibiousCreatureHopStates = function(states, config, anims, ti
             EventHandler("done_embark_movement", function(inst)
 				if not inst.AnimState:IsCurrentAnimation("jump_loop") then
 					inst.AnimState:PlayAnimation(anims.loop or "jump_loop", false)
+					inst.components.amphibiouscreature:OnExitOcean()
 				end
 				inst.sg.statemem.embarked = true
             end),
@@ -803,6 +804,8 @@ CommonStates.AddAmphibiousCreatureHopStates = function(states, config, anims, ti
 						end
 					end
 					inst.AnimState:PlayAnimation(anims.loop or "jump_loop", false)
+
+					inst.components.amphibiouscreature:OnExitOcean()
 				end
             end),
         },
@@ -932,6 +935,8 @@ CommonStates.AddSleepStates = function(states, timelines, fns)
         tags = { "busy", "sleeping" },
 
         onenter = onentersleeping,
+
+        onexit = fns and fns.onsleepexit or nil,
 
         timeline = timelines ~= nil and timelines.sleeptimeline or nil,
 
@@ -1123,7 +1128,7 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns)
             if inst.components.locomotor ~= nil then
                 inst.components.locomotor:StopMoving()
             end
-            inst.AnimState:PlayAnimation(anims ~= nil and anims.attack or "atk")
+            inst.AnimState:PlayAnimation(anims ~= nil and anims.attack or (fns and fns.attackanimfn and fns.attackanimfn(inst)) or "atk")
             inst.components.combat:StartAttack()
 
             --V2C: Cached to force the target to be the same one later in the timeline
@@ -1861,3 +1866,28 @@ CommonStates.AddSinkAndWashAsoreStates = function(states, anims, timelines, fns)
         end,
 	})
 end
+
+--------------------------------------------------------------------------
+
+function PlayMiningFX(inst, target, nosound)
+    if target ~= nil and target:IsValid() then
+        local frozen = target:HasTag("frozen")
+        local moonglass = target:HasTag("moonglass")
+        if target.Transform ~= nil then
+            SpawnPrefab(
+                (frozen and "mining_ice_fx") or
+                (moonglass and "mining_moonglass_fx") or
+                "mining_fx"
+            ).Transform:SetPosition(target.Transform:GetWorldPosition())
+        end
+        if not nosound and inst.SoundEmitter ~= nil then
+            inst.SoundEmitter:PlaySound(
+                (frozen and "dontstarve_DLC001/common/iceboulder_hit") or
+                (moonglass and "turnoftides/common/together/moon_glass/mine") or
+                "dontstarve/wilson/use_pick_rock"
+            )
+        end
+    end
+end
+
+--------------------------------------------------------------------------

@@ -105,7 +105,9 @@ local function GetHomeLocation(inst)
 end
 
 local function GetNoLeaderLeashPos(inst)
-    return GetLeader(inst) == nil and GetHomeLocation(inst) or nil
+    if not inst:HasTag("flare_summoned") then
+        return GetLeader(inst) == nil and GetHomeLocation(inst) or nil
+    end
 end
 
 local function CanAttackNow(inst)

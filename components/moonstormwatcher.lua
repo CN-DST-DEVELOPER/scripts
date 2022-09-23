@@ -86,7 +86,7 @@ end
 
 function MoonstormWatcher:GetMoonStormLevel()
     if self.inst.components.stormwatcher then
-        return self.inst.components.stormwatcher.stormlevel
+        return self.inst.components.stormwatcher:GetStormLevel(STORM_TYPES.MOONSTORM)
     end
     return nil
 end

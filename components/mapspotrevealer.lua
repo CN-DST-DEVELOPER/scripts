@@ -49,7 +49,7 @@ function MapSpotRevealer:RevealMap(doer)
 			doer.player_classified.revealmapspotevent:push()
 		end
 
-		doer:DoTaskInTime(4*FRAMES, function()
+		doer:DoStaticTaskInTime(4*FRAMES, function()
 			doer.player_classified.MapExplorer:RevealArea(x, y, z, true, true)
 		end)
 	else

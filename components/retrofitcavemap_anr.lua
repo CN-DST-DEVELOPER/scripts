@@ -175,7 +175,7 @@ local function HeartOfTheRuinsAtriumRetrofitting(inst)
 	local function isvalidarea(_left, _top)
 		for x = 0, 5*8 do
 			for y = 0, 5*8 do
-				if TheWorld.Map:GetTile(_left + x, _top + y) ~= GROUND.IMPASSABLE then
+				if not TileGroupManager:IsImpassableTile(TheWorld.Map:GetTile(_left + x, _top + y)) then
 					return false
 				end
 			end
@@ -440,7 +440,7 @@ local function HeartOfTheRuinsRuinsRetrofitting_RepositionAtriumGate(inst)
 	local ents = TheSim:FindEntities(x, y, z, 25)
 	for _, ent in ipairs(ents) do
 		if ent.prefab == "atrium_light" then
-			if TheWorld.Map:GetTileAtPoint(ent.Transform:GetWorldPosition()) == GROUND.BRICK then
+			if TheWorld.Map:GetTileAtPoint(ent.Transform:GetWorldPosition()) == WORLD_TILES.BRICK then
 				table.insert(pts, ent:GetPosition())
 			end
 		end
@@ -667,7 +667,7 @@ function self:OnPostInit()
 
 		local gates = {}
 		for _,v in pairs(Ents) do
-			if v.prefab == "atrium_gate" and TheWorld.Map:GetTileAtPoint(v.Transform:GetWorldPosition()) == GROUND.BRICK then
+			if v.prefab == "atrium_gate" and TheWorld.Map:GetTileAtPoint(v.Transform:GetWorldPosition()) == WORLD_TILES.BRICK then
 				HeartOfTheRuinsRuinsRetrofitting_RepositionAtriumGate(v)
 
 				-- check if this gate is not located in an existing node, if its not then we know the atrium zone needs node data

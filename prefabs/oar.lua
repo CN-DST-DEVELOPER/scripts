@@ -16,6 +16,12 @@ local beak_assets =
     Asset("ANIM", "anim/swap_malbatross_beak.zip"),
 }
 
+local monkey_assets =
+{
+    Asset("ANIM", "anim/oar_monkey.zip"),
+    Asset("ANIM", "anim/swap_oar_monkey.zip"),
+}
+
 local function onequip(inst, owner, swap_build)
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
@@ -113,6 +119,12 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
     inst.components.finiteuses:SetConsumption(ACTIONS.ROW, 1)
     inst.components.finiteuses:SetConsumption(ACTIONS.ROW_CONTROLLER, 1)
     inst.components.finiteuses:SetConsumption(ACTIONS.ROW_FAIL, data.ROW_FAIL_WEAR)
+    inst.components.finiteuses.modifyuseconsumption = function(uses, action, doer, target)
+        if (action == ACTIONS.ROW or action == ACTIONS.ROW_FAIL or action == ACTIONS.ROW_CONTROLLER )and doer:HasTag("master_crewman") then
+            uses = uses /2
+        end
+        return uses
+    end
 
     MakeHauntableLaunch(inst)
 
@@ -131,6 +143,11 @@ local function malbatrossbeak()
     return fn(TUNING.BOAT.OARS.MALBATROSS, "malbatross_beak", "swap_malbatross_beak", nil, nil)
 end
 
+local function monkey_oar()    
+    return fn(TUNING.BOAT.OARS.MONKEY, "oar_monkey", "swap_oar_monkey", TUNING.MED_FUEL, true)
+end
+
 return  Prefab("oar", oar, wood_assets),
         Prefab("oar_driftwood", driftwood_oar, driftwood_assets),
-        Prefab("malbatross_beak", malbatrossbeak, beak_assets)
+        Prefab("malbatross_beak", malbatrossbeak, beak_assets),
+        Prefab("oar_monkey", monkey_oar, monkey_assets)

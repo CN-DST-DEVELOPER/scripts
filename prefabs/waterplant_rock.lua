@@ -2,6 +2,7 @@ local assets =
 {
     Asset("ANIM", "anim/barnacle_plant.zip"),
     Asset("ANIM", "anim/barnacle_plant_colour_swaps.zip"),
+    Asset("MINIMAP_IMAGE", "barnacle_rock"),
 }
 
 local prefabs =
@@ -65,10 +66,13 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
     inst:SetPhysicsRadiusOverride(2.35)
     MakeWaterObstaclePhysics(inst, 0.80, 2, 0.75)
+
+    inst.MiniMapEntity:SetIcon("barnacle_rock.png")
 
     inst.Transform:SetSixFaced()
 

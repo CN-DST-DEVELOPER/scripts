@@ -31,6 +31,7 @@ local function onregenfn(inst)
 end
 
 local function makefullfn(inst)
+    inst.AnimState:PlayAnimation("grow")
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:Show("BANANA")
 end

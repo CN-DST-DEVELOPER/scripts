@@ -403,10 +403,24 @@ local function NoHoles(pt)
     return not TheWorld.Map:IsGroundTargetBlocked(pt)
 end
 
+local BLINKFOCUS_MUST_TAGS = { "blinkfocus" }
+
 local function blinkstaff_reticuletargetfn()
     local player = ThePlayer
-    local rotation = player.Transform:GetRotation() * DEGREES
+    local rotation = player.Transform:GetRotation()
     local pos = player:GetPosition()
+    local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, TUNING.CONTROLLER_BLINKFOCUS_DISTANCE, BLINKFOCUS_MUST_TAGS)
+    for _, v in ipairs(ents) do
+        local epos = v:GetPosition()
+        if distsq(pos, epos) > TUNING.CONTROLLER_BLINKFOCUS_DISTANCESQ_MIN then
+            local angletoepos = player:GetAngleToPoint(epos)
+            local angleto = math.abs(anglediff(rotation, angletoepos))
+            if angleto < TUNING.CONTROLLER_BLINKFOCUS_ANGLE then
+                return epos
+            end
+        end
+    end
+    rotation = rotation * DEGREES
     for r = 13, 1, -1 do
         local numtries = 2 * PI * r
         local offset = FindWalkableOffset(pos, rotation, r, numtries, false, true, NoHoles)
@@ -909,7 +923,8 @@ local function green()
 end
 
 local function orange()
-    local inst = commonfn("orange", { "nopunch" }, true)
+    --weapon (from weapon component) added to pristine state for optimization
+    local inst = commonfn("orange", { "weapon" }, true)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = blinkstaff_reticuletargetfn
@@ -926,10 +941,14 @@ local function orange()
     inst.components.blinkstaff:SetFX("sand_puff_large_front", "sand_puff_large_back")
     inst.components.blinkstaff.onblinkfn = onblink
 
+    inst:AddComponent("weapon")
+    inst.components.weapon:SetDamage(TUNING.CANE_DAMAGE) -- NOTES(JBK): This item is created from a cane it should do cane damage.
+
     inst.components.equippable.walkspeedmult = TUNING.CANE_SPEED_MULT
 
     inst.components.finiteuses:SetMaxUses(TUNING.ORANGESTAFF_USES)
     inst.components.finiteuses:SetUses(TUNING.ORANGESTAFF_USES)
+    inst.components.finiteuses:SetIgnoreCombatDurabilityLoss(true)
 
     MakeHauntableLaunch(inst)
     AddHauntableCustomReaction(inst, onhauntorange, true, false, true)

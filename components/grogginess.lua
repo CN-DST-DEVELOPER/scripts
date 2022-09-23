@@ -260,4 +260,12 @@ function Grogginess:OnUpdate(dt)
     end
 end
 
+function Grogginess:TransferComponent(newinst)
+    local newcomponent = newinst.components.grogginess
+    if self.grog_amount > 0 then
+        newcomponent:AddGrogginess(self.grog_amount, self.knockoutduration)
+        newcomponent.wearofftime = self.wearofftime
+    end
+end
+
 return Grogginess

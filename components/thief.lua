@@ -1,7 +1,7 @@
 local Thief = Class(function(self, inst)
     self.inst = inst
-    self.stolenitems = {}
-    self.onstolen--[[inst, victim, item]] = nil
+    self.stolenitems = {} -- DEPRECATED: this was keeping a reference to objects which would prevent there memory from being freed
+    --self.onstolen = nil
 end)
 
 function Thief:SetOnStolenFn(fn)
@@ -9,7 +9,9 @@ function Thief:SetOnStolenFn(fn)
 end
 
 function Thief:StealItem(victim, itemtosteal, attack)
-    if victim.components.inventory ~= nil and victim.components.inventory.isopen then
+
+    if victim.components.inventory ~= nil and victim:IsValid() then -- and victim.components.inventory.isopen 
+    
         local item = itemtosteal or victim.components.inventory:FindItem(function(item) return not item:HasTag("nosteal") end)
 
         if attack then
@@ -18,11 +20,11 @@ function Thief:StealItem(victim, itemtosteal, attack)
 
         if item then
             local direction = Vector3(self.inst.Transform:GetWorldPosition()) - Vector3(victim.Transform:GetWorldPosition() )
-            victim.components.inventory:DropItem(item, false, direction:GetNormalized())
-            table.insert(self.stolenitems, item)
+            item = victim.components.inventory:DropItem(item, false, direction:GetNormalized())
             if self.onstolen then
                 self.onstolen(self.inst, victim, item)
             end
+            victim:PushEvent("onitemstolen", { item = item, thief = self.inst, })
         end
     elseif victim.components.container then
         local item = itemtosteal or victim.components.container:FindItem(function(item) return not item:HasTag("nosteal") end)
@@ -33,11 +35,11 @@ function Thief:StealItem(victim, itemtosteal, attack)
             end
         end
 
-        victim.components.container:DropItem(item)
-        table.insert(self.stolenitems, item)
+        item = victim.components.container:DropItem(item)
         if self.onstolen then
             self.onstolen(self.inst, victim, item)
         end
+        victim:PushEvent("onitemstolen", { item = item, thief = self.inst, })
     end
 end
 

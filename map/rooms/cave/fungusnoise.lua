@@ -8,7 +8,7 @@ require "map/room_functions"
 -- Fungus noise
 AddRoom("FungusNoiseForest", {
     colour={r=1.0,g=1.0,b=1.0,a=0.9},
-    value = GROUND.FUNGUS_NOISE,
+    value = WORLD_TILES.FUNGUS_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -34,7 +34,7 @@ AddRoom("FungusNoiseForest", {
 -- Fungus meadow
 AddRoom("FungusNoiseMeadow", {
     colour={r=1.0,g=1.0,b=1.0,a=0.9},
-    value = GROUND.FUNGUS_NOISE,
+    value = WORLD_TILES.FUNGUS_NOISE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {

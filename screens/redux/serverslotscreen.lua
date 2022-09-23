@@ -14,7 +14,7 @@ local dialog_size_x = 860
 local dialog_size_y = 500
 
 local ServerSlotScreen = Class(Screen, function(self, prev_screen)
-    Widget._ctor(self, "ServerSlotScreen")
+    Screen._ctor(self, "ServerSlotScreen")
 
     self.slot_cache = {}
 
@@ -187,6 +187,7 @@ function ServerSlotScreen:UpdateSaveFiles(force_update)
 
     self.server_scroll_list:SetItemsData(self.savefilescrollitems)
     self.server_scroll_list:SetPosition(0, -26)
+    self.server_scroll_list:RefreshView()
 end
 
 function ServerSlotScreen:RefreshSaveFilter(filterfn)

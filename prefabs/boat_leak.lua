@@ -12,7 +12,7 @@ local function onsprungleak(inst)
         inst.components.hauntable.cooldown = TUNING.HAUNT_COOLDOWN_SMALL
         inst.components.hauntable.hauntvalue = TUNING.HAUNT_TINY
 	end
-
+    inst:RemoveTag("NOCLICK")
 	inst:RemoveTag("NOBLOCK")
 end
 
@@ -23,7 +23,17 @@ local function onrepairedleak(inst)
         inst:RemoveComponent("hauntable")
 	end
 
+    inst:AddTag("NOCLICK")
 	inst:AddTag("NOBLOCK")
+end
+
+local function checkforleakimmune(inst)
+    local boat = inst:GetCurrentPlatform()
+    if boat == nil or boat.components.hullhealth.leakproof then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        print("Warning: A boat leak tried to spawn on land or a leakproof boat at", x, y, z)
+        inst:Remove()
+    end
 end
 
 local function fn()
@@ -51,6 +61,8 @@ local function fn()
 	inst.components.boatleak.onrepairedleak = onrepairedleak
 
     inst:AddComponent("lootdropper")
+
+    inst:DoTaskInTime(0, checkforleakimmune) -- NOTES(JBK): This is now just a last resort safeguard checker.
 
     return inst
 end

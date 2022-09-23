@@ -129,6 +129,10 @@ function Rechargeable:SetCharge(val, overtime)
     end
 end
 
+function Rechargeable:GetChargeTime()
+    return self.chargetime
+end
+
 function Rechargeable:GetCharge()
     return self.current
 end
@@ -143,7 +147,7 @@ function Rechargeable:GetPercent()
 end
 
 function Rechargeable:SetPercent(pct)
-    self:Charge(self.total * pct)
+    self:SetCharge(self.total * pct)
 end
 
 function Rechargeable:GetRechargeTime()

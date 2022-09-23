@@ -18,7 +18,7 @@ function AreaAware:OnRemoveFromEntity()
 end
 
 function AreaAware:_TestArea(pt_x, pt_z, on_land, r)
-	local best = {tile_type = GROUND.INVALID, render_layer = -1}
+	local best = {tile_type = WORLD_TILES.INVALID, render_layer = -1}
 
 	for _z = -1, 1 do
 		for _x = -1, 1 do
@@ -38,7 +38,7 @@ function AreaAware:_TestArea(pt_x, pt_z, on_land, r)
 		end
 	end
 
-	return best.tile_type ~= GROUND.INVALID and best or nil
+	return best.tile_type ~= WORLD_TILES.INVALID and best or nil
 end
 
 function AreaAware:UpdatePosition(x, y, z)
@@ -90,8 +90,8 @@ function AreaAware:GetDebugString()
         end
         return s
     else
-
-        return "No current node."
+		local x, y = TheWorld.Map:GetTileCoordsAtPoint(self.inst.Transform:GetWorldPosition())
+        return "No current node: "..x..", "..y
     end
 end
 

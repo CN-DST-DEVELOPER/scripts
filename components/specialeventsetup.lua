@@ -26,6 +26,7 @@ self.inst = inst
 
 self.halloween_bat_grave_spawn_chance = 0 -- this is an accumulating chance for bats to spawn from digging graves
 self.prev_event = SPECIAL_EVENTS.NONE
+self.prev_extra_events = {}
 
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
@@ -251,8 +252,8 @@ function self:_SetupYearOfTheCatcoon()
 	local collected_kitcoons = { kitcoons = {} }
 	TheWorld:PushEvent("ms_collectallkitcoons", collected_kitcoons)
 	for _, kitcoon in ipairs(collected_kitcoons.kitcoons) do
-		print("[YOT Catcoon] Removing existing kitcoon '"..tostring(kitcoon).."'.")
-		kitcoon:Remove()
+		kitten_hiding_data[kitcoon.prefab] = nil
+		print("[YOT Catcoon] Using existing kitcoon '"..tostring(kitcoon).."'.")
 	end
 
 	for prefab, data in pairs(kitten_hiding_data) do
@@ -265,34 +266,33 @@ function self:_SetupYearOfTheCatcoon()
 	for kit_prefab, data in pairs(kitten_hiding_data) do
 		if data.kitcoon ~= nil then
 			self:_yotcatcoon_HideKitcoon(data, emergency_hidingspot_prefabs)
-		else
-
 		end
 	end
 
 end
 
-function self:SetupNewSpecialEvent()
+function self:SetupNewSpecialEvent(event)
+	if not event then return end
 	-- todo: add any event stup logic here
-	if WORLD_SPECIAL_EVENT == SPECIAL_EVENTS.YOT_CATCOON then
+	if event == SPECIAL_EVENTS.YOT_CATCOON then
 		self:_SetupYearOfTheCatcoon()
-	elseif WORLD_SPECIAL_EVENT == SPECIAL_EVENTS.HALLOWED_NIGHTS then
+	elseif event == SPECIAL_EVENTS.HALLOWED_NIGHTS then
 		self:_SetupHallowedNights()
 	end
 
 	-- for mod support
-	TheWorld:PushEvent("ms_setupspecialevent", WORLD_SPECIAL_EVENT)
+	TheWorld:PushEvent("ms_setupspecialevent", event)
 end
 
-function self:ShutdownPrevSpecialEvent()
-	if self.prev_event ~= nil and self.prev_event ~= SPECIAL_EVENTS.NONE then
-		if WORLD_SPECIAL_EVENT == SPECIAL_EVENTS.HALLOWED_NIGHTS then
-			-- TODO: clean up halloween trinkets out in the world that were not touched by the players
-		end
+function self:ShutdownPrevSpecialEvent(event)
+	if not event then return end
 
-		-- for mod support
-		TheWorld:PushEvent("ms_shutdownspecialevent", self.prev_event)
-	end 
+	if event == SPECIAL_EVENTS.HALLOWED_NIGHTS then
+		-- TODO: clean up halloween trinkets out in the world that were not touched by the players
+	end
+
+	-- for mod support
+	TheWorld:PushEvent("ms_shutdownspecialevent", event)
 end
 
 
@@ -303,11 +303,21 @@ end
 function self:OnPostInit()
 	require("prefabs/oceanfishdef").SpecialEventSetup()
 
-	if WORLD_SPECIAL_EVENT ~= self.prev_event then
-		print("[Special Event] Setup from "..tostring(self.prev_event).." to "..tostring(WORLD_SPECIAL_EVENT))
+	local previous_events = GetAllActiveEvents(self.prev_event, self.prev_extra_events)
+	local current_events = GetAllActiveEvents(WORLD_SPECIAL_EVENT, WORLD_EXTRA_EVENTS)
 
-		self:ShutdownPrevSpecialEvent()
-		self:SetupNewSpecialEvent()
+	for special_event in pairs(previous_events) do
+		if special_event ~= SPECIAL_EVENTS.NONE and not current_events[special_event] then
+			print("[Special Event] Shutting down "..tostring(special_event))
+			self:ShutdownPrevSpecialEvent(special_event)
+		end
+	end
+
+	for special_event in pairs(current_events) do
+		if special_event ~= SPECIAL_EVENTS.NONE and not previous_events[special_event] then
+			print("[Special Event] Setting up "..tostring(special_event))
+			self:SetupNewSpecialEvent(special_event)
+		end
 	end
 end
 
@@ -320,6 +330,7 @@ function self:OnSave()
 	{
 		halloween_bats = self.halloween_bat_grave_spawn_chance,
 		current_event = WORLD_SPECIAL_EVENT,
+		current_extra_events = WORLD_EXTRA_EVENTS
 	}
 end
 
@@ -329,6 +340,7 @@ function self:OnLoad(data)
 
 		self.halloween_bat_grave_spawn_chance = data.halloween_bats or 0
 		self.prev_event = data.current_event
+		self.prev_extra_events = data.current_extra_events or {}
     end
 end
 

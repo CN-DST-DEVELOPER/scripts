@@ -59,27 +59,27 @@ local function GetTalkToPlayerChatterLines(inst)
 	local home = (inst:GetTimeAlive() > 5 and inst.components.homeseeker ~= nil) and inst.components.homeseeker.home
 	if home then
 		local rank = home.components.carnivaldecorranker.rank
-		local lines = rank <= 1 and STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_NONE
-						or rank == TUNING.CARNIVAL_DECOR_RANK_MAX and STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_LOTS
-						or STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_SOME
+		local lines = rank <= 1 and (inst.has_snack and STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_NONE_SNACK or STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_NONE)
+						or rank == TUNING.CARNIVAL_DECOR_RANK_MAX and (inst.has_snack and STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_LOTS_SNACK or STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_LOTS)
+						or (inst.has_snack and STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_SOME_SNACK or STRINGS.CARNIVAL_CROWKID_DECOR_PLAYER_SOME)
 		return lines[math.random(#lines)]
 	end
 end
 
 local function GetAmbientChatterLines(inst)
 	local home = inst.components.homeseeker ~= nil and inst.components.homeseeker.home
-	if home ~= nil then
+	if home then
 		local rank = home.components.carnivaldecorranker ~= nil and home.components.carnivaldecorranker.rank or 0
-		local lines = rank <= 1 and STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_NONE
-						or rank == TUNING.CARNIVAL_DECOR_RANK_MAX and STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_LOTS
-						or STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_SOME
+		local lines = rank <= 1 and (inst.has_snack and STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_NONE_SNACK or STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_NONE)
+						or rank == TUNING.CARNIVAL_DECOR_RANK_MAX and (inst.has_snack and STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_LOTS_SNACK or STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_LOTS)
+						or (inst.has_snack and STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_SOME_SNACK or STRINGS.CARNIVAL_CROWKID_DECOR_AMBIENT_SOME)
 		return lines[math.random(#lines)]
 	end
 end
 
 local SEE_DICOR_DIST = 4
-local SEE_DICOR_MUST_TAGS = {"inactive" }
-local SEE_DICOR_ONEOF_TAGS = {"carnivalcannon", "carnivallamp"}
+local SEE_DICOR_MUST_TAGS = {"inactive", "carnivaldecor" }
+--local SEE_DICOR_ONEOF_TAGS = {"carnivalcannon", "carnivallamp", "carnivallamp"}
 
 local function ActivateDecor(inst)
 	if inst.components.minigame_spectator ~= nil then
@@ -95,22 +95,61 @@ local function ActivateDecor(inst)
 
 	local chain_can_activate_time = GetTime() - TUNING.CROWKID_ACTIVATE_DECOR_CHAIN_DELAY
 
-    local target = FindEntity(inst,
+    local target = (inst._watch_campfire ~= nil and inst._watch_campfire:IsValid() and inst._watch_campfire.components.fueled ~= nil and inst._watch_campfire.components.fueled:GetPercent() <= TUNING.CROWKID_STOKE_FIRE_PRECENT ) and inst._watch_campfire or nil
+
+	target = target or FindEntity(inst,
         SEE_DICOR_DIST,
         function(item)
             return (item._lastchaintime == nil or item._lastchaintime < chain_can_activate_time)
 					and item or nil
 
         end,
-        SEE_DICOR_MUST_TAGS,
-		nil,
-        SEE_DICOR_ONEOF_TAGS
+        SEE_DICOR_MUST_TAGS
     )
 
     if target ~= nil then
 		inst.next_activate_time = GetTime() + math.random(TUNING.CROWKID_ACTIVATE_DECOR_DELAY_MIN, TUNING.CROWKID_ACTIVATE_DECOR_DELAY_MAX)
-        return BufferedAction(inst, target, ACTIONS.ACTIVATE)
+		if target == inst._watch_campfire then
+		    return BufferedAction(inst, target, ACTIONS.ADDFUEL)
+		else
+	        return BufferedAction(inst, target, ACTIONS.ACTIVATE)
+		end
     end
+end
+
+local CAMPFIRE_WANDER_TIMES = { minwaittime = 3 }
+
+local CAMPFIRE_TAGS = {"campfire", "fire"}
+local SEE_CAMPFIRE_DIST = 12
+local function WatchCampfireFn(inst)
+	if not TheWorld.state.isnight then
+		inst._watch_campfire = nil
+		return false
+	end
+
+	if inst._watch_campfire ~= nil then
+		if inst._watch_campfire:IsValid() and inst._watch_campfire.components.burnable ~= nil and inst._watch_campfire.components.burnable:IsBurning() then
+			return true
+		end
+
+		inst._watch_campfire = nil
+	end
+
+	local x, y, z = inst.Transform:GetWorldPosition()
+    local targets = TheSim:FindEntities(x, y, z, SEE_CAMPFIRE_DIST, CAMPFIRE_TAGS)
+	if #targets > 0 then
+		inst._watch_campfire = targets[1]
+	end
+
+	return inst._watch_campfire ~= nil
+end
+
+local function GetCurrentCampfirePos(inst)
+    return (inst._watch_campfire ~= nil and inst._watch_campfire:IsValid()) and inst._watch_campfire:GetPosition() or nil
+end
+
+local function GetCampfireChatterLines(inst)
+	return STRINGS.CARNIVAL_CROWKID_CAMPFIRE[math.random(#STRINGS.CARNIVAL_CROWKID_CAMPFIRE)]
 end
 
 --- Minigames
@@ -149,13 +188,14 @@ local function OnEndOfGame(inst)
 	local minigame = inst.components.minigame_spectator ~= nil and inst.components.minigame_spectator:GetMinigame() or nil
 
 	local score = minigame ~= nil and minigame._minigame_score ~= nil and minigame._minigame_score or 0
-	inst.components.minigame_spectator._good_ending = score > 5
+	inst.components.minigame_spectator._good_ending = score >= (minigame._good_score_value or 6)
 	inst:PushEvent("minigame_spectator_start_outro")
 
-	if score > 15 or (score > 5 and math.random() < 0.5) then 
+	if score >= (minigame._spectator_rewards_score or 16) or (score > 5 and math.random() < 0.25) then 
 		inst:DoTaskInTime(0.5 + math.random() * 0.5, DoTossReward)
 	end
 end
+
 
 ---------------
 local CrowKidBrain = Class(Brain, function(self, inst)
@@ -214,12 +254,18 @@ function CrowKidBrain:OnStart()
 
 				watch_game,
 
+				DoAction(self.inst, ActivateDecor, "ActivateDecor"),
+
 				ChattyNode(self.inst, GetTalkToPlayerChatterLines,
 					FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn, 2), 5, 10),
 
-				DoAction(self.inst, ActivateDecor),
-				ChattyNode(self.inst, GetTalkToPlayerChatterLines,
-					Wander(self.inst, GetHomePos, MAX_WANDER_DIST), 20, 20),
+				WhileNode(function() return WatchCampfireFn(self.inst) end, "Campfire",
+					ChattyNode(self.inst, GetCampfireChatterLines,
+						Wander(self.inst, GetCurrentCampfirePos, TUNING.CARNIVAL_CROWKID_CAMPFIRE_WANDER_DIST, CAMPFIRE_WANDER_TIMES), 10, 20, 10, 10)
+				),
+
+				ChattyNode(self.inst, GetAmbientChatterLines,
+					Wander(self.inst, GetHomePos, MAX_WANDER_DIST), 20, 20, 5, 10),
 
 				-- fly away if no valid home pos
 

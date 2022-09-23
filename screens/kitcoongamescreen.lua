@@ -9,6 +9,7 @@ local PopupDialogScreen = require "screens/redux/popupdialog"
 local KitcoonPuppet = require "widgets/kitcoonpuppet"
 local KitcoonPoop = require "widgets/kitcoonpoop"
 local KitcoonFood = require "widgets/kitcoonfood"
+local KitcoonPouch = require "widgets/kitcoonpouch"
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -42,12 +43,18 @@ function KitcoonGameScreen:SetupUI()
     bg_as:SetUILightParams(2.0, 4.0, 4.0, 20.0)
     bg_as:PlayAnimation("idle", true)
 
+    self.pouch = self.fixed_root:AddChild(KitcoonPouch())
+	self.pouch:SetPosition(160, -120)
+
     self.kit_puppet = self.fixed_root:AddChild(KitcoonPuppet( self.profile, true, nil, 1 ))
 	self.kit_puppet:SetPosition(0, -45)
 	self.kit_puppet:Enable()
 	
+	self.pouch:SetKit(self.kit_puppet)
+
     self.food = self.fixed_root:AddChild(KitcoonFood( self.kit_puppet ))
 	self.food:SetPosition(-180, -50)
+
 
 	local num_poops = self.profile:GetKitPoops()
 	self.poops = {}
@@ -100,7 +107,6 @@ function KitcoonGameScreen:OnUpdate(dt)
 	self:UpdateInterface()
 end
 
-
 function KitcoonGameScreen:UpdateInterface()
 	if not (self.inst:IsValid()) then
         return
@@ -112,13 +118,15 @@ function KitcoonGameScreen:UpdateInterface()
 	else
 		self.age_txt:Show()
 
-		local birth_time = self.profile:GetKitBirthTime()	
-		local days_since = math.floor( os.difftime(os.time(), birth_time) / (60 * 60 * 24) )
-		self.age_txt:SetString( subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.NAME_AGE, { name = self.profile:GetKitName(), age = tostring(days_since) } ) )
+		if Profile:GetKitIsHibernating() then
+			self.age_txt:SetString( subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.HIBERNATING, { name = self.profile:GetKitName() } ) )
+		else
+			local birth_time = self.profile:GetKitBirthTime()	
+			local days_since = math.floor( os.difftime(os.time(), birth_time) / (60 * 60 * 24) )
+			self.age_txt:SetString( subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.NAME_AGE, { name = self.profile:GetKitName(), age = tostring(days_since) } ) )
+		end
 	end
 end
-
-
 
 function KitcoonGameScreen:Quit()
 	TheFrontEnd:FadeBack(nil, nil, function()
@@ -143,15 +151,30 @@ function KitcoonGameScreen:OnControl(control, down)
 	end
 	
 	if down and TheInput:ControllerAttached() then
-		if control == CONTROL_ACCEPT then
-			--play
-			self.kit_puppet:onclick()
-			return true
-		elseif control == CONTROL_MENU_MISC_2 then
-			--feed
-			self.food:onclick()
-			return true
-		elseif control == CONTROL_MENU_MISC_1 and #self.poops > 0 then
+		
+		if Profile:GetKitIsHibernating() then
+			if control == CONTROL_OPEN_INVENTORY then
+				--wake
+				self.pouch:onclick()
+				return true
+			end
+		else
+			if control == CONTROL_ACCEPT then
+				--play
+				self.kit_puppet:onclick()
+				return true
+			elseif control == CONTROL_MENU_MISC_2 then
+				--feed
+				self.food:onclick()
+				return true
+			elseif control == CONTROL_OPEN_INVENTORY then
+				--go to sleep
+				self.pouch:onclick()
+				return true
+			end
+		end
+			
+		if control == CONTROL_MENU_MISC_1 and #self.poops > 0 then
 			--clear poop
 			local p = GetRandomItem(self.poops)
 			p:onclick()
@@ -169,14 +192,22 @@ function KitcoonGameScreen:GetHelpText()
 		--name
 		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.TRADESCREEN.KITCOON_GAME.PICKUP_NAMETAG)
 	else
-		if not self.kit_puppet.animstate:IsCurrentAnimation("sleep_loop") then
-			--feed
-			local feed = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.FEED, { name = self.profile:GetKitName() } )
-			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. feed)
+		if Profile:GetKitIsHibernating() then
+			local wake = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.WAKE, { name = self.profile:GetKitName() } )
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. wake)
+		else
+			if not self.kit_puppet.animstate:IsCurrentAnimation("sleep_loop") then
+				--feed
+				local feed = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.FEED, { name = self.profile:GetKitName() } )
+				table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. feed)
 
-			--play
-			local play = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.PLAY_WITH, { name = self.profile:GetKitName() } )
-			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. play)
+				--play
+				local play = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.PLAY_WITH, { name = self.profile:GetKitName() } )
+				table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. play)
+			end
+			
+			local hibernate = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.HIBERNATE, { name = self.profile:GetKitName() } )
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. hibernate)
 		end
 
 		if #self.poops > 0 then

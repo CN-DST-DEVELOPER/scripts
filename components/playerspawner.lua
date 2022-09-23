@@ -103,7 +103,7 @@ local function PlayerRemove(player, deletesession, migrationdata, readytoremove)
     end
 end
 
-local SPAWN_PROTECTION_DANGER_TAGS = {"hostile", "_combat", "trapdamage"}
+local SPAWN_PROTECTION_DANGER_TAGS = {"hostile", "_combat", "trapdamage", "cursed"}
 local SPAWN_PROTECTION_BLOCKED_TAGS = {"blocker", "structure"}
 
 function self:_ShouldEnableSpawnProtection(inst, player, x, y, z, isloading)
@@ -318,7 +318,7 @@ function self:SpawnAtLocation(inst, player, x, y, z, isloading, platform_uid, rx
     end
 
 	if self:_ShouldEnableSpawnProtection(inst, player, x, y, z, isloading) then
-		print("Enabling Spawn Protection for ", self.inst)
+		print("Enabling Spawn Protection for", player)
         player:AddDebuff("spawnprotectionbuff", "spawnprotectionbuff")
 	end
 

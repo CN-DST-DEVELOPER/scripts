@@ -561,11 +561,6 @@ end
 
 local function tree(name, stage, data)
     local function fn()
-
-        if stage == 0 then
-            stage = math.random(1, 3)
-        end
-
         local inst = CreateEntity()
 
         inst.entity:AddTransform()
@@ -579,17 +574,12 @@ local function tree(name, stage, data)
 
         inst:SetPhysicsRadiusOverride(2.35)
         MakeWaterObstaclePhysics(inst, 0.80, 2, 0.75)
-        
+
         inst:AddTag("ignorewalkableplatforms")
         inst:AddTag("shelter")
         inst:AddTag("plant")
         inst:AddTag("event_trigger")
-        inst:AddTag("tree")        
-        
-        local bank = "oceantree_"..growth_stages[stage].name
-        local build = bank
-        inst.AnimState:SetBuild(build)
-        inst.AnimState:SetBank(bank)        
+        inst:AddTag("tree")
 
         local scale = 1.1
         inst.Transform:SetScale(scale, scale, scale)
@@ -603,6 +593,13 @@ local function tree(name, stage, data)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        stage = stage == 0 and math.random(1, 3) or stage
+
+        local bank = "oceantree_"..growth_stages[stage].name
+        local build = bank
+        inst.AnimState:SetBank(bank)
+        inst.AnimState:SetBuild(build)
 
         inst.sproutfn = Sprout
 
@@ -642,7 +639,11 @@ local function tree(name, stage, data)
         inst.components.growable:SetStage(stage)
         inst.components.growable.loopstages = true
         inst.components.growable.springgrowth = true
+        inst.components.growable.magicgrowable = true
         inst.components.growable:StartGrowing()
+
+        inst:AddComponent("simplemagicgrower")
+        inst.components.simplemagicgrower:SetLastStage(#inst.components.growable.stages)
 
         ---------------------
 

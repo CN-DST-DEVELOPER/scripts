@@ -125,6 +125,8 @@ local MainSounds =
 
 	"summerevent.fev",
 	"summerevent.fsb",
+	"summerevent2022.fev",
+	"summerevent2022.fsb",
 	"summerevent_music.fsb",
 
 	"webber2.fev",
@@ -158,6 +160,23 @@ local MainSounds =
 
 	"yotc_2022_2.fev",
     "yotc_2022_2.fsb",
+
+    "ancientguardian_rework.fev",
+    "ancientguardian_rework.fsb",
+
+    "WX_rework.fev",
+    "WX_rework.fsb",
+
+    "monkeyisland.fev",
+    "monkeyisland.fsb",
+    "monkeyisland_amb.fsb",
+    "monkeyisland_music.fsb",
+
+    "summerevent2022.fev",
+    "summerevent2022.fsb",
+
+    "wickerbottom_rework.fev",
+    "wickerbottom_rework.fsb",
 }
 
 function PreloadSoundList(list)

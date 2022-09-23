@@ -3,37 +3,26 @@ local events =
 
 }
 
-local function SpawnFragment(lp, prefix, offset_x, offset_y, offset_z, ignite)
-    local fragment = SpawnPrefab(prefix)
-    fragment.Transform:SetPosition(lp.x + offset_x, lp.y + offset_y, lp.z + offset_z)
-
-    if offset_y > 0 then
-        local physics = fragment.Physics
-        if physics ~= nil then
-            physics:SetVel(0, -0.25, 0)
-        end
-    end
-
-	if ignite then
-		fragment.components.burnable:Ignite()
-	end
-
-	return fragment
-end
-
 local states =
 {
     State{
         name = "place",
         onenter = function(inst)
-            inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/place")
+            inst.SoundEmitter:PlaySound(inst.sounds.place)
             inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/large",nil,.3)
             inst.AnimState:PlayAnimation("place")
         end,
 
         events =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", function(inst)
+                if inst.components.health and inst.components.health:IsDead() then
+                    -- NOTES(JBK): Boats can take damage during the building phase and we want to keep this to not have bullets shatter on an indestructible boat.
+                    inst.sg:GoToState("ready_to_snap")
+                else
+                    inst.sg:GoToState("idle")
+                end
+            end),
         },
     },
 
@@ -52,6 +41,11 @@ local states =
     State{
         name = "ready_to_snap",
         onenter = function(inst)
+            local ents = inst.components.walkableplatform:GetEntitiesOnPlatform()
+            for ent in pairs(ents) do    
+                ent:PushEvent("abandon_ship")
+            end
+
             inst.sg:SetTimeout(0.75)
         end,
 
@@ -60,12 +54,13 @@ local states =
         end,
     },
 
-
     State{
         name = "snapping",
         onenter = function(inst)
-            local fx_boat_crackle = SpawnPrefab("fx_boat_crackle")
-            fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
+            if inst.boat_crackle then
+                local fx_boat_crackle = SpawnPrefab(inst.boat_crackle)
+                fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
+            end
             inst.AnimState:PlayAnimation("crack")
             inst.sg:SetTimeout(1)
 
@@ -82,40 +77,41 @@ local states =
         timeline =
         {
             TimeEvent(0 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/creak")
+                if inst.sounds.creak then inst.SoundEmitter:PlaySoundWithParams(inst.sounds.creak) end
+                if inst.leaky then inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/fountain_small_LP", "small_leak") end
             end),
             TimeEvent(2 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .1})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .1})
             end),
             TimeEvent(17 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .2})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .2})
             end),
             TimeEvent(32* FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .3})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .3})
             end),
             TimeEvent(39* FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .3})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .3})
             end),
             TimeEvent(39* FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/creak")
+                if inst.sounds.creak then inst.SoundEmitter:PlaySoundWithParams(inst.sounds.creak) end
             end),
             TimeEvent(51 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .4})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .4})
             end),
             TimeEvent(58 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .4})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .4})
             end),
             TimeEvent(60 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .5})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .5})
             end),
             TimeEvent(71 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage",{intensity= .5})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage,{intensity= .5})
             end),
             TimeEvent(75 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", {intensity= .6})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= .6})
             end),
             TimeEvent(82 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", {intensity= .6})
+                inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= .6})
             end),
         },
     },
@@ -123,19 +119,11 @@ local states =
     State{
         name = "popping",
         onenter = function(inst)
-            local fx_boat_crackle = SpawnPrefab("fx_boat_pop")
-            fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
-            inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", {intensity= 1})
-            inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/sink")
-
-            local ignitefragments = inst.activefires > 0
-            local locus_point = Vector3(inst.Transform:GetWorldPosition())
-
+            inst.sinkloot()
+            if inst.postsinkfn then
+                inst:postsinkfn()
+            end
             inst:Remove()
-            SpawnFragment(locus_point, "boards",  2.75,  0, 0.5, ignitefragments)
-            SpawnFragment(locus_point, "boards",  0.25,  0, -2.8, ignitefragments)
-            SpawnFragment(locus_point, "boards", -2.5,   0, -0.25, ignitefragments)
-            SpawnFragment(locus_point, "boards", -0.95,  0, 0.75, ignitefragments)
         end,
     },
 }

@@ -2,7 +2,15 @@
 local decor_defs =
 {
 	carnivaldecor_plant = {
-		bank = "carnivaldecor_plant", build = "carnivaldecor_plant",
+		bank = "carnivaldecor_plant", build = "carnivaldecor_plant", 
+		sound_place = "summerevent/decor/place",
+		num_anims = 3,
+		physics_radius = 0.25,
+	},
+
+	carnivaldecor_banner = {
+		bank = "carnivaldecor_banner", build = "carnivaldecor_banner",
+		sound_place = "summerevent/decor/place",
 		num_anims = 3,
 		physics_radius = 0.25,
 	},
@@ -20,7 +28,7 @@ end
 local function onbuilt(inst, data)
     inst.AnimState:PlayAnimation("place_"..inst.shape)
     inst.AnimState:PushAnimation("idle_"..inst.shape, true)
-    inst.SoundEmitter:PlaySound("summerevent/decor/place")
+    inst.SoundEmitter:PlaySound(inst.data.sound_place)
 end
 
 local function onsave(inst, data)
@@ -64,6 +72,8 @@ local function common_fn(data)
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.data = data
 
 	inst.shape = math.random(data.num_anims)
 	if inst.shape ~= 1 then

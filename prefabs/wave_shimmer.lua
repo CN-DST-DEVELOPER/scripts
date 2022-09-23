@@ -25,6 +25,10 @@ local function commonfn(Sim)
 	inst:AddTag("NOBLOCK")
 	inst:AddTag("ignorewalkableplatforms")
 
+	if TheNet:GetIsClient() then
+		inst.entity:AddClientSleepable()
+	end
+
 	inst.OnEntitySleep = inst.Remove
 	inst:ListenForEvent("animover", inst.Remove)
 

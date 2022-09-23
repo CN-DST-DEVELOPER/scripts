@@ -3,6 +3,7 @@ local brain = require("brains/grassgekkobrain")
 local assets =
 {
     Asset("ANIM", "anim/grassgecko.zip"),
+    Asset("PKGREF", "anim/grassgecko_disease.zip"), -- NOTES(JBK): Keep for mods that add back in disease.
 }
 
 local prefabs =

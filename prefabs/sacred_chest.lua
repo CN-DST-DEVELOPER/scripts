@@ -160,6 +160,7 @@ end
 
 local function OnLocalOffering(inst)
 	inst.AnimState:PlayAnimation("open")
+	inst.SoundEmitter:KillSound("loop")
     inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_open")
     inst.components.timer:StartTimer("localoffering_pst", 0.2)
 end

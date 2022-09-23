@@ -10,12 +10,11 @@ local function RunCA(id, entities, data)
 			print(id.." RunCA() Cant process points")
 			return
 		end
-		local current_pos_idx = 1
 		for current_pos_idx = 1, #points_x do
-			if points_type[current_pos_idx]-1 < #data.translate then
-
-
-				local current_layer = data.translate[points_type[current_pos_idx]-1]
+			local type = points_type[current_pos_idx]
+			--print("RunCA ", GROUND_NAMES[type], type)
+			if type-1 < #data.translate then
+				local current_layer = data.translate[type-1]
 				WorldSim:SetTile(points_x[current_pos_idx], points_y[current_pos_idx], current_layer.tile)
 
 				if current_layer.item_count >0 then
@@ -73,13 +72,13 @@ local function MyTestTileSetFunction(id, entities, data)
 end
 
 local MyTestTileSetFunction_data = 	{
-		{tile=GROUND.FOREST, items={"evergreen_tall"}, 		item_count=3},
-		{tile=GROUND.FOREST, items={"evergreen_normal"}, 	item_count=5},
-		{tile=GROUND.FOREST, items={"evergreen_short"}, 	item_count=7},
-		{tile=GROUND.GRASS,  items={"sapling","berrybush"},	item_count=6},
-		{tile=GROUND.SAVANNA,items={"grass"}, 				item_count=6},
-		{tile=GROUND.DIRT},
-		{tile=GROUND.ROCK},
+		{tile=WORLD_TILES.FOREST, items={"evergreen_tall"}, 		item_count=3},
+		{tile=WORLD_TILES.FOREST, items={"evergreen_normal"}, 	item_count=5},
+		{tile=WORLD_TILES.FOREST, items={"evergreen_short"}, 	item_count=7},
+		{tile=WORLD_TILES.GRASS,  items={"sapling","berrybush"},	item_count=6},
+		{tile=WORLD_TILES.SAVANNA,items={"grass"}, 				item_count=6},
+		{tile=WORLD_TILES.DIRT},
+		{tile=WORLD_TILES.ROCK},
 	}
 PlaceLightBeam = {GeneratorFunction = MyTestTileSetFunction, DefaultArgs = MyTestTileSetFunction_data}
 
@@ -87,7 +86,7 @@ PlaceLightBeam = {GeneratorFunction = MyTestTileSetFunction, DefaultArgs = MyTes
 function MakeSetpieceBlockerRoom(blocker_name)
 	return	{
 				colour={r=0.2,g=0.0,b=0.2,a=0.3},
-				value = GROUND.IMPASSABLE,
+				value = WORLD_TILES.IMPASSABLE,
 				tags = {"ForceConnected", "RoadPoison"},
 				contents =  {
 								countstaticlayouts= {

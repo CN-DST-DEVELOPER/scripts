@@ -5,7 +5,7 @@
 ------------------------------------------------------------------------------------
 AddRoom("MaxPuzzle1", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 									countstaticlayouts={
 										["MaxPuzzle1"]=1,
@@ -23,7 +23,7 @@ AddRoom("MaxPuzzle1", {
 				   })
 AddRoom("MaxPuzzle2", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 									countstaticlayouts={
 										["MaxPuzzle2"]=1,
@@ -40,7 +40,7 @@ AddRoom("MaxPuzzle2", {
 					})
 AddRoom("MaxPuzzle3", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 									countstaticlayouts={
 										["MaxPuzzle3"]=1,
@@ -57,7 +57,7 @@ AddRoom("MaxPuzzle3", {
 					})
 AddRoom("SymmetryRoom", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 									countstaticlayouts={
 										["SymmetryTest"]=2,
@@ -67,7 +67,7 @@ AddRoom("SymmetryRoom", {
 					})
 AddRoom("TEST_ROOM", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.FUNGUS,
+					value = WORLD_TILES.FUNGUS,
 					contents =  {
 									countstaticlayouts={
 										["test"]=1,
@@ -84,7 +84,7 @@ AddRoom("TEST_ROOM", {
 					})
 AddRoom("MaxHome", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.IMPASSABLE,
+					value = WORLD_TILES.IMPASSABLE,
 					contents =  {
 									countstaticlayouts={
 										["MaxwellHome"]=1,
@@ -93,7 +93,7 @@ AddRoom("MaxHome", {
 					})
 AddRoom("TestMixedForest", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									distributepercent=0.8,
 									distributeprefabs={
@@ -104,7 +104,7 @@ AddRoom("TestMixedForest", {
 					})
 AddRoom("TestSparseForest", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									distributepercent=0.8,
 									distributeprefabs={
@@ -114,7 +114,7 @@ AddRoom("TestSparseForest", {
 					})
 AddRoom("TestPineForest", {
 					colour={r=0.3,g=.8,b=.5,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									distributepercent=0.8,
 									distributeprefabs={

@@ -26,6 +26,14 @@ local function on_not_float(inst)
     inst.AnimState:PlayAnimation("idle")
 end
 
+local function on_usedup(inst)
+    -- NOTES(JBK): There is a case where traps can reach here while in a container and cause issues later. This is a temporary fix until the source of that is found.
+    if inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:RemoveFromOwner()
+    end
+    inst:Remove()
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -63,7 +71,7 @@ local function fn()
         inst:AddComponent("finiteuses")
         inst.components.finiteuses:SetMaxUses(TUNING.TRAP_USES)
         inst.components.finiteuses:SetUses(TUNING.TRAP_USES)
-        inst.components.finiteuses:SetOnFinished(inst.Remove)
+        inst.components.finiteuses:SetOnFinished(on_usedup)
     end
 
     inst:AddComponent("trap")

@@ -147,6 +147,19 @@ function Eater:SetIgnoresSpoilage(ignores)
     end
 end
 
+function Eater:SetRefusesSpoiledFood(refuses)
+    if refuses then
+        self.inst:AddTag("nospoiledfood")
+        self.nospoiledfood = true
+    else
+        if self.inst:HasTag("nospoiledfood") then
+            self.inst:RemoveTag("nospoiledfood")
+        end
+        
+        self.nospoiledfood = false
+    end
+end
+
 function Eater:SetOnEatFn(fn)
     self.oneatfn = fn
 end
@@ -289,15 +302,17 @@ function Eater:TestFood(food, testvalues)
     end
 end
 
-function Eater:PrefersToEat(inst)
-    if inst.prefab == "winter_food4" and self.inst:HasTag("player") then
+function Eater:PrefersToEat(food)
+    if food.prefab == "winter_food4" and self.inst:HasTag("player") then
         --V2C: fruitcake hack. see how long this code stays untouched - _-"
+        return false
+    elseif self.nospoiledfood and (food.components.perishable and food.components.perishable:IsSpoiled()) then
         return false
     elseif self.preferseatingtags ~= nil then
         --V2C: now it has the warly hack for only eating prepared foods ;-D
         local preferred = false
         for i, v in ipairs(self.preferseatingtags) do
-            if inst:HasTag(v) then
+            if food:HasTag(v) then
                 preferred = true
                 break
             end
@@ -306,11 +321,11 @@ function Eater:PrefersToEat(inst)
             return false
         end
     end
-    return self:TestFood(inst, self.preferseating)
+    return self:TestFood(food, self.preferseating)
 end
 
-function Eater:CanEat(inst)
-    return self:TestFood(inst, self.caneat)
+function Eater:CanEat(food)
+    return self:TestFood(food, self.caneat)
 end
 
 return Eater

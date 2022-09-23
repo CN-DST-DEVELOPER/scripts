@@ -334,6 +334,7 @@ local function CreateWeapon(inst)
     weapon.persists = false
     weapon.components.inventoryitem:SetOnDroppedFn(weapon.Remove)
     weapon:AddComponent("equippable")
+    weapon:AddTag("nosteal")
     inst.components.inventory:GiveItem(weapon)
     inst.weapon = weapon
 end
@@ -400,14 +401,10 @@ SetSharedLootTable( 'malbatross',
     {'meat',                                1.00},
     {'meat',                                1.00},
     {'malbatross_beak',                     1.00},
-    {'mast_malbatross_item_blueprint',      1.00},
-    {'malbatross_feathered_weave_blueprint',1.00},
-    {'premiumwateringcan_blueprint',        1.00},
     {'bluegem',                             1},
     {'bluegem',                             1},
     {'bluegem',                             0.3},
     {'yellowgem',                           0.05},
-	{'oceanfishingbobber_malbatross_tacklesketch',1.00},
 	{'chesspiece_malbatross_sketch',		1.00},
 
 })

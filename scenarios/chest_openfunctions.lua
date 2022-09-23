@@ -93,7 +93,7 @@ local function summonmonsters(inst, scenariorunner, data)
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         local wander_point = pt + offset
 
-        if ground.Map and ground.Map:GetTileAtPoint(wander_point.x, wander_point.y, wander_point.z) ~= GROUND.IMPASSABLE then
+        if ground.Map and TileGroupManager:IsLandTile(ground.Map:GetTileAtPoint(wander_point.x, wander_point.y, wander_point.z)) then
         	local spawn = SpawnPrefab(monster)
             spawn.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
         	if initfn then

@@ -1,13 +1,12 @@
 local assets =
 {
     Asset("ANIM", "anim/gnarwail_horn.zip"),
-    Asset("ANIM", "anim/swap_gnarwailhorn.zip"),
     Asset("INV_IMAGE", "gnarwail_horn"),
 }
 
 local prefabs =
 {
-    "wave_splash"
+    "wave_splash",
 }
 
 local function reticuletargetfunction(inst)
@@ -23,7 +22,7 @@ local function onusesfinished(inst)
 end
 
 local function onequipped(inst, equipper)
-    equipper.AnimState:OverrideSymbol("swap_object", "swap_gnarwailhorn", "swap_gnarwailhorn")
+    equipper.AnimState:OverrideSymbol("swap_object", "gnarwail_horn", "swap_gnarwailhorn")
     equipper.AnimState:Show("ARM_carry")
     equipper.AnimState:Hide("ARM_normal")
 end
@@ -95,16 +94,18 @@ local function fn()
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
 
-    inst.AnimState:SetBank("gnarwail")
+    inst.AnimState:SetBank("gnarwail_horn")
     inst.AnimState:SetBuild("gnarwail_horn")
-    inst.AnimState:PlayAnimation("horn_idle")
+    inst.AnimState:PlayAnimation("idle")
 
-    MakeInventoryFloatable(inst)
+    MakeInventoryFloatable(inst, "med", 0, { 1, .6, 1 })
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.components.floater:SetBankSwapOnFloat(true, -16, { sym_build = "gnarwail_horn", sym_name = "swap_gnarwailhorn_float" })
 
     MakeHauntableLaunch(inst)
 

@@ -520,10 +520,10 @@ function CraftTabs:DoUpdateRecipes()
                 if IsRecipeValid(rec.name) then
                     local tab = self.tabbyfilter[rec.tab]
                     if tab ~= nil then
-                        local has_researched = builder:KnowsRecipe(rec.name)
+                        local has_researched = builder:KnowsRecipe(rec)
                         local can_learn = builder:CanLearn(rec.name)
                         local can_see = has_researched or (can_learn and CanPrototypeRecipe(rec.level, current_research_level))
-                        local can_build = can_learn and builder:CanBuild(rec.name)
+                        local can_build = can_learn and builder:HasIngredients(rec)
                         local buffered_build = builder:IsBuildBuffered(rec.name)
                         local can_research = not has_researched and can_see and can_build
 

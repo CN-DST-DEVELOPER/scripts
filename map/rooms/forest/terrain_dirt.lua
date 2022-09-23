@@ -1,7 +1,7 @@
 
 AddRoom("BGDirt", {
 					colour={r=1.0,g=.8,b=.66,a=.50},
-					value = GROUND.DIRT,
+					value = WORLD_TILES.DIRT,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_2"},
 					contents =  {
 					                distributepercent = .1,

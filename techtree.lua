@@ -26,7 +26,10 @@ local AVAILABLE_TECH =
 	"WINTERSFEASTCOOKING",
     "HERMITCRABSHOP",
     "TURFCRAFTING",
+	"MASHTURFCRAFTING",
     "SPIDERCRAFT",
+    "ROBOTMODULECRAFT",
+    "BOOKCRAFT",
 }
 
 -- only these tech trees can have tech bonuses added to them
@@ -36,6 +39,7 @@ local BONUS_TECH =
     "MAGIC",
 	"SEAFARING",
     "ANCIENT",
+	"MASHTURFCRAFTING",
 }
 
 local function Create(t)

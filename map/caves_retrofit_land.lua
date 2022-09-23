@@ -8,7 +8,7 @@ local function FindOpenArea(map, map_width, map_height, tiles_wide, tiles_high)
 	local function isvalidarea(map, _left, _top)
 		for x = 0, tiles_wide do
 			for y = 0, tiles_high do
-				if map:GetTile(_left + x, _top + y) ~= GROUND.IMPASSABLE then
+				if not TileGroupManager:IsImpassableTile((map:GetTile(_left + x, _top + y))) then
 					return false
 				end
 			end

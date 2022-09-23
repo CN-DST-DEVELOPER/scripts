@@ -7,6 +7,7 @@ local OnlineStatus = require "widgets/onlinestatus"
 local PopupDialogScreen = require "screens/redux/popupdialog"
 local GenericWaitingPopup = require "screens/redux/genericwaitingpopup"
 local ItemBoxOpenerPopup = require "screens/redux/itemboxopenerpopup"
+local ItemBoxPreviewer = require "screens/redux/itemboxpreviewer"
 local Stats = require("stats")
 local ImageButton = require "widgets/imagebutton"
 
@@ -420,6 +421,18 @@ local PurchasePackPopup = Class(Screen, function(self, iap_def, screen_self)
             {250, 60}
         )
     )
+    if not IsPurchasePackCurrency( iap_def.item_type ) then
+        self.contents_button = self.root:AddChild(TEMPLATES.StandardButton(
+                function()
+                    local display_items = GetPurchasePackDisplayItems(iap_def.item_type)
+                    local box_popup = ItemBoxPreviewer(display_items)
+                    TheFrontEnd:PushScreen( box_popup )
+                end,
+                STRINGS.UI.PURCHASEPACKSCREEN.PURCHASE_VIEW_CONTENTS,
+                {250, 60}
+            )
+        )
+    end
 
 	local onDLCGiftClickFn =
         function()
@@ -446,6 +459,11 @@ local PurchasePackPopup = Class(Screen, function(self, iap_def, screen_self)
 
     self.close_button:SetFocusChangeDir(MOVE_UP, self.buy_button)
     self.close_button:SetFocusChangeDir(MOVE_RIGHT, self.buy_button)
+    if self.contents_button ~= nil then
+        self.close_button:SetFocusChangeDir(MOVE_LEFT, self.contents_button)
+        self.contents_button:SetFocusChangeDir(MOVE_UP, self.buy_button)
+        self.contents_button:SetFocusChangeDir(MOVE_RIGHT, self.close_button)
+    end
     self.buy_button:SetFocusChangeDir(MOVE_DOWN, self.close_button)
     self.buy_button:SetFocusChangeDir(MOVE_LEFT, self.close_button)
 
@@ -468,14 +486,14 @@ function PurchasePackPopup:SetData( iap_def )
     local contentw = 520
 
     self.title:SetHAlign(ANCHOR_LEFT)
-    self.title:SetVAlign(ANCHOR_TOP)
+    self.title:SetVAlign(ANCHOR_MIDDLE)
     self.desc:SetHAlign(ANCHOR_LEFT)
-    self.desc:SetVAlign(ANCHOR_TOP)
+    self.desc:SetVAlign(ANCHOR_MIDDLE)
     self.text:SetHAlign(ANCHOR_LEFT)
     self.text:SetVAlign(ANCHOR_TOP)
 
     self.title:SetRegionSize(contentw, 90 )
-    self.desc:SetRegionSize(contentw,130)
+    self.desc:SetRegionSize(contentw,200)
     self.text:SetRegionSize(contentw,80)
     self.collection:SetRegionSize(contentw,40)
     self.price:SetRegionSize(contentw,80)
@@ -486,10 +504,10 @@ function PurchasePackPopup:SetData( iap_def )
     self.desc:EnableWordWrap( true )
     self.text:EnableWordWrap( true )
 
-    self.collection:SetPosition(0,240)
-    self.title:SetPosition(0, 190)
+    self.collection:SetPosition(0,250)
+    self.title:SetPosition(0, 200)
     self.desc:SetPosition(0, 70 )
-    self.text:SetPosition(0, -50 )
+    self.text:SetPosition(0, -60 )
     self.price:SetPosition( 0, -120)
     self.oldprice:SetPosition( 0, -80)
     self.oldprice_line:SetPosition( -200, -85)
@@ -510,7 +528,13 @@ function PurchasePackPopup:SetData( iap_def )
     self.icon_glow2:SetScale(2.5)
 
     self.divider:SetPosition(-1,-190)
-    self.close_button:SetPosition(0, -232)
+
+    if self.contents_button ~= nil then
+        self.close_button:SetPosition(130, -232)
+        self.contents_button:SetPosition(-130, -232)
+    else
+        self.close_button:SetPosition(0, -232)
+    end
 
     if IsPackFeatured(self.iap_def.item_type) then
         self.icon_root:SetPosition(-270, 80)
@@ -559,6 +583,30 @@ end
 
 
 PurchasePackScreen = Class(Screen, function(self, prev_screen, profile, filter_info)
+    
+    TheSim:QueryServer( "https://items.kleientertainment.com/iap/dst/GetShopEpoch",
+		function(result, isSuccessful, resultCode)
+			if isSuccessful and resultCode == 200 then
+                local res = json.decode(result)
+                if res.Time ~= nil then
+                    if math.abs(res.Time - os.time()) > 60 then
+                        print("Shop epoch time is offset!!!", res.Time - os.time())
+
+                        local warning = PopupDialogScreen(STRINGS.UI.PURCHASEPACKSCREEN.SHOP_EPOCH_WRONG_TITLE, STRINGS.UI.PURCHASEPACKSCREEN.SHOP_EPOCH_WRONG_BODY,
+                        {
+                            {text=STRINGS.UI.PURCHASEPACKSCREEN.OK, cb = function()
+                                TheFrontEnd:PopScreen()
+                            end },
+                        }, nil, "big" )
+                        TheFrontEnd:PushScreen( warning )
+                    end
+                end
+            end
+		end,
+		"POST")
+
+
+    self.prev_screen = prev_screen
 
     --track where in the UI we came from
     local screen_flow_path = "ScreenFlow"
@@ -913,7 +961,9 @@ end
 local function build_type_options(initial_item_key)
     local type_options = { { text = STRINGS.UI.PURCHASEPACKSCREEN.FILTER_ALL, data = "ALL" }, { text = STRINGS.UI.PURCHASEPACKSCREEN.FILTER_ITEMS, data = "ITEMS" }  }
     for _,character in pairs(DST_CHARACTERLIST) do
-        table.insert( type_options, { text = STRINGS.NAMES[string.upper(character)], data = character } )
+        if character ~= "wonkey" then --no wonkey skins in packs... yet??? maybe one day???
+            table.insert( type_options, { text = STRINGS.NAMES[string.upper(character)], data = character } )
+        end
     end
 
     if initial_item_key ~= nil then
@@ -1079,7 +1129,7 @@ function PurchasePackScreen:_BuildPurchasePanel()
                 self.sales_btn:SetText(STRINGS.UI.PURCHASEPACKSCREEN.GO_TO_SALES)
                 self.sales_btn:SetScale(0.80)
                 self.sales_btn:SetPosition(0, -170)
-                self.sales_btn:SetOnClick(function() print("sales") self.filters[FILTER_DISCOUNT_INDEX].spinner:SetSelected("SALE") end)
+                self.sales_btn:SetOnClick(function() self.filters[FILTER_DISCOUNT_INDEX].spinner:SetSelected("SALE") end)
 
                 self.filters[FILTER_DISCOUNT_INDEX]:SetFocusChangeDir(MOVE_DOWN, self.sales_btn)
                 self.sales_btn:SetFocusChangeDir(MOVE_UP, self.filters[FILTER_DISCOUNT_INDEX])
@@ -1187,7 +1237,8 @@ function PurchasePackScreen:OnBecomeActive()
     self.leaving = nil
 
     --Just in-case we came direct from the main menu, the music might not be playing
-    if not TheFrontEnd:GetSound():PlayingSound("FEMusic") then
+    if not TheFrontEnd:GetSound():PlayingSound("FEMusic") and (self.prev_screen == nil or self.prev_screen.musictask == nil) then
+        self.started_sound = true
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/collectionscreen/music/jukebox", "FEMusic")
     end
 
@@ -1195,6 +1246,9 @@ function PurchasePackScreen:OnBecomeActive()
 end
 
 function PurchasePackScreen:Close()
+    if self.started_sound then
+        TheFrontEnd:GetSound():KillSound("FEMusic")
+    end
     TheFrontEnd:FadeBack()
 end
 

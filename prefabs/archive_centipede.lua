@@ -190,7 +190,6 @@ local function ClearRecentlyCharged(inst, other)
 end
 
 local function onothercollide(inst, other)
-    print(other.prefab)
     if not other:IsValid() or inst.recentlycharged[other] then
         return
     elseif other:HasTag("smashable") and other.components.health ~= nil then

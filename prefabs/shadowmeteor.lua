@@ -165,6 +165,7 @@ local function onexplode(inst)
                         drop.Transform:SetPosition(x, y, z)
                         if drop.components.inventoryitem ~= nil then
                             drop.components.inventoryitem:OnDropped(true)
+                            launched[drop] = true
                         end
                     end
                 end
@@ -276,7 +277,7 @@ local function SetSize(inst, sz, mod)
     inst.striketask = inst:DoTaskInTime(warntime, dostrike)
 
     inst.warnshadow.entity:SetParent(inst.entity)
-    inst.warnshadow.startfn(inst.warnshadow, warntime, .33, 1)
+    inst.warnshadow:startfn(warntime, .33, 1)
 end
 
 local function AutoSize(inst)

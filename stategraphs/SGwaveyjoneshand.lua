@@ -7,6 +7,8 @@ local actionhandlers =
     ActionHandler(ACTIONS.LOWER_ANCHOR, "short_action"),
     ActionHandler(ACTIONS.RAISE_ANCHOR, "loop_action_anchor"),
     ActionHandler(ACTIONS.UNPATCH, "short_action"),
+    ActionHandler(ACTIONS.ROTATE_BOAT_COUNTERCLOCKWISE, "short_action"),
+    ActionHandler(ACTIONS.ROTATE_BOAT_CLOCKWISE, "short_action"),
     ActionHandler(ACTIONS.EXTINGUISH, "short_action"),
 }
 

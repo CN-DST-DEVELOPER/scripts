@@ -288,6 +288,15 @@ local function onload(inst, data)
     end
 end
 
+local function domagicgrowth(inst, doer)
+    if inst.components.harvestable:Grow() then
+        inst.components.harvestable:Disable()
+        inst:DoTaskInTime(0.5, domagicgrowth)
+    else
+        inst.components.harvestable:Enable()
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -325,6 +334,7 @@ local function fn()
     inst:AddComponent("harvestable")
     inst.components.harvestable:SetOnGrowFn(ongrow)
     inst.components.harvestable:SetOnHarvestFn(onharvest)
+    inst.components.harvestable:SetDoMagicGrowthFn(domagicgrowth)
     -------------------
 
     inst:AddComponent("trader")

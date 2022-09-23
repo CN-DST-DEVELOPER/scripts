@@ -580,6 +580,22 @@ function ServerListingScreen:ProcessServerWorldGenData()
         and #self.selected_server.world_gen_data > 0 then
         local success, data = RunInSandboxSafeCatchInfiniteLoops(self.selected_server.world_gen_data)
         if success and data ~= nil then
+            if type(data) == "table" and type(data.str) == "string" then
+                local count = 0
+                for _ in pairs(data) do
+                    count = count + 1
+                    if count > 1 then break end
+                end
+                --make sure data.str is the only entry in the table
+                if count == 1 then
+                    local decoded_success, decoded_data = RunInSandboxSafeCatchInfiniteLoops(TheSim:DecodeAndUnzipString(data.str))
+                    if decoded_success and decoded_data ~= nil then
+                        data = decoded_data
+                    else
+                        data = false
+                    end
+                end
+            end
             self.selected_server._processed_world_gen_data = data
         else
             self.selected_server._processed_world_gen_data = false

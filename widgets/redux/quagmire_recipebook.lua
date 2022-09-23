@@ -672,7 +672,7 @@ function QuagmireRecipeBook:OnRecipeBookUpdated()
     self.recipe_grid:SetPosition(-15, 0)
 
 	if scroll_pos ~= nil then
-		self.recipe_grid:ScrollToDataIndex(scroll_pos)
+		self.recipe_grid:ScrollToScrollPos(scroll_pos)
 	end
 
 	self:ApplyFilters()

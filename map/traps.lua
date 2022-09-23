@@ -40,12 +40,12 @@ local Any = {
 local SandboxModeTraps = {
 	["Rare"] = Rare,
 	["Any"] = Any,
-	[GROUND.ROCKY] = Rocky,
-	[GROUND.SAVANNA] = Savanna,
-	[GROUND.GRASS] = Grasslands,
-	[GROUND.FOREST] = Forest,
-	[GROUND.MARSH] = Swamp,
-	[GROUND.DIRT] = Badlands,
+	[WORLD_TILES.ROCKY] = Rocky,
+	[WORLD_TILES.SAVANNA] = Savanna,
+	[WORLD_TILES.GRASS] = Grasslands,
+	[WORLD_TILES.FOREST] = Forest,
+	[WORLD_TILES.MARSH] = Swamp,
+	[WORLD_TILES.DIRT] = Badlands,
 }
 
 local layouts = {}

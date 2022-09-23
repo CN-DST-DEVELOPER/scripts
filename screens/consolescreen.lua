@@ -4,6 +4,7 @@ local Image = require "widgets/image"
 local TextEdit = require "widgets/textedit"
 local Text = require "widgets/text"
 local Widget = require "widgets/widget"
+local ConsoleHistoryWidget = require "widgets/consolehistorywidget"
 
 -- fix syntax highlighting due to above list: "'
 
@@ -13,6 +14,7 @@ local Widget = require "widgets/widget"
 
 local DEBUG_MODE = BRANCH == "dev"
 local CONSOLE_HISTORY = {}
+local CONSOLE_LOCALREMOTE_HISTORY = {}
 
 local ConsoleScreen = Class(Screen, function(self)
 	Screen._ctor(self, "ConsoleScreen")
@@ -114,6 +116,11 @@ function ConsoleScreen:OnRawKeyHandler(key, down)
 				self.history_idx = len
 			end
 			self.console_edit:SetString( CONSOLE_HISTORY[ self.history_idx ] )
+			self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[self.history_idx] )
+			if BRANCH == "dev" then
+				self.console_history:Show(CONSOLE_HISTORY, CONSOLE_LOCALREMOTE_HISTORY, self.history_idx)
+			end
+			self.console_edit.inst:PushEvent("onconsolehistoryupdated")
 		end
 	elseif key == KEY_DOWN then
 		local len = #CONSOLE_HISTORY
@@ -121,9 +128,16 @@ function ConsoleScreen:OnRawKeyHandler(key, down)
 			if self.history_idx ~= nil then
 				if self.history_idx == len then
 					self.console_edit:SetString( "" )
+					self:ToggleRemoteExecute( true )
+					self.history_idx = len + 1
 				else
 					self.history_idx = math.min( len, self.history_idx + 1 )
 					self.console_edit:SetString( CONSOLE_HISTORY[ self.history_idx ] )
+					self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[self.history_idx] )
+					if BRANCH == "dev" then
+						self.console_history:Show(CONSOLE_HISTORY, CONSOLE_LOCALREMOTE_HISTORY, self.history_idx)
+					end
+					self.console_edit.inst:PushEvent("onconsolehistoryupdated")
 				end
 			end
 		end
@@ -145,6 +159,9 @@ function ConsoleScreen:Run()
 
 	if fnstr ~= "" then
 		table.insert( CONSOLE_HISTORY, fnstr )
+		table.insert( CONSOLE_LOCALREMOTE_HISTORY, self.toggle_remote_execute )
+
+		ConsoleScreenSettings:AddLastExecutedCommand(fnstr, self.toggle_remote_execute)
 	end
 
 	if self.toggle_remote_execute then
@@ -169,9 +186,20 @@ local function DoRun(inst, self)
     if TheFrontEnd.consoletext.closeonrun then
         TheFrontEnd:HideConsoleLog()
     end
+
+	ConsoleScreenSettings:Save()
 end
 
 function ConsoleScreen:OnTextEntered()
+	if BRANCH == "dev" then
+		if self.console_history:IsVisible() then
+			self.console_history:Hide()
+			self.console_edit:SetFocus()
+			self.console_edit:SetEditing(true)
+			return
+		end
+	end
+
     if self.runtask ~= nil then
         self.runtask:Cancel()
 	end
@@ -182,9 +210,19 @@ function GetConsoleHistory()
     return CONSOLE_HISTORY
 end
 
+function GetConsoleLocalRemoteHistory()
+    return CONSOLE_LOCALREMOTE_HISTORY
+end
+
 function SetConsoleHistory(history)
     if type(history) == "table" and type(history[1]) == "string" then
         CONSOLE_HISTORY = history
+    end
+end
+
+function SetConsoleLocalRemoteHistory(history)
+    if type(history) == "table" and type(history[1]) == "boolean" then
+        CONSOLE_LOCALREMOTE_HISTORY = history
     end
 end
 
@@ -246,7 +284,25 @@ function ConsoleScreen:DoInit()
 	self.console_edit:EnableWordPrediction({width = 1000, mode=Profile:GetConsoleAutocompleteMode()})
 	self.console_edit:AddWordPredictionDictionary({words = prefab_names, delim = '"', postfix='"', skip_pre_delim_check=true})
 	self.console_edit:AddWordPredictionDictionary({words = prefab_names, delim = "'", postfix="'", skip_pre_delim_check=true})
-	local prediction_command = {"spawn", "save", "gonext", "give", "mat", "list", "findnext", "countprefabs", "selectnear", "removeall", "shutdown", "regenerateworld", "reset", "despawn", "godmode", "supergodmode", "armor", "makeboat", "makeboatspiral", "autoteleportplayers", "gatherplayers", "dumpentities", "freecrafting", "selectnext", "sounddebug" }
+	local prediction_command = {
+		"addelectricity", "allbooks", "announce", "armor", "armour", "autoteleportplayers",
+		"boatcollision",
+		"cancelmaintaintasks", "connect", "countallprefabs", "countprefabs", "counttagged",
+		"debugshards", "despawn", "doscenario", "dump", "dumpentities", "dumpseasons", "dumpworldstate",
+		"emptyworld",
+		"find", "findnext", "findtag", "forcecrash", "freecrafting",
+		"gatherplayers", "getmaxplayers", "getnumplayers", "give", "giveingredients", "goadventuring", "godmode", "gonext", "goto", "gotoroom", "groundtype", "guitartab",
+		"inst",
+		"knownassert",
+		"list", "listallplayers", "listplayers", "listtag",
+		"maintainall", "maintainhealth", "maintainhunger", "maintainmoisture", "maintainsanity", "maintaintemperature", "makeboat", "makeboatspiral", "makecrabboat", "makeinvisible", "mat", "mermking", "mermthrone", "migrateto", "migrationportal", "move",
+		"netstats",
+		"pos", "printpos", "printtextureinfo",
+		"regenerateshard", "regenerateworld", "remote", "remove", "removeall", "removeallwithtags", "removeat", "repeatlastcommand", "reregisterportals", "reset", "rollback", "rotateccw", "rotatecw",
+		"save", "searchprefabs", "sel", "sel_health", "select", "selectnear", "selectnext", "sethealth", "sethunger", "setinspiration", "setmightiness", "setminhealth", "setmoisture", "setrotation", "setsanity", "settemperature", "setwereness", "shellsfromtable", "shutdown", "simphase", "skip", "sounddebug", "sounddebugui", "spawn", "speedmult", "speedup", "startinggear", "startvote", "stopvote", "summonbearger", "summondeerclops", "summonmalbatross", "supergodmode",
+		"teleport", "tile",
+		"worldstatedebug",
+	}
 	self.console_edit:AddWordPredictionDictionary({words = prediction_command, delim = "c_", num_chars = 0})
 
 	self.console_edit:SetForceEdit(true)
@@ -260,6 +316,38 @@ function ConsoleScreen:DoInit()
 	self.console_edit.validrawkeys[KEY_V] = true
 	self.toggle_remote_execute = false
 
+	if BRANCH == "dev" then
+		-- Setup console history display
+		self.console_history = self.console_edit:AddChild(ConsoleHistoryWidget(self.console_edit, self.console_remote_execute, 800, Profile:GetConsoleAutocompleteMode()))
+		local sx, sy = self.console_edit:GetRegionSize()
+		self.console_history:SetPosition(-sx * 0.5, sy * 0.5 + 5)
+		self.console_history:Hide()
+
+		local function onconsolehistoryitemclicked()
+			self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[ self.history_idx ] )
+		end
+		self.console_history.inst:ListenForEvent("onconsolehistoryitemclicked", onconsolehistoryitemclicked)
+	end
+
+	-- Load saved last entered console commands
+	if CONSOLE_HISTORY and #CONSOLE_HISTORY <= 0 then
+		shallowcopy(ConsoleScreenSettings:GetConsoleHistory(), CONSOLE_HISTORY)
+	end
+
+	if CONSOLE_LOCALREMOTE_HISTORY and #CONSOLE_LOCALREMOTE_HISTORY <= 0 then
+		shallowcopy(ConsoleScreenSettings:GetConsoleLocalRemoteHistory(), CONSOLE_LOCALREMOTE_HISTORY)
+	end
+
+	local function onhistoryupdated(inst, index)
+		if index == nil then
+			return
+		end
+		self.history_idx = index
+		self.console_edit:SetString( CONSOLE_HISTORY[ self.history_idx ] )
+		self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[ self.history_idx ] )
+	end
+
+	self.console_edit.inst:ListenForEvent("onhistoryupdated", onhistoryupdated)
 end
 
 return ConsoleScreen

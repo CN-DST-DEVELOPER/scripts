@@ -412,6 +412,11 @@ function WorldSettingsTab:RefreshOptionItems()
 end
 
 --called from ServerCreationScreen
+function WorldSettingsTab:UpdateSaveSlot(slot)
+    self.slot = slot
+end
+
+--called from ServerCreationScreen
 function WorldSettingsTab:SetDataForSlot(slot, ...)
     self.slot = slot
     self.isnewshard = ShardSaveGameIndex:IsSlotEmpty(slot)

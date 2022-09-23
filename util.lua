@@ -739,14 +739,14 @@ function weighted_random_choices(choices, num_choices)
 		for choice, weight in pairs(choices) do
 			threshold = threshold - weight
 			pick = choice
-			if threshold <= 0 then 
+			if threshold <= 0 then
 				break
 			end
 		end
 
 		table.insert(picks, pick)
 	end
-	
+
     return picks
 end
 
@@ -807,6 +807,12 @@ end
 
 --same as above, but catches infinite loops
 function RunInSandboxSafeCatchInfiniteLoops(untrusted_code, error_handler)
+    if DEBUGGER_ENABLED then
+        --The debugger makes use of debug.sethook, so it conflicts with this function
+        --We'll rely on the debugger to catch infinite loops instead, so in this case, just fallback
+        return RunInSandboxSafe(untrusted_code, error_handler)
+    end
+
 	if untrusted_code:byte(1) == 27 then return nil, "binary bytecode prohibited" end
 	local untrusted_function, message = loadstring(untrusted_code)
 	if not untrusted_function then return nil, message end
@@ -1423,6 +1429,53 @@ function IsWithinAngle(position, forward, width, testPos)
 	end
 end
 
+-- Given a number of segments, circle radius, circle center point, and point to snap, returns a snapped position and angle on a circle's edge.
+function GetCircleEdgeSnapTransform(segments, radius, base_pt, pt, angle)
+    local segmentangle = (segments > 0 and 360 / segments or 360)
+    local snap_point = base_pt + Vector3(1, 0, 0) * radius
+    local snap_angle = 0
+    local start = angle or 0
+
+    for midangle = -start, 360 - start, segmentangle do
+        local facing = Vector3(math.cos(midangle / RADIANS), 0 , math.sin(midangle / RADIANS))
+        if IsWithinAngle(base_pt, facing, segmentangle / RADIANS, pt) then
+            snap_point = base_pt + facing * radius
+            snap_angle = midangle
+            break
+        end
+    end
+    return snap_point, snap_angle
+end
+
+function SnapToBoatEdge(inst, boat, override_pt)
+    if boat == nil then
+        return
+    end
+
+    local pt = override_pt or inst:GetPosition()
+    local boatpos = boat:GetPosition()
+    local radius = boat.components.boatringdata and boat.components.boatringdata:GetRadius() - 0.1 or 0
+    local boatsegments = boat.components.boatringdata and boat.components.boatringdata:GetNumSegments() or 0
+    local boatangle = boat.Transform:GetRotation()
+
+    local snap_point, snap_angle = GetCircleEdgeSnapTransform(boatsegments, radius, boatpos, pt, boatangle)
+    if snap_point ~= nil then
+        inst.Transform:SetPosition(snap_point.x, 0, snap_point.z)
+        inst.Transform:SetRotation(-snap_angle + 90) -- Need to offset snap_angle here to make the object show in the correct orientation
+    else
+        -- point is outside of radius; set original position
+        inst.Transform:SetPosition(pt:Get())
+    end
+end
+
+-- Returns the angle from the boat's position to (x, z), in radians
+function GetAngleFromBoat(boat, x, z)
+    if boat == nil then
+        return
+    end
+    local boatpos = boat:GetPosition()
+    return math.atan2(z - boatpos.z, x - boatpos.x)
+end
 
 local Chars = {}
 for Loop = 0, 255 do
@@ -1626,8 +1679,8 @@ function FunctionOrValue(func_or_val, ...)
 end
 
 function ApplyLocalWordFilter(text, text_filter_context, net_id)
-	if text_filter_context == TEXT_FILTER_CTX_CHAT											-- we are only filtering chat at the moment
-		and Profile:GetProfanityFilterChatEnabled() 
+	if text_filter_context ~= TEXT_FILTER_CTX_GAME --We filter everything but game strings
+		and (Profile:GetProfanityFilterChatEnabled() or TheSim:IsSteamChinaClient())
 		then
 
 		text = TheSim:ApplyLocalWordFilter(text, text_filter_context, net_id) or text

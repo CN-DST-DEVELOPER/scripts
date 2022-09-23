@@ -1,4 +1,4 @@
-local function _spawn_list(list, spacing, fn)
+function d_spawnlist(list, spacing, fn)
 	spacing = spacing or 2
 	local num_wide = math.ceil(math.sqrt(#list))
 
@@ -21,6 +21,31 @@ local function _spawn_list(list, spacing, fn)
 	end
 end
 
+function d_playeritems()
+	local items = {}
+	for prefab, recipe in pairs(AllRecipes) do
+		if recipe.builder_tag and recipe.placer == nil and prefab:find("_builder") == nil then
+			items[recipe.builder_tag] = items[recipe.builder_tag] or {}
+			table.insert(items[recipe.builder_tag], prefab)
+		end
+	end
+	local items_sorted = {}
+	for tag, prefabs in pairs(items) do
+		table.insert(items_sorted, tag)
+	end
+	table.sort(items_sorted)
+	local tospawn = {}
+	for _, tag in ipairs(items_sorted) do
+		table.sort(items[tag])
+		for _, prefab in ipairs(items[tag]) do
+			if Prefabs[prefab] ~= nil then
+				table.insert(tospawn, prefab)
+			end
+		end
+	end
+	d_spawnlist(tospawn, 1.5)
+end
+
 function d_allmutators()
     c_give("mutator_warrior")
     c_give("mutator_dropper")
@@ -28,6 +53,24 @@ function d_allmutators()
     c_give("mutator_spitter")
     c_give("mutator_moon")
     c_give("mutator_water")
+end
+
+function d_allcircuits()
+    local module_defs = require("wx78_moduledefs").module_definitions
+
+    local pt = ConsoleWorldPosition()
+    local spacing, num_wide = 2, math.ceil(math.sqrt(#module_defs))
+
+    for y = 0, num_wide - 1 do
+        for x = 0, num_wide - 1 do
+            local def = module_defs[(y*num_wide) + x + 1]
+            local circuit = SpawnPrefab("wx78module_"..def.name)
+            if circuit ~= nil then
+                local spacing_vec = Vector3(x * spacing, 0, y * spacing)
+                circuit.Transform:SetPosition((pt + spacing_vec):Get())
+            end
+        end
+    end
 end
 
 function d_allheavy()
@@ -569,21 +612,14 @@ function d_reportevent(other_ku)
 end
 
 function d_ground(ground, pt)
-	ground = ground == nil and GROUND.QUAGMIRE_SOIL or
-			type(ground) == "string" and GROUND[string.upper(ground)]
+	ground = ground == nil and WORLD_TILES.QUAGMIRE_SOIL or
+			type(ground) == "string" and WORLD_TILES[string.upper(ground)]
 			or ground
 
 	pt = pt or ConsoleWorldPosition()
 
     local x, y = TheWorld.Map:GetTileCoordsAtPoint(pt:Get())
-
-    local original_tile_type = TheWorld.Map:GetTileAtPoint(pt:Get())
     TheWorld.Map:SetTile(x, y, ground)
-    TheWorld.Map:RebuildLayer(original_tile_type, x, y)
-    TheWorld.Map:RebuildLayer(ground, x, y)
-
-    TheWorld.minimap.MiniMap:RebuildLayer(original_tile_type, x, y)
-    TheWorld.minimap.MiniMap:RebuildLayer(ground, x, y)
 end
 
 function d_portalfx()
@@ -635,12 +671,12 @@ function d_allkitcoons()
 		"kitcoon_yot",
 	}
 
-	_spawn_list(kitcoons, 3, function(inst) inst._first_nuzzle = false end)
+	d_spawnlist(kitcoons, 3, function(inst) inst._first_nuzzle = false end)
 end
 
 function d_allcustomhidingspots()
 	local items = table.getkeys(TUNING.KITCOON_HIDING_OFFSET)
-	_spawn_list(items, 6, function(hidingspot)
+	d_spawnlist(items, 6, function(hidingspot)
 		local kitcoon = SpawnPrefab("kitcoon_rocky") 
 		if not kitcoon.components.hideandseekhider:GoHide(hidingspot, 0) then
 			kitcoon:Remove() 
@@ -986,7 +1022,7 @@ function d_farmplants(grow_stage, spacing)
 		end
 	end
 
-	_spawn_list(items, 2.5,
+	d_spawnlist(items, 2.5,
 		function(inst)
 			if grow_stage ~= nil then
 				for i = 1, grow_stage do
@@ -1029,11 +1065,11 @@ function d_seeds()
 			table.insert(items, v.seed)
 		end
 	end
-	_spawn_list(items, 2)
+	d_spawnlist(items, 2)
 end
 
 function d_fertilizers()
-	_spawn_list(require("prefabs/fertilizer_nutrient_defs").SORTED_FERTILIZERS, 2)
+	d_spawnlist(require("prefabs/fertilizer_nutrient_defs").SORTED_FERTILIZERS, 2)
 end
 
 function d_oversized()
@@ -1043,7 +1079,7 @@ function d_oversized()
 			table.insert(items, v.product_oversized)
 			end
 		end
-	_spawn_list(items, 3)
+	d_spawnlist(items, 3)
 end
 
 function d_startmoonstorm()
@@ -1137,5 +1173,42 @@ function d_statues(material)
 	for i, v in ipairs(items) do
 		items[i] = "chesspiece_".. v .."_" .. (material or "marble")
 	end
-	_spawn_list(items, 5)
+	d_spawnlist(items, 5)
+end
+
+function d_craftingstations()
+	local prefabs = {}
+	for k, _ in pairs(PROTOTYPER_DEFS) do
+		table.insert(prefabs, k)
+	end
+	d_spawnlist(prefabs, 6)
+end
+
+function d_removeentitywithnetworkid(networkid, x, y, z)
+    local ents = TheSim:FindEntities(x,y,z, 1)
+    for i, ent in ipairs(ents) do
+        if ent and ent.Network and ent.Network:GetNetworkID() == networkid then
+            c_remove(ent)
+            return
+        end
+    end
+end
+
+function d_spawnfilelist(filename, spacing)
+-- the file will need to be located in: \Documents\Klei\DoNotStarveTogether\<steam id>\client_save
+-- the fileformat is one prefab per line
+
+	local prefabs = {}
+
+	TheSim:GetPersistentString(filename, function(success, str)
+        if success and str ~= nil and #str > 0 then
+			for prefab in str:gmatch("[^\r\n]+") do
+				table.insert(prefabs, prefab)
+			end
+		else
+			print("d_spawnfilelist failed:", filename, str, success)
+		end
+	end)
+	
+	d_spawnlist(prefabs, spacing) 
 end

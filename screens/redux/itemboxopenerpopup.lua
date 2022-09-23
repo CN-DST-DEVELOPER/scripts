@@ -313,45 +313,7 @@ function ItemBoxOpenerPopup:_OpenItemBox()
                 table.insert(item_images, item_widget)
             end
 
-            -- Decide how many columns there should be
-            if #item_types == 1 then
-                columns = 1
-            elseif #item_types == 2 or #item_types == 4 then
-                columns = 2
-            elseif #item_types == 3 or #item_types == 6 then
-                columns = 3
-            elseif #item_types == 7 or #item_types == 8 then
-                columns = 4
-            elseif #item_types == 5 or #item_types == 10 or #item_types == 9 then
-                columns = 5
-            elseif #item_types == 13 then
-                columns = 5
-                self.resize_root = true
-            elseif #item_types == 12 or #item_types == 11 then
-                columns = 6
-            elseif #item_types == 16 or #item_types == 17 or #item_types == 18 then
-                columns = 6
-                self.resize_root = true
-            elseif #item_types == 19 then
-                columns = 7
-                self.resize_root = true
-            elseif #item_types == 22 or #item_types == 24 then
-                columns = 8
-                self.resize_root_small = true
-            elseif #item_types == 31 or #item_types == 35 then
-                columns = 9
-                self.resize_root_small = true
-            elseif #item_types == 38 then
-                columns = 10
-                self.resize_root_small = true
-            elseif #item_types == 41 then
-                columns = 10
-                self.resize_root_small_higher = true
-            else
-                columns = 10
-                self.resize_root_small_higher = true
-                print("Warning: Found an unexpected number of items in a box.", #item_types)
-            end
+            columns, self.resize_root, self.resize_root_small, self.resize_root_small_higher = GetBoxPopupLayoutDetails( #item_types )
 
             self.opened_item_display:FillGrid(columns, COLUMN_WIDTH, COLUMN_HEIGHT, item_images)
             self:_UpdateSwapIcon(1)

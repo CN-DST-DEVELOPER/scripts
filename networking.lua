@@ -188,11 +188,17 @@ function VerifySpawnNewPlayerOnServerRequest(user_id)
 	return true
 end
 
-function ValidateSpawnPrefabRequest(user_id, prefab_name, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet)
+function ValidateSpawnPrefabRequest(user_id, prefab_name, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, allow_seamlessswap_characters)
     local in_mod_char_list = table.contains(MODCHARACTERLIST, prefab_name)
 
     local valid_chars = ExceptionArrays(DST_CHARACTERLIST, MODCHARACTEREXCEPTIONS_DST)
     local in_valid_char_list = table.contains(valid_chars, prefab_name)
+
+    if table.contains(SEAMLESSSWAP_CHARACTERLIST, prefab_name) and not allow_seamlessswap_characters then
+        -- NOTES(JBK): This is not assertion level of importance but it is administrative note worthy level to know someone tried breaking things.
+        in_valid_char_list = false
+        print(string.format("[WERR] Player with ID %s tried spawning as %s without having permissions to do so!", user_id or "?", prefab_name or "?"))
+    end
 
     local validated_prefab = prefab_name
     local validated_skin_base = nil
@@ -251,9 +257,32 @@ function SpawnNewPlayerOnServerFromSim(player_guid, skin_base, clothing_body, cl
             player.OnNewSpawn = nil
         end
         TheWorld.components.playerspawner:SpawnAtNextLocation(TheWorld, player)
+        SerializeUserSession(player, true)        
+    end
+end
+
+--TheNet:SpawnSeamlessPlayerReplacement(userid, prefab_name, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet)
+function SpawnSeamlessPlayerReplacementFromSim(player_guid, old_player_guid, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet)
+    local player = Ents[player_guid]
+    if player ~= nil then
+        local skinner = player.components.skinner
+        skinner:SetClothing(clothing_body)
+        skinner:SetClothing(clothing_hand)
+        skinner:SetClothing(clothing_legs)
+        skinner:SetClothing(clothing_feet)
+        skinner:SetSkinName(skin_base)
+        skinner:SetSkinMode("normal_skin")
+
+		if player.components.seamlessplayerswapper then
+			player.components.seamlessplayerswapper:OnSeamlessCharacterSwap(old_player_guid ~= nil and Ents[old_player_guid] or nil)
+		end
+
+        TheWorld:PushEvent("ms_seamlesscharacterspawned", player)
+
         SerializeUserSession(player, true)
     end
 end
+
 
 function RequestedLobbyCharacter(userid, prefab_name, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet)
 	TheWorld:PushEvent("ms_requestedlobbycharacter", {userid=userid, prefab_name=prefab_name, skin_base=skin_base, clothing_body=clothing_body, clothing_hand=clothing_hand, clothing_legs=clothing_legs, clothing_feet=clothing_feet})
@@ -772,8 +801,7 @@ function UpdateServerWorldGenDataString()
     end
 
     --V2C: TODO: Likely to exceed data size limit with custom multilevel worlds
-
-    TheNet:SetWorldGenData(DataDumper(clusteroptions, nil, false))
+    TheNet:SetWorldGenData(DataDumper(ZipAndEncodeSaveData(clusteroptions), nil, true))
 end
 
 function GetDefaultServerData()

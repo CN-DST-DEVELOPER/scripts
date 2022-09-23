@@ -92,7 +92,7 @@ function CharacterSelect:BuildCharactersList(additionalCharacters)
 	--self.portrait_shadow:SetScale(1.2)
 
 
-	self.characters = ExceptionArrays(GetActiveCharacterList(), MODCHARACTEREXCEPTIONS_DST)
+	self.characters = ExceptionArrays(GetSelectableCharacterList(), MODCHARACTEREXCEPTIONS_DST)
 	for i = 1, #additionalCharacters do
 		table.insert(self.characters, additionalCharacters[i])
 	end

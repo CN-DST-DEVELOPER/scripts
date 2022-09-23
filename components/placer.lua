@@ -19,6 +19,8 @@ local Placer = Class(function(self, inst)
 
     self.override_build_point_fn = nil
     self.override_testfn = nil
+
+    self.BOAT_MUST_TAGS = { "boat" } --probably don't want static, but still cached per placer at least
 end)
 
 function Placer:SetBuilder(builder, recipe, invobject)
@@ -45,6 +47,9 @@ function Placer:GetDeployAction()
 end
 
 function Placer:OnUpdate(dt)
+    local rotating_from_boat_center
+    local hide_if_cannot_build
+
     if ThePlayer == nil then
         return
     elseif not TheInput:ControllerAttached() then
@@ -53,8 +58,31 @@ function Placer:OnUpdate(dt)
             self.inst.Transform:SetPosition(TheWorld.Map:GetTileCenterPoint(pt:Get()))
         elseif self.snap_to_meters then
             self.inst.Transform:SetPosition(math.floor(pt.x) + .5, 0, math.floor(pt.z) + .5)
+        elseif self.snap_to_boat_edge then
+            local boats = TheSim:FindEntities(pt.x, 0, pt.z, TUNING.MAX_WALKABLE_PLATFORM_RADIUS, self.BOAT_MUST_TAGS)
+            local boat = GetClosest(self.inst, boats)
+
+            if boat then
+                SnapToBoatEdge(self.inst, boat, pt)
+                if self.inst:GetDistanceSqToPoint(pt) > 1 then
+                    hide_if_cannot_build = true
+                end
+            else
+                self.inst.Transform:SetPosition(pt:Get())
+                hide_if_cannot_build = true
+            end
         else
             self.inst.Transform:SetPosition(pt:Get())
+        end
+
+        -- Set the placer's rotation to point away from the boat's center point
+        if self.rotate_from_boat_center then
+            local boat = TheWorld.Map:GetPlatformAtPoint(pt.x, pt.z)
+            if boat ~= nil then
+                local angle = GetAngleFromBoat(boat, pt.x, pt.z) / DEGREES
+                self.inst.Transform:SetRotation(-angle)
+                rotating_from_boat_center = true
+            end
         end
     elseif self.snap_to_tile then
         --Using an offset in this causes a bug in the terraformer functionality while using a controller.
@@ -62,6 +90,14 @@ function Placer:OnUpdate(dt)
     elseif self.snap_to_meters then
         local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
         self.inst.Transform:SetPosition(math.floor(x) + .5, 0, math.floor(z) + .5)
+    elseif self.snap_to_boat_edge then
+        local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
+        local boat = ThePlayer:GetCurrentPlatform()
+        if boat and boat:HasTag("boat") then
+            SnapToBoatEdge(self.inst, boat, Vector3(x, 0, z))
+        else
+            self.inst.Transform:SetPosition(x, 0, z)
+        end
     elseif self.onground then
         --V2C: this will keep ground orientation accurate and smooth,
         --     but unfortunately position will be choppy compared to parenting
@@ -70,12 +106,24 @@ function Placer:OnUpdate(dt)
     elseif self.inst.parent == nil then
 --        ThePlayer:AddChild(self.inst)
 --        self.inst.Transform:SetPosition(self.offset, 0, 0) -- this will cause the object to be rotated to face the same direction as the player, which is not what we want, rotate the camera if you want to rotate the object
-        self.inst.Transform:SetPosition(ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0))
+        local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
+        self.inst.Transform:SetPosition(x, y, z)
+
+        -- Set the placer's rotation to point away from the boat's center point
+        if self.rotate_from_boat_center then
+            local boat = TheWorld.Map:GetPlatformAtPoint(x, z)
+            if boat ~= nil then
+                local angle = GetAngleFromBoat(boat, x, z) / DEGREES
+                self.inst.Transform:SetRotation(-angle)
+                rotating_from_boat_center = true
+            end
+        end
     end
 
-    if self.fixedcameraoffset ~= nil then
+    if self.fixedcameraoffset ~= nil and not rotating_from_boat_center then
         local rot = self.fixedcameraoffset - TheCamera:GetHeading() -- rotate against the camera
-        self.inst.Transform:SetRotation(rot)
+        local offset = self.rotationoffset ~= nil and self.rotationoffset or 0
+        self.inst.Transform:SetRotation(rot + offset)
     end
 
     if self.onupdatetransform ~= nil then
@@ -91,6 +139,10 @@ function Placer:OnUpdate(dt)
     else
         self.can_build = true
         self.mouse_blocked = false
+    end
+
+    if hide_if_cannot_build and not self.can_build then
+        self.mouse_blocked = true
     end
 
     if self.builder ~= nil and was_mouse_blocked ~= self.mouse_blocked and self.hide_inv_icon then

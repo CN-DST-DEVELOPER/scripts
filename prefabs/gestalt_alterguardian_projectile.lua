@@ -35,7 +35,7 @@ end
 
 local function SetHeadAlpha(inst, alpha)
     if inst.blobhead ~= nil and inst.blobhead:IsValid() then
-        inst.blobhead.AnimState:SetMultColour(alpha, alpha, alpha, alpha)
+        inst.blobhead.AnimState:OverrideMultColour(1, 1, 1, alpha)
     end
 end
 
@@ -213,7 +213,7 @@ local function commonfn(buildbank, headdata, tags, common_postinit, master_posti
     inst.AnimState:PlayAnimation("emerge")
 
 	local colour_mult = TUNING.GESTALT_COMBAT_TRANSPERENCY
-	inst.AnimState:SetMultColour(colour_mult, colour_mult, colour_mult, colour_mult)
+	inst.AnimState:SetMultColour(1, 1, 1, colour_mult)
 
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
@@ -232,7 +232,7 @@ local function commonfn(buildbank, headdata, tags, common_postinit, master_posti
         inst.components.transparentonsanity.osc_speed = 5.25 + math.random() * 0.5
         inst.components.transparentonsanity.calc_percent_fn = Client_CalcSanityForTransparency
         inst.components.transparentonsanity.onalphachangedfn = SetHeadAlpha
-        inst.components.transparentonsanity:OnUpdate(0)
+        inst.components.transparentonsanity:ForceUpdate()
     end
 
     if common_postinit ~= nil then
@@ -325,7 +325,7 @@ end
 
 ----------- alterguardianhat_projectile -----------
 local HATGUARD_COMBAT_MUSHAVE_TAGS = { "_combat", "_health" }
-local HATGUARD_COMBAT_CANTHAVE_TAGS = { "INLIMBO", "structure", "wall" }
+local HATGUARD_COMBAT_CANTHAVE_TAGS = { "INLIMBO", "structure", "wall", "companion" }
 
 local function hatguard_find_attack_victim(inst)
     local x, y, z = inst.Transform:GetWorldPosition()

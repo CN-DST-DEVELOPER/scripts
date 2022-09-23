@@ -23,7 +23,7 @@ local QUAKESTATE = {
 local DENSITYRADIUS = 5 -- the minimum radius that can contain 3 debris (allows for some clumping)
 
 local SMASHABLE_TAGS = { "smashable", "quakedebris", "_combat" }
-local NON_SMASHABLE_TAGS = { "INLIMBO", "playerghost", "irreplaceable" }
+local NON_SMASHABLE_TAGS = { "INLIMBO", "playerghost", "irreplaceable", "outofreach" }
 
 local HEAVY_WORK_ACTIONS =
 {
@@ -36,7 +36,7 @@ local HEAVY_SMASHABLE_TAGS = { "smashable", "quakedebris", "_combat", "_inventor
 for k, v in pairs(HEAVY_WORK_ACTIONS) do
     table.insert(HEAVY_SMASHABLE_TAGS, k.."_workable")
 end
-local HEAVY_NON_SMASHABLE_TAGS = { "INLIMBO", "playerghost", "irreplaceable", "caveindebris" }
+local HEAVY_NON_SMASHABLE_TAGS = { "INLIMBO", "playerghost", "irreplaceable", "caveindebris", "outofreach" }
 
 --------------------------------------------------------------------------
 --[[ Member variables ]]

@@ -1,7 +1,7 @@
 
 AddRoom("BGGrassBurnt", {
 					colour={r=.5,g=.8,b=.5,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_1"},
 					contents =  {
 					                distributepercent = .275,
@@ -27,7 +27,7 @@ AddRoom("BGGrassBurnt", {
 					})
 AddRoom("BGGrass", {
 					colour={r=.5,g=.8,b=.5,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_2", "StagehandGarden"},
 					contents =  {
 									countprefabs = {
@@ -58,7 +58,7 @@ AddRoom("BGGrass", {
 					})
 AddRoom("FlowerPatch", {
 					colour={r=.5, g=1,b=.8,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1", "StagehandGarden"},
 					contents =  {
 					                distributepercent = .1,
@@ -72,7 +72,7 @@ AddRoom("FlowerPatch", {
 					})
 AddRoom("GrassyMoleColony", {
 					colour={r=.5, g=1,b=.8,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
 					contents =  {
 					                distributepercent = .1,
@@ -87,7 +87,7 @@ AddRoom("GrassyMoleColony", {
 					})
 AddRoom("EvilFlowerPatch", {
 					colour={r=.8,g=1,b=.4,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 					                distributepercent = .1,

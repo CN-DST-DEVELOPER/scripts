@@ -21,14 +21,17 @@ local FlareOver = Class(Widget, function(self, owner)
 
     self:Hide()
 
-    self.inst:ListenForEvent("startflareoverlay", function(o) self:StartFlare() end, owner)
+    self.inst:ListenForEvent("startflareoverlay", function(src,data) self:StartFlare(data) end, owner)
 end)
 
-function FlareOver:StartFlare()
+function FlareOver:StartFlare(data)
     self:Show()
     self._alpha = 1.0
 
     self:StartUpdating()
+    if data then
+        self.bg:SetTint(data.r,data.g,data.b, self._alpha)
+    end
 end
 
 function FlareOver:OnUpdate(dt)

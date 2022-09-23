@@ -13,6 +13,51 @@ end
 
 require "consolecommands"
 
+local fcts = {
+    string = function(value) return string_format('%q', value) end,
+    number = function(value) return value end,
+    boolean = function(value) return tostring(value) end,
+    ['nil'] = function(value) return 'nil' end,
+}
+local function dumpvariabletostr(var)
+    local fct = fcts[type(var)]
+    assert(fct)
+    return fct(var)
+end
+
+local function d_c_spawn(prefab, count, dontselect)
+    if not TheWorld.ismastersim then
+        ConsoleRemote("c_spawn(%s,%s,%s)", {dumpvariabletostr(prefab), dumpvariabletostr(count), dumpvariabletostr(dontselect)})
+    else
+        c_spawn(prefab, count, dontselect)
+    end
+end
+
+local function d_c_give(prefab, count, dontselect)
+    if not TheWorld.ismastersim then
+        ConsoleRemote("c_give(%s,%s,%s)", {dumpvariabletostr(prefab), dumpvariabletostr(count), dumpvariabletostr(dontselect)})
+    else
+        c_give(prefab, count, dontselect)
+    end
+end
+
+local function d_c_remove(entity)
+    if not TheWorld.ismastersim then
+        local mouseentity = entity or TheInput:GetWorldEntityUnderMouse()
+
+        if TheWorld == nil or mouseentity == nil or mouseentity.Network == nil then
+            c_remove()
+            return
+        end
+
+        local networkid = mouseentity.Network:GetNetworkID()
+        local x, y, z = mouseentity.Transform:GetWorldPosition()
+        ConsoleRemote('d_removeentitywithnetworkid(%s, %s, %s, %s)', {dumpvariabletostr(networkid), dumpvariabletostr(x), dumpvariabletostr(y), dumpvariabletostr(z)})
+    else
+        c_remove(entity)
+    end
+end
+
 local function DebugKeyPlayer()
     return (TheWorld and TheWorld.ismastersim and ConsoleCommandPlayer()) or nil
 end
@@ -49,7 +94,20 @@ function SimBreakPoint()
     end
 end
 
+function DoDebugMouse(button, down,x,y)
+	-- delcaring this here so that it doesn't crash on steam deck, look farther down for the real fucntion
+end
+
+function DoReload()
+    dofile("scripts/reload.lua")
+end
+
 -------------------------------------DEBUG KEYS
+
+if IsSteamDeck() then
+	return
+end
+
 
 local currentlySelected
 global("c_ent")
@@ -116,12 +174,7 @@ GLOBAL_KEY_BINDINGS =
         binding = { key = KEY_A, CTRL=true },
         name = "Unlock All Recipes",
         fn = function()
-            local MainCharacter = DebugKeyPlayer()
-            if MainCharacter ~= nil and MainCharacter.components.builder ~= nil then
-                MainCharacter.components.builder:GiveAllRecipes()
-                MainCharacter:PushEvent("techlevelchange")
-            end
-            return true
+            c_freecrafting()
         end
     },
     {
@@ -161,14 +214,26 @@ GLOBAL_KEY_BINDINGS =
         binding = { key = KEY_F10, SHIFT=true },
         name = "Next Nightmare Phase",
         fn = function()
-            TheWorld:PushEvent("ms_nextnightmarephase")
+            if TheWorld ~= nil then
+                if not TheWorld.ismastersim then
+                    ConsoleRemote('TheWorld:PushEvent("ms_nextnightmarephase")')
+                else
+                    TheWorld:PushEvent("ms_nextnightmarephase")
+                end
+            end
         end
     },
     {
         binding = { key = KEY_F10 },
         name = "Next Day Phase",
         fn = function()
-            TheWorld:PushEvent("ms_nextphase")
+            if TheWorld ~= nil then
+                if not TheWorld.ismastersim then
+                    ConsoleRemote('TheWorld:PushEvent("ms_nextphase")')
+                else
+                    TheWorld:PushEvent("ms_nextphase")
+                end
+            end
         end
     },
 }
@@ -197,58 +262,76 @@ WINDOW_KEY_BINDINGS =
         binding = { key = KEY_P, SHIFT=true },
         name = "Prefabs",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugPrefabs() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugPrefabs.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugPrefabs() )
+            end
         end
     },
     {
         binding = { key = KEY_A, SHIFT=true },
         name = "Audio",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugAudio() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugAudio.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugAudio() )
+            end
         end
     },
     {
         binding = { key = KEY_W, SHIFT=true },
         name = "UI",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugWidget() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugWidget.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugWidget() )
+            end
         end
     },
     {
         name = "Entity",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugEntity() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugEntity.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugEntity() )
+            end
         end
     },
     {
         name = "Player",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugPlayer() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugPlayer.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugPlayer() )
+            end
         end
     },
     {
         name = "Weather",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugWeather() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugWeather.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugWeather() )
+            end
         end
     },
     {
         binding = { key = KEY_S, SHIFT=true, ALT=true },
         name = "Skins",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugSkins() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugSkins.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugSkins() )
+            end
         end
     },
     {
         name = "Input",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugInput() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugInput.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugInput() )
+            end
         end
     },
     {
         name = "Character Examine Strings",
         fn = function()
-            TheFrontEnd:CreateDebugPanel( DebugNodes.DebugStrings() )            
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugStrings.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugStrings() )
+            end
         end
     },
 }
@@ -309,17 +392,11 @@ end)
 
 AddGameDebugKey(KEY_F3, function()
     for i=1,TheWorld.state.remainingdaysinseason do
-        TheWorld:PushEvent("ms_advanceseason")
-    end
-end)
-
-AddGameDebugKey(KEY_R, function()
-    if TheInput:IsKeyDown(KEY_SHIFT) then
-        local ent = TheInput:GetWorldEntityUnderMouse()
-        if ent ~= nil and ent.prefab ~= nil then
-            ent:Remove()
+        if not TheWorld.ismastersim then
+            ConsoleRemote('TheWorld:PushEvent("ms_advanceseason")')
+        else
+            TheWorld:PushEvent("ms_advanceseason")
         end
-        return true
     end
 end)
 
@@ -331,12 +408,44 @@ AddGameDebugKey(KEY_I, function()
         TheInventory:Debug_ForceHeartbeatGift("")
         return true
     elseif TheInput:IsKeyDown(KEY_SHIFT) then
-        c_spawn("researchlab")
+        d_c_spawn("researchlab")
         return true
     end
 end)
 
+
+AddGameDebugKey(KEY_B, function()
+    if TheInput:IsKeyDown(KEY_CTRL) and not TheInput:IsKeyDown(KEY_SHIFT) then
+        local pos = Vector3(ConsoleWorldPosition():Get())
+        local boat = TheWorld.Map:GetPlatformAtPoint(pos.x,pos.z)
+        if boat then
+            boat:PushEvent("spawnnewboatleak", {pt = pos, leak_size = "med_leak", playsoundfx = true})
+        end
+    elseif TheInput:IsKeyDown(KEY_SHIFT) then
+        local pos = Vector3(ConsoleWorldPosition():Get())
+        local bumpers = TheSim:FindEntities(pos.x, pos.y, pos.z, 1, {"boatbumper"})
+        for i, bumper in ipairs(bumpers) do
+            local health = bumper.components.health.maxhealth
+            if TheInput:IsKeyDown(KEY_CTRL) then
+                bumper.components.health:DoDelta(health * 0.2)
+            else
+                bumper:PushEvent("boatcollision")
+                bumper.components.health:DoDelta(-health * 0.2)
+            end
+        end
+
+    elseif TheInput:IsKeyDown(KEY_ALT) then
+        if TheWorld.components.piratespawner then
+            TheWorld.components.piratespawner:SpawnPirates(TheInput:GetWorldPosition())
+        end
+    end
+end)
+
 AddGameDebugKey(KEY_F4, function()
+    if TheWorld and not TheWorld.ismastersim then
+        return
+    end
+
     -- Spawn a ready-made base!
     local pos = TheInput:GetWorldPosition()
     local topleft = Vector3(pos.x - 15, 0, pos.z - 15)
@@ -405,9 +514,9 @@ AddGameDebugKey(KEY_F4, function()
             end
         end
     end
-    ConsoleCommandPlayer().components.inventory:Equip( c_spawn("backpack") ) -- do this first so other things can get put in it
-    ConsoleCommandPlayer().components.inventory:Equip( c_spawn("axe") )
-    ConsoleCommandPlayer().components.inventory:Equip( c_spawn("flowerhat") )
+    ConsoleCommandPlayer().components.inventory:Equip( d_c_spawn("backpack") ) -- do this first so other things can get put in it
+    ConsoleCommandPlayer().components.inventory:Equip( d_c_spawn("axe") )
+    ConsoleCommandPlayer().components.inventory:Equip( d_c_spawn("flowerhat") )
     local invitems = {
         carrot = 20,
         berries = 20,
@@ -430,7 +539,7 @@ AddGameDebugKey(KEY_F4, function()
         meatballs = 4,
     }
     for k,v in pairs(invitems) do
-        c_give(k, v)
+        d_c_give(k, v)
     end
 end)
 
@@ -462,7 +571,8 @@ AddGameDebugKey(KEY_F6, function()
 end)
 
 AddGameDebugKey(KEY_F12, function()
-    local positions = {}
+    --Removing this by Phil's request
+    --[[local positions = {}
     for i = 1, 100 do
         local s = i/32.0--(num/2) -- 32.0
         local a = math.sqrt(s*512.0)
@@ -481,7 +591,7 @@ AddGameDebugKey(KEY_F12, function()
             end)
             --delay = delay + 0.03
         end
-    end
+    end]]
 end)
 
 AddGameDebugKey(KEY_F7, function()
@@ -762,16 +872,34 @@ end)
 
 AddGameDebugKey(KEY_KP_PLUS, function()
     local MainCharacter = DebugKeyPlayer()
-    if MainCharacter ~= nil then
+
+    if TheWorld ~= nil and not TheWorld.ismastersim then
         if TheInput:IsKeyDown(KEY_CTRL) then
-			if TheInput:IsKeyDown(KEY_SHIFT) then
-				MainCharacter.components.health:DoDelta(50, nil, "debug_key")
-				c_sethunger(1)
-				c_sethealth(1)
-				c_setsanity(1)
-			else
-				MainCharacter.components.sanity:DoDelta(5)
-			end
+            if TheInput:IsKeyDown(KEY_SHIFT) then
+                ConsoleRemote("ThePlayer.components.health:DoDelta(%d)", {50})
+                ConsoleRemote("c_sethunger(%d)", {1})
+                ConsoleRemote("c_sethealth(%d)", {1})
+                ConsoleRemote("c_setsanity(%d)", {1})
+            else
+                ConsoleRemote("ThePlayer.components.sanity:DoDelta(%d)", {5})
+            end
+        elseif TheInput:IsKeyDown(KEY_SHIFT) then
+            ConsoleRemote("ThePlayer.components.hunger:DoDelta(%d)", {25})
+        elseif TheInput:IsKeyDown(KEY_ALT) then
+            ConsoleRemote("ThePlayer.components.sanity:DoDelta(%d)", {25})
+        else
+            ConsoleRemote("ThePlayer.components.health:DoDelta(%d)", {25})
+        end
+    elseif MainCharacter ~= nil then
+        if TheInput:IsKeyDown(KEY_CTRL) then
+            if TheInput:IsKeyDown(KEY_SHIFT) then
+                MainCharacter.components.health:DoDelta(50, nil, "debug_key")
+                c_sethunger(1)
+                c_sethealth(1)
+                c_setsanity(1)
+            else
+                MainCharacter.components.sanity:DoDelta(5)
+            end
         elseif TheInput:IsKeyDown(KEY_SHIFT) then
             MainCharacter.components.hunger:DoDelta(25)
         elseif TheInput:IsKeyDown(KEY_ALT) then
@@ -785,7 +913,19 @@ end)
 
 AddGameDebugKey(KEY_KP_MINUS, function()
     local MainCharacter = DebugKeyPlayer()
-    if MainCharacter and TheWorld.ismastersim then
+    if TheWorld ~= nil and not TheWorld.ismastersim then
+        if TheInput:IsKeyDown(KEY_CTRL) then
+            --ConsoleRemote("ThePlayer.components.temperature:DoDelta(%d)", {-10})
+            --ConsoleRemote("TheSim:SetTimeScale(%d)", {TheSim:GetTimeScale() - .25})
+            ConsoleRemote("ThePlayer.components.sanity:DoDelta(%d)", {-5})
+        elseif TheInput:IsKeyDown(KEY_SHIFT) then
+            ConsoleRemote("ThePlayer.components.hunger:DoDelta(%d)", {-25})
+        elseif TheInput:IsKeyDown(KEY_ALT) then
+            ConsoleRemote("ThePlayer.components.sanity:SetPercent(%d)", {0})
+        else
+            ConsoleRemote("ThePlayer.components.health:DoDelta(%d)", {-25})
+        end
+    elseif MainCharacter ~= nil then
         if TheInput:IsKeyDown(KEY_CTRL) then
             --MainCharacter.components.temperature:DoDelta(-10)
             --TheSim:SetTimeScale(TheSim:GetTimeScale() - .25)
@@ -809,8 +949,8 @@ AddGameDebugKey(KEY_T, function()
 			c_sel().Transform:SetPosition(TheInput:GetWorldPosition():Get())
 		end
     else
-        local MainCharacter = DebugKeyPlayer()
-        if MainCharacter then
+        local player = ConsoleCommandPlayer()
+        if player then
             local topscreen = TheFrontEnd:GetActiveScreen()
             if topscreen.minimap ~= nil then
 
@@ -820,9 +960,20 @@ AddGameDebugKey(KEY_T, function()
 
                 local x,y,z = topscreen.minimap:MapPosToWorldPos( mousemappos:Get() )
 
-                MainCharacter.Physics:Teleport(x, 0, y)
+                if TheWorld ~= nil and not TheWorld.ismastersim then
+                    ConsoleRemote("c_teleport(%d, %d, %d)", {x, 0, y})
+                else
+                    player.Physics:Teleport(x, 0, y)
+                end
+                topscreen.minimap.minimap:ResetOffset()
             else
-                MainCharacter.Physics:Teleport(TheInput:GetWorldPosition():Get())
+                if TheWorld ~= nil and not TheWorld.ismastersim then
+                    local x, y, z = ConsoleWorldPosition():Get()
+                    player.Transform:SetPosition(x, y, z)
+                    ConsoleRemote("c_teleport(%d, %d, %d)", {x, y, z})
+                else
+                    player.Physics:Teleport(TheInput:GetWorldPosition():Get())
+                end
             end
         end
     end
@@ -863,7 +1014,16 @@ AddGameDebugKey(KEY_G, function()
 end)
 
 AddGameDebugKey(KEY_D, function()
-    if TheInput:IsKeyDown(KEY_CTRL) then
+    if TheInput:IsKeyDown(KEY_SHIFT) then
+        local pos = TheInput:GetWorldPosition()
+        local x, y = TheWorld.Map:GetTileCoordsAtPoint(pos:Get())
+        local original_tile = TheWorld.Map:GetTileAtPoint(pos:Get())
+
+        --if original_tile == WORLD_TILES.MONKEY_DOCK or original_tile == WORLD_TILES.OCEAN_COASTAL or original_tile == WORLD_TILES.OCEAN_COASTAL_SHORE then
+            local is_dock = original_tile == WORLD_TILES.MONKEY_DOCK
+            TheWorld.Map:SetTile(x, y, is_dock and WORLD_TILES.OCEAN_COASTAL or WORLD_TILES.MONKEY_DOCK)
+        --end
+    elseif TheInput:IsKeyDown(KEY_CTRL) then
         local MouseCharacter = TheInput:GetWorldEntityUnderMouse()
         if MouseCharacter and MouseCharacter.components.diseaseable ~= nil then
             MouseCharacter.components.diseaseable:Disease()
@@ -891,76 +1051,85 @@ end)
 
 AddGameDebugKey(KEY_K, function()
     if TheInput:IsKeyDown(KEY_CTRL) then
-        local MouseCharacter = TheInput:GetWorldEntityUnderMouse()
-        if MouseCharacter and MouseCharacter ~= DebugKeyPlayer() then
-            if MouseCharacter.components.health then
-                MouseCharacter.components.health:Kill()
-            elseif MouseCharacter.Remove then
-                MouseCharacter:Remove()
-            end
-        end
+        d_c_remove()
+    elseif TheInput:IsKeyDown(KEY_ALT) then
+        c_gonext("monkeyhut")
     end
     return true
 end)
 
 
-AddGameDebugKey(KEY_L, function()
-    if not ThePlayer then
-        -- ThePlayer is nil in lobby screens (which count as GameDebug).
-        return
-    end
-	--local pt = TheInput:GetWorldPosition()
-	local pt = ThePlayer:GetPosition()
+AddGlobalDebugKey(KEY_L, function()
+	if not TheWorld then
+		-- Debug loading screens. Need to re-create the loading screen as hot reload doesn't work with loaded widgets.
+		if global_loading_widget then
+			global_loading_widget:Kill()
+			local image = global_loading_widget.image_random
+			global_loading_widget = LoadingWidget(image)
+			global_loading_widget:SetHAnchor(ANCHOR_LEFT)
+			global_loading_widget:SetVAnchor(ANCHOR_BOTTOM)
+			global_loading_widget:SetScaleMode(SCALEMODE_PROPORTIONAL)
 
-	if TheInput:IsKeyDown(KEY_SHIFT) then
-		local node_index = TheWorld.Map:GetNodeIdAtPoint(pt:Get())
-		print("Node (" .. tostring(node_index) .. "): " .. tostring(TheWorld.topology.ids[node_index]))
-		print("Node Tags:", (TheWorld.topology.nodes[node_index] == nil or #TheWorld.topology.nodes[node_index].tags == 0) and "<empty>" or unpack(TheWorld.topology.nodes[node_index].tags))
-
-		return
-	end
-
-	local GROUND_NAMES = table.invert(GROUND)
-
-    local x, _, z = pt:Get()
-    local k = 4
-    local str = "\n"
-	local name_space = 20
-    local target_tile = 34
-    local valid = nil
-	for _z = 1, -1, -1 do
-	    for _x = -1, 1 do
-			local tile = TheWorld.Map:GetTileAtPoint(x+_x*k, 0, z+_z*k)
-			if tile == 33 then -- this would be tile.sort > target_tile.sort
-				valid = false
-			elseif valid == nil and tile == target_tile then
-				valid = true
-			end
-
-			str = str .. tostring(GROUND_NAMES[tile])
-			for i = #(GROUND_NAMES[tile]), name_space, 1 do
-				str = str .. " "
-			end
+			TheFrontEnd:SetFadeLevel(1)
+			global_loading_widget:SetEnabled(true)
 		end
-		str = str .. "\n"
+	else
+	    if not ThePlayer then
+			-- ThePlayer is nil in lobby screens (which count as GameDebug).
+			return
+		end
+		--local pt = TheInput:GetWorldPosition()
+		local pt = ThePlayer:GetPosition()
+
+		if TheInput:IsKeyDown(KEY_SHIFT) then
+			local node_index = TheWorld.Map:GetNodeIdAtPoint(pt:Get())
+			print("Node (" .. tostring(node_index) .. "): " .. tostring(TheWorld.topology.ids[node_index]))
+			print("Node Tags:", (TheWorld.topology.nodes[node_index] == nil or #TheWorld.topology.nodes[node_index].tags == 0) and "<empty>" or unpack(TheWorld.topology.nodes[node_index].tags))
+
+			return
+		end
+
+		local x, _, z = pt:Get()
+		local k = 4
+        local tx, tz = TheWorld.Map:GetTileCoordsAtPoint(x, 0, z)
+		local str = tostring(tx) .. ", " .. tostring(tz) .. "\n"
+		local name_space = 20
+		local target_tile = 34
+		local valid = nil
+		for _z = 1, -1, -1 do
+			for _x = -1, 1 do
+				local tile = TheWorld.Map:GetTileAtPoint(x+_x*k, 0, z+_z*k)
+				if tile == 33 then -- this would be tile.sort > target_tile.sort
+					valid = false
+				elseif valid == nil and tile == target_tile then
+					valid = true
+				end
+
+				str = str .. tostring(GROUND_NAMES[tile]) .. "(" .. tostring(tile) .. ")"
+				for i = #(GROUND_NAMES[tile]), name_space, 1 do
+					str = str .. " "
+				end
+			end
+			str = str .. "\n"
+		end
+
+		print (str)
+		--print (str .. tostring(valid == true))
+
+	--	print ("", TheWorld.Map:GetTileAtPoint(x-k, 0, z+k), TheWorld.Map:GetTileAtPoint(x, 0, z+k), TheWorld.Map:GetTileAtPoint(x+k, 0, z+k))
+	--	print ("", TheWorld.Map:GetTileAtPoint(x-k, 0, z), TheWorld.Map:GetTileAtPoint(x, 0, z), TheWorld.Map:GetTileAtPoint(x+k, 0, z))
+	--	print ("", TheWorld.Map:GetTileAtPoint(x-k, 0, z-k), TheWorld.Map:GetTileAtPoint(x, 0, z-k), TheWorld.Map:GetTileAtPoint(x+k, 0, z-k))
+
+	--[[
+		local x, y = TheWorld.Map:GetTileCoordsAtPoint((pt - Vector3(4,0,4)):Get())
+
+
+		print ("", TheWorld.Map:GetTile(x, y+1), TheWorld.Map:GetTile(x+1, y+1))
+		print ("", TheWorld.Map:GetTile(x, y), TheWorld.Map:GetTile(x+1, y))
+	]]
+	--    print ("", TheWorld.Map:GetTile(x-1, y), TheWorld.Map:GetTile(x, y))
+	--    print ("", TheWorld.Map:GetTile(x-1, y-1), TheWorld.Map:GetTile(x, y-1))
 	end
-
-    print (str)
-    --print (str .. tostring(valid == true))
-
---	print ("", TheWorld.Map:GetTileAtPoint(x-k, 0, z+k), TheWorld.Map:GetTileAtPoint(x, 0, z+k), TheWorld.Map:GetTileAtPoint(x+k, 0, z+k))
---	print ("", TheWorld.Map:GetTileAtPoint(x-k, 0, z), TheWorld.Map:GetTileAtPoint(x, 0, z), TheWorld.Map:GetTileAtPoint(x+k, 0, z))
---	print ("", TheWorld.Map:GetTileAtPoint(x-k, 0, z-k), TheWorld.Map:GetTileAtPoint(x, 0, z-k), TheWorld.Map:GetTileAtPoint(x+k, 0, z-k))
-
---[[
-    local x, y = TheWorld.Map:GetTileCoordsAtPoint((pt - Vector3(4,0,4)):Get())
-
-
-    print ("", TheWorld.Map:GetTile(x, y+1), TheWorld.Map:GetTile(x+1, y+1))
-    print ("", TheWorld.Map:GetTile(x, y), TheWorld.Map:GetTile(x+1, y))
-]]
---    print ("", TheWorld.Map:GetTile(x-1, y), TheWorld.Map:GetTile(x, y))
---    print ("", TheWorld.Map:GetTile(x-1, y-1), TheWorld.Map:GetTile(x, y-1))
 end)
 
 local DebugTextureVisible = false
@@ -1019,7 +1188,7 @@ end)
 local enable_fog = true
 local hide_revealed = false
 AddGameDebugKey(KEY_M, function()
-    local MainCharacter = DebugKeyPlayer()
+    local MainCharacter = ConsoleCommandPlayer()
     if MainCharacter then
         if TheInput:IsKeyDown(KEY_CTRL) then
             enable_fog = not enable_fog
@@ -1048,14 +1217,18 @@ end)
 
 AddGameDebugKey(KEY_S, function()
     if TheInput:IsKeyDown(KEY_CTRL) then
-        TheWorld:PushEvent("ms_save")
+        if TheWorld and not TheWorld.ismastersim then
+            ConsoleRemote("c_save()")
+        else
+            TheWorld:PushEvent("ms_save")
+        end
         return true
     end
 end)
 
 AddGameDebugKey(KEY_KP_MULTIPLY, function()
     if TheInput:IsDebugToggleEnabled() then
-        c_give("devtool")
+        d_c_give("devtool")
         return true
     end
 end)
@@ -1186,9 +1359,9 @@ end)
 
 AddGameDebugKey(KEY_I, function()
     if TheInput:IsKeyDown(KEY_SHIFT) and not TheInput:IsKeyDown(KEY_CTRL) then
-        c_spawn("dragonfly")
+        d_c_spawn("dragonfly")
     elseif TheInput:IsKeyDown(KEY_CTRL) and not TheInput:IsKeyDown(KEY_SHIFT) then
-        c_spawn("light_flower"):TurnOn()
+        d_c_spawn("light_flower"):TurnOn()
     elseif TheInput:IsKeyDown(KEY_CTRL) and TheInput:IsKeyDown(KEY_SHIFT) then
         local lavae = {}
         for k, v in pairs(Ents) do
@@ -1204,8 +1377,6 @@ AddGameDebugKey(KEY_I, function()
 
     return true
 end)
-
-local GROUND_LOOKUP = table.invert(GROUND)
 
 AddGameDebugKey(KEY_5, function()
 	if TheWorld.components.farming_manager then
@@ -1293,18 +1464,16 @@ AddGameDebugKey(KEY_0, function()
         local pos = TheInput:GetWorldPosition()
         local x, y = TheWorld.Map:GetTileCoordsAtPoint(pos:Get())
         local original_tile = TheWorld.Map:GetTileAtPoint(pos:Get())
-        print("Original tile", GROUND_LOOKUP[original_tile])
+        print("Original tile", INVERTED_WORLD_TILES[original_tile])
         local tile = original_tile+1
-        while GROUND_LOOKUP[tile] == nil do
+        while INVERTED_WORLD_TILES[tile] == nil do
             if tile > 255 then
                 tile = 0
             end
             tile = tile + 1
         end
-        print("Changing tile to "..GROUND_LOOKUP[tile])
+        print("Changing tile to "..INVERTED_WORLD_TILES[tile])
         TheWorld.Map:SetTile(x, y, tile)
-        TheWorld.Map:RebuildLayer(original_tile,x,y)
-        TheWorld.Map:RebuildLayer(tile,x,y)
     end
 end)
 
@@ -1313,18 +1482,16 @@ AddGameDebugKey(KEY_9, function()
         local pos = TheInput:GetWorldPosition()
         local x, y = TheWorld.Map:GetTileCoordsAtPoint(pos:Get())
         local original_tile = TheWorld.Map:GetTileAtPoint(pos:Get())
-        print("Original tile", GROUND_LOOKUP[original_tile])
+        print("Original tile", INVERTED_WORLD_TILES[original_tile])
         local tile = original_tile-1
-        while GROUND_LOOKUP[tile] == nil do
+        while INVERTED_WORLD_TILES[tile] == nil do
             if tile < 1 then
                 tile = 255
             end
             tile = tile - 1
         end
-        print("Changing tile to "..GROUND_LOOKUP[tile])
+        print("Changing tile to "..INVERTED_WORLD_TILES[tile])
         TheWorld.Map:SetTile(x, y, tile)
-        TheWorld.Map:RebuildLayer(original_tile,x,y)
-        TheWorld.Map:RebuildLayer(tile,x,y)
     else
         if not ThePlayer.shownothightlight then
             ThePlayer.shownothightlight = true
@@ -1355,27 +1522,23 @@ local function DebugRMB(x,y)
     if TheInput:IsKeyDown(KEY_CTRL) and
        TheInput:IsKeyDown(KEY_SHIFT) and
        c_sel() and c_sel().prefab and not invaliddebugspawnprefabs[c_sel().prefab] then
-        local spawn = c_spawn(c_sel().prefab)
+        local spawn = d_c_spawn(c_sel().prefab)
         if spawn then
             spawn.Transform:SetPosition(pos:Get())
         end
-    elseif TheInput:IsKeyDown(KEY_CTRL) and TheWorld and TheWorld.ismastersim then
-        if MouseCharacter then
-            if MouseCharacter.components.health and MouseCharacter ~= DebugKeyPlayer() then
-                MouseCharacter.components.health:Kill()
-            elseif MouseCharacter.Remove then
-                MouseCharacter:Remove()
-            end
+    elseif TheInput:IsKeyDown(KEY_CTRL) and TheWorld then
+        if not TheWorld.ismastersim or MouseCharacter then
+            d_c_remove()
         else
             local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 5, nil, DEBUGRMB_IGNORE_TAGS)
             for k,v in pairs(ents) do
-                if v.components.health and v ~= DebugKeyPlayer() then
+                if v.components.health and v ~= ConsoleCommandPlayer() then
                     v.components.health:Kill()
                 end
             end
         end
     elseif TheInput:IsKeyDown(KEY_ALT) then
-        local player = c_sel() or DebugKeyPlayer()
+        local player = c_sel() or ConsoleCommandPlayer()
         if player then
             print(tostring(player) .. " to " .. tostring(pos) .. ": Dist = " .. tostring(math.sqrt(player:GetDistanceSqToPoint(pos))) .. ", Angle = " .. tostring(player:GetAngleToPoint(pos)))
         end
@@ -1403,10 +1566,6 @@ function DoDebugMouse(button, down,x,y)
         DebugLMB(x,y)
     end
 
-end
-
-function DoReload()
-    dofile("scripts/reload.lua")
 end
 
 ---------------------------------------------------

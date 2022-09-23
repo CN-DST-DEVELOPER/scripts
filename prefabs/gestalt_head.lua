@@ -9,8 +9,13 @@ local assets_guard =
 }
 
 local function fn(bank)
-
     local inst = CreateEntity()
+
+    inst:AddTag("FX")
+    --[[Non-networked entity]]
+    --Should be following parent's sleep state
+    --inst.entity:SetCanSleep(false)
+    inst.persists = false
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
@@ -21,16 +26,6 @@ local function fn(bank)
     inst.AnimState:PlayAnimation("idle", true)
 
     inst.Transform:SetFourFaced()
-
-	inst:AddTag("FX")
-
-    inst.entity:SetPristine()
-
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
-	inst.persists = false
 
     return inst
 end

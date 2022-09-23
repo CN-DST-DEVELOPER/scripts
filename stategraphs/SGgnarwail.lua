@@ -222,17 +222,22 @@ local states =
             inst.components.combat:StartAttack()
 
             inst.sg.statemem.target = target
-            if target then
-                local target_boat = target:GetCurrentPlatform()
-                if target_boat then
-                    local bx, by, bz = target_boat.Transform:GetWorldPosition()
-                    local r_angle = math.random() * 2 * PI
+            if target ~= nil then
+                inst.sg.statemem.target_position = target:GetPosition()
 
-                    -- Targeting a radius of 1 around the boat's center
-                    inst.sg.statemem.target_position = Vector3(bx + math.cos(r_angle), by, bz + math.sin(r_angle))
-                else
-                    -- If the boat magically disappeared somehow, attack the actual target's location.
-                    inst.sg.statemem.target_position = Vector3(target.Transform:GetWorldPosition())
+                local targets_boat = target:GetCurrentPlatform()
+                if targets_boat ~= nil then
+                    inst.sg.statemem.target_boat = targets_boat
+
+                    -- We want to grab the boat's position now, so we can account for movement after the attack delay.
+                    inst.sg.statemem.boat_position_at_acquisition = targets_boat:GetPosition()
+
+                    local random_angle = 2*PI*math.random()
+                    local hull_size = (targets_boat.components.hull ~= nil and targets_boat.components.hull:GetRadius()) or 2
+                    local random_radius = math.sqrt(math.random()) * (hull_size - 1)
+                    local boat_safety_offset = Vector3(random_radius * math.cos(random_angle), 0, -random_radius * math.sin(random_angle))
+
+                    inst.sg.statemem.target_position = inst.sg.statemem.boat_position_at_acquisition + boat_safety_offset
                 end
             end
 
@@ -242,15 +247,22 @@ local states =
         ontimeout = function(inst)
             local target = inst.sg.statemem.target
             if target and target:IsValid() then
-                local tx, ty, tz = inst.sg.statemem.target_position:Get()
-                if TheWorld.Map:GetPlatformAtPoint(tx, tz) ~= nil then
-                    inst.sg:GoToState("finish_boat_attack", {inst.sg.statemem.target_position, target})
-                elseif TheWorld.Map:IsOceanTileAtPoint(tx, ty, tz) and not TheWorld.Map:IsVisualGroundAtPoint(tx, ty, tz) then
-                    inst.Transform:SetPosition(tx, ty, tz)
-                    inst.components.combat:CancelAttack()
-                    inst.sg:GoToState("emerge")
+                local target_boat = inst.sg.statemem.target_boat
+                if target_boat ~= nil and target_boat:IsValid() and not target_boat.components.health:IsDead() then
+                    local target_position = inst.sg.statemem.target_position
+                    local old_boat_position = inst.sg.statemem.boat_position_at_acquisition
+                    if old_boat_position ~= nil then
+                        target_position = target_position + (target_boat:GetPosition() - old_boat_position)
+                    end
+
+                    inst.sg:GoToState("finish_boat_attack", {target = target, boat = target_boat, target_pos = target_position})
                 else
-                    -- If our target location is in the ground, just emerge where we are and go back to idling.
+                    -- If we didn't find a boat to hit, check if the target position is over water.
+                    -- If so, emerge there; if not, emerge where we dove.
+                    local tx, ty, tz = inst.sg.statemem.target_position:Get()
+                    if TheWorld.Map:IsOceanTileAtPoint(tx, ty, tz) and not TheWorld.Map:IsVisualGroundAtPoint(tx, ty, tz) then
+                        inst.Transform:SetPosition(tx, ty, tz)
+                    end
                     inst.components.combat:CancelAttack()
                     inst.sg:GoToState("emerge")
                 end
@@ -288,14 +300,13 @@ local states =
         tags = { "attack", "busy" },
 
         onenter = function(inst, target_info)
-            local tx, ty, tz = target_info[1]:Get()
+            local tx, ty, tz = target_info.target_pos:Get()
 
             local horn_attack_prefab = SpawnPrefab("gnarwail_attack_horn")
             horn_attack_prefab.Transform:SetPosition(tx, ty, tz)
-            horn_attack_prefab.gnarwail_record = inst:GetSaveRecord()
 
             -- If the target is still near our exit point, damage it.
-            local target = target_info[2]
+            local target = target_info.target
             if target and target:IsValid() then
                 if target:GetDistanceSqToPoint(tx, ty, tz) < TUNING.GNARWAIL.BOATATTACK_RADIUSSQ then
                     target.components.combat:GetAttacked(horn_attack_prefab, TUNING.GNARWAIL.DAMAGE)
@@ -303,13 +314,15 @@ local states =
             end
 
             -- Also damage the boat we just pierced.
-            local platform = TheWorld.Map:GetPlatformAtPoint(tx, ty, tz)
-            if platform and platform.components.hullhealth and platform.components.health then
+            local platform = target_info.boat
+            if platform ~= nil and platform:IsValid()
+                    and platform.components.hullhealth ~= nil and platform.components.health ~= nil then
                 platform.components.health:DoDelta(-TUNING.GNARWAIL.HORN_BOAT_DAMAGE)
             end
 
-            horn_attack_prefab.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", {intensity=.8})
+            horn_attack_prefab.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", {intensity=0.8})
 
+            horn_attack_prefab.gnarwail_record = inst:GetSaveRecord()
             inst:Remove()
         end,
     },

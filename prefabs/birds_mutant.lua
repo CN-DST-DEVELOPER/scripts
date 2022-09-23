@@ -191,8 +191,8 @@ local function commonPostMain(inst)
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = TUNING.MUTANT_BIRD_WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.MUTANT_BIRD_WALK_SPEED
-    inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-    inst.components.locomotor:SetTriggersCreep(false)
+    inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+    inst.components.locomotor:SetTriggersCreep(true)
 
 	inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.MUTANT_BIRD_HEALTH)

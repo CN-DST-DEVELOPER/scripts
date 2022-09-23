@@ -84,7 +84,7 @@ end
 function MightyDumbbell:DoAttackWorkout(doer)
 
     if doer.components.mightiness then
-        local mightiness = self:CheckAttackEfficiency(doer)
+        local mightiness = self:CheckAttackEfficiency(doer) * TUNING.DUMBBELL_EFFICIENCY_ATTCK_SCALE
         doer.components.mightiness:DoDelta(mightiness)
     end
 end

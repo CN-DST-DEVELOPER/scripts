@@ -14,7 +14,7 @@ AddTask("Make a pick", {
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -29,7 +29,7 @@ AddTask("Dig that rock", {
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 			["Clearing"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGNoise",
 		colour={r=0,g=0,b=1,a=1}
 	})
@@ -43,7 +43,7 @@ AddTask("Great Plains", {
 			["Plain"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Clearing"] = 2,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=0,g=1,b=1,a=1}
 	})
@@ -57,7 +57,7 @@ AddTask("Squeltch", {
 			--["DeepForest"] = function() return 1+math.random(SIZE_VARIATION) end,
 			["SlightlyMermySwamp"]=1,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})
@@ -72,7 +72,7 @@ AddTask("Beeeees!", {
 			["BeeQueenBee"] = 1,
 			["FlowerPatch"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0.3,a=1}
 	})
@@ -85,7 +85,7 @@ AddTask("Beeeees!", {
 			["MagicalDeciduous"] = 1,
 			["DeepDeciduous"] = function() return 3 + math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGDeciduous",
 		colour={r=1,g=1,b=0,a=1}
 	})
@@ -102,7 +102,7 @@ AddTask("Forest hunters", {
 			["Clearing"] = 1,
 			["MoonbaseOne"] = 1,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=.15,g=.5,b=.05,a=1}
 	})
@@ -117,7 +117,7 @@ AddTask("For a nice walk", {
 			["DeepForest"] = function() return 1 + math.random(SIZE_VARIATION) end,
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=1,g=0,b=1,a=1}
 	})
@@ -132,7 +132,7 @@ AddTask("Badlands", {
 			["BarePlain"] = 1,
 			["BuzzardyBadlands"] = function() return (math.random() < 0.5) and 2 or 1 end,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGBadlands",
 		colour={r=1,g=0.6,b=1,a=1},
 	})
@@ -146,7 +146,7 @@ AddTask("Lightning Bluff", {
 			["LightningBluffOasis"] = 1,
 			["BGLightningBluff"] = 2,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGLightningBluff",
 		colour={r=.05,g=.5,b=.05,a=1},
 	})
@@ -166,7 +166,7 @@ AddTask("Befriend the pigs", {
 			["DeepForest"] = function() return math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=1,g=0,b=0,a=1}
 	})
@@ -181,7 +181,7 @@ AddTask("Kill the spiders", {
 			["CrappyDeepForest"] = function() return math.random(SIZE_VARIATION) end,
 			["Clearing"] = 1
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=.25,g=.4,b=.06,a=1}
 	})
@@ -196,7 +196,7 @@ AddTask("Killer bees!", {
 			["Forest"] = function() return math.random(SIZE_VARIATION) end,
 			["FlowerPatch"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=1,g=0.1,b=0.1,a=1}
 	})
@@ -209,7 +209,7 @@ AddTask("Make a Beehat", {
 			["Rocky"] = function() return math.random(SIZE_VARIATION) end,
 			["FlowerPatch"] = function() return math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=1,g=1,b=0.5,a=1}
 	})
@@ -225,7 +225,7 @@ AddTask("The hunters", {
 			["BGGrass"] = 2,
 			["BGRocky"] = 2,
 		},
-		room_bg=GROUND.SAVANNA,
+		room_bg=WORLD_TILES.SAVANNA,
 		background_room="BGSavanna",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -237,7 +237,7 @@ AddTask("Magic meadow", {
 			["Pondopolis"] = 2,
 			["Clearing"] = 2, -- have to have at least a few rooms for tagging
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="Clearing",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -252,7 +252,7 @@ AddTask("Frogs and bugs", {
 			["Clearing"] = 2,
 			["GrassyMoleColony"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -266,7 +266,7 @@ AddTask("Frogs and bugs", {
 			["DeciduousMole"] = 2,
 			["DeciduousClearing"] = 1,
 		},
-		room_bg=GROUND.DECIDUOUS,
+		room_bg=WORLD_TILES.DECIDUOUS,
 		background_room="BGDeciduous",
 		colour={r=.15,g=.5,b=.05,a=1}
 	})
@@ -280,7 +280,7 @@ AddTask("Frogs and bugs", {
 			["GenericRockyNoThreat"] = function() return 2 + math.random(SIZE_VARIATION) end,
 			["MolesvilleRocky"] = 1,
 		},
-		room_bg=GROUND.ROCKY,
+		room_bg=WORLD_TILES.ROCKY,
 		background_room="BGRocky",
 		colour={r=1,g=1,b=0,a=1}
 	})
@@ -291,7 +291,7 @@ AddTask("MooseBreedingTask", {
 		room_choices={
 			["MooseGooseBreedingGrounds"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=1,g=0.7,b=1,a=1},
 })
@@ -311,7 +311,7 @@ AddTask("MoonIsland_IslandShards", {
         ["MoonIsland_IslandShard"] = function() return 3 + math.random(2) end,
         ["Empty_Cove"] = 2,
     },
-    room_bg = GROUND.PEBBLEBEACH,
+    room_bg = WORLD_TILES.PEBBLEBEACH,
     background_room = "Empty_Cove",
 	cove_room_name = "Blank",
     make_loop = true,
@@ -332,7 +332,7 @@ AddTask("MoonIsland_Beach", {
     {
         ["MoonIsland_Beach"] = 2,
     },
-    room_bg = GROUND.PEBBLEBEACH,
+    room_bg = WORLD_TILES.PEBBLEBEACH,
     background_room = "Empty_Cove",
 	cove_room_name = "Empty_Cove",
 	cove_room_chance = 1,
@@ -351,7 +351,7 @@ AddTask("MoonIsland_Forest", {
     {
         ["MoonIsland_Forest"] = 3,
     },
-    room_bg = GROUND.METEOR,
+    room_bg = WORLD_TILES.METEOR,
     background_room = "Empty_Cove",
 	cove_room_name = "Empty_Cove",
 	crosslink_factor = 1,
@@ -369,7 +369,7 @@ AddTask("MoonIsland_Mine", {
 	room_choices={
 		["MoonIsland_Mine"] = 3,
 	},
-	room_bg=GROUND.METEOR,
+	room_bg=WORLD_TILES.METEOR,
 	background_room = "Empty_Cove",
 	cove_room_name = "Empty_Cove",
 	cove_room_chance = 1,
@@ -388,7 +388,7 @@ AddTask("MoonIsland_Baths", {
         ["MoonIsland_Baths"] = 2,
 		["MoonIsland_Meadows"] = 2,
     },
-    room_bg = GROUND.METEOR,
+    room_bg = WORLD_TILES.METEOR,
     background_room = "MoonIsland_Meadows",
 	cove_room_name = "Empty_Cove",
 	cove_room_chance = 1,
@@ -407,7 +407,7 @@ AddTask("MoonIsland_Baths", {
 			--["Wormhole"] = 1,
 			["DeepForest"] = function() return 3 + math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.FOREST,
+		room_bg=WORLD_TILES.FOREST,
 		background_room="BGForest",
 		colour={r=1,g=1,b=0,a=1}
 	})

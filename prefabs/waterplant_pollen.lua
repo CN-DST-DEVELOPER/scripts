@@ -74,7 +74,7 @@ local FADE_FRAMES = TUNING.WATERPLANT.POLLEN_FADETIME / FRAMES
 local FADE_RATE = 1/FADE_FRAMES -- Fade by 100% over fade time, in frames
 local function update_fade(inst)
     inst._fade_value = (inst._fade_value and inst._fade_value - FADE_RATE) or 1
-    inst.AnimState:OverrideMultColour(inst._fade_value, inst._fade_value, inst._fade_value, inst._fade_value)
+    inst.AnimState:OverrideMultColour(1, 1, 1, inst._fade_value)
 end
 
 local function client_fading_dirty(inst)

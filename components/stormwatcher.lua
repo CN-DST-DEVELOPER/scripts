@@ -45,6 +45,10 @@ local function OnChangeArea(inst)
     self.delay = self.stormlevel > 0 and self.stormlevel < 1 and .5 or 1
 end
 
+function StormWatcher:GetStormLevel(stormtype)
+    return (stormtype == nil or self.currentstorm == stormtype) and self.stormlevel or 0
+end
+
 function StormWatcher:GetCurrentStorm(inst)
     local currentstorm = STORM_TYPES.NONE
     if TheWorld.components.sandstorms ~= nil then

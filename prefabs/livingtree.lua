@@ -183,7 +183,7 @@ local function fn()
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot({"livinglog", "livinglog"})
-    if TheNet:IsOnlineMode() then
+    if TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode() then
         inst.components.lootdropper:AddChanceLoot("reskin_tool", 0.25)
     end
 

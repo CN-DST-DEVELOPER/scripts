@@ -42,20 +42,20 @@ local watergen =
 	ellevels =
 	{
 		--'elevation' levels
-		{GROUND.OCEAN_BRINEPOOL, 1.0},
---		{GROUND.PEBBLEBEACH, 1.0},
---		{GROUND.METEOR, 1.0},
---		{GROUND.MANGROVE, 1.0},
---		{GROUND.JUNGLE, 1.0},
---		{GROUND.BEACH, 1.0},
---		{GROUND.MAGMAFIELD, 1.0},
---		{GROUND.TIDALMARSH, 1.0},
---		{GROUND.MEADOW, 1.0},
-		{GROUND.OCEAN_COASTAL, 0.9}, --was .6 when I started
-		{GROUND.OCEAN_SWELL, 0.4}, --.4 when I started
-		{GROUND.OCEAN_ROUGH, 0.0},
-		{GROUND.OCEAN_HAZARDOUS, 0.0},
-		{GROUND.IMPASSABLE, 0.0}
+		{WORLD_TILES.OCEAN_BRINEPOOL, 1.0},
+--		{WORLD_TILES.PEBBLEBEACH, 1.0},
+--		{WORLD_TILES.METEOR, 1.0},
+--		{WORLD_TILES.MANGROVE, 1.0},
+--		{WORLD_TILES.JUNGLE, 1.0},
+--		{WORLD_TILES.BEACH, 1.0},
+--		{WORLD_TILES.MAGMAFIELD, 1.0},
+--		{WORLD_TILES.TIDALMARSH, 1.0},
+--		{WORLD_TILES.MEADOW, 1.0},
+		{WORLD_TILES.OCEAN_COASTAL, 0.9}, --was .6 when I started
+		{WORLD_TILES.OCEAN_SWELL, 0.4}, --.4 when I started
+		{WORLD_TILES.OCEAN_ROUGH, 0.0},
+		{WORLD_TILES.OCEAN_HAZARDOUS, 0.0},
+		{WORLD_TILES.IMPASSABLE, 0.0}
 	},
 
 	--when blur is done every tile should be 0.0-1.0

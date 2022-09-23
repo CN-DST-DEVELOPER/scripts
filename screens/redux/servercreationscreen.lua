@@ -164,8 +164,23 @@ function ServerCreationScreen:GetGameMode()
 	return self.server_settings_tab:GetGameMode()
 end
 
-function ServerCreationScreen:SetDataOnTabs()
+function ServerCreationScreen:UpdateSaveSlot(new_save_slot)
+    self.save_slot = new_save_slot
 
+	if self.mods_enabled then
+        self.mods_tab:UpdateSaveSlot(self.save_slot) --needs to happen before server_settings_tab:SetDataForSlot
+    end
+
+    self.server_settings_tab:UpdateSaveSlot(self.save_slot)
+
+    for i,tab in ipairs(self.world_tabs) do
+        tab:UpdateSaveSlot(self.save_slot)
+    end
+
+    self.snapshot_tab:UpdateSaveSlot(self.save_slot)
+end
+
+function ServerCreationScreen:SetDataOnTabs()
 	if self.mods_enabled then
         self.mods_tab:SetDataForSlot(self.save_slot) --needs to happen before server_settings_tab:SetDataForSlot
     end
@@ -344,15 +359,22 @@ function ServerCreationScreen:Create(warnedOffline, warnedDisabledMods, warnedOu
                         end
                     end,
                     function()
-                        OnNetworkDisconnect("ID_DST_DEDICATED_SERVER_STARTUP_FAILED", false, false)
+						if IsSteam() then
+	                        OnNetworkDisconnect("ID_DST_DEDICATED_SERVER_STARTUP_FAILED", false, false, {help_button = {text=STRINGS.UI.MAINSCREEN.GETHELP, cb = function() VisitURL("https://support.klei.com/hc/en-us/articles/4407489414548") end}})
+						else
+	                        OnNetworkDisconnect("ID_DST_DEDICATED_SERVER_STARTUP_FAILED", false, false)
+						end
                         TheSystemService:StopDedicatedServers()
                     end)
 
                 TheFrontEnd:PushScreen(launchingServerPopup)
             end
 
+            local save_to_cloud = self.save_slot > CLOUD_SAVES_SAVE_OFFSET
+            local use_zip_format = Profile:GetUseZipFileForNormalSaves()
+
             -- Note: StartDedicatedServers launches both dedicated and non-dedicated servers... ~gjans
-            if not TheSystemService:StartDedicatedServers(self.save_slot, is_multi_level, cluster_info, encode_user_path, use_legacy_session_path) then
+            if not TheSystemService:StartDedicatedServers(self.save_slot, is_multi_level, cluster_info, encode_user_path, use_legacy_session_path, save_to_cloud, use_zip_format) then
                 if launchingServerPopup ~= nil then
                     launchingServerPopup:SetErrorStartingServers()
                 end
@@ -435,9 +457,9 @@ function ServerCreationScreen:Create(warnedOffline, warnedDisabledMods, warnedOu
     if warnedOffline ~= true and not self.server_settings_tab:GetOnlineMode() then
         local offline_mode_body = ""
         if not ShardSaveGameIndex:IsSlotEmpty(self.save_slot) then
-            offline_mode_body = STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODEBODYRESUME
+            offline_mode_body = TheInventory:HasSupportForOfflineSkins() and STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODEBODYRESUME_CANSKIN or STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODEBODYRESUME
         else
-            offline_mode_body = STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODEBODYCREATE
+            offline_mode_body = TheInventory:HasSupportForOfflineSkins() and STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODEBODYCREATE_CANSKIN or STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODEBODYCREATE
         end
 
         local confirm_offline_popup = PopupDialogScreen(STRINGS.UI.SERVERCREATIONSCREEN.OFFLINEMODETITLE, offline_mode_body,

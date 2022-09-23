@@ -144,7 +144,7 @@ local function is_meat(item)
 end
 
 local RETARGET_MUST_TAGS = { "_combat", "_health" }
-local RETARGET_ONEOF_TAGS = { "monster", "player" }
+local RETARGET_ONEOF_TAGS = { "monster", "player", "pirate"}
 local function NormalRetargetFn(inst)
     return not inst:IsInLimbo()
         and FindEntity(
@@ -153,6 +153,8 @@ local function NormalRetargetFn(inst)
                 function(guy)
                     return inst.components.combat:CanTarget(guy)
                         and (guy:HasTag("monster")
+                            or guy:HasTag("wonkey")
+                            or guy:HasTag("pirate")
                             or (guy.components.inventory ~= nil and
                                 guy:IsNear(inst, TUNING.BUNNYMAN_SEE_MEAT_DIST) and
                                 guy.components.inventory:FindItem(is_meat) ~= nil))
@@ -297,7 +299,6 @@ local function fn()
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLootSetupFn(LootSetupFunction)
-    LootSetupFunction(inst.components.lootdropper)
 
     ------------------------------------------
 

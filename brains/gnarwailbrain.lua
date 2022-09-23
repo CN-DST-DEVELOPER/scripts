@@ -186,13 +186,12 @@ local WANDER_DATA = {wander_dist = WANDER_DISTANCE}
 function GnarwailBrain:OnStart()
     local is_valid_turf_at_point = function(position)
         local tile_at_position = TheWorld.Map:GetTileAtPoint(position:Get())
-        if tile_at_position == GROUND.OCEAN_ROUGH or tile_at_position == GROUND.OCEAN_SWELL then
+        if tile_at_position == WORLD_TILES.OCEAN_ROUGH or tile_at_position == WORLD_TILES.OCEAN_SWELL then
             return true
         else
             local tile_at_gnarwail = TheWorld.Map:GetTileAtPoint(self.inst.Transform:GetWorldPosition())
-            if tile_at_gnarwail ~= GROUND.OCEAN_ROUGH and tile_at_gnarwail ~= GROUND.OCEAN_SWELL then
-                return (tile_at_position >= GROUND.OCEAN_START and tile_at_position <= GROUND.OCEAN_END) and
-                    (tile_at_position ~= GROUND.IMPASSABLE and tile_at_position ~= GROUND.INVALID)
+            if tile_at_gnarwail ~= WORLD_TILES.OCEAN_ROUGH and tile_at_gnarwail ~= WORLD_TILES.OCEAN_SWELL then
+                return TileGroupManager:IsOceanTile(tile_at_position)
             end
         end
         return false

@@ -7,6 +7,12 @@ local WaveyJonesHand = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
+local function rotatorcheck(ent)
+    if ent.components.boatrotator and ent.sg and  ent.sg.mem and  ent.sg.mem.direction and ent.sg.mem.direction == 0 then
+        return true
+    end
+end
+
 local function mastcheck(ent)
     if ent.components.mast and ent:HasTag("saillowered") and not ent:HasTag("sail_transitioning") then
         return true
@@ -67,7 +73,7 @@ local function Dotinker(inst)
                 local ent = ents[i]
                 local keep = false
 
-                if mastcheck(ent) or anchorcheck(ent) or patchcheck(ent) or firecheck(ent) or fuelcheck(ent) then
+                if mastcheck(ent) or anchorcheck(ent) or patchcheck(ent) or firecheck(ent) or fuelcheck(ent) or rotatorcheck(ent) then
                     keep = true
                 end
 
@@ -102,6 +108,13 @@ local function Dotinker(inst)
         end
         if anchorcheck(target) then
             return BufferedAction(inst, target, ACTIONS.RAISE_ANCHOR)
+        end
+        if rotatorcheck(target) then
+            if math.random() < 0.5 then
+                return BufferedAction(inst, target, ACTIONS.ROTATE_BOAT_CLOCKWISE)
+            else
+                return BufferedAction(inst, target, ACTIONS.ROTATE_BOAT_COUNTERCLOCKWISE)
+            end
         end
         if mastcheck(target) then
             return BufferedAction(inst, target, ACTIONS.RAISE_SAIL)

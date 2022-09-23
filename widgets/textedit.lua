@@ -225,7 +225,7 @@ function TextEdit:OnTextInput(text)
     self.inst.TextEditWidget:OnTextInput(text)
 
 	if self.editing and self.prediction_widget ~= nil then
-		self.prediction_widget:RefreshPredictions()
+		self.prediction_widget:RefreshPredictions(true)
 	end
 
     local overflow = self.regionlimit and self.inst.TextWidget:HasOverflow()

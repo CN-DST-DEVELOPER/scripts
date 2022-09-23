@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------------------
 AddRoom("ChessArea", {
 					colour={r=0.5,g=0.7,b=0.5,a=0.3},
-					value = GROUND.CHECKER,
+					value = WORLD_TILES.CHECKER,
 					contents =  {
 									countstaticlayouts={
 										["Maxwell1"] = function() return math.random(0,3) < 1 and 1 or 0 end,
@@ -30,7 +30,7 @@ AddRoom("ChessArea", {
 					})
 AddRoom("MarbleForest", {
 					colour={r=0.5,g=0.7,b=0.5,a=0.3},
-					value = GROUND.CHECKER,
+					value = WORLD_TILES.CHECKER,
 					contents =  {
 									countstaticlayouts={
 										["Maxwell1"] = function() return math.random(0,3) < 1 and 1 or 0 end,
@@ -57,7 +57,7 @@ AddRoom("MarbleForest", {
 
 AddRoom("ChessMarsh", {
 					colour={r=0.5,g=0.7,b=0.5,a=0.3},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 									countstaticlayouts={
 										["Maxwell1"] = function() return math.random(0,3) < 1 and 1 or 0 end,
@@ -78,7 +78,7 @@ AddRoom("ChessMarsh", {
 					})
 AddRoom("ChessForest", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									countstaticlayouts = {
 										["Maxwell2"] = function() return math.random(0,3) < 1 and 1 or 0 end,
@@ -112,7 +112,7 @@ AddRoom("ChessForest", {
 					})
 AddRoom("ChessBarrens", {
 					colour={r=.66,g=.66,b=.66,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_1"},
 					contents =  {
 									countstaticlayouts = {

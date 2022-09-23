@@ -388,7 +388,7 @@ local function onfade(inst)
             inst._task:Cancel()
             inst._task = nil
         end
-        inst.AnimState:OverrideMultColour(inst._fade, inst._fade, inst._fade, inst._fade)
+        inst.AnimState:OverrideMultColour(1, 1, 1, inst._fade)
     else
         local df = math.max(.1, inst._fade * .5)
         inst._fade = inst._fade - df
@@ -397,7 +397,7 @@ local function onfade(inst)
             inst._task:Cancel()
             inst._task = nil
         end
-        inst.AnimState:OverrideMultColour(inst._fade, inst._fade, inst._fade, inst._fade)
+        inst.AnimState:OverrideMultColour(1, 1, 1, inst._fade)
     end
 end
 
@@ -431,7 +431,7 @@ local function glow_fn()
     inst.AnimState:PlayAnimation("green", true)
     inst.AnimState:SetLightOverride(1)
     inst.AnimState:SetFinalOffset(3)
-    inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+    inst.AnimState:OverrideMultColour(1, 1, 1, 0)
 
     inst._ison = net_bool(inst.GUID, "firesuppressor_glow._ison", "onisondirty")
     inst._fade = 0

@@ -1,7 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/marsh_bush.zip"),
-    --Asset("MINIMAP_IMAGE", "thorns_marsh"),
+    Asset("MINIMAP_IMAGE", "marsh_bush"),
 }
 
 local erode_assets =
@@ -73,10 +73,14 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
+    inst.entity:AddMiniMapEntity()
 
     inst.AnimState:SetBuild("marsh_bush")
     inst.AnimState:SetBank("marsh_bush")
     inst.AnimState:PlayAnimation("idle", true)
+
+    inst.MiniMapEntity:SetIcon("marsh_bush.png")
+    inst.MiniMapEntity:SetPriority(-1)
 
     inst:AddTag("plant")
     inst:AddTag("thorny")

@@ -54,7 +54,7 @@ local function IsNearLeader(inst, dist)
     return leader ~= nil and inst:IsNear(leader, dist)
 end
 
-local TOWORK_CANT_TAGS = { "fire", "smolder", "event_trigger", "INLIMBO", "NOCLICK" }
+local TOWORK_CANT_TAGS = { "fire", "smolder", "event_trigger", "INLIMBO", "NOCLICK", "carnivalgame_part" }
 local function FindEntityToWorkAction(inst, action, addtltags)
     local leader = GetLeader(inst)
     if leader ~= nil then
@@ -180,7 +180,7 @@ function ShadowWaxwellBrain:OnStart()
                         ChaseAndAttack(self.inst),
                 }, .25)),
                 --All shadows will flee from danger at this point
-                RunAway(self.inst, { fn = ShouldRunAway, oneoftags = { "monster", "hostile" }, notags = { "player", "INLIMBO" } }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+                RunAway(self.inst, { fn = ShouldRunAway, oneoftags = { "monster", "hostile" }, notags = { "player", "INLIMBO", "companion" } }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
                 --Workiers will try to work if not fleeing
                 IfNode(function() return self.inst.prefab == "shadowlumber" end, "Keep Chopping",
                     DoAction(self.inst, function() return FindEntityToWorkAction(self.inst, ACTIONS.CHOP) end)),

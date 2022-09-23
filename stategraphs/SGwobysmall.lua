@@ -48,7 +48,7 @@ local states =
 
     State{
         name = "despawn",
-        tags = {"busy", "notinterupt"},
+        tags = {"busy", "nointerrupt"},
 
         onenter = function(inst, pushanim)
             inst.components.locomotor:StopMoving()

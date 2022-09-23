@@ -53,6 +53,34 @@ local function waterlogged_tree_area()
 	return stuff
 end
 
+local function monkeyisland_prefabs_area(area, data)
+    local prefabs = PickSomeWithDups(math.floor(area/5 + 0.5),
+        {   "bananabush",
+            "monkeytail",
+            "palmconetree_short",
+            "palmconetree_normal",
+            "palmconetree_tall",
+            "pirate_flag_pole",
+        }
+    )
+
+    -- Make sure we have at least 1 of each plant represented.
+    table.insert(prefabs, "bananabush")
+    table.insert(prefabs, "palmconetree_normal")
+    table.insert(prefabs, "monkeytail")
+
+    table.insert(prefabs, "lightcrab")
+    if math.random() > 0.5 then
+        table.insert(prefabs, "lightcrab")
+    end
+
+    return prefabs
+end
+
+local function monkeyhut_area()
+    return {"monkeyhut", "monkeyhut"}
+end
+
 local StaticLayout = require("map/static_layout")
 local ExampleLayout =
 	{
@@ -242,7 +270,7 @@ local ExampleLayout =
 								 	unknown_hanging = { "drumstick", "smallmeat", "monstermeat", "meat"},
 								 	unknown_fruit = { "pumpkin", "eggplant", "durian", "pomegranate", "dragonfruit"},
 								},
-							ground_types = {GROUND.IMPASSABLE, GROUND.WOODFLOOR},
+							ground_types = {WORLD_TILES.IMPASSABLE, WORLD_TILES.WOODFLOOR},
 							ground =
 								{
 									{0, 0, 1, 1, 1, 1, 1, 0},
@@ -361,7 +389,7 @@ local ExampleLayout =
 							start_mask = PLACE_MASK.NORMAL,
 							fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 							layout_position = LAYOUT_POSITION.CENTER,
-							ground_types = {GROUND.FOREST},
+							ground_types = {WORLD_TILES.FOREST},
 							ground =
 								{
 									{1,1},{1,1},
@@ -388,7 +416,7 @@ local ExampleLayout =
 							start_mask = PLACE_MASK.NORMAL,
 							fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 							layout_position = LAYOUT_POSITION.CENTER,
-							ground_types = {GROUND.ROCKY},
+							ground_types = {WORLD_TILES.ROCKY},
 							defs =
 								{
 								 	rocks = { "rock1", "rock2"},
@@ -405,7 +433,7 @@ local ExampleLayout =
 							start_mask = PLACE_MASK.NORMAL,
 							fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 							layout_position = LAYOUT_POSITION.CENTER,
-							ground_types = {GROUND.ROCKY},
+							ground_types = {WORLD_TILES.ROCKY},
 							defs =
 								{
 								 	rocks = { "insanityrock"},
@@ -422,7 +450,7 @@ local ExampleLayout =
 							start_mask = PLACE_MASK.NORMAL,
 							fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 							layout_position = LAYOUT_POSITION.CENTER,
-							ground_types = {GROUND.ROCKY},
+							ground_types = {WORLD_TILES.ROCKY},
 							defs =
 								{
 								 	rocks = { "sanityrock"},
@@ -573,7 +601,7 @@ local ExampleLayout =
 							start_mask = PLACE_MASK.NORMAL,
 							fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 							layout_position = LAYOUT_POSITION.CENTER,
-							ground_types = {GROUND.GRASS},
+							ground_types = {WORLD_TILES.GRASS},
 							ground = {
 									{0, 1, 1, 1, 0},
 									{1, 1, 1, 1, 1},
@@ -654,7 +682,7 @@ local ExampleLayout =
     ["SlurtleEnclave"] =
     {
         type = LAYOUT.CIRCLE_EDGE,
-        ground_types = {GROUND.CAVE},
+        ground_types = {WORLD_TILES.CAVE},
         ground =
         {
             {0, 0, 1, 1, 1, 1, 1, 0},
@@ -713,7 +741,7 @@ local ExampleLayout =
 			start_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 			fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 			layout_position = LAYOUT_POSITION.CENTER}),
-	["SacredBarracks"] = StaticLayout.Get("map/static_layouts/barracks",{
+	["SacredBarracks"] = StaticLayout.Get("map/static_layouts/sacred_barracks",{
 			start_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 			fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
 			layout_position = LAYOUT_POSITION.CENTER}),
@@ -789,7 +817,7 @@ local ExampleLayout =
 		{
 			antlion_spawner = {{x=0, y=0}},
 		},
-		ground_types = {GROUND.DESERT_DIRT, GROUND.DIRT},
+		ground_types = {WORLD_TILES.DESERT_DIRT, WORLD_TILES.DIRT},
 		ground =
 			{
 				{1, 2, 1, 2},
@@ -997,6 +1025,59 @@ local ExampleLayout =
 		min_dist_from_land = 0,
 	}),
 
+	["MonkeyIsland"] = StaticLayout.Get("map/static_layouts/monkeyisland_01",
+	{
+		add_topology = {room_id = "StaticLayoutIsland:MonkeyIsland", tags = {"RoadPoison", "nohunt", "nohasslers", "not_mainland"}},
+		areas =
+		{
+			monkeyisland_prefabs = function(area, data)
+				local prefabs = PickSomeWithDups(math.floor(area/5 + 0.5),
+                    {   "bananabush",
+                        "monkeytail",
+                        "palmconetree_short",
+                        "palmconetree_normal",
+                        "palmconetree_tall",
+                        "pirate_flag_pole",
+                    }
+                )
+
+                -- Make sure we have at least 1 of each plant represented.
+                table.insert(prefabs, "bananabush")
+                table.insert(prefabs, "palmconetree_normal")
+                table.insert(prefabs, "monkeytail")
+
+                table.insert(prefabs, "lightcrab")
+                if math.random() > 0.5 then
+                    table.insert(prefabs, "lightcrab")
+                end
+
+				return prefabs
+			end,
+			
+			monkeyhut_area = function(area, data)
+                return {"monkeyhut", "monkeyhut"}
+			end,
+
+            monkeyisland_docksafearea = function(area, data)
+                -- Convert the area we're given into a prefab recording that area,
+                -- so dock generation can access the area information while generating.
+                return {
+                    {
+                        prefab = "monkeyisland_dockgen_safeareacenter",
+                        x = data.x,
+                        y = data.y,
+                        properties = {
+                            data = {
+                                width = data.width,
+                                height = data.height,
+                            },
+                        },
+                    }
+                }
+            end,
+		},
+	}),
+
 --------------------------------------------------------------------------------
 -- Grotto
 --------------------------------------------------------------------------------
@@ -1098,8 +1179,50 @@ local ExampleLayout =
 			treearea = waterlogged_tree_area,
 		}
     }),
-	
-	
+
+    ["monkeyisland_retrofitlarge_01"] = StaticLayout.Get("map/static_layouts/monkeyisland_retrofitlarge_01",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+        areas =
+        {
+            monkeyisland_prefabs = monkeyisland_prefabs_area,
+            monkeyhut_area = monkeyhut_area,
+        },
+	}),
+
+    ["monkeyisland_retrofitlarge_02"] = StaticLayout.Get("map/static_layouts/monkeyisland_retrofitlarge_02",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+        areas =
+        {
+            monkeyisland_prefabs = monkeyisland_prefabs_area,
+            monkeyhut_area = monkeyhut_area,
+        },
+	}),
+
+    ["monkeyisland_retrofitsmall_01"] = StaticLayout.Get("map/static_layouts/monkeyisland_retrofitsmall_01",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+        areas =
+        {
+            monkeyisland_prefabs = monkeyisland_prefabs_area,
+            monkeyhut_area = monkeyhut_area,
+        },
+	}),
+
+    ["monkeyisland_retrofitsmall_02"] = StaticLayout.Get("map/static_layouts/monkeyisland_retrofitsmall_02",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE,
+        areas =
+        {
+            monkeyisland_prefabs = monkeyisland_prefabs_area,
+            monkeyhut_area = monkeyhut_area,
+        },
+	}),
 --------------------------------------------------------------------------------
 
 }

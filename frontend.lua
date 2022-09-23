@@ -172,7 +172,7 @@ FrontEnd = Class(function(self, name)
     self.subtitle:SetHAnchor(ANCHOR_MIDDLE)
 	self.overlayroot:AddChild(self.subtitle)
 
-    if PLATFORM == "PS4" then
+    if IsConsole() then
         self.saving_indicator = UIAnim()
         self.saving_indicator:GetAnimState():SetBank("saving_indicator")
         self.saving_indicator:GetAnimState():SetBuild("saving_indicator")
@@ -190,14 +190,20 @@ FrontEnd = Class(function(self, name)
 	self.gameinterface = CreateEntity("GameInterface")
 	self.gameinterface.entity:AddSoundEmitter()
 	self.gameinterface.entity:AddGraphicsOptions()
-	self.gameinterface.entity:AddTwitchOptions()
+	if IsNotConsole() then
+		self.gameinterface.entity:AddTwitchOptions()
+	end
 	self.gameinterface.entity:AddAccountManager()
 
 	TheInput:AddKeyHandler(function(key, down) self:OnRawKey(key, down) end )
 	TheInput:AddTextInputHandler(function(text) self:OnTextInput(text) end )
 
 	self.tracking_mouse = true
+
+	self:UpdateRepeatDelays() -- crafting menu and inventory navigation
+
 	self.repeat_time = -1
+	self.repeat_reps = 0
     self.scroll_repeat_time = -1
     self.spinner_repeat_time = -1
 
@@ -632,6 +638,16 @@ function FrontEnd:UpdateConsoleOutput()
    	self.consoletext:SetString(consolestr)
 end
 
+function FrontEnd:_RefreshRepeatDelay(control)
+	if self.repeat_reps <= 1 then
+		self.repeat_time = self.crafting_repeat_base
+	elseif self.repeat_reps >= 3 and Input:GetAnalogControlValue(control) > 0.95 then
+		self.repeat_time = self.crafting_repeat_ninja
+	else
+		self.repeat_time = self.crafting_repeat_fast
+	end
+end
+
 function FrontEnd:Update(dt)
     if DEBUGGER_ENABLED then
         Debuggee.poll()
@@ -640,6 +656,8 @@ function FrontEnd:Update(dt)
     if CHEATS_ENABLED then
         ProbeReload(TheInput:IsKeyDown(KEY_F6))
     end
+
+	local controller = TheInput:ControllerAttached()
 
 	if self.saving_indicator ~= nil and self.saving_indicator.shown then
 		if self.save_indicator_fade then
@@ -735,19 +753,62 @@ function FrontEnd:Update(dt)
         --skip while editing a text box
         if self.repeat_time > dt then
             self.repeat_time = self.repeat_time - dt
-        elseif not (self.textProcessorWidget ~= nil) then
-            self.repeat_time = REPEAT_TIME
-            if TheInput:IsControlPressed(CONTROL_MOVE_LEFT) or TheInput:IsControlPressed(CONTROL_FOCUS_LEFT) then
-                self:OnFocusMove(MOVE_LEFT, true)
-            elseif TheInput:IsControlPressed(CONTROL_MOVE_RIGHT) or TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT) then
-                self:OnFocusMove(MOVE_RIGHT, true)
-            elseif TheInput:IsControlPressed(CONTROL_MOVE_UP) or TheInput:IsControlPressed(CONTROL_FOCUS_UP) then
-                self:OnFocusMove(MOVE_UP, true)
-            elseif TheInput:IsControlPressed(CONTROL_MOVE_DOWN) or TheInput:IsControlPressed(CONTROL_FOCUS_DOWN) then
-                self:OnFocusMove(MOVE_DOWN, true)
-            else
-                self.repeat_time = 0
-            end
+
+			if self.crafting_navigation_mode then
+				if not (   TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_LEFT))
+						or TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT))
+						or TheInput:IsControlPressed(CONTROL_INVENTORY_UP) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_UP))
+						or TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_DOWN)) ) then
+
+            		self.repeat_time = 0
+					self.repeat_reps = 0
+				end
+			else
+				if not (   TheInput:IsControlPressed(CONTROL_MOVE_LEFT) or TheInput:IsControlPressed(CONTROL_FOCUS_LEFT)
+            			or TheInput:IsControlPressed(CONTROL_MOVE_RIGHT) or TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT)
+            			or TheInput:IsControlPressed(CONTROL_MOVE_UP) or TheInput:IsControlPressed(CONTROL_FOCUS_UP)
+            			or TheInput:IsControlPressed(CONTROL_MOVE_DOWN) or TheInput:IsControlPressed(CONTROL_FOCUS_DOWN) ) then
+
+            		self.repeat_time = 0
+					self.repeat_reps = 0
+				end
+			end
+		elseif not (self.textProcessorWidget ~= nil) then
+            self.repeat_reps = self.repeat_reps and (self.repeat_reps + 1) or 1
+
+			if self.crafting_navigation_mode then
+				if TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_LEFT)) then
+					self:_RefreshRepeatDelay(CONTROL_INVENTORY_LEFT)
+					self:OnFocusMove(MOVE_LEFT, true)
+				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT)) then
+					self:_RefreshRepeatDelay(CONTROL_INVENTORY_RIGHT)
+					self:OnFocusMove(MOVE_RIGHT, true)
+				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_UP) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_UP)) then
+					self:_RefreshRepeatDelay(CONTROL_INVENTORY_UP)
+					self:OnFocusMove(MOVE_UP, true)
+				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_DOWN)) then
+					self:_RefreshRepeatDelay(CONTROL_INVENTORY_DOWN)
+					self:OnFocusMove(MOVE_DOWN, true)
+				else
+					self.repeat_time = 0
+					self.repeat_reps = 0
+				end
+			else
+				self.repeat_time = REPEAT_TIME
+
+				if TheInput:IsControlPressed(CONTROL_MOVE_LEFT) or TheInput:IsControlPressed(CONTROL_FOCUS_LEFT) then
+					self:OnFocusMove(MOVE_LEFT, true)
+				elseif TheInput:IsControlPressed(CONTROL_MOVE_RIGHT) or TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT) then
+					self:OnFocusMove(MOVE_RIGHT, true)
+				elseif TheInput:IsControlPressed(CONTROL_MOVE_UP) or TheInput:IsControlPressed(CONTROL_FOCUS_UP) then
+					self:OnFocusMove(MOVE_UP, true)
+				elseif TheInput:IsControlPressed(CONTROL_MOVE_DOWN) or TheInput:IsControlPressed(CONTROL_FOCUS_DOWN) then
+					self:OnFocusMove(MOVE_DOWN, true)
+				else
+					self.repeat_time = 0
+					self.repeat_reps = 0
+				end
+			end
         end
 
         self:DoHoverFocusUpdate()
@@ -789,7 +850,7 @@ function FrontEnd:Update(dt)
 			self.imgui_is_running = false
 
     	end
-    	
+
         --self.widget_editor:Update(dt)
         --self.entity_editor:Update(dt)
     end
@@ -811,9 +872,10 @@ function FrontEnd:Update(dt)
 	end
 
 	self.helptext:Hide()
-	if TheInput:ControllerAttached() and
-        self:GetFadeLevel() < 1 and
-        not (self.fadedir == FADE_OUT and self.fade_type ~= "black") then
+	if controller
+        and self:GetFadeLevel() < 1
+		and not self.crafting_navigation_mode
+        and not (self.fadedir == FADE_OUT and self.fade_type ~= "black") then
 		local str = self:GetHelpText()
 		if str ~= "" then
 			self.helptext:Show()
@@ -918,6 +980,10 @@ end
 
 function FrontEnd:HideConsoleLog()
 	self.consoletext:Hide()
+end
+
+function FrontEnd:SetConsoleLogPosition(x, y, z)
+    self.consoletext:SetPosition(x, y, z)
 end
 
 function FrontEnd:DoFadeIn(time_to_take)
@@ -1133,6 +1199,40 @@ function FrontEnd:GetHUDScale()
     return easing.linear(size, min_scale, max_scale - min_scale, 10) * res_scale
 end
 
+function FrontEnd:GetCraftingMenuScale()
+    local size = Profile:GetCraftingMenuSize()
+    local min_scale = .6
+    local max_scale = 1.15
+	if IsSplitScreen() then
+		min_scale = 1.0
+		max_scale = 1.92
+	end
+
+    --testing high res displays
+    local w, h = TheSim:GetScreenSize()
+
+    local res_scale_x = math.max(1, w / 1920)
+    local res_scale_y = math.max(1, h / 1200)
+    local res_scale = math.min(res_scale_x, res_scale_y)
+
+    return easing.linear(size, min_scale, max_scale - min_scale, 10) * res_scale
+end
+
+function FrontEnd:UpdateRepeatDelays()
+	local craft_sensitivity = Profile:GetCraftingMenuSensitivity()
+	self.crafting_repeat_base = easing.linear(20-craft_sensitivity, .11, .4 - .11, 20)
+	self.crafting_repeat_fast = self.crafting_repeat_base * 0.4
+	self.crafting_repeat_ninja = self.crafting_repeat_base * 0.2
+
+	local inv_sensitivity = Profile:GetInventorySensitivity()
+	self.inventory_repeat_base = easing.linear(20-inv_sensitivity, .11, .4 - .11, 20)
+	self.inventory_repeat_fast = self.inventory_repeat_base * 0.4
+	self.inventory_repeat_ninja = self.inventory_repeat_base * 0.2
+
+	--print("UpdateRepeatDelays crafting  ", craft_sensitivity, self.crafting_repeat_base, self.crafting_repeat_fast, self.crafting_repeat_ninja)
+	--print("                   inventory ", inv_sensitivity, self.inventory_repeat_base, self.inventory_repeat_fast, self.inventory_repeat_ninja)
+end
+
 function FrontEnd:OnMouseButton(button, down, x, y)
     if self:IsControlsDisabled() then
         return false
@@ -1324,6 +1424,33 @@ function FrontEnd:ToggleImgui(node)
         end
     else
         print("IsImguiEnabled is disabled due to threaded renderer being enabled")
+    end
+end
+
+
+function FrontEnd:IsDebugPanelOpen( nodename )
+	if not CAN_USE_DBUI then
+		return false
+	end
+
+    for i, panel in ipairs(self.debug_panels) do
+        if panel:GetNode().NodeName == nodename then
+            return true
+        end
+    end
+    return false
+end
+
+function FrontEnd:CloseDebugPanel( nodename )
+	if not CAN_USE_DBUI then
+		return
+	end
+
+    for i, panel in ipairs(self.debug_panels) do
+        if panel:GetNode().NodeName == nodename then
+            panel:OnClose()
+            table.remove( self.debug_panels, i )
+        end
     end
 end
 

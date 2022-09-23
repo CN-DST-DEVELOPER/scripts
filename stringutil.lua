@@ -23,6 +23,7 @@ local function getmodifiedstring(topic_tab, modifier)
 end
 
 local function getcharacterstring(tab, item, modifier)
+
     if tab == nil then
         return
     end
@@ -58,6 +59,8 @@ end
 
 ---------------------------------------------------------
 --"Oooh" string stuff
+
+
 local Oooh_endings = { "h", "oh", "ohh" }
 local Oooh_punc = { ".", "?", "!" }
 
@@ -89,6 +92,7 @@ local function ooohpunc()
     return Oooh_punc[math.random(#Oooh_punc)]
 end
 
+
 local function CraftOooh() -- Ghost speech!
     local isstart = true
     local length = math.random(6)
@@ -103,6 +107,84 @@ local function CraftOooh() -- Ghost speech!
     end
     return str..ooohpunc()
 end
+
+
+function CraftGiberish()
+
+    local function midstr(locstr)
+        locstr = locstr .. STRINGS.GIBERISH_PRE[math.random(1,#STRINGS.GIBERISH_PRE)]
+        return locstr
+    end
+
+    local function endstr(locstr)
+        locstr = locstr .. STRINGS.GIBERISH_PST[math.random(1,#STRINGS.GIBERISH_PST)]
+        return locstr
+    end
+
+    local str = ""
+    local loop = 4    
+    while loop > 0 do
+        str = midstr(str)
+        if math.random() <0.3 then
+            str = endstr(str)
+        end
+
+        if math.random() <0.3 then
+            loop = 0
+        end
+        loop = loop -1
+        if loop > 0 and math.random() < 0.8 then
+            str = str .. " "
+        end        
+    end
+    
+    if math.random() < 0.2 then
+        return str .. "!"
+    end
+    return str .. "."
+end
+
+function CraftMonkeySpeech()
+    --getcharacterstring(STRINGS.CHARACTERS.WONKEY.DESCRIBE, stringtype, modifier) or CraftMonkeyString()
+
+    if not ThePlayer or ThePlayer:HasTag("wonkey") then
+        return nil
+    else
+        local function midstr(locstr)
+            locstr = locstr .. STRINGS.MONKEY_SPEECH_PRE[math.random(1,#STRINGS.MONKEY_SPEECH_PRE)]
+            return locstr
+        end
+
+        local function endstr(locstr)
+            locstr = locstr .. STRINGS.MONKEY_SPEECH_PST[math.random(1,#STRINGS.MONKEY_SPEECH_PST)]
+            return locstr
+        end
+
+        local str = ""
+        local loop = 4    
+        while loop > 0 do
+            str = midstr(str)
+            if math.random() <0.3 then
+                str = endstr(str)
+            end
+
+            if math.random() <0.3 then
+                loop = 0
+            end
+            loop = loop -1
+            if loop > 0 and math.random() < 0.8 then
+                str = str .. " "
+            end        
+        end
+        
+        if math.random() < 0.2 then
+            return str .. "!"
+        end
+        return str .. "."
+    end
+end
+
+
 
 --V2C: Left this here as a global util function so mods or other characters can use it easily.
 function Umlautify(string)
@@ -148,6 +230,7 @@ function GetSpecialCharacterString(character)
 
     return (character == "mime" and "")
         or (character == "ghost" and CraftOooh())
+        or (character == "wonkey" and CraftMonkeySpeech())
         or (character == "wilton" and wilton_sayings[math.random(#wilton_sayings)])
         or nil
 end
@@ -160,11 +243,16 @@ end
 
 -- When calling GetString, must pass actual instance of entity if it might be used when ghost
 -- Otherwise, handing inst.prefab directly to the function call is okay
-function GetString(inst, stringtype, modifier)
+function GetString(inst, stringtype, modifier, nil_missing)
     local character =
         type(inst) == "string"
         and inst
         or (inst ~= nil and inst.prefab or nil)
+
+
+    if type(inst) ~= "string" and inst.components.talker and inst.components.talker.speechproxy then
+        character = inst.components.talker.speechproxy
+    end
 
     character = character ~= nil and string.upper(character) or nil
     stringtype = stringtype ~= nil and string.upper(stringtype) or nil
@@ -182,10 +270,12 @@ function GetString(inst, stringtype, modifier)
         (inst:HasTag("playerghost") and "ghost"))
         or character
 
-    return GetSpecialCharacterString(specialcharacter)
+
+	return GetSpecialCharacterString(specialcharacter)
         or getcharacterstring(STRINGS.CHARACTERS[character], stringtype, modifier)
         or getcharacterstring(STRINGS.CHARACTERS.GENERIC, stringtype, modifier)
-        or ("UNKNOWN STRING: "..(character or "").." "..(stringtype or "").." "..(modifier or ""))
+		or (not nil_missing and ("UNKNOWN STRING: "..(character or "").." "..(stringtype or "").." "..(modifier or "")))
+		or nil
 end
 
 function GetActionString(action, modifier)
@@ -199,6 +289,10 @@ function GetDescription(inst, item, modifier)
         type(inst) == "string"
         and inst
         or (inst ~= nil and inst.prefab or nil)
+
+    if type(inst) ~= "string" and inst.components.talker and inst.components.talker.speechproxy then
+        character = inst.components.talker.speechproxy
+    end
 
     character = character ~= nil and string.upper(character) or nil
     local itemname = item.nameoverride or item.components.inspectable.nameoverride or item.prefab or nil
@@ -371,8 +465,8 @@ function DamLevDist( a, b, limit )
     local b_len = b:len()
 
     --early out optimization, if the lengths are more than "limit" difference then we can return
-    if math.abs( a_len - b_len ) >= limit then
-        return limit
+    if math.abs( a_len - b_len ) > limit then
+        return math.abs( a_len - b_len )
     end
 
     --Note(Peter): does this work with unicode?
@@ -418,10 +512,30 @@ function DamLevDist( a, b, limit )
             end
         end
 
-        if low >= limit then
-            return limit
+        if low > limit then
+            return low
         end
     end
 
     return d[ id(a_len,b_len) ]
+end
+
+--once again, left so you can see what string_search_subwords is doing
+local search_subwords = function( search, str, sub_len, limit )
+    local str_len = string.len(str)
+
+    for i=1,str_len - sub_len + 1 do
+        local sub = str:sub( i, i + sub_len - 1 )
+
+        local dist = DamLevDist( search, sub, limit )
+        if dist <= limit then
+            return true
+        end
+    end
+
+    return false
+end
+
+function do_search_subwords(...)
+    return string_search_subwords(...)
 end

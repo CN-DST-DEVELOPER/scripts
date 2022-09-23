@@ -142,6 +142,8 @@ local function MakeMeatrack(name, common_postinit, master_postinit)
 
         inst:AddTag("structure")
 
+        inst.AnimState:Hide("mouseover")
+
         MakeSnowCoveredPristine(inst)
 
         if common_postinit ~= nil then

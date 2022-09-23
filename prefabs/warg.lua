@@ -7,6 +7,8 @@ local prefabs_basic =
     "houndstooth",
 }
 
+local prefabs_wave = prefabs_basic
+
 local prefabs_clay =
 {
     "redpouch",
@@ -139,13 +141,16 @@ end
 local TARGETS_MUST_TAGS = {"player"}
 local TARGETS_CANT_TAGS = {"playerghost"}
 local function NumHoundsToSpawn(inst)
-    local numHounds = TUNING.WARG_BASE_HOUND_AMOUNT
+    local numHounds = inst.base_hound_num 
 
     local pt = Vector3(inst.Transform:GetWorldPosition())
     local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.WARG_NEARBY_PLAYERS_DIST, TARGETS_MUST_TAGS, TARGETS_CANT_TAGS)
     for i,player in ipairs(ents) do
         local playerAge = player.components.age:GetAgeInDays()
         local addHounds = math.clamp(Lerp(1, 4, playerAge/100), 1, 4)
+        if inst.spawn_fewer_hounds then
+            addHounds = math.ceil(addHounds/2)
+        end
         numHounds = numHounds + addHounds
     end
     local numFollowers = inst.components.leader:CountFollowers()
@@ -153,6 +158,10 @@ local function NumHoundsToSpawn(inst)
     num = (math.log(num)/0.4)+1 -- 0.4 is approx log(1.5)
 
     num = RoundToNearest(num, 1)
+
+    if inst.max_hound_spawns then
+        num = math.min(num,inst.max_hound_spawns)
+    end
 
     return num - numFollowers
 end
@@ -465,6 +474,8 @@ local function MakeWarg(name, bank, build, prefabs, tag)
 
         inst:AddComponent("lootdropper")
         inst.components.lootdropper:SetChanceLootTable(name)
+
+        inst.base_hound_num = TUNING.WARG_BASE_HOUND_AMOUNT
 
         if tag == "clay" then
             inst.NumHoundsToSpawn = NoHoundsToSpawn

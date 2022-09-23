@@ -64,7 +64,7 @@ function CharacterButton:SetCharacter(hero)
     if skindata.skins ~= nil then
         base_build = skindata.skins[skin_mode]
     end
-    SetSkinsOnAnim( self.head_animstate, self.herocharacter, base_build, {}, skin_mode)
+    SetSkinsOnAnim( self.head_animstate, self.herocharacter, base_build, {}, nil, skin_mode)
 
     if IsCharacterOwned(hero) then
         self.image:SetTint(unpack(WHITE))

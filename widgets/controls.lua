@@ -1,3 +1,8 @@
+
+if not IsConsole() then
+	require "splitscreenutils_pc"
+end
+
 local Screen = require "widgets/screen"
 local Button = require "widgets/button"
 local AnimButton = require "widgets/animbutton"
@@ -8,6 +13,7 @@ local UIAnim = require "widgets/uianim"
 local Inv = require "widgets/inventorybar"
 local Widget = require "widgets/widget"
 local CraftTabs = require "widgets/crafttabs"
+local CraftingMenu = require "widgets/redux/craftingmenu_hud"
 local HoverText = require "widgets/hoverer"
 local MapControls = require "widgets/mapcontrols"
 local ContainerWidget = require("widgets/containerwidget")
@@ -17,6 +23,7 @@ local UIClock = require "widgets/uiclock"
 local MapScreen = require "screens/mapscreen"
 local FollowText = require "widgets/followtext"
 local StatusDisplays = require "widgets/statusdisplays"
+local SecondaryStatusDisplays = require "widgets/secondarystatusdisplays"
 local Lavaarena_StatusDisplays = require "widgets/statusdisplays_lavaarena"
 local Quagmire_StatusDisplays = require "widgets/statusdisplays_quagmire"
 local Quagmire_StatusCravingDisplay = require "widgets/statusdisplays_quagmire_cravings"
@@ -35,6 +42,9 @@ local TeamStatusBars = require("widgets/teamstatusbars")
 local Controls = Class(Widget, function(self, owner)
     Widget._ctor(self, "Controls")
     self.owner = owner
+
+	local is_splitscreen = IsSplitScreen()
+	local is_player1 = IsGameInstance(Instances.Player1)
 
     self._scrnw, self._scrnh = TheSim:GetScreenSize()
 
@@ -89,26 +99,94 @@ local Controls = Class(Widget, function(self, owner)
     self.sidepanel:SetScale(1,1,1)
     self.sidepanel:SetPosition(-80, -60, 0)
 
-    self.votedialog = self.topright_root:AddChild(VoteDialog(self.owner))
-    self.votedialog:SetPosition(-330, 0, 0)
+    if is_splitscreen then
+        if is_player1 then
+            if TheNet:GetServerGameMode() == "lavaarena" then
+                self.status = self.bottom_root:AddChild(Lavaarena_StatusDisplays(self.owner))
+                self.status:SetPosition(-180,105,0)
+                --self.status:SetScale(1.8)
+                self.teamstatus = self.topleft_root:AddChild(TeamStatusBars(self.owner))
+            elseif TheNet:GetServerGameMode() == "quagmire" then
+                self.status = self.bottom_root:AddChild(Quagmire_StatusDisplays(self.owner))
+                --self.status:SetScale(1.4)
+                self.quagmire_hangriness = self.top_root:AddChild(Quagmire_StatusCravingDisplay(self.owner))
+                self.quagmire_hangriness.inst:DoPeriodicTask(.5, function() self.quagmire_hangriness:UpdateStatus() end, 0)
+                self.quagmire_notifications = self.right_root:AddChild(Quagmire_NotificationWidget(self.owner))
 
-    if TheNet:GetServerGameMode() == "lavaarena" then
-        self.status = self.bottom_root:AddChild(Lavaarena_StatusDisplays(self.owner))
-        self.teamstatus = self.topleft_root:AddChild(TeamStatusBars(self.owner))
-    elseif TheNet:GetServerGameMode() == "quagmire" then
-        self.status = self.bottom_root:AddChild(Quagmire_StatusDisplays(self.owner))
-		self.quagmire_hangriness = self.top_root:AddChild(Quagmire_StatusCravingDisplay(self.owner))
-		self.quagmire_notifications = self.right_root:AddChild(Quagmire_NotificationWidget(self.owner))
-		self.quagmire_notifications:SetPosition(0, 200)
-		self.containerroot:MoveToFront() -- so safes ui opens on top of hangriness meter
+                self.containerroot:MoveToFront() -- so safes ui opens on top of hangriness meter
+            else
+                self.status = self.topleft_root:AddChild(StatusDisplays(self.owner))
+                self.status:SetPosition(120,-100,0)
+                self.status:SetScale(1.4)
+
+                self.secondary_status = self.topright_root:AddChild(SecondaryStatusDisplays(self.owner))
+                self.secondary_status:SetPosition(-160,-250,0)
+                self.secondary_status:SetScale(2.2)
+
+				self.clock = self.sidepanel:AddChild(UIClock())
+				if self.clock:IsCaveClock() then
+					self.clock.inst:DoSimPeriodicTask(.5, function() self.clock:UpdateCaveClock(self.owner) end, 0)
+				end
+            end
+
+            self.votedialog = self.topright_root:AddChild(VoteDialog(self.owner))
+            self.votedialog:SetPosition(-350, 0, 0)
+        else
+            if TheNet:GetServerGameMode() == "lavaarena" then
+                self.status = self.bottom_root:AddChild(Lavaarena_StatusDisplays(self.owner))
+                self.status:SetPosition(-180,105,0)	
+                --self.status:SetScale(1.8)
+                self.teamstatus = self.topright_root:AddChild(TeamStatusBars(self.owner))
+            elseif TheNet:GetServerGameMode() == "quagmire" then
+                self.status = self.bottom_root:AddChild(Quagmire_StatusDisplays(self.owner))
+                --self.status:SetScale(1.4)
+                self.quagmire_hangriness = self.top_root:AddChild(Quagmire_StatusCravingDisplay(self.owner))
+                self.quagmire_notifications = self.right_root:AddChild(Quagmire_NotificationWidget(self.owner))
+
+                self.containerroot:MoveToFront() -- so safes ui opens on top of hangriness meter
+            else
+                self.status = self.topright_root:AddChild(StatusDisplays(self.owner))
+                self.status:SetPosition(-120,-100,0)
+                self.status:SetScale(1.4)
+
+                self.secondary_status = self.topleft_root:AddChild(SecondaryStatusDisplays(self.owner))
+                self.secondary_status:SetPosition(160,-250,0)
+                self.secondary_status:SetScale(2.2)
+
+				self.clock = self.sidepanel:AddChild(UIClock())
+				if self.clock:IsCaveClock() then
+					self.clock.inst:DoSimPeriodicTask(.5, function() self.clock:UpdateCaveClock(self.owner) end, 0)
+				end
+            end
+            
+            self.votedialog = self.topleft_root:AddChild(VoteDialog(self.owner))
+            self.votedialog:SetPosition(350, 0, 0)
+        end
     else
-        self.status = self.sidepanel:AddChild(StatusDisplays(self.owner))
-        self.status:SetPosition(0,-110,0)
+        if TheNet:GetServerGameMode() == "lavaarena" then
+            self.status = self.bottom_root:AddChild(Lavaarena_StatusDisplays(self.owner))
+            self.teamstatus = self.topleft_root:AddChild(TeamStatusBars(self.owner))
+        elseif TheNet:GetServerGameMode() == "quagmire" then
+            self.status = self.bottom_root:AddChild(Quagmire_StatusDisplays(self.owner))
+            self.quagmire_hangriness = self.top_root:AddChild(Quagmire_StatusCravingDisplay(self.owner))
+            self.quagmire_notifications = self.right_root:AddChild(Quagmire_NotificationWidget(self.owner))
+            self.quagmire_notifications:SetPosition(0, 200)
+            self.containerroot:MoveToFront() -- so safes ui opens on top of hangriness meter
+        else
+            self.status = self.sidepanel:AddChild(StatusDisplays(self.owner))
+            self.status:SetPosition(0,-110,0)
 
-		self.clock = self.sidepanel:AddChild(UIClock(self.owner))
-		if self.clock:IsCaveClock() then
-			self.clock.inst:DoSimPeriodicTask(.5, function() self.clock:UpdateCaveClock(self.owner) end, 0)
-		end
+            self.secondary_status = self.sidepanel:AddChild(SecondaryStatusDisplays(self.owner))
+            self.secondary_status:SetPosition(0,-110,0)
+
+            self.clock = self.sidepanel:AddChild(UIClock())
+            if self.clock:IsCaveClock() then
+                self.clock.inst:DoSimPeriodicTask(.5, function() self.clock:UpdateCaveClock(self.owner) end, 0)
+            end
+        end
+
+        self.votedialog = self.topright_root:AddChild(VoteDialog(self.owner))
+        self.votedialog:SetPosition(-330, 0, 0)
     end
 
     local twitch_options = TheFrontEnd:GetTwitchOptions()
@@ -123,6 +201,7 @@ local Controls = Class(Widget, function(self, owner)
     self.chat_queue_root:SetScaleMode(SCALEMODE_PROPORTIONAL)
     self.chat_queue_root:SetHAnchor(ANCHOR_MIDDLE)
     self.chat_queue_root:SetVAnchor(ANCHOR_BOTTOM)
+    self.chat_queue_root:MoveToBack()
     self.chat_queue_root = self.chat_queue_root:AddChild(Widget(""))
     self.chat_queue_root:SetPosition(-90,765,0)
     self.networkchatqueue = self.chat_queue_root:AddChild(ChatQueue())
@@ -158,6 +237,14 @@ local Controls = Class(Widget, function(self, owner)
     self.containerroot_side = self.containerroot_side:AddChild(Widget("contaierroot_side"))
     self.containerroot_side:Hide()
 
+    if not is_splitscreen then
+        -- This assumes that splitscreen means console; consoles are forced to use
+        -- the integrated backpack, so the side widget shouldn't cause issues there.
+        if owner:HasTag("upgrademoduleowner") then
+            --self.containerroot_side:SetPosition(-120, 0, 0)
+        end
+    end
+
     self.mousefollow = self:AddChild(Widget("follower"))
     self.mousefollow:FollowMouse(true)
     self.mousefollow:SetScaleMode(SCALEMODE_PROPORTIONAL)
@@ -165,7 +252,12 @@ local Controls = Class(Widget, function(self, owner)
     self.hover = self:AddChild(HoverText(self.owner))
     self.hover:SetScaleMode(SCALEMODE_PROPORTIONAL)
 
-    self.crafttabs = self.left_root:AddChild(CraftTabs(self.owner, self.top_root))
+	if is_player1 then
+	    self.craftingmenu = self.left_root:AddChild(CraftingMenu(self.owner, true))
+	else
+	    self.craftingmenu = self.right_root:AddChild(CraftingMenu(self.owner, false))
+	end
+	self.crafttabs = self.craftingmenu -- self.crafttabs is deprecated
 
     if TheNet:GetIsClient() then
         --Not using topleft_root because we need to be on top of containerroot
@@ -185,6 +277,19 @@ local Controls = Class(Widget, function(self, owner)
 
     self:SetHUDSize()
 
+    --NOTE: this is triggered on the swap SOURCE. we need to stop updates because
+    --      playercontroller component is removed first, entity remove is delayed.
+    self.inst:ListenForEvent("seamlessplayerswap", function()
+        self:StopUpdating()
+    end, self.owner)
+
+    --NOTE: this is triggered on the swap TARGET.
+    self.inst:ListenForEvent("finishseamlessplayerswap", function()
+        if self.owner.replica.inventory:IsVisible() then
+            self:ShowCraftingAndInventory()
+        end
+    end, self.owner)
+
     self:StartUpdating()
 end)
 
@@ -193,12 +298,18 @@ function Controls:ShowStatusNumbers()
     if self.teamstatus ~= nil then
         self.teamstatus:ShowStatusNumbers()
     end
+    if self.secondary_status ~= nil then
+        self.secondary_status:ShowStatusNumbers()
+    end
 end
 
 function Controls:HideStatusNumbers()
     self.status:HideStatusNumbers()
     if self.teamstatus ~= nil then
         self.teamstatus:HideStatusNumbers()
+    end
+    if self.secondary_status ~= nil then
+        self.secondary_status:HideStatusNumbers()
     end
 end
 
@@ -270,29 +381,35 @@ function Controls:MakeScalingNodes()
     self.right_root = self.right_root:AddChild(Widget("right_scale_root"))
     self.bottomright_root = self.bottomright_root:AddChild(Widget("br_scale_root"))
     self.topright_over_root = self.topright_over_root:AddChild(Widget("tr_over_scale_root"))
-    --
 end
 
 function Controls:SetHUDSize()
     local scale = TheFrontEnd:GetHUDScale()
+	local crafting_scale = TheFrontEnd:GetCraftingMenuScale()
 
-    self.topleft_root:SetScale(scale, scale, scale)
-    self.topright_root:SetScale(scale, scale, scale)
-    self.bottom_root:SetScale(scale, scale, scale)
-    self.top_root:SetScale(scale, scale, scale)
-    self.right_root:SetScale(scale, scale, scale)
-    self.bottomright_root:SetScale(scale, scale, scale)
-    self.left_root:SetScale(scale, scale, scale)
-    self.containerroot:SetScale(scale, scale, scale)
-    self.containerroot_side:SetScale(scale, scale, scale)
-    self.hover:SetScale(scale, scale, scale)
-    self.topright_over_root:SetScale(scale, scale, scale)
+    self.topleft_root:SetScale(scale)
+    self.topright_root:SetScale(scale)
+    self.bottom_root:SetScale(scale)
+    self.top_root:SetScale(scale)
+    self.bottomright_root:SetScale(scale)
+    self.containerroot:SetScale(scale)
+    self.containerroot_side:SetScale(scale)
+    self.hover:SetScale(scale)
+    self.topright_over_root:SetScale(scale)
 
-    self.mousefollow:SetScale(scale, scale, scale)
+    self.mousefollow:SetScale(scale)
 
     if self.desync ~= nil then
-        self.desync:SetScale(scale, scale, scale)
+        self.desync:SetScale(scale)
     end
+
+	if IsGameInstance(Instances.Player1) then
+		self.left_root:SetScale(crafting_scale)
+	    self.right_root:SetScale(scale)
+	else
+		self.left_root:SetScale(scale)
+	    self.right_root:SetScale(crafting_scale)
+	end
 
     self.owner.HUD.inst:PushEvent("refreshhudsize", scale)
 end
@@ -338,7 +455,7 @@ function Controls:OnUpdate(dt)
     local shownItemIndex = nil
     local itemInActions = false     -- the item is either shown through the actionhint or the groundaction
 
-    if controller_mode and not (self.inv.open or self.crafttabs.controllercraftingopen) and self.owner:IsActionsVisible() then
+    if controller_mode and not (self.inv.open or self.craftingmenu:IsCraftingOpen()) and self.owner:IsActionsVisible() then
         local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
         local ground_cmds = {}
         local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil
@@ -452,7 +569,7 @@ function Controls:OnUpdate(dt)
                 table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
 			end
             if controller_target.quagmire_shoptab ~= nil then
-                for k, v in pairs(self.crafttabs.tabs.shown) do
+                for k, v in pairs(self.craftingmenu.tabs.shown) do
                     if k.filter == controller_target.quagmire_shoptab then
                         if v then
                             table.insert(cmds, TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_OPEN_CRAFTING).." "..STRINGS.UI.CRAFTING.TABACTION[controller_target.quagmire_shoptab.str])
@@ -618,7 +735,7 @@ end
 function Controls:FocusMapOnWorldPosition(mapscreen, worldx, worldz)
 	if mapscreen == nil or mapscreen.minimap == nil then return nil end
 
-	while mapscreen.minimap.minimap:GetZoom() > 1 do mapscreen.minimap:OnZoomIn() end
+    mapscreen:SetZoom(1)
 
 	local player_x, player_y, player_z = self.owner.Transform:GetWorldPosition()
 	local dx, dy = worldx - player_x, worldz - player_z
@@ -664,7 +781,7 @@ function Controls:ShowCraftingAndInventory()
     if not self.craftingandinventoryshown then
         self.craftingandinventoryshown = true
         if not GetGameModeProperty("no_crafting") then
-            self.crafttabs:Show()
+            self.craftingmenu:Show()
         end
         self.inv:Show()
         self.containerroot_side:Show()
@@ -679,15 +796,8 @@ end
 function Controls:HideCraftingAndInventory()
     if self.craftingandinventoryshown then
         self.craftingandinventoryshown = false
-        if self.owner ~= nil and self.owner.HUD ~= nil then
-            if self.owner.HUD:IsControllerCraftingOpen() then
-                self.owner.HUD:CloseControllerCrafting()
-            end
-            if self.owner.HUD:IsControllerInventoryOpen() then
-                self.owner.HUD:CloseControllerInventory()
-            end
-        end
-        self.crafttabs:Hide()
+        self.craftingmenu:Close()
+        self.craftingmenu:Hide()
         self.inv:Hide()
         self.containerroot_side:Hide()
         self.item_notification:ToggleCrafting(true)

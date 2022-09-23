@@ -583,6 +583,8 @@ local function fn()
 
     inst:AddComponent("knownlocations")
 
+    inst:AddComponent("drownable")
+
     MakeLargeBurnableCharacter(inst, "swap_fire")
     inst.components.burnable.nocharring = true
     MakeLargeFreezableCharacter(inst, "swap_fire")

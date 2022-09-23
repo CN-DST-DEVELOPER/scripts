@@ -146,6 +146,7 @@ function MakeMediumBurnable(inst, time, offset, structure, sym)
     end
 end
 
+
 function MakeLargeBurnable(inst, time, offset, structure, sym)
     inst:AddComponent("burnable")
     inst.components.burnable:SetFXLevel(4)
@@ -219,12 +220,12 @@ function MakeMediumBurnableCharacter(inst, sym, offset)
     inst.components.propagator.acceptsheat = false
 end
 
-function MakeLargeBurnableCharacter(inst, sym, offset)
+function MakeLargeBurnableCharacter(inst, sym, offset, scale)
     inst:AddComponent("burnable")
     inst.components.burnable:SetFXLevel(3)
     inst.components.burnable.canlight = false
     inst.components.burnable:SetBurnTime(10)
-    inst.components.burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym)
+    inst.components.burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym, nil, scale)
     MakeLargePropagator(inst)
     inst.components.propagator.acceptsheat = false
 end
@@ -578,6 +579,9 @@ local function onperish(inst)
         local container = owner.components.inventory or owner.components.container or nil
         if container ~= nil and inst.components.lootdropper ~= nil then
             local stacksize = inst.components.stackable ~= nil and inst.components.stackable.stacksize or 1
+            if inst.components.health ~= nil then
+                owner:PushEvent("murdered", { victim = inst, stackmult = stacksize, negligent = true }) -- NOTES(JBK): This is a special case event already adding onto it.
+            end
             for i = 1, stacksize do
                 local loots = inst.components.lootdropper:GenerateLoot()
                 for k, v in pairs(loots) do
@@ -662,6 +666,10 @@ function MakeHauntableLaunch(inst, chance, speed, cooldown, haunt_value)
         if math.random() <= chance then
             Launch(inst, haunter, speed or TUNING.LAUNCH_SPEED_SMALL)
             inst.components.hauntable.hauntvalue = haunt_value or TUNING.HAUNT_TINY
+
+			if inst.components.inventoryitem ~= nil and inst.components.inventoryitem.is_landed then
+				inst.components.inventoryitem:SetLanded(false, true)
+			end
             return true
         end
         return false
@@ -676,6 +684,11 @@ function MakeHauntableLaunchAndSmash(inst, launch_chance, smash_chance, speed, c
         if math.random() <= launch_chance then
             Launch(inst, haunter, speed or TUNING.LAUNCH_SPEED_SMALL)
             inst.components.hauntable.hauntvalue = launch_haunt_value or TUNING.HAUNT_TINY
+
+			if inst.components.inventoryitem ~= nil and inst.components.inventoryitem.is_landed then
+				inst.components.inventoryitem:SetLanded(false, true)
+			end
+
             --#HAUNTFIX
             --smash_chance = smash_chance or TUNING.HAUNT_CHANCE_OCCASIONAL
             --if math.random() < smash_chance then
@@ -791,6 +804,11 @@ function MakeHauntableLaunchAndIgnite(inst, launchchance, ignitechance, speed, c
         if math.random() <= launchchance then
             Launch(inst, haunter, speed or TUNING.LAUNCH_SPEED_SMALL)
             inst.components.hauntable.hauntvalue = launch_haunt_value or TUNING.HAUNT_TINY
+
+			if inst.components.inventoryitem ~= nil and inst.components.inventoryitem.is_landed then
+				inst.components.inventoryitem:SetLanded(false, true)
+			end
+
             --#HAUNTFIX
             --ignitechance = ignitechance or TUNING.HAUNT_CHANCE_VERYRARE
             --if math.random() <= ignitechance then
@@ -906,6 +924,11 @@ function MakeHauntableLaunchAndPerish(inst, launchchance, perishchance, speed, p
             Launch(inst, haunter, speed or TUNING.LAUNCH_SPEED_SMALL)
             inst.components.hauntable.hauntvalue = launch_haunt_value or TUNING.HAUNT_TINY
             inst.components.hauntable.cooldown = cooldown or TUNING.HAUNT_COOLDOWN_SMALL
+
+			if inst.components.inventoryitem ~= nil and inst.components.inventoryitem.is_landed then
+				inst.components.inventoryitem:SetLanded(false, true)
+			end
+
             --#HAUNTFIX
             --perishchance = perishchance or TUNING.HAUNT_CHANCE_OCCASIONAL
             --if math.random() <= perishchance then
@@ -1074,6 +1097,11 @@ function MakeHauntableLaunchAndDropFirstItem(inst, launchchance, dropchance, spe
             Launch(inst, haunter, speed or TUNING.LAUNCH_SPEED_SMALL)
             inst.components.hauntable.hauntvalue = launch_haunt_value or TUNING.HAUNT_TINY
             inst.components.hauntable.cooldown = cooldown or TUNING.HAUNT_COOLDOWN_SMALL
+
+			if inst.components.inventoryitem ~= nil and inst.components.inventoryitem.is_landed then
+				inst.components.inventoryitem:SetLanded(false, true)
+			end
+
             --#HAUNTFIX
             --dropchance = dropchance or TUNING.HAUNT_CHANCE_OCCASIONAL
             --if math.random() <= dropchance then

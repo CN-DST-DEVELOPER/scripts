@@ -56,7 +56,7 @@ local function IsWithinDefensiveRange(inst)
 end
 
 local COMBAT_MUSHAVE_TAGS = { "_combat", "_health" }
-local COMBAT_CANTHAVE_TAGS = { "INLIMBO", "noauradamage" }
+local COMBAT_CANTHAVE_TAGS = { "INLIMBO", "noauradamage", "companion" }
 
 local COMBAT_MUSTONEOF_TAGS_AGGRESSIVE = { "monster", "prey", "insect", "hostile", "character", "animal" }
 local COMBAT_MUSTONEOF_TAGS_DEFENSIVE = { "monster", "prey" }
@@ -244,6 +244,10 @@ local function auratest(inst, target)
         return false
     end
 
+    if target:HasTag("companion") then
+        return false
+    end
+
     return ismonster or target:HasTag("prey")
 end
 
@@ -428,7 +432,8 @@ local function fn()
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = TUNING.ABIGAIL_SPEED*.5
     inst.components.locomotor.runspeed = TUNING.ABIGAIL_SPEED
-    inst.components.locomotor.pathcaps = { allowocean = true }
+    inst.components.locomotor.pathcaps = { allowocean = true, ignorecreep = true }
+    inst.components.locomotor:SetTriggersCreep(false)
 
     inst:SetStateGraph("SGabigail")
 	inst.sg.OnStart = DoAppear

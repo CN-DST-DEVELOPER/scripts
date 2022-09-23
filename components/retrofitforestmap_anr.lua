@@ -199,7 +199,7 @@ local function TurnOfTidesRetrofitting_PopulateOcean()
 
 	local width, height = TheWorld.Map:GetSize()
 	for k, v in pairs(pop) do
-		populate_ocean(GROUND[k], v, width, height)
+		populate_ocean(WORLD_TILES[k], v, width, height)
 	end
 
 	print("Retrofitting for Return Of Them: Turn of Tides - Populated Ocean.")
@@ -209,7 +209,7 @@ local function TurnOfTidesRetrofitting_CleanupOceanPoution(inst)
 	require "map/bunch_spawner"
 
 	local items_to_remove = { "seastack", "antchovies_group", "driftwood_log" }
-	local biomes_to_cleanup = { GROUND.OCEAN_SWELL, GROUND.OCEAN_ROUGH, GROUND.OCEAN_BRINEPOOL }
+	local biomes_to_cleanup = { WORLD_TILES.OCEAN_SWELL, WORLD_TILES.OCEAN_ROUGH, WORLD_TILES.OCEAN_BRINEPOOL }
 
 	local count = RemovePrefabs(items_to_remove, biomes_to_cleanup)
 	count = count + RemovePrefabs(items_to_remove, biomes_to_cleanup)
@@ -266,7 +266,7 @@ local function TurnOfTidesRetrofitting_CleanupOceanPoution(inst)
 	}
 
 	for k, v in pairs(pop) do
-		populate(GROUND[k], v)
+		populate(WORLD_TILES[k], v)
 	end
 
 	print("Retrofitting for Return Of Them : Turn of Tides Beta - Repopulated Ocean.")
@@ -287,7 +287,7 @@ local function SaltyRetrofitting_PopulateShoalSpawner()
 
 	local width, height = TheWorld.Map:GetSize()
 	for k, v in pairs(pop) do
-		populate_ocean(GROUND[k], v, width, height)
+		populate_ocean(WORLD_TILES[k], v, width, height)
 	end
 end
 
@@ -304,7 +304,7 @@ local function SaltyRetrofitting_PopulateBrinePools()
 		max = 6,
 		min_spacing = 3,
 		valid_tile_types = {
-			GROUND.OCEAN_BRINEPOOL,
+			WORLD_TILES.OCEAN_BRINEPOOL,
 		},
 	}
 
@@ -340,7 +340,7 @@ local function SaltyRetrofitting_PopulateBrinePools()
 
 	local width, height = TheWorld.Map:GetSize()
 	for k, v in pairs(pop) do
-		populate_ocean(GROUND[k], v, width, height, onspawn)
+		populate_ocean(WORLD_TILES[k], v, width, height, onspawn)
 	end
 
 	print("Retrofitting for Return Of Them: Salty Dog - Added " .. tostring(num_spawners) .. " 'cookiecutter_spawner' and " .. tostring(num_stacks) .. " 'saltstack' prefabs.")
@@ -392,7 +392,7 @@ local function SheSellsSeashellsRetrofitting_PopulateWobsterDens()
 	}
 
 	for k, v in pairs(pop) do
-		populate(GROUND[k], v)
+		populate(WORLD_TILES[k], v)
 	end
 
 	print("Retrofitting for Return Of Them : She Sells Seashells - Added " .. tostring(count) .. " Wobster Dens.")
@@ -502,7 +502,7 @@ local function Barnacles_ReplaceSeastacks()
         -- is 0.01 * (0.04 / (1.00 + 0.09 + 0.04)) ~= 0.000354.
         for y = OCEAN_POPULATION_EDGE_DIST, height - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
             for x = OCEAN_POPULATION_EDGE_DIST, width - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
-                if TheWorld.Map:GetTile(x, y) == GROUND.OCEAN_ROUGH and
+                if TheWorld.Map:GetTile(x, y) == WORLD_TILES.OCEAN_ROUGH and
                         math.random() < 0.000354 then
                     local spawn_x = (x - width/2.0)*TILE_SCALE + math.random()*2-1
                     local spawn_z = (y - height/2.0)*TILE_SCALE + math.random()*2-1
@@ -607,7 +607,7 @@ local function TerrariumChest_Retrofitting()
 	end
 
 	local forest_turf_fn = function(x, y, z, prefab)
-		return TheWorld.Map:GetTileAtPoint(x, y, z) == GROUND.FOREST
+		return TheWorld.Map:GetTileAtPoint(x, y, z) == WORLD_TILES.FOREST
 	end
 
 	if not RetrofitNewContentPrefab(inst, "terrariumchest", 2, 8, forest_turf_fn, candidtate_nodes, on_add_prefab) then -- first try a BGForest with a forest ground tile
@@ -654,7 +654,7 @@ local function CatcoonDen_Retrofitting()
 	end
 
 	local deciduous_turf_fn = function(x, y, z, prefab)
-		return TheWorld.Map:GetTileAtPoint(x, y, z) == GROUND.DECIDUOUS
+		return TheWorld.Map:GetTileAtPoint(x, y, z) == WORLD_TILES.DECIDUOUS
 	end
 
 	print("Retrofitting for Catcoon Den De-extinction: Found " .. tostring(count) .. " Catcoon Dens in the world. Adding "..tostring(min_dens - count) .. " more.")
@@ -1037,7 +1037,7 @@ function self:OnPostInit()
 
 		if requires_retrofitting then
 			local deciduousfn = function(x, y, z, prefab)
-					return TheWorld.Map:GetTileAtPoint(x, y, z) == GROUND.DECIDUOUS
+					return TheWorld.Map:GetTileAtPoint(x, y, z) == WORLD_TILES.DECIDUOUS
 				end
 
 			print ("Retrofitting for A New Reign: Herd Mentality.")
@@ -1226,7 +1226,6 @@ function self:OnPostInit()
 		CatcoonDen_Retrofitting()
 	end
 
-
 	---------------------------------------------------------------------------
 	if self.requiresreset then
 		print ("Retrofitting: Worldgen retrofitting requires the server to save and restart to fully take effect.")
@@ -1276,8 +1275,7 @@ function self:OnLoad(data)
 		self.retrofit_nodeidtilemap_thirdpass = data.retrofit_nodeidtilemap_thirdpass or false
         self.retrofit_removeextraaltarpieces = data.retrofit_removeextraaltarpieces or false
         self.retrofit_terraria_terrarium = data.retrofit_terraria_terrarium or false
-		self.retrofit_catcoonden_deextinction = data.retrofit_catcoonden_deextinction or false
-		
+		self.retrofit_ocean_brinepool_shore = data.retrofit_ocean_brinepool_shore or false
     end
 end
 

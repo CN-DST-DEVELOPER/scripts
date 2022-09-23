@@ -5,7 +5,7 @@
 
 AddRoom("Wormhole_Swamp", {
 					colour={r=1,g=0,b=0,a=0.3},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 									countprefabs = {
 										wormhole_MARKER = 1,
@@ -20,7 +20,7 @@ AddRoom("Wormhole_Swamp", {
 					})
 AddRoom("Wormhole_Plains", {
 					colour={r=1,g=0,b=0,a=0.3},
-					value = GROUND.SAVANNA,
+					value = WORLD_TILES.SAVANNA,
 					contents =  {
 									countprefabs = {
 										wormhole_MARKER = 1,
@@ -36,7 +36,7 @@ AddRoom("Wormhole_Plains", {
 					})
 AddRoom("Wormhole_Burnt", {
 					colour={r=1,g=0,b=0,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									countprefabs = {
 										wormhole_MARKER = 1,
@@ -56,7 +56,7 @@ AddRoom("Wormhole_Burnt", {
 					})
 AddRoom("Wormhole", {
 					colour={r=1,g=0,b=0,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									countprefabs = {
 										wormhole_MARKER = 1,
@@ -75,7 +75,7 @@ AddRoom("Wormhole", {
 					})
 AddRoom("Sinkhole", { -- This room is used to tag for the caves - it will be removed later
 					colour={r=0,g=0,b=0,a=0.9},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									countprefabs = {
 										cave_entrance = 1,
@@ -94,7 +94,7 @@ AddRoom("Sinkhole", { -- This room is used to tag for the caves - it will be rem
 					})
 AddRoom("GrassySinkhole", {
 					colour={r=0,g=0,b=0,a=0.9},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 									countprefabs = {
 										cave_entrance = 1,

@@ -15,7 +15,7 @@ local brain = require "brains/brightmare_gestaltguardbrain"
 
 local function SetHeadAlpha(inst, a)
 	if inst.blobhead then
-		inst.blobhead.AnimState:SetMultColour(a, a, a, a)
+		inst.blobhead.AnimState:OverrideMultColour(1, 1, 1, a)
 	end
 end
 
@@ -207,7 +207,7 @@ local function fn()
 		inst.components.transparentonsanity.osc_speed = 5.25 + math.random() * 0.5
 		inst.components.transparentonsanity.calc_percent_fn = Client_CalcTransparencyRating
 		inst.components.transparentonsanity.onalphachangedfn = SetHeadAlpha
-		inst.components.transparentonsanity:OnUpdate(0)
+		inst.components.transparentonsanity:ForceUpdate()
 	end
 
     inst.entity:SetPristine()

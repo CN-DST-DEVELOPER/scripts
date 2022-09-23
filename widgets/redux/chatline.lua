@@ -38,6 +38,7 @@ local ChatLine = Class(Widget, function(self, chat_font, user_width, user_max_ch
     self.skin_btn:SetTextFocusColour(1, 1, 1, 1)
     self.skin_btn:SetOnClick(function()
         if self.skin_data == nil then
+            print("### NO skin data received")
             return
         end
         TheFrontEnd:PushScreen(SkinsItemPopUp(unpack(self.skin_data)))

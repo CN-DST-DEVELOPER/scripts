@@ -1,5 +1,3 @@
-local CANOPY_SHADOW_DATA = require("prefabs/canopyshadows")
-
 local assets =
 {
     Asset("ANIM", "anim/oceantree_pillar_small_build1.zip"),
@@ -81,54 +79,6 @@ local function OnNear(inst,player)
     player.canopytrees = (player.canopytrees or 0) + 1
 
     player:PushEvent("onchangecanopyzone", player.canopytrees > 0)
-end
-
-local function removecanopyshadow(inst)
-    if inst.canopy_data ~= nil then
-        for _, shadetile_key in ipairs(inst.canopy_data.shadetile_keys) do
-            if TheWorld.shadetiles[shadetile_key] ~= nil then
-                TheWorld.shadetiles[shadetile_key] = TheWorld.shadetiles[shadetile_key] - 1
-
-                if TheWorld.shadetiles[shadetile_key] <= 0 then
-                    if TheWorld.shadetile_key_to_leaf_canopy_id[shadetile_key] ~= nil then
-                        DespawnLeafCanopy(TheWorld.shadetile_key_to_leaf_canopy_id[shadetile_key])
-                        TheWorld.shadetile_key_to_leaf_canopy_id[shadetile_key] = nil
-                    end
-                end
-            end
-        end
-
-        for _, ray in ipairs(inst.canopy_data.lightrays) do
-            ray:Remove()
-        end
-    end
-end
-
-local OCEANVINES_MUST = {"oceanvine"}
-local function removecanopy(inst)
-    if inst.roots then
-        inst.roots:Remove()
-    end
-    if inst._ripples then
-        inst._ripples:Remove()
-    end
-
-    for player in pairs(inst.players) do
-        if player:IsValid() then
-            if player.canopytrees then
-                OnFar(inst, player)
-            end
-        end
-    end
-    local point = inst:GetPosition()
-    local oceanvines = TheSim:FindEntities(point.x, point.y, point.z, MAX+1, OCEANVINES_MUST)
-    if #oceanvines > 0 then
-        for i, ent in ipairs(oceanvines) do
-            ent.fall(ent)
-        end
-    end
-
-    inst._hascanopy:set(false)    
 end
 
 local function chop_tree(inst, chopper, chopsleft, numchops)
@@ -359,7 +309,9 @@ local function OnCollide(inst, data)
 end
 
 local function chop_down_tree(inst, chopper)
-    removecanopy(inst)
+    inst:OnRemoveEntity()
+    inst:RemoveComponent("canopyshadows")
+
     inst.SoundEmitter:PlaySound("waterlogged2/common/watertree_pillar/fall")
     local pt = inst:GetPosition()
 
@@ -371,12 +323,12 @@ local function chop_down_tree(inst, chopper)
     end)
     inst.AnimState:PlayAnimation("fall")
 
-    inst:DoTaskInTime(7*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)    
+    inst:DoTaskInTime(7*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
     inst:DoTaskInTime(28*FRAMES,function() 
         inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/large")  
         spawnwaves(inst, 6, 360, 4, nil, 2, 2, nil, true)
     end)
-    inst:DoTaskInTime(38*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)    
+    inst:DoTaskInTime(38*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
     inst:DoTaskInTime(51*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
     inst:DoTaskInTime(56*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
     inst:DoTaskInTime(60*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
@@ -384,39 +336,64 @@ local function chop_down_tree(inst, chopper)
     inst:DoTaskInTime(68*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
     inst:DoTaskInTime(75*FRAMES,function() inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/medium")  end)
     inst:DoTaskInTime(94*FRAMES,function() 
-        inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/large")  
+        inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/large")
         spawnwaves(inst, 6, 360, 4, nil, 2, 2, nil, true)
-    end)    
-    
+    end)
+
     inst.components.lootdropper:DropLoot(pt)
     inst.removeme = true
     inst.persits = false
     dropcanopystuff(inst, math.random(NUM_DROP_SMALL_ITEMS_MIN,NUM_DROP_SMALL_ITEMS_MAX), true )
     inst.logs = 15
     DropLogs(inst)
-    
+
     inst:DoTaskInTime(.5, function() ShakeAllCameras(CAMERASHAKE.FULL, 0.25, 0.03, 0.6, inst, 6) end)
 end
 
-local function OnRemove(inst)
-    removecanopy(inst)
+local OCEANVINES_MUST = {"oceanvine"}
+local function OnRemoveEntity(inst)
+    if inst.roots then
+        inst.roots:Remove()
+    end
+
+    if inst._ripples then
+        inst._ripples:Remove()
+    end
+
+    for player in pairs(inst.players) do
+        if player:IsValid() then
+            if player.canopytrees then
+                OnFar(inst, player)
+            end
+        end
+    end
+    local point = inst:GetPosition()
+    local oceanvines = TheSim:FindEntities(point.x, point.y, point.z, MAX+1, OCEANVINES_MUST)
+    if #oceanvines > 0 then
+        for i, ent in ipairs(oceanvines) do
+            ent.fall(ent)
+        end
+    end
+
+    inst._hascanopy:set(false)
 end
 
 local function OnSprout(inst)
-
     inst.AnimState:PlayAnimation("grow_tall_to_pillar")
-    inst.AnimState:PushAnimation("idle",true)    
+    inst.AnimState:PushAnimation("idle", true)
 end
 
 local function OnBurnt(inst)
-    removecanopy(inst)
+    inst:OnRemoveEntity()
+    inst:RemoveComponent("canopyshadows")
+
     inst.SoundEmitter:PlaySound("waterlogged2/common/watertree_pillar/fall")
     local pt = inst:GetPosition()
 
     inst.components.lootdropper:SetLoot({"charcoal", "charcoal", "charcoal", "charcoal","charcoal", "charcoal", "charcoal"})
     inst.components.lootdropper:DropLoot(pt)
 
-    inst:ListenForEvent("animover", function() 
+    inst:ListenForEvent("animover", function()
         inst.falldone = true  
         if inst.itemsdone then
             inst:Remove() 
@@ -517,7 +494,7 @@ local function fn()
     
     MakeWaterObstaclePhysics(inst, 1.5, 2, 0.75)
 
-    inst:SetDeployExtraSpacing(TUNING.MAX_WALKABLE_PLATFORM_RADIUS + 1.5)
+    inst:SetDeployExtraSpacing(1.5)
 
     -- HACK: this should really be in the c side checking the maximum size of the anim or the _current_ size of the anim instead
     -- of frame 0
@@ -537,31 +514,30 @@ local function fn()
     if not TheNet:IsDedicated() then
         inst:AddComponent("distancefade")
         inst.components.distancefade:Setup(15,25)
-    end
-    
-    inst._hascanopy = net_bool(inst.GUID, "oceantree_pillar._hascanopy", "hascanopydirty")
-    inst._hascanopy:set(true)    
-    inst:DoTaskInTime(0, function()    
-        inst.canopy_data = CANOPY_SHADOW_DATA.spawnshadow(inst, math.floor(TUNING.SHADE_CANOPY_RANGE_SMALL/4), true)
-    end)
 
-    inst:ListenForEvent("hascanopydirty", function()
-                if not inst._hascanopy:value() then 
-                    removecanopyshadow(inst) 
-                end
+        inst:AddComponent("canopyshadows")
+        inst.components.canopyshadows.range = math.floor(TUNING.SHADE_CANOPY_RANGE_SMALL/4)
+
+        inst:ListenForEvent("hascanopydirty", function()
+            if not inst._hascanopy:value() then
+                inst:RemoveComponent("canopyshadows")
+            end
         end)
+    end
+
+    inst._hascanopy = net_bool(inst.GUID, "oceantree_pillar._hascanopy", "hascanopydirty")
+    inst._hascanopy:set(true)
 
     inst.entity:SetPristine()
 
-    if not TheWorld.ismastersim then        
+    if not TheWorld.ismastersim then
         return inst
     end
 
-    -- inst.canopy_data = nil
     inst.sproutfn = OnSprout
 
     -------------------
-   
+
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot({"log", "log", "log", "log", "twigs", "twigs", "twigs"})
 
@@ -598,16 +574,16 @@ local function fn()
     inst.components.burnable:SetOnBurntFn(OnBurnt)
 
     inst:ListenForEvent("on_collide", OnCollide)
-    inst:ListenForEvent("onremove", OnRemove)
 
     inst._ripples = SpawnPrefab("oceantree_pillar_ripples")
     inst._ripples.entity:SetParent(inst.entity)
-    
+
     inst.roots = SpawnPrefab("oceantree_pillar_roots")
     inst.roots.entity:SetParent(inst.entity)
 
-    inst.OnSave = OnSave    
+    inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+    inst.OnRemoveEntity = OnRemoveEntity
 
     inst:DoTaskInTime(0.5,function()
         if not inst.droppedvines then

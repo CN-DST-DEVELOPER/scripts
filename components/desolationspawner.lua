@@ -196,6 +196,10 @@ self:SetSpawningForType("moon_tree", "moonbutterfly_sapling", TUNING.EVERGREEN_R
     return (TUNING.MOONTREE_REGROWTH_TIME_MULT * moon_tree_mult[_worldstate.moonphase]) or 0
 end)
 
+self:SetSpawningForType("palmconetree", "palmcone_sapling", TUNING.PALMCONETREE_REGROWTH.DESOLATION_RESPAWN_TIME, {"palmconetree"}, function()
+    return (_worldstate.iswinter and 0) or TUNING.PALMCONETREE_REGROWTH_TIME_MULT
+end)
+
 inst:DoTaskInTime(0, PopulateAreaDataFromReplacements)
 
 --------------------------------------------------------------------------

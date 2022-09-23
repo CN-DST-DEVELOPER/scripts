@@ -214,6 +214,11 @@ function Input:OpenVirtualKeyboard(text_widget)
 		local x, y = text_widget.inst.UITransform:GetWorldPosition()
 		local w, h = text_widget:GetRegionSize()
 
+		--local _split = text_widget:GetString():split(",")
+		--x = _split[1] ~= nil and tonumber(_split[1]) or 0
+		--y = _split[2] ~= nil and tonumber(_split[2]) or 0
+		--print("_split", x, y)
+
 		if TheInputProxy:OpenVirtualKeyboard(x, y, w, h, self.allow_newline) then	
 			self.vk_text_widget = text_widget
 			return true

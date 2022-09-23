@@ -142,6 +142,18 @@ local plantables =
         anim = "dead1",
         floater = {"med", nil, 0.95},
     },
+    {
+        name = "bananabush",
+        anim = "dead",
+        floater = {"med", 0.2, 0.95},
+    },
+    {
+        name = "monkeytail",
+        bank = "grass",
+        build = "reeds_monkeytails",
+        mediumspacing = true,
+        floater = {"med", 0.1, 0.92},
+    },
 
 }
 

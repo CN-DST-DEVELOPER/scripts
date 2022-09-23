@@ -29,7 +29,7 @@ local PIECES =
     },
     {name="dragonfly",		moonevent=false,    gymweight=4},
     {name="clayhound",		moonevent=false,    gymweight=3},
-    {name="claywarg",   moonevent=false,    gymweight=3},
+    {name="claywarg",		moonevent=false,    gymweight=3},
     {name="butterfly",		moonevent=false,    gymweight=3},
     {name="anchor",			moonevent=false,    gymweight=3},
     {name="moon",			moonevent=false,    gymweight=4},
@@ -347,7 +347,7 @@ local function builderonbuilt(inst, builder)
     if prototyper ~= nil and prototyper.CreateItem ~= nil then
         prototyper:CreateItem("chesspiece_"..PIECES[inst.pieceid].name)
     else
-        local piece = SpawnPrefab("chesspiece_"..PIECES[inst.pieceid].name)
+        local piece = SpawnPrefab("chesspiece_"..PIECES[inst.pieceid].name.."_marble")
         piece.Transform:SetPosition(builder.Transform:GetWorldPosition())
     end
 

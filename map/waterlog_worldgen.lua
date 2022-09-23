@@ -23,7 +23,7 @@ local function checkIfValidGround(world, x, z, valid_tile_types, water)
 
     if x > OCEAN_POPULATION_EDGE_DIST and x < (WIDTH - OCEAN_POPULATION_EDGE_DIST) and z > OCEAN_POPULATION_EDGE_DIST and z < (HEIGHT - OCEAN_POPULATION_EDGE_DIST) then
         local original_tile_type = world:GetTile(x, z)    
-        if original_tile_type ~= GROUND.INVALID and original_tile_type ~= GROUND.IMPASSABLE then
+        if not TileGroupManager:IsInvalidTile(original_tile_type) then
             if valid_tile_types then
                 for i, tiletype in ipairs(valid_tile_types)do
                     if original_tile_type == tiletype then
@@ -49,7 +49,7 @@ function WaterlogRun(world, prefab_list, prefab_data)
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
-    local ptx,ptz = GetRandomWaterPoints(GROUND.OCEAN_ROUGH,  WIDTH, HEIGHT, 0, BIOME_SPAWN_NUM)
+    local ptx,ptz = GetRandomWaterPoints(WORLD_TILES.OCEAN_ROUGH,  WIDTH, HEIGHT, 0, BIOME_SPAWN_NUM)
     
     dumptable(ptx,1,1)
 
@@ -63,7 +63,7 @@ function WaterlogRun(world, prefab_list, prefab_data)
         print("TILE HERE:",world:GetTile(ptx[i],ptz[i]) )
         local data = {x=ptx[i],z=ptz[i]}             
         table.insert(entities[MARKER_PREFAB],data)
-        --PopulateWorld_AddEntity(MARKER_PREFAB, ptx[i], ptz[i], GROUND.OCEAN_ROUGH, entities, WIDTH, HEIGHT, prefab_list, prefab_data) --, prefab_list, prefab_data
+        --PopulateWorld_AddEntity(MARKER_PREFAB, ptx[i], ptz[i], WORLD_TILES.OCEAN_ROUGH, entities, WIDTH, HEIGHT, prefab_list, prefab_data) --, prefab_list, prefab_data
     end
 
     --dumptable(entities["saltstack"])
@@ -86,16 +86,16 @@ function WaterlogRun(world, prefab_list, prefab_data)
             x = math.floor((WIDTH/2)+0.5 + (x/TILE_SCALE))
             z = math.floor((HEIGHT/2)+0.5 + (z/TILE_SCALE))
 
-            world:SetTile(x, z, GROUND.OCEAN_WATERLOG)
-             world:SetTile(x+1, z-1, GROUND.OCEAN_WATERLOG)
-              world:SetTile(x+1, z, GROUND.OCEAN_WATERLOG)
-               world:SetTile(x+1, z+1, GROUND.OCEAN_WATERLOG)
-            world:SetTile(x, z-1, GROUND.OCEAN_WATERLOG)
+            world:SetTile(x, z, WORLD_TILES.OCEAN_WATERLOG)
+             world:SetTile(x+1, z-1, WORLD_TILES.OCEAN_WATERLOG)
+              world:SetTile(x+1, z, WORLD_TILES.OCEAN_WATERLOG)
+               world:SetTile(x+1, z+1, WORLD_TILES.OCEAN_WATERLOG)
+            world:SetTile(x, z-1, WORLD_TILES.OCEAN_WATERLOG)
             
-               world:SetTile(x, z+1, GROUND.OCEAN_WATERLOG)
-             world:SetTile(x-1, z-1, GROUND.OCEAN_WATERLOG)
-              world:SetTile(x-1, z, GROUND.OCEAN_WATERLOG)
-               world:SetTile(x-1, z+1, GROUND.OCEAN_WATERLOG)                          
+               world:SetTile(x, z+1, WORLD_TILES.OCEAN_WATERLOG)
+             world:SetTile(x-1, z-1, WORLD_TILES.OCEAN_WATERLOG)
+              world:SetTile(x-1, z, WORLD_TILES.OCEAN_WATERLOG)
+               world:SetTile(x-1, z+1, WORLD_TILES.OCEAN_WATERLOG)                          
     
         end                                 
     end 
@@ -145,8 +145,8 @@ local function checkIfValidGround(world, x, z, valid_tile_types, water)
     z = math.floor((HEIGHT/2)+0.5 + (z/TILE_SCALE))
 
 	if x > OCEAN_POPULATION_EDGE_DIST and x < (WIDTH - OCEAN_POPULATION_EDGE_DIST) and z > OCEAN_POPULATION_EDGE_DIST and z < (HEIGHT - OCEAN_POPULATION_EDGE_DIST) then
-		local original_tile_type = world:GetTile(x, z)    
-		if original_tile_type ~= GROUND.INVALID and original_tile_type ~= GROUND.IMPASSABLE then
+		local original_tile_type = world:GetTile(x, z)
+        if not TileGroupManager:IsInvalidTile(original_tile_type) then
 			if valid_tile_types then
 				for i, tiletype in ipairs(valid_tile_types)do
 					if original_tile_type == tiletype then

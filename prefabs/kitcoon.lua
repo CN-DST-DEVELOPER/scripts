@@ -81,11 +81,6 @@ local function OnFound(inst, doer)
 			if inst._first_nuzzle and doer ~= nil and doer.components.talker ~= nil then
 				doer.components.talker:Say(GetString(doer, "ANNOUNCE_KITCOON_FOUND_IN_THE_WILD"))
 			end
-
-			if not IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
-				-- limited follow time if YOT_CATCOON is disabled
-				inst.components.follower:AddLoyaltyTime(TUNING.KITCOON_LOYALTY_MAX)
-			end
 		end
 
 		inst:FacePoint(doer.Transform:GetWorldPosition())
@@ -143,10 +138,6 @@ local function OnPetted(inst, data)
 
 		inst.components.timer:StopTimer("panic")
 		inst.components.timer:StopTimer("teleport_home") -- must happen after AddFollower
-
-		if not IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
-			inst.components.follower:AddLoyaltyTime(TUNING.KITCOON_LOYALTY_MAX)
-		end
 
 		inst:FacePoint(doer.Transform:GetWorldPosition())
 		inst.sg:GoToState("nuzzle")
@@ -270,10 +261,6 @@ local function MakeKitcoon(name, is_unique)
         inst:AddComponent("follower")
         inst.components.follower.keepleaderduringminigame = true
 		inst.components.follower.OnChangedLeader = OnChangedLeader
-		if not IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
-			-- limited follow time if YOT_CATCOON is disabled
-			inst.components.follower.maxfollowtime = TUNING.KITCOON_LOYALTY_MAX
-		end
 
         inst:AddComponent("entitytracker")
 

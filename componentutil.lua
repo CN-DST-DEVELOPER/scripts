@@ -12,3 +12,10 @@ function IsEntityDeadOrGhost(inst, require_health)
     end
     return IsEntityDead(inst, require_health)
 end
+
+function GetStackSize(inst)
+    if inst.replica.stackable == nil then
+        return 1
+    end
+    return inst.replica.stackable:StackSize()
+end

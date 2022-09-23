@@ -1,11 +1,9 @@
-local CANOPY_SHADOW_DATA = require("prefabs/canopyshadows")
-
 local assets =
 {
     Asset("ANIM", "anim/oceantree_pillar_build1.zip"),
     Asset("ANIM", "anim/oceantree_pillar_build2.zip"),
     Asset("ANIM", "anim/oceantree_pillar.zip"),
-   -- Asset("ANIM", "anim/oceantree_pillar_leaves.zip"),
+    --Asset("ANIM", "anim/oceantree_pillar_leaves.zip"),
     Asset("SOUND", "sound/tentacle.fsb"),
     Asset("MINIMAP_IMAGE", "oceantree_pillar"),
     Asset("SCRIPT", "scripts/prefabs/canopyshadows.lua")
@@ -56,27 +54,6 @@ local NEW_VINES_SPAWN_RADIUS_MIN = 6
 
 local ATTEMPT_DROP_OCEANTREENUT_MAX_ATTEMPTS = 5
 local ATTEMPT_DROP_OCEANTREENUT_RADIUS = 6
-
-local function removecanopyshadow(inst)
-    if inst.canopy_data ~= nil then
-        for _, shadetile_key in ipairs(inst.canopy_data.shadetile_keys) do
-            if TheWorld.shadetiles[shadetile_key] ~= nil then
-                TheWorld.shadetiles[shadetile_key] = TheWorld.shadetiles[shadetile_key] - 1
-
-                if TheWorld.shadetiles[shadetile_key] <= 0 then
-                    if TheWorld.shadetile_key_to_leaf_canopy_id[shadetile_key] ~= nil then
-                        DespawnLeafCanopy(TheWorld.shadetile_key_to_leaf_canopy_id[shadetile_key])
-                        TheWorld.shadetile_key_to_leaf_canopy_id[shadetile_key] = nil
-                    end
-                end
-            end
-        end
-
-        for _, ray in ipairs(inst.canopy_data.lightrays) do
-            ray:Remove()
-        end
-    end
-end
 
 local function OnFar(inst, player)
     if player.canopytrees then   
@@ -376,14 +353,11 @@ local function OnLoad(inst, data)
     end
 end
 
-local function OnLoadPostPass(inst, ents, data)
-
-end
-
-local function removecanopy(inst)
+local function OnRemoveEntity(inst)
     if inst.roots then
         inst.roots:Remove()
     end
+
     if inst._ripples then
         inst._ripples:Remove()
     end
@@ -396,13 +370,8 @@ local function removecanopy(inst)
             end
         end
     end
-
-    inst._hascanopy:set(false)
 end
 
-local function OnRemove(inst)
-    removecanopy(inst)
-end
 local FIREFLY_MUST = {"firefly"}
 local function OnPhaseChanged(inst, phase)
    if phase == "day" then
@@ -447,7 +416,7 @@ local function fn()
 
     MakeWaterObstaclePhysics(inst, 4, 2, 0.75)
 
-    inst:SetDeployExtraSpacing(TUNING.MAX_WALKABLE_PLATFORM_RADIUS + 4)
+    inst:SetDeployExtraSpacing(4)
 
     -- HACK: this should really be in the c side checking the maximum size of the anim or the _current_ size of the anim instead
     -- of frame 0
@@ -467,19 +436,10 @@ local function fn()
     if not TheNet:IsDedicated() then
         inst:AddComponent("distancefade")
         inst.components.distancefade:Setup(15,25)
+
+        inst:AddComponent("canopyshadows")
+        inst.components.canopyshadows.range = math.floor(TUNING.SHADE_CANOPY_RANGE/4)
     end
-
-    inst._hascanopy = net_bool(inst.GUID, "oceantree_pillar._hascanopy", "hascanopydirty")
-    inst._hascanopy:set(true)  
-    inst:ListenForEvent("hascanopydirty", function()
-                if not inst._hascanopy:value() then 
-                    removecanopyshadow(inst) 
-                end
-        end)
-
-    inst:DoTaskInTime(0,function()
-        inst.canopy_data = CANOPY_SHADOW_DATA.spawnshadow(inst, math.floor(TUNING.SHADE_CANOPY_RANGE/4))
-    end)
 
     inst.entity:SetPristine()
 
@@ -496,8 +456,12 @@ local function fn()
 
     -------------------
 
+    inst:AddComponent("canopylightrays")
+    inst.components.canopylightrays.range = math.floor(TUNING.SHADE_CANOPY_RANGE/4)
+
+    -------------------
+
     inst.players = {}
-   
     inst:AddComponent("playerprox")
     inst.components.playerprox:SetTargetMode(inst.components.playerprox.TargetModes.AllPlayers)
     inst.components.playerprox:SetDist(MIN, MAX)
@@ -532,7 +496,6 @@ local function fn()
     inst:ListenForEvent("on_collide", OnCollide)
     inst:ListenForEvent("timerdone", OnTimerDone)
     inst:ListenForEvent("cocoon_destroyed", OnNearbyCocoonDestroyed)
-    inst:ListenForEvent("onremove", OnRemove)
     inst:ListenForEvent("phasechanged", function(src, phase) OnPhaseChanged(inst,phase) end, TheWorld)
 
     --inst.components.childspawner.canspawnfn = canspawn
@@ -549,7 +512,7 @@ local function fn()
     inst.OnSave = OnSave
     inst.OnPreLoad = OnPreLoad
     inst.OnLoad = OnLoad
-    inst.OnLoadPostPass = OnLoadPostPass
+    inst.OnRemoveEntity = OnRemoveEntity
 
     return inst
 end

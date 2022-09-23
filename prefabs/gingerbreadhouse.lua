@@ -83,7 +83,7 @@ local function OnSave(inst, data)
 end
 
 local function OnLoad(inst, data)
-	sethousetype(inst, data ~= nil and data.bank, data ~= nil and data.build)
+	sethousetype(inst, data ~= nil and data.bank or nil, data ~= nil and data.build or nil)
 end
 
 local function fn()

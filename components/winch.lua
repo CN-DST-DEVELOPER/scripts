@@ -1,5 +1,3 @@
-local GroundTiles = require("worldtiledefs")
-
 local function on_winch_ready(self)
 	if self.winch_ready then
 		if not self.inst:HasTag("winch_ready") then

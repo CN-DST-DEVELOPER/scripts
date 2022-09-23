@@ -358,6 +358,39 @@ local function fix_web_string(text)
 		text = tostring(text)
 	end
 	text = string.gsub(tostring(text), "\\r\\n", "\\n")
+
+	--Unicode conversion done here for the motd json instead in json.lua as our game relies on the old invalid json encoding/decoding.
+	--https://github.com/craigmj/json4lua/blob/master/json/json.lua
+	--Version: 1.0.0
+	--see json.lua for further license information
+	while true do
+		local i, j = string.find(text, "\\u")
+		if i ~= nil then
+			local a = string.sub(text,j+1,j+4)
+
+			local n = tonumber(a, 16)
+			assert(n, "String decoding failed: bad Unicode escape " .. a .. " at position " .. i .. " : " .. j)
+			-- math.floor(x/2^y) == lazy right shift
+			-- a % 2^b == bitwise_and(a, (2^b)-1)
+			-- 64 = 2^6
+			-- 4096 = 2^12 (or 2^6 * 2^6)
+			local x
+			if n < 0x80 then
+			x = string.char(n % 0x80)
+			elseif n < 0x800 then
+			-- [110x xxxx] [10xx xxxx]
+			x = string.char(0xC0 + (math.floor(n/64) % 0x20), 0x80 + (n % 0x40))
+			else
+			-- [1110 xxxx] [10xx xxxx] [10xx xxxx]
+			x = string.char(0xE0 + (math.floor(n/4096) % 0x10), 0x80 + (math.floor(n/64) % 0x40), 0x80 + (n % 0x40))
+			end
+			
+			text = string.gsub(text, "\\u"..a, x)
+		else
+			break
+		end
+	end
+
 	return text
 end
 

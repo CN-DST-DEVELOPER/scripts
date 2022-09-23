@@ -1449,6 +1449,9 @@ function ValidateItemsLocal(currentcharacter, selected_skins)
 end
 
 function ValidateItemsInProfile(user_profile)
+	if TheInventory:HasSupportForOfflineSkins() and not TheInventory:HasDownloadedInventory() then
+		TheInventory:ForceLoadOfflineCache() -- This can set HasDownloadedInventory and only does things if TheInventory:HasSupportForOfflineSkins() returns true.
+	end
     if TheInventory:HasDownloadedInventory() then
         -- We know whether they own something.
         for i,item_type in ipairs(user_profile:GetStoredCustomizationItemTypes()) do
@@ -1506,6 +1509,52 @@ function BuildListOfSelectedItems(user_profile, item_type)
     end
     table.sort(image_keys)
     return image_keys
+end
+
+function GetNextOwnedSkin(prefab, cur_skin)
+	local new_skin = nil
+	local skin_list = PREFAB_SKINS[prefab]
+	if skin_list ~= nil then
+		local found = 0
+		if cur_skin ~= nil then
+			for i = 1, #skin_list do
+				if skin_list[i] == cur_skin then
+					found = i
+					break
+				end
+			end
+		end
+		for i = found + 1, #skin_list do
+			if TheInventory:CheckOwnership(skin_list[i]) then
+				new_skin = skin_list[i]
+				break
+			end
+		end
+	end
+	return new_skin
+end
+
+function GetPrevOwnedSkin(prefab, cur_skin)
+	local new_skin = nil
+	local skin_list = PREFAB_SKINS[prefab]
+	if skin_list ~= nil then
+		local found = #skin_list + 1
+		if cur_skin ~= nil then
+			for i = #skin_list, 1, -1 do
+				if skin_list[i] == cur_skin then
+					found = i
+					break
+				end
+			end
+		end
+		for i = found - 1, 1, -1 do
+			if TheInventory:CheckOwnership(skin_list[i]) then
+				new_skin = skin_list[i]
+				break
+			end
+		end
+	end
+	return new_skin
 end
 
 function GetMostRecentlySelectedItem(user_profile, item_type)
@@ -1639,28 +1688,80 @@ end
 
 function DisplayCharacterUnownedPopup(character, skins_subscreener)
 	local PopupDialogScreen = require "screens/redux/popupdialog"
-	local body_str = subfmt(STRINGS.UI.LOBBYSCREEN.UNOWNED_CHARACTER_BODY, {character = STRINGS.CHARACTER_NAMES[character] })
-    local unowned_popup = PopupDialogScreen(STRINGS.UI.LOBBYSCREEN.UNOWNED_CHARACTER_TITLE, body_str,
-    {
-        --Note(Peter): this is atrocious, but I don't see a better way to talk to the screen panel way down. Maybe implement a UI event system?
-        {text=STRINGS.UI.BARTERSCREEN.COMMERCE_BUY, cb = function()
-            TheFrontEnd:PopScreen()
-            skins_subscreener.sub_screens["base"].picker:DoCommerceForDefaultItem(character.."_none")
-        end},
-        {text=STRINGS.UI.LOBBYSCREEN.VISIT_SHOP, cb = function()
-            TheFrontEnd:PopScreen()
-            skins_subscreener.sub_screens["base"].picker:DoShopForDefaultItem(character.."_none")
-        end},
-        {text=STRINGS.UI.POPUPDIALOG.OK, cb = function()
-            TheFrontEnd:PopScreen()
-        end},
-    })
+	
+	local can_buy_character = TheItems:GetBarterBuyPrice(character.."_none") ~= 0 --Note(Peter): yuck, assume we can't buy a character if we don't know their weave price
+
+	local body_str_fmt = STRINGS.UI.LOBBYSCREEN.UNOWNED_CHARACTER_BODY
+	if not can_buy_character then
+		body_str_fmt = STRINGS.UI.LOBBYSCREEN.UNOWNED_CHARACTER_BODY_OFFLINE
+	end
+	local body_str = subfmt(body_str_fmt, {character = STRINGS.CHARACTER_NAMES[character] })
+
+	local buttons = {}
+	if can_buy_character then
+		table.insert( buttons, {text=STRINGS.UI.BARTERSCREEN.COMMERCE_BUY, cb = function()
+			TheFrontEnd:PopScreen()
+			skins_subscreener.sub_screens["base"].picker:DoCommerceForDefaultItem(character.."_none") --Note(Peter): this is atrocious, but I don't see a better way to talk to the screen panel way down. Maybe implement a UI event system?
+		end})
+
+		table.insert( buttons, {text=STRINGS.UI.LOBBYSCREEN.VISIT_SHOP, cb = function()
+			TheFrontEnd:PopScreen()
+			skins_subscreener.sub_screens["base"].picker:DoShopForDefaultItem(character.."_none")
+		end})
+	end
+	table.insert( buttons, {text=STRINGS.UI.POPUPDIALOG.OK, cb = function()
+		TheFrontEnd:PopScreen()
+	end})
+
+    local unowned_popup = PopupDialogScreen(STRINGS.UI.LOBBYSCREEN.UNOWNED_CHARACTER_TITLE, body_str, buttons)
     TheFrontEnd:PushScreen(unowned_popup)
 end
 
 function DisplayInventoryFailedPopup( screen )
 	if not screen.leave_from_fail and not TheInventory:HasDownloadedInventory() then
+		local function doleavefromfail()
+			screen.leave_from_fail = true
+			TheFrontEnd:PopScreen()
+			screen:Close()
+		end
+
 		local PopupDialogScreen = require "screens/redux/popupdialog"
+
+		-- NOTES(JBK): With offline skin support, the user may also not have an authentication token here.
+		--             The user must be logged in to access this panel in order to try to obtain the client's inventory from Klei services.
+		if not TheInventory:HasDownloadedInventory() and not TheFrontEnd:GetAccountManager():HasAuthToken() then
+			-- The user does not have a token and must have a token to proceed with trying to get items cache.
+			-- But check with user wishes for GDPR first before offering this as a thing to do to reduce DoRestart calls.
+			local notoken_popup
+			if TheSim:GetDataCollectionSetting() == false then
+				-- No authorization for data, bail with info.
+				notoken_popup = PopupDialogScreen(STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOPERMISSIONS_TITLE, STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOPERMISSIONS_BODY, 
+				{
+					{
+						text = STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOPERMISSIONS_NOCHOICE,
+						cb = doleavefromfail,
+					},
+				}, nil, "big", "dark_wide")
+			else
+				-- Authorized to get data, ask to restart.
+				notoken_popup = PopupDialogScreen(STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOLOGIN_TITLE, STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOLOGIN_BODY,
+				{
+					{
+						text = STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOLOGIN_YES,
+						cb = function()
+							DoRestart(true) -- Do a full restart in case this function gets used deeper in the game instance to handle networking.
+						end,
+					},
+					{
+						text = STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_NOLOGIN_NO,
+						cb = doleavefromfail,
+					},
+				})
+			end
+			TheFrontEnd:PushScreen(notoken_popup)
+			return
+		end
+
 		local GenericWaitingPopup = require "screens/redux/genericwaitingpopup"
 
 		local unowned_popup = PopupDialogScreen(STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_INVENTORY_TITLE, STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_INVENTORY_BODY,
@@ -1687,13 +1788,7 @@ function DisplayInventoryFailedPopup( screen )
                 screen.leave_from_fail = false
 
 			end},
-			{text=STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_INVENTORY_NO, cb = function()
-
-                screen.leave_from_fail = true
-                TheFrontEnd:PopScreen()
-				screen:Close()
-
-			end},
+			{text=STRINGS.UI.PLAYERSUMMARYSCREEN.FAILED_INVENTORY_NO, cb = doleavefromfail},
 		})
 		TheFrontEnd:PushScreen(unowned_popup)
     end
@@ -1812,4 +1907,53 @@ function GetSkinModeFromBuild(player)
 	end
 
 	return nil
+end
+
+
+function GetBoxPopupLayoutDetails( num_item_types )
+	local columns = 3
+	local resize_root = nil
+	local resize_root_small = nil
+	local resize_root_small_higher = nil
+
+	-- Decide how many columns there should be
+	if num_item_types == 1 then
+		columns = 1
+	elseif num_item_types == 2 or num_item_types == 4 then
+		columns = 2
+	elseif num_item_types == 3 or num_item_types == 6 then
+		columns = 3
+	elseif num_item_types == 7 or num_item_types == 8 then
+		columns = 4
+	elseif num_item_types == 5 or num_item_types == 10 or num_item_types == 9 then
+		columns = 5
+	elseif num_item_types == 13 then
+		columns = 5
+		resize_root = true
+	elseif num_item_types == 12 or num_item_types == 11 then
+		columns = 6
+	elseif num_item_types == 16 or num_item_types == 17 or num_item_types == 18 then
+		columns = 6
+		resize_root = true
+	elseif num_item_types == 19 then
+		columns = 7
+		resize_root = true
+	elseif num_item_types == 22 or num_item_types == 24 then
+		columns = 8
+		resize_root_small = true
+	elseif num_item_types == 31 or num_item_types == 35 then
+		columns = 9
+		resize_root_small = true
+	elseif num_item_types == 38 then
+		columns = 10
+		resize_root_small = true
+	elseif num_item_types == 41 then
+		columns = 10
+		resize_root_small_higher = true
+	else
+		columns = 10
+		resize_root_small_higher = true
+		print("Warning: Found an unexpected number of items in a box.", num_item_types)
+	end
+	return columns, resize_root, resize_root_small, resize_root_small_higher
 end

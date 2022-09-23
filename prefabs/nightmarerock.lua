@@ -46,7 +46,7 @@ end
 
 local function OnIsPathFindingDirty(inst)
     if inst._ispathfinding:value() then
-        if inst._pftable == nil then
+        if inst._pftable == nil and inst:GetCurrentPlatform() == nil then
             inst._pftable = {}
             local pathfinder = TheWorld.Pathfinder
             local x, y, z = inst.Transform:GetWorldPosition()

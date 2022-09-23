@@ -7,7 +7,7 @@ require "map/room_functions"
 -- Sprawling forest
 AddRoom("SinkholeForest", {
     colour={r=0.2,g=1,b=0.5,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .55,
@@ -29,7 +29,7 @@ AddRoom("SinkholeForest", {
 -- Patchy Forest
 AddRoom("SinkholeCopses", {
     colour={r=0.2,g=1,b=0.5,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         countstaticlayouts={
@@ -57,7 +57,7 @@ AddRoom("SinkholeCopses", {
 -- Sparse sinkholes
 AddRoom("SparseSinkholes", {
     colour={r=0.1,g=0.8,b=0.2,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .15,
@@ -80,7 +80,7 @@ AddRoom("SparseSinkholes", {
 -- Oasis
 AddRoom("SinkholeOasis", {
     colour={r=0.1,g=0.8,b=0.2,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         countstaticlayouts={
@@ -93,7 +93,9 @@ AddRoom("SinkholeOasis", {
             sapling = .8,
             twiggytree = .32,
             pond = .05,
-            stalagmite = 0.03,
+            stalagmite = 0.02,
+            stalagmite_med = 0.007,
+            stalagmite_low = 0.003,
             cave_fern = .75,
             berrybush = .2,
             berrybush_juicy = 0.1,
@@ -109,7 +111,7 @@ AddRoom("SinkholeOasis", {
 -- Grasslands
 AddRoom("GrasslandSinkhole", {
     colour={r=0.1,g=0.8,b=0.2,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         countstaticlayouts={
@@ -129,7 +131,7 @@ AddRoom("GrasslandSinkhole", {
 
 local bgsinkhole = {
     colour={r=0.1,g=0.8,b=0.2,a=0.9},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {

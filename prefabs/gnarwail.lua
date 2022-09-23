@@ -32,10 +32,10 @@ local gnarwail_attack_horn_loot = {"gnarwail_horn"}
 -- We try to leverage FindSwimmableOffset to identify a resurface location that is in the ocean and not under a boat.
 local function TryGnarwailResurface(gnarwail_instance, horn_position)
     local resurface_radius = TUNING.MAX_WALKABLE_PLATFORM_RADIUS + TUNING.MAX_WALKABLE_PLATFORM_RADIUS + gnarwail_instance:GetPhysicsRadius(0)
-    local emerge_offset = FindSwimmableOffset(Vector3(unpack(horn_position)), math.random() * PI * 2, resurface_radius)
+    local emerge_offset = FindSwimmableOffset(horn_position, math.random() * PI * 2, resurface_radius)
     if emerge_offset then
         gnarwail_instance:ReturnToScene()
-        gnarwail_instance.Transform:SetPosition(horn_position[1] + emerge_offset.x, horn_position[2] + emerge_offset.y, horn_position[3] + emerge_offset.z)
+        gnarwail_instance.Transform:SetPosition(horn_position.x + emerge_offset.x, horn_position.y + emerge_offset.y, horn_position.z + emerge_offset.z)
         gnarwail_instance.sg:GoToState("emerge")
     else
         gnarwail_instance:DoTaskInTime(1, TryGnarwailResurface, horn_position)
@@ -44,16 +44,10 @@ end
 
 local function horn_retreat(horn_inst, horn_broken, leak_size)
     -- Try to spawn a boat leak at our location.
-    local horn_x, horn_y, horn_z = horn_inst.Transform:GetWorldPosition()
+    local horn_pt = horn_inst:GetPosition()
     local boat = horn_inst:GetCurrentPlatform()
     if boat then
-        local leak = SpawnPrefab("boat_leak")
-        leak.Transform:SetPosition(horn_x, horn_y, horn_z)
-        leak.components.boatleak.isdynamic = true
-        leak.components.boatleak:SetBoat(boat)
-        leak.components.boatleak:SetState(leak_size, true)
-
-        table.insert(boat.components.hullhealth.leak_indicators_dynamic, leak)
+		boat:PushEvent("spawnnewboatleak", {pt = horn_pt, leak_size = leak_size, playsoundfx = true})
     end
 
     -- If this was spawned legitimately, it should have a gnarwail it was sourced from. So, we need to try to resurface it.
@@ -64,7 +58,7 @@ local function horn_retreat(horn_inst, horn_broken, leak_size)
         if horn_broken then
             gnarwail:SetHornBroken(true)
         end
-        gnarwail:DoTaskInTime(TUNING.GNARWAIL.HORN_RETREAT_TIME, TryGnarwailResurface, {horn_x, horn_y, horn_z})
+        gnarwail:DoTaskInTime(TUNING.GNARWAIL.HORN_RETREAT_TIME, TryGnarwailResurface, horn_pt)
         gnarwail:RemoveFromScene()
     end
 
@@ -87,11 +81,13 @@ local function EndHornAttack(horn_inst)
     horn_inst.AnimState:PushAnimation("attack_stage_2_retreat", false)
     horn_inst:ListenForEvent("animqueueover", HornAttack_AnimOver)
 
-    horn_inst:DoTaskInTime(7*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/boat/thunk") end)
-    horn_inst:DoTaskInTime(14*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/boat/damage") end)
-    horn_inst:DoTaskInTime(16*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/boat/thunk") end)
+    local boat = horn_inst:GetCurrentPlatform()
+
+    horn_inst:DoTaskInTime(7*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
+    horn_inst:DoTaskInTime(14*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.damage) end)
+    horn_inst:DoTaskInTime(16*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
     horn_inst:DoTaskInTime(19*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/jump_small") end)
-    horn_inst:DoTaskInTime(25*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/boat/thunk") end)
+    horn_inst:DoTaskInTime(25*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
 
     horn_inst._horn_attack_ending = true
     horn_inst:RemoveEventCallback("attacked", OnHornHit)

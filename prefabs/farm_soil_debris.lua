@@ -1,6 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/farm_soil_debris.zip"),
+    Asset("ANIM", "anim/farm_soil.zip"),
     Asset("ANIM", "anim/smoke_puff_small.zip"),
 }
 
@@ -69,6 +70,7 @@ local function fn()
 
     inst.AnimState:SetBank("farm_soil_debris")
     inst.AnimState:SetBuild("farm_soil_debris")
+    inst.AnimState:OverrideSymbol("soil01", "farm_soil", "soil01")
 
 	inst:Hide()
 

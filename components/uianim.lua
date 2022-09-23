@@ -28,6 +28,14 @@ function UIAnim:FinishCurrentTint()
     end
 end
 
+function UIAnim:CancelTintTo( run_complete_fn )
+	self.tint_t = nil
+	if run_complete_fn ~= nil and self.tint_whendone then
+		self.tint_whendone()
+    end
+	self.tint_whendone = nil
+end
+
 function UIAnim:TintTo(start, dest, duration, whendone)
     if not self.inst.widget.SetTint then
         return
@@ -60,6 +68,14 @@ function UIAnim:FinishCurrentScale()
         self.scale_whendone = nil
         whendone()
     end
+end
+
+function UIAnim:CancelScaleTo( run_complete_fn )
+	self.scale_t = nil
+	if run_complete_fn ~= nil and self.scale_whendone then
+		self.scale_whendone()
+    end
+	self.scale_whendone = nil
 end
 
 function UIAnim:ScaleTo(start, dest, duration, whendone)

@@ -17,9 +17,9 @@ local toy_trinket_nums =
     43,
 }
 local MIN_FADE_VALUE = 0.00
-local MIN_FADE_COLOUR = {MIN_FADE_VALUE, MIN_FADE_VALUE, MIN_FADE_VALUE, MIN_FADE_VALUE}
+local MIN_FADE_COLOUR = {1,00, 1.00, 1.00, MIN_FADE_VALUE}
 local MAX_FADE_VALUE = 0.70
-local MAX_FADE_COLOUR = {MAX_FADE_VALUE, MAX_FADE_VALUE, MAX_FADE_VALUE, MAX_FADE_VALUE}
+local MAX_FADE_COLOUR = {1.00, 1.00, 1.00, MAX_FADE_VALUE}
 local FADE_DIFFERENCE = MAX_FADE_VALUE - MIN_FADE_VALUE
 local FADE_TIME = 1.5
 
@@ -65,7 +65,7 @@ local function MakeTrinket(num)
         inst.AnimState:SetBank("trinkets")
         inst.AnimState:SetBuild("trinkets")
         inst.AnimState:PlayAnimation(tostring(num))
-        inst.AnimState:SetMultColour(MIN_FADE_VALUE, MIN_FADE_VALUE, MIN_FADE_VALUE, MIN_FADE_VALUE)
+        inst.AnimState:SetMultColour(unpack(MIN_FADE_COLOUR))
         inst.AnimState:SetHaunted(true)
 
         -- Lost toys are permanently haunted.

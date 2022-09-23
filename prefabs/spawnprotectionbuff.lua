@@ -117,7 +117,7 @@ local function fn(songdata, dodelta_fn)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:PlayAnimation("buff_pre")
     inst.AnimState:PushAnimation("buff_idle", true)
-	inst.AnimState:SetMultColour(0.25, 0.25, 0.25, 0.25)
+	inst.AnimState:SetMultColour(1, 1, 1, 0.25)
 
     inst:AddTag("DECOR") --"FX" will catch mouseover
     inst:AddTag("NOCLICK")

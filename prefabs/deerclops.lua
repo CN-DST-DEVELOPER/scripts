@@ -263,7 +263,6 @@ local function fn()
     inst.components.combat:SetDefaultDamage(TUNING.DEERCLOPS_DAMAGE)
     inst.components.combat.playerdamagepercent = TUNING.DEERCLOPS_DAMAGE_PLAYER_PERCENT
     inst.components.combat:SetRange(TUNING.DEERCLOPS_ATTACK_RANGE)
-    inst.components.combat:SetAreaDamage(TUNING.DEERCLOPS_AOE_RANGE, TUNING.DEERCLOPS_AOE_SCALE)
     inst.components.combat.hiteffectsymbol = "deerclops_body"
     inst.components.combat:SetAttackPeriod(TUNING.DEERCLOPS_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(1, RetargetFn)
@@ -288,6 +287,11 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst.components.inspectable:RecordViews()
+
+    ------------------------------------------
+
+    inst:AddComponent("drownable")
+
     ------------------------------------------
     inst:AddComponent("knownlocations")
     inst:SetBrain(brain)

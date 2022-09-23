@@ -120,11 +120,13 @@ local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a
         end
 
         local shake_percent = math.min(math.abs(hit_dot_velocity) * speed / TUNING.BOAT.MAX_ALLOWED_VELOCITY, 1)
-        inst.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", { intensity = shake_percent })
+        if inst.sounds ~= nil then
+            inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, { intensity = shake_percent })
+        end
 
         ShakeAllCamerasOnPlatform(CAMERASHAKE.FULL, destroyed_other and 1.5 or 0.7, 0.02, (destroyed_other and 0.45 or 0.15) * shake_percent, inst)
 
-    	boat_physics.velocity_x, boat_physics.velocity_z = relative_velocity_x + push_back * hit_normal_x, relative_velocity_z + push_back * hit_normal_z
+    	boat_physics.velocity_x, boat_physics.velocity_z = boat_physics.velocity_x + push_back * hit_normal_x, boat_physics.velocity_z + push_back * hit_normal_z
     end
 end
 
@@ -133,6 +135,10 @@ local function on_boatdrag_removed(boatdraginst)
 	if boat ~= nil and boat.components.boatphysics ~= nil then
 		boat.components.boatphysics:RemoveBoatDrag(boatdraginst)
 	end
+end
+
+local function on_death(inst)
+    inst.components.boatphysics:OnDeath()
 end
 
 local BoatPhysics = Class(function(self, inst)
@@ -144,6 +150,7 @@ local BoatPhysics = Class(function(self, inst)
     self.max_velocity = TUNING.BOAT.MAX_VELOCITY_MOD
     self.rudder_turn_speed = TUNING.BOAT.RUDDER_TURN_SPEED
     self.masts = {}
+    self.magnets = {}
     self.boatdraginstances = {}
 
     self.lastzoomtime = nil
@@ -168,8 +175,9 @@ local BoatPhysics = Class(function(self, inst)
     self.inst.Physics:SetCollisionCallback(OnCollide)
     self._recent_collisions = {}
 
-    self.inst:ListenForEvent("onignite", function() self:OnIgnite() end)
-    self.inst:ListenForEvent("death", function() self:OnDeath() end)
+    --"onignite" doesn't work; boat does not have burnable component
+    --self.inst:ListenForEvent("onignite", function() self:OnIgnite() end)
+    self.inst:ListenForEvent("death", on_death)
 end)
 
 function BoatPhysics:OnSave()
@@ -178,6 +186,8 @@ function BoatPhysics:OnSave()
         target_rudder_direction_x = self.target_rudder_direction_x,
         target_rudder_direction_z = self.target_rudder_direction_z,
         boat_rotation_offset = self.boat_rotation_offset,
+        velocity_x = self.velocity_x,
+        velocity_z = self.velocity_z,
     }
 
     return data
@@ -185,11 +195,13 @@ end
 
 function BoatPhysics:OnLoad(data)
     if data ~= nil then
-        self.target_rudder_direction_x = data.target_rudder_direction_x
-        self.rudder_direction_x = data.target_rudder_direction_x
-        self.target_rudder_direction_z = data.target_rudder_direction_z
-        self.rudder_direction_z = data.target_rudder_direction_z
+        self.target_rudder_direction_x = data.target_rudder_direction_x or self.target_rudder_direction_x
+        self.rudder_direction_x = data.target_rudder_direction_x or self.rudder_direction_x
+        self.target_rudder_direction_z = data.target_rudder_direction_z or self.target_rudder_direction_z
+        self.rudder_direction_z = data.target_rudder_direction_z or self.rudder_direction_z
         self.boat_rotation_offset = data.boat_rotation_offset or self.boat_rotation_offset
+        self.velocity_x = data.velocity_x or self.velocity_x
+        self.velocity_z = data.velocity_z or self.velocity_z
     end
 end
 
@@ -238,8 +250,20 @@ function BoatPhysics:RemoveMast(mast)
     self.masts[mast] = nil
 end
 
+function BoatPhysics:AddMagnet(magnet)
+    self.magnets[magnet] = magnet
+end
+
+function BoatPhysics:RemoveMagnet(magnet)
+    self.magnets[magnet] = nil
+end
+
 function BoatPhysics:OnDeath()
     self.inst.SoundEmitter:KillSound("boat_movement")
+end
+
+function BoatPhysics:GetMoveDirection()
+    return Vector3(self.velocity_x, 0, self.velocity_z)
 end
 
 function BoatPhysics:GetVelocity()
@@ -262,7 +286,7 @@ function BoatPhysics:DoApplyForce(dir_x, dir_z, force)
     local velocity_length = VecUtil_Length(self.velocity_x, self.velocity_z)
 
     if velocity_length > TUNING.BOAT.MAX_ALLOWED_VELOCITY then
-        local velocity_normal_x, velocity_normal_z = VecUtil_Normalize(self.velocity_x, self.velocity_z)
+        local velocity_normal_x, velocity_normal_z = VecUtil_NormalizeNoNaN(self.velocity_x, self.velocity_z)
         self.velocity_x, self.velocity_z = VecUtil_Scale(velocity_normal_x, velocity_normal_z, TUNING.BOAT.MAX_ALLOWED_VELOCITY)
     end
 end
@@ -272,15 +296,29 @@ function BoatPhysics:ApplyRowForce(dir_x, dir_z, force, max_velocity)
     local velocity_normal_x, velocity_normal_z = VecUtil_NormalizeNoNaN(self.velocity_x, self.velocity_z)
     local force_dir_modifier = math.max(0, VecUtil_Dot(velocity_normal_x, velocity_normal_z, dir_normal_x, dir_normal_z))
 
-    local dampening = self:GetForceDampening()
-    dampening = dampening - easing.inExpo(
-        math.min(VecUtil_Length(self.velocity_x, self.velocity_z), max_velocity) * force_dir_modifier,
-        TUNING.BOAT.BASE_DAMPENING,
-        TUNING.BOAT.MAX_DAMPENING - TUNING.BOAT.BASE_DAMPENING,
-        max_velocity
-    )
+    local base_dampening = self:GetForceDampening()
 
-    self:DoApplyForce(dir_x, dir_z, force * math.max(0, dampening))
+    if force_dir_modifier > 0 then
+        local dir_length = VecUtil_Length(dir_normal_x, dir_normal_z)
+
+        local forward_dir_length = dir_length * force_dir_modifier
+        local side_dir_length = dir_length * (1 - force_dir_modifier)
+
+        local velocity_left_normal_x, velocity_left_normal_z = velocity_normal_z, -velocity_normal_x
+        local is_left = VecUtil_Dot(velocity_left_normal_x, velocity_left_normal_z, dir_normal_x, dir_normal_z) > 0
+
+        local velocity_dampening = base_dampening - easing.inExpo(
+            math.min(VecUtil_Length(self.velocity_x, self.velocity_z), max_velocity),
+            TUNING.BOAT.BASE_DAMPENING,
+            TUNING.BOAT.MAX_DAMPENING - TUNING.BOAT.BASE_DAMPENING,
+            max_velocity
+        )
+
+        self:DoApplyForce(velocity_normal_x, velocity_normal_z, force * math.max(0, velocity_dampening) * forward_dir_length)
+        self:DoApplyForce(velocity_left_normal_x, velocity_left_normal_z, force * math.max(0, base_dampening) * side_dir_length * (is_left and 1 or -1))
+    else
+        self:DoApplyForce(dir_x, dir_z, force * math.max(0, base_dampening))
+    end
 end
 
 function BoatPhysics:ApplyForce(dir_x, dir_z, force)
@@ -302,6 +340,21 @@ function BoatPhysics:GetMaxVelocity()
     local mult = 1
     for i,mast_vel in ipairs(mast_maxes)do
         max_vel = max_vel + (mast_vel * mult)
+        mult = mult * 0.7
+    end
+
+    local magnet_maxes = {}
+    for k,v in pairs(self.magnets) do
+		local vel = k:CalcMaxVelocity()
+        if vel ~= 0 then
+            table.insert(magnet_maxes, vel)
+        end
+    end
+
+    table.sort(magnet_maxes)
+    local mult = 1
+    for i,magnet_vel in ipairs(magnet_maxes) do
+        max_vel = max_vel + (magnet_vel * mult)
         mult = mult * 0.7
     end
 
@@ -371,6 +424,10 @@ function BoatPhysics:SetCanSteeringRotate(can_rotate)
 end
 
 function BoatPhysics:ApplyDrag(dt, total_drag, cur_velocity, velocity_normal_x, velocity_normal_z)
+    if isnan(velocity_normal_x) or isnan(velocity_normal_z) then
+        return cur_velocity
+    end
+
     if cur_velocity > 0 then
         local velocity_length = math.min(-total_drag, 0) * dt
         self.velocity_x, self.velocity_z = VecUtil_Add(self.velocity_x, self.velocity_z, VecUtil_Scale(velocity_normal_x, velocity_normal_z, velocity_length))
@@ -392,7 +449,25 @@ function BoatPhysics:ApplySailForce(dt, sail_force, cur_velocity, max_velocity)
         cur_velocity = cur_velocity + velocity_length
 
         if cur_velocity > max_velocity then
-            local velocity_normal_x, velocity_normal_z = VecUtil_Normalize(self.velocity_x, self.velocity_z)
+            local velocity_normal_x, velocity_normal_z = VecUtil_NormalizeNoNaN(self.velocity_x, self.velocity_z)
+            self.velocity_x, self.velocity_z = VecUtil_Scale(velocity_normal_x, velocity_normal_z, max_velocity)
+            cur_velocity = max_velocity
+        end
+    end
+
+    return cur_velocity
+end
+
+function BoatPhysics:ApplyMagnetForce(dt, magnet_force, magnet_direction, cur_velocity, max_velocity)
+    local force = VecUtil_Length(magnet_force.x, magnet_force.z)
+    if force > 0 and cur_velocity < max_velocity then
+        local velocity_length = force * dt
+        local mag_x, mag_z = VecUtil_NormalizeNoNaN(magnet_direction.x, magnet_direction.z)
+        self.velocity_x, self.velocity_z = VecUtil_Add(self.velocity_x, self.velocity_z, VecUtil_Scale(mag_x, mag_z, velocity_length))
+        cur_velocity = cur_velocity + velocity_length
+
+        if cur_velocity > max_velocity then
+            local velocity_normal_x, velocity_normal_z = VecUtil_NormalizeNoNaN(self.velocity_x, self.velocity_z)
             self.velocity_x, self.velocity_z = VecUtil_Scale(velocity_normal_x, velocity_normal_z, max_velocity)
             cur_velocity = max_velocity
         end
@@ -443,7 +518,7 @@ function BoatPhysics:OnUpdate(dt)
     --END TURNING
 
     --This is used to tell the steering characters to stop turning the wheel.
-    local TOLERANCE = 0.1   
+    local TOLERANCE = 0.1
     if math.abs(self.rudder_direction_x - self.target_rudder_direction_x) < TOLERANCE and math.abs(self.rudder_direction_z - self.target_rudder_direction_z) < TOLERANCE then
         self.inst:PushEvent("stopturning")
     end
@@ -455,14 +530,26 @@ function BoatPhysics:OnUpdate(dt)
         sail_force = sail_force + k:CalcSailForce() * sail_force_modifier
     end
 
+    -- Calculate magnet forces
+    local magnet_force = Vector3(0, 0, 0)
+    local magnet_direction = Vector3(0, 0, 0)
+    for k,v in pairs(self.magnets) do
+        if k:PairedBeacon() ~= nil and not k:PairedBeacon().components.boatmagnetbeacon:IsTurnedOff() then
+            magnet_direction = magnet_direction + k:CalcMagnetDirection()
+            magnet_force = magnet_force + magnet_direction * k:CalcMagnetForce()
+        end
+    end
+
     local velocity_normal_x, velocity_normal_z, cur_velocity = VecUtil_NormalAndLength(self.velocity_x, self.velocity_z)
     local max_velocity = self:GetMaxVelocity()
+
+    cur_velocity = self:ApplyMagnetForce(dt, magnet_force, magnet_direction, cur_velocity, max_velocity)
 
     local total_anchor_drag = self:GetTotalAnchorDrag()
 
     if total_anchor_drag > 0 and sail_force > 0 then
         cur_velocity = self:ApplySailForce(dt, sail_force, cur_velocity, max_velocity)
-        cur_velocity = self:ApplyDrag(dt, self:GetBoatDrag(cur_velocity, total_anchor_drag), cur_velocity, VecUtil_Normalize(self.velocity_x, self.velocity_z))
+        cur_velocity = self:ApplyDrag(dt, self:GetBoatDrag(cur_velocity, total_anchor_drag), cur_velocity, VecUtil_NormalizeNoNaN(self.velocity_x, self.velocity_z))
     else
         cur_velocity = self:ApplyDrag(dt, self:GetBoatDrag(cur_velocity, total_anchor_drag), cur_velocity, velocity_normal_x, velocity_normal_z)
         cur_velocity = self:ApplySailForce(dt, sail_force, cur_velocity, max_velocity)
@@ -516,13 +603,20 @@ function BoatPhysics:OnUpdate(dt)
         for mast in pairs(self.masts) do
             mast:SetRudderDirection(self.rudder_direction_x, self.rudder_direction_z)
         end
-        self.inst.Transform:SetRotation(self.boat_rotation_offset)
+        --self.inst.Transform:SetRotation(self.boat_rotation_offset)
     end
 
     local corrected_vel_x, corrected_vel_z = VecUtil_RotateDir(self.velocity_x, self.velocity_z, self.inst.Transform:GetRotation() * DEGREES)
+    if self.halting then -- NOTES(JBK): Injecting these here because velocity is edited all over this component.
+        corrected_vel_x, corrected_vel_z, cur_velocity = 0, 0, 0
+    end
     self.inst.Physics:SetMotorVel(corrected_vel_x, 0, corrected_vel_z)
 
     self.inst.SoundEmitter:SetParameter("boat_movement", "speed", cur_velocity / TUNING.BOAT.MAX_ALLOWED_VELOCITY)
+end
+
+function BoatPhysics:SetHalting(halt)
+    self.halting = halt
 end
 
 function BoatPhysics:GetDebugString()

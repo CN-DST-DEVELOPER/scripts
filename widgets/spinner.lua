@@ -56,6 +56,9 @@ local Spinner = Class(Widget, function( self, options, width, height, textinfo, 
 
     self.lean = lean
 
+	self.control_prev = CONTROL_PREVVALUE
+	self.control_next = CONTROL_NEXTVALUE
+
     self.atlas = atlas or spinner_atlas
     if self.lean then
         self.textures = textures or spinner_lean_images
@@ -199,11 +202,11 @@ function Spinner:GetHelpText()
 
 	local t = {}
 	if self.leftimage.enabled then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PREVVALUE, false, false) .. " " .. STRINGS.UI.HELP.PREVVALUE)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, self.control_prev, false, false) .. " " .. STRINGS.UI.HELP.PREVVALUE)
 	end
 
 	if self.rightimage.enabled then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_NEXTVALUE, false, false) .. " " .. STRINGS.UI.HELP.NEXTVALUE)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, self.control_next, false, false) .. " " .. STRINGS.UI.HELP.NEXTVALUE)
 	end
 
 	return table.concat(t, "  ")
@@ -211,21 +214,28 @@ end
 
 -- This function allows display of hint text next to the arrow buttons
 -- TODO: only tested with XBOX one controller. Test with other controller types to make sure there's room for the symbols.
-function Spinner:AddControllerHints()
+function Spinner:AddControllerHints(control_prev, control_next, mute_negative_sound)
+	self.control_prev = control_prev or self.control_prev
+	self.control_next = control_next or self.control_next
+	self.mute_negative_sound = mute_negative_sound
+
+	local w = self.rightimage:GetSize() * self.arrow_scale
+
+	self.left_hint = self:AddChild( Text( BODYTEXTFONT, 26 ) )
+	self.left_hint:SetPosition( -self.width/2 + w/2 + 32, 0, 0 )
+
+	self.right_hint = self:AddChild( Text( BODYTEXTFONT, 26 ) )
+	self.right_hint:SetPosition( self.width/2 - w/2 - 27, 0, 0 )
+
 	if TheInput:ControllerAttached() then
-		local w = self.rightimage:GetSize() * self.arrow_scale
-
-		self.left_hint = self:AddChild( Text( BODYTEXTFONT, 26 ) )
-		self.left_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PREVVALUE))
-		self.left_hint:SetPosition( -self.width/2 + w/2 + 32, 0, 0 )
-
-		self.right_hint = self:AddChild( Text( BODYTEXTFONT, 26 ) )
-		self.right_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_NEXTVALUE))
-		self.right_hint:SetPosition( self.width/2 - w/2 - 27, 0, 0 )
-
-
-		self.hints_enabled = true
+		self.right_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_next))
+		self.left_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_prev))
+	else
+		self.left_hint:Hide()
+		self.right_hint:Hide()
 	end
+
+	self.hints_enabled = true
 end
 
 
@@ -239,10 +249,10 @@ function Spinner:OnControl(control, down)
 	if Spinner._base.OnControl(self, control, down) then return true end
 
 	if down then
-		if control == CONTROL_PREVVALUE then
+		if control == self.control_prev then
 			self:Prev()
 			return true
-		elseif control == CONTROL_NEXTVALUE then
+		elseif control == self.control_next then
 			self:Next()
 			return true
 		end
@@ -396,7 +406,7 @@ function Spinner:Next(noclicksound)
 		self:OnNext()
 		self:SetSelectedIndex(newSelection)
 		self:Changed(oldSelection)
-	else
+	elseif not self.mute_negative_sound then
 		TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative")
 	end
 end
@@ -421,7 +431,7 @@ function Spinner:Prev(noclicksound)
 		self:OnPrev()
 		self:SetSelectedIndex(newSelection)
 		self:Changed(oldSelection)
-	else
+	elseif not self.mute_negative_sound then
 		TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative")
 	end
 end
@@ -473,8 +483,7 @@ function Spinner:SetSelectedIndex( idx )
 	self.updating = false
 end
 
-function Spinner:SetSelected(data, force)
-
+function Spinner:SetSelected(data)
 	for k,v in pairs(self.options) do
 		if v.data == data then
 			local oldSelection = self.selectedIndex
@@ -494,7 +503,11 @@ function Spinner:UpdateText( msg )
 	local chars = width / 4 --Note(Peter): 4 is roughly the right size of a miniumum character, no guarantees!
 
 	if chars > 5 and width > 10 then --Note(Peter): Quick hack fix to address tiny spinners in mods.
-		self.text:SetTruncatedString(_msg, width, chars, true)
+		if self.auto_shrink_text then
+			self.text:SetMultilineTruncatedString(_msg, 1, width, nil, nil, true)
+		else
+			self.text:SetTruncatedString(_msg, width, chars, true)
+		end
 	else
 		self.text:SetString(_msg)
 	end
@@ -540,14 +553,30 @@ function Spinner:SetWrapEnabled(enable)
 	self:UpdateState()
 end
 
+function Spinner:RefreshControllers(controller_mode)
+	if controller_mode and self.hints_enabled then
+		self.left_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_prev))
+		self.right_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_next))
+		self:UpdateState()
+	else
+		self.left_hint:Hide()
+		self.right_hint:Hide()
+	end
+end
+
 function Spinner:UpdateState()
 	if self.enabled then
 		self.leftimage:Enable()
 		self.rightimage:Enable()
 
 		if self.hints_enabled then
-			self.left_hint:Show()
-			self.right_hint:Show()
+			if TheInput:ControllerAttached() then
+				self.left_hint:Show()
+				self.right_hint:Show()
+			else
+				self.left_hint:Hide()
+				self.right_hint:Hide()
+			end
 		end
 
 		if not self.enableWrap then

@@ -85,7 +85,7 @@ local everything_sample2 = {
 			["SpiderCon"] = 3,
 			["Forest"] = 1,
 		 },
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -118,7 +118,7 @@ local everything_sample = {
 			["Clearing"] = 1,
 			["BurntForest"] = 1,
 		},
-		room_bg=GROUND.GRASS,
+		room_bg=WORLD_TILES.GRASS,
 		background_room="BGGrass",
 		colour={r=0,g=1,b=0,a=1}
 	})
@@ -145,7 +145,7 @@ AddTask("TEST_TASK", {
 		room_choices={
 			["BGCaveRoom"] = 1,
 		},
-		room_bg=GROUND.SINKHOLE,
+		room_bg=WORLD_TILES.SINKHOLE,
 		background_room="BGSinkholeRoom",
 		colour={r=1,g=0.7,b=1,a=1},
 	})
@@ -157,7 +157,7 @@ AddTask("TEST_TASK1", {
 			["CaveRoom"] = 3,
 			["BatCaveRoom"] = 1,
 		},
-		room_bg=GROUND.CAVE,
+		room_bg=WORLD_TILES.CAVE,
 		background_room="BGCaveRoom",
 		colour={r=1,g=0.6,b=1,a=1},
 	})
@@ -167,7 +167,7 @@ AddTask("TEST_EMPTY", {
 		room_choices = {
 			["Clearing"] = 1,
 		},
-		room_bg = GROUND.FOREST,
+		room_bg = WORLD_TILES.FOREST,
 		background_room = "Clearing",
 		colour = { r = 1, g = 1, b = 1, a = 1 },
 	})

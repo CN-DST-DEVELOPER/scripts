@@ -25,8 +25,6 @@ local NUM_ITEMS_PER_GRID = 16
 local SkinsScreen = Class(Screen, function(self, profile)
 	Screen._ctor(self, "SkinsScreen")
 
-	--print("Is offline?", TheNet:IsOnlineMode() or "nil", TheFrontEnd:GetIsOfflineMode() or "nil")
-
 	self.profile = profile
 	self:DoInit()
 
@@ -310,7 +308,7 @@ function SkinsScreen:Quit()
 end
 
 function SkinsScreen:OnBecomeActive()
-	if not self.sorry_popup and (not TheNet:IsOnlineMode() or TheFrontEnd:GetIsOfflineMode()) then
+	if not self.sorry_popup and not TheInventory:HasSupportForOfflineSkins() and (not TheNet:IsOnlineMode() or TheFrontEnd:GetIsOfflineMode()) then
 		--The game is offline, don't show any inventory
 		self.skins_list = {}
 		self.scroll_list:SetItemsData(self.skins_list)

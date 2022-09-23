@@ -74,6 +74,21 @@ function Stackable:Get(num)
             instance.components.perishable.perishremainingtime = self.inst.components.perishable.perishremainingtime
         end
 
+        if instance.components.curseditem ~= nil and self.inst.components.curseditem ~= nil then
+            self.inst.components.curseditem:CopyCursedFields(instance.components.curseditem)
+            if self.inst:HasTag("applied_curse") then
+                instance.skipspeech = true
+                instance:AddTag("applied_curse")
+            end
+        end
+
+        if instance.components.rechargeable ~= nil and self.inst.components.rechargeable ~= nil then
+            if not self.inst.components.rechargeable:IsCharged() then
+                instance.components.rechargeable:SetChargeTime(self.inst.components.rechargeable:GetChargeTime())
+                instance.components.rechargeable:SetCharge(self.inst.components.rechargeable:GetCharge())
+            end
+        end
+
         if instance.components.inventoryitem ~= nil and self.inst.components.inventoryitem ~= nil then
             if self.inst.components.inventoryitem.owner then
                 instance.components.inventoryitem:OnPutInInventory(self.inst.components.inventoryitem.owner)
@@ -113,6 +128,10 @@ function Stackable:Put(item, source_pos)
 
         if self.inst.components.edible ~= nil then
             self.inst.components.edible:DiluteChill(item, numberadded)
+        end
+
+        if self.inst.components.curseditem ~= nil then
+            self.inst.skipspeech = true
         end
 
         if self.maxsize >= newtotal then

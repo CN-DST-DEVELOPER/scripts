@@ -1,6 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/crow_kids.zip"),
+    Asset("ANIM", "anim/crow_kids2.zip"),
 }
 
 local prefabs =
@@ -19,12 +20,46 @@ local function SetScarfBuild(inst)
 	end
 end
 
+local function OnTimerDone(inst, data)
+    if data ~= nil and data.name == "has_snack" then
+        inst.has_snack = nil
+    end
+end
+
+local function AcceptTest(inst, item, giver)
+    return inst.has_snack == nil and (item.prefab == "corn_cooked" or item.prefab == "carnivalfood_corntea")
+end
+
+local function OnGetItemFromPlayer(inst, giver, item)
+	inst.has_snack = item.prefab
+
+	inst.components.timer:StartTimer("has_snack", item.components.perishable ~= nil and (item.components.perishable.perishremainingtime * 0.5) or TUNING.TOTAL_DAY_TIME )
+	inst.sg:GoToState("give_reward", giver)
+
+	item:Remove()
+end
+
+local function OnRefuseItem(inst, giver, item)
+	if not inst:HasTag("busy") then
+		if inst.has_snack then
+			inst.components.talker:Say(STRINGS.CARNIVAL_CROWKID_HASGIFT[math.random(#STRINGS.CARNIVAL_CROWKID_HASGIFT)])
+		else
+			inst.components.talker:Say(STRINGS.CARNIVAL_CROWKID_REFUSEGIFT[math.random(#STRINGS.CARNIVAL_CROWKID_REFUSEGIFT)])
+		end
+	end
+end
+
 local function onsave(inst, data)
     data.shape = inst.shape
+	data.has_snack = inst.has_snack
 end
 
 local function onload(inst, data)
-	inst.shape = data ~= nil and data.shape or 1
+	if data ~= nil then
+		inst.shape = data.shape or 1
+		inst.has_snack = data.has_snack
+	end
+
 	SetScarfBuild(inst)
 end
 
@@ -46,6 +81,9 @@ local function fn()
     inst.AnimState:SetBuild("crow_kids")
     inst.AnimState:PlayAnimation("idle", true)
 
+	-- TODO: Remove this when the art is done
+	inst.AnimState:AddOverrideBuild("crow_kids2")
+
     inst:AddComponent("talker")
     inst.components.talker.fontsize = 30
     inst.components.talker.font = TALKINGFONT
@@ -56,6 +94,9 @@ local function fn()
     inst:AddTag("character")
     inst:AddTag("_named")
     inst:AddTag("NOBLOCK")
+
+    --trader (from trader component) added to pristine state for optimization
+    inst:AddTag("trader")
 
     inst.entity:SetPristine()
 
@@ -81,16 +122,26 @@ local function fn()
     inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })
     inst.components.eater:SetCanEatRaw()
 
-    --inst:AddComponent("sleeper")
-    --inst.components.sleeper:SetWakeTest(ShouldWake)
+    inst:AddComponent("trader")
+    inst.components.trader:SetAcceptTest(AcceptTest)
+    inst.components.trader.onaccept = OnGetItemFromPlayer
+    inst.components.trader.onrefuse = OnRefuseItem
+	inst.components.trader.deleteitemonaccept = false -- will be deleted in trader.onaccept
 
     inst:AddComponent("inspectable")
+
+    inst:AddComponent("fueler")
+    inst.components.fueler.fuelvalue = TUNING.SMALL_FUEL
+
+	inst:AddComponent("timer")
+    inst:ListenForEvent("timerdone", OnTimerDone)
 
     MakeHauntablePanic(inst)
 
 	inst.shape = math.random(3)
 	SetScarfBuild(inst)
 
+	inst.has_snack = nil
 
     inst:SetStateGraph("SGcarnival_crowkid")
     inst:SetBrain(brain)

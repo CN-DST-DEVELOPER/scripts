@@ -4,7 +4,7 @@ local assets =
 {
     Asset("ANIM", "anim/grass.zip"),
     Asset("ANIM", "anim/grass1.zip"),
-    Asset("ANIM", "anim/grass_diseased_build.zip"),
+    Asset("PKGREF", "anim/grass_diseased_build.zip"),
     Asset("SOUND", "sound/common.fsb"),
 }
 
@@ -235,8 +235,8 @@ local function grass(name, stage)
         inst.components.pickable.onpickedfn = onpickedfn
         inst.components.pickable.makeemptyfn = makeemptyfn
         inst.components.pickable.makebarrenfn = makebarrenfn
-        inst.components.pickable.max_cycles = 20
-        inst.components.pickable.cycles_left = 20
+        inst.components.pickable.max_cycles = TUNING.GRASS_CYCLES
+        inst.components.pickable.cycles_left = TUNING.GRASS_CYCLES
         inst.components.pickable.ontransplantfn = ontransplantfn
 
         inst:AddComponent("witherable")
@@ -300,5 +300,5 @@ local function grasspart_fn()
 end
 
 return grass("grass", 0),
-    grass("depleted_grass", 1),
-    Prefab("grasspartfx", grasspart_fn, grasspart_assets)
+       grass("depleted_grass", 1),
+       Prefab("grasspartfx", grasspart_fn, grasspart_assets)

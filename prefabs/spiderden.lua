@@ -114,7 +114,6 @@ local function onsleep(inst, sleeper)
 end
 
 local function AddSleepingBag(inst)
-    
     if inst.components.sleepingbag == nil then
         inst:AddComponent("sleepingbag")
     end
@@ -129,6 +128,14 @@ local function AddSleepingBag(inst)
     inst.components.sleepingbag:SetTemperatureTickFn(temperaturetick)
 
     inst:AddTag("tent")
+end
+
+local function RemoveSleepingBag(inst)
+    if inst.components.sleepingbag ~= nil then
+        inst.components.sleepingbag:DoWakeUp()
+        inst:RemoveComponent("sleepingbag")
+        inst:RemoveTag("tent")
+    end
 end
 
 local function SetStage(inst, stage, skip_anim)
@@ -244,6 +251,12 @@ local function SpawnQueen(inst, should_duplicate)
     end
 end
 
+local function RescheduleGrowth(inst, checkstage, time)
+    if inst.components.growable:GetStage() == checkstage then
+        inst.components.growable:StartGrowing(time)
+    end
+end
+
 local DENCHECK_ONEOF_TAGS = { "spiderden", "spiderqueen" }
 local function AttemptMakeQueen(inst)
     if inst.components.growable == nil then
@@ -270,7 +283,8 @@ local function AttemptMakeQueen(inst)
     end
 
     if not inst:IsNearPlayer(30) then
-        inst.components.growable:StartGrowing(60 + math.random(60))
+        inst.components.growable:SetStage(3)
+        inst:DoTaskInTime(0, RescheduleGrowth, 3, 60 + math.random(60))
         return
     end
 
@@ -281,6 +295,7 @@ local function AttemptMakeQueen(inst)
     local num_dens = #ents
 
     inst.components.growable:SetStage(1)
+    RemoveSleepingBag(inst)
 
     inst.AnimState:PlayAnimation("cocoon_large_burst")
     inst.AnimState:PushAnimation("cocoon_large_burst_pst")
@@ -291,7 +306,10 @@ local function AttemptMakeQueen(inst)
     inst:DoTaskInTime(15 * FRAMES, PlayLegBurstSound)
     inst:DoTaskInTime(35 * FRAMES, SpawnQueen, num_dens < cap)
 
-    inst.components.growable:StartGrowing(60)
+    --V2C: Before this was changed to RescheduleGrowth, the 60 timer never worked
+    --     as it would always be overwritten in growable:DoGrowth back to default
+    --     stage 1 time.  We'll opt to keep that timer even after this fix.
+    --inst:DoTaskInTime(0, RescheduleGrowth, 1, 60)
     return true
 end
 
@@ -616,9 +634,7 @@ local function CanShave(inst, shaver, shaving_implement)
 end
 
 local function OnShaved(inst, shaver, shaving_implement)
-
     local stage = inst.data.stage
-
     if stage == 1 then
         -- Should we release all children instead?
         SpawnDefenders(inst, shaver)
@@ -628,10 +644,8 @@ local function OnShaved(inst, shaver, shaving_implement)
         inst.shaving = true
         local downgraded_stage = stage - 1
 
-        if downgraded_stage < 3 and inst.components.sleepingbag then
-            inst.components.sleepingbag:DoWakeUp()
-            inst:RemoveComponent("sleepingbag")
-            inst:RemoveTag("tent")
+        if downgraded_stage < 3 then
+            RemoveSleepingBag(inst)
         end
 
         inst.components.growable:SetStage(downgraded_stage)

@@ -80,8 +80,18 @@ local function OnKilled(inst)
     inst.components.lootdropper:DropLoot(inst:GetPosition())
 end
 
-local function OnIsSummer(inst, issummer)
-    inst.components.childspawner:SetRareChild("firehound", issummer and 0.2 or 0)
+local SEASON_PREFABS = {
+    winter = "icehound",
+    summer = "firehound",
+}
+local SEASON_CHANCE = 0.2
+local function OnSeasonChange(inst, season)
+    local prefab = SEASON_PREFABS[season] or nil
+    if prefab == nil then
+        inst.components.childspawner:SetRareChild(inst.components.childspawner.rarechild, 0)
+        return
+    end
+    inst.components.childspawner:SetRareChild(prefab, SEASON_CHANCE)
 end
 
 local HAUNTTARGET_MUST_TAGS = { "_combat" }
@@ -171,8 +181,8 @@ local function fn()
         inst.components.childspawner.childreninside = 0
     end
 
-    inst:WatchWorldState("issummer", OnIsSummer)
-    OnIsSummer(inst, TheWorld.state.issummer)
+    inst:WatchWorldState("season", OnSeasonChange)
+    OnSeasonChange(inst, TheWorld.state.season)
 
     ---------------------
     inst:AddComponent("lootdropper")

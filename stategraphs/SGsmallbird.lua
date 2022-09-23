@@ -50,9 +50,8 @@ local states =
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("idle", true)
             inst.sg:SetTimeout(4 + 4 * math.random())
-            CheckForNewLeader(inst)
             if inst.components.follower ~= nil and inst.components.follower.leader == nil then
-                inst.sg.statemem.checkleadertask = inst:DoPeriodicTask(1, CheckForNewLeader)
+                inst.sg.statemem.checkleadertask = inst:DoPeriodicTask(1, CheckForNewLeader, 0)
             end
         end,
 

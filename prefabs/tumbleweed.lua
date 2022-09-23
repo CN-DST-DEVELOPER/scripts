@@ -43,16 +43,7 @@ local prefabs =
     "fireflies",
     "beardhair",
     "berries",
-    "TOOLS_blueprint",
-    "LIGHT_blueprint",
-    "SURVIVAL_blueprint",
-    "FARM_blueprint",
-    "SCIENCE_blueprint",
-    "WARTAB_blueprint",
-    "TOWN_blueprint",
-    "REFINE_blueprint",
-    "MAGIC_blueprint",
-    "DRESS_blueprint",
+    "blueprint",
     "petals_evil",
     "trinket_8",
     "houndstooth",
@@ -132,7 +123,10 @@ local function onpickup(inst, picker)
             item.components.inventoryitem.ondropfn(item)
         end
         if inst.lootaggro[i] and item.components.combat ~= nil and picker ~= nil then
-            if not (item:HasTag("spider") and (picker:HasTag("spiderwhisperer") or picker:HasTag("spiderdisguise") or (picker:HasTag("monster") and not picker:HasTag("player")))) then
+            if not (
+                item:HasTag("spider") and (picker:HasTag("spiderwhisperer") or picker:HasTag("spiderdisguise") or (picker:HasTag("monster") and not picker:HasTag("player"))) or
+                item:HasTag("frog") and picker:HasTag("merm")
+            ) then
                 item.components.combat:SuggestTarget(picker)
             end
         end
@@ -177,16 +171,7 @@ local function MakeLoot(inst)
         {chance = 1,    item = "butterflywings"},
         {chance = .02,  item = "beardhair"},
         {chance = 1,    item = "berries"},
-        {chance = 0.1,    item = "TOOLS_blueprint"},
-        {chance = 0.1,    item = "LIGHT_blueprint"},
-        {chance = 0.1,    item = "SURVIVAL_blueprint"},
-        {chance = 0.1,    item = "FARM_blueprint"},
-        {chance = 0.1,    item = "SCIENCE_blueprint"},
-        {chance = 0.1,    item = "WARTAB_blueprint"},
-        {chance = 0.1,    item = "TOWN_blueprint"},
-        {chance = 0.1,    item = "REFINE_blueprint"},
-        {chance = 0.1,    item = "MAGIC_blueprint"},
-        {chance = 0.1,    item = "DRESS_blueprint"},
+        {chance = 1,    item = "blueprint"},
         {chance = 1,    item = "petals_evil"},
         {chance = 1,    item = "trinket_8"},
         {chance = 1,    item = "houndstooth"},

@@ -22,6 +22,7 @@ local function tryspawn(inst)
         end
 
         local obj = inst.components.objectspawner:SpawnObject(inst.spawnprefab)
+        obj.spawnlocation = Vector3(x, y, z)
         obj.Transform:SetPosition(x, y, z)
   		if inst.onrespawnfn ~= nil then
 			inst.onrespawnfn(obj, inst)
@@ -40,6 +41,12 @@ local function onload(inst, data)
     if data ~= nil then
         inst.resetruins = data.resetruins
     end
+end
+
+local function OnLoadPostPass(inst)
+	if inst.resetruins then
+		tryspawn(inst)
+	end
 end
 
 local function MakeFn(obj, onrespawnfn, data)
@@ -64,6 +71,7 @@ local function MakeFn(obj, onrespawnfn, data)
 
 		inst.OnSave = onsave
 		inst.OnLoad = onload
+		inst.OnLoadPostPass = OnLoadPostPass
 
 		inst.listenforprefabsawp = data ~= nil and data.listenforprefabsawp or nil
 

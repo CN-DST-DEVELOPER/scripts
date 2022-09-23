@@ -71,7 +71,7 @@ end
 
 function SandStormWatcher:GetSandstormLevel()
     if self.inst.components.stormwatcher then
-        return self.inst.components.stormwatcher.stormlevel
+        return self.inst.components.stormwatcher:GetStormLevel(STORM_TYPES.SANDSTORM)
     end
     return nil
 end

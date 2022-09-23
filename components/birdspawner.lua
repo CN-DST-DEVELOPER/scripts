@@ -13,23 +13,22 @@ assert(TheWorld.ismastersim, "BirdSpawner should not exist on client")
 --Note: in winter, 'robin' is replaced with 'robin_winter' automatically
 local BIRD_TYPES =
 {
-    --[GROUND.IMPASSABLE] = { "" },
-    --[GROUND.ROAD] = { "crow" },
-    [GROUND.ROCKY] = { "crow" },
-    [GROUND.DIRT] = { "crow" },
-    [GROUND.SAVANNA] = { "robin", "crow" },
-    [GROUND.GRASS] = { "robin" },
-    [GROUND.FOREST] = { "robin", "crow" },
-    [GROUND.MARSH] = { "crow" },
+    --[WORLD_TILES.IMPASSABLE] = { "" },
+    --[WORLD_TILES.ROAD] = { "crow" },
+    [WORLD_TILES.ROCKY] = { "crow" },
+    [WORLD_TILES.DIRT] = { "crow" },
+    [WORLD_TILES.SAVANNA] = { "robin", "crow" },
+    [WORLD_TILES.GRASS] = { "robin" },
+    [WORLD_TILES.FOREST] = { "robin", "crow" },
+    [WORLD_TILES.MARSH] = { "crow" },
 
-    [GROUND.OCEAN_COASTAL] = {"puffin"},
-    [GROUND.OCEAN_COASTAL_SHORE] = {"puffin"},
-    [GROUND.OCEAN_SWELL] = {"puffin"},
-    [GROUND.OCEAN_ROUGH] = {"puffin"},
-    [GROUND.OCEAN_BRINEPOOL] = {"puffin"},
-    [GROUND.OCEAN_BRINEPOOL_SHORE] = {"puffin"},
-    [GROUND.OCEAN_HAZARDOUS] = {"puffin"},
-    [GROUND.OCEAN_WATERLOG] = {},
+    [WORLD_TILES.OCEAN_COASTAL] = {"puffin"},
+    [WORLD_TILES.OCEAN_COASTAL_SHORE] = {"puffin"},
+    [WORLD_TILES.OCEAN_SWELL] = {"puffin"},
+    [WORLD_TILES.OCEAN_ROUGH] = {"puffin"},
+    [WORLD_TILES.OCEAN_BRINEPOOL] = {"puffin"},
+    [WORLD_TILES.OCEAN_HAZARDOUS] = {"puffin"},
+    [WORLD_TILES.OCEAN_WATERLOG] = {},
 }
 
 --------------------------------------------------------------------------
@@ -266,7 +265,6 @@ function self:GetSpawnPoint(pt)
         end
 
         return _map:IsPassableAtPoint(spawnpoint_x, spawnpoint_y, spawnpoint_z, allow_water) and
-               _map:GetTileAtPoint(spawnpoint_x, spawnpoint_y, spawnpoint_z) ~= GROUND.OCEAN_COASTAL_SHORE and
                not _groundcreep:OnCreep(spawnpoint_x, spawnpoint_y, spawnpoint_z) and
                #(TheSim:FindEntities(spawnpoint_x, 0, spawnpoint_z, 4, BIRDBLOCKER_TAGS)) == 0 and
                not moonstorm

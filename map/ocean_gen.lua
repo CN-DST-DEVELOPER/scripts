@@ -14,25 +14,11 @@ end
 
 local function is_waterlined(tile)
 	-- should this tile have a water outline around it?
-	return IsLandTile(tile) --or tile == GROUND.OCEAN_BRINEPOOL
-end
-
-local function IsSurroundedByWater(x, y, radius)
-	for i = -radius, radius, 1 do
-		if not IsOceanTile(world:GetTile(x - radius, y + i)) or not IsOceanTile(world:GetTile(x + radius, y + i)) then
-			return false
-		end
-	end
-	for i = -(radius - 1), radius - 1, 1 do
-		if not IsOceanTile(world:GetTile(x + i, y - radius)) or not IsOceanTile(world:GetTile(x + i, y + radius)) then
-			return false
-		end
-	end
-	return true
+	return IsLandTile(tile) --or tile == WORLD_TILES.OCEAN_BRINEPOOL
 end
 
 local function isWaterOrInvalid(ground)
-	return IsOceanTile(ground) or ground == GROUND.INVALID
+	return IsOceanTile(ground) or TileGroupManager:IsInvalidTile(ground)
 end
 
 local function IsSurroundedByWaterOrInvalid(x, y, radius)
@@ -77,14 +63,14 @@ local function IsCloseToLand(x, y, radius)
 	return false
 end
 
-local function IsCloseToTileType(x, y, radius, tile)
+local function IsCloseToImpassable(x, y, radius)
 	for i = -radius, radius, 1 do
-		if world:GetTile(x - radius, y + i) == tile or world:GetTile(x + radius, y + i) == tile then
+		if TileGroupManager:IsImpassableTile(world:GetTile(x - radius, y + i)) or TileGroupManager:IsImpassableTile(world:GetTile(x + radius, y + i)) then
 			return true
 		end
 	end
 	for i = -(radius - 1), radius - 1, 1 do
-		if world:GetTile(x + i, y - radius) == tile or world:GetTile(x + i, y + radius) == tile then
+		if TileGroupManager:IsImpassableTile(world:GetTile(x + i, y - radius)) or TileGroupManager:IsImpassableTile(world:GetTile(x + i, y + radius)) then
 			return true
 		end
 	end
@@ -104,9 +90,6 @@ local function fillGroundType(width, height, x, y, offset, depth, ground)
 	if is_waterlined(t) then
 		return
 	end
-	--[[if t ~= GROUND.IMPASSABLE and not (ground == GROUND.OCEAN_COASTAL and t == GROUND.OCEAN_SWELL) then
-		return
-	end]]
 
 	world:SetTile(x, y, ground)
 	depth = depth - 1
@@ -121,7 +104,7 @@ local function placeGroundType(width, height, x, y, offx, offy, depth, ground)
 	local i = 0;
 	while i < depth and 0 <= x and x < width and 0 < y and y < height do
 		local t = world:GetTile(x, y)
-		if not is_waterlined(t) then --if t == GROUND.IMPASSABLE then
+		if not is_waterlined(t) then
 			world:SetTile(x, y, ground)
 			x = x + offx
 			y = y + offy
@@ -153,14 +136,14 @@ local function placeFilledGroundType(width, height, x, y, offx, offy, depth, gro
 end
 
 local function placeWaterline(width, height, x, y, offx, offy, depthShallow, depthMed)
-	x, y = placeGroundType(width, height, x, y, offx, offy, depthShallow, GROUND.OCEAN_COASTAL)
-	x, y = placeGroundType(width, height, x, y, offx, offy, depthMed, GROUND.OCEAN_SWELL)
+	x, y = placeGroundType(width, height, x, y, offx, offy, depthShallow, WORLD_TILES.OCEAN_COASTAL)
+	x, y = placeGroundType(width, height, x, y, offx, offy, depthMed, WORLD_TILES.OCEAN_SWELL)
 end
 
 local function placeWaterlineFilled(width, height, x, y, offx, offy, depthShallow, depthMed, fillOffset, fillDepth)
 	placeWaterline(width, height, x, y, offx, offy, depthShallow, depthMed)
-	x, y = placeFilledGroundType(width, height, x, y, offx, offy, depthMed, GROUND.OCEAN_SWELL, fillOffset, fillDepth)
-	x, y = placeFilledGroundType(width, height, x, y, offx, offy, depthShallow, GROUND.OCEAN_COASTAL, fillOffset, fillDepth)
+	x, y = placeFilledGroundType(width, height, x, y, offx, offy, depthMed, WORLD_TILES.OCEAN_SWELL, fillOffset, fillDepth)
+	x, y = placeFilledGroundType(width, height, x, y, offx, offy, depthShallow, WORLD_TILES.OCEAN_COASTAL, fillOffset, fillDepth)
 end
 
 local function squareFill(width, height, x, y, radius, ground)
@@ -229,8 +212,8 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for y = 0, height - 1, 1 do
 			for x = 0, width - 1, 1 do
 				local ground = world:GetTile(x, y)
-				if is_waterlined(ground) and (IsCloseToTileType(x, y, shallowRadius, GROUND.IMPASSABLE) or IsCloseToWater(x, y, shallowRadius)) then
-					squareFill(width, height, x, y, shallowRadius, GROUND.OCEAN_COASTAL)
+				if is_waterlined(ground) and (IsCloseToImpassable(x, y, shallowRadius) or IsCloseToWater(x, y, shallowRadius)) then
+					squareFill(width, height, x, y, shallowRadius, WORLD_TILES.OCEAN_COASTAL)
 				end
 			end
 			--print(string.format("  Square fill %4.2f", (y * width) / (width * height) * 100))
@@ -258,18 +241,18 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for y = 0, height - 1, 1 do
 			for x = 0, width - 1, 1 do
 				local ground = world:GetTile(x, y)
-				if ground == GROUND.IMPASSABLE then
+				if ground == WORLD_TILES.IMPASSABLE then
 					local nx, ny = x/width - 0.5, y/height - 0.5
 					--if simplexnoise2d(noise_scale_coral * (nx + offx_coral), noise_scale_coral * (ny + offy_coral), noise_octave_coral, noise_persistence_coral) > init_level_coral then
-					--	world:SetTile(x, y, GROUND.OCEAN_BRINEPOOL)
+					--	world:SetTile(x, y, WORLD_TILES.OCEAN_BRINEPOOL)
 					--else
 						if simplexnoise2d(noise_scale_water * (nx + offx_water), noise_scale_water * (ny + offy_water), noise_octave_water, noise_persistence_water) > init_level_medium then
-							world:SetTile(x, y, GROUND.OCEAN_SWELL)
+							world:SetTile(x, y, WORLD_TILES.OCEAN_SWELL)
 						else
 							if simplexnoise2d(noise_scale_grave * (nx + offx_grave), noise_scale_grave * (ny + offy_grave), noise_octave_grave, noise_persistence_grave) > init_level_grave then
-								world:SetTile(x, y, GROUND.OCEAN_HAZARDOUS)
+								world:SetTile(x, y, WORLD_TILES.OCEAN_HAZARDOUS)
 							else
-								world:SetTile(x, y, GROUND.OCEAN_ROUGH)
+								world:SetTile(x, y, WORLD_TILES.OCEAN_ROUGH)
 							end
 						end
 					--end
@@ -285,7 +268,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 
 		local cmlevels =
 		{
-			{GROUND.OCEAN_BRINEPOOL, 1.0}
+			{WORLD_TILES.OCEAN_BRINEPOOL, 1.0}
 		}
 		local cm, cmw, cmh = world:GenerateBlendedMap(kernelSize, sigma, cmlevels, 0.0)
 		--print(width, height, cmw, cmh)
@@ -294,7 +277,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 
 		local glevels =
 		{
-			{GROUND.OCEAN_HAZARDOUS, 1.0}
+			{WORLD_TILES.OCEAN_HAZARDOUS, 1.0}
 		}
 		local g, gw, gh = world:GenerateBlendedMap(kernelSize, sigma, glevels, 0.0)
 
@@ -311,26 +294,26 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for y = 0, height - 1, 1 do
 			for x = 0, width - 1, 1 do
 				local tile = world:GetTile(x, y)
-				if IsOceanTile(tile) or tile == GROUND.IMPASSABLE then
+				if IsOceanTile(tile) or tile == WORLD_TILES.IMPASSABLE then
 					local falloff = getEdgeFalloff(x, y, width, height, OCEAN_MAPWRAPPER_WARN_RANGE + 1, OCEAN_MAPWRAPPER_WARN_RANGE + 5, 0.0, 1.0)
 					local ellevel = el[y * width + x]
 					local cmlevel = cm[y * width + x] * falloff
 					local glevel = g[y * width + x] * falloff
 					if ellevel > final_level_shallow then
-						if tile == GROUND.OCEAN_WATERLOG then
-							world:SetTile(x, y, GROUND.OCEAN_WATERLOG)
-						elseif cmlevel > final_level_coral and tile == GROUND.OCEAN_BRINEPOOL then
-							world:SetTile(x, y, GROUND.OCEAN_BRINEPOOL)
+						if tile == WORLD_TILES.OCEAN_WATERLOG then
+							world:SetTile(x, y, WORLD_TILES.OCEAN_WATERLOG)
+						elseif cmlevel > final_level_coral and tile == WORLD_TILES.OCEAN_BRINEPOOL then
+							world:SetTile(x, y, WORLD_TILES.OCEAN_BRINEPOOL)
 						else
-							world:SetTile(x, y, GROUND.OCEAN_COASTAL)
+							world:SetTile(x, y, WORLD_TILES.OCEAN_COASTAL)
 						end
 					elseif ellevel > final_level_medium then
-						world:SetTile(x, y, GROUND.OCEAN_SWELL)
+						world:SetTile(x, y, WORLD_TILES.OCEAN_SWELL)
 					else
 						if glevel > final_level_grave then
-							world:SetTile(x, y, GROUND.OCEAN_HAZARDOUS)
+							world:SetTile(x, y, WORLD_TILES.OCEAN_HAZARDOUS)
 						else
-							world:SetTile(x, y, GROUND.OCEAN_ROUGH)
+							world:SetTile(x, y, WORLD_TILES.OCEAN_ROUGH)
 						end
 					end
 				end
@@ -358,8 +341,8 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		end
 
 		local function add_boarder(x, y)
-			if world:GetTile(x, y) ~= GROUND.IMPASSABLE then
-				world:SetTile(x, y, GROUND.OCEAN_ROUGH)
+			if world:GetTile(x, y) ~= WORLD_TILES.IMPASSABLE then
+				world:SetTile(x, y, WORLD_TILES.OCEAN_ROUGH)
 			end
 
 		end
@@ -376,7 +359,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for i = 0, height, 1 do
 			local d = calc_next(state, (i <= offset or i >= height - offset - offset) and tunings.corner or tunings.middle)
 			for ii = 0, d do
-				world:SetTile(ii, i, GROUND.IMPASSABLE)
+				world:SetTile(ii, i, WORLD_TILES.IMPASSABLE)
 			end
 			add_boarder(d + 1, i)
 			add_boarder(d + 2, i)
@@ -385,7 +368,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for i = 0, height, 1 do
 			local d = calc_next(state, (i <= offset or i >= height - offset - offset) and tunings.corner or tunings.middle)
 			for ii = 0, d do
-				world:SetTile(width - ii, i, GROUND.IMPASSABLE)
+				world:SetTile(width - ii, i, WORLD_TILES.IMPASSABLE)
 			end
 			add_boarder(width - d - 1, i)
 			add_boarder(width - d - 2, i)
@@ -395,7 +378,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for i = 0, width, 1 do
 			local d = calc_next(state, (i <= offset or i >= width - offset - offset) and tunings.corner or tunings.middle)
 			for ii = 0, d do
-				world:SetTile(i, ii, GROUND.IMPASSABLE)
+				world:SetTile(i, ii, WORLD_TILES.IMPASSABLE)
 			end
 			add_boarder(i, d + 1)
 			add_boarder(i, d + 2)
@@ -404,7 +387,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 		for i = 0, width, 1 do
 			local d = calc_next(state, (i <= offset or i >= width - offset - offset) and tunings.corner or tunings.middle)
 			for ii = 0, d do
-				world:SetTile(i, height - ii, GROUND.IMPASSABLE)
+				world:SetTile(i, height - ii, WORLD_TILES.IMPASSABLE)
 			end
 			add_boarder(i, height - d - 1)
 			add_boarder(i, height - d - 2)
@@ -417,7 +400,7 @@ function Ocean_ConvertImpassibleToWater(width, height, data)
 	local fillOffset = data.fillOffset or 4
 
 	do_squarefill(data.shallowRadius)
-	do_groundfill(GROUND.OCEAN_COASTAL, fillOffset, fillDepth, data.shallowRadius or 5)
+	do_groundfill(WORLD_TILES.OCEAN_COASTAL, fillOffset, fillDepth, data.shallowRadius or 5)
 	do_noise()
 	do_blend()
 
@@ -433,10 +416,8 @@ function AddShoreline(width, height)
 		for x = 0, width - 1, 1 do
 			local ground = world:GetTile(x, y)
 			if IsOceanTile(ground) and not IsSurroundedByWaterOrInvalid(x, y, 1) then
-				if ground == GROUND.OCEAN_BRINEPOOL then
-					world:SetTile(x, y, GROUND.OCEAN_BRINEPOOL_SHORE)
-				else
-					world:SetTile(x, y, GROUND.OCEAN_COASTAL_SHORE)
+				if ground ~= WORLD_TILES.OCEAN_BRINEPOOL then
+					world:SetTile(x, y, WORLD_TILES.OCEAN_COASTAL_SHORE)
 				end
 			end
 		end
@@ -595,7 +576,13 @@ local function PlaceOceanLayout(layout, prefabs, populating_tile, ReserveAndPlac
 	return false
 end
                
-local function AddSquareTopology(encoded_topology, left, top, size, add_topology) -- less than ideal, but it will have to do
+local function AddSquareTopology(encoded_topology, tile_left, tile_top, area_size, map_width, map_height, add_topology)
+	local topology_delta = 0
+
+	local left = (tile_left-topology_delta)*TILE_SCALE - (map_width * 0.5 * TILE_SCALE)
+	local top = (tile_top-topology_delta)*TILE_SCALE - (map_height * 0.5 * TILE_SCALE)
+	local size = (area_size + (topology_delta*2))*TILE_SCALE
+
 	local index = #encoded_topology.ids + 1
 	encoded_topology.ids[index] = add_topology.room_id
 	encoded_topology.story_depths[index] = 0
@@ -619,8 +606,8 @@ local function AddSquareTopology(encoded_topology, left, top, size, add_topology
 
 	encoded_topology.nodes[index] = node
 
-	for x = left, left + size do
-		for y = top, top + size do
+	for x = tile_left, tile_left + area_size do
+		for y = tile_top, tile_top + area_size do
 			world:SetTileNodeId(x, y, index)
 		end
 	end
@@ -633,14 +620,13 @@ function Ocean_PlaceSetPieces(set_pieces, add_entity, obj_layout, populating_til
 	local num_placed = 0
 
     if set_pieces ~= nil then
-	    populating_tile = populating_tile or GROUND.IMPASSABLE
+	    populating_tile = populating_tile or WORLD_TILES.IMPASSABLE
 
 	    local function ReserveAndPlaceLayoutFn(layout, prefabs, position, area_size)
 		    obj_layout.ReserveAndPlaceLayout("POSITIONED", layout, prefabs, add_entity, position, world)
 
 			if layout.add_topology ~= nil then
-				local topology_delta = 0
-				AddSquareTopology(encoded_topology, (position[1]-topology_delta)*TILE_SCALE - (map_width * 0.5 * TILE_SCALE), (position[2]-topology_delta)*TILE_SCALE - (map_height * 0.5 * TILE_SCALE), (area_size + (topology_delta*2))*TILE_SCALE, layout.add_topology)
+				AddSquareTopology(encoded_topology, position[1], position[2], area_size, map_width, map_height, layout.add_topology )
 			end
 	    end
 

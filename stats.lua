@@ -134,7 +134,7 @@ local function BuildContextTable(player)
         end
     end
 
-	sendstats.special_event = TheNet:GetServerEvent() and TheNet:GetServerGameMode() or nil
+	--sendstats.special_event = TheNet:GetServerEvent() and TheNet:GetServerGameMode() or nil
 
     sendstats.user =
         (sendstats.user ~= nil and (sendstats.user.."@chester")) or

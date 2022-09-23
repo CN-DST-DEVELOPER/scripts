@@ -17,7 +17,7 @@ local function checkmaster(tar, inst)
 end
 
 local RETARGET_MUST_TAGS = { "_combat", "_health" }
-local RETARGET_CANT_TAGS = { "INLIMBO", "plantkin" }
+local RETARGET_CANT_TAGS = { "magicgrowth", "INLIMBO", "plantkin" }
 local RETARGET_ONEOF_TAGS = { "character", "monster", "animal", "prey", "eyeplant", "lureplant" }
 local function retargetfn(inst)
     return FindEntity(

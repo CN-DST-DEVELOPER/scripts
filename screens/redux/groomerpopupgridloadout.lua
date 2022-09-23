@@ -62,7 +62,7 @@ local GridGroomerPopupScreen = Class(Screen, function(self, target, owner_player
 	self.loadout = self.proot:AddChild(LoadoutSelect_beefalo(profile, self.target, self.initial_skins, self.filter, self.owner_player))
 	self.loadout:SetDefaultMenuOption()
 
-    local offline = not TheNet:IsOnlineMode()
+    local offline = not TheInventory:HasSupportForOfflineSkins() and not TheNet:IsOnlineMode()
 
 	local buttons = {}
 	if offline then
@@ -166,7 +166,7 @@ function GridGroomerPopupScreen:Close(cancel)
 	local skins = self.loadout.selected_skins
 
     local data = {}
-    if TheNet:IsOnlineMode() then
+    if TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode() then
 		data = skins
     end
 

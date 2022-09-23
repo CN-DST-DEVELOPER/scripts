@@ -156,4 +156,9 @@ end
 
 PetLeash.OnRemoveEntity = PetLeash.DespawnAllPets
 
+function PetLeash:TransferComponent(newinst)
+    local newcomponent = newinst.components.petleash
+
+end
+
 return PetLeash

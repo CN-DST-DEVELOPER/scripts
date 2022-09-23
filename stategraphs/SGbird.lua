@@ -149,6 +149,31 @@ local states =
     },
 
     State{
+        name = "delay_glide",
+        tags = { "busy", "notarget" },
+
+        onenter = function(inst, delay)
+            inst:AddTag("NOCLICK")
+            inst:Hide()
+            inst.Physics:SetActive(false)
+            inst.sg:SetTimeout(delay)
+        end,
+
+        ontimeout = function(inst)
+            inst.sg.statemem.gliding = true
+            inst.sg:GoToState("glide")
+        end,
+
+        onexit = function(inst)
+            if not inst.sg.statemem.gliding then
+                inst:RemoveTag("NOCLICK")
+            end
+            inst:Show()
+            inst.Physics:SetActive(true)
+        end,
+    },
+
+    State{
         name = "glide",
         tags = { "idle", "flight", "notarget" },
 
@@ -160,8 +185,16 @@ local states =
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 
             inst.Physics:SetMotorVel(0, math.random() * 10 - 20, 0)
-            inst.SoundEmitter:PlaySound(inst.sounds.flyin)
         end,
+
+        timeline =
+        {
+            TimeEvent(1 * FRAMES, function(inst)
+                if inst.components.inventoryitem == nil or not inst.components.inventoryitem:IsHeld() then
+                    inst.SoundEmitter:PlaySound(inst.sounds.flyin)
+                end
+            end),
+        },
 
         onupdate = function(inst)
             local x, y, z = inst.Transform:GetWorldPosition()

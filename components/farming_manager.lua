@@ -49,8 +49,12 @@ self.inst = inst
 local _world = TheWorld
 local _map = _world.Map
 local _worldsettingstimer = TheWorld.components.worldsettingstimer
-local tile_data = {}
 local LORDFRUITFLY_TIMERNAME = "lordfruitfly_spawntime"
+
+local _nutrientgrid --this grid contains the soil nutrients
+local _moisturegrid --this grid contains the soil moisture
+local _drinkersgrid	--this grid contains the list of soil drinkers
+local _overlaygrid	--this grid contains the soil overlay entity
 
 local _remaining_weed_spawns = {}
 local _weed_spawning_task = nil
@@ -89,31 +93,24 @@ local function DecodeNutrients(nutrients)
     return bit.band(bit.rshift(nutrients, 16), 0xFF), bit.band(bit.rshift(nutrients, 8), 0xFF), bit.band(nutrients, 0xFF)
 end
 
-local function GetTileDataAtPoint(lazy_init, _x, _y, _z)
-    local x, y = _map:GetTileCoordsAtPoint(_x, _y, _z)
-	if lazy_init then
-		tile_data[x] = tile_data[x] or {}
-		tile_data[x][y] = tile_data[x][y] or {}
-		return tile_data[x][y]
-	else
-		return (tile_data[x] ~= nil and tile_data[x][y] ~= nil) and tile_data[x][y] or nil
-	end
-end
+local function SetSoilMoisture(index, soil_moisture)
 
-local function SetSoilMoisture(data, soil_moisture)
-	local prev_moisture = data.soilmoisture or 0
-	data.soilmoisture = Clamp(soil_moisture, TheWorld.state.wetness, MAX_SOIL_MOISTURE)
-	local new_moisture = data.soilmoisture or 0
-
-	if data.nutrients_overlay ~= nil then
-		data.nutrients_overlay:UpdateMoisture(data.soilmoisture / MAX_SOIL_MOISTURE)
-	end
+	local prev_moisture = _moisturegrid:GetDataAtIndex(index)
+	local new_moisture = Clamp(soil_moisture, TheWorld.state.wetness, MAX_SOIL_MOISTURE) or 0
 
 	if prev_moisture ~= new_moisture then
+		_moisturegrid:SetDataAtIndex(index, new_moisture)
+
+		local nutrients_overlay = _overlaygrid:GetDataAtIndex(index)
+		if nutrients_overlay ~= nil then
+			nutrients_overlay:UpdateMoisture(soil_moisture / MAX_SOIL_MOISTURE)
+		end
+
 		-- we only push events when we go from 0 to non-0 and vice verse
 		if new_moisture == 0 or prev_moisture == 0 then
-			if data.soil_drinkers ~= nil then
-				for obj, _ in pairs(data.soil_drinkers) do
+			local soil_drinkers = _drinkersgrid:GetDataAtIndex(index)
+			if soil_drinkers ~= nil then
+				for obj, _ in pairs(soil_drinkers) do
 					--obj:PushEvent("onsoilmoisturestatechange", {is_soil_moist = new_moisture > 0, was_soil_moist = prev_moisture > 0})
 					obj.components.farmsoildrinker:OnSoilMoistureStateChange(new_moisture > 0, prev_moisture > 0)
 					if new_moisture == 0 then
@@ -125,8 +122,20 @@ local function SetSoilMoisture(data, soil_moisture)
 			end
 		end
 	end
-
 end
+
+local function InitializeDataGrids()
+    if _nutrientgrid ~= nil then return end --only check one since the rest will all be in the same state
+
+	local w, h = _map:GetSize()
+	_nutrientgrid = DataGrid(w, h)
+	_moisturegrid = DataGrid(w, h)
+	_drinkersgrid = DataGrid(w, h)
+	_overlaygrid = DataGrid(w, h)
+
+	self.inst:DoPeriodicTask(TUNING.SOIL_MOISTURE_UPDATE_TIME, function() self:_RefreshSoilMoisture(TUNING.SOIL_MOISTURE_UPDATE_TIME) end)
+end
+inst:ListenForEvent("worldmapsetsize", InitializeDataGrids, _world)
 
 --------------------------------------------------------------------------
 --[[ Private event handlers ]]
@@ -135,51 +144,65 @@ end
 local function OnTerraform(inst, data, isloading)
     --isloading can only be set if called internally
     local x, y = data.x, data.y
-    tile_data[x] = tile_data[x] or {}
-    tile_data[x][y] = tile_data[x][y] or {}
-    local tile_entities = tile_data[x][y]
 
-    if data.tile == GROUND.FARMING_SOIL then
-        if not isloading and not tile_entities.nutrients then
-            self:SetTileNutrients(x, y, GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX), GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX), GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX))
-        end
-		tile_entities.belowsoiltile = data.original_tile or GROUND.DIRT
-        if tile_entities.nutrients_overlay == nil then
-            local nutrients_overlay = SpawnPrefab("nutrients_overlay")
+	local index = _nutrientgrid:GetIndex(x, y)
+	local nutrients = _nutrientgrid:GetDataAtIndex(index)
+	local soilmoisture = _moisturegrid:GetDataAtIndex(index)
+	local nutrients_overlay = _overlaygrid:GetDataAtIndex(index)
+
+    if data.tile == WORLD_TILES.FARMING_SOIL then
+		if not isloading then
+			if not nutrients then
+				self:SetTileNutrients(x, y, GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX), GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX), GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX))
+			end
+			TheWorld.components.undertile:SetTileUnderneath(x, y, data.original_tile or nil)
+		end
+
+        if nutrients_overlay == nil then
+            nutrients_overlay = SpawnPrefab("nutrients_overlay")
             nutrients_overlay.Transform:SetPosition(_map:GetTileCenterPoint(x,y))
             nutrients_overlay:UpdateOverlay(self:GetTileNutrients(x, y))
-            tile_entities.nutrients_overlay = nutrients_overlay
+			_overlaygrid:SetDataAtIndex(index, nutrients_overlay)
         end
-		SetSoilMoisture(tile_entities, tile_entities.soilmoisture or TheWorld.state.wetness)
+		SetSoilMoisture(index, soilmoisture or TheWorld.state.wetness)
     else
-        tile_entities.belowsoiltile = nil
-		tile_entities.soilmoisture = nil
-        if tile_entities.nutrients_overlay then
-            tile_entities.nutrients_overlay:Remove()
-            tile_entities.nutrients_overlay = nil
+		TheWorld.components.undertile:ClearTileUnderneath(x, y)
+		_moisturegrid:SetDataAtIndex(index, nil)
+        if nutrients_overlay then
+            nutrients_overlay:Remove()
+			_overlaygrid:SetDataAtIndex(index, nil)
         end
     end
 end
 
 local function OnRemoveSoilDrinker(drinker)
-	local data = GetTileDataAtPoint(false, drinker.Transform:GetWorldPosition())
-	if data ~= nil and data.soil_drinkers ~= nil then
-		data.soil_drinkers[drinker] = nil
-		if next(data.soil_drinkers) == nil then
-			data.soil_drinkers = nil
+	local index = _drinkersgrid:GetIndex(_map:GetTileCoordsAtPoint(drinker.Transform:GetWorldPosition()))
+	local soil_drinkers = _drinkersgrid:GetDataAtIndex(index)
+	if soil_drinkers ~= nil then
+		soil_drinkers[drinker] = nil
+		if IsTableEmpty(soil_drinkers) then
+			_drinkersgrid:SetDataAtIndex(index, nil)
 		end
 	end
 end
 
 local function OnRegisterSoilDrinker(drinker)
-	local data = GetTileDataAtPoint(true, drinker.Transform:GetWorldPosition())
-	data.soil_drinkers = data.soil_drinkers or {}
-	data.soil_drinkers[drinker] = true
-	if data.soilmoisture == nil then
-		data.soilmoisture = TheWorld.state.wetness
+	local index = _drinkersgrid:GetIndex(_map:GetTileCoordsAtPoint(drinker.Transform:GetWorldPosition()))
+	local soil_drinkers = _drinkersgrid:GetDataAtIndex(index)
+	if not soil_drinkers then
+		soil_drinkers = {}
+		_drinkersgrid:SetDataAtIndex(index, soil_drinkers)
 	end
 
-	if data.soilmoisture > 0 then
+	soil_drinkers[drinker] = true
+
+	local soilmoisture = _moisturegrid:GetDataAtIndex(index)
+	if soilmoisture == nil then
+		soilmoisture = TheWorld.state.wetness
+		_moisturegrid:SetDataAtIndex(index, soilmoisture)
+	end
+
+	if soilmoisture > 0 then
 		drinker:AddTag("wildfireprotected")
 	end
 
@@ -211,13 +234,13 @@ local FIND_SOIL_TAG = {"soil"}
 local WEIGHTED_SEED_TABLE = require("prefabs/weed_defs").weighted_seed_table
 
 local function TrySpawnWeed(x, y)
-	local data = tile_data[x] ~= nil and tile_data[x][y] or nil
-	if data ~= nil and data.nutrients_overlay ~= nil and data.nutrients_overlay:IsValid() then
+	local nutrients_overlay = _overlaygrid:GetDataAtPoint(x, y)
+	if nutrients_overlay ~= nil and nutrients_overlay:IsValid() then
 		local half_tile = TILE_SCALE * 0.9 / 2
 
 		local in_soil, spawn_x, spawn_y, spawn_z
 
-		local _x, _y, _z = data.nutrients_overlay.Transform:GetWorldPosition()
+		local _x, _y, _z = nutrients_overlay.Transform:GetWorldPosition()
 		local soils = TheSim:FindEntities(_x, _y, _z, half_tile, FIND_SOIL_TAG)
 		if #soils > 0 then
 			local soil = soils[#soils == 1 and 1 or math.random(#soils)]
@@ -248,17 +271,12 @@ local function OnSeasonChange(inst, season)
 
 	local weed_chance = TUNING.SEASONAL_WEED_SPAWN_CAHNCE[season]
 	if weed_chance ~= nil and weed_chance > 0 then
-		local world_width = TheWorld.Map:GetSize()
 		local spawn_window = TheWorld.state.remainingdaysinseason * 0.25
 
 		-- start updating weeds
-		for x, ylist in pairs(tile_data) do
-			for y, data in pairs(ylist) do
-				if data.nutrients_overlay ~= nil then
-					if math.random() < weed_chance then
-						table.insert(_remaining_weed_spawns, {loc = x + y * world_width, season_time = math.random() * spawn_window})
-					end
-				end
+		for index in pairs(_overlaygrid.grid) do
+			if math.random() < weed_chance then
+				table.insert(_remaining_weed_spawns, {loc = index, season_time = math.random() * spawn_window})
 			end
 		end
 
@@ -278,27 +296,26 @@ function self:_RefreshSoilMoisture(dt)
 	local world_wetness = TheWorld.state.wetness
 	local world_temp = TheWorld.state.temperature
 
-    for x, ylist in pairs(tile_data) do
-        for y, data in pairs(ylist) do
-            if data.soilmoisture ~= nil then
-				if data.soilmoisture < world_wetness then
-					-- the soil will never by dryer than the ground's wetness
-					SetSoilMoisture(data, world_wetness)
-				else
-					-- if its raining, then add moisture based on how hard its raining, otherwise, the world temp may do some drying
-					local world_rate = rain_rate > 0 and (rain_rate * SOIL_RAIN_MOD)
-								or Remap(Clamp(world_temp, MIN_DRYING_TEMP, MAX_DRYING_TEMP), MIN_DRYING_TEMP, MAX_DRYING_TEMP, SOIL_MIN_TEMP_DRY_RATE, SOIL_MAX_TEMP_DRY_RATE)	--
+	for index, soilmoisture in pairs(_moisturegrid.grid) do
+		if soilmoisture < world_wetness then
+			-- the soil will never by dryer than the ground's wetness
+			SetSoilMoisture(index, world_wetness)
+		else
+			-- if its raining, then add moisture based on how hard its raining, otherwise, the world temp may do some drying
+			local world_rate = rain_rate > 0 and (rain_rate * SOIL_RAIN_MOD)
+						or Remap(Clamp(world_temp, MIN_DRYING_TEMP, MAX_DRYING_TEMP), MIN_DRYING_TEMP, MAX_DRYING_TEMP, SOIL_MIN_TEMP_DRY_RATE, SOIL_MAX_TEMP_DRY_RATE)	--
 
-					local obj_rate = 0
-					if data.soil_drinkers ~= nil then
-						for obj, _ in pairs(data.soil_drinkers) do
-							obj_rate = obj_rate + obj.components.farmsoildrinker:GetMoistureRate()
-						end
-					end
-					--print ("_RefreshSoilMoisture", data.soilmoisture, data.soilmoisture, dt * (obj_rate + world_rate), dt,obj_rate, world_rate)
-					SetSoilMoisture(data, data.soilmoisture + dt * (obj_rate + world_rate))
+			local obj_rate = 0
+
+			local soil_drinkers = _drinkersgrid:GetDataAtIndex(index)
+
+			if soil_drinkers ~= nil then
+				for obj, _ in pairs(soil_drinkers) do
+					obj_rate = obj_rate + obj.components.farmsoildrinker:GetMoistureRate()
 				end
 			end
+			--print ("_RefreshSoilMoisture", soilmoisture, soilmoisture, dt * (obj_rate + world_rate), dt,obj_rate, world_rate)
+			SetSoilMoisture(index, soilmoisture + dt * (obj_rate + world_rate))
 		end
 	end
 end
@@ -327,7 +344,9 @@ end
 
 
 function self:LongUpdate(dt)
-    self:_RefreshSoilMoisture(dt)
+	if _moisturegrid ~= nil then
+    	self:_RefreshSoilMoisture(dt)
+	end
 	if _weed_spawning_task ~= nil then
 		self:_UpdateWeedSpawning()
 	end
@@ -338,11 +357,12 @@ end
 --------------------------------------------------------------------------
 
 function self:GetTileNutrients(x, y)
-    local data = tile_data[x] and tile_data[x][y] or {}
-    if data.nutrients then
-        return DecodeNutrients(data.nutrients)
-    end
-    local nutrients = GetTileInfo(_map:GetTile(x, y)).nutrients
+	local nutrients = _nutrientgrid:GetDataAtPoint(x, y)
+
+	if nutrients then
+        return DecodeNutrients(nutrients)
+	end
+	nutrients = GetTileInfo(_map:GetTile(x, y)).nutrients
     if nutrients then
         return unpack(nutrients)
     end
@@ -350,12 +370,12 @@ function self:GetTileNutrients(x, y)
 end
 
 function self:SetTileNutrients(x, y, n1, n2, n3)
-    tile_data[x] = tile_data[x] or {}
-    tile_data[x][y] = tile_data[x][y] or {}
-    local data = tile_data[x][y]
-    data.nutrients = EncodeNutrients(n1, n2, n3)
-    if data.nutrients_overlay then
-        data.nutrients_overlay:UpdateOverlay(n1, n2, n3)
+    local nutrients = EncodeNutrients(n1, n2, n3)
+	_nutrientgrid:SetDataAtPoint(x, y, nutrients)
+
+	local nutrients_overlay = _overlaygrid:GetDataAtPoint(x, y)
+	if nutrients_overlay then
+		nutrients_overlay:UpdateOverlay(n1, n2, n3)
     end
 end
 
@@ -366,12 +386,12 @@ function self:AddTileNutrients(x, y, nutrient1, nutrient2, nutrient3)
 end
 
 function self:CycleNutrientsAtPoint(_x, _y, _z, consume, restore, test_only)
-	local data = GetTileDataAtPoint(false, _x, _y, _z)
-	if data == nil or data.nutrients_overlay == nil then
+    local x, y = TheWorld.Map:GetTileCoordsAtPoint(_x, _y, _z)
+	local nutrients_overlay = _overlaygrid:GetDataAtPoint(x, y)
+	if nutrients_overlay == nil then
 		return true --soil is depleted
 	end
 
-    local x, y = TheWorld.Map:GetTileCoordsAtPoint(_x, _y, _z)
     local nutrients = {self:GetTileNutrients(x, y)}
 
 	local depleted = false
@@ -423,92 +443,116 @@ function self:CycleNutrientsAtPoint(_x, _y, _z, consume, restore, test_only)
 end
 
 function self:GetTileBelowSoil(x, y)
-    return tile_data[x] and tile_data[x][y] and tile_data[x][y].belowsoiltile
+	return TheWorld.components.undertile:GetTileUnderneath(x, y)
 end
 
 function self:AddSoilMoistureAtPoint(x, y, z, moisture_delta)
 	if moisture_delta ~= 0 then
-		local data = GetTileDataAtPoint(false, x, y, z) -- if the tile is not used for farming then there is no need to track the moisture
-		if data ~= nil then
-			SetSoilMoisture(data, (data.soilmoisture or TheWorld.state.wetness) + moisture_delta)
+		local index = _overlaygrid:GetIndex(_map:GetTileCoordsAtPoint(x, y, z))
+		local nutrients_overlay = _overlaygrid:GetDataAtIndex(index) --if the tile is not used for farming then there is no need to track the moisture
+		if nutrients_overlay then
+			local soilmoisture = _moisturegrid:GetDataAtIndex(index)
+			SetSoilMoisture(index, (soilmoisture or TheWorld.state.wetness) + moisture_delta)
 		end
 	end
 end
 
 function self:IsSoilMoistAtPoint(x, y, z)
-	local data = GetTileDataAtPoint(false, x, y, z)
-	return (data ~= nil and data.soilmoisture ~= nil) and data.soilmoisture > 0 or TheWorld.state.wetness > 0
+	local soilmoisture = _moisturegrid:GetDataAtPoint(_map:GetTileCoordsAtPoint(x, y, z))
+	return soilmoisture ~= nil and soilmoisture > 0 or TheWorld.state.wetness > 0
 end
 
 --------------------------------------------------------------------------
 --[[ Save/Load ]]
 --------------------------------------------------------------------------
+local FARMING_MANAGER_SAVE_VERSION = 2
 
 function self:OnSave()
-    local data = {tile_data = {}}
+    local data = {}
 
 	if #_remaining_weed_spawns > 0 then
 		data.remaining_weed_spawns = _remaining_weed_spawns
 	end
 
-    for x, ylist in pairs(tile_data) do
-        data.tile_data[x] = {}
-        for y, entries in pairs(ylist) do
-            data.tile_data[x][y] = {}
-            if entries.nutrients then
-                data.tile_data[x][y].nutrients = entries.nutrients
-            end
-            if entries.belowsoiltile then
-                data.tile_data[x][y].belowsoiltile = entries.belowsoiltile
-            end
-            if entries.soilmoisture then
-                data.tile_data[x][y].soilmoisture = entries.soilmoisture
-            end
-        end
-    end
+	data.nutrientgrid = _nutrientgrid:Save()
+	data.moisturegrid = _moisturegrid:Save()
 
 	data.lordfruitfly_queued_spawn = not _worldsettingstimer:ActiveTimerExists(LORDFRUITFLY_TIMERNAME)
+
+	data.version = FARMING_MANAGER_SAVE_VERSION
 
 	return ZipAndEncodeSaveData(data)
 end
 
-function self:OnLoad(data)
-    data = DecodeAndUnzipSaveData(data)
+local function LoadVersion1Tiledata(data)
+	if data.tile_data then
+		local tile_id_conversion_map = TheWorld.tile_id_conversion_map
+		for x, ylist in pairs(data.tile_data) do
+			for y, entries in pairs(ylist) do
+				local index = _nutrientgrid:GetIndex(x, y)
 
-    if data ~= nil then
-        if data.tile_data then
-            for x, ylist in pairs(data.tile_data) do
-                tile_data[x] = {}
-                for y, entries in pairs(ylist) do
-                    tile_data[x][y] = {}
+				if entries.nutrients then
+					_nutrientgrid:SetDataAtIndex(index, entries.nutrients)
+				end
 
-                    if entries.nutrients then
-                        tile_data[x][y].nutrients = entries.nutrients
-                    end
+				if entries.soilmoisture then
+					_moisturegrid:SetDataAtIndex(index, entries.soilmoisture)
+				end
 
-                    if entries.soilmoisture then
-                        tile_data[x][y].soilmoisture = entries.soilmoisture
-                    end
-
-					local map_tile = _map:GetTile(x, y)
-                    if map_tile == GROUND.FARMING_SOIL then
-                        OnTerraform(_world, {x = x, y = y, original_tile = entries.belowsoiltile, tile = map_tile}, true)
-                    end
-                end
-            end
-        end
-		if data.remaining_weed_spawns then
-			_remaining_weed_spawns = data.remaining_weed_spawns
-			if _weed_spawning_task == nil then
-				_weed_spawning_task = TheWorld:DoPeriodicTask(TUNING.SEG_TIME, self._UpdateWeedSpawning)
+				local map_tile = _map:GetTile(x, y)
+				if map_tile == WORLD_TILES.FARMING_SOIL then
+					local undertile = entries.belowsoiltile
+					if undertile then
+						if tile_id_conversion_map then
+							undertile = tile_id_conversion_map[undertile] or undertile
+						end
+						TheWorld.components.undertile:SetTileUnderneath(x, y, undertile)
+					end
+					OnTerraform(_world, {x = x, y = y, tile = map_tile}, true)
+				end
 			end
 		end
-        if data.lordfruitfly_spawntime then
-			StartFruitFlyTimer(data.lordfruitfly_spawntime)
-		elseif data.lordfruitfly_queued_spawn ~= false then
-			StopFruitFlyTimer()
-        end
-    end
+	end
+end
+
+local function LoadVersion2Tiledata(data)
+	_nutrientgrid:Load(data.nutrientgrid)
+	_moisturegrid:Load(data.moisturegrid)
+
+	local w, h = _map:GetSize()
+	for x = 0, w - 1 do
+		for y = 0, h - 1 do
+			local map_tile = _map:GetTile(x, y)
+			if map_tile == WORLD_TILES.FARMING_SOIL then
+				OnTerraform(_world, {x = x, y = y, tile = map_tile}, true)
+			end
+		end
+	end
+end
+
+function self:OnLoad(data)
+    data = DecodeAndUnzipSaveData(data)
+    if data == nil then return end
+
+	local version = data.version or 1
+
+	if version == 1 then
+		LoadVersion1Tiledata(data)
+	else
+		LoadVersion2Tiledata(data)
+	end
+
+	if data.remaining_weed_spawns then
+		_remaining_weed_spawns = data.remaining_weed_spawns
+		if _weed_spawning_task == nil then
+			_weed_spawning_task = TheWorld:DoPeriodicTask(TUNING.SEG_TIME, self._UpdateWeedSpawning)
+		end
+	end
+	if data.lordfruitfly_spawntime then
+		StartFruitFlyTimer(data.lordfruitfly_spawntime)
+	elseif data.lordfruitfly_queued_spawn ~= false then
+		StopFruitFlyTimer()
+	end
 end
 
 
@@ -522,10 +566,15 @@ function self:GetDebugString()
 	local target = ConsoleCommandPlayer()
 	if target ~= nil and target.Transform ~= nil then
 	    local x, y = _map:GetTileCoordsAtPoint(target.Transform:GetWorldPosition())
-		local data = tile_data[x] ~= nil and tile_data[x][y] or nil
-		if data ~= nil then
-			if data.soilmoisture ~= nil then
-				s = s .. "M: ".. string.format("%.3f", data.soilmoisture) .. " (# " .. tostring(data.soil_drinkers ~= nil and GetTableSize(data.soil_drinkers) or 0) .. ")"
+
+		local index = _overlaygrid:GetIndex(x, y)
+		local nutrients_overlay = _overlaygrid:GetDataAtIndex(index)
+
+		if nutrients_overlay ~= nil then
+			local soilmoisture = _moisturegrid:GetDataAtIndex(index)
+			if soilmoisture ~= nil then
+				local soil_drinkers = _drinkersgrid:GetDataAtIndex(index)
+				s = s .. "M: ".. string.format("%.3f", soilmoisture) .. " (# " .. tostring(soil_drinkers ~= nil and GetTableSize(soil_drinkers) or 0) .. ")"
 			end
 		    local _n1, _n2, _n3 = self:GetTileNutrients(x, y)
 			s = s .. ", N: " .. tostring(_n1) .. ", " .. tostring(_n2) .. ", " .. tostring(_n3)
@@ -554,8 +603,6 @@ self.inst:ListenForEvent("ms_unregistersoildrinker", function(i, m) OnRemoveSoil
 self.inst:ListenForEvent("ms_fruitflyspawneractive", function(world, data) OnFruitFlySpawnerActive(data) end)
 self.inst:ListenForEvent("ms_lordfruitflykilled", function() StartFruitFlyTimer(TUNING.LORDFRUITFLY_RESPAWN_TIME) end)
 self.inst:ListenForEvent("ms_oncroprotted", function() AdvanceFruitFlyTimer(TUNING.LORDFRUITFLY_CROP_ROTTED_ADVANCE_TIME) end)
-
-self.inst:DoPeriodicTask(TUNING.SOIL_MOISTURE_UPDATE_TIME, function() self:_RefreshSoilMoisture(TUNING.SOIL_MOISTURE_UPDATE_TIME) end)
 
 self:WatchWorldState("season", OnSeasonChange)
 

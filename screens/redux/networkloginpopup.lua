@@ -36,10 +36,13 @@ function NetworkLoginPopup:OnUpdate( dt )
 					self.inventory_step = INVENTORY_PROGRESS.CHECK_EVENT
 				elseif inventory_progress == INVENTORY_PROGRESS.CHECK_DAILY_GIFT and self.inventory_step ~= INVENTORY_PROGRESS.CHECK_DAILY_GIFT then
 					self.dialog.title:SetString(STRINGS.UI.NOTIFICATION.CHECK_DAILY_GIFT)
-					self.inventory_step = INVENTORY_PROGRESS.CHECK_DAILY_GIFT
-				elseif inventory_progress == INVENTORY_PROGRESS.CHECK_COOKBOOK and self.inventory_step ~= INVENTORY_PROGRESS.CHECK_COOKBOOK then
-					self.dialog.title:SetString(STRINGS.UI.NOTIFICATION.CHECK_COOKBOOK)
-					self.inventory_step = INVENTORY_PROGRESS.CHECK_COOKBOOK
+					self.inventory_step = INVENTORY_PROGRESS.CHECK_DAILY_GIFT		
+				elseif inventory_progress == INVENTORY_PROGRESS.CHECK_PENDINGKEYVALUESTORES and self.inventory_step ~= INVENTORY_PROGRESS.CHECK_PENDINGKEYVALUESTORES then
+					self.dialog.title:SetString(STRINGS.UI.NOTIFICATION.CHECK_KEYVALUESTORES)
+					self.inventory_step = INVENTORY_PROGRESS.CHECK_PENDINGKEYVALUESTORES		
+				elseif inventory_progress == INVENTORY_PROGRESS.CHECK_KEYVALUESTORES and self.inventory_step ~= INVENTORY_PROGRESS.CHECK_KEYVALUESTORES then
+					self.dialog.title:SetString(STRINGS.UI.NOTIFICATION.CHECK_KEYVALUESTORES)
+					self.inventory_step = INVENTORY_PROGRESS.CHECK_KEYVALUESTORES						
 				elseif inventory_progress == INVENTORY_PROGRESS.CHECK_INVENTORY and self.inventory_step ~= INVENTORY_PROGRESS.CHECK_INVENTORY then
 					self.dialog.title:SetString(STRINGS.UI.NOTIFICATION.CHECK_INVENTORY)
 					self.inventory_step = INVENTORY_PROGRESS.CHECK_INVENTORY
@@ -58,7 +61,10 @@ function NetworkLoginPopup:OnLogin(forceOffline)
 		self.logged = true
 	    self:Disable()
 	    self:StopUpdating()
-	    if forceOffline then TheFrontEnd:GetAccountManager():CancelLogin() end
+	    if forceOffline then
+			TheInventory:CancelGetAllItems()
+			TheFrontEnd:GetAccountManager():CancelLogin()
+		end
 	    self.onLogin_cb(forceOffline)
 	end
 end
@@ -66,6 +72,7 @@ end
 function NetworkLoginPopup:OnCancel()
     -- Ignore base implementation and do it all ourself.
     self:Disable()
+	TheInventory:CancelGetAllItems()
 	TheFrontEnd:GetAccountManager():CancelLogin()
 	TheFrontEnd:PopScreen()
 	self.onCancel_cb()

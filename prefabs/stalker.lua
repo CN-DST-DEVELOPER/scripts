@@ -1178,10 +1178,16 @@ end
 local function OnDecay(inst)
     inst._decaytask = nil
     if not inst.components.health:IsDead() then
-        --No chance fuel drops if decayed due to daylight
-        inst.components.lootdropper:SetLoot(nil)
-        inst.components.lootdropper:AddChanceLoot("shadowheart", 1)
-        inst.components.health:Kill()
+        -- If we tried to decay while we're dunked in the ocean, we can't die to
+        -- health:Kill(), so queue up the task until we finish washing ashore.
+        if inst.sg:HasStateTag("drowning") then
+            inst._decaytask = inst:DoTaskInTime(2 + math.random(), OnDecay)
+        else
+            --No chance fuel drops if decayed due to daylight
+            inst.components.lootdropper:SetLoot(nil)
+            inst.components.lootdropper:AddChanceLoot("shadowheart", 1)
+            inst.components.health:Kill()
+        end
     end
 end
 
@@ -1311,6 +1317,8 @@ local function common_fn(bank, build, shadowsize, canfight, atriumstalker)
 
     inst:AddComponent("sanityaura")
     inst.components.sanityaura.aura = -TUNING.SANITYAURA_HUGE
+
+    inst:AddComponent("drownable")
 
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "torso"

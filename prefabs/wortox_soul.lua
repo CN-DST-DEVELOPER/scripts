@@ -25,14 +25,13 @@ local function KillSoul(inst)
     inst:ListenForEvent("animover", inst.Remove)
     inst.AnimState:PlayAnimation("idle_pst")
     inst.SoundEmitter:PlaySound("dontstarve/characters/wortox/soul/spawn", nil, .5)
-
     wortox_soul_common.DoHeal(inst)
 end
 
 local function toground(inst)
     inst.persists = false
     if inst._task == nil then
-        inst._task = inst:DoTaskInTime(.4 + math.random() * .7, KillSoul)
+        inst._task = inst:DoTaskInTime(.4 + math.random() * .7, KillSoul) -- NOTES(JBK): This is 1.1 max keep it in sync with "[WST]"
     end
     if inst.AnimState:IsCurrentAnimation("idle_loop") then
         inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
@@ -50,6 +49,15 @@ local function OnDropped(inst)
                 soul.Physics:Teleport(x, y, z)
                 soul.components.inventoryitem:OnDropped(true)
             end
+        end
+    end
+end
+
+local function OnCharged(inst)
+    if inst.components.inventoryitem ~= nil then
+        local owner = inst.components.inventoryitem.owner
+        if owner and owner.FinishPortalHop then
+            owner:FinishPortalHop()
         end
     end
 end
@@ -76,6 +84,11 @@ local function fn()
     --souleater (from soul component) added to pristine state for optimization
     inst:AddTag("soul")
 
+    -- Tag rechargeable (from rechargeable component) added to pristine state for optimization.
+    inst:AddTag("rechargeable")
+    -- Optional tag to control if the item is not a "cooldown until" meter but a "bonus while" meter.
+    inst:AddTag("rechargeable_bonus")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -90,6 +103,9 @@ local function fn()
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
     inst.components.stackable.forcedropsingle = true
+
+    inst:AddComponent("rechargeable")
+    inst.components.rechargeable:SetOnChargedFn(OnCharged)
 
     inst:AddComponent("inspectable")
     inst:AddComponent("soul")

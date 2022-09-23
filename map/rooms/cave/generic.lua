@@ -6,7 +6,7 @@ require "map/room_functions"
 
 AddRoom("PitRoom", {
     colour={r=.25,g=.28,b=.25,a=.50},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     type = NODE_TYPE.Room,
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
     contents = {},
@@ -14,7 +14,7 @@ AddRoom("PitRoom", {
 
 AddRoom("CaveExitRoom", {
     colour={r=.25,g=.28,b=.25,a=.50},
-    value = GROUND.SINKHOLE,
+    value = WORLD_TILES.SINKHOLE,
     contents =  {
         countstaticlayouts = {
             ["CaveExit"] = 1,

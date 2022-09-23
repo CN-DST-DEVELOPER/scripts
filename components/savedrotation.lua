@@ -12,4 +12,11 @@ function SavedRotation:LoadPostPass(newents, data)
     self.inst.Transform:LoadRotation(data.rotation or 0)
 end
 
+-- Note: If an object can be placed on a rotated boat, this function must be called in OnLoadPostPass() in order to correctly orient the object on the boat.
+function SavedRotation:ApplyPostPassRotation(angle)
+    self.inst:DoTaskInTime(0, function(inst)
+        inst.Transform:SetRotation(angle)
+    end)
+end
+
 return SavedRotation

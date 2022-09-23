@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 AddRoom("SpiderCity", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 					                countprefabs= {
                                         goldnugget = function() return 3 + math.random(3) end,
@@ -27,7 +27,7 @@ AddRoom("SpiderCity", {
 
 AddRoom("SpiderVillage", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					contents =  {
 					                countprefabs= {
                                         goldnugget = function() return 3 + math.random(3) end,
@@ -51,7 +51,7 @@ AddRoom("SpiderVillage", {
 					})
 AddRoom("SpiderVillageSwamp", {
 					colour={r=.30,g=.20,b=.50,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 					                countprefabs= {
                                         goldnugget = function() return 3 + math.random(3) end,

@@ -192,6 +192,9 @@ local function fn()
 
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = 2.75
+    inst.components.locomotor:SetSlowMultiplier(1)
+    inst.components.locomotor:SetTriggersCreep(false)
+    inst.components.locomotor.pathcaps = {ignorecreep = true,}
 
     inst:SetStateGraph("SGmole")
     inst:SetBrain(brain)

@@ -5,7 +5,7 @@ AddTask("MaxPuzzle1", {
 			["MaxPuzzle1"] = 1,
 			["SpiderMarsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})
@@ -16,7 +16,7 @@ AddTask("MaxPuzzle2", {
 			["MaxPuzzle2"] = 1,
 			["SpiderMarsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})
@@ -27,7 +27,7 @@ AddTask("MaxPuzzle3", {
 			["MaxPuzzle3"] = 1,
 			["SpiderMarsh"] = function() return 2+math.random(SIZE_VARIATION) end,
 		},
-		room_bg=GROUND.MARSH,
+		room_bg=WORLD_TILES.MARSH,
 		background_room="BGMarsh",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})
@@ -38,7 +38,7 @@ AddTask("MaxHome", {
 		room_choices={
 			["MaxHome"] = 1,
 		},
-		room_bg=GROUND.IMPASSABLE,
+		room_bg=WORLD_TILES.IMPASSABLE,
 		background_room="BGImpassable",
 		colour={r=.05,g=.05,b=.05,a=1}
 	})

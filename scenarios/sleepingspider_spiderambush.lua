@@ -20,7 +20,7 @@ local function OnWakeUp(inst, scenariorunner, data)
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         local wander_point = pt + offset
 
-        if ground.Map and ground.Map:GetTileAtPoint(wander_point.x, wander_point.y, wander_point.z) ~= GROUND.IMPASSABLE then
+        if ground.Map and not TileGroupManager:IsImpassableTile(ground.Map:GetTileAtPoint(wander_point.x, wander_point.y, wander_point.z)) then
         	local particle = SpawnPrefab("poopcloud")
             particle.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
 

@@ -13,8 +13,8 @@ local AOETargeting = Class(function(self, inst)
         smoothing = 6.66,
         targetfn = nil,
         reticuleprefab = "reticule",
-        validcolour = { 204 / 255, 131 / 255, 57 / 255, .3 },
-        invalidcolour = { 1, 0, 0, .3 },
+        validcolour = { 204 / 255, 131 / 255, 57 / 255, 1 },
+        invalidcolour = { 1, 0, 0, 1 },
         mouseenabled = false,
         pingprefab = nil,
     }

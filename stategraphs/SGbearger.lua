@@ -125,6 +125,7 @@ local events =
 	CommonHandlers.OnSleep(),
 	CommonHandlers.OnFreeze(),
 	CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
 	EventHandler("doattack", onattackfn),
 	EventHandler("attacked", onattackedfn),
 }
@@ -772,5 +773,6 @@ local states=
 }
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAsoreStates(states)
 
 return StateGraph("bearger", states, events, "idle", actionhandlers)

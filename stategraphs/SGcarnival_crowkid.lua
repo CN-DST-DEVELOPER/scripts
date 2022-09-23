@@ -6,10 +6,41 @@ local actionhandlers =
 {
     ActionHandler(ACTIONS.GOHOME, "flyaway"),
     ActionHandler(ACTIONS.ACTIVATE, "activate"),
+    ActionHandler(ACTIONS.ADDFUEL, "activate"),
 }
 
 local function GoToGameOverState(inst)
 	inst.sg:GoToState((inst.components.minigame_spectator ~= nil and inst.components.minigame_spectator._good_ending) and "minigame_over_cheer" or "minigame_over_boo")
+end
+
+local function DropRewards(inst)
+	if not inst.sg.statemem.rewards_given then
+		inst.sg.statemem.rewards_given = true
+
+		local num_rewards = math.random()
+		num_rewards = 3 + math.ceil(num_rewards * 5)
+
+		local tickets = SpawnPrefab("carnival_prizeticket")
+		tickets.components.stackable.stacksize = num_rewards
+		tickets.Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+		local token = SpawnPrefab("carnival_gametoken")
+		token.Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+		local giver = inst.sg.statemem.giver
+		if giver ~= nil and giver:IsValid() then
+			inst:ForceFacePoint(giver.Transform:GetWorldPosition())
+		end
+
+		LaunchAt(tickets, inst, giver, 0, 1, 1, 45)
+		LaunchAt(token, inst, giver, 0, 1, 1, 45)
+	end
+end
+
+local function GetEatSnackState(inst)
+	return inst.has_snack == "corn_cooked" and "eat_popcorn"
+			or inst.has_snack == "carnivalfood_corntea" and "eat_corntea"
+			or nil
 end
 
 local events=
@@ -47,14 +78,14 @@ local states =
         name = "idle",
         tags = { "idle", "canrotate" },
 
-        onenter = function(inst, from_minigame_reaction)
+        onenter = function(inst, short_delay)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("idle", true)
 
 			if inst.components.minigame_spectator ~= nil and inst.components.minigame_spectator._good_ending ~= nil then
 				GoToGameOverState(inst)
 			else
-				inst.sg:SetTimeout(1 + math.random() * (from_minigame_reaction and 1 or 3))
+				inst.sg:SetTimeout(1 + math.random() * (short_delay and 1 or 3))
 			end
         end,
 
@@ -70,8 +101,114 @@ local states =
 				elseif inst.components.minigame_spectator._good_ending ~= nil then
 					GoToGameOverState(inst)
 				end
+			else
+				local snack = GetEatSnackState(inst)
+				if snack ~= nil then
+					inst.sg:GoToState(snack)
+				elseif inst._watch_campfire ~= nil and inst._watch_campfire:IsValid() and inst:IsNear(inst._watch_campfire, TUNING.CARNIVAL_CROWKID_CAMPFIRE_SIT_DIST) then
+					inst.sg:GoToState(math.random() < 0.25 and "campfire_sit2" or "campfire_sit")
+					inst:ForceFacePoint(inst._watch_campfire:GetPosition())
+				end
 			end
         end,
+    },
+
+    State{
+        name = "eat_popcorn",
+        tags = { },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("popcorn")
+        end,
+
+        timeline =
+        {
+            TimeEvent(19 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent2022/crowkid/popcorn_toss") end),
+            TimeEvent(58 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent2022/crowkid/popcorn_crunch") end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+
+    },
+
+    State{
+        name = "eat_corntea",
+        tags = { },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("cornyslush")
+        end,
+
+        timeline =
+        {
+            TimeEvent(29 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent2022/crowkid/slurp_cornslush") end),
+            TimeEvent(50 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent2022/crowkid/happy_chirp") end),
+
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+
+    State{
+        name = "campfire_sit",
+        tags = { },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("sit_pre")
+            inst.AnimState:PushAnimation("sit_loop", false)
+            inst.AnimState:PushAnimation("sit_loop", false)
+            inst.AnimState:PushAnimation("sit_loop", false)
+            inst.AnimState:PushAnimation("sit_pst", false)
+        end,
+
+        timeline =
+        {
+            --TimeEvent(5 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/upset") end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+
+    State{
+        name = "campfire_sit2",
+        tags = { },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("sit_pre")
+            inst.AnimState:PushAnimation("sit_sleep", false)
+            inst.AnimState:PushAnimation("sit_pst", false)
+        end,
+
+        timeline =
+        {
+            --TimeEvent(5 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/upset") end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
     },
 
     State{
@@ -92,7 +229,7 @@ local states =
                 inst.Physics:Teleport(x, 0, z)
                 inst.AnimState:PlayAnimation("land")
                 inst.DynamicShadow:Enable(true)
-                inst.sg:GoToState("idle", true)
+                inst.sg:GoToState("idle")
             end
         end,
 
@@ -134,7 +271,7 @@ local states =
 
     State{
         name = "talkto",
-        tags = {"canrotate"},
+        tags = {"canrotate", "talking"},
 
         onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -147,12 +284,48 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
+                inst.sg:GoToState(GetEatSnackState(inst) or "idle")
             end),
         },
 
 		onexit = function(inst)
 	        --inst.SoundEmitter:KillSound("talk")
+		end,
+    },
+
+    State{
+        name = "give_reward",
+        tags = {"canrotate", "busy", "talking"},
+
+        onenter = function(inst, giver)
+			inst.components.locomotor:Stop()
+
+			if giver ~= nil then
+				inst.sg.statemem.giver = giver
+				inst:ForceFacePoint(giver.Transform:GetWorldPosition())
+
+				inst.components.talker:Say(STRINGS.CARNIVAL_CROWKID_ACCEPTGIFT[math.random(#STRINGS.CARNIVAL_CROWKID_ACCEPTGIFT)])
+			end
+
+            inst.AnimState:PlayAnimation("talk_" .. tostring(math.random(2)), true)
+		    inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/neutral")
+
+			inst.sg:SetTimeout(0.4)
+        end,
+
+        ontimeout = function(inst)
+			DropRewards(inst)
+		end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState(GetEatSnackState(inst) or "idle")
+            end),
+        },
+
+		onexit = function(inst)
+			DropRewards(inst)
 		end,
     },
 
@@ -182,7 +355,7 @@ local states =
         {
             TimeEvent(10 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/neutral") end),
             TimeEvent(28 * FRAMES, function(inst) if inst.sg.statemem.loops >= 2 then inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/upset") end end),
-            TimeEvent(28 * FRAMES, function(inst) if inst.sg.statemem.loops >= 3 then inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/upset") end end),
+            TimeEvent(46 * FRAMES, function(inst) if inst.sg.statemem.loops >= 3 then inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/upset") end end),
         },
         events =
         {

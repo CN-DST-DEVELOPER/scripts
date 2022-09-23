@@ -26,7 +26,7 @@ local CookbookWidget = Class(Widget, function(self, parent)
     backdrop:ScaleToSize(900, 550)
 
 	if not TheCookbook:ApplyOnlineProfileData() then
-		local msg = (TheFrontEnd ~= nil and TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) and STRINGS.UI.COOKBOOK.ONLINE_DATA_USER_OFFLINE or STRINGS.UI.COOKBOOK.ONLINE_DATA_DOWNLOAD_FAILED
+		local msg = not TheInventory:HasSupportForOfflineSkins() and (TheFrontEnd ~= nil and TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) and STRINGS.UI.COOKBOOK.ONLINE_DATA_USER_OFFLINE or STRINGS.UI.COOKBOOK.ONLINE_DATA_DOWNLOAD_FAILED
 		self.sync_status = self.root:AddChild(Text(HEADERFONT, 18, msg, UICOLOURS.BROWN_DARK))
 		self.sync_status:SetPosition(0, -258)
 	end

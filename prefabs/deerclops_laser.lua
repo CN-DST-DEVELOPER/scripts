@@ -240,7 +240,7 @@ local function Scorch_OnFadeDirty(inst)
     else
         local k = inst._fade:value() / SCORCH_FADE_FRAMES
         k = k * k
-        inst.AnimState:OverrideMultColour(k, k, k, k)
+        inst.AnimState:OverrideMultColour(1, 1, 1, k)
         inst.AnimState:SetHighlightColour()
     end
 end
@@ -253,7 +253,7 @@ local function Scorch_OnUpdateFade(inst)
         inst:Remove()
     elseif inst._fade:value() > 0 then
         inst._fade:set_local(0)
-        inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+        inst.AnimState:OverrideMultColour(1, 1, 1, 0)
     end
 end
 

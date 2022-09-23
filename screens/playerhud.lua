@@ -59,7 +59,7 @@ local PlayerHud = Class(Screen, function(self)
     self.playeravatarpopup = nil
     self.recentgifts = nil
     self.recentgiftstask = nil
-
+	
     self.inst:ListenForEvent("continuefrompause", function() self:RefreshControllers() end, TheWorld)
     self.inst:ListenForEvent("endofmatch", function(world, data) self:ShowEndOfMatchPopup(data) end, TheWorld)
 
@@ -212,9 +212,7 @@ function PlayerHud:OnLoseFocus()
     Screen.OnLoseFocus(self)
     TheInput:EnableMouse(true)
 
-    if self:IsControllerCraftingOpen() then
-        self:CloseControllerCrafting()
-    end
+    self:CloseCrafting()
 
     if self:IsControllerInventoryOpen() then
         self:CloseControllerInventory()
@@ -254,10 +252,6 @@ function PlayerHud:OnGainFocus()
     end
 
     if not TheInput:ControllerAttached() then
-        if self:IsControllerCraftingOpen() then
-            self:CloseControllerCrafting()
-        end
-
         if self:IsControllerInventoryOpen() then
             self:CloseControllerInventory()
         end
@@ -601,8 +595,14 @@ function PlayerHud:ClearRecentGifts()
     self.recentgifts = nil
 end
 
-function PlayerHud:RefreshControllers()
+function PlayerHud:RefreshControllers() -- this is really the event handler for "continuefrompause"
     local controller_mode = TheInput:ControllerAttached()
+	if controller_mode then
+	    TheFrontEnd:StopTrackingMouse()
+	end
+
+	TheFrontEnd:UpdateRepeatDelays()
+
 	local integrated_backpack = controller_mode or Profile:GetIntegratedBackpack()
     if self.controls.inv.controller_build ~= controller_mode or self.controls.inv.integrated_backpack ~= integrated_backpack then
         self.controls.inv.rebuild_pending = true
@@ -621,6 +621,14 @@ function PlayerHud:RefreshControllers()
             OpenContainerWidget(self, overflow.inst, overflow:IsSideWidget())
         end
     end
+
+	self.controls.craftingmenu:RefreshControllers(controller_mode)
+	
+	if self._CraftingHintAllRecipesEnabled ~= Profile:GetCraftingHintAllRecipesEnabled() then
+		self.owner:PushEvent("refreshcrafting")
+		self._CraftingHintAllRecipesEnabled = Profile:GetCraftingHintAllRecipesEnabled()
+	end
+
 end
 
 function PlayerHud:ShowWriteableWidget(writeable, config)
@@ -661,6 +669,8 @@ function PlayerHud:SetMainCharacter(maincharacter)
         maincharacter.HUD = self
         self.owner = maincharacter
 
+		self._CraftingHintAllRecipesEnabled = Profile:GetCraftingHintAllRecipesEnabled() -- cache the value so we can refresh the crafting menu with it changes
+
         self:CreateOverlays(self.owner)
         self.controls = self.root:AddChild(Controls(self.owner))
 
@@ -675,7 +685,6 @@ function PlayerHud:SetMainCharacter(maincharacter)
                 self:GoEnlightened()
             end
         end
-        self.controls.crafttabs:UpdateRecipes()
 
         local overflow = maincharacter.replica.inventory ~= nil and maincharacter.replica.inventory:GetOverflowContainer() or nil
         if overflow ~= nil then
@@ -721,22 +730,21 @@ function PlayerHud:OnUpdate(dt)
 end
 
 function PlayerHud:HideControllerCrafting()
-    local pt = self.controls.crafttabs:GetPosition()
-    self.controls.crafttabs:MoveTo(pt, Vector3(-200, pt.y, pt.z), .25)
+    local pt = self.controls.craftingmenu:GetPosition()
+    self.controls.craftingmenu:MoveTo(pt, Vector3(-200, pt.y, pt.z), .25)
 end
 
 function PlayerHud:ShowControllerCrafting()
-    local pt = self.controls.crafttabs:GetPosition()
-    self.controls.crafttabs:MoveTo(pt, Vector3(0, pt.y, pt.z), .25)
+    local pt = self.controls.craftingmenu:GetPosition()
+    self.controls.craftingmenu:MoveTo(pt, Vector3(0, pt.y, pt.z), .25)
 end
 
 function PlayerHud:OpenControllerInventory()
     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/craft_open")
     TheFrontEnd:StopTrackingMouse()
-    if self:IsControllerCraftingOpen() then
-        self:CloseControllerCrafting()
-	    self:HideControllerCrafting()
-    end
+
+    self:CloseCrafting()
+
     self.controls.inv:OpenControllerInventory()
     self.controls.item_notification:ToggleController(true)
     self.controls.yotb_notification:ToggleController(true)
@@ -750,7 +758,6 @@ function PlayerHud:CloseControllerInventory()
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/craft_close")
     end
     self.controls:HideStatusNumbers()
-    self:ShowControllerCrafting()
     self.controls.inv:CloseControllerInventory()
     self.controls.item_notification:ToggleController(false)
     self.controls.yotb_notification:ToggleController(false)
@@ -762,7 +769,8 @@ function PlayerHud:HasInputFocus()
     --when anything else is active on top of it.
     local active_screen = TheFrontEnd:GetActiveScreen()
     return (active_screen ~= nil and active_screen ~= self)
-        or (self.controls ~= nil and (self.controls.inv.open or self.controls.crafttabs.controllercraftingopen))
+		or TheFrontEnd.textProcessorWidget ~= nil
+        or (self.controls ~= nil and (self.controls.inv.open or (self:IsCraftingOpen() and TheInput:ControllerAttached())))
         or self.modfocus ~= nil
 end
 
@@ -790,12 +798,17 @@ function PlayerHud:IsControllerInventoryOpen()
     return self.controls ~= nil and self.controls.inv.open
 end
 
-function PlayerHud:IsControllerCraftingOpen()
-    return self.controls ~= nil and self.controls.crafttabs.controllercraftingopen
+function PlayerHud:IsControllerCraftingOpen() -- deprecated - please switch to using IsCraftingOpen() or playercontroller:IsEnabled()
+    return self.controls ~= nil and self.controls.craftingmenu:IsCraftingOpen()
 end
 
 function PlayerHud:IsCraftingOpen()
-    return self.controls ~= nil and self.controls.crafttabs:IsCraftingOpen()
+    return self.controls ~= nil and self.controls.craftingmenu:IsCraftingOpen()
+end
+
+function PlayerHud:IsCraftingBlockingGameplay()
+	-- deprecated
+    return false
 end
 
 function PlayerHud:IsControllerVoteOpen()
@@ -852,28 +865,28 @@ function PlayerHud:IsPlayerAvatarPopUpOpen()
         and self.playeravatarpopup.inst:IsValid()
 end
 
-function PlayerHud:OpenControllerCrafting()
-    if self.controls.crafttabs.tabs:GetFirstIdx() ~= nil then
-        TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/craft_open")
-        TheFrontEnd:StopTrackingMouse()
-        if self:IsControllerInventoryOpen() then
-            self:CloseControllerInventory()
+function PlayerHud:OpenCrafting(search)
+	if not self:IsCraftingOpen() and not GetGameModeProperty("no_crafting") then
+		if self:IsControllerInventoryOpen() then
+			self:CloseControllerInventory()
 		end
-        self.controls.inv:Disable()
-        self.controls.crafttabs:OpenControllerCrafting()
-        self.controls.item_notification:ToggleController(true)
-        self.controls.yotb_notification:ToggleController(true)
-    end
+
+		TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/craft_open")
+		self.controls.craftingmenu:Open(search)
+
+		self.controls.item_notification:ToggleController(true)
+		self.controls.yotb_notification:ToggleController(true)
+	end
 end
 
-function PlayerHud:CloseControllerCrafting()
-    if self:IsControllerCraftingOpen() then
+function PlayerHud:CloseCrafting()
+    if self:IsCraftingOpen() then
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/craft_close")
+	    self.controls.craftingmenu:Close()
+
+		self.controls.item_notification:ToggleController(false)
+		self.controls.yotb_notification:ToggleController(false)
     end
-    self.controls.crafttabs:CloseControllerCrafting()
-    self.controls.inv:Enable()
-    self.controls.item_notification:ToggleController(false)
-    self.controls.yotb_notification:ToggleController(false)
 end
 
 function PlayerHud:ShowPlayerStatusScreen(click_to_close, onclosefn)
@@ -923,15 +936,42 @@ function PlayerHud:OnControl(control, down)
             return true
         end
     elseif control == CONTROL_PAUSE then
-        if not self.owner.components.playercontroller:IsAOETargeting() then
-            TheFrontEnd:PushScreen(PauseScreen())
-        elseif TheInput:ControllerAttached() then
+		if TheInput:ControllerAttached() then
             self.owner.components.playercontroller:CancelAOETargeting()
+            self:CloseCrafting()
+            if self:IsControllerInventoryOpen() then
+                self:CloseControllerInventory()
+            end
             TheFrontEnd:PushScreen(PauseScreen())
-        else
-            self.owner.components.playercontroller:CancelAOETargeting()
-        end
+		else
+			local closed = false
+			if self.owner.components.playercontroller:IsAOETargeting() then
+	            self.owner.components.playercontroller:CancelAOETargeting()
+				closed = true
+			end
+            if self:IsCraftingOpen() then
+                self:CloseCrafting()
+                closed = true
+            end
+			if self:IsPlayerAvatarPopUpOpen() then
+                self:TogglePlayerAvatarPopup()
+                closed = true
+			end
+			if not closed then
+	            TheFrontEnd:PushScreen(PauseScreen())
+			end
+		end
         return true
+	elseif control == CONTROL_CRAFTING_PINLEFT then
+		if self.controls ~= nil and self.controls.craftingmenu ~= nil and self.controls.craftingmenu.pinbar ~= nil then
+			self.controls.craftingmenu.pinbar:GoToPrevPage()
+			return true
+		end
+	elseif control == CONTROL_CRAFTING_PINRIGHT then
+		if self.controls ~= nil and self.controls.craftingmenu ~= nil and self.controls.craftingmenu.pinbar ~= nil then
+			self.controls.craftingmenu.pinbar:GoToNextPage()
+			return true
+		end
     elseif control == CONTROL_SERVER_PAUSE then
         SetServerPaused()
         return true
@@ -945,22 +985,38 @@ function PlayerHud:OnControl(control, down)
         return true
     elseif not down then
         if control == CONTROL_MAP then
+            if not self:IsMapScreenOpen() then
+                if self:IsCraftingOpen() then
+                    self:CloseCrafting()
+                end
+                if self:IsControllerInventoryOpen() then
+                    self:CloseControllerInventory()
+                end
+            end
             self.controls:ToggleMap()
             return true
-        elseif control == CONTROL_CANCEL then
-            local closed = false
-            if self:IsControllerCraftingOpen() then
-                self:CloseControllerCrafting()
-                closed = true
-            end
-            if self:IsControllerInventoryOpen() then
+        elseif control == CONTROL_CANCEL and TheInput:ControllerAttached() then
+            if self:IsCraftingOpen() then
+                self:CloseCrafting()
+                return true
+            elseif self:IsControllerInventoryOpen() then
                 self:CloseControllerInventory()
-                closed = true
+                return true
             end
-            return closed
         elseif control == CONTROL_TOGGLE_PLAYER_STATUS then
             self:ShowPlayerStatusScreen(true)
             return true
+		elseif control == CONTROL_TOGGLE_SAY then
+			TheFrontEnd:PushScreen(ChatInputScreen(false))
+			return true
+		elseif control == CONTROL_TOGGLE_WHISPER then
+			TheFrontEnd:PushScreen(ChatInputScreen(true))
+			return true
+		elseif control == CONTROL_TOGGLE_SLASH_COMMAND then
+			local chat_input_screen = ChatInputScreen(false)
+			chat_input_screen.chat_edit:SetString("/")
+			TheFrontEnd:PushScreen(chat_input_screen)
+			return true
         end
     elseif control == CONTROL_SHOW_PLAYER_STATUS then
         if not self:IsPlayerAvatarPopUpOpen() or self.playeravatarpopup.settled then
@@ -968,13 +1024,17 @@ function PlayerHud:OnControl(control, down)
         end
         return true
     elseif control == CONTROL_OPEN_CRAFTING then
-        if self:IsControllerCraftingOpen() then
-            self:CloseControllerCrafting()
+        if self:IsCraftingOpen() then
+			if TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER) then
+				self.controls.craftingmenu.craftingmenu:StartSearching(true)
+			else
+	            self:CloseCrafting()
+			end
             return true
         elseif not GetGameModeProperty("no_crafting") then
             local inventory = self.owner.replica.inventory
             if inventory ~= nil and inventory:IsVisible() then
-                self:OpenControllerCrafting()
+                self:OpenCrafting(TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER))
                 return true
             end
         end
@@ -988,22 +1048,30 @@ function PlayerHud:OnControl(control, down)
             self:OpenControllerInventory()
             return true
         end
-    elseif control == CONTROL_TOGGLE_SAY then
-        TheFrontEnd:PushScreen(ChatInputScreen(false))
-        return true
-    elseif control == CONTROL_TOGGLE_WHISPER then
-        TheFrontEnd:PushScreen(ChatInputScreen(true))
-        return true
-    elseif control == CONTROL_TOGGLE_SLASH_COMMAND then
-        local chat_input_screen = ChatInputScreen(false)
-        chat_input_screen.chat_edit:SetString("/")
-        TheFrontEnd:PushScreen(chat_input_screen)
-        return true
     elseif control >= CONTROL_INV_1 and control <= CONTROL_INV_10 then
         --inventory hotkeys
         local inventory = self.owner.replica.inventory
         if inventory ~= nil and inventory:IsVisible() then
-            local item = inventory:GetItemInSlot(control - CONTROL_INV_1 + 1)
+			local hot_key_num = control - CONTROL_INV_1 + 1
+
+			if TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER) then
+				self.controls.craftingmenu:SelectPin(hot_key_num)
+			else
+				local item = inventory:GetItemInSlot(hot_key_num)
+				if item ~= nil then
+					self.owner.replica.inventory:UseItemFromInvTile(item)
+				end
+			end
+            return true
+        end
+    elseif control >= CONTROL_INV_11 and control <= CONTROL_INV_15 then
+        -- Inventory hotkeys part two.
+        local inventory = self.owner.replica.inventory
+        if inventory ~= nil and inventory:IsVisible() then
+			local hot_key_num = control - CONTROL_INV_11 + 11
+
+            -- No crafting menu pins!
+			local item = inventory:GetItemInSlot(hot_key_num)
             if item ~= nil then
                 self.owner.replica.inventory:UseItemFromInvTile(item)
             end

@@ -93,17 +93,34 @@ function InitAllDLC()
     end
 end
 function InitDLC(index)
-   if RegisteredDLC[index].Setup then
-      RegisteredDLC[index].Setup()
-   end
-end
-
-function GetOfficialCharacterList()
-    return DST_CHARACTERLIST
+    if RegisteredDLC[index].Setup then
+        RegisteredDLC[index].Setup()
+    end
 end
 
 function GetActiveCharacterList()
-    return JoinArrays(GetOfficialCharacterList(), MODCHARACTERLIST)
+    return JoinArrays(DST_CHARACTERLIST, MODCHARACTERLIST)
+end
+
+function GetSelectableCharacterList()
+    local all = JoinArrays(DST_CHARACTERLIST, MODCHARACTERLIST)
+    RemoveByValue(all, "wonkey") --users can't select wonkey
+    return all 
+end
+
+function GetFEVisibleCharacterList()
+    local kv = TheInventory:GetLocalGenericKV()
+    local all = {}    
+    for i,character in ipairs(DST_CHARACTERLIST) do
+        local add_char = true
+        if character == "wonkey" and kv.wonkey_played ~= "played" then --only show wonkey if we've played him
+            add_char = false
+        end
+        if add_char then
+            table.insert( all, character )
+        end
+    end
+    return all 
 end
 
 function DisableDLC(index)

@@ -39,7 +39,7 @@ local PlantRegistryWidget = Class(Widget, function(self, parent)
 	self.backdrop = self.root:AddChild(Image("images/plantregistry.xml", "backdrop.tex"))
 
 	if not ThePlantRegistry:ApplyOnlineProfileData() then
-		local msg = (TheFrontEnd ~= nil and TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) and STRINGS.UI.PLANTREGISTRY.ONLINE_DATA_USER_OFFLINE or STRINGS.UI.PLANTREGISTRY.ONLINE_DATA_DOWNLOAD_FAILED
+		local msg = not TheInventory:HasSupportForOfflineSkins() and (TheFrontEnd ~= nil and TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) and STRINGS.UI.PLANTREGISTRY.ONLINE_DATA_USER_OFFLINE or STRINGS.UI.PLANTREGISTRY.ONLINE_DATA_DOWNLOAD_FAILED
 		self.sync_status = self.root:AddChild(Text(HEADERFONT, 18, msg, UICOLOURS.GREY))
 		self.sync_status:SetPosition(0, -285)
 	end

@@ -47,7 +47,7 @@ local WardrobePopupScreen = Class(Screen, function(self, owner_player, profile, 
     self:SetPortrait()
 
 
-    local offline = not TheNet:IsOnlineMode()
+    local offline = not TheInventory:HasSupportForOfflineSkins() and not TheNet:IsOnlineMode()
 
     local buttons = {}
     if offline then
@@ -138,7 +138,7 @@ function WardrobePopupScreen:Close()
 	local skins = self.dressup:GetSkinsForGameStart()
 
     local data = {}
-    if TheNet:IsOnlineMode() then
+    if TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode() then
 		data = skins
     end
 
@@ -149,7 +149,7 @@ function WardrobePopupScreen:Close()
 end
 
 function WardrobePopupScreen:SetPortrait()
-    if TheNet:IsOnlineMode() then
+    if TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode() then
         local herocharacter = self.dressup.currentcharacter
         local portrait_name = GetPortraitNameForItem(self.dressup:GetBaseSkin())
 

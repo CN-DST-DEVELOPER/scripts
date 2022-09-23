@@ -118,11 +118,17 @@ local TRIGGERED_DANGER_MUSIC =
         "terraria1/common/music_epicfight_eot",
     },
 
+    piratemonkeyraid = 
+    {
+        "monkeyisland/warning_music/warning_combo",
+    },
+
     default =
     {
         "dontstarve/music/music_epicfight_ruins",
     },
 }
+
 
 local BUSYTHEMES = {
     FOREST = 1,
@@ -151,6 +157,7 @@ local _iscave = inst:HasTag("cave")
 local _isenabled = true
 local _busytask = nil
 local _dangertask = nil
+local _pirates_near = nil
 local _triggeredlevel = nil
 local _isday = nil
 local _isbusydirty = nil
@@ -160,6 +167,7 @@ local _extendtime = nil
 local _soundemitter = nil
 local _activatedplayer = nil --cached for activation/deactivation only, NOT for logic use
 local _hasinspirationbuff = nil
+
 
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
@@ -198,7 +206,7 @@ local function StartBusy(player)
         return
     elseif _busytask ~= nil then
         _extendtime = GetTime() + 15
-    elseif _dangertask == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
+    elseif _dangertask == nil and _pirates_near == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
 
         if _iscave then
             if IsInRuins(player) then
@@ -241,7 +249,7 @@ local function StartOcean(player)
         return
     elseif _busytask ~= nil then
         _extendtime = GetTime() + 15
-    elseif _dangertask == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
+    elseif _dangertask == nil and _pirates_near == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
 
         if _busytheme ~= BUSYTHEMES.OCEAN then
             _soundemitter:KillSound("busy")
@@ -261,7 +269,7 @@ local function StartFeasting(player)
         _busytask:Cancel()
         _busytask = nil
         _busytask = inst:DoTaskInTime(5, StopBusy, true)
-    elseif _dangertask == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
+    elseif _dangertask == nil and _pirates_near == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
 
         if _busytheme ~= BUSYTHEMES.FEAST then
             _soundemitter:KillSound("busy")
@@ -276,7 +284,7 @@ local function StartFeasting(player)
 end
 
 local function StartRacing(player)
-    if _dangertask == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
+    if _dangertask == nil and _pirates_near == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
         if _busytask then
             _busytask:Cancel()
             _busytask = nil
@@ -294,7 +302,7 @@ local function StartRacing(player)
 end
 
 local function StartHermit(player)
-    if _dangertask == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
+    if _dangertask == nil and _pirates_near == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
         if _busytask then
             _busytask:Cancel()
             _busytask = nil
@@ -312,7 +320,7 @@ local function StartHermit(player)
 end
 
 local function StartTraining(player)
-    if _dangertask == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled and _busytheme ~= BUSYTHEMES.RACE then
+    if _dangertask == nil and _pirates_near == nil and (_extendtime == 0 or GetTime() >= _extendtime) and _isenabled and _busytheme ~= BUSYTHEMES.RACE then
         if _busytask then
             _busytask:Cancel()
             _busytask = nil
@@ -330,7 +338,7 @@ local function StartTraining(player)
 end
 
 local function StartBusyTheme(player, theme, sound, duration, extendtime)
-    if _dangertask == nil and (_busytheme ~= theme or _extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
+    if _dangertask == nil and _pirates_near == nil and (_busytheme ~= theme or _extendtime == 0 or GetTime() >= _extendtime) and _isenabled then
         if _busytask then
             _busytask:Cancel()
             _busytask = nil
@@ -352,7 +360,7 @@ local function StartFarming(player)
 end
 
 local function StartCarnivalMustic(player, is_game_active)
-	if _dangertask ~= nil or (_busytask ~= nil and _busytheme == BUSYTHEMES.CARNIVAL_MINIGAME and not is_game_active) then
+	if _dangertask ~= nil or _pirates_near ~= nil or (_busytask ~= nil and _busytheme == BUSYTHEMES.CARNIVAL_MINIGAME and not is_game_active) then
 		return
 	end
 
@@ -363,6 +371,58 @@ end
 local function ExtendBusy()
     if _busytask ~= nil then
         _extendtime = math.max(_extendtime, GetTime() + 10)
+    end
+end
+
+local function StopPirates()
+    if _pirates_near ~= nil then
+        _pirates_near:Cancel()
+        _pirates_near = nil
+        _soundemitter:KillSound("pirates")
+    end
+end
+
+local PIRATES_MUST = {"crewmember"}
+
+local function UpdatePirates(player)
+
+    local level = 0
+    local x,y,z = player.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x,y,z, 40, PIRATES_MUST)
+    if #ents > 0 then
+        if _dangertask then
+            level = 1
+        else
+            local dist = player:GetDistanceSqToInst(ents[1])
+            level = math.min(Remap(dist, 40*40, 20*20 ,   0   ,1)  ,1)
+        end
+    end
+
+    if not _soundemitter:PlayingSound("pirates") and level > 0 then
+      _soundemitter:PlaySound("monkeyisland/warning_music/warning_combo", "pirates")
+    end
+
+    local intensity = 0
+    if _dangertask then
+        intensity = 0.5
+        if _hasinspirationbuff then
+            intensity = intensity + (0.5 * _hasinspirationbuff)
+        end
+    end
+
+    _soundemitter:SetParameter("pirates", "intensity", intensity) 
+
+    if level > 0 then
+        StopBusy()
+         _soundemitter:SetVolume("pirates", level)
+    else
+        StopPirates()
+    end
+end
+
+local function StartPirates(player)
+    if not _pirates_near then
+        _pirates_near = player:DoPeriodicTask(0.1,function()  UpdatePirates(player) end)
     end
 end
 
@@ -388,13 +448,15 @@ end
 local EPIC_TAGS = { "epic" }
 local NO_EPIC_TAGS = { "noepicmusic" }
 local function StartDanger(player)
+
     if _dangertask ~= nil then
         _extendtime = GetTime() + 10
     elseif _isenabled then
-        StopBusy()
         local x, y, z = player.Transform:GetWorldPosition()
+        local epics = TheSim:FindEntities(x, y, z, 30, EPIC_TAGS, NO_EPIC_TAGS)
+        StopBusy()        
         _soundemitter:PlaySound(
-            #TheSim:FindEntities(x, y, z, 30, EPIC_TAGS, NO_EPIC_TAGS) > 0
+            #epics > 0
             and ((IsInRuins(player) and "dontstarve/music/music_epicfight_ruins") or
                 (_iscave and "dontstarve/music/music_epicfight_cave") or
                 (SEASON_EPICFIGHT_MUSIC[inst.state.season]))
@@ -406,6 +468,11 @@ local function StartDanger(player)
         _triggeredlevel = nil
         _extendtime = 0
 
+
+        if _pirates_near then
+            _soundemitter:SetVolume("danger", 0)
+        end
+
 		if _hasinspirationbuff then
 			_soundemitter:SetParameter("danger", "wathgrithr_intensity", _hasinspirationbuff)
 		end
@@ -413,12 +480,14 @@ local function StartDanger(player)
 end
 
 local function StartTriggeredDanger(player, data)
+
     local level = math.max(1, math.floor(data ~= nil and data.level or 1))
     if _triggeredlevel == level then
         _extendtime = math.max(_extendtime, GetTime() + (data.duration or 10))
     elseif _isenabled then
         StopBusy()
         StopDanger()
+
         local music = data ~= nil and TRIGGERED_DANGER_MUSIC[data.name or "default"] or TRIGGERED_DANGER_MUSIC.default
         music = music[level] or music[1]
         if #music > 0 then
@@ -427,6 +496,7 @@ local function StartTriggeredDanger(player, data)
                 _soundemitter:SetParameter("danger", "wathgrithr_intensity", _hasinspirationbuff)
             end
         end
+
         _dangertask = inst:DoTaskInTime(data.duration or 10, StopDanger, true)
         _triggeredlevel = level
         _extendtime = 0
@@ -533,6 +603,7 @@ local function StartPlayerListeners(player)
     inst:ListenForEvent("playracemusic", StartRacing, player)
     inst:ListenForEvent("playhermitmusic", StartHermit, player)
     inst:ListenForEvent("playtrainingmusic", StartTraining, player)
+    inst:ListenForEvent("playpiratesmusic", StartPirates, player)
     inst:ListenForEvent("playfarmingmusic", StartFarming, player)
     inst:ListenForEvent("hasinspirationbuff", OnHasInspirationBuff, player)
     inst:ListenForEvent("playcarnivalmusic", StartCarnivalMustic, player)
@@ -551,6 +622,7 @@ local function StopPlayerListeners(player)
     inst:RemoveEventCallback("playracemusic", StartRacing, player)
     inst:RemoveEventCallback("playhermitmusic", StartHermit, player)
     inst:RemoveEventCallback("playtrainingmusic", StartTraining, player)
+    inst:RemoveEventCallback("playpiratesmusic", StartPirates, player)    
     inst:RemoveEventCallback("playfarmingmusic", StartFarming, player)
     inst:RemoveEventCallback("hasinspirationbuff", OnHasInspirationBuff, player)
     inst:RemoveEventCallback("playcarnivalmusic", StartCarnivalMustic, player)

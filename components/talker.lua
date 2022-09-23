@@ -60,7 +60,7 @@ function Talker:MakeChatter()
         self.chatter =
         {
             strtbl = net_string(self.inst.GUID, "talker.chatter.strtbl", "chatterdirty"),
-            strid = net_tinybyte(self.inst.GUID, "talker.chatter.strid", "chatterdirty"),
+            strid = net_smallbyte(self.inst.GUID, "talker.chatter.strid", "chatterdirty"),
             strtime = net_tinybyte(self.inst.GUID, "talker.chatter.strtime"),
             forcetext = net_bool(self.inst.GUID, "talker.chatter.forcetext"),
         }
@@ -125,6 +125,7 @@ function Talker:StopIgnoringAll(source)
 end
 
 local function sayfn(self, script, nobroadcast, colour, text_filter_context, original_author_netid)
+    
     local player = ThePlayer
     if (not self.disablefollowtext) and self.widget == nil and player ~= nil and player.HUD ~= nil then
         self.widget = player.HUD:AddChild(FollowText(self.font or TALKINGFONT, self.fontsize or 35))
@@ -149,6 +150,13 @@ local function sayfn(self, script, nobroadcast, colour, text_filter_context, ori
                         self.inst.prefab,
                         self.mod_str_fn ~= nil and self.mod_str_fn(line.message) or line.message
                     )
+            if ThePlayer and not self.inst:HasTag("monkey") and ThePlayer:HasTag("wonkey") then
+                display_message =  CraftGiberish()
+            end
+
+            if self.inst.speech_override_fn then  
+                display_message = self.inst.speech_override_fn(self.inst,display_message)
+            end
 
             if not nobroadcast then
                 TheNet:Talker(line.message, self.inst.entity, duration ~= TUNING.DEFAULT_TALKER_DURATION and duration or nil, text_filter_context, original_author_netid)
@@ -156,6 +164,10 @@ local function sayfn(self, script, nobroadcast, colour, text_filter_context, ori
 
             if self.widget ~= nil then
 				--print("talker sayfn:", original_author, text_filter_context, display_message)
+                if text_filter_context == nil or text_filter_context == TEXT_FILTER_CTX_UNKNOWN then
+                    -- NOTES(JBK): Assume the text comes from the game if not specified.
+                    text_filter_context = TEXT_FILTER_CTX_GAME
+                end
 		        local filtered_message = display_message ~= nil and ApplyLocalWordFilter(display_message, text_filter_context, original_author_netid) or display_message
                 self.widget.text:SetString(filtered_message)
             end

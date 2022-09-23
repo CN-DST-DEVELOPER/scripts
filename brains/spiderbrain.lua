@@ -92,7 +92,7 @@ function SpiderBrain:OnStart()
     local post_nodes = PriorityNode({
         DoAction(self.inst, function() return InvestigateAction(self.inst) end ),
             
-        WhileNode(function() return TheWorld.state.iscaveday and not self.inst.summoned end, "IsDay",
+        WhileNode(function() return (TheWorld.state.iscaveday or self.inst._quaking) and not self.inst.summoned end, "IsDay",
                 DoAction(self.inst, function() return GoHomeAction(self.inst) end ) ),
         
         FaceEntity(self.inst, GetTraderFn, KeepTraderFn),

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 AddRoom("MermTown", {
 					colour={r=0.5,g=.18,b=.35,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 									countprefabs={
 										pighead=function() return math.random(6) end,

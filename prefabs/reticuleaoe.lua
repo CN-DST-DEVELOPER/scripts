@@ -21,7 +21,7 @@ local function UpdatePing(inst, s0, s1, t0, duration, multcolour, addcolour)
     local s = Lerp(s0, s1, k)
     local c = Lerp(1, 0, k)
     inst.Transform:SetScale(s, s, s)
-    inst.AnimState:SetMultColour(c * multcolour[1], c * multcolour[2], c * multcolour[3], c * multcolour[4])
+    inst.AnimState:SetMultColour(multcolour[1], multcolour[2], multcolour[3], c * multcolour[4])
 
     k = math.min(FLASH_TIME, t) / FLASH_TIME
     c = math.max(0, 1 - k * k)
@@ -160,7 +160,7 @@ local function OnUpdateTargetFade(inst, r, g, b, a)
         k = (FADE_FRAMES * 2 + 1 - inst._fade:value()) / FADE_FRAMES
     end
 
-    inst.AnimState:OverrideMultColour(r * k, g * k, b * k, a * k)
+    inst.AnimState:OverrideMultColour(r, g, b, a * k)
 
     if inst._fade:value() == FADE_FRAMES then
         inst._fadetask:Cancel()
@@ -204,7 +204,7 @@ local function MakeTarget(name, anim, colour)
         inst.AnimState:SetLayer(LAYER_BACKGROUND)
         inst.AnimState:SetSortOrder(1)
         inst.AnimState:SetScale(SCALE, SCALE)
-        inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+        inst.AnimState:OverrideMultColour(1, 1, 1, 0)
 
         inst._fade = net_smallbyte(inst.GUID, name.."._fade", "fadedirty")
         inst._fadetask = inst:DoPeriodicTask(FRAMES, OnUpdateTargetFade, nil, unpack(colour))

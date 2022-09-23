@@ -19,6 +19,7 @@ local events =
 {
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
 
     EventHandler("locomote", function(inst)
         if not inst.sg:HasStateTag("charge") then
@@ -695,5 +696,6 @@ CommonStates.AddWalkStates(states,
 
 CommonStates.AddHitState(states)
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAsoreStates(states, {washashore = "shield_pst"})
 
 return StateGraph("alterguardian_phase1", states, events, "idle", actionhandlers)

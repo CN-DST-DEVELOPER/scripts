@@ -5,7 +5,7 @@ require ("map/room_functions")
 ------------------------------------------------------------------------------------
 AddRoom("Deerclopsfield", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 					                countprefabs= {
@@ -35,7 +35,7 @@ AddRoom("Deerclopsfield", {
 					})
 AddRoom("Walrusfield", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 					                countprefabs= {
@@ -57,7 +57,7 @@ AddRoom("Walrusfield", {
 					})
 AddRoom("Chessfield", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.CHECKER,
+					value = WORLD_TILES.CHECKER,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 									countstaticlayouts = {
@@ -80,7 +80,7 @@ AddRoom("ChessfieldB", MakeSetpieceBlockerRoom("ChessBlockerB"))
 AddRoom("ChessfieldC", MakeSetpieceBlockerRoom("ChessBlockerC"))
 AddRoom("Tallbirdfield", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.ROCKY,
+					value = WORLD_TILES.ROCKY,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 									countprefabs={
@@ -99,7 +99,7 @@ AddRoom("TallbirdfieldA", MakeSetpieceBlockerRoom("TallbirdBlocker"))
 AddRoom("TallbirdfieldB", MakeSetpieceBlockerRoom("TallbirdBlockerB"))
 AddRoom("Mermfield", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 									countprefabs={
@@ -116,7 +116,7 @@ AddRoom("Mermfield", {
 					})
 AddRoom("Moundfield", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.DIRT,
+					value = WORLD_TILES.DIRT,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 									countprefabs = {
@@ -137,7 +137,7 @@ AddRoom("Moundfield", {
 AddRoom("Minefield", {
 			-- DO NOT USE -- it destroys performance, so many mosquitos!!
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 					                distributepercent = 0.5,
@@ -149,7 +149,7 @@ AddRoom("Minefield", {
 					})
 AddRoom("Trapfield", {
 					colour={r=0.0,g=0.4,b=0.2,a=0.3},
-					value = GROUND.DIRT,
+					value = WORLD_TILES.DIRT,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 									countprefabs = {
@@ -164,7 +164,7 @@ AddRoom("Trapfield", {
 					})
 AddRoom("TrappedForest", {
 					colour={r=0.0,g=0.4,b=0.2,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 --									countstaticlayouts={
@@ -179,7 +179,7 @@ AddRoom("TrappedForest", {
 					})
 AddRoom("SpiderfieldEasy", {
 					colour={r=0.0,g=0.4,b=0.2,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 --									countstaticlayouts={
@@ -197,7 +197,7 @@ AddRoom("SpiderfieldEasy", {
 					})
 AddRoom("Spiderfield", {
 					colour={r=0.0,g=0.4,b=0.2,a=0.3},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 --									countstaticlayouts={
@@ -227,7 +227,7 @@ AddRoom("PigGuardpost", MakeSetpieceBlockerRoom("PigGuards"))
 AddRoom("PigGuardpostB", MakeSetpieceBlockerRoom("PigGuardsB"))
 AddRoom("SpiderCon", {
 					colour={r=0.5,g=0.7,b=0.5,a=0.3},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 									countstaticlayouts={["StoneHenge"]=function() return math.random(0,1) end},
@@ -243,7 +243,7 @@ AddRoom("SpiderCon", {
 					})
 AddRoom("Waspnests", {
 					colour={r=0.9,g=0.1,b=0.1,a=0.3},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 					                distributepercent = 0.5,
@@ -258,7 +258,7 @@ AddRoom("Waspnests", {
 
 AddRoom("Tentacleland", {
 					colour={r=.45,g=.75,b=.45,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ForceConnected", "RoadPoison"},
 					contents =  {
 					                distributepercent = .3,
@@ -281,14 +281,14 @@ AddRoom("SanityWormholeBlocker", {
 					colour={r=.45,g=.75,b=.45,a=.50},
 					type = "blank",
 					tags = {"OneshotWormhole", "ForceDisconnected"},
-					value = GROUND.IMPASSABLE,
+					value = WORLD_TILES.IMPASSABLE,
 					contents = {},
 			})
 AddRoom("ForceDisconnectedRoom", {
 					colour={r=.45,g=.75,b=.45,a=.50},
 					type = "blank",
 					tags = {"ForceDisconnected"},
-					value = GROUND.IMPASSABLE,
+					value = WORLD_TILES.IMPASSABLE,
 					contents = {},
 			})
 

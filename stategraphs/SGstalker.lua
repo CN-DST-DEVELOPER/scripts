@@ -113,6 +113,7 @@ end
 local events =
 {
     CommonHandlers.OnLocomote(false, true),
+    CommonHandlers.OnSink(),
     EventHandler("death", function(inst)
         if not inst.sg:HasStateTag("delaydeath") then
             if inst.atriumstalker then
@@ -1529,5 +1530,7 @@ local states =
         end,
     },
 }
+
+CommonStates.AddSinkAndWashAsoreStates(states, {washashore = "taunt2_pst"})
 
 return StateGraph("SGstalker", states, events, "idle")

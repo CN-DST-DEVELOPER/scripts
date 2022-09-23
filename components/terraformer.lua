@@ -4,12 +4,12 @@ local Terraformer = Class(function(self, inst)
     self.inst = inst
 
 	--self.nospawnturf = false
-	--self.turf = GROUND.DIRT
+	--self.turf = WORLD_TILES.DIRT
 	--self.onterraformfn
 	--self.plow
 end)
 
-function Terraformer:Terraform(pt)
+function Terraformer:Terraform(pt, doer)
     local world = TheWorld
     local map = world.Map
 	local _x, _y, _z = pt:Get()
@@ -21,19 +21,9 @@ function Terraformer:Terraform(pt)
     local original_tile_type = map:GetTileAtPoint(_x, _y, _z)
     local x, y = map:GetTileCoordsAtPoint(_x, _y, _z)
 
-	local below_soil_turf
-	if original_tile_type == GROUND.FARMING_SOIL and TheWorld.components.farming_manager then
-		below_soil_turf = TheWorld.components.farming_manager:GetTileBelowSoil(x, y)
-	end
-
-	local turf = self.turf or below_soil_turf or GROUND.DIRT
+	local turf = self.turf or TheWorld.components.undertile:GetTileUnderneath(x, y) or WORLD_TILES.DIRT
 
     map:SetTile(x, y, turf)
-    map:RebuildLayer(original_tile_type, x, y)
-    map:RebuildLayer(turf, x, y)
-
-    world.minimap.MiniMap:RebuildLayer(original_tile_type, x, y)
-    world.minimap.MiniMap:RebuildLayer(turf, x, y)
 
 	if self.onterraformfn ~= nil then
 		self.onterraformfn(self.inst, pt, original_tile_type, GroundTiles.turf[original_tile_type])
@@ -60,6 +50,10 @@ function Terraformer:Terraform(pt)
 				ent:PushEvent("collapsesoil")
 			end
 		end
+	end
+
+	if doer ~= nil then
+		doer:PushEvent("onterraform")
 	end
 
     return true

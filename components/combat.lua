@@ -28,6 +28,7 @@ local Combat = Class(function(self, inst)
     self.attackrange = 3
     self.hitrange = 3
     self.areahitrange = nil
+    self.temprange = nil
 	--self.areahitcheck = nil
     self.areahitdamagepercent = nil
     --self.areahitdisabled = nil
@@ -108,7 +109,7 @@ end
 
 function Combat:SetRange(attack, hit)
     self.attackrange = attack
-    self.hitrange = hit or self.attackrange
+    self.hitrange = (hit or self.attackrange)
 end
 
 function Combat:SetPlayerStunlock(stunlock)
@@ -145,6 +146,9 @@ end
 
 local DEFAULT_SHARE_TARGET_MUST_TAGS = { "_combat" }
 function Combat:ShareTarget(target, range, fn, maxnum, musttags)
+    if target and target._doesnotdrawaggro then
+        return
+    end
     if maxnum <= 0 then
         return
     end
@@ -443,6 +447,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
     local blocked = false
     local damageredirecttarget = self.redirectdamagefn ~= nil and self.redirectdamagefn(self.inst, attacker, damage, weapon, stimuli) or nil
     local damageresolved = 0
+	local original_damage = damage
 
     self.lastattacker = attacker
 
@@ -494,7 +499,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
     end
 
     if not blocked then
-        self.inst:PushEvent("attacked", { attacker = attacker, damage = damage, damageresolved = damageresolved, weapon = weapon, stimuli = stimuli, redirected = damageredirecttarget, noimpactsound = self.noimpactsound })
+        self.inst:PushEvent("attacked", { attacker = attacker, damage = damage, damageresolved = damageresolved, original_damage = original_damage, weapon = weapon, stimuli = stimuli, redirected = damageredirecttarget, noimpactsound = self.noimpactsound })
 
         if self.onhitfn ~= nil then
             self.onhitfn(self.inst, attacker, damage)
@@ -630,14 +635,15 @@ end
 
 function Combat:LocomotorCanAttack(reached_dest, target)
     if not self:IsValidTarget(target) then
-        return false, true
+        return false, true, false
     end
 
+    local attackrange = self:CalcAttackRangeSq(target)
+
     reached_dest = reached_dest or
-        (self.ignorehitrange or distsq(target:GetPosition(), self.inst:GetPosition()) <= self:CalcAttackRangeSq(target))
+        (self.ignorehitrange or distsq(target:GetPosition(), self.inst:GetPosition()) <= attackrange)
 
     local valid = self.canattack
-        and not self:InCooldown()
         and (   self.inst.sg == nil or
                 not self.inst.sg:HasStateTag("busy") or
                 self.inst.sg:HasStateTag("hit")
@@ -651,7 +657,20 @@ function Combat:LocomotorCanAttack(reached_dest, target)
                     )
                 )
 
-    return reached_dest, not valid
+    if attackrange > 2 * 2 and self.inst:HasTag("player") then
+        local weapon = self:GetWeapon()
+        local is_ranged_weapon = weapon ~= nil and (weapon:HasTag("projectile") or weapon:HasTag("rangedweapon"))
+
+        if not is_ranged_weapon then
+            local currentpos = self.inst:GetPosition()
+            local voidtest = currentpos + ((target:GetPosition() - currentpos):Normalize() * (self:GetAttackRange() / 2))
+            if TheWorld.Map:IsNotValidGroundAtPoint(voidtest:Get()) and not TheWorld.Map:IsNotValidGroundAtPoint(target.Transform:GetWorldPosition()) then
+                reached_dest = false
+            end
+        end
+    end
+
+    return reached_dest, not valid, self:InCooldown()
 end
 
 function Combat:TryAttack(target)
@@ -801,7 +820,7 @@ end
 
 function Combat:GetHitRange()
     local weapon = self:GetWeapon()
-    return weapon ~= nil and weapon.components.weapon.hitrange ~= nil and self.hitrange + weapon.components.weapon.hitrange or self.hitrange
+    return self.temprange or weapon ~= nil and weapon.components.weapon.hitrange ~= nil and self.hitrange + weapon.components.weapon.hitrange or self.hitrange
 end
 
 function Combat:CalcHitRangeSq(target)
@@ -845,7 +864,8 @@ function Combat:CanHitTarget(target, weapon)
 
         local targetpos = target:GetPosition()
         -- V2C: this is 3D distsq
-        if self.ignorehitrange or distsq(targetpos, self.inst:GetPosition()) <= self:CalcHitRangeSq(target) then
+        local pos = self.temppos or self.inst:GetPosition()
+        if self.ignorehitrange or distsq(targetpos, pos) <= self:CalcHitRangeSq(target) then
             return true
         elseif weapon ~= nil and weapon.components.projectile ~= nil then
             local range = target:GetPhysicsRadius(0) + weapon.components.projectile.hitdist
@@ -856,7 +876,18 @@ function Combat:CanHitTarget(target, weapon)
     return false
 end
 
-function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult)
+function Combat:ClearAttackTemps()
+    self.temppos = nil
+    self.temprange = nil
+end
+
+function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult, instrangeoverride, instpos)
+    if instrangeoverride then
+        self.temprange = instrangeoverride
+    end
+    if instpos then
+        self.temppos = instpos
+    end      
     if targ == nil then
         targ = self.target
     end
@@ -872,11 +903,12 @@ function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult)
         end
     end
 
-    if not self:CanHitTarget(targ, weapon) then
+    if not self:CanHitTarget(targ, weapon) or self.AOEarc then
         self.inst:PushEvent("onmissother", { target = targ, weapon = weapon })
         if self.areahitrange ~= nil and not self.areahitdisabled then
             self:DoAreaAttack(projectile or self.inst, self.areahitrange, weapon, self.areahitcheck, stimuli, AREA_EXCLUDE_TAGS)
         end
+        self:ClearAttackTemps()
         return
     end
 
@@ -888,17 +920,20 @@ function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult)
             if projectile ~= nil then
                 projectile.components.projectile:Throw(self.inst, targ)
             end
+            self:ClearAttackTemps()
             return
 
-        elseif weapon.components.complexprojectile ~= nil then
+        elseif weapon.components.complexprojectile ~= nil and not weapon.components.complexprojectile.ismeleeweapon then
             local projectile = self.inst.components.inventory:DropItem(weapon, false)
             if projectile ~= nil then
                 projectile.components.complexprojectile:Launch(targ:GetPosition(), self.inst)
             end
+            self:ClearAttackTemps()
             return
 
         elseif weapon.components.weapon:CanRangedAttack() then
             weapon.components.weapon:LaunchProjectile(self.inst, targ)
+            self:ClearAttackTemps()
             return
         end
     end
@@ -931,7 +966,7 @@ function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult)
     if self.areahitrange ~= nil and not self.areahitdisabled then
         self:DoAreaAttack(targ, self.areahitrange, weapon, self.areahitcheck, stimuli, AREA_EXCLUDE_TAGS)
     end
-
+    self:ClearAttackTemps()
     self.lastdoattacktime = GetTime()
 
     --Apply reflected damage to self after our attack damage is completed

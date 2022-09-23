@@ -2,7 +2,7 @@ require ("map/room_functions")
 
 AddRoom("MooseGooseBreedingGrounds", {
 	colour={r=0.2,g=0.0,b=0.2,a=0.3},
-	value = GROUND.GRASS,
+	value = WORLD_TILES.GRASS,
 	tags = {"ForceConnected", "RoadPoison"},
 	contents =
 	{
@@ -29,7 +29,7 @@ AddRoom("MooseGooseBreedingGrounds", {
 
 -- AddRoom("MooseGooseNestGrass", {
 -- 	colour={r=0.2,g=0.0,b=0.2,a=0.3},
--- 	value = GROUND.GRASS,
+-- 	value = WORLD_TILES.GRASS,
 -- 	tags = {"ForceConnected", "RoadPoison"},
 -- 	contents =
 -- 	{
@@ -54,7 +54,7 @@ AddRoom("MooseGooseBreedingGrounds", {
 
 -- AddRoom("MooseGooseNestForest", {
 -- 	colour={r=0.2,g=0.0,b=0.2,a=0.3},
--- 	value = GROUND.FOREST,
+-- 	value = WORLD_TILES.FOREST,
 -- 	tags = {"ForceConnected", "RoadPoison"},
 -- 	contents =
 -- 	{

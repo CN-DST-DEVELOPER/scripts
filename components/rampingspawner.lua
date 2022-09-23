@@ -35,6 +35,7 @@ end
 
 function RampingSpawner:StopTrackingSpawn(spawn)
     if self.spawns[spawn] then
+        self.inst:RemoveEventCallback("inevitabledeath", self._ondeathfn, spawn)
         self.inst:RemoveEventCallback("death", self._ondeathfn, spawn)
         self.inst:RemoveEventCallback("onremove", self._onremovefn, spawn)
         self.spawns[spawn] = nil
@@ -49,6 +50,7 @@ end
 
 function RampingSpawner:TrackSpawn(spawn)
     if not self.spawns[spawn] then
+        self.inst:ListenForEvent("inevitabledeath", self._ondeathfn, spawn)
         self.inst:ListenForEvent("death", self._ondeathfn, spawn)
         self.inst:ListenForEvent("onremove", self._onremovefn, spawn)
         self.spawns[spawn] = true

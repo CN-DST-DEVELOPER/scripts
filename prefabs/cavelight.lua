@@ -56,7 +56,7 @@ local light_phases = {}
 for k, v in pairs(light_params) do
     table.insert(light_phases, k)
     v.id = #light_phases
-    v.tint = { v.colour[1] * .5, v.colour[2] * .5, v.colour[3] * .5, 0--[[ alpha, zero for additive blending ]] }
+    v.tint = { v.colour[1] * .5, v.colour[2] * .5, v.colour[3] * .5, 1 }
 end
 
 local function pushparams(inst, params)

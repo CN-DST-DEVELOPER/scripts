@@ -90,7 +90,9 @@ end
 local function ondropped(inst)
     --Disappears faster when floating
     inst.components.perishable:SetLocalMultiplier(1)
-    inst.SoundEmitter:PlaySound("moonstorm/common/moonstorm/spark_LP","idle_LP")
+    if not inst:IsAsleep() then
+        inst.SoundEmitter:PlaySound("moonstorm/common/moonstorm/spark_LP", "idle_LP")
+    end
     if inst.components.workable ~= nil then
         inst.components.workable:SetWorkLeft(1)
     end
@@ -135,6 +137,9 @@ local function OnWake(inst)
     if not inst.sparktask and not inst:IsInLimbo() then
         inst.sparktask = inst:DoTaskInTime(5 + math.random()* 10, dospark)
     end
+    if not inst.components.inventoryitem:IsHeld() then
+        inst.SoundEmitter:PlaySound("moonstorm/common/moonstorm/spark_LP", "idle_LP")
+    end
 end
 
 local function OnSleep(inst)
@@ -142,6 +147,7 @@ local function OnSleep(inst)
         inst.sparktask:Cancel()
         inst.sparktask = nil
     end
+    inst.SoundEmitter:KillSound("idle_LP")
 end
 
 local function fn()
@@ -173,8 +179,6 @@ local function fn()
 
     inst:AddTag("show_spoilage")
     inst:AddTag("moonstorm_spark")
-
-    inst.SoundEmitter:PlaySound("moonstorm/common/moonstorm/spark_LP","idle_LP")
 
     inst.entity:SetPristine()
 

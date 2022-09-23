@@ -28,7 +28,7 @@ local states =
         name = "place_weight",
         tags = { },
         onenter = function(inst,data)
-            inst.AnimState:PlayAnimation("place_"..data.slot or 1)
+            inst.AnimState:PlayAnimation(("place_"..data.slot) or 1)
         end,
 
         events = 

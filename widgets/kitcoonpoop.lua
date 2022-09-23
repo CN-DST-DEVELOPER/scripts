@@ -34,18 +34,6 @@ local KitcoonPoop = Class(Widget, function(self, kit, gamescreen, profile)
     self.anim:SetScale(s)
 end)
 
-
-function Lerp(a,b,t)
-    return a + (b - a) * t
-end
-
---Remap a value (i) from one range (a - b) to another (x - y)
-function Remap(i, a, b, x, y)
-    return (((i - a)/(b - a)) * (y - x)) + x
-end
-
-
-
 function KitcoonPoop:OnGainFocus()
 	self._base.OnGainFocus(self)
 end

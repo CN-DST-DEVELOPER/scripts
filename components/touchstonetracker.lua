@@ -79,4 +79,12 @@ function TouchStoneTracker:OnLoad(data)
     end
 end
 
+function TouchStoneTracker:TransferComponent(newinst)
+    local newcomponent = newinst.components.touchstonetracker
+    for k,v in pairs(self.used)do
+        OnUsedTouchStoneID(newcomponent, k)
+    end
+    newcomponent.used_foreign = self.used_foreign
+end
+
 return TouchStoneTracker

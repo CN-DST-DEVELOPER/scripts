@@ -4,19 +4,25 @@ local defs =
 	carnivaldecor_eggride1 = {
 		bank = "carnivaldecor_eggride1", build = "carnivaldecor_eggride1",
 		physics_radius = 0.25,
-		sound_fx = {place = "summerevent/egg_rides/1/place", turnon = "", on = "summerevent/egg_rides/1/LP", turnoff = "summerevent/egg_rides/turn_off"},
+		sound_fx = {place = "summerevent/egg_rides/1/place", turnon = nil, on = "summerevent/egg_rides/1/LP", turnoff = "summerevent/egg_rides/turn_off"},
 	},
 
 	carnivaldecor_eggride2 = {
 		bank = "carnivaldecor_eggride2", build = "carnivaldecor_eggride2",
 		physics_radius = 0.25,
-		sound_fx = {place = "summerevent/egg_rides/2/place", turnon = "", on = "summerevent/egg_rides/2/LP", turnoff = "summerevent/egg_rides/turn_off"},
+		sound_fx = {place = "summerevent/egg_rides/2/place", turnon = nil, on = "summerevent/egg_rides/2/LP", turnoff = "summerevent/egg_rides/turn_off"},
 	},
 
 	carnivaldecor_eggride3 = {
 		bank = "carnivaldecor_eggride3", build = "carnivaldecor_eggride3",
 		physics_radius = 0.25,
-		sound_fx = {place = "summerevent/egg_rides/3/place", turnon = "", on = "summerevent/egg_rides/3/LP", turnoff = "summerevent/egg_rides/turn_off"},
+		sound_fx = {place = "summerevent/egg_rides/3/place", turnon = nil, on = "summerevent/egg_rides/3/LP", turnoff = "summerevent/egg_rides/turn_off"},
+	},
+
+	carnivaldecor_eggride4 = {
+		bank = "carnivaldecor_eggride4", build = "carnivaldecor_eggride4",
+		physics_radius = 0.25,
+		sound_fx = {place = "summerevent2022/eggride_eggdrop/place", turnon = nil, on = "summerevent2022/eggride_eggdrop/music_lp", turnoff = "summerevent/egg_rides/turn_off", loop_oneoff ="summerevent2022/eggride_eggdrop/sfx_lp"},
 	},
 }
 
@@ -29,9 +35,18 @@ local function onhammered(inst, worker)
     inst:Remove()
 end
 
+local function onloop(inst)
+	inst.AnimState:PlayAnimation("loop", false)
+	if inst.def.sound_fx.loop_oneoff then
+		inst.SoundEmitter:PlaySound(inst.def.sound_fx.loop_oneoff)
+	end
+end
+
 local function TurnOffRide(inst)
 	inst.AnimState:PushAnimation("turn_off", false)
 	inst.AnimState:PushAnimation("off", false)
+
+	inst:RemoveEventCallback("animover", onloop)
 
 	if inst.def.sound_fx ~= nil then
 		inst.SoundEmitter:PlaySound(inst.def.sound_fx.turnoff)
@@ -50,12 +65,16 @@ local function TurnOnRide(inst, duration)
 		inst.turnofftask:Cancel()
 	else
 	    inst.AnimState:PlayAnimation("turn_on")
-	    inst.AnimState:PushAnimation("loop")
 		if inst.def.sound_fx ~= nil then
-			inst.SoundEmitter:PlaySound(inst.def.sound_fx.turnon)
+			if inst.def.sound_fx.turnon then
+				inst.SoundEmitter:PlaySound(inst.def.sound_fx.turnon)
+			end
 			inst.SoundEmitter:PlaySound(inst.def.sound_fx.on, "loop")
 		end
+
+		inst:ListenForEvent("animover", onloop)
 	end
+
 	inst.turnofftask = inst:DoTaskInTime(duration, TurnOffRide)
 end
 

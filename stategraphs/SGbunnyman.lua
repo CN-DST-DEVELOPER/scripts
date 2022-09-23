@@ -210,4 +210,4 @@ CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4 * FRAMES, { 
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAsoreStates(states)
 
-return StateGraph("pig", states, events, "idle", actionhandlers)
+return StateGraph("bunnyman", states, events, "idle", actionhandlers)

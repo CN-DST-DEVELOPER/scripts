@@ -1,4 +1,5 @@
 require("stategraphs/commonstates")
+require("stategraphs/SGcritter_common")
 
 local RANDOM_IDLES = { "bark_idle", "shake", "sit", "scratch" }
 
@@ -21,6 +22,8 @@ local events=
             inst.sg:GoToState("transform")
         end
     end),
+
+    SGCritterEvents.OnEat(),
 }
 
 local states=
@@ -57,7 +60,7 @@ local states=
 
     State{
         name = "despawn",
-        tags = {"busy", "notinterupt"},
+        tags = {"busy", "nointerrupt"},
 
         onenter = function(inst, pushanim)
             inst.components.locomotor:StopMoving()
@@ -110,6 +113,29 @@ local states=
         events=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        },
+    },
+
+    State{
+        name="eat",
+        tags = {"busy"},
+
+        onenter = function(inst, data)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("eat_pre", false)
+            inst.AnimState:PushAnimation("eat_loop", false)
+            inst.AnimState:PushAnimation("eat_pst", false)
+            inst.SoundEmitter:PlaySound("dontstarve/beefalo/chew")
+        end,
+
+        timeline =
+        {
+            TimeEvent(9*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/walter/woby/big/chuff") end),
+        },
+
+        events=
+        {
+            EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
         },
     },
 

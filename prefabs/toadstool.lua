@@ -347,8 +347,9 @@ local function SproutLaunch(inst, launcher, basespeed)
     inst.Physics:SetVel(math.cos(angle) * speed, speed * 4 + math.random() * 2, math.sin(angle) * speed)
 end
 
-local MUSHROOMSPROUT_BLOCKER_TAGS = { "_inventoryitem", "playerskeleton", "quickpick", "DIG_workable", "NOBLOCK", "FX", "INLIMBO", "DECOR" }
-local MUSHROOMSPROUT_BREAK_ONEOF_TAGS = { "playerskeleton", "DIG_workable" }
+local MUSHROOMSPROUT_BLOCKER_ONEOF_TAGS = { "mushroomsprout", "pond" } -- NOTES(JBK): Any of these tags will stop Toadstool from breaking things do not add tags from MUSHROOMSPROUT_BREAK_ONEOF_TAGS here.
+local MUSHROOMSPROUT_BLOCKER_CANT_TAGS = { "INLIMBO" }
+local MUSHROOMSPROUT_BREAK_ONEOF_TAGS = { "playerskeleton", "DIG_workable", "HAMMER_workable", "CHOP_WORKABLE", "soil" }
 local MUSHROOMSPROUT_TOSS_MUST_TAGS = { "_inventoryitem" }
 local MUSHROOMSPROUT_TOSS_CANT_TAGS = { "locomotor", "INLIMBO" }
 local MUSHROOMSPROUT_TOSSFLOWERS_MUST_TAGS = { "quickpick", "pickable" }
@@ -376,10 +377,14 @@ local function DoMushroomSprout(inst, angles)
         if offset ~= nil then
             pt.x = pt.x + offset.x
             pt.z = pt.z + offset.z
-            if #TheSim:FindEntities(pt.x, 0, pt.z, min_spacing, nil, MUSHROOMSPROUT_BLOCKER_TAGS) <= 0 then
-                --destroy skeletons and diggables
+            if TheSim:CountEntities(pt.x, 0, pt.z, min_spacing, nil, MUSHROOMSPROUT_BLOCKER_CANT_TAGS, MUSHROOMSPROUT_BLOCKER_ONEOF_TAGS) <= 0 then
+                --destroy skeletons and diggables and structures and trees
                 for i, v in ipairs(TheSim:FindEntities(pt.x, 0, pt.z, 1.2, nil, nil, MUSHROOMSPROUT_BREAK_ONEOF_TAGS)) do
-                    v.components.workable:Destroy(inst)
+                    if v.components.workable then
+                        v.components.workable:Destroy(inst)
+                    else
+                        v:PushEvent("collapsesoil")
+                    end
                 end
 
                 local totoss = TheSim:FindEntities(pt.x, 0, pt.z, 1, MUSHROOMSPROUT_TOSS_MUST_TAGS, MUSHROOMSPROUT_TOSS_CANT_TAGS)

@@ -440,6 +440,7 @@ local SGTagsToEntTags =
     ["fishing"] = true,
     ["flight"] = true,
     ["giving"] = true,
+    ["igniting"] = true,
     ["hiding"] = true,
     ["idle"] = true,
     ["invisible"] = true,

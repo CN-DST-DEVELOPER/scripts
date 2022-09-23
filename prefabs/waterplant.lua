@@ -212,7 +212,7 @@ local function equip_ranged_weapon(inst)
         ranged_weapon.components.inventoryitem:SetOnDroppedFn(ranged_weapon.Remove)
 
         ranged_weapon:AddComponent("equippable")
-
+        ranged_weapon:AddTag("nosteal")
         inst.components.inventory:Equip(ranged_weapon)
     end
 end

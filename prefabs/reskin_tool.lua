@@ -10,19 +10,10 @@ local prefabs =
     "tornado",
 }
 
-local function FuelTaken(inst, taker)
-    if taker ~= nil and taker.SoundEmitter ~= nil then
-        taker.SoundEmitter:PlaySound("dontstarve/creatures/leif/livinglog_burn")
-    end
-end
-
-local function onignite(inst)
-    inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/livinglog_burn")
-end
-
 local reskin_fx_info =
 {
 	abigail = { offset = 1.3, scale = 1.3 },
+	anchor = { offset = 0.2, scale = 1.3 },
 	arrowsign_post = { offset = 0.9, scale = 1.2 },
 	beebox = { scale = 1.4 },
 	bernie_big = { offset = 1.2, scale = 1.8 },
@@ -30,10 +21,12 @@ local reskin_fx_info =
 	bugnet = { offset = 0.4 },
 	campfire = { scale = 1.2 },
 	cane = { offset = 0.4 },
+	cavein_boulder = { scale = 1.4 },
 	coldfirepit = { scale = 1.2 },
 	cookpot = { offset = 0.5, scale = 1.4 },
 	critter_dragonling = { offset = 0.8 },
 	critter_glomling = { offset = 0.8 },
+	dragonflychest = { offset = 0.1, scale = 1.4 },
 	dragonflyfurnace = { offset = 0.6, scale = 1.8 },
 	endtable = { offset = 0.2, scale = 1.3 },
 	featherfan = { scale = 1.3 },
@@ -51,30 +44,46 @@ local reskin_fx_info =
 	icestaff = { offset = 0.4 },
 	lightning_rod = { offset = 0.8, scale = 1.3 },
 	mast = { offset = 4, scale = 2 },
+	mast_malbatross = { offset = 4, scale = 2 },
 	meatrack = { offset = 1, scale = 1.7 },
+	mermhouse_crafted = { offset = 1.5, scale = 2.2 },
+	monkey_mediumhat = { scale = 1.2 },
 	mushroom_light = { offset = 1.2, scale = 1.4 },
 	mushroom_light2 = { offset = 1.2, scale = 1.8 },
 	nightsword = { offset = 0.2 },
+	oceanfishingrod = { offset = -0.4 },
 	opalstaff = { offset = 0.4 },
 	orangestaff = { offset = 0.4 },
 	pighouse = { offset = 1.5, scale = 2.2 },
 	rabbithouse = { offset = 1.5, scale = 2.2 },
 	rainometer = { offset = 0.9, scale = 1.6 },
+	researchlab = { offset = 0.5, scale = 1.4 },
 	researchlab2 = { offset = 0.5, scale = 1.4 },
 	researchlab3 = { offset = 0.5, scale = 1.4 },
 	researchlab4 = { offset = 0.5, scale = 1.4 },
 	ruins_bat = { offset = 0.4, scale = 1.2 },
 	saltbox = { offset = 0.3, scale = 1.3 },
+	sculptingtable = { scale = 1.2 },
+	seafaring_prototyper = { offset = 0.5, scale = 1.5 },
 	shovel = { offset = 0.2 },
+	siestahut = { scale = 1.8 },
 	spear = { offset = 0.4 },
 	spear_wathgrithr = { offset = 0.4 },
+	stagehand = { offset = 0.2, scale = 1.3 },
+	telebase = { scale = 1.6 },
 	tent = { offset = 0.4, scale = 2.0 },
 	treasurechest = { offset = 0.1, scale = 1.1 },
 	umbrella = { offset = 0.4 },
+	wall_moonrock = { offset = 0.2, scale = 1.2 },
+	wall_ruins = { offset = 0.2, scale = 1.3 },
+	wall_stone = { offset = 0.2, scale = 1.3 },
 	wardrobe = { offset = 0.5, scale = 1.4 },
 	winterometer = { offset = 0.8, scale = 1.3 },
+	wormhole = { scale = 1.3 },
 	yellowstaff = { offset = 0.4 },
 }
+
+
 
 local function spellCB(tool, target, pos)
     
@@ -106,20 +115,22 @@ local function spellCB(tool, target, pos)
             is_beard = true
         end
 
-        if target:IsValid() and tool:IsValid() then
+        if target:IsValid() and tool:IsValid() and tool.parent and tool.parent:IsValid() then
             local curr_skin = is_beard and target.components.beard.skinname or target.skinname
-            local search_for_skin = tool._cached_reskinname[prefab_to_skin] ~= nil --also check if it's owned
-            if curr_skin == tool._cached_reskinname[prefab_to_skin] or (search_for_skin and not TheInventory:CheckClientOwnership(tool.parent.userid, tool._cached_reskinname[prefab_to_skin])) then
+            local userid = tool.parent.userid or ""
+            local cached_skin = tool._cached_reskinname[prefab_to_skin]
+            local search_for_skin = cached_skin ~= nil --also check if it's owned
+            if curr_skin == cached_skin or (search_for_skin and not TheInventory:CheckClientOwnership(userid, cached_skin)) then
                 local new_reskinname = nil
 
                 if PREFAB_SKINS[prefab_to_skin] ~= nil then
                     for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
                         if search_for_skin then
-                            if tool._cached_reskinname[prefab_to_skin] == item_type then
+                            if cached_skin == item_type then
                                 search_for_skin = false
                             end
                         else
-                            if TheInventory:CheckClientOwnership(tool.parent.userid, item_type) then
+                            if TheInventory:CheckClientOwnership(userid, item_type) then
                                 new_reskinname = item_type
                                 break
                             end
@@ -127,18 +138,28 @@ local function spellCB(tool, target, pos)
                     end
                 end
                 tool._cached_reskinname[prefab_to_skin] = new_reskinname
+                cached_skin = new_reskinname
             end
 
             if is_beard then
-                target.components.beard:SetSkin( tool._cached_reskinname[prefab_to_skin] )
+                target.components.beard:SetSkin( cached_skin )
             else
-                TheSim:ReskinEntity( target.GUID, target.skinname, tool._cached_reskinname[prefab_to_skin], nil, tool.parent.userid )
+                TheSim:ReskinEntity( target.GUID, target.skinname, cached_skin, nil, userid )
 
 				--Todo(Peter): make this better one day if we do more skins applied to multiple prefabs in the future
                 if target.prefab == "wormhole" then
                     local other = target.components.teleporter.targetTeleporter
                     if other ~= nil then
-                        TheSim:ReskinEntity( other.GUID, other.skinname, tool._cached_reskinname[prefab_to_skin], nil, tool.parent.userid )
+                        TheSim:ReskinEntity( other.GUID, other.skinname, cached_skin, nil, userid )
+                    end
+                elseif target.prefab == "cave_entrance" or target.prefab == "cave_entrance_open" or target.prefab == "cave_exit" then
+                    if target.components.worldmigrator:IsLinked() and Shard_IsWorldAvailable(target.components.worldmigrator.linkedWorld) then
+                        local skin_theme = ""
+                        if target.skinname ~= nil then
+                            skin_theme = string.sub( target.skinname, string.len(target.prefab) + 2 )
+                        end
+
+                        SendRPCToShard(SHARD_RPC.ReskinWorldMigrator, target.components.worldmigrator.linkedWorld, target.components.worldmigrator.id, skin_theme, target.skin_id, TheNet:GetSessionIdentifier() )
                     end
                 end
             end
@@ -250,13 +271,10 @@ local function tool_fn()
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.MED_FUEL
-    inst.components.fuel:SetOnTakenFn(FuelTaken)
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)
     MakeHauntableLaunchAndIgnite(inst)
-
-    inst:ListenForEvent("onignite", onignite)
 
     inst._cached_reskinname = {}
 

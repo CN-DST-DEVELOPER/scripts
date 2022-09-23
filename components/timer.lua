@@ -147,4 +147,13 @@ function Timer:LongUpdate(dt)
     end
 end
 
+function Timer:TransferComponent(newinst)
+    local newcomponent = newinst.components.timer
+
+    for k, v in pairs(self.timers) do
+        newcomponent:StartTimer(k, self:GetTimeLeft(k), v.paused, v.initial_time)
+    end
+
+end
+
 return Timer

@@ -193,7 +193,7 @@ local function Count(item)
     return item.replica.stackable ~= nil and item.replica.stackable:StackSize() or 1
 end
 
-local function Has(inst, prefab, amount)
+local function Has(inst, prefab, amount, checkallcontainers)
     local count =
         inst._activeitem ~= nil and
         inst._activeitem.prefab == prefab and
@@ -219,6 +219,21 @@ local function Has(inst, prefab, amount)
     if overflow ~= nil then
         local overflowhas, overflowcount = overflow:Has(prefab, amount)
         count = count + overflowcount
+    end
+
+    if checkallcontainers then
+        local inventory_replica = inst and inst._parent and inst._parent.replica.inventory
+        local containers = inventory_replica and inventory_replica:GetOpenContainers()
+
+        if containers then
+            for container_inst in pairs(containers) do
+                local container = container_inst.replica.container or container_inst.replica.inventory
+                if container and container ~= overflow and not container.excludefromcrafting then
+                    local containerhas, containercount = container:Has(prefab, amount)
+                    count = count + containercount
+                end
+            end
+        end
     end
 
     return count >= amount, count
@@ -378,6 +393,12 @@ local function OnStackItemDirty(inst, item)
                         data.eslot = k
                         inst._parent:PushEvent("gotnewitem", data)
                         break
+                    end
+                end
+                if data.eslot == nil then
+                    if item == inst._activeitem then
+                        data.toactiveitem = true
+                        inst._parent:PushEvent("gotnewitem", data)
                     end
                 end
             end
@@ -1095,7 +1116,7 @@ local function ReceiveItem(inst, item, count)--, forceslot)
     end
 end
 
-local function ConsumeByName(inst, prefab, amount, overflow)
+local function ConsumeByName(inst, prefab, amount, overflow, containers)
     if amount <= 0 then
         return
     end
@@ -1135,6 +1156,15 @@ local function ConsumeByName(inst, prefab, amount, overflow)
     if overflow ~= nil then
         overflow:ConsumeByName(prefab, amount)
     end
+
+    if containers then
+        for container_inst in pairs(containers) do
+            local container = container_inst.replica.container or container_inst.replica.inventory
+            if container and container.classified and container.classified ~= overflow and not container.excludefromcrafting then
+                container.classified:ConsumeByName(prefab, amount)
+            end
+        end
+    end
 end
 
 local function RemoveIngredients(inst, recipe, ingredientmod)
@@ -1146,9 +1176,13 @@ local function RemoveIngredients(inst, recipe, ingredientmod)
     if overflow ~= nil and overflow:IsBusy() then
         return false
     end
+
+    local inventory_replica = inst and inst._parent and inst._parent.replica.inventory
+    local containers = inventory_replica and inventory_replica:GetOpenContainers()
+
     for i, v in ipairs(recipe.ingredients) do
         local amt = math.max(1, RoundBiasedUp(v.amount * ingredientmod))
-        ConsumeByName(inst, v.type, amt, overflow)
+        ConsumeByName(inst, v.type, amt, overflow, containers)
     end
     return true
 end

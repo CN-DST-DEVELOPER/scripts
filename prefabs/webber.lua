@@ -38,7 +38,6 @@ local function common_postinit(inst)
     inst:AddTag("dualsoul")
     inst:AddTag(UPGRADETYPES.SPIDER.."_upgradeuser")
 
-    inst.customidleanim = "idle_webber"
     inst.AnimState:AddOverrideBuild("player_idles_webber")
 
     if TheNet:GetServerGameMode() == "quagmire" then
@@ -102,7 +101,8 @@ end
 
 local function master_postinit(inst)
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
-
+	
+    inst.customidleanim = "idle_webber"
     inst.talker_path_override = "dontstarve_DLC001/characters/"
 
     if inst.components.eater ~= nil then

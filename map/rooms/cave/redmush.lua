@@ -9,7 +9,7 @@ require "map/room_functions"
 -- Red mush forest
 AddRoom("RedMushForest", {
     colour={r=0.8,g=0.1,b=0.1,a=0.9},
-    value = GROUND.FUNGUSRED,
+    value = WORLD_TILES.FUNGUSRED,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .3,
@@ -21,7 +21,9 @@ AddRoom("RedMushForest", {
             flower_cave_double = 0.1,
             flower_cave_triple = 0.1,
 
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.1,
             spiderhole = 0.05,
 
@@ -33,7 +35,7 @@ AddRoom("RedMushForest", {
 -- Spider mush forest
 AddRoom("RedSpiderForest", {
     colour={r=0.8,g=0.1,b=0.4,a=0.9},
-    value = GROUND.FUNGUSRED,
+    value = WORLD_TILES.FUNGUSRED,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .3,
@@ -45,7 +47,9 @@ AddRoom("RedSpiderForest", {
             flower_cave_double = 0.1,
             flower_cave_triple = 0.1,
 
-            stalagmite = 1.5,
+            stalagmite = 1.0,
+            stalagmite_med = 0.4,
+            stalagmite_low = 0.1,
             pillar_cave = 0.2,
             spiderhole = 0.4,
 
@@ -57,7 +61,7 @@ AddRoom("RedSpiderForest", {
 -- Pillar Red Mush Meadow
 AddRoom("RedMushPillars", {
     colour={r=0.8,g=0.1,b=0.4,a=0.9},
-    value = GROUND.FUNGUSRED,
+    value = WORLD_TILES.FUNGUSRED,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .15,
@@ -69,7 +73,9 @@ AddRoom("RedMushPillars", {
             flower_cave_double = 0.2,
             flower_cave_triple = 0.2,
 
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.5,
             spiderhole = 0.01,
 
@@ -81,7 +87,7 @@ AddRoom("RedMushPillars", {
 -- Stalagmite Forest
 AddRoom("StalagmiteForest", {
     colour={r=0.8,g=0.1,b=0.1,a=0.9},
-    value = GROUND.FUNGUSRED,
+    value = WORLD_TILES.FUNGUSRED,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .3,
@@ -93,7 +99,9 @@ AddRoom("StalagmiteForest", {
             flower_cave_double = 0.1,
             flower_cave_triple = 0.1,
 
-            stalagmite = 3.5,
+            stalagmite = 2.5,
+            stalagmite_med = 0.7,
+            stalagmite_low = 0.3,
             pillar_cave = 1.0,
             spiderhole = 0.15,
 
@@ -105,7 +113,7 @@ AddRoom("StalagmiteForest", {
 -- Spillagmite meadow
 AddRoom("SpillagmiteMeadow", {
     colour={r=0.8,g=0.1,b=0.1,a=0.9},
-    value = GROUND.FUNGUSRED,
+    value = WORLD_TILES.FUNGUSRED,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .15,
@@ -117,7 +125,9 @@ AddRoom("SpillagmiteMeadow", {
             flower_cave_double = 0.2,
             flower_cave_triple = 0.2,
 
-            stalagmite = 1.5,
+            stalagmite = 1.0,
+            stalagmite_med = 0.4,
+            stalagmite_low = 0.1,
             pillar_cave = 0.05,
             spiderhole = 0.45,
 
@@ -128,7 +138,7 @@ AddRoom("SpillagmiteMeadow", {
 
 local bgredmush = {
     colour={r=0.8,g=0.1,b=0.1,a=0.9},
-    value = GROUND.FUNGUSRED,
+    value = WORLD_TILES.FUNGUSRED,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .3,
@@ -140,7 +150,9 @@ local bgredmush = {
             flower_cave_double = 0.1,
             flower_cave_triple = 0.1,
 
-            stalagmite = 0.2,
+            stalagmite = 0.1,
+            stalagmite_med = 0.07,
+            stalagmite_low = 0.03,
             pillar_cave = 0.05,
             spiderhole = 0.01,
 

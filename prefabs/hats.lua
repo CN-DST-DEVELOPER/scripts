@@ -16,7 +16,7 @@ local function MakeHat(name)
     local swap_data = { bank = symname, anim = "anim" }
 
 	-- do not pass this function to equippable:SetOnEquip as it has different a parameter listing
-    local function _onequip(inst, owner, symbol_override)
+    local function _onequip(inst, owner, symbol_override, headbase_hat_override)
 
         local skin_build = inst:GetSkinBuild()
         if skin_build ~= nil then
@@ -25,6 +25,18 @@ local function MakeHat(name)
         else
             owner.AnimState:OverrideSymbol("swap_hat", fname, symbol_override or "swap_hat")
         end
+        
+        owner.AnimState:ClearOverrideSymbol("headbase_hat") --clear out previous overrides
+        if headbase_hat_override ~= nil then
+            local skin_build = owner.AnimState:GetSkinBuild()
+            if skin_build ~= "" then
+                owner.AnimState:OverrideSkinSymbol("headbase_hat", skin_build, headbase_hat_override )
+            else 
+                local build = owner.AnimState:GetBuild()
+                owner.AnimState:OverrideSymbol("headbase_hat", build, headbase_hat_override)
+            end
+        end
+
         owner.AnimState:Show("HAT")
         owner.AnimState:Show("HAIR_HAT")
         owner.AnimState:Hide("HAIR_NOHAT")
@@ -38,12 +50,21 @@ local function MakeHat(name)
         if inst.components.fueled ~= nil then
             inst.components.fueled:StartConsuming()
         end
+        
+        if inst.skin_equip_sound and owner.SoundEmitter then
+            owner.SoundEmitter:PlaySound(inst.skin_equip_sound)
+        end
     end
 
     local function _onunequip(inst, owner)
         local skin_build = inst:GetSkinBuild()
         if skin_build ~= nil then
             owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+        end
+
+        owner.AnimState:ClearOverrideSymbol("headbase_hat") --it might have been overriden by _onequip
+        if owner.components.skinner ~= nil then
+            owner.components.skinner.base_change_cb = owner.old_base_change_cb
         end
 
         owner.AnimState:ClearOverrideSymbol("swap_hat")
@@ -89,6 +110,10 @@ local function MakeHat(name)
 
         if inst.components.fueled ~= nil then
             inst.components.fueled:StartConsuming()
+        end
+
+        if inst.skin_equip_sound and owner.SoundEmitter then
+            owner.SoundEmitter:PlaySound(inst.skin_equip_sound)
         end
     end
 
@@ -757,7 +782,14 @@ local function MakeHat(name)
     end
 
     local function bush_onequip(inst, owner)
-        owner.AnimState:OverrideSymbol("swap_hat", fname, "swap_hat")
+        local skin_build = inst:GetSkinBuild()
+        if skin_build ~= nil then
+            owner:PushEvent("equipskinneditem", inst:GetSkinName())
+            owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, "swap_hat", inst.GUID, fname)
+        else
+            owner.AnimState:OverrideSymbol("swap_hat", fname, "swap_hat")
+        end
+
         owner.AnimState:Show("HAT")
         owner.AnimState:Show("HAIR_HAT")
         owner.AnimState:Hide("HAIR_NOHAT")
@@ -777,6 +809,10 @@ local function MakeHat(name)
 
     local function bush_onunequip(inst, owner)
         owner.AnimState:ClearOverrideSymbol("swap_hat")
+        local skin_build = inst:GetSkinBuild()
+        if skin_build ~= nil then
+            owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+        end
 
         owner.AnimState:Hide("HAT")
         owner.AnimState:Hide("HAIR_HAT")
@@ -843,6 +879,7 @@ local function MakeHat(name)
         end
 
         inst.components.equippable.dapperness = TUNING.DAPPERNESS_TINY
+        inst.components.equippable.flipdapperonmerms = true
         inst.components.equippable:SetOnEquip(opentop_onequip)
 
         inst:AddComponent("perishable")
@@ -873,6 +910,7 @@ local function MakeHat(name)
         end
 
         inst.components.equippable.dapperness = -TUNING.DAPPERNESS_TINY
+        inst.components.equippable.flipdapperonmerms = true
         inst.components.equippable:SetOnEquip(opentop_onequip)
 
         inst:AddComponent("perishable")
@@ -1060,6 +1098,8 @@ local function MakeHat(name)
     end
 
     local function balloon_custom_init(inst)
+        inst.entity:AddSoundEmitter() -- NOTES(JBK): Needed for damage dealing attacks that play sounds on the victim from health combat components.
+
         --waterproofer (from waterproofer component) added to pristine state for optimization
         inst:AddTag("waterproofer")
 
@@ -1135,11 +1175,37 @@ local function MakeHat(name)
     end
 
     local function walter_onequip(inst, owner)
-        if owner.prefab == "walter" then
-            _onequip(inst, owner )
-        else
-            _onequip(inst, owner, "swap_hat_large")
+        local do_walter_onequip = function()
+            if owner.prefab == "walter" then
+            	--Note(Peter): please forgive my sins..... walterhats are a mess, and walterhat_nature complicates it
+                --When walter wears a walter hat, we use headbase_walter_hat, except for walterhat_nature unless it's one of these listed skins
+                if (inst.skinname ~= "walterhat_nature" or (owner.components.skinner ~= nil and
+                      (owner.components.skinner.skin_name == "walter_none"
+                    or owner.components.skinner.skin_name == "walter_bee"
+                    or owner.components.skinner.skin_name == "walter_bee_d"
+                    or owner.components.skinner.skin_name == "walter_nature"
+                    or owner.components.skinner.skin_name == "walter_ventriloquist")
+                )) then
+                    --print("headbase_walter_hat", owner.components.skinner.skin_name)
+                    _onequip(inst, owner, nil, "headbase_walter_hat" )
+                else
+                    --print("headbase_hat", owner.components.skinner.skin_name)
+                    _onequip(inst, owner )
+                end
+            else
+                _onequip(inst, owner, "swap_hat_large")
+            end
         end
+        if owner.components.skinner ~= nil then
+            owner.old_base_change_cb = owner.components.skinner.base_change_cb
+            owner.components.skinner.base_change_cb = function()
+                if owner.old_base_change_cb ~= nil then
+                    owner.old_base_change_cb()
+                end
+                do_walter_onequip()
+            end
+        end
+        do_walter_onequip()
 
 		if owner._sanity_damage_protection ~= nil then
 			owner._sanity_damage_protection:SetModifier(inst, TUNING.WALTERHAT_SANITY_DAMAGE_PROTECTION)
@@ -1637,6 +1703,10 @@ local function MakeHat(name)
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
 
+        inst:AddComponent("insulator")
+        inst.components.insulator:SetSummer()
+        inst.components.insulator:SetInsulation(TUNING.INSULATION_MED)
+
         return inst
     end
 
@@ -1764,6 +1834,237 @@ local function MakeHat(name)
         return inst
     end
 
+    --------------------- POLLY ROGERS
+
+
+    local function update_polly_hat_art(inst)
+        inst.AnimState:PlayAnimation(inst.defaultanim)
+        local deadpolly = not inst.components.spawner.child or inst.components.spawner.child.components.health:IsDead()
+        if deadpolly then
+            inst.components.inventoryitem:ChangeImageName("polly_rogershat2")
+            inst.AnimState:PlayAnimation("anim_dead")
+        else
+            inst.components.inventoryitem:ChangeImageName("polly_rogershat")
+            inst.AnimState:PlayAnimation("anim")
+        end
+        if inst.components.equippable:IsEquipped() then
+            local skin_build = inst:GetSkinBuild()
+            local symbol = deadpolly and "swap_hat2" or "swap_hat"
+            local owner = inst.components.inventoryitem.owner
+            if skin_build ~= nil then
+                owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, symbol, inst.GUID, fname)
+            else
+                owner.AnimState:OverrideSymbol("swap_hat", fname, symbol)
+            end
+        end
+    end
+
+    local function pollyremoved(inst)
+        inst:RemoveEventCallback("onremove", pollyremoved, inst.polly)
+        inst.polly = nil
+    end
+
+    local function polly_rogers_custom_init(inst)
+
+    end
+
+    local function test_polly_spawn(inst)
+        if not inst.polly and not inst.components.spawner:IsSpawnPending() then
+            inst.components.spawner:ReleaseChild()
+        end
+    end
+
+    local function polly_rogers_go_away(inst)
+        if inst.pollytask then
+            inst.pollytask:Cancel()
+            inst.pollytask = nil
+        end
+
+        if inst.polly then
+            inst.polly.flyaway = true
+            inst.polly:PushEvent("flyaway")
+        end
+    end
+
+    local function polly_rogers_ondeplete(inst, data)
+        polly_rogers_go_away(inst)
+        inst:Remove()
+    end
+
+    local function polly_rogers_equip(inst,owner)
+        _onequip(inst, owner)
+        inst:DoTaskInTime(0,function()
+            inst.worn = true
+            test_polly_spawn(inst)
+
+            inst.polly = inst.components.spawner.child
+            if inst.polly then
+                inst.polly.components.follower:SetLeader(owner)
+                inst.polly.flyaway = nil
+            end
+            update_polly_hat_art(inst)
+        end)
+    end
+
+    local function polly_rogers_unequip(inst,owner)
+        _onunequip(inst, owner)
+        inst.worn = nil
+
+        polly_rogers_go_away(inst)
+        --update_polly_hat_art(inst)
+    end 
+
+    local function getpollyspawnlocation(inst)
+        local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner or inst
+        local pos = Vector3(owner.Transform:GetWorldPosition())
+        local offset = nil
+        local count = 0
+        while offset == nil and count < 12 do
+            offset = FindWalkableOffset(pos, math.random()*2*PI, math.random() * 5, 12, false, false, nil, false, true)
+            count = count + 1
+        end
+
+        if offset then
+            return pos.x+offset.x,15,pos.z+offset.z
+        end
+    end
+
+    local function polly_rogers_onoccupied(inst,child)
+        inst.polly = nil
+        child.components.follower:StopFollowing()
+    end
+
+    local function polly_rogers_onvacate(inst, child)
+
+        if not inst.worn then
+            inst.components.spawner:GoHome(child)
+            return
+        end
+               
+        local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner or nil
+        if owner then
+            child.sg:GoToState("glide")
+            child.Transform:SetRotation(math.random() * 180)
+            child.components.locomotor:StopMoving()
+            child.hat = inst
+            inst:ListenForEvent("onremove", pollyremoved, inst.polly)
+        end
+    end
+
+
+    local function updatepolly(spawner,polly)
+        update_polly_hat_art(spawner)
+    end
+
+    local function polly_rogers()
+        local inst = simple(polly_rogers_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.72)
+
+        inst.defaultanim = "anim"
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled:InitializeFuelLevel(TUNING.POLLY_ROGERS_HAT_PERISHTIME)
+        inst.components.fueled:SetDepletedFn(polly_rogers_ondeplete)
+
+        inst.components.equippable:SetOnEquip(polly_rogers_equip)
+        inst.components.equippable:SetOnUnequip(polly_rogers_unequip)
+
+
+        inst:AddComponent("spawner")
+        inst.components.spawner:Configure("polly_rogers", TUNING.POLLY_ROGERS_SPAWN_TIME)
+        inst.components.spawner.onvacate = polly_rogers_onvacate
+        inst.components.spawner.onoccupied = polly_rogers_onoccupied
+        inst.components.spawner.overridespawnlocation = getpollyspawnlocation
+        inst.components.spawner:CancelSpawning()
+        inst.components.spawner.onkilledfn = updatepolly
+        inst.components.spawner.onspawnedfn = updatepolly
+
+        inst:DoTaskInTime(0,function() update_polly_hat_art(inst) end)
+
+        return inst
+    end
+
+    ---------------------- MONEY SMALL
+    local function monkey_small_custom_init(inst)
+
+    end
+
+
+    local function monkey_small_equip(inst,owner)
+        _onequip(inst, owner)
+        owner:AddTag("master_crewman")
+    end
+
+    local function monkey_small_unequip(inst,owner)
+        _onunequip(inst, owner)
+        owner:RemoveTag("master_crewman")
+    end    
+
+
+    local function monkey_small()
+        local inst = simple(monkey_small_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.72)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled:InitializeFuelLevel(TUNING.MONKEY_MEDIUM_HAT_PERISHTIME)
+        inst.components.fueled:SetDepletedFn(--[[generic_perish]]inst.Remove)
+
+        inst.components.equippable:SetOnEquip(monkey_small_equip)
+        inst.components.equippable:SetOnUnequip(monkey_small_unequip)
+
+        return inst
+    end
+
+    ---------------------- MONEY MEDIUM
+    local function monkey_medium_custom_init(inst)
+
+    end
+
+    local function monkey_medium_equip(inst,owner)
+        _onequip(inst, owner)
+        owner:AddTag("boat_health_buffer")
+    end
+
+    local function monkey_medium_unequip(inst,owner)
+        _onunequip(inst, owner)
+        owner:RemoveTag("boat_health_buffer")
+    end    
+
+    local function monkey_medium()
+        local inst = simple(monkey_medium_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.72)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled:InitializeFuelLevel(TUNING.MONKEY_MEDIUM_HAT_PERISHTIME)
+        inst.components.fueled:SetDepletedFn(--[[generic_perish]]inst.Remove)        
+
+        inst.components.equippable:SetOnEquip(monkey_medium_equip)
+        inst.components.equippable:SetOnUnequip(monkey_medium_unequip)
+
+        return inst
+    end
+
     local function skeleton_onequip(inst, owner)
         _onequip(inst, owner)
         if owner.components.sanity ~= nil then
@@ -1875,7 +2176,7 @@ local function MakeHat(name)
         inst.components.equippable:SetOnUnequip(merm_unequip)
 
         inst:AddComponent("perishable")
-        inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+        inst.components.perishable:SetPerishTime(TUNING.PERISH_SLOW)
         inst.components.perishable:StartPerishing()
         inst.components.perishable:SetOnPerishFn(inst.Remove)
 
@@ -1915,6 +2216,7 @@ local function MakeHat(name)
         end
 
         inst.components.equippable.dapperness = -TUNING.DAPPERNESS_TINY
+        inst.components.equippable.flipdapperonmerms = true
         inst.components.equippable:SetOnEquip(batnose_equip)
         inst.components.equippable:SetOnUnequip(batnose_unequip)
         inst.components.equippable.restrictedtag = "usesvegetarianequipment"
@@ -2136,7 +2438,7 @@ local function MakeHat(name)
 	end
 
 	local function alterguardian_onsanitydelta(inst, owner)
-		local sanity = owner.components.sanity ~= nil and owner.components.sanity:GetPercent() or 0
+		local sanity = owner.components.sanity ~= nil and owner.components.sanity:GetPercentWithPenalty() or 0
 		if sanity > TUNING.SANITY_BECOME_ENLIGHTENED_THRESH then
 			alterguardian_activate(inst, owner)
 		else
@@ -2365,6 +2667,14 @@ local function MakeHat(name)
         }
         table.insert(assets, Asset("ANIM", "anim/ui_alterguardianhat_1x6.zip"))
         fn = alterguardian
+    elseif name == "monkey_medium" then
+        fn = monkey_medium
+    elseif name == "monkey_small" then
+        fn = monkey_small
+    elseif name == "polly_rogers" then        
+        prefabs = {"polly_rogers",}
+        table.insert(assets, Asset("INV_IMAGE", "polly_rogershat2"))
+        fn = polly_rogers
 	elseif name == "eyemask" then
         fn = eyemask
     end
@@ -2464,5 +2774,10 @@ return  MakeHat("straw"),
         MakeHat("balloon"),
         MakeHat("alterguardian"),
         MakeHat("eyemask"),
+
+        MakeHat("monkey_medium"),
+        MakeHat("monkey_small"),
+        MakeHat("polly_rogers"),
+
         Prefab("minerhatlight", minerhatlightfn),
         Prefab("alterguardianhatlight", alterguardianhatlightfn)

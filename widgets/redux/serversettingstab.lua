@@ -210,6 +210,18 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
         self.servercreationscreen:MakeDirty()
     end)
 
+    local savetype_options = {
+        { text = STRINGS.UI.SERVERCREATIONSCREEN.SAVE_TYPE_LOCAL, data = false },
+        { text = STRINGS.UI.SERVERCREATIONSCREEN.SAVE_TYPE_CLOUD, data = true  }
+    }
+    self.savetype_mode = TEMPLATES.LabelSpinner(STRINGS.UI.SERVERCREATIONSCREEN.SAVE_TYPE, savetype_options, narrow_label_width, narrow_input_width, label_height, space_between, NEWFONT, font_size, narrow_field_nudge)
+    self.savetype_mode.spinner:SetOnChangedFn(function(data)
+        self:UpdateSaveType(data)
+        self:UpdateSlot()
+        self.servercreationscreen:MakeDirty()
+    end)
+    self:SetCanEditSaveTypeWidgets(false)
+
     local online_options = {
         { text = STRINGS.UI.SERVERLISTINGSCREEN.ONLINE, data = true },
         { text = STRINGS.UI.SERVERLISTINGSCREEN.OFFLINE, data = false  }
@@ -235,6 +247,7 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
         self.pvp,
         self.max_players,
         self.server_pw,
+        self.savetype_mode,
         self.online_mode,
     }
     self.clan_widgets =
@@ -303,6 +316,27 @@ function ServerSettingsTab:SetOnlineWidgets(online)
     self:RefreshPrivacyButtons()
 end
 
+function ServerSettingsTab:SetSaveTypeWidgets(is_cloud_save)
+    if is_cloud_save ~= nil then
+        self.savetype_mode.spinner:SetSelected(is_cloud_save)
+    end
+end
+
+function ServerSettingsTab:SetCanEditSaveTypeWidgets(can_edit)
+    if can_edit then
+        self.savetype_mode.spinner:Enable()
+    else
+        self.savetype_mode.spinner:Disable()
+    end
+end
+
+function ServerSettingsTab:UpdateSaveType(is_cloud_save)
+    if (is_cloud_save and self.slot > CLOUD_SAVES_SAVE_OFFSET) or (not is_cloud_save and self.slot <= CLOUD_SAVES_SAVE_OFFSET) then
+        return
+    end
+    self.servercreationscreen:UpdateSaveSlot(ShardSaveGameIndex:GetNextNewSlot(is_cloud_save and "cloud" or "local"))
+end
+
 function ServerSettingsTab:DisplayClanControls(show)
     -- These controls don't get cleaned up properly unless they have a parent, so we shuffle them between the scroll list and ourselves.
     if show then
@@ -351,7 +385,7 @@ function ServerSettingsTab:OnControl(control, down)
     end
 end
 
-function ServerSettingsTab:UpdateModeSpinner(slot)
+function ServerSettingsTab:UpdateModeSpinner()
     local selected = self.game_mode.spinner:GetSelectedData()
     self.game_mode.spinner:SetOptions( GetGameModesSpinnerData( ModManager:GetEnabledServerModNames() ) )
     self.game_mode.spinner:SetSelected(selected)
@@ -428,11 +462,17 @@ function ServerSettingsTab:UpdateSlot()
     self.serverslot:SetSaveSlot(self.slot, self:GetServerData())
 end
 
+function ServerSettingsTab:UpdateSaveSlot(slot)
+    self.slot = slot
+end
+
 function ServerSettingsTab:SetDataForSlot(slot)
     self.slot = slot
     self._cached_privacy_setting = nil
 
     self.game_mode.spinner:SetOptions( GetGameModesSpinnerData( ModManager:GetEnabledServerModNames() ) )
+
+    self:SetSaveTypeWidgets(slot > CLOUD_SAVES_SAVE_OFFSET)
 
     -- No save data
     if slot < 0 or ShardSaveGameIndex:IsSlotEmpty(slot) then
@@ -450,6 +490,7 @@ function ServerSettingsTab:SetDataForSlot(slot)
 
         self:SetServerIntention(nil)
         self:SetOnlineWidgets(online)
+        self:SetCanEditSaveTypeWidgets(true)
 
         self.game_mode.spinner:Enable()
 
@@ -476,6 +517,7 @@ function ServerSettingsTab:SetDataForSlot(slot)
 
             self:SetServerIntention(server_data.intention)
             self:SetOnlineWidgets(server_data.online_mode) -- always load from the server data
+            self:SetCanEditSaveTypeWidgets(false)
         else
             self.encode_user_path = true
             self.use_legacy_session_path = false

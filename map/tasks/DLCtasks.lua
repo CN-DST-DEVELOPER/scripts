@@ -8,7 +8,7 @@ AddTask("Oasis", {
 			["PondyGrass"] = 1,
 			["BuzzardyBadlands"] = 2,
 		},
-		room_bg=GROUND.DIRT,
+		room_bg=WORLD_TILES.DIRT,
 		background_room="BGBadlands",
 		colour={r=.05,g=.5,b=.05,a=1},
 	})

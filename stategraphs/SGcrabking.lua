@@ -127,7 +127,7 @@ local states =
 
     State{
         name = "inert",
-        tags = { "inert", "canrotate", "noattack"},
+        tags = { "inert", "canrotate", "noattack", "canwxscan", },
 
         onenter = function(inst, pushanim)
             inst.AnimState:PlayAnimation("inert")
@@ -157,7 +157,7 @@ local states =
 
     State{
         name = "reappear",
-        tags = { "inert", "canrotate", "noattack","busy"},
+        tags = { "inert", "canrotate", "noattack", "busy", "canwxscan", },
 
         onenter = function(inst, pushanim)
             inst.AnimState:PlayAnimation("reappear")
@@ -182,7 +182,7 @@ local states =
 
     State{
         name = "inert_blink",
-        tags = { "inert", "canrotate", "noattack"},
+        tags = { "inert", "canrotate", "noattack", "canwxscan", },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("inert_blink")
@@ -235,7 +235,7 @@ local states =
 
     State{
         name = "disappear",
-        tags = { "idle", "canrotate", "noattack", "inert"},
+        tags = { "idle", "canrotate", "noattack", "inert", "canwxscan", },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("disappear")
@@ -253,7 +253,7 @@ local states =
 
     State{
         name = "reappear",
-        tags = { "idle", "canrotate", "noattack", "inert"},
+        tags = { "idle", "canrotate", "noattack", "inert", "canwxscan", },
 
         onenter = function(inst)
             inst.Physics:SetActive(true)
@@ -272,7 +272,7 @@ local states =
 
     State{
         name = "socket",
-        tags = { "idle", "canrotate", "noattack", "inert"},
+        tags = { "idle", "canrotate", "noattack", "inert", "canwxscan", },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("gem_insert")

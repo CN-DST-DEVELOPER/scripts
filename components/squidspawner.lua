@@ -32,6 +32,18 @@ local SQUID_TIMING = {5, 7}
 
 local SQUID_TAGS = {"squid"}
 local FISHABLE_TAGS = {"oceanfish", "oceanfishable"}
+
+local OCEANTRAWLER_TAGS = { "oceantrawler" }
+local function GetOceanTrawlerChanceModifier(spawnpoint)
+    local oceantrawlers = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, OCEANTRAWLER_TAGS)
+    for i, trawler in ipairs(oceantrawlers) do
+        if trawler.components.oceantrawler then
+            return trawler.components.oceantrawler:GetOceanTrawlerSpawnChanceModifier(spawnpoint)
+        end
+    end
+    return 1
+end
+
 local function testforsquid(comp, forcesquid)
 
     if not TheWorld.state.isday then
@@ -50,14 +62,16 @@ local function testforsquid(comp, forcesquid)
         while scrambled[1] do
             local spawnpoint = Vector3(scrambled[1].Transform:GetWorldPosition())
 
+            local oceantrawlerchancemodifier = GetOceanTrawlerChanceModifier(spawnpoint)
+
         --    local tile_at_spawnpoint = TheWorld.Map:GetTileAtPoint(spawnpoint:Get())
-        --    if tile_at_spawnpoint == GROUND.OCEAN_SWELL or tile_at_spawnpoint == GROUND.OCEAN_ROUGH then
+        --    if tile_at_spawnpoint == WORLD_TILES.OCEAN_SWELL or tile_at_spawnpoint == WORLD_TILES.OCEAN_ROUGH then
 
             local squidcount = #TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, SQUID_TAGS)
             local fishlist = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, FISHABLE_TAGS)
             local fishcount = #fishlist
 
-            local chance = TUNING.SQUID_CHANCE[TheWorld.state.moonphase]
+            local chance = TUNING.SQUID_CHANCE[TheWorld.state.moonphase] * (oceantrawlerchancemodifier or 1)
             chance = Remap(math.min(fishcount,TUNING.SQUID_MAX_FISH), 0, TUNING.SQUID_MAX_FISH, 0, chance)
             if TheWorld.state.isnight then
                 chance = chance * 2

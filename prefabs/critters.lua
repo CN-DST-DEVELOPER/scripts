@@ -308,21 +308,6 @@ local function MakeBuilder(prefab)
 end
 -------------------------------------------------------------------------------
 
-local function kitten_master_postinit(inst, data)
-	if not IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then -- this is only needed when the event is off because they have unlimited loyalty during the event.
-		inst:DoPeriodicTask(TUNING.SEG_TIME, function()
-			local perish = inst.components.perishable:GetPercent()
-			if perish > HUNGRY_PERISH_PERCENT and inst.components.follower.leader ~= nil then
-				for v, _ in pairs(inst.components.follower.leader.components.leader.followers) do
-					if v.components.kitcoon ~= nil then
-						v.components.follower:AddLoyaltyTime(TUNING.KITCOON_LOYALTY_MAX)
-					end
-				end
-			end
-		end, 0)
-	end
-end
-
 local function lunarmoth_special_powers_fn(inst, data)
 	if inst._special_powers.buff ~= nil then
 		if data.percent < HUNGRY_PERISH_PERCENT then
@@ -358,7 +343,7 @@ return MakeCritter("critter_lamb", "sheepington", 6, standard_diet, false, {favo
        MakeBuilder("critter_lamb"),
        MakeCritter("critter_puppy", "pupington", 4, standard_diet, false, {favoritefood="monsterlasagna", allow_platform_hopping=true}),
        MakeBuilder("critter_puppy"),
-       MakeCritter("critter_kitten", "kittington", 6, standard_diet, false, {favoritefood="fishsticks", playmatetags={"kitcoon"}, allow_platform_hopping=true, master_postinit = kitten_master_postinit}),
+       MakeCritter("critter_kitten", "kittington", 6, standard_diet, false, {favoritefood="fishsticks", playmatetags={"kitcoon"}, allow_platform_hopping=true}),
        MakeBuilder("critter_kitten"),
        MakeCritter("critter_perdling", "perdling", 4, standard_diet, false, {favoritefood="trailmix", allow_platform_hopping=true}),
        MakeBuilder("critter_perdling"),

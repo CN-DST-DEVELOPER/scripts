@@ -3,7 +3,7 @@
 
 AddRoom("OceanCoastalShore", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.OCEAN_COASTAL_SHORE,
+					value = WORLD_TILES.OCEAN_COASTAL_SHORE,
 					contents =  {
 						distributepercent = 0.005,
 						distributeprefabs =
@@ -14,7 +14,7 @@ AddRoom("OceanCoastalShore", {
 
 AddRoom("OceanCoastal", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.OCEAN_COASTAL,
+					value = WORLD_TILES.OCEAN_COASTAL,
 					contents =  {
 						distributepercent = 0.01,
 						distributeprefabs =
@@ -33,7 +33,7 @@ AddRoom("OceanCoastal", {
 
 AddRoom("OceanSwell", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.OCEAN_SWELL,
+					value = WORLD_TILES.OCEAN_SWELL,
 				    required_prefabs = {"crabking_spawner"},
 					contents =  {
 						distributepercent = 0.005,
@@ -51,10 +51,11 @@ AddRoom("OceanSwell", {
 
 AddRoom("OceanRough", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.OCEAN_ROUGH,
+					value = WORLD_TILES.OCEAN_ROUGH,
 				    required_prefabs = {
                         "hermithouse_construction1",
                         "waterplant",
+						"monkeyqueen",
                     },
 					contents =  {
 						distributepercent = 0.01 ,
@@ -67,12 +68,13 @@ AddRoom("OceanRough", {
 						countstaticlayouts =
 						{
 							["HermitcrabIsland"] = 1,
+							["MonkeyIsland"] = 1,
 						},
 					}})
 
 AddRoom("OceanHazardous", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.OCEAN_HAZARDOUS,
+					value = WORLD_TILES.OCEAN_HAZARDOUS,
 					contents =  {
 		                countprefabs = {
 		                },
@@ -89,7 +91,7 @@ AddRoom("OceanHazardous", {
 
 AddRoom("OceanReef", { -- OceanReef is deprecated
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.OCEAN_REEF,
+					value = WORLD_TILES.OCEAN_REEF,
 					contents =  {
 						distributepercent = 0,
 						distributeprefabs =

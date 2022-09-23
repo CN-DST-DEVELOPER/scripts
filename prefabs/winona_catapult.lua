@@ -197,6 +197,13 @@ local function OnLoad(inst, data)
     end
 end
 
+local function OnLoadPostPass(inst, newents, data)
+    if inst.components.savedrotation then
+        local savedrotation = data ~= nil and data.savedrotation ~= nil and data.savedrotation.rotation or 0
+        inst.components.savedrotation:ApplyPostPassRotation(savedrotation)
+    end
+end
+
 local function OnInit(inst)
     inst._inittask = nil
     inst.components.circuitnode:ConnectTo("engineeringbattery")
@@ -495,6 +502,7 @@ local function fn()
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+    inst.OnLoadPostPass = OnLoadPostPass
     inst.AddBatteryPower = AddBatteryPower
     inst.IsPowered = IsPowered
 

@@ -192,7 +192,9 @@ local function TryRandomLightFX(inst)
 end
 
 local function OnSleep(inst)
-    inst:RemoveEventCallback("ghostvision", inst._onghostvision, inst._lightplayer)
+    if inst._lightplayer ~= nil then
+        inst:RemoveEventCallback("ghostvision", inst._onghostvision, inst._lightplayer)
+    end
     if inst._lighttask ~= nil then
         inst._lighttask:Cancel()
         inst._lighttask = nil
@@ -204,12 +206,14 @@ local function OnSleep(inst)
 end
 
 local function OnWake(inst)
-    inst:ListenForEvent("ghostvision", inst._onghostvision, inst._lightplayer)
-    inst._onghostvision(inst._lightplayer, inst._lightplayer.components.playervision:HasGhostVision())
+    if inst._lightplayer ~= nil then
+        inst:ListenForEvent("ghostvision", inst._onghostvision, inst._lightplayer)
+        inst._onghostvision(inst._lightplayer, inst._lightplayer.components.playervision:HasGhostVision())
+    end
 end
 
-local function OnEnableLights(inst, enablelights)
-    if enablelights then
+local function OnEnableLightsDirty(inst)
+    if inst._enablelights:value() then
         inst.OnEntitySleep = OnSleep
         inst.OnEntityWake = OnWake
         if not inst:IsAsleep() then
@@ -249,8 +253,8 @@ local function SetupLights(inst)
     local function OnPlayerDeactivated(world, player)
         if inst._lightplayer == player then
             inst._lightplayer = nil
-            inst:RemoveEventCallback("enablelightsdirty", OnEnableLights)
-            OnEnableLights(inst, false)
+            inst:RemoveEventCallback("enablelightsdirty", OnEnableLightsDirty)
+            OnEnableLightsDirty(inst)
         end
     end
 
@@ -260,9 +264,9 @@ local function SetupLights(inst)
                 OnPlayerDeactivated(world, inst._lightplayer)
             end
             inst._lightplayer = player
-            inst:ListenForEvent("enablelightsdirty", OnEnableLights)
+            inst:ListenForEvent("enablelightsdirty", OnEnableLightsDirty)
             if inst._enablelights:value() then
-                OnEnableLights(inst, true)
+                OnEnableLightsDirty(inst)
             end
         end
     end

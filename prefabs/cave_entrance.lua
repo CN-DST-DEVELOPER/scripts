@@ -62,7 +62,7 @@ local function OnWork(inst, worker, workleft)
         if worker ~= nil then
 	        AwardPlayerAchievement("cave_entrance_opened", worker)
 	    end
-        local openinst = SpawnPrefab("cave_entrance_open")
+        local openinst = SpawnPrefab("cave_entrance_open", inst.linked_skinname, inst.skin_id )
         openinst.Transform:SetPosition(pt:Get())
         openinst.components.worldmigrator.id = inst.components.worldmigrator.id
         openinst.components.worldmigrator.auto = inst.components.worldmigrator.auto

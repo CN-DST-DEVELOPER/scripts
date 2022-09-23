@@ -28,10 +28,10 @@ function Fuel:SetOnTakenFn(fn)
     self.ontaken = fn
 end
 
-function Fuel:Taken(taker)
-    self.inst:PushEvent("fueltaken", {taker = taker})
+function Fuel:Taken(target)
+    self.inst:PushEvent("fueltaken", {taker = target})
     if self.ontaken then
-        self.ontaken(self.inst, taker)
+        self.ontaken(self.inst, target)
     end
 end
 

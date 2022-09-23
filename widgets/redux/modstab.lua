@@ -1547,6 +1547,10 @@ function ModsTab:UpdateAllButton(force)
     end
 end
 
+function ModsTab:UpdateSaveSlot(slotnum)
+    self.slotnum = slotnum
+end
+
 function ModsTab:SetDataForSlot(slotnum)
     if slotnum == self.slotnum then return end
 

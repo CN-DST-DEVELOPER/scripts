@@ -304,4 +304,10 @@ function Moisture:OnLoad(data)
     end
 end
 
+function Moisture:TransferComponent(newinst)
+    local newcomponent = newinst.components.moisture
+
+    newcomponent:SetPercent(self:GetMoisturePercent())
+end
+
 return Moisture

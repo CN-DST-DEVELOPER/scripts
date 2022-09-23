@@ -210,7 +210,6 @@ end
 
 function Spawner:ReleaseChild()
     self:CancelSpawning()
-
     if self.child == nil then
         local childname = self.childfn ~= nil and self.childfn(self.inst) or self.childname
         local child = SpawnPrefab(childname)
@@ -219,7 +218,11 @@ function Spawner:ReleaseChild()
             if self:GoHome(child) then
                 self:CancelSpawning()
             end
+            if self.onspawnedfn then
+                self.onspawnedfn(self.inst,child)
+            end
         end
+        
     end
 
     if self:IsOccupied() then
@@ -231,27 +234,36 @@ function Spawner:ReleaseChild()
             self.inst:RemoveChild(self.child)
             self.child:ReturnToScene()
 
-            local rad = .5 + self.inst:GetPhysicsRadius(0) + self.child:GetPhysicsRadius(0)
             local x, y, z = self.inst.Transform:GetWorldPosition()
-            local start_angle = math.random() * 2 * PI
 
-            local offset = FindWalkableOffset(Vector3(x, 0, z), start_angle, rad, 8, false, true, NoHoles, self.spawn_in_water or false, self.spawn_on_boats or false)
-            if offset == nil then
-                -- well it's gotta go somewhere!
-                --print(self.inst, "Spawner:ReleaseChild() no good place to spawn child: ", self.child)
-                x = x + rad * math.cos(start_angle)
-                z = z - rad * math.sin(start_angle)
+            y = 0
+
+            if self.overridespawnlocation then
+                x,y,z = self.overridespawnlocation(self.inst)
             else
-                --print(self.inst, "Spawner:ReleaseChild() safe spawn of: ", self.child)
-                x = x + offset.x
-                z = z + offset.z
-            end
 
+                local rad = .5 + self.inst:GetPhysicsRadius(0) + self.child:GetPhysicsRadius(0)
+
+                local start_angle = math.random() * 2 * PI
+
+                local offset = FindWalkableOffset(Vector3(x, 0, z), start_angle, rad, 8, false, true, NoHoles, self.spawn_in_water or false, self.spawn_on_boats or false)
+                if offset == nil then
+                    -- well it's gotta go somewhere!
+                    --print(self.inst, "Spawner:ReleaseChild() no good place to spawn child: ", self.child)
+                    x = x + rad * math.cos(start_angle)
+                    z = z - rad * math.sin(start_angle)
+                else
+                    --print(self.inst, "Spawner:ReleaseChild() safe spawn of: ", self.child)
+                    x = x + offset.x
+                    z = z + offset.z
+                end
+
+            end
             self:TakeOwnership(self.child)
             if self.child.Physics ~= nil then
-                self.child.Physics:Teleport(x, 0, z)
+                self.child.Physics:Teleport(x, y, z)
             else
-                self.child.Transform:SetPosition(x, 0, z)
+                self.child.Transform:SetPosition(x, y, z)
             end
 
             if self.onvacate ~= nil then
@@ -292,6 +304,9 @@ function Spawner:GoHome(child)
 end
 
 function Spawner:OnChildKilled(child)
+    if self.onkilledfn then
+        self.onkilledfn(self.inst,child)
+    end
     if self.child == child then
         self.child = nil
         self:SpawnWithDelay(self.delay)

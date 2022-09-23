@@ -184,6 +184,11 @@ local function OnPlayerJoined(src,player)
         end
     end
     table.insert(_activeplayers, player)
+
+    if CanSpawnBearger() then
+        _worldsettingstimer:ResumeTimer(BEARGER_TIMERNAME)
+        self.inst:StartUpdatingComponent(self)
+    end
 end
 
 local function OnPlayerLeft(src,player)
@@ -193,6 +198,12 @@ local function OnPlayerLeft(src,player)
             table.remove(_activeplayers, i)
             if player == _targetplayer then
             	_targetplayer = nil
+            end
+
+            PickPlayer()
+            if _targetplayer == nil then
+                self.inst:StopUpdatingComponent(self)
+                _worldsettingstimer:PauseTimer(BEARGER_TIMERNAME, true)
             end
             return
         end

@@ -1,7 +1,7 @@
 
 AddRoom("BGMarsh", {
 					colour={r=.6,g=.2,b=.8,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 									countstaticlayouts={["MushroomRingMedium"] = function()
@@ -30,7 +30,7 @@ AddRoom("BGMarsh", {
 	-- No trees, no rocks, very rare spiderden
 AddRoom("Marsh", {
 					colour={r=.45,g=.75,b=.45,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
 					contents =  {
 									countstaticlayouts={["MushroomRingMedium"]=function()
@@ -56,7 +56,7 @@ AddRoom("Marsh", {
 					})
 AddRoom("SpiderMarsh", {
 					colour={r=.45,g=.75,b=.45,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 					                distributepercent = .1,
@@ -83,7 +83,7 @@ AddRoom("SpiderMarsh", {
 					})
 AddRoom("SlightlyMermySwamp", {
 					colour={r=0.5,g=.18,b=.35,a=.50},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 
 									distributepercent = .1,

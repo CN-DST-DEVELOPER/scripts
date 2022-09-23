@@ -104,7 +104,7 @@ end
 
 local function SortByTypeAndValue(a, b)
     local typea, typeb = type(a), type(b)
-    return typea < typeb or (typea == typeb and a < b)
+    return typea < typeb or (typea == typeb and (typea ~= "table" and a < b))
 end
 
 function dumptablequiet(obj, indent, recurse_levels, visit_table)

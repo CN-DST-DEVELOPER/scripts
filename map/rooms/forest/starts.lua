@@ -1,7 +1,7 @@
 
 AddRoom("BurntForestStart", {
 					colour={r=.010,g=.010,b=.010,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					contents =  {
 									countprefabs= {
 										firepit=1,
@@ -18,7 +18,7 @@ AddRoom("BurntForestStart", {
 					})
 AddRoom("SafeSwamp", {
 					colour={r=0.2,g=0.0,b=0.2,a=0.3},
-					value = GROUND.MARSH,
+					value = WORLD_TILES.MARSH,
 					contents =  {
 					                distributepercent = 0.2,
 									distributeprefabs = {

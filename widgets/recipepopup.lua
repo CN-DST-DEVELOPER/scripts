@@ -142,7 +142,7 @@ function RecipePopup:BuildWithSpinner(horizontal)
         self.last_recipe_click = GetStaticTime()
         if not self.recipe_held then
             if not DoRecipeClick(self.owner, self.recipe, self.skins_spinner.GetItem()) then
-                self.owner.HUD.controls.crafttabs:Close()
+                self.owner.HUD.controls.craftingmenu:Close()
             end
         end
         self.recipe_held = false
@@ -236,7 +236,7 @@ function RecipePopup:BuildNoSpinner(horizontal)
         self.last_recipe_click = GetStaticTime()
         if not self.recipe_held then
             if not DoRecipeClick(self.owner, self.recipe) then
-                self.owner.HUD.controls.crafttabs:Close()
+                self.owner.HUD.controls.craftingmenu:Close()
             end
         end
         self.recipe_held = false
@@ -261,9 +261,9 @@ function RecipePopup:Refresh()
     local builder = owner.replica.builder
     local inventory = owner.replica.inventory
 
-    local knows = builder:KnowsRecipe(recipe.name)
+    local knows = builder:KnowsRecipe(recipe)
     local buffered = builder:IsBuildBuffered(recipe.name)
-    local can_build = buffered or builder:CanBuild(recipe.name)
+    local can_build = buffered or builder:HasIngredients(recipe)
     local tech_level = builder:GetTechTrees()
     local should_hint = not knows and ShouldHintRecipe(recipe.level, tech_level) and not CanPrototypeRecipe(recipe.level, tech_level)
 
@@ -332,7 +332,7 @@ function RecipePopup:Refresh()
     end
 
     for i, v in ipairs(recipe.ingredients) do
-        local has, num_found = inventory:Has(v.type, math.max(1, RoundBiasedUp(v.amount * builder:IngredientMod())))
+        local has, num_found = inventory:Has(v.type, math.max(1, RoundBiasedUp(v.amount * builder:IngredientMod())), true)
         local ing = self.contents:AddChild(IngredientUI(v:GetAtlas(), v:GetImage(), v.amount ~= 0 and v.amount or nil, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner, v.type))
         if GetGameModeProperty("icons_use_cc") then
             ing.ing:SetEffect("shaders/ui_cc.ksh")
@@ -382,6 +382,8 @@ function RecipePopup:Refresh()
                 ["CANTRESEARCH"] = "CANTRESEARCH",
                 ["ANCIENTALTAR_HIGH"] = "NEEDSANCIENT_FOUR",
                 ["SPIDERCRAFT"] = "NEEDSSPIDERFRIENDSHIP",
+                ["ROBOTMODULECRAFT"] = "NEEDSCREATURESCANNING",
+                ["BOOKCRAFT"] = "NEEDSBOOKSTATION",
             }
             local prototyper_tree = GetHintTextForRecipe(owner, recipe)
             str = STRINGS.UI.CRAFTING[hint_text[prototyper_tree] or ("NEEDS"..prototyper_tree)]
@@ -509,7 +511,7 @@ function RecipePopup:GetSkinOptions()
 
     local recipe_timestamp = Profile:GetRecipeTimestamp(self.recipe.product)
     --print(self.recipe.product, "Recipe timestamp is ", recipe_timestamp)
-    if self.skins_list ~= nil and self.recipe.chooseskin == nil and TheNet:IsOnlineMode() then
+    if self.skins_list ~= nil and self.recipe.chooseskin == nil and (TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode()) then
         for which = 1, #self.skins_list do
             local item = self.skins_list[which].item
 

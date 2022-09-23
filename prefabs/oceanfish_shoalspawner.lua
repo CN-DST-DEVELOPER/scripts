@@ -44,6 +44,8 @@ local function fn()
     inst:AddTag("NOBLOCK")
 	inst:AddTag("ignorewalkableplatforms")
 
+    inst:AddTag("oceanshoalspawner")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

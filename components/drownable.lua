@@ -22,7 +22,7 @@ end
 function Drownable:IsOverWater()
     local x, y, z = self.inst.Transform:GetWorldPosition()
     return not TheWorld.Map:IsVisualGroundAtPoint(x, y, z)
-        and TheWorld.Map:GetTileAtPoint(x, y, z) ~= GROUND.INVALID -- allow players to be out of bounds so that a number of mods will still work
+        and not TileGroupManager:IsInvalidTile(TheWorld.Map:GetTileAtPoint(x, y, z)) -- allow players to be out of bounds so that a number of mods will still work
         and self.inst:GetCurrentPlatform() == nil
 end
 

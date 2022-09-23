@@ -150,4 +150,9 @@ function Hunger:SetRate(rate)
     self.hungerrate = rate
 end
 
+function Hunger:TransferComponent(newinst)
+    local newcomponent = newinst.components.hunger
+    newcomponent:SetPercent(self:GetPercent())
+end
+
 return Hunger

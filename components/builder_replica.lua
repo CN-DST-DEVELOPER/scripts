@@ -46,8 +46,17 @@ function Builder:GetTechBonuses()
     elseif self.classified ~= nil then
 		local bonus = {}
         for i, v in ipairs(TechTree.BONUS_TECH) do
-            local netvar = self.classified[string.lower(v).."bonus"]
-			bonus[v] = netvar ~= nil and netvar:value() or nil
+            local bonus_netvar = self.classified[string.lower(v).."bonus"]
+			bonus[v] = bonus_netvar ~= nil and bonus_netvar:value() or nil
+
+            local tempbonus_netvar = self.classified[string.lower(v).."tempbonus"]
+            if tempbonus_netvar ~= nil then
+                if bonus[v] ~= nil then
+                    bonus[v] = bonus[v] + tempbonus_netvar:value()
+                else
+                    bonus[v] = tempbonus_netvar:value()
+                end
+            end
         end
 		return bonus
     end
@@ -57,6 +66,15 @@ end
 function Builder:SetTechBonus(tech, bonus)
 	if self.classified ~= nil  then
 		local netvar = self.classified[string.lower(tech).."bonus"]
+		if netvar ~= nil then
+			netvar:set(bonus)
+		end
+	end
+end
+
+function Builder:SetTempTechBonus(tech, bonus)
+    if self.classified ~= nil  then
+		local netvar = self.classified[string.lower(tech).."tempbonus"]
 		if netvar ~= nil then
 			netvar:set(bonus)
 		end
@@ -85,6 +103,32 @@ function Builder:SetIsFreeBuildMode(isfreebuildmode)
     end
 end
 
+function Builder:IsFreeBuildMode()
+    if self.classified ~= nil then
+        return self.classified.isfreebuildmode:value()
+    end
+end
+
+function Builder:SetCurrentPrototyper(prototyper)
+    if self.classified ~= nil then
+        self.classified.current_prototyper:set(prototyper)
+    end
+end
+
+function Builder:GetCurrentPrototyper()
+    if self.inst.components.builder ~= nil then
+        return self.inst.components.builder.current_prototyper
+    elseif self.classified ~= nil then
+        return self.classified.current_prototyper:value()
+    end
+end
+
+function Builder:OpenCraftingMenu()
+    if self.classified ~= nil then
+        self.classified.opencraftingmenuevent:push()
+    end
+end
+
 function Builder:SetTechTrees(techlevels)
     if self.classified ~= nil then
         for i, v in ipairs(TechTree.AVAILABLE_TECH) do
@@ -98,6 +142,16 @@ function Builder:GetTechTrees()
         return self.inst.components.builder.accessible_tech_trees
     elseif self.classified ~= nil then
         return self.classified.techtrees
+    else
+        return TECH.NONE
+    end
+end
+
+function Builder:GetTechTreesNoTemp()
+    if self.inst.components.builder ~= nil then
+        return self.inst.components.builder.accessible_tech_trees_no_temp
+    elseif self.classified ~= nil then
+        return self.classified.techtrees_no_temp
     else
         return TECH.NONE
     end
@@ -188,58 +242,74 @@ function Builder:HasTechIngredient(ingredient)
     return false, 0
 end
 
-function Builder:KnowsRecipe(recipename)
+function Builder:KnowsRecipe(recipe, ignore_tempbonus)
+    if type(recipe) == "string" then
+		recipe = GetValidRecipe(recipe)
+	end
+
     if self.inst.components.builder ~= nil then
-        return self.inst.components.builder:KnowsRecipe(recipename)
+        return self.inst.components.builder:KnowsRecipe(recipe, ignore_tempbonus)
     elseif self.classified ~= nil then
-        local recipe = GetValidRecipe(recipename)
         if recipe ~= nil then
+			if self.classified.isfreebuildmode:value() then
+				return true
+			elseif recipe.builder_tag ~= nil and not self.inst:HasTag(recipe.builder_tag) then -- builder_tag check is require due to character swapping
+				return false
+			elseif self.classified.recipes[recipe.name] ~= nil and self.classified.recipes[recipe.name]:value() then
+				return true
+			end
+
             local has_tech = true
-            if not self.classified.isfreebuildmode:value() then
-                for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-                    local bonus = self.classified[string.lower(v).."bonus"]
-                    if recipe.level[v] > (bonus ~= nil and bonus:value() or 0) then
-                        has_tech = false
-                        break
-                    end
+            for i, v in ipairs(TechTree.AVAILABLE_TECH) do
+                local bonus = self.classified[string.lower(v).."bonus"]
+                local tempbonus = not ignore_tempbonus and self.classified[string.lower(v).."tempbonus"] or nil
+                if recipe.level[v] > (bonus ~= nil and bonus:value() or 0) + (tempbonus ~= nil and tempbonus:value() or 0) then
+                    return false
                 end
             end
-            return (has_tech or (self.classified.recipes[recipename] ~= nil and
-                    self.classified.recipes[recipename]:value())) and
-                    (recipe.builder_tag == nil or self.inst:HasTag(recipe.builder_tag))
+
+			return true
         end
     end
     return false
 end
 
-function Builder:CanBuild(recipename)
+function Builder:HasIngredients(recipe)
     if self.inst.components.builder ~= nil then
-        return self.inst.components.builder:CanBuild(recipename)
+        return self.inst.components.builder:HasIngredients(recipe)
     elseif self.classified ~= nil then
-        local recipe = GetValidRecipe(recipename)
-        if recipe == nil then
-            return false
-        elseif not self.classified.isfreebuildmode:value() then
+        if type(recipe) == "string" then 
+            recipe = GetValidRecipe(recipe)
+        end
+		if recipe ~= nil then
+			if self.classified.isfreebuildmode:value() then
+				return true
+			end
             for i, v in ipairs(recipe.ingredients) do
-                if not self.inst.replica.inventory:Has(v.type, math.max(1, RoundBiasedUp(v.amount * self:IngredientMod()))) then
+                if not self.inst.replica.inventory:Has(v.type, math.max(1, RoundBiasedUp(v.amount * self:IngredientMod())), true) then
                     return false
                 end
             end
-        end
-        for i, v in ipairs(recipe.character_ingredients) do
-            if not self:HasCharacterIngredient(v) then
-                return false
-            end
-        end
-        for i, v in ipairs(recipe.tech_ingredients) do
-            if not self:HasTechIngredient(v) then
-                return false
-            end
-        end
-        return true
-    else
-        return false
-    end
+			for i, v in ipairs(recipe.character_ingredients) do
+				if not self:HasCharacterIngredient(v) then
+					return false
+				end
+			end
+			for i, v in ipairs(recipe.tech_ingredients) do
+				if not self:HasTechIngredient(v) then
+					return false
+				end
+			end
+			return true
+		end
+	end
+
+	return false
+end
+
+
+function Builder:CanBuild(recipe_name) -- deprecated
+	return self:HasIngredients(GetValidRecipe(recipe_name))
 end
 
 function Builder:CanLearn(recipename)

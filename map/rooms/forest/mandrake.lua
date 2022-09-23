@@ -1,7 +1,7 @@
 
 AddRoom("MandrakeHome", {
 					colour={r=0.3,g=0.4,b=0.8,a=0.3},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					contents =  {
 									countstaticlayouts=
 									{

@@ -62,6 +62,9 @@ local function commonfn(bank, build, char_anim_build, data)
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+	if data.dynamic_shadow then
+	    inst.entity:AddDynamicShadow()
+	end
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
@@ -69,6 +72,10 @@ local function commonfn(bank, build, char_anim_build, data)
     inst.AnimState:SetBank(bank)
     inst.AnimState:SetBuild(build)
     inst.AnimState:PlayAnimation("idle", false)
+    
+	if data.dynamic_shadow then
+	    inst.DynamicShadow:SetSize(data.dynamic_shadow[1], data.dynamic_shadow[2])
+	end
 
 	inst:AddTag("fish")
 	inst:AddTag("pondfish")
@@ -139,6 +146,9 @@ local function commonfn(bank, build, char_anim_build, data)
     return inst
 end
 
+local SHADOW_MEDIUM = {1.5, 0.75}
+local SHADOW_LONG = {3, 1}
+
 local pondfish_data =
 {
     weight_min = 40.89,
@@ -150,6 +160,7 @@ local pondfish_data =
     hungervalue = TUNING.CALORIES_SMALL,
     perish_time = TUNING.PERISH_SUPERFAST,
 	goldvalue = TUNING.GOLD_VALUES.MEAT,
+    dynamic_shadow = SHADOW_MEDIUM,
 }
 local function pondfishfn()
 	return commonfn("fish", "fish", "fish01", pondfish_data)
@@ -166,6 +177,7 @@ local pondeel_data =
     hungervalue = TUNING.CALORIES_TINY,
     perish_time = TUNING.PERISH_SUPERFAST,
 	goldvalue = TUNING.GOLD_VALUES.RAREMEAT,
+    dynamic_shadow = SHADOW_LONG,
 }
 local function pondeelfn()
 	return commonfn("eel", "eel", "eel01", pondeel_data)

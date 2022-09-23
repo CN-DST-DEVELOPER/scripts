@@ -121,8 +121,8 @@ end
 -- @param offset The offset from the burning entity/symbol that the effect should appear at
 -- @param followsymbol Optional symbol for the effect to follow
 -- @param followaschild Optional flag to force fx to be a child even when it has a follow symbol
-function Burnable:AddBurnFX(prefab, offset, followsymbol, followaschild)
-    table.insert(self.fxdata, { prefab = prefab, x = offset.x, y = offset.y, z = offset.z, follow = followsymbol, followaschild = followaschild or nil })
+function Burnable:AddBurnFX(prefab, offset, followsymbol, followaschild, scale)
+    table.insert(self.fxdata, { prefab = prefab, x = offset.x, y = offset.y, z = offset.z, follow = followsymbol, followaschild = followaschild or nil, scale = scale or 1 })
 end
 
 function Burnable:OverrideBurnFXBuild(build)
@@ -445,7 +445,14 @@ function Burnable:SpawnFX(immediate)
             if v.finaloffset ~= nil then
                 fx.AnimState:SetFinalOffset(v.finaloffset)
             end
-            fx.Transform:SetScale(self.inst.Transform:GetScale())
+
+            local scale = self.inst.Transform:GetScale()
+            if v.scale then
+                scale = scale * v.scale
+            end
+
+            fx.Transform:SetScale(scale,scale,scale)
+            
             local xoffs, yoffs, zoffs = v.x + fxoffset.x, v.y + fxoffset.y, v.z + fxoffset.z
             if v.follow ~= nil then
                 if v.followaschild then

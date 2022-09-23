@@ -29,10 +29,15 @@ AddModReleaseID( "R16_ROT_MOONSTORMS" )
 AddModReleaseID( "R17_WATERLOGGED" )
 AddModReleaseID( "R18_QOL_SERVERPAUSING" )
 AddModReleaseID( "R19_REFRESH_WOLFGANG" )
+AddModReleaseID( "R20_QOL_CRAFTING4LIFE" )
+AddModReleaseID( "R21_REFRESH_WX78" )
+AddModReleaseID( "R22_PIRATEMONKEYS" )
+AddModReleaseID( "R23_REFRESH_WICKERBOTTOM" )
 
 -----------------------------------------------------------------------------------------------
 
 MOD_AVATAR_LOCATIONS = { Default = "images/avatars/" }
+MOD_CRAFTING_AVATAR_LOCATIONS = { Default = "images/crafting_menu_avatars/" }
 --Add your avatar atlas locations for each prefab if you don't want to use the default mod avatar location
 
 local function VisitModForums()
@@ -295,6 +300,7 @@ function CreateEnvironment(modname, isworldgen, isfrontend)
         -- worldgen
 		LEVELCATEGORY = LEVELCATEGORY,
         GROUND = GROUND,
+		WORLD_TILES = WORLD_TILES,
         LOCKS = LOCKS,
         KEYS = KEYS,
         LEVELTYPE = LEVELTYPE,

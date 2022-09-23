@@ -105,8 +105,6 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-    MakeObstaclePhysics(inst, .25)
-
     inst.MiniMapEntity:SetIcon("gravestones.png")
 
     inst:AddTag("grave")
@@ -120,7 +118,8 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:PlayAnimation("grave"..tostring(math.random(4)))
+    inst.random_stone_choice = tostring(math.random(4))
+    inst.AnimState:PlayAnimation("grave" .. inst.random_stone_choice)
 
     inst:AddComponent("inspectable")
     inst.components.inspectable:SetDescription(STRINGS.EPITAPHS[math.random(#STRINGS.EPITAPHS)])

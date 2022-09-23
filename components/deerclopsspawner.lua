@@ -51,10 +51,10 @@ local _activeplayers = {}
 --[[ Private member functions ]]
 --------------------------------------------------------------------------
 
-local function AllowedToAttack()
+local function AllowedToAttack(data)
 	--print("Deerclopsspawner allowed to attack?", #_activeplayers, TheWorld.state.cycles, _attackoffseason, TheWorld.state.season)
     return  #_activeplayers > 0 and
-            TheWorld.state.cycles > TUNING.NO_BOSS_TIME and
+            ((data and data.skipcycles) or TheWorld.state.cycles > TUNING.NO_BOSS_TIME) and
                 (_attackoffseason or
                 TheWorld.state.season == "winter")
 end
@@ -237,6 +237,7 @@ local function OnStoreHassler(src, hassler)
 	end
 end
 
+
 local function OnHasslerKilled(src, hassler)
 	_activehassler = nil
 	TryStartAttacks(true)
@@ -252,6 +253,21 @@ local function OnDeerclopsTimerDone(src, data)
         ResetAttacks()
     else
         TargetLost()
+    end
+end
+
+local function OnMegaFlare(src, data)
+    if data.sourcept and TheWorld.Map:IsVisualGroundAtPoint(data.sourcept.x,data.sourcept.y,data.sourcept.z) then
+        if not _activehassler and math.random() < 0.6 and AllowedToAttack({skipcycles = true}) then
+            self.inst:DoTaskInTime(5 + (math.random() * 20), function()
+                local players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
+                if #players > 0 then
+                    _targetplayer = players[1]
+                    _activehassler = ReleaseHassler(players[1])
+                    ResetAttacks()
+                end
+            end)
+        end
     end
 end
 
@@ -430,5 +446,7 @@ self:WatchWorldState("season", OnSeasonChange)
 self.inst:ListenForEvent("hasslerremoved", OnHasslerRemoved, TheWorld)
 self.inst:ListenForEvent("hasslerkilled", OnHasslerKilled, TheWorld)
 self.inst:ListenForEvent("storehassler", OnStoreHassler, TheWorld)
+
+self.inst:ListenForEvent("megaflare_detonated", OnMegaFlare, TheWorld)
 
 end)

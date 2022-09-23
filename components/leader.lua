@@ -71,7 +71,7 @@ end
 function Leader:OnNewTarget(target)
 	if target == nil or (target.components.minigame_participator == nil or (target:HasTag("player") and TheNet:GetPVPEnabled())) then
 		for k,v in pairs(self.followers) do
-			if k.components.combat ~= nil and k.components.follower ~= nil and k.components.follower.canaccepttarget then
+			if k.components.combat ~= nil and k.components.follower ~= nil and k.components.follower.canaccepttarget and k:IsValid() then
 				k.components.combat:SuggestTarget(target)
 			end
 		end

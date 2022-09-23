@@ -154,7 +154,7 @@ function Sanity:RecalculatePenalty()
         penalty = penalty + v
     end
 
-    penalty = math.max(penalty, -self.max)
+    penalty = math.min(penalty, 1-(5/self.max)) -- players cannot go lower than 5 max sanity. The sanity_penalties penalty will actually go beyond, so they will still have to remove enough sanity_penalties to get back above the 5 max sanity cap
 
     self.penalty = penalty
 
@@ -305,6 +305,8 @@ function Sanity:DoDelta(delta, overtime)
 	end
 
     self.inst:PushEvent("sanitydelta", { oldpercent = self._oldpercent, newpercent = self:GetPercent(), overtime = overtime, sanitymode = self.mode })
+
+    -- Re-call GetPercent on the slight chance that "sanitydelta" changed it.
     self._oldpercent = self:GetPercent()
 
     if self:IsSane() ~= self._oldissane then
@@ -474,6 +476,11 @@ function Sanity:Recalc(dt)
 
     --print (string.format("dapper: %2.2f light: %2.2f TOTAL: %2.2f", dapper_delta, light_delta, self.rate*dt))
     self:DoDelta(self.rate * dt, true)
+end
+
+function Sanity:TransferComponent(newinst)
+    local newcomponent = newinst.components.sanity
+    newcomponent:SetPercent(self:GetPercent())
 end
 
 Sanity.LongUpdate = Sanity.OnUpdate

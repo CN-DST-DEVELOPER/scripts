@@ -2,7 +2,7 @@ local assets =
 {
     Asset("ANIM", "anim/rock_avocado.zip"),
     Asset("ANIM", "anim/rock_avocado_build.zip"),
-    Asset("ANIM", "anim/rock_avocado_diseased_build.zip"),
+    Asset("PKGREF", "anim/rock_avocado_diseased_build.zip"),
     Asset("MINIMAP_IMAGE", "rock_avocado"),
 }
 
@@ -308,6 +308,9 @@ local function rock_avocado_bush()
     inst.components.growable.magicgrowable = true
     inst.components.growable:SetStage(math.random(1, 4))
     inst.components.growable:StartGrowing()
+
+    inst:AddComponent("simplemagicgrower")
+    inst.components.simplemagicgrower:SetLastStage(#inst.components.growable.stages - 1)
 
     inst.OnSave = on_save
     inst.OnLoad = on_load

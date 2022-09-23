@@ -17,22 +17,22 @@ local brain = require "brains/lureplantbrain"
 
 local VALID_TILE_TYPES =
 {
-    [GROUND.DIRT] = true,
-    [GROUND.SAVANNA] = true,
-    [GROUND.GRASS] = true,
-    [GROUND.FOREST] = true,
-    [GROUND.MARSH] = true,
+    [WORLD_TILES.DIRT] = true,
+    [WORLD_TILES.SAVANNA] = true,
+    [WORLD_TILES.GRASS] = true,
+    [WORLD_TILES.FOREST] = true,
+    [WORLD_TILES.MARSH] = true,
 
     -- CAVES
-    [GROUND.CAVE] = true,
-    [GROUND.FUNGUS] = true,
-    [GROUND.SINKHOLE] = true,
-    [GROUND.MUD] = true,
-    [GROUND.FUNGUSRED] = true,
-    [GROUND.FUNGUSGREEN] = true,
+    [WORLD_TILES.CAVE] = true,
+    [WORLD_TILES.FUNGUS] = true,
+    [WORLD_TILES.SINKHOLE] = true,
+    [WORLD_TILES.MUD] = true,
+    [WORLD_TILES.FUNGUSRED] = true,
+    [WORLD_TILES.FUNGUSGREEN] = true,
 
     --EXPANDED FLOOR TILES
-    [GROUND.DECIDUOUS] = true,
+    [WORLD_TILES.DECIDUOUS] = true,
 }
 
 function adjustIdleSound(inst, vol)
@@ -124,6 +124,13 @@ local function OnPicked(inst)
         inst.hibernatetask:Cancel()
     end
     inst.hibernatetask = inst:DoTaskInTime(TUNING.LUREPLANT_HIBERNATE_TIME, WakeUp)
+end
+
+local function OnPotentiallyPicked(inst, data)
+    local item = data and data.item or nil
+    if item and item:HasTag("lureplant_bait") then
+        OnPicked(inst)
+    end
 end
 
 local function FreshSpawn(inst)
@@ -349,6 +356,7 @@ local function fn()
 
     inst:AddComponent("shelf")
     inst.components.shelf.ontakeitemfn = OnPicked
+    inst:ListenForEvent("onitemstolen", OnPotentiallyPicked)
 
     inst:AddComponent("inventory")
 

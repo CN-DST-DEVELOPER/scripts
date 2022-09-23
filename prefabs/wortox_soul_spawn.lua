@@ -116,10 +116,16 @@ local function OnThrown(inst)
     end
 end
 
+local function ThiefSort(a, b) -- Better than bogo!
+    return a.distsq < b.distsq
+end
+
 local function SeekSoulStealer(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local closestPlayer = nil
     local rangesq = TUNING.WORTOX_SOULSTEALER_RANGE * TUNING.WORTOX_SOULSTEALER_RANGE
+    local soulthieves = {}
+    local soulthiefreceiver = nil
+    local hasthief = false
     for i, v in ipairs(AllPlayers) do
         if v:HasTag("soulstealer") and
             not (v.components.health:IsDead() or v:HasTag("playerghost")) and
@@ -127,13 +133,21 @@ local function SeekSoulStealer(inst)
             v.entity:IsVisible() then
             local distsq = v:GetDistanceSqToPoint(x, y, z)
             if distsq < rangesq then
-                rangesq = distsq
-                closestPlayer = v
+                hasthief = true
+                if inst._soulsource == v then
+                    soulthiefreceiver = v
+                    break
+                end
+                table.insert(soulthieves, {thief = v, distsq = distsq,})
             end
         end
     end
-    if closestPlayer ~= nil then
-        inst.components.projectile:Throw(inst, closestPlayer, inst)
+    if hasthief then
+        if soulthiefreceiver == nil then
+            table.sort(soulthieves, ThiefSort)
+            soulthiefreceiver = soulthieves[1].thief
+        end
+        inst.components.projectile:Throw(inst, soulthiefreceiver, inst)
     end
 end
 

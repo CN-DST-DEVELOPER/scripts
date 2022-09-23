@@ -119,7 +119,7 @@ function KlausSackLoot:RollKlausLoot()
         table.insert(items, giant_loot2[math.random(#giant_loot2)])
     end
     table.insert(items, giant_loot3[i1])
-    table.insert(items, giant_loot3[i2 == i1 and i2 + 1 or i2])
+    table.insert(items, giant_loot3[i2 == i1 and #giant_loot3 or i2])
     table.insert(self.loot, items)
 end
 

@@ -76,8 +76,8 @@ local function OnPlayerActivated(inst)
 		inst:ListenForEvent("onremove", OnPlayerDeactivated)
 		if not TheWorld.ismastersim then
 			inst:ListenForEvent("_bondleveldirty", OnBondLevelDirty)
-			OnBondLevelDirty(inst)
 		end
+		OnBondLevelDirty(inst)
 	end
 end
 
@@ -121,6 +121,11 @@ local function OnDespawn(inst)
 		end
         abigail:DoTaskInTime(25 * FRAMES, abigail.Remove)
     end
+end
+
+local function OnReroll(inst)
+	-- This is its own function in case OnDespawn above changes that requires workarounds for seamlessswap to not interfere.
+    OnDespawn(inst)
 end
 
 local function ondeath(inst)
@@ -260,9 +265,10 @@ local function master_postinit(inst)
 
         inst.components.combat.damagemultiplier = TUNING.WENDY_DAMAGE_MULT
 
-        inst.OnDespawn = OnDespawn
         inst.OnSave = OnSave
         inst.OnLoad = OnLoad
+        inst.OnDespawn = OnDespawn
+		inst:ListenForEvent("ms_playerreroll", OnReroll)
     end
 end
 

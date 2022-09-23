@@ -414,7 +414,7 @@ local FarmPlantPage = Class(PlantPageWidget, function(self, plantspage, data)
 
     --oversized plant picture--
     local picture = ThePlantRegistry:GetOversizedPictureData(data.plant)
-    if picture and table.contains(GetOfficialCharacterList(), picture.player) then
+    if picture and table.contains(DST_CHARACTERLIST, picture.player) then
         local anim_scale = 0.30
 
         local x_pos = 210

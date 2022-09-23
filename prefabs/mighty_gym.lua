@@ -9,11 +9,7 @@ local assets =
 
 local prefabs =
 {
-    "mighty_gym_bell",
-    "mighty_gym_bell_fail_fx",
-    "mighty_gym_bell_succeed_fx",
-    "mighty_gym_bell_perfect_fx",
-    "potatosack"    
+	"potatosack",
 }
 
 -----------------------------------------------------------------------
@@ -94,8 +90,6 @@ local function fn()
     inst.AnimState:OverrideSymbol("fx_star", "fx_wolfgang", "fx_star")
     inst.AnimState:OverrideSymbol("fx_star_part", "fx_wolfgang", "fx_star_part")
 
-    inst.AnimState:Hide("bell")
-
     inst.AnimState:PlayAnimation("idle_empty", true)
 
     MakeSnowCoveredPristine(inst)
@@ -127,7 +121,7 @@ local function fn()
 
     inst:ListenForEvent("onbuilt", onbuilt)
     inst:ListenForEvent("onburnt", onburnt)
-    inst:ListenForEvent("onremove", onremoved)    
+    inst:ListenForEvent("onremove", onremoved)
 
     MakeLargeBurnable(inst, nil, nil, true)
     MakeMediumPropagator(inst)
@@ -136,43 +130,5 @@ local function fn()
     return inst
 end
 
-local function ding(inst, success)
-    local pos = Vector3(inst.AnimState:GetSymbolPosition("meter",0,0,0))
-    local fx = SpawnPrefab("mighty_gym_bell_"..success.."_fx")
-    fx.Transform:SetPosition(pos.x,pos.y,pos.z)
-    fx.Network:SetClassifiedTarget(inst)
-end
-
-local function bell_fn()
-    local inst = CreateEntity()
-
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-
-    inst:AddTag("CLASSIFIED")
-    inst:AddTag("NOCLICK")
-    inst:AddTag("FX")
-
-    inst.AnimState:SetBank("mighty_gym")
-    inst.AnimState:SetBuild("mighty_gym")
-    inst.AnimState:PlayAnimation("meter_move")
-    inst.AnimState:SetPercent("meter_move", 0)
-    inst.AnimState:SetFinalOffset(2)
-    
-    inst.persists = false
-
-    inst.ding = ding
-
-    inst.entity:SetPristine()
-
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
-    return inst
-end
-
 return Prefab("mighty_gym", fn, assets, prefabs),
-       Prefab("mighty_gym_bell", bell_fn, assets),
-       MakePlacer("mighty_gym_placer", "mighty_gym", "mighty_gym", "idle_empty", nil, nil, nil, nil, nil, nil, function(inst)  inst.AnimState:Hide("bell") end)
+	MakePlacer("mighty_gym_placer", "mighty_gym", "mighty_gym", "idle_empty")

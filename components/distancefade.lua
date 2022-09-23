@@ -92,10 +92,10 @@ function Distancefade:OnUpdate(dt)
       local percent = 1- (mody/(self.fadedist))
       percent = percent *  extrapercent
 
-      self.inst.AnimState:SetMultColour(percent,percent,percent,percent)
+      self.inst.AnimState:SetMultColour(1,1,1,percent)
     else
       local percent = 1 * extrapercent
-      self.inst.AnimState:SetMultColour(percent,percent,percent,percent)
+      self.inst.AnimState:SetMultColour(1,1,1,percent)
     end      
 end
 

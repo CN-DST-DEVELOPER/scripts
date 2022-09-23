@@ -430,6 +430,7 @@ local function MakeWeapon(inst)
         weapon.components.inventoryitem:SetOnDroppedFn(weapon.Remove)
         
         weapon:AddComponent("equippable")
+        weapon:AddTag("nosteal")
         inst.weapon = weapon
         inst.components.inventory:Equip(inst.weapon)
         inst.components.inventory:Unequip(EQUIPSLOTS.HANDS)

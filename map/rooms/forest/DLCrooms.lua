@@ -1,6 +1,6 @@
 AddRoom("BGBadlands", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					contents =  {
 									distributepercent = 0.07,
 									distributeprefabs =
@@ -20,7 +20,7 @@ AddRoom("BGBadlands", {
 
 AddRoom("Lightning", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					contents =  {
 									distributepercent = 0.05,
 									distributeprefabs =
@@ -38,7 +38,7 @@ AddRoom("Lightning", {
 
 AddRoom("Badlands", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					contents =  {
 									distributepercent = 0.07,
 									distributeprefabs =
@@ -58,7 +58,7 @@ AddRoom("Badlands", {
 
 AddRoom("DragonflyArena", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					contents =  {
 									countstaticlayouts={["DragonflyArena"]=1}, -- using a static layout because this can force it to be in the center of the room
 									distributepercent = 0.1,
@@ -75,7 +75,7 @@ AddRoom("DragonflyArena", {
 
 AddRoom("HoundyBadlands", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					contents =  {
 									distributepercent = 0.2,
 									distributeprefabs =
@@ -91,7 +91,7 @@ AddRoom("HoundyBadlands", {
 
 AddRoom("BuzzardyBadlands", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					contents =  {
 									distributepercent = 0.1,
 									distributeprefabs =
@@ -109,7 +109,7 @@ AddRoom("BuzzardyBadlands", {
 
 AddRoom("BGDeciduous", {
 					colour={r=.1,g=.8,b=.1,a=.50},
-					value = GROUND.DECIDUOUS,
+					value = WORLD_TILES.DECIDUOUS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_2"},
 					contents =  {
 					                countprefabs= {
@@ -150,7 +150,7 @@ AddRoom("BGDeciduous", {
 
 AddRoom("DeepDeciduous", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.DECIDUOUS,
+					value = WORLD_TILES.DECIDUOUS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_1"},
 					contents =  {
 					                countprefabs =
@@ -181,7 +181,7 @@ AddRoom("DeepDeciduous", {
 
 AddRoom("MagicalDeciduous", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.DECIDUOUS,
+					value = WORLD_TILES.DECIDUOUS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_2"},
                     required_prefabs = {"statueglommer"},
 					contents =  {
@@ -218,7 +218,7 @@ AddRoom("MagicalDeciduous", {
 
 AddRoom("DeciduousMole", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.DECIDUOUS,
+					value = WORLD_TILES.DECIDUOUS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_1"},
 					contents =  {
 					                distributepercent = .3,
@@ -245,7 +245,7 @@ AddRoom("DeciduousMole", {
 
 AddRoom("MolesvilleDeciduous", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.DECIDUOUS,
+					value = WORLD_TILES.DECIDUOUS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_2"},
 					contents =  {
 					                distributepercent = .3,
@@ -271,7 +271,7 @@ AddRoom("MolesvilleDeciduous", {
 
 AddRoom("DeciduousClearing", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.DECIDUOUS,
+					value = WORLD_TILES.DECIDUOUS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_1"},
 					contents =  {
 									countstaticlayouts={["MushroomRingLarge"]=function()
@@ -304,7 +304,7 @@ AddRoom("DeciduousClearing", {
 
 AddRoom("PondyGrass", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.GRASS,
+					value = WORLD_TILES.GRASS,
 					tags = {"ExitPiece", "Chester_Eyebone","Astral_2"},
 					contents =  {
 					                distributepercent = .2,
@@ -327,7 +327,7 @@ AddRoom("PondyGrass", {
 
 AddRoom("BGLightningBluff", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					tags = {"RoadPoison", "sandstorm"},
 					contents =  {
 									distributepercent = 0.06,
@@ -344,7 +344,7 @@ AddRoom("BGLightningBluff", {
 
 AddRoom("LightningBluffAntlion", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					tags = {"RoadPoison", "sandstorm"},
 					contents =  {
 									countstaticlayouts={["AntlionSpawningGround"]=1}, -- using a static layout because this can force it to be in the center of the room
@@ -360,7 +360,7 @@ AddRoom("LightningBluffAntlion", {
 
 AddRoom("LightningBluffOasis", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					tags = {"RoadPoison", "sandstorm"},
 					contents =  {
 									countstaticlayouts={["Oasis"]=1}, -- using a static layout because this can force it to be in the center of the room
@@ -377,7 +377,7 @@ AddRoom("LightningBluffOasis", {
 
 AddRoom("LightningBluffLightning", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.DIRT_NOISE,
+					value = WORLD_TILES.DIRT_NOISE,
 					tags = {"RoadPoison", "sandstorm"},
 					contents =  {
 					                countprefabs= {

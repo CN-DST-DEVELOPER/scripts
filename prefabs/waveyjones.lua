@@ -200,12 +200,10 @@ local rotatearthand = function(inst)
 end
 
 local function playernear(inst)
-    print("near")
     inst:PushEvent("trapped")
 end
 
 local function playerfar(inst)
-    print("FAR")
     inst:PushEvent("released")
 end
 
@@ -460,7 +458,7 @@ local function markerfn()
         end
     end)
 
-    inst:ListenForEvent("timerdone", function(inst, data) print("TIMER DONE")
+    inst:ListenForEvent("timerdone", function(inst, data)
         if data.name == "respawndelay" then
             if inst.components.entitytracker:GetEntity("boat") then
                 local boat = inst.components.entitytracker:GetEntity("boat")

@@ -20,7 +20,7 @@ local function DisplayNameFn(inst)
 end
 
 local function OnBreak(inst)
-    if inst:HasTag("soil") and not inst:HasTag("NOCLICK") then
+    if inst:HasTag("soil") and not inst:HasTag("NOBLOCK") then
         inst:AddTag("NOCLICK")
         inst:AddTag("NOBLOCK")
         inst.AnimState:PlayAnimation("collapse")
@@ -30,11 +30,22 @@ local function OnBreak(inst)
     end
 end
 
+local function CancelPlowing(inst)
+	if inst._plow ~= nil then
+		inst:RemoveEventCallback("onremove", inst._onremoveplow, inst._plow)
+		inst:RemoveEventCallback("finishplowing", inst._onfinishplowing, inst._plow)
+		inst._plow = nil
+		inst._onremoveplow = nil
+		inst._onfinishplowing = nil
+	end
+end
+
 local function OnCollapse(inst)
+	CancelPlowing(inst)
     if inst:HasTag("soil") then
         inst:RemoveTag("soil")
         inst.persists = false
-        if inst:HasTag("NOCLICK") then
+        if inst:HasTag("NOBLOCK") then
             inst.AnimState:PlayAnimation("collapse_remove")
         else
             inst:AddTag("NOCLICK")
@@ -45,8 +56,29 @@ local function OnCollapse(inst)
     end
 end
 
+local function SetPlowing(inst, plow)
+	CancelPlowing(inst)
+	inst._plow = plow
+	inst._onremoveplow = function()
+		OnCollapse(inst)
+	end
+	inst._onfinishplowing = function(plow)
+		CancelPlowing(inst)
+		if not inst:HasTag("NOBLOCK") then
+			inst:RemoveTag("NOCLICK")
+		end
+	end
+	inst:ListenForEvent("onremove", inst._onremoveplow, plow)
+	inst:ListenForEvent("finishplowing", inst._onfinishplowing, plow)
+	inst:AddTag("NOCLICK")
+end
+
 local function OnSave(inst, data)
-    data.broken = inst:HasTag("NOCLICK")
+	data.broken = inst:HasTag("NOBLOCK")
+	if inst._plow ~= nil then
+		data.plow = inst._plow.GUID
+		return { inst._plow.GUID } --refs
+	end
 end
 
 local function OnLoad(inst, data)--, ents)
@@ -56,6 +88,17 @@ local function OnLoad(inst, data)--, ents)
     else
         inst.AnimState:PlayAnimation("till_idle")
     end
+end
+
+local function OnLoadPostPass(inst, ents, data)
+	if data ~= nil and data.plow ~= nil then
+		local plow = ents[data.plow]
+		if plow ~= nil then
+			SetPlowing(inst, plow.entity)
+		else
+			OnCollapse(inst)
+		end
+	end
 end
 
 local function fn()
@@ -87,8 +130,13 @@ local function fn()
     inst:ListenForEvent("breaksoil", OnBreak)
     inst:ListenForEvent("collapsesoil", OnCollapse)
 
+	--Works with farm_plow
+	--inst._plow = nil
+	inst.SetPlowing = SetPlowing
+
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+	inst.OnLoadPostPass = OnLoadPostPass
 
     return inst
 end

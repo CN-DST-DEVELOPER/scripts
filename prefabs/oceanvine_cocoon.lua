@@ -121,6 +121,25 @@ local function spawn_investigators(inst, data)
     end
 end
 
+local function OnQuakeBegin(inst)
+    if inst.components.childspawner ~= nil then
+        for _, child in pairs(inst.components.childspawner.childrenoutside) do
+            child._quaking = true
+            if child.components.sleeper ~= nil then
+                child.components.sleeper:WakeUp()
+            end
+        end
+    end
+end
+
+local function OnQuakeEnd(inst)
+    if inst.components.childspawner ~= nil then
+        for _, child in pairs(inst.components.childspawner.childrenoutside) do
+            child._quaking = nil
+        end
+    end
+end
+
 local SEE_FISH_DISTANCE = 10
 local OCEANFISH_TAGS = {"oceanfish"}
 local function look_for_fish(inst)
@@ -349,6 +368,8 @@ local function fn()
 
     inst:ListenForEvent("death", OnKilled)
     inst:ListenForEvent("activated", spawn_investigators)
+    inst:ListenForEvent("startquake", function() OnQuakeBegin(inst) end, TheWorld.net)
+    inst:ListenForEvent("endquake", function() OnQuakeEnd(inst) end, TheWorld.net)
     inst:ListenForEvent("timerdone", on_timer_finished)
 
     return inst

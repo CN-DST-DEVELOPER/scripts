@@ -10,6 +10,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnAttacked(),
+    CommonHandlers.OnSink(),
 
     EventHandler("doattack", function(inst, data)
         if not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy"))
@@ -794,5 +795,6 @@ CommonStates.AddWalkStates(states,
 
 CommonStates.AddHitState(states)
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAsoreStates(states, {washashore = "hit"})
 
 return StateGraph("alterguardian_phase2", states, events, "idle", actionhandlers)

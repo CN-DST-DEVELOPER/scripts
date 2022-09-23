@@ -98,8 +98,21 @@ local function EquipBlowdart(inst)
         blowdart.persists = false
         blowdart.components.inventoryitem:SetOnDroppedFn(inst.Remove)
         blowdart:AddComponent("equippable")
+        blowdart:AddTag("nosteal")
 
         inst.components.inventory:Equip(blowdart)
+    end
+end
+
+local function OnSave(inst, data)
+    data.flare_summoned = inst:HasTag("flare_summoned")
+end
+
+local function OnLoad(inst, data)
+    if data then
+        if data.flare_summoned then
+            inst:AddTag("flare_summoned")
+        end
     end
 end
 
@@ -182,6 +195,9 @@ local function create_common(build, scale, tag)
     inst.OnEntitySleep = OnEntitySleep
 
     inst:DoTaskInTime(1, EquipBlowdart)
+
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
 
     return inst
 end

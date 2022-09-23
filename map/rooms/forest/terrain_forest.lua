@@ -1,7 +1,7 @@
 
 AddRoom("BGCrappyForest", {
 					colour={r=.1,g=.8,b=.1,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 					                distributepercent = .6,
@@ -26,7 +26,7 @@ AddRoom("BGCrappyForest", {
 					})
 AddRoom("BGForest", {
 					colour={r=.1,g=.8,b=.1,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone", "StagehandGarden", "Terrarium_Spawner"},
 					contents =  {
 					                distributepercent = .6,
@@ -53,7 +53,7 @@ AddRoom("BGForest", {
 					})
 AddRoom("BGDeepForest", {
 					colour={r=.1,g=.8,b=.1,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 									countstaticlayouts={["MushroomRingSmall"]=function()
@@ -86,7 +86,7 @@ AddRoom("BGDeepForest", {
 					})
 AddRoom("BurntForest", {
 					colour={r=.090,g=.10,b=.010,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 									distributepercent = 0.4,
@@ -100,7 +100,7 @@ AddRoom("BurntForest", {
 						   })
 AddRoom("CrappyDeepForest", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 					                distributepercent = .8,
@@ -122,7 +122,7 @@ AddRoom("CrappyDeepForest", {
 					})
 AddRoom("DeepForest", {
 					colour={r=0,g=.9,b=0,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 									countstaticlayouts=
@@ -154,7 +154,7 @@ AddRoom("DeepForest", {
 	-- Trees, very few rocks, very few rabbit holes
 AddRoom("Forest", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 									countprefabs = {
@@ -182,7 +182,7 @@ AddRoom("Forest", {
 	-- Trees, some rocks
 AddRoom("CritterDen", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.GROUND_NOISE,
+					value = WORLD_TILES.GROUND_NOISE,
 					tags = {"Chester_Eyebone"},
 					contents =  {
 									countprefabs = {
@@ -212,7 +212,7 @@ AddRoom("CritterDen", {
 	-- Trees, very few rocks, very few molehills
 AddRoom("ForestMole", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 					                distributepercent = .3,
@@ -236,7 +236,7 @@ AddRoom("ForestMole", {
 					})
 AddRoom("CrappyForest", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 									countprefabs = {
@@ -263,7 +263,7 @@ AddRoom("CrappyForest", {
 					})
 AddRoom("SpiderForest", {
 					colour={r=.80,g=0.34,b=.80,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 					                distributepercent = .2,
@@ -288,7 +288,7 @@ AddRoom("SpiderForest", {
 					})
 AddRoom("BurntClearing", {
 					colour={r=.8,g=0.5,b=.7,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone"},
 					contents =  {
 					                distributepercent = .1,
@@ -308,7 +308,7 @@ AddRoom("BurntClearing", {
 	-- Trees on the outside, empty in the middle
 AddRoom("Clearing", {
 					colour={r=.8,g=0.5,b=.6,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = {"ExitPiece", "Chester_Eyebone", "StagehandGarden"},
 					contents =  {
 									countprefabs = {
@@ -341,7 +341,7 @@ AddRoom("Clearing", {
 
 AddRoom("MoonbaseOne", {
 					colour={r=.8,g=0.5,b=.6,a=.50},
-					value = GROUND.FOREST,
+					value = WORLD_TILES.FOREST,
 					tags = { "RoadPoison" },
 					contents =  {
 									countprefabs = {

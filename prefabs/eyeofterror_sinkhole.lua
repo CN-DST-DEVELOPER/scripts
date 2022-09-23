@@ -1,3 +1,5 @@
+require("stategraphs/commonstates")
+
 local assets =
 {
     Asset("ANIM", "anim/antlion_sinkhole.zip"),
@@ -117,10 +119,7 @@ local function DoCollapse(inst)
         -- and pick stuff that can be picked.
         if isworkable then
             if collapsible_entity.components.workable:GetWorkAction() == ACTIONS.MINE then
-                local mine_fx = (collapsible_entity:HasTag("frozen") and "mining_ice_fx")
-                    or (collapsible_entity:HasTag("moonglass") and "mining_moonglass_fx")
-                    or "mining_fx"
-                SpawnPrefab(mine_fx).Transform:SetPosition(collapsible_entity.Transform:GetWorldPosition())
+                PlayMiningFX(inst, collapsible_entity, true)
             end
 
             collapsible_entity.components.workable:WorkedBy(inst, 1)

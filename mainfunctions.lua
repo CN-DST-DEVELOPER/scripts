@@ -210,6 +210,39 @@ function ModReloadFrontEndAssets(assets, modname)
     end
 end
 
+local MOD_PRELOAD_PREFABS = {}
+function ModUnloadPreloadAssets(modname)
+    if modname == nil then
+        TheSim:UnloadPrefabs(MOD_PRELOAD_PREFABS)
+        TheSim:UnregisterPrefabs(MOD_PRELOAD_PREFABS)
+        MOD_PRELOAD_PREFABS = {}
+    else
+        local prefab = {table.removearrayvalue(MOD_PRELOAD_PREFABS, "MODPRELOAD_"..modname)}
+        if not IsTableEmpty(prefab) then
+            TheSim:UnloadPrefabs(prefab)
+            TheSim:UnregisterPrefabs(prefab)
+        end
+    end
+end
+
+function ModPreloadAssets(assets, modname)
+    assert(KnownModIndex:DoesModExistAnyVersion(modname), "modname "..modname.." must refer to a valid mod!")
+    if assets then
+        ModUnloadPreloadAssets(modname)
+
+        assets = shallowcopy(assets) --make a copy so that changes to the table in the mod code don't do anything funky
+
+        for i, v in ipairs(assets) do
+            local modroot = MODS_ROOT..modname.."/"
+            resolvefilepath_soft(v.file, nil, modroot)
+        end
+        local prefab = Prefab("MODPRELOAD_"..modname, nil, assets, nil)
+        table.insert(MOD_PRELOAD_PREFABS, prefab.name)
+        RegisterSinglePrefab(prefab)
+        TheSim:LoadPrefabs({prefab.name})
+    end
+end
+
 function RegisterAchievements(achievements)
     for i, achievement in ipairs(achievements) do
         --print ("Registering achievement:", achievement.name, achievement.id.steam, achievement.id.psn)
@@ -455,6 +488,11 @@ end
 function RemoveEntity(guid)
     local inst = Ents[guid]
     if inst then
+        --certain things(like seamless player swapping) need to delay the despawning on a local client until they have ran their own code.
+        if inst.delayclientdespawn then
+            inst.delayclientdespawn_attempted = true
+            return
+        end
         inst:Remove()
     end
 end
@@ -716,7 +754,19 @@ function OnServerPauseDirty(pause, autopause, gameautopause, source)
 end
 
 function ReplicateEntity(guid)
-    Ents[guid]:ReplicateEntity()
+    local inst = Ents[guid]
+
+    local _ThePlayer
+    if inst.isseamlessswaptarget then
+        _ThePlayer = ThePlayer
+        ThePlayer = inst
+    end
+
+    inst:ReplicateEntity()
+
+    if _ThePlayer then
+        ThePlayer = _ThePlayer
+    end
 end
 
 ------------------------------
@@ -777,6 +827,12 @@ function SetAutopaused(autopause)
     DoAutopause()
 end
 
+local craftingautopause = false
+function SetCraftingAutopaused(autopause)
+    craftingautopause = autopause
+    DoAutopause()
+end
+
 local consoleautopausecount = 0
 function SetConsoleAutopaused(autopause)
     consoleautopausecount = consoleautopausecount + (autopause and 1 or -1)
@@ -785,9 +841,10 @@ end
 
 function DoAutopause()
     TheNet:SetAutopaused(
-        ((autopausecount > 0 and Profile:GetAutopauseEnabled()) or
-        (consoleautopausecount > 0 and Profile:GetConsoleAutopauseEnabled()))
-        and not TheFrontEnd:IsControlsDisabled()
+        ((autopausecount > 0 and Profile:GetAutopauseEnabled()) 
+         or (craftingautopause and Profile:GetCraftingAutopauseEnabled())
+         or (consoleautopausecount > 0 and Profile:GetConsoleAutopauseEnabled())
+		) and not TheFrontEnd:IsControlsDisabled()
     )
 end
 
@@ -945,6 +1002,8 @@ function SaveGame(isshutdown, cb)
         return
     end
 
+    TheNet:StartWorldSave()
+
     local save = {}
 	local savedata_entities = {}
 
@@ -978,7 +1037,6 @@ function SaveGame(isshutdown, cb)
     --save out the map
     save.map =
     {
-        revealed = "",
         tiles = "",
         roads = Roads,
     }
@@ -989,6 +1047,8 @@ function SaveGame(isshutdown, cb)
     if ground ~= nil then
         save.map.prefab = ground.worldprefab
         save.map.tiles = ground.Map:GetStringEncode()
+        save.map.world_tile_map = GetWorldTileMap()
+        save.map.tiledata = ground.Map:GetDataStringEncode()
         save.map.nav = ground.Map:GetNavStringEncode()
         save.map.nodeidtilemap = ground.Map:GetNodeIdTileMapStringEncode()
         save.map.width, save.map.height = ground.Map:GetSize()
@@ -1099,7 +1159,13 @@ function SaveGame(isshutdown, cb)
         TheNet:IncrementSnapshot()
         local function onupdateoverrides()
             local function onsaved()
-                ShardGameIndex:WriteTimeFile(cb)
+                local function onwritetimefile()
+                    TheNet:EndWorldSave()
+                    if cb ~= nil then
+                        cb()
+                    end
+                end
+                ShardGameIndex:WriteTimeFile(onwritetimefile)
             end
             ShardGameIndex:Save(onsaved)
         end
@@ -1185,7 +1251,7 @@ local function CheckControllers()
 	if IsSteamDeck() and not TheNet:IsDedicated() then
 		TheInputProxy:EnableInputDevice(1, true)
         Check_Mods()
-    elseif isConnected and not (sawPopup or TheNet:IsDedicated()) then
+    elseif RUN_GLOBAL_INIT and isConnected and not (sawPopup or TheNet:IsDedicated()) then
 
         -- store previous controller enabled state so we can revert to it, then enable all controllers
         local controllers = {}
@@ -1313,7 +1379,6 @@ function DoLoadingPortal(cb)
 
 	--No portal anymore, just fade to "white". Maybe we want to swipe fade to the loading screen?
 	TheFrontEnd:Fade(FADE_OUT, SCREEN_FADE_TIME, cb, nil, nil, "white")
-	return
 end
 
 -- This is for joining a game: once we're done downloading the map, we load it and simreset
@@ -1364,6 +1429,7 @@ function ForceAssetReset()
     Settings.current_asset_set = "FORCERESET"
     Settings.current_world_asset = nil
     Settings.current_world_specialevent = nil
+    Settings.current_world_extraevents = nil
 end
 
 function SimReset(instanceparameters)
@@ -1375,6 +1441,7 @@ function SimReset(instanceparameters)
     instanceparameters.last_asset_set = Settings.current_asset_set
     instanceparameters.last_world_asset = Settings.current_world_asset
     instanceparameters.last_world_specialevent = Settings.current_world_specialevent
+    instanceparameters.last_world_extraevents = Settings.current_world_extraevents
     instanceparameters.loaded_characters = Settings.loaded_characters
     instanceparameters.loaded_mods = ModManager:GetUnloadPrefabsData()
     if Settings.current_asset_set == "BACKEND" then
@@ -1400,7 +1467,7 @@ function RequestShutdown()
     end
 
     if TheNet:GetIsHosting() then
-        TheSystemService:StopDedicatedServers()
+        TheSystemService:StopDedicatedServers(not IsDynamicCloudShutdown)
     end
 
     Shutdown()
@@ -1545,7 +1612,7 @@ local function postsavefn()
     EnableAllMenuDLC()
 
     if TheNet:GetIsHosting() then
-        TheSystemService:StopDedicatedServers()
+        TheSystemService:StopDedicatedServers(not IsDynamicCloudShutdown)
     end
 
     StartNextInstance()
@@ -1581,6 +1648,18 @@ function DoRestart(save)
         ShowLoading()
         TheFrontEnd:Fade(FADE_OUT, 1, save and savefn or postsavefn)
     end
+end
+
+IsDynamicCloudShutdown = false
+
+--these are currently unused, they will be used on Steam Dynamic Cloud Syncing is eventually enabled.
+function OnDynamicCloudSyncReload()
+    TheNet:SendWorldRollbackRequestToServer(0)
+end
+
+function OnDynamicCloudSyncDelete()
+    IsDynamicCloudShutdown = true
+    DoRestart(false)
 end
 
 local screen_fade_time = .25
@@ -1622,7 +1701,7 @@ end
 function OnDemoTimeout()
 	print("Demo timed out")
 	if not IsMigrating() then
-		TheSystemService:StopDedicatedServers()
+		TheSystemService:StopDedicatedServers(not IsDynamicCloudShutdown)
 	end
 	if ThePlayer ~= nil then
 		SerializeUserSession(ThePlayer)
@@ -1642,13 +1721,22 @@ function OnNetworkDisconnect( message, should_reset, force_immediate_reset, deta
     end
 
     if not IsMigrating() then
-        TheSystemService:StopDedicatedServers()
+        TheSystemService:StopDedicatedServers(not IsDynamicCloudShutdown)
     end
 
     local accounts_link = nil
+	local help_button = nil
     if (IsRail() or TheNet:IsNetOverlayEnabled()) and (message == "E_BANNED") then
         accounts_link = {text=STRINGS.UI.NETWORKDISCONNECT.ACCOUNTS, cb = function() TheFrontEnd:GetAccountManager():VisitAccountPage() end}
     end
+
+	if details ~= nil then
+		if accounts_link == nil then
+			accounts_link = details.help_button
+		else
+			help_button = details.help_button
+		end
+	end
 
     local title = STRINGS.UI.NETWORKDISCONNECT.TITLE[message] or STRINGS.UI.NETWORKDISCONNECT.TITLE.DEFAULT
     message = STRINGS.UI.NETWORKDISCONNECT.BODY[message] or STRINGS.UI.NETWORKDISCONNECT.BODY.DEFAULT
@@ -1699,7 +1787,7 @@ function OnNetworkDisconnect( message, should_reset, force_immediate_reset, deta
             local cb = TheFrontEnd.fadecb
             TheFrontEnd.fadecb = function()
                 if cb then cb() end
-                TheFrontEnd:PushScreen( PopupDialogScreen(title, message, { {text=STRINGS.UI.NETWORKDISCONNECT.OK, cb = function() doquit( should_reset ) end}, accounts_link }) )
+                TheFrontEnd:PushScreen( PopupDialogScreen(title, message, { {text=STRINGS.UI.NETWORKDISCONNECT.OK, cb = function() doquit( should_reset ) end}, accounts_link, help_button }) )
                 local screen = TheFrontEnd:GetActiveScreen()
                 if screen then
                     screen:Enable()
@@ -1707,7 +1795,7 @@ function OnNetworkDisconnect( message, should_reset, force_immediate_reset, deta
                 TheFrontEnd:Fade(FADE_IN, screen_fade_time)
             end
         else
-            TheFrontEnd:PushScreen( PopupDialogScreen(title, message, { {text=STRINGS.UI.NETWORKDISCONNECT.OK, cb = function() doquit( should_reset ) end}, accounts_link  }) )
+            TheFrontEnd:PushScreen( PopupDialogScreen(title, message, { {text=STRINGS.UI.NETWORKDISCONNECT.OK, cb = function() doquit( should_reset ) end}, accounts_link, help_button }) )
             local screen = TheFrontEnd:GetActiveScreen()
             if screen then
                 screen:Enable()
@@ -1716,7 +1804,7 @@ function OnNetworkDisconnect( message, should_reset, force_immediate_reset, deta
         end
     else
         -- TheFrontEnd:Fade(FADE_OUT, screen_fade_time, function()
-            TheFrontEnd:PushScreen( PopupDialogScreen(title, message, { {text=STRINGS.UI.NETWORKDISCONNECT.OK, cb = function() doquit( should_reset ) end}, accounts_link  }) )
+            TheFrontEnd:PushScreen( PopupDialogScreen(title, message, { {text=STRINGS.UI.NETWORKDISCONNECT.OK, cb = function() doquit( should_reset ) end}, accounts_link, help_button }) )
             local screen = TheFrontEnd:GetActiveScreen()
             if screen then
                 screen:Enable()
@@ -1816,6 +1904,22 @@ function ResumeRequestLoadComplete(success)
         TheFrontEnd:PushScreen(LobbyScreen(Profile, OnUserPickedCharacter, false))
         TheFrontEnd:Fade(FADE_IN, 1, nil, nil, nil, "white")
         TheWorld:PushEvent("entercharacterselect")
+--[[
+	else
+		local session_file = TheNet:GetLocalClientUserSessionFile()
+        if session_file then
+            print("Loading Local Client Session Data from:", session_file)
+
+            TheNet:DeserializeUserSession(session_file, function(success, str)
+                if success and str ~= nil and #str > 0 then
+                    local playerdata = ParseUserSessionData(str)
+                    if playerdata ~= nil and playerdata.crafting_menu ~= nil then
+                        TheCraftingMenuProfile:DeserializeLocalClientSessionData(playerdata.crafting_menu)
+                    end
+                end
+            end)
+        end
+]]
     end
 end
 
@@ -1823,6 +1927,7 @@ end
 function ParseUserSessionData(data)
     local success, playerdata = RunInSandboxSafe(data)
     if success and playerdata ~= nil then
+        --print(playerdata, playerdata.prefab)
         --Here we can do some validation on data and/or prefab if we want
         --e.g. Resuming a mod character without the mod loaded?
         return playerdata, playerdata.prefab
@@ -1870,6 +1975,10 @@ function RestoreSnapshotUserSession(sessionid, userid)
                                 end
                             end
                         end
+						--if playerdata.crafting_menu ~= nil then
+						--	TheCraftingMenuProfile:DeserializeLocalClientSessionData(playerdata.crafting_menu)
+						--end
+
                         return player.player_classified ~= nil and player.player_classified.entity or nil
                     end
                 end

@@ -1,14 +1,14 @@
 local assets =
 {
     Asset("ANIM", "anim/sapling.zip"),
-    Asset("ANIM", "anim/sapling_diseased_build.zip"),
+    Asset("PKGREF", "anim/sapling_diseased_build.zip"),
     Asset("SOUND", "sound/common.fsb"),
 }
 
 local moon_assets =
 {
     Asset("ANIM", "anim/sapling_moon.zip"),
-    Asset("ANIM", "anim/sapling_diseased_moon.zip"),
+    Asset("PKGREF", "anim/sapling_diseased_moon.zip"),
     Asset("SOUND", "sound/common.fsb"),
 }
 

@@ -26,10 +26,15 @@ function Hull:SetPlank(obj)
     self.plank = obj
 end
 
-function Hull:SetBoatLip(obj)
+function Hull:SetBoatLip(obj,scale)
 	self.boat_lip = obj
 	self.inst:AddPlatformFollower(obj)
 	self:AttachEntityToBoat(obj, 0, 0)
+
+	self.boat_lip:AddTag("ignoremouseover")
+	if scale then
+		self.boat_lip.AnimState:SetScale(scale,scale,scale)
+	end
 end
 
 function Hull:SetRadius(radius)
@@ -45,6 +50,20 @@ function Hull:OnDeployed()
 	self.boat_lip.AnimState:PushAnimation("lip", true)
     self.plank:Hide()
     self.plank:DoTaskInTime(1.25, function() self.plank:Show() self.plank.AnimState:PlayAnimation("plank_place") end)
+end
+
+function Hull:OnSave()
+	local save_data = {}
+	if self.plank ~= nil then
+		save_data = {plank_skinname = self.plank.skinname, plank_skin_name = self.plank.skin_id}
+	end
+	return save_data
+end
+
+function Hull:OnLoad(data)	
+    if data.plank_skinname ~= nil then
+		TheSim:ReskinEntity( self.plank.GUID, nil, data.plank_skinname, data.plank_skin_name )
+	end
 end
 
 return Hull

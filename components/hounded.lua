@@ -18,22 +18,6 @@ local SourceModifierList = require("util/sourcemodifierlist")
 
 local SPAWN_DIST = 30
 
-local attack_levels =
-{
-	intro	=	{ warnduration = function() return 120 end, numspawns = function() return 2 end },
-	light	=	{ warnduration = function() return 60 end, numspawns = function() return 2 + math.random(2) end },
-	med		=	{ warnduration = function() return 45 end, numspawns = function() return 3 + math.random(3) end },
-	heavy	=	{ warnduration = function() return 30 end, numspawns = function() return 4 + math.random(3) end },
-	crazy	=	{ warnduration = function() return 30 end, numspawns = function() return 6 + math.random(4) end },
-}
-
-local attack_delays =
-{
-	rare		= function() return TUNING.TOTAL_DAY_TIME * 6, math.random() * TUNING.TOTAL_DAY_TIME * 7 end,
-	occasional	= function() return TUNING.TOTAL_DAY_TIME * 4, math.random() * TUNING.TOTAL_DAY_TIME * 7 end,
-	frequent	= function() return TUNING.TOTAL_DAY_TIME * 3, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
-}
-
 --------------------------------------------------------------------------
 --[[ Member variables ]]
 --------------------------------------------------------------------------
@@ -53,30 +37,38 @@ local _timetonextwarningsound = 0
 local _announcewarningsoundinterval = 4
 local _pausesources = SourceModifierList(inst, false, SourceModifierList.boolean)
 
+local _spawnwintervariant = true
+local _spawnsummervariant = true
+
 --Configure this data using hounded:SetSpawnData
 local _spawndata =
 	{
 		base_prefab = "hound",
 		winter_prefab = "icehound",
 		summer_prefab = "firehound",
+		upgrade_spawn = "warglet",
 
 		attack_levels =
 		{
-			intro 	= { warnduration = function() return 120 end, numspawns = function() return 2 end },
+			intro 	= { warnduration = function() return 120 end, numspawns = function() return 1 end },
 			light 	= { warnduration = function() return 60 end, numspawns = function() return 2 + math.random(2) end },
 			med 	= { warnduration = function() return 45 end, numspawns = function() return 3 + math.random(3) end },
 			heavy 	= { warnduration = function() return 30 end, numspawns = function() return 4 + math.random(3) end },
 			crazy 	= { warnduration = function() return 30 end, numspawns = function() return 6 + math.random(4) end },
 		},
 
+		--attack delays actually go from shorter to longer, to account for stronger waves
+		--these names are describing the strength of the houndwave more than the duration
 		attack_delays =
 		{
-			rare 		= function() return TUNING.TOTAL_DAY_TIME * 6, math.random() * TUNING.TOTAL_DAY_TIME * 7 end,
-			occasional 	= function() return TUNING.TOTAL_DAY_TIME * 4, math.random() * TUNING.TOTAL_DAY_TIME * 7 end,
-			frequent 	= function() return TUNING.TOTAL_DAY_TIME * 3, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
+			intro 		= function() return TUNING.TOTAL_DAY_TIME * 5, math.random() * TUNING.TOTAL_DAY_TIME * 3 end,
+			light 		= function() return TUNING.TOTAL_DAY_TIME * 5, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
+			med 		= function() return TUNING.TOTAL_DAY_TIME * 7, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
+			heavy 		= function() return TUNING.TOTAL_DAY_TIME * 9, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
+			crazy 		= function() return TUNING.TOTAL_DAY_TIME * 11, math.random() * TUNING.TOTAL_DAY_TIME * 5 end,
 		},
 
-		warning_speech = "ANNOUNCE_HOUND",
+		warning_speech = "ANNOUNCE_HOUNDS",
 		warning_sound_thresholds =
 		{	--Key = time, Value = sound prefab
 			{time = 30, sound =  "LVL4"},
@@ -86,11 +78,13 @@ local _spawndata =
 		},
 	}
 
-local _attackdelayfn = _spawndata.attack_delays.occasional
-local _attacksizefn = _spawndata.attack_levels.light.numspawns
+local _attackdelayfn = _spawndata.attack_delays.med
 local _warndurationfn = _spawndata.attack_levels.light.warnduration
 local _spawnmode = "escalating"
 local _spawninfo = nil
+--for players who leave during the warning when spawns are queued
+local _delayedplayerspawninfo = {}
+local _missingplayerspawninfo = {}
 
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
@@ -107,25 +101,20 @@ end
 local function CalcEscalationLevel()
 	local day = GetAveragePlayerAgeInDays()
 
-	if day < 10 then
-		_attackdelayfn = _spawndata.attack_delays.rare
-		_attacksizefn = _spawndata.attack_levels.intro.numspawns
+	if day < 8 then
+		_attackdelayfn = _spawndata.attack_delays.intro or _spawndata.attack_delays.rare
 		_warndurationfn = _spawndata.attack_levels.intro.warnduration
 	elseif day < 25 then
-		_attackdelayfn = _spawndata.attack_delays.rare
-		_attacksizefn = _spawndata.attack_levels.light.numspawns
+		_attackdelayfn = _spawndata.attack_delays.light or _spawndata.attack_delays.rare
 		_warndurationfn = _spawndata.attack_levels.light.warnduration
 	elseif day < 50 then
-		_attackdelayfn = _spawndata.attack_delays.occasional
-		_attacksizefn = _spawndata.attack_levels.med.numspawns
+		_attackdelayfn = _spawndata.attack_delays.med or _spawndata.attack_delays.occasional
 		_warndurationfn = _spawndata.attack_levels.med.warnduration
 	elseif day < 100 then
-		_attackdelayfn = _spawndata.attack_delays.occasional
-		_attacksizefn = _spawndata.attack_levels.heavy.numspawns
+		_attackdelayfn = _spawndata.attack_delays.heavy or _spawndata.attack_delays.frequent
 		_warndurationfn = _spawndata.attack_levels.heavy.warnduration
 	else
-		_attackdelayfn = _spawndata.attack_delays.frequent
-		_attacksizefn = _spawndata.attack_levels.crazy.numspawns
+		_attackdelayfn = _spawndata.attack_delays.crazy or _spawndata.attack_delays.frequent
 		_warndurationfn = _spawndata.attack_levels.crazy.warnduration
 	end
 
@@ -213,7 +202,7 @@ local function GetWaveAmounts()
 	local thieves = {}
 	local groupmap = {}
 	for player, group in pairs(groupindex) do
-		local attackdelaybase, attackdelayvariance = _attackdelayfn()
+		local attackdelaybase = _attackdelayfn()
 		local playerAge = player.components.age:GetAge()
 
 		-- amount of hounds relative to our age
@@ -299,6 +288,23 @@ local function GetWaveAmounts()
 
 end
 
+local function GetDelayedPlayerWaveAmounts(player, data)
+	local attackdelaybase = _attackdelayfn()
+	local playerAge = player.components.age:GetAge()
+
+	-- amount of hounds relative to our age
+	-- if we have lived shorter than the minimum wave delay then don't spawn hounds to us
+	local spawnsToRelease = playerAge >= attackdelaybase and CalcPlayerAttackSize(player) or 0
+
+	data._spawninfo = {}
+	table.insert(data._spawninfo,
+	{
+		players = {[player] = spawnsToRelease}, --tracks the number of spawns for this player
+		timetonext = 0,
+		averageplayerage = playerAge,
+	})
+end
+
 local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
@@ -344,14 +350,29 @@ local function GetSpecialSpawnChance()
     return TheWorld.state.issummer and chance * 1.5 or chance
 end
 
-local function SummonSpawn(pt)
+local function GetSpawnPrefab(upgrade)
+	if upgrade and _spawndata.upgrade_spawn then
+		return _spawndata.upgrade_spawn
+	end
+
+	local do_seasonal_spawn = math.random() < GetSpecialSpawnChance()
+
+	if do_seasonal_spawn then
+		if _spawnwintervariant and (TheWorld.state.iswinter or TheWorld.state.isspring) then
+			return _spawndata.winter_prefab
+		end
+		if _spawnsummervariant and (TheWorld.state.issummer or TheWorld.state.isautumn) then
+			return _spawndata.summer_prefab
+		end
+	end
+
+	return _spawndata.base_prefab
+end
+
+local function SummonSpawn(pt, upgrade)
     local spawn_pt = GetSpawnPoint(pt)
     if spawn_pt ~= nil then
-        local spawn = SpawnPrefab(
-            (math.random() >= GetSpecialSpawnChance() and _spawndata.base_prefab) or
-            ((TheWorld.state.iswinter or TheWorld.state.isspring) and _spawndata.winter_prefab) or
-            _spawndata.summer_prefab
-        )
+        local spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
         if spawn ~= nil then
             spawn.Physics:Teleport(spawn_pt:Get())
             spawn:FacePoint(pt)
@@ -363,9 +384,9 @@ local function SummonSpawn(pt)
     end
 end
 
-local function ReleaseSpawn(target)
+local function ReleaseSpawn(target, upgrade)
 	if not _targetableplayers[target.GUID] or _targetableplayers[target.GUID] == "land" then
-	    local spawn = SummonSpawn(target:GetPosition())
+	    local spawn = SummonSpawn(target:GetPosition(), upgrade)
 	    if spawn ~= nil then
 	        spawn.components.combat:SuggestTarget(target)
 	        return true
@@ -389,6 +410,94 @@ local function RemovePendingSpawns(player)
 	end
 end
 
+local function GenerateSaveDataFromDelayedSpawnInfo(player, savedata, delayedspawninfo)
+	savedata[player.userid] =
+	{
+		_warning = delayedspawninfo._warning,
+		_timetoattack = delayedspawninfo._timetoattack,
+		_warnduration = delayedspawninfo._warnduration,
+		_timetonextwarningsound = delayedspawninfo._timetonextwarningsound,
+		_announcewarningsoundinterval = delayedspawninfo._announcewarningsoundinterval,
+		_targetstatus =  _targetableplayers[player.GUID]
+	}
+	if delayedspawninfo._spawninfo then
+		local spawninforec = delayedspawninfo._spawninfo
+		savedata[player.userid]._spawninfo = {
+			count = spawninforec.players and spawninforec.players[player] or 0,
+			timetonext = spawninforec.timetonext,
+			averageplayerage = spawninforec.averageplayerage,
+		}
+	end
+end
+
+local function GenerateSaveDataFromSpawnInfo(player, savedata)
+	savedata[player.userid] =
+	{
+		_warning = _warning,
+		_timetoattack = _timetoattack,
+		_warnduration = _warnduration,
+		_timetonextwarningsound = _timetonextwarningsound,
+		_announcewarningsoundinterval = _announcewarningsoundinterval,
+	}
+	if _spawninfo then
+		for i, spawninforec in ipairs(_spawninfo) do
+			if spawninforec.players[player] then
+				savedata[player.userid]._spawninfo =
+				{
+					count = spawninforec.players[player],
+					timetonext = spawninforec.timetonext,
+					averageplayerage = spawninforec.averageplayerage,
+				}
+				break
+			end
+		end
+	end
+end
+
+local function LoadSaveDataFromMissingSpawnInfo(player, missingspawninfo)
+	_delayedplayerspawninfo[player] =
+	{
+		_warning = missingspawninfo._warning,
+		_timetoattack = missingspawninfo._timetoattack,
+		_warnduration = missingspawninfo._warnduration,
+		_timetonextwarningsound = missingspawninfo._timetonextwarningsound,
+		_announcewarningsoundinterval = missingspawninfo._announcewarningsoundinterval,
+	}
+	if missingspawninfo._targetstatus then
+		_targetableplayers[player.GUID] = missingspawninfo._targetstatus
+	end
+	if missingspawninfo._spawninfo then
+		local spawninforec = missingspawninfo._spawninfo
+		_delayedplayerspawninfo[player]._spawninfo =
+		{
+			players = {[player] = spawninforec.count},
+			timetonext = spawninforec.timetonext,
+			averageplayerage = spawninforec.averageplayerage,
+		}
+	end
+end
+
+local function LoadPlayerSpawnInfo(player)
+	if _missingplayerspawninfo[player.userid] then
+		LoadSaveDataFromMissingSpawnInfo(player, _missingplayerspawninfo[player.userid])
+		_missingplayerspawninfo[player.userid] = nil
+	end
+end
+
+local function SavePlayerSpawnInfo(player, savedata, isworldsave)
+	if _delayedplayerspawninfo[player] then
+		GenerateSaveDataFromDelayedSpawnInfo(player, savedata, _delayedplayerspawninfo[player])
+		if not isworldsave then
+			_delayedplayerspawninfo[player] = nil
+		end
+	elseif _warning or _timetoattack < 0 or _spawninfo ~= nil then
+		GenerateSaveDataFromSpawnInfo(player, savedata)
+		if not isworldsave then
+			RemovePendingSpawns(player)
+		end
+	end
+end
+
 --------------------------------------------------------------------------
 --[[ Private event handlers ]]
 --------------------------------------------------------------------------
@@ -400,15 +509,17 @@ local function OnPlayerJoined(src, player)
         end
     end
     table.insert(_activeplayers, player)
+
+	LoadPlayerSpawnInfo(player)
 end
 
 local function OnPlayerLeft(src, player)
-	if _targetableplayers[player.GUID] then
-		_targetableplayers[player.GUID] = nil
-	end
+	SavePlayerSpawnInfo(player, _missingplayerspawninfo)
+
+	_targetableplayers[player.GUID] = nil
+
     for i, v in ipairs(_activeplayers) do
         if v == player then
-			RemovePendingSpawns(player)
             table.remove(_activeplayers, i)
             return
         end
@@ -428,7 +539,6 @@ local function OnUnpauseHounded(src, data)
 end
 
 local function CheckForWaterImunity(player)
-
     if not _targetableplayers[player.GUID] then
 		-- block hound wave targeting when target is on water.. for now.
 		local x,y,z = player.Transform:GetWorldPosition()
@@ -460,6 +570,22 @@ local function SetDifficulty(src, difficulty)
 	end
 end
 
+local function SetSummerVariant(src, enabled)
+	if enabled == "never" then
+		self:SetSummerVariant(false)
+	elseif enabled == "default" then
+		self:SetSummerVariant(true)
+	end
+end
+
+local function SetWinterVariant(src, enabled)
+	if enabled == "never" then
+		self:SetWinterVariant(false)
+	elseif enabled == "default" then
+		self:SetWinterVariant(true)
+	end
+end
+
 --------------------------------------------------------------------------
 --[[ Initialization ]]
 --------------------------------------------------------------------------
@@ -477,6 +603,8 @@ inst:ListenForEvent("pausehounded", OnPauseHounded)
 inst:ListenForEvent("unpausehounded", OnUnpauseHounded)
 
 inst:ListenForEvent("hounded_setdifficulty", SetDifficulty)
+inst:ListenForEvent("hounded_setsummervariant", SetSummerVariant)
+inst:ListenForEvent("hounded_setwintervariant", SetWinterVariant)
 
 self.inst:StartUpdatingComponent(self)
 PlanNextAttack()
@@ -505,6 +633,14 @@ end
 --[[ Public member functions ]]
 --------------------------------------------------------------------------
 
+function self:SetSummerVariant(enabled)
+	_spawnsummervariant = enabled
+end
+
+function self:SetWinterVariant(enabled)
+	_spawnwintervariant = enabled
+end
+
 function self:SpawnModeNever()
 	_spawnmode = "never"
 	PlanNextAttack()
@@ -512,8 +648,7 @@ end
 
 function self:SpawnModeLight()
 	_spawnmode = "constant"
-	_attackdelayfn = _spawndata.attack_delays.rare
-	_attacksizefn = _spawndata.attack_levels.light.numspawns
+	_attackdelayfn = _spawndata.attack_delays.heavy or _spawndata.attack_delays.frequent
 	_warndurationfn = _spawndata.attack_levels.light.warnduration
 	PlanNextAttack()
 end
@@ -527,16 +662,14 @@ self.SpawnModeEscalating = self.SpawnModeNormal
 
 function self:SpawnModeMed()
 	_spawnmode = "constant"
-	_attackdelayfn = _spawndata.attack_delays.occasional
-	_attacksizefn = _spawndata.attack_levels.med.numspawns
+	_attackdelayfn = _spawndata.attack_delays.med or _spawndata.attack_delays.occasional
 	_warndurationfn = _spawndata.attack_levels.med.warnduration
 	PlanNextAttack()
 end
 
 function self:SpawnModeHeavy()
 	_spawnmode = "constant"
-	_attackdelayfn = _spawndata.attack_delays.frequent
-	_attacksizefn = _spawndata.attack_levels.heavy.numspawns
+	_attackdelayfn = _spawndata.attack_delays.light or _spawndata.attack_delays.rare
 	_warndurationfn = _spawndata.attack_levels.heavy.warnduration
 	PlanNextAttack()
 end
@@ -566,7 +699,6 @@ local function _DoWarningSpeech(player)
 end
 
 function self:DoWarningSpeech()
-    --for i, v in ipairs(_activeplayers) do
     for GUID,data in pairs(_targetableplayers) do
     	if data == "land" then
     		local player = Ents[GUID]
@@ -589,9 +721,135 @@ function self:DoWarningSound()
     end
 end
 
+function self:DoDelayedWarningSpeech(player, data)
+	if _targetableplayers[player.GUID] == "land" then
+		player:DoTaskInTime(math.random() * 2, _DoWarningSpeech)
+	end
+end
+
+function self:DoDelayedWarningSound(player, data)
+    for k,v in pairs(_spawndata.warning_sound_thresholds) do
+    	if data._timetoattack <= v.time or data._timetoattack == nil then
+			if _targetableplayers[player.GUID] == "land" then
+				player:PushEvent("houndwarning",HOUNDWARNINGTYPE[v.sound])
+			end
+    		break
+    	end
+    end
+end
+
+local function ShouldUpgrade(amount)
+	if amount >= 8 then
+		return math.random() < 0.7
+	elseif amount == 7 then
+		return math.random() < 0.3
+	elseif amount == 6 then
+		return math.random() < 0.15
+	elseif amount == 5 then
+		return math.random() < 0.05
+	end
+	return false
+end
+
+local function HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
+	spawninforec.timetonext = spawninforec.timetonext - dt
+	if next(spawninforec.players) ~= nil and spawninforec.timetonext < 0 then
+		local target = weighted_random_choice(spawninforec.players)
+
+		if spawninforec.players[target] <= 0 then
+			spawninforec.players[target] = nil
+			if next(spawninforec.players) == nil then
+				table.insert(groupsdone, 1, i)
+			end
+			return
+		end
+
+		-- TEST IF GROUPS IF HOUNDS SHOULD BE TURNED INTO A VARG (or other)
+		local upgrade = _spawndata.upgrade_spawn and ShouldUpgrade(spawninforec.players[target])
+
+		if upgrade then
+			spawninforec.players[target] = spawninforec.players[target] - 5
+		else
+			spawninforec.players[target] = spawninforec.players[target] - 1
+		end
+
+		ReleaseSpawn(target, upgrade)
+
+		if spawninforec.players[target] <= 0 then
+			spawninforec.players[target] = nil
+		end
+
+		local day = spawninforec.averageplayerage / TUNING.TOTAL_DAY_TIME
+		if day < 20 then
+			spawninforec.timetonext = 3 + math.random()*5
+		elseif day < 60 then
+			spawninforec.timetonext = 2 + math.random()*3
+		elseif day < 100 then
+			spawninforec.timetonext = .5 + math.random()*3
+		else
+			spawninforec.timetonext = .5 + math.random()*1
+		end
+
+	end
+	if next(spawninforec.players) == nil then
+		table.insert(groupsdone, 1, i)
+	end
+end
+
 function self:OnUpdate(dt)
 	if _spawnmode == "never" then
 		return
+	end
+
+	for player, data in pairs (_delayedplayerspawninfo) do
+		data._timetoattack = data._timetoattack - dt
+		if data._timetoattack < 0 then
+			_warning = false
+
+			-- Okay, it's hound-day, get number of dogs for each player
+			if data._spawninfo == nil then
+				GetDelayedPlayerWaveAmounts(player, data)
+			end
+
+			local groupsdone = {}
+			CheckForWaterImunity(player)
+			for i, spawninforec in ipairs(data._spawninfo) do
+				HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
+			end
+
+			for i, v in ipairs(groupsdone) do
+				table.remove(data._spawninfo, v)
+			end
+
+			if #data._spawninfo <= 0 then
+				_delayedplayerspawninfo[player] = nil
+				_targetableplayers[player] = nil
+			end
+		elseif not data._warning and data._timetoattack < data._warnduration then
+			data._warning = true
+			data._timetonextwarningsound = 0
+		end
+
+		if data._warning then
+			data._timetonextwarningsound = data._timetonextwarningsound - dt
+
+			if data._timetonextwarningsound <= 0 then
+				CheckForWaterImunity(player)
+				data._announcewarningsoundinterval = data._announcewarningsoundinterval - 1
+				if data._announcewarningsoundinterval <= 0 then
+					data._announcewarningsoundinterval = 10 + math.random(5)
+					self:DoDelayedWarningSpeech(player, data)
+				end
+
+				data._timetonextwarningsound =
+					(data._timetoattack < 30 and .3 + math.random(1)) or
+					(data._timetoattack < 60 and 2 + math.random(1)) or
+					(data._timetoattack < 90 and 4 + math.random(2)) or
+											5 + math.random(4)
+
+				self:DoDelayedWarningSound(player, data)
+			end
+		end
 	end
 
 	-- if there's no players, then don't even try
@@ -617,37 +875,15 @@ function self:OnUpdate(dt)
 		end
 
 		local groupsdone = {}
+		CheckForWaterImunityAllPlayers()
 		for i, spawninforec in ipairs(_spawninfo) do
-			CheckForWaterImunityAllPlayers()
-			spawninforec.timetonext = spawninforec.timetonext - dt
-			if next(spawninforec.players) ~= nil and spawninforec.timetonext < 0 then
-				local target = weighted_random_choice(spawninforec.players)
-				ReleaseSpawn(target)
-				spawninforec.players[target] = spawninforec.players[target] - 1
-				if spawninforec.players[target] <= 0 then
-					spawninforec.players[target] = nil
-				end
-
-				local day = spawninforec.averageplayerage / TUNING.TOTAL_DAY_TIME
-				if day < 20 then
-					spawninforec.timetonext = 3 + math.random()*5
-				elseif day < 60 then
-					spawninforec.timetonext = 2 + math.random()*3
-				elseif day < 100 then
-					spawninforec.timetonext = .5 + math.random()*3
-				else
-					spawninforec.timetonext = .5 + math.random()*1
-				end
-
-			end
-			if next(spawninforec.players) == nil then
-				table.insert(groupsdone, 1, i)
-			end
+			HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 		end
 
 		for i, v in ipairs(groupsdone) do
 			table.remove(_spawninfo, v)
 		end
+
 		if #_spawninfo <= 0 then
 			_spawninfo = nil
 
@@ -659,7 +895,6 @@ function self:OnUpdate(dt)
 	end
 
     if _warning then
-
         _timetonextwarningsound	= _timetonextwarningsound - dt
 
         if _timetonextwarningsound <= 0 then
@@ -688,12 +923,18 @@ self.LongUpdate = self.OnUpdate
 --------------------------------------------------------------------------
 
 function self:OnSave()
+	local missingspawninfo = deepcopy(_missingplayerspawninfo)
+	for i, player in ipairs(AllPlayers) do
+		SavePlayerSpawnInfo(player, missingspawninfo, true)
+	end
+
 	return
 	{
 		warning = _warning,
 		timetoattack = _timetoattack,
 		warnduration = _warnduration,
 		attackplanned = _attackplanned,
+		missingplayerspawninfo = missingspawninfo,
 	}
 end
 
@@ -702,6 +943,8 @@ function self:OnLoad(data)
 	_warnduration = data.warnduration or 0
 	_timetoattack = data.timetoattack or 0
 	_attackplanned = data.attackplanned  or false
+	_missingplayerspawninfo = data.missingplayerspawninfo or {}
+
 	if _timetoattack > _warnduration then
 		-- in case everything went out of sync
 		_warning = false

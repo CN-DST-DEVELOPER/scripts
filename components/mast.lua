@@ -38,8 +38,9 @@ local Mast = Class(function(self, inst)
 
     self:SetRudder(SpawnPrefab("rudder"))
 
-    self.inst:DoTaskInTime(0, function()
+    self._setup_boat_task = self.inst:DoTaskInTime(0, function()
         self:SetBoat(self.inst:GetCurrentPlatform())
+		self._setup_boat_task = nil
     end)
 end,
 nil,
@@ -48,10 +49,17 @@ nil,
     is_sail_transitioning = on_is_sail_transitioning,
 })
 
+function Mast:OnRemoveFromEntity()
+	if self._setup_boat_task ~= nil then
+		self._setup_boat_task:Cancel()
+        self._setup_boat_task = nil
+	end
+end
+
 function Mast:OnRemoveEntity()
 	local mast_sinking
 
-	if self.boat ~= nil and self.sink_fx ~= nil then
+	if self.sink_fx ~= nil and (self.boat_death or self.boat ~= nil) then
 		mast_sinking = SpawnPrefab(self.sink_fx)
     else
         mast_sinking = SpawnPrefab("collapse_small")
@@ -62,9 +70,7 @@ function Mast:OnRemoveEntity()
 		mast_sinking.Transform:SetPosition(x_pos, y_pos, z_pos)
 	end
 
-    if self ~= nil then
-        self:SetBoat(nil)
-    end
+	self:SetBoat(nil)
 end
 
 function Mast:SetReveseDeploy(set)
@@ -125,6 +131,7 @@ end
 
 function Mast:OnDeath()
 	if self.inst:IsValid() then
+		self.boat_death = true
 	    self.inst.SoundEmitter:KillSound("boat_movement")
         self:SetBoat(nil)
 	end

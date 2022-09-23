@@ -72,6 +72,23 @@ local HealthBadge = Class(Badge, function(self, owner, art)
         end
     end, owner)
 
+    self.small_hots = {}
+    self._onremovesmallhots = function(debuff)
+        self.small_hots[debuff] = nil
+    end
+    self.inst:ListenForEvent("startsmallhealthregen", function(owner, debuff)
+        if self.small_hots[debuff] == nil then
+            self.small_hots[debuff] = true
+            self.inst:ListenForEvent("onremove", self._onremovesmallhots, debuff)
+        end
+    end, owner)
+    self.inst:ListenForEvent("stopsmallhealthregen", function(owner, debuff)
+        if self.small_hots[debuff] ~= nil then
+            self._onremovesmallhots(debuff)
+            self.inst:RemoveEventCallback("onremove", self._onremovesmallhots, debuff)
+        end
+    end, owner)
+
     self:StartUpdating()
 end)
 
@@ -127,7 +144,7 @@ function HealthBadge:OnUpdate(dt)
     local up = down == nil and
         (
             (   (self.owner.player_classified ~= nil and self.owner.player_classified.issleephealing:value()) or
-                next(self.hots) ~= nil or
+                next(self.hots) ~= nil or next(self.small_hots) ~= nil or
                 (self.owner.replica.inventory ~= nil and self.owner.replica.inventory:EquipHasTag("regen"))
             ) or
             (self.owner:HasDebuff("wintersfeastbuff"))

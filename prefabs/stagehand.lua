@@ -52,8 +52,6 @@ local function ChangePhysics(inst, is_standing)
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
         inst.Physics:ClearCollisionMask()
         inst.Physics:CollidesWith(COLLISION.ITEMS)
-        inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-        inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
         inst.Physics:CollidesWith(COLLISION.CHARACTERS)
         inst.Physics:CollidesWith(COLLISION.GIANTS)
     end
@@ -107,6 +105,8 @@ local function fn()
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 8
+	inst.components.locomotor:SetTriggersCreep(false)
+    inst.components.locomotor.pathcaps = { ignorecreep = true }
     inst.sounds = sounds
 
     inst.CanStandUp = CanStandUp

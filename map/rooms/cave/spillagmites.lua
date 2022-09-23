@@ -8,14 +8,16 @@ require "map/room_functions"
 -- Spillagmite Forest
 AddRoom("SpillagmiteForest", {
     colour={r=0.4,g=0.4,b=0.4,a=0.9},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .35,
         distributeprefabs=
         {
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.1,
             pillar_stalactite = 0.1,
             spiderhole = 0.05,
@@ -28,14 +30,16 @@ AddRoom("SpillagmiteForest", {
 -- Dropper Canyon
 AddRoom("DropperCanyon", {
     colour={r=0.4,g=0.4,b=0.4,a=0.9},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .35,
         distributeprefabs=
         {
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.2,
             pillar_stalactite = 0.2,
             dropperweb = 0.15,
@@ -51,14 +55,16 @@ AddRoom("DropperCanyon", {
 -- Stalagmites and Lights
 AddRoom("StalagmitesAndLights", {
     colour={r=0.4,g=0.4,b=0.4,a=0.9},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .15,
         distributeprefabs=
         {
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.1,
             pillar_stalactite = 0.1,
             spiderhole = 0.01,
@@ -74,14 +80,16 @@ AddRoom("StalagmitesAndLights", {
 -- Spiders and Bats
 AddRoom("SpidersAndBats", {
     colour={r=0.4,g=0.4,b=0.4,a=0.9},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .15,
         distributeprefabs=
         {
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.1,
             pillar_stalactite = 0.1,
             spiderhole = 0.05,
@@ -95,14 +103,16 @@ AddRoom("SpidersAndBats", {
 -- Thulecite debris
 AddRoom("ThuleciteDebris", {
     colour={r=0.4,g=0.4,b=0.4,a=0.9},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .15,
         distributeprefabs=
         {
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.1,
             pillar_stalactite = 0.1,
             spiderhole = 0.01,
@@ -117,14 +127,16 @@ AddRoom("ThuleciteDebris", {
 
 local bgspillagmite = {
     colour={r=0.4,g=0.4,b=0.4,a=0.9},
-    value = GROUND.UNDERROCK,
+    value = WORLD_TILES.UNDERROCK,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .35,
         distributeprefabs=
         {
-            stalagmite = 0.5,
+            stalagmite = 0.35,
+            stalagmite_med = 0.1,
+            stalagmite_low = 0.05,
             pillar_cave = 0.1,
             pillar_stalactite = 0.1,
             spiderhole = 0.05,

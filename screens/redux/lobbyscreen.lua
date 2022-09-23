@@ -371,7 +371,7 @@ local LoadoutPanel = Class(LobbyPanel, function(self, owner)
 
         --We can't be random character at this point
 		if owner.character_for_game == "random" then
-			local char_list = GetActiveCharacterList()
+			local char_list = GetSelectableCharacterList()
 
 			--remove unowned characters
 			for i = #char_list, 1, -1 do

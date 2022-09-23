@@ -1,7 +1,7 @@
 
 AddRoom("BGSavanna", {
 					colour={r=.8,g=.8,b=.2,a=.50},
-					value = GROUND.SAVANNA,
+					value = WORLD_TILES.SAVANNA,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
 					contents =  {
 					                distributepercent = .1,
@@ -17,7 +17,7 @@ AddRoom("BGSavanna", {
 	-- Very few Trees, very few rocks, rabbit holes, some beefalow, some grass
 AddRoom("Plain", {
 					colour={r=.8,g=.4,b=.4,a=.50},
-					value = GROUND.SAVANNA,
+					value = WORLD_TILES.SAVANNA,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
 					contents =  {
 					                distributepercent = .2,
@@ -32,7 +32,7 @@ AddRoom("Plain", {
 					})
 	-- Rabbit holes, Beefalow hurds if bigger
 AddRoom("BarePlain", {					colour={r=.5,g=.5,b=.45,a=.50},
-					value = GROUND.SAVANNA,
+					value = WORLD_TILES.SAVANNA,
 					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
 					contents =  {
 					                distributepercent = 0.1,

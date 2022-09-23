@@ -1,7 +1,7 @@
 
 AddRoom("LabyrinthGuarden", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.BRICK,
+					value = WORLD_TILES.BRICK,
 					tags = {"LabyrinthEntrance"},
 					contents =  {
 									countstaticlayouts =
@@ -13,7 +13,7 @@ AddRoom("LabyrinthGuarden", {
 
 AddRoom("BGLabyrinth", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.BRICK,
+					value = WORLD_TILES.BRICK,
 					tags = {"Labyrinth"},
 					contents =  {
 					                distributepercent = .04,
@@ -27,7 +27,7 @@ AddRoom("BGLabyrinth", {
 					})
 AddRoom("BGMaze", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
-					value = GROUND.MUD,
+					value = WORLD_TILES.MUD,
 					tags = {"Maze"},
 					contents =  {
 									distributepercent = 0.15,

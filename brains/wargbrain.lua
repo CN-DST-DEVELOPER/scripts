@@ -42,8 +42,11 @@ function WargBrain:OnStart()
         MinPeriod(self.inst, TUNING.WARG_SUMMONPERIOD, true,
             IfNode(function() return CanSpawnChild(self.inst) end, "needs follower",
                 ActionNode(function()
-                    self.inst.sg:GoToState("howl")
-                    return SUCCESS
+                    if not IsEntityDead(self.inst) then
+                        self.inst.sg:GoToState("howl",{howl = true})
+                        return SUCCESS
+                    end
+                    return FAILED
                 end, "Summon Hound"))),
         ChaseAndAttack(self.inst),
 

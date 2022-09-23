@@ -181,7 +181,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-    MakeObstaclePhysics(inst, 1)
+    MakeSmallObstaclePhysics(inst, 1)
 
     inst.AnimState:SetBank("klaus_bag")
     inst.AnimState:SetBuild("klaus_bag")

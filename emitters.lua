@@ -40,7 +40,7 @@ function EmitterManagerClass:RemoveEmitter(inst)
 end
 
 function EmitterManagerClass:PostUpdate()
-	if TheNet:IsServerPaused() then
+	if TheNet:IsServerPaused() or global_error_widget ~= nil then
 		return
 	end
 

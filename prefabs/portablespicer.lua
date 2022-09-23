@@ -147,12 +147,13 @@ local function ShowProduct(inst)
             inst.AnimState:ClearOverrideSymbol("swap_plate")
             inst.AnimState:ClearOverrideSymbol("swap_garnish")
         end
-        if IsModCookingProduct(inst.prefab, inst.components.stewer.product) then
-            inst.AnimState:OverrideSymbol("swap_cooked", product, product)
-        else
-            local symbol_override_build = (recipe ~= nil and recipe.overridebuild) or "cook_pot_food"
-            inst.AnimState:OverrideSymbol("swap_cooked", symbol_override_build, product)
-        end
+
+        local build =
+            (recipe ~= nil and recipe.overridebuild) or
+            (IsModCookingProduct(inst.prefab, product) and product) or
+            "cook_pot_food"
+        local overridesymbol = recipe ~= nil and recipe.overridesymbolname or product
+        inst.AnimState:OverrideSymbol("swap_cooked", build, overridesymbol)
     end
 end
 

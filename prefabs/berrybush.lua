@@ -213,7 +213,7 @@ local function createbush(name, inspectname, berryname, master_postinit)
     local assets =
     {
         Asset("ANIM", "anim/"..name..".zip"),
-        Asset("ANIM", "anim/"..name.."_diseased_build.zip"),
+        Asset("PKGREF", "anim/"..name.."_diseased_build.zip"),
     }
 
     local prefabs =

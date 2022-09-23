@@ -148,13 +148,15 @@ local function OnLoad(self, callback, str)
 			end
         end
 
-
         self.slots = TheSim:GetSaveFiles()
 
         RetryFailedSaveConversions(self)
     elseif not TheNet:IsDedicated() and IsInFrontEnd() and SaveGameIndex.loaded_from_file then
         local savefileupgrades = require "savefileupgrades"
         savefileupgrades.utilities.ConvertSaveIndexToShardSaveIndex(SaveGameIndex, self)
+        self:Save()
+    elseif not TheNet:IsDedicated() then
+        self.slots = TheSim:GetSaveFiles()
         self:Save()
     end
 
@@ -185,19 +187,24 @@ function ShardSaveIndex:GetSlotGameMode(slot)
 end
 
 function ShardSaveIndex:DeleteSlot(slot, cb, save_options)
+    local function callback()
+        if not save_options and not TheNet:IsDedicated() then
+            TheNet:DeleteCluster(slot)
+        end
+
+        if cb ~= nil then
+            cb()
+        end
+    end
+
     local shardIndex = self:GetShardIndex(slot, "Master")
     self.slots[slot] = nil
     self.slot_cache[slot] = nil
+
     if shardIndex then
-        shardIndex:Delete(cb, save_options)
-    end
-
-    if not save_options and not TheNet:IsDedicated() then
-        TheNet:DeleteCluster(slot)
-    end
-
-    if not shardIndex and cb ~= nil then
-        cb()
+        shardIndex:Delete(callback, save_options)
+    else
+        callback()
     end
 end
 
@@ -213,8 +220,12 @@ function ShardSaveIndex:GetValidSlots()
     return slots
 end
 
-function ShardSaveIndex:GetNextNewSlot()
-    local i = 1
+function ShardSaveIndex:GetNextNewSlot(force_slot_type)
+    if force_slot_type == "cloud" or (force_slot_type ~= "local" and Profile:GetDefaultCloudSaves()) then
+        return TheSim:GetNextCloudSaveSlot()
+    end
+
+    local i = 1 
     while true do
         if (self.failed_slot_conversions or {})[i] == nil and (self.slots[i] == nil or self:IsSlotEmpty(i))  then
             return i
@@ -289,7 +300,7 @@ function ShardSaveIndex:GetSlotServerData(slot)
 end
 
 function ShardSaveIndex:SetSlotServerData(slot, serverdata)
-    if self:IsSlotEmpty(slot) then return {} end
+    if self:IsSlotEmpty(slot) then return end
     local shardIndex = self:GetShardIndex(slot, "Master")
     if shardIndex then
         shardIndex:SetServerData(serverdata)
@@ -303,7 +314,7 @@ function ShardSaveIndex:GetSlotGenOptions(slot, shard)
 end
 
 function ShardSaveIndex:SetSlotGenOptions(slot, shard, options)
-    if self:IsSlotEmpty(slot) then return {} end
+    if self:IsSlotEmpty(slot) then return end
     local shardIndex = self:GetShardIndex(slot, shard)
     if shardIndex then
         shardIndex:SetGenOptions(options)

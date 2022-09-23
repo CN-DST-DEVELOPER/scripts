@@ -92,53 +92,59 @@ end
 
 local function SpawnOceanShadowCreature(player)
     return SpawnPrefab("oceanhorror")
+
+end
+
+function self:SpawnShadowCreature(player, params)
+    params = params or _players[player]
+
+    local x, y, z = player.Transform:GetWorldPosition()
+    local boat = player:GetCurrentPlatform()
+    if player.components.sanity:GetPercent() < .1 and boat ~= nil then
+        local boat_x, boat_y, boat_z = boat.Transform:GetWorldPosition()
+
+        local angle = math.random() * 2 * PI
+        local offset = (boat.components.walkableplatform ~= nil and boat.components.walkableplatform.platform_radius or 4) + 3 + math.random() * 8
+        local spawn_x = boat_x + offset * math.cos(angle)
+        local spawn_z = boat_z - offset * math.sin(angle)
+
+        if _map:IsOceanAtPoint(spawn_x, 0, spawn_z) then
+            _failed_ocean_spawn_attempts = 0
+
+            local ent = SpawnOceanShadowCreature(player)
+            ent.Transform:SetPosition(spawn_x, 0, spawn_z)
+            StartTracking(player, params, ent)
+        else
+            _failed_ocean_spawn_attempts = _failed_ocean_spawn_attempts + 1
+
+            if _failed_ocean_spawn_attempts >= OCEAN_SPAWN_ATTEMPTS then
+                if _map:IsPassableAtPoint(spawn_x, 0, spawn_z, false, false) then
+                    _failed_ocean_spawn_attempts = 0
+
+                    local ent = SpawnLandShadowCreature(player)
+                    ent.Transform:SetPosition(spawn_x, 0, spawn_z)
+                    StartTracking(player, params, ent)
+                end
+            end
+        end
+    else
+        _failed_ocean_spawn_attempts = 0
+
+        local angle = math.random() * 2 * PI
+        x = x + 15 * math.cos(angle)
+        z = z - 15 * math.sin(angle)
+        if _map:IsPassableAtPoint(x, 0, z) then
+            local ent = SpawnLandShadowCreature(player)
+
+            ent.Transform:SetPosition(x, 0, z)
+            StartTracking(player, params, ent)
+        end
+    end
 end
 
 UpdateSpawn = function(player, params)
     if params.targetpop > #params.ents then
-        local x, y, z = player.Transform:GetWorldPosition()
-
-        local boat = player:GetCurrentPlatform()
-        if player.components.sanity:GetPercent() < .1 and boat ~= nil then
-            local boat_x, boat_y, boat_z = boat.Transform:GetWorldPosition()
-
-            local angle = math.random() * 2 * PI
-            local offset = (boat.components.walkableplatform ~= nil and boat.components.walkableplatform.platform_radius or 4) + 3 + math.random() * 8
-            local spawn_x = boat_x + offset * math.cos(angle)
-            local spawn_z = boat_z - offset * math.sin(angle)
-
-            if _map:IsOceanAtPoint(spawn_x, 0, spawn_z) then
-                _failed_ocean_spawn_attempts = 0
-
-                local ent = SpawnOceanShadowCreature(player)
-                ent.Transform:SetPosition(spawn_x, 0, spawn_z)
-                StartTracking(player, params, ent)
-            else
-                _failed_ocean_spawn_attempts = _failed_ocean_spawn_attempts + 1
-
-                if _failed_ocean_spawn_attempts >= OCEAN_SPAWN_ATTEMPTS then
-                    if _map:IsPassableAtPoint(spawn_x, 0, spawn_z, false, false) then
-                        _failed_ocean_spawn_attempts = 0
-
-                        local ent = SpawnLandShadowCreature(player)
-                        ent.Transform:SetPosition(spawn_x, 0, spawn_z)
-                        StartTracking(player, params, ent)
-                    end
-                end
-            end
-        else
-            _failed_ocean_spawn_attempts = 0
-
-            local angle = math.random() * 2 * PI
-            x = x + 15 * math.cos(angle)
-            z = z - 15 * math.sin(angle)
-            if _map:IsPassableAtPoint(x, 0, z) then
-                local ent = SpawnLandShadowCreature(player)
-
-                ent.Transform:SetPosition(x, 0, z)
-                StartTracking(player, params, ent)
-            end
-        end
+        self:SpawnShadowCreature(player, params)
 
         --Reschedule spawning if we haven't reached our target population
         params.spawntask =

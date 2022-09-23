@@ -191,14 +191,13 @@ local function OnQuakeBegin(inst)
 end
 
 local function OnQuakeEnd(inst)
-    inst._quaking = false
+    inst._quaking = nil
 end
 
 local function on_save(inst, data)
     data.can_summon_allies = inst._can_summon_allies or false
     data.wants_to_nap = inst._wants_to_nap or false
     data.is_napping = (inst.components.sleeper ~= nil and inst.components.sleeper:IsAsleep()) or false
-    data.quaking = inst._quaking or false
     data.nest_needs_cleaning = inst._nest_needs_cleaning or false
 end
 
@@ -221,7 +220,6 @@ local function on_load(inst, data)
             inst:Nap()
         end
 
-        inst._quaking = data.quaking
         inst._nest_needs_cleaning = data.nest_needs_cleaning
     end
 end
@@ -325,7 +323,7 @@ local function fn()
     inst._wants_to_nap = false
     inst.components.timer:StartTimer("resetnap", TUNING.MOLEBAT_NAP_COOLDOWN * (0.2 + math.random() * 0.3))
 
-    inst._quaking = false
+    inst._quaking = nil
     inst._nest_needs_cleaning = false
 
     inst.ShouldSummonAllies = should_summon_allies
@@ -343,8 +341,8 @@ local function fn()
     inst:ListenForEvent("summon", OnSummon)
     inst:ListenForEvent("timerdone", OnTimerDone)
 
-    inst:ListenForEvent("startquake", function(wn) OnQuakeBegin(inst) end, TheWorld.net)
-    inst:ListenForEvent("endquake", function(wn) OnQuakeEnd(inst) end, TheWorld.net)
+    inst:ListenForEvent("startquake", function() OnQuakeBegin(inst) end, TheWorld.net)
+    inst:ListenForEvent("endquake", function() OnQuakeEnd(inst) end, TheWorld.net)
 
     inst.OnSave = on_save
     inst.OnLoad = on_load

@@ -198,9 +198,9 @@ end
 --      1  2
 --      3
 function Grid:FillGrid(num_columns, coffset, roffset, items)
-    local num_rows = math.ceil(#items / num_columns)
+    self.num_rows = math.ceil(#items / num_columns)
     self:UseNaturalLayout()
-    self:InitSize(num_columns, num_rows, coffset, roffset)
+    self:InitSize(num_columns, self.num_rows, coffset, roffset)
     self:AddList(items)
 end
 

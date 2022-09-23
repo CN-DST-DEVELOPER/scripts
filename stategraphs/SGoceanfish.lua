@@ -13,7 +13,7 @@ local events=
 {
     CommonHandlers.OnLocomote(true, true),
     EventHandler("dobreach", function(inst, data)
-		if not inst.sg:HasStateTag("jumping") then
+		if not inst.sg:HasStateTag("jumping") and ( inst.food_target == nil or not inst.food_target:HasTag("oceantrawler") )then
             inst.sg:GoToState("breach")
         end
     end),
@@ -118,9 +118,11 @@ local states=
 			end
 
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("breach")
-			SetBreaching(inst, true)
-			SpawnSplashFx(inst)
+            if inst.food_target == nil or not inst.food_target:HasTag("oceantrawler") then
+                inst.AnimState:PlayAnimation("breach")
+			    SetBreaching(inst, true)
+			    SpawnSplashFx(inst)
+            end
 
 			inst:PerformBufferedAction()
         end,

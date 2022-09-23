@@ -356,6 +356,7 @@ function Health:SetVal(val, cause, afflicter)
     end
 
     if old_health > 0 and self.currenthealth <= 0 then
+        -- NOTES(JBK): Make sure to keep the events fired up to date with the explosive component.
         --Push world event first, because the entity event may invalidate itself
         --i.e. items that use .nofadeout and manually :Remove() on "death" event
         TheWorld:PushEvent("entity_death", { inst = self.inst, cause = cause, afflicter = afflicter })
@@ -389,14 +390,28 @@ function Health:DoDelta(amount, overtime, cause, ignore_invincible, afflicter, i
 
     local old_percent = self:GetPercent()
     self:SetVal(self.currenthealth + amount, cause, afflicter)
-    local new_percent = self:GetPercent()
 
     self.inst:PushEvent("healthdelta", { oldpercent = old_percent, newpercent = self:GetPercent(), overtime = overtime, cause = cause, afflicter = afflicter, amount = amount })
 
     if self.ondelta ~= nil then
+        -- Re-call GetPercent on the slight chance that "healthdelta" changed it.
         self.ondelta(self.inst, old_percent, self:GetPercent(), overtime, cause, afflicter, amount)
     end
     return amount
+end
+
+function Health:TransferComponent(newinst)
+    local newcomponent = newinst.components.health
+    newcomponent:SetPercent(self:GetPercent())
+
+    newcomponent.takingfiredamage = self.takingfiredamage
+    if newcomponent.takingfiredamage then
+        newcomponent.takingfiredamagestarttime = self.takingfiredamagestarttime
+        newcomponent.takingfiredamagelow = self.takingfiredamagelow
+        newinst:StartUpdatingComponent(newcomponent)
+        newinst:PushEvent("startfiredamage", { low = newcomponent.takingfiredamagelow })
+    end
+    newcomponent.lastfiredamagetime = self.lastfiredamagetime
 end
 
 return Health

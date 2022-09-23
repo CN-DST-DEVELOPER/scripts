@@ -112,6 +112,8 @@ function Repairable:Repair(doer, repair_item)
             return false
         end
         self.inst.components.perishable:SetPercent(self.inst.components.perishable:GetPercent() + repair_item.components.repairer.perishrepairpercent)
+    elseif self.inst.components.repairable.justrunonrepaired then
+
     else
         --not repairable
         return false

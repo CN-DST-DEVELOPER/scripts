@@ -51,6 +51,13 @@ local function onremove(inst)---------------------------------------------------
     end
 end
 
+local function OnEntityReplicated(inst)
+    local parent = inst.entity:GetParent()
+    if parent ~= nil and parent.prefab == "mast" or parent.prefab == "mast_malbatross" then
+        parent.highlightchildren = { inst }
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -69,6 +76,7 @@ local function fn()
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+        inst.OnEntityReplicated = OnEntityReplicated
         return inst
     end
 

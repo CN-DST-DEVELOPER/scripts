@@ -427,6 +427,8 @@ local function fn()
     inst:AddComponent("teleportedoverride")
     inst.components.teleportedoverride:SetDestPositionFn(teleport_override_fn)
 
+    inst:AddComponent("drownable")
+
     MakeLargeFreezableCharacter(inst)
     inst.components.freezable:SetResistance(8)
 

@@ -40,14 +40,8 @@ local function GoHomeAction(inst)
 end
 
 local function InvestigateAction(inst)
-    if inst.components.knownlocations ~= nil then
-        local investigate_pos = inst.components.knownlocations:GetLocation("investigate")
-        if investigate_pos ~= nil then
-            return BufferedAction(inst, nil, ACTIONS.INVESTIGATE, nil, investigate_pos, nil, 1)
-        end
-    end
-
-    return nil
+    local investigatePos = inst.components.knownlocations ~= nil and inst.components.knownlocations:GetLocation("investigate") or nil
+    return investigatePos ~= nil and BufferedAction(inst, nil, ACTIONS.INVESTIGATE, nil, investigatePos, nil, 1) or nil
 end
 
 local function GetFaceTargetFn(inst)
@@ -168,7 +162,7 @@ function SpiderWaterBrain:OnStart()
             end),
 
             WhileNode(function()
-                    return TheWorld.state.iscaveday
+                    return (TheWorld.state.iscaveday or self.inst._quaking)
                         and not self.inst.summoned
                         and not self.inst.components.timer:TimerExists("investigating")
                 end, "IsDay",

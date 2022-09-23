@@ -70,12 +70,12 @@ local function LinkToPlayer(inst, player)
     inst:ListenForEvent("onremove", inst._onlostplayerlink, player)
 end
 
-local function OnPlayerLinkDespawn(inst)
+local function OnPlayerLinkDespawn(inst, forcedrop)
 	if inst.components.container ~= nil then
 		inst.components.container:Close()
 		inst.components.container.canbeopened = false
 
-		if GetGameModeProperty("drop_everything_on_despawn") then
+		if forcedrop or GetGameModeProperty("drop_everything_on_despawn") then
 			inst.components.container:DropEverything()
 		else
 			inst.components.container:DropEverythingWithTag("irreplaceable")

@@ -5,8 +5,9 @@ local assets =
     Asset("ANIM", "anim/beard_monster.zip"),
     Asset("ANIM", "anim/rabbit_winter_build.zip"),
     Asset("SOUND", "sound/rabbit.fsb"),
-	Asset("INV_IMAGE", "beard_monster" ),
-	Asset("INV_IMAGE", "rabbit_winter" ),
+	Asset("INV_IMAGE", "beard_monster"),
+	Asset("INV_IMAGE", "rabbit"),
+	Asset("INV_IMAGE", "rabbit_winter"),
 }
 
 local prefabs =
@@ -71,6 +72,9 @@ local function BecomeRabbit(inst)
         return
     end
     inst.AnimState:SetBuild("rabbit_build")
+    if inst.components.inventoryitem then
+        inst.components.inventoryitem:ChangeImageName("rabbit")
+    end
     inst.sounds = rabbitsounds
     if inst.components.hauntable ~= nil then
         inst.components.hauntable.haunted = false
@@ -82,6 +86,9 @@ local function BecomeWinterRabbit(inst)
         return
     end
     inst.AnimState:SetBuild("rabbit_winter_build")
+    if inst.components.inventoryitem then
+        inst.components.inventoryitem:ChangeImageName("rabbit_winter")
+    end
     inst.sounds = wintersounds
     if inst.components.hauntable ~= nil then
         inst.components.hauntable.haunted = false

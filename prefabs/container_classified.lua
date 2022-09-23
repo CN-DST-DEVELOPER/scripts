@@ -191,11 +191,8 @@ end
 
 local function RefreshCrafting(inst)
     local player = ThePlayer
-    if player ~= nil and player.replica.inventory ~= nil then
-        local overflow = player.replica.inventory:GetOverflowContainer()
-        if overflow ~= nil and overflow.inst == inst._parent then
-            player:PushEvent("refreshcrafting")
-        end
+    if player ~= nil then
+        player:PushEvent("refreshcrafting")
     end
 end
 

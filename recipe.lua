@@ -82,6 +82,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.ingredients   = {}
     self.character_ingredients = {}
     self.tech_ingredients = {}
+	self.filter = more_data.filter
 
     for k,v in pairs(ingredients) do
         table.insert(
@@ -93,7 +94,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     end
 
     self.product       = product or name
-    self.tab           = tab
+    self.tab           = tab					-- DEPRECATED
 
 	self.description   = more_data.description -- override the description string in the crafting menu
 
@@ -119,7 +120,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.numtogive     = numtogive or 1
 
     self.builder_tag   = builder_tag or nil
-	self.buildingstate = more_data.buildingstate -- overrides the SG state to use when crafting the item
+	self.sg_state      = more_data.sg_state or more_data.buildingstate or nil -- overrides the SG state to use when crafting the item (buildingstate is the old variable name)
 
     self.build_mode    = build_mode or BUILDMODE.LAND
     self.build_distance= build_distance or 1
@@ -130,9 +131,24 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
 	self.dropitem      = more_data.dropitem
 
 	self.actionstr     = more_data.actionstr
+	self.hint_msg      = more_data.hint_msg
+
+	self.manufactured = more_data.manufactured -- if true, then it is up to the crafting station to handle creating the item, not the builder component
+
+	self.is_deconstruction_recipe = tab == nil
 
     num                = num + 1
     AllRecipes[name]   = self
+
+    if ModManager then
+        for k,recipepostinit in pairs(ModManager:GetPostInitFns("RecipePostInit")) do
+            recipepostinit(self)
+        end
+
+        for k,recipepostinitany in pairs(ModManager:GetPostInitFns("RecipePostInitAny")) do
+            recipepostinitany(self)
+        end
+    end
 end)
 
 function Recipe:GetAtlas()
@@ -156,7 +172,7 @@ function GetValidRecipe(recname)
         return
     end
     local rec = AllRecipes[recname]
-    return rec ~= nil and rec.tab ~= nil and (rec.require_special_event == nil or IsSpecialEventActive(rec.require_special_event)) and rec or nil
+    return rec ~= nil and not rec.is_deconstruction_recipe and (rec.require_special_event == nil or IsSpecialEventActive(rec.require_special_event)) and rec or nil
 end
 
 function IsRecipeValid(recname)
@@ -167,3 +183,19 @@ function RemoveAllRecipes()
     AllRecipes = {}
     num = 0
 end
+
+Recipe2 = Class(Recipe, function(self, name, ingredients, tech, config) -- add new optional params to config
+	if config ~= nil then
+		Recipe._ctor(self, name, ingredients, nil, tech, config, config.min_spacing, config.nounlock, config.numtogive, config.builder_tag, config.atlas, config.image, config.testfn, config.product, config.build_mode, config.build_distance)
+	else
+		Recipe._ctor(self, name, ingredients, nil, tech)
+	end
+
+	self.is_deconstruction_recipe = false
+end)
+
+DeconstructRecipe = Class(Recipe, function(self, name, return_ingredients)
+	Recipe._ctor(self, name, return_ingredients, nil, TECH.NONE)
+	self.is_deconstruction_recipe = true
+	self.nounlock = true
+end)

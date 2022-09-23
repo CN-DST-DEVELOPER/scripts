@@ -8,6 +8,12 @@ local actionhandlers =
     ActionHandler(ACTIONS.EAT, "eat_loop"),
 }
 
+local function TryToDropFood(inst, food)
+    -- NOTES(JBK): Similar to checks in FindItems in penguinbrain to make sure this penguin ware can still drop.
+    if food and food:IsValid() and food.entity:IsVisible() then
+        inst.components.inventory:DropItem(food)
+    end
+end
 
 local events=
 {
@@ -271,7 +277,7 @@ local states=
             {
                 EventHandler("attacked",
                              function(inst)
-                                 inst.components.inventory:DropItem(inst:GetBufferedAction().target)
+                                 TryToDropFood(inst, inst:GetBufferedAction().target)
                                  inst.sg:GoToState("idle")
                              end) --drop food
             },
@@ -301,7 +307,7 @@ local states=
             {
                 EventHandler("attacked",
                              function(inst)
-                                 inst.components.inventory:DropItem(inst:GetBufferedAction().target)
+                                 TryToDropFood(inst, inst:GetBufferedAction().target)
                                  inst.sg:GoToState("idle")
                              end) --drop food
             },

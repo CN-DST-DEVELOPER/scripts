@@ -77,6 +77,7 @@ local function EquipWeapon(inst)
         weapon.persists = false
         weapon.components.inventoryitem:SetOnDroppedFn(inst.Remove)
         weapon:AddComponent("equippable")
+        weapon:AddTag("nosteal")
 
         inst.components.inventory:Equip(weapon)
     end

@@ -156,7 +156,11 @@ function Fueled:SetSections(num)
 end
 
 function Fueled:CanAcceptFuelItem(item)
-    return self.accepting and item and item.components.fuel and (item.components.fuel.fueltype == self.fueltype or item.components.fuel.fueltype == self.secondaryfueltype)
+	if self.accepting and item then
+		local fuel = item.components.fuel or item.components.fueler
+		return fuel.fueltype == self.fueltype or fuel.fueltype == self.secondaryfueltype
+	end
+	return false
 end
 
 function Fueled:GetCurrentSection()
@@ -172,19 +176,25 @@ function Fueled:SetTakeFuelFn(fn)
 end
 
 function Fueled:TakeFuelItem(item, doer)
-    if self:CanAcceptFuelItem(item) then
+	local fuel_obj = item or doer
+
+    if self:CanAcceptFuelItem(fuel_obj) then
         local oldsection = self:GetCurrentSection()
 
-        local wetmult = item:GetIsWet() and TUNING.WET_FUEL_PENALTY or 1
-        local masterymult = doer ~= nil and doer.components.fuelmaster ~= nil and doer.components.fuelmaster:GetBonusMult(item, self.inst) or 1
-        self:DoDelta(item.components.fuel.fuelvalue * self.bonusmult * wetmult * masterymult, doer)
+        local wetmult = fuel_obj:GetIsWet() and TUNING.WET_FUEL_PENALTY or 1
+        local masterymult = doer ~= nil and doer.components.fuelmaster ~= nil and doer.components.fuelmaster:GetBonusMult(fuel_obj, self.inst) or 1
 
-        local fuelvalue = 0
-        if item.components.fuel ~= nil then
-            fuelvalue = item.components.fuel.fuelvalue
-            item.components.fuel:Taken(self.inst)
-        end
-        item:Remove()
+		local fuel = fuel_obj.components.fuel or fuel_obj.components.fueler
+
+        local fuelvalue = fuel.fuelvalue * self.bonusmult * wetmult * masterymult
+
+        self:DoDelta(fuelvalue, doer)
+
+        fuel:Taken(self.inst)
+
+		if item ~= nil then
+	        item:Remove()
+		end
 
         if self.ontakefuelfn ~= nil then
             self.ontakefuelfn(self.inst, fuelvalue)
@@ -202,7 +212,7 @@ end
 function Fueled:GetDebugString()
     local section = self:GetCurrentSection()
 
-    return string.format("%s %2.2f/%2.2f (-%2.2f) : section %d/%d %2.2f", self.consuming and "ON" or "OFF", self.currentfuel, self.maxfuel, self.rate * self.rate_modifiers:Get(), section, self.sections, self:GetSectionPercent())
+    return string.format("%s %2.2f/%2.2f (-%2.2f, -%2.2f) : section %d/%d %2.2f", self.consuming and "ON" or "OFF", self.currentfuel, self.maxfuel, self.rate * self.rate_modifiers:Get(), self:GetPercent(), section, self.sections, self:GetSectionPercent())
 end
 
 function Fueled:AddThreshold(percent, fn)

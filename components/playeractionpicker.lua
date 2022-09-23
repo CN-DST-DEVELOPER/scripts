@@ -133,23 +133,42 @@ function PlayerActionPicker:GetUseItemActions(target, useitem, right)
 end
 
 function PlayerActionPicker:GetSteeringActions(inst, pos, right)
-    if not self.inst:HasTag("steeringboat") then return nil end
-
-    if right then
-        return self:SortActionList({ ACTIONS.STOP_STEERING_BOAT }, pos)
-    else
-        if not TheInput:ControllerAttached() then
-            return self:SortActionList({ ACTIONS.SET_HEADING }, pos)
+    -- Boat steering
+    if self.inst:HasTag("steeringboat") then
+        if right then
+            return self:SortActionList({ ACTIONS.STOP_STEERING_BOAT }, pos)
+        else
+            if not TheInput:ControllerAttached() then
+                return self:SortActionList({ ACTIONS.SET_HEADING }, pos)
+            end
         end
     end
 
     return nil
 end
 
-function PlayerActionPicker:GetPointActions(pos, useitem, right)
-    local actions = {}
+function PlayerActionPicker:GetCannonAimActions(inst, pos, right)
+    local boatcannonuser = self.inst.components.boatcannonuser
+    if boatcannonuser ~= nil and boatcannonuser:GetCannon() ~= nil then
+        if right then
+            return self:SortActionList({ ACTIONS.BOAT_CANNON_STOP_AIMING }, pos)
+        else
+            if inst == ThePlayer then
+                pos = boatcannonuser:GetAimPos()
+                if pos == nil then
+                    return nil
+                end
+            end
+            return self:SortActionList({ ACTIONS.BOAT_CANNON_SHOOT }, pos)
+        end
+    end
 
-    useitem:CollectActions("POINT", self.inst, pos, actions, right)
+    return nil
+end
+
+function PlayerActionPicker:GetPointActions(pos, useitem, right, target)
+    local actions = {}
+    useitem:CollectActions("POINT", self.inst, pos, actions, right, target)
 
     local sorted_acts = self:SortActionList(actions, pos, useitem)
 
@@ -229,15 +248,23 @@ function PlayerActionPicker:GetLeftClickActions(position, target)
         return steering_actions
     end
 
+    local cannon_aim_actions = self:GetCannonAimActions(self.inst, position, false)
+    if cannon_aim_actions ~= nil then
+        return cannon_aim_actions
+    end
+
     --if we're specifically using an item, see if we can use it on the target entity
     if useitem ~= nil then
         if useitem:IsValid() then
             if target == self.inst then
                 actions = self:GetInventoryActions(useitem)
-            elseif target ~= nil  and not target:HasTag("walkableplatform") then
+            elseif target ~= nil and not target:HasTag("walkableplatform") and not target:HasTag("ignoremouseover") then
                 actions = self:GetUseItemActions(target, useitem)
+                if #actions == 0 and target:HasTag("walkableperipheral") then
+                    actions = self:GetPointActions(position, useitem, nil, target)
+                end
             else
-                actions = self:GetPointActions(position, useitem)
+                actions = self:GetPointActions(position, useitem, nil, target)
             end
         end
     elseif target ~= nil and target ~= self.inst then
@@ -264,7 +291,7 @@ function PlayerActionPicker:GetLeftClickActions(position, target)
     if actions == nil and target == nil and ispassable then
         if equipitem ~= nil and equipitem:IsValid() then
             --can we use our equipped item at the point?
-            actions = self:GetPointActions(position, equipitem)
+            actions = self:GetPointActions(position, equipitem, nil, target)
             --this is to make it so you don't auto-drop equipped items when you left click the ground. kinda ugly.
             if actions ~= nil then
                 for i, v in ipairs(actions) do
@@ -302,6 +329,11 @@ function PlayerActionPicker:GetRightClickActions(position, target)
         return steering_actions
     end
 
+    local cannon_aim_actions = self:GetCannonAimActions(self.inst, position, true)
+    if cannon_aim_actions ~= nil then
+        return cannon_aim_actions
+    end
+
     local actions = nil
     local useitem = self.inst.replica.inventory:GetActiveItem()
     local equipitem = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
@@ -315,10 +347,13 @@ function PlayerActionPicker:GetRightClickActions(position, target)
         if useitem:IsValid() then
             if target == self.inst then
                 actions = self:GetInventoryActions(useitem, true)
-            elseif target ~= nil and (not target:HasTag("walkableplatform") or (useitem:HasTag("repairer") and not useitem:HasTag("deployable"))) then
+            elseif target ~= nil and ((not target:HasTag("walkableplatform") and not target:HasTag("ignoremouseover")) or (useitem:HasTag("repairer") and not useitem:HasTag("deployable"))) then
                 actions = self:GetUseItemActions(target, useitem, true)
+                if #actions == 0 and target:HasTag("walkableperipheral") then
+                    actions = self:GetPointActions(position, useitem, true, target)
+                end
             else
-                actions = self:GetPointActions(position, useitem, true)
+                actions = self:GetPointActions(position, useitem, true, target)
             end
         end
     elseif target ~= nil and not target:HasTag("walkableplatform") then
@@ -334,12 +369,17 @@ function PlayerActionPicker:GetRightClickActions(position, target)
 
         if actions == nil or #actions == 0 then
             actions = self:GetSceneActions(target, true)
+            if (#actions == 0 or (#actions == 1 and actions[1].action == ACTIONS.LOOKAT)) and target:HasTag("walkableperipheral") then
+                if equipitem ~= nil and equipitem:IsValid() and (ispassable or equipitem:HasTag("allow_action_on_impassable") or (equipitem.components.aoetargeting ~= nil and equipitem.components.aoetargeting.alwaysvalid and equipitem.components.aoetargeting:IsEnabled())) then
+                    actions = self:GetPointActions(position, equipitem, true, target)
+                end
+            end
         end
     elseif equipitem ~= nil and equipitem:IsValid() and (ispassable or equipitem:HasTag("allow_action_on_impassable") or (equipitem.components.aoetargeting ~= nil and equipitem.components.aoetargeting.alwaysvalid and equipitem.components.aoetargeting:IsEnabled())) then
-        actions = self:GetPointActions(position, equipitem, true)
+        actions = self:GetPointActions(position, equipitem, true, target)
     end
 
-    if (actions == nil or #actions <= 0) and (target == nil or target:HasTag("walkableplatform")) and ispassable then
+    if (actions == nil or #actions <= 0) and (target == nil or target:HasTag("walkableplatform") or target:HasTag("walkableperipheral")) and ispassable then
         actions = self:GetPointSpecialActions(position, useitem, true)
     end
 
@@ -379,14 +419,17 @@ function PlayerActionPicker:DoGetMouseActions(position, target)
                 local lmbs = self:GetLeftClickActions(position)
                 for i, v in ipairs(lmbs) do
                     if (v.action == ACTIONS.DROP and self.inst:GetDistanceSqToPoint(position:Get()) < 16) or
-                        v.action == ACTIONS.SET_HEADING then
+                        v.action == ACTIONS.SET_HEADING or
+                        v.action == ACTIONS.BOAT_CANNON_SHOOT then
+
                         lmb = v
                     end
                 end
 
                 local rmbs = self:GetRightClickActions(position)
                 for i, v in ipairs(rmbs) do
-                    if (v.action == ACTIONS.STOP_STEERING_BOAT) then
+                    if (v.action == ACTIONS.STOP_STEERING_BOAT) or
+                        v.action == ACTIONS.BOAT_CANNON_STOP_AIMING then
                         rmb = v
                     end
                 end

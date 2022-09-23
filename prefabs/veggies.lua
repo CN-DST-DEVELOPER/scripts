@@ -95,7 +95,7 @@ VEGGIES =
                                     {"med", nil, 0.7},      {"med", nil, 0.65},
                                     nil,
                                     FOODTYPE.BERRY,
-                                    nil, 
+                                    nil,
                                     {lure_data = TUNING.OCEANFISHING_LURE.BERRY, single_use = true, build = "oceanfishing_lure_mis", symbol = "hook_fig"}),
 
     cactus_meat = MakeVegStats(0, TUNING.CALORIES_SMALL, -TUNING.HEALING_SMALL, TUNING.PERISH_MED, -TUNING.SANITY_TINY,
@@ -135,6 +135,9 @@ VEGGIES =
                                     TUNING.CALORIES_TINY, -TUNING.HEALING_SMALL, TUNING.PERISH_SLOW, -TUNING.SANITY_SMALL,
                                     {nil, 0.1, 0.75}),
 }
+
+VEGGIES.cave_banana.extra_tags_fresh = {"monkeyqueenbribe"}
+VEGGIES.cave_banana.extra_tags_cooked = {"monkeyqueenbribe"}
 
 local SEEDLESS =
 {
@@ -466,6 +469,12 @@ local function MakeVeggie(name, has_seeds)
             inst:AddTag("weighable_OVERSIZEDVEGGIES")
         end
 
+        if VEGGIES[name].extra_tags_fresh then
+            for _, extra_tag in ipairs(VEGGIES[name].extra_tags_fresh) do
+                inst:AddTag(extra_tag)
+            end
+        end
+
         local float = VEGGIES[name].float_settings
         if float ~= nil then
             MakeInventoryFloatable(inst, float[1], float[2], float[3])
@@ -506,6 +515,12 @@ local function MakeVeggie(name, has_seeds)
         if name == "watermelon" then
             inst.components.edible.temperaturedelta = TUNING.COLD_FOOD_BONUS_TEMP
             inst.components.edible.temperatureduration = TUNING.FOOD_TEMP_BRIEF
+        end
+
+        if name == "kelp" then
+            inst:AddComponent("repairer")
+            inst.components.repairer.repairmaterial = MATERIALS.KELP
+            inst.components.repairer.healthrepairvalue = TUNING.REPAIR_KELP_HEALTH
         end
 
 		if dryable ~= nil then
@@ -576,6 +591,12 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBank(name)
         inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("cooked")
+
+        if VEGGIES[name].extra_tags_cooked then
+            for _, extra_tag in ipairs(VEGGIES[name].extra_tags_cooked) do
+                inst:AddTag(extra_tag)
+            end
+        end
 
         local float = VEGGIES[name].cooked_float_settings
         if float ~= nil then
@@ -782,7 +803,7 @@ local function MakeVeggie(name, has_seeds)
 
         inst:AddTag("heavy")
         inst:AddTag("oversized_veggie")
-        
+
         inst.gymweight = 4
 
         inst.displayadjectivefn = displayadjectivefn
@@ -894,7 +915,7 @@ local function MakeVeggie(name, has_seeds)
         inst.components.inventoryitem.cangoincontainer = false
 		--inst.components.inventoryitem.canbepickedup = false
         inst.components.inventoryitem:SetSinks(true)
-        
+
         inst:AddComponent("equippable")
         inst.components.equippable.equipslot = EQUIPSLOTS.BODY
         inst.components.equippable:SetOnEquip(oversized_onequip)

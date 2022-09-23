@@ -245,7 +245,7 @@ function Crafting:UpdateRecipes()
         for k,v in pairs(AllRecipes) do
             if IsRecipeValid(v.name) and
             (self.filter == nil or self.filter(v.name)) and --Has no filter or passes the filter in place
-            (self.owner.replica.builder:KnowsRecipe(v.name) or --[[Knows the recipe]]
+            (self.owner.replica.builder:KnowsRecipe(v) or --[[Knows the recipe]]
             ShouldHintRecipe(v.level, self.owner.replica.builder:GetTechTrees())) --[[ Knows enough to see it]] then
                 table.insert(self.valid_recipes, v)
             end

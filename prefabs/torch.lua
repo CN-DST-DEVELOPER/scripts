@@ -34,6 +34,9 @@ local function onequip(inst, owner)
             fx.entity:AddFollower()
             fx.Follower:FollowSymbol(owner.GUID, "swap_object", fx.fx_offset_x or 0, fx.fx_offset, 0)
             fx:AttachLightTo(owner)
+            if fx.AssignSkinData ~= nil then
+                fx:AssignSkinData(inst)
+            end
 
             table.insert(inst.fires, fx)
         end

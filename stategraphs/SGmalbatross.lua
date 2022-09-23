@@ -5,7 +5,7 @@ local SWOOP_LOOP_TARGET_ONEOF_TAGS = {"tree", "mast", "_health"}
 
 local actionhandlers =
 {
-    ActionHandler(ACTIONS.HAMMER, "attack"),
+    ActionHandler(ACTIONS.HAMMER, "hammer"),
     ActionHandler(ACTIONS.GOHOME, "taunt"),
     ActionHandler(ACTIONS.EAT, "eat_dive"),
 }
@@ -101,7 +101,7 @@ local events =
 
     EventHandler("dosplash", function(inst, data)
         if not inst.components.health:IsDead() and not inst.components.freezable:IsFrozen() and not inst.components.sleeper:IsAsleep() then
-            if not TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition()) and not inst:GetCurrentPlatform() then
+            if not TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition()) and not inst:GetCurrentPlatform() and inst:IsOnOcean() then
                 inst.readytodive = nil
                 inst.sg:GoToState("combatdive")
             end
@@ -114,7 +114,7 @@ local events =
         end
     end),
     EventHandler("death", function(inst, data)
-        if TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition()) or inst:GetCurrentPlatform() then
+        if TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition()) or inst:GetCurrentPlatform() or not inst:IsOnOcean() then
             inst.sg:GoToState("death", data)
         else
             inst.sg:GoToState("death_ocean", data)
@@ -281,6 +281,33 @@ local states =
                 else
                     inst.sg:GoToState("nofish")
                 end
+            end),
+        },
+    },
+
+    State{
+        name = "hammer",
+        tags = { "busy", "nosleep", "canrotate" },
+
+        onenter = function(inst)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("atk")
+        end,
+
+        timeline =
+        {
+            TimeEvent(26*FRAMES, function(inst) inst.SoundEmitter:PlaySound("saltydog/creatures/boss/malbatross/flap") end),
+            TimeEvent(28*FRAMES, function(inst)
+                if inst.bufferedaction and inst.bufferedaction.action == ACTIONS.HAMMER then
+                    inst:PerformBufferedAction()
+                end
+            end)
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
             end),
         },
     },

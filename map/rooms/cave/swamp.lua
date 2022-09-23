@@ -7,7 +7,7 @@ require "map/room_functions"
 -- Vast sinkhole swamp
 AddRoom("SinkholeSwamp", {
     colour={r=0.4,g=0.1,b=0.6,a=0.9},
-    value = GROUND.MARSH,
+    value = WORLD_TILES.MARSH,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -30,7 +30,7 @@ AddRoom("SinkholeSwamp", {
 -- Dark swamp
 AddRoom("DarkSwamp", {
     colour={r=0.4,g=0.1,b=0.6,a=0.9},
-    value = GROUND.MARSH,
+    value = WORLD_TILES.MARSH,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -50,7 +50,7 @@ AddRoom("DarkSwamp", {
 -- Tentacle mud (noise)
 AddRoom("TentacleMud", {
     colour={r=0.4,g=0.1,b=0.6,a=0.9},
-    value = GROUND.MARSH,
+    value = WORLD_TILES.MARSH,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -75,7 +75,7 @@ AddRoom("TentacleMud", {
 -- Tentacle forest (noise)
 AddRoom("TentaclesAndTrees", {
     colour={r=0.4,g=0.1,b=0.6,a=0.9},
-    value = GROUND.MARSH,
+    value = WORLD_TILES.MARSH,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -99,7 +99,7 @@ AddRoom("TentaclesAndTrees", {
 
 AddRoom("SpiderSinkholeMarsh", {
     colour={r=.45,g=.75,b=.45,a=.50},
-    value = GROUND.MARSH,
+    value = WORLD_TILES.MARSH,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .1,
@@ -129,7 +129,7 @@ AddRoom("SpiderSinkholeMarsh", {
 
 local bgsinkholeswamp = {
     colour={r=0.4,g=0.1,b=0.6,a=0.9},
-    value = GROUND.MARSH,
+    value = WORLD_TILES.MARSH,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {

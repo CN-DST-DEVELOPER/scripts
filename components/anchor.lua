@@ -193,11 +193,7 @@ function Anchor:AddAnchorRaiser(doer)
         self.numberofraisers = self.numberofraisers +1
     end
 
-    if doer.components.expertsailor and doer.components.expertsailor:HasAnchorRaisingSpeed() then
-        self.raisers[doer] = doer.components.expertsailor:GetAnchorRaisingSpeed()
-    else
-        self.raisers[doer] =  1  -- raise units/second
-    end
+    self.raisers[doer] = (doer.components.expertsailor ~= nil and doer.components.expertsailor:GetAnchorRaisingSpeed() or 1) * ( doer:HasTag("master_crewman") and 2 or 1)	-- raise units/second
 
     self.currentraiseunits = self.currentraiseunits + self.raisers[doer]
     return true

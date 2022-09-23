@@ -1,21 +1,30 @@
-ChattyNode = Class(BehaviourNode, function(self, inst, chatlines, child, delay, rand_delay)
+ChattyNode = Class(BehaviourNode, function(self, inst, chatlines, child, delay, rand_delay, enter_delay, enter_delay_rand)
     BehaviourNode._ctor(self, "ChattyNode", {child})
 
     self.inst = inst
     self.chatlines = chatlines
-    self.nextchattime = nil
+    self.nextchattime = 0
 	self.delay = delay
 	self.rand_delay = rand_delay
+
+	self.enter_delay = enter_delay
+	self.enter_delay_rand = enter_delay_rand
 end)
 
 function ChattyNode:Visit()
     local child = self.children[1]
-
     child:Visit()
+	local prev_status = self.status
     self.status = child.status
 
     if self.status == RUNNING then
         local t = GetTime()
+
+		if prev_status ~= RUNNING then
+			-- allow for an initial delay when entering the node, use this for things like Wander where you stay in the state for a long time and frequently enter it
+			self.nextchattime = t + (self.enter_delay or 0) + (self.enter_delay_rand ~= nil and math.random() * self.enter_delay_rand or 0) - FRAMES
+		end
+
         if self.nextchattime == nil or t > self.nextchattime then
             if type(self.chatlines) == "function" then
                 local str = self.chatlines(self.inst)

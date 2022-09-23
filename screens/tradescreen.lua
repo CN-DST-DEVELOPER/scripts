@@ -92,8 +92,6 @@ end
 local TradeScreen = Class(Screen, function(self, prev_screen, profile)
 	Screen._ctor(self, "TradeScreen")
 
-	--print("Is offline?", TheNet:IsOnlineMode() or "nil", TheFrontEnd:GetIsOfflineMode() or "nil")
-
     -- DISABLE SPECIAL RECIPES
 	-- self.recipes = TheItems:GetRecipes()
 
@@ -1335,8 +1333,24 @@ end
 function TradeScreen:OnUpdate(dt)
 
 	if TheFrontEnd:GetIsOfflineMode() then
-		if not self.quitting and TheFrontEnd:GetActiveScreen() == self then
-			self:Quit()
+		if not self.sorry_popup then
+			local function ShowApology(message)
+				local sorry_popup = PopupDialogScreen(
+					STRINGS.UI.TRADESCREEN.SORRY,
+					message,
+					{
+						{
+							text=STRINGS.UI.POPUPDIALOG.OK,
+							cb = function()
+								TheFrontEnd:PopScreen() -- Popup
+								self:Quit() -- TradeScreen
+							end
+						}
+					})
+				TheFrontEnd:PushScreen(sorry_popup)
+				return sorry_popup
+			end
+			self.sorry_popup = ShowApology(STRINGS.UI.TRADESCREEN.OFFLINE)
 		end
 		return
 	end

@@ -8,7 +8,7 @@ require "map/room_functions"
 -- Blue mush forest
 AddRoom("BlueMushForest", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUS,
+    value = WORLD_TILES.FUNGUS,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .6,
@@ -31,7 +31,7 @@ AddRoom("BlueMushForest", {
 -- Blue light meadow
 AddRoom("BlueMushMeadow", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUS,
+    value = WORLD_TILES.FUNGUS,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .3,
@@ -54,7 +54,7 @@ AddRoom("BlueMushMeadow", {
 -- Dropper forest
 AddRoom("BlueSpiderForest", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUS,
+    value = WORLD_TILES.FUNGUS,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .4,
@@ -78,7 +78,7 @@ AddRoom("BlueSpiderForest", {
 -- Dropper desolation
 AddRoom("DropperDesolation", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUS,
+    value = WORLD_TILES.FUNGUS,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .2,
@@ -101,7 +101,7 @@ AddRoom("DropperDesolation", {
 
 local bgbluemush = {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUS,
+    value = WORLD_TILES.FUNGUS,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .6,
@@ -126,7 +126,7 @@ AddRoom("BGBlueMushRoom", Roomify(bgbluemush))
 
 AddRoom("MoonMushForest", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUSMOON,
+    value = WORLD_TILES.FUNGUSMOON,
     tags = {},
     random_node_entrance_weight = 0,
     contents =  {
@@ -159,7 +159,7 @@ AddRoom("MoonMushForest", {
 
 AddRoom("MoonMushForest_entrance", {
     colour={r=0.1,g=0.1,b=0.8,a=0.9},
-    value = GROUND.FUNGUSMOON_NOISE,
+    value = WORLD_TILES.FUNGUSMOON_NOISE,
     tags = {"GrottoWarEntrance"},
 	random_node_exit_weight = 0,
     contents =  {

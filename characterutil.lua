@@ -72,7 +72,7 @@ end
 function GetCharacterAvatarTextureLocation(character)
     local avatar_location = "images/avatars.xml"
     -- Random isn't a real character, but we treat it like one for display purposes.
-    if character == "random" or table.contains(GetOfficialCharacterList(), character) then
+    if character == "random" or table.contains(DST_CHARACTERLIST, character) then
         -- Normal flow. Nothing special.
     elseif table.contains(MODCHARACTERLIST, character) then
         local mod_location = MOD_AVATAR_LOCATIONS[character] or MOD_AVATAR_LOCATIONS["Default"]
@@ -116,7 +116,7 @@ function GetKilledByFromMorgueRow(data)
     local killed_by =
         (data.killed_by == "nil" and (data.character == "waxwell" and "charlie" or "darkness")) or
         (data.killed_by == "unknown" and "shenanigans") or
-        (data.killed_by == "moose" and (math.random() < .5 and "moose1" or "moose2")) or
+        (data.killed_by == "moose" and ((data.morgue_random or math.random()) < .5 and "moose1" or "moose2")) or
         data.killed_by
 
     killed_by = STRINGS.NAMES[string.upper(killed_by)] or STRINGS.NAMES.SHENANIGANS

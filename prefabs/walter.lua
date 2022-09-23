@@ -132,11 +132,33 @@ local function SpawnWoby(inst)
     return woby
 end
 
-local function OnAttacked(inst)
+local function ResetOrStartWobyBuckTimer(inst)
+	if inst.components.timer:TimerExists("wobybuck") then
+		inst.components.timer:SetTimeLeft("wobybuck", TUNING.WALTER_WOBYBUCK_DECAY_TIME)
+	else
+		inst.components.timer:StartTimer("wobybuck", TUNING.WALTER_WOBYBUCK_DECAY_TIME)
+	end
+end
+
+local function OnTimerDone(inst, data)
+	if data and data.name == "wobybuck" then
+		inst._wobybuck_damage = 0
+	end
+end
+
+local function OnAttacked(inst, data)
     if inst.components.rider:IsRiding() then
         local mount = inst.components.rider:GetMount()
         if mount:HasTag("woby") then
-            mount.components.rideable:Buck()
+			local damage = data and data.damage or TUNING.WALTER_WOBYBUCK_DAMAGE_MAX * 0.5 -- Fallback in case of mods.
+			inst._wobybuck_damage = inst._wobybuck_damage + damage
+			if inst._wobybuck_damage >= TUNING.WALTER_WOBYBUCK_DAMAGE_MAX then
+				inst.components.timer:StopTimer("wobybuck")
+				inst._wobybuck_damage = 0
+				mount.components.rideable:Buck()
+			else
+				ResetOrStartWobyBuckTimer(inst)
+			end
         end
     end
 end
@@ -174,30 +196,40 @@ local function OnDespawn(inst)
     end
 end
 
+local function OnReroll(inst)
+    if inst.woby ~= nil then
+		inst.woby:OnPlayerLinkDespawn(true)
+    end
+end
+
 local function OnSave(inst, data)
 	data.woby = inst.woby ~= nil and inst.woby:GetSaveRecord() or nil
+	data.buckdamage = inst._wobybuck_damage > 0 and inst._wobybuck_damage or nil
 end
 
 local function OnLoad(inst, data)
-	if data ~= nil and data.woby ~= nil then
-		inst._woby_spawntask:Cancel()
-		inst._woby_spawntask = nil
+	if data ~= nil then
+		if data.woby ~= nil then
+			inst._woby_spawntask:Cancel()
+			inst._woby_spawntask = nil
 
-		local woby = SpawnSaveRecord(data.woby)
-		inst.woby = woby
-		if woby ~= nil then
-			if inst.migrationpets ~= nil then
-				table.insert(inst.migrationpets, woby)
+			local woby = SpawnSaveRecord(data.woby)
+			inst.woby = woby
+			if woby ~= nil then
+				if inst.migrationpets ~= nil then
+					table.insert(inst.migrationpets, woby)
+				end
+				woby:LinkToPlayer(inst)
+
+				woby.AnimState:SetMultColour(0,0,0,1)
+				woby.components.colourtweener:StartTween({1,1,1,1}, 19*FRAMES)
+				local fx = SpawnPrefab(woby.spawnfx)
+				fx.entity:SetParent(woby.entity)
+
+				inst:ListenForEvent("onremove", inst._woby_onremove, woby)
 			end
-			woby:LinkToPlayer(inst)
-
-	        woby.AnimState:SetMultColour(0,0,0,1)
-            woby.components.colourtweener:StartTween({1,1,1,1}, 19*FRAMES)
-			local fx = SpawnPrefab(woby.spawnfx)
-			fx.entity:SetParent(woby.entity)
-
-			inst:ListenForEvent("onremove", inst._woby_onremove, woby)
 		end
+		inst._wobybuck_damage = data.buckdamage or 0
 	end
 end
 
@@ -263,6 +295,9 @@ local function master_postinit(inst)
 	inst._tree_sanity_gain = 0
 	inst._update_tree_sanity_task = inst:DoPeriodicTask(TUNING.WALTER_TREE_SANITY_UPDATE_TIME, UpdateTreeSanityGain)
 
+	inst._wobybuck_damage = 0
+	inst:ListenForEvent("timerdone", OnTimerDone)
+
 	inst._woby_spawntask = inst:DoTaskInTime(0, function(i) i._woby_spawntask = nil SpawnWoby(i) end)
 	inst._woby_onremove = function(woby) OnWobyRemoved(inst) end
 
@@ -271,6 +306,7 @@ local function master_postinit(inst)
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
     inst.OnDespawn = OnDespawn
+    inst:ListenForEvent("ms_playerreroll", OnReroll)
 	inst:ListenForEvent("onremove", OnRemoveEntity)
 
 end
@@ -278,7 +314,7 @@ end
 -------------------------------------------------------------------------------
 
 local function CampfireStory_OnNotNight(inst, isnight)
-	if not isnight and inst.storyteller:IsValid() and inst.storyteller.components.storyteller ~= nil then
+	if not isnight and inst.storyteller ~= nil and inst.storyteller:IsValid() and inst.storyteller.components.storyteller ~= nil then
 		inst.storyteller.components.storyteller:AbortStory(GetString(inst.storyteller, "ANNOUNCE_STORYTELLING_ABORT_NOT_NIGHT"))
 	end
 end

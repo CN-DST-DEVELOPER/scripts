@@ -17,15 +17,15 @@ local MAX_TRAIL = 32
 local TRAIL_TICK_TIME = 40
 local VALID_TILES = table.invert(
 {
-    GROUND.DIRT,
-    GROUND.SAVANNA,
-    GROUND.GRASS,
-    GROUND.FOREST,
-    GROUND.MARSH,
-    GROUND.CAVE,
-    GROUND.FUNGUS,
-    GROUND.SINKHOLE,
-    GROUND.MUD,
+    WORLD_TILES.DIRT,
+    WORLD_TILES.SAVANNA,
+    WORLD_TILES.GRASS,
+    WORLD_TILES.FOREST,
+    WORLD_TILES.MARSH,
+    WORLD_TILES.CAVE,
+    WORLD_TILES.FUNGUS,
+    WORLD_TILES.SINKHOLE,
+    WORLD_TILES.MUD,
 })
 
 --------------------------------------------------------------------------
@@ -80,6 +80,12 @@ local function CancelTrailLog(playerdata)
     end
 end
 
+local function IsValidSpawnPoint(pt)
+    return VALID_TILES[_map:GetTileAtPoint(pt:Get())]
+        and #TheSim:FindEntities(pt.x, pt.y, pt.z, 1) <= 0 --small radius, no tag exclusions
+        and _map:IsDeployPointClear(pt, nil, 1)     --generic deploy point test
+end
+
 local function FindSpawnLocationInTrail(trail)
     local weight = 0
     for i, v in ipairs(trail) do
@@ -90,7 +96,7 @@ local function FindSpawnLocationInTrail(trail)
     for i, v in ipairs(trail) do
         rnd = rnd - v[2]
         if rnd <= 0 then
-            while VALID_TILES[_map:GetTileAtPoint(v[1]:Get())] == nil do
+            while not IsValidSpawnPoint(v[1]) do
                 table.remove(trail, i)
                 v = trail[i]
 
@@ -112,10 +118,9 @@ local function FindSpawnLocation(x, y, z)
     local validpos = {}
 
     for i = 1, steps do
-        local x1 = x + radius * math.cos(theta)
-        local z1 = z - radius * math.sin(theta)
-        if VALID_TILES[_map:GetTileAtPoint(x1, y, z1)] and #TheSim:FindEntities(x1, y, z1, 1) <= 0 then
-            table.insert(validpos, Vector3(x1, y, z1))
+        local pt = Vector3(x + radius * math.cos(theta), y, z - radius * math.sin(theta))
+        if IsValidSpawnPoint(pt) then
+            table.insert(validpos, pt)
         end
         theta = theta - 2 * PI / steps
     end

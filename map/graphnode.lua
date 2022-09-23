@@ -237,7 +237,7 @@ end
 
 function Node:AddEntity(prefab, points_x, points_y, current_pos_idx, entitiesOut, width, height, prefab_list, prefab_data, rand_offset)
 	local tile = WorldSim:GetTile(points_x[current_pos_idx], points_y[current_pos_idx])
-	if tile <= GROUND.IMPASSABLE or tile >= GROUND.UNDERGROUND then
+	if not TileGroupManager:IsLandTile(tile) then
 		return
 	end
 
@@ -245,11 +245,6 @@ function Node:AddEntity(prefab, points_x, points_y, current_pos_idx, entitiesOut
 end
 
 function Node:ConvertGround(spawnFn, entitiesOut, width, height, world_gen_choices)
-
-	--if self.data.value == GROUND.IMPASSABLE then
-		--return
-	--end
-
 	if not self.data.terrain_contents then
 		return
 	end
@@ -338,7 +333,7 @@ function Node:PopulateVoronoi(spawnFn, entitiesOut, width, height, world_gen_cho
 		return
 	end
 
-	if self.data.value == GROUND.IMPASSABLE then
+	if TileGroupManager:IsImpassableTile(self.data.value) then
 		return
 	end
 

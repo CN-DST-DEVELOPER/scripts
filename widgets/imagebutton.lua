@@ -243,7 +243,9 @@ end
 -- NB: For image buttons, you need to set the image_selected variable. Best practice is for this to be the same texture as disabled.
 function ImageButton:OnSelect()
     ImageButton._base.OnSelect(self)
-    self.image:SetTexture(self.atlas, self.image_selected)
+	if self.image_selected then
+	    self.image:SetTexture(self.atlas, self.image_selected)
+	end
     if self.imageselectedcolour then
         self.image:SetTint(unpack(self.imageselectedcolour))
     end

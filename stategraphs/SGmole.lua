@@ -459,7 +459,7 @@ local states =
 
     State{
         name = "stunned",
-        tags = { "busy", "noattack" },
+        tags = { "busy", "noattack","canwxscan" },
 
         onenter = function(inst, skippre)
             inst:ClearBufferedAction()

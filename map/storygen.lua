@@ -50,7 +50,7 @@ Story = Class(function(self, id, tasks, terrain, gen_params, level)
 	self.id = id
 	self.loop_blanks = 1
 	self.gen_params = gen_params
-	self.impassible_value = gen_params.impassible_value or GROUND.IMPASSABLE
+	self.impassible_value = gen_params.impassible_value or WORLD_TILES.IMPASSABLE
 	self.level = level
 
 	self.tasks = {}
@@ -234,7 +234,7 @@ function Story:InsertAdditionalSetPieces(task_nodes)
 					return setpiece_data.restrict_to ~= "background" or room.data.type == "background"
 				end
 				local isnt_blank = function(room)
-					return room.data.type ~= "blank" and room.data.value ~= GROUND.IMPASSABLE
+					return room.data.type ~= "blank" and not TileGroupManager:IsImpassableTile(room.data.value)
 				end
 
 				local choicekeys = shuffledKeys(task.nodes)
@@ -764,13 +764,13 @@ end
 
 function Story:LinkRegions(n1, n2)
 	local task_id = "REGION_LINK_"..tostring(self.region_link_tasks)
-	local node_task = Graph(task_id, {parent=self.rootNode, default_bg=GROUND.IMPASSABLE, colour = {r=0,g=0,b=0,a=1}, background="BGImpassable" })
-	WorldSim:AddChild(self.rootNode.id, task_id, GROUND.IMPASSABLE, 0, 0, 0, 1, "blank")
+	local node_task = Graph(task_id, {parent=self.rootNode, default_bg=WORLD_TILES.IMPASSABLE, colour = {r=0,g=0,b=0,a=1}, background="BGImpassable" })
+	WorldSim:AddChild(self.rootNode.id, task_id, WORLD_TILES.IMPASSABLE, 0, 0, 0, 1, "blank")
 
 	local nodes = {}
 	local prev_node = nil
 	for i = 1, 4 do
-		WorldSim:AddChild(self.rootNode.id, task_id, GROUND.IMPASSABLE, 0, 0, 0, 1, "blank")
+		WorldSim:AddChild(self.rootNode.id, task_id, WORLD_TILES.IMPASSABLE, 0, 0, 0, 1, "blank")
 		table.insert(nodes, node_task:AddNode({
 												id=task_id..":REGION_LINK_SUB_"..tostring(i),
 												data={
@@ -778,7 +778,7 @@ function Story:LinkRegions(n1, n2)
 														name="REGION_LINK_SUB",
 														tags = {"RoadPoison", "ForceDisconnected"},
 														colour={r=0.3,g=.8,b=.5,a=.50},
-														value = GROUND.OCEAN_COASTAL
+														value = WORLD_TILES.OCEAN_COASTAL
 														}
 											}))
 		if i > 1 then
@@ -919,7 +919,7 @@ function Story:_AddPlayerStartNode(mainland)
 		print("No start node! Createing a default room.")
 		start_node_data.data =
 		{
-			value = GROUND.GRASS,
+			value = WORLD_TILES.GRASS,
 			terrain_contents={
 				countprefabs = {
 					spawnpoint=1,
@@ -1117,8 +1117,8 @@ function Story:AddCoveNodes(task_nodes)
 end
 
 function Story:SeperateStoryByBlanks(startnode, endnode )
-	local blank_node = Graph("LOOP_BLANK"..tostring(self.loop_blanks), {parent=self.rootNode, default_bg=GROUND.IMPASSABLE, colour = {r=0,g=0,b=0,a=1}, background="BGImpassable" })
-	WorldSim:AddChild(self.rootNode.id, "LOOP_BLANK"..tostring(self.loop_blanks), GROUND.IMPASSABLE, 0, 0, 0, 1, "blank")
+	local blank_node = Graph("LOOP_BLANK"..tostring(self.loop_blanks), {parent=self.rootNode, default_bg=WORLD_TILES.IMPASSABLE, colour = {r=0,g=0,b=0,a=1}, background="BGImpassable" })
+	WorldSim:AddChild(self.rootNode.id, "LOOP_BLANK"..tostring(self.loop_blanks), WORLD_TILES.IMPASSABLE, 0, 0, 0, 1, "blank")
 	local blank_subnode = blank_node:AddNode({
 											id="LOOP_BLANK_SUB "..tostring(self.loop_blanks),
 											data={

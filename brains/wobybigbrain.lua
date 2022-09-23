@@ -218,7 +218,7 @@ function WobyBigBrain:OnStart()
     local root = PriorityNode(
     {
         WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return false end, "OnFire", -- TODO add the fire case again
+        WhileNode(function() return false end, "OnFire",
             Panic(self.inst)),
 
         PriorityNode{

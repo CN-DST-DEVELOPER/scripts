@@ -14,11 +14,16 @@ require("util")
 require("networking")
 require("stringutil")
 
-local LoadoutSelect = Class(Widget, function(self, user_profile, character, initial_skintype, hide_item_skinner)
+local function AllowSkins()
+    return TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode()
+end
+
+local LoadoutSelect = Class(Widget, function(self, user_profile, character, initial_skintype, hide_item_skinner, monkey_curse)
     Widget._ctor(self, "LoadoutSelect")
     self.user_profile = user_profile
 
     self.currentcharacter = character
+    self.monkey_curse = monkey_curse
 
     self.show_puppet = self.currentcharacter ~= "random"
     self.have_base_option = table.contains(DST_CHARACTERLIST, self.currentcharacter)
@@ -114,7 +119,7 @@ local LoadoutSelect = Class(Widget, function(self, user_profile, character, init
 	end
 
 
-    if not TheNet:IsOnlineMode() then
+    if not AllowSkins() then
 		self.bg_group = self.loadout_root:AddChild(Widget("bg_group"))
         self.bg_group:SetPosition(370, 10)
 
@@ -198,7 +203,7 @@ local LoadoutSelect = Class(Widget, function(self, user_profile, character, init
 	        self.portraitbutton:SetPosition(-260, 270)
             self.portraitbutton:SetScale(0.77)
 
-            if TheNet:IsOnlineMode() then
+            if AllowSkins() then
                 self.presetsbutton = self.loadout_root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "save.tex", STRINGS.UI.SKIN_PRESETS.TITLE, false, false, function()
 			            self:_LoadSkinPresetsScreen()
 		            end
@@ -343,7 +348,7 @@ end
 
 
 function LoadoutSelect:_SaveLoadout()
-    if TheNet:IsOnlineMode() then
+    if AllowSkins() then
         self.user_profile:SetSkinsForCharacter(self.currentcharacter, self.selected_skins)
     end
 end
@@ -397,7 +402,7 @@ function LoadoutSelect:ApplySkinPresets(skins)
 end
 
 function LoadoutSelect:_LoadSavedSkins()
-    if TheNet:IsOnlineMode() then
+    if AllowSkins() then
         self.selected_skins = self.user_profile:GetSkinsForCharacter(self.currentcharacter)
     else
         self.selected_skins = { base = self.currentcharacter.."_none" }
@@ -444,7 +449,7 @@ function LoadoutSelect:_ApplySkins(skins, skip_change_emote)
 
     self:_SetPortrait()
     if self.show_puppet then
-		self.puppet:SetSkins(self.currentcharacter, skins.base, skins, skip_change_emote, self.selected_skinmode)
+		self.puppet:SetSkins(self.currentcharacter, skins.base, skins, skip_change_emote, self.selected_skinmode, self.monkey_curse)
     end
 end
 
@@ -516,11 +521,11 @@ function LoadoutSelect:OnControl(control, down)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 return true
             end
-        elseif control == CONTROL_MENU_MISC_1 and TheNet:IsOnlineMode() then
+        elseif control == CONTROL_MENU_MISC_1 and AllowSkins() then
             self:_LoadSkinPresetsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
-        elseif control == CONTROL_MENU_MISC_4 and TheNet:IsOnlineMode() and self:_ShouldShowStartingItemSkinsButton() then
+        elseif control == CONTROL_MENU_MISC_4 and AllowSkins() and self:_ShouldShowStartingItemSkinsButton() then
             self:_LoadItemSkinsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
@@ -535,17 +540,15 @@ function LoadoutSelect:RefreshInventory(animateDoodad)
 end
 
 function LoadoutSelect:GetHelpText()
-    if TheNet:IsOnlineMode() then
+    if AllowSkins() then
 		local controller_id = TheInput:GetControllerID()
 		local t = {}
 
         if self.show_puppet then
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_3) .. " " .. STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW)
         end
-        if TheNet:IsOnlineMode() then
-		    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
-        end
-        if TheNet:IsOnlineMode() and self:_ShouldShowStartingItemSkinsButton() then
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
+        if self:_ShouldShowStartingItemSkinsButton() then
 		    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_4) .. " " .. STRINGS.UI.ITEM_SKIN_DEFAULTS.TITLE)
         end
 

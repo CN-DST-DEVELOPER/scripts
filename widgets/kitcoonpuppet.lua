@@ -40,22 +40,22 @@ function TestKitcoon( hours )
     Profile:SetKitHunger( 0 )
     Profile:SetKitHappiness( 1 )
     Profile:SetKitPoops( 0 )
-    RunKitcoonLongUpdate( Profile, hours )
+    RunKitcoonLongUpdate( hours )
 end
 
-function RunKitcoonLongUpdate( profile, override_hours )
-    if profile:GetKitBuild() == "" then
-        --don't do an update, there's already no build
+function RunKitcoonLongUpdate( override_hours )
+    if Profile:GetKitBuild() == "" or Profile:GetKitIsHibernating() then
+        --don't do an update, there's already no build, or if it's hibernating
         return
     end
 
-    local hunger = profile:GetKitHunger()
-    local happiness = profile:GetKitHappiness()
-    local poops = profile:GetKitPoops()
-    local size = profile:GetKitSize()
+    local hunger = Profile:GetKitHunger()
+    local happiness = Profile:GetKitHappiness()
+    local poops = Profile:GetKitPoops()
+    local size = Profile:GetKitSize()
 
     local now = os.time()
-    local last_time = profile:GetKitLastTime()
+    local last_time = Profile:GetKitLastTime()
     local hours_since = override_hours or math.floor( os.difftime(now, last_time) / PHASE_LENGTH )
     if hours_since > 0 then
         local abandoned = false
@@ -74,8 +74,8 @@ function RunKitcoonLongUpdate( profile, override_hours )
             
             if happiness <= 0 then
                 --print("abandoned")
-                profile:SetKitAbandonedMessage(true)
-                profile:SetKitBuild("")
+                Profile:SetKitAbandonedMessage(true)
+                Profile:SetKitBuild("")
                 abandoned = true
                 break
             end
@@ -88,21 +88,22 @@ function RunKitcoonLongUpdate( profile, override_hours )
         end
 		--print("~~~~ Hours since last visit", hours_since, ", new happiness", happiness)
 
-        profile:SetKitHunger( hunger )
-        profile:SetKitHappiness( happiness )
-        profile:SetKitSize( size )
-        profile:SetKitPoops( poops )
-        profile:SetKitLastTime( now )
+        Profile:SetKitHunger( hunger )
+        Profile:SetKitHappiness( happiness )
+        Profile:SetKitSize( size )
+        Profile:SetKitPoops( poops )
+        Profile:SetKitLastTime( now )
     end
 end
 
 
-local KitcoonPuppet = Class(Widget, function(self, profile, interactable, positions, chance_to_show )
+local KitcoonPuppet = Class(Widget, function(self, profile_remove_me, interactable, positions, chance_to_show )
     Widget._ctor(self)
+
+    --profile_remove_me remove this and calling functions at a later time when it is safer
 
     self:StartUpdating()
 
-    self.profile = profile
     self.chance_to_show = chance_to_show or 0.4
 
     self.anim = self:AddChild(UIAnim())
@@ -125,7 +126,7 @@ local KitcoonPuppet = Class(Widget, function(self, profile, interactable, positi
     self.nametag_anim:SetScale(0.5)
     self.nametag_anim:Hide()
 
-    RunKitcoonLongUpdate( self.profile )
+    RunKitcoonLongUpdate()
 
     self.interactable = interactable
     if self.interactable then
@@ -137,7 +138,7 @@ local KitcoonPuppet = Class(Widget, function(self, profile, interactable, positi
                 local kitcoon_name_popup = KitcoonNamePopup(
                     function(name)
                         print("Named", name)
-                        self.profile:SetKitName(name)
+                        Profile:SetKitName(name)
                         self:StartKit()
                         self.nametag_anim:Hide()
                         self.animstate:PlayAnimation("jump_out")
@@ -170,22 +171,22 @@ end
 
 function KitcoonPuppet:InitNewKit()
     local build = GetRandomItem( KIT_TYPES )
-    self.profile:SetKitBuild(build)
+    Profile:SetKitBuild(build)
     
     self.size = MIN_SIZE
-    self.profile:SetKitSize(self.size)
+    Profile:SetKitSize(self.size)
 
     self.hunger = 0.3
-    self.profile:SetKitHunger( self.hunger )
+    Profile:SetKitHunger( self.hunger )
     
     self.happiness = 0.7
-    self.profile:SetKitHappiness( self.happiness )
+    Profile:SetKitHappiness( self.happiness )
 
-    self.profile:SetKitPoops(0)
+    Profile:SetKitPoops(0)
 
     local now = os.time()
-    self.profile:SetKitLastTime(now)
-    self.profile:SetKitBirthTime(now - math.random(5, 10) * 60 * 60 * 24 )
+    Profile:SetKitLastTime(now)
+    Profile:SetKitBirthTime(now - math.random(5, 10) * 60 * 60 * 24 )
 
     return build
 end
@@ -194,17 +195,17 @@ function KitcoonPuppet:StartKit()
     self.kit_active = true
     self.anim:Show()
 
-    local build = self.profile:GetKitBuild()
+    local build = Profile:GetKitBuild()
     if build == "" then
         build = self:InitNewKit()
     end
 	self.animstate:SetBuild( build )
     self:AddShadow()
 
-    self.hunger = self.profile:GetKitHunger()
-    self.happiness = self.profile:GetKitHappiness()
-    self.size = self.profile:GetKitSize()
-    self.poops = self.profile:GetKitPoops()
+    self.hunger = Profile:GetKitHunger()
+    self.happiness = Profile:GetKitHappiness()
+    self.size = Profile:GetKitSize()
+    self.poops = Profile:GetKitPoops()
     self.anim:SetScale(self.size)
 end
 
@@ -240,8 +241,43 @@ function KitcoonPuppet:OnUpdate(dt)
     end
 end
 
+local pouch_vec3 = {x=150, y=-75, z=0} --Note(Peter): these hacks are getting laughable. *game jame code*
+function KitcoonPuppet:GoToHibernation( cb )
+    self:CancelMoveTo(true)
+    
+    if self.intention_task then
+        self.intention_task:Cancel()
+        self.intention_task = nil
+    end
+
+    Profile:SetKitHibernationStart( os.time() )
+
+    self.home_vec = self:GetPosition() --cache this so we know where to jump back to
+    self:MoveTo( self.home_vec, pouch_vec3, 0.3, function() self:Hide() cb() end )
+    self.animstate:PlayAnimation("jump_out")
+end
+
+
+function KitcoonPuppet:WakeFromHibernation()
+    local time_hibernated = os.time() - Profile:GetKitHibernationStart()
+    local bt = Profile:GetKitBirthTime()
+    Profile:SetKitBirthTime( bt + time_hibernated ) --don't age while we're hibernated
+    Profile:SetKitLastTime( os.time() )
+
+    self:CancelMoveTo(true)
+    self:Show()
+    
+    self:StartKit()
+    local vec_home = self.home_vec or self:GetPosition()
+    self:MoveTo( pouch_vec3, vec_home, 0.3, function() self:SetPosition(vec_home) end )
+    self.animstate:PlayAnimation("jump_out")
+    self.animstate:PushAnimation("idle_loop", true)
+    self:DoIntention( false )
+end
+
+
 function KitcoonPuppet:OnEnable()
-    RunKitcoonLongUpdate( self.profile )
+    RunKitcoonLongUpdate()
 
     self:PickPosition( self.positions )
 
@@ -251,14 +287,18 @@ function KitcoonPuppet:OnEnable()
         self:Show()
     end
 
-    local build = self.profile:GetKitBuild()
+    local build = Profile:GetKitBuild()
     if build == "" then
         if self.interactable then
             self.nametag_anim:Show()
         end
     else
         self:StartKit()
-        self:DoIntention( true )
+        if Profile:GetKitIsHibernating() then
+            self:Hide()
+        else
+            self:DoIntention( true )
+        end
     end
 end
 
@@ -335,7 +375,7 @@ function KitcoonPuppet:Play()
 
         self.happiness = self.happiness + HAPPINESS_DELTA_PLAY
         self.happiness = math.clamp( self.happiness, 0, 1)
-        self.profile:SetKitHappiness( self.happiness )
+        Profile:SetKitHappiness( self.happiness )
 
         local choices = {
             function()
@@ -355,25 +395,22 @@ function KitcoonPuppet:Play()
 end
 
 function KitcoonPuppet:TryQueueEat()
-    if self.animstate:IsCurrentAnimation("idle_loop") then
+    if self.animstate:IsCurrentAnimation("idle_loop") and not Profile:GetKitIsHibernating() then
         self.eat_queued = true
         if self.intention_task then
             self.intention_task:Cancel()
             self.intention_task = nil
         end
 
-        --print("TryQueueEat")
-
         return true
     end
     return false
 end
 function KitcoonPuppet:Eat()
-    --print("Eat")
     self.eat_queued = false
     self.hunger = self.hunger - HUNGER_DELTA_EAT
     self.hunger = math.clamp( self.hunger, 0, 1)
-    self.profile:SetKitHunger( self.hunger )
+    Profile:SetKitHunger( self.hunger )
 
 --    staticScheduler:ExecuteInTime( 5*FRAMES, function(inst) TheFrontEnd:GetSound():PlaySound("dontstarve_DLC001/creatures/together/kittington/eat_pre") end )
     staticScheduler:ExecuteInTime( 21*FRAMES, function(inst) TheFrontEnd:GetSound():PlaySound("dontstarve_DLC001/creatures/together/kittington/eat") end )
@@ -388,17 +425,14 @@ end
 
 function KitcoonPuppet:RemovePoop()
     self.poops = self.poops - 1
-    self.profile:SetKitPoops(self.poops)
+    Profile:SetKitPoops(self.poops)
 end
 
 function KitcoonPuppet:LeaveGameScreen()
-    if self.kit_active then
+    if self.kit_active and not Profile:GetKitIsHibernating() then
         --do poop penalty
         self.happiness = self.happiness - self.poops * POOP_PENALTY_DELTA
-        self.profile:SetKitHappiness( self.happiness )
-
-        --made do this when feeding or playing with
-        --self.profile:SetKitLastTime( os.time() )
+        Profile:SetKitHappiness( self.happiness )
     end
 end
 

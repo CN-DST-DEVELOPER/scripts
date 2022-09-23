@@ -162,8 +162,11 @@ local function MakeShadowCreature(data)
         inst.AnimState:PlayAnimation("idle_loop", true)
         inst.AnimState:SetMultColour(1, 1, 1, .5)
 
-        -- this is purely view related
-        inst:AddComponent("transparentonsanity")
+        if not TheNet:IsDedicated() then
+            -- this is purely view related
+            inst:AddComponent("transparentonsanity")
+            inst.components.transparentonsanity:ForceUpdate()
+        end
 
         inst.entity:SetPristine()
 

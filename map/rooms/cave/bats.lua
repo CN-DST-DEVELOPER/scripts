@@ -7,7 +7,7 @@ require "map/room_functions"
 -- Classic bat cave
 AddRoom("BatCave", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.CAVE,
+    value = WORLD_TILES.CAVE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -30,7 +30,7 @@ AddRoom("BatCave", {
 -- Very batty bat cave
 AddRoom("BattyCave", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.CAVE,
+    value = WORLD_TILES.CAVE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -52,7 +52,7 @@ AddRoom("BattyCave", {
 -- Ferny bat cave
 AddRoom("FernyBatCave", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.CAVE,
+    value = WORLD_TILES.CAVE,
     tags = {"Hutch_Fishbowl"},
     type = NODE_TYPE.Room,
     contents =  {
@@ -75,7 +75,7 @@ AddRoom("FernyBatCave", {
 
 local bgbatcave = {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.CAVE,
+    value = WORLD_TILES.CAVE,
     tags = {"Hutch_Fishbowl"},
     contents =  {
         distributepercent = .13,

@@ -43,39 +43,66 @@ local rock_fruit_prefabs = {
 }
 
 local function on_mine(inst, miner, workleft, workdone)
-    local num_fruits_worked = math.clamp(math.ceil(workdone / TUNING.ROCK_FRUIT_MINES), 1, TUNING.ROCK_FRUIT_LOOT.MAX_SPAWNS)
-    num_fruits_worked = math.min(num_fruits_worked, inst.components.stackable:StackSize())
+    local num_fruits_worked = math.clamp(math.ceil(workdone / TUNING.ROCK_FRUIT_MINES), 1, inst.components.stackable:StackSize())
 
+    local loot_data = TUNING.ROCK_FRUIT_LOOT
     if inst.components.stackable:StackSize() > num_fruits_worked then
         inst.AnimState:PlayAnimation("mined")
         inst.AnimState:PushAnimation("idle", false)
-
-        if num_fruits_worked == TUNING.ROCK_FRUIT_LOOT.MAX_SPAWNS then
-            -- If we got hit hard, also launch the remaining fruit stack.
-            LaunchAt(inst, inst, miner, TUNING.ROCK_FRUIT_LOOT.SPEED, TUNING.ROCK_FRUIT_LOOT.HEIGHT, nil, TUNING.ROCK_FRUIT_LOOT.ANGLE)
-        end
     end
 
+    -- Generate a list of prefabs to create first and optimize the loop by having every type here.
+    local spawned_prefabs = {
+        ["rock_avocado_fruit_ripe"] = 0,
+        ["rock_avocado_fruit_sprout"] = 0,
+        ["rocks"] = 0,
+    }
+    local odds_ripe = loot_data.RIPE_CHANCE
+    local odds_seed = odds_ripe + loot_data.SEED_CHANCE
     for _ = 1, num_fruits_worked do
         -- Choose a ripeness to spawn.
         local loot_roll = math.random()
-        if loot_roll < TUNING.ROCK_FRUIT_LOOT.RIPE_CHANCE then
-            local loot = SpawnPrefab("rock_avocado_fruit_ripe")
-            LaunchAt(loot, inst, miner, TUNING.ROCK_FRUIT_LOOT.SPEED, TUNING.ROCK_FRUIT_LOOT.HEIGHT, nil, TUNING.ROCK_FRUIT_LOOT.ANGLE)
-            if loot ~= nil then
+        if loot_roll < odds_ripe then
+            spawned_prefabs["rock_avocado_fruit_ripe"] = spawned_prefabs["rock_avocado_fruit_ripe"] + 1
+        elseif loot_roll < odds_seed then
+            spawned_prefabs["rock_avocado_fruit_sprout"] = spawned_prefabs["rock_avocado_fruit_sprout"] + 1
+        else
+            spawned_prefabs["rocks"] = spawned_prefabs["rocks"] + 1
+        end
+    end
+
+    -- Then create these prefabs while stacking them up as much as they are able to.
+    for prefab, count in pairs(spawned_prefabs) do
+        local i = 1
+        while i <= count do
+            local loot = SpawnPrefab(prefab)
+            local room = loot.components.stackable ~= nil and loot.components.stackable:RoomLeft() or 0
+            if room > 0 then
+                local stacksize = math.min(count - i, room) + 1
+                loot.components.stackable:SetStackSize(stacksize)
+                i = i + stacksize
+            else
+                i = i + 1
+            end
+            LaunchAt(loot, inst, miner, loot_data.SPEED, loot_data.HEIGHT, nil, loot_data.ANGLE)
+            if prefab == "rock_avocado_fruit_ripe" then
                 loot.AnimState:PlayAnimation("split_open")
                 loot.AnimState:PushAnimation("idle_split_open")
             end
-        elseif loot_roll < (TUNING.ROCK_FRUIT_LOOT.RIPE_CHANCE + TUNING.ROCK_FRUIT_LOOT.SEED_CHANCE) then
-            LaunchAt(SpawnPrefab("rock_avocado_fruit_sprout"), inst, miner, TUNING.ROCK_FRUIT_LOOT.SPEED, TUNING.ROCK_FRUIT_LOOT.HEIGHT, nil, TUNING.ROCK_FRUIT_LOOT.ANGLE)
-        else
-            LaunchAt(SpawnPrefab("rocks"), inst, miner, TUNING.ROCK_FRUIT_LOOT.SPEED, TUNING.ROCK_FRUIT_LOOT.HEIGHT, nil, TUNING.ROCK_FRUIT_LOOT.ANGLE)
         end
     end
 
     -- Finally, remove the actual stack items we just consumed
     local top_stack_item = inst.components.stackable:Get(num_fruits_worked)
     top_stack_item:Remove()
+end
+
+local function OnExplosion_rock_avocado_fruit_full(inst, data)
+    local miner = data and data.explosive or nil
+    if miner then
+        local loot_data = TUNING.ROCK_FRUIT_LOOT
+        LaunchAt(inst, inst, miner, loot_data.SPEED, loot_data.HEIGHT, nil, loot_data.ANGLE)
+    end
 end
 
 local function stack_size_changed(inst, data)
@@ -129,6 +156,8 @@ local function rock_avocado_fruit_full()
 
     -- The amount of work needs to be updated whenever the size of the stack changes
     inst:ListenForEvent("stacksizechange", stack_size_changed)
+    -- Explosions knock around these fruits in specific.
+    inst:ListenForEvent("explosion", OnExplosion_rock_avocado_fruit_full)
 
     MakeHauntableLaunch(inst)
 

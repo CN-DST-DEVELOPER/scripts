@@ -62,11 +62,13 @@ local function Attack(inst)
     inst:PushEvent("dobite")
 end
 
-local function removefood(inst,target)
-    inst:removefood(target)
-    inst:RemoveEventCallback("onremoved", inst._removefood, target)
-    inst:RemoveEventCallback("onpickup", inst._removefood, target)
-    inst._removefood = nil
+local function removefood(inst, target)
+	if inst._removefood ~= nil then
+		inst.foodtoeat = nil
+		inst:RemoveEventCallback("onremove", inst._removefood, target)
+		inst:RemoveEventCallback("onpickup", inst._removefood, target)
+		inst._removefood = nil
+	end
 end
 
 local function isfoodnearby(inst)
@@ -77,14 +79,17 @@ local function isfoodnearby(inst)
         return nil
     end
 
-    inst.foodtoeat = target
-    if target then
-        inst._removefood = function() removefood(inst,target) end
-        inst:ListenForEvent("onremoved", inst._removefood, target)
-        inst:ListenForEvent("onpickup", inst._removefood, target)
+	if inst.foodtoeat ~= target then
+		removefood(inst)
+		if target then
+			inst.foodtoeat = target
+			inst._removefood = function() removefood(inst, target) end
+			inst:ListenForEvent("onremove", inst._removefood, target)
+			inst:ListenForEvent("onpickup", inst._removefood, target)
 
-        return BufferedAction(inst, target, ACTIONS.EAT)
-    end
+			return BufferedAction(inst, target, ACTIONS.EAT)
+		end
+	end
 end
 
 local function EatFishAction(inst)

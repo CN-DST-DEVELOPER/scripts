@@ -588,7 +588,7 @@ local function chop_down_tree(inst, chopper)
     else
         inst.AnimState:PlayAnimation(inst.anims.fallright)
         if inst.components.growable ~= nil and inst.components.growable.stage == 3 and inst.leaf_state == "colorful" then
-            inst.components.lootdropper:SpawnLootPrefab("acorn", pt - TheCamera:GetRightVec())
+            inst.components.lootdropper:SpawnLootPrefab("acorn", pt + TheCamera:GetRightVec())
         end
         inst.components.lootdropper:DropLoot(pt + TheCamera:GetRightVec())
     end
@@ -1317,7 +1317,11 @@ local function makefn(build, stage, data)
         inst.components.growable:SetStage(stage == 0 and math.random(1, 3) or stage)
         inst.components.growable.loopstages = true
         inst.components.growable.springgrowth = true
+        inst.components.growable.magicgrowable = true
         inst.components.growable:StartGrowing()
+
+        inst:AddComponent("simplemagicgrower")
+        inst.components.simplemagicgrower:SetLastStage(#inst.components.growable.stages)
 
         inst.growfromseed = handler_growfromseed
 

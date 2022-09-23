@@ -191,6 +191,7 @@ end
 
 function CookbookPageCrockPot:_GetSpoilString(perishtime)
 	return perishtime == nil and STRINGS.UI.COOKBOOK.PERISH_NEVER
+			or perishtime <= TUNING.PERISH_SUPERFAST and STRINGS.UI.COOKBOOK.PERISH_VERY_QUICKLY
 			or perishtime <= TUNING.PERISH_FAST and STRINGS.UI.COOKBOOK.PERISH_QUICKLY
 			or perishtime <= TUNING.PERISH_MED and STRINGS.UI.COOKBOOK.PERISH_AVERAGE
 			or perishtime <= TUNING.PERISH_SLOW and STRINGS.UI.COOKBOOK.PERISH_SLOWLY

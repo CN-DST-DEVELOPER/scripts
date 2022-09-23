@@ -1,7 +1,7 @@
 
 AddRoom("MoonIsland_IslandShard",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.METEORCOAST_NOISE,
+    value = WORLD_TILES.METEORCOAST_NOISE,
     tags = {"RoadPoison"}, --"ForceDisconnected"
 	type = NODE_TYPE.SeparatedRoom,
 	contents = {
@@ -30,7 +30,7 @@ AddRoom("MoonIsland_IslandShard",  {
 
 AddRoom("MoonIsland_Beach",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.PEBBLEBEACH,
+    value = WORLD_TILES.PEBBLEBEACH,
 	contents = {
 		countprefabs =
 		{
@@ -56,14 +56,14 @@ AddRoom("MoonIsland_Beach",  {
 
 AddRoom("MoonIsland_Blank",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
     tags = {"ForceDisconnected", "RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 })
 
 AddRoom("MoonIsland_Forest",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.METEOR,
+    value = WORLD_TILES.METEOR,
     --tags = {"ForceDisconnected", "RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 	contents = {
@@ -93,7 +93,7 @@ AddRoom("MoonIsland_Forest",  {
 
 AddRoom("MoonIsland_Mine",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.METEORMINE_NOISE,
+    value = WORLD_TILES.METEORMINE_NOISE,
     --tags = {"ForceDisconnected", "RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 	contents = {
@@ -115,7 +115,7 @@ AddRoom("MoonIsland_Mine",  {
 
 AddRoom("MoonIsland_Baths",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.METEOR,
+    value = WORLD_TILES.METEOR,
 	tags = {"RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 	random_node_entrance_weight = 0,
@@ -140,7 +140,7 @@ AddRoom("MoonIsland_Baths",  {
 
 AddRoom("MoonIsland_Meadows",  {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
-    value = GROUND.METEOR,
+    value = WORLD_TILES.METEOR,
     --tags = {"ForceDisconnected", "RoadPoison"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
 	random_node_exit_weight = 0,
@@ -164,7 +164,7 @@ AddRoom("MoonIsland_Meadows",  {
 -------------------------------------------------------------------------------
 AddRoom("Empty_Cove",  {
     colour={r=1.0,g=1.0,b=1.0,a=0.3},
-    value = GROUND.IMPASSABLE,
+    value = WORLD_TILES.IMPASSABLE,
 	type = NODE_TYPE.Blank,
 	tags = {"ForceDisconnected", "RoadPoison"},
 	random_node_entrance_weight = 0,

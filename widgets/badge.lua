@@ -75,6 +75,7 @@ local Badge = Class(Widget, function(self, anim, owner, tint, iconbuild, circula
         self.circleframe:GetAnimState():SetBuild("status_meter")
         self.circleframe:GetAnimState():PlayAnimation("frame")
         self.circleframe:GetAnimState():AnimateWhilePaused(not dont_update_while_paused)
+		--self.dont_animate_circleframe = false
         if iconbuild ~= nil then
             self.circleframe:GetAnimState():OverrideSymbol("icon", iconbuild, "icon")
             self.iconbuild = iconbuild
@@ -119,7 +120,7 @@ function Badge:SetPercent(val, max)
         self.circular_meter:GetAnimState():SetPercent("meter", val)
     else
         self.anim:GetAnimState():SetPercent("anim", 1 - val)
-        if self.circleframe ~= nil then
+        if self.circleframe ~= nil and not self.dont_animate_circleframe then
             self.circleframe:GetAnimState():SetPercent("frame", 1 - val)
         end
     end

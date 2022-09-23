@@ -17,7 +17,7 @@ local testNewTag = false
 
 
 local function CanPlayDressup()
-    return TheNet:IsOnlineMode()
+    return TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode()
 end
 
 local DressupPanel = Class(Widget, function(self, owner_screen, profile, playerdata, onChanged, recent_item_types, recent_item_ids, include_random_options)
@@ -140,7 +140,7 @@ function DressupPanel:ReverseFocus()
 end
 
 -- This function removes the background and moves the puppet out to the side.
--- This is only done when the game is online because the offline images don't
+-- This is only done when the game is online or offline skin support because the offline images don't
 -- work without the background.
 function DressupPanel:SeparateAvatar()
 	if CanPlayDressup() then
@@ -819,8 +819,8 @@ function DressupPanel:GetSkinsForGameStart()
 			self.profile:SetSkinsForCharacter(self.currentcharacter, skins)
 		else
 			--offline here, leave skins as default
-			if TheNet:IsOnlineMode() then
-				print( "Error: Game is online but the dressup panel hasn't been created." )
+			if CanPlayDressup() then
+				print( "Error: Game can do dressuppanel but the dressup panel hasn't been created." )
 			end
 		end
 	end

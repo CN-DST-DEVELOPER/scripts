@@ -153,14 +153,16 @@ local function OnSave(inst, data)
     end
 end
 
-local function onsleep(inst)
+local function TryStartSleepGrowing(inst)
     if CanStartGrowing(inst) then
         inst.components.harvestable:SetGrowTime(TUNING.BEEBOX_HONEY_TIME)
         inst.components.harvestable:StartGrowing()
+    elseif inst.components.harvestable then
+        inst.components.harvestable:PauseGrowing()
     end
 end
 
-local function stopsleep(inst)
+local function StopSleepGrowing(inst)
     if not inst:HasTag("burnt") and inst.components.harvestable ~= nil then
         inst.components.harvestable:SetGrowTime(nil)
         inst.components.harvestable:PauseGrowing()
@@ -190,10 +192,12 @@ local function onignite(inst)
 end
 
 local function OnEntityWake(inst)
+    StopSleepGrowing(inst)
     inst.SoundEmitter:PlaySound("dontstarve/bee/bee_box_LP", "loop")
 end
 
 local function OnEntitySleep(inst)
+    TryStartSleepGrowing(inst)
     inst.SoundEmitter:KillSound("loop")
 end
 
@@ -204,6 +208,12 @@ local function GetStatus(inst)
                 ((inst.components.childspawner == nil or inst.components.childspawner:NumChildren() <= 0) and "NOHONEY")
             )
         or nil
+end
+
+local function AsleepHoneyGrowth(inst)
+    if inst:IsAsleep() then
+        TryStartSleepGrowing(inst)
+    end
 end
 
 local function SeasonalSpawnChanges(inst, season)
@@ -282,17 +292,13 @@ local function MakeBeebox(name, common_postinit, master_postinit)
             inst.components.childspawner:StartSpawning()
         end
 
+        inst:WatchWorldState("iswinter", AsleepHoneyGrowth)
         inst:WatchWorldState("iscaveday", OnIsCaveDay)
         inst:ListenForEvent("enterlight", OnEnterLight)
         inst:ListenForEvent("enterdark", OnEnterDark)
 
         inst:AddComponent("inspectable")
         inst.components.inspectable.getstatus = GetStatus
-
-
-
-        inst:ListenForEvent("entitysleep", onsleep)
-        inst:ListenForEvent("entitywake", stopsleep)
 
         updatelevel(inst)
 
