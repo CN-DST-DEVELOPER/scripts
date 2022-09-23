@@ -1,0 +1,76 @@
+name: AutoUpdate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0/2 * * *
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.result.outputs.version }}
+      need_update: ${{ steps.result.outputs.need_update }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: "Skippeh/steamfetch-action@v1.0.3"
+        with:
+          username: "${{ secrets.STEAM_USER }}"
+          password: "${{ secrets.STEAM_PASS }}"
+          dir: "${{ github.workspace }}/temp/"
+          os: "windows"
+          app: 322330
+          osarch: 64
+          files: "version.txt"
+
+      - name: Check need update or not
+        id: result
+        run: |
+          if [ "$(git describe --abbrev=0)" != "${{ env.VERSION }}" ]; then 
+            echo "::set-output name=need_update::True"
+            echo "::set-output name=version::$(cat ${{ github.workspace }}/temp/version.txt | grep -o [0-9]*)"
+          fi
+
+  update:
+    runs-on: ubuntu-latest
+    needs: check
+    if: ${{ needs.check.outputs.need_update }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: temp/scripts
+
+      - name: Get files
+        uses: "Skippeh/steamfetch-action@v1.0.3"
+        with:
+          username: "${{ secrets.STEAM_USER }}"
+          password: "${{ secrets.STEAM_PASS }}"
+          dir: "${{ github.workspace }}/temp/"
+          os: "windows"
+          app: 322330
+          osarch: 64
+          files: |
+            data/databundles/scripts.zip
+
+      - name: unzip
+        run: |
+          shopt -s extglob
+          cd ${{ github.workspace }}/temp/scripts
+          rm -rf !(.git/|.github/)
+          unzip -qd ${{ github.workspace }}/temp ${{ github.workspace }}/temp/data/databundles/scripts.zip
+
+      - name: push
+        run: |
+          cd ${{ github.workspace }}/temp/scripts
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m ${{ needs.check.outputs.version }}
+          git tag ${{ needs.check.outputs.version }}
+          git push
+          git push --tags
