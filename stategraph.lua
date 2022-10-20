@@ -318,6 +318,32 @@ StateGraphInstance = Class( function (self, stategraph, inst)
     self.statestarttime = 0
 end)
 
+function StateGraphInstance:RenderDebugUI(ui, panel)
+	-- Don't have a specific stategraph debugger for DebugNodeName, but viewing
+	-- our History is pretty useful.
+	if ui:Button("Open History for: ".. tostring(self.inst)) then
+		local DebugNodes = require "dbui_no_package.debug_nodes"
+		SetDebugEntity(self.inst)
+		panel:PushNode(DebugNodes.DebugHistory())
+	end
+end
+
+function StateGraphInstance:GetDebugTable()
+	TheSim:ProfilerPush("[SGI] GetDebugTable")
+
+	local ret = {
+		name = self.sg.name,
+		current = self.currentstate and self.currentstate.name or "<None>",
+		ticks = math.floor(self:GetTimeInState() / FRAMES),
+		tags = shallowcopy(self.tags),
+		statemem = shallowcopy(self.statemem),
+	}
+
+	TheSim:ProfilerPop()
+
+	return ret
+end
+
 function StateGraphInstance:__tostring()
     local str =  string.format([[sg="%s", state="%s", time=%2.2f]], self.sg.name, self.currentstate.name, GetTime() - self.statestarttime)
     str = str..[[, tags = "]]
@@ -452,7 +478,7 @@ local SGTagsToEntTags =
     ["pausepredict"] = true,
     ["sleeping"] = true,
     ["working"] = true,
-    ["jumping"] = true,
+    ["boathopping"] = true,
 }
 
 function StateGraphInstance:HasState(statename)
@@ -553,7 +579,7 @@ function StateGraphInstance:UpdateState(dt)
 
     if self.timeout then
         self.timeout = self.timeout - dt
-        if self.timeout <= (1/30) then
+        if self.timeout < 0.0001 then --epsilon for floating point error
             self.timeout = nil
             if self.currentstate.ontimeout then
                 self.currentstate.ontimeout(self.inst)

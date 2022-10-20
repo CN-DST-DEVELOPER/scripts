@@ -105,7 +105,7 @@ local function GetActiveHasslerCount()
 end
 
 local function SpawnBearger()
-	local spawndelay = .25 * TheWorld.state.remainingdaysinseason * TUNING.TOTAL_DAY_TIME / _numToSpawn
+	local spawndelay = _numToSpawn > 0 and (.25 * TheWorld.state.remainingdaysinseason * TUNING.TOTAL_DAY_TIME / _numToSpawn) or 0
 	local spawnrandom = .25 * spawndelay
 	local timetospawn = TheWorld.components.worldsettingstimer:GetTimeLeft(BEARGER_TIMERNAME)
 	if timetospawn == nil then
@@ -256,8 +256,10 @@ function self:OnPostInit()
 	for i, v in ipairs(_beargerchances) do
 		totalbeargerchance = totalbeargerchance + v
 	end
-	_spawndelay = 0.25 * TheWorld.state.autumnlength * TUNING.TOTAL_DAY_TIME / totalbeargerchance
-    _worldsettingstimer:AddTimer(BEARGER_TIMERNAME, _spawndelay, TUNING.SPAWN_BEARGER, OnBeargerTimerDone)
+	if totalbeargerchance > 0 then -- NOTES(JBK): In case mods modify chances to make it zero we do not want to make infinite timers.
+		_spawndelay = 0.25 * TheWorld.state.autumnlength * TUNING.TOTAL_DAY_TIME / totalbeargerchance
+		_worldsettingstimer:AddTimer(BEARGER_TIMERNAME, _spawndelay, TUNING.SPAWN_BEARGER, OnBeargerTimerDone)
+	end
 
 	if _timetospawn then
 		_worldsettingstimer:StartTimer(BEARGER_TIMERNAME, math.min(_timetospawn, _spawndelay))

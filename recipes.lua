@@ -136,29 +136,29 @@ Recipe2("dumbbell_marble",				{Ingredient("marble", 4), Ingredient("twigs", 1)},
 Recipe2("dumbbell_gem",					{Ingredient("thulecite", 2), Ingredient("purplegem", 1), Ingredient("twigs", 1)},				TECH.NONE,				{builder_tag="strongman"})
 
 -- Wickerbottom
-Recipe2("bookstation", {Ingredient("livinglog", 2), Ingredient("papyrus", 4), Ingredient("featherpencil", 1)}, TECH.NONE, {builder_tag="bookbuilder", placer="bookstation_placer"})
+Recipe2("bookstation",					{Ingredient("livinglog", 2), Ingredient("papyrus", 4), Ingredient("featherpencil", 1)},				TECH.NONE,				{builder_tag="bookbuilder", placer="bookstation_placer"})
 
-Recipe2("book_horticulture", 	 	  {Ingredient("papyrus", 2), Ingredient("seeds", 5), Ingredient("poop", 5)}, TECH.SCIENCE_ONE,   {builder_tag="bookbuilder"})
-Recipe2("book_horticulture_upgraded", {Ingredient("book_horticulture", 1), Ingredient("featherpencil", 1), Ingredient("papyrus", 2)}, TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
-Recipe2("book_silviculture", 	 	  {Ingredient("papyrus", 2), Ingredient("livinglog", 1)},  TECH.SCIENCE_THREE, {builder_tag="bookbuilder"})
-Recipe2("book_research_station", 	  {Ingredient("papyrus", 2), Ingredient("transistor", 1)}, TECH.NONE, 		  {builder_tag="bookbuilder"})
+Recipe2("book_horticulture", 	 		{Ingredient("papyrus", 2), Ingredient("seeds", 5), Ingredient("poop", 5)},							TECH.SCIENCE_ONE,		{builder_tag="bookbuilder"})
+Recipe2("book_horticulture_upgraded",	{Ingredient("book_horticulture", 1), Ingredient("featherpencil", 1), Ingredient("papyrus", 2)},		TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
+Recipe2("book_silviculture", 	 		{Ingredient("papyrus", 2), Ingredient("livinglog", 1)},												TECH.SCIENCE_THREE,		{builder_tag="bookbuilder"})
+Recipe2("book_research_station", 		{Ingredient("papyrus", 2), Ingredient("transistor", 1)},											TECH.NONE, 				{builder_tag="bookbuilder"})
 
-Recipe2("book_birds",		 	 {Ingredient("papyrus", 2), Ingredient("bird_egg", 2)}, TECH.NONE, {builder_tag="bookbuilder"})
-Recipe2("book_fish",			 {Ingredient("papyrus", 2), Ingredient("oceanfishingbobber_ball", 2)}, TECH.NONE, {builder_tag="bookbuilder"})
-Recipe2("book_bees", 			 {Ingredient("papyrus", 2), Ingredient("stinger", 8), Ingredient("honey", 4)}, 					TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
+Recipe2("book_birds",		 			{Ingredient("papyrus", 2), Ingredient("bird_egg", 2)},												TECH.NONE,				{builder_tag="bookbuilder"})
+Recipe2("book_fish",					{Ingredient("papyrus", 2), Ingredient("oceanfishingbobber_ball", 2)},								TECH.NONE,				{builder_tag="bookbuilder"})
+Recipe2("book_bees", 					{Ingredient("papyrus", 2), Ingredient("stinger", 8), Ingredient("honey", 4)}, 						TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
 
-Recipe2("book_sleep",		 	 {Ingredient("papyrus", 2), Ingredient("nightmarefuel", 2)},  TECH.MAGIC_TWO,	  {builder_tag="bookbuilder"})
-Recipe2("book_brimstone",	 	 {Ingredient("papyrus", 2), Ingredient("redgem", 1)},		  TECH.MAGIC_THREE,   {builder_tag="bookbuilder"})
-Recipe2("book_fire",			 {Ingredient("book_brimstone", 1), Ingredient("featherpencil", 1), Ingredient("papyrus", 2)}, TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
+Recipe2("book_sleep",		 			{Ingredient("papyrus", 2), Ingredient("nightmarefuel", 2)},											TECH.MAGIC_TWO,			{builder_tag="bookbuilder"})
+Recipe2("book_brimstone",	 			{Ingredient("papyrus", 2), Ingredient("redgem", 1)},												TECH.MAGIC_THREE,		{builder_tag="bookbuilder"})
+Recipe2("book_fire",					{Ingredient("book_brimstone", 1), Ingredient("featherpencil", 1), Ingredient("papyrus", 2)},		TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
 
-Recipe2("book_tentacles",	 	 {Ingredient("papyrus", 2), Ingredient("tentaclespots", 1)}, TECH.SCIENCE_THREE, {builder_tag="bookbuilder"})
-Recipe2("book_web", 			 {Ingredient("papyrus", 2), Ingredient("silk", 8)},  		 TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
+Recipe2("book_tentacles",	 			{Ingredient("papyrus", 2), Ingredient("tentaclespots", 1)},											TECH.SCIENCE_THREE,		{builder_tag="bookbuilder"})
+Recipe2("book_web", 					{Ingredient("papyrus", 2), Ingredient("silk", 8)},  												TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
 
-Recipe2("book_moon", 			 {Ingredient("papyrus", 2),    Ingredient("opalpreciousgem", 1), Ingredient("moonbutterflywings", 2) }, TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
-Recipe2("book_light",			 {Ingredient("papyrus", 2),    Ingredient("lightbulb", 2) },   											TECH.NONE, 	  	  	{builder_tag="bookbuilder"})
-Recipe2("book_light_upgraded",	 {Ingredient("book_light", 1), Ingredient("featherpencil", 1),   Ingredient("papyrus", 2)}, 	  		TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
-Recipe2("book_rain", 			 {Ingredient("papyrus", 2),    Ingredient("goose_feather", 2)}, 		TECH.NONE, 	  	  	{builder_tag="bookbuilder"})
-Recipe2("book_temperature", 	 {Ingredient("papyrus", 2),    Ingredient("heatrock", 1)}, 							 	      			TECH.BOOKCRAFT_ONE, {builder_tag="bookbuilder"})
+Recipe2("book_moon", 					{Ingredient("papyrus", 2), Ingredient("opalpreciousgem", 1), Ingredient("moonbutterflywings", 2)},	TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
+Recipe2("book_light",					{Ingredient("papyrus", 2), Ingredient("lightbulb", 2) },   											TECH.NONE, 	  	  		{builder_tag="bookbuilder"})
+Recipe2("book_light_upgraded",			{Ingredient("book_light", 1), Ingredient("featherpencil", 1),   Ingredient("papyrus", 2)}, 	  		TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
+Recipe2("book_rain", 					{Ingredient("papyrus", 2), Ingredient("goose_feather", 2)}, 										TECH.NONE, 	  	  		{builder_tag="bookbuilder"})
+Recipe2("book_temperature", 			{Ingredient("papyrus", 2), Ingredient("heatrock", 1)}, 							 	      			TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
 
 -- Maxwell
 Recipe2("waxwelljournal",				{Ingredient("papyrus", 2), Ingredient("nightmarefuel", 2), Ingredient(CHARACTER_INGREDIENT.HEALTH, 50)},													TECH.NONE,			{builder_tag="shadowmagic"})
@@ -236,6 +236,7 @@ Recipe2("goldenshovel",						{Ingredient("twigs", 4),Ingredient("goldnugget", 2)
 Recipe2("bugnet",							{Ingredient("twigs", 4), Ingredient("silk", 2), Ingredient("rope", 1)},							TECH.SCIENCE_ONE)
 Recipe2("hammer",							{Ingredient("twigs", 3),Ingredient("rocks", 3), Ingredient("cutgrass", 6)},						TECH.NONE)
 Recipe2("pitchfork",						{Ingredient("twigs", 2),Ingredient("flint", 2)},												TECH.SCIENCE_ONE)
+Recipe2("goldenpitchfork",					{Ingredient("twigs", 4),Ingredient("goldnugget", 2)},											TECH.SCIENCE_TWO)
 Recipe2("razor",							{Ingredient("twigs", 2), Ingredient("flint", 2)},												TECH.SCIENCE_ONE)
 Recipe2("miniflare",						{Ingredient("twigs", 1), Ingredient("cutgrass", 1), Ingredient("nitre", 1)},					TECH.NONE)
 Recipe2("megaflare",						{Ingredient("miniflare", 3), Ingredient("glommerfuel", 1)},										TECH.NONE)
@@ -406,8 +407,10 @@ Recipe2("pighouse",							{Ingredient("boards", 4), Ingredient("cutstone", 3), I
 Recipe2("rabbithouse",						{Ingredient("boards", 4), Ingredient("carrot", 10), Ingredient("manrabbit_tail", 4)},					TECH.SCIENCE_TWO,			{placer="rabbithouse_placer"})
 Recipe2("saltlick",							{Ingredient("boards", 2), Ingredient("nitre", 4)},  													TECH.SCIENCE_TWO,			{placer="saltlick_placer"})
 Recipe2("townportal",						{Ingredient("orangemooneye", 1), Ingredient("townportaltalisman", 1), Ingredient("cutstone", 3)},		TECH.LOST,		 			{placer="townportal_placer"})
+Recipe2("antlionhat",						{Ingredient("beefalowool", 5), Ingredient("pigskin", 3), Ingredient("townportaltalisman", 1)},			TECH.LOST)
 
 Recipe2("scarecrow",						{Ingredient("pumpkin", 1), Ingredient("boards", 3), Ingredient("cutgrass", 3)},							TECH.SCIENCE_ONE,			{placer="scarecrow_placer", min_spacing=1.5})
+Recipe2("sewing_mannequin",					{Ingredient("silk", 2), Ingredient("boards", 2), Ingredient("cutgrass", 3)},							TECH.SCIENCE_ONE,			{placer="sewing_mannequin_placer", min_spacing=1.5})
 Recipe2("endtable",							{Ingredient("marble", 2), Ingredient("boards", 2), Ingredient("turf_carpetfloor", 2)},					TECH.LOST,					{placer="endtable_placer", min_spacing=1.5})
 
 Recipe2("moon_device_construction1",		{Ingredient("moonstorm_static_item", 1),Ingredient("moonstorm_spark", 5),Ingredient("transistor", 2)}, TECH.LOST,				{placer="moon_device_construction1_placer", min_spacing=0, no_deconstruction=true})
@@ -430,7 +433,7 @@ Recipe2("anchor_item", 						{Ingredient("boards", 2), Ingredient("rope", 3), In
 Recipe2("mast_item", 						{Ingredient("boards", 3), Ingredient("rope", 3), Ingredient("silk", 8)}, 								TECH.SEAFARING_ONE)
 Recipe2("mast_malbatross_item",				{Ingredient("driftwood_log", 3), Ingredient("rope", 3), Ingredient("malbatross_feathered_weave", 4)},	TECH.SEAFARING_ONE)
 Recipe2("steeringwheel_item",				{Ingredient("boards", 2), Ingredient("rope", 1)}, 														TECH.SEAFARING_ONE)
-Recipe2("fish_box",							{Ingredient("cutstone", 1), Ingredient("rope", 3)}, 													TECH.SEAFARING_ONE,			{placer="fish_box_placer", min_spacing=1.5, testfn=function(pt) return TheWorld.Map:GetPlatformAtPoint(pt.x, 0, pt.z, -0.5) ~= nil end})
+Recipe2("fish_box",							{Ingredient("cutstone", 1), Ingredient("rope", 3)}, 													TECH.SEAFARING_ONE,			{placer="fish_box_placer", min_spacing=1.5, testfn=function(pt) return TheWorld.Map:GetPlatformAtPoint(pt.x, 0, pt.z, -0.5) ~= nil or TheWorld.Map:IsDockAtPoint(pt.x, 0, pt.z) end})
 Recipe2("winch",							{Ingredient("boards", 2), Ingredient("cutstone", 1), Ingredient("rope", 2)},							TECH.LOST,					{placer="winch_placer", min_spacing=1.5})
 Recipe2("mastupgrade_lamp_item",			{Ingredient("boards", 1), Ingredient("rope", 2), Ingredient("flint", 4)},								TECH.SEAFARING_ONE)
 Recipe2("mastupgrade_lightningrod_item",	{Ingredient("goldnugget", 5)},																			TECH.SEAFARING_ONE)
@@ -503,6 +506,12 @@ Recipe2("turf_woodfloor",					{Ingredient("boards", 1)},																				TECH
 Recipe2("turf_checkerfloor",				{Ingredient("marble", 1)},																				TECH.SCIENCE_TWO,			{numtogive=4})
 Recipe2("turf_carpetfloor",					{Ingredient("boards", 1), Ingredient("beefalowool", 1)},												TECH.SCIENCE_TWO,			{numtogive=4})
 Recipe2("turf_dragonfly",					{Ingredient("dragon_scales", 1), Ingredient("cutstone", 1)},											TECH.SCIENCE_TWO,			{numtogive=4})
+
+Recipe2("turf_carpetfloor2",				{Ingredient("boards", 1), Ingredient("beefalowool", 1)},												TECH.SCIENCE_TWO,			{numtogive=4})
+Recipe2("turf_mosaic_grey",					{Ingredient("marble", 1)},																				TECH.SCIENCE_TWO,			{numtogive=4})
+Recipe2("turf_mosaic_red",					{Ingredient("marble", 1)},																				TECH.SCIENCE_TWO,			{numtogive=4})
+Recipe2("turf_mosaic_blue",					{Ingredient("marble", 1)},																				TECH.SCIENCE_TWO,			{numtogive=4})
+
 Recipe2("turf_shellbeach",					{Ingredient("rocks", 1), Ingredient("slurtle_shellpieces", 1)},											TECH.LOST,					{numtogive=4})
 
 Recipe2("turf_forest",						{Ingredient("twigs", 1), Ingredient("pinecone", 1)},													TECH.TURFCRAFTING_TWO,		{numtogive=4})
@@ -520,6 +529,15 @@ Recipe2("turf_fungus",						{Ingredient("cutlichen", 1), Ingredient("spore_tall"
 Recipe2("turf_fungus_red",					{Ingredient("cutlichen", 1), Ingredient("spore_medium", 1)},											TECH.TURFCRAFTING_TWO,		{numtogive=4})
 Recipe2("turf_fungus_green",				{Ingredient("cutlichen", 1), Ingredient("spore_small", 1)},												TECH.TURFCRAFTING_TWO,		{numtogive=4})
 Recipe2("turf_marsh",						{Ingredient("cutreeds", 1), Ingredient("spoiled_food", 2)},												TECH.MASHTURFCRAFTING_TWO,	{numtogive=4})
+
+Recipe2("turf_archive",						{Ingredient("moonrocknugget", 1), Ingredient("thulecite_pieces", 1)},									TECH.LOST,					{numtogive=4})
+
+Recipe2("turf_ruinsbrick",					{Ingredient("rocks", 2), Ingredient("nightmarefuel", 1)},												TECH.LOST,					{numtogive=4})
+Recipe2("turf_ruinsbrick_glow",				{Ingredient("rocks", 2)},																				TECH.LOST,					{numtogive=4})
+Recipe2("turf_ruinstiles",					{Ingredient("rocks", 2), Ingredient("nightmarefuel", 1)},												TECH.LOST,					{numtogive=4})
+Recipe2("turf_ruinstiles_glow",				{Ingredient("rocks", 2)},																				TECH.LOST,					{numtogive=4})
+Recipe2("turf_ruinstrim",					{Ingredient("rocks", 2), Ingredient("nightmarefuel", 1)},												TECH.LOST,					{numtogive=4})
+Recipe2("turf_ruinstrim_glow",				{Ingredient("rocks", 2)},																				TECH.LOST,					{numtogive=4})
 
 Recipe2("pottedfern",						{Ingredient("foliage", 2), Ingredient("slurtle_shellpieces", 1)},										TECH.SCIENCE_TWO,			{placer="pottedfern_placer", min_spacing=0.9})
 Recipe2("succulent_potted",					{Ingredient("succulent_picked", 2), Ingredient("cutstone", 1)},											TECH.SCIENCE_TWO,			{placer="succulent_potted_placer", min_spacing=0.9})
@@ -567,6 +585,8 @@ Recipe2("ruinshat",							{Ingredient("thulecite", 4), Ingredient("nightmarefuel
 Recipe2("armorruins",						{Ingredient("thulecite", 6), Ingredient("nightmarefuel", 4)},											TECH.ANCIENT_FOUR,			{nounlock=true})
 Recipe2("ruins_bat",						{Ingredient("livinglog", 3), Ingredient("thulecite", 4), Ingredient("nightmarefuel", 4)},				TECH.ANCIENT_FOUR,			{nounlock=true})
 Recipe2("eyeturret_item",					{Ingredient("deerclops_eyeball", 1), Ingredient("minotaurhorn", 1), Ingredient("thulecite", 5)}, 		TECH.ANCIENT_FOUR,			{nounlock=true})
+Recipe2("blueprint_craftingset_ruins_builder",		{Ingredient("papyrus", 3)},																		TECH.ANCIENT_TWO,			{nounlock=true})
+Recipe2("blueprint_craftingset_ruinsglow_builder",	{Ingredient("papyrus", 3)},																		TECH.ANCIENT_TWO,			{nounlock=true})
 
 -- CARTOGRAPHY
 Recipe2("mapscroll",						{Ingredient("featherpencil", 1), Ingredient("papyrus", 1)}, 											TECH.CARTOGRAPHY_TWO,		{nounlock=true, actionstr="CARTOGRAPHY"})
@@ -833,9 +853,9 @@ CONSTRUCTION_PLANS =
 {
     ["multiplayer_portal_moonrock_constr"] = { Ingredient("purplemooneye", 1), Ingredient("moonrocknugget", 20) },
 	["mermthrone_construction"]   = { Ingredient("kelp", 20), Ingredient("pigskin", 10), Ingredient("beefalowool", 15) },
-	["hermithouse_construction1"] = { Ingredient("cookiecuttershell", 10), Ingredient("boards", 10) },
-	["hermithouse_construction2"] = { Ingredient("marble", 10), Ingredient("rope", 10) },
-	["hermithouse_construction3"] = { Ingredient("moonrocknugget", 5),   Ingredient("cactus_flower", 10) },
+	["hermithouse_construction1"] = { Ingredient("cookiecuttershell", 10), Ingredient("boards", 10), Ingredient("fireflies", 1) },
+	["hermithouse_construction2"] = { Ingredient("marble", 10), Ingredient("cutstone", 5), Ingredient("lightbulb", 3) },
+	["hermithouse_construction3"] = { Ingredient("moonrocknugget", 10), Ingredient("rope", 5), Ingredient("turf_carpetfloor", 5) },
 
 	["moon_device_construction1"] = { Ingredient("moonstorm_static_item", 1), Ingredient("moonstorm_spark", 10), Ingredient("moonglass_charged", 10) },
 	["moon_device_construction2"] = { Ingredient("moonstorm_static_item", 1), Ingredient("moonglass_charged", 20), Ingredient("moonrockseed", 1) },

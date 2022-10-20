@@ -545,6 +545,12 @@ CommonHandlers.OnHop = function()
         end)
 end
 
+local function DoHopLandSound(inst, land_sound)
+	if inst:GetCurrentPlatform() ~= nil then
+		inst.SoundEmitter:PlaySound(land_sound, nil, nil, true)
+	end
+end
+
 CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, land_sound, landed_in_water_state, data)
 	anims = anims or {}
     timelines = timelines or {}
@@ -552,7 +558,7 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
 
     table.insert(states, State{
         name = "hop_pre",
-        tags = { "doing", "nointerrupt", "busy", "jumping", "autopredict", "nomorph", "nosleep" },
+        tags = { "doing", "nointerrupt", "busy", "boathopping", "jumping", "autopredict", "nomorph", "nosleep" },
 
         onenter = function(inst)
             local embark_x, embark_z = inst.components.embarker:GetEmbarkPosition()
@@ -605,7 +611,7 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
 
     table.insert(states, State{
         name = "hop_loop",
-        tags = { "doing", "nointerrupt", "busy", "jumping", "autopredict", "nomorph", "nosleep" },
+        tags = { "doing", "nointerrupt", "busy", "boathopping", "jumping", "autopredict", "nomorph", "nosleep" },
 
         onenter = function(inst, data)
 			inst.sg.statemem.queued_post_land_state = data ~= nil and data.queued_post_land_state or nil
@@ -640,7 +646,6 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
 	            inst.components.embarker:Cancel()
 			end
 
-			inst:RemoveTag("busy")
 			if inst.components.locomotor.isrunning then
                 inst:PushEvent("locomote")
 			end
@@ -649,13 +654,12 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
 
     table.insert(states, State{
         name = "hop_pst",
-        tags = { "doing", "nointerrupt", "jumping", "autopredict", "nomorph", "nosleep" },
+        tags = { "doing", "nointerrupt", "boathopping", "jumping", "autopredict", "nomorph", "nosleep" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation(FunctionOrValue(anims.pst, inst) or "jump_pst", false)
 
             inst.components.embarker:Embark()
-			inst:RemoveTag("busy")
 
             local nextstate = "hop_pst_complete"
 			if data ~= nil then
@@ -689,9 +693,10 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
 
 		onexit = function(inst)
 			-- here for now, should be moved into timeline
-            if land_sound and inst:GetCurrentPlatform() then
-	            --For now we just have the land on boat sound
-                inst.SoundEmitter:PlaySound(land_sound)
+			if land_sound ~= nil then
+				--For now we just have the land on boat sound
+				--Delay since inst:GetCurrentPlatform() may not be updated yet
+				inst:DoTaskInTime(0, DoHopLandSound, land_sound)
             end
 		end
     })

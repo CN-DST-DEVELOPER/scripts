@@ -25,8 +25,7 @@ local assets =
     Asset("PKGREF", "images/names_gold_cn_random.tex"),
 
     -- Asset("ANIM", "anim/portrait_frame.zip"), -- Not currently used, but likely to come back
-    Asset("ANIM", "anim/spiral_bg.zip"),
-
+    
     Asset("ANIM", "anim/frames_comp.zip"),
 
     Asset("ANIM", "anim/frozen.zip"),
@@ -56,6 +55,7 @@ end
 local prefabs =
 {
     "sounddebugicon",
+    "entityproxy",
 
     "minimap",
     "evergreen",
@@ -241,6 +241,8 @@ local prefabs =
 	"kitcoon_desert",
 	"kitcoon_moon",
 	"kitcoon_yot",
+
+	"cookingrecipecard",
 
     -- Pirates
     "monkeyhut",
@@ -456,6 +458,8 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
                 layer_properties.neighbor_needs_falloff_result
             )
         end
+
+        inst:AddComponent("worldsettings")
 
         --Initialize lua world state
         inst:AddComponent("worldstate")

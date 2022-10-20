@@ -18,12 +18,13 @@ local function AllowSkins()
     return TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode()
 end
 
-local LoadoutSelect = Class(Widget, function(self, user_profile, character, initial_skintype, hide_item_skinner, monkey_curse)
+local LoadoutSelect = Class(Widget, function(self, user_profile, character, initial_skintype, hide_item_skinner, monkey_curse, is_scarecrow, initial_skins)
     Widget._ctor(self, "LoadoutSelect")
     self.user_profile = user_profile
 
     self.currentcharacter = character
     self.monkey_curse = monkey_curse
+    self.is_scarecrow = is_scarecrow
 
     self.show_puppet = self.currentcharacter ~= "random"
     self.have_base_option = table.contains(DST_CHARACTERLIST, self.currentcharacter)
@@ -72,11 +73,10 @@ local LoadoutSelect = Class(Widget, function(self, user_profile, character, init
         self.heroportrait:Show()
     end
 
-    self:_LoadSavedSkins()
+    self:_LoadSavedSkins(initial_skins)
 
-
-	if IsPrefabSkinned(self.currentcharacter) then
-		self.skinmodes = GetSkinModes(self.currentcharacter)
+    if IsPrefabSkinned(self.currentcharacter) then
+        self.skinmodes = GetSkinModes(self.currentcharacter)
     else
         self.skinmodes = {}
         table.insert(self.skinmodes, GetSkinModes("default")[1])
@@ -195,7 +195,7 @@ local LoadoutSelect = Class(Widget, function(self, user_profile, character, init
     end
 
     if not TheInput:ControllerAttached() then
-        if self.show_puppet then
+        if self.show_puppet and #self.skinmodes > 1 then
             self.portraitbutton = self.loadout_root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "player_info.tex", STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW, false, false, function()
 			        self:_CycleView()
 		        end
@@ -401,9 +401,9 @@ function LoadoutSelect:ApplySkinPresets(skins)
     self:_RefreshAfterSkinsLoad()
 end
 
-function LoadoutSelect:_LoadSavedSkins()
+function LoadoutSelect:_LoadSavedSkins(initial_skins)
     if AllowSkins() then
-        self.selected_skins = self.user_profile:GetSkinsForCharacter(self.currentcharacter)
+        self.selected_skins = initial_skins or self.user_profile:GetSkinsForCharacter(self.currentcharacter)
     else
         self.selected_skins = { base = self.currentcharacter.."_none" }
     end
@@ -450,6 +450,9 @@ function LoadoutSelect:_ApplySkins(skins, skip_change_emote)
     self:_SetPortrait()
     if self.show_puppet then
 		self.puppet:SetSkins(self.currentcharacter, skins.base, skins, skip_change_emote, self.selected_skinmode, self.monkey_curse)
+        if self.puppet.scarecrow_pose == "pose2" or self.puppet.scarecrow_pose == "pose5" then
+            self.puppet_root:SetPosition(-135, -30)
+        end
     end
 end
 
@@ -492,6 +495,13 @@ function LoadoutSelect:_UpdateMenu(skins)
 end
 
 function LoadoutSelect:_SetPortrait()
+    if self.is_scarecrow then
+        self.heroname:Hide()
+        self.heroportrait:Hide()
+        self.characterquote:SetString("")
+        return
+    end
+
 	local herocharacter = self.currentcharacter
 	local skin = self.preview_skins.base
 
@@ -516,7 +526,7 @@ function LoadoutSelect:OnControl(control, down)
 
     if not down then
         if control == CONTROL_MENU_MISC_3 then
-            if self.show_puppet then
+            if self.show_puppet and #self.skinmodes > 1 then
                 self:_CycleView()
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 return true
@@ -544,7 +554,7 @@ function LoadoutSelect:GetHelpText()
 		local controller_id = TheInput:GetControllerID()
 		local t = {}
 
-        if self.show_puppet then
+        if self.show_puppet and #self.skinmodes > 1 then
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_3) .. " " .. STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW)
         end
         table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)

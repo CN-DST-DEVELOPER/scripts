@@ -312,6 +312,7 @@ ACTIONS =
     CATPLAYGROUND = Action({ rmb=false, distance=1 }),
     CATPLAYAIR = Action({ rmb=false, distance=2 }),
     FAN = Action({ rmb=true, mount_valid=true }),
+    ERASE_PAPER = Action({ rmb=true, mount_valid=true }),
     DRAW = Action(),
     BUNDLE = Action({ rmb=true, priority=2 }),
     BUNDLESTORE = Action({ instant=true }),
@@ -331,6 +332,7 @@ ACTIONS =
     CASTUNSUMMON = Action({ mount_valid=true, distance=math.huge }),
 	COMMUNEWITHSUMMONED = Action({ rmb=true, mount_valid=true }),
     TELLSTORY = Action({ rmb=true, distance=3 }),
+    PERFORM = Action({ rmb=true, distance=1.5, invalid_hold_action=true }),
 
     TOSS = Action({priority=1, rmb=true, distance=8, mount_valid=true }),
     NUZZLE = Action(),
@@ -734,7 +736,7 @@ ACTIONS.RUMMAGE.fn = function(act)
                 end
             end
             --Silent fail for opening containers in the dark
-            if CanEntitySeeTarget(act.doer, targ) then
+            if owner == act.doer or CanEntitySeeTarget(act.doer, targ) then
                 act.doer:PushEvent("opencontainer", { container = targ })
                 targ.components.container:Open(act.doer)
             end
@@ -1030,6 +1032,13 @@ ACTIONS.TELLSTORY.fn = function(act)
 	if act.doer.components.storyteller ~= nil then
 		return act.doer.components.storyteller:TellStory(act.target or act.invobject)
 	end
+end
+
+ACTIONS.PERFORM.fn = function(act)
+    if (act.doer ~= nil and act.doer.components.stageactor ~= nil)
+            and (act.target ~= nil and act.target.components.stageactingprop ~= nil) then
+        return act.target.components.stageactingprop:DoPerformance(act.doer)
+    end
 end
 
 ACTIONS.BAIT.fn = function(act)
@@ -1570,8 +1579,10 @@ end
 
 ACTIONS.GIVE.fn = function(act)
     if act.target ~= nil then
-
-        if act.target.components.ghostlyelixirable ~= nil and act.invobject.components.ghostlyelixir ~= nil then
+        if act.target:HasTag("playbill_lecturn") and act.invobject.components.playbill then
+            act.target.components.playbill_lecturn:SwapPlayBill(act.invobject, act.doer)
+            return true
+        elseif act.target.components.ghostlyelixirable ~= nil and act.invobject.components.ghostlyelixir ~= nil then
             return act.invobject.components.ghostlyelixir:Apply(act.doer, act.target)
         elseif act.target.components.trader ~= nil then
             local able, reason = act.target.components.trader:AbleToAccept(act.invobject, act.doer)
@@ -1846,7 +1857,7 @@ ACTIONS.LIGHT.fn = function(act)
         if act.doer ~= nil then
             act.doer:PushEvent("onstartedfire", { target = act.target })
         end
-        act.invobject.components.lighter:Light(act.target)
+        act.invobject.components.lighter:Light(act.target, act.doer)
         return true
     end
 end
@@ -2545,18 +2556,18 @@ end
 ACTIONS.MAKEMOLEHILL.fn = function(act)
     if act.doer then
         if act.doer.prefab == "mole" then
-        local molehill = SpawnPrefab("molehill")
-        molehill.Transform:SetPosition(act.doer.Transform:GetWorldPosition())
-        molehill:AdoptChild(act.doer)
-        act.doer.needs_home_time = nil
-        return true
+			local molehill = SpawnPrefab("molehill")
+			molehill.Transform:SetPosition(act.doer.Transform:GetWorldPosition())
+			molehill:AdoptChild(act.doer)
+			act.doer.needs_home_time = nil
+			return true
         elseif act.doer.prefab == "molebat" then
             local molebathill = SpawnPrefab("molebathill")
             molebathill.Transform:SetPosition(act.doer.Transform:GetWorldPosition())
             molebathill:AdoptChild(act.doer)
             return true
-    end
-end
+		end
+	end
 end
 
 ACTIONS.MOLEPEEK.fn = function(act)
@@ -2713,6 +2724,18 @@ ACTIONS.CATPLAYAIR.fn = function(act)
         end
         act.doer.last_play_air_time = GetTime()
         return true
+    end
+end
+
+ACTIONS.ERASE_PAPER.fn = function(act)
+    if act.invobject and act.target
+        and act.invobject.components.erasablepaper
+		and act.target.components.papereraser
+		and not act.target:HasTag("fire")
+        and not act.target:HasTag("burnt")
+		then
+		
+        return act.target.components.papereraser:DoErase(act.invobject, act.doer)
     end
 end
 
@@ -3188,7 +3211,7 @@ end
 ACTIONS.HALLOWEENMOONMUTATE.fn = function(act)
 	if act.invobject ~= nil and act.invobject.components.halloweenpotionmoon ~= nil then
 		if act.target == nil
-			or (not act.target:HasTag("flying") and not TheWorld.Map:IsPassableAtPoint(act.target.Transform:GetWorldPosition()))
+			--or (not act.target:HasTag("flying") and not TheWorld.Map:IsPassableAtPoint(act.target.Transform:GetWorldPosition()))
 			or (act.target.components.burnable ~= nil and (act.target.components.burnable:IsBurning() or act.target.components.burnable:IsSmoldering()))
 			or (act.target.components.freezable ~= nil and act.target.components.freezable:IsFrozen()) then
 

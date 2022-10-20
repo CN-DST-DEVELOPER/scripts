@@ -46,6 +46,12 @@ local function onunequip(inst, owner)
     end
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.components.container ~= nil then
+        inst.components.container:Close()
+    end
+end
+
 local function GetTackle(inst)
 	return (inst.components.oceanfishingrod ~= nil and inst.components.container ~= nil) and
 		{
@@ -167,6 +173,7 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     MakeHauntableLaunch(inst)
 

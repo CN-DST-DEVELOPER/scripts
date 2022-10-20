@@ -5,19 +5,7 @@ local Text = require "widgets/text"
 local TEMPLATES = require "widgets/redux/templates"
 local ManageServerSlotScreen = require "screens/redux/manageserverslotscreen"
 
-local intention_images = {
-    [INTENTIONS.SOCIAL] = "playstyle_social.tex",
-    [INTENTIONS.COOPERATIVE] = "playstyle_coop.tex",
-    [INTENTIONS.COMPETITIVE] = "playstyle_competitive.tex",
-    [INTENTIONS.MADNESS] = "playstyle_madness.tex",
-}
-
-local intention_options = {
-    [INTENTIONS.SOCIAL] = STRINGS.UI.INTENTION.SOCIAL,
-    [INTENTIONS.COOPERATIVE] = STRINGS.UI.INTENTION.COOPERATIVE,
-    [INTENTIONS.COMPETITIVE] = STRINGS.UI.INTENTION.COMPETITIVE,
-    [INTENTIONS.MADNESS] = STRINGS.UI.INTENTION.MADNESS,
-}
+local Levels = require("map/levels")
 
 local privacy_images = {
     [PRIVACY_TYPE.PUBLIC] = "public.tex",
@@ -106,10 +94,10 @@ local ServerSaveSlot = Class(Widget, function(self, serverslotscreen, isservercr
     self.privacy.bg:SetScale(1)
     self.privacy.img:SetScale(setting_image_s)
 
-    self.intention = self.root:AddChild(TEMPLATES.ServerDetailIcon(servericons_atlas, intention_images[INTENTIONS.SOCIAL], "brown", intention_options[INTENTIONS.SOCIAL]))
-    self.intention:SetScale(setting_icon_s)
-    self.intention.bg:SetScale(1)
-    self.intention.img:SetScale(setting_image_s)
+    self.playstyle = self.root:AddChild(TEMPLATES.ServerDetailIcon(nil, nil, "brown", "."))
+    self.playstyle:SetScale(setting_icon_s)
+    self.playstyle.bg:SetScale(1)
+    self.playstyle.img:SetScale(setting_image_s)
 
     self.pvp = self.root:AddChild(TEMPLATES.ServerDetailIcon(servericons_atlas, "pvp.tex", "brown", STRINGS.UI.SERVERLISTINGSCREEN.PVP_ICON_HOVER))
     self.pvp:SetScale(setting_icon_s)
@@ -149,7 +137,7 @@ end)
 
 function ServerSaveSlot:HideHoverText()
     self.privacy:OnLoseFocus()
-    self.intention:OnLoseFocus()
+    self.playstyle:OnLoseFocus()
     self.pvp:OnLoseFocus()
     self.mods:OnLoseFocus()
     self.cloud:OnLoseFocus()
@@ -237,10 +225,16 @@ function ServerSaveSlot:SetSaveSlot(slot, server_data)
         self.pvp:Hide()
     end
 
-    self.intention.img:SetTexture(servericons_atlas, intention_images[server_data.intention or INTENTIONS.SOCIAL])
-    self.intention:SetHoverText(intention_options[server_data.intention or INTENTIONS.SOCIAL])
-    self.intention:SetPosition(setting_icon_x, setting_icon_y)
-    setting_icon_x = setting_icon_x - 28
+	local playstyle_def = server_data.playstyle ~= nil and Levels.GetPlaystyleDef(server_data.playstyle) or nil
+	if playstyle_def ~= nil then
+		self.playstyle:Show()
+		self.playstyle.img:SetTexture(playstyle_def.smallimage.atlas,  playstyle_def.smallimage.icon)
+		self.playstyle:SetHoverText(playstyle_def.name)
+		self.playstyle:SetPosition(setting_icon_x, setting_icon_y)
+	    setting_icon_x = setting_icon_x - 28
+	else
+		self.playstyle:Hide()
+	end
 
     self.privacy.img:SetTexture(servericons_atlas, privacy_images[server_data.privacy_type or PRIVACY_TYPE.PUBLIC])
     self.privacy:SetHoverText(privacy_options[server_data.privacy_type or PRIVACY_TYPE.PUBLIC])

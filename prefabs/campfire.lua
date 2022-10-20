@@ -10,6 +10,7 @@ local prefabs =
     "campfirefire",
     "collapse_small",
     "ash",
+	"charcoal",
 }
 
 local function onhammered(inst, worker)
@@ -48,7 +49,12 @@ local function onfuelchange(newsection, oldsection, inst)
         inst.AnimState:PlayAnimation("dead")
         RemovePhysicsColliders(inst)
 
-        SpawnPrefab("ash").Transform:SetPosition(inst.Transform:GetWorldPosition())
+		if inst.queued_charcoal then
+			SpawnPrefab("charcoal").Transform:SetPosition(inst.Transform:GetWorldPosition())
+			inst.queued_charcoal = nil
+		else
+			SpawnPrefab("ash").Transform:SetPosition(inst.Transform:GetWorldPosition())
+		end
 
         inst.components.fueled.accepting = false
         inst:RemoveComponent("cooker")
@@ -66,6 +72,10 @@ local function onfuelchange(newsection, oldsection, inst)
 
         inst.components.propagator.propagaterange = PROPAGATE_RANGES[newsection]
         inst.components.propagator.heatoutput = HEAT_OUTPUTS[newsection]
+
+		if newsection == inst.components.fueled.sections then
+			inst.queued_charcoal = not inst.disable_charcoal
+		end
     end
 end
 
@@ -96,6 +106,12 @@ local function OnHaunt(inst)
         return true
     end
     return false
+end
+
+local function OnInit(inst)
+    if inst.components.burnable ~= nil then
+        inst.components.burnable:FixFX()
+    end
 end
 
 local function fn()
@@ -174,6 +190,11 @@ local function fn()
     inst.components.hauntable.cooldown = TUNING.HAUNT_COOLDOWN_HUGE
     inst.components.hauntable:SetOnHauntFn(OnHaunt)
 
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
+
+    inst:DoTaskInTime(0, OnInit)
+
     return inst
 end
 
@@ -187,6 +208,8 @@ local function quagmire_fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.disable_charcoal = true
 
     event_server_data("quagmire", "prefabs/campfire").master_postinit(inst, SECTION_STATUS, updatefuelrate)
 

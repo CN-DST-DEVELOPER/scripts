@@ -73,9 +73,9 @@ function Map:IsOceanTileAtPoint(x, y, z)
 end
 
 function Map:IsOceanAtPoint(x, y, z, allow_boats)
-    return TheWorld.Map:IsOceanTileAtPoint(x, y, z)                             -- Location is in the ocean tile range
-        and not TheWorld.Map:IsVisualGroundAtPoint(x, y, z)                     -- Location is NOT in the world overhang space
-        and (allow_boats or TheWorld.Map:GetPlatformAtPoint(x, z) == nil)		-- The location either accepts boats, or is not the location of a boat
+    return self:IsOceanTileAtPoint(x, y, z)                             -- Location is in the ocean tile range
+        and not self:IsVisualGroundAtPoint(x, y, z)                     -- Location is NOT in the world overhang space
+        and (allow_boats or self:GetPlatformAtPoint(x, z) == nil)		-- The location either accepts boats, or is not the location of a boat
 end
 
 function Map:IsValidTileAtPoint(x, y, z)
@@ -338,6 +338,11 @@ function Map:CanDeployDockAtPoint(pt, inst, mouseover)
         and self:IsDeployPointClear(pt, nil, min_distance_from_entities, nil, IsDockNearOtherOnOcean)
 end
 
+function Map:IsDockAtPoint(x, y, z)
+    local tile = self:GetTileAtPoint(x, y, z)
+    return tile == WORLD_TILES.MONKEY_DOCK
+end
+
 
 function Map:CanDeployBoatAtPointInWater(pt, inst, mouseover, data)
     local tile = self:GetTileAtPoint(pt.x, pt.y, pt.z)
@@ -384,7 +389,7 @@ function Map:CanDeployRecipeAtPoint(pt, recipe, rot)
         local pt_x, pt_y, pt_z = pt:Get()
         is_valid_ground = not self:IsPassableAtPoint(pt_x, pt_y, pt_z)
         if is_valid_ground then
-            is_valid_ground = TheWorld.Map:IsSurroundedByWater(pt_x, pt_y, pt_z, 5)
+            is_valid_ground = self:IsSurroundedByWater(pt_x, pt_y, pt_z, 5)
         end
     else
         local pt_x, pt_y, pt_z = pt:Get()
@@ -432,7 +437,6 @@ end
 
 function Map:GetNearestPointOnWater(x, z, radius, iterations)
     local test_increment = radius / iterations
-    local map = TheWorld.Map
 
     for i=1,iterations do
         local test_x, test_z = 0,0
@@ -490,7 +494,7 @@ function Map:GetPlatformAtPoint(pos_x, pos_y, pos_z, extra_radius)
 end
 
 function Map:FindRandomPointInOcean(max_tries)
-	local w, h = TheWorld.Map:GetSize()
+	local w, h = self:GetSize()
 	w = (w - w/2) * TILE_SCALE
 	h = (h - h/2) * TILE_SCALE
 	while (max_tries > 0) do
@@ -504,13 +508,13 @@ end
 
 function Map:FindNodeAtPoint(x, y, z)
 	-- Note: If you care about the tile overlap then use FindVisualNodeAtPoint
-	local node_index = TheWorld.Map:GetNodeIdAtPoint(x, y, z)
+	local node_index = self:GetNodeIdAtPoint(x, y, z)
 	return TheWorld.topology.nodes[node_index], node_index
 end
 
 function Map:NodeAtPointHasTag(x, y, z, tag)
 	-- Note: If you care about the tile overlap then use FindVisualNodeAtPoint
-	local node_index = TheWorld.Map:GetNodeIdAtPoint(x, y, z)
+	local node_index = self:GetNodeIdAtPoint(x, y, z)
 	local node = TheWorld.topology.nodes[node_index]
 	return node ~= nil and node.tags ~= nil and table.contains(node.tags, tag)
 end

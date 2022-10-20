@@ -74,6 +74,17 @@ local function onunequip(inst,owner)
     owner.SoundEmitter:PlaySound("dontstarve/wilson/lighter_off")
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.fires ~= nil then
+        for i, fx in ipairs(inst.fires) do
+            fx:Remove()
+        end
+        inst.fires = nil
+    end
+
+    inst.components.burnable:Extinguish()
+end
+
 local function onpocket(inst, owner)
     inst.components.burnable:Extinguish()
 end
@@ -200,6 +211,7 @@ local function fn()
     inst.components.equippable:SetOnPocket(onpocket)
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     -----------------------------------
 

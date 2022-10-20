@@ -97,9 +97,8 @@ function WorldSettingsMenu:GetValueForOption(option)
 end
 
 function WorldSettingsMenu:SetTweak(option, value)
-    local refresh = self.settings.tweaks[option] ~= nil
     self.settings.tweaks[option] = value
-    if refresh and not self.refreshing then self:Refresh() end
+    if not self.refreshing then self:Refresh() end
 end
 
 function WorldSettingsMenu:UpdatePresetInfo()
@@ -140,7 +139,17 @@ function WorldSettingsMenu:Refresh(force)
     self:UpdatePresetInfo()
     self.settingslist:Refresh(force)
     GetPresetBox(self):Refresh()
+
+
+	if self.levelcategory == LEVELCATEGORY.SETTINGS and self.parent_widget:IsMasterLevel() then
+		self:GetParentScreen():UpdatePlaystyle(self.settings.tweaks)
+	end
+
     self.refreshing = false
+end
+
+function WorldSettingsMenu:RefreshPlaystyleIndicator(playstyle)
+	GetPresetBox(self):SetPlaystyleIcon(playstyle)
 end
 
 function WorldSettingsMenu:SavePreset(presetid, name, desc, noload)
@@ -364,6 +373,8 @@ end
 
 --called by parent widget
 function WorldSettingsMenu:LoadPreset(preset)
+	self.refreshing = true
+
     local gamemode = self:GetGameMode()
     local level_type = GetLevelType(gamemode)
     local location = self.parent_widget:GetCurrentLocation()
@@ -394,12 +405,17 @@ function WorldSettingsMenu:LoadPreset(preset)
         self.settings.errorpreset = preset
     end
 
+	for k, v in pairs(presetdata.overrides) do
+		self:SetTweak(k, v)
+	end
 
     self.settingslist:SetPresetValues(presetdata.overrides)
 
     if not self.settingslist.scroll_list then
         self.settingslist:MakeScrollList()
     end
+
+	self.refreshing = false
 end
 
 --called by parent widget

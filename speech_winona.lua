@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "Looks like we gotta find more players.",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Not really enough places for them to hide.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "They look pretty tired, let's see if they wanna play again tomorrow.",
+            MANNEQUIN_EQUIPSWAPFAILED = "Just kiddin'!",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -860,6 +862,8 @@ return{
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
+    ANNOUNCE_OFF_SCRIPT = "That didn't seem right.",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'll demolish you!",
@@ -1450,7 +1454,19 @@ return{
 
         TURF_SHELLBEACH = "That's a chunk of sandy ground.",
 
+		TURF_RUINSBRICK = "That's a chunk of ground.",
+		TURF_RUINSBRICK_GLOW = "That's a chunk of ground.",
+		TURF_RUINSTILES = "That's a chunk of ground.",
+		TURF_RUINSTILES_GLOW = "That's a chunk of ground.",
+		TURF_RUINSTRIM = "That's a chunk of ground.",
+		TURF_RUINSTRIM_GLOW = "That's a chunk of ground.",
+
         TURF_MONKEY_GROUND = "That's a chunk of sandy ground.",
+
+        TURF_CARPETFLOOR2 = "That's a real dramatic chunk of ground.",
+        TURF_MOSAIC_GREY = "That's a chunk of ground.",
+        TURF_MOSAIC_RED = "That's a chunk of ground.",
+        TURF_MOSAIC_BLUE = "That's a chunk of ground.",
 
 		POWCAKE = "Gotta eat what you can around here.",
         CAVE_ENTRANCE = "Into the depths!",
@@ -1634,6 +1650,10 @@ return{
             RARE = "Progress on paper!",
         },
         SKETCH = "What a nice drawing.",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "I can't make heads or tails of it.",
+		},
 		BLUE_CAP = "Yep. Blue mushroom.",
 		BLUE_CAP_COOKED = "Well, I don't THINK it's poison.",
 		BLUE_MUSHROOM =
@@ -1658,6 +1678,7 @@ return{
 		BUZZARD = "It lives off the hard work of others.",
 
 		SHADOWDIGGER = "Too lazy to do your own chores, Max?",
+        SHADOWDANCER = "Now even his shadow is slackin' off.",
 
 		CACTUS =
 		{
@@ -1819,6 +1840,7 @@ return{
 		},
         GOGGLESHAT = "I hate fashion.",
         DESERTHAT = "Helps you see, see?",
+        ANTLIONHAT = "It sure makes landscaping a breeze!",
 		DEVTOOL = "What an incredible tool!",
 		DEVTOOL_NODEV = "Lazy builders.",
 		DIRTPILE = "Time to get my hands dirty.",
@@ -4522,6 +4544,13 @@ return{
 
         SCANDATA = "Yeesh, this stuff would make ol' Wickerbottom's writing seem flowery.",
 
+		-- QOL 2022
+		JUSTEGGS = "Nice and simple.",
+		VEGGIEOMLET = "Less dishes to wash if you leave it in the pan.",
+		TALLEGGS = "What's this, some kinda fancy boiled egg?",
+		BEEFALOFEED = "Feedin' time!",
+		BEEFALOTREAT = "My beefalo's been pulling her weight, she should get a reward.",
+
         -- Pirates
         BOAT_ROTATOR = "Controllin' the boat rotation is mighty useful.",
         BOAT_ROTATOR_KIT = "Time to put this doo-hickey to the test.",
@@ -4596,10 +4625,48 @@ return{
         PIRATE_STASH = "I think this is the place.",
         STASH_MAP = "Might find some loot if I follow this.",
 
-
         BANANAJUICE = "Would ya look at that, you can juice 'em too!",
 
         FENCE_ROTATOR = "There's a right tool for every job.",
+
+        CHARLIE_STAGE_POST = "Who'd build a stage out here? Oh...",
+        CHARLIE_LECTURN = "Everyone's got their part to play, huh?",
+
+        CHARLIE_HECKLER = "You can't please everyone.",
+
+        PLAYBILL_THE_DOLL = "Somehow I think there's more to the story.",
+        STATUEHARP_HEDGESPAWNER = "Yeesh, this place needs a good pruning.",
+        HEDGEHOUND = "You're gettin' to be a real thorn in my side!",
+        HEDGEHOUND_BUSH = "Why am I gettin' a bad feeling...",
+
+        MASK_DOLLHAT = "Why do I feel like it's lookin' at me?",
+        MASK_DOLLBROKENHAT = "Why do I feel like it's lookin' at me?",
+        MASK_DOLLREPAIREDHAT = "Why do I feel like it's lookin' at me?",
+        MASK_BLACKSMITHHAT = "Why do I feel like it's lookin' at me?",
+        MASK_MIRRORHAT = "Why do I feel like it's lookin' at me?",
+        MASK_QUEENHAT = "Why do I feel like it's lookin' at me?",
+        MASK_KINGHAT = "Why do I feel like it's lookin' at me?",
+        MASK_TREEHAT = "Why do I feel like it's lookin' at me?",
+        MASK_FOOLHAT = "Why do I feel like it's lookin' at me?",
+
+        COSTUME_DOLL_BODY = "Looks like a doll's costume.",
+        COSTUME_QUEEN_BODY = "Looks like a Queen's costume.",
+        COSTUME_KING_BODY = "Looks like a King's costume.",
+        COSTUME_BLACKSMITH_BODY = "Hey, that looks like it'll fit me!",
+        COSTUME_MIRROR_BODY = "Looks like some kind of costume.",
+        COSTUME_TREE_BODY = "Looks like a tree costume.",
+        COSTUME_FOOL_BODY = "Looks like a jester costume.",
+
+        STAGEUSHER =
+        {
+            STANDING = "Shoo!",
+            SITTING = "Why's this table givin' me the creeps?",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "Lookin' good!",
+            BURNT = "Yeesh, looks like this one's toast.",
+        },
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

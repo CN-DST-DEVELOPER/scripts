@@ -47,6 +47,13 @@ local craftingHintOptions = { { text = STRINGS.UI.OPTIONS.DEFAULT, data = false 
 local steamCloudLocalOptions = { { text = STRINGS.UI.OPTIONS.LOCAL_SAVES, data = false }, { text = STRINGS.UI.OPTIONS.STEAM_CLOUD_SAVES, data = true } }
 local integratedbackpackOptions = { { text = STRINGS.UI.OPTIONS.INTEGRATEDBACKPACK_DISABLED, data = false }, { text = STRINGS.UI.OPTIONS.INTEGRATEDBACKPACK_ENABLED, data = true } }
 local enableScreenFlashOptions = { { text = STRINGS.UI.OPTIONS.DEFAULT, data = 1 }, { text = STRINGS.UI.OPTIONS.DIM, data = 2 } , { text = STRINGS.UI.OPTIONS.DIMMEST, data = 3 } }
+local distortionLevelOptions = { 
+	{ text = STRINGS.UI.OPTIONS.DISABLED, data = 0 },
+	{ text = STRINGS.UI.OPTIONS.FAINT, data = 0.25 },
+	{ text = STRINGS.UI.OPTIONS.WEAK, data = 0.5 },
+	{ text = STRINGS.UI.OPTIONS.STRONG, data = 0.75 },
+	{ text = STRINGS.UI.OPTIONS.MAX, data = 1 }
+}
 
 local loadingtipsOptions =
 {
@@ -63,6 +70,15 @@ local function FindEnableScreenFlashOptionsIndex(value)
 		end
 	end
 	return 1
+end
+
+local function FindDistortionLevelOptionsIndex(value)
+    for i = 1, #distortionLevelOptions do
+		if distortionLevelOptions[i].data == value then
+			return i
+		end
+	end
+	return 4
 end
 
 local all_controls =
@@ -262,7 +278,7 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 		bloom = PostProcessor:IsBloomEnabled(),
 		smalltextures = graphicsOptions:GetSmallTexturesModeSettingValue(),
 		screenflash = Profile:GetScreenFlash(),
-		distortion = PostProcessor:IsDistortionEnabled(),
+		distortion_modifier = Profile:GetDistortionModifier(),
 		screenshake = Profile:IsScreenShakeEnabled(),
 		hudSize = Profile:GetHUDSize(),
 		craftingmenusize = Profile:GetCraftingMenuSize(),
@@ -584,7 +600,8 @@ function OptionsScreen:Save(cb)
 
 	Profile:SetVolume( self.options.ambientvolume, self.options.fxvolume, self.options.musicvolume )
 	Profile:SetBloomEnabled( self.options.bloom )
-	Profile:SetDistortionEnabled( self.options.distortion )
+	Profile:SetDistortionEnabled( self.options.distortion_modifier > 0 )
+	Profile:SetDistortionModifier( self.options.distortion_modifier )
 	Profile:SetScreenShakeEnabled( self.options.screenshake )
 	Profile:SetWathgrithrFontEnabled( self.options.wathgrithrfont )
 	Profile:SetBoatCameraEnabled( self.options.boatcamera )
@@ -721,7 +738,10 @@ function OptionsScreen:Apply()
 
 	local gopts = TheFrontEnd:GetGraphicsOptions()
 	PostProcessor:SetBloomEnabled( self.working.bloom )
-	PostProcessor:SetDistortionEnabled( self.working.distortion )
+	PostProcessor:SetDistortionEnabled( self.working.distortion_modifier > 0 )
+	if TheWorld and TheWorld.components.colourcube then
+		TheWorld.components.colourcube:SetDistortionModifier( self.working.distortion_modifier )
+	end
 	gopts:SetSmallTexturesMode( self.working.smalltextures )
 	Profile:SetScreenShakeEnabled( self.working.screenshake )
 	Profile:SetWathgrithrFontEnabled( self.working.wathgrithrfont )
@@ -1318,10 +1338,10 @@ function OptionsScreen:_BuildGraphics()
 			self:UpdateMenu()
 		end
 
-	self.distortionSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.DISTORTION, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.DISTORTION)
+	self.distortionSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.DISTORTION, distortionLevelOptions, STRINGS.UI.OPTIONS.TOOLTIPS.DISTORTION)
 	self.distortionSpinner.OnChanged =
 		function( _, data )
-			self.working.distortion = data
+			self.working.distortion_modifier = data
 			--self:Apply()
 			self:UpdateMenu()
 		end
@@ -2357,7 +2377,7 @@ function OptionsScreen:InitializeSpinners(first)
 	--]]
 
 	self.bloomSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.bloom ) )
-	self.distortionSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.distortion ) )
+	self.distortionSpinner:SetSelectedIndex( FindDistortionLevelOptionsIndex( self.working.distortion_modifier ) )
 	self.screenshakeSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.screenshake ) )
 
 	for i,v in ipairs(self.devices) do

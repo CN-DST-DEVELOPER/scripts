@@ -67,6 +67,15 @@ local function onunequip(inst, owner)
     owner:RemoveTag("compassbearer")
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    inst.components.fueled:StopConsuming()
+
+    if owner.components.maprevealable ~= nil then
+        owner.components.maprevealable:RemoveRevealSource(inst)
+    end
+    owner:RemoveTag("compassbearer")
+end
+
 local function ondepleted(inst)
     if inst.components.inventoryitem ~= nil
         and inst.components.inventoryitem.owner ~= nil then
@@ -121,6 +130,7 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("fueled")
     inst.components.fueled:InitializeFuelLevel(TUNING.COMPASS_FUEL)

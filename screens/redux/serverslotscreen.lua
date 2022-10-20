@@ -5,6 +5,7 @@ local Text = require "widgets/text"
 local TEMPLATES = require "widgets/redux/templates"
 local ServerSaveSlot = require "widgets/redux/serversaveslot"
 local ServerCreationScreen = require "screens/redux/servercreationscreen"
+local PlaystyleSelectScreen = require "screens/redux/playstyleselectscreen"
 local SaveFilterBar = require "widgets/redux/savefilterbar"
 local BansPopup = require "screens/redux/banspopup"
 
@@ -255,7 +256,7 @@ end
 
 function ServerSlotScreen:OnCreateNewSlot()
     TheFrontEnd:Fade(FADE_OUT, SCREEN_FADE_TIME, function()
-        TheFrontEnd:PushScreen(ServerCreationScreen(self, ShardSaveGameIndex:GetNextNewSlot()))
+        TheFrontEnd:PushScreen(PlaystyleSelectScreen(self, ShardSaveGameIndex:GetNextNewSlot()))
         TheFrontEnd:Fade(FADE_IN, SCREEN_FADE_TIME)
     end)
 end
@@ -318,7 +319,7 @@ function ServerSlotScreen:OnBecomeActive()
     ServerSlotScreen._base.OnBecomeActive(self)
     if IsTableEmpty(ShardSaveGameIndex:GetValidSlots()) then
         if not self.immediatenewslot then
-            TheFrontEnd:PushScreen(ServerCreationScreen(self, ShardSaveGameIndex:GetNextNewSlot()))
+	        TheFrontEnd:PushScreen(PlaystyleSelectScreen(self, ShardSaveGameIndex:GetNextNewSlot()))
             self.immediatenewslot = true
         else
 	        TheFrontEnd:PopScreen()

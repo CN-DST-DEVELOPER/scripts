@@ -161,6 +161,14 @@ local function onunequip(inst, owner)
     end
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.components.machine.ison then
+        starttrackingowner(inst, owner)
+    end
+
+    turnoff(inst)
+end
+
 local function nofuel(inst)
     if inst.components.equippable:IsEquipped() and inst.components.inventoryitem.owner ~= nil then
         local data =
@@ -275,6 +283,7 @@ local function fn()
 
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst.OnRemoveEntity = OnRemove
 

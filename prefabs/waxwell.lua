@@ -11,6 +11,7 @@ local prefabs =
 {
     "statue_transition_2",
     "waxwell_shadowstriker",
+    "shadowdancer",
 }
 
 local start_inv = {}
@@ -133,6 +134,8 @@ local function master_postinit(inst)
     inst:ListenForEvent("death", OnDeath)
     inst:ListenForEvent("ms_becameghost", OnDeath)
     inst:ListenForEvent("ms_playerreroll", OnReroll)
+
+    inst.petspawneffects = DoEffects
 
     if TheNet:GetServerGameMode() == "lavaarena" then
         event_server_data("lavaarena", "prefabs/waxwell").master_postinit(inst)

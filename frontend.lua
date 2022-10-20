@@ -23,6 +23,10 @@ local SPINNER_REPEAT_TIME = .25
 
 local save_fade_time = .5
 
+local DebugMenu = CAN_USE_DBUI and require("dbui_no_package/debugmenu") or nil
+
+global_error_widget = nil
+
 FrontEnd = Class(function(self, name)
 	self.screenstack = {}
 
@@ -220,6 +224,8 @@ FrontEnd = Class(function(self, name)
         self.imgui = require("dbui_no_package/imgui")
         self.debug_panels = {}
         self.imgui_font_size = Profile:GetValue("imgui_font_size") or 1
+
+        self.debugMenu = DebugMenu()
     end
 
     -- data from the current game that is to be passed back to the game when the server resets (used for showing results in events when back in the lobby)
@@ -814,46 +820,7 @@ function FrontEnd:Update(dt)
         self:DoHoverFocusUpdate()
     end
 
-    if CAN_USE_DBUI then
-    	if not self.imgui_is_running and self.imgui_enabled then
-
-			local i = 1
-
-			--jcheng: this is to stop imgui from re-running while inside imgui, for example if you do a sim step
-			self.imgui_is_running = true
-
-			while i <= #self.debug_panels do
-				local panel = self.debug_panels[i]
-
-				local ok, result = xpcall( function() return panel:RenderPanel(self.imgui) end, generic_error )
-				if ok and panel._wants_to_close then
-					result = false
-				end
-
-				if not ok or not result then
-					print("closing panel "..tostring(panel))
-					panel:OnClose()
-					table.remove( self.debug_panels, i )
-					if not ok then
-						print( tostring(result) )
-						break
-					end
-				else
-					i = i + 1
-				end
-			end
-
-			if #self.debug_panels == 0 then
-				self.imgui_enabled = false
-			end
-
-			self.imgui_is_running = false
-
-    	end
-
-        --self.widget_editor:Update(dt)
-        --self.entity_editor:Update(dt)
-    end
+    self:OnRenderImGui(dt)
 
 	TheSim:ProfilerPush("update widgets")
 	if not self.updating_widgets_alt then
@@ -1460,11 +1427,48 @@ function FrontEnd:CreateDebugPanel( node )
 	end
 
 	local node = DebugPanel2( node )
+    node.type = node
 	if not self.imgui_enabled then
 		self:ToggleImgui(node)
 	end
 
 	table.insert( self.debug_panels, node )
+    -- If you want to stuff values into the PrefabEditor, it's the input node
+	-- that you want to modify, not this panel. If you want to modify windowing
+	-- info, then this panel is where it's at.
+	return node
+end
+
+-- Takes the same argument as CreateDebugPanel -- the class of a debug panel
+-- node.
+function FrontEnd:FindOpenDebugPanel( node )
+	for _, panel in ipairs(self.debug_panels) do
+		if panel.type:is_a(node) then
+			return panel
+		end
+	end
+end
+
+function FrontEnd:GetNumberOpenDebugPanels( node )
+	local numOpenPanels = 0
+	for _, panel in ipairs(self.debug_panels) do
+		if panel.type:is_a(node) then
+			numOpenPanels = numOpenPanels + 1
+		end
+	end
+
+	return numOpenPanels
+end
+
+function FrontEnd:GetSelectedDebugPanel()
+
+	for _, panel in ipairs(self.debug_panels) do
+		if panel.isSelected then
+			return panel
+		end
+	end
+
+	return nil
 end
 
 function FrontEnd:SetImguiFontSize( font_size )
@@ -1474,6 +1478,79 @@ function FrontEnd:SetImguiFontSize( font_size )
     Profile:Save()
 end
 
+function FrontEnd:OnRenderImGui(dt)
+	if not CAN_USE_DBUI then
+		return
+	end
+
+	if not self.imgui_is_running and self.imgui_enabled then
+
+		local i = 1
+
+		--jcheng: this is to stop imgui from re-running while inside imgui, for example if you do a sim step
+		self.imgui_is_running = true
+
+		while i <= #self.debug_panels do
+			local panel = self.debug_panels[i]
+
+			local ok, result = xpcall( function() return panel:RenderPanel(self.imgui, i, dt) end, generic_error )
+			if ok and panel:WantsToClose() then
+				result = false
+			end
+
+			if not ok or not result then
+				print("closing panel "..tostring(panel))
+				panel:OnClose()
+				table.remove( self.debug_panels, i )
+				if not ok then
+					print( tostring(result) )
+					break
+				end
+			else
+				i = i + 1
+			end
+		end
+
+		if #self.debug_panels == 0 then
+			self.imgui_enabled = false
+		end
+
+		self.imgui_is_running = false
+	end
+
+	self.debugMenu:Render(dt)
+end
+
+function FrontEnd:IsImGuiWindowFocused(flags)
+	if not CAN_USE_DBUI then
+		return false
+	end
+
+    return self.imgui ~= nil and imgui ~= nil and self.imgui:IsWindowFocused(flags or imgui.FocusedFlags.AnyWindow)
+end
+
 function FrontEnd:SetServerPauseText(source)
     self.serverpausewidget:UpdateText(source)
+end
+
+function FrontEnd:SetGlobalErrorWidget(...)
+	if not self.cachedError then
+		self.cachedError = {...}
+	end
+end
+
+function FrontEnd:ResetGlobalErrorWidget()
+	self.cachedError = nil
+end
+
+function FrontEnd:CheckCachedError()
+	if self.cachedError and not global_error_widget then
+		local widget = ScriptErrorWidget(table.unpack(self.cachedError))
+		widget:MarkTransformDirty()
+		self:PushScreen(widget)
+
+		-- Pushing screens is not allowed after creating the error widget, so
+		-- assign it last.
+		global_error_widget = widget
+	end
 end

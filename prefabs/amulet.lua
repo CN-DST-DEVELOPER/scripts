@@ -45,6 +45,13 @@ local function onunequip_red(inst, owner)
     end
 end
 
+local function onequiptomodel_red(inst, owner, from_ground)
+    if inst.task ~= nil then
+        inst.task:Cancel()
+        inst.task = nil
+    end
+end
+
 ---BLUE
 local function onequip_blue(inst, owner)
     owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "blueamulet")
@@ -75,6 +82,14 @@ local function onunequip_blue(inst, owner)
     end
 end
 
+local function onequiptomodel_blue(inst, owner, from_ground)
+    inst:RemoveEventCallback("attacked", inst.freezefn, owner)
+
+    if inst.components.fueled then
+        inst.components.fueled:StopConsuming()
+    end
+end
+
 ---PURPLE
 local function onequip_purple(inst, owner)
     owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "purpleamulet")
@@ -96,11 +111,22 @@ local function onunequip_purple(inst, owner)
     end
 end
 
+local function onequiptomodel_purple(inst, owner, from_ground)
+    if inst.components.fueled then
+        inst.components.fueled:StopConsuming()
+    end
+    if owner.components.sanity ~= nil then
+        owner.components.sanity:SetInducedInsanity(inst, false)
+    end
+end
+
 ---GREEN
 
 local function onequip_green(inst, owner)
     owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "greenamulet")
-    owner.components.builder.ingredientmod = TUNING.GREENAMULET_INGREDIENTMOD
+    if owner.components.builder ~= nil then
+        owner.components.builder.ingredientmod = TUNING.GREENAMULET_INGREDIENTMOD
+    end
     inst.onitembuild = function(owner, data)
         --V2C: backward compatibility so that no data or discounted == nil still consumes a charge
         --     (discounted is newly added; in the past, it would always consume a charge)
@@ -114,7 +140,16 @@ end
 
 local function onunequip_green(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
-    owner.components.builder.ingredientmod = 1
+    if owner.components.builder ~= nil then
+        owner.components.builder.ingredientmod = 1
+    end
+    inst:RemoveEventCallback("consumeingredients", inst.onitembuild, owner)
+end
+
+local function onequiptomodel_green(inst, owner, from_ground)
+    if owner.components.builder ~= nil then
+        owner.components.builder.ingredientmod = 1
+    end
     inst:RemoveEventCallback("consumeingredients", inst.onitembuild, owner)
 end
 
@@ -160,6 +195,13 @@ end
 
 local function onunequip_orange(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
+    if inst.task ~= nil then
+        inst.task:Cancel()
+        inst.task = nil
+    end
+end
+
+local function onequiptomodel_orange(inst, owner, from_ground)
     if inst.task ~= nil then
         inst.task:Cancel()
         inst.task = nil
@@ -217,6 +259,20 @@ local function onunequip_yellow(inst, owner)
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
         owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
+
+    if inst.components.fueled ~= nil then
+        inst.components.fueled:StopConsuming()
+    end
+
+    turnoff_yellow(inst)
+end
+
+local function onequiptomodel_yellow(inst, owner, from_ground)
+    if owner.components.bloomer ~= nil then
+        owner.components.bloomer:PopBloom(inst)
+    else
+        owner.AnimState:ClearBloomEffectHandle()
     end
 
     if inst.components.fueled ~= nil then
@@ -305,6 +361,7 @@ local function red()
 
     inst.components.equippable:SetOnEquip(onequip_red)
     inst.components.equippable:SetOnUnequip(onunequip_red)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel_red)
 
     inst:AddComponent("finiteuses")
     inst.components.finiteuses:SetOnFinished(inst.Remove)
@@ -343,6 +400,8 @@ local function blue()
 
     inst.components.equippable:SetOnEquip(onequip_blue)
     inst.components.equippable:SetOnUnequip(onunequip_blue)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel_blue)
+
     inst:AddComponent("heater")
     inst.components.heater:SetThermics(false, true)
     inst.components.heater.equippedheat = TUNING.BLUEGEM_COOLER
@@ -374,6 +433,7 @@ local function purple()
 
     inst.components.equippable:SetOnEquip(onequip_purple)
     inst.components.equippable:SetOnUnequip(onunequip_purple)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel_purple)
 
     inst.components.equippable.dapperness = -TUNING.DAPPERNESS_MED
 
@@ -391,6 +451,7 @@ local function green()
 
     inst.components.equippable:SetOnEquip(onequip_green)
     inst.components.equippable:SetOnUnequip(onunequip_green)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel_green)
 
     inst:AddComponent("finiteuses")
     inst.components.finiteuses:SetOnFinished(inst.Remove)
@@ -403,7 +464,7 @@ local function green()
 end
 
 local function orange()
-    local inst = commonfn("orangeamulet")
+    local inst = commonfn("orangeamulet", "repairshortaction")
 
     if not TheWorld.ismastersim then
         return inst
@@ -414,11 +475,15 @@ local function orange()
     -- inst.components.useableitem:SetOnUseFn(unimplementeditem)
     inst.components.equippable:SetOnEquip(onequip_orange)
     inst.components.equippable:SetOnUnequip(onunequip_orange)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel_orange)
 
     inst:AddComponent("finiteuses")
     inst.components.finiteuses:SetOnFinished(inst.Remove)
     inst.components.finiteuses:SetMaxUses(TUNING.ORANGEAMULET_USES)
     inst.components.finiteuses:SetUses(TUNING.ORANGEAMULET_USES)
+
+    inst:AddComponent("repairable")
+    inst.components.repairable.repairmaterial = MATERIALS.NIGHTMARE
 
     MakeHauntableLaunch(inst)
 
@@ -434,6 +499,7 @@ local function yellow()
 
     inst.components.equippable:SetOnEquip(onequip_yellow)
     inst.components.equippable:SetOnUnequip(onunequip_yellow)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel_yellow)
     inst.components.equippable.walkspeedmult = 1.2
     inst.components.inventoryitem:SetOnDroppedFn(turnoff_yellow)
 

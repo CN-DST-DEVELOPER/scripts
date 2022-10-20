@@ -27,6 +27,9 @@ local locations = {}
 
 local modlocations = {}
 
+local playstyle_defs = {}
+local playstyle_order = {}
+
 ------------------------------------------------------------------
 -- Module functions
 ------------------------------------------------------------------
@@ -651,6 +654,38 @@ local function GetLocationForID(category, ...)
     end
 end
 
+local function GetPlaystyles()
+	return playstyle_order
+end
+
+local function GetPlaystyleDef(id)
+	return playstyle_defs[id]
+end
+
+function CalcPlaystyleForSettings(settings_overrides)
+	local scores = {}
+
+	for i, playstyle_def in pairs(playstyle_defs) do
+		local score = playstyle_def.is_default and 0.5 or 1
+		for override, value in pairs(playstyle_def.overrides) do
+			if settings_overrides[override] ~= value then
+				score = 0
+				break
+			end
+		end
+
+		table.insert(scores, {id = playstyle_def.id, score = score, priority = playstyle_def.priority})
+	end
+
+	table.sort(scores, function(a, b) return a.score > b.score or (a.score == b.score and a.priority > b.priority) end)
+
+	--print("scores")
+	--dumptable(scores)
+
+
+	return scores[1].id
+end
+
 ------------------------------------------------------------------
 -- GLOBAL functions
 ------------------------------------------------------------------
@@ -748,6 +783,13 @@ function AddModWorldGenLevel(mod, type, data)
     table.insert(modworldgenlist[mod][type], Level(data))
 end
 
+function AddPlaystyleDef(def)
+	assert(playstyle_defs[def.id] == nil, string.format("Tried adding a Playstyle with id %s, but one already exists!", def.id))
+
+	table.insert(playstyle_order, def.id)
+	playstyle_defs[def.id] = def
+end
+
 ------------------------------------------------------------------
 -- Load the data
 ------------------------------------------------------------------
@@ -800,4 +842,9 @@ return {
     GetNameForID = GetNameForID,
     GetDescForID = GetDescForID,
     GetLocationForID = GetLocationForID,
+
+	GetPlaystyles = GetPlaystyles,
+	GetPlaystyleDef = GetPlaystyleDef,
+
+	CalcPlaystyleForSettings = CalcPlaystyleForSettings,
 }

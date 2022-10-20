@@ -89,7 +89,9 @@ local function ondropped(inst)
 end
 
 local function ToggleOverrideSymbols(inst, owner)
-    if owner.sg:HasStateTag("nodangle") or (owner.components.rider ~= nil and owner.components.rider:IsRiding() and not owner.sg:HasStateTag("forcedangle")) then
+    if owner.sg == nil or (owner.sg:HasStateTag("nodangle")
+            or (owner.components.rider ~= nil and owner.components.rider:IsRiding()
+                and not owner.sg:HasStateTag("forcedangle"))) then
         owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible")
         inst._body:Hide()
         if inst._smoke ~= nil then
@@ -145,6 +147,10 @@ local function onunequip(inst, owner)
     owner.AnimState:Hide("ARM_carry")
     owner.AnimState:Show("ARM_normal")
 
+    turnoff(inst)
+end
+
+local function onequiptomodel(inst, owner, from_ground)
     turnoff(inst)
 end
 
@@ -212,6 +218,7 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("fueled")
     inst.components.fueled.fueltype = FUELTYPE.NIGHTMARE

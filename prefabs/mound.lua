@@ -12,6 +12,7 @@ local prefabs =
     "bluegem",
     "nightmarefuel",
 	"bat",
+	"cookingrecipecard",
 }
 
 for k = 1, NUM_TRINKETS do
@@ -72,6 +73,10 @@ local function onfinishcallback(inst, worker)
             if item ~= nil then
                 inst.components.lootdropper:SpawnLootPrefab(item)
             end
+
+			if math.random() < TUNING.COOKINGRECIPECARD_GRAVESTONE_CHANCE then
+                inst.components.lootdropper:SpawnLootPrefab("cookingrecipecard")
+			end
 
 			if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
 				local ornament = math.random(NUM_HALLOWEEN_ORNAMENTS * 4)

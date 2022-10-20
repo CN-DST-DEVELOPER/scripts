@@ -206,6 +206,10 @@ function Button:SetOnUnSelect( fn )
     self.onunselect = fn
 end
 
+function Button:SetOnUnselect( fn )
+    self.onunselect = fn
+end
+
 function Button:SetOnDown( fn )
 	self.ondown = fn
 end
@@ -329,7 +333,7 @@ end
 function Button:GetHelpText()
 	local controller_id = TheInput:GetControllerID()
 	local t = {}
-	if not self:IsSelected() and self.help_message ~= "" then
+	if (not self:IsSelected() or self.AllowOnControlWhenSelected) and self.help_message ~= "" then
     	table.insert(t, TheInput:GetLocalizedControl(controller_id, self.control, false, false ) .. " " .. self.help_message)
     end
 	return table.concat(t, "  ")

@@ -19,6 +19,13 @@ local function onunequip(inst, owner)
     inst.components.fueled:StopConsuming()
 end
 
+local function onequiptomodel(inst, owner)
+    if owner.components.hunger ~= nil then
+        owner.components.hunger.burnratemodifiers:RemoveModifier(inst)
+    end
+    inst.components.fueled:StopConsuming()
+end
+
 local function onperish(inst)
     inst:Remove()
 end
@@ -68,6 +75,7 @@ local function fn()
 
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     MakeHauntableLaunch(inst)
 

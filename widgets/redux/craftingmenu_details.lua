@@ -267,7 +267,6 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	local left = -self.panel_width / 2
 
 	local width = self.panel_width / 2
-	local title_width = self.panel_width - 60
 
 	if recipe.custom_craftingmenu_details_fn ~= nil then
 		-- Modders can define this on a preparedfoods definition table if they use this if they want to have their own custom display.
@@ -278,19 +277,14 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	root_left:SetPosition(-self.panel_width / 4, 0)
 
 	local y = top
-
-	-- Name
 	local name_font_size = 30
-	local name = root_left:AddChild(Text(UIFONT, name_font_size))
-	name:SetAutoSizingString(STRINGS.NAMES[string.upper(recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)], title_width)
-	name:SetPosition(0, y - name_font_size/2)
 
 	-- Favorite Button
 	local is_favorite = TheCraftingMenuProfile:IsFavorite(recipe.name)
 	local fav_button = root_left:AddChild(ImageButton(atlas, is_favorite and "favorite_checked.tex" or "favorite_unchecked.tex", is_favorite and "favorite_checked.tex" or "favorite_unchecked.tex", nil, is_favorite and "favorite_unchecked.tex" or "favorite_checked.tex", nil, { .81, .81 }, { 0, 0 }))
     fav_button.focus_scale = {1, 1}
     fav_button.normal_scale = {.81, .81}
-	fav_button:SetPosition(-width/2 + 5, y - name_font_size/2)
+	fav_button:SetPosition(-width/2 + 2, y - name_font_size/2)
 	fav_button:SetOnClick(function()
 		local is_favorite_recipe = TheCraftingMenuProfile:IsFavorite(recipe.name)
 		if is_favorite_recipe then
@@ -306,6 +300,12 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 		self.owner:PushEvent("refreshcrafting")
 	end)
 	self.fav_button = fav_button
+
+	-- Name
+	local title_width = width - 30
+	local name = root_left:AddChild(Text(UIFONT, name_font_size))
+	name:SetMultilineTruncatedString(STRINGS.NAMES[string.upper(recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)], 1, title_width, nil, nil, true)
+	name:SetPosition(0, y - name_font_size/2)
 
 	y = y - name_font_size
 

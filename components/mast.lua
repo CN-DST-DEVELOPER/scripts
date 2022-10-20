@@ -121,6 +121,9 @@ function Mast:SetBoat(boat)
         boat.components.boatphysics:AddMast(self)
         self.inst:ListenForEvent("onremove", self.OnBoatRemoved, boat)
         self.inst:ListenForEvent("death", self.OnBoatDeath, boat)
+		self.inst:RemoveTag("rotatableobject")
+	else
+		self.inst:AddTag("rotatableobject")
     end
 end
 

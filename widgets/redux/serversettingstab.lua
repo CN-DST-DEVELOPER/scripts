@@ -3,7 +3,6 @@ local Text = require "widgets/text"
 local ScrollableList = require "widgets/scrollablelist"
 local RadioButtons = require "widgets/radiobuttons"
 local NewHostPicker = require "widgets/redux/newhostpicker"
-local IntentionPicker = require "widgets/redux/intentionpicker"
 local PopupDialogScreen = require "screens/redux/popupdialog"
 local TEMPLATES = require "widgets/redux/templates"
 
@@ -63,20 +62,6 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
     local ServerSaveSlot = require "widgets/redux/serversaveslot"
     self.serverslot = self:AddChild(ServerSaveSlot(servercreationscreen.server_slot_screen, true))
     self.serverslot:SetPosition(0, 295)
-
-    self.intentions_overlay = self:AddChild(IntentionPicker( STRINGS.UI.SERVERCREATIONSCREEN.INTENTION_TITLE, STRINGS.UI.SERVERCREATIONSCREEN.INTENTION_DESC))
-    self.intentions_overlay:SetCallback(function(intention)
-        self:SetServerIntention(intention)
-        self.servercreationscreen:MakeDirty()
-    end)
-    self.intentions_overlay:SetPosition(picker_x_offset, picker_y_offset)
-
-    self.server_intention = TEMPLATES.LabelButton(
-        function(data)
-            self:SetServerIntention(nil)
-            self.servercreationscreen:MakeDirty()
-        end,
-        STRINGS.UI.SERVERCREATIONSCREEN.INTENTION_LABEL, "", wide_label_width, wide_input_width, label_height, space_between, NEWFONT, font_size, narrow_field_nudge)
 
     self.server_name = TEMPLATES.LabelTextbox(STRINGS.UI.SERVERCREATIONSCREEN.SERVERNAME, TheNet:GetDefaultServerName(), wide_label_width, wide_input_width, label_height, space_between, NEWFONT, font_size, wide_field_nudge)
     self.server_name.textbox:SetTextLengthLimit( SERVER_NAME_MAX_LENGTH )
@@ -181,9 +166,9 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
 			info_dialog.dialog.body:SetSize(24)
 			TheFrontEnd:PushScreen(info_dialog)
         end))
-    self.game_mode.info_button:SetPosition(0, -2)
-    self.game_mode.info_button:SetScale(.4)
-    self.game_mode.info_button:SetFocusChangeDir(MOVE_LEFT, self.game_mode.spinner)
+    self.game_mode.info_button:SetPosition(220, -2)
+    self.game_mode.info_button:SetScale(.5)
+    self.game_mode.info_button:SetFocusChangeDir(MOVE_LEFT, self.game_mode)
     self.game_mode.spinner:SetFocusChangeDir(MOVE_RIGHT, self.game_mode.info_button)
 
     local numplayer_options = {}
@@ -195,7 +180,6 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
     self.max_players.spinner:SetOnChangedFn(function(selected, old)
         if (selected > 1) ~= (old > 1) then
             self:RefreshPrivacyButtons()
-            self:RefreshIntentionsButton()
         end
         self.servercreationscreen:MakeDirty()
     end)
@@ -238,7 +222,6 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
     {
         self.server_name,
         self.server_desc,
-        self.server_intention,
         self.privacy_type,
         self.game_mode,
         --self.clan_id,
@@ -296,16 +279,6 @@ function ServerSettingsTab:RefreshPrivacyButtons()
         if self._cached_privacy_setting ~= nil then
             self.privacy_type.buttons:SetSelected(self._cached_privacy_setting)
         end
-    end
-end
-
-function ServerSettingsTab:RefreshIntentionsButton()
-    if self.max_players.spinner:GetSelectedData() <= 1 then
-        self.server_intention.button:SetText(STRINGS.UI.SERVERCREATIONSCREEN.NEWHOST_TYPE.ALONE)
-        self.server_intention.button:Disable()
-    else
-        self.server_intention.button:SetText(self.server_intention.button.data ~= nil and STRINGS.UI.INTENTION[string.upper(self.server_intention.button.data)] or "")
-        self.server_intention.button:Enable()
     end
 end
 
@@ -391,65 +364,43 @@ function ServerSettingsTab:UpdateModeSpinner()
     self.game_mode.spinner:SetSelected(selected)
 end
 
-function ServerSettingsTab:SetServerIntention(intention)
-    self.server_intention.button.data = intention
+function ServerSettingsTab:ShowNewHostPicker()
+    if not Profile:SawNewHostPicker() then
+        self.newhost_overlay = self:AddChild(NewHostPicker())
+        self.newhost_overlay:SetPosition(picker_x_offset, picker_y_offset)
+        self.newhost_overlay:SetCallback(function(data)
+            Profile:ShowedNewHostPicker()
+            Profile:Save(function()
+                if data == "ALONE" then
+                    self.max_players.spinner:SetSelected(1)
+                    self:RefreshPrivacyButtons()
+                end
+				self.newhost_overlay:Kill()
+				self.newhost_overlay = nil
 
-    self:RefreshIntentionsButton()
+				self.scroll_list:Show()
+				self.default_focus = self.scroll_list
+				self.focus_forward = self.default_focus
+				if self.focus then
+					self.default_focus:SetFocus()
+				end
 
-    if intention ~= nil then
-        self.intentions_overlay:SetSelected(intention)
-    end
-
-    self:ShowServerIntention(self.server_intention.button.data == nil)
-    self:UpdateSlot()
-end
-
-function ServerSettingsTab:ShowServerIntention(show)
-    if show then
-        if not Profile:SawNewHostPicker() then
-            self:ShowNewHostPicker(true)
-            self.intentions_overlay:Hide()
-            self.default_focus = self.newhost_overlay
-        else
-            self:ShowNewHostPicker(false)
-            self.intentions_overlay:Show()
-            self.default_focus = self.intentions_overlay
-        end
-        self.scroll_list:Hide()
-    else
-        self:ShowNewHostPicker(false)
-        self.intentions_overlay:Hide()
-        self.scroll_list:Show()
-        self.default_focus = self.scroll_list
-    end
-
-    self.focus_forward = self.default_focus
-    if self.focus then
-        self.default_focus:SetFocus()
-    end
-end
-
-function ServerSettingsTab:ShowNewHostPicker(show)
-    if show then
-        if self.newhost_overlay == nil then
-            self.newhost_overlay = self:AddChild(NewHostPicker())
-            self.newhost_overlay:SetPosition(picker_x_offset, picker_y_offset)
-            self.newhost_overlay:SetCallback(function(data)
-                Profile:ShowedNewHostPicker()
-                Profile:Save(function()
-                    if data == "ALONE" then
-                        self.max_players.spinner:SetSelected(1)
-                        self:SetServerIntention(INTENTIONS.COOPERATIVE)
-                        self:RefreshPrivacyButtons()
-                    end
-                    self:ShowServerIntention(self.server_intention.button.data == nil)
-                    self.servercreationscreen:MakeDirty()
-                end)
+                self.servercreationscreen:MakeDirty()
             end)
-        end
-    elseif self.newhost_overlay ~= nil then
-        self.newhost_overlay:Kill()
-        self.newhost_overlay = nil
+        end)
+
+		self.default_focus = self.newhost_overlay
+		self.focus_forward = self.default_focus
+		if self.focus then
+			self.default_focus:SetFocus()
+		end
+	else
+		self.scroll_list:Show()
+		self.default_focus = self.scroll_list
+		self.focus_forward = self.default_focus
+		if self.focus then
+			self.default_focus:SetFocus()
+		end
     end
 end
 
@@ -488,11 +439,12 @@ function ServerSettingsTab:SetDataForSlot(slot)
         self.encode_user_path = true
         self.use_legacy_session_path = false
 
-        self:SetServerIntention(nil)
         self:SetOnlineWidgets(online)
         self:SetCanEditSaveTypeWidgets(true)
 
         self.game_mode.spinner:Enable()
+
+		self.playstyle = PLAYSTYLE_DEFAULT
 
     else -- Save data
         local server_data = ShardSaveGameIndex:GetSlotServerData(slot)
@@ -515,24 +467,22 @@ function ServerSettingsTab:SetDataForSlot(slot)
                 self.clan_admins.spinner:SetSelected(claninfo and claninfo.admins or false)
             end
 
-            self:SetServerIntention(server_data.intention)
+			self.playstyle = server_data.playstyle
+
             self:SetOnlineWidgets(server_data.online_mode) -- always load from the server data
             self:SetCanEditSaveTypeWidgets(false)
         else
             self.encode_user_path = true
             self.use_legacy_session_path = false
-            self:SetServerIntention(nil)
         end
 
 		-- No editing online or game mode for servers that have already been created
         self.game_mode.spinner:Disable()
     end
 
-    self:UpdateSlot()
-end
+	self:ShowNewHostPicker()
 
-function ServerSettingsTab:GetServerIntention()
-	return self.server_intention.button.data
+    self:UpdateSlot()
 end
 
 function ServerSettingsTab:GetServerName()
@@ -549,6 +499,10 @@ end
 
 function ServerSettingsTab:GetGameMode()
 	return self.game_mode.spinner:GetSelectedData()
+end
+
+function ServerSettingsTab:GetPlaystyle()
+	return self.playstyle
 end
 
 function ServerSettingsTab:GetMaxPlayers()
@@ -589,7 +543,7 @@ end
 
 function ServerSettingsTab:GetServerData()
     return {
-        intention = self.server_intention.button.data,
+		playstyle = self:GetPlaystyle(),
         pvp = self:GetPVP(),
         game_mode = self:GetGameMode(),
         online_mode = self:GetOnlineMode(),
@@ -604,16 +558,17 @@ function ServerSettingsTab:GetServerData()
     }
 end
 
+function ServerSettingsTab:SetPlaystyle(playstyle)
+	self.playstyle = playstyle
+	self:UpdateSlot()
+end
+
 function ServerSettingsTab:VerifyValidClanSettings()
     return self.privacy_type.buttons:GetSelectedData() ~= PRIVACY_TYPE.CLAN or TheNet:IsClanIDValid(self.clan_id.textbox:GetString())
 end
 
 function ServerSettingsTab:VerifyValidServerName()
     return self.server_name.textbox:GetString() ~= ""
-end
-
-function ServerSettingsTab:VerifyValidServerIntention()
-    return self.server_intention.button.data ~= nil
 end
 
 function ServerSettingsTab:VerifyValidNewHostType()

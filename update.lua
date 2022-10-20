@@ -86,6 +86,7 @@ function WallUpdate(dt)
 
     TheSim:ProfilerPush("fe")
     if global_error_widget then
+        TheFrontEnd:OnRenderImGui(dt)
         global_error_widget:OnUpdate(dt)
     else
         TheFrontEnd:Update(dt)

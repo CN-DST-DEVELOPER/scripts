@@ -124,13 +124,14 @@ function Talker:StopIgnoringAll(source)
     end
 end
 
-local function sayfn(self, script, nobroadcast, colour, text_filter_context, original_author_netid)
-    
+local function sayfn(self, script, nobroadcast, colour, text_filter_context, original_author_netid, onfinishedlinesfn, sgparam)
+
     local player = ThePlayer
     if (not self.disablefollowtext) and self.widget == nil and player ~= nil and player.HUD ~= nil then
         self.widget = player.HUD:AddChild(FollowText(self.font or TALKINGFONT, self.fontsize or 35))
         self.widget:SetHUD(player.HUD.inst)
     end
+
 
     if self.widget ~= nil then
         self.widget.symbol = self.symbol
@@ -176,11 +177,19 @@ local function sayfn(self, script, nobroadcast, colour, text_filter_context, ori
                 self.ontalkfn(self.inst, { noanim = line.noanim, message=display_message })
             end
 
-            self.inst:PushEvent("ontalk", { noanim = line.noanim, duration = duration })
+            self.inst:PushEvent("ontalk", { noanim = line.noanim, duration = duration, sgparam=sgparam })
         elseif self.widget ~= nil then
             self.widget:Hide()
         end
+
         Sleep(duration)
+
+        if onfinishedlinesfn then
+            if i >= #script then
+                onfinishedlinesfn(self.inst)
+            end
+        end
+
         if not self.inst:IsValid() or (self.widget ~= nil and not self.widget.inst:IsValid()) then
             return
         end
@@ -217,9 +226,11 @@ local function CancelSay(self)
     end
 end
 
-function Talker:Say(script, time, noanim, force, nobroadcast, colour, text_filter_context, original_author_netid)
+function Talker:Say(script, time, noanim, force, nobroadcast, colour, text_filter_context, original_author_netid, onfinishedlinesfn, sgparam)
+
     if TheWorld.speechdisabled then return nil end
     if TheWorld.ismastersim then
+
         if not force
             and (self.ignoring ~= nil or
                 (self.inst.components.health ~= nil and self.inst.components.health:IsDead() and self.inst.components.revivablecorpse == nil) or
@@ -242,7 +253,7 @@ function Talker:Say(script, time, noanim, force, nobroadcast, colour, text_filte
     CancelSay(self)
     local lines = type(script) == "string" and { Line(script, noanim, time) } or script
     if lines ~= nil then
-        self.task = self.inst:StartThread(function() sayfn(self, lines, nobroadcast, colour, text_filter_context, original_author_netid) end)
+        self.task = self.inst:StartThread(function() sayfn(self, lines, nobroadcast, colour, text_filter_context, original_author_netid, onfinishedlinesfn, sgparam) end)
     end
 end
 

@@ -444,6 +444,10 @@ local prefabs =
     "fx_dock_pop",
 
     "fence_rotator",
+
+    "charlie_stage_post",
+    "stageusher",
+    "statueharp_hedgespawner",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")

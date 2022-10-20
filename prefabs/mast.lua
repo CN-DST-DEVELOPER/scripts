@@ -330,6 +330,7 @@ local function fn_pre(inst)
     inst:AddTag("NOBLOCK")
     inst:AddTag("structure")
     inst:AddTag("mast")
+	inst:AddTag("rotatableobject")
 end
 
 local function fn_pst(inst)

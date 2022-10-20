@@ -11,6 +11,10 @@ local prefabs =
 local function onpicked(inst)
     TheWorld:PushEvent("beginregrowth", inst)
 end
+local function OnBurnt(inst)
+	TheWorld:PushEvent("beginregrowth", inst)
+    DefaultBurntFn(inst)
+end
 
 local function fn()
     --Carrot you eat is defined in veggies.lua
@@ -43,6 +47,7 @@ local function fn()
     inst.components.pickable.quickpick = true
 
     MakeSmallBurnable(inst)
+    inst.components.burnable:SetOnBurntFn(OnBurnt)
     MakeSmallPropagator(inst)
 
 	inst:AddComponent("halloweenmoonmutable")

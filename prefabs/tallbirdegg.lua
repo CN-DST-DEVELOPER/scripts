@@ -59,7 +59,9 @@ local function OnDropped(inst)
     --print("tallbirdegg - OnDropped")
     inst.components.hatchable:StartUpdating()
     CheckHatch(inst)
-    PlayUncomfySound(inst)
+    if inst.components.hatchable.state ~= "unhatched" then
+        PlayUncomfySound(inst)
+    end
 end
 
 local function OnPutInInventory(inst)

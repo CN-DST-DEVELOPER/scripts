@@ -97,7 +97,7 @@ CommonStates.AddWalkStates(states,
                 inst.SoundEmitter:PlaySound("dontstarve/creatures/knight"..inst.kind.."/bounce")
                 inst.components.locomotor:WalkForward()
             end ),
-            TimeEvent(20*FRAMES, function(inst)
+            TimeEvent(19*FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve/creatures/knight"..inst.kind.."/land")
                 inst.Physics:Stop()
             end ),

@@ -77,6 +77,41 @@ local Any = {
 				end,
 				},
 		}),
+	["CookingBoon"] = StaticLayout.Get("map/static_layouts/small_boon", {
+			areas = {
+				item_area = function()
+					return JoinArrays({"cookingrecipecard", "cookingrecipecard", "cookbook"}, PickSomeWithDups(math.random(3,4), {"spoiled_food", "spoiled_fish", "spoiled_fish_small"}))
+				end,
+				resource_area = function()
+					return {"cookpot"}
+				end,
+			},
+		}),
+	["FishingBoon"] = StaticLayout.Get("map/static_layouts/small_boon", {
+			areas = {
+				item_area = function()
+					return {
+							"oceanfishingrod",
+							"spoiled_fish_small",
+							GetRandomItem({"oceanfishinglure_spoon_red", "oceanfishinglure_spoon_green", "oceanfishinglure_spoon_blue", "oceanfishinglure_spinner_red", "oceanfishinglure_spinner_green", "oceanfishinglure_spinner_blue"}),
+							GetRandomItem({"trinket_8", "oceanfishingbobber_ball", "oceanfishingbobber_oval", "oceanfishingbobber_crow", "oceanfishingbobber_robin"}),
+						}
+				end,
+				resource_area = function()
+					return nil
+				end,
+			},
+		}),
+	["FarmingBoon"] = StaticLayout.Get("map/static_layouts/small_boon", {
+			areas = {
+				item_area = function()
+					return {"farm_plow_item", "plantregistryhat", "poop", "poop", "spoiled_food", "spoiled_food", "spoiled_food", "guano"}
+				end,
+				resource_area = function()
+					return nil
+				end,
+			},
+		}),
 
 ------------------------------------------------------------------------------------------------------
 --			Level 2

@@ -302,6 +302,7 @@ local function SetNormalPig(inst)
 
     inst.components.combat:SetDefaultDamage(TUNING.PIG_DAMAGE)
     inst.components.combat:SetAttackPeriod(TUNING.PIG_ATTACK_PERIOD)
+    inst.components.combat:SetNoAggroTags(nil)
     inst.components.combat:SetKeepTargetFunction(NormalKeepTargetFn)
     inst.components.locomotor.runspeed = TUNING.PIG_RUN_SPEED
     inst.components.locomotor.walkspeed = TUNING.PIG_WALK_SPEED
@@ -413,6 +414,7 @@ local function SetGuardPig(inst)
     inst.components.health:SetMaxHealth(TUNING.PIG_GUARD_HEALTH)
     inst.components.combat:SetDefaultDamage(TUNING.PIG_GUARD_DAMAGE)
     inst.components.combat:SetAttackPeriod(TUNING.PIG_GUARD_ATTACK_PERIOD)
+    inst.components.combat:SetNoAggroTags(RETARGET_GUARD_CANT_TAGS)
     inst.components.combat:SetKeepTargetFunction(GuardKeepTargetFn)
     inst.components.combat:SetRetargetFunction(1, GuardRetargetFn)
     inst.components.combat:SetTarget(nil)
@@ -513,6 +515,7 @@ local function SetWerePig(inst)
 
     inst.components.health:SetMaxHealth(TUNING.WEREPIG_HEALTH)
     inst.components.combat:SetTarget(nil)
+    inst.components.combat:SetNoAggroTags(WEREPIG_RETARGET_CANT_TAGS)
     inst.components.combat:SetRetargetFunction(3, WerepigRetargetFn)
     inst.components.combat:SetKeepTargetFunction(WerepigKeepTargetFn)
 
@@ -820,6 +823,7 @@ local function moon()
 
     inst.components.health:SetMaxHealth(TUNING.WEREPIG_HEALTH)
     inst.components.combat:SetTarget(nil)
+    inst.components.combat:SetNoAggroTags(MOONPIG_RETARGET_CANT_TAGS)
     inst.components.combat:SetRetargetFunction(3, MoonpigRetargetFn)
     inst.components.combat:SetKeepTargetFunction(MoonpigKeepTargetFn)
 

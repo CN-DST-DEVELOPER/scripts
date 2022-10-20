@@ -92,12 +92,12 @@ function c_mermthrone()
 end
 
 function c_allbooks()
-    local books = 
+    local books =
     {
-        "book_birds", "book_horticulture", "book_silviculture", "book_sleep", 
-        "book_brimstone", "book_tentacles", "book_fish", "book_fire", "book_web", 
-        "book_temperature", "book_light", "book_rain", "book_moon", "book_bees", 
-        "book_research_station", "book_horticulture_upgraded", 
+        "book_birds", "book_horticulture", "book_silviculture", "book_sleep",
+        "book_brimstone", "book_tentacles", "book_fish", "book_fire", "book_web",
+        "book_temperature", "book_light", "book_rain", "book_moon", "book_bees",
+        "book_research_station", "book_horticulture_upgraded",
         "book_light_upgraded"
     }
 
@@ -348,13 +348,13 @@ end
 
 
 -- Some helper shortcut functions
-function c_freecrafting()
+function c_freecrafting(player)
     if TheWorld ~= nil and not TheWorld.ismastersim then
         c_remote("c_freecrafting()")
         return
     end
 
-    local player = ConsoleCommandPlayer()
+    player = ListingOrConsolePlayer(player)
 	player.components.builder:GiveAllRecipes()
 	player:PushEvent("techlevelchange")
 end
@@ -1910,6 +1910,15 @@ function c_rotateccw(delta)
     mouseentity.Transform:SetRotation(angle - (delta or 45))
 end
 
+function c_record()
+    if not CAN_USE_DBUI or Profile:GetThreadedRenderEnabled() then
+		return
+	end
+
+    local on_off = TheFrontEnd.debugMenu.history:IsEnabled() and "OFF" or "ON"
+    print("***** History recording is set to " .. on_off .. " *****")
+    TheFrontEnd.debugMenu.history:ToggleHistoryRecording()
+end
 -- ========================================
 
 

@@ -581,6 +581,8 @@ STRINGS =
             DEACTIVATE = "Deactivate",
 			BUTTON = "Press",
 			WHEELSPIN_STOP = "Press",
+            PICK_FLOWER = "Pick Flower From",
+            EQUIPMENTSWAP = "Swap Clothes",
         },
 
 		OPEN_CRAFTING =
@@ -675,6 +677,7 @@ STRINGS =
         BURY = "Bury",
         FEED = "Feed",
         FAN = "Fan",
+        ERASE_PAPER = "Erase",
         UPGRADE =
         {
             GENERIC = "Upgrade",
@@ -945,6 +948,8 @@ STRINGS =
         EMPTY_CONTAINER = "Empty",
 
         ROTATE_FENCE = "Rotate",
+
+        PERFORM = "Perform",
 	},
 
     -- PC controls get hex ranges EE90xx to EE9Fxx
@@ -1241,13 +1246,29 @@ STRINGS =
         TURF_FUNGUS_RED = "Fungal Turf",
         TURF_FUNGUS_GREEN = "Fungal Turf",
 		TURF_FUNGUS_MOON = "Mutated Fungal Turf",
+
 		TURF_ARCHIVE = "Ancient Stonework",
+
+		BLUEPRINT_CRAFTINGSET_RUINS_BUILDER = "Ruins Turf Blueprints",
+		BLUEPRINT_CRAFTINGSET_RUINSGLOW_BUILDER = "Imitation Ruins Turf Blueprints",
+		TURF_RUINSBRICK = "Ancient Flooring",
+		TURF_RUINSBRICK_GLOW = "Imitation Ancient Flooring",
+		TURF_RUINSTILES = "Ancient Tilework",
+		TURF_RUINSTILES_GLOW = "Imitation Ancient Tilework",
+		TURF_RUINSTRIM = "Ancient Brickwork",
+		TURF_RUINSTRIM_GLOW = "Imitation Ancient Brickwork",
+
         TURF_SINKHOLE = "Slimy Turf",
         TURF_UNDERROCK = "Cave Rock Turf",
         TURF_MUD = "Mud Turf",
         TURF_DESERTDIRT = "Sandy Turf",
         TURF_DECIDUOUS = "Deciduous Turf",
         TURF_MONKEY_GROUND = "Moon Quay Beach Turf",
+
+        TURF_CARPETFLOOR2 = "Lush Carpet",
+        TURF_MOSAIC_GREY = "Grey Mosaic Flooring",
+        TURF_MOSAIC_BLUE = "Blue Mosaic Flooring",
+        TURF_MOSAIC_RED = "Red Mosaic Flooring",
 
         COOKPOT = "Crock Pot",
         DUG_GRASS = "Grass Tuft",
@@ -1322,7 +1343,6 @@ STRINGS =
         BERRYBUSH = "Berry Bush",
         BERRYBUSH2 = "Berry Bush",
         BERRYBUSH_JUICY = "Juicy Berry Bush",
-        BONFIRE = "Bonfire",
         CAMPFIRE = "Campfire",
         CANARY = "Canary",
         CANARY_POISONED = "Canary (Volatile)",
@@ -1770,7 +1790,6 @@ STRINGS =
         KNIGHT = "Clockwork Knight",
         BISHOP = "Clockwork Bishop",
         ROOK = "Clockwork Rook",
-        SUNKBOAT = "Sunken Boat",
         MAXWELLPHONOGRAPH = "Maxwell's Phonograph",
         MAXWELLTHRONE = "Nightmare Throne",
         MAXWELLLOCK = "Nightmare Lock",
@@ -1814,6 +1833,7 @@ STRINGS =
         BLUEPRINT_RARE = "{item} Blueprint",
         SKETCH = "{item} Sketch",
         TACKLESKETCH = "{item} Advert",
+        COOKINGRECIPECARD = "{item} Recipe Card",
         BAT = "Batilisk",
         TEAMLEADER = "Team Leader",
         BATWING = "Batilisk Wing",
@@ -1884,6 +1904,7 @@ STRINGS =
         WETPOUCH = "Crumpled Package",
         GOGGLESHAT = "Fashion Goggles",
         DESERTHAT = "Desert Goggles",
+        ANTLIONHAT = "Turf-Raiser Helm",
         ANTLION = "Antlion",
         ANTLION_SINKHOLE = "Sinkhole",
         SANDSPIKE = "Sand Spike",
@@ -1920,6 +1941,7 @@ STRINGS =
         SHADOWMINER_BUILDER = "Shadow Miner",
         SHADOWDIGGER_BUILDER = "Shadow Digger",
         SHADOWDUELIST_BUILDER = "Shadow Duelist",
+        SHADOWDANCER = "Shadow Dancer",
 
         SHADOWTENTACLE = "Shadow Tentacle",
 
@@ -3447,6 +3469,13 @@ STRINGS =
         WX78_SCANNER_SUCCEEDED = "Bio Scanalyzer",
         WX78_MODULEREMOVER = "Circuit Extractor",
 
+		-- QOL 2022
+		JUSTEGGS = "Plain Omelette",
+		VEGGIEOMLET = "Breakfast Skillet",
+		TALLEGGS = "Tall Scotch Eggs",
+		BEEFALOFEED = "Steamed Twigs",
+		BEEFALOTREAT = "Beefalo Treats",
+
         -- Pirates
         BOAT_ROTATOR = "Rudder",
         BOAT_ROTATOR_KIT = "Rudder Kit",
@@ -3503,6 +3532,39 @@ STRINGS =
         BANANAJUICE = "Banana Shake",
 
         FENCE_ROTATOR = "Fencing Sword",
+
+        CHARLIE_STAGE_POST = "Stage",
+        CHARLIE_LECTURN = "Playbill",
+
+        HEDGEHOUND = "Briar Wolf",
+        HEDGEHOUND_BUSH = "Briar",
+
+        CHARLIE_HECKLER = "Mockingbird",
+
+        STAGEUSHER = "Stagehand",
+        SEWING_MANNEQUIN = "Mannequin",
+
+        MASK_DOLLHAT = "Doll Mask",
+        MASK_DOLLBROKENHAT = "Cracked Doll Mask",
+        MASK_DOLLREPAIREDHAT = "Shattered Doll Mask",
+        MASK_BLACKSMITHHAT = "Blacksmith Mask",
+        MASK_MIRRORHAT = "Mirror Mask",
+        MASK_QUEENHAT = "Queen Mask",
+        MASK_TREEHAT = "Tree Mask",
+		MASK_KINGHAT = "King Mask",
+        MASK_FOOLHAT = "Fool Mask",
+
+        COSTUME_DOLL_BODY = "Doll Costume",
+        COSTUME_QUEEN_BODY = "Queen Costume",
+        COSTUME_BLACKSMITH_BODY = "Blacksmith Costume",
+        COSTUME_MIRROR_BODY = "Mirror Costume",
+        COSTUME_TREE_BODY = "Tree Costume",
+        COSTUME_KING_BODY = "King Costume",
+        COSTUME_FOOL_BODY = "Fool Costume",
+
+        PLAYBILL_THE_DOLL = "The Enchanted Doll\nA Stage Play",
+        STATUEHARP_HEDGESPAWNER = "Overgrown Statue",
+
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -3722,8 +3784,23 @@ STRINGS =
         TURF_CHECKERFLOOR = "Nicely checkered marble tiles.",
         TURF_METEOR = "The cratered surface of the moon.",
         TURF_FUNGUS_MOON = "The mutated fungal floor of a cave.",
+		TURF_ARCHIVE = "Ancient stonework from an unsealed archive.",
+		BLUEPRINT_CRAFTINGSET_RUINS_BUILDER = "Build a floor in the style of a long-gone civilization.",
+		BLUEPRINT_CRAFTINGSET_RUINSGLOW_BUILDER = "As faithful a recreation as could be mustered.",
+		TURF_RUINSBRICK = "Ancient stone flooring, decorated with a magical technique lost to time.",
+		TURF_RUINSBRICK_GLOW = "A reproduction of ancient stone flooring.",
+		TURF_RUINSTILES = "Tile flooring, decorated with a magical technique lost to time.",
+		TURF_RUINSTILES_GLOW = "A reproduction of ancient tile flooring.",
+		TURF_RUINSTRIM = "Brick flooring, decorated with a magical technique lost to time.",
+		TURF_RUINSTRIM_GLOW = "A reproduction of ancient brick flooring.",
         TURF_SHELLBEACH = "A patch of seashell seashore.",
         TURF_CARPETFLOOR = "Super soft. Smells like Beefalo.",
+
+        TURF_CARPETFLOOR2 = "Super Super soft.",
+        TURF_MOSAIC_GREY = "Elegantly broken rock. In grey.",
+        TURF_MOSAIC_BLUE = "Elegantly broken rock. In blue.",
+        TURF_MOSAIC_RED  = "Elegantly broken rock. In red.",
+
         TURF_ROAD = "Build your own road to nowhere.",
         TURF_DRAGONFLY = "Quell the spread of fire.",
         SEWING_KIT = "Fix up degraded clothing items.",
@@ -3824,6 +3901,7 @@ STRINGS =
         CATCOONHAT = "For those who value warmth over friends.",
         GOGGLESHAT = "Decorative goggles you can oggle.",
         DESERTHAT = "Keeps the sand out of your eyes.",
+        ANTLIONHAT = "Shake things up by getting rid of old turf.",
 
         FEATHERPENCIL = "Yes, the feather IS necessary.",
         COOKBOOK = "Review your repertoire of recipes.",
@@ -4299,7 +4377,17 @@ STRINGS =
 
         FENCE_ROTATOR = "A sword, used for fencing.",
 
+        --
+        SEWING_MANNEQUIN = "A model for all the latest equippable looks.",
+
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
+
+	COOKINGRECIPECARD_DESC = 
+	{
+		BASE = "{name}:\n{ingredients}.",
+		INGREDIENTS_FIRST = "{num}x {ing}",
+		INGREDIENTS_MORE = ", {num}x {ing}",
+	},
 
     -- MAXWELL_QUEST_SURVIVE = {
     --  {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -6657,6 +6745,8 @@ STRINGS.UI =
         ANY = "Any",
     },
 
+	PLAYSTYLE_ANY = "Any",
+
     CONSOLESCREEN =
     {
         REMOTEEXECUTE = "Remote:",
@@ -6753,6 +6843,7 @@ STRINGS.UI =
         ACKNOWLEDGEWARNING = "Don't Show This Again.",
         SCRIPTERRORRESTART = "Reload Save",
         SCRIPTERRORQUIT = "Exit Game",
+        SCRIPTERROR_DEBUG = "Debug Console",
         SCRIPTERRORMODWARNING = "This error may have occurred due to a mod you have enabled!\nYou have the following mods enabled:\n",
         TESTING = "This is the testing branch!",
         TESTINGDETAIL = "You may encounter bugs or broken features, and you may lose your save game when we update. Please report all problems in the forum.",
@@ -6887,7 +6978,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Wickerbottom\nBeta Build",
+		MAINBANNER_BETA_TITLE = "A Little Drama\nBeta Build",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -7113,6 +7204,7 @@ STRINGS.UI =
         FOOD_EFFECTS_DUST_MOTH_FOOD = "Thulecite's secret ingredient",
 		FOOD_EFFECTS_SANITY_REGEN = "Restores sanity over time",
 		FOOD_EFFECTS_HOT_SANITY_REGEN = "Warms the body and mind",
+		FOOD_EFFECTS_BEEFALO = "Treat your Beefalo",
 
 		FOOD_TYPE_TITLE = "Type",
 		FOOD_TYPE_UNKNOWN = "?",
@@ -7571,6 +7663,10 @@ STRINGS.UI =
         NETBOOKMODE = "Netbook Mode:",
         ENABLED = "Enabled",
         DISABLED = "Disabled",
+        FAINT = "Faint",
+        WEAK = "Weak",
+        STRONG = "Strong",
+        MAX = "Max",
         STEAM_CLOUD_SAVES = "Steam Cloud",
         LOCAL_SAVES = "Local Files",
         FX = "Sound FX Volume:",
@@ -7784,7 +7880,7 @@ STRINGS.UI =
         TIP_GARDENEERHAT = "\"I've finally perfected my design for an ingenious (if I do say so myself) device that stores important garden-based knowledge. Certain naysayers might point out that it looks like nothing more than an overturned flowerpot worn on the head... some people simply don't have an eye for science.\" -W",
         TIP_COOKBOOK = "\"Once I've perfected a recipe, I find it helpful to write it down. Luckily, I've been able to cobble together a rough cookbook for just such a thing out of some spare pieces of parchment. Now my mind is free to worry about more immediate things...\" -W",
         TIP_NEWRECIPES = "\"Recipes are useful, but a true chef knows the importance of experimenting with new ingredients and flavors, and this world certainly provides an abundance of unusual things to choose from.\" -W",
-        TIP_REPLANTING = "\"The bushes I replanted by the camp are looking malnourished... I suspect they'll require some extra care before they can produce any berries again.\" -W",
+        TIP_REPLANTING = "\"The bushes I replanted by the camp are looking sickly... I suspect they'll require some extra care before they can produce any berries again.\" -W",
         TIP_NAUGHTINESS = "\"We shouldn't hurt things that don't hurt us. If we're mean, bad old Mr. Krampus will come...\" -W",
         TIP_BERRYLURE = "\"Last time I baited my hook with berries I caught more fish than I could carry, but when I tried today? Barely a nibble! Guess the berry trick only works on some of 'em.\" -W",
         TIP_OCEANEXPLORATION = "\"What strange new islands and creatures might I encounter if I journey out to sea? I shudder to think... but curiosity has a tendency to get the better of me...\" -W",
@@ -8214,7 +8310,15 @@ STRINGS.UI =
         SURVIVED_MSG_1_DAY = "Survived %d Day",
         RESET_BUTTON = "Reset Now",
         BUTTONPROMPT1 = "Hold ",
-        BUTTONPROMPT2 = "to Reset Now"
+        BUTTONPROMPT2 = "to Reset Now",
+        REGEN_MSG = "Everyone is dead. The world will reset in: %d",
+
+		REGEN_CONFIRM_TITLE = "Start a New World",
+		REGEN_CONFIRM_BODY = "Are you sure you want to start a new world?",
+
+		REVIVE_0 = "I hope you are playing with friends, or had prepared a way to revive...",
+		REVIVE_1 = "Haunt a {item1} to revive, or find another way.",
+		REVIVE_2 = "Haunt a {item1} or {item2} to revive, or find another way.",
     },
 
     VOTEDIALOG =
@@ -8492,7 +8596,7 @@ STRINGS.UI =
                 "The Caves",                 -- Caves content in DST
                 "Caves Plus",                -- harder caves
 
-            SURVIVAL_TOGETHER = "Standard Forest",
+            SURVIVAL_TOGETHER = "Survival",
             SURVIVAL_TOGETHER_PS4 = "Generic Forest",
             SURVIVAL_TOGETHER_CLASSIC = "No Giants Here",
             SURVIVAL_DEFAULT_PLUS = "Forest Plus",
@@ -8504,6 +8608,10 @@ STRINGS.UI =
             QUAGMIRE = "The Gorge",
             TERRARIA = "Taste of Terraria",
             TERRARIA_CAVE = "Caves of Terraria",
+
+			RELAXED = "Relaxed",
+			WILDERNESS = "Wilderness",
+			ENDLESS = "Endless",
 
             MOD_MISSING = "<MOD MISSING>",
         },
@@ -8525,19 +8633,25 @@ STRINGS.UI =
                 "Delve into the caves... together!",
                 "A darker, more arachnid-y cave experience.",
 
-            SURVIVAL_TOGETHER = "The standard Don't Starve experience.",
             SURVIVAL_TOGETHER_CLASSIC = "Don't Starve Together with Reign of Giants turned off.",
             SURVIVAL_DEFAULT_PLUS = "A quicker start in a harsher world.",
-            COMPLETE_DARKNESS = "A dark twist on the standard Don't Starve experience.",
             DST_CAVE = "Delve into the caves... together!",
             DST_CAVE_PLUS = "A darker, more arachnid-y cave experience.",
             LAVAARENA = "Dare you prove yourself in The Forge?",
             QUAGMIRE = "Can you stand the heat in The Gorge?",
-            TERRARIA = "Don't Starve Together, with a Terarria-inspired twist.",
-            TERRARIA_CAVE = "Don't Starve Together, with a Terarria-inspired twist... in the caves!",
+            TERRARIA = "Don't Starve Together, with a Terraria-inspired twist.",
+            TERRARIA_CAVE = "Don't Starve Together, with a Terraria-inspired twist... in the caves!",
+
+            SURVIVAL_TOGETHER = "The standard Don't Starve experience.",
+			RELAXED = "A more relaxed playstyle with less threats from the world.\nSurvivors will not die from starvation, freezing, overheating, or the darkness.\nDamage to survivors is reduced. Resurrection is always available via the Florid Postern.",
+			WILDERNESS = "It's wild and dangerous out there!\nEnter at a random location in the world.\nWhen you die: pick a new survivor and try, try again.",
+			ENDLESS = "A never-ending Don't Starve sandbox.\nResurrection is always available via the Florid Postern.",
+            COMPLETE_DARKNESS = "A dark twist on the standard Don't Starve experience.",
 
             MOD_MISSING = "This preset came from a mod, but that mod isn't active right now!",
         },
+
+        PRESET_PLAYSTYLE_LABEL = "Playstyle:",
 
         TASKSETNAMES =
         {
@@ -8782,6 +8896,19 @@ STRINGS.UI =
         PALMCONE_SEED_PORTALRATE = "Palmcone Sprouts",
         POWDER_MONKEY_PORTALRATE = "Powder Monkeys",
 
+        BASICRESOURCE_REGROWTH = "Basic Resources",
+        SPAWNMODE = "Spawn Mode",
+        PORTALRESURECTION = "Revive At Florid Postern",
+        GHOSTENABLED = "Survivor Death",
+        GHOSTSANITYDRAIN = "Ghost Sanity Drain",
+        RESETTIME = "Death Reset Timer",
+
+        HUNGER = "Hunger Damage",
+        TEMPERATUREDAMAGE = "Temperature Damage",
+        DARKNESS = "Darkness Damage",
+        HEALTHPENALTY = "Max Health Penalty",
+		LESSDAMAGETAKEN = "Damage Taken",
+        STAGEPLAYS = "Stage Plays",
 		-- End of world customization strings
     },
 
@@ -8821,6 +8948,7 @@ STRINGS.UI =
     {
         SERVER_LIST_TITLE = "Servers",
         SERVER_LIST_TITLE_INTENT = "%s Servers",
+        SERVER_LIST_TITLE_PLAYSTYLE = "%s Servers",
         DIRECTCONNECT = "Direct Connect",
         REFRESH = "Refresh",
         REFRESHING = "Refreshing...",
@@ -8981,8 +9109,12 @@ STRINGS.UI =
             COOPERATIVE = "Teamwork is your guiding principal. It's not enough to just not starve, you have to not starve... Together!",
             COMPETITIVE = "You'll show your opponents exactly what you're made of by playing smarter, harder, faster and coming out on top!",
             MADNESS = "Who knows what'll happen next? Mass fighting, crazy dance parties, pits filled with carnivorous spiders... it's pure madness!",
-            ANY = "You're, like, laidback and flexible, man. Any world is good with you."
+            ANY = "You're, like, laidback and flexible, man. Any world is good with you.",
         },
+        PLAYSTYLE_FILTER = "Playstyle:",
+        PLAYSTYLE_TITLE = "What's your playstyle?",
+        PLAYSTYLE_BUTTON = "Choose Playstyle",
+		PLAYSTYLE_ANY_DESC = "You're, like, laidback and flexible, man. Any world is good with you.",
         MISSINGDATATITLE = "Out-of-Date Server",
         MISSINGDATABODY = "This server is not up to date. We cannot display its world settings.",
         SERVER_LANGUAGE_WARNING_TITLE = "Server Language Mismatch",
@@ -9036,6 +9168,9 @@ STRINGS.UI =
             COMPETITIVE = "This server is the perfect arena for a fair fight. Everyone needs a place to prove who's the best at surviving, fighting, building, or... whatever.",
             MADNESS = "Anything goes on this server! Forests will be burned, food will be nommed, and backs will be unceremoniously stabbed. Be prepared!",
         },
+
+		PLAYSTYLE_TITLE = "Pick your server's playstyle.",
+
         NEWHOST_TITLE = "Creating your first world?",
         NEWHOST_TYPE =
         {
@@ -9150,8 +9285,10 @@ STRINGS.UI =
 
     GAMEMODES =
     {
-        SURVIVAL = "Survival",
-        SURVIVAL_DESCRIPTION = "We survive together, we die together!\n\n* Enter the world through the Florid Postern.\n* Become a ghost when you die.\n* Ghost players cause a sanity drain for living players.",
+        SURVIVAL = "Default",
+        SURVIVAL_DESCRIPTION = "We survive together, we die together!\n\n* Survive through the seasons and protect yourself from the world.\n* Uncover ancient secrets hidden within the shadows.\n* Grow crops, catch fish, hunt for meat. Whatever you do, don't starve.",
+--        SURVIVAL = "Survival",
+--        SURVIVAL_DESCRIPTION = "We survive together, we die together!\n\n* Enter the world through the Florid Postern.\n* Become a ghost when you die.\n* Ghost players cause a sanity drain for living players.",
         WILDERNESS = "Wilderness",
         WILDERNESS_DESCRIPTION = "It's wild and dangerous out there!\n\n* Enter at a random location in the world.\n* No safety net. If you die: try, try again.\n* Those you encounter may or may not be friendly.",
         ENDLESS = "Endless",
@@ -11952,6 +12089,11 @@ STRINGS.UI =
         QTYNORMAL = "Normal",
         QTYMEDIUM = "Medium",
 
+        PORTAL = "Florid Postern",
+
+		RESPAWN = "Change Survivor",
+		BECOMEGHOST = "Become a Ghost",
+
 		DAY_5 = "After Day 5",
 		DAY_10 = "After Day 10",
 		DAY_15 = "After Day 15",
@@ -11996,6 +12138,8 @@ STRINGS.UI =
 
         ENABLED = "Enabled",
         DISABLED = "Disabled",
+        INSTANT = "Instant",
+        NONLETHAL = "Nonlethal",
 
         DEFAULTSTART = "Default",
         PLUSSTART = "Plus",
@@ -12763,6 +12907,9 @@ STRINGS.KITCOON_NAMING =
 		"Kira",
         "Finch",
         "Mango",
+		"Ares",
+		--"Armella",
+		"Armello",
     },
 }
 
@@ -12851,6 +12998,730 @@ STRINGS.SONGS =
 	},
 }
 
+STRINGS.STAGEACTOR =
+{
+
+    WILSON1 =
+    {
+        "I am the very model of a modern Major-General",
+        "I've information vegetable, animal, and mineral",
+        "I'm very well acquainted, too, with matters Mathematical",
+        "I understand equations, both the simple and quadratical",
+    },
+
+    WALTER1 =
+    {
+        "I've been teaching Woby lots of tricks, watch!",
+        "Okay Woby... stay!",
+        "Good girl!",
+
+        "We're uh... we're still working on the rest.",
+        "Still pretty impressive though, right?",
+    },
+
+    WANDA1 =
+    {
+        "\"You are old, Father William,\" the young man said",
+        "\"And your hair has become very white;",
+        "And yet you incessantly stand on your head—",
+        "Do you think, at your age, it is right?\"",
+        "\"In my youth,\" Father William replied to his son,",
+        "\"I feared it might injure the brain;",
+        "But now that I'm perfectly sure I have none,",
+        "Why, I do it again and again.\"",
+    },
+
+    WARLY1 =
+    {
+        "Adieu, patrie!",
+        "L'onde est en furie.",
+        "Adieu, patrie,",
+        "Azur!",
+        "Adieu, maison, treille au fruit mûr,",
+        "Adieu, les fleurs d'or du vieux mur!",  
+    },
+    
+    WAXWELL1 = 
+    {
+        "Thank you very much, you are too kind.",
+        "And now, I will pull shadows incarnate from this mysterious tome!",
+        "The show was better with... well, it was better before.",
+    },
+
+    WEBBER_SPIDER = {
+        "\"Will you walk into my parlour?\"",
+        "said a spider to a fly;",
+        "'Tis the prettiest little parlour that ever you did spy.",
+        "The way into my parlour is up a winding stair,",
+        "And I have many pretty things to shew when you are there.",
+        "\"Oh no, no!\" said the little fly",
+        "to ask me is in vain",
+        "For who goes up your winding stair can ne'er come down again.",
+    },
+
+    WEBBER_BOY = {
+        "Ahem! We're going to say a poem now!",
+        "Little Miss Muffet she sat on her tuffet,",
+        "eating her curds and whey.",
+        "Along came a spider who sat down beside her",
+        "And frightened Miss Muffet away!",
+    },
+
+    WENDY1 = {
+        "O what can ail thee, knight-at-arms,",
+        "So haggard and so woe-begone?",
+        "The squirrel's granary is full,",
+        "And the harvest's done.",
+        "I see a lily on thy brow,",
+        "With anguish moist and fever-dew,",
+        "And on thy cheeks a fading rose",
+        "Fast withereth too.",
+    },
+
+    WICKERBOTTOM1 = {
+        "Theater as an art form is practiced throughout the world.",
+        "The Western tradition of theater can trace its origins back to ancient Athens;",
+        "the word \"theater\" of course coming from the Greek \"theatron,\"",
+        "which itself was derived from the verb \"theasthai,\" \"to behold.\"",
+        "Isn't etymology delightful?",   
+    },
+
+    WILLOW1 = {
+        "Fire fire, burning bright,",
+        "In the forests of the night;",
+        "And in the mountains, and the plains,",
+        "And the towns, and the cities,",
+        "Everywhere! Burn it all down!! Hahaha!!", anim="emote_happycheer",
+        "Yeah, pretty sure that's how that poem goes.",
+    },
+
+    WINONA1 = {
+        "There once was a gal from the sticks,",
+        "Who went out to look for her sis.",
+        "But she found her too late,",
+        "And got yanked through a gate,",
+        "Ain't family drama the pits?",
+    },
+
+    WOLFGANG1 = {
+        "Wolfgang is not just man of big muscles,",
+        "Is man of mighty feelings too.",
+        "Will read poem to you now:",
+        "Wolfgang likes his friends,",
+        "Though some are weird, make scary magic, and one is spider,",
+        "Will stay with them till very end,",
+        "Make Wolfgang's bad day brighter.",
+    },  
+
+    WOODIE1 = {
+        "Er... I don't really like bein' the center of attention.",
+        "Let me try!", 
+        "Chop chop chop, swing swing swing,", 
+        "Choppin' is my favourite thing.", 
+        "Swing swing swing, chop chop chop,", 
+        "Love it way too much to stop!", 
+        "You've sure got a way with words, Luce.",
+    },
+
+    WORMWOOD1 = {
+        "Hello friends!",
+        "Watching? Hmm...",
+        "Doo-doo-dee-doop",
+        "Woo-wah-wah!",
+        "Deedle-deedle-deedle-woo",
+        "Wah-wah-wheee!",
+        "Oop-doodle-doo",
+        "Bwa-waaaaaaaaaah!",
+    },
+
+    WORTOX1 = {
+        "The wisest aunt, telling the saddest tale,",
+        "Sometime for three-foot stool mistaketh me;",
+        "Then slip I from her bum, down topples she,",
+        "And 'tailor' cries, and falls into a cough;",
+        "And then the whole quire hold their hips and laugh,",
+        "And waxen in their mirth and neeze and swear",
+        "A merrier hour was never wasted there.",
+    },
+
+    WURT1 = {
+        "Glurp... th-this is fairy story. Made by Wurt.",
+        "Once upon time, there was super strong Mermfolk princess.",
+        "Merm princess build houses for all her friends,",
+        "and make pretty decorations from bones of her enemies.",
+        "Everyone live happily ever after, the end.",
+    },
+
+    WX1 = {
+        "PERCEIVE ME, FLESHLINGS",
+        "YES. GOOD",
+        "I KNOW YOU MEATBAGS ARE WEAK-WILLED",
+        "SO AS YOUR OVERLORD",
+        "I HAVE DECIDED TO ENGAGE IN...",
+        "UGH...",
+        "\"MOTIVATIONAL SPEAKING\"",
+        "TO INSPIRE YOU TO BE MORE USEFUL TO ME",
+        "BUT SINCE YOU HAVE SAD LITTLE MEAT BRAINS",
+        "I AM KEEPING MY EXPECTATIONS LOW",
+        "IS THE INSPIRATION WORKING YET?",
+    },
+
+    WES1 = {
+        "Essayez-vous comprendre mes pensées?",
+        "Ah, comme c'est gentil à vous!",
+        "Je suis flatté. :)",
+    },
+
+    BAD_COSTUMES = {
+        "Something's wrong!",
+        "Check your costumes!", 
+        "We'll come back.",
+        "When you get it right!",
+    },
+
+    REPEAT_COSTUMES = {
+        "Are you kidding?",
+        "Am I seeing double?!",
+        "No understudies!",
+    },
+
+    NO_SCRIPT = {
+        "Something's off.",
+        "They're going off-script!",
+        "I didn't come for improv!",
+        "We're out.",
+    },
+
+    BLACKSMITH_SOLILOQUY = {
+        -- BIRDS
+        "\"The Blacksmith's Soliloquy\"",
+        "Forging on ahead.",
+
+        -- BLACKSMITH
+        "Oh little doll, little doll!",
+        "Where have you gone?",
+        "It's not safe for you out there",
+        "in the big wide world!",
+
+        -- BIRDS
+        "If it ain't broke...",
+        "She'll still try to fix it.",
+    },
+
+    KING_SOLILOQUY = {
+        -- BIRDS
+        "\"The King's Soliloquy\"",
+        "He's King for now, anyway.",
+
+        -- KING
+        "How different might things have been,",
+        "if I never sought the crown?",
+        "I suppose the world would be a bit brighter.",
+        "What a terrible thought indeed.",
+
+        -- BIRDS
+        "Heavy is the head who wears the crown.",
+        "His head is bigger than most.",  
+    },
+
+    FOOL_SOLILOQUY = {
+        -- BIRDS
+        "\"The Fool's Soliloquy\"",
+        "Who do they think they're fooling?",
+
+        -- FOOL
+        "Once I acted as I thought I should,",
+        "I followed all the rules.",
+        "But soon I found out life's a game,",
+        "and I have played the fool!",
+
+        -- BIRDS
+        "My head hurts.",
+        "Listening to a fool will do that.",
+    },
+
+    TREE_SOLILOQUY = {
+        -- BIRDS
+        "\"Ode to the Scenery\"",
+        "Oh, this is going to be good.",
+
+        -- NARRATOR
+        "The tree stood alone.",
+        "In resolute silence.",
+        "Not doing much of anything.",
+
+        -- BIRDS
+        "That was my favorite act so far.",
+        "Bravo! Bravissima!",
+    },
+
+    REUNION = {
+        -- BIRDS
+        "\"The Reunion\"",
+        "Ooooh, sounds juicy!",
+
+        -- NARRATOR
+        "The Blacksmith had been searching for the doll,",
+        "and at last her journey came to an end.",
+
+        -- BLACKSMITH
+        "Little doll, is that really you?",
+        "How you've changed...",
+
+        -- QUEEN
+        "It is me,",
+        "but I am not the little doll you once knew.",
+        "You were right, Blacksmith.",
+        "The world is too dangerous for one made of porcelain.",
+        "But you need not fear for me anymore.",
+        "Now I'm made of something stronger.",
+
+        -- BIRDS
+        "Oh, I was wondering what happened to the blacksmith.",
+        "It's nice to have closure.",
+
+        -- WINONA COMMENT
+        "No way, it can't just end like that!",
+    },
+
+    ACT1_SCENE1 = {
+        -- BIRDS
+        LINE1   = "Act 1.",
+        LINE2   = "Yeah, scene 1!",
+
+        -- NARRATOR
+        LINE3   = "Long ago, in a land oh so far away",
+        LINE4   = "a strange magic filled the air,",
+        LINE5   = "and a porcelain doll came to life.",
+
+        -- DOLL
+        LINE6   = "Ahh.",
+        LINE7   = "I can move my hands? And my feet too!",
+        LINE8   = "Is this what it's like to be alive?",
+        LINE9   = "And what a big world to be alive in!",
+        LINE10  = "There are so many things I've never done," ,
+        LINE11  = "so many things I've never seen...",
+        LINE12  = "I must explore every last bit of it!",
+
+        -- NARRATOR
+        LINE13  = "The thought of starting a life of her own",
+        LINE14  = "filled the doll's heart with joy.",
+        LINE15  = "But not everyone shared the sentiment...",
+
+        -- BIRDS
+        LINE16  = "You don't see talent like that everyday.",
+        LINE17  = "Thankfully.",
+        LINE18  = "At least the tree was good.",
+        LINE19  = "HA HA HA HA HA!",
+    },
+
+    ACT1_SCENE2 = {
+        -- BIRDS
+        LINE1   = "Act 1!",
+        LINE2   = "Scene 2, right?",
+
+        -- NARRATOR
+        LINE3   = "The little doll ran first to the Blacksmith,",
+        LINE4   = "who had cared for her ever since",
+        LINE5   = "the Blacksmith herself was small.",
+        LINE6   = "The Blacksmith was delighted to see",
+        LINE7   = "that the doll had come to life,",
+        LINE8   = "but her delight quickly gave way to fear.",
+
+        -- BLACKSMITH
+        LINE9   = "Little doll, you must be careful!",
+        LINE10  = "The world is filled with dangers",
+        LINE11  = "for one as fragile as you.",
+        LINE12  = "It's simply not the place for a girl made of porcelain!",
+        LINE13  = "I know what must be done,",
+        LINE14  = "I will build you a fine suit of armor.",       
+        LINE15  = "Wear it, and you will have nothing to fear.",
+
+        -- NARRATOR
+        LINE16  = "And so, the Blacksmith went to her anvil,",
+        LINE17  = "and fashioned a suit of heavy iron armor.",
+        LINE18  = "The little doll put it on,",
+        LINE19  = "but found that she could barely move in it.",
+
+        -- DOLL
+        LINE20  = "This armor is so heavy,",
+        LINE21  = "I feel as though I might just...",
+
+        -- NARRATOR
+        LINE22  = "The little doll waited until it was dark,",
+        LINE23  = "and the Blacksmith went to sleep.",
+        LINE24  = "Then she shed the heavy armor,",
+        LINE25  = "and slipped out into the night",
+        LINE26  = "to begin her adventure.",
+
+        -- WINONA COMMENT
+        LINE27  = "Sis... are you tryin' to tell me something?",
+
+        -- BIRDS
+        LINE28  = "That blacksmith really cracks me up.",
+        LINE29  = "I dunno, the acting was pretty heavy-handed.",
+        LINE30  = "HA HA HA HA HA!",
+        LINE31  = "But did you see that tree?",
+        LINE32  = "Right? Such presence!",
+    },
+
+    ACT1_SCENE3 = {
+        -- BIRDS
+        LINE1   = "Act 1.",
+        LINE2   = "Scene 3!",
+        LINE3   = "Yeah, scene 3.",
+
+        -- NARRATOR
+        LINE4   = "The little doll walked and walked,",
+        LINE5   = "marveling as the countryside gave way",
+        LINE6   = "to a bustling city.",
+        LINE7   = "One day, she happened upon a man in a golden crown,",
+        LINE8   = "traveling down the road.",
+        LINE9   = "He twirled his finger in the air,",
+        LINE10  = "and the trees and flowers bloomed at his command.",
+        LINE11  = "Crowds gathered to watch him pass.",
+
+        -- BIRDS
+        LINE12  = "Get a load of this guy.",
+        LINE13  = "What a show-off.",
+
+        -- DOLL
+        LINE14  = "Excuse me, sir!", 
+        LINE15  = "How did you make the flowers bloom?",
+
+        -- KING
+        LINE16  = "Why, it's magic, my dear!",
+        LINE17  = "And I am no simple \"sir\",",
+        LINE18  = "but the King of this land!",
+
+        -- DOLL
+        LINE19  = "Oh! I'm terribly sorry,",
+        LINE20  = "I've never met a king before,",
+        LINE21  = "I didn't know what they looked like.",
+
+        -- KING
+        LINE22  = "Ho, ho!",
+        LINE23  = "Truth be told,",
+        LINE24  = "I've never met a porcelain doll",
+        LINE25  = "quite so alive before.",
+        LINE26  = "Perhaps we could travel together?",
+        LINE27  = "This road is long, and can get quite lonely.",
+
+        -- DOLL
+        LINE28  = "How wonderful!",
+        LINE29  = "Would you teach me your magic along the way?",
+
+        -- KING
+        LINE30  = "I would be delighted.",
+
+        -- BIRDS
+        LINE31  = "The plot thickens.",
+        LINE32  = "I think you mean sickens.",
+        LINE33  = "HA HA HA HA HA!",
+    },
+
+    ACT2_SCENE4 = {
+        -- BIRDS
+        LINE1   = "Back from intermission.",
+        LINE2   = "Yes, on to Act 2!",
+        LINE3   = "Scene 1.",
+
+        -- NARRATOR
+        LINE4   = "Time passed, and the King brought the little doll",
+        LINE5   = "on many wonderful adventures.",
+        LINE6   = "The doll asked often about the King's magic,",
+        LINE7   = "and if he would teach her,",
+        LINE8   = "but the King always gave one excuse or another.",
+
+        -- KING
+        LINE9   = "Not today little doll,",
+        LINE10  = "I'm a bit under the weather.",
+        LINE11  = "I'm afraid I can't,",
+        LINE12  = "there's a full moon out tonight!",
+        LINE13  = "Dear me, I couldn't possibly!",
+        LINE14  = "Don't you know it's bad luck to teach magic on Wednesdays?",
+
+        -- NARRATOR
+        LINE15  = "The doll believed the King,",
+        LINE16  = "so she waited. And waited...",
+        LINE17  = "Until one day,",
+        LINE18  = "she found a hidden chamber in the King's castle,",
+        LINE19  = "and discovered his secret.",
+
+        -- MIRROR
+        LINE20  = "Oh! Hello there, who are you?",
+        LINE21  = "I have no name,",
+        LINE22  = "I am known only as the magic mirror.",
+        LINE23  = "Your King has stolen my power",
+        LINE24  = "and kept me hidden away.",
+        LINE25  = "How I hunger for freedom.",
+        LINE26  = "Just a taste of the outside world...",
+
+        -- BIRDS
+        LINE27  = "I knew I didn't trust that King!",
+        LINE28  = "Boo! Hiss!",
+
+        -- DOLL
+        LINE29  = "How terrible!",
+        LINE30  = "Don't worry,",
+        LINE31  = "I will help you leave this lonely place.",
+
+        -- KING
+        LINE32  = "No! My secret has been discovered!",
+
+        -- MIRROR
+        LINE33  = "You didn't honor our agreement.",
+        LINE34  = "Now this courageous doll has come",
+        LINE35  = "to release me from this prison.",
+
+        -- KING
+        LINE36  = "Back, I say!",
+        LINE37  = "Your magic is mine, mirror.",
+        LINE38  = "I will never let you go free!",
+        LINE39  = "Mmmagic blast!",
+
+        -- DOLL
+        LINE40  = "No!",
+
+        -- KING
+        LINE41  = "Eeep! Time to disappear!",
+        LINE42  = "Mmmagic ske-daddle!",
+
+        -- MAXWELL COMMENT
+        LINE43  = "Is that really how she remembers it?",
+
+        -- BIRDS
+        LINE44  = "I really felt for the tree.",
+        LINE45  = "Very emotional.",
+    },
+
+    ACT2_SCENE5 = {
+        -- BIRDS
+        LINE1   = "Oh good, the tree is here.",
+        LINE2   = "I was worried for a second.",
+        LINE3   = "Hurry! Act 2!",
+        LINE4   = "Scene 2!",
+
+        -- MIRROR
+        LINE5   = "Your time is not over yet, little doll.",
+        LINE6   = "Awaken!",
+
+        -- DOLL
+        LINE7   = "I'm... alive!",
+        LINE8   = "But I feel... different...",
+
+        -- BIRDS
+        LINE9   = "Good as new!",
+        LINE10  = "Better than ever!",
+
+        -- MIRROR
+        LINE11  = "I've given you what power I can spare,",
+        LINE12  = "but without the magic the King stole from me,",
+        LINE13  = "I cannot make you fully whole.",
+        LINE14  = "You must seek him out, but be wary.",
+        LINE15  = "You have seen his treacherous ways for yourself.",
+
+        -- DOLL
+        LINE16  = "I will speak to him.",
+        LINE17  = "And I promise you this, mirror;", 
+        LINE18  = "I will see both of us whole again.",
+    },
+
+    ACT2_SCENE6 = {
+        -- BIRDS
+        LINE1   = "Act 2!",
+        LINE2   = "Scene 3!",
+
+        -- NARRATOR
+        LINE3   = "The doll searched the castle for the King,",
+        LINE4   = "and found him cowering behind his throne.",
+
+        -- KING
+        LINE5   = "Leave me be, monster!",
+        LINE6   = "I-I'm just a poor, frail old man!",
+        LINE7   = "Um... and my mother is sick,",
+        LINE8   = "and I'm all she has to care for her!",
+        LINE9   = "And... oh I know! I was just now planning",
+        LINE10  = "the construction of a home for peg-legged orphans!",
+        LINE11  = "And... er... um...",
+        LINE12  = "You wouldn't hit a guy with glasses, would you?",
+
+        -- DOLL
+        LINE13  = "Are you so afraid to see your old friend?",
+
+        -- KING
+        LINE14  = "Little doll? It can't be! I... that is, you...",
+
+        -- DOLL
+        LINE15  = "The mirror brought me back to life.",
+        LINE16  = "I can feel what it feels...",
+        LINE17  = "We are going to help each other become whole again.",
+        LINE18  = "But for that, I will need your power.",
+
+        -- KING
+        LINE19  = "My power? Never!",
+        LINE20  = "Mmmmagic away!",
+
+        -- DOLL
+        LINE21  = "No!",
+
+        -- NARRATOR
+        LINE22  = "And with that, the King used his magic",
+        LINE23  = "to hide himself and his throne far away,",
+        LINE24  = "where he thought the little doll would never find him.",
+    },
+
+    ACT3_SCENE7 = {
+        -- BIRDS
+        LINE1   = "It's the Final Act!",
+        LINE2   = "Scene 1!",
+        LINE3   = "So exciting!",
+        LINE4   = "Almost done!",
+
+        -- NARRATOR
+        LINE5   = "The doll searched high and low,",
+        LINE6   = "but as time went on,",
+        LINE7   = "it seemed that the King had won.",
+        LINE8   = "Until one day...",
+
+        -- FOOL
+        LINE9   = "Cheer-a-lee, cheer-a-lone,",
+        LINE10  = "the King's so glum upon his throne!",
+        LINE11  = "Cheer-a-loo, cheer-a-lay,",
+        LINE12  = "he's sent for fools, to watch us play!",
+        LINE13  = "From far and wide he's called us there,",
+        LINE14  = "we'll perform for the one who sits on the chair!",
+
+        -- DOLL
+        LINE15  = "The King has grown bored, has he?",
+        LINE16  = "Perhaps he's grown careless as well.",
+        LINE17  = "If I follow these fools,",
+        LINE18  = "they might lead me straight to him...",
+
+        -- FOOL
+        LINE19  = "How strange, I suddenly feel like I'm being shadowed.",
+        LINE20  = "It's probably nothing!",
+    },
+
+    ACT3_SCENE8 = {
+        -- BIRDS
+        LINE1   = "Act 3!",
+        LINE2   = "Scene 2!",
+
+        -- NARRATOR
+        LINE3   = "Though the journey was long,",
+        LINE4   = "it was just as the doll had predicted.",
+        LINE5   = "The doll followed the fool",
+        LINE6   = "all the way to the King's throne room,",
+        LINE7   = "careful to keep out of sight.",
+
+        -- KING
+        LINE29  = "Fool!",
+        LINE8   = "It took you long enough!",
+        LINE9   = "I'd grown weary of waiting.",
+
+        -- FOOL
+        LINE10  = "My King!",
+        LINE11  = "Allow me to entertain you with my merry foolery!",
+        LINE12  = "Whoops-!",
+
+        -- KING
+        LINE19  = "Nooooo!",
+
+        -- NARRATOR
+        LINE13  = "In their excitement,",
+        LINE14  = "the clumsy fool knocked the King from his throne.",
+        LINE15  = "It seemed that the years",
+        LINE16  = "had not been kind to the King,",
+        LINE17  = "for when he hit the floor,",
+        LINE18  = "his frail body turned to dust.",
+
+        -- FOOL
+        LINE20  = "Oh... I suppose I'm the King now!",
+
+        -- DOLL
+        LINE21  = "There's been a fool on the throne long enough.",
+        LINE22  = "perhaps what this kingdom needs...",
+        LINE23  = "is a Queen.",
+
+        -- BIRDS
+        LINE24  = "The special effects are getting better.",
+        LINE25  = "Wish I could say the same for the actors.",
+        LINE26  = "HA HA HA HA HA!",  
+        LINE27  = "Another flawless performance from the tree.",
+        LINE28  = "How do they do it?!",
+    },
+
+    ACT3_SCENE9 = {
+        -- BIRDS
+        LINE1   = "The final scene!",
+        LINE2   = "Of the final act!",
+        LINE3   = "Finally!",
+
+        -- QUEEN
+        LINE4   = "It is as you said, mirror.",
+        LINE5   = "I've become so much more than I ever dreamed...",
+        LINE6   = "but why do you remain broken?",
+
+        -- MIRROR
+        LINE7   = "Alas,",
+        LINE8   = "I was shattered long before I met your King.",
+        LINE9   = "Even with his power,",
+        LINE10  = "I cannot yet be restored.",
+
+        -- QUEEN
+        LINE11  = "I made you a promise, mirror,",
+        LINE12  = "and I will see it through.",
+        LINE13  = "I will find the power to fix you,",
+        LINE14  = "and repay you for all you've given me.",
+
+        -- NARRATOR
+        LINE15  = "And so,",
+        LINE16  = "with the treacherous King gone and forgotten,",
+        LINE17  = "the little doll became a just and formidable Queen.",
+        LINE18  = "The people rejoiced across the land,",
+        LINE19  = "and the magic mirror knew",
+        LINE20  = "they had finally found the one who would set Them free.",
+
+        -- BIRDS
+        LINE21  = "I love a happy ending.",
+        LINE22  = "I'm just happy it ended.",
+        LINE23  = "HA HA HA HA HA!",
+    },
+}
+
+STRINGS.HECKLERS_OFF_SCRIPT = {
+    "You're going off script!",
+    "Off script! Off script!",
+    "It's all gone wrong!"
+}
+
+STRINGS.CAST = {
+    DOLL = "The Doll",
+    DOLL_BROKEN = "The Broken Doll",
+    DOLL_REPAIRED = "The Shattered Doll",
+    KING = "The King",
+    QUEEN = "The Queen",
+    BLACKSMITH = "The Blacksmith",
+    MIRROR = "The Mirror",
+    FOOL = "The Fool",
+    TREE = "The Tree",
+}
+
+STRINGS.PLAYS = {
+    THE_ENCHANTED_DOLL = {
+        "Act 1 - Scene 1",
+        "Act 1 - Scene 2",
+        "Act 1 - Scene 3",
+        "Act 2 - Scene 1",
+        "Act 2 - Scene 2",
+        "Act 2 - Scene 3",
+        "Act 3 - Scene 1",
+        "Act 3 - Scene 2",
+        "Act 3 - Scene 3",
+        "- The Reunion -",
+    },
+}
 
 --Don't include this in pot generation as this file is already translated.
 if POT_GENERATION == false then

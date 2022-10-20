@@ -34,7 +34,7 @@ function fns.IsNearDanger(inst, hounded_ok)
             return (target.components.combat ~= nil and target.components.combat.target == inst)
                 or (
                     (
-                        target:HasTag("monster") and (target.components.follower == nil or target.components.follower:GetLeader() == nil or not target.components.follower:GetLeader():HasTag("player"))
+                        target:HasTag("monster") and not target:HasTag("companion") and (target.components.follower == nil or target.components.follower:GetLeader() == nil or not target.components.follower:GetLeader():HasTag("player"))
                         or (not nopigdanger and target:HasTag("pig"))
                     ) and
                     not target:HasTag("player") and
@@ -610,6 +610,14 @@ local function RegisterMasterEventListeners(inst)
 	inst:ListenForEvent("stormlevel", fns.OnStormLevelChanged)
 	inst:WatchWorldState("isnight", fns.OnAlterNight)
 	inst:WatchWorldState("isalterawake", fns.OnAlterNight)
+
+    -- Merm murder event
+    inst:ListenForEvent("murdered", ex_fns.OnMurderCheckForFishRepel)
+
+    -- Stageplay events
+    inst:ListenForEvent("onstage", ex_fns.OnOnStageEvent)
+    inst:ListenForEvent("startstageacting", ex_fns.StartStageActing)
+    inst:ListenForEvent("stopstageacting", ex_fns.StopStageActing)
 end
 
 --------------------------------------------------------------------------
@@ -823,8 +831,7 @@ end
 
 local function SetGhostMode(inst, isghost)
     TheWorld:PushEvent("enabledynamicmusic", not isghost)
-    inst.HUD.controls.status:SetGhostMode(isghost)
-    inst.HUD.controls.secondary_status:SetGhostMode(isghost)
+	inst.HUD.controls:SetGhostMode(isghost)
     if inst.components.revivablecorpse == nil then
         if isghost then
             TheMixer:PushMix("death")
@@ -965,6 +972,36 @@ end
 
 function fns.MasterSeamlessPlayerSwapTarget(inst)
     fns.CommonSeamlessPlayerSwapTarget(inst)
+end
+
+function fns.EnableLoadingProtection(inst)
+    inst.loadingprotection = true
+
+    inst:AddTag("notarget")
+    inst:AddTag("spawnprotection")
+
+    if inst.components.health then
+        inst.components.health:SetInvincible(true)
+    end
+    inst.Physics:SetActive(false)
+end
+
+function fns.DisableLoadingProtection(inst)
+    if inst.loadingprotection then
+        inst.loadingprotection = nil
+        --enable physics immediately, that way if their is a little lag we don't lock the character in place
+        inst.Physics:SetActive(true)
+
+        --everything else can wait a small amount so that the screen can properly fade
+        inst:DoTaskInTime(1.5, function()
+            inst:RemoveTag("notarget")
+            inst:RemoveTag("spawnprotection")
+
+            if inst.components.health then
+                inst.components.health:SetInvincible(false)
+            end
+        end)
+    end
 end
 
 local function AttachClassified(inst, classified)
@@ -1742,6 +1779,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_monkey_change.zip"),
         Asset("ANIM", "anim/player_monkey_run.zip"),
 
+        Asset("ANIM", "anim/player_acting.zip"),
+
         Asset("INV_IMAGE", "skull_"..name),
 
         Asset("SCRIPT", "scripts/prefabs/player_common_extensions.lua"),
@@ -1971,7 +2010,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst.AnimState:AddOverrideBuild("player_actions_fishing_ocean_new")
         inst.AnimState:AddOverrideBuild("player_actions_farming")
-        inst.AnimState:AddOverrideBuild("player_actions_cowbell")
+        inst.AnimState:AddOverrideBuild("player_actions_cowbell")        
 
 
         inst.DynamicShadow:SetSize(1.3, .6)
@@ -2002,11 +2041,12 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:AddTag(UPGRADETYPES.MAST.."_upgradeuser")
         inst:AddTag("usesvegetarianequipment")
 
+
 		SetInstanceFunctions(inst)
 
         inst.foleysound = nil --Characters may override this in common_postinit
         inst.playercolour = DEFAULT_PLAYER_COLOUR --Default player colour used in case it doesn't get set properly
-        inst.ghostenabled = GetGhostEnabled(TheNet:GetServerGameMode())
+        inst.ghostenabled = GetGhostEnabled()
 
         if GetGameModeProperty("revivable_corpse") then
             inst:AddComponent("revivablecorpse")
@@ -2062,6 +2102,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         --debuffable (from debuffable component) added to pristine state for optimization
         inst:AddTag("debuffable")
+
+        -- stageacotr (from stageactor component) added to pristine state for optimization
+        inst:AddTag("stageactor")
 
         --Sneak these into pristine state for optimization
         inst:AddTag("_health")
@@ -2232,6 +2275,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:AddComponent("health")
         inst.components.health:SetMaxHealth(TUNING.WILSON_HEALTH)
         inst.components.health.nofadeout = true
+		if TUNING.PLAYER_DAMAGE_TAKEN_MOD ~= 1 then
+			inst.components.health.externalabsorbmodifiers:SetModifier(inst, TUNING.PLAYER_DAMAGE_TAKEN_MOD, "worldsettings")
+		end
 
         inst:AddComponent("hunger")
         inst.components.hunger:SetMax(TUNING.WILSON_HUNGER)
@@ -2315,6 +2361,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst:AddComponent("cursable")
 
+        inst:AddComponent("stageactor")
+
         inst:AddInherentAction(ACTIONS.PICK)
         inst:AddInherentAction(ACTIONS.SLEEPIN)
         inst:AddInherentAction(ACTIONS.CHANGEIN)
@@ -2376,6 +2424,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.ChangeToMonkey = ChangeToMonkey
         inst.ChangeFromMonkey = ChangeBackFromMonkey
 
+        inst.IsActing = ex_fns.IsActing
+
 		fns.OnAlterNight(inst)
 
         --V2C: used by multiplayer_portal_moon
@@ -2385,9 +2435,10 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:ListenForEvent("startfiredamage", OnStartFireDamage)
         inst:ListenForEvent("stopfiredamage", OnStopFireDamage)
         inst:ListenForEvent("burnt", OnBurntHands)
-        inst:ListenForEvent("onchangecanopyzone", OnChangeCanopyZone)
+        inst:ListenForEvent("onchangecanopyzone", OnChangeCanopyZone)    
 
-
+        inst.EnableLoadingProtection = fns.EnableLoadingProtection
+        inst.DisableLoadingProtection = fns.DisableLoadingProtection
 
 --[[
         inst:ListenForEvent("stormlevel", function(owner, data)

@@ -31,8 +31,9 @@ local Builder = Class(function(self, inst)
 
     self.recipes = {}
     self.station_recipes = {}
-    self.accessible_tech_trees = deepcopy(TECH.NONE)
-    self.accessible_tech_trees_no_temp = deepcopy(self.accessible_tech_trees)
+    self.accessible_tech_trees = TechTree.Create()
+    self.accessible_tech_trees_no_temp = TechTree.Create()
+	self.old_accessible_tech_trees = {}
     self.inst:StartUpdatingComponent(self)
     self.current_prototyper = nil
     self.buffered_builds = {}
@@ -219,6 +220,12 @@ function Builder:ConsumeTempTechBonuses()
     end
 end
 
+local function CopyTechTrees(src, dest)
+	for i, v in ipairs(TechTree.AVAILABLE_TECH) do
+		dest[v] = src[v] or 0
+	end
+end
+
 local PROTOTYPER_TAGS = { "prototyper" }
 function Builder:EvaluateTechTrees()
     local pos = self.inst:GetPosition()
@@ -242,7 +249,7 @@ function Builder:EvaluateTechTrees()
 		ents = TheSim:FindEntities(pos.x, pos.y, pos.z, TUNING.RESEARCH_MACHINE_DIST, PROTOTYPER_TAGS, self.exclude_tags)
 	end
 
-    local old_accessible_tech_trees = deepcopy(self.accessible_tech_trees or TECH.NONE)
+	CopyTechTrees(self.accessible_tech_trees, self.old_accessible_tech_trees)
     local old_station_recipes = self.station_recipes
     local old_prototyper = self.current_prototyper
     self.current_prototyper = nil
@@ -254,7 +261,9 @@ function Builder:EvaluateTechTrees()
             if not prototyper_active then
                 --activate the first machine in the list. This will be the one you're closest to.
                 v.components.prototyper:TurnOn(self.inst)
-                self.accessible_tech_trees = v.components.prototyper:GetTechTrees()
+
+				--prototyper:GetTrees() returns a deepcopy, which we no longer want
+				CopyTechTrees(v.components.prototyper.trees, self.accessible_tech_trees)
 
                 if v.components.craftingstation ~= nil then
                     local recs = v.components.craftingstation:GetRecipes(self.inst)
@@ -289,7 +298,7 @@ function Builder:EvaluateTechTrees()
     end
 
     --add any character specific bonuses to your current tech levels.
-    self.accessible_tech_trees_no_temp = deepcopy(self.accessible_tech_trees)
+	CopyTechTrees(self.accessible_tech_trees, self.accessible_tech_trees_no_temp)
     if not prototyper_active then
         for i, v in ipairs(TechTree.AVAILABLE_TECH) do
             self.accessible_tech_trees_no_temp[v] = (self[string.lower(v).."_bonus"] or 0)
@@ -330,20 +339,21 @@ function Builder:EvaluateTechTrees()
     end
 
     if not trees_changed then
-        for k, v in pairs(old_accessible_tech_trees) do
+        for k, v in pairs(self.old_accessible_tech_trees) do
             if v ~= self.accessible_tech_trees[k] then
                 trees_changed = true
                 break
             end
         end
-        if not trees_changed then
+		--V2C: not required anymore; both trees should have the same keys now
+        --[[if not trees_changed then
             for k, v in pairs(self.accessible_tech_trees) do
-                if v ~= old_accessible_tech_trees[k] then
+                if v ~= self.old_accessible_tech_trees[k] then
                     trees_changed = true
                     break
                 end
             end
-        end
+        end]]
     end
 
     if trees_changed then

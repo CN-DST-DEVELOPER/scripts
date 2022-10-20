@@ -503,7 +503,7 @@ local function GoToHut(inst)
     end
 end
 
-local HARVEST_MUSTHAVE_TAGS = {"bush","plant"}
+local HARVEST_MUSTHAVE_TAGS = {"bananabush"}
 local function HarvestBanana(inst)
     local x,y,z = inst.Transform:GetWorldPosition()
 

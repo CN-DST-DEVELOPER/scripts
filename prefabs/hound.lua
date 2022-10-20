@@ -9,6 +9,10 @@ local assets =
     Asset("ANIM", "anim/hound_ice.zip"),
     Asset("ANIM", "anim/hound_ice_ocean.zip"),
     Asset("ANIM", "anim/hound_mutated.zip"),
+    Asset("ANIM", "anim/hound_hedge.zip"),
+    Asset("ANIM", "anim/hound_hedge_ocean.zip"),
+    Asset("ANIM", "anim/hound_hedge_action.zip"),
+    Asset("ANIM", "anim/hound_action_water.zip"),
     Asset("SOUND", "sound/hound.fsb"),
 }
 
@@ -87,6 +91,19 @@ local sounds_mutated =
     growl = "turnoftides/creatures/together/mutated_hound/growl",
     howl = "dontstarve/creatures/together/clayhound/howl",
     hurt = "turnoftides/creatures/together/mutated_hound/hurt",
+}
+
+local sounds_hedge =
+{
+    pant = "dontstarve/creatures/hound/pant",
+    attack = "dontstarve/creatures/hound/attack",
+    bite = "dontstarve/creatures/hound/bite",
+    bark = "dontstarve/creatures/hound/bark",
+    death = "stageplay_set/briar_wolf/destroyed",
+    sleep = "dontstarve/creatures/hound/sleep",
+    growl = "dontstarve/creatures/hound/growl",
+    howl = "dontstarve/creatures/together/clayhound/howl",
+    hurt = "dontstarve/creatures/hound/hurt",
 }
 
 SetSharedLootTable('hound',
@@ -281,6 +298,7 @@ end
 local function OnSave(inst, data)
     data.ispet = inst:HasTag("pet_hound") or nil
     --print("OnSave", inst, data.ispet)
+    data.hedgeitem = inst.hedgeitem
 end
 
 local function OnLoad(inst, data)
@@ -290,6 +308,9 @@ local function OnLoad(inst, data)
         if inst.sg ~= nil then
             inst.sg:GoToState("idle")
         end
+    end
+    if data ~= nil and data.hedgeitem then
+        inst.hedgeitem = data.hedgeitem        
     end
 end
 
@@ -433,7 +454,10 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
 	inst._CanMutateFromCorpse = data.canmutatefn
 
-    inst.sounds = (tag == "clay" and sounds_clay) or (build == "hound_mutated" and sounds_mutated) or sounds
+    inst.sounds = (tag == "clay" and sounds_clay)
+            or (build == "hound_mutated" and sounds_mutated)
+            or (build == "hound_hedge" and sounds_hedge)
+            or sounds
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = tag == "clay" and TUNING.CLAYHOUND_SPEED or TUNING.HOUND_SPEED
@@ -738,11 +762,46 @@ local function fnfiredrop()
     return inst
 end
 
+local function OnHedgeKilled(inst)
+    if inst.hedgeitem then
+        local loot = SpawnPrefab(inst.hedgeitem)
+        inst.components.lootdropper:FlingItem(loot)
+        inst.hedgeitem = nil
+    end
+end
+
+
+local function fnhedge()
+    local inst = fncommon("hound", "hound_hedge_ocean", nil, nil, nil, {amphibious = true})
+
+    inst.death_shatter = true
+
+    if not TheWorld.ismastersim then
+        return inst
+    end 
+
+    MakeMediumFreezableCharacter(inst, "hound_body")
+    MakeMediumBurnableCharacter(inst, "hound_body")
+
+    inst.components.health:SetMaxHealth(TUNING.HEDGEHOUND_HEALTH)
+
+    inst.components.combat:SetDefaultDamage(TUNING.HEDGEHOUND_DAMAGE)
+    inst.components.combat:SetAttackPeriod(TUNING.HEDGEHOUND_ATTACK_PERIOD)   
+
+    inst.components.lootdropper:SetChanceLootTable(nil)
+
+    inst:ListenForEvent("death", OnHedgeKilled)
+
+    return inst
+end
+
+
 return Prefab("hound", fndefault, assets, prefabs),
         Prefab("firehound", fnfire, assets, prefabs),
         Prefab("icehound", fncold, assets, prefabs),
         Prefab("moonhound", fnmoon, assets, prefabs_moon),
         Prefab("clayhound", fnclay, assets_clay, prefabs_clay),
         Prefab("mutatedhound", fnmutated, assets, prefabs),
+        Prefab("hedgehound", fnhedge, assets, prefabs),
         --fx
         Prefab("houndfire", fnfiredrop, assets, prefabs)

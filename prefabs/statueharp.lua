@@ -2,6 +2,7 @@ local assets =
 {
     Asset("ANIM", "anim/statue_small.zip"),
     Asset("ANIM", "anim/statue_small_harp_build.zip"),
+    Asset("ANIM", "anim/statue_small_harp_vine_build.zip"),
     Asset("MINIMAP_IMAGE", "statue_small"),
 }
 
@@ -17,6 +18,26 @@ SetSharedLootTable( 'statue_harp',
     {'marble',  1.0},
     {'marble',  0.3},
 })
+
+local function invokecharliesanger(inst)
+    inst.AnimState:AddOverrideBuild("statue_small_harp_vine_build")
+end
+
+local function doCharlieTest(inst)
+    if not inst.charlie_test then
+        inst.charlie_test = true
+        if math.random() < 0.5 then
+            inst.charlies_work = true
+            invokecharliesanger(inst)
+            if math.random()<0.5 then
+                if inst.components.workable.workleft == TUNING.MARBLEPILLAR_MINE then
+                    local work = math.random(1,TUNING.MARBLEPILLAR_MINE-2)
+                    inst.components.workable:WorkedBy(TheWorld, work)
+                end
+            end
+        end
+    end
+end
 
 local function OnWorked(inst, worker, workleft)
     if workleft <= 0 then
@@ -35,6 +56,26 @@ end
 
 local function OnWorkLoad(inst)
     OnWorked(inst, nil, inst.components.workable.workleft)
+end
+
+
+function OnSave(inst, data)
+    if inst.charlies_work then
+        data.charlies_work = inst.charlies_work
+    end
+    if inst.charlie_test then
+        data.charlie_test = inst.charlie_test
+    end
+end
+
+function OnLoad(inst, data)
+   if data and not data.charlie_test then
+        inst.charlie_test = data.charlie_test
+   end
+   if data and data.charlies_work then
+        inst.charlies_work = data.charlies_work
+        invokecharliesanger(inst)
+   end
 end
 
 local function fn()
@@ -73,6 +114,11 @@ local function fn()
     inst.components.workable:SetOnWorkCallback(OnWorked)
     inst.components.workable:SetOnLoadFn(OnWorkLoad)
     inst.components.workable.savestate = true
+
+    inst:DoTaskInTime(0, doCharlieTest)
+
+    inst.OnLoad = OnLoad
+    inst.OnSave = OnSave  
 
     MakeHauntableWork(inst)
 

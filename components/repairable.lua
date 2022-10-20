@@ -23,12 +23,21 @@ local function onworkrepairable(self, workrepairable)
     end
 end
 
+local function onfiniteusesrepairable(self, finiteusesrepairable)
+    if finiteusesrepairable then
+        self.inst:AddTag("finiteusesrepairable")
+    else
+        self.inst:RemoveTag("finiteusesrepairable")
+    end
+end
+
 
 local Repairable = Class(function(self, inst)
     self.inst = inst
     self.repairmaterial = nil
     self.healthrepairable = nil
     self.workrepairable = nil
+    self.finiteusesrepairable = nil
     self.noannounce = nil
     self.checkmaterialfn = nil
     self.testvalidrepairfn = nil
@@ -47,6 +56,7 @@ nil,
 {
     repairmaterial = onrepairmaterial,
     healthrepairable = onhealthrepairable,
+    finiteusesrepairable = onfiniteusesrepairable,
     workrepairable = onworkrepairable,
 })
 
@@ -56,6 +66,10 @@ end
 
 function Repairable:SetWorkRepairable(repairable)
     self.workrepairable = repairable
+end
+
+function Repairable:SetFiniteUsesRepairable(repairable)
+    self.finiteusesrepairable = repairable
 end
 
 function Repairable:OnRemoveFromEntity()
@@ -68,6 +82,9 @@ function Repairable:OnRemoveFromEntity()
     if self.workrepairable then
         self.inst:RemoveTag("workrepairable")
     end
+    if self.finiteusesrepairable then
+        self.inst:RemoveTag("finiteusesrepairable")
+    end
 end
 
 local NEEDSREPAIRS_THRESHOLD = 0.95 -- don't complain about repairs if we're basically full.
@@ -79,6 +96,8 @@ function Repairable:NeedsRepairs()
         return self.inst.components.workable.workable and self.inst.components.workable.workleft < self.inst.components.workable.maxwork * NEEDSREPAIRS_THRESHOLD
     elseif self.inst.components.perishable ~= nil and self.inst.components.perishable.perishremainingtime ~= nil then
         return self.inst.components.perishable.perishremainingtime < self.inst.components.perishable.perishtime * NEEDSREPAIRS_THRESHOLD
+    elseif self.inst.components.finiteuses ~= nil then
+        return self.inst.components.finiteuses:GetPercent() < NEEDSREPAIRS_THRESHOLD
     end
     return false
 end
@@ -112,6 +131,11 @@ function Repairable:Repair(doer, repair_item)
             return false
         end
         self.inst.components.perishable:SetPercent(self.inst.components.perishable:GetPercent() + repair_item.components.repairer.perishrepairpercent)
+    elseif self.inst.components.finiteuses ~= nil then
+        if self.inst.components.finiteuses:GetPercent() >= 1 then
+            return false
+        end
+        self.inst.components.finiteuses:Repair(repair_item.components.repairer.finiteusesrepairvalue)
     elseif self.inst.components.repairable.justrunonrepaired then
 
     else

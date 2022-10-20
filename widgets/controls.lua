@@ -32,6 +32,7 @@ local QuagmireRecipeBookScreen = require "screens/quagmire_recipebookscreen"
 local ChatQueue = require "widgets/redux/chatqueue"
 local Desync = require "widgets/desync"
 local WorldResetTimer = require "widgets/worldresettimer"
+local PlayerDeathNotification = require "widgets/playerdeathnotification"
 local GiftItemToast = require "widgets/giftitemtoast"
 local YotbToast = require "widgets/yotbtoast"
 local VoteDialog = require "widgets/votedialog"
@@ -90,7 +91,8 @@ local Controls = Class(Widget, function(self, owner)
     self.yotb_notification = self.topleft_root:AddChild(YotbToast(self.owner))
     self.yotb_notification:SetPosition(215, 150, 0)
 
-    self.worldresettimer = self.bottom_root:AddChild(WorldResetTimer(self.owner))
+    --self.worldresettimer = self.bottom_root:AddChild(WorldResetTimer(self.owner))
+    self.worldresettimer = self.bottom_root:AddChild(PlayerDeathNotification(self.owner))
     self.inv = self.bottom_root:AddChild(Inv(self.owner))
     self.inv.autoanchor = self.worldresettimer
     self.inv:Hide()
@@ -319,6 +321,12 @@ function Controls:SetDark(val)
     else
         self.blackoverlay:Hide()
     end
+end
+
+function Controls:SetGhostMode(isghost)
+    self.status:SetGhostMode(isghost)
+    self.secondary_status:SetGhostMode(isghost)
+	self.worldresettimer:SetGhostMode(isghost)
 end
 
 function Controls:MakeScalingNodes()

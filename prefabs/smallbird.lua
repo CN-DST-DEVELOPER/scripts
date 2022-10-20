@@ -298,6 +298,7 @@ local function create_common(inst, physicscylinder)
     inst:AddTag("companion")
     inst:AddTag("character")
     inst:AddTag("smallbird")
+    inst:AddTag("notraptrigger")
 
     --trader (from trader component) added to pristine state for optimization
     inst:AddTag("trader")

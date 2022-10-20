@@ -29,6 +29,11 @@ function AddCookerRecipe(cooker, recipe, is_mod_food)
 	end
 end
 
+local recipe_cards = {}
+function AddRecipeCard(cooker, recipe)
+	table.insert(recipe_cards, {recipe_name = recipe.name, cooker_name = cooker})
+end
+
 local function IsModCookerFood(prefab)
 	return not official_foods[prefab] -- note: we cannot test against cookbook_recipes[MOD_COOKBOOK_CATEGORY] because if the mod is unloaded, it would return true
 end
@@ -135,6 +140,7 @@ AddIngredientValues({"cactus_meat"}, {veggie=1}, true)
 AddIngredientValues({"rock_avocado_fruit_ripe"}, {veggie=1}, true)
 AddIngredientValues({"watermelon"}, {fruit=1}, true)
 AddIngredientValues({"cactus_flower"}, {veggie=.5})
+AddIngredientValues({"acorn"}, {seed=1})
 AddIngredientValues({"acorn_cooked"}, {seed=1})
 AddIngredientValues({"goatmilk"}, {dairy=1})
 -- AddIngredientValues({"seeds"}, {seed=1}, true)
@@ -174,6 +180,10 @@ for k,recipe in pairs (foods) do
 	AddCookerRecipe("cookpot", recipe)
 	AddCookerRecipe("portablecookpot", recipe)
 	AddCookerRecipe("archive_cookpot", recipe)
+
+	if recipe.card_def then
+		AddRecipeCard("cookpot", recipe)
+	end
 end
 
 local portable_foods = require("preparedfoods_warly")
@@ -300,4 +310,4 @@ end
 
 TestRecipes("cookpot", {"tallbirdegg","meat","carrot","meat"})]]
 
-return { CalculateRecipe = CalculateRecipe, IsCookingIngredient = IsCookingIngredient, recipes = cookerrecipes, ingredients = ingredients, GetRecipe = GetRecipe, cookbook_recipes = cookbook_recipes, HasModCookerFood = HasModCookerFood, IsModCookerFood = IsModCookerFood}
+return { CalculateRecipe = CalculateRecipe, IsCookingIngredient = IsCookingIngredient, recipes = cookerrecipes, ingredients = ingredients, GetRecipe = GetRecipe, cookbook_recipes = cookbook_recipes, recipe_cards = recipe_cards, HasModCookerFood = HasModCookerFood, IsModCookerFood = IsModCookerFood}

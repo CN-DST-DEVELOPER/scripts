@@ -131,6 +131,42 @@ function Inventory:TransferInventory(receiver)
     end
 end
 
+function Inventory:SwapEquipment(other, equipslot_to_swap)
+    if other == nil then
+        return false
+    end
+
+    local other_inventory = other.components.inventory
+    if other_inventory == nil or other_inventory.equipslots == nil then
+        return false
+    end
+
+    for _, equipslot in pairs(EQUIPSLOTS) do
+        if equipslot_to_swap == nil or equipslot_to_swap == equipslot then
+            local my_equipitem = self:Unequip(equipslot)
+            local ot_equipitem = other_inventory:Unequip(equipslot)
+
+            if my_equipitem ~= nil then
+                if my_equipitem.components.equippable and not my_equipitem.components.equippable:IsRestricted(other) then
+                    other_inventory:Equip(my_equipitem)
+                else
+                    other_inventory:GiveItem(my_equipitem)
+                end
+            end
+
+            if ot_equipitem ~= nil then
+                if ot_equipitem.components.equippable and not ot_equipitem.components.equippable:IsRestricted(other) then
+                    self:Equip(ot_equipitem)
+                else
+                    self:GiveItem(ot_equipitem)
+                end
+            end
+        end
+    end
+
+    return true
+end
+
 function Inventory:OnSave()
     local data = {items= {}, equip = {}}
 
@@ -276,6 +312,14 @@ function Inventory:ReturnActiveActionItem(item)
         self.ignorefull = false
         self.ignoreoverflow = false
     end
+end
+
+function Inventory:HasAnyEquipment()
+    for k, v in pairs(self.equipslots) do
+        return true
+    end
+
+    return false
 end
 
 function Inventory:IsWearingArmor()
@@ -942,7 +986,7 @@ function Inventory:SetActiveItem(item)
     end
 end
 
-function Inventory:Equip(item, old_to_active)
+function Inventory:Equip(item, old_to_active, no_animation)
     if item == nil or item.components.equippable == nil or not item:IsValid() or item.components.equippable:IsRestricted(self.inst) or (self.noheavylifting and item:HasTag("heavy")) then
         return
     end
@@ -1033,7 +1077,7 @@ function Inventory:Equip(item, old_to_active)
             self.heavylifting = item:HasTag("heavy")
         end
 
-        self.inst:PushEvent("equip", { item = item, eslot = eslot })
+        self.inst:PushEvent("equip", { item = item, eslot = eslot, no_animation = no_animation })
         if METRICS_ENABLED and item.prefab ~= nil then
             ProfileStatsAdd("equip_"..item.prefab)
         end
@@ -1421,7 +1465,7 @@ function Inventory:DropEverythingWithTag(tag)
 end
 
 function Inventory:DropEverything(ondeath, keepequip)
-    if self.inst:HasTag("player") and not GetGameModeProperty("ghost_enabled") and not GetGameModeProperty("revivable_corpse") then
+    if self.inst:HasTag("player") and not GetGhostEnabled() and not GetGameModeProperty("revivable_corpse") then
         -- NOTES(JBK): This is for items like Wanda's watches that normally stick inside the inventory but Wilderness mode will force the player to reroll so drop everything.
         ondeath = false
     end

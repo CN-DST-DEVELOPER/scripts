@@ -8,7 +8,9 @@ local actionhandlers =
 local events =
 {
     EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death", inst.sg.statemem.dead) end),
+    EventHandler("death", function(inst) 
+        inst.sg:GoToState("death", inst.sg.statemem.dead) 
+    end),
     EventHandler("doattack", function(inst, data) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then inst.sg:GoToState("attack", data.target) end end),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnHop(),
@@ -314,7 +316,14 @@ local states =
             if reanimating then
                 inst.AnimState:Pause()
             else
-                inst.AnimState:PlayAnimation("death")
+
+                if inst.death_shatter then
+                    inst.AnimState:PlayAnimation("death_shatter")
+                else
+                    inst.AnimState:PlayAnimation("death")
+                end
+
+
 				if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
 		            inst.AnimState:PushAnimation("death_idle", true)
 				end

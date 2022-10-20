@@ -40,6 +40,12 @@ local function OnUnequip(inst, owner)
     end
 end
 
+local function OnEquipToModel(inst, owner, from_ground)
+    if inst.components.container ~= nil then
+        inst.components.container:Close()
+    end
+end
+
 local function OnProjectileLaunched(inst, attacker, target)
 	if inst.components.container ~= nil then
 		local ammo_stack = inst.components.container:GetItemInSlot(1)
@@ -112,6 +118,7 @@ local function fn()
     inst.components.equippable.restrictedtag = "slingshot_sharpshooter"
     inst.components.equippable:SetOnEquip(OnEquip)
     inst.components.equippable:SetOnUnequip(OnUnequip)
+    inst.components.equippable:SetOnEquipToModel(OnEquipToModel)
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(0)

@@ -209,7 +209,7 @@ local function fn()
     inst:AddComponent("sleepingbag")
     inst.components.sleepingbag.onsleep = OnSleep
     inst.components.sleepingbag.onwake = OnWake
-    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK
+    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 2
     --convert wetness delta to drying rate
     inst.components.sleepingbag.dryingrate = math.max(0, -TUNING.SLEEP_WETNESS_PER_TICK / TUNING.SLEEP_TICK_PERIOD)
     inst.components.sleepingbag:SetTemperatureTickFn(TemperatureTick)

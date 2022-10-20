@@ -182,6 +182,10 @@ local function OnCanaryLoad(inst, data)
     end
 end
 
+local function halloweenmoonmutablefn()
+	return math.random() < 0.8 and "bird_mutant" or "bird_mutant_spitter"
+end
+
 --------------------------------------------------------------------------
 
 local function makebird(name, soundname, no_feather, bank, custom_loot_setup, water_bank)
@@ -312,6 +316,10 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
 
         inst:AddComponent("eater")
         inst.components.eater:SetDiet({ FOODTYPE.SEEDS }, { FOODTYPE.SEEDS })
+
+		inst:AddComponent("halloweenmoonmutable")
+		--inst.components.halloweenmoonmutable:SetConversionOverrideFn(moonconversionoverridefn)
+		inst.components.halloweenmoonmutable:SetPrefabMutated(halloweenmoonmutablefn)
 
         inst:AddComponent("sleeper")
         inst.components.sleeper.watchlight = true

@@ -15,6 +15,7 @@ local prefabs =
     "townportaltalisman",
     "sandspike",
     "sandblock",
+    "antlionhat",
 
     --loot
     "meat",
@@ -31,6 +32,7 @@ SetSharedLootTable('antlion',
 {
     {'townportal_blueprint',    1.00},
 	{'chesspiece_antlion_sketch', 1.00},
+    {"antlionhat_blueprint", 1.00},
 
     {'townportaltalisman',  1.00},
     {'townportaltalisman',  1.00},
@@ -124,7 +126,7 @@ local function OnGivenItem(inst, giver, item)
 
     inst.tributer = giver
     inst.pendingrewarditem =
-        (item.prefab == "antliontrinket" and "townportal_blueprint") or
+        (item.prefab == "antliontrinket" and {"townportal_blueprint", "antlionhat_blueprint"}) or
         (item.components.tradable.goldvalue > 0 and "townportaltalisman") or
         nil
 
@@ -167,7 +169,15 @@ local function HasRewardToGive(inst)
 end
 
 local function GiveReward(inst)
-    LaunchAt(SpawnPrefab(inst.pendingrewarditem), inst, (inst.tributer ~= nil and inst.tributer:IsValid()) and inst.tributer or nil, 1, 2, 1)
+	if inst.pendingrewarditem ~= nil then
+		if type(inst.pendingrewarditem) == "table" then
+			for _, item in ipairs(inst.pendingrewarditem) do
+			    LaunchAt(SpawnPrefab(item), inst, (inst.tributer ~= nil and inst.tributer:IsValid()) and inst.tributer or nil, 1, 2, 1)
+			end
+		else
+		    LaunchAt(SpawnPrefab(inst.pendingrewarditem), inst, (inst.tributer ~= nil and inst.tributer:IsValid()) and inst.tributer or nil, 1, 2, 1)
+		end
+	end
     inst.pendingrewarditem = nil
     inst.tributer = nil
 end

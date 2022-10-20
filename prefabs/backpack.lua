@@ -38,6 +38,12 @@ local function onunequip(inst, owner)
     end
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.components.container ~= nil then
+        inst.components.container:Close(owner)
+    end
+end
+
 local function onburnt(inst)
     if inst.components.container ~= nil then
         inst.components.container:DropEverything()
@@ -100,6 +106,7 @@ local function fn()
     inst.components.equippable.equipslot = EQUIPSLOTS.BODY
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("backpack")

@@ -38,8 +38,8 @@ local sounds =
 
 SetSharedLootTable('squid',
 {
-    {'monstermeat', 1.000},
-    {'lightbulb', 0.33},
+    {'monstermeat', 1.00},
+    {'lightbulb', 1.00},
 })
 
 local WAKE_TO_FOLLOW_DISTANCE = 8

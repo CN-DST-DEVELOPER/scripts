@@ -412,6 +412,13 @@ local function DoWortoxPortalTint(inst, val)
     end
 end
 
+local function DoMimeAnimations(inst)
+    inst.AnimState:PlayAnimation("mime"..tostring(math.random(13)))
+    for k = 1, math.random(2) do
+        inst.AnimState:PushAnimation("mime"..tostring(math.random(13)), false)
+    end
+end
+
 local actionhandlers =
 {
     ActionHandler(ACTIONS.CHOP,
@@ -507,7 +514,9 @@ local actionhandlers =
     ActionHandler(ACTIONS.TURNON, "give"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.READ,
         function(inst, action)
             return (action.invobject ~= nil and action.invobject.components.simplebook ~= nil and "cookbook_open")
@@ -670,6 +679,7 @@ local actionhandlers =
             end
         end),
     ActionHandler(ACTIONS.FAN, "use_fan"),
+    ActionHandler(ACTIONS.ERASE_PAPER, "dolongaction"),
     ActionHandler(ACTIONS.JUMPIN, "jumpin_pre"),
     ActionHandler(ACTIONS.TELEPORT,
         function(inst, action)
@@ -880,7 +890,15 @@ local actionhandlers =
     ActionHandler(ACTIONS.BEGIN_QUEST, "doshortaction"),
     ActionHandler(ACTIONS.ABANDON_QUEST, "dolongaction"),
 
-    ActionHandler(ACTIONS.TELLSTORY, "dostorytelling"),
+    ActionHandler(ACTIONS.TELLSTORY, function(inst, action)
+            return inst:HasTag("mime") and "dostorytelling_mime" 
+                or "dostorytelling"
+        end),
+
+    ActionHandler(ACTIONS.PERFORM, function(inst, action)
+            inst:PerformBufferedAction()
+            return "acting_idle"
+        end),
 
     ActionHandler(ACTIONS.POUR_WATER,
         function(inst, action)
@@ -976,7 +994,11 @@ local events =
                 inst.sleepingbag = nil
             end
         elseif is_moving and not should_move then
-            inst.sg:GoToState("run_stop")
+            if inst:HasTag("acting") then
+                inst.sg:GoToState("acting_run_stop")
+            else
+                inst.sg:GoToState("run_stop")
+            end
         elseif not is_moving and should_move then
             inst.sg:GoToState("run_start")
         elseif data.force_idle_state and not (is_moving or should_move or inst.sg:HasStateTag("idle") or inst:HasTag("is_furling"))  then
@@ -1129,9 +1151,12 @@ local events =
     end),
 
     EventHandler("equip", function(inst, data)
+        if inst.sg:HasStateTag("acting") then
+            return
+        end
         if data.eslot == EQUIPSLOTS.BODY and data.item ~= nil and data.item:HasTag("heavy") then
             inst.sg:GoToState("heavylifting_start")
-        elseif inst.components.inventory:IsHeavyLifting()
+        elseif inst.components.inventory:IsHeavyLifting()            
             and not inst.components.rider:IsRiding() then
             if inst.sg:HasStateTag("idle") or inst.sg:HasStateTag("moving") then
                 inst.sg:GoToState("heavylifting_item_hat")
@@ -1145,9 +1170,13 @@ local events =
         elseif data.item ~= nil and data.item.projectileowner ~= nil then
             SpawnPrefab("lucy_transform_fx").entity:AddFollower():FollowSymbol(inst.GUID, "swap_object", 50, -25, 0)
         end
+
     end),
 
     EventHandler("unequip", function(inst, data)
+        if inst.sg:HasStateTag("acting") then
+            return
+        end
         if data.eslot == EQUIPSLOTS.BODY and data.item ~= nil and data.item:HasTag("heavy") then
             if not inst.sg:HasStateTag("busy") then
                 inst.sg:GoToState("heavylifting_stop")
@@ -1176,7 +1205,13 @@ local events =
     end),
 
     EventHandler("ontalk", function(inst, data)
-		if inst.sg:HasStateTag("idle") and not inst.sg:HasStateTag("notalking") then
+        if inst:IsActing() and not inst.sg:HasStateTag("talking") then
+            if inst:HasTag("mime") then
+                inst.sg:GoToState("acting_mime")
+            else
+                inst.sg:GoToState("acting_talk")
+            end
+        elseif inst.sg:HasStateTag("idle") and not inst.sg:HasStateTag("notalking") then
 			if not inst:HasTag("mime") then
 				inst.sg:GoToState("talk", data.noanim)
 			elseif not inst.components.inventory:IsHeavyLifting() then
@@ -1412,6 +1447,34 @@ local events =
 			then
 
             inst.sg:GoToState("hideandseek_counting", (data and data.timeout) or nil)
+        end
+    end),
+
+    EventHandler("perform_do_next_line", function(inst, data)
+        if inst:HasTag("mime") then
+            inst.sg:GoToState("acting_mime")
+        else
+            if data.anim then
+                inst.sg:GoToState("acting_action", data)
+            else
+                inst.sg:GoToState("acting_talk")
+            end
+        end
+    end),
+
+    EventHandler("acting", function(inst, data)
+        if not inst.components.health:IsDead() then
+            if data.act == "bow" then
+                inst.sg:GoToState("acting_bow")
+            elseif data.act == "curtsy" then
+                inst.sg:GoToState("acting_curtsy")
+            end
+        end
+    end),
+
+    EventHandler("startstageacting", function(inst, data)
+        if not inst.components.health:IsDead() then
+            inst.sg:GoToState("acting_idle")
         end
     end),
 
@@ -5131,14 +5194,25 @@ local states =
     },
 
     State{
+        name = "dostorytelling_mime",
+        onenter = function(inst)
+            inst.sg:GoToState("mime",{storytelling = true})
+        end
+    },
+
+    State{
         name = "mime",
         tags = { "idle", "talking" },
 
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("mime"..tostring(math.random(13)))
-            for k = 1, math.random(2) do
-                inst.AnimState:PushAnimation("mime"..tostring(math.random(13)), false)
+        onenter = function(inst,data)
+            if data and data.storytelling then
+                if not inst:PerformBufferedAction() then
+                    inst.sg.statemem.not_interupted = true
+                    inst.sg:GoToState("idle")
+                end
             end
+
+            DoMimeAnimations(inst)
             DoTalkSound(inst)
         end,
 
@@ -5147,6 +5221,28 @@ local states =
             EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
                     inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = StopTalkSound,
+    },
+
+    -- Same as above, but intended for use during stageplays, so it eschews the "idle" tag,
+    -- and goes to "acting_idle" when it finishes instead.
+    State{
+        name = "acting_mime",
+        tags = {"forcedangle", "acting", "talking", "mime"},
+        onenter = function(inst)
+            DoMimeAnimations(inst)
+            DoTalkSound(inst)
+        end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("acting_idle")
                 end
             end),
         },
@@ -7211,7 +7307,7 @@ local states =
             end
             inst.AnimState:PushAnimation("dart", false)
 
-            inst.sg:SetTimeout(math.max((inst.sg.statemem.chained and 14 or 18) * FRAMES, inst.components.combat.min_attack_period + .5 * FRAMES))
+            inst.sg:SetTimeout(math.max((inst.sg.statemem.chained and 14 or 18) * FRAMES, inst.components.combat.min_attack_period))
 
             if target ~= nil and target:IsValid() then
                 inst:FacePoint(target.Transform:GetWorldPosition())
@@ -7306,7 +7402,7 @@ local states =
             inst.components.combat:SetTarget(target)
             inst.components.combat:StartAttack()
             inst.components.locomotor:Stop()
-            local cooldown = math.max(inst.components.combat.min_attack_period + .5 * FRAMES, 11 * FRAMES)
+            local cooldown = math.max(inst.components.combat.min_attack_period, 11 * FRAMES)
 
             inst.AnimState:PlayAnimation("throw")
 
@@ -7431,7 +7527,7 @@ local states =
             inst.components.combat:SetTarget(target)
             inst.components.combat:StartAttack()
             inst.components.locomotor:Stop()
-            local cooldown = inst.components.combat.min_attack_period + .5 * FRAMES
+            local cooldown = inst.components.combat.min_attack_period
             if inst.components.rider:IsRiding() then
                 if equip ~= nil and (equip.components.projectile ~= nil or equip:HasTag("rangedweapon")) then
                     inst.AnimState:PlayAnimation("player_atk_pre")
@@ -7873,8 +7969,7 @@ local states =
                 inst.AnimState:PlayAnimation(anim, true)
             end
 
-            --V2C: adding half a frame time so it rounds up
-            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength() + .5 * FRAMES)
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
 
         onupdate = function(inst)
@@ -8265,8 +8360,7 @@ local states =
                 inst.AnimState:PlayAnimation("run_monkey_loop", true)
             end
 
-            --V2C: adding half a frame time so it rounds up
-            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength() + .5 * FRAMES)
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
 
         timeline =
@@ -15243,7 +15337,7 @@ local states =
             end
             inst.sg:SetTimeout(
                 inst.sg.statemem.loop > 0 and
-                inst.AnimState:GetCurrentAnimationLength() + .5 * FRAMES or
+                inst.AnimState:GetCurrentAnimationLength() or
                 inst.AnimState:GetCurrentAnimationLength() * math.random()
             )
         end,
@@ -15909,6 +16003,229 @@ local states =
             end),
         },
     },
+
+    ----------------------------------------------------------------------------------------------------
+    -- STAGE ACTING STATES
+
+    State{
+        name = "acting_idle",
+        tags = { "idle", "forcedangle", "acting"},
+
+        onenter = function(inst, pre)
+            local function getidle()
+                if math.random() < 0.5 then
+                    return "acting_idle1"
+                else
+                    return "acting_idle2"
+                end
+            end
+
+            if pre then
+                inst.AnimState:PlayAnimation(pre, false)
+                inst.AnimState:PushAnimation(getidle(),false)
+            else
+                inst.AnimState:PlayAnimation(getidle(),false)
+            end
+        end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                inst.sg:GoToState("acting_idle")
+            end),
+        },
+    },
+
+    State{
+        name = "acting_run_stop",
+        tags = { "canrotate", "acting", "autopredict" },
+
+        onenter = function(inst)
+            ConfigureRunState(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation(GetRunStateAnim(inst).."_pst")
+
+            if inst.sg.statemem.moose or inst.sg.statemem.moosegroggy then
+                PlayMooseFootstep(inst, .6, true)
+                DoFoleySounds(inst)
+            end
+        end,
+
+        timeline =
+        {
+            TimeEvent(FRAMES, function(inst)
+                if inst.sg.statemem.goose or inst.sg.statemem.goosegroggy then
+                    PlayFootstep(inst, .5, true)
+                    DoFoleySounds(inst)
+                    if inst.sg.statemem.goosegroggy then
+                        DoGooseWalkFX(inst)
+                    else
+                        DoGooseStepFX(inst)
+                    end
+                end
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("acting_idle")
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "acting_talk",
+        tags = { "talking", "acting" },
+
+        onenter = function(inst, noanim)
+            local function gettalk()
+                if math.random() < 0.5 then
+                    return "acting_1"
+                else
+                    return "acting_2"
+                end
+            end
+
+            if not noanim then
+                inst.AnimState:PlayAnimation(gettalk(),false)
+            end
+            DoTalkSound(inst)
+            inst.sg:SetTimeout(1.5 + math.random() * .5)
+        end,
+
+        ontimeout = function(inst)
+            inst.sg.statemem.talkdone = true
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.sg.statemem.talkdone then
+                    inst.sg:GoToState("acting_idle")
+                else
+                    local function gettalk()
+                        if math.random() < 0.5 then
+                            return "acting_1"
+                        else
+                            return "acting_2"
+                        end
+                    end
+                    inst.AnimState:PlayAnimation(gettalk())
+                end
+            end),
+            EventHandler("donetalking", function(inst)
+                inst.sg.statemem.talkdone = true
+            end),
+        },
+
+        onexit = function(inst)
+            StopTalkSound(inst)
+        end,
+    },
+
+    State{
+        name = "acting_action",
+        tags = { "talking", "acting" },
+
+        onenter = function(inst, data)
+            local loop = false
+            if data.animtype == "loop" then
+                loop = true
+                inst.sg.statemem.loop = true
+            end
+            if data.animtype == "hold" then
+                inst.sg.statemem.hold = true
+            end
+
+            if type(data.anim) == "table" then
+                for i,animation in ipairs(data.anim)do
+                    inst.sg.statemem.queue = true
+                    if i == 1 then
+                        if #data.anim == 1 and loop then
+                            inst.AnimState:PlayAnimation(animation, true)
+                        else
+                            inst.AnimState:PlayAnimation(animation, false)
+                        end
+                    elseif i == #data.anim then
+                        inst.AnimState:PushAnimation(animation, loop)
+                    else 
+                        inst.AnimState:PushAnimation(animation, false)
+                    end
+                end
+            else
+                inst.AnimState:PlayAnimation(data.anim, loop)
+            end
+            if data.line then
+                DoTalkSound(inst)
+            end
+        end,
+
+        events =
+        {
+            EventHandler("donetalking", function(inst)
+                StopTalkSound(inst)
+                if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
+                    inst.sg:GoToState("acting_idle")
+                end
+            end),
+            EventHandler("animover", function(inst)
+                if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
+                    if not inst.sg.statemem.queue then
+                        inst.sg:GoToState("acting_idle")
+                    end
+                end
+            end),  
+            EventHandler("animqueueover", function(inst)
+                if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
+                    if inst.sg.statemem.queue then
+                        inst.sg:GoToState("acting_idle")
+                    end
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            StopTalkSound(inst)
+        end,
+    },
+
+    State{
+        name = "acting_bow",
+        tags = { "nopredict", "forcedangle", "acting"},
+
+        onenter = function(inst, target)
+            inst.AnimState:PlayAnimation("bow_pre",false)
+            inst.AnimState:PushAnimation("bow_pst",false)
+        end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                inst.sg:GoToState("acting_idle")
+            end),
+        },
+    },
+
+    State{
+        name = "acting_curtsy",
+        tags = { "nopredict", "forcedangle", "acting"},
+
+        onenter = function(inst, target)
+            inst.AnimState:PlayAnimation("idle_wathgrithr",false)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("acting_idle")
+            end),
+        },
+    },
+
+    -- END STAGE ACTING
 }
 
 local hop_timelines =

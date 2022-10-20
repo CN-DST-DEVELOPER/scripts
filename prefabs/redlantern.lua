@@ -111,7 +111,9 @@ local function ondropped(inst)
 end
 
 local function ToggleOverrideSymbols(inst, owner)
-    if owner.sg:HasStateTag("nodangle") or (owner.components.rider ~= nil and owner.components.rider:IsRiding() and not owner.sg:HasStateTag("forcedangle")) then
+    if owner.sg ~= nil and (owner.sg:HasStateTag("nodangle")
+            or (owner.components.rider ~= nil and owner.components.rider:IsRiding()
+                and not owner.sg:HasStateTag("forcedangle"))) then
         owner.AnimState:OverrideSymbol("swap_object", "swap_redlantern", "swap_redlantern")
         if not inst.components.fueled:IsEmpty() then
             owner.AnimState:Show("LANTERN_OVERLAY")
@@ -189,6 +191,25 @@ local function onunequip(inst, owner)
     if inst.components.fueled.consuming then
         starttrackingowner(inst, owner)
     end
+end
+
+local function onequiptomodel(inst, owner, from_ground)
+    if inst._body ~= nil then
+        if inst._body.entity:IsVisible() then
+            --need to see the lantern when animating putting away the object
+            owner.AnimState:OverrideSymbol("swap_object", "swap_redlantern", "swap_redlantern")
+        end
+        if inst._light ~= nil then
+            inst._light.entity:SetParent((inst.components.inventoryitem.owner or inst).entity)
+        end
+        inst._body:Remove()
+    end
+
+    if inst.components.fueled.consuming then
+        starttrackingowner(inst, owner)
+    end
+
+    turnoff(inst)
 end
 
 local function nofuel(inst)
@@ -293,6 +314,7 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("fueled")
     inst.components.fueled.fueltype = FUELTYPE.MAGIC --no associated fuel, and not burnable fuel, since we want this item to be lit on fire

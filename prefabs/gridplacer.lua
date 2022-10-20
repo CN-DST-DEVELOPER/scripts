@@ -63,6 +63,50 @@ local function tile_outline_fn()
     return inst
 end
 
+local function turfhat_update(inst)
+    inst.Transform:SetPosition(TheWorld.Map:GetTileCenterPoint(inst.player.Transform:GetWorldPosition()))
+end
+
+local function SetPlayer(inst, player)
+    inst.player = player
+    if player then
+        inst.components.updatelooper:AddOnWallUpdateFn(turfhat_update)
+        inst:ListenForEvent("onremove", inst._onremoveplayer, player)
+    else
+        inst.components.updatelooper:RemoveOnWallUpdateFn(turfhat_update)
+        inst:RemoveEventCallback("onremove", inst._onremoveplayer, player)
+    end
+end
+
+local function turfhat_fn()
+    local inst = CreateEntity()
+
+    inst:AddTag("CLASSIFIED")
+    inst:AddTag("NOCLICK")
+    inst:AddTag("placer")
+    --[[Non-networked entity]]
+    inst.persists = false
+
+    inst.entity:SetCanSleep(false)
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+
+    inst.AnimState:SetBank("gridplacer")
+    inst.AnimState:SetBuild("gridplacer")
+    inst.AnimState:PlayAnimation("anim")
+    inst.AnimState:SetLightOverride(1)
+	inst.AnimState:SetLayer(LAYER_BACKGROUND)
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+
+    inst:AddComponent("updatelooper")
+
+    inst.SetPlayer = SetPlayer
+    inst._onremoveplayer = function() inst:SetPlayer() end
+
+    return inst
+end
+
 local function farmablesoil_update(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     if TheWorld.Map:IsFarmableSoilAtPoint(x, y, z) then
@@ -104,4 +148,5 @@ end
 
 return Prefab("gridplacer", fn, assets),
     Prefab("tile_outline", tile_outline_fn, assets),
+    Prefab("gridplacer_turfhat", turfhat_fn, assets),
     Prefab("gridplacer_farmablesoil", farmablesoil_fn, assets)

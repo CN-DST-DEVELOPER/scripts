@@ -911,6 +911,27 @@ function deepcopy(object)
     return _copy(object)
 end
 
+local function _copynometa(object, lookup_table)
+	if type(object) ~= "table" then
+		return object
+	elseif getmetatable(object) ~= nil then
+		return tostring(object)
+	elseif lookup_table[object] then
+		return lookup_table[object]
+	end
+
+	local new_table = {}
+	lookup_table[object] = new_table
+	for k, v in pairs(object) do
+		new_table[_copynometa(k, lookup_table)] = _copynometa(v, lookup_table)
+	end
+	return new_table
+end
+
+function deepcopynometa(object)
+	return _copynometa(object, {})
+end
+
 -- http://lua-users.org/wiki/CopyTable
 function shallowcopy(orig, dest)
     local copy

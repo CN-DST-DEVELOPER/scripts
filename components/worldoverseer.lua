@@ -307,7 +307,7 @@ function WorldOverseer:DumpSessionStats()
                                     or (TheNet:GetServerFriendsOnly() and "FRIENDS")
                                     or "PUBLIC",
                             offline = not TheNet:IsOnlineMode(),
-                            intention = TheNet:GetServerIntention(),
+                            --intention = TheNet:GetServerIntention(), -- deprecated
                             pvp = TheNet:GetServerPVP()
                         }
     local clanid = TheNet:GetServerClanID()

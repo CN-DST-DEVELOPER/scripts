@@ -92,9 +92,6 @@ end
 local TradeScreen = Class(Screen, function(self, prev_screen, profile)
 	Screen._ctor(self, "TradeScreen")
 
-    -- DISABLE SPECIAL RECIPES
-	-- self.recipes = TheItems:GetRecipes()
-
 	self.profile = profile
 	self:DoInit()
 	self.prevScreen = prev_screen
@@ -132,8 +129,6 @@ function TradeScreen:DoInit()
 	self.frames_height_adjustment = 0
 
   	self:DoInitInventoryAndMachine()
- 	-- DISABLE SPECIAL RECIPES
-    -- self:DoInitSpecials()
 	self:DoInitState()
 
 	self.warning_timeout = 0
@@ -248,24 +243,6 @@ function TradeScreen:DoInitInventoryAndMachine()
     self.claw_machine_bg:SetScale(machine_scale)
     self.claw_machine_bg:SetPosition(0, 65)
 
--- DISABLE SPECIAL RECIPES
---[[
-	--Specials recipe list
-	self.specials_list = self.fixed_root:AddChild(RecipeList(
-		function(data)
-			if self.specials_mode then
-				self.innkeeper:Say(STRINGS.UI.TRADESCREEN.SKIN_COLLECTOR_SPEECH.SPECIALRECIPE, data.rarity, nil, data.number)
-				self.sold_out = data.sold_out
-				self:Reset()
-			end
-		end)
-	)
-	self.specials_list:SetData( self.recipes )
-	self.specials_list:SetHintStrings(STRINGS.UI.TRADESCREEN.PREV, STRINGS.UI.TRADESCREEN.NEXT)
-	self.specials_list:Hide()
---]]
-
-
 	--Machine tiles: frames_container is in the root so that we can order all the layers correctly and the hover text (while still allowing the specials_list to not be scaled)
 	self.frames_container = self.fixed_root:AddChild(Widget("frames_container"))
     self.frames_container:SetScale(machine_scale*1.75)
@@ -291,14 +268,6 @@ function TradeScreen:DoInitInventoryAndMachine()
     self.claw_machine:GetAnimState():SetBank("shop")
     self.claw_machine:SetScale(machine_scale)
     self.claw_machine:SetPosition(0, 65)
-
-	-- DISABLE SPECIAL RECIPES
-	--[[self.special_lightfx = self.claw_machine:AddChild(UIAnim())
-	self.special_lightfx:GetAnimState():SetBuild("swapshoppe_special_lightfx")
-	self.special_lightfx:GetAnimState():SetBank("shop_lights")
-	--self.special_lightfx:GetAnimState():PlayAnimation("turn_on")
-	self.special_lightfx:GetAnimState():PlayAnimation("flicker_loop", true)]]
-
 
 	self:PlayMachineAnim("idle_empty", true)
 
@@ -358,43 +327,6 @@ function TradeScreen:DoInitInventoryAndMachine()
 
 	self.moving_items_list = {}
 end
-
--- DISABLE SPECIAL RECIPES
---[[function TradeScreen:DoInitSpecials()
-
-	self.specials_button = self.fixed_root:AddChild(UIAnimButton("button_special", "button_weeklyspecial",
-											nil, "hover", "pressed", "pressed", nil ))
-	-- Looping anims must be inialized to nil and then set separately:
-	self.specials_button:SetIdleAnim("flicker2_loop", true)
-	self.specials_button:SetSelectedAnim("flicker2_loop", true)
-	self.specials_button:SetOnClick( function()
-		self:ToggleSpecialsMode()
-	end)
-
-	self.specials_button:SetFont(TALKINGFONT)
-	self.specials_button:SetDisabledFont(TALKINGFONT)
-	self.specials_button:SetTextSize(50)
-	self.specials_button:SetText(STRINGS.UI.TRADESCREEN.SPECIALS)
-	self.specials_button:SetTextColour(WHITE)
-	self.specials_button:SetTextFocusColour(WHITE)
-	self.specials_button:SetTextDisabledColour(WHITE)
-	self.specials_button:SetTextSelectedColour(WHITE)
-	self.specials_button.text:MoveToFront()
-
-	self.specials_button:SetScale(.5)
-	self.specials_button:SetPosition(-455, -205, 0)
-
-	self.specials_title = self.claw_machine:AddChild(Text(TALKINGFONT, 55, STRINGS.UI.TRADESCREEN.SPECIALS_TITLE, WHITE))
-	self.specials_title:SetPosition(25, 373)
-	self.specials_title:Hide()
-
-	self.specials_transitionFx = self.fixed_root:AddChild(UIAnim())
-	self.specials_transitionFx:GetAnimState():SetBuild("swapshoppe_special_transitionfx")
-	self.specials_transitionFx:GetAnimState():SetBank("transitionfx")
-	self.specials_transitionFx:SetPosition(0, -325)
-	self.specials_transitionFx:SetScale(.9, 1.1, 1)
-	self.specials_transitionFx:Hide()
-end]]
 
 function TradeScreen:DoInitState()
 	self.machine_in_use = false		-- the machine is currently in-use, we use this to disable things and ignore input
@@ -1099,13 +1031,6 @@ function TradeScreen:RefreshUIState()
 		self:EnableMachineTiles()
 	end
 
-	-- DISABLE SPECIAL RECIPES
-	--[[if self.specials_mode then
-		self:ShowSpecials()
-	else
-		self:HideSpecials()
-	end]]
-
 	if self.machine_in_use or self.sold_out or self.transitioning or self.quitting then
 		self.popup:DisableInput()
 	else
@@ -1118,14 +1043,6 @@ function TradeScreen:RefreshUIState()
 	   	self.sold_out_sign:Hide()
 	end
 
-
-	-- DISABLE SPECIAL RECIPES
-	--[[if self.machine_in_use or self.transitioning or self.quitting then
-		self.specials_button:Disable()
-	else
-		self.specials_button:Enable()
-	end]]
-
 	if self.exit_button ~= nil then
 		if self.quitting or self.machine_in_use then
 			self.exit_button:Disable()
@@ -1137,34 +1054,6 @@ function TradeScreen:RefreshUIState()
 
 	self:RefreshMachineTilesState() -- Do this at the end so that self.popup will be already updated.
 end
-
--- DISABLE SPECIAL RECIPES
---[[function TradeScreen:ShowSpecials()
-	--print("**** Setting up specials mode")
-	if not self.machine_in_use then
-		self.specials_list:Show()
-		self.specials_list:UpdateSelectedIngredients(self.selected_items)
-	else
-		self.specials_list:Hide()
-	end
-	self.special_lightfx:Show()
-
-	self.claw_machine:GetAnimState():AddOverrideBuild("swapshoppe_special_build")
-
-	self.title:Hide()
-	self.specials_title:Show()
-end
-
-function TradeScreen:HideSpecials()
-	--print("**** Hiding specials ")
-	self.specials_list:Hide()
-	self.special_lightfx:Hide()
-
-	self.claw_machine:GetAnimState():ClearOverrideBuild("swapshoppe_special_build")
-
-	self.title:Show()
-	self.specials_title:Hide()
-end]]
 
 function TradeScreen:RefreshMachineTilesState()
 
@@ -1372,11 +1261,6 @@ function TradeScreen:OnUpdate(dt)
 		self:FinishTrade()
 	end
 
-	-- DISABLE SPECIAL RECIPES
-	--[[if self.specials_transitionFx:GetAnimState():IsCurrentAnimation(TRANSITION_ANIM) and self.specials_transitionFx:GetAnimState():AnimDone() then
-		self.specials_transitionFx:Hide()
-	end]]
-
 	self:FlushTilesUpdate(dt)
 
 	if self.warning_timeout and self.warning_timeout > 0 then
@@ -1512,19 +1396,7 @@ function TradeScreen:GetHelpText()
 
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.TRADESCREEN.BACK)
 
-
 	if not self.machine_in_use and not self.transitioning then
-
-		-- DISABLE SPECIAL RECIPES
-       	--[[if self.specials_mode then
-	    	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. STRINGS.UI.TRADESCREEN.NOSPECIALS )
-
-	    	-- This uses too much space. Just use the hints on the spinner instead.
-	    	--table.insert(t, self.specials_list:GetHelpText())
-	    else
-	    	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. STRINGS.UI.TRADESCREEN.SPECIALS )
-	    end]]
-
 		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. STRINGS.UI.TRADESCREEN.BIRDS )
 
 		if self.resetbtn:IsEnabled() then
@@ -1552,12 +1424,6 @@ function TradeScreen:GetHelpText()
 	   	end
     end
 
-	-- DISABLE SPECIAL RECIPES
-	--[[
-    if self.specials_mode then
-    	local str = self.specials_list:GetHelpText()
-    	table.insert(t, str)
-    end]]
 	if not IsRail() and IsNotConsole() then
 		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.TRADESCREEN.MARKET)
 	end

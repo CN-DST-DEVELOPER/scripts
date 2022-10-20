@@ -9,9 +9,25 @@ function d_spawnlist(list, spacing, fn)
 	for y = 0, num_wide-1 do
 		for x = 0, num_wide-1 do
 			if list[(y*num_wide + x + 1)] then
-				local inst = SpawnPrefab(list[(y*num_wide + x + 1)])
+				local prefab = list[(y*num_wide + x + 1)]
+				local count = 1
+				local item_fn = nil
+				if type(prefab) == "table" then
+					count = prefab[2]
+					item_fn = prefab[3]
+					prefab = prefab[1]
+				end
+				local inst = SpawnPrefab(prefab)
 				if inst ~= nil then
 					inst.Transform:SetPosition((pt + Vector3(x*spacing, 0, y*spacing)):Get())
+					if count > 1 then
+						if inst.components.stackable then
+							inst.components.stackable:SetStackSize(count)
+						end
+					end
+					if item_fn ~= nil then
+						item_fn(inst)
+					end
 					if fn ~= nil then
 						fn(inst)
 					end
@@ -144,6 +160,31 @@ function d_allsongs()
 
     c_give("battlesong_instant_taunt")
     c_give("battlesong_instant_panic")
+end
+
+function d_allstscostumes()
+    c_give("mask_dollhat")
+    c_give("mask_dollbrokenhat")
+    c_give("mask_dollrepairedhat")
+    c_give("costume_doll_body")
+
+    c_give("mask_blacksmithhat")
+    c_give("costume_blacksmith_body")
+
+    c_give("mask_mirrorhat")
+    c_give("costume_mirror_body")
+
+    c_give("mask_queenhat")
+    c_give("costume_queen_body")
+
+    c_give("mask_kinghat")
+    c_give("costume_king_body")
+
+    c_give("mask_treehat")
+    c_give("costume_tree_body")
+
+    c_give("mask_foolhat")
+    c_give("costume_fool_body")
 end
 
 function d_domesticatedbeefalo(tendency, saddle)
@@ -723,6 +764,17 @@ function d_giveturfs()
     end
 end
 
+function d_turfs()
+    local GroundTiles = require("worldtiledefs")
+
+	local items = {}
+	for k, v in pairs(GroundTiles.turf) do
+		table.insert(items, {"turf_"..v.name, 10})
+	end
+
+	d_spawnlist(items)
+end
+
 function d_spawnlayout(name, offset)
 	local obj_layout = require("map/object_layout")
 	local entities = {}
@@ -1194,6 +1246,23 @@ function d_removeentitywithnetworkid(networkid, x, y, z)
     end
 end
 
+
+function d_recipecards()
+	local items = {}
+
+	local cards = require("cooking").recipe_cards
+	for _, card in ipairs(cards) do
+		table.insert(items, {"cookingrecipecard", 1, function(inst)
+			    inst.recipe_name = card.recipe_name
+				inst.cooker_name = card.cooker_name
+				inst.components.named:SetName(subfmt(STRINGS.NAMES.COOKINGRECIPECARD, { item = STRINGS.NAMES[string.upper(card.recipe_name)] or card.recipe_name }))
+			end}
+		)
+	end
+
+	d_spawnlist(items, 2)
+end
+
 function d_spawnfilelist(filename, spacing)
 -- the file will need to be located in: \Documents\Klei\DoNotStarveTogether\<steam id>\client_save
 -- the fileformat is one prefab per line
@@ -1211,4 +1280,177 @@ function d_spawnfilelist(filename, spacing)
 	end)
 	
 	d_spawnlist(prefabs, spacing) 
+end
+
+function d_spawnallhats()
+	d_spawnlist(ALL_HAT_PREFAB_NAMES)
+end
+
+local function spawn_mannequin_and_equip_item(item)
+	local ix, iy, iz = item.Transform:GetWorldPosition()
+	local stand = SpawnPrefab("sewing_mannequin")
+	stand.Transform:SetPosition(ix, iy, iz)
+	stand.components.inventory:Equip(item)
+end
+
+function d_spawnallhats_onstands()
+    local all_hats = {"slurper"}
+    for i = 1, #ALL_HAT_PREFAB_NAMES do
+        table.insert(all_hats, ALL_HAT_PREFAB_NAMES[i])
+    end
+	d_spawnlist(all_hats, 3.5, spawn_mannequin_and_equip_item)
+end
+
+function d_spawnallarmor_onstands()
+	local all_armor =
+	{
+		"amulet",
+		"blueamulet",
+		"purpleamulet",
+		"orangeamulet",
+		"greenamulet",
+		"yellowamulet",
+		"armor_bramble",
+		"armordragonfly",
+		"armorgrass",
+		"armormarble",
+		"armorruins",
+		"armor_sanity",
+		"armorskeleton",
+		"armorslurper",
+		"armorsnurtleshell",
+		"armorwood",
+		"backpack",
+		"balloonvest",
+		"beargervest",
+		"candybag",
+		"carnival_vest_a",
+		"carnival_vest_b",
+		"carnival_vest_c",
+		"costume_doll_body",
+        "costume_queen_body",
+        "costume_king_body",
+        "costume_blacksmith_body",
+        "costume_mirror_body",
+        "costume_tree_body",
+        "costume_fool_body",
+		"hawaiianshirt",
+		"icepack",
+		"krampus_sack",
+		"onemanband",
+		"piggyback",
+		"potatosack",
+		"raincoat",
+		"reflectivevest",
+		"seedpouch",
+		"spicepack",
+		"sweatervest",
+		"trunkvest_summer",
+		"trunkvest_winter",
+	}
+
+	d_spawnlist(all_armor, 3.5, spawn_mannequin_and_equip_item)
+end
+
+function d_spawnallhandequipment_onstands()
+    local all_hand_equipment =
+    {
+        "multitool_axe_pickaxe",
+        "axe",
+        "goldenaxe",
+        "balloon",
+        "balloonparty",
+        "balloonspeed",
+        "batbat",
+        "bernie_inactive",
+        "blowdart_sleep",
+        "blowdart_fire",
+        "blowdart_pipe",
+        "blowdart_yellow",
+        "blowdart_walrus",
+        "boomerang",
+        "brush",
+        "bugnet",
+        "bullkelp_root",
+        "cane",
+        "carnivalgame_feedchicks_food",
+        "chum",
+        "compass",
+        "cutless",
+        "diviningrod",
+        "dumbbell",
+        "dumbbell_golden",
+        "dumbbell_marble",
+        "dumbbell_gem",
+        "farm_hoe",
+        "golden_farm_hoe",
+        "fence_rotator",
+        "firepen",
+        "fishingnet",
+        "fishingrod",
+        "glasscutter",
+        "gnarwail_horn",
+        "hambat",
+        "hammer",
+        "lighter",
+        "lucy",
+        "messagebottle_throwable",
+        "minifan",
+        "lantern",
+        "nightstick",
+        "nightsword",
+        "oar",
+        "oar_driftwood",
+        "oar_monkey",
+        "malbatross_beak",
+        "oceanfishingrod",
+        "pickaxe",
+        "goldenpickaxe",
+        "pitchfork",
+        "pocketwatch_weapon",
+        "propsign",
+        "redlantern",
+        "reskin_tool",
+        "ruins_bat",
+        "saddlehorn",
+        "shieldofterror",
+        "shovel",
+        "goldenshovel",
+        "sleepbomb",
+        "slingshot",
+        "spear_wathgrithr",
+        "spear",
+        "staff_tornado",
+        "icestaff",
+        "firestaff",
+        "telestaff",
+        "orangestaff",
+        "greenstaff",
+        "yellowstaff",
+        "opalstaff",
+        "tentaclespike",
+        "thurible",
+        "torch",
+        "trident",
+        "umbrella",
+        "grass_umbrella",
+        "wateringcan",
+        "premiumwateringcan",
+        "waterplant_bomb",
+        "waterballoon",
+        "whip",
+    }
+
+	d_spawnlist(all_hand_equipment, 3.5, spawn_mannequin_and_equip_item)
+end
+
+function d_spawnequipment_onstand(...)
+	if arg == nil or #arg == 0 then return end
+
+	local stand = SpawnPrefab("sewing_mannequin")
+	stand.Transform:SetPosition(ConsoleWorldPosition():Get())
+
+	for _, item in ipairs(arg) do
+		stand.components.inventory:Equip(SpawnPrefab(item))
+	end
 end

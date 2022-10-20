@@ -17,6 +17,13 @@ local Hatchable = Class(function(self, inst)
         night = true,
     }
 
+    self.chiller_prefs =
+    {
+        day = false,
+        dusk = false,
+        night = false,
+    }
+
     self.delay = false
 end)
 
@@ -43,9 +50,9 @@ function Hatchable:SetHatchFailTime(t)
     self.hatchfailtime = t
 end
 
-function Hatchable:OnState(state)
+function Hatchable:OnState(state, forcestateupdate)
     --print("Hatchable:OnState", state)
-    if self.state ~= state then
+    if self.state ~= state or forcestateupdate then
         self.state = state
         if self.onstatefn then
             self.onstatefn(self.inst, self.state)
@@ -81,23 +88,46 @@ function Hatchable:SetHeaterPrefs(day, dusk, night)
     self.heater_prefs["night"] = night
 end
 
+function Hatchable:SetChillerPrefs(day, dusk, night)
+    --If this is "nil" then the egg does not care either way.
+    self.chiller_prefs["day"] = day
+    self.chiller_prefs["dusk"] = dusk
+    self.chiller_prefs["night"] = night
+end
+
 function Hatchable:GetHeaterPref(phase)
     return self.heater_prefs[TheWorld.state.phase]
 end
 
-local function IsExothermic(guy)
-    return guy.components.burnable ~= nil and guy.components.burnable:HasExothermicHeat()
+function Hatchable:GetChillerPref(phase)
+    return self.chiller_prefs[TheWorld.state.phase]
 end
 
-local FIRE_MUST_TAGS = { "campfire", "fire" }
+local FIRE_MUST_TAGS = { "HASHEATER" }
+local FIRE_MUST_NOT_TAGS = { "INLIMBO" }
 function Hatchable:OnUpdate(dt)
     if self.delay then
         return
     end
 
-    local has_heater = FindEntity(self.inst, TUNING.HATCH_CAMPFIRE_RADIUS, IsExothermic, FIRE_MUST_TAGS) ~= nil
-    local wants_heater = self:GetHeaterPref()
+    -- NOTES(JBK): The heater component allows many sources be able to act as heating or cooling elements.
+    -- This hatchable component assumed only fire structures and wild fires could heat so this needs to change to take it into account.
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, TUNING.HATCH_CAMPFIRE_RADIUS, FIRE_MUST_TAGS, FIRE_MUST_NOT_TAGS)
+    local heatindex = 0
+    for _, ent in ipairs(ents) do
+        if ent.components.heater ~= nil and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
+            heatindex = heatindex + ent.components.heater:GetHeat(self.inst) -- Cold fires produce negative heat.
+        end
+    end
 
+    local wants_heater = self:GetHeaterPref()
+    local has_heater = heatindex > 0
+
+    local wants_chiller = self:GetChillerPref()
+    local has_chiller = heatindex < 0
+
+    local old_toohot, old_toocold = self.toohot, self.toocold
     self.toohot = false
     self.toocold = false
 
@@ -109,8 +139,16 @@ function Hatchable:OnUpdate(dt)
         end
     end
 
+    if wants_chiller ~= nil then
+        if has_chiller and not wants_chiller then
+            self.toocold = true
+        elseif not has_chiller and wants_chiller then
+            self.toohot = true
+        end
+    end
+
     if self.state == "unhatched" then
-        if has_heater then
+        if has_heater and wants_heater or has_chiller and wants_chiller then
             self.progress = self.progress + dt
             if self.progress >= self.cracktime then
                 self.progress = 0
@@ -122,10 +160,8 @@ function Hatchable:OnUpdate(dt)
         return
     end
 
-    local oldstate = self.state
-
     if self.toohot or self.toocold then
-        self:OnState("uncomfy")
+        self:OnState("uncomfy", old_toohot ~= self.toohot or old_toocold ~= self.toocold)
     else
         self:OnState("comfy")
     end

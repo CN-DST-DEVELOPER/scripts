@@ -171,6 +171,9 @@ local function AddTile(tile_name, tile_range, tile_data, ground_tile_def, minima
         if ground_tile_def.hard then
             GROUND_HARD[tile_id] = true
         end
+        if ground_tile_def.roadways then
+            GROUND_ROADWAYS[tile_id] = true
+        end
         if ground_tile_def.cannotbedug then
             TERRAFORM_IMMUNE[tile_id] = true
         end

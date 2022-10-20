@@ -1,5 +1,13 @@
 local DEBUG_MODE = BRANCH == "dev"
 
+local function GetWorldSetting(setting, default)
+    local worldsettings = TheWorld and TheWorld.components.worldsettings
+    if worldsettings then
+        return worldsettings:GetSetting(setting)
+    end
+    return default
+end
+
 DEFAULT_GAME_MODE = "survival" --only used when we can't actually find the game mode of a saved server slot
 
 GAME_MODES =
@@ -18,6 +26,7 @@ GAME_MODES =
         reset_time = { time = 120, loadingtime = 180 },
         invalid_recipes = nil,
     },
+    --[[
     wilderness =
     {
         text = "",
@@ -46,6 +55,7 @@ GAME_MODES =
         reset_time = nil,
         invalid_recipes = nil,
     },
+    --]]
     lavaarena =
     {
         internal = true,
@@ -148,10 +158,8 @@ local GAME_MODE_ERROR =
 GAME_MODES_ORDER =
 {
     survival = 1,
-    wilderness = 2,
-    endless = 3,
-    lavaarena = 4,
-    quagmire = 5,
+    lavaarena = 2,
+    quagmire = 3,
 }
 
 local function mode_cmp(a, b)
@@ -191,7 +199,10 @@ function AddGameMode(game_mode, game_mode_text)
 end
 
 function GetGameModeProperty(property)
-    --print ("GetGameModeProperty:", tostring(TheNet:GetServerGameMode()), property, tostring(GetGameMode(TheNet:GetServerGameMode())[property]))
+    local setting = GetWorldSetting(property, nil)
+    if setting ~= nil then
+        return setting
+    end
     return GetGameMode(TheNet:GetServerGameMode())[property]
 end
 
@@ -256,44 +267,37 @@ function GetIsModGameMode(game_mode)
     return (GAME_MODES[game_mode] or GAME_MODE_ERROR).mod_game_mode
 end
 
-function GetGhostSanityDrain(game_mode)
-    return GetGameMode(game_mode).ghost_sanity_drain
+function GetGhostSanityDrain()
+    return GetWorldSetting("ghost_sanity_drain", true)
 end
 
-function GetIsSpawnModeFixed(game_mode)
-    return GetGameMode(game_mode).spawn_mode == "fixed"
+function GetIsSpawnModeFixed()
+    return GetSpawnMode() == "fixed"
 end
 
-function GetSpawnMode(game_mode)
-    return GetGameMode(game_mode).spawn_mode
+function GetSpawnMode()
+    return GetWorldSetting("spawn_mode", "fixed")
 end
 
-function GetHasResourceRenewal(game_mode)
-    return GetGameMode(game_mode).resource_renewal
+function GetHasResourceRenewal()
+    return GetWorldSetting("resource_renewal", false)
 end
 
-function GetGhostEnabled(game_mode)
-    return GetGameMode(game_mode).ghost_enabled
+function GetGhostEnabled()
+    return GetWorldSetting("ghost_enabled", true) and not GetGameModeProperty("revivable_corpse") --revivablecorpse forces ghosts to be disabled.
 end
 
-function GetPortalRez(game_mode)
-    return GetGameMode(game_mode).portal_rez
+function GetPortalRez()
+    return GetWorldSetting("portal_rez", false)
 end
 
-function GetResetTime(game_mode)
-    return GetGameMode(game_mode).reset_time
+function GetResetTime()
+    return GetWorldSetting("reset_time", { time = 120, loadingtime = 180 })
 end
 
 function IsRecipeValidInGameMode(game_mode, recipe_name)
     local invalid_recipes = GetGameMode(game_mode).invalid_recipes
-    if invalid_recipes ~= nil then
-        for i, v in ipairs(invalid_recipes) do
-            if v == recipe_name then
-                return false
-            end
-        end
-    end
-    return true
+    return not table.contains(invalid_recipes, recipe_name)
 end
 
 function GetLevelType(game_mode)

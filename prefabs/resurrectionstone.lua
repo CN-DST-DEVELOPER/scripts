@@ -334,12 +334,6 @@ local function fn()
 
     inst.entity:AddTransform()
 
-    if not GetGhostEnabled(TheNet:GetServerGameMode()) then
-        inst.entity:Hide()
-        inst:DoTaskInTime(0, inst.Remove)
-        return inst
-    end
-
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
     inst.entity:AddMiniMapEntity()

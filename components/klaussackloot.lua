@@ -30,6 +30,7 @@ local giant_loot3 =
     "steelwool",
     "townportaltalisman",
 	"malbatross_beak",
+	"tallbirdegg",
 }
 
 function AddGiantLootPrefabs(prefabs)

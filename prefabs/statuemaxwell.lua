@@ -1,6 +1,8 @@
-local assets =
+    local assets =
 {
     Asset("ANIM", "anim/statue_maxwell.zip"),
+    Asset("ANIM", "anim/statue_maxwell_build.zip"),
+    Asset("ANIM", "anim/statue_maxwell_vine_build.zip"),
     Asset("MINIMAP_IMAGE", "statue"),
 }
 
@@ -18,6 +20,26 @@ SetSharedLootTable('statue_maxwell',
     { 'marble', 1.00 },
     { 'marble', 0.33 },
 })
+
+local function invokecharliesanger(inst)
+    inst.AnimState:AddOverrideBuild("statue_maxwell_vine_build")
+end
+
+local function doCharlieTest(inst)
+    if not inst.charlie_test then
+        inst.charlie_test = true
+        if math.random() < 0.5 then
+            inst.charlies_work = true
+            invokecharliesanger(inst)
+            if math.random()<0.5 then
+                if inst.components.workable.workleft == TUNING.MARBLEPILLAR_MINE then
+                    local work = math.random(1,TUNING.MARBLEPILLAR_MINE-2)
+                    inst.components.workable:WorkedBy(TheWorld, work)
+                end
+            end
+        end
+    end
+end
 
 local function OnWork(inst, worker, workleft)
     if workleft <= 0 then
@@ -38,6 +60,25 @@ local function OnWork(inst, worker, workleft)
     end
 end
 
+function OnSave(inst, data)
+    if inst.charlies_work then
+        data.charlies_work = inst.charlies_work
+    end
+    if inst.charlie_test then
+        data.charlie_test = inst.charlie_test
+    end
+end
+
+function OnLoad(inst, data)
+   if data and not data.charlie_test then
+        inst.charlie_test= data.charlie_test
+   end
+   if data and data.charlies_work then
+        inst.charlies_work = data.charlies_work
+        invokecharliesanger(inst)
+   end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -55,7 +96,7 @@ local function fn()
     inst.MiniMapEntity:SetIcon("statue.png")
 
     inst.AnimState:SetBank("statue_maxwell")
-    inst.AnimState:SetBuild("statue_maxwell")
+    inst.AnimState:SetBuild("statue_maxwell_build")
     inst.AnimState:PlayAnimation("idle_full")
 
     inst.entity:SetPristine()
@@ -73,6 +114,13 @@ local function fn()
     inst.components.workable:SetWorkAction(ACTIONS.MINE)
     inst.components.workable:SetWorkLeft(TUNING.MARBLEPILLAR_MINE)
     inst.components.workable:SetOnWorkCallback(OnWork)
+
+    inst:DoTaskInTime(0,function() 
+        doCharlieTest(inst)
+    end)
+
+    inst.OnLoad = OnLoad
+    inst.OnSave = OnSave
 
     MakeHauntableWork(inst)
 

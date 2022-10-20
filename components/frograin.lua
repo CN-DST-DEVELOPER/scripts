@@ -214,8 +214,9 @@ function self.StopTrackingFn(target)
 end
 
 --V2C: FIXME: nobody calls this ever... c'mon...
+-- NOTES(JBK): May as well have it call the appropriate function until it is!
 function self:StopTracking(inst)
-    _frogs[inst] = nil
+    self.StopTrackingFn(inst)
 end
 
 --------------------------------------------------------------------------

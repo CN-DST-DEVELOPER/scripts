@@ -51,6 +51,10 @@ local function KeepFaceTargetFn(inst, target)
         inst:GetDistanceSqToInst(target) <= KEEP_FACE_DIST*KEEP_FACE_DIST
 end
 
+local function CanMakeNewNest(inst)
+	return inst.components.homeseeker == nil and inst:CanMakeNewHome() and not inst.sg:HasStateTag("busy")
+end
+
 local TallbirdBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -70,6 +74,8 @@ function TallbirdBrain:OnStart()
 				DoAction(self.inst, function() return GoHomeAction(self.inst) end, "GoHome", true)
 			),
 			DoAction(self.inst, function() return LayEggAction(self.inst) end, "LayEgg", true),
+			WhileNode(function() return CanMakeNewNest(self.inst) end, "Make Nest",
+				ActionNode(function() self.inst:PushEvent("makenewnest") end)),
 			Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),
       },1)
 

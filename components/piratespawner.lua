@@ -96,10 +96,12 @@ local function setpirateboat(boat)
         ents = TheSim:FindEntities(x,y,z, inst.components.walkableplatform.platform_radius)
         for _, ent in ipairs(ents) do
             if ent.components.health then
-                --print("Kill:", ent)
-                ent.components.health:Kill()
+                if ent:HasTag("pirate") then
+                    ent:Remove()
+                else            
+                    ent.components.health:Kill()
+                end
             else
-                --print("Remove:", ent)
                 ent:Remove()
             end
         end

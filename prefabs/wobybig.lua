@@ -10,6 +10,7 @@ local assets =
     Asset("ANIM", "anim/woby_big_boat_jump.zip"),
 
     Asset("ANIM", "anim/ui_woby_3x3.zip"),
+    Asset("PKGREF", "anim/ui_woby_3x4.zip"), --using 3x3 instead
 
     Asset("ANIM", "anim/pupington_woby_build.zip"),
     Asset("SOUND", "sound/beefalo.fsb"),

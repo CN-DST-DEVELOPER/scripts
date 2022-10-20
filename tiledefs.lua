@@ -378,6 +378,7 @@ TileManager.AddTile(
         snowsound="dontstarve/movement/run_ice",
         mudsound = "dontstarve/movement/run_mud",
         hard = true,
+        roadways = true,
     },
     {
         name = "map_edge",
@@ -827,6 +828,14 @@ TileManager.AddTile(
         walksound="dontstarve/movement/walk_dirt",
         snowsound="dontstarve/movement/run_ice",
         mudsound="dontstarve/movement/run_mud",
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_ruinsbrick_noise"
+    },
+    {
+        name = "ruinsbrick_glow",
+        bank_build = "turf_drama",
     }
 )
 
@@ -845,6 +854,10 @@ TileManager.AddTile(
     {
         name="map_edge",
         noise_texture="mini_ruinsbrick_noise"
+    },
+    {
+        name = "ruinsbrick",
+        bank_build = "turf_drama",
     }
 )
 
@@ -859,6 +872,14 @@ TileManager.AddTile(
         walksound="dontstarve/movement/walk_dirt",
         snowsound="dontstarve/movement/run_snow",
         mudsound="dontstarve/movement/run_mud",
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_ruinstile_noise"
+    },
+    {
+        name = "ruinstiles_glow",
+        bank_build = "turf_drama",
     }
 )
 
@@ -877,6 +898,10 @@ TileManager.AddTile(
     {
         name="map_edge",
         noise_texture="mini_ruinstile_noise"
+    },
+    {
+        name = "ruinstiles",
+        bank_build = "turf_drama",
     }
 )
 
@@ -891,6 +916,14 @@ TileManager.AddTile(
         walksound="dontstarve/movement/walk_dirt",
         snowsound="dontstarve/movement/run_snow",
         mudsound="dontstarve/movement/run_mud",
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_ruinstile_noise"
+    },
+    {
+        name = "ruinstrim_glow",
+        bank_build = "turf_drama",
     }
 )
 
@@ -909,6 +942,10 @@ TileManager.AddTile(
     {
         name="map_edge",
         noise_texture="mini_ruinstrim_noise"
+    },
+    {
+        name = "ruinstrim",
+        bank_build = "turf_drama",
     }
 )
 
@@ -1002,6 +1039,8 @@ TileManager.AddTile(
     }
 )
 
+
+
 TileManager.AddTile(
     "CHECKER",
     TileRanges.LAND,
@@ -1023,6 +1062,105 @@ TileManager.AddTile(
     {
         name = "checkerfloor", -- Inventory item
         anim = "checker", -- Ground item
+    }
+)
+
+
+TileManager.AddTile(
+    "MOSAIC_GREY",
+    TileRanges.LAND,
+    {ground_name = "Grey Mosaic", old_static_id = GROUND.MOSAIC_GREY},
+    {
+        name="blocky",
+        noise_texture="noise_mosaictiles_grey",
+        runsound="dontstarve/movement/run_marble",
+        walksound="dontstarve/movement/walk_marble",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        flooring = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_mosaictiles_grey_noise"
+    },
+    {
+        name = "mosaic_grey", -- Inventory item
+        anim = "mosaic_grey", -- Ground item
+        bank_build = "turf_drama",        
+    }
+)
+TileManager.AddTile(
+    "MOSAIC_RED",
+    TileRanges.LAND,
+    {ground_name = "Red Mosaic", old_static_id = GROUND.MOSAIC_RED},
+    {
+        name="blocky",
+        noise_texture="noise_mosaictiles_red",
+        runsound="dontstarve/movement/run_marble",
+        walksound="dontstarve/movement/walk_marble",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        flooring = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_mosaictiles_red_noise"
+    },
+    {
+        name = "mosaic_red", -- Inventory item
+        anim = "mosaic_red", -- Ground item
+        bank_build = "turf_drama",
+    }
+)
+TileManager.AddTile(
+    "MOSAIC_BLUE",
+    TileRanges.LAND,
+    {ground_name = "Blue Mosaic", old_static_id = GROUND.MOSAIC_BLUE},
+    {
+        name="blocky",
+        noise_texture="noise_mosaictiles_blue",
+        runsound="dontstarve/movement/run_marble",
+        walksound="dontstarve/movement/walk_marble",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        flooring = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_mosaictiles_blue_noise"
+    },
+    {
+        name = "mosaic_blue", -- Inventory item
+        anim = "mosaic_blue", -- Ground item
+        bank_build = "turf_drama",
+    }
+)
+
+TileManager.AddTile(
+    "CARPET2",
+    TileRanges.LAND,
+    {ground_name = "Carpet", old_static_id = GROUND.CARPET2},
+    {
+        name="carpet",
+        noise_texture="noise_carpet2",
+        runsound="dontstarve/movement/run_carpet",
+        walksound="dontstarve/movement/walk_carpet",
+        snowsound="dontstarve/movement/run_snow",
+        mudsound="dontstarve/movement/run_mud",
+        flooring = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_carpet2_noise"
+    },
+    {
+        name = "carpetfloor2", -- Inventory item
+        anim = "carpet2", -- Ground item
+        bank_build = "turf_drama",
     }
 )
 
@@ -1121,6 +1259,7 @@ TileManager.AddTile(
         noise_texture="lavaarena_floor_mini"
     }
 )
+
 
 --noise tiles
 TileManager.AddTile(

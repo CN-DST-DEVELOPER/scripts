@@ -120,6 +120,28 @@ local function OnAttacked(inst, data)
     end
 end
 
+local MAKE_NEXT_EXCLUDE_TAGS = {"tallbird"}
+
+local function CanMakeNewHome(inst)
+	if inst.components.homeseeker == nil and not inst.components.combat:HasTarget() then
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local tile = TheWorld.Map:GetTileAtPoint(x, y, z)
+		return (tile == WORLD_TILES.ROCKY or tile == WORLD_TILES.DIRT) and TheSim:CountEntities(x, y, z, TUNING.TALLBIRD_MAKE_NEST_RADIUS, nil, MAKE_NEXT_EXCLUDE_TAGS) == 0
+	end
+end
+
+local function MakeNewHome(inst)
+	if inst:CanMakeNewHome() then
+		local nest = SpawnPrefab("tallbirdnest")
+		nest.Transform:SetPosition(inst.Transform:GetWorldPosition())
+		nest.components.pickable:MakeEmpty()
+		nest.components.childspawner:TakeOwnership(inst)
+		nest.components.childspawner:SetMaxChildren(1)
+		nest:StartNesting()
+		return true
+	end
+end
+
 local function OnEntitySleep(inst, data)
     inst.entitysleeping = true
     if inst.pending_spawn_smallbird then
@@ -215,6 +237,9 @@ local function fn()
     inst:AddComponent("inspectable")
 
     ------------------
+
+	inst.CanMakeNewHome = CanMakeNewHome
+	inst.MakeNewHome = MakeNewHome
 
     inst:SetBrain(brain)
 

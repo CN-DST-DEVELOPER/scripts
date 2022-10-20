@@ -89,7 +89,7 @@ end
 
 local function GoHomeAction(inst)
 	local home = inst.components.homeseeker and inst.components.homeseeker.home or nil
-    if home ~= nil and home:IsValid() then
+    if home ~= nil and home:IsValid() and (not home.components.burnable or not home.components.burnable:IsBurning()) then
         return BufferedAction(inst, home, ACTIONS.GOHOME)
     else
         inst.raining = false

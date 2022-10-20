@@ -455,6 +455,9 @@ local function fn()
 
     MakeInventoryFloatable(inst)
 
+    --Sneak this into pristine state for optimization
+    inst:AddTag("__follower")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -462,6 +465,10 @@ local function fn()
     end
 
     inst.recentlycharged = {}
+
+    --Remove this tag so that they can be added properly when replicating below
+    inst:RemoveTag("__follower")
+    inst:PrereplicateComponent("follower")
 
     inst:AddComponent("inspectable")
 

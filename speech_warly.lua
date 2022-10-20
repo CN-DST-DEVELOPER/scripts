@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "It would be better with more petits chats, non?",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Ah, perhaps I should find a place with more hiding spots.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I'm afraid that's enough playing for one day.",
+            MANNEQUIN_EQUIPSWAPFAILED = "Non, that will not do.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -466,6 +468,8 @@ return{
         SAME_OLD_5 = "Enough already!",
 		TASTY = "Tres magnifique!",
     },
+
+	ANNOUNCE_FOODMEMORY = "\nI'd rather not eat the same old thing again.",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -853,6 +857,8 @@ return{
     ANNOUNCE_PIRATES_ARRIVE = "Oh, zut alors...",
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
+
+    ANNOUNCE_OFF_SCRIPT = "Everyone wants to add their own flavor to a role.",
 
 	BATTLECRY =
 	{
@@ -1444,7 +1450,19 @@ return{
 
         TURF_SHELLBEACH = "It's like an ingredient for the ground.",
 
+		TURF_RUINSBRICK = "It's like an ingredient for the ground.",
+		TURF_RUINSBRICK_GLOW = "It's like an ingredient for the ground.",
+		TURF_RUINSTILES = "It's like an ingredient for the ground.",
+		TURF_RUINSTILES_GLOW = "It's like an ingredient for the ground.",
+		TURF_RUINSTRIM = "It's like an ingredient for the ground.",
+		TURF_RUINSTRIM_GLOW = "It's like an ingredient for the ground.",
+
         TURF_MONKEY_GROUND = "It's like an ingredient for the ground.",
+
+        TURF_CARPETFLOOR2 = "How plush!",
+        TURF_MOSAIC_GREY = "It's like an ingredient for the ground.",
+        TURF_MOSAIC_RED = "It's like an ingredient for the ground.",
+        TURF_MOSAIC_BLUE = "It's like an ingredient for the ground.",
 
 		POWCAKE = "I would not feed this to my worst enemies. Or would I...",
         CAVE_ENTRANCE = "I wonder what is underneath that?",
@@ -1628,6 +1646,10 @@ return{
             RARE = "This one looks complicated.",
         },
         SKETCH = "Oh! I could sculpt something based off this.",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "Ah, non! I cannot make out the recipe!",
+		},
 		BLUE_CAP = "What deliciousness shall you yield?",
 		BLUE_CAP_COOKED = "Could use a dash of smoked salt and balsamic vinegar...",
 		BLUE_MUSHROOM =
@@ -1652,6 +1674,7 @@ return{
 		BUZZARD = "If only you were more turkey than vulture...",
 
 		SHADOWDIGGER = "Oh, how odd.",
+        SHADOWDANCER = "They keep getting odder...",
 
 		CACTUS =
 		{
@@ -1813,6 +1836,7 @@ return{
 		},
         GOGGLESHAT = "Oh. I've never considered myself fashionable before!",
         DESERTHAT = "Goggles would be quite useful. I need my eyes.",
+        ANTLIONHAT = "Madame Antlion was kind enough to share the recipe.",
 		DEVTOOL = "Efficient, oui?",
 		DEVTOOL_NODEV = "No, I am a traditionalist.",
 		DIRTPILE = "It's making a bit of a mess, isn't it?",
@@ -4516,6 +4540,13 @@ return{
 
         SCANDATA = "What is this they're cooking up?",
 
+		-- QOL 2022
+		JUSTEGGS = "If only I had a bit of cheese, perhaps some chives...",
+		VEGGIEOMLET = "The best way to start the day is with a hot breakfast.",
+		TALLEGGS = "Crispy on the outside, with a nice runny center.",
+		BEEFALOFEED = "My beast could use some more meat on its bones.",
+		BEEFALOTREAT = "My beast deserves something delicious to eat.",
+
         -- Pirates
         BOAT_ROTATOR = "It might be about time to turn it over.",
         BOAT_ROTATOR_KIT = "Aha! I thought my boat was missing something!",
@@ -4590,10 +4621,48 @@ return{
         PIRATE_STASH = "Et voila, the treasure!",
         STASH_MAP = "Ah, it looks like this will lead me to some treasure!",
 
-
         BANANAJUICE = "I would have added a pinch of cinnamon.",
 
         FENCE_ROTATOR = "I should poke it into a freshly made fence, to see if it's done.",
+
+        CHARLIE_STAGE_POST = "I have the feeling I am being watched.",
+        CHARLIE_LECTURN = "A play? Here?",
+
+        CHARLIE_HECKLER = "What a rude bird!",
+
+        PLAYBILL_THE_DOLL = "I wonder who will play the lead?",
+        STATUEHARP_HEDGESPAWNER = "That poor statue seems to have been left alone for a long time.",
+        HEDGEHOUND = "Alors, some things in life are not as rosy as they seem.",
+        HEDGEHOUND_BUSH = "Ah, la vie en rose.",
+
+        MASK_DOLLHAT = "Is it time for a masquerade?",
+        MASK_DOLLBROKENHAT = "Is it time for a masquerade?",
+        MASK_DOLLREPAIREDHAT = "Quel dommage, it is broken!",
+        MASK_BLACKSMITHHAT = "Is it time for a masquerade?",
+        MASK_MIRRORHAT = "Is it time for a masquerade?",
+        MASK_QUEENHAT = "Is it time for a masquerade?",
+        MASK_KINGHAT = "Is it time for a masquerade?",
+        MASK_TREEHAT = "Is it time for a masquerade?",
+        MASK_FOOLHAT = "Is it time for a masquerade?",
+
+        COSTUME_DOLL_BODY = "It seems to be a costume for a doll.",
+        COSTUME_QUEEN_BODY = "It seems to be a costume fit for a Queen.",
+        COSTUME_KING_BODY = "It seems to be a costume fit for a King.",
+        COSTUME_BLACKSMITH_BODY = "It seems to be a costume for a blacksmith.",
+        COSTUME_MIRROR_BODY = "I wonder whose costume this could be?",
+        COSTUME_TREE_BODY = "It seems to be a costume for a... tree?",
+        COSTUME_FOOL_BODY = "It seems to be a costume for a fool.",
+
+        STAGEUSHER =
+        {
+            STANDING = "I've got to hand it to you, I was startled!",
+            SITTING = "Oh, what a nice table setting.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "I feel as though it's staring at me.",
+            BURNT = "Ah, I almost feel bad for it now.",
+        },
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

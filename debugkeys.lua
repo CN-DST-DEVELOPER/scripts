@@ -9,6 +9,10 @@ if CAN_USE_DBUI then
     require "dbui_no_package/debug_player"
     require "dbui_no_package/debug_input"
     require "dbui_no_package/debug_strings"
+    require "dbui_no_package/debug_console"
+    require "dbui_no_package/debug_watch"
+    require "dbui_no_package/debug_anything"
+    require "dbui_no_package/debug_history"
 end
 
 require "consolecommands"
@@ -132,7 +136,7 @@ if CHEATS_ENABLED and userName == "My Username" then
     CHEATS_ENABLE_DPRINT = true
 end
 
-GLOBAL_KEY_BINDINGS = 
+GLOBAL_KEY_BINDINGS =
 {
     {
         binding = { key = KEY_HOME },
@@ -155,6 +159,16 @@ GLOBAL_KEY_BINDINGS =
             TheSim:ToggleDebugPause()
         end
     },
+    {
+        binding = { key = KEY_H, SHIFT=true },
+		name = function()
+			local on_off = TheFrontEnd.debugMenu.history:IsEnabled() and "OFF" or "ON"
+			return "Turn "..on_off.." History Recording"
+		end,
+		fn = function()
+            c_record()
+		end
+	},
     {
         binding = { key = KEY_G },
         name = "God Mode",
@@ -207,7 +221,7 @@ GLOBAL_KEY_BINDINGS =
         binding = { key = KEY_W, CTRL=true },
         name = "Toggle IMGUI",
         fn = function()
-            TheFrontEnd:ToggleImgui()    
+            TheFrontEnd:ToggleImgui()
         end
     },
     {
@@ -238,7 +252,7 @@ GLOBAL_KEY_BINDINGS =
     },
 }
 
-PROGRAMMER_KEY_BINDINGS = 
+PROGRAMMER_KEY_BINDINGS =
 {
     {
         binding = { key = KEY_F1, ALT=true },
@@ -253,10 +267,10 @@ PROGRAMMER_KEY_BINDINGS =
         fn = function()
             TheSim:TogglePerfGraph()
         end
-    },    
+    },
 }
 
-WINDOW_KEY_BINDINGS = 
+WINDOW_KEY_BINDINGS =
 {
     {
         binding = { key = KEY_P, SHIFT=true },
@@ -277,7 +291,7 @@ WINDOW_KEY_BINDINGS =
         end
     },
     {
-        binding = { key = KEY_W, SHIFT=true },
+        --binding = { key = KEY_W, SHIFT=true },
         name = "UI",
         fn = function()
             if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugWidget.NodeName) then
@@ -286,13 +300,65 @@ WINDOW_KEY_BINDINGS =
         end
     },
     {
+        binding = { key = KEY_E, SHIFT=true },
         name = "Entity",
         fn = function()
             if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugEntity.NodeName) then
                 TheFrontEnd:CreateDebugPanel( DebugNodes.DebugEntity() )
+                if GetDebugEntity() == nil then
+                    --c_selectany_cycle()
+                end
             end
         end
     },
+    {
+        binding = { key = KEY_C, SHIFT=true },
+        name = "Console",
+        fn = function()
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugConsole.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugConsole() )
+            end
+        end
+    },
+    {
+        binding = { key = KEY_F, SHIFT=true },
+        name = "Watch",
+        fn = function()
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugWatch.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugWatch() )
+            end
+        end
+    },
+    {
+		binding = { key = KEY_H },
+		name = "History",
+		fn = function()
+            if not CAN_USE_DBUI or Profile:GetThreadedRenderEnabled() then
+                return
+            end
+
+            if not TheFrontEnd:IsDebugPanelOpen(DebugNodes.DebugHistory.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugHistory() )
+            end
+        end
+	},
+    {
+		name = "Anything",
+		fn = function()
+			if not TheFrontEnd:IsDebugPanelOpen( DebugNodes.DebugAnything.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugAnything() )
+            end
+		end,
+	},
+	{
+		--binding = { key = InputConstants.Keys.E, SHIFT = true },
+		name = "Brain",
+		fn = function()
+            if not TheFrontEnd:IsDebugPanelOpen( DebugNodes.DebugBrain.NodeName) then
+                TheFrontEnd:CreateDebugPanel( DebugNodes.DebugBrain() )
+            end
+		end,
+	},
     {
         name = "Player",
         fn = function()
@@ -339,25 +405,25 @@ WINDOW_KEY_BINDINGS =
 local function BindKeys( bindings )
     for _,v in pairs(bindings) do
         if v.binding then
-            AddGlobalDebugKey( v.binding.key, 
-                function() 
-                    if (v.binding.CTRL and not TheInput:IsKeyDown(KEY_CTRL)) or 
-                        (v.binding.CTRL == nil and TheInput:IsKeyDown(KEY_CTRL)) then  
+            AddGlobalDebugKey( v.binding.key,
+                function()
+                    if (v.binding.CTRL and not TheInput:IsKeyDown(KEY_CTRL)) or
+                        (v.binding.CTRL == nil and TheInput:IsKeyDown(KEY_CTRL)) then
                         return false
                     end
 
-                    if (v.binding.SHIFT and not TheInput:IsKeyDown(KEY_SHIFT)) or 
-                        (v.binding.SHIFT == nil and TheInput:IsKeyDown(KEY_SHIFT)) then  
+                    if (v.binding.SHIFT and not TheInput:IsKeyDown(KEY_SHIFT)) or
+                        (v.binding.SHIFT == nil and TheInput:IsKeyDown(KEY_SHIFT)) then
                         return false
                     end
 
-                    if (v.binding.ALT and not TheInput:IsKeyDown(KEY_ALT)) or 
-                        (v.binding.ALT == nil and TheInput:IsKeyDown(KEY_ALT)) then  
+                    if (v.binding.ALT and not TheInput:IsKeyDown(KEY_ALT)) or
+                        (v.binding.ALT == nil and TheInput:IsKeyDown(KEY_ALT)) then
                         return false
                     end
 
                     --print("Activating hotkey: "..v.name)
-                    return v.fn() 
+                    return v.fn()
                 end, v.down)
         end
     end
@@ -435,9 +501,8 @@ AddGameDebugKey(KEY_B, function()
         end
 
     elseif TheInput:IsKeyDown(KEY_ALT) then
-        if TheWorld.components.piratespawner then
-            TheWorld.components.piratespawner:SpawnPirates(TheInput:GetWorldPosition())
-        end
+
+
     end
 end)
 
@@ -1020,14 +1085,9 @@ AddGameDebugKey(KEY_D, function()
         local original_tile = TheWorld.Map:GetTileAtPoint(pos:Get())
 
         --if original_tile == WORLD_TILES.MONKEY_DOCK or original_tile == WORLD_TILES.OCEAN_COASTAL or original_tile == WORLD_TILES.OCEAN_COASTAL_SHORE then
-            local is_dock = original_tile == WORLD_TILES.MONKEY_DOCK
-            TheWorld.Map:SetTile(x, y, is_dock and WORLD_TILES.OCEAN_COASTAL or WORLD_TILES.MONKEY_DOCK)
+        --    local is_dock = original_tile == WORLD_TILES.MONKEY_DOCK
+        --    TheWorld.Map:SetTile(x, y, is_dock and WORLD_TILES.OCEAN_COASTAL or WORLD_TILES.MONKEY_DOCK)
         --end
-    elseif TheInput:IsKeyDown(KEY_CTRL) then
-        local MouseCharacter = TheInput:GetWorldEntityUnderMouse()
-        if MouseCharacter and MouseCharacter.components.diseaseable ~= nil then
-            MouseCharacter.components.diseaseable:Disease()
-        end
     end
 end)
 

@@ -85,6 +85,7 @@ local function CanHatTarget(inst, target)
         not (target.components.inventory.isopen or
             target:HasTag("pig") or
             target:HasTag("manrabbit") or
+            target:HasTag("equipmentmodel") or
             (inst._loading and target:HasTag("player"))) then
         --NOTE: open inventory implies player, so we can skip "player" tag check
         --      closed inventory on player means they shouldn't be able to equip
@@ -206,6 +207,12 @@ local function OnUnequip(inst, owner)
         inst.task:Cancel()
     end
     inst.task = inst:DoTaskInTime(10, setcansleep)
+end
+
+local function unequip_myself(owner, inst)
+    if inst ~= nil and inst:IsValid() and owner.components.inventory and owner.components.inventory:IsItemEquipped(inst) then
+        owner.components.inventory:DropItem(inst, true, true)
+    end
 end
 
 local function BasicAwakeCheck(inst)
@@ -356,6 +363,10 @@ local function fn()
         inst:ListenForEvent("onremove", inst.ondetach, owner)
         inst._light.entity:SetParent(owner.entity)
         inst._owner = owner
+
+        if owner:HasTag("equipmentmodel") then
+            owner:DoTaskInTime(TUNING.SLURPER_MANNEQUINTIME, unequip_myself, inst)
+        end
     end
     inst.ondetach = function()
         if inst._owner ~= nil then

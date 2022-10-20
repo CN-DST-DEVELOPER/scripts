@@ -129,7 +129,7 @@ return {
         },
         {
           name = "",
-          type = "fast_farmplot",
+          type = "meatrack",
           shape = "rectangle",
           x = 50,
           y = 277,
@@ -140,7 +140,7 @@ return {
         },
         {
           name = "",
-          type = "fast_farmplot",
+          type = "meatrack",
           shape = "rectangle",
           x = 90,
           y = 236,

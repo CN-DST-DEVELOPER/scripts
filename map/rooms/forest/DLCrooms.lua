@@ -1,6 +1,7 @@
 AddRoom("BGBadlands", {
 					colour={r=0.3,g=0.2,b=0.1,a=0.3},
 					value = WORLD_TILES.DIRT_NOISE,
+					tags = {"CharlieStage_Spawner"},
 					contents =  {
 									distributepercent = 0.07,
 									distributeprefabs =
@@ -110,7 +111,7 @@ AddRoom("BuzzardyBadlands", {
 AddRoom("BGDeciduous", {
 					colour={r=.1,g=.8,b=.1,a=.50},
 					value = WORLD_TILES.DECIDUOUS,
-					tags = {"ExitPiece", "Chester_Eyebone","Astral_2"},
+					tags = {"ExitPiece", "Chester_Eyebone","Astral_2", "StatueHarp_HedgeSpawner", "CharlieStage_Spawner",},
 					contents =  {
 					                countprefabs= {
 					                    pumpkin = function () return IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and (0 + math.random(3)) or 0 end,

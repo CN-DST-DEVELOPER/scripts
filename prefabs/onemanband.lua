@@ -112,6 +112,14 @@ local function onunequip(inst, owner)
     band_disable(inst)
 end
 
+local function onequiptomodel(inst, owner)
+    if owner then
+        inst.components.fueled:StopConsuming()
+    end
+
+    band_disable(inst)
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -156,6 +164,7 @@ local function fn()
 
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("leader")
 

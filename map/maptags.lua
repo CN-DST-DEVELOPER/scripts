@@ -7,6 +7,8 @@ local function MakeTags()
 			["StagehandGarden"] = true,
 			["SandstormOasis"] = true,
 			["Terrarium_Spawner"] = true,
+			["CharlieStage_Spawner"] = true,
+			["StatueHarp_HedgeSpawner"] = true,
 		}
 
 	local Terrarium_Spawners = 
@@ -95,6 +97,32 @@ local function MakeTags()
 										end
 
 										return "STATIC", Terrarium_Spawners[math.random(#Terrarium_Spawners)]
+									end,
+
+			["CharlieStage_Spawner"] = function(tagdata, level)
+										if tagdata["CharlieStage_Spawner"] == false then
+											return
+										end
+										tagdata["CharlieStage_Spawner"] = false
+
+										if level ~= nil and level.overrides ~= nil and level.overrides.stageplays == "never" then
+											return
+										end
+
+										return "STATIC", "Charlie1"
+									end,
+
+			["StatueHarp_HedgeSpawner"] = function(tagdata, level)
+										if tagdata["StatueHarp_HedgeSpawner"] == false then
+											return
+										end
+										tagdata["StatueHarp_HedgeSpawner"] = false
+
+										if level ~= nil and level.overrides ~= nil and level.overrides.stageplays == "never" then
+											return
+										end
+
+										return "STATIC", "Charlie2"
 									end,
 
 			["Hutch_Fishbowl"] =	function(tagdata)

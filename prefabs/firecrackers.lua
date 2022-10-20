@@ -109,9 +109,6 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("burnable")
-    inst.components.burnable:SetOnIgniteFn(DefaultBurnFn)
-    inst.components.burnable:SetOnExtinguishFn(DefaultExtinguishFn)
-
     inst.components.burnable:SetBurnTime(nil)
     inst.components.burnable:SetOnIgniteFn(OnIgniteFn)
     inst.components.burnable:SetOnExtinguishFn(OnExtinguishFn)

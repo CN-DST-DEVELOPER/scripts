@@ -4,6 +4,7 @@ local assets =
 {
     Asset("ANIM", "anim/fish_box.zip"),
     Asset("ANIM", "anim/ui_fish_box_3x4.zip"),
+    Asset("ANIM", "anim/ui_fish_box_5x4.zip"),
 }
 
 local prefabs =
@@ -112,6 +113,12 @@ local function onbuilt(inst)
     inst.SoundEmitter:PlaySound("hookline/common/fishbox/place")
 end
 
+local function OnSink(inst)
+	if inst:GetCurrentPlatform() == nil and not TheWorld.Map:IsDockAtPoint(inst.Transform:GetWorldPosition()) then
+		inst.components.workable:Destroy(inst)
+	end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -159,10 +166,12 @@ local function fn()
     inst.components.workable:SetOnFinishCallback(onhammered)
     inst.components.workable:SetOnWorkCallback(onhit)
 
-    inst:ListenForEvent("onbuilt", onbuilt)
     MakeSnowCovered(inst)
 
     AddHauntableDropItemOrWork(inst)
+
+    inst:ListenForEvent("onbuilt", onbuilt)
+	inst:ListenForEvent("onsink", OnSink)
 
     return inst
 end

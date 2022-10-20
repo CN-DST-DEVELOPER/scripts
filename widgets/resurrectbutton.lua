@@ -8,7 +8,7 @@ local ResurrectButton = Class(Widget, function(self, owner)
     self.owner = owner
     self.hud_focus = owner.HUD.focus
 
-    self.button = self:AddChild(ImageButton("images/hud.xml", "effigy_button.tex", "effigy_button_mouseover.tex", "effigy_button.tex"))
+    self.button = self:AddChild(ImageButton("images/hud.xml", "effigy_button_mouseover.tex", nil, "effigy_button.tex"))
     self.button:SetOnClick(function() self:DoResurrect() end)
 
     self.text = self:AddChild(Text(TALKINGFONT, 28))
@@ -23,7 +23,7 @@ local ResurrectButton = Class(Widget, function(self, owner)
 end)
 
 function ResurrectButton:ToggleHUDFocus(focus)
-    self.hud_focus = focus
+   self.hud_focus = focus
     self:OnShow()
 end
 

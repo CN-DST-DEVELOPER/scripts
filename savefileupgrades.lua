@@ -300,6 +300,49 @@ t = {
             shardindex.version = 4
             shardindex:MarkDirty()
         end,
+        UpgradeShardIndexFromV4toV5 = function(shardindex)
+            if shardindex.version ~= 4 then
+                return
+            end
+
+            local server = shardindex:GetServerData()
+            if server == nil then
+                return
+            end
+
+            if server.game_mode == "wilderness" then
+                local level = shardindex:GetGenOptions()
+                if level then
+                    level.overrides.spawnmode = "scatter"
+                    level.overrides.basicresource_regrowth = "always"
+                    level.overrides.ghostsanitydrain = "none"
+                    level.overrides.ghostenabled = "none"
+                    level.overrides.resettime = "none"
+                end
+
+				server.playstyle = "wilderness"
+                server.game_mode = "survival"
+            elseif server.game_mode == "endless" then
+                local level = shardindex:GetGenOptions()
+                if level then
+                    level.overrides.basicresource_regrowth = "always"
+                    level.overrides.ghostsanitydrain = "none"
+                    level.overrides.portalresurection = "always"
+                    level.overrides.resettime = "none"
+                end
+
+				server.playstyle = "endless"
+                server.game_mode = "survival"
+			else
+                local level = shardindex:GetGenOptions()
+				server.playstyle = level and require("map/levels").CalcPlaystyleForSettings(level) or PLAYSTYLE_DEFAULT
+            end
+
+			server.intention = nil
+
+            shardindex.version = 5
+            shardindex:MarkDirty()
+        end,
         UpgradeWorldgenoverrideFromV1toV2 = function(wgo)
             local validfields = {
                 overrides = true,
@@ -1176,6 +1219,13 @@ t = {
             version = 5.12, -- Curse of Moon Quay - new content
             fn = function(savedata)
                 savedata.retrofit_moonquay_monkeyisland_setpiece = true
+            end,
+        },
+
+        {
+            version = 5.13, -- A Little Drama - new setpieces
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_alittledrama_content")
             end,
         },
     },

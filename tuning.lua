@@ -5,7 +5,7 @@ TUNING_MODIFIERS = {}
 ORIGINAL_TUNING = {}
 
 function AddTuningModifier(tuning_var, fn, tuning_value)
-    if not TUNING_MODIFIERS[tuning_var] then
+    if not TUNING_MODIFIERS[tuning_var] and fn then
         TUNING_MODIFIERS[tuning_var] = {fn, TUNING[tuning_var] or tuning_value}
         TUNING[tuning_var] = nil
     end
@@ -54,6 +54,9 @@ function Tune(overrides)
         MAX_SERVER_SIZE = 6,
         DEMO_TIME = total_day_time * 2 + day_time*.2,
         AUTOSAVE_INTERVAL = total_day_time,
+
+		HUD_CLOUD_CUTOFF = 0.75,
+
         SEG_TIME = seg_time,
         TOTAL_DAY_TIME = total_day_time,
         DAY_SEGS_DEFAULT = day_segs,
@@ -110,6 +113,8 @@ function Tune(overrides)
         WILSON_HUNGER = wilson_hunger, --stomach size
         WILSON_HUNGER_RATE = calories_per_day/total_day_time, --calories burnt per day
         WILSON_SANITY = wilson_sanity,
+
+		PLAYER_DAMAGE_TAKEN_MOD = 1,
 
         -- Controller specific tuning values.
         CONTROLLER_DEADZONE_RADIUS = 0.3, -- TODO(JBK): Hook this up.
@@ -713,6 +718,8 @@ function Tune(overrides)
         GHOST_FOLLOW_DSQ = 30 * 30, -- Used in ghost.lua and ghostbrain.lua
         GHOST_SISTURN_CHANCE_PER_DECOR = 0.05,
 
+        COOKINGRECIPECARD_GRAVESTONE_CHANCE = 0.1,
+
         MIN_LEAF_CHANGE_TIME = .1 * day_time,
         MAX_LEAF_CHANGE_TIME = 3 * day_time,
         MIN_SWAY_FX_FREQUENCY = 1 * seg_time,
@@ -1147,6 +1154,8 @@ function Tune(overrides)
         TEENBIRD_STARVE_KILL_TIME = 240,
         TEENBIRD_GROW_TIME = total_day_time*18,
         TEENBIRD_TARGET_DIST = 8,
+		TALLBIRD_LAY_EGG_TIME_MIN = 3 * total_day_time,
+		TALLBIRD_LAY_EGG_TIME_VAR = 2 * total_day_time,
 
         SMALLBIRD_HEALTH = 50,
         SMALLBIRD_DAMAGE = 10,
@@ -1380,6 +1389,10 @@ function Tune(overrides)
         MUTATEDHOUND_HEALTH = 100,
         MUTATEDHOUND_DAMAGE = 25,
         MUTATEDHOUND_ATTACK_PERIOD = 2.5,
+
+        HEDGEHOUND_HEALTH = 50,
+        HEDGEHOUND_DAMAGE = 10,
+        HEDGEHOUND_ATTACK_PERIOD = 2,
 
         MOONPIG_AGGRO_DIST = 15,
         MOONPIG_RETURN_DIST = 30,
@@ -1816,6 +1829,7 @@ function Tune(overrides)
         HEALING_MEDLARGE = 30,
         HEALING_LARGE = 40,
         HEALING_HUGE = 60,
+        HEALING_MOREHUGE = 75,
         HEALING_SUPERHUGE = 100,
 
         SANITY_SUPERTINY = 1,
@@ -1850,6 +1864,7 @@ function Tune(overrides)
         CALORIES_MED = calories_per_day/3,			-- meat					 25
         CALORIES_LARGE = calories_per_day/2,		-- cooked meat			 37.5
         CALORIES_HUGE = calories_per_day,			-- crockpot foods?		 75
+        CALORIES_MOREHUGE = calories_per_day*4/3,	-- crockpot foods?		100
         CALORIES_SUPERHUGE = calories_per_day*2,	-- crockpot foods?		150
 
 		-- food affinity multipliers to add 15 calories
@@ -1887,6 +1902,7 @@ function Tune(overrides)
         TALLBIRDEGG_HUNGER = 15,
         TALLBIRDEGG_COOKED_HEALTH = 25;
         TALLBIRDEGG_COOKED_HUNGER = 30,
+		TALLBIRD_MAKE_NEST_RADIUS = 2,
 
         REPAIR_CUTSTONE_HEALTH = 50,
         REPAIR_ROCKS_HEALTH = 50/3,
@@ -2107,9 +2123,10 @@ function Tune(overrides)
         MIN_SMOLDER_TIME = .5*seg_time,
         MAX_SMOLDER_TIME = seg_time,
 
-        TENT_USES = 6,
-        SIESTA_CANOPY_USES = 6,
+        TENT_USES = 15,
+        SIESTA_CANOPY_USES = 15,
         PORTABLE_TENT_USES = 10,
+		BEDROLL_FURRY_USES = 3,
 
         DAPPER_BEARDLING_SANITY = .3,
         BEARDLING_SANITY = .4,
@@ -2749,7 +2766,9 @@ function Tune(overrides)
         SLEEP_TEMP_PER_TICK = 1,
         SLEEP_WETNESS_PER_TICK = -1,
         SLEEP_TARGET_TEMP_TENT = 40,
+        SLEEP_AMBIENT_TEMP_BEDROLL_FURRY = 40,
         SLEEP_TARGET_TEMP_BEDROLL_FURRY = 30,
+		SLEEP_TARGET_TEMP_BEDROLL_FURRY_MAX = 45,
 
 
         PVP_DAMAGE_MOD = .5,
@@ -6205,6 +6224,34 @@ function Tune(overrides)
         BOOK_MAX_SHADOWCREATURES = 16,
 
         FENCE_DEFAULT_ROTATION = 45,
+
+        HEALTH_PENALTY_ENABLED = true,
+        NONLETHAL_TEMPERATURE = false,
+        NONLETHAL_HUNGER = false,
+        NONLETHAL_DARKNESS = false,
+        NONLETHAL_PERCENT = 0.2,
+
+        AUTOTERRAFORMER_REPEAT_DELAY = 0.25,
+        ANTLIONHAT_USES = 400,
+        NIGHTMAREFUEL_FINITEUSESREPAIRVALUE = 50,
+        
+        -- Setting the Stage
+        STAGEUSHER_ATTACK_PERIOD = 8,
+        STAGEUSHER_ATTACK_DAMAGE = 80,
+        STAGEUSHER_ATTACK_RANGE = 12,
+        STAGEUSHER_ATTACK_SPEED = 6.0,
+        STAGEUSHER_ATTACK_STEPS = 6,
+        STAGEUSHER_ATTACK_STEPTIME = 25*FRAMES,
+        STAGEUSHER_ATTACK_DAMAGERADIUS = 2.0,
+        STAGEUSHER_GIVEUP_HEALTH = 86*wilson_attack,
+
+        CHARLIE_STAGE_RESET_TIME = total_day_time*3,
+        CHARLIE_STAGE_RESET_TIME_VARIABLE = total_day_time*3,
+        CHARLIE_STAGE_MUSIC_RANGE = 15,
+
+        STATUEHARP_HEDGESPAWNER_RESET_TIME = total_day_time,
+
+        SLURPER_MANNEQUINTIME = 7.5,
     }
 
     TUNING_MODIFIERS = {}

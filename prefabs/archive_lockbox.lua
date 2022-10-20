@@ -45,6 +45,8 @@ local function teach(inst)
     if recipe == "archive_resonator" then
         recipe = "archive_resonator_item"
     end
+	local recipe2 = inst.product_orchestrina == "turfcraftingstation" and "turf_archive" or nil
+
     local pos = Vector3(inst.Transform:GetWorldPosition())
     local players = FindPlayersInRange( pos.x, pos.y, pos.z, 20, true )
 
@@ -55,17 +57,18 @@ local function teach(inst)
                 player:AddChild(fx)
             end
 
-            if player.components.builder:KnowsRecipe(recipe) then
-                if player.components.talker then
-                    player.components.talker:Say(GetString(player, "ANNOUNCE_ARCHIVE_OLD_KNOWLEDGE"), nil, true)
-                end
-            else
-                local blueprint = SpawnPrefab(recipe .. "_blueprint")
-                player.components.inventory:GiveItem(blueprint)
+			local got_new_blueprint = false
+            if not player.components.builder:KnowsRecipe(recipe) then
+				got_new_blueprint = true
+                player.components.inventory:GiveItem(SpawnPrefab(recipe .. "_blueprint"))
+			end
+            if recipe2 and not player.components.builder:KnowsRecipe(recipe2) then
+				got_new_blueprint = true
+                player.components.inventory:GiveItem(SpawnPrefab(recipe2 .. "_blueprint"))
+			end
 
-                if player.components.talker then
-                    player.components.talker:Say(GetString(player, "ANNOUNCE_ARCHIVE_NEW_KNOWLEDGE"), nil, true)
-                end
+            if player.components.talker then
+                player.components.talker:Say(GetString(player, got_new_blueprint and "ANNOUNCE_ARCHIVE_NEW_KNOWLEDGE" or "ANNOUNCE_ARCHIVE_OLD_KNOWLEDGE"), nil, true)
             end
         end
     end

@@ -2514,7 +2514,7 @@ local states =
             --inst.components.combat:SetTarget(target)
             --inst.components.combat:StartAttack()
             inst.components.locomotor:Stop()
-            local cooldown =  1 -- math.max(inst.components.combat.min_attack_period + .5 * FRAMES, 11 * FRAMES)
+            local cooldown =  1 -- math.max(inst.components.combat.min_attack_period, 11 * FRAMES)
 
             inst.AnimState:PlayAnimation("throw")
 
@@ -2709,8 +2709,7 @@ local states =
                 inst.AnimState:PlayAnimation(anim, true)
             end
 
-            --V2C: adding half a frame time so it rounds up
-            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength() + .5 * FRAMES)
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
 
         onupdate = function(inst)
@@ -2891,8 +2890,7 @@ local states =
                 inst.AnimState:PlayAnimation(anim, true)
             end
 
-            --V2C: adding half a frame time so it rounds up
-            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength() + .5 * FRAMES)
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
 
         onupdate = function(inst)

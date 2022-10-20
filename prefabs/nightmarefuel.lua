@@ -32,6 +32,9 @@ local function fn()
     inst:AddComponent("fuel")
     inst.components.fuel.fueltype = FUELTYPE.NIGHTMARE
     inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
+    inst:AddComponent("repairer")
+    inst.components.repairer.repairmaterial = MATERIALS.NIGHTMARE
+    inst.components.repairer.finiteusesrepairvalue = TUNING.NIGHTMAREFUEL_FINITEUSESREPAIRVALUE
 
     MakeHauntableLaunch(inst)
 

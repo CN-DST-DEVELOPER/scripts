@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "It would seem the seekers outnumber the kittens.",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "I believe there are not enough locations for the kittens to hide.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I believe I should take some time to rest.",
+            MANNEQUIN_EQUIPSWAPFAILED = "That does not belong on a mannequin.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -855,6 +856,8 @@ return{
 
     ANNOUNCE_BOOK_MOON_DAYTIME = "We won't be able to view the effects until this evening.",
 
+    ANNOUNCE_OFF_SCRIPT = "Perhaps a review of the script is in order, dear?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Combat!",
@@ -1445,7 +1448,19 @@ return{
 
         TURF_SHELLBEACH = "The ground. You step on it.",
 
+		TURF_RUINSBRICK = "The ground. You step on it.",
+		TURF_RUINSBRICK_GLOW = "The ground. You step on it.",
+		TURF_RUINSTILES = "The ground. You step on it.",
+		TURF_RUINSTILES_GLOW = "The ground. You step on it.",
+		TURF_RUINSTRIM = "The ground. You step on it.",
+		TURF_RUINSTRIM_GLOW = "The ground. You step on it.",
+
         TURF_MONKEY_GROUND = "The ground. You step on it.",
+
+        TURF_CARPETFLOOR2 = "The ground. You step on it.",
+        TURF_MOSAIC_GREY = "The ground. You step on it.",
+        TURF_MOSAIC_RED = "The ground. You step on it.",
+        TURF_MOSAIC_BLUE = "The ground. You step on it.",
 
 		POWCAKE = "The crowning achievement of the agricultural-industrial complex.",
         CAVE_ENTRANCE = "The placement of that rock looks intentional.",
@@ -1629,6 +1644,10 @@ return{
             RARE = "Such a rare and detailed drawing!",
         },
         SKETCH = "Detailed diagrams of a stone sculpture.",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "Oh dear, I can't seem to make any sense of it.",
+		},
 		BLUE_CAP = "This seems to have medicinal properties.",
 		BLUE_CAP_COOKED = "Chemistry has altered it.",
 		BLUE_MUSHROOM =
@@ -1653,6 +1672,7 @@ return{
 		BUZZARD = "Cathartes, of course.",
 
 		SHADOWDIGGER = "Well, I suppose we did need an extra set of hands... Hm.",
+        SHADOWDANCER = "...Has anyone checked in on him recently?",
 
 		CACTUS =
 		{
@@ -1814,6 +1834,7 @@ return{
 		},
         GOGGLESHAT = "I can't imagine these improving visibility.",
         DESERTHAT = "Much more effective than reading glasses.",
+        ANTLIONHAT = "It's quite convenient for landscaping.",
 --fallback to speech_wilson.lua 		DEVTOOL = "It smells of bacon!",
 --fallback to speech_wilson.lua 		DEVTOOL_NODEV = "I'm not strong enough to wield it.",
 		DIRTPILE = "Unhygienic!",
@@ -4517,6 +4538,13 @@ return{
 
         SCANDATA = "An incredibly thorough analysis. Well done!",
 
+		-- QOL 2022
+		JUSTEGGS = "It would be nice to have some buttered toast to go with it.",
+		VEGGIEOMLET = "A healthy, balanced breakfast.",
+		TALLEGGS = "Like most comfort food, it will likely wreak havoc on the arteries.",
+		BEEFALOFEED = "Beefalo seem to be quite adept at digesting sticks.",
+		BEEFALOTREAT = "We all could use a little treat from time to time.",
+
         -- Pirates
         BOAT_ROTATOR = "It allows me to rotate the deck, while maintaining our heading.",
         BOAT_ROTATOR_KIT = "It should improve the boat's maneuverability.",
@@ -4591,10 +4619,48 @@ return{
         PIRATE_STASH = "That appears to be the location indicated on the map.",
         STASH_MAP = "The penmanship is messy, but legible.",
 
-
         BANANAJUICE = "Ah, I was in need of some refreshment.",
 
         FENCE_ROTATOR = "Sometimes sharpness is necessary to keep things aligned and orderly.",
+
+        CHARLIE_STAGE_POST = "The builder must have been inspired by the Greek dramas of antiquity.",
+        CHARLIE_LECTURN = "It lists the characters in the next act.",
+
+        CHARLIE_HECKLER = "I wouldn't classify their criticism as constructive.",
+
+        PLAYBILL_THE_DOLL = "I suspect there's a deeper meaning to its storyline.",
+        STATUEHARP_HEDGESPAWNER = "Someone has let that poor statue become overgrown with vines.",
+        HEDGEHOUND = "Ah. That would explain the respiration.",
+        HEDGEHOUND_BUSH = "How odd. This rose bush appears to be... breathing.",
+
+        MASK_DOLLHAT = "It appears to be a stage mask.",
+        MASK_DOLLBROKENHAT = "It appears to be a stage mask.",
+        MASK_DOLLREPAIREDHAT = "It appears to be a stage mask.",
+        MASK_BLACKSMITHHAT = "It appears to be a stage mask.",
+        MASK_MIRRORHAT = "It appears to be a stage mask.",
+        MASK_QUEENHAT = "It appears to be a stage mask.",
+        MASK_KINGHAT = "It appears to be a stage mask.",
+        MASK_TREEHAT = "It appears to be a stage mask.",
+        MASK_FOOLHAT = "It appears to be a stage mask.",
+
+        COSTUME_DOLL_BODY = "It appears to be a theatrical costume.",
+        COSTUME_QUEEN_BODY = "It appears to be a theatrical costume.",
+        COSTUME_KING_BODY = "It appears to be a theatrical costume.",
+        COSTUME_BLACKSMITH_BODY = "It appears to be a theatrical costume.",
+        COSTUME_MIRROR_BODY = "It appears to be a theatrical costume.",
+        COSTUME_TREE_BODY = "It appears to be a theatrical costume.",
+        COSTUME_FOOL_BODY = "It appears to be a theatrical costume.",
+
+        STAGEUSHER =
+        {
+            STANDING = "That was an underhanded trick!",
+            SITTING = "Something devious is lurking in the shadows.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "Excellent! A place to air out musty equipment.",
+            BURNT = "What a shame, it might have been useful.",
+        },
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

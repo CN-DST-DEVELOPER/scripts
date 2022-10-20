@@ -196,6 +196,17 @@ pitchfork_clear_fn = function(inst)
     basic_clear_fn(inst, "pitchfork" )
 end
 
+goldenpitchfork_init_fn = function(inst, build_name)
+    if string.find( build_name, "_invisible") ~= nil then
+        inst.components.floater.do_bank_swap = false
+    end
+    basic_init_fn( inst, build_name, "goldenpitchfork" )
+end
+goldenpitchfork_clear_fn = function(inst)
+    inst.components.floater.do_bank_swap = true
+    basic_clear_fn(inst, "goldenpitchfork" )
+end
+
 goldenpickaxe_init_fn = function(inst, build_name)
     if string.find( build_name, "_invisible") ~= nil then
         inst.components.floater.do_bank_swap = false

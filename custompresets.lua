@@ -116,6 +116,8 @@ function CustomPresets:LoadCustomPreset(category, presetid)
                 presetdata:SetBaseID(custompreset.baseid)
                 presetdata:SetNameAndDesc(custompreset.name, custompreset.desc)
                 presetdata.overrides = custompreset.overrides
+
+				presetdata.playstyle = category == LEVELCATEGORY.SETTINGS and custompreset.playstyle or nil
             end
         end
     end)
@@ -164,6 +166,7 @@ function CustomPresets:SaveCustomPreset(category, presetid, basepreset, override
         baseid = basepreset,
         overrides = overrides,
         name = name,
+		playstyle = Levels.CalcPlaystyleForSettings(overrides),
         desc = desc,
         version = 1,
     }
@@ -175,6 +178,7 @@ function CustomPresets:SaveCustomPreset(category, presetid, basepreset, override
     presetdata:SetBaseID(custompreset.baseid)
     presetdata:SetNameAndDesc(custompreset.name, custompreset.desc)
     presetdata.overrides = custompreset.overrides
+    presetdata.playstyle = custompreset.playstyle
 
     self.presets[category][presetid] = presetdata
     if not table.contains(self.presetIDs[category], presetid) then

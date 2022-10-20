@@ -73,6 +73,7 @@ local function MakeCostumeBlueprint(data)
         inst.components.inventoryitem:ChangeImageName("blueprint_sewing_machine_yotb")
 
         inst:AddComponent("lootdropper")
+		inst:AddComponent("erasablepaper")
 
         inst:AddComponent("yotb_skinunlocker")
         inst.components.yotb_skinunlocker:SetSkin(data.skin_name)

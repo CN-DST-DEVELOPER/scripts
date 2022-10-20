@@ -37,7 +37,6 @@ AddRoom("PigVillage", {
 															end,
 									},
 					                countprefabs= {
-					                    --bonfire = 1,
 					                    pighouse = function () return 3 + math.random(4) end,
 										mermhead = function () return math.random(3) end,
 					                    pumpkin_lantern = function () return IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and (1 + math.random(3)) or 0 end,

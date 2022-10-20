@@ -33,6 +33,7 @@ AddModReleaseID( "R20_QOL_CRAFTING4LIFE" )
 AddModReleaseID( "R21_REFRESH_WX78" )
 AddModReleaseID( "R22_PIRATEMONKEYS" )
 AddModReleaseID( "R23_REFRESH_WICKERBOTTOM" )
+AddModReleaseID( "R24_STS_ALITTLEDRAMA" )
 
 -----------------------------------------------------------------------------------------------
 

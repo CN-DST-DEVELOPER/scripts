@@ -10,7 +10,6 @@ local prefabs =
     "tallbirdegg",
 }
 
-local NEST_TIME = 35*TUNING.SEG_TIME
 local TALLBIRD_LAY_DIST = 16
 
 local function StopNesting(inst)
@@ -44,7 +43,7 @@ end
 
 local function StartNesting(inst, time)
     StopNesting(inst)
-    time = time or (NEST_TIME+math.random() )
+    time = time or (TUNING.TALLBIRD_LAY_EGG_TIME_MIN + math.random() * TUNING.TALLBIRD_LAY_EGG_TIME_VAR )
     inst.nesttime = GetTime() + time
     inst.nesttask = inst:DoTaskInTime(time, DoNesting)
 end
@@ -90,7 +89,7 @@ local function onsleep(inst)
 end
 
 local function OnSave(inst, data)
-    data.readytolay = inst.readytolayson
+    data.readytolay = inst.readytolay
     --data.canspawn = inst.canspawnsmallbird
     data.havespawned = inst.spawnedsmallbirdthisseason
     if inst.nesttime and inst.nesttime > GetTime() then
@@ -101,7 +100,7 @@ end
 local function OnLoad(inst, data)
     if data then
         inst.readytolay = data.readytolay
-        if data.timetonest then
+        if data.timetonest or not inst.readytolay then
             StartNesting(inst, data.timetonest)
         end
         --inst.canspawnsmallbird = data.canspawn or true
@@ -150,6 +149,7 @@ local function fn()
     inst.AnimState:SetBuild("tallbird_egg")
     inst.AnimState:SetBank("egg")
     inst.AnimState:PlayAnimation("eggnest", false)
+	inst.AnimState:SetFinalOffset(-1)
 
     inst:AddTag("antlion_sinkhole_blocker")
 
@@ -190,6 +190,8 @@ local function fn()
 
     SeasonalSpawnChanges(inst)
     inst:WatchWorldState("isspring", SeasonalSpawnChanges)
+
+	inst.StartNesting = StartNesting
 
     return inst
 end

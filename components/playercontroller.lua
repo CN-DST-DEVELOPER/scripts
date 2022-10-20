@@ -57,6 +57,36 @@ local function CacheHasItemSlots(self)
     return self._hasitemslots
 end
 
+local function OnEquipChanged(inst)
+    local self = inst.components.playercontroller
+    if self and (self.gridplacer ~= nil) == not inst.replica.inventory:EquipHasTag("turfhat") then
+        if self.gridplacer then
+            self.gridplacer:SetPlayer(nil)
+            self.gridplacer:Remove()
+            self.gridplacer = nil
+        else
+            self.gridplacer = SpawnPrefab("gridplacer_turfhat")
+            self.gridplacer:SetPlayer(self.inst)
+        end
+    end
+end
+
+local function OnInit(inst, self)
+    inst:ListenForEvent("equip", OnEquipChanged)
+    inst:ListenForEvent("unequip", OnEquipChanged)
+    if not TheWorld.ismastersim then
+        --Client only event, because when inventory is closed, we will stop
+        --getting "equip" and "unequip" events, but we can also assume that
+        --our inventory is emptied.
+        inst:ListenForEvent("inventoryclosed", OnEquipChanged)
+        if inst.replica.inventory == nil then
+            --V2C: clients c_spawning characters ...grrrr
+            return
+        end
+    end
+    OnEquipChanged(inst)
+end
+
 local PlayerController = Class(function(self, inst)
     self.inst = inst
 
@@ -136,6 +166,8 @@ local PlayerController = Class(function(self, inst)
 
     inst:ListenForEvent("playeractivated", OnPlayerActivated)
     inst:ListenForEvent("playerdeactivated", OnPlayerDeactivated)
+
+    inst:DoTaskInTime(0, OnInit, self)
 end)
 
 --------------------------------------------------------------------------
@@ -2022,7 +2054,7 @@ function PlayerController:OnUpdate(dt)
                 self.terraformer:Remove()
                 self.terraformer = nil
             end
-
+            
             self.LMBaction, self.RMBaction = nil, nil
             self.controller_target = nil
             self.controller_attack_target = nil
@@ -2299,8 +2331,11 @@ function PlayerController:OnUpdate(dt)
 
     --NOTE: isbusy is used further below as well
     local isbusy = self:IsBusy()
-	if isbusy and self.inst.sg ~= nil and self.inst:HasTag("jumping") then
-		isbusy = isbusy and self.inst.sg:HasStateTag("jumping")
+
+	--#HACK for hopping prediction
+	--ignore server "busy" if server still "boathopping" but we're not anymore
+	if isbusy and self.inst.sg ~= nil and self.inst:HasTag("boathopping") and not self.inst.sg:HasStateTag("boathopping") then
+		isbusy = false
 	end
 
     if isbusy or
@@ -2720,7 +2755,7 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
                     --make it easier to target stuff dropped inside the portal when alive
                     --make it easier to haunt the portal for resurrection in endless mode
                     if v:HasTag("portal") then
-                        score = score * (self.inst:HasTag("playerghost") and GetPortalRez(TheNet:GetServerGameMode()) and 1.1 or .9)
+                        score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
                     end
 
                     --print(v, angle_component, dist_component, mult, add, score)

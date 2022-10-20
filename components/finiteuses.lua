@@ -1,10 +1,22 @@
+local function onfiniteuses(self)
+    local repairable = self.inst.components.repairable
+    if repairable then
+        repairable:SetFiniteUsesRepairable(self.current < self.total)
+    end
+end
+
 local FiniteUses = Class(function(self, inst)
     self.inst = inst
     self.total = 100
     self.current = 100
     self.consumption = {}
     self.ignorecombatdurabilityloss = false
-end)
+end,
+nil,
+{
+    current = onfiniteuses,
+    total = onfiniteuses,
+})
 
 function FiniteUses:OnRemoveFromEntity()
 	self.inst:RemoveTag("usesdepleted")
@@ -96,6 +108,10 @@ end
 
 function FiniteUses:SetOnFinished(fn)
     self.onfinished = fn
+end
+
+function FiniteUses:Repair(repairvalue)
+    self:SetUses(math.min(self.current + repairvalue, self.total))
 end
 
 return FiniteUses

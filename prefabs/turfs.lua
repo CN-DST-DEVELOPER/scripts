@@ -29,6 +29,8 @@ local function make_turf(tile, data)
         inst.AnimState:SetBuild(data.build_override or data.bank_build)
         inst.AnimState:PlayAnimation(data.anim)
 
+        inst.tile = tile
+
         inst:AddTag("groundtile")
         inst:AddTag("molebait")
 

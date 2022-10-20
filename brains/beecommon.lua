@@ -13,11 +13,13 @@ local function OnAttacked(inst, data)
     local attacker = data and data.attacker
     inst.components.combat:SetTarget(attacker)
     local targetshares = MAX_TARGET_SHARES
-    if inst.components.homeseeker and inst.components.homeseeker.home then
-        local home = inst.components.homeseeker.home
-        if home and home.components.childspawner then
-            targetshares = targetshares - home.components.childspawner.childreninside
-            home.components.childspawner:ReleaseAllChildren(attacker, "killerbee")
+    if inst.components.combat:HasTarget() then
+        if inst.components.homeseeker and inst.components.homeseeker.home then
+            local home = inst.components.homeseeker.home
+            if home and home.components.childspawner then
+                targetshares = targetshares - home.components.childspawner.childreninside
+                home.components.childspawner:ReleaseAllChildren(attacker, "killerbee")
+            end
         end
     end
     local iscompanion = inst:HasTag("companion")

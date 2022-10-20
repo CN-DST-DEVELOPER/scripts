@@ -563,6 +563,7 @@ local function MakeWall(name, anims, isdoor, klaussackkeyid)
         inst:AddTag("fence")
         inst:AddTag("alignwall")
         inst:AddTag("noauradamage")
+		inst:AddTag("rotatableobject")
 
         if isdoor then
             inst.isdoor = true

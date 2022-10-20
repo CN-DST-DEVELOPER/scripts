@@ -2,6 +2,7 @@ local function onremovematerial(self, material)
     self.inst:RemoveTag("work_"..material)
     self.inst:RemoveTag("health_"..material)
     self.inst:RemoveTag("freshen_"..material)
+    self.inst:RemoveTag("finiteuses_"..material)
 end
 
 local function onrepairvalue(self)
@@ -15,6 +16,9 @@ local function onrepairvalue(self)
         end
         if self.perishrepairpercent > 0 then
             self.inst:AddTag("freshen_"..self.repairmaterial)
+        end
+        if self.finiteusesrepairvalue > 0 then
+            self.inst:AddTag("finiteuses_"..self.repairmaterial)
         end
     end
 end
@@ -34,6 +38,7 @@ local Repairer = Class(function(self, inst)
     self.healthrepairvalue = 0
     self.healthrepairpercent = 0
     self.perishrepairpercent = 0
+    self.finiteusesrepairvalue = 0
     self.repairmaterial = nil
 
     self.inst:AddTag("repairer")
@@ -44,6 +49,7 @@ nil,
     healthrepairvalue = onrepairvalue,
     healthrepairpercent = onrepairvalue,
     perishrepairpercent = onrepairvalue,
+    finiteusesrepairvalue = onrepairvalue,
     repairmaterial = onrepairmaterial,
 })
 

@@ -56,6 +56,10 @@ local function onunequip(inst, owner)
 	StopFx(inst)
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    StopFx(inst)
+end
+
 local function onattack(inst, attacker, target)
 	if not inst.components.fueled:IsEmpty() then
 		inst.components.fueled:DoDelta(-TUNING.TINY_FUEL)
@@ -128,6 +132,7 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 	inst.components.equippable.restrictedtag = "pocketwatchcaster"
 
     inst:AddComponent("weapon")

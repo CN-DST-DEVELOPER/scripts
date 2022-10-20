@@ -154,13 +154,13 @@ local function OnAttacked(inst, data)
         local max_target_shares = isguard and TUNING.MERM_GUARD_MAX_TARGET_SHARES or TUNING.MERM_MAX_TARGET_SHARES
 
         inst.components.combat:SetTarget(attacker)
-
-        local home = inst.components.homeseeker and inst.components.homeseeker.home
-        if home and home.components.childspawner and inst:GetDistanceSqToInst(home) <= share_target_dist*share_target_dist then
-            max_target_shares = max_target_shares - home.components.childspawner.childreninside
-            home.components.childspawner:ReleaseAllChildren(attacker)
+        if inst.components.combat:HasTarget() then
+            local home = inst.components.homeseeker and inst.components.homeseeker.home
+            if home and home.components.childspawner and inst:GetDistanceSqToInst(home) <= share_target_dist*share_target_dist then
+                max_target_shares = max_target_shares - home.components.childspawner.childreninside
+                home.components.childspawner:ReleaseAllChildren(attacker)
+            end
         end
-
         inst.components.combat:ShareTarget(attacker, share_target_dist, IsNonPlayerMerm, max_target_shares)
     end
 end

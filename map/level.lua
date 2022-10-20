@@ -33,6 +33,8 @@ Level = Class( function(self, data)
 	self.numrandom_set_pieces = data.numrandom_set_pieces or 0
 	self.random_set_pieces = data.random_set_pieces or nil
 
+	self.playstyle = data.playstyle
+
     self.chosen_tasks = nil
 
     self.version = data.version or 1

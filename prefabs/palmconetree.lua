@@ -621,7 +621,7 @@ local function tree(name, stage, data)
         -------------------
         inst:AddComponent("plantregrowth")
         inst.components.plantregrowth:SetRegrowthRate(TUNING.PALMCONETREE_REGROWTH.OFFSPRING_TIME)
-        inst.components.plantregrowth:SetProduct("palmconetree_sapling")
+        inst.components.plantregrowth:SetProduct("palmcone_sapling")
         inst.components.plantregrowth:SetSearchTag("palmconetree")
 
         ------------------- Set up a decay timer

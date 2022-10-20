@@ -84,11 +84,12 @@ local LobbyScreen = Class(Screen, function(self, profile, cb, no_backbutton, def
     self.anim_root:SetHAnchor(ANCHOR_MIDDLE)
     self.anim_root:SetScaleMode(SCALEMODE_PROPORTIONAL)
 
-    self.anim = self.anim_root:AddChild(UIAnim())
+    --old big asset was removed
+    --[[self.anim = self.anim_root:AddChild(UIAnim())
     self.anim:GetAnimState():SetBuild("spiral_bg")
     self.anim:GetAnimState():SetBank("spiral_bg")
     self.anim:GetAnimState():PlayAnimation("idle_loop", true)
-    self.anim:GetAnimState():SetMultColour(unpack(FRONTEND_PORTAL_COLOUR))
+    self.anim:GetAnimState():SetMultColour(unpack(FRONTEND_PORTAL_COLOUR))]]
 
     self.anim_root:SetPosition(160, 0)
 

@@ -279,7 +279,7 @@ end
 
 function Scheduler:GetListForTimeFromNow(dt)
     local nowtick = GetSchedulerTick(self.isstatic)
-    local wakeuptick = math.floor( (GetSchedulerTime(self.isstatic)+dt)/GetTickTime() )
+    local wakeuptick = math.ceil((GetSchedulerTime(self.isstatic) + dt) / GetTickTime() - 0.0001) --epsilon for floating point error when used with FRAMES
     if wakeuptick <= nowtick then
         wakeuptick = nowtick+1
     end

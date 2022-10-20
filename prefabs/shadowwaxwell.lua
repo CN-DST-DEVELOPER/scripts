@@ -80,8 +80,11 @@ local function MakeMinion(prefab, tool, hat, master_postinit)
     {
         Asset("ANIM", "anim/waxwell_shadow_mod.zip"),
         Asset("SOUND", "sound/maxwell.fsb"),
-        Asset("ANIM", "anim/"..tool..".zip"),
+        
     }
+    if tool then
+        table.insert(assets, Asset("ANIM", "anim/"..tool..".zip"))
+    end
 
     local function fn()
         local inst = CreateEntity()
@@ -217,6 +220,7 @@ return MakeMinion("shadowlumber", "swap_axe", nil, noncombatantfn),
     MakeMinion("shadowminer", "swap_pickaxe", nil, noncombatantfn),
     MakeMinion("shadowdigger", "swap_shovel", nil, noncombatantfn),
     MakeMinion("shadowduelist", "swap_nightmaresword_shadow", nil, spearfn),
+    MakeMinion("shadowdancer", nil, nil, noncombatantfn),    
     MakeBuilder("shadowlumber"),
     MakeBuilder("shadowminer"),
     MakeBuilder("shadowdigger"),

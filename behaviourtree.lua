@@ -49,11 +49,19 @@ end
 
 ---------------------------------------------------------------------------------------
 
+local NODE_COUNT = 0
+
 BehaviourNode = Class(function (self, name, children)
     self.name = name or ""
     self.children = children
     self.status = READY
     self.lastresult = READY
+    self.nextupdatetick = 0
+
+    --jcheng: this is for imgui to have an id to use
+    self.id = NODE_COUNT
+    NODE_COUNT = NODE_COUNT + 1
+
     if children then
         for i,k in pairs(children) do
             k.parent = self

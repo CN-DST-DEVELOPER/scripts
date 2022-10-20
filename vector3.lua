@@ -101,3 +101,7 @@ function ToVector3(obj,y,z)
     end
 end
 
+function Vector3FromTheta(theta, radius) -- theta in radians
+    radius = radius or 1
+    return Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+end

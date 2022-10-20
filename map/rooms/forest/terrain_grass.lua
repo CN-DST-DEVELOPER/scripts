@@ -2,7 +2,7 @@
 AddRoom("BGGrassBurnt", {
 					colour={r=.5,g=.8,b=.5,a=.50},
 					value = WORLD_TILES.GRASS,
-					tags = {"ExitPiece", "Chester_Eyebone","Astral_1"},
+					tags = {"ExitPiece", "Chester_Eyebone","Astral_1", "CharlieStage_Spawner"},
 					contents =  {
 					                distributepercent = .275,
 					                distributeprefabs=
@@ -28,7 +28,7 @@ AddRoom("BGGrassBurnt", {
 AddRoom("BGGrass", {
 					colour={r=.5,g=.8,b=.5,a=.50},
 					value = WORLD_TILES.GRASS,
-					tags = {"ExitPiece", "Chester_Eyebone","Astral_2", "StagehandGarden"},
+					tags = {"ExitPiece", "Chester_Eyebone","Astral_2", "StagehandGarden", "StatueHarp_HedgeSpawner", "CharlieStage_Spawner"},
 					contents =  {
 									countprefabs = {
     										spawnpoint_multiplayer = 1,

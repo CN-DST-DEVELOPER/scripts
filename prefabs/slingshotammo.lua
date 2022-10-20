@@ -33,14 +33,14 @@ local function OnAttack(inst, attacker, target)
 end
 
 local function OnPreHit(inst, attacker, target)
-    if target ~= nil and target:IsValid() and target.components.combat ~= nil then
-		target.components.combat.temp_disable_aggro = no_aggro(attacker, target)
+    if target ~= nil and target:IsValid() and target.components.combat ~= nil and no_aggro(attacker, target) then
+        target.components.combat:SetShouldAvoidAggro(attacker)
 	end
 end
 
 local function OnHit(inst, attacker, target)
     if target ~= nil and target:IsValid() and target.components.combat ~= nil then
-		target.components.combat.temp_disable_aggro = false
+		target.components.combat:RemoveShouldAvoidAggro(attacker)
 	end
     inst:Remove()
 end
@@ -148,9 +148,9 @@ local function OnHit_Distraction(inst, attacker, target)
 	if target ~= nil and target:IsValid() and target.components.combat ~= nil then
 		local targets_target = target.components.combat.target
 		if targets_target == nil or targets_target == attacker then
-            attacker._doesnotdrawaggro = true
+            target.components.combat:SetShouldAvoidAggro(attacker)
 			target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst })
-            attacker._doesnotdrawaggro = nil
+            target.components.combat:RemoveShouldAvoidAggro(attacker)
 
 			if not target:HasTag("epic") then
 				target.components.combat:DropTarget()

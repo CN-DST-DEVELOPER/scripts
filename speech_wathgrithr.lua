@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "This hunt will require more players.",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "This is not a worthy stage for our players!",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Let us reprise another time.",
+            MANNEQUIN_EQUIPSWAPFAILED = "It is not trained to carry such things.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -854,6 +856,8 @@ return{
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
+    ANNOUNCE_OFF_SCRIPT = "How unprofessional!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Valhalla awaits!",
@@ -1444,7 +1448,19 @@ return{
 
         TURF_SHELLBEACH = "A piece of the battlefield.",
 
+		TURF_RUINSBRICK = "A piece of the battlefield.",
+		TURF_RUINSBRICK_GLOW = "A piece of the battlefield.",
+		TURF_RUINSTILES = "A piece of the battlefield.",
+		TURF_RUINSTILES_GLOW = "A piece of the battlefield.",
+		TURF_RUINSTRIM = "A piece of the battlefield.",
+		TURF_RUINSTRIM_GLOW = "A piece of the battlefield.",
+
         TURF_MONKEY_GROUND = "A piece of the battlefield.",
+
+        TURF_CARPETFLOOR2 = "A good color to hide the bloodstains of battle.",
+        TURF_MOSAIC_GREY = "A piece of the battlefield.",
+        TURF_MOSAIC_RED = "A piece of the battlefield.",
+        TURF_MOSAIC_BLUE = "A piece of the battlefield.",
 
 		POWCAKE = "What in the name of the unicorn is this?",
         CAVE_ENTRANCE = "What treasures lie beneath?",
@@ -1628,6 +1644,10 @@ return{
             RARE = "Tis a blessed scroll.",
         },
         SKETCH = "The muses' knowledge, inscribed upon an ancient scroll!",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "'Tis but a jumbled mess of words.",
+		},
 		BLUE_CAP = "Hmm, a blue one.",
 		BLUE_CAP_COOKED = "I have no desire to eat it.",
 		BLUE_MUSHROOM =
@@ -1652,6 +1672,7 @@ return{
 		BUZZARD = "You and I, we meat feast together.",
 
 		SHADOWDIGGER = "I hope this serf is being treated with dignity.",
+        SHADOWDANCER = "This serf is not being treated with dignity.",
 
 		CACTUS =
 		{
@@ -1813,6 +1834,7 @@ return{
 		},
         GOGGLESHAT = "T'would be no help in battle.",
         DESERTHAT = "Tis no helm.",
+        ANTLIONHAT = "A helm to change the very ground I walk upon!",
 		DEVTOOL = "It smells of bacon!",
 		DEVTOOL_NODEV = "I'm not strong enough to wield it.",
 		DIRTPILE = "A small hill of earth.",
@@ -4516,6 +4538,13 @@ return{
 
         SCANDATA = "The metal scout's report!",
 
+		-- QOL 2022
+		JUSTEGGS = "A simple meal, but a good one.",
+		VEGGIEOMLET = "Bah! The eggs have been spoiled by non-meats!",
+		TALLEGGS = "A fine warrior's breakfast!",
+		BEEFALOFEED = "I must keep my beast fed and battle-ready.",
+		BEEFALOTREAT = "My noble steed deserves a reward.",
+
         -- Pirates
         BOAT_ROTATOR = "The most nimble vessel is often the victor in battle.",
         BOAT_ROTATOR_KIT = "It shall be done, with haste!",
@@ -4590,10 +4619,48 @@ return{
         PIRATE_STASH = "There lies the treasure!",
         STASH_MAP = "We journey to find the hidden plunder!",
 
-
         BANANAJUICE = "Monkey slop.",
 
         FENCE_ROTATOR = "I'd take a proper blade at my side over this overgrown sewing needle.",
+
+        CHARLIE_STAGE_POST = "The stage beckons!",
+        CHARLIE_LECTURN = "This play is in need of actors.",
+
+        CHARLIE_HECKLER = "Begone, critics!",
+
+        PLAYBILL_THE_DOLL = "I am not familiar with the playwright.",
+        STATUEHARP_HEDGESPAWNER = "'Tis surrounded by a thorny thicket.",
+        HEDGEHOUND = "Deceiver! Thou art a prickly pox upon my stage!",
+        HEDGEHOUND_BUSH = "A thorny bramble.",
+
+        MASK_DOLLHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_DOLLBROKENHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_DOLLREPAIREDHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_BLACKSMITHHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_MIRRORHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_QUEENHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_KINGHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_TREEHAT = "'Tis cowardly to hide one's face behind a mask!",
+        MASK_FOOLHAT = "'Tis cowardly to hide one's face behind a mask!",
+
+        COSTUME_DOLL_BODY = "I have my own costu- that is, warrior's garb!",
+        COSTUME_QUEEN_BODY = "I have my own costu- that is, warrior's garb!",
+        COSTUME_KING_BODY = "I have my own costu- that is, warrior's garb!",
+        COSTUME_BLACKSMITH_BODY = "I have my own costu- that is, warrior's garb!",
+        COSTUME_MIRROR_BODY = "I have my own costu- that is, warrior's garb!",
+        COSTUME_TREE_BODY = "I have my own costu- that is, warrior's garb!",
+        COSTUME_FOOL_BODY = "I have my own costu- that is, warrior's garb!",
+
+        STAGEUSHER =
+        {
+            STANDING = "Keep thy hand from out mine fires!",
+            SITTING = "Merely a table.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "It shall make for some fine target practice.",
+            BURNT = "The stuffed man hath met a fiery end.",
+        },
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

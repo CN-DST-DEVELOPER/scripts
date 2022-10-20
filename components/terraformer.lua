@@ -28,20 +28,7 @@ function Terraformer:Terraform(pt, doer)
 	if self.onterraformfn ~= nil then
 		self.onterraformfn(self.inst, pt, original_tile_type, GroundTiles.turf[original_tile_type])
 	else
-		local spawnturf = GroundTiles.turf[original_tile_type] or nil
-		if spawnturf ~= nil then
-			local loot = SpawnPrefab("turf_"..spawnturf.name)
-			if loot.components.inventoryitem ~= nil then
-				loot.components.inventoryitem:InheritMoisture(world.state.wetness, world.state.iswet)
-			end
-			loot.Transform:SetPosition(_x, _y, _z)
-			if loot.Physics ~= nil then
-				local angle = math.random() * 2 * PI
-				loot.Physics:SetVel(2 * math.cos(angle), 10, 2 * math.sin(angle))
-			end
-		else
-			SpawnPrefab("sinkhole_spawn_fx_"..tostring(math.random(3))).Transform:SetPosition(_x, _y, _z)
-		end
+		HandleDugGround(original_tile_type, _x, _y, _z)
 	end
 
 	if not self.plow then
@@ -52,9 +39,7 @@ function Terraformer:Terraform(pt, doer)
 		end
 	end
 
-	if doer ~= nil then
-		doer:PushEvent("onterraform")
-	end
+	self.inst:PushEvent("onterraform")
 
     return true
 end

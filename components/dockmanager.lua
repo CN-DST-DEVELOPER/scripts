@@ -280,9 +280,10 @@ function self:DestroyDockAtPoint(x, y, z, dont_toss_loot)
 
             -- We're testing the overhang, so we need to verify that anything we find isn't
             -- still on some adjacent dock or land tile after we remove ourself.
-            if ent ~= inst and not has_drownable and ent.entity:GetParent() == nil
-                    and ent.components.amphibiouscreature == nil
-                    and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
+            if ent ~= inst and ent:IsValid() and not has_drownable and ent.entity:GetParent() == nil
+                and ent.components.amphibiouscreature == nil
+                and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
+
                 if ent.components.inventoryitem ~= nil then
                     ent.components.inventoryitem:SetLanded(false, true)
                 else

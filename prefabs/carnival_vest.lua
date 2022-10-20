@@ -12,6 +12,10 @@ local function onunequip(inst, owner)
     inst.components.fueled:StopConsuming()
 end
 
+local function onequiptomodel(inst)
+    inst.components.fueled:StopConsuming()
+end
+
 local function common_fn(build_bank, insulation)
     local inst = CreateEntity()
 
@@ -46,6 +50,7 @@ local function common_fn(build_bank, insulation)
     inst.components.equippable.dapperness = TUNING.DAPPERNESS_SMALL
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("fueled")
     inst.components.fueled.fueltype = FUELTYPE.USAGE

@@ -193,6 +193,9 @@ function Class(base, _ctor, props)
         end
         return false
     end
+    c.is_instance = function(obj)
+		return type(obj) == "table" and c.is_a(obj, c)
+	end
     setmetatable(c, mt)
     ClassRegistry[c] = c_inherited
 --    local count = 0

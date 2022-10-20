@@ -105,6 +105,10 @@ local function MakeFx(t)
                 t.fn(inst)
             end
         end
+
+        if TheWorld then
+            TheWorld:PushEvent("fx_spawned", inst)
+        end
     end
 
     local function fn()

@@ -271,6 +271,9 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 						end
 					end
 				end
+				for _, sym in pairs(symbols_to_use_base) do -- Force these to show in case any of them were hidden.
+					anim_state:ShowSymbol(sym)
+				end
 				if CLOTHING[name].symbol_shows then
 					for _,sym in pairs(CLOTHING[name].symbol_shows) do
 						anim_state:ShowSymbol(sym)

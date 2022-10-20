@@ -5,6 +5,7 @@ PREFAB_SKINS = {
 	{
 		"abigail_formal",
 		"abigail_handmedown",
+		"abigail_lunar",
 		"abigail_nature",
 		"abigail_rose",
 		"abigail_shadow",
@@ -14,6 +15,7 @@ PREFAB_SKINS = {
 	{
 		"abigail_flower_formal",
 		"abigail_flower_handmedown",
+		"abigail_flower_lunar",
 		"abigail_flower_nature",
 		"abigail_flower_rose",
 		"abigail_flower_shadow",
@@ -239,6 +241,21 @@ PREFAB_SKINS = {
 		"catcoonhat_trapperup_rooster",
 		"hat_puppy_cap",
 	},
+	cave_entrance =
+	{
+		"cave_entrance_fantasy",
+		"cave_entrance_gothic",
+	},
+	cave_entrance_open =
+	{
+		"cave_entrance_open_fantasy",
+		"cave_entrance_open_gothic",
+	},
+	cave_exit =
+	{
+		"cave_exit_fantasy",
+		"cave_exit_gothic",
+	},
 	cavein_boulder =
 	{
 		"cavein_boulder_kettlebell",
@@ -338,6 +355,11 @@ PREFAB_SKINS = {
 		"puppy_chow_builder",
 		"puppy_tzu_builder",
 		"puppy_winter_builder",
+	},
+	critterlab =
+	{
+		"critterlab_fantasy",
+		"critterlab_gothic",
 	},
 	dragonflychest =
 	{
@@ -509,6 +531,10 @@ PREFAB_SKINS = {
 		"goldenpickaxe_invisible",
 		"goldenpickaxe_northern",
 	},
+	goldenpitchfork =
+	{
+		"goldenpitchfork_invisible",
+	},
 	goldenshovel =
 	{
 		"goldenshovel_invisible",
@@ -517,6 +543,17 @@ PREFAB_SKINS = {
 	grass_umbrella =
 	{
 		"parasol_spring",
+	},
+	gravestone =
+	{
+		"gravestone_fantasy",
+		"gravestone_fantasy2",
+		"gravestone_fantasy3",
+		"gravestone_fantasy4",
+		"gravestone_gothic",
+		"gravestone_gothic2",
+		"gravestone_gothic3",
+		"gravestone_gothic4",
 	},
 	greenstaff =
 	{
@@ -569,6 +606,11 @@ PREFAB_SKINS = {
 		"icestaff_lance",
 		"icestaff_northern",
 		"icestaff_rose",
+	},
+	insanityrock =
+	{
+		"insanityrock_fantasy",
+		"insanityrock_gothic",
 	},
 	krampus_sack =
 	{
@@ -752,6 +794,7 @@ PREFAB_SKINS = {
 	},
 	panflute =
 	{
+		"panflute_an",
 		"panflute_harlequin",
 	},
 	pickaxe =
@@ -845,6 +888,11 @@ PREFAB_SKINS = {
 	{
 		"reskin_tool_brush",
 	},
+	resurrectionstone =
+	{
+		"resurrectionstone_fantasy",
+		"resurrectionstone_gothic",
+	},
 	reviver =
 	{
 		"reviver_cupid",
@@ -875,6 +923,11 @@ PREFAB_SKINS = {
 		"saltbox_nautical",
 		"saltbox_shaker",
 		"saltbox_victorian",
+	},
+	sanityrock =
+	{
+		"sanityrock_fantasy",
+		"sanityrock_gothic",
 	},
 	sculptingtable =
 	{
@@ -1093,6 +1146,7 @@ PREFAB_SKINS = {
 		"walter_detective",
 		"walter_formal",
 		"walter_ice",
+		"walter_lunar",
 		"walter_nature",
 		"walter_none",
 		"walter_survivor",
@@ -1106,6 +1160,7 @@ PREFAB_SKINS = {
 		"walterhat_detective",
 		"walterhat_formal",
 		"walterhat_ice",
+		"walterhat_lunar",
 		"walterhat_nature",
 		"walterhat_survivor",
 		"walterhat_ventriloquist",
@@ -1117,6 +1172,7 @@ PREFAB_SKINS = {
 		"wanda_bishop_d",
 		"wanda_bishop_p",
 		"wanda_formal",
+		"wanda_lunar",
 		"wanda_none",
 		"wanda_shadow",
 		"wanda_steampunk",
@@ -1195,6 +1251,7 @@ PREFAB_SKINS = {
 		"waxwell_krampus",
 		"waxwell_krampus_d",
 		"waxwell_krampus_p",
+		"waxwell_lunar",
 		"waxwell_magma",
 		"waxwell_nature",
 		"waxwell_none",
@@ -1217,6 +1274,7 @@ PREFAB_SKINS = {
 		"webber_formalp",
 		"webber_gladiator",
 		"webber_ice",
+		"webber_lunar",
 		"webber_magma",
 		"webber_nature",
 		"webber_none",
@@ -1237,6 +1295,7 @@ PREFAB_SKINS = {
 		"webber_beard_formal",
 		"webber_beard_gladiator",
 		"webber_beard_ice",
+		"webber_beard_lunar",
 		"webber_beard_magma",
 		"webber_beard_nature",
 		"webber_beard_punk",
@@ -1256,6 +1315,7 @@ PREFAB_SKINS = {
 		"wendy_gladiator",
 		"wendy_handmedown",
 		"wendy_ice",
+		"wendy_lunar",
 		"wendy_lureplant",
 		"wendy_lureplant_d",
 		"wendy_lureplant_p",
@@ -1311,6 +1371,7 @@ PREFAB_SKINS = {
 		"wickerbottom_lightninggoat",
 		"wickerbottom_lightninggoat_d",
 		"wickerbottom_lightninggoat_p",
+		"wickerbottom_lunar",
 		"wickerbottom_magma",
 		"wickerbottom_none",
 		"wickerbottom_ornate",
@@ -1356,6 +1417,7 @@ PREFAB_SKINS = {
 		"wilson_formal",
 		"wilson_gladiator",
 		"wilson_ice",
+		"wilson_lunar",
 		"wilson_madscience",
 		"wilson_magma",
 		"wilson_nature",
@@ -1374,6 +1436,7 @@ PREFAB_SKINS = {
 		"wilson_beard_formal",
 		"wilson_beard_gladiator",
 		"wilson_beard_ice",
+		"wilson_beard_lunar",
 		"wilson_beard_madscience",
 		"wilson_beard_magma",
 		"wilson_beard_nature",
@@ -1484,6 +1547,8 @@ PREFAB_SKINS = {
 	wormhole =
 	{
 		"wormhole_claw",
+		"wormhole_fantasy",
+		"wormhole_gothic",
 		"wormhole_lureplant",
 		"wormhole_spider",
 		"wormhole_worm",
@@ -1491,6 +1556,7 @@ PREFAB_SKINS = {
 	wormwood =
 	{
 		"wormwood_cactus",
+		"wormwood_lunar",
 		"wormwood_mushroom",
 		"wormwood_none",
 		"wormwood_pumpkin",
@@ -1540,6 +1606,7 @@ PREFAB_SKINS = {
 		"wx78_formalp",
 		"wx78_gladiator",
 		"wx78_ice",
+		"wx78_lunar",
 		"wx78_magma",
 		"wx78_nature",
 		"wx78_none",

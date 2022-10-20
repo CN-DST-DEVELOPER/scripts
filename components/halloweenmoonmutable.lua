@@ -42,7 +42,7 @@ function HalloweenMoonMutable:Mutate(overrideprefab)
 
 		return transformed_inst
 	else
-		local prefab = overrideprefab or self.prefab_mutated
+		local prefab = overrideprefab or FunctionOrValue(self.prefab_mutated, self.inst) or nil
 
 		if prefab ~= nil then
 			local transformed_inst = SpawnPrefab(prefab)

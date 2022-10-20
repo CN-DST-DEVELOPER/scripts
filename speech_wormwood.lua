@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "Not many friends to hide",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Not many hideys for friends",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Already had fun",
+            MANNEQUIN_EQUIPSWAPFAILED = "Doesn't go there",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -858,6 +860,8 @@ return{
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
+    ANNOUNCE_OFF_SCRIPT = "Hmm. Not right",
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -1448,7 +1452,19 @@ return{
 
         TURF_SHELLBEACH = "Sand",
 
+		TURF_RUINSBRICK = "Not dirt",
+		TURF_RUINSBRICK_GLOW = "Not dirt",
+		TURF_RUINSTILES = "Not dirt",
+		TURF_RUINSTILES_GLOW = "Not dirt",
+		TURF_RUINSTRIM = "Not dirt",
+		TURF_RUINSTRIM_GLOW = "Not dirt",
+
         TURF_MONKEY_GROUND = "Sand... with friend hair?",
+
+        TURF_CARPETFLOOR2 = "Not real friends",
+        TURF_MOSAIC_GREY = "Not dirt",
+        TURF_MOSAIC_RED = "Not dirt",
+        TURF_MOSAIC_BLUE = "Not dirt",
 
 		POWCAKE = "Ka-pow!",
         CAVE_ENTRANCE = "Goes somewhere",
@@ -1632,6 +1648,10 @@ return{
             RARE = "Ohhhh... Looks important",
         },
         SKETCH = "Pretty picture",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "Hmmm. No good",
+		},
 		BLUE_CAP = "Hurts head. Ow!",
 		BLUE_CAP_COOKED = "Helps head. Ahhh...",
 		BLUE_MUSHROOM =
@@ -1656,6 +1676,7 @@ return{
 		BUZZARD = "Meat Tweeter",
 
 		SHADOWDIGGER = "Dark Floaty Digger",
+        SHADOWDANCER = "Hehe",
 
 		CACTUS =
 		{
@@ -1817,6 +1838,7 @@ return{
 		},
         GOGGLESHAT = "More eyes for head?",
         DESERTHAT = "Funny eyes. Like it",
+        ANTLIONHAT = "Funny hat moves ground?",
 		DEVTOOL = "Strange",
 		DEVTOOL_NODEV = "Can't",
 		DIRTPILE = "What's hiding?",
@@ -4520,6 +4542,13 @@ return{
 
         SCANDATA = "Hmm!",
 
+		-- QOL 2022
+		JUSTEGGS = "Good for belly",
+		VEGGIEOMLET = "Friends help make belly stuff",
+		TALLEGGS = "Fills belly up nice",
+		BEEFALOFEED = "Belly stuff for Shaggy Buddy",
+		BEEFALOTREAT = "Makes Shaggy Buddy so happy!",
+
         -- Pirates
         BOAT_ROTATOR = "Wee! Floaty go spinny!",
         BOAT_ROTATOR_KIT = "Can make the Floaty spin with this",
@@ -4594,10 +4623,48 @@ return{
         PIRATE_STASH = "Yay! Found treasure stuff",
         STASH_MAP = "Where Cheekies put treasure stuff",
 
-
         BANANAJUICE = "Sweet friend water",
 
         FENCE_ROTATOR = "Not nice to hit friends",
+
+        CHARLIE_STAGE_POST = "Hello? Somebody there?",
+        CHARLIE_LECTURN = "Story?",
+
+        CHARLIE_HECKLER = "Mean tweeters, hurt friends' feelings!",
+
+        PLAYBILL_THE_DOLL = "Sad story",
+        STATUEHARP_HEDGESPAWNER = "Friends giving statue a hug",
+        HEDGEHOUND = "Why friends mad?",
+        HEDGEHOUND_BUSH = "Friends?",
+
+        MASK_DOLLHAT = "Hello? Oh! Not friend, just face",
+        MASK_DOLLBROKENHAT = "Hello? Oh! Not friend, just face",
+        MASK_DOLLREPAIREDHAT = "Hello? Oh! Not friend, just face",
+        MASK_BLACKSMITHHAT = "Hello? Oh! Not friend, just face",
+        MASK_MIRRORHAT = "Hello? Oh! Not friend, just face",
+        MASK_QUEENHAT = "Hello? Oh! Not friend, just face",
+        MASK_KINGHAT = "Hello? Oh! Not friend, just face",
+        MASK_TREEHAT = "Hello? Oh! Not friend, just face",
+        MASK_FOOLHAT = "Hello? Oh! Not friend, just face",
+
+        COSTUME_DOLL_BODY = "Pretty clothes",
+        COSTUME_QUEEN_BODY = "Pretty clothes",
+        COSTUME_KING_BODY = "Pretty clothes",
+        COSTUME_BLACKSMITH_BODY = "Pretty clothes",
+        COSTUME_MIRROR_BODY = "Pretty clothes",
+        COSTUME_TREE_BODY = "Pretty clothes",
+        COSTUME_FOOL_BODY = "Pretty clothes",
+
+        STAGEUSHER =
+        {
+            STANDING = "Ohh! Table friend!",
+            SITTING = "Too shy?",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "Hello!",
+            BURNT = "Goodbye",
+        },
     },
 
     DESCRIBE_GENERIC = "Friend?",

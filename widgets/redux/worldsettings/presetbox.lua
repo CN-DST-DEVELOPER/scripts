@@ -58,14 +58,27 @@ local PresetBox = Class(Widget, function(self, parent_widget, levelcategory, hei
     self.presetdesc:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
     self.presetdesc:SetVAlign(ANCHOR_TOP)
     self.presetdesc:SetHAlign(ANCHOR_MIDDLE)
-    self.presetdesc:SetRegionSize(preset_width-40, 200)
+    self.presetdesc:SetRegionSize(preset_width-40, 160)
     self.presetdesc:SetString("")
     self.presetdesc:EnableWordWrap(true)
-    self.presetdesc:SetPosition(0, 20)
+    self.presetdesc:SetPosition(0, self.height/2 - 250)
+
+	self.playstyle = self.root:AddChild(Widget("playstyle_root"))
+    self.playstyle.icon = self.playstyle:AddChild(TEMPLATES.ServerDetailIcon(nil, nil, "brown", "."))
+    self.playstyle.icon:SetScale(0.1)
+    self.playstyle.icon.bg:SetScale(1)
+    self.playstyle.icon.img:SetScale(0.8)
+	self.playstyle.label = self.playstyle:AddChild(Text(CHATFONT, 22, "Playstyle:", UICOLOURS.GOLD_UNIMPORTANT))
+    local w = self.playstyle.label:GetRegionSize()
+	local total_w = w + 30
+	self.playstyle.icon:SetPosition(w + 15, 0)
+	self.playstyle.label:SetPosition(w/2, 0)
+	self.playstyle:SetPosition(-total_w/2, self.height/2 - 145)
+	self.playstyle:Hide()
 
     local hover_config = {
         offset_x = 0,
-        offset_y = 65,
+        offset_y = 33,
     }
 
     self.revertbutton = self.root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "undo.tex", STRINGS.UI.CUSTOMIZATIONSCREEN.REVERTCHANGES, false, false, function() self:OnRevertChanges() end, hover_config))
@@ -323,6 +336,18 @@ end
 function PresetBox:SetTextAndDesc(text, desc)
     self.presetname:SetString(text)
     self.presetdesc:SetString(desc)
+end
+
+function PresetBox:SetPlaystyleIcon(playstyle_id)
+	local playstyle_def = playstyle_id ~= nil and Levels.GetPlaystyleDef(playstyle_id) or nil
+
+	if playstyle_def ~= nil then
+		self.playstyle:Show()
+		self.playstyle.icon.img:SetTexture(playstyle_def.smallimage.atlas,  playstyle_def.smallimage.icon)
+		self.playstyle.icon:SetHoverText(playstyle_def.name)
+	else
+		self.playstyle:Hide()
+	end
 end
 
 function PresetBox:SetEditable(editable)

@@ -516,14 +516,6 @@ local fx =
             return GetString(viewer, "DESCRIBE", { "MOLE", "UNDERGROUND" })
         end,
     },
-    --[[{
-        name = "sparklefx",
-        bank = "sparklefx",
-        build = "sparklefx",
-        anim = "sparkle",
-        sound = "dontstarve/common/chest_positive",
-        tintalpha = 0.6,
-    },]]
     {
         name = "chester_transform_fx",
         bank = "die_fx",
@@ -2699,6 +2691,13 @@ local fx =
         anim =  "idle",
         sound = "wickerbottom_rework/fence_rotator/use",
         fn = FinalOffset1,
+    },
+
+    {
+        name = "turf_smoke_fx",
+        bank = "turf_smoke_fx",
+        build = "turf_smoke_fx",
+        anim = "fx",
     },
 }
 

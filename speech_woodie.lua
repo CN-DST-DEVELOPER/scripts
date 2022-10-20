@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "I don't think there's enough of them to make a real game of it.",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Not many places to hide around here, eh?",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "How aboot we do it again another day?",
+            MANNEQUIN_EQUIPSWAPFAILED = "Guess that won't work, eh?",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -855,6 +857,8 @@ return{
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
+    ANNOUNCE_OFF_SCRIPT = "That didn't seem like part of the play...",
+
 	BATTLECRY =
 	{
 		GENERIC = "Get over here, eh!",
@@ -1445,7 +1449,19 @@ return{
 
         TURF_SHELLBEACH = "Just some ground, eh?",
 
+		TURF_RUINSBRICK = "Just some ground, eh?",
+		TURF_RUINSBRICK_GLOW = "Just some ground, eh?",
+		TURF_RUINSTILES = "Just some ground, eh?",
+		TURF_RUINSTILES_GLOW = "Just some ground, eh?",
+		TURF_RUINSTRIM = "Just some ground, eh?",
+		TURF_RUINSTRIM_GLOW = "Just some ground, eh?",
+
         TURF_MONKEY_GROUND = "Just some ground, eh?",
+
+        TURF_CARPETFLOOR2 = "A fancy place to leave muddy footprints.",
+        TURF_MOSAIC_GREY = "Just some ground, eh?",
+        TURF_MOSAIC_RED = "Just some ground, eh?",
+        TURF_MOSAIC_BLUE = "Just some ground, eh?",
 
 		POWCAKE = "I like the ones made with real sugar better.",
         CAVE_ENTRANCE = "It's all bunged up.",
@@ -1629,6 +1645,10 @@ return{
             RARE = "Looks real complicated, that one.",
         },
         SKETCH = "Some plans for a fancy stone carving.",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "Looks like somethin' was written here, but it faded away.",
+		},
 		BLUE_CAP = "That's not meat.",
 		BLUE_CAP_COOKED = "That's not meat.",
 		BLUE_MUSHROOM =
@@ -1653,6 +1673,7 @@ return{
 		BUZZARD = "Stay away from those meat snacks!",
 
 		SHADOWDIGGER = "Are your little buddies, uh... alive?",
+        SHADOWDANCER = "Well, looks like he finally lost it.",
 
 		CACTUS =
 		{
@@ -1814,6 +1835,7 @@ return{
 		},
         GOGGLESHAT = "Seems pretty useless.",
         DESERTHAT = "That's easy on the eyes.",
+        ANTLIONHAT = "It sure beats using a pitchfork, eh?",
 		DEVTOOL = "I'm not commenting on that.",
 --fallback to speech_wilson.lua 		DEVTOOL_NODEV = "I'm not strong enough to wield it.",
 		DIRTPILE = "Hey! A clue!",
@@ -4517,6 +4539,13 @@ return{
 
         SCANDATA = "Doesn't seem right to boil nature down to just a bunch of facts and figures.",
 
+		-- QOL 2022
+		JUSTEGGS = "Delicious revenge.",
+		VEGGIEOMLET = "Veggies? Did we run outta bacon and potatoes?",
+		TALLEGGS = "A hearty breakfast and one less bird in the world, what could be better?",
+		BEEFALOFEED = "Come and get it!",
+		BEEFALOTREAT = "How aboot I give my beefalo something tasty to munch on, eh?",
+
         -- Pirates
         BOAT_ROTATOR = "Just gotta pick one way or the other, nice and simple.",
         BOAT_ROTATOR_KIT = "Better get it set up on the boat, eh?",
@@ -4591,10 +4620,48 @@ return{
         PIRATE_STASH = "\"X marks the spot\", eh?",
         STASH_MAP = "Whatcha say, Luce? Should we see where it leads?",
 
-
         BANANAJUICE = "Feels almost like being on vacation, eh?",
 
         FENCE_ROTATOR = "Sometimes you've gotta show a fence who's boss, eh?",
+
+        CHARLIE_STAGE_POST = "I don't like being put in the spotlight.",
+        CHARLIE_LECTURN = "Anything good on?",
+
+        CHARLIE_HECKLER = "Birds... it's always the birds...",
+
+        PLAYBILL_THE_DOLL = "The theater ain't really my sorta thing.",
+        STATUEHARP_HEDGESPAWNER = "Back to nature, eh?",
+        HEDGEHOUND = "Ready to do some pruning, Luce?",
+        HEDGEHOUND_BUSH = "Roses grow awfully fast around these parts.",
+
+        MASK_DOLLHAT = "There's somethin' funny about that mask.",
+        MASK_DOLLBROKENHAT = "There's somethin' funny about that mask.",
+        MASK_DOLLREPAIREDHAT = "There's somethin' funny about that mask.",
+        MASK_BLACKSMITHHAT = "There's somethin' funny about that mask.",
+        MASK_MIRRORHAT = "There's somethin' funny about that mask.",
+        MASK_QUEENHAT = "There's somethin' funny about that mask.",
+        MASK_KINGHAT = "There's somethin' funny about that mask.",
+        MASK_TREEHAT = "Now this one I kinda like.",
+        MASK_FOOLHAT = "There's somethin' funny about that mask.",
+
+        COSTUME_DOLL_BODY = "Some kinda fancy theater costume.",
+        COSTUME_QUEEN_BODY = "Some kinda fancy theater costume.",
+        COSTUME_KING_BODY = "Some kinda fancy theater costume.",
+        COSTUME_BLACKSMITH_BODY = "Some kinda fancy theater costume.",
+        COSTUME_MIRROR_BODY = "Some kinda fancy theater costume.",
+        COSTUME_TREE_BODY = "It's not as scratchy as it looks.",
+        COSTUME_FOOL_BODY = "Some kinda fancy theater costume.",
+
+        STAGEUSHER =
+        {
+            STANDING = "I really wish I hadn't seen that.",
+            SITTING = "Not my style.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "Quiet type, eh?",
+            BURNT = "I was just startin' to get used to having it around.",
+        },
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

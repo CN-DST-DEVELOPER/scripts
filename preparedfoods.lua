@@ -12,6 +12,7 @@ local foods =
 		sanity = TUNING.SANITY_TINY,
 		cooktime = 2,
         floater = {"small", 0.05, 0.7},
+		card_def = {ingredients = {{"butterflywings", 1}, {"carrot", 2}, {"berries", 1}} },
 	},
 
 	frogglebunwich =
@@ -26,6 +27,7 @@ local foods =
 		cooktime = 2,
         potlevel = "high",
         floater = {"med", nil, 0.55},
+		card_def = {ingredients = {{"froglegs", 1}, {"red_cap", 2}, {"carrot", 1}} },
 	},
 
 	taffy =
@@ -40,6 +42,7 @@ local foods =
 		cooktime = 2,
 		tags = {"honeyed"},
         floater = {"med", nil, 0.6},
+		card_def = {ingredients = {{"honey", 3}, {"berries", 1}} },
 	},
 
 	pumpkincookie =
@@ -54,6 +57,7 @@ local foods =
 		cooktime = 2,
 		tags = {"honeyed"},
         floater = {"med", nil, 0.65},
+		card_def = {ingredients = {{"pumpkin", 1}, {"honey", 2}, {"berries", 1}} },
 	},
 
 	stuffedeggplant =
@@ -69,6 +73,7 @@ local foods =
 		temperatureduration = TUNING.FOOD_TEMP_BRIEF,
 		cooktime = 2,
         floater = {"small", nil, 0.8},
+		card_def = {ingredients = {{"eggplant", 1}, {"potato", 1}, {"onion", 1}, {"garlic", 1}} },
 	},
 
 	fishsticks =
@@ -84,6 +89,7 @@ local foods =
         potlevel =  "high",
 		tags = {"catfood"},
         floater = {"small", nil, nil},
+		card_def = {ingredients = {{"fishmeat_small", 3}, {"twigs", 1}} },
 	},
 
 	honeynuggets =
@@ -99,6 +105,7 @@ local foods =
         potlevel = "high",
 		tags = {"honeyed"},
         floater = {"med", nil, 0.7},
+		card_def = {ingredients = {{"honey", 2}, {"smallmeat", 2}} },
 	},
 
 	honeyham =
@@ -115,6 +122,7 @@ local foods =
 		cooktime = 2,
 		tags = {"honeyed"},
         floater = {"small", nil, nil},
+		card_def = {ingredients = {{"honey", 2}, {"meat", 2}} },
 	},
 
 	dragonpie =
@@ -130,6 +138,7 @@ local foods =
 		temperatureduration = TUNING.FOOD_TEMP_AVERAGE,
 		cooktime = 2,
         floater = {"med", nil, 0.8},
+		card_def = {ingredients = {{"dragonfruit", 2}, {"potato", 1},  {"pepper", 1}} },
 	},
 	kabobs =
 	{
@@ -145,6 +154,7 @@ local foods =
 		cooktime = 2,
         potlevel = "high",
         floater = {"med", nil, 0.55},
+		card_def = {ingredients = {{"meat", 1}, {"onion", 1}, {"eggplant", 1},  {"twigs", 1}} },
 	},
 	mandrakesoup =
 	{
@@ -225,6 +235,7 @@ local foods =
 		cooktime = 3,
         potlevel = "high",
         floater = {"med", nil, 0.75},
+		card_def = {ingredients = {{"drumstick", 2}, {"meat", 1}, {"berries", 1}} },
 	},
 	ratatouille =
 	{
@@ -278,6 +289,7 @@ local foods =
 		cooktime = .5,
         potlevel = "high",
         floater = {"small", nil, nil},
+		card_def = {ingredients = {{"fishmeat_small", 2}, {"corn", 1}, {"onion", 1}} },
 	},
 	waffles =
 	{
@@ -321,6 +333,7 @@ local foods =
         potlevel = "low",
 		tags = {"honeyed"},
         floater = {"med", nil, 0.65},
+		card_def = {ingredients = {{"honey", 1}, {"corn", 1}, {"twigs", 2}} },
 	},
 
 	unagi =
@@ -339,7 +352,7 @@ local foods =
 	wetgoop =
 	{
 		test = function(cooker, names, tags) return true end,
-		priority = -2,
+		priority = -10,
 		health=0,
 		hunger=0,
 		perishtime = TUNING.PERISH_FAST,
@@ -367,7 +380,7 @@ local foods =
 	{
 		test = function(cooker, names, tags) return tags.frozen and tags.dairy and tags.sweetener and not tags.meat and not tags.veggie and not tags.inedible and not tags.egg end,
 		priority = 10,
-		foodtype = FOODTYPE.VEGGIE,
+		foodtype = FOODTYPE.GOODIES,
 		health = 0,
 		hunger = TUNING.CALORIES_MED,
 		perishtime = TUNING.PERISH_SUPERFAST,
@@ -397,7 +410,7 @@ local foods =
 
 	trailmix =
 	{
-		test = function(cooker, names, tags) return names.acorn_cooked and tags.seed and tags.seed >= 1 and (names.berries or names.berries_cooked or names.berries_juicy or names.berries_juicy_cooked) and tags.fruit and tags.fruit >= 1 and not tags.meat and not tags.veggie and not tags.egg and not tags.dairy end,
+		test = function(cooker, names, tags) return (names.acorn or names.acorn_cooked) and tags.seed and tags.seed >= 1 and (names.berries or names.berries_cooked or names.berries_juicy or names.berries_juicy_cooked) and tags.fruit and tags.fruit >= 1 and not tags.meat and not tags.veggie and not tags.egg and not tags.dairy end,
 		priority = 10,
 		foodtype = FOODTYPE.VEGGIE,
 		health = TUNING.HEALING_MEDLARGE,
@@ -406,6 +419,7 @@ local foods =
 		sanity = TUNING.SANITY_TINY,
 		cooktime = .5,
         floater = {"small", 0.05, nil},
+		card_def = {ingredients = {{"acorn_cooked", 2}, {"berries", 2}} },
 	},
 
 	hotchili =
@@ -422,6 +436,7 @@ local foods =
 		cooktime = .5,
         potlevel = "low",
         floater = {"small", nil, nil},
+		card_def = {ingredients = {{"meat", 2}, {"tomato", 1}, {"pepper", 1}} },
 	},
 
 	guacamole =
@@ -436,6 +451,7 @@ local foods =
 		cooktime = .5,
         potlevel = "low",
         floater = {"small", nil, 0.85},
+		card_def = {ingredients = {{"mole", 1}, {"rock_avocado_fruit_ripe", 2}, {"corn", 1}} },
 	},
 
 	jellybean =
@@ -499,6 +515,7 @@ local foods =
 		cooktime = 0.5,
         potlevel = "low",
         floater = {nil, 0.05, {0.75, 0.65, 0.75}},
+		card_def = {ingredients = {{"asparagus", 2}, {"potato", 1}, {"onion", 1}} },
 	},
 
 	vegstinger =
@@ -517,7 +534,7 @@ local foods =
 
 	bananapop =
 	{
-		test = function(cooker, names, tags) return (names.cave_banana or names.cave_banana_cooked) and tags.frozen and names.twigs and not tags.meat and not tags.fish and (tags.inedible and tags.inedible <= 2) end,
+		test = function(cooker, names, tags) return (names.cave_banana or names.cave_banana_cooked) and tags.frozen and names.twigs and not tags.meat and not tags.fish end,
 		priority = 20,
 		foodtype = FOODTYPE.VEGGIE,
 		health = TUNING.HEALING_MED,
@@ -529,7 +546,38 @@ local foods =
 		cooktime = 0.5,
         potlevel = "low",
         floater = {nil, 0.05, 0.95},
+		card_def = {ingredients = {{"cave_banana", 1}, {"ice", 2}, {"twigs", 1}} },
 	},
+
+    frozenbananadaiquiri =
+    {
+        test = function(cooker, names, tags) return (names.cave_banana or names.cave_banana_cooked) and (tags.frozen and tags.frozen >= 1) and not tags.meat and not tags.fish end,
+        priority = 2,
+        overridebuild = "cook_pot_food9",
+        foodtype = FOODTYPE.GOODIES,
+        health = TUNING.HEALING_MEDLARGE,
+        hunger = TUNING.CALORIES_MEDSMALL,
+        perishtime = TUNING.PERISH_SLOW,
+        sanity = TUNING.SANITY_MED,
+        temperature = TUNING.COLD_FOOD_BONUS_TEMP,
+        temperatureduration = TUNING.FOOD_TEMP_LONG,
+        cooktime = 1,
+        floater = {"small", 0.05, 0.7},
+    },
+
+    bananajuice =
+    {
+        test = function(cooker, names, tags) return ((names.cave_banana or 0) + (names.cave_banana_cooked or 0) >= 2) and not tags.meat and not tags.fish and not tags.monster end,
+        priority = 1,
+        overridebuild = "cook_pot_food10",
+        foodtype = FOODTYPE.VEGGIE,
+		health = TUNING.HEALING_MEDSMALL,
+		hunger = TUNING.CALORIES_MED,
+        perishtime = TUNING.PERISH_SLOW, 
+		sanity = TUNING.SANITY_LARGE,
+        cooktime = 0.5,
+        floater = {"med", 0.05, 0.55},
+    },
 
 	ceviche =
 	{
@@ -573,6 +621,7 @@ local foods =
 		temperatureduration = TUNING.FOOD_TEMP_LONG,
 		cooktime = 2,
         --floater = nil,
+		card_def = {ingredients = {{"pepper", 1}, {"smallmeat", 2}, {"potato", 1}} },
 	},
 
 	californiaroll =
@@ -588,6 +637,7 @@ local foods =
 		overridebuild = "cook_pot_food2",
 		potlevel = "high",
 		floater = {"med", 0.05, {0.65, 0.6, 0.65}},
+		card_def = {ingredients = {{"kelp", 2}, {"fishmeat_small", 2}} },
 	},
 
 	seafoodgumbo =
@@ -685,6 +735,7 @@ local foods =
         cooktime = 0.5,
         overridebuild = "cook_pot_food5",
         floater = {"med", 0.05, {0.65, 0.6, 0.65}},
+		card_def = {ingredients = {{"barnacle", 1}, {"kelp", 2}, {"bird_egg", 1}} },
     },
 
     barnaclinguine =
@@ -710,7 +761,7 @@ local foods =
             return (names.barnacle or names.barnacle_cooked)
                     and tags.fish and tags.fish >= 1.25
         end,
-        priority = 25,
+        priority = 26,
         foodtype = FOODTYPE.MEAT,
         health = TUNING.HEALING_MED,
         hunger = TUNING.CALORIES_LARGE*2,
@@ -719,6 +770,7 @@ local foods =
         cooktime = 2,
         overridebuild = "cook_pot_food5",
         floater = {"med", 0.05, {0.65, 0.6, 0.65}},
+		card_def = {ingredients = {{"barnacle", 1}, {"fishmeat_small", 2}, {"potato", 1}} },
     },
 
 
@@ -745,7 +797,7 @@ local foods =
             		and (names.onion or names.onion_cooked)
                     and tags.veggie and tags.veggie >= 2
         end,
-        priority = 25,
+        priority = 26,
         foodtype = FOODTYPE.MEAT,
         health = TUNING.HEALING_MEDLARGE,
         hunger = TUNING.CALORIES_LARGE,
@@ -788,6 +840,7 @@ local foods =
         cooktime = 2,
         overridebuild = "cook_pot_food4",
         floater = {"med", 0.05, {0.65, 0.6, 0.65}},
+		card_def = {ingredients = {{"plantmeat", 1}, {"tomato", 2}, {"carrot", 1}} },
 	},
 
     shroomcake =
@@ -839,6 +892,7 @@ local foods =
         oneatenfn = function(inst, eater)
 			eater:AddDebuff("sweettea_buff", "sweettea_buff")
         end,
+		card_def = {ingredients = {{"forgetmelots", 1}, {"honey", 1}, {"ice", 2}} },
 	},
 
 	koalefig_trunk =
@@ -886,6 +940,7 @@ local foods =
 		cooktime = 1,
         potlevel = "high",
         floater = {"med", nil, 0.55},
+		card_def = {ingredients = {{"fig", 1}, {"twigs", 1}, {"smallmeat", 2}} },
 	},
 
 	frognewton =
@@ -905,25 +960,6 @@ local foods =
         floater = {"med", nil, 0.55},
 	},
 
-    frozenbananadaiquiri =
-    {
-        test = function(cooker, names, tags)
-            return (names.cave_banana or names.cave_banana_cooked)
-                and (tags.frozen and tags.frozen >= 1)
-        end,
-        priority = 1,
-        overridebuild = "cook_pot_food9",
-        foodtype = FOODTYPE.GOODIES,
-        health = TUNING.HEALING_MEDLARGE,
-        hunger = TUNING.CALORIES_MEDSMALL,
-        perishtime = TUNING.PERISH_SLOW,
-        sanity = TUNING.SANITY_MED,
-        temperature = TUNING.COLD_FOOD_BONUS_TEMP,
-        temperatureduration = TUNING.FOOD_TEMP_LONG,
-        cooktime = 1,
-        floater = {"small", 0.05, 0.7},
-    },
-
     bunnystew =
     {
         test = function(cooker, names, tags)
@@ -942,23 +978,88 @@ local foods =
         temperatureduration = TUNING.FOOD_TEMP_BRIEF,
         cooktime = 0.5,
         floater = {"med", 0.05, 0.55},
+		card_def = {ingredients = {{"smallmeat", 1}, {"ice", 2}, {"tomato", 1}} },
     },
 
-    bananajuice =
-    {
-        test = function(cooker, names, tags)
-            return ((names.cave_banana or 0) + (names.cave_banana_cooked or 0) >= 2)
-        end,
-        priority = 1,
-        overridebuild = "cook_pot_food10",
-        foodtype = FOODTYPE.VEGGIE,
-		health = TUNING.HEALING_MEDSMALL,
+	justeggs = 
+	{
+		test = function(cooker, names, tags) return tags.egg and tags.egg >= 3 end,
+		priority = 0,
+		overridebuild = "cook_pot_food11",
+		foodtype = FOODTYPE.MEAT,
+		health = TUNING.HEALING_SMALL,
+		hunger = TUNING.CALORIES_SMALL*4,
+		perishtime = TUNING.PERISH_MED,
+		sanity = TUNING.SANITY_TINY,
+		cooktime = 0.5,
+        potlevel = "high",
+        floater = {"med", nil, 0.85},
+	},
+
+	veggieomlet = 
+	{
+		test = function(cooker, names, tags) return tags.egg and tags.egg >= 1 and tags.veggie and tags.veggie >= 1 and not tags.meat and not tags.dairy end,
+		priority = 1,
+		overridebuild = "cook_pot_food11",
+		foodtype = FOODTYPE.MEAT,
+		health = TUNING.HEALING_MED,
+		hunger = TUNING.CALORIES_LARGE,
+		perishtime = TUNING.PERISH_PRESERVED,
+		sanity = TUNING.SANITY_TINY,
+		cooktime = 1,
+        potlevel = "high",
+        floater = {"med", nil, 0.7},
+	},
+
+	talleggs = 
+	{
+		test = function(cooker, names, tags) return names.tallbirdegg and tags.veggie and tags.veggie >= 1 end,
+		priority = 10,
+		overridebuild = "cook_pot_food11",
+		foodtype = FOODTYPE.MEAT,
+		health = TUNING.HEALING_HUGE,
+		hunger = TUNING.CALORIES_SUPERHUGE,
+		perishtime = TUNING.PERISH_SLOW,
+		sanity = TUNING.SANITY_TINY,
+		cooktime = 2,
+        floater = {"med", nil, 0.65},
+	},
+
+	beefalofeed = 
+	{
+		-- basic beefalo food
+		test = function(cooker, names, tags) return tags.inedible and not tags.monster and not tags.meat and not tags.fish and not tags.egg and not tags.fat and not tags.dairy and not tags.magic end,
+		priority = -5,
+		overridebuild = "cook_pot_food11",
+		foodtype = FOODTYPE.ROUGHAGE,
+		secondaryfoodtype = FOODTYPE.WOOD,
+		health = TUNING.HEALING_MEDLARGE/2,
+		hunger = TUNING.CALORIES_MOREHUGE,
+		perishtime = TUNING.PERISH_PRESERVED,
+		sanity = 0,
+		cooktime = 0.5,
+        oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_BEEFALO,
+		OnPutInInventory = function(inst, owner) if owner ~= nil and owner:IsValid() then owner:PushEvent("learncookbookstats", inst.food_basename or inst.prefab) end end,
+		card_def = {ingredients = {{"twigs", 3}, {"acorn", 1}} },
+	},
+
+	beefalotreat = 
+	{
+		-- good beefalo food
+		test = function(cooker, names, tags) return tags.inedible and tags.seed and names.forgetmelots and not tags.monster and not tags.meat and not tags.fish and not tags.egg and not tags.fat and not tags.dairy and not tags.magic end,
+		priority = -4,
+		foodtype = FOODTYPE.ROUGHAGE,
+		overridebuild = "cook_pot_food11",
+		health = TUNING.HEALING_MOREHUGE,
 		hunger = TUNING.CALORIES_MED,
-        perishtime = TUNING.PERISH_SLOW, 
-		sanity = TUNING.SANITY_LARGE,
-        cooktime = 0.5,
-        floater = {"med", 0.05, 0.55},
-    },
+		perishtime = TUNING.PERISH_PRESERVED,
+		sanity = 0,
+		cooktime = 2,
+        potlevel = "high",
+        floater = {"med", nil, 0.85},
+        oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_BEEFALO,
+		OnPutInInventory = function(inst, owner) if owner ~= nil and owner:IsValid() then owner:PushEvent("learncookbookstats", inst.food_basename or inst.prefab) end end,
+	},
 }
 
 for k, v in pairs(foods) do

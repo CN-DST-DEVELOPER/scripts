@@ -30,6 +30,7 @@ local _lastcountdown = nil
 local _dtoverride = 0
 
 --Master simulation
+local _instant
 local _countdownmax
 local _countdownloadingmax
 local _syncperiod
@@ -165,6 +166,10 @@ local OnPlayerCounts = _ismastershard and function(src, data)
         if _cancelwhenempty then
             CancelCountdown()
         end
+    elseif _instant then
+        if _ismastershard then
+            WorldReset()
+        end
     elseif _countdown:value() <= 0 then
         --everyone's a ghost, it's hopeless, sigh...
         --3 min bonus time if loading
@@ -178,10 +183,11 @@ local OnPlayerCounts = _ismastershard and function(src, data)
 end or nil
 
 local OnSetWorldResetTime = _ismastershard and function(src, data)
-    local wasenabled = _countdownmax > 0
+    local wasenabled = _countdownmax > 0 or _instant
+    _instant = data ~= nil and data.instant or false
     _countdownmax = data ~= nil and data.time or 0
     _countdownloadingmax = data ~= nil and data.loadingtime or _countdownmax
-    if wasenabled ~= (_countdownmax > 0) then
+    if wasenabled ~= (_countdownmax > 0 or _instant) then
         if wasenabled then
             inst:RemoveEventCallback("ms_playercounts", OnPlayerCounts, _world)
             CancelCountdown()
@@ -218,6 +224,7 @@ end
 if _ismastersim then
     if _ismastershard then
         --Initialize master simulation variables
+        _instant = false
         _countdownmax = 0
         _countdownloadingmax = 0
         _syncperiod = SYNC_PERIOD_SLOW

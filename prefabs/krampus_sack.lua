@@ -28,6 +28,10 @@ local function onunequip(inst, owner)
     inst.components.container:Close(owner)
 end
 
+local function onequiptomodel(inst, owner)
+    inst.components.container:Close(owner)
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -69,6 +73,7 @@ local function fn()
     inst.components.equippable.equipslot = EQUIPSLOTS.BODY
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("waterproofer")
     inst.components.waterproofer:SetEffectiveness(0)

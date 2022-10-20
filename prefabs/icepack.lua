@@ -21,27 +21,8 @@ local function onunequip(inst, owner)
     inst.components.container:Close(owner)
 end
 
-local function onburnt(inst)
-    if inst.components.container ~= nil then
-        inst.components.container:DropEverything()
-        inst.components.container:Close()
-    end
-
-    SpawnPrefab("ash").Transform:SetPosition(inst.Transform:GetWorldPosition())
-
-    inst:Remove()
-end
-
-local function onignite(inst)
-    if inst.components.container ~= nil then
-        inst.components.container.canbeopened = false
-    end
-end
-
-local function onextinguish(inst)
-    if inst.components.container ~= nil then
-        inst.components.container.canbeopened = true
-    end
+local function onequiptomodel(inst, owner)
+    inst.components.container:Close(owner)
 end
 
 local function fn()
@@ -84,17 +65,12 @@ local function fn()
     inst.components.equippable.equipslot = EQUIPSLOTS.BODY
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("icepack")
     inst.components.container.skipclosesnd = true
     inst.components.container.skipopensnd = true
-
-    MakeSmallBurnable(inst)
-    MakeSmallPropagator(inst)
-    inst.components.burnable:SetOnBurntFn(onburnt)
-    inst.components.burnable:SetOnIgniteFn(onignite)
-    inst.components.burnable:SetOnExtinguishFn(onextinguish)
 
     MakeHauntableLaunchAndDropFirstItem(inst)
 

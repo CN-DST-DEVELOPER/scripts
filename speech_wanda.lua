@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "It would be quite a short game, not that I'd mind...",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "There's nowhere to hide around here.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I think I've spent quite enough time wrangling these tiny terrors today.",
+            MANNEQUIN_EQUIPSWAPFAILED = "Hmph. Picky, aren't we?",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
         },
 
         GIVE =
@@ -854,6 +856,8 @@ return{
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
+    ANNOUNCE_OFF_SCRIPT = "I don't think that's how it's supposed to go.",
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -1444,7 +1448,19 @@ return{
 
         TURF_SHELLBEACH = "Why am I wasting time staring at the ground?",
 
+		TURF_RUINSBRICK = "Why am I wasting time staring at the ground?",
+		TURF_RUINSBRICK_GLOW = "Why am I wasting time staring at the ground?",
+		TURF_RUINSTILES = "Why am I wasting time staring at the ground?",
+		TURF_RUINSTILES_GLOW = "Why am I wasting time staring at the ground?",
+		TURF_RUINSTRIM = "Why am I wasting time staring at the ground?",
+		TURF_RUINSTRIM_GLOW = "Why am I wasting time staring at the ground?",
+
         TURF_MONKEY_GROUND = "Why am I wasting time staring at the ground?",
+
+        TURF_CARPETFLOOR2 = "Oh, what a lovely carpet!",
+        TURF_MOSAIC_GREY = "Why am I wasting time staring at the ground?",
+        TURF_MOSAIC_RED = "Why am I wasting time staring at the ground?",
+        TURF_MOSAIC_BLUE = "Why am I wasting time staring at the ground?",
 
 		POWCAKE = "This never ends well.",
         CAVE_ENTRANCE = "I never was good at leaving well enough alone.",
@@ -1628,6 +1644,10 @@ return{
             RARE = "Oooh, this looks very interesting!",
         },
         SKETCH = "An art project? Do I really have time for that?",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "Whatever was written here has been lost to time.",
+		},
 		BLUE_CAP = "It's... probably edible. If I'm desperate.",
 		BLUE_CAP_COOKED = "I think I made it worse.",
 		BLUE_MUSHROOM =
@@ -1652,6 +1672,7 @@ return{
 		BUZZARD = "You're wasting your time following me, buzzard.",
 
 		SHADOWDIGGER = "Those things make me nervous...",
+        SHADOWDANCER = "That's a sight I won't soon forget.",
 
 		CACTUS =
 		{
@@ -1813,6 +1834,7 @@ return{
 		},
         GOGGLESHAT = "I think they go nicely with what I'm wearing.",
         DESERTHAT = "It's no good against the sands of time, unfortunately.",
+        ANTLIONHAT = "Oh my, what a splendidly strange hat!",
 --fallback to speech_wilson.lua 		DEVTOOL = "It smells of bacon!",
 --fallback to speech_wilson.lua 		DEVTOOL_NODEV = "I'm not strong enough to wield it.",
 		DIRTPILE = "There's something just irresistibly suspicious about it...",
@@ -4516,6 +4538,13 @@ return{
 
         SCANDATA = "It's of no use to me, I won't waste time reading it.",
 
+		-- QOL 2022
+		JUSTEGGS = "Just how I like my eggs, quick and easy.",
+		VEGGIEOMLET = "Why waste time washing extra dishes when you can eat out of the pan?",
+		TALLEGGS = "Eggs and breakfast sausage efficiently rolled into one.",
+		BEEFALOFEED = "Did I remember to feed my beefalo today?",
+		BEEFALOTREAT = "It's probably better for them than candy from my pockets...",
+
         -- Pirates
         BOAT_ROTATOR = "Clockwise or counter-clockwise?",
         BOAT_ROTATOR_KIT = "I can't believe I didn't think of it sooner.",
@@ -4590,10 +4619,48 @@ return{
         PIRATE_STASH = "Somehow I was not expecting an actual \"X\" to be there on the ground.",
         STASH_MAP = "It looks like I'm not the only one who forgets where I put things.",
 
-
         BANANAJUICE = "I suppose I can spare a moment to enjoy a sip or two.",
 
         FENCE_ROTATOR = "I appreciate specialized tools. Especially when I can still hit things with them.",
+
+        CHARLIE_STAGE_POST = "Honestly, who has time for these theatrics?",
+        CHARLIE_LECTURN = "My daily life is quite dramatic enough.",
+
+        CHARLIE_HECKLER = "I don't remember asking for their opinion.",
+
+        PLAYBILL_THE_DOLL = "What an odd little play.",
+        STATUEHARP_HEDGESPAWNER = "There's just something about it...",
+        HEDGEHOUND = "Fool me once, shame on you. Fool me twice, shame on you again!",
+        HEDGEHOUND_BUSH = "Was that rosebush there a second ago?",
+
+        MASK_DOLLHAT = "Something about it makes my skin crawl...",
+        MASK_DOLLBROKENHAT = "Something about it makes my skin crawl...",
+        MASK_DOLLREPAIREDHAT = "Something about it makes my skin crawl...",
+        MASK_BLACKSMITHHAT = "Something about it makes my skin crawl...",
+        MASK_MIRRORHAT = "Something about it makes my skin crawl...",
+        MASK_QUEENHAT = "Something about it makes my skin crawl...",
+        MASK_KINGHAT = "Something about it makes my skin crawl...",
+        MASK_TREEHAT = "Something about it makes my skin crawl...",
+        MASK_FOOLHAT = "Something about it makes my skin crawl...",
+
+        COSTUME_DOLL_BODY = "What's this? An oversized doll's dress?",
+        COSTUME_QUEEN_BODY = "It looks like it could belong to a Queen.",
+        COSTUME_KING_BODY = "It looks like it could belong to a King.",
+        COSTUME_BLACKSMITH_BODY = "It looks like it could belong to a blacksmith.",
+        COSTUME_MIRROR_BODY = "Something about that costume doesn't sit right with me.",
+        COSTUME_TREE_BODY = "It looks like a... tree costume?",
+        COSTUME_FOOL_BODY = "It looks like it could belong to a fool.",
+
+        STAGEUSHER =
+        {
+            STANDING = "You'll never catch me! I've outsmarted you and your ilk at every turn!",
+            SITTING = "I know you're hiding in there.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "I can't imagine being stuck in one place! Wait...",
+            BURNT = "Time waits for no mannequin.",
+        },
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

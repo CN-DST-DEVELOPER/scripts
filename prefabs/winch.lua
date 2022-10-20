@@ -471,6 +471,7 @@ local function fn()
 	inst.components.activatable.OnActivate = OnActivate
 	inst.components.activatable.CanActivateFn = CanActivate
 	inst.components.activatable.standingaction = true
+	inst.components.activatable.forcenopickupaction = true -- disables spacebar interaction
 
 	inst:AddComponent("boatdrag")
 	inst.components.boatdrag.drag = TUNING.BOAT.ANCHOR.BASIC.ANCHOR_DRAG

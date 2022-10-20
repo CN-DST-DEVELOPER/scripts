@@ -1,4 +1,4 @@
-local SHARDINDEX_VERSION = 4
+local SHARDINDEX_VERSION = 5
 
 ShardIndex = Class(function(self)
     self.ismaster = false
@@ -84,6 +84,11 @@ local function UpgradeShardIndexData(self)
 
     if self.version == 3 then
         savefileupgrades.utilities.UpgradeShardIndexFromV3toV4(self)
+        upgraded = true
+    end
+
+    if self.version == 4 then
+        savefileupgrades.utilities.UpgradeShardIndexFromV4toV5(self)
         upgraded = true
     end
 
@@ -530,6 +535,9 @@ function ShardIndex:SetServerShardData(customoptions, serverdata, onsavedcb)
                     self.world.options = MergeMapsDeep(self.world.options, overridedata)
                 end
             end
+
+			local Levels = require("map/levels")
+			self.server.playstyle = Levels.CalcPlaystyleForSettings(self.world.options.overrides)
 
             self:Save(onsavedcb)
         end)

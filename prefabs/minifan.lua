@@ -55,6 +55,12 @@ local function onunequip(inst, owner)
     owner.AnimState:Show("ARM_normal")
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.components.fueled ~= nil then
+        inst.components.fueled:StopConsuming()
+    end
+end
+
 local function ondepleted(inst)
     if inst.components.inventoryitem ~= nil and inst.components.inventoryitem:IsHeld() then
         inst.components.inventoryitem.owner:PushEvent("itemranout", {
@@ -107,6 +113,7 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     -----------------------------------
 

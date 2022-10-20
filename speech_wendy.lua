@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "If we play now, they will stand no chance at winning.",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "If we play now, they won't find a place to hide.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "If we play more, Abigail will get tired.",
+            MANNEQUIN_EQUIPSWAPFAILED = "No. That would be silly.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -110,6 +111,7 @@ return{
 --fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 
         GIVE =
@@ -858,6 +860,8 @@ return{
 
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
+    ANNOUNCE_OFF_SCRIPT = "Just one little mistake...",
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -1448,7 +1452,19 @@ return{
 
         TURF_SHELLBEACH = "Some ground.",
 
+		TURF_RUINSBRICK = "Some ground.",
+		TURF_RUINSBRICK_GLOW = "Some ground.",
+		TURF_RUINSTILES = "Some ground.",
+		TURF_RUINSTILES_GLOW = "Some ground.",
+		TURF_RUINSTRIM = "Some ground.",
+		TURF_RUINSTRIM_GLOW = "Some ground.",
+
         TURF_MONKEY_GROUND = "Some ground.",
+
+        TURF_CARPETFLOOR2 = "Some ground.",
+        TURF_MOSAIC_GREY = "Some ground.",
+        TURF_MOSAIC_RED = "Some ground.",
+        TURF_MOSAIC_BLUE = "Some ground.",
 
 		POWCAKE = "I would have to be desperate.",
         CAVE_ENTRANCE = "Someone is trying to keep the underground at bay.",
@@ -1632,6 +1648,10 @@ return{
             RARE = "I'm surprised we didn't die trying to get this.",
         },
         SKETCH = "I think we could make what's drawn here...",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "The writing has been smudged away, the words forgotten.",
+		},
 		BLUE_CAP = "A fungus to preserve the monotony.",
 		BLUE_CAP_COOKED = "All is malleable.",
 		BLUE_MUSHROOM =
@@ -1656,6 +1676,7 @@ return{
 		BUZZARD = "I hear they feed on the dead.",
 
 		SHADOWDIGGER = "Was he your brother?",
+        SHADOWDANCER = "Father used to do silly dances like that.",
 
 		CACTUS =
 		{
@@ -1817,6 +1838,7 @@ return{
 		},
         GOGGLESHAT = "They're just for show.",
         DESERTHAT = "Now no one can tell when I'm crying.",
+        ANTLIONHAT = "A crown fit for a queen of dirt.",
 --fallback to speech_wilson.lua 		DEVTOOL = "It smells of bacon!",
 --fallback to speech_wilson.lua 		DEVTOOL_NODEV = "I'm not strong enough to wield it.",
 		DIRTPILE = "Oh look. More dirt.",
@@ -4520,6 +4542,13 @@ return{
 
         SCANDATA = "If I'm lucky, it might just bore me to death.",
 
+		-- QOL 2022
+		JUSTEGGS = "Plain is fine. Why hope for anything more?",
+		VEGGIEOMLET = "A healthy diet for a long life. How dreadful.",
+		TALLEGGS = "A life snatched away... and wrapped in fried sausage.",
+		BEEFALOFEED = "I wouldn't want my beefalo to starve.",
+		BEEFALOTREAT = "Oh to be able to find joy in such a simple thing...",
+
         -- Pirates
         BOAT_ROTATOR = "If only I could turn everything around so easily.",
         BOAT_ROTATOR_KIT = "I could build a rudder, I suppose...",
@@ -4594,10 +4623,48 @@ return{
         PIRATE_STASH = "Oh... did I... find the treasure?",
         STASH_MAP = "No map will lead me to what my heart seeks.",
 
-
         BANANAJUICE = "I... like it.",
 
         FENCE_ROTATOR = "Disorderly fences need to be brought into line.",
+
+        CHARLIE_STAGE_POST = "The perfect place for a tragedy.",
+        CHARLIE_LECTURN = "Perhaps there is a small part for me to play.",
+
+        CHARLIE_HECKLER = "Their words can't hurt me. Well, maybe just a little...",
+
+        PLAYBILL_THE_DOLL = "What a strange little story.",
+        STATUEHARP_HEDGESPAWNER = "Overgrown and abandoned.",
+        HEDGEHOUND = "Its beauty hid the beast within.",
+        HEDGEHOUND_BUSH = "They're... beautiful.",
+
+        MASK_DOLLHAT = "To become someone else, even for a moment...",
+        MASK_DOLLBROKENHAT = "To become someone else, even for a moment...",
+        MASK_DOLLREPAIREDHAT = "To become someone else, even for a moment...",
+        MASK_BLACKSMITHHAT = "To become someone else, even for a moment...",
+        MASK_MIRRORHAT = "To become someone else, even for a moment...",
+        MASK_QUEENHAT = "To become someone else, even for a moment...",
+        MASK_KINGHAT = "To become someone else, even for a moment...",
+        MASK_TREEHAT = "To become someone else, even for a moment...",
+        MASK_FOOLHAT = "To become someone else, even for a moment...",
+
+        COSTUME_DOLL_BODY = "Shall we play a game of dress-up, Abigail?",
+        COSTUME_QUEEN_BODY = "Shall we play a game of dress-up, Abigail?",
+        COSTUME_KING_BODY = "Shall we play a game of dress-up, Abigail?",
+        COSTUME_BLACKSMITH_BODY = "Shall we play a game of dress-up, Abigail?",
+        COSTUME_MIRROR_BODY = "Shall we play a game of dress-up, Abigail?",
+        COSTUME_TREE_BODY = "Shall we play a game of dress-up, Abigail?",
+        COSTUME_FOOL_BODY = "Shall we play a game of dress-up, Abigail?",
+
+        STAGEUSHER =
+        {
+            STANDING = "A creature of shadow that seeks the light... how sad...",
+            SITTING = "My heart aches with its beauty.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "A mockery of life.",
+            BURNT = "This burnt husk is all that remains.",
+        },
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

@@ -64,6 +64,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "It seems we are lacking in participants.",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "This environment is not suitable for a fair game.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Playtime is over for now.",
+            MANNEQUIN_EQUIPSWAPFAILED = "No, that would be ridiculous.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -855,6 +856,8 @@ return{
 
     ANNOUNCE_BOOK_MOON_DAYTIME = "We'll know if it worked once night falls.",
 
+    ANNOUNCE_OFF_SCRIPT = "She won't like that.",
+
 	BATTLECRY =
 	{
 		GENERIC = "To arms!",
@@ -1445,7 +1448,19 @@ return{
 
         TURF_SHELLBEACH = "Turf.",
 
+		TURF_RUINSBRICK = "A stone floor.",
+		TURF_RUINSBRICK_GLOW = "Hmph. A cheap replica.",
+		TURF_RUINSTILES = "A stone floor.",
+		TURF_RUINSTILES_GLOW = "Hmph. A cheap replica.",
+		TURF_RUINSTRIM = "A stone floor.",
+		TURF_RUINSTRIM_GLOW = "Hmph. A cheap replica.",
+
         TURF_MONKEY_GROUND = "It doesn't belong here.",
+
+        TURF_CARPETFLOOR2 = "What was wrong with my carpet?",
+        TURF_MOSAIC_GREY = "A stone floor.",
+        TURF_MOSAIC_RED = "A stone floor.",
+        TURF_MOSAIC_BLUE = "A stone floor.",
 
 		POWCAKE = "What foul manifestation of evil is this?",
         CAVE_ENTRANCE = "I plugged it a long time ago.",
@@ -1629,6 +1644,10 @@ return{
             RARE = "A rare blueprint, indeed.",
         },
         SKETCH = "I'll need somewhere to sculpt it.",
+		COOKINGRECIPECARD = 
+		{
+			GENERIC = "The writing is too faint to read.",
+		},
 		BLUE_CAP = "What could go wrong?",
 		BLUE_CAP_COOKED = "Umami!",
 		BLUE_MUSHROOM =
@@ -1653,6 +1672,7 @@ return{
 		BUZZARD = "Carrion connoisseur.",
 
 		SHADOWDIGGER = "I'm a shadow of myself. Ha-ha!",
+        SHADOWDANCER = "What have I become.",
 
 		CACTUS =
 		{
@@ -1814,6 +1834,7 @@ return{
 		},
         GOGGLESHAT = "Not my sort of fashion.",
         DESERTHAT = "Function over form.",
+        ANTLIONHAT = "If the ground displeases me, I'll pull it up by the roots.",
 --fallback to speech_wilson.lua 		DEVTOOL = "It smells of bacon!",
 --fallback to speech_wilson.lua 		DEVTOOL_NODEV = "I'm not strong enough to wield it.",
 		DIRTPILE = "That looks out-of-place.",
@@ -4426,7 +4447,7 @@ return{
             GENERIC = "My, this is some strange magic, even for me.",
             CRIMSON = "The fuel has taken hold.",
             ENABLED = "Just what manner of magic is this?!",
-			WAITING_FOR_DARK = "It's power is coalescing.",
+			WAITING_FOR_DARK = "Its power is coalescing.",
 			COOLDOWN = "I'd bet it was that insufferable imp who brought it here.",
 			SPAWN_DISABLED = "Let it stay banished.",
         },
@@ -4517,6 +4538,13 @@ return{
 
         SCANDATA = "Well... fine. I suppose that sums it all up, more or less.",
 
+		-- QOL 2022
+		JUSTEGGS = "We couldn't even spare a little salt?",
+		VEGGIEOMLET = "At least it's hot.",
+		TALLEGGS = "It's been a while since I've had a good Scotch egg.",
+		BEEFALOFEED = "I suppose I'd better keep the stupid beast fed.",
+		BEEFALOTREAT = "Best to keep the beast placated for now.",
+
         -- Pirates
         BOAT_ROTATOR = "If I hear one word of complaint, I'm turning this boat around.",
         BOAT_ROTATOR_KIT = "Do I look like a common shipwright? Oh, very well...",
@@ -4591,10 +4619,48 @@ return{
         PIRATE_STASH = "Hooray.",
         STASH_MAP = "Now I suppose I'll have to go out and fetch what was stolen from me.",
 
-
         BANANAJUICE = "It doesn't do much for my refined palate.",
 
         FENCE_ROTATOR = "What insidious magic. It draws power from eye rolls and groans.",
+
+        CHARLIE_STAGE_POST = "Just like the old days.",
+        CHARLIE_LECTURN = "She really expects me to... oh why not.",
+
+        CHARLIE_HECKLER = "Tough crowd.",
+
+        PLAYBILL_THE_DOLL = "Are you having fun?",
+        STATUEHARP_HEDGESPAWNER = "This place is really going to seed.",
+        HEDGEHOUND = "The critics here will really eat you alive.",
+        HEDGEHOUND_BUSH = "Nice try.",
+
+        MASK_DOLLHAT = "How very dramatic.",
+        MASK_DOLLBROKENHAT = "How very dramatic.",
+        MASK_DOLLREPAIREDHAT = "How very dramatic.",
+        MASK_BLACKSMITHHAT = "How very dramatic.",
+        MASK_MIRRORHAT = "How very dramatic.",
+        MASK_QUEENHAT = "How very dramatic.",
+        MASK_KINGHAT = "How very dramatic.",
+        MASK_TREEHAT = "How very dramatic.",
+        MASK_FOOLHAT = "How very dramatic.",
+
+        COSTUME_DOLL_BODY = "It seems the costumes are provided.",
+        COSTUME_QUEEN_BODY = "It seems the costumes are provided.",
+        COSTUME_KING_BODY = "I think that one will fit me nicely.",
+        COSTUME_BLACKSMITH_BODY = "It seems the costumes are provided.",
+        COSTUME_MIRROR_BODY = "It seems the costumes are provided.",
+        COSTUME_TREE_BODY = "It seems the costumes are provided.",
+        COSTUME_FOOL_BODY = "It seems the costumes are provided.",
+
+        STAGEUSHER =
+        {
+            STANDING = "Hmph. Impressive sleight of hand.",
+            SITTING = "This must be the work of an unseen hand.",
+        },
+        SEWING_MANNEQUIN =
+        {
+            GENERIC = "Finally, someone who'll carry my things.",
+            BURNT = "Someone should clean that up.",
+        },
     },
 
     DESCRIBE_GENERIC = "You tell me.",

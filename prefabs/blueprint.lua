@@ -135,6 +135,8 @@ local function fn(is_rare)
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:ChangeImageName("blueprint")
 
+	inst:AddComponent("erasablepaper")
+
     inst:AddComponent("named")
     inst:AddComponent("teacher")
     inst.components.teacher.onteach = OnTeach

@@ -15,9 +15,9 @@ function Lighter:SetOnLightFn(fn)
     self.onlight = fn
 end
 
-function Lighter:Light(target)
+function Lighter:Light(target, doer)
     if target.components.burnable ~= nil and not ((target:HasTag("fueldepleted") and not target:HasTag("burnableignorefuel")) or target:HasTag("INLIMBO")) then
-        target.components.burnable:Ignite()
+        target.components.burnable:Ignite(nil, self.inst, doer)
         if self.onlight ~= nil then
             self.onlight(self.inst, target)
         end

@@ -47,6 +47,15 @@ local function onunequip(inst, owner)
     inst.SoundEmitter:KillSound("torch")
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.fire ~= nil then
+        inst.fire:Remove()
+    end
+
+    inst.components.burnable:Extinguish()
+    inst.SoundEmitter:KillSound("torch")
+end
+
 local function OnRemoveEntity(inst)
     if inst.fire ~= nil then
         inst.fire:Remove()
@@ -123,6 +132,7 @@ local function fn()
     inst.components.equippable:SetOnPocket(onpocket)
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     -----------------------------------
 

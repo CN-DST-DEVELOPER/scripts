@@ -162,7 +162,8 @@ local function cooked()
     inst:AddComponent("edible")
     inst.components.edible.hungervalue = TUNING.CALORIES_TINY
     inst.components.edible.healthvalue = TUNING.HEALING_TINY
-    inst.components.edible.foodtype = "SEEDS"
+    inst.components.edible.foodtype = FOODTYPE.SEEDS
+	inst.components.edible.secondaryfoodtype = FOODTYPE.ROUGHAGE
 
     inst:AddComponent("tradable")
 

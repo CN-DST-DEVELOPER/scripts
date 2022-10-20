@@ -40,6 +40,10 @@ local function onhammered(inst)
     TheWorld:PushEvent("beginregrowth", inst)
     inst:Remove()
 end
+local function OnBurnt(inst)
+	TheWorld:PushEvent("beginregrowth", inst)
+    DefaultBurntFn(inst)
+end
 
 local function onhit(inst)
     if not inst.playing_dead_anim then
@@ -279,6 +283,7 @@ local function fn()
     inst.components.activatable.inactive = true
 
     MakeMediumBurnable(inst)
+    inst.components.burnable:SetOnBurntFn(OnBurnt)
     MakeSmallPropagator(inst)
 
     ---------------------

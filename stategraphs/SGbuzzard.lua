@@ -176,7 +176,7 @@ local states=
         onupdate= function(inst)
             inst.Physics:SetMotorVelOverride(0,-15,0)
             local pt = Point(inst.Transform:GetWorldPosition())
-            if pt.y <= .1 or inst:IsAsleep() then
+            if pt.y <= 0.1 or inst:IsAsleep() then
                 inst.Physics:ClearMotorVelOverride()
                 pt.y = 0
                 inst.Physics:Stop()
@@ -208,7 +208,7 @@ local states=
 
     State{
         name = "kill",
-        tags = {"busy", "canrotate"},
+        tags = {"canrotate"},
         onenter = function(inst, data)
             inst.AnimState:PushAnimation("atk", false)
             if data and data.target:HasTag("prey") then
@@ -226,6 +226,7 @@ local states=
             TimeEvent(27*FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/attack")
                 local target = inst.sg.statemem.target
+
                 if target ~= nil and
                     target:IsValid() and
                     inst:IsNear(target, TUNING.BUZZARD_ATTACK_RANGE) and
@@ -237,7 +238,7 @@ local states=
 
         events =
         {
-            EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end)
+            EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
         },
     },
 
@@ -405,7 +406,10 @@ CommonStates.AddCombatStates(states,
 {
     attacktimeline =
     {
+        TimeEvent(1*FRAMES, function(inst) print(" START OF ATTACK ")
+        end),
         TimeEvent(15*FRAMES, function(inst)
+            print("ATTACK",inst.sg.statemem.target.prefab)
             inst.components.combat:DoAttack(inst.sg.statemem.target)
             inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/attack")
         end),

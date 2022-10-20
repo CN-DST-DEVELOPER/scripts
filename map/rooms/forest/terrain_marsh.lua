@@ -2,7 +2,7 @@
 AddRoom("BGMarsh", {
 					colour={r=.6,g=.2,b=.8,a=.50},
 					value = WORLD_TILES.MARSH,
-					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1"},
+					tags = {"ExitPiece", "Chester_Eyebone", "Astral_1", "CharlieStage_Spawner"},
 					contents =  {
 									countstaticlayouts={["MushroomRingMedium"] = function()
 																				if math.random(0,1000) > 985 then

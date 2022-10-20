@@ -52,6 +52,9 @@ local Grue = Class(function(self, inst)
     --self.nextSoundTime = nil
     self.immunity = {}
 
+    self.nonlethal = TUNING.NONLETHAL_DARKNESS
+    self.nonlethal_pct = TUNING.NONLETHAL_PERCENT
+
     self.inittask = inst:DoTaskInTime(0, OnInit, self)
 end)
 
@@ -124,6 +127,26 @@ function Grue:SetSleeping(asleep)
     end
 end
 
+function Grue:Attack()
+    local damage = TUNING.GRUEDAMAGE
+
+    if self.nonlethal then
+        local health = self.inst.components.health
+        if health then
+            local currenthealth = health.currenthealth
+            local maxhealth = health.maxhealth
+
+            local damagepercent = (currenthealth - damage) / maxhealth
+            if damagepercent <= self.nonlethal_pct then
+                local minhealth = maxhealth * self.nonlethal_pct
+                damage = math.max(0, currenthealth - minhealth)
+            end
+        end
+    end
+
+    self.inst.components.combat:GetAttacked(nil, damage, nil, "darkness")
+end
+
 function Grue:OnUpdate(dt)
     if self.nextHitTime ~= nil and self.nextHitTime > 0 then
         self.nextHitTime = self.nextHitTime - dt
@@ -150,7 +173,7 @@ function Grue:OnUpdate(dt)
         end
 
         if self.level > (self.resistance or 0) then
-            self.inst.components.combat:GetAttacked(nil, TUNING.GRUEDAMAGE, nil, "darkness")
+            self:Attack()
             self.inst.components.sanity:DoDelta(-TUNING.SANITY_MEDLARGE)
             self.inst:PushEvent("attackedbygrue")
         else

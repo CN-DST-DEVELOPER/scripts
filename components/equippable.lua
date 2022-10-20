@@ -26,6 +26,7 @@ local Equippable = Class(function(self, inst)
     self.onequipfn = nil
     self.onunequipfn = nil
     self.onpocketfn = nil
+    self.onequiptomodelfn = nil
     self.equipstack = false
     self.walkspeedmult = nil
     --self.retrictedtag = nil --only entities with this tag can equip
@@ -68,6 +69,10 @@ function Equippable:SetOnUnequip(fn)
     self.onunequipfn = fn
 end
 
+function Equippable:SetOnEquipToModel(fn)
+    self.onequiptomodelfn = fn
+end
+
 function Equippable:IsEquipped()
     return self.isequipped
 end
@@ -83,6 +88,10 @@ function Equippable:Equip(owner, from_ground)
         self.onequipfn(self.inst, owner, from_ground)
     end
     self.inst:PushEvent("equipped", { owner = owner })
+
+    if self.onequiptomodelfn ~= nil and owner:HasTag("equipmentmodel") then
+        self.onequiptomodelfn(self.inst, owner, from_ground)
+    end
 end
 
 function Equippable:ToPocket(owner)

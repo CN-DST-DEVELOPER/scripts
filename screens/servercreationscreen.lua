@@ -458,6 +458,7 @@ function ServerCreationScreen:Create(warnedOffline, warnedDisabledMods, warnedOu
                     self:Enable()
                 elseif not is_multi_level then
                     -- Collect the tags we want and set the tags string now that we have our mods enabled
+					TheNet:SetServerPlaystyle(serverdata.playstyle or PLAYSTYLE_DEFAULT)
                     TheNet:SetServerTags(BuildTagsStringHosting(self, worldoptions))
                     DoLoadingPortal(function()
                         StartNextInstance({ reset_action = RESET_ACTION.LOAD_SLOT, save_slot = self.saveslot })

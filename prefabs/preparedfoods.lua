@@ -110,6 +110,9 @@ local function MakePreparedFood(data)
         inst.wet_prefix = data.wet_prefix
 
         inst:AddComponent("inventoryitem")
+		if data.OnPutInInventory then
+			inst:ListenForEvent("onputininventory", data.OnPutInInventory)
+		end
 
         if spicename ~= nil then
             inst.components.inventoryitem:ChangeImageName(spicename.."_over")

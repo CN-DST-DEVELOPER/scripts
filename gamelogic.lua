@@ -631,13 +631,6 @@ local function PopulateWorld(savedata, profile)
             if savedata.world_network ~= nil and savedata.world_network.persistdata ~= nil then
                 world.net:SetPersistData(savedata.world_network.persistdata)
             end
-
-            local gamemode = TheNet:GetServerGameMode()
-			world:PushEvent("ms_setspawnmode", GetSpawnMode( gamemode ) )
-			world:PushEvent("ms_setworldresettime", GetResetTime( gamemode ) )
-            world:PushEvent("ms_enableresourcerenewal", GetHasResourceRenewal( gamemode ) )
-
-            --V2C: forward to MOD game mode server configuration HERE
         end
 
 		WorldSettings_Overrides.areaambientdefault(savedata.map.prefab)

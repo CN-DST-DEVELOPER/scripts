@@ -77,6 +77,7 @@ local Health = Class(function(self, inst)
     self.firedamagecaptimer = 0
     self.nofadeout = false
     self.penalty = 0
+    self.disable_penalty = not TUNING.HEALTH_PENALTY_ENABLED
 
     self.absorb = 0 -- DEPRECATED, please use externalabsorbmodifiers instead
     self.playerabsorb = 0 -- DEPRECATED, please use externalabsorbmodifiers instead
@@ -86,6 +87,10 @@ local Health = Class(function(self, inst)
     self.destroytime = nil
     self.canmurder = true
     self.canheal = true
+
+    self.nonlethal_temperature = TUNING.NONLETHAL_TEMPERATURE
+    self.nonlethal_hunger = TUNING.NONLETHAL_HUNGER
+    self.nonlethal_pct = TUNING.NONLETHAL_PERCENT
 end,
 nil,
 {
@@ -132,7 +137,7 @@ function Health:OnLoad(data)
 	end
 
     local haspenalty = data.penalty ~= nil and data.penalty > 0 and data.penalty < 1
-    if haspenalty then
+    if haspenalty and self.penalty_enabled then
         self:SetPenalty(data.penalty)
     end
 
@@ -380,15 +385,22 @@ function Health:SetVal(val, cause, afflicter)
 end
 
 function Health:DoDelta(amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
+    local old_percent = self:GetPercent()
+
+    if old_percent <= self.nonlethal_pct and
+		(((cause == "cold" or cause == "hot") and self.nonlethal_temperature) or
+		(cause == "hunger" and self.nonlethal_hunger)) then
+
+        return 0
+    end
+
     if self.redirect ~= nil and self.redirect(self.inst, amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb) then
         return 0
     elseif not ignore_invincible and (self:IsInvincible() or self.inst.is_teleporting) then
         return 0
     elseif amount < 0 and not ignore_absorb then
-        amount = amount * math.clamp(1 - (self.playerabsorb ~= 0 and afflicter ~= nil and afflicter:HasTag("player") and self.playerabsorb + self.absorb or self.absorb), 0, 1) * math.clamp(1 - self.externalabsorbmodifiers:Get(), 0, 1)
+        amount = amount * math.clamp(1 - (self.playerabsorb ~= 0 and afflicter ~= nil and afflicter:HasTag("player") and self.playerabsorb + self.absorb or self.absorb), 0, 1) * math.max(1 - self.externalabsorbmodifiers:Get(), 0)
     end
-
-    local old_percent = self:GetPercent()
     self:SetVal(self.currenthealth + amount, cause, afflicter)
 
     self.inst:PushEvent("healthdelta", { oldpercent = old_percent, newpercent = self:GetPercent(), overtime = overtime, cause = cause, afflicter = afflicter, amount = amount })

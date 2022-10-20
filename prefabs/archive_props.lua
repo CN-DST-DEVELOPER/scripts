@@ -568,7 +568,7 @@ local function startpowersound(inst)
 
         local pos = Vector3(wp.Transform:GetWorldPosition())
         spawnsounderobj(pos, "grotto/common/archive_switch/start")
-        print("1 NUMBER OF WAY POINTS!",#wps)
+        --print("1 NUMBER OF WAY POINTS!",#wps)
 
 
         for i=#wps,1,-1 do
@@ -576,7 +576,7 @@ local function startpowersound(inst)
                 table.remove(wps,i)
             end
         end
-        print("2 NUMBER OF WAY POINTS!",#wps)
+        --print("2 NUMBER OF WAY POINTS!",#wps)
 
         for i,ent in ipairs(wps)do
             local pos = Vector3(wp.Transform:GetWorldPosition())

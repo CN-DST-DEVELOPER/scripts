@@ -139,6 +139,20 @@ local function onunequip(inst, owner)
     end
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    inst.components.cooldown.onchargedfn = nil
+
+    if inst.task ~= nil then
+        inst.task:Cancel()
+        inst.task = nil
+        inst.components.resistance:SetOnResistDamageFn(OnResistDamage)
+    end
+
+    for i, v in ipairs(RESISTANCES) do
+        inst.components.resistance:RemoveResistance(v)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -185,6 +199,7 @@ local function fn()
     inst.components.equippable.equipslot = EQUIPSLOTS.BODY
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     inst:AddComponent("cooldown")
     inst.components.cooldown.cooldown_duration = TUNING.ARMOR_SKELETON_COOLDOWN

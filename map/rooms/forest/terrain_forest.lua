@@ -2,7 +2,7 @@
 AddRoom("BGCrappyForest", {
 					colour={r=.1,g=.8,b=.1,a=.50},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone"},
+					tags = {"ExitPiece", "Chester_Eyebone", "StatueHarp_HedgeSpawner", "CharlieStage_Spawner",},
 					contents =  {
 					                distributepercent = .6,
 					                distributeprefabs=
@@ -27,7 +27,7 @@ AddRoom("BGCrappyForest", {
 AddRoom("BGForest", {
 					colour={r=.1,g=.8,b=.1,a=.50},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone", "StagehandGarden", "Terrarium_Spawner"},
+					tags = {"ExitPiece", "Chester_Eyebone", "StagehandGarden", "Terrarium_Spawner", "StatueHarp_HedgeSpawner", "CharlieStage_Spawner"},
 					contents =  {
 					                distributepercent = .6,
 					                distributeprefabs=
@@ -54,7 +54,7 @@ AddRoom("BGForest", {
 AddRoom("BGDeepForest", {
 					colour={r=.1,g=.8,b=.1,a=.50},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone"},
+					tags = {"ExitPiece", "Chester_Eyebone", "StatueHarp_HedgeSpawner", "CharlieStage_Spawner",},
 					contents =  {
 									countstaticlayouts={["MushroomRingSmall"]=function()
 																				if math.random(0,1000) > 985 then

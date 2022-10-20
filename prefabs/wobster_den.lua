@@ -19,6 +19,7 @@ local prefabs =
     "rock_break_fx",
     "rocks",
     "wobster_sheller",
+	"moonglass_wobster_den",
 }
 
 local moonglass_prefabs =
@@ -188,6 +189,18 @@ local function OnPreLoad(inst, data)
     WorldSettings_ChildSpawner_PreLoad(inst, data, TUNING.WOBSTER_DEN_SPAWN_PERIOD, TUNING.WOBSTER_DEN_REGEN_PERIOD)
 end
 
+
+local function moonconversionoverridefn(inst)
+	inst.prefab = "moonglass_wobster_den"
+	inst.AnimState:SetBuild("lobster_den_moonglass_build")
+    inst.components.lootdropper:SetChanceLootTable("moonglass_wobster_den")
+    inst.components.childspawner.childname = "wobster_moonglass"
+
+	inst:RemoveComponent("halloweenmoonmutable")
+
+	return inst, nil
+end
+
 local function basefn(build, loot_table_name, child_name)
     local inst = CreateEntity()
 
@@ -269,6 +282,9 @@ end
 
 local function fn()
     local inst = basefn("lobster_den_build", "wobster_den", "wobster_sheller")
+
+	inst:AddComponent("halloweenmoonmutable")
+	inst.components.halloweenmoonmutable:SetConversionOverrideFn(moonconversionoverridefn)
 
     return inst
 end

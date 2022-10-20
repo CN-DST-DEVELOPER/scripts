@@ -47,8 +47,7 @@ function Follower:GetLeader()
     return self.leader
 end
 
-local function DoPortNearLeader(inst, self, pos)
-    self.porttask = nil
+local function DoPortNearLeader(inst, pos)
     if inst.Physics ~= nil then
         inst.Physics:Teleport(pos:Get())
     else
@@ -60,13 +59,8 @@ local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
-local function OnEntitySleep(inst)
-    local self = inst.components.follower
-
-    if self.porttask ~= nil then
-        self.porttask:Cancel()
-        self.porttask = nil
-    end
+local function TryPorting(inst, self)
+	self.porttask = nil
 
     if inst.components.hitchable and not inst.components.hitchable.canbehitched then
         return
@@ -101,13 +95,12 @@ local function OnEntitySleep(inst)
             leader_pos.y = 0
 
             if TheWorld.Map:IsOceanAtPoint(leader_pos:Get()) then
-                --There's a crash if you teleport without the delay
-                --V2C: ORLY
-                self.porttask = inst:DoTaskInTime(0, DoPortNearLeader, self, leader_pos)
+				DoPortNearLeader(inst, leader_pos)
+				return --successfully teleported, so early out
             end
         end
 
-        if self.porttask == nil and allow_land then
+        if allow_land then
             local offset = FindWalkableOffset(leader_pos, angle, 30, 10, false, true, NoHoles)
             if offset ~= nil then
                 leader_pos.x = leader_pos.x + offset.x
@@ -118,20 +111,22 @@ local function OnEntitySleep(inst)
             -- We don't want to teleport onto boats because it'll probably be on top of the player,
             -- so include boats in the ocean test we're negating.
             if not TheWorld.Map:IsOceanAtPoint(leader_pos.x, leader_pos.y, leader_pos.z, true) then
-                --There's a crash if you teleport without the delay
-                --V2C: ORLY
-                self.porttask = inst:DoTaskInTime(0, DoPortNearLeader, self, leader_pos)
+				DoPortNearLeader(inst, leader_pos)
+				return --successfully teleported, so early out
             end
         end
-
-        if self.porttask == nil then
-            -- No position to teleport to. Retry later.
-            self.porttask = inst:DoTaskInTime(3, OnEntitySleep)
-        end
-    else
-        --Retry later
-        self.porttask = inst:DoTaskInTime(3, OnEntitySleep)
     end
+
+	--Retry later
+	self.porttask = inst:DoTaskInTime(3, TryPorting, self)
+end
+
+local function OnEntitySleep(inst)
+	local self = inst.components.follower
+	if self.porttask ~= nil then
+		self.porttask:Cancel()
+	end
+	self.porttask = self.inst:DoTaskInTime(0, TryPorting, self)
 end
 
 function Follower:StartLeashing()

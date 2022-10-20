@@ -577,6 +577,12 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        stageactingprop = function(inst, doer, actions, right)
+            if right and inst:HasTag("stageactingprop") and doer:HasTag("stageactor") and not inst:HasTag("play_in_progress") then
+                table.insert(actions, ACTIONS.PERFORM)
+            end
+        end,
+        
 		storytellingprop = function(inst, doer, actions, right)
             if right and inst:HasTag("storytellingprop") and doer:HasTag("storyteller") then
                 table.insert(actions, ACTIONS.TELLSTORY)
@@ -951,6 +957,16 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+		erasablepaper = function(inst, doer, target, actions)
+            if target:HasTag("papereraser") 
+				and not target:HasTag("fire")
+                and not target:HasTag("burnt")
+				then
+
+	            table.insert(actions, ACTIONS.ERASE_PAPER)
+			end
+		end,
+
         fan = function(inst, doer, target, actions)
             table.insert(actions, ACTIONS.FAN)
         end,
@@ -1162,6 +1178,12 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        playbill = function(inst, doer, target, actions)
+            if target:HasTag("playbill_lecturn") then
+                table.insert(actions, ACTIONS.GIVE)
+            end
+        end,        
+
         pocketwatch = function(inst, doer, target, actions)
             if inst:HasTag("pocketwatch_inactive") and doer:HasTag("pocketwatchcaster") and inst.pocketwatch_CanTarget ~= nil and inst:pocketwatch_CanTarget(doer, target) then
 				if not (doer.replica.rider ~= nil and doer.replica.rider:IsRiding()) or inst:HasTag("pocketwatch_mountedcast") then
@@ -1193,7 +1215,8 @@ local COMPONENT_ACTIONS =
                     if target:HasTag("repairable_"..v) then
                         if (inst:HasTag("work_"..v) and target:HasTag("workrepairable"))
                             or (inst:HasTag("health_"..v) and target:HasTag("healthrepairable"))
-                            or (inst:HasTag("freshen_"..v) and (target:HasTag("fresh") or target:HasTag("stale") or target:HasTag("spoiled"))) then
+                            or (inst:HasTag("freshen_"..v) and (target:HasTag("fresh") or target:HasTag("stale") or target:HasTag("spoiled")))
+                            or (inst:HasTag("finiteuses_"..v) and target:HasTag("finiteusesrepairable")) then
                             table.insert(actions, ACTIONS.REPAIR)
                         end
                         return
@@ -1853,7 +1876,7 @@ local COMPONENT_ACTIONS =
         end,
 
         fencerotator = function(inst, doer, target, actions, right)
-            if (target:HasTag("fence") or target:HasTag("directionsign")) and not inst:HasTag("fire") and not inst:HasTag("burnt") then
+            if target:HasTag("rotatableobject") and not inst:HasTag("fire") and not inst:HasTag("burnt") then
                 if right then
                     table.insert(actions, ACTIONS.ROTATE_FENCE)
                 end

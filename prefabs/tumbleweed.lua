@@ -12,7 +12,7 @@ local assets =
 
 local prefabs =
 {
-    "splash_ocean",
+    "splash_sink",
     "tumbleweedbreakfx",
     "ash",
     "cutgrass",
@@ -54,6 +54,7 @@ local prefabs =
     "bee",
     "mosquito",
     "boneshard",
+    "cookingrecipecard",
 }
 
 local CHESS_LOOT =
@@ -84,7 +85,7 @@ end
 
 local function CheckGround(inst)
     if not inst:IsOnValidGround() then
-        SpawnPrefab("splash_ocean").Transform:SetPosition(inst.Transform:GetWorldPosition())
+        SpawnPrefab("splash_sink").Transform:SetPosition(inst.Transform:GetWorldPosition())
         inst:PushEvent("detachchild")
         inst:Remove()
     end
@@ -178,6 +179,7 @@ local function MakeLoot(inst)
         {chance = 1,    item = "stinger"},
         {chance = 1,    item = "gears"},
         {chance = 0.1,  item = "boneshard"},
+        {chance = 0.25, item = "cookingrecipecard"},
     }
 
     local chessunlocks = TheWorld.components.chessunlocks

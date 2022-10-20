@@ -10,6 +10,7 @@ local prefabs =
     "campfirefire",
     "collapse_small",
     "ash",
+	"charcoal",
 }
 
 local function onhammered(inst, worker)
@@ -51,12 +52,20 @@ end
 local function onfuelchange(newsection, oldsection, inst, doer)
     if newsection <= 0 then
         inst.components.burnable:Extinguish()
+		if inst.queued_charcoal then
+			inst.components.lootdropper:SpawnLootPrefab("charcoal")
+			inst.queued_charcoal = nil
+		end
     else
         if not inst.components.burnable:IsBurning() then
             updatefuelrate(inst)
             inst.components.burnable:Ignite(nil, nil, doer)
         end
         inst.components.burnable:SetFXLevel(newsection, inst.components.fueled:GetSectionPercent())
+
+		if newsection == inst.components.fueled.sections then
+			inst.queued_charcoal = not inst.disable_charcoal
+		end
     end
 end
 
@@ -99,6 +108,16 @@ end
 local function OnInit(inst)
     if inst.components.burnable ~= nil then
         inst.components.burnable:FixFX()
+    end
+end
+
+local function OnSave(inst, data)
+    data.queued_charcoal = inst.queued_charcoal or nil
+end
+
+local function OnLoad(inst, data)
+    if data ~= nil and data.queued_charcoal then
+		inst.queued_charcoal = true
     end
 end
 
@@ -204,6 +223,7 @@ local function fn()
 
     -----------------------------
     if TheNet:GetServerGameMode() == "quagmire" then
+		inst.disable_charcoal = true
         event_server_data("quagmire", "prefabs/firepit").master_postinit(inst, OnPrefabOverrideDirty, OnRadiusDirty)
     end
     -----------------------------
@@ -219,12 +239,21 @@ local function fn()
 
     inst:ListenForEvent("onbuilt", onbuilt)
 
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
+
     inst:DoTaskInTime(0, OnInit)
 
     inst.restart_firepit = function( inst )
+        -- HACK(JBK): In order to stop making more charcoals this reset function for the reskin_tool needs to make it not work while it updates animation frames.
+        local queued = inst.queued_charcoal
+        inst.queued_charcoal = nil
+
         local fuel_percent = inst.components.fueled:GetPercent()
         inst.components.fueled:MakeEmpty()
         inst.components.fueled:SetPercent( fuel_percent )
+
+        inst.queued_charcoal = queued
     end
 
     return inst

@@ -157,7 +157,7 @@ local function fn()
 
     MakeSmallObstaclePhysics(inst, .1)
 
-    inst:AddTag("bush")
+    inst:AddTag("bananabush")
     inst:AddTag("plant")
 
     inst.MiniMapEntity:SetIcon("bananabush.png")

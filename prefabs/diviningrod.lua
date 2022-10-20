@@ -120,6 +120,13 @@ local function onunequip(inst, owner)
     inst.closeness = nil
 end
 
+local function onequiptomodel(inst, owner, from_ground)
+    if inst.task ~= nil then
+        inst.task:Cancel()
+        inst.task = nil
+    end
+end
+
 local function describe(inst)
     if inst.components.equippable:IsEquipped() then
         if inst.closeness and inst.closeness.describe then
@@ -182,6 +189,7 @@ local function fn()
 
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+    inst.components.equippable:SetOnEquipToModel(onequiptomodel)
 
     MakeHauntableLaunch(inst)
 

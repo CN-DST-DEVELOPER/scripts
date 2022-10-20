@@ -177,7 +177,11 @@ end
 
 function Temperature:GetDebugString()
 	local winter, summer = self:GetInsulation()
-    return string.format("%2.2fC at %2.2f (delta: %2.2f) (modifiers: %2.2f) (insulation: %d, %d)", self.current, self.rate, self.delta, self.totalmodifiers, winter, summer)
+	local str = string.format("%2.2fC at %2.2f (delta: %2.2f) (modifiers: %2.2f) (insulation: %d, %d)", self.current, self.rate, self.delta, self.totalmodifiers, winter, summer)
+	if self.inst.sleepingbag ~= nil and self.inst.sleepingbag.components.sleepingbag.ambient_temp then
+		str = str .. string.format(" (sleepingbag %2.2f)", self.inst.sleepingbag.components.sleepingbag.ambient_temp)
+	end
+    return str
 end
 
 function Temperature:IsFreezing()
@@ -289,6 +293,11 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
         mintemp = math.max(mintemp, math.min(0, ambient_temperature))
         self.rate = owner:HasTag("lowcool") and -.5 * TUNING.WARM_DEGREES_PER_SEC or -TUNING.WARM_DEGREES_PER_SEC
     else
+		local sleepingbag_ambient_temp = self.inst.sleepingbag ~= nil and self.inst.sleepingbag.components.sleepingbag.ambient_temp
+		if sleepingbag_ambient_temp then
+            ambient_temperature = sleepingbag_ambient_temp
+		end
+
         -- Prepare to figure out the temperature where we are standing
         local x, y, z = self.inst.Transform:GetWorldPosition()
         local ents = self.usespawnlight and

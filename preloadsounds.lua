@@ -177,6 +177,13 @@ local MainSounds =
 
     "wickerbottom_rework.fev",
     "wickerbottom_rework.fsb",
+    
+    --"skin_sfx.fev",
+    --"skin_sfx.fsb",
+
+    "stageplay_set.fev",
+    "stageplay_set.fsb",
+    "stageplay_set_music.fsb",
 }
 
 function PreloadSoundList(list)

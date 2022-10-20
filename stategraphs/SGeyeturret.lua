@@ -10,6 +10,7 @@ local events=
         end
     end),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnFreeze(),
     --CommonHandlers.OnAttacked(),
     EventHandler("attacked", function(inst)
         if not inst.components.health:IsDead() and not
@@ -84,5 +85,6 @@ local states=
         },
     },
 }
+CommonStates.AddFrozenStates(states)
 
 return StateGraph("eyeturret", states, events, "idle")

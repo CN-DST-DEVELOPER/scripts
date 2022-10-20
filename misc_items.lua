@@ -162,6 +162,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 40,
 	},
+	emoji_florid_postern =
+	{
+		type = "emoji",
+		skin_tags = { "EMOJI", },
+		rarity = "Common",
+		rarity_modifier = "Woven",
+		release_group = 135,
+	},
 	emoji_ghost =
 	{
 		type = "emoji",
@@ -273,6 +281,14 @@ MISC_ITEMS =
 		rarity = "Common",
 		rarity_modifier = "Woven",
 		release_group = 43,
+	},
+	emoji_resurrection_stone =
+	{
+		type = "emoji",
+		skin_tags = { "EMOJI", },
+		rarity = "Common",
+		rarity_modifier = "Woven",
+		release_group = 135,
 	},
 	emoji_salt =
 	{
@@ -1369,6 +1385,20 @@ MISC_ITEMS =
 		output_items = {  "wurt_none", "wurt_formal", "body_wurt_formal", "hand_wurt_formal", "legs_wurt_formal", },
 		release_group = 78,
 	},
+	pack_constant_bundle =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_constant_bundle.xml",
+		display_tex = "constant_bundle.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "critterlab_gothic", "wormhole_gothic", "gravestone_gothic", "gravestone_gothic2", "gravestone_gothic3", "gravestone_gothic4", "cave_entrance_open_gothic", "resurrectionstone_gothic", "sanityrock_gothic", "critterlab_fantasy", "wormhole_fantasy", "gravestone_fantasy", "gravestone_fantasy2", "gravestone_fantasy3", "gravestone_fantasy4", "cave_entrance_open_fantasy", "resurrectionstone_fantasy", "sanityrock_fantasy", },
+		output_items = {  "critterlab_gothic", "wormhole_gothic", "gravestone_gothic", "gravestone_gothic2", "gravestone_gothic3", "gravestone_gothic4", "cave_entrance_open_gothic", "resurrectionstone_gothic", "sanityrock_gothic", "critterlab_fantasy", "wormhole_fantasy", "gravestone_fantasy", "gravestone_fantasy2", "gravestone_fantasy3", "gravestone_fantasy4", "cave_entrance_open_fantasy", "resurrectionstone_fantasy", "sanityrock_fantasy", },
+		release_group = 136,
+	},
 	pack_container_items =
 	{
 		type = "purchase",
@@ -1731,6 +1761,21 @@ MISC_ITEMS =
 		output_items = {  "arrowsign_post_fantasy", "minisign_fantasy", "fence_fantasy", "batbat_fantasy", "beefalohat_fantasy", "dragonflychest_fantasy", "eyebrellahat_fantasy", "heatrock_fantasy", "mermhouse_crafted_fantasy", "glommer_fantasy", "hutch_fantasy", },
 		release_group = 128,
 	},
+	pack_fantasy_items2 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		steam_dlc_id = 2170670,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_fantasy_items2.xml",
+		display_tex = "fantasy_items2.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "critterlab_fantasy", "wormhole_fantasy", "gravestone_fantasy", "gravestone_fantasy2", "gravestone_fantasy3", "gravestone_fantasy4", "cave_entrance_open_fantasy", "resurrectionstone_fantasy", "sanityrock_fantasy", },
+		output_items = {  "critterlab_fantasy", "wormhole_fantasy", "gravestone_fantasy", "gravestone_fantasy2", "gravestone_fantasy3", "gravestone_fantasy4", "cave_entrance_open_fantasy", "resurrectionstone_fantasy", "sanityrock_fantasy", },
+		release_group = 136,
+	},
 	pack_forge_armor =
 	{
 		type = "purchase",
@@ -1943,6 +1988,21 @@ MISC_ITEMS =
 		display_items = {  "wall_stone_gothic", "coldfirepit_gothic", "fence_gothic", "fence_gate_gothic", "lightning_rod_gothic", "pighouse_gothic", "researchlab2_gothic", "researchlab_gothic", "wardrobe_gothic", "lantern_gothic", "bundle_gothic", "sculptingtable_gothic", },
 		output_items = {  "wall_stone_gothic", "coldfirepit_gothic", "fence_gothic", "fence_gate_gothic", "lightning_rod_gothic", "pighouse_gothic", "researchlab2_gothic", "researchlab_gothic", "wardrobe_gothic", "lantern_gothic", "bundle_gothic", "sculptingtable_gothic", },
 		release_group = 129,
+	},
+	pack_gothic_items2 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		steam_dlc_id = 2170671,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_gothic_items2.xml",
+		display_tex = "gothic_items2.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "critterlab_gothic", "wormhole_gothic", "gravestone_gothic", "gravestone_gothic2", "gravestone_gothic3", "gravestone_gothic4", "cave_entrance_open_gothic", "resurrectionstone_gothic", "sanityrock_gothic", },
+		output_items = {  "critterlab_gothic", "wormhole_gothic", "gravestone_gothic", "gravestone_gothic2", "gravestone_gothic3", "gravestone_gothic4", "cave_entrance_open_gothic", "resurrectionstone_gothic", "sanityrock_gothic", },
+		release_group = 136,
 	},
 	pack_hallowed_all =
 	{
@@ -2559,6 +2619,138 @@ MISC_ITEMS =
 		display_items = {  "wilson_nature", "wolfgang_nature", "wurt_rose", "wormwood_shadow", "warly_chef", "tophat_chef", },
 		output_items = {  "wilson_nature", "wilson_beard_nature", "body_wilson_nature", "legs_wilson_nature", "wolfgang_nature", "body_wolfgang_nature", "feet_wolfgang_nature", "wurt_rose", "body_wurt_rose", "hand_wurt_rose", "legs_wurt_rose", "wormwood_shadow", "body_wormwood_shadow", "hand_wormwood_shadow", "legs_wormwood_shadow", "tophat_chef", "warly_chef", "body_warly_chef", "feet_warly_chef", },
 		release_group = 101,
+	},
+	pack_lunar_all =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		steam_dlc_id = 2132800,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_lunar.xml",
+		display_tex = "lunar.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "walter_lunar", "wanda_lunar", "waxwell_lunar", "webber_lunar", "wendy_lunar", "wickerbottom_lunar", "wilson_lunar", "wormwood_lunar", "wx78_lunar", },
+		output_items = {  "walter_lunar", "walterhat_lunar", "body_walter_lunar", "legs_walter_lunar", "wanda_lunar", "body_wanda_lunar", "feet_wanda_lunar", "hand_wanda_lunar", "waxwell_lunar", "body_waxwell_lunar", "feet_waxwell_lunar", "hand_waxwell_lunar", "webber_lunar", "webber_beard_lunar", "body_webber_lunar", "feet_webber_lunar", "hand_webber_lunar", "legs_webber_lunar", "wendy_lunar", "body_wendy_lunar", "feet_wendy_lunar", "abigail_lunar", "wickerbottom_lunar", "body_wickerbottom_lunar", "feet_wickerbottom_lunar", "hand_wickerbottom_lunar", "wilson_lunar", "wilson_beard_lunar", "body_wilson_lunar", "hand_wilson_lunar", "legs_wilson_lunar", "wormwood_lunar", "body_wormwood_lunar", "hand_wormwood_lunar", "legs_wormwood_lunar", "wx78_lunar", "body_wx78_lunar", "hand_wx78_lunar", "legs_wx78_lunar", "feet_wx78_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_walter =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 117,
+		build_name_override = "walter_lunar",
+		display_atlas = "bigportraits/walter_lunar.xml",
+		display_tex = "walter_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "walter_lunar", "walterhat_lunar", "body_walter_lunar", "legs_walter_lunar", },
+		output_items = {  "walter_lunar", "walterhat_lunar", "body_walter_lunar", "legs_walter_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_wanda =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 118,
+		build_name_override = "wanda_lunar",
+		display_atlas = "bigportraits/wanda_lunar.xml",
+		display_tex = "wanda_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wanda_lunar", "body_wanda_lunar", "feet_wanda_lunar", "hand_wanda_lunar", },
+		output_items = {  "wanda_lunar", "body_wanda_lunar", "feet_wanda_lunar", "hand_wanda_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_waxwell =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_lunar",
+		display_atlas = "bigportraits/waxwell_lunar.xml",
+		display_tex = "waxwell_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_lunar", "body_waxwell_lunar", "feet_waxwell_lunar", "hand_waxwell_lunar", },
+		output_items = {  "waxwell_lunar", "body_waxwell_lunar", "feet_waxwell_lunar", "hand_waxwell_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_webber =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 111,
+		build_name_override = "webber_lunar",
+		display_atlas = "bigportraits/webber_lunar.xml",
+		display_tex = "webber_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "webber_lunar", "webber_beard_lunar", "body_webber_lunar", "feet_webber_lunar", "hand_webber_lunar", "legs_webber_lunar", },
+		output_items = {  "webber_lunar", "webber_beard_lunar", "body_webber_lunar", "feet_webber_lunar", "hand_webber_lunar", "legs_webber_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_wendy =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 104,
+		build_name_override = "wendy_lunar",
+		display_atlas = "bigportraits/wendy_lunar.xml",
+		display_tex = "wendy_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wendy_lunar", "body_wendy_lunar", "feet_wendy_lunar", "abigail_lunar", },
+		output_items = {  "wendy_lunar", "body_wendy_lunar", "feet_wendy_lunar", "abigail_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_wickerbottom =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 106,
+		build_name_override = "wickerbottom_lunar",
+		display_atlas = "bigportraits/wickerbottom_lunar.xml",
+		display_tex = "wickerbottom_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wickerbottom_lunar", "body_wickerbottom_lunar", "feet_wickerbottom_lunar", "hand_wickerbottom_lunar", },
+		output_items = {  "wickerbottom_lunar", "body_wickerbottom_lunar", "feet_wickerbottom_lunar", "hand_wickerbottom_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_wilson =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 101,
+		build_name_override = "wilson_lunar",
+		display_atlas = "bigportraits/wilson_lunar.xml",
+		display_tex = "wilson_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wilson_lunar", "wilson_beard_lunar", "body_wilson_lunar", "hand_wilson_lunar", "legs_wilson_lunar", },
+		output_items = {  "wilson_lunar", "wilson_beard_lunar", "body_wilson_lunar", "hand_wilson_lunar", "legs_wilson_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_wormwood =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 114,
+		build_name_override = "wormwood_lunar",
+		display_atlas = "bigportraits/wormwood_lunar.xml",
+		display_tex = "wormwood_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wormwood_lunar", "body_wormwood_lunar", "hand_wormwood_lunar", "legs_wormwood_lunar", },
+		output_items = {  "wormwood_lunar", "body_wormwood_lunar", "hand_wormwood_lunar", "legs_wormwood_lunar", },
+		release_group = 136,
+	},
+	pack_lunar_wx78 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 105,
+		build_name_override = "wx78_lunar",
+		display_atlas = "bigportraits/wx78_lunar.xml",
+		display_tex = "wx78_lunar_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wx78_lunar", "body_wx78_lunar", "hand_wx78_lunar", "legs_wx78_lunar", "feet_wx78_lunar", },
+		output_items = {  "wx78_lunar", "body_wx78_lunar", "hand_wx78_lunar", "legs_wx78_lunar", "feet_wx78_lunar", },
+		release_group = 136,
 	},
 	pack_magma_all =
 	{
@@ -5761,6 +5953,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 43,
 	},
+	playerportrait_bg_panflutean =
+	{
+		type = "playerportrait",
+		skin_tags = { "ARTNOUVEAU", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 136,
+	},
 	playerportrait_bg_penguins =
 	{
 		type = "playerportrait",
@@ -6937,6 +7136,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 36,
 	},
+	profileflair_panflute_an =
+	{
+		type = "profileflair",
+		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 136,
+	},
 	profileflair_pengull =
 	{
 		type = "profileflair",
@@ -7906,6 +8112,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 102,
 	},
+	webber_beard_lunar =
+	{
+		type = "beard",
+		skin_tags = { "LUNAR", "WEBBER_BEARD", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 136,
+	},
 	webber_beard_magma =
 	{
 		type = "beard",
@@ -7993,6 +8207,14 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 97,
+	},
+	wilson_beard_lunar =
+	{
+		type = "beard",
+		skin_tags = { "LUNAR", "WILSON_BEARD", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 136,
 	},
 	wilson_beard_madscience =
 	{

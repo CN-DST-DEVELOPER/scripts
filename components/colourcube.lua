@@ -106,6 +106,7 @@ local _remainingblendtime = 0
 local _totalblendtime = 0
 local _fxtime = 0
 local _fxspeed = 0
+local _distortion_modifier = Profile:GetDistortionModifier()
 local _lunacyintensity = 0
 local _lunacyspeed = 0
 local _activatedplayer = nil --cached for activation/deactivation only, NOT for logic use
@@ -250,12 +251,12 @@ local function OnSanityDelta(player, data)
     elseif not is_lunacy and _lunacyintensity == 0 then
 		PostProcessor:SetColourCubeLerp(sanity_cc_idx, sanity_distortion)
 		PostProcessor:SetColourCubeLerp(lunacy_cc_idx, 0)
-		PostProcessor:SetDistortionFactor(1 - sanity_distortion)
+		PostProcessor:SetDistortionFactor(1 - sanity_distortion * _distortion_modifier)
         PostProcessor:SetOverlayBlend(0)
         PostProcessor:SetLunacyEnabled(false)
     end
 
-	_fxspeed = easing.outQuad(1 - sanity_percent, 0, .2, 1)
+	_fxspeed = easing.outQuad(1 - sanity_percent, 0, .2, 1) * _distortion_modifier
 end
 
 local function OnOverrideCCTable(player, cctable)
@@ -464,6 +465,13 @@ end
 
 function self:LongUpdate(dt)
     self:OnUpdate(_remainingblendtime)
+end
+
+function self:SetDistortionModifier(modifier)
+    _distortion_modifier = modifier
+    if _activatedplayer and _activatedplayer.replica.sanity then
+        OnSanityDelta(_activatedplayer, { newpercent = _activatedplayer.replica.sanity:GetPercent(), sanitymode = _activatedplayer.replica.sanity:GetSanityMode() })
+    end
 end
 
 --------------------------------------------------------------------------

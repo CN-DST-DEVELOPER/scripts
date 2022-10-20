@@ -380,6 +380,12 @@ local ExampleLayout =
 		["Maxwell6"] = StaticLayout.Get("map/static_layouts/maxwell_6"),
 		["Maxwell7"] = StaticLayout.Get("map/static_layouts/maxwell_7"),
 
+----------------------------------------------------------------------------------
+-- Charlie's work
+----------------------------------------------------------------------------------
+		["Charlie1"] = StaticLayout.Get("map/static_layouts/charlie_1"),
+		["Charlie2"] = StaticLayout.Get("map/static_layouts/charlie_2"),
+		
 --------------------------------------------------------------------------------
 -- Blockers
 --------------------------------------------------------------------------------

@@ -33,9 +33,9 @@ end
 
 local function temperaturetick(inst, sleeper)
     if sleeper.components.temperature ~= nil then
-        if inst.sleep_temp_min ~= nil and sleeper.components.temperature:GetCurrent() < inst.sleep_temp_min then
+        if inst.components.sleepingbag.sleep_temp_min ~= nil and sleeper.components.temperature:GetCurrent() < inst.components.sleepingbag.sleep_temp_min then
             sleeper.components.temperature:SetTemperature(sleeper.components.temperature:GetCurrent() + TUNING.SLEEP_TEMP_PER_TICK)
-        elseif inst.sleep_temp_max ~= nil and sleeper.components.temperature:GetCurrent() > inst.sleep_temp_max then
+        elseif inst.components.sleepingbag.sleep_temp_max ~= nil and sleeper.components.temperature:GetCurrent() > inst.components.sleepingbag.sleep_temp_max then
             sleeper.components.temperature:SetTemperature(sleeper.components.temperature:GetCurrent() - TUNING.SLEEP_TEMP_PER_TICK)
         end
     end
@@ -74,7 +74,6 @@ local function common_fn(bank, build)
 
     inst:AddComponent("sleepingbag")
     inst.components.sleepingbag.onwake = onwake
-    inst.components.sleepingbag:SetTemperatureTickFn(temperaturetick)
 
 
     MakeHauntableLaunchAndIgnite(inst)
@@ -89,8 +88,8 @@ local function bedroll_straw()
         return inst
     end
 
-    inst.components.sleepingbag.healthsleep = false
-    inst.components.sleepingbag.sanity_tick = TUNING.SLEEP_SANITY_PER_TICK * .67
+	inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 0.5
+    inst.components.sleepingbag.sanity_tick = TUNING.SLEEP_SANITY_PER_TICK * 2/3
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
@@ -109,11 +108,14 @@ local function bedroll_furry()
 
     inst:AddComponent("finiteuses")
     inst.components.finiteuses:SetConsumption(ACTIONS.SLEEPIN, 1)
-    inst.components.finiteuses:SetMaxUses(3)
-    inst.components.finiteuses:SetUses(3)
+    inst.components.finiteuses:SetMaxUses(TUNING.BEDROLL_FURRY_USES)
+    inst.components.finiteuses:SetUses(TUNING.BEDROLL_FURRY_USES)
 
     inst.components.sleepingbag.sleep_temp_min = TUNING.SLEEP_TARGET_TEMP_BEDROLL_FURRY
-    inst.components.sleepingbag.sleep_temp_max = TUNING.SLEEP_TARGET_TEMP_BEDROLL_FURRY * 1.5
+    inst.components.sleepingbag.sleep_temp_max = TUNING.SLEEP_TARGET_TEMP_BEDROLL_FURRY_MAX
+	inst.components.sleepingbag.ambient_temp = TUNING.SLEEP_AMBIENT_TEMP_BEDROLL_FURRY
+    inst.components.sleepingbag:SetTemperatureTickFn(temperaturetick)
+
     inst.onuse = onuse_furry
 
     return inst

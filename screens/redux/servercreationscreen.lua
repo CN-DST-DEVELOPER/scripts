@@ -14,6 +14,7 @@ local Widget = require "widgets/widget"
 local Text = require "widgets/text"
 
 local KitcoonPuppet = require "widgets/kitcoonpuppet"
+local Levels = require("map/levels")
 
 require("constants")
 require("tuning")
@@ -119,6 +120,17 @@ function ServerCreationScreen:UpdatePresetMode(mode)
     for i, tab in ipairs(self.world_tabs) do
         tab:SetPresetMode(mode)
     end
+end
+
+function ServerCreationScreen:OnNewGamePresetPicked(preset_id)
+	self.world_tabs[1]:OnCombinedPresetButton(preset_id)
+end
+
+function ServerCreationScreen:UpdatePlaystyle(settings_overrides)
+	local playstyle = Levels.CalcPlaystyleForSettings(settings_overrides) --self.world_tabs[1].settings_widget:CollectOptions()
+
+	self.server_settings_tab:SetPlaystyle(playstyle)
+	self.world_tabs[1]:RefreshPlaystyleIndicator(playstyle)
 end
 
 function ServerCreationScreen:GetContentHeight()
@@ -323,7 +335,6 @@ function ServerCreationScreen:Create(warnedOffline, warnedDisabledMods, warnedOu
         cluster_info.settings.NETWORK.cluster_password       = serverdata.password
         cluster_info.settings.NETWORK.cluster_description    = serverdata.description
         cluster_info.settings.NETWORK.lan_only_cluster       = tostring(serverdata.privacy_type == PRIVACY_TYPE.LOCAL)
-        cluster_info.settings.NETWORK.cluster_intention      = serverdata.intention
         cluster_info.settings.NETWORK.offline_cluster        = tostring(not serverdata.online_mode)
         cluster_info.settings.NETWORK.cluster_language       = LOC.GetLocaleCode()
 
@@ -385,6 +396,7 @@ function ServerCreationScreen:Create(warnedOffline, warnedDisabledMods, warnedOu
                     ShardSaveGameIndex.slot_cache[self.save_slot] = nil
                     assert(ShardSaveGameIndex:GetShardIndex(self.save_slot, "Master"), "failed to save shardindex.")
 
+					TheNet:SetServerPlaystyle(serverdata.playstyle or PLAYSTYLE_DEFAULT)
                     TheNet:SetServerTags(BuildTagsStringHosting(self, worldoptions))
                     DoLoadingPortal(function()
                         StartNextInstance({ reset_action = RESET_ACTION.LOAD_SLOT, save_slot = self.save_slot })
@@ -552,10 +564,6 @@ function ServerCreationScreen:ValidateSettings()
     self.last_focus = TheFrontEnd:GetFocusWidget()
     if not self.server_settings_tab:VerifyValidNewHostType() then
         TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.SERVERCREATIONSCREEN.INVALIDNEWHOST_TITLE, STRINGS.UI.SERVERCREATIONSCREEN.INVALIDNEWHOST_BODY,
-                    {{text=STRINGS.UI.CUSTOMIZATIONSCREEN.OKAY, cb = function() TheFrontEnd:PopScreen() self:SetTab("settings") end}}))
-        return false
-    elseif not self.server_settings_tab:VerifyValidServerIntention() then
-        TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.SERVERCREATIONSCREEN.INVALIDINTENTIONSETTINGS_TITLE, STRINGS.UI.SERVERCREATIONSCREEN.INVALIDINTENTIONSETTINGS_BODY,
                     {{text=STRINGS.UI.CUSTOMIZATIONSCREEN.OKAY, cb = function() TheFrontEnd:PopScreen() self:SetTab("settings") end}}))
         return false
     elseif not self.server_settings_tab:VerifyValidServerName() then

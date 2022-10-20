@@ -22,7 +22,7 @@ AddRoom("BGChessRocky", {
 AddRoom("BGRocky", {
 					colour={r=.66,g=.66,b=.66,a=.50},
 					value = WORLD_TILES.ROCKY,
-					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
+					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2", "CharlieStage_Spawner"},
 					contents =  {
 					                distributepercent = .1,
 					                distributeprefabs=
@@ -47,6 +47,7 @@ AddRoom("Rocky", {
 										meteorspawner = function() return math.random(1,2) end,
 										rock_moon = function() return math.random(1,2) - 1 end,
 										burntground_faded = function() return math.random(3,5) end,
+										tallbirdnest = 1,
 									},
 					                distributepercent = .1,
 					                distributeprefabs=

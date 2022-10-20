@@ -217,6 +217,7 @@ local function fn()
     UpdateBookAesthetics(inst, 0)
 
     inst:AddTag("structure")
+    inst:AddTag("giftmachine")
 
     --prototyper (from prototyper component) added to pristine state for optimization
     inst:AddTag("prototyper")
@@ -268,6 +269,8 @@ local function fn()
 
     inst:ListenForEvent("itemget", ItemGet)
     inst:ListenForEvent("itemlose", ItemLose)
+
+    inst:ListenForEvent("ms_giftopened", onactivate)
 
     return inst
 end

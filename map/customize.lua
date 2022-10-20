@@ -196,6 +196,47 @@ local dropeverythingondespawn_descriptions = {
 	{ text = STRINGS.UI.SANDBOXMENU.EVERYTHING, data = "always" },
 }
 
+local spawnmode_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.PORTAL, data = "fixed" },
+	{ text = STRINGS.UI.SANDBOXMENU.RANDOM, data = "scatter" },
+}
+
+local enableddisabled_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.DISABLED, data = "none" },
+	{ text = STRINGS.UI.SANDBOXMENU.ENABLED, data = "always" },
+}
+
+local ghostenabled_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.RESPAWN, data = "none" },
+	{ text = STRINGS.UI.SANDBOXMENU.BECOMEGHOST, data = "always" },
+}
+
+local resetime_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.DISABLED, data = "none" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDESLOW, data = "slow" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEDEFAULT, data = "default" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEFAST, data = "fast" },
+	{ text = STRINGS.UI.SANDBOXMENU.INSTANT, data = "always" },
+}
+
+local nonlethal_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.NONLETHAL, data = "nonlethal" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEDEFAULT, data = "default" },
+}
+
+local darknessdamage_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDENEVER, data = "never" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEUNCOMMON, data = "rare" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEDEFAULT, data = "default" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEOFTEN, data = "often" },
+}
+
+local lessdamagetaken_descriptions = {	-- Note: The data values should be named better but it's not worth retrofitting.
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEUNCOMMON, data = "always" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEDEFAULT, data = "none" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEOFTEN, data = "more" },
+}
+
 local descriptions = {
 	frequency_descriptions = frequency_descriptions,
 	worldgen_frequency_descriptions = worldgen_frequency_descriptions,
@@ -218,6 +259,11 @@ local descriptions = {
 	autodetect = autodetect,
 	dropeverythingondespawn_descriptions = dropeverythingondespawn_descriptions,
 	atrium_descriptions = atrium_descriptions,
+	spawnmode_descriptions = spawnmode_descriptions,
+	enableddisabled_descriptions = enableddisabled_descriptions,
+	resetime_descriptions = resetime_descriptions,
+	nonlethal_descriptions = nonlethal_descriptions,
+	darknessdamage_descriptions = darknessdamage_descriptions,
 }
 
 local WORLDGEN_GROUP = {
@@ -329,6 +375,7 @@ local WORLDGEN_GROUP = {
 			["prefabswaps_start"] = {value = "default", image = "starting_variety.tex", options_remap = {img = "blank_grassy.tex", atlas = "images/customisation.xml"}, desc = starting_swaps_descriptions, order = 20, world={"forest", "cave"}},
 			["moon_fissure"] = {value = "default", image = "moon_fissure.tex", desc = worldgen_frequency_descriptions, world = {"forest"}},
 			["terrariumchest"] = {value = "default", image = "terrarium.tex", desc = yesno_descriptions, world={"forest"}},
+			["stageplays"] = {value = "default", image = "stageplays.tex", desc = yesno_descriptions, world={"forest"}},
 		}
 	},
 	["global"] = {
@@ -465,6 +512,8 @@ local WORLDSETTINGS_GROUP = {
 			["lightflier_flower_regrowth"] = {value = "default", image = "lightflier_flower.tex", world={"cave"}},
 			["mushtree_regrowth"] = {value = "default", image = "mushtree.tex", world={"cave"}},
 			["mushtree_moon_regrowth"] = {value = "default", image = "mushtree_moon.tex", world={"cave"}},
+
+			["basicresource_regrowth"] = {value = "none", image = "basicresource_regrowth.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true},
 		}
 	},
     ["portal_resources"] = {
@@ -518,8 +567,13 @@ local WORLDSETTINGS_GROUP = {
 			["seasonalstartingitems"] = {value = "default", image = "seasonalstartingitems.tex", desc = yesno_descriptions, order = 2, masteroption = true, master_controlled = true},
 			["spawnprotection"] = {value = "default", image = "spawnprotection.tex", desc = autodetect, order = 3, masteroption = true, master_controlled = true},
 			["dropeverythingondespawn"] = {value = "default", image = "dropeverythingondespawn.tex", desc = dropeverythingondespawn_descriptions, order = 4, masteroption = true, master_controlled = true},
-			["shadowcreatures"] = {value = "default", image = "shadowcreatures.tex", desc = frequency_descriptions, order = 5, masteroption = true, master_controlled = true},
-			["brightmarecreatures"] = {value = "default", image = "brightmarecreatures.tex", desc = frequency_descriptions, order = 5, masteroption = true, master_controlled = true},
+			["healthpenalty"] = {value = "always", image = "healthpenalty.tex", desc = enableddisabled_descriptions, order = 5, masteroption = true, master_controlled = true},
+			["lessdamagetaken"] = {value = "none", image = "lessdamagetaken.tex", desc = lessdamagetaken_descriptions, order = 6, masteroption = true, master_controlled = true},			-- Note: This should be named "playerdamagetaken" but it's not worth retrofitting
+			["temperaturedamage"] = {value = "default", image = "temperaturedamage.tex", desc = nonlethal_descriptions, order = 7, masteroption = true, master_controlled = true},
+			["hunger"] = {value = "default", image = "hunger.tex", desc = nonlethal_descriptions, order = 8, masteroption = true, master_controlled = true},
+			["darkness"] = {value = "default", image = "darkness.tex", desc = nonlethal_descriptions, order = 9, masteroption = true, master_controlled = true},
+			["shadowcreatures"] = {value = "default", image = "shadowcreatures.tex", desc = frequency_descriptions, order = 10, masteroption = true, master_controlled = true},
+			["brightmarecreatures"] = {value = "default", image = "brightmarecreatures.tex", desc = frequency_descriptions, order = 11, masteroption = true, master_controlled = true},
 		}
 	},
 	["events"] = {
@@ -551,8 +605,14 @@ local WORLDSETTINGS_GROUP = {
 			["spring"] = {value = "default", image = "spring.tex", options_remap = {img = "blank_season_yellow.tex", atlas = "images/customisation.xml"}, desc = season_length_descriptions, master_controlled = true, order = 4},
 			["summer"] = {value = "default", image = "summer.tex", options_remap = {img = "blank_season_yellow.tex", atlas = "images/customisation.xml"}, desc = season_length_descriptions, master_controlled = true, order = 5},
 			["day"] = {value = "default", image = "day.tex", desc = day_descriptions, masteroption = true, master_controlled = true, order = 6},
-			["beefaloheat"] = {value = "default", image = "beefaloheat.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, order = 7},
-			["krampus"] = {value = "default", image = "krampus.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, order = 8},
+
+			["spawnmode"] = {value = "fixed", image = "spawnmode.tex", desc = spawnmode_descriptions, masteroption = true, master_controlled = true, order = 7},
+			["ghostenabled"] = {value = "always", image = "ghostenabled.tex", desc = ghostenabled_descriptions, masteroption = true, master_controlled = true, order = 8},
+			["portalresurection"] = {value = "none", image = "portalresurection.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, order = 9},
+			["ghostsanitydrain"] = {value = "always", image = "ghostsanitydrain.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, order = 10},
+			["resettime"] = {value = "default", image = "resettime.tex", desc = resetime_descriptions, masteroption = true, master_controlled = true, order = 11},
+			["beefaloheat"] = {value = "default", image = "beefaloheat.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, order = 12},
+			["krampus"] = {value = "default", image = "krampus.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, order = 13},
 		}
 	},
 }

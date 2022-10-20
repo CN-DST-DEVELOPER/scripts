@@ -153,6 +153,7 @@ Brain = Class(function(self)
     self.events = {}
     self.thinkperiod = nil
     self.lastthinktime = nil
+    self.paused = false
 end)
 
 
@@ -185,6 +186,10 @@ function Brain:GetSleepTime()
 end
 
 function Brain:Start()
+    if self.paused then
+        return
+    end
+
     if self.OnStart then
         self:OnStart()
     end
@@ -215,6 +220,10 @@ end
 
 
 function Brain:Stop()
+    if self.paused then
+        return
+    end
+
     if self.OnStop then
         self:OnStop()
     end
@@ -231,4 +240,14 @@ function Brain:PushEvent(event, data)
     if handler then
         handler(data)
     end
+end
+
+function Brain:Pause()
+	self.paused = true
+	BrainManager:RemoveInstance(self)
+end
+
+function Brain:Resume()
+    self.paused = false
+	BrainManager:AddInstance(self)
 end

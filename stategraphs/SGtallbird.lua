@@ -21,6 +21,11 @@ local events=
 			end
         end
     end),
+    EventHandler("makenewnest", function(inst)
+        if not inst.sg:HasStateTag("busy") then
+            inst.sg:GoToState("makenest")
+        end
+    end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
@@ -180,6 +185,38 @@ local states=
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
         },
 
+    },
+
+
+    State{
+        name = "makenest",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("taunt")
+            inst.SoundEmitter:PlaySound("dontstarve/creatures/tallbird/chirp")
+        end,
+
+        timeline=
+        {
+            TimeEvent(6*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/tallbird/scratch_ground") end),
+            TimeEvent(30*FRAMES, function(inst)
+				inst.SoundEmitter:PlaySound("dontstarve/creatures/tallbird/scratch_ground")
+				inst.sg.statemem.made_new_home = inst:MakeNewHome()
+			end),
+        },
+
+        events=
+        {
+            EventHandler("animover", function(inst) 
+				if inst.sg.statemem.made_new_home and inst.components.sleeper then
+					inst.components.sleeper:GoToSleep()
+				else
+					inst.sg:GoToState("idle")
+	            end
+			end),
+        },
     },
 
 

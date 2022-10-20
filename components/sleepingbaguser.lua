@@ -38,7 +38,6 @@ local function WakeUpTest(inst, phase)
 end
 
 function SleepingBagUser:DoSleep(bed)
-
     self.bed = bed
 
     -- check if we're in an invalid period (i.e. daytime). if so: wakeup

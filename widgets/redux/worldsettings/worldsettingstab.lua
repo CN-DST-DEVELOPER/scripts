@@ -353,6 +353,10 @@ function WorldSettingsTab:OnCombinedPresetButton(presetid)
     self.worldgen_widget:OnPresetButton(worldgen_presetid)
 end
 
+function WorldSettingsTab:RefreshPlaystyleIndicator(playstyle)
+	self.settings_widget:RefreshPlaystyleIndicator(playstyle)
+end
+
 function WorldSettingsTab:GetNumberOfCombinedTweaks()
     return self.settings_widget:GetNumberOfTweaks() + self.worldgen_widget:GetNumberOfTweaks()
 end

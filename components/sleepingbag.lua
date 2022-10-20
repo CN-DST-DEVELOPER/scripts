@@ -35,6 +35,7 @@ local SleepingBag = Class(function(self, inst)
     self.sleep_temp_min = nil
     self.sleep_temp_max = nil
 
+	self.ambient_temp = nil
     self.temperaturetickfn = nil
 
     self.sleep_phase = "night"

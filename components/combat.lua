@@ -43,8 +43,14 @@ local Combat = Class(function(self, inst)
     --self.noimpactsound = false
     --
 
-	-- these are a temporary aggro system for the sling shot that may be replaced in the future. Modders: This variable may be removed one day
-	-- self.temp_disable_aggro
+    -- NOTES(JBK): Aggro system for combat to help make things untargetable temporarily.
+    -- None of this is saved in a restart and should be instantiated as things go.
+    -- shouldaggrofn returns if the owner of this combat component should target the passed in target.
+    -- shouldavoidaggro is a table that holds entity references as keys in it for temporary combat no target.
+    -- forbiddenaggrotags is an ipairs table that holds tag strings as values in it to avoid targeting.
+    self.shouldaggrofn = nil
+    self.shouldavoidaggro = nil
+    self.forbiddenaggrotags = nil
 	self.lastwasattackedbytargettime = 0
 
 	self.externaldamagemultipliers = SourceModifierList(self.inst) -- damage dealt to others multiplier
@@ -146,7 +152,8 @@ end
 
 local DEFAULT_SHARE_TARGET_MUST_TAGS = { "_combat" }
 function Combat:ShareTarget(target, range, fn, maxnum, musttags)
-    if target and target._doesnotdrawaggro then
+    --NOTE: true param ignores my own forbidden tags when sharing someone else's aggro
+    if not self:ShouldAggro(target, true) then
         return
     end
     if maxnum <= 0 then
@@ -341,8 +348,70 @@ function Combat:EngageTarget(target)
     end
 end
 
+function Combat:SetShouldAggroFn(fn)
+    self.shouldaggrofn = fn
+end
+
+function Combat:SetShouldAvoidAggro(target)
+    self.shouldavoidaggro = self.shouldavoidaggro or {}
+    self.shouldavoidaggro[target] = (self.shouldavoidaggro[target] or 0) + 1
+end
+
+function Combat:RemoveShouldAvoidAggro(target)
+    if self.shouldavoidaggro == nil then
+        return
+    end
+    self.shouldavoidaggro[target] = (self.shouldavoidaggro[target] or 1) - 1
+    if self.shouldavoidaggro[target] == 0 then
+        self.shouldavoidaggro[target] = nil
+    end
+    if next(self.shouldavoidaggro) == nil then
+        self.shouldavoidaggro = nil
+    end
+end
+
+function Combat:ShouldAggro(target, ignore_forbidden)
+    if target ~= nil and
+        (self.shouldaggrofn == nil or self.shouldaggrofn(self.inst, target)) and
+        (self.shouldavoidaggro == nil or not self.shouldavoidaggro[target]) and
+        (target.components.combat == nil or target.components.combat.shouldavoidaggrofn == nil or target.components.combat.shouldavoidaggrofn(self.inst, target))
+        then
+        if not ignore_forbidden and self.forbiddenaggrotags ~= nil then
+            for _, tag in ipairs(self.forbiddenaggrotags) do
+                if target:HasTag(tag) then
+                    return false
+                end
+            end
+        end
+        return true
+    end
+    return false
+end
+
+function Combat:AddNoAggroTag(tag)
+    self.forbiddenaggrotags = self.forbiddenaggrotags or {}
+    table.insert(self.forbiddenaggrotags, tag)
+end
+
+function Combat:RemoveNoAggroTag(tag)
+    if self.forbiddenaggrotags == nil then
+        return
+    end
+    table.removearrayvalue(self.forbiddenaggrotags, tag)
+    if self.forbiddenaggrotags[1] == nil then
+        self.forbiddenaggrotags = nil
+    end
+end
+
+function Combat:SetNoAggroTags(tags) -- Wants a table in an ipairs table format.
+    self.forbiddenaggrotags = tags
+end
+
 function Combat:SetTarget(target)
-    if not self.temp_disable_aggro and target ~= self.target and (not target or self:IsValidTarget(target)) and not (target and target.sg and target.sg:HasStateTag("hiding") and target:HasTag("player")) then
+    if target ~= self.target and
+        (target == nil or (self:IsValidTarget(target) and self:ShouldAggro(target))) and
+        not (target and target.sg and target.sg:HasStateTag("hiding") and target:HasTag("player"))
+        then
         self:DropTarget(target ~= nil)
         self:EngageTarget(target)
     end
@@ -887,7 +956,7 @@ function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult, instra
     end
     if instpos then
         self.temppos = instpos
-    end      
+    end
     if targ == nil then
         targ = self.target
     end

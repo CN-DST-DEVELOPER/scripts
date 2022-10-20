@@ -2,7 +2,7 @@
 AddRoom("BGSavanna", {
 					colour={r=.8,g=.8,b=.2,a=.50},
 					value = WORLD_TILES.SAVANNA,
-					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2"},
+					tags = {"ExitPiece", "Chester_Eyebone", "Astral_2", "CharlieStage_Spawner",},
 					contents =  {
 					                distributepercent = .1,
 					                distributeprefabs=

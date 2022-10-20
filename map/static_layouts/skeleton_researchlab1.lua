@@ -166,7 +166,7 @@ return {
         },
         {
           name = "",
-          type = "farmplot",
+          type = "meatrack",
           shape = "rectangle",
           x = 182,
           y = 239,
@@ -177,7 +177,7 @@ return {
         },
         {
           name = "",
-          type = "farmplot",
+          type = "meatrack",
           shape = "rectangle",
           x = 225,
           y = 187,

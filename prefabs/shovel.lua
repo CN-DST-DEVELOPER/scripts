@@ -89,7 +89,8 @@ local function common_fn(bank, build)
     return inst
 end
 
-local function onequipgold(inst, owner)local skin_build = inst:GetSkinBuild()
+local function onequipgold(inst, owner)
+	local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
         owner:PushEvent("equipskinneditem", inst:GetSkinName())
         owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_goldenshovel", inst.GUID, "swap_goldenshovel")

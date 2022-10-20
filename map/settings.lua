@@ -12,6 +12,8 @@ SettingsPreset = Class(function(self, data)
 
     self.version = data.version or 2
 	self.version = math.max(self.version, 2) --minimum version is 2 because serverlistingscreen.
+
+	self.playstyle = data.playstyle
 end)
 
 function SettingsPreset:SetID(id)

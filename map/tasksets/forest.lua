@@ -41,7 +41,9 @@ AddTaskSet("default", {
 			"sculpture_rook",
 			"sculpture_bishop",
 			"sculpture_knight",
-            "terrariumchest",
+			"terrariumchest",
+			"charlie_stage_post",
+			"statueharp_hedgespawner",
 		},
 		set_pieces = {
 			["ResurrectionStone"] = { count = 2, tasks={"Make a pick", "Dig that rock", "Great Plains", "Squeltch", "Beeeees!", "Speak to the king", "Forest hunters", "Badlands" } },

@@ -95,7 +95,7 @@ CommonStates.AddWalkStates(states,
                 inst.SoundEmitter:PlaySound(inst.soundpath .. "bounce")
                 inst.components.locomotor:WalkForward()
             end ),
-            TimeEvent(20*FRAMES, function(inst)
+            TimeEvent(19*FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound(inst.soundpath .. "land")
 		        inst.SoundEmitter:PlaySound(inst.effortsound)
                 inst.Physics:Stop()

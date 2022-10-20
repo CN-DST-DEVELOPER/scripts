@@ -58,7 +58,6 @@ local assets =
     Asset("ANIM", "anim/woby_big_build.zip"),
 
     Asset("ANIM", "anim/ui_woby_3x3.zip"),
-    Asset("ANIM", "anim/ui_woby_3x4.zip"),
 }
 
 local prefabs = {}

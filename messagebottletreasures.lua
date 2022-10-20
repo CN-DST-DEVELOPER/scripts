@@ -69,6 +69,7 @@ local treasure_templates =
 					papyrus = {4, 8},
 					featherpencil = {2, 4},
 					spoiled_fish = {3, 5},
+					cookingrecipecard = 1,
 				},
 				randomly_selected_loot =
 				{
@@ -88,6 +89,7 @@ local treasure_templates =
 					oceanfishingbobber_robin_winter = {2, 5},
 					oceanfishinglure_spoon_green = {1, 4},
 					oceanfishinglure_hermit_heavy = {0, 2},
+					cookingrecipecard = 1,
 				},
 				randomly_selected_loot =
 				{
