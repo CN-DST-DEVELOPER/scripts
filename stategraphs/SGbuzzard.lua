@@ -406,10 +406,7 @@ CommonStates.AddCombatStates(states,
 {
     attacktimeline =
     {
-        TimeEvent(1*FRAMES, function(inst) print(" START OF ATTACK ")
-        end),
         TimeEvent(15*FRAMES, function(inst)
-            print("ATTACK",inst.sg.statemem.target.prefab)
             inst.components.combat:DoAttack(inst.sg.statemem.target)
             inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/attack")
         end),

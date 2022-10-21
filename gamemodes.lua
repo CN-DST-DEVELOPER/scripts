@@ -167,6 +167,10 @@ local function mode_cmp(a, b)
 end
 
 local function GameModeError(game_mode)
+	if game_mode == "wilderness" or game_mode == "endless" then -- wilderness and endless are deprecated game modes. This is here for error handling on dedicated servers.
+		return GAME_MODES.survival
+	end
+
     if not IsInFrontEnd() then
         moderror(string.format("Game mode '%s' not found in GAME_MODES", tostring(game_mode)))
     end

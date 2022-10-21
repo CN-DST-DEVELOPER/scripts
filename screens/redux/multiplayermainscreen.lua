@@ -433,6 +433,7 @@ local function MakeBannerFront(self)
     if IS_BETA then
         local banner_front = Widget("banner_front")
         banner_front:SetPosition(0, 0)
+        banner_front:SetClickable(false)
         local anim = banner_front:AddChild(UIAnim())
 
         MakeDramaBannerFront(self, banner_front, anim)
@@ -446,6 +447,7 @@ local function MakeBannerFront(self)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
         local banner_front = Widget("banner_front")
         banner_front:SetPosition(0, 0)
+        banner_front:SetClickable(false)
         local anim = banner_front:AddChild(UIAnim())
 
         MakeDramaBannerFront(self, banner_front, anim)

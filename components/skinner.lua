@@ -261,7 +261,11 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 
 				if CLOTHING[name].symbol_hides then
 					for _,sym in pairs(CLOTHING[name].symbol_hides) do
-						anim_state:HideSymbol(sym)
+						if sym == "arm_upper_skin" and not allow_arms then
+							--don't hide arm_upper_skin if we're not allowed to show the arms, otherwise we'll be hiding the
+						else
+							anim_state:HideSymbol(sym)
+						end
 					end
 				end
 				if CLOTHING[name].symbol_in_base_hides then
@@ -282,10 +286,6 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 			end
 		end
 		
-		if not allow_arms then
-			anim_state:ShowSymbol("arm_upper_skin") --Sometimes Wolfgang wants to show off his muscles. Make sure we can see them. /flex
-		end
-
 		for _, sym in pairs(monkey_pieces) do
 			anim_state:ShowSymbol(sym)
 			anim_state:OverrideSymbol( sym, "wonkey", sym )
