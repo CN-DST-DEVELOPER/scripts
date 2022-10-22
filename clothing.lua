@@ -7879,10 +7879,11 @@ CLOTHING =
 	{
 		type = "legs",
 		skin_tags = { "LUNAR", "CLOTHING_LEGS", "CLOTHING", },
-		symbol_overrides = { "foot", "leg", "leg_boot", "torso_pelvis", },
+		symbol_overrides = { "foot", "leg", "torso_pelvis", },
 		symbol_hides = { "skirt", },
 		rarity = "Classy",
 		rarity_modifier = "Woven",
+		has_leg_boot = true,
 		release_group = 136,
 	},
 	legs_walter_nature =

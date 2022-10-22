@@ -222,7 +222,7 @@ local function StartSpike(inst, variation)
 
     inst.shadowsize = 0
     inst.shadowtask = inst:DoPeriodicTask(0, UpdateShadow)
-    inst.shadowtask2 = inst:DoPeriodicTask(0, UpdateShadow2, 43.5 * FRAMES)
+    inst.shadowtask2 = inst:DoPeriodicTask(0, UpdateShadow2, 43 * FRAMES)
     inst.lightvalue = 0
     inst.lighttask = inst:DoPeriodicTask(0, UpdateLight)
 end

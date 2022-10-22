@@ -69,17 +69,17 @@ local PresetPopupScreen = Class(Screen, function(self, currentpreset, onconfirmf
         preset_str = STRINGS.UI.CUSTOMIZATIONSCREEN.COMBINEDPRESET
     end
 
-    self.presets = self.root:AddChild(Text(CHATFONT, 35))
-    self.presets:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
-    self.presets:SetHAlign(ANCHOR_MIDDLE)
-    self.presets:SetString(preset_str)
-    self.presets:SetPosition(0, 250)
+    self.presets_label = self.root:AddChild(Text(CHATFONT, 35))
+    self.presets_label:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
+    self.presets_label:SetHAlign(ANCHOR_MIDDLE)
+    self.presets_label:SetString(preset_str)
+    self.presets_label:SetPosition(0, 250)
 
     self.horizontal_line = self.root:AddChild(Image("images/global_redux.xml", "item_divider.tex"))
     self.horizontal_line:SetPosition(0,window_height/2 - 48)
     self.horizontal_line:SetSize(dialog_width, 5)
 
-    self.presets = Levels.GetList(self.levelcategory, self.level_type, self.location, true)
+	self:UpdatePresetList()
 
     self:OnSelectPreset(currentpreset or self.presets[1].data)
 
@@ -330,9 +330,24 @@ function PresetPopupScreen:OnPresetButton(presetinfo)
 end
 
 function PresetPopupScreen:UpdatePresetList()
-    self.presets = Levels.GetList(self.levelcategory, self.level_type, self.location, true)
-    self.scroll_list:SetItemsData(self.presets)
-    self.scroll_list:SetPosition(0 + (self.scroll_list:CanScroll() and -10 or 0), -25)
+	local presets = Levels.GetList(self.levelcategory, self.level_type, self.location, true)
+	self.presets = {}
+	-- adding some validation because some people happen to have corrupt data :(
+	for _, data in ipairs(presets) do
+		if data.data ~= nil then
+			if preset_settingsdata[data.data] == nil then
+				preset_settingsdata[data.data] = Levels.GetDataForSettingsID(data.data)
+			end
+			if preset_settingsdata[data.data] ~= nil then
+				table.insert(self.presets, data)
+			end
+		end
+	end
+
+	if self.scroll_list then
+		self.scroll_list:SetItemsData(self.presets)
+		self.scroll_list:SetPosition(0 + (self.scroll_list:CanScroll() and -10 or 0), -25)
+	end
 end
 
 function PresetPopupScreen:Refresh()

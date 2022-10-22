@@ -224,7 +224,7 @@ local function OnHiveRegenTimer(inst, data)
         if oldhoneylevel ~= newhoneylevel and not inst:IsAsleep() then
             inst.AnimState:PlayAnimation("transition")
             inst.AnimState:PushAnimation("large", false)
-            SetHoneyLevel(inst, newhoneylevel, 10.5 * FRAMES)
+            SetHoneyLevel(inst, newhoneylevel, 10 * FRAMES)
         else
             SetHoneyLevel(inst, newhoneylevel)
         end
