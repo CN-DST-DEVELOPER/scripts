@@ -988,8 +988,8 @@ local function ALittleDrama_NewContent_Retrofitting()
 		end
 		return false
 	end
-	if not RetrofitNewContentPrefab(inst, "charlie_stage_post", 5, 8, is_valid_alittledrama_turf, stage_candidate_nodes)
-			and not RetrofitNewContentPrefab(inst, "charlie_stage_post", 5, 8, nil, stage_candidate_nodes) then
+	if not RetrofitNewContentPrefab(inst, "charlie_stage_post", 10.5, 11, is_valid_alittledrama_turf, stage_candidate_nodes)
+			and not RetrofitNewContentPrefab(inst, "charlie_stage_post", 10.5, 11, nil, stage_candidate_nodes) then
 		print("Retrofitting for A Little Drama: Failed to place a Stage in the world.")
 	end
 
@@ -1007,8 +1007,8 @@ local function ALittleDrama_NewContent_Retrofitting()
 		end
 		return false
 	end
-	if not RetrofitNewContentPrefab(inst, "statueharp_hedgespawner", 2, 4, is_valid_statue_turf, statue_candidate_nodes)
-			and not RetrofitNewContentPrefab(inst, "statueharp_hedgespawner", 2, 4, nil, statue_candidate_nodes) then
+	if not RetrofitNewContentPrefab(inst, "statueharp_hedgespawner", 4, 6, is_valid_statue_turf, statue_candidate_nodes)
+			and not RetrofitNewContentPrefab(inst, "statueharp_hedgespawner", 4, 6, nil, statue_candidate_nodes) then
 		print("Retrofitting for A Little Drama: Failed to place an Overgrown Statue in the world.")
 	end
 end

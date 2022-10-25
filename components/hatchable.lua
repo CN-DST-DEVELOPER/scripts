@@ -117,7 +117,7 @@ function Hatchable:OnUpdate(dt)
     local heatindex = 0
     for _, ent in ipairs(ents) do
         if ent.components.heater ~= nil and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
-            heatindex = heatindex + ent.components.heater:GetHeat(self.inst) -- Cold fires produce negative heat.
+            heatindex = heatindex + (ent.components.heater:GetHeat(self.inst) or 0) -- Cold fires produce negative heat.
         end
     end
 

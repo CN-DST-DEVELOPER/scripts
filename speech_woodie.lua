@@ -1387,7 +1387,7 @@ return{
         MUSHTREE_TALL_WEBBED = "This one needs pruning, at least.",
         SPORE_TALL =
         {
-            GENERIC = "A flying green pinecone!",
+            GENERIC = "A flying blue pinecone!",
             HELD = "One day this might be a tree.",
         },
         SPORE_MEDIUM =

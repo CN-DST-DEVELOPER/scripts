@@ -881,6 +881,10 @@ local function DoInitGame(savedata, profile)
 	end
 	savedata.map.topology.overrides.original = nil
 
+	local Levels = require("map/levels")
+	ShardGameIndex:GetServerData().playstyle = Levels.CalcPlaystyleForSettings(savedata.map.topology.overrides)
+	TheNet:SetServerPlaystyle(ShardGameIndex:GetServerData().playstyle)
+
 	-- remove the LOOP_BLANK_SUB before we do anything else
 	for i = #savedata.map.topology.ids, 1, -1 do
 		local name = savedata.map.topology.ids[i]

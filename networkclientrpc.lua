@@ -1049,6 +1049,7 @@ for k, v in orderedPairs(CLIENT_RPC) do
 end
 
 --these rpc's don't need special verification because server<->server communication is already trusted.
+local WorldSettings_Overrides = require("worldsettings_overrides")
 local SHARD_RPC_HANDLERS =
 {
     ReskinWorldMigrator = function(shardid, migrator, skin_theme, skin_id, sessionid)
@@ -1061,6 +1062,31 @@ local SHARD_RPC_HANDLERS =
                 TheSim:ReskinEntity( v.GUID, v.skinname, skinname, skin_id, nil, sessionid )
             end
         end
+    end,
+
+    SyncWorldSettings = function(shardid, options_string)
+        local success, data = RunInSandboxSafe(options_string)
+		print("[SyncWorldSettings] recieved world settings from master shard.", success)
+        if success then
+            for option, value in pairs(data) do
+				print("[SyncWorldSettings] applying " .. option .. " = " .. value .. " from master shard.")
+
+                if WorldSettings_Overrides.Sync[option] then
+                    WorldSettings_Overrides.Sync[option](value)
+                else
+                    if WorldSettings_Overrides.Pre[option] then
+                        WorldSettings_Overrides.Pre[option](value)
+                    end
+                    if WorldSettings_Overrides.Post[option] then
+                        WorldSettings_Overrides.Post[option](value)
+                    end
+                end
+            end
+        end
+    end,
+
+    ResyncWorldSettings = function(shardid)
+        Shard_SyncWorldSettings(shardid, true)
     end,
 }
 

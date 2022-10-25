@@ -513,7 +513,7 @@ local WORLDSETTINGS_GROUP = {
 			["mushtree_regrowth"] = {value = "default", image = "mushtree.tex", world={"cave"}},
 			["mushtree_moon_regrowth"] = {value = "default", image = "mushtree_moon.tex", world={"cave"}},
 
-			["basicresource_regrowth"] = {value = "none", image = "basicresource_regrowth.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true},
+			["basicresource_regrowth"] = {value = "none", image = "basicresource_regrowth.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, master_sync = true},
 		}
 	},
     ["portal_resources"] = {
@@ -566,14 +566,14 @@ local WORLDSETTINGS_GROUP = {
 			["extrastartingitems"] = {value = "default", image = "extrastartingitems.tex", desc = extrastartingitems_descriptions, order = 1, masteroption = true, master_controlled = true},
 			["seasonalstartingitems"] = {value = "default", image = "seasonalstartingitems.tex", desc = yesno_descriptions, order = 2, masteroption = true, master_controlled = true},
 			["spawnprotection"] = {value = "default", image = "spawnprotection.tex", desc = autodetect, order = 3, masteroption = true, master_controlled = true},
-			["dropeverythingondespawn"] = {value = "default", image = "dropeverythingondespawn.tex", desc = dropeverythingondespawn_descriptions, order = 4, masteroption = true, master_controlled = true},
-			["healthpenalty"] = {value = "always", image = "healthpenalty.tex", desc = enableddisabled_descriptions, order = 5, masteroption = true, master_controlled = true},
-			["lessdamagetaken"] = {value = "none", image = "lessdamagetaken.tex", desc = lessdamagetaken_descriptions, order = 6, masteroption = true, master_controlled = true},			-- Note: This should be named "playerdamagetaken" but it's not worth retrofitting
-			["temperaturedamage"] = {value = "default", image = "temperaturedamage.tex", desc = nonlethal_descriptions, order = 7, masteroption = true, master_controlled = true},
-			["hunger"] = {value = "default", image = "hunger.tex", desc = nonlethal_descriptions, order = 8, masteroption = true, master_controlled = true},
-			["darkness"] = {value = "default", image = "darkness.tex", desc = nonlethal_descriptions, order = 9, masteroption = true, master_controlled = true},
-			["shadowcreatures"] = {value = "default", image = "shadowcreatures.tex", desc = frequency_descriptions, order = 10, masteroption = true, master_controlled = true},
-			["brightmarecreatures"] = {value = "default", image = "brightmarecreatures.tex", desc = frequency_descriptions, order = 11, masteroption = true, master_controlled = true},
+			["dropeverythingondespawn"] = {value = "default", image = "dropeverythingondespawn.tex", desc = dropeverythingondespawn_descriptions, order = 4, masteroption = true, master_sync = true, master_controlled = true},
+			["healthpenalty"] = {value = "always", image = "healthpenalty.tex", desc = enableddisabled_descriptions, order = 5, masteroption = true, master_sync = true, master_controlled = true},
+			["lessdamagetaken"] = {value = "none", image = "lessdamagetaken.tex", desc = lessdamagetaken_descriptions, order = 6, masteroption = true, master_sync = true, master_controlled = true},			-- Note: This should be named "playerdamagetaken" but it's not worth retrofitting
+			["temperaturedamage"] = {value = "default", image = "temperaturedamage.tex", desc = nonlethal_descriptions, order = 7, masteroption = true, master_sync = true, master_controlled = true},
+			["hunger"] = {value = "default", image = "hunger.tex", desc = nonlethal_descriptions, order = 8, masteroption = true, master_sync = true, master_controlled = true},
+			["darkness"] = {value = "default", image = "darkness.tex", desc = nonlethal_descriptions, order = 9, masteroption = true, master_sync = true, master_controlled = true},
+			["shadowcreatures"] = {value = "default", image = "shadowcreatures.tex", desc = frequency_descriptions, order = 10, masteroption = true, master_sync = true, master_controlled = true},
+			["brightmarecreatures"] = {value = "default", image = "brightmarecreatures.tex", desc = frequency_descriptions, order = 11, masteroption = true, master_sync = true, master_controlled = true},
 		}
 	},
 	["events"] = {
@@ -606,13 +606,13 @@ local WORLDSETTINGS_GROUP = {
 			["summer"] = {value = "default", image = "summer.tex", options_remap = {img = "blank_season_yellow.tex", atlas = "images/customisation.xml"}, desc = season_length_descriptions, master_controlled = true, order = 5},
 			["day"] = {value = "default", image = "day.tex", desc = day_descriptions, masteroption = true, master_controlled = true, order = 6},
 
-			["spawnmode"] = {value = "fixed", image = "spawnmode.tex", desc = spawnmode_descriptions, masteroption = true, master_controlled = true, order = 7},
-			["ghostenabled"] = {value = "always", image = "ghostenabled.tex", desc = ghostenabled_descriptions, masteroption = true, master_controlled = true, order = 8},
-			["portalresurection"] = {value = "none", image = "portalresurection.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, order = 9},
-			["ghostsanitydrain"] = {value = "always", image = "ghostsanitydrain.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, order = 10},
-			["resettime"] = {value = "default", image = "resettime.tex", desc = resetime_descriptions, masteroption = true, master_controlled = true, order = 11},
+			["spawnmode"] = {value = "fixed", image = "spawnmode.tex", desc = spawnmode_descriptions, masteroption = true, master_controlled = true, master_sync = true, order = 7},
+			["ghostenabled"] = {value = "always", image = "ghostenabled.tex", desc = ghostenabled_descriptions, masteroption = true, master_controlled = true, master_sync = true, order = 8},
+			["portalresurection"] = {value = "none", image = "portalresurection.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, master_sync = true, order = 9},
+			["ghostsanitydrain"] = {value = "always", image = "ghostsanitydrain.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, master_sync = true, order = 10},
+			["resettime"] = {value = "default", image = "resettime.tex", desc = resetime_descriptions, masteroption = true, master_controlled = true, master_sync = true, order = 11},
 			["beefaloheat"] = {value = "default", image = "beefaloheat.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, order = 12},
-			["krampus"] = {value = "default", image = "krampus.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, order = 13},
+			["krampus"] = {value = "default", image = "krampus.tex", desc = frequency_descriptions, masteroption = true, master_controlled = true, master_sync = true, order = 13},
 		}
 	},
 }
@@ -767,6 +767,25 @@ local function GetMasterOptions()
     for modname, modoptions in pairs(MOD_OPTIONS) do
 		for option_name, option in pairs(modoptions) do
 			if option.masteroption then
+				options[option_name] = true
+			end
+		end
+	end
+	return options
+end
+
+local function GetSyncOptions()
+	local options = {}
+	for option_name, option in pairs(OPTIONS) do
+		if not (IsGroupDisabled(option.category, option.group.group_name) or IsItemDisabled(option_name)) then
+			if option.master_sync then
+				options[option_name] = true
+			end
+		end
+    end
+    for modname, modoptions in pairs(MOD_OPTIONS) do
+		for option_name, option in pairs(modoptions) do
+			if option.master_sync then
 				options[option_name] = true
 			end
 		end
@@ -1226,6 +1245,7 @@ return {
 	GetWorldSettingsFromLevelSettings			= GetWorldSettingsFromLevelSettings,
 
 	GetMasterOptions							= GetMasterOptions,
+	GetSyncOptions								= GetSyncOptions,
 
     GetLocationDefaultForOption    				= GetLocationDefaultForOption,
 	ValidateOption                 				= ValidateOption,

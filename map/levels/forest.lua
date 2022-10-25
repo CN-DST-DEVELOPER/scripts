@@ -448,60 +448,40 @@ AddPlaystyleDef({
 })
 
 -------------------------------------------------------------------------------
-AddWorldGenLevel(LEVELTYPE.SURVIVAL, {id="COMPLETE_DARKNESS",
-	name=STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELS.COMPLETE_DARKNESS,
-	desc= STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELDESC.COMPLETE_DARKNESS,
-	location = "forest",
-	version = 4,
-	overrides={
-		start_location = "darkness",
-	},
-	required_setpieces = {
-		"Sculptures_1",
-		"Maxwell5",
-	},
-	numrandom_set_pieces = 4,
-	random_set_pieces =
-	{
-		"Sculptures_2",
-		"Sculptures_3",
-		"Sculptures_4",
-		"Sculptures_5",
-		"Chessy_1",
-		"Chessy_2",
-		"Chessy_3",
-		"Chessy_4",
-		"Chessy_5",
-		"Chessy_6",
-		--"ChessSpot1",
-		--"ChessSpot2",
-		--"ChessSpot3",
-		"Maxwell1",
-		"Maxwell2",
-		"Maxwell3",
-		"Maxwell4",
-		"Maxwell6",
-		"Maxwell7",
-		"Warzone_1",
-		"Warzone_2",
-		"Warzone_3",
-	},
-})
-local complete_darkness_settings = {}
-complete_darkness_settings.id = "COMPLETE_DARKNESS"
-complete_darkness_settings.name = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELS.COMPLETE_DARKNESS
-complete_darkness_settings.desc = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELDESC.COMPLETE_DARKNESS
-complete_darkness_settings.location = "forest"
-complete_darkness_settings.playstyle = "lightsout"
-complete_darkness_settings.version = 4
-complete_darkness_settings.overrides = {
+local lightsout_worldgen = deepcopy(worldgen_survival_together)
+lightsout_worldgen.id = "LIGHTS_OUT"
+lightsout_worldgen.name = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELS.LIGHTS_OUT
+lightsout_worldgen.desc = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELDESC.LIGHTS_OUT
+lightsout_worldgen.overrides={
+	start_location = "darkness",
+}
+AddWorldGenLevel(LEVELTYPE.SURVIVAL, lightsout_worldgen)
+
+local lightsout_settings = {}
+lightsout_settings.id = "LIGHTS_OUT"
+lightsout_settings.name = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELS.LIGHTS_OUT
+lightsout_settings.desc = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELDESC.LIGHTS_OUT
+lightsout_settings.location = "forest"
+lightsout_settings.playstyle = "lightsout"
+lightsout_settings.version = 4
+lightsout_settings.overrides = {
 	day = "onlynight",
 }
-AddSettingsPreset(LEVELTYPE.SURVIVAL, complete_darkness_settings)
+AddSettingsPreset(LEVELTYPE.SURVIVAL, lightsout_settings)
 
+-- the old COMPLETE_DARKNESS is now basically an alias on LIGHTS_OUT that is left in for old saves
+local complete_darkness_worldgen = deepcopy(lightsout_worldgen)
+complete_darkness_worldgen.id = "COMPLETE_DARKNESS"
+complete_darkness_worldgen.hideinfrontend = true
+AddWorldGenLevel(LEVELTYPE.SURVIVAL, complete_darkness_worldgen)
+
+local complete_darkness_settings = deepcopy(lightsout_settings)
+complete_darkness_settings.id = "COMPLETE_DARKNESS"
+complete_darkness_settings.hideinfrontend = true
+AddSettingsPreset(LEVELTYPE.SURVIVAL, complete_darkness_settings)
 AddPlaystyleDef({
 	id = "lightsout",
-	default_preset = "COMPLETE_DARKNESS",
+	default_preset = "LIGHTS_OUT",
 	location = "forest",
 	name = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELS.COMPLETE_DARKNESS,
 	desc = STRINGS.UI.CUSTOMIZATIONSCREEN.PRESETLEVELDESC.COMPLETE_DARKNESS,

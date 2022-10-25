@@ -61,6 +61,9 @@ end
 --------------------------------------------------------------------------------
 
 local function spawn_timed_fx_onme(inst, fxname, time)
+	if not inst:IsValid() then
+		return
+	end
     local fx = SpawnPrefab(fxname)
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     fx:SetTime(time or FRAMES)
@@ -309,7 +312,7 @@ fns.findpositions = function(inst, line, cast)
                 castmember._play_findposition_timeouttask = castmember:DoTaskInTime(line.duration or 0, on_findposition_timeout)
             else
                 local line_length = 
-                castmember:DoTaskInTime((line.duration or 2*FRAMES)/2, teleport_to_position, inst_pos+offset)
+                castmember:DoTaskInTime((line.duration or (2*FRAMES))/2, teleport_to_position, inst_pos+offset)
             end
         end
 	end

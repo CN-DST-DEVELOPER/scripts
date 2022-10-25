@@ -58,7 +58,7 @@ end
 
 local function setflagnumber(inst, number)
     if inst.flag_number == nil or (number ~= nil and number ~= inst.flag_number) then
-        inst.flag_number = number or "0"..tostring(math.random(1, 4))
+        inst.flag_number = number or ("0"..tostring(math.random(1, 4)))
 
         inst.AnimState:OverrideSymbol("flag_01", "pirate_flag_pole", "flag_"..inst.flag_number)
     end

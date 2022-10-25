@@ -204,7 +204,7 @@ end
 
 function ModWrangler:GetEnabledServerModTags()
 	local tags = {}
-	for k,mod_name in pairs(self.GetEnabledServerModNames()) do
+	for k,mod_name in pairs(self:GetEnabledServerModNames()) do
 		local modinfo = KnownModIndex:GetModInfo(mod_name)
 			if modinfo ~= nil and modinfo.server_filter_tags ~= nil then
 				for i,tag in pairs(modinfo.server_filter_tags) do

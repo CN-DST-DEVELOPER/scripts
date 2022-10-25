@@ -2820,24 +2820,21 @@ local applyoverrides_pre = {
 		end
 	end,
     seasonalstartingitems = function(difficulty)
-        local tuning_vars =
-        {
-            none = {
-                SEASONAL_STARTING_ITEMS = {}
-            }
-            --[[
-            default = {
-                SEASONAL_STARTING_ITEMS =
+		if difficulty == "never" then
+	        OverrideTuningVariables({SEASONAL_STARTING_ITEMS = {}})
+
+        elseif difficulty == "default" then
+			--[[
+	        OverrideTuningVariables({SEASONAL_STARTING_ITEMS =
                 {
                     autumn = { },
                     winter = { "earmuffshat" },
                     spring = { "strawhat" },
                     summer = { "grass_umbrella" },
-                },
-            }
-            --]]
-        }
-        OverrideTuningVariables(tuning_vars[difficulty])
+                }
+			})
+			]]
+		end
 	end,
     dropeverythingondespawn = function(difficulty)
         local tuning_vars =
@@ -3356,6 +3353,7 @@ local applyoverrides_post = {
 
         difficulty = difficulty == "always"
         TheWorld:PushEvent("ms_setworldsetting", {setting = "portal_rez", value = difficulty})
+        TheWorld:PushEvent("ms_onportalrez", difficulty)
     end,
     resettime = function(difficulty)
         local reset_time
@@ -3374,6 +3372,9 @@ local applyoverrides_post = {
         TheWorld:PushEvent("ms_setworldsetting", {setting = "reset_time", value = reset_time})
         TheWorld:PushEvent("ms_setworldresettime", reset_time)
     end,
+}
+
+local applyoverrides_sync = {
 }
 
 local function areaambientdefault(prefab)
@@ -3408,4 +3409,4 @@ local function areaambientdefault(prefab)
     end
 end
 
-return {Pre = applyoverrides_pre, Post = applyoverrides_post, areaambientdefault = areaambientdefault}
+return {Pre = applyoverrides_pre, Post = applyoverrides_post, Sync = applyoverrides_sync, areaambientdefault = areaambientdefault}

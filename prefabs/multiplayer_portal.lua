@@ -42,6 +42,17 @@ local function OnRezPlayer(inst)
     end
 end
 
+local function OnGetPortalRez(inst, portalrez)
+    if portalrez then
+        inst:AddComponent("hauntable")
+        inst.components.hauntable:SetHauntValue(TUNING.HAUNT_INSTANT_REZ)
+        inst:AddTag("resurrector")
+    elseif inst.components.hauntable then
+        inst:RemoveComponent("hauntable")
+        inst:RemoveTag("resurrector")
+    end
+end
+
 local function MakePortal(name, bank, build, assets, prefabs, common_postinit, master_postinit)
     local function fn()
         local inst = CreateEntity()
@@ -81,11 +92,8 @@ local function MakePortal(name, bank, build, assets, prefabs, common_postinit, m
         inst:AddComponent("inspectable")
         inst.components.inspectable:RecordViews()
 
-        if GetPortalRez() then
-            inst:AddComponent("hauntable")
-            inst.components.hauntable:SetHauntValue(TUNING.HAUNT_INSTANT_REZ)
-            inst:AddTag("resurrector")
-        end
+        OnGetPortalRez(inst, GetPortalRez())
+        inst:ListenForEvent("ms_onportalrez", function() OnGetPortalRez(inst, GetPortalRez()) end, TheWorld)
 
         inst:ListenForEvent("ms_newplayercharacterspawned", function(world, data)
             if data and data.player then

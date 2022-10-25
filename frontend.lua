@@ -1545,7 +1545,7 @@ end
 
 function FrontEnd:CheckCachedError()
 	if self.cachedError and not global_error_widget then
-		local widget = ScriptErrorWidget(table.unpack(self.cachedError))
+		local widget = ScriptErrorWidget(unpack(self.cachedError))
 		widget:MarkTransformDirty()
 		self:PushScreen(widget)
 

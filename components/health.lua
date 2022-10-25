@@ -137,7 +137,7 @@ function Health:OnLoad(data)
 	end
 
     local haspenalty = data.penalty ~= nil and data.penalty > 0 and data.penalty < 1
-    if haspenalty and self.penalty_enabled then
+    if haspenalty then
         self:SetPenalty(data.penalty)
     end
 
@@ -272,6 +272,7 @@ function Health:StopRegen()
 end
 
 function Health:SetPenalty(penalty)
+    print("Health:SetPenalty", self.disable_penalty)
 	if not self.disable_penalty then
 		--Penalty should never be less than 0% or ever above 75%.
 		self.penalty = math.clamp(penalty, 0, TUNING.MAXIMUM_HEALTH_PENALTY)

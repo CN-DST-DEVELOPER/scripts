@@ -70,10 +70,6 @@ function StageActor:performplay()
     end
 end
 
-function StageActor:OnRemoveFromEntity()
-	self.inst:RemoveTag("stageactor")
-end
-
 function StageActor:SetOnStoryBeginFn(fn)
 	self.onstorybeginfn = fn
 end
