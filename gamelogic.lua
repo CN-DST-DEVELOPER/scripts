@@ -400,7 +400,7 @@ local function PopulateWorld(savedata, profile)
 		local savedata_overrides = savedata.map.topology.overrides
 
 		if savedata_overrides then
-			ApplySpecialEvent(savedata_overrides.specialevent or nil)
+			ApplySpecialEvent(savedata_overrides.specialevent or "default")
 			for k, event_name in pairs(SPECIAL_EVENTS) do
 				if savedata_overrides[event_name] == "enabled" then
 					ApplyExtraEvent(event_name)

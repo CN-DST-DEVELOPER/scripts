@@ -2491,7 +2491,7 @@ local fx =
         bank = "fx_dock_crackleandpop",
         build = "fx_dock_crackleandpop",
         anim = "pop",
-        sound = "monkeyisland/dock/break",
+        sound = "monkeyisland/dock/break2",
     },
 
     {
@@ -2735,15 +2735,16 @@ for j = 0, 3, 3 do
     end
 end
 
-local shot_types = {"rocks", "gold", "marble", "thulecite", "freeze", "slow", "poop", "trinket_1"}
+local shot_types = {"rock", "gold", "marble", "thulecite", "freeze", "slow", "poop", "trinket_1"}
 for _, shot_type in ipairs(shot_types) do
     table.insert(fx, {
         name = "slingshotammo_hitfx_"..shot_type,
         bank = "slingshotammo",
         build = "slingshotammo",
         anim = "used",
+        sound = "dontstarve/characters/walter/slingshot/"..shot_type,
         fn = function(inst)
-			if shot_type ~= "rocks" then
+			if shot_type ~= "rock" then
 		        inst.AnimState:OverrideSymbol("rock", "slingshotammo", shot_type)
 			end
 		    inst.AnimState:SetFinalOffset(3)

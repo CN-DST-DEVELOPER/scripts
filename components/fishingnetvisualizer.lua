@@ -59,7 +59,9 @@ function FishingNetVisualizer:UpdateWhenMovingToTarget(dt)
 	end
 	local y = self:CalculateY(self.total_distance - self.distance_remaining - self.total_distance * 0.5, self.total_distance, 0.2)
 
-	my_x, my_z = VecUtil_Add(my_x, my_z, VecUtil_Scale(self.dir_x, self.dir_z, distance_traveled))
+	if distance_traveled > 0 then
+		my_x, my_z = VecUtil_Add(my_x, my_z, VecUtil_Scale(self.dir_x or 1, self.dir_z or 0, distance_traveled))
+	end
 	self.inst.Transform:SetPosition(my_x, y, my_z)
 end
 

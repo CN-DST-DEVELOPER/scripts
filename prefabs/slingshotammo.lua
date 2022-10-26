@@ -16,10 +16,6 @@ local function ImpactFx(inst, attacker, target)
     if target ~= nil and target:IsValid() then
 		local impactfx = SpawnPrefab(inst.ammo_def.impactfx)
 		impactfx.Transform:SetPosition(target.Transform:GetWorldPosition())
-
-		if inst.ammo_def.hit_sound ~= nil then
-			inst.SoundEmitter:PlaySound(inst.ammo_def.hit_sound)
-		end
     end
 end
 
@@ -64,8 +60,6 @@ local function SpawnShadowTentacle(target, pt, starting_angle)
 end
 
 local function OnHit_Thulecite(inst, attacker, target)
-    ImpactFx(inst, attacker, target)
-
     if math.random() < 0.5 then
         local pt
         if target ~= nil and target:IsValid() then
@@ -95,8 +89,6 @@ local function onunloadammo_ice(inst, data)
 end
 
 local function OnHit_Ice(inst, attacker, target)
-    ImpactFx(inst, attacker, target)
-
     if target.components.sleeper ~= nil and target.components.sleeper:IsAsleep() then
         target.components.sleeper:WakeUp()
     end
@@ -126,8 +118,6 @@ local function OnHit_Ice(inst, attacker, target)
 end
 
 local function OnHit_Speed(inst, attacker, target)
-    ImpactFx(inst, attacker, target)
-
 	local debuffkey = inst.prefab
 
 	if target ~= nil and target:IsValid() and target.components.locomotor ~= nil then
@@ -143,8 +133,6 @@ local function OnHit_Speed(inst, attacker, target)
 end
 
 local function OnHit_Distraction(inst, attacker, target)
-	ImpactFx(inst, attacker, target)
-
 	if target ~= nil and target:IsValid() and target.components.combat ~= nil then
 		local targets_target = target.components.combat.target
 		if targets_target == nil or targets_target == attacker then
@@ -286,26 +274,22 @@ local ammo =
 	{
 		name = "slingshotammo_rock",
 		damage = TUNING.SLINGSHOT_AMMO_DAMAGE_ROCKS,
-        hit_sound = "dontstarve/characters/walter/slingshot/rock",
 	},
     {
         name = "slingshotammo_gold",
 		symbol = "gold",
         damage = TUNING.SLINGSHOT_AMMO_DAMAGE_GOLD,
-        hit_sound = "dontstarve/characters/walter/slingshot/gold",
     },
 	{
 		name = "slingshotammo_marble",
 		symbol = "marble",
 		damage = TUNING.SLINGSHOT_AMMO_DAMAGE_MARBLE,
-        hit_sound = "dontstarve/characters/walter/slingshot/marble",
 	},
 	{
 		name = "slingshotammo_thulecite", -- chance to spawn a Shadow Tentacle
 		symbol = "thulecite",
 		onhit = OnHit_Thulecite,
 		damage = TUNING.SLINGSHOT_AMMO_DAMAGE_THULECITE,
-        hit_sound = "dontstarve/characters/walter/slingshot/gold",
 	},
     {
         name = "slingshotammo_freeze",
@@ -315,21 +299,18 @@ local ammo =
 		onloadammo = onloadammo_ice,
 		onunloadammo = onunloadammo_ice,
         damage = nil,
-        hit_sound = "dontstarve/characters/walter/slingshot/frozen",
     },
     {
         name = "slingshotammo_slow",
 		symbol = "slow",
         onhit = OnHit_Speed,
         damage = TUNING.SLINGSHOT_AMMO_DAMAGE_SLOW,
-        hit_sound = "dontstarve/characters/walter/slingshot/slow",
     },
     {
         name = "slingshotammo_poop", -- distraction (drop target, note: hostile creatures will probably retarget you very shortly after)
 		symbol = "poop",
         onhit = OnHit_Distraction,
         damage = nil,
-        hit_sound = "dontstarve/characters/walter/slingshot/poop",
 		fuelvalue = TUNING.MED_FUEL / 10, -- 1/10th the value of using poop
     },
     {
@@ -337,13 +318,12 @@ local ammo =
 		no_inv_item = true,
 		symbol = "trinket_1",
 		damage = TUNING.SLINGSHOT_AMMO_DAMAGE_TRINKET_1,
-        hit_sound = "dontstarve/characters/walter/slingshot/trinket",
     },
 }
 
 local ammo_prefabs = {}
 for _, v in ipairs(ammo) do
-	v.impactfx = "slingshotammo_hitfx_" .. (v.symbol or "rocks")
+	v.impactfx = "slingshotammo_hitfx_" .. (v.symbol or "rock")
 
 	---
 	if not v.no_inv_item then
