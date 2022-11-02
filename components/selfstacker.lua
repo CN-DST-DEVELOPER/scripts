@@ -10,8 +10,9 @@ local SelfStacker = Class(function(self, inst)
 end)
 
 function SelfStacker:CanSelfStack()
-	--Not in inventory, can be stacked
-	return (self.inst.components.stackable and not self.inst.components.stackable:IsFull()) and
+	-- Not in a trap, not in inventory, can be stacked, not moving fast.
+	return (self.inst.components.bait == nil or self.inst.components.bait:IsFree()) and
+	(self.inst.components.stackable and not self.inst.components.stackable:IsFull()) and
 	(self.inst.components.inventoryitem and not self.inst.components.inventoryitem:IsHeld()) and
 	Vector3(self.inst.Physics:GetVelocity()):LengthSq() < 1 and not
 	self.stackpartner

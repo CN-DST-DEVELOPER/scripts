@@ -23,6 +23,8 @@ local function choosebroken(inst, broken)
         inst.broken = true
         inst.AnimState:SetBank("pillar_archive_broken")
         inst.AnimState:SetBuild("pillar_archive_broken")
+    else
+        inst.broken = false
     end
 end
 

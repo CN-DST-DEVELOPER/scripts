@@ -339,11 +339,11 @@ function GetDescription_AddSpecialCases(ret, charactertable, inst, item, modifie
     local post = {}
 
     if item.components.repairable ~= nil and not item.components.repairable.noannounce and item.components.repairable:NeedsRepairs() then
-        table.insert(post, getcharacterstring(charactertable, "ANNOUNCE_CANFIX", modifier))
+        table.insert(post, (getcharacterstring(charactertable, "ANNOUNCE_CANFIX", modifier))) -- NOTES(JBK): Encapsulate getcharacterstring to only use the first return value!
     end
 
     if type(inst) == "table" and inst.components.foodmemory ~= nil and inst.components.foodmemory:GetMemoryCount(item.prefab) > 0 then
-        table.insert(post, getcharacterstring(charactertable, "ANNOUNCE_FOODMEMORY", modifier))
+        table.insert(post, (getcharacterstring(charactertable, "ANNOUNCE_FOODMEMORY", modifier))) -- NOTES(JBK): Encapsulate getcharacterstring to only use the first return value!
     end
 
     if #post > 0 then

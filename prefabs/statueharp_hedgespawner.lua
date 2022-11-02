@@ -109,19 +109,19 @@ local function primehounds(inst)
     end
 end
 
-function onsave(inst, data)
+local function onsave(inst, data)
     data.charlie_test = inst.charlie_test
     data.has_dropped_loot = inst._has_dropped_loot
 end
 
-function onpreload(inst, data, newents)
+local function onpreload(inst, data, newents)
     -- This flag needs to be loaded before the workable component runs its onload
     if data then
         inst._has_dropped_loot = data.has_dropped_loot
     end
 end
 
-function onload(inst, data)
+local function onload(inst, data)
    if data and data.charlie_test then
         inst.charlie_test = data.charlie_test
    end
@@ -188,6 +188,7 @@ local function fn()
     ----------------------------------------------------------------------------------
     inst.OnSave = onsave
     inst.OnLoad = onload
+    inst.OnPreLoad = onpreload
 
     ----------------------------------------------------------------------------------
     MakeHauntableWork(inst)

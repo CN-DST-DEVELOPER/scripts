@@ -62,7 +62,6 @@ function ConstructionSite:OnConstruct(doer, items)
 		recipe_items = {}
 	}
 
-    self.builder = nil
     local x, y, z = self.inst.Transform:GetWorldPosition()
     for i, v in ipairs(items) do
         local remainder = self:AddMaterial(v.prefab, v.components.stackable ~= nil and v.components.stackable:StackSize() or 1)
@@ -71,12 +70,18 @@ function ConstructionSite:OnConstruct(doer, items)
             if v.components.stackable ~= nil then
                 v.components.stackable:SetStackSize(math.min(remainder, v.components.stackable.maxsize))
             end
-            v.components.inventoryitem:RemoveFromOwner(true)
-            v.components.inventoryitem:DoDropPhysics(x, y, z, true)
+            -- NOTES(JBK): Stopping the dropping mechanic for overfilling a construction and instead return excess to the builder if it exists and is a player for QoL.
+            if self.builder ~= nil and self.builder.components.inventory ~= nil and self.builder:HasTag("player") then
+                self.builder.components.inventory:GiveItem(v)
+            else
+                v.components.inventoryitem:RemoveFromOwner(true)
+                v.components.inventoryitem:DoDropPhysics(x, y, z, true)
+            end
         else
             v:Remove()
         end
     end
+    self.builder = nil
 
 	stats.victory = self:IsComplete()
 	Stats.PushMetricsEvent("constructionsite", doer, stats)

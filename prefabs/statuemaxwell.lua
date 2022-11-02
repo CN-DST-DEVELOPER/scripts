@@ -60,7 +60,7 @@ local function OnWork(inst, worker, workleft)
     end
 end
 
-function OnSave(inst, data)
+local function OnSave(inst, data)
     if inst.charlies_work then
         data.charlies_work = inst.charlies_work
     end
@@ -69,7 +69,7 @@ function OnSave(inst, data)
     end
 end
 
-function OnLoad(inst, data)
+local function OnLoad(inst, data)
    if data and not data.charlie_test then
         inst.charlie_test= data.charlie_test
    end

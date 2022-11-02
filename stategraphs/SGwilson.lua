@@ -1205,7 +1205,7 @@ local events =
     end),
 
     EventHandler("ontalk", function(inst, data)
-        if inst:IsActing() and not inst.sg:HasStateTag("talking") then
+        if inst:IsActing() and not inst.sg:HasStateTag("talking") and (inst.components.rider == nil or not inst.components.rider:IsRiding()) then
             if inst:HasTag("mime") then
                 inst.sg:GoToState("acting_mime")
             else

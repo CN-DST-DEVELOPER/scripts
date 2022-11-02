@@ -218,6 +218,15 @@ local function OnUnequip(inst, owner)
     end
 end
 
+local function OnEquipToModel(inst, owner, from_ground)
+    inst.components.fueled:StopConsuming()
+
+    if inst._lastowner ~= nil then
+        inst:RemoveEventCallback("onattackother", inst._onattackother, inst._lastowner)
+        inst._lastowner = nil
+    end
+end
+
 --------------------------------------------------------------------------
 
 local function fn()
@@ -262,6 +271,7 @@ local function fn()
     inst.components.equippable.restrictedtag = "bernieowner"
     inst.components.equippable:SetOnEquip(OnEquip)
     inst.components.equippable:SetOnUnequip(OnUnequip)
+    inst.components.equippable:SetOnEquipToModel(OnEquipToModel)
 
     inst:AddComponent("insulator")
     inst.components.insulator:SetInsulation(TUNING.INSULATION_SMALL)

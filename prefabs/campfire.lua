@@ -114,6 +114,16 @@ local function OnInit(inst)
     end
 end
 
+local function OnSave(inst, data)
+    data.queued_charcoal = inst.queued_charcoal or nil
+end
+
+local function OnLoad(inst, data)
+    if data ~= nil and data.queued_charcoal then
+        inst.queued_charcoal = true
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 

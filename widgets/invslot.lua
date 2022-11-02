@@ -284,7 +284,7 @@ end
 
 function InvSlot:ConvertToConstructionSlot(ingredient, amount)
     if ingredient ~= nil then
-        self:SetBGImage2(ingredient:GetAtlas(), ingredient.type..".tex", { 1, 1, 1, .4 })
+        self:SetBGImage2(ingredient:GetAtlas(), ingredient:GetImage(), { 1, 1, 1, .4 })
         self.highlight_scale = 1.7
 
         local function onquantitychanged(tile, quantity)
