@@ -161,11 +161,14 @@ Recipe2("book_rain", 					{Ingredient("papyrus", 2), Ingredient("goose_feather",
 Recipe2("book_temperature", 			{Ingredient("papyrus", 2), Ingredient("heatrock", 1)}, 							 	      			TECH.BOOKCRAFT_ONE,		{builder_tag="bookbuilder"})
 
 -- Maxwell
-Recipe2("waxwelljournal",				{Ingredient("papyrus", 2), Ingredient("nightmarefuel", 2), Ingredient(CHARACTER_INGREDIENT.HEALTH, 50)},													TECH.NONE,			{builder_tag="shadowmagic"})
-Recipe2("shadowlumber_builder",			{Ingredient("nightmarefuel", 2), Ingredient("axe", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWLUMBER)},		TECH.SHADOW_TWO,	{builder_tag="shadowmagic", nounlock=true})
-Recipe2("shadowminer_builder",			{Ingredient("nightmarefuel", 2), Ingredient("pickaxe", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWMINER)},	TECH.SHADOW_TWO,	{builder_tag="shadowmagic", nounlock=true})
-Recipe2("shadowdigger_builder",			{Ingredient("nightmarefuel", 2), Ingredient("shovel", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWDIGGER)},	TECH.SHADOW_TWO,	{builder_tag="shadowmagic", nounlock=true})
-Recipe2("shadowduelist_builder",		{Ingredient("nightmarefuel", 2), Ingredient("spear", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWDUELIST)},	TECH.SHADOW_TWO,	{builder_tag="shadowmagic", nounlock=true})
+Recipe2("waxwelljournal",				{Ingredient("papyrus", 2), Ingredient("nightmarefuel", 2), Ingredient(CHARACTER_INGREDIENT.HEALTH, 50)},	TECH.NONE,		{builder_tag="shadowmagic"})
+Recipe2("tophat_magician",				{Ingredient("tophat", 1), Ingredient("nightmarefuel", 2)},													TECH.NONE,		{builder_tag="shadowmagic", product="tophat", description="tophat_magician", fxover={ bank="inventory_fx_shadow", build="inventory_fx_shadow", anim="idle" }})
+Recipe2("magician_chest",				{Ingredient("silk", 1), Ingredient("boards", 4), Ingredient("nightmarefuel", 9)},							TECH.NONE,		{builder_tag="shadowmagic", placer="magician_chest_placer", min_spacing=1})
+-- DEPRECATED kept around for mods.
+Recipe("shadowlumber_builder",			{Ingredient("nightmarefuel", 2), Ingredient("axe", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWLUMBER)},		nil, TECH.LOST, nil, nil, true, nil, "shadowmagic")
+Recipe("shadowminer_builder",			{Ingredient("nightmarefuel", 2), Ingredient("pickaxe", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWMINER)},	nil, TECH.LOST, nil, nil, true, nil, "shadowmagic")
+Recipe("shadowdigger_builder",			{Ingredient("nightmarefuel", 2), Ingredient("shovel", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWDIGGER)},	nil, TECH.LOST, nil, nil, true, nil, "shadowmagic")
+Recipe("shadowduelist_builder",			{Ingredient("nightmarefuel", 2), Ingredient("spear", 1), Ingredient(CHARACTER_INGREDIENT.MAX_SANITY, TUNING.SHADOWWAXWELL_SANITY_PENALTY.SHADOWDUELIST)},	nil, TECH.LOST, nil, nil, true, nil, "shadowmagic")
 
 -- Winona
 Recipe2("sewing_tape",					{Ingredient("silk", 1), Ingredient("cutgrass", 3)},												TECH.NONE,				{builder_tag="handyperson"})
@@ -175,7 +178,7 @@ Recipe2("winona_battery_low",			{Ingredient("sewing_tape", 1), Ingredient("log",
 Recipe2("winona_battery_high",			{Ingredient("sewing_tape", 1), Ingredient("boards", 2), Ingredient("transistor", 2)},			TECH.NONE,				{builder_tag="handyperson", placer="winona_battery_high_placer"})
 
 -- Webber
-Recipe2("spidereggsack", 				{Ingredient("silk", 12),  Ingredient("spidergland", 4), Ingredient("papyrus", 3)},		TECH.NONE,				{builder_tag="spiderwhisperer"})
+Recipe2("spidereggsack", 				{Ingredient("silk", 12),  Ingredient("spidergland", 4), Ingredient("papyrus", 3)},		TECH.NONE,				{builder_tag="spiderwhisperer", allowautopick = true,})
 Recipe2("spiderden_bedazzler",			{Ingredient("silk", 1),   Ingredient("papyrus", 1), Ingredient("boards", 2) },			TECH.NONE,				{builder_tag="spiderwhisperer"})
 Recipe2("spider_whistle",  				{Ingredient("silk", 3),   Ingredient("twigs", 2) }, 									TECH.NONE,				{builder_tag="spiderwhisperer"})
 Recipe2("spider_repellent",  			{Ingredient("boards", 2), Ingredient("goldnugget", 2), Ingredient("rope", 1) }, 		TECH.NONE,				{builder_tag="spiderwhisperer"})
@@ -189,7 +192,7 @@ Recipe2("mutator_healer",  				{Ingredient("monstermeat", 2), Ingredient("silk",
 Recipe2("mutator_water",  				{Ingredient("monstermeat", 2), Ingredient("silk", 2), Ingredient("fig", 2)},			TECH.SPIDERCRAFT_ONE,	{builder_tag="spiderwhisperer"})
 
 -- Wormwood
-Recipe2("livinglog", 					{Ingredient(CHARACTER_INGREDIENT.HEALTH, 20)},													TECH.NONE,				{builder_tag="plantkin", sg_state="form_log"})
+Recipe2("livinglog", 					{Ingredient(CHARACTER_INGREDIENT.HEALTH, 20)},													TECH.NONE,				{builder_tag="plantkin", sg_state="form_log", allowautopick = true,})
 Recipe2("armor_bramble",				{Ingredient("livinglog", 2), Ingredient("stinger", 4)},											TECH.NONE,				{builder_tag="plantkin"})
 Recipe2("trap_bramble",					{Ingredient("livinglog", 1), Ingredient("stinger", 1)},											TECH.NONE,				{builder_tag="plantkin"})
 Recipe2("compostwrap",					{Ingredient("poop", 5), Ingredient("spoiled_food", 2), Ingredient("nitre", 1)}, 				TECH.NONE,				{builder_tag="plantkin"})

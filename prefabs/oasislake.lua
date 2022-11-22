@@ -222,6 +222,7 @@ local function fn()
     inst:AddTag("watersource")
     inst:AddTag("birdblocker")
     inst:AddTag("antlion_sinkhole_blocker")
+	inst:AddTag("allow_casting")
 
     inst.no_wet_prefix = true
     inst:SetDeployExtraSpacing(NO_DEPLOY_RADIUS)

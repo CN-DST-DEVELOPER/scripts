@@ -194,22 +194,26 @@ local function Count(item)
 end
 
 local function Has(inst, prefab, amount, checkallcontainers)
+	--V2C: this is the current assumption, so make it explicit
+	local iscrafting = checkallcontainers
+
     local count =
         inst._activeitem ~= nil and
         inst._activeitem.prefab == prefab and
+		not (iscrafting and inst._activeitem:HasTag("nocrafting")) and
         Count(inst._activeitem) or 0
 
     if inst._itemspreview ~= nil then
         for i, v in ipairs(inst._items) do
             local item = inst._itemspreview[i]
-            if item ~= nil and item.prefab == prefab then
+			if item ~= nil and item.prefab == prefab and not (iscrafting and item:HasTag("nocrafting")) then
                 count = count + Count(item)
             end
         end
     else
         for i, v in ipairs(inst._items) do
             local item = v:value()
-            if item ~= nil and item ~= inst._activeitem and item.prefab == prefab then
+			if item ~= nil and item ~= inst._activeitem and item.prefab == prefab and not (iscrafting and item:HasTag("nocrafting")) then
                 count = count + Count(item)
             end
         end
@@ -217,7 +221,7 @@ local function Has(inst, prefab, amount, checkallcontainers)
 
     local overflow = GetOverflowContainer(inst)
     if overflow ~= nil then
-        local overflowhas, overflowcount = overflow:Has(prefab, amount)
+		local overflowhas, overflowcount = overflow:Has(prefab, amount, iscrafting)
         count = count + overflowcount
     end
 
@@ -229,7 +233,7 @@ local function Has(inst, prefab, amount, checkallcontainers)
             for container_inst in pairs(containers) do
                 local container = container_inst.replica.container or container_inst.replica.inventory
                 if container and container ~= overflow and not container.excludefromcrafting then
-                    local containerhas, containercount = container:Has(prefab, amount)
+					local containerhas, containercount = container:Has(prefab, amount, iscrafting)
                     count = count + containercount
                 end
             end
@@ -312,6 +316,9 @@ local function OnActiveDirty(inst, netitem)
             inst._returncontainer:GetItemInSlot(inst._returnslot) ~= inst._activeitem) then
             inst._returncontainer = nil
             inst._returnslot = nil
+        end
+        if item == nil and inst._returningitem == nil then
+            inst._returningitem = inst._activeitem
         end
         inst._activeitem = item
         if inst._parent ~= nil then
@@ -695,6 +702,26 @@ local function SwapActiveItemWithSlot(inst, slot)
     end
 end
 
+local function TryNonNetworkedAction(inst, act, item)
+	if act == ACTIONS.RUMMAGE then
+		local overflow = GetOverflowContainer(inst)
+		if overflow ~= nil and overflow.inst == item then
+			if overflow:IsOpenedBy(inst._parent) then
+				overflow:Close()
+			else
+				overflow:Open(inst._parent)
+			end
+			return true
+		end
+	elseif act == ACTIONS.CLOSESPELLBOOK then
+		if inst._parent.HUD ~= nil and inst._parent.HUD:GetCurrentOpenSpellBook() == item then
+			inst._parent.HUD:CloseSpellWheel()
+		end
+		return true
+	end
+	return false
+end
+
 local function UseItemFromInvTile(inst, item)
     if not IsBusy(inst) and
         inst._parent ~= nil and
@@ -706,19 +733,9 @@ local function UseItemFromInvTile(inst, item)
         local actions = inst._activeitem ~= nil and
             inst._parent.components.playeractionpicker:GetUseItemActions(item, inst._activeitem, true) or
             inst._parent.components.playeractionpicker:GetInventoryActions(item)
-        if #actions > 0 then
-            if actions[1].action == ACTIONS.RUMMAGE then
-                local overflow = GetOverflowContainer(inst)
-                if overflow ~= nil and overflow.inst == item then
-                    if overflow:IsOpenedBy(inst._parent) then
-                        overflow:Close()
-                    else
-                        overflow:Open(inst._parent)
-                    end
-                    return
-                end
-            end
-            inst._parent.components.playercontroller:RemoteUseItemFromInvTile(actions[1], item)
+		local act = actions[1]
+		if act ~= nil and not TryNonNetworkedAction(inst, act, item) then
+			inst._parent.components.playercontroller:RemoteUseItemFromInvTile(act, item)
         end
     end
 end
@@ -737,18 +754,9 @@ local function ControllerUseItemOnItemFromInvTile(inst, item, active_item)
             --[[if inst._parent.HUD ~= nil then
                 inst._parent.HUD.controls.inv:CloseControllerInventory()
             end]]
-            if act.action == ACTIONS.RUMMAGE then
-                local overflow = GetOverflowContainer(inst)
-                if overflow ~= nil and overflow.inst == item then
-                    if overflow:IsOpenedBy(inst._parent) then
-                        overflow:Close()
-                    else
-                        overflow:Open(inst._parent)
-                    end
-                    return
-                end
+			if not TryNonNetworkedAction(inst, act, item) then
+				inst._parent.components.playercontroller:RemoteControllerUseItemOnItemFromInvTile(act, item, active_item)
             end
-            inst._parent.components.playercontroller:RemoteControllerUseItemOnItemFromInvTile(act, item, active_item)
         end
     end
 end
@@ -767,18 +775,7 @@ local function ControllerUseItemOnSelfFromInvTile(inst, item)
             act = BufferedAction(inst._parent, nil, ACTIONS.UNEQUIP, item)
         end
 
-        if act ~= nil then
-            if act.action == ACTIONS.RUMMAGE then
-                local overflow = GetOverflowContainer(inst)
-                if overflow ~= nil and overflow.inst == item then
-                    if overflow:IsOpenedBy(inst._parent) then
-                        overflow:Close()
-                    else
-                        overflow:Open(inst._parent)
-                    end
-                    return
-                end
-            end
+		if act ~= nil and not TryNonNetworkedAction(inst, act, item) then
             inst._parent.components.playercontroller:RemoteControllerUseItemOnSelfFromInvTile(act, item)
         end
     end
@@ -801,18 +798,7 @@ local function ControllerUseItemOnSceneFromInvTile(inst, item)
             act = inst._parent.components.playercontroller:GetItemUseAction(item)
         end
 
-        if act ~= nil and act.action ~= ACTIONS.UNEQUIP then
-            if act.action == ACTIONS.RUMMAGE then
-                local overflow = GetOverflowContainer(inst)
-                if overflow ~= nil and overflow.inst == item then
-                    if overflow:IsOpenedBy(inst._parent) then
-                        overflow:Close()
-                    else
-                        overflow:Open(inst._parent)
-                    end
-                    return
-                end
-            end
+		if act ~= nil and act.action ~= ACTIONS.UNEQUIP and not TryNonNetworkedAction(inst, act, item) then
             inst._parent.components.playercontroller:DoActionAutoEquip(act)
             inst._parent.components.playercontroller:RemoteControllerUseItemOnSceneFromInvTile(act, item)
         end
@@ -837,6 +823,18 @@ local function DropItemFromInvTile(inst, item, single)
         inst._parent.components.playercontroller ~= nil then
         inst._parent.components.playercontroller:RemoteDropItemFromInvTile(item, single)
     end
+end
+
+local function CastSpellBookFromInv(inst, item)
+	if not IsBusy(inst) and
+		inst._parent ~= nil and
+		not inst._parent:HasTag("busy") and
+		not (inst._parent.sg ~= nil and
+			inst._parent.sg:HasStateTag("busy")) and
+		item.components.spellbook ~= nil and
+		inst._parent.components.playercontroller ~= nil then
+		inst._parent.components.playercontroller:RemoteCastSpellBookFromInv(item, item.components.spellbook:GetSelectedSpell())
+	end
 end
 
 local function EquipActiveItem(inst)
@@ -1259,6 +1257,7 @@ local function fn()
         inst.ControllerUseItemOnSceneFromInvTile = ControllerUseItemOnSceneFromInvTile
         inst.InspectItemFromInvTile = InspectItemFromInvTile
         inst.DropItemFromInvTile = DropItemFromInvTile
+		inst.CastSpellBookFromInv = CastSpellBookFromInv
         inst.EquipActiveItem = EquipActiveItem
         inst.EquipActionItem = EquipActionItem
         inst.SwapEquipWithActiveItem = SwapEquipWithActiveItem

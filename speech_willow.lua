@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "Ha! Scan THAT!",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -468,6 +485,8 @@ return{
 --fallback to speech_wilson.lua         SAME_OLD_5 = "only_used_by_warly",
 --fallback to speech_wilson.lua 		TASTY = "only_used_by_warly",
     },
+
+	ANNOUNCE_FOODMEMORY = "only_used_by_warly",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -2924,7 +2943,11 @@ return{
 		WATERMELON = "But where's the firemelon?",
 		WATERMELON_COOKED = "I made my own firemelon.",
 		WATERMELONHAT = "Well, that's one use for this fruit.",
-		WAXWELLJOURNAL = "Would make a great bedtime story... for nightmares!",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "Would make a great bedtime story... for nightmares!",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "How did it go wrong?! It was engulfed in fire and everything.",
         WHIP = "This means I'm the boss now.",
 		WINTERHAT = "It's not warm enough for my liking.",
@@ -4668,6 +4691,10 @@ return{
             GENERIC = "Here, hold my stuff, would you?",
             BURNT = "I think it looks better, personally.",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "What do you think would happen if I threw a lit match inside?",
+		TOPHAT_MAGICIAN = "Aww, I thought I saw smoke, but it's just Max's shadow gunk.",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

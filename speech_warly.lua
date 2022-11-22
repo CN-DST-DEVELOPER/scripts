@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "I do not think I'm the one it wants to talk to.",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -2919,7 +2936,11 @@ return{
 		WATERMELON = "Despite its name, it is mostly filled with deliciousness!",
 		WATERMELON_COOKED = "Could use mint and feta...",
 		WATERMELONHAT = "Aaaahhhhhh sweet relief...",
-		WAXWELLJOURNAL = "Maman used to keep a journal, before her memory went.",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "Maman used to keep a journal, before her memory went.",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "Thankfully my sous chefs aren't here to witness this abomination...",
         WHIP = "I'd rather whip up a nice meringue.",
 		WINTERHAT = "I know when to don this, and not a minute sooner.",
@@ -4663,6 +4684,10 @@ return{
             GENERIC = "I feel as though it's staring at me.",
             BURNT = "Ah, I almost feel bad for it now.",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "Are you certain that whatever you put in there will come back?",
+		TOPHAT_MAGICIAN = "I can't think of any occasion I'd wear that to.",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

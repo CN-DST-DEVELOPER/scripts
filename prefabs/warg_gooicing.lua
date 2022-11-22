@@ -91,6 +91,8 @@ local function projectilefn()
     inst.AnimState:SetBuild("warg_gingerbread_bomb")
     inst.AnimState:PlayAnimation("spin_loop", true)
 
+    inst:AddTag("projectile")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

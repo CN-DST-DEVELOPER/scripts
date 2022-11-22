@@ -26,6 +26,9 @@ end
 prefabs = FlattenTree({ prefabs, start_inv }, true)
 
 local function CLIENT_Webber_HostileTest(inst, target)
+	if target.HostileToPlayerTest ~= nil then
+		return target:HostileToPlayerTest(inst)
+	end
     return (target:HasTag("hostile") or target:HasTag("pig") or target:HasTag("catcoon"))
         and (not target:HasTag("spiderden"))
         and (not target:HasTag("spider") or target:HasTag("spiderqueen"))

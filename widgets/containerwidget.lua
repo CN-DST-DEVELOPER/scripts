@@ -105,6 +105,9 @@ function ContainerWidget:Open(container, doer)
         self.bgimage:Show()
     else
         self.bganim:GetAnimState():PlayAnimation("open")
+		if widget.animloop then
+			self.bganim:GetAnimState():PushAnimation("open_loop")
+		end
     end
 
     self.onitemlosefn = function(inst, data) self:OnItemLose(data) end

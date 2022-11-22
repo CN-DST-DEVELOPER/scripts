@@ -143,10 +143,12 @@ local function onothercollide(inst, other)
         SpawnPrefab("collapse_small").Transform:SetPosition(other.Transform:GetWorldPosition())
         other.components.workable:Destroy(inst)
 
-    elseif other.components.health ~= nil and not other.components.health:IsDead() then
+	elseif other.components.combat ~= nil
+		and other.components.health ~= nil and not other.components.health:IsDead()
+		and (other:HasTag("wall") or other:HasTag("structure"))
+		then
         inst.SoundEmitter:PlaySound("moonstorm/creatures/boss/alterguardian1/onothercollide")
         inst.components.combat:DoAttack(other)
-
     end
 end
 
@@ -157,10 +159,6 @@ local function oncollide(inst, other)
         ShakeAllCameras(CAMERASHAKE.SIDE, .5, .05, .1, inst, 40)
         inst:DoTaskInTime(2 * FRAMES, onothercollide, other)
         inst._collisions[other] = true
-
-        if other:HasTag("player") and not other:HasTag("playerghost") then
-            inst:PushEvent("rollcollidedwithplayer")
-        end
     end
 end
 

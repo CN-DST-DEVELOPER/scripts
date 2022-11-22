@@ -133,6 +133,7 @@ local FRIENDLYBEES_MUST = { "_combat", "_health" }
 local FRIENDLYBEES_CANT = { "INLIMBO", "noauradamage", "bee", "companion" }
 local FRIENDLYBEES_MUST_ONE = { "monster", "prey" }
 local FRIENDLYBEES_PVP = nil
+local BEE_STUCK_MUST = { "_combat" }
 local function RetargetFn(inst)
     if inst:IsFriendly() then
         if inst:GetQueen() == nil then -- NOTES(JBK): A friendly bee must wait for its queen to take action.
@@ -163,14 +164,31 @@ local function RetargetFn(inst)
         end
 
         return nil
-    else
-        local focustarget = CheckFocusTarget(inst)
-        if focustarget ~= nil then
-            return focustarget, not inst.components.combat:TargetIs(focustarget)
-        end
-        local player, distsq = inst:GetNearestPlayer()
-        return (distsq ~= nil and distsq < 225) and player or nil
     end
+
+	local focustarget = CheckFocusTarget(inst)
+	if focustarget ~= nil then
+		return focustarget, not inst.components.combat:TargetIs(focustarget)
+	end
+
+	if inst.components.combat:HasTarget() and inst.components.stuckdetection:IsStuck() then
+		local queen = inst:GetQueen()
+		if queen ~= nil then
+			local commander = queen.components.commander
+			local x, y, z = inst.Transform:GetWorldPosition()
+			for i, v in ipairs(TheSim:FindEntities(x, 0, z, TUNING.BEEGUARD_ATTACK_RANGE + 3, BEE_STUCK_MUST)) do
+				if v ~= inst then
+					local target = v.components.combat.target
+					if target == queen or (commander ~= nil and commander:IsSoldier(target)) then
+						return v, true
+					end
+				end
+			end
+		end
+	end
+
+	local player, distsq = inst:GetNearestPlayer()
+	return (distsq ~= nil and distsq < 225) and player or nil
 end
 
 local function KeepTargetFn(inst, target)
@@ -204,6 +222,8 @@ local function OnAttacked(inst, data)
 end
 
 local function OnAttackOther(inst, data)
+	inst.components.stuckdetection:Reset()
+
     if data.target ~= nil and data.target.components.inventory ~= nil then
         for k, eslot in pairs(EQUIPSLOTS) do
             local equip = data.target.components.inventory:GetEquippedItem(eslot)
@@ -382,8 +402,17 @@ local function OnGotCommander(inst, data)
                 local offset = Vector3((radius + radiusoffset) * math.cos(angle), 0, (radius + radiusoffset) * math.sin(angle))
                 v.components.knownlocations:RememberLocation("queenoffset", offset, false)
 
-                if realqueen and not v:IsNear(data.commander, 30.0) then -- NOTES(JBK): This is an edge case hack fixup so these bees do not get lost from being too far from a real Bee Queen.
-                    v.Transform:SetPosition(qx + offset.x, qy + offset.y, qz + offset.z)
+				-- NOTES(JBK): This is an edge case hack fixup so these bees do not get lost from being too far from a real Bee Queen.
+				-- V2C: Updated hack to use sleep status instead of range.
+				if realqueen and v:IsAsleep() then
+					if v.components.health:IsDead() or v.sg:HasStateTag("flight") then
+						v:Remove()
+					elseif not v:HasTag("rooted") then
+						v.Physics:Teleport(qx + offset.x, qy + offset.y, qz + offset.z)
+						if not data.commander:IsAsleep() then
+							v.sg:GoToState("spawnin", data.commander)
+						end
+					end
                 end
             end
         end
@@ -500,6 +529,9 @@ local function fn()
     inst.components.combat.battlecryenabled = false
     inst.components.combat.hiteffectsymbol = "mane"
     inst.components.combat.bonusdamagefn = bonus_damage_via_allergy
+
+	inst:AddComponent("stuckdetection")
+	inst.components.stuckdetection:SetTimeToStuck(2)
 
     inst:AddComponent("entitytracker")
     inst:AddComponent("knownlocations")

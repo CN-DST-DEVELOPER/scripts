@@ -17,6 +17,7 @@ local function fn()
     inst.AnimState:SetBuild("driftwood_log")
     inst.AnimState:PlayAnimation("idle")
 
+	--waterproofer (from waterproofer component) added to pristine state for optimization
     inst:AddTag("waterproofer")
 
     MakeInventoryFloatable(inst, "med", 0.03, 0.65)

@@ -222,6 +222,8 @@ local function MakeMinion(name, data, prefabs)
         inst.components.timer:StartTimer("selfdestruct", GetRandomWithVariance(TUNING.STALKER_MINIONS_LIFESPAN, TUNING.STALKER_MINIONS_LIFESPAN_VARIANCE))
         inst:ListenForEvent("timerdone", OnTimerDone)
 
+		MakeHauntablePanic(inst)
+
         inst.emergeimmunetime = params.emergeimmunetime
         inst.emergeshadowtime = params.emergeshadowtime
         inst.movestarttime = params.movestarttime

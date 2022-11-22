@@ -202,7 +202,7 @@ local function MakeTarget(name, anim, colour)
         inst.AnimState:PlayAnimation(anim)
         inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
         inst.AnimState:SetLayer(LAYER_BACKGROUND)
-        inst.AnimState:SetSortOrder(1)
+        inst.AnimState:SetSortOrder(3)--1) --was 1 in forge
         inst.AnimState:SetScale(SCALE, SCALE)
         inst.AnimState:OverrideMultColour(1, 1, 1, 0)
 
@@ -230,11 +230,19 @@ end
 return MakeReticule("reticuleaoe", "idle"),
     MakeReticule("reticuleaoesmall", "idle_small"),
     MakeReticule("reticuleaoesummon", "idle_summon"),
+	MakeReticule("reticuleaoe_1_6", "idle_1_6"),
+	MakeReticule("reticuleaoe_1d2_12", "idle_1d2_12"),
+	--ping scales to grow radius by .2 (or .1 of inner ring for summons)
     MakePing("reticuleaoeping", "idle", 1.05),
     MakePing("reticuleaoesmallping", "idle_small", 1.1),
-    MakePing("reticuleaoesummonping", "idle_summon", 1.025),
+    MakePing("reticuleaoesummonping", "idle_summon", 1.0667),
+	MakePing("reticuleaoeping_1_6", "idle_1_6", 1.1),
+	MakePing("reticuleaoeping_1d2_12", "idle_1d2_12", 1.08333),
     MakeTarget("reticuleaoehostiletarget", "idle_target", { 1, .25, 0, 1 }),
     MakeTarget("reticuleaoefriendlytarget", "idle_target", { 0, 1, .25, 1 }),
     MakeTarget("reticuleaoecctarget", "idle_target", { .3, .5, .2, 1 }),
     MakeTarget("reticuleaoesmallhostiletarget", "idle_small_target", { 1, .25, 0, 1 }),
-    MakeTarget("reticuleaoesummontarget", "idle_summon_target", { .3, .5, .2, 1 })
+    MakeTarget("reticuleaoesummontarget", "idle_summon_target", { .3, .5, .2, 1 }),
+	MakeTarget("reticuleaoesummontarget_1", "idle_target_1", { .3, .5, .2, 1 }),
+	MakeTarget("reticuleaoesummontarget_1d2", "idle_target_1d2", { .3, .5, .2, 1 }),
+	MakeTarget("reticuleaoeshadowtarget_6", "idle_target_6", { .1, .1, .1, 1 })

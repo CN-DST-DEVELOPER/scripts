@@ -28,6 +28,8 @@ local LANDEDAOE_CANT_TAGS = {
     "brightmareboss", "brightmare", "FX", "ghost", "INLIMBO", "NOCLICK", "playerghost",
 }
 local LANDEDAOE_ONEOF_TAGS = { "_combat", "CHOP_workable", "DIG_workable", "HAMMER_workable", "MINE_workable" }
+local LANDEDAOE_RANGE = 2.25
+local LANDEDAOE_RANGE_PADDING = 3
 local function do_landed(inst)
     -- Start with a nice simple camera shake... Should be mild, since we're dropping a bunch of these.
     ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, 0.1, 0.1, inst, 35)
@@ -46,29 +48,32 @@ local function do_landed(inst)
 
     local x, y, z = inst.Transform:GetWorldPosition()
     local potential_targets = TheSim:FindEntities(
-        x, y, z, 2.5, nil, LANDEDAOE_CANT_TAGS, LANDEDAOE_ONEOF_TAGS
+		x, y, z, LANDEDAOE_RANGE + LANDEDAOE_RANGE_PADDING, nil, LANDEDAOE_CANT_TAGS, LANDEDAOE_ONEOF_TAGS
     )
     for _, target in ipairs(potential_targets) do
-        if target ~= inst and target:IsValid() then
-            local has_health = target.components.health ~= nil
+		if target:IsValid() then
+			local range = LANDEDAOE_RANGE + target:GetPhysicsRadius(0)
+			if target:GetDistanceSqToPoint(x, y, z) < range * range then
+				local health = target.components.health
 
-            if has_health and target:HasTag("smashable") then
-                target.components.health:Kill()
-            elseif target.components.workable ~= nil
-                    and target.components.workable:CanBeWorked()
-                    and target.components.workable.action ~= ACTIONS.NET then
-                local tx, ty, tz = target.Transform:GetWorldPosition()
-                if not target:HasTag("moonglass") then
-                    local collapse_fx = SpawnPrefab("collapse_small")
-                    collapse_fx.Transform:SetPosition(tx, ty, tz)
-                end
+				if health ~= nil and target:HasTag("smashable") then
+					health:Kill()
+				elseif target.components.workable ~= nil
+						and target.components.workable:CanBeWorked()
+						and target.components.workable.action ~= ACTIONS.NET then
+					local tx, ty, tz = target.Transform:GetWorldPosition()
+					if not target:HasTag("moonglass") then
+						local collapse_fx = SpawnPrefab("collapse_small")
+						collapse_fx.Transform:SetPosition(tx, ty, tz)
+					end
 
-                target.components.workable:Destroy(inst)
-            elseif has_health and not target.components.health:IsDead() then
-                if attacker_combat ~= nil then
-                    attacker_combat:DoAttack(target)
-                elseif target.components.combat ~= nil then
-                    target.components.combat:GetAttacked(attacker, TUNING.ALTERGUARDIAN_PHASE3_TRAP_LANDEDDAMAGE)
+					target.components.workable:Destroy(inst)
+				elseif health ~= nil and not health:IsDead() then
+					if attacker_combat ~= nil then
+						attacker_combat:DoAttack(target)
+					elseif target.components.combat ~= nil then
+						target.components.combat:GetAttacked(attacker, TUNING.ALTERGUARDIAN_PHASE3_TRAP_LANDEDDAMAGE)
+					end
                 end
             end
         end
@@ -153,6 +158,7 @@ local function do_groggy_pulse(inst)
 
     for _, target in ipairs(nearby_targets) do
         if target.entity:IsVisible()
+				and target.components.health ~= nil
                 and not target.components.health:IsDead()
                 and target.sg ~= nil then
             -- Smash some sleepiness onto anything with grogginess or sleeper components.
@@ -173,6 +179,8 @@ local function do_groggy_pulse(inst)
                         target.components.sanity:DoDelta(TUNING.GESTALT_ATTACK_DAMAGE_SANITY)
                     end
                 end
+			elseif target:HasTag("shadowminion") then
+				target:PushEvent("attacked", { attacker = inst, damage = 0 })
             end
         end
     end

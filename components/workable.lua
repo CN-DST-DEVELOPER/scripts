@@ -78,6 +78,10 @@ function Workable:SetWorkLeft(work)
     self.workleft = self.maxwork > 0 and math.clamp(work or 10, 1, self.maxwork) or math.max(1, work or 10)
 end
 
+function Workable:GetWorkLeft()
+    return self.workable and self.workleft or 0
+end
+
 function Workable:CanBeWorked()
     return self.workable and self.workleft > 0
 end

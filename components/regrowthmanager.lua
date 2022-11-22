@@ -190,6 +190,9 @@ local function CactusRegrowth()
 end
 self:SetRegrowthForType("cactus", TUNING.CACTUS_REGROWTH_TIME, "cactus", CactusRegrowth)
 self:SetRegrowthForType("oasis_cactus", TUNING.CACTUS_REGROWTH_TIME, "oasis_cactus", CactusRegrowth)
+self:SetRegrowthForType("cave_banana_tree", TUNING.CAVE_BANANA_TREE_REGROWTH_TIME, "cave_banana_tree", function()
+    return TUNING.CAVE_BANANA_TREE_REGROWTH_TIME_MULT
+end)
 
 --------------------------------------------------------------------------
 --[[ Update ]]

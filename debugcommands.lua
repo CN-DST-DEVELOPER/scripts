@@ -749,6 +749,26 @@ function d_islandstart()
 
 end
 
+function d_waxwellworker()
+	local player = ConsoleCommandPlayer()
+	local x, y, z = player.Transform:GetWorldPosition()
+
+	local pet = player.components.petleash:SpawnPetAt(x, y, z, "shadowworker")
+	if pet ~= nil then
+		pet.components.knownlocations:RememberLocation("spawn", pet:GetPosition(), true)
+	end
+end
+
+function d_waxwellprotector()
+	local player = ConsoleCommandPlayer()
+	local x, y, z = player.Transform:GetWorldPosition()
+
+	local pet = player.components.petleash:SpawnPetAt(x, y, z, "shadowprotector")
+	if pet ~= nil then
+		pet.components.knownlocations:RememberLocation("spawn", pet:GetPosition(), true)
+	end
+end
+
 function d_boatitems()
     c_spawn("boat_item")
     c_spawn("mast_item", 3)

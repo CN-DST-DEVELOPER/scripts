@@ -190,7 +190,7 @@ local function OnAttacked(inst, data)
         local target = inst.components.combat.target
         if not (target ~= nil and
                 target:HasTag("player") and
-                target:IsNear(inst, inst.focustarget_cd > 0 and TUNING.BEEQUEEN_ATTACK_RANGE + target:GetPhysicsRadius(0) or TUNING.BEEQUEEN_AGGRO_DIST)) then
+				target:IsNear(inst, (inst.focustarget_cd > 0 or inst.components.stuckdetection:IsStuck()) and TUNING.BEEQUEEN_ATTACK_RANGE + target:GetPhysicsRadius(0) or TUNING.BEEQUEEN_AGGRO_DIST)) then
             inst.components.combat:SetTarget(data.attacker)
         end
         inst.components.commander:ShareTargetToAllSoldiers(data.attacker)
@@ -198,6 +198,8 @@ local function OnAttacked(inst, data)
 end
 
 local function OnAttackOther(inst, data)
+	inst.components.stuckdetection:Reset()
+
     if data.target ~= nil then
         local fx = SpawnPrefab("honey_trail")
         fx.Transform:SetPosition(data.target.Transform:GetWorldPosition())
@@ -430,6 +432,9 @@ local function fn()
     inst.components.combat.battlecryenabled = false
     inst.components.combat.hiteffectsymbol = "hive_body"
     inst.components.combat.bonusdamagefn = bonus_damage_via_allergy
+
+	inst:AddComponent("stuckdetection")
+	inst.components.stuckdetection:SetTimeToStuck(2)
 
     inst:AddComponent("explosiveresist")
 

@@ -95,8 +95,27 @@ local function OnFuelChanged(inst, data)
     end
 end
 
-local function OnTakeFuel(inst)
-	inst.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+local function CLIENT_PlayFuelSound(inst)
+	local parent = inst.entity:GetParent()
+	local container = parent ~= nil and (parent.replica.inventory or parent.replica.container) or nil
+	if container ~= nil and container:IsOpenedBy(ThePlayer) then
+		TheFocalPoint.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	end
+end
+
+local function SERVER_PlayFuelSound(inst)
+	local owner = inst.components.inventoryitem.owner
+	if owner == nil then
+		inst.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	elseif inst.components.equippable:IsEquipped() and owner.SoundEmitter ~= nil then
+		owner.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	else
+		inst.playfuelsound:push()
+		--Dedicated server does not need to trigger sfx
+		if not TheNet:IsDedicated() then
+			CLIENT_PlayFuelSound(inst)
+		end
+	end
 end
 
 local function fn()
@@ -117,9 +136,14 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.05, {1.2, 0.75, 1.2})
 
+	inst.playfuelsound = net_event(inst.GUID, "pocketwatch_weapon.playfuelsound")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+		--delayed because we don't want any old events
+		inst:DoTaskInTime(0, inst.ListenForEvent, "pocketwatch_weapon.playfuelsound", CLIENT_PlayFuelSound)
+
         return inst
     end
 
@@ -144,7 +168,7 @@ local function fn()
     inst.components.fueled.fueltype = FUELTYPE.NIGHTMARE
     inst.components.fueled:InitializeFuelLevel(4 * TUNING.LARGE_FUEL)
     inst.components.fueled.accepting = true
-	inst.components.fueled:SetTakeFuelFn(OnTakeFuel)
+	inst.components.fueled:SetTakeFuelFn(SERVER_PlayFuelSound)
 
     inst:ListenForEvent("percentusedchange", OnFuelChanged)
 	

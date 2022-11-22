@@ -75,6 +75,9 @@ local function fn()
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -101,6 +104,9 @@ local function fn()
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
     inst.components.equippable.walkspeedmult = TUNING.RUINS_BAT_SPEED_MULT
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.RUINS_BAT_SHADOW_LEVEL)
 
     MakeHauntableLaunch(inst)
 

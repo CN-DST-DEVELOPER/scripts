@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "I just thought the lil guy could use a polish.",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -468,6 +485,8 @@ return{
 --fallback to speech_wilson.lua         SAME_OLD_5 = "only_used_by_warly",
 --fallback to speech_wilson.lua 		TASTY = "only_used_by_warly",
     },
+
+	ANNOUNCE_FOODMEMORY = "only_used_by_warly",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -2923,7 +2942,11 @@ return{
 		WATERMELON = "We used to slice these up on hot summer days.",
 		WATERMELON_COOKED = "This was an odd choice.",
 		WATERMELONHAT = "A melon for your melon.",
-		WAXWELLJOURNAL = "I don't trust that thing one bit.",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "I don't trust that thing one bit.",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "Yuck.",
         WHIP = "The preferred tool of the foreman.",
 		WINTERHAT = "Perfect for winters in the tenement house.",
@@ -4667,6 +4690,10 @@ return{
             GENERIC = "Lookin' good!",
             BURNT = "Yeesh, looks like this one's toast.",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "I dunno if I want to stick my hand in there.",
+		TOPHAT_MAGICIAN = "Max is a little too good at keepin' things under his hat.",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

@@ -127,28 +127,34 @@ local function spawn_ground_fx(inst)
     end
 end
 
-local CHARGE_LOOP_TARGET_CANT_TAGS = {"INLIMBO", "fx", "eyeofterror"}
+local CHARGE_RANGE_OFFSET = 3 - TUNING.EYEOFTERROR_CHARGE_AOERANGE
 local CHARGE_LOOP_TARGET_ONEOF_TAGS = {"tree", "_health"}
-local FOCUSTARGET_DSQ = TUNING.BEEQUEEN_FOCUSTARGET_RANGE * TUNING.BEEQUEEN_FOCUSTARGET_RANGE
 
+local AOE_RANGE_PADDING = 3
 local AOE_TARGET_MUSTHAVE_TAGS = { "_health", "_combat" }
-local AOE_TARGET_CANT_TAGS = { "fx", "INLIMBO", "eyeofterror" }
-local AOE_TARGET_ONEOF_TAGS = { "animal", "character", "monster", "shadowminion", "smallcreature" }
+local AOE_TARGET_CANT_TAGS = { "INLIMBO", "eyeofterror", "flight", "invisible", "notarget", "noattack" }
+local AOE_TARGET_ONEOF_TAGS = { "animal", "character", "monster", "shadowminion" }
 local function DoAOEAttack(inst, range)
+	--assert(range <= inst.components.combat.hitrange)
     local x,y,z = inst.Transform:GetWorldPosition()
     local targets = TheSim:FindEntities(
-        x, y, z, range,
+		x, y, z, range + AOE_RANGE_PADDING,
         AOE_TARGET_MUSTHAVE_TAGS, AOE_TARGET_CANT_TAGS, AOE_TARGET_ONEOF_TAGS
     )
 
-    local default_damage = inst.components.combat.defaultdamage
-    inst.components.combat:SetDefaultDamage(inst._chompdamage or TUNING.EYEOFTERROR_AOE_DAMAGE)
-    for _, target in ipairs(targets) do
-        if target ~= inst then
-            inst.components.combat:DoAttack(target)
-        end
-    end
-    inst.components.combat:SetDefaultDamage(default_damage)
+	if #targets > 0 then
+		local default_damage = inst.components.combat.defaultdamage
+		inst.components.combat:SetDefaultDamage(inst._chompdamage or TUNING.EYEOFTERROR_AOE_DAMAGE)
+		for _, target in ipairs(targets) do
+			if target:IsValid() and not (target.components.health ~= nil and target.components.health:IsDead()) then
+				local range1 = range + target:GetPhysicsRadius(0)
+				if target:GetDistanceSqToPoint(x, y, z) < range1 * range1 then
+					inst.components.combat:DoAttack(target)
+				end
+			end
+		end
+		inst.components.combat:SetDefaultDamage(default_damage)
+	end
 end
 
 local function DoEpicScare(inst, duration)
@@ -229,26 +235,36 @@ local states =
             inst.components.timer:StartTimer("charge_cd", get_rng_cooldown(cooldown))
 
             inst.sg.statemem.target = target
-            inst.sg.statemem.stopsteering = false
+			inst.sg.statemem.steering = true
 
             inst.AnimState:PlayAnimation("charge_pre")
 
             -- All users of this SG share this sound.
             inst.SoundEmitter:PlaySound("terraria1/eyeofterror/charge_pre_sfx")
+
+			inst.components.stuckdetection:Reset()
         end,
 
         onupdate = function(inst)
-            local target = inst.sg.statemem.target
-            if not inst.sg.statemem.stopsteering and target and target:IsValid() then
-                inst:ForceFacePoint(target.Transform:GetWorldPosition())
-            end
+			if inst.sg.statemem.steering and inst.sg.statemem.target ~= nil then
+				if inst.sg.statemem.target:IsValid() then
+					inst:ForceFacePoint(inst.sg.statemem.target.Transform:GetWorldPosition())
+				else
+					inst.sg.statemem.target = nil
+				end
+			end
         end,
 
         timeline =
         {
             TimeEvent(11 * FRAMES, function(inst)
-                inst.sg.statemem.stopsteering = true
+				--normal: stop tracking early
+				inst.sg.statemem.steering = inst.sg.mem.transformed
             end),
+			TimeEvent(25 * FRAMES, function(inst)
+				--transformed: stop tracking 8 frames b4 dash
+				inst.sg.statemem.steering = false
+			end),
         },
 
         events =
@@ -285,10 +301,19 @@ local states =
 
         onupdate = function(inst, dt)
             if inst.sg.statemem.collisiontime <= 0 then
+				--assert(TUNING.EYEOFTERROR_CHARGE_AOERANGE <= inst.components.combat.hitrange)
                 local x,y,z = inst.Transform:GetWorldPosition()
-                local ents = TheSim:FindEntities(x, y, z, 2, nil, CHARGE_LOOP_TARGET_CANT_TAGS, CHARGE_LOOP_TARGET_ONEOF_TAGS)
+				local theta = inst.Transform:GetRotation() * DEGREES
+				x = x + math.cos(theta) * CHARGE_RANGE_OFFSET
+				z = z - math.sin(theta) * CHARGE_RANGE_OFFSET
+				local ents = TheSim:FindEntities(x, y, z, TUNING.EYEOFTERROR_CHARGE_AOERANGE + AOE_RANGE_PADDING, nil, AOE_TARGET_CANT_TAGS, CHARGE_LOOP_TARGET_ONEOF_TAGS)
                 for _, ent in ipairs(ents) do
-                    inst:OnCollide(ent)
+					if ent:IsValid() then
+						local range = TUNING.EYEOFTERROR_CHARGE_AOERANGE + ent:GetPhysicsRadius(0)
+						if ent:GetDistanceSqToPoint(x, y, z) < range * range then
+							inst:OnCollide(ent)
+						end
+					end
                 end
 
                 inst.sg.statemem.collisiontime = COLLIDE_TIME
@@ -329,13 +354,38 @@ local states =
             -- All users of this SG share this sound.
             inst.SoundEmitter:PlaySound("terraria1/eyeofterror/charge_pst_sfx")
 
-            inst.sg.statemem.target = target
+			if inst.sg.mem.mouthcharge_count ~= nil and inst.sg.mem.mouthcharge_count > 0 then
+				inst.sg.statemem.mouthcharge = true
+				if target ~= nil and target:IsValid() then
+					inst.sg.statemem.target = inst.components.stuckdetection:IsStuck() and inst.components.combat.target or target
+				else
+					inst.components.combat:TryRetarget()
+					inst.sg.statemem.target = inst.components.combat.target
+				end
+			end
         end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.steering and inst.sg.statemem.target ~= nil then
+				if inst.sg.statemem.target:IsValid() then
+					inst:ForceFacePoint(inst.sg.statemem.target.Transform:GetWorldPosition())
+				else
+					inst.sg.statemem.target = nil
+				end
+			end
+		end,
 
         timeline =
         {
+			TimeEvent(3 * FRAMES, function(inst)
+				inst.sg.statemem.steering = inst.sg.statemem.mouthcharge
+			end),
+			TimeEvent(13 * FRAMES, function(inst)
+				--transformed: stop tracking 4 frames before dash
+				inst.sg.statemem.steering = false
+			end),
             TimeEvent(17*FRAMES, function(inst)
-                if inst.sg.mem.mouthcharge_count ~= nil and inst.sg.mem.mouthcharge_count > 0 then
+				if inst.sg.statemem.mouthcharge then
                     inst.sg:GoToState("mouthcharge_loop", inst.sg.statemem.target)
                 end
             end),
@@ -374,24 +424,24 @@ local states =
             inst.sg:SetTimeout(inst._chargedata.mouthchargetimeout)
             inst.sg.statemem.collisiontime = 0
             inst.sg.statemem.fxtime = 0
-
-            if target == nil or not target:IsValid() then
-                inst.components.combat:TryRetarget()
-                target = inst.components.combat.target
-            end
-            if target ~= nil and target:IsValid() then
-                inst:ForceFacePoint(target.Transform:GetWorldPosition())
-            end
-
             inst.sg.statemem.target = target
         end,
 
         onupdate = function(inst, dt)
             if inst.sg.statemem.collisiontime <= 0 then
+				--assert(TUNING.EYEOFTERROR_CHARGE_AOERANGE <= inst.components.combat.hitrange)
                 local x,y,z = inst.Transform:GetWorldPosition()
-                local ents = TheSim:FindEntities(x, y, z, 2, nil, CHARGE_LOOP_TARGET_CANT_TAGS, CHARGE_LOOP_TARGET_ONEOF_TAGS)
+				local theta = inst.Transform:GetRotation() * DEGREES
+				x = x + math.cos(theta) * CHARGE_RANGE_OFFSET
+				z = z - math.sin(theta) * CHARGE_RANGE_OFFSET
+				local ents = TheSim:FindEntities(x, y, z, TUNING.EYEOFTERROR_CHARGE_AOERANGE + AOE_RANGE_PADDING, nil, AOE_TARGET_CANT_TAGS, CHARGE_LOOP_TARGET_ONEOF_TAGS)
                 for _, ent in ipairs(ents) do
-                    inst:OnCollide(ent)
+					if ent:IsValid() then
+						local range = TUNING.EYEOFTERROR_CHARGE_AOERANGE + ent:GetPhysicsRadius(0)
+						if ent:GetDistanceSqToPoint(x, y, z) < range * range then
+							inst:OnCollide(ent)
+						end
+					end
                 end
 
                 inst.sg.statemem.collisiontime = COLLIDE_TIME
@@ -420,15 +470,7 @@ local states =
             inst.sg.mem.mouthcharge_count = (inst.sg.mem.mouthcharge_count == nil and 0)
                 or inst.sg.mem.mouthcharge_count - 1
 
-            local target = inst.sg.statemem.target
-            if target == nil or not target:IsValid() then
-                inst.components.combat:TryRetarget()
-                target = inst.components.combat.target
-            end
-            if target ~= nil and target:IsValid() then
-                inst:ForceFacePoint(target.Transform:GetWorldPosition())
-            end
-            inst.sg:GoToState("charge_pst", target)
+			inst.sg:GoToState("charge_pst", inst.sg.statemem.target)
         end,
     },
 

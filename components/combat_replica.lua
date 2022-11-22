@@ -388,7 +388,11 @@ function Combat:CanBeAttacked(attacker)
         self.inst:HasTag("invisible") then
         --Can't be attacked by anyone
         return false
-    elseif attacker ~= nil then
+	end
+
+	local sanity
+
+	if attacker ~= nil then
         --Attacker checks
         if self.inst:HasTag("birchnutdrake")
             and (attacker:HasTag("birchnutdrake") or
@@ -426,19 +430,38 @@ function Combat:CanBeAttacked(attacker)
                 end
             end
         end
-        local sanity = attacker.replica.sanity
+
+		sanity = attacker.replica.sanity
+
         if sanity ~= nil and sanity:IsCrazy() or attacker:HasTag("crazy") then
             --Insane attacker can pretty much attack anything
             return true
         end
     end
 
-    if self.inst:HasTag("shadowcreature") and
-        self._target:value() == nil and
+	if self.inst:HasTag("shadowcreature") and
+		(	self._target:value() == nil
+			--[[or (--See if we're targeting someone else, and attacker isn't insane enough to help
+				attacker ~= nil and
+				sanity ~= nil and --set already in the above attacker ~= nil block
+				self._target:value() ~= attacker and
+				not (sanity:IsInsanityMode() and sanity:GetPercent() < .5)
+				)]]
+			--V2C: The above version is the correct design; we should never have
+			--     allowed targeting invisible entities.
+			--     TODO: Add/improve items for revealing shadow creatures so we
+			--           can switch to that version.
+			or (--See if we're targeting someone else, but not actually hostile to them
+				attacker ~= nil and
+				self._target:value() ~= attacker and
+				(self.inst.HostileToPlayerTest ~= nil and not self.inst:HostileToPlayerTest(self._target:value()))
+				)
+		) and
         --Allow AOE damage on stationary shadows like Unseen Hands
         (attacker ~= nil or self.inst:HasTag("locomotor")) then
         --Not insane attacker cannot attack shadow creatures
-        --(unless shadow creature has a target)
+		--(unless shadow creature is targeting attacker, or targeting
+		-- someone else, and attacker is below 50% sanity to help out)
         return false
     end
 

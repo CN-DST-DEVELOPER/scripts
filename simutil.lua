@@ -255,7 +255,6 @@ end
 function FindValidPositionByFan(start_angle, radius, attempts, test_fn)
     attempts = attempts or 8
 
-    local TWOPI = 2 * PI
     local attempt_angle = TWOPI / attempts
     local tmp_angles = {}
     for i = 0, attempts - 1 do
@@ -324,42 +323,93 @@ function FindSwimmableOffset(position, start_angle, radius, attempts, check_los,
             end)
 end
 
-local PICKUP_MUST_TAGS = { "_inventoryitem" }
+local PICKUP_MUST_ONEOF_TAGS = { "_inventoryitem", "pickable" }
 local PICKUP_CANT_TAGS = {
-    "INLIMBO", "NOCLICK", "irreplaceable", "knockbackdelayinteraction",
+    -- Items
+    "INLIMBO", "NOCLICK", "irreplaceable", "knockbackdelayinteraction", "event_trigger",
     "minesprung", "mineactive", "catchable",
-    "fire", "spider", "cursed", "paired", "bundle"
+    "fire", "light", "spider", "cursed", "paired", "bundle",
+    "heatrock", "deploykititem", "boatbuilder", "singingshell",
+    "archive_lockbox", "simplebook",
+    -- Pickables
+    "flower", "gemsocket", "structure",
+    -- Either
+    "donotautopick",
 }
+local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable)
+    if AllBuilderTaggedRecipes[v.prefab] then
+        return false
+    end
+    -- NOTES(JBK): "donotautopick" for general class components here.
+    if v.components.armor or v.components.weapon or v.components.tool or v.components.equippable or v.components.sewing or v.components.erasablepaper then
+        return false
+    end
+    if v.components.burnable ~= nil and (v.components.burnable:IsBurning() or v.components.burnable:IsSmoldering()) then
+        return false
+    end
+    if ispickable then
+        if not allowpickables then
+            return false
+        end
+    else
+        if not (v.components.inventoryitem ~= nil and
+            v.components.inventoryitem.canbepickedup and
+            v.components.inventoryitem.cangoincontainer and
+            not v.components.inventoryitem:IsHeld()) then
+            return false
+        end
+    end
+    if ignorethese ~= nil and ignorethese[v] ~= nil then
+        return false
+    end
+    if onlytheseprefabs ~= nil and onlytheseprefabs[ispickable and v.components.pickable.product or v.prefab] == nil then
+        return false
+    end
+    if v.components.container ~= nil then -- Containers are most likely sorted and placed by the player do not pick them up.
+        return false
+    end
+    if v.components.bundlemaker ~= nil then -- Bundle creators are aesthetically placed do not pick them up.
+        return false
+    end
+    if v.components.bait ~= nil and v.components.bait.trap ~= nil then -- Do not steal baits.
+        return false
+    end
+    if v.components.trap ~= nil and not (v.components.trap:IsSprung() and v.components.trap:HasLoot()) then -- Only interact with traps that have something in it to take.
+        return false
+    end
+    if not ispickable and owner.components.inventory:CanAcceptCount(v, 1) <= 0 then -- TODO(JBK): This is not correct for traps nor pickables but they do not have real prefabs made yet to check against.
+        return false
+    end
+    if ba ~= nil and ba.target == v and (ba.action == ACTIONS.PICKUP or ba.action == ACTIONS.CHECKTRAP or ba.action == ACTIONS.PICK) then
+        return false
+    end
+    return v, ispickable
+end
 -- This function looks for an item on the ground that could be ACTIONS.PICKUP (or ACTIONS.CHECKTRAP if a trap) by the owner and subsequently put into the owner's inventory.
-function FindPickupableItem(owner, radius, furthestfirst)
+function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables)
     if owner == nil or owner.components.inventory == nil then
         return nil
     end
     local ba = owner:GetBufferedAction()
-    local x, y, z = owner.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, radius, PICKUP_MUST_TAGS, PICKUP_CANT_TAGS)
+    local x, y, z
+    if positionoverride then
+        x, y, z = positionoverride:Get()
+    else
+        x, y, z = owner.Transform:GetWorldPosition()
+    end
+    local ents = TheSim:FindEntities(x, y, z, radius, nil, PICKUP_CANT_TAGS, PICKUP_MUST_ONEOF_TAGS)
     local istart, iend, idiff = 1, #ents, 1
     if furthestfirst then
         istart, iend, idiff = iend, istart, -1
     end
     for i = istart, iend, idiff do
         local v = ents[i]
-        if v.components.container == nil and -- Containers are most likely sorted and placed by the player do not pick them up.
-            v.components.bundlemaker == nil and -- Bundle creators are aesthetically placed do not pick them up.
-            v.components.inventoryitem ~= nil and
-            v.components.inventoryitem.canbepickedup and
-            v.components.inventoryitem.cangoincontainer and
-            not v.components.inventoryitem:IsHeld() and
-            (v.components.bait == nil or v.components.bait.trap == nil) and -- Do not steal baits.
-            owner.components.inventory:CanAcceptCount(v, 1) > 0 and -- TODO(JBK): This is not correct for traps but they do not have real prefabs made yet to check against.
-            (ba == nil or (ba.action ~= ACTIONS.PICKUP and ba.action ~= ACTIONS.CHECKTRAP) or ba.target ~= v) then
-            -- Only interact with traps that have something in it to take.
-            if v.components.trap == nil or v.components.trap:IsSprung() and v.components.trap:HasLoot() then
-                return v
-            end
+        local ispickable = v:HasTag("pickable")
+        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable) then
+            return v, ispickable
         end
     end
-    return nil
+    return nil, nil
 end
 
 local function _CanEntitySeeInDark(inst)

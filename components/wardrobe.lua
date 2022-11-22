@@ -157,6 +157,7 @@ function Wardrobe:EndChanging(doer)
         self.inst:RemoveEventCallback("ms_closepopup", self.onclosepopup, doer)
 
         self.changers[doer] = nil
+        doer:PushEvent("onskinschanged") -- NOTES(JBK): Yay.
 
         if doer.sg:HasStateTag("inwardrobe") and not doer.sg.statemem.isclosingwardrobe then
             doer.sg.statemem.isclosingwardrobe = true

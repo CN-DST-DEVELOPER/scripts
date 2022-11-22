@@ -8,7 +8,7 @@ local foodinfo =
     {food=FOODTYPE.GOODIES, health=0,     hunger=3,  sanity=1, treeornament=true, floater={"med", 0.65}}, -- Gingerbread Cookies
     {food=FOODTYPE.GOODIES, health=0,     hunger=2,  sanity=2, treeornament=true, floater={"small", 0.90}}, -- Sugar Cookies
     {food=FOODTYPE.GOODIES, health=2,     hunger=0,  sanity=2, treeornament=true, floater={"med", 0.65}}, -- Candy Cane
-    {food=FOODTYPE.VEGGIE,  health=-2,    hunger=6,  sanity=-2, treeornament=true, floater={"med", 0.83}}, -- Fruitcake
+    {food=FOODTYPE.VEGGIE,  health=-2,    hunger=6,  sanity=-2, treeornament=true, floater={"med", 0.83}, tags = {"donotautopick"}}, -- Fruitcake
     {food=FOODTYPE.GOODIES, health=1,     hunger=2,  sanity=1, treeornament=true, floater={"med", 0.65}}, -- chocolate log cake
     {food=FOODTYPE.VEGGIE,  health=0,     hunger=4,  sanity=0, treeornament=false, floater={"small", 0.80}}, -- plum pudding
     {food=FOODTYPE.VEGGIE,  health=2,     hunger=0,  sanity=1, treeornament=false, floater={"small", 0.93}, temperature = TUNING.HOT_FOOD_BONUS_TEMP, temperatureduration = TUNING.FOOD_TEMP_LONG}, -- hot apple cider

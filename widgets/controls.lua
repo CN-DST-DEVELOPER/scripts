@@ -39,6 +39,7 @@ local VoteDialog = require "widgets/votedialog"
 local TEMPLATES = require "widgets/templates"
 local easing = require("easing")
 local TeamStatusBars = require("widgets/teamstatusbars")
+local Wheel = require "widgets/wheel"
 
 local Controls = Class(Widget, function(self, owner)
     Widget._ctor(self, "Controls")
@@ -261,6 +262,20 @@ local Controls = Class(Widget, function(self, owner)
 	end
 	self.crafttabs = self.craftingmenu -- self.crafttabs is deprecated
 
+	self.commandwheelroot = self:AddChild(Widget("CommandWheelRoot"))
+    self.commandwheelroot:SetHAnchor(ANCHOR_MIDDLE)
+    self.commandwheelroot:SetVAnchor(ANCHOR_MIDDLE)
+    self.commandwheelroot:SetScaleMode(SCALEMODE_PROPORTIONAL)
+
+	--@CHARLES #TODO CONSOLE MERGE: add these lines
+	--self.commandwheel.OnCancel = function() owner.HUD:CloseControllerCommandWheel() end
+	--self.commandwheel.OnExecute = self.commandwheel.OnCancel
+
+	self.spellwheel = self.commandwheelroot:AddChild(Wheel("SpellWheel", owner, {ignoreleftstick = true,}))
+	self.spellwheel.selected_label:SetSize(26)
+	self.spellwheel.OnCancel = function() owner.HUD:CloseSpellWheel() end
+	self.spellwheel.OnExecute = function() owner.HUD:CloseSpellWheel(true) end
+
     if TheNet:GetIsClient() then
         --Not using topleft_root because we need to be on top of containerroot
         self.desync = self:AddChild(Widget("desyncroot"))
@@ -463,7 +478,7 @@ function Controls:OnUpdate(dt)
     local shownItemIndex = nil
     local itemInActions = false     -- the item is either shown through the actionhint or the groundaction
 
-    if controller_mode and not (self.inv.open or self.craftingmenu:IsCraftingOpen()) and self.owner:IsActionsVisible() then
+    if controller_mode and not (self.inv.open or self.craftingmenu:IsCraftingOpen() or self.spellwheel:IsOpen()) and self.owner:IsActionsVisible() then
         local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
         local ground_cmds = {}
         local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil
@@ -600,16 +615,24 @@ function Controls:OnUpdate(dt)
             else
                 textblock:SetString(table.concat(cmds, "\n"))
             end
-        elseif not self.groundactionhint.shown
-            and self.dismounthintdelay <= 0
-            and self.owner.replica.rider ~= nil
-            and self.owner.replica.rider:IsRiding() then
-            self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
-            self.playeractionhint:Show()
-            self.playeractionhint:SetTarget(self.owner)
-        else
-            self.playeractionhint:Hide()
-            self.playeractionhint:SetTarget(nil)
+		elseif not self.groundactionhint.shown then
+			if self.owner:HasTag("usingmagiciantool") then
+				self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.STOPUSINGMAGICTOOL)
+				self.playeractionhint:Show()
+				self.playeractionhint:SetTarget(self.owner)
+			elseif self.dismounthintdelay <= 0
+				and self.owner.replica.rider ~= nil
+				and self.owner.replica.rider:IsRiding() then
+				self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+				self.playeractionhint:Show()
+				self.playeractionhint:SetTarget(self.owner)
+			else
+				self.playeractionhint:Hide()
+				self.playeractionhint:SetTarget(nil)
+			end
+		else
+			self.playeractionhint:Hide()
+			self.playeractionhint:SetTarget(nil)
         end
 
         if controller_attack_target ~= nil and not attack_shown then
@@ -813,6 +836,7 @@ function Controls:HideCraftingAndInventory()
         if self.status.ToggleCrafting ~= nil then
             self.status:ToggleCrafting(true)
         end
+		self.spellwheel:Close()
     end
 end
 

@@ -22,23 +22,30 @@ local events=
 
 }
 
-local TARGET_CANT_TAGS = { "INLIMBO","ancient_clockwork" }
-local TARGET_ONEOF_TAGS = { "character", "monster" }
+local AOE_RANGE_PADDING = 3
+local AOE_MUST_TAGS = { "_combat", "_health" }
+local AOE_CANT_TAGS = { "ancient_clockwork", "archive_centipede", "INLIMBO", "flight", "invisible", "notarget", "noattack" }
+local ROLL_CANT_TAGS = { "wall", "structure", "INLIMBO", "flight", "invisible", "notarget", "noattack" }
+local AOE_ONEOF_TAGS = { "character", "monster", "shadowminion", "animal", "smallcreature" }
+local TARGET_ONEOF_TAGS = { "character", "monster", "shadowminion" }
 
 local function doAOEattack(inst)
     local x,y,z = inst.Transform:GetWorldPosition()
-    local targets = TheSim:FindEntities(x,y,z, TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE, nil, TARGET_CANT_TAGS,TARGET_ONEOF_TAGS)
-    for i=#targets,1,-1 do
-        local target = targets[i]
-        if not target.components.health and not target.components.combat then
-            table.remove(targets,i)
-        end
-    end
-    inst.components.combat:SetDefaultDamage(TUNING.ARCHIVE_CENTIPEDE.AOE_DAMAGE)
-    for i,target in ipairs(targets)do
-        inst.components.combat:DoAttack(target)
-    end
-    inst.components.combat:SetDefaultDamage(TUNING.ARCHIVE_CENTIPEDE.DAMAGE)
+	local targets = TheSim:FindEntities(x, y, z, TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE + AOE_RANGE_PADDING, AOE_MUST_TAGS, AOE_CANT_TAGS, AOE_ONEOF_TAGS)
+	if #targets > 0 then
+		inst.components.combat:SetDefaultDamage(TUNING.ARCHIVE_CENTIPEDE.AOE_DAMAGE)
+		inst.components.combat:SetRange(TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE)
+		for i, target in ipairs(targets) do
+			if target:IsValid() and target.components.health ~= nil and not target.components.health:IsDead() then
+				local range = TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE + target:GetPhysicsRadius(0)
+				if target:GetDistanceSqToPoint(x, y, z) < range * range then
+					inst.components.combat:DoAttack(target)
+				end
+			end
+		end
+		inst.components.combat:SetDefaultDamage(TUNING.ARCHIVE_CENTIPEDE.DAMAGE)
+		inst.components.combat:SetRange(TUNING.ARCHIVE_CENTIPEDE.ATTACK_RANGE)
+	end
 end
 
 local function attackexit(inst)
@@ -60,23 +67,28 @@ local states=
                 inst.pushparams(inst, inst._currentlight)
             end
 
-            local targets = {}
             if inst.doAOE then
+				inst.doAOE = nil
                 local x,y,z = inst.Transform:GetWorldPosition()
-                targets = TheSim:FindEntities(x,y,z, TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE, nil, TARGET_CANT_TAGS,TARGET_ONEOF_TAGS)
+				local targets = TheSim:FindEntities(x, y, z, TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE + AOE_RANGE_PADDING, AOE_MUST_TAGS, AOE_CANT_TAGS, TARGET_ONEOF_TAGS)
+				for i, target in ipairs(targets) do
+					if target:IsValid() and target.components.health ~= nil and not target.components.health:IsDead() then
+						local range = TUNING.ARCHIVE_CENTIPEDE.AOE_RANGE + target:GetPhysicsRadius(0)
+						if target:GetDistanceSqToPoint(x, y, z) < range * range then
+							inst.sg:GoToState("atk_aoe")
+							return
+						end
+					end
+				end
             end
-            if #targets > 0 then
-                inst.sg:GoToState("atk_aoe")
-            else
-                inst.Physics:Stop()
-                if playanim then
-                    inst.AnimState:PlayAnimation(playanim)
-                    inst.AnimState:PushAnimation("idle", true)
-                else
-                    inst.AnimState:PlayAnimation("idle", true)
-                end
-            end
-            inst.doAOE = nil
+
+			inst.Physics:Stop()
+			if playanim then
+				inst.AnimState:PlayAnimation(playanim)
+				inst.AnimState:PushAnimation("idle", true)
+			else
+				inst.AnimState:PlayAnimation("idle", true)
+			end
         end,
 
         events=
@@ -126,7 +138,7 @@ local states=
         },
     },
     State{  name = "roll_start",
-            tags = {"moving", "running", "busy", "atk_pre", "canrotate", "charge"},
+			tags = { "busy", "atk_pre", "canrotate", "charge" },
 
             onenter = function(inst)
                 if inst.components.combat and inst.components.combat.target then
@@ -138,13 +150,6 @@ local states=
                 inst.AnimState:PlayAnimation("atk_roll_pre")
             end,
 
-            timeline=
-            {
-                TimeEvent(1*FRAMES,  function(inst)
-
-                end ),
-            },
-
             events=
             {
                 EventHandler("animover", function(inst)
@@ -155,7 +160,7 @@ local states=
         },
 
     State{  name = "roll",
-            tags = {"moving", "running", "charge"},
+			tags = { "busy", "charge"},
 
             onenter = function(inst)
                 inst.components.locomotor:Stop()
@@ -169,12 +174,30 @@ local states=
                 end
                 inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength()*2)
                 --inst.sg:SetTimeout(1)
+				inst.sg.statemem.ignores = { [inst] = true }
             end,
 
-            timeline=
-            {
-
-            },
+			onupdate = function(inst)
+				local ignores = inst.sg.statemem.ignores
+				local x, y, z = inst.Transform:GetWorldPosition()
+				local radius = 2
+				local ents = TheSim:FindEntities(x, y, z, radius + AOE_RANGE_PADDING, AOE_MUST_TAGS, ROLL_CANT_TAGS)
+				local hit = false
+				for i, v in ipairs(ents) do
+					if not ignores[v] and v:IsValid() and not (v.components.health ~= nil and v.components.health:IsDead()) then
+						local range = radius + v:GetPhysicsRadius(0)
+						if v:GetDistanceSqToPoint(x, y, z) < range * range then
+							inst.components.combat:DoAttack(v)
+							ignores[v] = true
+							hit = true
+						end
+					end
+				end
+				if hit then
+					ShakeAllCameras(CAMERASHAKE.SIDE, .5, .05, .1, inst, 40)
+					inst.SoundEmitter:PlaySound("dontstarve/creatures/rook/explo")
+				end
+			end,
 
             onexit = function(inst)
                 inst.components.locomotor:Stop()
@@ -192,7 +215,6 @@ local states=
             tags = {"canrotate", "idle", "charge"},
 
             onenter = function(inst)
-
                 inst.components.locomotor:Stop()
                 inst.AnimState:PlayAnimation("atk_roll_pst")
             end,

@@ -18,6 +18,8 @@ local Reticule = Class(function(self, inst)
     self.invalidcolour = { 1, 0, 0, 1 }
     self.currentcolour = self.invalidcolour
     self.mouseenabled = false
+	self.twinstickmode = nil
+	self.twinstickrange = nil
     self.followhandler = nil
     self.fadealpha = 1
     self.blipalpha = 1
@@ -88,16 +90,33 @@ end
 
 function Reticule:PingReticuleAt(pos)
     if self.pingprefab ~= nil and pos ~= nil then
-        local ping = SpawnPrefab(self.pingprefab)
-        if ping ~= nil then
-            ping.AnimState:SetMultColour(unpack(self.validcolour))
-            ping.AnimState:SetAddColour(.2, .2, .2, 0)
-            if self.updatepositionfn ~= nil then
-                self.updatepositionfn(self.inst, pos, ping)
-            else
-                ping.Transform:SetPosition(pos.x, 0, pos.z)
-            end
-        end
+		local platform
+		if pos:is_a(DynamicPosition) then
+			platform = pos.walkable_platform
+			pos = pos:GetPosition()
+		end
+		if pos ~= nil then
+			local ping = SpawnPrefab(self.pingprefab)
+			if ping ~= nil then
+				ping.AnimState:SetMultColour(unpack(self.validcolour))
+				ping.AnimState:SetAddColour(.2, .2, .2, 0)
+				if self.updatepositionfn ~= nil then
+					self.updatepositionfn(self.inst, pos, ping)
+				else
+					ping.Transform:SetPosition(pos.x, 0, pos.z)
+				end
+				if platform ~= nil then
+					--Assume valid otherwise pos would've been nil
+					--assert(platform:IsValid())
+					ping.Transform:SetPosition(platform.entity:WorldToLocalSpace(ping.Transform:GetWorldPosition()))
+					ping.entity:SetParent(platform.entity)
+					ping:ListenForEvent("onremove", function()
+						ping.Transform:SetPosition(ping.Transform:GetWorldPosition())
+						ping.entity:SetParent(nil)
+					end, platform)
+				end
+			end
+		end
     end
 end
 
@@ -110,7 +129,6 @@ function Reticule:Blip()
 end
 
 function Reticule:OnUpdate(dt)
-
     self.blipalpha = self.blipalpha + dt * 5
     if self.blipalpha >= 1 then
         self.blipalpha = 1
@@ -119,7 +137,6 @@ function Reticule:OnUpdate(dt)
     if self.reticule then
         self:UpdateColour()
     end
-
 end
 
 function Reticule:UpdateColour()
@@ -130,9 +147,15 @@ end
 function Reticule:UpdatePosition(dt)
     if self.targetpos ~= nil then
         local x, y, z = self.targetpos:Get()
-        if  self.ispassableatallpoints or
-            ( self.inst.components.aoetargeting ~= nil and self.inst.components.aoetargeting.alwaysvalid or
-            (TheWorld.Map:IsPassableAtPoint(x, y, z) and not TheWorld.Map:IsGroundTargetBlocked(self.targetpos)) ) then
+		local alwayspassable, allowwater, deployradius
+		local aoetargeting = self.inst.components.aoetargeting
+		if aoetargeting ~= nil then
+			alwayspassable = aoetargeting.alwaysvalid
+			allowwater = aoetargeting.allowwater
+			deployradius = aoetargeting.deployradius
+		end
+		alwayspassable = alwayspassable or self.ispassableatallpoints
+		if TheWorld.Map:CanCastAtPoint(self.targetpos, alwayspassable, allowwater, deployradius) then
             self.currentcolour = self.validcolour
             self.reticule.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
         else
@@ -164,10 +187,135 @@ function Reticule:OnCameraUpdate(dt)
             self.targetpos = pos
         end
         self:UpdatePosition(nil)
-    elseif self.targetfn ~= nil then
-        self.targetpos = self.targetfn(self.inst)
-        self:UpdatePosition(dt) --always update for dt easing
-    end
+	elseif self.targetfn ~= nil then
+		if self.twinstickmode ~= nil and TheInput:ControllerAttached() then
+			if self.twinstickmode == 1 then
+				self:UpdateTwinStickMode1()
+			elseif self.twinstickmode == 2 then
+				self:UpdateTwinStickMode2()
+			else
+				self.targetpos = self.targetfn(self.inst)
+			end
+		else
+			self:ClearTwinStickOverrides()
+			self.targetpos = self.targetfn(self.inst)
+		end
+		self:UpdatePosition(dt) --always update for dt easing
+	end
+end
+
+function Reticule:UpdateTwinStickMode1()
+	local xdir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_LEFT)
+	local ydir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_UP) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_DOWN)
+	local xmag = xdir * xdir + ydir * ydir
+
+	if self.twinstickoverride then
+		--update offset
+		local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+		if xmag > deadzone * deadzone then
+			xmag = math.sqrt(xmag)
+			xmag = (xmag - deadzone) / xmag
+			xmag = xmag * xmag * TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
+			self.twinstickx = self.twinstickx - ydir * xmag
+			self.twinstickz = self.twinstickz + xdir * xmag
+			local dsq = self.twinstickx * self.twinstickx + self.twinstickz * self.twinstickz
+			local range = self.twinstickrange or 8
+			if dsq > range * range then
+				--clamp at range
+				range = range / math.sqrt(dsq)
+				self.twinstickx = self.twinstickx * range
+				self.twinstickz = self.twinstickz * range
+			end
+		end
+		--re-apply offset relative to screen
+		local x, y, z = self.inst.Transform:GetWorldPosition()
+		if self.twinstickx ~= 0 or self.twinstickz ~= 0 then
+			local heading = TheCamera:GetHeadingTarget() * DEGREES
+			local sin_heading = math.sin(heading)
+			local cos_heading = math.cos(heading)
+			self.targetpos.x = x + self.twinstickx * cos_heading - self.twinstickz * sin_heading
+			self.targetpos.z = z + self.twinstickx * sin_heading + self.twinstickz * cos_heading
+		else
+			self.targetpos.x, self.targetpos.z = x, z
+		end
+		--
+		if self.mousetargetfn ~= nil then
+			self.targetpos = self.mousetargetfn(self.inst, self.targetpos)
+		end
+	else
+		self.targetpos = self.targetfn(self.inst)
+
+		local initial_deadzone = TUNING.CONTROLLER_RETICULE_INITIAL_DEADZONE_RADIUS
+		if xmag >= initial_deadzone * initial_deadzone then
+			self.twinstickoverride = true
+			--determine initial offset relative to screen
+			local x, y, z = self.inst.Transform:GetWorldPosition()
+			x = self.targetpos.x - x
+			z = self.targetpos.z - z
+			if x ~= 0 or z ~= 0 then
+				local heading = -TheCamera:GetHeadingTarget() * DEGREES
+				local sin_heading = math.sin(heading)
+				local cos_heading = math.cos(heading)
+				self.twinstickx = x * cos_heading - z * sin_heading
+				self.twinstickz = x * sin_heading + z * cos_heading
+			else
+				self.twinstickx, self.twinstickz = x, z
+			end
+		end
+	end
+end
+
+function Reticule:UpdateTwinStickMode2()
+	self.targetpos = self.targetfn(self.inst)
+
+	local xdir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_LEFT)
+	local ydir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_UP) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_DOWN)
+	local xmag = xdir * xdir + ydir * ydir
+	local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+	if not self.twinstickoverride then
+		local initial_deadzone = TUNING.CONTROLLER_RETICULE_INITIAL_DEADZONE_RADIUS
+		if xmag >= initial_deadzone * initial_deadzone then
+			self.twinstickoverride = true
+		end
+	elseif xmag < deadzone * deadzone then
+		self.twinstickoverride = false
+	end
+
+	if self.twinstickoverride then
+		--normalize
+		xmag = math.sqrt(xmag)
+		xdir = xdir / xmag
+		ydir = ydir / xmag
+		--rotate to screen
+		local heading = (TheCamera:GetHeadingTarget() + 90) * DEGREES
+		local sin_heading = math.sin(heading)
+		local cos_heading = math.cos(heading)
+		local dx = xdir * cos_heading - ydir * sin_heading
+		local dz = xdir * sin_heading + ydir * cos_heading
+		--rescale xmag
+		xmag = Remap(xmag, deadzone, math.max(1, xmag), 0, 1)
+		xmag = xmag * xmag
+		--find outer edge of range that we're aiming at
+		local x, y, z = self.inst.Transform:GetWorldPosition()
+		local range = self.twinstickrange or 8
+		x = x + dx * range
+		z = z + dz * range
+		--lerp toward outer edge from the auto-target point instead of true center
+		self.targetpos.x = self.targetpos.x * (1 - xmag) + x * xmag
+		self.targetpos.z = self.targetpos.z * (1 - xmag) + z * xmag
+		--
+		if self.mousetargetfn ~= nil then
+			self.targetpos = self.mousetargetfn(self.inst, self.targetpos)
+		end
+	end
+end
+
+function Reticule:ClearTwinStickOverrides()
+	if self.twinstickoverride then
+		self.twinstickoverride = nil
+		self.twinstickx = nil
+		self.twinstickz = nil
+	end
 end
 
 function Reticule:ShouldHide()

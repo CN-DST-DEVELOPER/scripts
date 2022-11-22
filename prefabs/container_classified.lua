@@ -145,19 +145,19 @@ local function Count(item)
     return item.replica.stackable ~= nil and item.replica.stackable:StackSize() or 1
 end
 
-local function Has(inst, prefab, amount)
+local function Has(inst, prefab, amount, iscrafting)
     local count = 0
     if inst._itemspreview ~= nil then
         for i, v in ipairs(inst._items) do
             local item = inst._itemspreview[i]
-            if item ~= nil and item.prefab == prefab then
+			if item ~= nil and item.prefab == prefab and not (iscrafting and item:HasTag("nocrafting")) then
                 count = count + Count(item)
             end
         end
     else
         for i, v in ipairs(inst._items) do
             local item = v:value()
-            if item ~= nil and item.prefab == prefab then
+			if item ~= nil and item.prefab == prefab and not (iscrafting and item:HasTag("nocrafting")) then
                 count = count + Count(item)
             end
         end

@@ -278,18 +278,6 @@ local function WatchingCheaters(inst)
     end
 end
 
-
-local function WatchingCheaters(inst)
-    local minigame = WatchingMinigame(inst) or nil
-    if minigame ~= nil and minigame._minigame_elites ~= nil then
-        for k, v in pairs(minigame._minigame_elites) do
-            if k:WasCheated() then
-                return minigame
-            end
-        end
-    end
-end
-
 local function CurrentContestTarget(inst)
     local stage = inst.npc_stage
     if stage.current_contest_target then

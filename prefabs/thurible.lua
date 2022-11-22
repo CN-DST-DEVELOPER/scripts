@@ -155,6 +155,7 @@ local function onequiptomodel(inst, owner, from_ground)
 end
 
 local function nofuel(inst)
+	inst:RemoveTag("shadow_item")
     if inst.components.equippable:IsEquipped() and inst.components.inventoryitem.owner ~= nil then
         local data =
         {
@@ -169,9 +170,33 @@ local function nofuel(inst)
     end
 end
 
+local function CLIENT_PlayFuelSound(inst)
+	local parent = inst.entity:GetParent()
+	local container = parent ~= nil and (parent.replica.inventory or parent.replica.container) or nil
+	if container ~= nil and container:IsOpenedBy(ThePlayer) then
+		TheFocalPoint.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	end
+end
+
+local function SERVER_PlayFuelSound(inst)
+	local owner = inst.components.inventoryitem.owner
+	if owner == nil then
+		inst.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	elseif inst.components.equippable:IsEquipped() and owner.SoundEmitter ~= nil then
+		owner.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	else
+		inst.playfuelsound:push()
+		--Dedicated server does not need to trigger sfx
+		if not TheNet:IsDedicated() then
+			CLIENT_PlayFuelSound(inst)
+		end
+	end
+end
+
 local function ontakefuel(inst)
+	inst:AddTag("shadow_item")
+	SERVER_PlayFuelSound(inst)
     if inst.components.equippable:IsEquipped() or not inst.components.inventoryitem:IsHeld() then
-        (inst.components.inventoryitem.owner ~= nil and inst.components.inventoryitem.owner.SoundEmitter or inst.SoundEmitter):PlaySound("dontstarve/common/nightmareAddFuel")
         turnon(inst)
     end
 end
@@ -180,6 +205,10 @@ local function OnLoad(inst, data)
     if inst.components.fueled:IsEmpty() then
         nofuel(inst)
     end
+end
+
+local function GetShadowLevel(inst)
+	return not inst.components.fueled:IsEmpty() and TUNING.THURIBLE_SHADOW_LEVEL or 0
 end
 
 local function fn()
@@ -197,12 +226,21 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:SetFinalOffset(1)
 
+	inst:AddTag("shadow_item")
     inst:AddTag("shadowlure")
     inst:AddTag("nopunch")
+
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
+	inst.playfuelsound = net_event(inst.GUID, "thurible.playfuelsound")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+		--delayed because we don't want any old events
+		inst:DoTaskInTime(0, inst.ListenForEvent, "thurible.playfuelsound", CLIENT_PlayFuelSound)
+
         return inst
     end
 
@@ -227,6 +265,10 @@ local function fn()
     inst.components.fueled:SetTakeFuelFn(ontakefuel)
     inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
     inst.components.fueled.accepting = true
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.THURIBLE_SHADOW_LEVEL)
+	inst.components.shadowlevel:SetLevelFn(GetShadowLevel)
 
     MakeHauntableLaunch(inst)
 

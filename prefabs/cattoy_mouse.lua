@@ -47,6 +47,7 @@ local function fn()
 
     inst:AddTag("cattoy")
     inst:AddTag("kitcoonfollowtoy")
+    inst:AddTag("donotautopick")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

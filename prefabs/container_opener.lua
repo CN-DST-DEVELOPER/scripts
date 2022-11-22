@@ -9,6 +9,8 @@ local function OnEntityReplicated(inst)
     if inst._parent == nil then
     elseif inst._parent.replica.container ~= nil then
         inst._parent.replica.container:AttachOpener(inst)
+    elseif inst._parent.components.container_proxy ~= nil then
+        inst._parent.components.container_proxy:AttachOpener(inst)
     else
         inst._parent.container_opener = inst
         inst.OnRemoveEntity = OnRemoveEntity

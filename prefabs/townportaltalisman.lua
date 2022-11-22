@@ -84,6 +84,7 @@ local function OnLinkTownPortals(inst, other)
             end
         end
         StartSoundLoop(inst)
+        inst:AddTag("donotautopick")
     else
         inst.components.inventoryitem:ChangeImageName("townportaltalisman")
         if inst.components.inventoryitem:IsHeld() or inst.AnimState:IsCurrentAnimation("active_shake") then
@@ -97,6 +98,7 @@ local function OnLinkTownPortals(inst, other)
             inst.animtask = inst:DoTaskInTime(.3 + math.random() * .3, DoFallAnims)
         end
         StopSoundLoop(inst)
+        inst:RemoveTag("donotautopick")
     end
 end
 

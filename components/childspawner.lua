@@ -665,7 +665,10 @@ function ChildSpawner:OnChildKilled(child)
 end
 
 function ChildSpawner:ReleaseAllChildren(target, prefab, radius)
-    if target and target.components.health and target.components.health:IsInvincible() then
+    --if target and target.components.health and target.components.health:IsInvincible() then
+	if target and target.components.health and target.components.health.invincible then
+		--health:IsInvincible() includes things with stategraph tag "temp_invincible"
+		--but those are like brief i-frames, and we should not skip for that
         return
     end
 

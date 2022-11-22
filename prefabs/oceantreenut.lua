@@ -26,8 +26,6 @@ local ATTEMPT_GROW_FREQUENCY = 60
 
 local CHECK_NEARBY_BOATS_OFFSET = PHYSICS_RADIUS + 0.1
 
-local TWOPI = 6.28319
-
 local function OnWorkedFinished(inst, worker)
     inst.components.lootdropper:DropLoot()
 

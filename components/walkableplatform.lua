@@ -50,7 +50,7 @@ function WalkablePlatform:GetUID()
 end
 
 function WalkablePlatform:OnSave()
-    return self.uid ~= nil and { uid = self.uid } or nil
+	return { uid = self:GetUID() }
 end
 
 function WalkablePlatform:OnLoad(data)

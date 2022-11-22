@@ -50,9 +50,31 @@ local SkinSelector = Class(Widget, function(self, recipe, owner, skin_name)
     self.spinner_bg:SetPosition(0, -spinner_height/2)
 	self.spinner_bg:SetTint(1, 1, 1, 0.7)
 
+	self.line_top = self:AddChild(Image("images/ui.xml", "line_horizontal_white.tex"))
+	self.line_top:SetPosition(0, 0)
+	self.line_top:SetTint(unpack(BROWN))
+
+	self.line_bottom = self:AddChild(Image("images/ui.xml", "line_horizontal_white.tex"))
+	self.line_bottom:SetPosition(0, -spinner_height)
+	self.line_bottom:SetTint(unpack(BROWN))
+
     self.spinner = self:AddChild(Spinner( {}, spinner_width, nil, spinner_font, nil, nil, textures, true, 250, nil))
     self.spinner.auto_shrink_text = true
     self.spinner:SetPosition(0, -spinner_height/2, 0)
+	if recipe.fxover ~= nil then
+		if self.spinner.fxover == nil then
+			self.spinner.fxover = self.spinner.fgimage:AddChild(UIAnim())
+			self.spinner.fxover:SetClickable(false)
+			self.spinner.fxover:GetAnimState():AnimateWhilePaused(false)
+			self.spinner.fxover:SetScale(.25)
+		end
+		self.spinner.fxover:GetAnimState():SetBank(recipe.fxover.bank)
+		self.spinner.fxover:GetAnimState():SetBuild(recipe.fxover.build)
+		self.spinner.fxover:GetAnimState():PlayAnimation(recipe.fxover.anim, true)
+	elseif self.spinner.fxover ~= nil then
+		self.spinner.fxover:Kill()
+		self.spinner.fxover = nil
+	end
     self.spinner.fgimage:SetPosition(0, 0)
 	self.spinner.fgimage:SetScale(1.2)
     self.spinner.text:SetPosition(0, -35)
@@ -72,6 +94,9 @@ local SkinSelector = Class(Widget, function(self, recipe, owner, skin_name)
         else
             self.new_tag:Hide()
         end
+		if self.spinner.fxover ~= nil then
+			self.spinner.fxover:GetAnimState():SetTime(0)
+		end
 	end)
 
     if #self.skins_options == 1 then
@@ -88,14 +113,6 @@ local SkinSelector = Class(Widget, function(self, recipe, owner, skin_name)
     self.new_tag:SetScale(.7)
     self.new_tag:SetPosition(-55, -20)
     self.new_tag:Hide()
-
-    self.line_top = self:AddChild(Image("images/ui.xml", "line_horizontal_white.tex"))
-    self.line_top:SetPosition(0, 0)
-    self.line_top:SetTint(unpack(BROWN))
-
-    self.line_bottom = self:AddChild(Image("images/ui.xml", "line_horizontal_white.tex"))
-    self.line_bottom:SetPosition(0, -spinner_height)
-    self.line_bottom:SetTint(unpack(BROWN))
 
     self.focus_forward = self.spinner
 

@@ -57,13 +57,12 @@ function KnownLocations:OnLoad(data)
 end
 
 function KnownLocations:RememberLocation(name, pos, dont_overwrite)
-    if not self.locations[name] or not dont_overwrite then
+	if not dont_overwrite or self.locations[name] == nil then
         self.locations[name] = pos
-		if pos ~= nil and (pos.x ~= pos.x or pos.y ~= pos.y or pos.z ~= pos.z) then
+		if pos ~= nil and (isbadnumber(pos.x) or isbadnumber(pos.y) or isbadnumber(pos.z)) then
 			print("KnownLocations:RememberLocation position error: ", self.inst.prefab, self.inst:IsValid(), pos.x, pos.y, pos.z)
 			error("Error: KnownLocations:RememberLocation() recieved a bad pos value.")
 		end
-
     end
 end
 

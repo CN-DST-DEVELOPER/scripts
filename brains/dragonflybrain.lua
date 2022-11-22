@@ -69,10 +69,21 @@ function DragonflyBrain:OnStart()
                     DoAction(self.inst, GoHome),
                 }, .25)),
             WhileNode(function() return ShouldSpawnFn(self) end, "Spawn Lavae",
-                PriorityNode({
-                    Leash(self.inst, function() return self._spawnpos end, 5, 5),
-                    ActionNode(function() self.inst:PushEvent("spawnlavae") end),
-                }, .25)),
+				ParallelNode{
+					PriorityNode({
+						Leash(self.inst, function() return self._spawnpos end, 5, 5),
+						ActionNode(function() self.inst:PushEvent("spawnlavae") end),
+					}, .25),
+					LoopNode{
+						ActionNode(function()
+							if self.inst.sg:HasStateTag("busy") and not self.inst.sg:HasStateTag("hit") then
+								self.inst.components.stuckdetection:Reset()
+							elseif self.inst.components.stuckdetection:IsStuck() and not self.inst.components.combat:InCooldown() then
+								self.inst.components.combat:TryAttack()
+							end
+						end),
+					},
+				}),
             ChaseAndAttack(self.inst),
             Leash(self.inst, HomePoint, 20, 10),
             Wander(self.inst, HomePoint, 15)

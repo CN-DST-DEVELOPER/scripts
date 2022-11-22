@@ -26,7 +26,7 @@ function AvoidLight:PickNewAngle()
 
     local light = self.inst.LightWatcher:GetLightAngle()
     if light then
-        table.sort(angles, function(a,b) return anglediff(a, light) < anglediff(b,light) end)
+        table.sort(angles, function(a,b) return math.abs(anglediff(a, light)) < math.abs(anglediff(b,light)) end)
         angle = angles[1]
     else
         angle = angles[math.random(#angles)]

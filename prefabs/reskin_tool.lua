@@ -85,7 +85,7 @@ local reskin_fx_info =
 
 
 
-local function spellCB(tool, target, pos)
+local function spellCB(tool, target, pos, caster)
     
     local fx_prefab = "explode_reskin"
     local skin_fx = SKIN_FX_PREFAB[tool:GetSkinName()]
@@ -95,7 +95,7 @@ local function spellCB(tool, target, pos)
 
     local fx = SpawnPrefab(fx_prefab)
 
-    target = target or tool.components.inventoryitem.owner --if no target, then get the owner of the tool. Self target for beards
+	target = target or caster --if no target, then self target for beards
 
     local fx_info = reskin_fx_info[target.prefab] or {}
 

@@ -12,6 +12,8 @@ local assets =
 local prefabs =
 {
     "spellmasterybuff",
+	"book_fx",
+	"book_fx_mount",
 }
 
 local start_inv = {}

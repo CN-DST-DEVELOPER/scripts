@@ -13,6 +13,7 @@ local prefabs =
     "cave_banana",
     "beardhair",
     "nightmarefuel",
+	"shadow_despawn",
 }
 
 local brain = require "brains/monkeybrain"
@@ -25,6 +26,7 @@ local MAX_TARGET_SHARES = 5
 local SHARE_TARGET_DIST = 40
 
 local LOOT = { "smallmeat", "cave_banana" }
+local FORCED_NIGHTMARE_LOOT = { "nightmarefuel" }
 SetSharedLootTable('monkey',
 {
     {'smallmeat',     1.0},
@@ -241,6 +243,33 @@ local function DoFx(inst)
     end
 end
 
+local function DoForceNightmareFx(inst, isnightmare)
+	--Only difference is we use "shadow_despawn" instead of "statue_transition"
+	--Same anim, but shadow_despawn has its own sfx and can be attached to platforms.
+	--For consistency, shadow_despawn is what shadow_trap uses when forcing nightmare state.
+
+	local x, y, z = inst.Transform:GetWorldPosition()
+	local fx = SpawnPrefab("statue_transition_2")
+	fx.Transform:SetPosition(x, y, z)
+	fx.Transform:SetScale(.8, .8, .8)
+
+	--When forcing into nightmare state, shadow_trap would've already spawned this fx
+	if not isnightmare then
+		fx = SpawnPrefab("shadow_despawn")
+		local platform = inst:GetCurrentPlatform()
+		if platform ~= nil then
+			fx.entity:SetParent(platform.entity)
+			fx.Transform:SetPosition(platform.entity:WorldToLocalSpace(x, y, z))
+			fx:ListenForEvent("onremove", function()
+				fx.Transform:SetPosition(fx.Transform:GetWorldPosition())
+				fx.entity:SetParent(nil)
+			end, platform)
+		else
+			fx.Transform:SetPosition(x, y, z)
+		end
+	end
+end
+
 local function SetNormalMonkey(inst)
     inst:RemoveTag("nightmare")
     inst:SetBrain(brain)
@@ -268,40 +297,87 @@ local function SetNightmareMonkey(inst)
         inst.task:Cancel()
         inst.task = nil
     end
-    inst.components.lootdropper:SetLoot(nil)
-    inst.components.lootdropper:SetChanceLootTable("monkey")
 
     inst.components.combat:SetTarget(nil)
 
     inst:RemoveEventCallback("entity_death", inst.listenfn, TheWorld)
 end
 
-local function TestNightmareArea(inst, area)
-    if (TheWorld.state.isnightmarewild or TheWorld.state.isnightmaredawn)
-        and inst.components.areaaware:CurrentlyInTag("Nightmare")
-        and not inst:HasTag("nightmare") then
+local function SetNightmareMonkeyLoot(inst, forced)
+	if forced then
+		inst.components.lootdropper:SetLoot(FORCED_NIGHTMARE_LOOT)
+		inst.components.lootdropper:SetChanceLootTable("monkey")
+	else
+		inst.components.lootdropper:SetLoot(nil)
+		inst.components.lootdropper:SetChanceLootTable("monkey")
+	end
+end
 
-        DoFx(inst)
-        SetNightmareMonkey(inst)
-    elseif (not TheWorld.state.isnightmarewild and not TheWorld.state.isnightmaredawn)
-        and inst:HasTag("nightmare") then
-        DoFx(inst)
-        SetNormalMonkey(inst)
-    end
+local function IsForcedNightmare(inst)
+	return inst.components.timer:TimerExists("forcenightmare")
+end
+
+local function IsWorldNightmare(inst, phase)
+	return phase == "wild" or phase == "dawn"
+end
+
+local function OnTimerDone(inst, data)
+	if data ~= nil and data.name == "forcenightmare" then
+		if IsWorldNightmare(inst, TheWorld.state.nightmarephase) and inst:HasTag("nightmare") then
+			SetNightmareMonkeyLoot(inst, false)
+		else
+			if not (inst:IsInLimbo() or inst:IsAsleep()) then
+				if inst.sg:HasStateTag("busy") and not inst.sg:HasStateTag("sleeping") then
+					inst.components.timer:StartTimer("forcenightmare", 1)
+					return
+				end
+				DoForceNightmareFx(inst, false)
+			end
+			SetNormalMonkey(inst)
+		end
+		inst:RemoveEventCallback("timerdone", OnTimerDone)
+	end
+end
+
+local function OnForceNightmareState(inst, data)
+	if data ~= nil and data.duration ~= nil then
+		if inst.components.health:IsDead() then
+			return
+		end
+		local t = inst.components.timer:GetTimeLeft("forcenightmare")
+		if t ~= nil then
+			if t < data.duration then
+				inst.components.timer:SetTimeLeft("forcenightmare", data.duration)
+			end
+			return
+		end
+		inst.components.timer:StartTimer("forcenightmare", data.duration)
+		inst:ListenForEvent("timerdone", OnTimerDone)
+		if not inst:HasTag("nightmare") then
+			DoForceNightmareFx(inst, true)
+			SetNightmareMonkey(inst)
+		end
+		SetNightmareMonkeyLoot(inst, true)
+	end
 end
 
 local function TestNightmarePhase(inst, phase)
-    if (phase == "wild" or phase == "dawn")
-        and inst.components.areaaware:CurrentlyInTag("Nightmare")
-        and not inst:HasTag("nightmare") then
+	if not IsForcedNightmare(inst) then
+		if IsWorldNightmare(inst, phase) then
+			if inst.components.areaaware:CurrentlyInTag("Nightmare") and not inst:HasTag("nightmare") then
+				DoFx(inst)
+				SetNightmareMonkey(inst)
+				SetNightmareMonkeyLoot(inst, false)
+			end
+		elseif inst:HasTag("nightmare") then
+			DoFx(inst)
+			SetNormalMonkey(inst)
+		end
+	end
+end
 
-        DoFx(inst)
-        SetNightmareMonkey(inst)
-    elseif (phase ~= "wild" and phase ~= "dawn")
-        and inst:HasTag("nightmare") then
-        DoFx(inst)
-        SetNormalMonkey(inst)
-    end
+local function TestNightmareArea(inst)--, area)
+	TestNightmarePhase(inst, TheWorld.state.nightmarephase)
 end
 
 local function OnCustomHaunt(inst)
@@ -314,8 +390,13 @@ local function OnSave(inst, data)
 end
 
 local function OnLoad(inst, data)
-    if data ~= nil and data.nightmare then
+	if IsForcedNightmare(inst) then
+		inst:ListenForEvent("timerdone", OnTimerDone)
+		SetNightmareMonkey(inst)
+		SetNightmareMonkeyLoot(inst, true)
+	elseif data ~= nil and data.nightmare then
         SetNightmareMonkey(inst)
+		SetNightmareMonkeyLoot(inst, false)
     end
 end
 
@@ -409,6 +490,7 @@ local function fn()
     inst._onharassplayerremoved = function() SetHarassPlayer(inst, nil) end
 
     inst:AddComponent("knownlocations")
+	inst:AddComponent("timer")
 
     inst.listenfn = function(listento, data) OnMonkeyDeath(inst, data) end
 
@@ -417,6 +499,10 @@ local function fn()
 
     inst:WatchWorldState("nightmarephase", TestNightmarePhase)
     inst:ListenForEvent("changearea", TestNightmareArea)
+
+	--shadow_trap interaction
+	inst.has_nightmare_state = true
+	inst:ListenForEvent("ms_forcenightmarestate", OnForceNightmareState)
 
     MakeHauntablePanic(inst)
     AddHauntableCustomReaction(inst, OnCustomHaunt, true, false, true)

@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "not_used_by_wx78",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -468,6 +485,8 @@ return{
 --fallback to speech_wilson.lua         SAME_OLD_5 = "only_used_by_warly",
 --fallback to speech_wilson.lua 		TASTY = "only_used_by_warly",
     },
+
+	ANNOUNCE_FOODMEMORY = "only_used_by_warly",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -2917,7 +2936,11 @@ return{
 		WATERMELON = "SPHERE OF JUICE",
 		WATERMELON_COOKED = "HOT JUICE",
 		WATERMELONHAT = "HAT SEEMS INCOMPATIBLE WITH MY FUNCTION",
-		WAXWELLJOURNAL = "GOOSEBUMPS ACTIVATED",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "GOOSEBUMPS ACTIVATED",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "EDIBLE FILTH",
         WHIP = "I WILL COMMAND THE MEATLINGS",
 		WINTERHAT = "THIS WILL KEEP MY PROCESSOR FROM FREEZING",
@@ -4661,6 +4684,10 @@ return{
             GENERIC = "IT IS SOFT AND PATHETIC",
             BURNT = "IT WILL NOT BE MISSED",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "IF ONLY DATA COULD TRAVEL SO EASILY. THE CHAOS THAT COULD BE WROUGHT",
+		TOPHAT_MAGICIAN = "EXCELLENT. IT LOOKS MUCH MORE EVIL NOW",
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

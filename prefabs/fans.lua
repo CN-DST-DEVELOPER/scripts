@@ -95,6 +95,7 @@ local function common_fn(overridesymbol, onchannelingfn)
         --channelingfan (from fan component) added to pristine state for optimization
         inst:AddTag("channelingfan")
     end
+    inst:AddTag("donotautopick")
 
     local swap_data = {bank = "fan", anim = "idle"}
     MakeInventoryFloatable(inst, nil, nil, nil, nil, nil, swap_data)

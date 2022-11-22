@@ -115,8 +115,36 @@ local function GetStatus(inst)
 end
 
 --------------------------------------------------------------------------------
+local function on_giveup_timer_done(inst)
+	inst._giveup_timer = nil
+	if inst.components.combat:HasTarget() then
+		inst.components.combat:GiveUp()
+	end
+end
+
+local function restart_giveup_timer(inst)
+	if inst._giveup_timer ~= nil then
+		inst._giveup_timer:Cancel()
+	end
+	inst._giveup_timer = inst:DoTaskInTime(TUNING.STAGEUSHER_GIVEUP_TIME, on_giveup_timer_done)
+end
+
 local function on_new_combat_target(inst)
     inst:PushEvent("standup")
+	restart_giveup_timer(inst)
+end
+
+local function on_dropped_target(inst)
+	if inst._giveup_timer ~= nil then
+		inst._giveup_timer:Cancel()
+		inst._giveup_timer = nil
+	end
+end
+
+local function on_attacked(inst)
+	if inst.components.health.currenthealth > inst.components.health.minhealth then
+		restart_giveup_timer(inst)
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -228,6 +256,8 @@ local function fn()
 
     ----------------------------------------------------------------------------
     inst:ListenForEvent("newcombattarget", on_new_combat_target)
+	inst:ListenForEvent("droppedtarget", on_dropped_target)
+	inst:ListenForEvent("attacked", on_attacked)
 
     ----------------------------------------------------------------------------
     inst:SetStateGraph("SGstageusher")

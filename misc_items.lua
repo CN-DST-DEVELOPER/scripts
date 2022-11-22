@@ -4064,6 +4064,85 @@ MISC_ITEMS =
 		output_items = {  "wathgrithr_valkyrie", "body_wathgrithr_valkyrie", "legs_wathgrithr_valkyrie", "spear_wathgrithr_valkyrie", "wathgrithrhat_valkyrie", "armor_marble_valkyrie", },
 		release_group = 103,
 	},
+	pack_waxwell_deluxe =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_waxwell_deluxe.xml",
+		display_tex = "waxwell_deluxe.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_wizard", "tophat_wizard", "waxwell_formalp", "waxwell_survivorp", "waxwell_unshadowp", "waxwell_rosep", },
+		output_items = {  "waxwell_wizard", "body_waxwell_wizard", "feet_waxwell_wizard", "hand_waxwell_wizard", "tophat_wizard", "waxwell_formalp", "body_waxwell_formalp", "waxwell_survivorp", "body_waxwell_survivorp", "waxwell_unshadowp", "body_waxwell_unshadowp", "waxwell_rosep", "body_waxwell_rosep", },
+		release_group = 137,
+	},
+	pack_waxwell_formal =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_formal",
+		display_atlas = "bigportraits/waxwell_formal.xml",
+		display_tex = "waxwell_formal_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_formalp", "body_waxwell_formalp", },
+		output_items = {  "waxwell_formalp", "body_waxwell_formalp", },
+		release_group = 137,
+	},
+	pack_waxwell_rose =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_rose",
+		display_atlas = "bigportraits/waxwell_rose.xml",
+		display_tex = "waxwell_rose_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_rosep", "body_waxwell_rosep", },
+		output_items = {  "waxwell_rosep", "body_waxwell_rosep", },
+		release_group = 137,
+	},
+	pack_waxwell_survivor =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_survivor",
+		display_atlas = "bigportraits/waxwell_survivor.xml",
+		display_tex = "waxwell_survivor_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_survivorp", "body_waxwell_survivorp", },
+		output_items = {  "waxwell_survivorp", "body_waxwell_survivorp", },
+		release_group = 137,
+	},
+	pack_waxwell_unshadow =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_unshadow",
+		display_atlas = "bigportraits/waxwell_unshadow.xml",
+		display_tex = "waxwell_unshadow_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_unshadowp", "body_waxwell_unshadowp", },
+		output_items = {  "waxwell_unshadowp", "body_waxwell_unshadowp", },
+		release_group = 137,
+	},
+	pack_waxwell_wizard =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_wizard",
+		display_atlas = "bigportraits/waxwell_wizard.xml",
+		display_tex = "waxwell_wizard_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_wizard", "body_waxwell_wizard", "feet_waxwell_wizard", "hand_waxwell_wizard", "tophat_wizard", },
+		output_items = {  "waxwell_wizard", "body_waxwell_wizard", "feet_waxwell_wizard", "hand_waxwell_wizard", "tophat_wizard", },
+		release_group = 137,
+	},
 	pack_wb_0 =
 	{
 		type = "purchase",
@@ -4615,6 +4694,20 @@ MISC_ITEMS =
 		display_items = {  "winona_survivorp", "body_winona_survivorp", },
 		output_items = {  "winona_survivorp", "body_winona_survivorp", },
 		release_group = 61,
+	},
+	pack_wizard_items =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 2,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_wizard_items.xml",
+		display_tex = "wizard_items.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "armor_sanity_wizard", "nightsword_wizard", "tophat_spiked", },
+		output_items = {  "armor_sanity_wizard", "nightsword_wizard", "tophat_spiked", },
+		release_group = 137,
 	},
 	pack_wolfgang_deluxe =
 	{
@@ -5945,6 +6038,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 43,
 	},
+	playerportrait_bg_mushroomlight2an =
+	{
+		type = "playerportrait",
+		skin_tags = { "ARTNOUVEAU", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 137,
+	},
 	playerportrait_bg_oven =
 	{
 		type = "playerportrait",
@@ -6991,6 +7091,13 @@ MISC_ITEMS =
 		rarity = "Common",
 		rarity_modifier = "Woven",
 		release_group = 56,
+	},
+	profileflair_mushroom_light2an =
+	{
+		type = "profileflair",
+		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 137,
 	},
 	profileflair_nightlight =
 	{

@@ -464,6 +464,16 @@ function Inventory:DropItemFromInvTile(item, single)
     end
 end
 
+function Inventory:CastSpellBookFromInv(item)
+	if item == nil or not item:IsValid() then
+		return
+	elseif self.inst.components.inventory ~= nil then
+		self.inst.components.inventory:CastSpellBookFromInv(item)
+	elseif self.classified ~= nil then
+		self.classified:CastSpellBookFromInv(item)
+	end
+end
+
 function Inventory:EquipActiveItem()
     if self.inst.components.inventory ~= nil then
         self.inst.components.inventory:EquipActiveItem()

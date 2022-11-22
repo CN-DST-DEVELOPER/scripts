@@ -40,7 +40,7 @@ function LavaeBrain:OnStart()
         PriorityNode(
         {
             WhileNode(function() return ShouldResetFight(self.inst) end, "Reset Fight", DoAction(self.inst, GoHome, "Go Home", nil, 10)),
-            WhileNode(function() ispanichaunted(self.inst) end, "PanicHaunted", Panic(self.inst)), --Ghosts can still help in the fight by helping with lavae :)
+            WhileNode(function() return ispanichaunted(self.inst) end, "PanicHaunted", Panic(self.inst)), --Ghosts can still help in the fight by helping with lavae :)
             AttackWall(self.inst),
             ChaseAndAttack(self.inst),
             StandStill(self.inst),

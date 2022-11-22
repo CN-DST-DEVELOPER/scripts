@@ -1,6 +1,7 @@
 require "behaviours/leash"
 require "behaviours/standstill"
 require "behaviours/wander"
+require "behaviours/panic"
 
 local STALKER_RADIUS = .75
 local MINION_RADIUS = .3
@@ -29,8 +30,13 @@ local function ShouldDie(self)
     return t > self.delay
 end
 
+local function ShouldPanic(inst)
+	return inst.components.hauntable ~= nil and inst.components.hauntable.panic
+end
+
 function StalkerMinionBrain:OnStart()
     local root = PriorityNode({
+		WhileNode(function() return ShouldPanic(self.inst) end, "PanicHaunted", Panic(self.inst)),
         Leash(self.inst, GetTargetPos, LEASH_DIST, LEASH_DIST),
         WhileNode(function() return GetTarget(self.inst) ~= nil end, "ReachedStalker",
             StandStill(self.inst)),

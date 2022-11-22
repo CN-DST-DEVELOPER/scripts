@@ -42,6 +42,7 @@ PREFAB_SKINS = {
 	{
 		"armor_sanity_curve",
 		"armor_sanity_sharp",
+		"armor_sanity_wizard",
 	},
 	armordragonfly =
 	{
@@ -754,6 +755,7 @@ PREFAB_SKINS = {
 	},
 	mushroom_light2 =
 	{
+		"mushroom_light2_an",
 		"mushroom_light2_cawnival",
 		"mushroom_light2_lily",
 		"mushroom_light2_victorian",
@@ -763,6 +765,7 @@ PREFAB_SKINS = {
 		"nightsword_curve",
 		"nightsword_lightsbane",
 		"nightsword_sharp",
+		"nightsword_wizard",
 	},
 	oar =
 	{
@@ -882,6 +885,8 @@ PREFAB_SKINS = {
 		"researchlab4_merchant",
 		"researchlab4_tophat_circus",
 		"researchlab4_tophat_harlequin",
+		"researchlab4_tophat_spiked",
+		"researchlab4_tophat_wizard",
 		"researchlab4_witch_pyre",
 	},
 	reskin_tool =
@@ -1037,7 +1042,9 @@ PREFAB_SKINS = {
 		"tophat_festive_bell_red_firehound",
 		"tophat_harlequin",
 		"tophat_merchant",
+		"tophat_spiked",
 		"tophat_witch_pyre",
+		"tophat_wizard",
 	},
 	torch =
 	{
@@ -1247,6 +1254,7 @@ PREFAB_SKINS = {
 		"waxwell_combatant",
 		"waxwell_cook",
 		"waxwell_formal",
+		"waxwell_formalp",
 		"waxwell_gladiator",
 		"waxwell_krampus",
 		"waxwell_krampus_d",
@@ -1256,10 +1264,14 @@ PREFAB_SKINS = {
 		"waxwell_nature",
 		"waxwell_none",
 		"waxwell_rose",
+		"waxwell_rosep",
 		"waxwell_survivor",
+		"waxwell_survivorp",
 		"waxwell_unshadow",
+		"waxwell_unshadowp",
 		"waxwell_vampire",
 		"waxwell_victorian",
+		"waxwell_wizard",
 		"waxwell_yule",
 	},
 	webber =

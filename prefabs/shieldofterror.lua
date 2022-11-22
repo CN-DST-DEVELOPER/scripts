@@ -74,6 +74,9 @@ local function fn()
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     MakeInventoryFloatable(inst, nil, 0.2, {1.1, 0.6, 1.1})
 
     inst.entity:SetPristine()
@@ -109,6 +112,9 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.SHIELDOFTERROR_SHADOW_LEVEL)
 
     MakeHauntableLaunch(inst)
 

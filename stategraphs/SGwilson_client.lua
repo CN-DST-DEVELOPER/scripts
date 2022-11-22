@@ -588,6 +588,10 @@ local actionhandlers =
     ActionHandler(ACTIONS.CHARGE_FROM, "doshortaction"),
 
     ActionHandler(ACTIONS.ROTATE_FENCE, "doswipeaction"),
+
+	ActionHandler(ACTIONS.USEMAGICTOOL, "start_using_tophat"),
+	ActionHandler(ACTIONS.STOPUSINGMAGICTOOL, "stop_using_tophat"),
+	ActionHandler(ACTIONS.CAST_SPELLBOOK, "book"),
 }
 
 local events =
@@ -596,6 +600,8 @@ local events =
 		--#HACK for hopping prediction: ignore busy when boathopping... (?_?)
 		if (inst.sg:HasStateTag("busy") or inst:HasTag("busy")) and
 			not (inst.sg:HasStateTag("boathopping") or inst:HasTag("boathopping")) then
+			return
+		elseif inst.sg:HasStateTag("overridelocomote") then
 			return
 		end
 
@@ -2862,12 +2868,24 @@ local states =
 
     State{
         name = "book",
-        tags = { "doing", },
+		tags = { "doing" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
+
+			if inst:HasTag("canrepeatcast") and inst.entity:FlattenMovementPrediction() then
+				inst:PerformPreviewBufferedAction()
+				inst.sg:GoToState("idle", "noanim")
+				return
+			end
+
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("action_uniqueitem_lag", false)
+
+			local book = inst.bufferedaction ~= nil and (inst.bufferedaction.target or inst.bufferedaction.invobject) or nil
+			if book ~= nil and (book.components.spellbook ~= nil or book.components.aoetargeting ~= nil) then
+				inst.sg:AddStateTag("busy")
+			end
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -4924,6 +4942,157 @@ local states =
             inst.sg:GoToState("idle")
         end,
     },
+
+	--------------------------------------------------------------------------
+	-- Maxwell rework
+
+	State{
+		name = "start_using_tophat",
+		tags = { "doing", "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+
+			local buffaction = inst:GetBufferedAction()
+			local hat = buffaction ~= nil and buffaction.invobject or nil
+			if hat ~= nil and inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) == hat then
+				inst.AnimState:PlayAnimation("tophat_equipped_pre")
+				inst.AnimState:PushAnimation("tophat_equipped_lag", false)
+				inst.sg.statemem.equipped = true
+			else
+				inst.AnimState:PlayAnimation("tophat_empty_pre")
+				inst.AnimState:PushAnimation("tophat_empty_lag", false)
+			end
+
+			if buffaction ~= nil then
+				inst:PerformPreviewBufferedAction()
+			end
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		timeline =
+		{
+			TimeEvent(8 * FRAMES, function(inst)
+				inst.sg:RemoveStateTag("busy")
+			end),
+		},
+
+		onupdate = function(inst)
+			if inst:HasTag("doing") then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("using_tophat")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation(inst.sg.statemem.equipped and "tophat_equipped_pst" or "tophat_empty_pst")
+				inst.AnimState:SetTime(9 * FRAMES)
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation(inst.sg.statemem.equipped and "tophat_equipped_pst" or "tophat_empty_pst")
+			inst.AnimState:SetTime(9 * FRAMES)
+			inst.sg:GoToState("idle", true)
+		end,
+	},
+
+	State{
+		name = "using_tophat",
+		tags = { "doing", "overridelocomote" },
+
+		onenter = function(inst)
+			inst.entity:SetIsPredictingMovement(false)
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.bufferedaction == nil and not inst:HasTag("usingmagiciantool") then
+				inst.sg:GoToState("idle", "noanim")
+			end
+		end,
+
+		ontimeout = function(inst)
+			if inst.bufferedaction ~= nil and inst.bufferedaction.ispreviewing then
+				inst:ClearBufferedAction()
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				inst.sg:GoToState("stop_using_tophat", true)
+				return true
+			end),
+		},
+
+		onexit = function(inst)
+			inst.entity:SetIsPredictingMovement(true)
+		end,
+	},
+
+	State{
+		name = "stop_using_tophat",
+		tags = { "idle", "overridelocomote" },
+
+		onenter = function(inst, locomoting)
+			inst.AnimState:PlayAnimation(
+				inst:HasTag("usingmagiciantool_wasequipped") and
+				inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) == nil and
+				"tophat_equipped_pst" or
+				"tophat_empty_pst"
+			)
+			if locomoting then
+				inst.sg.statemem.overridelocomote = true
+				inst.components.playercontroller:RemotePredictOverrideLocomote()
+			else
+				inst:PerformPreviewBufferedAction()
+			end
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:HasStateTag("overridelocomote") then
+				if inst.sg.statemem.overridelocomote then
+					inst.components.playercontroller:RemotePredictOverrideLocomote()
+				end
+			elseif not inst.components.locomotor:HasDestination() then
+				inst.sg:GoToState("idle", "noanim")
+				return
+			end
+			if inst.sg.statemem.stopped then
+				if not (inst.AnimState:IsCurrentAnimation("tophat_equipped_pst") or
+						inst.AnimState:IsCurrentAnimation("tophat_empty_pst")) then
+					inst.sg:GoToState("idle", "noanim")
+					return
+				end
+			elseif not inst:HasTag("usingmagiciantool") then
+				inst.sg.statemem.stopped = true
+				inst.entity:SetIsPredictingMovement(false)
+			end
+		end,
+
+		timeline =
+		{
+			TimeEvent(7 * FRAMES, function(inst)
+				inst.sg:AddStateTag("canrotate")
+			end),
+			TimeEvent(8 * FRAMES, function(inst)
+				inst.sg:RemoveStateTag("overridelocomote")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				return inst.sg:HasStateTag("overridelocomote")
+			end),
+		},
+
+		onexit = function(inst)
+			inst.entity:SetIsPredictingMovement(true)
+		end,
+	},
 }
 
 local hop_timelines =

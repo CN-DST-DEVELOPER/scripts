@@ -499,6 +499,7 @@ local function fn()
     inst:AddComponent("health")
     inst:AddComponent("groundpounder")
     inst:AddComponent("combat")
+	inst:AddComponent("stuckdetection")
     inst:AddComponent("explosiveresist")
     inst:AddComponent("sleeper")
     inst:AddComponent("lootdropper")
@@ -551,6 +552,8 @@ local function fn()
     inst.components.combat.battlecryenabled = false
     inst.components.combat.hiteffectsymbol = "dragonfly_body"
     inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/dragonfly/hurt")
+
+	inst.components.stuckdetection:SetTimeToStuck(2)
 
     inst.components.sleeper:SetResistance(4)
     inst.components.sleeper:SetSleepTest(ShouldSleep)

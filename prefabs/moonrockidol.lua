@@ -74,6 +74,7 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
 
     inst:AddTag("moonportalkey")
+    inst:AddTag("donotautopick")
 
     inst.entity:SetPristine()
 

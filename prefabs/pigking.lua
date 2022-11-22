@@ -307,6 +307,8 @@ local function LaunchGameItem(inst, item, angle, minorspeedvariance)
     item.Physics:SetVel(math.cos(angle) * spd, 11.5, math.sin(angle) * spd)
     item:DoTaskInTime(.6, OnRestoreItemPhysics)
     item:PushEvent("knockbackdropped", { owner = inst, knocker = inst, delayinteraction = .75, delayplayerinteraction = .5 })
+
+    --#WARNING: you probably don't want this last part if you copy pasta this function!--
     if item.components.burnable ~= nil then
         inst:ListenForEvent("onignite", function()
             for k, v in pairs(inst._minigame_elites) do
@@ -314,6 +316,7 @@ local function LaunchGameItem(inst, item, angle, minorspeedvariance)
             end
         end, item)
     end
+    -------------------------------------------------------------------------------------
 end
 
 local PROP_MUST_TAGS = { "minigameitem", "propweapon" }
@@ -412,7 +415,7 @@ local function LaunchRewards(inst, level, minigame_players)
 		end
 	end
 
-	-- Now Lunach it
+	-- Now Launch it
 	for i, pouch in ipairs(pouches) do
 	    local angle
 		local target = minigame_players[((i-1) % num_players) + 1]

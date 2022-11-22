@@ -49,6 +49,7 @@ local function makeemptyfn(inst)
 end
 
 local function setupstump(inst)
+	TheWorld:PushEvent("beginregrowth", inst)
     SpawnPrefab("cave_banana_stump").Transform:SetPosition(inst.Transform:GetWorldPosition())
     inst:Remove()
 end
@@ -88,6 +89,7 @@ local function tree_startburn(inst)
 end
 
 local function tree_burnt(inst)
+	TheWorld:PushEvent("beginregrowth", inst)
     local burnt_tree = SpawnPrefab("cave_banana_burnt")
     burnt_tree.Transform:SetPosition(inst.Transform:GetWorldPosition())
     burnt_tree.no_banana = inst.components.pickable == nil or not inst.components.pickable.canbepicked
@@ -211,6 +213,7 @@ local function stump_fn()
     inst.MiniMapEntity:SetIcon("cave_banana_tree_stump.png")
 
     inst:AddTag("plant")
+    inst:AddTag("stump")
 
     inst.AnimState:SetBank("cave_banana_tree")
     inst.AnimState:SetBuild("cave_banana_tree")

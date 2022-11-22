@@ -48,7 +48,7 @@ local function onpickedfn(inst, picker)
 
         if inst.animname == ROSE_NAME and
             picker.components.combat ~= nil and
-            not (picker.components.inventory ~= nil and picker.components.inventory:EquipHasTag("bramble_resistant")) then
+            not (picker.components.inventory ~= nil and picker.components.inventory:EquipHasTag("bramble_resistant")) and not picker:HasTag("shadowminion") then
             picker.components.combat:GetAttacked(inst, TUNING.ROSE_DAMAGE)
             picker:PushEvent("thorns")
         end

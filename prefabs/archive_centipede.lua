@@ -203,8 +203,10 @@ local function onothercollide(inst, other)
             inst.recentlycharged[other] = true
             inst:DoTaskInTime(3, ClearRecentlyCharged, other)
         end
-    elseif other.components.health ~= nil and not other.components.health:IsDead() then
-
+	elseif other.components.combat ~= nil
+		and other.components.health ~= nil and not other.components.health:IsDead()
+		and (other:HasTag("wall") or other:HasTag("structure"))
+		then
         inst.recentlycharged[other] = true
         inst:DoTaskInTime(3, ClearRecentlyCharged, other)
         inst.SoundEmitter:PlaySound("dontstarve/creatures/rook/explo")
@@ -213,11 +215,9 @@ local function onothercollide(inst, other)
 end
 
 local function oncollide(inst, other)
-
     if not (other ~= nil and other:IsValid() and inst:IsValid())
         or inst.recentlycharged[other]
         or Vector3(inst.Physics:GetVelocity()):LengthSq() < 42 then
-
         return
     end
     ShakeAllCameras(CAMERASHAKE.SIDE, .5, .05, .1, inst, 40)
@@ -285,15 +285,15 @@ local function fn_common(tag)
     inst.components.sleeper:SetResistance(3)
 
     inst:AddComponent("health")
+	inst.components.health:SetMaxHealth(TUNING.ARCHIVE_CENTIPEDE.HEALTH)
+
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "cent_bod"
     inst.components.combat:SetAttackPeriod(TUNING.ARCHIVE_CENTIPEDE.ATTACK_PERIOD)
+	inst.components.combat:SetRange(TUNING.ARCHIVE_CENTIPEDE.ATTACK_RANGE)
     inst.components.combat:SetRetargetFunction(3, Retarget)
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
-
-    inst.components.health:SetMaxHealth(TUNING.ARCHIVE_CENTIPEDE.HEALTH)
     inst.components.combat:SetDefaultDamage(TUNING.ARCHIVE_CENTIPEDE.DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.ARCHIVE_CENTIPEDE.ATTACK_PERIOD)
 
     inst:AddComponent("lootdropper")
 

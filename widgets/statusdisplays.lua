@@ -562,30 +562,44 @@ function StatusDisplays:HungerDelta(data)
 end
 
 function StatusDisplays:SetSanityPercent(pct)
-    self.brain:SetPercent(pct, self.owner.replica.sanity:Max(), self.owner.replica.sanity:GetPenaltyPercent())
+	local oldpenalty = self.brain.penaltypercent or 0
+	local newpenalty = self.owner.replica.sanity:GetPenaltyPercent()
+	self.brain:SetPercent(pct, self.owner.replica.sanity:Max(), newpenalty)
 
     if self.owner.replica.sanity:IsInsane() or self.owner.replica.sanity:IsEnlightened() then
         self.brain:StartWarning()
     else
         self.brain:StopWarning()
     end
+	return oldpenalty, newpenalty
 end
 
 function StatusDisplays:SanityDelta(data)
-    self:SetSanityPercent(data.newpercent)
+	local oldpenalty, newpenalty = self:SetSanityPercent(data.newpercent)
 
     if self.brain ~= nil and self.brain.SanityDelta then
         self.brain:SanityDelta(data)
     else
+		local green, red
         if not data.overtime then
             if data.newpercent > data.oldpercent then
-                self.brain:PulseGreen()
-                TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_up")
+				green = true
             elseif data.newpercent < data.oldpercent then
-                self.brain:PulseRed()
-                TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_down")
+				red = true
             end
         end
+		if newpenalty > oldpenalty then
+			red = true
+		elseif newpenalty < oldpenalty then
+			green = true
+		end
+		if red then
+			self.brain:PulseRed()
+			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_down")
+		elseif green then
+			self.brain:PulseGreen()
+			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_up")
+		end
     end
 end
 

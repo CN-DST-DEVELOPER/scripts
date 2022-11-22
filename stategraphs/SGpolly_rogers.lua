@@ -110,7 +110,7 @@ local states=
                 end
             end),
         },
-    },    
+    },
 
     State{
         name = "idle_ground",

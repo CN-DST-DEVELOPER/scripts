@@ -331,7 +331,7 @@ local foods =
 		sanity = 0,
 		cooktime = 0.5,
         potlevel = "low",
-		tags = {"honeyed"},
+		tags = {"honeyed", "donotautopick"},
         floater = {"med", nil, 0.65},
 		card_def = {ingredients = {{"honey", 1}, {"corn", 1}, {"twigs", 2}} },
 	},

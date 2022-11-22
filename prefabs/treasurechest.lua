@@ -43,12 +43,12 @@ end
 
 local function onhit(inst, worker)
     if not inst:HasTag("burnt") then
-        inst.AnimState:PlayAnimation("hit")
-        inst.AnimState:PushAnimation("closed", false)
         if inst.components.container ~= nil then
             inst.components.container:DropEverything()
             inst.components.container:Close()
         end
+        inst.AnimState:PlayAnimation("hit")
+        inst.AnimState:PushAnimation("closed", false)
     end
 end
 

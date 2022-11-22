@@ -38,6 +38,7 @@ end
 
 local num = 0
 AllRecipes = {}
+AllBuilderTaggedRecipes = {}
 
 local is_character_ingredient = nil
 function IsCharacterIngredient(ingredienttype)
@@ -101,6 +102,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.imagefn       = type(image) == "function" and image or nil
     self.image         = self.imagefn == nil and image or (self.product .. ".tex")
     self.atlas         = (atlas and resolvefilepath(atlas))-- or resolvefilepath(GetInventoryItemAtlas(self.image))
+	self.fxover        = more_data.fxover
 
     --self.lockedatlas   = (lockedatlas and resolvefilepath(lockedatlas)) or (atlas == nil and resolvefilepath("images/inventoryimages_inverse.xml")) or nil
     --self.lockedimage   = lockedimage or (self.product ..".tex")
@@ -139,6 +141,9 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
 
     num                = num + 1
     AllRecipes[name]   = self
+    if self.builder_tag ~= nil and more_data.allowautopick == nil then -- NOTES(JBK): "donotautopick" filtered items should set allowautopick in the recipe if they are to be picked up by things for the player.
+        AllBuilderTaggedRecipes[name] = self.builder_tag
+    end
 
     if ModManager then
         for k,recipepostinit in pairs(ModManager:GetPostInitFns("RecipePostInit")) do
@@ -181,6 +186,7 @@ end
 
 function RemoveAllRecipes()
     AllRecipes = {}
+    AllBuilderTaggedRecipes = {}
     num = 0
 end
 

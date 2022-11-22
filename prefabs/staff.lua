@@ -353,11 +353,8 @@ end
 
 local TELEPORT_MUST_TAGS = { "locomotor" }
 local TELEPORT_CANT_TAGS = { "playerghost", "INLIMBO" }
-local function teleport_func(inst, target)
-    local caster = inst.components.inventoryitem.owner or target
-    if target == nil then
-        target = caster
-    end
+local function teleport_func(inst, target, pos, caster)
+	target = target or caster
 
     local x, y, z = target.Transform:GetWorldPosition()
 	local target_in_ocean = target.components.locomotor ~= nil and target.components.locomotor:IsAquatic()
@@ -702,7 +699,7 @@ local function onunequip_skinned(inst, owner)
     onunequip(inst, owner)
 end
 
-local function commonfn(colour, tags, hasskin)
+local function commonfn(colour, tags, hasskin, hasshadowlevel)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -721,6 +718,11 @@ local function commonfn(colour, tags, hasskin)
             inst:AddTag(v)
         end
     end
+
+	if hasshadowlevel then
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
+	end
 
     local floater_swap_data =
     {
@@ -771,6 +773,11 @@ local function commonfn(colour, tags, hasskin)
         inst.components.equippable:SetOnUnequip(onunequip)
     end
 
+	if hasshadowlevel then
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.STAFF_SHADOW_LEVEL)
+	end
+
     return inst
 end
 
@@ -778,7 +785,7 @@ end
 
 local function red()
     --weapon (from weapon component) added to pristine state for optimization
-    local inst = commonfn("red", { "firestaff", "weapon", "rangedweapon", "rangedlighter" }, true)
+	local inst = commonfn("red", { "firestaff", "weapon", "rangedweapon", "rangedlighter" }, true, true)
 
     inst.projectiledelay = FRAMES
 
@@ -813,7 +820,7 @@ end
 
 local function blue()
     --weapon (from weapon component) added to pristine state for optimization
-    local inst = commonfn("blue", { "icestaff", "weapon", "rangedweapon", "extinguisher" }, true)
+	local inst = commonfn("blue", { "icestaff", "weapon", "rangedweapon", "extinguisher" }, true, true)
 
     inst.projectiledelay = FRAMES
 
@@ -839,7 +846,7 @@ local function blue()
 end
 
 local function purple()
-    local inst = commonfn("purple", { "nopunch" }, true)
+	local inst = commonfn("purple", { "nopunch" }, true, true)
 
     if not TheWorld.ismastersim then
         return inst
@@ -863,7 +870,7 @@ local function purple()
 end
 
 local function yellow()
-    local inst = commonfn("yellow", { "nopunch", "allow_action_on_impassable" }, true)
+	local inst = commonfn("yellow", { "nopunch", "allow_action_on_impassable" }, true, true)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
@@ -901,7 +908,7 @@ local function yellow()
 end
 
 local function green()
-    local inst = commonfn("green", { "nopunch" }, true)
+	local inst = commonfn("green", { "nopunch" }, true, true)
 
     if not TheWorld.ismastersim then
         return inst
@@ -924,7 +931,7 @@ end
 
 local function orange()
     --weapon (from weapon component) added to pristine state for optimization
-    local inst = commonfn("orange", { "weapon" }, true)
+	local inst = commonfn("orange", { "weapon" }, true, true)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = blinkstaff_reticuletargetfn
@@ -957,7 +964,7 @@ local function orange()
 end
 
 local function opal()
-    local inst = commonfn("opal", { "nopunch", "allow_action_on_impassable" }, true)
+	local inst = commonfn("opal", { "nopunch", "allow_action_on_impassable" }, true, false)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn

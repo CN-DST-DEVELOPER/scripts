@@ -47,7 +47,7 @@ function StageUsherBrain:OnStart()
                     DoAction(self.inst, WalkHomeAction, "Return To Spawn", false, RETURN_TO_SPAWN_TIMEOUT + 2),
                     SequenceNode{
                         WaitNode(RETURN_TO_SPAWN_TIMEOUT),
-                        ActionNode(function() inst:PushEvent("sitdown") end, "Sit Down Here"),
+                        ActionNode(function() self.inst:PushEvent("sitdown") end, "Sit Down Here"),
                     },
                 }
             ),

@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "It won't pay any attention to me...",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -468,6 +485,8 @@ return{
 --fallback to speech_wilson.lua         SAME_OLD_5 = "only_used_by_warly",
 --fallback to speech_wilson.lua 		TASTY = "only_used_by_warly",
     },
+
+	ANNOUNCE_FOODMEMORY = "only_used_by_warly",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -2921,7 +2940,11 @@ return{
 		WATERMELON = "It's mostly water. What's the big deal?",
 		WATERMELON_COOKED = "Now it's warm water.",
 		WATERMELONHAT = "It makes the wearer's head sticky. Yuck.",
-		WAXWELLJOURNAL = "Do you want me to read you a story, Abigail?",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "Do you want me to read you a story, Abigail?",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "A miserable mess, just like life.",
         WHIP = "It only provides the illusion of control.",
 		WINTERHAT = "It helps stave off the encroaching cold.",
@@ -4665,6 +4688,10 @@ return{
             GENERIC = "A mockery of life.",
             BURNT = "This burnt husk is all that remains.",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "You can't use a magic box for hide-and-seek, that's cheating.",
+		TOPHAT_MAGICIAN = "The darkness has changed it.",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

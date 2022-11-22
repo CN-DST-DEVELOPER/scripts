@@ -56,8 +56,9 @@ end
 function Hauntable:Panic(panictime)
     self.haunted = true
     self.panic = true
-    self.panictimer = panictime or TUNING.HAUNT_PANIC_TIME_SMALL
-    self.cooldowntimer = self.panictimer
+	panictime = panictime or TUNING.HAUNT_PANIC_TIME_SMALL
+	self.panictimer = math.max(self.panictimer, panictime)
+	self.cooldowntimer = math.max(self.cooldowntimer, panictime)
     self.inst:StartUpdatingComponent(self)
 end
 

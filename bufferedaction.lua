@@ -90,6 +90,11 @@ function BufferedAction:GetActionPoint()
 	return self.pos ~= nil and self.pos:GetPosition() or nil
 end
 
+function BufferedAction:GetDynamicActionPoint()
+	-- returns a DynamicPosition or nil
+	return self.pos
+end
+
 function BufferedAction:SetActionPoint(pt)
 	self.pos = DynamicPosition(pt)
 end

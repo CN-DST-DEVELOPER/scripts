@@ -80,6 +80,7 @@ local function item_commonfn(bank, build, masterfn)
 
     inst:AddTag("lightbattery")
     inst:AddTag("vasedecoration")
+    inst:AddTag("light")
 
     MakeInventoryFloatable(inst, "small", 0.1, 0.9)
 

@@ -97,9 +97,9 @@ local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
 end
 
-local function OnCollide(inst, other)
+--local function OnCollide(inst, other)
     --Destroy?
-end
+--end
 
 local function OnSave(inst, data)
     data.WantsToLayEgg = inst.WantsToLayEgg
@@ -161,7 +161,7 @@ local function fn()
 
     MakeGiantCharacterPhysics(inst, 5000, 1)
 
-    inst.Physics:SetCollisionCallback(OnCollide)
+    --inst.Physics:SetCollisionCallback(OnCollide)
 
     inst.AnimState:SetBank("goosemoose")
     inst.AnimState:SetBuild(IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) and "goosemoose_yule_build" or "goosemoose_build")

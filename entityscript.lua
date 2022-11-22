@@ -245,29 +245,36 @@ EntityScript = Class(function(self, entity)
 end)
 
 function EntityScript:GetSaveRecord()
-    local record = nil
+	local record =
+	{
+		prefab = self.prefab,
+		--id = self.GUID,
+	}
 
-    if self.entity:HasTag("player") then
-        record = {
-            prefab = self.prefab,
-            --id = self.GUID,
-            age = self.Network:GetPlayerAge(),
-        }
+	local x, y, z = self.Transform:GetWorldPosition()
+
+	if self.temp_save_platform_pos or self.entity:HasTag("player") then
+		record.age = self.Network:GetPlayerAge()
 
 		--if ThePlayer == self then
 		--	record.crafting_menu = TheCraftingMenuProfile:SerializeLocalClientSessionData()
 		--end
 
         local platform = self:GetCurrentPlatform()
+		if self._snapshot_platform ~= nil then
+			if platform == nil and self._snapshot_platform == TheWorld.Map:GetPlatformAtPoint(x, z) then
+				--V2C: During RestoreSnapshotUserSession, players aren't attached to platforms correctly.
+				--     This is quick hack to fix that for now.
+				platform = self._snapshot_platform
+			end
+			self._snapshot_platform = nil
+		end
         if platform then
-            local px, py, pz = platform.Transform:GetWorldPosition()
-            local x, y, z = self.Transform:GetWorldPosition()
+			local rx, ry, rz = platform.entity:WorldToLocalSpace(x, y, z)
 
-            local rx, ry, rz = x - px, y - py, z - pz
-
-            --Qnan hunting
-			if rx ~= rx or ry ~= ry or rz ~= rz then
-				print("EntityScript:GetSaveRecord error saving position: ", self.prefab, rx, ry, rz, ":", x, y, z, ":", px, py, pz)
+            -- NaN and +/-inf hunting
+			if isbadnumber(rx) or isbadnumber(ry) or isbadnumber(rz) then
+				print("EntityScript:GetSaveRecord error saving position: ", self.prefab, rx, ry, rz, ":", x, y, z, ":", platform)
 				if CONFIGURATION ~= "PRODUCTION" then
 					error("EntityScript:GetSaveRecord qnan error")
 				end
@@ -278,21 +285,15 @@ function EntityScript:GetSaveRecord()
 
             record.rx = rx and math.floor(rx*1000)/1000 or 0
             record.rz = rz and math.floor(rz*1000)/1000 or 0
-            if ry ~= 0 then
-                record.ry = ry and math.floor(ry*1000)/1000 or 0
+			if ry and ry ~= 0 then
+				ry = math.floor(ry*1000)/1000
+				record.ry = ry ~= 0 and ry or nil
             end
         end
-    else
-        record = {
-            prefab = self.prefab,
-            --id = self.GUID,
-        }
     end
 
-    local x, y, z = self.Transform:GetWorldPosition()
-
-    --Qnan hunting
-	if x ~= x or y ~= y or z ~= z then
+    -- NaN and +/-inf hunting
+	if isbadnumber(x) or isbadnumber(y) or isbadnumber(z) then
 		print("EntityScript:GetSaveRecord error saving position: ", self.prefab, x, y, z)
 		if CONFIGURATION ~= "PRODUCTION" then
 			error("EntityScript:GetSaveRecord qnan error")
@@ -303,8 +304,9 @@ function EntityScript:GetSaveRecord()
     record.x = x and math.floor(x*1000)/1000 or 0
     record.z = z and math.floor(z*1000)/1000 or 0
     --y is often 0 in our game, so be selective.
-    if y ~= 0 then
-        record.y = y and math.floor(y*1000)/1000 or 0
+	if y and y ~= 0 then
+		y = math.floor(y*1000)/1000
+		record.y = y ~= 0 and y or nil
     end
 
     record.skinname = self.skinname
@@ -1374,6 +1376,9 @@ function EntityScript:PreviewBufferedAction(bufferedaction)
 
     if bufferedaction.action == ACTIONS.WALKTO then
         self.bufferedaction = nil
+	elseif bufferedaction.options.instant then
+		self.bufferedaction = bufferedaction
+		self:PerformPreviewBufferedAction()
     elseif self.sg ~= nil then
         self.bufferedaction = bufferedaction
         if not self.sg:PreviewAction(bufferedaction) then
@@ -1422,7 +1427,7 @@ function EntityScript:PushBufferedAction(bufferedaction)
         self:PushEvent("performaction", { action = bufferedaction })
         bufferedaction:Succeed()
         self.bufferedaction = nil
-    elseif bufferedaction.action.instant then
+	elseif bufferedaction.action.instant or bufferedaction.options.instant then
         if bufferedaction.target ~= nil and bufferedaction.target.Transform ~= nil and (self.sg == nil or self.sg:HasStateTag("canrotate")) then
             self:FacePoint(bufferedaction.target.Transform:GetWorldPosition())
         end

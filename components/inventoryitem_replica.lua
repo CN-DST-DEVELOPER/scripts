@@ -1,6 +1,9 @@
 local InventoryItem = Class(function(self, inst)
     self.inst = inst
 
+	--Local override, not networked
+	--self.overrideimage = nil
+
     self._cannotbepickedup = net_bool(inst.GUID, "inventoryitem._cannotbepickedup")
     self._iswet = net_bool(inst.GUID, "inventoryitem._iswet", "iswetdirty")
 
@@ -98,11 +101,18 @@ function InventoryItem:SetImage(imagename)
     self.classified.image:set(imagename ~= nil and (imagename..".tex") or 0)
 end
 
+--Local override, not networked
+function InventoryItem:OverrideImage(imagename)
+	self.overrideimage = imagename ~= nil and (imagename..".tex") or nil
+	self.inst:PushEvent("imagechange")
+end
+
 local function GetClientSideInventoryImageOverride(self)
     if self.inst:HasClientSideInventoryImageOverrides() then
-        local imagehash = self.classified ~= nil and
-            self.classified.image:value() ~= 0 and
-            self.classified.image:value() or hash(self.inst.prefab..".tex")
+		local imagehash =
+			(self.overrideimage ~= nil and hash(self.overrideimage)) or
+			(self.classified ~= nil and self.classified.image:value() ~= 0 and self.classified.image:value()) or
+			hash(self.inst.prefab..".tex")
         return self.inst:GetClientSideInventoryImageOverride(imagehash)
     end
 end
@@ -110,6 +120,7 @@ end
 function InventoryItem:GetImage()
     local override = GetClientSideInventoryImageOverride(self)
     return (override and override.image) or
+		self.overrideimage or
         (self.classified ~= nil and self.classified.image:value() ~= 0 and self.classified.image:value()) or
         self.inst.prefab..".tex"
 end

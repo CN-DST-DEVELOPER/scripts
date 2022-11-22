@@ -21,21 +21,21 @@ local function shine(inst)
     inst:DoTaskInTime(4 + math.random() * 5, shine)
 end
 
-local function spellfn(inst, target)
-    local caster = inst.components.inventoryitem.owner
+local function spellfn(inst, target, pos, caster)
 	if caster ~= nil then
-		local x, y, z = caster.Transform:GetWorldPosition()
+		local pos = caster:GetPosition()
 
 		local elite = SpawnPrefab("pigelitefighter"..math.random(4))
-		elite.Transform:SetPosition(x, (caster.components.rider ~= nil and caster.components.rider:IsRiding()) and 3 or 0, z)
+		elite.Transform:SetPosition(pos.x, (caster.components.rider ~= nil and caster.components.rider:IsRiding()) and 3 or 0, pos.z)
 		elite.components.follower:SetLeader(caster)
 
-		local theta = math.random() * 2 * PI
-		local offset = FindWalkableOffset(Vector3(x, y, z), theta, 2.5, 16, true, true, nil, false, true)
-						or FindWalkableOffset(Vector3(x, y, z), theta, 2.5, 16, false, false, nil, false, true)
+		local theta = math.random() * PI2
+		local offset = FindWalkableOffset(pos, theta, 2.5, 16, true, true, nil, false, true)
+						or FindWalkableOffset(pos, theta, 2.5, 16, false, false, nil, false, true)
 						or Vector3(0, 0, 0)
 
-	    elite.sg:GoToState("spawnin", { dest = Vector3(x + offset.x, 0, z + offset.z) })
+		pos.x, pos.y, pos.z = pos.x + offset.x, 0, pos.z + offset.z
+		elite.sg:GoToState("spawnin", { dest = pos })
 	end
 
     if inst.components.stackable ~= nil and inst.components.stackable:IsStack() then

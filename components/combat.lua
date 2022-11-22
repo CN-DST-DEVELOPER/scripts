@@ -72,6 +72,18 @@ local Combat = Class(function(self, inst)
     self.forcefacing = true
     self.bonusdamagefn = nil
     --self.playerstunlock = PLAYERSTUNLOCK.ALWAYS --nil for default
+
+	self.losetargetcallback = function() self:DropTarget() end
+	self.transfertargetcallback = function(target, newtarget)
+		if newtarget ~= nil and self:CanTarget(newtarget) then
+			self:SetTarget(newtarget)
+			if self.target == target and self.target ~= newtarget then
+				self:DropTarget()
+			end
+		else
+			self:DropTarget()
+		end
+	end
 end,
 nil,
 {
@@ -298,21 +310,16 @@ function Combat:IsRecentTarget(target)
     return target ~= nil and (target == self.target or target.GUID == self.lasttargetGUID)
 end
 
-local function TargetDisappeared(self, target)
-    self:DropTarget()
-end
-
 function Combat:StartTrackingTarget(target)
     if target then
-        self.losetargetcallback = function()
-            TargetDisappeared(self, target)
-        end
         self.inst:ListenForEvent("enterlimbo", self.losetargetcallback, target)
         self.inst:ListenForEvent("onremove", self.losetargetcallback, target)
+		self.inst:ListenForEvent("transfercombattarget", self.transfertargetcallback, target)
     end
 end
 
 function Combat:StopTrackingTarget(target)
+	self.inst:RemoveEventCallback("transfercombattarget", self.transfertargetcallback, target)
     self.inst:RemoveEventCallback("enterlimbo", self.losetargetcallback, target)
     self.inst:RemoveEventCallback("onremove", self.losetargetcallback, target)
 end
@@ -383,6 +390,13 @@ function Combat:ShouldAggro(target, ignore_forbidden)
                 end
             end
         end
+		if target.components.health ~= nil and (target.components.health.minhealth or 0) > 0 then
+			target = target.components.follower ~= nil and target.components.follower:GetLeader() or target
+			if not target:HasTag("player") then
+				--npc should not aggro on things that can't be killed
+				return false
+			end
+		end
         return true
     end
     return false

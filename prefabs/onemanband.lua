@@ -132,6 +132,9 @@ local function fn()
 
     inst:AddTag("band")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     inst.AnimState:SetBank("onemanband")
     inst.AnimState:SetBuild("armor_onemanband")
     inst.AnimState:PlayAnimation("anim")
@@ -165,6 +168,9 @@ local function fn()
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
     inst.components.equippable:SetOnEquipToModel(onequiptomodel)
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.ONEMANBAND_SHADOW_LEVEL)
 
     inst:AddComponent("leader")
 

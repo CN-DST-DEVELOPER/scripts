@@ -205,6 +205,8 @@ local function flare_fn()
 
     MakeInventoryFloatable(inst, "large", nil, {0.65, 0.4, 0.65})
 
+    inst:AddTag("donotautopick")
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

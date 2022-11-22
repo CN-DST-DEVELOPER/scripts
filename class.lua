@@ -12,6 +12,19 @@ if TrackClassInstances == true then
     ClassTrackingInterval = 100
 end
 
+local function _is_a(self, klass)
+	local m = getmetatable(self)
+	while m do
+		if m == klass then return true end
+		m = m._base
+	end
+	return false
+end
+
+local function _is_class(self)
+	return rawget(self, "is_instance") ~= nil
+end
+
 local function __index(t, k)
     local p = rawget(t, "_")[k]
     if p ~= nil then
@@ -185,17 +198,12 @@ function Class(base, _ctor, props)
 	end
 
     c._ctor = _ctor
-    c.is_a = function(self, klass)
-        local m = getmetatable(self)
-        while m do
-            if m == klass then return true end
-            m = m._base
-        end
-        return false
-    end
-    c.is_instance = function(obj)
-		return type(obj) == "table" and c.is_a(obj, c)
+	c.is_a = _is_a					-- is_a: is descendent of this class
+	c.is_class = _is_class			-- is_class: is self a class instead of an instance
+	c.is_instance = function(obj)	-- is_instance: is obj an instance of this class
+		return type(obj) == "table" and _is_a(obj, c)
 	end
+
     setmetatable(c, mt)
     ClassRegistry[c] = c_inherited
 --    local count = 0

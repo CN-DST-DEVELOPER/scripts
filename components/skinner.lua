@@ -171,7 +171,7 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 				elseif skintype == "powerup" and CLOTHING[name].symbol_overrides_powerup then
 					src_symbols = CLOTHING[name].symbol_overrides_powerup
 				
-				--wurt
+				--wanda
 				elseif skintype == "old_skin" and CLOTHING[name].symbol_overrides_old then
 					src_symbols = CLOTHING[name].symbol_overrides_old
 
@@ -546,6 +546,29 @@ end
 
 function Skinner:ClearClothing(type)
 	_InternalSetClothing(self, type, "", true)
+end
+
+function Skinner:CopySkinsFromPlayer(player)
+	-- NOTES(JBK): This assumes things please be careful.
+	local onto = self.inst
+
+	-- Grab skins and validate with AnimState.
+	local skins = player.components.skinner:GetClothing()
+	onto.AnimState:AssignItemSkins(player.userid, skins.base or "", skins.body or "", skins.hand or "", skins.legs or "", skins.feet or "")
+
+	-- Grab details used to apply.
+	local monkey_curse = player.components.skinner:GetMonkeyCurse()
+	local skin_mode = player.components.skinner:GetSkinMode()
+
+	-- For legacy mod support, this part is like this.
+	local skindata = GetSkinData(skins.base)
+	local base_skin = player.prefab --.. "_none"
+	if skindata.skins ~= nil then
+		base_skin = skindata.skins[skin_mode] or base_skin
+	end
+
+	-- Paste it and hope nothing has went wrong.
+	SetSkinsOnAnim(onto.AnimState, player.prefab, base_skin, skins, monkey_curse, skin_mode, player.prefab)
 end
 
 function Skinner:OnSave()

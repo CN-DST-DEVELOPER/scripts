@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "We don't think Jimmy wants to play.",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -468,6 +485,8 @@ return{
 --fallback to speech_wilson.lua         SAME_OLD_5 = "only_used_by_warly",
 --fallback to speech_wilson.lua 		TASTY = "only_used_by_warly",
     },
+
+	ANNOUNCE_FOODMEMORY = "only_used_by_warly",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -2917,7 +2936,11 @@ return{
 		WATERMELON = "Looks tasty!",
 		WATERMELON_COOKED = "Anything can be cooked!",
 		WATERMELONHAT = "This is the best idea anyone's ever had.",
-		WAXWELLJOURNAL = "I don't think we should play with that...",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "I don't think we should play with that...",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "Experimenting is fun!",
         WHIP = "Oooh, it makes so much noise!",
 		WINTERHAT = "Mum always said I should take a cap with me.",
@@ -4661,6 +4684,10 @@ return{
             GENERIC = "Let's play dress up!",
             BURNT = "Aww, we wanted to play dress-up...",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "Could we borrow it for hide-and-seek?",
+		TOPHAT_MAGICIAN = "Not quite like father used to wear.",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

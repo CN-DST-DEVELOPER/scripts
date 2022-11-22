@@ -2274,6 +2274,7 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    -- TODO(JBK): cave_banana_tree settings
     saltstack_regrowth = function(difficulty)
         local tuning_vars =
         {

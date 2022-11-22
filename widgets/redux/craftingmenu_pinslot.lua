@@ -3,6 +3,7 @@ local Image = require "widgets/image"
 local ImageButton = require "widgets/imagebutton"
 local Text = require "widgets/text"
 local ThreeSlice = require "widgets/threeslice"
+local UIAnim = require "widgets/uianim"
 
 local CraftingMenuIngredients = require "widgets/redux/craftingmenu_ingredients"
 
@@ -354,7 +355,8 @@ function PinSlot:Refresh()
 
 		self.item_img:SetTexture(inv_atlas, inv_image or "default.tex", "default.tex")
 		self.item_img:ScaleToSize(is_left and item_size or -item_size, item_size)
-		self.item_img:SetTint(1, 1, 1, 1)
+
+		local tint = 1
 
 		if meta.build_state == "buffered" then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_buffered.tex", nil, nil, nil, "pinslot_bg_buffered.tex")
@@ -368,18 +370,36 @@ function PinSlot:Refresh()
 			self.fg:Hide()
 		elseif meta.build_state == "hint" then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
-			self.item_img:SetTint(0.7, 0.7, 0.7, 1)
+			tint = .7
 			self.fg:SetTexture(atlas, "pinslot_fg_lock.tex")
             self.fg:Show()
 		elseif meta.build_state == "no_ingredients" or meta.build_state == "prototype" then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
-			self.item_img:SetTint(0.7, 0.7, 0.7, 1)
+			tint = .7
             self.fg:Hide()
 		else
 			self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
-			self.item_img:SetTint(0.7, 0.7, 0.7, 1)
+			tint = .7
 			self.fg:SetTexture(atlas, "pinslot_fg_lock.tex")
             self.fg:Show()
+		end
+
+		self.item_img:SetTint(tint, tint, tint, 1)
+
+		if recipe.fxover ~= nil then
+			if self.fxover == nil then
+				self.fxover = self.item_img:AddChild(UIAnim())
+				self.fxover:SetClickable(false)
+				self.fxover:SetScale(.25)
+				self.fxover:GetAnimState():AnimateWhilePaused(false)
+			end
+			self.fxover:GetAnimState():SetBank(recipe.fxover.bank)
+			self.fxover:GetAnimState():SetBuild(recipe.fxover.build)
+			self.fxover:GetAnimState():PlayAnimation(recipe.fxover.anim, true)
+			self.fxover:GetAnimState():SetMultColour(tint, tint, tint, 1)
+		elseif self.fxover ~= nil then
+			self.fxover:Kill()
+			self.fxover = nil
 		end
 
 		local details_recipe_name, details_skin_name = self.craftingmenu:GetCurrentRecipeName()
@@ -393,6 +413,11 @@ function PinSlot:Refresh()
         self.fg:Hide()
 		self.item_img:SetTexture(atlas, "pinslot_fg_pin.tex")
 		self.item_img:ScaleToSize(is_left and item_size or -item_size, item_size)
+
+		if self.fxover ~= nil then
+			self.fxover:Kill()
+			self.fxover = nil
+		end
 
 		self.craft_button:SetHelpTextMessage(STRINGS.UI.CRAFTING_MENU.PIN)
 	end

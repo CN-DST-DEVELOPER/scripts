@@ -1112,9 +1112,10 @@ DynamicPosition = Class(function(self, pt, walkable_platform)
 	if pt ~= nil then
 		self.walkable_platform = walkable_platform or TheWorld.Map:GetPlatformAtPoint(pt.x, pt.z)
 		if self.walkable_platform ~= nil then
-			self.local_pt = pt - self.walkable_platform:GetPosition()
+			self.local_pt = Vector3(self.walkable_platform.entity:WorldToLocalSpace(pt:Get()))
 		else
-			self.local_pt = pt
+			--V2C: Make copy, saving ref to input Vector can be error prone
+			self.local_pt = Vector3(pt:Get())
 		end
 	end
 end)
@@ -1133,16 +1134,12 @@ end
 function DynamicPosition:GetPosition()
 	if self.walkable_platform ~= nil then
 		if self.walkable_platform:IsValid() then
-			local x, y, z = self.walkable_platform.Transform:GetWorldPosition()
-			return Vector3(x + self.local_pt.x, y + self.local_pt.y, z + self.local_pt.z)
-		else
-			self.walkable_platform = nil
-			self.local_pt = nil
+			return Vector3(self.walkable_platform.entity:LocalToWorldSpace(self.local_pt:Get()))
 		end
-	elseif self.local_pt ~= nil then
-	    return self.local_pt
+		self.walkable_platform = nil
+		self.local_pt = nil
 	end
-    return nil
+	return self.local_pt
 end
 
 -----------------------------------------------------------------

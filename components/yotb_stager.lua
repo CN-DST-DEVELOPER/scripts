@@ -984,14 +984,6 @@ local function LaunchGameItem(inst, item, angle, minorspeedvariance, target)
     item.Physics:SetVel(math.cos(angle) * spd, 11.5, math.sin(angle) * spd)
     item:DoTaskInTime(.6, OnRestoreItemPhysics)
     item:PushEvent("knockbackdropped", { owner = inst, knocker = inst, delayinteraction = .75, delayplayerinteraction = .5 })
-    if item.components.burnable ~= nil then
-        inst:ListenForEvent("onignite", function()
-            for k, v in pairs(inst._minigame_elites) do
-                k:SetCheatFlag()
-            end
-        end, item)
-    end
-
    	item:ListenForEvent("onland")
 end
 

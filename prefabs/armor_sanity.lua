@@ -57,6 +57,9 @@ local function fn()
     inst:AddTag("sanity")
     inst:AddTag("shadow_item")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     inst.foleysound = "dontstarve/movement/foley/nightarmour"
 
     local swap_data = {bank = "armor_sanity", anim = "anim"}
@@ -83,6 +86,9 @@ local function fn()
 
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.ARMOR_SANITY_SHADOW_LEVEL)
 
     MakeHauntableLaunch(inst)
 

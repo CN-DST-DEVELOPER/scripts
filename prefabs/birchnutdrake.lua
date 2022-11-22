@@ -145,7 +145,7 @@ local function fn()
     inst.components.propagator.flashpoint = 5 + math.random() * 3
     MakeSmallFreezableCharacter(inst, "treedrake_root", Vector3(0, -1, .1))
 
-    MakeHauntableIgnite(inst)
+	MakeHauntablePanicAndIgnite(inst)
 
     inst.Exit = Exit
     inst.Enter = Enter

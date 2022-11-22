@@ -93,7 +93,9 @@ function Teleporter:Activate(doer)
 
     if doer.components.leader ~= nil then
         for follower, v in pairs(doer.components.leader.followers) do
-            self:Teleport(follower)
+			if not (follower.components.follower ~= nil and follower.components.follower.noleashing) then
+				self:Teleport(follower)
+			end
         end
     end
 

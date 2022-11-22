@@ -127,7 +127,7 @@ STRINGS =
         wx78 = "*Can upgrade with circuits \n*Not a picky eater \n*Is charged by lightning, but damaged by water",
         wickerbottom = "*Knows many things \n*Self-publishes books \n*Suffers from insomnia \n*Has a delicate stomach",
         wes = "*Can't talk \n*Practices balloonomancy \n*Is not a skilled fighter or worker \n*Has trouble staying alive",
-        waxwell = "*Is dapper, but frail \n*Can split his mind into pieces \n*Was once the king of the world",
+        waxwell = "*Is dapper, but frail \n*Can split his mind into pieces \n*Draws power from shadowy equipment \n*Was once the king of the world",
         woodie = "*Has a lovely axe... \n*And is at war with the forest \n*Suffers from the curse of the Werebeaver! \n*And the Weremoose and the Weregoose... \n*Is thankful for bountiful harvests",
         woodie_us = "*Has a lovely axe... \n*And is at war with the forest \n*Suffers from the curse of the Werebeaver! \n*And the Weremoose and the Weregoose... \n*Celebrates Thanksgiving too early",
         woodie_canada = "*Has a lovely axe... \n*And is at war with the forest \n*Suffers from the curse of the Werebeaver! \n*And the Weremoose and the Weregoose... \n*Celebrates Thanksgiving at the correct time",
@@ -205,7 +205,7 @@ STRINGS =
         wx78 = "One might assume WX's callous nature hides a sensitive inner soul. One would assume incorrectly.",
         wickerbottom = "A woman of curious mind and stern air, Wickerbottom thrives on the lifelong pursuit of knowledge.",
         wes = "Wes is a mime of many thoughts, but few words.",
-        waxwell = "Formerly the Shadow King, lately Maxwell finds himself reacquainted with life among the commonfolk.",
+        waxwell = "Formerly the Nightmare King, lately Maxwell finds himself reacquainted with life among the commonfolk.",
         woodie = "A gruff, bearded woodsman, Woodie has a soft spot for nature, plaid, and his trusty axe, Lucy.",
         wathgrithr = "Whoever Wigfrid was before her titular role has been lost to time, and the power of method acting.",
         webber = "Webber is a polite young monster who cares deeply for all his friends, human or otherwise.",
@@ -925,6 +925,12 @@ STRINGS =
         APPLYMODULE = "Plug In",
         REMOVEMODULES = "Unplug",
         CHARGE_FROM = "Charge At",
+
+		-- Waxwell
+		USEMAGICTOOL = "Use",
+		STOPUSINGMAGICTOOL = "Stop",
+		USESPELLBOOK = "Read",
+		CLOSESPELLBOOK = "Close",
 
         -- Pirates
         ROTATE_BOAT_CLOCKWISE = "Rotate Starboard",
@@ -1935,7 +1941,10 @@ STRINGS =
         LIVINGTREE_ROOT = "Totally Normal Root",
 		LIVINGTREE_SAPLING = "Totally Normal Sapling",
 
+		-- Waxwell
         WAXWELLJOURNAL = "Codex Umbra",
+		MAGICIAN_CHEST = "Magician's Chest",
+		TOPHAT_MAGICIAN = "Magician's Top Hat",
         SHADOWWAXWELL = "Shadow",
         SHADOWLUMBER_BUILDER = "Shadow Logger",
         SHADOWMINER_BUILDER = "Shadow Miner",
@@ -3564,7 +3573,6 @@ STRINGS =
 
         PLAYBILL_THE_DOLL = "The Enchanted Doll\nA Stage Play",
         STATUEHARP_HEDGESPAWNER = "Overgrown Statue",
-
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -3916,7 +3924,10 @@ STRINGS =
 
         WARDROBE = "Change your look to suit your mood.",
 
+		-- Waxwell
         WAXWELLJOURNAL = "It'll blow your mind.",
+		MAGICIAN_CHEST = "Imprison your belongings in a shadowy vortex.",
+		TOPHAT_MAGICIAN = "Black magic goes with everything.",
         SHADOWLUMBER_BUILDER = "Holds a grudge against trees.",
         SHADOWMINER_BUILDER = "Mine that rock!",
         SHADOWDIGGER_BUILDER = "Diggy diggy hole.",
@@ -6712,6 +6723,10 @@ STRINGS.UI =
             "Wortox's hooves...",
             "Wormwood's leaves...",
             "Warly's spices...",
+            "Walter's Pioneer badges...",
+            "Wanda's timeline...",
+            "Wurt's scales...",
+            "Woby's tail wag...",
 
             "a monarch's sorrow...",
             "an inescapable nostalgia...",
@@ -6733,6 +6748,13 @@ STRINGS.UI =
             "primal instincts...",
             "terrible darkness...",
             "a touch of magic...",
+            "unknowable machinations...",
+            "plot thickeners...",
+            "the \"moon\"...",
+            "a sliver of hope...",
+            "dramatic irony...",
+            "curious mechanisms...",
+            "unforeseen consequences...",
         },
     },
 
@@ -13521,7 +13543,7 @@ STRINGS.STAGEACTOR =
         LINE42  = "Mmmagic ske-daddle!",
 
         -- MAXWELL COMMENT
-        LINE43  = "Is that really how she remembers it?",
+        LINE43  = "I wonder just how much she really remembers.",
 
         -- BIRDS
         LINE44  = "I really felt for the tree.",
@@ -13754,6 +13776,15 @@ STRINGS.PLAYS = {
         "Act 3 - Scene 3",
         "- The Reunion -",
     },
+}
+
+STRINGS.SPELLS = {
+	SHADOW_WORKER = "Shadow Servant",
+	SHADOW_PROTECTOR = "Shadow Duelist",
+	SHADOW_TRAP = "Shadow Sneak",
+	SHADOW_PILLARS = "Shadow Prison",
+	SHADOW_UNSUMMON = "Return Shadows",
+	--SHADOW_TOPHAT = "Imbue Top Hat",
 }
 
 --Don't include this in pot generation as this file is already translated.

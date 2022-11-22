@@ -376,6 +376,9 @@ local function MakeHat(name)
     local function ruins_custom_init(inst)
         inst:AddTag("open_top_hat")
         inst:AddTag("metal")
+
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
     end
 
     local function ruins_onremove(inst)
@@ -397,6 +400,9 @@ local function MakeHat(name)
 
         inst.components.equippable:SetOnEquip(ruins_onequip)
         inst.components.equippable:SetOnUnequip(ruins_onunequip)
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.RUINSHAT_SHADOW_LEVEL)
 
         MakeHauntableLaunch(inst)
 
@@ -774,9 +780,146 @@ local function MakeHat(name)
         return inst
     end
 
+	local function top_displaynamefn(inst)
+		return inst:HasTag("magiciantool") and STRINGS.NAMES.TOPHAT_MAGICIAN or nil
+	end
+
+	local function top_onclose(tophatcontainer)
+		tophatcontainer.tophat.components.magiciantool:StopUsing()
+	end
+
+	local function top_onstartusing(inst, doer)
+		if inst.container == nil then
+			inst.container = SpawnPrefab("tophat_container")
+			inst.container.Network:SetClassifiedTarget(doer)
+			inst.container.tophat = inst
+			inst.container.components.container_proxy:SetOnCloseFn(top_onclose)
+		end
+		doer:PushEvent("opencontainer", { container = inst.container.components.container_proxy:GetMaster() })
+		inst.container.components.container_proxy:Open(doer)
+		if doer.SoundEmitter ~= nil and not doer.SoundEmitter:PlayingSound("magician_tophat_loop") then
+			doer.SoundEmitter:PlaySound("maxwell_rework/shadow_magic/storage_void_LP", "magician_tophat_loop")
+		end
+	end
+
+	local function top_onstopusing(inst, doer)
+		if inst.container ~= nil then
+			inst.container.components.container_proxy:Close(doer)
+			doer:PushEvent("closecontainer", { container = inst.container.components.container_proxy:GetMaster() })
+			inst.container:Remove()
+			inst.container = nil
+		end
+		if doer.SoundEmitter ~= nil then
+			doer.SoundEmitter:KillSound("magician_tophat_loop")
+		end
+	end
+
+	local function top_hidefx(inst)
+		if inst.fx ~= nil then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+	end
+
+	local function top_showfx_onground(inst)
+		if inst.fx == nil then
+			inst.fx = SpawnPrefab("tophat_shadow_fx")
+		else
+			inst.fx.Follower:StopFollowing()
+			inst.fx.Transform:SetPosition(0, 0, 0)
+		end
+		inst.fx.entity:SetParent(inst.entity)
+	end
+
+	local function top_showfx_equipped(inst, owner)
+		if inst.fx == nil then
+			inst.fx = SpawnPrefab("tophat_shadow_fx")
+		end
+		inst.fx.entity:SetParent(owner.entity)
+		inst.fx.Follower:FollowSymbol(owner.GUID, "swap_hat", 0, -100, 0)
+	end
+
+	local function top_onequip(inst, owner)
+		_onequip(inst, owner)
+		top_showfx_equipped(inst, owner)
+	end
+
+	local function top_onunequip(inst, owner)
+		_onunequip(inst, owner)
+		if inst:IsInLimbo() then
+			top_hidefx(inst)
+		else
+			top_showfx_onground(inst)
+		end
+	end
+
+	local function top_enterlimbo(inst, owner)
+		if not inst.components.equippable:IsEquipped() then
+			top_hidefx(inst)
+		end
+	end
+
+	local function top_exitlimbo(inst)
+		if not inst.components.equippable:IsEquipped() then
+			top_showfx_onground(inst)
+		end
+	end
+
+	local function top_convert_to_magician(inst)
+		if inst.components.magiciantool ~= nil then
+			--Already converted
+			return
+		end
+
+		inst:AddTag("shadow_item")
+		inst:AddTag("nocrafting")
+
+		inst.components.inspectable.nameoverride = "TOPHAT_MAGICIAN"
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.MAGICIAN_TOPHAT_SHADOW_LEVEL)
+
+		inst:AddComponent("magiciantool")
+		inst.components.magiciantool:SetOnStartUsingFn(top_onstartusing)
+		inst.components.magiciantool:SetOnStopUsingFn(top_onstopusing)
+
+		inst.components.equippable:SetOnEquip(top_onequip)
+		inst.components.equippable:SetOnUnequip(top_onunequip)
+
+		inst:ListenForEvent("enterlimbo", top_enterlimbo)
+		inst:ListenForEvent("exitlimbo", top_exitlimbo)
+
+		local owner = inst.components.equippable:IsEquipped() and inst.components.inventoryitem.owner or nil
+		if owner ~= nil then
+			top_showfx_equipped(inst, owner)
+		elseif not inst:IsInLimbo() then
+			top_showfx_onground(inst)
+		end
+	end
+
+	local function top_onsave(inst, data)
+		if inst.components.magiciantool ~= nil then
+			data.magician = true
+		end
+	end
+
+	local function top_onload(inst, data)
+		if data ~= nil and data.magician then
+			top_convert_to_magician(inst)
+		end
+	end
+
+	local function top_onprebuilt(inst, builder, materials, recipe)
+		if recipe.name == "tophat_magician" then
+			inst:ConvertToMagician()
+		end
+	end
+
     local function top_custom_init(inst)
         --waterproofer (from waterproofer component) added to pristine state for optimization
         inst:AddTag("waterproofer")
+
+		inst.displaynamefn = top_displaynamefn
     end
 
     fns.top = function()
@@ -799,6 +942,11 @@ local function MakeHat(name)
 
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+		inst.OnSave = top_onsave
+		inst.OnLoad = top_onload
+		inst.ConvertToMagician = top_convert_to_magician
+		inst.onPreBuilt = top_onprebuilt
 
         return inst
     end
@@ -1884,6 +2032,12 @@ local function MakeHat(name)
 
     local function antlion_custom_init(inst)
         inst:AddTag("turfhat")
+
+		--waterproofer (from waterproofer component) added to pristine state for optimization
+		inst:AddTag("waterproofer")
+
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
     end
 
     fns.antlion = function()
@@ -1912,6 +2066,9 @@ local function MakeHat(name)
 
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.ANTLIONHAT_SHADOW_LEVEL)
 
         return inst
     end
@@ -2014,8 +2171,10 @@ local function MakeHat(name)
         end
 
         if offset then
-            return pos.x+offset.x,15,pos.z+offset.z
+            pos.x = pos.x + offset.x
+            pos.z = pos.z + offset.z
         end
+        return pos.x, 15, pos.z
     end
 
 
@@ -2199,6 +2358,10 @@ local function MakeHat(name)
         --waterproofer (from waterproofer component) added to pristine state for optimization
         inst:AddTag("waterproofer")
 
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
+
+		--shadowdominance (from shadowdominance component) added to pristine state for optimization
         inst:AddTag("shadowdominance")
     end
 
@@ -2215,6 +2378,11 @@ local function MakeHat(name)
         inst.components.equippable.dapperness = TUNING.CRAZINESS_MED
         inst.components.equippable:SetOnEquip(skeleton_onequip)
         inst.components.equippable:SetOnUnequip(skeleton_onunequip)
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.SKELETONHAT_SHADOW_LEVEL)
+
+		inst:AddComponent("shadowdominance")
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_SKELETONHAT, TUNING.ARMOR_SKELETONHAT_ABSORPTION)
@@ -2431,6 +2599,9 @@ local function MakeHat(name)
         plantregistry_custom_init(inst)
         inst:AddTag("detailedplanthappiness")
         inst:AddTag("nutrientsvision")
+
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
     end
 
     fns.nutrientsgoggles = function()
@@ -2452,6 +2623,9 @@ local function MakeHat(name)
 
         inst:AddComponent("useableitem")
         inst.components.useableitem:SetOnUseFn(plantregistry_onuse)
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.NUTRIENTSGOGGLESHAT_SHADOW_LEVEL)
 
         return inst
     end
@@ -2712,6 +2886,13 @@ local function MakeHat(name)
         fn = fns.straw
     elseif name == "top" then
         fn = fns.top
+		prefabs =
+		{
+			"tophat_container",
+			"tophat_shadow_fx",
+			"tophat_swirl_fx",
+			"tophat_using_shadow_fx",
+		}
     elseif name == "feather" then
         fn = fns.feather
     elseif name == "football" then
@@ -2892,6 +3073,29 @@ local function alterguardianhatlightfn()
     return inst
 end
 
+local function tophatcontainerfn()
+	local inst = CreateEntity()
+
+	inst.entity:AddNetwork()
+
+	inst:AddTag("CLASSIFIED")
+	inst:Hide()
+
+	inst:AddComponent("container_proxy")
+
+	inst.entity:SetPristine()
+
+	if not TheWorld.ismastersim then
+		return inst
+	end
+
+	inst.components.container_proxy:SetMaster(TheWorld:GetPocketDimensionContainer("shadow"))
+
+	inst.persists = false
+
+	return inst
+end
+
 return  MakeHat("straw"),
         MakeHat("top"),
         MakeHat("beefalo"),
@@ -2952,4 +3156,6 @@ return  MakeHat("straw"),
         MakeHat("polly_rogers"),
 
         Prefab("minerhatlight", minerhatlightfn),
-        Prefab("alterguardianhatlight", alterguardianhatlightfn)
+        Prefab("alterguardianhatlight", alterguardianhatlightfn),
+
+		Prefab("tophat_container", tophatcontainerfn)

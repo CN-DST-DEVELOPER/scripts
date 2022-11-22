@@ -268,6 +268,10 @@ local function fn()
                 inst.components.locomotor.walkspeed = inst.landspeedwalk
             end
             inst.DynamicShadow:Enable(true)
+			if inst.sg:HasStateTag("moving") then
+				--land shark has no walk or run anims and will crash if we don't force them out of those states
+				inst.sg:GoToState("leap")
+			end
         end)
 
     inst:AddComponent("updatelooper")

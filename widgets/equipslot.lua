@@ -16,6 +16,12 @@ local EquipSlot = Class(ItemSlot, function(self, equipslot, atlas, bgim, owner)
             self:UnlockHighlight()
         end
     end, owner)
+
+	self:SetOnTileChangedFn(function(self, tile)
+		if tile ~= nil then
+			tile:SetIsEquip(true)
+		end
+	end)
 end)
 
 function EquipSlot:Click()

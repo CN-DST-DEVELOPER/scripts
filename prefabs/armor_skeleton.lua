@@ -95,6 +95,29 @@ local function nofuel(inst)
     inst.components.cooldown:FinishCharging()
 end
 
+local function CLIENT_PlayFuelSound(inst)
+	local parent = inst.entity:GetParent()
+	local container = parent ~= nil and (parent.replica.inventory or parent.replica.container) or nil
+	if container ~= nil and container:IsOpenedBy(ThePlayer) then
+		TheFocalPoint.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	end
+end
+
+local function SERVER_PlayFuelSound(inst)
+	local owner = inst.components.inventoryitem.owner
+	if owner == nil then
+		inst.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	elseif inst.components.equippable:IsEquipped() and owner.SoundEmitter ~= nil then
+		owner.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	else
+		inst.playfuelsound:push()
+		--Dedicated server does not need to trigger sfx
+		if not TheNet:IsDedicated() then
+			CLIENT_PlayFuelSound(inst)
+		end
+	end
+end
+
 local function ontakefuel(inst)
     if inst.components.equippable:IsEquipped() and
         not inst.components.fueled:IsEmpty() and
@@ -102,7 +125,7 @@ local function ontakefuel(inst)
         inst.components.cooldown.onchargedfn = OnChargedFn
         inst.components.cooldown:StartCharging(TUNING.ARMOR_SKELETON_FIRST_COOLDOWN)
     end
-    inst.SoundEmitter:PlaySound("dontstarve/common/nightmareAddFuel")
+	SERVER_PlayFuelSound(inst)
 end
 
 local function onequip(inst, owner)
@@ -153,6 +176,10 @@ local function onequiptomodel(inst, owner, from_ground)
     end
 end
 
+local function GetShadowLevel(inst)
+	return not inst.components.fueled:IsEmpty() and TUNING.ARMOR_SKELETON_SHADOW_LEVEL or 0
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -169,7 +196,12 @@ local function fn()
 
     inst:AddTag("fossil")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     inst.foleysound = "dontstarve/movement/foley/bone"
+
+	inst.playfuelsound = net_event(inst.GUID, "armorskeleton.playfuelsound")
 
     local swap_data = {bank = "armor_skeleton", anim = "anim"}
     MakeInventoryFloatable(inst, "small", 0.2, 0.80, nil, nil, swap_data)
@@ -177,6 +209,9 @@ local function fn()
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+		--delayed because we don't want any old events
+		inst:DoTaskInTime(0, inst.ListenForEvent, "armorskeleton.playfuelsound", CLIENT_PlayFuelSound)
+
         return inst
     end
 
@@ -203,6 +238,10 @@ local function fn()
 
     inst:AddComponent("cooldown")
     inst.components.cooldown.cooldown_duration = TUNING.ARMOR_SKELETON_COOLDOWN
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.ARMOR_SKELETON_SHADOW_LEVEL)
+	inst.components.shadowlevel:SetLevelFn(GetShadowLevel)
 
     MakeHauntableLaunch(inst)
 

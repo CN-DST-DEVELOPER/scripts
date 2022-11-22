@@ -152,6 +152,11 @@ table.insert(TILLSOIL_IGNORE_TAGS, "soil")
 local WALKABLEPERIPHERAL_DEPLOY_IGNORE_TAGS = shallowcopy(DEPLOY_IGNORE_TAGS)
 table.removearrayvalue(WALKABLEPERIPHERAL_DEPLOY_IGNORE_TAGS, "walkableperipheral")
 
+local CAST_DEPLOY_IGNORE_TAGS = shallowcopy(DEPLOY_IGNORE_TAGS)
+table.insert(CAST_DEPLOY_IGNORE_TAGS, "locomotor")
+table.insert(CAST_DEPLOY_IGNORE_TAGS, "_inventoryitem")
+table.insert(CAST_DEPLOY_IGNORE_TAGS, "allow_casting")
+
 local HOLE_TAGS = { "groundhole" }
 local BLOCKED_ONEOF_TAGS = { "groundtargetblocker", "groundhole" }
 
@@ -561,4 +566,11 @@ end
 
 function Map:IsInLunacyArea(x, y, z)
 	return (TheWorld.state.isalterawake and TheWorld.state.isnight) or self:FindVisualNodeAtPoint(x, y, z, "lunacyarea") ~= nil
+end
+
+function Map:CanCastAtPoint(pt, alwayspassable, allowwater, deployradius)
+	if alwayspassable or (self:IsPassableAtPoint(pt.x, 0, pt.z, allowwater) and not self:IsGroundTargetBlocked(pt)) then
+		return deployradius == nil or deployradius <= 0 or self:IsDeployPointClear(pt, nil, deployradius, nil, nil, nil, CAST_DEPLOY_IGNORE_TAGS)
+	end
+	return false
 end

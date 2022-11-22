@@ -213,7 +213,7 @@ function BeefaloBrain:OnStart()
 
         Follow(self.inst, function()
                 local bell_owner = self.inst:GetBeefBellOwner() or self.inst.components.follower:GetLeader()
-                return (bell_owner ~= nil and bell_owner:IsOnValidGround() and bell_owner)
+                return (bell_owner ~= nil and bell_owner:IsOnValidGround() and not bell_owner:HasTag("pocketdimension_container") and bell_owner)
                         or nil
             end, MIN_BUDDY_DIST, TARGET_BUDDY_DIST, MAX_BUDDY_DIST, true),
         Follow(self.inst, function()

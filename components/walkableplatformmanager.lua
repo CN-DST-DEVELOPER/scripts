@@ -1,19 +1,15 @@
 local WalkablePlatformManager = Class(function(self, inst)
     self.inst = inst
-
+    self.lastuid = -1
     self.walkable_platforms = {}
-
     self.walkable_platform_uids = {}
 end)
 
+--V2C: refactored. please do NOT recycle UIDs! players save the uids,
+--     and those platforms can be destroyed while they are offline.
 function WalkablePlatformManager:GetNewUID()
-    local i = 0
-    while true do
-        if self.walkable_platform_uids[i] == nil then
-            return i
-        end
-        i = i + 1
-    end
+	self.lastuid = self.lastuid + 1
+	return self.lastuid
 end
 
 function WalkablePlatformManager:UnregisterPlatform(platform)
@@ -32,6 +28,10 @@ function WalkablePlatformManager:RegisterPlatform(platform)
     if not uid then
         uid = self:GetNewUID()
         platform.components.walkableplatform.uid = uid
+	elseif uid > self.lastuid then
+		--V2C: legacy support... previously there was no proper uid management,
+		--     so we don't rly know for sure what the lastuid is.
+		self.lastuid = uid + 10000
     end
 
     if self.walkable_platform_uids[uid] then
@@ -76,6 +76,16 @@ function WalkablePlatformManager:PostUpdate(dt)
     elseif ThePlayer and ThePlayer.components.walkableplatformplayer then
         ThePlayer.components.walkableplatformplayer:TestForPlatform()
     end
+end
+
+function WalkablePlatformManager:OnSave()
+	return { lastuid = self.lastuid }
+end
+
+function WalkablePlatformManager:OnLoad(data)
+	if data.lastuid ~= nil then
+		self.lastuid = data.lastuid
+	end
 end
 
 return WalkablePlatformManager

@@ -90,6 +90,8 @@ end
 --[[ shadowchester ]]
 --------------------------------------------------------------------------
 
+--Deprecated; keep definition for dragonflychest, minotaurchest, mods,
+--and also for legacy save data
 params.shadowchester =
 {
     widget =
@@ -107,6 +109,15 @@ for y = 2.5, -0.5, -1 do
     for x = 0, 2 do
         table.insert(params.shadowchester.widget.slotpos, Vector3(75 * x - 75 * 2 + 75, 75 * y - 75 * 2 + 75, 0))
     end
+end
+
+params.shadow_container = deepcopy(params.shadowchester)
+params.shadow_container.widget.animbank = "ui_portal_shadow_3x4"
+params.shadow_container.widget.animbuild = "ui_portal_shadow_3x4"
+params.shadow_container.widget.animloop = true
+
+function params.shadow_container.itemtestfn(container, item, slot)
+    return not item:HasTag("irreplaceable")
 end
 
 --------------------------------------------------------------------------
@@ -696,6 +707,10 @@ params.sunkenchest = params.treasurechest
 params.quagmire_safe = deepcopy(params.treasurechest)
 params.quagmire_safe.widget.animbank = "quagmire_ui_chest_3x3"
 params.quagmire_safe.widget.animbuild = "quagmire_ui_chest_3x3"
+
+--------------------------------------------------------------------------
+--[[ dragonflychest ]]
+--------------------------------------------------------------------------
 
 params.dragonflychest = params.shadowchester
 params.minotaurchest = params.shadowchester

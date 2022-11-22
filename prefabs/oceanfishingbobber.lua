@@ -327,6 +327,7 @@ for name, v in pairs(BOBBERS) do
 		name.."_floater",
 		"oceanfishinghook_ripple",
 		"ocean_splash_med1",
+		"ocean_splash_med2",
 		"ocean_splash_small1",
 		"ocean_splash_small2",
 		"ocean_splash_ripple1",

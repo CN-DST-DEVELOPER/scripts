@@ -2,6 +2,8 @@ require("stategraphs/commonstates")
 
 --------------------------------------------------------------------------
 
+local AREAATTACK_EXCLUDETAGS = { "INLIMBO", "notarget", "invisible", "noattack", "flight", "playerghost", "shadow", "shadowchesspiece", "shadowcreature" }
+
 local function ShakeIfClose(inst)
     ShakeAllCameras(CAMERASHAKE.FULL, .5, .02, .2, inst, 30)
 end
@@ -816,7 +818,7 @@ local states =
             TimeEvent(24 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/together/stalker/attack1_pbaoe") end),
             TimeEvent(25.5 * FRAMES, function(inst)
                 ShakePound(inst)
-                inst.components.combat:DoAreaAttack(inst, 3.5, nil, nil, nil, { "INLIMBO", "notarget", "invisible", "noattack", "flight", "playerghost", "shadow", "shadowchesspiece", "shadowcreature" })
+                inst.components.combat:DoAreaAttack(inst, 3.5, nil, nil, nil, AREAATTACK_EXCLUDETAGS)
                 if inst.sg.statemem.targets ~= nil then
                     inst:SpawnSnares(inst.sg.statemem.targets)
                 end
@@ -864,7 +866,7 @@ local states =
             TimeEvent(50 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/together/stalker/attack1_pbaoe") end),
             TimeEvent(51 * FRAMES, function(inst)
                 ShakePound(inst)
-                inst.components.combat:DoAreaAttack(inst, 3.5, nil, nil, nil, { "INLIMBO", "notarget", "invisible", "noattack", "flight", "playerghost", "shadow", "shadowchesspiece", "shadowcreature" })
+                inst.components.combat:DoAreaAttack(inst, 3.5, nil, nil, nil, AREAATTACK_EXCLUDETAGS)
             end),
             TimeEvent(61 * FRAMES, function(inst)
                 inst.sg:RemoveStateTag("busy")

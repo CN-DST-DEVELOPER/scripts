@@ -102,6 +102,9 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/stageplay_set.fev"),
     Asset("FILE", "sound/stageplay_set.fsb"),
     Asset("FILE", "sound/stageplay_set_music.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/maxwell_rework.fev"),
+    Asset("FILE", "sound/maxwell_rework.fsb"),
     
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods

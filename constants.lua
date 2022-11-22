@@ -3,8 +3,9 @@ local TechTree = require("techtree")
 
 local IS_BETA = BRANCH == "staging" --or BRANCH == "dev"
 
-PI = 3.14159
+PI = math.pi
 PI2 = PI*2
+TWOPI = PI2
 DEGREES = PI/180
 RADIANS = 180/PI
 FRAMES = 1/30
@@ -750,8 +751,8 @@ SPECIAL_EVENTS =
     YOTB = "year_of_the_beefalo",
     YOT_CATCOON = "year_of_the_catcoon",
 }
---WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
-WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.HALLOWED_NIGHTS
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+--WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.HALLOWED_NIGHTS
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -1036,7 +1037,8 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_charliestage"
+    "dontstarve/music/music_FE_maxwell"
+    --"dontstarve/music/music_FE_charliestage"
     --"dontstarve/music/music_FE_wickerbottom"
     --"dontstarve/music/music_FE"
     --"dontstarve/music/music_FE_pirates"

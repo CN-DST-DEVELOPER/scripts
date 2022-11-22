@@ -214,7 +214,7 @@ function PlayerHud:OnLoseFocus()
     TheInput:EnableMouse(true)
 
     self:CloseCrafting()
-
+	self:CloseSpellWheel()
     if self:IsControllerInventoryOpen() then
         self:CloseControllerInventory()
     end
@@ -298,6 +298,15 @@ function PlayerHud:GetFirstOpenContainerWidget()
     return v
 end
 
+local function CloseAllChestContainerWidgets(self)
+	for _, v in pairs(self.controls.containers) do
+		--cheap check for "chest" type containers
+		if v:GetParent() == self.controls.containerroot then
+			v:Close()
+		end
+	end
+end
+
 local function CloseContainerWidget(self, container, side)
     for k, v in pairs(self.controls.containers) do
         if v.container == container then
@@ -331,6 +340,10 @@ local function OpenContainerWidget(self, container, side)
 	containerwidget:MoveToBack()
     containerwidget:Open(container, self.owner)
     self.controls.containers[container] = containerwidget
+
+	if parent == self.controls.containerroot then
+		self:CloseSpellWheel()
+	end
 end
 
 function PlayerHud:OpenContainer(container, side)
@@ -678,6 +691,11 @@ function PlayerHud:SetMainCharacter(maincharacter)
         self.inst:ListenForEvent("gosane", function() self:GoSane() end, self.owner)
         self.inst:ListenForEvent("goinsane", function() self:GoInsane() end, self.owner)
         self.inst:ListenForEvent("goenlightened", function() self:GoEnlightened() end, self.owner)
+		self.inst:ListenForEvent("newactiveitem", function(owner, data)
+				if data ~= nil and data.item ~= nil then
+					self:CloseSpellWheel()
+				end
+			end, self.owner)
 
         if self.owner.replica.sanity ~= nil then
             if self.owner.replica.sanity:IsCrazy() then
@@ -745,6 +763,20 @@ function PlayerHud:OnUpdate(dt)
     if self.leafcanopy then
         self.leafcanopy:OnUpdate(dt)
     end
+
+	if self.owner ~= nil then
+		local spellbook = self:GetCurrentOpenSpellBook()
+		if spellbook ~= nil then
+			if not spellbook:IsValid() or spellbook:HasTag("fueldepleted") then
+				self:CloseSpellWheel()
+			else
+				local inventoryitem = spellbook.replica.inventoryitem
+				if inventoryitem == nil or not inventoryitem:IsGrandOwner(self.owner) then
+					self:CloseSpellWheel()
+				end
+			end
+		end
+	end
 end
 
 function PlayerHud:HideControllerCrafting()
@@ -762,6 +794,7 @@ function PlayerHud:OpenControllerInventory()
     TheFrontEnd:StopTrackingMouse()
 
     self:CloseCrafting()
+	self:CloseSpellWheel()
 
     self.controls.inv:OpenControllerInventory()
     self.controls.item_notification:ToggleController(true)
@@ -788,7 +821,7 @@ function PlayerHud:HasInputFocus()
     local active_screen = TheFrontEnd:GetActiveScreen()
     return (active_screen ~= nil and active_screen ~= self)
 		or TheFrontEnd.textProcessorWidget ~= nil
-        or (self.controls ~= nil and (self.controls.inv.open or (self:IsCraftingOpen() and TheInput:ControllerAttached())))
+        or (self.controls ~= nil and (self.controls.inv.open or ((self:IsCraftingOpen() or self:IsSpellWheelOpen()) and TheInput:ControllerAttached())))
         or self.modfocus ~= nil
 end
 
@@ -885,6 +918,7 @@ end
 
 function PlayerHud:OpenCrafting(search)
 	if not self:IsCraftingOpen() and not GetGameModeProperty("no_crafting") then
+		self:CloseSpellWheel()
 		if self:IsControllerInventoryOpen() then
 			self:CloseControllerInventory()
 		end
@@ -905,6 +939,72 @@ function PlayerHud:CloseCrafting()
 		self.controls.item_notification:ToggleController(false)
 		self.controls.yotb_notification:ToggleController(false)
     end
+end
+
+function PlayerHud:IsSpellWheelOpen()
+	return self.controls.spellwheel:IsOpen()
+end
+
+function PlayerHud:GetCurrentOpenSpellBook()
+	return self.controls.spellwheel.invobject
+end
+
+function PlayerHud:OpenSpellWheel(invobject, items, radius, focus_radius)
+	self:CloseCrafting()
+	if self:IsControllerInventoryOpen() then
+		self:CloseControllerInventory()
+	end
+	CloseAllChestContainerWidgets(self)
+	local itemscpy = {}
+	for i, v in ipairs(items) do
+		itemscpy[i] = shallowcopy(v)
+		if v.execute ~= nil then
+			itemscpy[i].execute = function()
+				invobject.components.spellbook:SelectSpell(i)
+				v.execute(invobject)
+			end
+			itemscpy[i].onfocus = function()
+				for j, v in ipairs(items) do
+					v.selected = i == j or nil
+				end
+			end
+		end
+	end
+	self.controls.spellwheel:SetScale(TheFrontEnd:GetHUDScale())
+	self.controls.spellwheel:SetItems(itemscpy, radius, focus_radius)
+	self.controls.spellwheel:Open()
+	local old = self.controls.spellwheel.invobject
+	self.controls.spellwheel.invobject = invobject
+	if old ~= nil and old:IsValid() then
+		old:PushEvent("closespellwheel")
+	end
+	invobject:PushEvent("openspellwheel")
+	local sfx = invobject.components.spellbook ~= nil and invobject.components.spellbook.opensound or nil
+	if sfx ~= nil then
+		TheFocalPoint.SoundEmitter:PlaySound(sfx)
+	end
+end
+
+function PlayerHud:CloseSpellWheel(is_execute)
+	self.controls.spellwheel:Close()
+	local old = self.controls.spellwheel.invobject
+	if old ~= nil then
+		self.controls.spellwheel.invobject = nil
+		if old:IsValid() then
+			old:PushEvent("closespellwheel")
+		end
+		if old.components.spellbook ~= nil then
+			local sfx
+			if is_execute then
+				sfx = old.components.spellbook.executesound
+			else
+				sfx = old.components.spellbook.closesound
+			end
+			if sfx ~= nil then
+				TheFocalPoint.SoundEmitter:PlaySound(sfx)
+			end
+		end
+	end
 end
 
 function PlayerHud:ShowPlayerStatusScreen(click_to_close, onclosefn)
@@ -957,6 +1057,7 @@ function PlayerHud:OnControl(control, down)
 		if TheInput:ControllerAttached() then
             self.owner.components.playercontroller:CancelAOETargeting()
             self:CloseCrafting()
+			self:CloseSpellWheel()
             if self:IsControllerInventoryOpen() then
                 self:CloseControllerInventory()
             end
@@ -971,6 +1072,10 @@ function PlayerHud:OnControl(control, down)
                 self:CloseCrafting()
                 closed = true
             end
+			if self:IsSpellWheelOpen() then
+				self:CloseSpellWheel()
+				closed = true
+			end
 			if self:IsPlayerAvatarPopUpOpen() then
                 self:TogglePlayerAvatarPopup()
                 closed = true
@@ -1004,9 +1109,8 @@ function PlayerHud:OnControl(control, down)
     elseif not down then
         if control == CONTROL_MAP then
             if not self:IsMapScreenOpen() then
-                if self:IsCraftingOpen() then
-                    self:CloseCrafting()
-                end
+				self:CloseCrafting()
+				self:CloseSpellWheel()
                 if self:IsControllerInventoryOpen() then
                     self:CloseControllerInventory()
                 end
@@ -1017,6 +1121,9 @@ function PlayerHud:OnControl(control, down)
             if self:IsCraftingOpen() then
                 self:CloseCrafting()
                 return true
+			elseif self:IsSpellWheelOpen() then
+				self:CloseSpellWheel()
+				return true
             elseif self:IsControllerInventoryOpen() then
                 self:CloseControllerInventory()
                 return true

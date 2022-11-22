@@ -36,7 +36,7 @@ end
 local function onpickedfn(inst, picker)
     inst.AnimState:PlayAnimation("picking")
     inst.AnimState:PushAnimation("picked", false)
-    if picker ~= nil and picker.components.combat ~= nil and not (picker.components.inventory ~= nil and picker.components.inventory:EquipHasTag("bramble_resistant")) then
+    if picker ~= nil and picker.components.combat ~= nil and not (picker.components.inventory ~= nil and picker.components.inventory:EquipHasTag("bramble_resistant")) and not picker:HasTag("shadowminion") then
         picker.components.combat:GetAttacked(inst, TUNING.MARSHBUSH_DAMAGE)
         picker:PushEvent("thorns")
     end

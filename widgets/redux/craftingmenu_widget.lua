@@ -4,6 +4,7 @@ local Widget = require "widgets/widget"
 local Text = require "widgets/text"
 local Grid = require "widgets/grid"
 local Spinner = require "widgets/spinner"
+local UIAnim = require "widgets/uianim"
 
 local TEMPLATES = require "widgets/redux/templates"
 
@@ -1008,7 +1009,7 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
 			widget.item_img:SetTexture(recipe:GetAtlas(), image, image ~= recipe.image and recipe.image or nil)
 			widget.item_img:ScaleToSize(item_size, item_size)
 
-			widget.item_img:SetTint(1, 1, 1, 1)
+			local tint = 1
 
 			if meta.build_state == "buffered" then
 				widget.bg:SetTexture(atlas, "slot_bg_buffered.tex")
@@ -1022,18 +1023,36 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
 				widget.fg:Hide()
 			elseif meta.build_state == "hint" then
 				widget.bg:SetTexture(atlas, "slot_bg_missing_mats.tex")
-				widget.item_img:SetTint(0.7, 0.7, 0.7, 1)
+				tint = .7
 				widget.fg:SetTexture(atlas, "slot_fg_lock.tex")
                 widget.fg:Show()
 			elseif meta.build_state == "no_ingredients" or meta.build_state == "prototype" then
 				widget.bg:SetTexture(atlas, "slot_bg_missing_mats.tex")
-				widget.item_img:SetTint(0.7, 0.7, 0.7, 1)
+				tint = .7
                 widget.fg:Hide()
 			else
 				widget.bg:SetTexture(atlas, "slot_bg_missing_mats.tex")
-				widget.item_img:SetTint(0.7, 0.7, 0.7, 1)
+				tint = .7
 				widget.fg:SetTexture(atlas, "slot_fg_lock.tex")
                 widget.fg:Show()
+			end
+
+			widget.item_img:SetTint(tint, tint, tint, 1)
+
+			if recipe.fxover ~= nil then
+				if widget.fxover == nil then
+					widget.fxover = widget.item_img:AddChild(UIAnim())
+					widget.fxover:SetClickable(false)
+					widget.fxover:SetScale(.25)
+					widget.fxover:GetAnimState():AnimateWhilePaused(false)
+				end
+				widget.fxover:GetAnimState():SetBank(recipe.fxover.bank)
+				widget.fxover:GetAnimState():SetBuild(recipe.fxover.build)
+				widget.fxover:GetAnimState():PlayAnimation(recipe.fxover.anim, true)
+				widget.fxover:GetAnimState():SetMultColour(tint, tint, tint, 1)
+			elseif widget.fxover ~= nil then
+				widget.fxover:Kill()
+				widget.fxover = nil
 			end
 
 			widget:Enable()

@@ -47,6 +47,9 @@ local function fn()
     inst:AddTag("ruins")
     inst:AddTag("metal")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     inst.foleysound = "dontstarve/movement/foley/metalarmour"
 
     local swap_data = {bank = "armor_ruins", anim = "anim"}
@@ -72,6 +75,9 @@ local function fn()
 
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.ARMORRUINS_SHADOW_LEVEL)
 
     MakeHauntableLaunch(inst)
 

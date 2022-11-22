@@ -565,6 +565,8 @@ local function PopulateWorld(savedata, profile)
 		if world.ismastersim then
 			local retrofiting = require("map/retrofit_savedata")
 			retrofiting.DoRetrofitting(savedata, world.Map)
+
+			require("worldentities").AddWorldEntities(savedata)
 		end
 
 		TheFrontEnd:GetGraphicsOptions():DisableStencil()

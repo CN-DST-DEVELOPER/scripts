@@ -409,6 +409,7 @@ function StateGraphInstance:StartAction(bufferedaction)
                 if handler.deststate then
                     local state = handler.deststate(self.inst, bufferedaction)
                     if state then
+						self.statemem.is_going_to_action_state = true
                         self:GoToState(state)
                     else
                         return

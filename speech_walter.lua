@@ -384,6 +384,16 @@ return{
         {
             DOER_ISNT_MODULE_OWNER = "I was trying to scratch behind his ears... but I don't think he has any.",
         },
+
+		CAST_SPELLBOOK =
+		{
+--fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+		},
+
+		CASTAOE =
+		{
+--fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -405,6 +415,13 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+
+	--waxwell specific
+--fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -468,6 +485,8 @@ return{
 --fallback to speech_wilson.lua         SAME_OLD_5 = "only_used_by_warly",
 --fallback to speech_wilson.lua 		TASTY = "only_used_by_warly",
     },
+
+	ANNOUNCE_FOODMEMORY = "only_used_by_warly",
 
     ANNOUNCE_ENCUMBERED =
     {
@@ -2917,7 +2936,11 @@ return{
 		WATERMELON = "A sweet, refreshing snack!",
 		WATERMELON_COOKED = "It's still sweet, but not as refreshing...",
 		WATERMELONHAT = "This feels silly...",
-		WAXWELLJOURNAL = "Maybe you could teach me some magic tricks? I'm a quick learner!",
+		WAXWELLJOURNAL =
+		{
+			GENERIC = "Maybe you could teach me some magic tricks? I'm a quick learner!",
+--fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+		},
 		WETGOOP = "Er... maybe Woby will want it...",
         WHIP = "I know how you feel about cats Woby, but it still seems pretty mean.",
 		WINTERHAT = "Better bundle up.",
@@ -4661,6 +4684,10 @@ return{
             GENERIC = "I don't know why some people think mannequins are scary.",
             BURNT = "Oh no, I thought I smelled a campfire burning around here!",
         },
+
+		-- Waxwell
+		MAGICIAN_CHEST = "C'mon Woby, just a little peek inside?",
+		TOPHAT_MAGICIAN = "Do you think he can teach me how to pull rabbits out of it?",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

@@ -175,6 +175,9 @@ local function OnPreLoad(inst, data)
 end
 
 local function CLIENT_Wurt_HostileTest(inst, target)
+	if target.HostileToPlayerTest ~= nil then
+		return target:HostileToPlayerTest(inst)
+	end
     return (target:HasTag("hostile") or target:HasTag("pig"))
         and not target:HasTag("merm") and not target:HasTag("manrabbit")
         and not target:HasTag("frog")

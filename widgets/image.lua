@@ -226,4 +226,8 @@ function Image:SetBlendMode(mode)
 	self.inst.ImageWidget:SetBlendMode(mode)
 end
 
+function Image:SetRadiusForRayTraces(radius)
+    self.inst.ImageWidget:SetRadiusForRayTraces(radius)
+end
+
 return Image

@@ -46,6 +46,8 @@ local function fn()
     inst.AnimState:SetBuild("mandrake")
     inst.AnimState:PlayAnimation("ground")
 
+	inst:AddTag("donotautopick")
+
     inst.entity:SetPristine()
 
 	if not TheWorld.ismastersim then
