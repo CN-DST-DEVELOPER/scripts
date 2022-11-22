@@ -4075,7 +4075,7 @@ MISC_ITEMS =
 		display_tex = "waxwell_deluxe.tex",
 		box_build = "box_shop_plain",
 		display_items = {  "waxwell_wizard", "tophat_wizard", "waxwell_formalp", "waxwell_survivorp", "waxwell_unshadowp", "waxwell_rosep", },
-		output_items = {  "waxwell_wizard", "body_waxwell_wizard", "feet_waxwell_wizard", "hand_waxwell_wizard", "tophat_wizard", "waxwell_formalp", "body_waxwell_formalp", "waxwell_survivorp", "body_waxwell_survivorp", "waxwell_unshadowp", "body_waxwell_unshadowp", "waxwell_rosep", "body_waxwell_rosep", },
+		output_items = {  "waxwell_wizard", "body_waxwell_wizard", "feet_waxwell_wizard", "hand_waxwell_wizard", "tophat_wizard", "waxwell_formalp", "body_waxwell_formalp", "feet_formal_winklepickerp_white_ivory", "hand_waxwell_formalp", "waxwell_survivorp", "body_waxwell_survivorp", "waxwell_unshadowp", "body_waxwell_unshadowp", "waxwell_rosep", "body_waxwell_rosep", },
 		release_group = 137,
 	},
 	pack_waxwell_formal =
@@ -4087,8 +4087,8 @@ MISC_ITEMS =
 		display_atlas = "bigportraits/waxwell_formal.xml",
 		display_tex = "waxwell_formal_oval.tex",
 		box_build = "box_shop_plain",
-		display_items = {  "waxwell_formalp", "body_waxwell_formalp", },
-		output_items = {  "waxwell_formalp", "body_waxwell_formalp", },
+		display_items = {  "waxwell_formalp", "body_waxwell_formalp", "feet_formal_winklepickerp_white_ivory", "hand_waxwell_formalp", },
+		output_items = {  "waxwell_formalp", "body_waxwell_formalp", "feet_formal_winklepickerp_white_ivory", "hand_waxwell_formalp", },
 		release_group = 137,
 	},
 	pack_waxwell_rose =
