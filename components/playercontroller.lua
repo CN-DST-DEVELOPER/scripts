@@ -2714,14 +2714,11 @@ local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 end
 
 local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
-
 	local attack_target = self:GetControllerAttackTarget()
 	if self.controller_targeting_lock_target and attack_target then
 		self.controller_target = attack_target
 		return
-	end
-
-    if self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) then
+	elseif self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) or self.inst:HasTag("usingmagiciantool") then
         self.controller_target = nil
         self.controller_target_age = 0
         return
@@ -4025,12 +4022,29 @@ function PlayerController:GetItemUseAction(active_item, target)
         return
     end
     target = target or self:GetControllerTarget()
+
+	if target == nil and self.inst:HasTag("usingmagiciantool") then
+		local containers = self.inst.replica.inventory:GetOpenContainers()
+		if containers ~= nil then
+			for k in pairs(containers) do
+				if k:HasTag("pocketdimension_container") then
+					target = k
+					break
+				end
+			end
+		end
+	end
+
     local act = target ~= nil and (
         ValidateItemUseAction(--[[rmb]] self, self.inst.components.playeractionpicker:GetUseItemActions(target, active_item, true)[1], active_item, target) or
         ValidateItemUseAction(--[[lmb]] self, self.inst.components.playeractionpicker:GetUseItemActions(target, active_item, false)[1], active_item, target)
     ) or nil
 
-	if act == nil and active_item:HasTag("magiciantool") and self.inst:HasTag("magician") then
+	if act ~= nil then
+		if act.action == ACTIONS.STORE and act.target ~= nil and act.target:HasTag("pocketdimension_container") then
+			act.options.instant = true
+		end
+	elseif active_item:HasTag("magiciantool") and self.inst:HasTag("magician") then
 		act = BufferedAction(self.inst, nil, ACTIONS.USEMAGICTOOL, active_item)
 	end
 

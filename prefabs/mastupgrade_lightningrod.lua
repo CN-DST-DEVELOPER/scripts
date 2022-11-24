@@ -119,7 +119,7 @@ end
 
 local function OnEntityReplicated(inst)
     local parent = inst.entity:GetParent()
-    if parent ~= nil and parent.prefab == "mast" or parent.prefab == "mast_malbatross" then
+    if parent ~= nil and (parent.prefab == "mast" or parent.prefab == "mast_malbatross") then
         parent.highlightchildren = parent.highlightchildren or {}
         table.insert(parent.highlightchildren, inst)
     end

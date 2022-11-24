@@ -52,20 +52,19 @@ local function get_other_player_linked_bell(inst, other)
 end
 
 local function on_put_in_inventory(inst, owner)
-    local grand_owner = inst.components.inventoryitem:GetGrandOwner()
-    if grand_owner ~= nil then
-        -- If the bell being picked up has a beefalo...
-        if inst:_HasBeefalo() then
-            -- ...look for another bell in the picking up player's inventory and drop it.
-            local other_bell = get_other_player_linked_bell(inst, grand_owner)
-            if other_bell ~= nil then
-                if grand_owner.components.inventory ~= nil then
-                    grand_owner.components.inventory:DropItem(other_bell, true, true)
-                elseif grand_owner.components.container ~= nil then
-                    grand_owner.components.container:DropItem(other_bell)
-                end
-            end
-        end
+	-- If the bell being picked up has a beefalo...
+	if owner ~= nil and inst:_HasBeefalo() then
+		owner = owner.components.inventoryitem ~= nil and owner.components.inventoryitem:GetGrandOwner() or owner
+		-- ...look for another bell in the picking up player's inventory and drop it.
+		local other_bell = get_other_player_linked_bell(inst, owner)
+		if other_bell ~= nil then
+			if owner.components.inventory ~= nil then
+				owner.components.inventory:DropItem(other_bell, true, true)
+			elseif owner.components.container ~= nil and owner.components.inventoryitem ~= nil then
+				--backpacks can be picked up, so don't allow multiple bells
+				owner.components.container:DropItem(other_bell)
+			end
+		end
     end
 end
 

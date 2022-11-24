@@ -15057,7 +15057,7 @@ local states =
         onexit = function(inst)
             if not inst.sg.statemem.not_interrupted then
                 inst:RemoveTag("switchtoho")
-				if inst.sg.mem.furl_target:IsValid() then
+				if inst.sg.mem.furl_target:IsValid() and inst.sg.mem.furl_target.components.mast ~= nil then
 	                inst.sg.mem.furl_target.components.mast:RemoveSailFurler(inst)
 				end
                 inst:RemoveTag("is_furling")
@@ -15126,7 +15126,7 @@ local states =
 
             if not inst.sg.statemem.not_interrupted then
                 inst:RemoveTag("switchtoho")
-                if inst.sg.mem.furl_target:IsValid() and inst.sg.mem.furl_target.components.mast then
+                if inst.sg.mem.furl_target:IsValid() and inst.sg.mem.furl_target.components.mast ~= nil then
                     inst.sg.mem.furl_target.components.mast:RemoveSailFurler(inst)
                 end
                 inst:RemoveTag("is_furling")
@@ -15147,7 +15147,7 @@ local states =
         onenter = function(inst)
 
             inst:PerformBufferedAction()
-			if inst.sg.mem.furl_target:IsValid() then
+			if inst.sg.mem.furl_target:IsValid() and inst.sg.mem.furl_target.components.mast ~= nil then
 	            inst.sg.mem.furl_target.components.mast:AddSailFurler(inst, 0)
 			end
 
@@ -15161,7 +15161,7 @@ local states =
 
         onexit = function(inst)
             if not inst.sg.statemem.not_interrupted then
-				if inst.sg.mem.furl_target:IsValid() then
+				if inst.sg.mem.furl_target:IsValid() and inst.sg.mem.furl_target.components.mast ~= nil then
 	                inst.sg.mem.furl_target.components.mast:RemoveSailFurler(inst)
 				end
                 inst:RemoveTag("is_furling")
@@ -15823,7 +15823,7 @@ local states =
 				inst.AnimState:PlayAnimation(equipped and "tophat_equipped_start" or "tophat_empty_start")
 				inst.AnimState:PushAnimation("tophat_loop")
 				if skin_build ~= nil then
-					inst.AnimState:OverrideItemSkinSymbol("swap_hattop", skin_build, "swap_hat", inst.GUID, build)
+					inst.AnimState:OverrideItemSkinSymbol("swap_hattop", skin_build, "swap_hat", hat.GUID, build)
 				else
 					inst.AnimState:OverrideSymbol("swap_hattop", build, "swap_hat")
 				end

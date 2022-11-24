@@ -231,7 +231,7 @@ local states =
 
         onenter = function(inst)
             if inst.hurtsoundoverride ~= nil then
-                inst.SoundEmitter:PlaySound(hurtsoundoverride)
+                inst.SoundEmitter:PlaySound(inst.hurtsoundoverride)
             elseif not inst:HasTag("mime") then
                 inst.SoundEmitter:PlaySound(
                     inst:HasTag("girl") and

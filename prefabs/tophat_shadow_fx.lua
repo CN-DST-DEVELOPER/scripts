@@ -20,12 +20,12 @@ end
 
 local function shadow_spawnparticles(base, name, front, x_scale, y_scale)
 	local parent = base
-	while parent ~= nil do
+	repeat
 		if not parent.entity:IsVisible() then
 			return
 		end
 		parent = parent.entity:GetParent()
-	end
+	until parent == nil
 
 	local inst
 	if #base.pool > 0 then

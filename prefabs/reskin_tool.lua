@@ -86,7 +86,11 @@ local reskin_fx_info =
 
 
 local function spellCB(tool, target, pos, caster)
-    
+	target = target or caster --if no target, then self target for beards
+    if target == nil then -- Bail.
+        return
+    end
+
     local fx_prefab = "explode_reskin"
     local skin_fx = SKIN_FX_PREFAB[tool:GetSkinName()]
     if skin_fx ~= nil and skin_fx[1] ~= nil then
@@ -94,8 +98,6 @@ local function spellCB(tool, target, pos, caster)
     end
 
     local fx = SpawnPrefab(fx_prefab)
-
-	target = target or caster --if no target, then self target for beards
 
     local fx_info = reskin_fx_info[target.prefab] or {}
 
@@ -168,7 +170,6 @@ local function spellCB(tool, target, pos, caster)
 end
 
 local function can_cast_fn(doer, target, pos)
-
     local prefab_to_skin = target.prefab
     local is_beard = false
 

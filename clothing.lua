@@ -6252,7 +6252,7 @@ CLOTHING =
 	hand_waxwell_formalp =
 	{
 		type = "hand",
-		build_name_override = "waxwell_unshadow",
+		build_name_override = "hand_waxwell_formal",
 		skin_tags = { "FORMAL", "CLOTHING_HAND", "CLOTHING", },
 		symbol_overrides = { "hand", "arm_lower_cuff", },
 		rarity = "Classy",
