@@ -123,6 +123,10 @@ function ContainerProxy:Open(doer)
 		self.openlist[doer] = container_opener
 		self.opencount = self.opencount + 1
 
+		if doer.components.inventory ~= nil then
+			doer.components.inventory.opencontainerproxies[self.inst] = true
+		end
+
 		if self.opencount == 1 then
 			if self.inst.Transform ~= nil then
 				self.inst:StartUpdatingComponent(self)
@@ -153,6 +157,10 @@ function ContainerProxy:OnClose(doer)
 		self.openlist[doer]:Remove()
 		self.openlist[doer] = nil
 		self.opencount = self.opencount - 1
+
+		if doer.components.inventory ~= nil then
+			doer.components.inventory.opencontainerproxies[self.inst] = nil
+		end
 
 		if self.opencount == 0 then
 			self.inst:StopUpdatingComponent(self)

@@ -302,13 +302,17 @@ end
 
 local function on_portal_save(inst, data)
     if inst._loot ~= nil and #inst._loot > 0 then
-        data.loot = {}
+		local loot = {}
         for _, loot_item in ipairs(inst._loot) do
-            table.insert(data.loot, loot_item.GUID)
+			if loot_item.persists and loot_item:IsValid() then
+				table.insert(loot, loot_item.GUID)
+			end
         end
+		if #loot > 0 then
+			data.loot = loot
+			return loot
+		end
     end
-
-    return data.loot
 end
 
 local function on_portal_loadpostpass(inst, ents, data)

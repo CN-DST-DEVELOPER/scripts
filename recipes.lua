@@ -192,7 +192,7 @@ Recipe2("mutator_healer",  				{Ingredient("monstermeat", 2), Ingredient("silk",
 Recipe2("mutator_water",  				{Ingredient("monstermeat", 2), Ingredient("silk", 2), Ingredient("fig", 2)},			TECH.SPIDERCRAFT_ONE,	{builder_tag="spiderwhisperer"})
 
 -- Wormwood
-Recipe2("livinglog", 					{Ingredient(CHARACTER_INGREDIENT.HEALTH, 20)},													TECH.NONE,				{builder_tag="plantkin", sg_state="form_log", allowautopick = true,})
+Recipe2("livinglog", 					{Ingredient(CHARACTER_INGREDIENT.HEALTH, 20)},													TECH.NONE,				{builder_tag="plantkin", sg_state="form_log", allowautopick = true, no_deconstruction=true})
 Recipe2("armor_bramble",				{Ingredient("livinglog", 2), Ingredient("stinger", 4)},											TECH.NONE,				{builder_tag="plantkin"})
 Recipe2("trap_bramble",					{Ingredient("livinglog", 1), Ingredient("stinger", 1)},											TECH.NONE,				{builder_tag="plantkin"})
 Recipe2("compostwrap",					{Ingredient("poop", 5), Ingredient("spoiled_food", 2), Ingredient("nitre", 1)}, 				TECH.NONE,				{builder_tag="plantkin"})
@@ -300,7 +300,7 @@ Recipe2("beeswax",							{Ingredient("honeycomb", 1)}, 																	TECH.SCI
 Recipe2("marblebean",						{Ingredient("marble", 1)}, 																		TECH.SCIENCE_TWO)
 
 Recipe2("nightmarefuel",					{Ingredient("petals_evil", 4)}, 																TECH.MAGIC_TWO)
-Recipe2("purplegem",						{Ingredient("redgem",1), Ingredient("bluegem", 1)}, 											TECH.MAGIC_TWO)
+Recipe2("purplegem",						{Ingredient("redgem",1), Ingredient("bluegem", 1)}, 											TECH.MAGIC_TWO, {no_deconstruction=true})
 Recipe2("moonrockcrater",					{Ingredient("moonrocknugget", 3)}, 																TECH.SCIENCE_TWO)
 Recipe2("bearger_fur",						{Ingredient("furtuft", 90)}, 																	TECH.SCIENCE_TWO,			{numtogive = 3})
 Recipe2("malbatross_feathered_weave",		{Ingredient("malbatross_feather", 6), Ingredient("silk", 1)},									TECH.SCIENCE_TWO)

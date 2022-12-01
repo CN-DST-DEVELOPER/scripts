@@ -175,10 +175,18 @@ local function TurnOn(inst, is_loading)
         inst.AnimState:PlayAnimation("activate")
         inst.AnimState:PushAnimation("activated_idle", true)
 
+		if inst._ShadowDelayTask ~= nil then
+			inst._ShadowDelayTask:Cancel()
+		end
         inst._ShadowDelayTask = inst:DoTaskInTime(4*FRAMES, enable_dynshadow)
 
         if TheWorld.state.isnight then
-            inst.components.timer:StartTimer("summon_delay", TUNING.TERRARIUM_SUMMON_DELAY)
+			local t = inst.components.timer:GetTimeLeft("summon_delay")
+			if t == nil then
+				inst.components.timer:StartTimer("summon_delay", TUNING.TERRARIUM_SUMMON_DELAY)
+			elseif t < 1 then
+				inst.components.timer:SetTimeLeft("summon_delay", 1)
+			end
         end
     end
 
@@ -277,6 +285,9 @@ local function TurnOff(inst)
         inst.AnimState:PlayAnimation("deactivate")
         inst.AnimState:PushAnimation("idle", true)
 
+		if inst._ShadowDelayTask ~= nil then
+			inst._ShadowDelayTask:Cancel()
+		end
         inst._ShadowDelayTask = inst:DoTaskInTime(4*FRAMES, disable_dynshadow)
     end
 end
@@ -453,10 +464,12 @@ local function OnSave(inst, data)
     local refs = nil
     if inst.eyeofterror ~= nil then
         -- If the boss is dying as we save, record it.
-        data.boss_dead = inst.eyeofterror:IsDying()
+		data.boss_dead = inst.eyeofterror:IsDying() or nil
 
-        data.boss_guid = inst.eyeofterror.GUID
-        refs = { inst.eyeofterror.GUID }
+		if inst.eyeofterror.persists then
+			data.boss_guid = inst.eyeofterror.GUID
+			refs = { inst.eyeofterror.GUID }
+		end
     end
 
     return refs
@@ -558,6 +571,7 @@ local function fn()
     inst.on_end_eyeofterror_fn = function()
         if inst.eyeofterror ~= nil then
             OnBossFightOver(inst)
+			inst.eyeofterror = nil
         end
     end
 

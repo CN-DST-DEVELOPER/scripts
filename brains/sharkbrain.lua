@@ -1,12 +1,12 @@
 require "behaviours/wander"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/attackwall"
 require "behaviours/minperiod"
 require "behaviours/leash"
 require "behaviours/faceentity"
 require "behaviours/doaction"
 require "behaviours/standstill"
+local BrainCommon = require("brains/braincommon")
 
 local SharkBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -186,10 +186,9 @@ function SharkBrain:OnStart()
                             DoAction(self.inst, Attack, "attack", true),
                         })),
 
-                    --WhileNode(function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
                     WhileNode(function() return isOnWater(self.inst) end, "on water",
                         PriorityNode({
-                            WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+							BrainCommon.PanicTrigger(self.inst),
                             RunAway(self.inst, function() return self.inst.components.timer:TimerExists("getdistance") and self.inst.components.combat.target end, 10, 20),
                             ChaseAndAttack(self.inst, 100),
                             DoAction(self.inst, isfoodnearby, "gotofood", true),

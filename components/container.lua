@@ -159,11 +159,19 @@ function Container:DropEverything(drop_pos)
 end
 
 function Container:DropItem(itemtodrop)
+	--@V2C NOTE: not supported when using container_proxy because this
+	--           will be the pocket dimension_container at (0, 0, 0)
+	local x, y, z = self.inst.Transform:GetWorldPosition()
+	self:DropItemAt(itemtodrop, x, y, z)
+end
+
+function Container:DropItemAt(itemtodrop, x, y, z)
+	if Vector3.is_instance(x) then
+		x, y, z = x:Get()
+	end
     local item = self:RemoveItem(itemtodrop)
     if item then
-        --@V2C NOTE: not supported when using container_proxy
-        local pos = Vector3(self.inst.Transform:GetWorldPosition())
-        item.Transform:SetPosition(pos:Get())
+		item.Transform:SetPosition(x, y, z)
         if item.components.inventoryitem then
             item.components.inventoryitem:OnDropped(true)
         end

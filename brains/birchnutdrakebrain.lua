@@ -1,6 +1,6 @@
-require "behaviours/panic"
 require "behaviours/chaseandattack"
 require "behaviours/leash"
+local BrainCommon = require("brains/braincommon")
 
 local BirchNutDrakeBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -15,7 +15,7 @@ end
 function BirchNutDrakeBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.health.takingfiredamage or self.inst.components.hauntable.panic end, "Panic", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         Leash(self.inst, GetHomePos, 20, 5),
         ChaseAndAttack(self.inst, 12, 21),
         ActionNode(function() self.inst:PushEvent("exit", { force = true, idleanim = true }) end),

@@ -17,11 +17,17 @@ local SourceModifierList = require("util/sourcemodifierlist")
 --------------------------------------------------------------------------
 
 local function shouldremoveitem(inst)
-    return inst:HasTag("personal_possession") or inst:HasTag("cursed")
+	return not inst.components.inventoryitem.canbepickedup
+		or not inst.components.inventoryitem.cangoincontainer
+		or inst.components.inventoryitem.canonlygoinpocket
+		or inst:HasTag("personal_possession")
+		or inst:HasTag("cursed")
 end
 
 local function processloot(inst, stash)
-    if shouldremoveitem(inst) then
+	if inst:HasTag("irreplaceable") then
+		return
+	elseif shouldremoveitem(inst) then
         inst:Remove()
         return
     end
@@ -42,7 +48,9 @@ local function stashloot(inst)
     elseif inst.components.inventory then
         local function checkitem(item)
             if item then
-                if shouldremoveitem(item) then
+				if inst:HasTag("irreplaceable") then
+					inst.components.inventory:DropItem(item, true)
+				elseif shouldremoveitem(item) then
                     item:Remove()
                 else
                     inst.components.inventory:DropItem(item, true)
@@ -65,46 +73,36 @@ local function hitbycannon(boat, data)
     end
 end
 
-local CANT_TAGS = {"INLIMBO"}
-
 local function setpirateboat(boat)
-
     boat:AddComponent("boatcrew")
-
     boat:AddComponent("vanish_on_sleep")
-    boat.components.vanish_on_sleep.vanishfn = function(inst)
-        --local ents = boat.components.walkableplatform:GetEntitiesOnPlatform()
-        local x,y,z = inst.Transform:GetWorldPosition()
-
-        -- Drop items out of containers first.
-        local ents = TheSim:FindEntities(x,y,z, inst.components.walkableplatform.platform_radius, nil, CANT_TAGS)
-        for _, ent in ipairs(ents) do
-            --print("Drop:", ent)
-            if ent.components.container then
-                ent.components.container:DropEverything(Vector3(x,y,z))
-            end
-        end
-
-        -- Try to stash what can be stashed.
-        ents = TheSim:FindEntities(x,y,z, inst.components.walkableplatform.platform_radius, nil, CANT_TAGS)
-        for _, ent in ipairs(ents) do
-            --print("Stash:", ent)
-            stashloot(ent)
-        end
-
-        -- Remove anything that's left.
-        ents = TheSim:FindEntities(x,y,z, inst.components.walkableplatform.platform_radius)
-        for _, ent in ipairs(ents) do
-            if ent.components.health then
-                if ent:HasTag("pirate") then
-                    ent:Remove()
-                else            
-                    ent.components.health:Kill()
-                end
-            else
-                ent:Remove()
-            end
-        end
+	boat.components.vanish_on_sleep.vanishfn = function(boat)
+		if boat.components.walkableplatform ~= nil then
+			for ent in pairs(boat.components.walkableplatform:GetEntitiesOnPlatform()) do
+				local container = ent.components.container
+				if container ~= nil then
+					for i = 1, container.numslots do
+						local item = container.slots[i]
+						if item ~= nil then
+							--V2C: DropItem(item) does not drop whole stack
+							--container:DropItem(item)
+							container:DropItemBySlot(i)
+							stashloot(item)
+						end
+					end
+				end
+				if ent.components.inventoryitem ~= nil then
+					stashloot(ent)
+				elseif ent:HasTag("pirate") then
+					stashloot(ent)
+					ent:Remove()
+				elseif ent.components.health ~= nil then
+					ent.components.health:Kill()
+				else
+					ent:Remove()
+				end
+			end
+		end
     end
     boat:ListenForEvent("spawnnewboatleak", hitbycannon)
 end

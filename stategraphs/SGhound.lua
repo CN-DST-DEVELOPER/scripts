@@ -315,19 +315,14 @@ local states =
         onenter = function(inst, reanimating)
             if reanimating then
                 inst.AnimState:Pause()
-            else
-
-                if inst.death_shatter then
-                    inst.AnimState:PlayAnimation("death_shatter")
-                else
-                    inst.AnimState:PlayAnimation("death")
-                end
-
-
+			elseif inst.death_shatter then
+				inst.AnimState:PlayAnimation("death_shatter")
+			else
+				inst.AnimState:PlayAnimation("death")
 				if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
-		            inst.AnimState:PushAnimation("death_idle", true)
+					inst.AnimState:PushAnimation("death_idle", true)
 				end
-            end
+			end
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             if inst:HasTag("clay") then

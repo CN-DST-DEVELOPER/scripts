@@ -84,7 +84,7 @@ local function shouldKeepTarget(inst, target)
 end
 
 local function OnPickup(inst, data)
-    local item = data.item
+	local item = data ~= nil and data.item or nil
     if item ~= nil and
         item.components.equippable ~= nil and
         item.components.equippable.equipslot == EQUIPSLOTS.HEAD and
@@ -101,29 +101,48 @@ local function OnPickup(inst, data)
     end
 end
 
+local function OnDropItem(inst, data)
+	if data ~= nil and data.item ~= nil then
+		data.item:RemoveTag("personal_possession")
+	end
+end
+
 local function OnSave(inst, data)
-    data.nightmare = inst:HasTag("nightmare") or nil
-    data.personal_possessions = {}
-    for k,v in pairs(inst.components.inventory.itemslots) do
-        table.insert(data.personal_possessions,v.GUID)
-    end
-    return data.personal_possessions
+	local personal_item = {}
+	for k, v in pairs(inst.components.inventory.itemslots) do
+		if v.persists and v:HasTag("personal_possession") then
+			personal_item[k] = v.prefab
+		end
+	end
+	local personal_equip = {}
+	for k, v in pairs(inst.components.inventory.equipslots) do
+		if v.persists and v:HasTag("personal_possession") then
+			personal_equip[k] = v.prefab
+		end
+	end
+	data.personal_item = next(personal_item) ~= nil and personal_item or nil
+	data.personal_equip = next(personal_equip) ~= nil and personal_equip or nil
 end
 
 local function OnLoad(inst, data)
-    if data ~= nil and data.nightmare then
-        SetNightmareMonkey(inst)
-    end
-end
-
-local function OnLoadPostPass(inst, ents, data)
-    if data and data.personal_possessions then
-        for k,v in ipairs(data.personal_possessions)do
-            if ents[v] and ents[v].entity then
-                ents[v].entity:AddTag("personal_possession")
-            end
-        end
-    end
+	if data ~= nil then
+		if data.personal_item ~= nil then
+			for k, v in pairs(data.personal_item) do
+				local item = inst.components.inventory:GetItemInSlot(k)
+				if item ~= nil and item.prefab == v then
+					item:AddTag("personal_possession")
+				end
+			end
+		end
+		if data.personal_equip ~= nil then
+			for k, v in pairs(data.personal_equip) do
+				local item = inst.components.inventory:GetEquippedItem(k)
+				if item ~= nil and item.prefab == v then
+					item:AddTag("personal_possession")
+				end
+			end
+		end
+	end
 end
 
 local function ClearTinkerTarget(inst)
@@ -329,6 +348,7 @@ local function fn()
     inst:AddComponent("knownlocations")
 
     inst:ListenForEvent("onpickupitem", OnPickup)
+	inst:ListenForEvent("dropitem", OnDropItem)
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDeath)
     inst:ListenForEvent("itemget", OnGotItem)
@@ -344,7 +364,6 @@ local function fn()
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
-    inst.OnLoadPostPass = OnLoadPostPass
 
     return inst
 end

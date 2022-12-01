@@ -1,8 +1,8 @@
 require "behaviours/chaseandattack"
 require "behaviours/wander"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/attackwall"
+local BrainCommon = require("brains/braincommon")
 
 local LavaeBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -31,16 +31,12 @@ local function GoHome(inst)
     return BufferedAction(inst, target, ACTIONS.GOHOME)
 end
 
-local function ispanichaunted(inst)
-    return inst.components.hauntable and inst.components.hauntable.panic
-end
-
 function LavaeBrain:OnStart()
     local root =
         PriorityNode(
         {
             WhileNode(function() return ShouldResetFight(self.inst) end, "Reset Fight", DoAction(self.inst, GoHome, "Go Home", nil, 10)),
-            WhileNode(function() return ispanichaunted(self.inst) end, "PanicHaunted", Panic(self.inst)), --Ghosts can still help in the fight by helping with lavae :)
+			BrainCommon.PanicTrigger(self.inst),
             AttackWall(self.inst),
             ChaseAndAttack(self.inst),
             StandStill(self.inst),

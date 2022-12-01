@@ -3,6 +3,7 @@ require "behaviours/panic"
 require "behaviours/attackwall"
 require "behaviours/leash"
 require "behaviours/standstill"
+local BrainCommon = require("brains/braincommon")
 
 local RETURN_DIST = 15
 local BASE_DIST = 6
@@ -82,9 +83,7 @@ end
 function BirdMutantBrain:OnStart()
     local brain =
     {
-
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 
         --Mutant Spitter:
             --Spit

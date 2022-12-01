@@ -1,6 +1,7 @@
 require "behaviours/standandattack"
 require "behaviours/standstill"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local MushGnomeBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -40,9 +41,7 @@ function MushGnomeBrain:OnStart()
                     StandAndAttack(self.inst, nil, 7)
                 }, 1.0)
             ),
-            WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire",
-                Panic(self.inst)
-            ),
+			BrainCommon.PanicTrigger(self.inst),
             RunAway(self.inst, THREAT_PARAMS, 5, 10),
             Wander(self.inst),
         }, 1)

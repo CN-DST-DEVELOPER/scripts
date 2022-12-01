@@ -1,8 +1,8 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
 require "behaviours/runaway"
 require "behaviours/leash"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 0
 local MAX_FOLLOW_DIST = 25
@@ -34,7 +34,7 @@ function GrassgekkoBrain:OnStart()
     local root =
     PriorityNode(
     {
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP , function() return true end ),
         RunAway(self.inst, "player", AVOID_DIST, AVOID_STOP, nil, nil, NO_TAGS),
         --Wander(self.inst, function() return self.inst:GetPosition() end, MAX_WANDER_DIST),

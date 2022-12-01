@@ -1,7 +1,7 @@
-require "behaviours/panic"
 require "behaviours/standstill"
 require "behaviours/chaseandattack"
 require "behaviours/leash"
+local BrainCommon = require("brains/braincommon")
 
 local WargBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -38,7 +38,7 @@ function WargBrain:OnStart()
         WhileNode(function() return isclay and self.inst.sg:HasStateTag("statue") end, "Statue",
             ActionNode(function() TryReanimate(self) end, "TryReanimate")),
 
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         MinPeriod(self.inst, TUNING.WARG_SUMMONPERIOD, true,
             IfNode(function() return CanSpawnChild(self.inst) end, "needs follower",
                 ActionNode(function()

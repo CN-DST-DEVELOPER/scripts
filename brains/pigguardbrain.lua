@@ -1,7 +1,6 @@
 require "behaviours/wander"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/chattynode"
 
 local BrainCommon = require "brains/braincommon"
@@ -72,8 +71,7 @@ function PigGuardBrain:OnStart()
     local root = PriorityNode(
     {
         BrainCommon.PanicWhenScared(self.inst, .2, "PIG_TALK_PANICBOSS"),
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         ChattyNode(self.inst, "PIG_GUARD_TALK_FIGHT",
             WhileNode(function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
                 ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)))),

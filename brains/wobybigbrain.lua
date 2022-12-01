@@ -1,6 +1,5 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
 require "behaviours/follow"
 
 local BrainCommon = require("brains/braincommon")
@@ -217,9 +216,7 @@ function WobyBigBrain:OnStart()
 
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return false end, "OnFire",
-            Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 
         PriorityNode{
             RunAway(self.inst, {tags={"_combat", "_health"}, notags={"wall", "INLIMBO"},

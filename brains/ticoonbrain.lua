@@ -1,7 +1,6 @@
 require "behaviours/follow"
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
 require "behaviours/runaway"
 require "behaviours/leash"
 require "behaviours/standstill"
@@ -44,11 +43,6 @@ local function KeepFaceTargetFn(inst, target)
     return inst.components.follower.leader == target
 end
 
-local function ShouldPanic(inst)
-	return (inst.components.hauntable and inst.components.hauntable.panic)
-		or inst.components.health.takingfiredamage 
-end
-
 local function GetTrackingTarget(inst)
 	return inst.components.entitytracker:GetEntity("tracking") 
 end
@@ -72,8 +66,7 @@ function TicoonBrain:OnStart()
 	    WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "not jumping",
             PriorityNode({
 				BrainCommon.PanicWhenScared(self.inst),
-				WhileNode(function() return ShouldPanic(self.inst) end, "Panic", 
-					Panic(self.inst)),
+				BrainCommon.PanicTrigger(self.inst),
 				ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
 
 				WhileNode(function() return self.inst.components.entitytracker:GetEntity("tracking") ~= nil end, "Tracking Kitcoon",

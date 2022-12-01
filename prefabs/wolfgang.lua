@@ -103,6 +103,7 @@ end
 
 local function onbecameghost(inst, data)
     inst.components.mightiness:Pause()
+	inst.hurtsoundoverride = nil
 
     if inst.playercheck_task ~= nil then
         inst.playercheck_task:Cancel()

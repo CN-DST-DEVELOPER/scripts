@@ -1,7 +1,7 @@
 require "behaviours/wander"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
+local BrainCommon = require("brains/braincommon")
 
 local STOP_RUN_DIST = 10
 local SEE_PLAYER_DIST = 5
@@ -85,7 +85,7 @@ end
 function MoleBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         WhileNode( function() return ShouldMakeHome(self.inst) end, "HomeDugUp",
             DoAction(self.inst, MakeNewHomeAction, "make home", false)),
         WhileNode(function() return self.inst.flee == true end, "Flee",

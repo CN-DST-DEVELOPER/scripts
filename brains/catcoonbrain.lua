@@ -1,7 +1,6 @@
 require "behaviours/follow"
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
 require "behaviours/runaway"
 require "behaviours/leash"
 
@@ -131,10 +130,7 @@ function CatcoonBrain:OnStart()
     PriorityNode(
     {
         BrainCommon.PanicWhenScared(self.inst, 1),
-        WhileNode(function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", 
-			Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", 
-			Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         IfNode(function() return ShouldHairball(self.inst) end, "hairball",
             DoAction(self.inst, HairballAction, "hairballact", true)),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),

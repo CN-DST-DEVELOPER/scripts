@@ -59,7 +59,9 @@ local function on_put_in_inventory(inst, owner)
 		local other_bell = get_other_player_linked_bell(inst, owner)
 		if other_bell ~= nil then
 			if owner.components.inventory ~= nil then
-				owner.components.inventory:DropItem(other_bell, true, true)
+				if owner:HasTag("player") then
+					owner.components.inventory:DropItem(other_bell, true, true)
+				end
 			elseif owner.components.container ~= nil and owner.components.inventoryitem ~= nil then
 				--backpacks can be picked up, so don't allow multiple bells
 				owner.components.container:DropItem(other_bell)

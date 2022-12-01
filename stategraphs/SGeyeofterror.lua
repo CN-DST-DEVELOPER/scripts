@@ -171,6 +171,16 @@ local FX_TIME = 5*FRAMES
 
 local states =
 {
+	State{
+		name = "standby",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.sg.mem.wantstoleave = false
+			inst.sg.mem.sleeping = false
+		end,
+	},
+
     State {
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -895,6 +905,7 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
             RemovePhysicsColliders(inst)
+			inst:AddTag("NOCLICK")
 
             if not inst.sg.mem.transformed then
                 inst.AnimState:Show("mouth")
@@ -912,22 +923,29 @@ local states =
             TimeEvent(26*FRAMES, DoEpicScare),
             TimeEvent(31*FRAMES, lower_flying_creature),
             TimeEvent(36*FRAMES, function(inst)
-                if not inst._loot_dropped then
-                    inst._loot_dropped = true
-
-                    inst.components.lootdropper:DropLoot(inst:GetPosition())
-                end
-
+				if inst.persists then
+					inst.persists = false
+					inst.components.lootdropper:DropLoot(inst:GetPosition())
+				end
                 ShakeAllCameras(CAMERASHAKE.VERTICAL, 0.5, 0.15, 0.1, inst, 40)
+				inst:PushEvent("forgetme")
             end),
+			TimeEvent(5, ErodeAway),
         },
 
         events =
         {
             EventHandler("animover", function(inst)
-                inst:PushEvent("turnoff_terrarium")
+				if inst.AnimState:AnimDone() then
+					inst:PushEvent("turnoff_terrarium")
+				end
             end),
         },
+
+		onexit = function(inst)
+			--Should NOT happen!
+			inst:RemoveTag("NOCLICK")
+		end,
     },
 
     State {
@@ -959,11 +977,13 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                inst.sg.mem.sleeping = false        -- Clean up after the "gotosleep" sleepex listener, since we're doing something weird here.
+				if inst.AnimState:AnimDone() then
+					inst.sg.mem.sleeping = false        -- Clean up after the "gotosleep" sleepex listener, since we're doing something weird here.
 
-                inst.sg.mem.leaving = false
-                inst.components.health:SetInvincible(false)
-                inst:PushEvent("finished_leaving")
+					inst.sg.mem.leaving = false
+					inst.components.health:SetInvincible(false)
+					inst:PushEvent("finished_leaving")
+				end
             end),
         },
 

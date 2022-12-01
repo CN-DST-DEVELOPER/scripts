@@ -1,6 +1,6 @@
 require "behaviours/wander"
-require "behaviours/panic"
 require "behaviours/chaseandattack"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_WANDER_DIST = 10
 
@@ -22,14 +22,12 @@ function NightmareMonkeyBrain:OnStart()
 
     local root = PriorityNode(
     {
-    	WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         SequenceNode({
             ActionNode(function() EquipWeapon(self.inst, self.inst.weaponitems.hitter) end, "Equip hitter"),
             ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
         }),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),
-
     }, .25)
     self.bt = BT(self.inst, root)
 end

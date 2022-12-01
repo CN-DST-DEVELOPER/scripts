@@ -897,7 +897,9 @@ local states =
         },
 
         onexit = function(inst)
-            inst:ClearBufferedAction()
+            if inst.bufferedaction == inst.sg.statemem.action then
+                inst:ClearBufferedAction()
+            end
         end,
     },
 

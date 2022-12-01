@@ -902,35 +902,30 @@ function PlayerController:DoControllerAltActionButton()
 
     local lmb, act = self:GetGroundUseAction()
     local isspecial = nil
-    local obj = nil
+	local obj = act ~= nil and act.target or nil
     if act == nil then
         obj = self:GetControllerTarget()
         if obj ~= nil then
             lmb, act = self:GetSceneItemControllerAction(obj)
         end
         if act == nil then
-			if self.inst:HasTag("usingmagiciantool") then
+			local rider = self.inst.replica.rider
+			if rider ~= nil and rider:IsRiding() then
 				obj = self.inst
-				act = BufferedAction(obj, obj, ACTIONS.STOPUSINGMAGICTOOL)
+				act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
 			else
-				local rider = self.inst.replica.rider
-				if rider ~= nil and rider:IsRiding() then
-					obj = self.inst
-					act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
-				else
-					obj = nil
-					act = self:GetGroundUseSpecialAction(nil, true)
-					if act == nil then
-						self:TryAOETargeting()
-						return
-					end
-					isspecial = true
+				obj = nil
+				act = self:GetGroundUseSpecialAction(nil, true)
+				if act == nil then
+					self:TryAOETargeting()
+					return
 				end
+				isspecial = true
 			end
         end
     end
 
-    if self.reticule ~= nil and self.reticule.reticule ~= nil then
+	if self.reticule ~= nil and self.reticule.reticule ~= nil and self.reticule.reticule.entity:IsVisible() then
 		self.reticule:PingReticuleAt(act:GetDynamicActionPoint())
     end
 
@@ -2163,6 +2158,12 @@ function PlayerController:OnUpdate(dt)
 		end
 	end
 
+	if self.handler ~= nil and self.inst:HasTag("usingmagiciantool") then
+		self:CancelPlacement()
+		self:CancelDeployPlacement()
+		self:CancelAOETargeting()
+	end
+
 	--Attack controls are buffered and handled here in the update
 	if self.attack_buffer ~= nil then
 		if self.attack_buffer == CONTROL_ATTACK then
@@ -2298,31 +2299,33 @@ function PlayerController:OnUpdate(dt)
 			end
 
 			local terraform = false
-			local hidespecialactionreticule = false
+			local hideactionreticuleoverride = false
 			local terraform_action = nil
 			if controller_mode then
 				local lmb, rmb = self:GetGroundUseAction()
 				if rmb ~= nil then
 					terraform = rmb.action.tile_placer ~= nil
-					terraform_action = rmb.action
+					terraform_action = terraform and rmb.action or nil
+					--hide reticule if not a point action (ie. STOPUSINGMAGICTOOL)
+					hideactionreticuleoverride = rmb.pos == nil
 				end
 				--If reticule is from special action, hide it when other actions are available
-				if self.reticule ~= nil and self.reticule.inst == self.inst then
+				if not hideactionreticuleoverride and self.reticule ~= nil and self.reticule.inst == self.inst then
 					if rmb == nil and self.controller_target ~= nil then
 						lmb, rmb = self:GetSceneItemControllerAction(self.controller_target)
 					end
 					if rmb ~= nil then
-						hidespecialactionreticule = true
+						hideactionreticuleoverride = true
 					else
 						local rider = self.inst.replica.rider
-						hidespecialactionreticule = rider ~= nil and rider:IsRiding() or not self:HasGroundUseSpecialAction(true)
+						hideactionreticuleoverride = rider ~= nil and rider:IsRiding() or not self:HasGroundUseSpecialAction(true)
 					end
 				end
 			else
 				local rmb = self:GetRightMouseAction()
 				if rmb ~= nil then
 					terraform = rmb.action.tile_placer ~= nil and (rmb.action.show_tile_placer_fn == nil or rmb.action.show_tile_placer_fn(self:GetRightMouseAction()))
-					terraform_action = rmb.action
+					terraform_action = terraform and rmb.action or nil
 				end
 			end
 
@@ -2342,7 +2345,7 @@ function PlayerController:OnUpdate(dt)
 				end
 
 				if self.reticule ~= nil and self.reticule.reticule ~= nil then
-					if hidespecialactionreticule or self.reticule:ShouldHide() then
+					if hideactionreticuleoverride or self.reticule:ShouldHide() then
 						self.reticule.reticule:Hide()
 					else
 						self.reticule.reticule:Show()
@@ -3944,7 +3947,9 @@ end
 function PlayerController:GetGroundUseAction(position, spellbook)
     if self.inst.components.playeractionpicker:HasContainerWidgetAction() then
         return
-    end
+	elseif self.inst:HasTag("usingmagiciantool") then
+		return nil, BufferedAction(self.inst, self.inst, ACTIONS.STOPUSINGMAGICTOOL)
+	end
 
     local islocal = position == nil
     position = position or

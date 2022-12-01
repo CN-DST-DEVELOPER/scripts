@@ -1,7 +1,7 @@
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local SEE_FOOD_DIST = 13
 
@@ -109,10 +109,7 @@ end
 function DustMothBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.health.takingfiredamage or self.inst.components.burnable:IsBurning() end, "OnFire",
-            Panic(self.inst)),
-
-        WhileNode(function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         WhileNode(function() return self.inst.components.inventory:GetItemInSlot(1) == nil end, "RunAwayAll",
             RunAway(self.inst, "scarytoprey", SEE_THREAT_DIST, STOP_RUN_DIST)),
         RunAway(self.inst, HUNTERPARAMS_NOPLAYER, SEE_THREAT_DIST, STOP_RUN_DIST),

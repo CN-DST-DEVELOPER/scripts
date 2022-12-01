@@ -3,8 +3,8 @@ require "behaviours/runaway"
 require "behaviours/wander"
 require "behaviours/doaction"
 require "behaviours/attackwall"
-require "behaviours/panic"
 require "behaviours/minperiod"
+local BrainCommon = require("brains/braincommon")
 
 local TIME_BETWEEN_EATING = 3.5
 
@@ -185,7 +185,7 @@ function MosslingBrain:OnStart()
 	local root =
 	PriorityNode(
 	{
-		WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 
 		WhileNode(function() return self.inst.shouldGoAway end, "Go Away",
 			DoAction(self.inst, GoHome)),

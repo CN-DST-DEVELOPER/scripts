@@ -1,10 +1,10 @@
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/useshield"
 require "behaviours/wander"
 require "behaviours/chaseandattack"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_CHASE_TIME = 60
 local MAX_CHASE_DIST = 40
@@ -131,7 +131,7 @@ function SlurtleBrain:OnStart()
     local root = PriorityNode(
     {
         UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
         DoAction(self.inst, EatFoodAction),
         DoAction(self.inst, StealFoodAction),

@@ -247,6 +247,7 @@ function Boatcrew:RemoveMember(inst)
         self.members[inst] = nil
 
         if self.membercount < 1 then
+			inst:RemoveComponent("vanish_on_sleep")
             inst:RemoveComponent("boatcrew")
         end
     end

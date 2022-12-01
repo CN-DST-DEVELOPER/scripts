@@ -2057,7 +2057,7 @@ return{
         {
 			GENERIC = "Still could use a piece or two.",
 			FUNNY = "A silly look, that's to be sure!",
-			COMPLETE = "That looks right at rain, it does it does!",
+			COMPLETE = "That looks right as rain, it does it does!",
         },
         STALKER = "Your mind's not quite right, but neither is mine!",
         STALKER_ATRIUM = "Shall we dance, dearest demon?",

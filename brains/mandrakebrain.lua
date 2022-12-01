@@ -1,5 +1,6 @@
 require "behaviours/follow"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 2
 local TARGET_FOLLOW_DIST = 3
@@ -20,7 +21,7 @@ end)
 function MandrakeBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetLeader, KeepFaceTargetFn),
         Wander(self.inst),

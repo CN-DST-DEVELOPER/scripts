@@ -4,6 +4,7 @@ require "behaviours/doaction"
 require "behaviours/panic"
 require "behaviours/chaseandattack"
 require "behaviours/leash"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 5
 local TARGET_FOLLOW_DIST = 7
@@ -264,7 +265,7 @@ local function shouldsteal(inst)
 
     if #ents > 0 then
         for i=#ents,1,-1 do
-            if ents[i]:IsOnWater() then
+			if ents[i]:IsOnOcean() then
                 table.remove(ents,i)
             end
         end
@@ -638,11 +639,15 @@ function PowderMonkeyBrain:OnStart()
 
     local root = PriorityNode(
     {
-
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage or 
-                                     (self.inst.components.homeseeker ~= nil and self.inst.components.homeseeker.home and self.inst.components.homeseeker.home.components.burnable and self.inst.components.homeseeker.home.components.burnable:IsBurning()) 
-                                 end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
+		WhileNode(
+			function()
+				return self.inst.components.homeseeker ~= nil
+					and self.inst.components.homeseeker.home
+					and self.inst.components.homeseeker.home.components.burnable
+					and self.inst.components.homeseeker.home.components.burnable:IsBurning()
+			end,
+			"OnFire", Panic(self.inst)),
 
         ChattyNode(self.inst, "MONKEY_TALK_ABANDON",
             DoAction(self.inst, DoAbandon, "abandon", true )),

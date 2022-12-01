@@ -1,7 +1,6 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/runaway"
 
 local BrainCommon = require("brains/braincommon")
@@ -39,8 +38,7 @@ end)
 function KoalefantBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         SequenceNode{
             FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn, 0.5),

@@ -10,6 +10,8 @@ local prefabs =
     "bee_poof_big",
     "bee_poof_small",
     "stinger",
+	"ocean_splash_med1",
+	"ocean_splash_med2",
 }
 
 --------------------------------------------------------------------------

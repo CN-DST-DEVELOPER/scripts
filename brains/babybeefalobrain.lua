@@ -2,7 +2,7 @@ require "behaviours/wander"
 require "behaviours/panic"
 require "behaviours/follow"
 require "behaviours/runaway"
-
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 2
 local TARGET_FOLLOW_DIST = 3
@@ -26,8 +26,7 @@ function BabyBeefaloBrain:OnStart()
 
     local root = PriorityNode(
     {
-    	WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         RunAway(self.inst, {tags={"character"}, fn=NonMountedPlayer}, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         Follow(self.inst, function() return (self.inst.components.follower ~= nil and
                                             self.inst.components.follower.leader ~= nil and

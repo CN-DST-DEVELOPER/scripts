@@ -3,10 +3,10 @@ require "behaviours/runaway"
 require "behaviours/wander"
 require "behaviours/doaction"
 require "behaviours/attackwall"
-require "behaviours/panic"
 require "behaviours/minperiod"
 require "behaviours/chaseandram"
 --require "behaviours/beargeroffscreen"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_CHASE_TIME = 8
 local GIVE_UP_DIST = 20
@@ -252,7 +252,7 @@ function BeargerBrain:OnStart()
             -- (It does trigger before the entity goes to sleep, so we can probably just have BeargerOffScreen set up its own periodic task)
             --WhileNode(function() return OutsidePlayerRange(self.inst) end, "OffScreen", BeargerOffScreen(self.inst)),
 
-            WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+			BrainCommon.PanicTrigger(self.inst),
 
             WhileNode(function()
                     return self.inst.cangroundpound

@@ -83,6 +83,18 @@ BrainCommon.AnchorToSaltlick = AnchorToSaltlick
 
 --------------------------------------------------------------------------
 
+local function ShouldTriggerPanic(inst)
+	return (inst.components.health ~= nil and inst.components.health.takingfiredamage)
+		or (inst.components.hauntable ~= nil and inst.components.hauntable.panic)
+end
+
+BrainCommon.ShouldTriggerPanic = ShouldTriggerPanic
+BrainCommon.PanicTrigger = function(inst)
+	return WhileNode(function() return ShouldTriggerPanic(inst) end, "PanicTrigger", Panic(inst))
+end
+
+--------------------------------------------------------------------------
+
 local function PanicWhenScared(inst, loseloyaltychance, chatty)
     local scareendtime = 0
     local function onepicscarefn(inst, data)
@@ -256,8 +268,17 @@ BrainCommon.NodeAssistLeaderDoAction = NodeAssistLeaderDoAction
 --NOTES(JBK): This helps followers pickup items for a PLAYER leader.
 --            They pickup if they are able to, then give them to their leader, or drop them onto the ground if unable to.
 
-local function Unignore(inst, item, ignorethese)
-    ignorethese[item] = nil
+local function Unignore(inst, sometarget, ignorethese)
+    ignorethese[sometarget] = nil
+end
+local function IgnoreThis(sometarget, ignorethese, leader, worker)
+    if ignorethese[sometarget] and ignorethese[sometarget].task ~= nil then
+        ignorethese[sometarget].task:Cancel()
+        ignorethese[sometarget].task = nil
+    else
+        ignorethese[sometarget] = {worker = worker,}
+    end
+    ignorethese[sometarget].task = leader:DoTaskInTime(5, Unignore, sometarget, ignorethese)
 end
 
 local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirst, positionoverride, ignorethese, wholestacks, allowpickables)
@@ -265,10 +286,11 @@ local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirs
     if activeitem ~= nil then
         inst.components.inventory:DropItem(activeitem, true, true)
         if ignorethese ~= nil then
-            if ignorethese[activeitem] then
-                ignorethese[activeitem]:Cancel()
-                ignorethese[activeitem] = nil
+            if ignorethese[activeitem] and ignorethese[activeitem].task ~= nil then
+                ignorethese[activeitem].task:Cancel()
+                ignorethese[activeitem].task = nil
             end
+            ignorethese[activeitem] = nil
         end
     end
     local onlytheseprefabs
@@ -295,21 +317,17 @@ local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirs
 
     local item, pickable
     if pickup_range_local ~= nil then
-        item, pickable = FindPickupableItem(leader, pickup_range_local, furthestfirst, inst:GetPosition(), ignorethese, onlytheseprefabs, allowpickables)
+        item, pickable = FindPickupableItem(leader, pickup_range_local, furthestfirst, inst:GetPosition(), ignorethese, onlytheseprefabs, allowpickables, inst)
     end
     if item == nil then
-        item, pickable = FindPickupableItem(leader, pickup_range, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables)
+        item, pickable = FindPickupableItem(leader, pickup_range, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, inst)
     end
     if item == nil then
         return nil
     end
 
     if ignorethese ~= nil then
-        if ignorethese[item] then
-            ignorethese[item]:Cancel()
-            ignorethese[item] = nil
-        end
-        ignorethese[item] = leader:DoTaskInTime(5, Unignore, item, ignorethese)
+        IgnoreThis(item, ignorethese, leader, inst)
     end
 
     return BufferedAction(inst, item, item.components.trap ~= nil and ACTIONS.CHECKTRAP or pickable and ACTIONS.PICK or ACTIONS.PICKUP)
@@ -367,12 +385,12 @@ local function NodeAssistLeaderPickUps(self, parameters)
 		or AlwaysTrue
 
     return PriorityNode({
-        IfNode(cond, "Should Pickup",
-            DoAction(self.inst, CustomPickUpAction, nil, true)),
-		IfNode(give_cond_fn, "Should Bring To Leader",
+        WhileNode(cond, "BC KeepPickup",
+            DoAction(self.inst, CustomPickUpAction, "BC CustomPickUpAction", true)),
+        WhileNode(give_cond_fn, "BC Should Bring To Leader",
 			PriorityNode({
-				DoAction(self.inst, GiveAction, nil, true),
-				DoAction(self.inst, DropAction, nil, true),
+				DoAction(self.inst, GiveAction, "BC GiveAction", true),
+				DoAction(self.inst, DropAction, "BC DropAction", true),
 			}, .25)),
     },.25)
 end

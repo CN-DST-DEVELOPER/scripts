@@ -1,7 +1,7 @@
 require "behaviours/wander"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
+local BrainCommon = require("brains/braincommon")
 
 local AVOID_PLAYER_DIST = 5
 local AVOID_PLAYER_STOP = 9
@@ -47,8 +47,7 @@ function LightCrabBrain:OnStart()
         WhileNode(function() return self.inst.sg:HasStateTag("jumping") end, "Standby",
             ActionNode(function() --[[do nothing]] end)),
 
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
         DoAction(self.inst, EatFoodAction),
         Wander(self.inst, nil, nil, WANDER_TIMING),

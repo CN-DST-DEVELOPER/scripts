@@ -328,10 +328,6 @@ function EntityScript:Show()
     self.entity:Show(false)
 end
 
-function EntityScript:IsOnWater()
-    return not self:GetCurrentPlatform() and not TheWorld.Map:IsVisualGroundAtPoint(self.Transform:GetWorldPosition())
-end
-
 function EntityScript:IsInLimbo()
     --V2C: faster than checking tag, but only valid on mastersim
     return self.inlimbo
@@ -1192,7 +1188,9 @@ function EntityScript:GetAngleToPoint(x, y, z)
         x, y, z = x:Get()
     end    
     local x1, y1, z1 = self.Transform:GetWorldPosition()
-    return math.atan2(z1 - z, x - x1) / DEGREES
+	return x1 == x and z1 == z
+		and self.Transform:GetRotation()
+		or math.atan2(z1 - z, x - x1) / DEGREES
 end
 
 function EntityScript:GetPositionAdjacentTo(target, distance)
@@ -1259,6 +1257,9 @@ function EntityScript:FaceAwayFromPoint(dest, force)
         return
     end
     local x, y, z = self.Transform:GetWorldPosition()
+	if x == dest.x and z == dest.z then
+		return
+	end
     self.Transform:SetRotation(math.atan2(z - dest.z, dest.x - x) / DEGREES + 180)
 end
 
@@ -1614,6 +1615,9 @@ function EntityScript:IsOnOcean(allow_boats)
     local x, y, z = self.Transform:GetWorldPosition()
     return TheWorld.Map:IsOceanAtPoint(x, y, z, allow_boats)
 end
+
+--deprecated
+EntityScript.IsOnWater = EntityScript.IsOnOcean
 
 function EntityScript:GetCurrentPlatform()
     if TheWorld.ismastersim then

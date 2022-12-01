@@ -1,9 +1,9 @@
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/chaseandram"
 require "behaviours/follow"
+local BrainCommon = require("brains/braincommon")
 
 local START_FACE_DIST = 14
 local KEEP_FACE_DIST = 16
@@ -75,8 +75,7 @@ function RookBrain:OnStart()
             end,
             "Dodge",
             RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, GoHomeAction, "Go Home", false)),
 

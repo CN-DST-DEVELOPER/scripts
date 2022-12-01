@@ -1,8 +1,8 @@
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/follow"
+local BrainCommon = require("brains/braincommon")
 
 local START_FACE_DIST = 6
 local KEEP_FACE_DIST = 8
@@ -46,8 +46,7 @@ end
 function KnightBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         WhileNode(function()
                         return self.inst.components.combat.target == nil
                             or not self.inst.components.combat:InCooldown()

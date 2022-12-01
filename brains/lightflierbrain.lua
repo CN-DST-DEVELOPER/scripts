@@ -2,6 +2,7 @@ require "behaviours/runaway"
 require "behaviours/panic"
 require "behaviours/wander"
 require "behaviours/follow"
+local BrainCommon = require("brains/braincommon")
 
 local SEE_THREAT_DIST = 3.5
 local SEE_THREAT_DIST_ALERT = 8
@@ -98,12 +99,7 @@ function LightFlierBrain:OnStart()
                         Panic(self.inst),
                         WaitNode(6),
                     }),
-                WhileNode(function()
-                    return self.inst.components.health.takingfiredamage
-                            or self.inst.components.hauntable.panic
-                    end, "Panic",
-                        Panic(self.inst)
-                ),
+				BrainCommon.PanicTrigger(self.inst),
 
                 WhileNode(function() return GetTime() - self.inst._time_since_formation_attacked < TUNING.LIGHTFLIER.ON_ATTACKED_ALERT_DURATION end, "Recently Attacked",
                     RunAway(self.inst, hunterparams_alert, SEE_THREAT_DIST_ALERT, STOP_RUN_DIST_ALERT)),

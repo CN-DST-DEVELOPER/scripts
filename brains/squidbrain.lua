@@ -1,12 +1,12 @@
 require "behaviours/wander"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/attackwall"
 require "behaviours/minperiod"
 require "behaviours/leash"
 require "behaviours/faceentity"
 require "behaviours/doaction"
 require "behaviours/standstill"
+local BrainCommon = require("brains/braincommon")
 
 local SquidBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -179,8 +179,7 @@ function SquidBrain:OnStart()
         {
             WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "NotJumpingBehaviour",
                 PriorityNode({
-                    WhileNode(function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-                    WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+					BrainCommon.PanicTrigger(self.inst),
 
                     IfNode(function() return findwall(self.inst) end, "nearwall", AttackWall(self.inst)),
 

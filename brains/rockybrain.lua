@@ -1,10 +1,10 @@
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/wander"
 require "behaviours/chaseandattack"
 require "behaviours/useshield"
+local BrainCommon = require("brains/braincommon")
 
 local START_FACE_DIST = 4
 local KEEP_FACE_DIST = 6
@@ -106,7 +106,7 @@ function RockyBrain:OnStart()
             },
             UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
         },
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)),
         DoAction(self.inst, EatFoodAction),
         Follow(self.inst, function(inst) return inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),

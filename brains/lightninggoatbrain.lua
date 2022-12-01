@@ -3,7 +3,6 @@ require "behaviours/runaway"
 require "behaviours/wander"
 require "behaviours/doaction"
 require "behaviours/attackwall"
-require "behaviours/panic"
 require "behaviours/minperiod"
 
 local BrainCommon = require("brains/braincommon")
@@ -48,7 +47,7 @@ function LightningGoatBrain:OnStart()
     local root =
     PriorityNode(
     {
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         IfNode(function() return self.inst.components.combat.target ~= nil end, "hastarget", AttackWall(self.inst)),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         SequenceNode{

@@ -157,7 +157,17 @@ local function OnOwnerChange(inst)
         owner = nextowner
     end
 
-    inst._light.entity:SetParent(owner.entity)
+	if owner:HasTag("pocketdimension_container") or owner:HasTag("buried") then
+		inst._light.entity:SetParent(inst.entity)
+		if not inst._light:IsInLimbo() then
+			inst._light:RemoveFromScene()
+		end
+	else
+		inst._light.entity:SetParent(owner.entity)
+		if inst._light:IsInLimbo() then
+			inst._light:ReturnToScene()
+		end
+	end
 
     for k, v in pairs(inst._owners) do
         if k:IsValid() then

@@ -1,6 +1,6 @@
 require "behaviours/wander"
-require "behaviours/panic"
 require "behaviours/chaseandattack"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_WANDER_DIST = 15
 local GO_HOME_DIST = 30
@@ -77,7 +77,7 @@ end)
 function FruitFlyBrain:OnStart()
     local brain =
     {
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         --LordFruitFly:
             --needs follower
             --AttackMomentarily

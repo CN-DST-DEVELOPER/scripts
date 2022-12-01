@@ -2,7 +2,7 @@ require "behaviours/runaway"
 require "behaviours/wander"
 require "behaviours/doaction"
 require "behaviours/findflower"
-require "behaviours/panic"
+local BrainCommon = require("brains/braincommon")
 
 local RUN_AWAY_DIST = 5
 local STOP_RUN_AWAY_DIST = 10
@@ -37,8 +37,7 @@ function ButterflyBrain:OnStart()
     local root =
         PriorityNode(
         {
-            WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-            WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+			BrainCommon.PanicTrigger(self.inst),
             RunAway(self.inst, "scarytoprey", RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
             IfNode(function() return not TheWorld.state.isday end, "IsNight",
                 DoAction(self.inst, GoHomeAction, "go home", true )),

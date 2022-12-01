@@ -1,9 +1,8 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
 require "behaviours/runaway"
 require "behaviours/leash"
-
+local BrainCommon = require("brains/braincommon")
 
 local CHALLENGE_LOST_RUN_AWAY_DIST = 10
 local CHALLENGE_LOST_STOP_RUN_AWAY_DIST = 15
@@ -42,6 +41,7 @@ local wander_timing = {minwalktime = 4, randwalktime = 4, randwaittime = 1}
 function FruitDragonBrain:OnStart()
     local root = PriorityNode(
     {
+		BrainCommon.PanicTrigger(self.inst),
         WhileNode(function() return self.inst.components.timer:TimerExists("panicing") end, "LostChallenge",
 			RunAway(self.inst, "fruitdragon", CHALLENGE_LOST_RUN_AWAY_DIST, CHALLENGE_LOST_STOP_RUN_AWAY_DIST)),
         ChaseAndAttack(self.inst, nil, MAX_CHASE_DIST),

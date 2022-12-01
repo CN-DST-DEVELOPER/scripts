@@ -3,7 +3,7 @@ require "behaviours/wander"
 require "behaviours/faceentity"
 require "behaviours/follow"
 require "behaviours/standstill"
-
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 2
 local MAX_FOLLOW_DIST = 9
@@ -73,7 +73,7 @@ end)
 function SmallBirdBrain:OnStart()
     local root =
     PriorityNode({
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
         -- when starving prefer finding food over fighting
         SequenceNode{

@@ -1,8 +1,8 @@
 require "behaviours/chaseandattack"
 require "behaviours/wander"
-require "behaviours/panic"
 require "behaviours/faceentity"
 require "behaviours/follow"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 0
 local MAX_FOLLOW_DIST = 8
@@ -94,8 +94,7 @@ end)
 function LavaePetBrain:OnStart()
     local root =
     PriorityNode({
-
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 
         WhileNode(function() return self.inst.components.hunger:GetPercent() < 0.05 end, "STARVING BABY ALERT!",
             PriorityNode{
@@ -121,7 +120,6 @@ function LavaePetBrain:OnStart()
                 WaitNode(4),
                 DoAction(self.inst, LoveOwner),
             }),
-
     }, 1)
     self.bt = BT(self.inst, root)
 end

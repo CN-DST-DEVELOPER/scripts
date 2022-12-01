@@ -1,8 +1,8 @@
 require "behaviours/attackwall"
 require "behaviours/chaseandattack"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local EyeOfTerrorMiniBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -32,16 +32,7 @@ function EyeOfTerrorMiniBrain:OnStart()
     {
         WhileNode(function() return not self.inst.sg:HasStateTag("charge") end, "Not Attacking",
             PriorityNode({
-                WhileNode(function()
-                        return self.inst.components.hauntable
-                            and self.inst.components.hauntable.panic
-                    end, "PanicHaunted", Panic(self.inst)
-                ),
-                WhileNode(function()
-                        return self.inst.components.health.takingfiredamage
-                    end, "OnFire", Panic(self.inst)
-                ),
-
+				BrainCommon.PanicTrigger(self.inst),
                 AttackWall(self.inst),
                 ChaseAndAttack(self.inst),
                 DoAction(self.inst, EatFoodAction, "Find And Eat Food"),

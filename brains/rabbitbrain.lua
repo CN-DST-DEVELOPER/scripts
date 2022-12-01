@@ -1,7 +1,7 @@
 require "behaviours/wander"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
+local BrainCommon = require("brains/braincommon")
 
 local STOP_RUN_DIST = 10
 local SEE_PLAYER_DIST = 5
@@ -47,8 +47,7 @@ end
 function RabbitBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
         RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST, nil, true),
         EventNode(self.inst, "gohome",

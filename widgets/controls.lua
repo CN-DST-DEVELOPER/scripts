@@ -616,11 +616,7 @@ function Controls:OnUpdate(dt)
                 textblock:SetString(table.concat(cmds, "\n"))
             end
 		elseif not self.groundactionhint.shown then
-			if self.owner:HasTag("usingmagiciantool") then
-				self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.STOPUSINGMAGICTOOL)
-				self.playeractionhint:Show()
-				self.playeractionhint:SetTarget(self.owner)
-			elseif self.dismounthintdelay <= 0
+			if self.dismounthintdelay <= 0
 				and self.owner.replica.rider ~= nil
 				and self.owner.replica.rider:IsRiding() then
 				self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)

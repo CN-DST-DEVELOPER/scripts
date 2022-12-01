@@ -1,7 +1,6 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/follow"
 require "behaviours/attackwall"
 --require "behaviours/runaway"
@@ -194,9 +193,7 @@ end)
 function BeefaloBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire",
-            Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         IfNode(function() return self.inst.components.combat.target ~= nil end, "hastarget",
             AttackWall(self.inst)),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),

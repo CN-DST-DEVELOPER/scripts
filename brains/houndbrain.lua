@@ -1,12 +1,12 @@
 require "behaviours/wander"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/attackwall"
 require "behaviours/minperiod"
 require "behaviours/leash"
 require "behaviours/faceentity"
 require "behaviours/doaction"
 require "behaviours/standstill"
+local BrainCommon = require("brains/braincommon")
 
 local HoundBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -156,8 +156,7 @@ function HoundBrain:OnStart()
         {
             WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "NotJumpingBehaviour",
                 PriorityNode({
-                    WhileNode(function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-                    WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+					BrainCommon.PanicTrigger(self.inst),
                     WhileNode(function() return GetLeader(self.inst) == nil end, "NoLeader", AttackWall(self.inst)),
 
                     WhileNode(function() return self.inst:HasTag("pet_hound") end, "Is Pet", ChaseAndAttack(self.inst, 10)),

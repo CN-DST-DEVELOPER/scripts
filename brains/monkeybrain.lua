@@ -1,9 +1,9 @@
 require "behaviours/wander"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/chaseandattack"
 require "behaviours/leash"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 5
 local TARGET_FOLLOW_DIST = 7
@@ -279,8 +279,7 @@ function MonkeyBrain:OnStart()
 
     local root = PriorityNode(
     {
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 
         --Monkeys go home when quakes start.
         EventNode(self.inst, "gohome",

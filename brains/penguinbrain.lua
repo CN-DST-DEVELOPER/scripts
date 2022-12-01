@@ -1,10 +1,10 @@
 require "behaviours/wander"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/standstill"
 require "behaviours/attackwall"
 require "behaviours/leash"
+local BrainCommon = require("brains/braincommon")
 
 local SEE_DIST = 30
 local MIN_FOLLOW_DIST = 1
@@ -350,8 +350,7 @@ function PenguinBrain:OnStart()
         IfNode(function() return  self.inst.sg:HasStateTag("flight") end, "Flying",
             ActionNode(function() return FlyAway(self.inst) end)),
 
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 
         -- Penguins will panic and pick up eggs if player comes too close
 		DoAction(self.inst, function() return StealAction(self.inst) end, "PickUp Egg Action", true ),

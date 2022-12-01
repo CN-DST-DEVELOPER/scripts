@@ -1,9 +1,8 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/runaway"
-
+local BrainCommon = require("brains/braincommon")
 
 local MAX_CHASE_TIME = 6
 local WANDER_DIST_DAY = 20
@@ -77,8 +76,7 @@ function Spatbrain:OnStart()
 
     local root = PriorityNode(
     {
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         WhileNode(function() return CanMeleeNow(self.inst) end, "Hit Stuck Target or Creature",
             SequenceNode({
                 ActionNode(function() EquipMeleeAndResetCooldown(self.inst) end, "Equip melee"),

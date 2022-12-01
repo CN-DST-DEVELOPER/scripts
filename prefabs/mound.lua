@@ -162,6 +162,7 @@ local function fn()
     inst.AnimState:PlayAnimation("gravedirt")
 
     inst:AddTag("grave")
+	inst:AddTag("buried")
 
     inst.entity:SetPristine()
 

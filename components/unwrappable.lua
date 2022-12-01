@@ -54,14 +54,25 @@ function Unwrappable:Unwrap(doer)
     if self.itemdata ~= nil then
 		if doer ~= nil and self.inst.components.inventoryitem ~= nil then
 			local owner = self.inst.components.inventoryitem:GetGrandOwner()
-			if owner ~= nil and (owner == doer or owner:HasTag("pocketdimension_container")) then
-				local doerpos = doer:GetPosition()
-				local offset = FindWalkableOffset(doerpos, doer.Transform:GetRotation() * DEGREES, 1, 8, false, true, NoHoles)
-				if offset ~= nil then
-					pos.x = doerpos.x + offset.x
-					pos.z = doerpos.z + offset.z
-				else
-					pos.x, pos.z = doerpos.x, doerpos.z
+			if owner ~= nil then
+				if owner ~= doer and owner:HasTag("pocketdimension_container") then
+					owner = doer.components.inventory ~= nil and doer.components.inventory:GetOpenContainerProxyFor(owner) or nil
+					if owner ~= nil then
+						pos.x, pos.y, pos.z = owner.Transform:GetWorldPosition()
+						pos.y = 0
+					else
+						owner = doer
+					end
+				end
+				if owner == doer then
+					local doerpos = doer:GetPosition()
+					local offset = FindWalkableOffset(doerpos, doer.Transform:GetRotation() * DEGREES, 1, 8, false, true, NoHoles)
+					if offset ~= nil then
+						pos.x = doerpos.x + offset.x
+						pos.z = doerpos.z + offset.z
+					else
+						pos.x, pos.z = doerpos.x, doerpos.z
+					end
 				end
 			end
         end

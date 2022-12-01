@@ -465,7 +465,7 @@ function HermitBrain:OnStart()
         PriorityNode(
         {
 
-            WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted",
+            WhileNode( function() return BrainCommon.ShouldTriggerPanic(self.inst) end, "PanicHaunted",
                 ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_PANICHAUNT) end,
                     Panic(self.inst))),
             RunAway(self.inst, function(guy) return guy:HasTag("pig") and guy.components.combat and guy.components.combat.target == self.inst end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST ),

@@ -1,11 +1,11 @@
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/useshield"
 require "behaviours/wander"
 require "behaviours/chaseandattack"
 require "behaviours/runaway"
+local BrainCommon = require("brains/braincommon")
 
 local START_FACE_DIST = 6
 local KEEP_FACE_DIST = 8
@@ -136,7 +136,7 @@ function SlurtleSnailBrain:OnStart()
     local root = PriorityNode(
     {
         UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         DoAction(self.inst, EatFoodAction),
         DoAction(self.inst, StealFoodAction),

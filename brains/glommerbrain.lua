@@ -1,7 +1,7 @@
 require "behaviours/follow"
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 0
 local MAX_FOLLOW_DIST = 6
@@ -36,7 +36,7 @@ function GlommerBrain:OnStart()
     local root =
     PriorityNode(
     {
-        WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         DoAction(self.inst, WanderOff),
         Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),

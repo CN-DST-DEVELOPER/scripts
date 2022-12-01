@@ -336,7 +336,7 @@ local PICKUP_CANT_TAGS = {
     -- Either
     "donotautopick",
 }
-local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable)
+local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker)
     if AllBuilderTaggedRecipes[v.prefab] then
         return false
     end
@@ -359,7 +359,7 @@ local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, po
             return false
         end
     end
-    if ignorethese ~= nil and ignorethese[v] ~= nil then
+    if ignorethese ~= nil and ignorethese[v] ~= nil and ignorethese[v].worker ~= worker then
         return false
     end
     if onlytheseprefabs ~= nil and onlytheseprefabs[ispickable and v.components.pickable.product or v.prefab] == nil then
@@ -386,7 +386,7 @@ local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, po
     return v, ispickable
 end
 -- This function looks for an item on the ground that could be ACTIONS.PICKUP (or ACTIONS.CHECKTRAP if a trap) by the owner and subsequently put into the owner's inventory.
-function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables)
+function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, worker)
     if owner == nil or owner.components.inventory == nil then
         return nil
     end
@@ -405,7 +405,7 @@ function FindPickupableItem(owner, radius, furthestfirst, positionoverride, igno
     for i = istart, iend, idiff do
         local v = ents[i]
         local ispickable = v:HasTag("pickable")
-        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable) then
+        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker) then
             return v, ispickable
         end
     end

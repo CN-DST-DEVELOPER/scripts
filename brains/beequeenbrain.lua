@@ -6,7 +6,6 @@ require "behaviours/leash"
 local FLEE_DELAY = 15
 local DODGE_DELAY = 5
 local MAX_DODGE_TIME = 3
-local SEE_PLAYER_DIST = 20
 
 local BeeQueenBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -150,7 +149,7 @@ local function ShouldDodge(self)
         local theta = 2 * PI * math.random()
         local dtheta = PI * .25
         for attempt = 1, 8 do
-            local offset = FindWalkableOffset(pos, theta, r, 1, true, true)
+			local offset = FindWalkableOffset(pos, theta, r, 1, true, true, nil, true, true)
             if offset ~= nil then
                 local x, z = offset.x + pos.x, offset.z + pos.z
                 if distsq(homepos.x, homepos.z, x, z) < maxrangesq then

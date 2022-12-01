@@ -1,8 +1,8 @@
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
 require "behaviours/chaseandram"
+local BrainCommon = require("brains/braincommon")
 
 local START_FACE_DIST = 14
 local KEEP_FACE_DIST = 16
@@ -165,8 +165,7 @@ function MinotaurBrain:OnStart()
 
                 WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Rest",
                     StandStill(self.inst)),
-                WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-                WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+				BrainCommon.PanicTrigger(self.inst),
                 WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
                     DoAction(self.inst, GoHomeAction, "Go Home", false)),
                 FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),

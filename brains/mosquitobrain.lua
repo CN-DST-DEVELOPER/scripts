@@ -3,6 +3,7 @@ require "behaviours/leash"
 require "behaviours/doaction"
 require "behaviours/chaseandattack"
 require "behaviours/runaway"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_LEASH_DIST = 20
 local MAX_WANDER_DIST = 6
@@ -44,8 +45,7 @@ function MosquitoBrain:OnStart()
 
     local root = PriorityNode(
     {
-        WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-		WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
 		Leash(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_LEASH_DIST, MAX_WANDER_DIST),
         WhileNode( function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily", ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)) ),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",

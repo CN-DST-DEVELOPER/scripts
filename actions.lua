@@ -751,6 +751,12 @@ ACTIONS.RUMMAGE.fn = function(act)
             if owner ~= nil and (targ.components.quagmire_stewer ~= nil or targ.components.container.droponopen) then
                 if owner == act.doer then
                     owner.components.inventory:DropItem(targ, true, true)
+				elseif owner:HasTag("pocketdimension_container") then
+					--V2C: skipped IsOpenedBy(act.doer) check because magician's top hat
+					--     closes when performing actions, but it's pretty safe to assume
+					--     this action is valid.
+					local x, y, z = (act.doer.components.inventory ~= nil and act.doer.components.inventory:GetOpenContainerProxyFor(owner) or act.doer).Transform:GetWorldPosition()
+					owner.components.container:DropItemAt(targ, x, y, z)
                 elseif owner.components.container ~= nil and owner.components.container:IsOpenedBy(act.doer) then
                     owner.components.container:DropItem(targ)
                 else

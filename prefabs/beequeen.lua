@@ -9,7 +9,8 @@ local prefabs =
 {
     "beeguard",
     "honey_trail",
-    "splash_sink",
+	"ocean_splash_ripple1",
+	"ocean_splash_ripple2",
     "royal_jelly",
     "honeycomb",
     "honey",
@@ -80,6 +81,16 @@ local function PickHoney(inst)
     return rand
 end
 
+local function TrySpawnHoney(inst, x, z, min_scale, max_scale, duration)
+	if TheWorld.Map:IsPassableAtPoint(x, 0, z) then
+		local fx = SpawnPrefab("honey_trail")
+		fx:SetVariation(PickHoney(inst), GetRandomMinMax(min_scale, max_scale), duration + math.random() * .5)
+		fx.Transform:SetPosition(x, 0, z)
+	else
+		SpawnPrefab("ocean_splash_ripple"..tostring(math.random(2))).Transform:SetPosition(x, 0, z)
+	end
+end
+
 local function DoHoneyTrail(inst)
     local level = HONEY_LEVELS[
         (not inst.sg:HasStateTag("moving") and 1) or
@@ -100,14 +111,7 @@ local function DoHoneyTrail(inst)
             inst.honeythreshold = math.ceil((inst.honeythreshold + level.threshold) * .5)
         end
 
-        local fx = nil
-        if TheWorld.Map:IsPassableAtPoint(hx, hy, hz) then
-            fx = SpawnPrefab("honey_trail")
-            fx:SetVariation(PickHoney(inst), GetRandomMinMax(level.min_scale, level.max_scale), level.duration + math.random() * .5)
-        else
-            fx = SpawnPrefab("splash_sink")
-        end
-        fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+		TrySpawnHoney(inst, hx, hz, level.min_scale, level.max_scale, level.duration)
     end
 end
 
@@ -201,18 +205,17 @@ local function OnAttackOther(inst, data)
 	inst.components.stuckdetection:Reset()
 
     if data.target ~= nil then
-        local fx = SpawnPrefab("honey_trail")
-        fx.Transform:SetPosition(data.target.Transform:GetWorldPosition())
-        fx:SetVariation(PickHoney(inst), GetRandomMinMax(1, 1.3), 4 + math.random() * .5)
+		local x, y, z = data.target.Transform:GetWorldPosition()
+		TrySpawnHoney(inst, x, z, 1, 1.3, 4)
     end
 end
 
 local function OnMissOther(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local angle = -inst.Transform:GetRotation() * DEGREES
-    local fx = SpawnPrefab("honey_trail")
-    fx.Transform:SetPosition(x + TUNING.BEEQUEEN_ATTACK_RANGE * math.cos(angle), 0, z + TUNING.BEEQUEEN_ATTACK_RANGE * math.sin(angle))
-    fx:SetVariation(PickHoney(inst), GetRandomMinMax(1, 1.3), 4 + math.random() * .5)
+	x = x + TUNING.BEEQUEEN_ATTACK_RANGE * math.cos(angle)
+	z = z + TUNING.BEEQUEEN_ATTACK_RANGE * math.sin(angle)
+	TrySpawnHoney(inst, x, z, 1, 1.3, 4)
 end
 
 --------------------------------------------------------------------------

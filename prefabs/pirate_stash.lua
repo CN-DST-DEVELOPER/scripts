@@ -4,69 +4,85 @@ local assets =
     Asset("MINIMAP_IMAGE", "pirate_stash"),
 }
 
-local function fling_loot(loot)
-    Launch(loot, loot, 2)
+local MAX_LOOTFLING_DELAY = 0.8
+
+local function fling_loot_in_slot(inst, slot)
+	local loot = inst.components.inventory:GetItemInSlot(slot)
+	if loot ~= nil then
+		loot = inst.components.inventory:DropItem(loot, true)
+		if loot ~= nil and loot:IsValid() then
+			Launch(loot, loot, 2)
+		end
+	end
+
+	--This way, if saved while we're flinging will just resume as a diggable
+	--stash again, with the remaining loot.
+	if inst.queued > 1 then
+		inst.queued = inst.queued - 1
+	else
+		inst.components.inventory:DropEverything() --JUST in case
+		inst:Remove()
+	end
 end
 
-local MAX_LOOTFLING_DELAY = 0.8
+local function queue_fling_in_slot(inst, slot)
+	inst.queued = (inst.queued or 0) + 1
+	inst:DoTaskInTime(MAX_LOOTFLING_DELAY * math.random(), fling_loot_in_slot, slot)
+end
+
 local function stash_dug(inst)
-    local inst_pos = inst:GetPosition()
+	if not inst.flinging then
+		inst.flinging = true
+		inst:Hide()
+		SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
 
-    local fx = SpawnPrefab("collapse_small")
-    fx.Transform:SetPosition(inst_pos:Get())
-
-    inst:Hide()
-    for i,loot in ipairs(inst.loot) do
-        loot:ReturnToScene()
-        loot.Transform:SetPosition(inst_pos:Get())
-        loot:DoTaskInTime(MAX_LOOTFLING_DELAY * math.random(), fling_loot)
-
-        if loot.components.perishable then
-            loot.components.perishable:StartPerishing()
-        end
-        if loot.components.disappears then
-            loot.components.disappears:PrepareDisappear()
-        end
-    end
-
-    -- Ensure that the remove happens after all of our loot gets flung.
-    inst:DoTaskInTime(MAX_LOOTFLING_DELAY + 0.2, function()
-        inst:Remove()
-    end)
+		local inv = inst.components.inventory
+		for k in pairs(inv.itemslots) do
+			queue_fling_in_slot(inst, k)
+		end
+	end
 end
 
 local function stashloot(inst, item)
-    item.Transform:SetPosition(inst.Transform:GetWorldPosition())
-    item:RemoveFromScene()
-    table.insert(inst.loot,item)
-    if item.components.perishable then
-        item.components.perishable:StopPerishing()
-    end
-    if item.components.disappears then
-        item.components.disappears:StopDisappear()
-    end
-    if inst.onstashed then
-        inst:onstashed()
-    end
+	if item ~= nil and item:IsValid() then
+		local first = inst.nextslot
+		repeat
+			local olditem = inst.components.inventory:GetItemInSlot(inst.nextslot)
+			if olditem ~= nil and not olditem:HasTag("irreplaceable") then
+				olditem:Remove()
+				olditem = nil
+			end
+			if olditem == nil then
+				inst.components.inventory:GiveItem(item, inst.nextslot)
+				if inst.flinging then
+					queue_fling_in_slot(inst, inst.nextslot)
+				end
+				inst.nextslot = inst.nextslot < inst.components.inventory.maxslots and inst.nextslot + 1 or 1
+				return
+			end
+		until inst.nextslot == first
+
+		--No open slot
+		if not item:HasTag("irreplaceable") then
+			item:Remove()
+		elseif item.components.inventoryitem ~= nil then
+			item.components.inventoryitem:DoDropPhysics(x, 0, z, true)
+		elseif item.Physics ~= nil then
+			Launch(item, item, 1)
+		else
+			item.Transform:SetPosition(inst.Transform:GetWorldPosition())
+		end
+	end
 end
 
 local function OnSave(inst, data)
-    data.loot = {}
-    for i,k in ipairs(inst.loot)do
-        table.insert(data.loot, k.GUID)
-    end    
-    return data.loot
+	data.nextslot = inst.nextslot > 1 and inst.nextslot or nil
 end
 
-local function OnLoadPostPass(inst, ents, data)
-    inst.loot = {}
-    if data and data.loot then
-        for i,k in ipairs(data.loot) do
-            if ents[k] and ents[k].entity then
-                stashloot(inst, ents[k].entity)
-            end
-        end
-    end
+local function OnLoad(inst, data)
+	if data ~= nil and data.nextslot ~= nil and data.nextslot <= TUNING.PIRATE_STASH_INV_SIZE then
+		inst.nextslot = data.nextslot
+	end
 end
 
 local function fn()
@@ -83,11 +99,22 @@ local function fn()
     inst.AnimState:SetBuild("x_marks_spot")
     inst.AnimState:PlayAnimation("idle")
 
+	inst:AddTag("irreplaceable")
+	inst:AddTag("buried")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst:AddComponent("inspectable")
+
+	inst:AddComponent("inventory")
+	inst.components.inventory.maxslots = TUNING.PIRATE_STASH_INV_SIZE
+
+	inst:AddComponent("preserver")
+	inst.components.preserver:SetPerishRateMultiplier(0)
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.DIG)
@@ -100,11 +127,11 @@ local function fn()
         end
     end)
 
-    inst.loot = {}
+	inst.nextslot = 1
     inst.stashloot = stashloot
-  
+
     inst.OnSave = OnSave
-    inst.OnLoadPostPass = OnLoadPostPass
+    inst.OnLoad = OnLoad
 
     return inst
 end

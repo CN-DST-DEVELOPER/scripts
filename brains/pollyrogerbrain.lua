@@ -1,7 +1,6 @@
 require "behaviours/follow"
 require "behaviours/wander"
 require "behaviours/faceentity"
-require "behaviours/panic"
 require "behaviours/standstill"
 
 local BrainCommon = require("brains/braincommon")
@@ -59,8 +58,7 @@ function PollyRogerBrain:OnStart()
     {
         WhileNode( function() return not self.inst.sg:HasStateTag("busy") end, "NO BRAIN WHEN BUSY",
             PriorityNode({
-                WhileNode( function() return self.inst.components.hauntable and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-                WhileNode( function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+				BrainCommon.PanicTrigger(self.inst),
                 RunAway(self.inst, ShouldRunAway, AVOID_MONSTER_DIST, AVOID_MONSTER_STOP),
                 RunAway(self.inst, ShouldRunAway, SEE_MONSTER_DIST, STOP_RUN_DIST), -- NOTES(JBK): Polly Rogers has an atypical home to go back to so do not use typical home run logic!
                 WhileNode( function() return closetoleader(self.inst) end, "Stayclose", BrainCommon.NodeAssistLeaderPickUps(self, pickupparams)),

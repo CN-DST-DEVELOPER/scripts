@@ -3,7 +3,7 @@ require "behaviours/leash"
 require "behaviours/standstill"
 require "behaviours/runaway"
 require "behaviours/doaction"
-require "behaviours/panic"
+local BrainCommon = require("brains/braincommon")
 
 local STOP_RUN_DIST = 50
 local SEE_PLAYER_DIST = 15
@@ -46,9 +46,7 @@ end
 function GingerBreadPigBrain:OnStart()
     local root = PriorityNode(
     {
-    	WhileNode(function() return self.inst.components.health.takingfiredamage or self.inst.components.hauntable.panic end, "Panic",
-            Panic(self.inst)),
-
+		BrainCommon.PanicTrigger(self.inst),
     	RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST, function(hunter) return self.inst.chased_by_player end, nil, true),
 
     	IfNode(function() return self.inst.leash_target ~= nil and not self.inst.chased end, "shouldapproach",

@@ -4,6 +4,7 @@ require "behaviours/doaction"
 require "behaviours/panic"
 require "behaviours/wander"
 require "behaviours/chaseandattack"
+local BrainCommon = require("brains/braincommon")
 
 local MAX_CHASE_TIME = 60
 local MAX_CHASE_DIST = 40
@@ -74,7 +75,7 @@ function BatBrain:OnStart()
                 Panic(self.inst),
                 WaitNode(6),
             }),
-        WhileNode(function() return self.inst.components.health.takingfiredamage or self.inst.components.hauntable.panic end, "Panic", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         AttackWall(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
         WhileNode(function() return TheWorld.state.isday end, "IsDay",

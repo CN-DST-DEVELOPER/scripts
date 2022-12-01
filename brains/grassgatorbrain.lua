@@ -1,7 +1,6 @@
 require "behaviours/wander"
 require "behaviours/faceentity"
 require "behaviours/chaseandattack"
-require "behaviours/panic"
 require "behaviours/runaway"
 
 local BrainCommon = require("brains/braincommon")
@@ -75,8 +74,7 @@ function GrassgatorBrain:OnStart()
         WhileNode(function() return not self.inst.sg:HasStateTag("diving") end, "Not Diving",
             PriorityNode(
             {
-                WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted", Panic(self.inst)),
-                WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire", Panic(self.inst)),
+				BrainCommon.PanicTrigger(self.inst),
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME),
                 SequenceNode{                    
                     RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),  -- ShouldRunAwayFn

@@ -3,8 +3,8 @@ require "behaviours/chaseandattack"
 require "behaviours/follow"
 require "behaviours/doaction"
 require "behaviours/minperiod"
-require "behaviours/panic"
 require "behaviours/runaway"
+local BrainCommon = require("brains/braincommon")
 
 local SEE_DIST = 30
 local TOOCLOSE = 6
@@ -96,7 +96,7 @@ function KrampusBrain:OnStart()
 
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic or self.inst.components.health.takingfiredamage end, "Panic", Panic(self.inst)),
+		BrainCommon.PanicTrigger(self.inst),
         ChaseAndAttack(self.inst, 100),
         IfNode( function() return self.inst.components.inventory:NumItems() >= self.greed and not self.inst.sg:HasStateTag("busy") end, "donestealing",
             ActionNode(function() self.inst.sg:GoToState("exit") return SUCCESS end, "leave" )),

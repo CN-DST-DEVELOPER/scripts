@@ -40,8 +40,14 @@ local function MakeContainer(def)
 		inst.entity:Hide()
 		inst:AddTag("CLASSIFIED")
 		inst:AddTag("pocketdimension_container")
-		inst:AddTag("spoiler")
-	
+		inst:AddTag("irreplaceable")
+
+		if def.tags ~= nil then
+			for i, v in ipairs(def.tags) do
+				inst:AddTag(v)
+			end
+		end
+
 		inst.entity:SetPristine()
 	
 		if not TheWorld.ismastersim then
