@@ -307,7 +307,7 @@ function OceanFishingRod:OnUpdate(dt)
 		or (not self.fisher.sg:HasStateTag("fishing") and not self.fisher.sg:HasStateTag("npc_fishing") and not self.fisher.sg:HasStateTag("catchfish")) then
 
 		local has_fish = self.target.components.oceanfishinghook == nil and not self.target:HasTag("projectile")
-		self:StopFishing("interupted", has_fish)
+		self:StopFishing("interrupted", has_fish)
 	elseif not self.inst:IsNear(self.target, TUNING.OCEAN_FISHING.MAX_HOOK_DIST) then
 		self:StopFishing("toofaraway", true)
 	else

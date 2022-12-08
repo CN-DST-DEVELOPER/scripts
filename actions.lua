@@ -474,9 +474,9 @@ ACTIONS =
 
     -- WX78
     APPLYMODULE = Action({ mount_valid=true }),
-    APPLYMODULE_FAIL = Action({ mount_valid=true }),
+	APPLYMODULE_FAIL = Action({ mount_valid=true, instant = true }),
     REMOVEMODULES = Action({ mount_valid=true }),
-    REMOVEMODULES_FAIL = Action({ mount_valid=true }),
+	REMOVEMODULES_FAIL = Action({ mount_valid=true, instant = true }),
     CHARGE_FROM = Action({ mount_valid=false }),
 
     ROTATE_FENCE = Action({ rmb=true }),
@@ -4409,6 +4409,9 @@ ACTIONS.APPLYMODULE.fn = function(act)
 end
 
 ACTIONS.APPLYMODULE_FAIL.fn = function(act)
+	if act.doer.components.talker ~= nil then
+		act.doer.components.talker:Say(GetActionFailString(act.doer, "APPLYMODULE", "NOTENOUGHSLOTS"))
+	end
     return true
 end
 
@@ -4436,6 +4439,9 @@ ACTIONS.REMOVEMODULES.fn = function(act)
 end
 
 ACTIONS.REMOVEMODULES_FAIL.fn = function(act)
+	if act.doer.components.talker ~= nil then
+		act.doer.components.talker:Say(GetActionFailString(act.doer, "REMOVEMODULES", "NO_MODULES"))
+	end
     return true
 end
 

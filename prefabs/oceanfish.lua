@@ -552,6 +552,8 @@ local function MakeFish(data)
 
 	table.insert(fish_prefabs, Prefab(data.prefab, function() return water_common(data) end, assets, prefabs))
 	table.insert(fish_prefabs, Prefab(data.prefab.."_inv", function() return inv_common(data) end))
+    -- NOTES(JBK): Use this to help export the bottom table to make this file findable.
+    --print(string.format("%s %s", data.edible_values.foodtype or FOODTYPE.MEAT, data.prefab))
 end
 
 for _, fish_def in pairs(FISH_DATA.fish) do
@@ -559,3 +561,25 @@ for _, fish_def in pairs(FISH_DATA.fish) do
 end
 
 return unpack(fish_prefabs)
+
+-- NOTES(JBK): These are here to make this file findable.
+--[[
+FOODTYPE.MEAT oceanfish_medium_1
+FOODTYPE.MEAT oceanfish_medium_2
+FOODTYPE.MEAT oceanfish_medium_3
+FOODTYPE.MEAT oceanfish_medium_4
+FOODTYPE.MEAT oceanfish_medium_6
+FOODTYPE.MEAT oceanfish_medium_7
+FOODTYPE.MEAT oceanfish_medium_8
+FOODTYPE.MEAT oceanfish_medium_9
+FOODTYPE.MEAT oceanfish_small_1
+FOODTYPE.MEAT oceanfish_small_2
+FOODTYPE.MEAT oceanfish_small_3
+FOODTYPE.MEAT oceanfish_small_4
+FOODTYPE.MEAT oceanfish_small_6
+FOODTYPE.MEAT oceanfish_small_7
+FOODTYPE.MEAT oceanfish_small_8
+FOODTYPE.MEAT oceanfish_small_9
+FOODTYPE.VEGGIE oceanfish_medium_5
+FOODTYPE.VEGGIE oceanfish_small_5
+]]

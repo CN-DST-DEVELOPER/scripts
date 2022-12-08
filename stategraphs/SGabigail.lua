@@ -237,14 +237,12 @@ local states =
 
         timeline =
         {
-            TimeEvent(9*FRAMES, function(inst)
+			TimeEvent(14 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound(inst.sg.statemem.level == 3 and "dontstarve/characters/wendy/abigail/level_change/2" or "dontstarve/characters/wendy/abigail/level_change/1")
             end),
-
-            TimeEvent(10 * FRAMES, function(inst)
+			TimeEvent(15 * FRAMES, function(inst)
 				local fx = SpawnPrefab("abigaillevelupfx")
 				fx.entity:SetParent(inst.entity)
-                fx.Transform:SetRotation(inst.Transform:GetRotation())
 
                 local skin_build = inst:GetSkinBuild()
                 if skin_build ~= nil then

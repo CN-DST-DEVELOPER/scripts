@@ -68,7 +68,7 @@ local PresetBox = Class(Widget, function(self, parent_widget, levelcategory, hei
     self.playstyle.icon:SetScale(0.1)
     self.playstyle.icon.bg:SetScale(1)
     self.playstyle.icon.img:SetScale(0.8)
-	self.playstyle.label = self.playstyle:AddChild(Text(CHATFONT, 22, "Playstyle:", UICOLOURS.GOLD_UNIMPORTANT))
+	self.playstyle.label = self.playstyle:AddChild(Text(CHATFONT, 22, STRINGS.UI.CUSTOMIZATIONSCREEN.PRESET_PLAYSTYLE_LABEL, UICOLOURS.GOLD_UNIMPORTANT))
     local w = self.playstyle.label:GetRegionSize()
 	local total_w = w + 30
 	self.playstyle.icon:SetPosition(w + 15, 0)

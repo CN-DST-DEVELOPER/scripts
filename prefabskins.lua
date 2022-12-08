@@ -128,6 +128,10 @@ PREFAB_SKINS = {
 		"batbat_fantasy",
 		"batbat_scythe",
 	},
+	beargervest =
+	{
+		"beargervest_yule",
+	},
 	bedroll_furry =
 	{
 		"bedroll_furry_potato",
@@ -1179,6 +1183,7 @@ PREFAB_SKINS = {
 		"wanda_bishop_d",
 		"wanda_bishop_p",
 		"wanda_formal",
+		"wanda_ice",
 		"wanda_lunar",
 		"wanda_none",
 		"wanda_shadow",
@@ -1228,6 +1233,7 @@ PREFAB_SKINS = {
 		"wathgrithr_formal",
 		"wathgrithr_formalp",
 		"wathgrithr_gladiator",
+		"wathgrithr_ice",
 		"wathgrithr_magma",
 		"wathgrithr_nature",
 		"wathgrithr_none",
@@ -1256,6 +1262,7 @@ PREFAB_SKINS = {
 		"waxwell_formal",
 		"waxwell_formalp",
 		"waxwell_gladiator",
+		"waxwell_ice",
 		"waxwell_krampus",
 		"waxwell_krampus_d",
 		"waxwell_krampus_p",
@@ -1351,6 +1358,7 @@ PREFAB_SKINS = {
 		"wes_formalp",
 		"wes_gladiator",
 		"wes_harlequin",
+		"wes_ice",
 		"wes_magma",
 		"wes_mandrake",
 		"wes_mandrake_d",
@@ -1540,6 +1548,7 @@ PREFAB_SKINS = {
 		"woodie_gladiator",
 		"woodie_hippie",
 		"woodie_hockey",
+		"woodie_ice",
 		"woodie_magma",
 		"woodie_nature",
 		"woodie_none",
@@ -1568,6 +1577,7 @@ PREFAB_SKINS = {
 	wormwood =
 	{
 		"wormwood_cactus",
+		"wormwood_ice",
 		"wormwood_lunar",
 		"wormwood_mushroom",
 		"wormwood_none",
@@ -1599,6 +1609,7 @@ PREFAB_SKINS = {
 	{
 		"wurt_cave",
 		"wurt_formal",
+		"wurt_ice",
 		"wurt_none",
 		"wurt_pirate",
 		"wurt_rose",

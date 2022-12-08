@@ -561,7 +561,8 @@ function MultiplayerMainScreen:DoInit()
     self.onlinestatus = self.fixed_root:AddChild(OnlineStatus( true ))
 
     --TODO(Peter) put the snowflakes back in after 2021
-	--[[if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
+	--[
+    if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
 		self.banner_snowfall = self.banner_root:AddChild(TEMPLATES.old.Snowfall(-.39 * RESOLUTION_Y, .35, 3, 15))
 		self.banner_snowfall:SetVAnchor(ANCHOR_TOP)
 		self.banner_snowfall:SetHAnchor(ANCHOR_MIDDLE)
@@ -571,7 +572,8 @@ function MultiplayerMainScreen:DoInit()
 		self.snowfall:SetVAnchor(ANCHOR_TOP)
 		self.snowfall:SetHAnchor(ANCHOR_MIDDLE)
 		self.snowfall:SetScaleMode(SCALEMODE_PROPORTIONAL)
-	end]]
+	end
+    --]
 
     ----------------------------------------------------------
 	-- new MOTD

@@ -2449,6 +2449,21 @@ MISC_ITEMS =
 		output_items = {  "walter_ice", "body_walter_ice", "hand_walter_ice", "legs_walter_ice", "walterhat_ice", "warly_ice", "body_warly_ice", "feet_warly_ice", "legs_warly_ice", "wortox_ice", "body_wortox_ice", "legs_wortox_ice", "wx78_ice", "body_wx78_ice", "feet_wx78_ice", "hand_wx78_ice", "legs_wx78_ice", "winona_ice", "body_winona_ice", "hand_winona_ice", },
 		release_group = 109,
 	},
+	pack_ice_all3 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		steam_dlc_id = 2236180,
+		display_order = 2,
+		build_name_override = "pack_ice_all",
+		display_atlas = "images/iap_images_ice3.xml",
+		display_tex = "ice3.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "woodie_ice", "wes_ice", "waxwell_ice", "wathgrithr_ice", "wormwood_ice", "wurt_ice", "wanda_ice", },
+		output_items = {  "woodie_ice", "body_woodie_ice", "hand_woodie_ice", "feet_woodie_ice", "wes_ice", "body_wes_ice", "waxwell_ice", "body_waxwell_ice", "hand_waxwell_ice", "legs_waxwell_ice", "wathgrithr_ice", "body_wathgrithr_ice", "hand_wathgrithr_ice", "feet_wathgrithr_ice", "wormwood_ice", "body_wormwood_ice", "hand_wormwood_ice", "legs_wormwood_ice", "wurt_ice", "body_wurt_ice", "legs_wurt_ice", "wanda_ice", "body_wanda_ice", "hand_wanda_ice", "feet_wanda_ice", },
+		release_group = 138,
+	},
 	pack_ice_bundle =
 	{
 		type = "purchase",
@@ -2463,6 +2478,20 @@ MISC_ITEMS =
 		output_items = {  "webber_ice", "webber_beard_ice", "wendy_ice", "wickerbottom_ice", "willow_ice", "wilson_ice", "wilson_beard_ice", "wolfgang_ice", "body_webber_ice", "body_wendy_ice", "body_wickerbottom_ice", "body_willow_ice", "body_wilson_ice", "body_wolfgang_ice", "feet_webber_ice", "feet_wendy_ice", "feet_wickerbottom_ice1", "feet_willow_ice", "feet_wilson_ice", "feet_wolfgang_ice", "hand_wendy_ice", "hand_wickerbottom_ice", "hand_willow_ice", "hand_wilson_ice", "hand_wolfgang_ice", "legs_webber_ice", "legs_wilson_ice", "legs_wolfgang_ice", "walter_ice", "body_walter_ice", "hand_walter_ice", "legs_walter_ice", "walterhat_ice", "warly_ice", "body_warly_ice", "feet_warly_ice", "legs_warly_ice", "wortox_ice", "body_wortox_ice", "legs_wortox_ice", "wx78_ice", "body_wx78_ice", "feet_wx78_ice", "hand_wx78_ice", "legs_wx78_ice", "winona_ice", "body_winona_ice", "hand_winona_ice", },
 		release_group = 109,
 	},
+	pack_ice_bundle2 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 3,
+		build_name_override = "pack_ice_all",
+		display_atlas = "images/iap_images_ice_bundle2.xml",
+		display_tex = "ice_bundle2.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "wilson_ice", "willow_ice", "wickerbottom_ice", "wendy_ice", "webber_ice", "wolfgang_ice", "walter_ice", "warly_ice", "wortox_ice", "wx78_ice", "winona_ice", "woodie_ice", "wes_ice", "waxwell_ice", "wathgrithr_ice", "wormwood_ice", "wurt_ice", "wanda_ice", },
+		output_items = {  "webber_ice", "webber_beard_ice", "wendy_ice", "wickerbottom_ice", "willow_ice", "wilson_ice", "wilson_beard_ice", "wolfgang_ice", "body_webber_ice", "body_wendy_ice", "body_wickerbottom_ice", "body_willow_ice", "body_wilson_ice", "body_wolfgang_ice", "feet_webber_ice", "feet_wendy_ice", "feet_wickerbottom_ice1", "feet_willow_ice", "feet_wilson_ice", "feet_wolfgang_ice", "hand_wendy_ice", "hand_wickerbottom_ice", "hand_willow_ice", "hand_wilson_ice", "hand_wolfgang_ice", "legs_webber_ice", "legs_wilson_ice", "legs_wolfgang_ice", "walter_ice", "body_walter_ice", "hand_walter_ice", "legs_walter_ice", "walterhat_ice", "warly_ice", "body_warly_ice", "feet_warly_ice", "legs_warly_ice", "wortox_ice", "body_wortox_ice", "legs_wortox_ice", "wx78_ice", "body_wx78_ice", "feet_wx78_ice", "hand_wx78_ice", "legs_wx78_ice", "winona_ice", "body_winona_ice", "hand_winona_ice", "woodie_ice", "body_woodie_ice", "hand_woodie_ice", "feet_woodie_ice", "wes_ice", "body_wes_ice", "waxwell_ice", "body_waxwell_ice", "hand_waxwell_ice", "legs_waxwell_ice", "wathgrithr_ice", "body_wathgrithr_ice", "hand_wathgrithr_ice", "feet_wathgrithr_ice", "wormwood_ice", "body_wormwood_ice", "hand_wormwood_ice", "legs_wormwood_ice", "wurt_ice", "body_wurt_ice", "legs_wurt_ice", "wanda_ice", "body_wanda_ice", "hand_wanda_ice", "feet_wanda_ice", },
+		release_group = 138,
+	},
 	pack_ice_walter =
 	{
 		type = "purchase",
@@ -2476,6 +2505,19 @@ MISC_ITEMS =
 		output_items = {  "walter_ice", "body_walter_ice", "hand_walter_ice", "legs_walter_ice", "walterhat_ice", },
 		release_group = 109,
 	},
+	pack_ice_wanda =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 118,
+		build_name_override = "wanda_ice",
+		display_atlas = "bigportraits/wanda_ice.xml",
+		display_tex = "wanda_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "wanda_ice", "body_wanda_ice", "hand_wanda_ice", "feet_wanda_ice", },
+		output_items = {  "wanda_ice", "body_wanda_ice", "hand_wanda_ice", "feet_wanda_ice", },
+		release_group = 138,
+	},
 	pack_ice_warly =
 	{
 		type = "purchase",
@@ -2488,6 +2530,32 @@ MISC_ITEMS =
 		display_items = {  "warly_ice", "body_warly_ice", "feet_warly_ice", "legs_warly_ice", },
 		output_items = {  "warly_ice", "body_warly_ice", "feet_warly_ice", "legs_warly_ice", },
 		release_group = 109,
+	},
+	pack_ice_wathgrithr =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 110,
+		build_name_override = "wathgrithr_ice",
+		display_atlas = "bigportraits/wathgrithr_ice.xml",
+		display_tex = "wathgrithr_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "wathgrithr_ice", "body_wathgrithr_ice", "hand_wathgrithr_ice", "feet_wathgrithr_ice", },
+		output_items = {  "wathgrithr_ice", "body_wathgrithr_ice", "hand_wathgrithr_ice", "feet_wathgrithr_ice", },
+		release_group = 138,
+	},
+	pack_ice_waxwell =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_ice",
+		display_atlas = "bigportraits/waxwell_ice.xml",
+		display_tex = "waxwell_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "waxwell_ice", "body_waxwell_ice", "hand_waxwell_ice", "legs_waxwell_ice", },
+		output_items = {  "waxwell_ice", "body_waxwell_ice", "hand_waxwell_ice", "legs_waxwell_ice", },
+		release_group = 138,
 	},
 	pack_ice_webber =
 	{
@@ -2514,6 +2582,19 @@ MISC_ITEMS =
 		display_items = {  "wendy_ice", "body_wendy_ice", "feet_wendy_ice", "hand_wendy_ice", },
 		output_items = {  "wendy_ice", "body_wendy_ice", "feet_wendy_ice", "hand_wendy_ice", },
 		release_group = 109,
+	},
+	pack_ice_wes =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 108,
+		build_name_override = "wes_ice",
+		display_atlas = "bigportraits/wes_ice.xml",
+		display_tex = "wes_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "wes_ice", "body_wes_ice", },
+		output_items = {  "wes_ice", "body_wes_ice", },
+		release_group = 138,
 	},
 	pack_ice_wickerbottom =
 	{
@@ -2580,6 +2661,32 @@ MISC_ITEMS =
 		output_items = {  "wolfgang_ice", "body_wolfgang_ice", "feet_wolfgang_ice", "hand_wolfgang_ice", "legs_wolfgang_ice", },
 		release_group = 109,
 	},
+	pack_ice_woodie =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 107,
+		build_name_override = "woodie_ice",
+		display_atlas = "bigportraits/woodie_ice.xml",
+		display_tex = "woodie_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "woodie_ice", "body_woodie_ice", "hand_woodie_ice", "feet_woodie_ice", },
+		output_items = {  "woodie_ice", "body_woodie_ice", "hand_woodie_ice", "feet_woodie_ice", },
+		release_group = 138,
+	},
+	pack_ice_wormwood =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 114,
+		build_name_override = "wormwood_ice",
+		display_atlas = "bigportraits/wormwood_ice.xml",
+		display_tex = "wormwood_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "wormwood_ice", "body_wormwood_ice", "hand_wormwood_ice", "legs_wormwood_ice", },
+		output_items = {  "wormwood_ice", "body_wormwood_ice", "hand_wormwood_ice", "legs_wormwood_ice", },
+		release_group = 138,
+	},
 	pack_ice_wortox =
 	{
 		type = "purchase",
@@ -2592,6 +2699,19 @@ MISC_ITEMS =
 		display_items = {  "wortox_ice", "body_wortox_ice", "legs_wortox_ice", },
 		output_items = {  "wortox_ice", "body_wortox_ice", "legs_wortox_ice", },
 		release_group = 109,
+	},
+	pack_ice_wurt =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 116,
+		build_name_override = "wurt_ice",
+		display_atlas = "bigportraits/wurt_ice.xml",
+		display_tex = "wurt_ice_oval.tex",
+		box_build = "box_shop_ice",
+		display_items = {  "wurt_ice", "body_wurt_ice", "legs_wurt_ice", },
+		output_items = {  "wurt_ice", "body_wurt_ice", "legs_wurt_ice", },
+		release_group = 138,
 	},
 	pack_ice_wx78 =
 	{

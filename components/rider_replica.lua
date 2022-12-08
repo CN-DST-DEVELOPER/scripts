@@ -137,6 +137,7 @@ end
 function Rider:SetActionFilter(riding)
     if self.inst.components.playercontroller ~= nil then
         if riding then
+			--See playercontroller AllowMountedStoreActionFilter; match priority
             self.inst.components.playercontroller.actionbuttonoverride = ActionButtonOverride
             self.inst.components.playeractionpicker:PushActionFilter(MountedActionFilter, 20)
         else

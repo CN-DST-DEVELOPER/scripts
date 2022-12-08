@@ -30,6 +30,7 @@ local PlayerProfile = Class(function(self)
         self.persistdata.volume_ambient = 7
         self.persistdata.volume_sfx = 7
         self.persistdata.volume_music = 7
+		self.persistdata.volume_muteonfocuslost = false
         self.persistdata.HUDSize = 5
         self.persistdata.CraftingMenuSize = 5
         self.persistdata.CraftingMenuNumPinPages = 3
@@ -80,6 +81,7 @@ function PlayerProfile:Reset()
         self.persistdata.volume_ambient = 7
         self.persistdata.volume_sfx = 7
         self.persistdata.volume_music = 7
+		self.persistdata.volume_muteonfocuslost = false
         self.persistdata.HUDSize = 5
         self.persistdata.CraftingMenuSize = 5
         self.persistdata.CraftingMenuNumPinPages = 3
@@ -131,6 +133,7 @@ function PlayerProfile:SoftReset()
         self.persistdata.volume_ambient = 7
         self.persistdata.volume_sfx = 7
         self.persistdata.volume_music = 7
+		self.persistdata.volume_muteonfocuslost = false
         self.persistdata.HUDSize = 5
         self.persistdata.CraftingMenuSize = 5
         self.persistdata.CraftingMenuNumPinPages = 3
@@ -497,6 +500,15 @@ function PlayerProfile:SetVolume(ambient, sfx, music)
 	    self:SetValue("volume_sfx", sfx)
 	    self:SetValue("volume_music", music)
 	    self.dirty = true
+	end
+end
+
+function PlayerProfile:SetMuteOnFocusLost(value)
+	if USE_SETTINGS_FILE then
+		TheSim:SetSetting("audio", "volume_muteonfocuslost", tostring(value))
+	else
+		self:SetValue("volume_muteonfocuslost", value)
+		self.dirty = true
 	end
 end
 
@@ -1367,6 +1379,14 @@ function PlayerProfile:GetVolume()
 	end
 end
 
+function PlayerProfile:GetMuteOnFocusLost()
+	if USE_SETTINGS_FILE then
+		return TheSim:GetSetting("audio", "volume_muteonfocuslost") == "true"
+	else
+		return GetValueOrDefault(self.persistdata.volume_muteonfocuslost, false)
+	end
+end
+
 
 function PlayerProfile:SetRenderQuality(quality)
 	self:SetValue("render_quality", quality)
@@ -1517,6 +1537,7 @@ function PlayerProfile:Set(str, callback, minimal_load)
                 self.persistdata.volume_ambient = 7
                 self.persistdata.volume_sfx = 7
                 self.persistdata.volume_music = 7
+				self.persistdata.volume_muteonfocuslost = false
                 self.persistdata.HUDSize = 5
                 self.persistdata.CraftingMenuSize = 5
                 self.persistdata.CraftingMenuNumPinPages = 3

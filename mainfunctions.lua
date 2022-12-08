@@ -1904,6 +1904,14 @@ function TintBackground( bg )
     --end
 end
 
+--NOTES(JBK): Keeping this for PC Steam/RAIL only for now.
+local platforms_supporting_audio_focus = {
+    ["WIN32_STEAM"] = true,
+    ["WIN32_RAIL"] = true,
+    ["LINUX_STEAM"] = true,
+    ["OSX_STEAM"] = true,
+}
+
 -- Global for saving game on Android focus lost event
 function OnFocusLost()
     --check that we are in gameplay, not main menu
@@ -1911,14 +1919,18 @@ function OnFocusLost()
         SetPause(true)
         ShardGameIndex:SaveCurrent()
     end
+    if platforms_supporting_audio_focus[PLATFORM] and Profile:GetMuteOnFocusLost() then
+        TheMixer:SetLevel("master", 0)
+    end
 end
 
 function OnFocusGained()
     --check that we are in gameplay, not main menu
-    if inGamePlay then
-        if PLATFORM == "ANDROID" then
-            SetPause(false)
-        end
+    if PLATFORM == "ANDROID" and inGamePlay then
+        SetPause(false)
+    end
+    if platforms_supporting_audio_focus[PLATFORM] and Profile:GetMuteOnFocusLost() then
+        TheMixer:SetLevel("master", 1)
     end
 end
 

@@ -18,12 +18,15 @@ function SeamlessPlayerSwapper:_StartSwap(new_prefab)
         skin_base = self.main_data.skin_base
 		new_prefab = self.main_data.prefab or "wilson"
 		-- Clear used stored fields.
-		self.main_data.prefab = nil
-		self.main_data.skin_base = nil
+		for k in pairs(self.main_data) do
+			self.main_data[k] = nil
+		end
 
 		self.swap_data[self.inst.prefab] = {skin_base = clothing.base}
     else
         skin_base = self.swap_data[new_prefab] and self.swap_data[new_prefab].skin_base or nil
+		-- Clear used stored fields.
+		self.swap_data[new_prefab] = nil
 
 		self.main_data.skin_base = clothing.base
 		self.main_data.prefab = self.inst.prefab
@@ -52,7 +55,10 @@ function SeamlessPlayerSwapper:OnSeamlessCharacterSwap(old_player)
 	local new_player = self.inst
 
 	old_player:PushEvent("ms_playerreroll") -- remove stuff the old character might have had in the world.
-	new_player:LoadForReroll(old_player:SaveForReroll()) -- apply the saved stuff from the old player
+	local old_data = old_player:SaveForReroll()
+	--V2C: Overwrite with full OnSave() data instead of SaveForReroll() data.
+	old_data.seamlessplayerswapper = old_player.components.seamlessplayerswapper ~= nil and old_player.components.seamlessplayerswapper:OnSave() or nil
+	new_player:LoadForReroll(old_data) -- apply the saved stuff from the old player
 	old_player:SwapAllCharacteristics(new_player)
 
 	--disable the old player entity
@@ -62,7 +68,14 @@ function SeamlessPlayerSwapper:OnSeamlessCharacterSwap(old_player)
 	old_player.MiniMapEntity:SetEnabled(false)
 	old_player.Network:SetClassifiedTarget(new_player)
 
-	self.main_data.mime = old_player:HasTag("mime")
+	--V2C: this flag is for FORCING mime tag.
+	--     only flag if old player is a mime (but NOT FORCED).
+	--     only flag if I'm not already a mime.
+	self.main_data.mime =
+		old_player:HasTag("mime") and
+		not (old_player.components.seamlessplayerswapper ~= nil and old_player.components.seamlessplayerswapper.main_data.mime) and
+		not self.inst:HasTag("mime") or
+		nil
 
 	self:PostTransformSetup()
 	new_player:PushEvent("ms_playerseamlessswaped") -- Add post fixup stuff special character traits normally would get for OnNewSpawn but without items.
@@ -85,14 +98,23 @@ function SeamlessPlayerSwapper:PostTransformSetup()
 	self.inst.components.talker.speechproxy = self.main_data.prefab
 end
 
+function SeamlessPlayerSwapper:SaveForReroll()
+	if next(self.main_data) ~= nil then
+		local clothing = self.inst.components.skinner:GetClothing()
+		local swap_data = deepcopy(self.swap_data)
+		swap_data[self.inst.prefab] = { skin_base = clothing.base }
+		return { swap_data = swap_data }
+	end
+	return next(self.swap_data) ~= nil and { swap_data = self.swap_data } or nil
+end
+
 function SeamlessPlayerSwapper:OnSave()
     local data =
     {
-        swap_data = self.swap_data,
-        main_data = self.main_data,
+		swap_data = next(self.swap_data) ~= nil and self.swap_data or nil,
+		main_data = next(self.main_data) ~= nil and self.main_data or nil,
     }
-
-    return data
+	return next(data) ~= nil and data or nil
 end
 
 function SeamlessPlayerSwapper:OnLoad(data)
@@ -101,7 +123,7 @@ function SeamlessPlayerSwapper:OnLoad(data)
         self.main_data = data.main_data or {}
 	end
 
- 	if self.main_data ~= nil and self.inst.prefab ~= self.main_data.prefab then
+	if next(self.main_data) ~= nil and self.inst.prefab ~= self.main_data.prefab then
 		self:PostTransformSetup()
 	end
 end

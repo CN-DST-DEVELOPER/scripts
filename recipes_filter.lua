@@ -756,6 +756,8 @@ CRAFTING_FILTERS.FISHING.recipes =
 	"oceanfishingrod",
 	"fish_box",
 
+	"ocean_trawler_kit",
+
 	"oceanfishingbobber_ball",
 	"oceanfishingbobber_oval",
 	"oceanfishingbobber_crow",
@@ -1087,6 +1089,8 @@ CRAFTING_FILTERS.DECOR.recipes =
 	"pirate_flag_pole",
     "dock_kit",
 	"dock_woodposts_item",
+
+    "sewing_mannequin",
 
 	"turf_road",
 	"turf_woodfloor",

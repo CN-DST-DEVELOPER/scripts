@@ -91,7 +91,6 @@ local states =
     State{
         name = "lowered_land",
         onenter = function(inst)
-
             inst.AnimState:PlayAnimation("tether_land_idle")
             anchor_lowered(inst)
         end,
@@ -146,6 +145,7 @@ local states =
                 if inst.components.anchor.raiseunits == 0 then
                     inst.sg:GoToState("raising_pst")
                 else
+					inst.sg.statemem.keepmooring = true
                     inst.sg:GoToState("lowering_pst")
                 end
             end
@@ -154,9 +154,10 @@ local states =
         timeline =
         {
             TimeEvent(2 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/LP", "mooring")
+				if not inst.SoundEmitter:PlayingSound("mooring") then
+					inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/LP", "mooring")
+				end
             end),
-
         },
 
         events =
@@ -164,12 +165,19 @@ local states =
             EventHandler("lowering_anchor", function(inst)
                 local anchor_x, anchor_y, anchor_z = inst.Transform:GetWorldPosition()
                 if inst.components.anchor ~= nil and inst.components.anchor.boat ~= nil then
+					inst.sg.statemem.keepmooring = true
                     inst.sg:GoToState("lowering")
                 else
                     inst.sg:GoToState("lowering_land")
                 end
              end),
         },
+
+		onexit = function(inst)
+			if not inst.sg.statemem.keepmooring then
+				inst.SoundEmitter:KillSound("mooring")
+			end
+		end,
     },
 
     State{
@@ -182,9 +190,6 @@ local states =
         {
             TimeEvent(0 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/up")
-            end),
-
-            TimeEvent(0 * FRAMES, function(inst) inst.SoundEmitter:KillSound("mooring")
             end),
         },
 
@@ -281,6 +286,7 @@ local states =
                 if inst.components.anchor.raiseunits == 0 then
                     inst.sg:GoToState("raising_pst")
                 else
+					inst.sg.statemem.keepmooring = true
                     inst.sg:GoToState("lowering_pst")
                 end
             end
@@ -290,16 +296,25 @@ local states =
         {
             TimeEvent(0 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/down")
-            end),
-            TimeEvent(0 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/LP", "mooring")
+				if not inst.SoundEmitter:PlayingSound("mooring") then
+					inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/LP", "mooring")
+				end
             end),
         },
 
         events =
         {
-            EventHandler("raising_anchor", function(inst) inst.sg:GoToState("raising") end),
+			EventHandler("raising_anchor", function(inst)
+				inst.sg.statemem.keepmooring = true
+				inst.sg:GoToState("raising")
+			end),
         },
+
+		onexit = function(inst)
+			if not inst.sg.statemem.keepmooring then
+				inst.SoundEmitter:KillSound("mooring")
+			end
+		end,
     },
 
     State{
@@ -332,6 +347,10 @@ local states =
             EventHandler("raising_anchor", function(inst) inst.sg:GoToState("raising") end),
             EventHandler("animqueueover", function(inst) inst.sg:GoToState("lowered") end),
         },
+
+		onexit = function(inst)
+			inst.SoundEmitter:KillSound("mooring")
+		end,
     },
 }
 

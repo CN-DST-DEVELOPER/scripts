@@ -74,6 +74,9 @@ local function MakeFood(def)
 		Asset("ANIM", "anim/"..def.art..".zip"),
 	}
 
+
+    -- NOTES(JBK): Use this to help export the bottom table to make this file findable.
+    --print(string.format("%s %s", def.food or FOODTYPE.GENERIC, def.name))
     return Prefab(def.name, fn, assets)
 end
 
@@ -83,3 +86,8 @@ for i, def in ipairs(food_defs) do
 end
 
 return unpack(ret)
+
+-- NOTES(JBK): These are here to make this file findable.
+--[[
+FOODTYPE.VEGGIE carnivalfood_corntea
+]]

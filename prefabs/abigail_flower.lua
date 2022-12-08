@@ -191,29 +191,25 @@ end
 
 local assets_summonfx =
 {
+	Asset("ANIM", "anim/abigail_flower_rework.zip"),
     Asset("ANIM", "anim/wendy_channel_flower.zip"),
     Asset("ANIM", "anim/wendy_mount_channel_flower.zip"),
 }
 
 local assets_unsummonfx =
 {
+	Asset("ANIM", "anim/abigail_flower_rework.zip"),
     Asset("ANIM", "anim/wendy_recall_flower.zip"),
     Asset("ANIM", "anim/wendy_mount_recall_flower.zip"),
 }
 
 local assets_levelupfx =
 {
+	Asset("ANIM", "anim/abigail_flower_rework.zip"),
     Asset("ANIM", "anim/abigail_flower_change.zip"),
 }
 
-local function AlignToTarget(inst)
-	local parent = inst.entity:GetParent()
-	if parent ~= nil then
-	    inst.Transform:SetRotation(parent.Transform:GetRotation())
-	end
-end
-
-local function MakeSummonFX(anim, use_anim_for_build, is_mounted)
+local function MakeSummonFX(anim, build, is_mounted)
     return function()
         local inst = CreateEntity()
 
@@ -229,20 +225,15 @@ local function MakeSummonFX(anim, use_anim_for_build, is_mounted)
 	        inst.Transform:SetFourFaced()
 		end
 
-
         inst.AnimState:SetBank(anim)
-		if use_anim_for_build then
-	        inst.AnimState:SetBuild(anim)
+		if build ~= nil then
+			inst.AnimState:SetBuild(build)
 	        inst.AnimState:OverrideSymbol("flower", "abigail_flower_rework", "flower")
 		else
 	        inst.AnimState:SetBuild("abigail_flower_rework")
 		end
         inst.AnimState:PlayAnimation(anim)
-
-		if is_mounted then
-			inst:AddComponent("updatelooper")
-			inst.components.updatelooper:AddOnWallUpdateFn(AlignToTarget)
-		end
+		inst.AnimState:SetFinalOffset(1)
 
         inst.entity:SetPristine()
 
@@ -260,10 +251,8 @@ local function MakeSummonFX(anim, use_anim_for_build, is_mounted)
 end
 
 return Prefab("abigail_flower", fn, assets),
-	Prefab("abigailsummonfx", MakeSummonFX("wendy_channel_flower", true, false), assets_summonfx),
-    Prefab("abigailsummonfx_mount", MakeSummonFX("wendy_mount_channel_flower", true, true), assets_summonfx),
-	Prefab("abigailunsummonfx", MakeSummonFX("wendy_recall_flower", false, false), assets_unsummonfx),
-    Prefab("abigailunsummonfx_mount", MakeSummonFX("wendy_mount_recall_flower", false, true), assets_unsummonfx),
-	Prefab("abigaillevelupfx", MakeSummonFX("abigail_flower_change", false, false), assets_levelupfx)
-
-
+	Prefab("abigailsummonfx", MakeSummonFX("wendy_channel_flower", "wendy_channel_flower", false), assets_summonfx),
+	Prefab("abigailsummonfx_mount", MakeSummonFX("wendy_mount_channel_flower", "wendy_channel_flower", true), assets_summonfx),
+	Prefab("abigailunsummonfx", MakeSummonFX("wendy_recall_flower", nil, false), assets_unsummonfx),
+	Prefab("abigailunsummonfx_mount", MakeSummonFX("wendy_mount_recall_flower", nil, true), assets_unsummonfx),
+	Prefab("abigaillevelupfx", MakeSummonFX("abigail_flower_change", nil, false), assets_levelupfx)

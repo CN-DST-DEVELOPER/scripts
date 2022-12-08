@@ -1565,7 +1565,7 @@ local function SaveForReroll(inst)
         builder = inst.components.builder ~= nil and inst.components.builder:OnSave() or nil,
         petleash = inst.components.petleash ~= nil and inst.components.petleash:OnSave() or nil,
         maps = inst.player_classified ~= nil and inst.player_classified.MapExplorer ~= nil and inst.player_classified.MapExplorer:RecordAllMaps() or nil,
-		seamlessplayerswapper = inst.components.seamlessplayerswapper ~= nil and inst.components.seamlessplayerswapper:OnSave() or nil,
+		seamlessplayerswapper = inst.components.seamlessplayerswapper ~= nil and inst.components.seamlessplayerswapper:SaveForReroll() or nil,
         curses = curses,
     }
     return next(data) ~= nil and data or nil

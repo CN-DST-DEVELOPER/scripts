@@ -6,10 +6,12 @@ PopupManagerWidget = Class(function(self, data)
 end)
 
 function PopupManagerWidget:Close(inst, ...)
-    if not TheWorld.ismastersim then
-        SendRPCToServer(RPC.ClosePopup, self.code, self.mod_name, ...)
-    else
-        inst:PushEvent("ms_closepopup", {popup = self, args = {...}})
+    if TheWorld ~= nil then -- NOTES(JBK): This is here for running debug panels at the main menu.
+        if not TheWorld.ismastersim then
+            SendRPCToServer(RPC.ClosePopup, self.code, self.mod_name, ...)
+        else
+            inst:PushEvent("ms_closepopup", {popup = self, args = {...}})
+        end
     end
 end
 

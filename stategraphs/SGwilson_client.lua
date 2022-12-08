@@ -582,9 +582,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.LIFT_GYM_SUCCEED, "mighty_gym_lift"),
 
     ActionHandler(ACTIONS.APPLYMODULE, "applyupgrademodule"),
-    ActionHandler(ACTIONS.APPLYMODULE_FAIL, "applyupgrademodule_fail"),
     ActionHandler(ACTIONS.REMOVEMODULES, "use_inventory_item_busy"),
-    ActionHandler(ACTIONS.REMOVEMODULES_FAIL, "removeupgrademodules_fail"),
     ActionHandler(ACTIONS.CHARGE_FROM, "doshortaction"),
 
     ActionHandler(ACTIONS.ROTATE_FENCE, "doswipeaction"),
@@ -2472,16 +2470,6 @@ local states =
             inst.sg:SetTimeout(TIMEOUT)
         end,
 
-        timeline =
-        {
-            TimeEvent(4 * FRAMES, function(inst)
-                inst.sg:RemoveStateTag("busy")
-            end),
-            TimeEvent(15*FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve/beefalo/saddle/dismount")
-            end),
-        },
-
         onupdate = function(inst)
             if inst:HasTag("doing") then
                 if inst.entity:FlattenMovementPrediction() then
@@ -2506,19 +2494,17 @@ local states =
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("idle_walter_storytelling_pre")
-            inst.AnimState:PushAnimation("idle_walter_storytelling", true)
+			if inst:HasTag("mime") then
+				inst.sg.statemem.mime = true
+				inst.AnimState:PlayAnimation("mime13")
+			else
+				inst.AnimState:PlayAnimation("idle_walter_storytelling_pre")
+				inst.AnimState:PushAnimation("idle_walter_storytelling")
+			end
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
         end,
-
-        timeline =
-        {
-            TimeEvent(4 * FRAMES, function(inst)
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
 
         onupdate = function(inst)
             if inst:HasTag("doing") then
@@ -2526,19 +2512,23 @@ local states =
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.AnimState:PlayAnimation("idle_walter_storytelling_pst")
-                inst.sg:GoToState("idle", true)
+				if inst.sg.statemem.mime then
+					inst.sg:GoToState("idle")
+				else
+					inst.AnimState:PlayAnimation("idle_walter_storytelling_pst")
+					inst.sg:GoToState("idle", true)
+				end
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.AnimState:PlayAnimation("build_pst")
-            inst.sg:GoToState("idle", true)
-        end,
-
-        onexit = function(inst)
-            inst.SoundEmitter:KillSound("make_preview")
+			if inst.sg.statemem.mime then
+				inst.sg:GoToState("idle")
+			else
+				inst.AnimState:PlayAnimation("idle_walter_storytelling_pst")
+				inst.sg:GoToState("idle", true)
+			end
         end,
     },
 
@@ -2591,12 +2581,11 @@ local states =
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            --TODO: need a shave_pre animation
-            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
-                inst.AnimState:PlayAnimation("idle_loop", true)
-            end
-            --HACK: Let server animate since we don't have shave_pre
-            inst.entity:SetIsPredictingMovement(false)
+			--V2C: intentionally not using "dontstarve/wilson/shave_LP" for the preview
+			--     since the action can still fail after entering the state on the server.
+			inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make_preview")
+			inst.AnimState:PlayAnimation("build_pre")
+			inst.AnimState:PushAnimation("build_loop", true)
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -2608,17 +2597,19 @@ local states =
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.sg:GoToState("idle", true)
+				inst.AnimState:PlayAnimation("build_pst")
+				inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
+			inst.AnimState:PlayAnimation("build_pst")
+			inst.sg:GoToState("idle", true)
         end,
 
         onexit = function(inst)
-            inst.entity:SetIsPredictingMovement(true)
+			inst.SoundEmitter:KillSound("make_preview")
         end,
     },
 
@@ -2779,26 +2770,32 @@ local states =
 
     State{
         name = "channel_longaction",
-        tags = { "doing", "canrotate", "channeling"},
+		tags = { "doing", "canrotate", "channeling" },
 
         onenter = function(inst)
-
             inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("give")
 
-            inst.AnimState:PlayAnimation("give",false)
-            inst.AnimState:PushAnimation("give_pst",false)
-
-            if inst:GetBufferedAction() then
-                inst:PerformPreviewBufferedAction()
-            end
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
         end,
 
-        events =
-        {
-            EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState("channel_longaction")
-            end),
-        },
+		onupdate = function(inst)
+			if inst:HasTag("doing") then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("give_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("give_pst")
+			inst.sg:GoToState("idle", true)
+		end,
     },
 
     State{
@@ -2809,7 +2806,6 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("action_uniqueitem_lag", false)
-            inst.SoundEmitter:PlaySound("hookline/common/trophyscale_fish/pocket")
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -3102,7 +3098,7 @@ local states =
 
     State{
         name = "play_gnarwail_horn",
-        tags = { "doing", "busy", "canrotate" },
+		tags = { "doing", "busy", "playing", "canrotate" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -3139,7 +3135,7 @@ local states =
 
     State{
         name = "play_strum",
-        tags = { "doing", "busy", "canrotate" },
+		tags = { "doing", "busy", "playing", "canrotate" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -3181,37 +3177,27 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("wendy_channel")
-            inst.AnimState:PushAnimation("wendy_channel_lag", false)
 
-            local buffaction = inst:GetBufferedAction()
-            if buffaction ~= nil then
-                inst:PerformPreviewBufferedAction()
-
-                local flower = inst.bufferedaction.invobject
-                if flower ~= nil and flower:IsValid() then
-                    if flower.skin_id ~= 0 then
-                        inst.AnimState:OverrideItemSkinSymbol( "flower", flower.AnimState:GetBuild(), "flower", flower.GUID, flower.AnimState:GetBuild() )
-                    else
-                        inst.AnimState:OverrideSymbol("flower", flower.AnimState:GetBuild(), "flower")
-                    end
-                end
-            end
+			inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+			if inst:HasTag("busy") then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.sg:GoToState("idle")
+            	inst.AnimState:PlayAnimation("wendy_channel_pst")
+				inst.AnimState:SetTime(45 * FRAMES)
+				inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
+			inst.AnimState:SetTime(45 * FRAMES)
+			inst.sg:GoToState("idle", true)
         end,
     },
 
@@ -3224,11 +3210,8 @@ local states =
             inst.AnimState:PlayAnimation("wendy_recall")
             inst.AnimState:PushAnimation("wendy_recall_lag", false)
 
-            local buffaction = inst:GetBufferedAction()
-            if buffaction ~= nil then
-                inst:PerformPreviewBufferedAction()
-
-                local flower = inst.bufferedaction.invobject
+			if inst.bufferedaction ~= nil then
+				local flower = inst.bufferedaction.invobject
                 if flower ~= nil and flower:IsValid() then
                     if flower.skin_id ~= 0 then
                         inst.AnimState:OverrideItemSkinSymbol( "flower", flower.AnimState:GetBuild(), "flower", flower.GUID, flower.AnimState:GetBuild() )
@@ -3236,24 +3219,29 @@ local states =
                         inst.AnimState:OverrideSymbol("flower", flower.AnimState:GetBuild(), "flower")
                     end
                 end
+				inst:PerformPreviewBufferedAction()
             end
 
             inst.sg:SetTimeout(TIMEOUT)
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+            if inst:HasTag("busy") then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.sg:GoToState("idle")
+				inst.AnimState:PlayAnimation("wendy_recall_pst")
+				inst.AnimState:SetTime(17 * FRAMES)
+				inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
+			inst.AnimState:PlayAnimation("wendy_recall_pst")
+			inst.AnimState:SetTime(17 * FRAMES)
+			inst.sg:GoToState("idle", true)
         end,
     },
 
@@ -3266,10 +3254,7 @@ local states =
             inst.AnimState:PlayAnimation("wendy_commune_pre")
             inst.AnimState:PushAnimation("wendy_commune_lag", false)
 
-            local buffaction = inst:GetBufferedAction()
-            if buffaction ~= nil then
-                inst:PerformPreviewBufferedAction()
-
+			if inst.bufferedaction ~= nil then
                 local flower = inst.bufferedaction.invobject
                 if flower ~= nil and flower:IsValid() then
                     if flower.skin_id ~= 0 then
@@ -3278,24 +3263,29 @@ local states =
                         inst.AnimState:OverrideSymbol("flower", flower.AnimState:GetBuild(), "flower")
                     end
                 end
+				inst:PerformPreviewBufferedAction()
             end
 
             inst.sg:SetTimeout(TIMEOUT)
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+            if inst:HasTag("busy") then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.sg:GoToState("idle")
+				inst.AnimState:PlayAnimation("wendy_commune_pst")
+				inst.AnimState:SetTime(33 * FRAMES)
+				inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
+			inst.AnimState:PlayAnimation("wendy_commune_pst")
+			inst.AnimState:SetTime(33 * FRAMES)
+			inst.sg:GoToState("idle", true)
         end,
     },
 
@@ -3497,41 +3487,34 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst.sg.timeinstate >= (inst.sg.statemem.chained and 15 or 18)*FRAMES and inst.sg.statemem.flattened_time == nil and inst:HasTag("attack") then
-                if inst.entity:FlattenMovementPrediction() then
-					inst.sg.statemem.flattened_time = inst.sg.timeinstate
-					inst.sg:AddStateTag("idle")
-					inst.sg:AddStateTag("canrotate")
-		            inst.entity:SetIsPredictingMovement(false) -- so the animation will come across
-                end
+			if inst.sg:HasStateTag("idle") then
+				if inst.sg:HasStateTag("attack") and not inst:HasTag("attack") then
+					inst.sg:RemoveStateTag("attack")
+				end
+			elseif inst:HasTag("attack") then
+				if inst.entity:FlattenMovementPrediction() then
+					if inst.sg.timeinstate >= (inst.sg.statemem.chained and 15 or 18) * FRAMES then
+						inst.sg:AddStateTag("idle")
+						inst.sg:AddStateTag("canrotate")
+						inst.entity:SetIsPredictingMovement(false) -- so the animation will come across
+					end
+				end
+			elseif inst.bufferedaction == nil then
+				inst.sg:GoToState("idle")
 			end
-
-			if inst.bufferedaction == nil and inst.sg.statemem.flattened_time ~= nil and inst.sg.statemem.flattened_time < inst.sg.timeinstate then
-				inst.sg.statemem.flattened_time = nil
-				inst.entity:SetIsPredictingMovement(true)
-				inst.sg:RemoveStateTag("attack")
-				inst.sg:AddStateTag("idle")
-            end
         end,
 
         ontimeout = function(inst)
-            inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
+			if inst.sg:HasStateTag("idle") then
+				inst.sg:GoToState("idle", "noanim")
+			else
+				inst:ClearBufferedAction()
+				inst.sg:GoToState("idle")
+			end
         end,
 
-        events =
-        {
-            EventHandler("animqueueover", function(inst)
-                if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle")
-                end
-            end),
-        },
-
 		onexit = function(inst)
-			if inst.sg.statemem.flattened_time ~= nil then
-				inst.entity:SetIsPredictingMovement(true)
-			end
+			inst.entity:SetIsPredictingMovement(true)
 		end,
     },
 
@@ -3607,21 +3590,19 @@ local states =
         tags = { "attack", "notalking", "abouttoattack" },
 
         onenter = function(inst)
-            local buffaction = inst:GetBufferedAction()
-            local cooldown = 0
-            if inst.replica.combat ~= nil then
-                if inst.replica.combat:InCooldown() then
-                    inst.sg:RemoveStateTag("abouttoattack")
-                    inst:ClearBufferedAction()
-                    inst.sg:GoToState("idle", true)
-                    return
-                end
-                inst.replica.combat:StartAttack()
-                cooldown = inst.replica.combat:MinAttackPeriod()
-            end
+			local combat = inst.replica.combat
+			if combat:InCooldown() then
+				inst.sg:RemoveStateTag("abouttoattack")
+				inst:ClearBufferedAction()
+				inst.sg:GoToState("idle", true)
+				return
+			end
+
+			local cooldown = combat:MinAttackPeriod()
             if inst.sg.laststate == inst.sg.currentstate then
                 inst.sg.statemem.chained = true
             end
+			combat:StartAttack()
             inst.components.locomotor:Stop()
             local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
             local rider = inst.replica.rider
@@ -3780,6 +3761,7 @@ local states =
                 end
             end
 
+			local buffaction = inst:GetBufferedAction()
             if buffaction ~= nil then
                 inst:PerformPreviewBufferedAction()
 
@@ -3871,7 +3853,7 @@ local states =
         },
 
         onexit = function(inst)
-            if inst.sg:HasStateTag("abouttoattack") and inst.replica.combat ~= nil then
+			if inst.sg:HasStateTag("abouttoattack") then
                 inst.replica.combat:CancelAttack()
             end
         end,
@@ -3911,21 +3893,21 @@ local states =
         tags = { "attack", "notalking", "abouttoattack" },
 
         onenter = function(inst)
-            local buffaction = inst:GetBufferedAction()
-            if inst.replica.combat ~= nil then
-                if inst.replica.combat:InCooldown() then
-                    inst.sg:RemoveStateTag("abouttoattack")
-                    inst:ClearBufferedAction()
-                    inst.sg:GoToState("idle", true)
-                    return
-                end
-                inst.replica.combat:StartAttack()
-                inst.sg:SetTimeout(math.max(11 * FRAMES, inst.replica.combat:MinAttackPeriod()))
-            end
+			local combat = inst.replica.combat
+			if combat:InCooldown() then
+				inst.sg:RemoveStateTag("abouttoattack")
+				inst:ClearBufferedAction()
+				inst.sg:GoToState("idle", true)
+				return
+			end
+
+			combat:StartAttack()
+			inst.sg:SetTimeout(math.max(11 * FRAMES, combat:MinAttackPeriod()))
             inst.components.locomotor:Stop()
 
             inst.AnimState:PlayAnimation("throw")
 
+			local buffaction = inst:GetBufferedAction()
             if buffaction ~= nil then
                 inst:PerformPreviewBufferedAction()
 
@@ -3960,7 +3942,7 @@ local states =
         },
 
         onexit = function(inst)
-            if inst.sg:HasStateTag("abouttoattack") and inst.replica.combat ~= nil then
+			if inst.sg:HasStateTag("abouttoattack") then
                 inst.replica.combat:CancelAttack()
             end
         end,
@@ -3971,17 +3953,16 @@ local states =
         tags = { "attack", "notalking", "abouttoattack" },
 
         onenter = function(inst)
-            local buffaction = inst:GetBufferedAction()
-            if inst.replica.combat ~= nil then
-                if inst.replica.combat:InCooldown() then
-                    inst.sg:RemoveStateTag("abouttoattack")
-                    inst:ClearBufferedAction()
-                    inst.sg:GoToState("idle", true)
-                    return
-                end
-                inst.replica.combat:StartAttack()
-                inst.sg:SetTimeout(math.max((inst.sg.statemem.chained and 14 or 18) * FRAMES, inst.replica.combat:MinAttackPeriod()))
-            end
+			local combat = inst.replica.combat
+			if combat:InCooldown() then
+				inst.sg:RemoveStateTag("abouttoattack")
+				inst:ClearBufferedAction()
+				inst.sg:GoToState("idle", true)
+				return
+			end
+
+			combat:StartAttack()
+			inst.sg:SetTimeout(math.max((inst.sg.statemem.chained and 14 or 18) * FRAMES, combat:MinAttackPeriod()))
 
             local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
             inst.components.locomotor:Stop()
@@ -3993,6 +3974,7 @@ local states =
             end
             inst.AnimState:PushAnimation("dart", false)
 
+			local buffaction = inst:GetBufferedAction()
             if buffaction ~= nil then
                 inst:PerformPreviewBufferedAction()
 
@@ -4065,7 +4047,7 @@ local states =
         },
 
         onexit = function(inst)
-            if inst.sg:HasStateTag("abouttoattack") and inst.replica.combat ~= nil then
+			if inst.sg:HasStateTag("abouttoattack") then
                 inst.replica.combat:CancelAttack()
             end
         end,
@@ -4852,7 +4834,7 @@ local states =
 
     State{
         name = "pocketwatch_warpback_pre",
-        tags = { "doing", "playing", "busy" },
+		tags = { "busy" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -4864,7 +4846,7 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+			if inst:HasTag("busy") then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
@@ -4883,11 +4865,12 @@ local states =
     -- WX78 Rework
     State {
         name = "applyupgrademodule",
-        tags = { "busy", "nointerrupt" },
+        tags = { "busy" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("upgrade")
+			inst.AnimState:PlayAnimation("upgrade_pre")
+			inst.AnimState:PushAnimation("upgrade_lag", false)
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -4901,40 +4884,6 @@ local states =
             elseif inst.bufferedaction == nil then
                 inst.sg:GoToState("idle")
             end
-        end,
-
-        ontimeout = function(inst)
-            inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
-        end,
-    },
-
-    State {
-        name = "applyupgrademodule_fail",
-        tags = { "busy" },
-
-        onenter = function(inst)
-            inst:PerformPreviewBufferedAction()
-
-            inst.sg:GoToState("idle")
-            inst.sg:SetTimeout(TIMEOUT)
-        end,
-
-        ontimeout = function(inst)
-            inst:ClearBufferedAction()
-            inst.sg:GoToState("idle")
-        end,
-    },
-
-    State {
-        name = "removeupgrademodules_fail",
-        tags = { "busy" },
-
-        onenter = function(inst)
-            inst:PerformPreviewBufferedAction()
-
-            inst.sg:GoToState("idle")
-            inst.sg:SetTimeout(TIMEOUT)
         end,
 
         ontimeout = function(inst)

@@ -2858,9 +2858,12 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
                             target_score = score
                         else
                             local inv_obj = self:GetCursorInventoryObject()
-                            if inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) ~= nil then
-                                target = v
-                                target_score = score
+							if inv_obj ~= nil then
+								rmb = self:GetItemUseAction(inv_obj, v)
+								if rmb ~= nil and rmb.target == v then
+									target = v
+									target_score = score
+								end
                             end
                         end
                     end
@@ -4022,10 +4025,20 @@ local function ValidateItemUseAction(self, act, active_item, target)
         act or nil
 end
 
+--#V2C #Hack to allow controllers to Store in Magician's Top Hat while mounted.
+--           This is for DPAD actions, so they don't have to open inventory UI
+--           to access the unfiltered UI actions.
+local function AllowMountedStoreActionFilter(inst, action)
+	return action.mount_valid or action == ACTIONS.STORE
+end
+
 function PlayerController:GetItemUseAction(active_item, target)
     if active_item == nil then
         return
     end
+
+	local allow_mounted_store = target ~= nil and target:HasTag("pocketdimension_container")
+
     target = target or self:GetControllerTarget()
 
 	if target == nil and self.inst:HasTag("usingmagiciantool") then
@@ -4034,9 +4047,20 @@ function PlayerController:GetItemUseAction(active_item, target)
 			for k in pairs(containers) do
 				if k:HasTag("pocketdimension_container") then
 					target = k
+					allow_mounted_store = true
 					break
 				end
 			end
+		end
+	end
+
+	if allow_mounted_store then
+		local rider = self.inst.replica.rider
+		if rider ~= nil and rider:IsRiding() then
+			--See rider_replica MountedActionFilter; match priority
+			self.inst.components.playeractionpicker:PushActionFilter(AllowMountedStoreActionFilter, 20)
+		else
+			allow_mounted_store = false
 		end
 	end
 
@@ -4044,6 +4068,10 @@ function PlayerController:GetItemUseAction(active_item, target)
         ValidateItemUseAction(--[[rmb]] self, self.inst.components.playeractionpicker:GetUseItemActions(target, active_item, true)[1], active_item, target) or
         ValidateItemUseAction(--[[lmb]] self, self.inst.components.playeractionpicker:GetUseItemActions(target, active_item, false)[1], active_item, target)
     ) or nil
+
+	if allow_mounted_store then
+		self.inst.components.playeractionpicker:PopActionFilter(AllowMountedStoreActionFilter)
+	end
 
 	if act ~= nil then
 		if act.action == ACTIONS.STORE and act.target ~= nil and act.target:HasTag("pocketdimension_container") then

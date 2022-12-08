@@ -175,7 +175,9 @@ end
 
 local function startprojectilelaunch(inst)
     inst.AnimState:PlayAnimation("use_loop")
-    inst.SoundEmitter:PlaySound("dangerous_sea/common/water_pump/LP","pump")
+	if not inst.SoundEmitter:PlayingSound("pump") then
+		inst.SoundEmitter:PlaySound("dangerous_sea/common/water_pump/LP", "pump")
+	end
 
     if inst:GetCurrentPlatform() ~= nil then
         inst._launch_projectile_task = inst:DoTaskInTime(7*FRAMES, LaunchProjectile)

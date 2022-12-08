@@ -498,13 +498,13 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-				inst.sg.statemem.notinterupted = true
+				inst.sg.statemem.not_interrupted = true
 				inst.sg:GoToState("drill")
 			end),
         },
 
 		onexit = function(inst)
-			SetSortOrderIsInWater(inst, not inst.sg.statemem.notinterupted)
+			SetSortOrderIsInWater(inst, not inst.sg.statemem.not_interrupted)
 			RestoreCollidesWith(inst)
 		end,
     },

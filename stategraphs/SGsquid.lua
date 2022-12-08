@@ -783,7 +783,7 @@ local states =
         onupdate = function(inst)
             if inst.components.oceanfishable ~= nil and inst.components.oceanfishable:GetRod() ~= nil then
                 if not inst:HasTag("partiallyhooked") then
-                    inst.sg.statemem.not_interupted = true
+                    inst.sg.statemem.not_interrupted = true
                     inst.sg:GoToState("idle")
                 end
             else
@@ -793,13 +793,13 @@ local states =
 
         ontimeout = function(inst)
             if inst:HasTag("partiallyhooked") then
-                inst.sg.statemem.not_interupted = true
+                inst.sg.statemem.not_interrupted = true
                 inst.sg:GoToState("bitehook_jump")
             end
         end,
 
         onexit = function(inst)
-            if not inst.sg.statemem.not_interupted and inst.components.oceanfishable ~= nil then
+            if not inst.sg.statemem.not_interrupted and inst.components.oceanfishable ~= nil then
                 inst.components.oceanfishable:SetRod(nil)
             end
         end,
