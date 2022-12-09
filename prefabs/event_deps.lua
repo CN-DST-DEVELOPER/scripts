@@ -92,9 +92,6 @@ local SPECIAL_EVENT_DEPS =
                 Asset("PKGREF", "sound/music_frontend_winters_feast.fsb"),
                 Asset("PKGREF", "anim/dst_menu_inker_winter.zip"),
                 Asset("PKGREF", "anim/dst_menu_farming_winter.zip"),
-
-                Asset("ANIM", "anim/dst_menu_wolfgang.zip"),
-
             },
         },
     },

@@ -1335,7 +1335,7 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "ICE", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "arm_lower", "arm_upper", "skirt", "torso", },
+		symbol_overrides = { "arm_lower", "arm_upper", "leg", "skirt", "torso", },
 		symbol_overrides_old = { skirt = "skirt_old", torso = "torso_old", torso_pelvis = "torso_pelvis_old", },
 		symbol_hides = { "arm_upper_skin", },
 		torso_tuck = "untucked",
@@ -8857,7 +8857,7 @@ CLOTHING =
 	legs_wormwood_ice =
 	{
 		type = "legs",
-		skin_tags = { "CACTUS", "CLOTHING_LEGS", "CLOTHING", },
+		skin_tags = { "ICE", "CLOTHING_LEGS", "CLOTHING", },
 		symbol_overrides = { "leg", "foot", "torso_pelvis", },
 		symbol_overrides_stage2 = { foot = "foot_stage2", },
 		symbol_overrides_stage3 = { foot = "foot_stage3", torso_pelvis = "torso_pelvis_stage3", },

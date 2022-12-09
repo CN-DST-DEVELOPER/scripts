@@ -802,10 +802,8 @@ SPECIAL_EVENT_MUSIC =
     --winter's feast carol
     [SPECIAL_EVENTS.WINTERS_FEAST] =
     {
-  --      bank = "music_frontend_winters_feast.fsb",
-  --      sound = "dontstarve/music/music_FE_WF",
-        bank = "music_frontend.fsb",
-        sound = "dontstarve/music/music_FE_wolfgang",
+        bank = "music_frontend_winters_feast.fsb",
+        sound = "dontstarve/music/music_FE_WF",
     },
 
     --year of the gobbler
