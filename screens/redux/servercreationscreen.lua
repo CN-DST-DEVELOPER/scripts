@@ -42,6 +42,8 @@ local ServerCreationScreen = Class(Screen, function(self, prev_screen, save_slot
 
     self.save_slot = save_slot
 
+	self.letterbox = self:AddChild(TEMPLATES.old.ForegroundLetterbox())
+
     self.root = self:AddChild(TEMPLATES.ScreenRoot())
     self.bg = self.root:AddChild(TEMPLATES.PlainBackground())
     self.onlinestatus = self.bg:AddChild(OnlineStatus())

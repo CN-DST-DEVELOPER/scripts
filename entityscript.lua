@@ -1673,18 +1673,26 @@ function EntityScript:GetCurrentTileType()
     --print (string.format("(%d+%d, %d+%d), (%2.2f, %2.2f), %d", tx, x_off, ty, y_off, xpercent, ypercent, actual_tile))
 end
 
-function EntityScript:PutBackOnGround()
+-- NOTES(JBK): This function will return true if the entity is now on valid ground, false if it could not find a suitable location.
+function EntityScript:PutBackOnGround(radius)
+    radius = radius or 8
 	local x, y, z = self.Transform:GetWorldPosition()
-    if not TheWorld.Map:IsPassableAtPoint(x, y, z, true) then
-        local dest = FindNearbyLand(self:GetPosition(), 8) or FindNearbyOcean(self:GetPosition(), 8)
+    if TheWorld.Map:IsPassableAtPoint(x, y, z, true) then
+        return true
+    else
+        local pt = Point(x, y, z)
+        local dest = FindNearbyLand(pt, radius) or FindNearbyOcean(pt, radius)
         if dest ~= nil then
             if self.Physics ~= nil then
                 self.Physics:Teleport(dest:Get())
+                return true
             elseif self.Transform ~= nil then
                 self.Transform:SetPosition(dest:Get())
+                return true
             end
         end
     end
+    return false
 end
 
 function EntityScript:GetPersistData()

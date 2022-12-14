@@ -14,7 +14,11 @@ local FIND_FOOD_ACTION_DIST = 12
 
 local function GetOwner(inst)
     local leader = inst.components.follower.leader
-    return leader ~= nil and leader.components.inventoryitem ~= nil and leader.components.inventoryitem:GetGrandOwner() or nil
+    local owner = leader ~= nil and leader.components.inventoryitem ~= nil and leader.components.inventoryitem:GetGrandOwner() or nil
+    if owner ~= nil and owner:HasTag("pocketdimension_container") then
+        return nil
+    end
+    return owner
 end
 
 local GetFaceTargetFn = GetOwner
@@ -109,7 +113,7 @@ function LavaePetBrain:OnStart()
                 },
             }),
 
-        Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+        Follow(self.inst, function() return GetOwner(self.inst) end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
 
         DoAction(self.inst, EatFoodAction),
 

@@ -40,6 +40,9 @@ function Terraformer:Terraform(pt, doer)
 	end
 
 	self.inst:PushEvent("onterraform")
+	if doer ~= nil then
+		doer:PushEvent("onterraform") -- NOTES(JBK): This is for Wolfgang.
+	end
 
     return true
 end

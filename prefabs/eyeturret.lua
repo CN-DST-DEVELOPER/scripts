@@ -63,24 +63,38 @@ local function triggerlight(inst)
 end
 
 local RETARGET_MUST_TAGS = { "_combat" }
-local RETARGET_CANT_TAGS = { "INLIMBO", "player" }
+local RETARGET_CANT_TAGS = { "INLIMBO", "player", "eyeturret", "engineering" }
 local function retargetfn(inst)
+    local target = inst.components.combat.target
+    if target ~= nil and
+        target:IsValid() and
+        inst:IsNear(target, TUNING.EYETURRET_RANGE + 3) then
+        --keep current target
+        return
+    end
+
     local playertargets = {}
-	for i = 1, #AllPlayers do
-		local v = AllPlayers[i]
+    for i, v in ipairs(AllPlayers) do
         if v.components.combat.target ~= nil then
             playertargets[v.components.combat.target] = true
         end
     end
 
-    return FindEntity(inst, TUNING.EYETURRET_RANGE + 3,
-        function(guy)
-            return (playertargets[guy] or (guy.components.combat.target ~= nil and guy.components.combat.target:HasTag("player")))
-					and inst.components.combat:CanTarget(guy)
-        end,
-        RETARGET_MUST_TAGS, --see entityreplica.lua
-        RETARGET_CANT_TAGS
-    )
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, TUNING.EYETURRET_RANGE + 3, RETARGET_MUST_TAGS, RETARGET_CANT_TAGS)
+    for i, v in ipairs(ents) do
+        if v ~= inst and
+            v ~= target and
+            v.entity:IsVisible() and
+            inst.components.combat:CanTarget(v) and
+            (   playertargets[v] or
+                v.components.combat:TargetIs(inst) or
+                (v.components.combat.target ~= nil and v.components.combat.target:HasTag("player"))
+            ) then
+                return v
+        end
+    end
+    return nil
 end
 
 local function shouldKeepTarget(inst, target)
@@ -88,11 +102,18 @@ local function shouldKeepTarget(inst, target)
         and target:IsValid()
         and target.components.health ~= nil
         and not target.components.health:IsDead()
-        and inst:IsNear(target, 20)
+        and inst:IsNear(target, TUNING.EYETURRET_RANGE + 3)
 end
 
 local function ShareTargetFn(dude)
     return dude:HasTag("eyeturret")
+end
+
+local function ShouldAggro(combat, target)
+    if target:HasTag("player") then
+        return TheNet:GetPVPEnabled()
+    end
+    return true
 end
 
 local function OnAttacked(inst, data)
@@ -240,6 +261,7 @@ local function fn()
     inst.components.combat:SetAttackPeriod(TUNING.EYETURRET_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(1, retargetfn)
     inst.components.combat:SetKeepTargetFunction(shouldKeepTarget)
+    inst.components.combat:SetShouldAggroFn(ShouldAggro)
 
     inst.triggerlight = triggerlight
 

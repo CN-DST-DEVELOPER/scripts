@@ -747,6 +747,16 @@ end
 
 -------------------------------------------------------------------------------
 
+local palmcone_has_leaf_fx = {["short"] = true, ["normal"] = true, ["tall"] = true,}
+local function palmcone_onchop(inst)
+    if palmcone_has_leaf_fx[inst.statedata.name] then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        SpawnPrefab("palmcone_leaf_fx_" .. inst.statedata.name).Transform:SetPosition(x, y + math.random() * 2, z)
+    end
+end
+
+-------------------------------------------------------------------------------
+
 local trees = {}
 
 local function AddWinterTree(treetype)
@@ -966,6 +976,20 @@ for i, v in ipairs({
         onload = deciduous_onload,
         onplayanim = deciduous_onplayanim,
         onchop = deciduous_onchop,
+    },
+    {
+        name = "winter_palmconetree",
+        bank = "wintertree_palmcone",
+        build = "wintertree_palmcone",
+        seedprefab = "palmcone_seed",
+        extraprefabs =
+        {
+            "palmcone_leaf_fx_tall",
+            "palmcone_leaf_fx_normal",
+            "palmcone_leaf_fx_short",
+        },
+        onchop = palmcone_onchop,
+        shelter = true, --dynamic
     },
 }) do
     AddWinterTree(v)

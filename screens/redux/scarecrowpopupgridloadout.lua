@@ -34,7 +34,7 @@ local GridScarecrowClothingPopupScreen = Class(Screen, function(self, owner_scar
 	else
 		self.initial_skins = {}
 	end
-    dumptable(self.initial_skins)
+    --dumptable(self.initial_skins)
 
 	self.loadout = self.proot:AddChild(LoadoutSelect(profile, self.owner_scarecrow.prefab, nil, true, nil, true, self.initial_skins))
 	self.loadout:SetDefaultMenuOption()
@@ -147,7 +147,7 @@ function GridScarecrowClothingPopupScreen:Close(apply_skins)
 	local skins = self.loadout.selected_skins
 
     local data = {}
-    if TheNet:IsOnlineMode() then
+    if TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode() then
 		data = skins
     end
 

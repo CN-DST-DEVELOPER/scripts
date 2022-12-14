@@ -4916,6 +4916,7 @@ local states =
         },
 
         onexit = function(inst)
+			inst.SoundEmitter:KillSound("make")
             if inst.sg.statemem.cb ~= nil then
                 -- in case of interruption
                 inst.sg.statemem.cb()

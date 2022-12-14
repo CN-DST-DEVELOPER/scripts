@@ -354,6 +354,11 @@ local states =
 
             local chest = SpawnPrefab("minotaurchestspawner")
             chest.Transform:SetPosition(inst.Transform:GetWorldPosition())
+            for i = 1, 8 do
+                if chest:PutBackOnGround(TILE_SCALE * i) then
+                    break
+                end
+            end
             chest.minotaur = inst
 
             inst:AddTag("NOCLICK")

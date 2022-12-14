@@ -359,7 +359,8 @@ function Projectile:OnUpdate(dt)
 end
 
 function Projectile:RotateToTarget(dest)
-    local direction = (dest - self.inst:GetPosition()):GetNormalized()
+    local direction = dest - self.inst:GetPosition()
+    direction:Normalize()
     local angle = math.acos(direction:Dot(Vector3(1, 0, 0))) / DEGREES
     self.inst.Transform:SetRotation(angle)
     self.inst:FacePoint(dest)

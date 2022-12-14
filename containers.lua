@@ -468,6 +468,7 @@ end
 
 params.winter_twiggytree = params.winter_tree
 params.winter_deciduoustree = params.winter_tree
+params.winter_palmconetree = params.winter_tree
 
 --------------------------------------------------------------------------
 --[[ sisturn ]]

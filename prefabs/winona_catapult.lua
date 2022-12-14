@@ -17,7 +17,7 @@ local prefabs =
 local brain = require("brains/winonacatapultbrain")
 
 local RETARGET_MUST_TAGS = { "_combat" }
-local RETARGET_CANT_TAGS = { "INLIMBO", "player", "engineering" }
+local RETARGET_CANT_TAGS = { "INLIMBO", "player", "engineering", "eyeturret" }
 
 local function RetargetFn(inst)
     local target = inst.components.combat.target
@@ -69,6 +69,13 @@ end
 
 local function ShareTargetFn(dude)
     return dude:HasTag("catapult")
+end
+
+local function ShouldAggro(combat, target)
+    if target:HasTag("player") then
+        return TheNet:GetPVPEnabled()
+    end
+    return true
 end
 
 local function ForceDropTarget(inst, target)
@@ -474,6 +481,7 @@ local function fn()
     inst.components.combat:SetAttackPeriod(TUNING.WINONA_CATAPULT_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(1, RetargetFn)
     inst.components.combat:SetKeepTargetFunction(ShouldKeepTarget)
+    inst.components.combat:SetShouldAggroFn(ShouldAggro)
 
     inst:AddComponent("lootdropper")
     inst:AddComponent("workable")

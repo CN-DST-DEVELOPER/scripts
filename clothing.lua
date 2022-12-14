@@ -5839,6 +5839,7 @@ CLOTHING =
 		symbol_overrides = { "foot", },
 		rarity = "Classy",
 		rarity_modifier = "Woven",
+		feet_cuff_size = 4,
 		release_group = 138,
 	},
 	feet_woodie_nature =

@@ -84,8 +84,8 @@ end
 local function TrySpawnHoney(inst, x, z, min_scale, max_scale, duration)
 	if TheWorld.Map:IsPassableAtPoint(x, 0, z) then
 		local fx = SpawnPrefab("honey_trail")
+        fx.Transform:SetPosition(x, 0, z) -- NOTES(JBK): This must be before SetVariation is called!
 		fx:SetVariation(PickHoney(inst), GetRandomMinMax(min_scale, max_scale), duration + math.random() * .5)
-		fx.Transform:SetPosition(x, 0, z)
 	else
 		SpawnPrefab("ocean_splash_ripple"..tostring(math.random(2))).Transform:SetPosition(x, 0, z)
 	end

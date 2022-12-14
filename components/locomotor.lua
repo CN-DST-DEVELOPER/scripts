@@ -626,7 +626,13 @@ function LocoMotor:PreviewAction(bufferedaction, run, try_instant)
 	elseif bufferedaction.action.instant or bufferedaction.action.do_not_locomote or bufferedaction.options.instant then
         self.inst:PreviewBufferedAction(bufferedaction)
     elseif bufferedaction.target ~= nil then
-        if bufferedaction.distance ~= nil and bufferedaction.distance >= math.huge then
+		local inventoryitem = bufferedaction.target.replica.inventoryitem
+		local owner = inventoryitem ~= nil and inventoryitem:IsHeld() and bufferedaction.target.entity:GetParent() or nil
+		if owner ~= nil and owner:HasTag("pocketdimension_container") then
+			--don't try to walk to this container at (0, 0, 0)
+			self.inst:FacePoint(bufferedaction.target.Transform:GetWorldPosition())
+			self.inst:PushBufferedAction(bufferedaction)
+		elseif bufferedaction.distance ~= nil and bufferedaction.distance >= math.huge then
             --essentially instant
             self.inst:FacePoint(bufferedaction.target.Transform:GetWorldPosition())
             self.inst:PreviewBufferedAction(bufferedaction)
@@ -700,7 +706,12 @@ function LocoMotor:PushAction(bufferedaction, run, try_instant)
 	elseif bufferedaction.action.instant or bufferedaction.action.do_not_locomote or bufferedaction.options.instant then
         self.inst:PushBufferedAction(bufferedaction)
     elseif bufferedaction.target ~= nil then
-        if bufferedaction.distance ~= nil and bufferedaction.distance >= math.huge then
+		local owner = bufferedaction.target.components.inventoryitem ~= nil and bufferedaction.target.components.inventoryitem.owner or nil
+		if owner ~= nil and owner:HasTag("pocketdimension_container") then
+			--don't try to walk to this container at (0, 0, 0)
+			self.inst:FacePoint(bufferedaction.target.Transform:GetWorldPosition())
+			self.inst:PushBufferedAction(bufferedaction)
+		elseif bufferedaction.distance ~= nil and bufferedaction.distance >= math.huge then
             --essentially instant
             self.inst:FacePoint(bufferedaction.target.Transform:GetWorldPosition())
             self.inst:PushBufferedAction(bufferedaction)
