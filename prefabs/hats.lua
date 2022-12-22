@@ -1998,8 +1998,8 @@ local function MakeHat(name)
 
     local function antlion_onequip(inst, owner)
         fns.simple_onequip(inst, owner)
-        
-        if inst.components.autoterraformer ~= nil then
+
+		if inst.components.autoterraformer ~= nil and owner.components.locomotor ~= nil then
             inst.components.autoterraformer:StartTerraforming()
         end
 

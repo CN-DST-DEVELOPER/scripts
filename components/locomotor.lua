@@ -486,13 +486,19 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
     if oncreep and self.triggerscreep then
         -- if this ever needs to happen when self.enablegroundspeedmultiplier is set, need to move the check for self.enablegroundspeedmultiplier above
         if not self.wasoncreep then
-            for _, v in ipairs(TheWorld.GroundCreep:GetTriggeredCreepSpawners(x, y, z)) do
-                v:PushEvent("creepactivate", { target = self.inst })
+            local spawners = TheWorld.GroundCreep:GetTriggeredCreepSpawners(x, y, z)
+            local eventdata = { target = self.inst, spawners = spawners, }
+            for _, v in ipairs(spawners) do
+                v:PushEvent("creepactivate", eventdata)
             end
+            self.inst:PushEvent("walkoncreep", eventdata)
             self.wasoncreep = true
         end
         self.groundspeedmultiplier = self.slowmultiplier
     else
+        if self.wasoncreep and self.triggerscreep then
+            self.inst:PushEvent("walkoffcreep")
+        end
         self.wasoncreep = false
 
         local current_ground_tile = TheWorld.Map:GetTileAtPoint(x, 0, z)

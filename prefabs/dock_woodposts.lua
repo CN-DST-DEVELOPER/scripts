@@ -23,6 +23,15 @@ local function OnHammered(inst, worker)
     inst:Remove()
 end
 
+local function OnHit(inst)
+	local idleanim = "idle"..inst._post_id
+	if inst.AnimState:IsCurrentAnimation(idleanim) or inst.AnimState:GetCurrentAnimationTime() >= 15 * FRAMES then
+		inst.AnimState:PlayAnimation("place"..inst._post_id)
+		inst.AnimState:SetTime(11 * FRAMES)
+		inst.AnimState:PushAnimation(idleanim, false)
+	end
+end
+
 local function setpostid(inst, id)
     if inst._post_id == nil or (id ~= nil and inst._post_id ~= id) then
         inst._post_id = id or tostring(math.random(1, 3))
@@ -42,7 +51,7 @@ local function place(inst)
     inst.SoundEmitter:PlaySound("monkeyisland/dock/post_place")
     
     inst.AnimState:PlayAnimation("place"..inst._post_id)
-    inst.AnimState:PushAnimation("idle"..inst._post_id)
+	inst.AnimState:PushAnimation("idle"..inst._post_id, false)
 end
 
 local function fn()
@@ -71,6 +80,7 @@ local function fn()
     inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
     inst.components.workable:SetWorkLeft(3)
     inst.components.workable:SetOnFinishCallback(OnHammered)
+	inst.components.workable:SetOnWorkCallback(OnHit)
 
     ---------------------------------------------------------------
     --inst._post_id = nil

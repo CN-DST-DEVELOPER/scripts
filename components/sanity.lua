@@ -126,8 +126,8 @@ function Sanity:GetSanityMode()
 	return self.mode
 end
 
-function Sanity:EnableLunacy(enable, sorce)
-	self._lunacy_sources:SetModifier(self.inst, enable, sorce)
+function Sanity:EnableLunacy(enable, source)
+	self._lunacy_sources:SetModifier(self.inst, enable, source)
 
 	local mode = self._lunacy_sources:Get() and SANITY_MODE_LUNACY or SANITY_MODE_INSANITY
 	if self.mode ~= mode then

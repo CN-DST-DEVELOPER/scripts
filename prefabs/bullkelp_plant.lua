@@ -39,6 +39,27 @@ local function makeemptyfn(inst)
     inst.underwater.AnimState:SetTime(time)
 end
 
+local function CheckBeached(inst)
+    -- NOTES(JBK): If this is now beached it was ran ashore through something external force so do not spawn the bullkelp_beachedroot prefab instead spawn the expiring items.
+    inst._checkgroundtask = nil
+    local x, y, z = inst.Transform:GetWorldPosition()
+    if inst:GetCurrentPlatform() ~= nil or TheWorld.Map:IsVisualGroundAtPoint(x, y, z) then
+        if inst.components.pickable ~= nil then
+            inst.components.pickable:Pick(TheWorld)
+        end
+        inst:Remove()
+        local beached = SpawnPrefab("bullkelp_root")
+        beached.Transform:SetPosition(x, y, z)
+    end
+end
+
+local function OnCollide(inst, other)
+    if inst._checkgroundtask == nil then
+        -- This collision callback is called very fast so only do the checks after some time in a staggered method.
+        inst._checkgroundtask = inst:DoTaskInTime(1 + math.random(), CheckBeached)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -94,6 +115,9 @@ local function fn()
     MakeSmallPropagator(inst)
     MakeHauntableIgnite(inst)
     ---------------------
+
+    inst.Physics:SetCollisionCallback(OnCollide)
+    inst:DoTaskInTime(1 + math.random(), CheckBeached) -- Does not need to be immediately done stagger over time.
 
     return inst
 end

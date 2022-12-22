@@ -99,7 +99,7 @@ local function onpickedfn(inst, picker)
         end
     end
 
-    if not (picker:HasTag("berrythief") or inst._noperd) and math.random() < (IsSpecialEventActive(SPECIAL_EVENTS.YOTG) and TUNING.YOTG_PERD_SPAWNCHANCE or TUNING.PERD_SPAWNCHANCE) then
+    if not (picker ~= nil and picker:HasTag("berrythief") or inst._noperd) and math.random() < (IsSpecialEventActive(SPECIAL_EVENTS.YOTG) and TUNING.YOTG_PERD_SPAWNCHANCE or TUNING.PERD_SPAWNCHANCE) then
         inst:DoTaskInTime(3 + math.random() * 3, spawnperd)
     end
 end

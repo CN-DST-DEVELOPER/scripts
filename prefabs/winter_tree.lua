@@ -989,7 +989,7 @@ for i, v in ipairs({
             "palmcone_leaf_fx_short",
         },
         onchop = palmcone_onchop,
-        shelter = true, --dynamic
+        shelter = true,
     },
 }) do
     AddWinterTree(v)

@@ -64,7 +64,7 @@ local function CheckDay(inst)
     end
 end
 
-local function onpicked(inst, leader)
+local function onpicked(inst)
     --Go to proper animation state
     inst.sg:GoToState("picked")
 

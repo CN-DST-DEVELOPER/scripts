@@ -150,7 +150,7 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
 							return true 
 						elseif control == CONTROL_INVENTORY_USEONSELF then
 							if self.recipe_name ~= nil then
-								local new_skin = GetPrevOwnedSkin(self.recipe_name, self.skin_name)
+								local new_skin = self:GetPrevSkin(self.skin_name)
 								if new_skin ~= self.skin_name then
 									self:SetRecipe(self.recipe_name, new_skin)
 									TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
@@ -161,7 +161,7 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
 							end
 						elseif control == CONTROL_INVENTORY_USEONSCENE then
 							if self.recipe_name ~= nil then
-								local new_skin = GetNextOwnedSkin(self.recipe_name, self.skin_name)
+								local new_skin = self:GetNextSkin(self.skin_name)
 								if new_skin ~= self.skin_name then
 									self:SetRecipe(self.recipe_name, new_skin)
 									TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
@@ -176,7 +176,7 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
 			else
 				if self.recipe_name ~= nil then
 					if control == CONTROL_SCROLLBACK then
-						local new_skin = GetPrevOwnedSkin(self.recipe_name, self.skin_name)
+						local new_skin = self:GetPrevSkin(self.skin_name)
 						if new_skin ~= self.skin_name then
 							self:SetRecipe(self.recipe_name, new_skin)
 							TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
@@ -185,7 +185,7 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
 						end
 						return true
 					elseif control == CONTROL_SCROLLFWD then
-						local new_skin = GetNextOwnedSkin(self.recipe_name, self.skin_name)
+						local new_skin = self:GetNextSkin(self.skin_name)
 						if new_skin ~= self.skin_name then
 							self:SetRecipe(self.recipe_name, new_skin)
 							TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
@@ -238,6 +238,18 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
 	----------------
 	self:Hide()
 end)
+
+function PinSlot:GetPrevSkin(cur_skin)
+	local data = self.craftingmenu:GetRecipeState(self.recipe_name)
+	local prefab = data ~= nil and data.recipe ~= nil and data.recipe.product or self.recipe_name
+	return GetPrevOwnedSkin(prefab, cur_skin)
+end
+
+function PinSlot:GetNextSkin(cur_skin)
+	local data = self.craftingmenu:GetRecipeState(self.recipe_name)
+	local prefab = data ~= nil and data.recipe ~= nil and data.recipe.product or self.recipe_name
+	return GetNextOwnedSkin(prefab, cur_skin)
+end
 
 function PinSlot:Highlight() -- called from inventorybar
 	if not self.focus then

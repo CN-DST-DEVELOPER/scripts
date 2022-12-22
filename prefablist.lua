@@ -718,6 +718,7 @@ PREFABFILES = {
   "pinecone",
   "pirate_flag_pole",
   "pirate_stash",
+  "piratewarningsound",
   "pitchfork",
   "plant_normal",
   "plantables",

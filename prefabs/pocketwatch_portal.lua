@@ -43,7 +43,7 @@ local function DoCastSpell(inst, doer, target, pos)
 	local recallmark = inst.components.recallmark
 
 	if recallmark:IsMarked() then
-		local pt = inst:GetPosition()
+		local pt = doer:GetPosition()
 		local offset = FindWalkableOffset(pt, math.random() * 2 * PI, 3 + math.random(), 16, false, true, noentcheckfn, true, true)
 						or FindWalkableOffset(pt, math.random() * 2 * PI, 5 + math.random(), 16, false, true, noentcheckfn, true, true)
 						or FindWalkableOffset(pt, math.random() * 2 * PI, 7 + math.random(), 16, false, true, noentcheckfn, true, true)

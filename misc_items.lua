@@ -3543,6 +3543,22 @@ MISC_ITEMS =
 		output_items = {  "wanda_none", "wilson_ice", "wilson_beard_ice", "body_wilson_ice", "feet_wilson_ice", "hand_wilson_ice", "legs_wilson_ice", "willow_victorian", "body_willow_victorian", "hand_willow_victorian", "feet_willow_victorian", "walter_formal", "body_walter_formal", "feet_walter_formal", "legs_walter_formal", "walterhat_formal", "winona_rosep", "body_winona_rosep", "backpack_splumonkey", "torch_pronged", "body_pj_orange_honey", "legs_pj_orange_honey", "bedroll_furry_quilt_orange_honey", },
 		release_group = 123,
 	},
+	pack_starter_2023 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		steam_dlc_id = 2241030,
+		rail_dlc_id = 2001898,
+		display_order = 0,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_starter_2023.xml",
+		display_tex = "starter_2023.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wortox_none", "wilson_magma", "wilson_beard_magma", "wendy_formalp", "abigail_formal", "wolfgang_pirate", "wx78_shadow", "researchlab_gothic", "lantern_gothic", "body_pj_blue_agean", "legs_pj_blue_agean", "bedroll_furry_quilt_blue_frost", },
+		output_items = {  "wortox_none", "wilson_magma", "wilson_beard_magma", "body_wilson_magma", "hand_wilson_magma", "legs_wilson_magma", "wendy_formalp", "body_wendy_formalp", "feet_maryjanesp_white_pure", "abigail_formal", "wolfgang_pirate", "body_wolfgang_pirate", "feet_wolfgang_pirate", "wx78_shadow", "body_wx78_shadow", "researchlab_gothic", "lantern_gothic", "body_pj_blue_agean", "legs_pj_blue_agean", "bedroll_furry_quilt_blue_frost", },
+		release_group = 139,
+	},
 	pack_sw_gift =
 	{
 		type = "purchase",

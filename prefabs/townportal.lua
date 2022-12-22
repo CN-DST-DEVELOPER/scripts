@@ -263,6 +263,7 @@ local function fx_fn()
     inst.AnimState:SetBuild("teleport_sand_fx")
     inst.AnimState:OverrideSymbol("sand_splash", "sand_splash_fx", "sand_splash")
     inst.AnimState:PlayAnimation("portal_in")
+	inst.AnimState:SetFinalOffset(7)
 
     inst:AddTag("NOCLICK")
     inst:AddTag("FX")

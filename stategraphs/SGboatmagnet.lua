@@ -2,6 +2,9 @@ local events =
 {
 }
 
+--V2C: TERRIBLE, but not worth the effort to refactor.
+--     plz DO NOT COPY or reuse ANY code from boatmagnet.
+
 local states =
 {
     State {
@@ -12,9 +15,23 @@ local states =
             if inst.components.boatmagnet and inst.components.boatmagnet:PairedBeacon() ~= nil then
                 inst.AnimState:PlayAnimation("idle_activated", true)
             else
-                inst.AnimState:PlayAnimation("idle", true)
+				inst.AnimState:PlayAnimation("idle")
             end
         end,
+
+		events =
+		{
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit_off") then
+					inst.AnimState:PlayAnimation("hit_off")
+					if inst.components.boatmagnet ~= nil and inst.components.boatmagnet:PairedBeacon() ~= nil then
+						inst.AnimState:PushAnimation("idle_activated")
+					else
+						inst.AnimState:PushAnimation("idle", false)
+					end
+				end
+			end),
+		},
     },
 
     State {
@@ -25,24 +42,20 @@ local states =
             inst.AnimState:PlayAnimation("place")
         end,
 
-        events =
-        {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
-        },
-    },
-
-    State {
-        name = "hit",
-        tags = { "busy" },
-
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("hit")
-        end,
+		timeline =
+		{
+			TimeEvent(27 * FRAMES, function(inst)
+				inst.sg:AddStateTag("caninterrupt")
+			end),
+		},
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if inst.sg:HasStateTag("caninterrupt") and not inst.AnimState:IsCurrentAnimation("hit_off") then
+					inst.AnimState:PlayAnimation("hit_off")
+				end
+			end),
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("idle")
             end),
@@ -60,8 +73,13 @@ local states =
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit_off") then
+					inst.AnimState:PlayAnimation("hit_off")
+				end
+			end),
             EventHandler("animover", function(inst)
-                inst.sg:GoToState("search_loop")
+				inst.sg:GoToState(inst.AnimState:IsCurrentAnimation("search_pre") and "search_loop" or "search_pre")
             end),
         },
     },
@@ -81,14 +99,23 @@ local states =
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit_off") then
+					inst.AnimState:PlayAnimation("hit_off")
+				end
+			end),
             EventHandler("animover", function(inst)
-                local nearestbeacon = inst.components.boatmagnet ~= nil and inst.components.boatmagnet:FindNearestBeacon() or nil
-                if nearestbeacon ~= nil then
-                    inst.components.boatmagnet:PairWithBeacon(nearestbeacon)
-                    inst.sg:GoToState("success")
-                else
-                    inst.sg:GoToState("fail")
-                end
+				if inst.AnimState:IsCurrentAnimation("search_loop") then
+					local nearestbeacon = inst.components.boatmagnet ~= nil and inst.components.boatmagnet:FindNearestBeacon() or nil
+					if nearestbeacon ~= nil then
+						inst.components.boatmagnet:PairWithBeacon(nearestbeacon)
+						inst.sg:GoToState("success")
+					else
+						inst.sg:GoToState("fail")
+					end
+				else
+					inst.sg:GoToState("search_pre")
+				end
             end),
         },
     },
@@ -104,6 +131,11 @@ local states =
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit_off") then
+					inst.AnimState:PlayAnimation("hit_off")
+				end
+			end),
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("pull_pre")
             end),
@@ -121,6 +153,11 @@ local states =
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit_off") then
+					inst.AnimState:PlayAnimation("hit_off")
+				end
+			end),
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("idle")
             end),
@@ -143,6 +180,11 @@ local states =
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit") then
+					inst.AnimState:PlayAnimation("hit")
+				end
+			end),
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("pull")
             end),
@@ -161,6 +203,16 @@ local states =
         onexit = function(inst)
             inst.SoundEmitter:KillSound("pull_loop")
         end,
+
+		events =
+		{
+			EventHandler("worked", function(inst)
+				if not inst.AnimState:IsCurrentAnimation("hit") then
+					inst.AnimState:PlayAnimation("hit")
+					inst.AnimState:PushAnimation("pull")
+				end
+			end),
+		},
     },
 
     State {
@@ -177,6 +229,16 @@ local states =
 
         events =
         {
+			EventHandler("worked", function(inst)
+				if inst.AnimState:IsCurrentAnimation("pull_pst") then
+					inst.AnimState:PlayAnimation("hit")
+					if inst.components.boatmagnet ~= nil and inst.components.boatmagnet:PairedBeacon() == nil then
+						inst.AnimState:PushAnimation("fail", false)
+					end
+				elseif inst.AnimState:IsCurrentAnimation("fail") then
+					inst.AnimState:PlayAnimation("hit_off")
+				end
+			end),
             EventHandler("animqueueover", function(inst)
                 inst.sg:GoToState("idle")
             end),

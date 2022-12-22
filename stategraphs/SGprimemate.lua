@@ -34,7 +34,7 @@ local events=
     EventHandler("onsink", function(inst, data)
         if (inst.components.health == nil or not inst.components.health:IsDead()) and not inst.sg:HasStateTag("drowning") and (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown()) then
                 SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
-                inst:dropInventory()
+				inst.components.inventory:DropEverything(true)
                 inst:Remove()
             end
     end),
@@ -105,19 +105,27 @@ local states =
 
 
     State{
-
         name = "row",
         onenter = function(inst, playanim)
+			local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if equipped ~= nil and equipped.components.oar == nil then
+				inst.components.inventory:Unequip(equipped)
+				inst.components.inventory:GiveItem(equipped)
+				equipped = nil
+			end
+			if equipped == nil then
+				equipped = SpawnPrefab("oar_monkey")
+				equipped:AddTag("personal_possession")
+				inst.components.inventory:Equip(equipped)
+			end
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("row_pre",false)
             inst.AnimState:PushAnimation("row_loop",false)
             inst.AnimState:PushAnimation("row_pst",false)
-           -- inst.sg:SetTimeout(4)
         end,
 
         timeline =
         {
-
             TimeEvent(8*FRAMES, function(inst)
                inst:PerformBufferedAction()
                inst.SoundEmitter:PlaySound("monkeyisland/primemate/row")
@@ -127,14 +135,14 @@ local states =
             end),     
         },
 
-        ontimeout = function(inst)
-        
-            inst:PerformBufferedAction()
-            inst.sg:GoToState("idle")
-        end,
-
         events=
         {
+			EventHandler("unequip", function(inst, data)
+				if data ~= nil and data.item ~= nil and data.item.components.oar ~= nil then
+					inst:ClearBufferedAction()
+					inst.sg:GoToState("idle")
+				end
+			end),
             EventHandler("animqueueover", function (inst)
                 inst.sg:GoToState("idle")
             end),
@@ -234,9 +242,7 @@ local states =
                 else
                     SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
 
-                    if TheWorld.components.piratespawner then
-                        TheWorld.components.piratespawner:StashLoot(inst)
-                    end
+					inst.components.inventory:DropEverything(true)
                     inst:Remove()
                 end
             end),
@@ -314,7 +320,7 @@ CommonStates.AddCombatStates(states,
 {
     attacktimeline =
     {
-        TimeEvent(9*FRAMES, function(inst)
+		TimeEvent(9 * FRAMES, function(inst)
             inst.components.combat:DoAttack()
             --inst.SoundEmitter:PlaySound("dontstarve/creatures/monkey"..inst.soundtype.."/attack")
         end),
@@ -335,7 +341,7 @@ CommonStates.AddCombatStates(states,
     },
 },nil,{attackanimfn= function(inst) 
     if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS).components.weapon then
-        return "atk_object"
+		return "atk_weapon"
     end
     return nil
 end})

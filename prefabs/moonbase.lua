@@ -374,8 +374,10 @@ local function OnStaffTaken(inst, picker, loot)
         inst:RemoveChild(inst._staffinst)
         inst._staffinst:ReturnToScene()
         inst._staffinst.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
-        picker:PushEvent("picksomething", { object = inst, loot = inst._staffinst })
-        picker.components.inventory:GiveItem(inst._staffinst, nil, inst:GetPosition())
+        if picker ~= nil then
+            picker:PushEvent("picksomething", { object = inst, loot = inst._staffinst })
+            picker.components.inventory:GiveItem(inst._staffinst, nil, inst:GetPosition())
+        end
         inst._staffinst = nil
         inst._staffuse = nil
     elseif inst._staffuse ~= nil then

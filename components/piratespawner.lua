@@ -247,6 +247,12 @@ end)
 local RANGE = 40 -- distance from player to spawn the flotsam.  should be 5 more than wanted
 local SHORTRANGE = 5 -- radius that must be clear for flotsam to appear
 
+local function DoAnnouncePirates(player)
+	if not (player.components.health:IsDead() or player:HasTag("playerghost")) and player.entity:IsVisible() then 
+		player.components.talker:Say(GetString(player, "ANNOUNCE_PIRATES_ARRIVE"))
+	end
+end
+
 local function spawnpirateship(pt)
     local shipdata = {}
 
@@ -311,23 +317,23 @@ local function spawnpirateship(pt)
         monkey.components.inventory:GiveItem(cutless)
         monkey.components.inventory:Equip(cutless)
 
-
         local hat = SpawnPrefab("monkey_smallhat")
         hat:AddTag("personal_possession")
         monkey.components.inventory:GiveItem(hat)
         monkey.components.inventory:Equip(hat)
     end
 
-    local players = FindPlayersInRange(pt.x, pt.y, pt.z,  RANGE, true)
-    for i,player in ipairs(players)do
-        player:DoTaskInTime(0.6, 
-            function() 
-                if player:IsValid() and not player.components.health:IsDead() then 
-                    player.components.talker:Say(  GetString(player, "ANNOUNCE_PIRATES_ARRIVE") ) 
-                end
-            end)
-        player.SoundEmitter:PlaySound("monkeyisland/primemate/announce")
-    end
+	for i, v in ipairs(AllPlayers) do
+		if not (v.components.health:IsDead() or v:HasTag("playerghost")) and v.entity:IsVisible() then
+			local vboat = v:GetCurrentPlatform()
+			local vrange = RANGE + (vboat ~= nil and vboat.components.walkableplatform ~= nil and vboat.components.walkableplatform.platform_radius or 0)
+			-- <= since we spawn at exactly RANGE
+			if v:GetDistanceSqToPoint(pt) <= vrange * vrange then
+				v:DoTaskInTime(.6, DoAnnouncePirates)
+			end
+		end
+	end
+	SpawnPrefab("piratewarningsound").Transform:SetPosition(pt:Get())
 
     return shipdata
 end
@@ -688,12 +694,9 @@ function self:OnUpdate(dt)
             v.piratesnear = nil
         end
     end
-
 end
 
-
 function self:LongUpdate(dt)
-
     self:OnUpdate(dt)
 end
 

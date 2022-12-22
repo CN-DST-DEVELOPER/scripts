@@ -157,13 +157,6 @@ local function ClearTinkerTarget(inst)
     end
 end
 
-local function dropInventory(inst)
-    if inst.components.inventory ~= nil then
-        inst.components.inventory:DropEverything(true)
-    end
-end
-
-
 local function OnDeath(inst,data)
     local item = SpawnPrefab("cursed_monkey_token")
     inst.components.inventory:DropItem(item, nil, true)
@@ -359,8 +352,6 @@ local function fn()
 
     --inst.weaponitems = {}
     --EquipWeapons(inst)
-
-    inst.dropInventory = dropInventory
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad

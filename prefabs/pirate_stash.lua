@@ -43,12 +43,27 @@ local function stash_dug(inst)
 	end
 end
 
+local function hascopyof(inst, item)
+	for k, v in pairs(inst.components.inventory.itemslots) do
+		if v ~= item and v.prefab == "blueprint" and v.recipetouse == item.recipetouse then
+			return true
+		end
+	end
+	return false
+end
+
+local function checkistreasure(inst, item)
+	return item.prefab == "blueprint"
+		and (item.recipetouse == "pirate_flag_pole" or item.recipetouse == "polly_rogershat")
+		and not hascopyof(inst, item)
+end
+
 local function stashloot(inst, item)
 	if item ~= nil and item:IsValid() then
 		local first = inst.nextslot
 		repeat
 			local olditem = inst.components.inventory:GetItemInSlot(inst.nextslot)
-			if olditem ~= nil and not olditem:HasTag("irreplaceable") then
+			if olditem ~= nil and not (olditem:HasTag("irreplaceable") or checkistreasure(inst, olditem)) then
 				olditem:Remove()
 				olditem = nil
 			end

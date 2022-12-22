@@ -5565,6 +5565,8 @@ local skin_assets =
 	Asset("PKGREF", "images/iap_images_starter_2020.tex"),
 	Asset("DYNAMIC_ATLAS", "images/iap_images_starter_2021.xml"),
 	Asset("PKGREF", "images/iap_images_starter_2021.tex"),
+	Asset("DYNAMIC_ATLAS", "images/iap_images_starter_2023.xml"),
+	Asset("PKGREF", "images/iap_images_starter_2023.tex"),
 	Asset("DYNAMIC_ATLAS", "images/iap_images_valkyrie_items.xml"),
 	Asset("PKGREF", "images/iap_images_valkyrie_items.tex"),
 	Asset("DYNAMIC_ATLAS", "images/iap_images_victorian.xml"),

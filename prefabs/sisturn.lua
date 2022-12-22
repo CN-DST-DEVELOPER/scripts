@@ -114,6 +114,18 @@ local function getstatus(inst)
 			or nil
 end
 
+local function OnSave(inst, data)
+	if inst:HasTag("burnt") or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+		data.burnt = true
+	end
+end
+
+local function OnLoad(inst, data)
+	if data ~= nil and data.burnt and inst.components.burnable ~= nil then
+		inst.components.burnable.onburnt(inst)
+	end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -172,6 +184,9 @@ local function fn()
 		TheWorld:AddComponent("sisturnregistry")
 	end
 	TheWorld.components.sisturnregistry:Register(inst)
+
+	inst.OnSave = OnSave
+	inst.OnLoad = OnLoad
 
     return inst
 end

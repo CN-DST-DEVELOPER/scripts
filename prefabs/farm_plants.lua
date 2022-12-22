@@ -17,7 +17,7 @@ local function PlaySound(inst, sound)
 end
 
 local function call_for_reinforcements(inst, target)
-	if not target:HasTag("plantkin") then
+	if target ~= nil and not target:HasTag("plantkin") then
 		local x, y, z = inst.Transform:GetWorldPosition()
 		local defenders = TheSim:FindEntities(x, y, z, TUNING.FARM_PLANT_DEFENDER_SEARCH_DIST, {"farm_plant_defender"})
 		for _, defender in ipairs(defenders) do

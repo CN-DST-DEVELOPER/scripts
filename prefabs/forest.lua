@@ -435,6 +435,7 @@ local prefabs =
     "palmconetree_normal",
     "palmconetree_tall",
     "pirate_flag_pole",
+	"piratewarningsound",
     "bananabush",
     "monkeytail",
     "dock_tile_registrator",

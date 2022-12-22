@@ -5,11 +5,13 @@ end
 local function AddMemberListeners(self, member)
     self.inst:ListenForEvent("onremove", self._onmemberkilled, member)
     self.inst:ListenForEvent("death", self._onmemberkilled, member)
+	self.inst:ListenForEvent("teleported", self._onmemberkilled, member)
 end
 
 local function RemoveMemberListeners(self, member)
     self.inst:RemoveEventCallback("onremove", self._onmemberkilled, member)
     self.inst:RemoveEventCallback("death", self._onmemberkilled, member)
+	self.inst:RemoveEventCallback("teleported", self._onmemberkilled, member)
 end
 
 local Boatcrew = Class(function(self, inst)

@@ -1,5 +1,10 @@
 local events =
 {
+	EventHandler("worked", function(inst)
+		if not (inst.sg:HasStateTag("busy") or inst:HasTag("burnt")) then
+			inst.sg:GoToState("hit")
+		end
+	end),
 }
 
 local states =
