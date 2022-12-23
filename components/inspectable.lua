@@ -50,7 +50,7 @@ function Inspectable:GetDescription(viewer)
     if self.inst == viewer then
         return
     elseif not CanEntitySeeTarget(viewer, self.inst) then
-		local owner = self.inst.components.inventoryitem ~= nil and self.inst.components.inventoryitem.owner
+		local owner = self.inst.components.inventoryitem ~= nil and self.inst.components.inventoryitem.owner or nil
 		if not (owner ~= nil and
 				owner:HasTag("pocketdimension_container") and
 				owner.components.container ~= nil and

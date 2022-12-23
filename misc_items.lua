@@ -3555,8 +3555,8 @@ MISC_ITEMS =
 		display_atlas = "images/iap_images_starter_2023.xml",
 		display_tex = "starter_2023.tex",
 		box_build = "box_shop_plain",
-		display_items = {  "wortox_none", "wilson_magma", "wilson_beard_magma", "wendy_formalp", "abigail_formal", "wolfgang_pirate", "wx78_shadow", "researchlab_gothic", "lantern_gothic", "body_pj_blue_agean", "legs_pj_blue_agean", "bedroll_furry_quilt_blue_frost", },
-		output_items = {  "wortox_none", "wilson_magma", "wilson_beard_magma", "body_wilson_magma", "hand_wilson_magma", "legs_wilson_magma", "wendy_formalp", "body_wendy_formalp", "feet_maryjanesp_white_pure", "abigail_formal", "wolfgang_pirate", "body_wolfgang_pirate", "feet_wolfgang_pirate", "wx78_shadow", "body_wx78_shadow", "researchlab_gothic", "lantern_gothic", "body_pj_blue_agean", "legs_pj_blue_agean", "bedroll_furry_quilt_blue_frost", },
+		display_items = {  "wortox_none", "wilson_magma", "wilson_beard_magma", "wendy_formalp", "abigail_formal", "wolfgang_pirate", "wx78_shadowp", "researchlab_gothic", "lantern_gothic", "body_pj_blue_agean", "legs_pj_blue_agean", "bedroll_furry_quilt_blue_frost", },
+		output_items = {  "wortox_none", "wilson_magma", "wilson_beard_magma", "body_wilson_magma", "hand_wilson_magma", "legs_wilson_magma", "wendy_formalp", "body_wendy_formalp", "feet_maryjanesp_white_pure", "abigail_formal", "wolfgang_pirate", "body_wolfgang_pirate", "feet_wolfgang_pirate", "wx78_shadowp", "body_wx78_shadowp", "researchlab_gothic", "lantern_gothic", "body_pj_blue_agean", "legs_pj_blue_agean", "bedroll_furry_quilt_blue_frost", },
 		release_group = 139,
 	},
 	pack_sw_gift =
