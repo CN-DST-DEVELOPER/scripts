@@ -391,7 +391,7 @@ function MightyGym:CharacterExitGym(player)
                 else
                     player.sg.statemem.dontleavegym = true -- this is pretty confusing but basically, setting this true means that the gym wont auto try to run CharcterExitGym (THIS VERY FUNCTION) again.
                     player.sg:GoToState("jumpout")
-                    player.AnimState:SetTime(4*FRAMES)
+					player.AnimState:SetFrame(4)
                     player:DoTaskInTime(0.3,function() 
                         local state = string.upper(player.components.mightiness:GetState())
                         player.components.talker:Say(GetString(player, "ANNOUNCE_EXITGYM", state))

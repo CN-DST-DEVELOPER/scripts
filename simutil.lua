@@ -578,18 +578,29 @@ function RegisterInventoryItemAtlas(atlas, imagename)
 	end
 end
 
+function GetInventoryItemAtlas_Internal(imagename, no_fallback)
+    local images1 = "images/inventoryimages1.xml"
+    local images2 = "images/inventoryimages2.xml"
+    local images3 = "images/inventoryimages3.xml"
+    return TheSim:AtlasContains(images1, imagename) and images1
+            or TheSim:AtlasContains(images2, imagename) and images2
+            or (not no_fallback or TheSim:AtlasContains(images3, imagename)) and images3
+            or nil
+end
+
+-- Testing and viewing skins on a more close level.
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("inventoryimages")
+end
+
 function GetInventoryItemAtlas(imagename, no_fallback)
 	local atlas = inventoryItemAtlasLookup[imagename]
 	if atlas then
 		return atlas
 	end
-	local images1 = "images/inventoryimages1.xml"
-	local images2 = "images/inventoryimages2.xml"
-	local images3 = "images/inventoryimages3.xml"
-	atlas =    TheSim:AtlasContains(images1, imagename) and images1
-			or TheSim:AtlasContains(images2, imagename) and images2
-			or (not no_fallback or TheSim:AtlasContains(images3, imagename)) and images3
-			or nil
+
+    atlas = GetInventoryItemAtlas_Internal(imagename, no_fallback)
+
 	if atlas ~= nil then
 		inventoryItemAtlasLookup[imagename] = atlas
 	end

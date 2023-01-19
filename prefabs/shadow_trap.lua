@@ -267,7 +267,7 @@ local function OnLoad(inst)
 	inst.sg:GoToState("idle", true) --true to randomize
 	inst.base.Transform:SetRotation(math.random() * 360)
 	inst.base.AnimState:PlayAnimation("idle", true)
-	inst.base.AnimState:SetTime(inst.base.AnimState:GetCurrentAnimationLength() * math.random())
+	inst.base.AnimState:SetFrame(math.random(inst.base.AnimState:GetCurrentAnimationNumFrames()) - 1)
 end
 
 local function OnShockwave(inst)

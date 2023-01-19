@@ -65,6 +65,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Ah, perhaps I should find a place with more hiding spots.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I'm afraid that's enough playing for one day.",
             MANNEQUIN_EQUIPSWAPFAILED = "Non, that will not do.",
+            PILLOWFIGHT_NO_HANDPILLOW = "I think I am forgetting an important ingredient.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -387,12 +388,12 @@ return{
 
 		CAST_SPELLBOOK =
 		{
---fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
 		CASTAOE =
 		{
---fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
 		},
     },
 
@@ -417,11 +418,11 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
 	--waxwell specific
---fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -876,6 +877,8 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
     ANNOUNCE_OFF_SCRIPT = "Everyone wants to add their own flavor to a role.",
+
+    ANNOUNCE_COZY_SLEEP = "Ah, what lovely dreams I had!",
 
 	BATTLECRY =
 	{
@@ -1784,6 +1787,7 @@ return{
         CHESSPIECE_BEEFALO = "What a beautifully marbled steak.",
 		CHESSPIECE_KITCOON = "I think Mme. Wickerbottom is particularly fond of this one.",
 		CHESSPIECE_CATCOON = "At least this one won't try to sneak off with my lunch.",
+        CHESSPIECE_MANRABBIT = "As far as battles go, it was probably the most pleasant.",
         CHESSPIECE_GUARDIANPHASE3 = "A three course fight I won't soon forget.",
         CHESSPIECE_EYEOFTERROR = "Did it just blink?",
         CHESSPIECE_TWINSOFTERROR = "They weren't the most polite guests, non?",
@@ -2879,6 +2883,34 @@ return{
         },
         BEEFALO_GROOMER_ITEM = "I'd better build it, non?",
 
+        YOTR_RABBITSHRINE =
+        {
+            GENERIC = "I do enjoy a good rabbit stew. I should show them my appreciation.",
+            EMPTY = "Are you hungry, monsieur?",
+            BURNT = "A bit too well-done.",
+        },
+
+        NIGHTCAPHAT = "A short nap might be nice.",
+
+        YOTR_FOOD1 = "It's been so long since I've had such a scrumptious bite of carrot cake!",
+        YOTR_FOOD2 = "A part of me expected it to be cheesecake.",
+        YOTR_FOOD3 = "A feast for the eyes and my stomach.",
+        YOTR_FOOD4 = "Perfectly doughy.",
+
+        YOTR_TOKEN = "Surely we can settle this without violence?",
+
+        COZY_BUNNYMAN = "What a cozy-looking fellow.",
+
+        HANDPILLOW_BEEFALOWOOL = "Soft and dense, like a well-baked loaf of bread.",
+        HANDPILLOW_KELP = "Wet and unpleasant, like an old spinach salad.",
+        HANDPILLOW_PETALS = "Light and airy, like a soufflé.",
+        HANDPILLOW_STEELWOOL = "Stiff and scratchy, like a terrible biscotti.",
+
+        BODYPILLOW_BEEFALOWOOL = "Soft and dense, like a well-baked loaf of bread.",
+        BODYPILLOW_KELP = "Wet and unpleasant, like an old spinach salad.",
+        BODYPILLOW_PETALS = "Light and airy, like a soufflé.",
+        BODYPILLOW_STEELWOOL = "Stiff and scratchy, like a terrible biscotti.",
+
 		BISHOP_CHARGE_HIT = "Mon dieu!",
 		TRUNKVEST_SUMMER = "Fashionably refreshing.",
 		TRUNKVEST_WINTER = "Toasty and trendy.",
@@ -2939,7 +2971,7 @@ return{
 		WAXWELLJOURNAL =
 		{
 			GENERIC = "Maman used to keep a journal, before her memory went.",
---fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NEEDSFUEL = "only_used_by_waxwell",
 		},
 		WETGOOP = "Thankfully my sous chefs aren't here to witness this abomination...",
         WHIP = "I'd rather whip up a nice meringue.",
@@ -4688,6 +4720,27 @@ return{
 		-- Waxwell
 		MAGICIAN_CHEST = "Are you certain that whatever you put in there will come back?",
 		TOPHAT_MAGICIAN = "I can't think of any occasion I'd wear that to.",
+
+        -- Year of the Rabbit
+        YOTR_FIGHTRING_KIT = "I have all my ingredients right here.",
+        YOTR_FIGHTRING_BELL =
+        {
+            GENERIC = "No one seems to be using it right now.",
+            PLAYING = "It's all fun and games until someone gets a mouthful of pillow fluff.",
+        },
+
+        YOTR_DECOR_1 = {
+            GENERAL = "Ah, some lovely mood lighting!",
+            OUT = "C'est dommage, its little fire has burnt out.",
+        },
+        YOTR_DECOR_2 = {
+            GENERAL = "Ah, some lovely mood lighting!",
+            OUT = "C'est dommage, its little fire has burnt out.",
+        },
+
+        HAREBALL = "The thought of anyone eating this wounds me deeply.",
+        YOTR_DECOR_1_ITEM = "Now, to find the perfect placement for it.",
+        YOTR_DECOR_2_ITEM = "Now, to find the perfect placement for it.",             
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

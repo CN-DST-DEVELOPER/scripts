@@ -369,6 +369,9 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 		if tuck_torso == "untucked" or (tuck_torso == "untucked_wide" and wide) then
 			--print("torso over the skirt")
 			anim_state:SetSymbolExchange( "skirt", "torso" )
+		elseif tuck_torso == "pelvis_skirt" then
+			--print("torso_pelvis over the skirt")
+			anim_state:SetSymbolExchange( "skirt", "torso_pelvis" )
 		end
 		if legs_cuff_size > feet_cuff_size then
 			--if inst.user ~= "KU_MikeBell" then --mike always tucks his pants into all shoes, including high heels...

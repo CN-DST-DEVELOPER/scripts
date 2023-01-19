@@ -75,7 +75,7 @@ local states =
         {
 			EventHandler("worked", function(inst)
 				if inst.AnimState:IsCurrentAnimation("active_pre") then
-					if inst.AnimState:GetCurrentAnimationTime() < 7 * FRAMES then
+					if inst.AnimState:GetCurrentAnimationFrame() < 7 then
 						inst.AnimState:PlayAnimation("hit_inactive")
 						inst.AnimState:PushAnimation("active_pre", false)
 					else
@@ -120,7 +120,7 @@ local states =
         {
 			EventHandler("worked", function(inst)
 				if inst.AnimState:IsCurrentAnimation("active_pst") then
-					if inst.AnimState:GetCurrentAnimationTime() < 9 * FRAMES then
+					if inst.AnimState:GetCurrentAnimationFrame() < 9 then
 						inst.AnimState:PlayAnimation("hit_active")
 					else
 						inst.AnimState:PlayAnimation("hit_inactive")
@@ -133,7 +133,7 @@ local states =
 						inst.sg:GoToState("idle")
 					else
 						inst.AnimState:PlayAnimation("active_pst")
-						inst.AnimState:SetTime(9 * FRAMES)
+						inst.AnimState:SetFrame(9)
 					end
 				end
             end),

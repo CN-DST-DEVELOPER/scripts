@@ -845,7 +845,7 @@ CommonStates.AddSleepExStates(states,
             land_without_floater(inst)
             if not inst:IsOnPassablePoint() then
                 inst.AnimState:PlayAnimation("sleep_ocean_pre")
-                inst.AnimState:SetTime(36*FRAMES)
+				inst.AnimState:SetFrame(36)
             end
         end),
     },

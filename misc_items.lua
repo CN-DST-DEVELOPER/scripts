@@ -3055,6 +3055,20 @@ MISC_ITEMS =
 		output_items = {  "wx78_magma", "body_wx78_magma", "feet_wx78_magma", "hand_wx78_magma", },
 		release_group = 53,
 	},
+	pack_masquerade_1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_masquerade.xml",
+		display_tex = "masquerade.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "willow_masquerade", "warly_masquerade", "wortox_masquerade", "wes_masquerade", "woodie_masquerade", },
+		output_items = {  "willow_masquerade", "body_willow_masquerade", "feet_willow_masquerade", "warly_masquerade", "body_warly_masquerade", "hand_warly_masquerade", "legs_warly_masquerade", "feet_warly_masquerade", "wortox_masquerade", "body_wortox_masquerade", "legs_wortox_masquerade", "wes_masquerade", "body_wes_masquerade", "legs_wes_masquerade", "woodie_masquerade", "body_woodie_masquerade", "hand_woodie_masquerade", "legs_woodie_masquerade", },
+		release_group = 140,
+	},
 	pack_mighty_items =
 	{
 		type = "purchase",
@@ -6181,6 +6195,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 137,
 	},
+	playerportrait_bg_mushroomlightan =
+	{
+		type = "playerportrait",
+		skin_tags = { "ARTNOUVEAU", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 140,
+	},
 	playerportrait_bg_oven =
 	{
 		type = "playerportrait",
@@ -7234,6 +7255,13 @@ MISC_ITEMS =
 		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 137,
+	},
+	profileflair_mushroom_lightan =
+	{
+		type = "profileflair",
+		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 140,
 	},
 	profileflair_nightlight =
 	{

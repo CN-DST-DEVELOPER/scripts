@@ -25,9 +25,9 @@ end
 
 local function OnHit(inst)
 	local idleanim = "idle"..inst._post_id
-	if inst.AnimState:IsCurrentAnimation(idleanim) or inst.AnimState:GetCurrentAnimationTime() >= 15 * FRAMES then
+	if inst.AnimState:IsCurrentAnimation(idleanim) or inst.AnimState:GetCurrentAnimationFrame() >= 15 then
 		inst.AnimState:PlayAnimation("place"..inst._post_id)
-		inst.AnimState:SetTime(11 * FRAMES)
+		inst.AnimState:SetFrame(11)
 		inst.AnimState:PushAnimation(idleanim, false)
 	end
 end

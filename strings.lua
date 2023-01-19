@@ -583,6 +583,7 @@ STRINGS =
 			WHEELSPIN_STOP = "Press",
             PICK_FLOWER = "Pick Flower From",
             EQUIPMENTSWAP = "Swap Clothes",
+            SPIN = "Spin",
         },
 
 		OPEN_CRAFTING =
@@ -2190,6 +2191,7 @@ STRINGS =
         CHESSPIECE_BEEFALO = "Beefalo Figure",
         CHESSPIECE_KITCOON = "Kitcoon Figure",
         CHESSPIECE_CATCOON = "Catcoon Figure",
+        CHESSPIECE_MANRABBIT = "Bunnyman Figure",
         CHESSPIECE_MALBATROSS = "Malbatross Figure",
         CHESSPIECE_CRABKING = "Crab King Figure",
         CHESSPIECE_TOADSTOOL = "Toadstool Figure",
@@ -2223,6 +2225,7 @@ STRINGS =
         CHESSPIECE_BEEFALO_BUILDER = "Beefalo Figure",
         CHESSPIECE_KITCOON_BUILDER = "Kitcoon Figure",
         CHESSPIECE_CATCOON_BUILDER = "Catcoon Figure",
+        CHESSPIECE_MANRABBIT_BUILDER = "Bunnyman Figure",
         CHESSPIECE_MALBATROSS_BUILDER = "Malbatross Figure",
         CHESSPIECE_CRABKING_BUILDER = "Crab King Figure",
         CHESSPIECE_TOADSTOOL_BUILDER = "Toadstool Figure",
@@ -2245,6 +2248,7 @@ STRINGS =
         CHESSPIECE_MALBATROSS_SKETCH = "Malbatross Figure Sketch",
         CHESSPIECE_CRABKING_SKETCH = "Crab King Figure Sketch",
         CHESSPIECE_GUARDIANPHASE3_SKETCH = "Celestial Champion Figure Sketch",
+        CHESSPIECE_MANRABBIT_SKETCH = "Bunnyman Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -2478,6 +2482,25 @@ STRINGS =
 
         TICOON = "Ticoon",
         TICOON_BUILDER = "Ticoon",
+
+        YOTR_RABBITSHRINE = "Bunnyman Shrine",
+        COZY_BUNNYMAN = "Cozy Bunnyman",
+
+        HANDPILLOW_BEEFALOWOOL = "Beefalo Wool Pillow",
+        HANDPILLOW_KELP = "Kelp-Stuffed Pillow",
+        HANDPILLOW_PETALS = "Flowery Pillow",
+        HANDPILLOW_STEELWOOL = "Steel Wool Pillow",
+
+        BODYPILLOW_BEEFALOWOOL = "Beefalo Pillow Armor",
+        BODYPILLOW_KELP = "Kelpy Pillow Armor",
+        BODYPILLOW_PETALS = "Flowery Pillow Armor",
+        BODYPILLOW_STEELWOOL = "Steel Wool Pillow Armor",
+
+        YOTR_FOOD1 = "Bunny Roll",
+        YOTR_FOOD2 = "Moon Cake",
+        YOTR_FOOD3 = "Moon Jelly",
+        YOTR_FOOD4 = "Skewered Puffs",
+        YOTR_TOKEN = "Glove of Challenge",
 
         --Arena Event
         LAVAARENA_BOARLORD = "Battlemaster Pugna",
@@ -3573,6 +3596,19 @@ STRINGS =
 
         PLAYBILL_THE_DOLL = "The Enchanted Doll\nA Stage Play",
         STATUEHARP_HEDGESPAWNER = "Overgrown Statue",
+        -- Year of the Rabbit
+        YOTR_FIGHTRING = "Pillow Fight Pit",
+        YOTR_FIGHTRING_KIT = "Pillow Fight Pit Kit",
+        YOTR_FIGHTRING_TORCH = "Bunnyman Torch",
+        YOTR_FIGHTRING_BELL = "Pillow Fight Bell",
+        NIGHTCAPHAT = "Nightcap",
+        
+        YOTR_DECOR_1 = "Short Rabbit Lamp",
+        YOTR_DECOR_2 = "Tall Rabbit Lamp",
+
+        YOTR_DECOR_1_ITEM = "Short Rabbit Lamp",
+        YOTR_DECOR_2_ITEM = "Tall Rabbit Lamp",        
+        HAREBALL = "Hare Ball",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -3890,6 +3926,7 @@ STRINGS =
         DRAGONBODYHAT = "The middle bit of a beast costume.",
         DRAGONTAILHAT = "The caboose of a beast costume.",
         PERDSHRINE = "Make offerings to the majestic Gobbler.",
+        YOTR_RABBITSHRINE = "Make offerings to the cozy Bunnyman.",
         REDLANTERN = "A fortuitous lantern to light your way.",
         FIRECRACKERS = "Celebrate with a BANG!",
         PERDFAN = "Extra lucky, extra large.",
@@ -3985,6 +4022,7 @@ STRINGS =
         CHESSPIECE_BEEFALO_BUILDER = "A beauteous beefalo bust.",
 		CHESSPIECE_KITCOON_BUILDER = "One's true wealth is measured by their friends.",
         CHESSPIECE_CATCOON_BUILDER = "A curious statue for a curious creature.",
+        CHESSPIECE_MANRABBIT_BUILDER = "A fluffy friend, made of rock.",
         CHESSPIECE_MALBATROSS_BUILDER = "A sculpted scourge of the seas.",
         CHESSPIECE_CRABKING_BUILDER = "It looks even crabbier than you remember it.",
 		CHESSPIECE_TOADSTOOL_BUILDER = "A toad-ally authentic reproduction of the original.",
@@ -4005,6 +4043,7 @@ STRINGS =
         CHESSPIECE_CATCOON_SKETCH = "A sculpture sketch of a playful catcoon.",
         CHESSPIECE_MALBATROSS_SKETCH = "A sculpture sketch of the mighty Malbatross.",
         CHESSPIECE_CRABKING_SKETCH = "A sculpture sketch of the Crab King",
+        CHESSPIECE_MANRABBIT_SKETCH = "A sculpture sketch of a playful Bunnyman.",
 
         CRITTER_GLOMLING_BUILDER = "Befriend a bouncy Glomglom.",
         CRITTER_DRAGONLING_BUILDER = "Befriend a noble Broodling.",
@@ -4390,6 +4429,28 @@ STRINGS =
 
         --
         SEWING_MANNEQUIN = "A model for all the latest equippable looks.",
+
+        -- 
+        NIGHTCAPHAT = "A cap for your sleepy head.",
+
+        YOTR_FOOD1 = "No bunnies were harmed in the making of this cake.",
+        YOTR_FOOD2 = "It's \"blue\" flavored!",
+        YOTR_FOOD3 = "This dessert looks almost too good to eat.",
+        YOTR_FOOD4 = "Puffy balls of chewy goodness.",
+        YOTR_TOKEN = "Tell a Bunnyman you'd like to try your hand at a pillow battle.",
+
+        HANDPILLOW_BEEFALOWOOL = "It packs a woolly wallop!",
+        HANDPILLOW_KELP = "Nobody likes a wet blanket. Wet pillows aren't much better.",
+        HANDPILLOW_PETALS = "A pillow packed with flower power.",
+        HANDPILLOW_STEELWOOL = "For folks who take their pillow fighting seriously.",
+
+        BODYPILLOW_BEEFALOWOOL = "Beef up your pillow defenses.",
+        BODYPILLOW_KELP = "A soggy suit of pillow armor.",
+        BODYPILLOW_PETALS = "It offers minimal protection, but hopefully you'll still come out smelling like a rose.",
+        BODYPILLOW_STEELWOOL = "A wearable pillow that is as effective as it is unpleasant.",
+
+        YOTR_DECOR_1_ITEM = "This lovable light makes any cave cozier.",
+        YOTR_DECOR_2_ITEM = "A rabbit statue with a real fire in its belly!",           
 
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
@@ -4952,6 +5013,23 @@ STRINGS =
     RABBIT_PANICHOUSEFIRE = { "HOME!", "FIRE!", "BURNING!" },
     RABBIT_PANICHAUNT = { "SCARED!", "AAAH!!", "OHH!", "GHOST!" },
     RABBIT_PANICBOSS = { "RUN!", "AHHH!", "IT MAD", "EHHH!" },
+
+    COZY_RABBIT_PANICHIT = { "HIDE!", "FLEE!", "CRIME!", "SCATTER!"},
+    COZY_RABBIT_PLANTPILLOW = {"COZY","NEST","FRIENDS"},
+    COZY_RABBIT_CHEER = {"MOON!","SKY!","LIGHT!","CELEBRATE!","PARTY!","SLEEPOVER!"},
+    COZY_RABBIT_QUESTION_DANGER = {"SAFE?","DANGER?","GONE?"},
+    COZY_RABBIT_GREET = {"PLAY?","SNACK?","HUG?"},
+    COZY_RABBIT_SPIN = {"SPIN!"},
+    COZY_RABBIT_GETTOKEN = {"GAME!","SERVED!","MATCH!"},
+    COZY_RABBIT_REJECTTOKEN = {"BOOKED","HAVE","BUSY"},
+    COZY_RABBIT_NOARENA = {"ARENA?"},
+    COZY_RABBIT_SPINGAMESTART = {"PLAY!","SPIN!","CARROT!"},
+    COZY_RABBIT_YAY = {"YAY!","WOOP!"},
+    COZY_RABBIT_SPOILSPORT = {"SPOILSPORT"},
+    COZY_RABBIT_YUM = {"YUM!","YUMMY!"},
+    COZY_RABBIT_WINNER = {"EAT!","{winner}","{winner}"},
+    COZY_RABBIT_MOON = {"MOON!","SUBLIME!","GLOW!","EYE!"},
+    COZY_RABBIT_ARENANOTEMPTY = {"CRAMPED!","PACKED!"},
 
     --NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
     STALKER_BATTLECRY = { "Huurgh...", "...(growl)...", "...gruuuugh...", "Hrrgh...", "...grraaugh...", "...(rumble)...", "...gruh..." },
@@ -6482,6 +6560,7 @@ STRINGS.UI =
 		NEEDSYOTC = "Available during Year of the Carrat!",
 		NEEDSYOTB = "Available during Year of the Beefalo!",
 		NEEDSYOTCATCOON = "Available during Year of the Catcoon!",
+        NEEDSYOTR = "Available during Year of the Bunnyman!",
 		NEEDSHALLOWED_NIGHTS = "Available during Hallowed Nights!",
 		NEEDSWINTERS_FEAST = "Available during Winter's Feast!",
 
@@ -7073,6 +7152,7 @@ STRINGS.UI =
 		TOOLTIP_LOGOUT = "Log out so you can log back in again",
 
         ITEMCOLLECTION_DISABLE = "You must be logged in to view your Profile or Item Collection.",
+		STORE_DISABLE = "You must be logged in to use the Klei Store.",
 
         LOGIN = "Login",
 
@@ -8742,6 +8822,7 @@ STRINGS.UI =
         YEAR_OF_THE_CARRAT = "Year of the Carrat",
         YEAR_OF_THE_BEEFALO = "Year of the Beefalo",
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
+        YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
 
         PREFABSWAPS = "Changing Resources",
         PREFABSWAPS_START = "Starting Resource Variety",
@@ -11962,6 +12043,8 @@ STRINGS.UI =
         NO = "Not Yet",
     },
 
+    OBJECTOWNERSHIP = "{owner}'s {object}",
+
     GENDERSTRINGS =
     {
         MALE =
@@ -12182,6 +12265,7 @@ STRINGS.UI =
             YOTC = "Year of the Carrat",
             YOTB = "Year of the Beefalo",
 			YOT_CATCOON = "Year of the Catcoon",
+            YOTR = "Year of the Bunnyman",            
         },
     },
 
@@ -12197,6 +12281,7 @@ STRINGS.UI =
         YEAR_OF_THE_CARRAT = "Year of the Carrat",
         YEAR_OF_THE_BEEFALO = "Year of the Beefalo",
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
+        YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
     },
 
     SAVELOAD =

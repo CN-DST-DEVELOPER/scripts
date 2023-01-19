@@ -1309,6 +1309,7 @@ local function fn()
     inst.isghostmode = net_bool(inst.GUID, "sg.isghostmode", "isghostmodedirty")
     inst.actionmeter = net_byte(inst.GUID, "sg.actionmeter", "actionmeterdirty")
     inst.actionmetertime = net_byte(inst.GUID, "sg.actionmetertime", "actionmeterdirty")
+	inst.currentstate = net_hash(inst.GUID, "sg.currentstate")
 
     --Locomotor variables
     inst.runspeed = net_float(inst.GUID, "locomotor.runspeed")

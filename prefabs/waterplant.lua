@@ -407,13 +407,11 @@ local function fn()
     inst.base.Transform:SetPosition(0,0,0)
 
     -- Stop the plants from idling in unison.
-    local random_anim_time = math.random() * inst.AnimState:GetCurrentAnimationLength()
-    inst.AnimState:SetTime(random_anim_time)
-    inst.base.AnimState:SetTime(random_anim_time)
+	local random_anim_frame = math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1
+	inst.AnimState:SetFrame(random_anim_frame)
+	inst.base.AnimState:SetFrame(random_anim_frame)
 
     inst.highlightchildren = { inst.base }
-
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
 
     local land_time = (POPULATING and math.random()*5*FRAMES) or 0
     inst:DoTaskInTime(land_time, function(inst)

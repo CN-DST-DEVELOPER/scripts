@@ -23,7 +23,7 @@ local prefabs =
 local IDLE_CHARGE_SOUND_FRAMES = { 0, 3, 17, 20 }
 
 local function DoIdleChargeSound(inst)
-    local t = math.floor(inst.AnimState:GetCurrentAnimationTime() / FRAMES + .5) % inst._idlechargeperiod
+	local t = inst.AnimState:GetCurrentAnimationFrame()
     if (t == 0 or t == 3 or t == 17 or t == 20) and inst._lastchargeframe ~= t then
         inst._lastchargeframe = t
         inst.SoundEmitter:PlaySound("dontstarve/common/together/spot_light/electricity", nil, GetRandomMinMax(.2, .5))
@@ -31,17 +31,15 @@ local function DoIdleChargeSound(inst)
 end
 
 local function StartIdleChargeSounds(inst)
-    if inst._idlechargeperiod == nil then
-        inst._idlechargeperiod = math.floor(inst.AnimState:GetCurrentAnimationLength() / FRAMES + .5)
-        inst._lastchargeframe = nil
+	if inst._lastchargeframe == nil then
+		inst._lastchargeframe = -1
         inst.components.updatelooper:AddOnUpdateFn(DoIdleChargeSound)
     end
 end
 
 local function StopIdleChargeSounds(inst)
-    if inst._idlechargeperiod ~= nil then
-        inst._idlechargeperiod = nil
-        inst._lastchargeframe = nil
+	if inst._lastchargeframe ~= nil then
+		inst._lastchargeframe = nil
         inst.components.updatelooper:RemoveOnUpdateFn(DoIdleChargeSound)
     end
 end
@@ -385,7 +383,7 @@ local function OnLoad(inst, data, ents)
             if not inst:IsAsleep() then
                 StartIdleChargeSounds(inst)
             end
-            inst.AnimState:SetTime(inst.AnimState:GetCurrentAnimationLength() * math.random())
+			inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
         end
     end
 end

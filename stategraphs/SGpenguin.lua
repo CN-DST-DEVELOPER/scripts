@@ -86,22 +86,11 @@ local states=
                 inst.SoundEmitter:PlaySound(inst._soundpath.."idle")
                 if playanim then
                     inst.AnimState:PlayAnimation(playanim)
-                    inst.AnimState:SetTime(math.random()*2)
                     inst.AnimState:PushAnimation("idle_loop", true)
                 else
                     inst.AnimState:PlayAnimation("idle_loop", true)
                 end
             end,
-
-            timeline =
-            {
-                --TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/bishop/idle") end ),
-            },
-
-            events=
-            {
-                EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
-            },
         },
 
     State{  name = "run_start",
@@ -109,7 +98,6 @@ local states=
 
             onenter = function(inst)
                 inst.components.locomotor:RunForward()
-                inst.AnimState:SetTime(math.random()*2)
                 inst.SoundEmitter:KillSound("slide")
                 if TheWorld.state.snowlevel < 0.1 then
                     inst.SoundEmitter:PlaySound(inst._soundpath.."land")
@@ -131,10 +119,6 @@ local states=
                     inst.SoundEmitter:PlaySound(inst._soundpath.."slide_dirt","slide")
                 end
             end,
-
-            timeline=
-            {
-            },
         },
 
     State{  name = "run",
@@ -147,10 +131,6 @@ local states=
                 end
                 inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
             end,
-
-            timeline=
-            {
-            },
 
             ontimeout = function(inst)
                 inst.sg:GoToState("run")
@@ -179,7 +159,6 @@ local states=
             onenter = function(inst)
                 inst.SoundEmitter:KillSound("slide")
                 inst.components.locomotor:WalkForward()
-                -- inst.AnimState:SetTime(math.random()*2)
                 inst.AnimState:PlayAnimation("walk")
             end,
 

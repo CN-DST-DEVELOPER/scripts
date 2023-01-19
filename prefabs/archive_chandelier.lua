@@ -223,8 +223,6 @@ local function fn()
     inst.AnimState:SetBuild("chandelier_archives")
     inst.AnimState:PlayAnimation("idle", true)
 
-    inst.AnimState:SetTime(math.random() * 2)
-
     inst.Light:EnableClientModulation(true)
 
     inst:AddTag("NOCLICK")
@@ -250,6 +248,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("playerprox")
     inst.components.playerprox:SetDist(20, 23) --15,17

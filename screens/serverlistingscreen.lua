@@ -2317,12 +2317,4 @@ function ServerListingScreen:GetHelpText()
     return table.concat(t, "  ")
 end
 
-function OnServerListingUpdated(row_id)
-    local active_screen = TheFrontEnd:GetActiveScreen()
-    if active_screen and tostring(active_screen) == "ServerListingScreen" and active_screen.selected_server
-    and active_screen.selected_server.row and active_screen.selected_server.row == row_id and active_screen.selected_server.actualindex then
-        active_screen.selected_server = TheNet:GetServerListingFromActualIndex( active_screen.selected_server.actualindex )
-    end
-end
-
 return ServerListingScreen

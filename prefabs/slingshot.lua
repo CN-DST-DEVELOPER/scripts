@@ -64,6 +64,7 @@ local function OnAmmoLoaded(inst, data)
 	if inst.components.weapon ~= nil then
 		if data ~= nil and data.item ~= nil then
 			inst.components.weapon:SetProjectile(data.item.prefab.."_proj")
+			inst:AddTag("ammoloaded")
 			data.item:PushEvent("ammoloaded", {slingshot = inst})
 		end
 	end
@@ -72,6 +73,7 @@ end
 local function OnAmmoUnloaded(inst, data)
 	if inst.components.weapon ~= nil then
 		inst.components.weapon:SetProjectile(nil)
+		inst:RemoveTag("ammoloaded")
 		if data ~= nil and data.prev_item ~= nil then
 			data.prev_item:PushEvent("ammounloaded", {slingshot = inst})
 		end

@@ -89,7 +89,7 @@ local states =
                     inst.sg.mem.recentlyplaced = nil
                     if not inst.AnimState:IsCurrentAnimation("idle") then
                         inst.AnimState:PlayAnimation("idle", true)
-                        inst.AnimState:SetTime(inst.AnimState:GetCurrentAnimationLength() * math.random())
+						inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
                     end
                 else
                     inst.sg:GoToState("powerup")

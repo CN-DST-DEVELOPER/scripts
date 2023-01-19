@@ -159,6 +159,7 @@ local prefabs_seeds =
 {
     "plant_normal_ground",
     "seeds_placer",
+	"carrot_spinner",
 }
 
 local function can_plant_seed(inst, pt, mouseover, deployer)
@@ -360,6 +361,38 @@ local function MakeVeggie(name, has_seeds)
         table.insert(assets_oversized, Asset("ANIM", "anim/"..PLANT_DEFS[name].build..".zip"))
     end
 
+    local function spin(inst, time)
+        inst.entity:AddSoundEmitter()
+        inst.AnimState:PlayAnimation("spin_pre")
+        inst.AnimState:PushAnimation("spin_loop",true)
+        inst.components.timer:StartTimer("spin",time or 2)
+        inst.SoundEmitter:PlaySound("yotr_2023/common/carrot_spin", "spin_lp")
+    end
+
+    local function timerdone(inst,data)
+        if data and data.name then
+            if data.name == "spin" then
+                inst.Transform:SetEightFaced()
+                inst.Transform:SetRotation(math.random()*360)
+                inst.AnimState:PlayAnimation("spin_pst")
+                inst.components.activatable.inactive = true
+                inst.SoundEmitter:PlaySound("yotr_2023/common/carrot_spin_pst")
+                inst.SoundEmitter:KillSound("spin_lp")
+
+                local fx = SpawnPrefab("carrot_spinner")
+                inst:AddChild(fx)
+            end
+        end
+    end
+
+    local function GetActivateVerb()
+        return "SPIN"
+    end    
+
+    local function OnActivateSpin(inst)
+        inst:Spin()
+    end
+
     local function fn_seeds()
         local inst = CreateEntity()
 
@@ -449,6 +482,10 @@ local function MakeVeggie(name, has_seeds)
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
         inst.entity:AddNetwork()
+
+        if name == "carrot" then
+            inst.entity:AddSoundEmitter()
+        end
 
         MakeInventoryPhysics(inst)
 
@@ -575,6 +612,19 @@ local function MakeVeggie(name, has_seeds)
         end
 
         MakeHauntableLaunchAndPerish(inst)
+
+        if name == "carrot" then
+            inst.Spin = spin
+            inst:AddComponent("timer")
+            inst:ListenForEvent("timerdone", timerdone)
+            inst:AddComponent("activatable")
+            inst.components.activatable.OnActivate = OnActivateSpin
+            inst.components.activatable.quickaction = true
+            inst.components.inventoryitem:SetOnPickupFn(function()
+                inst.Transform:SetNoFaced()
+            end)
+            inst.GetActivateVerb = GetActivateVerb
+        end
 
         return inst
     end

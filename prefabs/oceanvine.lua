@@ -237,7 +237,7 @@ local function makefull(inst)
 end
 
 local function onloadpostpass(inst, newents, savedata)
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 end
 
 local function fall(inst)

@@ -33,7 +33,7 @@ local function ondeath(inst)
     local mandrake = SpawnPrefab("mandrake")
     mandrake.Transform:SetPosition(inst.Transform:GetWorldPosition())
     mandrake.AnimState:PlayAnimation("death")
-    mandrake.AnimState:SetTime(2)
+	mandrake.AnimState:SetTime(mandrake.AnimState:GetCurrentAnimationLength())
 
     inst:Remove()
 end

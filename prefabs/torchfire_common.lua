@@ -2,9 +2,10 @@ local function CreateLight()
     local inst = CreateEntity()
 
     inst:AddTag("FX")
-    inst:AddTag("playerlight")
+	--inst:AddTag("playerlight") --see AttachLightTo instead!
     --[[Non-networked entity]]
-    inst.entity:SetCanSleep(false)
+	--V2C: should be sleepable on host, and should follow parent's sleep anyway
+	--inst.entity:SetCanSleep(false)
     inst.persists = false
 
     inst.entity:AddTransform()
@@ -20,6 +21,11 @@ end
 
 local function AttachLightTo(inst, target)
     inst._light.entity:SetParent(target.entity)
+	if target:HasTag("player") then
+		inst._light:AddTag("playerlight")
+	else
+		inst._light:RemoveTag("playerlight")
+	end
 end
 
 local function OnEntityReplicated(inst)

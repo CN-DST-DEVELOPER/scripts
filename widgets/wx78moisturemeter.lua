@@ -186,7 +186,7 @@ end
 function WX78MoistureMeter:OnUpdate(dt)
     if TheNet:IsServerPaused() then return end
 
-    local curframe = self.circleframe:GetAnimState():GetCurrentAnimationTime() / FRAMES
+	local curframe = self.circleframe:GetAnimState():GetCurrentAnimationFrame()
     if curframe < 1 then
         self.anim:SetScale(.955, .096, 1)
         self.marker:SetScale(.955, .096, 1)

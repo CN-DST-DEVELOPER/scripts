@@ -41,6 +41,7 @@ PROTOTYPER_DEFS.pigshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.yotc_carratshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.yotb_beefaloshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.yot_catcoonshrine = PROTOTYPER_DEFS.perdshrine
+PROTOTYPER_DEFS.yotr_rabbitshrine = PROTOTYPER_DEFS.perdshrine
 
 
 
@@ -478,7 +479,6 @@ Recipe2("oceanfishinglure_hermit_snow",		{Ingredient("cookiecuttershell", 1), In
 Recipe2("oceanfishinglure_hermit_drowsy",	{Ingredient("cookiecuttershell", 1), Ingredient("stinger", 1)},											TECH.LOST)
 Recipe2("oceanfishinglure_hermit_heavy",	{Ingredient("cookiecuttershell", 1), Ingredient("beefalowool", 1)},										TECH.LOST)
 
-
 Recipe2("homesign",							{Ingredient("boards", 1)},																				TECH.SCIENCE_ONE,			{placer="homesign_placer"})
 Recipe2("arrowsign_post",					{Ingredient("boards", 1)},																				TECH.SCIENCE_ONE,			{placer="arrowsign_post_placer"})
 Recipe2("minisign_item",					{Ingredient("boards", 1)},																				TECH.SCIENCE_ONE,			{numtogive = 4})
@@ -650,6 +650,7 @@ Recipe2("chesspiece_carrat_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2),
 Recipe2("chesspiece_beefalo_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},										TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_beefalo.tex"})
 Recipe2("chesspiece_kitcoon_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},										TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_kitcoon.tex"})
 Recipe2("chesspiece_catcoon_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},										TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_catcoon.tex"})
+Recipe2("chesspiece_manrabbit_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},										TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_manrabbit.tex"})
 
 -- Hermitcrab
 Recipe2("hermitshop_hermit_bundle_shells",				{Ingredient("messagebottleempty", 1)},														TECH.HERMITCRABSHOP_ONE,	{nounlock = true, sg_state="give", product="hermit_bundle_shells",		image="hermit_bundle.tex"})
@@ -677,6 +678,31 @@ Recipe2("hermitshop_winter_ornament_boss_pearl",		{Ingredient("messagebottleempt
 
 
 ----YEAR OF THE X-----
+Recipe2("yotr_fightring_kit",				{Ingredient("boards", 2)},																				TECH.RABBITOFFERING_THREE,	{nounlick=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_token",						{Ingredient("goldnugget", 1)},																			TECH.RABBITOFFERING_THREE,	{nounlick=true, actionstr="PERDOFFERING"})
+
+Recipe2("yotr_food1", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food2", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food3", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food4", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+
+Recipe2("yotr_decor_1_item", 	            {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_decor_2_item", 	            {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+
+Recipe2("chesspiece_manrabbit_sketch",		{Ingredient("lucky_goldnugget", 8)},		                                              				TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+
+Recipe2("nightcaphat",						{Ingredient("lucky_goldnugget", 4)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+
+Recipe2("handpillow_petals",				{Ingredient("silk", 2),Ingredient("petals", 3)},				                            			TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("handpillow_kelp",					{Ingredient("lucky_goldnugget", 2),Ingredient("silk", 2), Ingredient("kelp", 3)},				        TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("handpillow_beefalowool",			{Ingredient("lucky_goldnugget", 3),Ingredient("silk", 2), Ingredient("beefalowool", 3)},				TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("handpillow_steelwool",				{Ingredient("lucky_goldnugget", 5),Ingredient("silk", 2), Ingredient("steelwool", 2)},				    TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+
+Recipe2("bodypillow_petals",				{Ingredient("silk", 2),Ingredient("petals", 5)},				                            			TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("bodypillow_kelp",					{Ingredient("lucky_goldnugget", 3),Ingredient("silk", 2), Ingredient("kelp", 3)},				        TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("bodypillow_beefalowool",			{Ingredient("lucky_goldnugget", 4),Ingredient("silk", 2), Ingredient("beefalowool", 3)},				TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("bodypillow_steelwool",				{Ingredient("lucky_goldnugget", 6),Ingredient("silk", 2), Ingredient("steelwool", 2)},				    TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+
 Recipe2("ticoon_builder",					{Ingredient("lucky_goldnugget", 1)},																	TECH.CATCOONOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING", canbuild = function(inst, builder) return (builder.components.leader == nil or builder.components.leader:CountFollowers("ticoon") == 0), "TICOON" end})
 Recipe2("kitcoonden_kit",					{Ingredient("lucky_goldnugget", 1)},																	TECH.CATCOONOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
 Recipe2("kitcoon_nametag",					{Ingredient("lucky_goldnugget", 6)},																	TECH.CATCOONOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
@@ -799,6 +825,7 @@ Recipe2("pigshrine",					{Ingredient("goldnugget", 4), Ingredient("boards", 2)},
 Recipe2("yotc_carratshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTC,						{placer="yotc_carratshrine_placer", hint_msg = "NEEDSYOTC"})
 Recipe2("yotb_beefaloshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTB,						{placer="yotb_beefaloshrine_placer", hint_msg = "NEEDSYOTB"})
 Recipe2("yot_catcoonshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOT_CATCOON,				{placer="yot_catcoonshrine_placer", hint_msg = "NEEDSYOTCATCOON"})
+Recipe2("yotr_rabbitshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTR,						{placer="yotr_rabbitshrine_placer", hint_msg = "NEEDSYOTR"})
 --this is so you can use deconstruction staff on the deployed item
 Recipe("yotb_post",  {Ingredient("boards", 2), Ingredient("goldnugget", 1)}, nil, TECH.LOST, nil, nil, true)
 Recipe("portablecookpot", {Ingredient("goldnugget", 2), Ingredient("charcoal",   6), Ingredient("twigs", 6)}, nil, TECH.LOST, nil, nil, true)

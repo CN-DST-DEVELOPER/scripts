@@ -104,7 +104,7 @@ local function MakeCactus(name)
             return inst
         end
 
-        inst.AnimState:SetTime(math.random() * 2)
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
         inst:AddComponent("pickable")
         inst.components.pickable.picksound = "dontstarve/wilson/harvest_sticks"

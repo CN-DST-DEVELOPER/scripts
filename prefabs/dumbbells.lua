@@ -30,6 +30,10 @@ local function ReticuleTargetFn()
     return pos
 end
 
+local function ReticuleShouldHideFn(inst)
+	return not inst:HasTag("projectile")
+end
+
 local function HasFriendlyLeader(inst, target)
     local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
     
@@ -249,9 +253,11 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
         MakeInventoryFloatable(inst, "small", 0.15, 0.9)
 
         inst:AddTag("dumbbell")
+		inst:AddTag("keep_equip_toss")
 
         inst:AddComponent("reticule")
         inst.components.reticule.targetfn = ReticuleTargetFn
+		inst.components.reticule.shouldhidefn = ReticuleShouldHideFn
         inst.components.reticule.ease = true
 
         inst.entity:SetPristine()

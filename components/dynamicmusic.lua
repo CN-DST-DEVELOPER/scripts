@@ -146,6 +146,7 @@ local BUSYTHEMES = {
     STAGEPLAY_HAPPY = 13,
     STAGEPLAY_MYSTERIOUS = 14,
     STAGEPLAY_DRAMATIC = 15,
+    PILLOWFIGHT = 16,
 }
 
 --------------------------------------------------------------------------
@@ -391,6 +392,14 @@ local function StartStageplayMusic(player, mood_index)
     StartBusyTheme(player, theme, sound, 2)
 end
 
+local function StartPillowFightMusic(player)
+    if _dangertask or _pirates_near then
+        return
+    end
+
+    StartBusyTheme(player, BUSYTHEMES.PILLOWFIGHT, "yotr_2023/common/music_pillowfight", 2)
+end
+
 local function ExtendBusy()
     if _busytask ~= nil then
         _extendtime = math.max(_extendtime, GetTime() + 10)
@@ -631,6 +640,7 @@ local function StartPlayerListeners(player)
     inst:ListenForEvent("hasinspirationbuff", OnHasInspirationBuff, player)
     inst:ListenForEvent("playcarnivalmusic", StartCarnivalMusic, player)
     inst:ListenForEvent("stageplaymusic", StartStageplayMusic, player)
+    inst:ListenForEvent("playpillowfightmusic", StartPillowFightMusic, player)
 end
 
 local function StopPlayerListeners(player)
@@ -651,6 +661,7 @@ local function StopPlayerListeners(player)
     inst:RemoveEventCallback("hasinspirationbuff", OnHasInspirationBuff, player)
     inst:RemoveEventCallback("playcarnivalmusic", StartCarnivalMusic, player)
     inst:RemoveEventCallback("stageplaymusic", StartStageplayMusic, player)
+    inst:RemoveEventCallback("playpillowfightmusic", StartPillowFightMusic, player)
 end
 
 local function OnPhase(inst, phase)

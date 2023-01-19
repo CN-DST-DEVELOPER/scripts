@@ -4319,6 +4319,16 @@ table.insert(prefs, CreatePrefabSkin("mushroom_light2_victorian",
 	release_group = 113,
 }))
 
+table.insert(prefs, CreatePrefabSkin("mushroom_light_an",
+{
+	base_prefab = "mushroom_light",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) mushroom_light_init_fn(inst, "mushroom_light_an") end,
+	skin_tags = { "MUSHROOM_LIGHT", "ARTNOUVEAU", "CRAFTABLE", },
+	release_group = 140,
+}))
+
 table.insert(prefs, CreatePrefabSkin("mushroom_light_festive",
 {
 	base_prefab = "mushroom_light",
@@ -7272,6 +7282,18 @@ table.insert(prefs, CreatePrefabSkin("warly_ice",
 	release_group = 109,
 }))
 
+table.insert(prefs, CreatePrefabSkin("warly_masquerade",
+{
+	base_prefab = "warly",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WARLY", },
+	bigportrait_anim = { build = "bigportraits/warly_masquerade.xml", symbol = "warly_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_warly_build", normal_skin = "warly_masquerade", },
+	release_group = 140,
+}))
+
 table.insert(prefs, CreatePrefabSkin("warly_nature",
 {
 	base_prefab = "warly",
@@ -8720,6 +8742,19 @@ table.insert(prefs, CreatePrefabSkin("wes_mandrake_p",
 	release_group = 105,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wes_masquerade",
+{
+	base_prefab = "wes",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WES", },
+	skins = { ghost_skin = "ghost_wes_build", normal_skin = "wes_masquerade", },
+	torso_tuck_builds = { "wes_masquerade", },
+	has_alternate_for_body = { "wes_masquerade", },
+	release_group = 140,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wes_nature",
 {
 	base_prefab = "wes",
@@ -9390,6 +9425,19 @@ table.insert(prefs, CreatePrefabSkin("willow_magma",
 	skins = { ghost_skin = "ghost_willow_build", normal_skin = "willow_magma", },
 	one_piece_skirt_builds = { "willow_magma", },
 	release_group = 51,
+}))
+
+table.insert(prefs, CreatePrefabSkin("willow_masquerade",
+{
+	base_prefab = "willow",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WILLOW", },
+	bigportrait_anim = { build = "bigportraits/willow_masquerade.xml", symbol = "willow_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_willow_build", normal_skin = "willow_masquerade", },
+	one_piece_skirt_builds = { "willow_masquerade", },
+	release_group = 140,
 }))
 
 table.insert(prefs, CreatePrefabSkin("willow_none",
@@ -10520,6 +10568,18 @@ table.insert(prefs, CreatePrefabSkin("woodie_magma",
 	release_group = 51,
 }))
 
+table.insert(prefs, CreatePrefabSkin("woodie_masquerade",
+{
+	base_prefab = "woodie",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WOODIE", },
+	bigportrait_anim = { build = "bigportraits/woodie_masquerade.xml", symbol = "woodie_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_woodie_build", ghost_werebeaver_skin = "ghost_werebeaver_build", ghost_weregoose_skin = "ghost_weregoose_build", ghost_weremoose_skin = "ghost_weremoose_build", normal_skin = "woodie_masquerade", werebeaver_skin = "werebeaver_build", weregoose_skin = "weregoose_build", weremoose_skin = "weremoose_build", },
+	release_group = 140,
+}))
+
 table.insert(prefs, CreatePrefabSkin("woodie_nature",
 {
 	base_prefab = "woodie",
@@ -10953,6 +11013,21 @@ table.insert(prefs, CreatePrefabSkin("wortox_ice",
 	torso_untuck_wide_builds = { "wortox_ice", },
 	has_alternate_for_body = { "wortox_ice", },
 	release_group = 109,
+}))
+
+table.insert(prefs, CreatePrefabSkin("wortox_masquerade",
+{
+	base_prefab = "wortox",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "BASE", "WORTOX", "MASQUERADE", },
+	bigportrait_anim = { build = "bigportraits/wortox_masquerade.xml", symbol = "wortox_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_wortox_masquerade", normal_skin = "wortox_masquerade", },
+	torso_tuck_builds = { "wortox_masquerade", },
+	torso_untuck_wide_builds = { "wortox_masquerade", },
+	has_alternate_for_body = { "wortox_masquerade", },
+	release_group = 140,
 }))
 
 table.insert(prefs, CreatePrefabSkin("wortox_minotaur",

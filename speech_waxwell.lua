@@ -65,6 +65,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "This environment is not suitable for a fair game.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Playtime is over for now.",
             MANNEQUIN_EQUIPSWAPFAILED = "No, that would be ridiculous.",
+            PILLOWFIGHT_NO_HANDPILLOW = "If I'm going to humiliate myself, I can at least do it properly.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -876,6 +877,8 @@ return{
     ANNOUNCE_BOOK_MOON_DAYTIME = "We'll know if it worked once night falls.",
 
     ANNOUNCE_OFF_SCRIPT = "She won't like that.",
+
+    ANNOUNCE_COZY_SLEEP = "That was a marginally more restful sleep than usual.",
 
 	BATTLECRY =
 	{
@@ -1784,6 +1787,7 @@ return{
         CHESSPIECE_BEEFALO = "At least this version doesn't shed all over my poor suit.",
 		CHESSPIECE_KITCOON = "This is a rather precarious design.",
 		CHESSPIECE_CATCOON = "This animal commands respect through violence.",
+        CHESSPIECE_MANRABBIT = "Who put this ridiculous thing here?",
         CHESSPIECE_GUARDIANPHASE3 = "How could I not have seen...",
         CHESSPIECE_EYEOFTERROR = "An eye could never best a master of illusion such as I.",
         CHESSPIECE_TWINSOFTERROR = "The most troublesome pair I've ever seen.",
@@ -2878,6 +2882,34 @@ return{
             BURNT = "What a shame.",
         },
         BEEFALO_GROOMER_ITEM = "Do I look like a common construction worker? Oh very well...",
+
+        YOTR_RABBITSHRINE =
+        {
+            GENERIC = "What do you have in store for me?",
+            EMPTY = "It requires an offering.",
+            BURNT = "A pity.",
+        },
+
+        NIGHTCAPHAT = "I can't remember the last time I slept well.",
+
+        YOTR_FOOD1 = "Cake shaped like a rabbit, how novel.",
+        YOTR_FOOD2 = "What a mysterious flavor.",
+        YOTR_FOOD3 = "A small piece of fruit, imprisoned in gelatin.",
+        YOTR_FOOD4 = "Far too sticky for my liking.",
+
+        YOTR_TOKEN = "Care for a gentleman's duel?",
+
+        COZY_BUNNYMAN = "I could have sworn I left you all underground.",
+
+        HANDPILLOW_BEEFALOWOOL = "What is the thread count on this?",
+        HANDPILLOW_KELP = "Looking at it is making me seasick.",
+        HANDPILLOW_PETALS = "Can you rightfully call a sack of potpourri a pillow?",
+        HANDPILLOW_STEELWOOL = "At least it will make a satisfying thwack.",
+
+        BODYPILLOW_BEEFALOWOOL = "What is the thread count on this?",
+        BODYPILLOW_KELP = "Looking at it is making me seasick.",
+        BODYPILLOW_PETALS = "Can you rightfully call a sack of potpourri a pillow?",
+        BODYPILLOW_STEELWOOL = "It will either protect me or cut me to ribbons.",
 
 		BISHOP_CHARGE_HIT = "How DARE you!",
 		TRUNKVEST_SUMMER = "It's more of a fall vest.",
@@ -4688,6 +4720,27 @@ return{
 		-- Waxwell
 		MAGICIAN_CHEST = "If you're worried about getting stuck inside, don't rummage through my things.",
 		TOPHAT_MAGICIAN = "Tall, dark and dapper.",
+
+        -- Year of the Rabbit
+        YOTR_FIGHTRING_KIT = "Surely that's a job for someone else?",
+        YOTR_FIGHTRING_BELL =
+        {
+            GENERIC = "Absolutely not.",
+            PLAYING = "I do enjoy watching people make fools of themselves.",
+        },
+
+        YOTR_DECOR_1 = {
+            GENERAL = "Such unrefined decor.",
+            OUT = "Now it's not even useful.",
+        },
+        YOTR_DECOR_2 = {
+            GENERAL = "Such unrefined decor.",
+            OUT = "Now it's not even useful.",
+        },
+
+        HAREBALL = "You must be joking.",
+        YOTR_DECOR_1_ITEM = "Someone should set that up.",
+        YOTR_DECOR_2_ITEM = "Someone should set that up.",             
     },
 
     DESCRIBE_GENERIC = "You tell me.",

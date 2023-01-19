@@ -32,6 +32,79 @@ local BEEFALO_SHAPE_TRIS = {
 	{{x=0.23,y=-0.26},{x=0.29,y=-0.36},{x=0.06,y=-0.20}}
 }
 
+local RABBIT_SHAPE_TRIS = {
+	{{x=0.27,y=1.59},{x=0.05,y=1.92},{x=0.52,y=2.14},},
+	{{x=-0.43,y=1.62},{x=-0.74,y=1.42},{x=-0.61,y=1.73},},
+	{{x=0.27,y=1.59},{x=0.13,y=1.63},{x=0.05,y=1.92},},
+	{{x=-0.63,y=0.24},{x=-0.72,y=0.12},{x=-0.70,y=0.62},},
+	{{x=-0.72,y=0.12},{x=-0.63,y=0.24},{x=-0.70,y=-0.00},},
+	{{x=0.01,y=-0.69},{x=0.24,y=-0.03},{x=-0.02,y=-0.95},},
+	{{x=-0.63,y=0.24},{x=-0.54,y=-0.10},{x=-0.70,y=-0.00},},
+	{{x=-0.70,y=-0.00},{x=-0.54,y=-0.10},{x=-0.44,y=-0.95},},
+	{{x=-0.20,y=2.43},{x=-0.71,y=2.68},{x=-0.17,y=2.88},},
+	{{x=-0.20,y=2.43},{x=-0.27,y=2.26},{x=-0.71,y=2.68},},
+	{{x=-0.01,y=1.54},{x=-0.04,y=1.09},{x=-0.41,y=1.17},},
+	{{x=-0.43,y=1.62},{x=-0.01,y=1.54},{x=-0.41,y=1.17},},
+	{{x=0.24,y=0.62},{x=0.05,y=0.92},{x=0.16,y=0.95},},
+	{{x=0.17,y=0.24},{x=0.05,y=0.92},{x=0.24,y=0.62},},
+	{{x=-0.16,y=2.12},{x=0.05,y=1.92},{x=-0.08,y=1.71},},
+	{{x=-0.16,y=2.12},{x=-0.43,y=2.00},{x=-0.27,y=2.26},},
+	{{x=-0.43,y=2.00},{x=-0.89,y=2.39},{x=-0.71,y=2.68},},
+	{{x=-0.27,y=2.26},{x=-0.43,y=2.00},{x=-0.71,y=2.68},},
+	{{x=-0.74,y=1.42},{x=-0.91,y=1.89},{x=-0.61,y=1.73},},
+	{{x=-0.91,y=1.89},{x=-0.93,y=1.92},{x=-0.94,y=2.23},},
+	{{x=0.05,y=1.92},{x=0.04,y=1.80},{x=-0.08,y=1.71},},
+	{{x=0.26,y=0.12},{x=0.17,y=0.24},{x=0.24,y=0.62},},
+	{{x=0.01,y=-0.69},{x=0.08,y=-0.10},{x=0.24,y=-0.03},},
+	{{x=0.35,y=2.54},{x=-0.02,y=2.39},{x=-0.17,y=2.88},},
+	{{x=-0.02,y=2.39},{x=-0.20,y=2.43},{x=-0.17,y=2.88},},
+	{{x=-0.08,y=1.69},{x=-0.01,y=1.54},{x=-0.43,y=1.62},},
+	{{x=0.07,y=1.18},{x=0.13,y=1.63},{x=0.27,y=1.59},},
+	{{x=0.07,y=1.18},{x=-0.01,y=1.54},{x=0.13,y=1.63},},
+	{{x=-0.01,y=1.54},{x=0.07,y=1.18},{x=-0.04,y=1.09},},
+	{{x=0.05,y=0.92},{x=0.07,y=1.18},{x=0.16,y=0.95},},
+	{{x=0.07,y=1.18},{x=0.05,y=0.92},{x=-0.04,y=1.09},},
+	{{x=-0.53,y=1.21},{x=-0.43,y=1.62},{x=-0.41,y=1.17},},
+	{{x=-0.53,y=1.21},{x=-0.74,y=1.42},{x=-0.43,y=1.62},},
+	{{x=-0.52,y=0.92},{x=-0.53,y=1.21},{x=-0.41,y=1.17},},
+	{{x=-0.53,y=1.21},{x=-0.52,y=0.92},{x=-0.62,y=0.95},},
+	{{x=-0.62,y=0.95},{x=-0.52,y=0.92},{x=-0.70,y=0.62},},
+	{{x=-0.52,y=0.92},{x=-0.63,y=0.24},{x=-0.70,y=0.62},},
+	{{x=0.26,y=0.12},{x=0.24,y=-0.01},{x=0.17,y=0.24},},
+	{{x=0.24,y=-0.01},{x=0.08,y=-0.10},{x=0.17,y=0.24},},
+	{{x=-0.16,y=2.12},{x=-0.02,y=2.17},{x=0.05,y=1.92},},
+	{{x=-0.02,y=2.17},{x=-0.02,y=2.39},{x=0.35,y=2.54},},
+	{{x=0.05,y=1.92},{x=-0.02,y=2.17},{x=0.52,y=2.14},},
+	{{x=-0.02,y=2.17},{x=0.35,y=2.54},{x=0.52,y=2.14},},
+	{{x=-0.38,y=1.76},{x=-0.49,y=1.89},{x=-0.43,y=2.00},},
+	{{x=-0.08,y=1.69},{x=-0.38,y=1.76},{x=-0.08,y=1.71},},
+	{{x=-0.38,y=1.76},{x=-0.08,y=1.69},{x=-0.43,y=1.62},},
+	{{x=-0.38,y=1.76},{x=-0.16,y=2.12},{x=-0.08,y=1.71},},
+	{{x=-0.38,y=1.76},{x=-0.43,y=2.00},{x=-0.16,y=2.12},},
+	{{x=-0.91,y=1.89},{x=-0.57,y=1.87},{x=-0.61,y=1.73},},
+	{{x=0.24,y=-0.01},{x=0.24,y=-0.02},{x=0.08,y=-0.10},},
+	{{x=-0.15,y=2.16},{x=-0.02,y=2.17},{x=-0.16,y=2.12},},
+	{{x=-0.02,y=2.17},{x=-0.05,y=2.38},{x=-0.02,y=2.39},},
+	{{x=-0.02,y=2.39},{x=-0.05,y=2.38},{x=-0.20,y=2.43},},
+	{{x=-0.05,y=2.38},{x=-0.13,y=2.36},{x=-0.20,y=2.43},},
+	{{x=0.08,y=-0.10},{x=0.24,y=-0.02},{x=0.24,y=-0.03},},
+	{{x=0.24,y=-0.02},{x=0.24,y=-0.01},{x=0.24,y=-0.03},},
+	{{x=-0.16,y=2.15},{x=-0.16,y=2.12},{x=-0.27,y=2.26},},
+	{{x=-0.16,y=2.15},{x=-0.15,y=2.16},{x=-0.16,y=2.12},},
+	{{x=-0.49,y=1.89},{x=-0.56,y=1.88},{x=-0.43,y=2.00},},
+	{{x=-0.89,y=2.39},{x=-0.56,y=1.88},{x=-0.94,y=2.23},},
+	{{x=-0.43,y=2.00},{x=-0.56,y=1.88},{x=-0.89,y=2.39},},
+	{{x=0.24,y=-0.02},{x=0.24,y=-0.02},{x=0.08,y=-0.10},},
+	{{x=0.24,y=-0.02},{x=0.24,y=-0.02},{x=0.08,y=-0.10},},
+	{{x=0.24,y=-0.02},{x=0.24,y=-0.02},{x=0.24,y=-0.01},},
+	{{x=0.24,y=-0.02},{x=0.24,y=-0.02},{x=0.24,y=-0.01},},
+	{{x=-0.56,y=1.88},{x=-0.56,y=1.88},{x=-0.94,y=2.23},},
+	{{x=-0.57,y=1.87},{x=-0.56,y=1.88},{x=-0.56,y=1.87},},
+	{{x=-0.56,y=1.88},{x=-0.57,y=1.87},{x=-0.94,y=2.23},},
+	{{x=-0.57,y=1.87},{x=-0.91,y=1.89},{x=-0.94,y=2.23},},
+	{{x=-0.57,y=1.87},{x=-0.57,y=1.87},{x=-0.91,y=1.89},},
+}
+
 local TEXTURE = "fx/confetti.tex"
 local SPARK_TEXTURE = "fx/sparkle.tex"
 
@@ -187,95 +260,99 @@ local function emit_spark_fn(effect, spark_sphere_emitter)
     )
 end
 
-local function fn()
-    local inst = CreateEntity()
+local NUM_EMITTERS = 4
+local function do_emits(inst, effect, ep, spark_sphere_emitter)
+    local c_down = TheCamera:GetPitchDownVec():Normalize()
+    local c_right = TheCamera:GetRightVec():Normalize()
 
-    inst.entity:AddTransform()
-    inst.entity:AddNetwork()
-    inst.entity:AddSoundEmitter()
+    local c_up = c_down:Cross(c_right):Normalize()
 
-    inst:AddTag("FX")
-
-    inst.entity:SetPristine()
-
-    inst.persists = false
-
-    --Dedicated server does not need to spawn local particle fx
-    if TheNet:IsDedicated() then
-        return inst
-    elseif InitEnvelope ~= nil then
-        InitEnvelope()
+    for i = 0,NUM_EMITTERS do
+        local num_to_emit = math.random(150, 200)
+        while num_to_emit > 0 do
+            emit_confetti_fn(effect, i, ep, c_right, c_up)
+            num_to_emit = num_to_emit - 1
+        end
     end
 
-    local effect = inst.entity:AddVFXEffect()
-    effect:InitEmitters(6)
-
-    local num_emitters = 4
-    for i=0,num_emitters do
-        effect:SetRenderResources(i, TEXTURE, SHADER)
-        effect:SetRotationStatus(i, true)
-        effect:SetUVFrameSize(i, .25, 1)
-        effect:SetMaxNumParticles(i, 200)
-        effect:SetMaxLifetime(i, MAX_LIFETIME)
-        effect:SetColourEnvelope(i, COLOUR_ENVELOPE_NAME..i)
-        effect:SetScaleEnvelope(i, SCALE_ENVELOPE_NAME)
-        effect:SetBlendMode(i, BLENDMODE.Premultiplied)
-        effect:EnableBloomPass(i, true)
-        effect:SetSortOrder(i, 0)
-        effect:SetSortOffset(i, 0)
-        effect:SetGroundPhysics(i, true)
-
-        effect:SetAcceleration(i, 0, -0.8, 0)
-        effect:SetDragCoefficient(i, .1)
+    local num_to_emit_spark = 3
+    while num_to_emit_spark > 0 do
+        emit_spark_fn(effect, spark_sphere_emitter)
+        num_to_emit_spark = num_to_emit_spark - 1
     end
 
-    --Sparkle
-    effect:SetRenderResources(5, SPARK_TEXTURE, ADD_SHADER)
-    effect:SetMaxNumParticles(5, 20)
-    effect:SetMaxLifetime(5, SPARK_MAX_LIFETIME)
-    effect:SetColourEnvelope(5, COLOUR_ENVELOPE_NAME_SPARK)
-    effect:SetScaleEnvelope(5, SCALE_ENVELOPE_NAME_SPARK)
-    effect:SetBlendMode(5, BLENDMODE.Additive)
-    effect:EnableBloomPass(5, true)
-    effect:SetUVFrameSize(5, 0.25, 1)
-    effect:SetSortOrder(5, 0)
-    effect:SetSortOffset(5, 1)
-    effect:SetDragCoefficient(5, .11)
-
-
-    local ep = Create2DTriEmitter(BEEFALO_SHAPE_TRIS, 0.5)
-
-    local spark_sphere_emitter = CreateSphereEmitter(.03)
-
-    inst:DoTaskInTime(0, function()
-        local c_down = TheCamera:GetPitchDownVec():Normalize()
-        local c_right = TheCamera:GetRightVec():Normalize()
-
-        local c_up = c_down:Cross(c_right):Normalize()
-
-        for i = 0,num_emitters do
-            local num_to_emit = math.random(150, 200)
-            while num_to_emit > 0 do
-                emit_confetti_fn(effect, i, ep, c_right, c_up)
-                num_to_emit = num_to_emit - 1
-            end
-        end
-
-        local num_to_emit_spark = 3
-        while num_to_emit_spark > 0 do
-            emit_spark_fn(effect, spark_sphere_emitter)
-            num_to_emit_spark = num_to_emit_spark - 1
-        end
-
-        inst:Remove()
-    end)
-
-    inst.SoundEmitter:PlaySound("yotb_2021/common/fireworks")
-
-    return inst
+    inst:Remove()
 end
 
-return Prefab("confetti_fx", fn, assets)
+local function MakeConfetti(name, data)
+    local function fn()
+        local inst = CreateEntity()
+
+        inst.entity:AddTransform()
+        inst.entity:AddNetwork()
+        inst.entity:AddSoundEmitter()
+
+        inst:AddTag("FX")
+
+        inst.entity:SetPristine()
+
+        inst.persists = false
+
+        --Dedicated server does not need to spawn local particle fx
+        if TheNet:IsDedicated() then
+            return inst
+        elseif InitEnvelope ~= nil then
+            InitEnvelope()
+        end
+
+        local effect = inst.entity:AddVFXEffect()
+        effect:InitEmitters(6)
+
+        for i=0,NUM_EMITTERS do
+            effect:SetRenderResources(i, TEXTURE, SHADER)
+            effect:SetRotationStatus(i, true)
+            effect:SetUVFrameSize(i, .25, 1)
+            effect:SetMaxNumParticles(i, 200)
+            effect:SetMaxLifetime(i, MAX_LIFETIME)
+            effect:SetColourEnvelope(i, COLOUR_ENVELOPE_NAME..i)
+            effect:SetScaleEnvelope(i, SCALE_ENVELOPE_NAME)
+            effect:SetBlendMode(i, BLENDMODE.Premultiplied)
+            effect:EnableBloomPass(i, true)
+            effect:SetSortOrder(i, 0)
+            effect:SetSortOffset(i, 0)
+            effect:SetGroundPhysics(i, true)
+
+            effect:SetAcceleration(i, 0, -0.8, 0)
+            effect:SetDragCoefficient(i, .1)
+        end
+
+        --Sparkle
+        effect:SetRenderResources(5, SPARK_TEXTURE, ADD_SHADER)
+        effect:SetMaxNumParticles(5, 20)
+        effect:SetMaxLifetime(5, SPARK_MAX_LIFETIME)
+        effect:SetColourEnvelope(5, COLOUR_ENVELOPE_NAME_SPARK)
+        effect:SetScaleEnvelope(5, SCALE_ENVELOPE_NAME_SPARK)
+        effect:SetBlendMode(5, BLENDMODE.Additive)
+        effect:EnableBloomPass(5, true)
+        effect:SetUVFrameSize(5, 0.25, 1)
+        effect:SetSortOrder(5, 0)
+        effect:SetSortOffset(5, 1)
+        effect:SetDragCoefficient(5, .11)
+
+        local ep = Create2DTriEmitter(data.tri_list, 0.5)
+        local spark_sphere_emitter = CreateSphereEmitter(.03)
+        inst:DoTaskInTime(0, do_emits, effect, ep, spark_sphere_emitter)
+
+        inst.SoundEmitter:PlaySound("yotb_2021/common/fireworks")
+
+        return inst
+    end
+
+    return Prefab(name, fn, assets)
+end
+
+return MakeConfetti("confetti_fx", {tri_list = BEEFALO_SHAPE_TRIS}),
+    MakeConfetti("rabbit_confetti_fx", {tri_list = RABBIT_SHAPE_TRIS})
 
 --[[
     c_spawn("confetti_fx")

@@ -159,6 +159,12 @@ local function OnRespawnedFromGhost(inst)
     end
 end
 
+local function TryToOnRespawnedFromGhost(inst)
+    if not inst.components.health:IsDead() and not inst:HasTag("playerghost") then
+        OnRespawnedFromGhost(inst)
+    end
+end
+
 local function OnBecameGhost(inst)
     if inst._onentitydroplootfn ~= nil then
         inst:RemoveEventCallback("entity_droploot", inst._onentitydroplootfn, TheWorld)
@@ -531,7 +537,7 @@ local function master_postinit(inst)
     inst:ListenForEvent("ms_becameghost", OnBecameGhost)
     inst:ListenForEvent("ms_playerreroll", OnReroll)
 
-    OnRespawnedFromGhost(inst)
+    inst:DoTaskInTime(0, TryToOnRespawnedFromGhost) -- NOTES(JBK): Player loading in with zero health will still be alive here delay a frame to get loaded values.
 end
 
 return MakePlayerCharacter("wortox", prefabs, assets, common_postinit, master_postinit)

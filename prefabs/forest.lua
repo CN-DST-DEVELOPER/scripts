@@ -444,8 +444,6 @@ local prefabs =
     "fx_dock_crackle",
     "fx_dock_pop",
 
-    "fence_rotator",
-
     "charlie_stage_post",
     "stageusher",
     "statueharp_hedgespawner",

@@ -134,7 +134,7 @@ local function fn()
     inst.AnimState:SetBank("fish_chum")
     inst.AnimState:SetBuild("fish_chum")
     inst.AnimState:PlayAnimation("fish_chum_base_pre")
-    -- inst.AnimState:SetTime(19 * FRAMES)
+	-- inst.AnimState:SetFrame(19)
     inst.AnimState:PushAnimation("fish_chum_base_idle", true)
 
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)

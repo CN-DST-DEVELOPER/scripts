@@ -209,13 +209,13 @@ ACTIONS =
     READ = Action({ mount_valid=true }),
     DROP = Action({ priority=-1, mount_valid=true, encumbered_valid=true, is_relative_to_platform=true, extra_arrive_dist=ExtraDropDist }),
     TRAVEL = Action(),
-    CHOP = Action({ distance=1.75 }),
-    ATTACK = Action({priority=2, canforce=true, mount_valid=true }), -- No custom range check, attack already handles that
+	CHOP = Action({ distance=1.75, invalid_hold_action=true }),
+	ATTACK = Action({priority=2, canforce=true, mount_valid=true, invalid_hold_action=true }), -- No custom range check, attack already handles that
     EAT = Action({ mount_valid=true }),
     PICK = Action({ canforce=true, rangecheckfn=DefaultRangeCheck, extra_arrive_dist=ExtraPickupRange, mount_valid = true }),
     PICKUP = Action({ priority=1, extra_arrive_dist=ExtraPickupRange, mount_valid=true }),
-    MINE = Action(),
-    DIG = Action({ rmb=true }),
+	MINE = Action({ invalid_hold_action=true }),
+	DIG = Action({ rmb=true, invalid_hold_action=true }),
     GIVE = Action({ mount_valid=true, canforce=true, rangecheckfn=DefaultRangeCheck }),
     GIVETOPLAYER = Action({ priority=3, canforce=true, rangecheckfn=DefaultRangeCheck }),
     GIVEALLTOPLAYER = Action({ priority=3, canforce=true, rangecheckfn=DefaultRangeCheck }),
@@ -272,7 +272,7 @@ ACTIONS =
     SMOTHER = Action({ priority=1, mount_valid=true }),
     MANUALEXTINGUISH = Action({ priority=1 }),
     LAYEGG = Action(),
-    HAMMER = Action({ priority=3 }),
+	HAMMER = Action({ priority=3, invalid_hold_action=true }),
     TERRAFORM = Action({ tile_placer="gridplacer" }),
     JUMPIN = Action({ ghost_valid=true, encumbered_valid=true }),
     TELEPORT = Action({ rmb=true, distance=2 }),
@@ -795,6 +795,10 @@ ACTIONS.RUMMAGE.strfn = function(act)
 end
 
 ACTIONS.DROP.fn = function(act)
+    if act.invobject.components.equippable and act.invobject.components.equippable:IsEquipped() and act.invobject.components.inventoryitem.owner then
+        act.invobject.components.equippable:Unequip(act.invobject.components.inventoryitem.owner)
+    end
+
     return act.doer.components.inventory ~= nil
         and act.doer.components.inventory:DropItem(
                 act.invobject,

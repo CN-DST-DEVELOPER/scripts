@@ -73,7 +73,7 @@ end
 local function shadow_fxfrontloop(inst, frame)
 	frame = frame or 0
 	inst.AnimState:PlayAnimation("hatfx")
-	inst.AnimState:SetTime(frame * FRAMES)
+	inst.AnimState:SetFrame(frame)
 	shadow_spawnpartciels_atframe(inst, 13 - frame, "top", true, 1.34, 1)
 	shadow_spawnpartciels_atframe(inst, 15 - frame, "mid", true, 1.34, 1)
 	shadow_spawnpartciels_atframe(inst, 17 - frame, "btm", true, 1.34, 1)
@@ -85,7 +85,7 @@ end
 local function shadow_fxbackloop(inst, frame)
 	frame = frame or 0
 	inst.AnimState:PlayAnimation("hatfx")
-	inst.AnimState:SetTime(frame * FRAMES)
+	inst.AnimState:SetFrame(frame)
 	shadow_spawnpartciels_atframe(inst, 9 - frame, "top", false, -1.09, 1.16)
 	shadow_spawnpartciels_atframe(inst, 11 - frame, "mid", false, -1.09, 1.16)
 	shadow_spawnpartciels_atframe(inst, 13 - frame, "btm", false, -1.09, 1.16)

@@ -682,7 +682,7 @@ local function tree(name, stage, data)
                 RemovePhysicsColliders(inst)
             end)
         else
-            inst.AnimState:SetTime(math.random() * 2)
+			inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
             if data == "burnt" then
                 OnBurnt(inst)
             else

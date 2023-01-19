@@ -75,6 +75,10 @@ if DEBUGGER_ENABLED then
 	Debuggee = require 'debuggee'
 end
 
+-- Testing and viewing skins on a more close level.
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("init")
+end
 
 local servers =
 {

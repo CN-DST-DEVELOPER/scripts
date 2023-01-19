@@ -517,6 +517,7 @@ local function orange()
     inst:AddComponent("repairable")
     inst.components.repairable.repairmaterial = MATERIALS.NIGHTMARE
     inst.components.repairable.noannounce = true
+	inst.components.repairable.onrepaired = SERVER_PlayFuelSound
 
     MakeHauntableLaunch(inst)
 

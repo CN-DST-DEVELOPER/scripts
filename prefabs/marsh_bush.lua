@@ -92,7 +92,7 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:SetTime(math.random()*2)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     local color = 0.5 + math.random() * 0.5
     inst.AnimState:SetMultColour(color, color, color, 1)
@@ -180,7 +180,7 @@ local function PlayErodeAnim(proxy)
     inst.AnimState:SetBuild("ash")
     inst.AnimState:PlayAnimation("disappear")
     inst.AnimState:SetMultColour(.4, .4, .4, 1)
-    inst.AnimState:SetTime(13 * FRAMES)
+	inst.AnimState:SetFrame(13)
 
     inst.SoundEmitter:PlaySound("dontstarve/forest/treeCrumble", nil, .2)
 

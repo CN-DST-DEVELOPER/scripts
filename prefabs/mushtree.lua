@@ -469,7 +469,7 @@ local function maketree(name, data, state)
 
         local color = .5 + math.random() * .5
         inst.AnimState:SetMultColour(color, color, color, 1)
-        inst.AnimState:SetTime(math.random() * 2)
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
         MakeMediumPropagator(inst)
         MakeLargeBurnable(inst)

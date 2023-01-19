@@ -191,8 +191,7 @@ local function spawnfeather(inst,time)
     feather.Transform:SetPosition(pos.x,pos.y,pos.z)
 
     if time then
-        local set = time * 79/30
-        feather.AnimState:SetTime( set )
+		feather.AnimState:SetTime(time * 79 * FRAMES)
     end
 
     feather.Transform:SetRotation(math.random()*360)

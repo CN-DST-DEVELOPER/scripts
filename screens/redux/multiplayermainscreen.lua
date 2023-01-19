@@ -187,6 +187,13 @@ local function MakeYOTCatcoonBanner(self, banner_root, anim)
     anim:GetAnimState():PlayAnimation("loop", true)
 end
 
+local function MakeYOTRBanner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_yotr")
+    anim:GetAnimState():SetBank ("dst_menu_yotr")
+    anim:SetScale(.667)
+    anim:GetAnimState():PlayAnimation("loop", true)
+end
+
 local function MakeHallowedNightsBanner(self, banner_root, anim)
     anim:GetAnimState():SetBuild("dst_menu_halloween2")
     anim:GetAnimState():SetBank ("dst_menu_halloween2")
@@ -365,7 +372,11 @@ function MakeBanner(self)
 
 	if IS_BETA then
 		title_str = STRINGS.UI.MAINSCREEN.MAINBANNER_BETA_TITLE
+        
         MakeWaxwellBanner(self, banner_root, anim)
+
+    elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
+        MakeYOTRBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTC) then
         MakeYOTCBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
@@ -495,8 +506,14 @@ local MultiplayerMainScreen = Class(Screen, function(self, prev_screen, profile,
 end)
 
 function MultiplayerMainScreen:GotoShop( filter_info )
-	if not TheInventory:HasSupportForOfflineSkins() and (TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) then
-		TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.MAINSCREEN.OFFLINE, STRINGS.UI.MAINSCREEN.ITEMCOLLECTION_DISABLE,
+	if (TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) then
+		local error_message
+		if TheInventory:HasSupportForOfflineSkins() then
+			error_message = STRINGS.UI.MAINSCREEN.STORE_DISABLE
+		else
+			error_message = STRINGS.UI.MAINSCREEN.ITEMCOLLECTION_DISABLE
+		end
+		TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.MAINSCREEN.OFFLINE, error_message, 
 			{
 				{text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_LOGIN, cb = function()
 						SimReset()

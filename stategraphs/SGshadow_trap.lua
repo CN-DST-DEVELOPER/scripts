@@ -41,7 +41,7 @@ local states =
 		onenter = function(inst, randomize)
 			inst.AnimState:PlayAnimation("idle", true)
 			if randomize then
-				inst.AnimState:SetTime(inst.AnimState:GetCurrentAnimationLength() * math.random())
+				inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 			end
 		end,
 	},

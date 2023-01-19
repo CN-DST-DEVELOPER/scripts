@@ -157,8 +157,7 @@ end
 function Mast:GetCurrentFurlUnits()
     local total_strength = 0
     for furler,strength in pairs(self.furlers) do
-        local active_time = TUNING.BOAT.MAST.HEAVABLE_ACTIVE_FRAME/30
-        if furler.AnimState:IsCurrentAnimation("pull_small_loop") or (furler.AnimState:IsCurrentAnimation("pull_big_loop") and furler.AnimState:GetCurrentAnimationTime() < active_time) then
+		if furler.AnimState:IsCurrentAnimation("pull_small_loop") or (furler.AnimState:IsCurrentAnimation("pull_big_loop") and furler.AnimState:GetCurrentAnimationFrame() < TUNING.BOAT.MAST.HEAVABLE_ACTIVE_FRAME) then
             total_strength = total_strength + strength
         end
     end

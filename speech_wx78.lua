@@ -65,6 +65,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "NOT ENOUGH LOCATIONS TO HIDE FROM MY POWER",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "THEY NEED TO RECHARGE",
             MANNEQUIN_EQUIPSWAPFAILED = "THE CLOTHSACK CANNOT BE TRUSTED WITH SOMETHING LIKE THIS",
+            PILLOWFIGHT_NO_HANDPILLOW = "ERROR: PILLOW REQUIRED FOR COMBAT",
 		},
 		OPEN_CRAFTING =
 		{
@@ -387,12 +388,12 @@ return{
 
 		CAST_SPELLBOOK =
 		{
---fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
 		CASTAOE =
 		{
---fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
 		},
     },
 
@@ -417,11 +418,11 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
 	--waxwell specific
---fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -876,6 +877,8 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
     ANNOUNCE_OFF_SCRIPT = "INCORRECT!",
+
+    ANNOUNCE_COZY_SLEEP = "ENERGY RESTORED, PROCESSOR SPEED: OPTIMAL",
 
 	BATTLECRY =
 	{
@@ -1784,8 +1787,9 @@ return{
         CHESSPIECE_BEEFALO = "AN IMPROVEMENT ON THE FLESHY ORIGINAL",
 		CHESSPIECE_KITCOON = "THE URGE TO TOPPLE IT OVERWHELMS MY SYSTEMS",
 		CHESSPIECE_CATCOON = "A CLEAR IMPROVEMENT OVER ITS FLESHY COUNTERPART",
+        CHESSPIECE_MANRABBIT = "THEY'RE SO MUCH BETTER WHEN THEY'RE NOT MOVING",
         CHESSPIECE_GUARDIANPHASE3 = "WE WOULD HAVE BEEN UNSTOPPABLE. OH WELL",
-        CHESSPIECE_EYEOFTERROR = "ORGANIC REDUCED TO MINERAL - TYPICAL.",
+        CHESSPIECE_EYEOFTERROR = "ORGANIC REDUCED TO MINERAL - TYPICAL",
         CHESSPIECE_TWINSOFTERROR = "SIGH. I MISS THEM",
 
         CHESSJUNK1 = "EX-AUTOMATON",
@@ -2879,6 +2883,34 @@ return{
         },
         BEEFALO_GROOMER_ITEM = "BEGIN CONSTRUCTION",
 
+        YOTR_RABBITSHRINE =
+        {
+            GENERIC = "IT IS OPERATIONAL",
+            EMPTY = "REQUIRES VEGETABLE OFFERING",
+            BURNT = "DELETED",
+        },
+
+        NIGHTCAPHAT = "IT KEEPS THE PROCESSOR WARM",
+
+        YOTR_FOOD1 = "NO TRACE OF RABBIT DETECTED. DISAPPOINTING",
+        YOTR_FOOD2 = "THE MOON IS DELICIOUS",
+        YOTR_FOOD3 = "THE MOON JELLY IS MINE",
+        YOTR_FOOD4 = "SWEET EMPTY CALORIES",
+
+        YOTR_TOKEN = "VIOLENCE INITIATOR",
+
+        COZY_BUNNYMAN = "WHO LET YOU OUT",
+
+        HANDPILLOW_BEEFALOWOOL = "EXTRUDED BEEFALO DISGUSTINGNESS... IN A BAG",
+        HANDPILLOW_KELP = "WHO IS RESPONSIBLE FOR THIS. IT WAS THE GREEN ONE, WASN'T IT",
+        HANDPILLOW_PETALS = "FLOWERS ARE AN INEFFECTIVE CHOICE FOR A WEAPON",
+        HANDPILLOW_STEELWOOL = "THE ADDITION OF METAL HAS IMPROVED IT SUBSTANTIALLY",
+
+        BODYPILLOW_BEEFALOWOOL = "EXTRUDED BEEFALO DISGUSTINGNESS... IN A BAG",
+        BODYPILLOW_KELP = "WHO IS RESPONSIBLE FOR THIS. IT WAS THE GREEN ONE, WASN'T IT",
+        BODYPILLOW_PETALS = "FLOWERS ARE AN INEFFECTIVE CHOICE FOR ARMOR",
+        BODYPILLOW_STEELWOOL = "THE ADDITION OF METAL HAS IMPROVED IT SUBSTANTIALLY",
+
 		BISHOP_CHARGE_HIT = "DAMAGE!",
 		TRUNKVEST_SUMMER = "TEMPERATURE CONTROL HOUSING",
 		TRUNKVEST_WINTER = "IMPROVED TEMPERATURE CONTROL HOUSING",
@@ -2939,7 +2971,7 @@ return{
 		WAXWELLJOURNAL =
 		{
 			GENERIC = "GOOSEBUMPS ACTIVATED",
---fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NEEDSFUEL = "only_used_by_waxwell",
 		},
 		WETGOOP = "EDIBLE FILTH",
         WHIP = "I WILL COMMAND THE MEATLINGS",
@@ -4688,6 +4720,27 @@ return{
 		-- Waxwell
 		MAGICIAN_CHEST = "IF ONLY DATA COULD TRAVEL SO EASILY. THE CHAOS THAT COULD BE WROUGHT",
 		TOPHAT_MAGICIAN = "EXCELLENT. IT LOOKS MUCH MORE EVIL NOW",
+
+        -- Year of the Rabbit
+        YOTR_FIGHTRING_KIT = "ASSEMBLY REQUIRED",
+        YOTR_FIGHTRING_BELL =
+        {
+            GENERIC = "FIGHT FOR MY ENTERTAINMENT",
+            PLAYING = "LET THEM FIGHT",
+        },
+
+        YOTR_DECOR_1 = {
+            GENERAL = "RABBIT-SHAPED LIGHT SOURCE",
+            OUT = "LIGHT DEACTIVATED",
+        },
+        YOTR_DECOR_2 = {
+            GENERAL = "RABBIT-SHAPED LIGHT SOURCE",
+            OUT = "LIGHT DEACTIVATED",
+        },
+
+        HAREBALL = "IT IS TECHNICALLY EDIBLE",
+        YOTR_DECOR_1_ITEM = "I WILL FIND A SUITABLE LOCATION FOR IT",
+        YOTR_DECOR_2_ITEM = "I WILL FIND A SUITABLE LOCATION FOR IT",             
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

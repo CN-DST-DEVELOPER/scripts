@@ -151,6 +151,7 @@ local function master_postinit(inst)
         inst.components.battleborn:SetSanityEnabled(true)
         inst.components.battleborn:SetHealthEnabled(true)
         inst.components.battleborn:SetValidVictimFn(IsValidVictim)
+        inst.components.battleborn.allow_zero = false -- Don't regain stats if our attack is trying to deal literally 0 damage.
 
         if inst.components.drownable ~= nil then
             inst.components.drownable:SetOnTakeDrowningDamageFn(OnTakeDrowningDamage)

@@ -252,8 +252,9 @@ local states =
             end),
 
             TimeEvent(25*FRAMES, function(inst)
-                if inst.components.crewmember and inst.components.crewmember.boat then
-                    inst.components.crewmember.boat.components.boatcrew:CrewCheer()
+                local crewmember = inst.components.crewmember
+                if crewmember and crewmember.boat and crewmember.boat.components.boatcrew then
+                    crewmember.boat.components.boatcrew:CrewCheer()
                 end
                 PlayFootstep(inst)
             end),

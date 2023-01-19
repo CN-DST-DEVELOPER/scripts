@@ -7,7 +7,7 @@ local TINT = { r = 154 / 255, g = 23 / 255, b = 19 / 255 }
 
 local function OnUpdateTargetTint(inst)--, dt)
     if inst._tinttarget:IsValid() then
-        local curframe = inst.AnimState:GetCurrentAnimationTime() / FRAMES
+		local curframe = inst.AnimState:GetCurrentAnimationFrame()
         if curframe < 10 then
             local k = curframe / 10 * .5
             if inst._tinttarget.components.colouradder ~= nil then

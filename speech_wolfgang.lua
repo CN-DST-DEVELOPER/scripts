@@ -65,6 +65,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Wolfgang plays fair, is nowhere for kitties to hide here!",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Is enough games for Wolfgang.",
             MANNEQUIN_EQUIPSWAPFAILED = "Is not for cloth man. Wolfgang will keep.",
+            PILLOWFIGHT_NO_HANDPILLOW = "Wolfgang needs pillow for fighting!",
 		},
 		OPEN_CRAFTING =
 		{
@@ -387,12 +388,12 @@ return{
 
 		CAST_SPELLBOOK =
 		{
---fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
 		CASTAOE =
 		{
---fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
 		},
     },
 
@@ -417,11 +418,11 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
 	--waxwell specific
---fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
     ANNOUNCE_NORMALTOMIGHTY = "I AM MIGHTY!",
@@ -877,6 +878,8 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
     ANNOUNCE_OFF_SCRIPT = "Ha, is wrong! This is funny to Wolfgang!",
+
+    ANNOUNCE_COZY_SLEEP = "Wolfgang had nice dreams of fluffy bunnies.",
 
 	BATTLECRY =
 	{
@@ -1785,6 +1788,7 @@ return{
         CHESSPIECE_BEEFALO = "Is look almost like real hair-cow.",
 		CHESSPIECE_KITCOON = "Wolfgang can lift twice as many!",
 		CHESSPIECE_CATCOON = "Ha! Is easy to find this one.",
+        CHESSPIECE_MANRABBIT = "Haha! Funny rabbit thought it could beat Wolfgang!",
         CHESSPIECE_GUARDIANPHASE3 = "Wolfgang glad is just statue.",
         CHESSPIECE_EYEOFTERROR = "No like the way it look at Wolfgang.",
         CHESSPIECE_TWINSOFTERROR = "Brrr, still sends chill down Wolfgang's spine.",
@@ -2880,6 +2884,34 @@ return{
         },
         BEEFALO_GROOMER_ITEM = "Do not worry, Wolfgang will build it!",
 
+        YOTR_RABBITSHRINE =
+        {
+            GENERIC = "Is well-fed rabbit!",
+            EMPTY = "Rabbit is hungry! Wolfgang understands this.",
+            BURNT = "Goodbye rabbit.",
+        },
+
+        NIGHTCAPHAT = "Is cozy sleeping hat.",
+
+        YOTR_FOOD1 = "Wolfgang likes the funny rabbit cake.",
+        YOTR_FOOD2 = "Ah. Wolfgang expected cheese.",
+        YOTR_FOOD3 = "Is funny wobble dessert.",
+        YOTR_FOOD4 = "Sticky chew puffs.",
+
+        YOTR_TOKEN = "Who will face mighty Wolfgang in pillow fight?",
+
+        COZY_BUNNYMAN = "Rabbits look ready for bedtime.",
+
+        HANDPILLOW_BEEFALOWOOL = "Is fluffy like hair-cow.",
+        HANDPILLOW_KELP = "Wolfgang does not know why anyone would do this.",
+        HANDPILLOW_PETALS = "Is very pretty pillow.",
+        HANDPILLOW_STEELWOOL = "Is good for smacking, but not sleeping.",
+
+        BODYPILLOW_BEEFALOWOOL = "Is fluffy like hair-cow.",
+        BODYPILLOW_KELP = "Wolfgang does not know why anyone would do this.",
+        BODYPILLOW_PETALS = "Is very pretty pillow.",
+        BODYPILLOW_STEELWOOL = "Is good thing Wolfgang has tough skin.",
+
 		BISHOP_CHARGE_HIT = "Rrrraa!",
 		TRUNKVEST_SUMMER = "Is warm fuzzy nose.",
 		TRUNKVEST_WINTER = "Cozy nosy!",
@@ -2940,7 +2972,7 @@ return{
 		WAXWELLJOURNAL =
 		{
 			GENERIC = "Wolfgang is glad he cannot read!",
---fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NEEDSFUEL = "only_used_by_waxwell",
 		},
 		WETGOOP = "Is not bad to eat, but is not good.",
         WHIP = "Good to floss teeth with.",
@@ -2973,7 +3005,7 @@ return{
         WINTER_FOOD2 = "Does Wolfgang have sugar in moustache?", --sugar cookie
         WINTER_FOOD3 = "Little sugar stick.", --candy cane
         WINTER_FOOD4 = "Wolfgang does not trust little fruit loaf.", --fruitcake
-        WINTER_FOOD5 = "Ha! Wolfgang will eat log, just like beardman!", --yule log cake
+        WINTER_FOOD5 = "Ha! Is not real log, Wolfgang was not fooled!", --yule log cake
         WINTER_FOOD6 = "Tiny yummy cakething make strong Wolfgang.", --plum pudding
         WINTER_FOOD7 = "Little fruit is sweet and tasty!", --apple cider
         WINTER_FOOD8 = "Wolfgang likes feeling cozy.", --hot cocoa
@@ -4689,6 +4721,27 @@ return{
 		-- Waxwell
 		MAGICIAN_CHEST = "Is little disappearing box.",
 		TOPHAT_MAGICIAN = "Wolfgang would rather wear something else.",
+
+        -- Year of the Rabbit
+        YOTR_FIGHTRING_KIT = "Do not worry, Wolfgang will put it in good spot.",
+        YOTR_FIGHTRING_BELL =
+        {
+            GENERIC = "Is time for pillow battle, yes?",
+            PLAYING = "Haha! Is good fun!",
+        },
+
+        YOTR_DECOR_1 = {
+            GENERAL = "Wolfgang likes rabbit night light.",
+            OUT = "Rabbit light ran out!",
+        },
+        YOTR_DECOR_2 = {
+            GENERAL = "Wolfgang likes rabbit night light.",
+            OUT = "Rabbit light ran out!",
+        },
+
+        HAREBALL = "Wolfgang is not afraid to eat! Gulp...",
+        YOTR_DECOR_1_ITEM = "Wolfgang will find good place for rabbit light.",
+        YOTR_DECOR_2_ITEM = "Wolfgang will find good place for rabbit light.",             
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

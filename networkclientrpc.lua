@@ -787,15 +787,11 @@ local RPC_HANDLERS =
     end,
 
     MovementPredictionEnabled = function(player)
-        player.components.locomotor:Stop()
-        player.components.locomotor:SetAllowPlatformHopping(false)
-        player.components.playercontroller:ResetRemoteController()
+		player.components.playercontroller:OnRemoteToggleMovementPrediction(true)
     end,
 
     MovementPredictionDisabled = function(player)
-        player.components.locomotor:Stop()
-        player.components.locomotor:SetAllowPlatformHopping(true)
-        player.components.playercontroller:ResetRemoteController()
+		player.components.playercontroller:OnRemoteToggleMovementPrediction(false)
     end,
 
     Hop = function(player, hopper, hop_x, hop_z, other_platform)

@@ -439,7 +439,7 @@ local function onturnon(inst)
 	stopclosingsounds(inst)
 	if inst.AnimState:IsCurrentAnimation("proximity_loop") then
 		--In case other animations were still in queue
-		local t = inst.AnimState:GetCurrentAnimationTime() % inst.AnimState:GetCurrentAnimationLength()
+		local t = inst.AnimState:GetCurrentAnimationTime()
 		inst.AnimState:PlayAnimation("proximity_loop", true)
 		inst.AnimState:SetTime(t)
 	else

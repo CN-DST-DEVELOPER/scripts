@@ -81,6 +81,9 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/yotc_2022_1.fev"),
     Asset("FILE", "sound/yotc_2022_1.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/yotr_2023.fev"),
+    Asset("FILE", "sound/yotr_2023.fsb"),
+
     Asset("SOUNDPACKAGE", "sound/ancientguardian_rework.fev"),
     Asset("FILE", "sound/ancientguardian_rework.fsb"),
 

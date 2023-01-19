@@ -1275,6 +1275,12 @@ local fx =
         anim = "unwrap",
     },
     {
+        name = "redpouch_yotr_unwrap",
+        bank = "redpouch_yotr",
+        build = "redpouch_yotr",
+        anim = "unwrap",
+    },    
+    {
         name = "yotc_seedpacket_unwrap",
         bank = "bundle",
         build = "bundle",
@@ -2695,6 +2701,14 @@ local fx =
         bank = "turf_smoke_fx",
         build = "turf_smoke_fx",
         anim = "fx",
+    },
+    {
+        name = "pillowfight_confetti_fx",
+        bank = "pillowfight_confetti",
+        build = "pillowfight_confetti",
+        anim = "out",
+        fn = FinalOffsetNegative1,
+        sound = "summerevent/cannon/fire1",
     },
 }
 

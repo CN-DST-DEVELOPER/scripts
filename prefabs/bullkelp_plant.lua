@@ -34,9 +34,9 @@ local function makeemptyfn(inst)
     inst.AnimState:PlayAnimation("picked", true)
     inst.underwater.AnimState:PlayAnimation("picked", true)
 
-	local time = math.random() * inst.AnimState:GetCurrentAnimationLength()
-    inst.AnimState:SetTime(time)
-    inst.underwater.AnimState:SetTime(time)
+	local fr = math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1
+	inst.AnimState:SetFrame(fr)
+	inst.underwater.AnimState:SetFrame(fr)
 end
 
 local function CheckBeached(inst)
@@ -94,9 +94,9 @@ local function fn()
 	inst.underwater.Transform:SetPosition(0,0,0)
     ---------------------
 
-	local start_time = math.random() * 2
-    inst.AnimState:SetTime(start_time)
-    inst.underwater.AnimState:SetTime(start_time)
+	local start_frame = math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1
+	inst.AnimState:SetFrame(start_frame)
+	inst.underwater.AnimState:SetFrame(start_frame)
 
     local color = 0.75 + math.random() * 0.25
     inst.AnimState:SetMultColour(color, color, color, 1)

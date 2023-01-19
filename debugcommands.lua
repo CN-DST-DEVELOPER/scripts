@@ -1464,6 +1464,26 @@ function d_spawnallhandequipment_onstands()
 	d_spawnlist(all_hand_equipment, 3.5, spawn_mannequin_and_equip_item)
 end
 
+function d_allpillows()
+    local all_pillow_equipment = {}
+    for material in pairs(require("prefabs/pillow_defs")) do
+        table.insert(all_pillow_equipment, "handpillow_"..material)
+        table.insert(all_pillow_equipment, "bodypillow_"..material)
+    end
+
+    d_spawnlist(all_pillow_equipment, 3.5)
+end
+
+function d_allpillows_onstands()
+    local all_pillow_equipment = {}
+    for material in pairs(require("prefabs/pillow_defs")) do
+        table.insert(all_pillow_equipment, "handpillow_"..material)
+        table.insert(all_pillow_equipment, "bodypillow_"..material)
+    end
+
+    d_spawnlist(all_pillow_equipment, 3.5, spawn_mannequin_and_equip_item)
+end
+
 function d_spawnequipment_onstand(...)
 	if arg == nil or #arg == 0 then return end
 

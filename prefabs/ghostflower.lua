@@ -31,7 +31,7 @@ end
 
 local function toground(inst)
     inst.AnimState:PlayAnimation("idle", true)
-	inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
 	inst:DoTaskInTime(3 + math.random() * 6, dofx)
 end

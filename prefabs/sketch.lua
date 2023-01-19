@@ -35,6 +35,7 @@ local SKETCHES =
     { item = "chesspiece_twinsofterror",	recipe = "chesspiece_twinsofterror_builder" },
     { item = "chesspiece_kitcoon",			recipe = "chesspiece_kitcoon_builder",			image = "chesspiece_kitcoon_sketch" },
     { item = "chesspiece_catcoon",			recipe = "chesspiece_catcoon_builder",			image = "chesspiece_catcoon_sketch" },
+    { item = "chesspiece_manrabbit",        recipe = "chesspiece_manrabbit_builder",        image = "chesspiece_manrabbit_sketch" },
 	
 }
 

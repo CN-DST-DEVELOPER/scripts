@@ -83,7 +83,7 @@ local function CreateBase(isnew)
 
     if isnew then
         inst.AnimState:PlayAnimation("sporecloud_base_pre")
-        inst.AnimState:SetTime(12 * FRAMES)
+		inst.AnimState:SetFrame(12)
         inst.AnimState:PushAnimation("sporecloud_base_idle", false)
     else
         inst.AnimState:PlayAnimation("sporecloud_base_idle")

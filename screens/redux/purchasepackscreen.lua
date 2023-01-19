@@ -987,7 +987,7 @@ function PurchasePackScreen:_BuildPurchasePanel()
         local iap_defs = self:GetIAPDefs(true)
 
         if #iap_defs == 0 then
-            local msg = STRINGS.UI.PURCHASEPACKSCREEN.FAILED_TO_LOAD
+            local msg = TheInventory:HasSupportForOfflineSkins() and (TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) and STRINGS.UI.MAINSCREEN.STORE_DISABLE or STRINGS.UI.PURCHASEPACKSCREEN.FAILED_TO_LOAD
             local dialog = purchase_ss:AddChild(TEMPLATES.CurlyWindow(400, 200, "", nil, nil, msg))
             purchase_ss.focus_forward = dialog
         else

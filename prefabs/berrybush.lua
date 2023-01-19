@@ -37,7 +37,7 @@ end
 local function makeemptyfn(inst)
     if POPULATING then
         inst.AnimState:PlayAnimation("idle", true)
-        inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
     elseif inst:HasTag("withered") or inst.AnimState:IsCurrentAnimation("dead") then
         --inst.SoundEmitter:PlaySound("dontstarve/common/bush_fertilize")
         inst.AnimState:PlayAnimation("dead_to_idle")
@@ -144,7 +144,7 @@ local function makefullfn(inst)
         inst.AnimState:PlayAnimation(anim)
     elseif POPULATING then
         inst.AnimState:PlayAnimation("idle", true)
-        inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
     else
         inst.AnimState:PlayAnimation("grow")
         inst.AnimState:PushAnimation("idle", true)
@@ -262,7 +262,7 @@ local function createbush(name, inspectname, berryname, master_postinit)
             return inst
         end
 
-        inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
         inst:AddComponent("pickable")
         inst.components.pickable.picksound = "dontstarve/wilson/harvest_berries"

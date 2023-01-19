@@ -65,6 +65,7 @@ return{
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDING_SPOTS = "Uhh, I'm not sure where they could even hide around here.",
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Sorry kitties, I can't play with you all day!",
             MANNEQUIN_EQUIPSWAPFAILED = "Sorry, I guess you can't wear that.",
+            PILLOWFIGHT_NO_HANDPILLOW = "Wait, I'm not prepared yet!",
 		},
 		OPEN_CRAFTING =
 		{
@@ -387,12 +388,12 @@ return{
 
 		CAST_SPELLBOOK =
 		{
---fallback to speech_wilson.lua			NO_TOPHAT = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
 		CASTAOE =
 		{
---fallback to speech_wilson.lua			NO_MAX_SANITY = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
 		},
     },
 
@@ -417,11 +418,11 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
 	--waxwell specific
---fallback to speech_wilson.lua		ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
---fallback to speech_wilson.lua		ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -876,6 +877,8 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_BOOK_MOON_DAYTIME = "only_used_by_waxwell_and_wicker",
 
     ANNOUNCE_OFF_SCRIPT = "Uh, I don't think that's in the script...",
+
+    ANNOUNCE_COZY_SLEEP = "Wow, that was a good night's sleep!",
 
 	BATTLECRY =
 	{
@@ -1784,6 +1787,7 @@ return{
         CHESSPIECE_BEEFALO = "Aw don't be jealous Woby, you deserve a statue too!",
 		CHESSPIECE_KITCOON = "They're pretty cute, but not as cute as you Woby.",
 		CHESSPIECE_CATCOON = "It's not quite as exciting as a monster statue, is it?",
+        CHESSPIECE_MANRABBIT = "He looks so happy! And hoppy!",
         CHESSPIECE_GUARDIANPHASE3 = "It's so lifelike, I feel like they're staring right at me!",
         CHESSPIECE_EYEOFTERROR = "Nothing to see here, folks! Ha ha, get it Woby?",
         CHESSPIECE_TWINSOFTERROR = "Is this one of those sculptures where the eyes follow you around the room?",
@@ -2879,6 +2883,34 @@ return{
         },
         BEEFALO_GROOMER_ITEM = "Better get this all set up.",
 
+        YOTR_RABBITSHRINE =
+        {
+            GENERIC = "What should we make, Woby?",
+            EMPTY = "That's a hungry-looking rabbit statue.",
+            BURNT = "What a waste of good supplies...",
+        },
+
+        NIGHTCAPHAT = "It's a little sleeping bag for your head.",
+
+        YOTR_FOOD1 = "Time for a dessert break!",
+        YOTR_FOOD2 = "Is that what the moon tastes like?",
+        YOTR_FOOD3 = "It's so jiggly!",
+        YOTR_FOOD4 = "They're not marshmallows, but they're still pretty good!",
+
+        YOTR_TOKEN = "It's rude to hit people with gloves. You might start a fight!",
+
+        COZY_BUNNYMAN = "They seem friendly!",
+
+        HANDPILLOW_BEEFALOWOOL = "It's almost as good of a pillow as Woby!",
+        HANDPILLOW_KELP = "Well, um... I guess there are worse things to use for a pillow?",
+        HANDPILLOW_PETALS = "Don't worry, I already checked it for bees.",
+        HANDPILLOW_STEELWOOL = "It's not so bad, I once made a bed out of pine needles.",
+
+        BODYPILLOW_BEEFALOWOOL = "It's almost as good of a pillow as Woby!",
+        BODYPILLOW_KELP = "Well, um... I guess there are worse things to use for a pillow?",
+        BODYPILLOW_PETALS = "Don't worry, I already checked it for bees.",
+        BODYPILLOW_STEELWOOL = "It's not so bad, I once made a bed out of pine needles.",
+
 		BISHOP_CHARGE_HIT = "Ah!! Why?!",
 		TRUNKVEST_SUMMER = "Now we're both fuzzy, Woby!",
 		TRUNKVEST_WINTER = "A warm nose cozy.",
@@ -2939,7 +2971,7 @@ return{
 		WAXWELLJOURNAL =
 		{
 			GENERIC = "Maybe you could teach me some magic tricks? I'm a quick learner!",
---fallback to speech_wilson.lua			NEEDSFUEL = "only_used_by_waxwell",
+--fallback to speech_wilson.lua 			NEEDSFUEL = "only_used_by_waxwell",
 		},
 		WETGOOP = "Er... maybe Woby will want it...",
         WHIP = "I know how you feel about cats Woby, but it still seems pretty mean.",
@@ -4688,6 +4720,27 @@ return{
 		-- Waxwell
 		MAGICIAN_CHEST = "C'mon Woby, just a little peek inside?",
 		TOPHAT_MAGICIAN = "Do you think he can teach me how to pull rabbits out of it?",
+
+        -- Year of the Rabbit
+        YOTR_FIGHTRING_KIT = "I'll have it set up in a jiffy!",
+        YOTR_FIGHTRING_BELL =
+        {
+            GENERIC = "All fighting should be done with pillows.",
+            PLAYING = "It's okay, everyone is wearing their safety gear!",
+        },
+
+        YOTR_DECOR_1 = {
+            GENERAL = "It's nice to have a little extra firelight!",
+            OUT = "Don't worry, Woby and I will find some kindling for it.",
+        },
+        YOTR_DECOR_2 = {
+            GENERAL = "It's nice to have a little extra firelight!",
+            OUT = "Don't worry, Woby and I will find some kindling for it.",
+        },
+
+        HAREBALL = "That looks like something Woby spit up.",
+        YOTR_DECOR_1_ITEM = "I'll have it set up in a jiffy!",
+        YOTR_DECOR_2_ITEM = "I'll have it set up in a jiffy!",             
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

@@ -184,7 +184,7 @@ end
 
 local function OnUpdateTargetTint(inst)--, dt)
     if inst._tinttarget:IsValid() then
-        local curframe = inst.AnimState:GetCurrentAnimationTime() / FRAMES
+		local curframe = inst.AnimState:GetCurrentAnimationFrame()
         if curframe < 15 then
             local k = curframe / 15
             k = k * k

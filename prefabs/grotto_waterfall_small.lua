@@ -100,7 +100,7 @@ local function falls1()
 
     inst._type = 1
 
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("workable")
     inst.components.workable.savestate = true
@@ -146,7 +146,7 @@ local function falls2()
 
     inst._type = 2
 
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("workable")
     inst.components.workable.savestate = true

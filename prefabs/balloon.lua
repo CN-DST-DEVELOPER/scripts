@@ -75,7 +75,7 @@ local function fn()
 
 	BALLOONS.MakeBalloonMasterInit(inst, BALLOONS.DoPop_Floating)
 
-    inst.AnimState:SetTime(math.random() * 2)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
 	SetBalloonShape(inst, math.random(NUM_BALLOON_SHAPES))
 

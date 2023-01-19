@@ -95,7 +95,7 @@ local function fn()
 
     inst.Physics:SetCollisionCallback(oncollide)
 
-    inst.AnimState:SetTime(math.random() * 2)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst.balloon_num = 1
 
@@ -280,7 +280,7 @@ local function confettiballoon_fn()
     inst.AnimState:SetBank("wes_balloon_party")
     inst.AnimState:SetBuild("wes_balloon_party")
     inst.AnimState:PlayAnimation("float", true)
-	inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 	BALLOONS.SetColour(inst)
 
 	local s = 0.9 + math.random() * 0.1

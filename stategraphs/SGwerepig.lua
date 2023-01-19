@@ -57,9 +57,16 @@ local states =
         name = "howl",
         tags = { "busy" },
 
-        onenter = function(inst)
+        onenter = function(inst, pushanim)
             inst.Physics:Stop()
-            inst.AnimState:PlayAnimation("howl")
+            if pushanim then
+                if type(pushanim) == "string" then
+                    inst.AnimState:PlayAnimation(pushanim)
+                end
+                inst.AnimState:PushAnimation("howl", false)
+            else
+                inst.AnimState:PlayAnimation("howl")
+            end
         end,
 
         timeline =
@@ -142,7 +149,7 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState(not inst.components.combat:HasTarget() and math.random() < .3 and "howl" or "idle")
+                inst.sg:GoToState((not inst.components.combat:HasTarget() and math.random() < .3) and "howl" or "idle", "were_atk_pst")
             end),
         },
     },

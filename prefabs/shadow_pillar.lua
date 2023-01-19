@@ -248,16 +248,15 @@ local function Pillar_OnLoad(inst, data)
 		--pillar pre is 24 * FRAMES
 		--pillar pre is delayed 7 * FRAMES
 		inst.AnimState:PlayAnimation("idle"..tostring(inst.variation), true)
-		local rnd = math.random()
-		local t = inst.AnimState:GetCurrentAnimationLength() * rnd
-		inst.AnimState:SetTime(t)
+		local fr = math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1
+		inst.AnimState:SetFrame(fr)
 		if inst.base == nil then
 			inst.base = SpawnPrefab("shadow_pillar_base_fx")
 			inst.base.entity:SetParent(inst.entity)
 			inst.base.Transform:SetRotation(math.random() * 360)
 		end
 		inst.base.AnimState:PlayAnimation("idle", true)
-		inst.base.AnimState:SetTime(t + 7 * FRAMES)
+		inst.base.AnimState:SetFrame(fr + 7)
 		if not inst.components.timer:TimerExists("warningtime") then
 			local target = inst.components.entitytracker:GetEntity("target")
 			if target ~= nil and not (target.components.health ~= nil and target.components.health:IsDead()) then

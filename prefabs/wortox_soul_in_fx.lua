@@ -24,7 +24,7 @@ end
 
 local function OnUpdateTargetTint(inst)--, dt)
     if inst._tinttarget:IsValid() then
-        local curframe = inst.AnimState:GetCurrentAnimationTime() / FRAMES
+		local curframe = inst.AnimState:GetCurrentAnimationFrame()
         if curframe < 10 then
             local k = curframe / 10
             k = k * k
@@ -77,7 +77,7 @@ local function fn()
     inst.AnimState:SetBank("wortox_soul_ball")
     inst.AnimState:SetBuild("wortox_soul_ball")
     inst.AnimState:PlayAnimation("idle_pst")
-    inst.AnimState:SetTime(6 * FRAMES)
+	inst.AnimState:SetFrame(6)
     inst.AnimState:SetScale(SCALE, SCALE)
     inst.AnimState:SetFinalOffset(3)
 

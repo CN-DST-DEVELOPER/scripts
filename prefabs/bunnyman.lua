@@ -316,6 +316,8 @@ local function fn()
     inst.AnimState:SetBank("manrabbit")
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:Hide("hat")
+    inst.AnimState:Hide("ARM_carry")
+    inst.AnimState:Hide("HAIR_HAT")
 
     inst.AnimState:SetClientsideBuildOverride("insane", "manrabbit_build", "manrabbit_beard_build")
 

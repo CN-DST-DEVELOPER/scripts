@@ -37,7 +37,7 @@ local states=
 		onenter = function(inst)
             inst.waveactive = true
 			inst.AnimState:PlayAnimation("appear")
-            inst.AnimState:SetTime(10*FRAMES)
+			inst.AnimState:SetFrame(10)
 		end,
 
 		events =

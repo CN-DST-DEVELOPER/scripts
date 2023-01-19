@@ -56,6 +56,8 @@ local function fn()
     inst:AddComponent("hauntable")
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
+
+
     return inst
 end
 

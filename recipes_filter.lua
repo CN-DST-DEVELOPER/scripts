@@ -235,6 +235,7 @@ CRAFTING_FILTERS.SPECIAL_EVENT.recipes =
 	"yotc_carratshrine",
 	"yotb_beefaloshrine",
 	"yot_catcoonshrine",
+	"yotr_rabbitshrine",
 
 
 }
@@ -351,6 +352,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_beefalo_builder",
 	"chesspiece_kitcoon_builder",
 	"chesspiece_catcoon_builder",
+	"chesspiece_manrabbit_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -379,6 +381,31 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"halloween_experiment_volatile",
 	"halloween_experiment_moon",
 	"halloween_experiment_root",
+
+	-- Year of the Rabbit
+	"yotr_fightring_kit",
+	"yotr_token",
+
+	"handpillow_petals",
+	"handpillow_kelp",
+	"handpillow_beefalowool",
+	"handpillow_steelwool",
+
+	"bodypillow_petals",
+	"bodypillow_kelp",
+	"bodypillow_beefalowool",
+	"bodypillow_steelwool",
+
+	"yotr_food1",
+	"yotr_food2",
+	"yotr_food3",
+	"yotr_food4",
+
+	"yotr_decor_1_item",
+	"yotr_decor_2_item",
+
+	"chesspiece_manrabbit_sketch",
+	"nightcaphat",
 
 	-- Year of the Kitcoon
 	"ticoon_builder",
@@ -558,6 +585,7 @@ CRAFTING_FILTERS.PROTOTYPERS.recipes =
 	"yotc_carratshrine",
 	"yotb_beefaloshrine",
 	"yot_catcoonshrine",
+	"yotr_rabbitshrine",
 }
 
 CRAFTING_FILTERS.REFINE.recipes =
@@ -852,6 +880,7 @@ CRAFTING_FILTERS.STRUCTURES.recipes =
 	"yotc_carratshrine",
 	"yotb_beefaloshrine",
 	"yot_catcoonshrine",
+	"yotr_rabbitshrine",
 
 	"researchlab",
 	"researchlab2",

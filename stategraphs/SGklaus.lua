@@ -563,7 +563,7 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("attack_doubleclaw")
-            inst.AnimState:SetTime(15 * FRAMES)
+			inst.AnimState:SetFrame(15)
             inst.components.combat:StartAttack()
             inst.sg.statemem.target = inst.components.combat.target
             DoFoleySounds(inst)

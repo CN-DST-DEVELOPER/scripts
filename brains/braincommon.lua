@@ -157,9 +157,9 @@ BrainCommon.PanicWhenScared = PanicWhenScared
 -- Actions: MINE, CHOP
 
 local MINE_TAGS = { "MINE_workable" }
-local MINE_CANT_TAGS = { "carnivalgame_part" }
+local MINE_CANT_TAGS = { "carnivalgame_part", "event_trigger" }
 local CHOP_TAGS = { "CHOP_workable" }
-local CHOP_CANT_TAGS = { "carnivalgame_part" }
+local CHOP_CANT_TAGS = { "carnivalgame_part", "event_trigger" }
 
 local function IsDeciduousTreeMonster(guy)
     return guy.monster and guy.prefab == "deciduoustree"

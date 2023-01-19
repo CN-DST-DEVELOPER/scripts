@@ -2425,7 +2425,7 @@ local states =
                     inst.components.npc_talker:Say(inst.sg.statemem.str)
                 else
                     inst.AnimState:ClearOverrideBuild(inst.sg.statemem.target_build)
-                    inst.AnimState:SetTime(51 * FRAMES)
+					inst.AnimState:SetFrame(51)
                 end
                 inst:ClearBufferedAction()
             end),
@@ -3119,7 +3119,7 @@ local states =
             DoHurtSound(inst)
 
             --V2C: some of the woodie's were-transforms have shorter hit anims
-            local stun_frames = math.min(math.floor(inst.AnimState:GetCurrentAnimationLength() / FRAMES + .5), frozen and 10 or 6)
+			local stun_frames = math.min(inst.AnimState:GetCurrentAnimationNumFrames(), frozen and 10 or 6)
             inst.sg:SetTimeout(stun_frames * FRAMES)
         end,
 

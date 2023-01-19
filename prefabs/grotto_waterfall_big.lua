@@ -27,7 +27,7 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     return inst
 end

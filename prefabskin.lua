@@ -2172,7 +2172,7 @@ local function researchlab2_flash(inst, intensity, frames)
     researchlab2_applyflash(inst, intensity * .5)
 end
 
-local function researchlab2_checkflashing(inst, anim, offset)
+local function researchlab2_checkflashing(inst, anim)
     if inst.checkanimtask ~= nil then
         inst.checkanimtask:Cancel()
         inst.checkanimtask = nil
@@ -2188,7 +2188,7 @@ end
 local function researchlab2_checkanim(inst)
     if inst.AnimState:IsCurrentAnimation("proximity_loop") or inst.AnimState:IsCurrentAnimation("proximity_gift_loop") then
         inst.checkanimtask = nil
-        researchlab2_checkflashing(inst, "proximity_loop", inst.AnimState:GetCurrentAnimationTime())
+        researchlab2_checkflashing(inst, "proximity_loop")
     else
         inst.checkanimtask = inst:DoTaskInTime(inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime() + FRAMES, researchlab2_checkanim)
     end
@@ -2197,7 +2197,7 @@ end
 local function researchlab2_playanimation(inst, anim, loop)
     inst.AnimState:PlayAnimation(anim, loop)
     inst.highlightchildren[1].AnimState:PlayAnimation(anim, loop)
-    researchlab2_checkflashing(inst, anim, 0)
+    researchlab2_checkflashing(inst, anim)
 end
 
 local function researchlab2_pushanimation(inst, anim, loop)
@@ -2207,7 +2207,7 @@ local function researchlab2_pushanimation(inst, anim, loop)
         inst.highlightchildren[1].AnimState:PushAnimation(anim, loop)
     end
     if not wasplaying and inst.AnimState:IsCurrentAnimation(anim) then
-        researchlab2_checkflashing(inst, anim, 0)
+        researchlab2_checkflashing(inst, anim)
     elseif (anim == "proximity_gift_loop" or anim == "proximity_loop") and inst.checkanimtask == nil then
         inst.checkanimtask = inst:DoTaskInTime(inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime() + FRAMES, researchlab2_checkanim)
     end

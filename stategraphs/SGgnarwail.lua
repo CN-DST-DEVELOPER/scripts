@@ -667,7 +667,7 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
 
-            local run_anim_time_remaining = inst.AnimState:GetCurrentAnimationTime() % inst.AnimState:GetCurrentAnimationLength()
+			local run_anim_time_remaining = inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime()
             inst.sg:SetTimeout(run_anim_time_remaining + 1*FRAMES)
 
             inst:PushAnimation("walk_pst", false)
@@ -744,7 +744,7 @@ local states =
 
             -- We want to play the emerge sound 3 frames into the emerge animation, but we're softstopping, so we could be any number of frames
             -- into the run animation when we get here. So we calculate that and play the sound as a timeout trigger instead.
-            local run_anim_time_remaining = inst.AnimState:GetCurrentAnimationTime() % inst.AnimState:GetCurrentAnimationLength()
+			local run_anim_time_remaining = inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime()
             inst.sg:SetTimeout(run_anim_time_remaining + 3*FRAMES)
 
             inst:PushAnimation("emerge", false)

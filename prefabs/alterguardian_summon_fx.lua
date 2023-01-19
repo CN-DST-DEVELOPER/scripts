@@ -136,7 +136,7 @@ local function CLIENT_MakeBackFX()
 
     -- We spawn a frame delayed to make sure the transform is updated,
     -- so we have to skip a frame into the animation.
-    inst.AnimState:SetTime(FRAMES)
+	inst.AnimState:SetFrame(1)
 
     return inst
 end

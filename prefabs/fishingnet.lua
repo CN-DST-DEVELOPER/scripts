@@ -1,7 +1,8 @@
 local assets =
 {
-    Asset("ANIM", "anim/boat_net.zip"),
-    Asset("ANIM", "anim/swap_boat_net.zip"),
+	--fishingnet unused, so switching to PKGREF
+	Asset("PKGREF", "anim/boat_net.zip"),
+	Asset("PKGREF", "anim/swap_boat_net.zip"),
 }
 
 local prefabs =

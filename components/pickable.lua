@@ -459,7 +459,7 @@ end
 
 -- NOTES(JBK): Added TheWorld behaviour.
 -- If picker is nil it will not produce items.
--- If picker is TheWorld it will drop items at the inst. This will NOT fire event picked and should be used to get picked items to spawn.
+-- If picker is TheWorld it will drop items at the inst. This will NOT fire the regular event picked but will fire pickedbyworld instead to differentiate the type of pick.
 -- If picker is something with an inventory it will harvest normally.
 function Pickable:Pick(picker)
     if self.canbepicked and self.caninteractwith then
@@ -555,9 +555,7 @@ function Pickable:Pick(picker)
             end
         end
 
-        if not worldpicker then
-            self.inst:PushEvent("picked", { picker = picker, loot = loot, plant = self.inst })
-        end
+        self.inst:PushEvent(worldpicker and "pickedbyworld" or "picked", { picker = picker, loot = loot, plant = self.inst })
 
 		if self.remove_when_picked then
 			self.inst:Remove()

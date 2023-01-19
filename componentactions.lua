@@ -33,9 +33,9 @@ local function Row(inst, doer, pos, actions)
     if CLIENT_REQUESTED_ACTION == ACTIONS.ROW_FAIL then
         table.insert(actions, ACTIONS.ROW_FAIL)
     elseif doer ~= nil and not doer:HasTag("is_row_failing") then
-        local animation_fail_time = (doer.AnimState:IsCurrentAnimation("row_pre") and (30/30)) or (4/30)
+		local animation_fail_frame = doer.AnimState:IsCurrentAnimation("row_pre") and 30 or 4
 
-        if doer:HasTag("is_rowing") and doer.AnimState:GetCurrentAnimationTime() < animation_fail_time then
+		if doer:HasTag("is_rowing") and doer.AnimState:GetCurrentAnimationFrame() < animation_fail_frame then
             table.insert(actions, ACTIONS.ROW_FAIL)
         elseif not is_controller_attached then
             table.insert(actions, ACTIONS.ROW)

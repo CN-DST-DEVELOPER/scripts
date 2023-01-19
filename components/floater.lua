@@ -111,7 +111,7 @@ function Floater:SwitchToFloatAnim()
         else
             self.inst.AnimState:SetBankAndPlayAnimation("floating_item", "right")
         end
-        self.inst.AnimState:SetTime(math.abs(self.float_index) * FRAMES)
+		self.inst.AnimState:SetFrame(math.abs(self.float_index))
         self.inst.AnimState:Pause()
 
         if self.swap_data ~= nil then

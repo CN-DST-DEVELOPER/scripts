@@ -252,7 +252,7 @@ local function client_update_hand(inst, hand, _end_angle)
 
 	if end_angle > 0 then
 		hand.AnimState:Pause()
-		hand._start_animtime = (hand.AnimState:GetCurrentAnimationTime() % hand.AnimState:GetCurrentAnimationLength()) + FRAMES*0.5
+		hand._start_animtime = hand.AnimState:GetCurrentAnimationTime() + FRAMES*0.5
 		hand._end_animtime = (end_angle * hand.AnimState:GetCurrentAnimationLength())
 		hand._start_time = GetTime()
 

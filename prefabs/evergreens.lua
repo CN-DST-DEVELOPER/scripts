@@ -935,7 +935,7 @@ local function tree(name, build, stage, data)
             inst.AnimState:PlayAnimation(inst.anims.stump)
             inst.MiniMapEntity:SetIcon(build == "twiggy" and "twiggy_stump.png" or "evergreen_stump.png")
         else
-            inst.AnimState:SetTime(math.random() * 2)
+			inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
             if data == "burnt" then
                 OnBurnt(inst)
             end

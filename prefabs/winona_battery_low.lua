@@ -254,7 +254,7 @@ local function OnLoad(inst, data, ents)
     else
         UpdateSoundLoop(inst, inst.components.fueled:GetCurrentSection())
         if inst.AnimState:IsCurrentAnimation("idle_charge") then
-            inst.AnimState:SetTime(inst.AnimState:GetCurrentAnimationLength() * math.random())
+			inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
         end
     end
 end

@@ -117,7 +117,7 @@ local function mineable_glass(name, anim)
         inst.components.lootdropper.y_speed = 14
         inst.components.lootdropper.y_speed_variance = 4
 
-        inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
         return inst
     end

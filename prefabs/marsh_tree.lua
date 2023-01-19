@@ -179,7 +179,7 @@ local function fn()
     local color = 0.5 + math.random() * 0.5
     inst.AnimState:SetMultColour(color, color, color, 1)
     sway(inst)
-    inst.AnimState:SetTime(math.random()*2)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = inspect_tree

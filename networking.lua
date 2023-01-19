@@ -197,6 +197,7 @@ function ValidateSpawnPrefabRequest(user_id, prefab_name, skin_base, clothing_bo
     if table.contains(SEAMLESSSWAP_CHARACTERLIST, prefab_name) and not allow_seamlessswap_characters then
         -- NOTES(JBK): This is not assertion level of importance but it is administrative note worthy level to know someone tried breaking things.
         in_valid_char_list = false
+        in_mod_char_list = false
         print(string.format("[WERR] Player with ID %s tried spawning as %s without having permissions to do so!", user_id or "?", prefab_name or "?"))
     end
 

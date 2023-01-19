@@ -266,6 +266,7 @@ local LocoMotor = Class(function(self, inst)
     self.movestarttime = -1
     self.movestoptime = -1
     --self.predictmovestarttime = nil
+	--self.no_predict_fastforward = nil --see PlayerController:RepeatHeldAction()
 
     self.groundspeedmultiplier = 1.0
     self.enablegroundspeedmultiplier = true
@@ -669,7 +670,14 @@ end
 function LocoMotor:PushAction(bufferedaction, run, try_instant)
     if bufferedaction == nil then
         return
-    end
+	elseif self.inst.components.playercontroller ~= nil then
+		self.inst.components.playercontroller:OnRemoteBufferedAction()
+	end
+
+	--V2C: see PlayerController:RepeatHeldAction()
+	if self.no_predict_fastforward then
+		bufferedaction.options.no_predict_fastforward = true
+	end
 
     if bufferedaction.action.pre_action_cb ~= nil then
         bufferedaction.action.pre_action_cb(bufferedaction)
@@ -742,10 +750,6 @@ function LocoMotor:PushAction(bufferedaction, run, try_instant)
         self.inst:PushBufferedAction(bufferedaction)
     else
         self:GoToPoint(nil, bufferedaction, run)
-    end
-
-    if self.inst.components.playercontroller ~= nil then
-        self.inst.components.playercontroller:OnRemoteBufferedAction()
     end
 end
 
@@ -837,6 +841,9 @@ function LocoMotor:SetBufferedAction(act)
     if self.allow_platform_hopping then
         self.last_platform_visited = INVALID_PLATFORM_ID
     end
+	if act ~= nil and self.inst.components.playercontroller ~= nil then
+		self.inst.components.playercontroller:OnLocomotorBufferedAction(act)
+	end
 end
 
 function LocoMotor:Stop(sgparams)
@@ -1130,6 +1137,7 @@ function LocoMotor:OnUpdate(dt)
         local reached_dest, invalid, in_cooldown = nil, nil, false
         if self.bufferedaction ~= nil and
             self.bufferedaction.action == ACTIONS.ATTACK and
+			not (self.bufferedaction.forced and self.bufferedaction.target == nil) and
             self.inst.replica.combat ~= nil then
 
             local dsq = distsq(destpos_x, destpos_z, mypos_x, mypos_z)

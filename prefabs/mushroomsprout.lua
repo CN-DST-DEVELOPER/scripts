@@ -188,7 +188,7 @@ local function OnLoad(inst, data)
         inst._fade:set(FADE_FRAMES)
         OnFadeDirty(inst)
         Sway(inst)
-        inst.AnimState:SetTime(inst.AnimState:GetCurrentAnimationLength() * math.random())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
     end
 end
 

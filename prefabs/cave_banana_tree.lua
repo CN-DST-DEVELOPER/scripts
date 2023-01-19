@@ -142,7 +142,7 @@ local function tree_fn()
         return inst
     end
 
-    inst.AnimState:SetTime(math.random() * 2)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("pickable")
     inst.components.pickable.picksound = "dontstarve/wilson/pickup_reeds"

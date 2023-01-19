@@ -244,7 +244,7 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("inspectable")
 
@@ -301,7 +301,7 @@ local function thuriblebodyfn()
         return inst
     end
 
-    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst.persists = false
 

@@ -754,6 +754,7 @@ PREFAB_SKINS = {
 	},
 	mushroom_light =
 	{
+		"mushroom_light_an",
 		"mushroom_light_festive",
 		"mushroom_light_tiffany",
 	},
@@ -1208,6 +1209,7 @@ PREFAB_SKINS = {
 		"warly_chef",
 		"warly_fisherman",
 		"warly_ice",
+		"warly_masquerade",
 		"warly_nature",
 		"warly_none",
 		"warly_pirate",
@@ -1363,6 +1365,7 @@ PREFAB_SKINS = {
 		"wes_mandrake",
 		"wes_mandrake_d",
 		"wes_mandrake_p",
+		"wes_masquerade",
 		"wes_nature",
 		"wes_none",
 		"wes_pirate",
@@ -1419,6 +1422,7 @@ PREFAB_SKINS = {
 		"willow_haunteddoll",
 		"willow_ice",
 		"willow_magma",
+		"willow_masquerade",
 		"willow_none",
 		"willow_pirate",
 		"willow_rose",
@@ -1550,6 +1554,7 @@ PREFAB_SKINS = {
 		"woodie_hockey",
 		"woodie_ice",
 		"woodie_magma",
+		"woodie_masquerade",
 		"woodie_nature",
 		"woodie_none",
 		"woodie_pirate",
@@ -1594,6 +1599,7 @@ PREFAB_SKINS = {
 	{
 		"wortox_dragon",
 		"wortox_ice",
+		"wortox_masquerade",
 		"wortox_minotaur",
 		"wortox_nature",
 		"wortox_noeyeddeer",

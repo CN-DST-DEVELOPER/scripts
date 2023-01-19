@@ -136,7 +136,7 @@ local function droponother(inst,other)
         and other.components.workable:CanBeWorked()
         and other.components.workable.action ~= ACTIONS.NET then
         other.components.workable:Destroy(inst)
-    elseif other.components.health ~= nil and not other.components.health:IsDead() then
+    elseif other.components.health ~= nil and not other.components.health:IsDead() and other.components.combat ~= nil then
         local dist = inst:GetDistanceSqToInst(other)
         if dist < 3*3 then
             other.components.combat:GetAttacked(inst, TUNING.RUINS_CAVEIN_OBSTACLE_FALL_DAMAGE, nil)

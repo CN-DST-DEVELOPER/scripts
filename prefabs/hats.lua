@@ -951,6 +951,24 @@ local function MakeHat(name)
         return inst
     end
 
+
+    local function nightcap_custom_init(inst)
+        inst:AddTag("good_sleep_aid")
+    end
+
+    fns.nightcap = function()
+        local inst = simple(nightcap_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.65)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        return inst
+    end
+
     local function stopusingbush(inst, data)
         local hat = inst.components.inventory ~= nil and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or nil
         if hat ~= nil and data.statename ~= "hide" then
@@ -3017,6 +3035,8 @@ local function MakeHat(name)
         fn = fns.mask
     elseif name == "mask_fool" then
         fn = fns.mask        
+    elseif name == "nightcap" then
+        fn = fns.nightcap
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -3154,6 +3174,8 @@ return  MakeHat("straw"),
         MakeHat("monkey_medium"),
         MakeHat("monkey_small"),
         MakeHat("polly_rogers"),
+
+        MakeHat("nightcap"),
 
         Prefab("minerhatlight", minerhatlightfn),
         Prefab("alterguardianhatlight", alterguardianhatlightfn),

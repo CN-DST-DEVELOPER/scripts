@@ -243,7 +243,9 @@ local states =
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation(data.anim)
             inst.AnimState:Pause()
-            if data.time ~= nil then
+			if data.frame ~= nil then
+				inst.AnimState:SetFrame(data.frame)
+			elseif data.time ~= nil then
                 inst.AnimState:SetTime(data.time)
             end
             inst.sg.statemem.dead = data.dead

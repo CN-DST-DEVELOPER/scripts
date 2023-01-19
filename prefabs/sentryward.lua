@@ -92,7 +92,7 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:SetTime(math.random() * 1.8)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     -----------------------
     MakeSmallBurnable(inst, nil, nil, true)

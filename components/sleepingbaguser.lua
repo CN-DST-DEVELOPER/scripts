@@ -62,7 +62,8 @@ function SleepingBagUser:DoWakeUp(nostatechange)
         if self.inst.sg:HasStateTag("bedroll") then
             self.inst.sg.statemem.iswaking = true
         end
-        self.inst.sg:GoToState("wakeup")
+        local goodsleeperequipped = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("good_sleep_aid")
+        self.inst.sg:GoToState("wakeup",{goodsleep=goodsleeperequipped})
     end
 end
 
@@ -77,9 +78,11 @@ end
 
 function SleepingBagUser:SleepTick()
 
+    local goodsleeperequipped = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("good_sleep_aid")
+
     local hunger_tick = self.bed.components.sleepingbag.hunger_tick * self.hunger_bonus_mult
     local health_tick = self.bed.components.sleepingbag.health_tick * self.health_bonus_mult
-    local sanity_tick = self.bed.components.sleepingbag.sanity_tick * self.sanity_bonus_mult
+    local sanity_tick = self.bed.components.sleepingbag.sanity_tick * self.sanity_bonus_mult * (goodsleeperequipped and TUNING.GOODSLEEP_SANITY or 1)
 
     local isstarving = false
     if self.inst.components.hunger ~= nil then

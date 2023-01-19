@@ -642,7 +642,7 @@ end
 --------------------------------------------------------------------------
 
 local function SkipToFull(inst)
-    inst.AnimState:SetTime((5 + math.random() * 7) * FRAMES)
+	inst.AnimState:SetFrame(4 + math.random(7))
 end
 
 local function PlaySoundFX(inst)

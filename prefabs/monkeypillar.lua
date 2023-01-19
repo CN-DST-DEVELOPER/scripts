@@ -33,7 +33,7 @@ local function setpillartype(inst, index)
     if inst.pillar_id == nil or (index ~= nil and inst.pillar_id ~= index) then
         inst.pillar_id = index or tostring(math.random(1, 4))
         inst.AnimState:PlayAnimation("idle"..inst.pillar_id)
-        inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
     end
 end
 

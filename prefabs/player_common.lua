@@ -1664,7 +1664,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_boat.zip"),
         Asset("ANIM", "anim/player_boat_plank.zip"),
         Asset("ANIM", "anim/player_oar.zip"),
-        Asset("ANIM", "anim/player_boat_hook.zip"),
+		--Asset("ANIM", "anim/player_boat_hook.zip"), --Unfinished, bad file. For unused "fishingnet". Overwrites other anim states due to poor naming.
         Asset("ANIM", "anim/player_boat_net.zip"),
         Asset("ANIM", "anim/player_boat_sink.zip"),
         Asset("ANIM", "anim/player_boat_jump.zip"),
@@ -1751,6 +1751,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_mount_travel.zip"),
         Asset("ANIM", "anim/player_mount_actions.zip"),
         Asset("ANIM", "anim/player_mount_actions_item.zip"),
+		Asset("ANIM", "anim/player_mount_actions_boomerang.zip"),
         Asset("ANIM", "anim/player_mount_actions_reading.zip"),
         Asset("ANIM", "anim/player_mount_unique_actions.zip"),
         Asset("ANIM", "anim/player_mount_actions_useitem.zip"),
@@ -1782,6 +1783,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_monkey_run.zip"),
 
         Asset("ANIM", "anim/player_acting.zip"),
+
+        Asset("ANIM", "anim/player_attack_pillows.zip"),
 
         Asset("INV_IMAGE", "skull_"..name),
 

@@ -1,6 +1,7 @@
 local AOESpell = Class(function(self, inst)
     self.inst = inst
-    self.spellfn = nil
+
+    --self.spellfn = nil
 end)
 
 function AOESpell:SetSpellFn(fn)
@@ -9,25 +10,27 @@ end
 
 function AOESpell:CastSpell(doer, pos)
 	local success, reason = true, nil
-    if self.spellfn ~= nil then
+    if self.spellfn then
 		success, reason = self.spellfn(self.inst, doer, pos)
 		if success == nil and reason == nil then
 			success = true
 		end
     end
-    if doer ~= nil and doer:IsValid() then
+
+    if doer and doer:IsValid() then
 		doer:PushEvent("oncastaoespell", { item = self.inst, pos = pos, success = success })
     end
 	return success, reason
 end
 
 function AOESpell:CanCast(doer, pos)
-	if self.spellfn == nil then
+	if not self.spellfn then
 		return false
 	end
+
 	local alwayspassable, allowwater, deployradius
 	local aoetargeting = self.inst.components.aoetargeting
-	if aoetargeting ~= nil then
+	if aoetargeting then
 		if not aoetargeting:IsEnabled() then
 			return false
 		end

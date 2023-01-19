@@ -1279,6 +1279,11 @@ function Tune(overrides)
                 PERDOFFERING = 1,
             }),
 
+            RABBITSHRINE = TechTree.Create({
+                RABBITOFFERING = 3,
+                PERDOFFERING = 1,
+            }),
+
             MADSCIENCE = TechTree.Create({
                 MADSCIENCE = 1,
             }),
@@ -6344,6 +6349,20 @@ function Tune(overrides)
         STATUEHARP_HEDGESPAWNER_RESET_TIME = total_day_time,
 
         SLURPER_MANNEQUINTIME = 7.5,
+
+        -- Year of the Bunny
+        SLEEPOVER_BUNNY_COUNT = 9,
+
+        GOODSLEEP_SANITY = 1.3,
+
+        BUNNY_RING_MINIGAME_ARENA_RADIUS = 8,
+        BUNNY_RING_CAMERA_FOCUS_MIN = 8,
+        BUNNY_RING_CAMERA_FOCUS_MAX = 8,
+
+        PILLOWFIGHT_PRIZE_CAP = 10,
+
+        PILLOW_DAMAGE = 0,
+        PILLOW_HIT_RANGE = 2.5,
     }
 
     TUNING_MODIFIERS = {}

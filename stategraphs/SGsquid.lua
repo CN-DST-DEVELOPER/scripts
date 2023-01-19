@@ -581,7 +581,7 @@ local states =
             end
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("jump")
-            inst.AnimState:SetTime(5*FRAMES)
+			inst.AnimState:SetFrame(5)
             inst.AnimState:PushAnimation("jump_loop")
 
             inst:StopBrain()

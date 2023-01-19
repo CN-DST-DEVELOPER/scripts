@@ -69,11 +69,11 @@ local function OnLinkTownPortals(inst, other)
         inst.components.inventoryitem:ChangeImageName("townportaltalisman_active")
         if inst.components.inventoryitem:IsHeld() then
             inst.AnimState:PlayAnimation("active_loop", true)
-            inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+			inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
         else
             if inst.AnimState:IsCurrentAnimation("active_shake2") then
                 inst.AnimState:PlayAnimation("active_loop", true)
-                inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+				inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
             elseif inst.AnimState:IsCurrentAnimation("active_fall") then
                 inst.onanimqueueover = DoActiveAnim
                 inst:ListenForEvent("animqueueover", DoActiveAnim)
@@ -128,7 +128,7 @@ local function topocket(inst)
 
     if inst.components.teleporter:IsActive() then
         inst.AnimState:PlayAnimation("active_loop", true)
-        inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
     else
         inst.AnimState:PlayAnimation("inactive")
     end

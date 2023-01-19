@@ -113,7 +113,7 @@ end
 local function PlayStageAnim(inst, anim, custom_pre)
 	if POPULATING or inst:IsAsleep() then
 		inst.AnimState:PlayAnimation("crop_"..anim, true)
-		inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 	elseif custom_pre ~= nil then
 		inst.AnimState:PlayAnimation(custom_pre, false)
 		inst.AnimState:PushAnimation("crop_"..anim, true)

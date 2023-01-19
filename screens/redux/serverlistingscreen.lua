@@ -19,6 +19,8 @@ local Levels = require("map/levels")
 require("constants")
 require("util")
 
+local SHOW_PINGS = not IsRail()
+
 local column_offsets_x_pos = -100
 local column_offsets_y_pos = 303
 local column_offsets ={
@@ -28,6 +30,9 @@ local column_offsets ={
     PLAYERS = 615,
     PING = 669,
 }
+if not SHOW_PINGS then
+    column_offsets.PLAYERS = 667
+end
 local server_list_width = 800
 
 local dev_color = WEBCOLOURS.PLUM
@@ -908,7 +913,7 @@ function ServerListingScreen:RefreshView(skipPoll, keepScrollFocusPos)
     -- If we're fading, don't mess with stuff
     if TheFrontEnd:GetFadeLevel() > 0 then return end
 
-    if TheNet:IsSearchingServers( PLATFORM ~= "WIN32_RAIL" ) then
+    if TheNet:IsSearchingServers() then
         self.refresh_button:Disable()
         self.refresh_button:SetText(STRINGS.UI.SERVERLISTINGSCREEN.REFRESHING)
         --if self.lan_spinner then self.lan_spinner.spinner:Disable() end
@@ -940,7 +945,9 @@ end
 function ServerListingScreen:SetRowColour(row_widget, colour)
     row_widget.NAME:SetColour(colour)
     row_widget.PLAYERS:SetColour(colour)
-    row_widget.PING:SetColour(colour)
+    if SHOW_PINGS then
+        row_widget.PING:SetColour(colour)
+    end
 end
 
 function ServerListingScreen:MakeServerListWidgets()
@@ -1087,8 +1094,10 @@ function ServerListingScreen:MakeServerListWidgets()
         row.PLAYERS = row:AddChild(CreateTextWithIcon("players.tex", 30, STRINGS.UI.SERVERLISTINGSCREEN.PLAYERS))
         row.PLAYERS:SetPosition(column_offsets.PLAYERS + 20, y_offset, 0)
 
-        row.PING = row:AddChild(CreateTextWithIcon("ping.tex", 25, STRINGS.UI.SERVERLISTINGSCREEN.PING))
-        row.PING:SetPosition(column_offsets.PING + 20, y_offset, 0)
+        if SHOW_PINGS then
+            row.PING = row:AddChild(CreateTextWithIcon("ping.tex", 25, STRINGS.UI.SERVERLISTINGSCREEN.PING))
+            row.PING:SetPosition(column_offsets.PING + 20, y_offset, 0)
+        end
 
         row.focus_forward = row.cursor
 
@@ -1106,7 +1115,9 @@ function ServerListingScreen:MakeServerListWidgets()
             widget.NAME:SetString("")
             widget.NAME:SetPosition(widget.NAME._align.x, widget.NAME._align.y, 0)
             widget.PLAYERS:SetText()
-            widget.PING:SetText()
+            if SHOW_PINGS then
+                widget.PING:SetText()
+            end
             widget.CHAR:Hide()
             widget.FRIEND_ICON:Hide()
             widget.CLAN_OTHER_ICON:Hide()
@@ -1238,9 +1249,11 @@ function ServerListingScreen:MakeServerListWidgets()
 
             widget.PLAYERS:SetText(serverdata.current_players .. "/" .. serverdata.max_players)
 
-            widget.PING:SetText(serverdata.ping)
-            if serverdata.ping < 0 then
-                widget.PING:SetText("???")
+            if SHOW_PINGS then
+                widget.PING:SetText(serverdata.ping)
+                if serverdata.ping < 0 then
+                    widget.PING:SetText("???")
+                end
             end
 
             if dev_server then
@@ -1287,13 +1300,24 @@ function ServerListingScreen:_GuaranteeSelectedServerHighlighted()
 end
 
 function ServerListingScreen:CycleColumnSort()
-    local next_sort = {
-        RELEVANCE = "PLAYERCOUNT",
-        PLAYERCOUNT = "PING",
-        PING = "SERVER_NAME_AZ",
-        SERVER_NAME_AZ = "SERVER_NAME_ZA",
-        SERVER_NAME_ZA = "RELEVANCE",
-    }
+    local next_sort = nil
+    if SHOW_PINGS then
+        next_sort = {
+            RELEVANCE = "PLAYERCOUNT",
+            PLAYERCOUNT = "PING",
+            PING = "SERVER_NAME_AZ",
+            SERVER_NAME_AZ = "SERVER_NAME_ZA",
+            SERVER_NAME_ZA = "RELEVANCE",
+        }
+    else
+        next_sort = {
+            RELEVANCE = "PLAYERCOUNT",
+            PLAYERCOUNT = "SERVER_NAME_AZ",
+            SERVER_NAME_AZ = "SERVER_NAME_ZA",
+            SERVER_NAME_ZA = "RELEVANCE",
+        }
+    end
+
     self:SetSort(next_sort[self.sort_column] or "RELEVANCE")
     self.sorting_spinner:SetFocus()
 end
@@ -1946,13 +1970,24 @@ function ServerListingScreen:_MakeConnectionSpinner()
 end
 
 function ServerListingScreen:MakeMenuButtons(left_col, right_col, nav_col)
-    local sorting_types = {
-        "RELEVANCE",
-        "PLAYERCOUNT",
-        "PING",
-        "SERVER_NAME_AZ",
-        "SERVER_NAME_ZA",
-    }
+    local sorting_types = nil
+    if SHOW_PINGS then
+        sorting_types = {
+            "RELEVANCE",
+            "PLAYERCOUNT",
+            "PING",
+            "SERVER_NAME_AZ",
+            "SERVER_NAME_ZA",
+        }
+    else
+        sorting_types = {
+            "RELEVANCE",
+            "PLAYERCOUNT",
+            "SERVER_NAME_AZ",
+            "SERVER_NAME_ZA",
+        }
+    end
+    
     local sorting_data = {}
     for i,sort_key in ipairs(sorting_types) do
         table.insert(sorting_data, {
@@ -2254,7 +2289,7 @@ function ServerListingScreen:OnControl(control, down)
         elseif control == CONTROL_OPEN_CRAFTING or control == CONTROL_OPEN_INVENTORY then
             self:ToggleShowFilters()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-        elseif control == CONTROL_MENU_MISC_2 and not TheNet:IsSearchingServers(PLATFORM ~= "WIN32_RAIL") then
+        elseif control == CONTROL_MENU_MISC_2 and not TheNet:IsSearchingServers() then
             self:SearchForServers()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         elseif control == CONTROL_MENU_MISC_1 then
@@ -2298,7 +2333,7 @@ function ServerListingScreen:GetHelpText()
 
     table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SERVERLISTINGSCREEN.CHANGE_SORT)
 
-    if not TheNet:IsSearchingServers(PLATFORM ~= "WIN32_RAIL") then
+    if not TheNet:IsSearchingServers() then
         table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.SERVERLISTINGSCREEN.REFRESH)
     end
 

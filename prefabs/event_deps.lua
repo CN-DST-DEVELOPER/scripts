@@ -187,6 +187,18 @@ local SPECIAL_EVENT_DEPS =
         },
     },
 
+    [SPECIAL_EVENTS.YOTR] =
+    {
+        frontend =
+        {
+            assets =
+            {
+                Asset("ANIM", "anim/dst_menu_yotr.zip"),
+                Asset("PKGREF", "sound/music_frontend_yotg.fsb"),
+            },
+        },
+    },
+
     [SPECIAL_EVENTS.YOTB] =
     {
         frontend =

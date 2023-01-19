@@ -33,7 +33,7 @@ local function CreateRipple()
 end
 
 local function DoRipple(inst, scale, fx)
-	local t = inst.AnimState:GetCurrentAnimationTime()
+	local frame = inst.AnimState:GetCurrentAnimationFrame()
 	local x, y, z = inst.Transform:GetWorldPosition()
 	if TheWorld.Map:IsOceanAtPoint(x, 0, z) then
 		if fx == nil or not fx:IsValid() then
@@ -42,12 +42,12 @@ local function DoRipple(inst, scale, fx)
 		fx.Transform:SetPosition(x, 0, z)
 		fx.AnimState:SetScale(scale, scale)
 		fx.AnimState:PlayAnimation(math.random() < .5 and "no_splash" or "no_splash2")
-		if t < PERIOD then
-			fx.AnimState:SetTime(t)
+		if frame < PERIOD then
+			fx.AnimState:SetFrame(frame)
 		end
 	end
-	if t < PERIOD then
-		inst._ripple_task = inst:DoTaskInTime(PERIOD - t, DoRipple, .6, fx)
+	if frame < PERIOD then
+		inst._ripple_task = inst:DoTaskInTime((PERIOD - frame) * FRAMES, DoRipple, .6, fx)
 	end
 end
 
