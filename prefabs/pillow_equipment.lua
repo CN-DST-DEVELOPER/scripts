@@ -163,7 +163,7 @@ local function MakeHandPillow(materialname, pillowdata)
             }
             pillow_common.DoKnockback(target, attacker, knockback_data)
         else
-            target:PushEvent("attacked", { attacker = attacker, weapon = inst})
+            target:PushEvent("attacked", { attacker = attacker, weapon = inst, damage = 0,})
         end
     end
 

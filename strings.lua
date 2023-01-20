@@ -4438,6 +4438,7 @@ STRINGS =
         YOTR_FOOD3 = "This dessert looks almost too good to eat.",
         YOTR_FOOD4 = "Puffy balls of chewy goodness.",
         YOTR_TOKEN = "Tell a Bunnyman you'd like to try your hand at a pillow battle.",
+        YOTR_FIGHTRING_KIT = "Who will be the last pillowfighter standing?",
 
         HANDPILLOW_BEEFALOWOOL = "It packs a woolly wallop!",
         HANDPILLOW_KELP = "Nobody likes a wet blanket. Wet pillows aren't much better.",

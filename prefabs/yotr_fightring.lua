@@ -584,10 +584,7 @@ local function OnRingRemoved(inst)
     for index = 1, WAITING_FIGHTERS_COUNT do
         local potential_fighter = inst.components.entitytracker:GetEntity(WAITING_FIGHTERS_NAMEPREFIX..index)
         if potential_fighter then
-            if potential_fighter.components.knownlocations then
-                potential_fighter.components.knownlocations:ForgetLocation("pillowfightlocation")
-            end
-            potential_fighter:PushEvent("pillowfight_returnhome")
+            potential_fighter:PushEvent("pillowfight_deactivated")
         end
     end
 end

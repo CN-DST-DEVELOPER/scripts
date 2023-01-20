@@ -73,6 +73,31 @@ local function AbleToAcceptItem(inst, item, giver)
     end
 end
 
+local function GetNextArena(inst)
+    if not TheWorld.yotr_fightrings then
+        return nil
+    end
+
+    local chosen_arena = next(TheWorld.yotr_fightrings)
+    if not chosen_arena then
+        return nil
+    end
+
+    local ix, iy, iz = inst.Transform:GetWorldPosition()
+    local dsq_to_chosen = chosen_arena:GetDistanceSqToPoint(ix, iy, iz)
+    for arena in pairs(TheWorld.yotr_fightrings) do
+        if arena ~= chosen_arena then
+            local dsq_to_arena = arena:GetDistanceSqToPoint(ix, iy, iz)
+            if dsq_to_arena < dsq_to_chosen then
+                chosen_arena = arena
+                dsq_to_chosen = dsq_to_arena
+            end
+        end
+    end
+
+    return chosen_arena
+end
+
 local ARENA_MUST = {"yotr_arena"}
 local REJECT_ITEM_DATA = {text=STRINGS.COZY_RABBIT_REJECTTOKEN}
 local REJECT_NOARENA_DATA = {text=STRINGS.COZY_RABBIT_NOARENA}
@@ -87,16 +112,7 @@ local function OnGetItemFromPlayer(inst, giver, item)
             giver.components.inventory:GiveItem(item)
             inst:PushEvent("reject", REJECT_ITEM_DATA)
         else
-            local chosen_arena = nil
-            
-            if TheWorld.yotr_fightrings and next(TheWorld.yotr_fightrings) then
-                for arena in pairs(TheWorld.yotr_fightrings) do
-                    -- look for closest?
-                    -- look for unclaimed?
-                    chosen_arena = arena
-                    break
-                end
-            end
+            local chosen_arena = GetNextArena(inst)
 
             if chosen_arena then
                 inst:PushEvent("gotyotrtoken", CHEER_TOKEN_DATA)

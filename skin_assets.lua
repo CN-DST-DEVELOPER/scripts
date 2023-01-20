@@ -1073,6 +1073,8 @@ local skin_assets =
 	Asset("PKGREF", "anim/dynamic/box_mystery_victorian.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/box_shared.zip"),
 	Asset("PKGREF", "anim/dynamic/box_shared.dyn"),
+	Asset("DYNAMIC_ANIM", "anim/dynamic/box_shop_character.zip"),
+	Asset("PKGREF", "anim/dynamic/box_shop_character.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/box_shop_forge.zip"),
 	Asset("PKGREF", "anim/dynamic/box_shop_forge.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/box_shop_forge_all.zip"),

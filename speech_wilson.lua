@@ -2913,12 +2913,12 @@ return {
 
         HANDPILLOW_BEEFALOWOOL = "If only it didn't also smell like a beefalo.",
         HANDPILLOW_KELP = "It's soggier than I would like.",
-        HANDPILLOW_PETALS = "At least is smells nicer than the beefalo pillow.",
+        HANDPILLOW_PETALS = "At least it smells nicer than the beefalo pillow.",
         HANDPILLOW_STEELWOOL = "Who would sleep on this?",
 
         BODYPILLOW_BEEFALOWOOL = "If only it didn't also smell like a beefalo.",
         BODYPILLOW_KELP = "It's soggier than I would like.",
-        BODYPILLOW_PETALS = "At least is smells nicer than the beefalo pillow.",
+        BODYPILLOW_PETALS = "At least it smells nicer than the beefalo pillow.",
         BODYPILLOW_STEELWOOL = "Who would sleep on this?",
 
 		BISHOP_CHARGE_HIT = "Ow!",

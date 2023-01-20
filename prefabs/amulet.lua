@@ -496,7 +496,7 @@ local function green()
 end
 
 local function orange()
-    local inst = commonfn("orangeamulet", "repairshortaction")
+    local inst = commonfn("orangeamulet", "repairshortaction", nil, true)
 
     if not TheWorld.ismastersim then
         return inst
