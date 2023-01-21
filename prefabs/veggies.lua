@@ -485,6 +485,7 @@ local function MakeVeggie(name, has_seeds)
 
         if name == "carrot" then
             inst.entity:AddSoundEmitter()
+            inst.GetActivateVerb = GetActivateVerb
         end
 
         MakeInventoryPhysics(inst)
@@ -623,7 +624,6 @@ local function MakeVeggie(name, has_seeds)
             inst.components.inventoryitem:SetOnPickupFn(function()
                 inst.Transform:SetNoFaced()
             end)
-            inst.GetActivateVerb = GetActivateVerb
         end
 
         return inst

@@ -19,22 +19,12 @@ function SpawnSecondInstance()
     end
 end
 
-local SLASH_CMD_RATE_LIMIT = 10
-local SlashCmd_Limiter = {}
-local function MinusLimit(inst, guid)
-    local counter = (SlashCmd_Limiter[guid] or 1) - 1
-    SlashCmd_Limiter[guid] = counter > 0 and counter or nil
-end
+
 --V2C: This is for server side processing of remote slash command requests
 function Networking_SlashCmd(guid, userid, cmd)
-    local entity = Ents[guid] or TheNet:GetClientTableForUser(userid)
-    if entity ~= nil then
-        local counter = (SlashCmd_Limiter[guid] or 0) + 1
-        if counter < SLASH_CMD_RATE_LIMIT then
-            SlashCmd_Limiter[guid] = counter
-            UserCommands.RunTextUserCommand(cmd, entity, true)
-            entity:DoTaskInTime(1, MinusLimit, guid)
-        end
+    local caller = Ents[guid] or TheNet:GetClientTableForUser(userid) -- NOTES(JBK): Either an actual entity or a table with some data.
+    if caller ~= nil then
+        UserCommands.RunTextUserCommand(cmd, caller, true)
     end
 end
 

@@ -273,7 +273,10 @@ local function GetSpinFaceTargetFn(inst)
         return nil
     end
     local shrine = inst.components.entitytracker:GetEntity("shrine")
-    local ents = shrine and shrine:getrabbits() or {}
+    local ents = shrine and shrine:getrabbits() or nil
+    if ents == nil then
+        return nil
+    end
 
     local target = nil
     for i,ent in ipairs(ents)do
@@ -480,12 +483,16 @@ local function carrotgamemanager(inst)
         if inst.carrotgamestatus == "wait" then
             local carrot = inst.components.entitytracker:GetEntity("carrot")
         
-            if carrot and not carrot.components.inventoryitem.owner then
-                inst:ForceFacePoint(carrot.Transform:GetWorldPosition())
+            if carrot then
+                if not carrot.components.inventoryitem.owner then
+                    inst:ForceFacePoint(carrot.Transform:GetWorldPosition())
 
-                if carrot.AnimState:IsCurrentAnimation("spin_pst") then
-                    inst.carrotgamestatus = "declare"
+                    if carrot.AnimState:IsCurrentAnimation("spin_pst") then
+                        inst.carrotgamestatus = "declare"
+                    end
                 end
+            else
+                inst:finishgame()
             end
         end
 
@@ -663,7 +670,6 @@ local function getpillow(inst)
     if dsq > 1 then
         return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, pos )
     else
-        pillow:AddComponent("inventoryitem")
         return BufferedAction(inst, pillow, ACTIONS.PICKUP )
     end
 end
@@ -835,6 +841,12 @@ function CozyBunnymanBrain:OnStart()
             DoAction(self.inst, shouldgotoarena, "go to arena", true ),
             DoAction(self.inst, shoulddigbacktopillowring, "return to pillow ring", true),
 
+            IfNode(function() return not self.inst.components.entitytracker:GetEntity("arena") end, "hold pillow behaviour for arena",
+                ChattyNode(self.inst, "COZY_RABBIT_PLANTPILLOW",
+                    DoAction(self.inst, plantpillow, "plant pillow", true )
+                )
+            ),
+
             WhileNode( function() return checkforcarrotgame(self.inst) end, "carrot game on",
                         carrotgame),
 
@@ -861,13 +873,8 @@ function CozyBunnymanBrain:OnStart()
                 }, PRIORITY_NODE_RATE)
             ),
 
-            WhileNode(function() return not self.inst.components.entitytracker:GetEntity("arena") end, "hold pillow behaviour for arena",
-                PriorityNode({
-                    ChattyNode(self.inst, "COZY_RABBIT_PLANTPILLOW",
-                        DoAction(self.inst, plantpillow, "plant pillow", true )
-                    ),
-                    DoAction(self.inst, gotopillowlocation, "go to pillow spot"),
-                }, PRIORITY_NODE_RATE)
+            WhileNode(function() return not self.inst.components.entitytracker:GetEntity("arena") end, "go back to pillow spot",
+                DoAction(self.inst, gotopillowlocation, "go to pillow spot")
             ),
 
             ChattyNode(self.inst, "COZY_RABBIT_GREET",

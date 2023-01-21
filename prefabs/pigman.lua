@@ -350,7 +350,7 @@ local function GuardRetargetFn(inst)
         if not TheWorld.state.isday and home ~= nil and home.components.burnable ~= nil and home.components.burnable:IsBurning() then
             local lightThief = FindEntity(
                 home,
-                home.components.burnable:GetLargestLightRadius(),
+                home.components.burnable:GetLargestLightRadius() or 4,
                 function(guy)
                     return guy:IsInLight()
                         and not (defenseTarget.components.trader ~= nil and defenseTarget.components.trader:IsTryingToTradeWithMe(guy))

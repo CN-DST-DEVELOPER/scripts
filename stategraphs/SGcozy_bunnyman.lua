@@ -852,20 +852,29 @@ local states =
 
             local bufferedaction = inst:GetBufferedAction()
 
-            if bufferedaction and bufferedaction.action.id == "DROP" and bufferedaction.invobject and bufferedaction.invobject.prefab == "hareball" then
-                inst.AnimState:PlayAnimation("disgust")
-                inst.sg.statemem.disgust = true
-                inst.SoundEmitter:PlaySound("yotr_2023/common/bunnyman_disgust")
-            else
+            if bufferedaction then
+                if bufferedaction.action.id == "DROP" and bufferedaction.invobject and bufferedaction.invobject.prefab == "hareball" then
+                    inst.AnimState:PlayAnimation("disgust")
+                    inst.sg.statemem.disgust = true
+                    inst.SoundEmitter:PlaySound("yotr_2023/common/bunnyman_disgust")
+                elseif bufferedaction.action.id == "PICKUP" and bufferedaction.target and bufferedaction.target:HasTag("bodypillow") then
+                    inst.sg.statemem.pickup_bodypillow = bufferedaction.target
+                end
+            end
+
+            if not inst.sg.statemem.disgust then
                 inst.AnimState:PlayAnimation("pig_pickup")
             end
-            
         end,
 
         timeline =
         {
             TimeEvent(10 * FRAMES, function(inst)
                 if not inst.sg.statemem.disgust then
+                    local body_pillow = inst.sg.statemem.pickup_bodypillow
+                    if body_pillow and body_pillow:IsValid() and not body_pillow.components.inventoryitem then
+                        body_pillow:AddComponent("inventoryitem")
+                    end
                     inst:PerformBufferedAction()
                 end
             end),

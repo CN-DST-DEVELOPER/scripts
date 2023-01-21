@@ -6,8 +6,6 @@ local assets =
     Asset("SCRIPT", "scripts/prefabs/pillow_defs.lua"),
     Asset("ANIM", "anim/firefighter_placement.zip"),
     Asset("MINIMAP_IMAGE", "yotr_rabbitshrine"),
-
-    
 }
 
 local prefabs =
@@ -23,7 +21,7 @@ local prefabs =
 
     "redpouch_yotr",
     "yotb_post_spotlight",
-    
+
     "yotr_decor_1",
     "yotr_decor_2",
     "yotr_decor_1_item",
@@ -31,6 +29,7 @@ local prefabs =
 }
 
 local NUMOFBUNNIES = TUNING.SLEEPOVER_BUNNY_COUNT
+local PLACER_RADIUS = 10
 
 for material in pairs(require("prefabs/pillow_defs")) do
     table.insert(prefabs, "handpillow_"..material)
@@ -139,33 +138,24 @@ local function getrabbits(inst, fn)
     return bunnies
 end
 
-local function CheckForSpawn(inst, theta)
+local function CheckForSpawn(inst)
     if not IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
         return
     end
 
-    local pos = Vector3(inst.Transform:GetWorldPosition())
+    local radiushome = PLACER_RADIUS - 3 -- Use a radius a bit inside of the full radius.
+    local tweakradius = 4
+    local pos = inst:GetPosition()
+
     inst.bunnylocations = {}
     inst.bunnyhomelocations = {}
-    local radius = 10
-    local radiushome = 7
     for i=1,NUMOFBUNNIES do
-        local theta = i * (PI*2/NUMOFBUNNIES)
+        local theta = i * (PI2/NUMOFBUNNIES)
         inst.bunnyhomelocations[i] = Vector3(radiushome * math.cos( theta ), 0, -radiushome * math.sin( theta ))
-        local newpos = pos + inst.bunnyhomelocations[i]
-      --  local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
-      --  local tweaktheta = math.random()*PI*2
-      --  local tweakradius = 2
-        --local tweak = Vector3(tweakradius * math.cos( tweaktheta ), 0, -tweakradius * math.sin( tweaktheta ))
-        local tweakradius = 4
-        local tweak = FindWalkableOffset(newpos, theta, tweakradius, 12, true, true)
+        local tweak = FindWalkableOffset(pos + inst.bunnyhomelocations[i], theta, tweakradius, 12, true, true)
         if tweak then
-            tweak = Vector3(tweak.x,0,tweak.z) 
-        else
-            tweak = Vector3(0,0,0)
+            inst.bunnylocations[i] = inst.bunnyhomelocations[i]+tweak
         end
-
-        inst.bunnylocations[i] = inst.bunnyhomelocations[i]+tweak
     end
 
     for i=1,NUMOFBUNNIES do
@@ -231,15 +221,7 @@ local function SetOffering(inst, offering, loading)
     inst:AddChild(offering)
     offering:RemoveFromScene()
     offering.Transform:SetPosition(0, 0, 0)
-    --[[
-    if offering.prefab == "carrot" then
-        inst.AnimState:ClearOverrideSymbol("meat")
-    elseif offering.prefab == "meat_dried" then
-        inst.AnimState:OverrideSymbol("meat", "pigshrine", "meat_jerky")
-    elseif offering.prefab == "cookedmeat" then
-        inst.AnimState:OverrideSymbol("meat", "pigshrine", "meat_cooked")
-    end
-    ]]
+
     inst.AnimState:Show("offering")
 
     if not loading then
@@ -259,8 +241,6 @@ end
 
 local function abletoaccepttest(inst, item)
     return item.prefab == "carrot"
-    --[[    or item.prefab == "meat_dried"
-        or item.prefab == "cookedmeat" ]]
 end
 
 local function MakeEmpty(inst)
@@ -441,23 +421,37 @@ local function fn()
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:ListenForEvent("ondeconstructstructure", DropOffering)
-    
+
     return inst
 end
 
-local PLACER_SCALE = 10
-
+local ANGLE_PER_PLACER_TEST = PI2 / NUMOFBUNNIES
 local function placer_override_testfn(inst)
     local can_build, mouse_blocked = true, false
 
     local x, y, z = inst.Transform:GetWorldPosition()
-    local r = 10
-    for i = 0, 8 do
-        if not TheWorld.Map:IsAboveGroundAtPoint(x + r * math.sin(i * 45*DEGREES), 0, z + r * math.cos(i * 45*DEGREES), false) then
-            can_build = false
-            break
+    local ipos = inst:GetPosition()
+    if not TheWorld.Map:IsDeployPointClear2(ipos, inst, 0.7) then
+        can_build = false
+    end
+
+    if can_build then
+        for i = 1, NUMOFBUNNIES do
+            local angle = i * ANGLE_PER_PLACER_TEST
+            if not TheWorld.Map:IsAboveGroundAtPoint(x + PLACER_RADIUS*math.sin(angle), 0, z + PLACER_RADIUS*math.cos(angle)) then
+                can_build = false
+                break
+            end
         end
     end
+
+    return can_build, mouse_blocked
+end
+
+local function placer_postinit_fn(inst)
+    inst.AnimState:Hide("offering")
+
+    inst.components.placer.override_testfn = placer_override_testfn
 
     local placer2 = CreateEntity()
 
@@ -487,14 +481,6 @@ local function placer_override_testfn(inst)
     placer2.entity:SetParent(inst.entity)
 
     inst.components.placer:LinkEntity(placer2)
-
-    return can_build, mouse_blocked
-end
-
-local function placer_postinit_fn(inst)
-    inst.AnimState:Hide("offering")   
-
-    inst.components.placer.override_testfn = placer_override_testfn
 end
 
 return Prefab("yotr_rabbitshrine", fn, assets, prefabs),

@@ -10,21 +10,40 @@ local PopupDialogScreen = require "screens/redux/popupdialog"
 
 local usercommands = {}
 local modusercommands = {}
+
+local hasiteminqueue = false
 local cmdqueue = {}
+local SLASH_CMDS_PER_TICK_LIMIT = 10
+local SlashCmd_Limiter = {}
+local SlashCmd_Limiter_Warned = {}
 
 -----------------------------------------------------------------------------------------------------------
 -- INTERNAL EXECUTION HANDLERS
 -----------------------------------------------------------------------------------------------------------
 
 local function queuelocalcommandexec(fn, params, caller)
-    --Queue execution so it runs during sim update loop
-    table.insert(cmdqueue, { fn = fn, params = params, caller = caller })
+    local userid = caller and caller.userid or params and params.user and UserToClientID(params.user) or "unknown"
+    local counter = (SlashCmd_Limiter[userid] or 0) + 1
+    if counter <= SLASH_CMDS_PER_TICK_LIMIT then
+        SlashCmd_Limiter[userid] = counter
+        --Queue execution so it runs during sim update loop
+        table.insert(cmdqueue, { fn = fn, params = params, caller = caller })
+        hasiteminqueue = true
+    elseif SlashCmd_Limiter_Warned[userid] == nil then
+        print("Excess commands per tick from", userid)
+        SlashCmd_Limiter_Warned[userid] = true
+    end
 end
 
 function HandleUserCmdQueue()
-    while #cmdqueue > 0 do
-        local cmd = table.remove(cmdqueue, 1)
-        cmd.fn(cmd.params, cmd.caller)
+    if hasiteminqueue then
+        for _, cmd in ipairs(cmdqueue) do
+            cmd.fn(cmd.params, cmd.caller)
+        end
+        cmdqueue = {}
+        SlashCmd_Limiter = {}
+        SlashCmd_Limiter_Warned = {}
+        hasiteminqueue = false
     end
 end
 
