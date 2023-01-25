@@ -44,6 +44,9 @@ end
 -- To repeat a periodic announcement: c_announce(msg, interval)
 -- To cancel a periodic announcement: c_announce()
 function c_announce(msg, interval, category)
+    msg = type(msg) == "string" and msg or tostring(msg)
+    interval = type(interval) == "number" and interval or nil
+    category = type(category) == "string" and category or nil
     if msg == nil then
         if TheWorld.__announcementtask ~= nil then
             TheWorld.__announcementtask:Cancel()
@@ -1420,6 +1423,23 @@ function c_makeboat()
     inst = SpawnPrefab("cannonball_rock_item")
     inst.Transform:SetPosition(x, y, z + 3)
 	inst.components.stackable:SetStackSize(20)
+end
+
+function c_makegrassboat()
+	local x, y, z = ConsoleWorldPosition():Get()
+
+	local inst = SpawnPrefab("boat_grass")
+	inst.Transform:SetPosition(x, y, z)
+
+	local inst = SpawnPrefab("mast")
+	inst.Transform:SetPosition(x, y, z)
+	inst = SpawnPrefab("steeringwheel")
+	inst.Transform:SetPosition(x + 1, y, z)
+	inst = SpawnPrefab("anchor")
+	inst.Transform:SetPosition(x - 1, y, z + 1)
+
+	inst = SpawnPrefab("oar_driftwood")
+	inst.Transform:SetPosition(x + 1, y, z - 1)
 end
 
 function c_makecrabboat()

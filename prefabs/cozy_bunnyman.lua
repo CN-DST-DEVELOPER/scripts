@@ -175,6 +175,14 @@ local function OnAttacked(inst, data)
     end
 end
 
+local function NamePillow(item, inst)
+    if not item.components.named then
+        item:AddComponent("named")
+        local name = subfmt(STRINGS.UI.OBJECTOWNERSHIP, {object = item.name, owner = inst.name})
+        item.components.named:SetName(name)
+    end
+end
+
 local function OnItemDropped(inst, data)
     if data.item and data.item:HasTag("bodypillow") then
 
@@ -182,11 +190,7 @@ local function OnItemDropped(inst, data)
         inst.components.entitytracker:TrackEntity("floorpillow", data.item)
         data.item:RemoveComponent("inventoryitem")
 
-        if not data.item.components.named then
-            data.item:AddComponent("named")
-            local name = subfmt(STRINGS.UI.OBJECTOWNERSHIP, {object = data.item.name, owner = inst.name})
-            data.item.components.named:SetName(name)
-        end
+        NamePillow(data.item, inst)
     end
 end
 
@@ -307,6 +311,7 @@ local function connecttofloorpillow(inst)
         if not pillow.components.inventoryitem.owner then
             inst.components.homeseeker:SetHome(pillow)
             pillow:RemoveComponent("inventoryitem")
+            NamePillow(pillow, inst)
         end
     end
     inst:ListenForEvent("onremove", onremove_cleanup_floor_pillow)

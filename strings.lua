@@ -12422,7 +12422,7 @@ STRINGS.LUCY =
 
     on_ground =
     {
-        "Come back! Take we with you!",
+        "Come back! Take me with you!",
         "Where did you go?",
         "Take me with you!",
         "It's cold!",

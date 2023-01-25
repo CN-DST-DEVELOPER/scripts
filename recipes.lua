@@ -681,10 +681,10 @@ Recipe2("hermitshop_winter_ornament_boss_pearl",		{Ingredient("messagebottleempt
 Recipe2("yotr_fightring_kit",				{Ingredient("boards", 2)},																				TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
 Recipe2("yotr_token",						{Ingredient("goldnugget", 1)},																			TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
 
-Recipe2("yotr_food1", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
-Recipe2("yotr_food2", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
-Recipe2("yotr_food3", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
-Recipe2("yotr_food4", 	                    {Ingredient("lucky_goldnugget", 1)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food1", 	                    {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food2", 	                    {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food3", 	                    {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yotr_food4", 	                    {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
 
 Recipe2("yotr_decor_1_item", 	            {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
 Recipe2("yotr_decor_2_item", 	            {Ingredient("lucky_goldnugget", 5)},																	TECH.RABBITOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})

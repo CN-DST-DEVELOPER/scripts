@@ -68,7 +68,7 @@ local anims = {
     idle_chop_burnt="idle_chop_burnt",
 }
 
-local STAGES_TO_SUPERTALL = 4
+local STAGES_TO_SUPERTALL = TUNING.OCEANTREE_STAGES_TO_SUPERTALL
 
 local function update_ripples_roots(inst)
     --@waterlog_todo: since the growable cmp is removed on burn/chop down this won't work when trees in those
@@ -401,9 +401,12 @@ local function MakeNotEnriched(inst)
     inst.AnimState:PlayAnimation("ungooped")
     PushSway(inst)
 
-    local random = math.random(1,#inst.buds)
-    table.insert(inst.buds_used,inst.buds[random])
-    table.remove(inst.buds,random)
+    local budscount = #inst.buds
+    if budscount > 0 then -- NOTES(JBK): In case STAGES_TO_SUPERTALL gets changed we do not want to exceed the 7 buds the tree has.
+        local random = math.random(1, budscount)
+        table.insert(inst.buds_used, inst.buds[random])
+        table.remove(inst.buds, random)
+    end
 
     showbuds(inst)
         

@@ -430,7 +430,7 @@ local states =
 
         onenter = function(inst, data)
             local ba = inst:GetBufferedAction()
-            if ba.target.components.edible.foodtype ~= FOODTYPE.VEGGIE then
+            if ba.target and ba.target.components.edible and ba.target.components.edible.foodtype ~= FOODTYPE.VEGGIE and ba.target:IsValid() then
                 inst.sg.statemem.barf = ba.target
             end
 
@@ -444,7 +444,9 @@ local states =
                 
             TimeEvent(4 * FRAMES, function(inst)
                 if inst.sg.statemem.barf then
-                    inst.components.inventory:GiveItem(inst.sg.statemem.barf)
+                    if inst.sg.statemem.barf:IsValid() then
+                        inst.components.inventory:GiveItem(inst.sg.statemem.barf)
+                    end
                 else
                     if inst.components.entitytracker:GetEntity("carrot") and inst:GetBufferedAction().target == inst.components.entitytracker:GetEntity("carrot") then
                         inst.sg.statemem.nocheer = true
@@ -456,8 +458,10 @@ local states =
 
             TimeEvent(20 * FRAMES, function(inst)
                 if inst.sg.statemem.barf then
-                    inst.sg.statemem.barf:PushEvent("oneaten",{eater=inst})
-                    inst.sg.statemem.barf:Remove()
+                    if inst.sg.statemem.barf:IsValid() then
+                        inst.sg.statemem.barf:PushEvent("oneaten",{eater=inst})
+                        inst.sg.statemem.barf:Remove()
+                    end
                     inst.sg:GoToState("disgust")
                 end
             end),

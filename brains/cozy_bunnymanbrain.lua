@@ -176,6 +176,7 @@ local function dropprizeforplayer(inst)
     local prize_info = inst.fightprizes[1]
     if prize_info then
         local winner = prize_info.winner
+        winner = winner:IsValid() and winner or nil
         local my_position = inst:GetPosition()
 
         local base_position = (winner and winner:GetPosition()) or my_position

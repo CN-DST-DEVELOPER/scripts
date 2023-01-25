@@ -94,6 +94,11 @@ local set_pillows = {
 }
 
 function do_bunnyman_spawn(inst, index)
+    local bunspawn = inst.bunnylocations[index]
+    if bunspawn == nil then
+        return
+    end
+
     local bunbun = SpawnPrefab("cozy_bunnyman")
     bunbun.sg:GoToState("spawn_pre")
 
@@ -102,7 +107,7 @@ function do_bunnyman_spawn(inst, index)
     bunbun.components.entitytracker:TrackEntity("shrine", inst)
 
     local pos = inst:GetPosition()
-    bunbun.Transform:SetPosition((pos + inst.bunnylocations[index]):Get())
+    bunbun.Transform:SetPosition((pos + bunspawn):Get())
     bunbun.components.knownlocations:RememberLocation("pillowSpot", pos + inst.bunnyhomelocations[index])
 
     local pillows =  {"bodypillow_petals", "handpillow_petals"}

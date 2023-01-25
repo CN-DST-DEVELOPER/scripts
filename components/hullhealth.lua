@@ -57,15 +57,7 @@ function HullHealth:GetDamageMult(cat)
 end
 
 function HullHealth:UpdateHealth()
-	if TheWorld.Map:IsVisualGroundAtPoint(self.inst.Transform:GetWorldPosition()) then
-		if self.inst.components.boatphysics then
-			self.inst.components.boatphysics:SetHalting(true)
-		end
-		if self.inst.components.health:IsDead() then
-			return
-		end
-		self.inst.components.health:Kill()
-	end
+    if self.inst.components.health:IsDead() then return end
 
 	local hull_damage = 0
 	for k,v in pairs(self.leak_indicators) do

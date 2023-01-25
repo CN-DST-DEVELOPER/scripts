@@ -6,7 +6,7 @@ local assets =
 local foodinfo =
 {    
     {-- carrot roll  (hunger)
-        food=FOODTYPE.VEGGIE,
+        food=FOODTYPE.GOODIES,
         hunger = TUNING.CALORIES_HUGE,
         health = TUNING.HEALING_HUGE/4,
         sanity = TUNING.SANITY_LARGE/4,
@@ -14,7 +14,7 @@ local foodinfo =
         floater = {"med", 0.9, false},
     },     
     {-- moon cake (health)
-        food=FOODTYPE.VEGGIE,
+        food=FOODTYPE.GOODIES,
         hunger = TUNING.CALORIES_HUGE/4,        
         health = TUNING.HEALING_HUGE,
         sanity = TUNING.SANITY_LARGE/4,

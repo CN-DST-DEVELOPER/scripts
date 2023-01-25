@@ -5864,6 +5864,7 @@ function Tune(overrides)
         OCEANTREE_ENRICHED_COOLDOWN_VARIANCE = total_day_time * 1.5,
         OCEANTREE_CHOPS_NORMAL = 10,
         OCEANTREE_PILLAR_CHOPS = 25,
+        OCEANTREE_STAGES_TO_SUPERTALL = 4,
 
         OCEANTREE_VINE_DROP_MAX = 4,
 

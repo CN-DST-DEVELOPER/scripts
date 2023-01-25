@@ -3192,7 +3192,7 @@ function PlayerController:DoPredictWalking(dt)
 				self.locomotor:RunInDirection(dir)
 				self.remote_predict_dir = dir
             else
-				if self.remote_authority and self.remote_predict_dir ~= nil and DiffAngle(dir, self.remote_predict_dir) >= 90 then
+				if self.remote_authority and self.inst:GetCurrentPlatform() == nil and self.remote_predict_dir ~= nil and DiffAngle(dir, self.remote_predict_dir) >= 90 then -- FIXME(JBK): Boat handling.
 					--overshot?
 					self.inst.Transform:SetPosition(pt.x, 0, pt.z)
 				else
@@ -3234,7 +3234,7 @@ function PlayerController:DoPredictWalking(dt)
                 self.remote_vector.y = 0
             elseif distancetotargetsq > RUBBER_BAND_DISTANCE_SQ then
                 self.remote_vector.y = 0
-				if self.remote_authority then
+				if self.remote_authority and self.inst:GetCurrentPlatform() == nil then -- FIXME(JBK): Boat handling.
 					self.inst.Transform:SetPosition(pt.x, 0, pt.z)
 				else
 					self.inst.Physics:Teleport(self.inst.Transform:GetWorldPosition())

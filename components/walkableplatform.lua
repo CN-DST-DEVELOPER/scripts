@@ -122,16 +122,41 @@ end
 function WalkablePlatform:SetEntitiesOnPlatform()
     local new_objects_on_platform = {}
     local x, y, z = self.inst.Transform:GetWorldPosition()
-    local entities = TheSim:FindEntities(x, y, z, self.platform_radius, nil, IGNORE_WALKABLE_PLATFORM_TAGS)
+    local r1 = self.platform_radius
+    local entities = TheSim:FindEntities(x, y, z, r1, nil, IGNORE_WALKABLE_PLATFORM_TAGS)
+    local shouldhalt = false
     for i, v in ipairs(entities) do
         if v ~= self.inst and v.entity:GetParent() == nil then
-            new_objects_on_platform[v] = true
-            if self.objects_on_platform[v] then
-                self.objects_on_platform[v] = nil
-            else
-                self.inst:AddPlatformFollower(v)
+            local safetoadd = true
+            if v.Physics ~= nil and v.Physics:GetMass() == 0 then
+                -- NOTES(JBK): Boats do not like infinite mass objects when they intersect their own collision mesh and get attached to the platform.
+                -- So we will do a quick circle intersection test of the physics objects to try to reduce the odds of one of these happening.
+                local x2, _, z2 = v.Transform:GetWorldPosition()
+                local dx, dz = x2 - x, z2 - z
+                local dist = math.sqrt(dx * dx + dz * dz)
+                local r2 = (v.Physics:GetRadius() or 1)
+                if dist <= r1 + r2 and dist >= math.abs(r1 - r2) then -- Circles are not separate and circles are not contained inside each other. This means they are intersecting.
+                    safetoadd = false
+                    shouldhalt = true
+                end
+            end
+            if safetoadd then 
+                new_objects_on_platform[v] = true
+                if self.objects_on_platform[v] then
+                    self.objects_on_platform[v] = nil
+                else
+                    self.inst:AddPlatformFollower(v)
+                end
             end
         end
+    end
+    local shouldbreak = TheWorld.Map:IsVisualGroundAtPoint(x, y, z) -- Health break not brake to stop.
+    if self.inst.components.boatphysics then
+        shouldhalt = shouldhalt or shouldbreak
+        self.inst.components.boatphysics:SetHalting(shouldhalt or shouldbreak) -- Safe to call repeatedly.
+    end
+    if shouldbreak and self.inst.components.health and not self.inst.components.health:IsDead() then
+        self.inst.components.health:Kill()
     end
 
     for k in pairs(self.objects_on_platform) do

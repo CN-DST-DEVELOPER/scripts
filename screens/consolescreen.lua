@@ -295,7 +295,7 @@ function ConsoleScreen:DoInit()
 		"inst",
 		"knownassert",
 		"list", "listallplayers", "listplayers", "listtag",
-		"maintainall", "maintainhealth", "maintainhunger", "maintainmoisture", "maintainsanity", "maintaintemperature", "makeboat", "makeboatspiral", "makecrabboat", "makeinvisible", "mat", "mermking", "mermthrone", "migrateto", "migrationportal", "move",
+		"maintainall", "maintainhealth", "maintainhunger", "maintainmoisture", "maintainsanity", "maintaintemperature", "makeboat", "makeboatspiral", "makecrabboat", "makegrassboat", "makeinvisible", "mat", "mermking", "mermthrone", "migrateto", "migrationportal", "move",
 		"netstats",
 		"pos", "printpos", "printtextureinfo",
 		"regenerateshard", "regenerateworld", "remote", "remove", "removeall", "removeallwithtags", "removeat", "repeatlastcommand", "reregisterportals", "reset", "rollback", "rotateccw", "rotatecw",

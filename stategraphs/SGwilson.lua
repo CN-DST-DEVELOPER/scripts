@@ -15651,7 +15651,7 @@ local states =
         events =
         {
 			EventHandler("animover", function(inst)
-				if not inst.AnimState:AnimDone() then
+				if inst.AnimState:AnimDone() then
 					inst.sg.statemem.not_interrupted = true
 					inst.sg:GoToState("furl", inst.sg.mem.furl_target)
 				end
