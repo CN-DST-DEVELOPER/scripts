@@ -105,7 +105,8 @@ local WorldGenScreen = Class(Screen, function(self, profile, cb, world_gen_data,
         local moddata = {}
         moddata.index = KnownModIndex:CacheSaveData()
 
-        self.modparam = json.encode(moddata)
+        local ok, result = xpcall(function() return json.encode(moddata) end, generic_error)
+        self.modparam = ok and result or "[]" -- NOTES(JBK): A json encode of a blank table makes this string.
 
         TheSim:GenerateNewWorld(self.genparam, self.modparam,
             function(worlddata)

@@ -176,10 +176,8 @@ local function OnAttacked(inst, data)
 end
 
 local function NamePillow(item, inst)
-    if not item.components.named then
-        item:AddComponent("named")
-        local name = subfmt(STRINGS.UI.OBJECTOWNERSHIP, {object = item.name, owner = inst.name})
-        item.components.named:SetName(name)
+	if item.components.named ~= nil and item.components.named.name == nil then
+		item.components.named:SetName(subfmt(STRINGS.UI.OBJECTOWNERSHIP, {object = item.name, owner = inst.name}))
     end
 end
 
@@ -299,16 +297,20 @@ end
 ----------------------------------------------------
 local function onremove_cleanup_floor_pillow(inst)
     local pillow = inst.components.entitytracker:GetEntity("floorpillow")
-    if pillow and not pillow.components.inventoryitem then
-        pillow:AddComponent("inventoryitem")
-        pillow:RemoveComponent("named")
+	if pillow ~= nil then
+		if pillow.components.inventoryitem == nil then
+			pillow:AddComponent("inventoryitem")
+		end
+		if pillow.components.named ~= nil then
+			pillow.components.named:SetName(nil)
+		end
     end
 end
 
 local function connecttofloorpillow(inst)
     local pillow = inst.components.entitytracker:GetEntity("floorpillow")
     if pillow then
-        if not pillow.components.inventoryitem.owner then
+        if not pillow.components.inventoryitem:IsHeld() then
             inst.components.homeseeker:SetHome(pillow)
             pillow:RemoveComponent("inventoryitem")
             NamePillow(pillow, inst)

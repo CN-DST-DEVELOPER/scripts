@@ -128,7 +128,7 @@ function WalkablePlatform:SetEntitiesOnPlatform()
     for i, v in ipairs(entities) do
         if v ~= self.inst and v.entity:GetParent() == nil then
             local safetoadd = true
-            if v.Physics ~= nil and v.Physics:GetMass() == 0 then
+            if v.Physics ~= nil and v.Physics:GetMass() == 0 and checkbit(v.Physics:GetCollisionMask(), COLLISION.OBSTACLES) then
                 -- NOTES(JBK): Boats do not like infinite mass objects when they intersect their own collision mesh and get attached to the platform.
                 -- So we will do a quick circle intersection test of the physics objects to try to reduce the odds of one of these happening.
                 local x2, _, z2 = v.Transform:GetWorldPosition()

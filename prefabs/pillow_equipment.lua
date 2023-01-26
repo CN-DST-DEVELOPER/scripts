@@ -70,17 +70,16 @@ local function MakeBodyPillow(materialname, pillowdata)
         MakeInventoryFloatable(inst, "large", 0.1, 0.75)
 
         --Sneak this into pristine state for optimization
-        inst:AddTag("__named")
+        inst:AddTag("_named")
 
         inst.entity:SetPristine()
+
         if not TheWorld.ismastersim then
             return inst
         end
 
         --Remove this tag so that they can be added properly when replicating later
-        inst:RemoveTag("__named")
-        inst:PrereplicateComponent("named")
-
+        inst:RemoveTag("_named")
 
         inst._prize_value = pillowdata.body_prize_value
 
@@ -91,6 +90,7 @@ local function MakeBodyPillow(materialname, pillowdata)
         inst._on_blocked = function(owner, data) on_blocked_callback(owner, data, inst) end
 
         -------------------------------------------------------
+		inst:AddComponent("named")
         inst:AddComponent("inspectable")
 
         -------------------------------------------------------

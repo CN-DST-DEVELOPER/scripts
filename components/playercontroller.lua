@@ -4316,7 +4316,7 @@ function PlayerController:OnRemoteBufferedAction()
         --If we're starting a remote buffered action, prevent the last
         --movement prediction vector from cancelling us out right away
         if self.remote_vector.y >= 3 then
-			if self.remote_authority and self.remote_vector.y < 5 and not self:IsBusy() then
+			if self.remote_authority and self.inst:GetCurrentPlatform() == nil and self.remote_vector.y < 5 and not self:IsBusy() then -- FIXME(JBK): Boat handling.
 				--excludes self:IsLocalOrRemoteHopping() as well, ie. y ~= 6
 				local x, y, z = self.inst.Transform:GetWorldPosition()
 				if x ~= self.remote_vector.x or z ~= self.remote_vector.z then
