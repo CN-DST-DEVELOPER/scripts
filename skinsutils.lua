@@ -1957,3 +1957,8 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	end
 	return columns, resize_root, resize_root_small, resize_root_small_higher
 end
+
+-- Testing and viewing skins on a more close level.
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("skinsutils")
+end

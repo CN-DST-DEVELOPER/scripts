@@ -307,7 +307,7 @@ end
 -- Eat goop & finish the game
 local function shrine_clear_game(shrine)
     shrine.gameinprogress = nil
-    shrine.gamewinner = nil
+    shrine:SetShrineWinner(nil)
 end
 
 local function goopeaten(inst)
@@ -533,7 +533,7 @@ local function carrotgamemanager(inst)
                 --target = FindClosestPlayerToInst(inst,40)   -- DEBUG FOR TESTING PLAYER WIN
 
                 shrine.gameinprogress = "winner"
-                shrine.gamewinner = target
+                shrine:SetShrineWinner(target)
 
                 inst.components.timer:StartTimer("wincheer",3)
                 inst.carrotgamestatus = "winnercheer"
@@ -615,7 +615,7 @@ local function carrotgamemanager(inst)
             if inst.sayspoilsport == true then
                 goopnoteatenintime(inst)
                 inst:PushEvent("disappoint", SPOILSPORT_DATA)
-                shrine.gamewinner = nil
+                shrine:SetShrineWinner(nil)
             end
         end
 
@@ -626,7 +626,7 @@ local function carrotgamemanager(inst)
                 winner = shrine.gamewinner,
             })
             inst.carrotgamestatus = "prizedelivered"
-            shrine.gamewinner = nil
+            shrine:SetShrineWinner(nil)
         end
     end
 end

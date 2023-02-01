@@ -47,7 +47,7 @@ function DeployHelper:AddKeyFilter(key)
     end
 end
 
-function DeployHelper:StartHelper(recipename, placerinst)
+function DeployHelper:StartHelper(recipename, placerinst) -- NOTES(JBK): Parameter placerinst can be nil so onenablehelper and onstarthelper should check that if they want to use it.
     if self.delay ~= nil then
         self.delay = 2
     elseif not self.inst:IsAsleep() then

@@ -412,7 +412,7 @@ local function finishgame(inst)
     local shrine = inst.components.entitytracker:GetEntity("shrine")
     if shrine then
        shrine.gameinprogress = nil
-       shrine.gamewinner = nil
+       shrine:SetShrineWinner(nil)
 
         for i, ent in ipairs(shrine:getrabbits())do
             ent.gamehost = nil    

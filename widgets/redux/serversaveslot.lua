@@ -65,7 +65,7 @@ local ServerSaveSlot = Class(Widget, function(self, serverslotscreen, isservercr
 
     self.character_portrait = self.root:AddChild(Widget("character_portrait"))
     self.character_portrait.SetCharacter = function(self, character_atlas, character)
-        if character_atlas and character then
+        if character_atlas and character and character ~= "" then
             self.title_portrait:SetTexture(character_atlas, character..".tex")
         else
             self.title_portrait:SetTexture(default_portrait_atlas, default_avatar)

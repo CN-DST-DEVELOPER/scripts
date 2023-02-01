@@ -354,6 +354,25 @@ local function GetStatus(inst)
         or nil
 end
 
+local function SetShrineWinner(shrine, winner)
+    local oldwinner = shrine.gamewinner
+    if oldwinner == winner then
+        return -- Nothing to do.
+    end
+
+    shrine.gamewinner = winner
+
+    if shrine.gamewinner_onremove ~= nil then
+        shrine:RemoveEventCallback("onremove", shrine.gamewinner_onremove, oldwinner)
+        shrine.gamewinner_onremove = nil
+    end
+
+    if winner ~= nil then
+        shrine.gamewinner_onremove = function() shrine:SetShrineWinner(nil) end
+        shrine:ListenForEvent("onremove", shrine.gamewinner_onremove, winner)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -387,6 +406,8 @@ local function fn()
             return inst
         end
     end
+
+    inst.SetShrineWinner = SetShrineWinner
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus

@@ -127,6 +127,13 @@ local function MakeHat(name)
         end
     end
 
+    local _skinfns = { -- NOTES(JBK): These are useful for skins to have access to them instead of sometimes storing a reference to a hat.
+        simple_onequip = fns.simple_onequip,
+        simple_onunequip = fns.simple_onunequip,
+        opentop_onequip = fns.opentop_onequip,
+        simple_onequiptomodel = fns.simple_onequiptomodel,
+    }
+
     local function simple(custom_init)
         local inst = CreateEntity()
 
@@ -154,6 +161,8 @@ local function MakeHat(name)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst._skinfns = _skinfns
 
         inst:AddComponent("inventoryitem")
 
@@ -1305,10 +1314,6 @@ local function MakeHat(name)
         if not TheWorld.ismastersim then
             return inst
         end
-
-        --Saved so we can re-assign with skins
-        inst._opentop_onequip = fns.opentop_onequip
-        inst._onequip = fns.simple_onequip
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_WATHGRITHRHAT, TUNING.ARMOR_WATHGRITHRHAT_ABSORPTION)

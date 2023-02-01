@@ -430,7 +430,7 @@ local states =
 
         onenter = function(inst, data)
             local ba = inst:GetBufferedAction()
-            if ba.target and ba.target.components.edible and ba.target.components.edible.foodtype ~= FOODTYPE.VEGGIE and ba.target:IsValid() then
+            if ba.target and ba.target.prefab == "hareball" and ba.target:IsValid() then
                 inst.sg.statemem.barf = ba.target
             end
 

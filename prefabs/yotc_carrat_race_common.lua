@@ -95,7 +95,7 @@ local function OnStartHelper(inst, recipename, placerinst)
 			inst.helper:Remove()
 			inst.helper = nil
 			inst.components.deployhelper:StopHelper()
-		elseif placerinst.components.placer.mouse_blocked then
+		elseif placerinst ~= nil and placerinst.components.placer.mouse_blocked then
 			inst.helper:Hide()
 		else
 			inst.helper:Show()

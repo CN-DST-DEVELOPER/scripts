@@ -747,7 +747,7 @@ wathgrithrhat_init_fn = function(inst, build_name, opentop)
 
     if opentop then
         inst:AddTag("open_top_hat")
-        inst.components.equippable:SetOnEquip(inst._opentop_onequip)
+        inst.components.equippable:SetOnEquip(inst._skinfns.opentop_onequip)
     end
     
     if not TheWorld.ismastersim then
@@ -759,7 +759,7 @@ wathgrithrhat_clear_fn = function(inst)
     basic_clear_fn(inst, "hat_wathgrithr" )
 
     inst:RemoveTag("open_top_hat")
-    inst.components.equippable:SetOnEquip(inst._onequip)
+    inst.components.equippable:SetOnEquip(inst._skinfns.simple_onequip)
 
     inst.skin_equip_sound = nil
 end
@@ -2457,4 +2457,9 @@ function CreatePrefabSkin(name, info)
     end
 
     return prefab_skin
+end
+
+-- Testing and viewing skins on a more close level.
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("prefabskin")
 end
