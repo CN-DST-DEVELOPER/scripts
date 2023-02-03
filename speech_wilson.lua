@@ -755,6 +755,8 @@ return {
         BOOK_TEMPERATURE = "only_used_by_wurt",
         BOOK_LIGHT = "only_used_by_wurt",
         BOOK_RAIN = "only_used_by_wurt",
+        BOOK_MOON = "only_used_by_wurt",
+        BOOK_BEES = "only_used_by_wurt",
 
         BOOK_HORTICULTURE_UPGRADED = "only_used_by_wurt",
         BOOK_RESEARCH_STATION = "only_used_by_wurt",

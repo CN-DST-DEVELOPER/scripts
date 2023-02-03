@@ -745,6 +745,8 @@ return{
         BOOK_TEMPERATURE = "The... m-measure of th... theer-mole energy...",
         BOOK_LIGHT = "Heeyyy, these words different!",
         BOOK_RAIN = "Can tell rain what to do? Wanna try!!",
+        BOOK_MOON = "Huh. Moon actually kinda boring.",
+        BOOK_BEES = "Aww... no honey inside...",
 
         BOOK_HORTICULTURE_UPGRADED = "M-maybe will find easier book...",
         BOOK_RESEARCH_STATION = "It really hard to read, but feel smart holding it, florp!",
