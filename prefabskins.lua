@@ -896,6 +896,7 @@ PREFAB_SKINS = {
 	},
 	reskin_tool =
 	{
+		"reskin_tool_bouquet",
 		"reskin_tool_brush",
 	},
 	resurrectionstone =

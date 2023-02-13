@@ -370,6 +370,24 @@ local function ReserveAndPlaceLayout(node_id, layout, prefabs, add_entity, posit
 				-- !! WARNING: layout.ground is stored as layout.ground[y][x] !! --
 				if layout.ground[rw][clmn] ~= 0 then
 					if position ~= nil then
+                        if position[1] == nil or position[2] == nil then
+                            -- NOTES(JBK): Something did not create a valid position here somehow so get as much information out now before the crash.
+                            -- The Maze generation in the ruins is the most probable for this if anyone comes by to try to recreate the issue.
+                            -- FIXME(JBK): Remove this once fixed.
+                            print(">>> The worldgen has failed to establish a required field for position somehow.")
+                            print(">>> Please add a bug report with this log file to help diagnose what went wrong!")
+                            print("--- Position:")
+                            dumptable(position)
+                            print("--- Prefabs:")
+                            dumptable(prefabs)
+                            print("--- Layout:")
+                            dumptable(layout)
+                            print("--- Item Positions:")
+                            dumptable(item_positions)
+                            print("--- Trace:")
+                            print(_TRACEBACK())
+                            print("<<< Please add a bug report with this log file to help diagnose what went wrong!")
+                        end
 						world:SetTile(position[1] + column, position[2] + row, layout.ground_types[layout.ground[rw][clmn]], 1)
 					else
 						table.insert(tiles, layout.ground_types[layout.ground[rw][clmn]])

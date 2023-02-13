@@ -5286,6 +5286,17 @@ table.insert(prefs, CreatePrefabSkin("researchlab_retro",
 	release_group = 130,
 }))
 
+table.insert(prefs, CreatePrefabSkin("reskin_tool_bouquet",
+{
+	base_prefab = "reskin_tool",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) reskin_tool_init_fn(inst, "reskin_tool_bouquet") end,
+	skin_tags = { "RESKIN", "CRAFTABLE", "HEART", },
+	fx_prefab = { "reskin_tool_bouquet_explode_fx", },
+	release_group = 141,
+}))
+
 table.insert(prefs, CreatePrefabSkin("reskin_tool_brush",
 {
 	base_prefab = "reskin_tool",

@@ -1258,7 +1258,6 @@ MISC_ITEMS =
 		build_name_override = "pack_hallowed",
 		box_build = "box_shop_hallowed",
 		rarity = "HeirloomElegant",
-		marketable = true,
 		release_group = 124,
 	},
 	mysterybox_trickortreat_alt =

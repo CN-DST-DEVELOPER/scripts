@@ -79,9 +79,8 @@ local function SetDigits(inst, weight)
 		weight = string.sub(formatted, 1, 3)..string.sub(formatted, 5)
 	end
 
-	local build = inst.AnimState:GetBuild()
 	for i=1,5 do
-		inst.AnimState:OverrideSymbol("column"..i, build, "number"..string.sub(weight, i, i)..(DIGIT_COLORS[i] or "_black"))
+		inst.AnimState:OverrideSymbol("column"..i, "scale_o_matic", "number"..string.sub(weight, i, i)..(DIGIT_COLORS[i] or "_black"))
 	end
 end
 

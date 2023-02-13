@@ -94,6 +94,16 @@ local extras =
         bloom = false,
         light_override = 0,
     },
+    reskin_bouquet =
+    {
+        bank = "fx_shadow_dust",
+        skin_build = "reskin_tool_bouquet",
+        skin_symbol = "shadow_dust",
+        anim = "puff",
+        sound = "dontstarve/common/together/reskin_tool",
+        bloom = false,
+        light_override = 0,
+    },
     slurtle =
     {
         sound = "dontstarve/creatures/slurtle/explode",
@@ -115,6 +125,7 @@ local extras =
 return Prefab("explode_small", MakeExplosion(), assets),
     Prefab("explode_reskin", MakeExplosion(extras.reskin), assets),
     Prefab("reskin_tool_brush_explode_fx", MakeExplosion(extras.reskin_brush), assets),
+    Prefab("reskin_tool_bouquet_explode_fx", MakeExplosion(extras.reskin_bouquet), assets),
     Prefab("explode_small_slurtle", MakeExplosion(extras.slurtle), assets),
     Prefab("explode_small_slurtlehole", MakeExplosion(extras.slurtlehole), assets),
     Prefab("explode_firecrackers", MakeExplosion(extras.firecrackers), assets)

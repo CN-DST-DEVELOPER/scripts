@@ -3671,6 +3671,8 @@ local skin_assets =
 	Asset("PKGREF", "anim/dynamic/researchlab_green.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/researchlab_retro.zip"),
 	Asset("PKGREF", "anim/dynamic/researchlab_retro.dyn"),
+	Asset("DYNAMIC_ANIM", "anim/dynamic/reskin_tool_bouquet.zip"),
+	Asset("PKGREF", "anim/dynamic/reskin_tool_bouquet.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/reskin_tool_brush.zip"),
 	Asset("PKGREF", "anim/dynamic/reskin_tool_brush.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/resurrectionstone_fantasy.zip"),

@@ -2366,9 +2366,6 @@ function gemsocket_clear_fn(inst)
     inst.AnimState:SetBuild("staff_purple_base")
 end
 
-
---------------------------------------------------------------------------
-
 function CreatePrefabSkin(name, info)
     local prefab_skin = Prefab(name, nil, info.assets, info.prefabs)
     prefab_skin.is_skin = true

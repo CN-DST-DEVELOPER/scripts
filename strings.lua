@@ -7832,6 +7832,7 @@ STRINGS.UI =
         OFFLINE_MODE_TITLE = "Offline Mode",
         OFFLINE_MODE_BODY = "Your selection is not available in offline mode. Please log in and try again.",
         KLEI_ID_PREFIX = "Klei ID: ",
+		COMMANDWHEEL = "Command / Emote Wheel Movement:",
 
 		INTRO_MOVIE = "Intro Movie",
 		CREDITS = "Credits",
@@ -7888,6 +7889,7 @@ STRINGS.UI =
             DISPLAY = "Got multiple screens? We've got you covered, choose where the game window goes when playing the game. (Fullscreen only)",
             REFRESHRATE = "Customize how many times per second the game screen refreshes. (Fullscreen only)",
             SMALLTEXTURES = "Reduces texture quality for better performance. (Only recommended for min-spec computers)",
+			SMALLTEXTURES_CONSOLE = "Reduces texture quality for better performance.\n(Only recommended if you're having problems with your world)",
             NETBOOKMODE = "Reduces the game's update frequency. (Only recommended for min-spec computers)",
             TEXTURESTREAMING = "Reduces the memory overhead for textures. Enabling this should improve performance.",
             THREADEDRENDER = "Renders the game on a different core. Enabling this should improve performance.",
@@ -7906,7 +7908,8 @@ STRINGS.UI =
             AUTOMODS = "Keep up to date with the mods of all the servers you join.",
             ANIMATED_HEADS = "Animates the survivor's heads in the menus.",
             CONSOLEAUTOPAUSE = "Allows the server to auto-pause while the console screen is open.",
-            DEFAULTCLOUDSAVES = "Chooses whether new saves will be stored in the cloud or not by default."
+            DEFAULTCLOUDSAVES = "Chooses whether new saves will be stored in the cloud or not by default.",
+			COMMANDWHEEL = "Allows you to control your player movement and the Command / Emote Wheel independently.",
     },
 
     },
