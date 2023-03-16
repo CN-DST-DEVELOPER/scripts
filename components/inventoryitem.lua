@@ -293,7 +293,6 @@ function InventoryItem:OnPickup(pickupguy, src_pos)
         end
     end
 
-
     self.inst:PushEvent("onpickup", { owner = pickupguy })
     return self.onpickupfn and self.onpickupfn(self.inst, pickupguy, src_pos)
 end

@@ -38,6 +38,10 @@ function SourceModifierList:Get()
 	return self._modifier
 end
 
+function SourceModifierList:IsEmpty()
+	return next(self._modifiers) == nil
+end
+
 -------------------------------------------------------------------------------
 local function RecalculateModifier(inst)
     local m = inst._base

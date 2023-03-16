@@ -201,6 +201,10 @@ local Wisecracker = Class(function(self, inst)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_HUNGRY_FASTBUILD"))
     end)
 
+	inst:ListenForEvent("tooltooweak", function(inst, data)
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_TOOL_TOOWEAK"))
+	end)
+
     if inst:HasTag("soulstealer") then
         inst:ListenForEvent("soulempty", function(inst)
             inst.components.talker:Say(GetString(inst, "ANNOUNCE_SOUL_EMPTY"))

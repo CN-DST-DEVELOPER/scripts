@@ -888,6 +888,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "I feel all bright-eyed and bushy-tailed!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Maybe this ain't the right tool for the job...",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'll demolish you!",
@@ -1491,6 +1494,8 @@ return{
         TURF_MOSAIC_GREY = "That's a chunk of ground.",
         TURF_MOSAIC_RED = "That's a chunk of ground.",
         TURF_MOSAIC_BLUE = "That's a chunk of ground.",
+
+        TURF_BEARD_RUG = "That's sure makin' do with what you have.",
 
 		POWCAKE = "Gotta eat what you can around here.",
         CAVE_ENTRANCE = "Into the depths!",
@@ -4748,7 +4753,23 @@ return{
 
         HAREBALL = "Yuck!",
         YOTR_DECOR_1_ITEM = "Gotta find a good place for it.",
-        YOTR_DECOR_2_ITEM = "Gotta find a good place for it.",             
+        YOTR_DECOR_2_ITEM = "Gotta find a good place for it.",
+
+		--
+		DREADSTONE = "It's evil-lookin', but tough as nails.",
+		HORRORFUEL = "Makes the usual nightmare goop look almost pleasant by comparison.",
+		DAYWALKER =
+		{
+			GENERIC = "Yeesh big guy, I was just tryin' to help you out!",
+			IMPRISONED = "That pig's seen better days.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "That marble doesn't look structurally sound to me.",
+			EXPOSED = "I stand corrected. That rock ain't goin' nowhere.",
+		},
+		ARMORDREADSTONE = "That's some real high-grade protective equipment.",
+		DREADSTONEHAT = "Lookin' sharp! Literally.",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

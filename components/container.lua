@@ -382,7 +382,6 @@ function Container:Open(doer, open_sfx_override)
         if not self.skipautoclose then
             self.inst:StartUpdatingComponent(self)
         end
-
         local inventory = doer.components.inventory
         if inventory ~= nil then
             for k, v in pairs(inventory.opencontainers) do
@@ -393,7 +392,6 @@ function Container:Open(doer, open_sfx_override)
 
             inventory.opencontainers[self.inst] = true
         end
-
         self.openlist[doer] = true
         self.opencount = self.opencount + 1
         self.inst.replica.container:AddOpener(doer)
@@ -401,11 +399,13 @@ function Container:Open(doer, open_sfx_override)
         if doer.HUD ~= nil then
             doer.HUD:OpenContainer(self.inst, self:IsSideWidget())
             doer:PushEvent("refreshcrafting")
-            if self:IsSideWidget() then
-                TheFocalPoint.SoundEmitter:PlaySound(SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or "dontstarve/wilson/backpack_open")
-            else
-                if not self.inst.replica.container:ShouldSkipOpenSnd() then
-                    TheFocalPoint.SoundEmitter:PlaySound(open_sfx_override or "dontstarve/HUD/Together_HUD/container_open")
+            if  not self.inst.replica.container:ShouldSkipOpenSnd() then
+                if self:IsSideWidget()  then
+                    TheFocalPoint.SoundEmitter:PlaySound(SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or "dontstarve/wilson/backpack_open")
+                else
+                    --if then
+                        TheFocalPoint.SoundEmitter:PlaySound(open_sfx_override or "dontstarve/HUD/Together_HUD/container_open")
+                    --end
                 end
             end
         elseif self.widget ~= nil
@@ -445,10 +445,10 @@ function Container:Close(doer)
         if doer.HUD ~= nil then
             doer.HUD:CloseContainer(self.inst, self:IsSideWidget())
             doer:PushEvent("refreshcrafting")
-            if self:IsSideWidget() then
-                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/backpack_close")
-            else
-                if not self.inst.replica.container:ShouldSkipCloseSnd() then
+            if not self.inst.replica.container:ShouldSkipCloseSnd() then
+                if self:IsSideWidget() then
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/backpack_close")
+                else                
                     TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/container_close")
                 end
             end

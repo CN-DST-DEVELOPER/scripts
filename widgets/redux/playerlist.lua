@@ -171,8 +171,6 @@ function PlayerInfoListing:DoInit(v, nextWidgets)
     self.viewprofile:SetHoverText(STRINGS.UI.PLAYERSTATUSSCREEN.VIEWPROFILE, { font = NEWFONT_OUTLINE, offset_x = -35, offset_y = 0, colour = {1,1,1,1}})
     self.viewprofile:SetOnClick(
         function()
-            -- Can't do this here because HUD doesn't exist yet. TODO: add the playeravatarpopup to frontend, or wrap it in a screen.
-            --ThePlayer.HUD:OpenPlayerAvatarPopup(displayName, v, true)
             if v.netid ~= nil then
                 TheNet:ViewNetProfile(v.netid)
             end
@@ -312,8 +310,6 @@ local function UpdatePlayerListing(context, widget, data, index)
 
     widget.viewprofile:SetOnClick(
         function()
-            -- Can't do this here because HUD doesn't exist yet. TODO: add the playeravatarpopup to frontend, or wrap it in a screen.
-            --ThePlayer.HUD:OpenPlayerAvatarPopup(displayName, data, true)
             if data ~= nil and data.netid ~= nil then
                 TheNet:ViewNetProfile(data.netid)
             end

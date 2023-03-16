@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Ah, I feel fit as a fiddle!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Oh botheration! I'll need something stronger than this...",
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "Why am I wasting time staring at the ground?",
         TURF_MOSAIC_RED = "Why am I wasting time staring at the ground?",
         TURF_MOSAIC_BLUE = "Why am I wasting time staring at the ground?",
+
+        TURF_BEARD_RUG = "Why am I wasting time staring at... I'm sorry, is that rug made of whiskers?!",
 
 		POWCAKE = "This never ends well.",
         CAVE_ENTRANCE = "I never was good at leaving well enough alone.",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "Disgusting!",
         YOTR_DECOR_1_ITEM = "I suppose I can spare a moment to set it up.",
-        YOTR_DECOR_2_ITEM = "I suppose I can spare a moment to set it up.",             
+        YOTR_DECOR_2_ITEM = "I suppose I can spare a moment to set it up.",
+
+		--
+		DREADSTONE = "As off-putting as it is, it could be useful.",
+		HORRORFUEL = "It gives me a terrible feeling...",
+		DAYWALKER =
+		{
+			GENERIC = "I knew I shouldn't have involved myself!",
+			IMPRISONED = "I shouldn't involve myself in these things.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "They seem breakable... but I don't think that'd be wise.",
+			EXPOSED = "Oh botheration. I think I just remembered something...",
+		},
+		ARMORDREADSTONE = "It should keep me well protected, at least.",
+		DREADSTONEHAT = "That stone turned out to be rather useful.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

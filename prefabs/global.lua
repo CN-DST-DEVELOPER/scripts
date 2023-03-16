@@ -108,6 +108,12 @@ local assets =
 
     Asset("SOUNDPACKAGE", "sound/maxwell_rework.fev"),
     Asset("FILE", "sound/maxwell_rework.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/daywalker.fev"),
+    Asset("FILE", "sound/daywalker.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/wilson_rework.fev"),
+    Asset("FILE", "sound/wilson_rework.fsb"),
     
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
@@ -388,6 +394,15 @@ local assets =
     Asset("IMAGE", "images/hud.tex"),
     Asset("ATLAS", "images/hud2.xml"),
     Asset("IMAGE", "images/hud2.tex"),
+
+    Asset("ATLAS", "images/skilltree.xml"),
+    Asset("IMAGE", "images/skilltree.tex"),
+
+    Asset("ATLAS", "images/skilltree2.xml"),
+    Asset("IMAGE", "images/skilltree2.tex"),
+
+    Asset("ATLAS", "images/skilltree_icons.xml"),
+    Asset("IMAGE", "images/skilltree_icons.tex"),    
 
     --oft-used panel bgs
     Asset("DYNAMIC_ATLAS", "images/globalpanels2.xml"),

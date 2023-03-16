@@ -177,6 +177,7 @@ local function fn()
 	inst:AddTag("NOBLOCK")
 	inst:AddTag("extinguisher") -- to put out nightlights
 	inst:AddTag("soulless") -- no wortox souls
+	inst:AddTag("lunar_aligned")
 
     inst.Transform:SetFourFaced()
     inst.Transform:SetScale(0.8, 0.8, 0.8)

@@ -161,6 +161,7 @@ local function commonPreMain(inst)
     inst:AddTag("scarytoprey")
     inst:AddTag("canbetrapped")
     inst:AddTag("bird")
+    inst:AddTag("lunar_aligned")
 
     inst.Transform:SetFourFaced()
 

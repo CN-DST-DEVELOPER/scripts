@@ -323,6 +323,13 @@ local function MakeWaxwellBanner(self, banner_root, anim)
     anim:SetScale(.667)
 end
 
+local function MakeWilsonBanner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_wilson")
+    anim:GetAnimState():SetBank("dst_menu_wilson")
+    anim:GetAnimState():PlayAnimation("loop", true)
+    anim:SetScale(.667)
+end
+
 local function MakeDefaultBanner(self, banner_root, anim)
 	local banner_height = 350
 	banner_root:SetPosition(0, RESOLUTION_Y / 2 - banner_height / 2 + 1 ) -- positioning for when we had the top banner art
@@ -373,7 +380,7 @@ function MakeBanner(self)
 	if IS_BETA then
 		title_str = STRINGS.UI.MAINSCREEN.MAINBANNER_BETA_TITLE
         
-        MakeWaxwellBanner(self, banner_root, anim)
+        MakeWilsonBanner(self, banner_root, anim)
 
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
         MakeYOTRBanner(self, banner_root, anim)
@@ -387,7 +394,7 @@ function MakeBanner(self)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
         MakeCawnivalBanner(self, banner_root, anim)
 	else
-		MakeWaxwellBanner(self, banner_root, anim)
+		MakeWilsonBanner(self, banner_root, anim)
         --MakeDramaBanner(self, banner_root, anim)
         --MakeDefaultBanner(self, banner_root, anim)
         --MakePiratesBanner(self, banner_root, anim)
@@ -503,6 +510,8 @@ local MultiplayerMainScreen = Class(Screen, function(self, prev_screen, profile,
     self.prev_screen = prev_screen
 	self:DoInit()
 	self.default_focus = self.menu
+
+    TheGenericKV:ApplyOnlineProfileData() -- Applies the data after synchronization in login flow if applicable.
 end)
 
 function MultiplayerMainScreen:GotoShop( filter_info )

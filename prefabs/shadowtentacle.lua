@@ -30,6 +30,7 @@ local function fn()
 
     inst:AddTag("shadow")
     inst:AddTag("notarget")
+    inst:AddTag("shadow_aligned")
 
     inst.entity:SetPristine()
 

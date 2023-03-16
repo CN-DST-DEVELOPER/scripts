@@ -12,6 +12,19 @@ local function FlagForRetrofitting_Forest(savedata, flag_name)
     end
 
 end
+local function FlagForRetrofitting_Cave(savedata, flag_name)
+    if savedata ~= nil and savedata.map ~= nil and savedata.map.prefab == "cave" then
+        if savedata.map.persistdata == nil then
+            savedata.map.persistdata = {}
+        end
+
+        if savedata.map.persistdata.retrofitcavemap_anr == nil then
+            savedata.map.persistdata.retrofitcavemap_anr = {}
+        end
+        savedata.map.persistdata.retrofitcavemap_anr[flag_name] = true
+    end
+
+end
 
 local t = nil
 t = {
@@ -1234,6 +1247,15 @@ t = {
             version = 5.13, -- A Little Drama - new setpieces
             fn = function(savedata)
                 FlagForRetrofitting_Forest(savedata, "retrofit_alittledrama_content")
+            end,
+        },
+
+        -- 5.14 used up during beta.
+        {
+            version = 5.141, -- Daywalker - new content
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_daywalker_content")
+                FlagForRetrofitting_Cave(savedata, "retrofit_daywalker_content")
             end,
         },
     },

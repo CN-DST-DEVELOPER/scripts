@@ -894,13 +894,12 @@ AddGameDebugKey(KEY_1, function()
         end
         return true
     end
-
 end)
 
 AddGameDebugKey(KEY_X, function()
     currentlySelected = TheInput:GetWorldEntityUnderMouse()
 
-	if TheInput:IsKeyDown(KEY_CTRL) then
+    if TheInput:IsKeyDown(KEY_CTRL) then
 		local inventory = ConsoleCommandPlayer().components and ConsoleCommandPlayer().components.inventory
 						or ConsoleCommandPlayer().replica and ConsoleCommandPlayer().replica.inventory
 						or nil
@@ -918,6 +917,21 @@ AddGlobalDebugKey(KEY_LEFTBRACKET, function()
         TheSim:SetTimeScale(1)
     elseif TheInput:IsKeyDown(KEY_SHIFT) then
         TheSim:SetTimeScale(0)
+    elseif TheInput:IsKeyDown(KEY_ALT) then
+        if ThePlayer then
+            local skilltreeupdater = ThePlayer.components.skilltreeupdater
+            local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS[ThePlayer.prefab]
+            if skilldefs then
+                local player = ThePlayer
+                if c_sel() and c_sel():HasTag("player") then
+                    player = c_sel()
+                end
+                for skill, data in pairs(skilldefs) do
+                    skilltreeupdater:DeactivateSkill(skill)
+                end
+                skilltreeupdater:AddSkillXP(-skilltreeupdater:GetSkillXP())
+            end
+        end
     else
         TheSim:SetTimeScale(TheSim:GetTimeScale() - .25)
     end
@@ -929,6 +943,19 @@ AddGlobalDebugKey(KEY_RIGHTBRACKET, function()
         TheSim:SetTimeScale(1)
     elseif TheInput:IsKeyDown(KEY_SHIFT) then
         TheSim:SetTimeScale(4)
+
+    elseif TheInput:IsKeyDown(KEY_ALT)then
+        local player = ThePlayer
+        if c_sel() and c_sel():HasTag("player") then
+            player = c_sel()
+        end
+        if player then
+            local skilltreeupdater = player.components.skilltreeupdater
+            local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS[player.prefab]
+            if skilldefs then
+                skilltreeupdater:AddSkillXP(1)
+            end
+        end
     else
         TheSim:SetTimeScale(TheSim:GetTimeScale() + .25)
     end

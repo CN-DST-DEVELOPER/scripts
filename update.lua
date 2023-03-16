@@ -134,10 +134,12 @@ function WallUpdate(dt)
     ]]
 end
 
+require("components/updatelooper")
+
 function PostUpdate(dt)
     --TheSim:ProfilerPush("LuaPostUpdate")
     EmitterManager:PostUpdate()
-
+	UpdateLooper_PostUpdate()
     --TheSim:ProfilerPop()
 end
 

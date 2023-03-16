@@ -826,6 +826,20 @@ local function OnPlayerCameraSnap(inst)
     end
 end
 
+local function DoMinimapCenter(inst)
+    TheWorld.minimap.MiniMap:ResetOffset()
+end
+
+local function OnPlayerMinimapCenter(inst)
+    if inst._parent ~= nil and inst._parent.HUD ~= nil then
+        if TheWorld.ismastersim then
+            DoMinimapCenter(inst)
+        else
+            inst:DoTaskInTime(0, DoMinimapCenter)
+        end
+    end
+end
+
 local function OnPlayerFadeDirty(inst)
     if inst._parent ~= nil and inst._parent.HUD ~= nil then
         local iswhite = inst.fadetime:value() >= 32
@@ -1017,6 +1031,7 @@ local function RegisterNetListeners(inst)
     inst:ListenForEvent("ismounthurtdirty", OnMountHurtDirty)
     inst:ListenForEvent("playercameradirty", OnPlayerCameraDirty)
     inst:ListenForEvent("playercamerasnap", OnPlayerCameraSnap)
+    inst:ListenForEvent("playerminimapcenter", OnPlayerMinimapCenter)
     inst:ListenForEvent("playerfadedirty", OnPlayerFadeDirty)
     inst:ListenForEvent("wormholetraveldirty", OnWormholeTravelDirty)
     inst:ListenForEvent("leader.makefriend", OnMakeFriendEvent)
@@ -1215,6 +1230,9 @@ local function fn()
     inst.camerashaketime = net_byte(inst.GUID, "playercamera.shaketime")
     inst.camerashakespeed = net_byte(inst.GUID, "playercamera.shakespeed")
     inst.camerashakescale = net_byte(inst.GUID, "playercamera.shakescale")
+
+    --Player minimap variables
+    inst.minimapcenter = net_bool(inst.GUID, "playerminimap.center", "playerminimapcenter")
 
     --Player front end variables
     inst.isfadein = net_bool(inst.GUID, "frontend.isfadein", "playerfadedirty")

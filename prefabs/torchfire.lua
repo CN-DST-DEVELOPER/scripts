@@ -108,7 +108,9 @@ end
 
 local function common_postinit(inst)
     --Dedicated server does not need to spawn local particle fx
-    if TheNet:IsDedicated() then
+
+
+    if TheNet:IsDedicated() then        
         return
     elseif InitEnvelope ~= nil then
         InitEnvelope()

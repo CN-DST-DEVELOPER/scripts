@@ -20,7 +20,7 @@ local COLLAPSE_STAGE_DURATION = 1
 local OBJECT_SCALE = 0.6
 
 local NUM_FX = 7
-local FX_THETA_DELTA = (2*PI) / NUM_FX
+local FX_THETA_DELTA = TWOPI / NUM_FX
 local FX_RADIUS = 1.6
 local function SpawnFx(inst, scale, pos)
     local theta = math.random() * PI * 2
@@ -53,7 +53,7 @@ end
 local function OnTimerDone(inst, data)
     if data ~= nil and data.name == "repair" then
         if not inst:IsAsleep() then
-            SpawnFx(inst, OBJECT_SCALE / 2)
+			SpawnFx(inst, inst.scale / 2)
         end
 
         inst.components.unevenground:Disable()
@@ -89,16 +89,16 @@ local TOSS_MUST_TAGS = { "_inventoryitem" }
 local TOSS_CANT_TAGS = { "locomotor", "INLIMBO" }
 
 local function DoCollapse(inst)
-    ShakeAllCameras(CAMERASHAKE.FULL, COLLAPSE_STAGE_DURATION, .03, .15, inst, TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS*6)
+	ShakeAllCameras(CAMERASHAKE.FULL, COLLAPSE_STAGE_DURATION, .03, .15, inst, inst.radius * 6)
 
     inst.components.unevenground:Enable()
 
     local pos = inst:GetPosition()
-    SpawnFx(inst, OBJECT_SCALE, pos)
+	SpawnFx(inst, inst.scale, pos)
 
     local ents = TheSim:FindEntities(
         pos.x, 0, pos.z,
-        TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS + 1, nil,
+        inst.radius + 1, nil,
         NON_COLLAPSIBLE_TAGS, COLLAPSIBLE_TAGS
     )
 
@@ -115,14 +115,17 @@ local function DoCollapse(inst)
             )
         end
 
-        -- Work the object a little if it can be worked,
+		-- Work the object a little if it can be worked (or destroy if inst.maxwork is true),
         -- and pick stuff that can be picked.
         if isworkable then
-            if collapsible_entity.components.workable:GetWorkAction() == ACTIONS.MINE then
-                PlayMiningFX(inst, collapsible_entity, true)
-            end
-
-            collapsible_entity.components.workable:WorkedBy(inst, 1)
+			if inst.maxwork then
+				collapsible_entity.components.workable:Destroy(inst)
+			else
+				if collapsible_entity.components.workable:GetWorkAction() == ACTIONS.MINE then
+					PlayMiningFX(inst, collapsible_entity, true)
+				end
+				collapsible_entity.components.workable:WorkedBy(inst, 1)
+			end
             if collapsible_entity:IsValid() and collapsible_entity:HasTag("stump") then
                 collapsible_entity:Remove()
             end
@@ -144,7 +147,7 @@ local function DoCollapse(inst)
         end
     end
 
-    local totoss = TheSim:FindEntities(pos.x, 0, pos.z, TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS, TOSS_MUST_TAGS, TOSS_CANT_TAGS)
+    local totoss = TheSim:FindEntities(pos.x, 0, pos.z, inst.radius, TOSS_MUST_TAGS, TOSS_CANT_TAGS)
     for _, tossible_entity in ipairs(totoss) do
         if tossible_entity.components.mine ~= nil then
             tossible_entity.components.mine:Deactivate()
@@ -160,66 +163,72 @@ end
 
 -------------------------------------------------------------------------------
 
-local function OnSave(inst, data)
-    data.collapsed = inst.components.timer:TimerExists("repair")
-end
-
-local function OnLoad(inst, data)
-    if data ~= nil and data.collapsed then
+local function OnLoad(inst)--, data)
+	if inst.components.timer:TimerExists("repair") then
         inst.components.unevenground:Enable()
     end
 end
 
-local function OnLoadPostPass(inst, newents, data)
-    if not data.collapsed then
-        inst:Remove()
-    end
+local function OnLoadPostPass(inst)--, newents, data)
+	if inst.persists and not inst.components.timer:TimerExists("repair") then
+		--backup, in case sinkholes got spawned and never started collapsing
+		inst:Remove()
+	end
 end
 
 -------------------------------------------------------------------------------
 
-local function fn()
-    local inst = CreateEntity()
+local function MakeSinkhole(name, radius, scale, maxwork)
+	local function fn()
+		local inst = CreateEntity()
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-    inst.entity:AddNetwork()
+		inst.entity:AddTransform()
+		inst.entity:AddAnimState()
+		inst.entity:AddSoundEmitter()
+		inst.entity:AddNetwork()
 
-    inst.AnimState:SetBank("sinkhole")
-    inst.AnimState:SetBuild("antlion_sinkhole")
-    inst.AnimState:PlayAnimation("idle")
-    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-    inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    inst.AnimState:SetSortOrder(2)
-    inst.AnimState:SetScale(OBJECT_SCALE, OBJECT_SCALE, OBJECT_SCALE)
+		inst.AnimState:SetBank("sinkhole")
+		inst.AnimState:SetBuild("antlion_sinkhole")
+		inst.AnimState:PlayAnimation("idle")
+		inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+		inst.AnimState:SetLayer(LAYER_BACKGROUND)
+		inst.AnimState:SetSortOrder(2)
+		inst.AnimState:SetScale(scale, scale)
 
-    inst.Transform:SetEightFaced()
+		inst.Transform:SetEightFaced()
 
-    inst:AddTag("antlion_sinkhole")
-    inst:AddTag("antlion_sinkhole_blocker")
-    inst:AddTag("NOCLICK")
+		inst:AddTag("antlion_sinkhole")
+		inst:AddTag("antlion_sinkhole_blocker")
+		inst:AddTag("NOCLICK")
 
-    inst:SetDeployExtraSpacing(4)
+		inst:SetDeployExtraSpacing(4)
 
-    inst.entity:SetPristine()
-    if not TheWorld.ismastersim then
-        return inst
-    end
+		inst.entity:SetPristine()
 
-    inst:AddComponent("timer")
+		if not TheWorld.ismastersim then
+			return inst
+		end
 
-    inst:AddComponent("unevenground")
-    inst.components.unevenground.radius = TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS
+		inst.radius = radius
+		inst.scale = scale
+		inst.maxwork = maxwork
 
-    inst:ListenForEvent("docollapse", DoCollapse)
-    inst:ListenForEvent("timerdone", OnTimerDone)
+		inst:AddComponent("timer")
 
-    inst.OnSave = OnSave
-    inst.OnLoad = OnLoad
-    inst.OnLoadPostPass = OnLoadPostPass
+		inst:AddComponent("unevenground")
+		inst.components.unevenground.radius = radius
 
-    return inst
+		inst:ListenForEvent("docollapse", DoCollapse)
+		inst:ListenForEvent("timerdone", OnTimerDone)
+
+		inst.OnLoad = OnLoad
+		inst.OnLoadPostPass = OnLoadPostPass
+
+		return inst
+	end
+
+	return Prefab(name, fn, assets, prefabs)
 end
 
-return Prefab("eyeofterror_sinkhole", fn, assets, prefabs)
+return MakeSinkhole("eyeofterror_sinkhole", TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS, OBJECT_SCALE, false),
+	MakeSinkhole("daywalker_sinkhole", TUNING.DAYWALKER_SLAM_SINKHOLERADIUS, 1, true)

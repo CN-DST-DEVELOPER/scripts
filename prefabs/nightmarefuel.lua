@@ -29,6 +29,8 @@ local function fn()
         return inst
     end
 
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
+
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
     inst:AddComponent("inspectable")

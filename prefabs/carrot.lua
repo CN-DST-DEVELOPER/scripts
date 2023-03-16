@@ -8,14 +8,6 @@ local prefabs =
     "carrot",
 }
 
-local function onpicked(inst)
-    TheWorld:PushEvent("beginregrowth", inst)
-end
-local function OnBurnt(inst)
-	TheWorld:PushEvent("beginregrowth", inst)
-    DefaultBurntFn(inst)
-end
-
 local function fn()
     --Carrot you eat is defined in veggies.lua
     local inst = CreateEntity()
@@ -41,13 +33,12 @@ local function fn()
     inst:AddComponent("pickable")
     inst.components.pickable.picksound = "dontstarve/wilson/pickup_plants"
     inst.components.pickable:SetUp("carrot", 10)
-    inst.components.pickable.onpickedfn = onpicked
-	inst.components.pickable.remove_when_picked = true
+	inst.components.pickable.remove_when_picked = true -- Triggers onremove event.
 
     inst.components.pickable.quickpick = true
 
     MakeSmallBurnable(inst)
-    inst.components.burnable:SetOnBurntFn(OnBurnt)
+    AddToRegrowthManager(inst)
     MakeSmallPropagator(inst)
 
 	inst:AddComponent("halloweenmoonmutable")

@@ -24,6 +24,7 @@ function UIAnimButton:OnGainFocus()
 
     if self:IsEnabled() then
         if self.focusanimation and not self.animstate:IsCurrentAnimation(self.focusanimation) then
+
             self.animstate:PlayAnimation(self.focusanimation, self.loops[self.focusanimation])
         end
         if self.onfocus then

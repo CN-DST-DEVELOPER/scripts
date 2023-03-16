@@ -995,7 +995,24 @@ local function CheckAtriumDecay(inst)
     return inst.atriumdecay
 end
 
-local function AtriumOnDeath(inst)
+local function trackattackers(inst,data)
+    if data.attacker and data.attacker:HasTag("player") then
+        inst.attackerUSERIDs[data.attacker.userid] = true
+    end
+end
+
+local function AtriumOnDeath(inst,data)
+
+    trackattackers(inst,data)
+    for ID, data in pairs(inst.attackerUSERIDs) do
+        for i, player in ipairs(AllPlayers) do
+            if player.userid == ID then 
+                SendRPCToClient(CLIENT_RPC.UpdateAccomplishment, player.userid, "fuelweaver_killed")
+                break
+            end
+        end
+    end
+
     if not CheckAtriumDecay(inst) then
         SetMusicLevel(inst, 3)
     end
@@ -1015,6 +1032,7 @@ local function AtriumOnSave(inst, data)
     data.level = inst._music:value() == 2 and 2 or nil
     data.channelers = inst.channelerparams
     data.minions = inst.minionpoints ~= nil and #inst.minionpoints or nil
+    data.attackerUSERIDs = inst.attackerUSERIDs or nil
 end
 
 local function AtriumOnLoad(inst, data)
@@ -1048,6 +1066,7 @@ local function AtriumOnLoad(inst, data)
                 inst.channelertask = inst:DoTaskInTime(0, DoSpawnChanneler)
             end
         end
+        inst.attackerUSERIDs = data.attackerUSERIDs or {}
     end
 end
 
@@ -1265,6 +1284,7 @@ local function common_fn(bank, build, shadowsize, canfight, atriumstalker)
     inst:AddTag("largecreature")
     inst:AddTag("stalker")
     inst:AddTag("fossil")
+    inst:AddTag("shadow_aligned")
 
     if atriumstalker then
         inst:AddTag("noepicmusic")
@@ -1457,10 +1477,13 @@ local function atrium_fn()
     inst.OnLoad = AtriumOnLoad
     inst.OnLoadPostPass = AtriumOnLoadPostPass
 
+    inst.attackerUSERIDs = {}
+
     inst.hasshield = false
     inst:ListenForEvent("soldierschanged", OnSoldiersChanged)
     inst:ListenForEvent("miniondeath", OnMinionDeath)
     inst:ListenForEvent("death", AtriumOnDeath)
+    inst:ListenForEvent("attacked", trackattackers)
 
     return inst
 end

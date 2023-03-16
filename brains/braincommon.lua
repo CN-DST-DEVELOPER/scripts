@@ -230,7 +230,7 @@ local AssistLeaderDefaults = {
 -- Mod support access.
 BrainCommon.AssistLeaderDefaults = AssistLeaderDefaults
 
---NOTES(JBK): This helps followers do a task once they see the leader is doing an act.
+-- NOTES(JBK): This helps followers do a task once they see the leader is doing an act.
 --            Since actions are very context sensitive, there are defaults above to help clarify context.
 local function NodeAssistLeaderDoAction(self, parameters)
     local action = parameters.action
@@ -265,7 +265,7 @@ end
 BrainCommon.NodeAssistLeaderDoAction = NodeAssistLeaderDoAction
 
 --------------------------------------------------------------------------
---NOTES(JBK): This helps followers pickup items for a PLAYER leader.
+-- NOTES(JBK): This helps followers pickup items for a PLAYER leader.
 --            They pickup if they are able to, then give them to their leader, or drop them onto the ground if unable to.
 
 local function Unignore(inst, sometarget, ignorethese)

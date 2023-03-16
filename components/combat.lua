@@ -390,10 +390,10 @@ function Combat:ShouldAggro(target, ignore_forbidden)
                 end
             end
         end
-		if target.components.health ~= nil and (target.components.health.minhealth or 0) > 0 then
+		if target.components.health ~= nil and (target.components.health.minhealth or 0) > 0 and not target:HasTag("hostile") then
 			target = target.components.follower ~= nil and target.components.follower:GetLeader() or target
 			if not target:HasTag("player") then
-				--npc should not aggro on things that can't be killed
+				--npc should not aggro on things that can't be killed (unless hostile!)
 				return false
 			end
 		end
@@ -523,6 +523,10 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
     end
     self.lastwasattackedtime = GetTime()
 
+    if self.inst.components.skilltreeupdater and self.inst.components.skilltreeupdater:HasSkillTag("shadow_favor") and attacker and attacker:HasTag("shadow_aligned") then
+        damage = damage * 0.9
+    end
+
     --print ("ATTACKED", self.inst, attacker, damage)
     --V2C: redirectdamagefn is currently only used by either mounting or parrying,
     --     but not both at the same time.  If we use it more, then it really needs
@@ -538,6 +542,9 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
         if self.inst.components.inventory ~= nil then
             damage = self.inst.components.inventory:ApplyDamage(damage, attacker, weapon)
         end
+		if self.inst.components.damagetyperesist ~= nil then
+			damage = damage * self.inst.components.damagetyperesist:GetResist(attacker, weapon)
+		end
         damage = damage * self.externaldamagetakenmultipliers:Get()
         if damage > 0 and not self.inst.components.health:IsInvincible() then
             --Bonus damage only applies after unabsorbed damage gets through your armor
@@ -551,7 +558,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
             damageresolved = damageresolved ~= nil and -damageresolved or damage
             if self.inst.components.health:IsDead() then
                 if attacker ~= nil then
-                    attacker:PushEvent("killed", { victim = self.inst })
+                    attacker:PushEvent("killed", { victim = self.inst, attacker = attacker })
                 end
                 if self.onkilledbyother ~= nil then
                     self.onkilledbyother(self.inst, attacker)
@@ -623,6 +630,7 @@ function Combat:GetImpactSound(target, weapon)
                 (tgtinv:ArmorHasTag("grass") and "straw_armour_") or
                 (tgtinv:ArmorHasTag("forcefield") and "forcefield_armour_") or
                 (tgtinv:ArmorHasTag("sanity") and "sanity_armour_") or
+                (tgtinv:ArmorHasTag("dreadstone") and "dreadstone_armour_") or
                 (tgtinv:ArmorHasTag("marble") and "marble_armour_") or
                 (tgtinv:ArmorHasTag("shell") and "shell_armour_") or
                 (tgtinv:ArmorHasTag("fur") and "fur_armour_") or
@@ -836,6 +844,10 @@ function Combat:CalcDamage(target, weapon, multiplier)
                 basedamage = basedamage + saddle.components.saddler:GetBonusDamage()
             end
         end
+    end
+
+    if self.inst.components.skilltreeupdater and self.inst.components.skilltreeupdater:HasSkillTag("shadow_favor") and target:HasTag("lunar_aligned") then
+        basedamage = basedamage * 1.1
     end
 
     return basedamage

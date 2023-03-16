@@ -344,7 +344,7 @@ local COMPONENT_ACTIONS =
             if inst.replica.inventoryitem:CanBePickedUp() and
                 doer.replica.inventory ~= nil and
                 (doer.replica.inventory:GetNumSlots() > 0 or inst.replica.equippable ~= nil) and
-                not (inst:HasTag("catchable") or inst:HasTag("fire") or inst:HasTag("smolder")) and
+				not (inst:HasTag("catchable") or (inst:HasTag("fire") and not inst:HasTag("lighter")) or inst:HasTag("smolder")) and
                 (not inst:HasTag("spider") or (doer:HasTag("spiderwhisperer") and right)) and
                 (right or not inst:HasTag("heavy")) and
                 not (right and inst.replica.container ~= nil and inst.replica.equippable == nil) then
@@ -1572,9 +1572,9 @@ local COMPONENT_ACTIONS =
 
         complexprojectile = function(inst, doer, pos, actions, right, target)
             if right and not TheWorld.Map:IsGroundTargetBlocked(pos)
-				and (inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer)) then
-
-                table.insert(actions, ACTIONS.TOSS)
+				and not (inst.replica.equippable ~= nil and (inst.replica.equippable:IsRestricted(doer) or inst.replica.equippable:ShouldPreventUnequipping()))
+				and not inst:HasTag("special_action_toss") then
+				table.insert(actions, ACTIONS.TOSS)
             end
         end,
 
@@ -1607,7 +1607,9 @@ local COMPONENT_ACTIONS =
 
         inventoryitem = function(inst, doer, pos, actions, right, target)
             if not right and inst.replica.inventoryitem:IsHeldBy(doer) then
-                table.insert(actions, ACTIONS.DROP)
+                if inst.replica.equippable == nil or not inst.replica.equippable:IsEquipped() or inst.replica.equippable:IsEquipped() and not inst.replica.equippable:ShouldPreventUnequipping() then
+                    table.insert(actions, ACTIONS.DROP)
+                end
             end
         end,
 
@@ -1737,7 +1739,8 @@ local COMPONENT_ACTIONS =
             if right and
                 not (doer.components.playercontroller ~= nil and doer.components.playercontroller.isclientcontrollerattached) and
                 not TheWorld.Map:IsGroundTargetBlocked(target:GetPosition()) and
-				(inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer)) then
+				(inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer) and not inst.replica.equippable:ShouldPreventUnequipping()) and
+				not inst:HasTag("special_action_toss") then
 
                 table.insert(actions, ACTIONS.TOSS)
             end
@@ -1991,7 +1994,9 @@ local COMPONENT_ACTIONS =
 
         equippable = function(inst, doer, actions)
             if inst.replica.equippable:IsEquipped() then
-                table.insert(actions, ACTIONS.UNEQUIP)
+                if not inst.replica.equippable:ShouldPreventUnequipping() then
+                    table.insert(actions, ACTIONS.UNEQUIP)
+                end
             elseif not inst.replica.equippable:IsRestricted(doer) then
                 table.insert(actions, ACTIONS.EQUIP)
             end

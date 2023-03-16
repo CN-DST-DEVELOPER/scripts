@@ -754,8 +754,7 @@ end
 local function OnPlayerActivated(world, player)
 	if player.isseamlessswaptarget then
 		if player.prefab == "wonkey" then
-			local kv = TheInventory:GetLocalGenericKV()
-			if kv.wonkey_played ~= "played" then
+			if TheGenericKV:GetKV("wonkey_played") then
 				TheInventory:SetGenericKVValue( "wonkey_played", "played" )
 			end
 		end

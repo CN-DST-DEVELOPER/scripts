@@ -18,6 +18,10 @@ local function onrestrictedtag(self, restrictedtag)
     end
 end
 
+local function onpreventunequipping(self, equipslot)
+    self.inst.replica.equippable:SetPreventUnequipping(true)
+end
+
 local Equippable = Class(function(self, inst)
     self.inst = inst
 
@@ -36,6 +40,8 @@ local Equippable = Class(function(self, inst)
     self.equippedmoisture = 0
     self.maxequippedmoisture = 0
 
+    -- self.preventunequipping = nil -- Set to true to block unequipping the item.
+
 	-- self.is_magic_dapperness -- some survivors are only affected by magic sources
 end,
 nil,
@@ -43,6 +49,7 @@ nil,
     equipslot = onequipslot,
     walkspeedmult = onwalkspeedmult,
     restrictedtag = onrestrictedtag,
+    preventunequipping = onpreventunequipping
 })
 
 function Equippable:OnRemoveFromEntity()
@@ -119,6 +126,28 @@ function Equippable:IsRestricted(target)
         and self.restrictedtag:len() > 0
         and not target:HasTag(self.restrictedtag)
         and target:HasTag("player") --restricted tags only apply to players
+end
+
+function Equippable:ShouldPreventUnequipping()
+    return self.preventunequipping
+end
+
+local function OnRemove(inst, data)
+    inst.components.equippable:SetPreventUnequipping(false)
+end
+
+function Equippable:SetPreventUnequipping(shouldprevent)
+    if shouldprevent then
+        if self._onremovelistener == nil then
+            self._onremovelistener = self.inst:ListenForEvent("onremove", OnRemove)
+        end
+    else
+        if self._onremovelistener ~= nil then
+            self.inst:RemoveEventCallback("onremove", OnRemove)
+            self._onremovelistener = nil
+        end
+    end
+    self.preventunequipping = shouldprevent
 end
 
 function Equippable:GetDapperness(owner, ignore_wetness)

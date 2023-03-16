@@ -292,6 +292,9 @@ armor_sanity_clear_fn = function(inst) basic_clear_fn(inst, "armor_sanity" ) end
 armorskeleton_init_fn =  function(inst, build_name) basic_init_fn( inst, build_name, "armor_skeleton" ) end
 armorskeleton_clear_fn = function(inst) basic_clear_fn(inst, "armor_skeleton" ) end
 
+armordreadstone_init_fn =  function(inst, build_name) basic_init_fn( inst, build_name, "armor_dreadstone" ) end
+armordreadstone_clear_fn = function(inst) basic_clear_fn(inst, "armor_dreadstone" ) end
+
 beargervest_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "torso_bearger" ) end
 beargervest_clear_fn = function(inst) basic_clear_fn(inst, "torso_bearger" ) end
 
@@ -374,6 +377,9 @@ alterguardianhat_clear_fn = function(inst) basic_clear_fn(inst, "hat_alterguardi
 
 skeletonhat_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "hat_skeleton" ) end
 skeletonhat_clear_fn = function(inst) basic_clear_fn(inst, "hat_skeleton" ) end
+
+dreadstonehat_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "hat_dreadstone" ) end
+dreadstonehat_clear_fn = function(inst) basic_clear_fn(inst, "hat_dreadstone" ) end
 
 researchlab3_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "researchlab3" ) end
 researchlab3_clear_fn = function(inst) basic_clear_fn(inst, "researchlab3" ) end
@@ -2365,6 +2371,83 @@ end
 function gemsocket_clear_fn(inst)
     inst.AnimState:SetBuild("staff_purple_base")
 end
+
+-- Unsorted.
+
+function molehat_init_fn(inst, build_name, opentop)
+    basic_init_fn(inst, build_name, "hat_mole")
+    if opentop then
+        inst:AddTag("open_top_hat")
+        inst.components.equippable:SetOnEquip(inst._skinfns.opentop_onequip)
+    end
+end
+function molehat_clear_fn(inst)
+    basic_clear_fn(inst, "hat_mole")
+    inst:RemoveTag("open_top_hat")
+    inst.components.equippable:SetOnEquip(inst._skinfns.simple_onequip)
+end
+
+function premiumwateringcan_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "premiumwateringcan")
+end
+function premiumwateringcan_clear_fn(inst)
+    basic_clear_fn(inst, "premiumwateringcan")
+end
+
+function mushroom_farm_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "mushroom_farm")
+end
+function mushroom_farm_clear_fn(inst)
+    basic_clear_fn(inst, "mushroom_farm")
+end
+
+function dock_woodposts_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "dock_woodposts")
+    inst.AnimState:PlayAnimation("idle" .. (inst._post_id or tostring(math.random(1, 3))))
+end
+function dock_woodposts_clear_fn(inst)
+    basic_clear_fn(inst, "dock_woodposts")
+    inst.AnimState:PlayAnimation("idle" .. (inst._post_id or tostring(math.random(1, 3))))
+end
+
+function dock_woodposts_item_init_fn(inst, build_name, anim_bank)
+    inst.linked_skinname = build_name --hack that relies on the build name to match the linked skinname
+    inst.AnimState:SetSkin(build_name, "dock_woodposts") --same hack is used here by the deployable code in player controller
+    if anim_bank ~= nil then
+        inst.AnimState:SetBank(anim_bank)
+    end
+    inst.components.inventoryitem:ChangeImageName(inst:GetSkinName())
+end
+function dock_woodposts_item_clear_fn(inst)
+    inst.linked_skinname = nil
+    inst.AnimState:SetBuild("dock_woodposts")
+    inst.AnimState:SetBank("dock_woodposts")
+    inst.components.inventoryitem:ChangeImageName()
+end
+
+
+function trophyscale_fish_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "scale_o_matic")
+end
+function trophyscale_fish_clear_fn(inst)
+    basic_clear_fn(inst, "scale_o_matic")
+end
+
+function trophyscale_oversizedveggies_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "trophyscale_oversizedveggies")
+end
+function trophyscale_oversizedveggies_clear_fn(inst)
+    basic_clear_fn(inst, "trophyscale_oversizedveggies")
+end
+
+function resurrectionstatue_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "wilsonstatue")
+end
+function resurrectionstatue_clear_fn(inst)
+    basic_clear_fn(inst, "wilsonstatue")
+end
+
+
 
 function CreatePrefabSkin(name, info)
     local prefab_skin = Prefab(name, nil, info.assets, info.prefabs)

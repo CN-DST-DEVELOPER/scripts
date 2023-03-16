@@ -9,9 +9,9 @@ local down_pos = -200
 
 local TIMEOUT = 1
 
-local YotbToast = Class(Widget, function(self, owner)
+local YotbToast = Class(Widget, function(self, owner, controls)
     Widget._ctor(self, "YotbToast")
-
+    self.controls = controls
     self.owner = owner
     self.root = self:AddChild(Widget("ROOT"))
 
@@ -46,8 +46,9 @@ end)
 function YotbToast:UpdateElements()
     local from = self.root:GetPosition()
 
-    if not self.controller_hide and not self.craft_hide and self.owner.player_classified and self.owner.player_classified.hasyotbskin and self.owner.player_classified.hasyotbskin:value() then
+    if not self.controller_hide and not self.craft_hide and self.owner.player_classified and self.owner.player_classified.hasyotbskin and self.owner.player_classified.hasyotbskin:value() then 
         if not self.opened then
+            self.controls:ManageToast(self)
             self.opened = true
             local to = Vector3(0, down_pos, 0)
 
@@ -64,7 +65,7 @@ function YotbToast:UpdateElements()
             if self:IsVisible() then
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/skin_drop_slide_gift_UP")
             end
-            self.root:MoveTo(from, to, 0.5, nil)
+            self.root:MoveTo(from, to, 0.5, function() self.controls:ManageToast(self,true) end)
         end
         self:UpdateControllerHelp()
     end

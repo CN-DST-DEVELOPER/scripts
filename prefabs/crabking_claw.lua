@@ -136,6 +136,7 @@ local function fn()
     inst:AddTag("hostile")
     inst:AddTag("crabking_claw")
 	inst:AddTag("soulless")
+    inst:AddTag("lunar_aligned")
 
     local s  = 0.7
     inst.Transform:SetScale(s, s, s)

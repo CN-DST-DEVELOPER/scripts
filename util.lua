@@ -775,7 +775,6 @@ local env = {  -- add functions you know are safe here
     loadstring=loadstring -- functions can get serialized to text, this is required to turn them back into functions
  }
 
-
 function RunInEnvironment(fn, fnenv)
 	setfenv(fn, fnenv)
 	return xpcall(fn, debug.traceback)
@@ -1400,6 +1399,20 @@ function table.findpath(Table,Names,indx)
         end
     end
     return nil
+end
+
+function table.keysareidentical(a, b)
+    for k, _ in pairs(a) do
+        if b[k] == nil then
+            return false
+        end
+    end
+    for k, _ in pairs(b) do
+        if a[k] == nil then
+            return false
+        end
+    end
+    return true
 end
 
 function TrackMem()

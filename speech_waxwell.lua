@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "That was a marginally more restful sleep than usual.",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "I'll need a more powerful tool.",
+
 	BATTLECRY =
 	{
 		GENERIC = "To arms!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "A stone floor.",
         TURF_MOSAIC_RED = "A stone floor.",
         TURF_MOSAIC_BLUE = "A stone floor.",
+
+        TURF_BEARD_RUG = "Really, Higgsbury?",
 
 		POWCAKE = "What foul manifestation of evil is this?",
         CAVE_ENTRANCE = "I plugged it a long time ago.",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "You must be joking.",
         YOTR_DECOR_1_ITEM = "Someone should set that up.",
-        YOTR_DECOR_2_ITEM = "Someone should set that up.",             
+        YOTR_DECOR_2_ITEM = "Someone should set that up.",
+
+		--
+		DREADSTONE = "Petrified nightmares.",
+		HORRORFUEL = "That's the good stuff.",
+		DAYWALKER =
+		{
+			GENERIC = "Say pal, why don't we talk this out?",
+			IMPRISONED = "You went nosing around places you shouldn't have, didn't you?",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "I can just make out something dark within.",
+			EXPOSED = "That stone would be useful, if only it could be broken.",
+		},
+		ARMORDREADSTONE = "Black never goes out of style.",
+		DREADSTONEHAT = "Darkness is never far from my mind.",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

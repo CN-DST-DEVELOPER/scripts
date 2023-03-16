@@ -54,10 +54,6 @@ local function onpickedfn(inst, picker)
         end
     end
 
-    if not inst.planted then
-        TheWorld:PushEvent("beginregrowth", inst)
-    end
-
     TheWorld:PushEvent("plantkilled", { doer = picker, pos = pos }) --this event is pushed in other places too
 end
 
@@ -91,15 +87,13 @@ local function OnIsCaveDay(inst, isday)
     end
 end
 
-local function OnBurnt(inst)
-	if not inst.planted then
-		TheWorld:PushEvent("beginregrowth", inst)
-	end
-    DefaultBurntFn(inst)
+local function CheckForPlanted(inst)
+    if not inst.planted then
+        AddToRegrowthManager(inst)
+    end
 end
 
-
-local function fn()
+local function commonfn(isplanted)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -137,8 +131,9 @@ local function fn()
     --inst.components.transformer.transformPrefab = "flower_evil"
 
     MakeSmallBurnable(inst)
-    inst.components.burnable:SetOnBurntFn(OnBurnt)
-
+    if not isplanted then -- This will be true during load but it will be false and cut down on runtime.
+        inst:DoTaskInTime(0, CheckForPlanted)
+    end
     MakeSmallPropagator(inst)
 
 	inst:AddComponent("halloweenmoonmutable")
@@ -160,8 +155,13 @@ local function fn()
     return inst
 end
 
+function plainfn()
+    -- NOTES(JBK): This is here to stop TheSim from appearing in the commonfn callback.
+    return commonfn()
+end
+
 function rosefn()
-    local inst = fn()
+    local inst = commonfn()
 
     inst:SetPrefabName("flower")
 
@@ -175,7 +175,7 @@ function rosefn()
 end
 
 function plantedflowerfn()
-    local inst = fn()
+    local inst = commonfn(true)
 
     inst:SetPrefabName("flower")
 
@@ -188,6 +188,6 @@ function plantedflowerfn()
     return inst
 end
 
-return Prefab("flower", fn, assets, prefabs),
+return Prefab("flower", plainfn, assets, prefabs),
        Prefab("flower_rose", rosefn, assets, prefabs),
        Prefab("planted_flower", plantedflowerfn, assets, prefabs)

@@ -135,11 +135,17 @@ local assets =
     Asset("ANIM", "anim/player_idles_wonkey.zip"),
     Asset("ANIM", "anim/player_idles_wickerbottom.zip"),
     Asset("ANIM", "anim/player_idles_waxwell.zip"),
+    Asset("ANIM", "anim/player_idles_wilson.zip"),    
     Asset("ANIM", "anim/bernie_build.zip"),
     Asset("ANIM", "anim/swap_lucy_axe.zip"),
 
     -- Wardrobe
     Asset("ANIM", "anim/player_emotesxl.zip"), -- idle emote animations
+
+    -- Skill tree
+    Asset("ANIM", "anim/skills_activate.zip"),
+    Asset("ANIM", "anim/skill_unlock.zip"),
+
 
     -- Unused and deprecated. Keeping for mods.
     Asset("DYNAMIC_ATLAS", "images/skinsscreen.xml"),

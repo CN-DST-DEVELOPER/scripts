@@ -802,6 +802,7 @@ local function fn()
     inst:AddTag("largecreature")
     inst:AddTag("gemsocket")
     inst:AddTag("birdblocker")
+    inst:AddTag("lunar_aligned")
 
     inst.AnimState:PlayAnimation("inert", true)
 

@@ -1277,6 +1277,8 @@ STRINGS =
         TURF_MOSAIC_BLUE = "Blue Mosaic Flooring",
         TURF_MOSAIC_RED = "Red Mosaic Flooring",
 
+        TURF_BEARD_RUG = "Beard Hair Rug",
+
         COOKPOT = "Crock Pot",
         DUG_GRASS = "Grass Tuft",
         DUG_SAPLING = "Sapling",
@@ -3607,8 +3609,17 @@ STRINGS =
         YOTR_DECOR_2 = "Tall Rabbit Lamp",
 
         YOTR_DECOR_1_ITEM = "Short Rabbit Lamp",
-        YOTR_DECOR_2_ITEM = "Tall Rabbit Lamp",        
+        YOTR_DECOR_2_ITEM = "Tall Rabbit Lamp",
         HAREBALL = "Hare Ball",
+
+		--
+		DREADSTONE = "Dreadstone",
+		HORRORFUEL = "Pure Horror",
+		DAYWALKER = "Nightmare Werepig",
+		DAYWALKER_PILLAR = "Cracked Pillar",
+		SHADOW_LEECH = "Parasitic Shadeling",
+		ARMORDREADSTONE = "Dreadstone Armor",
+		DREADSTONEHAT = "Dreadstone Helm",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4438,7 +4449,6 @@ STRINGS =
         YOTR_FOOD3 = "This dessert looks almost too good to eat.",
         YOTR_FOOD4 = "Puffy balls of chewy goodness.",
         YOTR_TOKEN = "Tell a Bunnyman you'd like to try your hand at a pillow battle.",
-        YOTR_FIGHTRING_KIT = "Who will be the last pillowfighter standing?",
 
         HANDPILLOW_BEEFALOWOOL = "It packs a woolly wallop!",
         HANDPILLOW_KELP = "Nobody likes a wet blanket. Wet pillows aren't much better.",
@@ -4451,9 +4461,45 @@ STRINGS =
         BODYPILLOW_STEELWOOL = "A wearable pillow that is as effective as it is unpleasant.",
 
         YOTR_DECOR_1_ITEM = "This lovable light makes any cave cozier.",
-        YOTR_DECOR_2_ITEM = "A rabbit statue with a real fire in its belly!",           
+        YOTR_DECOR_2_ITEM = "A rabbit statue with a real fire in its belly!",    
+        
+        --
+        ARMORDREADSTONE = "Have no fear, the darkness will protect you.",
+        DREADSTONEHAT = "A sturdy helmet of blackest stone.",
 
-    },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
+        TRANSMUTE_LOG = "Transmute Twigs into a Log.",
+        TRANSMUTE_TWIGS = "Transmute a Log into Twigs.",
+        TRANSMUTE_FLINT = "Transmute Rocks into Flint.",
+        TRANSMUTE_ROCKS = "Transmute Flint into Rocks.",
+
+        TRANSMUTE_BLUEGEM = "Transmute Red Gems into Blue Gems.",
+        TRANSMUTE_REDGEM = "Transmute Blue Gems into Red Gems.",
+        TRANSMUTE_PURPLEGEM = "Transmute Blue and Red Gems into Purple Gems.",
+        TRANSMUTE_ORANGEGEM = "Transmute Purple Gems into Orange Gems.",
+        TRANSMUTE_YELLOWGEM = "Transmute Orange Gems into Yellow Gems.",
+        TRANSMUTE_GREENGEM = "Transmute Yellow Gems into Green Gems.",
+        TRANSMUTE_OPALPRECIOUSGEM = "Transmute Many Gems into an Iridescent Gem.",
+
+        TRANSMUTE_MEAT = "Transmute Morsels into Meat.",
+        TRANSMUTE_SMALLMEAT = "Transmute Meat into Morsels.",
+        TRANSMUTE_GOLDNUGGET = "Transmute Nitre into Gold Nuggets.",
+        TRANSMUTE_NITRE = "Transmute Gold Nugget into a Nitre.",
+        TRANSMUTE_MARBLE = "Transmute Cut Stone into Marble.",
+        TRANSMUTE_CUTSTONE = "Transmute Marble into Cut Stone.",
+        TRANSMUTE_MOONROCKNUGGET = "Transmute Marble into Moon Rock.",
+
+        TRANSMUTE_POOP = "Transmute Rot into Manure.",
+        TRANSMUTE_BEARDHAIR = "Transmute Beefalo Hair into Beard Hair.",
+        TRANSMUTE_BEEFALODHAIR = "Transmute Beard Hair into Beefalo Hair.",
+        TRANSMUTE_BONESHARD = "Transmute a Hound's Tooth into Bone Shards.",
+        TRANSMUTE_HOUNDSTOOTH = "Transmute Bone Shards into a Hounds Tooth.",
+
+        TRANSMUTE_HORRORFUEL = "Transmute Dreadstone into Pure Horror.",
+        TRANSMUTE_DREADSTONE = "Transmute Pure Horror into Dreadstone.",
+        TRANSMUTE_NIGHTMAREFUEL = "Transmute Pure Horror into Nightmare Fuel.",
+    },
+
+    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
 	COOKINGRECIPECARD_DESC = 
 	{
@@ -6075,6 +6121,89 @@ STRINGS =
 
     MONKEY_SPEECH_PRE = {"Ooo","Eee","Oee"},
     MONKEY_SPEECH_PST = {"ki","k"},
+
+	--
+	DAYWALKER_IMPRISONED_FAR =
+	{
+		--in chains & player is on screen but not that close
+		--moaning/grunting/mumbling to self?
+		"UUGH...",
+		"...(growl)...",
+		"ME FOUND IT FIRST... ME!",
+		"...UUUGH...",
+	},
+	DAYWALKER_IMPRISONED_NEAR =
+	{
+		--in chains & player is nearby
+		--duplicate some of the lines from above, and add some asking player for help?
+		"FREE... ME...",
+		"...UUGH...",
+		"COME... CLOSER...",
+        "PLEASE...",
+	},
+	DAYWALKER_RE_IMPRISONED_NEAR =
+	{
+		--switches to this speech after being beaten and then respawning
+		"CAN'T KEEP... ME HERE... FOREVER...",
+		"ME FIND CRACK TO DARK PLACE... ME!",
+        "POWER SHOULD BE FOR ME!",
+		"COWARDS!",
+	},
+	DAYWALKER_IMPRISONED_STRUGGLE =
+	{
+		--in chains & randomized brief struggling animation
+		"ITCHY!",
+		"CAN'T MOVE!",
+	},
+    DAYWALKER_IMPRISONED_PILLAR_BREAKING =
+    {
+        --as players are pickaxing pillars
+        "YES!",
+        "KEEP GOING!",
+        "HURRY! HURRY!",
+    },
+	DAYWALKER_SHAKE_LEECHES =
+	{
+		--trying to shake off shadow leeches
+		"OFF OF ME!",
+        "GET OFF!!",
+		"RAAAAUUGGHH!",
+        "VERMIN!",
+	},
+	DAYWALKER_LEECH_BITE =
+	{
+		--leech jumped on and bit
+		"AHHH!",
+		"OW!!",
+	},
+	DAYWALKER_COLLIDE =
+	{
+		--collide with pillar when stumbling around trying to shake off leeches
+		"OWWWWW!",
+        "OOF!",
+	},
+	DAYWALKER_ATTACK =
+    {
+        --attacking player
+        "HEH HEH HEH...",
+        "FREE... FREE!!",
+        "GRAAAR!!",
+        "PESTS!",
+        "ME DESTROY YOU!",
+        "IS MINE! MINE!!",
+    },
+    DAYWALKER_POWERDOWN =
+    {
+        --after player's knocked all the pure horror out
+        "M-MY POWER...",
+        "THIS NOT OVER!",
+    },
+	DAYWALKER_TIRED =
+	{
+		--kneeling down tired, recovering health
+		"HUFF... HUFF...",
+        "BETTER... YES, MUCH BETTER.",
+	},
 }
 
 STRINGS.BUNNYMANNAMES =
@@ -6553,6 +6682,7 @@ STRINGS.UI =
         NEEDSHERMITCRABSHOP_L3 = "Find someone friendly enough to make this trade!",
         NEEDSHERMITCRABSHOP_L4 = "Find someone friendly enough to make this trade!",
         NEEDSCREATURESCANNING = "Scan living creatures to collect data!",
+        NEEDSSKILL = "Learn new skills.",
         NEEDSBOOKSTATION = "Build a bookcase to craft your books.",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
@@ -7080,7 +7210,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "A Little Drama\nBeta Build",
+		MAINBANNER_BETA_TITLE = "Wilson Refresh\nBeta Build",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -9459,11 +9589,12 @@ STRINGS.UI =
     LOBBYSCREEN =
     {
         SELECT = "Select",
-        START = "Go!",
+        START = "Go!",        
 		NEXT = "Next",
         APPLY = "Apply",
         CANCEL = "Cancel",
         BACK = "Back",
+
         DISCONNECT = "Disconnect",
         CLIENTQUITTITLE = "Leave Server",
         CLIENTQUITBODY = "Are you sure you want to leave this server?",
@@ -10648,6 +10779,8 @@ STRINGS.UI =
         FAILED_NOPERMISSIONS_TITLE = "Permissions Required",
         FAILED_NOPERMISSIONS_BODY = "Unfortunately you will need to login to continue viewing this panel, but you do not allow data collection which is required to login.\n\nData Collection settings can be modified in the Options menu.",
         FAILED_NOPERMISSIONS_NOCHOICE = "I understand",
+		
+        MYSTERYBOX_DISABLE = "You must be logged in to access the Treasury.",
     },
 
     BEARDSCREEN =
@@ -13876,6 +14009,114 @@ STRINGS.SPELLS = {
 	--SHADOW_TOPHAT = "Imbue Top Hat",
 }
 
+STRINGS.SKILLTREE = {
+    INFOPANEL = "Outfit",
+    INFOPANEL_DESC = "Become a seasoned survivor!",
+    SKILLTREE = "Skillset",
+    SKILLPOINTS = "Insight",
+    SKILLPOINTS_TO_SPEND = "Insight Remaining",
+    NEW_SKILL_POINT = "Insight Gained!",
+    ACTIVATE = "Learn",
+    ACTIVATED = "SKILL MASTERED",
+    RESPEC = "Reset Insight",
+    PANELS = {
+        ALCHEMY = "ALCHEMY",
+        TORCH = "TORCH",
+        BEARD = "BEARD",
+        ALLEGIANCE = "AFFINITY",
+    },
+
+    ONLINE_DATA_USER_OFFLINE = "Login to use online skilltree data.",
+    ONLINE_DATA_DOWNLOAD_FAILED = "Online skilltree data failed to sync. Using offline data.",
+
+    LOCKED = "PATH LOCKED",
+    UNLOCKED = "PATH UNLOCKED",
+    UNKNOWN = "PATH UNKNOWN",
+    WILSON = {
+
+        WILSON_ALCHEMY_1_TITLE = "Transmutation",
+        WILSON_ALCHEMY_1_DESC = "Transform 3 Twigs into a Log.\nTransform a Log into 2 Twigs.",
+
+        WILSON_ALCHEMY_2_TITLE = "Transmute Gems I",
+        WILSON_ALCHEMY_2_DESC = "Transform 2 Red Gems into a Blue Gem.\nTransform 2 Blue Gems into a Red Gem.\nTransform a Blue and Red Gem into a Purple Gem.",
+
+        WILSON_ALCHEMY_5_TITLE = "Transmute Gems II",
+        WILSON_ALCHEMY_5_DESC = "Transform 3 Purple Gems into an Orange Gem.\nTransform 3 Orange Gems into a Yellow Gem.",
+
+        WILSON_ALCHEMY_6_TITLE = "Transmute Gems III",
+        WILSON_ALCHEMY_6_DESC = "Transform 3 Yellow Gems into a Green Gem.\nTransform 6 Gems of different colors into an Iridescent Gem.",
+
+        WILSON_ALCHEMY_3_TITLE = "Transmute Ore I",
+        WILSON_ALCHEMY_3_DESC = "Transform 3 Rocks into a Flint.\nTransform 2 Flint into Rocks.",
+
+        WILSON_ALCHEMY_7_TITLE = "Transmute Ore II",
+        WILSON_ALCHEMY_7_DESC = "Transform 3 Nitre into a Gold Nugget.\nTransform 2 Gold Nuggets into Nitre.",
+
+        WILSON_ALCHEMY_8_TITLE = "Transmute Ore III",
+        WILSON_ALCHEMY_8_DESC = "Transform 2 Cut Stone into Marble.\nTransform Marble into Cut Stone.\nTransform 2 Marble into Moon Rock.",
+
+        WILSON_ALCHEMY_4_TITLE = "Transmute Icky I",
+        WILSON_ALCHEMY_4_DESC = "Transform 3 Morsels into a Meat.\nTransform a Meat into 2 Morsels.",
+
+        WILSON_ALCHEMY_9_TITLE = "Transmute Icky II",
+        WILSON_ALCHEMY_9_DESC = "Transform 2 Beard Hair into Beefalo Hair.\n Transform 2 Beefalo Hair into Beard Hair.",
+
+        WILSON_ALCHEMY_10_TITLE = "Transmute Icky III",
+        WILSON_ALCHEMY_10_DESC = "Transform 6 Rot into Manure.\nTransform 2 Hound's Teeth into a Bone Shards.\nTransform 2 Bone Shards into a Hound's Tooth.",
+
+        WILSON_TORCH_1_TITLE = "Torch Longevity I",
+        WILSON_TORCH_1_DESC = "Torches last a little longer.",
+
+        WILSON_TORCH_2_TITLE = "Torch Longevity II",
+        WILSON_TORCH_2_DESC = "Torches last a fair amount longer.",
+
+        WILSON_TORCH_3_TITLE = "Torch Longevity III",
+        WILSON_TORCH_3_DESC = "Torches last a lot longer.",
+
+        WILSON_TORCH_4_TITLE = "Torch Range I",
+        WILSON_TORCH_4_DESC = "Torches are a little brighter.",
+
+        WILSON_TORCH_5_TITLE = "Torch Range II",
+        WILSON_TORCH_5_DESC = "Torches are a fair amount brighter.",
+
+        WILSON_TORCH_6_TITLE = "Torch Range III",
+        WILSON_TORCH_6_DESC = "Torches are a lot brighter.",
+
+        WILSON_TORCH_1_LOCK_DESC = "Learn 3 Torch Skills to unlock.",
+
+        WILSON_TORCH_7_TITLE = "Torch Toss",
+        WILSON_TORCH_7_DESC = "Uses a scientifically formulated trajectory to always land right side up.",
+
+        WILSON_BEARD_1_TITLE = "Beard Insulation I",
+        WILSON_BEARD_1_DESC = "Gain high insulation from your beard.",
+
+        WILSON_BEARD_2_TITLE = "Beard Insulation II",
+        WILSON_BEARD_2_DESC = "Gain higher insulation from your beard.",
+
+        WILSON_BEARD_3_TITLE = "Beard Insulation III",
+        WILSON_BEARD_3_DESC = "Gain highest insulation from your beard.",
+
+        WILSON_BEARD_4_TITLE = "Beard Growth I",
+        WILSON_BEARD_4_DESC = "Your magnificent beard grows a little faster.",
+
+        WILSON_BEARD_5_TITLE = "Beard Growth II",
+        WILSON_BEARD_5_DESC = "Your magnificent beard grows a fair amount faster.",
+
+        WILSON_BEARD_6_TITLE = "Beard Growth III",
+        WILSON_BEARD_6_DESC = "Your magnificent beard grows much faster.",
+
+        WILSON_BEARD_1_LOCK_DESC = "Learn 3 Beard Skills to unlock.",
+
+        WILSON_BEARD_7_TITLE = "Beard Hair Storage",
+        WILSON_BEARD_7_DESC = "Stash food in your beard.",
+
+        WILSON_ALLEGIANCE_LOCK_1_DESC = "Learn 12 Skills to unlock.",
+        WILSON_ALLEGIANCE_LOCK_2_DESC = "Find and defeat the Ancient Fuelweaver.",
+
+        WILSON_ALLEGIANCE_SHADOW_TITLE = "Shadow Courtier",
+        WILSON_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty with the secrets of Shadow Transmutation.",
+    },
+}
 --Don't include this in pot generation as this file is already translated.
 if POT_GENERATION == false then
     require "strings_pretranslated"

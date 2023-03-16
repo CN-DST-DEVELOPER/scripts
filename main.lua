@@ -326,6 +326,10 @@ global("TheCookbook")
 TheCookbook = nil
 global("ThePlantRegistry")
 ThePlantRegistry = nil
+global("TheSkillTree")
+TheSkillTree = nil
+global("TheGenericKV")
+TheGenericKV = nil
 global("TheCraftingMenuProfile")
 TheCraftingMenuProfile = nil
 global("Lavaarena_CommunityProgression")
@@ -385,6 +389,12 @@ local function ModSafeStartup()
 	ThePlantRegistry = require("plantregistrydata")()
 	ThePlantRegistry:Load()
 	ThePlantRegistry.save_enabled = true
+    TheSkillTree = require("skilltreedata")()
+    TheSkillTree:Load()
+    TheSkillTree.save_enabled = true
+    TheGenericKV = require("generickv")
+    TheGenericKV:Load()
+    TheGenericKV.save_enabled = true
 	TheCraftingMenuProfile = require("craftingmenuprofile")()
 	TheCraftingMenuProfile:Load()
 	Lavaarena_CommunityProgression = require("lavaarena_communityprogression")()

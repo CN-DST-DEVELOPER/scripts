@@ -123,6 +123,11 @@ local TRIGGERED_DANGER_MUSIC =
         "monkeyisland/warning_music/warning_combo",
     },
 
+	daywalker =
+	{
+		"dontstarve/music/music_epicfight_daywalker",
+	},
+
     default =
     {
         "dontstarve/music/music_epicfight_ruins",

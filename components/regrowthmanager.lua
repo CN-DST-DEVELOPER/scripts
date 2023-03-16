@@ -56,7 +56,7 @@ local function AppendTimer(key, timer)
     _lists[key]:Append(timer)
 end
 
-local REGROWBLOCKER_ONEOF_TAGS = { "structure", "wall" }
+local REGROWBLOCKER_ONEOF_TAGS = { "structure", "wall", "regrowth_blocker" }
 local function TestForRegrow(x, y, z, orig_tile)
     if _map:GetTileAtPoint(x, y, z) ~= orig_tile or
         not _map:CanPlantAtPoint(x, y, z) or

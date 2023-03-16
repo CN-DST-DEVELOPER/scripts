@@ -1904,7 +1904,7 @@ function TintBackground( bg )
     --end
 end
 
---NOTES(JBK): Keeping this for PC Steam/RAIL only for now.
+-- NOTES(JBK): Keeping this for PC Steam/RAIL only for now.
 local platforms_supporting_audio_focus = {
     ["WIN32_STEAM"] = true,
     ["WIN32_RAIL"] = true,
@@ -1955,8 +1955,19 @@ local function OnUserPickedCharacter(char, skin_base, clothing_body, clothing_ha
                 starting_skins[item] = skin_name
             end
         end
+        local selection = TheSkillTree:GetPlayerSkillSelection(char)
+        local has_selection = false
+        for _, v in ipairs(selection) do
+            if v ~= 0 then
+                has_selection = true
+                break
+            end
+        end
+        if not has_selection then
+            selection = nil
+        end
 
-        TheNet:SendSpawnRequestToServer(char, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, starting_skins)
+        TheNet:SendSpawnRequestToServer(char, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, starting_skins, selection)
     end
 
     TheFrontEnd:Fade(FADE_OUT, 1, doSpawn, nil, nil, "white")

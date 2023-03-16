@@ -47,6 +47,9 @@ local function fn()
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
 
+	--shadowlevel (from shadowlevel component) added to pristine state for optimization
+	inst:AddTag("shadowlevel")
+
     local swap_data = {sym_build = "swap_multitool_axe_pickaxe"}
     MakeInventoryFloatable(inst, "med", 0.05, {0.7, 0.4, 0.7}, true, -13, swap_data)
 
@@ -76,10 +79,11 @@ local function fn()
     inst:AddComponent("inventoryitem")
 
     inst:AddComponent("equippable")
-
     inst.components.equippable:SetOnEquip(onequip)
-
     inst.components.equippable:SetOnUnequip(onunequip)
+
+	inst:AddComponent("shadowlevel")
+	inst.components.shadowlevel:SetDefaultLevel(TUNING.MULTITOOL_AXE_PICKAXE_SHADOW_LEVEL)
 
     MakeHauntableLaunch(inst)
 

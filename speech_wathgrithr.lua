@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "A well-rested warrior am I!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "This meager tool hath not the strength to break it.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Valhalla awaits!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "A piece of the battlefield.",
         TURF_MOSAIC_RED = "A piece of the battlefield.",
         TURF_MOSAIC_BLUE = "A piece of the battlefield.",
+        
+        TURF_BEARD_RUG = "I shan't ask any questions.",
 
 		POWCAKE = "What in the name of the unicorn is this?",
         CAVE_ENTRANCE = "What treasures lie beneath?",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "Ha! I am no coward, pass it this way!",
         YOTR_DECOR_1_ITEM = "Let us set the rabbit torch alight!",
-        YOTR_DECOR_2_ITEM = "Let us set the rabbit torch alight!",             
+        YOTR_DECOR_2_ITEM = "Let us set the rabbit torch alight!",
+
+		--
+		DREADSTONE = "A stone of ill omen.",
+		HORRORFUEL = "The sight of it chills even my courageous Viking heart.",
+		DAYWALKER =
+		{
+			GENERIC = "You leave me no choice, beast! To arms!",
+			IMPRISONED = "The beast hath been consumed by foul magic.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "The pillar is weakened... mayhaps it could be broken.",
+			EXPOSED = "Only something of great might could crack that foul stone.",
+		},
+		ARMORDREADSTONE = "It will serve me well, despite its origins.",
+		DREADSTONEHAT = "Ready to bear the brunt of battle!",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

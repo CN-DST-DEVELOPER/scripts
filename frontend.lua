@@ -9,6 +9,7 @@ local Image = require "widgets/image"
 local ConsoleScreen = require "screens/consolescreen"
 local DebugMenuScreen = require "screens/DebugMenuScreen"
 local PopupDialogScreen = require "screens/popupdialog"
+local PopupDialogScreenRedux = require "screens/redux/popupdialog"
 local TEMPLATES = require "widgets/templates"
 local ServerPauseWidget = require "widgets/redux/serverpausewidget"
 
@@ -1391,6 +1392,26 @@ function FrontEnd:ToggleImgui(node)
         end
     else
         print("IsImguiEnabled is disabled due to threaded renderer being enabled")
+        if self.ignoredebugpanelwarning == nil then
+            local dialogue = PopupDialogScreenRedux("[DEV] Bad threaded renderer setting!", "You are trying to use a debug panel but have threaded renderer ON, please turn it OFF.", {
+                {
+                    text = "Ignore for now",
+                    cb = function()
+                        self.ignoredebugpanelwarning = true
+                        TheFrontEnd:PopScreen()
+                    end
+                },{
+                    text = "Turn OFF and Quit",
+                    cb = function()
+                        Profile:SetThreadedRenderEnabled(false)
+                        Profile:Save(function()
+                            RequestShutdown()
+                        end)
+                    end
+                },
+            }, nil, "big")
+            self:PushScreen(dialogue)
+        end
     end
 end
 

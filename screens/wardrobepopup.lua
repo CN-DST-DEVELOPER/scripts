@@ -81,7 +81,6 @@ local WardrobePopupScreen = Class(Screen, function(self, owner_player, profile, 
 end)
 
 function WardrobePopupScreen:OnDestroy()
-    TheCamera:PushScreenHOffset(self, SCREEN_OFFSET)
     self._base.OnDestroy(self)
 end
 

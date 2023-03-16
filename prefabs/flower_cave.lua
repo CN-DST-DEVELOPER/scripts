@@ -199,11 +199,6 @@ local function makeemptyfn(inst)
     inst.AnimState:PlayAnimation("picked")
 end
 
-local function onburnt(inst)
-    TheWorld:PushEvent("beginregrowth", inst)
-    DefaultBurntFn(inst)
-end
-
 local function OnSave(inst, data)
     data.light_state = inst.light_state
 end
@@ -320,7 +315,7 @@ local function commonfn(bank, build, light_params)
 
     ---------------------
     MakeMediumBurnable(inst)
-    inst.components.burnable:SetOnBurntFn(onburnt)
+    AddToRegrowthManager(inst)
     MakeSmallPropagator(inst)
     ---------------------
 

@@ -886,6 +886,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Ahhh. Good morning!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Oh. Something else?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -1489,6 +1492,8 @@ return{
         TURF_MOSAIC_GREY = "Not dirt",
         TURF_MOSAIC_RED = "Not dirt",
         TURF_MOSAIC_BLUE = "Not dirt",
+
+        TURF_BEARD_RUG = "Scratchy",
 
 		POWCAKE = "Ka-pow!",
         CAVE_ENTRANCE = "Goes somewhere",
@@ -4746,7 +4751,23 @@ return{
 
         HAREBALL = "From Hoppers. Thanks!",
         YOTR_DECOR_1_ITEM = "Hmmm, where put Hopper?",
-        YOTR_DECOR_2_ITEM = "Hmmm, where put Hopper?",             
+        YOTR_DECOR_2_ITEM = "Hmmm, where put Hopper?",
+
+		--
+		DREADSTONE = "Pretty",
+		HORRORFUEL = "Scary...",
+		DAYWALKER =
+		{
+			GENERIC = "Why so mad?",
+			IMPRISONED = "Stuck. Poor Twirly Tail",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "Where you grow from?",
+			EXPOSED = "Where you grow from?",
+		},
+		ARMORDREADSTONE = "Pretty rock clothes",
+		DREADSTONEHAT = "Rock for head",
     },
 
     DESCRIBE_GENERIC = "Friend?",

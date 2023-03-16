@@ -49,7 +49,7 @@ local function RemovePrefabs(prefabs_to_remove, biomes_to_cleanup)
 end
 
 
-local function RetrofitNewCaveContentPrefab(inst, prefab, min_space, dist_from_structures, nightmare)
+local function RetrofitNewCaveContentPrefab(inst, prefab, min_space, dist_from_structures, nightmare, searchnodes_override, ignore_terrain)
 	local attempt = 1
 	local topology = TheWorld.topology
 
@@ -57,16 +57,21 @@ local function RetrofitNewCaveContentPrefab(inst, prefab, min_space, dist_from_s
 
 	nightmare = nightmare or false
 
-	local searchnodes = {}
-	for k = 1, #topology.nodes do
-		if (nightmare == table.contains(topology.nodes[k].tags, "Nightmare"))
-			and (not table.contains(topology.nodes[k].tags, "Atrium"))
-			and (not table.contains(topology.nodes[k].tags, "lunacyarea"))
-			and (not string.find(topology.ids[k], "RuinedGuarden")) then
+    local searchnodes
+    if searchnodes_override then
+        searchnodes = searchnodes_override
+    else
+        searchnodes = {}
+        for k = 1, #topology.nodes do
+            if (nightmare == table.contains(topology.nodes[k].tags, "Nightmare"))
+                and (not table.contains(topology.nodes[k].tags, "Atrium"))
+                and (not table.contains(topology.nodes[k].tags, "lunacyarea"))
+                and (not string.find(topology.ids[k], "RuinedGuarden")) then
 
-			table.insert(searchnodes, k)
-		end
-	end
+                table.insert(searchnodes, k)
+            end
+        end
+    end
 
 	if #searchnodes == 0 then
 		print ("Retrofitting world for " .. prefab .. " FAILED: Could not find any " .. (nightmare and "Ruins" or "Caves") .. " nodes to spawn in.")
@@ -82,7 +87,7 @@ local function RetrofitNewCaveContentPrefab(inst, prefab, min_space, dist_from_s
 			local x = points_x[1]
 			local z = points_y[1]
 
-			if TheWorld.Map:CanPlacePrefabFilteredAtPoint(x, 0, z, prefab) and
+			if ignore_terrain or TheWorld.Map:CanPlacePrefabFilteredAtPoint(x, 0, z, prefab) and
 				TheWorld.Map:CanPlacePrefabFilteredAtPoint(x + min_space, 0, z, prefab) and
 				TheWorld.Map:CanPlacePrefabFilteredAtPoint(x, 0, z + min_space, prefab) and
 				TheWorld.Map:CanPlacePrefabFilteredAtPoint(x - min_space, 0, z, prefab) and
@@ -839,6 +844,58 @@ function self:OnPostInit()
 	end
 
 	---------------------------------------------------------------------------
+    
+    if self.retrofit_daywalker_content then
+		self.retrofit_daywalker_content = nil
+
+		local requires_retrofitting_spawningground = true
+	    for k,v in pairs(Ents) do
+			if v ~= inst and v.prefab == "daywalkerspawningground" then
+				print("Retrofitting for Daywalker spawningground is not required.")
+				requires_retrofitting_spawningground = false
+				break
+			end
+		end
+
+        if requires_retrofitting_spawningground then
+            print("Retrofitting for Daywalker spawningground.")
+            local searchnodes_override = {}
+            local topology = TheWorld.topology
+            for k = 1, #topology.nodes do
+                if string.find(topology.ids[k], "LightPlantField") then
+                    table.insert(searchnodes_override, k)
+                end
+            end
+            local success = false
+            for i = 1, 5 do
+                success = RetrofitNewCaveContentPrefab(inst, "daywalkerspawningground", 1, 10, nil, searchnodes_override) or success
+            end
+            if not success then
+                -- Expand search area greatly.
+                for k = 1, #topology.nodes do
+                    if string.find(topology.ids[k], "WormPlantField") or
+                        string.find(topology.ids[k], "FernGully") or
+                        string.find(topology.ids[k], "SlurtlePlains") or
+                        string.find(topology.ids[k], "MudWithRabbit") then
+                        table.insert(searchnodes_override, k)
+                    end
+                end
+                for i = 1, 5 do
+                    success = RetrofitNewCaveContentPrefab(inst, "daywalkerspawningground", 1, 10, nil, searchnodes_override) or success
+                end
+                if not success then
+                    -- Allow all tile types we need at least one to spawn somewhere it does not matter where at this point.
+                    while not success do
+                        print ("Retrofitting for Daywalker spawningground. - Trying really hard to find a spot for one spawningground.")
+                        success = RetrofitNewCaveContentPrefab(inst, "daywalkerspawningground", 4, 40, nil, searchnodes_override, true)
+                    end
+                end
+            end
+        end
+
+	end
+
+	---------------------------------------------------------------------------
 	if self.requiresreset then
 		print ("Retrofitting: Worldgen retrofitting requires the server to save and restart to fully take effect.")
 		print ("Restarting server in 45 seconds...")
@@ -880,6 +937,7 @@ function self:OnLoad(data)
 		self.retrofit_dispencer_fixes = data.retrofit_dispencer_fixes
 		self.retrofit_archives_navmesh = data.retrofit_archives_navmesh
 		self.retrofit_nodeidtilemap_atriummaze = data.retrofit_nodeidtilemap_atriummaze
+        self.retrofit_daywalker_content = data.retrofit_daywalker_content or false
 
     end
 end

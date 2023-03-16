@@ -235,7 +235,9 @@ local MOONGLASS_WOBSTER_FISH_DEF =
 }
 
 local function moonglass_water()
-    return base_water_wobster("lobster_moonglass", MOONGLASS_WOBSTER_FISH_DEF)
+    local inst = base_water_wobster("lobster_moonglass", MOONGLASS_WOBSTER_FISH_DEF)
+    inst:AddTag("lunar_aligned")
+    return inst        
 end
 
 local function play_cooked_sound(inst)
@@ -406,7 +408,9 @@ local function wobster_land()
 end
 
 local function moonglass_land()
-    return base_land_wobster("lobster_moonglass", "wobster_moonglass", MOONGLASS_WOBSTER_FISH_DEF, true)
+    local inst = base_land_wobster("lobster_moonglass", "wobster_moonglass", MOONGLASS_WOBSTER_FISH_DEF, true)
+    inst:AddTag("lunar_aligned")
+    return inst
 end
 
 local function lobster_dead_fn()

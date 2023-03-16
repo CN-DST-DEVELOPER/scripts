@@ -37,12 +37,7 @@ local function onhammered(inst)
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     fx:SetMaterial("wood")
 
-    TheWorld:PushEvent("beginregrowth", inst)
     inst:Remove()
-end
-local function OnBurnt(inst)
-	TheWorld:PushEvent("beginregrowth", inst)
-    DefaultBurntFn(inst)
 end
 
 local function onhit(inst)
@@ -283,7 +278,7 @@ local function fn()
     inst.components.activatable.inactive = true
 
     MakeMediumBurnable(inst)
-    inst.components.burnable:SetOnBurntFn(OnBurnt)
+    AddToRegrowthManager(inst)
     MakeSmallPropagator(inst)
 
     ---------------------

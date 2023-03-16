@@ -136,6 +136,7 @@ local function MakeShadowCreature(data)
         inst:AddTag("hostile")
         inst:AddTag("shadow")
         inst:AddTag("notraptrigger")
+        inst:AddTag("shadow_aligned")
 
 		--shadowsubmissive (from shadowsubmissive component) added to pristine state for optimization
 		inst:AddTag("shadowsubmissive")

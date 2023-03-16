@@ -886,6 +886,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Such a peaceful slumber... but now I must wake.",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "It's not strong enough... like me...",
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -1489,6 +1492,8 @@ return{
         TURF_MOSAIC_GREY = "Some ground.",
         TURF_MOSAIC_RED = "Some ground.",
         TURF_MOSAIC_BLUE = "Some ground.",
+
+        TURF_BEARD_RUG = "How silly.",
 
 		POWCAKE = "I would have to be desperate.",
         CAVE_ENTRANCE = "Someone is trying to keep the underground at bay.",
@@ -4746,7 +4751,23 @@ return{
 
         HAREBALL = "What a horrid thing!",
         YOTR_DECOR_1_ITEM = "I should find a place for it to belong.",
-        YOTR_DECOR_2_ITEM = "I should find a place for it to belong.",             
+        YOTR_DECOR_2_ITEM = "I should find a place for it to belong.",
+
+		--
+		DREADSTONE = "It is cold... and beautiful.",
+		HORRORFUEL = "There are always more horrors to come.",
+		DAYWALKER =
+		{
+			GENERIC = "Kindness only begets more pain...",
+			IMPRISONED = "What a pitiful creature.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "We are all tethered to this place in one way or another.",
+			EXPOSED = "It is too strong, and I am too weak.",
+		},
+		ARMORDREADSTONE = "Let the darkness surround me.",
+		DREADSTONEHAT = "What's the point?",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

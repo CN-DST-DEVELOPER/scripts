@@ -1207,6 +1207,31 @@ TileManager.AddTile(
 )
 
 TileManager.AddTile(
+    "BEARD_RUG",
+    TileRanges.LAND,
+    {ground_name = "Beard Rug", old_static_id = GROUND.BEARDRUG},
+    {
+        name="carpet",
+        noise_texture="Ground_beard_hair",
+        runsound="dontstarve/movement/run_carpet",
+        walksound="dontstarve/movement/walk_carpet",
+        snowsound="dontstarve/movement/run_snow",
+        mudsound="dontstarve/movement/run_mud",
+        flooring = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_beard_hair"
+    },
+    {
+        name = "beard_rug", -- Inventory item
+        anim = "turf_beard", -- Ground item
+        bank_build = "turf_beard",
+    }
+)
+
+TileManager.AddTile(
     "FARMING_SOIL",
     TileRanges.LAND,
     {ground_name = "Farming Soil", old_static_id = GROUND.FARMING_SOIL},
@@ -1259,6 +1284,7 @@ TileManager.AddTile(
         noise_texture="lavaarena_floor_mini"
     }
 )
+
 
 
 --noise tiles

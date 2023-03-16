@@ -7,6 +7,8 @@ local Equippable = Class(function(self, inst)
         EquipSlot.Count() <= 7 and
         net_tinybyte(inst.GUID, "equippable._equipslot") or
         net_smallbyte(inst.GUID, "equippable._equipslot")
+    
+    self._preventunequipping = net_bool(inst.GUID, "equippable._preventunequipping")
 end)
 
 function Equippable:SetEquipSlot(eslot)
@@ -34,6 +36,14 @@ function Equippable:IsRestricted(target)
     end
     local restrictedtag = self.inst.replica.inventoryitem ~= nil and self.inst.replica.inventoryitem:GetEquipRestrictedTag() or nil
     return restrictedtag ~= nil and not target:HasTag(restrictedtag)
+end
+
+function Equippable:ShouldPreventUnequipping()
+    return self._preventunequipping:value()
+end
+
+function Equippable:SetPreventUnequipping(shouldprevent)
+    self._preventunequipping:set(shouldprevent)
 end
 
 return Equippable

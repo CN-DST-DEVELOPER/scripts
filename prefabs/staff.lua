@@ -286,18 +286,21 @@ local function teleport_continue(teleportee, locpos, loctarget, staff)
     end
 end
 
-local function teleport_start(teleportee, staff, caster, loctarget, target_in_ocean)
+local function teleport_start(teleportee, staff, caster, loctarget, target_in_ocean, no_teleport)
     local ground = TheWorld
 
     --V2C: Gotta do this RIGHT AWAY in case anything happens to loctarget or caster
-    local locpos = teleportee.components.teleportedoverride ~= nil and teleportee.components.teleportedoverride:GetDestPosition()
-				or loctarget == nil and getrandomposition(caster, teleportee, target_in_ocean)
-				or loctarget.teletopos ~= nil and loctarget:teletopos()
-				or loctarget:GetPosition()
+	local locpos
+	if not no_teleport then
+		locpos = (teleportee.components.teleportedoverride ~= nil and teleportee.components.teleportedoverride:GetDestPosition())
+			or (loctarget == nil and getrandomposition(caster, teleportee, target_in_ocean))
+			or (loctarget.teletopos ~= nil and loctarget:teletopos())
+			or loctarget:GetPosition()
 
-    if teleportee.components.locomotor ~= nil then
-        teleportee.components.locomotor:StopMoving()
-    end
+		if teleportee.components.locomotor ~= nil then
+			teleportee.components.locomotor:StopMoving()
+		end
+	end
 
     staff.components.finiteuses:Use(1)
 
@@ -307,18 +310,21 @@ local function teleport_start(teleportee, staff, caster, loctarget, target_in_oc
         return
     end
 
-    local isplayer = teleportee:HasTag("player")
-    if isplayer then
-        teleportee.sg:GoToState("forcetele")
-    else
-        if teleportee.components.health ~= nil then
-            teleportee.components.health:SetInvincible(true)
-        end
-        if teleportee.DynamicShadow ~= nil then
-            teleportee.DynamicShadow:Enable(false)
-        end
-        teleportee:Hide()
-    end
+	local is_teleporting_player
+	if not no_teleport then
+		if teleportee:HasTag("player") then
+			is_teleporting_player = true
+			teleportee.sg:GoToState("forcetele")
+		else
+			if teleportee.components.health ~= nil then
+				teleportee.components.health:SetInvincible(true)
+			end
+			if teleportee.DynamicShadow ~= nil then
+				teleportee.DynamicShadow:Enable(false)
+			end
+			teleportee:Hide()
+		end
+	end
 
     --#v2c hacky way to prevent lightning from igniting us
     local preventburning = teleportee.components.burnable ~= nil and not teleportee.components.burnable.burning
@@ -340,11 +346,13 @@ local function teleport_start(teleportee, staff, caster, loctarget, target_in_oc
 
     ground:PushEvent("ms_deltamoisture", TUNING.TELESTAFF_MOISTURE)
 
-    if isplayer then
-        teleportee.sg.statemem.teleport_task = teleportee:DoTaskInTime(3, teleport_continue, locpos, loctarget, staff)
-    else
-        teleport_continue(teleportee, locpos, loctarget, staff)
-    end
+	if not no_teleport then
+		if is_teleporting_player then
+			teleportee.sg.statemem.teleport_task = teleportee:DoTaskInTime(3, teleport_continue, locpos, loctarget, staff)
+		else
+			teleport_continue(teleportee, locpos, loctarget, staff)
+		end
+	end
 end
 
 local function teleport_targets_sort_fn(a, b)
@@ -352,22 +360,25 @@ local function teleport_targets_sort_fn(a, b)
 end
 
 local TELEPORT_MUST_TAGS = { "locomotor" }
-local TELEPORT_CANT_TAGS = { "playerghost", "INLIMBO" }
+local TELEPORT_CANT_TAGS = { "playerghost", "INLIMBO", "noteleport" }
 local function teleport_func(inst, target, pos, caster)
 	target = target or caster
 
     local x, y, z = target.Transform:GetWorldPosition()
 	local target_in_ocean = target.components.locomotor ~= nil and target.components.locomotor:IsAquatic()
+	local no_teleport = target:HasTag("noteleport") --targetable by spell, but don't actually teleport
+	local loctarget
+	if not no_teleport then
+		loctarget = (target.components.minigame_participator ~= nil and target.components.minigame_participator:GetMinigame())
+				or (target.components.teleportedoverride ~= nil and target.components.teleportedoverride:GetDestTarget())
+				or (target.components.hitchable ~= nil and target:HasTag("hitched") and target.components.hitchable.hitched)
+				or nil
 
-	local loctarget = target.components.minigame_participator ~= nil and target.components.minigame_participator:GetMinigame()
-						or target.components.teleportedoverride ~= nil and target.components.teleportedoverride:GetDestTarget()
-                        or target.components.hitchable ~= nil and target:HasTag("hitched") and target.components.hitchable.hitched
-						or nil
-
-	if loctarget == nil and not target_in_ocean then
-		loctarget = FindNearestActiveTelebase(x, y, z, nil, 1)
+		if loctarget == nil and not target_in_ocean then
+			loctarget = FindNearestActiveTelebase(x, y, z, nil, 1)
+		end
 	end
-    teleport_start(target, inst, caster, loctarget, target_in_ocean)
+	teleport_start(target, inst, caster, loctarget, target_in_ocean, no_teleport)
 end
 
 local function onhauntpurple(inst)

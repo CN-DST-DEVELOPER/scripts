@@ -1062,6 +1062,12 @@ function Inv:UpdateCursorText()
             self.actionstringbody:SetPosition(0, h1/2)
 
             dest_pos.y = dest_pos.y + (self.active_slot.top_align_tip + TIP_YFUDGE) * yscale
+        elseif self.active_slot.bottom_align_tip then
+            
+            self.actionstringtitle:SetPosition(0, -h0/2)
+            self.actionstringbody:SetPosition(0, -(h1/2 + h0))
+
+            dest_pos.y = dest_pos.y + (self.active_slot.bottom_align_tip + TIP_YFUDGE) * yscale
         else
             -- old default as fallback ?
             self.actionstringtitle:SetPosition(0, h0/2 + h1)

@@ -150,6 +150,7 @@ local function FindBestContainer(self, item, containers, exclude_containers)
     --local containerwithsameitem = nil --reused with construction containers code above
     local containerwithemptyslot = nil
     local containerwithnonstackableslot = nil
+    local containerwithlowpirority = nil
 
     for k, v in pairs(containers) do
         if exclude_containers == nil or not exclude_containers[k] then
@@ -158,7 +159,11 @@ local function FindBestContainer(self, item, containers, exclude_containers)
                 local isfull = container:IsFull()
                 if container:AcceptsStacks() then
                     if not isfull and containerwithemptyslot == nil then
-                        containerwithemptyslot = k
+                        if container.lowpriorityselection then
+                            containerwithlowpirority = k
+                        else
+                            containerwithemptyslot = k
+                        end
                     end
                     if item.replica.equippable ~= nil and container == k.replica.inventory then
                         local equip = container:GetEquippedItem(item.replica.equippable:EquipSlot())
@@ -173,7 +178,11 @@ local function FindBestContainer(self, item, containers, exclude_containers)
                     for k1, v1 in pairs(container:GetItems()) do
                         if v1.prefab == item.prefab and v1.skinname == item.skinname then
                             if v1.replica.stackable ~= nil and not v1.replica.stackable:IsFull() then
-                                return k
+                                if container.lowpriorityselection then
+                                    containerwithlowpirority = k
+                                else
+                                    return k
+                                end
                             elseif not isfull and containerwithsameitem == nil then
                                 containerwithsameitem = k
                             end
@@ -186,7 +195,7 @@ local function FindBestContainer(self, item, containers, exclude_containers)
         end
     end
 
-    return containerwithsameitem or containerwithemptyslot or containerwithnonstackableslot
+    return containerwithsameitem or containerwithemptyslot or containerwithnonstackableslot or containerwithlowpirority
 end
 
 function InvSlot:CanTradeItem()

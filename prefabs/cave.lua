@@ -126,6 +126,9 @@ local prefabs =
 	"retrofitted_grotterwar_spawnpoint",
 	"retrofitted_grotterwar_homepoint",
  --   "wall_ruins_2",
+
+    --
+    "daywalkerspawningground",
 }
 
 local monsters =
@@ -251,6 +254,7 @@ local function master_postinit(inst)
     end
 
     --cave specifics
+	inst:AddComponent("daywalkerspawner")
     inst:AddComponent("hounded")
     inst.components.hounded:SetSpawnData(wormspawn)
 	inst.components.hounded.max_thieved_spawn_per_thief = 1

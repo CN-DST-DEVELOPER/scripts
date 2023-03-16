@@ -108,11 +108,10 @@ function GetSelectableCharacterList()
 end
 
 function GetFEVisibleCharacterList()
-    local kv = TheInventory:GetLocalGenericKV()
     local all = {}    
     for i,character in ipairs(DST_CHARACTERLIST) do
         local add_char = true
-        if character == "wonkey" and kv.wonkey_played ~= "played" then --only show wonkey if we've played him
+        if character == "wonkey" and TheGenericKV:GetKV("wonkey_played") then --only show wonkey if we've played him
             add_char = false
         end
         if add_char then

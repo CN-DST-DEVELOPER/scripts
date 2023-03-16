@@ -71,11 +71,6 @@ local function OnEntityWake(inst)
     end
 end
 
-local function OnBurnt(inst)
-	TheWorld:PushEvent("beginregrowth", inst)
-    DefaultBurntFn(inst)
-end
-
 local function MakeCactus(name)
     local function cactusfn()
         local inst = CreateEntity()
@@ -118,7 +113,7 @@ local function MakeCactus(name)
         inst:AddComponent("inspectable")
 
         MakeLargeBurnable(inst)
-        inst.components.burnable:SetOnBurntFn(OnBurnt)
+        AddToRegrowthManager(inst)
         MakeMediumPropagator(inst)
 
         inst.OnEntityWake = OnEntityWake

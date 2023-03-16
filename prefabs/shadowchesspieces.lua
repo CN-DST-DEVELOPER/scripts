@@ -355,6 +355,7 @@ local function commonfn(name, sixfaced)
     inst:AddTag("hostile")
     inst:AddTag("notraptrigger")
     inst:AddTag("shadowchesspiece")
+    inst:AddTag("shadow_aligned")
 
     inst.AnimState:SetBank(name)
     inst.AnimState:SetBuild(name)

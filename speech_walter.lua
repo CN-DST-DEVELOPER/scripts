@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Wow, that was a good night's sleep!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "It's okay Woby, we just need to find a stronger tool!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Sorry!!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "A patch of ground.",
         TURF_MOSAIC_RED = "A patch of ground.",
         TURF_MOSAIC_BLUE = "A patch of ground.",
+
+        TURF_BEARD_RUG = "It has to be a monster, I'm sure I saw it twitching!",
 
 		POWCAKE = "This could go badly.",
         CAVE_ENTRANCE = "That rock's blocking the entrance!",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "That looks like something Woby spit up.",
         YOTR_DECOR_1_ITEM = "I'll have it set up in a jiffy!",
-        YOTR_DECOR_2_ITEM = "I'll have it set up in a jiffy!",             
+        YOTR_DECOR_2_ITEM = "I'll have it set up in a jiffy!",
+
+		--
+		DREADSTONE = "It's just a rock, what's so scary about a rock?",
+		HORRORFUEL = "It can't be THAT bad... can it?",
+		DAYWALKER =
+		{
+			GENERIC = "I thought he'd be a bit happier to be free...",
+			IMPRISONED = "We can't just leave him like that, Woby! We've gotta help him!",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "Hey, what's that stuff inside?",
+			EXPOSED = "Oh, it's just a different kind of rock.",
+		},
+		ARMORDREADSTONE = "It looks like an evil knight's armor. Neat!",
+		DREADSTONEHAT = "Never forget to wear your dark helmet.",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

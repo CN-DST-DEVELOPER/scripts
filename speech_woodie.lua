@@ -883,6 +883,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Sorry Luce, was I snorin'?",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Guess this tool just ain't gonna cut it.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Get over here, eh!",
@@ -1486,6 +1489,8 @@ return{
         TURF_MOSAIC_GREY = "Just some ground, eh?",
         TURF_MOSAIC_RED = "Just some ground, eh?",
         TURF_MOSAIC_BLUE = "Just some ground, eh?",
+
+        TURF_BEARD_RUG = "He sacrificed a lot of beard for this rug.",       
 
 		POWCAKE = "I like the ones made with real sugar better.",
         CAVE_ENTRANCE = "It's all bunged up.",
@@ -4743,7 +4748,23 @@ return{
 
         HAREBALL = "It's for a dare, eh? Alright, I'll bite.",
         YOTR_DECOR_1_ITEM = "Alright Luce, where should we put it?",
-        YOTR_DECOR_2_ITEM = "Alright Luce, where should we put it?",             
+        YOTR_DECOR_2_ITEM = "Alright Luce, where should we put it?",
+
+		--
+		DREADSTONE = "There's something off aboot it.",
+		HORRORFUEL = "That stuff can't be good for ya.",
+		DAYWALKER =
+		{
+			GENERIC = "Not even so much as a \"thank you\", eh?",
+			IMPRISONED = "Whatever he's got better not be contagious.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "Looks sturdy... ish.",
+			EXPOSED = "That's some firmly planted stone.",
+		},
+		ARMORDREADSTONE = "Luce says black ain't my colour.",
+		DREADSTONEHAT = "Gotta protect the old noggin', eh?",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

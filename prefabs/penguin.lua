@@ -409,6 +409,7 @@ local function mutated_fn()
     inst:AddTag("scarytoprey")
     inst:AddTag("animal")
     inst:AddTag("smallcreature")
+    inst:AddTag("lunar_aligned")
 
     --herdmember (from herdmember component) added to pristine state for optimization
     inst:AddTag("herdmember")

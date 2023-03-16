@@ -122,6 +122,7 @@ local function fn()
 	inst:AddTag("brightmare")
 	inst:AddTag("brightmare_gestalt")
 	inst:AddTag("NOBLOCK")
+	inst:AddTag("lunar_aligned")
 
     inst.Transform:SetFourFaced()
 

@@ -82,6 +82,7 @@ local assets =
 
     Asset("ANIM", "anim/tab_gift.zip"),
     Asset("ANIM", "anim/tab_yotb.zip"),
+    Asset("ANIM", "anim/tab_skills.zip"),
 
     Asset("INV_IMAGE", "unknown_head"),
     Asset("INV_IMAGE", "unknown_hand"),
@@ -117,6 +118,11 @@ local assets =
 
     Asset("ANIM", "anim/status_wx.zip"),
     Asset("ANIM", "anim/status_wet_wx.zip"),
+
+    Asset("ANIM", "anim/skills_activate.zip"),
+    Asset("ANIM", "anim/skills_shadow.zip"),
+    Asset("ANIM", "anim/skill_unlock.zip"),
+
 }
 
 local prefabs =

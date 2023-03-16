@@ -280,11 +280,6 @@ local function OnGoHome(inst, child)
     ForceOn(inst)
 end
 
-local function onburnt(inst)
-    TheWorld:PushEvent("beginregrowth", inst)
-    DefaultBurntFn(inst)
-end
-
 local function OnIgnite(inst)
     TurnOff(inst)
     if inst.components.pickable:CanBePicked() then
@@ -418,7 +413,7 @@ local function commonfn(bank, build, light_params)
 
     ---------------------
     MakeMediumBurnable(inst)
-    inst.components.burnable:SetOnBurntFn(onburnt)
+    AddToRegrowthManager(inst)
     MakeSmallPropagator(inst)
     ---------------------
 

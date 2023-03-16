@@ -883,6 +883,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Wolfgang had nice dreams of fluffy bunnies.",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Tool is weak! Wolfgang needs something mightier!",
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -1486,6 +1489,8 @@ return{
         TURF_MOSAIC_GREY = "Step stones.",
         TURF_MOSAIC_RED = "Step stones.",
         TURF_MOSAIC_BLUE = "Step stones.",
+
+        TURF_BEARD_RUG = "Is beard for the ground.",        
 
 		POWCAKE = "Is made of nothings!",
         CAVE_ENTRANCE = "Even I am not that mighty.",
@@ -4743,7 +4748,23 @@ return{
 
         HAREBALL = "Wolfgang is not afraid to eat! Gulp...",
         YOTR_DECOR_1_ITEM = "Wolfgang will find good place for rabbit light.",
-        YOTR_DECOR_2_ITEM = "Wolfgang will find good place for rabbit light.",             
+        YOTR_DECOR_2_ITEM = "Wolfgang will find good place for rabbit light.",
+
+		--
+		DREADSTONE = "Is just rock, not scary! ...Right?",
+		HORRORFUEL = "S-scary...",
+		DAYWALKER =
+		{
+			GENERIC = "H-how about friendly game of arm wrestle, yes?",
+			IMPRISONED = "Angry piggie has gotten more muscles!",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "Mighty Wolfgang could break pillar!",
+			EXPOSED = "Mighty Wolfgang could... not break pillar.",
+		},
+		ARMORDREADSTONE = "Wolfgang doesn't need scary rock armor!",
+		DREADSTONEHAT = "Ha! Wolfgang's head is already hard like a rock!",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

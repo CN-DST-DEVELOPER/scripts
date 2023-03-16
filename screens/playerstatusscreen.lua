@@ -686,7 +686,7 @@ function PlayerStatusScreen:DoInit(ClientObjs)
         playerListing.viewprofile:SetOnClick(
             function()
                 TheFrontEnd:PopScreen()
-                self.owner.HUD:TogglePlayerAvatarPopup(playerListing.displayName, client, true, true)
+                self.owner.HUD:TogglePlayerInfoPopup(playerListing.displayName, client, true, true)
             end)
 
         local button_start = 50

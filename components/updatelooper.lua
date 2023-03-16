@@ -1,16 +1,24 @@
 --V2C: component for adding generic onupdate loops to entities
 --     since we found out that DoPeriodicTask(0) doesn't trigger precisely every frame
 
+local _PostUpdates = {}
+
 local UpdateLooper = Class(function(self, inst)
     self.inst = inst
     self.onupdatefns = {}
     self.longupdatefns = {}
 	self.onwallupdatefns = {}
+	self.postupdatefns = {}
 end)
 
 function UpdateLooper:OnRemoveFromEntity()
     self.inst:StopUpdatingComponent(self)
     self.inst:StopWallUpdatingComponent(self)
+	_PostUpdates[self.inst] = nil
+end
+
+function UpdateLooper:OnRemoveEntity()
+	_PostUpdates[self.inst] = nil
 end
 
 function UpdateLooper:AddOnUpdateFn(fn)
@@ -107,5 +115,33 @@ function UpdateLooper:OnWallUpdate(dt)
         self.onwallupdatefns[i](self.inst, dt)
     end
 end
+
+--------------------------------------------------------------------------
+--#V2C: quick and dirty post update implementation for now.
+--      not safe to add remove fns during UpdateLooper_PostUpdate.
+
+function UpdateLooper:AddPostUpdateFn(fn)
+	if #self.postupdatefns <= 0 then
+		_PostUpdates[self.inst] = self.postupdatefns
+	end
+	table.insert(self.postupdatefns, fn)
+end
+
+function UpdateLooper:RemovePostUpdateFn(fn)
+	table.removearrayvalue(self.postupdatefns, fn)
+	if #self.postupdatefns <= 0 then
+		_PostUpdates[self.inst] = nil
+	end
+end
+
+function UpdateLooper_PostUpdate()
+	for inst, fns in pairs(_PostUpdates) do
+		for i, fn in ipairs(fns) do
+			fn(inst)
+		end
+	end
+end
+
+--------------------------------------------------------------------------
 
 return UpdateLooper

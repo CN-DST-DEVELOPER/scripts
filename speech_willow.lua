@@ -889,6 +889,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Wow, I think I needed that!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Ugh. I'm gonna need something way stronger than this...",
+
 	BATTLECRY =
 	{
 		GENERIC = "It's you or me!",
@@ -1492,6 +1495,8 @@ return{
         TURF_MOSAIC_GREY = "The ground is boring.",
         TURF_MOSAIC_RED = "The ground is boring.",
         TURF_MOSAIC_BLUE = "The ground is boring.",
+
+        TURF_BEARD_RUG = "Ew ew ew EW!!",
 
 		POWCAKE = "I wonder if it is flammable.",
         CAVE_ENTRANCE = "Who plugged that hole?",
@@ -4749,7 +4754,23 @@ return{
 
         HAREBALL = "Haha, nasty! Wait, I'm not the one who has to eat it, am I?",
         YOTR_DECOR_1_ITEM = "The more firelight around here, the better!",
-        YOTR_DECOR_2_ITEM = "The more firelight around here, the better!",             
+        YOTR_DECOR_2_ITEM = "The more firelight around here, the better!",
+
+		--
+		DREADSTONE = "Eww, why does this rock feel so cold and clammy?",
+		HORRORFUEL = "That must be what nightmares have nightmares about.",
+		DAYWALKER =
+		{
+			GENERIC = "You jerk! I was just trying to help!",
+			IMPRISONED = "Looks like somebody's having a bad day.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "How crazy would I have to be to try and break that pillar?",
+			EXPOSED = "It won't break. I didn't try that hard, but still.",
+		},
+		ARMORDREADSTONE = "It's fine I guess.",
+		DREADSTONEHAT = "Do I have to wear it? On my head??",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

@@ -269,6 +269,7 @@ local function fn()
     inst:AddTag("hostile")
     inst:AddTag("monster")
     inst:AddTag("scarytoprey")
+    inst:AddTag("lunar_aligned")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

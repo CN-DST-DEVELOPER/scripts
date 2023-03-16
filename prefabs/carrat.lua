@@ -684,6 +684,7 @@ local function fn()
     inst:AddTag("prey")
     inst:AddTag("smallcreature")
     inst:AddTag("stunnedbybomb")
+    inst:AddTag("lunar_aligned")
 
     --cookable (from cookable component) added to pristine state for optimization
     inst:AddTag("cookable")

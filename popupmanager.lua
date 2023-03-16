@@ -25,6 +25,8 @@ POPUPS = {
     GROOMER = PopupManagerWidget(),
     COOKBOOK = PopupManagerWidget(),
     PLANTREGISTRY = PopupManagerWidget(),
+    SKILLTREE = PopupManagerWidget(),
+    PLAYERINFO = PopupManagerWidget(),
 }
 
 POPUPS_BY_POPUP_CODE = {}
@@ -114,6 +116,26 @@ POPUPS.PLANTREGISTRY.fn = function(inst, show)
             inst.HUD:ClosePlantRegistryScreen()
         elseif not inst.HUD:OpenPlantRegistryScreen() then
             POPUPS.PLANTREGISTRY:Close(inst)
+        end
+    end
+end
+
+POPUPS.SKILLTREE.fn = function(inst, show)
+    if inst.HUD then
+        if not show then
+            inst.HUD:CloseSkillTreeScreen()
+        elseif not inst.HUD:OpenSkillTreeScreen() then
+            POPUPS.SKILLTREE:Close(inst)
+        end
+    end
+end
+
+POPUPS.PLAYERINFO.fn = function(inst, show)
+    if inst.HUD then
+        if not show then
+            inst.HUD:ClosePlayerInfoScreen()
+        elseif not inst.HUD:OpenPlayerInfoScreen() then
+            POPUPS.PLAYERINFO:Close(inst)
         end
     end
 end

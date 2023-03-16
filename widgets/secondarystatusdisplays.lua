@@ -53,6 +53,9 @@ local SecondaryStatusDisplays = Class(Widget, function(self, owner)
     self.isghostmode = true --force the initial SetGhostMode call to be dirty
     self:SetGhostMode(false)
 
+    self.side_inv = self:AddChild(Widget("side_inv"))
+    self.side_inv:SetPosition(self.column1, 0, 0) -- -120
+
     if owner:HasTag("upgrademoduleowner") then
         self:AddModuleOwnerDisplay()
     end
@@ -87,11 +90,19 @@ function SecondaryStatusDisplays:SetGhostMode(ghostmode)
     elseif ghostmode then
         self.isghostmode = true
 
+        if self.side_inv ~= nil then
+            self.side_inv:Hide()
+        end
+
         if self.upgrademodulesdisplay ~= nil then
             self.upgrademodulesdisplay:Hide()
         end
     else
         self.isghostmode = nil
+
+        if self.side_inv ~= nil then
+            self.side_inv:Show()
+        end
 
         if self.upgrademodulesdisplay ~= nil then
             self.upgrademodulesdisplay:Show()

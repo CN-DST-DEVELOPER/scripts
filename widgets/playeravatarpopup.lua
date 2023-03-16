@@ -27,15 +27,14 @@ local PlayerAvatarPopup = Class(Widget, function(self, owner, player_name, data,
     self.anchortime = 0
     self.resetanchortime = -.3
     self.targetmovetime = TheInput:ControllerAttached() and .5 or .75
-    self.started = false
-    self.settled = false
+    self.started = true
+    self.settled = true
     self.time_to_refresh = REFRESH_INTERVAL
 
-    self.proot = self:AddChild(Widget("ROOT"))
-    self.proot:SetPosition(335, 0)
+    self.proot = self:AddChild(Widget("PROOT"))
+    self.proot.sroot = self.proot:AddChild(Widget("SROOT"))
 
     self:SetPlayer(player_name, data, show_net_profile)
-    self:Start()
 end)
 
 --For ease of overriding in mods
@@ -57,6 +56,7 @@ end
 function PlayerAvatarPopup:SetPlayer(player_name, data, show_net_profile)
     self.currentcharacter = self:ResolveCharacter(data)
     self.player_name = player_name
+    self.data = data
     self.userid = data.userid
     self.target = data.inst
     self.anchorpos = self.owner:GetPosition()
@@ -66,110 +66,118 @@ function PlayerAvatarPopup:SetPlayer(player_name, data, show_net_profile)
     self:UpdateData(data)
 end
 
+
+
 function PlayerAvatarPopup:Layout(data, show_net_profile)
+    local color = data.colour or DEFAULT_PLAYER_COLOUR
     -- net profile button is unreachable with controllers
     show_net_profile = show_net_profile and not TheInput:ControllerAttached()
 
-    self.frame = self.proot:AddChild(TEMPLATES.CurlyWindow(130, 540, .6, .6, 39, -25))
-    self.frame:SetPosition(0, 20)
-
-    self.frame_bg = self.frame:AddChild(Image("images/fepanel_fills.xml", "panel_fill_tall.tex"))
-    self.frame_bg:SetScale(.51, .74)
-    self.frame_bg:SetPosition(5, 7)
-
     if self.currentcharacter ~= "notselected" then
-        local left_column = -94
-        local right_column = 94
-
-        --title
-        --could be skeleton with no player colour
-        self.title = self.proot:AddChild(Text(data.colour ~= nil and TALKINGFONT or BUTTONFONT, 32))
-        self.title:SetPosition(left_column + 15, 287, 0)
-        self:UpdateDisplayName()
+        local left_side = -220
+        
+        local portrait_height = 150
 
         if data.playerage ~= nil then
-            self.age = self.proot:AddChild(Text(BUTTONFONT, 25))
-            self.age:SetPosition(left_column + 12, 60, 0)
+            self.age = self.proot:AddChild(Text(BUTTONFONT, ITEM_TEXT_SIZE)) --25
+            self.age:SetPosition(100, portrait_height + 130, 0)
             self.age:SetColour(0, 0, 0, 1)
         end
 
         self.puppet = self.proot:AddChild(PlayerAvatarPortrait())
-        self.puppet:SetPosition(left_column + 10, 170)
-        self.puppet:SetScale(0.9)
-
-        local portrait_height = 170
+        self.puppet:SetPosition(left_side, portrait_height -250)
+        self.puppet:SetScale(1)
+        
         self.portrait = self.proot:AddChild(Image())
         self.portrait:SetScale(.37)
-        self.portrait:SetPosition(right_column, portrait_height)
+        self.portrait:SetPosition(left_side, portrait_height)
 
         self.character_name = self.proot:AddChild(Image("images/names_gold_wilson.xml", "wilson.tex"))
         self.character_name:SetScale(.13)
-        self.character_name:SetPosition(right_column-3, portrait_height + 120)
+        self.character_name:SetPosition(left_side, portrait_height + 130)
         SetHeroNameTexture_Gold(self.character_name, self.currentcharacter)
 
-        local widget_height = 75
+        local widget_height = 100
         local body_offset = 10
-        local line_offset = body_offset + 37
+        local line_offset = body_offset + (widget_height/2) -- 42 --37
         local line_scale = 1.05
 
-        self.horizontal_line1 = self.proot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
+        local left_column = -94
+        local right_column = 94
+
+        self.proot.sroot:SetPosition(100,160)
+
+        self.srootbg = self.proot.sroot:AddChild(Image("images/skilltree.xml", "background_box.tex"))
+        --self.srootbg = self.proot.sroot:AddChild(Image("images/fepanel_fills.xml", "panel_fill_tall.tex"))
+        self.srootbg:ScaleToSize(450,4*widget_height + 105)
+        self.srootbg:SetPosition(7, -144)
+        --self.srootbg:SetTint(0.25,0.22,0.15,0.5)
+
+        self.horizontal_line1 = self.proot.sroot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
         self.horizontal_line1:SetScale(line_scale, .25)
         self.horizontal_line1:SetPosition(7, line_offset)
 
-        self.vertical_line = self.proot:AddChild(Image("images/ui.xml", "line_vertical_5.tex"))
-        self.vertical_line:SetScale(.5, .46)
-        self.vertical_line:SetPosition(5, -105)
+        self.vertical_line = self.proot.sroot:AddChild(Image("images/ui.xml", "line_vertical_5.tex"))
+        self.vertical_line:SetScale(.5, .6)
+        self.vertical_line:SetPosition(5, -142)
 
-        self.body_image = self.proot:AddChild(self:CreateSkinWidgetForSlot())
+        self.body_image = self.proot.sroot:AddChild(self:CreateSkinWidgetForSlot())
         self.body_image:SetPosition(left_column, body_offset)
         self:UpdateSkinWidgetForSlot(self.body_image, "body", data.body_skin or "none")
 
-        self.horizontal_line2 = self.proot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
+        self.horizontal_line2 = self.proot.sroot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
         self.horizontal_line2:SetScale(line_scale, .25)
         self.horizontal_line2:SetPosition(7, line_offset - widget_height)
 
-        self.hand_image = self.proot:AddChild(self:CreateSkinWidgetForSlot())
+        self.hand_image = self.proot.sroot:AddChild(self:CreateSkinWidgetForSlot())
         self.hand_image:SetPosition(left_column, body_offset - widget_height)
         self:UpdateSkinWidgetForSlot(self.hand_image, "hand", data.hand_skin or "none")
 
-        self.horizontal_line3 = self.proot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
+        self.horizontal_line3 = self.proot.sroot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
         self.horizontal_line3:SetScale(line_scale, .25)
         self.horizontal_line3:SetPosition(7, line_offset - 2 * widget_height)
 
-        self.legs_image = self.proot:AddChild(self:CreateSkinWidgetForSlot())
+        self.legs_image = self.proot.sroot:AddChild(self:CreateSkinWidgetForSlot())
         self.legs_image:SetPosition(left_column, body_offset - 2 * widget_height)
         self:UpdateSkinWidgetForSlot(self.legs_image, "legs", data.legs_skin or "none")
 
-        self.horizontal_line4 = self.proot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
+        self.horizontal_line4 = self.proot.sroot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
         self.horizontal_line4:SetScale(line_scale, .25)
         self.horizontal_line4:SetPosition(7, line_offset - 3 * widget_height)
 
-        self.feet_image = self.proot:AddChild(self:CreateSkinWidgetForSlot())
+        self.feet_image = self.proot.sroot:AddChild(self:CreateSkinWidgetForSlot())
         self.feet_image:SetPosition(left_column, body_offset - 3 * widget_height)
         self:UpdateSkinWidgetForSlot(self.feet_image, "feet", data.feet_skin or "none")
+ 
+        self.horizontal_line5 = self.proot.sroot:AddChild(Image("images/ui.xml", "line_horizontal_6.tex"))
+        self.horizontal_line5:SetScale(line_scale, .25)
+        self.horizontal_line5:SetPosition(7, line_offset - 4 * widget_height)
+
 
         local equip_offset = 10
 
-        self.base_image = self.proot:AddChild(self:CreateSkinWidgetForSlot())
+        self.base_image = self.proot.sroot:AddChild(self:CreateSkinWidgetForSlot())
         self.base_image:SetPosition(right_column, equip_offset)
         self:UpdateSkinWidgetForSlot(self.base_image, "base", data.base_skin or self.currentcharacter.."_none")
 
-        self.head_equip_image = self.proot:AddChild(self:CreateEquipWidgetForSlot())
+        self.head_equip_image = self.proot.sroot:AddChild(self:CreateEquipWidgetForSlot())
         self.head_equip_image:SetPosition(right_column, equip_offset - widget_height)
         self:UpdateEquipWidgetForSlot(self.head_equip_image, EQUIPSLOTS.HEAD, data.equip)
 
-        self.hand_equip_image = self.proot:AddChild(self:CreateEquipWidgetForSlot())
+        self.hand_equip_image = self.proot.sroot:AddChild(self:CreateEquipWidgetForSlot())
         self.hand_equip_image:SetPosition(right_column, equip_offset - 2 * widget_height)
         self:UpdateEquipWidgetForSlot(self.hand_equip_image, EQUIPSLOTS.HANDS, data.equip)
 
-        self.body_equip_image = self.proot:AddChild(self:CreateEquipWidgetForSlot())
+        self.body_equip_image = self.proot.sroot:AddChild(self:CreateEquipWidgetForSlot())
         self.body_equip_image:SetPosition(right_column, equip_offset - 3 * widget_height)
         self:UpdateEquipWidgetForSlot(self.body_equip_image, EQUIPSLOTS.BODY, data.equip)
 
         if show_net_profile and TheNet:IsNetIDPlatformValid(data.netid) then
+
             self.netprofilebutton = self.proot:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "steam.tex", "", false, false, function() if data.netid ~= nil then TheNet:ViewNetProfile(data.netid) end end ))
             self.netprofilebutton:SetScale(.5)
-            self.netprofilebutton:SetPosition(left_column - 60, 62, 0)
+            --self.netprofilebutton:SetPosition(left_column - 60, 62, 0)
+            self.netprofilebutton:SetPosition(100, portrait_height + 130, 0) 
         end
     else
         self.proot:SetPosition(10, 0)
@@ -181,21 +189,13 @@ function PlayerAvatarPopup:Layout(data, show_net_profile)
         self:UpdateDisplayName()
 
         self.text = self.proot:AddChild(Text(UIFONT, 25, STRINGS.UI.PLAYER_AVATAR.CHOOSING))
-        self.text:SetColour(unpack(data.colour))
+        self.text:SetColour(color)
 
         if show_net_profile and TheNet:IsNetIDPlatformValid(data.netid) then
             self.netprofilebutton = self.proot:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "steam.tex", "", false, false, function() if data.netid ~= nil then TheNet:ViewNetProfile(data.netid) end end ))
             self.netprofilebutton:SetScale(.5)
             self.netprofilebutton:SetPosition(0, -75, 0)
         end
-    end
-
-    if not TheInput:ControllerAttached() then
-        self.close_button = self.proot:AddChild(TEMPLATES.SmallButton(STRINGS.UI.PLAYER_AVATAR.CLOSE, 26, .5, function() self:Close() end))
-        self.close_button:SetPosition(0, -269)
-	else
-		self.close_text = self.proot:AddChild(Text(UIFONT, 25, TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_USE_ITEM_ON_ITEM) .. "  " .. STRINGS.UI.PLAYER_AVATAR.CLOSE))
-        self.close_text:SetPosition(0, -275)
     end
 end
 
@@ -209,12 +209,10 @@ function PlayerAvatarPopup:UpdateData(data)
     end
 
     if self.age ~= nil and data.playerage ~= nil then
-        self.age:SetString(STRINGS.UI.PLAYER_AVATAR.AGE_SURVIVED.." "..data.playerage.." "..(data.playerage == 1 and STRINGS.UI.PLAYER_AVATAR.AGE_DAY or STRINGS.UI.PLAYER_AVATAR.AGE_DAYS))
-        if self.netprofilebutton ~= nil then
-            --left align to steam button if there is one
-            --otherwise it is centered by default
-            local w = self.age:GetRegionSize()
-            self.age:SetPosition(w * .5 - 130, 60, 0)
+        self.age:SetString(STRINGS.UI.PLAYER_AVATAR.AGE_SURVIVED.." "..data.playerage.." "..(data.playerage == 1 and STRINGS.UI.PLAYER_AVATAR.AGE_DAY or STRINGS.UI.PLAYER_AVATAR.AGE_DAYS))        local w = self.age:GetRegionSize()
+        if self.netprofilebutton then
+            local pos = self.netprofilebutton:GetPosition()
+            self.netprofilebutton:SetPosition(pos.x - (w/2) -25, pos.y, 0)
         end
     end
 
@@ -268,30 +266,6 @@ end
 
 function PlayerAvatarPopup:OnControl(control, down)
     if PlayerAvatarPopup._base.OnControl(self,control, down) then return true end
-end
-
-function PlayerAvatarPopup:Start()
-    if not self.started then
-        self.started = true
-        self:StartUpdating()
-
-        local w, h = self.frame_bg:GetSize()
-
-        self.out_pos = Vector3(.5 * w, 0, 0)
-        self.in_pos = Vector3(-.95 * w, 0, 0)
-
-        self:MoveTo(self.out_pos, self.in_pos, .33, function() self.settled = true end)
-    end
-end
-
-function PlayerAvatarPopup:Close()
-    if self.started then
-        self.started = false
-        self.current_speed = 0
-
-        self:StopUpdating()
-        self:MoveTo(self.in_pos, self.out_pos, .33, function() self:Kill() end)
-    end
 end
 
 function PlayerAvatarPopup:OnUpdate(dt)
@@ -355,6 +329,17 @@ function PlayerAvatarPopup:CreateSkinWidgetForSlot()
     image_group._text:SetHAlign(ANCHOR_LEFT)
     image_group._text:SetVAlign(ANCHOR_BOTTOM)
 
+    image_group._shadow = image_group:AddChild(UIAnim())
+    image_group._shadow:GetAnimState():SetBuild("frames_comp")
+    image_group._shadow:GetAnimState():SetBank("frames_comp")
+    image_group._shadow:GetAnimState():Hide("frame")
+    image_group._shadow:GetAnimState():Hide("NEW")
+    image_group._shadow:GetAnimState():PlayAnimation("idle_on", true)
+    image_group._shadow:SetScale(.7)
+    image_group._shadow:SetPosition(-53, -3)
+    image_group._shadow:GetAnimState():SetMultColour(0.3,0.3,0.3,0.7)
+    image_group._shadow:Hide()
+
     image_group._image = image_group:AddChild(UIAnim())
     image_group._image:GetAnimState():SetBuild("frames_comp")
     image_group._image:GetAnimState():SetBank("frames_comp")
@@ -373,8 +358,9 @@ function PlayerAvatarPopup:UpdateSkinWidgetForSlot(image_group, slot, skin_name)
     local namestr = STRINGS.NAMES[string.upper(skin_name)] or GetSkinName(skin_name)
 
     image_group._text:SetMultilineTruncatedString(namestr, 2, TEXT_WIDTH, 25, true, true)
-
+    local shadow_build = nil
     local skin_build = GetBuildForItem(skin_name)
+
     if skin_build == nil or skin_build == "none" then
         skin_build =
             (slot == "body" and "body_default1") or
@@ -382,8 +368,17 @@ function PlayerAvatarPopup:UpdateSkinWidgetForSlot(image_group, slot, skin_name)
             (slot == "legs" and "legs_default1") or
             (slot == "feet" and "feet_default1") or
             self.currentcharacter
-    end
 
+        if slot == "body" or slot == "hand" or slot == "legs" or slot == "feet" then
+            image_group._shadow:Show()
+            shadow_build = 
+                (slot == "body" and "body_default1") or
+                (slot == "hand" and "hand_default1") or
+                (slot == "legs" and "legs_default1") or
+                (slot == "feet" and "feet_default1")
+            image_group._shadow:GetAnimState():OverrideSkinSymbol("SWAP_ICON", shadow_build, "SWAP_ICON")
+        end
+    end
     image_group._image:GetAnimState():OverrideSkinSymbol("SWAP_ICON", skin_build, "SWAP_ICON")
 end
 
@@ -402,6 +397,12 @@ function PlayerAvatarPopup:CreateEquipWidgetForSlot()
     image_group._text:SetHAlign(ANCHOR_LEFT)
     image_group._text:SetVAlign(ANCHOR_BOTTOM)
 
+    image_group._shadow = image_group:AddChild(Image())
+    image_group._shadow:SetScale(1)
+    image_group._shadow:SetPosition(-53, -3)
+    image_group._shadow:SetTint(0.3,0.3,0.3,0.7)
+    image_group._shadow:Hide()
+
     image_group._image = image_group:AddChild(Image())
     image_group._image:SetScale(1)
     image_group._image:SetPosition(-50, 0)
@@ -419,7 +420,9 @@ function PlayerAvatarPopup:UpdateEquipWidgetForSlot(image_group, slot, equipdata
 
     local atlas = ""
     local default = DEFAULT_IMAGES[slot] or "trinket_5.tex"
+    local shadow = false
     if name == "none" then
+        shadow = true
         if slot == EQUIPSLOTS.BODY then
             --atlas = "images/hud2.xml"
             name = "equip_slot_body_hud"
@@ -441,6 +444,11 @@ function PlayerAvatarPopup:UpdateEquipWidgetForSlot(image_group, slot, equipdata
     end
 
     image_group._image:SetTexture(atlas, name..".tex", default)
+
+    if shadow then
+        image_group._shadow:SetTexture(atlas, name..".tex", default)
+        image_group._shadow:Show()
+    end
 end
 
 return PlayerAvatarPopup

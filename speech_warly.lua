@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Ah, what lovely dreams I had!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "No, this won't do...",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'm also an accomplished butcher!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "It's like an ingredient for the ground.",
         TURF_MOSAIC_RED = "It's like an ingredient for the ground.",
         TURF_MOSAIC_BLUE = "It's like an ingredient for the ground.",
+
+        TURF_BEARD_RUG = "Mon dieu, how long must that have taken to make?",
 
 		POWCAKE = "I would not feed this to my worst enemies. Or would I...",
         CAVE_ENTRANCE = "I wonder what is underneath that?",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "The thought of anyone eating this wounds me deeply.",
         YOTR_DECOR_1_ITEM = "Now, to find the perfect placement for it.",
-        YOTR_DECOR_2_ITEM = "Now, to find the perfect placement for it.",             
+        YOTR_DECOR_2_ITEM = "Now, to find the perfect placement for it.",
+
+		--
+		DREADSTONE = "Terrible and beautiful all at once.",
+		HORRORFUEL = "It makes my teeth chatter.",
+		DAYWALKER =
+		{
+			GENERIC = "I have decided on fear!",
+			IMPRISONED = "I don't know whether to feel fear or pity.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "Perhaps I could free the poor creature?",
+			EXPOSED = "Ah zut, that stone is far too tough for me to break.",
+		},
+		ARMORDREADSTONE = "A fine peice of armor.",
+		DREADSTONEHAT = "My head feels safer already.",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

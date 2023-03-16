@@ -585,6 +585,9 @@ end
 
 ACTIONS.UNEQUIP.fn = function(act)
     if act.invobject ~= nil and act.doer.components.inventory ~= nil then
+        if act.invobject.components.equippable ~= nil and act.invobject.components.equippable:ShouldPreventUnequipping() then
+            return nil
+        end
         if act.invobject.components.inventoryitem.cangoincontainer and not GetGameModeProperty("non_item_equips") then
             act.doer.components.inventory:GiveItem(act.invobject)
         else
@@ -608,7 +611,7 @@ ACTIONS.PICKUP.fn = function(act)
         (act.target.components.inventoryitem.canbepickedup or
         (act.target.components.inventoryitem.canbepickedupalive and not act.doer:HasTag("player"))) and
         not (act.target:IsInLimbo() or
-            (act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning()) or
+			(act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning() and act.target.components.lighter == nil) or
             (act.target.components.projectile ~= nil and act.target.components.projectile:IsThrown())) then
 
         if act.doer.components.itemtyperestrictions ~= nil and not act.doer.components.itemtyperestrictions:IsAllowed(act.target) then
@@ -795,6 +798,12 @@ ACTIONS.RUMMAGE.strfn = function(act)
 end
 
 ACTIONS.DROP.fn = function(act)
+    if act.invobject ~= nil and act.invobject.components.equippable ~= nil and
+        act.invobject.components.equippable:IsEquipped() and
+        act.invobject.components.equippable:ShouldPreventUnequipping() then
+        return nil
+    end
+
     return act.doer.components.inventory ~= nil
         and act.doer.components.inventory:DropItem(
                 act.invobject,
@@ -1152,6 +1161,11 @@ local function DoToolWork(act, workaction)
     if act.target.components.workable ~= nil and
         act.target.components.workable:CanBeWorked() and
         act.target.components.workable:GetWorkAction() == workaction then
+
+		if act.doer.sg ~= nil and act.doer.sg.statemem.recoilstate ~= nil and act.target:HasTag("worker_recoil") then
+			act.doer.sg:GoToState(act.doer.sg.statemem.recoilstate, { target = act.target })
+		end
+
         act.target.components.workable:WorkedBy(
             act.doer,
             (   (   act.invobject ~= nil and
@@ -1167,7 +1181,7 @@ local function DoToolWork(act, workaction)
             (   act.doer.components.workmultiplier ~= nil and
                 act.doer.components.workmultiplier:GetMultiplier(workaction) or
                 1
-        )
+            )
         )
         return true
     end
@@ -2806,10 +2820,18 @@ ACTIONS.FAN.fn = function(act)
 end
 
 ACTIONS.TOSS.fn = function(act)
-    if act.invobject and act.doer then
-        if act.invobject.components.complexprojectile and act.doer.components.inventory and (act.invobject.components.equippable == nil or not act.invobject.components.equippable:IsRestricted(act.doer)) then
-            local projectile = act.doer.components.inventory:DropItem(act.invobject, false)
-            if projectile then
+	if act.doer ~= nil and act.doer.components.inventory ~= nil then
+		local projectile = act.invobject
+		if projectile == nil then
+			--for Special action TOSS, we can also use equipped item.
+			projectile = act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if projectile ~= nil and not projectile:HasTag("special_action_toss") then
+				projectile = nil
+			end
+		end
+		if projectile ~= nil and projectile.components.complexprojectile ~= nil and not (projectile.components.equippable ~= nil and (projectile.components.equippable:IsRestricted(act.doer) or projectile.components.equippable:ShouldPreventUnequipping())) then
+			projectile = act.doer.components.inventory:DropItem(projectile, false)
+			if projectile ~= nil then
                 local pos = nil
                 if act.target then
                     pos = act.target:GetPosition()

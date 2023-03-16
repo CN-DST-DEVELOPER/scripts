@@ -659,7 +659,7 @@ end
 local function fnmoon()
     local inst = fncommon("hound", "hound", nil, moonbrain, "moonbeast", false)
 
-    inst:SetPrefabNameOverride("hound")
+    inst:SetPrefabNameOverride("hound")    
 
     if not TheWorld.ismastersim then
         return inst
@@ -720,6 +720,8 @@ end
 
 local function fnmutated()
     local inst = fncommon("hound", "hound_mutated", nil, nil, "hound_mutated", {amphibious = true})
+    
+    inst:AddTag("lunar_aligned")
 
     if not TheWorld.ismastersim then
         return inst

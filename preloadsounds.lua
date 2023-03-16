@@ -190,6 +190,12 @@ local MainSounds =
 
     "maxwell_rework.fev",
     "maxwell_rework.fsb",
+
+    "daywalker.fev",
+    "daywalker.fsb",
+
+    "wilson_rework.fev",
+    "wilson_rework.fsb",
 }
 
 function PreloadSoundList(list)

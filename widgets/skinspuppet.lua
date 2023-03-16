@@ -7,6 +7,7 @@ require "components/skinner"
 
 local emotes_to_choose = { "emoteXL_waving1", "emoteXL_waving2", "emoteXL_waving3" }
 local player_emotes_to_choose = {
+	wilson = "idle_wilson",
 	walter = "idle_walter",
 	wathgrithr = "idle_wathgrithr",
 	warly = "idle_warly",

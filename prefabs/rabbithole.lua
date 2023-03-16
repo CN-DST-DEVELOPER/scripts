@@ -25,9 +25,6 @@ local function dig_up(inst)
     if inst.components.spawner:IsOccupied() then
         inst.components.lootdropper:SpawnLootPrefab("rabbit")
     end
-
-    TheWorld:PushEvent("beginregrowth", inst)
-
     inst:Remove()
 end
 
@@ -229,6 +226,7 @@ local function fn()
     inst.components.workable:SetWorkAction(ACTIONS.DIG)
     inst.components.workable:SetOnFinishCallback(dig_up)
     inst.components.workable:SetWorkLeft(1)
+    AddToRegrowthManager(inst)
 
     inst.springmode = nil
     inst.springtask = nil

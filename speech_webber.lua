@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "We had such a good sleep!",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "We don't think this tool's strong enough!",
+
 	BATTLECRY =
 	{
 		GENERIC = "En garde!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "Some ground that we dug up.",
         TURF_MOSAIC_RED = "Some ground that we dug up.",
         TURF_MOSAIC_BLUE = "Some ground that we dug up.",
+
+        TURF_BEARD_RUG = "It tickles!",        
 
 		POWCAKE = "Mum never let me have these.",
         CAVE_ENTRANCE = "It's plugged up.",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "Yuck! What a mean dare!",
         YOTR_DECOR_1_ITEM = "It'd be a good night light.",
-        YOTR_DECOR_2_ITEM = "It'd be a good night light.",             
+        YOTR_DECOR_2_ITEM = "It'd be a good night light.",
+
+		--
+		DREADSTONE = "We're not sure if we like that rock.",
+		HORRORFUEL = "It makes our spider skin crawl.",
+		DAYWALKER =
+		{
+			GENERIC = "Hey! We were just trying to help!!",
+			IMPRISONED = "He doesn't look like a normal pig. Or even a normal werepig.",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "We feel bad just leaving him like that...",
+			EXPOSED = "We can't break through it!",
+		},
+		ARMORDREADSTONE = "It's kinda scary, but it keeps us safe!",
+		DREADSTONEHAT = "A pointy helmet to match our pointy teeth!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

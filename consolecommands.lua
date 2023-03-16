@@ -453,6 +453,10 @@ function c_setmoisture(n)
 end
 
 function c_settemperature(n)
+    if type(n) ~= "number" then
+        print("c_settemperature expects a number value for its argument:", n)
+        return
+    end
     local player = ConsoleCommandPlayer()
     if player ~= nil and player.components.temperature ~= nil and not player:HasTag("playerghost") then
         SuUsed("c_settemperature", true)

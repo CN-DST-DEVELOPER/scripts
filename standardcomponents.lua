@@ -1415,3 +1415,13 @@ function MakeDeployableFertilizer(inst)
 end
 
 --------------------------------------------------------------------------
+local function OnStartRegrowth(inst, data)
+    -- NOTES(JBK): inst will most likely be not valid right after this.
+    TheWorld:PushEvent("beginregrowth", inst)
+end
+function AddToRegrowthManager(inst)
+    inst:ListenForEvent("onremove", OnStartRegrowth)
+    inst.OnStartRegrowth = OnStartRegrowth -- For any special cases that need to call this.
+end
+
+--------------------------------------------------------------------------

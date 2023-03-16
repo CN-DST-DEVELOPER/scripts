@@ -127,7 +127,7 @@ function ComplexProjectile:Launch(targetPos, attacker, owningweapon)
 	end
 
     if self.onlaunchfn ~= nil then
-        self.onlaunchfn(self.inst)
+        self.onlaunchfn(self.inst, attacker)
     end
 
     self.inst:AddTag("activeprojectile")

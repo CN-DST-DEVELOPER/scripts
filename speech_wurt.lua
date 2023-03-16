@@ -882,6 +882,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "Aww, was having such good dream...",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "Grrr... need something stronger, florp!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -1485,6 +1488,8 @@ return{
         TURF_MOSAIC_GREY = "Ground bit.",
         TURF_MOSAIC_RED = "Ground bit.",
         TURF_MOSAIC_BLUE = "Ground bit.",
+
+        TURF_BEARD_RUG = "Soft!",
 
 		POWCAKE = "Gives tummy-ache, but... smell so good...",
         CAVE_ENTRANCE = "There rocks in the way.",
@@ -4742,7 +4747,23 @@ return{
 
         HAREBALL = "Glurgh, Bunnyman spit-up!",
         YOTR_DECOR_1_ITEM = "Mermfolk light would be better.",
-        YOTR_DECOR_2_ITEM = "Mermfolk light would be better.",             
+        YOTR_DECOR_2_ITEM = "Mermfolk light would be better.",
+
+		--
+		DREADSTONE = "Pretty rocks!",
+		HORRORFUEL = "I-is just goop! Not scared!",
+		DAYWALKER =
+		{
+			GENERIC = "Grrr! You just big stinky pig!",
+			IMPRISONED = "Nyeeeeehhh!!",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "Heehee, stinky pig all locked up!",
+			EXPOSED = "Rock too hard for breaking, florp.",
+		},
+		ARMORDREADSTONE = "So pretty... it mine!",
+		DREADSTONEHAT = "It real good for headbutting, flort!",
     },
 
     DESCRIBE_GENERIC = "What that?",

@@ -788,7 +788,15 @@ local actionhandlers =
         end),
 	ActionHandler(ACTIONS.TOSS,
 		function(inst, action)
-			return action.invobject ~= nil and action.invobject:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
+			local projectile = action.invobject
+			if projectile == nil then
+				--for Special action TOSS, we can also use equipped item.
+				projectile = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if projectile ~= nil and not projectile:HasTag("special_action_toss") then
+					projectile = nil
+				end
+			end
+			return projectile ~= nil and projectile:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
 		end),
     ActionHandler(ACTIONS.UNPIN, "doshortaction"),
     ActionHandler(ACTIONS.CATCH, "catch_pre"),
@@ -1137,8 +1145,11 @@ local events =
     end),
 
     EventHandler("knockback", function(inst, data)
-        if not (inst.components.health:IsDead() or inst:HasTag("wereplayer")) then
-            if inst.sg:HasStateTag("parrying") then
+		if not inst.components.health:IsDead() then
+			if inst:HasTag("wereplayer") then
+				inst.sg.mem.laststuntime = GetTime()
+				inst.sg:GoToState("hit")
+			elseif inst.sg:HasStateTag("parrying") then
                 inst.sg.statemem.parrying = true
                 inst.sg:GoToState("parry_knockback", {
                     timeleft =
@@ -1190,7 +1201,9 @@ local events =
         if inst.sg:HasStateTag("acting") then
             return
         end
-        if data.eslot == EQUIPSLOTS.BODY and data.item ~= nil and data.item:HasTag("heavy") then
+        if data.eslot == EQUIPSLOTS.BEARD then
+            return nil
+        elseif data.eslot == EQUIPSLOTS.BODY and data.item ~= nil and data.item:HasTag("heavy") then
 			if inst.components.rider:IsRiding() then
 				--V2C: See "dodismountaction"
 				inst.sg.statemem.keepmount = true
@@ -3467,6 +3480,7 @@ local states =
                 if inst.sg.statemem.action ~= nil then
                     PlayMiningFX(inst, inst.sg.statemem.action.target)
                 end
+				inst.sg.statemem.recoilstate = "mine_recoil"
                 inst:PerformBufferedAction()
             end),
 
@@ -3511,6 +3525,62 @@ local states =
 			inst:RemoveTag("premine")
 		end,
     },
+
+	State{
+		name = "mine_recoil",
+		tags = { "busy", "nopredict", "nomorph" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+
+			inst.AnimState:PlayAnimation("pickaxe_recoil")
+			if data ~= nil and data.target ~= nil and data.target:IsValid() then
+				SpawnPrefab("impact").Transform:SetPosition(data.target.Transform:GetWorldPosition())
+			end
+			inst:ShakeCamera(CAMERASHAKE.FULL, .4, .02, .15)
+			inst.Physics:SetMotorVel(-6, 0, 0)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.speed ~= nil then
+				inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
+				inst.sg.statemem.speed = inst.sg.statemem.speed * 0.75
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(4, function(inst)
+				inst.sg.statemem.speed = -3
+			end),
+			FrameEvent(17, function(inst)
+				inst.sg.statemem.speed = nil
+				inst.Physics:Stop()
+			end),
+			FrameEvent(23, function(inst)
+				inst.sg:RemoveStateTag("busy")
+				inst.sg:RemoveStateTag("nopredict")
+				inst.sg:RemoveStateTag("nomorph")
+			end),
+			FrameEvent(30, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Physics:Stop()
+		end,
+	},
 
     State{
         name = "hammer_start",
@@ -10597,6 +10667,26 @@ local states =
                     end
                 end
             end
+			if not inst.sg.statemem.isphysicstoggle then
+				if inst:IsOnPassablePoint(true) then
+					inst.sg.statemem.safepos = inst:GetPosition()
+				elseif data ~= nil and data.knocker ~= nil and data.knocker:IsValid() and data.knocker:IsOnPassablePoint(true) then
+					local x1, y1, z1 = data.knocker.Transform:GetWorldPosition()
+					local radius = data.knocker:GetPhysicsRadius(0) - inst:GetPhysicsRadius(0)
+					if radius > 0 then
+						local x, y, z = inst.Transform:GetWorldPosition()
+						local dx = x - x1
+						local dz = z - z1
+						local dist = radius / math.sqrt(dx * dx + dz * dz)
+						x = x1 + dx * dist
+						z = z1 + dz * dist
+						if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
+							x1, z1 = x, z
+						end
+					end
+					inst.sg.statemem.safepos = Vector3(x1, 0, z1)
+				end
+			end
         end,
 
         onupdate = function(inst)
@@ -10611,6 +10701,20 @@ local states =
                     inst.Physics:Stop()
                 end
             end
+			local safepos = inst.sg.statemem.safepos
+			if safepos ~= nil then
+				if inst:IsOnPassablePoint(true) then
+					safepos.x, safepos.y, safepos.z = inst.Transform:GetWorldPosition()
+				elseif inst.sg.statemem.landed then
+					local mass = inst.Physics:GetMass()
+					if mass > 0 then
+						inst.sg.statemem.restoremass = mass
+						inst.Physics:SetMass(99999)
+					end
+					inst.Physics:Teleport(safepos.x, 0, safepos.z)
+					inst.sg.statemem.safepos = nil
+				end
+			end
         end,
 
         timeline =
@@ -10618,6 +10722,9 @@ local states =
             TimeEvent(8 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
             end),
+			FrameEvent(10, function(inst)
+				inst.sg.statemem.landed = true
+			end),
         },
 
         events =
@@ -10630,6 +10737,9 @@ local states =
         },
 
         onexit = function(inst)
+			if inst.sg.statemem.restoremass ~= nil then
+				inst.Physics:SetMass(inst.sg.statemem.restoremass)
+			end
             if inst.sg.statemem.isphysicstoggle then
                 ToggleOnPhysics(inst)
             end
@@ -10729,6 +10839,25 @@ local states =
                 end
             end
 
+			if inst:IsOnPassablePoint(true) then
+				inst.sg.statemem.safepos = inst:GetPosition()
+			elseif data ~= nil and data.knocker ~= nil and data.knocker:IsValid() and data.knocker:IsOnPassablePoint(true) then
+				local x1, y1, z1 = data.knocker.Transform:GetWorldPosition()
+				local radius = data.knocker:GetPhysicsRadius(0) - inst:GetPhysicsRadius(0)
+				if radius > 0 then
+					local x, y, z = inst.Transform:GetWorldPosition()
+					local dx = x - x1
+					local dz = z - z1
+					local dist = radius / math.sqrt(dx * dx + dz * dz)
+					x = x1 + dx * dist
+					z = z1 + dz * dist
+					if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
+						x1, z1 = x, z
+					end
+				end
+				inst.sg.statemem.safepos = Vector3(x1, 0, z1)
+			end
+
             inst.sg:SetTimeout(11 * FRAMES)
         end,
 
@@ -10744,6 +10873,20 @@ local states =
                     inst.Physics:Stop()
                 end
             end
+			local safepos = inst.sg.statemem.safepos
+			if safepos ~= nil then
+				if inst:IsOnPassablePoint(true) then
+					safepos.x, safepos.y, safepos.z = inst.Transform:GetWorldPosition()
+				elseif inst.sg.statemem.landed then
+					local mass = inst.Physics:GetMass()
+					if mass > 0 then
+						inst.sg.statemem.restoremass = mass
+						inst.Physics:SetMass(99999)
+					end
+					inst.Physics:Teleport(safepos.x, 0, safepos.z)
+					inst.sg.statemem.safepos = nil
+				end
+			end
         end,
 
         timeline =
@@ -10751,6 +10894,9 @@ local states =
             TimeEvent(9 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
             end),
+			FrameEvent(10, function(inst)
+				inst.sg.statemem.landed = true
+			end),
         },
 
         ontimeout = function(inst)
@@ -10758,6 +10904,9 @@ local states =
         end,
 
         onexit = function(inst)
+			if inst.sg.statemem.restoremass ~= nil then
+				inst.Physics:SetMass(inst.sg.statemem.restoremass)
+			end
             if inst.sg.statemem.speed ~= nil then
                 inst.Physics:Stop()
             end

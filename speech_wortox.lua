@@ -887,6 +887,9 @@ return{
 
     ANNOUNCE_COZY_SLEEP = "This imp feels best after a cozy rest.",
 
+	--
+	ANNOUNCE_TOOL_TOOWEAK = "This tool is too weak for what I seek.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Let's have some fun.",
@@ -1490,6 +1493,8 @@ return{
         TURF_MOSAIC_GREY = "Floor or ceiling, depending on your perspective.",
         TURF_MOSAIC_RED = "Floor or ceiling, depending on your perspective.",
         TURF_MOSAIC_BLUE = "Floor or ceiling, depending on your perspective.",
+
+        TURF_BEARD_RUG = "What a hairy situation this is!",
 
 		POWCAKE = "Hyuyu! This cake packs a wallop!",
         CAVE_ENTRANCE = "Clear the way I say!",
@@ -4748,7 +4753,23 @@ return{
 
         HAREBALL = "Hyuyu! I see they're seasoned pranksters.",
         YOTR_DECOR_1_ITEM = "I should place this rabbit now that I've nabbed it.",
-        YOTR_DECOR_2_ITEM = "I should place this rabbit now that I've nabbed it.",             
+        YOTR_DECOR_2_ITEM = "I should place this rabbit now that I've nabbed it.",
+
+		--
+		DREADSTONE = "A stone as black as night.",
+		HORRORFUEL = "A goop most foul.",
+		DAYWALKER =
+		{
+			GENERIC = "I'm sensing the answer is foe.",
+			IMPRISONED = "Friend or foe?",
+		},
+		DAYWALKER_PILLAR =
+		{
+			GENERIC = "A terrible fate, to be locked in this state.",
+			EXPOSED = "Why hide this stone inside?",
+		},
+		ARMORDREADSTONE = "All blows will be blocked by this armor of rock.",
+		DREADSTONEHAT = "A stone fortress for my brain.",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

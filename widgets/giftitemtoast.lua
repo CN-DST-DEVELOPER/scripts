@@ -9,9 +9,9 @@ local down_pos = -200
 local last_click_time = 0 -- V2C: s'ok to be static
 local TIMEOUT = 1
 
-local GiftItemToast = Class(Widget, function(self, owner)
+local GiftItemToast = Class(Widget, function(self, owner, controls)
     Widget._ctor(self, "GiftItemToast")
-
+    self.controls = controls
     self.owner = owner
     self.root = self:AddChild(Widget("ROOT"))
 
@@ -68,6 +68,7 @@ function GiftItemToast:UpdateElements()
     local from = self.root:GetPosition()
     if not self.controller_hide and not self.craft_hide and self.numitems > 0 then
         if not self.opened then
+            self.controls:ManageToast(self)
             self.opened = true
             last_click_time = 0
 
@@ -101,7 +102,7 @@ function GiftItemToast:UpdateElements()
             if self:IsVisible() then
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/skin_drop_slide_gift_UP")
             end
-            self.root:MoveTo(from, to, 0.5, nil)
+            self.root:MoveTo(from, to, 0.5, function() self.controls:ManageToast(self,true) end)
         end
         self:UpdateControllerHelp()
     end

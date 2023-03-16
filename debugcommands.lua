@@ -1494,3 +1494,25 @@ function d_spawnequipment_onstand(...)
 		stand.components.inventory:Equip(SpawnPrefab(item))
 	end
 end
+
+--@V2C #TODO: #DELETEME
+function d_daywalker(chain)
+	local daywalker = c_spawn("daywalker")
+	local x, y, z = daywalker.Transform:GetWorldPosition()
+	local radius = 6
+	local num = 3
+	for i = 1, num do
+		local theta = i * TWOPI / num + PI * 3 / 4
+		local pillar = c_spawn("daywalker_pillar")
+		pillar.Transform:SetPosition(
+			x + math.cos(theta) * radius,
+			0,
+			z - math.sin(theta) * radius
+		)
+		if chain then
+			pillar:SetPrisoner(daywalker)
+		end
+	end
+
+	c_select(daywalker)
+end

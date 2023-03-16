@@ -37,7 +37,7 @@ local function SpawnFx(inst, stage, scale)
     local theta = math.random() * PI * 2
     local num = 7
     local radius = 1.6
-    local dtheta = 2 * PI / num
+    local dtheta = TWOPI / num
     local x, y, z = inst.Transform:GetWorldPosition()
     SpawnPrefab("sinkhole_spawn_fx_"..math.random(3)).Transform:SetPosition(x, y, z)
     for i = 1, num do

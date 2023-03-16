@@ -1372,7 +1372,7 @@ end
 
 local REGISTERED_FIND_ATTACK_TARGET_TAGS = TheSim:RegisterFindTags({ "_combat" }, { "INLIMBO" })
 
-function PlayerController:GetAttackTarget(force_attack, force_target, isretarget)
+function PlayerController:GetAttackTarget(force_attack, force_target, isretarget, use_remote_predict)
     if self.inst:HasTag("playerghost") or
         self.inst:HasTag("weregoose") or
 		(self.classified and self.classified.inmightygym:value() > 0) or
@@ -1395,7 +1395,7 @@ function PlayerController:GetAttackTarget(force_attack, force_target, isretarget
     end
 
     if self.inst.sg ~= nil then
-        if self.inst.sg:HasStateTag("attack") then
+		if self.inst.sg:HasStateTag(use_remote_predict and self.remote_authority and self.remote_predicting and "abouttoattack" or "attack") then
             return
         end
     elseif self.inst:HasTag("attack") then
@@ -1503,7 +1503,7 @@ function PlayerController:OnRemoteAttackButton(target, force_attack, noforce)
                     self:OnRemoteAttackButton(target, force_attack)
                 end
             else
-                target = self:GetAttackTarget(force_attack, target, target ~= self:GetCombatTarget())
+				target = self:GetAttackTarget(force_attack, target, target ~= self:GetCombatTarget(), true)
                 self.attack_buffer = BufferedAction(self.inst, target, ACTIONS.ATTACK, nil, nil, nil, nil, true)
                 self.attack_buffer._predictpos = true
             end
@@ -1570,7 +1570,7 @@ local function GetPickupAction(self, target, tool)
         return (not target:HasTag("wall") or self.inst:IsNear(target, 2.5)) and ACTIONS.ACTIVATE or nil
     elseif target.replica.inventoryitem ~= nil and
         target.replica.inventoryitem:CanBePickedUp() and
-        not (target:HasTag("heavy") or target:HasTag("fire") or target:HasTag("catchable")) and
+		not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasTag("lighter")) or target:HasTag("catchable")) and
         not target:HasTag("spider") then
         return (self:HasItemSlots() or target.replica.equippable ~= nil) and ACTIONS.PICKUP or nil
     elseif target:HasTag("pickable") and not target:HasTag("fire") then
@@ -1877,7 +1877,7 @@ function PlayerController:DoInspectButton()
         local client_obj = buffaction.target.components.playeravatardata:GetData()
         if client_obj ~= nil then
             client_obj.inst = buffaction.target
-            self.inst.HUD:TogglePlayerAvatarPopup(client_obj.name, client_obj, true)
+            self.inst.HUD:TogglePlayerInfoPopup(client_obj.name, client_obj, true, buffaction.target)
         end
     end
 
@@ -3659,7 +3659,7 @@ function PlayerController:OnLeftClick(down)
                 local client_obj = act.target.components.playeravatardata:GetData()
                 if client_obj ~= nil then
                     client_obj.inst = act.target
-                    self.inst.HUD:TogglePlayerAvatarPopup(client_obj.name, client_obj, true)
+                    self.inst.HUD:TogglePlayerInfoPopup(client_obj.name, client_obj, true)
                 end
             elseif act.target.quagmire_shoptab ~= nil then
                 self.inst:PushEvent("quagmire_shoptab", act.target.quagmire_shoptab)

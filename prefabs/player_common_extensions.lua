@@ -870,6 +870,60 @@ local function StopStageActing(inst)
     end
 end
 
+local function OnPostActivateHandshake_Client(inst, state) -- NOTES(JBK): Use PostActivateHandshake.
+    --print("[OPA_C]", state)
+    if state <= inst._PostActivateHandshakeState_Client or state > POSTACTIVATEHANDSHAKE.READY then -- Forward unique states only.
+        print("OnPostActivateHandshake_Client got a bad increment in state:", inst, inst._PostActivateHandshakeState_Client, state)
+        return
+    end
+    inst._PostActivateHandshakeState_Client = state
+
+    if state == POSTACTIVATEHANDSHAKE.CTS_LOADED then
+        TheSkillTree:OPAH_DoBackup()
+    elseif state == POSTACTIVATEHANDSHAKE.STC_SENDINGSTATE then
+        inst:PostActivateHandshake(POSTACTIVATEHANDSHAKE.READY)
+    elseif state == POSTACTIVATEHANDSHAKE.READY then
+        TheSkillTree:OPAH_Ready()
+    else
+        print("OnPostActivateHandshake_Client got a bad state:", inst, state)
+    end
+end
+local function OnPostActivateHandshake_Server(inst, state) -- NOTES(JBK): Use PostActivateHandshake.
+    --print("[OPA_S]", state)
+    if state <= inst._PostActivateHandshakeState_Server or state > POSTACTIVATEHANDSHAKE.READY then -- Forward unique states only.
+        print("OnPostActivateHandshake_Server got a bad increment in state:", inst, inst._PostActivateHandshakeState_Server, state)
+        return
+    end
+    inst._PostActivateHandshakeState_Server = state
+
+    if state == POSTACTIVATEHANDSHAKE.CTS_LOADED then
+        inst:PostActivateHandshake(POSTACTIVATEHANDSHAKE.STC_SENDINGSTATE)
+    elseif state == POSTACTIVATEHANDSHAKE.STC_SENDINGSTATE then
+        local skilltreeupdater = inst.components.skilltreeupdater
+        skilltreeupdater:SendFromSkillTreeBlob(inst)
+    elseif state == POSTACTIVATEHANDSHAKE.READY then
+        -- Good state.
+    else
+        print("OnPostActivateHandshake_Server got a bad state:", inst, state)
+    end
+end
+local function PostActivateHandshake(inst, state)
+    if TheWorld.ismastersim then
+        if inst.userid and (TheNet:IsDedicated() or (TheWorld.ismastersim and inst ~= ThePlayer)) then
+            inst:OnPostActivateHandshake_Server(state)
+            SendRPCToClient(CLIENT_RPC.PostActivateHandshake, inst.userid, state)
+        else
+            inst:DoTaskInTime(0, function() -- Delay each state by a frame to let OnPostActivateHandshake call PostActivateHandshake.
+                inst:OnPostActivateHandshake_Client(state)
+                inst:OnPostActivateHandshake_Server(state)
+            end)
+        end
+    elseif inst == ThePlayer then
+        inst:OnPostActivateHandshake_Client(state)
+        SendRPCToServer(RPC.PostActivateHandshake, state)
+    end
+end
+
 return
 {
     ShouldKnockout              = ShouldKnockout,
@@ -900,4 +954,7 @@ return
     IsActing                    = IsActing,
     StartStageActing            = StartStageActing,
     StopStageActing             = StopStageActing,
+    OnPostActivateHandshake_Client = OnPostActivateHandshake_Client,
+    OnPostActivateHandshake_Server = OnPostActivateHandshake_Server,
+    PostActivateHandshake       = PostActivateHandshake,
 }

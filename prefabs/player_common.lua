@@ -2,6 +2,7 @@ local upvalue = {}
 local easing = require("easing")
 local PlayerHud = require("screens/playerhud")
 local ex_fns = require "prefabs/player_common_extensions"
+local skilltreedefs = require "prefabs/skilltree_defs"
 
 local BEEFALO_COSTUMES = require("yotb_costumes")
 
@@ -419,7 +420,12 @@ local function OnGotNewItem(inst, data)
 end
 
 local function OnEquip(inst, data)
-    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/equip_item")
+    if data.eslot == EQUIPSLOTS.BEARD then
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/shave_LP", "equipbeard")
+        inst:DoTaskInTime(0.5,function() inst.SoundEmitter:KillSound("equipbeard") end)
+    else
+        TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/equip_item")
+    end
 end
 
 local function OnPickSomething(inst, data)
@@ -601,6 +607,7 @@ local function RegisterMasterEventListeners(inst)
     inst:ListenForEvent("learncookbookstats", ex_fns.OnLearnCookbookStats)
     inst:ListenForEvent("oneat", ex_fns.OnEat)
 
+    --Plantregistry events
     inst:ListenForEvent("learnplantstage", ex_fns.OnLearnPlantStage)
     inst:ListenForEvent("learnfertilizer", ex_fns.OnLearnFertilizer)
     inst:ListenForEvent("takeoversizedpicture", ex_fns.OnTakeOversizedPicture)
@@ -722,6 +729,7 @@ local function ActivatePlayer(inst)
 
     inst:PushEvent("playeractivated")
     TheWorld:PushEvent("playeractivated", inst)
+    inst:PostActivateHandshake(POSTACTIVATEHANDSHAKE.CTS_LOADED)
 
     TheCamera:LockDistance(false)
 
@@ -797,7 +805,7 @@ local function EnableMovementPrediction(inst, enable)
                 --This is unfortunate but it doesn't seem like you can send an rpc on the first
                 --frame when a character is spawned
                 inst:DoTaskInTime(0, function(inst)
-                    SendRPCToServer(RPC.MovementPredictionEnabled)
+                    SendRPCToServer(RPC.SetMovementPredictionEnabled, true)
                     end)
             end
         elseif inst.components.locomotor ~= nil then
@@ -814,7 +822,7 @@ local function EnableMovementPrediction(inst, enable)
             --This is unfortunate but it doesn't seem like you can send an rpc on the first
             --frame when a character is spawned
             inst:DoTaskInTime(0, function(inst)
-                SendRPCToServer(RPC.MovementPredictionDisabled)
+                SendRPCToServer(RPC.SetMovementPredictionEnabled, false)
                 end)
         end
     end
@@ -1329,6 +1337,7 @@ local function OnNewSpawn(inst, starting_item_skins)
     inst.OnNewSpawn = nil
     inst.starting_inventory = nil
     TheWorld:PushEvent("ms_newplayerspawned", inst)
+
 end
 
 --------------------------------------------------------------------------
@@ -1387,8 +1396,10 @@ fns.ShowPopUp = function(inst, popup, show, ...)
 end
 
 fns.ResetMinimapOffset = function(inst) -- NOTES(JBK): Please use this only when necessary.
-    if TheWorld.ismastersim and inst.userid then
-        SendRPCToClient(CLIENT_RPC.ResetMinimapOffset, inst.userid)
+    if TheWorld.ismastersim then
+        --Forces a netvar to be dirty regardless of value
+        inst.player_classified.minimapcenter:set_local(false)
+        inst.player_classified.minimapcenter:set(false)
     end
 end
 
@@ -1637,6 +1648,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_actions.zip"),
         Asset("ANIM", "anim/player_actions_axe.zip"),
         Asset("ANIM", "anim/player_actions_pickaxe.zip"),
+		Asset("ANIM", "anim/player_actions_pickaxe_recoil.zip"),
         Asset("ANIM", "anim/player_actions_shovel.zip"),
         Asset("ANIM", "anim/player_actions_blowdart.zip"),
         Asset("ANIM", "anim/player_actions_slingshot.zip"),
@@ -1789,6 +1801,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("INV_IMAGE", "skull_"..name),
 
         Asset("SCRIPT", "scripts/prefabs/player_common_extensions.lua"),
+        Asset("SCRIPT", "scripts/prefabs/skilltree_defs.lua"),
     }
 
     local prefabs =
@@ -1817,6 +1830,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		"washashore_puddle_fx",
 		"spawnprotectionbuff",
         "battreefx",
+		"impact",
 
         -- Player specific classified prefabs
         "player_classified",
@@ -2015,7 +2029,6 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.AnimState:AddOverrideBuild("player_actions_farming")
         inst.AnimState:AddOverrideBuild("player_actions_cowbell")        
 
-
         inst.DynamicShadow:SetSize(1.3, .6)
 
         inst.MiniMapEntity:SetIcon(name..".png")
@@ -2043,7 +2056,6 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:AddTag(UPGRADETYPES.WATERPLANT.."_upgradeuser")
         inst:AddTag(UPGRADETYPES.MAST.."_upgradeuser")
         inst:AddTag("usesvegetarianequipment")
-
 
 		SetInstanceFunctions(inst)
 
@@ -2086,6 +2098,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst:AddComponent("cookbookupdater")
         inst:AddComponent("plantregistryupdater")
+        inst:AddComponent("skilltreeupdater")
 
         inst:AddComponent("walkableplatformplayer")
         inst:AddComponent("boatcannonuser")
@@ -2150,15 +2163,20 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst._piratemusicstate = net_bool(inst.GUID, "player.piratemusicstate", "piratemusicstatedirty")
         inst._piratemusicstate:set(false)
-
-
-
         inst:ListenForEvent("piratemusicstatedirty", OnPirateMusicStateDirty)
+
+
+        inst.PostActivateHandshake = ex_fns.PostActivateHandshake
+        inst.OnPostActivateHandshake_Client = ex_fns.OnPostActivateHandshake_Client
+        inst._PostActivateHandshakeState_Client = POSTACTIVATEHANDSHAKE.NONE
 
         inst.entity:SetPristine()
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.OnPostActivateHandshake_Server = ex_fns.OnPostActivateHandshake_Server
+        inst._PostActivateHandshakeState_Server = POSTACTIVATEHANDSHAKE.NONE
 
         inst.persists = false --handled in a special way
 
@@ -2221,6 +2239,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.components.combat.pvp_damagemod = TUNING.PVP_DAMAGE_MOD -- players shouldn't hurt other players very much
         inst.components.combat:SetAttackPeriod(TUNING.WILSON_ATTACK_PERIOD)
         inst.components.combat:SetRange(TUNING.DEFAULT_ATTACK_RANGE)
+
+		inst:AddComponent("damagetyperesist")
 
         local gamemode = TheNet:GetServerGameMode()
         if gamemode == "lavaarena" then
@@ -2366,6 +2386,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst:AddComponent("stageactor")
 
+        inst:AddComponent("experiencecollector")
+
         inst:AddInherentAction(ACTIONS.PICK)
         inst:AddInherentAction(ACTIONS.SLEEPIN)
         inst:AddInherentAction(ACTIONS.CHANGEIN)
@@ -2438,23 +2460,15 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:ListenForEvent("startfiredamage", OnStartFireDamage)
         inst:ListenForEvent("stopfiredamage", OnStopFireDamage)
         inst:ListenForEvent("burnt", OnBurntHands)
-        inst:ListenForEvent("onchangecanopyzone", OnChangeCanopyZone)    
+        inst:ListenForEvent("onchangecanopyzone", OnChangeCanopyZone)
 
         inst.EnableLoadingProtection = fns.EnableLoadingProtection
         inst.DisableLoadingProtection = fns.DisableLoadingProtection
 
---[[
-        inst:ListenForEvent("stormlevel", function(owner, data)
-            if data.stormtype == STORM_TYPES.MOONSTORM and data.level > 0 then
-                print("5")
-                TheWorld.components.moonstormlightningmanager.sparks_per_sec_mod = 0.1
-            else
-                print("1")
-                TheWorld.components.moonstormlightningmanager.sparks_per_sec_mod = 1.0
-            end
-        end)
-]]
+        inst:PushEvent("newskillpointupdated")
+
         TheWorld:PushEvent("ms_playerspawn", inst)
+
 
         return inst
     end

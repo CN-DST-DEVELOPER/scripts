@@ -352,7 +352,9 @@ CommonStates.AddRunStates = function(states, timelines, anims, softstop, delayst
 			if fns ~= nil and fns.startonenter ~= nil then
 				fns.startonenter(inst)
 			end
-			if not delaystart then
+			if delaystart then
+				inst.components.locomotor:StopMoving()
+			else
 	            inst.components.locomotor:RunForward()
 			end
             inst.AnimState:PlayAnimation(get_loco_anim(inst, anims ~= nil and anims.startrun or nil, "run_pre"))
@@ -453,7 +455,9 @@ CommonStates.AddWalkStates = function(states, timelines, anims, softstop, delays
 			if fns ~= nil and fns.startonenter ~= nil then -- this has to run before WalkForward so that startonenter has a chance to update the walk speed
 				fns.startonenter(inst)
 			end
-			if not delaystart then
+			if delaystart then
+				inst.components.locomotor:StopMoving()
+			else
 	            inst.components.locomotor:WalkForward()
 			end
             inst.AnimState:PlayAnimation(get_loco_anim(inst, anims ~= nil and anims.startwalk or nil, "walk_pre"))

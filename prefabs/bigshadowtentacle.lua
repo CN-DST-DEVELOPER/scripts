@@ -93,7 +93,8 @@ local function fn()
 
     inst:AddTag("shadow")
     inst:AddTag("notarget")
-    inst:AddTag("NOCLICK")    
+    inst:AddTag("NOCLICK")
+    inst:AddTag("shadow_aligned") 
 
     inst.entity:SetPristine()
 

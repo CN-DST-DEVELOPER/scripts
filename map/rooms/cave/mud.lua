@@ -13,6 +13,9 @@ AddRoom("LightPlantField", {
     value = WORLD_TILES.MUD,
     tags = {"Hutch_Fishbowl"},
     contents =  {
+        countprefabs= {
+            daywalkerspawningground = 1,
+        },
         distributepercent = .2,
         distributeprefabs=
         {

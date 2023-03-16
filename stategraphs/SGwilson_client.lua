@@ -418,7 +418,15 @@ local actionhandlers =
         end),
 	ActionHandler(ACTIONS.TOSS,
 		function(inst, action)
-			return action.invobject ~= nil and action.invobject:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
+			local projectile = action.invobject
+			if projectile == nil then
+				--for Special action TOSS, we can also use equipped item.
+				projectile = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if projectile ~= nil and not projectile:HasTag("special_action_toss") then
+					projectile = nil
+				end
+			end
+			return projectile ~= nil and projectile:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
 		end),
     ActionHandler(ACTIONS.UNPIN, "doshortaction"),
     ActionHandler(ACTIONS.CATCH, "catch_pre"),

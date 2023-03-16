@@ -130,14 +130,12 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                local max_tries = 4
-                for k = 1, max_tries do
-                    local x, y, z = inst.Transform:GetWorldPosition()
-                    local offset = 10
-                    x = x + math.random(2 * offset) - offset
-                    z = z + math.random(2 * offset) - offset
-                    if TheWorld.Map:IsPassableAtPoint(x, y, z) then
-                        inst.Physics:Teleport(x, y, z)
+				local x0, y0, z0 = inst.Transform:GetWorldPosition()
+				for k = 1, 4 --[[# of attempts]] do
+					local x = x0 + math.random() * 20 - 10
+					local z = z0 + math.random() * 20 - 10
+					if TheWorld.Map:IsPassableAtPoint(x, 0, z) then
+						inst.Physics:Teleport(x, 0, z)
                         break
                     end
                 end

@@ -116,7 +116,7 @@ local function onworkfinished(inst, worker)
     if inst.components.lootdropper.chanceloottable ~= nil then
 	    inst.components.lootdropper:DropLoot(inst:GetPosition())
         -- say the uncovered state description string
-        if worker ~= nil and worker.components.talker ~= nil then
+		if worker ~= nil and worker.components.talker ~= nil and worker:HasTag("player") then
             worker.components.talker:Say(inst.components.inspectable:GetDescription(worker, inst, "UNCOVERED"))
         end
 	else

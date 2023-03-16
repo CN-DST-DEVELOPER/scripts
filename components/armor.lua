@@ -33,7 +33,11 @@ function Armor:IsIndestructible()
 	return self.indestructible == true
 end
 
-function Armor:GetPercent(amount)
+function Armor:IsDamaged()
+	return self.condition < self.maxcondition
+end
+
+function Armor:GetPercent()
     return self.condition / self.maxcondition
 end
 

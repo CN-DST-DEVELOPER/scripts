@@ -65,6 +65,38 @@ end
 
 CRAFTING_FILTERS.CHARACTER.recipes =
 {
+	-- Wilson
+	"transmute_log",
+	"transmute_twigs",
+	"transmute_flint",
+	"transmute_rocks",
+
+	"transmute_bluegem",
+	"transmute_redgem",
+	"transmute_purplegem",
+	"transmute_orangegem",
+	"transmute_yellowgem",
+	"transmute_greengem",
+	"transmute_opalpreciousgem",
+
+	"transmute_meat",
+	"transmute_smallmeat",
+	"transmute_goldnugget",
+	"transmute_nitre",
+	"transmute_marble",
+	"transmute_cutstone",
+	"transmute_moonrocknugget",
+
+	"transmute_beardhair",
+	"transmute_beefalowool",
+	"transmute_boneshard",
+	"transmute_houndstooth",
+	"transmute_poop",
+
+	"transmute_horrorfuel",
+	"transmute_dreadstone",
+	"transmute_nightmarefuel",
+
 	-- Willow
 	"lighter",
 	"bernie_inactive",
@@ -649,6 +681,8 @@ CRAFTING_FILTERS.ARMOUR.recipes =
 	"armordragonfly",
 	"armor_sanity",
 	"armormarble",
+	"armordreadstone",
+	"dreadstonehat",
 	"footballhat",
 	"wathgrithrhat",
 	"cookiecutterhat",
@@ -977,6 +1011,8 @@ CRAFTING_FILTERS.MAGIC.recipes =
 	"nightlight",
 	"armor_sanity",
 	"nightsword",
+	"armordreadstone",
+	"dreadstonehat",
 	"batbat",
 	"armorslurper",
 	"antlionhat",
@@ -1156,6 +1192,7 @@ CRAFTING_FILTERS.DECOR.recipes =
 	"turf_fungus",
 	"turf_fungus_red",
 	"turf_fungus_green",
+	"turf_beard_rug",	
 
 	"ruinsrelic_plate",
 	"ruinsrelic_chipbowl",

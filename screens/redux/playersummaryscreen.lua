@@ -469,7 +469,17 @@ function PlayerSummaryScreen:OnSkinsButton()
 end
 
 function PlayerSummaryScreen:OnMysteryBoxButton()
-    self:_FadeToScreen(MysteryBoxScreen, {})
+    if (TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) then
+        TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.MAINSCREEN.OFFLINE, STRINGS.UI.PLAYERSUMMARYSCREEN.MYSTERYBOX_DISABLE, 
+            {
+                {text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_LOGIN, cb = function()
+                        SimReset()
+                    end},
+                {text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_BACK, cb=function() TheFrontEnd:PopScreen() end },
+            }))
+    else
+        self:_FadeToScreen(MysteryBoxScreen, {})
+    end
 end
 
 function PlayerSummaryScreen:StopMusic()

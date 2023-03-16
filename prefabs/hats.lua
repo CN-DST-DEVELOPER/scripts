@@ -2899,6 +2899,110 @@ local function MakeHat(name)
         return inst
     end
 
+	local function dreadstone_getsetbonusequip(inst, owner)
+		local body = owner.components.inventory ~= nil and owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY) or nil
+		return body ~= nil and body.prefab == "armordreadstone" and body or nil
+	end
+
+	local function dreadstone_doregen(inst, owner)
+		if owner.components.sanity ~= nil and owner.components.sanity:IsInsanityMode() then
+			local setbonus = dreadstone_getsetbonusequip(inst, owner) ~= nil and TUNING.ARMOR_DREADSTONE_REGEN_SETBONUS or 1
+			local rate = 1 / Lerp(1 / TUNING.ARMOR_DREADSTONE_REGEN_MAXRATE, 1 / TUNING.ARMOR_DREADSTONE_REGEN_MINRATE, owner.components.sanity:GetPercent())
+			inst.components.armor:Repair(inst.components.armor.maxcondition * rate * setbonus)
+		end
+		if not inst.components.armor:IsDamaged() then
+			inst.regentask:Cancel()
+			inst.regentask = nil
+		end
+	end
+
+	local function dreadstone_startregen(inst, owner)
+		if inst.regentask == nil then
+			inst.regentask = inst:DoPeriodicTask(TUNING.ARMOR_DREADSTONE_REGEN_PERIOD, dreadstone_doregen, nil, owner)
+		end
+	end
+
+	local function dreadstone_stopregen(inst)
+		if inst.regentask ~= nil then
+			inst.regentask:Cancel()
+			inst.regentask = nil
+		end
+	end
+
+	local function dreadstone_onequip(inst, owner)
+		_onequip(inst, owner)
+
+		if owner.components.sanity ~= nil and inst.components.armor:IsDamaged() then
+			dreadstone_startregen(inst, owner)
+		else
+			dreadstone_stopregen(inst)
+		end
+	end
+
+	local function dreadstone_onunequip(inst, owner)
+		_onunequip(inst, owner)
+		dreadstone_stopregen(inst)
+	end
+
+	local function dreadstone_ontakedamage(inst, amount)
+		if inst.regentask == nil and inst.components.equippable:IsEquipped() then
+			local owner = inst.components.inventoryitem.owner
+			if owner ~= nil and owner.components.sanity ~= nil then
+				dreadstone_startregen(inst, owner)
+			end
+		end
+	end
+
+	local function dreadstone_calcdapperness(inst, owner)
+		local insanity = owner.components.sanity ~= nil and owner.components.sanity:IsInsanityMode()
+		local other = dreadstone_getsetbonusequip(inst, owner)
+		if other ~= nil then
+			return (insanity and (inst.regentask ~= nil or other.regentask ~= nil) and TUNING.CRAZINESS_MED or TUNING.CRAZINESS_SMALL) * 0.5
+		end
+		return insanity and inst.regentask ~= nil and TUNING.CRAZINESS_MED or TUNING.CRAZINESS_SMALL
+	end
+
+	local function dreadstone_custom_init(inst)
+		inst:AddTag("dreadstone")
+		inst:AddTag("shadow_item")
+
+		--waterproofer (from waterproofer component) added to pristine state for optimization
+		inst:AddTag("waterproofer")
+
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
+	end
+
+	fns.dreadstone = function()
+		local inst = simple(dreadstone_custom_init)
+
+		if not TheWorld.ismastersim then
+			return inst
+		end
+
+		inst:AddComponent("armor")
+		inst.components.armor:InitCondition(TUNING.ARMOR_DREADSTONEHAT, TUNING.ARMOR_DREADSTONEHAT_ABSORPTION)
+		inst.components.armor.ontakedamage = dreadstone_ontakedamage
+
+		inst.components.equippable.dapperfn = dreadstone_calcdapperness
+		inst.components.equippable.is_magic_dapperness = true
+		inst.components.equippable:SetOnEquip(dreadstone_onequip)
+		inst.components.equippable:SetOnUnequip(dreadstone_onunequip)
+
+		inst:AddComponent("waterproofer")
+		inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+		inst:AddComponent("damagetyperesist")
+		inst.components.damagetyperesist:AddResist("shadow_aligned", inst, TUNING.ARMOR_DREADSTONEHAT_SHADOW_RESIST)
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.DREADSTONEHAT_SHADOW_LEVEL)
+
+		MakeHauntableLaunch(inst)
+
+		return inst
+	end
+
     local fn = nil
     local assets = { Asset("ANIM", "anim/"..fname..".zip") }
     local prefabs = nil
@@ -3042,6 +3146,8 @@ local function MakeHat(name)
         fn = fns.mask        
     elseif name == "nightcap" then
         fn = fns.nightcap
+    elseif name == "dreadstone" then
+    	fn = fns.dreadstone
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -3181,6 +3287,8 @@ return  MakeHat("straw"),
         MakeHat("polly_rogers"),
 
         MakeHat("nightcap"),
+
+		MakeHat("dreadstone"),
 
         Prefab("minerhatlight", minerhatlightfn),
         Prefab("alterguardianhatlight", alterguardianhatlightfn),

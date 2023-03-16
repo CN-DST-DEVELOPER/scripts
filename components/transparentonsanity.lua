@@ -21,10 +21,18 @@ local TransparentOnSanity = Class(function(self, inst)
 	self.target_alpha = nil
 
 	PushAlpha(self, 0, .4)
-	inst:StartUpdatingComponent(self)
 
 	self.inst.AnimState:UsePointFiltering(true)
 end)
+
+function TransparentOnSanity:OnEntitySleep()
+	self.inst:StopUpdatingComponent(self)
+end
+
+function TransparentOnSanity:OnEntityWake()
+	self.inst:StartUpdatingComponent(self)
+	self:ForceUpdate()
+end
 
 function TransparentOnSanity:OnUpdate(dt)
 	self:DoUpdate(dt, false)

@@ -107,6 +107,9 @@ local SPAWN_PROTECTION_DANGER_TAGS = {"hostile", "_combat", "trapdamage", "curse
 local SPAWN_PROTECTION_BLOCKED_TAGS = {"blocker", "structure"}
 
 function self:_ShouldEnableSpawnProtection(inst, player, x, y, z, isloading)
+    if BRANCH == "dev" then -- NOTES(JBK): Turning this off for faster local tests.
+        return false
+    end
     if TheWorld.topology.overrides ~= nil and not isloading then
         if TheWorld.topology.overrides.spawnprotection == "always" then
             return true

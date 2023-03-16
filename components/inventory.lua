@@ -362,7 +362,11 @@ function Inventory:ApplyDamage(damage, attacker, weapon)
             v.components.resistance:ShouldResistDamage() then
             v.components.resistance:ResistDamage(damage)
             return 0
-        elseif v.components.armor ~= nil then
+		end
+		if v.components.damagetyperesist ~= nil then
+			damage = damage * v.components.damagetyperesist:GetResist(attacker, weapon)
+		end
+		if v.components.armor ~= nil then
             absorbers[v.components.armor] = v.components.armor:GetAbsorption(attacker, weapon)
         end
     end
@@ -957,6 +961,9 @@ function Inventory:Unequip(equipslot, slip)
     --print("Inventory:Unequip", item)
     if item ~= nil then
         if item.components.equippable ~= nil then
+            if item.components.equippable:ShouldPreventUnequipping() then
+                return nil
+            end
             item.components.equippable:Unequip(self.inst)
             local overflow = self:GetOverflowContainer()
             if overflow ~= nil and overflow.inst == item then
@@ -987,6 +994,13 @@ end
 
 function Inventory:Equip(item, old_to_active, no_animation)
     if item == nil or item.components.equippable == nil or not item:IsValid() or item.components.equippable:IsRestricted(self.inst) or (self.noheavylifting and item:HasTag("heavy")) then
+        return
+    end
+    -----
+    
+    local eslot = item.components.equippable.equipslot
+    local olditem = self.equipslots[eslot]
+    if olditem ~= nil and olditem.components.equippable:ShouldPreventUnequipping() then
         return
     end
 
@@ -1038,9 +1052,7 @@ function Inventory:Equip(item, old_to_active, no_animation)
         self:SetActiveItem(nil)
     end
 
-    local eslot = item.components.equippable.equipslot
-    if self.equipslots[eslot] ~= item then
-        local olditem = self.equipslots[eslot]
+    if olditem ~= item then
         if leftovers ~= nil then
             if old_to_active then
                 self:GiveActiveItem(leftovers)
@@ -1485,6 +1497,10 @@ function Inventory:DropEverything(ondeath, keepequip)
     end
 
     if not keepequip then
+        if self.inst.EmptyBeard ~= nil then
+            self.inst:EmptyBeard()
+        end    
+
         for k, v in pairs(self.equipslots) do
             if not (ondeath and v.components.inventoryitem.keepondeath) then
                 self:DropItem(v, true, true)
@@ -1611,7 +1627,7 @@ function Inventory:Hide()
     overflow = overflow ~= nil and overflow.inst or nil
 
     for k, v in pairs(self.opencontainers) do
-        if k ~= overflow then
+        if k ~= overflow and not k.components.container.stay_open_on_hide then
 			k.components.container:Close(self.inst)
         end
     end
@@ -2108,6 +2124,9 @@ function Inventory:IsWaterproof()
 end
 
 function Inventory:TransferComponent(newinst)
+    if self.inst.EmptyBeard ~= nil then
+        self.inst:EmptyBeard()
+    end  
     self:TransferInventory(newinst)
 end
 

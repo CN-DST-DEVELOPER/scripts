@@ -185,7 +185,7 @@ function PlayerActionPicker:GetPointActions(pos, useitem, right, target)
 end
 
 function PlayerActionPicker:GetPointSpecialActions(pos, useitem, right)
-    return self.pointspecialactionsfn ~= nil and self:SortActionList(self.pointspecialactionsfn(self.inst, pos, useitem, right), pos) or {}
+	return self.pointspecialactionsfn ~= nil and self:SortActionList(self.pointspecialactionsfn(self.inst, pos, useitem, right), pos, useitem) or {}
 end
 
 function PlayerActionPicker:GetEquippedItemActions(target, useitem, right)

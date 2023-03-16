@@ -335,6 +335,8 @@ Recipe2("armordragonfly",					{Ingredient("dragon_scales", 1), Ingredient("armor
 
 Recipe2("armor_sanity",						{Ingredient("nightmarefuel", 5),Ingredient("papyrus", 3)},										TECH.MAGIC_THREE)
 Recipe2("armormarble",						{Ingredient("marble", 6),Ingredient("rope", 2)},												TECH.SCIENCE_TWO)
+Recipe2("armordreadstone",					{Ingredient("dreadstone", 6), Ingredient("horrorfuel", 4)},										TECH.LOST)
+Recipe2("dreadstonehat",					{Ingredient("dreadstone", 4), Ingredient("horrorfuel", 4)},										TECH.LOST)
 Recipe2("footballhat",						{Ingredient("pigskin", 1), Ingredient("rope", 1)},												TECH.SCIENCE_TWO)
 Recipe2("cookiecutterhat",					{Ingredient("cookiecuttershell", 4), Ingredient("rope", 1)},									TECH.SCIENCE_TWO)
 
@@ -509,6 +511,7 @@ Recipe2("turf_woodfloor",					{Ingredient("boards", 1)},																				TECH
 Recipe2("turf_checkerfloor",				{Ingredient("marble", 1)},																				TECH.SCIENCE_TWO,			{numtogive=4})
 Recipe2("turf_carpetfloor",					{Ingredient("boards", 1), Ingredient("beefalowool", 1)},												TECH.SCIENCE_TWO,			{numtogive=4})
 Recipe2("turf_dragonfly",					{Ingredient("dragon_scales", 1), Ingredient("cutstone", 1)},											TECH.SCIENCE_TWO,			{numtogive=4})
+Recipe2("turf_beard_rug",					{Ingredient("beardhair", 2), Ingredient("cutgrass", 2)},												TECH.SCIENCE_TWO,			{numtogive=4})
 
 Recipe2("turf_carpetfloor2",				{Ingredient("boards", 1), Ingredient("beefalowool", 1)},												TECH.SCIENCE_TWO,			{numtogive=4})
 Recipe2("turf_mosaic_grey",					{Ingredient("marble", 1)},																				TECH.SCIENCE_TWO,			{numtogive=4})
@@ -876,6 +879,44 @@ Recipe("terrariumchest",				{Ingredient("boards", 3)}, nil, TECH.LOST, nil, nil,
 Recipe("eyemaskhat",                    {Ingredient("milkywhites", 3), Ingredient("monstermeat", 2)}, nil, TECH.LOST, nil, nil, true)
 Recipe("shieldofterror",                {Ingredient("gears", 2), Ingredient("nightmarefuel", 3)}, nil, TECH.LOST, nil, nil, true)
 Recipe("potatosack",                    {Ingredient("cutgrass", 2), Ingredient("rocks", 3)}, nil, TECH.LOST, nil, nil, true)
+
+--WILSON TRANSMUTATION
+Recipe2("transmute_log",                {Ingredient("twigs", 3)}, 	TECH.NONE, 				{product="log", image="log.tex",     builder_tag="alchemist", description="transmute_log"})
+Recipe2("transmute_twigs",              {Ingredient("log", 1)}, 	TECH.NONE, 				{product="twigs", image="twigs.tex", builder_tag="alchemist", description="transmute_twigs", numtogive = 2})
+--
+Recipe2("transmute_bluegem",            {Ingredient("redgem", 2)}, 	TECH.NONE, 				{product="bluegem", image="bluegem.tex", builder_tag="gem_alchemistI", description="transmute_bluegem"})
+Recipe2("transmute_redgem",             {Ingredient("bluegem", 2)}, TECH.NONE, 				{product="redgem", image="redgem.tex", builder_tag="gem_alchemistI", description="transmute_redgem"})
+Recipe2("transmute_purplegem",          {Ingredient("bluegem", 1),Ingredient("redgem", 1)}, TECH.NONE, {product="purplegem", image="purplegem.tex", builder_tag="gem_alchemistI", description="transmute_purplegem"})
+
+Recipe2("transmute_orangegem",          {Ingredient("purplegem", 3)}, TECH.NONE, 			{product="orangegem", image="orangegem.tex", builder_tag="gem_alchemistII", description="transmute_orangegem"})
+Recipe2("transmute_yellowgem",          {Ingredient("orangegem", 3)}, TECH.NONE, 			{product="yellowgem", image="yellowgem.tex", builder_tag="gem_alchemistII", description="transmute_yellowgem"})
+
+Recipe2("transmute_greengem",          	{Ingredient("yellowgem", 3)}, TECH.NONE, 			{product="greengem", image="greengem.tex", builder_tag="gem_alchemistIII", description="transmute_greengem"})
+Recipe2("transmute_opalpreciousgem",   	{Ingredient("yellowgem", 1), Ingredient("orangegem", 1), Ingredient("greengem", 1), Ingredient("purplegem", 1), Ingredient("redgem", 1), Ingredient("bluegem", 1)},   TECH.NONE, 				{product="opalpreciousgem", image="opalpreciousgem.tex", builder_tag="gem_alchemistIII", description="transmute_opalpreciousgem"})
+--
+Recipe2("transmute_flint",              {Ingredient("rocks", 3)}, 	TECH.NONE, 				{product="flint", image="flint.tex", builder_tag="ore_alchemistI", description="transmute_flint"})
+Recipe2("transmute_rocks",              {Ingredient("flint", 2)}, 	TECH.NONE, 				{product="rocks", image="rocks.tex", builder_tag="ore_alchemistI", description="transmute_rocks"})
+
+Recipe2("transmute_goldnugget",         {Ingredient("nitre", 3)}, 	TECH.NONE, 			    {product="goldnugget", image="goldnugget.tex",   builder_tag="ore_alchemistII", description="transmute_goldnugget"})
+Recipe2("transmute_nitre",         		{Ingredient("goldnugget", 2)}, 	TECH.NONE, 			{product="nitre", image="nitre.tex",   builder_tag="ore_alchemistII", description="transmute_nitre"})
+
+Recipe2("transmute_marble",           	{Ingredient("cutstone", 2)}, 	TECH.NONE, 			{product="marble", image="marble.tex",     builder_tag="ore_alchemistIII", description="transmute_marble"})
+Recipe2("transmute_cutstone",           {Ingredient("marble", 1)}, 	TECH.NONE, 				{product="cutstone", image="cutstone.tex",     builder_tag="ore_alchemistIII", description="transmute_cutstone"})
+Recipe2("transmute_moonrocknugget",     {Ingredient("marble", 2)}, 	TECH.NONE, 				{product="moonrocknugget", image="moonrocknugget.tex",     builder_tag="ore_alchemistIII", description="transmute_moonrocknugget"})
+--
+Recipe2("transmute_meat",               {Ingredient("smallmeat", 3)}, 	TECH.NONE, 			{product="meat", image="meat.tex",     builder_tag="ick_alchemistI", description="transmute_meat"})
+Recipe2("transmute_smallmeat",          {Ingredient("meat", 1)}, 	TECH.NONE, 				{product="smallmeat", image="smallmeat.tex",     builder_tag="ick_alchemistI", description="transmute_smallmeat", numtogive = 2})
+
+Recipe2("transmute_beardhair",          {Ingredient("beefalowool", 2)}, 	TECH.NONE, 		{product="beardhair", image="beardhair.tex",     builder_tag="ick_alchemistII", description="transmute_beardhair"})
+Recipe2("transmute_beefalowool",        {Ingredient("beardhair", 2)}, 	TECH.NONE, 			{product="beefalowool", image="beefalowool.tex",     builder_tag="ick_alchemistII", description="transmute_beefalowool"})
+
+Recipe2("transmute_boneshard",          {Ingredient("houndstooth", 2)}, 	TECH.NONE, 		{product="boneshard", image="boneshard.tex",     builder_tag="ick_alchemistIII", description="transmute_boneshard"})
+Recipe2("transmute_houndstooth",        {Ingredient("boneshard", 2)}, 	    TECH.NONE, 		{product="houndstooth", image="houndstooth.tex",     builder_tag="ick_alchemistIII", description="transmute_houndstooth"})
+Recipe2("transmute_poop",     			{Ingredient("spoiled_food", 6)}, 	TECH.NONE, 		{product="poop", image="poop.tex",     builder_tag="ick_alchemistIII", description="transmute_poop"})
+
+Recipe2("transmute_horrorfuel",     	{Ingredient("dreadstone", 1)}, 	TECH.NONE, 			{product="horrorfuel", image="horrorfuel.tex",     builder_tag="skill_wilson_allegiance_shadow", description="transmute_horrorfuel", numtogive=2})
+Recipe2("transmute_dreadstone",      	{Ingredient("horrorfuel", 3)}, 	TECH.NONE, 			{product="dreadstone", image="dreadstone.tex",     builder_tag="skill_wilson_allegiance_shadow", description="transmute_dreadstone"})
+Recipe2("transmute_nightmarefuel",      {Ingredient("horrorfuel", 1)}, 	TECH.NONE, 			{product="nightmarefuel", image="nightmarefuel.tex",     builder_tag="skill_wilson_allegiance_shadow", description="transmute_nightmarefuel", numtogive=2})
 
 
 ----CONSTRUCTION PLANS----

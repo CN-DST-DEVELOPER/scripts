@@ -1323,6 +1323,25 @@ function self:OnPostInit()
 	end
 
 	---------------------------------------------------------------------------
+
+    if self.retrofit_daywalker_content then
+		self.retrofit_daywalker_content = nil
+
+        -- NOTES(JBK): This is here to clean up old daywalker content from forest after it moved to caves.
+        local should_delete = {
+            daywalker = true,
+            daywalker_pillar = true,
+            daywalkerspawningground = true,
+            shadow_leech = true,
+        }
+        for k,v in pairs(Ents) do
+            if v ~= inst and should_delete[v.prefab] then
+                print("Retrofitting BETA Daywalker entity, removing from forest:", v)
+                v:Remove()
+            end
+        end
+	end
+	---------------------------------------------------------------------------
 	if self.requiresreset then
 		print ("Retrofitting: Worldgen retrofitting requires the server to save and restart to fully take effect.")
 		print ("Restarting server in 30 seconds...")
@@ -1372,6 +1391,7 @@ function self:OnLoad(data)
         self.retrofit_removeextraaltarpieces = data.retrofit_removeextraaltarpieces or false
         self.retrofit_terraria_terrarium = data.retrofit_terraria_terrarium or false
 		self.retrofit_alittledrama_content = data.retrofit_alittledrama_content or false
+        self.retrofit_daywalker_content = data.retrofit_daywalker_content or false
     end
 end
 

@@ -60,7 +60,7 @@ local function FadeInImmediately(inst)
 end
 
 local function FadeOutImmediately(inst)
-    inst._fade:Set(FADE_FRAMES * 2 + 1)
+    inst._fade:set(FADE_FRAMES * 2 + 1)
     OnFadeDirty(inst)
 end
 

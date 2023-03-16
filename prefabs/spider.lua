@@ -823,6 +823,7 @@ end
 
 local function spider_moon_common_init(inst)
     inst.Transform:SetScale(1.25, 1.25, 1.25)
+    inst:AddTag("lunar_aligned")
 end
 
 local function create_moon()
