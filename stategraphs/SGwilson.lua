@@ -2407,14 +2407,21 @@ local states =
         name = "rebirth",
         tags = { "nopredict", "silentmorph" },
 
-        onenter = function(inst)
+        onenter = function(inst, source)
             if inst.components.playercontroller ~= nil then
                 inst.components.playercontroller:Enable(false)
             end
             inst.AnimState:PlayAnimation("rebirth")
 
-            for k,v in pairs(statue_symbols) do
-                inst.AnimState:OverrideSymbol(v, "wilsonstatue", v)
+            local skin_build = source and source:GetSkinBuild() or nil
+            if skin_build ~= nil then
+                for k,v in pairs(statue_symbols) do
+                    inst.AnimState:OverrideItemSkinSymbol(v, skin_build, v, inst.GUID, "wilsonstatue")
+                end
+            else
+                for k,v in pairs(statue_symbols) do
+                    inst.AnimState:OverrideSymbol(v, "wilsonstatue", v)
+                end
             end
 
             inst.components.health:SetInvincible(true)
@@ -3689,6 +3696,7 @@ local states =
                     local target = inst.sg.statemem.action.target
                     if target ~= nil and target:IsValid() then
                         if inst.sg.statemem.action.action == ACTIONS.MINE then
+							inst.sg.statemem.recoilstate = "gnaw_recoil"
                             PlayMiningFX(inst, target)
                         elseif inst.sg.statemem.action.action == ACTIONS.HAMMER then
                             inst.sg.statemem.rmb = true
@@ -3752,6 +3760,51 @@ local states =
 			inst:RemoveTag("gnawing")
 		end,
     },
+
+	State{
+		name = "gnaw_recoil",
+		tags = { "busy", "nopredict", "nomorph" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+
+			inst.AnimState:PlayAnimation("hit")
+			inst:ShakeCamera(CAMERASHAKE.FULL, .4, .02, .15)
+			inst.Physics:SetMotorVel(-6, 0, 0)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.speed ~= nil then
+				inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
+				inst.sg.statemem.speed = inst.sg.statemem.speed * 0.6
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(1, function(inst)
+				inst.sg.statemem.speed = -2
+			end),
+			FrameEvent(5, function(inst)
+				inst.sg.statemem.speed = nil
+				inst.Physics:Stop()
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Physics:Stop()
+		end,
+	},
 
     State{
         name = "hide",

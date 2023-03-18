@@ -294,7 +294,7 @@ local function DoActualRez(inst, source, item)
             inst:PushEvent("ms_closepopups")
             inst.sg:GoToState("wakeup")
         elseif source.prefab == "resurrectionstatue" then
-            inst.sg:GoToState("rebirth")
+            inst.sg:GoToState("rebirth", source)
         elseif source:HasTag("multiplayer_portal") then
             inst.components.health:DeltaPenalty(TUNING.PORTAL_HEALTH_PENALTY)
 

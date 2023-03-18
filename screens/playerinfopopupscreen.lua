@@ -38,12 +38,7 @@ local PlayerInfoPopup = Class(Screen, function(self, owner, player_name, data, s
 	self.root = self.anchor:AddChild(Widget("root"))
 	self.root:SetPosition(-420,-30)
 
-    local prefab = nil
-    if self.data and self.data.inst then
-        prefab = self.data.inst.prefab
-    else
-        prefab = self.owner.prefab
-    end
+    local prefab = self.data.inst and self.data.inst.prefab or self.data.prefab
 
     if self.currentcharacter == "notselected" then
         self:MakePlayerAvatarPopup()
@@ -156,7 +151,8 @@ function PlayerInfoPopup:MakeSkillTree()
         self.playeravatar = nil
     end
 
-    self.skilltree = self.root:AddChild(SkillTreeWidget(self.data.prefab, self.data))
+    local prefab = self.data.inst and self.data.inst.prefab or self.data.prefab
+    self.skilltree = self.root:AddChild(SkillTreeWidget(prefab, self.data))
     if self.root.tabs then
         self.root.tabs.skillTreePopup:Disable()
         self.root.tabs.playerAvatarPopup:Enable()

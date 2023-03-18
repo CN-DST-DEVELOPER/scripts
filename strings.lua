@@ -4489,8 +4489,8 @@ STRINGS =
         TRANSMUTE_MOONROCKNUGGET = "Transmute Marble into Moon Rock.",
 
         TRANSMUTE_POOP = "Transmute Rot into Manure.",
-        TRANSMUTE_BEARDHAIR = "Transmute Beefalo Hair into Beard Hair.",
-        TRANSMUTE_BEEFALODHAIR = "Transmute Beard Hair into Beefalo Hair.",
+        TRANSMUTE_BEARDHAIR = "Transmute Beefalo Wool into Beard Hair.",
+        TRANSMUTE_BEEFALOWOOL = "Transmute Beard Hair into Beefalo Wool.",
         TRANSMUTE_BONESHARD = "Transmute a Hound's Tooth into Bone Shards.",
         TRANSMUTE_HOUNDSTOOTH = "Transmute Bone Shards into a Hounds Tooth.",
 
@@ -8157,7 +8157,7 @@ STRINGS.UI =
         TIP_ROTATE_CAMERA = "Press {rotateleft} & {rotateright} to rotate your view of the world.",
         TIP_SHOW_MAP = "Press {map} to take a quick glance at your map.",
 
-        TIP_ENDLESS_MODE = "When creating a new world, switch the Game Mode to Endless to allow you and your friends to revive themselves at the Florid Postern.",
+        TIP_ENDLESS_MODE = "When creating a new world, switch the Game Mode to Endless to allow you and your friends to revive at the Florid Postern.",
         TIP_DISABLE_TIPS = "Is your mind already bursting with secret knowledge? You can turn off Loading Tips anytime in the Options menu.",
         TIP_ROLLBACK = "Server hosts can roll back one day or regenerate the world by accessing the Server Commands menu in the Pause Screen.",
         TIP_DICEVOTE = "Access the Server Commands menu from the Pause Screen to start votes or roll a dice.",
@@ -14059,7 +14059,7 @@ STRINGS.SKILLTREE = {
         WILSON_ALCHEMY_4_DESC = "Transform 3 Morsels into a Meat.\nTransform a Meat into 2 Morsels.",
 
         WILSON_ALCHEMY_9_TITLE = "Transmute Icky II",
-        WILSON_ALCHEMY_9_DESC = "Transform 2 Beard Hair into Beefalo Hair.\n Transform 2 Beefalo Hair into Beard Hair.",
+        WILSON_ALCHEMY_9_DESC = "Transform 2 Beard Hair into Beefalo Wool.\n Transform 2 Beefalo Wool into Beard Hair.",
 
         WILSON_ALCHEMY_10_TITLE = "Transmute Icky III",
         WILSON_ALCHEMY_10_DESC = "Transform 6 Rot into Manure.\nTransform 2 Hound's Teeth into a Bone Shards.\nTransform 2 Bone Shards into a Hound's Tooth.",

@@ -12,12 +12,18 @@ local prefabs =
 
 local function DoIgniteSound(inst, owner)
 	inst._ignitesoundtask = nil
-	(owner ~= nil and owner:IsValid() and owner or inst).SoundEmitter:PlaySound("dontstarve/wilson/torch_swing")
+    local se = (owner ~= nil and owner:IsValid() and owner or inst).SoundEmitter
+    if se ~= nil then
+        se:PlaySound("dontstarve/wilson/torch_swing")
+    end
 end
 
 local function DoExtinguishSound(inst, owner)
 	inst._extinguishsoundtask = nil
-	(owner ~= nil and owner:IsValid() and owner or inst).SoundEmitter:PlaySound("dontstarve/common/fireOut")
+    local se = (owner ~= nil and owner:IsValid() and owner or inst).SoundEmitter
+    if se ~= nil then
+       se:PlaySound("dontstarve/common/fireOut")
+    end
 end
 
 local function PlayIgniteSound(inst, owner, instant, force)

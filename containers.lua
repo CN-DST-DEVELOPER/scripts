@@ -832,14 +832,11 @@ params.beard_sack_1 =
     },
     type = "side_inv_behind",
     acceptsstacks = true,
-    usespecificslotsforitems = true,
     lowpriorityselection = true,
    -- excludefromcrafting = false,
 }
 
 function params.beard_sack_1.itemtestfn(container, item, slot)
-    if slot and slot ~= 1 then return end
-
     --Edible
     for k, v in pairs(FOODGROUP.OMNI.types) do
         if item:HasTag("edible_"..v) then
@@ -870,14 +867,11 @@ params.beard_sack_2 =
     },
     type = "side_inv_behind",
     acceptsstacks = true,
-    usespecificslotsforitems = true,
     lowpriorityselection = true,
    -- excludefromcrafting = false,
 }
 
 function params.beard_sack_2.itemtestfn(container, item, slot)
-    if slot and (slot ~= 1 and slot ~= 2) then return end
-
     --Edible
     for k, v in pairs(FOODGROUP.OMNI.types) do
         if item:HasTag("edible_"..v) then
@@ -909,14 +903,11 @@ params.beard_sack_3 =
     },
     type = "side_inv_behind",
     acceptsstacks = true,
-    usespecificslotsforitems = true,
     lowpriorityselection = true,
    -- excludefromcrafting = false,
 }
 
 function params.beard_sack_3.itemtestfn(container, item, slot)
-    if slot and (slot ~= 1 and slot ~= 2 and slot ~= 3) then return end
-
     --Edible
     for k, v in pairs(FOODGROUP.OMNI.types) do
         if item:HasTag("edible_"..v) then

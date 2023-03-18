@@ -477,12 +477,13 @@ local function OnWorked(inst, worker, workleft, numworks)
 	end
 	inst.SoundEmitter:KillSound("vibrate_loop")
 	inst.SoundEmitter:KillSound("chain_vibrate_loop")
-	if workleft <= 1 and not changed and worker ~= nil and worker:HasTag("player") then
+	if workleft <= 1 and not changed and worker ~= nil and worker:HasTag("player") and not worker:HasTag("weremoose") then
+		inst.SoundEmitter:PlaySound("daywalker/pillar/pickaxe_hit_unbreakable")
 		local mult =
 			worker.components.workmultiplier ~= nil and
 			worker.components.workmultiplier:GetMultiplier(ACTIONS.MINE) or
 			1
-		if numworks > mult and not worker:HasTag("weremoose") then
+		if numworks > mult then
 			local prisoner = inst.prisoner:value()
 			if prisoner ~= nil then
 				Pillar_PlayAnimation(inst, "pillar_shake", true)
@@ -635,6 +636,8 @@ local function fn()
 	inst.debris = net_tinybyte(inst.GUID, "daywalker_pillar.debris", "debrisdirty")
 	inst.restartvibrate = net_event(inst.GUID, "daywalker_pillar.restartvibrate")
 
+	inst.OnRemoveEntity = OnRemoveEntity
+
 	inst.entity:SetPristine()
 
 	if not TheWorld.ismastersim then
@@ -709,7 +712,6 @@ local function fn()
 	inst.IsResonating = IsResonating
 	inst.OnCollided = OnCollided
 	inst.OnLoadPostPass = OnLoadPostPass
-	inst.OnRemoveEntity = OnRemoveEntity
 
 	return inst
 end
