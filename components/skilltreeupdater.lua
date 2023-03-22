@@ -197,10 +197,23 @@ end
 
 function SkillTreeUpdater:OnSave()
     local skilltreeblob = self.skilltreeblob or self.skilltree:EncodeSkillTreeData(self.inst.prefab)
-    --print("[STUpdater] OnSave", skilltreeblob)
+    local skilltreeblobprefab = self.skilltreeblobprefab or self.inst.prefab
+    --print("[STUpdater] OnSave", skilltreeblob, skilltreeblobprefab)
     if skilltreeblob ~= TheSkillTree.NILDATA then
-        return {skilltreeblob = skilltreeblob,}
+        return {skilltreeblob = skilltreeblob, skilltreeblobprefab = skilltreeblobprefab,}
     end
+end
+
+function SkillTreeUpdater:TransferComponent(newinst)
+    --print("[STUpdater] TransferComponent", self.inst, newinst)
+    local skilltreeblob = self.skilltreeblob or self.skilltree:EncodeSkillTreeData(self.inst.prefab)
+    local skilltreeblobprefab = self.skilltreeblobprefab or self.inst.prefab
+    local newcomponent = newinst.components.skilltreeupdater
+    if skilltreeblob ~= TheSkillTree.NILDATA then
+        newcomponent.skilltreeblob = skilltreeblob
+        newcomponent.skilltreeblobprefab = skilltreeblobprefab
+    end
+    -- FIXME(JBK): Save the data as a backup and if the player loads back in as the original use their old data as a fallback.
 end
 
 function SkillTreeUpdater:SetPlayerSkillSelection(skillselection) -- NOTES(JBK): Applies an array table of bitfield entries of all activated skills and does not network anything.
@@ -211,27 +224,31 @@ function SkillTreeUpdater:SetPlayerSkillSelection(skillselection) -- NOTES(JBK):
     end
     self:SetSilent(false)
     self.skilltreeblob = self.skilltree:EncodeSkillTreeData(self.inst.prefab)
+    self.skilltreeblobprefab = self.inst.prefab
 end
 
 function SkillTreeUpdater:SendFromSkillTreeBlob(inst)
-    if self.skilltreeblob ~= nil then
+    -- NOTES(JBK): self.skilltreeblobprefab could be nil from old saves so we will try to apply skills here in that case.
+    -- The worst case is that ValidateCharacterData fails and nothing changes.
+    if self.skilltreeblob ~= nil and (self.skilltreeblobprefab == nil or self.skilltreeblobprefab == self.inst.prefab) then
         local activatedskills, _badskillxp_donotuse = self.skilltree:DecodeSkillTreeData(self.skilltreeblob)
-        self.skilltreeblob = nil
-        if activatedskills ~= nil then
-            self:SetSilent(true)
-            for skill, _ in pairs(activatedskills) do
-                self:DeactivateSkill(skill)
-            end
-            self:SetSilent(false)
-            -- At this point the client will have sent their current XP to measure from so use that value and not the local stored invalid XP.
-            if self.skilltree:ValidateCharacterData(self.inst.prefab, activatedskills, self:GetSkillXP()) then
+        -- At this point the client will have sent their current XP to measure from so use that value and not the local stored invalid XP.
+        if self.skilltree:ValidateCharacterData(self.inst.prefab, activatedskills, self:GetSkillXP()) then
+            self.skilltreeblob = nil
+            self.skilltreeblobprefab = nil
+            if activatedskills ~= nil then
+                self:SetSilent(true)
+                for skill, _ in pairs(activatedskills) do
+                    self:DeactivateSkill(skill)
+                end
+                self:SetSilent(false)
                 -- The skills are validated so apply them and network them if need be.
                 for skill, _ in pairs(activatedskills) do -- Two loops just in case of activation states.
                     self:ActivateSkill(skill)
                 end
             end
+            -- Do not use nor send skillxp here.
         end
-        -- Do not use nor send skillxp here.
     end
 end
 
@@ -242,7 +259,8 @@ end
 
 function SkillTreeUpdater:OnLoad(data)
     self.skilltreeblob = data.skilltreeblob
-    --print("[STUpdater] OnLoad", self.skilltreeblob)
+    self.skilltreeblobprefab = data.skilltreeblobprefab
+    --print("[STUpdater] OnLoad", self.skilltreeblob, self.skilltreeblobprefab)
 end
 
 return SkillTreeUpdater

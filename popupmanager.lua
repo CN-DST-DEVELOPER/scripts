@@ -120,16 +120,6 @@ POPUPS.PLANTREGISTRY.fn = function(inst, show)
     end
 end
 
-POPUPS.SKILLTREE.fn = function(inst, show)
-    if inst.HUD then
-        if not show then
-            inst.HUD:CloseSkillTreeScreen()
-        elseif not inst.HUD:OpenSkillTreeScreen() then
-            POPUPS.SKILLTREE:Close(inst)
-        end
-    end
-end
-
 POPUPS.PLAYERINFO.fn = function(inst, show)
     if inst.HUD then
         if not show then

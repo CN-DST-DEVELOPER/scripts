@@ -6480,6 +6480,7 @@ function Tune(overrides)
 
             -- Shadow allegiance.
             WILSON_ALLEGIANCE_SHADOW_RESIST = 0.9,
+            WILSON_ALLEGIANCE_VS_LUNAR_BONUS = 1.1,
         },
 
         WILSON_BEARD_BITS ={

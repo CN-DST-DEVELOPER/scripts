@@ -85,7 +85,11 @@ function Weapon:SetAttackCallback(fn)
 end
 
 function Weapon:GetDamage(attacker, target)
-    return FunctionOrValue(self.damage, self.inst, attacker, target)
+	local dmg = self.damage
+	if self.inst.components.damagetypebonus ~= nil then
+		dmg = dmg * self.inst.components.damagetypebonus:GetBonus(target)
+	end
+	return FunctionOrValue(dmg, self.inst, attacker, target)
 end
 
 function Weapon:OnAttack(attacker, target, projectile)

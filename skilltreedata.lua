@@ -1,11 +1,13 @@
 local skilltreedata_all = require("prefabs/skilltree_defs")
 local SKILLTREE_DEFS, SKILLTREE_METAINFO = skilltreedata_all.SKILLTREE_DEFS, skilltreedata_all.SKILLTREE_METAINFO
 
+local NILDATA = nil -- Local cache to have same copy across all instances of SkillTreeData.
 
 local SkillTreeData = Class(function(self)
     self.activatedskills = {}
     self.skillxp = {}
-    self.NILDATA = self:EncodeSkillTreeData() -- NOTES(JBK): This the default output when no data is available.
+    NILDATA = NILDATA or self:EncodeSkillTreeData() -- NOTES(JBK): This the default output when no data is available.
+    self.NILDATA = NILDATA
 
     --self.save_enabled = nil
     --self.dirty = nil
@@ -192,6 +194,7 @@ end
 -- NOTES(JBK): These do not have use case out of the data layer they are here in case mods want to make their own handlers. Do not call.
 
 function SkillTreeData:OPAH_DoBackup()
+    --print("[OPAH] TheSkillTree:DoBackup")
     local characterprefab = ThePlayer.prefab
     self.save_enabled = nil -- We will get a bunch of events from the server do not write to disk every time.
     -- The server is intending to send the client its known state to the local player.
@@ -211,6 +214,7 @@ function SkillTreeData:OPAH_DoBackup()
     end
 end
 function SkillTreeData:OPAH_Ready()
+    --print("[OPAH] TheSkillTree:Ready")
     local characterprefab = ThePlayer.prefab
     -- The server is done sending the client data on the activated skills it knows of.
     -- The local player will first check if the states are identical and if so disregard preservation entirely.
@@ -307,8 +311,8 @@ function SkillTreeData:UpdateSaveState(characterprefab)
     self.dirty = true
     if self.save_enabled then
         --print("[STData] UpdateSaveState", characterprefab)
-        local def = SKILLTREE_DEFS[characterprefab]
-        if def and not def.modded and not TheNet:IsDedicated() and table.contains(DST_CHARACTERLIST, characterprefab) then
+        local metadef = SKILLTREE_METAINFO[characterprefab]
+        if metadef and not metadef.modded and not TheNet:IsDedicated() and table.contains(DST_CHARACTERLIST, characterprefab) then
             TheInventory:SetSkillTreeValue(characterprefab, self:EncodeSkillTreeData(characterprefab))
         end
         self:Save(true, characterprefab)

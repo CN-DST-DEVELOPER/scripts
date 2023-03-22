@@ -459,6 +459,7 @@ function Controls:SetHUDSize()
     self.containerroot:SetScale(scale)
     self.containerroot_side:SetScale(scale)
     self.containerroot_side_behind:SetScale(scale)
+
     self.hover:SetScale(scale)
     self.topright_over_root:SetScale(scale)
 
@@ -855,6 +856,7 @@ function Controls:ShowCraftingAndInventory()
         end
         self.inv:Show()
         self.containerroot_side:Show()
+        self.containerroot_side_behind:Show()
         if self.secondary_status and self.secondary_status.side_inv then
             self.secondary_status.side_inv:Show()
         end
@@ -874,6 +876,7 @@ function Controls:HideCraftingAndInventory()
         self.craftingmenu:Hide()
         self.inv:Hide()
         self.containerroot_side:Hide()
+        self.containerroot_side_behind:Hide()
         if self.secondary_status and self.secondary_status.side_inv then
             self.secondary_status.side_inv:Hide()
         end

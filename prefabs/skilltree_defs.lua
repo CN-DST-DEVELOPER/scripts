@@ -11,11 +11,11 @@ local function CreateSkillTreeFor(characterprefab, skills)
         rpc_id = rpc_id + 1
         -- NOTES(JBK): If this goes beyond 32 it will not be shown to other players in the inspection panel.
     end
-    SKILLTREE_DEFS[characterprefab] = skills
-    SKILLTREE_METAINFO[characterprefab] = {
+    SKILLTREE_METAINFO[characterprefab] = { -- Must be first for metatable setting.
         RPC_LOOKUP = RPC_LOOKUP,
         TOTAL_SKILLS_COUNT = rpc_id,
     }
+    SKILLTREE_DEFS[characterprefab] = skills
 end
 
 local function CountTags(prefab, targettag, skillselection)
@@ -502,12 +502,20 @@ CreateSkillTreeFor("wilson", {
             if damagetyperesist then
                 damagetyperesist:AddResist("shadow_aligned", inst, TUNING.SKILLS.WILSON_ALLEGIANCE_SHADOW_RESIST, "wilson_allegiance_shadow")
             end
+            local damagetypebonus = inst.components.damagetypebonus
+            if damagetypebonus then
+                damagetypebonus:AddBonus("lunar_aligned", inst, TUNING.SKILLS.WILSON_ALLEGIANCE_VS_LUNAR_BONUS, "wilson_allegiance_shadow")
+            end
         end,
         ondeactivate = function(inst, fromload)
             inst:RemoveTag("skill_wilson_allegiance_shadow")
             local damagetyperesist = inst.components.damagetyperesist
             if damagetyperesist then
                 damagetyperesist:RemoveResist("shadow_aligned", inst, "wilson_allegiance_shadow")
+            end
+            local damagetypebonus = inst.components.damagetypebonus
+            if damagetypebonus then
+                damagetypebonus:RemoveBonus("lunar_aligned", inst, "wilson_allegiance_shadow")
             end
         end,
         connects = {
@@ -518,7 +526,7 @@ CreateSkillTreeFor("wilson", {
 
 setmetatable(SKILLTREE_DEFS, {
     __newindex = function(t, k, v)
-        v.modded = true
+        SKILLTREE_METAINFO[k].modded = true
         rawset(t, k, v)
     end,
 })

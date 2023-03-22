@@ -79,6 +79,8 @@ local SkillTreeBuilder = Class(Widget, function(self, infopanel, fromfrontend, s
     self.root.xp_tospend = self.root.xp:AddChild(Text(HEADERFONT,15, 0, COLOR))
     self.root.xp_tospend:SetHAlign(ANCHOR_LEFT)  
     self.root.xp_tospend:SetString(STRINGS.SKILLTREE.SKILLPOINTS_TO_SPEND)
+
+
     local w, h = self.root.xp_tospend:GetRegionSize()
     self.root.xp_tospend:SetPosition(30+(w/2),-3)
 
@@ -471,6 +473,16 @@ function SkillTreeBuilder:RefreshTree()
 	end
 
 	self.root.xptotal:SetString(availableskillpoints)
+	if availableskillpoints <= 0 and TheSkillTree:GetSkillXP(characterprefab) >= TheSkillTree:GetMaximumExperiencePoints() then
+		self.root.xp_tospend:SetString(STRINGS.SKILLTREE.KILLPOINTS_MAXED)
+		local w, h = self.root.xp_tospend:GetRegionSize()
+   		self.root.xp_tospend:SetPosition(30+(w/2),-3)		
+	else	   	
+		self.root.xp_tospend:SetString(STRINGS.SKILLTREE.SKILLPOINTS_TO_SPEND)
+		local w, h = self.root.xp_tospend:GetRegionSize()
+		self.root.xp_tospend:SetPosition(30+(w/2),-3)
+	end
+
 
 	if self.selectedskill  then
 		if TheInput:ControllerAttached() then

@@ -377,22 +377,20 @@ end
 
 local function OnSave(inst, data)
 	if inst.components.burnable:IsBurning() and not inst.components.inventoryitem:IsHeld() then
-		data.lit = true
+		if inst.thrower ~= nil then
+			data.thrower = inst.thrower
+		else
+			data.lit = true
+		end
 	end
-
-    if inst.thrower then
-        data.thrower = inst.thrower
-    end
 end
 
 local function OnLoad(inst, data)
-	if data ~= nil and data.lit and not inst.components.inventoryitem:IsHeld() then
+	if data ~= nil and (data.lit or data.thrower ~= nil) and not inst.components.inventoryitem:IsHeld() then
 		inst.AnimState:PlayAnimation("land")
+		inst.thrower = data.thrower
 		IgniteTossed(inst)
 	end
-    if data~= nil and data.thrower then
-        inst.thrower = data.thrower
-    end
 end
 
 local function fn()

@@ -523,10 +523,6 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
     end
     self.lastwasattackedtime = GetTime()
 
-    if self.inst.components.skilltreeupdater and self.inst.components.skilltreeupdater:HasSkillTag("shadow_favor") and attacker and attacker:HasTag("shadow_aligned") then
-        damage = damage * 0.9
-    end
-
     --print ("ATTACKED", self.inst, attacker, damage)
     --V2C: redirectdamagefn is currently only used by either mounting or parrying,
     --     but not both at the same time.  If we use it more, then it really needs
@@ -542,6 +538,12 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
         if self.inst.components.inventory ~= nil then
             damage = self.inst.components.inventory:ApplyDamage(damage, attacker, weapon)
         end
+		if self.inst.components.rideable ~= nil then
+			local saddle = self.inst.components.rideable.saddle
+			if saddle ~= nil and saddle.components.damagetyperesist ~= nil then
+				damage = damage * saddle.components.damagetyperesist:GetResist(attacker, weapon)
+			end
+		end
 		if self.inst.components.damagetyperesist ~= nil then
 			damage = damage * self.inst.components.damagetyperesist:GetResist(attacker, weapon)
 		end
@@ -814,6 +816,7 @@ function Combat:CalcDamage(target, weapon, multiplier)
     local basedamage
     local basemultiplier = self.damagemultiplier
     local externaldamagemultipliers = self.externaldamagemultipliers
+	local damagetypemult
     local bonus = self.damagebonus --not affected by multipliers
     local playermultiplier = target ~= nil and target:HasTag("player")
     local pvpmultiplier = playermultiplier and self.inst:HasTag("player") and self.pvp_damagemod or 1
@@ -826,6 +829,9 @@ function Combat:CalcDamage(target, weapon, multiplier)
         --No playermultiplier when using weapons
         basedamage = weapon.components.weapon:GetDamage(self.inst, target) or 0
         playermultiplier = 1
+		if self.inst.components.damagetypebonus ~= nil then
+			damagetypemult = self.inst.components.damagetypebonus:GetBonus(target)
+		end
     else
         basedamage = self.defaultdamage
         playermultiplier = playermultiplier and self.playerdamagepercent or 1
@@ -837,22 +843,29 @@ function Combat:CalcDamage(target, weapon, multiplier)
                 basemultiplier = mount.components.combat.damagemultiplier
                 externaldamagemultipliers = mount.components.combat.externaldamagemultipliers
                 bonus = mount.components.combat.damagebonus
+				if mount.components.damagetypebonus ~= nil then
+					damagetypemult = mount.components.damagetypebonus:GetBonus(target)
+				end
+			elseif self.inst.components.damagetypebonus ~= nil then
+				damagetypemult = self.inst.components.damagetypebonus:GetBonus(target)
             end
 
             local saddle = self.inst.components.rider:GetSaddle()
             if saddle ~= nil and saddle.components.saddler ~= nil then
                 basedamage = basedamage + saddle.components.saddler:GetBonusDamage()
+				if saddle.components.damagetypebonus ~= nil then
+					damagetypemult = (damagetypemult or 1) * saddle.components.damagetypebonus:GetBonus(target)
+				end
             end
+		elseif self.inst.components.damagetypebonus ~= nil then
+			damagetypemult = self.inst.components.damagetypebonus:GetBonus(target)
         end
-    end
-
-    if self.inst.components.skilltreeupdater and self.inst.components.skilltreeupdater:HasSkillTag("shadow_favor") and target:HasTag("lunar_aligned") then
-        basedamage = basedamage * 1.1
     end
 
     return basedamage
         * (basemultiplier or 1)
         * externaldamagemultipliers:Get()
+		* (damagetypemult or 1)
         * (multiplier or 1)
         * playermultiplier
         * pvpmultiplier

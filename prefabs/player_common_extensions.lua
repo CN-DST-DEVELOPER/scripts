@@ -924,6 +924,11 @@ local function PostActivateHandshake(inst, state)
     end
 end
 
+local function OnClosePopups(inst)
+    -- NOTES(JBK): These are popups that should be closed that do not have an automatic close handler elsewhere.
+    inst:ShowPopUp(POPUPS.PLAYERINFO, false)
+end
+
 return
 {
     ShouldKnockout              = ShouldKnockout,
@@ -957,4 +962,5 @@ return
     OnPostActivateHandshake_Client = OnPostActivateHandshake_Client,
     OnPostActivateHandshake_Server = OnPostActivateHandshake_Server,
     PostActivateHandshake       = PostActivateHandshake,
+    OnClosePopups               = OnClosePopups,
 }

@@ -625,6 +625,9 @@ local function RegisterMasterEventListeners(inst)
     inst:ListenForEvent("onstage", ex_fns.OnOnStageEvent)
     inst:ListenForEvent("startstageacting", ex_fns.StartStageActing)
     inst:ListenForEvent("stopstageacting", ex_fns.StopStageActing)
+
+    -- Generic POPUPS
+    inst:ListenForEvent("ms_closepopups", ex_fns.OnClosePopups)
 end
 
 --------------------------------------------------------------------------
@@ -2241,6 +2244,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.components.combat:SetRange(TUNING.DEFAULT_ATTACK_RANGE)
 
 		inst:AddComponent("damagetyperesist")
+		inst:AddComponent("damagetypebonus")
 
         local gamemode = TheNet:GetServerGameMode()
         if gamemode == "lavaarena" then

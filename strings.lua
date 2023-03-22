@@ -14015,6 +14015,7 @@ STRINGS.SKILLTREE = {
     SKILLTREE = "Skillset",
     SKILLPOINTS = "Insight",
     SKILLPOINTS_TO_SPEND = "Insight Remaining",
+    KILLPOINTS_MAXED = "MAX Insight Reached",
     NEW_SKILL_POINT = "Insight Gained!",
     ACTIVATE = "Learn",
     ACTIVATED = "SKILL MASTERED",

@@ -82,6 +82,8 @@ local PlayerHud = Class(Screen, function(self)
                 self.playerstatusscreen:CloseUserCommandPickerScreen()
             end
         end, TheWorld)
+    else
+        self.inst:ListenForEvent("ms_closepopups", self.onclosepopups)
     end
 end)
 

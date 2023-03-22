@@ -155,7 +155,7 @@ function SkillTreeWidget:SpawnFavorOverlay(pre)
             self.midlay.splash:SetPosition(0,-10)
             self.midlay.splash.inst:ListenForEvent("animover", function()
                 if math.random() < 0.3 then
-                    self.midlay.splash:GetAnimState():PlayAnimation("twitch ",false)
+                    self.midlay.splash:GetAnimState():PlayAnimation("twitch",false)
                     self.midlay.splash:GetAnimState():PushAnimation("idle",false)
                 else
                     self.midlay.splash:GetAnimState():PlayAnimation("idle",false)
