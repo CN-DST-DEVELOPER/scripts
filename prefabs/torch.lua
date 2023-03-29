@@ -230,6 +230,7 @@ local function onequiptomodel(inst, owner, from_ground)
 end
 
 local function onpocket(inst, owner)
+	--V2C: I think this is redundant, otherwise it would've needed fire fx cleanup as well
     inst.components.burnable:Extinguish()
 end
 
@@ -340,6 +341,7 @@ local function OnThrown(inst, thrower)
 	PlayIgniteSound(inst, nil, true, true)
 	IgniteTossed(inst)
 	inst.components.inventoryitem.canbepickedup = false
+	inst:AddTag("FX") --prevent targeting, like flingo
 end
 
 local function OnHit(inst)
@@ -347,12 +349,13 @@ local function OnHit(inst)
 	inst.SoundEmitter:KillSound("spin_loop")
 	inst.SoundEmitter:PlaySound("wilson_rework/torch/stick_ground")
 	inst.components.inventoryitem.canbepickedup = true
+	inst:RemoveTag("FX")
 end
 
 local function RemoveThrower(inst)
     if inst.thrower then
         removetorchskilleffects(inst,inst.thrower.brightnessmod)
-        inst.thrower=nil 
+		inst.thrower = nil
     end
 end
 
@@ -373,6 +376,32 @@ local function OnPutInInventory(inst, owner)
 	end
 
 	inst.components.burnable:Extinguish()
+end
+
+local function OnExtinguish(inst)
+	--V2C: Handle cases where we're extinguished externally while stuck in ground.
+	--     e.g. flingo, waterballoon, icestaff
+	--     NOTE: these checks should not pass for any internally handled extinguishes.
+	if inst.fires ~= nil and not (inst.components.inventoryitem:IsHeld() or inst.components.fueled:IsEmpty()) then
+		for i, fx in ipairs(inst.fires) do
+			fx:Remove()
+		end
+		inst.fires = nil
+		PlayExtinguishSound(inst, nil, true, false)
+		--shouldn't be possible while spinning, but JUST IN CASE
+		if inst:HasTag("activeprojectile") then
+			inst.components.complexprojectile:Cancel()
+			inst.SoundEmitter:KillSound("spin_loop")
+			inst.components.inventoryitem.canbepickedup = true
+			inst:RemoveTag("FX")
+		end
+		inst.AnimState:PlayAnimation("idle")
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local theta = math.random() * TWOPI
+		local speed = math.random()
+		inst.Physics:Teleport(x, math.max(.1, y), z)
+		inst.Physics:SetVel(speed * math.cos(theta), 8 + math.random(), -speed * math.sin(theta))
+	end
 end
 
 local function OnSave(inst, data)
@@ -477,6 +506,7 @@ local function fn()
     inst:AddComponent("burnable")
     inst.components.burnable.canlight = false
     inst.components.burnable.fxprefab = nil
+	inst.components.burnable:SetOnExtinguishFn(OnExtinguish)
 
     -----------------------------------
 
@@ -495,8 +525,6 @@ local function fn()
     inst.SetFuelRateMult = SetFuelRateMult
 
     MakeHauntableLaunch(inst)
-
-
 
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad

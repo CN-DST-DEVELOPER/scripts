@@ -1224,6 +1224,61 @@ table.insert(prefs, CreatePrefabSkin("book_brimstone_gilded",
 	release_group = 32,
 }))
 
+table.insert(prefs, CreatePrefabSkin("book_research_station_howto",
+{
+	base_prefab = "book_research_station",
+	type = "item",
+	rarity = "Spiffy",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) book_research_station_init_fn(inst, "book_research_station_howto") end,
+	skin_tags = { "BOOK_RESEARCH_STATION", "FOOLS", "CRAFTABLE", },
+	release_group = 143,
+}))
+
+table.insert(prefs, CreatePrefabSkin("book_silviculture_livinglog",
+{
+	base_prefab = "book_silviculture",
+	type = "item",
+	rarity = "Spiffy",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) book_silviculture_init_fn(inst, "book_silviculture_livinglog") end,
+	skin_tags = { "BOOK_SILVICULTURE", "FOOLS", "CRAFTABLE", },
+	release_group = 143,
+}))
+
+table.insert(prefs, CreatePrefabSkin("book_sleep_magazine",
+{
+	base_prefab = "book_sleep",
+	type = "item",
+	rarity = "Spiffy",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) book_sleep_init_fn(inst, "book_sleep_magazine") end,
+	skin_tags = { "BOOK_SLEEP", "FOOLS", "CRAFTABLE", },
+	release_group = 143,
+}))
+
+table.insert(prefs, CreatePrefabSkin("book_temperature_romance",
+{
+	base_prefab = "book_temperature",
+	type = "item",
+	rarity = "Spiffy",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) book_temperature_init_fn(inst, "book_temperature_romance") end,
+	skin_tags = { "BOOK_TEMPERATURE", "FOOLS", "CRAFTABLE", },
+	release_group = 143,
+}))
+
+table.insert(prefs, CreatePrefabSkin("book_web_tallbird",
+{
+	base_prefab = "book_web",
+	type = "item",
+	rarity = "Spiffy",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) book_web_init_fn(inst, "book_web_tallbird") end,
+	skin_tags = { "BOOK_WEB", "FOOLS", "CRAFTABLE", },
+	release_group = 143,
+}))
+
 table.insert(prefs, CreatePrefabSkin("boomerang_bananarang",
 {
 	base_prefab = "boomerang",

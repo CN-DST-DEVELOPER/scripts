@@ -262,8 +262,18 @@ yellowamulet_clear_fn = function(inst)
     inst.skin_equip_sound = nil
 end
 
-book_brimstone_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "books" ) end
-book_brimstone_clear_fn = function(inst) basic_clear_fn(inst, "books" ) end
+book_brimstone_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
+book_brimstone_clear_fn = function(inst) basic_clear_fn(inst, "books") end
+book_temperature_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
+book_temperature_clear_fn = function(inst) basic_clear_fn(inst, "books") end
+book_research_station_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
+book_research_station_clear_fn = function(inst) basic_clear_fn(inst, "books") end
+book_silviculture_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
+book_silviculture_clear_fn = function(inst) basic_clear_fn(inst, "books") end
+book_sleep_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
+book_sleep_clear_fn = function(inst) basic_clear_fn(inst, "books") end
+book_web_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
+book_web_clear_fn = function(inst) basic_clear_fn(inst, "books") end
 
 bedroll_furry_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_bedroll_furry" ) end
 bedroll_furry_clear_fn = function(inst) basic_clear_fn(inst, "swap_bedroll_furry" ) end

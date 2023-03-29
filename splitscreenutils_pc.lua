@@ -25,3 +25,7 @@ end
 function IsSplitScreen()
 	return false
 end
+
+function HaveMultipleViewports()
+	return false
+end

@@ -178,23 +178,40 @@ local function IsNewLine(charcode)
     return charcode >= 10 and charcode <= 13
 end
 
+local function ContainsLinebreakString(str, linebreak_string)
+    local start, finish = str:find(linebreak_string, 1, true)
+    return nil ~= start
+end
+
 -- maxwidth can be a single number or an array of numbers if maxwidth is different per line
-function Text:SetMultilineTruncatedString_Impl(str, maxlines, maxwidth, maxcharsperline, ellipses)
+function Text:SetMultilineTruncatedString_Impl(str, maxlines, maxwidth, maxcharsperline, ellipses, linebreak_string)
 	local str_fits = true
+    local num_lines = 1
     if str == nil or #str <= 0 then
         self.inst.TextWidget:SetString("")
-        return str_fits
+        return str_fits, num_lines
     end
     local tempmaxwidth = type(maxwidth) == "table" and maxwidth[1] or maxwidth
     if maxlines <= 1 then
-        str_fits = self:SetTruncatedString(str, tempmaxwidth, maxcharsperline, ellipses) -- returns true if the string was truncated
+        str_fits = self:SetTruncatedString(str, tempmaxwidth, maxcharsperline, ellipses) -- returns false if the string was truncated
     else
         self:SetTruncatedString(str, tempmaxwidth, maxcharsperline, false)
         local line = self:GetString()
         if #line < #str then
-            if IsNewLine(str:byte(#line + 1)) then
-                str = str:sub(#line + 2)
-            elseif not IsWhiteSpace(str:byte(#line + 1)) then
+            local charcode = str:byte(#line + 1)
+            if linebreak_string and ContainsLinebreakString(line, linebreak_string) then
+                local start, finish = line:find(linebreak_string, 1, true)
+                local last_start, last_finish -- used to cache the last results in case the next line:find returns nil
+                while nil ~= start do         -- keep checking if there are any more occurrences of linebreak_string further along the line   
+                    last_start = start
+                    last_finish = finish
+                    start, finish = line:find(linebreak_string, finish, true)
+                end
+                line = line:sub(1, last_finish) 
+                str = str:sub(last_finish + 1)   
+            elseif IsNewLine(charcode) then
+                str = str:sub(#line + 2)     
+            elseif not IsWhiteSpace(charcode) then
                 local found_white = false
                 for i = #line, 1, -1 do
                     if IsWhiteSpace(line:byte(i)) then
@@ -226,23 +243,24 @@ function Text:SetMultilineTruncatedString_Impl(str, maxlines, maxwidth, maxchars
                         tempmaxwidth = maxwidth[2]
                     end
                 end
-                str_fits = self:SetMultilineTruncatedString_Impl(str, maxlines - 1, tempmaxwidth, maxcharsperline, ellipses)
+                str_fits, num_lines = self:SetMultilineTruncatedString_Impl(str, maxlines - 1, tempmaxwidth, maxcharsperline, ellipses, linebreak_string)
+                num_lines = num_lines + 1 -- we already had one line before recursing so add it to the result
                 self.inst.TextWidget:SetString(line.."\n"..(self.inst.TextWidget:GetString() or ""))
             end
         end
     end
-
-	return str_fits
+	
+	return str_fits, num_lines
 end
 
 function Text:UpdateOriginalSize()
 	self.original_size = self.size
 end
 
-function Text:SetMultilineTruncatedString(str, maxlines, maxwidth, maxcharsperline, ellipses, shrink_to_fit, min_shrink_font_size)
+function Text:SetMultilineTruncatedString(str, maxlines, maxwidth, maxcharsperline, ellipses, shrink_to_fit, min_shrink_font_size, linebreak_string)
     if str == nil or #str <= 0 then
         self.inst.TextWidget:SetString("")
-        return
+        return 1
     end
 
 	if shrink_to_fit then
@@ -254,14 +272,16 @@ function Text:SetMultilineTruncatedString(str, maxlines, maxwidth, maxcharsperli
 		end
 	end
 
-	local str_fits = self:SetMultilineTruncatedString_Impl(str, maxlines, maxwidth, maxcharsperline, ellipses)
+	local str_fits, num_lines = self:SetMultilineTruncatedString_Impl(str, maxlines, maxwidth, maxcharsperline, ellipses, linebreak_string)
 	while not str_fits and shrink_to_fit and LOC.GetShouldTextFit() and self:GetSize() > (min_shrink_font_size or 16) do -- the 16 is a semi reasonable "smallest" size that is okay. This is to stop stackoverflow from infinite recursion due to bad string data.
 		local new_size = self:GetSize() - 1 --drop size to fit a whole word
 		local shrinked_maxlines = math.floor(maxlines * self.original_size / new_size)  -- num lines that fit in original size
 
 		self:SetSize( new_size )
-		str_fits = self:SetMultilineTruncatedString_Impl(str, shrinked_maxlines, maxwidth, maxcharsperline, ellipses)
+		str_fits, num_lines = self:SetMultilineTruncatedString_Impl(str, shrinked_maxlines, maxwidth, maxcharsperline, ellipses, linebreak_string)
 	end
+	
+    return num_lines
 end
 
 function Text:SetAutoSizingString(str, max_width, allow_scaling_up)

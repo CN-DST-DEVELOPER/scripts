@@ -14,6 +14,7 @@ local TEMPLATES = require "widgets/templates"
 local ServerPauseWidget = require "widgets/redux/serverpausewidget"
 
 require "constants"
+require "splitscreenutils_pc"
 
 local MotdManager = require "motdmanager"
 
@@ -21,6 +22,16 @@ local REPEAT_TIME = .15
 local SCROLL_REPEAT_TIME = .05
 local MOUSE_SCROLL_REPEAT_TIME = 0
 local SPINNER_REPEAT_TIME = .25
+
+local HELP_TEXT_SCALE_FACTOR = 1/63	-- dunno where this magic number came from
+local HELP_TEXT_BG_SCALE_X = RESOLUTION_X * HELP_TEXT_SCALE_FACTOR + 8 
+local HELP_TEXT_BG_SCALE_Y = 2 * HELP_TEXT_SCALE_FACTOR
+local HELP_TEXT_BG_HEIGHT = 80
+local HELP_TEXT_FONT_SIZE = 30
+local HELP_TEXT_MAX_LINES = 2
+local HELP_TEXT_MAX_WIDTH = RESOLUTION_X * .95
+local HELP_TEXT_MAX_CHARS_PER_LINE = 130
+local HELP_TEXT_MAX_CHARS_PER_LINE_SPLITSCREEN = 80
 
 local save_fade_time = .5
 
@@ -128,27 +139,26 @@ FrontEnd = Class(function(self, name)
 	self.topvigoverlay = TEMPLATES.BackgroundVignette()
 	self.topvigoverlay:SetClickable(false)
 	self.topvigoverlay:Hide()
+	
+	self.is_splitscreen = HaveMultipleViewports()
+	self.helptext_max_characters_per_line = (self.is_splitscreen and HELP_TEXT_MAX_CHARS_PER_LINE_SPLITSCREEN) or HELP_TEXT_MAX_CHARS_PER_LINE
 
 	self.helptext = self.overlayroot:AddChild(Widget("HelpText"))
 	self.helptext:SetScaleMode(SCALEMODE_PROPORTIONAL)
     self.helptext:SetHAnchor(ANCHOR_MIDDLE)
     self.helptext:SetVAnchor(ANCHOR_BOTTOM)
 
-	local help_height = 80
-
     self.helptextbg = self.helptext:AddChild(Image("images/global.xml", "square.tex"))
-	self.helptextbg:SetScale(RESOLUTION_X/63 + 8, 2*help_height/63)
-	self.helptextbg:SetPosition(0, -help_height/2)
+	self.helptextbg:SetScale(HELP_TEXT_BG_SCALE_X, HELP_TEXT_BG_HEIGHT * HELP_TEXT_BG_SCALE_Y)
+	self.helptextbg:SetPosition(0, -HELP_TEXT_BG_HEIGHT/2)
 --	self.helptextbg:SetClickable(false)
 	self.helptextbg:SetTint(0,0,0,.75)
 
-	self.helptexttext = self.helptext:AddChild(Text(UIFONT, 30))
-    --self.helptexttext:SetVAnchor(ANCHOR_BOTTOM)
-    --self.helptexttext:SetHAnchor(ANCHOR_MIDDLE)
-	self.helptexttext:SetRegionSize(RESOLUTION_X*.9, help_height)
+	self.helptexttext = self.helptext:AddChild(Text(UIFONT, HELP_TEXT_FONT_SIZE))
 	self.helptexttext:SetPosition(0, -5)
 	self.helptexttext:SetHAlign(ANCHOR_LEFT)
 	self.helptexttext:SetVAlign(ANCHOR_TOP)
+	self.helptextstring = ""
 
 	self.overlayroot:AddChild(self.topblackoverlay)
 	self.overlayroot:AddChild(self.topwhiteoverlay)
@@ -345,6 +355,25 @@ function FrontEnd:GetHelpText()
 	end
 
 	return table.concat(t, "  ")
+end
+
+function FrontEnd:UpdateHelpTextSize(num_lines)
+	local splitscreen_scale = (self.is_splitscreen and not IsGameInstance(Instances.Overlay)) and 1.8 or 1
+	if PLATFORM == "XBONE" and splitscreen_scale == 1.8 then
+		splitscreen_scale = 1.63
+	end
+		
+	if self.helptext_scale ~= splitscreen_scale then
+		self.helptexttext:SetSize(HELP_TEXT_FONT_SIZE*splitscreen_scale)
+		self.helptext_scale = splitscreen_scale
+	end
+	
+	local help_height = HELP_TEXT_BG_HEIGHT * splitscreen_scale * num_lines
+
+	self.helptextbg:SetScale(HELP_TEXT_BG_SCALE_X, help_height * HELP_TEXT_BG_SCALE_Y)
+	self.helptextbg:SetPosition(0, -help_height/2)
+
+	self.helptexttext:SetRegionSize(HELP_TEXT_MAX_WIDTH, help_height)
 end
 
 function FrontEnd:StopTrackingMouse(autofocus)
@@ -846,8 +875,13 @@ function FrontEnd:Update(dt)
         and not (self.fadedir == FADE_OUT and self.fade_type ~= "black") then
 		local str = self:GetHelpText()
 		if str ~= "" then
+			if str ~= self.helptextstring then
+				self.helptexttext:SetRegionSize(100, 40)
+				local num_lines = self.helptexttext:SetMultilineTruncatedString(str, HELP_TEXT_MAX_LINES, HELP_TEXT_MAX_WIDTH, self.helptext_max_characters_per_line, nil, nil, nil, "  ")
+				self:UpdateHelpTextSize(num_lines)				
+				self.helptextstring = str
+			end
 			self.helptext:Show()
-			self.helptexttext:SetString(str)
 		end
 	end
 

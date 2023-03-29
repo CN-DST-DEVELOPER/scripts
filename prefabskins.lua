@@ -200,6 +200,26 @@ PREFAB_SKINS = {
 	{
 		"book_brimstone_gilded",
 	},
+	book_research_station =
+	{
+		"book_research_station_howto",
+	},
+	book_silviculture =
+	{
+		"book_silviculture_livinglog",
+	},
+	book_sleep =
+	{
+		"book_sleep_magazine",
+	},
+	book_temperature =
+	{
+		"book_temperature_romance",
+	},
+	book_web =
+	{
+		"book_web_tallbird",
+	},
 	boomerang =
 	{
 		"boomerang_bananarang",
