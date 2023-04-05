@@ -119,7 +119,7 @@ function Beard:Shave(who, withwhat)
     local currentflag = true
     local daysback = 0
 
-    print("Shave from",self.daysgrowth)
+    --print("Shave from",self.daysgrowth)
     for k = self.daysgrowth, 0, -1 do
 
         local cb = self.callbacks[k]

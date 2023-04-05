@@ -501,13 +501,20 @@ function SettingsList:SetBGForTextEntry(textentry, option)
 end
 
 function SettingsList:OnTextEntryChanged(option, textentry, value)
-    self.parent_widget:SetTweak(option.name, value)
-    self:SetBGForTextEntry(textentry, option)
+	if option then
+		self.parent_widget:SetTweak(option.name, value)
+		self:SetBGForTextEntry(textentry, option)
+	end
 end
 
 function SettingsList:OnSpinnerChanged(option, spinner, value)
-    self.parent_widget:SetTweak(option.name, value)
-    self:SetBGForSpinner(spinner, option)
+	-- there seem to be spinners on all list entries, even the headers which don't have any data to drive the spinners
+	-- and it's also possible to trigger an OnSpinnerChanged event on these headers (with a controller)
+	-- so check for valid options before trying to use them
+	if option then	
+		self.parent_widget:SetTweak(option.name, value)
+		self:SetBGForSpinner(spinner, option)
+	end
 end
 
 function SettingsList:Refresh(force)

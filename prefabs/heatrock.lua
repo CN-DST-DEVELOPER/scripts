@@ -30,6 +30,9 @@ end
 
 local function OnRemove(inst)
     inst._light:Remove()
+    if IsSteam() then -- Only Steam consoles will not get logs so this would be wasted memory for them.
+        inst._JBK_DEBUG_TRACE = _TRACEBACK() -- FIXME(JBK): Remove this when no longer needed.
+    end
 end
 
 -- These represent the boundaries between the ranges (relative to ambient, so ambient is always "0")
@@ -89,6 +92,16 @@ local function UpdateImages(inst, range)
 end
 
 local function AdjustLighting(inst, range, ambient)
+    if inst._JBK_DEBUG_TRACE then -- FIXME(JBK): Remove this when no longer needed.
+        -- This is not important enough for a crash this issue has been around for a while and it generates log file bloat.
+        print(">>> A thermal stone somehow deleted its light entity but still exists and is a bad state.")
+        print(">>> Please add a bug report with this log file to help diagnose what went wrong!")
+        print("--- Trace:")
+        print(inst._JBK_DEBUG_TRACE)
+        print("<<< Please add a bug report with this log file to help diagnose what went wrong!")
+        inst._JBK_DEBUG_TRACE = nil
+        return
+    end
     if range == 5 then
         local relativetemp = inst.components.temperature:GetCurrent() - ambient
         local baseline = relativetemp - relative_temperature_thresholds[4]

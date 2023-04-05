@@ -457,11 +457,11 @@ function ItemExplorer:_LaunchCommerce()
         local character = data.base_prefab
         local body = subfmt(STRINGS.UI.BARTERSCREEN.UNRAVEL_WARNING_RESTRICTED_BODY, {character=STRINGS.CHARACTER_NAMES[character]})
 
-		local scr = PopupDialogScreen(
+		local scr; scr = PopupDialogScreen(
 			STRINGS.UI.BARTERSCREEN.UNRAVEL_WARNING_TITLE,
 			body,
-			{{ text = STRINGS.UI.BARTERSCREEN.OK, cb = function() TheFrontEnd:PopScreen() self:_DoCommerce(item_key) end },
-			 { text = STRINGS.UI.BARTERSCREEN.CANCEL, cb = function() TheFrontEnd:PopScreen() end }})
+			{{ text = STRINGS.UI.BARTERSCREEN.OK, cb = function() self:_DoCommerce(item_key) TheFrontEnd:PopScreen(scr) end },
+			 { text = STRINGS.UI.BARTERSCREEN.CANCEL, cb = function() TheFrontEnd:PopScreen(scr) end }})
 		scr.owned_by_wardrobe = true
 		TheFrontEnd:PushScreen(scr)
 		return
@@ -469,11 +469,11 @@ function ItemExplorer:_LaunchCommerce()
         local _, reward_item = IsItemInCollection(item_key)
         local body = subfmt(STRINGS.UI.BARTERSCREEN.UNRAVEL_WARNING_BODY, {ensemble_name=STRINGS.SET_NAMES[reward_item], reward_name=GetSkinName(reward_item)})
 
-		local scr = PopupDialogScreen(
+		local scr; scr = PopupDialogScreen(
 			STRINGS.UI.BARTERSCREEN.UNRAVEL_WARNING_TITLE,
 			body,
-			{{ text = STRINGS.UI.BARTERSCREEN.OK, cb = function() TheFrontEnd:PopScreen() self:_DoCommerce(item_key) end },
-			 { text = STRINGS.UI.BARTERSCREEN.CANCEL, cb = function() TheFrontEnd:PopScreen() end }})
+			{{ text = STRINGS.UI.BARTERSCREEN.OK, cb = function() self:_DoCommerce(item_key) TheFrontEnd:PopScreen(scr) end },
+			 { text = STRINGS.UI.BARTERSCREEN.CANCEL, cb = function() TheFrontEnd:PopScreen(scr) end }})
 		scr.owned_by_wardrobe = true
 		TheFrontEnd:PushScreen(scr)
 		return

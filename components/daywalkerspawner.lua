@@ -48,7 +48,7 @@ for k, v in pairs(COLLAPSIBLE_WORK_ACTIONS) do
 	table.insert(COLLAPSIBLE_TAGS, k.."_workable")
 end
 local NON_COLLAPSIBLE_TAGS = { "locomotor", "FX", --[["NOCLICK",]] "DECOR", "INLIMBO" }
-local STRUCTURES_TAGS = {"structure"}
+local STRUCTURES_TAGS = {"structure", "blocker"}
 local IS_CLEAR_AREA_RADIUS = TILE_SCALE * 2.5
 local DESTROY_AREA_RADIUS = TILE_SCALE * 2.5
 local NO_PLAYER_RADIUS = 35
@@ -133,7 +133,7 @@ function DayWalkerSpawner:FindBestSpawningPoint()
     for i, v in ipairs(self.spawnpoints) do
         x, y, z = v.Transform:GetWorldPosition()
         if self:IsValidSpawningPoint(x, y, z) and not IsAnyPlayerInRange(x, y, z, NO_PLAYER_RADIUS) then
-            local structures = #TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, STRUCTURES_TAGS)
+            local structures = #TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, nil, nil, STRUCTURES_TAGS)
             if structures == 0 then
                 valid = true -- No structures nearby and roomy for tiles.
                 break

@@ -15,7 +15,8 @@ end
 
 function PocketWatch_Dismantler:Dismantle(target, doer)
     local owner = target.components.inventoryitem:GetGrandOwner()
-    local receiver = owner ~= nil and (owner.components.inventory or owner.components.container) or nil
+    local receiver = owner ~= nil and not owner:HasTag("pocketdimension_container") and (owner.components.inventory or owner.components.container) or nil
+    local pt = receiver ~= nil and self.inst:GetPosition() or doer:GetPosition()
 
     local loot = target.components.lootdropper:GetFullRecipeLoot(AllRecipes[target.prefab])
     target:Remove() -- We remove the target before giving the loot to make more space in the inventory
@@ -23,9 +24,9 @@ function PocketWatch_Dismantler:Dismantle(target, doer)
     for _, prefab in ipairs(loot) do
 		if prefab ~= "nightmarefuel" then
 			if receiver ~= nil then
-		        receiver:GiveItem(SpawnPrefab(prefab), nil, self.inst:GetPosition())
+		        receiver:GiveItem(SpawnPrefab(prefab), nil, pt)
 			else
-				target.components.lootdropper:SpawnLootPrefab(prefab)
+				target.components.lootdropper:SpawnLootPrefab(prefab, pt)
 			end
 		end
     end

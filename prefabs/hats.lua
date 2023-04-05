@@ -2399,6 +2399,7 @@ local function MakeHat(name)
         end
 
         inst.components.equippable.dapperness = TUNING.CRAZINESS_MED
+        inst.components.equippable.is_magic_dapperness = true
         inst.components.equippable:SetOnEquip(skeleton_onequip)
         inst.components.equippable:SetOnUnequip(skeleton_onunequip)
 

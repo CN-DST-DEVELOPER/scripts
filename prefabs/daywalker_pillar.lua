@@ -571,22 +571,57 @@ end
 
 --------------------------------------------------------------------------
 
+-- NOTES(JBK): In case this pillar is spawned into something with collision from an old save data load.
+-- We look for nearby blockers and then adjust the pillar location to be outside of it if it is also on land.
+local BLOCKERS_MUST_TAGS = {"blocker"}
+local BLOCKERS_RADIUS_CLEAR = 3.0
+local function ClearNearbyColliders(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, BLOCKERS_RADIUS_CLEAR, BLOCKERS_MUST_TAGS)
+    local ent = nil
+    for _, v in ipairs(ents) do
+        if v ~= inst then
+            ent = v
+            break
+        end
+    end
+    if ent == nil then
+        return
+    end
+
+    local ex, ey, ez = ent.Transform:GetWorldPosition()
+    local dx, dz = x - ex, z - ez
+    local d = math.sqrt(dx * dx + dz * dz) + 0.001
+    dx, dz = dx / d, dz / d
+    for theta = 0, PI2 do
+        local px, pz = x + BLOCKERS_RADIUS_CLEAR * dx, z + BLOCKERS_RADIUS_CLEAR * dz
+        if TheWorld.Map:IsAboveGroundAtPoint(px, 0, pz, false) then
+            inst.Transform:SetPosition(px, y, pz)
+            break
+        end
+    end
+end
+
+--------------------------------------------------------------------------
+
 local function GetStatus(inst)
 	return inst.level == "lowest" and "EXPOSED" or nil
 end
 
 local function OnLoadPostPass(inst)--, ents, data)
-	local prisoner = inst.components.entitytracker:GetEntity("prisoner")
-	if prisoner ~= nil then
-		inst:SetPrisoner(prisoner)
-	else
-		prisoner = inst.components.entitytracker:GetEntity("freed")
-		if prisoner ~= nil then
-			inst:ListenForEvent("onremove", inst._onremoveprisoner, prisoner)
-		else
-			inst:Remove()
-		end
-	end
+    local prisoner = inst.components.entitytracker:GetEntity("prisoner")
+    if prisoner ~= nil then
+        inst:SetPrisoner(prisoner)
+        return
+    end
+
+    prisoner = inst.components.entitytracker:GetEntity("freed")
+    if prisoner ~= nil then
+        inst:ListenForEvent("onremove", inst._onremoveprisoner, prisoner)
+        return
+    end
+
+    inst:Remove()
 end
 
 --------------------------------------------------------------------------
@@ -712,6 +747,9 @@ local function fn()
 	inst.IsResonating = IsResonating
 	inst.OnCollided = OnCollided
 	inst.OnLoadPostPass = OnLoadPostPass
+    inst.ClearNearbyColliders = ClearNearbyColliders
+
+    inst:DoTaskInTime((1 + math.random()) * 0.2, inst.ClearNearbyColliders)
 
 	return inst
 end
