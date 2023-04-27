@@ -1285,6 +1285,26 @@ TileManager.AddTile(
     }
 )
 
+TileManager.AddTile(
+    "RIFT_MOON",
+    TileRanges.LAND,
+    {ground_name = "Lunar Rift"},
+    {
+        name="meteor",
+        noise_texture="ground_noise_lunarrift",
+        runsound="turnoftides/movement/run_meteor",
+        walksound="turnoftides/movement/run_meteor",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        cannotbedug = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="Ground_noise_lunarrift_mini"
+    }
+)
+
 
 
 --noise tiles

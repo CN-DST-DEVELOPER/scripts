@@ -155,6 +155,8 @@ end
 local function nightmarefn()
     local inst = fn_common("knight_nightmare", "cavedweller")
 
+    inst:AddTag("shadow_aligned")
+
     if not TheWorld.ismastersim then
         return inst
     end

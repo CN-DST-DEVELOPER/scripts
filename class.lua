@@ -44,9 +44,6 @@ local function __newindex(t, k, v)
     end
 end
 
-local function __dummy()
-end
-
 local function onreadonly(t, v, old)
     assert(v == old, "Cannot change read only property")
 end
@@ -168,7 +165,7 @@ function Class(base, _ctor, props)
 		mt.__call = function(class_tbl, ...)
 			local obj = {}
 			if props ~= nil then
-				obj._ = { _ = { nil, __dummy } }
+				obj._ = {}
 				for k, v in pairs(props) do
 					obj._[k] = { nil, v }
 				end
@@ -184,7 +181,7 @@ function Class(base, _ctor, props)
 		mt.__call = function(class_tbl, ...)
 			local obj = {}
 			if props ~= nil then
-				obj._ = { _ = { nil, __dummy } }
+				obj._ = {}
 				for k, v in pairs(props) do
 					obj._[k] = { nil, v }
 				end

@@ -556,7 +556,7 @@ function SkillTreeBuilder:LearnSkill(skilltreeupdater, characterprefab)
 	    clickfx.inst:ListenForEvent("animover", function() clickfx:Kill() end)
 	    clickfx:SetPosition(pos.x,pos.y + 15)
 
-	    if  skilltreedefs.FN.SkillHasTags( self.selectedskill, "shadow", self.target) then
+	    if  skilltreedefs.FN.SkillHasTags( self.selectedskill, "shadow", self.target) or skilltreedefs.FN.SkillHasTags( self.selectedskill, "lunar", self.target) then
 	    	self.skilltreewidget:SpawnFavorOverlay(true)
 		end
 	    self:RefreshTree()

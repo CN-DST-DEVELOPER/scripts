@@ -183,6 +183,8 @@ end
 local function bishop_nightmare_fn()
     local inst = common_fn("bishop_nightmare", "cavedweller")
 
+    inst:AddTag("shadow_aligned")
+
     if not TheWorld.ismastersim then
         return inst
     end

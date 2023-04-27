@@ -344,6 +344,12 @@ global("ShardSaveGameIndex")
 ShardSaveGameIndex = nil
 global("CustomPresetManager")
 CustomPresetManager = nil
+global("HashesMessageState")
+HashesMessageState = nil
+global("LastUIRoot")
+LastUIRoot = nil
+global("IsIntegrityChecking")
+IsIntegrityChecking = nil
 require("globalvariableoverrides")
 
 --world setup

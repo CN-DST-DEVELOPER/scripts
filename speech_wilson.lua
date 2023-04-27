@@ -895,6 +895,8 @@ return {
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "I need a stronger tool!",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "That flash! Was that moonlight?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Go for the eyes!",
@@ -4622,7 +4624,7 @@ return {
         BOAT_ROTATOR_KIT = "I think I'll take it out for a spin.",
         BOAT_BUMPER_KELP = "It won't save the boat from everything, but it sure kelps.",
         BOAT_BUMPER_KELP_KIT = "A soon-to-be boat bumper.",
-        BOAT_BUMPER_SHELL = "It gives the boat a little shellf defence.",
+		BOAT_BUMPER_SHELL = "It gives the boat a little shellf defense.",
         BOAT_BUMPER_SHELL_KIT = "A soon-to-be boat bumper.",
         BOAT_CANNON = {
             GENERIC = "I should load it with something.",
@@ -4774,6 +4776,31 @@ return {
 		},
 		ARMORDREADSTONE = "Lightweight, sturdy, and snazzy!",
 		DREADSTONEHAT = "To keep my brilliant brain safe and sound.",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "All that science hiding inside... and I can't get to it!",
+        LUNARRIFT_CRYSTAL = "Crystallized illuminosity.",
+
+        LUNARTHRALL_PLANT = "It doesn't seem to care about personal space.",
+        LUNARTHRALL_PLANT_VINE_END = "It has a prickly disposition.",
+
+		LUNAR_GRAZER = "It must have come through that strange rift!",
+
+        PUREBRILLIANCE = "It's blinding me with science!",
+        LUNARPLANT_HUSK = "It's incredibly tough. I could use this!",
+
+		LUNAR_FORGE = "Just the place to make something very clever and scientific.",
+		LUNAR_FORGE_KIT = "A simple combination of elements!",
+
+		ARMOR_LUNARPLANT = "This armor doesn't leaf any room for improvement.",
+		LUNARPLANTHAT = "It makes me look even brighter than usual.",
+		BOMB_LUNARPLANT = "Botany and chemistry, working together.",
+		STAFF_LUNARPLANT = "Plant power!",
+		SWORD_LUNARPLANT = "It's hard not to make sound effects when I wave it around.",
+		PICKAXE_LUNARPLANT = "Smashing!",
+		SHOVEL_LUNARPLANT = "Has science gone too far?",
+
+        PUNCHINGBAG = "It comes with a finely calibrated ouch-o-meter.",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

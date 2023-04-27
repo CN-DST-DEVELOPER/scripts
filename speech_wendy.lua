@@ -889,6 +889,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "It's not strong enough... like me...",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "I can see a light...",
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -4616,7 +4618,7 @@ return{
         BOAT_ROTATOR_KIT = "I could build a rudder, I suppose...",
         BOAT_BUMPER_KELP = "It will only prolong the inevitable.",
         BOAT_BUMPER_KELP_KIT = "I suppose I should make myself useful.",
-        BOAT_BUMPER_SHELL = "It will only prolong the inevitable.",
+		BOAT_BUMPER_SHELL = "It will only prolong the inevitable.",
         BOAT_BUMPER_SHELL_KIT = "I suppose I should make myself useful.",
         BOAT_CANNON = {
             GENERIC = "It's empty inside...",
@@ -4768,6 +4770,31 @@ return{
 		},
 		ARMORDREADSTONE = "Let the darkness surround me.",
 		DREADSTONEHAT = "What's the point?",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "A gaping wound in the sky.",
+        LUNARRIFT_CRYSTAL = "Beautiful and fragile.",
+
+        LUNARTHRALL_PLANT = "Others must suffer for it to survive.",
+        LUNARTHRALL_PLANT_VINE_END = "It's lashing out.",
+
+		LUNAR_GRAZER = "Will you grant me the eternal slumber I seek?",
+
+        PUREBRILLIANCE = "It hurts my eyes.",
+        LUNARPLANT_HUSK = "It can't hurt anyone anymore.",
+
+		LUNAR_FORGE = "Will I be able to create anything of use?",
+		LUNAR_FORGE_KIT = "I should try to put these scattered pieces together...",
+
+		ARMOR_LUNARPLANT = "Shining armor, but no knight to save us.",
+		LUNARPLANTHAT = "It lets me hide my face from the world.",
+		BOMB_LUNARPLANT = "An instrument of destruction.",
+		STAFF_LUNARPLANT = "It will help me make sure no one gets too close.",
+		SWORD_LUNARPLANT = "A shining beacon of pain.",
+		PICKAXE_LUNARPLANT = "It makes the endless toil a bit easier.",
+		SHOVEL_LUNARPLANT = "Some things should stay buried... but not today.",
+
+        PUNCHINGBAG = "Some are simply made to suffer.",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

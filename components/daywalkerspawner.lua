@@ -219,7 +219,9 @@ function DayWalkerSpawner:WatchDaywalker(daywalker)
 end
 
 function DayWalkerSpawner:OnPostInit()
-    self:WatchWorldState("cycles", self.OnDayChange)
+    if TUNING.SPAWN_DAYWALKER then
+        self:WatchWorldState("cycles", self.OnDayChange)
+    end
 end
 
 function DayWalkerSpawner:OnSave()
@@ -239,11 +241,13 @@ function DayWalkerSpawner:OnSave()
 end
 
 function DayWalkerSpawner:OnLoad(data)
-    if data == nil then
+    if not data then
         return
     end
 
-    self.days_to_spawn = data.days_to_spawn or self.days_to_spawn
+    if data.days_to_spawn then
+        self.days_to_spawn = math.min(TUNING.DAYWALKER_RESPAWN_DAYS_COUNT, data.days_to_spawn)
+    end
     self.power_level = data.power_level or self.power_level
 end
 

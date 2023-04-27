@@ -140,7 +140,7 @@ local function shouldgotopillowforsleep(inst)
     if TheWorld.state["isday"] then
         local pillow = inst.components.entitytracker:GetEntity("floorpillow")
         if pillow and not pillow.components.inventoryitem and inst:GetDistanceSqToInst(pillow) > 0.25 then
-            inst.components.combat.target = nil
+			inst.components.combat:DropTarget()
             return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, pillow:GetPosition())
         end
     end

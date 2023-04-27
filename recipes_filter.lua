@@ -97,6 +97,9 @@ CRAFTING_FILTERS.CHARACTER.recipes =
 	"transmute_dreadstone",
 	"transmute_nightmarefuel",
 
+	"transmute_purebrilliance",
+	"transmute_moonglass_charged",
+
 	-- Willow
 	"lighter",
 	"bernie_inactive",
@@ -299,6 +302,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	----CELESTIAL----
 	"moonrockidol",
 	"multiplayer_portal_moonrock_constr_plans",
+	"lunar_forge_kit",
 
 	----MOON_ALTAR-----
 	"moonglassaxe",
@@ -308,6 +312,15 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"bathbomb",
 	"chesspiece_butterfly_sketch",
 	"chesspiece_moon_sketch",
+
+	----LUNAR_FORGE----
+	"armor_lunarplant",
+	"lunarplanthat",
+	"bomb_lunarplant",
+	"staff_lunarplant",
+	"sword_lunarplant",
+	"pickaxe_lunarplant",
+	"shovel_lunarplant",
 
 	-- Hermit Crab
 	"hermitshop_hermit_bundle_shells",
@@ -540,6 +553,8 @@ CRAFTING_FILTERS.TOOLS.recipes =
 	"goldenshovel",
 	"golden_farm_hoe",
 	"goldenpitchfork",
+	"pickaxe_lunarplant",
+	"shovel_lunarplant",
 	"trap",
 	"birdtrap",
 	"bugnet",
@@ -653,7 +668,9 @@ CRAFTING_FILTERS.WEAPONS.recipes =
 	"whip",
 	"nightstick",
 	"nightsword",
+	"sword_lunarplant",
 	"sleepbomb",
+	"bomb_lunarplant",
 	"blowdart_pipe",
 	"blowdart_fire",
 	"blowdart_yellow",
@@ -662,6 +679,7 @@ CRAFTING_FILTERS.WEAPONS.recipes =
 	"trident",
 	"firestaff",
 	"icestaff",
+	"staff_lunarplant",
 	"gunpowder",
 	"panflute",
 	"trap_teeth",
@@ -681,12 +699,14 @@ CRAFTING_FILTERS.ARMOUR.recipes =
 	"armordragonfly",
 	"armor_sanity",
 	"armormarble",
-	"armordreadstone",
-	"dreadstonehat",
 	"footballhat",
 	"wathgrithrhat",
 	"cookiecutterhat",
 	"beehat",
+	"armordreadstone",
+	"dreadstonehat",
+	"armor_lunarplant",
+	"lunarplanthat",
 }
 
 CRAFTING_FILTERS.CLOTHING.recipes =
@@ -958,6 +978,9 @@ CRAFTING_FILTERS.STRUCTURES.recipes =
 	"firesuppressor",
 	"moondial",
 	"archive_resonator_item",
+	"punchingbag",
+	"punchingbag_lunar",
+	"punchingbag_shadow",
 
 	"tent",
 	"portabletent_item",
@@ -1028,6 +1051,8 @@ CRAFTING_FILTERS.MAGIC.recipes =
 	"moondial",
 	"townportal",
 	"nightmarefuel",
+	"punchingbag_lunar",
+	"punchingbag_shadow",
 }
 
 CRAFTING_FILTERS.RIDING.recipes =

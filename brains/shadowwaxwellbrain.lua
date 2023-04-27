@@ -391,8 +391,10 @@ function ShadowWaxwellBrain:OnStart()
             -- Keep watch out for danger.
             avoid_explosions,
             avoid_danger,
+			WhileNode(function() return self.inst.sg:HasStateTag("phasing") or self.inst.sg:HasStateTag("recoil") end, "Busy",
+				ActionNode(function() end)),
             -- Do the work needed to be done.
-			WhileNode(function() return not self.inst.sg:HasStateTag("phasing") end, "Keep Working",
+			WhileNode(function() return not (self.inst.sg:HasStateTag("phasing") or self.inst.sg:HasStateTag("recoil")) end, "Keep Working",
 				DoAction(self.inst, function() return FindAnyEntityToWorkActionsOn(self.inst, pickupparams.ignorethese) end)),
 			-- This Leash is to stop chasing after leader with loot if they keep moving too far away.
 			Leash(self.inst, GetSpawn, pickupparams.range + 4, math.min(6, pickupparams.range)),

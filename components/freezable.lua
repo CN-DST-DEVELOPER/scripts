@@ -51,6 +51,8 @@ local Freezable = Class(function(self, inst)
     --self.extraresist = 0
     --self.diminishingtask = nil
 
+	--self.redirectfn = nil
+
     self.inst:ListenForEvent("attacked", OnAttacked)
     self.inst:AddTag("freezable")
 end)
@@ -126,7 +128,14 @@ function Freezable:GetDebugString()
         self.diminishingtask ~= nil and GetTaskRemaining(self.diminishingtask) or 0)
 end
 
+function Freezable:SetRedirectFn(fn)
+	self.redirectfn = fn
+end
+
 function Freezable:AddColdness(coldness, freezetime, nofreeze)
+	if self.redirectfn ~= nil and self.redirectfn(self.inst, coldness, freezetime, nofreeze) then
+		return
+	end
     self.coldness = math.max(0, self.coldness + coldness)
     --V2C: when removing coldness, don't update freeze states here
     if coldness > 0 then
@@ -154,6 +163,10 @@ function Freezable:StartWearingOff(wearofftime)
         self.wearofftask:Cancel()
     end
     self.wearofftask = self.inst:DoTaskInTime(self:ResolveWearOffTime(wearofftime or self.wearofftime), WearOff, self)
+end
+
+function Freezable:GetTimeToWearOff()
+	return self.wearofftask ~= nil and GetTaskRemaining(self.wearofftask) or nil
 end
 
 local function PushColour(inst, r, g, b, a)
@@ -256,7 +269,7 @@ function Freezable:Freeze(freezetime)
         end
 
         if self.state ~= prevState then
-            self.inst:PushEvent("freeze")
+			self.inst:PushEvent("freeze")
             if self.diminishingreturns then
                 self:SetExtraResist((self.extraresist or 0) + self.resistance * .25)
             end

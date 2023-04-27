@@ -886,6 +886,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "Tool is weak! Wolfgang needs something mightier!",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Oh! Wolfgang can see pretty light up ahead!",
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -1490,7 +1492,7 @@ return{
         TURF_MOSAIC_RED = "Step stones.",
         TURF_MOSAIC_BLUE = "Step stones.",
 
-        TURF_BEARD_RUG = "Is beard for the ground.",        
+        TURF_BEARD_RUG = "Is beard for the ground.",
 
 		POWCAKE = "Is made of nothings!",
         CAVE_ENTRANCE = "Even I am not that mighty.",
@@ -4613,7 +4615,7 @@ return{
         BOAT_ROTATOR_KIT = "Will make boat extra turny, yes?",
         BOAT_BUMPER_KELP = "Wolfgang feels better now.",
         BOAT_BUMPER_KELP_KIT = "Will keep boat safe.",
-        BOAT_BUMPER_SHELL = "Wolfgang feels better now.",
+		BOAT_BUMPER_SHELL = "Wolfgang feels better now.",
         BOAT_BUMPER_SHELL_KIT = "Will keep boat safe.",
         BOAT_CANNON = {
             GENERIC = "Cannon is empty, but still very scary looking!",
@@ -4765,6 +4767,31 @@ return{
 		},
 		ARMORDREADSTONE = "Wolfgang doesn't need scary rock armor!",
 		DREADSTONEHAT = "Ha! Wolfgang's head is already hard like a rock!",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Let Wolfgang in!",
+        LUNARRIFT_CRYSTAL = "Twinkly rocks.",
+
+        LUNARTHRALL_PLANT = "Eep! Is haunted plant!",
+        LUNARTHRALL_PLANT_VINE_END = "Ground is haunted too!",
+
+		LUNAR_GRAZER = "Funny blob makes Wolfgang's head feel tickly.",
+
+        PUREBRILLIANCE = "Little rocks are too bright!",
+        LUNARPLANT_HUSK = "Ah. Is not haunted anymore.",
+
+		LUNAR_FORGE = "Is there a mighty hammer for Wolfgang to swing?",
+		LUNAR_FORGE_KIT = "Wolfgang will find good spot for it!",
+
+		ARMOR_LUNARPLANT = "Tough, like Wolfgang!",
+		LUNARPLANTHAT = "Wolfgang feels very safe inside.",
+		BOMB_LUNARPLANT = "Boom!",
+		STAFF_LUNARPLANT = "Is planty magic stick.",
+		SWORD_LUNARPLANT = "Is sword of star-stuff.",
+		PICKAXE_LUNARPLANT = "Rocks will tremble before Wolfgang!",
+		SHOVEL_LUNARPLANT = "But is not shoe? Wolfgang is confused...",
+
+        PUNCHINGBAG = "Wolfgang will try to go easy on tiny punch man.",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

@@ -237,6 +237,12 @@ local lessdamagetaken_descriptions = {	-- Note: The data values should be named 
 	{ text = STRINGS.UI.SANDBOXMENU.SLIDEOFTEN, data = "more" },
 }
 
+local riftsenabled_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDENEVER, data = "never" },
+	{ text = STRINGS.UI.SANDBOXMENU.SLIDEDEFAULT, data = "default" },
+    { text = STRINGS.UI.SANDBOXMENU.ALWAYS, data = "always" },
+}
+
 local descriptions = {
 	frequency_descriptions = frequency_descriptions,
 	worldgen_frequency_descriptions = worldgen_frequency_descriptions,
@@ -264,6 +270,7 @@ local descriptions = {
 	resetime_descriptions = resetime_descriptions,
 	nonlethal_descriptions = nonlethal_descriptions,
 	darknessdamage_descriptions = darknessdamage_descriptions,
+    riftsenabled_descriptions = riftsenabled_descriptions,
 }
 
 local WORLDGEN_GROUP = {
@@ -423,6 +430,8 @@ local WORLDSETTINGS_GROUP = {
 			["klaus"] = {value = "default", image = "klaus.tex", world={"forest"}},
 			["spiderqueen"] = {value = "default", image = "spiderqueen.tex", world={"forest", "cave"}},
 			["eyeofterror"] = {value = "default", image = "eyeofterror.tex", world={"forest"}},
+
+			["daywalker"] = {value = "default", image = "daywalker.tex", world={"cave"}},
 			--NO_BOSS_TIME?
 		}
 	},
@@ -547,12 +556,15 @@ local WORLDSETTINGS_GROUP = {
 			["hounds"] = {value = "default", image = "houndattacks.tex", desc = frequency_descriptions, world={"forest"}, order = 1},
 			["winterhounds"] = {value = "default", image = "winterhounds.tex", desc = yesno_descriptions, world={"forest"}, order = 2},
 			["summerhounds"] = {value = "default", image = "summerhounds.tex", desc = yesno_descriptions, world={"forest"}, order = 3},
+            ["rifts_frequency"] = {value = "default", image = "lunarrift_portal.tex", desc = frequency_descriptions, world={"forest"}},
+            ["rifts_enabled"] = {value = "default", image = "lunarrift_portal.tex", desc = riftsenabled_descriptions, world={"forest"}},
 
 			["weather"] = {value = "default", image = "rain.tex", desc = frequency_descriptions, world={"forest", "cave"}},
 
 			["earthquakes"] = {value = "default", image = "earthquakes.tex", desc = frequency_descriptions, world={"cave"}},
 			["wormattacks"] = {value = "default", image = "wormattacks.tex", desc = frequency_descriptions, world={"cave"}},
 			["atriumgate"] = {value = "default", image = "atriumgate.tex", desc = atrium_descriptions, world={"cave"}},
+
 
 			--["disease_delay"] = {value = "default", image = "berrybush_diseased.tex", desc = disease_descriptions, world={"forest", "cave"}},
 		}

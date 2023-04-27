@@ -17,7 +17,7 @@ end
 function DamageTypeBonus:RemoveBonus(tag, src, key)
 	local modifiers = self.tags[tag]
 	if modifiers ~= nil then
-		modifiers:RemoveModifier(tag, src, key)
+		modifiers:RemoveModifier(src, key)
 		if modifiers:IsEmpty() then
 			self.tags[tag] = nil
 		end

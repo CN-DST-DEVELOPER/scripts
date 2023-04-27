@@ -4,6 +4,7 @@ local AreaAware = Class(function(self, inst)
     self.current_area_data = nil
     self.lastpt = Vector3(-9999,0,-9999)
 	self.updatedistsq = 16 --4*4
+	--self.watch_tiles = nil
 
     self.inst:StartUpdatingComponent(self)
 
@@ -57,6 +58,16 @@ function AreaAware:UpdatePosition(x, y, z)
 
 		self.inst:PushEvent("changearea", self.current_area_data)
 	end
+
+	if self.watch_tiles ~= nil then
+		local tile = TheWorld.Map:GetTileAtPoint(x, y, z)
+		for k, v in pairs(self.watch_tiles) do
+			if (tile == k) ~= v then
+				self.watch_tiles[k] = not v
+				self.inst:PushEvent("on_"..INVERTED_WORLD_TILES[k].."_tile", not v)
+			end
+		end
+	end
 end
 
 function AreaAware:OnUpdate(dt)
@@ -97,6 +108,21 @@ end
 
 function AreaAware:StartCheckingPosition(checkinterval)
     self.checkpositiontask = self.inst:DoPeriodicTask(checkinterval or self.checkinterval, function() self:UpdatePosition() end)
+end
+
+function AreaAware:StartWatchingTile(tile_id)
+	if self.watch_tiles == nil then
+		self.watch_tiles = { [tile_id] = false }
+	elseif self.watch_tiles[tile_id] == nil then
+		self.watch_tiles[tile_id] = false
+	end
+end
+
+function AreaAware:StopWatchingTile(tile_id)
+	self.watch_tiles[tile_id] = nil
+	if next(self.watch_tiles) == nil then
+		self.watch_tiles = nil
+	end
 end
 
 return AreaAware

@@ -69,7 +69,7 @@ local function KeepCombatFaceTargetFn(inst, target)
 
         local potential = FindClosestPlayerToInst(inst, RETURNTOFIGHT_DIST, true)
         if potential then
-            inst.components.combat.target = potential
+			inst.components.combat:SetTarget(potential)
             inst.staredown = nil
             return nil
         end

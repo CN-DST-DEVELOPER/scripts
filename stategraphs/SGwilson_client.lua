@@ -4138,8 +4138,16 @@ local states =
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("till_pre")
-            inst.AnimState:PushAnimation("till_lag", false)
+
+			local equippedTool = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if equippedTool ~= nil and equippedTool:HasTag("DIG_tool") then
+				inst.sg.statemem.fliptool = true
+				inst.AnimState:PlayAnimation("till2_pre")
+				inst.AnimState:PushAnimation("till2_lag", false)
+			else
+				inst.AnimState:PlayAnimation("till_pre")
+				inst.AnimState:PushAnimation("till_lag", false)
+			end
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -4151,14 +4159,14 @@ local states =
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.AnimState:PlayAnimation("till_pst")
+				inst.AnimState:PlayAnimation(inst.sg.statemem.fliptool and "till2_pst" or "till_pst")
                 inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.AnimState:PlayAnimation("till_pst")
+			inst.AnimState:PlayAnimation(inst.sg.statemem.fliptool and "till2_pst" or "till_pst")
             inst.sg:GoToState("idle", true)
         end,
     },

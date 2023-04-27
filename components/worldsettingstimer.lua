@@ -16,8 +16,8 @@ function WorldSettingsTimer:AddTimer(name, maxtime, enabled, callback, externall
         externallongupdate = externallongupdate
     }
 
-    if self.saved_timers[name] then
-        local saved = self.saved_timers[name]
+    local saved = self.saved_timers[name]
+    if saved then
         self:StartTimer(name, saved.timeleft * maxtime, saved.paused, saved.initial_time, saved.blocklongupdate)
         self.saved_timers[name] = nil
     end

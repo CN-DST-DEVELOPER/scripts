@@ -93,7 +93,7 @@ local function fn()
     effect:SetBlendMode(0, BLENDMODE.AlphaBlended)
     effect:EnableBloomPass(0, true)
     effect:SetSortOrder(0, 0)
-    effect:SetSortOffset(0, 0)
+	effect:SetSortOffset(0, -1)
     effect:SetKillOnEntityDeath(0, true)
     effect:SetFollowEmitter(0, true)
 

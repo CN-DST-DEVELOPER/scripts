@@ -814,6 +814,7 @@ function self:OnLoad(data)
 			if _alterguardian_defeated_count > 0 then
 				self.inst:DoTaskInTime(0,function()
 					TheWorld:PushEvent("ms_setmoonphasestyle", {style = "glassed_default"})
+                    TheWorld:PushEvent("ms_moonboss_was_defeated", {count = _alterguardian_defeated_count})
 				end)
 			end
 		end

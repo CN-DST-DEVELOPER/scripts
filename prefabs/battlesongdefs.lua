@@ -66,11 +66,13 @@ local song_defs =
         ONAPPLY = function(inst, target)
             if target.components.health then
                 inst:ListenForEvent("onattackother", function(attacker, data)
-                    if target:HasTag("battlesinger") then
-                        target.components.health:DoDelta(TUNING.BATTLESONG_HEALTHGAIN_DELTA_SINGER)
-                    else
-                        target.components.health:DoDelta(TUNING.BATTLESONG_HEALTHGAIN_DELTA)
-                    end
+					if not (data ~= nil and data.projectile ~= nil and data.projectile.components.projectile ~= nil and data.projectile.components.projectile:IsBounced()) then
+						if target:HasTag("battlesinger") then
+							target.components.health:DoDelta(TUNING.BATTLESONG_HEALTHGAIN_DELTA_SINGER)
+						else
+							target.components.health:DoDelta(TUNING.BATTLESONG_HEALTHGAIN_DELTA)
+						end
+					end
                 end, target)
             end
         end,
@@ -86,7 +88,9 @@ local song_defs =
         ONAPPLY = function(inst, target)
             if target.components.sanity then
                 inst:ListenForEvent("onattackother", function(attacker, data)
-                    target.components.sanity:DoDelta(TUNING.BATTLESONG_SANITYGAIN_DELTA)
+					if not (data ~= nil and data.projectile ~= nil and data.projectile.components.projectile ~= nil and data.projectile.components.projectile:IsBounced()) then
+						target.components.sanity:DoDelta(TUNING.BATTLESONG_SANITYGAIN_DELTA)
+					end
                 end, target)
             end
         end,

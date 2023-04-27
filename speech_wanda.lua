@@ -885,6 +885,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "Oh botheration! I'll need something stronger than this...",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Did anyone else feel that temporal burst?",
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -4612,7 +4614,7 @@ return{
         BOAT_ROTATOR_KIT = "I can't believe I didn't think of it sooner.",
         BOAT_BUMPER_KELP = "Anything to prolong the life of my boat.",
         BOAT_BUMPER_KELP_KIT = "It'll make me feel slightly safer at sea. Slightly.",
-        BOAT_BUMPER_SHELL = "Anything to prolong the life of my boat.",
+		BOAT_BUMPER_SHELL = "Anything to prolong the life of my boat.",
         BOAT_BUMPER_SHELL_KIT = "It'll make me feel slightly safer at sea. Slightly.",
         BOAT_CANNON = {
             GENERIC = "I could have sworn I loaded that cannon... maybe it hasn't happened yet.",
@@ -4764,6 +4766,31 @@ return{
 		},
 		ARMORDREADSTONE = "It should keep me well protected, at least.",
 		DREADSTONEHAT = "That stone turned out to be rather useful.",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Sloppy! Just look at those rough edges!",
+        LUNARRIFT_CRYSTAL = "Some kind of temporal residue, perhaps?",
+
+        LUNARTHRALL_PLANT = "This is going to be bothersome...",
+        LUNARTHRALL_PLANT_VINE_END = "Keep your vines to yourself!",
+
+		LUNAR_GRAZER = "Oh botheration, it pops back up as quickly as I can knock it down!",
+
+        PUREBRILLIANCE = "If only I could use it to power one of my watches... oh well.",
+        LUNARPLANT_HUSK = "What an interesting material, I should make use of it.",
+
+		LUNAR_FORGE = "Why waste time staring at it when I could be making something?",
+		LUNAR_FORGE_KIT = "Well, it's not going to build itself.",
+
+		ARMOR_LUNARPLANT = "Some extra protection is always welcome.",
+		LUNARPLANTHAT = "It's incredible that I can see anything while wearing it.",
+		BOMB_LUNARPLANT = "This should end a fight quickly.",
+		STAFF_LUNARPLANT = "I prefer keeping everything at a distance.",
+		SWORD_LUNARPLANT = "Oh, I quite like that one.",
+		PICKAXE_LUNARPLANT = "Unbelievably, it works rather well.",
+		SHOVEL_LUNARPLANT = "An odd, yet extremely efficient design.",
+
+        PUNCHINGBAG = "I could spare a moment to test my weapons... and let off some steam.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

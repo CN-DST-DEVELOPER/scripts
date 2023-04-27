@@ -9357,6 +9357,7 @@ local states =
         onexit = function(inst)
             if inst.components.grogginess then
                 inst.components.grogginess.knockedout = false
+				inst.components.grogginess:CapToResistance()
             end
             if inst.sg:HasStateTag("dismounting") then
                 --Interrupted
@@ -10658,7 +10659,7 @@ local states =
 
     State{
         name = "knockback",
-        tags = { "busy", "nopredict", "nomorph", "nodangle" },
+		tags = { "busy", "nopredict", "nomorph", "nodangle", "nointerrupt", "jumping" },
 
         onenter = function(inst, data)
             ClearStatusAilments(inst)
@@ -10667,7 +10668,7 @@ local states =
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
-            inst.AnimState:PlayAnimation("bucked")
+			inst.AnimState:PlayAnimation("knockback_high")
 
             if data ~= nil then
                 if data.disablecollision then
@@ -10777,6 +10778,8 @@ local states =
             end),
 			FrameEvent(10, function(inst)
 				inst.sg.statemem.landed = true
+				inst.sg:RemoveStateTag("nointerrupt")
+				inst.sg:RemoveStateTag("jumping")
 			end),
         },
 
@@ -10831,7 +10834,7 @@ local states =
 
     State{
         name = "knockbacklanded",
-        tags = { "knockback", "busy", "nopredict", "nomorph" },
+		tags = { "knockback", "busy", "nopredict", "nomorph", "nointerrupt", "jumping" },
 
         onenter = function(inst, data)
             ClearStatusAilments(inst)
@@ -10949,6 +10952,8 @@ local states =
             end),
 			FrameEvent(10, function(inst)
 				inst.sg.statemem.landed = true
+				inst.sg:RemoveStateTag("nointerrupt")
+				inst.sg:RemoveStateTag("jumping")
 			end),
         },
 
@@ -14685,7 +14690,13 @@ local states =
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("till_pre")
+			local equippedTool = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if equippedTool ~= nil and equippedTool.components.tool ~= nil and equippedTool.components.tool:CanDoAction(ACTIONS.DIG) then
+				--upside down tool build
+				inst.AnimState:PlayAnimation("till2_pre")
+			else
+				inst.AnimState:PlayAnimation("till_pre")
+			end
         end,
 
         events =
@@ -14704,7 +14715,14 @@ local states =
         tags = { "doing", "busy" },
 
         onenter = function(inst)
-            inst.AnimState:PlayAnimation("till_loop")
+			local equippedTool = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if equippedTool ~= nil and equippedTool.components.tool ~= nil and equippedTool.components.tool:CanDoAction(ACTIONS.DIG) then
+				--upside down tool build
+				inst.sg.statemem.fliptool = true
+				inst.AnimState:PlayAnimation("till2_loop")
+			else
+				inst.AnimState:PlayAnimation("till_loop")
+			end
         end,
 
         timeline =
@@ -14724,7 +14742,7 @@ local states =
             EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
             EventHandler("animover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.AnimState:PlayAnimation("till_pst")
+					inst.AnimState:PlayAnimation(inst.sg.statemem.fliptool and "till2_pst" or "till_pst")
                     inst.sg:GoToState("idle", true)
                 end
             end),

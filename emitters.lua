@@ -108,6 +108,20 @@ function CreateDiscEmitter( radius )
 	end
 end
 
+function CreateCircleEmitter( radius )
+	local sqrt = math.sqrt
+	local rand = math.random
+	local sin = math.sin
+	local cos = math.cos
+
+    return function()
+        local point_rand = radius * sqrt(rand())
+        local angle_rand = PI2 * rand()
+        return point_rand * cos(angle_rand),
+            point_rand * sin(angle_rand)
+    end
+end
+
 function CreateRingEmitter( radius )
 	local sqrt = math.sqrt
 

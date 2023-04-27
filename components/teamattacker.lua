@@ -73,7 +73,7 @@ function TeamAttacker:OnUpdate(dt)
 
 	if self.teamleader and self.teamleader:CanAttack() then --did you find a team?
 		if self.orders == ORDERS.HOLD or self.orders == nil then --if you don't have anything to do.. look menacing
-			self.inst.components.combat.target = nil
+			self.inst.components.combat:DropTarget()
 			if self.formationpos then
 				local destpos = self.formationpos
         		local mypos = Point(self.inst.Transform:GetWorldPosition())
@@ -89,7 +89,7 @@ function TeamAttacker:OnUpdate(dt)
 
 			end
 		elseif self.orders == ORDERS.WARN then
-			self.inst.components.combat.target = nil
+			self.inst.components.combat:DropTarget()
 			if self.formationpos then
 				local destpos = self.formationpos
         		local mypos = Point(self.inst.Transform:GetWorldPosition())

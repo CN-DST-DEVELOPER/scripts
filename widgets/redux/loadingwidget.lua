@@ -24,6 +24,28 @@ local function GetRandomIndex(session_random_index, maxval)
     end
 end
 
+-- NOTES(JBK): These should hide any decorations that are not apart of the image to make their contents stand out more.
+-- Keep loading text and move it around if needed.
+local IsSpecial = {
+    ["loading_dst10_signed.tex"] = {loading_x = 170 + 50, loading_y = RESOLUTION_Y - 40 + 10,},
+}
+local function IsBGLoadingSpecial(atlas, tex)
+    return IsSpecial[tex]
+end
+local function UpdateSpecialLoadingTip(self)
+    if self._specialbg then
+        if self.loading_tip_root then
+            self.loading_tip_root:Hide()
+        end
+        if self.loading_tip_text then
+            self.loading_tip_text:Hide()
+        end
+        if self.loading_tip_icon then
+            self.loading_tip_icon:Hide()
+        end
+    end
+end
+
 local LoadingWidget = Class(Widget, function(self, session_random_index)
     Widget._ctor(self, "LoadingWidget")
 
@@ -44,6 +66,7 @@ local LoadingWidget = Class(Widget, function(self, session_random_index)
     self.selected_key = image_keys[self.image_random or -1]
     if self.selected_key then
         self.bg = self:AddChild(TEMPLATES.LoaderBackground(self.selected_key))
+        self._specialbg = IsBGLoadingSpecial(GetLoaderAtlasAndTex(self.selected_key))
     else
         -- Initial startup or user didn't select any backgrounds. Use the
         -- legacy style.
@@ -59,6 +82,7 @@ local LoadingWidget = Class(Widget, function(self, session_random_index)
             self.bg = self:AddChild(TEMPLATES.old.BackgroundSpiral())
         end
         self.legacy_fg = self.root_classic:AddChild(Image(selected_key.atlas, selected_key.tex))
+        self._specialbg = IsBGLoadingSpecial(selected_key.atlas, selected_key.tex)
         self.legacy_fg:SetScaleMode(SCALEMODE_FILLSCREEN)
         self.legacy_fg:SetVAnchor(ANCHOR_MIDDLE)
         self.legacy_fg:SetHAnchor(ANCHOR_MIDDLE)
@@ -105,14 +129,19 @@ local LoadingWidget = Class(Widget, function(self, session_random_index)
         self.loading_tip_text:EnableWordWrap(true)
         self.tipcycledelay = TIP_CYCLE_DELAY
     end
+    UpdateSpecialLoadingTip(self)
 
     -- Loading text
     self.loading_widget = self:AddChild(ShadowedText(HEADERFONT, 35))
 
-    if loadingtipsoption ~= LOADING_SCREEN_TIP_OPTIONS.NONE then
-        self.loading_widget:SetPosition(170, RESOLUTION_Y - 40)
+    if self._specialbg then
+        self.loading_widget:SetPosition(self._specialbg.loading_x, self._specialbg.loading_y)
     else
-        self.loading_widget:SetPosition(170, 60)
+        if loadingtipsoption ~= LOADING_SCREEN_TIP_OPTIONS.NONE then
+            self.loading_widget:SetPosition(170, RESOLUTION_Y - 40)
+        else
+            self.loading_widget:SetPosition(170, 60)
+        end
     end
     self.loading_widget:SetRegionSize(250, 44)
     self.loading_widget:SetHAlign(ANCHOR_LEFT)
@@ -134,12 +163,15 @@ function LoadingWidget:RepickImage()
                 local selected_key = legacy_images[-self.image_random]
                 self.legacy_fg:SetTexture(selected_key.atlas, selected_key.tex)
                 self.selected_key = random_idx
+                self._specialbg = IsBGLoadingSpecial(selected_key.atlas, selected_key.tex)
             end
         elseif self.image_random > 0 and Settings.loading_screen_keys ~= nil and #Settings.loading_screen_keys > 1 then
             local random_idx = math.random(#Settings.loading_screen_keys - 1)
             self.image_random = random_idx == self.image_random and #Settings.loading_screen_keys or random_idx
             self.selected_key = Settings.loading_screen_keys[self.image_random]
-            self.bg:SetTexture(GetLoaderAtlasAndTex(self.selected_key))
+            local atlas, tex = GetLoaderAtlasAndTex(self.selected_key)
+            self.bg:SetTexture(atlas, tex)
+            self._specialbg = IsBGLoadingSpecial(atlas, tex)
         end
     end
 end
@@ -158,7 +190,7 @@ function LoadingWidget:SetEnabled(enabled)
 
             -- Refresh loading tip
             if self.loading_tip_text ~= nil and self.loading_tip_icon ~= nil then
-                local loadingtip = TheLoadingTips:PickLoadingTip(self.selected_key)
+                local loadingtip = not self._specialbg and TheLoadingTips:PickLoadingTip(self.selected_key) or nil
                 if loadingtip then
                     self.loading_tip_text:SetString(loadingtip.text)
                     self.loading_tip_icon:SetTexture(loadingtip.atlas, loadingtip.icon)
@@ -248,7 +280,7 @@ function LoadingWidget:OnUpdate(dt)
     self.forceShowNextFrame = false
 
     -- Debug stuff for testing tip layouts
-    if BRANCH == "dev" and Profile:GetLoadingTipsOption() ~= LOADING_SCREEN_TIP_OPTIONS.NONE then
+    if BRANCH == "dev" and not self._specialbg and Profile:GetLoadingTipsOption() ~= LOADING_SCREEN_TIP_OPTIONS.NONE then
 
         self.tipcycledelay = self.tipcycledelay - dt
 

@@ -108,6 +108,12 @@ local function update_hit_recovery_delay(inst)
 end
 
 CommonHandlers.UpdateHitRecoveryDelay = update_hit_recovery_delay
+
+CommonHandlers.ResetHitRecoveryDelay = function(inst)
+	inst._last_hitreact_time = nil
+	inst._last_hitreact_count = nil
+end
+
 local function onattacked(inst, data, hitreact_cooldown, max_hitreacts, skip_cooldown_fn)
     if inst.components.health ~= nil and not inst.components.health:IsDead()
 		and not hit_recovery_delay(inst, hitreact_cooldown, max_hitreacts, skip_cooldown_fn)
@@ -988,6 +994,7 @@ local function onunfreeze(inst)
 end
 
 local function onthaw(inst)
+	inst.sg.statemem.thawing = true
     inst.sg:GoToState("thaw")
 end
 
@@ -1020,7 +1027,9 @@ local function onenterfrozen(inst)
 end
 
 local function onexitfrozen(inst)
-    inst.AnimState:ClearOverrideSymbol("swap_frozen")
+	if not inst.sg.statemem.thawing then
+		inst.AnimState:ClearOverrideSymbol("swap_frozen")
+	end
 end
 
 local function onenterthawpre(inst)
@@ -1875,6 +1884,8 @@ CommonStates.AddSinkAndWashAsoreStates = function(states, anims, timelines, fns)
         end,
 	})
 end
+
+CommonStates.AddSinkAndWashAshoreStates = CommonStates.AddSinkAndWashAsoreStates
 
 --------------------------------------------------------------------------
 

@@ -83,21 +83,21 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
 		inst.AnimState:SetBuild(build or bank)
 		inst.AnimState:PlayAnimation(anim or "idle")
 
-		if floatable_data ~= nil then
+		if floatable_data then
 		    MakeInventoryFloatable(inst, floatable_data.size, floatable_data.y_offset, floatable_data.scale)
 		end
 
-		if tags ~= nil then
+		if tags then
 			for _, tag in pairs(tags) do
 				inst:AddTag(tag)
 			end
         end
         inst:AddTag("deploykititem")
 
-        if deployable_data.custom_candeploy_fn ~= nil then
+        if deployable_data.custom_candeploy_fn then
             inst._custom_candeploy_fn = deployable_data.custom_candeploy_fn
         end
-        if deployable_data.usedeployspacingasoffset ~= nil then
+        if deployable_data.usedeployspacingasoffset then
             inst:AddTag("usedeployspacingasoffset")
         end
 
@@ -107,7 +107,7 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
 			return inst
 		end
 
-		if burnable ~= nil then
+		if burnable then
 			MakeSmallBurnable(inst)
 			MakeSmallPropagator(inst)
 		end
@@ -115,11 +115,11 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
 		inst:AddComponent("inspectable")
 
 		inst:AddComponent("inventoryitem")
-		if floatable_data == nil then
+		if not floatable_data then
 			inst.components.inventoryitem:SetSinks(true)
 		end
 
-		if stack_size ~= nil then
+		if stack_size then
 			inst:AddComponent("stackable")
 			inst.components.stackable.maxsize = stack_size
 		end
@@ -127,19 +127,19 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
 		inst._prefab_to_deploy = prefab_to_deploy
 		inst:AddComponent("deployable")
 		inst.components.deployable.ondeploy = deployablekititem_ondeploy
-        if deployable_data.deploymode ~= nil then
+        if deployable_data.deploymode then
             inst.components.deployable:SetDeployMode(deployable_data.deploymode)
         end
-        if deployable_data.deployspacing ~= nil then
+        if deployable_data.deployspacing then
 			inst.components.deployable:SetDeploySpacing(deployable_data.deployspacing)
 		end
 
-		if burnable.fuelvalue ~= nil then
+		if burnable and burnable.fuelvalue then
 			inst:AddComponent("fuel")
 			inst.components.fuel.fuelvalue = burnable.fuelvalue
 		end
 
-        if deployable_data.master_postinit ~= nil then
+        if deployable_data.master_postinit then
             deployable_data.master_postinit(inst)
         end
 

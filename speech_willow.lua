@@ -892,6 +892,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "Ugh. I'm gonna need something way stronger than this...",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Hey, what was that weird light?",
+
 	BATTLECRY =
 	{
 		GENERIC = "It's you or me!",
@@ -4619,7 +4621,7 @@ return{
         BOAT_ROTATOR_KIT = "Fiiiine, I'll put the stupid rudder on the stupid boat.",
         BOAT_BUMPER_KELP = "Ewww, it's slimy!",
         BOAT_BUMPER_KELP_KIT = "I guess building some bumpers is better than sinking.",
-        BOAT_BUMPER_SHELL = "Uh-huh, nothing sturdier than seashells.",
+		BOAT_BUMPER_SHELL = "Uh-huh, nothing sturdier than seashells.",
         BOAT_BUMPER_SHELL_KIT = "I guess building some bumpers is better than sinking.",
         BOAT_CANNON = {
             GENERIC = "It isn't loaded? Booooring.",
@@ -4771,6 +4773,31 @@ return{
 		},
 		ARMORDREADSTONE = "It's fine I guess.",
 		DREADSTONEHAT = "Do I have to wear it? On my head??",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Uh... is that supposed to be here?",
+        LUNARRIFT_CRYSTAL = "I like the way it glitters.",
+
+        LUNARTHRALL_PLANT = "Ew, that thing's creepy!",
+        LUNARTHRALL_PLANT_VINE_END = "It's asking for a taste of my lighter.",
+
+		LUNAR_GRAZER = "Ew, it's dripping its weird sleep gunk everywhere!",
+
+        PUREBRILLIANCE = "It's pretty, but it'll never beat fire.",
+        LUNARPLANT_HUSK = "Can I burn it now?",
+
+		LUNAR_FORGE = "What gives? That little fire doesn't even feel warm!",
+		LUNAR_FORGE_KIT = "Right. Now I guess I have to build it.",
+
+		ARMOR_LUNARPLANT = "I make it look good.",
+		LUNARPLANTHAT = "How am I supposed to see in that thing?",
+		BOMB_LUNARPLANT = "Heh. Think fast!",
+		STAFF_LUNARPLANT = "This magic stuff is easy!",
+		SWORD_LUNARPLANT = "It's okay, but now I really want a fire sword.",
+		PICKAXE_LUNARPLANT = "The dumb plant still gets to hit stuff. It's what it would've wanted.",
+		SHOVEL_LUNARPLANT = "Alright, time to find some stuff to dig up!",
+
+        PUNCHINGBAG = "Think fast, dummy!",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

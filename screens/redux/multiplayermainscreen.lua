@@ -330,6 +330,15 @@ local function MakeWilsonBanner(self, banner_root, anim)
     anim:SetScale(.667)
 end
 
+local function MakeLunarRiftBanner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_lunarrifts")
+    anim:GetAnimState():SetBank("dst_menu_lunarrifts")
+    anim:GetAnimState():PlayAnimation("loop", true)
+    anim:SetScale(.667)
+end
+
+
+
 local function MakeDefaultBanner(self, banner_root, anim)
 	local banner_height = 350
 	banner_root:SetPosition(0, RESOLUTION_Y / 2 - banner_height / 2 + 1 ) -- positioning for when we had the top banner art
@@ -380,7 +389,7 @@ function MakeBanner(self)
 	if IS_BETA then
 		title_str = STRINGS.UI.MAINSCREEN.MAINBANNER_BETA_TITLE
         
-        MakeWilsonBanner(self, banner_root, anim)
+        MakeLunarRiftBanner(self, banner_root, anim)
 
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
         MakeYOTRBanner(self, banner_root, anim)
@@ -394,7 +403,7 @@ function MakeBanner(self)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
         MakeCawnivalBanner(self, banner_root, anim)
 	else
-		MakeWilsonBanner(self, banner_root, anim)
+		MakeLunarRiftBanner(self, banner_root, anim)
         --MakeDramaBanner(self, banner_root, anim)
         --MakeDefaultBanner(self, banner_root, anim)
         --MakePiratesBanner(self, banner_root, anim)

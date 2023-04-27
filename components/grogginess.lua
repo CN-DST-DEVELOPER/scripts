@@ -201,6 +201,10 @@ function Grogginess:ResetGrogginess()
     end
 end
 
+function Grogginess:CapToResistance()
+	self.grog_amount = math.min(self.grog_amount, self.resistance)
+end
+
 function Grogginess:ExtendKnockout(knockoutduration)
     if self:IsKnockedOut() then
         self.knockoutduration = knockoutduration

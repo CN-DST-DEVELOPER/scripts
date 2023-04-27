@@ -8,12 +8,15 @@ end)
 
 function Bloomer:OnRemoveFromEntity()
     for i, v in ipairs(self.bloomstack) do
-        if type(v.source) == "table" then
+		if EntityScript.is_instance(v.source) then
             self.inst:RemoveEventCallback("onremove", self._onremovesource, v.source)
         end
     end
     for k, v in pairs(self.children) do
         self.inst:RemoveEventCallback("onremove", v, k)
+		if k.components.bloomer ~= nil then
+			k.components.bloomer:PopBloom(self.inst)
+		end
     end
 end
 
@@ -23,10 +26,16 @@ function Bloomer:AttachChild(child)
             self.children[child] = nil
         end
         self.inst:ListenForEvent("onremove", self.children[child], child)
-        local fx = self:GetCurrentFX()
-        if fx ~= nil then
-            child.AnimState:SetBloomEffectHandle(fx)
-        else
+		local fx, priority = self:GetCurrentFxAndPriority()
+		if fx ~= nil then
+			if child.components.bloomer ~= nil then
+				child.components.bloomer:PushBloom(self.inst, fx, priority)
+			else
+				child.AnimState:SetBloomEffectHandle(fx)
+			end
+		elseif child.components.bloomer ~= nil then
+			child.components.bloomer:PopBloom(self.inst)
+		else
             child.AnimState:ClearBloomEffectHandle()
         end
     end
@@ -36,6 +45,9 @@ function Bloomer:DetachChild(child)
     if self.children[child] ~= nil then
         self.inst:RemoveEventCallback("onremove", self.children[child], child)
         self.children[child] = nil
+		if child.components.bloomer ~= nil then
+			child.components.bloomer:PopBloom(self.inst)
+		end
     end
 end
 
@@ -43,23 +55,38 @@ function Bloomer:GetCurrentFX()
     return #self.bloomstack > 0 and self.bloomstack[#self.bloomstack].fx or nil
 end
 
-function Bloomer:OnSetBloomEffectHandle(fx)
+function Bloomer:GetCurrentFxAndPriority()
+	if #self.bloomstack > 0 then
+		local bloom = self.bloomstack[#self.bloomstack]
+		return bloom.fx, bloom.priority
+	end
+end
+
+function Bloomer:OnSetBloomEffectHandle(fx, priority)
     self.inst.AnimState:SetBloomEffectHandle(fx)
     for k, v in pairs(self.children) do
-        k.AnimState:SetBloomEffectHandle(fx)
+		if k.components.bloomer ~= nil then
+			k.components.bloomer:PushBloom(self.inst, fx, priority)
+		else
+			k.AnimState:SetBloomEffectHandle(fx)
+		end
     end
 end
 
 function Bloomer:OnClearBloomEffectHandle()
     self.inst.AnimState:ClearBloomEffectHandle()
     for k, v in pairs(self.children) do
-        k.AnimState:ClearBloomEffectHandle()
+		if k.components.bloomer ~= nil then
+			k.components.bloomer:PopBloom(self.inst)
+		else
+			k.AnimState:ClearBloomEffectHandle()
+		end
     end
 end
 
 function Bloomer:PushBloom(source, fx, priority)
     if source ~= nil and fx ~= nil then
-        local oldfx = self:GetCurrentFX()
+		local oldfx, oldpriority = self:GetCurrentFxAndPriority()
         local bloom = nil
 
         priority = priority or 0
@@ -76,7 +103,7 @@ function Bloomer:PushBloom(source, fx, priority)
 
         if bloom == nil then
             bloom = { source = source, fx = fx, priority = priority }
-            if type(source) == "table" then
+			if EntityScript.is_instance(source) then
                 self.inst:ListenForEvent("onremove", self._onremovesource, source)
             end
         end
@@ -84,17 +111,17 @@ function Bloomer:PushBloom(source, fx, priority)
         for i, v in ipairs(self.bloomstack) do
             if v.priority > priority then
                 table.insert(self.bloomstack, i, bloom)
-                local newfx = self:GetCurrentFX()
-                if newfx ~= oldfx then
-                    self:OnSetBloomEffectHandle(newfx)
+				local newfx, newpriority = self:GetCurrentFxAndPriority()
+				if newfx ~= oldfx or newpriority ~= oldpriority then
+					self:OnSetBloomEffectHandle(newfx, newpriority)
                 end
                 return
             end
         end
 
         table.insert(self.bloomstack, bloom)
-        if fx ~= oldfx then
-            self:OnSetBloomEffectHandle(fx)
+		if fx ~= oldfx or priority ~= oldpriority then
+			self:OnSetBloomEffectHandle(fx, priority)
         end
     end
 end
@@ -103,16 +130,16 @@ function Bloomer:PopBloom(source)
     if source ~= nil then
         for i, v in ipairs(self.bloomstack) do
             if v.source == source then
-                if type(source) == "table" then
+				if EntityScript.is_instance(source) then
                     self.inst:RemoveEventCallback("onremove", self._onremovesource, source)
                 end
-                local oldfx = self:GetCurrentFX()
+				local oldfx, oldpriority = self:GetCurrentFxAndPriority()
                 table.remove(self.bloomstack, i)
-                local newfx = self:GetCurrentFX()
+				local newfx, newpriority = self:GetCurrentFxAndPriority()
                 if newfx == nil then
                     self:OnClearBloomEffectHandle()
-                elseif newfx ~= oldfx then
-                    self:OnSetBloomEffectHandle(newfx)
+				elseif newfx ~= oldfx or newpriority ~= oldpriority then
+					self:OnSetBloomEffectHandle(newfx, newpriority)
                 end
                 return
             end

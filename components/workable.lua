@@ -33,6 +33,8 @@ local Workable = Class(function(self, inst)
     self.action = ACTIONS.CHOP
     self.savestate = false
     self.workable = true
+	--self.workmultiplierfn = nil
+	--self.shouldrecoilfn = nil
 end,
 nil,
 {
@@ -115,10 +117,16 @@ end
 
 function Workable:WorkedBy(worker, numworks)
     numworks = numworks or 1
+	if self.workmultiplierfn ~= nil then
+		numworks = numworks * (self.workmultiplierfn(self.inst, worker, numworks) or 1)
+	end
 	if self.workleft <= 1 then -- if there is less that one full work remaining, then just finish it. This is to handle the case where objects are set to only one work and not planned to handled something like 0.5 numworks
 		self.workleft = 0
 	else
 	    self.workleft = self.workleft - numworks
+        if self.workleft < 0.01 then -- NOTES(JBK): Floating points are possible with work efficiency modifiers so cut out the epsilon.
+            self.workleft = 0
+        end
 	end
     self.lastworktime = GetTime()
 
@@ -153,6 +161,25 @@ end
 
 function Workable:SetOnFinishCallback(fn)
     self.onfinish = fn
+end
+
+function Workable:SetWorkMultiplierFn(fn)
+	self.workmultiplierfn = fn
+end
+
+function Workable:SetShouldRecoilFn(fn)
+	self.shouldrecoilfn = fn
+end
+
+function Workable:ShouldRecoil(worker, tool, numworks)
+	if self.shouldrecoilfn ~= nil then
+		local recoil, remainingworks = self.shouldrecoilfn(self.inst, worker, tool, numworks)
+		if recoil then
+			return true, remainingworks or 0
+		end
+		return false, remainingworks or numworks
+	end
+	return false, numworks
 end
 
 return Workable

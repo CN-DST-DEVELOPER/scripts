@@ -54,7 +54,9 @@ end
 
 function AmphibiousCreature:OnEnterOcean()
 	if not self.in_water then
-		self.inst.AnimState:SetBank(self.ocean_bank)
+		if self.ocean_bank then
+			self.inst.AnimState:SetBank(self.ocean_bank)
+		end
 		self.in_water = true
 		self.inst:AddTag("swimming")
 		if self.enterwaterfn then
@@ -65,7 +67,9 @@ end
 
 function AmphibiousCreature:OnExitOcean()
 	if self.in_water then
-		self.inst.AnimState:SetBank(self.land_bank)
+		if self.land_bank then
+			self.inst.AnimState:SetBank(self.land_bank)
+		end
 		self.in_water = false
 		self.inst:RemoveTag("swimming")
 		if self.exitwaterfn then

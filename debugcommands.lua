@@ -1,4 +1,5 @@
 function d_spawnlist(list, spacing, fn)
+    local created = {}
 	spacing = spacing or 2
 	local num_wide = math.ceil(math.sqrt(#list))
 
@@ -19,6 +20,7 @@ function d_spawnlist(list, spacing, fn)
 				end
 				local inst = SpawnPrefab(prefab)
 				if inst ~= nil then
+                    table.insert(created, inst)
 					inst.Transform:SetPosition((pt + Vector3(x*spacing, 0, y*spacing)):Get())
 					if count > 1 then
 						if inst.components.stackable then
@@ -35,6 +37,7 @@ function d_spawnlist(list, spacing, fn)
 			end
 		end
 	end
+    return created
 end
 
 function d_playeritems()
@@ -137,6 +140,67 @@ function d_spiders()
     c_give("spider_water")
 end
 
+function d_particles()
+    local emittingfx = {
+        "cane_candy_fx",
+        "cane_harlequin_fx",
+        "cane_victorian_fx",
+        "eyeflame",
+        "lighterfire_haunteddoll",
+        "lighterfire",
+        "lunar_goop_cloud_fx",
+        "thurible_smoke",
+        "torchfire",
+        "torchfire_barber",
+        "torchfire_carrat",
+        "torchfire_nautical",
+        "torchfire_pillar",
+        "torchfire_pronged",
+        "torchfire_rag",
+        "torchfire_shadow",
+        "torchfire_spooky",
+        "torchfire_yotrpillowfight",
+        -- Particles below need special handling to function.
+        --"frostbreath",
+        --"lunarrift_crystal_spawn_fx",
+        --"nightsword_curve_fx",
+        --"nightsword_lightsbane_fx",
+        --"nightsword_sharp_fx",
+        --"nightsword_wizard_fx",
+        --"reviver_cupid_beat_fx",
+        --"reviver_cupid_glow_fx",
+    }
+    local overridespeed = { -- Some particles want speed to emit.
+        cane_harlequin_fx = PI2 * FRAMES,
+        cane_victorian_fx = PI2 * FRAMES,
+    }
+    local created = d_spawnlist(emittingfx, 6)
+    local r = 1.5
+    for _, v in ipairs(created) do
+        v._d_pos = v:GetPosition()
+        v._d_theta = 0
+        v.persists = false
+
+        local labeler = c_spawn("razor")
+        labeler.Transform:SetPosition(v._d_pos:Get())
+        labeler.persists = false
+        labeler.AnimState:SetScale(0, 0)
+
+        local label = labeler.entity:AddLabel()
+        label:SetFontSize(12)
+        label:SetFont(BODYTEXTFONT)
+        label:SetWorldOffset(0, 0, 0)
+        label:SetText(v.prefab)
+        label:SetColour(1, 1, 1)
+        label:Enable(true)
+
+        v:DoPeriodicTask(FRAMES, function()
+            v._d_theta = v._d_theta + (overridespeed[v.prefab] or PI * 0.5 * FRAMES)
+            v.Transform:SetPosition(v._d_pos.x + r * math.cos(v._d_theta), 0, v._d_pos.z + r * math.sin(v._d_theta))
+        end)
+    end
+end
+
 function d_decodedata(path)
     print("DECODING",path)
     TheSim:GetPersistentString(path, function(load_success, str)
@@ -149,6 +213,12 @@ function d_decodedata(path)
             print("ERROR LOADING FILE! (wrong path?)")
         end
     end)
+end
+
+function d_spawnrift(...)
+    if TheWorld and TheWorld.components.riftspawner then
+        TheWorld.components.riftspawner:Debug_SpawnRift(...)
+    end
 end
 
 function d_allsongs()
@@ -1515,4 +1585,157 @@ function d_daywalker(chain)
 	end
 
 	c_select(daywalker)
+end
+
+function d_moonplant()
+    if c_sel() then
+        TheWorld.components.lunarthrall_plantspawner:SpawnPlant(c_sel())
+    end
+end
+
+function d_punchingbags()
+    local punchingbag_list = {"punchingbag", "punchingbag_lunar", "punchingbag_shadow"}
+    d_spawnlist(punchingbag_list, 3.0)
+end
+
+local skiplist = {}
+skiplist["blossom_hit_fx"] = true
+skiplist["quagmire_parkspike"] = true
+skiplist["quagmire_spotspice_shrub"] = true
+skiplist["lavaarena_elemental"] = true
+skiplist["lavaarena"] = true
+skiplist["fireball_hit_fx"] = true
+skiplist["quagmire_coin_fx"] = true
+skiplist["lavaarena_spectator"] = true
+skiplist["global"] = true
+skiplist["audio_test_prefab"] = true
+skiplist["peghook_hitfx"] = true
+skiplist["quagmire_coin4"] = true
+skiplist["quagmire_food"] = true
+skiplist["lavaarena_boarlord"] = true
+skiplist["quagmire"] = true
+skiplist["world"] = true
+skiplist["shard_network"] = true
+skiplist["cave_network"] = true
+skiplist["cave"] = true
+skiplist["gooball_hit_fx"] = true
+skiplist["forest_network"] = true
+skiplist["peghook_splashfx"] = true
+skiplist["quagmire_network"] = true
+skiplist["lavaarena_network"] = true
+skiplist["quagmire_mushroomstump"] = true
+skiplist["forest"] = true
+skiplist["quagmire_parkspike_short"] = true
+skiplist["reticulearc"] = true
+skiplist["reticuleline"] = true
+skiplist["reticulelong"] = true
+skiplist["reticuleaoe"] = true
+skiplist["reticule"] = true
+
+function d_dumpCreatureTXT()
+
+    local f = io.open("creatures.txt", "w")
+    local total = 0
+    local str = ""
+    if f then
+       --"PREFAB","NAME", "HEALTH", "DAMAGE"
+       str = str .. string.format("%s;%s;%s;%s\n", "PREFAB","NAME", "HEALTH", "DAMAGE")
+        for i,data in pairs(Prefabs)do
+            print("=====>",i)
+           -- dumptable(data,1,1)
+            if not data.base_prefab and not skiplist[i] then -- not a skin
+                local t = SpawnPrefab(i)
+                if t and t.components.health then
+                --if t and (t:HasTag("smallcreature") or t:HasTag("monster") or t:HasTag("animal")) then
+
+                    local name = t.name or "---"
+                    local health = t.components.health and t.components.health.maxhealth or 0
+                    local damage = t.components.combat and t.components.combat.defaultdamage or 0
+
+                    str = str .. string.format("%s;%s;%s;%s\n", i,name, tostring(health), tostring(damage))
+                end
+                t:Remove()
+                total = total + 1
+            else
+                print("Skipping")
+            end
+        end
+
+        f:write(str)
+    end
+end
+function d_dumpItemsTXT()
+
+    local f = io.open("items.txt", "w")
+    local total = 0
+    local str = ""
+    if f then
+        str = str .. string.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n","PREFAB","NAME","STACKSIZE","DURABILITY","SPOILTIME","FOOD-HEALTH","FOOD-HUNGER","FOOD-SANITY","DAMAGE","PLANAR DAMAGE","ARMOR-%","ARMOR-HEALTH")
+        for i,data in pairs(Prefabs)do
+            print("=====>",i)
+           -- dumptable(data,1,1)
+            if not data.base_prefab and not skiplist[i] then -- not a skin
+                local t = SpawnPrefab(i)
+                if t and t.components.inventoryitem then
+                --if t and (t:HasTag("smallcreature") or t:HasTag("monster") or t:HasTag("animal")) then
+
+                    local name = t.name or "---"
+                    local stack = t.components.stackable and t.components.stackable.maxsize or 1
+                    local durability = t.components.finiteuses and t.components.finiteuses.total or 0
+                    local spoiltime = t.components.perishable and t.components.perishable.perishtime or 0
+
+                    local food_health = t.components.edible and t.components.edible.healthvalue or "-"
+                    local food_hunger = t.components.edible and t.components.edible.hungervalue or "-"
+                    local food_sanity = t.components.edible and t.components.edible.sanityvalue or "-"
+
+                    local weapondamage = t.components.weapon and t.components.weapon.damage or "-"
+                    local planardamage = t.components.planardamage and t.components.planardamage.basedamage or "-"
+                    local absorb_percent = t.components.armor and t.components.armor.absorb_percent or "-"
+                    local condition =    t.components.armor and t.components.armor.condition or "-"
+
+                    str = str .. string.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n", i,name, tostring(stack), tostring(durability), tostring(spoiltime), 
+                        tostring(food_health), tostring(food_hunger), tostring(food_sanity),
+                        tostring(weapondamage), tostring(planardamage), tostring(absorb_percent), tostring(condition)
+                        )
+                end
+                t:Remove()
+                total = total + 1
+            else
+                print("Skipping")
+            end
+        end
+
+        f:write(str)
+    end
+end
+
+function d_structuresTXT()
+
+    local f = io.open("structures.txt", "w")
+    local total = 0
+    local str = ""
+    if f then
+        str = str .. string.format("%s;%s\n","PREFAB","NAME")
+        for i,data in pairs(Prefabs)do
+            print("=====>",i)
+           -- dumptable(data,1,1)
+            if not data.base_prefab and not skiplist[i] then -- not a skin
+                local t = SpawnPrefab(i)
+                if t and not t.components.inventoryitem and not t.components.locomotor and not t:HasTag("fx") then
+
+                --if t and (t:HasTag("smallcreature") or t:HasTag("monster") or t:HasTag("animal")) then
+
+                    local name = t.name or "---"
+
+                    str = str .. string.format("%s;%s\n", i,name)
+                end
+                t:Remove()
+                total = total + 1
+            else
+                print("Skipping")
+            end
+        end
+
+        f:write(str)
+    end
 end

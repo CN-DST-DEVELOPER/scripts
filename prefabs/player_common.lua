@@ -525,6 +525,10 @@ fns.OnStormLevelChanged = function(inst, data)
 	inst.components.sanity:EnableLunacy(in_moonstorm, "moon_storm")
 end
 
+fns.OnRiftMoonTile = function(inst, on_rift_moon)
+	inst.components.sanity:EnableLunacy(on_rift_moon, "rift_moon")
+end
+
 --------------------------------------------------------------------------
 --Equipment Breaking Events
 --------------------------------------------------------------------------
@@ -615,6 +619,7 @@ local function RegisterMasterEventListeners(inst)
 	-- Enlightenment events
 	inst:ListenForEvent("changearea", fns.OnChangeArea)
 	inst:ListenForEvent("stormlevel", fns.OnStormLevelChanged)
+	inst:ListenForEvent("on_RIFT_MOON_tile", fns.OnRiftMoonTile)
 	inst:WatchWorldState("isnight", fns.OnAlterNight)
 	inst:WatchWorldState("isalterawake", fns.OnAlterNight)
 
@@ -1476,7 +1481,9 @@ local function ScreenFlash(inst, intensity)
             --Forces a netvar to be dirty regardless of value
             inst.player_classified.screenflash:set_local(intensity)
             inst.player_classified.screenflash:set(intensity)
-            TheWorld:PushEvent("screenflash", (intensity + 1) / 8)
+			if inst.HUD ~= nil then
+				TheWorld:PushEvent("screenflash", (intensity + 1) / 8)
+			end
         end
     end
 end
@@ -1618,6 +1625,14 @@ local function OnWintersFeastMusic(inst)
         ThePlayer:PushEvent("isfeasting")
     end
 end
+
+local function OnLunarPortalMax(inst)
+    if ThePlayer ~= nil and  ThePlayer == inst then
+        ThePlayer:PushEvent("startflareoverlay")
+        inst:DoTaskInTime(2, function() inst.components.talker:Say(GetString(inst, "ANNOUNCE_LUNAR_RIFT_MAX")) end)
+    end
+end
+
 
 local function OnHermitMusic(inst)
     if ThePlayer ~= nil and  ThePlayer == inst then
@@ -2144,6 +2159,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._winters_feast_music = net_event(inst.GUID, "localplayer._winters_feast_music")
         inst._hermit_music = net_event(inst.GUID, "localplayer._hermit_music")
         inst._underleafcanopy = net_bool(inst.GUID, "localplayer._underleafcanopy","underleafcanopydirty")
+        inst._lunarportalmax = net_event(inst.GUID, "localplayer._lunarportalmax")
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
             inst.yotb_skins_sets = net_shortint(inst.GUID, "player.yotb_skins_sets")
@@ -2152,6 +2168,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         if not TheNet:IsDedicated() then
             inst:ListenForEvent("localplayer._winters_feast_music", OnWintersFeastMusic)
+            inst:ListenForEvent("localplayer._lunarportalmax", OnLunarPortalMax)
             inst:ListenForEvent("localplayer._hermit_music", OnHermitMusic)
 
             inst:AddComponent("hudindicatable")
@@ -2221,6 +2238,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         else
             inst:ListenForEvent("playerdied", ex_fns.OnPlayerDied)
         end
+
+		inst.components.areaaware:StartWatchingTile(WORLD_TILES.RIFT_MOON)
 
         inst:AddComponent("bloomer")
         inst:AddComponent("colouradder")

@@ -885,6 +885,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "Grrr... need something stronger, florp!",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Grrr! Who make that light?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -4612,7 +4614,7 @@ return{
         BOAT_ROTATOR_KIT = "It boat stuff.",
         BOAT_BUMPER_KELP = "Pretty decorations!",
         BOAT_BUMPER_KELP_KIT = "Gonna decorate boat, florp.",
-        BOAT_BUMPER_SHELL = "Pretty decorations!",
+		BOAT_BUMPER_SHELL = "Pretty decorations!",
         BOAT_BUMPER_SHELL_KIT = "Gonna decorate boat, florp.",
         BOAT_CANNON = {
             GENERIC = "It not ready yet!",
@@ -4764,6 +4766,31 @@ return{
 		},
 		ARMORDREADSTONE = "So pretty... it mine!",
 		DREADSTONEHAT = "It real good for headbutting, flort!",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Who broke sky?!",
+        LUNARRIFT_CRYSTAL = "Blegh, it not ice!",
+
+        LUNARTHRALL_PLANT = "Hey, it not sharing! Wicker-lady say we have to share!",
+        LUNARTHRALL_PLANT_VINE_END = "Glurgh, quit hitting!!",
+
+		LUNAR_GRAZER = "Hee-hee, it funny!",
+
+        PUREBRILLIANCE = "Glurgh, too bright!",
+        LUNARPLANT_HUSK = "Hee-hee, it dead!",
+
+		LUNAR_FORGE = "Make shiny things.",
+		LUNAR_FORGE_KIT = "Look easy to build, florp.",
+
+		ARMOR_LUNARPLANT = "Tough and glowy!",
+		LUNARPLANTHAT = "Cage for head, florp?",
+		BOMB_LUNARPLANT = "Hee-hee-hee... boom!!",
+		STAFF_LUNARPLANT = "Magic hitting stick.",
+		SWORD_LUNARPLANT = "It mine!! Me want glowy sword!",
+		PICKAXE_LUNARPLANT = "It real good at breaking stuff.",
+		SHOVEL_LUNARPLANT = "Good scooper-upper, florp.",
+
+        PUNCHINGBAG = "Allowed to hit it? Yay!!",
     },
 
     DESCRIBE_GENERIC = "What that?",

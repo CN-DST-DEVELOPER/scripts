@@ -910,6 +910,7 @@ PREFAB_SKINS = {
 	{
 		"researchlab_gothic",
 		"researchlab_green",
+		"researchlab_party",
 		"researchlab_retro",
 	},
 	researchlab2 =
@@ -974,6 +975,7 @@ PREFAB_SKINS = {
 	},
 	ruins_bat =
 	{
+		"ruins_bat_an",
 		"ruins_bat_arcane",
 		"ruins_bat_heavy",
 	},
@@ -1135,6 +1137,7 @@ PREFAB_SKINS = {
 	},
 	treasurechest =
 	{
+		"treasurechest_cake",
 		"treasurechest_carpetbag",
 		"treasurechest_corruption",
 		"treasurechest_crimson",
@@ -1253,6 +1256,7 @@ PREFAB_SKINS = {
 		"wanda_formal",
 		"wanda_ice",
 		"wanda_lunar",
+		"wanda_nature",
 		"wanda_none",
 		"wanda_shadow",
 		"wanda_steampunk",
@@ -1464,6 +1468,7 @@ PREFAB_SKINS = {
 		"wickerbottom_lightninggoat_p",
 		"wickerbottom_lunar",
 		"wickerbottom_magma",
+		"wickerbottom_nature",
 		"wickerbottom_none",
 		"wickerbottom_ornate",
 		"wickerbottom_rose",
@@ -1491,6 +1496,7 @@ PREFAB_SKINS = {
 		"willow_ice",
 		"willow_magma",
 		"willow_masquerade",
+		"willow_nature",
 		"willow_none",
 		"willow_pirate",
 		"willow_rose",
@@ -1659,6 +1665,7 @@ PREFAB_SKINS = {
 		"wormwood_ice",
 		"wormwood_lunar",
 		"wormwood_mushroom",
+		"wormwood_nature",
 		"wormwood_none",
 		"wormwood_pumpkin",
 		"wormwood_rose",
@@ -1690,6 +1697,7 @@ PREFAB_SKINS = {
 		"wurt_cave",
 		"wurt_formal",
 		"wurt_ice",
+		"wurt_nature",
 		"wurt_none",
 		"wurt_pirate",
 		"wurt_rose",

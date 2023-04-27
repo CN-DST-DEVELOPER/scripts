@@ -6,8 +6,12 @@ local ExperienceCollector = Class(function(self, inst)
     self:SetTask()
 end)
 
-function ExperienceCollector:SetTask()
-    self.inst.xpgeneration_task = self.inst:DoPeriodicTask(self.xp_period, function() self:UpdateXp() end)
+function ExperienceCollector:SetTask(time)
+    if self.inst.xpgeneration_task then
+        self.inst.xpgeneration_task:Cancel()
+        self.inst.xpgeneration_task = nil
+    end  
+    self.inst.xpgeneration_task = self.inst:DoPeriodicTask(self.xp_period,  function() self:UpdateXp() end, time)
 end
 
 function ExperienceCollector:UpdateXp()
@@ -37,12 +41,7 @@ function ExperienceCollector:LongUpdate(dt)
 
         timeremaining = remaining * self.xp_period
     end
-
-    if not self.inst.xpgeneration_task then
-        self:SetTask()
-    end
-    
-    self.inst.xpgeneration_task.nexttick = GetTime() + timeremaining
+    self:SetTask(timeremaining)
 end
 
 function ExperienceCollector:OnSave()
@@ -54,9 +53,7 @@ end
 
 function ExperienceCollector:OnLoad(data)
    if data.time then
-        if self.inst.xpgeneration_task then
-            self.inst.xpgeneration_task.nexttick = GetTime() + data.time
-        end
+        self:SetTask(data.time)
    end
 end
 

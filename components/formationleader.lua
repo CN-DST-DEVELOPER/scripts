@@ -186,7 +186,7 @@ function FormationLeader:OnLostFormationMember(member)
 		member.components.formationfollower.formationleader = nil
 
 		member.components.formationfollower.in_formation = false
-		member.components.combat.target = nil
+		member.components.combat:DropTarget()
 
 		member.components.follower:StopFollowing()
 	end

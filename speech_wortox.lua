@@ -890,6 +890,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "This tool is too weak for what I seek.",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "That odd moonlight has caught my sight.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Let's have some fun.",
@@ -4618,7 +4620,7 @@ return{
         BOAT_ROTATOR_KIT = "It's something or rudder!",
         BOAT_BUMPER_KELP = "Some friendly help from fronds of kelp.",
         BOAT_BUMPER_KELP_KIT = "But idle hands are such good playthings!",
-        BOAT_BUMPER_SHELL = "We shell be well protected, hyuyu!",
+		BOAT_BUMPER_SHELL = "We shell be well protected, hyuyu!",
         BOAT_BUMPER_SHELL_KIT = "But idle hands are such good playthings!",
         BOAT_CANNON = {
             GENERIC = "Rounded stones are required for this cannon to fire.",
@@ -4770,6 +4772,31 @@ return{
 		},
 		ARMORDREADSTONE = "All blows will be blocked by this armor of rock.",
 		DREADSTONEHAT = "A stone fortress for my brain.",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "It's all falling apart at the seams!",
+        LUNARRIFT_CRYSTAL = "Glint and glitter.",
+
+        LUNARTHRALL_PLANT = "A long way from home, aren't we?",
+        LUNARTHRALL_PLANT_VINE_END = "The weeds are whacking.",
+
+		LUNAR_GRAZER = "My my, are those teeth I spy?",
+
+        PUREBRILLIANCE = "Hyuyu, it tickles my impish brain!",
+        LUNARPLANT_HUSK = "Unoccupied.",
+
+		LUNAR_FORGE = "There isn't any iron in that forge, is there?",
+		LUNAR_FORGE_KIT = "Shall we forge ahead?",
+
+		ARMOR_LUNARPLANT = "Strong and light, quite good in a fight.",
+		LUNARPLANTHAT = "It has me looking on the bright side, hyuyu!",
+		BOMB_LUNARPLANT = "This will be the start of some wonderful pranks.",
+		STAFF_LUNARPLANT = "With a flick of the wrist, someone's getting hit.",
+		SWORD_LUNARPLANT = "A swish to and fro will cut down my foe.",
+		PICKAXE_LUNARPLANT = "To bash and break.",
+		SHOVEL_LUNARPLANT = "Dig a hole to who knows where!",
+
+        PUNCHINGBAG = "It does not complain, for it feels no pain!",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

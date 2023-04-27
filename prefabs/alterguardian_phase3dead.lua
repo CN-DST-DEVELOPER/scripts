@@ -113,6 +113,13 @@ local ERODEIN =
     remove = false,
 }
 local function start_wag_sequence(inst)
+
+    local oldwagstaff = TheWorld.components.entitytracker:GetEntity("WagstaffNPC_continueWorking")
+    if oldwagstaff then
+        oldwagstaff.sg:GoToState("capture_emote")
+        oldwagstaff:DoTaskInTime(20,function() oldwagstaff:Remove() end)
+    end
+
     local ipos = inst:GetPosition()
 
     local offset = FindWalkableOffset(ipos, 2*PI*math.random(), 2.5)

@@ -329,7 +329,7 @@ local function OnKilledOther(inst, data)
         end
         if data.victim == inst.components.combat.target then
             inst:RemoveEventCallback("dropitem", inst._OnTargetDropItem, data.victim)
-            inst.components.combat.target = nil
+			inst.components.combat:DropTarget()
             inst.components.locomotor.walkspeed = TUNING.BEARGER_CALM_WALK_SPEED
         end
     end

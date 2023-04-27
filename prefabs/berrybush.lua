@@ -1,3 +1,4 @@
+local BERRY_TYPES = { "berries", "berriesmore", "berriesmost" }
 local function setberries(inst, pct)
     if inst._setberriesonanimover then
         inst._setberriesonanimover = nil
@@ -5,16 +6,16 @@ local function setberries(inst, pct)
     end
 
     local berries =
-        (pct == nil and "") or
+        (not pct and "") or
         (pct >= .9 and "berriesmost") or
         (pct >= .33 and "berriesmore") or
         "berries"
 
-    for i, v in ipairs({ "berries", "berriesmore", "berriesmost" }) do
-        if v == berries then
-            inst.AnimState:Show(v)
+    for i, berry_type in ipairs(BERRY_TYPES) do
+        if berry_type == berries then
+            inst.AnimState:Show(berry_type)
         else
-            inst.AnimState:Hide(v)
+            inst.AnimState:Hide(berry_type)
         end
     end
 end
@@ -59,9 +60,9 @@ local function makebarrenfn(inst)--, wasempty)
 end
 
 local function shake(inst)
-    if inst.components.pickable ~= nil and
-        not inst.components.pickable:CanBePicked() and
-        inst.components.pickable:IsBarren() then
+    if inst.components.pickable and
+            not inst.components.pickable:CanBePicked() and
+            inst.components.pickable:IsBarren() then
         inst.AnimState:PlayAnimation("shake_dead")
         inst.AnimState:PushAnimation("dead", false)
     else
@@ -75,7 +76,7 @@ local function spawnperd(inst)
     if inst:IsValid() then
         local perd = SpawnPrefab("perd")
         local x, y, z = inst.Transform:GetWorldPosition()
-        local angle = math.random() * 2 * PI
+        local angle = math.random() * PI2
         perd.Transform:SetPosition(x + math.cos(angle), 0, z + math.sin(angle))
         perd.sg:GoToState("appear")
         perd.components.homeseeker:SetHome(inst)
@@ -84,7 +85,7 @@ local function spawnperd(inst)
 end
 
 local function onpickedfn(inst, picker)
-    if inst.components.pickable ~= nil then
+    if inst.components.pickable then
         --V2C: nil cycles_left means unlimited picks, so use max value for math
         --local old_percent = inst.components.pickable.cycles_left ~= nil and (inst.components.pickable.cycles_left + 1) / inst.components.pickable.max_cycles or 1
         --setberries(inst, old_percent)
@@ -99,13 +100,14 @@ local function onpickedfn(inst, picker)
         end
     end
 
-    if not (picker ~= nil and picker:HasTag("berrythief") or inst._noperd) and math.random() < (IsSpecialEventActive(SPECIAL_EVENTS.YOTG) and TUNING.YOTG_PERD_SPAWNCHANCE or TUNING.PERD_SPAWNCHANCE) then
+    if not (picker and picker:HasTag("berrythief") or inst._noperd) and
+            math.random() < (IsSpecialEventActive(SPECIAL_EVENTS.YOTG) and TUNING.YOTG_PERD_SPAWNCHANCE or TUNING.PERD_SPAWNCHANCE) then
         inst:DoTaskInTime(3 + math.random() * 3, spawnperd)
     end
 end
 
 local function getregentimefn_normal(inst)
-    if inst.components.pickable == nil then
+    if not inst.components.pickable then
         return TUNING.BERRY_REGROW_TIME
     end
     --V2C: nil cycles_left means unlimited picks, so use max value for math
@@ -118,7 +120,7 @@ local function getregentimefn_normal(inst)
 end
 
 local function getregentimefn_juicy(inst)
-    if inst.components.pickable == nil then
+    if not inst.components.pickable then
         return TUNING.BERRY_JUICY_REGROW_TIME
     end
     --V2C: nil cycles_left means unlimited picks, so use max value for math
@@ -133,9 +135,9 @@ end
 local function makefullfn(inst)
     local anim = "idle"
     local berries = nil
-    if inst.components.pickable ~= nil then
+    if inst.components.pickable then
         if inst.components.pickable:CanBePicked() then
-            berries = inst.components.pickable.cycles_left ~= nil and inst.components.pickable.cycles_left / inst.components.pickable.max_cycles or 1
+            berries = (inst.components.pickable.cycles_left and inst.components.pickable.cycles_left / inst.components.pickable.max_cycles) or 1
         elseif inst.components.pickable:IsBarren() then
             anim = "dead"
         end
@@ -156,17 +158,17 @@ local function onworked_juicy(inst, worker, workleft)
     --This is possible when beaver is gnaw-digging the bush,
     --and the expected behaviour should be same as jostling.
     if workleft > 0 and
-        inst.components.lootdropper ~= nil and
-        inst.components.pickable ~= nil and
-        inst.components.pickable.droppicked and
-        inst.components.pickable:CanBePicked() then
+            inst.components.lootdropper and
+            inst.components.pickable and
+            inst.components.pickable.droppicked and
+            inst.components.pickable:CanBePicked() then
         inst.components.pickable:Pick(worker)
     end
 end
 
 local function dig_up_common(inst, worker, numberries)
-    if inst.components.pickable ~= nil and inst.components.lootdropper ~= nil then
-        local withered = inst.components.witherable ~= nil and inst.components.witherable:IsWithered()
+    if inst.components.pickable and inst.components.lootdropper then
+        local withered = (inst.components.witherable ~= nil and inst.components.witherable:IsWithered())
 
 
         if withered or inst.components.pickable:IsBarren() then
@@ -205,8 +207,21 @@ local function OnHaunt(inst)
         shake(inst)
         inst.components.hauntable.hauntvalue = TUNING.HAUNT_COOLDOWN_TINY
         return true
+    else
+        return false
     end
-    return false
+end
+
+local function OnSave(inst, data)
+    data.was_herd = inst.components.herdmember and true or nil
+end
+
+local function OnPreLoad(inst, data)
+    if data and data.was_herd then
+        if TheWorld.components.lunarthrall_plantspawner then
+            TheWorld.components.lunarthrall_plantspawner:setHerdsOnPlantable(inst)
+        end
+    end    
 end
 
 local function createbush(name, inspectname, berryname, master_postinit)
@@ -238,11 +253,13 @@ local function createbush(name, inspectname, berryname, master_postinit)
         inst:AddTag("bush")
         inst:AddTag("plant")
         inst:AddTag("renewable")
+        inst:AddTag("lunarplant_target")
 
         --witherable (from witherable component) added to pristine state for optimization
         inst:AddTag("witherable")
 
-        if TheNet:GetServerGameMode() == "quagmire" then
+        local is_quagmire = (TheNet:GetServerGameMode() == "quagmire")
+        if is_quagmire then
             -- for stats tracking
             inst:AddTag("quagmire_wildplant")
         end
@@ -257,7 +274,6 @@ local function createbush(name, inspectname, berryname, master_postinit)
         MakeSnowCoveredPristine(inst)
 
         inst.entity:SetPristine()
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -303,9 +319,13 @@ local function createbush(name, inspectname, berryname, master_postinit)
             inst:ListenForEvent("spawnperd", spawnperd)
         end
 
-        if TheNet:GetServerGameMode() == "quagmire" then
+        if is_quagmire then
             event_server_data("quagmire", "prefabs/berrybush").master_postinit(inst)
         end
+
+
+        inst.OnSave = OnSave
+        inst.OnPreLoad = OnPreLoad
 
         return inst
     end
@@ -319,7 +339,7 @@ local function normal_postinit(inst)
     inst.components.pickable.max_cycles = TUNING.BERRYBUSH_CYCLES + math.random(2)
     inst.components.pickable.cycles_left = inst.components.pickable.max_cycles
 
-    if inst.components.workable ~= nil then
+    if inst.components.workable then
         inst.components.workable:SetOnFinishCallback(dig_up_normal)
     end
 end
@@ -333,7 +353,7 @@ local function juicy_postinit(inst)
     inst.components.pickable.droppicked = true
     inst.components.pickable.dropheight = 3.5
 
-    if inst.components.workable ~= nil then
+    if inst.components.workable then
         inst.components.workable:SetOnWorkCallback(onworked_juicy)
         inst.components.workable:SetOnFinishCallback(dig_up_juicy)
     end

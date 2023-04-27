@@ -14,7 +14,7 @@ assert(TheWorld.ismastersim, "Beargerspawner should not exist on client")
 --[[ Private constants ]]
 --------------------------------------------------------------------------
 
-local HASSLER_SPAWN_DIST = 40
+local HASSLER_SPAWN_DIST = PLAYER_CAMERA_SEE_DISTANCE
 local BEARGER_TIMERNAME = "bearger_timetospawn"
 
 --------------------------------------------------------------------------

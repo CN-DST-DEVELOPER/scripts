@@ -74,7 +74,7 @@ local function do_water_explosion_effect(inst, affected_entity, owner, position)
 
             local v_position = affected_entity:GetPosition()
             local launch_position = v_position + (v_position - position):Normalize() * SPEED
-            ae_cp:Launch(launch_position, projectile)
+            ae_cp:Launch(launch_position, projectile, ae_cp.owningweapon)
         else
             launch_away(projectile, position)
         end

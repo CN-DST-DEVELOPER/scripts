@@ -396,6 +396,10 @@ local function SetLightColour(inst, intensity)
 	inst.Light:SetColour(LIGHT_COLOUR[1] * intensity, LIGHT_COLOUR[2] * intensity, LIGHT_COLOUR[3] * intensity)
 end
 
+local function AlwaysRecoil(inst, worker, tool, numworks)
+	return true, numworks
+end
+
 local function UpdateBuild(inst, workleft)
 	if math.floor(workleft) <= 1 then
 		if inst.level ~= "lowest" then
@@ -406,6 +410,7 @@ local function UpdateBuild(inst, workleft)
 			if inst.Light ~= nil then
 				SetLightColour(inst, 1.3)
 			end
+			inst.components.workable:SetShouldRecoilFn(AlwaysRecoil)
 			inst:AddTag("worker_recoil")
 			return true, dlevel
 		end
@@ -418,7 +423,7 @@ local function UpdateBuild(inst, workleft)
 			if inst.Light ~= nil then
 				SetLightColour(inst, 1.2)
 			end
-			inst:RemoveTag("worker_recoil")
+			inst.components.workable:SetShouldRecoilFn(nil)
 			return true, dlevel
 		end
 	elseif workleft <= 7 then
@@ -430,7 +435,7 @@ local function UpdateBuild(inst, workleft)
 			if inst.Light ~= nil then
 				SetLightColour(inst, 1.1)
 			end
-			inst:RemoveTag("worker_recoil")
+			inst.components.workable:SetShouldRecoilFn(nil)
 			return true, dlevel
 		end
 	end

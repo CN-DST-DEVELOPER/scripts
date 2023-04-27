@@ -885,6 +885,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "It's okay Woby, we just need to find a stronger tool!",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Look, Woby! Something's glowing over there!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Sorry!!",
@@ -4612,7 +4614,7 @@ return{
         BOAT_ROTATOR_KIT = "A rudder might come in handy.",
         BOAT_BUMPER_KELP = "Don't worry Woby, I'm really good at sailing. That's just a precaution!",
         BOAT_BUMPER_KELP_KIT = "It's always best to be prepared!",
-        BOAT_BUMPER_SHELL = "Don't worry Woby, I'm really good at sailing. That's just a precaution!",
+		BOAT_BUMPER_SHELL = "Don't worry Woby, I'm really good at sailing. That's just a precaution!",
         BOAT_BUMPER_SHELL_KIT = "It's always best to be prepared!",
         BOAT_CANNON = {
             GENERIC = "I'll load the cannonball!",
@@ -4764,6 +4766,31 @@ return{
 		},
 		ARMORDREADSTONE = "It looks like an evil knight's armor. Neat!",
 		DREADSTONEHAT = "Never forget to wear your dark helmet.",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "It looks like a rip in the sky. Neat!",
+        LUNARRIFT_CRYSTAL = "I need to start a new rock collection!",
+
+        LUNARTHRALL_PLANT = "Woby, I think that plant's haunted!",
+        LUNARTHRALL_PLANT_VINE_END = "Revenge of the plants!",
+
+		LUNAR_GRAZER = "It puts its victims to sleep before it eats them. Neat!",
+
+        PUREBRILLIANCE = "That's gotta be the shiniest rock I've ever seen.",
+        LUNARPLANT_HUSK = "If you kill a ghost plant, do you get... a double ghost?",
+
+		LUNAR_FORGE = "Let's make something, Woby!",
+		LUNAR_FORGE_KIT = "Woby and I can have that set up in a jiffy!",
+
+		ARMOR_LUNARPLANT = "It makes me feel so safe, it's scary!",
+		LUNARPLANTHAT = "That's definitely the helmet of some kind of ghost knight!",
+		BOMB_LUNARPLANT = "If only I could use it in my slingshot.",
+		STAFF_LUNARPLANT = "Yup, that's definitely magical.",
+		SWORD_LUNARPLANT = "A space sword! Neat!",
+		PICKAXE_LUNARPLANT = "Those are some really tough leaves!",
+		SHOVEL_LUNARPLANT = "I came up with the name! ",
+
+        PUNCHINGBAG = "Don't worry Woby, it's just for practice!",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

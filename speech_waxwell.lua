@@ -885,6 +885,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "I'll need a more powerful tool.",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Something has changed...",
+
 	BATTLECRY =
 	{
 		GENERIC = "To arms!",
@@ -3976,7 +3978,7 @@ return{
         -- GROTTO
 
 		MOLEBAT = "Indecent.",
-        MOLEBATHILL = "Do I even want anything I find in there, knowing its spent time in a rodent's nostrils?",
+        MOLEBATHILL = "Do I even want anything I find in there, knowing it spent time in a rodent's nostrils?",
 
         BATNOSE = "It smells.",
         BATNOSE_COOKED = "The things I must do to survive...",
@@ -4612,7 +4614,7 @@ return{
         BOAT_ROTATOR_KIT = "Do I look like a common shipwright? Oh, very well...",
         BOAT_BUMPER_KELP = "I don't know if the smell is worth the protection it offers.",
         BOAT_BUMPER_KELP_KIT = "Ugh. These menial tasks do not suit me.",
-        BOAT_BUMPER_SHELL = "Seashells. The sturdiest building material known to man.",
+		BOAT_BUMPER_SHELL = "Seashells. The sturdiest building material known to man.",
         BOAT_BUMPER_SHELL_KIT = "Ugh. These menial tasks do not suit me.",
         BOAT_CANNON = {
             GENERIC = "It's useless if it isn't loaded.",
@@ -4764,6 +4766,31 @@ return{
 		},
 		ARMORDREADSTONE = "Black never goes out of style.",
 		DREADSTONEHAT = "Darkness is never far from my mind.",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "I don't like the look of this.",
+        LUNARRIFT_CRYSTAL = "Crystals? How very Bohemian.",
+
+        LUNARTHRALL_PLANT = "I don't think it's from around here.",
+        LUNARTHRALL_PLANT_VINE_END = "Some aggressive pruning might be in order.",
+
+		LUNAR_GRAZER = "I have a feeling this pest won't be dispatched so easily.",
+
+        PUREBRILLIANCE = "I wonder if she knows about this...",
+        LUNARPLANT_HUSK = "The blasted thing is finally dead.",
+
+		LUNAR_FORGE = "To work, then.",
+		LUNAR_FORGE_KIT = "There's more to be done.",
+
+		ARMOR_LUNARPLANT = "Does no one else find this armor oddly itchy?",
+		LUNARPLANTHAT = "It looks wonderfully ominous.",
+		BOMB_LUNARPLANT = "Someone's about to have a very bad day.",
+		STAFF_LUNARPLANT = "More magic to add to the arsenal.",
+		SWORD_LUNARPLANT = "Such power!",
+		PICKAXE_LUNARPLANT = "It works surprisingly well.",
+		SHOVEL_LUNARPLANT = "I'd rather let someone else do my dirty work.",
+
+        PUNCHINGBAG = "A crude test of my weapons' power.",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

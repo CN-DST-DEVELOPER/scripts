@@ -1583,6 +1583,9 @@ local states =
 					inst.components.lootdropper:DropLoot(inst:GetPosition())
 				end
 			end),
+			FrameEvent(48, function(inst)
+				inst:RemoveTag("shadow_aligned")
+			end),
 			FrameEvent(76, function(inst) inst.SoundEmitter:PlaySound("daywalker/voice/speak_short") end),
 		},
 
@@ -1604,6 +1607,7 @@ local states =
 				else
 					inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
 				end
+				inst:AddTag("shadow_aligned")
 			end
 		end,
 	},
@@ -1615,6 +1619,7 @@ local states =
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
 			inst:SwitchToFacingModel(0) --inst.Transform:SetNoFaced()
+			inst:RemoveTag("shadow_aligned")
 			inst.AnimState:PlayAnimation("defeat_idle_pre")
 		end,
 
@@ -1643,6 +1648,7 @@ local states =
 				else
 					inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
 				end
+				inst:AddTag("shadow_aligned")
 			end
 		end,
 	},
@@ -1654,6 +1660,7 @@ local states =
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
 			inst:SwitchToFacingModel(0) --inst.Transform:SetNoFaced()
+			inst:RemoveTag("shadow_aligned")
 			if not inst.AnimState:IsCurrentAnimation("defeat_idle_loop") then
 				inst.AnimState:PlayAnimation("defeat_idle_loop", true)
 			end
@@ -1680,6 +1687,7 @@ local states =
 				else
 					inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
 				end
+				inst:AddTag("shadow_aligned")
 			end
 		end,
 	},

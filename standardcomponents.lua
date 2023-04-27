@@ -527,9 +527,13 @@ function MakeSmallHeavyObstaclePhysics(inst, rad, height)
 end
 
 function RemovePhysicsColliders(inst)
-    inst.Physics:ClearCollisionMask()
-    if inst.Physics:GetMass() > 0 then
-        inst.Physics:CollidesWith(COLLISION.GROUND)
+    local physics = inst.Physics
+    if not physics then
+        return
+    end
+    physics:ClearCollisionMask()
+    if physics:GetMass() > 0 then
+        physics:CollidesWith(COLLISION.GROUND)
     end
 end
 

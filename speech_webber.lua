@@ -885,6 +885,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "We don't think this tool's strong enough!",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "We can see something glowing waaay over there!",
+
 	BATTLECRY =
 	{
 		GENERIC = "En garde!",
@@ -1489,7 +1491,7 @@ return{
         TURF_MOSAIC_RED = "Some ground that we dug up.",
         TURF_MOSAIC_BLUE = "Some ground that we dug up.",
 
-        TURF_BEARD_RUG = "It tickles!",        
+        TURF_BEARD_RUG = "It tickles!",
 
 		POWCAKE = "Mum never let me have these.",
         CAVE_ENTRANCE = "It's plugged up.",
@@ -4612,7 +4614,7 @@ return{
         BOAT_ROTATOR_KIT = "We're good at spinning things!",
         BOAT_BUMPER_KELP = "It keeps the boat from getting hurt.",
         BOAT_BUMPER_KELP_KIT = "Now we can play bumper boats!",
-        BOAT_BUMPER_SHELL = "It keeps the boat from getting hurt.",
+		BOAT_BUMPER_SHELL = "It keeps the boat from getting hurt.",
         BOAT_BUMPER_SHELL_KIT = "Now we can play bumper boats!",
         BOAT_CANNON = {
             GENERIC = "Ms. Wickerbottom said we could play with it as long as there's no cannonballs inside.",
@@ -4764,6 +4766,31 @@ return{
 		},
 		ARMORDREADSTONE = "It's kinda scary, but it keeps us safe!",
 		DREADSTONEHAT = "A pointy helmet to match our pointy teeth!",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Aww, it won't let us in.",
+        LUNARRIFT_CRYSTAL = "They look like candy, but they're just rocks.",
+
+        LUNARTHRALL_PLANT = "That plant's kinda spooky...",
+        LUNARTHRALL_PLANT_VINE_END = "Hey, leave us alone!",
+
+		LUNAR_GRAZER = "It's trying to make us take a nap!",
+
+        PUREBRILLIANCE = "It's blinding our poor spider eyes!",
+        LUNARPLANT_HUSK = "That was one mean plant. We're glad it's gone!",
+
+		LUNAR_FORGE = "Can we use it to make crafts?",
+		LUNAR_FORGE_KIT = "We can build it, we have lots of free hands to spare!",
+
+		ARMOR_LUNARPLANT = "We're gonna look so tough!",
+		LUNARPLANTHAT = "We're gonna be a spider knight!",
+		BOMB_LUNARPLANT = "Catch!",
+		STAFF_LUNARPLANT = "We can hit things far away.",
+		SWORD_LUNARPLANT = "It's a magic sword!",
+		PICKAXE_LUNARPLANT = "We're coming to get you, rocks!",
+		SHOVEL_LUNARPLANT = "Two things in one, just like us!",
+
+        PUNCHINGBAG = "Wigfrid's teaching us how to spar with it!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

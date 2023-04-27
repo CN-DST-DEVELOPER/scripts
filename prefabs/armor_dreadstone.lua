@@ -123,6 +123,9 @@ local function fn()
 	inst.components.armor:InitCondition(TUNING.ARMORDREADSTONE, TUNING.ARMORDREADSTONE_ABSORPTION)
 	inst.components.armor.ontakedamage = OnTakeDamage
 
+	inst:AddComponent("planardefense")
+	inst.components.planardefense:SetBaseDefense(TUNING.ARMORDREADSTONE_PLANAR_DEF)
+
 	inst:AddComponent("equippable")
 	inst.components.equippable.equipslot = EQUIPSLOTS.BODY
 	inst.components.equippable.dapperfn = CalcDapperness

@@ -182,8 +182,27 @@ local function IsRecipeValidForFilter(self, recipename, filter_recipes)
 	return self:IsRecipeValidForSearch(recipename)
 end
 
+local function IsRecipeValidForStation(self, recipe, station, current_filter)
+    if current_filter ~= "CRAFTING_STATION" then
+        return true -- Only care about CRAFTING_STATION filter tab for this function.
+    end
+
+    if recipe == nil or station == nil then
+        return true -- NOTES(JBK): This is here to not change old filtering before this function was added.
+    end
+
+    if recipe.station_tag == nil then
+        return true
+    end
+
+    return station:HasTag(recipe.station_tag)
+end
+
 function CraftingMenuWidget:ApplyFilters()
 	self.filtered_recipes = {}
+
+    local builder = self.owner ~= nil and self.owner.replica.builder or nil
+    local station = builder and builder:GetCurrentPrototyper() or nil
 
 	local current_filter = self.current_filter_name
 	local filter_recipes = (current_filter ~= nil and CRAFTING_FILTERS[current_filter] ~= nil) and FunctionOrValue(CRAFTING_FILTERS[current_filter].default_sort_values) or nil
@@ -192,7 +211,7 @@ function CraftingMenuWidget:ApplyFilters()
 
 	for i, recipe_name in metaipairs(self.sort_class) do
 		local data = self.crafting_hud.valid_recipes[recipe_name]
-		if data and (show_hidden or data.meta.build_state ~= "hide") and IsRecipeValidForFilter(self, recipe_name, filter_recipes) then
+		if data and (show_hidden or data.meta.build_state ~= "hide") and IsRecipeValidForFilter(self, recipe_name, filter_recipes) and IsRecipeValidForStation(self, data.recipe, station, current_filter) then
 			table.insert(self.filtered_recipes, data)
 		end
 	end

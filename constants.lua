@@ -15,6 +15,8 @@ RESOLUTION_X = 1280
 RESOLUTION_Y = 720
 
 PLAYER_REVEAL_RADIUS = 30.0 -- NOTES(JBK): Keep in sync with MiniMapRenderer.cpp!
+PLAYER_CAMERA_SEE_DISTANCE = 40.0 -- NOTES(JBK): Based off of an approximation of the maximum default camera distance before seeing clouds and is the screen diagonal.
+PLAYER_CAMERA_SEE_DISTANCE_SQ = PLAYER_CAMERA_SEE_DISTANCE * PLAYER_CAMERA_SEE_DISTANCE -- Helper.
 
 MAX_FE_SCALE = 3 --Default if you don't call SetMaxPropUpscale
 MAX_HUD_SCALE = 1.25
@@ -1045,7 +1047,8 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_daywalker"
+    "dontstarve/music/music_FE_lunarrift"
+    --dontstarve/music/music_FE_daywalker"
     --"dontstarve/music/music_FE_maxwell"
     --"dontstarve/music/music_FE_charliestage"
     --"dontstarve/music/music_FE_wickerbottom"
@@ -1143,6 +1146,9 @@ TECH =
 
     ROBOTMODULECRAFT_ONE = { ROBOTMODULECRAFT = 1 },
     BOOKCRAFT_ONE = { BOOKCRAFT = 1 },
+
+	LUNARFORGING_ONE = { LUNARFORGING = 1 },
+	LUNARFORGING_TWO = { LUNARFORGING = 2 },
 }
 
 -- See cell_data.h

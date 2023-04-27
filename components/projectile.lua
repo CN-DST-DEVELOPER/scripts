@@ -34,6 +34,9 @@ local Projectile = Class(function(self, inst)
     --self.delaypos = nil
     self._ondelaycancel = function() inst:Remove() end
 
+	--self.overridestartpos = nil
+	--self.bounced = nil
+
     --NOTE: projectile and complexprojectile components are mutually
     --      exclusive because they share this tag!
     --V2C: Recommended to explicitly add tag to prefab pristine state
@@ -137,7 +140,7 @@ end
 function Projectile:Throw(owner, target, attacker)
     self.owner = owner
     self.target = target
-    self.start = owner:GetPosition()
+	self.start = self.overridestartpos or owner:GetPosition()
     self.dest = target:GetPosition()
     self.inst.Physics:ClearCollidesWith(COLLISION.LIMITS)
 
@@ -389,6 +392,14 @@ function Projectile:DelayVisibility(duration)
     )
     self.delaypos = {}
     self.delaytask = self.inst:DoTaskInTime(duration, OnShow, self)
+end
+
+function Projectile:SetBounced(bounced)
+	self.bounced = bounced ~= false
+end
+
+function Projectile:IsBounced()
+	return self.bounced == true
 end
 
 return Projectile

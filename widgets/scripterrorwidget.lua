@@ -16,8 +16,8 @@ local ScriptErrorWidget = Class(Widget, function(self, title, text, buttons, tex
 
     TheInputProxy:SetCursorVisible(true)
 
-    TheInput:AddGeneralControlHandler(function(control, down) self:OnControl(control == CONTROL_PRIMARY and CONTROL_ACCEPT or control, down) end )
-    TheInput:AddMouseButtonHandler(function(button, down, x, y) self:OnMouseButton(button, down, x, y) end )
+    self.special_general_control = TheInput:AddGeneralControlHandler(function(control, down) self:OnControl(control == CONTROL_PRIMARY and CONTROL_ACCEPT or control, down) end)
+    self.special_mouse_control = TheInput:AddMouseButtonHandler(function(button, down, x, y) self:OnMouseButton(button, down, x, y) end)
 
     --darken everything behind the dialog
     self.black = self:AddChild(Image("images/global.xml", "square.tex"))
@@ -92,12 +92,19 @@ local ScriptErrorWidget = Class(Widget, function(self, title, text, buttons, tex
     TheSim:SetUIRoot(self.inst.entity)
 end)
 
+function ScriptErrorWidget:GoAway()
+    -- Undo special handling this widget typically has.
+    global_error_widget = nil
+    TheInput.oncontrol:RemoveHandler(self.special_general_control)
+    self.special_general_control = nil
+    TheInput.onmousebutton:RemoveHandler(self.special_mouse_control)
+    self.special_mouse_control = nil
+    self:Kill()
+    TheSim:SetUIRoot(LastUIRoot)
+end
+
 function ScriptErrorWidget:OnControl(control, down)
     if ScriptErrorWidget._base.OnControl(self, control, down) then return true end
-
-    if control == Controls.Digital.MENU_ACCEPT then
-		self:_ClickFocusedButton()
-	end
 end
 
 function ScriptErrorWidget:OnUpdate( dt )

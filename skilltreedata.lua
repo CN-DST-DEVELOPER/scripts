@@ -325,7 +325,7 @@ end
 function SkillTreeData:ValidateCharacterData(characterprefab, activatedskills, skillxp)
     local def = SKILLTREE_DEFS[characterprefab]
     if def == nil then
-        print("Invalid skilltree characterprefab to ValidateCharacterData:", self.owner, characterprefab)
+        --print("Invalid skilltree characterprefab to ValidateCharacterData:", self.owner, characterprefab)
         return false
     end
 

@@ -27,6 +27,7 @@ local prefabs =
 SetSharedLootTable("alterguardian_phase3",
 {
     {"chesspiece_guardianphase3_sketch", 1.00},
+    {"alterguardianhatshard", 1.00},
     {"moonglass",           1.00},
     {"moonglass",           1.00},
     {"moonglass",           1.00},

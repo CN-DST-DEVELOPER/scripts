@@ -84,7 +84,7 @@ function Sheltered:OnUpdate(dt)
 end
 
 function Sheltered:GetDebugString()
-    return string.format("%s, shletered: %s, presheltered: %s", self.stoptime == nil and "STARTED" or "STOPPED", tostring(self.sheltered), tostring(self.presheltered))
+    return string.format("%s, sheltered: %s, presheltered: %s", self.stoptime == nil and "STARTED" or "STOPPED", tostring(self.sheltered), tostring(self.presheltered))
 end
 
 return Sheltered

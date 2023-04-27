@@ -1162,27 +1162,31 @@ local function DoToolWork(act, workaction)
         act.target.components.workable:CanBeWorked() and
         act.target.components.workable:GetWorkAction() == workaction then
 
-		if act.doer.sg ~= nil and act.doer.sg.statemem.recoilstate ~= nil and act.target:HasTag("worker_recoil") then
-			act.doer.sg:GoToState(act.doer.sg.statemem.recoilstate, { target = act.target })
-		end
+		local numworks =
+			(	(	act.invobject ~= nil and
+				act.invobject.components.tool ~= nil and
+				act.invobject.components.tool:GetEffectiveness(workaction)
+			) or
+			(	act.doer ~= nil and
+				act.doer.components.worker ~= nil and
+				act.doer.components.worker:GetEffectiveness(workaction)
+			) or
+			1
+			) *
+			(	act.doer.components.workmultiplier ~= nil and
+				act.doer.components.workmultiplier:GetMultiplier(workaction) or
+				1
+			)
 
-        act.target.components.workable:WorkedBy(
-            act.doer,
-            (   (   act.invobject ~= nil and
-                act.invobject.components.tool ~= nil and
-                act.invobject.components.tool:GetEffectiveness(workaction)
-            ) or
-            (   act.doer ~= nil and
-                act.doer.components.worker ~= nil and
-                act.doer.components.worker:GetEffectiveness(workaction)
-            ) or
-            1
-            ) *
-            (   act.doer.components.workmultiplier ~= nil and
-                act.doer.components.workmultiplier:GetMultiplier(workaction) or
-                1
-            )
-        )
+		local recoil
+		recoil, numworks = act.target.components.workable:ShouldRecoil(act.doer, act.invobject, numworks)
+		if recoil and act.doer.sg ~= nil and act.doer.sg.statemem.recoilstate ~= nil then
+			act.doer.sg:GoToState(act.doer.sg.statemem.recoilstate, { target = act.target })
+			if numworks == 0 then
+				act.doer:PushEvent("tooltooweak", { workaction = workaction })
+			end
+		end
+		act.target.components.workable:WorkedBy(act.doer, numworks)
         return true
     end
     return false
@@ -1597,6 +1601,7 @@ ACTIONS.ADDWETFUEL.fn = ACTIONS.ADDFUEL.fn
 ACTIONS.GIVE.strfn = function(act)
     return act.target ~= nil
         and ((act.target:HasTag("gemsocket") and "SOCKET") or
+            (act.target:HasTag("trader_just_show") and "SHOW")or
             (act.target:HasTag("moontrader") and "CELESTIAL"))
         or nil
 end

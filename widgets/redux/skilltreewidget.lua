@@ -130,37 +130,60 @@ end
 
 function SkillTreeWidget:SpawnFavorOverlay(pre)
     if not self.fromfrontend then
-        local hasskill = false
+
+        local favor = nil
         if self.readonly then
             local skillselection = TheSkillTree:GetNamesFromSkillSelection(self.targetdata.skillselection, self.targetdata.prefab)
-            hasskill = skillselection["wilson_allegiance_shadow"]
+            if skillselection["wilson_allegiance_shadow"] then
+                favor = "skills_shadow"
+            elseif skillselection["wilson_allegiance_lunar"] then
+                favor = "skills_lunar"
+            end
         else
+
             local skilltreeupdater = ThePlayer and ThePlayer.components.skilltreeupdater or nil
             if skilltreeupdater then
-                hasskill = skilltreeupdater:IsActivated("wilson_allegiance_shadow")
+                if skilltreeupdater:IsActivated("wilson_allegiance_shadow") then
+                    favor = "skills_shadow"
+                elseif skilltreeupdater:IsActivated("wilson_allegiance_lunar") then
+                    favor = "skills_lunar"
+                end
             end
         end
-        if hasskill then
-            self.midlay.splash = self.midlay:AddChild(UIAnim())
-            self.midlay.splash:GetAnimState():SetBuild("skills_shadow")
-            self.midlay.splash:GetAnimState():SetBank("skills_shadow")
-            if pre then  
-                TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/shadow_skill")
 
+        if favor then
+            self.midlay.splash = self.midlay:AddChild(UIAnim())
+            self.midlay.splash:GetAnimState():SetBuild(favor)
+            self.midlay.splash:GetAnimState():SetBank(favor)
+            if favor == "skills_lunar" then
+                self.midlay.splash:GetAnimState():SetMultColour(0.7,0.7,0.7,0.7)
+                self.midlay.splash:SetPosition(0,-10)
+            end
+            if pre then
+                local sound = "wilson_rework/ui/shadow_skill"
+            
+                if favor == "skills_lunar" then
+                    sound = "wilson_rework/ui/lunar_skill"
+                end
+            
+                TheFrontEnd:GetSound():PlaySound(sound)
                 self.midlay.splash:GetAnimState():PlayAnimation("pre",false)
                 self.midlay.splash:GetAnimState():PushAnimation("idle",false)
             else
                 self.midlay.splash:GetAnimState():PlayAnimation("idle",false)
-            end            
-            self.midlay.splash:SetPosition(0,-10)
+            end
+
             self.midlay.splash.inst:ListenForEvent("animover", function()
-                if math.random() < 0.3 then
+                local chance = 0.3
+                if favor == "skills_lunar" then                     
+                    chance = 0.05 
+                end
+                if math.random() < chance then
                     self.midlay.splash:GetAnimState():PlayAnimation("twitch",false)
                     self.midlay.splash:GetAnimState():PushAnimation("idle",false)
                 else
                     self.midlay.splash:GetAnimState():PlayAnimation("idle",false)
-                end
-
+                end                
             end)
         end
     end

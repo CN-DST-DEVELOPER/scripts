@@ -209,6 +209,8 @@ local prefabs =
     "constructionsite_classified",
 
     "dummytarget",
+    "dummytarget_lunar",
+    "dummytarget_shadow",
     "float_fx_front",
     "float_fx_back",
 
@@ -246,6 +248,10 @@ local prefabs =
 
     -- Pirates
     "monkeyhut",
+
+	-- Planar
+	"planar_hit_fx",
+	"planar_resist_fx",
 }
 
 for _, v in pairs(require("prefabs/farm_plant_defs").PLANT_DEFS) do

@@ -403,6 +403,7 @@ STRINGS =
             READY    = "Sacrifice",
             SOCKET   = "Socket",
             CELESTIAL = "Offer",
+            SHOW = "Show",
 			APPLY    = "Apply {item}",
             QUAGMIRE_POT_HANGER = "Hang {item}",
             QUAGMIRE_OVEN       = "Place {item}",
@@ -598,7 +599,8 @@ STRINGS =
 			CRITTERS = "Look in",
 			SCULPTING = "Sculpt at",
 			CARTOGRAPHY = "Draw at",
-            STUDY = "Study at"
+			STUDY = "Study at",
+			FORGE = "Forge at",
 		},
 
         JUMPIN =
@@ -3398,7 +3400,7 @@ STRINGS =
         MOONSTORM_STATIC_ITEM = "Restrained Static",
 
         ALTERGUARDIANHAT = "Enlightened Crown",
-        ALTERGUARDIANHATSHARD = "Enlightened Crown Shard",
+        ALTERGUARDIANHATSHARD = "Enlightened Shard",
 
         MOONSTORM_GOGGLESHAT = "Astroggles",
 
@@ -3598,13 +3600,14 @@ STRINGS =
 
         PLAYBILL_THE_DOLL = "The Enchanted Doll\nA Stage Play",
         STATUEHARP_HEDGESPAWNER = "Overgrown Statue",
+
         -- Year of the Rabbit
         YOTR_FIGHTRING = "Pillow Fight Pit",
         YOTR_FIGHTRING_KIT = "Pillow Fight Pit Kit",
         YOTR_FIGHTRING_TORCH = "Bunnyman Torch",
         YOTR_FIGHTRING_BELL = "Pillow Fight Bell",
         NIGHTCAPHAT = "Nightcap",
-        
+
         YOTR_DECOR_1 = "Short Rabbit Lamp",
         YOTR_DECOR_2 = "Tall Rabbit Lamp",
 
@@ -3620,6 +3623,35 @@ STRINGS =
 		SHADOW_LEECH = "Parasitic Shadeling",
 		ARMORDREADSTONE = "Dreadstone Armor",
 		DREADSTONEHAT = "Dreadstone Helm",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Rift",
+        LUNARRIFT_CRYSTAL_BIG = "Ryftstal",
+        LUNARRIFT_CRYSTAL_SMALL = "Ryftstal",
+        LUNARRIFT_TERRAFORMER_EXPLOSION = "Lunaform Burst", -- For player death messages.
+
+		LUNAR_GRAZER = "Grazer",
+        LUNARTHRALL_PLANT = "Deadly Brightshade",
+        LUNARTHRALL_PLANT_GESTALT = "Brightshade Gestalt",
+        LUNARTHRALL_PLANT_VINE_END = "Tunneling Vine",
+
+        PUREBRILLIANCE = "Pure Brilliance",
+        LUNARPLANT_HUSK = "Brightshade Husk",
+
+		LUNAR_FORGE = "Brightsmithy",
+		LUNAR_FORGE_KIT = "Brightsmithy Kit",
+
+		ARMOR_LUNARPLANT = "Brightshade Armor",
+		LUNARPLANTHAT = "Brightshade Helm",
+		BOMB_LUNARPLANT = "Brightshade Bomb",
+		STAFF_LUNARPLANT = "Brightshade Staff",
+		SWORD_LUNARPLANT = "Brightshade Sword",
+		PICKAXE_LUNARPLANT = "Brightshade Smasher",
+		SHOVEL_LUNARPLANT = "Brightshade Shoevel",
+
+        PUNCHINGBAG = "Punching Bag",
+        PUNCHINGBAG_LUNAR = "Bright Boxer",
+        PUNCHINGBAG_SHADOW = "Shadow Boxer",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4345,6 +4377,7 @@ STRINGS =
         TURF_MUD = "A patch of muddy ground.",
 
         TURF_MONKEY_GROUND = "A patch of sand, with a faint scent of bananas.",
+        TURF_BEARD_RUG = "Some people just like to do art.",
 
 		-- FARMING
 		FARM_PLOW_ITEM = "Plow a plot for your plants.",
@@ -4461,8 +4494,8 @@ STRINGS =
         BODYPILLOW_STEELWOOL = "A wearable pillow that is as effective as it is unpleasant.",
 
         YOTR_DECOR_1_ITEM = "This lovable light makes any cave cozier.",
-        YOTR_DECOR_2_ITEM = "A rabbit statue with a real fire in its belly!",    
-        
+        YOTR_DECOR_2_ITEM = "A rabbit statue with a real fire in its belly!",
+
         --
         ARMORDREADSTONE = "Have no fear, the darkness will protect you.",
         DREADSTONEHAT = "A sturdy helmet of blackest stone.",
@@ -4497,7 +4530,25 @@ STRINGS =
         TRANSMUTE_HORRORFUEL = "Transmute Dreadstone into Pure Horror.",
         TRANSMUTE_DREADSTONE = "Transmute Pure Horror into Dreadstone.",
         TRANSMUTE_NIGHTMAREFUEL = "Transmute Pure Horror into Nightmare Fuel.",
-    },
+
+        TRANSMUTE_PUREBRILLIANCE = "Transmute Infused Moon Shards into Pure Brilliance.",
+        TRANSMUTE_MOONGLASS_CHARGED = "Transmute Pure Brilliance into Infused Moon Shards.",        
+
+        -- Rifts 1
+		LUNAR_FORGE_KIT = "Forge otherworldly items.",
+
+		ARMOR_LUNARPLANT = "Surround yourself in formidable lunar leaves.",
+		LUNARPLANTHAT = "Luminescent protection for your precious cranium.",
+		BOMB_LUNARPLANT = "Use unstable lunar energy for explosive results.",
+		STAFF_LUNARPLANT = "Stay rooted to the spot and attack from afar.",
+		SWORD_LUNARPLANT = "A sword of lunar light.",
+		PICKAXE_LUNARPLANT = "Mine and demolish to your heart's content.",
+		SHOVEL_LUNARPLANT = "The groundbreaking results of cross-pollination between a shovel and a garden hoe.",
+
+        PUNCHINGBAG = "Test the strength of your weapons. And have fun!",
+        PUNCHINGBAG_LUNAR = "Test how well your weapons fare against lunar foes.",
+        PUNCHINGBAG_SHADOW = "Test how well your weapons fare against shadowy foes.",
+    },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
@@ -5700,6 +5751,7 @@ STRINGS =
         ANCIENT = "Ancient",
         CELESTIAL = "Celestial",
 		MOON_ALTAR = "Celestial",
+		LUNARFORGING = "Brightsmithy",
         SHADOW = "Shadow",
         ENGINEERING = "Engineering",
 		ELIXIRBREWING = "Ectoherbology",
@@ -6082,7 +6134,26 @@ STRINGS =
 
     WAGSTAFF_NPC_CAPTURESTART = "Excellent! My little experiment was a resounding success!",
     WAGSTAFF_NPC_CAPTURESTOP = "Thank you for all your hard work.",
+    WAGSTAFF_NPC_CAPTURESTOP1 = "This will increase the power output exponentially!",
     WAGSTAFF_NPC_CAPTURESTOP2 = "Now if you'll excuse me, I have much to do.",
+    WAGSTAFF_NPC_CAPTURESTOP3 = "you and I are about to change the world",
+
+    WAGSTAFF_NPC_REQUEST = {"Incredible! It's just as I surmised!",
+                            "If I could just push its output a bit further...",
+                            "Oh yes, this could really be something, with one small addition...",
+                            "A small crystalline structure might just do the trick.",
+                            "Yes, I'm positive a shard of crystal would work...",
+                            "If it had the right translucency...",
+                            "And the correct shape...",
+                            "And lunar origin...",
+                            -- These next ones will be randomly chosen from here on.
+                            "Hmmm...",
+                            "If I could just locate one...",
+                            "A crystalline shard, with the correct properties..."},
+
+    WAGSTAFF_NPC_NOTTHAT = "Don't waste my time.",
+    WAGSTAFF_NPC_YES_THAT1 = "This is... yes, this will propel my experiments to the next level!",
+    WAGSTAFF_NPC_YES_THAT2 = "Quickly, hand it over.",
 
     WAGSTAFF_GOTTAGO1 = "Aha! This selenological anomaly can only mean one thing!",
     WAGSTAFF_GOTTAGO2 = "Now is my chance!",
@@ -6684,6 +6755,7 @@ STRINGS.UI =
         NEEDSCREATURESCANNING = "Scan living creatures to collect data!",
         NEEDSSKILL = "Learn new skills.",
         NEEDSBOOKSTATION = "Build a bookcase to craft your books.",
+		NEEDSLUNARFORGING_TWO = "Use a Brightsmithy to forge a prototype!",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
 		NEEDSYOTV = "Available during Year of the Varg!",
@@ -7210,7 +7282,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Wilson Refresh\nBeta Build",
+		MAINBANNER_BETA_TITLE = "Taking Root\nBeta Build",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -7244,6 +7316,11 @@ STRINGS.UI =
         VERSION_OUT_OF_DATE_PLAY = "Play Anyway",
         VERSION_OUT_OF_DATE_INSTRUCTIONS = "Instructions",
         VERSION_OUT_OF_DATE_CANCEL = "Cancel",
+
+        BAD_HASHES_TITLE = "Game Files Hash Mismatch",
+        BAD_HASHES_BODY = "Your game data files look corrupted. We recommend that you run your platform's file validation routines.",
+        BAD_HASHES_PLAY = "Play Anyway",
+        BAD_HASHES_INSTRUCTIONS = "Instructions",
 
         CONTROLLER_DETECTED_HEADER = "Controller Detected",
         CONTROLLER_DETECTED_BODY = "Do you want to play Don't Starve Together with a controller?\nYou won't be asked again, but you can revert your settings in the Controls screen of the Option menu if you change your mind.",
@@ -7720,7 +7797,7 @@ STRINGS.UI =
 		ARMOUR = "Armour",
 		CLOTHING = "Clothing",
 		RESTORATION = "Healing",
-		MAGIC = "Shadow Magic",
+		MAGIC = "Magic",
 		DECOR = "Decorations",
 		STRUCTURES = "Structures",
 		CONTAINERS = "Storage Solutions",
@@ -7742,6 +7819,7 @@ STRINGS.UI =
         CARTOGRAPHY = "Cartography",
         SCULPTING = "Sculptures",
 		CELESTIAL = "Celestial",
+		LUNARFORGING = "Brightsmithy",
         HERMITCRABSHOP = "Bottle Exchange",
 
         SHADOW = "Codex Umbra",
@@ -9009,6 +9087,8 @@ STRINGS.UI =
         HOUNDS = "Hound Attacks",
         WINTERHOUNDS = "Ice Hound Waves",
         SUMMERHOUNDS = "Fire Hound Waves",
+        RIFTS_FREQUENCY = "Wild Rift Frequency",
+        RIFTS_ENABLED = "Wild Rifts Enabled",
         HOUNDMOUND = "Hound Mounds",
         MERMS = "Merms",
         TENTACLES = "Tentacles",
@@ -9148,6 +9228,8 @@ STRINGS.UI =
         HEALTHPENALTY = "Max Health Penalty",
 		LESSDAMAGETAKEN = "Damage Taken",
         STAGEPLAYS = "Stage Plays",
+
+        DAYWALKER = "Nightmare Werepig",
 		-- End of world customization strings
     },
 
@@ -9589,7 +9671,7 @@ STRINGS.UI =
     LOBBYSCREEN =
     {
         SELECT = "Select",
-        START = "Go!",        
+        START = "Go!",
 		NEXT = "Next",
         APPLY = "Apply",
         CANCEL = "Cancel",
@@ -12401,8 +12483,8 @@ STRINGS.UI =
             YOTP = "Year of the Pig King",
             YOTC = "Year of the Carrat",
             YOTB = "Year of the Beefalo",
-			YOT_CATCOON = "Year of the Catcoon",
-            YOTR = "Year of the Bunnyman",            
+            YOT_CATCOON = "Year of the Catcoon",
+            YOTR = "Year of the Bunnyman",
         },
     },
 
@@ -14113,9 +14195,16 @@ STRINGS.SKILLTREE = {
 
         WILSON_ALLEGIANCE_LOCK_1_DESC = "Learn 12 Skills to unlock.",
         WILSON_ALLEGIANCE_LOCK_2_DESC = "Find and defeat the Ancient Fuelweaver.",
+        WILSON_ALLEGIANCE_LOCK_3_DESC = "Find and defeat the Celestial Champion.",
+
+        WILSON_ALLEGIANCE_LOCK_4_DESC = "Have no lunar affinity.",
+        WILSON_ALLEGIANCE_LOCK_5_DESC = "Have no shadow affinity.",
 
         WILSON_ALLEGIANCE_SHADOW_TITLE = "Shadow Courtier",
         WILSON_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty with the secrets of Shadow Transmutation.",
+        
+        WILSON_ALLEGIANCE_LUNAR_TITLE = "Lunar Innovator",
+        WILSON_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity with the secrets of Lunar Transmutation.",        
     },
 }
 --Don't include this in pot generation as this file is already translated.

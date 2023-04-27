@@ -67,6 +67,11 @@ function Map:IsAboveGroundAtPoint(x, y, z, allow_water)
     return valid_water_tile or TileGroupManager:IsLandTile(tile)
 end
 
+function Map:IsLandTileAtPoint(x, y, z)
+    local tile = self:GetTileAtPoint(x, y, z)
+    return TileGroupManager:IsLandTile(tile)
+end
+
 function Map:IsOceanTileAtPoint(x, y, z)
     local tile = self:GetTileAtPoint(x, y, z)
     return TileGroupManager:IsOceanTile(tile)
@@ -498,17 +503,27 @@ function Map:GetPlatformAtPoint(pos_x, pos_y, pos_z, extra_radius)
     return nil
 end
 
+function Map:FindRandomPointWithFilter(max_tries, filterfn)
+    local w, h = self:GetSize()
+    w = w/2 * TILE_SCALE
+    h = h/2 * TILE_SCALE
+    -- NOTES(JBK): w and h are now half width and half height sample from -w and +w
+    while (max_tries > 0) do
+        max_tries = max_tries - 1
+        local x, z = (2 * math.random() - 1) * w, (2 * math.random() - 1) * h
+        if filterfn == nil or filterfn(self, x, 0, z) then
+            return Vector3(x, 0, z)
+        end
+    end
+    return nil
+end
+
 function Map:FindRandomPointInOcean(max_tries)
-	local w, h = self:GetSize()
-	w = (w - w/2) * TILE_SCALE
-	h = (h - h/2) * TILE_SCALE
-	while (max_tries > 0) do
-		max_tries = max_tries - 1
-		local x, z = math.random() * w, math.random() * h
-        if self:IsOceanAtPoint(x, 0, z)	then
-			return Vector3(x, 0, z)
-		end
-	end
+    return self:FindRandomPointWithFilter(max_tries, self.IsOceanAtPoint)
+end
+
+function Map:FindRandomPointOnLand(max_tries)
+    return self:FindRandomPointWithFilter(max_tries, self.IsLandTileAtPoint)
 end
 
 function Map:FindNodeAtPoint(x, y, z)

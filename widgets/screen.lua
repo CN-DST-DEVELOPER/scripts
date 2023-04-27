@@ -30,6 +30,7 @@ function Screen:OnBecomeInactive()
 end
 
 function Screen:OnBecomeActive()
+    LastUIRoot = self.inst.entity
 	TheSim:SetUIRoot(self.inst.entity)
 	if self.last_focus and self.last_focus.inst.entity:IsValid() then
 		self.last_focus:SetFocus()

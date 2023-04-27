@@ -150,7 +150,7 @@ function TeamLeader:NewTeammate(member)
 		member.attackedfn = function() self:BroadcastDistress(member) end
 		member.attackedotherfn = function()
 			self.chasetime = 0
-			member.components.combat.target = nil
+			member.components.combat:DropTarget()
 			member.components.teamattacker.orders = ORDERS.HOLD
 		end
 

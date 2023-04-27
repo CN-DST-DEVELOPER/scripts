@@ -1111,6 +1111,7 @@ local function fn()
 	inst:AddTag("hostile")
 	inst:AddTag("scarytoprey")
 	inst:AddTag("largecreature")
+	inst:AddTag("shadow_aligned")
 
 	inst.AnimState:SetBank("daywalker")
 	inst.AnimState:SetBuild("daywalker_build")

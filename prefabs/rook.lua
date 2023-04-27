@@ -223,6 +223,8 @@ end
 
 local function rook_nightmare_fn()
     local inst = common_fn("rook_nightmare", "cavedweller")
+    
+    inst:AddTag("shadow_aligned")
 
     if not TheWorld.ismastersim then
         return inst

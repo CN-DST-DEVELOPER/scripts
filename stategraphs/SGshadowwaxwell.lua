@@ -753,6 +753,7 @@ local states =
             TimeEvent(7 * FRAMES, function(inst)
 				if inst.sg.statemem.action ~= nil then
 					PlayMiningFX(inst, inst.sg.statemem.action.target)
+					inst.sg.statemem.recoilstate = "mine_recoil"
                     inst:PerformBufferedAction()
                 end
             end),
@@ -772,6 +773,61 @@ local states =
             end),
         },
     },
+
+	State{
+		name = "mine_recoil",
+		tags = { "busy", "recoil" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+
+			inst.AnimState:PlayAnimation("pickaxe_recoil")
+			if data ~= nil and data.target ~= nil and data.target:IsValid() then
+				SpawnPrefab("impact").Transform:SetPosition(data.target.Transform:GetWorldPosition())
+			end
+			inst.Physics:SetMotorVelOverride(-6, 0, 0)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.speed ~= nil then
+				inst.Physics:SetMotorVelOverride(inst.sg.statemem.speed, 0, 0)
+				inst.sg.statemem.speed = inst.sg.statemem.speed * 0.75
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(4, function(inst)
+				inst.sg.statemem.speed = -3
+			end),
+			FrameEvent(17, function(inst)
+				inst.sg.statemem.speed = nil
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+			end),
+			FrameEvent(23, function(inst)
+				inst.sg:RemoveStateTag("busy")
+			end),
+			FrameEvent(30, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Physics:ClearMotorVelOverride()
+			inst.Physics:Stop()
+		end,
+	},
 
     State{
         name = "dig_start",

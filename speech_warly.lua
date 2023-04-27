@@ -885,6 +885,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "No, this won't do...",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "What could that glow be?",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'm also an accomplished butcher!",
@@ -4612,7 +4614,7 @@ return{
         BOAT_ROTATOR_KIT = "Aha! I thought my boat was missing something!",
         BOAT_BUMPER_KELP = "A helpful bit of garnish for the boat, non?",
         BOAT_BUMPER_KELP_KIT = "I will feel a bit safer with an extra layer wrapped around my boat.",
-        BOAT_BUMPER_SHELL = "I've given my boat a crunchy outer shell.",
+		BOAT_BUMPER_SHELL = "I've given my boat a crunchy outer shell.",
         BOAT_BUMPER_SHELL_KIT = "I will feel a bit safer with an extra layer wrapped around my boat.",
         BOAT_CANNON = {
             GENERIC = "Its belly is empty.",
@@ -4764,6 +4766,31 @@ return{
 		},
 		ARMORDREADSTONE = "A fine peice of armor.",
 		DREADSTONEHAT = "My head feels safer already.",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Ah, zut! It will not let me through.",
+        LUNARRIFT_CRYSTAL = "Tres beau!",
+
+        LUNARTHRALL_PLANT = "Go away, you plant thief!",
+        LUNARTHRALL_PLANT_VINE_END = "I'm afraid it won't give up without a fight.",
+
+		LUNAR_GRAZER = "It's like a living gelatin... but it lacks the sweetness.",
+
+        PUREBRILLIANCE = "My, I've never seen anything shine so brightly.",
+        LUNARPLANT_HUSK = "Ah, raw ingredients!",
+
+		LUNAR_FORGE = "What shall I cook up with this?",
+		LUNAR_FORGE_KIT = "I'll whip it up tout de suite!",
+
+		ARMOR_LUNARPLANT = "A hard outer crust.",
+		LUNARPLANTHAT = "An extra layer for my head.",
+		BOMB_LUNARPLANT = "Explosions really add some zest to a fight.",
+		STAFF_LUNARPLANT = "I could stir up some real trouble with this.",
+		SWORD_LUNARPLANT = "Beautiful and dangerous.",
+		PICKAXE_LUNARPLANT = "It's far less delicate than it looks.",
+		SHOVEL_LUNARPLANT = "I almost hate to get it dirty.",
+
+        PUNCHINGBAG = "It's a relief to practice on something that won't hit me back.",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

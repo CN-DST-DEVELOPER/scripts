@@ -48,7 +48,7 @@ local function triggernearbymorph(inst, quick, range)
 
             count = count + 1
 
-            if canmorph(v) and math.random() < .75 then
+            if canmorph(v) and math.random() < 0.75 then
                 v.components.worldsettingstimer:StartTimer(
                     "morphing",
                     ((not quick or count > 3) and .75 + math.random() * 1.5) or
@@ -176,6 +176,10 @@ local function ontransplantfn(inst)
     inst.components.worldsettingstimer:StartTimer("morphdelay", GetRandomWithVariance(TUNING.GRASSGEKKO_MORPH_DELAY, TUNING.GRASSGEKKO_MORPH_DELAY_VARIANCE))
 end
 
+local function OnSave(inst, data)
+    data.was_herd = inst.components.herdmember and true or nil
+end
+
 local function OnPreLoad(inst, data)
     WorldSettings_Timer_PreLoad(inst, data, "morphdelay", TUNING.GRASSGEKKO_MORPH_DELAY + TUNING.GRASSGEKKO_MORPH_DELAY_VARIANCE)
     WorldSettings_Timer_PreLoad_Fix(inst, data, "morphdelay", 1)
@@ -190,6 +194,12 @@ local function OnPreLoad(inst, data)
             if data.worldsettingstimer ~= nil then
                 makemorphable(inst)
             end
+        end
+    end
+
+    if data and data.was_herd then
+        if TheWorld.components.lunarthrall_plantspawner then
+            TheWorld.components.lunarthrall_plantspawner:setHerdsOnPlantable(inst)
         end
     end
 end
@@ -213,6 +223,7 @@ local function grass(name, stage)
         inst:AddTag("plant")
         inst:AddTag("renewable")
 		inst:AddTag("silviculture") -- for silviculture book
+        inst:AddTag("lunarplant_target")
 
         --witherable (from witherable component) added to pristine state for optimization
         inst:AddTag("witherable")
@@ -263,6 +274,7 @@ local function grass(name, stage)
         ---------------------
 
         inst.OnPreLoad = OnPreLoad
+        inst.OnSave = OnSave
 
         return inst
     end

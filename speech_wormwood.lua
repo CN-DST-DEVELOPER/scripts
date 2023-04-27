@@ -889,6 +889,8 @@ return{
 	--
 	ANNOUNCE_TOOL_TOOWEAK = "Oh. Something else?",
 
+    ANNOUNCE_LUNAR_RIFT_MAX = "Hmm? Light?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -4616,7 +4618,7 @@ return{
         BOAT_ROTATOR_KIT = "Can make the Floaty spin with this",
         BOAT_BUMPER_KELP = "Keeps Floaty safe",
         BOAT_BUMPER_KELP_KIT = "Will help protect Floaty",
-        BOAT_BUMPER_SHELL = "Keeps Floaty safe",
+		BOAT_BUMPER_SHELL = "Keeps Floaty safe",
         BOAT_BUMPER_SHELL_KIT = "Will help protect Floaty",
         BOAT_CANNON = {
             GENERIC = "Empty",
@@ -4768,6 +4770,31 @@ return{
 		},
 		ARMORDREADSTONE = "Pretty rock clothes",
 		DREADSTONEHAT = "Rock for head",
+
+        -- Rifts 1
+        LUNARRIFT_PORTAL = "Hello?",
+        LUNARRIFT_CRYSTAL = "Shiny",
+
+        LUNARTHRALL_PLANT = "Why friend hurt other friends?",
+        LUNARTHRALL_PLANT_VINE_END = "Not nice!",
+
+		LUNAR_GRAZER = "Bloop, bloop, bloop",
+
+        PUREBRILLIANCE = "Ahhh. Pretty",
+        LUNARPLANT_HUSK = "Sorry",
+
+		LUNAR_FORGE = "Make shiny things!",
+		LUNAR_FORGE_KIT = "Where to plant it?",
+
+		ARMOR_LUNARPLANT = "Mean friend made nice clothes",
+		LUNARPLANTHAT = "Mean friend made nice hat",
+		BOMB_LUNARPLANT = "Boom ball",
+		STAFF_LUNARPLANT = "Mean stick",
+		SWORD_LUNARPLANT = "Bright Swoosh Stick",
+		PICKAXE_LUNARPLANT = "Mean friend good at breaking things",
+		SHOVEL_LUNARPLANT = "Mean friend help dig",
+
+        PUNCHINGBAG = "It okay. Not real",
     },
 
     DESCRIBE_GENERIC = "Friend?",

@@ -121,6 +121,7 @@ local assets =
 
     Asset("ANIM", "anim/skills_activate.zip"),
     Asset("ANIM", "anim/skills_shadow.zip"),
+    Asset("ANIM", "anim/skills_lunar.zip"),
     Asset("ANIM", "anim/skill_unlock.zip"),
 
 }

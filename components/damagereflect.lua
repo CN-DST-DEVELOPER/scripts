@@ -15,10 +15,12 @@ function DamageReflect:SetDefaultDamage(value)
     self.defaultdamage = value
 end
 
-function DamageReflect:GetReflectedDamage(attacker, damage, weapon, stimuli)
-    return self.reflectdamagefn ~= nil
-        and self.reflectdamagefn(self.inst, attacker, damage, weapon, stimuli)
-        or self.defaultdamage
+function DamageReflect:GetReflectedDamage(attacker, damage, weapon, stimuli, spdamage)
+	if self.reflectdamagefn ~= nil then
+		damage, spdamage = self.reflectdamagefn(self.inst, attacker, damage, weapon, stimuli, spdamage)
+		return damage or self.defaultdamage, spdamage
+	end
+	return self.defaultdamage
 end
 
 return DamageReflect

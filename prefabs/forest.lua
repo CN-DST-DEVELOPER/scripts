@@ -447,6 +447,14 @@ local prefabs =
     "charlie_stage_post",
     "stageusher",
     "statueharp_hedgespawner",
+
+    -- Lunar Rifts
+    "lunarrift_portal",
+
+    "lunarthrall_plant",
+    "domesticplantherd",
+
+    --
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -569,6 +577,11 @@ local function master_postinit(inst)
     inst:AddComponent("moonstormmanager")
 
     inst:AddComponent("sharklistener")
+
+    inst:AddComponent("entitytracker")
+
+    inst:AddComponent("riftspawner")
+    inst:AddComponent("lunarthrall_plantspawner")
 
     if METRICS_ENABLED then
         inst:AddComponent("worldoverseer")

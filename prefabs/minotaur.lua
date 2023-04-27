@@ -174,8 +174,10 @@ local function checkfortentacledrop(inst)
 end
 
 local function OnAttacked(inst, data)
-    if inst.components.health:GetPercent() < PHASE1 then
+    if inst.components.health:GetPercent() < PHASE1 and not inst.atphase2 then
+        inst.atphase2 = true
         inst.AnimState:SetBuild("rook_rhino_damaged_build")
+        inst:AddTag("shadow_aligned")
     end
 
     local attacker = data ~= nil and data.attacker or nil

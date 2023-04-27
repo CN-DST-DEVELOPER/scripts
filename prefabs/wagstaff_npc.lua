@@ -594,6 +594,9 @@ local function donpcerode(inst, data)
     inst:erode(data.time, data.erodein, data.remove)
     if inst._device ~= nil and inst._device:IsValid() then
         inst._device:erode(data.time, data.erodein, data.remove)
+        if not data.norelocate then
+            inst.components.timer:StartTimer("relocate_wagstaff",math.min(1,data.time-1))
+        end
     end
 end
 
@@ -610,6 +613,115 @@ local function spawn_device(inst, erode_data)
 
     if erode_data then
         inst._device:erode(erode_data.time, erode_data.erodein, erode_data.remove)
+    end
+end
+
+local function pstbossShouldAcceptItem(inst, item)
+    if item.prefab == "alterguardianhatshard" then
+        return true
+    end
+end
+local function pstbossOnGetItemFromPlayer(inst, giver, item)
+    if item.prefab == "alterguardianhatshard" and (inst.AnimState:IsCurrentAnimation("build_loop") or inst.AnimState:IsCurrentAnimation("build_pre")) then
+
+        if inst:HasTag("trader_just_show") then
+            inst:RemoveTag("trader_just_show")
+            if inst.request_task then
+                inst.request_task:Cancel()
+                inst.request_task = nil
+            end
+
+            inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT1))
+            inst:DoTaskInTime(3,function()
+                inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT2))
+            end)
+        else
+            inst.rifts_are_open = true
+            inst.sg:SetTimeout(0)
+            inst:AddTag("shard_recieved")
+            TheWorld:PushEvent("lunarrift_opened")
+        end
+    end
+end
+local function pstbossOnRefuseItem(inst, item)
+    inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NOTTHAT))
+    if inst.request_task then
+        inst.request_task:Cancel()
+        inst.request_task = nil
+    end
+    inst.request_task = inst:DoPeriodicTask(10,inst.doplayerrequest)
+end
+
+local function doplayerrequest(inst)
+    inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_REQUEST[inst.sg.statemem.request])
+    inst.sg.statemem.request = inst.sg.statemem.request +1
+    if inst.sg.statemem.request >= 9 then
+        inst.sg.statemem.request = math.random(9,#STRINGS.WAGSTAFF_NPC_REQUEST)
+    end
+end
+local RELOCATE_MUST_NOT = {"INLIMBO","noblock","FX"}
+local PLAYER_MUST = {"player"}
+local ERODEIN =
+{
+    time = 3.5,
+    erodein = true,
+    remove = false,
+}
+local function relocate_wagstaff(inst)
+    local nodes = {}
+    for i,node in ipairs(TheWorld.topology.nodes)do
+        table.insert(nodes,i)
+    end
+    local location = false
+    while location == false and #nodes > 0 do
+        local rand = math.random(1,#nodes)
+        local testnode = nodes[rand]
+        table.remove(nodes,rand)
+
+        local pos = TheWorld.topology.nodes[testnode].cent
+        if pos then
+            if TheWorld.Map:IsVisualGroundAtPoint(pos[1],0,pos[2]) then
+               local ents = TheSim:FindEntities(pos[1], 0, pos[2], 5, nil, RELOCATE_MUST_NOT)
+               if #ents <= 0 then
+                    local ents2 = TheSim:FindEntities(pos[1], 0, pos[2], PLAYER_CAMERA_SEE_DISTANCE , PLAYER_MUST)
+                    if #ents2<=0 then
+                        location = pos
+                    end
+                end
+            end
+        end
+    end
+
+    if location ~= false then
+        local wagstaff = SpawnPrefab("wagstaff_npc_pstboss")
+        wagstaff.Transform:SetPosition(location[1],0,location[2])
+        wagstaff:PushEvent("spawndevice", ERODEIN)
+        wagstaff:PushEvent("continuework")
+        wagstaff.continuework = true
+        wagstaff.persists = true
+        TheWorld.components.entitytracker:TrackEntity("WagstaffNPC_continueWorking",wagstaff)
+    end
+end
+
+local function pstbossontimerdone(inst,data)
+    local rifts_on = TheWorld.components.riftsspawner
+    if data and data.name == "relocate_wagstaff" then
+        relocate_wagstaff(inst)
+    end
+end
+
+local function PstBossOnSave(inst, data)
+   if inst.continuework then
+        data.continuework = true
+    end
+end
+
+local function PstBossOnLoad(inst, data)
+    if data and data.continuework and data.continuework == true then
+        inst:PushEvent("continuework")
+        inst:PushEvent("spawndevice", ERODEIN)
+        inst.continuework = true
+        inst.persists = true
     end
 end
 
@@ -631,6 +743,7 @@ local function pstbossfn()
 
     inst:AddTag("nomagic")
     inst:AddTag("wagstaff_npc")
+    inst:AddTag("trader_just_show")
 
     inst.AnimState:SetBank("wilson")
     inst.AnimState:SetBuild("wagstaff")
@@ -672,6 +785,14 @@ local function pstbossfn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.nameoverride = "WAGSTAFF_NPC"
 
+    inst:AddComponent("trader")
+    inst.components.trader:Disable()
+    inst.components.trader:SetAcceptTest(pstbossShouldAcceptItem)
+    inst.components.trader.onaccept = pstbossOnGetItemFromPlayer
+    inst.components.trader.onrefuse = pstbossOnRefuseItem
+    inst.components.trader.deleteitemonaccept = true
+    inst.doplayerrequest = doplayerrequest
+
     inst:SetStateGraph("SGwagstaff_npc")
 
     inst.erode = erode
@@ -680,6 +801,12 @@ local function pstbossfn()
     inst:ListenForEvent("ontalk", ontalk)
     inst:ListenForEvent("spawndevice", spawn_device)
     inst:ListenForEvent("doerode", donpcerode)
+
+    inst:AddComponent("timer")
+    inst:ListenForEvent("timerdone", pstbossontimerdone)
+
+    inst.OnSave = PstBossOnSave
+    inst.OnLoad = PstBossOnLoad
 
     inst.SoundEmitter:PlaySound("moonstorm/common/alterguardian_contained/static_LP", "wagstaffnpc_static_loop")
 

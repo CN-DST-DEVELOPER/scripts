@@ -196,6 +196,9 @@ local MainSounds =
 
     "wilson_rework.fev",
     "wilson_rework.fsb",
+
+    "rifts.fev",
+    "rifts.fsb",
 }
 
 function PreloadSoundList(list)

@@ -458,7 +458,7 @@ CreateSkillTreeFor("wilson", {
 
     wilson_allegiance_lock_1 = {
         desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LOCK_1_DESC,
-        pos = {204,176},
+        pos = {204+2,176},
         --pos = {0.5,0},
         group = "allegiance",
         tags = {"allegiance","lock"},
@@ -471,7 +471,7 @@ CreateSkillTreeFor("wilson", {
 
     wilson_allegiance_lock_2 = {
         desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LOCK_2_DESC,
-        pos = {204,176-50},  -- -22
+        pos = {204-22+2,176-50+2},  
         --pos = {0,-1},
         group = "allegiance",
         tags = {"allegiance","lock"},
@@ -487,15 +487,37 @@ CreateSkillTreeFor("wilson", {
         },
     },
 
+    wilson_allegiance_lock_4 = {
+        desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LOCK_4_DESC,
+        pos = {204-22+2,176-100+8},  
+        --pos = {0,-1},
+        group = "allegiance",
+        tags = {"allegiance","lock"},
+        root = true,
+        lock_open = function(prefabname, skillselection) 
+                if skillselection then
+                    return "question"
+                end
+                if CountTags(prefabname, "lunar_favor", skillselection) > 0 then
+                    return nil
+                else
+                    return true
+                end 
+            end,
+        connects = {
+            "wilson_allegiance_shadow",
+        },
+    },    
+
     wilson_allegiance_shadow = {
         title = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_SHADOW_TITLE,
         desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_SHADOW_DESC,
         icon = "wilson_favor_shadow",
-        pos = {204 ,176-60-38},  --  -22
+        pos = {204-22+2 ,176-110-38+10},  --  -22
         --pos = {0,-2},
         group = "allegiance",
         tags = {"allegiance","shadow","shadow_favor"},
-        locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_2"},
+        locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_2", "wilson_allegiance_lock_4"},
         onactivate = function(inst, fromload)
             inst:AddTag("skill_wilson_allegiance_shadow")
             local damagetyperesist = inst.components.damagetyperesist
@@ -521,6 +543,81 @@ CreateSkillTreeFor("wilson", {
         connects = {
         },
     },  
+
+    wilson_allegiance_lock_3 = {
+        desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LOCK_3_DESC,
+        pos = {204+22+2,176-50+2},
+        --pos = {0,-1},
+        group = "allegiance",
+        tags = {"allegiance","lock"},
+        root = true,
+        lock_open = function(prefabname, skillselection) 
+                if skillselection then
+                    return "question"
+                end 
+                return TheGenericKV:GetKV("celestialchampion_killed") == "1"
+            end,
+        connects = {
+            "wilson_allegiance_lunar",
+        },
+    },
+
+    wilson_allegiance_lock_5 = {
+        desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LOCK_5_DESC,
+        pos = {204+22+2,176-100+8},  
+        --pos = {0,-1},
+        group = "allegiance",
+        tags = {"allegiance","lock"},
+        root = true,
+        lock_open = function(prefabname, skillselection) 
+                if skillselection then
+                    return "question"
+                end
+                if CountTags(prefabname, "shadow_favor", skillselection) > 0 then
+                    return nil
+                else 
+                    return true
+                end
+            end,
+        connects = {
+            "wilson_allegiance_lunar",
+        },
+    },
+
+    wilson_allegiance_lunar = {
+        title = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LUNAR_TITLE,
+        desc = STRINGS.SKILLTREE.WILSON.WILSON_ALLEGIANCE_LUNAR_DESC,
+        icon = "wilson_favor_lunar",
+        pos = {204+22+2 ,176-110-38+10},
+        --pos = {0,-2},
+        group = "allegiance",
+        tags = {"allegiance","lunar","lunar_favor"},
+        locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_3","wilson_allegiance_lock_5"},
+        onactivate = function(inst, fromload)
+            inst:AddTag("skill_wilson_allegiance_lunar")
+            local damagetyperesist = inst.components.damagetyperesist
+            if damagetyperesist then
+                damagetyperesist:AddResist("lunar_aligned", inst, TUNING.SKILLS.WILSON_ALLEGIANCE_LUNAR_RESIST, "wilson_allegiance_lunar")
+            end
+            local damagetypebonus = inst.components.damagetypebonus
+            if damagetypebonus then
+                damagetypebonus:AddBonus("shadow_aligned", inst, TUNING.SKILLS.WILSON_ALLEGIANCE_VS_SHADOW_BONUS, "wilson_allegiance_lunar")
+            end
+        end,
+        ondeactivate = function(inst, fromload)
+            inst:RemoveTag("skill_wilson_allegiance_lunar")
+            local damagetyperesist = inst.components.damagetyperesist
+            if damagetyperesist then
+                damagetyperesist:RemoveResist("lunar_aligned", inst, "wilson_allegiance_lunar")
+            end
+            local damagetypebonus = inst.components.damagetypebonus
+            if damagetypebonus then
+                damagetypebonus:RemoveBonus("shadow_aligned", inst, "wilson_allegiance_lunar")
+            end
+        end,
+        connects = {
+        },
+    },    
 
 })
 

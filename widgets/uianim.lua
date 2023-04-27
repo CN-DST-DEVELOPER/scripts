@@ -13,6 +13,13 @@ function UIAnim:SetFacing(dir)
 	self.inst.UITransform:SetFacing(dir)
 end
 
+function UIAnim:GetBoundingBoxSize()
+    local x1, y1, x2, y2 = self.inst.AnimState:GetVisualBB()
+    local width, height = x2 - x1, y2 - y1
+    local scale = self:GetScale()
+    return width * scale.x, height * scale.y
+end
+
 function UIAnim:DebugDraw_AddSection(dbui, panel)
     UIAnim._base.DebugDraw_AddSection(self, dbui, panel)
 

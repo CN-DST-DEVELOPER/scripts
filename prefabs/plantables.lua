@@ -26,6 +26,10 @@ local function make_plantable(data)
                 --     one just for this sound!
                 deployer.SoundEmitter:PlaySound("dontstarve/common/plant")
             end
+
+            if TheWorld.components.lunarthrall_plantspawner and tree:HasTag("lunarplant_target") then
+                TheWorld.components.lunarthrall_plantspawner:setHerdsOnPlantable(tree)
+            end
         end
     end
 

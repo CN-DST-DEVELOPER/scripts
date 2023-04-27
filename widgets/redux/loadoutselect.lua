@@ -237,8 +237,9 @@ local LoadoutSelect = Class(Widget, function(self, user_profile, character, init
     self.currentContext = "wardrobe"
     self.switch_context_button = self:AddChild(TEMPLATES.StandardButton(function() self:SwitchContext() end, STRINGS.SKILLTREE.SKILLTREE, {200, 50}))
     self.switch_context_button:SetPosition(300,-315)
+	self.can_show_skilltree = self.currentcharacter and skilltreedefs.SKILLTREE_DEFS[self.currentcharacter]
 
-    if self.currentcharacter and skilltreedefs.SKILLTREE_DEFS[self.currentcharacter] and not TheInput:ControllerAttached() and not ThePlayer then
+    if self.can_show_skilltree and not TheInput:ControllerAttached() and not ThePlayer then
         self.switch_context_button:Show()
     else
         self.switch_context_button:Hide()
@@ -597,7 +598,7 @@ function LoadoutSelect:OnControl(control, down)
             self:_LoadItemSkinsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
-        elseif control == CONTROL_MENU_MISC_2 and self.currentcharacter and skilltreedefs.SKILLTREE_DEFS[self.currentcharacter] then
+        elseif control == CONTROL_MENU_MISC_2 and self.can_show_skilltree and not ThePlayer then
             self:SwitchContext()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true            
@@ -625,7 +626,7 @@ function LoadoutSelect:GetHelpText()
         if self:_ShouldShowStartingItemSkinsButton() then
 		    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_4) .. " " .. STRINGS.UI.ITEM_SKIN_DEFAULTS.TITLE)
         end
-        if self.currentcharacter and skilltreedefs.SKILLTREE_DEFS[self.currentcharacter] then
+        if self.can_show_skilltree and not ThePlayer then
             local text = self.switch_context_button:GetText()
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. text)
         end

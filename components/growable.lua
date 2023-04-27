@@ -2,6 +2,7 @@ local Growable = Class(function(self, inst)
     self.inst = inst
     self.stages = nil
     self.stage = 1
+    self.pausereasons = {}
     --self.loopstages = false
 	--self.loopstages_start = 1
     --self.growonly = false
@@ -119,16 +120,28 @@ function Growable:StopGrowing()
     end
 end
 
-function Growable:Pause()
+function Growable:Pause(reason)
 	if self.pausedremaining == nil then
 		local targettime = self.targettime
 		self:StopGrowing()
 		self.pausedremaining = targettime ~= nil and math.floor(targettime - GetTime()) or nil
 	end
+
+    if reason then
+        self.pausereasons[reason] = true
+    end
 end
 
-function Growable:Resume()
-    if self.pausedremaining ~= nil then
+function Growable:Resume(reason)
+    if reason then
+        self.pausereasons[reason] = nil
+    end
+    local paused = false
+    if next(self.pausereasons) then
+        paused = true
+    end
+
+    if self.pausedremaining ~= nil and not paused then
         local _usetimemultiplier = self.usetimemultiplier
         self:StartGrowing(math.max(0, self.pausedremaining))
         self.usetimemultiplier = _usetimemultiplier

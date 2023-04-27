@@ -162,16 +162,15 @@ SetSharedLootTable( 'rock_petrified_tree_old',
     {'flint',  0.75},
 })
 
-
 local function OnWork(inst, worker, workleft)
     if workleft <= 0 then
         local pt = inst:GetPosition()
-        SpawnPrefab("rock_break_fx").Transform:SetPosition(pt:Get())
+        SpawnPrefab("rock_break_fx").Transform:SetPosition(pt.x, pt.y, pt.z)
         inst.components.lootdropper:DropLoot(pt)
 
         if inst.showCloudFXwhenRemoved then
             local fx = SpawnPrefab("collapse_small")
-            fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+            fx.Transform:SetPosition(pt.x, pt.y, pt.z)
         end
 
 		if not inst.doNotRemoveOnWorkDone then
@@ -227,7 +226,7 @@ local function onload(inst, data)
     end
 end
 
-local function baserock_fn(bank, build, anim, icon, tag, multcolour)
+local function baserock_fn(bank, build, anim, minimapicon, tag, multcolour)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -238,8 +237,8 @@ local function baserock_fn(bank, build, anim, icon, tag, multcolour)
 
     MakeObstaclePhysics(inst, 1)
 
-    if icon ~= nil then
-        inst.MiniMapEntity:SetIcon(icon)
+    if minimapicon then
+        inst.MiniMapEntity:SetIcon(minimapicon)
     end
 
     inst.AnimState:SetBank(bank)
@@ -260,34 +259,31 @@ local function baserock_fn(bank, build, anim, icon, tag, multcolour)
     MakeSnowCoveredPristine(inst)
 
     inst:AddTag("boulder")
-    if tag ~= nil then
+    if tag then
         inst:AddTag(tag)
     end
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst:AddComponent("lootdropper")
 
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.MINE)
-    inst.components.workable:SetWorkLeft(TUNING.ROCKS_MINE)
-    inst.components.workable:SetOnWorkCallback(OnWork)
+    local workable_component = inst:AddComponent("workable")
+    workable_component:SetWorkAction(ACTIONS.MINE)
+    workable_component:SetWorkLeft(TUNING.ROCKS_MINE)
+    workable_component:SetOnWorkCallback(OnWork)
 
-    if multcolour == nil or (0 <= multcolour and multcolour < 1) then
-        if multcolour == nil then
-            multcolour = 0.5
-        end
-
-        local color = multcolour + math.random() * (1.0 - multcolour)
-        inst.AnimState:SetMultColour(color, color, color, 1)
+    multcolour = multcolour or 0.5
+    if 0 <= multcolour and multcolour < 1 then
+        local colour = multcolour + math.random() * (1.0 - multcolour)
+        inst.AnimState:SetMultColour(colour, colour, colour, 1)
     end
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.nameoverride = "ROCK"
+
     MakeSnowCovered(inst)
 
     MakeHauntableWork(inst)
@@ -376,7 +372,7 @@ local function OnRockMoonCapsuleWorkFinished(inst)
 
 	local seed = SpawnPrefab("moonrockseed")
 	seed.Transform:SetPosition(inst.Transform:GetWorldPosition())
-    if seed.OnSpawned ~= nil then
+    if seed.OnSpawned then
         seed:OnSpawned()
     end
 
@@ -415,7 +411,7 @@ local function set_moonglass_type(inst, new_type)
 end
 
 local function on_load_moonglass(inst, data)
-    if data ~= nil and data.rock_type ~= nil then
+    if data and data.rock_type then
         set_moonglass_type(inst, data.rock_type)
     end
 end
@@ -453,15 +449,10 @@ local function rock_petrified_tree_common(size)
 
     if not size then
         local rand = math.random()
-        if rand > 0.90 then
-            size = 4
-        elseif rand > 0.60 then
-            size = 1
-        elseif rand < 0.30 then
-            size = 2
-        else
-            size = 3
-        end
+        size = (rand > 0.90 and 4)
+            or (rand > 0.60 and 1)
+            or (rand < 0.30 and 2)
+            or 3
     end
 
     inst.treeSize = size

@@ -771,6 +771,7 @@ local function MakePlant(plant_def)
 
         inst:AddTag("plantedsoil")
         inst:AddTag("farm_plant")
+        inst:AddTag("lunarplant_target")
 		inst:AddTag("plant")
 		if plant_def.plant_type_tag then
 			inst:AddTag(plant_def.plant_type_tag)
@@ -842,6 +843,10 @@ local function MakePlant(plant_def)
         inst.components.workable:SetWorkAction(ACTIONS.DIG)
         inst.components.workable:SetWorkLeft(1)
         inst.components.workable:SetOnFinishCallback(dig_up)
+
+	    inst:AddComponent("knownlocations")
+	    inst:AddComponent("herdmember")
+	    inst.components.herdmember:SetHerdPrefab("domesticplantherd")
 
 		if not plant_def.fireproof then
 			MakeSmallBurnable(inst)

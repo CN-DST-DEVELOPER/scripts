@@ -1945,7 +1945,12 @@ function c_record()
 end
 -- ========================================
 
-
+function c_spawnrift()
+    local pos = ConsoleWorldPosition()
+    if TheWorld.components.riftspawner then
+        TheWorld.components.riftspawner:SpawnRift(pos)
+    end
+end
 
 -- Nuke any controller mappings, for when people get in a hairy situation with a controller mapping that is totally busted.
 function ResetControllersAndQuitGame()
