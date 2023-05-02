@@ -518,7 +518,7 @@ local function OnWeakVineAttacked(inst)
 	end
 end
 
-local function makeweak(inst)
+local function makeweak(inst, headplant)
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.LUNARTHRALL_PLANT_VINE_HEALTH)
     inst.components.health.redirect = function(target, amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
@@ -535,6 +535,19 @@ local function makeweak(inst)
     inst:AddComponent("planarentity")
 
 	inst:ListenForEvent("attacked", OnWeakVineAttacked)
+
+	if headplant ~= nil then
+		local target = headplant.components.combat.target
+		if target ~= nil then
+			inst.components.combat:SetTarget(target)
+		end
+		inst:ListenForEvent("newcombattarget", function(headplant, data)
+			inst.components.combat:SetTarget(data.target)
+		end, headplant)
+		inst:ListenForEvent("droppedtarget", function(headplant, data)
+			inst.components.combat:DropTarget()
+		end, headplant)
+	end
 
     inst:AddTag("weakvine")
     inst.AnimState:SetBank("lunarthrall_plant_vine_big")

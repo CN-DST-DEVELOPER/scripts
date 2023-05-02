@@ -321,6 +321,10 @@ function RiftSpawner:LoadPostPass(newents, data)
     --if self.X_rifts_enabled then
     --    self:EnableXRifts()
     --end
+
+    if self._worldsettingstimer:ActiveTimerExists(RIFTSPAWN_TIMERNAME) then
+        self._map:StartFindingGoodArenaPoints()
+    end
 end
 
 

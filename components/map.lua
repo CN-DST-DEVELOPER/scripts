@@ -678,7 +678,7 @@ function Map:CheckForBadThingsInArena(pt, badthingsatspawnpoints)
         local badthings = TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, nil, BADARENA_CANT_TAGS, BADARENA_ONEOF_TAGS)
         local badthingscount = #badthings
         for _, v in ipairs(badthings) do
-            if v.components.pickable and not v.components.pickable.transplanted or v:HasTag("plant") then
+            if (v.components.pickable == nil or not v.components.pickable.transplanted) and v:HasTag("plant") then
                 badthingscount = badthingscount - 1
             end
         end

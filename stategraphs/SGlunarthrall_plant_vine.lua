@@ -64,9 +64,9 @@ local function teleportahead(inst,pos)
     local nub = SpawnPrefab("lunarthrall_plant_vine")
     nub.Transform:SetPosition(inst.Transform:GetWorldPosition())
 	nub.Transform:SetRotation(inst.Transform:GetRotation())
-    
+
     if inst:HasTag("weakvine") then
-        nub:makeweak()
+		nub:makeweak(inst)
     end
     nub.sg:GoToState("nub_idle")
     nub.headplant = inst

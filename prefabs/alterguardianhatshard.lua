@@ -105,8 +105,6 @@ local function fn()
     inst.components.container.acceptsstacks = false
     inst.components.container.droponopen = true
 
-    inst:AddComponent("tradable")
-
     inst:AddComponent("preserver")
     inst.components.preserver:SetPerishRateMultiplier(0)
 

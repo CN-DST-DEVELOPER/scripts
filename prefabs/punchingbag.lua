@@ -51,6 +51,10 @@ local function on_health_delta(inst, data)
     end
 end
 
+local function on_blocked(inst, data)
+    do_digits(inst, 0)
+end
+
 local function do_hit_presentation(inst)
     if not inst:HasTag("burnt") then
 		if not (inst.AnimState:IsCurrentAnimation("hit") and inst.AnimState:GetCurrentAnimationFrame() < 4) then
@@ -236,6 +240,7 @@ local function basefn(build, tags)
     inst:ListenForEvent("attacked", onhit)
     inst:ListenForEvent("onbuilt", onbuilt)
     inst:ListenForEvent("healthdelta", on_health_delta)
+    inst:ListenForEvent("blocked", on_blocked)
     inst:ListenForEvent("equip", onequipped)
 
     --

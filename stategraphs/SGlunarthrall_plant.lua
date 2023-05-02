@@ -182,7 +182,6 @@ local states=
 
         onenter = function(inst)
             inst.tired = true
-            inst.components.combat:DropTarget()
             inst:customPlayAnimation("tired_pre_"..inst.targetsize)
             inst.SoundEmitter:PlaySound("rifts/lunarthrall/tired_pre")
         end,
