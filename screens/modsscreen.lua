@@ -431,7 +431,7 @@ function ModsScreen:StartWorkshopUpdate()
 		function(result, isSuccessful, resultCode) self:OnStatsQueried(result, isSuccessful, resultCode) end)
 
 	self:UpdateForWorkshop()
-	self.updatetask = staticScheduler:ExecutePeriodic( 1, self.UpdateForWorkshop, nil, 0, "updateforworkshop", self )
+	self.updatetask = staticScheduler:ExecutePeriodic( TUNING.MODS_QUERY_TIME, self.UpdateForWorkshop, nil, 0, "updateforworkshop", self )
 
 end
 

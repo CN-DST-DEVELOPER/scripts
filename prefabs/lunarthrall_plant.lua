@@ -171,8 +171,7 @@ local function deinfest(inst)
 end
 
 local function playSpawnAnimation(inst)
-    inst:customPlayAnimation("spawn_"..inst.targetsize )
-    inst:customPushAnimation("idle_"..inst.targetsize )
+    inst.sg:GoToState("spawn")
 end
 
 local function OnLoadPostPass(inst)
@@ -523,7 +522,7 @@ local function makeweak(inst)
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.LUNARTHRALL_PLANT_VINE_HEALTH)
     inst.components.health.redirect = function(target, amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
-        if inst.headplant then
+        if inst.headplant and inst.headplant:IsValid() then
             inst.headplant.indirectdamage = inst.GUID
             local result = inst.headplant.components.health:DoDelta(amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
             if not inst.headplant.components.health:IsDead() then

@@ -43,7 +43,7 @@ function CustomPresets:Load()
         if profilepresets ~= nil and not IsTableEmpty(profilepresets) then
             for i, level in pairs(profilepresets) do
                 local basepreset = (level.location == "forest" and "SURVIVAL_TOGETHER") or (level.location == "cave" and "DST_CAVE") or (nil)
-                if basepreset then
+                if basepreset and level.id and level.name and level.desc then
                     local id = "CUSTOM_"..(level.id):gsub("_", " ") --prepend CUSTOM_ because all custom presets start with that.
                     local defaultsettings = Customize.GetWorldSettingsOptionsWithLocationDefaults(level.location, level.location == "forest")
                     local settingsoverrides = {}

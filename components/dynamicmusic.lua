@@ -609,7 +609,7 @@ local function OnHasInspirationBuff(player, data)
 end
 
 local function OnInsane()
-    if _dangertask == nil and _isenabled then
+    if _dangertask == nil and _isenabled and (_extendtime == 0 or GetTime() >= _extendtime) then
         _soundemitter:PlaySound("dontstarve/sanity/gonecrazy_stinger")
         StopBusy()
         --Repurpose this as a delay before stingers or busy can start again
@@ -619,7 +619,7 @@ end
 
 local function OnEnlightened()
 	-- TEMP
-    if _dangertask == nil and _isenabled then
+    if _dangertask == nil and _isenabled and (_extendtime == 0 or GetTime() >= _extendtime) then
         _soundemitter:PlaySound("dontstarve/sanity/gonecrazy_stinger")
         StopBusy()
         --Repurpose this as a delay before stingers or busy can start again

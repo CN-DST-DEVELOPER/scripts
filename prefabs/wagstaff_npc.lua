@@ -704,9 +704,11 @@ local function relocate_wagstaff(inst)
 end
 
 local function pstbossontimerdone(inst,data)
-    local rifts_on = TheWorld.components.riftsspawner
+    
     if data and data.name == "relocate_wagstaff" then
-        relocate_wagstaff(inst)
+        if TUNING.SPAWN_RIFTS == 1 and TheWorld.components.riftspawner and not TheWorld.components.riftspawner:GetEnabled()  then
+            relocate_wagstaff(inst)
+        end
     end
 end
 
@@ -717,11 +719,15 @@ local function PstBossOnSave(inst, data)
 end
 
 local function PstBossOnLoad(inst, data)
-    if data and data.continuework and data.continuework == true then
-        inst:PushEvent("continuework")
-        inst:PushEvent("spawndevice", ERODEIN)
-        inst.continuework = true
-        inst.persists = true
+    if TUNING.SPAWN_RIFTS ~= 1 then
+        inst:Remove()
+    else
+        if data and data.continuework and data.continuework == true then
+            inst:PushEvent("continuework")
+            inst:PushEvent("spawndevice", ERODEIN)
+            inst.continuework = true
+            inst.persists = true
+        end
     end
 end
 

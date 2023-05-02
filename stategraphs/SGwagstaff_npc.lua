@@ -273,14 +273,18 @@ local states =
                 end
             end
 
-            if not inst.sg.statemem.notimeout then
-                inst.sg:SetTimeout(119)
-            end
+            if TUNING.SPAWN_RIFTS == 1 and TheWorld.components.riftspawner and not TheWorld.components.riftspawner:GetLunarRiftsEnabled()  then
+                if not inst.sg.statemem.notimeout then
+                    inst.sg:SetTimeout(119)
+                end
 
-            if TheWorld.components.riftspawner and not TheWorld.components.riftspawner:GetEnabled() then
-                inst.sg.statemem.request = 1
-                inst.components.trader:Enable()
-                inst.request_task = inst:DoPeriodicTask(10,inst.doplayerrequest)
+                if TheWorld.components.riftspawner and not TheWorld.components.riftspawner:GetLunarRiftsEnabled() then
+                    inst.sg.statemem.request = 1
+                    inst.components.trader:Enable()
+                    inst.request_task = inst:DoPeriodicTask(10,inst.doplayerrequest)
+                end
+            else
+                inst.sg:SetTimeout(4)
             end
         end,
 

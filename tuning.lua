@@ -51,6 +51,8 @@ function Tune(overrides)
 
     TUNING =
     {
+        MODS_QUERY_TIME = 60, -- NOTES(JBK): We do not need live instant updates per query for this while the mod panels are up.
+
         MAX_SERVER_SIZE = 6,
         DEMO_TIME = total_day_time * 2 + day_time*.2,
         AUTOSAVE_INTERVAL = total_day_time,
@@ -3007,6 +3009,9 @@ function Tune(overrides)
         CACTUS_REGROWTH_TIME_MULT = 1,
         CAVE_BANANA_TREE_REGROWTH_TIME = total_day_time * 5,
         CAVE_BANANA_TREE_REGROWTH_TIME_MULT = 1,
+        MUSHROOM_REGROWTH_TIME = total_day_time * 20,
+        MUSHROOM_REGROWTH_TIME_MULT = 1,
+        MUSHROOM_REGROWTH_TIME_FAST_MULT = 2,
 
         EVERGREEN_REGROWTH = {
             OFFSPRING_TIME = total_day_time * 5,

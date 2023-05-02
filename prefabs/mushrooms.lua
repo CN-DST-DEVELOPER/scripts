@@ -14,11 +14,13 @@ local capassets =
 }
 
 local function onsave(inst, data)
-    data.rain = inst.rain
+    if inst.rain > 0 then
+        data.rain = inst.rain
+    end
 end
 
 local function onload(inst, data)
-    if data.rain or inst.rain then
+    if data and data.rain then
         inst.rain = data.rain or inst.rain
     end
 end
@@ -70,8 +72,13 @@ local function close(inst)
 end
 
 local function onregenfn(inst)
+    inst.components.pickable.caninteractwith = false -- Wait for the mushroom to become visible.
+
     if inst.data.open_time == TheWorld.state.cavephase then
         open(inst)
+    else
+        inst.AnimState:PushAnimation("inground", false)
+        inst:DoTaskInTime(.25, function() inst.SoundEmitter:PlaySound("dontstarve/common/mushroom_down") end )
     end
 end
 
@@ -236,6 +243,7 @@ local function mushcommonfn(data)
     --inst.components.transformer:SetOnLoadCheck(testfortransformonload)
     --inst.components.transformer.transformPrefab = data.transform_prefab
 
+    AddToRegrowthManager(inst)
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)
     MakeNoGrowInWinter(inst)
@@ -254,6 +262,9 @@ local function mushcommonfn(data)
         inst.AnimState:PlayAnimation("inground")
         inst.components.pickable.caninteractwith = false
     end
+
+    inst.OnSave = onsave
+    inst.OnLoad = onload
 
     return inst
 end

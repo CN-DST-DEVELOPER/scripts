@@ -215,10 +215,16 @@ function d_decodedata(path)
     end)
 end
 
-function d_spawnrift(...)
-    if TheWorld and TheWorld.components.riftspawner then
-        TheWorld.components.riftspawner:Debug_SpawnRift(...)
-    end
+function d_riftspawns()
+    c_announce("Rift open, 5s for spawning..")
+    TheWorld:PushEvent("lunarrift_opened")
+    TheWorld:DoTaskInTime(5, function()
+        c_announce("Rifts Spawning..")
+        for i = 1, 200 do
+            TheWorld.components.riftspawner:SpawnRift()
+        end
+        TheWorld.components.riftspawner:DebugHighlightRifts()
+    end)
 end
 
 function d_allsongs()

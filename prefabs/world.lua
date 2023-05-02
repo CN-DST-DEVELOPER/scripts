@@ -45,6 +45,8 @@ local assets =
 	Asset("IMAGE", "images/waterfall_mask.tex"),
 	Asset("IMAGE", "levels/textures/waterfall_noise1.tex"),
 	Asset("IMAGE", "levels/textures/waterfall_noise2.tex"),
+
+    Asset("SCRIPT", "scripts/prefabs/rift_portal_defs.lua"),
 }
 
 

@@ -31,7 +31,7 @@ local Herd = Class(function(self, inst)
     self.updatepos = true
     self.updateposincombat = false
 
-    self.task = self.inst:DoPeriodicTask(math.random() * 2 + 6, _OnUpdate, nil, self)
+    self.task = self.inst:DoPeriodicTask(math.random() * 2 + 6, _OnUpdate, nil, self) -- NOTES(JBK): Keep this smaller than herdmember sample rate! Search string: HERDSAMPLER823
 
     self._onmemberkilled = function(member) self:RemoveMember(member) end
 end)

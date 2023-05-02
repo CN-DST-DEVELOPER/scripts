@@ -15,6 +15,9 @@ local prefabs =
     "rift_terraformer",
 }
 
+
+---------------------------------------------------------------------------------
+
 local STAGEUP_TIME = 3
 
 local MIN_CRYSTAL_DISTANCE = 3.0
@@ -671,6 +674,20 @@ local function portal_shadow_fn()
 
     return inst
 end
+
+--------------------------------------------------------------------------------
+
+local rift_portal_defs = require("prefabs/rift_portal_defs")
+local RIFTPORTAL_FNS = rift_portal_defs.RIFTPORTAL_FNS
+local RIFTPORTAL_CONST = rift_portal_defs.RIFTPORTAL_CONST
+rift_portal_defs = nil
+
+RIFTPORTAL_FNS.CreateRiftPortalDefinition("lunarrift_portal", {
+    CustomAllowTest = function(_map, x, y, z)
+        return _map:FindVisualNodeAtPoint(x, y, z, "not_mainland") == nil -- Only mainland.
+    end,
+    Affinity = RIFTPORTAL_CONST.AFFINITY.LUNAR,
+})
 
 return Prefab("lunarrift_portal", portalfn, assets, prefabs),
     Prefab("lunarrift_portal_shadow", portal_shadow_fn, assets)

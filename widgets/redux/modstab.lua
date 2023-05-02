@@ -653,7 +653,7 @@ function ModsTab:StartWorkshopUpdate()
     end
 
     self:UpdateForWorkshop()
-    self.workshopupdatetask = staticScheduler:ExecutePeriodic( 1, self.UpdateForWorkshop, nil, 0, "updateforworkshop", self)
+    self.workshopupdatetask = staticScheduler:ExecutePeriodic( TUNING.MODS_QUERY_TIME, self.UpdateForWorkshop, nil, 0, "updateforworkshop", self)
 end
 
 local function ModNameVersionTableContains( modnames_versions, modname )

@@ -8,7 +8,7 @@ local PERIODIC_TIME = TUNING.TOTAL_DAY_TIME *2
 local EXISTING_PLANT_SPACE = 30
 
 local function getrifts()
-    return TheWorld.components.riftspawner and TheWorld.components.riftspawner:GetRiftsOfType("lunarrift_portal") or nil
+    return TheWorld.components.riftspawner and TheWorld.components.riftspawner:GetRiftsOfPrefab("lunarrift_portal") or nil
 end
 
 local function releasethrall(world, target)

@@ -21,7 +21,7 @@ local HerdMember = Class(function(self, inst)
     self.herd = nil
     self.herdprefab = "beefaloherd"
 
-    self.task = self.inst:DoTaskInTime(5, OnInit)
+    self.task = self.inst:DoTaskInTime(8.1, OnInit)-- NOTES(JBK): Keep this larger than herd component sample rate! Search string: HERDSAMPLER823
 end,
 nil,
 {
