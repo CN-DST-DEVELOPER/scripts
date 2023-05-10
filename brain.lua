@@ -2,6 +2,7 @@
 BrainWrangler = Class(function(self)
         self.instances = {}
         self.updaters = {}
+        self._safe_updaters = {} -- NOTES(JBK): Internal use for safely iterating over self.updaters.
         self.tickwaiters = {}
         self.hibernaters = {}
 end)
@@ -130,18 +131,27 @@ function BrainWrangler:Update(current_tick)
     end
 
 
-    for k,v in pairs(self.updaters) do
+    -- NOTES(JBK): We need to make a copy of the keys to safely iterate over the table because brains will remove and add onto the self.updaters table during iteration.
+    local count = 0
+    for k, _ in pairs(self.updaters) do
         if k.inst.entity:IsValid() and not k.inst:IsAsleep() then
-			k:OnUpdate()
-			local sleep_amount = k:GetSleepTime()
-			if sleep_amount then
-				if sleep_amount > GetTickTime() then
-					self:Sleep(k, sleep_amount)
-				else
-				end
-			else
-				self:Hibernate(k)
-			end
+            count = count + 1
+            self._safe_updaters[count] = k
+        end
+    end
+    for i = 1, count do
+        local k = self._safe_updaters[i]
+        self._safe_updaters[i] = nil
+
+        k:OnUpdate()
+        local sleep_amount = k:GetSleepTime()
+        if sleep_amount then
+            if sleep_amount > GetTickTime() then
+                self:Sleep(k, sleep_amount)
+            else
+            end
+        else
+            self:Hibernate(k)
         end
     end
 end

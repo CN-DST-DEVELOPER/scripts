@@ -4798,7 +4798,7 @@ return {
 		STAFF_LUNARPLANT = "Plant power!",
 		SWORD_LUNARPLANT = "It's hard not to make sound effects when I wave it around.",
 		PICKAXE_LUNARPLANT = "Smashing!",
-		SHOVEL_LUNARPLANT = "Has science gone too far?",
+		SHOVEL_LUNARPLANT = "The dirt displacing possibilities are endless!",
 
         PUNCHINGBAG = "It comes with a finely calibrated ouch-o-meter.",
     },

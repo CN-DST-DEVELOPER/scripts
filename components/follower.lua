@@ -240,9 +240,9 @@ function Follower:SetLeader(new_leader)
 	local changed_leader = prev_leader ~= new_leader
 
     if prev_leader and changed_leader then
-        local leader_cmp = self.leader.components.leader
-        if leader_cmp then
-            leader_cmp:RemoveFollower(self.inst)
+        local leader = self.leader.components.leader
+        if leader then
+            leader:RemoveFollower(self.inst)
         end
 
         self:StopLeashing()
@@ -259,9 +259,9 @@ function Follower:SetLeader(new_leader)
 
         self.leader = new_leader
 
-        local leader_cmp = new_leader.components.leader
-        if leader_cmp then
-            leader_cmp:AddFollower(self.inst)
+        local leader = new_leader.components.leader
+        if leader then
+            leader:AddFollower(self.inst)
         end
 
         self.inst:ListenForEvent("onremove", self.OnLeaderRemoved, new_leader)
@@ -290,9 +290,9 @@ local function stopfollow(inst, self)
 end
 
 function Follower:AddLoyaltyTime(time)
-    local leader_cmp = self.leader and self.leader.components.leader
-    if leader_cmp and leader_cmp.loyaltyeffectiveness then
-		time = time * leader_cmp.loyaltyeffectiveness
+    local leader = self.leader and self.leader.components.leader
+    if leader and leader.loyaltyeffectiveness then
+		time = time * leader.loyaltyeffectiveness
 	end
 
     local current_time = GetTime()

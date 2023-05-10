@@ -13,6 +13,34 @@ local events =
     end),
 }
 
+local BLUEPRINT_LOOTS = {
+    "boat_cannon_kit",
+    "cannonball_rock_item",
+    "dock_kit",
+    "dock_woodposts_item",
+    "turf_monkey_ground",
+}
+
+local BLUEPRINTLOOTS_MUSTTAGS = {"_inventoryitem"}
+local function FindBlueprintLootsIndex(x, y, z)
+    local lootsindex = nil
+    local ents = TheSim:FindEntities(x, y, z, 16, BLUEPRINTLOOTS_MUSTTAGS)
+    for _, ent in ipairs(ents) do
+        if ent.prefab == "blueprint" then
+            for index, lootname in ipairs(BLUEPRINT_LOOTS) do
+                if ent.recipetouse == lootname then
+                    if lootsindex == nil then
+                        lootsindex = index
+                    elseif index > lootsindex then
+                        lootsindex = index
+                    end
+                end
+            end
+        end
+    end
+    return lootsindex
+end
+
 local states =
 {
     State{
@@ -65,26 +93,27 @@ local states =
                     inst.sg:GoToState("removecurse", {giver = inst.sg.statemem.giver})
                 else 
                     if inst.sg.statemem.giver:HasTag("player") then
+                        local builder = inst.sg.statemem.giver.components.builder
+                        local x, y, z = inst.Transform:GetWorldPosition()
+                        local lootsindex = FindBlueprintLootsIndex(x, y, z)
 
-                        if not inst.sg.statemem.giver.components.builder:KnowsRecipe("boat_cannon_kit") then
-                            local loot = SpawnPrefab("boat_cannon_kit_blueprint")
-                            inst.components.lootdropper:FlingItem(loot)
-                            loot:AddTag("nosteal")
-                            local loot2 = SpawnPrefab("cannonball_rock_item_blueprint")
-                            inst.components.lootdropper:FlingItem(loot2)
-                            loot2:AddTag("nosteal")
-                        elseif not inst.sg.statemem.giver.components.builder:KnowsRecipe("dock_kit") then
-                            local loot = SpawnPrefab("dock_kit_blueprint")
-                            inst.components.lootdropper:FlingItem(loot)
-                            loot:AddTag("nosteal")
-                            local loot2 = SpawnPrefab("dock_woodposts_item_blueprint")
-                            inst.components.lootdropper:FlingItem(loot2)
-                            loot2:AddTag("nosteal")
-                        elseif not inst.sg.statemem.giver.components.builder:KnowsRecipe("turf_monkey_ground") then
-                             local loot = SpawnPrefab("turf_monkey_ground_blueprint")
-                            inst.components.lootdropper:FlingItem(loot)
-                            loot:AddTag("nosteal")
+                        local lootname
+                        for index, recipename in ipairs(BLUEPRINT_LOOTS) do
+                            if lootsindex == nil or lootsindex < index then
+                                if builder == nil or not builder:KnowsRecipe(recipename) then
+                                    lootname = recipename
+                                    break
+                                end
+                            end
                         end
+
+                        if not lootname then
+                            lootname = BLUEPRINT_LOOTS[math.random(#BLUEPRINT_LOOTS)]
+                        end
+
+                        local loot = SpawnPrefab(lootname .. "_blueprint")
+                        inst.components.lootdropper:FlingItem(loot)
+                        loot:AddTag("nosteal")
                     end
                     inst.sg:GoToState("happy",{say="MONKEY_QUEEN_HAPPY"})
                 end

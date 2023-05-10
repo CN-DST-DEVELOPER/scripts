@@ -258,6 +258,12 @@ local states=
             inst.Physics:SetDamping(0)
             inst.Physics:SetMotorVel(0, math.random() * 10 - 20, 0)
             inst.AnimState:PlayAnimation("glide", true)
+
+            inst.sg.statemem.collisionmask = inst.Physics:GetCollisionMask()
+            inst.Physics:SetCollisionMask(COLLISION.GROUND)
+            if not TheWorld.ismastersim then
+                inst.Physics:SetLocalCollisionMask(COLLISION.GROUND)
+            end
         end,
 
         onupdate = function(inst)
@@ -276,6 +282,11 @@ local states=
         onexit = function(inst)
             local x, y, z = inst.Transform:GetWorldPosition()
             inst.Transform:SetPosition(x, 0, z)
+
+            inst.Physics:ClearLocalCollisionMask()
+            if inst.sg.statemem.collisionmask ~= nil then
+                inst.Physics:SetCollisionMask(inst.sg.statemem.collisionmask)
+            end
         end,
     },
 

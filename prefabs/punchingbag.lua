@@ -201,10 +201,10 @@ local function basefn(build, tags)
     inst:AddComponent("debuffable")
 
     --
-    local health_cmp = inst:AddComponent("health")
-    health_cmp:SetMaxHealth(MAX_NUM + 10)
-    health_cmp:SetMinHealth(1)
-    health_cmp:StartRegen(MAX_NUM + 10, 0.1)
+    local health = inst:AddComponent("health")
+    health:SetMaxHealth(MAX_NUM + 10)
+    health:SetMinHealth(1)
+    health:StartRegen(MAX_NUM + 10, 0.1)
 
     --
     inst:AddComponent("inspectable")
@@ -217,18 +217,18 @@ local function basefn(build, tags)
     inst.components.inventory.maxslots = 0
 
     --
-    local trader_cmp = inst:AddComponent("trader")
-    trader_cmp:SetAbleToAcceptTest(should_accept_item)
-    trader_cmp.onaccept = on_get_item
-    trader_cmp.deleteitemonaccept = false
-    trader_cmp.acceptnontradable = true
+    local trader = inst:AddComponent("trader")
+    trader:SetAbleToAcceptTest(should_accept_item)
+    trader.onaccept = on_get_item
+    trader.deleteitemonaccept = false
+    trader.acceptnontradable = true
 
     --
-    local workable_cmp = inst:AddComponent("workable")
-    workable_cmp:SetWorkAction(ACTIONS.HAMMER)
-    workable_cmp:SetWorkLeft(6)
-    workable_cmp:SetOnFinishCallback(on_finished_hammering)
-    workable_cmp:SetOnWorkCallback(on_hammered)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(6)
+    workable:SetOnFinishCallback(on_finished_hammering)
+    workable:SetOnWorkCallback(on_hammered)
 
     --
     MakeHauntable(inst)

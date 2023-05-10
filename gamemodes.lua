@@ -162,7 +162,7 @@ GAME_MODES_ORDER =
     quagmire = 3,
 }
 
-local function mode_cmp(a, b)
+local function mode_comp(a, b)
     return (GAME_MODES_ORDER[a.data] or math.huge) < (GAME_MODES_ORDER[b.data] or math.huge)
 end
 
@@ -230,7 +230,7 @@ function GetGameModesSpinnerData(enabled_mods)
         end
     end
 
-    table.sort(spinner_data, mode_cmp)
+    table.sort(spinner_data, mode_comp)
     return spinner_data
 end
 

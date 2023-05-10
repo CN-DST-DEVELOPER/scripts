@@ -1,6 +1,6 @@
 local function ontype(self, type, old_type)
 	if old_type ~= nil then
-		self.inst:Removetag("weighable_"..old_type)
+		self.inst:RemoveTag("weighable_"..old_type)
 	end
 	if type ~= nil then
 		self.inst:AddTag("weighable_"..type)
@@ -32,7 +32,7 @@ nil,
 
 function Weighable:OnRemoveFromEntity()
 	if self.type ~= nil then
-		self.inst:Removetag("weighable_"..self.type)
+		self.inst:RemoveTag("weighable_"..self.type)
 	end
 end
 

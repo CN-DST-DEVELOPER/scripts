@@ -142,17 +142,17 @@ local function bfs_for_root(start_xy, visited)
     return found_root
 end
 
-local function destroy_dock_at_point(world, dx, dz, dockmanager_cmp, dont_toss_loot)
-    dockmanager_cmp:DestroyDockAtPoint(dx, 0, dz, dont_toss_loot)
+local function destroy_dock_at_point(world, dx, dz, dockmanager, dont_toss_loot)
+    dockmanager:DestroyDockAtPoint(dx, 0, dz, dont_toss_loot)
 end
 
-local function start_destroy_for_tile(_, txy, wid, dockmanager_cmp)
+local function start_destroy_for_tile(_, txy, wid, dockmanager)
     local center_x, center_y, center_z = _map:GetTileCenterPoint(txy % wid, math.floor(txy / wid))
 
-    dockmanager_cmp:QueueDestroyForDockAtPoint(center_x, center_y, center_z)
+    dockmanager:QueueDestroyForDockAtPoint(center_x, center_y, center_z)
 end
 
-local function test_for_destroy_at_point(txy, visited, dockmanager_cmp)
+local function test_for_destroy_at_point(txy, visited, dockmanager)
     local should_delete = false
 
     -- If this got a visited value of true, it touches a root and shouldn't break.
@@ -165,7 +165,7 @@ local function test_for_destroy_at_point(txy, visited, dockmanager_cmp)
     if should_delete and not _marked_for_delete_grid:GetDataAtIndex(txy) then
         _marked_for_delete_grid:SetDataAtIndex(txy, true)
 
-        _world:DoTaskInTime(math.random(1, 10)*FRAMES, start_destroy_for_tile, txy, WIDTH, dockmanager_cmp)
+        _world:DoTaskInTime(math.random(1, 10)*FRAMES, start_destroy_for_tile, txy, WIDTH, dockmanager)
 
         return true
     end
@@ -213,8 +213,8 @@ end
 
 function self:CreateDockAtTile(tile_x, tile_y, dock_tile_type)
     local current_tile = nil
-    local undertile_cmp = _world.components.undertile
-    if undertile_cmp ~= nil then
+    local undertile = _world.components.undertile
+    if undertile ~= nil then
         current_tile = _map:GetTile(tile_x, tile_y)
     end
 
@@ -222,8 +222,8 @@ function self:CreateDockAtTile(tile_x, tile_y, dock_tile_type)
 
     -- V2C: Because of a terraforming callback in farming_manager.lua, the undertile gets cleared during SetTile.
     --      We can circumvent this for now by setting the undertile after SetTile.
-    if undertile_cmp ~= nil and current_tile ~= nil then
-        undertile_cmp:SetTileUnderneath(tile_x, tile_y, current_tile)
+    if undertile ~= nil and current_tile ~= nil then
+        undertile:SetTileUnderneath(tile_x, tile_y, current_tile)
     end
 
     self:_GenerateDockDataForTile(tile_x, tile_y)

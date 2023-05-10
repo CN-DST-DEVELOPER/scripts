@@ -2543,6 +2543,13 @@ function PlayerController:OnUpdate(dt)
     end
 end
 
+local function CheckControllerPriorityTagOrOverride(target, tag, override)
+	if override ~= nil then
+		return FunctionOrValue(override)
+	end
+	return target:HasTag(tag)
+end
+
 local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
     if self.inst:HasTag("playerghost") or self.inst.replica.inventory:IsHeavyLifting() then
         self.controller_attack_target = nil
@@ -2618,13 +2625,13 @@ local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 
                         if isally then
                             score = score * .25
-                        elseif v:HasTag("epic") then
+						elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
                             score = score * 5
-                        elseif v:HasTag("monster") then
+						elseif CheckControllerPriorityTagOrOverride(v, "monster", v.controller_priority_override_is_monster) then
                             score = score * 4
-                        end
+						end
 
-                        if v.replica.combat:GetTarget() == self.inst then
+						if v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
                             score = score * 6
                         end
 

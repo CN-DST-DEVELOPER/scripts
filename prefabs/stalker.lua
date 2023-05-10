@@ -671,6 +671,7 @@ end
 local function OnSoldiersChanged(inst)
     if inst.hasshield ~= (inst.components.commander:GetNumSoldiers() > 0) then
         inst.hasshield = not inst.hasshield
+		inst._hasshield:set(inst.hasshield)
         if not inst.hasshield then
             inst.components.timer:StopTimer("channelers_cd")
             inst.components.timer:StartTimer("channelers_cd", TUNING.STALKER_CHANNELERS_CD)
@@ -1295,6 +1296,12 @@ local function common_fn(bank, build, shadowsize, canfight, atriumstalker)
         inst._playingmusic = false
         inst._musictask = nil
         SetMusicLevel(inst, 1)
+
+		--Lower priority to regular monster when it is shielded
+		inst._hasshield = net_bool(inst.GUID, "stalker._hasshield")
+		inst.controller_priority_override_is_epic = function()
+			return not inst._hasshield:value()
+		end
     end
 
     if canfight then

@@ -642,12 +642,12 @@ local function ringfn()
     inst:DoTaskInTime(0, SetUpAuxiliaryObjects)
 
     ---------------------------------------------------------
-    local minigame_component = inst:AddComponent("minigame")
-    minigame_component.gametype = "bunnyman_pillowfighting"
-    minigame_component:SetOnActivatedFn(OnActivateMinigame)
-    minigame_component:SetOnDeactivatedFn(OnDeactivateMinigame)
-    minigame_component.spectator_dist = TUNING.BUNNY_RING_MINIGAME_ARENA_RADIUS + 20
-    minigame_component.participator_dist = 0
+    local minigame = inst:AddComponent("minigame")
+    minigame.gametype = "bunnyman_pillowfighting"
+    minigame:SetOnActivatedFn(OnActivateMinigame)
+    minigame:SetOnDeactivatedFn(OnDeactivateMinigame)
+    minigame.spectator_dist = TUNING.BUNNY_RING_MINIGAME_ARENA_RADIUS + 20
+    minigame.participator_dist = 0
 
     ---------------------------------------------------------
     inst:AddComponent("entitytracker")
@@ -767,9 +767,9 @@ local function kitfn()
     end
 
     ---------------------------------------------------------
-    local deployable_component = inst:AddComponent("deployable")
-    deployable_component.ondeploy = on_kit_deployed
-    deployable_component:SetDeployMode(DEPLOYMODE.CUSTOM)
+    local deployable = inst:AddComponent("deployable")
+    deployable.ondeploy = on_kit_deployed
+    deployable:SetDeployMode(DEPLOYMODE.CUSTOM)
 
     ---------------------------------------------------------
     inst:AddComponent("inspectable")
@@ -778,8 +778,8 @@ local function kitfn()
     inst:AddComponent("inventoryitem")
 
     ---------------------------------------------------------
-    local fuel_component = inst:AddComponent("fuel")
-    fuel_component.fuelvalue = TUNING.LARGE_FUEL
+    local fuel = inst:AddComponent("fuel")
+    fuel.fuelvalue = TUNING.LARGE_FUEL
 
     ---------------------------------------------------------
     MakeLargeBurnable(inst)
@@ -983,23 +983,23 @@ local function bellfn()
     end
 
     ---------------------------------------------------------
-    local activatable_component = inst:AddComponent("activatable")
-    activatable_component.OnActivate = OnBellActivated
+    local activatable = inst:AddComponent("activatable")
+    activatable.OnActivate = OnBellActivated
 
     ---------------------------------------------------------
-    local inspectable_component = inst:AddComponent("inspectable")
-    inspectable_component.getstatus = GetStatus
+    local inspectable = inst:AddComponent("inspectable")
+    inspectable.getstatus = GetStatus
 
     ---------------------------------------------------------
-    local workable_component = inst:AddComponent("workable")
-    workable_component:SetWorkAction(ACTIONS.HAMMER)
-    workable_component:SetWorkLeft(4)
-    workable_component:SetOnWorkCallback(on_bell_worked)
-    workable_component:SetOnFinishCallback(on_bell_work_finished)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(4)
+    workable:SetOnWorkCallback(on_bell_worked)
+    workable:SetOnFinishCallback(on_bell_work_finished)
 
     ---------------------------------------------------------
-    local lootdropper_component = inst:AddComponent("lootdropper")
-    lootdropper_component:SetLoot(BELL_LOOTDROPPER_LOOT)
+    local lootdropper = inst:AddComponent("lootdropper")
+    lootdropper:SetLoot(BELL_LOOTDROPPER_LOOT)
 
     ---------------------------------------------------------
     inst:ListenForEvent("onplaced", bell_onplaced)

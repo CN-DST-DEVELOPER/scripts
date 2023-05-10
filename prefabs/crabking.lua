@@ -470,6 +470,9 @@ local function removearm(inst,armpos)
 end
 
 local function spawnarm(inst,armpos, fx)
+    if inst.arms == nil then -- This happens when the Crab King goes into entity sleep we should not continue spawning arms.
+        return
+    end
 
     local clawsnum = TUNING.CRABKING_BASE_CLAWS + (math.floor(inst.countgems(inst).green/2))
 

@@ -70,6 +70,9 @@ local function InitEnvelope()
             { 1,    { fire_max_scale * .5, fire_max_scale * .4 } },
         }
     )
+
+    InitEnvelope = nil
+    IntColour = nil
 end
 
 --------------------------------------------------------------------------

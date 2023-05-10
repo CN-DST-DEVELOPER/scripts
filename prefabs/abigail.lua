@@ -23,14 +23,14 @@ local function UpdateGhostlyBondLevel(inst, level)
 					or level == 2 and TUNING.ABIGAIL_HEALTH_LEVEL2
 					or TUNING.ABIGAIL_HEALTH_LEVEL1
 
-	local health_comp = inst.components.health
-	if health_comp ~= nil then
-		if health_comp:IsDead() then
-			health_comp.maxhealth = max_health
+	local health = inst.components.health
+	if health ~= nil then
+		if health:IsDead() then
+			health.maxhealth = max_health
 		else
-			local health_percent = health_comp:GetPercent()
-			health_comp:SetMaxHealth(max_health)
-			health_comp:SetPercent(health_percent, true)
+			local health_percent = health:GetPercent()
+			health:SetMaxHealth(max_health)
+			health:SetPercent(health_percent, true)
 		end
 
 	    if inst._playerlink ~= nil and inst._playerlink.components.pethealthbar ~= nil then

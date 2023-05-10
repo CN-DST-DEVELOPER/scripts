@@ -1,6 +1,6 @@
 local function ontype(self, type, old_type)
 	if old_type ~= nil then
-		self.inst:Removetag("trophyscale_"..old_type)
+		self.inst:RemoveTag("trophyscale_"..old_type)
 	end
 	if type ~= nil then
 		self.inst:AddTag("trophyscale_"..type)

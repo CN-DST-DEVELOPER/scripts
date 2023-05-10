@@ -59,13 +59,13 @@ local function fn()
     inst.AnimState:SetMultColour(1,1,1,0)
 
     ------------------------------------------------------------
-    local timer_component = inst:AddComponent("timer")
-    timer_component:StartTimer("begin_delay", 0.5)
-    timer_component:StartTimer("end_delay", 3)
+    local timer = inst:AddComponent("timer")
+    timer:StartTimer("begin_delay", 0.5)
+    timer:StartTimer("end_delay", 3)
 
     ------------------------------------------------------------
-    local updatelooper_component = inst:AddComponent("updatelooper")
-    updatelooper_component:AddOnUpdateFn(looperupdate)
+    local updatelooper = inst:AddComponent("updatelooper")
+    updatelooper:AddOnUpdateFn(looperupdate)
 
     ------------------------------------------------------------
     inst:ListenForEvent("timerdone", timerdone)

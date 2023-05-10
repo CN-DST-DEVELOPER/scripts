@@ -98,10 +98,10 @@ function GroundPounder:DestroyPoints(points, breakobjects, dodamage, pushplatfor
                 end
                 if pushinventoryitems then
                     for _, object in ipairs(ents) do
-                        local object_inventoryitem_cmp = object.components.inventoryitem
-                        if object_inventoryitem_cmp then
+                        local inventoryitem = object.components.inventoryitem
+                        if inventoryitem then
                             Launch(object, self.inst)
-                            object_inventoryitem_cmp:SetLanded(false, true)
+                            inventoryitem:SetLanded(false, true)
                         end
                     end
                 end

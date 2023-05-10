@@ -215,16 +215,16 @@ local function MakeHandPillow(materialname, pillowdata)
         inst:AddComponent("inventoryitem")
 
         -------------------------------------------------------
-        local equippable_component = inst:AddComponent("equippable")
-        equippable_component.equipslot = EQUIPSLOTS.HANDS
-        equippable_component:SetOnEquip(OnEquipHand)
-        equippable_component:SetOnUnequip(OnUnequipHand)
+        local equippable = inst:AddComponent("equippable")
+        equippable.equipslot = EQUIPSLOTS.HANDS
+        equippable:SetOnEquip(OnEquipHand)
+        equippable:SetOnUnequip(OnUnequipHand)
 
         -------------------------------------------------------
-        local weapon_component = inst:AddComponent("weapon")
-        weapon_component:SetDamage(TUNING.PILLOW_DAMAGE)
-        weapon_component:SetRange(TUNING.DEFAULT_ATTACK_RANGE, TUNING.PILLOW_HIT_RANGE)
-        weapon_component:SetOnAttack(onweaponattack)
+        local weapon = inst:AddComponent("weapon")
+        weapon:SetDamage(TUNING.PILLOW_DAMAGE)
+        weapon:SetRange(TUNING.DEFAULT_ATTACK_RANGE, TUNING.PILLOW_HIT_RANGE)
+        weapon:SetOnAttack(onweaponattack)
 
         -------------------------------------------------------
         MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)

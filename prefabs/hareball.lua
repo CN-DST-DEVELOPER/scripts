@@ -34,10 +34,10 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 
-    local edible_component = inst:AddComponent("edible")
-    edible_component.foodtype = FOODTYPE.GOODIES
-    edible_component.healthvalue = 0
-    edible_component.hungervalue = 0
+    local edible = inst:AddComponent("edible")
+    edible.foodtype = FOODTYPE.GOODIES
+    edible.healthvalue = 0
+    edible.hungervalue = 0
 
     inst:AddComponent("inspectable")
     inst:AddComponent("tradable")

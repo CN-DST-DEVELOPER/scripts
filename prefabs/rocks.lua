@@ -270,10 +270,10 @@ local function baserock_fn(bank, build, anim, minimapicon, tag, multcolour)
 
     inst:AddComponent("lootdropper")
 
-    local workable_component = inst:AddComponent("workable")
-    workable_component:SetWorkAction(ACTIONS.MINE)
-    workable_component:SetWorkLeft(TUNING.ROCKS_MINE)
-    workable_component:SetOnWorkCallback(OnWork)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.MINE)
+    workable:SetWorkLeft(TUNING.ROCKS_MINE)
+    workable:SetOnWorkCallback(OnWork)
 
     multcolour = multcolour or 0.5
     if 0 <= multcolour and multcolour < 1 then

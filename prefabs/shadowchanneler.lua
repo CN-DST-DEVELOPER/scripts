@@ -101,6 +101,9 @@ local function fn()
         inst.components.transparentonsanity:ForceUpdate()
     end
 
+	--Higher priority as if it is always targeting player
+	inst.controller_priority_override_is_targeting_player = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

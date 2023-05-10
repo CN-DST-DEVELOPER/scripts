@@ -205,11 +205,11 @@ function BoatPhysics:OnLoad(data)
     end
 end
 
-function BoatPhysics:AddAnchorCmp(anchor_cmp)
+function BoatPhysics:AddAnchorCmp(anchor)
     print("BoatPhysics:AddAnchorCmp is deprecated, please use AddBoatDrag instead.")
 end
 
-function BoatPhysics:RemoveAnchorCmp(anchor_cmp)
+function BoatPhysics:RemoveAnchorCmp(anchor)
     print("BoatPhysics:RemoveAnchorCmp is deprecated, please use RemoveBoatDrag instead.")
 end
 

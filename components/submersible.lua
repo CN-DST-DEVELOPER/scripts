@@ -54,7 +54,20 @@ function Submersible:OnRemoveFromEntity()
 end
 
 function Submersible:GetUnderwaterObject()
-	return self.inst.components.inventoryitem ~= nil and self.inst.components.inventoryitem:GetContainer() or nil
+    if self.inst.components.inventoryitem == nil then
+        return nil
+    end
+
+    local container = self.inst.components.inventoryitem:GetContainer()
+    if container == nil then
+        return nil
+    end
+
+    if not container.inst:HasTag("underwater_salvageable") then
+        return nil
+    end
+
+    return container
 end
 
 function Submersible:OnLanded()

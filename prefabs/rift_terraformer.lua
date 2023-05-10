@@ -19,20 +19,21 @@ local function _TerraformTile(inst, tx, ty)
     local index = string.format(TERRAFORM_INDEX_TEMPLATE, tx, ty)
     inst._terraform_tasks[index] = nil
 
-    local _map = TheWorld.Map
+    local _world = TheWorld
+    local _map = _world.Map
     local current_tile = _map:GetTile(tx, ty)
     if not IsOceanTile(current_tile) and current_tile ~= WORLD_TILES.RIFT_MOON then
-        local _undertile_cmp = TheWorld.components.undertile
-        local current_undertile = _undertile_cmp:GetTileUnderneath(tx, ty)
+        local undertile = _world.components.undertile
+        local current_undertile = undertile:GetTileUnderneath(tx, ty)
 
         _map:SetTile(tx, ty, WORLD_TILES.RIFT_MOON)
 
         -- farming_manager.lua will clear this if we do it before the SetTile call.
-        if _undertile_cmp then
+        if undertile then
             -- If the undertile component already has an entry at this location,
             -- we'll just keep that instead of over-writing with the current one.
             -- This plays a bit better with farm plots.
-            _undertile_cmp:SetTileUnderneath(tx, ty, current_undertile or current_tile)
+            undertile:SetTileUnderneath(tx, ty, current_undertile or current_tile)
         end
 
         local tcx, tcy, tcz = _map:GetTileCenterPoint(tx, ty)
@@ -50,16 +51,9 @@ local function _TerraformTile(inst, tx, ty)
                 end
             else
                 local pickable = entity_on_tile.components.pickable
-                if pickable and pickable:CanBePicked() and pickable.product then
-                    local harvest_count = pickable.numtoharvest or 1
-                    local ex, ey, ez = entity_on_tile.Transform:GetWorldPosition()
-                    pickable:Pick(inst)
-                    for i = 1, harvest_count do
-                        local product_item = SpawnPrefab(pickable.product)
-                        product_item.Transform:SetPosition(ex, ey, ez)
-                        -- Use inst as the launcher so that the product flies away from the portal.
-                        Launch(product_item, inst, 1)
-                    end
+                if pickable then
+                    -- NOTES(JBK): This will drop the items at the location of the pickable if it has drops and the groundpounder will knock loose items around when those go.
+                    pickable:Pick(_world)
                 end
             end
         end
@@ -74,11 +68,11 @@ local function _RevertTile(inst, tx, ty)
 
     -- First, reset the tile.
     local _map = TheWorld.Map
-    local _undertile_cmp = TheWorld.components.undertile
+    local undertile = TheWorld.components.undertile
     local old_tile = WORLD_TILES.DIRT
-    if _undertile_cmp then
-        old_tile = _undertile_cmp:GetTileUnderneath(tx, ty) or old_tile
-        _undertile_cmp:ClearTileUnderneath(tx, ty)
+    if undertile then
+        old_tile = undertile:GetTileUnderneath(tx, ty) or old_tile
+        undertile:ClearTileUnderneath(tx, ty)
     end
     _map:SetTile(tx, ty, old_tile)
 

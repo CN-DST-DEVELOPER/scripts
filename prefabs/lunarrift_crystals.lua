@@ -135,17 +135,17 @@ local function basecrystal_fn(anim_prefix, physics_size)
     end
 
     -----------------------------------------
-    local inspectable_cmp = inst:AddComponent("inspectable")
-    inspectable_cmp.nameoverride = "LUNARRIFT_CRYSTAL"
+    local inspectable = inst:AddComponent("inspectable")
+    inspectable.nameoverride = "LUNARRIFT_CRYSTAL"
 
     -----------------------------------------
     inst:AddComponent("lootdropper")
 
     -----------------------------------------
-    local workable_cmp = inst:AddComponent("workable")
-    workable_cmp:SetWorkAction(ACTIONS.MINE)
-	workable_cmp:SetShouldRecoilFn(ShouldRecoil)
-    workable_cmp.savestate = true
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.MINE)
+	workable:SetShouldRecoilFn(ShouldRecoil)
+    workable.savestate = true
 
     -----------------------------------------
     inst:AddComponent("savedrotation")

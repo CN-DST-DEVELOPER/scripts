@@ -39,16 +39,16 @@ function AOEWeapon_Leap:DoLeap(doer, startingpos, targetpos)
     doer.components.combat:EnableAreaDamage(false)
     doer.components.combat.ignorehitrange = true
 
-    local weapon_component = self.inst.components.weapon
+    local weapon = self.inst.components.weapon
     local attackwear, damage = 0, 0
-    if weapon_component then
-        attackwear = weapon_component.attackwear
-        damage = weapon_component.damage
+    if weapon then
+        attackwear = weapon.attackwear
+        damage = weapon.damage
         if attackwear ~= 0 then
-            weapon_component.attackwear = 0
+            weapon.attackwear = 0
         end
         if damage ~= self.damage then
-            weapon_component:SetDamage(self.damage)
+            weapon:SetDamage(self.damage)
         end
     end
 
@@ -65,12 +65,12 @@ function AOEWeapon_Leap:DoLeap(doer, startingpos, targetpos)
 
     doer.components.combat:EnableAreaDamage(true)
     doer.components.combat.ignorehitrange = false
-    if weapon_component then
+    if weapon then
         if attackwear ~= 0 then
-            weapon_component.attackwear = attackwear
+            weapon.attackwear = attackwear
         end
         if damage ~= self.damage then
-            weapon_component:SetDamage(damage)
+            weapon:SetDamage(damage)
         end
     end
 

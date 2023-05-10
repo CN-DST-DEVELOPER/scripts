@@ -48,16 +48,16 @@ function AOEWeapon_Lunge:DoLunge(doer, startingpos, targetpos)
     local doer_combat = doer.components.combat
     doer_combat:EnableAreaDamage(false)
 
-    local weapon_component = self.inst.components.weapon
+    local weapon = self.inst.components.weapon
     local attackwear, damage = 0, 0
-    if weapon_component then
-        attackwear = weapon_component.attackwear
-        damage = weapon_component.damage
+    if weapon then
+        attackwear = weapon.attackwear
+        damage = weapon.damage
         if attackwear ~= 0 then
-            weapon_component.attackwear = 0
+            weapon.attackwear = 0
         end
         if damage ~= self.damage then
-            weapon_component:SetDamage(self.damage)
+            weapon:SetDamage(self.damage)
         end
     end
 
