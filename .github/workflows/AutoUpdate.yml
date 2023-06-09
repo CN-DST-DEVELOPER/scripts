@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: 0 0/2 * * *
 
+env:
+  DepotDownloader_VERSION: '5b6315c8cad36395ea4a8172cca8b4706b7ddac9'
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -17,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: "Skippeh/steamfetch-action@v1.0.3"
+      - uses: "zxcvbnm3057/steamfetch-action@main"
         with:
           username: "${{ secrets.STEAM_USER }}"
           password: "${{ secrets.STEAM_PASS }}"
@@ -26,6 +29,7 @@ jobs:
           app: 322330
           osarch: 64
           files: "version.txt"
+          depotdownloader-version: ${{ env.DepotDownloader_VERSION }}
 
       - name: Check need update or not
         id: result
@@ -47,7 +51,7 @@ jobs:
           path: temp/scripts
 
       - name: Get files
-        uses: "Skippeh/steamfetch-action@v1.0.3"
+        uses: "zxcvbnm3057/steamfetch-action@main"
         with:
           username: "${{ secrets.STEAM_USER }}"
           password: "${{ secrets.STEAM_PASS }}"
@@ -57,6 +61,7 @@ jobs:
           osarch: 64
           files: |
             data/databundles/scripts.zip
+          depotdownloader-version: ${{ env.DepotDownloader_VERSION }}
 
       - name: unzip
         run: |
