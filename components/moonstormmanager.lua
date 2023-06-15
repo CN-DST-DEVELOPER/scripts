@@ -159,10 +159,6 @@ local function OnPlayerJoined(src, player)
         end
     end
     table.insert(_activeplayers, player)
-
-	if TheWorld.net.components.moonstorms and next(TheWorld.net.components.moonstorms._moonstorm_nodes:value()) ~= nil then
-		player.components.moonstormwatcher:ToggleMoonstorms({setting=true})
-	end
 end
 
 local function OnPlayerLeft(src, player)

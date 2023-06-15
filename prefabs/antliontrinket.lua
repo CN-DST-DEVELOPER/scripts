@@ -16,6 +16,7 @@ local function fn()
     inst.AnimState:SetBank("antliontrinket")
     inst.AnimState:SetBuild("antliontrinket")
     inst.AnimState:PlayAnimation("1")
+    inst.scrapbook_anim = "1"
 
     inst:AddTag("molebait")
 

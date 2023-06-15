@@ -1,4 +1,5 @@
 local cooking = require("cooking")
+local PopupDialogScreen = require "screens/redux/popupdialog"
 
 local params = {}
 local containers = { MAXITEMSLOTS = 0 }
@@ -370,7 +371,7 @@ params.construction_container =
         top_align_tip = 50,
         buttoninfo =
         {
-            text = STRINGS.ACTIONS.APPLYCONSTRUCTION,
+            text = STRINGS.ACTIONS.APPLYCONSTRUCTION.GENERIC,
             position = Vector3(0, -94, 0),
         }
     },
@@ -401,6 +402,85 @@ end
 function params.construction_container.widget.buttoninfo.validfn(inst)
     return inst.replica.container ~= nil and not inst.replica.container:IsEmpty()
 end
+
+--------------------------------------------------------------------------
+--[[ enable_shadow_rift_construction_container ]]
+--------------------------------------------------------------------------
+
+
+params.enable_shadow_rift_construction_container = deepcopy(params.construction_container)
+
+params.enable_shadow_rift_construction_container.widget.slotpos = {Vector3(0, 8, 0)}
+params.enable_shadow_rift_construction_container.widget.side_align_tip = 120
+params.enable_shadow_rift_construction_container.widget.animbank = "ui_bundle_2x2"
+params.enable_shadow_rift_construction_container.widget.animbuild = "ui_bundle_2x2"
+params.enable_shadow_rift_construction_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.OFFER
+
+local function IsConstructionSiteComplete(inst, doer)
+    local container = inst.replica.container
+
+    if container ~= nil and not container:IsEmpty() then
+        local constructionsite = doer.components.constructionbuilderuidata ~= nil and doer.components.constructionbuilderuidata:GetConstructionSite() or nil
+        
+        if constructionsite ~= nil then
+            local ingredients = constructionsite:GetIngredients()
+
+            if ingredients ~= nil then
+                for i, v in ipairs(ingredients) do
+                    local complete, new_count = container:Has(v.type, v.amount)
+                    local old_count = constructionsite:GetSlotCount(i)
+                    if not (new_count +  old_count >= v.amount) then
+                        return false
+                    end
+                end
+            else
+                return false
+            end
+
+            return true
+        end
+    end
+
+    return false
+end
+
+local function EnableRiftsPopUpGoBack()
+    TheFrontEnd:PopScreen()
+end
+
+function params.enable_shadow_rift_construction_container.widget.buttoninfo.fn(inst, doer)
+    local function DoAct()
+        if inst.components.container ~= nil then
+            BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
+        elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+            SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
+        end
+    end
+
+    if TheFrontEnd ~= nil and doer and doer == ThePlayer and IsConstructionSiteComplete(inst, doer) then
+        -- We have UI do dialogue.
+        local function EnableRiftsPopUpConfirm()
+            DoAct()
+            TheFrontEnd:PopScreen()
+        end
+
+        local str = inst.POPUP_STRINGS
+
+        local confirmation = PopupDialogScreen(str.TITLE, str.BODY,
+        {
+            { text = str.OK,     cb = EnableRiftsPopUpConfirm },
+            { text = str.CANCEL, cb = EnableRiftsPopUpGoBack  },
+        },nil,"big","dark_wide")
+
+        TheFrontEnd:PushScreen(confirmation)
+    else
+        -- No UI no dialogue.
+        DoAct()
+    end
+end
+
+--lunar is same as shadow, just different strings specified in prefab
+params.enable_lunar_rift_construction_container = params.enable_shadow_rift_construction_container
 
 --------------------------------------------------------------------------
 --[[ mushroom_light ]]

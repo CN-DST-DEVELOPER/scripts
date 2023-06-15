@@ -21,6 +21,7 @@ local function create_common(anim, cookable)
     inst.AnimState:SetBank("trunk")
     inst.AnimState:SetBuild("koalephant_trunk")
     inst.AnimState:PlayAnimation(anim)
+    inst.scrapbook_anim = anim
 
     if cookable then
         --cookable (from cookable component) added to pristine state for optimization

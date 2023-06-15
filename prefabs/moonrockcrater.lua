@@ -53,6 +53,7 @@ local function fn()
     inst.AnimState:SetBank("mooneyes")
     inst.AnimState:SetBuild("mooneyes")
     inst.AnimState:PlayAnimation("crater")
+    inst.scrapbook_anim = "crater"
 
     inst:AddTag("gemsocket")
 

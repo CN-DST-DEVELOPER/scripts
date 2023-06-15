@@ -180,6 +180,7 @@ local function mushcommonfn(data)
     inst.AnimState:SetBank("mushrooms")
     inst.AnimState:SetBuild("mushrooms")
     inst.AnimState:PlayAnimation(data.animname)
+    inst.scrapbook_anim = data.animname
     inst.AnimState:SetRayTestOnBB(true)
 
     inst.entity:SetPristine()
@@ -310,6 +311,7 @@ local function capcommonfn(data)
     inst.AnimState:SetBank("mushrooms")
     inst.AnimState:SetBuild("mushrooms")
     inst.AnimState:PlayAnimation(data.animname.."_cap")
+    inst.scrapbook_anim = data.animname.."_cap"
 
     --cookable (from cookable component) added to pristine state for optimization
     inst:AddTag("cookable")
@@ -367,6 +369,7 @@ local function cookedcommonfn(data)
     inst.AnimState:SetBank("mushrooms")
     inst.AnimState:SetBuild("mushrooms")
     inst.AnimState:PlayAnimation(data.pickloot.."_cooked")
+    inst.scrapbook_anim = data.pickloot.."_cooked"
 
     MakeInventoryFloatable(inst, "small", 0.05, 0.9)
 

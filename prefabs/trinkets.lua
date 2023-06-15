@@ -106,6 +106,7 @@ local function MakeTrinket(num)
         inst.AnimState:SetBank("trinkets")
         inst.AnimState:SetBuild("trinkets")
         inst.AnimState:PlayAnimation(tostring(num))
+        inst.scrapbook_anim = tostring(num)
 
         inst:AddTag("molebait")
         inst:AddTag("cattoy")

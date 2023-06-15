@@ -107,16 +107,22 @@ function ConstructionBuilder:StopConstruction()
 end
 
 function ConstructionBuilder:FinishConstruction()
-    if self.constructioninst ~= nil and
+    if
+        self.constructioninst ~= nil and
         self.constructioninst.components.container ~= nil and
         not self.constructioninst.components.container:IsEmpty() and
         self.constructionsite ~= nil and
         self.constructionsite.components.constructionsite ~= nil and
-        self.inst.sg.currentstate.name == "constructing" then
-        self.constructioninst.components.container:Close()
-        self.inst.sg.statemem.constructing = true
-        self.inst.sg:GoToState("construct_pst")
-        return true
+        self.inst.sg.currentstate.name == "constructing"
+    then
+        if self.constructionsite.components.constructionsite:CanBeConstructed() then
+            self.constructioninst.components.container:Close()
+            self.inst.sg.statemem.constructing = true
+            self.inst.sg:GoToState("construct_pst")
+            return true
+        elseif self.inst.components.talker ~= nil then
+            self.inst.components.talker:Say(GetActionFailString(self.inst, "CONSTRUCT", "NOTREADY"))
+        end
     end
 end
 

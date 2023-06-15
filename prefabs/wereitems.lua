@@ -21,6 +21,7 @@ local function MakeWereItem(were_mode)
         inst.AnimState:SetBank("wereitems")
         inst.AnimState:SetBuild("wereitems")
         inst.AnimState:PlayAnimation("idle_"..were_mode)
+        inst.scrapbook_anim = "idle_"..were_mode
 
         inst:AddTag("monstermeat")
         inst:AddTag("wereitem")

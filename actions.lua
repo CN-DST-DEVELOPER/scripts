@@ -487,6 +487,9 @@ ACTIONS =
 	USESPELLBOOK = Action({ instant = true, mount_valid = true }),
 	CLOSESPELLBOOK = Action({ instant = true, mount_valid = true }),
 	CAST_SPELLBOOK = Action({ mount_valid = true }),
+
+    SCYTHE = Action({ rmb=true, distance=1.8, rangecheckfn=DefaultRangeCheck, invalid_hold_action=true }),
+	SITON = Action(),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -842,6 +845,9 @@ ACTIONS.LOOKAT.fn = function(act)
 				) then
 					act.doer.components.locomotor:Stop()
 				end
+                if ThePlayer == act.doer then
+                    TheScrapbookPartitions:SetInspectedByCharacter(targ.prefab, ThePlayer.prefab)
+                end
 				if act.doer.components.talker ~= nil then
 					act.doer.components.talker:Say(desc, nil, targ.components.inspectable.noanim, nil, nil, nil, text_filter_context, original_author)
 				end
@@ -2353,13 +2359,18 @@ ACTIONS.USEKLAUSSACKKEY.fn = function(act)
 end
 
 ACTIONS.TEACH.strfn = function(act)
+    if act.invobject:HasTag("scrapbook_data") then
+        return "SCRAPBOOK"
+    end
 	return act.invobject ~= nil and act.invobject.components.mapspotrevealer ~= nil and "READ" or nil
 end
 
 ACTIONS.TEACH.fn = function(act)
     if act.invobject ~= nil then
         local target = act.target or act.doer
-        if act.invobject.components.teacher ~= nil then
+        if act.invobject.components.scrapbookable ~= nil then
+            return act.invobject.components.scrapbookable:Teach(act.doer)
+        elseif act.invobject.components.teacher ~= nil then
             return act.invobject.components.teacher:Teach(target)
         elseif act.invobject.components.maprecorder ~= nil then
             local success, reason = act.invobject.components.maprecorder:TeachMap(target)
@@ -2407,7 +2418,7 @@ ACTIONS.USEITEM.fn = function(act)
 		--V2C: kinda hack since USEITEM is instant action, and the useableitem will
 		--     liklely force state change (bad!) instead.
 		act.doer.sg.statemem.is_going_to_action_state = true
-		local ret = act.invobject.components.useableitem:StartUsingItem()
+		local ret = act.invobject.components.useableitem:StartUsingItem(act.doer)
 		--And clear it now in case no state change happened
 		act.doer.sg.statemem.is_going_to_action_state = nil
 		return ret
@@ -3150,7 +3161,15 @@ ACTIONS.CONSTRUCT.stroverridefn = function(act)
 end
 
 ACTIONS.CONSTRUCT.strfn = function(act)
-    return act.invobject ~= nil and act.target:HasTag("constructionsite") and "STORE" or nil
+    return act.invobject ~= nil
+        and (
+                (act.target:HasTag("offerconstructionsite") and "OFFER") or
+                (act.target:HasTag("constructionsite")      and "STORE")
+            )
+        or  (
+                (act.target:HasTag("offerconstructionsite") and "OFFER_TO")
+            )
+        or nil
 end
 
 ACTIONS.CONSTRUCT.fn = function(act)
@@ -3225,6 +3244,14 @@ ACTIONS.STOPCONSTRUCTION.stroverridefn = function(act)
     end
 end
 
+ACTIONS.STOPCONSTRUCTION.strfn = function(act)
+    return
+        (
+            (act.target:HasTag("offerconstructionsite") and "OFFER")
+        )
+    or nil
+end
+
 ACTIONS.STOPCONSTRUCTION.fn = function(act)
     if act.doer ~= nil and act.doer.components.constructionbuilder ~= nil then
         act.doer.components.constructionbuilder:StopConstruction()
@@ -3264,6 +3291,15 @@ ACTIONS.CASTAOE.fn = function(act)
     if act.invobject ~= nil and act.invobject.components.aoespell ~= nil and act.invobject.components.aoespell:CanCast(act.doer, act_pos) then
 		return act.invobject.components.aoespell:CastSpell(act.doer, act_pos)
     end
+end
+
+ACTIONS.SCYTHE.fn = function(act)
+    if act.invobject ~= nil and act.invobject.DoScythe then
+        act.invobject:DoScythe(act.target, act.doer)
+        return true
+    end
+
+    return false
 end
 
 ACTIONS.DISMANTLE.fn = function(act)
@@ -4562,5 +4598,18 @@ ACTIONS.CAST_SPELLBOOK.fn = function(act)
 		act.invobject.components.spellbook ~= nil
 		then
 		return act.invobject.components.spellbook:CastSpell(act.doer)
+	end
+end
+
+ACTIONS.SITON.fn = function(act)
+	if act.doer ~= nil and
+		act.doer.sg ~= nil and
+		act.doer.sg.currentstate.name == "start_sitting" then
+		if act.target ~= nil and
+			act.target.components.sittable ~= nil and
+			not act.target.components.sittable:IsOccupied() then
+			act.target.components.sittable:SetOccupier(act.doer)
+			return true
+		end
 	end
 end

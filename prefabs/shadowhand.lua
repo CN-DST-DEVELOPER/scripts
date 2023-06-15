@@ -255,6 +255,8 @@ local function create_arm()
     inst.AnimState:SetSortOrder(3)
     inst.AnimState:PlayAnimation("arm_loop", true)
 
+    inst:AddComponent("highlightchild")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

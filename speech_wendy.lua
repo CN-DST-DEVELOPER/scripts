@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "It doesn't go there. I know the feeling.",
             EMPTY = "Nothing comes of nothing.",
             MISMATCH = "I can't do anything right.",
+            NOTREADY = "Perhaps when my life is in slightly less peril.",
         },
 		RUMMAGE =
 		{
@@ -890,6 +891,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "It's not strong enough... like me...",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "I can see a light...",
+    ANNOUNCE_SHADOW_RIFT_MAX = "That glow... does it lead to my doom?",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "Nothing more will fit in my scrapbook.",
 
 	BATTLECRY =
 	{
@@ -1804,6 +1808,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "It won't be looking down on us anymore.",
         CHESSPIECE_EYEOFTERROR = "Its stony gaze will glare for eternity.",
         CHESSPIECE_TWINSOFTERROR = "I still remember watching the light leave their eyes.",
+        CHESSPIECE_DAYWALKER = "A reminder that kindness only leads to pain.",
 
         CHESSJUNK1 = "Cold, dead artificial life.",
         CHESSJUNK2 = "Cold, dead artificial life.",
@@ -2955,6 +2960,8 @@ return{
 		WALL_WOOD_ITEM = "Bundled logs.",
 		WALL_MOONROCK = "The moon... she whispers promises of protection to me.",
 		WALL_MOONROCK_ITEM = "This gift from above should not go to waste.",
+		WALL_DREADSTONE = "Nothing will ever break through.",
+		WALL_DREADSTONE_ITEM = "As dark and impenetrable as my heart.",
 		FENCE = "Sort of like an emotional barrier. But wood.",
         FENCE_ITEM = "We could use it to build a fence.",
         FENCE_GATE = "Will it keep others in, or out?",
@@ -4795,6 +4802,34 @@ return{
 		SHOVEL_LUNARPLANT = "Some things should stay buried... but not today.",
 
         PUNCHINGBAG = "Some are simply made to suffer.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Endless, swirling nothingness... how serene.",
+
+		SHADOW_FORGE = "What terrible things will I create?",
+		SHADOW_FORGE_KIT = "I suppose if I tried I could piece it together.",
+
+        FUSED_SHADELING = "It knows nothing but pain and hunger.",
+        FUSED_SHADELING_BOMB = "They lead such short, explosive lives.",
+
+		VOIDCLOTH = "Tattered remains.",
+		VOIDCLOTHHAT = "I can disappear into the darkness within.",
+		ARMOR_VOIDCLOTH = "This ragged cloak will either protect me, or be my shroud.",
+
+        VOIDCLOTH_UMBRELLA = "I will stay under its shadow.",
+        VOIDCLOTH_SCYTHE = "One swift motion, and the work is done.",
+
+		SHADOWTHRALL_HANDS = "Another nightmare to torment me.",
+		SHADOWTHRALL_HORNS = "Will the darkness consume me at last?",
+		SHADOWTHRALL_WINGS = "There is no face beneath that hood.",
+
+        CHARLIE_NPC = "Are you the true face of the darkness?",
+        CHARLIE_HAND = "Do I dare approach?",
+
+        NITRE_FORMATION = "It thrives while the rest of us burn.",
+        DREADSTONE_STACK = "Do I dare imagine what kind of darkness it grew from?",
+        
+        SCRAPBOOK_PAGE = "A lost and lonely page.",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

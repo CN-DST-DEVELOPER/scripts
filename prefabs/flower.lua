@@ -103,6 +103,7 @@ local function commonfn(isplanted)
     inst.AnimState:SetBank("flowers")
     inst.AnimState:SetBuild("flowers")
     inst.AnimState:SetRayTestOnBB(true)
+    inst.scrapbook_anim = "f1"
 
     inst:AddTag("flower")
     inst:AddTag("cattoy")

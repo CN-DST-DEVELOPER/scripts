@@ -65,6 +65,7 @@ local function MakeTrinket(num)
         inst.AnimState:SetBank("trinkets")
         inst.AnimState:SetBuild("trinkets")
         inst.AnimState:PlayAnimation(tostring(num))
+        inst.scrapbook_anim = tostring(num)
         inst.AnimState:SetMultColour(unpack(MIN_FADE_COLOUR))
         inst.AnimState:SetHaunted(true)
 

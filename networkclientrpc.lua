@@ -363,10 +363,14 @@ local RPC_HANDLERS =
         end
     end,
 
-	PredictOverrideLocomote = function(player)
+	PredictOverrideLocomote = function(player, dir)
+		if not checknumber(dir) then
+			printinvalid("PredictOverrideLocomote", player)
+			return
+		end
 		local playercontroller = player.components.playercontroller
 		if playercontroller ~= nil then
-			playercontroller:OnRemotePredictOverrideLocomote()
+			playercontroller:OnRemotePredictOverrideLocomote(dir)
 		end
 	end,
 
@@ -1005,6 +1009,17 @@ local RPC_HANDLERS =
         player:OnPostActivateHandshake_Server(state)
     end,
 
+    OnScrapbookDataTaught = function(player, inst, response)
+        if not checkentity(inst) then
+            printinvalid("OnScrapbookDataTaught", player)
+            return
+        end
+
+        if inst.OnScrapbookDataTaught then
+            inst:OnScrapbookDataTaught(player, response)
+        end
+    end,
+
     -- NOTES(JBK): RPC limit is at 128, with 1-127 usable.
 }
 
@@ -1116,6 +1131,10 @@ local CLIENT_RPC_HANDLERS =
 
     PostActivateHandshake = function(state)
         ThePlayer:OnPostActivateHandshake_Client(state)
+    end,
+
+    TryToTeachScrapbookData = function(inst)
+        TheScrapbookPartitions:TryToTeachScrapbookData(false, inst)
     end,
 }
 
@@ -1342,6 +1361,9 @@ function HandleRPCQueue()
             -- Invoke.
             if TheNet:CallShardRPC(fn, sender, data) then
                 RPC_Shard_Timeline[sender] = tick
+            end
+            if RPC_Shard_Queue[RPC_Shard_Queue_len + 1] then
+                print("Shard RPC invoked another RPC in the same frame and will be dropped! Delay shard RPCs sending more shard RPCs to itself by a frame minimally or try handling RPCs in a different way.")
             end
         else
             -- Pending.

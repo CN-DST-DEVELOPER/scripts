@@ -96,9 +96,15 @@ function Highlight:Highlight(r, g, b)
     self.highlit = true
 
     if self.inst:IsValid() and self.inst:HasTag("player") or CanEntitySeeTarget(ThePlayer, self.inst) then
-        self.highlight_add_colour_red = r or .2
-        self.highlight_add_colour_green = g or .2
-        self.highlight_add_colour_blue = b or .2
+        local r2, g2, b2
+        if self.inst.highlightoverride then
+            r2, g2, b2 = self.inst.highlightoverride[1], self.inst.highlightoverride[2], self.inst.highlightoverride[3]
+        else
+            r2, g2, b2 = .2, .2, .2
+        end
+        self.highlight_add_colour_red = r or r2
+        self.highlight_add_colour_green = g or g2
+        self.highlight_add_colour_blue = b or b2
     else
         self.highlight_add_colour_red = nil
         self.highlight_add_colour_green = nil

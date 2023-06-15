@@ -17,6 +17,8 @@ local ConstructionSite = Class(function(self, inst)
     self.onstopconstructionfn = nil
     self.onconstructedfn = nil
 
+    self.canconstruct = true
+
     --V2C: Recommended to explicitly add tag to prefab pristine state
     inst:AddTag("constructionsite")
 end,
@@ -24,6 +26,12 @@ nil,
 {
     builder = onbuilder,
 })
+
+function ConstructionSite:SetCanConstruct(bool)
+    if bool == nil then bool = true end
+
+    self.canconstruct = bool
+end
 
 function ConstructionSite:SetConstructionPrefab(prefab)
     self.constructionprefab = prefab
@@ -97,6 +105,10 @@ end
 
 function ConstructionSite:IsBuilder(guy)
     return guy ~= nil and self.builder == guy
+end
+
+function ConstructionSite:CanBeConstructed()
+    return self.canconstruct
 end
 
 function ConstructionSite:AddMaterial(prefab, num)

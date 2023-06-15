@@ -32,6 +32,7 @@ local function MakeFood(num)
         inst.AnimState:SetBank("winter_ornaments")
         inst.AnimState:SetBuild("winter_ornaments")
         inst.AnimState:PlayAnimation("food"..tostring(num))
+        inst.scrapbook_anim = "food"..tostring(num)
 
         inst:AddTag("cattoy")
         inst:AddTag("wintersfeastfood")

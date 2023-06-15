@@ -24,13 +24,19 @@ local RiftSpawner = Class(function(self, inst)
     self.spawnmode = 3
 
     self.lunar_rifts_enabled = false
+    self.shadow_rifts_enabled = false
+    --self.X_rifts_enabled = false
+
     self.rifts = {}
     self.rifts_count = 0
 
     self.inst:ListenForEvent("rifts_setdifficulty", function(...) self:SetDifficulty(...) end)
     self.inst:ListenForEvent("rifts_settingsenabled", function(...) self:SetEnabledSetting(...) end)
+    self.inst:ListenForEvent("rifts_settingsenabled_cave", function(...) self:SetEnabledSettingCave(...) end)
     self.inst:ListenForEvent("lunarrift_opened", function(...) self:EnableLunarRifts(...) end)
+    self.inst:ListenForEvent("shadowrift_opened", function(...) self:EnableShadowRifts(...) end)
     self.inst:ListenForEvent("ms_lunarrift_maxsize", function(...) self:OnLunarRiftMaxSize(...) end)
+    self.inst:ListenForEvent("ms_shadowrift_maxsize", function(...) self:OnShadowRiftMaxSize(...) end)
     
     self._worldsettingstimer:AddTimer(
         RIFTSPAWN_TIMERNAME,
@@ -59,6 +65,7 @@ function RiftSpawner:OnRiftRemoved(rift)
     if self.rifts[rift] then
         self.rifts[rift] = nil
         self.rifts_count = self.rifts_count - 1
+        TheWorld:PushEvent("ms_riftremovedfrompool", {rift = rift})
 
         -- If we can spawn rifts, and a timer isn't already counting down...
         if self.spawnmode ~= 1 and not self._worldsettingstimer:ActiveTimerExists(RIFTSPAWN_TIMERNAME) then
@@ -75,6 +82,7 @@ function RiftSpawner:AddRiftToPool(rift, rift_prefab)
         self.rifts[rift] = rift_prefab
         self.rifts_count = self.rifts_count + 1
         self.inst:ListenForEvent("onremove", function() self:OnRiftRemoved(rift) end, rift)
+        TheWorld:PushEvent("ms_riftaddedtopool", {rift = rift})
     end
 end
 
@@ -171,6 +179,10 @@ function RiftSpawner:EnableLunarRifts(src)
     self:TryToStartTimer(src)
 end
 
+function RiftSpawner:EnableShadowRifts(src)
+    self.shadow_rifts_enabled = true
+    self:TryToStartTimer(src)
+end
 --function RiftSpawner:EnableXRifts(src)
 --    self.X_rifts_enabled = true
 --    self:TryToStartTimer(src)
@@ -188,16 +200,35 @@ function RiftSpawner:OnLunarRiftMaxSize(src, rift)
     end
 end
 
+function RiftSpawner:OnShadowRiftMaxSize(src, rift)
+    local fx, _, fz = rift.Transform:GetWorldPosition()
+    for _, player in ipairs(AllPlayers) do
+        local px, _, pz = player.Transform:GetWorldPosition()
+        local sq_dist = distsq(fx, fz, px, pz)
+
+        if sq_dist > 900 then --30*30
+            player._shadowportalmax:push()
+        end
+    end
+end
+
 function RiftSpawner:SetEnabledSetting(src, enabled_difficulty)
     if enabled_difficulty == "never" then
         self.lunar_rifts_enabled = false
         self._worldsettingstimer:StopTimer(RIFTSPAWN_TIMERNAME)
     elseif enabled_difficulty == "always" then
         self:EnableLunarRifts(src)
-        --self:EnableXRifts(src)
     end
 end
 
+function RiftSpawner:SetEnabledSettingCave(src, enabled_difficulty)
+    if enabled_difficulty == "never" then
+        self.shadow_rifts_enabled = false
+        self._worldsettingstimer:StopTimer(RIFTSPAWN_TIMERNAME)
+    elseif enabled_difficulty == "always" then
+        self:EnableShadowRifts(src)
+    end
+end
 
 --------------------------------------------------------------------------------
 -- Getters
@@ -239,23 +270,58 @@ end
 
 
 function RiftSpawner:GetEnabled() -- Any type update accordingly.
-    return self.lunar_rifts_enabled -- or self.X_rifts_enabled
+    return self.lunar_rifts_enabled or self.shadow_rifts_enabled -- or self.X_rifts_enabled
 end
 
 function RiftSpawner:GetLunarRiftsEnabled()
     return self.lunar_rifts_enabled
 end
 
+function RiftSpawner:GetShadowRiftsEnabled()
+    return self.shadow_rifts_enabled
+end
+
 --function RiftSpawner:GetXRiftsEnabled()
 --    return self.X_rifts_enabled
+--end
+
+function RiftSpawner:IsLunarPortalActive()
+    for rift, rift_prefab in pairs(self.rifts) do
+        if RIFTPORTAL_DEFS[rift_prefab].Affinity == RIFTPORTAL_CONST.AFFINITY.LUNAR then
+            return true
+        end
+    end
+    return false
+end
+
+function RiftSpawner:IsShadowPortalActive()
+    for rift, rift_prefab in pairs(self.rifts) do
+        if RIFTPORTAL_DEFS[rift_prefab].Affinity == RIFTPORTAL_CONST.AFFINITY.SHADOW then
+            return true
+        end
+    end
+    return false
+end
+
+--function RiftSpawner:IsXPortalActive()
+--    for rift, rift_prefab in pairs(self.rifts) do
+--        if RIFTPORTAL_DEFS[rift_prefab].Affinity == RIFTPORTAL_CONST.AFFINITY.X then
+--            return true
+--        end
+--    end
+--    return false
 --end
 
 function RiftSpawner:GetNextRiftPrefab()
     local potentials = {}
     local isLunarEnabled = self:GetLunarRiftsEnabled()
+    local isShadowEnabled = self:GetShadowRiftsEnabled()
     --local isXEnabled = self:GetXRiftsEnabled()
     for rift_prefab, rift_def in pairs(RIFTPORTAL_DEFS) do
         if isLunarEnabled and rift_def.Affinity == RIFTPORTAL_CONST.AFFINITY.LUNAR then
+            table.insert(potentials, rift_prefab)
+        end
+        if isShadowEnabled and rift_def.Affinity == RIFTPORTAL_CONST.AFFINITY.SHADOW then
             table.insert(potentials, rift_prefab)
         end
         --if isXEnabled and rift_def.Affinity == RIFTPORTAL_CONST.AFFINITY.X then
@@ -281,6 +347,7 @@ function RiftSpawner:OnSave()
         timerfinished = (not self._worldsettingstimer:ActiveTimerExists(RIFTSPAWN_TIMERNAME)) or nil,
         rift_guids = {},
         _lunar_enabled = self.lunar_rifts_enabled,
+        _shadow_enabled = self.shadow_rifts_enabled,
         --_X_enabled = self.X_rifts_enabled,
     }
     local ents = {}
@@ -300,6 +367,7 @@ function RiftSpawner:OnLoad(data)
     end
 
     self.lunar_rifts_enabled = data._lunar_enabled or self.lunar_rifts_enabled
+    self.shadow_rifts_enabled = data._shadow_enabled or self.shadow_rifts_enabled
     --self.X_rifts_enabled = data._X_enabled or self.X_rifts_enabled
 end
 
@@ -318,6 +386,9 @@ function RiftSpawner:LoadPostPass(newents, data)
     if self.lunar_rifts_enabled then
         self:EnableLunarRifts()
     end
+    if self.shadow_rifts_enabled then
+        self:EnableShadowRifts()
+    end
     --if self.X_rifts_enabled then
     --    self:EnableXRifts()
     --end
@@ -334,8 +405,9 @@ end
 
 
 function RiftSpawner:GetDebugString()
-    return string.format("Lunar Rifts: %s || Rifts Count: %d || Rift Spawn Time: %s",
+    return string.format("Lunar Rifts: %s || Shadow Rifts: %s || Rifts Count: %d || Rift Spawn Time: %s",
         self.lunar_rifts_enabled and "ON" or "OFF",
+        self.shadow_rifts_enabled and "ON" or "OFF",
         self.rifts_count,
         self._worldsettingstimer:GetTimeLeft(RIFTSPAWN_TIMERNAME) or "-"
     )
@@ -359,7 +431,14 @@ end
 function RiftSpawner:DebugHighlightRifts()
     for rift, rift_prefab in pairs(self.rifts) do
         local x, y, z = rift.Transform:GetWorldPosition()
-        local eye = SpawnPrefab("bluemooneye")
+        local eye
+        if RIFTPORTAL_DEFS[rift_prefab].Affinity == RIFTPORTAL_CONST.AFFINITY.LUNAR then
+            eye = SpawnPrefab("bluemooneye")
+        elseif RIFTPORTAL_DEFS[rift_prefab].Affinity == RIFTPORTAL_CONST.AFFINITY.SHADOW then
+            eye = SpawnPrefab("redmooneye")
+        else
+            eye = SpawnPrefab("greenmooneye") -- No affinity maybe mods?
+        end
         eye.Transform:SetPosition(x, y, z)
     end
 end

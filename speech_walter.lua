@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "That doesn't make sense.",
             EMPTY = "I need some supplies!",
             MISMATCH = "Wait... these aren't even the right plans.",
+            NOTREADY = "Maybe I'll try when the ground isn't shaking.",
         },
 		RUMMAGE =
 		{
@@ -886,6 +887,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "It's okay Woby, we just need to find a stronger tool!",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "Look, Woby! Something's glowing over there!",
+    ANNOUNCE_SHADOW_RIFT_MAX = "What was that weird light? We should check it out, Woby!",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "I've already filled out my scrapbook.",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "It's so lifelike, I feel like they're staring right at me!",
         CHESSPIECE_EYEOFTERROR = "Nothing to see here, folks! Ha ha, get it Woby?",
         CHESSPIECE_TWINSOFTERROR = "Is this one of those sculptures where the eyes follow you around the room?",
+        CHESSPIECE_DAYWALKER = "I sure hope we get to see him again!",
 
         CHESSJUNK1 = "I don't think they're going to get up anytime soon.",
         CHESSJUNK2 = "I don't think they're going to get up anytime soon.",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "Looks sharp.",
 		WALL_MOONROCK = "It came from another world!",
 		WALL_MOONROCK_ITEM = "I can't believe we're making walls out of real moon rock!",
+		WALL_DREADSTONE = "Spooky!",
+		WALL_DREADSTONE_ITEM = "It's gonna be a real nightmare to set it up! Get it?",
 		FENCE = "Why do we need fences? It's the great outdoors!",
         FENCE_ITEM = "Why fence in nature?",
         FENCE_GATE = "It's open-and-shut.",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "I came up with the name! ",
 
         PUNCHINGBAG = "Don't worry Woby, it's just for practice!",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "I wish I could get a better look inside...",
+
+		SHADOW_FORGE = "It's really handy! Get it? Because it has hands?",
+		SHADOW_FORGE_KIT = "Don't worry, I'm great at setting things up!",
+
+        FUSED_SHADELING = "Woby, look! It has a ball on its tail!",
+        FUSED_SHADELING_BOMB = "Woah! The ball's alive!",
+
+		VOIDCLOTH = "All that's left of that poor shadow monster.",
+		VOIDCLOTHHAT = "Woby doesn't like it when I wear that.",
+		ARMOR_VOIDCLOTH = "It almost looks like it has a face, doesn't it?",
+
+        VOIDCLOTH_UMBRELLA = "An umbrella that comes with its own lightning!",
+        VOIDCLOTH_SCYTHE = "I think it just blinked!",
+
+		SHADOWTHRALL_HANDS = "They seem fun!",
+		SHADOWTHRALL_HORNS = "I bet they're friendly!",
+		SHADOWTHRALL_WINGS = "Oooh, neat! That one can fly!",
+
+        CHARLIE_NPC = "Excuse me, ma'am! It's dangerous here, do you need any assistance?",
+        CHARLIE_HAND = "We should give it a hand! Heh. Good one, Walter.",
+
+        NITRE_FORMATION = "Huh. Looks like a big clump of rocks.",
+        DREADSTONE_STACK = "I bet there's more buried deep underground!",
+        
+        SCRAPBOOK_PAGE = "I should add it to my scrapbook!",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

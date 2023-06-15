@@ -244,7 +244,7 @@ local MoonstormOver = Class(Widget, function(self, owner, dustlayer, dustlayer_g
         self:UpdateAlphaRangeShaderUniforms()
 
         if owner.GetStormLevel ~= nil then
-            self:FadeTo(owner:GetStormLevel(), true)
+			self:FadeTo(owner:GetStormLevel(STORM_TYPES.MOONSTORM), true)
         end
     end
 end)
@@ -272,7 +272,7 @@ function MoonstormOver:BlindTo(blindto, instant)
 end
 
 function MoonstormOver:FadeTo(fadeto, instant)
-    if self.owner and self.owner:GetStormLevel() == 0 then
+	if self.owner and self.owner:GetStormLevel(STORM_TYPES.MOONSTORM) == 0 then
         fadeto = 0
     end
 
@@ -346,7 +346,7 @@ function MoonstormOver:OnUpdate(dt)
     if TheNet:IsServerPaused() then return end
 
     if self.dust.shown then
-        local stormlevel = ThePlayer:GetStormLevel()
+		local stormlevel = self.owner:GetStormLevel(STORM_TYPES.MOONSTORM)
         if self.intensity < stormlevel then
             self.intensity = math.min(stormlevel, self.intensity + INTENSITY_SHIFT_SPEED * dt)
         elseif self.intensity > stormlevel then
@@ -357,10 +357,10 @@ function MoonstormOver:OnUpdate(dt)
     end
 
     local heading = TheCamera.heading - 90
-    local delta_rads = ((-heading - ThePlayer.Transform:GetRotation()) / 360) * PI * 2
+	local delta_rads = ((-heading - self.owner.Transform:GetRotation()) / 360) * TWOPI
 
     local player_delta_x, player_delta_z = 0, 0
-    local new_player_position = ThePlayer:GetPosition()
+	local new_player_position = self.owner:GetPosition()
 
     if self.player_position ~= nil then
         player_delta_x, player_delta_z = new_player_position.x - self.player_position.x, new_player_position.z - self.player_position.z

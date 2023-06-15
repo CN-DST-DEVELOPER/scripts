@@ -153,6 +153,8 @@ local function fn()
     inst.AnimState:SetBuild("tree_marsh")
     inst.AnimState:SetBank("marsh_tree")
 
+    inst.scrapbook_anim = "sway1_loop"
+
     MakeSnowCoveredPristine(inst)
 
     inst.entity:SetPristine()

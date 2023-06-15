@@ -254,29 +254,22 @@ local function GetMoistureRateScale(inst)
     end
 end
 
-local function GetStormLevel(inst)
-    return inst.player_classified ~= nil and inst.player_classified.stormlevel:value() / 7 or 0
+local function GetStormLevel(inst, stormtype)
+	return inst.player_classified ~= nil
+		and (stormtype == nil or stormtype == inst.player_classified.stormtype:value())
+		and inst.player_classified.stormlevel:value() / 7
+		or 0
 end
 
-local function GetMoonstormLevel(inst)
+fns.IsInMiasma = function(inst)
+	return inst.player_classified ~= nil and inst.player_classified.isinmiasma:value()
+end
 
-    pos = { x = pos.x, y = pos.z }
-
-    local depth = math.huge
-    local node_edges = TheWorld.topology.nodes[node_index].validedges
-    for _, edge_index in ipairs(node_edges) do
-        local edge_nodes = TheWorld.topology.edgeToNodes[edge_index]
-        local other_node_index = edge_nodes[1] ~= node_index and edge_nodes[1] or edge_nodes[2]
-        if not _active_moonstorm_nodes[other_node_index] then
-            local point_indices = TheWorld.topology.flattenedEdges[edge_index]
-            local node1 = { x = TheWorld.topology.flattenedPoints[point_indices[1]][1], y = TheWorld.topology.flattenedPoints[point_indices[1]][2] }
-            local node2 = { x = TheWorld.topology.flattenedPoints[point_indices[2]][1], y = TheWorld.topology.flattenedPoints[point_indices[2]][2] }
-
-            depth = math.min(depth, DistPointToSegmentXYSq(pos, node1, node2))
-        end
-    end
-
-    return depth
+fns.IsInAnyStormOrCloud = function(inst)
+	return inst.player_classified ~= nil
+		and (	inst.player_classified.stormlevel:value() / 7 >= TUNING.SANDSTORM_FULL_LEVEL or
+				inst.player_classified.isinmiasma:value()
+			)
 end
 
 local function IsCarefulWalking(inst)
@@ -413,9 +406,22 @@ end
 --Audio events
 --------------------------------------------------------------------------
 
+local PICKUPSOUNDS = {
+    ["wood"] = "aqol/new_test/wood",
+    ["gem"] = "aqol/new_test/gem",
+    ["cloth"] = "aqol/new_test/cloth",
+    ["metal"] = "aqol/new_test/metal",
+    ["rock"] = "aqol/new_test/rock",
+    ["vegetation_firm"] = "aqol/new_test/vegetation_firm",
+    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",
+
+    ["DEFAULT_FALLBACK"] = "dontstarve/HUD/collect_resource",
+}
+
 local function OnGotNewItem(inst, data)
     if data.slot ~= nil or data.eslot ~= nil or data.toactiveitem ~= nil then
-        TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
+        local sound = data.item and data.item.pickupsound or "DEFAULT_FALLBACK"
+        TheFocalPoint.SoundEmitter:PlaySound(inst._PICKUPSOUNDS[sound])
     end
 end
 
@@ -574,6 +580,7 @@ end
 
 local function RegisterActivePlayerEventListeners(inst)
     --HUD Audio events
+    inst._PICKUPSOUNDS = PICKUPSOUNDS -- NOTES(JBK): For client mods to get access to.
     inst:ListenForEvent("gotnewitem", OnGotNewItem)
     inst:ListenForEvent("equip", OnEquip)
 end
@@ -738,6 +745,7 @@ local function ActivatePlayer(inst)
     inst:PushEvent("playeractivated")
     TheWorld:PushEvent("playeractivated", inst)
     inst:PostActivateHandshake(POSTACTIVATEHANDSHAKE.CTS_LOADED)
+    inst:DoPeriodicTask(TUNING.SCRAPBOOK_UPDATERATE, ex_fns.UpdateScrapbook)
 
     TheCamera:LockDistance(false)
 
@@ -778,9 +786,8 @@ local function OnPlayerJoined(inst)
 end
 
 local function OnCancelMovementPrediction(inst)
-    inst.components.locomotor:Clear()
-    inst:ClearBufferedAction()
-    inst.sg:GoToState("idle", "cancel")
+	--Use stategraph event logic, but triggered instantly instead of buffering.
+	inst.sg:HandleEvent("sg_cancelmovementprediction")
 end
 
 local function EnableMovementPrediction(inst, enable)
@@ -1633,6 +1640,13 @@ local function OnLunarPortalMax(inst)
     end
 end
 
+local function OnShadowPortalMax(inst)
+    if ThePlayer ~= nil and ThePlayer == inst then
+        ThePlayer:PushEvent("startflareoverlay", {r=0.8, g=0.2, b=0.2})
+        inst:DoTaskInTime(2, function() inst.components.talker:Say(GetString(inst, "ANNOUNCE_SHADOW_RIFT_MAX")) end)
+    end
+end
+
 
 local function OnHermitMusic(inst)
     if ThePlayer ~= nil and  ThePlayer == inst then
@@ -1690,6 +1704,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_actions_cowbell.zip"),
         Asset("ANIM", "anim/player_actions_reversedeath.zip"),
         Asset("ANIM", "anim/player_actions_cannon.zip"),
+		Asset("ANIM", "anim/player_actions_scythe.zip"),
 
         Asset("ANIM", "anim/player_boat.zip"),
         Asset("ANIM", "anim/player_boat_plank.zip"),
@@ -1710,6 +1725,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_teleport.zip"),
         Asset("ANIM", "anim/wilson_fx.zip"),
         Asset("ANIM", "anim/player_one_man_band.zip"),
+		Asset("ANIM", "anim/player_sit.zip"),
 
         Asset("ANIM", "anim/player_slurtle_armor.zip"),
         Asset("ANIM", "anim/player_staff.zip"),
@@ -1902,6 +1918,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.GetMaxMoisture = GetMaxMoisture -- Didn't want to make moisture a networked component
         inst.GetMoistureRateScale = GetMoistureRateScale -- Didn't want to make moisture a networked component
         inst.GetStormLevel = GetStormLevel -- Didn't want to make stormwatcher a networked component
+		inst.IsInMiasma = fns.IsInMiasma -- Didn't want to make miasmawatcher a networked component
+		inst.IsInAnyStormOrCloud = fns.IsInAnyStormOrCloud -- Use this instead of GetStormLevel, to include things like Miasma clouds
         inst.IsCarefulWalking = IsCarefulWalking -- Didn't want to make carefulwalking a networked component
         inst.EnableMovementPrediction = EnableMovementPrediction
         inst.EnableBoatCamera = fns.EnableBoatCamera
@@ -2160,6 +2178,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._hermit_music = net_event(inst.GUID, "localplayer._hermit_music")
         inst._underleafcanopy = net_bool(inst.GUID, "localplayer._underleafcanopy","underleafcanopydirty")
         inst._lunarportalmax = net_event(inst.GUID, "localplayer._lunarportalmax")
+        inst._shadowportalmax = net_event(inst.GUID, "localplayer._shadowportalmax")
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
             inst.yotb_skins_sets = net_shortint(inst.GUID, "player.yotb_skins_sets")
@@ -2169,6 +2188,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         if not TheNet:IsDedicated() then
             inst:ListenForEvent("localplayer._winters_feast_music", OnWintersFeastMusic)
             inst:ListenForEvent("localplayer._lunarportalmax", OnLunarPortalMax)
+            inst:ListenForEvent("localplayer._shadowportalmax", OnShadowPortalMax)
             inst:ListenForEvent("localplayer._hermit_music", OnHermitMusic)
 
             inst:AddComponent("hudindicatable")
@@ -2265,6 +2285,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		inst:AddComponent("damagetyperesist")
 		inst:AddComponent("damagetypebonus")
 
+        inst:AddComponent("planardamage")
+        inst.components.planardamage:SetBaseDamage(0)
+
         local gamemode = TheNet:GetServerGameMode()
         if gamemode == "lavaarena" then
             event_server_data("lavaarena", "prefabs/player_common").master_postinit(inst)
@@ -2306,6 +2329,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:AddComponent("stormwatcher")
         inst:AddComponent("sandstormwatcher")
         inst:AddComponent("moonstormwatcher")
+		inst:AddComponent("miasmawatcher")
+        inst:AddComponent("acidlevel")
         inst:AddComponent("carefulwalker")
 
         if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then

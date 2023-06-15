@@ -18,6 +18,8 @@ local function fn()
     inst.AnimState:SetBuild("hounds_tooth")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "rock"
+
     MakeInventoryFloatable(inst, "small", nil, {0.6, 0.55, 0.6})
     inst.AnimState:AddOverrideBuild("hounds_tooth_water")
 

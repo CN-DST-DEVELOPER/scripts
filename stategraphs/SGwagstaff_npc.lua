@@ -280,7 +280,12 @@ local states =
 
                 if TheWorld.components.riftspawner and not TheWorld.components.riftspawner:GetLunarRiftsEnabled() then
                     inst.sg.statemem.request = 1
-                    inst.components.trader:Enable()
+					if inst.components.trader ~= nil then
+						inst.components.trader:Enable()
+					end
+					if inst.components.constructionsite ~= nil then
+						inst.components.constructionsite:SetCanConstruct(true)
+					end
                     inst.request_task = inst:DoPeriodicTask(10,inst.doplayerrequest)
                 end
             else
@@ -289,7 +294,12 @@ local states =
         end,
 
         onexit = function(inst)
-            inst.components.trader:Disable()
+			if inst.components.trader ~= nil then
+				inst.components.trader:Disable()
+			end
+			if inst.components.constructionsite ~= nil then
+				inst.components.constructionsite:SetCanConstruct(false)
+			end
             if inst.request_task then
                 inst.request_task:Cancel()
                 inst.request_task = nil

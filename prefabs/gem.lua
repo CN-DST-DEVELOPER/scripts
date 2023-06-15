@@ -36,10 +36,14 @@ local function buildgem(colour, precious)
         inst.AnimState:SetBank("gems")
         inst.AnimState:SetBuild("gems")
         inst.AnimState:PlayAnimation(colour.."gem_idle", true)
+        inst.scrapbook_anim = colour.."gem_idle"
 
         inst:AddTag("molebait")
         inst:AddTag("quakedebris")
         inst:AddTag("gem")
+
+        inst.pickupsound = "gem"
+
         inst.colour = colour
 
         local fp = FLOATER_PROPERTIES[colour]

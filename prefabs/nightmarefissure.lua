@@ -61,12 +61,16 @@ local function returnchildren(inst)
         end
 
         if child.components.health ~= nil then
-            child.components.health:Kill()
+            child.components.health:SetPercent(0)
         end
     end
 end
 
 local function spawnchildren(inst)
+    if inst._nofissurechildren then
+        return
+    end
+
     if inst.components.childspawner ~= nil then
         inst.components.childspawner:StartSpawning()
         inst.components.childspawner:StopRegen()
@@ -81,9 +85,19 @@ local function killchildren(inst)
     end
 end
 
+local function OnAnimOverControlled(inst)
+    if inst.AnimState:IsCurrentAnimation("idle_open_rift") then
+        inst:RemoveEventCallback("animover", OnAnimOverControlled)
+        local shadowthrallmanager = TheWorld.components.shadowthrallmanager
+        if shadowthrallmanager then
+            shadowthrallmanager:OnFissureAnimationsFinished(inst)
+        end
+    end
+end
+
 local states =
 {
-    calm = function(inst, instant)
+    calm = function(inst, instant, oldstate)
         inst.SoundEmitter:KillSound("loop")
 
         RemovePhysicsColliders(inst)
@@ -92,6 +106,16 @@ local states =
         if instant then
             inst.AnimState:PlayAnimation("idle_closed")
             inst.fx.AnimState:PlayAnimation("idle_closed")
+        elseif oldstate == "controlled" then -- From wild state animation.
+            -- dawn
+            inst.AnimState:PushAnimation("close_1")
+            inst.fx.AnimState:PushAnimation("close_1")
+            -- calm
+            inst.AnimState:PushAnimation("close_2")
+            inst.AnimState:PushAnimation("idle_closed", false)
+            inst.fx.AnimState:PushAnimation("close_2")
+            inst.fx.AnimState:PushAnimation("idle_closed", false)
+            inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_warning")
         else
             inst.AnimState:PlayAnimation("close_2")
             inst.AnimState:PushAnimation("idle_closed", false)
@@ -103,7 +127,7 @@ local states =
         killchildren(inst)
     end,
 
-    warn = function(inst, instant)
+    warn = function(inst, instant, oldstate)
         if not (inst:IsAsleep() or inst.SoundEmitter:PlayingSound("loop")) then
             inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_LP", "loop")
         end
@@ -111,15 +135,21 @@ local states =
         ChangeToObstaclePhysics(inst)
         fade_to(inst, 2, instant)
 
-        inst.AnimState:PlayAnimation("open_1")
-        inst.fx.AnimState:PlayAnimation("open_1")
+        if oldstate == "controlled" then -- From wild state animation.
+            inst.AnimState:PushAnimation("open_1", false)
+            inst.fx.AnimState:PushAnimation("open_1", false)
+        else
+            inst.AnimState:PlayAnimation("open_1")
+            inst.fx.AnimState:PlayAnimation("open_1")
+        end
+
 
         if not instant then
             inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_warning")
         end
     end,
 
-    wild = function(inst, instant)
+    wild = function(inst, instant, oldstate)
         if not (inst:IsAsleep() or inst.SoundEmitter:PlayingSound("loop")) then
             inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_LP", "loop")
         end
@@ -141,7 +171,7 @@ local states =
         spawnchildren(inst)
     end,
 
-    dawn = function(inst, instant)
+    dawn = function(inst, instant, oldstate)
         if not (inst:IsAsleep() or inst.SoundEmitter:PlayingSound("loop")) then
             inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_LP", "loop")
         end
@@ -149,8 +179,13 @@ local states =
         ChangeToObstaclePhysics(inst)
         fade_to(inst, 2, instant)
 
-        inst.AnimState:PlayAnimation("close_1")
-        inst.fx.AnimState:PlayAnimation("close_1")
+        if oldstate == "controlled" then -- From wild state animation.
+            inst.AnimState:PushAnimation("close_1", false)
+            inst.fx.AnimState:PushAnimation("close_1", false)
+        else
+            inst.AnimState:PlayAnimation("close_1")
+            inst.fx.AnimState:PlayAnimation("close_1")
+        end
 
         if not instant then
             inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open")
@@ -158,16 +193,79 @@ local states =
 
         spawnchildren(inst)
     end,
+
+    controlled = function(inst, instant, oldstate)
+        -- This state assumes instant is from a loading state.
+        if oldstate == "controlled" then
+            return
+        end
+
+        if not (inst:IsAsleep() or inst.SoundEmitter:PlayingSound("loop")) then
+            inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_LP", "loop")
+        end
+
+        ChangeToObstaclePhysics(inst)
+        fade_to(inst, 3, false)
+        inst.Light:SetColour(1, 0.3, 0.15)
+
+        inst.fx.AnimState:SetMultColour(1, 0.7, 0.7, 1)
+        
+        inst.AnimState:SetBank("nightmare_crack_upper")
+        inst.AnimState:SetBuild("nightmare_crack_upper")
+        inst.AnimState:HideSymbol("stack_under")
+        inst.AnimState:HideSymbol("stack_over")
+        inst.AnimState:HideSymbol("stack_red")
+
+        if instant then
+            inst.AnimState:PlayAnimation("idle_open_rift", true)
+            inst.fx.AnimState:PlayAnimation("open_2", false) -- open_2 intentional
+        else
+            -- These animation selections were simplified down from the state changes.
+            if oldstate == "calm" then
+                inst.AnimState:PushAnimation("open_1", false)
+                inst.fx.AnimState:PushAnimation("open_1", false)
+            end
+            if oldstate ~= "wild" then
+                inst.AnimState:PushAnimation("open_2", false)
+                inst.AnimState:PushAnimation("idle_open", false)
+                inst.fx.AnimState:PushAnimation("open_2", false)
+                inst.fx.AnimState:PushAnimation("idle_open", false)
+            end
+
+            inst.AnimState:PushAnimation("idle_open_rift", true)
+            --inst.fx.AnimState:PushAnimation("idle_open_rift", true) This animation does not exist we will use the old playing open_2 instead.
+
+            inst:ListenForEvent("animover", OnAnimOverControlled)
+        end
+
+		inst.AnimState:SetSymbolLightOverride("crack01", .5)
+		inst.AnimState:SetSymbolLightOverride("fx_beam", 1)
+		inst.AnimState:SetSymbolLightOverride("fx_spiral", 1)
+		inst.AnimState:SetSymbolLightOverride("stack_red", 1)
+
+        killchildren(inst)
+    end,
 }
 
 local function ShowPhaseState(inst, phase, instant)
     inst._phasetask = nil
 
     local fn = states[phase] or states.calm
-    fn(inst, instant)
+    fn(inst, instant, inst._oldfissurestate)
+    inst._oldfissurestate = phase
 end
 
 local function OnNightmarePhaseChanged(inst, phase, instant)
+    local shadowthrallmanager = TheWorld.components.shadowthrallmanager
+    if shadowthrallmanager and shadowthrallmanager:GetControlledFissure() == inst then
+        -- Force phase to controlled if it is being controlled and do not play any animations.
+        phase = "controlled"
+        instant = true
+        inst._nofissurechildren = true
+    else
+        inst._nofissurechildren = nil
+    end
+
     if inst._phasetask ~= nil then
         inst._phasetask:Cancel()
     end
@@ -178,11 +276,22 @@ local function OnNightmarePhaseChanged(inst, phase, instant)
     end
 end
 
+local AllowShadowThralls = {
+    fissure = true,
+    fissure_lower = true,
+}
+
 local function OnEntitySleep(inst)
     inst.SoundEmitter:KillSound("loop")
     if inst._phasetask ~= nil then
         inst._phasetask:Cancel()
         ShowPhaseState(inst, TheWorld.state.nightmarephase, true)
+    end
+    if AllowShadowThralls[inst.prefab] then
+        local shadowthrallmanager = TheWorld.components.shadowthrallmanager
+        if shadowthrallmanager then
+            shadowthrallmanager:UnregisterFissure(inst)
+        end
     end
 end
 
@@ -190,10 +299,117 @@ local function OnEntityWake(inst)
     if not (TheWorld.state.isnightmarecalm or inst.SoundEmitter:PlayingSound("loop")) then
         inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_LP", "loop")
     end
+    if AllowShadowThralls[inst.prefab] then
+        local shadowthrallmanager = TheWorld.components.shadowthrallmanager
+        if shadowthrallmanager then
+            shadowthrallmanager:RegisterFissure(inst)
+        end
+    end
 end
 
 local function OnPreLoad(inst, data)
     WorldSettings_ChildSpawner_PreLoad(inst, data, TUNING.NIGHTMARELIGHT_RELEASE_TIME, TUNING.NIGHTMARELIGHT_REGEN_TIME)
+end
+
+local function FissureShouldRecoil(inst, worker, tool, numworks)
+    if worker and tool and tool.components.tool and tool.components.tool:GetEffectiveness(ACTIONS.MINE) <= 1 then
+        return true, 0 -- No working on this.
+    end
+    return false, numworks
+end
+
+local function OnFissureMinedFinished(inst, worker)
+    if inst.components.inspectable then
+        inst:RemoveComponent("inspectable")
+    end
+    inst:SetPrefabNameOverride(nil)
+    inst.AnimState:HideSymbol("stack_under")
+    inst.AnimState:HideSymbol("stack_over")
+    inst.AnimState:HideSymbol("stack_red")
+    local pt = inst:GetPosition()
+    for i = 1, 3 do
+        inst.components.lootdropper:SpawnLootPrefab("dreadstone", pt)
+    end
+    inst.SoundEmitter:PlaySound("dontstarve/impacts/lava_arena/fossilized_break") -- FIXME(JBK): Better sound.
+    local shadowthrallmanager = TheWorld.components.shadowthrallmanager
+    if shadowthrallmanager then
+        shadowthrallmanager:OnFissureMinedFinished(inst)
+    end
+end
+
+local function ShowStack(inst)
+    if not inst.components.inspectable then
+        local inspectable = inst:AddComponent("inspectable")
+    end
+    inst:SetPrefabNameOverride("dreadstone_stack")
+    inst.AnimState:ShowSymbol("stack_under")
+    inst.AnimState:ShowSymbol("stack_over")
+    inst.AnimState:ShowSymbol("stack_red")
+end
+
+local function OnDreadstoneMineCooldown(inst, fromload)
+    local workable = inst.components.workable
+    if workable then
+        workable:SetWorkable(true)
+    end
+    if not fromload then
+        if workable then
+            workable:SetWorkLeft(TUNING.FISSURE_DREADSTONE_WORK)
+        end
+        inst.SoundEmitter:PlaySound("dontstarve/sanity/shadowrock_up")
+        local fx = SpawnPrefab("dreadstone_spawn_fx")
+        fx.entity:SetParent(inst.entity)
+        inst:DoTaskInTime(7 * FRAMES, ShowStack)
+    else
+        ShowStack(inst)
+    end
+end
+
+local function OnReleasedFromControl_Animation(inst)
+    inst.AnimState:SetBankAndPlayAnimation(inst._default_fissure_build, "open_2")
+    inst.AnimState:SetBuild(inst._default_fissure_build)
+    inst.AnimState:HideSymbol("stack_under")
+    inst.AnimState:HideSymbol("stack_over")
+    inst.AnimState:HideSymbol("stack_red")
+
+    inst.fx.AnimState:SetMultColour(1, 1, 1, 1)
+    inst.Light:SetColour(unpack(inst._default_light_values))
+
+	inst.AnimState:SetSymbolLightOverride("crack01", 0)
+	inst.AnimState:SetSymbolLightOverride("fx_beam", 0)
+	inst.AnimState:SetSymbolLightOverride("fx_spiral", 0)
+	inst.AnimState:SetSymbolLightOverride("stack_red", 0)
+
+    inst:OnNightmarePhaseChanged(TheWorld.state.nightmarephase, false)
+end
+
+local function OnReleasedFromControl(inst)
+    inst:RemoveEventCallback("animover", OnAnimOverControlled)
+    local played_animation = false
+    local workable = inst.components.workable
+    if workable then
+        if workable:CanBeWorked() and not inst:IsAsleep() then
+            inst.SoundEmitter:PlaySound("dontstarve/sanity/shadowrock_down")
+            local fx = SpawnPrefab("dreadstone_spawn_fx")
+            fx.entity:SetParent(inst.entity)
+            inst:DoTaskInTime(7 * FRAMES, OnReleasedFromControl_Animation)
+            played_animation = true
+        end
+        workable:SetWorkable(false)
+    end
+    if inst.components.inspectable then
+        inst:RemoveComponent("inspectable")
+    end
+    inst:SetPrefabNameOverride(nil)
+    
+    if not played_animation then
+        OnReleasedFromControl_Animation(inst)
+    end
+end
+
+local function displaynamefn(inst)
+    -- This is a hack relying on the inspectable tag to flag if the object has dreadstone and should change if this is no longer the case.
+    return inst:HasTag("inspectable") and STRINGS.NAMES.DREADSTONE_STACK or nil
 end
 
 local function Make(name, build, lightcolour, fxname, masterinit)
@@ -208,6 +424,14 @@ local function Make(name, build, lightcolour, fxname, masterinit)
         "crawlingnightmare",
         fxname,
     }
+    
+    if AllowShadowThralls[name] then
+        table.insert(prefabs, "dreadstone")
+        table.insert(prefabs, "dreadstone_spawn_fx")
+        if build ~= "nightmare_crack_upper" then
+            table.insert(assets, Asset("ANIM", "anim/nightmare_crack_upper.zip"))
+        end
+    end
 
     local function fn()
         local inst = CreateEntity()
@@ -239,6 +463,12 @@ local function Make(name, build, lightcolour, fxname, masterinit)
         inst._lightmaxframe = MAX_LIGHT_OFF_FRAME
         inst._lightframe:set(inst._lightmaxframe)
         inst._lighttask = nil
+        
+        if AllowShadowThralls[name] then
+            inst.displaynamefn = displaynamefn
+        end
+
+        inst:AddTag("okayforarena")
 
         inst.entity:SetPristine()
 
@@ -247,6 +477,9 @@ local function Make(name, build, lightcolour, fxname, masterinit)
 
             return inst
         end
+
+        inst._default_fissure_build = build
+        inst._default_light_values = lightcolour
 
         inst.fx = SpawnPrefab(fxname)
         inst.fx.entity:SetParent(inst.entity)
@@ -263,8 +496,23 @@ local function Make(name, build, lightcolour, fxname, masterinit)
         inst.components.childspawner.childname = "crawlingnightmare"
         inst.components.childspawner:SetRareChild("nightmarebeak", .35)
 
-        inst:WatchWorldState("nightmarephase", OnNightmarePhaseChanged)
-        OnNightmarePhaseChanged(inst, TheWorld.state.nightmarephase, true)
+        if AllowShadowThralls[name] then
+            local lootdropper = inst:AddComponent("lootdropper")
+            local workable = inst:AddComponent("workable")
+            workable:SetWorkAction(ACTIONS.MINE)
+            workable:SetShouldRecoilFn(FissureShouldRecoil)
+            workable:SetOnFinishCallback(OnFissureMinedFinished)
+            workable:SetMaxWork(TUNING.FISSURE_DREADSTONE_WORK)
+            workable:SetWorkLeft(TUNING.FISSURE_DREADSTONE_WORK)
+            workable:SetWorkable(false)
+            workable.savestate = true
+            inst.OnDreadstoneMineCooldown = OnDreadstoneMineCooldown
+            inst.OnReleasedFromControl = OnReleasedFromControl
+        end
+
+        inst.OnNightmarePhaseChanged = OnNightmarePhaseChanged
+        inst:WatchWorldState("nightmarephase", inst.OnNightmarePhaseChanged)
+        inst:OnNightmarePhaseChanged(TheWorld.state.nightmarephase, true)
 
         inst.OnEntityWake = OnEntityWake
         inst.OnEntitySleep = OnEntitySleep
@@ -292,6 +540,7 @@ local function grottowar_masterinit(inst)
 	inst.components.childspawner:SetSpawnedFn(grottowar_onchildspawned)
 end
 
+-- NOTES(JBK): Add more to AllowShadowThralls table above if adding more prefabs here that want the shadow thrall event fight.
 return Make("fissure", "nightmare_crack_upper", upperLightColour, "upper_nightmarefissurefx"),
     Make("fissure_lower", "nightmare_crack_ruins", lowerLightColour, "nightmarefissurefx"),
     Make("fissure_grottowar", "fissure_grottowar", upperLightColour, "fissure_grottowarfx", grottowar_masterinit)

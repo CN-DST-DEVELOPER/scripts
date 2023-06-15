@@ -64,6 +64,7 @@ local function MakePreparedFood(data)
 
         inst.AnimState:PlayAnimation("idle")
         inst.AnimState:OverrideSymbol("swap_food", data.overridebuild or "cook_pot_food", data.basename or data.name)
+        inst.scrapbook_overridedata = {"swap_food", data.overridebuild or "cook_pot_food", data.basename or data.name}
 
         inst:AddTag("preparedfood")
         if data.tags ~= nil then

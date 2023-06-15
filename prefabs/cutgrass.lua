@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBuild("cutgrass")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "vegetation_grassy"
+
     inst:AddTag("cattoy")
     inst:AddTag("renewable")
 

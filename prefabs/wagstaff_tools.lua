@@ -86,6 +86,7 @@ local function maketool(name, build, bank, state ,erodeparam)
         inst.AnimState:SetBank(bank)
         inst.AnimState:SetBuild(build)
         inst.AnimState:PlayAnimation(state)
+        inst.scrapbook_anim = state
 
         inst.AnimState:SetErosionParams(0, erodeparam, -1.0)
 
@@ -96,6 +97,7 @@ local function maketool(name, build, bank, state ,erodeparam)
         inst.Light:Enable(true)
 
         inst:AddTag("irreplaceable")
+        inst:AddTag("wagstafftool")
 
         MakeInventoryFloatable(inst, "med", 0.05, 0.68)
 

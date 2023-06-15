@@ -26,6 +26,8 @@ local function fn()
     inst.AnimState:SetBuild("gold_nugget")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "metal"
+
     inst:AddTag("molebait")
     inst:AddTag("quakedebris")
 

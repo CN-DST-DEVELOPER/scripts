@@ -1952,6 +1952,52 @@ function c_spawnrift()
     end
 end
 
+local _showradius_ent =  nil
+
+function c_showradius(radius, parent)
+    if type(radius) == "number" then
+        -- Sqrt because Transform applies scaling exponentially.
+        --  300: Game Unit to Pixel conversion.
+        -- 1900: Firefighter texture size.
+        local scale = math.sqrt(radius * 300 / 1900)
+
+        if _showradius_ent == nil then
+            _showradius_ent = CreateEntity()
+
+            --[[Non-networked entity]]
+            _showradius_ent.entity:SetCanSleep(false)
+            _showradius_ent.persists = false
+
+            _showradius_ent.entity:AddTransform()
+            _showradius_ent.entity:AddAnimState()
+
+            _showradius_ent:AddTag("CLASSIFIED")
+            _showradius_ent:AddTag("NOCLICK")
+
+            _showradius_ent.AnimState:SetBank("firefighter_placement")
+            _showradius_ent.AnimState:SetBuild("firefighter_placement")
+            _showradius_ent.AnimState:PlayAnimation("idle")
+            _showradius_ent.AnimState:SetLightOverride(1)
+            _showradius_ent.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+            _showradius_ent.AnimState:SetLayer(LAYER_BACKGROUND)
+            _showradius_ent.AnimState:SetSortOrder(1)
+            _showradius_ent.AnimState:SetAddColour(0, .2, .5, 0)
+
+            _showradius_ent.entity:SetParent(ConsoleCommandPlayer().entity)
+        end
+
+        if parent ~= nil then
+            _showradius_ent.entity:SetParent(parent.entity)
+        end
+
+        _showradius_ent.Transform:SetScale(scale, scale, scale)
+
+    elseif _showradius_ent ~= nil then
+        _showradius_ent:Remove()
+        _showradius_ent = nil
+    end
+end
+
 -- Nuke any controller mappings, for when people get in a hairy situation with a controller mapping that is totally busted.
 function ResetControllersAndQuitGame()
     print("ResetControllersAndQuitGame requested")

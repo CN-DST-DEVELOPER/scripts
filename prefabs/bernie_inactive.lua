@@ -245,6 +245,7 @@ local function fn()
     inst.AnimState:SetBank("bernie")
     inst.AnimState:SetBuild("bernie_build")
     inst.AnimState:PlayAnimation("inactive")
+    inst.scrapbook_anim = "inactive"
 
     inst.MiniMapEntity:SetIcon("bernie.png")
 

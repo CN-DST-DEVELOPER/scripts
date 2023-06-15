@@ -108,7 +108,7 @@ local function emit_spark_fn(effect, sphere_emitter, adjust_vec)
         px, py, pz,         -- position
         vx, vy, vz,         -- velocity
         math.random() * 360,-- angle
-        UnitRand() * 1      -- angle velocity
+        UnitRand()          -- angle velocity
     )
 end
 

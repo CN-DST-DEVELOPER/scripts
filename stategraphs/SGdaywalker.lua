@@ -1375,7 +1375,8 @@ local states =
 			if inst.sg.statemem.tracking then
 				if inst.sg.statemem.target ~= nil then
 					if inst.sg.statemem.target:IsValid() then
-						inst.sg.statemem.targetpos = inst.sg.statemem.target:GetPosition()
+						local p = inst.sg.statemem.targetpos
+						p.x, p.y, p.z = inst.sg.statemem.target.Transform:GetWorldPosition()
 					else
 						inst.sg.statemem.target = nil
 					end

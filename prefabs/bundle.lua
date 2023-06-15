@@ -185,6 +185,7 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
             suffix = suffix..tostring(inst.variation)
         end
         inst.AnimState:PlayAnimation("idle"..suffix)
+        inst.scrapbook_anim = "idle"..suffix
 
         if doer ~= nil and doer.SoundEmitter ~= nil then
             doer.SoundEmitter:PlaySound(inst.skin_wrap_sound or "dontstarve/common/together/packaged")
@@ -250,6 +251,9 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
             (onesize and "idle_onesize1" or "idle_large1") or
             (onesize and "idle_onesize" or "idle_large")
         )
+        inst.scrapbook_anim = variations ~= nil and
+            (onesize and "idle_onesize1" or "idle_large1") or
+            (onesize and "idle_onesize" or "idle_large")
 
         inst:AddTag("bundle")
 

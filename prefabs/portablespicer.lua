@@ -255,6 +255,7 @@ local function fn()
     inst.AnimState:SetBank("portable_spicer")
     inst.AnimState:SetBuild("portable_spicer")
     inst.AnimState:PlayAnimation("idle_empty")
+    inst.scrapbook_anim = "idle_empty"
 
     inst:SetPrefabNameOverride("portablespicer_item")
 
@@ -338,6 +339,7 @@ local function itemfn()
     inst.AnimState:SetBank("portable_spicer")
     inst.AnimState:SetBuild("portable_spicer")
     inst.AnimState:PlayAnimation("idle_ground")
+    inst.scrapbook_anim ="idle_ground"
 
     inst:AddTag("portableitem")
 

@@ -17,6 +17,7 @@ local function MakeSpice(name)
         inst.AnimState:SetBuild("spices")
         inst.AnimState:PlayAnimation("idle")
         inst.AnimState:OverrideSymbol("swap_spice", "spices", name)
+        inst.scrapbook_overridedata={"swap_spice", "spices", name}
 
         inst:AddTag("spice")
 

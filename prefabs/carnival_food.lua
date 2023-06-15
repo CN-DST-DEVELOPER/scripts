@@ -18,6 +18,7 @@ local function MakeFood(def)
         inst.AnimState:SetBank(def.art)
         inst.AnimState:SetBuild(def.art)
         inst.AnimState:PlayAnimation(def.anim)
+        inst.scrapbook_anim = def.anim
 
         if def.art.tags ~= nil then
             for _,v in ipairs(def.art.tags) do

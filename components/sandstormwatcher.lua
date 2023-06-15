@@ -1,6 +1,18 @@
 local SandStormWatcher = Class(function(self, inst)
     self.inst = inst
+	self.enabled = false
     self.sandstormspeedmult = TUNING.SANDSTORM_SPEED_MOD
+
+	if TheWorld.components.sandstorms ~= nil then
+		inst:ListenForEvent("ms_stormchanged", function(src, data)
+			if data.stormtype == STORM_TYPES.SANDSTORM then
+				self:ToggleSandstorms(data.setting)
+			end
+		end, TheWorld)
+		if TheWorld.components.sandstorms:IsSandstormActive() then
+			self:ToggleSandstorms({ stormtype = STORM_TYPES.SANDSTORM, setting = true })
+		end
+	end
 end)
 
 local function UpdateSandstormWalkSpeed(inst)
@@ -22,40 +34,57 @@ local function RemoveSandstormWalkSpeedListeners(inst)
     inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "sandstorm")
 end
 
+function SandStormWatcher:OnRemoveFromEntity()
+	if self.enabled and self.sandstormspeedmult < 1 then
+		RemoveSandstormWalkSpeedListeners(self.inst)
+	end
+end
+
 function SandStormWatcher:ToggleSandstorms(active)
-    if active then
-        if self.sandstormspeedmult < 1 then
-            AddSandstormWalkSpeedListeners(self.inst)
-        end
-    else
-        if self.sandstormspeedmult < 1 then
-            RemoveSandstormWalkSpeedListeners(self.inst)
-        end
-    end
+	active = active or false
+	if self.enabled ~= active then
+		if self.sandstormspeedmult < 1 then
+			if active then
+				AddSandstormWalkSpeedListeners(self.inst)
+			else
+				RemoveSandstormWalkSpeedListeners(self.inst)
+			end
+		end
+		self.enabled = active
+		if active then
+			self:UpdateSandstormLevel()
+		end
+	end
 end
 
 function SandStormWatcher:SetSandstormSpeedMultiplier(mult)
     mult = math.clamp(mult, 0, 1)
     if self.sandstormspeedmult ~= mult then
-        if mult < 1 then
-            if self.sandstormspeedmult >= 1 then
-                AddSandstormWalkSpeedListeners(self.inst)
-            end
-            self.sandstormspeedmult = mult
-            self:UpdateSandstormWalkSpeed()
-        else
-            self.sandstormspeedmult = 1
-            RemoveSandstormWalkSpeedListeners(self.inst)
-        end
+		if self.enabled then
+			if mult >= 1 then
+				RemoveSandstormWalkSpeedListeners(self.inst)
+			elseif self.sandstormspeedmult >= 1 then
+				AddSandstormWalkSpeedListeners(self.inst)
+			end
+		end
+		self.sandstormspeedmult = mult
+		if self.enabled then
+			self:UpdateSandstormWalkSpeed()
+		end
     end
 end
 
 function SandStormWatcher:UpdateSandstormLevel()
-    self:UpdateSandstormWalkSpeed()
+	local level = self:GetSandstormLevel()
+	self:UpdateSandstormWalkSpeed_Internal(level)
+	self.inst:PushEvent("sandstormlevel", { level = level })
 end
 
 function SandStormWatcher:UpdateSandstormWalkSpeed()
-    local level = self:GetSandstormLevel()
+	self:UpdateSandstormWalkSpeed_Internal(self:GetSandstormLevel())
+end
+
+function SandStormWatcher:UpdateSandstormWalkSpeed_Internal(level)
     if level and self.sandstormspeedmult < 1 then
         if level < TUNING.SANDSTORM_FULL_LEVEL or
             self.inst.components.playervision:HasGoggleVision() or
@@ -66,7 +95,6 @@ function SandStormWatcher:UpdateSandstormWalkSpeed()
             self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "sandstorm", self.sandstormspeedmult)
         end
     end
-    self.inst:PushEvent("sandstormlevel",{level = level})
 end
 
 function SandStormWatcher:GetSandstormLevel()

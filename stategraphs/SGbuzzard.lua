@@ -166,6 +166,7 @@ local states=
         tags = {"idle", "flight", "busy"},
         onenter= function(inst)
             inst.AnimState:PlayAnimation("glide", true)
+			inst.DynamicShadow:Enable(false)
             inst.Physics:SetMotorVelOverride(0,-15,0)
             inst.flapSound = inst:DoPeriodicTask(6*FRAMES,
                 function(inst)
@@ -192,6 +193,7 @@ local states=
         end,
 
         onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
             if inst.flapSound then
                 inst.flapSound:Cancel()
                 inst.flapSound = nil
@@ -295,6 +297,7 @@ local states=
                 local x = 8+ math.random()*8
                 inst.Physics:SetMotorVel(x,15+math.random()*5,-2 + math.random()*4)
             end
+			inst.DynamicShadow:Enable(false)
         end,
 
         timeline =
@@ -307,7 +310,11 @@ local states=
                     inst:Remove()
                 end
             end),
-        }
+        },
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+		end,
     },
 
     State{
@@ -365,6 +372,7 @@ local states=
         onenter = function(inst)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("fall_loop", true)
+			inst.DynamicShadow:Enable(false)
         end,
 
         onupdate = function(inst)
@@ -377,6 +385,10 @@ local states=
                 inst.sg:GoToState("stunned")
             end
         end,
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+		end,
     },
 
     State{

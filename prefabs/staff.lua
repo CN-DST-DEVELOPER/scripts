@@ -723,6 +723,7 @@ local function commonfn(colour, tags, hasskin, hasshadowlevel)
     inst.AnimState:SetBank("staffs")
     inst.AnimState:SetBuild("staffs")
     inst.AnimState:PlayAnimation(colour.."staff")
+    inst.scrapbook_anim = colour.."staff"
 
     if tags ~= nil then
         for i, v in ipairs(tags) do

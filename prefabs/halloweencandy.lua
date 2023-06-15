@@ -37,6 +37,7 @@ local function MakeCandy(num)
         inst.AnimState:SetBank("halloweencandy")
         inst.AnimState:SetBuild("halloweencandy")
         inst.AnimState:PlayAnimation(tostring(num))
+        inst.scrapbook_anim = tostring(num)
 
         inst:AddTag("cattoy")
         inst:AddTag("halloweencandy")

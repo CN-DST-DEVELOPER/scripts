@@ -337,7 +337,12 @@ local function MakeLunarRiftBanner(self, banner_root, anim)
     anim:SetScale(.667)
 end
 
-
+local function MakeShadowRiftBanner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_rift2")
+    anim:GetAnimState():SetBank("dst_menu_rift2")
+    anim:GetAnimState():PlayAnimation("loop", true)
+    anim:SetScale(.667)
+end
 
 local function MakeDefaultBanner(self, banner_root, anim)
 	local banner_height = 350
@@ -389,7 +394,7 @@ function MakeBanner(self)
 	if IS_BETA then
 		title_str = STRINGS.UI.MAINSCREEN.MAINBANNER_BETA_TITLE
         
-        MakeLunarRiftBanner(self, banner_root, anim)
+        MakeShadowRiftBanner(self, banner_root, anim)
 
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
         MakeYOTRBanner(self, banner_root, anim)
@@ -398,12 +403,13 @@ function MakeBanner(self)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
         MakeYOTCatcoonBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-		MakeDramaBanner(self, banner_root, anim)
-        --MakeHallowedNightsBanner(self, banner_root, anim)
+		--MakeDramaBanner(self, banner_root, anim)
+        MakeHallowedNightsBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
-        MakeCawnivalBanner(self, banner_root, anim)
+        MakeShadowRiftBanner(self, banner_root, anim) -- FIXME(JBK): Comment this when the shadow rift update is done.
+        --MakeCawnivalBanner(self, banner_root, anim) -- FIXME(JBK): Uncomment this when the shadow rift update is done.
 	else
-		MakeLunarRiftBanner(self, banner_root, anim)
+		MakeShadowRiftBanner(self, banner_root, anim)
         --MakeDramaBanner(self, banner_root, anim)
         --MakeDefaultBanner(self, banner_root, anim)
         --MakePiratesBanner(self, banner_root, anim)

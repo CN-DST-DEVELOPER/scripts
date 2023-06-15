@@ -136,6 +136,7 @@ local function common(bank, build, anim, tags, dryable, cookable)
     inst.AnimState:SetBank(bank)
     inst.AnimState:SetBuild(build)
     inst.AnimState:PlayAnimation(anim)
+    inst.scrapbook_anim = anim
 
     inst:AddTag("meat")
     if tags ~= nil then

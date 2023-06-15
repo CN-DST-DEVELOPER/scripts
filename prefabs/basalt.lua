@@ -11,6 +11,7 @@ local function onload(inst, data)
     if data and data.anim then
         inst.animname = data.anim
         inst.AnimState:PlayAnimation(inst.animname)
+
     end
 end
 
@@ -41,6 +42,7 @@ local function makebasalt(anims)
 
         inst.animname = anims[math.random(#anims)]
         inst.AnimState:PlayAnimation(inst.animname)
+        inst.scrapbook_anim = inst.animname
         local color = 0.5 + math.random() * 0.5
         inst.AnimState:SetMultColour(color, color, color, 1)
 

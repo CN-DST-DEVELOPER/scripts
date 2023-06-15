@@ -86,7 +86,7 @@ local function ConfigureRunState(inst)
         else
             inst.sg.statemem.normal = true
         end
-    elseif inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+	elseif inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
         inst.sg.statemem.sandstorm = true
     elseif inst:HasTag("groggy") then
         inst.sg.statemem.groggy = true
@@ -605,10 +605,17 @@ local actionhandlers =
 	ActionHandler(ACTIONS.USEMAGICTOOL, "start_using_tophat"),
 	ActionHandler(ACTIONS.STOPUSINGMAGICTOOL, "stop_using_tophat"),
 	ActionHandler(ACTIONS.CAST_SPELLBOOK, "book"),
+	ActionHandler(ACTIONS.SCYTHE, "scythe"),
+	ActionHandler(ACTIONS.SITON, "start_sitting"),
 }
 
 local events =
 {
+	EventHandler("sg_cancelmovementprediction", function(inst)
+		inst.components.locomotor:Clear()
+		inst:ClearBufferedAction()
+		inst.sg:GoToState("idle", "cancel")
+	end),
     EventHandler("locomote", function(inst)
 		--#HACK for hopping prediction: ignore busy when boathopping... (?_?)
 		if (inst.sg:HasStateTag("busy") or inst:HasTag("busy")) and
@@ -692,8 +699,7 @@ local states =
 			else
                 anim =
                     (inst.replica.inventory ~= nil and inst.replica.inventory:IsHeavyLifting() and "heavy_idle") or
-                    (   inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL and
-                        not inst.components.playervision:HasGoggleVision() and
+					(   inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() and
                         (   inst.AnimState:IsCurrentAnimation("sand_walk_pst") or
                             inst.AnimState:IsCurrentAnimation("sand_walk") or
                             inst.AnimState:IsCurrentAnimation("sand_walk_pre")
@@ -1006,12 +1012,12 @@ local states =
                 elseif not (inst.sg.statemem.riding or
                             inst.sg.statemem.heavy or
                             inst.sg.statemem.iswere or
-                            inst.sg.statemem.sandstorm or
-                            inst:GetStormLevel() < TUNING.SANDSTORM_FULL_LEVEL) then
+							inst.sg.statemem.sandstorm)
+					and inst:IsInAnyStormOrCloud() then
                     inst.sg:GoToState("run")
                 end
             end),
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level < TUNING.SANDSTORM_FULL_LEVEL then
                     if inst.sg.statemem.sandstorm then
                         inst.sg:GoToState("run")
@@ -1024,6 +1030,19 @@ local states =
                     inst.sg:GoToState("run")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level < 1 then
+					if inst.sg.statemem.sandstorm then
+						inst.sg:GoToState("run")
+					end
+				elseif not (inst.sg.statemem.riding or
+							inst.sg.statemem.heavy or
+							inst.sg.statemem.iswere or
+							inst.sg.statemem.sandstorm or
+							inst.components.playervision:HasGoggleVision()) then
+					inst.sg:GoToState("run")
+				end
+			end),
             EventHandler("carefulwalking", function(inst, data)
                 if not data.careful then
                     if inst.sg.statemem.careful then
@@ -1105,15 +1124,20 @@ local states =
         events =
         {
             EventHandler("gogglevision", function(inst, data)
-                if not data.enabled and inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL then
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
                     inst.sg:GoToState("run")
                 end
             end),
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
                     inst.sg:GoToState("run")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
             EventHandler("carefulwalking", function(inst, data)
                 if data.careful then
                     inst.sg:GoToState("run")
@@ -1172,15 +1196,20 @@ local states =
         events =
         {
             EventHandler("gogglevision", function(inst, data)
-                if not data.enabled and inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL then
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
                     inst.sg:GoToState("run")
                 end
             end),
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
                     inst.sg:GoToState("run")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
             EventHandler("carefulwalking", function(inst, data)
                 if data.careful then
                     inst.sg:GoToState("run")
@@ -4961,6 +4990,155 @@ local states =
 
 		onexit = function(inst)
 			inst.entity:SetIsPredictingMovement(true)
+		end,
+	},
+
+	State{
+        name = "scythe",
+		tags = { "busy" },
+        server_states = { "scythe" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("scythe_pre")
+			inst.AnimState:PushAnimation("scythe_lag", false)
+
+            inst:PerformPreviewBufferedAction()
+            inst.sg:SetTimeout(TIMEOUT)
+        end,
+
+        onupdate = function(inst)
+            if inst.sg:ServerStateMatches() then
+                if inst.entity:FlattenMovementPrediction() then
+                    inst.sg:GoToState("idle", "noanim")
+                end
+            elseif inst.bufferedaction == nil then
+                inst.sg:GoToState("idle")
+            end
+        end,
+
+        ontimeout = function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle")
+        end,
+    },
+
+	State{
+		name = "start_sitting",
+		tags = { "busy" },
+		server_states = { "start_sitting", "sit_jumpon", "sitting" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.Transform:SetPredictedNoFaced()
+			inst.AnimState:PlayAnimation("sit_pre")
+			inst.AnimState:PushAnimation("sit_lag", false)
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("sitting")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("sit_off_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		events =
+		{
+			EventHandler("sg_cancelmovementprediction", function(inst)
+				if inst.sg:ServerStateMatches() then
+					inst.sg:GoToState("sitting")
+					return true
+				end
+			end),
+		},
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("sit_off_pst")
+			inst.sg:GoToState("idle", true)
+		end,
+
+		onexit = function(inst)
+			inst.Transform:ClearPredictedFacingModel()
+		end,
+	},
+
+	State{
+		name = "sitting",
+		tags = { "overridelocomote", "canrotate" },
+		server_states = { "start_sitting", "sit_jumpon", "sitting" }, --for sg_cancelmovementprediction
+
+		onenter = function(inst)
+			inst.entity:SetIsPredictingMovement(false)
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.bufferedaction == nil and not inst:HasTag("sitting_on_chair") then
+				inst.sg:GoToState("idle", "noanim")
+			end
+		end,
+
+		ontimeout = function(inst)
+			if inst.bufferedaction ~= nil and inst.bufferedaction.ispreviewing then
+				inst:ClearBufferedAction()
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		events =
+		{
+			EventHandler("sg_cancelmovementprediction", function(inst)
+				return inst.sg:ServerStateMatches()
+			end),
+			EventHandler("locomote", function(inst)
+				if inst.components.locomotor:WantsToMoveForward() then
+					inst.sg:GoToState("stop_sitting")
+				end
+				return true
+			end),
+		},
+
+		onexit = function(inst)
+			inst.entity:SetIsPredictingMovement(true)
+		end,
+	},
+
+	State{
+		name = "stop_sitting",
+		tags = { "busy" },
+		server_states = { "stop_sitting", "sit_jumpoff" },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("sit_off")
+			inst.AnimState:PushAnimation("sit_off_lag", false)
+			inst.components.playercontroller:RemotePredictOverrideLocomote()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst.components.locomotor:Clear()
+			if inst:HasTag("sitting_on_chair") then
+				inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+				inst.sg:GoToState("sitting")
+			else
+				inst.AnimState:PlayAnimation("sit_off_pst")
+				inst.sg:GoToState("idle", true)
+			end
 		end,
 	},
 }

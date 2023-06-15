@@ -240,6 +240,8 @@ local function fn()
     inst.AnimState:SetBank("worm")
     inst.AnimState:SetBuild("worm")
     inst.AnimState:PlayAnimation("idle_loop", true)
+    inst.scrapbook_anim = "atk"
+    inst.scrapbook_setanim = 0.37
 
     inst:AddTag("monster")
     inst:AddTag("hostile")

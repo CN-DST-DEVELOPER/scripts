@@ -50,6 +50,7 @@ local treasure_templates =
 					boatpatch = {2, 4},
 					saltrock = {5, 8},
 					goldenpickaxe = 1,
+					scrapbook_page = {0,1},
 				},
 				randomly_selected_loot =
 				{
@@ -70,6 +71,7 @@ local treasure_templates =
 					featherpencil = {2, 4},
 					spoiled_fish = {3, 5},
 					cookingrecipecard = 1,
+					scrapbook_page = {0,3},
 				},
 				randomly_selected_loot =
 				{
@@ -90,6 +92,7 @@ local treasure_templates =
 					oceanfishinglure_spoon_green = {1, 4},
 					oceanfishinglure_hermit_heavy = {0, 2},
 					cookingrecipecard = 1,
+					scrapbook_page = {0,1},
 				},
 				randomly_selected_loot =
 				{
@@ -108,6 +111,7 @@ local treasure_templates =
 					moonglass = {3, 6},
 					moonrocknugget = {3, 6},
 					goldenpickaxe = 1,
+					scrapbook_page = {0,1},
 				},
 				randomly_selected_loot =
 				{
@@ -127,6 +131,7 @@ local treasure_templates =
 					multitool_axe_pickaxe = 1,
 					armorruins = 1,
 					lantern = 1,
+					scrapbook_page = {0,1},
 				},
 				randomly_selected_loot =
 				{

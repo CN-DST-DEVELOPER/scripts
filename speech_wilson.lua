@@ -47,6 +47,7 @@ return {
             NOTALLOWED = "It won't fit.",
             EMPTY = "I need something to build with.",
             MISMATCH = "Whoops! Wrong plans.",
+            NOTREADY = "It might come out once things have stabilized around here.",
         },
 		RUMMAGE =
 		{
@@ -216,7 +217,7 @@ return {
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "I can't make anything out in this lighting!",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "I don't see an \"X marks the spot\". They must've forgotten to draw it.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "I don't see an \"X marks the spot\". They must've forgotten to draw it.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -896,6 +897,9 @@ return {
 	ANNOUNCE_TOOL_TOOWEAK = "I need a stronger tool!",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "That flash! Was that moonlight?",
+    ANNOUNCE_SHADOW_RIFT_MAX = "Something sinister's on the horizon.",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "I already have all these.",
 
 	BATTLECRY =
 	{
@@ -1810,6 +1814,7 @@ return {
         CHESSPIECE_GUARDIANPHASE3 = "I much prefer it this way.",
         CHESSPIECE_EYEOFTERROR = "It's giving me a stony stare.",
         CHESSPIECE_TWINSOFTERROR = "That was a terrible night of very uncomfortable eye contact.",
+        CHESSPIECE_DAYWALKER = "Now he's off who-knows-were.",
 
         CHESSJUNK1 = "A pile of broken chess pieces.",
         CHESSJUNK2 = "Another pile of broken chess pieces.",
@@ -2961,6 +2966,8 @@ return {
 		WALL_WOOD_ITEM = "Pickets!",
 		WALL_MOONROCK = "Spacey and smooth!",
 		WALL_MOONROCK_ITEM = "Very light, but surprisingly tough.",
+		WALL_DREADSTONE = " I feel so... safe?",
+		WALL_DREADSTONE_ITEM = "What could go wrong?",
 		FENCE = "It's just a wood fence.",
         FENCE_ITEM = "All we need to build a nice, sturdy fence.",
         FENCE_GATE = "It opens. And closes sometimes, too.",
@@ -4801,6 +4808,34 @@ return {
 		SHOVEL_LUNARPLANT = "The dirt displacing possibilities are endless!",
 
         PUNCHINGBAG = "It comes with a finely calibrated ouch-o-meter.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "That drop looks like it goes on forever.",
+
+		SHADOW_FORGE = "What dark designs will it bring to life?",
+		SHADOW_FORGE_KIT = "It would be unscientific of me not to at least do some experiments.",
+
+        FUSED_SHADELING = "I liked you better when you were smaller, and bothering someone else.",
+        FUSED_SHADELING_BOMB = "Bombastic!",
+
+		VOIDCLOTH = "Those shadows are all cut from the same cloth.",
+		VOIDCLOTHHAT = "It makes me feel dark and mysterious.",
+		ARMOR_VOIDCLOTH = "Oh drat, there's a tear across the front!",
+
+        VOIDCLOTH_UMBRELLA = "I always hate when my hair gets melted by acid.",
+        VOIDCLOTH_SCYTHE = "It makes harvesting so easy, it's scary!",
+
+		SHADOWTHRALL_HANDS = "Hands off!",
+		SHADOWTHRALL_HORNS = "It looks hungry for a fight.",
+		SHADOWTHRALL_WINGS = "The wings seem to be just for show.",
+
+        CHARLIE_NPC = "Wait, is that...?",
+        CHARLIE_HAND = "It wants something dreadful.",
+
+        NITRE_FORMATION = "It's definitely some kind of rock.",
+        DREADSTONE_STACK = "It's coming from deep down in those chasms...",
+        
+        SCRAPBOOK_PAGE = "Someone else out there likes to scrapbook.",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

@@ -65,6 +65,8 @@ local function common(anim, cookable, oceanfishing_lure)
     inst.AnimState:PlayAnimation(anim)
     inst.AnimState:SetRayTestOnBB(true)
 
+    inst.pickupsound = "vegetation_firm"
+
     if cookable then
         inst:AddTag("deployedplant")
         inst:AddTag("deployedfarmplant")

@@ -356,7 +356,7 @@ local function ConfigureRunState(inst)
         else
             inst.sg.statemem.normal = true
         end
-    elseif inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+	elseif inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
         inst.sg.statemem.sandstorm = true
     elseif inst:HasTag("groggy") then
         inst.sg.statemem.groggy = true
@@ -1011,6 +1011,8 @@ local actionhandlers =
 		return "stop_using_tophat"
 	end),
 	ActionHandler(ACTIONS.CAST_SPELLBOOK, "book"),
+	ActionHandler(ACTIONS.SCYTHE, "scythe"),
+	ActionHandler(ACTIONS.SITON, "start_sitting"),
 }
 
 local events =
@@ -1082,6 +1084,8 @@ local events =
                         pushing = data.attacker ~= nil and data.attacker.sg ~= nil and data.attacker.sg:HasStateTag("pushing"),
                     })
                 end
+			elseif inst.sg:HasStateTag("devoured") then
+				return --Do nothing
             elseif data.attacker ~= nil
                 and data.attacker:HasTag("groundspike")
                 and not inst.components.rider:IsRiding()
@@ -1148,7 +1152,13 @@ local events =
 		if not inst.components.health:IsDead() then
 			if inst:HasTag("wereplayer") then
 				inst.sg.mem.laststuntime = GetTime()
-				inst.sg:GoToState("hit")
+				if data ~= nil then
+					data = shallowcopy(data)
+					data.repeller = data.knocker
+					inst.sg:GoToState("repelled", data)
+				else
+					inst.sg:GoToState("hit")
+				end
 			elseif inst.sg:HasStateTag("parrying") then
                 inst.sg.statemem.parrying = true
                 inst.sg:GoToState("parry_knockback", {
@@ -1181,6 +1191,12 @@ local events =
             inst.sg:GoToState("mindcontrolled")
         end
     end),
+
+	EventHandler("devoured", function(inst, data)
+		if not inst.components.health:IsDead() and data ~= nil and data.attacker ~= nil and data.attacker:IsValid() then
+			inst.sg:GoToState("devoured", data.attacker)
+		end
+	end),
 
     EventHandler("set_heading",
         function(inst)
@@ -1352,12 +1368,16 @@ local events =
 
     EventHandler("toolbroke",
         function(inst, data)
-            inst.sg:GoToState("toolbroke", data.tool)
+			if not inst.sg:HasStateTag("nointerrupt") then
+				inst.sg:GoToState("toolbroke", data.tool)
+			end
         end),
 
     EventHandler("armorbroke",
         function(inst)
-            inst.sg:GoToState("armorbroke")
+			if not inst.sg:HasStateTag("nointerrupt") then
+				inst.sg:GoToState("armorbroke")
+			end
         end),
 
     EventHandler("fishingcancel",
@@ -2694,8 +2714,7 @@ local states =
                 dofunny = false
             else
                 inst.sg.statemem.ignoresandstorm = false
-                if inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL
-                    and not inst.components.playervision:HasGoggleVision() then
+				if inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
                     if not (inst.AnimState:IsCurrentAnimation("sand_walk_pst") or
                             inst.AnimState:IsCurrentAnimation("sand_walk") or
                             inst.AnimState:IsCurrentAnimation("sand_walk_pre")) then
@@ -2758,7 +2777,7 @@ local states =
 
         events =
         {
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if not inst.sg.statemem.ignoresandstorm then
                     if data.level < TUNING.SANDSTORM_FULL_LEVEL then
                         if inst.sg.statemem.sandstorm then
@@ -2769,6 +2788,17 @@ local states =
                     end
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if not inst.sg.statemem.ignoresandstorm then
+					if data.level < 1 then
+						if inst.sg.statemem.sandstorm then
+							inst.sg:GoToState("idle")
+						end
+					elseif not (inst.sg.statemem.sandstorm or inst.components.playervision:HasGoggleVision()) then
+						inst.sg:GoToState("idle")
+					end
+				end
+			end),
         },
 
         ontimeout = function(inst)
@@ -3072,7 +3102,7 @@ local states =
                 return
             end
 
-            if inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+			if inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
                 if pushanim then
                     inst.AnimState:PushAnimation("sand_idle_pre")
                 else
@@ -3092,7 +3122,7 @@ local states =
 
         events =
         {
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level < TUNING.SANDSTORM_FULL_LEVEL then
                     if inst.sg.statemem.sandstorm then
                         inst.sg:GoToState("mounted_idle")
@@ -3101,6 +3131,15 @@ local states =
                     inst.sg:GoToState("mounted_idle")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level < 1 then
+					if inst.sg.statemem.sandstorm then
+						inst.sg:GoToState("mounted_idle")
+					end
+				elseif not (inst.sg.statemem.sandstorm or inst.components.playervision:HasGoggleVision()) then
+					inst.sg:GoToState("mounted_idle")
+				end
+			end),
         },
 
         ontimeout = function(inst)
@@ -8770,12 +8809,12 @@ local states =
                 elseif not (inst.sg.statemem.riding or
                             inst.sg.statemem.heavy or
                             inst.sg.statemem.iswere or
-                            inst.sg.statemem.sandstorm or
-                            inst:GetStormLevel() < TUNING.SANDSTORM_FULL_LEVEL) then
+							inst.sg.statemem.sandstorm)
+						and inst:IsInAnyStormOrCloud() then
                     inst.sg:GoToState("run")
                 end
             end),
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level < TUNING.SANDSTORM_FULL_LEVEL then
                     if inst.sg.statemem.sandstorm then
                         inst.sg:GoToState("run")
@@ -8788,6 +8827,19 @@ local states =
                     inst.sg:GoToState("run")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level < 1 then
+					if inst.sg.statemem.sandstorm then
+						inst.sg:GoToState("run")
+					end
+				elseif not (inst.sg.statemem.riding or
+							inst.sg.statemem.heavy or
+							inst.sg.statemem.iswere or
+							inst.sg.statemem.sandstorm or
+							inst.components.playervision:HasGoggleVision()) then
+					inst.sg:GoToState("run")
+				end
+			end),
             EventHandler("carefulwalking", function(inst, data)
                 if not data.careful then
                     if inst.sg.statemem.careful then
@@ -8874,15 +8926,20 @@ local states =
         events =
         {
             EventHandler("gogglevision", function(inst, data)
-                if not data.enabled and inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL then
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
                     inst.sg:GoToState("run")
                 end
             end),
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
                     inst.sg:GoToState("run")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
             EventHandler("carefulwalking", function(inst, data)
                 if data.careful then
                     inst.sg:GoToState("run")
@@ -8942,15 +8999,20 @@ local states =
         events =
         {
             EventHandler("gogglevision", function(inst, data)
-                if not data.enabled and inst:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL then
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
                     inst.sg:GoToState("run")
                 end
             end),
-            EventHandler("sandstormlevel", function(inst, data)
+			EventHandler("stormlevel", function(inst, data)
                 if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
                     inst.sg:GoToState("run")
                 end
             end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
             EventHandler("carefulwalking", function(inst, data)
                 if data.careful then
                     inst.sg:GoToState("run")
@@ -10605,8 +10667,11 @@ local states =
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
+			--V2C: in case mount or woodie's were-transforms have shorter hit anims
+			local stun_frames = 9
             if inst.components.rider:IsRiding() or inst:HasTag("wereplayer") then
                 inst.AnimState:PlayAnimation("hit")
+				stun_frames = math.min(inst.AnimState:GetCurrentAnimationNumFrames(), stun_frames)
             else
                 inst.AnimState:PlayAnimation("distress_pre")
                 inst.AnimState:PushAnimation("distress_pst", false)
@@ -10614,22 +10679,27 @@ local states =
 
             DoHurtSound(inst)
 
-            if data ~= nil and data.radius ~= nil and data.repeller ~= nil and data.repeller:IsValid() then
-                local x, y, z = data.repeller.Transform:GetWorldPosition()
-                local distsq = inst:GetDistanceSqToPoint(x, y, z)
-                local rangesq = data.radius * data.radius
-                if distsq < rangesq then
-                    if distsq > 0 then
-                        inst:ForceFacePoint(x, y, z)
-                    end
-                    local k = .5 * distsq / rangesq - 1
-                    inst.sg.statemem.speed = 25 * k
-                    inst.sg.statemem.dspeed = 2
-                    inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
-                end
-            end
+			if data ~= nil then
+				if data.knocker ~= nil then
+					inst.sg:AddStateTag("nointerrupt")
+				end
+				if data.radius ~= nil and data.repeller ~= nil and data.repeller:IsValid() then
+					local x, y, z = data.repeller.Transform:GetWorldPosition()
+					local distsq = inst:GetDistanceSqToPoint(x, y, z)
+					local rangesq = data.radius * data.radius
+					if distsq < rangesq then
+						if distsq > 0 then
+							inst:ForceFacePoint(x, y, z)
+						end
+						local k = .5 * distsq / rangesq - 1
+						inst.sg.statemem.speed = (data.strengthmult or 1) * 25 * k
+						inst.sg.statemem.dspeed = 2
+						inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
+					end
+				end
+			end
 
-            inst.sg:SetTimeout(9 * FRAMES)
+			inst.sg:SetTimeout(stun_frames * FRAMES)
         end,
 
         onupdate = function(inst)
@@ -10645,6 +10715,13 @@ local states =
                 end
             end
         end,
+
+		timeline =
+		{
+			FrameEvent(4, function(inst)
+				inst.sg:RemoveStateTag("nointerrupt")
+			end),
+		},
 
         ontimeout = function(inst)
             inst.sg:GoToState("idle", true)
@@ -11082,6 +11159,127 @@ local states =
             inst.sg:GoToState("idle", true)
         end,
     },
+
+	State{
+		name = "devoured",
+		tags = { "devoured", "invisible", "noattack", "notalking", "nointerrupt", "busy", "nopredict", "silentmorph" },
+
+		onenter = function(inst, attacker)
+			ClearStatusAilments(inst)
+			ForceStopHeavyLifting(inst)
+			local mount = inst.components.rider:ActualDismount()
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("empty")
+			inst:ShowHUD(false)
+			inst:SetCameraDistance(14)
+			inst:Hide()
+			inst.DynamicShadow:Enable(false)
+			ToggleOffPhysics(inst)
+			if inst.components.playercontroller ~= nil then
+				inst.components.playercontroller:Enable(false)
+			end
+			StopTalkSound(inst, true)
+			if inst.components.talker ~= nil then
+				inst.components.talker:ShutUp()
+				inst.components.talker:IgnoreAll("devoured")
+			end
+			if attacker ~= nil and attacker:IsValid() then
+				inst.sg.statemem.attacker = attacker
+				if mount ~= nil then
+					--use true physics radius if available
+					local radius = attacker.Physics ~= nil and attacker.Physics:GetRadius() or attacker:GetPhysicsRadius(0)
+					if radius > 0 then
+						local dir = attacker:GetAngleToPoint(inst.Transform:GetWorldPosition()) * DEGREES
+						local x, y, z = attacker.Transform:GetWorldPosition()
+						x = x + radius * math.cos(dir)
+						z = z - radius * math.sin(dir)
+						if TheWorld.Map:IsPassableAtPoint(x, 0, z) then
+							if mount.Physics ~= nil then
+								mount.Physics:Teleport(x, 0, z)
+							else
+								mount.Transform:SetPosition(x, 0, z)
+							end
+						end
+					end
+				end
+				inst.Transform:SetRotation(attacker.Transform:GetRotation() + 180)
+			end
+		end,
+
+		onupdate = function(inst)
+			local attacker = inst.sg.statemem.attacker
+			if attacker:IsValid() then
+				inst.Transform:SetPosition(attacker.Transform:GetWorldPosition())
+				inst.Transform:SetRotation(attacker.Transform:GetRotation() + 180)
+			else
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		events =
+		{
+			EventHandler("spitout", function(inst, data)
+				local attacker = data ~= nil and data.spitter or inst.sg.statemem.attacker
+				if attacker ~= nil and attacker:IsValid() then
+					local rot = attacker.Transform:GetRotation()
+					inst.Transform:SetRotation(rot + 180)
+					local physradius = attacker:GetPhysicsRadius(0)
+					if physradius > 0 then
+						local x, y, z = inst.Transform:GetWorldPosition()
+						rot = rot * DEGREES
+						x = x + math.cos(rot) * physradius
+						z = z - math.sin(rot) * physradius
+						inst.Physics:Teleport(x, 0, z)
+					end
+					DoHurtSound(inst)
+					inst.sg:HandleEvent("knockback", {
+						knocker = attacker,
+						radius = data ~= nil and data.radius or physradius + 1,
+						strengthmult = data ~= nil and data.strengthmult or nil,
+					})
+				else
+					inst.sg:HandleEvent("knockback")
+				end
+				--NOTE: ignores heavy armor/body
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.components.health:IsDead() then
+				local attacker = inst.sg.statemem.attacker
+				if attacker ~= nil and attacker:IsValid() then
+					local rot = attacker.Transform:GetRotation()
+					inst.Transform:SetRotation(rot + 180)
+					--use true physics radius if available
+					local radius = attacker.Physics ~= nil and attacker.Physics:GetRadius() or attacker:GetPhysicsRadius(0)
+					if radius > 0 then
+						local x, y, z = inst.Transform:GetWorldPosition()
+						rot = rot * DEGREES
+						x = x + math.cos(rot) * radius
+						z = z - math.sin(rot) * radius
+						if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
+							inst.Physics:Teleport(x, 0, z)
+						end
+					end
+				end
+			end
+			inst:ShowHUD(true)
+			inst:SetCameraDistance()
+			inst:Show()
+			inst.DynamicShadow:Enable(true)
+			if inst.sg.statemem.isphysicstoggle then
+				ToggleOnPhysics(inst)
+			end
+			inst.entity:SetParent(nil)
+			if inst.components.playercontroller ~= nil then
+				inst.components.playercontroller:Enable(true)
+			end
+			if inst.components.talker ~= nil then
+				inst.components.talker:StopIgnoringAll("devoured")
+			end
+		end,
+	},
 
     State{
         name = "toolbroke",
@@ -17110,6 +17308,475 @@ local states =
     },
 
     -- END STAGE ACTING
+
+	State{
+		name = "scythe",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("scythe_pre")
+			inst.AnimState:PushAnimation("scythe_loop", false)
+		end,
+
+		timeline =
+		{
+			FrameEvent(14, function(inst) inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh") end),
+			FrameEvent(15, function(inst)
+				inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh")
+				inst:PerformBufferedAction()
+			end),
+			FrameEvent(18, function(inst)
+				inst.sg:RemoveStateTag("busy")
+			end),
+			FrameEvent(25, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+		},
+	},
+
+	State{
+		name = "start_sitting",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.Transform:SetPredictedNoFaced()
+			inst.AnimState:PlayAnimation("sit_pre")
+			local buffaction = inst:GetBufferedAction()
+			local chair = buffaction ~= nil and buffaction.target or nil
+			if chair ~= nil and chair:IsValid() then
+				inst.Transform:SetRotation(chair.Transform:GetRotation())
+				if inst:PerformBufferedAction() and
+					chair.components.sittable ~= nil and
+					chair.components.sittable:IsOccupiedBy(inst) then
+					--
+					inst:AddTag("sitting_on_chair")
+					inst.sg.statemem.chair = chair
+				end
+			else
+				inst:ClearBufferedAction()
+			end
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.sitting = true
+					inst.sg:GoToState("sit_jumpon", inst.sg.statemem.chair)
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Transform:ClearPredictedFacingModel()
+			if not inst.sg.statemem.sitting then
+				inst:RemoveTag("sitting_on_chair")
+				local chair = inst.sg.statemem.chair
+				if chair ~= nil and
+					chair:IsValid() and
+					chair.components.sittable ~= nil and
+					chair.components.sittable:IsOccupiedBy(inst) then
+					--
+					chair.components.sittable:SetOccupier(nil)
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "sit_jumpon",
+		tags = { "busy", "nopredict" },
+
+		onenter = function(inst, chair)
+			if chair == nil or not chair:IsValid() or chair.components.sittable == nil then
+				inst.sg:GoToState("idle")
+				return
+			elseif not chair.components.sittable:IsOccupied() then
+				chair.components.sittable:SetOccupier(inst)
+			elseif not chair.components.sittable:IsOccupiedBy(inst) then
+				inst.sg:GoToState("idle")
+				return
+			end
+			inst.components.locomotor:Stop()
+			inst.Transform:SetNoFaced()
+			inst.AnimState:PlayAnimation("sit_jump")
+			inst:AddTag("sitting_on_chair")
+			inst.sg.statemem.chair = chair
+			inst.sg.statemem.onremovechair = function(chair)
+				inst.sg.statemem.chair = nil
+				inst.sg:GoToState("stop_sitting_pst")
+			end
+			inst.sg.statemem.onbecomeunsittable = function(chair)
+				inst.sg:GoToState("stop_sitting_pst")
+			end
+			inst:ListenForEvent("onremove", inst.sg.statemem.onremovechair, chair)
+			inst:ListenForEvent("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
+			local rot = chair.Transform:GetRotation()
+			inst.Transform:SetRotation(rot)
+			local x, y, z = inst.Transform:GetWorldPosition()
+			local x1, y1, z1 = chair.Transform:GetWorldPosition()
+			local dx = x1 - x
+			local dz = z1 - z
+			if dx ~= 0 or dz ~= 0 then
+				local dist = math.sqrt(dx * dx + dz * dz)
+				local speed = dist * 30 / inst.AnimState:GetCurrentAnimationNumFrames()
+				local dir = math.atan2(-dz, dx) - rot * DEGREES
+				inst.Physics:SetMotorVel(speed * math.cos(dir), 0, -speed * math.sin(dir))
+			end
+			ToggleOffPhysics(inst)
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.sitting = true
+					inst.sg:GoToState("sitting", {
+						landed = true,
+						chair = inst.sg.statemem.chair,
+						onremovechair = inst.sg.statemem.onremovechair,
+						onbecomeunsittable = inst.sg.statemem.onbecomeunsittable,
+						isphysicstoggle = inst.sg.statemem.isphysicstoggle,
+					})
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Physics:Stop()
+			if not inst.sg.statemem.sitting then
+				inst:RemoveTag("sitting_on_chair")
+				inst.Transform:SetFourFaced()
+				if inst.sg.statemem.isphysicstoggle then
+					ToggleOnPhysics(inst)
+				end
+				local chair = inst.sg.statemem.chair
+				if chair ~= nil and chair:IsValid() then
+					inst:RemoveEventCallback("onremove", inst.sg.statemem.onremovechair, chair)
+					inst:RemoveEventCallback("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
+					if chair.components.sittable ~= nil and chair.components.sittable:IsOccupiedBy(inst) then
+						chair.components.sittable:SetOccupier(nil)
+					end
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "sitting",
+		tags = { "overridelocomote", "canrotate" },
+
+		onenter = function(inst, data)
+			local chair, landed
+			if EntityScript.is_instance(data) then
+				chair = data
+			elseif data ~= nil then
+				landed = data.landed
+				chair = data.chair
+				inst.sg.statemem.onremovechair = data.onremovechair
+				inst.sg.statemem.onbecomeunsittable = data.onbecomeunsittable
+				inst.sg.statemem.isphysicstoggle = data.isphysicstoggle
+			end
+			if chair == nil or not chair:IsValid() or chair.components.sittable == nil then
+				inst.sg:GoToState("stop_sitting_pst")
+				return
+			elseif not chair.components.sittable:IsOccupied() then
+				chair.components.sittable:SetOccupier(inst)
+			elseif not chair.components.sittable:IsOccupiedBy(inst) then
+				inst.sg:GoToState("stop_sitting_pst")
+				return
+			end
+			if inst.sg.statemem.onremovechair == nil then
+				inst.sg.statemem.onremovechair = function(chair)
+					inst.sg.statemem.chair = nil
+					inst.sg:GoToState("stop_sitting_pst")
+				end
+				inst:ListenForEvent("onremove", inst.sg.statemem.onremovechair, chair)
+			end
+			if inst.sg.statemem.onbecomeunsittable == nil then
+				inst.sg.statemem.onbecomeunsittable = function(chair)
+					inst.sg:GoToState("stop_sitting_pst")
+				end
+				inst:ListenForEvent("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
+			end
+			if not inst.sg.statemem.isphysicstoggle then
+				ToggleOffPhysics(inst)
+			end
+			inst.sg.statemem.chair = chair
+			inst:AddTag("sitting_on_chair")
+			inst.components.locomotor:StopMoving()
+			inst.Transform:SetNoFaced()
+			if landed then
+				inst.AnimState:PlayAnimation("sit_loop_pre")
+				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+			else
+				inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+			end
+			inst.Physics:Teleport(chair.Transform:GetWorldPosition())
+		end,
+
+		events =
+		{
+			EventHandler("ontalk", function(inst)
+				local duration = inst.sg.statemem.talktask ~= nil and GetTaskRemaining(inst.sg.statemem.talktask) or 1.5 + math.random() * .5
+				inst.AnimState:PlayAnimation("sit_dial", true)
+				if inst.sg.statemem.sittalktask ~= nil then
+					inst.sg.statemem.sittalktask:Cancel()
+				end
+				inst.sg.statemem.sittalktask = inst:DoTaskInTime(duration, function(inst)
+					inst.sg.statemem.sittalktask = nil
+					if inst.AnimState:IsCurrentAnimation("sit_dial") then
+						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+					end
+				end)
+				return OnTalk_Override(inst)
+			end),
+			EventHandler("donetalking", function(inst)
+				if inst.sg.statemem.sittalktask ~= nil then
+					inst.sg.statemem.sittalktask:Cancel()
+					inst.sg.statemem.sittalktask = nil
+					if inst.AnimState:IsCurrentAnimation("sit_dial") then
+						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+					end
+				end
+				return OnDoneTalking_Override(inst)
+			end),
+			EventHandler("equip", function(inst, data)
+				inst.AnimState:PlayAnimation(data.eslot == EQUIPSLOTS.HANDS and "sit_item_out" or "sit_item_hat")
+				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+			end),
+			EventHandler("unequip", function(inst, data)
+				inst.AnimState:PlayAnimation(data.eslot == EQUIPSLOTS.HANDS and "sit_item_in" or "sit_item_hat")
+				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+			end),
+			EventHandler("performaction", function(inst, data)
+				if data ~= nil and data.action ~= nil and data.action.action == ACTIONS.DROP then
+					inst.AnimState:PlayAnimation("sit_item_hat")
+					inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+				end
+			end),
+			EventHandler("locomote", function(inst, data)
+				if data ~= nil and data.remoteoverridelocomote or inst.components.locomotor:WantsToMoveForward() then
+					inst.sg.statemem.sitting = true
+					inst.sg:GoToState("stop_sitting", {
+						chair = inst.sg.statemem.chair,
+						isphysicstoggle = inst.sg.statemem.isphysicstoggle,
+					})
+				end
+				return true
+			end),
+		},
+
+		onexit = function(inst)
+			local chair = inst.sg.statemem.chair
+			if chair ~= nil then
+				inst:RemoveEventCallback("onremove", inst.sg.statemem.onremovechair, chair)
+				inst:RemoveEventCallback("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
+			end
+			if not inst.sg.statemem.sitting then
+				inst:RemoveTag("sitting_on_chair")
+				inst.Transform:SetFourFaced()
+				if inst.sg.statemem.isphysicstoggle then
+					ToggleOnPhysics(inst)
+				end
+				if chair ~= nil and chair:IsValid() then
+					if chair.components.sittable ~= nil and chair.components.sittable:IsOccupiedBy(inst) then
+						chair.components.sittable:SetOccupier(nil)
+					end
+					local radius = inst:GetPhysicsRadius(0) + chair:GetPhysicsRadius(0)
+					if radius > 0 then
+						local x, y, z = inst.Transform:GetWorldPosition()
+						local x1, y1, z1 = chair.Transform:GetWorldPosition()
+						if x == x1 and z == z1 then
+							local rot = inst.Transform:GetRotation() * DEGREES
+							x = x1 + radius * math.cos(rot)
+							z = z1 - radius * math.sin(rot)
+							if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
+								inst.Physics:Teleport(x, 0, z)
+							end
+						end
+					end
+				end
+			end
+			if inst.sg.statemem.sittalktask ~= nil then
+				inst.sg.statemem.sittalktask:Cancel()
+			end
+			CancelTalk_Override(inst)
+		end,
+	},
+
+	State{
+		name = "stop_sitting",
+		tags = { "busy" },
+
+		onenter = function(inst, data)
+			local chair
+			if EntityScript.is_instance(data) then
+				chair = data
+			elseif data ~= nil then
+				chair = data.chair
+				inst.sg.statemem.isphysicstoggle = data.isphysicstoggle
+			end
+			if chair == nil or not chair:IsValid() or chair.components.sittable == nil then
+				inst.sg:GoToState("stop_sitting_pst")
+				return
+			elseif not chair.components.sittable:IsOccupied() then
+				chair.components.sittable:SetOccupier(inst)
+			elseif not chair.components.sittable:IsOccupiedBy(inst) then
+				inst.sg:GoToState("stop_sitting_pst")
+				return
+			end
+			if not inst.sg.statemem.isphysicstoggle then
+				ToggleOffPhysics(inst)
+			end
+			inst:AddTag("sitting_on_chair")
+			inst.sg.statemem.chair = chair
+			inst.components.locomotor:Stop()
+			inst.Transform:SetNoFaced()
+			inst.AnimState:PlayAnimation("sit_off")
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.sitting = true
+					inst.sg:GoToState("sit_jumpoff", {
+						chair = inst.sg.statemem.chair,
+						isphysicstoggle = inst.sg.statemem.isphysicstoggle,
+					})
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst:RemoveTag("sitting_on_chair")
+			if not inst.sg.statemem.sitting then
+				inst.Transform:SetFourFaced()
+				if inst.sg.statemem.isphysicstoggle then
+					ToggleOnPhysics(inst)
+				end
+				local chair = inst.sg.statemem.chair
+				if chair ~= nil and chair:IsValid() then
+					if chair.components.sittable ~= nil and chair.components.sittable:IsOccupiedBy(inst) then
+						chair.components.sittable:SetOccupier(nil)
+					end
+					local radius = inst:GetPhysicsRadius(0) + chair:GetPhysicsRadius(0)
+					if radius > 0 then
+						local x, y, z = inst.Transform:GetWorldPosition()
+						local x1, y1, z1 = chair.Transform:GetWorldPosition()
+						if x == x1 and z == z1 then
+							local rot = inst.Transform:GetRotation() * DEGREES
+							x = x1 + radius * math.cos(rot)
+							z = z1 - radius * math.sin(rot)
+							if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
+								inst.Physics:Teleport(x, 0, z)
+							end
+						end
+					end
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "sit_jumpoff",
+		tags = { "busy", "nopredict" },
+
+		onenter = function(inst, data)
+			local chair
+			if EntityScript.is_instance(data) then
+				chair = data
+			elseif data ~= nil then
+				chair = data.chair
+				inst.sg.statemem.isphysicstoggle = data.isphysicstoggle
+			end
+			if chair == nil or not chair:IsValid() then
+				inst.sg:GoToState("stop_sitting_pst")
+				return
+			end
+			if not inst.sg.statemem.isphysicstoggle then
+				ToggleOffPhysics(inst)
+			end
+			inst.sg.statemem.chair = chair
+			inst.components.locomotor:Stop()
+			inst.Transform:SetNoFaced()
+			inst.AnimState:PlayAnimation("sit_jump_off")
+			local radius = inst:GetPhysicsRadius(0) + chair:GetPhysicsRadius(0)
+			if radius > 0 then
+				inst.Physics:SetMotorVel(radius * 30 / inst.AnimState:GetCurrentAnimationNumFrames(), 0, 0)
+				if inst:IsOnPassablePoint() then
+					inst.sg.statemem.safepos = inst:GetPosition()
+				end
+			end
+		end,
+
+		onupdate = function(inst)
+			local safepos = inst.sg.statemem.safepos
+			if safepos ~= nil and inst:IsOnPassablePoint() then
+				safepos.x, safepos.y, safepos.z = inst.Transform:GetWorldPosition()
+			end
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					if inst.sg.statemem.safepos ~= nil and not inst:IsOnPassablePoint() then
+						inst.Physics:Teleport(inst.sg.statemem.safepos.x, 0, inst.sg.statemem.safepos.z)
+					end
+					inst.sg:GoToState("stop_sitting_pst")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Transform:SetFourFaced()
+			inst.Physics:Stop()
+			if inst.sg.statemem.isphysicstoggle then
+				ToggleOnPhysics(inst)
+			end
+			local chair = inst.sg.statemem.chair
+			if chair ~= nil and
+				chair:IsValid() and
+				chair.components.sittable ~= nil and
+				chair.components.sittable:IsOccupiedBy(inst) then
+				--
+				chair.components.sittable:SetOccupier(nil)
+			end
+		end,
+	},
+
+	State{
+		name = "stop_sitting_pst",
+		tags = { "idle", "overridelocomote" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("sit_off_pst")
+		end,
+
+		timeline =
+		{
+			FrameEvent(3, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				return true
+			end),
+		},
+	},
 }
 
 local hop_timelines =

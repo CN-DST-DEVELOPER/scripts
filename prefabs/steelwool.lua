@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBuild("steel_wool")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "cloth"
+
     MakeInventoryFloatable(inst, "med", nil, 0.72)
 
     inst.entity:SetPristine()

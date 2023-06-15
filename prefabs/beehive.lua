@@ -163,6 +163,7 @@ local function fn()
     inst.AnimState:SetBank("beehive")
     inst.AnimState:SetBuild("beehive")
     inst.AnimState:PlayAnimation("cocoon_small", true)
+    inst.scrapbook_anim = "cocoon_small"
 
     inst:AddTag("structure")
     inst:AddTag("beaverchewable") -- by werebeaver

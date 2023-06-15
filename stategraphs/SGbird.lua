@@ -185,6 +185,7 @@ local states =
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 
             inst.Physics:SetMotorVel(0, math.random() * 10 - 20, 0)
+			inst.DynamicShadow:Enable(false)
         end,
 
         timeline =
@@ -219,6 +220,7 @@ local states =
 
 		onexit = function(inst)
 			inst:RemoveTag("NOCLICK")
+			inst.DynamicShadow:Enable(true)
 		end,
     },
 
@@ -274,7 +276,6 @@ local states =
             inst.sg:SetTimeout(.1 + math.random() * .2)
             inst.sg.statemem.vert = math.random() < .5
 
-            inst.DynamicShadow:Enable(false)
             inst.SoundEmitter:PlaySound(inst.sounds.takeoff)
 
             if inst.components.periodicspawner ~= nil and math.random() <= TUNING.BIRD_LEAVINGS_CHANCE then
@@ -292,10 +293,14 @@ local states =
                 inst.AnimState:PushAnimation("takeoff_diagonal_loop", true)
                 inst.Physics:SetMotorVel(math.random() * 8 + 8, math.random() * 5 + 15,math.random() * 4 - 2)
             end
+			inst.DynamicShadow:Enable(false)
         end,
 
         timeline =
         {
+			FrameEvent(5, function(inst)
+				inst.DynamicShadow:SetSize(.6, .5)
+			end),
             TimeEvent(2, function(inst)
                 inst:Remove()
             end),
@@ -303,6 +308,8 @@ local states =
 
 		onexit = function(inst)
 			inst:RemoveTag("NOCLICK")
+			inst.DynamicShadow:SetSize(1, .75)
+			inst.DynamicShadow:Enable(true)
 		end,
     },
 
@@ -364,6 +371,7 @@ local states =
         onenter = function(inst)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("fall_loop", true)
+			inst.DynamicShadow:Enable(false)
         end,
 
         onupdate = function(inst)
@@ -378,6 +386,10 @@ local states =
                 end
             end
         end,
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+		end,
     },
 
     State{

@@ -546,6 +546,9 @@ local function create_common(bank, build, tag, common_init, extra_data)
     inst:AddTag("drop_inventory_onpickup")
     inst:AddTag("drop_inventory_onmurder")
     
+    inst.scrapbook_deps = {"silk","spidergland","monstermeat"}
+
+
     if tag ~= nil then
         inst:AddTag(tag)
     end
@@ -766,6 +769,8 @@ end
 
 local function create_spitter()
     local inst = create_common("spider_spitter", "DS_spider2_caves", "spider_spitter")
+
+    inst.scrapbook_deps = {"silk","spidergland","monstermeat"}
 
     if not TheWorld.ismastersim then
         return inst

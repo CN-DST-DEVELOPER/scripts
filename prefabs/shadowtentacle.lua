@@ -27,6 +27,7 @@ local function fn()
     inst.AnimState:SetBank("tentacle_arm")
     inst.AnimState:SetBuild("tentacle_arm_black_build")
     inst.AnimState:PlayAnimation("idle", true)
+    inst.scrapbook_anim = "atk_idle"
 
     inst:AddTag("shadow")
     inst:AddTag("notarget")

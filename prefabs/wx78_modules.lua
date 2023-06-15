@@ -33,6 +33,7 @@ local function MakeModule(data)
         inst.AnimState:SetBank("chips")
         inst.AnimState:SetBuild("wx_chips")
         inst.AnimState:PlayAnimation(data.name)
+        inst.scrapbook_anim = data.name
 
         if data.slots > 4 then
             MakeInventoryFloatable(inst, "med", 0.1, 0.75)

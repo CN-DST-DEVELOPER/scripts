@@ -406,6 +406,9 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBuild("farm_plant_seeds")
         inst.AnimState:PlayAnimation(name)
         inst.AnimState:SetRayTestOnBB(true)
+        inst.scrapbook_anim = name
+
+        inst.pickupsound = "vegetation_firm"
 
         --cookable (from cookable component) added to pristine state for optimization
         inst:AddTag("cookable")
@@ -493,6 +496,8 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBank(name)
         inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("idle")
+
+        inst.pickupsound = "vegetation_firm"
 
         --cookable (from cookable component) added to pristine state for optimization
         inst:AddTag("cookable")
@@ -641,6 +646,7 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBank(name)
         inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("cooked")
+        inst.scrapbook_anim = "cooked"
 
         if VEGGIES[name].extra_tags_cooked then
             for _, extra_tag in ipairs(VEGGIES[name].extra_tags_cooked) do
@@ -712,6 +718,7 @@ local function MakeVeggie(name, has_seeds)
 		inst.AnimState:SetBank(dryable.build)
 		inst.AnimState:SetBuild(dryable.build)
 		inst.AnimState:PlayAnimation("dried_"..name)
+        inst.scrapbook_anim = "dried_"..name
 
 		MakeInventoryFloatable(inst)
 
@@ -762,6 +769,7 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
         inst.AnimState:PlayAnimation("idle_oversized")
+        inst.scrapbook_anim = "idle_oversized"
 
         inst:AddTag("heavy")
         inst:AddTag("waxable")
@@ -850,6 +858,7 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
         inst.AnimState:PlayAnimation("idle_oversized")
+        inst.scrapbook_anim = "idle_oversized"
 
         inst:AddTag("heavy")
         inst:AddTag("oversized_veggie")
@@ -925,6 +934,7 @@ local function MakeVeggie(name, has_seeds)
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
         inst.AnimState:PlayAnimation("idle_rot_oversized")
+        inst.scrapbook_anim = "idle_rot_oversized"
 
         inst:AddTag("heavy")
         inst:AddTag("farm_plant_killjoy")

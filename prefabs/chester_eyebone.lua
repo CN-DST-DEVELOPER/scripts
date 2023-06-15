@@ -231,6 +231,7 @@ local function fn()
     inst.AnimState:SetBank("eyebone")
     inst.AnimState:SetBuild("chester_eyebone_build")
     inst.AnimState:PlayAnimation("dead", true)
+    inst.scrapbook_anim = "dead"
 
     inst.entity:SetPristine()
 

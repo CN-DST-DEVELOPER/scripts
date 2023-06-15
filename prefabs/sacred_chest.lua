@@ -223,6 +223,7 @@ local function fn()
     inst.AnimState:SetBank("sacred_chest")
     inst.AnimState:SetBuild("sacred_chest")
     inst.AnimState:PlayAnimation("closed")
+    inst.scrapbook_anim = "closed"
 
     inst.entity:SetPristine()
 

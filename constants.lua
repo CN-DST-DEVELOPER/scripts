@@ -6,6 +6,7 @@ local IS_BETA = BRANCH == "staging" --or BRANCH == "dev"
 PI = math.pi
 PI2 = PI*2
 TWOPI = PI2
+SQRT2 = math.sqrt(2)
 DEGREES = PI/180
 RADIANS = 180/PI
 FRAMES = 1/30
@@ -353,6 +354,7 @@ ROG_CHARACTERLIST =
 }
 
 --When adding new characters with alternate states, be sure to update skinsutils.lua function GetSkinModes.
+-- NOTES(JBK): Keep this up to date with LOOKUP_LIST in scrapbookpartitions.lua
 DST_CHARACTERLIST =
 {
     "wilson",
@@ -755,7 +757,7 @@ SPECIAL_EVENTS =
     YOT_CATCOON = "year_of_the_catcoon",
     YOTR = "year_of_the_bunnyman",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -788,9 +790,15 @@ IS_YEAR_OF_THE_SPECIAL_EVENTS =
 
 ---------------------------------------------------------
 -- Reminder: update event_deps.lua
-SPECIAL_EVENT_GLOBAL_PREFABS = { WORLD_SPECIAL_EVENT.."_event_global" }
-SPECIAL_EVENT_BACKEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_backend" }
-SPECIAL_EVENT_FRONTEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_frontend" }
+if WORLD_SPECIAL_EVENT == SPECIAL_EVENTS.CARNIVAL then -- FIXME(JBK): Remove this block when the shadow rift update is done.
+    SPECIAL_EVENT_GLOBAL_PREFABS = { SPECIAL_EVENTS.NONE.."_event_global" }
+    SPECIAL_EVENT_BACKEND_PREFABS = { SPECIAL_EVENTS.NONE.."_event_backend" }
+    SPECIAL_EVENT_FRONTEND_PREFABS = { SPECIAL_EVENTS.NONE.."_event_frontend" }
+else
+    SPECIAL_EVENT_GLOBAL_PREFABS = { WORLD_SPECIAL_EVENT.."_event_global" }
+    SPECIAL_EVENT_BACKEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_backend" }
+    SPECIAL_EVENT_FRONTEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_frontend" }
+end
 
 FESTIVAL_EVENT_GLOBAL_PREFABS = { WORLD_FESTIVAL_EVENT.."_fest_global" }
 FESTIVAL_EVENT_BACKEND_PREFABS = { WORLD_FESTIVAL_EVENT.."_fest_backend" }
@@ -1046,9 +1054,11 @@ end
 --  sound = "dontstarve/music/music_FE"
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
+    WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.CARNIVAL and -- FIXME(JBK): Remove this line when the shadow rift update is done.
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_lunarrift"
-    --dontstarve/music/music_FE_daywalker"
+    "dontstarve/music/music_FE_shadowrift"
+    --"dontstarve/music/music_FE_lunarrift"
+    --"dontstarve/music/music_FE_daywalker"
     --"dontstarve/music/music_FE_maxwell"
     --"dontstarve/music/music_FE_charliestage"
     --"dontstarve/music/music_FE_wickerbottom"
@@ -1149,6 +1159,9 @@ TECH =
 
 	LUNARFORGING_ONE = { LUNARFORGING = 1 },
 	LUNARFORGING_TWO = { LUNARFORGING = 2 },
+
+	SHADOWFORGING_ONE = { SHADOWFORGING = 1 },
+	SHADOWFORGING_TWO = { SHADOWFORGING = 2 },
 }
 
 -- See cell_data.h
@@ -1755,6 +1768,7 @@ MATERIALS =
     KELP = "kelp",
     SHELL = "shell",
     NIGHTMARE = "nightmare",
+	DREADSTONE = "dreadstone",
 }
 
 UPGRADETYPES =
@@ -1926,6 +1940,14 @@ TOOLACTIONS =
     PLAY = true,
     UNSADDLE = true,
 	REACH_HIGH = true,
+	SCYTHE = true,
+}
+
+EQUIPMENTSETNAMES =
+{
+    DREADSTONE = "dreadstone",
+    LUNARPLANT = "lunarplant",
+    VOIDCLOTH = "voidcloth",
 }
 
 -- this is a net_tinybyte on inventoryitem_classified.deploymode
@@ -2521,6 +2543,13 @@ LOADING_SCREEN_CONTROL_TIP_KEYS =
     TIP_CHAT = { chat = CONTROL_TOGGLE_SAY, whisper = CONTROL_TOGGLE_WHISPER },
     TIP_PLAYER_STATUS = { playerstatus = CONTROL_SHOW_PLAYER_STATUS },
     TIP_INVENTORY_SLOTS = { inv_0 = CONTROL_INV_10, inv_9 = CONTROL_INV_9 },
+}
+
+SCRAPBOOK_CATS = {
+    "creature",
+    "item",
+    "food",
+    "giant",
 }
 
 -- When using a controller or on console, some control IDs are different than on non-console, but use the same tips.

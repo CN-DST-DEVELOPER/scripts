@@ -450,6 +450,8 @@ local function create_teen_smallbird()
     inst.AnimState:SetBuild("tallbird_teen_build")
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:Hide("beakfull")
+    inst.scrapbook_hide = {"beakfull"}
+    inst.scrapbook_scale = 0.8
 
     inst:AddTag("teenbird")
 

@@ -364,6 +364,10 @@ for k, v in pairs(require("prefabs/weed_defs").WEED_DEFS) do
 	table.insert(prefabs, v.prefab)
 end
 
+-- Testing and viewing skins on a more close level.
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("frontend", assets)
+end
 
 --we don't actually instantiate this prefab. It's used for controlling asset loading
 local function fn()

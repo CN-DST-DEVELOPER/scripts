@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBuild("boards")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "wood"
+
     MakeInventoryFloatable(inst, "med", 0.1)
 
     inst.entity:SetPristine()

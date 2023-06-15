@@ -207,6 +207,8 @@ local function fn()
     inst:AddTag("largecreature")
     inst:AddTag("shark")
 
+    inst.scrapbook_deps = {"fishmeat"}
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

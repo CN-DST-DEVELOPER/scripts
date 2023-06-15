@@ -21,6 +21,8 @@ local function fn()
     inst.AnimState:SetBuild("antchovy")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_anim = "idle_ground"
+
 	inst.Transform:SetTwoFaced()
 
     inst.entity:SetPristine()

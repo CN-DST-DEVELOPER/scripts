@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBuild("bone_shards")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "rock"
+
     MakeInventoryFloatable(inst, "small", 0.15, 0.8)
 
     inst.entity:SetPristine()

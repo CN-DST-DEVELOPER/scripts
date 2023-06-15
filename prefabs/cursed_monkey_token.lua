@@ -45,8 +45,6 @@ local function OnLoad(inst, data)
     seticons(inst)
 end
 
-
-
 local function fn()
     local inst = CreateEntity()
 

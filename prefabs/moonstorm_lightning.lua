@@ -75,6 +75,7 @@ local function fn()
     inst.AnimState:SetBank("Moonstorm_LightningStrike")
     inst.AnimState:SetBuild("moonstorm_lightningstrike")
     inst.AnimState:PlayAnimation("strike")
+    inst.scrapbook_anim = "strike"
 
     inst.SoundEmitter:PlaySound("dontstarve/rain/thunder_close", nil, nil, true)
 

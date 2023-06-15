@@ -254,9 +254,9 @@ local function NodeAssistLeaderDoAction(self, parameters)
     end
     local looper
     if parameters.chatterstring then
-        looper = LoopNode{ConditionNode(whilenode), ChattyNode(self.inst, parameters.chatterstring, DoAction(self.inst, findnode))}
+        looper = LoopNode{ConditionNode(whilenode), ChattyNode(self.inst, parameters.chatterstring, DoAction(self.inst, findnode, "DoAction_Chatty", nil, 3))}
     else
-        looper = LoopNode{ConditionNode(whilenode), DoAction(self.inst, findnode)}
+        looper = LoopNode{ConditionNode(whilenode), DoAction(self.inst, findnode, "DoAction_NoChatty", nil, 3)}
     end
 
     return IfThenDoWhileNode(ifnode, whilenode, action, looper)

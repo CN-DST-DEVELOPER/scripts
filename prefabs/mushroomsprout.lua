@@ -290,6 +290,7 @@ local function MakeSprout(name)
         inst.AnimState:SetBuild(name.."_upg_build")
         inst.AnimState:SetBank("mushroomsprout")
         inst.AnimState:PlayAnimation("shroom_pre")
+        inst.scrapbook_anim = "shroom_pre"
         inst.AnimState:SetLightOverride(.3)
 
         inst._fade = net_smallbyte(inst.GUID, "mushroomsprout._fade", "fadedirty")

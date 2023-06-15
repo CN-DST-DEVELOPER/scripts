@@ -22,6 +22,7 @@ local function MakePlans(name, targets)
         inst.AnimState:SetBank("construction_plans")
         inst.AnimState:SetBuild("construction_plans")
         inst.AnimState:PlayAnimation(constr_name)
+        inst.scrapbook_anim = constr_name
 
         MakeInventoryFloatable(inst)
 

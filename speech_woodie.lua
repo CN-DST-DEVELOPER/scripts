@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Well, it doesn't go there.",
             EMPTY = "I need to put something there.",
             MISMATCH = "Sorry. Wrong plans.",
+            NOTREADY = "I'll try again when things have calmed down around here.",
         },
 		RUMMAGE =
 		{
@@ -887,6 +888,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "Guess this tool just ain't gonna cut it.",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "That light's givin' me goosebumps.",
+    ANNOUNCE_SHADOW_RIFT_MAX = "I don't like the look of that light.",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "Looks like stuff I already know aboot.",
 
 	BATTLECRY =
 	{
@@ -1801,6 +1805,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "From ornery to ornament, eh?",
         CHESSPIECE_EYEOFTERROR = "That's the worst case of cataract I've ever seen.",
         CHESSPIECE_TWINSOFTERROR = "They make a good lookin' statue, eh?",
+        CHESSPIECE_DAYWALKER = "Not lookin' so tough now, eh?",
 
         CHESSJUNK1 = "Dead metal.",
         CHESSJUNK2 = "Dead metal.",
@@ -2952,6 +2957,8 @@ return{
 		WALL_WOOD_ITEM = "I like the look of that!",
 		WALL_MOONROCK = "Looks nice'n'sturdy.",
 		WALL_MOONROCK_ITEM = "It's not much use like that.",
+		WALL_DREADSTONE = "Not exactly cozy, eh?",
+		WALL_DREADSTONE_ITEM = "I'd rather build walls out of lumber.",
 		FENCE = "That's a good lookin' fence.",
         FENCE_ITEM = "A good project for a lazy afternoon.",
         FENCE_GATE = "Some nice woodwork there.",
@@ -4698,15 +4705,15 @@ return{
         HEDGEHOUND = "Ready to do some pruning, Luce?",
         HEDGEHOUND_BUSH = "Roses grow awfully fast around these parts.",
 
-        MASK_DOLLHAT = "There's somethin' funny about that mask.",
-        MASK_DOLLBROKENHAT = "There's somethin' funny about that mask.",
-        MASK_DOLLREPAIREDHAT = "There's somethin' funny about that mask.",
-        MASK_BLACKSMITHHAT = "There's somethin' funny about that mask.",
-        MASK_MIRRORHAT = "There's somethin' funny about that mask.",
-        MASK_QUEENHAT = "There's somethin' funny about that mask.",
-        MASK_KINGHAT = "There's somethin' funny about that mask.",
+        MASK_DOLLHAT = "There's somethin' funny aboot that mask.",
+        MASK_DOLLBROKENHAT = "There's somethin' funny aboot that mask.",
+        MASK_DOLLREPAIREDHAT = "There's somethin' funny aboot that mask.",
+        MASK_BLACKSMITHHAT = "There's somethin' funny aboot that mask.",
+        MASK_MIRRORHAT = "There's somethin' funny aboot that mask.",
+        MASK_QUEENHAT = "There's somethin' funny aboot that mask.",
+        MASK_KINGHAT = "There's somethin' funny aboot that mask.",
         MASK_TREEHAT = "Now this one I kinda like.",
-        MASK_FOOLHAT = "There's somethin' funny about that mask.",
+        MASK_FOOLHAT = "There's somethin' funny aboot that mask.",
 
         COSTUME_DOLL_BODY = "Some kinda fancy theater costume.",
         COSTUME_QUEEN_BODY = "Some kinda fancy theater costume.",
@@ -4792,6 +4799,34 @@ return{
 		SHOVEL_LUNARPLANT = "Let's get digging, eh?",
 
         PUNCHINGBAG = "I should see how much of a punch I'm packing, eh?",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Watch where ya step.",
+
+		SHADOW_FORGE = "Was this really a good idea?",
+		SHADOW_FORGE_KIT = "It won't do much good sitting there like that.",
+
+        FUSED_SHADELING = "Yeesh, this place is overrun with shadow critters!",
+        FUSED_SHADELING_BOMB = "That can't be good...",
+
+		VOIDCLOTH = "It ain't flannel, but I can work with it.",
+		VOIDCLOTHHAT = "A dark hood, full of secrets.",
+		ARMOR_VOIDCLOTH = "Quite the getup, eh?",
+
+        VOIDCLOTH_UMBRELLA = "As long as it works, I won't complain aboot how it looks.",
+        VOIDCLOTH_SCYTHE = "Luce says she doesn't like him.",
+
+		SHADOWTHRALL_HANDS = "You'd better keep yer hands clear of my axe!",
+		SHADOWTHRALL_HORNS = "Better not get too close to that big fella.",
+		SHADOWTHRALL_WINGS = "You're not some kinda bird hiding under that hood, are ya?",
+
+        CHARLIE_NPC = "Her face looks familiar, I think I've seen it in my nightmares.",
+        CHARLIE_HAND = "Not exactly a helping hand, eh?",
+
+        NITRE_FORMATION = "Guess that rain wasn't all bad, eh?",
+        DREADSTONE_STACK = "I don't like where this is going, and I really don't like where it's comin' from.",
+        
+        SCRAPBOOK_PAGE = "Huh. Wonder where it came from?",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

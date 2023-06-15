@@ -67,6 +67,7 @@ local function MakeTackleContainer(name, bank, build, assets)
         inst.AnimState:SetBank(bank)
         inst.AnimState:SetBuild(build)
         inst.AnimState:PlayAnimation("closed")
+        inst.scrapbook_anim = "closed"
 
 		MakeInventoryPhysics(inst)
 

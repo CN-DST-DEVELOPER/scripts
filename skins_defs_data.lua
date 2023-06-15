@@ -280,6 +280,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_walter_formal", "body_walter_forma
 TheInventory:AddRestrictedBuildFromLua( "body_walter_ice", "body_walter_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "body_walter_lunar", "body_walter_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_walter_nature", "body_walter_nature", false )
+TheInventory:AddRestrictedBuildFromLua( "body_walter_shadow", "body_walter_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "body_walter_survivor", "body_walter_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "body_walter_ventriloquist", "body_walter_ventriloquist", false )
 TheInventory:AddRestrictedBuildFromLua( "body_walter_victorian", "body_walter_victorian", false )
@@ -302,6 +303,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_warly_masquerade", "body_warly_mas
 TheInventory:AddRestrictedBuildFromLua( "body_warly_nature", "body_warly_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_warly_pirate", "body_warly_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "body_warly_rose", "body_warly_rose", false )
+TheInventory:AddRestrictedBuildFromLua( "body_warly_shadow", "body_warly_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "body_warly_victorian", "body_warly_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_cook", "body_wathgrithr_cook", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_deerclops", "body_wathgrithr_deerclops", false )
@@ -310,6 +312,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_formal", "body_wathgrit
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_formal", "body_wathgrithr_formalp", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_gladiator", "body_wathgrithr_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_ice", "body_wathgrithr_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_lunar", "body_wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_magma", "body_wathgrithr_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_nature", "body_wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_pirate", "body_wathgrithr_pirate", false )
@@ -475,6 +478,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_winona_gladiator", "body_winona_gl
 TheInventory:AddRestrictedBuildFromLua( "body_winona_grassgecko", "body_winona_grassgecko", false )
 TheInventory:AddRestrictedBuildFromLua( "body_winona_grassgecko", "body_winona_grassgeckop", false )
 TheInventory:AddRestrictedBuildFromLua( "body_winona_ice", "body_winona_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "body_winona_lunar", "body_winona_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_winona_magma", "body_winona_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "body_winona_nature", "body_winona_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_winona_pirate", "body_winona_pirate", false )
@@ -492,6 +496,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_formal", "body_wolfgang_f
 TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_formal", "body_wolfgang_formalp", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_gladiator", "body_wolfgang_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_ice", "body_wolfgang_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_lunar", "body_wolfgang_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_magma", "body_wolfgang_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_nature", "body_wolfgang_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wolfgang_pirate", "body_wolfgang_pirate", false )
@@ -549,6 +554,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wortox_noeyeddeer", "body_wortox_n
 TheInventory:AddRestrictedBuildFromLua( "body_wortox_noeyeddeer", "body_wortox_noeyeddeerp", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wortox_original", "body_wortox_original", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wortox_pirate", "body_wortox_pirate", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wortox_shadow", "body_wortox_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wortox_survivor", "body_wortox_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wortox_victorian", "body_wortox_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_cave", "body_wurt_cave", false )
@@ -807,6 +813,7 @@ TheInventory:AddRestrictedBuildFromLua( "feet_warly_ice", "feet_warly_ice", fals
 TheInventory:AddRestrictedBuildFromLua( "feet_warly_masquerade", "feet_warly_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_warly_nature", "feet_warly_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_warly_pirate", "feet_warly_pirate", false )
+TheInventory:AddRestrictedBuildFromLua( "feet_warly_shadow", "feet_warly_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_warly_victorian", "feet_warly_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_gladiator", "feet_wathgrithr_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_ice", "feet_wathgrithr_ice", false )
@@ -1023,6 +1030,7 @@ TheInventory:AddRestrictedBuildFromLua( "hand_warly_masquerade", "hand_warly_mas
 TheInventory:AddRestrictedBuildFromLua( "hand_warly_rose", "hand_warly_rose", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wathgrithr_gladiator", "hand_wathgrithr_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wathgrithr_ice", "hand_wathgrithr_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "hand_wathgrithr_lunar", "hand_wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wathgrithr_magma", "hand_wathgrithr_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wathgrithr_nature", "hand_wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wathgrithr_pirate", "hand_wathgrithr_pirate", false )
@@ -1096,6 +1104,7 @@ TheInventory:AddRestrictedBuildFromLua( "hand_winona_wrestler", "hand_winona_wre
 TheInventory:AddRestrictedBuildFromLua( "hand_winona_yule", "hand_winona_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wolfgang_gladiator", "hand_wolfgang_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wolfgang_ice", "hand_wolfgang_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "hand_wolfgang_lunar", "hand_wolfgang_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wolfgang_magma", "hand_wolfgang_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wolfgang_strongman", "hand_wolfgang_strongman", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wolfgang_victorian", "hand_wolfgang_victorian", false )
@@ -1129,6 +1138,7 @@ TheInventory:AddRestrictedBuildFromLua( "hand_wortox_minotaur", "hand_wortox_min
 TheInventory:AddRestrictedBuildFromLua( "hand_wortox_nature", "hand_wortox_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wortox_original", "hand_wortox_original", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wortox_pirate", "hand_wortox_pirate", false )
+TheInventory:AddRestrictedBuildFromLua( "hand_wortox_shadow", "hand_wortox_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wortox_survivor", "hand_wortox_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wortox_victorian", "hand_wortox_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wurt_cave", "hand_wurt_cave", false )
@@ -1264,6 +1274,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_walter_formal", "legs_walter_forma
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_ice", "legs_walter_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_lunar", "legs_walter_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_nature", "legs_walter_nature", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_walter_shadow", "legs_walter_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_ventriloquist", "legs_walter_ventriloquist", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_victorian", "legs_walter_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wanda_nature", "legs_wanda_nature", false )
@@ -1276,8 +1287,10 @@ TheInventory:AddRestrictedBuildFromLua( "legs_warly_ice", "legs_warly_ice", fals
 TheInventory:AddRestrictedBuildFromLua( "legs_warly_masquerade", "legs_warly_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_warly_pirate", "legs_warly_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_warly_rose", "legs_warly_rose", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_warly_shadow", "legs_warly_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_warly_victorian", "legs_warly_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_gladiator", "legs_wathgrithr_gladiator", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_lunar", "legs_wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_magma", "legs_wathgrithr_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_nature", "legs_wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_pirate", "legs_wathgrithr_pirate", false )
@@ -1309,6 +1322,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_wilson_nature", "legs_wilson_natur
 TheInventory:AddRestrictedBuildFromLua( "legs_wilson_yule", "legs_wilson_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_frankenstein", "legs_winona_frankenstein", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_gladiator", "legs_winona_gladiator", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_winona_lunar", "legs_winona_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_magma", "legs_winona_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_nature", "legs_winona_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_pirate", "legs_winona_pirate", false )
@@ -1317,6 +1331,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_winona_wrestler", "legs_winona_wre
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_yule", "legs_winona_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wolfgang_gladiator", "legs_wolfgang_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wolfgang_ice", "legs_wolfgang_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_wolfgang_lunar", "legs_wolfgang_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wolfgang_magma", "legs_wolfgang_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wolfgang_strongman", "legs_wolfgang_strongman", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wolfgang_victorian", "legs_wolfgang_victorian", false )
@@ -1347,6 +1362,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_wortox_minotaur", "legs_wortox_min
 TheInventory:AddRestrictedBuildFromLua( "legs_wortox_nature", "legs_wortox_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wortox_original", "legs_wortox_original", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wortox_pirate", "legs_wortox_pirate", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_wortox_shadow", "legs_wortox_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wortox_survivor", "legs_wortox_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wortox_victorian", "legs_wortox_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wurt_cave", "legs_wurt_cave", false )
@@ -1662,13 +1678,17 @@ TheInventory:AddRestrictedBuildFromLua( "pack_lost_1", "pack_lost_1", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_all", "pack_lunar_all", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_walter", "pack_lunar_walter", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wanda", "pack_lunar_wanda", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wathgrithr", "pack_lunar_wathgrithr", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_waxwell", "pack_lunar_waxwell", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_webber", "pack_lunar_webber", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wendy", "pack_lunar_wendy", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wickerbottom", "pack_lunar_wickerbottom", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wilson", "pack_lunar_wilson", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_lunar_winona", "pack_lunar_winona", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wolfgang", "pack_lunar_wolfgang", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wormwood", "pack_lunar_wormwood", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_lunar_wx78", "pack_lunar_wx78", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_lunarshadow", "pack_lunarshadow", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_magma_all", "pack_magma_all", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_magma_bundle", "pack_magma_bundle", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_magma_wathgrithr", "pack_magma_wathgrithr", false )
@@ -1726,6 +1746,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_pirate_wurt", "pack_pirate_wurt", 
 TheInventory:AddRestrictedBuildFromLua( "pack_retro_items", "pack_retro_items", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_rog_gift", "pack_rog_gift", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_seaside_items", "pack_seaside_items", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_shadow_all", "pack_shadow_all", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_spring_bundle", "pack_spring_bundle", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_springadventure_items", "pack_springadventure_items", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_springoutdoors_items", "pack_springoutdoors_items", false )
@@ -1762,6 +1783,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_wagstaffboat_items", "pack_wagstaf
 TheInventory:AddRestrictedBuildFromLua( "pack_walter_deluxe", "pack_walter_deluxe", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_walter_detective", "pack_walter_detective", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_walter_formal", "pack_walter_formal", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_walter_shadow", "pack_walter_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_walter_survivor", "pack_walter_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wanda_deluxe", "pack_wanda_deluxe", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wanda_deluxealt", "pack_wanda_deluxealt", false )
@@ -1772,6 +1794,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_warly_chef", "pack_warly_chef", fa
 TheInventory:AddRestrictedBuildFromLua( "pack_warly_deluxe", "pack_warly_deluxe", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_warly_fisherman", "pack_warly_fisherman", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_warly_rose", "pack_warly_rose", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_warly_shadow", "pack_warly_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_warly_victorian", "pack_warly_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wathgrithr_deluxe", "pack_wathgrithr_deluxe", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wathgrithr_deluxe2", "pack_wathgrithr_deluxe2", false )
@@ -1858,6 +1881,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_wormwood_shadow", "pack_wormwood_s
 TheInventory:AddRestrictedBuildFromLua( "pack_wortox_deluxe", "pack_wortox_deluxe", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wortox_minotaur", "pack_wortox_minotaur", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wortox_original", "pack_wortox_original", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_wortox_shadow", "pack_wortox_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wrestler_promo1", "pack_wrestler_promo1", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wrestler_promo2", "pack_wrestler_promo2", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wrestler_wathgrithr", "pack_wrestler_wathgrithr", false )
@@ -2011,6 +2035,7 @@ TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_researchlabgreen", "p
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_rocks", "playerportrait_bg_rocks", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_roseportal", "playerportrait_bg_roseportal", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_ruinsbatan", "playerportrait_bg_ruinsbatan", true )
+TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_ruinshatan", "playerportrait_bg_ruinshatan", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_saltboxnautical", "playerportrait_bg_saltboxnautical", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_saltboxshaker", "playerportrait_bg_saltboxshaker", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_shoreline", "playerportrait_bg_shoreline", true )
@@ -2178,6 +2203,7 @@ TheInventory:AddRestrictedBuildFromLua( "profileflair_researchlab_green", "profi
 TheInventory:AddRestrictedBuildFromLua( "profileflair_rook", "profileflair_rook", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_rose", "profileflair_rose", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_ruins_batan", "profileflair_ruins_batan", true )
+TheInventory:AddRestrictedBuildFromLua( "profileflair_ruinshat_an", "profileflair_ruinshat_an", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_saltbox_shaker", "profileflair_saltbox_shaker", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_saltboxnautical", "profileflair_saltboxnautical", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_shadowhand", "profileflair_shadowhand", true )
@@ -2335,7 +2361,9 @@ TheInventory:AddRestrictedBuildFromLua( "reviver_lifecrystal", "reviver_lifecrys
 TheInventory:AddRestrictedBuildFromLua( "ruins_bat_an", "ruins_bat_an", false )
 TheInventory:AddRestrictedBuildFromLua( "ruins_bat_arcane", "ruins_bat_arcane", false )
 TheInventory:AddRestrictedBuildFromLua( "ruins_bat_heavy", "ruins_bat_heavy", false )
+TheInventory:AddRestrictedBuildFromLua( "ruinshat_an", "ruinshat_an", false )
 TheInventory:AddRestrictedBuildFromLua( "ruinshat_arcane", "ruinshat_arcane", false )
+TheInventory:AddRestrictedBuildFromLua( "ruinsrelic_chair_toilet", "ruinsrelic_chair_toilet", false )
 TheInventory:AddRestrictedBuildFromLua( "saddle_basic_yotb", "saddle_basic_yotb", false )
 TheInventory:AddRestrictedBuildFromLua( "saddle_basic_yotb", "saddle_basic_yotbalt", false )
 TheInventory:AddRestrictedBuildFromLua( "saltbox_nautical", "saltbox_nautical", false )
@@ -2360,6 +2388,7 @@ TheInventory:AddRestrictedBuildFromLua( "spear_northern", "spear_northern", fals
 TheInventory:AddRestrictedBuildFromLua( "spear_ragged", "spear_ragged", false )
 TheInventory:AddRestrictedBuildFromLua( "spear_rose", "spear_rose", false )
 TheInventory:AddRestrictedBuildFromLua( "spear_simple", "spear_simple", false )
+TheInventory:AddRestrictedBuildFromLua( "spear_wathgrithr_lunar", "spear_wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "spear_wathgrithr_northern", "spear_wathgrithr_northern", false )
 TheInventory:AddRestrictedBuildFromLua( "spear_wathgrithr_valkyrie", "spear_wathgrithr_valkyrie", false )
 TheInventory:AddRestrictedBuildFromLua( "spear_wathgrithr_wrestle", "spear_wathgrithr_wrestle", false )
@@ -2461,6 +2490,7 @@ TheInventory:AddRestrictedBuildFromLua( "walter_formal", "walter_formal", false 
 TheInventory:AddRestrictedBuildFromLua( "walter_ice", "walter_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "walter_lunar", "walter_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "walter_nature", "walter_nature", false )
+TheInventory:AddRestrictedBuildFromLua( "walter_shadow", "walter_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "walter_survivor", "walter_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "walter_ventriloquist", "walter_ventriloquist", false )
 TheInventory:AddRestrictedBuildFromLua( "walter_victorian", "walter_victorian", false )
@@ -2471,6 +2501,7 @@ TheInventory:AddRestrictedBuildFromLua( "walterhat_formal", "walterhat_formal", 
 TheInventory:AddRestrictedBuildFromLua( "walterhat_ice", "walterhat_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "walterhat_lunar", "walterhat_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "walterhat_nature", "walterhat_nature", false )
+TheInventory:AddRestrictedBuildFromLua( "walterhat_shadow", "walterhat_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "walterhat_survivor", "walterhat_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "walterhat_ventriloquist", "walterhat_ventriloquist", false )
 TheInventory:AddRestrictedBuildFromLua( "walterhat_victorian", "walterhat_victorian", false )
@@ -2535,6 +2566,7 @@ TheInventory:AddRestrictedBuildFromLua( "warly_masquerade", "warly_masquerade", 
 TheInventory:AddRestrictedBuildFromLua( "warly_nature", "warly_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "warly_pirate", "warly_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "warly_rose", "warly_rose", false )
+TheInventory:AddRestrictedBuildFromLua( "warly_shadow", "warly_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "warly_victorian", "warly_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "wateringcan_cactus", "wateringcan_cactus", false )
 TheInventory:AddRestrictedBuildFromLua( "wateringcan_rustic", "wateringcan_rustic", false )
@@ -2549,6 +2581,7 @@ TheInventory:AddRestrictedBuildFromLua( "wathgrithr_formal", "wathgrithr_formal"
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_formal", "wathgrithr_formalp", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_gladiator", "wathgrithr_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_ice", "wathgrithr_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "wathgrithr_lunar", "wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_magma", "wathgrithr_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_nature", "wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_pirate", "wathgrithr_pirate", false )
@@ -2563,6 +2596,7 @@ TheInventory:AddRestrictedBuildFromLua( "wathgrithr_valkyrie", "wathgrithr_valky
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_victorian", "wathgrithr_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_wrestler", "wathgrithr_wrestler", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_yule", "wathgrithr_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "wathgrithrhat_lunar", "wathgrithrhat_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithrhat_valkyrie", "wathgrithrhat_valkyrie", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithrhat_wrestle", "wathgrithrhat_wrestle", false )
 TheInventory:AddRestrictedBuildFromLua( "waxwell_combatant", "waxwell_combatant", false )
@@ -2761,6 +2795,7 @@ TheInventory:AddRestrictedBuildFromLua( "winona_grassgecko", "winona_grassgecko"
 TheInventory:AddRestrictedBuildFromLua( "winona_grassgecko_d", "winona_grassgecko_d", false )
 TheInventory:AddRestrictedBuildFromLua( "winona_grassgecko_d", "winona_grassgecko_p", false )
 TheInventory:AddRestrictedBuildFromLua( "winona_ice", "winona_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "winona_lunar", "winona_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "winona_magma", "winona_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "winona_nature", "winona_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "winona_pirate", "winona_pirate", false )
@@ -2800,6 +2835,9 @@ TheInventory:AddRestrictedBuildFromLua( "wolfgang_skinny_gladiator", "wolfgang_g
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_mighty_ice", "wolfgang_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_ice", "wolfgang_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_skinny_ice", "wolfgang_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "wolfgang_mighty_lunar", "wolfgang_lunar", false )
+TheInventory:AddRestrictedBuildFromLua( "wolfgang_lunar", "wolfgang_lunar", false )
+TheInventory:AddRestrictedBuildFromLua( "wolfgang_skinny_lunar", "wolfgang_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_mighty_magma", "wolfgang_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_magma", "wolfgang_magma", false )
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_skinny_magma", "wolfgang_magma", false )
@@ -2969,6 +3007,8 @@ TheInventory:AddRestrictedBuildFromLua( "ghost_wortox_original", "wortox_origina
 TheInventory:AddRestrictedBuildFromLua( "wortox_original", "wortox_original", false )
 TheInventory:AddRestrictedBuildFromLua( "ghost_wortox_pirate", "wortox_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "wortox_pirate", "wortox_pirate", false )
+TheInventory:AddRestrictedBuildFromLua( "ghost_wortox_shadow", "wortox_shadow", false )
+TheInventory:AddRestrictedBuildFromLua( "wortox_shadow", "wortox_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "ghost_wortox_survivor", "wortox_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "wortox_survivor", "wortox_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "ghost_wortox_victorian", "wortox_victorian", false )
@@ -3625,7 +3665,3453 @@ TheInventory:AddGenericKVKey( "celestialchampion_killed" )
 TheInventory:AddGenericKVKey( "fuelweaver_killed" )
 TheInventory:AddGenericKVKey( "wonkey_played" )
 
-TheInventory:ValidateWithSignature( "7a313678e0001c83320e20db21e59efab8e23f84dfd2cac6bcf8d3798ef6ef78e07f12771faa067eb83edea2fe64f915ad06fbf19d9729faa4b1904c0338c8998518b735c8be5cefa4298536fb1e2fec6adf1b4946f6d57dd6a8f2ca640c7d173538bdacd115deb18f4ebf0733a118b3d22331cb8bdf2b096660cb8f425fb72eb4215bcfcd3b0130164bc8f69f5b6d956406f422fc4fc4d7e8b9a8a01a77585a3fb9821277bf9feb14e4eca235afb770bbf4bb0b0131bd45e25873ae99f25ab499c03036fe3828b56a9d72165446d268569842b881846272c5b4b5d3c09a9904104afa53731a65a581b78f9965bce58dbe8bfe540c01d00c9df919ab605af2cd817876cee83fb0fa4d1f70f320c76cf2d1e8d3d978e6e82ed7020f015b5bfb2575a3183eb39fa47cde3bc0fed732722379c65e75744343d00bc59e65b7cfd05a9d0b0a3653b243baa8c6f9aea11415b49ef871d8b215cda896321a9f412984ce87f9c416aabb0ea76fb7a1228b34de0718c8b7bf444ccfbd2cfdb741b574ee9a1293bde97adb41ea4a9304843a9372eaab5459be47ca856ea22226b5ebb6106248246c908c7a2fd8fd2d864b481beb61878dcf4ae011cf546bc67fe114339f7cc145efd798b1edccbe57f3c16f63ee046f726d517f7394cafd4d439cceb65effeb49a6835e4def9dcbf3d6d0115e7315ee4100ab111cfb0030f77b468d3b0c69" )
+if TheInventory.AddScrapbook0Key == nil then
+    TheInventory:ValidateWithSignature( "154f5047918876b59a33c9f71cf97ea73081e86656f02e653b42246ce33fd0620b066eb55cab9e2875a5d48cdb1ebc388550a5d4ab6904ab95b720b2a3f93d54411e8fc12c15bf6965c1d053723c679111b14b6b4072cea1526a0b0405d4fa0cd35e1458693143b650d8f602cf916159a1f2d4597e420b55d826039ad1dbbd8d5812af8a8f9b795fd451e07938837d83b092e96c3dd5ea963dab54b4e56cf5c826541bb8e01e5e0a9441e43773531ad28683c24c218ca0bcdcaea934e93365d8e6471a7c948bd4b1a6cc4e4a0168c6dc65d63a5a670be1a49bc3ce833d875e06c8c67a3b7c58817ba92e4f13a569fc56ece882b896a4f00d743475ab3a366fb2934e66d1200e6e5c9bdee8ee1fa025bbf4ab1516ae2749b41e68dde1d76075870bd794680a5a51960a405c5628971bf6fddd787cf6fd71202c32660d70b07683c26a6f96ff7fb9ee2d9822b9dd114e27e6a37b86f008a1c787f8cde5587a10c00003ed7bd3fbd65209b46f941fea1d31769c2c513651924988a430f1c0d966d8ff20f3a3e849938c395ab586589611b398a55f0c9dd73fb1f19da2d8ecf36c28f3391440835881c42d1ea0376a6d16a5c0953abb632593acf4ad543940f3532b22d5ffa7aa57e25f7afc345ce05c9c2690405b59c81f86f3f8adf95036017503c6cf9160c7fd5978374179789a3d05d9fc6f9aba551f9f0c4b746b5d9a05e66c" )
+else -- Temporary protection guard for platforms missing the engine change.
+
+TheInventory:AddScrapbook5Key( "679F8765" ) -- abigail
+TheInventory:AddScrapbook5Key( "481FFFD5" ) -- abigail_flower
+TheInventory:AddScrapbook9Key( "F1CD8EA9" ) -- acorn
+TheInventory:AddScrapbook13Key( "7E58AEBD" ) -- acorn_cooked
+TheInventory:AddScrapbook2Key( "674707C2" ) -- acorn_sapling
+TheInventory:AddScrapbook11Key( "C7A0F0FB" ) -- adventure_portal
+TheInventory:AddScrapbook11Key( "A33A8B1B" ) -- alterguardian_contained
+TheInventory:AddScrapbook14Key( "C91353CE" ) -- alterguardian_phase1
+TheInventory:AddScrapbook4Key( "C7692354" ) -- alterguardianhat
+TheInventory:AddScrapbook10Key( "CDDBFD0A" ) -- alterguardianhatshard
+TheInventory:AddScrapbook2Key( "CBA65752" ) -- amulet
+TheInventory:AddScrapbook5Key( "C829CD55" ) -- anchor
+TheInventory:AddScrapbook13Key( "3539BC5D" ) -- anchor_item
+TheInventory:AddScrapbook3Key( "C2B7DE33" ) -- ancient_altar
+TheInventory:AddScrapbook8Key( "B93A8268" ) -- animal_track
+TheInventory:AddScrapbook4Key( "B9506504" ) -- antchovies
+TheInventory:AddScrapbook3Key( "4974BCA3" ) -- antlion
+TheInventory:AddScrapbook15Key( "1443402F" ) -- antlion_sinkhole
+TheInventory:AddScrapbook8Key( "E2469258" ) -- antlionhat
+TheInventory:AddScrapbook4Key( "CE860ED4" ) -- antliontrinket
+TheInventory:AddScrapbook10Key( "C565DFEA" ) -- archive_centipede_husk
+TheInventory:AddScrapbook0Key( "31365ED0" ) -- archive_cookpot
+TheInventory:AddScrapbook3Key( "82BF7443" ) -- archive_lockbox
+TheInventory:AddScrapbook9Key( "F7E56709" ) -- archive_lockbox_dispencer
+TheInventory:AddScrapbook5Key( "1BD39585" ) -- archive_moon_statue
+TheInventory:AddScrapbook9Key( "29B534E9" ) -- archive_portal
+TheInventory:AddScrapbook8Key( "44B959B8" ) -- archive_resonator
+TheInventory:AddScrapbook10Key( "E3C2CBBA" ) -- archive_resonator_item
+TheInventory:AddScrapbook12Key( "B61F28CC" ) -- archive_rune_statue
+TheInventory:AddScrapbook11Key( "CA67EBB" ) -- archive_security_desk
+TheInventory:AddScrapbook1Key( "E8E1FA71" ) -- archive_switch
+TheInventory:AddScrapbook15Key( "767287F" ) -- armor_bramble
+TheInventory:AddScrapbook5Key( "E8455075" ) -- armor_lunarplant
+TheInventory:AddScrapbook14Key( "ADFDB7AE" ) -- armor_sanity
+TheInventory:AddScrapbook6Key( "7CBFBBA6" ) -- armor_voidcloth
+TheInventory:AddScrapbook1Key( "4AEB6641" ) -- armordragonfly
+TheInventory:AddScrapbook10Key( "49F89DEA" ) -- armordreadstone
+TheInventory:AddScrapbook7Key( "9A99C7B7" ) -- armorgrass
+TheInventory:AddScrapbook12Key( "E474F23C" ) -- armormarble
+TheInventory:AddScrapbook12Key( "1541C9CC" ) -- armorruins
+TheInventory:AddScrapbook12Key( "ABDC24AC" ) -- armorskeleton
+TheInventory:AddScrapbook8Key( "DA17C8E8" ) -- armorslurper
+TheInventory:AddScrapbook10Key( "D75A045A" ) -- armorsnurtleshell
+TheInventory:AddScrapbook12Key( "7F2D088C" ) -- armorwood
+TheInventory:AddScrapbook6Key( "3036FC96" ) -- ash
+TheInventory:AddScrapbook3Key( "6AD1C973" ) -- asparagus
+TheInventory:AddScrapbook3Key( "3A903573" ) -- asparagus_cooked
+TheInventory:AddScrapbook3Key( "F5792F43" ) -- asparagus_oversized
+TheInventory:AddScrapbook6Key( "56D4C316" ) -- asparagus_seeds
+TheInventory:AddScrapbook10Key( "3145126A" ) -- asparagussoup
+TheInventory:AddScrapbook8Key( "8EA00A08" ) -- atrium_gate
+TheInventory:AddScrapbook5Key( "ED22D8D5" ) -- atrium_idol
+TheInventory:AddScrapbook2Key( "D6109CA2" ) -- atrium_key
+TheInventory:AddScrapbook9Key( "E4DB1099" ) -- atrium_light
+TheInventory:AddScrapbook8Key( "BDDF1BF8" ) -- atrium_overgrowth
+TheInventory:AddScrapbook9Key( "2B025ED9" ) -- atrium_rubble
+TheInventory:AddScrapbook1Key( "D7A1A9A1" ) -- atrium_statue
+TheInventory:AddScrapbook14Key( "303BFDCE" ) -- axe
+TheInventory:AddScrapbook10Key( "9DB0528A" ) -- babybeefalo
+TheInventory:AddScrapbook0Key( "15220700" ) -- backpack
+TheInventory:AddScrapbook1Key( "C7480071" ) -- baconeggs
+TheInventory:AddScrapbook15Key( "E2F01FEF" ) -- balloon
+TheInventory:AddScrapbook12Key( "47CB680C" ) -- balloonhat
+TheInventory:AddScrapbook7Key( "6D5B1817" ) -- balloonparty
+TheInventory:AddScrapbook2Key( "E61F8ED2" ) -- balloons_empty
+TheInventory:AddScrapbook8Key( "EC90A2F8" ) -- balloonspeed
+TheInventory:AddScrapbook15Key( "A071439F" ) -- balloonvest
+TheInventory:AddScrapbook13Key( "6523FDAD" ) -- bananabush
+TheInventory:AddScrapbook11Key( "FBF9C9BB" ) -- bananajuice
+TheInventory:AddScrapbook12Key( "F0E390C" ) -- bananapop
+TheInventory:AddScrapbook10Key( "EFA57CEA" ) -- bandage
+TheInventory:AddScrapbook6Key( "749FBCB6" ) -- barnacle
+TheInventory:AddScrapbook0Key( "C0DD0770" ) -- barnacle_cooked
+TheInventory:AddScrapbook12Key( "E493131C" ) -- barnaclepita
+TheInventory:AddScrapbook5Key( "8C2B6AF5" ) -- barnaclestuffedfishhead
+TheInventory:AddScrapbook12Key( "4CED8C7C" ) -- barnaclesushi
+TheInventory:AddScrapbook14Key( "B62E6DE" ) -- barnaclinguine
+TheInventory:AddScrapbook5Key( "30A307B5" ) -- bat
+TheInventory:AddScrapbook0Key( "7F46D7C0" ) -- batbat
+TheInventory:AddScrapbook2Key( "58B7E9E2" ) -- batcave
+TheInventory:AddScrapbook5Key( "3DDED035" ) -- bathbomb
+TheInventory:AddScrapbook8Key( "5F64BA68" ) -- batnose
+TheInventory:AddScrapbook14Key( "4C10613E" ) -- batnose_cooked
+TheInventory:AddScrapbook3Key( "79A2F853" ) -- batnosehat
+TheInventory:AddScrapbook11Key( "57AF92FB" ) -- battlesong_durability
+TheInventory:AddScrapbook1Key( "44FA7EE1" ) -- battlesong_fireresistance
+TheInventory:AddScrapbook13Key( "A9AF12AD" ) -- battlesong_healthgain
+TheInventory:AddScrapbook7Key( "49D67747" ) -- battlesong_instant_panic
+TheInventory:AddScrapbook14Key( "5CFF611E" ) -- battlesong_instant_taunt
+TheInventory:AddScrapbook3Key( "36D35163" ) -- battlesong_sanityaura
+TheInventory:AddScrapbook15Key( "4419FD9F" ) -- battlesong_sanitygain
+TheInventory:AddScrapbook0Key( "FF28B2E0" ) -- batwing
+TheInventory:AddScrapbook6Key( "E609BAC6" ) -- batwing_cooked
+TheInventory:AddScrapbook2Key( "CB246DD2" ) -- beardhair
+TheInventory:AddScrapbook0Key( "63A7F5E0" ) -- bearger
+TheInventory:AddScrapbook4Key( "791CD764" ) -- bearger_fur
+TheInventory:AddScrapbook0Key( "A6B98890" ) -- beargervest
+TheInventory:AddScrapbook9Key( "F8E41FA9" ) -- bedroll_furry
+TheInventory:AddScrapbook6Key( "3D4D1DC6" ) -- bedroll_straw
+TheInventory:AddScrapbook2Key( "30A708A2" ) -- bee
+TheInventory:AddScrapbook9Key( "D5201C09" ) -- beebox
+TheInventory:AddScrapbook9Key( "4464BD9" ) -- beebox_hermit
+TheInventory:AddScrapbook14Key( "B0F0181E" ) -- beef_bell
+TheInventory:AddScrapbook0Key( "421A4DA0" ) -- beefalo
+TheInventory:AddScrapbook0Key( "A0F4AEF0" ) -- beefalo_groomer
+TheInventory:AddScrapbook2Key( "8746FC82" ) -- beefalo_groomer_item
+TheInventory:AddScrapbook14Key( "304110DE" ) -- beefalofeed
+TheInventory:AddScrapbook11Key( "46094F1B" ) -- beefalohat
+TheInventory:AddScrapbook10Key( "4A3F21A" ) -- beefalotreat
+TheInventory:AddScrapbook5Key( "4C2B8B15" ) -- beefalowool
+TheInventory:AddScrapbook3Key( "73261EE3" ) -- beeguard
+TheInventory:AddScrapbook9Key( "D8067599" ) -- beehat
+TheInventory:AddScrapbook2Key( "A3226D92" ) -- beehive
+TheInventory:AddScrapbook5Key( "8BBC7F55" ) -- beemine
+TheInventory:AddScrapbook8Key( "1C4D0FC8" ) -- beequeen
+TheInventory:AddScrapbook8Key( "B4778EB8" ) -- beequeenhive
+TheInventory:AddScrapbook13Key( "A9BD39BD" ) -- beeswax
+TheInventory:AddScrapbook10Key( "B542310A" ) -- bernie_active
+TheInventory:AddScrapbook15Key( "F1761CF" ) -- bernie_inactive
+TheInventory:AddScrapbook4Key( "E75663F4" ) -- berries
+TheInventory:AddScrapbook2Key( "35E3ACB2" ) -- berries_cooked
+TheInventory:AddScrapbook9Key( "13897EC9" ) -- berries_juicy
+TheInventory:AddScrapbook13Key( "ECB6F69D" ) -- berries_juicy_cooked
+TheInventory:AddScrapbook14Key( "891C637E" ) -- berrybush
+TheInventory:AddScrapbook4Key( "217A7C34" ) -- berrybush2
+TheInventory:AddScrapbook3Key( "F4858F53" ) -- berrybush_juicy
+TheInventory:AddScrapbook3Key( "29B9A53" ) -- berrysauce
+TheInventory:AddScrapbook13Key( "CE63193D" ) -- bibingka
+TheInventory:AddScrapbook0Key( "235A9A90" ) -- birchnutdrake
+TheInventory:AddScrapbook15Key( "22A4F6FF" ) -- bird_egg
+TheInventory:AddScrapbook7Key( "8DE8FCE7" ) -- bird_egg_cooked
+TheInventory:AddScrapbook1Key( "F2984961" ) -- bird_mutant
+TheInventory:AddScrapbook11Key( "AD599A7B" ) -- bird_mutant_spitter
+TheInventory:AddScrapbook5Key( "DAC7FBF5" ) -- birdcage
+TheInventory:AddScrapbook6Key( "FA14DEC6" ) -- birdtrap
+TheInventory:AddScrapbook13Key( "73255F7D" ) -- bishop
+TheInventory:AddScrapbook13Key( "CE0D39BD" ) -- bishop_nightmare
+TheInventory:AddScrapbook11Key( "77D2376B" ) -- blackflag
+TheInventory:AddScrapbook4Key( "5CE426C4" ) -- blowdart_fire
+TheInventory:AddScrapbook12Key( "2E264DBC" ) -- blowdart_pipe
+TheInventory:AddScrapbook9Key( "FB180669" ) -- blowdart_sleep
+TheInventory:AddScrapbook2Key( "C4076442" ) -- blowdart_yellow
+TheInventory:AddScrapbook13Key( "2A9524CD" ) -- blue_cap
+TheInventory:AddScrapbook9Key( "BE749799" ) -- blue_cap_cooked
+TheInventory:AddScrapbook13Key( "D299D4DD" ) -- blue_mushroom
+TheInventory:AddScrapbook14Key( "72FEC59E" ) -- blue_mushroomhat
+TheInventory:AddScrapbook12Key( "C3BF310C" ) -- blueamulet
+TheInventory:AddScrapbook5Key( "F07D70F5" ) -- bluegem
+TheInventory:AddScrapbook6Key( "58FD6B96" ) -- bluemooneye
+TheInventory:AddScrapbook3Key( "E00814B3" ) -- blueprint
+TheInventory:AddScrapbook13Key( "CA16846D" ) -- boards
+TheInventory:AddScrapbook0Key( "6A5BA60" ) -- boat
+TheInventory:AddScrapbook11Key( "F1C34C7B" ) -- boat_bumper_kelp
+TheInventory:AddScrapbook2Key( "96A9FD92" ) -- boat_bumper_kelp_kit
+TheInventory:AddScrapbook3Key( "730BCF73" ) -- boat_bumper_shell
+TheInventory:AddScrapbook10Key( "A52C888A" ) -- boat_bumper_shell_kit
+TheInventory:AddScrapbook12Key( "A12017C" ) -- boat_cannon
+TheInventory:AddScrapbook3Key( "4101193" ) -- boat_cannon_kit
+TheInventory:AddScrapbook7Key( "B75A6BD7" ) -- boat_grass
+TheInventory:AddScrapbook11Key( "E898005B" ) -- boat_grass_item
+TheInventory:AddScrapbook2Key( "3A6E3D12" ) -- boat_item
+TheInventory:AddScrapbook9Key( "A2141649" ) -- boat_magnet
+TheInventory:AddScrapbook10Key( "5BAF83DA" ) -- boat_magnet_beacon
+TheInventory:AddScrapbook0Key( "35C63960" ) -- boat_magnet_kit
+TheInventory:AddScrapbook8Key( "FD6F6458" ) -- boat_pirate
+TheInventory:AddScrapbook5Key( "941BD525" ) -- boat_rotator_kit
+TheInventory:AddScrapbook8Key( "48E805A8" ) -- boatpatch
+TheInventory:AddScrapbook2Key( "AAB18D92" ) -- bomb_lunarplant
+TheInventory:AddScrapbook10Key( "E4A51EDA" ) -- boneshard
+TheInventory:AddScrapbook11Key( "BA64557B" ) -- bonesoup
+TheInventory:AddScrapbook7Key( "BCCA9F17" ) -- bonestew
+TheInventory:AddScrapbook7Key( "DC253F27" ) -- book_bees
+TheInventory:AddScrapbook4Key( "2CC493E4" ) -- book_birds
+TheInventory:AddScrapbook11Key( "69AFE33B" ) -- book_brimstone
+TheInventory:AddScrapbook12Key( "9845C34C" ) -- book_fire
+TheInventory:AddScrapbook14Key( "9846C38E" ) -- book_fish
+TheInventory:AddScrapbook7Key( "A3EC4F57" ) -- book_gardening
+TheInventory:AddScrapbook4Key( "C3F4B644" ) -- book_horticulture
+TheInventory:AddScrapbook3Key( "787228A3" ) -- book_horticulture_upgraded
+TheInventory:AddScrapbook0Key( "CE99A060" ) -- book_light
+TheInventory:AddScrapbook7Key( "11D8FD87" ) -- book_light_upgraded
+TheInventory:AddScrapbook7Key( "E0E6D4D7" ) -- book_moon
+TheInventory:AddScrapbook10Key( "C29E0E0A" ) -- book_rain
+TheInventory:AddScrapbook6Key( "6C1CE206" ) -- book_research_station
+TheInventory:AddScrapbook11Key( "6ABA21FB" ) -- book_silviculture
+TheInventory:AddScrapbook1Key( "34A58BE1" ) -- book_sleep
+TheInventory:AddScrapbook14Key( "57CB923E" ) -- book_temperature
+TheInventory:AddScrapbook11Key( "E490CE6B" ) -- book_tentacles
+TheInventory:AddScrapbook14Key( "C97319DE" ) -- book_web
+TheInventory:AddScrapbook11Key( "22DAD40B" ) -- bookstation
+TheInventory:AddScrapbook2Key( "86860BC2" ) -- boomerang
+TheInventory:AddScrapbook10Key( "F295861A" ) -- brush
+TheInventory:AddScrapbook9Key( "76D26529" ) -- bugnet
+TheInventory:AddScrapbook0Key( "25E29090" ) -- bullkelp_root
+TheInventory:AddScrapbook2Key( "B79C8102" ) -- bundle
+TheInventory:AddScrapbook12Key( "1883478C" ) -- bundlewrap
+TheInventory:AddScrapbook4Key( "38CE0414" ) -- bunnyman
+TheInventory:AddScrapbook9Key( "1F420A39" ) -- bunnystew
+TheInventory:AddScrapbook3Key( "BC429EF3" ) -- bushhat
+TheInventory:AddScrapbook0Key( "D69F5BE0" ) -- butter
+TheInventory:AddScrapbook3Key( "2571D493" ) -- butterfly
+TheInventory:AddScrapbook0Key( "AC620F20" ) -- butterflymuffin
+TheInventory:AddScrapbook5Key( "62908E35" ) -- butterflywings
+TheInventory:AddScrapbook0Key( "D9D27D00" ) -- buzzard
+TheInventory:AddScrapbook5Key( "FA6EDA15" ) -- cabbagerolls
+TheInventory:AddScrapbook13Key( "8770784D" ) -- cactus
+TheInventory:AddScrapbook13Key( "32FC24ED" ) -- cactus_flower
+TheInventory:AddScrapbook13Key( "73BA20DD" ) -- cactus_meat
+TheInventory:AddScrapbook9Key( "D063B789" ) -- cactus_meat_cooked
+TheInventory:AddScrapbook5Key( "FC5EE675" ) -- californiaroll
+TheInventory:AddScrapbook7Key( "1C48B877" ) -- campfire
+TheInventory:AddScrapbook8Key( "7DDD4938" ) -- canary
+TheInventory:AddScrapbook3Key( "73DEB323" ) -- candybag
+TheInventory:AddScrapbook5Key( "2E54B535" ) -- cane
+TheInventory:AddScrapbook10Key( "AD46C74A" ) -- cannonball_rock_item
+TheInventory:AddScrapbook10Key( "DA1EDABA" ) -- carnival_gametoken
+TheInventory:AddScrapbook1Key( "D2765211" ) -- carnival_prizeticket
+TheInventory:AddScrapbook15Key( "8FCF8B7F" ) -- carnival_vest_a
+TheInventory:AddScrapbook0Key( "8FCF8B80" ) -- carnival_vest_b
+TheInventory:AddScrapbook1Key( "8FCF8B81" ) -- carnival_vest_c
+TheInventory:AddScrapbook9Key( "AD90E359" ) -- carnivalfood_corntea
+TheInventory:AddScrapbook13Key( "7FCB787D" ) -- carnivalgame_feedchicks_food
+TheInventory:AddScrapbook1Key( "40468F91" ) -- carrat
+TheInventory:AddScrapbook12Key( "AC11539C" ) -- carrat_planted
+TheInventory:AddScrapbook3Key( "40549303" ) -- carrot
+TheInventory:AddScrapbook3Key( "71127E3" ) -- carrot_cooked
+TheInventory:AddScrapbook3Key( "554910D3" ) -- carrot_oversized
+TheInventory:AddScrapbook14Key( "5ECFF30E" ) -- carrot_planted
+TheInventory:AddScrapbook6Key( "F6C034A6" ) -- carrot_seeds
+TheInventory:AddScrapbook3Key( "74963893" ) -- cartographydesk
+TheInventory:AddScrapbook1Key( "35C0AFC1" ) -- catcoon
+TheInventory:AddScrapbook12Key( "883918AC" ) -- catcoonden
+TheInventory:AddScrapbook10Key( "8A2D55BA" ) -- catcoonhat
+TheInventory:AddScrapbook14Key( "7021C6CE" ) -- cattoy_mouse
+TheInventory:AddScrapbook7Key( "646B3057" ) -- cave_banana
+TheInventory:AddScrapbook15Key( "854B9D8F" ) -- cave_banana_cooked
+TheInventory:AddScrapbook6Key( "9EFBB506" ) -- cave_banana_tree
+TheInventory:AddScrapbook8Key( "27BB85C8" ) -- cave_entrance
+TheInventory:AddScrapbook4Key( "70289D54" ) -- cave_entrance_ruins
+TheInventory:AddScrapbook0Key( "AF5D1C90" ) -- cave_exit
+TheInventory:AddScrapbook13Key( "D491C8ED" ) -- cave_fern
+TheInventory:AddScrapbook0Key( "B88DB840" ) -- cavein_boulder
+TheInventory:AddScrapbook11Key( "27841B6B" ) -- ceviche
+TheInventory:AddScrapbook13Key( "EC8853AD" ) -- charcoal
+TheInventory:AddScrapbook10Key( "96132B1A" ) -- charlie_lecturn
+TheInventory:AddScrapbook8Key( "5810C628" ) -- chessjunk
+TheInventory:AddScrapbook6Key( "5FBEEFE6" ) -- chesspiece_anchor
+TheInventory:AddScrapbook2Key( "B9B93E52" ) -- chesspiece_antlion
+TheInventory:AddScrapbook15Key( "D3EC778F" ) -- chesspiece_bearger
+TheInventory:AddScrapbook15Key( "B25ECF4F" ) -- chesspiece_beefalo
+TheInventory:AddScrapbook9Key( "3ED7F9D9" ) -- chesspiece_beequeen
+TheInventory:AddScrapbook14Key( "ABA820E" ) -- chesspiece_bishop
+TheInventory:AddScrapbook2Key( "8FB26EC2" ) -- chesspiece_butterfly
+TheInventory:AddScrapbook2Key( "D7DBB222" ) -- chesspiece_carrat
+TheInventory:AddScrapbook0Key( "A6053170" ) -- chesspiece_catcoon
+TheInventory:AddScrapbook2Key( "7870B372" ) -- chesspiece_clayhound
+TheInventory:AddScrapbook1Key( "DEEA0AD1" ) -- chesspiece_claywarg
+TheInventory:AddScrapbook8Key( "9F49CAD8" ) -- chesspiece_crabking
+TheInventory:AddScrapbook10Key( "B15EFCCA" ) -- chesspiece_deerclops
+TheInventory:AddScrapbook15Key( "3460A4CF" ) -- chesspiece_dragonfly
+TheInventory:AddScrapbook11Key( "9EEAEA2B" ) -- chesspiece_eyeofterror
+TheInventory:AddScrapbook0Key( "CED7BA60" ) -- chesspiece_formal
+TheInventory:AddScrapbook10Key( "2ECD3E5A" ) -- chesspiece_guardianphase3
+TheInventory:AddScrapbook11Key( "C28674BB" ) -- chesspiece_hornucopia
+TheInventory:AddScrapbook0Key( "8BFAF70" ) -- chesspiece_kitcoon
+TheInventory:AddScrapbook13Key( "6F88EC4D" ) -- chesspiece_klaus
+TheInventory:AddScrapbook14Key( "541E8F9E" ) -- chesspiece_knight
+TheInventory:AddScrapbook11Key( "23BD9ECB" ) -- chesspiece_malbatross
+TheInventory:AddScrapbook3Key( "B8F795A3" ) -- chesspiece_manrabbit
+TheInventory:AddScrapbook8Key( "A88DF978" ) -- chesspiece_minotaur
+TheInventory:AddScrapbook2Key( "BBD25112" ) -- chesspiece_moon
+TheInventory:AddScrapbook11Key( "2B512E4B" ) -- chesspiece_moosegoose
+TheInventory:AddScrapbook11Key( "BECAAF0B" ) -- chesspiece_muse
+TheInventory:AddScrapbook9Key( "4089EC39" ) -- chesspiece_pawn
+TheInventory:AddScrapbook15Key( "4473667F" ) -- chesspiece_pipe
+TheInventory:AddScrapbook10Key( "A47464CA" ) -- chesspiece_rook
+TheInventory:AddScrapbook11Key( "442F5A5B" ) -- chesspiece_stalker
+TheInventory:AddScrapbook12Key( "658E389C" ) -- chesspiece_toadstool
+TheInventory:AddScrapbook5Key( "888E1F45" ) -- chesspiece_twinsofterror
+TheInventory:AddScrapbook14Key( "C0F71E6E" ) -- chester
+TheInventory:AddScrapbook4Key( "1CBA00E4" ) -- chester_eyebone
+TheInventory:AddScrapbook13Key( "31CE237D" ) -- chum
+TheInventory:AddScrapbook10Key( "8D60EE3A" ) -- coldfire
+TheInventory:AddScrapbook1Key( "92CCC001" ) -- coldfirepit
+TheInventory:AddScrapbook2Key( "E6AF29D2" ) -- compass
+TheInventory:AddScrapbook1Key( "ED9402E1" ) -- compost
+TheInventory:AddScrapbook6Key( "11DA5D26" ) -- compostingbin
+TheInventory:AddScrapbook11Key( "3E408A6B" ) -- compostwrap
+TheInventory:AddScrapbook1Key( "F432C451" ) -- cookbook
+TheInventory:AddScrapbook10Key( "8119781A" ) -- cookedmandrake
+TheInventory:AddScrapbook2Key( "9EAFD452" ) -- cookedmeat
+TheInventory:AddScrapbook14Key( "54CB7C3E" ) -- cookedmonstermeat
+TheInventory:AddScrapbook11Key( "39D1762B" ) -- cookedsmallmeat
+TheInventory:AddScrapbook3Key( "FC493BE3" ) -- cookiecutter
+TheInventory:AddScrapbook8Key( "11B58318" ) -- cookiecutterhat
+TheInventory:AddScrapbook13Key( "3ED673CD" ) -- cookiecuttershell
+TheInventory:AddScrapbook8Key( "93501138" ) -- cookingrecipecard
+TheInventory:AddScrapbook13Key( "8D44BBAD" ) -- cookpot
+TheInventory:AddScrapbook11Key( "FE87B43B" ) -- coontail
+TheInventory:AddScrapbook8Key( "353D8F48" ) -- corn
+TheInventory:AddScrapbook14Key( "86E6145E" ) -- corn_cooked
+TheInventory:AddScrapbook8Key( "97AB7098" ) -- corn_oversized
+TheInventory:AddScrapbook11Key( "C01796B" ) -- corn_seeds
+TheInventory:AddScrapbook14Key( "46B779FE" ) -- costume_blacksmith_body
+TheInventory:AddScrapbook7Key( "ABE36C77" ) -- costume_doll_body
+TheInventory:AddScrapbook12Key( "D497B3FC" ) -- costume_fool_body
+TheInventory:AddScrapbook11Key( "DCA56ACB" ) -- costume_king_body
+TheInventory:AddScrapbook3Key( "B0FAD403" ) -- costume_mirror_body
+TheInventory:AddScrapbook6Key( "861A4296" ) -- costume_queen_body
+TheInventory:AddScrapbook4Key( "50513384" ) -- costume_tree_body
+TheInventory:AddScrapbook7Key( "7CBEE0C7" ) -- crabking
+TheInventory:AddScrapbook5Key( "DCD8F65" ) -- crawlinghorror
+TheInventory:AddScrapbook6Key( "49AFD846" ) -- critterlab
+TheInventory:AddScrapbook7Key( "36B4BD17" ) -- crow
+TheInventory:AddScrapbook8Key( "4C180398" ) -- crumbs
+TheInventory:AddScrapbook10Key( "6957BEBA" ) -- cursed_monkey_token
+TheInventory:AddScrapbook4Key( "39ECF974" ) -- cutgrass
+TheInventory:AddScrapbook11Key( "8F0D055B" ) -- cutless
+TheInventory:AddScrapbook13Key( "9DE8E6AD" ) -- cutlichen
+TheInventory:AddScrapbook15Key( "CA25AF1F" ) -- cutreeds
+TheInventory:AddScrapbook3Key( "CCEEE6C3" ) -- cutstone
+TheInventory:AddScrapbook2Key( "5B342532" ) -- daywalker
+TheInventory:AddScrapbook7Key( "47AD0A77" ) -- daywalker_pillar
+TheInventory:AddScrapbook4Key( "34DEC024" ) -- dead_sea_bones
+TheInventory:AddScrapbook9Key( "823876F9" ) -- deciduoustree_tall
+TheInventory:AddScrapbook14Key( "5ECAC1CE" ) -- deer
+TheInventory:AddScrapbook14Key( "5CD01ACE" ) -- deer_antler1
+TheInventory:AddScrapbook15Key( "5CD01ACF" ) -- deer_antler2
+TheInventory:AddScrapbook0Key( "5CD01AD0" ) -- deer_antler3
+TheInventory:AddScrapbook11Key( "471E629B" ) -- deerclops
+TheInventory:AddScrapbook12Key( "7FF8D18C" ) -- deerclops_eyeball
+TheInventory:AddScrapbook6Key( "48C52446" ) -- deserthat
+TheInventory:AddScrapbook9Key( "C07F6679" ) -- dirtpile
+TheInventory:AddScrapbook11Key( "3F6C9EBB" ) -- diviningrod
+TheInventory:AddScrapbook12Key( "D38AE96C" ) -- diviningrodbase
+TheInventory:AddScrapbook10Key( "FF9D356A" ) -- dock_kit
+TheInventory:AddScrapbook10Key( "A456043A" ) -- dock_woodposts
+TheInventory:AddScrapbook8Key( "424403B8" ) -- dock_woodposts_item
+TheInventory:AddScrapbook5Key( "19F41FD5" ) -- dragon_scales
+TheInventory:AddScrapbook6Key( "E2571846" ) -- dragonbodyhat
+TheInventory:AddScrapbook3Key( "C47E1C73" ) -- dragonchilisalad
+TheInventory:AddScrapbook0Key( "CA200AA0" ) -- dragonfly
+TheInventory:AddScrapbook1Key( "D2C60301" ) -- dragonflychest
+TheInventory:AddScrapbook8Key( "6E9AFFB8" ) -- dragonflyfurnace
+TheInventory:AddScrapbook1Key( "B1E7B61" ) -- dragonfruit
+TheInventory:AddScrapbook5Key( "359C8405" ) -- dragonfruit_cooked
+TheInventory:AddScrapbook1Key( "9FEA6E31" ) -- dragonfruit_oversized
+TheInventory:AddScrapbook4Key( "8FF1B004" ) -- dragonfruit_seeds
+TheInventory:AddScrapbook8Key( "6CC8A628" ) -- dragonheadhat
+TheInventory:AddScrapbook9Key( "CF09A4D9" ) -- dragonpie
+TheInventory:AddScrapbook8Key( "B1B3CD38" ) -- dragontailhat
+TheInventory:AddScrapbook11Key( "3C4C114B" ) -- dreadstone
+TheInventory:AddScrapbook0Key( "85A73BB0" ) -- dreadstonehat
+TheInventory:AddScrapbook11Key( "6969E25B" ) -- driftwood_log
+TheInventory:AddScrapbook10Key( "32D080EA" ) -- drumstick
+TheInventory:AddScrapbook12Key( "825B5E3C" ) -- drumstick_cooked
+TheInventory:AddScrapbook6Key( "F2335176" ) -- dug_bananabush
+TheInventory:AddScrapbook5Key( "828E8D75" ) -- dug_berrybush
+TheInventory:AddScrapbook13Key( "AE89CFFD" ) -- dug_berrybush2
+TheInventory:AddScrapbook10Key( "269656CA" ) -- dug_berrybush_juicy
+TheInventory:AddScrapbook13Key( "9F3CAC0D" ) -- dug_grass
+TheInventory:AddScrapbook13Key( "1F5630BD" ) -- dug_marsh_bush
+TheInventory:AddScrapbook12Key( "4C34510C" ) -- dug_monkeytail
+TheInventory:AddScrapbook5Key( "2A922B95" ) -- dug_rock_avocado_bush
+TheInventory:AddScrapbook15Key( "BBC98AAF" ) -- dug_sapling
+TheInventory:AddScrapbook1Key( "AF6F6771" ) -- dug_sapling_moon
+TheInventory:AddScrapbook3Key( "AC6E6393" ) -- dug_trap_starfish
+TheInventory:AddScrapbook9Key( "7AE57C9" ) -- dumbbell
+TheInventory:AddScrapbook9Key( "B9B2BBD9" ) -- dumbbell_gem
+TheInventory:AddScrapbook15Key( "C0E883DF" ) -- dumbbell_golden
+TheInventory:AddScrapbook3Key( "A5396073" ) -- dumbbell_marble
+TheInventory:AddScrapbook5Key( "A07BD155" ) -- durian
+TheInventory:AddScrapbook1Key( "3FE15911" ) -- durian_cooked
+TheInventory:AddScrapbook5Key( "E2A72225" ) -- durian_oversized
+TheInventory:AddScrapbook8Key( "ABEAD7F8" ) -- durian_seeds
+TheInventory:AddScrapbook10Key( "2E88B22A" ) -- dustmeringue
+TheInventory:AddScrapbook8Key( "5816E288" ) -- dustmoth
+TheInventory:AddScrapbook5Key( "85F4AB25" ) -- dustmothden
+TheInventory:AddScrapbook6Key( "FDCABD86" ) -- earmuffshat
+TheInventory:AddScrapbook12Key( "3221372C" ) -- eel
+TheInventory:AddScrapbook10Key( "EDF8FB7A" ) -- eel_cooked
+TheInventory:AddScrapbook6Key( "F597D306" ) -- eggplant
+TheInventory:AddScrapbook0Key( "ECB2FD20" ) -- eggplant_cooked
+TheInventory:AddScrapbook6Key( "BA36B956" ) -- eggplant_oversized
+TheInventory:AddScrapbook9Key( "D5A44029" ) -- eggplant_seeds
+TheInventory:AddScrapbook3Key( "9EA1C793" ) -- endtable
+TheInventory:AddScrapbook7Key( "80914807" ) -- evergreen_tall
+TheInventory:AddScrapbook14Key( "651E3E9E" ) -- eyebrellahat
+TheInventory:AddScrapbook14Key( "D498497E" ) -- eyemaskhat
+TheInventory:AddScrapbook12Key( "6832777C" ) -- eyeofterror
+TheInventory:AddScrapbook10Key( "2D41FD9A" ) -- eyeofterror_mini
+TheInventory:AddScrapbook10Key( "D843D59A" ) -- eyeplant
+TheInventory:AddScrapbook1Key( "E3298461" ) -- eyeturret
+TheInventory:AddScrapbook1Key( "3C935451" ) -- eyeturret_item
+TheInventory:AddScrapbook5Key( "6265D175" ) -- farm_hoe
+TheInventory:AddScrapbook6Key( "C2FEA416" ) -- farm_plant_asparagus
+TheInventory:AddScrapbook0Key( "65259E20" ) -- farm_plant_carrot
+TheInventory:AddScrapbook5Key( "393398E5" ) -- farm_plant_corn
+TheInventory:AddScrapbook4Key( "B6C23484" ) -- farm_plant_dragonfruit
+TheInventory:AddScrapbook2Key( "C54CDC72" ) -- farm_plant_durian
+TheInventory:AddScrapbook3Key( "3ADB1FA3" ) -- farm_plant_eggplant
+TheInventory:AddScrapbook11Key( "BADCC48B" ) -- farm_plant_garlic
+TheInventory:AddScrapbook12Key( "A8B7B8CC" ) -- farm_plant_onion
+TheInventory:AddScrapbook15Key( "3704475F" ) -- farm_plant_pepper
+TheInventory:AddScrapbook6Key( "A0CBD3E6" ) -- farm_plant_pomegranate
+TheInventory:AddScrapbook4Key( "91075B84" ) -- farm_plant_potato
+TheInventory:AddScrapbook11Key( "6B58E28B" ) -- farm_plant_pumpkin
+TheInventory:AddScrapbook1Key( "DF0371B1" ) -- farm_plant_randomseed
+TheInventory:AddScrapbook7Key( "A4092B47" ) -- farm_plant_tomato
+TheInventory:AddScrapbook9Key( "B8EC7E39" ) -- farm_plant_watermelon
+TheInventory:AddScrapbook13Key( "7B49E62D" ) -- farm_plow
+TheInventory:AddScrapbook5Key( "48A9B185" ) -- farm_plow_item
+TheInventory:AddScrapbook4Key( "AF850774" ) -- feather_canary
+TheInventory:AddScrapbook3Key( "961ED953" ) -- feather_crow
+TheInventory:AddScrapbook14Key( "33BACDAE" ) -- feather_robin
+TheInventory:AddScrapbook6Key( "F174236" ) -- feather_robin_winter
+TheInventory:AddScrapbook0Key( "7FCEFF10" ) -- featherfan
+TheInventory:AddScrapbook8Key( "80CB1E18" ) -- featherhat
+TheInventory:AddScrapbook0Key( "BA3AE90" ) -- featherpencil
+TheInventory:AddScrapbook1Key( "A1EBF7F1" ) -- fence
+TheInventory:AddScrapbook9Key( "A14B3E59" ) -- fence_gate_item
+TheInventory:AddScrapbook1Key( "18F754C1" ) -- fence_item
+TheInventory:AddScrapbook15Key( "BF25729F" ) -- fence_rotator
+TheInventory:AddScrapbook2Key( "ACBEA762" ) -- fertilizer
+TheInventory:AddScrapbook0Key( "2AE22F50" ) -- festivefish
+TheInventory:AddScrapbook4Key( "32A347A4" ) -- fig
+TheInventory:AddScrapbook2Key( "BC5E3D02" ) -- fig_cooked
+TheInventory:AddScrapbook3Key( "C5412FB3" ) -- figatoni
+TheInventory:AddScrapbook9Key( "F2079AC9" ) -- figkabab
+TheInventory:AddScrapbook2Key( "4E2A3B42" ) -- firecrackers
+TheInventory:AddScrapbook11Key( "24B8F3B" ) -- fireflies
+TheInventory:AddScrapbook14Key( "1BAA7BAE" ) -- firehound
+TheInventory:AddScrapbook13Key( "CCA36A0D" ) -- firenettles
+TheInventory:AddScrapbook3Key( "3F4D75C3" ) -- firepen
+TheInventory:AddScrapbook5Key( "3F5176C5" ) -- firepit
+TheInventory:AddScrapbook10Key( "E5936C6A" ) -- firestaff
+TheInventory:AddScrapbook14Key( "CE5A342E" ) -- firesuppressor
+TheInventory:AddScrapbook8Key( "BDDEA4B8" ) -- fish
+TheInventory:AddScrapbook4Key( "D3576EC4" ) -- fish_box
+TheInventory:AddScrapbook14Key( "935782EE" ) -- fish_cooked
+TheInventory:AddScrapbook13Key( "B918C5FD" ) -- fishingrod
+TheInventory:AddScrapbook3Key( "60230443" ) -- fishmeat
+TheInventory:AddScrapbook3Key( "C3A4E6A3" ) -- fishmeat_cooked
+TheInventory:AddScrapbook11Key( "71D70FCB" ) -- fishmeat_small
+TheInventory:AddScrapbook11Key( "D0FA891B" ) -- fishmeat_small_cooked
+TheInventory:AddScrapbook11Key( "8405847B" ) -- fishsticks
+TheInventory:AddScrapbook2Key( "CF3380C2" ) -- fishtacos
+TheInventory:AddScrapbook9Key( "E5306269" ) -- flint
+TheInventory:AddScrapbook11Key( "E4D9A49B" ) -- flower
+TheInventory:AddScrapbook1Key( "C8A635B1" ) -- flower_cave
+TheInventory:AddScrapbook15Key( "EDEF919F" ) -- flower_cave_double
+TheInventory:AddScrapbook12Key( "F50DD2AC" ) -- flower_cave_triple
+TheInventory:AddScrapbook8Key( "2FFE1998" ) -- flower_evil
+TheInventory:AddScrapbook3Key( "896E4933" ) -- flower_rose
+TheInventory:AddScrapbook6Key( "EA9CF236" ) -- flower_withered
+TheInventory:AddScrapbook0Key( "CAD92460" ) -- flowerhat
+TheInventory:AddScrapbook6Key( "BF65A5A6" ) -- flowersalad
+TheInventory:AddScrapbook9Key( "DF87DE19" ) -- foliage
+TheInventory:AddScrapbook14Key( "111DB7AE" ) -- footballhat
+TheInventory:AddScrapbook7Key( "13CE8207" ) -- forgetmelots
+TheInventory:AddScrapbook11Key( "A972315B" ) -- fossil_piece
+TheInventory:AddScrapbook9Key( "6B077E19" ) -- fossil_stalker
+TheInventory:AddScrapbook14Key( "707DD50E" ) -- freshfruitcrepes
+TheInventory:AddScrapbook10Key( "FC243B0A" ) -- friendlyfruitfly
+TheInventory:AddScrapbook4Key( "C2492F44" ) -- frog
+TheInventory:AddScrapbook14Key( "225C53BE" ) -- frogfishbowl
+TheInventory:AddScrapbook6Key( "8BE4C476" ) -- frogglebunwich
+TheInventory:AddScrapbook9Key( "1C86B389" ) -- froglegs
+TheInventory:AddScrapbook13Key( "73DA11DD" ) -- froglegs_cooked
+TheInventory:AddScrapbook7Key( "B78678B7" ) -- frognewton
+TheInventory:AddScrapbook5Key( "3C797975" ) -- frozenbananadaiquiri
+TheInventory:AddScrapbook7Key( "FED2EDC7" ) -- fruitdragon
+TheInventory:AddScrapbook15Key( "9E234FBF" ) -- fruitfly
+TheInventory:AddScrapbook5Key( "6CF8FEB5" ) -- fruitflyfruit
+TheInventory:AddScrapbook8Key( "E1624348" ) -- fruitmedley
+TheInventory:AddScrapbook2Key( "5BF8DB2" ) -- furtuft
+TheInventory:AddScrapbook7Key( "F8A60EA7" ) -- fused_shadeling
+TheInventory:AddScrapbook10Key( "3687E0BA" ) -- fused_shadeling_bomb
+TheInventory:AddScrapbook14Key( "960BB96E" ) -- garlic
+TheInventory:AddScrapbook8Key( "4A61CCB8" ) -- garlic_cooked
+TheInventory:AddScrapbook14Key( "A1DF1BBE" ) -- garlic_oversized
+TheInventory:AddScrapbook1Key( "2D500A91" ) -- garlic_seeds
+TheInventory:AddScrapbook9Key( "DD2FFC79" ) -- gazpacho
+TheInventory:AddScrapbook4Key( "DF809124" ) -- gears
+TheInventory:AddScrapbook0Key( "BEAAA710" ) -- gestalt_guard
+TheInventory:AddScrapbook15Key( "71FADCAF" ) -- ghost
+TheInventory:AddScrapbook10Key( "C238ACA" ) -- ghostflower
+TheInventory:AddScrapbook12Key( "406B700C" ) -- ghostlyelixir_attack
+TheInventory:AddScrapbook13Key( "149929BD" ) -- ghostlyelixir_fastregen
+TheInventory:AddScrapbook4Key( "A6F91074" ) -- ghostlyelixir_retaliation
+TheInventory:AddScrapbook13Key( "A2AC1A6D" ) -- ghostlyelixir_shield
+TheInventory:AddScrapbook8Key( "B883DCB8" ) -- ghostlyelixir_slowregen
+TheInventory:AddScrapbook3Key( "E33E1BA3" ) -- ghostlyelixir_speed
+TheInventory:AddScrapbook0Key( "EC587250" ) -- gift
+TheInventory:AddScrapbook10Key( "E9B32ADA" ) -- giftwrap
+TheInventory:AddScrapbook0Key( "819D4E50" ) -- gingerbreadhouse
+TheInventory:AddScrapbook1Key( "3619BD11" ) -- glassblock
+TheInventory:AddScrapbook11Key( "77DD59BB" ) -- glasscutter
+TheInventory:AddScrapbook7Key( "FD80ABE7" ) -- glassspike_short
+TheInventory:AddScrapbook7Key( "FEF4C277" ) -- glommer
+TheInventory:AddScrapbook2Key( "4C804492" ) -- glommerflower
+TheInventory:AddScrapbook13Key( "18C46CD" ) -- glommerfuel
+TheInventory:AddScrapbook1Key( "11C7D51" ) -- glommerwings
+TheInventory:AddScrapbook11Key( "DAAF19B" ) -- glowberrymousse
+TheInventory:AddScrapbook5Key( "197C2985" ) -- gnarwail
+TheInventory:AddScrapbook13Key( "34BC811D" ) -- gnarwail_horn
+TheInventory:AddScrapbook6Key( "AA2F2B56" ) -- goatmilk
+TheInventory:AddScrapbook9Key( "EA97B009" ) -- goggleshat
+TheInventory:AddScrapbook11Key( "F49B1E0B" ) -- golden_farm_hoe
+TheInventory:AddScrapbook5Key( "A1E54A85" ) -- goldenaxe
+TheInventory:AddScrapbook4Key( "94CF6C04" ) -- goldenpickaxe
+TheInventory:AddScrapbook9Key( "70A319B9" ) -- goldenpitchfork
+TheInventory:AddScrapbook12Key( "5A59F5CC" ) -- goldenshovel
+TheInventory:AddScrapbook6Key( "D3C23856" ) -- goldnugget
+TheInventory:AddScrapbook13Key( "68AF69D" ) -- goose_feather
+TheInventory:AddScrapbook6Key( "3C5A2B16" ) -- grass
+TheInventory:AddScrapbook13Key( "39311B4D" ) -- grass_umbrella
+TheInventory:AddScrapbook7Key( "7F096467" ) -- grassgator
+TheInventory:AddScrapbook11Key( "34B21ADB" ) -- grassgekko
+TheInventory:AddScrapbook0Key( "6BBB82E0" ) -- gravestone
+TheInventory:AddScrapbook9Key( "3C5D2BD9" ) -- gravy
+TheInventory:AddScrapbook6Key( "706870B6" ) -- green_cap
+TheInventory:AddScrapbook0Key( "540F5370" ) -- green_cap_cooked
+TheInventory:AddScrapbook4Key( "2368CC34" ) -- green_mushroom
+TheInventory:AddScrapbook7Key( "FFE9FF87" ) -- green_mushroomhat
+TheInventory:AddScrapbook5Key( "B1591875" ) -- greenamulet
+TheInventory:AddScrapbook12Key( "B80B9ACC" ) -- greengem
+TheInventory:AddScrapbook13Key( "B9465E6D" ) -- greenmooneye
+TheInventory:AddScrapbook13Key( "7FCB037D" ) -- greenstaff
+TheInventory:AddScrapbook9Key( "232B14D9" ) -- grotto_moonglass_1
+TheInventory:AddScrapbook11Key( "232B14DB" ) -- grotto_moonglass_3
+TheInventory:AddScrapbook12Key( "232B14DC" ) -- grotto_moonglass_4
+TheInventory:AddScrapbook1Key( "C355F2D1" ) -- grotto_pool_big
+TheInventory:AddScrapbook8Key( "34ACEA58" ) -- grotto_pool_small
+TheInventory:AddScrapbook11Key( "C634CE2B" ) -- grotto_waterfall_small1
+TheInventory:AddScrapbook12Key( "C634CE2C" ) -- grotto_waterfall_small2
+TheInventory:AddScrapbook12Key( "F2EB5D8C" ) -- guacamole
+TheInventory:AddScrapbook4Key( "C7E99C14" ) -- guano
+TheInventory:AddScrapbook9Key( "761A1799" ) -- gunpowder
+TheInventory:AddScrapbook8Key( "2D82B678" ) -- halloween_ornament_1
+TheInventory:AddScrapbook9Key( "2D82B679" ) -- halloween_ornament_2
+TheInventory:AddScrapbook10Key( "2D82B67A" ) -- halloween_ornament_3
+TheInventory:AddScrapbook11Key( "2D82B67B" ) -- halloween_ornament_4
+TheInventory:AddScrapbook12Key( "2D82B67C" ) -- halloween_ornament_5
+TheInventory:AddScrapbook13Key( "2D82B67D" ) -- halloween_ornament_6
+TheInventory:AddScrapbook10Key( "41857BEA" ) -- halloweencandy_1
+TheInventory:AddScrapbook6Key( "9BC37EC6" ) -- halloweencandy_10
+TheInventory:AddScrapbook7Key( "9BC37EC7" ) -- halloweencandy_11
+TheInventory:AddScrapbook8Key( "9BC37EC8" ) -- halloweencandy_12
+TheInventory:AddScrapbook9Key( "9BC37EC9" ) -- halloweencandy_13
+TheInventory:AddScrapbook10Key( "9BC37ECA" ) -- halloweencandy_14
+TheInventory:AddScrapbook11Key( "41857BEB" ) -- halloweencandy_2
+TheInventory:AddScrapbook12Key( "41857BEC" ) -- halloweencandy_3
+TheInventory:AddScrapbook13Key( "41857BED" ) -- halloweencandy_4
+TheInventory:AddScrapbook14Key( "41857BEE" ) -- halloweencandy_5
+TheInventory:AddScrapbook15Key( "41857BEF" ) -- halloweencandy_6
+TheInventory:AddScrapbook0Key( "41857BF0" ) -- halloweencandy_7
+TheInventory:AddScrapbook1Key( "41857BF1" ) -- halloweencandy_8
+TheInventory:AddScrapbook2Key( "41857BF2" ) -- halloweencandy_9
+TheInventory:AddScrapbook4Key( "B652D364" ) -- halloweenpotion_bravery_large
+TheInventory:AddScrapbook0Key( "B7C12F10" ) -- halloweenpotion_bravery_small
+TheInventory:AddScrapbook11Key( "7E3CE6CB" ) -- halloweenpotion_embers
+TheInventory:AddScrapbook7Key( "9F932A97" ) -- halloweenpotion_health_large
+TheInventory:AddScrapbook3Key( "A1018643" ) -- halloweenpotion_health_small
+TheInventory:AddScrapbook0Key( "78917780" ) -- halloweenpotion_moon
+TheInventory:AddScrapbook9Key( "5653BC89" ) -- halloweenpotion_sanity_large
+TheInventory:AddScrapbook5Key( "57C21835" ) -- halloweenpotion_sanity_small
+TheInventory:AddScrapbook5Key( "58484C55" ) -- halloweenpotion_sparks
+TheInventory:AddScrapbook1Key( "BEA16A01" ) -- hambat
+TheInventory:AddScrapbook6Key( "C4101586" ) -- hammer
+TheInventory:AddScrapbook6Key( "B4E674C6" ) -- hawaiianshirt
+TheInventory:AddScrapbook3Key( "3CB06493" ) -- healingsalve
+TheInventory:AddScrapbook5Key( "DB20FA95" ) -- heatrock
+TheInventory:AddScrapbook8Key( "ABE2CCE8" ) -- hedgehound_bush
+TheInventory:AddScrapbook14Key( "204761DE" ) -- hermit_bundle
+TheInventory:AddScrapbook4Key( "5ABA2084" ) -- hermit_cracked_pearl
+TheInventory:AddScrapbook10Key( "1313104A" ) -- hermit_pearl
+TheInventory:AddScrapbook13Key( "F7909B5D" ) -- hermithouse
+TheInventory:AddScrapbook14Key( "90239CFE" ) -- hermithouse_construction1
+TheInventory:AddScrapbook15Key( "90239CFF" ) -- hermithouse_construction2
+TheInventory:AddScrapbook0Key( "90239D00" ) -- hermithouse_construction3
+TheInventory:AddScrapbook11Key( "F76051CB" ) -- hivehat
+TheInventory:AddScrapbook12Key( "739FBE3C" ) -- homesign
+TheInventory:AddScrapbook11Key( "FB0ADDFB" ) -- honey
+TheInventory:AddScrapbook12Key( "8D0790FC" ) -- honeycomb
+TheInventory:AddScrapbook9Key( "A070F2F9" ) -- honeyham
+TheInventory:AddScrapbook2Key( "C68487A2" ) -- honeynuggets
+TheInventory:AddScrapbook3Key( "1DDFA303" ) -- horn
+TheInventory:AddScrapbook0Key( "30A17CA0" ) -- horrorfuel
+TheInventory:AddScrapbook4Key( "8737B1F4" ) -- hotchili
+TheInventory:AddScrapbook10Key( "1C1A00DA" ) -- hotspring
+TheInventory:AddScrapbook4Key( "FE864CA4" ) -- hound
+TheInventory:AddScrapbook8Key( "6ED9E628" ) -- houndbone
+TheInventory:AddScrapbook5Key( "1C6B2805" ) -- houndmound
+TheInventory:AddScrapbook9Key( "E8712B19" ) -- houndstooth
+TheInventory:AddScrapbook14Key( "D01ED08E" ) -- houndwhistle
+TheInventory:AddScrapbook12Key( "15261EEC" ) -- hutch
+TheInventory:AddScrapbook13Key( "6300A2ED" ) -- hutch_fishbowl
+TheInventory:AddScrapbook11Key( "341774AB" ) -- ice
+TheInventory:AddScrapbook0Key( "E87E06C0" ) -- icebox
+TheInventory:AddScrapbook7Key( "A2ED69B7" ) -- icecream
+TheInventory:AddScrapbook0Key( "EB646050" ) -- icehat
+TheInventory:AddScrapbook9Key( "72E4CDB9" ) -- icehound
+TheInventory:AddScrapbook4Key( "C22935E4" ) -- icepack
+TheInventory:AddScrapbook5Key( "3CCDBE75" ) -- icestaff
+TheInventory:AddScrapbook8Key( "1BD1B038" ) -- insanityrock
+TheInventory:AddScrapbook5Key( "2B3F1F65" ) -- jammypreserves
+TheInventory:AddScrapbook14Key( "8FEB788E" ) -- jellybean
+TheInventory:AddScrapbook10Key( "B24D07DA" ) -- justeggs
+TheInventory:AddScrapbook4Key( "7C35F54" ) -- kabobs
+TheInventory:AddScrapbook14Key( "A48178BE" ) -- kelp
+TheInventory:AddScrapbook8Key( "21D1D968" ) -- kelp_cooked
+TheInventory:AddScrapbook9Key( "959A18B9" ) -- kelp_dried
+TheInventory:AddScrapbook13Key( "79BEDA7D" ) -- kelphat
+TheInventory:AddScrapbook7Key( "87CB6FD7" ) -- killerbee
+TheInventory:AddScrapbook1Key( "72A371" ) -- kitcoon_nametag
+TheInventory:AddScrapbook14Key( "34E4C31E" ) -- klaus
+TheInventory:AddScrapbook7Key( "1AD06237" ) -- klaus_sack
+TheInventory:AddScrapbook11Key( "3884DFAB" ) -- klaussackkey
+TheInventory:AddScrapbook13Key( "BC896D0D" ) -- knight
+TheInventory:AddScrapbook13Key( "55D45F4D" ) -- knight_nightmare
+TheInventory:AddScrapbook7Key( "3E5E84D7" ) -- koalefant_summer
+TheInventory:AddScrapbook3Key( "DF281963" ) -- koalefig_trunk
+TheInventory:AddScrapbook11Key( "2747C45B" ) -- krampus
+TheInventory:AddScrapbook10Key( "B921CD3A" ) -- krampus_sack
+TheInventory:AddScrapbook6Key( "37C31AA6" ) -- lantern
+TheInventory:AddScrapbook10Key( "617530BA" ) -- latkes
+TheInventory:AddScrapbook4Key( "BDF4B374" ) -- lava_pond
+TheInventory:AddScrapbook0Key( "6AF325B0" ) -- lava_pond_rock
+TheInventory:AddScrapbook2Key( "77864682" ) -- lava_pond_rock2
+TheInventory:AddScrapbook3Key( "77864683" ) -- lava_pond_rock3
+TheInventory:AddScrapbook4Key( "77864684" ) -- lava_pond_rock4
+TheInventory:AddScrapbook5Key( "77864685" ) -- lava_pond_rock5
+TheInventory:AddScrapbook6Key( "77864686" ) -- lava_pond_rock6
+TheInventory:AddScrapbook7Key( "77864687" ) -- lava_pond_rock7
+TheInventory:AddScrapbook5Key( "83496A85" ) -- lavae
+TheInventory:AddScrapbook1Key( "2E114B71" ) -- lavae_cocoon
+TheInventory:AddScrapbook11Key( "3997740B" ) -- lavae_egg
+TheInventory:AddScrapbook5Key( "3F001E25" ) -- lavae_pet
+TheInventory:AddScrapbook14Key( "75FCCE8E" ) -- lavae_tooth
+TheInventory:AddScrapbook6Key( "994FAA86" ) -- leafloaf
+TheInventory:AddScrapbook11Key( "8AFF4D9B" ) -- leafymeatburger
+TheInventory:AddScrapbook12Key( "D3F502EC" ) -- leafymeatsouffle
+TheInventory:AddScrapbook6Key( "D30548B6" ) -- leif
+TheInventory:AddScrapbook11Key( "686A1D8B" ) -- lichen
+TheInventory:AddScrapbook0Key( "A90E8C50" ) -- lifeinjector
+TheInventory:AddScrapbook15Key( "EF2BADBF" ) -- lightbulb
+TheInventory:AddScrapbook6Key( "1C2D4D46" ) -- lightcrab
+TheInventory:AddScrapbook3Key( "E6B3A803" ) -- lighter
+TheInventory:AddScrapbook10Key( "F4FBB9FA" ) -- lightflier
+TheInventory:AddScrapbook0Key( "B9C7C200" ) -- lightflier_flower
+TheInventory:AddScrapbook2Key( "E51ACD32" ) -- lightning_rod
+TheInventory:AddScrapbook5Key( "57C92145" ) -- lightninggoat
+TheInventory:AddScrapbook8Key( "D39D5F48" ) -- lightninggoathorn
+TheInventory:AddScrapbook7Key( "45B7A357" ) -- little_walrus
+TheInventory:AddScrapbook11Key( "DE88577B" ) -- livinglog
+TheInventory:AddScrapbook7Key( "90B73BA7" ) -- livingtree
+TheInventory:AddScrapbook10Key( "C93E003A" ) -- livingtree_root
+TheInventory:AddScrapbook2Key( "BD3625A2" ) -- lobsterbisque
+TheInventory:AddScrapbook15Key( "FF62A1FF" ) -- lobsterdinner
+TheInventory:AddScrapbook4Key( "359DA624" ) -- log
+TheInventory:AddScrapbook4Key( "10B70BB4" ) -- lordfruitfly
+TheInventory:AddScrapbook5Key( "F265175" ) -- lost_toy_1
+TheInventory:AddScrapbook11Key( "BE30BFB" ) -- lost_toy_10
+TheInventory:AddScrapbook12Key( "BE30BFC" ) -- lost_toy_11
+TheInventory:AddScrapbook15Key( "BE30BFF" ) -- lost_toy_14
+TheInventory:AddScrapbook3Key( "BE30C03" ) -- lost_toy_18
+TheInventory:AddScrapbook4Key( "BE30C04" ) -- lost_toy_19
+TheInventory:AddScrapbook6Key( "F265176" ) -- lost_toy_2
+TheInventory:AddScrapbook10Key( "BE60CBA" ) -- lost_toy_42
+TheInventory:AddScrapbook11Key( "BE60CBB" ) -- lost_toy_43
+TheInventory:AddScrapbook11Key( "F26517B" ) -- lost_toy_7
+TheInventory:AddScrapbook13Key( "899343CD" ) -- lucky_goldnugget
+TheInventory:AddScrapbook15Key( "DAE03F5F" ) -- lucy
+TheInventory:AddScrapbook6Key( "FF4CA2C6" ) -- lumpy_sapling
+TheInventory:AddScrapbook14Key( "E2A4213E" ) -- lunar_forge
+TheInventory:AddScrapbook5Key( "23432F55" ) -- lunar_forge_kit
+TheInventory:AddScrapbook10Key( "BBFAF6DA" ) -- lunar_grazer
+TheInventory:AddScrapbook15Key( "C967C16F" ) -- lunarplant_husk
+TheInventory:AddScrapbook6Key( "20EEDA06" ) -- lunarplanthat
+TheInventory:AddScrapbook3Key( "759F7653" ) -- lunarrift_crystal_big
+TheInventory:AddScrapbook10Key( "1468CCDA" ) -- lunarrift_crystal_small
+TheInventory:AddScrapbook0Key( "34D2E7F0" ) -- lunarrift_portal
+TheInventory:AddScrapbook5Key( "D10462A5" ) -- lunarthrall_plant
+TheInventory:AddScrapbook15Key( "3D0E946F" ) -- lureplant
+TheInventory:AddScrapbook8Key( "931CDF78" ) -- lureplantbulb
+TheInventory:AddScrapbook5Key( "43522E35" ) -- lutefisk
+TheInventory:AddScrapbook2Key( "D5177BA2" ) -- madscience_lab
+TheInventory:AddScrapbook11Key( "2CFE118B" ) -- magician_chest
+TheInventory:AddScrapbook10Key( "63A8AD3A" ) -- malbatross
+TheInventory:AddScrapbook2Key( "688DFBF2" ) -- malbatross_beak
+TheInventory:AddScrapbook14Key( "EA540FFE" ) -- malbatross_feather
+TheInventory:AddScrapbook0Key( "8F837740" ) -- malbatross_feathered_weave
+TheInventory:AddScrapbook3Key( "8C6BE253" ) -- mandrake
+TheInventory:AddScrapbook2Key( "AAE566F2" ) -- mandrake_active
+TheInventory:AddScrapbook14Key( "A694A25E" ) -- mandrake_planted
+TheInventory:AddScrapbook10Key( "109A4B4A" ) -- mandrakesoup
+TheInventory:AddScrapbook11Key( "5E39A79B" ) -- manrabbit_tail
+TheInventory:AddScrapbook9Key( "87E8CDE9" ) -- mapscroll
+TheInventory:AddScrapbook13Key( "162C669D" ) -- marble
+TheInventory:AddScrapbook13Key( "41B5C8ED" ) -- marblebean
+TheInventory:AddScrapbook6Key( "CF11BA06" ) -- marblebean_sapling
+TheInventory:AddScrapbook7Key( "ED54E167" ) -- marblepillar
+TheInventory:AddScrapbook13Key( "B563D4D" ) -- marbleshrub
+TheInventory:AddScrapbook11Key( "8D9B40DB" ) -- marbletree
+TheInventory:AddScrapbook4Key( "9246DCF4" ) -- marsh_bush
+TheInventory:AddScrapbook10Key( "D639586A" ) -- marsh_tree
+TheInventory:AddScrapbook13Key( "880CE8DD" ) -- mashedpotatoes
+TheInventory:AddScrapbook4Key( "8E806944" ) -- mask_blacksmithhat
+TheInventory:AddScrapbook8Key( "D9859768" ) -- mask_dollbrokenhat
+TheInventory:AddScrapbook13Key( "A022DA3D" ) -- mask_dollhat
+TheInventory:AddScrapbook1Key( "3D931D51" ) -- mask_dollrepairedhat
+TheInventory:AddScrapbook2Key( "183DD442" ) -- mask_foolhat
+TheInventory:AddScrapbook1Key( "957BC291" ) -- mask_kinghat
+TheInventory:AddScrapbook9Key( "36CBC1C9" ) -- mask_mirrorhat
+TheInventory:AddScrapbook4Key( "33935DC4" ) -- mask_queenhat
+TheInventory:AddScrapbook10Key( "243097CA" ) -- mask_treehat
+TheInventory:AddScrapbook5Key( "FF9DDDF5" ) -- mast
+TheInventory:AddScrapbook13Key( "709673BD" ) -- mast_item
+TheInventory:AddScrapbook4Key( "F9243E4" ) -- mast_malbatross
+TheInventory:AddScrapbook14Key( "76F188E" ) -- mast_malbatross_item
+TheInventory:AddScrapbook0Key( "7B818B30" ) -- mastupgrade_lamp
+TheInventory:AddScrapbook2Key( "A657042" ) -- mastupgrade_lamp_item
+TheInventory:AddScrapbook5Key( "5F7AD4F5" ) -- mastupgrade_lightningrod
+TheInventory:AddScrapbook13Key( "358E3CBD" ) -- mastupgrade_lightningrod_item
+TheInventory:AddScrapbook11Key( "184178B" ) -- meat
+TheInventory:AddScrapbook6Key( "4F30B406" ) -- meat_dried
+TheInventory:AddScrapbook9Key( "417D9269" ) -- meatballs
+TheInventory:AddScrapbook2Key( "3949A42" ) -- meatrack
+TheInventory:AddScrapbook0Key( "E53EE160" ) -- meatrack_hermit
+TheInventory:AddScrapbook3Key( "750E7653" ) -- meatysalad
+TheInventory:AddScrapbook12Key( "AB4BBCDC" ) -- megaflare
+TheInventory:AddScrapbook3Key( "1951BB3" ) -- merm
+TheInventory:AddScrapbook2Key( "CFE24112" ) -- mermguard
+TheInventory:AddScrapbook8Key( "320A7F48" ) -- mermhat
+TheInventory:AddScrapbook3Key( "D1C28C73" ) -- mermhead
+TheInventory:AddScrapbook13Key( "67FF1ED" ) -- mermhouse
+TheInventory:AddScrapbook10Key( "5F5C3FEA" ) -- mermking
+TheInventory:AddScrapbook11Key( "2C83D19B" ) -- mermthrone
+TheInventory:AddScrapbook13Key( "4AE2BB6D" ) -- mermwatchtower
+TheInventory:AddScrapbook13Key( "595E90AD" ) -- messagebottle
+TheInventory:AddScrapbook0Key( "621669C0" ) -- messagebottleempty
+TheInventory:AddScrapbook14Key( "531CD57E" ) -- mighty_gym
+TheInventory:AddScrapbook8Key( "12A8E4C8" ) -- milkywhites
+TheInventory:AddScrapbook12Key( "85181F7C" ) -- minerhat
+TheInventory:AddScrapbook15Key( "E20416CF" ) -- miniboatlantern
+TheInventory:AddScrapbook12Key( "BFF3263C" ) -- minifan
+TheInventory:AddScrapbook7Key( "C4221357" ) -- miniflare
+TheInventory:AddScrapbook4Key( "C3D47D34" ) -- minisign
+TheInventory:AddScrapbook15Key( "E812949F" ) -- minisign_drawn
+TheInventory:AddScrapbook14Key( "3532833E" ) -- minisign_item
+TheInventory:AddScrapbook7Key( "86030F67" ) -- minotaur
+TheInventory:AddScrapbook10Key( "A796FA" ) -- minotaurchest
+TheInventory:AddScrapbook10Key( "EE8DEB6A" ) -- minotaurhorn
+TheInventory:AddScrapbook11Key( "67BB53B" ) -- mole
+TheInventory:AddScrapbook10Key( "1112EBA" ) -- molebat
+TheInventory:AddScrapbook11Key( "3DC5793B" ) -- molebathill
+TheInventory:AddScrapbook0Key( "4058BC0" ) -- molehat
+TheInventory:AddScrapbook12Key( "8D05DEBC" ) -- molehill
+TheInventory:AddScrapbook3Key( "1765DF93" ) -- monkey
+TheInventory:AddScrapbook10Key( "85C83AFA" ) -- monkey_mediumhat
+TheInventory:AddScrapbook0Key( "5EA9B5E0" ) -- monkey_smallhat
+TheInventory:AddScrapbook9Key( "3A6C8259" ) -- monkeybarrel
+TheInventory:AddScrapbook4Key( "DF46A854" ) -- monkeyhut
+TheInventory:AddScrapbook3Key( "2B08A163" ) -- monkeyisland_portal
+TheInventory:AddScrapbook7Key( "CB46C097" ) -- monkeyisland_portal_debris
+TheInventory:AddScrapbook13Key( "761B895D" ) -- monkeypillar
+TheInventory:AddScrapbook7Key( "DC214617" ) -- monkeyqueen
+TheInventory:AddScrapbook3Key( "BF24FD43" ) -- monkeytail
+TheInventory:AddScrapbook13Key( "82C1ABBD" ) -- monsterlasagna
+TheInventory:AddScrapbook5Key( "956D0CC5" ) -- monstermeat
+TheInventory:AddScrapbook0Key( "23143240" ) -- monstermeat_dried
+TheInventory:AddScrapbook11Key( "613DE2EB" ) -- monstertartare
+TheInventory:AddScrapbook12Key( "96A0E99C" ) -- moon_altar
+TheInventory:AddScrapbook14Key( "2C77C5DE" ) -- moon_altar_astral
+TheInventory:AddScrapbook3Key( "1829F003" ) -- moon_altar_cosmic
+TheInventory:AddScrapbook4Key( "A9E65F14" ) -- moon_altar_crown
+TheInventory:AddScrapbook9Key( "9B861C99" ) -- moon_altar_glass
+TheInventory:AddScrapbook12Key( "141F93BC" ) -- moon_altar_icon
+TheInventory:AddScrapbook11Key( "149DA33B" ) -- moon_altar_idol
+TheInventory:AddScrapbook13Key( "A2A762BD" ) -- moon_altar_link
+TheInventory:AddScrapbook5Key( "3DB03285" ) -- moon_altar_rock_glass
+TheInventory:AddScrapbook15Key( "B6F3524F" ) -- moon_altar_rock_idol
+TheInventory:AddScrapbook8Key( "88AB86C8" ) -- moon_altar_rock_seed
+TheInventory:AddScrapbook4Key( "E655D7B4" ) -- moon_altar_seed
+TheInventory:AddScrapbook15Key( "9E85DFDF" ) -- moon_altar_ward
+TheInventory:AddScrapbook4Key( "8D1DA314" ) -- moon_cap
+TheInventory:AddScrapbook2Key( "3950E592" ) -- moon_cap_cooked
+TheInventory:AddScrapbook4Key( "C3332254" ) -- moon_device
+TheInventory:AddScrapbook7Key( "3F59F9C7" ) -- moon_fissure
+TheInventory:AddScrapbook0Key( "93D69FA0" ) -- moon_tree_blossom
+TheInventory:AddScrapbook0Key( "15E21F0" ) -- moon_tree_tall
+TheInventory:AddScrapbook2Key( "17C7FAB2" ) -- moonbase
+TheInventory:AddScrapbook2Key( "99E360D2" ) -- moonbutterfly
+TheInventory:AddScrapbook11Key( "925847EB" ) -- moonbutterfly_sapling
+TheInventory:AddScrapbook6Key( "9579F0B6" ) -- moonbutterflywings
+TheInventory:AddScrapbook1Key( "78B413D1" ) -- moondial
+TheInventory:AddScrapbook11Key( "1F8271DB" ) -- moonglass
+TheInventory:AddScrapbook12Key( "8F4EF9CC" ) -- moonglass_charged
+TheInventory:AddScrapbook9Key( "B5AE0809" ) -- moonglass_rock
+TheInventory:AddScrapbook2Key( "EA526882" ) -- moonglass_wobster_den
+TheInventory:AddScrapbook3Key( "A1B2E033" ) -- moonglassaxe
+TheInventory:AddScrapbook14Key( "5116571E" ) -- moonrock_pieces
+TheInventory:AddScrapbook5Key( "F5CAF4B5" ) -- moonrockcrater
+TheInventory:AddScrapbook14Key( "63191E3E" ) -- moonrockidol
+TheInventory:AddScrapbook12Key( "C63A5A5C" ) -- moonrocknugget
+TheInventory:AddScrapbook7Key( "34D152B7" ) -- moonrockseed
+TheInventory:AddScrapbook7Key( "D79F11E7" ) -- moonspiderden
+TheInventory:AddScrapbook5Key( "836125A5" ) -- moonstorm_glass
+TheInventory:AddScrapbook0Key( "576DFC40" ) -- moonstorm_goggleshat
+TheInventory:AddScrapbook6Key( "6C8FDC66" ) -- moonstorm_spark
+TheInventory:AddScrapbook5Key( "A478D805" ) -- moonstorm_static
+TheInventory:AddScrapbook13Key( "55FA0DAD" ) -- moonstorm_static_item
+TheInventory:AddScrapbook15Key( "4F34CBDF" ) -- moose
+TheInventory:AddScrapbook6Key( "F8E68306" ) -- mooseegg
+TheInventory:AddScrapbook13Key( "3E98449D" ) -- moqueca
+TheInventory:AddScrapbook15Key( "B431972F" ) -- mosquito
+TheInventory:AddScrapbook5Key( "DE56C6A5" ) -- mosquitosack
+TheInventory:AddScrapbook8Key( "9946FCF8" ) -- mossling
+TheInventory:AddScrapbook9Key( "522427A9" ) -- mound
+TheInventory:AddScrapbook1Key( "32D00A11" ) -- mulleddrink
+TheInventory:AddScrapbook1Key( "6F0425F1" ) -- multiplayer_portal
+TheInventory:AddScrapbook4Key( "34535674" ) -- multiplayer_portal_moonrock
+TheInventory:AddScrapbook5Key( "A9B00505" ) -- multiplayer_portal_moonrock_constr_plans
+TheInventory:AddScrapbook14Key( "3EDAE42E" ) -- multitool_axe_pickaxe
+TheInventory:AddScrapbook3Key( "297A87E3" ) -- mushgnome
+TheInventory:AddScrapbook13Key( "27BB8F1D" ) -- mushroom_farm
+TheInventory:AddScrapbook15Key( "5C964CCF" ) -- mushroom_light
+TheInventory:AddScrapbook1Key( "CE7A37B1" ) -- mushroomsprout
+TheInventory:AddScrapbook4Key( "79308DE4" ) -- mushroomsprout_dark
+TheInventory:AddScrapbook9Key( "1AD851D9" ) -- mushtree_medium
+TheInventory:AddScrapbook5Key( "F4A552E5" ) -- mushtree_moon
+TheInventory:AddScrapbook3Key( "BB2A25C3" ) -- mushtree_small
+TheInventory:AddScrapbook1Key( "336D2E51" ) -- mushtree_tall
+TheInventory:AddScrapbook11Key( "60EAF2EB" ) -- mutated_penguin
+TheInventory:AddScrapbook6Key( "DB7556E6" ) -- mutatedhound
+TheInventory:AddScrapbook1Key( "D42416D1" ) -- mutator_dropper
+TheInventory:AddScrapbook2Key( "AB6368B2" ) -- mutator_healer
+TheInventory:AddScrapbook3Key( "978CF793" ) -- mutator_hider
+TheInventory:AddScrapbook14Key( "AC3FA41E" ) -- mutator_moon
+TheInventory:AddScrapbook12Key( "58D894DC" ) -- mutator_spitter
+TheInventory:AddScrapbook5Key( "65CBA9A5" ) -- mutator_warrior
+TheInventory:AddScrapbook10Key( "2610FABA" ) -- mutator_water
+TheInventory:AddScrapbook1Key( "EA8A06C1" ) -- nightcaphat
+TheInventory:AddScrapbook14Key( "62A5E7FE" ) -- nightlight
+TheInventory:AddScrapbook1Key( "E5071541" ) -- nightmare_timepiece
+TheInventory:AddScrapbook5Key( "41BA89B5" ) -- nightmarefuel
+TheInventory:AddScrapbook6Key( "F5B13266" ) -- nightmaregrowth
+TheInventory:AddScrapbook7Key( "20CD7317" ) -- nightmarelight
+TheInventory:AddScrapbook13Key( "20022C8D" ) -- nightmarepie
+TheInventory:AddScrapbook8Key( "3EDE96F8" ) -- nightstick
+TheInventory:AddScrapbook5Key( "CD7669E5" ) -- nightsword
+TheInventory:AddScrapbook12Key( "7E6D93AC" ) -- nitre
+TheInventory:AddScrapbook5Key( "E2ECBC75" ) -- nutrientsgoggleshat
+TheInventory:AddScrapbook0Key( "3709D140" ) -- oar
+TheInventory:AddScrapbook7Key( "85CCA1F7" ) -- oar_driftwood
+TheInventory:AddScrapbook2Key( "1094C032" ) -- oar_monkey
+TheInventory:AddScrapbook1Key( "10B48261" ) -- oasis_cactus
+TheInventory:AddScrapbook10Key( "F3987B3A" ) -- oasislake
+TheInventory:AddScrapbook4Key( "237DA7C4" ) -- ocean_trawler
+TheInventory:AddScrapbook11Key( "32906FDB" ) -- ocean_trawler_kit
+TheInventory:AddScrapbook0Key( "4585C7B0" ) -- oceanfish_medium_1
+TheInventory:AddScrapbook1Key( "4585C7B1" ) -- oceanfish_medium_2
+TheInventory:AddScrapbook2Key( "4585C7B2" ) -- oceanfish_medium_3
+TheInventory:AddScrapbook3Key( "4585C7B3" ) -- oceanfish_medium_4
+TheInventory:AddScrapbook4Key( "4585C7B4" ) -- oceanfish_medium_5
+TheInventory:AddScrapbook5Key( "4585C7B5" ) -- oceanfish_medium_6
+TheInventory:AddScrapbook6Key( "4585C7B6" ) -- oceanfish_medium_7
+TheInventory:AddScrapbook7Key( "4585C7B7" ) -- oceanfish_medium_8
+TheInventory:AddScrapbook8Key( "4585C7B8" ) -- oceanfish_medium_9
+TheInventory:AddScrapbook0Key( "BA4CCFD0" ) -- oceanfish_small_1
+TheInventory:AddScrapbook1Key( "BA4CCFD1" ) -- oceanfish_small_2
+TheInventory:AddScrapbook2Key( "BA4CCFD2" ) -- oceanfish_small_3
+TheInventory:AddScrapbook3Key( "BA4CCFD3" ) -- oceanfish_small_4
+TheInventory:AddScrapbook4Key( "BA4CCFD4" ) -- oceanfish_small_5
+TheInventory:AddScrapbook5Key( "BA4CCFD5" ) -- oceanfish_small_6
+TheInventory:AddScrapbook6Key( "BA4CCFD6" ) -- oceanfish_small_7
+TheInventory:AddScrapbook7Key( "BA4CCFD7" ) -- oceanfish_small_8
+TheInventory:AddScrapbook8Key( "BA4CCFD8" ) -- oceanfish_small_9
+TheInventory:AddScrapbook8Key( "278B19D8" ) -- oceanfishingbobber_ball
+TheInventory:AddScrapbook1Key( "3A2D2291" ) -- oceanfishingbobber_canary
+TheInventory:AddScrapbook0Key( "5E73F2F0" ) -- oceanfishingbobber_crow
+TheInventory:AddScrapbook0Key( "B591D240" ) -- oceanfishingbobber_goose
+TheInventory:AddScrapbook3Key( "6AAC8D93" ) -- oceanfishingbobber_malbatross
+TheInventory:AddScrapbook11Key( "8EAFF66B" ) -- oceanfishingbobber_oval
+TheInventory:AddScrapbook1Key( "9A491B51" ) -- oceanfishingbobber_robin
+TheInventory:AddScrapbook3Key( "E7C3E1D3" ) -- oceanfishingbobber_robin_winter
+TheInventory:AddScrapbook1Key( "24B85781" ) -- oceanfishinglure_hermit_drowsy
+TheInventory:AddScrapbook2Key( "148C7002" ) -- oceanfishinglure_hermit_heavy
+TheInventory:AddScrapbook9Key( "65860999" ) -- oceanfishinglure_hermit_rain
+TheInventory:AddScrapbook8Key( "9A79A568" ) -- oceanfishinglure_hermit_snow
+TheInventory:AddScrapbook7Key( "2FF1457" ) -- oceanfishinglure_spinner_blue
+TheInventory:AddScrapbook6Key( "3402C946" ) -- oceanfishinglure_spinner_green
+TheInventory:AddScrapbook4Key( "251CC5D4" ) -- oceanfishinglure_spinner_red
+TheInventory:AddScrapbook15Key( "F3327BDF" ) -- oceanfishinglure_spoon_blue
+TheInventory:AddScrapbook14Key( "B83143BE" ) -- oceanfishinglure_spoon_green
+TheInventory:AddScrapbook12Key( "1FEEFC4C" ) -- oceanfishinglure_spoon_red
+TheInventory:AddScrapbook11Key( "C6088C7B" ) -- oceanfishingrod
+TheInventory:AddScrapbook8Key( "903CAFC8" ) -- oceanhorror
+TheInventory:AddScrapbook0Key( "FB3C4310" ) -- oceantree_tall
+TheInventory:AddScrapbook1Key( "AAEB18F1" ) -- oceantreenut
+TheInventory:AddScrapbook8Key( "539992E8" ) -- oceanvine
+TheInventory:AddScrapbook14Key( "BD5EE04E" ) -- oceanvine_cocoon
+TheInventory:AddScrapbook9Key( "B6201AC9" ) -- onemanband
+TheInventory:AddScrapbook9Key( "A58E5B29" ) -- onion
+TheInventory:AddScrapbook13Key( "FD15C23D" ) -- onion_cooked
+TheInventory:AddScrapbook9Key( "973D59F9" ) -- onion_oversized
+TheInventory:AddScrapbook12Key( "4B2D63CC" ) -- onion_seeds
+TheInventory:AddScrapbook15Key( "F3E2BDDF" ) -- opalpreciousgem
+TheInventory:AddScrapbook4Key( "2953C8D4" ) -- opalstaff
+TheInventory:AddScrapbook0Key( "2CA456A0" ) -- orangeamulet
+TheInventory:AddScrapbook1Key( "B5C89C61" ) -- orangegem
+TheInventory:AddScrapbook2Key( "4EF5AB02" ) -- orangemooneye
+TheInventory:AddScrapbook2Key( "36768A92" ) -- orangestaff
+TheInventory:AddScrapbook14Key( "AE0F8BCE" ) -- palmcone_sapling
+TheInventory:AddScrapbook0Key( "678E43C0" ) -- palmcone_scale
+TheInventory:AddScrapbook11Key( "A86455DB" ) -- palmcone_seed
+TheInventory:AddScrapbook9Key( "FAD83599" ) -- palmconetree_tall
+TheInventory:AddScrapbook5Key( "6E26D625" ) -- pandoraschest
+TheInventory:AddScrapbook14Key( "FE34CA7E" ) -- panettone
+TheInventory:AddScrapbook3Key( "F0330963" ) -- panflute
+TheInventory:AddScrapbook6Key( "75370B6" ) -- papyrus
+TheInventory:AddScrapbook3Key( "408BE2B3" ) -- pavlova
+TheInventory:AddScrapbook12Key( "941FB5CC" ) -- penguin
+TheInventory:AddScrapbook2Key( "12333C42" ) -- pepper
+TheInventory:AddScrapbook4Key( "E964FCE4" ) -- pepper_cooked
+TheInventory:AddScrapbook2Key( "FB6BCC92" ) -- pepper_oversized
+TheInventory:AddScrapbook5Key( "27A20F65" ) -- pepper_seeds
+TheInventory:AddScrapbook14Key( "9619AB8E" ) -- pepperpopper
+TheInventory:AddScrapbook7Key( "8D298DE7" ) -- perd
+TheInventory:AddScrapbook12Key( "10D1D50C" ) -- perdfan
+TheInventory:AddScrapbook2Key( "1645CE02" ) -- perogies
+TheInventory:AddScrapbook9Key( "C4F29869" ) -- petals
+TheInventory:AddScrapbook10Key( "65EB274A" ) -- petals_evil
+TheInventory:AddScrapbook7Key( "1E746C37" ) -- phlegm
+TheInventory:AddScrapbook13Key( "B1FA364D" ) -- pickaxe
+TheInventory:AddScrapbook7Key( "1DF522C7" ) -- pickaxe_lunarplant
+TheInventory:AddScrapbook11Key( "A8774A7B" ) -- pickledherring
+TheInventory:AddScrapbook2Key( "85208542" ) -- pig_coin
+TheInventory:AddScrapbook8Key( "CBE83788" ) -- pig_token
+TheInventory:AddScrapbook7Key( "E32253D7" ) -- pigguard
+TheInventory:AddScrapbook7Key( "6F21E747" ) -- piggyback
+TheInventory:AddScrapbook14Key( "37F8786E" ) -- pighead
+TheInventory:AddScrapbook2Key( "19C004B2" ) -- pighouse
+TheInventory:AddScrapbook5Key( "C5922BE5" ) -- pigking
+TheInventory:AddScrapbook12Key( "7DA9320C" ) -- pigman
+TheInventory:AddScrapbook11Key( "3ABFCFAB" ) -- pigskin
+TheInventory:AddScrapbook14Key( "474A464E" ) -- pigtorch
+TheInventory:AddScrapbook3Key( "B7E66933" ) -- pinecone
+TheInventory:AddScrapbook12Key( "B50C4E4C" ) -- pinecone_sapling
+TheInventory:AddScrapbook5Key( "911454C5" ) -- pirate_flag_pole
+TheInventory:AddScrapbook15Key( "2C08F64F" ) -- pirate_stash
+TheInventory:AddScrapbook2Key( "34FB4F82" ) -- pitchfork
+TheInventory:AddScrapbook6Key( "9CAF68F6" ) -- plantmeat
+TheInventory:AddScrapbook0Key( "AAE6CB30" ) -- plantmeat_cooked
+TheInventory:AddScrapbook3Key( "6C92CBD3" ) -- plantregistryhat
+TheInventory:AddScrapbook13Key( "7D55F97D" ) -- playbill_the_doll
+TheInventory:AddScrapbook1Key( "560982A1" ) -- pocket_scale
+TheInventory:AddScrapbook7Key( "CA70877" ) -- pocketwatch_dismantler
+TheInventory:AddScrapbook14Key( "DE6B0AEE" ) -- pocketwatch_heal
+TheInventory:AddScrapbook10Key( "34F46F9A" ) -- pocketwatch_parts
+TheInventory:AddScrapbook2Key( "2E9CA4F2" ) -- pocketwatch_portal
+TheInventory:AddScrapbook7Key( "F0835257" ) -- pocketwatch_recall
+TheInventory:AddScrapbook11Key( "687F4EFB" ) -- pocketwatch_revive
+TheInventory:AddScrapbook14Key( "966A0C4E" ) -- pocketwatch_warp
+TheInventory:AddScrapbook2Key( "9B98062" ) -- pocketwatch_weapon
+TheInventory:AddScrapbook5Key( "4912D175" ) -- polishcookie
+TheInventory:AddScrapbook1Key( "E2BFA561" ) -- polly_rogers
+TheInventory:AddScrapbook10Key( "15B8981A" ) -- polly_rogershat
+TheInventory:AddScrapbook3Key( "F5281AC3" ) -- pomegranate
+TheInventory:AddScrapbook3Key( "757F3023" ) -- pomegranate_cooked
+TheInventory:AddScrapbook3Key( "F1953893" ) -- pomegranate_oversized
+TheInventory:AddScrapbook6Key( "830C1C66" ) -- pomegranate_seeds
+TheInventory:AddScrapbook5Key( "921227F5" ) -- pond
+TheInventory:AddScrapbook7Key( "22CBA2D7" ) -- pond_cave
+TheInventory:AddScrapbook7Key( "BDE53F87" ) -- pond_mos
+TheInventory:AddScrapbook7Key( "DE6216F7" ) -- pondeel
+TheInventory:AddScrapbook13Key( "1A0B7AD" ) -- pondfish
+TheInventory:AddScrapbook0Key( "92132840" ) -- poop
+TheInventory:AddScrapbook3Key( "7CF455A3" ) -- portableblender
+TheInventory:AddScrapbook15Key( "921ED58F" ) -- portableblender_item
+TheInventory:AddScrapbook2Key( "B73E6832" ) -- portablecookpot
+TheInventory:AddScrapbook0Key( "75F595C0" ) -- portablecookpot_item
+TheInventory:AddScrapbook15Key( "5A83D87F" ) -- portablespicer
+TheInventory:AddScrapbook3Key( "DED565B3" ) -- portablespicer_item
+TheInventory:AddScrapbook2Key( "CFCDFB2" ) -- portabletent
+TheInventory:AddScrapbook0Key( "451C7E40" ) -- portabletent_item
+TheInventory:AddScrapbook7Key( "6C365067" ) -- potato
+TheInventory:AddScrapbook15Key( "1813997F" ) -- potato_cooked
+TheInventory:AddScrapbook7Key( "82129437" ) -- potato_oversized
+TheInventory:AddScrapbook10Key( "9BFB9C0A" ) -- potato_seeds
+TheInventory:AddScrapbook13Key( "BEB747DD" ) -- potatosack
+TheInventory:AddScrapbook11Key( "CFE0620B" ) -- potatosouffle
+TheInventory:AddScrapbook14Key( "4BFE6A0E" ) -- potatotornado
+TheInventory:AddScrapbook9Key( "1153DBB9" ) -- pottedfern
+TheInventory:AddScrapbook0Key( "113860B0" ) -- powcake
+TheInventory:AddScrapbook9Key( "99CA37B9" ) -- powder_monkey
+TheInventory:AddScrapbook14Key( "ADA4BB4E" ) -- premiumwateringcan
+TheInventory:AddScrapbook5Key( "9DCD89A5" ) -- prime_mate
+TheInventory:AddScrapbook0Key( "262EEF40" ) -- propsign
+TheInventory:AddScrapbook10Key( "7ACC6ACA" ) -- puffin
+TheInventory:AddScrapbook8Key( "50CA2668" ) -- pumpkin
+TheInventory:AddScrapbook14Key( "B267F53E" ) -- pumpkin_cooked
+TheInventory:AddScrapbook15Key( "8CC766EF" ) -- pumpkin_lantern
+TheInventory:AddScrapbook8Key( "898837B8" ) -- pumpkin_oversized
+TheInventory:AddScrapbook11Key( "2D99608B" ) -- pumpkin_seeds
+TheInventory:AddScrapbook12Key( "4AD6EF2C" ) -- pumpkincookie
+TheInventory:AddScrapbook4Key( "88070A44" ) -- pumpkinpie
+TheInventory:AddScrapbook7Key( "122F70D7" ) -- purebrilliance
+TheInventory:AddScrapbook14Key( "9D92CCE" ) -- purpleamulet
+TheInventory:AddScrapbook3Key( "2AE7E3B3" ) -- purplegem
+TheInventory:AddScrapbook4Key( "95246054" ) -- purplemooneye
+TheInventory:AddScrapbook10Key( "9C9A403A" ) -- rabbit
+TheInventory:AddScrapbook10Key( "5BC167BA" ) -- rabbithole
+TheInventory:AddScrapbook6Key( "CF1626" ) -- rabbithouse
+TheInventory:AddScrapbook3Key( "4116C653" ) -- raincoat
+TheInventory:AddScrapbook7Key( "D3671C87" ) -- rainhat
+TheInventory:AddScrapbook14Key( "FBAEFA0E" ) -- rainometer
+TheInventory:AddScrapbook10Key( "51E97B1A" ) -- ratatouille
+TheInventory:AddScrapbook14Key( "1CD9E60E" ) -- razor
+TheInventory:AddScrapbook4Key( "1C1E3DC4" ) -- red_cap
+TheInventory:AddScrapbook2Key( "AB67FEE2" ) -- red_cap_cooked
+TheInventory:AddScrapbook6Key( "BA4090A6" ) -- red_mushroom
+TheInventory:AddScrapbook5Key( "2A2E3095" ) -- red_mushroomhat
+TheInventory:AddScrapbook14Key( "BCBAA3E" ) -- redgem
+TheInventory:AddScrapbook5Key( "2C76FFB5" ) -- redlantern
+TheInventory:AddScrapbook15Key( "65D9BBDF" ) -- redmooneye
+TheInventory:AddScrapbook1Key( "CC92E0C1" ) -- reeds
+TheInventory:AddScrapbook10Key( "640234BA" ) -- refined_dust
+TheInventory:AddScrapbook11Key( "2F0F89CB" ) -- reflectivevest
+TheInventory:AddScrapbook2Key( "38967BB2" ) -- researchlab
+TheInventory:AddScrapbook0Key( "68BA7100" ) -- researchlab2
+TheInventory:AddScrapbook1Key( "68BA7101" ) -- researchlab3
+TheInventory:AddScrapbook2Key( "68BA7102" ) -- researchlab4
+TheInventory:AddScrapbook7Key( "83CF1427" ) -- reskin_tool
+TheInventory:AddScrapbook11Key( "9A6718EB" ) -- resurrectionstatue
+TheInventory:AddScrapbook14Key( "7D8B3D7E" ) -- resurrectionstone
+TheInventory:AddScrapbook13Key( "BD603ADD" ) -- reviver
+TheInventory:AddScrapbook3Key( "E213ABB3" ) -- roastturkey
+TheInventory:AddScrapbook10Key( "9C61DAEA" ) -- robin
+TheInventory:AddScrapbook10Key( "B8DC9DFA" ) -- robin_winter
+TheInventory:AddScrapbook12Key( "9CE1EAAC" ) -- rock1
+TheInventory:AddScrapbook14Key( "C7DBAF9E" ) -- rock_avocado_bush
+TheInventory:AddScrapbook14Key( "63C8615E" ) -- rock_avocado_fruit
+TheInventory:AddScrapbook13Key( "6C41426D" ) -- rock_avocado_fruit_ripe
+TheInventory:AddScrapbook9Key( "95FA51F9" ) -- rock_avocado_fruit_ripe_cooked
+TheInventory:AddScrapbook10Key( "657F2FFA" ) -- rock_avocado_fruit_sprout
+TheInventory:AddScrapbook3Key( "349BC713" ) -- rock_avocado_fruit_sprout_sapling
+TheInventory:AddScrapbook8Key( "4F5EA448" ) -- rock_flintless
+TheInventory:AddScrapbook1Key( "E992CD51" ) -- rock_ice
+TheInventory:AddScrapbook12Key( "3F316F5C" ) -- rock_light
+TheInventory:AddScrapbook11Key( "87F86DB" ) -- rock_moon
+TheInventory:AddScrapbook12Key( "E02458AC" ) -- rock_moon_shell
+TheInventory:AddScrapbook15Key( "5719E47F" ) -- rock_petrified_tree
+TheInventory:AddScrapbook14Key( "9CE1EAEE" ) -- rocks
+TheInventory:AddScrapbook4Key( "9CE1EAF4" ) -- rocky
+TheInventory:AddScrapbook9Key( "EF20C9B9" ) -- rook
+TheInventory:AddScrapbook9Key( "976FCDF9" ) -- rook_nightmare
+TheInventory:AddScrapbook2Key( "EF21C9F2" ) -- rope
+TheInventory:AddScrapbook15Key( "CA05365F" ) -- rottenegg
+TheInventory:AddScrapbook6Key( "6AC7F0A6" ) -- royal_jelly
+TheInventory:AddScrapbook12Key( "EB14ACFC" ) -- rubble
+TheInventory:AddScrapbook1Key( "DF13A0C1" ) -- ruins_bat
+TheInventory:AddScrapbook6Key( "8D7D69B6" ) -- ruins_bowl
+TheInventory:AddScrapbook8Key( "3F72DA28" ) -- ruins_cavein_obstacle
+TheInventory:AddScrapbook1Key( "2EF75831" ) -- ruins_chair
+TheInventory:AddScrapbook2Key( "D5650A42" ) -- ruins_chipbowl
+TheInventory:AddScrapbook2Key( "5C1E70E2" ) -- ruins_plate
+TheInventory:AddScrapbook6Key( "4520D076" ) -- ruins_rubble_chair
+TheInventory:AddScrapbook15Key( "82A47A7F" ) -- ruins_rubble_table
+TheInventory:AddScrapbook12Key( "38050C" ) -- ruins_rubble_vase
+TheInventory:AddScrapbook7Key( "57A80367" ) -- ruins_statue_head
+TheInventory:AddScrapbook6Key( "D1543AB6" ) -- ruins_statue_head_nogem
+TheInventory:AddScrapbook9Key( "3E57DA99" ) -- ruins_statue_mage
+TheInventory:AddScrapbook8Key( "A43426E8" ) -- ruins_statue_mage_nogem
+TheInventory:AddScrapbook10Key( "6C7B023A" ) -- ruins_table
+TheInventory:AddScrapbook1Key( "291CDE91" ) -- ruins_vase
+TheInventory:AddScrapbook0Key( "E16C07D0" ) -- ruinshat
+TheInventory:AddScrapbook9Key( "9D461419" ) -- ruinsrelic_bowl
+TheInventory:AddScrapbook14Key( "BBBC468E" ) -- ruinsrelic_chair
+TheInventory:AddScrapbook5Key( "58AC71A5" ) -- ruinsrelic_chipbowl
+TheInventory:AddScrapbook15Key( "E8E35F3F" ) -- ruinsrelic_plate
+TheInventory:AddScrapbook7Key( "F93FF097" ) -- ruinsrelic_table
+TheInventory:AddScrapbook4Key( "38E588F4" ) -- ruinsrelic_vase
+TheInventory:AddScrapbook14Key( "EFE1AB3E" ) -- sacred_chest
+TheInventory:AddScrapbook6Key( "DEB59676" ) -- saddle_basic
+TheInventory:AddScrapbook9Key( "A801BD29" ) -- saddle_race
+TheInventory:AddScrapbook0Key( "A8651FD0" ) -- saddle_war
+TheInventory:AddScrapbook10Key( "4742FEAA" ) -- saddlehorn
+TheInventory:AddScrapbook7Key( "28479B97" ) -- saladfurnace
+TheInventory:AddScrapbook12Key( "59E56CEC" ) -- salsa
+TheInventory:AddScrapbook5Key( "8999B2F5" ) -- saltbox
+TheInventory:AddScrapbook11Key( "5E02CFFB" ) -- saltlick
+TheInventory:AddScrapbook11Key( "7820117B" ) -- saltrock
+TheInventory:AddScrapbook2Key( "CCE99F72" ) -- saltstack
+TheInventory:AddScrapbook9Key( "26756C89" ) -- sandblock
+TheInventory:AddScrapbook3Key( "A5DA3273" ) -- sanityrock
+TheInventory:AddScrapbook8Key( "28861538" ) -- sapling
+TheInventory:AddScrapbook8Key( "77DF6828" ) -- sapling_moon
+TheInventory:AddScrapbook7Key( "6D04767" ) -- scandata
+TheInventory:AddScrapbook11Key( "ED65FCBB" ) -- scarecrow
+TheInventory:AddScrapbook5Key( "A397B9B5" ) -- scorched_skeleton
+TheInventory:AddScrapbook4Key( "39E3AB34" ) -- scrapbook_page
+TheInventory:AddScrapbook7Key( "795096B7" ) -- sculptingtable
+TheInventory:AddScrapbook15Key( "68DC3DF" ) -- sculpture_bishop
+TheInventory:AddScrapbook15Key( "A9B3889F" ) -- sculpture_bishophead
+TheInventory:AddScrapbook15Key( "4FF1D16F" ) -- sculpture_knight
+TheInventory:AddScrapbook15Key( "44E0062F" ) -- sculpture_knighthead
+TheInventory:AddScrapbook11Key( "D571BF1B" ) -- sculpture_rook
+TheInventory:AddScrapbook14Key( "7E4A4BCE" ) -- sculpture_rooknose
+TheInventory:AddScrapbook15Key( "B433197F" ) -- seafoodgumbo
+TheInventory:AddScrapbook9Key( "EF200739" ) -- seastack
+TheInventory:AddScrapbook10Key( "70AFD24A" ) -- seedpouch
+TheInventory:AddScrapbook2Key( "107F3FC2" ) -- seeds
+TheInventory:AddScrapbook4Key( "EE071964" ) -- seeds_cooked
+TheInventory:AddScrapbook11Key( "DB8CE5DB" ) -- sentryward
+TheInventory:AddScrapbook4Key( "EC43B9F4" ) -- sewing_kit
+TheInventory:AddScrapbook8Key( "1E897BF8" ) -- sewing_mannequin
+TheInventory:AddScrapbook4Key( "7D679D24" ) -- sewing_tape
+TheInventory:AddScrapbook12Key( "9C99471C" ) -- shadow_bishop
+TheInventory:AddScrapbook8Key( "2BA99F08" ) -- shadow_forge
+TheInventory:AddScrapbook15Key( "4A2EA31F" ) -- shadow_forge_kit
+TheInventory:AddScrapbook12Key( "E5FD54AC" ) -- shadow_knight
+TheInventory:AddScrapbook2Key( "EB84E712" ) -- shadow_leech
+TheInventory:AddScrapbook8Key( "20A450D8" ) -- shadow_rook
+TheInventory:AddScrapbook6Key( "203935E6" ) -- shadowheart
+TheInventory:AddScrapbook6Key( "3C8E66A6" ) -- shadowrift_portal
+TheInventory:AddScrapbook2Key( "1AF6B572" ) -- shadowtentacle
+TheInventory:AddScrapbook8Key( "1E0D6848" ) -- shadowthrall_hands
+TheInventory:AddScrapbook4Key( "AB6F1334" ) -- shadowthrall_horns
+TheInventory:AddScrapbook12Key( "8D20800C" ) -- shadowthrall_wings
+TheInventory:AddScrapbook5Key( "9A297765" ) -- shark
+TheInventory:AddScrapbook11Key( "6A175D4B" ) -- shell_cluster
+TheInventory:AddScrapbook4Key( "7ADBAA54" ) -- shieldofterror
+TheInventory:AddScrapbook3Key( "F4EB0943" ) -- shovel
+TheInventory:AddScrapbook1Key( "25E4D451" ) -- shovel_lunarplant
+TheInventory:AddScrapbook12Key( "75E956EC" ) -- shroom_skin
+TheInventory:AddScrapbook8Key( "9E2155E8" ) -- shroomcake
+TheInventory:AddScrapbook6Key( "C78D9876" ) -- siestahut
+TheInventory:AddScrapbook5Key( "1AB03CB5" ) -- silk
+TheInventory:AddScrapbook1Key( "1A5BFAC1" ) -- singingshell_octave3
+TheInventory:AddScrapbook2Key( "1A5BFAC2" ) -- singingshell_octave4
+TheInventory:AddScrapbook3Key( "1A5BFAC3" ) -- singingshell_octave5
+TheInventory:AddScrapbook10Key( "1FD17D3A" ) -- sisturn
+TheInventory:AddScrapbook13Key( "C0DD788D" ) -- skeleton
+TheInventory:AddScrapbook14Key( "7A94E5EE" ) -- skeletonhat
+TheInventory:AddScrapbook12Key( "EE6DDF4C" ) -- sketch
+TheInventory:AddScrapbook9Key( "9C951B79" ) -- sleepbomb
+TheInventory:AddScrapbook3Key( "6D045A63" ) -- slingshot
+TheInventory:AddScrapbook5Key( "75FB97E5" ) -- slingshotammo_freeze
+TheInventory:AddScrapbook14Key( "4DACBA6E" ) -- slingshotammo_gold
+TheInventory:AddScrapbook11Key( "E9D0594B" ) -- slingshotammo_marble
+TheInventory:AddScrapbook14Key( "F06D11EE" ) -- slingshotammo_poop
+TheInventory:AddScrapbook3Key( "4D6EB073" ) -- slingshotammo_rock
+TheInventory:AddScrapbook15Key( "7A8755AF" ) -- slingshotammo_slow
+TheInventory:AddScrapbook3Key( "89527383" ) -- slingshotammo_thulecite
+TheInventory:AddScrapbook7Key( "8A9E6CC7" ) -- slurper
+TheInventory:AddScrapbook5Key( "B242F9D5" ) -- slurper_pelt
+TheInventory:AddScrapbook7Key( "8C9DAC77" ) -- slurtle
+TheInventory:AddScrapbook13Key( "65EC5ECD" ) -- slurtle_shellpieces
+TheInventory:AddScrapbook4Key( "E1A5C184" ) -- slurtlehat
+TheInventory:AddScrapbook7Key( "502B76F7" ) -- slurtlehole
+TheInventory:AddScrapbook1Key( "8FCABD71" ) -- slurtleslime
+TheInventory:AddScrapbook0Key( "6F90E420" ) -- smallbird
+TheInventory:AddScrapbook8Key( "7C7403C8" ) -- smallghost
+TheInventory:AddScrapbook2Key( "6D529A32" ) -- smallmeat
+TheInventory:AddScrapbook13Key( "A91DCC2D" ) -- smallmeat_dried
+TheInventory:AddScrapbook5Key( "B8F66EF5" ) -- snurtle
+TheInventory:AddScrapbook12Key( "41A2ECBC" ) -- soil_amender
+TheInventory:AddScrapbook13Key( "1771AB4D" ) -- soil_amender_fermented
+TheInventory:AddScrapbook0Key( "1E17A690" ) -- spat
+TheInventory:AddScrapbook9Key( "10473739" ) -- spear
+TheInventory:AddScrapbook4Key( "58D2DEA4" ) -- spear_wathgrithr
+TheInventory:AddScrapbook0Key( "6AB628F0" ) -- spice_chili
+TheInventory:AddScrapbook15Key( "8BBC561F" ) -- spice_garlic
+TheInventory:AddScrapbook7Key( "C511E5E7" ) -- spice_salt
+TheInventory:AddScrapbook5Key( "54D9105" ) -- spice_sugar
+TheInventory:AddScrapbook7Key( "EE7753E7" ) -- spicepack
+TheInventory:AddScrapbook5Key( "F44805C5" ) -- spider
+TheInventory:AddScrapbook4Key( "69EB10D4" ) -- spider_dropper
+TheInventory:AddScrapbook15Key( "FDAEBDEF" ) -- spider_healer
+TheInventory:AddScrapbook3Key( "56934C43" ) -- spider_healer_item
+TheInventory:AddScrapbook6Key( "C7678316" ) -- spider_hider
+TheInventory:AddScrapbook11Key( "8EFB07DB" ) -- spider_moon
+TheInventory:AddScrapbook9Key( "C3929029" ) -- spider_repellent
+TheInventory:AddScrapbook15Key( "EE9F8EDF" ) -- spider_spitter
+TheInventory:AddScrapbook8Key( "FB92A3A8" ) -- spider_warrior
+TheInventory:AddScrapbook13Key( "55EB863D" ) -- spider_water
+TheInventory:AddScrapbook8Key( "67686FD8" ) -- spider_whistle
+TheInventory:AddScrapbook8Key( "632D85A8" ) -- spiderden
+TheInventory:AddScrapbook2Key( "7ECE3C42" ) -- spiderden_bedazzler
+TheInventory:AddScrapbook6Key( "B46AB416" ) -- spidereggsack
+TheInventory:AddScrapbook13Key( "78F155CD" ) -- spidergland
+TheInventory:AddScrapbook6Key( "6521C2B6" ) -- spiderhat
+TheInventory:AddScrapbook15Key( "8BD2FC1F" ) -- spiderhole_rock
+TheInventory:AddScrapbook5Key( "C4D99E65" ) -- spiderqueen
+TheInventory:AddScrapbook3Key( "26BCF423" ) -- spoiled_fish
+TheInventory:AddScrapbook11Key( "3D2B2FAB" ) -- spoiled_fish_small
+TheInventory:AddScrapbook9Key( "29AD5029" ) -- spoiled_food
+TheInventory:AddScrapbook15Key( "1A35332F" ) -- spore_medium
+TheInventory:AddScrapbook13Key( "ED18EED" ) -- spore_small
+TheInventory:AddScrapbook7Key( "5286DAA7" ) -- spore_tall
+TheInventory:AddScrapbook2Key( "46B701F2" ) -- squid
+TheInventory:AddScrapbook4Key( "534F3FF4" ) -- staff_lunarplant
+TheInventory:AddScrapbook6Key( "FF7A976" ) -- staff_tornado
+TheInventory:AddScrapbook6Key( "36458456" ) -- stafflight
+TheInventory:AddScrapbook13Key( "ADECA88D" ) -- stagehand
+TheInventory:AddScrapbook9Key( "2B529ED9" ) -- stageusher
+TheInventory:AddScrapbook15Key( "33EEBEFF" ) -- stalagmite
+TheInventory:AddScrapbook12Key( "D3EAD8AC" ) -- stalker
+TheInventory:AddScrapbook5Key( "F77F69B5" ) -- stalker_atrium
+TheInventory:AddScrapbook0Key( "10C53670" ) -- stalker_forest
+TheInventory:AddScrapbook2Key( "E6E4B4B2" ) -- stash_map
+TheInventory:AddScrapbook8Key( "6DB347B8" ) -- statue_marble
+TheInventory:AddScrapbook1Key( "4F19B3A1" ) -- statue_marble_muse
+TheInventory:AddScrapbook15Key( "D0D8F0CF" ) -- statue_marble_pawn
+TheInventory:AddScrapbook3Key( "DC8D21B3" ) -- statueglommer
+TheInventory:AddScrapbook11Key( "2C507DBB" ) -- statueharp
+TheInventory:AddScrapbook14Key( "1E508F2E" ) -- statuemaxwell
+TheInventory:AddScrapbook0Key( "76824DA0" ) -- steelwool
+TheInventory:AddScrapbook10Key( "C4F38A8A" ) -- steeringwheel
+TheInventory:AddScrapbook8Key( "EEAC6168" ) -- steeringwheel_item
+TheInventory:AddScrapbook14Key( "4E63342E" ) -- stinger
+TheInventory:AddScrapbook4Key( "BCFCA634" ) -- strawhat
+TheInventory:AddScrapbook9Key( "22B6BFB9" ) -- stuffedeggplant
+TheInventory:AddScrapbook14Key( "3CB6DAEE" ) -- stuffing
+TheInventory:AddScrapbook13Key( "FF3696ED" ) -- succulent_picked
+TheInventory:AddScrapbook14Key( "A6298B3E" ) -- succulent_plant
+TheInventory:AddScrapbook11Key( "B223392B" ) -- succulent_potted
+TheInventory:AddScrapbook9Key( "641EAE99" ) -- sunkenchest
+TheInventory:AddScrapbook8Key( "2FA30738" ) -- supertacklecontainer
+TheInventory:AddScrapbook13Key( "F2A26AD" ) -- surfnturf
+TheInventory:AddScrapbook1Key( "47611D71" ) -- sweatervest
+TheInventory:AddScrapbook7Key( "9CC615D7" ) -- sweetpotato
+TheInventory:AddScrapbook0Key( "A9464640" ) -- sweettea
+TheInventory:AddScrapbook7Key( "4D26977" ) -- sword_lunarplant
+TheInventory:AddScrapbook1Key( "B0E44A81" ) -- table_winters_feast
+TheInventory:AddScrapbook3Key( "427CE073" ) -- tacklecontainer
+TheInventory:AddScrapbook10Key( "D988D9FA" ) -- tacklesketch
+TheInventory:AddScrapbook6Key( "1D80F2E6" ) -- tacklestation
+TheInventory:AddScrapbook12Key( "9AD06BCC" ) -- taffy
+TheInventory:AddScrapbook6Key( "107C65E6" ) -- tallbird
+TheInventory:AddScrapbook15Key( "3C221E3F" ) -- tallbirdegg
+TheInventory:AddScrapbook7Key( "75AC85A7" ) -- tallbirdegg_cooked
+TheInventory:AddScrapbook9Key( "9572AD79" ) -- tallbirdegg_cracked
+TheInventory:AddScrapbook14Key( "8C71AC9E" ) -- tallbirdnest
+TheInventory:AddScrapbook11Key( "9B09B67B" ) -- talleggs
+TheInventory:AddScrapbook9Key( "34921AD9" ) -- tamales
+TheInventory:AddScrapbook3Key( "55CA3533" ) -- teenbird
+TheInventory:AddScrapbook11Key( "89C20B1B" ) -- telebase
+TheInventory:AddScrapbook6Key( "DFB37276" ) -- telestaff
+TheInventory:AddScrapbook7Key( "4740CFF7" ) -- tent
+TheInventory:AddScrapbook2Key( "8362AB32" ) -- tentacle
+TheInventory:AddScrapbook7Key( "53090477" ) -- tentacle_pillar
+TheInventory:AddScrapbook4Key( "62A2A0B4" ) -- tentacle_pillar_arm
+TheInventory:AddScrapbook8Key( "2AEE1328" ) -- tentacle_pillar_hole
+TheInventory:AddScrapbook4Key( "83078AF4" ) -- tentaclespike
+TheInventory:AddScrapbook15Key( "8604EA3F" ) -- tentaclespots
+TheInventory:AddScrapbook15Key( "E54929DF" ) -- terrarium
+TheInventory:AddScrapbook2Key( "DF8F9282" ) -- terrariumchest
+TheInventory:AddScrapbook1Key( "7FB0EF81" ) -- terrorbeak
+TheInventory:AddScrapbook1Key( "21BF03B1" ) -- thulecite
+TheInventory:AddScrapbook3Key( "C6739A73" ) -- thulecite_pieces
+TheInventory:AddScrapbook3Key( "8CF9D7E3" ) -- thurible
+TheInventory:AddScrapbook2Key( "90DDB862" ) -- tillweed
+TheInventory:AddScrapbook11Key( "202DEFCB" ) -- tillweedsalve
+TheInventory:AddScrapbook13Key( "FB4D9E6D" ) -- toadstool
+TheInventory:AddScrapbook0Key( "D1BC9F80" ) -- toadstool_cap
+TheInventory:AddScrapbook10Key( "7F38202A" ) -- tomato
+TheInventory:AddScrapbook12Key( "7C066EFC" ) -- tomato_cooked
+TheInventory:AddScrapbook10Key( "97236C7A" ) -- tomato_oversized
+TheInventory:AddScrapbook13Key( "F70A974D" ) -- tomato_seeds
+TheInventory:AddScrapbook6Key( "E2BFA46" ) -- tophat
+TheInventory:AddScrapbook12Key( "2C158F7C" ) -- torch
+TheInventory:AddScrapbook11Key( "2C4D5E6B" ) -- tourtiere
+TheInventory:AddScrapbook14Key( "CF9652FE" ) -- townportal
+TheInventory:AddScrapbook15Key( "338F366F" ) -- townportaltalisman
+TheInventory:AddScrapbook6Key( "5CDC5516" ) -- trailmix
+TheInventory:AddScrapbook5Key( "1EEE0485" ) -- transistor
+TheInventory:AddScrapbook13Key( "4D9A964D" ) -- trap
+TheInventory:AddScrapbook13Key( "4A1538AD" ) -- trap_bramble
+TheInventory:AddScrapbook12Key( "B5909C" ) -- trap_starfish
+TheInventory:AddScrapbook6Key( "68370BD6" ) -- trap_teeth
+TheInventory:AddScrapbook2Key( "7C11AF2" ) -- treasurechest
+TheInventory:AddScrapbook14Key( "C3116BE" ) -- treegrowthsolution
+TheInventory:AddScrapbook2Key( "25FE1BF2" ) -- trident
+TheInventory:AddScrapbook9Key( "9CB30A49" ) -- trinket_1
+TheInventory:AddScrapbook7Key( "9A588827" ) -- trinket_10
+TheInventory:AddScrapbook8Key( "9A588828" ) -- trinket_11
+TheInventory:AddScrapbook9Key( "9A588829" ) -- trinket_12
+TheInventory:AddScrapbook10Key( "9A58882A" ) -- trinket_13
+TheInventory:AddScrapbook11Key( "9A58882B" ) -- trinket_14
+TheInventory:AddScrapbook12Key( "9A58882C" ) -- trinket_15
+TheInventory:AddScrapbook13Key( "9A58882D" ) -- trinket_16
+TheInventory:AddScrapbook14Key( "9A58882E" ) -- trinket_17
+TheInventory:AddScrapbook15Key( "9A58882F" ) -- trinket_18
+TheInventory:AddScrapbook0Key( "9A588830" ) -- trinket_19
+TheInventory:AddScrapbook10Key( "9CB30A4A" ) -- trinket_2
+TheInventory:AddScrapbook6Key( "9A598866" ) -- trinket_20
+TheInventory:AddScrapbook7Key( "9A598867" ) -- trinket_21
+TheInventory:AddScrapbook8Key( "9A598868" ) -- trinket_22
+TheInventory:AddScrapbook9Key( "9A598869" ) -- trinket_23
+TheInventory:AddScrapbook10Key( "9A59886A" ) -- trinket_24
+TheInventory:AddScrapbook11Key( "9A59886B" ) -- trinket_25
+TheInventory:AddScrapbook12Key( "9A59886C" ) -- trinket_26
+TheInventory:AddScrapbook13Key( "9A59886D" ) -- trinket_27
+TheInventory:AddScrapbook14Key( "9A59886E" ) -- trinket_28
+TheInventory:AddScrapbook15Key( "9A59886F" ) -- trinket_29
+TheInventory:AddScrapbook11Key( "9CB30A4B" ) -- trinket_3
+TheInventory:AddScrapbook5Key( "9A5A88A5" ) -- trinket_30
+TheInventory:AddScrapbook6Key( "9A5A88A6" ) -- trinket_31
+TheInventory:AddScrapbook7Key( "9A5A88A7" ) -- trinket_32
+TheInventory:AddScrapbook8Key( "9A5A88A8" ) -- trinket_33
+TheInventory:AddScrapbook9Key( "9A5A88A9" ) -- trinket_34
+TheInventory:AddScrapbook10Key( "9A5A88AA" ) -- trinket_35
+TheInventory:AddScrapbook11Key( "9A5A88AB" ) -- trinket_36
+TheInventory:AddScrapbook12Key( "9A5A88AC" ) -- trinket_37
+TheInventory:AddScrapbook13Key( "9A5A88AD" ) -- trinket_38
+TheInventory:AddScrapbook14Key( "9A5A88AE" ) -- trinket_39
+TheInventory:AddScrapbook12Key( "9CB30A4C" ) -- trinket_4
+TheInventory:AddScrapbook4Key( "9A5B88E4" ) -- trinket_40
+TheInventory:AddScrapbook5Key( "9A5B88E5" ) -- trinket_41
+TheInventory:AddScrapbook6Key( "9A5B88E6" ) -- trinket_42
+TheInventory:AddScrapbook7Key( "9A5B88E7" ) -- trinket_43
+TheInventory:AddScrapbook8Key( "9A5B88E8" ) -- trinket_44
+TheInventory:AddScrapbook9Key( "9A5B88E9" ) -- trinket_45
+TheInventory:AddScrapbook10Key( "9A5B88EA" ) -- trinket_46
+TheInventory:AddScrapbook13Key( "9CB30A4D" ) -- trinket_5
+TheInventory:AddScrapbook14Key( "9CB30A4E" ) -- trinket_6
+TheInventory:AddScrapbook15Key( "9CB30A4F" ) -- trinket_7
+TheInventory:AddScrapbook0Key( "9CB30A50" ) -- trinket_8
+TheInventory:AddScrapbook1Key( "9CB30A51" ) -- trinket_9
+TheInventory:AddScrapbook13Key( "3CCEF4BD" ) -- trophyscale_fish
+TheInventory:AddScrapbook14Key( "4D628C1E" ) -- trophyscale_oversizedveggies
+TheInventory:AddScrapbook2Key( "6CC51DB2" ) -- trunk_cooked
+TheInventory:AddScrapbook10Key( "B03E93A" ) -- trunk_summer
+TheInventory:AddScrapbook0Key( "669A3770" ) -- trunk_winter
+TheInventory:AddScrapbook10Key( "539E9E8A" ) -- trunkvest_summer
+TheInventory:AddScrapbook0Key( "AF34ECC0" ) -- trunkvest_winter
+TheInventory:AddScrapbook12Key( "3AD2989C" ) -- tumbleweed
+TheInventory:AddScrapbook8Key( "D2294618" ) -- turf_archive
+TheInventory:AddScrapbook11Key( "1372AB6B" ) -- turf_beard_rug
+TheInventory:AddScrapbook7Key( "1DAA5AB7" ) -- turf_carpetfloor
+TheInventory:AddScrapbook11Key( "A7A3533B" ) -- turf_carpetfloor2
+TheInventory:AddScrapbook7Key( "C6A141D7" ) -- turf_cave
+TheInventory:AddScrapbook1Key( "E8F381A1" ) -- turf_checkerfloor
+TheInventory:AddScrapbook11Key( "9C885B2B" ) -- turf_deciduous
+TheInventory:AddScrapbook6Key( "A5F511E6" ) -- turf_desertdirt
+TheInventory:AddScrapbook6Key( "ACC09476" ) -- turf_dragonfly
+TheInventory:AddScrapbook7Key( "31B9F5E7" ) -- turf_forest
+TheInventory:AddScrapbook0Key( "10270C70" ) -- turf_fungus
+TheInventory:AddScrapbook4Key( "9459E074" ) -- turf_fungus_green
+TheInventory:AddScrapbook0Key( "C3C876F0" ) -- turf_fungus_moon
+TheInventory:AddScrapbook2Key( "D1941402" ) -- turf_fungus_red
+TheInventory:AddScrapbook12Key( "3FE24AEC" ) -- turf_grass
+TheInventory:AddScrapbook9Key( "C8D7AFC9" ) -- turf_marsh
+TheInventory:AddScrapbook6Key( "82BE8916" ) -- turf_meteor
+TheInventory:AddScrapbook9Key( "EAF40A69" ) -- turf_monkey_ground
+TheInventory:AddScrapbook5Key( "48FBAC45" ) -- turf_mosaic_blue
+TheInventory:AddScrapbook10Key( "3482192A" ) -- turf_mosaic_grey
+TheInventory:AddScrapbook6Key( "99D55266" ) -- turf_mosaic_red
+TheInventory:AddScrapbook2Key( "2FBDE1F2" ) -- turf_mud
+TheInventory:AddScrapbook11Key( "2E75004B" ) -- turf_pebblebeach
+TheInventory:AddScrapbook10Key( "875750EA" ) -- turf_road
+TheInventory:AddScrapbook10Key( "A06A0ACA" ) -- turf_rocky
+TheInventory:AddScrapbook0Key( "8DFF1C60" ) -- turf_ruinsbrick
+TheInventory:AddScrapbook12Key( "DE9B400C" ) -- turf_ruinsbrick_glow
+TheInventory:AddScrapbook4Key( "B35CA2C4" ) -- turf_ruinstiles
+TheInventory:AddScrapbook8Key( "31BB36A8" ) -- turf_ruinstiles_glow
+TheInventory:AddScrapbook3Key( "9AAC4443" ) -- turf_ruinstrim
+TheInventory:AddScrapbook9Key( "F65913E9" ) -- turf_ruinstrim_glow
+TheInventory:AddScrapbook14Key( "2F85395E" ) -- turf_savanna
+TheInventory:AddScrapbook13Key( "526AD61D" ) -- turf_shellbeach
+TheInventory:AddScrapbook13Key( "7BB76C5D" ) -- turf_sinkhole
+TheInventory:AddScrapbook3Key( "59D5DD3" ) -- turf_underrock
+TheInventory:AddScrapbook5Key( "265D1455" ) -- turf_woodfloor
+TheInventory:AddScrapbook13Key( "79720FDD" ) -- turfcraftingstation
+TheInventory:AddScrapbook0Key( "52C59920" ) -- turkeydinner
+TheInventory:AddScrapbook1Key( "B0A79A1" ) -- twiggy_nut
+TheInventory:AddScrapbook9Key( "3E7C9B79" ) -- twiggy_tall
+TheInventory:AddScrapbook2Key( "9BE18AF2" ) -- twigs
+TheInventory:AddScrapbook14Key( "8804D9BE" ) -- twinofterror1
+TheInventory:AddScrapbook15Key( "8804D9BF" ) -- twinofterror2
+TheInventory:AddScrapbook4Key( "4685284" ) -- umbrella
+TheInventory:AddScrapbook10Key( "3920172A" ) -- unagi
+TheInventory:AddScrapbook2Key( "DCB939D2" ) -- veggieomlet
+TheInventory:AddScrapbook6Key( "F1A73776" ) -- vegstinger
+TheInventory:AddScrapbook6Key( "9FE119A6" ) -- voidcloth
+TheInventory:AddScrapbook1Key( "3D3AA221" ) -- voidcloth_scythe
+TheInventory:AddScrapbook13Key( "AC8EF0BD" ) -- voidcloth_umbrella
+TheInventory:AddScrapbook5Key( "A2446795" ) -- voidclothhat
+TheInventory:AddScrapbook2Key( "208B0122" ) -- voltgoatjelly
+TheInventory:AddScrapbook0Key( "C43E6110" ) -- waffles
+TheInventory:AddScrapbook6Key( "3D7A4986" ) -- wagstaff_tool_1
+TheInventory:AddScrapbook7Key( "3D7A4987" ) -- wagstaff_tool_2
+TheInventory:AddScrapbook8Key( "3D7A4988" ) -- wagstaff_tool_3
+TheInventory:AddScrapbook9Key( "3D7A4989" ) -- wagstaff_tool_4
+TheInventory:AddScrapbook10Key( "3D7A498A" ) -- wagstaff_tool_5
+TheInventory:AddScrapbook11Key( "6D8DF54B" ) -- wall_hay
+TheInventory:AddScrapbook7Key( "DE4BC7E7" ) -- wall_hay_item
+TheInventory:AddScrapbook11Key( "816018FB" ) -- wall_moonrock
+TheInventory:AddScrapbook7Key( "A0C84037" ) -- wall_moonrock_item
+TheInventory:AddScrapbook6Key( "83232836" ) -- wall_ruins
+TheInventory:AddScrapbook12Key( "A8B25ABC" ) -- wall_ruins_item
+TheInventory:AddScrapbook0Key( "9B7D1370" ) -- wall_stone
+TheInventory:AddScrapbook2Key( "22EC3802" ) -- wall_stone_item
+TheInventory:AddScrapbook2Key( "ABFB6FA2" ) -- wall_wood
+TheInventory:AddScrapbook0Key( "378BDA50" ) -- wall_wood_item
+TheInventory:AddScrapbook14Key( "E4A948EE" ) -- walrus
+TheInventory:AddScrapbook2Key( "CA3E16F2" ) -- walrus_camp
+TheInventory:AddScrapbook10Key( "EB112B2A" ) -- walrus_tusk
+TheInventory:AddScrapbook13Key( "49BA2E4D" ) -- walrushat
+TheInventory:AddScrapbook12Key( "8C62FFC" ) -- walterhat
+TheInventory:AddScrapbook12Key( "4AAA2F9C" ) -- wardrobe
+TheInventory:AddScrapbook15Key( "D0E1051F" ) -- warg
+TheInventory:AddScrapbook12Key( "21D9A5DC" ) -- warglet
+TheInventory:AddScrapbook7Key( "BBC68557" ) -- wasphive
+TheInventory:AddScrapbook8Key( "1D005698" ) -- waterballoon
+TheInventory:AddScrapbook5Key( "70CE5865" ) -- wateringcan
+TheInventory:AddScrapbook12Key( "2B3FB01C" ) -- watermelon
+TheInventory:AddScrapbook10Key( "B543268A" ) -- watermelon_cooked
+TheInventory:AddScrapbook12Key( "38E7BF6C" ) -- watermelon_oversized
+TheInventory:AddScrapbook15Key( "98611C3F" ) -- watermelon_seeds
+TheInventory:AddScrapbook15Key( "6DDA899F" ) -- watermelonhat
+TheInventory:AddScrapbook15Key( "C1E1CC4F" ) -- watermelonicle
+TheInventory:AddScrapbook4Key( "3748D794" ) -- waterplant
+TheInventory:AddScrapbook13Key( "3575200D" ) -- waterplant_bomb
+TheInventory:AddScrapbook13Key( "D5D0D5AD" ) -- waterplant_planter
+TheInventory:AddScrapbook15Key( "89E9EF5F" ) -- waterpump
+TheInventory:AddScrapbook4Key( "D1E35B14" ) -- watertree_pillar
+TheInventory:AddScrapbook12Key( "C463338C" ) -- watertree_root
+TheInventory:AddScrapbook13Key( "87CF8CFD" ) -- wathgrithrhat
+TheInventory:AddScrapbook14Key( "E8561EBE" ) -- waxpaper
+TheInventory:AddScrapbook11Key( "A54685FB" ) -- waxwelljournal
+TheInventory:AddScrapbook8Key( "9972AE98" ) -- weed_firenettle
+TheInventory:AddScrapbook9Key( "47D267B9" ) -- weed_forgetmelots
+TheInventory:AddScrapbook10Key( "C33233A" ) -- weed_ivy
+TheInventory:AddScrapbook4Key( "E6BE9014" ) -- weed_tillweed
+TheInventory:AddScrapbook0Key( "C04C6950" ) -- wereitem_beaver
+TheInventory:AddScrapbook14Key( "18795A6E" ) -- wereitem_goose
+TheInventory:AddScrapbook4Key( "B0039474" ) -- wereitem_moose
+TheInventory:AddScrapbook15Key( "3E819CF" ) -- wetgoop
+TheInventory:AddScrapbook5Key( "76240B35" ) -- wetpouch
+TheInventory:AddScrapbook8Key( "D44A6F78" ) -- whip
+TheInventory:AddScrapbook1Key( "DEB98A01" ) -- winch
+TheInventory:AddScrapbook13Key( "B38AC5ED" ) -- winona_battery_high
+TheInventory:AddScrapbook9Key( "6C50C8C9" ) -- winona_battery_low
+TheInventory:AddScrapbook1Key( "46B2D5F1" ) -- winona_catapult
+TheInventory:AddScrapbook11Key( "3187EABB" ) -- winona_spotlight
+TheInventory:AddScrapbook9Key( "6AAFAB59" ) -- winter_food1
+TheInventory:AddScrapbook10Key( "6AAFAB5A" ) -- winter_food2
+TheInventory:AddScrapbook11Key( "6AAFAB5B" ) -- winter_food3
+TheInventory:AddScrapbook12Key( "6AAFAB5C" ) -- winter_food4
+TheInventory:AddScrapbook13Key( "6AAFAB5D" ) -- winter_food5
+TheInventory:AddScrapbook14Key( "6AAFAB5E" ) -- winter_food6
+TheInventory:AddScrapbook15Key( "6AAFAB5F" ) -- winter_food7
+TheInventory:AddScrapbook0Key( "6AAFAB60" ) -- winter_food8
+TheInventory:AddScrapbook1Key( "6AAFAB61" ) -- winter_food9
+TheInventory:AddScrapbook2Key( "7F288DA2" ) -- winter_ornament_boss_antlion
+TheInventory:AddScrapbook15Key( "995BC6DF" ) -- winter_ornament_boss_bearger
+TheInventory:AddScrapbook9Key( "248C7E89" ) -- winter_ornament_boss_beequeen
+TheInventory:AddScrapbook1Key( "179CC4B1" ) -- winter_ornament_boss_celestialchampion1
+TheInventory:AddScrapbook2Key( "179CC4B2" ) -- winter_ornament_boss_celestialchampion2
+TheInventory:AddScrapbook3Key( "179CC4B3" ) -- winter_ornament_boss_celestialchampion3
+TheInventory:AddScrapbook4Key( "179CC4B4" ) -- winter_ornament_boss_celestialchampion4
+TheInventory:AddScrapbook8Key( "84FE4F88" ) -- winter_ornament_boss_crabking
+TheInventory:AddScrapbook14Key( "B4E8029E" ) -- winter_ornament_boss_crabkingpearl
+TheInventory:AddScrapbook10Key( "BD7BA41A" ) -- winter_ornament_boss_deerclops
+TheInventory:AddScrapbook15Key( "407D4C1F" ) -- winter_ornament_boss_dragonfly
+TheInventory:AddScrapbook6Key( "4B2C7576" ) -- winter_ornament_boss_eyeofterror1
+TheInventory:AddScrapbook7Key( "4B2C7577" ) -- winter_ornament_boss_eyeofterror2
+TheInventory:AddScrapbook7Key( "2C571F67" ) -- winter_ornament_boss_fuelweaver
+TheInventory:AddScrapbook12Key( "4FE70D5C" ) -- winter_ornament_boss_hermithouse
+TheInventory:AddScrapbook13Key( "E71EE39D" ) -- winter_ornament_boss_klaus
+TheInventory:AddScrapbook10Key( "5CFB955A" ) -- winter_ornament_boss_krampus
+TheInventory:AddScrapbook11Key( "C61ACB7B" ) -- winter_ornament_boss_malbatross
+TheInventory:AddScrapbook8Key( "8E427E28" ) -- winter_ornament_boss_minotaur
+TheInventory:AddScrapbook14Key( "16EEC5E" ) -- winter_ornament_boss_moose
+TheInventory:AddScrapbook9Key( "AB841389" ) -- winter_ornament_boss_noeyeblue
+TheInventory:AddScrapbook2Key( "646ADA22" ) -- winter_ornament_boss_noeyered
+TheInventory:AddScrapbook5Key( "F50A08A5" ) -- winter_ornament_boss_pearl
+TheInventory:AddScrapbook12Key( "71AADFEC" ) -- winter_ornament_boss_toadstool
+TheInventory:AddScrapbook8Key( "F5801E68" ) -- winter_ornament_boss_toadstool_misery
+TheInventory:AddScrapbook4Key( "B007CB24" ) -- winter_ornament_boss_wagstaff
+TheInventory:AddScrapbook9Key( "B3B14D39" ) -- winter_ornament_fancy1
+TheInventory:AddScrapbook10Key( "B3B14D3A" ) -- winter_ornament_fancy2
+TheInventory:AddScrapbook11Key( "B3B14D3B" ) -- winter_ornament_fancy3
+TheInventory:AddScrapbook12Key( "B3B14D3C" ) -- winter_ornament_fancy4
+TheInventory:AddScrapbook13Key( "B3B14D3D" ) -- winter_ornament_fancy5
+TheInventory:AddScrapbook14Key( "B3B14D3E" ) -- winter_ornament_fancy6
+TheInventory:AddScrapbook15Key( "B3B14D3F" ) -- winter_ornament_fancy7
+TheInventory:AddScrapbook0Key( "B3B14D40" ) -- winter_ornament_fancy8
+TheInventory:AddScrapbook15Key( "7CFEC9EF" ) -- winter_ornament_festivalevents1
+TheInventory:AddScrapbook0Key( "7CFEC9F0" ) -- winter_ornament_festivalevents2
+TheInventory:AddScrapbook1Key( "7CFEC9F1" ) -- winter_ornament_festivalevents3
+TheInventory:AddScrapbook2Key( "7CFEC9F2" ) -- winter_ornament_festivalevents4
+TheInventory:AddScrapbook3Key( "7CFEC9F3" ) -- winter_ornament_festivalevents5
+TheInventory:AddScrapbook12Key( "14E023CC" ) -- winter_ornament_light1
+TheInventory:AddScrapbook13Key( "14E023CD" ) -- winter_ornament_light2
+TheInventory:AddScrapbook14Key( "14E023CE" ) -- winter_ornament_light3
+TheInventory:AddScrapbook15Key( "14E023CF" ) -- winter_ornament_light4
+TheInventory:AddScrapbook0Key( "14E023D0" ) -- winter_ornament_light5
+TheInventory:AddScrapbook1Key( "14E023D1" ) -- winter_ornament_light6
+TheInventory:AddScrapbook2Key( "14E023D2" ) -- winter_ornament_light7
+TheInventory:AddScrapbook3Key( "14E023D3" ) -- winter_ornament_light8
+TheInventory:AddScrapbook8Key( "22A5EF58" ) -- winter_ornament_plain1
+TheInventory:AddScrapbook8Key( "762DE6D8" ) -- winter_ornament_plain10
+TheInventory:AddScrapbook9Key( "762DE6D9" ) -- winter_ornament_plain11
+TheInventory:AddScrapbook10Key( "762DE6DA" ) -- winter_ornament_plain12
+TheInventory:AddScrapbook9Key( "22A5EF59" ) -- winter_ornament_plain2
+TheInventory:AddScrapbook10Key( "22A5EF5A" ) -- winter_ornament_plain3
+TheInventory:AddScrapbook11Key( "22A5EF5B" ) -- winter_ornament_plain4
+TheInventory:AddScrapbook12Key( "22A5EF5C" ) -- winter_ornament_plain5
+TheInventory:AddScrapbook13Key( "22A5EF5D" ) -- winter_ornament_plain6
+TheInventory:AddScrapbook14Key( "22A5EF5E" ) -- winter_ornament_plain7
+TheInventory:AddScrapbook15Key( "22A5EF5F" ) -- winter_ornament_plain8
+TheInventory:AddScrapbook0Key( "22A5EF60" ) -- winter_ornament_plain9
+TheInventory:AddScrapbook6Key( "CDA99AF6" ) -- winterhat
+TheInventory:AddScrapbook15Key( "DA1F7EDF" ) -- winterometer
+TheInventory:AddScrapbook11Key( "793ECE0B" ) -- wintersfeastfuel
+TheInventory:AddScrapbook5Key( "1C7A3445" ) -- wintersfeastoven
+TheInventory:AddScrapbook6Key( "2656B2C6" ) -- wobster_den
+TheInventory:AddScrapbook6Key( "7F9756D6" ) -- wobster_moonglass_land
+TheInventory:AddScrapbook13Key( "A033C64D" ) -- wobster_sheller_dead
+TheInventory:AddScrapbook9Key( "66F89619" ) -- wobster_sheller_dead_cooked
+TheInventory:AddScrapbook4Key( "127F1174" ) -- wobster_sheller_land
+TheInventory:AddScrapbook1Key( "5A131A91" ) -- wobybig
+TheInventory:AddScrapbook3Key( "D7C5DE33" ) -- worm
+TheInventory:AddScrapbook3Key( "93186CB3" ) -- wormhole
+TheInventory:AddScrapbook3Key( "95CB0B43" ) -- wormlight
+TheInventory:AddScrapbook2Key( "4E3893E2" ) -- wormlight_lesser
+TheInventory:AddScrapbook15Key( "DDBAA98F" ) -- wormlight_plant
+TheInventory:AddScrapbook15Key( "EF0C40F" ) -- wortox_soul
+TheInventory:AddScrapbook5Key( "F93860E5" ) -- wx78_moduleremover
+TheInventory:AddScrapbook1Key( "F08FD851" ) -- wx78_scanner_item
+TheInventory:AddScrapbook1Key( "9602FE51" ) -- wx78module_bee
+TheInventory:AddScrapbook5Key( "1C8803D5" ) -- wx78module_cold
+TheInventory:AddScrapbook1Key( "3279E1" ) -- wx78module_heat
+TheInventory:AddScrapbook5Key( "530217E5" ) -- wx78module_light
+TheInventory:AddScrapbook15Key( "DF40482F" ) -- wx78module_maxhealth
+TheInventory:AddScrapbook3Key( "3900C3C3" ) -- wx78module_maxhealth2
+TheInventory:AddScrapbook6Key( "785980C6" ) -- wx78module_maxhunger
+TheInventory:AddScrapbook11Key( "1ECCB0EB" ) -- wx78module_maxhunger1
+TheInventory:AddScrapbook1Key( "1ED56521" ) -- wx78module_maxsanity
+TheInventory:AddScrapbook0Key( "FBA4E350" ) -- wx78module_maxsanity1
+TheInventory:AddScrapbook5Key( "48AEFCE5" ) -- wx78module_movespeed
+TheInventory:AddScrapbook13Key( "DFF53C8D" ) -- wx78module_movespeed2
+TheInventory:AddScrapbook4Key( "CB29FA14" ) -- wx78module_music
+TheInventory:AddScrapbook15Key( "1C23934F" ) -- wx78module_nightvision
+TheInventory:AddScrapbook2Key( "4144342" ) -- wx78module_taser
+TheInventory:AddScrapbook6Key( "9A0ED246" ) -- yellowamulet
+TheInventory:AddScrapbook11Key( "1941243B" ) -- yellowgem
+TheInventory:AddScrapbook12Key( "B7D018DC" ) -- yellowmooneye
+TheInventory:AddScrapbook12Key( "4374C56C" ) -- yellowstaff
+
+-- These are not hooked up yet mind the mess.
+--TheInventory:AddItemIDPairing(101, "amulet_red_heart")
+--TheInventory:AddItemIDPairing(102, "amulet_red_occulteye")
+--TheInventory:AddItemIDPairing(103, "armor_grass_cloak")
+--TheInventory:AddItemIDPairing(104, "armor_grass_woven")
+--TheInventory:AddItemIDPairing(105, "armor_marble_chainmail")
+--TheInventory:AddItemIDPairing(106, "armor_marble_rockabs")
+--TheInventory:AddItemIDPairing(107, "armor_ruins_arcane")
+--TheInventory:AddItemIDPairing(108, "armor_ruins_bulky")
+--TheInventory:AddItemIDPairing(109, "armor_ruins_leaf")
+--TheInventory:AddItemIDPairing(110, "armor_ruins_tusk")
+--TheInventory:AddItemIDPairing(111, "armor_wood_fangedcollar")
+--TheInventory:AddItemIDPairing(112, "armor_wood_haramaki")
+--TheInventory:AddItemIDPairing(113, "armor_wood_lamellar")
+--TheInventory:AddItemIDPairing(114, "arrowsign_post_circus")
+--TheInventory:AddItemIDPairing(115, "arrowsign_post_factory")
+--TheInventory:AddItemIDPairing(116, "axe_victorian")
+--TheInventory:AddItemIDPairing(117, "backpack_crab")
+--TheInventory:AddItemIDPairing(118, "backpack_deerclops")
+--TheInventory:AddItemIDPairing(119, "backpack_glommer")
+--TheInventory:AddItemIDPairing(120, "backpack_hound")
+--TheInventory:AddItemIDPairing(121, "backpack_mandrake")
+--TheInventory:AddItemIDPairing(122, "backpack_mushy")
+--TheInventory:AddItemIDPairing(123, "batbat_scythe")
+--TheInventory:AddItemIDPairing(124, "beefalohat_pigking")
+--TheInventory:AddItemIDPairing(125, "beemine_jamjar")
+--TheInventory:AddItemIDPairing(126, "bernie_cat")
+--TheInventory:AddItemIDPairing(127, "birdcage_circus")
+--TheInventory:AddItemIDPairing(128, "birdcage_curly")
+--TheInventory:AddItemIDPairing(129, "birdcage_pirate")
+--TheInventory:AddItemIDPairing(130, "birdcage_romantic")
+--TheInventory:AddItemIDPairing(131, "body_dancer_dragon")
+--TheInventory:AddItemIDPairing(132, "body_dancer_lion")
+--TheInventory:AddItemIDPairing(133, "body_pj_silk_teal_jade")
+--TheInventory:AddItemIDPairing(134, "body_silkbrocade_coat_green_laurel")
+--TheInventory:AddItemIDPairing(135, "body_wathgrithr_gladiator")
+--TheInventory:AddItemIDPairing(136, "body_wathgrithr_magma")
+--TheInventory:AddItemIDPairing(137, "body_wathgrithr_nature")
+--TheInventory:AddItemIDPairing(138, "body_wathgrithr_victorian")
+--TheInventory:AddItemIDPairing(139, "body_wathgrithr_wrestler")
+--TheInventory:AddItemIDPairing(140, "body_wathgrithr_yule")
+--TheInventory:AddItemIDPairing(141, "body_waxwell_gladiator")
+--TheInventory:AddItemIDPairing(142, "body_waxwell_magma")
+--TheInventory:AddItemIDPairing(143, "body_waxwell_nature")
+--TheInventory:AddItemIDPairing(144, "body_waxwell_victorian")
+--TheInventory:AddItemIDPairing(145, "body_waxwell_yule")
+--TheInventory:AddItemIDPairing(146, "body_webber_gladiator")
+--TheInventory:AddItemIDPairing(147, "body_webber_ice")
+--TheInventory:AddItemIDPairing(148, "body_webber_magma")
+--TheInventory:AddItemIDPairing(149, "body_webber_punk")
+--TheInventory:AddItemIDPairing(150, "body_webber_victorian")
+--TheInventory:AddItemIDPairing(151, "body_webber_wrestler")
+--TheInventory:AddItemIDPairing(152, "body_wendy_creepy")
+--TheInventory:AddItemIDPairing(153, "body_wendy_gladiator")
+--TheInventory:AddItemIDPairing(154, "body_wendy_ice")
+--TheInventory:AddItemIDPairing(155, "body_wendy_magma")
+--TheInventory:AddItemIDPairing(156, "body_wendy_victorian")
+--TheInventory:AddItemIDPairing(157, "body_wes_clown")
+--TheInventory:AddItemIDPairing(158, "body_wes_gladiator")
+--TheInventory:AddItemIDPairing(159, "body_wes_magma")
+--TheInventory:AddItemIDPairing(160, "body_wes_nature")
+--TheInventory:AddItemIDPairing(161, "body_wes_victorian")
+--TheInventory:AddItemIDPairing(162, "body_wes_wrestler")
+--TheInventory:AddItemIDPairing(163, "body_wes_yule")
+--TheInventory:AddItemIDPairing(164, "body_wickerbottom_gladiator")
+--TheInventory:AddItemIDPairing(165, "body_wickerbottom_ice")
+--TheInventory:AddItemIDPairing(166, "body_wickerbottom_magma")
+--TheInventory:AddItemIDPairing(167, "body_wickerbottom_victorian")
+--TheInventory:AddItemIDPairing(168, "body_willow_dowdy")
+--TheInventory:AddItemIDPairing(169, "body_willow_formalp")
+--TheInventory:AddItemIDPairing(170, "body_willow_gladiator")
+--TheInventory:AddItemIDPairing(171, "body_willow_haunteddoll")
+--TheInventory:AddItemIDPairing(172, "body_willow_ice")
+--TheInventory:AddItemIDPairing(173, "body_willow_magma")
+--TheInventory:AddItemIDPairing(174, "body_willow_rosep")
+--TheInventory:AddItemIDPairing(175, "body_willow_shadowp")
+--TheInventory:AddItemIDPairing(176, "body_willow_survivorp")
+--TheInventory:AddItemIDPairing(177, "body_willow_victorian")
+--TheInventory:AddItemIDPairing(178, "body_wilson_gladiator")
+--TheInventory:AddItemIDPairing(179, "body_wilson_ice")
+--TheInventory:AddItemIDPairing(180, "body_wilson_madscientist")
+--TheInventory:AddItemIDPairing(181, "body_wilson_magma")
+--TheInventory:AddItemIDPairing(182, "body_wilson_victorian")
+--TheInventory:AddItemIDPairing(183, "body_winona_factory")
+--TheInventory:AddItemIDPairing(184, "body_winona_formalp")
+--TheInventory:AddItemIDPairing(185, "body_winona_gladiator")
+--TheInventory:AddItemIDPairing(186, "body_winona_magma")
+--TheInventory:AddItemIDPairing(187, "body_winona_nature")
+--TheInventory:AddItemIDPairing(188, "body_winona_rosep")
+--TheInventory:AddItemIDPairing(189, "body_winona_shadowp")
+--TheInventory:AddItemIDPairing(190, "body_winona_survivorp")
+--TheInventory:AddItemIDPairing(191, "body_winona_victorian")
+--TheInventory:AddItemIDPairing(192, "body_winona_wrestler")
+--TheInventory:AddItemIDPairing(193, "body_winona_yule")
+--TheInventory:AddItemIDPairing(194, "body_wolfgang_gladiator")
+--TheInventory:AddItemIDPairing(195, "body_wolfgang_ice")
+--TheInventory:AddItemIDPairing(196, "body_wolfgang_magma")
+--TheInventory:AddItemIDPairing(197, "body_wolfgang_victorian")
+--TheInventory:AddItemIDPairing(198, "body_wolfgang_wrestler")
+--TheInventory:AddItemIDPairing(199, "body_woodie_gladiator")
+--TheInventory:AddItemIDPairing(200, "body_woodie_magma")
+--TheInventory:AddItemIDPairing(201, "body_woodie_nature")
+--TheInventory:AddItemIDPairing(202, "body_woodie_victorian")
+--TheInventory:AddItemIDPairing(203, "body_woodie_yule")
+--TheInventory:AddItemIDPairing(204, "body_wormwood_cactus")
+--TheInventory:AddItemIDPairing(205, "body_wormwood_mushroom")
+--TheInventory:AddItemIDPairing(206, "body_wormwood_rose")
+--TheInventory:AddItemIDPairing(207, "body_wortox_minotaur")
+--TheInventory:AddItemIDPairing(208, "body_wortox_original")
+--TheInventory:AddItemIDPairing(209, "body_wortox_survivor")
+--TheInventory:AddItemIDPairing(210, "body_wx78_gladiator")
+--TheInventory:AddItemIDPairing(211, "body_wx78_magma")
+--TheInventory:AddItemIDPairing(212, "body_wx78_nature")
+--TheInventory:AddItemIDPairing(213, "body_wx78_victorian")
+--TheInventory:AddItemIDPairing(214, "body_wx78_wip")
+--TheInventory:AddItemIDPairing(215, "body_wx78_wrestler")
+--TheInventory:AddItemIDPairing(216, "body_wx78_yule")
+--TheInventory:AddItemIDPairing(217, "body_yule_coat")
+--TheInventory:AddItemIDPairing(218, "body_yule_dress")
+--TheInventory:AddItemIDPairing(219, "book_brimstone_gilded")
+--TheInventory:AddItemIDPairing(220, "boomerang_tiger")
+--TheInventory:AddItemIDPairing(221, "bugnet_spider")
+--TheInventory:AddItemIDPairing(222, "cane_ancient")
+--TheInventory:AddItemIDPairing(223, "cane_victorian")
+--TheInventory:AddItemIDPairing(224, "cookpot_tureen")
+--TheInventory:AddItemIDPairing(225, "emoji_abigail")
+--TheInventory:AddItemIDPairing(226, "emoji_alchemyengine")
+--TheInventory:AddItemIDPairing(227, "emoji_arcane")
+--TheInventory:AddItemIDPairing(228, "emoji_backpack")
+--TheInventory:AddItemIDPairing(229, "emoji_battle")
+--TheInventory:AddItemIDPairing(230, "emoji_beefalo")
+--TheInventory:AddItemIDPairing(231, "emoji_beehive")
+--TheInventory:AddItemIDPairing(232, "emoji_berry_bush")
+--TheInventory:AddItemIDPairing(233, "emoji_carrot")
+--TheInventory:AddItemIDPairing(234, "emoji_chest")
+--TheInventory:AddItemIDPairing(235, "emoji_chester")
+--TheInventory:AddItemIDPairing(236, "emoji_crockpot")
+--TheInventory:AddItemIDPairing(237, "emoji_egg")
+--TheInventory:AddItemIDPairing(238, "emoji_eyeball")
+--TheInventory:AddItemIDPairing(239, "emoji_eyeplant")
+--TheInventory:AddItemIDPairing(240, "emoji_faketeeth")
+--TheInventory:AddItemIDPairing(241, "emoji_farm")
+--TheInventory:AddItemIDPairing(242, "emoji_fire")
+--TheInventory:AddItemIDPairing(243, "emoji_firepit")
+--TheInventory:AddItemIDPairing(244, "emoji_flex")
+--TheInventory:AddItemIDPairing(245, "emoji_ghost")
+--TheInventory:AddItemIDPairing(246, "emoji_gold")
+--TheInventory:AddItemIDPairing(247, "emoji_grave")
+--TheInventory:AddItemIDPairing(248, "emoji_hambat")
+--TheInventory:AddItemIDPairing(249, "emoji_hammer")
+--TheInventory:AddItemIDPairing(250, "emoji_heart")
+--TheInventory:AddItemIDPairing(251, "emoji_horn")
+--TheInventory:AddItemIDPairing(252, "emoji_hunger")
+--TheInventory:AddItemIDPairing(253, "emoji_lightbulb")
+--TheInventory:AddItemIDPairing(254, "emoji_meat_big")
+--TheInventory:AddItemIDPairing(255, "emoji_pig")
+--TheInventory:AddItemIDPairing(256, "emoji_poop")
+--TheInventory:AddItemIDPairing(257, "emoji_redgem")
+--TheInventory:AddItemIDPairing(258, "emoji_refine")
+--TheInventory:AddItemIDPairing(259, "emoji_salt")
+--TheInventory:AddItemIDPairing(260, "emoji_sanity")
+--TheInventory:AddItemIDPairing(261, "emoji_sciencemachine")
+--TheInventory:AddItemIDPairing(262, "emoji_shadowmanipulator")
+--TheInventory:AddItemIDPairing(263, "emoji_shovel")
+--TheInventory:AddItemIDPairing(264, "emoji_skull")
+--TheInventory:AddItemIDPairing(265, "emoji_thumbsup")
+--TheInventory:AddItemIDPairing(266, "emoji_tophat")
+--TheInventory:AddItemIDPairing(267, "emoji_torch")
+--TheInventory:AddItemIDPairing(268, "emoji_trap")
+--TheInventory:AddItemIDPairing(269, "emoji_trophy")
+--TheInventory:AddItemIDPairing(270, "emoji_wave")
+--TheInventory:AddItemIDPairing(271, "emoji_web")
+--TheInventory:AddItemIDPairing(272, "emoji_wormhole")
+--TheInventory:AddItemIDPairing(273, "emote_dance_chicken")
+--TheInventory:AddItemIDPairing(274, "emote_dance_robot")
+--TheInventory:AddItemIDPairing(275, "emote_dance_step")
+--TheInventory:AddItemIDPairing(276, "emote_flex")
+--TheInventory:AddItemIDPairing(277, "emote_impatient")
+--TheInventory:AddItemIDPairing(278, "emote_jumpcheer")
+--TheInventory:AddItemIDPairing(279, "emote_laugh")
+--TheInventory:AddItemIDPairing(280, "emote_shrug")
+--TheInventory:AddItemIDPairing(281, "emote_slowclap")
+--TheInventory:AddItemIDPairing(282, "emote_swoon")
+--TheInventory:AddItemIDPairing(283, "featherhat_circus")
+--TheInventory:AddItemIDPairing(284, "feet_formal_stilettop_black_scribble")
+--TheInventory:AddItemIDPairing(285, "feet_slippers_rooster_white_pure")
+--TheInventory:AddItemIDPairing(286, "feet_wathgrithr_gladiator")
+--TheInventory:AddItemIDPairing(287, "feet_wathgrithr_nature")
+--TheInventory:AddItemIDPairing(288, "feet_wathgrithr_wrestler")
+--TheInventory:AddItemIDPairing(289, "feet_wathgrithr_yule")
+--TheInventory:AddItemIDPairing(290, "feet_waxwell_gladiator")
+--TheInventory:AddItemIDPairing(291, "feet_waxwell_nature")
+--TheInventory:AddItemIDPairing(292, "feet_webber_gladiator")
+--TheInventory:AddItemIDPairing(293, "feet_webber_ice")
+--TheInventory:AddItemIDPairing(294, "feet_webber_magma")
+--TheInventory:AddItemIDPairing(295, "feet_webber_punk")
+--TheInventory:AddItemIDPairing(296, "feet_webber_victorian")
+--TheInventory:AddItemIDPairing(297, "feet_wendy_creepy")
+--TheInventory:AddItemIDPairing(298, "feet_wendy_gladiator")
+--TheInventory:AddItemIDPairing(299, "feet_wendy_ice")
+--TheInventory:AddItemIDPairing(300, "feet_wendy_magma")
+--TheInventory:AddItemIDPairing(301, "feet_wendy_victorian")
+--TheInventory:AddItemIDPairing(302, "feet_wes_clown")
+--TheInventory:AddItemIDPairing(303, "feet_wes_gladiator")
+--TheInventory:AddItemIDPairing(304, "feet_wes_magma")
+--TheInventory:AddItemIDPairing(305, "feet_wes_nature")
+--TheInventory:AddItemIDPairing(306, "feet_wes_victorian")
+--TheInventory:AddItemIDPairing(307, "feet_wes_yule")
+--TheInventory:AddItemIDPairing(308, "feet_wickerbottom_gladiator")
+--TheInventory:AddItemIDPairing(309, "feet_wickerbottom_ice1")
+--TheInventory:AddItemIDPairing(310, "feet_wickerbottom_magma")
+--TheInventory:AddItemIDPairing(311, "feet_wickerbottom_victorian")
+--TheInventory:AddItemIDPairing(312, "feet_willow_dowdy")
+--TheInventory:AddItemIDPairing(313, "feet_willow_gladiator")
+--TheInventory:AddItemIDPairing(314, "feet_willow_haunteddoll")
+--TheInventory:AddItemIDPairing(315, "feet_willow_ice")
+--TheInventory:AddItemIDPairing(316, "feet_willow_victorian")
+--TheInventory:AddItemIDPairing(317, "feet_wilson_gladiator")
+--TheInventory:AddItemIDPairing(318, "feet_wilson_ice")
+--TheInventory:AddItemIDPairing(319, "feet_wilson_victorian")
+--TheInventory:AddItemIDPairing(320, "feet_winona_factory")
+--TheInventory:AddItemIDPairing(321, "feet_winona_gladiator")
+--TheInventory:AddItemIDPairing(322, "feet_winona_nature")
+--TheInventory:AddItemIDPairing(323, "feet_wolfgang_gladiator")
+--TheInventory:AddItemIDPairing(324, "feet_wolfgang_ice")
+--TheInventory:AddItemIDPairing(325, "feet_woodie_gladiator")
+--TheInventory:AddItemIDPairing(326, "feet_woodie_nature")
+--TheInventory:AddItemIDPairing(327, "feet_wx78_gladiator")
+--TheInventory:AddItemIDPairing(328, "feet_wx78_magma")
+--TheInventory:AddItemIDPairing(329, "feet_wx78_nature")
+--TheInventory:AddItemIDPairing(330, "feet_wx78_wip")
+--TheInventory:AddItemIDPairing(331, "feet_wx78_wrestler")
+--TheInventory:AddItemIDPairing(332, "feet_wx78_yule")
+--TheInventory:AddItemIDPairing(333, "fence_factory")
+--TheInventory:AddItemIDPairing(334, "firepit_firebird")
+--TheInventory:AddItemIDPairing(335, "firepit_hole")
+--TheInventory:AddItemIDPairing(336, "firepit_kiln")
+--TheInventory:AddItemIDPairing(337, "firepit_stonehenge")
+--TheInventory:AddItemIDPairing(338, "firepit_victorian")
+--TheInventory:AddItemIDPairing(339, "firestaff_meteor")
+--TheInventory:AddItemIDPairing(340, "firesuppressor_circus")
+--TheInventory:AddItemIDPairing(341, "firesuppressor_robot")
+--TheInventory:AddItemIDPairing(342, "flowerhat_crown")
+--TheInventory:AddItemIDPairing(343, "flowerhat_healing")
+--TheInventory:AddItemIDPairing(344, "footballhat_combathelm")
+--TheInventory:AddItemIDPairing(345, "footballhat_combathelm2")
+--TheInventory:AddItemIDPairing(346, "hambat_potroast")
+--TheInventory:AddItemIDPairing(347, "hambat_spiralcut")
+--TheInventory:AddItemIDPairing(348, "hammer_crowbar")
+--TheInventory:AddItemIDPairing(349, "hammer_forge")
+--TheInventory:AddItemIDPairing(350, "hand_wathgrithr_gladiator")
+--TheInventory:AddItemIDPairing(351, "hand_wathgrithr_magma")
+--TheInventory:AddItemIDPairing(352, "hand_wathgrithr_nature")
+--TheInventory:AddItemIDPairing(353, "hand_wathgrithr_victorian")
+--TheInventory:AddItemIDPairing(354, "hand_wathgrithr_wrestler")
+--TheInventory:AddItemIDPairing(355, "hand_wathgrithr_yule")
+--TheInventory:AddItemIDPairing(356, "hand_waxwell_gladiator")
+--TheInventory:AddItemIDPairing(357, "hand_waxwell_magma")
+--TheInventory:AddItemIDPairing(358, "hand_waxwell_nature")
+--TheInventory:AddItemIDPairing(359, "hand_waxwell_victorian")
+--TheInventory:AddItemIDPairing(360, "hand_waxwell_yule")
+--TheInventory:AddItemIDPairing(361, "hand_webber_gladiator")
+--TheInventory:AddItemIDPairing(362, "hand_webber_magma")
+--TheInventory:AddItemIDPairing(363, "hand_webber_punk")
+--TheInventory:AddItemIDPairing(364, "hand_webber_victorian")
+--TheInventory:AddItemIDPairing(365, "hand_webber_wrestler")
+--TheInventory:AddItemIDPairing(366, "hand_wendy_gladiator")
+--TheInventory:AddItemIDPairing(367, "hand_wendy_ice")
+--TheInventory:AddItemIDPairing(368, "hand_wendy_magma")
+--TheInventory:AddItemIDPairing(369, "hand_wendy_victorian")
+--TheInventory:AddItemIDPairing(370, "hand_wes_gladiator")
+--TheInventory:AddItemIDPairing(371, "hand_wes_magma")
+--TheInventory:AddItemIDPairing(372, "hand_wes_nature")
+--TheInventory:AddItemIDPairing(373, "hand_wes_victorian")
+--TheInventory:AddItemIDPairing(374, "hand_wes_wrestler")
+--TheInventory:AddItemIDPairing(375, "hand_wes_yule")
+--TheInventory:AddItemIDPairing(376, "hand_wickerbottom_gladiator")
+--TheInventory:AddItemIDPairing(377, "hand_wickerbottom_ice")
+--TheInventory:AddItemIDPairing(378, "hand_wickerbottom_magma")
+--TheInventory:AddItemIDPairing(379, "hand_wickerbottom_victorian")
+--TheInventory:AddItemIDPairing(380, "hand_willow_gladiator")
+--TheInventory:AddItemIDPairing(381, "hand_willow_haunteddoll")
+--TheInventory:AddItemIDPairing(382, "hand_willow_ice")
+--TheInventory:AddItemIDPairing(383, "hand_willow_magma")
+--TheInventory:AddItemIDPairing(384, "hand_willow_victorian")
+--TheInventory:AddItemIDPairing(385, "hand_wilson_gladiator")
+--TheInventory:AddItemIDPairing(386, "hand_wilson_ice")
+--TheInventory:AddItemIDPairing(387, "hand_wilson_madscientist")
+--TheInventory:AddItemIDPairing(388, "hand_wilson_magma")
+--TheInventory:AddItemIDPairing(389, "hand_wilson_victorian")
+--TheInventory:AddItemIDPairing(390, "hand_winona_factory")
+--TheInventory:AddItemIDPairing(391, "hand_winona_gladiator")
+--TheInventory:AddItemIDPairing(392, "hand_winona_magma")
+--TheInventory:AddItemIDPairing(393, "hand_winona_nature")
+--TheInventory:AddItemIDPairing(394, "hand_winona_victorian")
+--TheInventory:AddItemIDPairing(395, "hand_winona_wrestler")
+--TheInventory:AddItemIDPairing(396, "hand_winona_yule")
+--TheInventory:AddItemIDPairing(397, "hand_wolfgang_gladiator")
+--TheInventory:AddItemIDPairing(398, "hand_wolfgang_ice")
+--TheInventory:AddItemIDPairing(399, "hand_wolfgang_magma")
+--TheInventory:AddItemIDPairing(400, "hand_wolfgang_victorian")
+--TheInventory:AddItemIDPairing(401, "hand_wolfgang_wrestler")
+--TheInventory:AddItemIDPairing(402, "hand_woodie_gladiator")
+--TheInventory:AddItemIDPairing(403, "hand_woodie_magma")
+--TheInventory:AddItemIDPairing(404, "hand_woodie_nature")
+--TheInventory:AddItemIDPairing(405, "hand_woodie_victorian")
+--TheInventory:AddItemIDPairing(406, "hand_woodie_yule")
+--TheInventory:AddItemIDPairing(407, "hand_wormwood_cactus")
+--TheInventory:AddItemIDPairing(408, "hand_wormwood_mushroom")
+--TheInventory:AddItemIDPairing(409, "hand_wormwood_rose")
+--TheInventory:AddItemIDPairing(410, "hand_wortox_minotaur")
+--TheInventory:AddItemIDPairing(411, "hand_wortox_original")
+--TheInventory:AddItemIDPairing(412, "hand_wortox_survivor")
+--TheInventory:AddItemIDPairing(413, "hand_wx78_gladiator")
+--TheInventory:AddItemIDPairing(414, "hand_wx78_magma")
+--TheInventory:AddItemIDPairing(415, "hand_wx78_nature")
+--TheInventory:AddItemIDPairing(416, "hand_wx78_victorian")
+--TheInventory:AddItemIDPairing(417, "hand_wx78_wip")
+--TheInventory:AddItemIDPairing(418, "hand_wx78_wrestler")
+--TheInventory:AddItemIDPairing(419, "hand_wx78_yule")
+--TheInventory:AddItemIDPairing(420, "hat_dog_helm")
+--TheInventory:AddItemIDPairing(421, "hat_puppy_cap")
+--TheInventory:AddItemIDPairing(422, "heatrock_fire")
+--TheInventory:AddItemIDPairing(423, "icebox_coffin")
+--TheInventory:AddItemIDPairing(424, "icebox_victorian")
+--TheInventory:AddItemIDPairing(425, "kitten_black")
+--TheInventory:AddItemIDPairing(426, "lantern_winter")
+--TheInventory:AddItemIDPairing(427, "legs_wathgrithr_gladiator")
+--TheInventory:AddItemIDPairing(428, "legs_wathgrithr_magma")
+--TheInventory:AddItemIDPairing(429, "legs_wathgrithr_nature")
+--TheInventory:AddItemIDPairing(430, "legs_wathgrithr_victorian")
+--TheInventory:AddItemIDPairing(431, "legs_waxwell_gladiator")
+--TheInventory:AddItemIDPairing(432, "legs_waxwell_magma")
+--TheInventory:AddItemIDPairing(433, "legs_waxwell_nature")
+--TheInventory:AddItemIDPairing(434, "legs_waxwell_victorian")
+--TheInventory:AddItemIDPairing(435, "legs_webber_ice")
+--TheInventory:AddItemIDPairing(436, "legs_wes_yule")
+--TheInventory:AddItemIDPairing(437, "legs_willow_gladiator")
+--TheInventory:AddItemIDPairing(438, "legs_willow_magma")
+--TheInventory:AddItemIDPairing(439, "legs_wilson_gladiator")
+--TheInventory:AddItemIDPairing(440, "legs_wilson_ice")
+--TheInventory:AddItemIDPairing(441, "legs_wilson_magma")
+--TheInventory:AddItemIDPairing(442, "legs_winona_gladiator")
+--TheInventory:AddItemIDPairing(443, "legs_winona_magma")
+--TheInventory:AddItemIDPairing(444, "legs_winona_nature")
+--TheInventory:AddItemIDPairing(445, "legs_winona_victorian")
+--TheInventory:AddItemIDPairing(446, "legs_winona_wrestler")
+--TheInventory:AddItemIDPairing(447, "legs_winona_yule")
+--TheInventory:AddItemIDPairing(448, "legs_wolfgang_gladiator")
+--TheInventory:AddItemIDPairing(449, "legs_wolfgang_ice")
+--TheInventory:AddItemIDPairing(450, "legs_wolfgang_magma")
+--TheInventory:AddItemIDPairing(451, "legs_wolfgang_victorian")
+--TheInventory:AddItemIDPairing(452, "legs_woodie_gladiator")
+--TheInventory:AddItemIDPairing(453, "legs_woodie_magma")
+--TheInventory:AddItemIDPairing(454, "legs_woodie_nature")
+--TheInventory:AddItemIDPairing(455, "legs_woodie_victorian")
+--TheInventory:AddItemIDPairing(456, "legs_woodie_yule")
+--TheInventory:AddItemIDPairing(457, "legs_wormwood_cactus")
+--TheInventory:AddItemIDPairing(458, "legs_wormwood_mushroom")
+--TheInventory:AddItemIDPairing(459, "legs_wormwood_rose")
+--TheInventory:AddItemIDPairing(460, "legs_wortox_minotaur")
+--TheInventory:AddItemIDPairing(461, "legs_wortox_original")
+--TheInventory:AddItemIDPairing(462, "legs_wortox_survivor")
+--TheInventory:AddItemIDPairing(463, "legs_wx78_gladiator")
+--TheInventory:AddItemIDPairing(464, "legs_wx78_victorian")
+--TheInventory:AddItemIDPairing(465, "legs_wx78_yule")
+--TheInventory:AddItemIDPairing(466, "lighter_haunteddoll")
+--TheInventory:AddItemIDPairing(467, "lightning_rod_robot")
+--TheInventory:AddItemIDPairing(468, "loading_bearger_yule")
+--TheInventory:AddItemIDPairing(469, "loading_critters")
+--TheInventory:AddItemIDPairing(470, "loading_deerclops_yule")
+--TheInventory:AddItemIDPairing(471, "loading_dragonfly_yule")
+--TheInventory:AddItemIDPairing(472, "loading_goats_victorian")
+--TheInventory:AddItemIDPairing(473, "loading_goosemoose_yule")
+--TheInventory:AddItemIDPairing(474, "loading_magma")
+--TheInventory:AddItemIDPairing(475, "loading_magma2")
+--TheInventory:AddItemIDPairing(476, "loading_maxwell")
+--TheInventory:AddItemIDPairing(477, "loading_merm")
+--TheInventory:AddItemIDPairing(478, "loading_pig_elite")
+--TheInventory:AddItemIDPairing(479, "loading_pigking")
+--TheInventory:AddItemIDPairing(480, "loading_webber")
+--TheInventory:AddItemIDPairing(481, "loading_webber_feast")
+--TheInventory:AddItemIDPairing(482, "loading_wendy")
+--TheInventory:AddItemIDPairing(483, "loading_wendy_creepy")
+--TheInventory:AddItemIDPairing(484, "loading_wendy_victorian")
+--TheInventory:AddItemIDPairing(485, "loading_wes_victorian")
+--TheInventory:AddItemIDPairing(486, "loading_wickerbottom")
+--TheInventory:AddItemIDPairing(487, "loading_wickerbottom_victorian")
+--TheInventory:AddItemIDPairing(488, "loading_wigfrid")
+--TheInventory:AddItemIDPairing(489, "loading_willow_bats")
+--TheInventory:AddItemIDPairing(490, "loading_willow_victorian")
+--TheInventory:AddItemIDPairing(491, "loading_willowfire")
+--TheInventory:AddItemIDPairing(492, "loading_wilson_feast")
+--TheInventory:AddItemIDPairing(493, "loading_wilson_madscience")
+--TheInventory:AddItemIDPairing(494, "loading_winona_victorian")
+--TheInventory:AddItemIDPairing(495, "loading_wolfgang")
+--TheInventory:AddItemIDPairing(496, "loading_wolfgang_feast")
+--TheInventory:AddItemIDPairing(497, "loading_woodie_victorian")
+--TheInventory:AddItemIDPairing(498, "loading_wx_magma")
+--TheInventory:AddItemIDPairing(499, "mushroom_light2_lily")
+--TheInventory:AddItemIDPairing(500, "mushroom_light_tiffany")
+--TheInventory:AddItemIDPairing(501, "pighouse_cabin")
+--TheInventory:AddItemIDPairing(502, "playerportrait_bg_altarstatue")
+--TheInventory:AddItemIDPairing(503, "playerportrait_bg_arrowsignpostcircus")
+--TheInventory:AddItemIDPairing(504, "playerportrait_bg_beefalo")
+--TheInventory:AddItemIDPairing(505, "playerportrait_bg_birchnut")
+--TheInventory:AddItemIDPairing(506, "playerportrait_bg_birdcagecircus")
+--TheInventory:AddItemIDPairing(507, "playerportrait_bg_boarilla")
+--TheInventory:AddItemIDPairing(508, "playerportrait_bg_boarlord")
+--TheInventory:AddItemIDPairing(509, "playerportrait_bg_brokenclock")
+--TheInventory:AddItemIDPairing(510, "playerportrait_bg_camp")
+--TheInventory:AddItemIDPairing(511, "playerportrait_bg_car")
+--TheInventory:AddItemIDPairing(512, "playerportrait_bg_cardinals")
+--TheInventory:AddItemIDPairing(513, "playerportrait_bg_cottontree")
+--TheInventory:AddItemIDPairing(514, "playerportrait_bg_deciduousforest")
+--TheInventory:AddItemIDPairing(515, "playerportrait_bg_elementals")
+--TheInventory:AddItemIDPairing(516, "playerportrait_bg_factory")
+--TheInventory:AddItemIDPairing(517, "playerportrait_bg_fancyarch")
+--TheInventory:AddItemIDPairing(518, "playerportrait_bg_featherhatcircus")
+--TheInventory:AddItemIDPairing(519, "playerportrait_bg_fence")
+--TheInventory:AddItemIDPairing(520, "playerportrait_bg_fencepattern")
+--TheInventory:AddItemIDPairing(521, "playerportrait_bg_firesuppressorcircus")
+--TheInventory:AddItemIDPairing(522, "playerportrait_bg_flames")
+--TheInventory:AddItemIDPairing(523, "playerportrait_bg_foods")
+--TheInventory:AddItemIDPairing(524, "playerportrait_bg_forestaltar")
+--TheInventory:AddItemIDPairing(525, "playerportrait_bg_forestfire")
+--TheInventory:AddItemIDPairing(526, "playerportrait_bg_garden")
+--TheInventory:AddItemIDPairing(527, "playerportrait_bg_gnaw")
+--TheInventory:AddItemIDPairing(528, "playerportrait_bg_grasslands")
+--TheInventory:AddItemIDPairing(529, "playerportrait_bg_gravestones")
+--TheInventory:AddItemIDPairing(530, "playerportrait_bg_graveyard")
+--TheInventory:AddItemIDPairing(531, "playerportrait_bg_graveyard2")
+--TheInventory:AddItemIDPairing(532, "playerportrait_bg_hallowedornaments")
+--TheInventory:AddItemIDPairing(533, "playerportrait_bg_heart1")
+--TheInventory:AddItemIDPairing(534, "playerportrait_bg_heart2")
+--TheInventory:AddItemIDPairing(535, "playerportrait_bg_heatrockfire")
+--TheInventory:AddItemIDPairing(536, "playerportrait_bg_lamppost")
+--TheInventory:AddItemIDPairing(537, "playerportrait_bg_lava")
+--TheInventory:AddItemIDPairing(538, "playerportrait_bg_lavaarena")
+--TheInventory:AddItemIDPairing(539, "playerportrait_bg_livingforest")
+--TheInventory:AddItemIDPairing(540, "playerportrait_bg_lonecarrot")
+--TheInventory:AddItemIDPairing(541, "playerportrait_bg_lumpyevergreen")
+--TheInventory:AddItemIDPairing(542, "playerportrait_bg_marblestatue")
+--TheInventory:AddItemIDPairing(543, "playerportrait_bg_marshhouse")
+--TheInventory:AddItemIDPairing(544, "playerportrait_bg_messylab")
+--TheInventory:AddItemIDPairing(545, "playerportrait_bg_monsterspawn")
+--TheInventory:AddItemIDPairing(546, "playerportrait_bg_mushroom")
+--TheInventory:AddItemIDPairing(547, "playerportrait_bg_oven")
+--TheInventory:AddItemIDPairing(548, "playerportrait_bg_penguins")
+--TheInventory:AddItemIDPairing(549, "playerportrait_bg_pighouse")
+--TheInventory:AddItemIDPairing(550, "playerportrait_bg_plates")
+--TheInventory:AddItemIDPairing(551, "playerportrait_bg_portal")
+--TheInventory:AddItemIDPairing(552, "playerportrait_bg_pothanger")
+--TheInventory:AddItemIDPairing(553, "playerportrait_bg_pumpkinlantern")
+--TheInventory:AddItemIDPairing(554, "playerportrait_bg_quagmiretournamentbronze")
+--TheInventory:AddItemIDPairing(555, "playerportrait_bg_quagmiretournamentgold")
+--TheInventory:AddItemIDPairing(556, "playerportrait_bg_quagmiretournamentsilver")
+--TheInventory:AddItemIDPairing(557, "playerportrait_bg_rainometercircus")
+--TheInventory:AddItemIDPairing(558, "playerportrait_bg_rocks")
+--TheInventory:AddItemIDPairing(559, "playerportrait_bg_roseportal")
+--TheInventory:AddItemIDPairing(560, "playerportrait_bg_shoreline")
+--TheInventory:AddItemIDPairing(561, "playerportrait_bg_spawngate")
+--TheInventory:AddItemIDPairing(562, "playerportrait_bg_spidermarsh")
+--TheInventory:AddItemIDPairing(563, "playerportrait_bg_spikymarsh")
+--TheInventory:AddItemIDPairing(564, "playerportrait_bg_suspisciousdirtpile")
+--TheInventory:AddItemIDPairing(565, "playerportrait_bg_tentcircus")
+--TheInventory:AddItemIDPairing(566, "playerportrait_bg_thickforest")
+--TheInventory:AddItemIDPairing(567, "playerportrait_bg_toothtraps")
+--TheInventory:AddItemIDPairing(568, "playerportrait_bg_tophatcircus")
+--TheInventory:AddItemIDPairing(569, "playerportrait_bg_umbrellacircus")
+--TheInventory:AddItemIDPairing(570, "playerportrait_bg_winter")
+--TheInventory:AddItemIDPairing(571, "playerportrait_bg_winterfire")
+--TheInventory:AddItemIDPairing(572, "playerportrait_bg_winterometercircus")
+--TheInventory:AddItemIDPairing(573, "playerportrait_bg_wintertrees")
+--TheInventory:AddItemIDPairing(574, "playerportrait_bg_yotp1")
+--TheInventory:AddItemIDPairing(575, "playerportrait_bg_yotp2")
+--TheInventory:AddItemIDPairing(576, "playerportrait_bg_yotp3")
+--TheInventory:AddItemIDPairing(577, "playerportrait_bg_yotp4")
+--TheInventory:AddItemIDPairing(578, "playerportrait_bg_yotp5")
+--TheInventory:AddItemIDPairing(579, "playerportrait_bg_yotp6")
+--TheInventory:AddItemIDPairing(580, "playerportrait_bg_yule1")
+--TheInventory:AddItemIDPairing(581, "playerportrait_bg_yule2")
+--TheInventory:AddItemIDPairing(582, "playerportrait_bg_yule3")
+--TheInventory:AddItemIDPairing(583, "playerportrait_bg_yule4")
+--TheInventory:AddItemIDPairing(584, "playerportrait_bg_yule5")
+--TheInventory:AddItemIDPairing(585, "playerportrait_bg_yule6")
+--TheInventory:AddItemIDPairing(586, "playerportrait_bg_yule7")
+--TheInventory:AddItemIDPairing(587, "profileflair_abigail_flower")
+--TheInventory:AddItemIDPairing(588, "profileflair_arrowsignpost_circus")
+--TheInventory:AddItemIDPairing(589, "profileflair_babybeefalo")
+--TheInventory:AddItemIDPairing(590, "profileflair_bat_furled")
+--TheInventory:AddItemIDPairing(591, "profileflair_bearger_roar")
+--TheInventory:AddItemIDPairing(592, "profileflair_beefalo")
+--TheInventory:AddItemIDPairing(593, "profileflair_bernie")
+--TheInventory:AddItemIDPairing(594, "profileflair_birdcage_circus")
+--TheInventory:AddItemIDPairing(595, "profileflair_bishop")
+--TheInventory:AddItemIDPairing(596, "profileflair_catcoon")
+--TheInventory:AddItemIDPairing(597, "profileflair_chester")
+--TheInventory:AddItemIDPairing(598, "profileflair_clayhound")
+--TheInventory:AddItemIDPairing(599, "profileflair_claywarg")
+--TheInventory:AddItemIDPairing(600, "profileflair_crow")
+--TheInventory:AddItemIDPairing(601, "profileflair_cupcake")
+--TheInventory:AddItemIDPairing(602, "profileflair_deerclops")
+--TheInventory:AddItemIDPairing(603, "profileflair_dragonfly_sleeping")
+--TheInventory:AddItemIDPairing(604, "profileflair_dragonfruit")
+--TheInventory:AddItemIDPairing(605, "profileflair_factory")
+--TheInventory:AddItemIDPairing(606, "profileflair_featherhat_circus")
+--TheInventory:AddItemIDPairing(607, "profileflair_firecrackers_yotp")
+--TheInventory:AddItemIDPairing(608, "profileflair_firesuppressor_circus")
+--TheInventory:AddItemIDPairing(609, "profileflair_food_berrytart")
+--TheInventory:AddItemIDPairing(610, "profileflair_food_carrotcake")
+--TheInventory:AddItemIDPairing(611, "profileflair_food_cheeseburger")
+--TheInventory:AddItemIDPairing(612, "profileflair_food_cheesecake")
+--TheInventory:AddItemIDPairing(613, "profileflair_food_crabcake")
+--TheInventory:AddItemIDPairing(614, "profileflair_food_crabroll")
+--TheInventory:AddItemIDPairing(615, "profileflair_food_croquette")
+--TheInventory:AddItemIDPairing(616, "profileflair_food_fishpie")
+--TheInventory:AddItemIDPairing(617, "profileflair_food_grilledcheese")
+--TheInventory:AddItemIDPairing(618, "profileflair_food_jellyroll")
+--TheInventory:AddItemIDPairing(619, "profileflair_food_meatpie")
+--TheInventory:AddItemIDPairing(620, "profileflair_food_pizza")
+--TheInventory:AddItemIDPairing(621, "profileflair_food_potroast")
+--TheInventory:AddItemIDPairing(622, "profileflair_food_pudding")
+--TheInventory:AddItemIDPairing(623, "profileflair_food_roastedveggies")
+--TheInventory:AddItemIDPairing(624, "profileflair_food_spaghettiandmeatballs")
+--TheInventory:AddItemIDPairing(625, "profileflair_food_steakfrites")
+--TheInventory:AddItemIDPairing(626, "profileflair_food_stuffedmushroom")
+--TheInventory:AddItemIDPairing(627, "profileflair_food_trifle")
+--TheInventory:AddItemIDPairing(628, "profileflair_food_turnipcake")
+--TheInventory:AddItemIDPairing(629, "profileflair_frog")
+--TheInventory:AddItemIDPairing(630, "profileflair_gift_1")
+--TheInventory:AddItemIDPairing(631, "profileflair_gift_2")
+--TheInventory:AddItemIDPairing(632, "profileflair_gift_3")
+--TheInventory:AddItemIDPairing(633, "profileflair_goosemoose")
+--TheInventory:AddItemIDPairing(634, "profileflair_heatrock_fire")
+--TheInventory:AddItemIDPairing(635, "profileflair_hound")
+--TheInventory:AddItemIDPairing(636, "profileflair_icehound")
+--TheInventory:AddItemIDPairing(637, "profileflair_knight")
+--TheInventory:AddItemIDPairing(638, "profileflair_koalefant")
+--TheInventory:AddItemIDPairing(639, "profileflair_krampus")
+--TheInventory:AddItemIDPairing(640, "profileflair_living_wood")
+--TheInventory:AddItemIDPairing(641, "profileflair_luckygoldnugget_yotp")
+--TheInventory:AddItemIDPairing(642, "profileflair_mactusk")
+--TheInventory:AddItemIDPairing(643, "profileflair_mad_science")
+--TheInventory:AddItemIDPairing(644, "profileflair_mandrake")
+--TheInventory:AddItemIDPairing(645, "profileflair_merm")
+--TheInventory:AddItemIDPairing(646, "profileflair_mole")
+--TheInventory:AddItemIDPairing(647, "profileflair_mudpie_yotp")
+--TheInventory:AddItemIDPairing(648, "profileflair_nightlight")
+--TheInventory:AddItemIDPairing(649, "profileflair_ornaments_1")
+--TheInventory:AddItemIDPairing(650, "profileflair_ornaments_10")
+--TheInventory:AddItemIDPairing(651, "profileflair_ornaments_11")
+--TheInventory:AddItemIDPairing(652, "profileflair_ornaments_12")
+--TheInventory:AddItemIDPairing(653, "profileflair_ornaments_13")
+--TheInventory:AddItemIDPairing(654, "profileflair_ornaments_14")
+--TheInventory:AddItemIDPairing(655, "profileflair_ornaments_15")
+--TheInventory:AddItemIDPairing(656, "profileflair_ornaments_16")
+--TheInventory:AddItemIDPairing(657, "profileflair_ornaments_2")
+--TheInventory:AddItemIDPairing(658, "profileflair_ornaments_3")
+--TheInventory:AddItemIDPairing(659, "profileflair_ornaments_4")
+--TheInventory:AddItemIDPairing(660, "profileflair_ornaments_5")
+--TheInventory:AddItemIDPairing(661, "profileflair_ornaments_6")
+--TheInventory:AddItemIDPairing(662, "profileflair_ornaments_7")
+--TheInventory:AddItemIDPairing(663, "profileflair_ornaments_8")
+--TheInventory:AddItemIDPairing(664, "profileflair_ornaments_9")
+--TheInventory:AddItemIDPairing(665, "profileflair_pengull")
+--TheInventory:AddItemIDPairing(666, "profileflair_phonograph")
+--TheInventory:AddItemIDPairing(667, "profileflair_pig_happy")
+--TheInventory:AddItemIDPairing(668, "profileflair_pigking")
+--TheInventory:AddItemIDPairing(669, "profileflair_pigking_yotp")
+--TheInventory:AddItemIDPairing(670, "profileflair_pigtoken_yotp")
+--TheInventory:AddItemIDPairing(671, "profileflair_potion_sanity")
+--TheInventory:AddItemIDPairing(672, "profileflair_pumpkinlantern")
+--TheInventory:AddItemIDPairing(673, "profileflair_puppington")
+--TheInventory:AddItemIDPairing(674, "profileflair_quagmiretournament_bronze")
+--TheInventory:AddItemIDPairing(675, "profileflair_quagmiretournament_gold")
+--TheInventory:AddItemIDPairing(676, "profileflair_quagmiretournament_participation")
+--TheInventory:AddItemIDPairing(677, "profileflair_quagmiretournament_silver")
+--TheInventory:AddItemIDPairing(678, "profileflair_rabbit")
+--TheInventory:AddItemIDPairing(679, "profileflair_rainometer_circus")
+--TheInventory:AddItemIDPairing(680, "profileflair_redhound")
+--TheInventory:AddItemIDPairing(681, "profileflair_redlantern_yotp")
+--TheInventory:AddItemIDPairing(682, "profileflair_rook")
+--TheInventory:AddItemIDPairing(683, "profileflair_rose")
+--TheInventory:AddItemIDPairing(684, "profileflair_shadowhand")
+--TheInventory:AddItemIDPairing(685, "profileflair_shadowmanipulator")
+--TheInventory:AddItemIDPairing(686, "profileflair_smallbird")
+--TheInventory:AddItemIDPairing(687, "profileflair_spider")
+--TheInventory:AddItemIDPairing(688, "profileflair_tallbird_eye")
+--TheInventory:AddItemIDPairing(689, "profileflair_tent_circus")
+--TheInventory:AddItemIDPairing(690, "profileflair_theforge_battlestandard")
+--TheInventory:AddItemIDPairing(691, "profileflair_theforge_battlestandardattack")
+--TheInventory:AddItemIDPairing(692, "profileflair_theforge_battlestandardheal")
+--TheInventory:AddItemIDPairing(693, "profileflair_theforge_beetletaur")
+--TheInventory:AddItemIDPairing(694, "profileflair_theforge_blowdarts")
+--TheInventory:AddItemIDPairing(695, "profileflair_theforge_boaraudienceboo")
+--TheInventory:AddItemIDPairing(696, "profileflair_theforge_boaraudiencecheer")
+--TheInventory:AddItemIDPairing(697, "profileflair_theforge_boaraudienceeat")
+--TheInventory:AddItemIDPairing(698, "profileflair_theforge_boarlord")
+--TheInventory:AddItemIDPairing(699, "profileflair_theforge_boaron")
+--TheInventory:AddItemIDPairing(700, "profileflair_theforge_boarrior")
+--TheInventory:AddItemIDPairing(701, "profileflair_theforge_bookelemental")
+--TheInventory:AddItemIDPairing(702, "profileflair_theforge_bookfossil")
+--TheInventory:AddItemIDPairing(703, "profileflair_theforge_elementalattack")
+--TheInventory:AddItemIDPairing(704, "profileflair_theforge_elementalrise")
+--TheInventory:AddItemIDPairing(705, "profileflair_theforge_fireballstaff")
+--TheInventory:AddItemIDPairing(706, "profileflair_theforge_gungnir")
+--TheInventory:AddItemIDPairing(707, "profileflair_theforge_hammer")
+--TheInventory:AddItemIDPairing(708, "profileflair_theforge_healingstaff")
+--TheInventory:AddItemIDPairing(709, "profileflair_theforge_lance")
+--TheInventory:AddItemIDPairing(710, "profileflair_theforge_peghook")
+--TheInventory:AddItemIDPairing(711, "profileflair_theforge_rhinodrill")
+--TheInventory:AddItemIDPairing(712, "profileflair_theforge_snapper")
+--TheInventory:AddItemIDPairing(713, "profileflair_theforge_tails")
+--TheInventory:AddItemIDPairing(714, "profileflair_theforge_tailsguard")
+--TheInventory:AddItemIDPairing(715, "profileflair_theforge_turtillus")
+--TheInventory:AddItemIDPairing(716, "profileflair_tophat_circus")
+--TheInventory:AddItemIDPairing(717, "profileflair_treasurechest_monster")
+--TheInventory:AddItemIDPairing(718, "profileflair_treeguard")
+--TheInventory:AddItemIDPairing(719, "profileflair_trinket_faketeeth")
+--TheInventory:AddItemIDPairing(720, "profileflair_trinket_gnome")
+--TheInventory:AddItemIDPairing(721, "profileflair_trinket_gnomette")
+--TheInventory:AddItemIDPairing(722, "profileflair_umbrella_circus")
+--TheInventory:AddItemIDPairing(723, "profileflair_varg")
+--TheInventory:AddItemIDPairing(724, "profileflair_victorian_boar")
+--TheInventory:AddItemIDPairing(725, "profileflair_victorian_coppercoin")
+--TheInventory:AddItemIDPairing(726, "profileflair_victorian_goatkid")
+--TheInventory:AddItemIDPairing(727, "profileflair_victorian_goatmom")
+--TheInventory:AddItemIDPairing(728, "profileflair_victorian_goldcoin")
+--TheInventory:AddItemIDPairing(729, "profileflair_victorian_merm")
+--TheInventory:AddItemIDPairing(730, "profileflair_victorian_merm2")
+--TheInventory:AddItemIDPairing(731, "profileflair_victorian_pigeon")
+--TheInventory:AddItemIDPairing(732, "profileflair_victorian_safe")
+--TheInventory:AddItemIDPairing(733, "profileflair_victorian_silvercoin")
+--TheInventory:AddItemIDPairing(734, "profileflair_victorian_topazcoin")
+--TheInventory:AddItemIDPairing(735, "profileflair_waffle")
+--TheInventory:AddItemIDPairing(736, "profileflair_watermelonhat_pumpkin")
+--TheInventory:AddItemIDPairing(737, "profileflair_werepig_howl")
+--TheInventory:AddItemIDPairing(738, "profileflair_wererabbit")
+--TheInventory:AddItemIDPairing(739, "profileflair_winterometer_circus")
+--TheInventory:AddItemIDPairing(740, "profileflair_yule_bearger")
+--TheInventory:AddItemIDPairing(741, "profileflair_yule_candycane")
+--TheInventory:AddItemIDPairing(742, "profileflair_yule_chocolatelog")
+--TheInventory:AddItemIDPairing(743, "profileflair_yule_claus")
+--TheInventory:AddItemIDPairing(744, "profileflair_yule_deer")
+--TheInventory:AddItemIDPairing(745, "profileflair_yule_deerclops")
+--TheInventory:AddItemIDPairing(746, "profileflair_yule_dragonfly")
+--TheInventory:AddItemIDPairing(747, "profileflair_yule_dragonflyfire")
+--TheInventory:AddItemIDPairing(748, "profileflair_yule_eggnog")
+--TheInventory:AddItemIDPairing(749, "profileflair_yule_fruitcake")
+--TheInventory:AddItemIDPairing(750, "profileflair_yule_gingerbreadman")
+--TheInventory:AddItemIDPairing(751, "profileflair_yule_glommer")
+--TheInventory:AddItemIDPairing(752, "profileflair_yule_goosemoose")
+--TheInventory:AddItemIDPairing(753, "profileflair_yule_hotchocolate")
+--TheInventory:AddItemIDPairing(754, "profileflair_yule_puppington")
+--TheInventory:AddItemIDPairing(755, "profileflair_yule_sugarcookie")
+--TheInventory:AddItemIDPairing(756, "puppy_chow")
+--TheInventory:AddItemIDPairing(757, "puppy_tzu")
+--TheInventory:AddItemIDPairing(758, "rainometer_circus")
+--TheInventory:AddItemIDPairing(759, "reviver_cupid")
+--TheInventory:AddItemIDPairing(760, "reviver_cupid_2")
+--TheInventory:AddItemIDPairing(761, "reviver_cupid_3")
+--TheInventory:AddItemIDPairing(762, "ruins_bat_heavy")
+--TheInventory:AddItemIDPairing(763, "shovel_victorian")
+--TheInventory:AddItemIDPairing(764, "spear_forge_gungnir")
+--TheInventory:AddItemIDPairing(765, "spear_forge_lance")
+--TheInventory:AddItemIDPairing(766, "spear_wathgrithr_wrestle")
+--TheInventory:AddItemIDPairing(767, "strawhat_cowboy")
+--TheInventory:AddItemIDPairing(768, "tent_circus")
+--TheInventory:AddItemIDPairing(769, "tophat_circus")
+--TheInventory:AddItemIDPairing(770, "tophat_festive_bell_red_firehound")
+--TheInventory:AddItemIDPairing(771, "torch_pillar")
+--TheInventory:AddItemIDPairing(772, "torch_shadow")
+--TheInventory:AddItemIDPairing(773, "torch_shadow_alt")
+--TheInventory:AddItemIDPairing(774, "trap_metal")
+--TheInventory:AddItemIDPairing(775, "trap_teeth_tiger")
+--TheInventory:AddItemIDPairing(776, "treasurechest_gingerbread")
+--TheInventory:AddItemIDPairing(777, "treasurechest_monster")
+--TheInventory:AddItemIDPairing(778, "treasurechest_poshprint")
+--TheInventory:AddItemIDPairing(779, "treasurechest_sacred")
+--TheInventory:AddItemIDPairing(780, "umbrella_circus")
+--TheInventory:AddItemIDPairing(781, "umbrella_heart")
+--TheInventory:AddItemIDPairing(782, "umbrella_parasol")
+--TheInventory:AddItemIDPairing(783, "wardrobe_heart")
+--TheInventory:AddItemIDPairing(784, "watermelonhat_pumpkin")
+--TheInventory:AddItemIDPairing(785, "wathgrithr_combatant")
+--TheInventory:AddItemIDPairing(786, "wathgrithr_cook")
+--TheInventory:AddItemIDPairing(787, "wathgrithr_deerclops")
+--TheInventory:AddItemIDPairing(788, "wathgrithr_gladiator")
+--TheInventory:AddItemIDPairing(789, "wathgrithr_magma")
+--TheInventory:AddItemIDPairing(790, "wathgrithr_nature")
+--TheInventory:AddItemIDPairing(791, "wathgrithr_victorian")
+--TheInventory:AddItemIDPairing(792, "wathgrithr_wrestler")
+--TheInventory:AddItemIDPairing(793, "wathgrithr_yule")
+--TheInventory:AddItemIDPairing(794, "wathgrithrhat_wrestle")
+--TheInventory:AddItemIDPairing(795, "waxwell_combatant")
+--TheInventory:AddItemIDPairing(796, "waxwell_cook")
+--TheInventory:AddItemIDPairing(797, "waxwell_gladiator")
+--TheInventory:AddItemIDPairing(798, "waxwell_krampus")
+--TheInventory:AddItemIDPairing(799, "waxwell_magma")
+--TheInventory:AddItemIDPairing(800, "waxwell_nature")
+--TheInventory:AddItemIDPairing(801, "waxwell_victorian")
+--TheInventory:AddItemIDPairing(802, "waxwell_yule")
+--TheInventory:AddItemIDPairing(803, "webber_bat")
+--TheInventory:AddItemIDPairing(804, "webber_combatant")
+--TheInventory:AddItemIDPairing(805, "webber_cook")
+--TheInventory:AddItemIDPairing(806, "webber_gladiator")
+--TheInventory:AddItemIDPairing(807, "webber_ice")
+--TheInventory:AddItemIDPairing(808, "webber_magma")
+--TheInventory:AddItemIDPairing(809, "webber_punk")
+--TheInventory:AddItemIDPairing(810, "webber_victorian")
+--TheInventory:AddItemIDPairing(811, "webber_wrestler")
+--TheInventory:AddItemIDPairing(812, "wendy_combatant")
+--TheInventory:AddItemIDPairing(813, "wendy_cook")
+--TheInventory:AddItemIDPairing(814, "wendy_creepy")
+--TheInventory:AddItemIDPairing(815, "wendy_gladiator")
+--TheInventory:AddItemIDPairing(816, "wendy_ice")
+--TheInventory:AddItemIDPairing(817, "wendy_lureplant")
+--TheInventory:AddItemIDPairing(818, "wendy_magma")
+--TheInventory:AddItemIDPairing(819, "wendy_victorian")
+--TheInventory:AddItemIDPairing(820, "wes_clown")
+--TheInventory:AddItemIDPairing(821, "wes_combatant")
+--TheInventory:AddItemIDPairing(822, "wes_cook")
+--TheInventory:AddItemIDPairing(823, "wes_gladiator")
+--TheInventory:AddItemIDPairing(824, "wes_magma")
+--TheInventory:AddItemIDPairing(825, "wes_mandrake")
+--TheInventory:AddItemIDPairing(826, "wes_nature")
+--TheInventory:AddItemIDPairing(827, "wes_victorian")
+--TheInventory:AddItemIDPairing(828, "wes_wrestler")
+--TheInventory:AddItemIDPairing(829, "wes_yule")
+--TheInventory:AddItemIDPairing(830, "wickerbottom_combatant")
+--TheInventory:AddItemIDPairing(831, "wickerbottom_cook")
+--TheInventory:AddItemIDPairing(832, "wickerbottom_gladiator")
+--TheInventory:AddItemIDPairing(833, "wickerbottom_ice")
+--TheInventory:AddItemIDPairing(834, "wickerbottom_lightninggoat")
+--TheInventory:AddItemIDPairing(835, "wickerbottom_magma")
+--TheInventory:AddItemIDPairing(836, "wickerbottom_victorian")
+--TheInventory:AddItemIDPairing(837, "willow_combatant")
+--TheInventory:AddItemIDPairing(838, "willow_cook")
+--TheInventory:AddItemIDPairing(839, "willow_dowdy")
+--TheInventory:AddItemIDPairing(840, "willow_dragonfly")
+--TheInventory:AddItemIDPairing(841, "willow_formalp")
+--TheInventory:AddItemIDPairing(842, "willow_gladiator")
+--TheInventory:AddItemIDPairing(843, "willow_haunteddoll")
+--TheInventory:AddItemIDPairing(844, "willow_ice")
+--TheInventory:AddItemIDPairing(845, "willow_magma")
+--TheInventory:AddItemIDPairing(846, "willow_rosep")
+--TheInventory:AddItemIDPairing(847, "willow_shadowp")
+--TheInventory:AddItemIDPairing(848, "willow_survivorp")
+--TheInventory:AddItemIDPairing(849, "willow_victorian")
+--TheInventory:AddItemIDPairing(850, "wilson_combatant")
+--TheInventory:AddItemIDPairing(851, "wilson_cook")
+--TheInventory:AddItemIDPairing(852, "wilson_gladiator")
+--TheInventory:AddItemIDPairing(853, "wilson_ice")
+--TheInventory:AddItemIDPairing(854, "wilson_madscience")
+--TheInventory:AddItemIDPairing(855, "wilson_magma")
+--TheInventory:AddItemIDPairing(856, "wilson_pigguard")
+--TheInventory:AddItemIDPairing(857, "wilson_victorian")
+--TheInventory:AddItemIDPairing(858, "winona_combatant")
+--TheInventory:AddItemIDPairing(859, "winona_cook")
+--TheInventory:AddItemIDPairing(860, "winona_factory")
+--TheInventory:AddItemIDPairing(861, "winona_formalp")
+--TheInventory:AddItemIDPairing(862, "winona_gladiator")
+--TheInventory:AddItemIDPairing(863, "winona_grassgecko")
+--TheInventory:AddItemIDPairing(864, "winona_magma")
+--TheInventory:AddItemIDPairing(865, "winona_nature")
+--TheInventory:AddItemIDPairing(866, "winona_rosep")
+--TheInventory:AddItemIDPairing(867, "winona_shadowp")
+--TheInventory:AddItemIDPairing(868, "winona_survivorp")
+--TheInventory:AddItemIDPairing(869, "winona_victorian")
+--TheInventory:AddItemIDPairing(870, "winona_wrestler")
+--TheInventory:AddItemIDPairing(871, "winona_yule")
+--TheInventory:AddItemIDPairing(872, "winterhat_black_davys")
+--TheInventory:AddItemIDPairing(873, "winterhat_fancy_puppy")
+--TheInventory:AddItemIDPairing(874, "winterhat_pink_hibiscus")
+--TheInventory:AddItemIDPairing(875, "winterhat_plum_pudding")
+--TheInventory:AddItemIDPairing(876, "winterhat_rooster")
+--TheInventory:AddItemIDPairing(877, "winterometer_circus")
+--TheInventory:AddItemIDPairing(878, "wolfgang_combatant")
+--TheInventory:AddItemIDPairing(879, "wolfgang_cook")
+--TheInventory:AddItemIDPairing(880, "wolfgang_gladiator")
+--TheInventory:AddItemIDPairing(881, "wolfgang_ice")
+--TheInventory:AddItemIDPairing(882, "wolfgang_magma")
+--TheInventory:AddItemIDPairing(883, "wolfgang_victorian")
+--TheInventory:AddItemIDPairing(884, "wolfgang_walrus")
+--TheInventory:AddItemIDPairing(885, "wolfgang_wrestler")
+--TheInventory:AddItemIDPairing(886, "woodie_combatant")
+--TheInventory:AddItemIDPairing(887, "woodie_cook")
+--TheInventory:AddItemIDPairing(888, "woodie_gladiator")
+--TheInventory:AddItemIDPairing(889, "woodie_magma")
+--TheInventory:AddItemIDPairing(890, "woodie_nature")
+--TheInventory:AddItemIDPairing(891, "woodie_treeguard")
+--TheInventory:AddItemIDPairing(892, "woodie_victorian")
+--TheInventory:AddItemIDPairing(893, "woodie_yule")
+--TheInventory:AddItemIDPairing(894, "wormwood_cactus")
+--TheInventory:AddItemIDPairing(895, "wormwood_mushroom")
+--TheInventory:AddItemIDPairing(896, "wormwood_none")
+--TheInventory:AddItemIDPairing(897, "wormwood_rose")
+--TheInventory:AddItemIDPairing(898, "wortox_minotaur")
+--TheInventory:AddItemIDPairing(899, "wortox_none")
+--TheInventory:AddItemIDPairing(900, "wortox_original")
+--TheInventory:AddItemIDPairing(901, "wortox_survivor")
+--TheInventory:AddItemIDPairing(902, "wx78_combatant")
+--TheInventory:AddItemIDPairing(903, "wx78_cook")
+--TheInventory:AddItemIDPairing(904, "wx78_gladiator")
+--TheInventory:AddItemIDPairing(905, "wx78_magma")
+--TheInventory:AddItemIDPairing(906, "wx78_nature")
+--TheInventory:AddItemIDPairing(907, "wx78_rhinorook")
+--TheInventory:AddItemIDPairing(908, "wx78_victorian")
+--TheInventory:AddItemIDPairing(909, "wx78_wip")
+--TheInventory:AddItemIDPairing(910, "wx78_wrestler")
+--TheInventory:AddItemIDPairing(911, "wx78_yule")
+--TheInventory:AddItemIDPairing(912, "bugnet_spider_white")
+--TheInventory:AddItemIDPairing(913, "icebox_crystal")
+--TheInventory:AddItemIDPairing(914, "starstaff_crystal")
+--TheInventory:AddItemIDPairing(915, "backpack_chester")
+--TheInventory:AddItemIDPairing(916, "eyebrellahat_crystal")
+--TheInventory:AddItemIDPairing(917, "playerportrait_bg_iceboxcrystal")
+--TheInventory:AddItemIDPairing(918, "playerportrait_bg_moonstarstaffcrystal")
+--TheInventory:AddItemIDPairing(919, "profileflair_icebox_crystal")
+--TheInventory:AddItemIDPairing(920, "profileflair_moonstaff_crystal")
+--TheInventory:AddItemIDPairing(921, "profileflair_starstaff_crystal")
+--TheInventory:AddItemIDPairing(922, "warly_fisherman")
+--TheInventory:AddItemIDPairing(923, "warly_rose")
+--TheInventory:AddItemIDPairing(924, "warly_victorian")
+--TheInventory:AddItemIDPairing(925, "body_warly_fisherman")
+--TheInventory:AddItemIDPairing(926, "body_warly_rose")
+--TheInventory:AddItemIDPairing(927, "body_warly_victorian")
+--TheInventory:AddItemIDPairing(928, "feet_warly_fisherman")
+--TheInventory:AddItemIDPairing(929, "feet_warly_victorian")
+--TheInventory:AddItemIDPairing(930, "hand_warly_rose")
+--TheInventory:AddItemIDPairing(931, "legs_warly_fisherman")
+--TheInventory:AddItemIDPairing(932, "legs_warly_rose")
+--TheInventory:AddItemIDPairing(933, "legs_warly_victorian")
+--TheInventory:AddItemIDPairing(934, "playerportrait_bg_eyebrellahatcrystal")
+--TheInventory:AddItemIDPairing(935, "profileflair_eyebrellahat_crystal")
+--TheInventory:AddItemIDPairing(936, "body_woodie_formalp")
+--TheInventory:AddItemIDPairing(937, "body_woodie_hockey")
+--TheInventory:AddItemIDPairing(938, "body_woodie_rosep")
+--TheInventory:AddItemIDPairing(939, "body_woodie_shadowp")
+--TheInventory:AddItemIDPairing(940, "body_woodie_survivorp")
+--TheInventory:AddItemIDPairing(941, "feet_woodie_hockey")
+--TheInventory:AddItemIDPairing(942, "footballhat_hockey")
+--TheInventory:AddItemIDPairing(943, "hand_woodie_hockey")
+--TheInventory:AddItemIDPairing(944, "legs_woodie_hockey")
+--TheInventory:AddItemIDPairing(945, "pighouse_logcabin")
+--TheInventory:AddItemIDPairing(946, "spear_hockey")
+--TheInventory:AddItemIDPairing(947, "woodie_formalp")
+--TheInventory:AddItemIDPairing(948, "woodie_hockey")
+--TheInventory:AddItemIDPairing(949, "woodie_rosep")
+--TheInventory:AddItemIDPairing(950, "woodie_shadowp")
+--TheInventory:AddItemIDPairing(951, "woodie_survivorp")
+--TheInventory:AddItemIDPairing(952, "feet_fleece_bootp_brown_sepia")
+--TheInventory:AddItemIDPairing(953, "mast_rose")
+--TheInventory:AddItemIDPairing(954, "firepit_lava")
+--TheInventory:AddItemIDPairing(955, "glomling_puft")
+--TheInventory:AddItemIDPairing(956, "warly_candyman")
+--TheInventory:AddItemIDPairing(957, "wathgrithr_scarecrow")
+--TheInventory:AddItemIDPairing(958, "waxwell_vampire")
+--TheInventory:AddItemIDPairing(959, "wickerbottom_spiderwitch")
+--TheInventory:AddItemIDPairing(960, "winona_frankenstein")
+--TheInventory:AddItemIDPairing(961, "wormwood_pumpkin")
+--TheInventory:AddItemIDPairing(962, "wortox_dragon")
+--TheInventory:AddItemIDPairing(963, "body_warly_candyman")
+--TheInventory:AddItemIDPairing(964, "body_wathgrithr_scarecrow")
+--TheInventory:AddItemIDPairing(965, "body_waxwell_vampire")
+--TheInventory:AddItemIDPairing(966, "body_winona_frankenstein")
+--TheInventory:AddItemIDPairing(967, "body_wormwood_pumpkin")
+--TheInventory:AddItemIDPairing(968, "body_wortox_dragon")
+--TheInventory:AddItemIDPairing(969, "feet_warly_candyman")
+--TheInventory:AddItemIDPairing(970, "feet_wathgrithr_scarecrow")
+--TheInventory:AddItemIDPairing(971, "feet_winona_frankenstein")
+--TheInventory:AddItemIDPairing(972, "hand_warly_candyman")
+--TheInventory:AddItemIDPairing(973, "hand_wathgrithr_scarecrow")
+--TheInventory:AddItemIDPairing(974, "hand_waxwell_vampire")
+--TheInventory:AddItemIDPairing(975, "hand_wormwood_pumpkin")
+--TheInventory:AddItemIDPairing(976, "legs_warly_candyman")
+--TheInventory:AddItemIDPairing(977, "legs_waxwell_vampire")
+--TheInventory:AddItemIDPairing(978, "legs_winona_frankenstein")
+--TheInventory:AddItemIDPairing(979, "legs_wortox_dragon")
+--TheInventory:AddItemIDPairing(980, "body_wickerbottom_spiderwitch")
+--TheInventory:AddItemIDPairing(981, "hand_wickerbottom_spiderwitch")
+--TheInventory:AddItemIDPairing(982, "legs_wickerbottom_spiderwitch")
+--TheInventory:AddItemIDPairing(983, "wurt_none")
+--TheInventory:AddItemIDPairing(984, "wurt_cave")
+--TheInventory:AddItemIDPairing(985, "wurt_formal")
+--TheInventory:AddItemIDPairing(986, "wurt_shadow")
+--TheInventory:AddItemIDPairing(987, "body_wurt_cave")
+--TheInventory:AddItemIDPairing(988, "body_wurt_formal")
+--TheInventory:AddItemIDPairing(989, "body_wurt_shadow")
+--TheInventory:AddItemIDPairing(990, "hand_wurt_cave")
+--TheInventory:AddItemIDPairing(991, "hand_wurt_formal")
+--TheInventory:AddItemIDPairing(992, "hand_wurt_shadow")
+--TheInventory:AddItemIDPairing(993, "legs_wurt_cave")
+--TheInventory:AddItemIDPairing(994, "legs_wurt_formal")
+--TheInventory:AddItemIDPairing(995, "legs_wurt_shadow")
+--TheInventory:AddItemIDPairing(996, "spear_simple")
+--TheInventory:AddItemIDPairing(997, "bedroll_furry_quilt_green_hunters")
+--TheInventory:AddItemIDPairing(998, "body_pj_green_hunters")
+--TheInventory:AddItemIDPairing(999, "legs_pj_green_hunters")
+--TheInventory:AddItemIDPairing(1000, "coldfirepit_teeth")
+--TheInventory:AddItemIDPairing(1001, "pickaxe_scythe")
+--TheInventory:AddItemIDPairing(1002, "playerportrait_bg_coldfirepitteeth")
+--TheInventory:AddItemIDPairing(1003, "profileflair_coldfirepit_teeth")
+--TheInventory:AddItemIDPairing(1004, "profileflair_skincollector")
+--TheInventory:AddItemIDPairing(1005, "oceanfishingrod_ice")
+--TheInventory:AddItemIDPairing(1006, "fence_gingerbread")
+--TheInventory:AddItemIDPairing(1007, "beefalohat_klaus")
+--TheInventory:AddItemIDPairing(1008, "cane_candycane")
+--TheInventory:AddItemIDPairing(1009, "earmuffshat_deerclops")
+--TheInventory:AddItemIDPairing(1010, "fence_gate_gingerbread")
+--TheInventory:AddItemIDPairing(1011, "mushroom_light_festive")
+--TheInventory:AddItemIDPairing(1012, "playerportrait_bg_beefalohatklaus")
+--TheInventory:AddItemIDPairing(1013, "profileflair_beefalohat_klaus")
+--TheInventory:AddItemIDPairing(1014, "profileflair_ornaments_17")
+--TheInventory:AddItemIDPairing(1015, "profileflair_yule_doorgategingerbread")
+--TheInventory:AddItemIDPairing(1016, "profileflair_yule_gingerpig")
+--TheInventory:AddItemIDPairing(1017, "profileflair_yule_gingervarg")
+--TheInventory:AddItemIDPairing(1018, "profileflair_yule_mulledwine")
+--TheInventory:AddItemIDPairing(1019, "profileflair_yule_mushroomlightfestive")
+--TheInventory:AddItemIDPairing(1020, "profileflair_yule_pumpkinpie")
+--TheInventory:AddItemIDPairing(1021, "profileflair_yule_roastturkey")
+--TheInventory:AddItemIDPairing(1022, "profileflair_snowbird")
+--TheInventory:AddItemIDPairing(1023, "legs_waxwell_yule")
+--TheInventory:AddItemIDPairing(1024, "loading_warly_trailer")
+--TheInventory:AddItemIDPairing(1025, "loading_willow_trailer")
+--TheInventory:AddItemIDPairing(1026, "loading_winona_trailer")
+--TheInventory:AddItemIDPairing(1027, "loading_woodie_trailer")
+--TheInventory:AddItemIDPairing(1028, "loading_wormwood_trailer")
+--TheInventory:AddItemIDPairing(1029, "loading_wortox_trailer")
+--TheInventory:AddItemIDPairing(1030, "loading_wurt_trailer")
+--TheInventory:AddItemIDPairing(1031, "loading_feast")
+--TheInventory:AddItemIDPairing(1032, "loading_gnarwail")
+--TheInventory:AddItemIDPairing(1033, "loading_gingersnow")
+--TheInventory:AddItemIDPairing(1034, "campfire_cabin")
+--TheInventory:AddItemIDPairing(1035, "dragonflyfurnace_antique")
+--TheInventory:AddItemIDPairing(1036, "minisign_picketwhite")
+--TheInventory:AddItemIDPairing(1037, "meatrack_butcher")
+--TheInventory:AddItemIDPairing(1038, "beebox_house")
+--TheInventory:AddItemIDPairing(1039, "nightsword_sharp")
+--TheInventory:AddItemIDPairing(1040, "armor_sanity_sharp")
+--TheInventory:AddItemIDPairing(1041, "fence_picketwhite")
+--TheInventory:AddItemIDPairing(1042, "torch_carrat")
+--TheInventory:AddItemIDPairing(1043, "goldenaxe_northern")
+--TheInventory:AddItemIDPairing(1044, "goldenpickaxe_northern")
+--TheInventory:AddItemIDPairing(1045, "goldenshovel_northern")
+--TheInventory:AddItemIDPairing(1046, "axe_northern")
+--TheInventory:AddItemIDPairing(1047, "backpack_carrat")
+--TheInventory:AddItemIDPairing(1048, "featherfan_exotic")
+--TheInventory:AddItemIDPairing(1049, "armor_wood_roman")
+--TheInventory:AddItemIDPairing(1050, "researchlab3_ancient")
+--TheInventory:AddItemIDPairing(1051, "spear_northern")
+--TheInventory:AddItemIDPairing(1052, "shovel_northern")
+--TheInventory:AddItemIDPairing(1053, "cane_sharp")
+--TheInventory:AddItemIDPairing(1054, "cookpot_clay")
+--TheInventory:AddItemIDPairing(1055, "fence_gate_picketwhite")
+--TheInventory:AddItemIDPairing(1056, "pickaxe_northern")
+--TheInventory:AddItemIDPairing(1057, "rabbithouse_carrat")
+--TheInventory:AddItemIDPairing(1058, "reviver_cupid_4")
+--TheInventory:AddItemIDPairing(1059, "trap_basket")
+--TheInventory:AddItemIDPairing(1060, "greenstaff_clockwork")
+--TheInventory:AddItemIDPairing(1061, "ruinshat_arcane")
+--TheInventory:AddItemIDPairing(1062, "fence_picketbrown")
+--TheInventory:AddItemIDPairing(1063, "fence_pickettan")
+--TheInventory:AddItemIDPairing(1064, "minisign_picketbrown")
+--TheInventory:AddItemIDPairing(1065, "minisign_pickettan")
+--TheInventory:AddItemIDPairing(1066, "fence_gate_picketbrown")
+--TheInventory:AddItemIDPairing(1067, "fence_gate_pickettan")
+--TheInventory:AddItemIDPairing(1068, "pickaxe_victorian")
+--TheInventory:AddItemIDPairing(1069, "piggyback_nose")
+--TheInventory:AddItemIDPairing(1070, "spear_wathgrithr_northern")
+--TheInventory:AddItemIDPairing(1071, "icebox_porcelain")
+--TheInventory:AddItemIDPairing(1072, "body_wendy_formalp")
+--TheInventory:AddItemIDPairing(1073, "body_wendy_rosep")
+--TheInventory:AddItemIDPairing(1074, "body_wendy_shadowp")
+--TheInventory:AddItemIDPairing(1075, "body_wendy_survivorp")
+--TheInventory:AddItemIDPairing(1076, "feet_maryjanesp_white_pure")
+--TheInventory:AddItemIDPairing(1077, "wendy_formalp")
+--TheInventory:AddItemIDPairing(1078, "wendy_rosep")
+--TheInventory:AddItemIDPairing(1079, "wendy_shadowp")
+--TheInventory:AddItemIDPairing(1080, "wendy_survivorp")
+--TheInventory:AddItemIDPairing(1081, "abigail_formal")
+--TheInventory:AddItemIDPairing(1082, "body_wendy_handmedown")
+--TheInventory:AddItemIDPairing(1083, "feet_wendy_handmedown")
+--TheInventory:AddItemIDPairing(1084, "hand_wendy_handmedown")
+--TheInventory:AddItemIDPairing(1085, "parasol_spring")
+--TheInventory:AddItemIDPairing(1086, "strawhat_bonnet")
+--TheInventory:AddItemIDPairing(1087, "wardrobe_armoire")
+--TheInventory:AddItemIDPairing(1088, "wendy_handmedown")
+--TheInventory:AddItemIDPairing(1089, "abigail_handmedown")
+--TheInventory:AddItemIDPairing(1090, "abigail_rose")
+--TheInventory:AddItemIDPairing(1091, "abigail_shadow")
+--TheInventory:AddItemIDPairing(1092, "abigail_survivor")
+--TheInventory:AddItemIDPairing(1093, "loading_charlie")
+--TheInventory:AddItemIDPairing(1094, "loading_charlie2")
+--TheInventory:AddItemIDPairing(1095, "loading_danger")
+--TheInventory:AddItemIDPairing(1096, "loading_lunacy")
+--TheInventory:AddItemIDPairing(1097, "loading_maxwell2")
+--TheInventory:AddItemIDPairing(1098, "loading_newhorizons")
+--TheInventory:AddItemIDPairing(1099, "playerportrait_bg_wardrobecrystal")
+--TheInventory:AddItemIDPairing(1100, "profileflair_wardrobe_crystal")
+--TheInventory:AddItemIDPairing(1101, "wardrobe_crystal")
+--TheInventory:AddItemIDPairing(1102, "saltbox_shaker")
+--TheInventory:AddItemIDPairing(1103, "earmuffshat_beeguard")
+--TheInventory:AddItemIDPairing(1104, "featherhat_exotic")
+--TheInventory:AddItemIDPairing(1105, "bugnet_frog")
+--TheInventory:AddItemIDPairing(1106, "profileflair_saltbox_shaker")
+--TheInventory:AddItemIDPairing(1107, "backpack_babybeef")
+--TheInventory:AddItemIDPairing(1108, "spear_ragged")
+--TheInventory:AddItemIDPairing(1109, "bedroll_furry_quilt_red_redbird")
+--TheInventory:AddItemIDPairing(1110, "body_pj_red_redbird")
+--TheInventory:AddItemIDPairing(1111, "legs_pj_red_redbird")
+--TheInventory:AddItemIDPairing(1112, "playerportrait_bg_saltboxshaker")
+--TheInventory:AddItemIDPairing(1113, "loading_wendy_blogpostart")
+--TheInventory:AddItemIDPairing(1114, "loading_wendy_trailer")
+--TheInventory:AddItemIDPairing(1115, "dragonflyfurnace_crystal")
+--TheInventory:AddItemIDPairing(1116, "coldfirepit_flower")
+--TheInventory:AddItemIDPairing(1117, "beebox_crystal")
+--TheInventory:AddItemIDPairing(1118, "beehat_sunhat")
+--TheInventory:AddItemIDPairing(1119, "playerportrait_bg_beeboxcrystal")
+--TheInventory:AddItemIDPairing(1120, "profileflair_beebox_crystal")
+--TheInventory:AddItemIDPairing(1121, "loading_wes_trailer")
+--TheInventory:AddItemIDPairing(1122, "researchlab3_crystal")
+--TheInventory:AddItemIDPairing(1123, "krampus_sack_basket")
+--TheInventory:AddItemIDPairing(1124, "tent_leaf")
+--TheInventory:AddItemIDPairing(1125, "walrushat_blue")
+--TheInventory:AddItemIDPairing(1126, "lantern_crystal")
+--TheInventory:AddItemIDPairing(1127, "nightsword_curve")
+--TheInventory:AddItemIDPairing(1128, "armor_sanity_curve")
+--TheInventory:AddItemIDPairing(1129, "mast_crabking")
+--TheInventory:AddItemIDPairing(1130, "playerportrait_bg_dragonflyfurnacecrystal")
+--TheInventory:AddItemIDPairing(1131, "playerportrait_bg_lanterncrystal")
+--TheInventory:AddItemIDPairing(1132, "playerportrait_bg_researchlab3crystal")
+--TheInventory:AddItemIDPairing(1133, "profileflair_dragonflyfurnace_crystal")
+--TheInventory:AddItemIDPairing(1134, "profileflair_lantern_crystal")
+--TheInventory:AddItemIDPairing(1135, "profileflair_researchlab3_crystal")
+--TheInventory:AddItemIDPairing(1136, "backpack_koalefant")
+--TheInventory:AddItemIDPairing(1137, "researchlab3_nature")
+--TheInventory:AddItemIDPairing(1138, "loading_winona2_trailer")
+--TheInventory:AddItemIDPairing(1139, "loading_wortox2_trailer")
+--TheInventory:AddItemIDPairing(1140, "wilson_beard_formal")
+--TheInventory:AddItemIDPairing(1141, "wilson_beard_rose")
+--TheInventory:AddItemIDPairing(1142, "wilson_beard_shadow")
+--TheInventory:AddItemIDPairing(1143, "wilson_beard_victorian")
+--TheInventory:AddItemIDPairing(1144, "wilson_beard_survivor")
+--TheInventory:AddItemIDPairing(1145, "wilson_beard_ice")
+--TheInventory:AddItemIDPairing(1146, "axe_feathered")
+--TheInventory:AddItemIDPairing(1147, "pickaxe_feathered")
+--TheInventory:AddItemIDPairing(1148, "body_walter_detective")
+--TheInventory:AddItemIDPairing(1149, "body_walter_survivor")
+--TheInventory:AddItemIDPairing(1150, "feet_walter_detective")
+--TheInventory:AddItemIDPairing(1151, "feet_walter_survivor")
+--TheInventory:AddItemIDPairing(1152, "legs_walter_detective")
+--TheInventory:AddItemIDPairing(1153, "walter_detective")
+--TheInventory:AddItemIDPairing(1154, "walter_survivor")
+--TheInventory:AddItemIDPairing(1155, "body_walter_formal")
+--TheInventory:AddItemIDPairing(1156, "feet_walter_formal")
+--TheInventory:AddItemIDPairing(1157, "legs_walter_formal")
+--TheInventory:AddItemIDPairing(1158, "walter_formal")
+--TheInventory:AddItemIDPairing(1159, "loading_warly2_trailer")
+--TheInventory:AddItemIDPairing(1160, "loading_willow2_trailer")
+--TheInventory:AddItemIDPairing(1161, "loading_woodie2_trailer")
+--TheInventory:AddItemIDPairing(1162, "loading_wormwood2_trailer")
+--TheInventory:AddItemIDPairing(1163, "walterhat_detective")
+--TheInventory:AddItemIDPairing(1164, "walterhat_formal")
+--TheInventory:AddItemIDPairing(1165, "walterhat_survivor")
+--TheInventory:AddItemIDPairing(1166, "body_wilson_nature")
+--TheInventory:AddItemIDPairing(1167, "legs_wilson_nature")
+--TheInventory:AddItemIDPairing(1168, "wilson_nature")
+--TheInventory:AddItemIDPairing(1169, "body_wurt_rose")
+--TheInventory:AddItemIDPairing(1170, "hand_wurt_rose")
+--TheInventory:AddItemIDPairing(1171, "legs_wurt_rose")
+--TheInventory:AddItemIDPairing(1172, "wurt_rose")
+--TheInventory:AddItemIDPairing(1173, "profileflair_egg")
+--TheInventory:AddItemIDPairing(1174, "profileflair_egg_rotten")
+--TheInventory:AddItemIDPairing(1175, "profileflair_redbird")
+--TheInventory:AddItemIDPairing(1176, "body_wolfgang_nature")
+--TheInventory:AddItemIDPairing(1177, "body_wormwood_shadow")
+--TheInventory:AddItemIDPairing(1178, "feet_wolfgang_nature")
+--TheInventory:AddItemIDPairing(1179, "hand_wormwood_shadow")
+--TheInventory:AddItemIDPairing(1180, "legs_wormwood_shadow")
+--TheInventory:AddItemIDPairing(1181, "wolfgang_nature")
+--TheInventory:AddItemIDPairing(1182, "wormwood_shadow")
+--TheInventory:AddItemIDPairing(1183, "warly_chef")
+--TheInventory:AddItemIDPairing(1184, "body_warly_chef")
+--TheInventory:AddItemIDPairing(1185, "feet_warly_chef")
+--TheInventory:AddItemIDPairing(1186, "tophat_chef")
+--TheInventory:AddItemIDPairing(1187, "webber_beard_formal")
+--TheInventory:AddItemIDPairing(1188, "webber_beard_rose")
+--TheInventory:AddItemIDPairing(1189, "webber_beard_shadow")
+--TheInventory:AddItemIDPairing(1190, "webber_beard_survivor")
+--TheInventory:AddItemIDPairing(1191, "wilson_beard_gladiator")
+--TheInventory:AddItemIDPairing(1192, "wilson_beard_madscience")
+--TheInventory:AddItemIDPairing(1193, "wilson_beard_magma")
+--TheInventory:AddItemIDPairing(1194, "wilson_beard_nature")
+--TheInventory:AddItemIDPairing(1195, "wilson_beard_pigguard")
+--TheInventory:AddItemIDPairing(1196, "webber_beard_bat")
+--TheInventory:AddItemIDPairing(1197, "telestaff_crystal")
+--TheInventory:AddItemIDPairing(1198, "webber_beard_ice")
+--TheInventory:AddItemIDPairing(1199, "playerportrait_bg_telestaffcrystal")
+--TheInventory:AddItemIDPairing(1200, "profileflair_telestaff_crystal")
+--TheInventory:AddItemIDPairing(1201, "webber_beard_gladiator")
+--TheInventory:AddItemIDPairing(1202, "webber_beard_magma")
+--TheInventory:AddItemIDPairing(1203, "webber_beard_wrestler")
+--TheInventory:AddItemIDPairing(1204, "webber_beard_punk")
+--TheInventory:AddItemIDPairing(1205, "wall_ruins_thulecite")
+--TheInventory:AddItemIDPairing(1206, "shovel_feathered")
+--TheInventory:AddItemIDPairing(1207, "wall_stone_ancient")
+--TheInventory:AddItemIDPairing(1208, "body_wathgrithr_formalp")
+--TheInventory:AddItemIDPairing(1209, "body_wathgrithr_rosep")
+--TheInventory:AddItemIDPairing(1210, "body_wathgrithr_shadowp")
+--TheInventory:AddItemIDPairing(1211, "body_wathgrithr_survivorp")
+--TheInventory:AddItemIDPairing(1212, "body_wathgrithr_valkyrie")
+--TheInventory:AddItemIDPairing(1213, "legs_wathgrithr_valkyrie")
+--TheInventory:AddItemIDPairing(1214, "spear_wathgrithr_valkyrie")
+--TheInventory:AddItemIDPairing(1215, "wathgrithr_formalp")
+--TheInventory:AddItemIDPairing(1216, "wathgrithr_rosep")
+--TheInventory:AddItemIDPairing(1217, "wathgrithr_shadowp")
+--TheInventory:AddItemIDPairing(1218, "wathgrithr_survivorp")
+--TheInventory:AddItemIDPairing(1219, "wathgrithr_valkyrie")
+--TheInventory:AddItemIDPairing(1220, "armor_marble_valkyrie")
+--TheInventory:AddItemIDPairing(1221, "wathgrithrhat_valkyrie")
+--TheInventory:AddItemIDPairing(1222, "telebase_crystal")
+--TheInventory:AddItemIDPairing(1223, "playerportrait_bg_telebasecrystal")
+--TheInventory:AddItemIDPairing(1224, "profileflair_telebase_crystal")
+--TheInventory:AddItemIDPairing(1225, "body_wolfgang_wolfman")
+--TheInventory:AddItemIDPairing(1226, "body_woodie_hippie")
+--TheInventory:AddItemIDPairing(1227, "body_wurt_squid")
+--TheInventory:AddItemIDPairing(1228, "feet_woodie_hippie")
+--TheInventory:AddItemIDPairing(1229, "hand_wolfgang_wolfman")
+--TheInventory:AddItemIDPairing(1230, "hand_woodie_hippie")
+--TheInventory:AddItemIDPairing(1231, "hand_wurt_squid")
+--TheInventory:AddItemIDPairing(1232, "legs_wolfgang_wolfman")
+--TheInventory:AddItemIDPairing(1233, "legs_woodie_hippie")
+--TheInventory:AddItemIDPairing(1234, "wolfgang_wolfman")
+--TheInventory:AddItemIDPairing(1235, "woodie_hippie")
+--TheInventory:AddItemIDPairing(1236, "wurt_squid")
+--TheInventory:AddItemIDPairing(1237, "legs_wormwood_pumpkin")
+--TheInventory:AddItemIDPairing(1238, "body_walter_ventriloquist")
+--TheInventory:AddItemIDPairing(1239, "feet_walter_ventriloquist")
+--TheInventory:AddItemIDPairing(1240, "legs_walter_ventriloquist")
+--TheInventory:AddItemIDPairing(1241, "razor_scissors")
+--TheInventory:AddItemIDPairing(1242, "razor_straight")
+--TheInventory:AddItemIDPairing(1243, "walter_ventriloquist")
+--TheInventory:AddItemIDPairing(1244, "walterhat_ventriloquist")
+--TheInventory:AddItemIDPairing(1245, "lantern_mummy")
+--TheInventory:AddItemIDPairing(1246, "birdcage_gothicp")
+--TheInventory:AddItemIDPairing(1247, "cookpot_cauldronp")
+--TheInventory:AddItemIDPairing(1248, "dragonling_batp")
+--TheInventory:AddItemIDPairing(1249, "torch_spookyp")
+--TheInventory:AddItemIDPairing(1250, "body_wathgrithr_deerclopsp")
+--TheInventory:AddItemIDPairing(1251, "body_waxwell_krampusp")
+--TheInventory:AddItemIDPairing(1252, "body_webber_batp")
+--TheInventory:AddItemIDPairing(1253, "body_wendy_lureplantp")
+--TheInventory:AddItemIDPairing(1254, "body_wes_mandrakep")
+--TheInventory:AddItemIDPairing(1255, "body_wickerbottom_lightninggoatp")
+--TheInventory:AddItemIDPairing(1256, "body_willow_dragonflyp")
+--TheInventory:AddItemIDPairing(1257, "body_wilson_pigguardp")
+--TheInventory:AddItemIDPairing(1258, "body_winona_grassgeckop")
+--TheInventory:AddItemIDPairing(1259, "body_wolfgang_walrusp")
+--TheInventory:AddItemIDPairing(1260, "body_woodie_treeguardp")
+--TheInventory:AddItemIDPairing(1261, "body_wx78_rhinorookp")
+--TheInventory:AddItemIDPairing(1262, "wathgrithr_deerclops_p")
+--TheInventory:AddItemIDPairing(1263, "waxwell_krampus_p")
+--TheInventory:AddItemIDPairing(1264, "webber_bat_p")
+--TheInventory:AddItemIDPairing(1265, "wendy_lureplant_p")
+--TheInventory:AddItemIDPairing(1266, "wes_mandrake_p")
+--TheInventory:AddItemIDPairing(1267, "wickerbottom_lightninggoat_p")
+--TheInventory:AddItemIDPairing(1268, "willow_dragonfly_p")
+--TheInventory:AddItemIDPairing(1269, "wilson_pigguard_p")
+--TheInventory:AddItemIDPairing(1270, "winona_grassgecko_p")
+--TheInventory:AddItemIDPairing(1271, "wolfgang_walrus_p")
+--TheInventory:AddItemIDPairing(1272, "woodie_treeguard_p")
+--TheInventory:AddItemIDPairing(1273, "wx78_rhinorook_p")
+--TheInventory:AddItemIDPairing(1274, "hat_catcoon_costumep")
+--TheInventory:AddItemIDPairing(1275, "hat_chester_costumep")
+--TheInventory:AddItemIDPairing(1276, "hat_glommer_costumep")
+--TheInventory:AddItemIDPairing(1277, "hat_hutch_costumep")
+--TheInventory:AddItemIDPairing(1278, "body_catcoon_costumep")
+--TheInventory:AddItemIDPairing(1279, "body_chester_costumep")
+--TheInventory:AddItemIDPairing(1280, "body_glommer_costumep")
+--TheInventory:AddItemIDPairing(1281, "body_hutch_costumep")
+--TheInventory:AddItemIDPairing(1282, "playerportrait_bg_researchlabgreen")
+--TheInventory:AddItemIDPairing(1283, "profileflair_researchlab_green")
+--TheInventory:AddItemIDPairing(1284, "researchlab_green")
+--TheInventory:AddItemIDPairing(1285, "playerportrait_bg_researchlab2crystal")
+--TheInventory:AddItemIDPairing(1286, "profileflair_researchlab2_crystal")
+--TheInventory:AddItemIDPairing(1287, "researchlab2_crystal")
+--TheInventory:AddItemIDPairing(1288, "body_walter_ice")
+--TheInventory:AddItemIDPairing(1289, "body_warly_ice")
+--TheInventory:AddItemIDPairing(1290, "body_wortox_ice")
+--TheInventory:AddItemIDPairing(1291, "body_wx78_ice")
+--TheInventory:AddItemIDPairing(1292, "feet_warly_ice")
+--TheInventory:AddItemIDPairing(1293, "feet_wx78_ice")
+--TheInventory:AddItemIDPairing(1294, "hand_walter_ice")
+--TheInventory:AddItemIDPairing(1295, "hand_wx78_ice")
+--TheInventory:AddItemIDPairing(1296, "legs_walter_ice")
+--TheInventory:AddItemIDPairing(1297, "legs_warly_ice")
+--TheInventory:AddItemIDPairing(1298, "legs_wortox_ice")
+--TheInventory:AddItemIDPairing(1299, "legs_wx78_ice")
+--TheInventory:AddItemIDPairing(1300, "walter_ice")
+--TheInventory:AddItemIDPairing(1301, "warly_ice")
+--TheInventory:AddItemIDPairing(1302, "wortox_ice")
+--TheInventory:AddItemIDPairing(1303, "wx78_ice")
+--TheInventory:AddItemIDPairing(1304, "walterhat_ice")
+--TheInventory:AddItemIDPairing(1305, "winona_ice")
+--TheInventory:AddItemIDPairing(1306, "body_winona_ice")
+--TheInventory:AddItemIDPairing(1307, "hand_winona_ice")
+--TheInventory:AddItemIDPairing(1308, "wardrobe_yule")
+--TheInventory:AddItemIDPairing(1309, "loading_grotto")
+--TheInventory:AddItemIDPairing(1310, "loading_walter_trailer")
+--TheInventory:AddItemIDPairing(1311, "loading_wigfrid_trailer")
+--TheInventory:AddItemIDPairing(1312, "playerportrait_bg_wardrobeyule")
+--TheInventory:AddItemIDPairing(1313, "profileflair_wardrobe_yule")
+--TheInventory:AddItemIDPairing(1314, "body_ugly_chester")
+--TheInventory:AddItemIDPairing(1315, "body_ugly_deerclops")
+--TheInventory:AddItemIDPairing(1316, "body_ugly_gemdeer")
+--TheInventory:AddItemIDPairing(1317, "body_ugly_gingerpig")
+--TheInventory:AddItemIDPairing(1318, "body_ugly_klaus")
+--TheInventory:AddItemIDPairing(1319, "body_ugly_treeguard")
+--TheInventory:AddItemIDPairing(1320, "body_ugly_winterhat")
+--TheInventory:AddItemIDPairing(1321, "webber_beard_victorian")
+--TheInventory:AddItemIDPairing(1322, "loading_farming")
+--TheInventory:AddItemIDPairing(1323, "loading_wendy_trailer2")
+--TheInventory:AddItemIDPairing(1324, "loading_wes_trailer2")
+--TheInventory:AddItemIDPairing(1325, "loading_wurt_trailer2")
+--TheInventory:AddItemIDPairing(1326, "fence_gate_victorianblack")
+--TheInventory:AddItemIDPairing(1327, "fence_victorianblack")
+--TheInventory:AddItemIDPairing(1328, "meatrack_victorian")
+--TheInventory:AddItemIDPairing(1329, "eyebrellahat_victorian")
+--TheInventory:AddItemIDPairing(1330, "featherhat_victorian")
+--TheInventory:AddItemIDPairing(1331, "saltbox_victorian")
+--TheInventory:AddItemIDPairing(1332, "wall_moonrock_victorian")
+--TheInventory:AddItemIDPairing(1333, "wall_ruins_victorian")
+--TheInventory:AddItemIDPairing(1334, "wall_stone_victorian")
+--TheInventory:AddItemIDPairing(1335, "saddle_basic_yotb")
+--TheInventory:AddItemIDPairing(1336, "beebox_victorian")
+--TheInventory:AddItemIDPairing(1337, "mushroom_light2_victorian")
+--TheInventory:AddItemIDPairing(1338, "fence_gate_victorianbrass")
+--TheInventory:AddItemIDPairing(1339, "fence_gate_victorianbronze")
+--TheInventory:AddItemIDPairing(1340, "fence_victorianbrass")
+--TheInventory:AddItemIDPairing(1341, "fence_victorianbronze")
+--TheInventory:AddItemIDPairing(1342, "treasurechest_cupid")
+--TheInventory:AddItemIDPairing(1343, "loading_walter_trailer2")
+--TheInventory:AddItemIDPairing(1344, "loading_wigfrid_trailer2")
+--TheInventory:AddItemIDPairing(1345, "beefalohat_pigking_alt")
+--TheInventory:AddItemIDPairing(1346, "reviver_cupid_2alt")
+--TheInventory:AddItemIDPairing(1347, "reviver_cupid_3alt")
+--TheInventory:AddItemIDPairing(1348, "reviver_cupid_4alt")
+--TheInventory:AddItemIDPairing(1349, "reviver_cupid_alt")
+--TheInventory:AddItemIDPairing(1350, "torch_carrat_alt")
+--TheInventory:AddItemIDPairing(1351, "winterhat_fancy_puppyalt")
+--TheInventory:AddItemIDPairing(1352, "winterhat_rooster_alt")
+--TheInventory:AddItemIDPairing(1353, "body_walter_victorian")
+--TheInventory:AddItemIDPairing(1354, "body_wormwood_victorian")
+--TheInventory:AddItemIDPairing(1355, "body_wortox_victorian")
+--TheInventory:AddItemIDPairing(1356, "body_wurt_victorian")
+--TheInventory:AddItemIDPairing(1357, "hand_wurt_victorian")
+--TheInventory:AddItemIDPairing(1358, "legs_walter_victorian")
+--TheInventory:AddItemIDPairing(1359, "legs_wormwood_victorian")
+--TheInventory:AddItemIDPairing(1360, "legs_wortox_victorian")
+--TheInventory:AddItemIDPairing(1361, "legs_wurt_victorian")
+--TheInventory:AddItemIDPairing(1362, "walter_victorian")
+--TheInventory:AddItemIDPairing(1363, "walterhat_victorian")
+--TheInventory:AddItemIDPairing(1364, "wormwood_victorian")
+--TheInventory:AddItemIDPairing(1365, "wortox_victorian")
+--TheInventory:AddItemIDPairing(1366, "wurt_victorian")
+--TheInventory:AddItemIDPairing(1367, "hand_wormwood_victorian")
+--TheInventory:AddItemIDPairing(1368, "hand_wortox_victorian")
+--TheInventory:AddItemIDPairing(1369, "lightning_rod_nautical")
+--TheInventory:AddItemIDPairing(1370, "playerportrait_bg_lightningrodnautical")
+--TheInventory:AddItemIDPairing(1371, "profileflair_lightningrodnautical")
+--TheInventory:AddItemIDPairing(1372, "wormhole_lureplant")
+--TheInventory:AddItemIDPairing(1373, "wormhole_spider")
+--TheInventory:AddItemIDPairing(1374, "wormhole_claw")
+--TheInventory:AddItemIDPairing(1375, "wormhole_worm")
+--TheInventory:AddItemIDPairing(1376, "body_wes_formalp")
+--TheInventory:AddItemIDPairing(1377, "body_wes_harlequin")
+--TheInventory:AddItemIDPairing(1378, "body_wes_rosep")
+--TheInventory:AddItemIDPairing(1379, "body_wes_shadowp")
+--TheInventory:AddItemIDPairing(1380, "body_wes_survivorp")
+--TheInventory:AddItemIDPairing(1381, "cane_harlequin")
+--TheInventory:AddItemIDPairing(1382, "playerportrait_bg_saltboxnautical")
+--TheInventory:AddItemIDPairing(1383, "saltbox_nautical")
+--TheInventory:AddItemIDPairing(1384, "wes_formalp")
+--TheInventory:AddItemIDPairing(1385, "wes_harlequin")
+--TheInventory:AddItemIDPairing(1386, "wes_rosep")
+--TheInventory:AddItemIDPairing(1387, "wes_shadowp")
+--TheInventory:AddItemIDPairing(1388, "wes_survivorp")
+--TheInventory:AddItemIDPairing(1389, "tophat_harlequin")
+--TheInventory:AddItemIDPairing(1390, "loading_farming2")
+--TheInventory:AddItemIDPairing(1391, "loading_march_qol")
+--TheInventory:AddItemIDPairing(1392, "loading_roadmap")
+--TheInventory:AddItemIDPairing(1393, "loading_roadmap2")
+--TheInventory:AddItemIDPairing(1394, "profileflair_saltboxnautical")
+--TheInventory:AddItemIDPairing(1395, "axe_invisible")
+--TheInventory:AddItemIDPairing(1396, "farm_hoe_invisible")
+--TheInventory:AddItemIDPairing(1397, "hammer_invisible")
+--TheInventory:AddItemIDPairing(1398, "panflute_harlequin")
+--TheInventory:AddItemIDPairing(1399, "pickaxe_invisible")
+--TheInventory:AddItemIDPairing(1400, "pitchfork_invisible")
+--TheInventory:AddItemIDPairing(1401, "shovel_invisible")
+--TheInventory:AddItemIDPairing(1402, "golden_farmhoe_invisible")
+--TheInventory:AddItemIDPairing(1403, "goldenaxe_invisible")
+--TheInventory:AddItemIDPairing(1404, "goldenpickaxe_invisible")
+--TheInventory:AddItemIDPairing(1405, "goldenshovel_invisible")
+--TheInventory:AddItemIDPairing(1406, "oar_driftwood_invisible")
+--TheInventory:AddItemIDPairing(1407, "oar_invisible")
+--TheInventory:AddItemIDPairing(1408, "body_webber_boy")
+--TheInventory:AddItemIDPairing(1409, "body_webber_formalp")
+--TheInventory:AddItemIDPairing(1410, "body_webber_rosep")
+--TheInventory:AddItemIDPairing(1411, "body_webber_shadowp")
+--TheInventory:AddItemIDPairing(1412, "body_webber_survivorp")
+--TheInventory:AddItemIDPairing(1413, "farm_hoe_rustic")
+--TheInventory:AddItemIDPairing(1414, "legs_webber_boy")
+--TheInventory:AddItemIDPairing(1415, "wateringcan_rustic")
+--TheInventory:AddItemIDPairing(1416, "webber_boy")
+--TheInventory:AddItemIDPairing(1417, "webber_formalp")
+--TheInventory:AddItemIDPairing(1418, "webber_rosep")
+--TheInventory:AddItemIDPairing(1419, "webber_shadowp")
+--TheInventory:AddItemIDPairing(1420, "webber_survivorp")
+--TheInventory:AddItemIDPairing(1421, "seedpouch_rustic")
+--TheInventory:AddItemIDPairing(1422, "webber_beard_boy")
+--TheInventory:AddItemIDPairing(1423, "chester_lamb")
+--TheInventory:AddItemIDPairing(1424, "treasurechest_vintage")
+--TheInventory:AddItemIDPairing(1425, "bundle_vintage")
+--TheInventory:AddItemIDPairing(1426, "lantern_flower")
+--TheInventory:AddItemIDPairing(1427, "endtable_cawnival")
+--TheInventory:AddItemIDPairing(1428, "loading_gameplay_trailer")
+--TheInventory:AddItemIDPairing(1429, "playerportrait_bg_dragonflychestkraken")
+--TheInventory:AddItemIDPairing(1430, "dragonflychest_kraken")
+--TheInventory:AddItemIDPairing(1431, "profileflair_dragonflychest_kraken")
+--TheInventory:AddItemIDPairing(1432, "profileflair_corvus")
+--TheInventory:AddItemIDPairing(1433, "profileflair_crowkid")
+--TheInventory:AddItemIDPairing(1434, "loading_carnival1")
+--TheInventory:AddItemIDPairing(1435, "loading_carnival2")
+--TheInventory:AddItemIDPairing(1436, "mast_nautical")
+--TheInventory:AddItemIDPairing(1437, "wanda_none")
+--TheInventory:AddItemIDPairing(1438, "playerportrait_bg_mastnautical")
+--TheInventory:AddItemIDPairing(1439, "profileflair_mast_nautical")
+--TheInventory:AddItemIDPairing(1440, "chester_walrus")
+--TheInventory:AddItemIDPairing(1441, "perdling_pelican")
+--TheInventory:AddItemIDPairing(1442, "perdling_puffin")
+--TheInventory:AddItemIDPairing(1443, "seafaring_prototyper_lighthouse")
+--TheInventory:AddItemIDPairing(1444, "supertacklecontainer_shell")
+--TheInventory:AddItemIDPairing(1445, "tacklecontainer_shell")
+--TheInventory:AddItemIDPairing(1446, "tent_beach")
+--TheInventory:AddItemIDPairing(1447, "walter_nature")
+--TheInventory:AddItemIDPairing(1448, "body_walter_nature")
+--TheInventory:AddItemIDPairing(1449, "hand_walter_nature")
+--TheInventory:AddItemIDPairing(1450, "legs_walter_nature")
+--TheInventory:AddItemIDPairing(1451, "walterhat_nature")
+--TheInventory:AddItemIDPairing(1452, "abigail_nature")
+--TheInventory:AddItemIDPairing(1453, "body_warly_nature")
+--TheInventory:AddItemIDPairing(1454, "body_webber_nature")
+--TheInventory:AddItemIDPairing(1455, "body_wendy_nature")
+--TheInventory:AddItemIDPairing(1456, "body_wortox_nature")
+--TheInventory:AddItemIDPairing(1457, "feet_warly_nature")
+--TheInventory:AddItemIDPairing(1458, "feet_webber_nature")
+--TheInventory:AddItemIDPairing(1459, "feet_wendy_nature")
+--TheInventory:AddItemIDPairing(1460, "hand_webber_nature")
+--TheInventory:AddItemIDPairing(1461, "legs_wortox_nature")
+--TheInventory:AddItemIDPairing(1462, "warly_nature")
+--TheInventory:AddItemIDPairing(1463, "webber_nature")
+--TheInventory:AddItemIDPairing(1464, "wendy_nature")
+--TheInventory:AddItemIDPairing(1465, "wortox_nature")
+--TheInventory:AddItemIDPairing(1466, "webber_beard_nature")
+--TheInventory:AddItemIDPairing(1467, "hand_wortox_nature")
+--TheInventory:AddItemIDPairing(1468, "wanda_formal")
+--TheInventory:AddItemIDPairing(1469, "body_wanda_formal")
+--TheInventory:AddItemIDPairing(1470, "body_wanda_shadow")
+--TheInventory:AddItemIDPairing(1471, "feet_wanda_formal")
+--TheInventory:AddItemIDPairing(1472, "hand_wanda_formal")
+--TheInventory:AddItemIDPairing(1473, "hand_wanda_shadow")
+--TheInventory:AddItemIDPairing(1474, "legs_wanda_shadow")
+--TheInventory:AddItemIDPairing(1475, "wanda_shadow")
+--TheInventory:AddItemIDPairing(1476, "wanda_steampunk")
+--TheInventory:AddItemIDPairing(1477, "backpack_splumonkey")
+--TheInventory:AddItemIDPairing(1478, "torch_pronged")
+--TheInventory:AddItemIDPairing(1479, "body_pj_orange_honey")
+--TheInventory:AddItemIDPairing(1480, "legs_pj_orange_honey")
+--TheInventory:AddItemIDPairing(1481, "bedroll_furry_quilt_orange_honey")
+--TheInventory:AddItemIDPairing(1482, "body_wanda_steampunk")
+--TheInventory:AddItemIDPairing(1483, "hand_wanda_steampunk")
+--TheInventory:AddItemIDPairing(1484, "legs_wanda_steampunk")
+--TheInventory:AddItemIDPairing(1485, "hambat_nautical")
+--TheInventory:AddItemIDPairing(1486, "profileflair_hambat_nautical")
+--TheInventory:AddItemIDPairing(1487, "playerportrait_bg_hambatnautical")
+--TheInventory:AddItemIDPairing(1488, "loading_axiomvisus_trailer")
+--TheInventory:AddItemIDPairing(1489, "loading_eyeofthestorm_trailer")
+--TheInventory:AddItemIDPairing(1490, "loading_waterlogged_trailer")
+--TheInventory:AddItemIDPairing(1491, "loading_webber_trailer")
+--TheInventory:AddItemIDPairing(1492, "loading_wes_trailer3")
+--TheInventory:AddItemIDPairing(1493, "steeringwheel_nautical_item")
+--TheInventory:AddItemIDPairing(1494, "steeringwheel_nautical")
+--TheInventory:AddItemIDPairing(1495, "playerportrait_bg_steeringwheelnautical")
+--TheInventory:AddItemIDPairing(1496, "profileflair_steeringwheel_nautical")
+--TheInventory:AddItemIDPairing(1497, "wanda_bishop")
+--TheInventory:AddItemIDPairing(1498, "wurt_toadstool")
+--TheInventory:AddItemIDPairing(1499, "body_wanda_bishopp")
+--TheInventory:AddItemIDPairing(1500, "body_wurt_toadstoolp")
+--TheInventory:AddItemIDPairing(1501, "walter_bee")
+--TheInventory:AddItemIDPairing(1502, "wurt_toadstool_p")
+--TheInventory:AddItemIDPairing(1503, "boomerang_bananarang")
+--TheInventory:AddItemIDPairing(1504, "bugnet_lavaproof")
+--TheInventory:AddItemIDPairing(1505, "firestaff_flamelash")
+--TheInventory:AddItemIDPairing(1506, "icestaff_icerod")
+--TheInventory:AddItemIDPairing(1507, "nightsword_lightsbane")
+--TheInventory:AddItemIDPairing(1508, "pickaxe_reavershark")
+--TheInventory:AddItemIDPairing(1509, "researchlab2_alchemytable")
+--TheInventory:AddItemIDPairing(1510, "reskin_tool_brush")
+--TheInventory:AddItemIDPairing(1511, "reviver_lifecrystal")
+--TheInventory:AddItemIDPairing(1512, "treasurechest_corruption")
+--TheInventory:AddItemIDPairing(1513, "treasurechest_crimson")
+--TheInventory:AddItemIDPairing(1514, "wanda_bishop_p")
+--TheInventory:AddItemIDPairing(1515, "hammer_hammush")
+--TheInventory:AddItemIDPairing(1516, "orangestaff_rodofdiscord")
+--TheInventory:AddItemIDPairing(1517, "oceanfishingrod_hotline")
+--TheInventory:AddItemIDPairing(1518, "whip_snapthorn")
+--TheInventory:AddItemIDPairing(1519, "body_walter_beep")
+--TheInventory:AddItemIDPairing(1520, "walter_bee_p")
+--TheInventory:AddItemIDPairing(1521, "walterhat_beep")
+--TheInventory:AddItemIDPairing(1522, "wortox_noeyeddeer")
+--TheInventory:AddItemIDPairing(1523, "starstaff_portal")
+--TheInventory:AddItemIDPairing(1524, "telestaff_shadowbeam")
+--TheInventory:AddItemIDPairing(1525, "multitool_axe_pickaxe_pickaxeaxe")
+--TheInventory:AddItemIDPairing(1526, "body_wortox_noeyeddeerp")
+--TheInventory:AddItemIDPairing(1527, "warly_carrat")
+--TheInventory:AddItemIDPairing(1528, "wortox_noeyeddeer_p")
+--TheInventory:AddItemIDPairing(1529, "alterguardianhat_lastprism")
+--TheInventory:AddItemIDPairing(1530, "krampus_sack_voidbag")
+--TheInventory:AddItemIDPairing(1531, "telebase_hallowpylon")
+--TheInventory:AddItemIDPairing(1532, "armor_skeleton_shadowscalemail")
+--TheInventory:AddItemIDPairing(1533, "body_merchant_coat")
+--TheInventory:AddItemIDPairing(1534, "skeletonhat_shadowhelmet")
+--TheInventory:AddItemIDPairing(1535, "tophat_merchant")
+--TheInventory:AddItemIDPairing(1536, "feet_merchant")
+--TheInventory:AddItemIDPairing(1537, "legs_merchant")
+--TheInventory:AddItemIDPairing(1538, "glasscutter_terraprisma")
+--TheInventory:AddItemIDPairing(1539, "wormwood_saladmander")
+--TheInventory:AddItemIDPairing(1540, "eyeplant_trap_plantera")
+--TheInventory:AddItemIDPairing(1541, "mastupgradelamp_nautical")
+--TheInventory:AddItemIDPairing(1542, "playerportrait_bg_mastupgradelampnautical")
+--TheInventory:AddItemIDPairing(1543, "profileflair_mastupgradelamp_nautical")
+--TheInventory:AddItemIDPairing(1544, "body_warly_carratp")
+--TheInventory:AddItemIDPairing(1545, "body_wormwood_saladmanderp")
+--TheInventory:AddItemIDPairing(1546, "warly_carrat_p")
+--TheInventory:AddItemIDPairing(1547, "wormwood_saladmander_p")
+--TheInventory:AddItemIDPairing(1548, "playerportrait_bg_researchlab3monster")
+--TheInventory:AddItemIDPairing(1549, "profileflair_researchlab3_monster")
+--TheInventory:AddItemIDPairing(1550, "researchlab3_monster")
+--TheInventory:AddItemIDPairing(1551, "body_wolfgang_formalp")
+--TheInventory:AddItemIDPairing(1552, "body_wolfgang_rosep")
+--TheInventory:AddItemIDPairing(1553, "body_wolfgang_shadowp")
+--TheInventory:AddItemIDPairing(1554, "body_wolfgang_strongman")
+--TheInventory:AddItemIDPairing(1555, "body_wolfgang_survivorp")
+--TheInventory:AddItemIDPairing(1556, "hand_wolfgang_strongman")
+--TheInventory:AddItemIDPairing(1557, "legs_wolfgang_strongman")
+--TheInventory:AddItemIDPairing(1558, "wolfgang_formalp")
+--TheInventory:AddItemIDPairing(1559, "wolfgang_rosep")
+--TheInventory:AddItemIDPairing(1560, "wolfgang_shadowp")
+--TheInventory:AddItemIDPairing(1561, "wolfgang_strongman")
+--TheInventory:AddItemIDPairing(1562, "wolfgang_survivorp")
+--TheInventory:AddItemIDPairing(1563, "bedroll_furry_potato")
+--TheInventory:AddItemIDPairing(1564, "body_wanda_yule")
+--TheInventory:AddItemIDPairing(1565, "body_willow_yule")
+--TheInventory:AddItemIDPairing(1566, "body_wilson_yule")
+--TheInventory:AddItemIDPairing(1567, "body_wormwood_yule")
+--TheInventory:AddItemIDPairing(1568, "body_wurt_yule")
+--TheInventory:AddItemIDPairing(1569, "cavein_boulder_kettlebell")
+--TheInventory:AddItemIDPairing(1570, "hand_willow_yule")
+--TheInventory:AddItemIDPairing(1571, "hand_wormwood_yule")
+--TheInventory:AddItemIDPairing(1572, "legs_wormwood_yule")
+--TheInventory:AddItemIDPairing(1573, "legs_wurt_yule")
+--TheInventory:AddItemIDPairing(1574, "meatrack_circus")
+--TheInventory:AddItemIDPairing(1575, "piggyback_elephant")
+--TheInventory:AddItemIDPairing(1576, "wanda_yule")
+--TheInventory:AddItemIDPairing(1577, "willow_yule")
+--TheInventory:AddItemIDPairing(1578, "wilson_yule")
+--TheInventory:AddItemIDPairing(1579, "wormwood_yule")
+--TheInventory:AddItemIDPairing(1580, "wurt_yule")
+--TheInventory:AddItemIDPairing(1581, "feet_willow_yule")
+--TheInventory:AddItemIDPairing(1582, "feet_wilson_yule")
+--TheInventory:AddItemIDPairing(1583, "hand_wilson_yule")
+--TheInventory:AddItemIDPairing(1584, "legs_wilson_yule")
+--TheInventory:AddItemIDPairing(1585, "body_wickerbottom_yule")
+--TheInventory:AddItemIDPairing(1586, "feet_wickerbottom_yule")
+--TheInventory:AddItemIDPairing(1587, "legs_wickerbottom_yule")
+--TheInventory:AddItemIDPairing(1588, "wickerbottom_yule")
+--TheInventory:AddItemIDPairing(1589, "lantern_winter_alt")
+--TheInventory:AddItemIDPairing(1590, "hand_wanda_yule")
+--TheInventory:AddItemIDPairing(1591, "legs_wanda_yule")
+--TheInventory:AddItemIDPairing(1592, "wilson_beard_yule")
+--TheInventory:AddItemIDPairing(1593, "playerportrait_bg_rabbithouseyule")
+--TheInventory:AddItemIDPairing(1594, "profileflair_rabbithouse_yule")
+--TheInventory:AddItemIDPairing(1595, "rabbithouse_yule")
+--TheInventory:AddItemIDPairing(1596, "feet_ridingbootp_white_pure")
+--TheInventory:AddItemIDPairing(1597, "arrowsign_post_fantasy")
+--TheInventory:AddItemIDPairing(1598, "batbat_fantasy")
+--TheInventory:AddItemIDPairing(1599, "beefalohat_fantasy")
+--TheInventory:AddItemIDPairing(1600, "dragonflychest_fantasy")
+--TheInventory:AddItemIDPairing(1601, "eyebrellahat_fantasy")
+--TheInventory:AddItemIDPairing(1602, "fence_fantasy")
+--TheInventory:AddItemIDPairing(1603, "heatrock_fantasy")
+--TheInventory:AddItemIDPairing(1604, "mermhouse_crafted_fantasy")
+--TheInventory:AddItemIDPairing(1605, "minisign_fantasy")
+--TheInventory:AddItemIDPairing(1606, "glommer_fantasy")
+--TheInventory:AddItemIDPairing(1607, "hutch_fantasy")
+--TheInventory:AddItemIDPairing(1608, "torch_nautical")
+--TheInventory:AddItemIDPairing(1609, "loading_wanda_trailer")
+--TheInventory:AddItemIDPairing(1610, "loading_wolfgang_trailer")
+--TheInventory:AddItemIDPairing(1611, "playerportrait_bg_torchnautical")
+--TheInventory:AddItemIDPairing(1612, "profileflair_torch_nautical")
+--TheInventory:AddItemIDPairing(1613, "beemine_heart")
+--TheInventory:AddItemIDPairing(1614, "loading_terraria_trailer")
+--TheInventory:AddItemIDPairing(1615, "wall_stone_gothic")
+--TheInventory:AddItemIDPairing(1616, "saddle_basic_yotbalt")
+--TheInventory:AddItemIDPairing(1617, "treasurechest_cupidalt")
+--TheInventory:AddItemIDPairing(1618, "bundle_gothic")
+--TheInventory:AddItemIDPairing(1619, "coldfirepit_gothic")
+--TheInventory:AddItemIDPairing(1620, "fence_gothic")
+--TheInventory:AddItemIDPairing(1621, "lantern_gothic")
+--TheInventory:AddItemIDPairing(1622, "lightning_rod_gothic")
+--TheInventory:AddItemIDPairing(1623, "mastupgrade_lightningrod_nautical")
+--TheInventory:AddItemIDPairing(1624, "pighouse_gothic")
+--TheInventory:AddItemIDPairing(1625, "researchlab2_gothic")
+--TheInventory:AddItemIDPairing(1626, "researchlab_gothic")
+--TheInventory:AddItemIDPairing(1627, "wardrobe_gothic")
+--TheInventory:AddItemIDPairing(1628, "sculptingtable_gothic")
+--TheInventory:AddItemIDPairing(1629, "playerportrait_bg_mastupgradelightningrodnautical")
+--TheInventory:AddItemIDPairing(1630, "profileflair_mastupgradelightningrod_nautical")
+--TheInventory:AddItemIDPairing(1631, "fence_gate_gothic")
+--TheInventory:AddItemIDPairing(1632, "endtable_cawnival_alt")
+--TheInventory:AddItemIDPairing(1633, "lantern_flower_alt")
+--TheInventory:AddItemIDPairing(1634, "lantern_mummy_alt")
+--TheInventory:AddItemIDPairing(1635, "mast_crabking_alt")
+--TheInventory:AddItemIDPairing(1636, "mast_rose_alt")
+--TheInventory:AddItemIDPairing(1637, "oceanfishingrod_ice_alt")
+--TheInventory:AddItemIDPairing(1638, "pickaxe_scythe_alt")
+--TheInventory:AddItemIDPairing(1639, "wall_ruins_thulecite_alt")
+--TheInventory:AddItemIDPairing(1640, "wall_stone_ancient_alt")
+--TheInventory:AddItemIDPairing(1641, "body_wx78_formalp")
+--TheInventory:AddItemIDPairing(1642, "body_wx78_survivorp")
+--TheInventory:AddItemIDPairing(1643, "wx78_formalp")
+--TheInventory:AddItemIDPairing(1644, "wx78_retro")
+--TheInventory:AddItemIDPairing(1645, "wx78_rosep")
+--TheInventory:AddItemIDPairing(1646, "wx78_shadowp")
+--TheInventory:AddItemIDPairing(1647, "wx78_survivorp")
+--TheInventory:AddItemIDPairing(1648, "body_wx78_rosep")
+--TheInventory:AddItemIDPairing(1649, "body_wx78_shadowp")
+--TheInventory:AddItemIDPairing(1650, "body_wx78_retro")
+--TheInventory:AddItemIDPairing(1651, "hand_wx78_retro")
+--TheInventory:AddItemIDPairing(1652, "legs_wx78_retro")
+--TheInventory:AddItemIDPairing(1653, "body_wathgrithr_pirate")
+--TheInventory:AddItemIDPairing(1654, "body_willow_pirate")
+--TheInventory:AddItemIDPairing(1655, "body_winona_pirate")
+--TheInventory:AddItemIDPairing(1656, "body_wortox_pirate")
+--TheInventory:AddItemIDPairing(1657, "feet_willow_pirate")
+--TheInventory:AddItemIDPairing(1658, "hand_wathgrithr_pirate")
+--TheInventory:AddItemIDPairing(1659, "hand_willow_pirate")
+--TheInventory:AddItemIDPairing(1660, "hand_winona_pirate")
+--TheInventory:AddItemIDPairing(1661, "hand_wortox_pirate")
+--TheInventory:AddItemIDPairing(1662, "legs_wathgrithr_pirate")
+--TheInventory:AddItemIDPairing(1663, "legs_winona_pirate")
+--TheInventory:AddItemIDPairing(1664, "legs_wortox_pirate")
+--TheInventory:AddItemIDPairing(1665, "body_warly_pirate")
+--TheInventory:AddItemIDPairing(1666, "feet_warly_pirate")
+--TheInventory:AddItemIDPairing(1667, "warly_pirate")
+--TheInventory:AddItemIDPairing(1668, "wathgrithr_pirate")
+--TheInventory:AddItemIDPairing(1669, "willow_pirate")
+--TheInventory:AddItemIDPairing(1670, "winona_pirate")
+--TheInventory:AddItemIDPairing(1671, "wortox_pirate")
+--TheInventory:AddItemIDPairing(1672, "legs_warly_pirate")
+--TheInventory:AddItemIDPairing(1673, "body_wes_pirate")
+--TheInventory:AddItemIDPairing(1674, "legs_wes_pirate")
+--TheInventory:AddItemIDPairing(1675, "wes_pirate")
+--TheInventory:AddItemIDPairing(1676, "lantern_retro")
+--TheInventory:AddItemIDPairing(1677, "lightning_rod_retro")
+--TheInventory:AddItemIDPairing(1678, "researchlab_retro")
+--TheInventory:AddItemIDPairing(1679, "wardrobe_vine")
+--TheInventory:AddItemIDPairing(1680, "fishbox_nautical")
+--TheInventory:AddItemIDPairing(1681, "playerportrait_bg_fishboxnautical")
+--TheInventory:AddItemIDPairing(1682, "profileflair_fishbox_nautical")
+--TheInventory:AddItemIDPairing(1683, "body_wolfgang_pirate")
+--TheInventory:AddItemIDPairing(1684, "body_woodie_pirate")
+--TheInventory:AddItemIDPairing(1685, "body_wurt_pirate")
+--TheInventory:AddItemIDPairing(1686, "feet_wolfgang_pirate")
+--TheInventory:AddItemIDPairing(1687, "hand_woodie_pirate")
+--TheInventory:AddItemIDPairing(1688, "hand_wurt_pirate")
+--TheInventory:AddItemIDPairing(1689, "legs_woodie_pirate")
+--TheInventory:AddItemIDPairing(1690, "legs_wurt_pirate")
+--TheInventory:AddItemIDPairing(1691, "wolfgang_pirate")
+--TheInventory:AddItemIDPairing(1692, "woodie_pirate")
+--TheInventory:AddItemIDPairing(1693, "wurt_pirate")
+--TheInventory:AddItemIDPairing(1694, "steeringwheel_wagstaff_item")
+--TheInventory:AddItemIDPairing(1695, "steeringwheel_wagstaff")
+--TheInventory:AddItemIDPairing(1696, "walkingplank_wagstaff")
+--TheInventory:AddItemIDPairing(1697, "mast_malbatross_wagstaff")
+--TheInventory:AddItemIDPairing(1698, "firepit_hole_alt")
+--TheInventory:AddItemIDPairing(1699, "firepit_kiln_alt")
+--TheInventory:AddItemIDPairing(1700, "torch_pillar_alt")
+--TheInventory:AddItemIDPairing(1701, "bundle_cawnival")
+--TheInventory:AddItemIDPairing(1702, "bushhat_cawnival")
+--TheInventory:AddItemIDPairing(1703, "hivehat_cawnival")
+--TheInventory:AddItemIDPairing(1704, "mushroom_light2_cawnival")
+--TheInventory:AddItemIDPairing(1705, "reflectivevest_cawnival")
+--TheInventory:AddItemIDPairing(1706, "siestahut_cawnival")
+--TheInventory:AddItemIDPairing(1707, "walrushat_cawnival")
+--TheInventory:AddItemIDPairing(1708, "anchor_nautical")
+--TheInventory:AddItemIDPairing(1709, "profileflair_anchor_nautical")
+--TheInventory:AddItemIDPairing(1710, "playerportrait_bg_anchornautical")
+--TheInventory:AddItemIDPairing(1711, "boat_wagstaff")
+--TheInventory:AddItemIDPairing(1712, "boat_wagstaff_item")
+--TheInventory:AddItemIDPairing(1713, "perdling_pollyrogers")
+--TheInventory:AddItemIDPairing(1714, "watermelonhat_banana")
+--TheInventory:AddItemIDPairing(1715, "monkeyhatmedium_blue")
+--TheInventory:AddItemIDPairing(1716, "monkeyhatmedium_red")
+--TheInventory:AddItemIDPairing(1717, "monkeyhatsmall_beads")
+--TheInventory:AddItemIDPairing(1718, "monkeyhatsmall_belt")
+--TheInventory:AddItemIDPairing(1719, "boat_nautical")
+--TheInventory:AddItemIDPairing(1720, "boat_nautical_item")
+--TheInventory:AddItemIDPairing(1721, "profileflair_boat_nautical")
+--TheInventory:AddItemIDPairing(1722, "playerportrait_bg_boatnautical")
+--TheInventory:AddItemIDPairing(1723, "loading_carnival3")
+--TheInventory:AddItemIDPairing(1724, "loading_catcoon")
+--TheInventory:AddItemIDPairing(1725, "loading_grotto2")
+--TheInventory:AddItemIDPairing(1726, "loading_pirates1")
+--TheInventory:AddItemIDPairing(1727, "loading_wanda1")
+--TheInventory:AddItemIDPairing(1728, "loading_waterlogged")
+--TheInventory:AddItemIDPairing(1729, "loading_webber2")
+--TheInventory:AddItemIDPairing(1730, "loading_wes1")
+--TheInventory:AddItemIDPairing(1731, "loading_wolfgang1")
+--TheInventory:AddItemIDPairing(1732, "loading_wolfgang2")
+--TheInventory:AddItemIDPairing(1733, "loading_wolfgang3")
+--TheInventory:AddItemIDPairing(1734, "loading_wx1")
+--TheInventory:AddItemIDPairing(1735, "loading_wx_trailer")
+--TheInventory:AddItemIDPairing(1736, "amulet_yellow_ornate")
+--TheInventory:AddItemIDPairing(1737, "body_wickerbottom_formalp")
+--TheInventory:AddItemIDPairing(1738, "body_wickerbottom_ornate")
+--TheInventory:AddItemIDPairing(1739, "body_wickerbottom_rosep")
+--TheInventory:AddItemIDPairing(1740, "body_wickerbottom_shadowp")
+--TheInventory:AddItemIDPairing(1741, "body_wickerbottom_survivorp")
+--TheInventory:AddItemIDPairing(1742, "feet_formal_highheelp_white_pure")
+--TheInventory:AddItemIDPairing(1743, "feet_wickerbottom_ornate")
+--TheInventory:AddItemIDPairing(1744, "hand_wickerbottom_ornate")
+--TheInventory:AddItemIDPairing(1745, "minisign_ornate")
+--TheInventory:AddItemIDPairing(1746, "wall_wood_ornate")
+--TheInventory:AddItemIDPairing(1747, "wickerbottom_formalp")
+--TheInventory:AddItemIDPairing(1748, "wickerbottom_ornate")
+--TheInventory:AddItemIDPairing(1749, "wickerbottom_rosep")
+--TheInventory:AddItemIDPairing(1750, "wickerbottom_shadowp")
+--TheInventory:AddItemIDPairing(1751, "wickerbottom_survivorp")
+--TheInventory:AddItemIDPairing(1752, "body_walter_lunar")
+--TheInventory:AddItemIDPairing(1753, "body_waxwell_lunar")
+--TheInventory:AddItemIDPairing(1754, "body_webber_lunar")
+--TheInventory:AddItemIDPairing(1755, "body_wendy_lunar")
+--TheInventory:AddItemIDPairing(1756, "feet_waxwell_lunar")
+--TheInventory:AddItemIDPairing(1757, "feet_webber_lunar")
+--TheInventory:AddItemIDPairing(1758, "feet_wendy_lunar")
+--TheInventory:AddItemIDPairing(1759, "hand_waxwell_lunar")
+--TheInventory:AddItemIDPairing(1760, "hand_webber_lunar")
+--TheInventory:AddItemIDPairing(1761, "legs_walter_lunar")
+--TheInventory:AddItemIDPairing(1762, "legs_webber_lunar")
+--TheInventory:AddItemIDPairing(1763, "walter_lunar")
+--TheInventory:AddItemIDPairing(1764, "walterhat_lunar")
+--TheInventory:AddItemIDPairing(1765, "waxwell_lunar")
+--TheInventory:AddItemIDPairing(1766, "webber_lunar")
+--TheInventory:AddItemIDPairing(1767, "wendy_lunar")
+--TheInventory:AddItemIDPairing(1768, "body_wormwood_lunar")
+--TheInventory:AddItemIDPairing(1769, "hand_wickerbottom_lunar")
+--TheInventory:AddItemIDPairing(1770, "hand_wilson_lunar")
+--TheInventory:AddItemIDPairing(1771, "legs_wilson_lunar")
+--TheInventory:AddItemIDPairing(1772, "wickerbottom_lunar")
+--TheInventory:AddItemIDPairing(1773, "wormwood_lunar")
+--TheInventory:AddItemIDPairing(1774, "legs_wx78_lunar")
+--TheInventory:AddItemIDPairing(1775, "feet_wickerbottom_lunar")
+--TheInventory:AddItemIDPairing(1776, "wilson_lunar")
+--TheInventory:AddItemIDPairing(1777, "hand_wormwood_lunar")
+--TheInventory:AddItemIDPairing(1778, "legs_wormwood_lunar")
+--TheInventory:AddItemIDPairing(1779, "hand_wx78_lunar")
+--TheInventory:AddItemIDPairing(1780, "body_wx78_lunar")
+--TheInventory:AddItemIDPairing(1781, "wx78_lunar")
+--TheInventory:AddItemIDPairing(1782, "body_wickerbottom_lunar")
+--TheInventory:AddItemIDPairing(1783, "body_wilson_lunar")
+--TheInventory:AddItemIDPairing(1784, "playerportrait_bg_hivehatan")
+--TheInventory:AddItemIDPairing(1785, "profileflair_hivehat_an")
+--TheInventory:AddItemIDPairing(1786, "hivehat_an")
+--TheInventory:AddItemIDPairing(1787, "cave_entrance_open_gothic")
+--TheInventory:AddItemIDPairing(1788, "critterlab_fantasy")
+--TheInventory:AddItemIDPairing(1789, "gravestone_fantasy")
+--TheInventory:AddItemIDPairing(1790, "gravestone_fantasy2")
+--TheInventory:AddItemIDPairing(1791, "gravestone_fantasy3")
+--TheInventory:AddItemIDPairing(1792, "gravestone_fantasy4")
+--TheInventory:AddItemIDPairing(1793, "gravestone_gothic")
+--TheInventory:AddItemIDPairing(1794, "gravestone_gothic2")
+--TheInventory:AddItemIDPairing(1795, "gravestone_gothic3")
+--TheInventory:AddItemIDPairing(1796, "gravestone_gothic4")
+--TheInventory:AddItemIDPairing(1797, "resurrectionstone_gothic")
+--TheInventory:AddItemIDPairing(1798, "sanityrock_fantasy")
+--TheInventory:AddItemIDPairing(1799, "wanda_lunar")
+--TheInventory:AddItemIDPairing(1800, "wormhole_fantasy")
+--TheInventory:AddItemIDPairing(1801, "wormhole_gothic")
+--TheInventory:AddItemIDPairing(1802, "critterlab_gothic")
+--TheInventory:AddItemIDPairing(1803, "insanityrock_fantasy")
+--TheInventory:AddItemIDPairing(1804, "insanityrock_gothic")
+--TheInventory:AddItemIDPairing(1805, "sanityrock_gothic")
+--TheInventory:AddItemIDPairing(1806, "body_wanda_lunar")
+--TheInventory:AddItemIDPairing(1807, "hand_wanda_lunar")
+--TheInventory:AddItemIDPairing(1808, "playerportrait_bg_panflutean")
+--TheInventory:AddItemIDPairing(1809, "profileflair_panflute_an")
+--TheInventory:AddItemIDPairing(1810, "resurrectionstone_fantasy")
+--TheInventory:AddItemIDPairing(1811, "panflute_an")
+--TheInventory:AddItemIDPairing(1812, "feet_wanda_lunar")
+--TheInventory:AddItemIDPairing(1813, "feet_wilson_madscientist")
+--TheInventory:AddItemIDPairing(1814, "wilson_beard_lunar")
+--TheInventory:AddItemIDPairing(1815, "abigail_lunar")
+--TheInventory:AddItemIDPairing(1816, "webber_beard_lunar")
+--TheInventory:AddItemIDPairing(1817, "cave_entrance_open_fantasy")
+--TheInventory:AddItemIDPairing(1818, "willow_masquerade")
+--TheInventory:AddItemIDPairing(1819, "emoji_florid_postern")
+--TheInventory:AddItemIDPairing(1820, "emoji_resurrection_stone")
+--TheInventory:AddItemIDPairing(1821, "mushroom_light2_an")
+--TheInventory:AddItemIDPairing(1822, "mushroom_light_an")
+--TheInventory:AddItemIDPairing(1823, "playerportrait_bg_mushroomlight2an")
+--TheInventory:AddItemIDPairing(1824, "playerportrait_bg_mushroomlightan")
+--TheInventory:AddItemIDPairing(1825, "profileflair_mushroom_light2an")
+--TheInventory:AddItemIDPairing(1826, "profileflair_mushroom_lightan")
+--TheInventory:AddItemIDPairing(1827, "goldenpitchfork_invisible")
+--TheInventory:AddItemIDPairing(1828, "feet_wx78_lunar")
+--TheInventory:AddItemIDPairing(1829, "body_waxwell_formalp")
+--TheInventory:AddItemIDPairing(1830, "body_waxwell_rosep")
+--TheInventory:AddItemIDPairing(1831, "body_waxwell_survivorp")
+--TheInventory:AddItemIDPairing(1832, "body_waxwell_unshadowp")
+--TheInventory:AddItemIDPairing(1833, "waxwell_formalp")
+--TheInventory:AddItemIDPairing(1834, "waxwell_rosep")
+--TheInventory:AddItemIDPairing(1835, "waxwell_survivorp")
+--TheInventory:AddItemIDPairing(1836, "waxwell_unshadowp")
+--TheInventory:AddItemIDPairing(1837, "body_waxwell_wizard")
+--TheInventory:AddItemIDPairing(1838, "feet_waxwell_wizard")
+--TheInventory:AddItemIDPairing(1839, "hand_waxwell_wizard")
+--TheInventory:AddItemIDPairing(1840, "waxwell_wizard")
+--TheInventory:AddItemIDPairing(1841, "armor_sanity_wizard")
+--TheInventory:AddItemIDPairing(1842, "nightsword_wizard")
+--TheInventory:AddItemIDPairing(1843, "tophat_spiked")
+--TheInventory:AddItemIDPairing(1844, "tophat_wizard")
+--TheInventory:AddItemIDPairing(1845, "body_wathgrithr_ice")
+--TheInventory:AddItemIDPairing(1846, "feet_wathgrithr_ice")
+--TheInventory:AddItemIDPairing(1847, "hand_wathgrithr_ice")
+--TheInventory:AddItemIDPairing(1848, "wathgrithr_ice")
+--TheInventory:AddItemIDPairing(1849, "body_wurt_ice")
+--TheInventory:AddItemIDPairing(1850, "wurt_ice")
+--TheInventory:AddItemIDPairing(1851, "legs_wurt_ice")
+--TheInventory:AddItemIDPairing(1852, "body_wanda_ice")
+--TheInventory:AddItemIDPairing(1853, "feet_wanda_ice")
+--TheInventory:AddItemIDPairing(1854, "wanda_ice")
+--TheInventory:AddItemIDPairing(1855, "body_willow_masquerade")
+--TheInventory:AddItemIDPairing(1856, "feet_willow_masquerade")
+--TheInventory:AddItemIDPairing(1857, "hand_wanda_ice")
+--TheInventory:AddItemIDPairing(1858, "body_wes_ice")
+--TheInventory:AddItemIDPairing(1859, "wes_ice")
+--TheInventory:AddItemIDPairing(1860, "waxwell_ice")
+--TheInventory:AddItemIDPairing(1861, "hand_waxwell_ice")
+--TheInventory:AddItemIDPairing(1862, "legs_waxwell_ice")
+--TheInventory:AddItemIDPairing(1863, "body_waxwell_ice")
+--TheInventory:AddItemIDPairing(1864, "body_wormwood_ice")
+--TheInventory:AddItemIDPairing(1865, "hand_wormwood_ice")
+--TheInventory:AddItemIDPairing(1866, "legs_wormwood_ice")
+--TheInventory:AddItemIDPairing(1867, "wormwood_ice")
+--TheInventory:AddItemIDPairing(1868, "body_woodie_ice")
+--TheInventory:AddItemIDPairing(1869, "feet_woodie_ice")
+--TheInventory:AddItemIDPairing(1870, "hand_woodie_ice")
+--TheInventory:AddItemIDPairing(1871, "woodie_ice")
+--TheInventory:AddItemIDPairing(1872, "feet_formal_winklepickerp_white_ivory")
+--TheInventory:AddItemIDPairing(1873, "hand_waxwell_formalp")
+--TheInventory:AddItemIDPairing(1874, "beargervest_yule")
+--TheInventory:AddItemIDPairing(1875, "warly_masquerade")
+--TheInventory:AddItemIDPairing(1876, "body_warly_masquerade")
+--TheInventory:AddItemIDPairing(1877, "feet_warly_masquerade")
+--TheInventory:AddItemIDPairing(1878, "hand_warly_masquerade")
+--TheInventory:AddItemIDPairing(1879, "legs_warly_masquerade")
+--TheInventory:AddItemIDPairing(1880, "wortox_masquerade")
+--TheInventory:AddItemIDPairing(1881, "body_wortox_masquerade")
+--TheInventory:AddItemIDPairing(1882, "wes_masquerade")
+--TheInventory:AddItemIDPairing(1883, "woodie_masquerade")
+--TheInventory:AddItemIDPairing(1884, "body_wes_masquerade")
+--TheInventory:AddItemIDPairing(1885, "body_woodie_masquerade")
+--TheInventory:AddItemIDPairing(1886, "hand_woodie_masquerade")
+--TheInventory:AddItemIDPairing(1887, "legs_wes_masquerade")
+--TheInventory:AddItemIDPairing(1888, "legs_woodie_masquerade")
+--TheInventory:AddItemIDPairing(1889, "legs_wortox_masquerade")
+--TheInventory:AddItemIDPairing(1890, "wateringcan_cactus")
+--TheInventory:AddItemIDPairing(1891, "greenstaff_an")
+--TheInventory:AddItemIDPairing(1892, "ruins_bat_an")
+--TheInventory:AddItemIDPairing(1893, "molehat_goggles")
+--TheInventory:AddItemIDPairing(1894, "premiumwateringcan_koalefant")
+--TheInventory:AddItemIDPairing(1895, "mushroom_farm_handmade")
+--TheInventory:AddItemIDPairing(1896, "reskin_tool_bouquet")
+--TheInventory:AddItemIDPairing(1897, "profileflair_greenstaff_an")
+--TheInventory:AddItemIDPairing(1898, "profileflair_ruins_batan")
+--TheInventory:AddItemIDPairing(1899, "dock_woodposts_carved")
+--TheInventory:AddItemIDPairing(1900, "dock_woodposts_decorated")
+--TheInventory:AddItemIDPairing(1901, "ruins_bat_arcane")
+--TheInventory:AddItemIDPairing(1902, "dock_woodposts_carved2")
+--TheInventory:AddItemIDPairing(1903, "dock_woodposts_carved3")
+--TheInventory:AddItemIDPairing(1904, "dock_woodposts_decorated2")
+--TheInventory:AddItemIDPairing(1905, "dock_woodposts_decorated3")
+--TheInventory:AddItemIDPairing(1906, "trophyscale_fish_handmade")
+--TheInventory:AddItemIDPairing(1907, "trophyscale_oversizedveggies_plant")
+--TheInventory:AddItemIDPairing(1908, "body_willow_nature")
+--TheInventory:AddItemIDPairing(1909, "body_wurt_nature")
+--TheInventory:AddItemIDPairing(1910, "feet_willow_nature")
+--TheInventory:AddItemIDPairing(1911, "hand_wurt_nature")
+--TheInventory:AddItemIDPairing(1912, "legs_wurt_nature")
+--TheInventory:AddItemIDPairing(1913, "researchlab_party")
+--TheInventory:AddItemIDPairing(1914, "treasurechest_cake")
+--TheInventory:AddItemIDPairing(1915, "willow_nature")
+--TheInventory:AddItemIDPairing(1916, "wurt_nature")
+--TheInventory:AddItemIDPairing(1917, "body_wanda_nature")
+--TheInventory:AddItemIDPairing(1918, "legs_wanda_nature")
+--TheInventory:AddItemIDPairing(1919, "wanda_nature")
+--TheInventory:AddItemIDPairing(1920, "wickerbottom_nature")
+--TheInventory:AddItemIDPairing(1921, "playerportrait_bg_greenstaffan")
+--TheInventory:AddItemIDPairing(1922, "razor_barber")
+--TheInventory:AddItemIDPairing(1923, "body_wilson_barber")
+--TheInventory:AddItemIDPairing(1924, "resurrectionstatue_barber")
+--TheInventory:AddItemIDPairing(1925, "torch_barber")
+--TheInventory:AddItemIDPairing(1926, "wilson_barber")
+--TheInventory:AddItemIDPairing(1927, "wilson_rosep")
+--TheInventory:AddItemIDPairing(1928, "wilson_shadowp")
+--TheInventory:AddItemIDPairing(1929, "wilson_survivorp")
+--TheInventory:AddItemIDPairing(1930, "wilson_formalp")
+--TheInventory:AddItemIDPairing(1931, "body_wilson_formalp")
+--TheInventory:AddItemIDPairing(1932, "body_wilson_rosep")
+--TheInventory:AddItemIDPairing(1933, "body_wilson_shadowp")
+--TheInventory:AddItemIDPairing(1934, "body_wilson_survivorp")
+--TheInventory:AddItemIDPairing(1935, "feet_formal_lowheelp_black_scribble")
+--TheInventory:AddItemIDPairing(1936, "hand_wilson_formalp")
+--TheInventory:AddItemIDPairing(1937, "wilson_beard_barber")
+--TheInventory:AddItemIDPairing(1938, "feet_wilson_barber")
+--TheInventory:AddItemIDPairing(1939, "hand_wilson_barber")
+--TheInventory:AddItemIDPairing(1940, "legs_wilson_barber")
+--TheInventory:AddItemIDPairing(1941, "body_wormwood_nature")
+--TheInventory:AddItemIDPairing(1942, "hand_wormwood_nature")
+--TheInventory:AddItemIDPairing(1943, "legs_wormwood_nature")
+--TheInventory:AddItemIDPairing(1944, "wormwood_nature")
+--TheInventory:AddItemIDPairing(1945, "book_temperature_romance")
+--TheInventory:AddItemIDPairing(1946, "book_research_station_howto")
+--TheInventory:AddItemIDPairing(1947, "book_silviculture_livinglog")
+--TheInventory:AddItemIDPairing(1948, "book_sleep_magazine")
+--TheInventory:AddItemIDPairing(1949, "book_web_tallbird")
+--TheInventory:AddItemIDPairing(1950, "playerportrait_bg_ruinsbatan")
+--TheInventory:AddItemIDPairing(1951, "body_wickerbottom_nature")
+--TheInventory:AddItemIDPairing(1952, "feet_wickerbottom_nature")
+--TheInventory:AddItemIDPairing(1953, "hand_wickerbottom_nature")
+--TheInventory:AddItemIDPairing(1954, "hand_willow_nature")
+--TheInventory:AddItemIDPairing(1955, "body_walter_shadow")
+--TheInventory:AddItemIDPairing(1956, "body_warly_shadow")
+--TheInventory:AddItemIDPairing(1957, "body_wathgrithr_lunar")
+--TheInventory:AddItemIDPairing(1958, "body_winona_lunar")
+--TheInventory:AddItemIDPairing(1959, "body_wolfgang_lunar")
+--TheInventory:AddItemIDPairing(1960, "body_wortox_shadow")
+--TheInventory:AddItemIDPairing(1961, "feet_warly_shadow")
+--TheInventory:AddItemIDPairing(1962, "hand_wathgrithr_lunar")
+--TheInventory:AddItemIDPairing(1963, "hand_wolfgang_lunar")
+--TheInventory:AddItemIDPairing(1964, "hand_wortox_shadow")
+--TheInventory:AddItemIDPairing(1965, "legs_walter_shadow")
+--TheInventory:AddItemIDPairing(1966, "legs_warly_shadow")
+--TheInventory:AddItemIDPairing(1967, "legs_wathgrithr_lunar")
+--TheInventory:AddItemIDPairing(1968, "legs_winona_lunar")
+--TheInventory:AddItemIDPairing(1969, "legs_wolfgang_lunar")
+--TheInventory:AddItemIDPairing(1970, "legs_wortox_shadow")
+--TheInventory:AddItemIDPairing(1971, "playerportrait_bg_ruinshatan")
+--TheInventory:AddItemIDPairing(1972, "profileflair_ruinshat_an")
+--TheInventory:AddItemIDPairing(1973, "ruinshat_an")
+--TheInventory:AddItemIDPairing(1974, "ruinsrelic_chair_toilet")
+--TheInventory:AddItemIDPairing(1975, "spear_wathgrithr_lunar")
+--TheInventory:AddItemIDPairing(1976, "walter_shadow")
+--TheInventory:AddItemIDPairing(1977, "walterhat_shadow")
+--TheInventory:AddItemIDPairing(1978, "warly_shadow")
+--TheInventory:AddItemIDPairing(1979, "wathgrithr_lunar")
+--TheInventory:AddItemIDPairing(1980, "wathgrithrhat_lunar")
+--TheInventory:AddItemIDPairing(1981, "winona_lunar")
+--TheInventory:AddItemIDPairing(1982, "wolfgang_lunar")
+--TheInventory:AddItemIDPairing(1983, "wortox_shadow")
+
+TheInventory:ValidateWithSignature( "48fd2efe64c4c6eeb73018fad38d96a9f2ac6cf3da1bfbdf2c8e9e4cc11e0387469a011b617ebfd613629251073ff3e566fd5ea18d9ef67bb9e2db2eb000f096b88f00f04f2a069334197c0362d60233c5448fd9025b24b9944f4875bb936be7b76c8d99f6d5f02e5ef7b9cfb608ad653b706098debaa4bd1fb583880902e47c5f9480c70212c7a15eedae95c6cf95c3cc9f1d9ff44e4434649f82b6776d5ac1a1306e83624b03fdd937b82b09934d0a0059e48c683a184ee75dd2bb1683205b7ae403617b15d06a36465e140bc0312be8bc53efc32478061e182db614adee4cd4ae30eacd3dc0fadfd702a6c4ab5c43ce348b577a12229becb60e19eaa85858f98949b330d824f3442563a1469ef9d669a123e68a6e7a2a98ce376a00f2592dd4ec926eb1a46a3370b6406e064fa7b9265c998e8a9a90ac93fbd2ab86217446ba3fedd5c31dbb14069b82d5e566084fa231132242a43ce954c9edff7f0bd3524769342bccf1f6158b9fee5c11ed25b3d7f00bb96b3c2a4ada318c8ed6134e25e4dc3a053a295775440f609c7e07279390622a377528f5b114dcbef5bfba22a67ea6adbb4d92df9b7825c8c8e355bf5616263d8499424c489520b2c6bc4e1df0653014b3fc3fc5f0a3982fc568b0bcac89412917cf3c68f3cc779a7c4fd81329a515139dc998bf75f5f253410e9ff4b3a47b3357d1d3445f58239864a239b405" )
+
+end -- Temporary protection guard for platforms missing the engine change.
 
 TheSim:AddTextureToStreamingGroup( 0 ,"anim/dynamic/wolfgang_mighty_combatant.zip:wolfgang_mighty_combatant--atlas-0.tex" )
 TheSim:AddTextureToStreamingGroup( 0 ,"anim/dynamic/wolfgang_combatant.zip:wolfgang_combatant--atlas-0.tex" )
@@ -3642,94 +7128,97 @@ TheSim:AddTextureToStreamingGroup( 4 ,"anim/dynamic/wolfgang_skinny_gladiator.zi
 TheSim:AddTextureToStreamingGroup( 5 ,"anim/dynamic/wolfgang_mighty_ice.zip:wolfgang_mighty_ice--atlas-0.tex" )
 TheSim:AddTextureToStreamingGroup( 5 ,"anim/dynamic/wolfgang_ice.zip:wolfgang_ice--atlas-0.tex" )
 TheSim:AddTextureToStreamingGroup( 5 ,"anim/dynamic/wolfgang_skinny_ice.zip:wolfgang_skinny_ice--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 6 ,"anim/dynamic/wolfgang_mighty_magma.zip:wolfgang_mighty_magma--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 6 ,"anim/dynamic/wolfgang_magma.zip:wolfgang_magma--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 6 ,"anim/dynamic/wolfgang_skinny_magma.zip:wolfgang_skinny_magma--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 7 ,"anim/dynamic/wolfgang_mighty_nature.zip:wolfgang_mighty_nature--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 7 ,"anim/dynamic/wolfgang_nature.zip:wolfgang_nature--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 7 ,"anim/dynamic/wolfgang_skinny_nature.zip:wolfgang_skinny_nature--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 8 ,"anim/dynamic/wolfgang_mighty.zip:wolfgang_mighty--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 8 ,"anim/dynamic/wolfgang.zip:wolfgang--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 8 ,"anim/dynamic/wolfgang_skinny.zip:wolfgang_skinny--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 9 ,"anim/dynamic/wolfgang_mighty_pirate.zip:wolfgang_mighty_pirate--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 9 ,"anim/dynamic/wolfgang_pirate.zip:wolfgang_pirate--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 9 ,"anim/dynamic/wolfgang_skinny_pirate.zip:wolfgang_skinny_pirate--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 10 ,"anim/dynamic/wolfgang_mighty_rose.zip:wolfgang_mighty_rose--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 10 ,"anim/dynamic/wolfgang_rose.zip:wolfgang_rose--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 10 ,"anim/dynamic/wolfgang_skinny_rose.zip:wolfgang_skinny_rose--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 12 ,"anim/dynamic/wolfgang_mighty_shadow.zip:wolfgang_mighty_shadow--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 12 ,"anim/dynamic/wolfgang_shadow.zip:wolfgang_shadow--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 12 ,"anim/dynamic/wolfgang_skinny_shadow.zip:wolfgang_skinny_shadow--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 14 ,"anim/dynamic/wolfgang_mighty_strongman.zip:wolfgang_mighty_strongman--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 14 ,"anim/dynamic/wolfgang_strongman.zip:wolfgang_strongman--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 14 ,"anim/dynamic/wolfgang_skinny_strongman.zip:wolfgang_skinny_strongman--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 15 ,"anim/dynamic/wolfgang_mighty_survivor.zip:wolfgang_mighty_survivor--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 15 ,"anim/dynamic/wolfgang_survivor.zip:wolfgang_survivor--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 15 ,"anim/dynamic/wolfgang_skinny_survivor.zip:wolfgang_skinny_survivor--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 17 ,"anim/dynamic/wolfgang_mighty_victorian.zip:wolfgang_mighty_victorian--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 17 ,"anim/dynamic/wolfgang_victorian.zip:wolfgang_victorian--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 17 ,"anim/dynamic/wolfgang_skinny_victorian.zip:wolfgang_skinny_victorian--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 18 ,"anim/dynamic/wolfgang_mighty_walrus.zip:wolfgang_mighty_walrus--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 18 ,"anim/dynamic/wolfgang_walrus.zip:wolfgang_walrus--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 18 ,"anim/dynamic/wolfgang_skinny_walrus.zip:wolfgang_skinny_walrus--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 19 ,"anim/dynamic/wolfgang_mighty_walrus_d.zip:wolfgang_mighty_walrus_d--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 19 ,"anim/dynamic/wolfgang_walrus_d.zip:wolfgang_walrus_d--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 19 ,"anim/dynamic/wolfgang_skinny_walrus_d.zip:wolfgang_skinny_walrus_d--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 21 ,"anim/dynamic/wolfgang_mighty_wolfman.zip:wolfgang_mighty_wolfman--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 21 ,"anim/dynamic/wolfgang_wolfman.zip:wolfgang_wolfman--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 21 ,"anim/dynamic/wolfgang_skinny_wolfman.zip:wolfgang_skinny_wolfman--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 22 ,"anim/dynamic/wolfgang_mighty_wrestler.zip:wolfgang_mighty_wrestler--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 22 ,"anim/dynamic/wolfgang_wrestler.zip:wolfgang_wrestler--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 22 ,"anim/dynamic/wolfgang_skinny_wrestler.zip:wolfgang_skinny_wrestler--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wormwood_cactus.zip:wormwood_cactus--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wormwood_cactus_stage2.zip:wormwood_cactus_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wormwood_cactus_stage3.zip:wormwood_cactus_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wormwood_cactus_stage4.zip:wormwood_cactus_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_ice.zip:wormwood_ice--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_ice_stage2.zip:wormwood_ice_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_ice_stage3.zip:wormwood_ice_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_ice_stage4.zip:wormwood_ice_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_lunar.zip:wormwood_lunar--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_lunar_stage2.zip:wormwood_lunar_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_lunar_stage3.zip:wormwood_lunar_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_lunar_stage4.zip:wormwood_lunar_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_mushroom.zip:wormwood_mushroom--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_mushroom_stage2.zip:wormwood_mushroom_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_mushroom_stage3.zip:wormwood_mushroom_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_mushroom_stage4.zip:wormwood_mushroom_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_nature.zip:wormwood_nature--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_nature_stage2.zip:wormwood_nature_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_nature_stage3.zip:wormwood_nature_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_nature_stage4.zip:wormwood_nature_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood.zip:wormwood--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_stage_2.zip:wormwood_stage_2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_stage_3.zip:wormwood_stage_3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_stage_4.zip:wormwood_stage_4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_pumpkin.zip:wormwood_pumpkin--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_pumpkin_stage2.zip:wormwood_pumpkin_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_pumpkin_stage3.zip:wormwood_pumpkin_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_pumpkin_stage4.zip:wormwood_pumpkin_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_rose.zip:wormwood_rose--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_rose_stage2.zip:wormwood_rose_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_rose_stage3.zip:wormwood_rose_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_rose_stage4.zip:wormwood_rose_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_saladmander.zip:wormwood_saladmander--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_saladmander_stage2.zip:wormwood_saladmander_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_saladmander_stage3.zip:wormwood_saladmander_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_saladmander_stage4.zip:wormwood_saladmander_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_d.zip:wormwood_saladmander_d--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_d_stage2.zip:wormwood_saladmander_d_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_d_stage3.zip:wormwood_saladmander_d_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_d_stage4.zip:wormwood_saladmander_d_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 34 ,"anim/dynamic/wormwood_shadow.zip:wormwood_shadow--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 34 ,"anim/dynamic/wormwood_shadow_stage2.zip:wormwood_shadow_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 34 ,"anim/dynamic/wormwood_shadow_stage3.zip:wormwood_shadow_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 34 ,"anim/dynamic/wormwood_shadow_stage4.zip:wormwood_shadow_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_victorian.zip:wormwood_victorian--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_victorian_stage2.zip:wormwood_victorian_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_victorian_stage3.zip:wormwood_victorian_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_victorian_stage4.zip:wormwood_victorian_stage4--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_yule.zip:wormwood_yule--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_yule_stage2.zip:wormwood_yule_stage2--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_yule_stage3.zip:wormwood_yule_stage3--atlas-0.tex" )
-TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_yule_stage4.zip:wormwood_yule_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 6 ,"anim/dynamic/wolfgang_mighty_lunar.zip:wolfgang_mighty_lunar--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 6 ,"anim/dynamic/wolfgang_lunar.zip:wolfgang_lunar--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 6 ,"anim/dynamic/wolfgang_skinny_lunar.zip:wolfgang_skinny_lunar--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 7 ,"anim/dynamic/wolfgang_mighty_magma.zip:wolfgang_mighty_magma--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 7 ,"anim/dynamic/wolfgang_magma.zip:wolfgang_magma--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 7 ,"anim/dynamic/wolfgang_skinny_magma.zip:wolfgang_skinny_magma--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 8 ,"anim/dynamic/wolfgang_mighty_nature.zip:wolfgang_mighty_nature--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 8 ,"anim/dynamic/wolfgang_nature.zip:wolfgang_nature--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 8 ,"anim/dynamic/wolfgang_skinny_nature.zip:wolfgang_skinny_nature--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 9 ,"anim/dynamic/wolfgang_mighty.zip:wolfgang_mighty--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 9 ,"anim/dynamic/wolfgang.zip:wolfgang--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 9 ,"anim/dynamic/wolfgang_skinny.zip:wolfgang_skinny--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 10 ,"anim/dynamic/wolfgang_mighty_pirate.zip:wolfgang_mighty_pirate--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 10 ,"anim/dynamic/wolfgang_pirate.zip:wolfgang_pirate--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 10 ,"anim/dynamic/wolfgang_skinny_pirate.zip:wolfgang_skinny_pirate--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 11 ,"anim/dynamic/wolfgang_mighty_rose.zip:wolfgang_mighty_rose--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 11 ,"anim/dynamic/wolfgang_rose.zip:wolfgang_rose--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 11 ,"anim/dynamic/wolfgang_skinny_rose.zip:wolfgang_skinny_rose--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 13 ,"anim/dynamic/wolfgang_mighty_shadow.zip:wolfgang_mighty_shadow--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 13 ,"anim/dynamic/wolfgang_shadow.zip:wolfgang_shadow--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 13 ,"anim/dynamic/wolfgang_skinny_shadow.zip:wolfgang_skinny_shadow--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 15 ,"anim/dynamic/wolfgang_mighty_strongman.zip:wolfgang_mighty_strongman--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 15 ,"anim/dynamic/wolfgang_strongman.zip:wolfgang_strongman--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 15 ,"anim/dynamic/wolfgang_skinny_strongman.zip:wolfgang_skinny_strongman--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 16 ,"anim/dynamic/wolfgang_mighty_survivor.zip:wolfgang_mighty_survivor--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 16 ,"anim/dynamic/wolfgang_survivor.zip:wolfgang_survivor--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 16 ,"anim/dynamic/wolfgang_skinny_survivor.zip:wolfgang_skinny_survivor--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 18 ,"anim/dynamic/wolfgang_mighty_victorian.zip:wolfgang_mighty_victorian--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 18 ,"anim/dynamic/wolfgang_victorian.zip:wolfgang_victorian--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 18 ,"anim/dynamic/wolfgang_skinny_victorian.zip:wolfgang_skinny_victorian--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 19 ,"anim/dynamic/wolfgang_mighty_walrus.zip:wolfgang_mighty_walrus--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 19 ,"anim/dynamic/wolfgang_walrus.zip:wolfgang_walrus--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 19 ,"anim/dynamic/wolfgang_skinny_walrus.zip:wolfgang_skinny_walrus--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 20 ,"anim/dynamic/wolfgang_mighty_walrus_d.zip:wolfgang_mighty_walrus_d--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 20 ,"anim/dynamic/wolfgang_walrus_d.zip:wolfgang_walrus_d--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 20 ,"anim/dynamic/wolfgang_skinny_walrus_d.zip:wolfgang_skinny_walrus_d--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 22 ,"anim/dynamic/wolfgang_mighty_wolfman.zip:wolfgang_mighty_wolfman--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 22 ,"anim/dynamic/wolfgang_wolfman.zip:wolfgang_wolfman--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 22 ,"anim/dynamic/wolfgang_skinny_wolfman.zip:wolfgang_skinny_wolfman--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wolfgang_mighty_wrestler.zip:wolfgang_mighty_wrestler--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wolfgang_wrestler.zip:wolfgang_wrestler--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 23 ,"anim/dynamic/wolfgang_skinny_wrestler.zip:wolfgang_skinny_wrestler--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_cactus.zip:wormwood_cactus--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_cactus_stage2.zip:wormwood_cactus_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_cactus_stage3.zip:wormwood_cactus_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 24 ,"anim/dynamic/wormwood_cactus_stage4.zip:wormwood_cactus_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_ice.zip:wormwood_ice--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_ice_stage2.zip:wormwood_ice_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_ice_stage3.zip:wormwood_ice_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 25 ,"anim/dynamic/wormwood_ice_stage4.zip:wormwood_ice_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_lunar.zip:wormwood_lunar--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_lunar_stage2.zip:wormwood_lunar_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_lunar_stage3.zip:wormwood_lunar_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 26 ,"anim/dynamic/wormwood_lunar_stage4.zip:wormwood_lunar_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_mushroom.zip:wormwood_mushroom--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_mushroom_stage2.zip:wormwood_mushroom_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_mushroom_stage3.zip:wormwood_mushroom_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 27 ,"anim/dynamic/wormwood_mushroom_stage4.zip:wormwood_mushroom_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_nature.zip:wormwood_nature--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_nature_stage2.zip:wormwood_nature_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_nature_stage3.zip:wormwood_nature_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 28 ,"anim/dynamic/wormwood_nature_stage4.zip:wormwood_nature_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood.zip:wormwood--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_stage_2.zip:wormwood_stage_2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_stage_3.zip:wormwood_stage_3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 29 ,"anim/dynamic/wormwood_stage_4.zip:wormwood_stage_4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_pumpkin.zip:wormwood_pumpkin--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_pumpkin_stage2.zip:wormwood_pumpkin_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_pumpkin_stage3.zip:wormwood_pumpkin_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 30 ,"anim/dynamic/wormwood_pumpkin_stage4.zip:wormwood_pumpkin_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_rose.zip:wormwood_rose--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_rose_stage2.zip:wormwood_rose_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_rose_stage3.zip:wormwood_rose_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 31 ,"anim/dynamic/wormwood_rose_stage4.zip:wormwood_rose_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander.zip:wormwood_saladmander--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_stage2.zip:wormwood_saladmander_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_stage3.zip:wormwood_saladmander_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 32 ,"anim/dynamic/wormwood_saladmander_stage4.zip:wormwood_saladmander_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 33 ,"anim/dynamic/wormwood_saladmander_d.zip:wormwood_saladmander_d--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 33 ,"anim/dynamic/wormwood_saladmander_d_stage2.zip:wormwood_saladmander_d_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 33 ,"anim/dynamic/wormwood_saladmander_d_stage3.zip:wormwood_saladmander_d_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 33 ,"anim/dynamic/wormwood_saladmander_d_stage4.zip:wormwood_saladmander_d_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_shadow.zip:wormwood_shadow--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_shadow_stage2.zip:wormwood_shadow_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_shadow_stage3.zip:wormwood_shadow_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 35 ,"anim/dynamic/wormwood_shadow_stage4.zip:wormwood_shadow_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_victorian.zip:wormwood_victorian--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_victorian_stage2.zip:wormwood_victorian_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_victorian_stage3.zip:wormwood_victorian_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 36 ,"anim/dynamic/wormwood_victorian_stage4.zip:wormwood_victorian_stage4--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 37 ,"anim/dynamic/wormwood_yule.zip:wormwood_yule--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 37 ,"anim/dynamic/wormwood_yule_stage2.zip:wormwood_yule_stage2--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 37 ,"anim/dynamic/wormwood_yule_stage3.zip:wormwood_yule_stage3--atlas-0.tex" )
+TheSim:AddTextureToStreamingGroup( 37 ,"anim/dynamic/wormwood_yule_stage4.zip:wormwood_yule_stage4--atlas-0.tex" )

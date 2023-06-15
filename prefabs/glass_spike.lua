@@ -101,6 +101,7 @@ local function MakeSpikeFn(shape, size)
         inst.AnimState:SetBank("sand_"..shape)
         inst.AnimState:SetBuild("sand_"..shape)
         inst.AnimState:PlayAnimation(inst.animname.."_glass_idle")
+        inst.scrapbook_anim = inst.animname.."_glass_idle"
 
         inst:AddTag("heavy")
 

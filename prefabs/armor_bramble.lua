@@ -54,6 +54,8 @@ local function fn()
     inst.AnimState:SetBuild("armor_bramble")
     inst.AnimState:PlayAnimation("anim")
 
+    inst.scrapbook_damage = TUNING.ARMORBRAMBLE_DMG
+
     inst.foleysound = "dontstarve/movement/foley/cactus_armor"
 
     MakeInventoryFloatable(inst)

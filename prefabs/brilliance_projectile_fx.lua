@@ -23,7 +23,7 @@ end
 local function OnThrown(inst, owner, target, attacker)
 	inst.owner = owner
 	if inst.bounces == nil then
-		inst.bounces = owner ~= nil and owner.max_bounces or TUNING.STAFF_LUNARPLANT_BOUNCES
+		inst.bounces = owner ~= nil and owner.components.setbonus ~= nil and owner.components.setbonus:IsEnabled(EQUIPMENTSETNAMES.LUNARPLANT) and TUNING.STAFF_LUNARPLANT_SETBONUS_BOUNCES or TUNING.STAFF_LUNARPLANT_BOUNCES
 		inst.initial_hostile = target ~= nil and target:IsValid() and target:HasTag("hostile")
 	end
 end

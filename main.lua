@@ -330,6 +330,8 @@ global("TheSkillTree")
 TheSkillTree = nil
 global("TheGenericKV")
 TheGenericKV = nil
+global("TheScrapbookPartitions")
+TheScrapbookPartitions = nil
 global("TheCraftingMenuProfile")
 TheCraftingMenuProfile = nil
 global("Lavaarena_CommunityProgression")
@@ -401,6 +403,9 @@ local function ModSafeStartup()
     TheGenericKV = require("generickv")
     TheGenericKV:Load()
     TheGenericKV.save_enabled = true
+    TheScrapbookPartitions = require("scrapbookpartitions")()
+    TheScrapbookPartitions:Load()
+    TheScrapbookPartitions.save_enabled = true
 	TheCraftingMenuProfile = require("craftingmenuprofile")()
 	TheCraftingMenuProfile:Load()
 	Lavaarena_CommunityProgression = require("lavaarena_communityprogression")()

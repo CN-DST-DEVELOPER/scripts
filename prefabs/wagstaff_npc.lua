@@ -1,3 +1,5 @@
+local PopupDialogScreen = require "screens/redux/popupdialog"
+
 local assets =
 {
     Asset("ANIM", "anim/player_actions.zip"),
@@ -25,6 +27,10 @@ local prefabs =
     "winter_ornament_boss_wagstaff",
 }
 
+local pst_prefabs =
+{
+	"enable_lunar_rift_construction_container",
+}
 
 --------------------------------------------------------------------------
 
@@ -85,7 +91,7 @@ local function OnGetItemFromPlayer(inst, giver, item)
     end
 end
 
-local function OnRefuseItem(inst, item)
+local function OnRefuseItem(inst, giver, item)
     if inst.tool_wanted then
         inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NOT_THIS_TOOL))
     else
@@ -618,40 +624,48 @@ local function spawn_device(inst, erode_data)
     end
 end
 
+local function ConstructionSite_OnConstructed(inst, doer)
+	if inst.components.constructionsite:IsComplete() then
+		inst.rifts_are_open = true
+		inst.sg:SetTimeout(0)
+		inst:AddTag("shard_recieved")
+		inst:AddTag("NOCLICK")
+		TheWorld:PushEvent("lunarrift_opened")
+	end
+end
+
 local function pstbossShouldAcceptItem(inst, item)
-    if item.prefab == "alterguardianhatshard" then
-        return true
-    end
+	return false
 end
-local function pstbossOnGetItemFromPlayer(inst, giver, item)
-    if item.prefab == "alterguardianhatshard" and (inst.AnimState:IsCurrentAnimation("build_loop") or inst.AnimState:IsCurrentAnimation("build_pre")) then
 
-        if inst:HasTag("trader_just_show") then
-            inst:RemoveTag("trader_just_show")
-            if inst.request_task then
-                inst.request_task:Cancel()
-                inst.request_task = nil
-            end
+local function pstbossOnRefuseItem(inst, giver, item)
+	if item.prefab == "alterguardianhatshard" then
+		if inst.AnimState:IsCurrentAnimation("build_loop") or inst.AnimState:IsCurrentAnimation("build_pre") then
+			if inst.request_task ~= nil then
+				inst.request_task:Cancel()
+				inst.request_task = nil
+			end
 
-            inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT1))
-            inst:DoTaskInTime(3,function()
-                inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT2))
-            end)
-        else
-            inst.rifts_are_open = true
-            inst.sg:SetTimeout(0)
-            inst:AddTag("shard_recieved")
-            TheWorld:PushEvent("lunarrift_opened")
-        end
-    end
-end
-local function pstbossOnRefuseItem(inst, item)
-    inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NOTTHAT))
-    if inst.request_task then
-        inst.request_task:Cancel()
-        inst.request_task = nil
-    end
-    inst.request_task = inst:DoPeriodicTask(10,inst.doplayerrequest)
+			inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT1))
+			inst:DoTaskInTime(3, function()
+				inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT2))
+			end)
+
+			inst:RemoveComponent("trader")
+
+			--V2C: NOTE: this works because we only need 1 single item, so there
+			--           should never be any save data for partial construction.
+			inst:AddComponent("constructionsite")
+			inst.components.constructionsite:SetConstructionPrefab("enable_lunar_rift_construction_container")
+			inst.components.constructionsite:SetOnConstructedFn(ConstructionSite_OnConstructed)
+		end
+	else
+		inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NOTTHAT))
+		if inst.request_task ~= nil then
+			inst.request_task:Cancel()
+		end
+		inst.request_task = inst:DoPeriodicTask(10, inst.doplayerrequest)
+	end
 end
 
 local function doplayerrequest(inst)
@@ -661,6 +675,7 @@ local function doplayerrequest(inst)
         inst.sg.statemem.request = math.random(9,#STRINGS.WAGSTAFF_NPC_REQUEST)
     end
 end
+
 local RELOCATE_MUST_NOT = {"INLIMBO","noblock","FX"}
 local PLAYER_MUST = {"player"}
 local ERODEIN =
@@ -701,7 +716,6 @@ local function relocate_wagstaff(inst)
         wagstaff:PushEvent("continuework")
         wagstaff.continuework = true
         wagstaff.persists = true
-        TheWorld.components.entitytracker:TrackEntity("WagstaffNPC_continueWorking",wagstaff)
     end
 end
 
@@ -753,6 +767,15 @@ local function pstbossfn()
     inst:AddTag("wagstaff_npc")
     inst:AddTag("trader_just_show")
 
+    --trader (from trader component) added to pristine state for optimization
+    inst:AddTag("trader")
+
+	--Sneak these into pristine state for optimization
+	inst:AddTag("__constructionsite")
+
+	-- Offer action strings.
+	inst:AddTag("offerconstructionsite")
+
     inst.AnimState:SetBank("wilson")
     inst.AnimState:SetBuild("wagstaff")
     inst.AnimState:PlayAnimation("idle", true)
@@ -787,6 +810,11 @@ local function pstbossfn()
 
     inst.persists = false
 
+	--Remove these tags so that they can be added properly when replicating components below
+	inst:RemoveTag("__constructionsite")
+
+	inst:PrereplicateComponent("constructionsite")
+
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 3
 
@@ -796,9 +824,7 @@ local function pstbossfn()
     inst:AddComponent("trader")
     inst.components.trader:Disable()
     inst.components.trader:SetAcceptTest(pstbossShouldAcceptItem)
-    inst.components.trader.onaccept = pstbossOnGetItemFromPlayer
     inst.components.trader.onrefuse = pstbossOnRefuseItem
-    inst.components.trader.deleteitemonaccept = true
     inst.doplayerrequest = doplayerrequest
 
     inst:SetStateGraph("SGwagstaff_npc")
@@ -812,6 +838,16 @@ local function pstbossfn()
 
     inst:AddComponent("timer")
     inst:ListenForEvent("timerdone", pstbossontimerdone)
+
+	inst:ListenForEvent("ms_despawn_wagstaff_npc_pstboss", function()
+		if inst:IsAsleep() then
+			inst:Remove()
+		else
+			inst.persists = false
+			inst.sg:GoToState("capture_emote")
+			inst:DoTaskInTime(20, inst.Remove)
+		end
+	end, TheWorld)
 
     inst.OnSave = PstBossOnSave
     inst.OnLoad = PstBossOnLoad
@@ -880,6 +916,35 @@ local function alterguardian_containedfn()
     return inst
 end
 
+----------------------------------------------------------------------------
+
+local function EnableRiftContainerFn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddNetwork()
+
+    -- Blank string for controller action prompt.
+    inst.name = " "
+	inst.POPUP_STRINGS = STRINGS.UI.START_LUNAR_RIFTS
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst:AddComponent("container")
+    inst.components.container:WidgetSetup("enable_lunar_rift_construction_container")
+
+    inst.persists = false
+
+    return inst
+end
+
+----------------------------------------------------------------------------
+
 return Prefab("wagstaff_npc", fn, assets, prefabs),
-        Prefab("wagstaff_npc_pstboss", pstbossfn, assets),
-        Prefab("alterguardian_contained", alterguardian_containedfn, contained_assets)
+        Prefab("wagstaff_npc_pstboss", pstbossfn, assets, pst_prefabs),
+        Prefab("alterguardian_contained", alterguardian_containedfn, contained_assets),
+		Prefab("enable_lunar_rift_construction_container",  EnableRiftContainerFn)

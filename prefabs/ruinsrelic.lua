@@ -3,6 +3,27 @@ local prefabs =
     "collapse_small",
 }
 
+local function Chair_TrySpawnShadeling(inst)
+	TheWorld.components.ruinsshadelingspawner:TrySpawnShadeling(inst)
+end
+
+local function Chair_ClearNoShadeling(inst)
+	inst.noshadelingtask = nil
+end
+
+local function Chair_OnEntityWake(inst)
+	if inst.chairtask == nil and inst.noshadelingtask == nil then
+		inst.chairtask = inst:DoTaskInTime(0, Chair_TrySpawnShadeling)
+	end
+end
+
+local function Chair_OnEntitySleep(inst)
+	if inst.chairtask ~= nil then
+		inst.chairtask:Cancel()
+		inst.chairtask = nil
+	end
+end
+
 local function item(name, animated, sound, radius)
     local build = "ruins_"..name
     local assets =
@@ -24,6 +45,9 @@ local function item(name, animated, sound, radius)
             inst.AnimState:PushAnimation("idle", false)
         end
         inst.SoundEmitter:PlaySound(sound == "rock" and "dontstarve/common/fixed_stonefurniture" or "dontstarve/common/repair_stonefurniture")
+		if inst.OnEntityWake == Chair_OnEntityWake then
+			inst.noshadelingtask = inst:DoTaskInTime(0, Chair_ClearNoShadeling)
+		end
     end
 
     local function fn()
@@ -43,6 +67,9 @@ local function item(name, animated, sound, radius)
         inst.AnimState:SetBank(build)
         inst.AnimState:SetBuild(build)
         inst.AnimState:PlayAnimation("idle")
+		if name == "chair" then
+			inst.AnimState:SetFinalOffset(-1)
+		end
 
         inst.entity:SetPristine()
 
@@ -63,6 +90,15 @@ local function item(name, animated, sound, radius)
         inst:ListenForEvent("onbuilt", OnBuilt)
 
         MakeHauntableWork(inst)
+
+		if name == "chair" then
+			inst:AddComponent("sittable")
+
+			if TheWorld.components.ruinsshadelingspawner ~= nil then
+				inst.OnEntityWake = Chair_OnEntityWake
+				inst.OnEntitySleep = Chair_OnEntitySleep
+			end
+		end
 
         return inst
     end

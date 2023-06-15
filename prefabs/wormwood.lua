@@ -458,6 +458,10 @@ local function OnFertilizedWithManure(inst, value, src)
 	end
 end
 
+local function OverrideAcidRainTickFn(inst, damage)
+    inst:OnFertilizedWithFormula(damage)
+end
+
 local function OnFertilized(inst, fertilizer_obj)
 	if inst.components.health ~= nil and inst.components.health.canheal then
 		local fertilizer = fertilizer_obj.components.fertilizer
@@ -642,6 +646,8 @@ local function master_postinit(inst)
 
 	inst:AddComponent("fertilizable")
 	inst.components.fertilizable.onfertlizedfn = OnFertilized
+
+    inst.components.acidlevel:SetOverrideAcidRainTickFn(OverrideAcidRainTickFn)
 
 	inst.OnFertilizedWithFormula = OnFertilizedWithFormula
 	inst.OnFertilizedWithCompost = OnFertilizedWithCompost

@@ -77,6 +77,7 @@ local function fn()
     inst.AnimState:SetBank("nightmare_watch")
     inst.AnimState:SetBuild("nightmare_timepiece")
     inst.AnimState:PlayAnimation("idle_1")
+    inst.scrapbook_anim = "idle_1"
 
     MakeInventoryFloatable(inst, "med", nil, 0.62)
 

@@ -48,6 +48,7 @@ local function make_plantable(data)
         inst.AnimState:SetBank(data.bank or data.name)
         inst.AnimState:SetBuild(data.build or data.name)
         inst.AnimState:PlayAnimation("dropped")
+        inst.scrapbook_anim = "dropped"
 
         if data.floater ~= nil then
             MakeInventoryFloatable(inst, data.floater[1], data.floater[2], data.floater[3])

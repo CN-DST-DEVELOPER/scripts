@@ -601,6 +601,21 @@ function StateGraphInstance:HasStateTag(tag)
     return self.tags and (self.tags[tag] == true)
 end
 
+function StateGraphInstance:HasAnyStateTag(...)
+    if not self.tags then
+        return false
+    end
+
+    local input_tags = {...}
+    for _, tag in ipairs(input_tags) do
+        if self.tags[tag] == true then
+            return true
+        end
+    end
+
+    return false
+end
+
 function StateGraphInstance:SetTimeout(time)
     SGManager:OnSetTimeout(self)
     self.timeout = time

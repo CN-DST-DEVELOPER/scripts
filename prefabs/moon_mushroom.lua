@@ -59,6 +59,7 @@ local function capfn()
     inst.AnimState:SetBank("moon_cap")
     inst.AnimState:SetBuild("moon_cap")
     inst.AnimState:PlayAnimation("moon_cap")
+    inst.scrapbook_anim = "moon_cap"
 
     --cookable (from cookable component) added to pristine state for optimization
     inst:AddTag("cookable")
@@ -122,6 +123,7 @@ local function cookedfn()
     inst.AnimState:SetBank("moon_cap")
     inst.AnimState:SetBuild("moon_cap")
     inst.AnimState:PlayAnimation("moon_cap_cooked")
+    inst.scrapbook_anim = "moon_cap_cooked"
 
     MakeInventoryFloatable(inst, "small", 0.05, 1.0)
 

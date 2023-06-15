@@ -17,6 +17,8 @@ local function fn()
     inst.AnimState:SetBuild("nitre")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "rock"
+
     inst:AddTag("molebait")
     inst:AddTag("quakedebris")
 

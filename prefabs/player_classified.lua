@@ -659,6 +659,12 @@ local function OnStormLevelDirty(inst)
     end
 end
 
+fns.OnIsInMiasmaDirty = function(inst)
+	if inst._parent ~= nil then
+		inst._parent:PushEvent("miasmalevel", { level = inst.isinmiasma:value() and 1 or 0 })
+	end
+end
+
 local function OnBuildEvent(inst)
     if inst._parent ~= nil and TheFocalPoint.entity:GetParent() == inst._parent then
         TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/collect_newitem")
@@ -1017,6 +1023,7 @@ local function RegisterNetListeners(inst)
     inst:ListenForEvent("gym_bell_start", fns.OnGymBellStart)
     inst:ListenForEvent("inmightygymdirty", fns.InMightyGymDirty)
     inst:ListenForEvent("stormleveldirty", OnStormLevelDirty)
+	inst:ListenForEvent("isinmiasmadirty", fns.OnIsInMiasmaDirty)
     inst:ListenForEvent("hasinspirationbuffdirty", fns.OnHasInspirationBuffDirty)
     inst:ListenForEvent("builder.build", OnBuildEvent)
     inst:ListenForEvent("builder.damaged", OnBuilderDamagedEvent)
@@ -1068,6 +1075,7 @@ function fns.OnInitialDirtyStates(inst)
     end
 
     OnStormLevelDirty(inst)
+	fns.OnIsInMiasmaDirty(inst)
     OnGiftsDirty(inst)
     fns.OnYotbSkinDirty(inst)
     OnMountHurtDirty(inst)
@@ -1200,6 +1208,9 @@ local function fn()
     --StormWatcher variables
     inst.stormlevel = net_tinybyte(inst.GUID, "stormwatcher.stormlevel", "stormleveldirty")
     inst.stormtype = net_tinybyte(inst.GUID, "stormwatcher.stormtype")
+
+	--MiasmaWatcher variables
+	inst.isinmiasma = net_bool(inst.GUID, "miasmawatcher.isinmiasma", "isinmiasmadirty")
 
     --Inked variables
     inst.inked = net_event(inst.GUID, "inked")

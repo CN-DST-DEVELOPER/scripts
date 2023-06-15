@@ -18,6 +18,8 @@ local function fn()
     inst.AnimState:SetBuild("moonrock_nugget")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "rock"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

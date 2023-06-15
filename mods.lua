@@ -38,6 +38,7 @@ AddModReleaseID( "R25_REFRESH_WAXWELL" )
 AddModReleaseID( "R26_LOBBY_NETWORKQOL" )
 AddModReleaseID( "R27_REFRESH_WILSON" )
 AddModReleaseID( "R28_LUNAR_RIFT" )
+AddModReleaseID( "R29_SHADOW_RIFT" )
 
 -----------------------------------------------------------------------------------------------
 

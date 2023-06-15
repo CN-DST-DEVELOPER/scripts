@@ -131,6 +131,18 @@ local function TargetForceAttackOnly(inst, target)
 	return target.HostileToPlayerTest ~= nil and target:HasTag("shadowcreature") and not target:HostileToPlayerTest(inst)
 end
 
+local SCYTHE_ONEOFTAGS = {"plant", "lichen", "oceanvine", "kelp"}
+
+local function IsValidScytheTarget(target)
+    for _, tag in pairs(SCYTHE_ONEOFTAGS) do
+        if target:HasTag(tag) then
+            return true
+        end
+    end
+    
+    return false
+end
+
 -- SCENE		using an object in the world
 -- USEITEM		using an inventory item on an object in the world
 -- POINT		using an inventory item on a point in the world
@@ -822,6 +834,12 @@ local COMPONENT_ACTIONS =
                 end
             end
         end,
+
+		sittable = function(inst, doer, actions, right)
+			if inst:HasTag("cansit") then
+				table.insert(actions, ACTIONS.SITON)
+			end
+		end,
     },
 
     USEITEM = --args: inst, doer, target, actions, right
@@ -1324,7 +1342,7 @@ local COMPONENT_ACTIONS =
             if doer == target and target.replica.builder ~= nil then
                 table.insert(actions, ACTIONS.TEACH)
             end
-        end,
+        end,        
 
         tool = function(inst, doer, target, actions, right)
             if not target:HasTag("INLIMBO") then
@@ -2239,6 +2257,10 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        scrapbookable = function(inst, doer, actions)
+            table.insert(actions, ACTIONS.TEACH)
+        end,
+
         teleporter = function(inst, doer, actions)
             if inst:HasTag("teleporter") and not doer:HasTag("channeling") then
                 table.insert(actions, ACTIONS.TELEPORT)
@@ -2277,7 +2299,7 @@ local COMPONENT_ACTIONS =
 
         useableitem = function(inst, doer, actions)
             if not inst:HasTag("inuse") and
-                inst.replica.equippable ~= nil and
+                inst.replica.equippable ~= nil and 
                 inst.replica.equippable:IsEquipped() and
                 doer.replica.inventory ~= nil and
                 doer.replica.inventory:IsOpenedBy(doer) then
@@ -2337,6 +2359,14 @@ local COMPONENT_ACTIONS =
         workable = function(inst, action, right)
             return (right or action ~= ACTIONS.HAMMER) and
                 inst:HasTag(action.id.."_workable")
+        end,
+
+        pickable = function(inst, action, right)
+            local valid = right and action == ACTIONS.SCYTHE and inst:HasTag("pickable")
+
+            if not valid then return false end
+
+            return IsValidScytheTarget(inst)
         end,
     },
 }

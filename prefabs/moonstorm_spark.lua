@@ -166,6 +166,7 @@ local function fn()
     inst.AnimState:SetBuild("charged_particle")
     inst.AnimState:SetBank("charged_particle")
     inst.AnimState:PlayAnimation("idle_flight_loop", true)
+    inst.scrapbook_anim = "idle_flight_loop"
 
     inst.DynamicShadow:Enable(false)
 

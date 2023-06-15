@@ -435,6 +435,7 @@ local function fn()
     inst.AnimState:SetBuild("lunarthrall_plant_front")
     inst.AnimState:PlayAnimation("idle_med", true)
     inst.AnimState:SetFinalOffset(1)
+    inst.scrapbook_anim = "scrapbook"
 
     inst.customPlayAnimation = customPlayAnimation
     inst.customPushAnimation = customPushAnimation

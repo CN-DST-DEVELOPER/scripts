@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "It doesn't go there.",
             EMPTY = "We need stuff to build with.",
             MISMATCH = "We don't think these are the right plans.",
+            NOTREADY = "Everything's too scary right now!",
         },
 		RUMMAGE =
 		{
@@ -886,6 +887,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "We don't think this tool's strong enough!",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "We can see something glowing waaay over there!",
+    ANNOUNCE_SHADOW_RIFT_MAX = "What was that creepy light?",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "We already filled up our scrapbook.",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "It can't still see us... right?",
         CHESSPIECE_EYEOFTERROR = "We think we could've been friends.",
         CHESSPIECE_TWINSOFTERROR = "Now they'll always be together.",
+        CHESSPIECE_DAYWALKER = "He wasn't very nice to us...",
 
         CHESSJUNK1 = "A mess of chess.",
         CHESSJUNK2 = "A mess of chess.",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "They won't keep us safe if we keep holding them.",
 		WALL_MOONROCK = "We feel safe behind this wall... it makes us sleepy...",
 		WALL_MOONROCK_ITEM = "We thought \"moon\" meant something totally different!",
+		WALL_DREADSTONE = "It looks kinda scary...",
+		WALL_DREADSTONE_ITEM = "Do we have to build it?",
 		FENCE = "I don't think we can jump over that.",
         FENCE_ITEM = "Let's build a fence!",
         FENCE_GATE = "The hinges are a little squeaky.",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "Two things in one, just like us!",
 
         PUNCHINGBAG = "Wigfrid's teaching us how to spar with it!",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "W-we don't think we want to look down there...",
+
+		SHADOW_FORGE = "We'd rather do crafts with paper and glue...",
+		SHADOW_FORGE_KIT = "Where should we put it?",
+
+        FUSED_SHADELING = "Ouchie! It bites!",
+        FUSED_SHADELING_BOMB = "You're not one of our spider friends!",
+
+		VOIDCLOTH = "It's definitely not spider silk.",
+		VOIDCLOTHHAT = "It makes us look pretty spooky.",
+		ARMOR_VOIDCLOTH = "It makes it look like our tummy's smiling!",
+
+        VOIDCLOTH_UMBRELLA = "It keeps us dry, and gives us lots of shade!",
+        VOIDCLOTH_SCYTHE = "He never used anything like this back on the farm.",
+
+		SHADOWTHRALL_HANDS = "We wonder if they get dizzy walking like that...",
+		SHADOWTHRALL_HORNS = "We don't want to get gobbled up again!",
+		SHADOWTHRALL_WINGS = "Aww, no fair, we wish we had wings!",
+
+        CHARLIE_NPC = "Are you the lady from the dark?",
+        CHARLIE_HAND = "We think it wants something!",
+
+        NITRE_FORMATION = "It's a big stack of rock stuff!",
+        DREADSTONE_STACK = "More of that scary rock...",
+        
+        SCRAPBOOK_PAGE = "Oooh, we found a page!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

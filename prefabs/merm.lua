@@ -244,9 +244,7 @@ local function ShouldAcceptItem(inst, item, giver)
 end
 
 local function DoCheer_Act(inst)
-    if inst.sg ~= nil and not inst.sg:HasStateTag("busy") then
-        inst.sg:GoToState("cheer")
-    end
+    inst:PushEvent("cheer")
 end
 local function DoCheer(inst)
     inst:DoTaskInTime(math.random()*SLIGHTDELAY, DoCheer_Act)

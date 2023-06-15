@@ -58,7 +58,7 @@ local function emit_glow_fn(effect, emitter_fn)
         px, py, pz,         -- position
         vx, vy, vz,         -- velocity
         math.random() * 360,-- angle
-        UnitRand() * 1     -- angle velocity
+        UnitRand()          -- angle velocity
     )
 end
 

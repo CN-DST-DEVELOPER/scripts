@@ -341,6 +341,8 @@ local function fn()
 	inst.AnimState:SetBuild("catcoon_build")
 	inst.AnimState:PlayAnimation("idle_loop")
 
+	inst.scrapbook_deps = {"meat","coontail"}
+
 	inst:AddTag("smallcreature")
 	inst:AddTag("animal")
 	inst:AddTag("catcoon")

@@ -1,27 +1,16 @@
 local function OnSyncOwnerDirty(inst)
-	--Dedicated server does not need highlighting
-	if not TheNet:IsDedicated() then
-		local self = inst.components.highlightchild
-		if self.owner ~= nil then
-			table.removearrayvalue(self.owner.highlightchildren, inst)
-		end
-		self.owner = self.syncowner:value()
-		if self.owner ~= nil then
-			if self.owner.highlightchildren == nil then
-				self.owner.highlightchildren = { inst }
-			else
-				table.insert(self.owner.highlightchildren, inst)
-			end
-		end
-	end
+	local self = inst.components.highlightchild
+	self:OnChangeOwner(self.syncowner:value())
 end
 
 local HighlightChild = Class(function(self, inst)
 	self.inst = inst
 	self.owner = nil
-	self.syncowner = net_entity(inst.GUID, "highlightchild.syncowner", "syncownerdirty")
-	if not TheWorld.ismastersim then
-		inst:ListenForEvent("syncownerdirty", OnSyncOwnerDirty)
+	if inst.Network ~= nil then
+		self.syncowner = net_entity(inst.GUID, "highlightchild.syncowner", "syncownerdirty")
+		if not TheWorld.ismastersim then
+			inst:ListenForEvent("syncownerdirty", OnSyncOwnerDirty)
+		end
 	end
 end)
 
@@ -32,8 +21,27 @@ function HighlightChild:OnRemoveEntity()
 end
 
 function HighlightChild:SetOwner(owner)
-	self.syncowner:set(owner)
-	OnSyncOwnerDirty(self.inst)
+	if self.syncowner ~= nil then
+		self.syncowner:set(owner)
+	end
+	self:OnChangeOwner(owner)
+end
+
+function HighlightChild:OnChangeOwner(owner)
+	--Dedicated server does not need highlighting
+	if not TheNet:IsDedicated() then
+		if self.owner ~= nil then
+			table.removearrayvalue(self.owner.highlightchildren, self.inst)
+		end
+		self.owner = owner
+		if owner ~= nil then
+			if owner.highlightchildren == nil then
+				owner.highlightchildren = { self.inst }
+			else
+				table.insert(owner.highlightchildren, self.inst)
+			end
+		end
+	end
 end
 
 return HighlightChild

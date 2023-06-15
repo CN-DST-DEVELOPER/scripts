@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "That was erroneous.",
             EMPTY = "I need something to build with first.",
             MISMATCH = "Those are the wrong plans.",
+            NOTREADY = "Perhaps when the ground is more stable...",
         },
 		RUMMAGE =
 		{
@@ -883,9 +884,12 @@ return{
     ANNOUNCE_COZY_SLEEP = "I suppose it was worth a try.",
 
 	--
-	ANNOUNCE_TOOL_TOOWEAK = "This will require a more robust tool than I currently possess.",
+	ANNOUNCE_TOOL_TOOWEAK = "This will require a more robust tool.",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "I suspect a powerful influx of energy is the source of that strange glow.",
+    ANNOUNCE_SHADOW_RIFT_MAX = "As nonsensical as it sounds, there is something dark about that \"light\"...",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "My scrapbook has already been completed.",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "I must commend the artist for their attention to detail.",
         CHESSPIECE_EYEOFTERROR = "A trophy that doubles as a useful anatomical model.",
         CHESSPIECE_TWINSOFTERROR = "A stone rendition of a pair of mechanical marvels.",
+        CHESSPIECE_DAYWALKER = "An accurate stone model of that ill-behaved creature.",
 
         CHESSJUNK1 = "The magician's unfinished projects?",
         CHESSJUNK2 = "The magician's unfinished projects?",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "Deployable pickets.",
 		WALL_MOONROCK = "A job well done.",
 		WALL_MOONROCK_ITEM = "Fits comfortably in my pocket.",
+		WALL_DREADSTONE = "A highly secure wall.",
+		WALL_DREADSTONE_ITEM = "The stone's density makes for an incredibly strong building material.",
 		FENCE = "A simply constructed fence.",
         FENCE_ITEM = "All the components for a wooden fence.",
         FENCE_GATE = "That is a wooden gate.",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "A surprisingly effective digging implement.",
 
         PUNCHINGBAG = "A useful tool for testing a weapon's efficacy.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Intriguing and deeply worrying in equal measures.",
+
+		SHADOW_FORGE = "I do not care for this type of magic.",
+		SHADOW_FORGE_KIT = "It cannot be utilized until its been assembled.",
+
+        FUSED_SHADELING = "It is reminiscent of the parasitic shadows we encountered before.",
+        FUSED_SHADELING_BOMB = "Its body is highly volatile.",
+
+		VOIDCLOTH = "This unusual fabric may be quite useful.",
+		VOIDCLOTHHAT = "Prolonged use will surely have detrimental effects on the mind.",
+		ARMOR_VOIDCLOTH = "Armor against metaphysical damage.",
+
+        VOIDCLOTH_UMBRELLA = "It provides a useful barrier against acid droplets.",
+        VOIDCLOTH_SCYTHE = "A common harvesting implement, with an admittedly unsettling appearance.",
+
+		SHADOWTHRALL_HANDS = "I would advise against challenging it in hand-to-hand combat.",
+		SHADOWTHRALL_HORNS = "A ravenous shadow beast.",
+		SHADOWTHRALL_WINGS = "Its wings seem to be utilized for propulsion, not to remain airborne.",
+
+        CHARLIE_NPC = "I'd like to give that young lady a stern talking to!",
+        CHARLIE_HAND = "It requires materials.",
+
+        NITRE_FORMATION = "The acidic rain seems to have caused a chemical reaction, producing these formations.",
+        DREADSTONE_STACK = "Its source must lie even deeper underground.",
+        
+        SCRAPBOOK_PAGE = "What a hideous sight! A page torn from its book!",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

@@ -418,6 +418,8 @@ local function fn()
 
     inst.AnimState:SetLightOverride(1)
 
+    inst.scrapbook_deps = {"lightbulb"}
+
     inst.Light:SetFalloff(0.7)
     inst.Light:SetIntensity(.5)
     inst.Light:SetRadius(1.8)

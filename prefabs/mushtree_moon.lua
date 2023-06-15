@@ -260,6 +260,7 @@ local function maketree(name, data, state)
         inst.AnimState:SetBuild(data.build)
         inst.AnimState:SetBank(data.bank)
         inst.AnimState:PlayAnimation("idle_loop", true)
+        inst.scrapbook_anim = "idle_loop"
 
         inst.MiniMapEntity:SetIcon(data.icon)
 

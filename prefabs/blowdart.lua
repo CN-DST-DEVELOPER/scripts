@@ -57,6 +57,7 @@ local function common(anim, tags, removephysicscolliders)
     inst.AnimState:SetBank("blow_dart")
     inst.AnimState:SetBuild("blow_dart")
     inst.AnimState:PlayAnimation(anim)
+    inst.scrapbook_anim = anim
 
     inst:AddTag("blowdart")
     inst:AddTag("sharp")

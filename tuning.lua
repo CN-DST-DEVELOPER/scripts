@@ -748,6 +748,7 @@ function Tune(overrides)
         GHOST_SISTURN_CHANCE_PER_DECOR = 0.05,
 
         COOKINGRECIPECARD_GRAVESTONE_CHANCE = 0.1,
+        SCRAPBOOK_PAGE_GRAVESTONE_CHANCE = 0.1,
 
         MIN_LEAF_CHANGE_TIME = .1 * day_time,
         MAX_LEAF_CHANGE_TIME = 3 * day_time,
@@ -1372,6 +1373,10 @@ function Tune(overrides)
 			LUNAR_FORGE = TechTree.Create({
 				LUNARFORGING = 2,
 			}),
+
+			SHADOW_FORGE = TechTree.Create({
+				SHADOWFORGING = 2,
+			}),
 		},
 
         RABBIT_HEALTH = 25 * multiplayer_attack_modifier,
@@ -1791,6 +1796,20 @@ function Tune(overrides)
 		ARMOR_LUNARPLANT_LUNAR_RESIST = 0.9,
 		ARMOR_LUNARPLANT_SETBONUS_LUNAR_RESIST = math.sqrt(0.75) / 0.9, --sqrt because two pieces combine to achieve this
 
+        --NOTE: + 20 * 10 <= 20 hits of defending 10 planar damage
+		ARMOR_VOIDCLOTH = wilson_health * 6 * multiplayer_armor_durability_modifier + 20 * 10,
+		ARMOR_VOIDCLOTH_ABSORPTION = 0.8 * multiplayer_armor_absorption_modifier,
+		ARMOR_VOIDCLOTH_PLANAR_DEF = 10,
+		ARMOR_VOIDCLOTH_HAT = wilson_health * 6 * multiplayer_armor_durability_modifier + 20 * 10,
+		ARMOR_VOIDCLOTH_HAT_ABSORPTION = 0.8 * multiplayer_armor_absorption_modifier,
+		ARMOR_VOIDCLOTH_HAT_PLANAR_DEF = 10,
+		ARMOR_VOIDCLOTH_SHADOW_RESIST = 0.9,
+		ARMOR_VOIDCLOTH_SETBONUS_SHADOW_RESIST = math.sqrt(0.75) / 0.9, --sqrt because two pieces combine to achieve this
+
+        ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_MAX = 24,
+        ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_MAX_HITS = 6,
+        ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_DECAY_TIME = 3,
+
         PANFLUTE_SLEEPTIME = 20,
         PANFLUTE_SLEEPRANGE = 15,
         PANFLUTE_USES = 10,
@@ -1810,6 +1829,11 @@ function Tune(overrides)
         MANDRAKE_SLEEP_RANGE_COOKED = 25,
         KNOCKOUT_SLEEP_TIME = 30,
         SLEEPBOMB_DURATION = 20,
+
+        -- Scrapbook
+        SCRAPBOOK_BACKEND_SYNC = 3,
+        SCRAPBOOK_UPDATERATE = 1, -- Must be smaller than SCRAPBOOK_BACKEND_SYNC
+        SCRAPBOOK_UPDATERADIUS = 15,
 
         GOLD_VALUES =
         {
@@ -1990,6 +2014,9 @@ function Tune(overrides)
         REPAIR_MOONROCK_NUGGET_HEALTH = 80/2,
         REPAIR_MOONROCK_NUGGET_WORK = 2,
 
+		REPAIR_DREADSTONE_HEALTH = 80,
+		REPAIR_DREADSTONE_WORK = 4,
+
         SCULPTURE_COMPLETE_WORK = 10,
         SCULPTURE_COVERED_WORK = 6,
 
@@ -2011,6 +2038,10 @@ function Tune(overrides)
         MOONROCKWALL_HEALTH = 600,
         MOONROCKWALL_PLAYERDAMAGEMOD = .25,
         MOONROCKWALL_WORK = 25,
+
+		DREADSTONEWALL_HEALTH = 800,
+		DREADSTONEWALL_PLAYERDAMAGEMOD = .25,
+		DREADSTONEWALL_WORK = 25,
 
         PORTAL_HEALTH_PENALTY = 0.25,
         HEART_HEALTH_PENALTY = 0.125,
@@ -2712,6 +2743,10 @@ function Tune(overrides)
 		--T3
 		SKELETONHAT_SHADOW_LEVEL = 3,
 		ARMOR_SKELETON_SHADOW_LEVEL = 3,
+		VOIDCLOTHHAT_SHADOW_LEVEL = 3,
+		ARMOR_VOIDCLOTH_SHADOW_LEVEL = 3,
+		VOIDCLOTH_SCYTHE_SHADOW_LEVEL = 3,
+		VOIDCLOTH_UMBRELLA_SHADOW_LEVEL = 3,
 		--T4
 		THURIBLE_SHADOW_LEVEL = 4,
 
@@ -6538,7 +6573,7 @@ function Tune(overrides)
 
         -- Rifts 1
         SPAWN_RIFTS = 1, -- 0 = disabled, 1 = enabled via gameplay, 2 = enabled at start
-        MAXIMUM_RIFTS_COUNT = 1,
+        MAXIMUM_RIFTS_COUNT = 1, -- NOTES(JBK): Leave at 1 until other side effects are fixed with assumptions made in portal rift logic.
         RIFTS_SPAWNDELAY = 5 * total_day_time,
 
         RIFT_LUNAR1_MAXSTAGE = 3,
@@ -6585,6 +6620,128 @@ function Tune(overrides)
         LUNARTHRALL_PLANT_VINE_LIMIT = 1,
         LUNARTHRALL_PLANT_REST_TIME = 5,
         LUNARTHRALL_PLANT_WAKE_TIME = 4,
+
+        -- Rifts 2
+        FUSED_SHADELING_DAMAGE = 40,
+        FUSED_SHADELING_PLANAR_DAMAGE = 10,
+        FUSED_SHADELING_ATTACK_PERIOD = 2.5,
+        FUSED_SHADELING_ATTACK_RANGE = 2.0,
+        FUSED_SHADELING_WALKSPEED = 4.0,
+        FUSED_SHADELING_JUMPSPEED = 24.0,
+        FUSED_SHADELING_MAXJUMPDISTANCE = 10.0,
+        FUSED_SHADELING_JUMP_COOLDOWN = 5.0,
+        FUSED_SHADELING_HEALTH = 1250,
+        FUSED_SHADELING_AGGRO_RANGE = 18,
+
+        FUSED_SHADELING_BOMB_WALKSPEED = 5.50,
+        FUSED_SHADELING_BOMB_EXPLOSION_DAMAGE = 50,
+        FUSED_SHADELING_BOMB_EXPLOSION_PLANARDAMAGE = 20,
+        FUSED_SHADELING_BOMB_EXPLOSION_TIME = 4.0,
+
+		SHADOWTHRALL_HANDS_HEALTH = 1000,
+		SHADOWTHRALL_HANDS_WALKSPEED = 4,
+		SHADOWTHRALL_HANDS_RUNSPEED = 8,
+		SHADOWTHRALL_HANDS_ATTACK_PERIOD = 4,
+		SHADOWTHRALL_HANDS_ATTACK_RANGE = 8,
+		SHADOWTHRALL_HANDS_DAMAGE = 35,
+		SHADOWTHRALL_HANDS_PLANAR_DAMAGE = 20,
+		SHADOWTHRALL_HANDS_STOMP_RADIUS = 1.8,
+
+		SHADOWTHRALL_HORNS_HEALTH = 1200,
+		SHADOWTHRALL_HORNS_WALKSPEED = 3,
+		SHADOWTHRALL_HORNS_ATTACK_PERIOD = 4,
+		SHADOWTHRALL_HORNS_ATTACK_RANGE = 6,
+		SHADOWTHRALL_HORNS_DAMAGE = 20,
+		SHADOWTHRALL_HORNS_PLANAR_DAMAGE = 20,
+		SHADOWTHRALL_HORNS_FACEPLANT_RADIUS = 2.8,
+		SHADOWTHRALL_HORNS_DEVOUR_RADIUS = 2.4,
+		SHADOWTHRALL_HORNS_BISHIBASHI_RANGE = 5.75,
+		SHADOWTHRALL_HORNS_BISHIBASHI_WIDTH = 2.5,
+
+		SHADOWTHRALL_WINGS_HEALTH = 800,
+		SHADOWTHRALL_WINGS_WALKSPEED = 5,
+		SHADOWTHRALL_WINGS_ATTACK_PERIOD = 4,
+		SHADOWTHRALL_WINGS_ATTACK_RANGE = 8,
+		SHADOWTHRALL_WINGS_DAMAGE = 25,
+		SHADOWTHRALL_WINGS_PLANAR_DAMAGE = 30,
+
+		SHADOWTHRALL_AGGRO_RANGE = 12,
+		SHADOWTHRALL_DEAGGRO_RANGE = 40,
+
+		MIASMA_SPEED_MOD = .4,
+        MIASMA_MAXSTRENGTH = 2, -- NOTES(JBK): It will take MIASMA_DIMINISH_INTERVAL_SECONDS * MIASMA_MAXSTRENGTH seconds to remove one miasma cloud maximally.
+        MIASMA_SPACING = 1, -- In tiles.
+        MIASMA_SPREAD_INTERVAL_SECONDS = 10,
+        MIASMA_DIMINISH_INTERVAL_SECONDS = 1,
+        MIASMA_MAX_CLOUDS = 50,
+        MIASMA_ODDS_CREATE = 0.75,
+        MIASMA_ODDS_SPREAD = 0.3,
+        MIASMA_MIN_DISTSQ_FROM_RIFT = 1 * 1 * 4, -- 4 is TILE_SCALE.
+        MIASMA_MAX_DISTSQ_FROM_RIFT = 12 * 12 * 4, -- 4 is TILE_SCALE.
+
+        MIASMA_DEBUFF_TICK_RATE = 2,
+        MIASMA_DEBUFF_TICK_VALUE = -2,
+
+        -- Damage over times.
+        ACIDRAIN_DAMAGE_TIME = 1.5, -- How quickly the game polls to deal acidrain damage.
+        ACIDRAIN_DAMAGE_PER_SECOND = 2.0,
+        ACIDRAIN_DAMAGE_FUELED_SCALER = 1.0,
+        ACIDRAIN_PERISHABLE_ROT_PERCENT = 0.01,
+        -- Side effects.
+        ACIDRAIN_BOULDER_WORK = 3,
+        ACIDRAIN_BOULDER_WORK_STARTS_PERCENT = 0.5, -- What percentage of the acid level of the pond should it be for work to start.
+        ACIDRAIN_BAT_SPEED_MULT = 1.25,
+        ACIDRAIN_BAT_DAMAGE_MULT = 1.5,
+
+        FISSURE_COOLDOWN_WALKED_AWAY = total_day_time / 8,
+        FISSURE_COOLDOWN_DEFEATED_ANY_THRALLS = total_day_time * 3,
+        FISSURE_TIME_THRALLS_OUT_OF_COMBAT = 15.0, -- Seconds from last hit until a thrall is considered out of combat.
+        FISSURE_DREADSTONE_WORK = 6,
+        FISSURE_DREADSTONE_COOLDOWN = total_day_time * 1,
+
+        RIFT_SHADOW1_QUAKER_ODDS = 0.1, -- Odds for interfering with quaker drops on players.
+        RIFT_SHADOW1_QUAKER_RADIUS = 4.0, -- Radius for interfered quaker drops on players.
+
+        RIFT_SHADOW1_MAXSTAGE = 3,
+        RIFT_SHADOW1_STAGEUP_BASE_TIME = 4.0 * total_day_time,
+        RIFT_SHADOW1_STAGEUP_RANDOM_TIME = total_day_time,
+
+        RIFT_SHADOW1_CLOSE_TIME = 15 * total_day_time,
+        RIFT_SHADOW1_GROUNDPOUND_DAMAGE = 20,
+
+        RIFT_SHADOW1_FUSED_SHADELING_SPAWN_RATE_BY_STAGE =
+        {
+            {
+                MAX_CHILDREN = 1,
+                REGEN_TIME = seg_time * 8,
+                RELEASE_TIME = seg_time * 4,
+            },
+            {
+                MAX_CHILDREN = 3,
+                REGEN_TIME = seg_time * 4,
+                RELEASE_TIME = seg_time * 2,
+            },
+            {
+                MAX_CHILDREN = 5,
+                REGEN_TIME = seg_time * 2,
+                RELEASE_TIME = seg_time,
+            },
+        },
+
+        VOIDCLOTH_UMBRELLA_PERISHTIME = total_day_time*15,
+        VOIDCLOTH_UMBRELLA_DAMAGE = wilson_attack,
+
+        VOIDCLOTH_SCYTHE_USES = 200,
+        VOIDCLOTH_SCYTHE_DAMAGE = wilson_attack * 2 - 30,
+        VOIDCLOTH_SCYTHE_PLANAR_DAMAGE = 18,
+        VOIDCLOTH_SCYTHE_HARVEST_RADIUS = 4,
+        VOIDCLOTH_SCYTHE_HARVEST_ANGLE_WIDTH = 165/RADIANS,
+        VOIDCLOTH_SCYTHE_TALK_INTERVAL = 30,
+        VOIDCLOTH_SCYTHE_TALK_INITIAL_INTERVAL = 3,
+
+        WEAPONS_VOIDCLOTH_VS_LUNAR_BONUS = 1.1,
+		WEAPONS_VOIDCLOTH_SETBONUS_DAMAGE_MULT = 1.1,
+		WEAPONS_VOIDCLOTH_SETBONUS_PLANAR_DAMAGE = 5,
     }
 
     TUNING_MODIFIERS = {}

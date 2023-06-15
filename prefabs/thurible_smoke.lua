@@ -112,7 +112,7 @@ local function emit_hand_fn(effect, sphere_emitter)
         px, py + .65, pz,   -- position
         vx, vy, vz,         -- velocity
         0,                  --* 2 * PI, -- angle
-        UnitRand() * 1,     -- angle velocity
+        UnitRand(),         -- angle velocity
         uv_offset, 0        -- uv offset
     )
 end

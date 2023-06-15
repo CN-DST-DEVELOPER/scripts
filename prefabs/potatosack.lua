@@ -50,6 +50,7 @@ local function fn()
     inst.AnimState:SetBank("potato_sack_empty")
     inst.AnimState:SetBuild("potato_sack")
     inst.AnimState:PlayAnimation("idle_full")
+    inst.scrapbook_anim = "idle_full"
 
     inst.entity:SetPristine()
 

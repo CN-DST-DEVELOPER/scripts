@@ -179,6 +179,7 @@ local function fn()
     inst.AnimState:SetBuild("ds_tallbird_basic")
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:Hide("beakfull")
+    inst.scrapbook_hide = {"beakfull"}
 
     inst.entity:SetPristine()
 

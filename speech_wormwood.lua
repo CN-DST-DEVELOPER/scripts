@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Nope",
             EMPTY = "Nothing to build with",
             MISMATCH = "Nope",
+            NOTREADY = "T-too sh-shaky!!",
         },
 		RUMMAGE =
 		{
@@ -890,6 +891,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "Oh. Something else?",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "Hmm? Light?",
+    ANNOUNCE_SHADOW_RIFT_MAX = "Glowy!",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "Book filled up!",
 
 	BATTLECRY =
 	{
@@ -1804,6 +1808,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "Big",
         CHESSPIECE_EYEOFTERROR = "Not watching?",
         CHESSPIECE_TWINSOFTERROR = "Can't see now",
+        CHESSPIECE_DAYWALKER = "Hello? Can't talk?",
 
         CHESSJUNK1 = "Machine stuff",
         CHESSJUNK2 = "Lots of machine stuff",
@@ -2955,6 +2960,8 @@ return{
 		WALL_WOOD_ITEM = "Friends!",
 		WALL_MOONROCK = "Hard",
 		WALL_MOONROCK_ITEM = "For the ground",
+		WALL_DREADSTONE = "Sparkly",
+		WALL_DREADSTONE_ITEM = "For the ground",
 		FENCE = "Made of friends",
         FENCE_ITEM = "Put in ground",
         FENCE_GATE = "Door made of friends",
@@ -4795,6 +4802,34 @@ return{
 		SHOVEL_LUNARPLANT = "Mean friend help dig",
 
         PUNCHINGBAG = "It okay. Not real",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Anybody down there?",
+
+		SHADOW_FORGE = "Scary hands helping?",
+		SHADOW_FORGE_KIT = "Not done yet",
+
+        FUSED_SHADELING = "Scary Biter!",
+        FUSED_SHADELING_BOMB = "Look out!",
+
+		VOIDCLOTH = "Leaves? No...",
+		VOIDCLOTHHAT = "Dark inside",
+		ARMOR_VOIDCLOTH = "Smiling?",
+
+        VOIDCLOTH_UMBRELLA = "Burny Rain Taker",
+        VOIDCLOTH_SCYTHE = "No... wants to hurt friends!",
+
+		SHADOWTHRALL_HANDS = "Not friend...",
+		SHADOWTHRALL_HORNS = "Big Biter!",
+		SHADOWTHRALL_WINGS = "Scary Flier",
+
+        CHARLIE_NPC = "Hello lady!",
+        CHARLIE_HAND = "Want something?",
+
+        NITRE_FORMATION = "Bunch of Pow Rocks",
+        DREADSTONE_STACK = "Growing up, up, up!",
+        
+        SCRAPBOOK_PAGE = "Book leaf?",
     },
 
     DESCRIBE_GENERIC = "Friend?",

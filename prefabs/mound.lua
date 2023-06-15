@@ -13,6 +13,7 @@ local prefabs =
     "nightmarefuel",
 	"bat",
 	"cookingrecipecard",
+    "scrapbook_page",
 }
 
 for k = 1, NUM_TRINKETS do
@@ -29,7 +30,7 @@ local LOOTS =
     amulet = 1,
     gears = 1,
     redgem = 5,
-    bluegem = 5,
+    bluegem = 5,    
 }
 
 local function ReturnChildren(inst)
@@ -77,6 +78,10 @@ local function onfinishcallback(inst, worker)
 			if math.random() < TUNING.COOKINGRECIPECARD_GRAVESTONE_CHANCE then
                 inst.components.lootdropper:SpawnLootPrefab("cookingrecipecard")
 			end
+
+            if math.random() < TUNING.SCRAPBOOK_PAGE_GRAVESTONE_CHANCE then
+                inst.components.lootdropper:SpawnLootPrefab("scrapbook_page")
+            end
 
 			if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
 				local ornament = math.random(NUM_HALLOWEEN_ORNAMENTS * 4)

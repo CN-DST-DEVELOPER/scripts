@@ -2750,6 +2750,23 @@ local fx =
 			inst.AnimState:SetSymbolLightOverride("flame01", 1)
 		end,
 	},
+    {
+        name = "fused_shadeling_spawn_fx",
+        bank = "fused_shadeling",
+        build = "fused_shadeling",
+        anim = "spawn_fx",
+    },
+    {
+        name = "dreadstone_spawn_fx",
+        bank = "mutate_fx",
+        build = "mutate_fx",
+        anim = "mutate",
+        nofaced = true,
+        fn = function(inst)
+            inst.AnimState:SetMultColour(0, 0, 0, 1)
+            inst.AnimState:SetFinalOffset(1)
+        end,
+    },
 }
 
 for cratersteamindex = 1, 4 do

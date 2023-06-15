@@ -151,6 +151,7 @@ local function OnPrecipitationChanged(src, preciptype)
     SetVariable("precipitation", preciptype)
     SetVariable("israining", preciptype == "rain", "rain")
     SetVariable("issnowing", preciptype == "snow", "snow")
+    SetVariable("isacidraining", preciptype == "acidrain", "acidrain")
 end
 
 local function OnSnowCoveredChanged(src, show)
@@ -244,6 +245,7 @@ self.data.pop = 0
 self.data.precipitationrate = 0
 self.data.precipitation = "none"
 self.data.israining = false
+self.data.isacidraining = false
 self.data.issnowing = false
 self.data.issnowcovered = false
 self.data.snowlevel = 0

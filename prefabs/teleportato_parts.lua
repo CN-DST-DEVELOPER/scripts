@@ -21,6 +21,7 @@ local function makefn(name, frame)
 
         inst.AnimState:SetBank("parts")
         inst.AnimState:PlayAnimation(frame, false)
+        inst.scrapbook_anim = frame
 
         inst:AddTag("irreplaceable")
         inst:AddTag("teleportato_part")

@@ -141,6 +141,7 @@ local function fn()
     inst.AnimState:SetBank("soil_amender")
     inst.AnimState:SetBuild("soil_amender")
     inst.AnimState:PlayAnimation("fresh_idle")
+    inst.scrapbook_anim = "fresh_idle"
 
 	MakeInventoryFloatable(inst, "small", 0.15, 0.86)
 	MakeDeployableFertilizerPristine(inst)
@@ -204,6 +205,7 @@ local function fermented_fn()
     inst.AnimState:SetBank("soil_amender")
     inst.AnimState:SetBuild("soil_amender")
     inst.AnimState:PlayAnimation("fermented_idle", false)
+    inst.scrapbook_anim = "fermented_idle"
 
 	MakeInventoryFloatable(inst, "small", 0.12, 1)
 	MakeDeployableFertilizerPristine(inst)

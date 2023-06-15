@@ -248,12 +248,14 @@ local function baserock_fn(bank, build, anim, minimapicon, tag, multcolour)
         for i, v in ipairs(anim) do
             if i == 1 then
                 inst.AnimState:PlayAnimation(v)
+                inst.scrapbook_anim = v
             else
                 inst.AnimState:PushAnimation(v, false)
             end
         end
     else
         inst.AnimState:PlayAnimation(anim)
+        inst.scrapbook_anim = anim
     end
 
     MakeSnowCoveredPristine(inst)

@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Alas! It doth not go there!",
             EMPTY = "It requireth materials.",
             MISMATCH = "Alas! 'Tis the wrong plans.",
+            NOTREADY = "'Tis no time for pleasantries!",
         },
 		RUMMAGE =
 		{
@@ -886,6 +887,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "This meager tool hath not the strength to break it.",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "Something doth shine like a beacon in the distance.",
+    ANNOUNCE_SHADOW_RIFT_MAX = "Hark! 'Tis a most unnatural light!",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "I hath already completed my tome.",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "You fought well, Champion of Mani.",
         CHESSPIECE_EYEOFTERROR = "I shall feast my eyes upon this trophy!",
         CHESSPIECE_TWINSOFTERROR = "A battle I shan't soon forget.",
+        CHESSPIECE_DAYWALKER = "The beast proved himself to be a worthy adversary!",
 
         CHESSJUNK1 = "It's only a pile of fallen warriors.",
         CHESSJUNK2 = "More fallen mechanical warriors.",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "A mediocre fortification.",
 		WALL_MOONROCK = "Wholly impregnable, a worthy fortification!",
 		WALL_MOONROCK_ITEM = "Our fortress shall be impenetrable!",
+		WALL_DREADSTONE = "These fortifications will strike fear into my enemies' hearts!",
+		WALL_DREADSTONE_ITEM = "Fashioned from cursed stone.",
 		FENCE = "Tis not my kind of fencing.",
         FENCE_ITEM = "Not for fortification. Merely the farm.",
         FENCE_GATE = "A tiny replica of Valhalla's gates.",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "The ground stands no chance against me.",
 
         PUNCHINGBAG = "Alas, 'tis not a very lively sparring partner.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "A chasm to Hel itself.",
+
+		SHADOW_FORGE = "It doth conjure powerful, accursed things...",
+		SHADOW_FORGE_KIT = "Dare I toy with such a thing?",
+
+        FUSED_SHADELING = "'Tis naught but a pest to be crushed beneath my boot!",
+        FUSED_SHADELING_BOMB = "'Tis small, but lively!",
+
+		VOIDCLOTH = "Remnants of a fallen foe.",
+		VOIDCLOTHHAT = "I despise the thought of hiding one's face in combat.",
+		ARMOR_VOIDCLOTH = "This garb invites madness...",
+
+        VOIDCLOTH_UMBRELLA = "A shield against the elements.",
+        VOIDCLOTH_SCYTHE = "A formidable weapon against non-meats.",
+
+		SHADOWTHRALL_HANDS = "To arms, fiend!",
+		SHADOWTHRALL_HORNS = "All thou shall taste is the bite of my spear!",
+		SHADOWTHRALL_WINGS = "Thou art swift, but not swift enough!",
+
+        CHARLIE_NPC = "At last, you reveal yourself!",
+        CHARLIE_HAND = "It seeks an offering.",
+
+        NITRE_FORMATION = "A boon from the burning rain.",
+        DREADSTONE_STACK = "It hails from a place deeper and darker than even here.",
+        
+        SCRAPBOOK_PAGE = "From whence hath you come, mysterious page?",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

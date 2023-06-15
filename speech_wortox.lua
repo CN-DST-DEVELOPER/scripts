@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Oh I simply couldn't.",
             EMPTY = "I can't create from nothing.",
             MISMATCH = "I've made an error.",
+            NOTREADY = "I'll come back around once the ground's settled down.",
         },
 		RUMMAGE =
 		{
@@ -891,6 +892,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "This tool is too weak for what I seek.",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "That odd moonlight has caught my sight.",
+    ANNOUNCE_SHADOW_RIFT_MAX = "Calling that \"light\" wouldn't be quite right.",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "I already know everything there is to know, hyuyu!",
 
 	BATTLECRY =
 	{
@@ -1806,6 +1810,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "In all its selenic splendour!",
         CHESSPIECE_EYEOFTERROR = "He's gone, no matter how you look at it, hyuyu!",
         CHESSPIECE_TWINSOFTERROR = "What an eye-catching statue, hyuyu!",
+        CHESSPIECE_DAYWALKER = "A boorish boar's bust!",
 
         CHESSJUNK1 = "It looks quite broke, and that's no joke!",
         CHESSJUNK2 = "It looks quite broke, and that's no joke!",
@@ -2957,6 +2962,8 @@ return{
 		WALL_WOOD_ITEM = "It's of no use there on the ground.",
 		WALL_MOONROCK = "To keep you out, or keep me in?",
 		WALL_MOONROCK_ITEM = "It's of no use there on the ground.",
+		WALL_DREADSTONE = "To keep you out, or keep me in?",
+		WALL_DREADSTONE_ITEM = "It's of no use there on the ground.",
 		FENCE = "To keep you out, or keep me in?",
         FENCE_ITEM = "It's of no use there on the ground.",
         FENCE_GATE = "For temporary visiting.",
@@ -4797,6 +4804,34 @@ return{
 		SHOVEL_LUNARPLANT = "Dig a hole to who knows where!",
 
         PUNCHINGBAG = "It does not complain, for it feels no pain!",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Hyuyu, watch your step!",
+
+		SHADOW_FORGE = "Those idle hands should be put to work, hyuyu!",
+		SHADOW_FORGE_KIT = "All work and no play makes for an irritable imp.",
+
+        FUSED_SHADELING = "The stuff of nightmares!",
+        FUSED_SHADELING_BOMB = "Keep away, I don't want to play!",
+
+		VOIDCLOTH = "Bits of tattered reality. And it comes in my color!",
+		VOIDCLOTHHAT = "A hood of night, that blocks out all light.",
+		ARMOR_VOIDCLOTH = "It broke the chains of its previous plane.",
+
+        VOIDCLOTH_UMBRELLA = "The rain of pain falls mainly on this plane.",
+        VOIDCLOTH_SCYTHE = "Alas, it reaps no souls, just grass.",
+
+		SHADOWTHRALL_HANDS = "This one's all topsy-turvy, hyuyu!",
+		SHADOWTHRALL_HORNS = "You wouldn't want to eat a sweet little imp like me!",
+		SHADOWTHRALL_WINGS = "A fright, taken flight!",
+
+        CHARLIE_NPC = "The Shadow Queen is finally seen!",
+        CHARLIE_HAND = "It seeks a stone of dread.",
+
+        NITRE_FORMATION = "After a while it formed a pile.",
+        DREADSTONE_STACK = "Who knows where it grows from?",
+        
+        SCRAPBOOK_PAGE = "Where is it from? Not knowing is half the fun!",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

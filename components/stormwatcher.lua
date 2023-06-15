@@ -108,18 +108,12 @@ end
 function StormWatcher:UpdateStormLevel()
     self:CheckStorms()
     if self.currentstorm ~= STORM_TYPES.NONE then
-        local level = self.stormlevel
-
         if self.currentstorm == STORM_TYPES.SANDSTORM then
-            level = math.floor(TheWorld.components.sandstorms:GetSandstormLevel(self.inst) * 7 + .5) / 7
+			self.stormlevel = math.floor(TheWorld.components.sandstorms:GetSandstormLevel(self.inst) * 7 + .5) / 7
             self.inst.components.sandstormwatcher:UpdateSandstormLevel()
         elseif self.currentstorm == STORM_TYPES.MOONSTORM then
-            level = math.floor(TheWorld.net.components.moonstorms:GetMoonstormLevel(self.inst) * 7 + .5) / 7
+			self.stormlevel = math.floor(TheWorld.net.components.moonstorms:GetMoonstormLevel(self.inst) * 7 + .5) / 7
             self.inst.components.moonstormwatcher:UpdateMoonstormLevel()
-        end
-
-        if self.stormlevel ~= level then
-            self.stormlevel = level
         end
     else
         if self.laststorm ~= STORM_TYPES.NONE then

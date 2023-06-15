@@ -101,6 +101,11 @@ local function fn()
 
     BALLOONS.SetRopeShape(inst)
 
+    inst.scrapbook_overridedata={}
+    table.insert( inst.scrapbook_overridedata, {"swap_balloon", "balloon_shapes_party", "balloon_1"})
+    table.insert( inst.scrapbook_overridedata, {"swap_rope", "balloon2", "rope_1"})
+
+
 	--inst.colour_idx = BALLOONS.SetColour(inst)
 
     inst:AddComponent("equippable")

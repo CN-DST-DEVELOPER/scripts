@@ -57,7 +57,7 @@ local function emit_smoke_fn(effect, smoke_emitter)
 		px, py, pz,             -- position
 		vx, vy, vz,             -- velocity
 		360 * math.random(),    -- angle
-		UnitRand() * 1          -- angle velocity
+		UnitRand()              -- angle velocity
 	)
 end
 

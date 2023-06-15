@@ -7,12 +7,14 @@ local prefabs =
 {
     "boneshard",
     "collapse_small",
+    "scrapbook_page",
 }
 
 SetSharedLootTable('skeleton',
 {
     {'boneshard',   1.00},
     {'boneshard',   1.00},
+    {'scrapbook_page', 0.05},
 })
 
 local function getdesc(inst, viewer)

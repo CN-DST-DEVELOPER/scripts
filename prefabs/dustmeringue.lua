@@ -23,6 +23,7 @@ local function fn()
     inst.AnimState:SetBuild("cook_pot_food6")
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:OverrideSymbol("swap_food", "cook_pot_food6", "dustmeringue")
+    inst.scrapbook_overridedata = {"swap_food", "cook_pot_food6", "dustmeringue"}
 
     inst:AddTag("dustmothfood")
     inst:AddTag("molebait")

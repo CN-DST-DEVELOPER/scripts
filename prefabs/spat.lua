@@ -149,6 +149,8 @@ local function fn()
     inst.AnimState:SetBuild("spat_build")
     inst.AnimState:PlayAnimation("idle_loop", true)
 
+    inst.scrapbook_damage = TUNING.SPAT_MELEE_DAMAGE
+
     inst:AddTag("spat")
     inst:AddTag("animal")
     inst:AddTag("largecreature")

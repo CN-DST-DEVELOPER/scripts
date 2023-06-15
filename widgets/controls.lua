@@ -36,6 +36,7 @@ local PlayerDeathNotification = require "widgets/playerdeathnotification"
 local GiftItemToast = require "widgets/giftitemtoast"
 local YotbToast = require "widgets/yotbtoast"
 local SkillTreeToast = require "widgets/skilltreetoast"
+local ScrapbookToast = require "widgets/scrapbooktoast"
 local VoteDialog = require "widgets/votedialog"
 local TEMPLATES = require "widgets/templates"
 local easing = require("easing")
@@ -92,6 +93,7 @@ local Controls = Class(Widget, function(self, owner)
         {pos=Vector3(115, 150, 0)},
         {pos=Vector3(215, 150, 0)},
         {pos=Vector3(315, 150, 0)},
+        {pos=Vector3(415, 150, 0)},        
     }
 
     self.item_notification = self.topleft_root:AddChild(GiftItemToast(self.owner, self))
@@ -102,6 +104,9 @@ local Controls = Class(Widget, function(self, owner)
 
     self.skilltree_notification = self.topleft_root:AddChild(SkillTreeToast(self.owner, self))
     self.skilltree_notification:SetPosition(315, 150, 0)
+
+    self.scrapbook_notification = self.topleft_root:AddChild(ScrapbookToast(self.owner, self))
+    self.scrapbook_notification:SetPosition(415, 0, 0)
 
     --self.worldresettimer = self.bottom_root:AddChild(WorldResetTimer(self.owner))
     self.worldresettimer = self.bottom_root:AddChild(PlayerDeathNotification(self.owner))

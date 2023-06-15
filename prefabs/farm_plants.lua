@@ -766,6 +766,8 @@ local function MakePlant(plant_def)
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
 		inst.AnimState:OverrideSymbol("soil01", "farm_soil", "soil01")
+		inst.scrapbook_overridedata= {"soil01", "farm_soil", "soil01"}
+		inst.scrapbook_anim = "crop_full"
 
 		inst:SetPhysicsRadiusOverride(TUNING.FARM_PLANT_PHYSICS_RADIUS)
 

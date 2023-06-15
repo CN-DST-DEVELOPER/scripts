@@ -631,6 +631,12 @@ function Inventory:ForEachItem(fn, ...)
     end
 end
 
+function Inventory:ForEachEquipment(fn, ...)
+    for k,v in pairs(self.equipslots) do
+        fn(v, ...)
+    end
+end
+
 function Inventory:RemoveItemBySlot(slot)
     if slot and self.itemslots[slot] then
         local item = self.itemslots[slot]
@@ -1029,8 +1035,14 @@ function Inventory:Unequip(equipslot, slip)
             self.heavylifting = false
         end
     end
+
     self.equipslots[equipslot] = nil
     self.inst:PushEvent("unequip", {item=item, eslot=equipslot, slip=slip})
+
+    if self.inst:HasTag("player") and item ~= nil and item.components.setbonus ~= nil then
+        item.components.setbonus:UpdateSetBonus(self, false)
+    end
+
     return item
 end
 
@@ -1147,6 +1159,11 @@ function Inventory:Equip(item, old_to_active, no_animation)
         if METRICS_ENABLED and item.prefab ~= nil then
             ProfileStatsAdd("equip_"..item.prefab)
         end
+
+        if self.inst:HasTag("player") and item.components.setbonus ~= nil then
+            item.components.setbonus:UpdateSetBonus(self, true)
+        end
+
         return true
     end
 end

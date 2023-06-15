@@ -130,6 +130,8 @@ local function fn()
     inst.AnimState:PlayAnimation("level0_loop")
     MakeInventoryPhysics(inst)
 
+    inst.scrapbook_deps = {"ghostflower","nightmarefuel"}
+
     inst.MiniMapEntity:SetIcon("abigail_flower.png")
 
     MakeInventoryFloatable(inst, "small", 0.15, 0.9)

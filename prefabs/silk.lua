@@ -20,6 +20,8 @@ local function fn()
     inst.AnimState:SetBuild("silk")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "cloth"
+
     inst:AddTag("cattoy")
 
     MakeInventoryFloatable(inst)

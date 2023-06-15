@@ -111,6 +111,8 @@ local function fn()
     inst.AnimState:SetBuild("trap_bramble")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_damage = TUNING.TRAP_BRAMBLE_DAMAGE
+
     inst:AddTag("trap")
 
     MakeInventoryFloatable(inst, "small", nil, {1.2, 0.8, 1.2})

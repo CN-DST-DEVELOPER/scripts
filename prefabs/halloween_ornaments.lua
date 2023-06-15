@@ -26,6 +26,7 @@ local function MakeOrnament(ornamentid)
         inst.AnimState:SetBank("halloween_ornaments")
         inst.AnimState:SetBuild("halloween_ornaments")
         inst.AnimState:PlayAnimation("decor_"..ornamentid)
+        inst.scrapbook_anim = "decor_"..ornamentid
 
 		inst:AddTag("halloween_ornament")
         inst:AddTag("molebait")

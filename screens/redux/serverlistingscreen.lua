@@ -1494,6 +1494,12 @@ function ServerListingScreen:IsValidWithFilters(server)
         return false
     end
 
+    -- Filter servers that set an old deprecated intention type as a playstyle which results in invisible graphics.
+    -- Mods sometimes use this field to extend onto the playstyles so this list should be very limited.
+    if server.playstyle == "cooperative" then
+        return false
+    end
+
     -- Now do checks for servers you can potentially join, but are currently
     -- being filtered due to your settings.
 

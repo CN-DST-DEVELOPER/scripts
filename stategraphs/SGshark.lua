@@ -43,10 +43,12 @@ local function endleap(inst)
 
 end
 
+local AOE_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "notarget"}
+
 local function  DoAttack(inst)
     local targetavailable = false
     local x, y, z = inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, TUNING.SHARK.AOE_RANGE, nil,{"FX", "NOCLICK", "DECOR", "INLIMBO", "notarget",""} )
+    local ents = TheSim:FindEntities(x, y, z, TUNING.SHARK.AOE_RANGE, nil, AOE_CANT_TAGS)
     for i, ent in pairs(ents)do
         if inst.components.combat:CanAttack(ent) then
             targetavailable = true

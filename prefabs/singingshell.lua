@@ -181,7 +181,10 @@ local function MakeShell(octave, common_postinit, master_postinit, prefabs)
 		inst.components.inventoryitem:SetSinks(false)
 
 		inst.AnimState:OverrideSymbol("shell_placeholder", "singingshell", octave_str.."_"..inst._variation)
+		inst.scrapbook_overridedata = {"shell_placeholder", "singingshell", octave_str.."_"..inst._variation}
+		
 		inst.components.inventoryitem:ChangeImageName("singingshell_"..octave_str.."_"..inst._variation)
+
 
 		inst:AddComponent("lootdropper")
 		inst.components.lootdropper:SetLoot(singingshellloot)

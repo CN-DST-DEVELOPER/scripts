@@ -77,6 +77,7 @@ local function commonfn(anim, cookable)
     inst.AnimState:SetBank("mandrake")
     inst.AnimState:SetBuild("mandrake")
     inst.AnimState:PlayAnimation(anim)
+    inst.scrapbook_anim = anim
 
     if cookable then
         --cookable (from cookable component) added to pristine state for optimization

@@ -398,6 +398,7 @@ local function fn()
 	inst.AnimState:UsePointFiltering(true)
 	inst.AnimState:SetLightOverride(0.1)
 	inst.AnimState:SetSymbolAddColour("moon_rocks", 0, 0, 0, 1)
+	inst.scrapbook_anim = "scrapbook"
 
 	inst._cloudenabled = net_bool(inst.GUID, "lunar_grazer._cloudenabled")
 	inst._cloudenabled:set(true)

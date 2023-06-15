@@ -10,6 +10,8 @@ function MakeWallType(data)
         Asset("ANIM", "anim/wall_"..data.name..".zip"),
     }
 
+	local bank = data.name == "dreadstone" and "wall_dreadstone" or "wall"
+
     local onhit = data.material ~= nil and function(inst)
         inst.SoundEmitter:PlaySound("dontstarve/common/destroy_"..data.material)
     end or nil
@@ -47,9 +49,13 @@ function MakeWallType(data)
             inst:AddTag(v)
         end
 
-        inst.AnimState:SetBank("wall")
+		inst.AnimState:SetBank(bank)
         inst.AnimState:SetBuild("wall_"..data.name)
         inst.AnimState:PlayAnimation("broken", false)
+
+		if data.name == "dreadstone" then
+			inst.AnimState:SetSymbolLightOverride("wall_segment_red", 1)
+		end
 
         MakeSnowCoveredPristine(inst)
 
@@ -98,6 +104,7 @@ local walldata =
     { name = "ruins",            material = "stone", tags = { "stone", "ruins" },                              maxloots = 2, maxhealth = TUNING.RUINSWALL_HEALTH    },
     { name = "ruins_2",          material = "stone", tags = { "stone", "ruins" },                              maxloots = 2, maxhealth = TUNING.RUINSWALL_HEALTH    },
     { name = MATERIALS.MOONROCK, material = "stone", tags = { "stone", "moonrock" },                           maxloots = 2, maxhealth = TUNING.MOONROCKWALL_HEALTH },
+	{ name = MATERIALS.DREADSTONE, material = "stone", tags = { "stone", "dreadstone" },                       maxloots = 2, maxhealth = TUNING.DREADSTONEWALL_HEALTH },
 }
 
 local wallprefabs = {}

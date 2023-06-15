@@ -9,15 +9,6 @@ local prefabs =
 	"staff_lunarplant_fx",
 }
 
-local function GetSetBonusEquip(inst, owner)
-	if owner.components.inventory ~= nil then
-		local hat = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-		local body = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
-		return hat ~= nil and hat.prefab == "lunarplanthat" and hat or nil,
-			body ~= nil and body.prefab == "armor_lunarplant" and body or nil
-	end
-end
-
 local function SetFxOwner(inst, owner)
 	if owner ~= nil then
 		inst.fx.entity:SetParent(owner.entity)
@@ -51,11 +42,6 @@ local function onequip(inst, owner)
 	owner.AnimState:Show("ARM_carry")
 	owner.AnimState:Hide("ARM_normal")
 	SetFxOwner(inst, owner)
-
-	local hat, body = GetSetBonusEquip(inst, owner)
-	if hat ~= nil and body ~= nil then
-		inst.max_bounces = TUNING.STAFF_LUNARPLANT_SETBONUS_BOUNCES
-	end
 end
 
 local function onunequip(inst, owner)
@@ -66,8 +52,6 @@ local function onunequip(inst, owner)
 		owner:PushEvent("unequipskinneditem", inst:GetSkinName())
 	end
 	SetFxOwner(inst, nil)
-
-	inst.max_bounces = TUNING.STAFF_LUNARPLANT_BOUNCES
 end
 
 local function OnAttack(inst, attacker, target, skipsanity)
@@ -126,8 +110,8 @@ local function fn()
 		return inst
 	end
 
-	inst.lunarplantweapon = true
-	inst.max_bounces = TUNING.STAFF_LUNARPLANT_BOUNCES
+	inst.lunarplantweapon = true -- Deprecated
+	inst.max_bounces = TUNING.STAFF_LUNARPLANT_BOUNCES -- Deprecated
 
 	local frame = math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1
 	inst.AnimState:SetFrame(frame)
@@ -160,6 +144,9 @@ local function fn()
 	inst:AddComponent("equippable")
 	inst.components.equippable:SetOnEquip(onequip)
 	inst.components.equippable:SetOnUnequip(onunequip)
+
+	local setbonus = inst:AddComponent("setbonus")
+	setbonus:SetSetName(EQUIPMENTSETNAMES.LUNARPLANT)
 
 	MakeHauntableLaunch(inst)
 

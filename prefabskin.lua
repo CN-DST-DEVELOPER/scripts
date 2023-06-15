@@ -275,6 +275,9 @@ book_sleep_clear_fn = function(inst) basic_clear_fn(inst, "books") end
 book_web_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
 book_web_clear_fn = function(inst) basic_clear_fn(inst, "books") end
 
+ruinsrelic_chair_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "ruins_chair") end
+ruinsrelic_chair_clear_fn = function(inst) basic_clear_fn(inst, "ruins_chair") end
+
 bedroll_furry_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_bedroll_furry" ) end
 bedroll_furry_clear_fn = function(inst) basic_clear_fn(inst, "swap_bedroll_furry" ) end
 

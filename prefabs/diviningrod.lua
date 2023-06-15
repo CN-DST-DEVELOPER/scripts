@@ -162,6 +162,7 @@ local function fn()
     inst.AnimState:SetBank("diviningrod")
     inst.AnimState:SetBuild("diviningrod")
     inst.AnimState:PlayAnimation("dropped")
+    inst.scrapbook_anim = "dropped"
 
     inst:AddTag("irreplaceable")
     inst:AddTag("nonpotatable")

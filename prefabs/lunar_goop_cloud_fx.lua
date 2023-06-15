@@ -53,10 +53,10 @@ local function emit_smoke_fn(effect, sphere_emitter)
 	effect:AddRotatingParticle(
 		0,
 		lifetime,           -- lifetime
-		px, py + 1, pz,    -- position
+		px, py + 1, pz,     -- position
 		vx, vy, vz,         -- velocity
 		math.random() * 360,-- angle
-		UnitRand() * 1      -- angle velocity
+		UnitRand()          -- angle velocity
 	)
 end
 

@@ -118,13 +118,16 @@ function ImageButton:OnGainFocus()
 
     if self:IsEnabled() then
         self.image:SetTexture(self.atlas, self.image_focus)
-
         if self.size_x and self.size_y then
-            self.image:ScaleToSize(self.size_x, self.size_y)
+            if self.ignore_standard_scaling and self.focus_scale then
+                self.image:ScaleToSize(self.size_x*self.focus_scale[1], self.size_y*self.focus_scale[2])
+            else
+                self.image:ScaleToSize(self.size_x, self.size_y)
+            end
         end
     end
 
-    if self.image_focus == self.image_normal and self.scale_on_focus and self.focus_scale then
+    if not self.ignore_standard_scaling  and self.image_focus == self.image_normal and self.scale_on_focus and self.focus_scale then
         self.image:SetScale(self.focus_scale[1], self.focus_scale[2], self.focus_scale[3])
     end
 
@@ -148,13 +151,16 @@ function ImageButton:OnLoseFocus()
 
     if self:IsEnabled() then
         self.image:SetTexture(self.atlas, self.image_normal)
-
         if self.size_x and self.size_y then
-            self.image:ScaleToSize(self.size_x, self.size_y)
+            if self.ignore_standard_scaling and self.focus_scale then
+                self.image:ScaleToSize(self.size_x*self.normal_scale[1], self.size_y*self.normal_scale[2])
+            else        
+                self.image:ScaleToSize(self.size_x, self.size_y)
+            end
         end
     end
 
-    if self.image_focus == self.image_normal and self.scale_on_focus and self.normal_scale then
+    if not self.ignore_standard_scaling and self.image_focus == self.image_normal and self.scale_on_focus and self.normal_scale then        
         self.image:SetScale(self.normal_scale[1], self.normal_scale[2], self.normal_scale[3])
     end
 

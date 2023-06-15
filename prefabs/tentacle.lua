@@ -92,6 +92,7 @@ local function fn()
     inst.AnimState:SetBank("tentacle")
     inst.AnimState:SetBuild("tentacle")
     inst.AnimState:PlayAnimation("idle")
+    inst.scrapbook_anim ="atk_idle"
 
     inst:AddTag("monster")
     inst:AddTag("hostile")

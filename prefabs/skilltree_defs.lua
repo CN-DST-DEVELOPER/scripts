@@ -520,6 +520,7 @@ CreateSkillTreeFor("wilson", {
         locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_2", "wilson_allegiance_lock_4"},
         onactivate = function(inst, fromload)
             inst:AddTag("skill_wilson_allegiance_shadow")
+			inst:AddTag("player_shadow_aligned")
             local damagetyperesist = inst.components.damagetyperesist
             if damagetyperesist then
                 damagetyperesist:AddResist("shadow_aligned", inst, TUNING.SKILLS.WILSON_ALLEGIANCE_SHADOW_RESIST, "wilson_allegiance_shadow")
@@ -531,6 +532,7 @@ CreateSkillTreeFor("wilson", {
         end,
         ondeactivate = function(inst, fromload)
             inst:RemoveTag("skill_wilson_allegiance_shadow")
+			inst:RemoveTag("player_shadow_aligned")
             local damagetyperesist = inst.components.damagetyperesist
             if damagetyperesist then
                 damagetyperesist:RemoveResist("shadow_aligned", inst, "wilson_allegiance_shadow")
@@ -595,6 +597,7 @@ CreateSkillTreeFor("wilson", {
         locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_3","wilson_allegiance_lock_5"},
         onactivate = function(inst, fromload)
             inst:AddTag("skill_wilson_allegiance_lunar")
+			inst:AddTag("player_lunar_aligned")
             local damagetyperesist = inst.components.damagetyperesist
             if damagetyperesist then
                 damagetyperesist:AddResist("lunar_aligned", inst, TUNING.SKILLS.WILSON_ALLEGIANCE_LUNAR_RESIST, "wilson_allegiance_lunar")
@@ -606,6 +609,7 @@ CreateSkillTreeFor("wilson", {
         end,
         ondeactivate = function(inst, fromload)
             inst:RemoveTag("skill_wilson_allegiance_lunar")
+			inst:RemoveTag("player_lunar_aligned")
             local damagetyperesist = inst.components.damagetyperesist
             if damagetyperesist then
                 damagetyperesist:RemoveResist("lunar_aligned", inst, "wilson_allegiance_lunar")

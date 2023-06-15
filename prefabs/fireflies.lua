@@ -181,6 +181,8 @@ local function fn()
     inst.Light:Enable(false)
     inst.Light:EnableClientModulation(true)
 
+    inst.scrapbook_anim ="swarm_loop"
+
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
     inst.AnimState:SetBank("fireflies")

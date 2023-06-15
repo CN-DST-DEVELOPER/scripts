@@ -99,6 +99,7 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
         inst.AnimState:SetBank(bank)
         inst.AnimState:SetBuild(build)
         inst.AnimState:PlayAnimation("closed")
+        inst.scrapbook_anim="closed"
 
 		MakeSnowCoveredPristine(inst)
 

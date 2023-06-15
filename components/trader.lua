@@ -106,17 +106,13 @@ function Trader:AcceptGift(giver, item, count)
     if self:WantsToAccept(item, giver) then
         count = count or 1
 
-        if self.inst:HasTag("trader_just_show") then
-           -- skip the removal
-        elseif item.components.stackable ~= nil and item.components.stackable.stacksize > count then
+        if item.components.stackable ~= nil and item.components.stackable.stacksize > count then
             item = item.components.stackable:Get(count)
         else
             item.components.inventoryitem:RemoveFromOwner(true)
         end
 
-        if self.inst:HasTag("trader_just_show") then
-            --skip the giving
-        elseif self.deleteitemonaccept then
+        if self.deleteitemonaccept then
             item:Remove()
         elseif self.inst.components.inventory ~= nil then
             item.prevslot = nil

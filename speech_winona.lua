@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Square peg in a round hole.",
             EMPTY = "I gotta have something to build with.",
             MISMATCH = "Oops! Wrong plans.",
+            NOTREADY = "Maybe once it's settled down around here!",
         },
 		RUMMAGE =
 		{
@@ -892,6 +893,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "Maybe this ain't the right tool for the job...",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "I should check out that weird glow.",
+    ANNOUNCE_SHADOW_RIFT_MAX = "I've got a bad feelin'...",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "I can't squeeze any more pages in my scrapbook.",
 
 	BATTLECRY =
 	{
@@ -1806,6 +1810,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "A little too lifelike for my comfort.",
         CHESSPIECE_EYEOFTERROR = "An eye (statue) for an eye (monster)!",
         CHESSPIECE_TWINSOFTERROR = "A fresh pair of eyes is just what we needed around here!",
+        CHESSPIECE_DAYWALKER = "It's so lifelike, I can almost smell the bad breath.",
 
         CHESSJUNK1 = "A heap of spare parts.",
         CHESSJUNK2 = "A heap of spare parts.",
@@ -2957,6 +2962,8 @@ return{
 		WALL_WOOD_ITEM = "Assembly time.",
 		WALL_MOONROCK = "It's already been built. Sigh.",
 		WALL_MOONROCK_ITEM = "Assembly time.",
+		WALL_DREADSTONE = "Well, at least it's sturdy.",
+		WALL_DREADSTONE_ITEM = "Assembly time.",
 		FENCE = "A clearly handmade fence.",
         FENCE_ITEM = "Just needs to be assembled.",
         FENCE_GATE = "A clearly handmade gate.",
@@ -4797,6 +4804,34 @@ return{
 		SHOVEL_LUNARPLANT = "It makes digging things up almost too easy.",
 
         PUNCHINGBAG = "Whatcha say? Wanna go a few rounds?",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "This place is falling apart at the seams.",
+
+		SHADOW_FORGE = "Might as well put the shadows to work.",
+		SHADOW_FORGE_KIT = "Just needs a bit of elbow grease.",
+
+        FUSED_SHADELING = "I don't like the look of those chompers.",
+        FUSED_SHADELING_BOMB = "Watch out, it's gonna blow!",
+
+		VOIDCLOTH = "I can work with any material.",
+		VOIDCLOTHHAT = "Some folks think it's safer to be kept in the dark.",
+		ARMOR_VOIDCLOTH = "Looks pretty tattered, will it really protect me from anything?",
+
+        VOIDCLOTH_UMBRELLA = "It sure provides plenty of shade.",
+        VOIDCLOTH_SCYTHE = "It gives me the creeps, but it sure works like a charm.",
+
+		SHADOWTHRALL_HANDS = "What? Mad I left ya hanging?",
+		SHADOWTHRALL_HORNS = "It's gonna chew me up and spit me back out! Literally!",
+		SHADOWTHRALL_WINGS = "Must be one of the higher-ups. Ha...",
+
+        CHARLIE_NPC = "Charlie, wait!!",
+        CHARLIE_HAND = "You want something, huh?",
+
+        NITRE_FORMATION = "Oh, I've got big plans for that!",
+        DREADSTONE_STACK = "Must be a lot of the stuff growing down there.",
+        
+        SCRAPBOOK_PAGE = "Let's see if there's anything interesting written on it.",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

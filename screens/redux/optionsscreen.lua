@@ -311,6 +311,7 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 		minimapzoomcursor = Profile:IsMinimapZoomCursorFollowing(),
 		loadingtips = Profile:GetLoadingTipsOption(),
 		defaultcloudsaves = Profile:GetDefaultCloudSaves(),
+		scrapbookhuddisplay = Profile:GetScrapbookHudDisplay(),
 	}
 
 	if IsWin32() then
@@ -635,6 +636,7 @@ function OptionsScreen:Save(cb)
 	Profile:SetCampfireStoryCameraEnabled( self.options.waltercamera )
 	Profile:SetMinimapZoomCursorEnabled( self.options.minimapzoomcursor )
 	Profile:SetDefaultCloudSaves( self.options.defaultcloudsaves )
+	Profile:SetScrapbookHudDisplay( self.options.scrapbookhuddisplay )
 
 	if self.integratedbackpackSpinner:IsEnabled() then
 		Profile:SetIntegratedBackpack( self.options.integratedbackpack )
@@ -760,6 +762,7 @@ function OptionsScreen:Apply()
 	Profile:SetCraftingHintAllRecipesEnabled( self.working.craftinghintallrecipes )
 	Profile:SetLoadingTipsOption( self.working.loadingtips )
 	Profile:SetDefaultCloudSaves( self.options.defaultcloudsaves )
+	Profile:SetScrapbookHudDisplay( self.options.scrapbookhuddisplay )
 	
 	DoAutopause()
 	local pausescreen = TheFrontEnd:GetOpenScreenOfType("PauseScreen")
@@ -1559,13 +1562,21 @@ function OptionsScreen:_BuildSettings()
 			self:UpdateMenu()
 		end
 
+	self.scrapbookhuddisplaySpinner =  CreateTextSpinner(STRINGS.UI.OPTIONS.SCAPBOOKHUDDISPLAY, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.SCAPBOOKHUDDISPLAY)
+	self.scrapbookhuddisplaySpinner.OnChanged =
+		function( _, data )
+			self.working.scrapbookhuddisplay = data
+			--self:Apply()
+			self:UpdateMenu()
+		end
+
 	self.craftingmenunumpinpagesSpinner = CreateNumericSpinner(STRINGS.UI.OPTIONS.CRAFTINGMENUNUMPINPAGES, 2, 9, STRINGS.UI.OPTIONS.TOOLTIPS.CRAFTINGMENUNUMPINPAGES)
 	self.craftingmenunumpinpagesSpinner.OnChanged =
 		function( _, data )
 			self.working.craftingmenunumpinpages = data
 			--self:Apply()
 			self:UpdateMenu()
-		end
+		end		
 
 	self.craftingautopauseSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.CRAFTINGAUTOPAUSE, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.CRAFTINGAUTOPAUSE)
 	self.craftingautopauseSpinner.OnChanged =
@@ -1734,6 +1745,7 @@ function OptionsScreen:_BuildSettings()
     table.insert( self.right_spinners, self.autopauseSpinner )
 	table.insert( self.right_spinners, self.craftingautopauseSpinner )
 	table.insert( self.right_spinners, self.craftingmenunumpinpagesSpinner )
+	table.insert( self.right_spinners, self.scrapbookhuddisplaySpinner )
 	
 	if self.show_datacollection then
 		table.insert( self.right_spinners, self.datacollectionCheckbox)
@@ -2405,6 +2417,7 @@ function OptionsScreen:InitializeSpinners(first)
 	if not TheSim:IsSteamChinaClient() then
 		self.profanityfilterchatSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.profanityfilterchat ) )
 	end
+	self.scrapbookhuddisplaySpinner:SetSelectedIndex( EnabledOptionsIndex(self.working.scrapbookhuddisplay))
     self.movementpredictionSpinner:SetSelectedIndex(EnabledOptionsIndex(self.working.movementprediction))
 	self.wathgrithrfontSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.wathgrithrfont ) )
 	self.waltercameraSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.waltercamera ) )

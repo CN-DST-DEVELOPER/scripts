@@ -20,7 +20,11 @@ local function UpdateFlash(inst)
 	if inst.target:IsValid() then
 		if inst.flashstep < 4 then
 			local value = (inst.flashstep > 2 and 4 - inst.flashstep or inst.flashstep) * .05
-			PushColour(inst, value, value, value, 0)
+            if inst.colouroverride then
+                PushColour(inst, value * inst.colouroverride[1], value * inst.colouroverride[2], value * inst.colouroverride[3])
+            else
+			    PushColour(inst, value, value, value)
+            end
 			inst.flashstep = inst.flashstep + 1
 			return
 		else
@@ -31,7 +35,7 @@ local function UpdateFlash(inst)
 	inst.components.updatelooper:RemoveOnUpdateFn(UpdateFlash)
 end
 
-local function Setup(inst, attacker, target, projectile)
+local function Setup(inst, attacker, target, projectile, colouroverride)
 	local x, y, z = target.Transform:GetWorldPosition()
 	local radius = target:GetPhysicsRadius(.5)
 	local source = projectile or attacker
@@ -46,6 +50,7 @@ local function Setup(inst, attacker, target, projectile)
 	inst.components.updatelooper:AddOnUpdateFn(UpdateFlash)
 	inst.target = target
 	inst.flashstep = 1
+    inst.colouroverride = colouroverride
 	inst.OnRemoveEntity = PopColour
 	UpdateFlash(inst)
 end
@@ -69,6 +74,9 @@ local function PlaySparksAnim(proxy)
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 	inst.AnimState:SetFinalOffset(1)
 	inst.AnimState:SetScale(proxy.flip:value() and -.7 or .7, .7)
+    if proxy.black:value() then
+        inst.AnimState:SetMultColour(0, 0, 0, 1)
+    end
 
 	inst:ListenForEvent("animover", inst.Remove)
 end
@@ -89,6 +97,7 @@ local function fn()
 	end
 
 	inst.flip = net_bool(inst.GUID, "hitsparks_fx.flip")
+	inst.black = net_bool(inst.GUID, "hitsparks_fx.black")
 
 	inst.entity:SetPristine()
 

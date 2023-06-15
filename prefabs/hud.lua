@@ -17,6 +17,7 @@ local assets =
     Asset("IMAGE", "images/fx5.tex"),
 
     Asset("ANIM", "anim/sand_over.zip"),
+	Asset("ANIM", "anim/miasma_over.zip"),
     Asset("ANIM", "anim/moonstorm_over.zip"),
     Asset("ANIM", "anim/moonstorm_over_static.zip"),
     Asset("ANIM", "anim/mind_control_overlay.zip"),
@@ -83,6 +84,8 @@ local assets =
     Asset("ANIM", "anim/tab_gift.zip"),
     Asset("ANIM", "anim/tab_yotb.zip"),
     Asset("ANIM", "anim/tab_skills.zip"),
+
+    Asset("ANIM", "anim/scrapbook_updated.zip"),    
 
     Asset("INV_IMAGE", "unknown_head"),
     Asset("INV_IMAGE", "unknown_hand"),

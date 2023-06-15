@@ -209,6 +209,8 @@ end
 local function create_little()
     local inst = create_common("walrus_baby_build", 1, "taunt_attack")
 
+    inst.scrapbook_deps = {"meat"}
+
     if not TheWorld.ismastersim then
         return inst
     end

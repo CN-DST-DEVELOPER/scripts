@@ -19,16 +19,28 @@ local function MakeHat(name)
     local swap_data = { bank = symname, anim = "anim" }
 
 	-- do not pass this function to equippable:SetOnEquip as it has different a parameter listing
-    local function _onequip(inst, owner, symbol_override, headbase_hat_override)
+	local function _base_onequip(inst, owner, symbol_override)
+		local skin_build = inst:GetSkinBuild()
+		if skin_build ~= nil then
+			owner:PushEvent("equipskinneditem", inst:GetSkinName())
+			owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, symbol_override or "swap_hat", inst.GUID, fname)
+		else
+			owner.AnimState:OverrideSymbol("swap_hat", fname, symbol_override or "swap_hat")
+		end
 
-        local skin_build = inst:GetSkinBuild()
-        if skin_build ~= nil then
-            owner:PushEvent("equipskinneditem", inst:GetSkinName())
-            owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, symbol_override or "swap_hat", inst.GUID, fname)
-        else
-            owner.AnimState:OverrideSymbol("swap_hat", fname, symbol_override or "swap_hat")
-        end
-        
+		if inst.components.fueled ~= nil then
+			inst.components.fueled:StartConsuming()
+		end
+
+		if inst.skin_equip_sound and owner.SoundEmitter then
+			owner.SoundEmitter:PlaySound(inst.skin_equip_sound)
+		end
+	end
+
+	-- do not pass this function to equippable:SetOnEquip as it has different a parameter listing
+    local function _onequip(inst, owner, symbol_override, headbase_hat_override)
+		_base_onequip(inst, owner, symbol_override)
+
         owner.AnimState:ClearOverrideSymbol("headbase_hat") --clear out previous overrides
         if headbase_hat_override ~= nil then
             local skin_build = owner.AnimState:GetSkinBuild()
@@ -48,14 +60,6 @@ local function MakeHat(name)
         if owner:HasTag("player") then
             owner.AnimState:Hide("HEAD")
             owner.AnimState:Show("HEAD_HAT")
-        end
-
-        if inst.components.fueled ~= nil then
-            inst.components.fueled:StartConsuming()
-        end
-        
-        if inst.skin_equip_sound and owner.SoundEmitter then
-            owner.SoundEmitter:PlaySound(inst.skin_equip_sound)
         end
     end
 
@@ -95,14 +99,7 @@ local function MakeHat(name)
 	end
 
     fns.opentop_onequip = function(inst, owner)
-
-        local skin_build = inst:GetSkinBuild()
-        if skin_build ~= nil then
-            owner:PushEvent("equipskinneditem", inst:GetSkinName())
-            owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, "swap_hat", inst.GUID, fname)
-        else
-            owner.AnimState:OverrideSymbol("swap_hat", fname, "swap_hat")
-        end
+		_base_onequip(inst, owner)
 
         owner.AnimState:Show("HAT")
         owner.AnimState:Hide("HAIR_HAT")
@@ -111,15 +108,36 @@ local function MakeHat(name)
 
         owner.AnimState:Show("HEAD")
         owner.AnimState:Hide("HEAD_HAT")
-
-        if inst.components.fueled ~= nil then
-            inst.components.fueled:StartConsuming()
-        end
-
-        if inst.skin_equip_sound and owner.SoundEmitter then
-            owner.SoundEmitter:PlaySound(inst.skin_equip_sound)
-        end
     end
+
+	fns.fullhelm_onequip = function(inst, owner)
+		_base_onequip(inst, owner)
+
+		owner.AnimState:Show("HAT")
+		owner.AnimState:Hide("HAIR_HAT")
+		owner.AnimState:Hide("HAIR_NOHAT")
+		owner.AnimState:Hide("HAIR")
+
+		if owner:HasTag("player") then
+			owner.AnimState:Hide("HEAD")
+			owner.AnimState:Hide("HEAD_HAT")
+			owner.AnimState:HideSymbol("face")
+			owner.AnimState:HideSymbol("swap_face")
+			owner.AnimState:HideSymbol("beard")
+			owner.AnimState:HideSymbol("cheeks")
+		end
+	end
+
+	fns.fullhelm_onunequip = function(inst, owner)
+		_onunequip(inst, owner)
+
+		if owner:HasTag("player") then
+			owner.AnimState:ShowSymbol("face")
+			owner.AnimState:ShowSymbol("swap_face")
+			owner.AnimState:ShowSymbol("beard")
+			owner.AnimState:ShowSymbol("cheeks")
+		end
+	end
 
     fns.simple_onequiptomodel = function(inst, owner, from_ground)
         if inst.components.fueled ~= nil then
@@ -131,6 +149,8 @@ local function MakeHat(name)
         simple_onequip = fns.simple_onequip,
         simple_onunequip = fns.simple_onunequip,
         opentop_onequip = fns.opentop_onequip,
+		fullhelm_onequip = fns.fullhelm_onequip,
+		fullhelm_onunequip = fns.fullhelm_onunequip,
         simple_onequiptomodel = fns.simple_onequiptomodel,
     }
 
@@ -2907,7 +2927,7 @@ local function MakeHat(name)
 
 	local function dreadstone_doregen(inst, owner)
 		if owner.components.sanity ~= nil and owner.components.sanity:IsInsanityMode() then
-			local setbonus = dreadstone_getsetbonusequip(inst, owner) ~= nil and TUNING.ARMOR_DREADSTONE_REGEN_SETBONUS or 1
+			local setbonus = inst.components.setbonus ~= nil and inst.components.setbonus:IsEnabled(EQUIPMENTSETNAMES.DREADSTONE) and TUNING.ARMOR_DREADSTONE_REGEN_SETBONUS or 1
 			local rate = 1 / Lerp(1 / TUNING.ARMOR_DREADSTONE_REGEN_MAXRATE, 1 / TUNING.ARMOR_DREADSTONE_REGEN_MINRATE, owner.components.sanity:GetPercent())
 			inst.components.armor:Repair(inst.components.armor.maxcondition * rate * setbonus)
 		end
@@ -3002,82 +3022,42 @@ local function MakeHat(name)
 		inst:AddComponent("shadowlevel")
 		inst.components.shadowlevel:SetDefaultLevel(TUNING.DREADSTONEHAT_SHADOW_LEVEL)
 
+        local setbonus = inst:AddComponent("setbonus")
+        setbonus:SetSetName(EQUIPMENTSETNAMES.DREADSTONE)
+
 		MakeHauntableLaunch(inst)
 
 		return inst
 	end
 
-	local function lunarplant_getsetbonusequip(inst, owner)
-		if owner.components.inventory ~= nil then
-			local body = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
-			local weapon = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			return body ~= nil and body.prefab == "armor_lunarplant" and body or nil,
-				weapon ~= nil and weapon.lunarplantweapon and weapon or nil
-		end
-	end
-
 	local function lunarplant_onequip(inst, owner)
-		_onequip(inst, owner)
-		local body, weapon = lunarplant_getsetbonusequip(inst, owner)
-		if body ~= nil then
-			inst.components.damagetyperesist:AddResist("lunar_aligned", inst, TUNING.ARMOR_LUNARPLANT_SETBONUS_LUNAR_RESIST, "setbonus")
-			body.components.damagetyperesist:AddResist("lunar_aligned", body, TUNING.ARMOR_LUNARPLANT_SETBONUS_LUNAR_RESIST, "setbonus")
-			if weapon ~= nil then
-				if weapon.base_damage ~= nil then
-					weapon.components.weapon:SetDamage(weapon.base_damage * TUNING.WEAPONS_LUNARPLANT_SETBONUS_DAMAGE_MULT)
-					weapon.components.planardamage:AddBonus(weapon, TUNING.WEAPONS_LUNARPLANT_SETBONUS_PLANAR_DAMAGE, "setbonus")
-				end
-				if weapon.max_bounces ~= nil then
-					weapon.max_bounces = TUNING.STAFF_LUNARPLANT_SETBONUS_BOUNCES
-				end
-			end
-		end
+		fns.fullhelm_onequip(inst, owner)
 
-		if inst.fx == nil then
-			inst.fx = {}
-			for i = 1, 3 do
-				local fx = SpawnPrefab("lunarplanthat_fx")
-				if i > 1 then
-					fx.AnimState:PlayAnimation("idle"..tostring(i), true)
-				end
-				table.insert(inst.fx, fx)
-			end
+		if inst.fx ~= nil then
+			inst.fx:Remove()
 		end
-		local frame = math.random(inst.fx[1].AnimState:GetCurrentAnimationNumFrames()) - 1
-		for i, v in ipairs(inst.fx) do
-			v.entity:SetParent(owner.entity)
-			v.Follower:FollowSymbol(owner.GUID, "swap_hat", nil, nil, nil, true, nil, i - 1)
-			v.AnimState:SetFrame(frame)
-			v.components.highlightchild:SetOwner(owner)
-		end
+		inst.fx = SpawnPrefab("lunarplanthat_fx")
+		inst.fx:AttachToOwner(owner)
 		owner.AnimState:SetSymbolLightOverride("swap_hat", .1)
 	end
 
 	local function lunarplant_onunequip(inst, owner)
-		_onunequip(inst, owner)
-		local body, weapon = lunarplant_getsetbonusequip(inst, owner)
-		if body ~= nil then
-			body.components.damagetyperesist:RemoveResist("lunar_aligned", body, "setbonus")
-		end
-		inst.components.damagetyperesist:RemoveResist("lunar_aligned", inst, "setbonus")
-		if weapon ~= nil then
-			if weapon.base_damage ~= nil then
-				weapon.components.weapon:SetDamage(weapon.base_damage)
-				weapon.components.planardamage:RemoveBonus(weapon, "setbonus")
-			end
-			if weapon.max_bounces ~= nil then
-				weapon.max_bounces = TUNING.STAFF_LUNARPLANT_BOUNCES
-			end
-		end
+		fns.fullhelm_onunequip(inst, owner)
 
 		if inst.fx ~= nil then
-			for i, v in ipairs(inst.fx) do
-				v:Remove()
-			end
+			inst.fx:Remove()
 			inst.fx = nil
 		end
 		owner.AnimState:SetSymbolLightOverride("swap_hat", 0)
 	end
+
+    local function lunarplant_onsetbonus_enabled(inst)
+		inst.components.damagetyperesist:AddResist("lunar_aligned", inst, TUNING.ARMOR_LUNARPLANT_SETBONUS_LUNAR_RESIST, "setbonus")
+    end
+
+    local function lunarplant_onsetbonus_disabled(inst)
+        inst.components.damagetyperesist:RemoveResist("lunar_aligned", inst, "setbonus")
+    end
 
 	local function lunarplant_custom_init(inst)
 		inst:AddTag("lunarplant")
@@ -3114,7 +3094,181 @@ local function MakeHat(name)
 		inst:AddComponent("damagetyperesist")
 		inst.components.damagetyperesist:AddResist("lunar_aligned", inst, TUNING.ARMOR_LUNARPLANT_LUNAR_RESIST)
 
+        local setbonus = inst:AddComponent("setbonus")
+        setbonus:SetSetName(EQUIPMENTSETNAMES.LUNARPLANT)
+        setbonus:SetOnEnabledFn(lunarplant_onsetbonus_enabled)
+        setbonus:SetOnDisabledFn(lunarplant_onsetbonus_disabled)
+
 		MakeHauntableLaunch(inst)
+
+		return inst
+	end
+
+    local function voidcloth_getsetbonusequip(inst, owner)
+		local body = owner.components.inventory ~= nil and owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY) or nil
+		return body ~= nil and body.prefab == "armor_voidcloth" and body or nil
+	end
+
+	local function voidcloth_calcdapperness(inst, owner)
+		local other = voidcloth_getsetbonusequip(inst, owner)
+		if other ~= nil then
+			return TUNING.CRAZINESS_SMALL * 0.5
+		end
+		return TUNING.CRAZINESS_SMALL
+	end
+
+    local function voidcloth_removedamagebuff(item, owner, inst)
+        if item.decaydamagetask ~= nil then
+            item.decaydamagetask:Cancel()
+            item.decaydamagetask = nil
+        end
+    
+        item.setbonus_damagebuff_count = nil
+        item.components.planardamage:RemoveBonus(inst, "setbonus")
+    
+        if item.onownerattacked_voidcloth ~= nil then
+            item:RemoveEventCallback("attacked", item.onownerattacked_voidcloth, owner)
+            item.onownerattacked_voidcloth = nil
+        end
+        if item.oninstunequipped_voidcloth ~= nil then
+            item:RemoveEventCallback("unequipped", item.oninstunequipped_voidcloth, inst)
+            item.oninstunequipped_voidcloth = nil
+        end
+
+		if inst.fx ~= nil then
+			inst.fx.buffed:set(false)
+		end
+    end
+    
+    local function voidcloth_onattackother(inst, owner, target)
+        if not owner or not owner.components.inventory then
+            return
+        end
+    
+        local item = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        if not item or not item.components.planardamage or not item:HasTag("shadow_item") then
+            return
+        end
+    
+        local buff_count = item.setbonus_damagebuff_count or 0
+        local charged = buff_count >= TUNING.ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_MAX_HITS
+    
+        if item.decaydamagetask ~= nil then
+            item.decaydamagetask:Cancel()
+            item.decaydamagetask = nil
+        end
+        item.decaydamagetask = item:DoTaskInTime(TUNING.ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_DECAY_TIME, voidcloth_removedamagebuff, owner, inst)
+    
+        if charged then
+            return
+        end
+
+		if inst.fx ~= nil then
+			inst.fx.buffed:set(true)
+		end
+
+        item.setbonus_damagebuff_count = buff_count + 1
+    
+        local new_bonus = Remap(item.setbonus_damagebuff_count, 0, TUNING.ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_MAX_HITS, 0, TUNING.ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_MAX)
+        item.components.planardamage:AddBonus(inst, new_bonus, "setbonus")
+    
+        if item.onownerattacked_voidcloth == nil then
+            local voidcloth_removedamagebuff_bridge = function() voidcloth_removedamagebuff(item, owner, inst) end
+            item.onownerattacked_voidcloth = voidcloth_removedamagebuff_bridge
+            item.oninstunequipped_voidcloth = voidcloth_removedamagebuff_bridge
+            item:ListenForEvent("attacked", item.onownerattacked_voidcloth, owner)
+            item:ListenForEvent("unequipped", item.oninstunequipped_voidcloth, inst)
+        end
+    end
+
+	fns.voidcloth_onequip = function(inst, owner)
+		fns.fullhelm_onequip(inst, owner)
+
+		if inst.fx ~= nil then
+			inst.fx:Remove()
+		end
+		inst.fx = SpawnPrefab("voidclothhat_fx")
+		inst.fx:AttachToOwner(owner)
+		owner.AnimState:SetSymbolBrightness("headbase_hat", 0)
+	end
+
+	fns.voidcloth_onunequip = function(inst, owner)
+		fns.fullhelm_onunequip(inst, owner)
+
+		if inst.fx ~= nil then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+		owner.AnimState:SetSymbolBrightness("headbase_hat", 1)
+	end
+
+	fns.voidcloth_custom_init = function(inst)
+		inst:AddTag("cloth")
+		inst:AddTag("shadow_item")
+
+		--shadowlevel (from shadowlevel component) added to pristine state for optimization
+		inst:AddTag("shadowlevel")
+	end
+
+    fns.voidcloth_onsetbonus_enabled = function(inst)
+        inst.components.damagetyperesist:AddResist("shadow_aligned", inst, TUNING.ARMOR_VOIDCLOTH_SETBONUS_SHADOW_RESIST, "setbonus")
+
+        local owner = inst.components.inventoryitem.owner
+        if owner then
+            owner:ListenForEvent("onattackother", inst._setbonus_onattackother)
+        end
+    end
+
+    fns.voidcloth_onsetbonus_disabled = function(inst)
+        inst.components.damagetyperesist:RemoveResist("shadow_aligned", inst, "setbonus")
+
+        local owner = inst.components.inventoryitem.owner
+        if owner then
+            owner:RemoveEventCallback("onattackother", inst._setbonus_onattackother)
+        end
+    end
+
+	fns.voidcloth = function()
+		local inst = simple(fns.voidcloth_custom_init)
+
+		inst.components.floater:SetSize("med")
+		inst.components.floater:SetVerticalOffset(0.25)
+		inst.components.floater:SetScale(.75)
+
+        inst:AddTag("miasmaimmune")
+        inst:AddTag("acidrainimmune")
+
+		if not TheWorld.ismastersim then
+			return inst
+		end
+
+		inst:AddComponent("armor")
+		inst.components.armor:InitCondition(TUNING.ARMOR_VOIDCLOTH_HAT, TUNING.ARMOR_VOIDCLOTH_HAT_ABSORPTION)
+
+		inst.components.equippable.dapperfn = voidcloth_calcdapperness
+		inst.components.equippable.is_magic_dapperness = true
+		inst.components.equippable:SetOnEquip(fns.voidcloth_onequip)
+		inst.components.equippable:SetOnUnequip(fns.voidcloth_onunequip)
+
+		inst:AddComponent("planardefense")
+		inst.components.planardefense:SetBaseDefense(TUNING.ARMOR_VOIDCLOTH_HAT_PLANAR_DEF)
+
+		inst:AddComponent("damagetyperesist")
+		inst.components.damagetyperesist:AddResist("shadow_aligned", inst, TUNING.ARMOR_VOIDCLOTH_SHADOW_RESIST)
+
+		inst:AddComponent("shadowlevel")
+		inst.components.shadowlevel:SetDefaultLevel(TUNING.VOIDCLOTHHAT_SHADOW_LEVEL)
+
+        local setbonus = inst:AddComponent("setbonus")
+        setbonus:SetSetName(EQUIPMENTSETNAMES.VOIDCLOTH)
+        setbonus:SetOnEnabledFn(fns.voidcloth_onsetbonus_enabled)
+        setbonus:SetOnDisabledFn(fns.voidcloth_onsetbonus_disabled)
+
+		MakeHauntableLaunch(inst)
+
+        inst.voidcloth_onattackother = voidcloth_onattackother -- Mods
+    
+        inst._setbonus_onattackother = function(owner, data) inst:voidcloth_onattackother(owner, data.target) end
 
 		return inst
 	end
@@ -3267,6 +3421,9 @@ local function MakeHat(name)
     elseif name == "lunarplant" then
     	prefabs = { "lunarplanthat_fx" }
     	fn = fns.lunarplant
+    elseif name == "voidcloth" then
+    	prefabs = { "voidclothhat_fx" }
+    	fn = fns.voidcloth
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -3323,19 +3480,21 @@ local function alterguardianhatlightfn()
     return inst
 end
 
-local function lunarplanthatfxfn()
+--------------------------------------------------------------------------
+
+local function lunarplanthat_CreateFxFollowFrame(i)
 	local inst = CreateEntity()
 
+	--[[Non-networked entity]]
 	inst.entity:AddTransform()
 	inst.entity:AddAnimState()
 	inst.entity:AddFollower()
-	inst.entity:AddNetwork()
 
 	inst:AddTag("FX")
 
 	inst.AnimState:SetBank("lunarplanthat")
 	inst.AnimState:SetBuild("hat_lunarplant")
-	inst.AnimState:PlayAnimation("idle1", true)
+	inst.AnimState:PlayAnimation("idle"..tostring(i), true)
 	inst.AnimState:SetSymbolBloom("glow01")
 	inst.AnimState:SetSymbolBloom("float_top")
 	inst.AnimState:SetSymbolLightOverride("glow01", .5)
@@ -3345,16 +3504,134 @@ local function lunarplanthatfxfn()
 
 	inst:AddComponent("highlightchild")
 
-	inst.entity:SetPristine()
+	inst.persists = false
 
-	if not TheWorld.ismastersim then
-		return inst
-	end
+	return inst
+end
+
+local function voidclothhat_CreateFxFollowFrame(i)
+	local inst = CreateEntity()
+
+	--[[Non-networked entity]]
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("voidclothhat")
+	inst.AnimState:SetBuild("hat_voidcloth")
+	inst.anim = "idle"..tostring(i)
+	inst.AnimState:PlayAnimation(inst.anim, true)
+
+	inst:AddComponent("highlightchild")
 
 	inst.persists = false
 
 	return inst
 end
+
+local function voidclothhat_fx_buffeddirty(inst)
+	if inst.fx ~= nil then
+		if inst.buffed:value() then
+			for i, v in ipairs(inst.fx) do
+				local anim = v.anim.."_powerup"
+				if not v.AnimState:IsCurrentAnimation(anim) then
+					v.AnimState:PlayAnimation(anim.."_pre")
+					v.AnimState:PushAnimation(anim)
+				end
+			end
+		else
+			for i, v in ipairs(inst.fx) do
+				if not v.AnimState:IsCurrentAnimation(v.anim) then
+					v.AnimState:PlayAnimation(v.anim.."_powerup_pst")
+					v.AnimState:PushAnimation(v.anim)
+				end
+			end
+		end
+	end
+end
+
+local function voidclothhat_fx_common_postinit(inst)
+	inst.buffed = net_bool(inst.GUID, "voidclothhat_fx.buffed", "buffeddirty")
+	if not TheNet:IsDedicated() then
+		inst:ListenForEvent("buffeddirty", voidclothhat_fx_buffeddirty)
+	end
+end
+
+--------------------------------------------------------------------------
+
+local function FollowFx_OnRemoveEntity(inst)
+	for i, v in ipairs(inst.fx) do
+		v:Remove()
+	end
+end
+
+local function SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend)
+	inst.fx = {}
+	local frame
+	for i = framebegin, frameend do
+		local fx = createfn(i)
+		frame = frame or math.random(fx.AnimState:GetCurrentAnimationNumFrames()) - 1
+		fx.entity:SetParent(owner.entity)
+		fx.Follower:FollowSymbol(owner.GUID, "swap_hat", nil, nil, nil, true, nil, i - 1)
+		fx.AnimState:SetFrame(frame)
+		fx.components.highlightchild:SetOwner(owner)
+		table.insert(inst.fx, fx)
+	end
+	inst.OnRemoveEntity = FollowFx_OnRemoveEntity
+end
+
+local function MakeFollowFx(name, createfn, common_postinit, master_postinit, framebegin, frameend, assets, prefabs)
+	local function OnEntityReplicated(inst)
+		local owner = inst.entity:GetParent()
+		if owner ~= nil then
+			SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend)
+		end
+	end
+
+	local function AttachToOwner(inst, owner)
+		inst.entity:SetParent(owner.entity)
+		--Dedicated server does not need to spawn the local fx
+		if not TheNet:IsDedicated() then
+			SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend)
+		end
+	end
+
+	local function fn()
+		local inst = CreateEntity()
+
+		inst.entity:AddTransform()
+		inst.entity:AddNetwork()
+
+		inst:AddTag("FX")
+
+		if common_postinit ~= nil then
+			common_postinit(inst)
+		end
+
+		inst.entity:SetPristine()
+
+		if not TheWorld.ismastersim then
+			inst.OnEntityReplicated = OnEntityReplicated
+
+			return inst
+		end
+
+		inst.AttachToOwner = AttachToOwner
+		inst.persists = false
+
+		if master_postinit ~= nil then
+			master_postinit(inst)
+		end
+
+		return inst
+	end
+
+	return Prefab(name, fn, assets, prefabs)
+end
+
+--------------------------------------------------------------------------
 
 local function tophatcontainerfn()
 	local inst = CreateEntity()
@@ -3442,9 +3719,12 @@ return  MakeHat("straw"),
 
 		MakeHat("dreadstone"),
 		MakeHat("lunarplant"),
+		MakeHat("voidcloth"),
+
+		MakeFollowFx("lunarplanthat_fx", lunarplanthat_CreateFxFollowFrame, nil, nil, 1, 3, { Asset("ANIM", "anim/hat_lunarplant.zip") }),
+		MakeFollowFx("voidclothhat_fx", voidclothhat_CreateFxFollowFrame, voidclothhat_fx_common_postinit, nil, 1, 3, { Asset("ANIM", "anim/hat_voidcloth.zip") }),
 
         Prefab("minerhatlight", minerhatlightfn),
         Prefab("alterguardianhatlight", alterguardianhatlightfn),
-        Prefab("lunarplanthat_fx", lunarplanthatfxfn, { Asset("ANIM", "anim/hat_lunarplant.zip") }),
 
 		Prefab("tophat_container", tophatcontainerfn)

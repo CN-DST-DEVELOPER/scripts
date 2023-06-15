@@ -564,6 +564,8 @@ local WORLDSETTINGS_GROUP = {
 			["earthquakes"] = {value = "default", image = "earthquakes.tex", desc = frequency_descriptions, world={"cave"}},
 			["wormattacks"] = {value = "default", image = "wormattacks.tex", desc = frequency_descriptions, world={"cave"}},
 			["atriumgate"] = {value = "default", image = "atriumgate.tex", desc = atrium_descriptions, world={"cave"}},
+            ["rifts_frequency_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = frequency_descriptions, world={"cave"}},
+            ["rifts_enabled_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = riftsenabled_descriptions, world={"cave"}},
 
 
 			--["disease_delay"] = {value = "default", image = "berrybush_diseased.tex", desc = disease_descriptions, world={"forest", "cave"}},

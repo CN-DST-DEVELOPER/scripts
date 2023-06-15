@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "These won't fit together.",
             EMPTY = "I thought I'd already put... ah, I must've done it later.",
             MISMATCH = "Hold on... these are the wrong plans! What a waste of time!",
+            NOTREADY = "This might not be the best time...",
         },
 		RUMMAGE =
 		{
@@ -886,6 +887,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "Oh botheration! I'll need something stronger than this...",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "Did anyone else feel that temporal burst?",
+    ANNOUNCE_SHADOW_RIFT_MAX = "Something has shifted...",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "Didn't I already fill out my scrapbook?",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "I hope I won't have to do that again.",
         CHESSPIECE_EYEOFTERROR = "Certainly an eye to behold.",
         CHESSPIECE_TWINSOFTERROR = "I'd be quite happy to never lay eyes on them again.",
+        CHESSPIECE_DAYWALKER = "Ah yes, how could I forget that time I was nearly smashed to bits?",
 
         CHESSJUNK1 = "I don't see much in the way of proper clockwork in there.",
         CHESSJUNK2 = "I have a suspicion these were held together with more magic than craftsmanship.",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "The sooner I can get it built, the better I'll feel.",
 		WALL_MOONROCK = "I'd like to see anything break through that! Actually no, I wouldn't.",
 		WALL_MOONROCK_ITEM = "I feel safer already.",
+		WALL_DREADSTONE = "It's just a wall, nothing more than that.",
+		WALL_DREADSTONE_ITEM = "I'd better get it set up, no time to waste.",
 		FENCE = "An incredibly ordinary wooden fence.",
         FENCE_ITEM = "Didn't I build that already?",
         FENCE_GATE = "An incredibly ordinary wooden gate.",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "An odd, yet extremely efficient design.",
 
         PUNCHINGBAG = "I could spare a moment to test my weapons... and let off some steam.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "This isn't good...",
+
+		SHADOW_FORGE = "Quite a nice change of pace to have shadows working for me.",
+		SHADOW_FORGE_KIT = "I'll have it up and running in just a tick.",
+
+        FUSED_SHADELING = "You stay away from me!",
+        FUSED_SHADELING_BOMB = "What a nasty little thing!",
+
+		VOIDCLOTH = "Tatters of spacetime.",
+		VOIDCLOTHHAT = "Oooh, it makes one look rather mysterious, doesn't it?",
+		ARMOR_VOIDCLOTH = "I prefer chains that have a pocket watch at the end of them.",
+
+        VOIDCLOTH_UMBRELLA = "At least it will keep me dry.",
+        VOIDCLOTH_SCYTHE = "Did I just hear a whisper? No, I must have imagined it.",
+
+		SHADOWTHRALL_HANDS = "Try all you might, you'll never catch me!",
+		SHADOWTHRALL_HORNS = "I will not be your dinner!",
+		SHADOWTHRALL_WINGS = "Shoo! Shoo!!",
+
+        CHARLIE_NPC = "She looks happy... that doesn't bode well.",
+        CHARLIE_HAND = "Me? Help YOU?!",
+
+        NITRE_FORMATION = "How exciting, more rocks!",
+        DREADSTONE_STACK = "It's coming from deep below the surface.",
+        
+        SCRAPBOOK_PAGE = "Did I leave this here?",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

@@ -976,6 +976,7 @@ local function MakeBook(def)
         inst.AnimState:SetBank("books")
         inst.AnimState:SetBuild("books")
         inst.AnimState:PlayAnimation(def.name)
+        inst.scrapbook_anim = def.name
 
         MakeInventoryFloatable(inst, "med", nil, 0.75)
 

@@ -151,6 +151,7 @@ local function fn()
     inst.AnimState:SetBank("townportaltalisman")
     inst.AnimState:SetBuild("townportaltalisman")
     inst.AnimState:PlayAnimation("inactive")
+    inst.scrapbook_anim = "inactive"
 
     inst:AddTag("townportaltalisman")
     inst:AddTag("townportal")

@@ -79,7 +79,7 @@ local function UpdateImages(inst, range)
     inst.currentTempRange = range
 
     inst.AnimState:PlayAnimation(tostring(range), true)
-
+    inst.scrapbook_anim = tostring(range)
     local skinname = inst:GetSkinName()
     inst.components.inventoryitem:ChangeImageName((skinname or "heat_rock")..tostring(range))
     if range == 5 then

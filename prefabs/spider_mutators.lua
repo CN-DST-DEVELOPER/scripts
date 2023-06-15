@@ -37,6 +37,10 @@ local function MakeMutatorFn(mutator_target, extra_data)
     inst.AnimState:SetBank((extra_data and extra_data.bank) or "spider_mutator_all")
     inst.AnimState:SetBuild((extra_data and extra_data.build) or "spider_mutators")
     inst.AnimState:PlayAnimation(mutator_target)
+    inst.scrapbook_anim = mutator_target
+
+
+    inst.scrapbook_deps = { "spider_"..mutator_target }
 
     MakeInventoryFloatable(inst)
 

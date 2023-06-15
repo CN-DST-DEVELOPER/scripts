@@ -225,6 +225,7 @@ local function inv_fn(ammo_def)
     inst.AnimState:PlayAnimation("idle")
 	if ammo_def.symbol ~= nil then
 		inst.AnimState:OverrideSymbol("rock", "slingshotammo", ammo_def.symbol)
+        inst.scrapbook_overridedata = {"rock", "slingshotammo", ammo_def.symbol}
 	end
 
     inst:AddTag("molebait")

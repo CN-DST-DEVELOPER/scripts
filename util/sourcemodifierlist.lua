@@ -78,7 +78,7 @@ function SourceModifierList:SetModifier(source, m, key)
         }
 
         -- If the source is an object, then add a onremove event listener to cleanup if source is removed from the game
-        if type(source) == "table" then
+		if EntityScript.is_instance(source) then
             self._modifiers[source].onremove = function(source)
                 self._modifiers[source] = nil
                 RecalculateModifier(self)

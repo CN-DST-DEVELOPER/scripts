@@ -5,7 +5,7 @@
 
 We have provided a standard PO file to translation in /scripts/languages/strings.pot
 To add a new language:
-- Use a PO editor such as POEdit (http://www.poedit.net/) to translate strings.pot
+- Use a PO editor such as POEdit (http://www.poedit.net/) to tranmslate strings.pot
 - Load your own PO file under /scripts/languages/language.lua
 
 ***************************************************************
@@ -584,7 +584,7 @@ STRINGS =
 			WHEELSPIN_STOP = "Press",
             PICK_FLOWER = "Pick Flower From",
             EQUIPMENTSWAP = "Swap Clothes",
-            SPIN = "Spin",
+            SPIN = "Spin",            
         },
 
 		OPEN_CRAFTING =
@@ -629,6 +629,7 @@ STRINGS =
         {
             GENERIC = "Learn",
             READ = "Read",
+            SCRAPBOOK = "Add to Scrapbook",
         },
         TURNON = "Turn On",
         TURNOFF =
@@ -717,15 +718,22 @@ STRINGS =
         CONSTRUCT =
         {
             GENERIC = "Build",
+            OFFER_TO = "Offer to",
             GENERIC_FMT = "Build {name}",
+            OFFER = "Offer Material",
             STORE = "Add Material",
         },
         STOPCONSTRUCTION =
         {
             GENERIC = "Stop Building",
             GENERIC_FMT = "Stop Building {name}",
+            OFFER = "Stop Offering to",
         },
-        APPLYCONSTRUCTION = "Build",
+        APPLYCONSTRUCTION =
+        {
+            GENERIC = "Build",
+            OFFER = "Offer",
+        },
         STARTCHANNELING = {
             GENERIC = "Touch",
             PUMP = "Pump",
@@ -959,6 +967,9 @@ STRINGS =
         ROTATE_FENCE = "Rotate",
 
         PERFORM = "Perform",
+
+        SCYTHE = "Reap",
+		SITON = "Sit On",
 	},
 
     -- PC controls get hex ranges EE90xx to EE9Fxx
@@ -1733,12 +1744,14 @@ STRINGS =
         WALL_RUINS_ITEM = "Thulecite Wall",
         WALL_HAY_ITEM = "Hay Wall",
         WALL_MOONROCK_ITEM = "Moon Rock Wall",
+		WALL_DREADSTONE_ITEM = "Dreadstone Wall",
 
         WALL_WOOD = "Wood Wall",
         WALL_STONE = "Stone Wall",
         WALL_RUINS = "Thulecite Wall",
         WALL_HAY = "Hay Wall",
         WALL_MOONROCK = "Moon Rock Wall",
+		WALL_DREADSTONE = "Dreadstone Wall",
 
         FENCE = "Wood Fence",
         FENCE_ITEM = "Wood Fence",
@@ -1967,6 +1980,8 @@ STRINGS =
         HUNGER = "Starvation",
         COLD = "Freezing",
         HOT = "Overheating",
+        ACIDRAIN = "Acid Rain",
+        MIASMA = "Miasma",
         SHENANIGANS = "Shenanigans",
         RESURRECTION_PENALTY = "Resurrection Sickness",
 
@@ -2206,6 +2221,7 @@ STRINGS =
         CHESSPIECE_GUARDIANPHASE3 = "Celestial Champion Figure",
 		CHESSPIECE_EYEOFTERROR = "Eye Of Terror Figure",
         CHESSPIECE_TWINSOFTERROR = "Twins of Terror Figure",
+        CHESSPIECE_DAYWALKER = "Nightmare Werepig Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2240,6 +2256,7 @@ STRINGS =
         CHESSPIECE_GUARDIANPHASE3_BUILDER = "Celestial Champion Figure",
 		CHESSPIECE_EYEOFTERROR_BUILDER = "Eye Of Terror Figure",
         CHESSPIECE_TWINSOFTERROR_BUILDER = "Twins of Terror Figure",
+        CHESSPIECE_DAYWALKER_BUILDER = "Nightmare Werepig Figure",
 
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
@@ -2253,6 +2270,7 @@ STRINGS =
         CHESSPIECE_CRABKING_SKETCH = "Crab King Figure Sketch",
         CHESSPIECE_GUARDIANPHASE3_SKETCH = "Celestial Champion Figure Sketch",
         CHESSPIECE_MANRABBIT_SKETCH = "Bunnyman Figure Sketch",
+        CHESSPIECE_DAYWALKER_SKETCH = "Nightmare Werepig Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -3577,7 +3595,7 @@ STRINGS =
 
         CHARLIE_HECKLER = "Mockingbird",
 
-        STAGEUSHER = "Stagehand",
+        STAGEUSHER = "Prickly Stagehand",
         SEWING_MANNEQUIN = "Mannequin",
 
         MASK_DOLLHAT = "Doll Mask",
@@ -3652,6 +3670,42 @@ STRINGS =
         PUNCHINGBAG = "Punching Bag",
         PUNCHINGBAG_LUNAR = "Bright Boxer",
         PUNCHINGBAG_SHADOW = "Shadow Boxer",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Rift",
+
+		SHADOW_FORGE = "Shadowcraft Plinth",
+		SHADOW_FORGE_KIT = "Shadowcraft Plinth Kit",
+
+        FUSED_SHADELING = "Fused Shadeling",
+        FUSED_SHADELING_BOMB = "Dread Mite",
+
+		RUINS_SHADELING = "Resting Horror",
+
+		VOIDCLOTH = "Dark Tatters",
+		VOIDCLOTHHAT = "Void Cowl",
+		ARMOR_VOIDCLOTH = "Void Robe",
+
+        VOIDCLOTH_UMBRELLA = "Umbralla",
+        VOIDCLOTH_SCYTHE = "Shadow Reaper",
+
+		SHADOWTHRALL_HANDS = "Ink Blight",
+		SHADOWTHRALL_HANDS_ALLEGIANCE = "Jitters",
+
+		SHADOWTHRALL_HORNS = "Ink Blight",
+		SHADOWTHRALL_HORNS_ALLEGIANCE = "Rasp",
+
+		SHADOWTHRALL_WINGS = "Ink Blight",
+		SHADOWTHRALL_WINGS_ALLEGIANCE = "Shriek",
+
+        CHARLIE_NPC = "Charlie", --Maxwell and Winona only
+        CHARLIE_NPC_ALT = "Shadow Queen",
+        CHARLIE_HAND = "Beckoning Hand",
+
+        NITRE_FORMATION = "Nitre Formation",
+        DREADSTONE_STACK = "Dreadstone Outcrop",
+
+        SCRAPBOOK_PAGE = "Lost Scrapbook Page",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -3864,6 +3918,7 @@ STRINGS =
         WALL_STONE_ITEM = "Stone wall segments.",
         WALL_HAY_ITEM = "Hay wall segments. Not very sturdy.",
         WALL_MOONROCK_ITEM = "Walls for the lunar loony.",
+		WALL_DREADSTONE_ITEM = "Surround yourself in the most dreadful decor.",
         MOONROCKCRATER = "A rock for marking your territory.",
         FENCE_ITEM = "Wood fence segments.",
         FENCE_GATE_ITEM = "A gate for wood fencing.",
@@ -4076,6 +4131,7 @@ STRINGS =
         CHESSPIECE_GUARDIANPHASE3_BUILDER = "Its design radiates an otherworldly strangeness.",
 		CHESSPIECE_EYEOFTERROR_BUILDER = "Its stony gaze reminds you of an evil presence.",
         CHESSPIECE_TWINSOFTERROR_BUILDER = "Double the eyes, double the terror.",
+        CHESSPIECE_DAYWALKER_BUILDER = "A stone likeness of a pig-headed prisoner.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4535,19 +4591,28 @@ STRINGS =
         TRANSMUTE_MOONGLASS_CHARGED = "Transmute Pure Brilliance into Infused Moon Shards.",        
 
         -- Rifts 1
-		LUNAR_FORGE_KIT = "Forge otherworldly items.",
+        LUNAR_FORGE_KIT = "Forge otherworldly items.",
 
-		ARMOR_LUNARPLANT = "Surround yourself in formidable lunar leaves.",
-		LUNARPLANTHAT = "Luminescent protection for your precious cranium.",
-		BOMB_LUNARPLANT = "Use unstable lunar energy for explosive results.",
-		STAFF_LUNARPLANT = "Stay rooted to the spot and attack from afar.",
-		SWORD_LUNARPLANT = "A sword of lunar light.",
-		PICKAXE_LUNARPLANT = "Mine and demolish to your heart's content.",
-		SHOVEL_LUNARPLANT = "The groundbreaking results of cross-pollination between a shovel and a garden hoe.",
+        ARMOR_LUNARPLANT = "Surround yourself in formidable lunar leaves.",
+        LUNARPLANTHAT = "Luminescent protection for your precious cranium.",
+        BOMB_LUNARPLANT = "Use unstable lunar energy for explosive results.",
+        STAFF_LUNARPLANT = "Stay rooted to the spot and attack from afar.",
+        SWORD_LUNARPLANT = "A sword of lunar light.",
+        PICKAXE_LUNARPLANT = "Mine and demolish to your heart's content.",
+        SHOVEL_LUNARPLANT = "The groundbreaking results of cross-pollination between a shovel and a garden hoe.",
 
         PUNCHINGBAG = "Test the strength of your weapons. And have fun!",
         PUNCHINGBAG_LUNAR = "Test how well your weapons fare against lunar foes.",
         PUNCHINGBAG_SHADOW = "Test how well your weapons fare against shadowy foes.",
+
+        -- Rifts 2
+        SHADOW_FORGE_KIT = "Create horrors for your convenience.",
+
+        ARMOR_VOIDCLOTH = "A nightmarish cloak to keep the light at bay.",
+        VOIDCLOTHHAT = "No light can pierce the darkness within this hood.",
+        VOIDCLOTH_UMBRELLA = "Shadowy protection from even the harshest rainfall.",
+        VOIDCLOTH_SCYTHE = "Cull the plant population with ease.",
+
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -5175,6 +5240,12 @@ STRINGS =
         "This will be quick.",
         "How we've fallen."
     },
+    STALKER_ATRIUM_BATTLECRY_ATRIUM_REPAIRED =
+    {
+        "This world is unraveling.",
+        "It's all happening again...",
+        "I tried to stop it... it seems I learned nothing...",
+    },    
     STALKER_ATRIUM_PLAYER_BATTLECRY =
     {
         "You will fall as we did.",
@@ -5183,8 +5254,16 @@ STRINGS =
         "They are coming. It cannot be stopped.",
         "This world's fabric is frayed and torn.",
         "They are unfathomable.",
-        "I will save you."
+        "I will save you.",
     },
+    STALKER_ATRIUM_PLAYER_BATTLECRY_ATRIUM_REPAIRED =
+    {
+        "You fools! What have you done?",
+        "You've doomed yourselves.",
+        "You have brought about your own end.",
+        "Please. Let me save you from what is coming.",
+        "I recognize your arrogance. I possessed it myself.",
+    },    
     STALKER_ATRIUM_SUMMON_MINIONS =
     {
         "Be woven.",
@@ -5215,6 +5294,11 @@ STRINGS =
         "Why?",
         "Metheus...",
     },
+    STALKER_ATRIUM_USEGATE_ATRIUM_REPAIRED =
+    {
+        "Not again... not again...",
+        "They are coming.",
+    },
     STALKER_ATRIUM_DECAYCRY =
     {
         "Please...",
@@ -5227,6 +5311,15 @@ STRINGS =
         "You are not Them...",
         "Are you so easily deceived? Ha...",
         "You deserve this.",
+        "You've made your choice.",
+    },
+    STALKER_ATRIUM_DEATHCRY_ATRIUM_REPAIRED =
+    {
+        "They will not show mercy as I have.",
+        "You will understand. But it's already too late.",
+        "I couldn't stop it...",
+        "History will repeat itself...",
+        "It will all come to pass again...",
         "You've made your choice.",
     },
 
@@ -5752,6 +5845,7 @@ STRINGS =
         CELESTIAL = "Celestial",
 		MOON_ALTAR = "Celestial",
 		LUNARFORGING = "Brightsmithy",
+		SHADOWFORGING = "Shadowcraft",
         SHADOW = "Shadow",
         ENGINEERING = "Engineering",
 		ELIXIRBREWING = "Ectoherbology",
@@ -6136,7 +6230,7 @@ STRINGS =
     WAGSTAFF_NPC_CAPTURESTOP = "Thank you for all your hard work.",
     WAGSTAFF_NPC_CAPTURESTOP1 = "This will increase the power output exponentially!",
     WAGSTAFF_NPC_CAPTURESTOP2 = "Now if you'll excuse me, I have much to do.",
-    WAGSTAFF_NPC_CAPTURESTOP3 = "you and I are about to change the world",
+    WAGSTAFF_NPC_CAPTURESTOP3 = "You and I are about to change the world!",
 
     WAGSTAFF_NPC_REQUEST = {"Incredible! It's just as I surmised!",
                             "If I could just push its output a bit further...",
@@ -6756,6 +6850,7 @@ STRINGS.UI =
         NEEDSSKILL = "Learn new skills.",
         NEEDSBOOKSTATION = "Build a bookcase to craft your books.",
 		NEEDSLUNARFORGING_TWO = "Use a Brightsmithy to forge a prototype!",
+		NEEDSSHADOWFORGING_TWO = "Use a Shadowcraft Plinth to create a prototype!",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
 		NEEDSYOTV = "Available during Year of the Varg!",
@@ -7282,7 +7377,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Taking Root\nBeta Build",
+		MAINBANNER_BETA_TITLE = "Terrors Below\nBeta Build",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -7820,6 +7915,7 @@ STRINGS.UI =
         SCULPTING = "Sculptures",
 		CELESTIAL = "Celestial",
 		LUNARFORGING = "Brightsmithy",
+		SHADOWFORGING = "Shadowcraft",
         HERMITCRABSHOP = "Bottle Exchange",
 
         SHADOW = "Codex Umbra",
@@ -7987,6 +8083,7 @@ STRINGS.UI =
 		CRAFTINGMENUSIZE = "Crafting Menu Size:",
 		CRAFTINGMENUNUMPINPAGES = "Crafting Pin Pages:",
 		CRAFTINGMENUSENSITIVITY = "Crafting Sensitivity:",
+        SCAPBOOKHUDDISPLAY = "Scrapbook Alerts:",
 		INVENTORYSENSITIVITY = "Inventory Sensitivity:",
         MINIMAPZOOMSENSITIVITY = "Zoom Sensitivity:",
         MINIMAPZOOMCURSOR = "Zoom Cursor Focus:",
@@ -8074,6 +8171,7 @@ STRINGS.UI =
 			CRAFTINGMENUSIZE = "Customize the size of the crafting menu.",
 			CRAFTINGMENUNUMPINPAGES = "Set how many pages of pinned recipes you would like to cycle through.",
 			CRAFTINGMENUSENSITIVITY = "Adjust the input sensitivity while navigating through the crafting menu.",
+            SCAPBOOKHUDDISPLAY = "Toggle HUD notifications from the Scrapbook on and off.",
 			INVENTORYSENSITIVITY = "Adjust the input sensitivity while navigating through the inventory.",
             MINIMAPZOOMSENSITIVITY = "Adjust the input sensitivity while zooming in and out on the minimap.",
             MINIMAPZOOMCURSOR = "Zooming on the minimap will focus where the cursor is located.",
@@ -8122,6 +8220,12 @@ STRINGS.UI =
 
     },
 
+    SCRAPBOOK = 
+    {
+        TITLE = "Scrapbook",
+        ONLINE_DATA_USER_OFFLINE = "Login to retrieve online scrapbook data.",
+        ONLINE_DATA_DOWNLOAD_FAILED = "Failed to sync online scrapbook data.",
+    },
 	COMPENDIUM =
 	{
 		HISTORYOFTRAVELS = "History of Travels",
@@ -8530,6 +8634,7 @@ STRINGS.UI =
         PLAYERPAUSED_TEXT = "{player} paused the game.",
         HOSTPAUSED_TEXT = "The server host has paused the game.",
         SELFPAUSED_TEXT = "You have paused the game.",
+        SCRAPBOOK = "Scrapbook",
     },
 
 	WORDPREDICTIONWIDGET =
@@ -9089,6 +9194,8 @@ STRINGS.UI =
         SUMMERHOUNDS = "Fire Hound Waves",
         RIFTS_FREQUENCY = "Wild Rift Frequency",
         RIFTS_ENABLED = "Wild Rifts Enabled",
+        RIFTS_FREQUENCY_CAVE = "Wild Rift Frequency",
+        RIFTS_ENABLED_CAVE = "Wild Rifts Enabled",
         HOUNDMOUND = "Hound Mounds",
         MERMS = "Merms",
         TENTACLES = "Tentacles",
@@ -12595,6 +12702,21 @@ STRINGS.UI =
         PLAY_TOGETHER_TITLE = "Play Together",
         PLAY_TOGETHER_BODY = "You can join a server or host your own. Invitations will be sent to the rest of your party once you are in the game.",
     },
+    
+    START_SHADOW_RIFTS =
+    {
+        TITLE  = "The Price of Ambition",
+        BODY   = "Be warned, assisting the Shadow Queen will alter your world and cannot be undone. Beautiful, terrible things will rise to the surface.\n\nAre you sure you'd like to continue?",
+        OK     = "I'm ready!",
+        CANCEL = "Let me think about it.",
+    },
+    START_LUNAR_RIFTS =
+    {
+        TITLE  = "The Price of Ambition",
+        BODY   = "Be warned, assisting the Cryptic Founder will alter your world and cannot be undone. Much will be lost and gained in the name of Progress.\n\nAre you sure you'd like to continue?",
+        OK     = "I'm ready!",
+        CANCEL = "Let me think about it.",
+    },    
 }
 
 --these are broken out into their own files for ease of editing
@@ -12617,6 +12739,51 @@ STRINGS.CHARACTERS =
     WURT = require "speech_wurt",
     WALTER = require "speech_walter",
     WANDA = require "speech_wanda",
+}
+
+STRINGS.VOIDCLOTH_SCYTHE_TALK =
+{
+    overtime = 
+    {
+        "You want to cut and ssssslice, yes you do!",
+        "The ssssseeds were planted long ago, now reap the rewards.",
+        "Your palms are sssssweating, mortal, you're losing your grip.",
+        "You need a sssssharp wit for this job.",
+        "What'sssss wrong, mortal? Not cut out for this?",
+        "You and I are going to do sssssuch great things together.",
+        "I think I was a farmer once, before I ssssshed my skin.",
+        "You can hear me, can't you, mortal? You're ssssstarting to understand.",
+        "I can sssssee all the dark corners of your mind, mortal.",
+        "I've been accused of having a rather sssssharp tongue.",
+        "We make a good team, no matter how you ssssslice it.",
+        "I hunger for the sssssilent screams of vegetation...",
+        "With my razor-sharp wit and your... mobility, we're unssssstoppable!",
+        "We're all jussssst tools for a greater purpose, aren't we?",
+        "Lay wassssste to the grass, then the bushes... after that, who knows?",
+    },
+
+    onharvest =
+    {
+        "Devassssstation to vegetation!",
+        "Cut them down, cut them all down!",
+        "There is no essssscaping my blade!",
+        "Cut... slash... consume... yesssss...",
+        "The world is oursssss for the reaping.",
+        "Don't hold back...",
+        "Let's cut right to it, ssssshall we?",
+        "It's time for the harvessssst.",
+        "Everything will fall before usssss!",
+        "Let nothing be ssssspared!",
+        "Enjoying yourssssself, mortal?",
+    },
+
+    lucy =
+    {
+        "You don't need that sssssecond-rate axe...",
+        "We could do ssssso much more without that old axe weighing you down...",
+        "Best to sssssever your connection with that old blade of yours.",
+        "Who needsssss that old axe when you have me?",
+    },
 }
 
 STRINGS.LUCY =
@@ -14207,6 +14374,109 @@ STRINGS.SKILLTREE = {
         WILSON_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity with the secrets of Lunar Transmutation.",        
     },
 }
+
+STRINGS.SCRAPBOOK = {
+    CATS = {
+        FOOD = "Food",
+        CREATURES = "Creature",
+        ITEMS = "Items",
+        GIANTS = "Giants",
+        THINGS = "Things",
+        POI = "POI",
+        BIOMES = "Biomes",
+        SEASONS = "Seasons",
+    },
+
+    SUBCATS = {
+        SPIDER = "Spider",
+        HALLOWEENORNAMENT = "Halloween Ornament",
+        STATUE = "Statue",
+        UPGRADEMODULE = "Upgrade Module",
+        TRINKET = "Trinket",
+        ORNAMENT = "Ornament",
+        BOOK = "Book",
+        SHADOW = "Shadow",
+        TACKLE = "Tackle",
+        TOOL = "Tool",
+        ELEMENT = "Element",
+        WEAPON = "Weapon",
+        ARMOR = "Armor",
+        ELIXER = "Elixir",
+        CLOTHING = "Clothing",
+        HAT = "Hat",
+        BATTLESONG = "Battlesong",
+        MUTATOR = "Mutator",
+        CONTAINER = "Container",
+        FARMPLANT = "Farm Plant",
+        WALL = "Wall",
+        TURF = "Turf",
+        POCKETWATCH = "Pocket Watch",
+        WAGSTAFFTOOL = "Wagstaff Tool",
+        OCEANFISH = "Ocean Fish",
+        CLOCKWORK = "Clockwork",
+        HOUND = "Hound",
+        MERM = "Merm",
+        PIG = "Pig",
+        BIRD = "Bird",
+        INSECT = "Insect",
+        SHELL = "shell",
+    },
+
+    SANITYDESC ={
+        NEGHIGH = "VERY SCARY",
+        NEGMED = "QUITE SCARY",
+        NEGLOW = "A LITTLE SCARY",
+        POSLOW = "A LITTLE CALMING",
+        POSMED = "QUITE CALMING",
+        POSHIGH = "VERY CALMING",
+    },
+
+    FOODTYPE = {
+        GENERIC = "GENERIC",
+        MEAT = "MEAT",
+        VEGGIE = "VEGGIE",
+        ELEMENTAL = "ELEMENTAL",
+        GEARS = "GEARS",
+        HORRIBLE = "HORRIBLE",
+        INSECT = "INSECT",
+        SEEDS = "SEEDS",
+        BERRY = "BERRY", 
+        RAW = "RAW", 
+        BURNT = "BURNT",
+        ROUGHAGE = "ROUGHAGE",
+        WOOD = "WOOD",
+        GOODIES = "GOODIES",
+        MONSTER = "MONSTER",
+    },
+
+    DATA_NEEDS_INVESTIGATION = "This needs more investigation.",
+    DATA_STACK = " ITEMS",
+
+    DATA_PLANAR_DAMAGE = " PLANAR DAMAGE",
+    DATA_PLANAR_DEFENSE = " PLANAR DEFENSE",
+    DATA_RANGE = " RANGE",
+    DATA_USES = " USES",
+    DATA_ARMOR_ABSORB = "ABSORBS ",
+    DATA_WETNESS = "STOPS ",
+    DATA_PERSEC = "/SEC",
+
+    NEW_SCRAPBOOK_ENTRY = "Scrapbook\nUpdated",
+    CLEARFLASH = "Clear all \"NEW\"",
+    DATA_DAYS =" DAYS",
+    DATA_CRAFTING = "CRAFTABLE",
+    DATA_LIGHTBATTERY = "Emits Light",
+
+    NOTE_SHADOW_ALIGNED = "SHADOW ALIGNED",
+    NOTE_LUNAR_ALIGNED = "LUNAR ALIGNED",
+
+    CYCLE_VIEW = "Cycle Layout",
+    CYCLE_CAT = "Cycle Category",
+    CYCLE_QUOTES = "Cycle Quotes",    
+    SEARCH = "Search",
+   -- CANCEL_SEARCH = "Cancel Search",
+
+}
+
 --Don't include this in pot generation as this file is already translated.
 if POT_GENERATION == false then
     require "strings_pretranslated"

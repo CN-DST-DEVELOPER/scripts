@@ -60,6 +60,7 @@ local PlayerProfile = Class(function(self)
         self.persistdata.profanityfilter_chat = true
 		self.persistdata.usezipfilefornormalsaves = false
 		self.persistdata.defaultcloudsaves = false
+		self.persistdata.scrapbookhuddisplay = true
     end
 
     self.dirty = true
@@ -110,6 +111,7 @@ function PlayerProfile:Reset()
 		self.persistdata.hide_pause_underlay = false
 		self.persistdata.usezipfilefornormalsaves = false
 		self.persistdata.defaultcloudsaves = true
+		self.persistdata.scrapbookhuddisplay = true
     end
 
     --self.persistdata.starts = 0 -- save starts?
@@ -150,6 +152,7 @@ function PlayerProfile:SoftReset()
         self.persistdata.warneddifficultyrog = false
         self.persistdata.controller_popup = false
         self.persistdata.warn_mods_enabled = true
+        self.persistdata.scrapbookhuddisplay = true
     end
     -- and apply these values
     local str = json.encode(self.persistdata)
@@ -593,6 +596,23 @@ function PlayerProfile:GetCraftingNumPinnedPages()
 		return tonumber(TheSim:GetSetting("misc", "CraftingMenuNumPinPages") or 3)
 	else
 		return tonumber(self:GetValue("CraftingMenuNumPinPages") or 3)
+	end
+end
+
+function PlayerProfile:GetScrapbookHudDisplay()
+ 	if USE_SETTINGS_FILE then
+		return TheSim:GetSetting("misc", "scrapbookhuddisplay") ~= "false"
+	else
+		return self:GetValue("scrapbookhuddisplay") ~= false
+	end
+end
+
+function PlayerProfile:SetScrapbookHudDisplay(enabled)
+ 	if USE_SETTINGS_FILE then
+		TheSim:SetSetting("misc", "scrapbookhuddisplay", tostring(enabled))
+	else
+		self:SetValue("scrapbookhuddisplay", enabled)
+		self.dirty = true
 	end
 end
 
@@ -1547,6 +1567,7 @@ function PlayerProfile:Set(str, callback, minimal_load)
                 self.persistdata.vibration = true
                 self.persistdata.showpassword = false
                 self.persistdata.movementprediction = true
+                self.persistdata.scrapbookhuddisplay = true
 		    end
 		end
 

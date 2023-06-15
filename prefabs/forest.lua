@@ -454,6 +454,10 @@ local prefabs =
     "lunarthrall_plant",
     "domesticplantherd",
 
+    -- Shadow Rifts
+    "charlie_npc",
+    "scrapbook_page",
+
     --
 }
 
@@ -577,8 +581,6 @@ local function master_postinit(inst)
     inst:AddComponent("moonstormmanager")
 
     inst:AddComponent("sharklistener")
-
-    inst:AddComponent("entitytracker")
 
     inst:AddComponent("riftspawner")
     inst:AddComponent("lunarthrall_plantspawner")

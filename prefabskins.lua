@@ -981,7 +981,12 @@ PREFAB_SKINS = {
 	},
 	ruinshat =
 	{
+		"ruinshat_an",
 		"ruinshat_arcane",
+	},
+	ruinsrelic_chair =
+	{
+		"ruinsrelic_chair_toilet",
 	},
 	saddle_basic =
 	{
@@ -1039,6 +1044,7 @@ PREFAB_SKINS = {
 	},
 	spear_wathgrithr =
 	{
+		"spear_wathgrithr_lunar",
 		"spear_wathgrithr_northern",
 		"spear_wathgrithr_valkyrie",
 		"spear_wathgrithr_wrestle",
@@ -1231,6 +1237,7 @@ PREFAB_SKINS = {
 		"walter_lunar",
 		"walter_nature",
 		"walter_none",
+		"walter_shadow",
 		"walter_survivor",
 		"walter_ventriloquist",
 		"walter_victorian",
@@ -1244,6 +1251,7 @@ PREFAB_SKINS = {
 		"walterhat_ice",
 		"walterhat_lunar",
 		"walterhat_nature",
+		"walterhat_shadow",
 		"walterhat_survivor",
 		"walterhat_ventriloquist",
 		"walterhat_victorian",
@@ -1285,6 +1293,7 @@ PREFAB_SKINS = {
 		"warly_none",
 		"warly_pirate",
 		"warly_rose",
+		"warly_shadow",
 		"warly_victorian",
 	},
 	wateringcan =
@@ -1308,6 +1317,7 @@ PREFAB_SKINS = {
 		"wathgrithr_formalp",
 		"wathgrithr_gladiator",
 		"wathgrithr_ice",
+		"wathgrithr_lunar",
 		"wathgrithr_magma",
 		"wathgrithr_nature",
 		"wathgrithr_none",
@@ -1326,6 +1336,7 @@ PREFAB_SKINS = {
 	},
 	wathgrithrhat =
 	{
+		"wathgrithrhat_lunar",
 		"wathgrithrhat_valkyrie",
 		"wathgrithrhat_wrestle",
 	},
@@ -1564,6 +1575,7 @@ PREFAB_SKINS = {
 		"winona_grassgecko_d",
 		"winona_grassgecko_p",
 		"winona_ice",
+		"winona_lunar",
 		"winona_magma",
 		"winona_nature",
 		"winona_none",
@@ -1601,6 +1613,7 @@ PREFAB_SKINS = {
 		"wolfgang_formalp",
 		"wolfgang_gladiator",
 		"wolfgang_ice",
+		"wolfgang_lunar",
 		"wolfgang_magma",
 		"wolfgang_nature",
 		"wolfgang_none",
@@ -1689,6 +1702,7 @@ PREFAB_SKINS = {
 		"wortox_none",
 		"wortox_original",
 		"wortox_pirate",
+		"wortox_shadow",
 		"wortox_survivor",
 		"wortox_victorian",
 	},

@@ -50,6 +50,8 @@ local function fn()
     inst.AnimState:SetBuild("flower_petals")
     inst.AnimState:PlayAnimation("anim")
 
+    inst.pickupsound = "vegetation_grassy"
+
     inst:AddTag("cattoy")
     inst:AddTag("vasedecoration")
 

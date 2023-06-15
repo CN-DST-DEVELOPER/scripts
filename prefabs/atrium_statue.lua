@@ -105,6 +105,7 @@ local function MakeStatue(name, rotate)
         inst.AnimState:SetBank("atrium_statue")
         inst.AnimState:SetBuild("atrium_statue")
         inst.AnimState:PlayAnimation("idle_full")
+        inst.scrapbook_anim = "idle_full"
 
         inst.MiniMapEntity:SetIcon("atrium_statue.png")
 

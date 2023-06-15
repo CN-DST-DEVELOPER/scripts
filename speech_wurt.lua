@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Nuh-uh.",
             EMPTY = "Need some buildy things.",
             MISMATCH = "Glort? Not right?",
+            NOTREADY = "Later! Too scary here, florp!",
         },
 		RUMMAGE =
 		{
@@ -886,6 +887,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "Grrr... need something stronger, florp!",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "Grrr! Who make that light?",
+    ANNOUNCE_SHADOW_RIFT_MAX = "N-not scared of weird light, florp!",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "No more room in scrappy book.",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "Glorp! Oh, it not real.",
         CHESSPIECE_EYEOFTERROR = "Oh no... got dried out, glorp...",
         CHESSPIECE_TWINSOFTERROR = "Ha ha, they just rocks now!",
+        CHESSPIECE_DAYWALKER = "Grrr... why we have nasty Pig statue?!",
 
         CHESSJUNK1 = "It all broken.",
         CHESSJUNK2 = "Didn't do it!!",
@@ -2327,7 +2332,7 @@ return{
             FULL = "That house full of nasty Pigfolk!",
             GENERIC = "Sniff... smell like... Pigfolk!",
             LIGHTSOUT = "Coast clear, florp.",
-            BURNT = "Hee-hee, pig house all burnt up!",
+            BURNT = "Hee-hee, Pig house all burnt up!",
         },
         PIGKING = "He no King, flort!!",
         PIGMAN =
@@ -2795,7 +2800,7 @@ return{
             BURNT = "Good, it gone now.",
 		},
 		PIG_TOKEN = "Stole Pigman's belt!",
-		PIG_COIN = "Shiny pig nose, florp!",
+		PIG_COIN = "Shiny Pig nose, florp!",
 		YOTP_FOOD1 = "Blegh! Has nasty Pig face!",
 		YOTP_FOOD2 = "Usually like mud, but that just bad.",
 		YOTP_FOOD3 = "This insulting to fish.",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "Nice and sharp, florp.",
 		WALL_MOONROCK = "Moon wall!",
 		WALL_MOONROCK_ITEM = "Tough rocks.",
+		WALL_DREADSTONE = "Pretty wall!",
+		WALL_DREADSTONE_ITEM = "Will be good wall, florp.",
 		FENCE = "Keep out nasty Pigfolk, florp.",
         FENCE_ITEM = "For building fence!",
         FENCE_GATE = "Oooh smart, put door in fence.",
@@ -4756,12 +4763,12 @@ return{
 		HORRORFUEL = "I-is just goop! Not scared!",
 		DAYWALKER =
 		{
-			GENERIC = "Grrr! You just big stinky pig!",
+			GENERIC = "Grrr! You just big stinky Pig!",
 			IMPRISONED = "Nyeeeeehhh!!",
 		},
 		DAYWALKER_PILLAR =
 		{
-			GENERIC = "Heehee, stinky pig all locked up!",
+			GENERIC = "Heehee, stinky Pig all locked up!",
 			EXPOSED = "Rock too hard for breaking, florp.",
 		},
 		ARMORDREADSTONE = "So pretty... it mine!",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "Good scooper-upper, florp.",
 
         PUNCHINGBAG = "Allowed to hit it? Yay!!",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Glorp! Ground broken!",
+
+		SHADOW_FORGE = "Make me things! Now!",
+		SHADOW_FORGE_KIT = "It not ready yet.",
+
+        FUSED_SHADELING = "Something stuck to its tail?",
+        FUSED_SHADELING_BOMB = "It gonna 'splode!",
+
+		VOIDCLOTH = "All torn up.",
+		VOIDCLOTHHAT = "It dark inside!",
+		ARMOR_VOIDCLOTH = "Scary shirt...",
+
+        VOIDCLOTH_UMBRELLA = "Huh? Th-there a storm in it!",
+        VOIDCLOTH_SCYTHE = "Swish swish, bye-bye plants! Hee-hee!",
+
+		SHADOWTHRALL_HANDS = "G-go away!!",
+		SHADOWTHRALL_HORNS = "Hey! No eating!!",
+		SHADOWTHRALL_WINGS = "N-not scared of you, florp!",
+
+        CHARLIE_NPC = "It the scary night lady!!",
+        CHARLIE_HAND = "What you want, florp?",
+
+        NITRE_FORMATION = "Big bunch of funny rocks.",
+        DREADSTONE_STACK = "Oooh, big shiny rock!",
+        
+        SCRAPBOOK_PAGE = "Found page for scrappy book!",
     },
 
     DESCRIBE_GENERIC = "What that?",

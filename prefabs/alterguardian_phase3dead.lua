@@ -113,12 +113,7 @@ local ERODEIN =
     remove = false,
 }
 local function start_wag_sequence(inst)
-
-    local oldwagstaff = TheWorld.components.entitytracker:GetEntity("WagstaffNPC_continueWorking")
-    if oldwagstaff then
-        oldwagstaff.sg:GoToState("capture_emote")
-        oldwagstaff:DoTaskInTime(20,function() oldwagstaff:Remove() end)
-    end
+	TheWorld:PushEvent("ms_despawn_wagstaff_npc_pstboss")
 
     local ipos = inst:GetPosition()
 

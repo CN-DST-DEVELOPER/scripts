@@ -13,11 +13,18 @@ local prefabs =
 
 local brain = require "brains/batbrain"
 
-SetSharedLootTable( 'bat',
+SetSharedLootTable("bat",
 {
-    {'batwing',    0.25},
-    {'guano',      0.15},
-    {'monstermeat',0.10},
+    {"batwing",    0.25},
+    {"guano",      0.15},
+    {"monstermeat",0.10},
+})
+SetSharedLootTable("bat_acidinfused",
+{
+    {"batwing",    0.5},
+    {"guano",      0.3},
+    {"monstermeat",0.2},
+    {"nitre",      0.2},
 })
 
 local SLEEP_DIST_FROMHOME = 1
@@ -128,6 +135,33 @@ local function OnPreLoad(inst, data)
 	end
 end
 
+local function BatSleepTest(inst, ...)
+    if inst.acidinfused then
+        return false
+    end
+    return NocturnalSleepTest(inst, ...)
+end
+
+local function OnIsAcidRaining(inst, isacidraining)
+    if isacidraining then
+        inst.AnimState:SetSymbolAddColour("bat_eye", .2, .5, 0, 0)
+        inst.AnimState:SetSymbolLightOverride("bat_eye", .5)
+        inst.components.locomotor.walkspeed = TUNING.BAT_WALK_SPEED * TUNING.ACIDRAIN_BAT_SPEED_MULT
+        inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE * TUNING.ACIDRAIN_BAT_DAMAGE_MULT)
+        inst.components.lootdropper:SetChanceLootTable("bat_acidinfused")
+        inst.components.combat:SetRetargetFunction(1, Retarget)
+        inst.acidinfused = true
+    else
+        inst.AnimState:SetSymbolAddColour("bat_eye", 0, 0, 0, 0)
+        inst.AnimState:SetSymbolLightOverride("bat_eye", 0)
+        inst.components.locomotor.walkspeed = TUNING.BAT_WALK_SPEED
+        inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
+        inst.components.lootdropper:SetChanceLootTable("bat")
+        inst.components.combat:SetRetargetFunction(3, Retarget)
+        inst.acidinfused = nil
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -178,11 +212,12 @@ local function fn()
 
     inst:AddComponent("sleeper")
     inst.components.sleeper:SetResistance(3)
-    inst.components.sleeper.sleeptestfn = NocturnalSleepTest
+    inst.components.sleeper.sleeptestfn = BatSleepTest
     inst.components.sleeper.waketestfn = NocturnalWakeTest
 
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "bat_body"
+    inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
     inst.components.combat:SetAttackPeriod(TUNING.BAT_ATTACK_PERIOD)
     inst.components.combat:SetRange(TUNING.BAT_ATTACK_DIST)
     inst.components.combat:SetRetargetFunction(3, Retarget)
@@ -190,11 +225,9 @@ local function fn()
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.BAT_HEALTH)
-    inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.BAT_ATTACK_PERIOD)
 
     inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetChanceLootTable('bat')
+    inst.components.lootdropper:SetChanceLootTable("bat")
 
     inst:AddComponent("inventory")
 
@@ -216,6 +249,9 @@ local function fn()
     inst.components.teamattacker.team_type = "bat"
 
     inst:ListenForEvent("attacked", OnAttacked)
+    inst.OnIsAcidRaining = OnIsAcidRaining -- Mods.
+    inst:WatchWorldState("isacidraining", inst.OnIsAcidRaining)
+    inst:OnIsAcidRaining(TheWorld.state.isacidraining)
 
     MakeHauntablePanic(inst)
 

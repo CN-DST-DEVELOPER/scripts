@@ -382,6 +382,13 @@ local function fn()
     inst.AnimState:SetBuild("barnacle_plant_colour_swaps")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_overridedata={}
+    table.insert( inst.scrapbook_overridedata, {"bc_bud", "barnacle_plant_colour_swaps", "bc_bud"})
+    table.insert( inst.scrapbook_overridedata, {"bc_face", "barnacle_plant_colour_swaps", "bc_face"})
+    table.insert( inst.scrapbook_overridedata, {"bc_flower_petal", "barnacle_plant_colour_swaps", "bc_flower_petal"})
+    inst.scrapbook_anim = "idle"
+
+
     inst.AnimState:Hide("stage1")
     inst.AnimState:Hide("bud1")
     inst.AnimState:Hide("bud2")

@@ -80,6 +80,8 @@ local function commonfn(anim)
 
     inst:SetPrefabNameOverride("stalagmite_tall")
 
+    inst:AddTag("boulder")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

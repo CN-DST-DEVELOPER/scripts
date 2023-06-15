@@ -1,14 +1,16 @@
 local MoonstormWatcher = Class(function(self, inst)
     self.inst = inst
 
+	self.enabled = false
     self.moonstormlevel = 0
     self.moonstormspeedmult = TUNING.MOONSTORM_SPEED_MOD
     self.delay = nil
 
     if TheWorld.net.components.moonstorms ~= nil then
         inst:ListenForEvent("ms_stormchanged", function(src, data) self:ToggleMoonstorms(data) end, TheWorld)
-        -- self:ToggleMoonstorms(TheWorld.components.moonstorms:IsMoonstormActive())
-        self:ToggleMoonstorms({setting=false})
+		if next(TheWorld.net.components.moonstorms:GetMoonstormNodes()) ~= nil then
+			self:ToggleMoonstorms({ stormtype = STORM_TYPES.MOONSTORM, setting = true })
+		end
     end
 end)
 
@@ -32,46 +34,59 @@ local function RemoveMoonstormWalkSpeedListeners(inst)
 end
 
 function MoonstormWatcher:OnRemoveFromEntity()
-    self:ToggleMoonstorms({setting=false})
+	if self.enabled and self.moonstormspeedmult < 1 then
+		RemoveMoonstormWalkSpeedListeners(self.inst)
+	end
 end
 
 function MoonstormWatcher:ToggleMoonstorms(data)
-    if data.setting then
-        if self.moonstormspeedmult < 1 then
-            AddMoonstormWalkSpeedListeners(self.inst)
-        end
-        self:UpdateMoonstormLevel()
-    else
-        if self.moonstormspeedmult < 1 then
-            RemoveMoonstormWalkSpeedListeners(self.inst)
-        end
-    end
+	if data.stormtype == STORM_TYPES.MOONSTORM then
+		local enable = data.setting or false
+		if self.enabled ~= enable then
+			if self.moonstormspeedmult < 1 then
+				if enable then
+					AddMoonstormWalkSpeedListeners(self.inst)
+				else
+					RemoveMoonstormWalkSpeedListeners(self.inst)
+				end
+			end
+			self.enabled = enable
+			if enable then
+				self:UpdateMoonstormLevel()
+			end
+		end
+	end
 end
 
 function MoonstormWatcher:SetMoonstormSpeedMultiplier(mult)
     mult = math.clamp(mult, 0, 1)
     if self.moonstormspeedmult ~= mult then
-        if mult < 1 then
-            if self.moonstormspeedmult >= 1 then
-                AddMoonstormWalkSpeedListeners(self.inst)
-            end
-            self.moonstormspeedmult = mult
-            self:UpdateMoonstormWalkSpeed()
-        else
-            self.moonstormspeedmult = 1
-            RemoveMoonstormWalkSpeedListeners(self.inst)
-        end
+		if self.enabled then
+			if mult >= 1 then
+				RemoveMoonstormWalkSpeedListeners(self.inst)
+			elseif self.moonstormspeedmult >= 1 then
+				AddMoonstormWalkSpeedListeners(self.inst)
+			end
+		end
+		self.moonstormspeedmult = mult
+		if self.enabled then
+			self:UpdateMoonstormWalkSpeed()
+		end
     end
 end
 
 function MoonstormWatcher:UpdateMoonstormLevel()
-    self:UpdateMoonstormWalkSpeed()
+	local level = self:GetMoonStormLevel()
+	self:UpdateMoonstormWalkSpeed_Internal(level)
+	self.inst:PushEvent("moonstormlevel", { level = level })
 end
 
 function MoonstormWatcher:UpdateMoonstormWalkSpeed()
-    local level = self:GetMoonStormLevel()
-    if level and self.moonstormspeedmult < 1 then
+	self:UpdateMoonstormWalkSpeed_Internal(self:GetMoonStormLevel())
+end
 
+function MoonstormWatcher:UpdateMoonstormWalkSpeed_Internal(level)
+    if level and self.moonstormspeedmult < 1 then
         if level < TUNING.SANDSTORM_FULL_LEVEL or
             self.inst.components.playervision:HasGoggleVision() or
             self.inst.components.playervision:HasGhostVision() or
@@ -81,7 +96,6 @@ function MoonstormWatcher:UpdateMoonstormWalkSpeed()
             self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "moonstorm", self.moonstormspeedmult)
         end
     end
-    self.inst:PushEvent("moonstormlevel",{level = level})
 end
 
 function MoonstormWatcher:GetMoonStormLevel()

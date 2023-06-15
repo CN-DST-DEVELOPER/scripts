@@ -117,6 +117,12 @@ local assets =
 
     Asset("SOUNDPACKAGE", "sound/rifts.fev"),
     Asset("FILE", "sound/rifts.fsb"),
+    
+    Asset("SOUNDPACKAGE", "sound/aqol.fev"),
+    Asset("FILE", "sound/aqol.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/rifts2.fev"),
+    Asset("FILE", "sound/rifts2.fsb"),
 
     
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
@@ -227,6 +233,14 @@ local assets =
 
     Asset("ATLAS", "images/plantregistry.xml"),
     Asset("IMAGE", "images/plantregistry.tex"),
+
+    Asset("ATLAS", "images/scrapbook.xml"),
+    Asset("IMAGE", "images/scrapbook.tex"),
+
+    Asset("ATLAS", "images/scrapbook_icons1.xml"),
+    Asset("IMAGE", "images/scrapbook_icons1.tex"), 
+    --Asset("ATLAS", "images/scrapbook_icons2.xml"),
+    --Asset("IMAGE", "images/scrapbook_icons2.tex"), 
 
     Asset("ATLAS", "images/crafting_menu.xml"),
     Asset("IMAGE", "images/crafting_menu.tex"),
@@ -407,6 +421,9 @@ local assets =
 
     Asset("ATLAS", "images/skilltree_icons.xml"),
     Asset("IMAGE", "images/skilltree_icons.tex"),    
+
+    Asset("ATLAS", "images/customisation.xml"),
+    Asset("IMAGE", "images/customisation.tex"), 
 
     --oft-used panel bgs
     Asset("DYNAMIC_ATLAS", "images/globalpanels2.xml"),

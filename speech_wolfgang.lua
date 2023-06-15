@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "Is not right place for that.",
             EMPTY = "Wolfgang needs something to put here.",
             MISMATCH = "Wolfgang have wrong plans.",
+            NOTREADY = "Is too scary here! Will come back later!",
         },
 		RUMMAGE =
 		{
@@ -887,6 +888,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "Tool is weak! Wolfgang needs something mightier!",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "Oh! Wolfgang can see pretty light up ahead!",
+    ANNOUNCE_SHADOW_RIFT_MAX = "Maybe is best to not go toward creepy light, yes?",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "Wolfgang's scrapbook will fit no more!",
 
 	BATTLECRY =
 	{
@@ -1801,6 +1805,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "Wolfgang glad is just statue.",
         CHESSPIECE_EYEOFTERROR = "No like the way it look at Wolfgang.",
         CHESSPIECE_TWINSOFTERROR = "Brrr, still sends chill down Wolfgang's spine.",
+        CHESSPIECE_DAYWALKER = "Wolfgang has bigger muscles, see?",
 
         CHESSJUNK1 = "Metal junk.",
         CHESSJUNK2 = "Metal junk.",
@@ -2952,6 +2957,8 @@ return{
 		WALL_WOOD_ITEM = "Pokey sticks!",
 		WALL_MOONROCK = "Rock of moon protects Wolfgang.",
 		WALL_MOONROCK_ITEM = "Can build with power of moon!",
+		WALL_DREADSTONE = "Wall is mighty! And scary!",
+		WALL_DREADSTONE_ITEM = "Pile of scary rocks!",
 		FENCE = "I do not like trapping little animals.",
         FENCE_ITEM = "Wolfgang will help make fence!",
         FENCE_GATE = "Is little flimsy swingboards.",
@@ -4792,6 +4799,34 @@ return{
 		SHOVEL_LUNARPLANT = "But is not shoe? Wolfgang is confused...",
 
         PUNCHINGBAG = "Wolfgang will try to go easy on tiny punch man.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "Wolfgang will be very careful not to fall into that.",
+
+		SHADOW_FORGE = "Creepy hands make things for Wolfgang.",
+		SHADOW_FORGE_KIT = "Is almost done!",
+
+        FUSED_SHADELING = "Is creepy and crawly!",
+        FUSED_SHADELING_BOMB = "Boom bug!",
+
+		VOIDCLOTH = "Scary little rags.",
+		VOIDCLOTHHAT = "Eep! Is too dark in there!",
+		ARMOR_VOIDCLOTH = "Creepy shirt is happy to be worn by Wolfgang.",
+
+        VOIDCLOTH_UMBRELLA = "Wolfgang would like less spooky umbrella, please.",
+        VOIDCLOTH_SCYTHE = "Wolfgang will cut with one mighty swipe!",
+
+		SHADOWTHRALL_HANDS = "Creepy shadow wants to arm wrestle?",
+		SHADOWTHRALL_HORNS = "Eep! Wolfgang's muscles are too tough for chewing!",
+		SHADOWTHRALL_WINGS = "Scary flapper!",
+
+        CHARLIE_NPC = "Wolfgang has seen that face in the dark...",
+        CHARLIE_HAND = "Is needing something, yes?",
+
+        NITRE_FORMATION = "It grew from burny rain?",
+        DREADSTONE_STACK = "Scary rock comes from scary place...",
+        
+        SCRAPBOOK_PAGE = "Is page of funny scribbles.",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

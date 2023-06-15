@@ -1186,11 +1186,11 @@ function EntityScript:GetAngleToPoint(x, y, z)
         return 0
     elseif y == nil and z == nil then
         x, y, z = x:Get()
-    end    
+    end
     local x1, y1, z1 = self.Transform:GetWorldPosition()
 	return x1 == x and z1 == z
 		and self.Transform:GetRotation()
-		or math.atan2(z1 - z, x - x1) / DEGREES
+		or math.atan2(z1 - z, x - x1) * RADIANS
 end
 
 function EntityScript:GetPositionAdjacentTo(target, distance)

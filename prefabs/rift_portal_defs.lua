@@ -3,6 +3,7 @@ local RIFTPORTAL_CONST = {
     AFFINITY = {
         NONE = "NONE",
         LUNAR = "LUNAR",
+        SHADOW = "SHADOW",
         --X = "X",
     }
 }

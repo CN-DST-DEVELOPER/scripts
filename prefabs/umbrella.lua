@@ -154,7 +154,7 @@ local function grass()
     local swap_data = {sym_build = "swap_parasol", bank = "parasol"}
     inst.components.floater:SetBankSwapOnFloat(true, -40, swap_data)
     inst.components.floater:SetVerticalOffset(0.05)
-    inst.components.floater:SetScale({0.9, 0.4, 0.9})
+	inst.components.floater:SetScale({ 0.75, 0.35, 1 })
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
@@ -185,8 +185,8 @@ local function pigskin()
     inst.components.equippable:SetOnUnequip(onunequip)
     inst.components.equippable:SetOnEquipToModel( onequiptomodel )
 
-    inst.components.floater:SetScale({1.0, 0.4, 1.0})
-    inst.components.floater:SetBankSwapOnFloat(true, -40, {sym_build = "swap_umbrella"})
+	inst.components.floater:SetScale({ .75, 0.35, 1.0 })
+	inst.components.floater:SetBankSwapOnFloat(true, -35, { sym_name = "swap_umbrella_float", sym_build = "swap_umbrella" })
 
     return inst
 end

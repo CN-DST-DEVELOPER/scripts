@@ -333,6 +333,7 @@ local function commonfn(anim, tag, should_sink, can_refuel)
     inst.AnimState:SetBank("amulets")
     inst.AnimState:SetBuild("amulets")
     inst.AnimState:PlayAnimation(anim)
+    inst.scrapbook_anim = anim
 
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization
 	inst:AddTag("shadowlevel")

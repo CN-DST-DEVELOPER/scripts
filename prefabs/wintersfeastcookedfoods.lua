@@ -26,6 +26,7 @@ local function MakeFood(name)
         inst.AnimState:SetBuild("food_winters_feast_2019")
         inst.AnimState:PlayAnimation("idle")
 		inst.AnimState:OverrideSymbol("swap_food", "food_winters_feast_2019", name)
+        inst.scrapbook_overridedata = {"swap_food", "food_winters_feast_2019", name}
 
 		local data = fooddef.foods[name]
 

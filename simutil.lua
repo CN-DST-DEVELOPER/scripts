@@ -440,13 +440,14 @@ function CanEntitySeeInStorm(inst)
     return inst ~= nil and inst:IsValid() and _CanEntitySeeInStorm(inst)
 end
 
-local function _GetEntityStormLevel(inst)
-    --NOTE: GetStormLevel is available on players on server
-    --      and clients, but only accurate for local players.
-    --      stormwatcher is a server-side component.
-    return (inst.GetStormLevel ~= nil and inst:GetStormLevel())
-        or (inst.components.stormwatcher ~= nil and inst.components.stormwatcher.sandstormlevel)
-        or 0
+local function _IsEntityInAnyStormOrCloud(inst)
+	--NOTE: IsInAnyStormOrCloud is available on players on server and clients, but only accurate for local players.
+	if inst.IsInAnyStormOrCloud ~= nil then
+		return inst:IsInAnyStormOrCloud()
+	end
+	-- stormwatcher and miasmawatcher are a server-side components.
+	return (inst.components.stormwatcher ~= nil and inst.components.stormwatcher:GetStormLevel() >= TUNING.SANDSTORM_FULL_LEVEL)
+		or (inst.components.miasmawatcher ~= nil and inst.components.miasmawatcher:IsInMiasma())
 end
 
 function CanEntitySeePoint(inst, x, y, z)
@@ -455,7 +456,7 @@ function CanEntitySeePoint(inst, x, y, z)
         and (not inst.components.inkable or not inst.components.inkable.inked)
         and (TheSim:GetLightAtPoint(x, y, z) > TUNING.DARK_CUTOFF or
             _CanEntitySeeInDark(inst))
-        and (_GetEntityStormLevel(inst) < TUNING.SANDSTORM_FULL_LEVEL or
+		and (not _IsEntityInAnyStormOrCloud(inst) or
             _CanEntitySeeInStorm(inst) or
             inst:GetDistanceSqToPoint(x, y, z) < TUNING.SANDSTORM_VISION_RANGE_SQ)
 end
@@ -605,4 +606,12 @@ function GetInventoryItemAtlas(imagename, no_fallback)
 		inventoryItemAtlasLookup[imagename] = atlas
 	end
 	return atlas
+end
+
+function GetScrapbookIconAtlas(imagename)
+    local images1 = "images/scrapbook_icons1.xml"
+    local images2 = "images/scrapbook_icons2.xml"
+    return TheSim:AtlasContains(images1, imagename) and images1
+            or TheSim:AtlasContains(images2, imagename) and images2
+            or nil
 end

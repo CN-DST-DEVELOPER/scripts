@@ -4,6 +4,14 @@ local Image = require "widgets/image"
 local Widget = require "widgets/widget"
 local UIAnim = require "widgets/uianim"
 
+local function DoInspected(invitem, tried)
+    if ThePlayer then
+        TheScrapbookPartitions:SetInspectedByCharacter(invitem.prefab, ThePlayer.prefab)
+    elseif not tried then
+        invitem:DoTaskInTime(0, DoInspected, true) -- Delay a frame in case of load order desync only try once and then giveup.
+    end
+end
+
 local ItemTile = Class(Widget, function(self, invitem)
     Widget._ctor(self, "ItemTile")
     self.item = invitem
@@ -25,6 +33,8 @@ local ItemTile = Class(Widget, function(self, invitem)
         print("NO INVENTORY ITEM COMPONENT"..tostring(invitem.prefab), invitem)
         return
     end
+
+    DoInspected(invitem)
 
     if self.item:HasTag("show_spoiled") or self:HasSpoilage() then
             self.bg = self:AddChild(Image(HUD_ATLAS, "inv_slot_spoiled.tex"))

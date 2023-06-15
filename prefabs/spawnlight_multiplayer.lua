@@ -80,8 +80,6 @@ local function fn()
     inst.Light:Enable(false)
     inst.Light:EnableClientModulation(true)
 
-    MakeInventoryPhysics(inst)
-
     inst._ismastersim = TheWorld.ismastersim
     inst._pulseoffs = 0
     inst._fadek = 1

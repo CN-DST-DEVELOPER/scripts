@@ -146,6 +146,14 @@ local function OnCavePhase(inst, cavephase)
     end
 end
 
+local function OnCharlieCutscene(inst, isstart)
+    if isstart then
+        OnCavePhase(inst, "day")
+    else
+        OnCavePhase(inst, TheWorld.state.cavephase)
+    end
+end
+
 local function OnInit(inst)
     if TheWorld.ismastersim then
         inst:WatchWorldState("cavephase", OnCavePhase)
@@ -251,7 +259,13 @@ local function tinyfn()
 end
 
 local function atriumfn()
-    return common_fn(.6)
+    local inst = common_fn(.6)
+
+    if TheWorld.ismastersim then
+        inst:ListenForEvent("charliecutscene", function(_, start) OnCharlieCutscene(inst, start) end, TheWorld)
+    end
+
+    return inst
 end
 
 return Prefab("cavelight", normalfn, assets),

@@ -134,6 +134,7 @@ local function statuefn()
     inst.AnimState:SetBank("archive_moon_statue")
     inst.AnimState:SetBuild("archive_moon_statue")
     inst.AnimState:PlayAnimation("idle_full_"..inst.anim)
+    inst.scrapbook_anim = "idle_full_"..inst.anim
 
     inst:AddTag("structure")
     inst:AddTag("statue")
@@ -188,10 +189,11 @@ end
 
 local function setruneanimation(inst)
     if inst.anim == 1 then
-        inst.AnimState:PlayAnimation("idle")
+        inst.AnimState:PlayAnimation("idle")        
     else
         inst.AnimState:PlayAnimation("idle"..inst.anim)
     end
+    inst.scrapbook_anim = "idle"
 end
 
 local function onloadRune(inst, data)

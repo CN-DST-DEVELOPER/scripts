@@ -11,6 +11,8 @@ local BloodOver = require "widgets/bloodover"
 local BeefBloodOver = require "widgets/beefbloodover"
 local HeatOver = require "widgets/heatover"
 local FumeOver = require "widgets/fumeover"
+local MiasmaOver = require("widgets/miasmaover")
+local MiasmaCloudsOver = require("widgets/miasmacloudsover")
 local SandOver = require "widgets/sandover"
 local SandDustOver = require "widgets/sanddustover"
 local MoonstormOver = require "widgets/moonstormover"
@@ -33,6 +35,7 @@ local InputDialogScreen = require "screens/inputdialog"
 local CookbookPopupScreen = require "screens/cookbookpopupscreen"
 local PlantRegistryPopupScreen = require "screens/plantregistrypopupscreen"
 local PlayerInfoPopupScreen = require "screens/playerinfopopupscreen"
+local ScrapbookScreen = require "screens/redux/scrapbookscreen"
 
 local TargetIndicator = require "widgets/targetindicator"
 
@@ -147,6 +150,8 @@ function PlayerHud:CreateOverlays(owner)
     self.moonstormdust:SetClickable(false)
     self.moonstormover_lightning = self.storm_overlays:AddChild(MoonstormOver_Lightning(owner))
 
+	self.miasmaclouds = self.storm_overlays:AddChild(MiasmaCloudsOver(owner))
+
     self.mindcontrolover = self.over_root:AddChild(MindControlOver(owner))
 
     if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
@@ -154,6 +159,7 @@ function PlayerHud:CreateOverlays(owner)
     end
     self.sandover = self.overlayroot:AddChild(SandOver(owner, self.sanddustover))
     self.moonstormover = self.overlayroot:AddChild(MoonstormOver(owner, self.moonstormdust))
+	self.miasmaover = self.overlayroot:AddChild(MiasmaOver(owner, self.miasmaclouds))
 
     self.gogglesover = self.overlayroot:AddChild(GogglesOver(owner, self.storm_overlays))
     self.nutrientsover = self.overlayroot:AddChild(NutrientsOver(owner))
@@ -186,6 +192,7 @@ function PlayerHud:CreateOverlays(owner)
     self.serverpause_underlay:SetScaleMode(SCALEMODE_FILLSCREEN)
     self.serverpause_underlay:SetTint(0,0,0,0.5)
 	self.serverpause_underlay:Hide()
+	self.serverpaused = false
     self:SetServerPaused(TheNet:IsServerPaused(true))
 
     self.eventannouncer = self.under_root:AddChild(Widget("eventannouncer_root"))
@@ -607,6 +614,22 @@ function PlayerHud:ClosePlayerInfoScreen()
             TheFrontEnd:PopScreen(self.playerinfoscreen)
         end
         self.playerinfoscreen = nil
+    end
+end
+
+function PlayerHud:OpenScrapbookScreen(player_name, data, show_net_profile, force)
+    self:CloseScrapbookScreen()
+    self.scrapbookscreen = ScrapbookScreen(self.owner)
+    self:OpenScreenUnderPause(self.scrapbookscreen)
+    return true
+end
+
+function PlayerHud:CloseScrapbookScreen()
+    if self.scrapbookscreen ~= nil then
+        if self.scrapbookscreen.inst:IsValid() then
+            TheFrontEnd:PopScreen(self.scrapbookscreen)
+        end
+        self.scrapbookscreen = nil
     end
 end
 
@@ -1062,6 +1085,10 @@ function PlayerHud:OnControl(control, down)
     if PlayerHud._base.OnControl(self, control, down) then
         return true
     elseif not self.shown then
+		if self.serverpaused and down and control == CONTROL_SERVER_PAUSE then
+			SetServerPaused(false)
+			return true
+		end
         return
     end
 
@@ -1367,6 +1394,7 @@ function PlayerHud:SetServerPaused(paused)
     else
         self.serverpause_underlay:Hide()
     end
+	self.serverpaused = paused
 end
 
 function PlayerHud:OffsetServerPausedWidget(serverpausewidget)

@@ -507,6 +507,7 @@ local function MakeWeed(weed_def)
 		inst:AddTag("plantresearchable")
 		inst:AddTag("weedplantstress")
 		inst:AddTag("tendable_farmplant") -- for farmplanttendable component
+
 		if weed_def.extra_tags ~= nil then
 			for k, v in ipairs(weed_def.extra_tags) do
 				inst:AddTag(v)

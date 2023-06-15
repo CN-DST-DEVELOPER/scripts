@@ -185,11 +185,8 @@ function Moisture:GetSegs()
     return full, num - full
 end
 
-function Moisture:GetMoistureRate()
-    if not TheWorld.state.israining then
-        return 0
-    end
-
+-- NOTES(JBK): More of an internal function to get a raw number elsewhere.
+function Moisture:_GetMoistureRateAssumingRain()
     local waterproofmult =
         (   self.inst.components.sheltered ~= nil and
             self.inst.components.sheltered.sheltered and
@@ -209,6 +206,14 @@ function Moisture:GetMoistureRate()
 
     local rate = easing.inSine(TheWorld.state.precipitationrate, self.minMoistureRate, self.maxMoistureRate, 1)
     return rate * (1 - waterproofmult)
+end
+
+function Moisture:GetMoistureRate()
+    if not TheWorld.state.israining then
+        return 0
+    end
+
+    return self:_GetMoistureRateAssumingRain()
 end
 
 function Moisture:GetEquippedMoistureRate(dryingrate)

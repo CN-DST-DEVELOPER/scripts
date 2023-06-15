@@ -37,6 +37,7 @@ return{
             NOTALLOWED = "This isn't the best place for it.",
             EMPTY = "I'm missing some ingredients.",
             MISMATCH = "I think I've gotten something mixed up.",
+            NOTREADY = "Perhaps once things have settled down, non?",
         },
 		RUMMAGE =
 		{
@@ -886,6 +887,9 @@ return{
 	ANNOUNCE_TOOL_TOOWEAK = "No, this won't do...",
 
     ANNOUNCE_LUNAR_RIFT_MAX = "What could that glow be?",
+    ANNOUNCE_SHADOW_RIFT_MAX = "What was that eerie glow?",
+
+    ANNOUNCE_SCRAPBOOK_FULL = "My scrapbook is already filled to the brim.",
 
 	BATTLECRY =
 	{
@@ -1800,6 +1804,7 @@ return{
         CHESSPIECE_GUARDIANPHASE3 = "A three course fight I won't soon forget.",
         CHESSPIECE_EYEOFTERROR = "Did it just blink?",
         CHESSPIECE_TWINSOFTERROR = "They weren't the most polite guests, non?",
+        CHESSPIECE_DAYWALKER = "I have to admit, I think I prefer him this way.",
 
         CHESSJUNK1 = "Broken chess pieces?",
         CHESSJUNK2 = "More broken chess pieces?",
@@ -2951,6 +2956,8 @@ return{
 		WALL_WOOD_ITEM = "Delivers a rather wooden performance as a wall.",
 		WALL_MOONROCK = "I do kind of wish it was made of cheese.",
 		WALL_MOONROCK_ITEM = "I can't believe this was once on the moon.",
+		WALL_DREADSTONE = "A bit unsettling, non?",
+		WALL_DREADSTONE_ITEM = "Oh dear, did I just hear it whisper?",
 		FENCE = "A fence.",
         FENCE_ITEM = "The ingredients for a fence.",
         FENCE_GATE = "Like an oven door.",
@@ -4791,6 +4798,34 @@ return{
 		SHOVEL_LUNARPLANT = "I almost hate to get it dirty.",
 
         PUNCHINGBAG = "It's a relief to practice on something that won't hit me back.",
+
+        -- Rifts 2
+        SHADOWRIFT_PORTAL = "The ground is crumbling!",
+
+		SHADOW_FORGE = "A place for dark concoctions.",
+		SHADOW_FORGE_KIT = "I'll just put these pieces together, and voila!",
+
+        FUSED_SHADELING = "It does not look friendly!",
+        FUSED_SHADELING_BOMB = "It's about to pop!",
+
+		VOIDCLOTH = "Leftovers from those nightmares.",
+		VOIDCLOTHHAT = "To protect my head while unraveling my mind.",
+		ARMOR_VOIDCLOTH = "Will it really keep me safe?",
+
+        VOIDCLOTH_UMBRELLA = "I fear it will bring bad luck whether it's opened indoors or not.",
+        VOIDCLOTH_SCYTHE = "Did I just see it twitch?",
+
+		SHADOWTHRALL_HANDS = "I don't want to end up in its clutches.",
+		SHADOWTHRALL_HORNS = "Oh my, it looks hungry... and I'm probably delicious!",
+		SHADOWTHRALL_WINGS = "My fears have taken flight!",
+
+        CHARLIE_NPC = "Mon dieu... Is that the face I've seen peering from the shadows?",
+        CHARLIE_HAND = "It needs an important ingredient.",
+
+        NITRE_FORMATION = "Adding a dash of acid to the mix created these formations.",
+        DREADSTONE_STACK = "More of that curious stone.",
+        
+        SCRAPBOOK_PAGE = "Ah! Someone has left a page here.",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

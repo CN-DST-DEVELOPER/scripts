@@ -561,7 +561,7 @@ function Pickable:Pick(picker)
 			self.inst:Remove()
 		end
 
-		return true
+        return true, EntityScript.is_instance(loot) and {loot} or loot
     end
 end
 

@@ -135,6 +135,8 @@ local function fn()
     inst.AnimState:SetBuild("dustmoth")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_deps = {"smallmeat"}
+
     inst:AddTag("cavedweller")
     inst:AddTag("animal")
 

@@ -30,6 +30,8 @@ local function fn()
 
     inst.entity:SetPristine()
 
+    inst.pickupsound = "wood"
+
     if not TheWorld.ismastersim then
         return inst
     end

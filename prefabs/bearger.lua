@@ -352,6 +352,7 @@ local function fn()
     inst.AnimState:SetBank("bearger")
     inst.AnimState:SetBuild(IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) and "bearger_yule" or "bearger_build")
     inst.AnimState:PlayAnimation("idle_loop", true)
+    inst.scrapbook_anim = "idle_loop"
 
     ------------------------------------------
 

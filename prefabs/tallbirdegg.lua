@@ -164,6 +164,7 @@ local function commonfn(anim, withsound, cookable)
     inst.AnimState:SetBuild("tallbird_egg")
     inst.AnimState:SetBank("egg")
     inst.AnimState:PlayAnimation("egg")
+    inst.scrapbook_anim = "egg"
 
     inst:AddTag("cattoy")
 	inst:AddTag("tallbirdegg")

@@ -242,6 +242,7 @@ local function fn()
     inst.AnimState:SetBank("lantern")
     inst.AnimState:SetBuild("lantern")
     inst.AnimState:PlayAnimation("idle_off")
+    inst.scrapbook_anim = "idle_off"
 
     inst:AddTag("light")
 

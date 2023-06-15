@@ -59,6 +59,23 @@ local function KeepTargetFn()
     return false
 end
 
+local function Chair_TrySpawnShadeling(inst)
+	TheWorld.components.ruinsshadelingspawner:TrySpawnShadeling(inst)
+end
+
+local function Chair_OnEntityWake(inst)
+	if inst.chairtask == nil then
+		inst.chairtask = inst:DoTaskInTime(0, Chair_TrySpawnShadeling)
+	end
+end
+
+local function Chair_OnEntitySleep(inst)
+	if inst.chairtask ~= nil then
+		inst.chairtask:Cancel()
+		inst.chairtask = nil
+	end
+end
+
 local function MakeRelic(inst)
     if inst.components.repairable ~= nil then
         inst:RemoveComponent("repairable")
@@ -69,6 +86,14 @@ local function MakeRelic(inst)
     else
         inst.AnimState:PlayAnimation("idle")
     end
+
+	if inst.chair and inst.components.sittable == nil then
+		inst:AddComponent("sittable")
+	end
+	if inst.chair_shadeling_spawner then
+		inst.OnEntityWake = Chair_OnEntityWake
+		inst.OnEntitySleep = Chair_OnEntitySleep
+	end
 end
 
 local function OnRepaired(inst, doer)
@@ -104,6 +129,15 @@ local function MakeRubble(inst)
     else
         inst.AnimState:PlayAnimation("broken")
     end
+
+	if inst.components.sittable ~= nil then
+		inst:RemoveComponent("sittable")
+	end
+	if inst.chair_shadeling_spawner then
+		inst.OnEntityWake = nil
+		inst.OnEntitySleep = nil
+		Chair_OnEntitySleep(inst)
+	end
 end
 
 local function OnHealthDelta(inst, oldpct, newpct)
@@ -143,7 +177,7 @@ local function displaynamefn(inst)
     return STRINGS.NAMES[inst:HasTag("repairable_stone") and "RUINS_RUBBLE" or "RELIC"]
 end
 
-local function makefn(name, asset, animated, smashsound, rubble)
+local function makefn(name, asset, animated, smashsound, rubble, chair)
     return function()
         local inst = CreateEntity()
 
@@ -160,6 +194,9 @@ local function makefn(name, asset, animated, smashsound, rubble)
         inst.AnimState:SetBank(asset)
         inst.AnimState:SetBuild(asset)
         inst.AnimState:PlayAnimation(rubble and "broken" or "idle")
+		if chair then
+			inst.AnimState:SetFinalOffset(-1)
+		end
 
         inst:AddTag("cavedweller")
         inst:AddTag("smashable")
@@ -177,6 +214,8 @@ local function makefn(name, asset, animated, smashsound, rubble)
 
         inst.rubble = rubble
         inst.animated = animated
+		inst.chair = chair
+		inst.chair_shadeling_spawner = chair and TheWorld.components.ruinsshadelingspawner ~= nil
 
         inst.OnSave = OnSave
         inst.OnPreLoad = OnPreLoad
@@ -242,11 +281,11 @@ local function makefn(name, asset, animated, smashsound, rubble)
 end
 
 local function item(name, animated, sound)
-    return Prefab(name, makefn(name, name, animated, sound, false), makeassetlist(name), prefabs)
+	return Prefab(name, makefn(name, name, animated, sound, false, string.sub(name, -5) == "chair"), makeassetlist(name), prefabs)
 end
 
-local function rubble(name, assetname, animated, sound, rubble)
-    return Prefab(name, makefn(name, assetname, animated, sound, true), makeassetlist(assetname), prefabs)
+local function rubble(name, assetname, animated, sound)
+	return Prefab(name, makefn(name, assetname, animated, sound, true, string.sub(name, -5) == "chair"), makeassetlist(assetname), prefabs)
 end
 
 return item("ruins_plate", false),

@@ -337,7 +337,6 @@ local function OnLoadPostPass(inst)
     end
 end
 
-
 local function create_hutch()
     local inst = CreateEntity()
 
@@ -369,6 +368,9 @@ local function create_hutch()
     inst.AnimState:SetBank("hutch")
     inst.AnimState:SetBuild("hutch_build")
     inst.AnimState:Hide("fx_lure_light")
+    inst.scrapbook_scale = 2
+    inst.scrapbook_animoffsetx = 120
+    inst.scrapbook_animoffsety = -100
 
     inst.DynamicShadow:SetSize(2, 1.5)
 

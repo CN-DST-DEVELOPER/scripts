@@ -51,6 +51,7 @@ local function item_fn(data, name)
     inst.AnimState:SetBank(data.bank or data.build)
     inst.AnimState:SetBuild(data.build)
     inst.AnimState:PlayAnimation("idle_"..data.symbol)
+    inst.scrapbook_anim = "idle_"..data.symbol
 
     MakeInventoryFloatable(inst, "small", nil, 0.5)
 

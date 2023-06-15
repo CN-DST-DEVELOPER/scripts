@@ -301,7 +301,7 @@ function ConsoleScreen:DoInit()
 		"regenerateshard", "regenerateworld", "remote", "remove", "removeall", "removeallwithtags", "removeat", "repeatlastcommand", "reregisterportals", "reset", "rollback", "rotateccw", "rotatecw",
 		"save", "searchprefabs", "sel", "sel_health", "select", "selectnear", "selectnext", "sethealth", "sethunger", "setinspiration", "setmightiness", "setminhealth", "setmoisture", "setrotation", "setsanity", "settemperature", "setwereness", "shellsfromtable", "shutdown", "simphase", "skip", "sounddebug", "sounddebugui", "spawn", "speedmult", "speedup", "startinggear", "startvote", "stopvote", "summonbearger", "summondeerclops", "summonmalbatross", "supergodmode",
 		"teleport", "tile",
-		"worldstatedebug",
+		"worldstatedebug", "showradius",
 	}
 	self.console_edit:AddWordPredictionDictionary({words = prediction_command, delim = "c_", num_chars = 0})
 

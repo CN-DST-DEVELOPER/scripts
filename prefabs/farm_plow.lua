@@ -284,6 +284,7 @@ local function item_fn()
     inst.AnimState:SetBank("farm_plow")
     inst.AnimState:SetBuild("farm_plow")
     inst.AnimState:PlayAnimation("idle_packed")
+    inst.scrapbook_anim = "idle_packed"
 
     inst:AddTag("usedeploystring")
     inst:AddTag("tile_deploy")
