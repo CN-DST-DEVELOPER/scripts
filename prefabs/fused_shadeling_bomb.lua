@@ -232,6 +232,7 @@ local function fn()
     inst:AddTag("notraptrigger")
     inst:AddTag("shadow")
     inst:AddTag("shadow_aligned")
+	inst:AddTag("explosive")
 
     inst.AnimState:SetBank("fused_shadeling_bomb")
     inst.AnimState:SetBuild("fused_shadeling_bomb")

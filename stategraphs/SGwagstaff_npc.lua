@@ -397,12 +397,13 @@ local states =
         name = "capture_emote",
         tags = {"busy"},
 
-        onenter = function(inst)
+		onenter = function(inst, norelocate)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("dial_loop")
             inst.AnimState:PushAnimation("research", true)
 
             inst.sg:SetTimeout(15)
+			inst.sg.statemem.norelocate = norelocate
         end,
 
         ontimeout = function(inst)
@@ -412,7 +413,13 @@ local states =
         timeline =
         {
             TimeEvent(1.0, function(inst)
-                inst:PushEvent("doerode", ERODEOUT_DATA)
+				if inst.sg.statemem.norelocate then
+					local data = shallowcopy(ERODEOUT_DATA)
+					data.norelocate = true
+					inst:PushEvent("doerode", data)
+				else
+					inst:PushEvent("doerode", ERODEOUT_DATA)
+				end
             end),
         },
     },

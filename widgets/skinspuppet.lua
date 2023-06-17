@@ -69,8 +69,10 @@ local SkinsPuppet = Class(Button, function(self, emote_min_time, emote_max_time)
 	self.anim:SetFacing(FACING_DOWN)
 
     self.animstate:Hide("ARM_carry")
-    self.animstate:Hide("head_hat")
     self.animstate:Hide("HAIR_HAT")
+	self.animstate:Hide("HEAD_HAT")
+	self.animstate:Hide("HEAD_HAT_NOHELM")
+	self.animstate:Hide("HEAD_HAT_HELM")
 
     self.anim:SetScale(.25)
 

@@ -54,9 +54,23 @@ local function do_crystal_spawnin(inst, time)
 end
 
 --------------------------------------------------------------------------
+-- An extra-safe cleanup in case the terraformer reverting fails to find & destroy us.
+local function do_deterraform_cleanup(inst)
+    if inst:IsInLimbo() then
+        inst:Remove()
+    else
+        inst.components.lootdropper:SetLoot(nil)
+        inst.components.lootdropper:SetChanceLootTable(nil)
+        inst.components.workable:Destroy(inst)
+    end
+end
+
+--------------------------------------------------------------------------
 local function on_crystal_timerdone(inst, data)
     if data.name == "finish_spawnin" then
         finish_crystal_spawnin(inst)
+    elseif data.name == "do_deterraform_cleanup" then
+        do_deterraform_cleanup(inst)
     end
 end
 

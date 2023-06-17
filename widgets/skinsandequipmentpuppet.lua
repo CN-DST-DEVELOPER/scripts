@@ -124,6 +124,8 @@ function SkinsAndEquipmentPuppet:SetHat(hat)
         self.animstate:Hide("HAIR")
 		self.animstate:Hide("HEAD")
 		self.animstate:Show("HEAD_HAT")
+		self.animstate:Show("HEAD_HAT_NOHELM")
+		self.animstate:Hide("HEAD_HAT_HELM")
     end
 end
 

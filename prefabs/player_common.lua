@@ -2039,6 +2039,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.AnimState:Show("HAIR")
         inst.AnimState:Show("HEAD")
         inst.AnimState:Hide("HEAD_HAT")
+		inst.AnimState:Hide("HEAD_HAT_NOHELM")
+		inst.AnimState:Hide("HEAD_HAT_HELM")
 
         inst.AnimState:OverrideSymbol("fx_wipe", "wilson_fx", "fx_wipe")
         inst.AnimState:OverrideSymbol("fx_liquid", "wilson_fx", "fx_liquid")

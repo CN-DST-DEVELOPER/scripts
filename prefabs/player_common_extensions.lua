@@ -267,6 +267,8 @@ local function DoActualRez(inst, source, item)
     inst.AnimState:Show("HAIR")
     inst.AnimState:Show("HEAD")
     inst.AnimState:Hide("HEAD_HAT")
+	inst.AnimState:Hide("HEAD_HAT_NOHELM")
+	inst.AnimState:Hide("HEAD_HAT_HELM")
 
     inst:Show()
 

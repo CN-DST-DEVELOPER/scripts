@@ -312,10 +312,24 @@ local function OnPreLoad(inst, data)
 end
 
 local function FissureShouldRecoil(inst, worker, tool, numworks)
-    if worker and tool and tool.components.tool and tool.components.tool:GetEffectiveness(ACTIONS.MINE) <= 1 then
+	if worker ~= nil and not (tool ~= nil and tool.components.tool ~= nil and tool.components.tool:GetEffectiveness(ACTIONS.MINE) > 1) then
         return true, 0 -- No working on this.
     end
     return false, numworks
+end
+
+local function FissureWorkMultiplier(inst, worker, numworks)
+	if worker ~= nil then
+		if worker.prefab == "daywalker_sinkhole" then
+			return --allow work
+		elseif worker.components.inventory ~= nil then
+			local tool = worker.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if tool ~= nil and tool.components.tool:GetEffectiveness(ACTIONS.MINE) > 1 then
+				return --allow work
+			end
+		end
+	end
+	return 0 --no work
 end
 
 local function OnFissureMinedFinished(inst, worker)
@@ -501,6 +515,7 @@ local function Make(name, build, lightcolour, fxname, masterinit)
             local workable = inst:AddComponent("workable")
             workable:SetWorkAction(ACTIONS.MINE)
             workable:SetShouldRecoilFn(FissureShouldRecoil)
+			workable:SetWorkMultiplierFn(FissureWorkMultiplier)
             workable:SetOnFinishCallback(OnFissureMinedFinished)
             workable:SetMaxWork(TUNING.FISSURE_DREADSTONE_WORK)
             workable:SetWorkLeft(TUNING.FISSURE_DREADSTONE_WORK)

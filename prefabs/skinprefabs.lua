@@ -5770,7 +5770,7 @@ table.insert(prefs, CreatePrefabSkin("ruinsrelic_chair_toilet",
 {
 	base_prefab = "ruinsrelic_chair",
 	type = "item",
-	rarity = "Elegant",
+	rarity = "Loyal",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) ruinsrelic_chair_init_fn(inst, "ruinsrelic_chair_toilet") end,
 	skin_tags = { "SHADOW", "RUINSRELIC_CHAIR", "CRAFTABLE", },

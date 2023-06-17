@@ -1269,7 +1269,7 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "SHADOW", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "torso", "arm_upper_skin", "arm_upper", "arm_lower", },
+		symbol_overrides = { "torso", "arm_upper", },
 		torso_tuck = "untucked",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",
@@ -1530,8 +1530,8 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "SHADOW", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "arm_lower", "arm_upper", "torso", },
-		symbol_hides = { "arm_upper_skin", },
+		symbol_overrides = { "arm_upper", "torso", },
+		symbol_overrides_by_character = { default = { torso = "torso_wilson", },walter = { torso = "torso_walter", },wanda = { torso = "torso_wanda", },warly = { torso = "torso_warly", },waxwell = { torso = "torso_waxwell", },webber = { torso = "torso_webber", },wormwood = { torso = "torso_wormwood", },wortox = { torso = "torso_wortox", },wurt = { torso = "torso_wurt", },wx78 = { torso = "torso_wx78", },},
 		torso_tuck = "untucked",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",
@@ -4432,8 +4432,7 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "SHADOW", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "arm_lower", "arm_upper", "arm_upper_skin", "hand", "torso", },
-		symbol_in_base_hides = { "arm_lower_cuff", },
+		symbol_overrides = { "arm_lower", "arm_upper", "arm_upper_skin", "torso", },
 		torso_tuck = "untucked",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",

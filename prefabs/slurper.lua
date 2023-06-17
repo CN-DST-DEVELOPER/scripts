@@ -162,6 +162,8 @@ local function OnEquip(inst, owner)
     if owner:HasTag("player") then
         owner.AnimState:Hide("HEAD")
         owner.AnimState:Show("HEAD_HAT")
+		owner.AnimState:Show("HEAD_HAT_NOHELM")
+		owner.AnimState:Hide("HEAD_HAT_HELM")
 
         inst._light.SoundEmitter:PlaySound("dontstarve/creatures/slurper/headslurp", "slurp_loop")
     else
@@ -196,6 +198,8 @@ local function OnUnequip(inst, owner)
     if owner:HasTag("player") then
         owner.AnimState:Show("HEAD")
         owner.AnimState:Hide("HEAD_HAT")
+		owner.AnimState:Hide("HEAD_HAT_NOHELM")
+		owner.AnimState:Hide("HEAD_HAT_HELM")
     end
     inst._light.SoundEmitter:KillSound("slurp_loop")
 

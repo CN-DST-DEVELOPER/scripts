@@ -50,6 +50,10 @@ local function SpawnNitreFormations(inst)
             end
         end
     end
+
+	if not TheNet:IsDedicated() then
+		inst.highlightchildren = inst.nitreformation_ents
+	end
 end
 
 local function DespawnNitreFormations(inst)
@@ -64,6 +68,7 @@ local function DespawnNitreFormations(inst)
     end
 
     inst.nitreformations = nil
+	inst.highlightchildren = nil
 end
 
 local function SpawnPlants(inst)
@@ -168,7 +173,6 @@ local function OnLoad(inst, data)
         if inst.task ~= nil and inst.plants == nil then
             inst.plants = data.plants
         end
-        inst.nitreformations = data.nitreformations
     end
 end
 
@@ -178,6 +182,10 @@ end
 
 local function OnPreLoadFrog(inst, data)
     WorldSettings_ChildSpawner_PreLoad(inst, data, TUNING.FROG_POND_SPAWN_TIME, TUNING.FROG_POND_REGEN_TIME)
+end
+
+local function OnPreLoadCave(inst, data)
+	inst.nitreformations = data and data.nitreformations or nil
 end
 
 local function commonfn(pondtype)
@@ -353,7 +361,6 @@ local function PlayBubble(inst)
     inst.SoundEmitter:PlaySound("hookline_2/creatures/boss/crabking/bubble")
 end
 
-local NITRE_FORMATION_MUST_TAGS = {"nitre_formation",}
 local function SetBackToNormal_Cave(inst)
     inst.AnimState:PushAnimation("splash_cave", true)
     inst.AnimState:PushAnimation("idle_cave", true)
@@ -365,6 +372,8 @@ local function SetBackToNormal_Cave(inst)
     inst.components.fishable:Unfreeze()
 
     inst.components.watersource.available = true
+
+	inst.components.inspectable.nameoverride = "pond"
 
     DespawnNitreFormations(inst)
 end
@@ -380,7 +389,9 @@ local function SetAcidic_Cave(inst)
 
     inst.components.watersource.available = false
 
-    inst:DoTaskInTime(0, SpawnNitreFormations) -- Delay a frame for loading.
+	inst.components.inspectable.nameoverride = "nitre_formation"
+
+	SpawnNitreFormations(inst)
 end
 
 local function OnAcidLevelDelta_Cave(inst, data)
@@ -441,8 +452,14 @@ local function OnPondCaveMinedFinished(inst, miner)
     inst.components.acidlevel:SetPercent(0)
 end
 
+local function PondCaveDisplayNameFn(inst)
+	return inst:HasTag("MINE_workable") and STRINGS.NAMES.NITRE_FORMATION or nil
+end
+
 local function pondcave()
     local inst = commonfn("_cave")
+
+	inst.displaynamefn = PondCaveDisplayNameFn
 
     if not TheWorld.ismastersim then
         return inst
@@ -467,6 +484,8 @@ local function pondcave()
 
     inst.planttype = "pond_algae"
     inst.task = inst:DoTaskInTime(0, SpawnPlants)
+
+	inst.OnPreLoad = OnPreLoadCave
 
     --These spawn nothing at this time.
     return inst

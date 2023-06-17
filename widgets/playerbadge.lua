@@ -36,8 +36,10 @@ function PlayerBadge:_SetupHeads()
 	self.head_anim:SetFacing(FACING_DOWN)
 
     self.head_animstate:Hide("ARM_carry")
-    self.head_animstate:Hide("head_hat")
     self.head_animstate:Hide("HAIR_HAT")
+	self.head_animstate:Hide("HEAD_HAT")
+	self.head_animstate:Hide("HEAD_HAT_NOHELM")
+	self.head_animstate:Hide("HEAD_HAT_HELM")
 
     self.head_anim:Hide()
 end

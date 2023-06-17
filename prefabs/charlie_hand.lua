@@ -242,6 +242,8 @@ local function EnableRiftContainerFn()
     inst.entity:AddTransform()
     inst.entity:AddNetwork()
 
+	inst:AddTag("bundle")
+
     -- Blank string for controller action prompt.
     inst.name = " "
 	inst.POPUP_STRINGS = STRINGS.UI.START_SHADOW_RIFTS

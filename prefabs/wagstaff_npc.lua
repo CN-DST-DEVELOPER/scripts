@@ -844,7 +844,7 @@ local function pstbossfn()
 			inst:Remove()
 		else
 			inst.persists = false
-			inst.sg:GoToState("capture_emote")
+			inst.sg:GoToState("capture_emote", true) --true for norelocate
 			inst:DoTaskInTime(20, inst.Remove)
 		end
 	end, TheWorld)
@@ -923,6 +923,8 @@ local function EnableRiftContainerFn()
 
     inst.entity:AddTransform()
     inst.entity:AddNetwork()
+
+	inst:AddTag("bundle")
 
     -- Blank string for controller action prompt.
     inst.name = " "

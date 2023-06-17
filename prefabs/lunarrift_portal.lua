@@ -407,6 +407,13 @@ local function on_portal_removed(inst)
             end
         end
     end
+
+    if inst._crystals then
+        for crystal in pairs(inst._crystals) do
+            crystal.components.timer:StartTimer("do_deterraform_cleanup", (current_portal_radius - 0.5) * 2.0)
+        end
+    end
+
     TheWorld:PushEvent("ms_lunarportal_removed",inst)
 end
 
@@ -492,7 +499,7 @@ local function on_portal_load(inst, data)
     if data then
         inst._stage = data.stage or inst._stage
         if inst._stage >= TUNING.RIFT_LUNAR1_MAXSTAGE then
-            inst.components.timer:StopTimer("trynextstage")            
+            inst.components.timer:StopTimer("trynextstage")
         end
 
         -- Re-load our presentation state
