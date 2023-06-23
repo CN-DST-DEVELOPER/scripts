@@ -69,6 +69,7 @@ local function fn()
 	inst:AddComponent("tool")
 	inst.components.tool:SetAction(ACTIONS.HAMMER, TUNING.PICKAXE_LUNARPLANT_EFFICIENCY)
 	inst.components.tool:SetAction(ACTIONS.MINE, TUNING.PICKAXE_LUNARPLANT_EFFICIENCY)
+	inst.components.tool:EnableToughWork(true)
 
 	-------
 	inst:AddComponent("finiteuses")

@@ -10,6 +10,7 @@ end
 
 local Tool = Class(function(self, inst)
     self.inst = inst
+	--self.tough = false
     self.actions = {}
     inst:ListenForEvent("percentusedchange", PercentChanged)
 
@@ -23,6 +24,14 @@ function Tool:OnRemoveFromEntity()
     for k, v in pairs(self.actions) do
         self.inst:RemoveTag(k.id.."_tool")
     end
+end
+
+function Tool:EnableToughWork(tough)
+	self.tough = tough ~= false
+end
+
+function Tool:CanDoToughWork()
+	return self.tough == true
 end
 
 function Tool:GetEffectiveness(action)

@@ -65,6 +65,7 @@ local function fn()
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.CHOP, TUNING.MULTITOOL_AXE_PICKAXE_EFFICIENCY)
     inst.components.tool:SetAction(ACTIONS.MINE, TUNING.MULTITOOL_AXE_PICKAXE_EFFICIENCY)
+	inst.components.tool:EnableToughWork(true)
     -------
     inst:AddComponent("finiteuses")
     inst.components.finiteuses:SetMaxUses(TUNING.MULTITOOL_AXE_PICKAXE_USES)

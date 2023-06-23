@@ -122,7 +122,7 @@ local ServerSettingsTab = Class(Widget, function(self, servercreationscreen)
     self.privacy_type.focus_forward = self.privacy_type.buttons
 
     self.clan_id = TEMPLATES.LabelTextbox(STRINGS.UI.SERVERCREATIONSCREEN.CLANID, nil, narrow_label_width, narrow_input_width, label_height, space_between, NEWFONT, font_size, narrow_field_nudge)
-    self.clan_id.textbox:SetTextLengthLimit( 12 )
+    self.clan_id.textbox:SetTextLengthLimit( 18 )
     self.clan_id.textbox:SetCharacterFilter( "0123456789" )
     self.clan_id.textbox.OnTextInputted = function() self.servercreationscreen:MakeDirty() end
 

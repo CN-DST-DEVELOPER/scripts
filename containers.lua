@@ -1,5 +1,5 @@
 local cooking = require("cooking")
-local PopupDialogScreen = require "screens/redux/popupdialog"
+local RiftConfirmScreen = require("screens/redux/riftconfirmscreen")
 
 local params = {}
 local containers = { MAXITEMSLOTS = 0 }
@@ -448,35 +448,40 @@ local function EnableRiftsPopUpGoBack()
     TheFrontEnd:PopScreen()
 end
 
+local function EnableRiftsDoAct(inst, doer)
+	if inst.components.container ~= nil then
+		BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
+	elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+		SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
+	end
+end
+
 function params.enable_shadow_rift_construction_container.widget.buttoninfo.fn(inst, doer)
-    local function DoAct()
-        if inst.components.container ~= nil then
-            BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
-        elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
-            SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
-        end
-    end
+	if not params.enable_shadow_rift_construction_container.widget.overrideactionfn(inst, doer) then
+		-- No UI no dialogue.
+		EnableRiftsDoAct(inst, doer)
+	end
+end
 
-    if TheFrontEnd ~= nil and doer and doer == ThePlayer and IsConstructionSiteComplete(inst, doer) then
-        -- We have UI do dialogue.
-        local function EnableRiftsPopUpConfirm()
-            DoAct()
-            TheFrontEnd:PopScreen()
-        end
+function params.enable_shadow_rift_construction_container.widget.overrideactionfn(inst, doer)
+	if doer ~= nil and doer.HUD ~= nil and IsConstructionSiteComplete(inst, doer) then
+		-- We have UI do dialogue.
+		local function EnableRiftsPopUpConfirm()
+			EnableRiftsDoAct(inst, doer)
+			TheFrontEnd:PopScreen()
+		end
 
-        local str = inst.POPUP_STRINGS
+		local str = inst.POPUP_STRINGS
+		local confirmation = RiftConfirmScreen(str.TITLE, str.BODY,
+		{
+			{ text = str.OK,     cb = EnableRiftsPopUpConfirm },
+			{ text = str.CANCEL, cb = EnableRiftsPopUpGoBack  },
+		})
 
-        local confirmation = PopupDialogScreen(str.TITLE, str.BODY,
-        {
-            { text = str.OK,     cb = EnableRiftsPopUpConfirm },
-            { text = str.CANCEL, cb = EnableRiftsPopUpGoBack  },
-        },nil,"big","dark_wide")
-
-        TheFrontEnd:PushScreen(confirmation)
-    else
-        -- No UI no dialogue.
-        DoAct()
-    end
+		TheFrontEnd:PushScreen(confirmation)
+		return true
+	end
+	return false
 end
 
 --lunar is same as shadow, just different strings specified in prefab

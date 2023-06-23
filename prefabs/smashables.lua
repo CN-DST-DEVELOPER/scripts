@@ -89,6 +89,7 @@ local function MakeRelic(inst)
 
 	if inst.chair and inst.components.sittable == nil then
 		inst:AddComponent("sittable")
+		inst:AddTag("structure")
 	end
 	if inst.chair_shadeling_spawner then
 		inst.OnEntityWake = Chair_OnEntityWake
@@ -132,6 +133,7 @@ local function MakeRubble(inst)
 
 	if inst.components.sittable ~= nil then
 		inst:RemoveComponent("sittable")
+		inst:RemoveTag("structure")
 	end
 	if inst.chair_shadeling_spawner then
 		inst.OnEntityWake = nil

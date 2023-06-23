@@ -408,6 +408,7 @@ TileManager.AddTile(
     {
         name = "pebblebeach",
         bank_build = "turf_moon",
+        --pickupsound = "CHEEEZY"
     }
 )
 

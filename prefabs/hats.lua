@@ -134,6 +134,8 @@ local function MakeHat(name)
 			owner.AnimState:HideSymbol("swap_face")
 			owner.AnimState:HideSymbol("beard")
 			owner.AnimState:HideSymbol("cheeks")
+
+			owner.AnimState:UseHeadHatExchange(true)
 		else
 			_base_onequip(inst, owner)
 
@@ -152,6 +154,8 @@ local function MakeHat(name)
 			owner.AnimState:ShowSymbol("swap_face")
 			owner.AnimState:ShowSymbol("beard")
 			owner.AnimState:ShowSymbol("cheeks")
+
+			owner.AnimState:UseHeadHatExchange(false)
 		end
 	end
 

@@ -2045,6 +2045,8 @@ end
 
 function ScrapbookScreen:OnBecomeActive()
     ScrapbookScreen._base.OnBecomeActive(self)
+
+    ThePlayer:PushEvent("scrapbookopened")
 end
 
 function ScrapbookScreen:OnBecomeInactive()

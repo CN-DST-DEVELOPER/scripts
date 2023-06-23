@@ -37,23 +37,17 @@ local function movetail(inst,anim)
 end
 
 local function teleportback(inst)
-
-    local function removelasttail()
-        inst.tails[#inst.tails]:Remove()
-        inst.tails[#inst.tails] = nil
-    end
-
     if #inst.tails > 0 then
-        inst.Transform:SetPosition(inst.tails[#inst.tails].Transform:GetWorldPosition())
-        if inst.tails[#inst.tails]:HasTag("weakvine") then
+		local last_tail = table.remove(inst.tails)
+		inst.Transform:SetPosition(last_tail.Transform:GetWorldPosition())
+		if last_tail:HasTag("weakvine") then
             inst:setweakstate(true)
-            inst.Transform:SetRotation(inst.tails[#inst.tails].Transform:GetRotation())
-            removelasttail()
+			inst.Transform:SetRotation(last_tail.Transform:GetRotation())
         else
             inst:setweakstate(false)
-            inst.Transform:SetRotation(inst.tails[#inst.tails].Transform:GetRotation())
-            removelasttail()
+			inst.Transform:SetRotation(last_tail.Transform:GetRotation())
         end 
+		last_tail:Remove()
         inst.sg:GoToState("nub_idle")
     else
         inst:Remove()
@@ -98,7 +92,6 @@ local function teleportahead(inst,pos)
     inst.sg:RemoveStateTag("busy")
 
     inst:ChooseAction()
-
 end
 
 local WEAKVINE_CAN = {"weakvine","lunarthrall_plant"}
@@ -264,17 +257,11 @@ local states=
                     inst.sg:GoToState("nub_spawn",inst.sg.statemem.pos)
                 elseif #inst.tails > 0 then
                     -- moving backward
-                    inst.Transform:SetPosition(inst.tails[#inst.tails].Transform:GetWorldPosition())
-                    
-                    if inst.tails[#inst.tails]:HasTag("weakvine") then
-                        inst:setweakstate(true)
-                    else
-                        inst:setweakstate(false)
-                    end
+					local last_tail = table.remove(inst.tails)
+					inst.Transform:SetPosition(last_tail.Transform:GetWorldPosition())
+					inst:setweakstate(last_tail:HasTag("weakvine"))
+					last_tail:Remove()
                     inst.sg:GoToState("nub_idle")
-
-                    inst.tails[#inst.tails]:Remove()
-                    inst.tails[#inst.tails] = nil
                     inst:ChooseAction()
                 else
                     inst:Remove()

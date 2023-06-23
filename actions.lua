@@ -1192,7 +1192,9 @@ local function DoToolWork(act, workaction)
 				act.doer:PushEvent("tooltooweak", { workaction = workaction })
 			end
 		end
-		act.target.components.workable:WorkedBy(act.doer, numworks)
+		--V2C: Call the "internal" function directly since we've already accounted for recoil.
+		--     Chose the "internal" naming to discourage more places from calling it directly.
+		act.target.components.workable:WorkedBy_Internal(act.doer, numworks)
         return true
     end
     return false
@@ -3263,6 +3265,10 @@ ACTIONS.STOPCONSTRUCTION.fn = function(act)
 
     end
     return true
+end
+
+ACTIONS.APPLYCONSTRUCTION.strfn = function(act)
+	return act.target:HasTag("offerconstructionsite") and "OFFER" or nil
 end
 
 ACTIONS.APPLYCONSTRUCTION.fn = function(act)

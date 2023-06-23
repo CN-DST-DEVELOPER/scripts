@@ -7,11 +7,16 @@ local Explosive = Class(function(self,inst)
     self.buildingdamage = 10
     self.lightonexplode = true
     self.onexplodefn = nil
+	--self.attacker = nil
 	--self.pvpattacker = nil
 end)
 
 function Explosive:SetOnExplodeFn(fn)
     self.onexplodefn = fn
+end
+
+function Explosive:SetAttacker(attacker)
+	self.attacker = attacker
 end
 
 function Explosive:SetPvpAttacker(attacker)
@@ -45,6 +50,8 @@ function Explosive:OnBurnt()
     if world.components.dockmanager ~= nil then
         world.components.dockmanager:DamageDockAtPoint(x, y, z, totaldamage)
     end
+
+	local attacker = self.attacker or self.pvpattacker
 
     local workablecount = TUNING.EXPLOSIVE_MAX_WORKABLE_INVENTORYITEMS
 	local ents = TheSim:FindEntities(x, y, z, self.explosiverange, nil, CANT_TAGS)
@@ -92,7 +99,18 @@ function Explosive:OnBurnt()
 					if spdmg ~= nil and damagetypemult ~= 1 then
 						spdmg = SpDamageUtil.ApplyMult(spdmg, damagetypemult)
 					end
+
+					--V2C: still passing self.inst instead of attacker here, so we don't
+					--     use attacker for calculating damage mods.
 					v.components.combat:GetAttacked(self.inst, dmg, nil, nil, spdmg)
+
+					if attacker ~= nil and not (v.components.health ~= nil and v.components.health:IsDead()) and v:IsValid() then
+						if attacker:IsValid() then
+							v.components.combat:SuggestTarget(attacker)
+						else
+							attacker = nil
+						end
+					end
                 end
 
                 v:PushEvent("explosion", { explosive = self.inst })

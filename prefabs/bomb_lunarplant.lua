@@ -15,7 +15,10 @@ local prefabs =
 local function OnHit(inst, attacker, target)
 	local x, y, z = inst.Transform:GetWorldPosition()
 
-	inst.components.planardamage:SetBaseDamage(TUNING.BOMB_LUNARPLANT_PLANAR_DAMAGE)
+	if inst.components.planardamage == nil then
+		inst:AddComponent("planardamage")
+		inst.components.planardamage:SetBaseDamage(TUNING.BOMB_LUNARPLANT_PLANAR_DAMAGE)
+	end
 
 	inst.SoundEmitter:KillSound("toss")
 
@@ -25,6 +28,8 @@ local function OnHit(inst, attacker, target)
 	inst.components.explosive.lightonexplode = false
 	if inst.ispvp then
 		inst.components.explosive:SetPvpAttacker(attacker)
+	else
+		inst.components.explosive:SetAttacker(attacker)
 	end
 	inst.components.explosive:OnBurnt()
 	--exploding should have removed me
@@ -171,6 +176,9 @@ local function fn()
 
 	MakeInventoryPhysics(inst)
 
+	inst:AddTag("toughworker")
+	inst:AddTag("explosive")
+
 	--projectile (from complexprojectile component) added to pristine state for optimization
 	inst:AddTag("projectile")
 
@@ -209,9 +217,6 @@ local function fn()
 	inst:AddComponent("weapon")
 	inst.components.weapon:SetDamage(0)
 	inst.components.weapon:SetRange(8, 10)
-
-	inst:AddComponent("planardamage")
-	--Don't set damage till hit
 
 	inst:AddComponent("inspectable")
 	inst:AddComponent("inventoryitem")

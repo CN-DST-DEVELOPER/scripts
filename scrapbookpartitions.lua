@@ -337,14 +337,13 @@ function ScrapbookPartitions:_GetBucketForHash(hashed) -- Exporter use.
     return GetBucketForHash(hashed)
 end
 
+-- NOTES(JBK): Debug commands are not expected to run seamlessly run the command at the main menu wait for the backend timer to sync and then go through login again to properly sync up.
 function ScrapbookPartitions:DebugDeleteAllData()
     local newdata = -1
     for prefab, data in pairs(SCRAPBOOK_DATA_SET) do
         local hashed = hash(prefab)
         self:UpdateStorageData(hashed, newdata)
     end
-    self.storage = {}
-    self.dirty_buckets = {}
 end
 
 function ScrapbookPartitions:DebugSeenEverything()
@@ -466,6 +465,16 @@ function ScrapbookPartitions:Save(force_save)
     end
 end
 
+function ScrapbookPartitions:MergeValues(storage, k, v)
+    if v then
+        -- Merge with what is there already.
+        storage[k] = bor(storage[k] or 0, v)
+    else
+        -- Deleted entry from debug command use.
+        storage[k] = nil
+    end
+end
+
 function ScrapbookPartitions:Load()
     --print("[ScrapbookPartitions] Load")
     local storage = {}
@@ -498,7 +507,7 @@ function ScrapbookPartitions:ApplyOnlineProfileData()
             local KVstorage = sformat("GetLocalScrapbook%d", i)
             local data = TheInventory[KVstorage](TheInventory)
             for k, v in pairs(data) do
-                storage[tonumber(k, 16)] = ReadTriStateString(v)
+                self:MergeValues(storage, tonumber(k, 16), ReadTriStateString(v))
             end
             -- TheInventory:GetLocalScrapbook() TheInventory:GetLocalScrapbook0() : Search Strings.
         end

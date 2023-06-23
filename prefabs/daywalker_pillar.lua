@@ -411,7 +411,6 @@ local function UpdateBuild(inst, workleft)
 				SetLightColour(inst, 1.3)
 			end
 			inst.components.workable:SetShouldRecoilFn(AlwaysRecoil)
-			inst:AddTag("worker_recoil")
 			return true, dlevel
 		end
 	elseif workleft <= 4 then
@@ -482,13 +481,14 @@ local function OnWorked(inst, worker, workleft, numworks)
 	end
 	inst.SoundEmitter:KillSound("vibrate_loop")
 	inst.SoundEmitter:KillSound("chain_vibrate_loop")
-	if workleft <= 1 and not changed and worker ~= nil and worker:HasTag("player") and not worker:HasTag("weremoose") then
+	if workleft <= 1 and not changed and worker ~= nil and worker:HasTag("player") then
 		inst.SoundEmitter:PlaySound("daywalker/pillar/pickaxe_hit_unbreakable")
-		local mult =
-			worker.components.workmultiplier ~= nil and
-			worker.components.workmultiplier:GetMultiplier(ACTIONS.MINE) or
-			1
-		if numworks > mult then
+		local trigger_vibrate = worker:HasTag("toughworker")
+		if not trigger_vibrate then
+			local tool = worker.components.inventory ~= nil and worker.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) or nil
+			trigger_vibrate = tool ~= nil and tool.components.tool ~= nil and tool.components.tool:CanDoToughWork()
+		end
+		if trigger_vibrate then
 			local prisoner = inst.prisoner:value()
 			if prisoner ~= nil then
 				Pillar_PlayAnimation(inst, "pillar_shake", true)

@@ -178,7 +178,7 @@ end
 
 -------------------------------------------------------------------------------
 
-local function MakeSinkhole(name, radius, scale, maxwork)
+local function MakeSinkhole(name, radius, scale, maxwork, toughworker)
 	local function fn()
 		local inst = CreateEntity()
 
@@ -200,6 +200,10 @@ local function MakeSinkhole(name, radius, scale, maxwork)
 		inst:AddTag("antlion_sinkhole")
 		inst:AddTag("antlion_sinkhole_blocker")
 		inst:AddTag("NOCLICK")
+
+		if toughworker then
+			inst:AddTag("toughworker")
+		end
 
 		inst:SetDeployExtraSpacing(4)
 
@@ -230,5 +234,5 @@ local function MakeSinkhole(name, radius, scale, maxwork)
 	return Prefab(name, fn, assets, prefabs)
 end
 
-return MakeSinkhole("eyeofterror_sinkhole", TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS, OBJECT_SCALE, false),
-	MakeSinkhole("daywalker_sinkhole", TUNING.DAYWALKER_SLAM_SINKHOLERADIUS, 1, true)
+return MakeSinkhole("eyeofterror_sinkhole", TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS, OBJECT_SCALE, false, false),
+	MakeSinkhole("daywalker_sinkhole", TUNING.DAYWALKER_SLAM_SINKHOLERADIUS, 1, true, true)

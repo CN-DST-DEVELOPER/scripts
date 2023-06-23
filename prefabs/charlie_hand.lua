@@ -244,6 +244,9 @@ local function EnableRiftContainerFn()
 
 	inst:AddTag("bundle")
 
+	-- Offer action strings.
+	inst:AddTag("offerconstructionsite")
+
     -- Blank string for controller action prompt.
     inst.name = " "
 	inst.POPUP_STRINGS = STRINGS.UI.START_SHADOW_RIFTS

@@ -69,6 +69,8 @@ local function item(name, animated, sound, radius)
         inst.AnimState:PlayAnimation("idle")
 		if name == "chair" then
 			inst.AnimState:SetFinalOffset(-1)
+
+			inst:AddTag("structure")
 		end
 
         inst.entity:SetPristine()

@@ -18,7 +18,8 @@ local ScrapbookToast = Class(Widget, function(self, owner, controls)
 
     self.tab_gift = self.root:AddChild(UIAnimButton("tab_scrapbook", "scrapbook_updated", "pre"))
 
-    self.tab_gift.animstate:SetScale(0.35,0.35,0.35)
+    --local scale = 0.35
+    --self.tab_gift.animstate:SetScale(scale,scale,scale)
 
     self.tab_gift.inst:ListenForEvent("animover", function()
         if self.tab_gift.inst:GetAnimState():IsCurrentAnimation("pre") then
@@ -27,9 +28,6 @@ local ScrapbookToast = Class(Widget, function(self, owner, controls)
     end)
 
     self.tab_gift:SetOnClick(function()
-        self.tab_gift:Hide()
-        self.controls:ManageToast(self,true)
-        self.opened = false
         ThePlayer.HUD:OpenScrapbookScreen() 
     end)
 
@@ -50,6 +48,14 @@ local ScrapbookToast = Class(Widget, function(self, owner, controls)
     self.hud_focus = owner.HUD.focus
     self.shownotification = Profile:GetScrapbookHudDisplay()
     self.inst:StartUpdatingComponent(self)
+
+    self.inst:ListenForEvent("scrapbookopened", function(player, data)        
+        if self.opened then
+            self.tab_gift:Hide()
+            self.controls:ManageToast(self,true)
+            self.opened = false
+        end
+    end, ThePlayer)
 end)
 
 
@@ -87,12 +93,10 @@ function ScrapbookToast:CheckControl(control, down)
     end
 end
 
-
 function ScrapbookToast:OnUpdate()
     if self.shownotification ~= Profile:GetScrapbookHudDisplay() then
         self.shownotification = Profile:GetScrapbookHudDisplay()
-        print("==============================")
-        print(self.shownotification)
+
         if self.shownotification == false then
             self.tab_gift:Hide()
             self.controls:ManageToast(self,true)

@@ -95,6 +95,19 @@ local function OnAnimOverControlled(inst)
     end
 end
 
+local function DisableTempFissure(inst)
+	if inst.persists then
+		inst.persists = false
+		inst.OnEntityWake = nil
+		inst.OnEntitySleep = nil
+		inst:StopWatchingWorldState("nightmarephase", inst.OnNightmarePhaseChanged)
+		local shadowthrallmanager = TheWorld.components.shadowthrallmanager
+		if shadowthrallmanager then
+			shadowthrallmanager:UnregisterFissure(inst)
+		end
+	end
+end
+
 local states =
 {
     calm = function(inst, instant, oldstate)
@@ -263,6 +276,9 @@ local function OnNightmarePhaseChanged(inst, phase, instant)
         instant = true
         inst._nofissurechildren = true
     else
+		if inst.temp and phase ~= "controlled" then
+			phase = "calm"
+		end
         inst._nofissurechildren = nil
     end
 
@@ -285,7 +301,7 @@ local function OnEntitySleep(inst)
     inst.SoundEmitter:KillSound("loop")
     if inst._phasetask ~= nil then
         inst._phasetask:Cancel()
-        ShowPhaseState(inst, TheWorld.state.nightmarephase, true)
+		ShowPhaseState(inst, inst.temp and "calm" or TheWorld.state.nightmarephase, true)
     end
     if AllowShadowThralls[inst.prefab] then
         local shadowthrallmanager = TheWorld.components.shadowthrallmanager
@@ -309,27 +325,13 @@ end
 
 local function OnPreLoad(inst, data)
     WorldSettings_ChildSpawner_PreLoad(inst, data, TUNING.NIGHTMARELIGHT_RELEASE_TIME, TUNING.NIGHTMARELIGHT_REGEN_TIME)
-end
-
-local function FissureShouldRecoil(inst, worker, tool, numworks)
-	if worker ~= nil and not (tool ~= nil and tool.components.tool ~= nil and tool.components.tool:GetEffectiveness(ACTIONS.MINE) > 1) then
-        return true, 0 -- No working on this.
-    end
-    return false, numworks
-end
-
-local function FissureWorkMultiplier(inst, worker, numworks)
-	if worker ~= nil then
-		if worker.prefab == "daywalker_sinkhole" then
-			return --allow work
-		elseif worker.components.inventory ~= nil then
-			local tool = worker.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			if tool ~= nil and tool.components.tool:GetEffectiveness(ACTIONS.MINE) > 1 then
-				return --allow work
-			end
-		end
+	if data ~= nil and data.temp then
+		inst:MakeTempFissure()
 	end
-	return 0 --no work
+end
+
+local function OnSave(inst, data)
+	data.temp = inst.temp
 end
 
 local function OnFissureMinedFinished(inst, worker)
@@ -395,6 +397,10 @@ local function OnReleasedFromControl_Animation(inst)
 	inst.AnimState:SetSymbolLightOverride("stack_red", 0)
 
     inst:OnNightmarePhaseChanged(TheWorld.state.nightmarephase, false)
+    if inst.temp then
+        inst:ListenForEvent("animqueueover", ErodeAway)
+        DisableTempFissure(inst)
+    end
 end
 
 local function OnReleasedFromControl(inst)
@@ -419,6 +425,11 @@ local function OnReleasedFromControl(inst)
     if not played_animation then
         OnReleasedFromControl_Animation(inst)
     end
+end
+
+local function MakeTempFissure(inst)
+	inst.temp = true
+	inst:OnNightmarePhaseChanged("calm", true)
 end
 
 local function displaynamefn(inst)
@@ -514,11 +525,10 @@ local function Make(name, build, lightcolour, fxname, masterinit)
             local lootdropper = inst:AddComponent("lootdropper")
             local workable = inst:AddComponent("workable")
             workable:SetWorkAction(ACTIONS.MINE)
-            workable:SetShouldRecoilFn(FissureShouldRecoil)
-			workable:SetWorkMultiplierFn(FissureWorkMultiplier)
             workable:SetOnFinishCallback(OnFissureMinedFinished)
             workable:SetMaxWork(TUNING.FISSURE_DREADSTONE_WORK)
             workable:SetWorkLeft(TUNING.FISSURE_DREADSTONE_WORK)
+			workable:SetRequiresToughWork(true)
             workable:SetWorkable(false)
             workable.savestate = true
             inst.OnDreadstoneMineCooldown = OnDreadstoneMineCooldown
@@ -532,11 +542,14 @@ local function Make(name, build, lightcolour, fxname, masterinit)
         inst.OnEntityWake = OnEntityWake
         inst.OnEntitySleep = OnEntitySleep
 
+		inst.MakeTempFissure = MakeTempFissure
+
 		if masterinit ~= nil then
 			masterinit(inst)
 		end
 
         inst.OnPreLoad = OnPreLoad
+		inst.OnSave = OnSave
 
         return inst
     end

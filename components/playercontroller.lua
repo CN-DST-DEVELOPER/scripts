@@ -893,6 +893,17 @@ function PlayerController:DoControllerAltActionButton()
         obj = self:GetControllerTarget()
         if obj ~= nil then
             lmb, act = self:GetSceneItemControllerAction(obj)
+			if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
+				local container = act.target ~= nil and act.target.replica.container
+				if container ~= nil and
+					container.widget ~= nil and
+					container.widget.overrideactionfn ~= nil and
+					container.widget.overrideactionfn(act.target, self.inst)
+					then
+					--e.g. rift offering has a local confirmation popup
+					return
+				end
+			end
         end
         if act == nil then
 			act = self:GetGroundUseSpecialAction(nil, true)
