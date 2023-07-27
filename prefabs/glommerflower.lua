@@ -98,6 +98,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.7)
 
+    inst.scrapbook_adddeps = {"glommer"}
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

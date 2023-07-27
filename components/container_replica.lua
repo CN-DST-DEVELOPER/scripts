@@ -407,12 +407,14 @@ function Container:Open(doer)
             self._isopen = false
         elseif not self._isopen then
             doer.HUD:OpenContainer(self.inst, self:IsSideWidget())
-            if self:IsSideWidget() then
-                TheFocalPoint.SoundEmitter:PlaySound(SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or "dontstarve/wilson/backpack_open")
-            else
-                if not self:ShouldSkipOpenSnd() then
-                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/container_open")
-                end
+			if not self:ShouldSkipOpenSnd() then
+				local skinsound = self.inst.AnimState and SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or nil
+				TheFocalPoint.SoundEmitter:PlaySound(
+					skinsound and skinsound.open_ui or
+					(self.widget ~= nil and self.widget.opensound) or
+					(self:IsSideWidget() and "dontstarve/wilson/backpack_open") or
+					"dontstarve/HUD/Together_HUD/container_open"
+				)
             end
             self._isopen = true
         end
@@ -429,12 +431,14 @@ function Container:Close()
     elseif self._isopen then
         if ThePlayer ~= nil and ThePlayer.HUD ~= nil then
             ThePlayer.HUD:CloseContainer(self.inst, self:IsSideWidget())
-            if self:IsSideWidget() then
-                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/backpack_close")
-            else
-                if not self:ShouldSkipCloseSnd() then
-                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/container_close")
-                end
+			if not self:ShouldSkipCloseSnd() then
+				local skinsound = self.inst.AnimState and SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or nil
+				TheFocalPoint.SoundEmitter:PlaySound(
+					skinsound and skinsound.close_ui or
+					(self.widget ~= nil and self.widget.closesound) or
+					(self:IsSideWidget() and "dontstarve/wilson/backpack_close") or
+					"dontstarve/HUD/Together_HUD/container_close"
+				)
             end
         end
         self._isopen = false

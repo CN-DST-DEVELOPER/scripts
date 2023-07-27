@@ -46,6 +46,8 @@ local function potion_fn(anim, buff_prefab)
 
     MakeInventoryFloatable(inst, "small", 0.15, 0.65)
 
+    inst.scrapbook_specialinfo = "HALLOWEENPOTIONFIRE"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

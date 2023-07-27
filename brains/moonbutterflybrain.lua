@@ -15,6 +15,15 @@ local function GetHomePos(inst)
     return inst.components.knownlocations:GetLocation("home")
 end
 
+local RUN_AWAY_PARAMS =
+{
+    tags = {"scarytoprey"},
+    fn = function(guy)
+        return not (guy.components.skilltreeupdater
+                and guy.components.skilltreeupdater:IsActivated("wormwood_butterfly_friend"))
+    end,
+}
+
 local ButterflyBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -24,7 +33,7 @@ function ButterflyBrain:OnStart()
         PriorityNode(
         {
 			BrainCommon.PanicTrigger(self.inst),
-            RunAway(self.inst, "scarytoprey", RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+            RunAway(self.inst, RUN_AWAY_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
             Wander(self.inst, GetHomePos, MAX_WANDER_DIST)
         },1)
 

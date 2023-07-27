@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBuild("manrabbit_tail")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "cloth"
+
     inst:AddTag("cattoy")
 
     MakeInventoryFloatable(inst, "small", 0.1, 0.85)

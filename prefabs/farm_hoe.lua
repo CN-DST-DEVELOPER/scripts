@@ -69,6 +69,9 @@ local function common_fn(build)
 
     MakeInventoryFloatable(inst, "med", 0.05, {0.8, 0.4, 0.8})
 
+    inst.scrapbook_subcat = "tool"
+    inst.scrapbook_specialinfo = "HOE"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

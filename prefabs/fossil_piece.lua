@@ -48,6 +48,8 @@ local function fn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+    inst.pickupsound = "rock"
+
     MakeInventoryPhysics(inst)
 
     inst.AnimState:SetBank("fossil_piece")

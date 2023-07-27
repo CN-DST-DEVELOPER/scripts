@@ -26,6 +26,8 @@ local function fn()
     inst.AnimState:SetBuild("flower_petals_evil")
     inst.AnimState:PlayAnimation("anim")
 
+    inst.pickupsound = "vegetation_grassy"
+
     MakeInventoryFloatable(inst)
 
     inst.entity:SetPristine()

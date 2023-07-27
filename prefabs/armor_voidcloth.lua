@@ -29,6 +29,10 @@ local function onequip(inst, owner)
     end
     inst.fx = SpawnPrefab("armor_voidcloth_fx")
     inst.fx:AttachToOwner(owner)
+
+	if owner.components.sanity ~= nil then
+		owner.components.sanity.neg_aura_modifiers:SetModifier(inst, 0)
+	end
 end
 
 local function onunequip(inst, owner)
@@ -43,19 +47,40 @@ local function onunequip(inst, owner)
         inst.fx:Remove()
         inst.fx = nil
     end
-end
 
-local function GetSetBonusEquip(inst, owner)
-	local hat = owner.components.inventory ~= nil and owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or nil
-	return hat ~= nil and hat.prefab == "voidclothhat" and hat or nil
-end
-
-local function CalcDapperness(inst, owner)
-	local other = GetSetBonusEquip(inst, owner)
-	if other ~= nil then
-		return TUNING.CRAZINESS_SMALL * 0.5
+	if owner.components.sanity ~= nil then
+		owner.components.sanity.neg_aura_modifiers:RemoveModifier(inst)
 	end
-	return TUNING.CRAZINESS_SMALL
+end
+
+local function SetupEquippable(inst)
+	inst:AddComponent("equippable")
+	inst.components.equippable.equipslot = EQUIPSLOTS.BODY
+	inst.components.equippable:SetOnEquip(onequip)
+	inst.components.equippable:SetOnUnequip(onunequip)
+end
+
+local SWAP_DATA_BROKEN = { bank = "armor_voidcloth", anim = "broken" }
+local SWAP_DATA = { bank = "armor_voidcloth", anim = "anim" }
+
+local function OnBroken(inst)
+	if inst.components.equippable ~= nil then
+		inst:RemoveComponent("equippable")
+		inst.AnimState:PlayAnimation("broken")
+		inst.components.floater:SetSwapData(SWAP_DATA_BROKEN)
+		inst:AddTag("broken")
+		inst.components.inspectable.nameoverride = "BROKEN_FORGEDITEM"
+	end
+end
+
+local function OnRepaired(inst)
+	if inst.components.equippable == nil then
+		SetupEquippable(inst)
+		inst.AnimState:PlayAnimation("anim")
+		inst.components.floater:SetSwapData(SWAP_DATA)
+		inst:RemoveTag("broken")
+		inst.components.inspectable.nameoverride = nil
+	end
 end
 
 local function fn()
@@ -73,15 +98,16 @@ local function fn()
 
     inst:AddTag("cloth")
 	inst:AddTag("shadow_item")
-    inst:AddTag("acidrainimmune")
+	inst:AddTag("show_broken_ui")
 
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization
 	inst:AddTag("shadowlevel")
 
 	inst.foleysound = "dontstarve/movement/foley/shadowcloth_armour"
 
-    local swap_data = { bank = "armor_voidcloth", anim = "anim" }
-    MakeInventoryFloatable(inst, "small", 0.2, 0.80, nil, nil, swap_data)
+	MakeInventoryFloatable(inst, "small", 0.2, 0.80, nil, nil, SWAP_DATA)
+
+    inst.scrapbook_specialinfo = "VOIDCLOTHARMOR"
 
     inst.entity:SetPristine()
 
@@ -98,12 +124,7 @@ local function fn()
     local planardefense = inst:AddComponent("planardefense")
     planardefense:SetBaseDefense(TUNING.ARMOR_VOIDCLOTH_PLANAR_DEF)
 
-    local equippable = inst:AddComponent("equippable")
-    equippable.equipslot = EQUIPSLOTS.BODY
-	equippable.dapperfn = CalcDapperness
-	equippable.is_magic_dapperness = true
-    equippable:SetOnEquip(onequip)
-    equippable:SetOnUnequip(onunequip)
+	SetupEquippable(inst)
 
     local damagetyperesist = inst:AddComponent("damagetyperesist")
     damagetyperesist:AddResist("shadow_aligned", inst, TUNING.ARMOR_VOIDCLOTH_SHADOW_RESIST)
@@ -116,6 +137,7 @@ local function fn()
     setbonus:SetOnEnabledFn(OnEnabledSetBonus)
     setbonus:SetOnDisabledFn(OnDisabledSetBonus)
 
+	MakeForgeRepairable(inst, FORGEMATERIALS.VOIDCLOTH, OnBroken, OnRepaired)
     MakeHauntableLaunch(inst)
 
     return inst
@@ -164,6 +186,12 @@ local function fx_OnUpdate(inst)
     end
 end
 
+local function fx_ColourChanged(inst, r, g, b, a)
+	for i, v in ipairs(inst.fx) do
+		v.AnimState:SetAddColour(r, g, b, a)
+	end
+end
+
 local function fx_SpawnFxForOwner(inst, owner)
     inst.owner = owner
     inst.wasmoving = false
@@ -176,6 +204,7 @@ local function fx_SpawnFxForOwner(inst, owner)
         fx.components.highlightchild:SetOwner(owner)
         table.insert(inst.fx, fx)
     end
+	inst.components.colouraddersync:SetColourChangedFn(fx_ColourChanged)
     if owner:HasTag("locomotor") then
         inst:AddComponent("updatelooper")
         inst.components.updatelooper:AddOnUpdateFn(fx_OnUpdate)
@@ -192,6 +221,9 @@ end
 
 local function fx_AttachToOwner(inst, owner)
     inst.entity:SetParent(owner.entity)
+	if owner.components.colouradder ~= nil then
+		owner.components.colouradder:AttachChild(inst)
+	end
     --Dedicated server does not need to spawn the local fx
     if not TheNet:IsDedicated() then
         fx_SpawnFxForOwner(inst, owner)
@@ -205,6 +237,8 @@ local function fxfn()
     inst.entity:AddNetwork()
 
     inst:AddTag("FX")
+
+	inst:AddComponent("colouraddersync")
 
     inst.entity:SetPristine()
 

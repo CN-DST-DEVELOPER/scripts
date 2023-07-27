@@ -1,8 +1,11 @@
 local Badge = require "widgets/badge"
 local UIAnim = require "widgets/uianim"
 
+local TINT = { 12/255, 127/255, 86/255, 1 }
+local OVERTINT = {113/255,47/255,128/255, 1}
+
 local MightyBadge = Class(Badge, function(self, owner)
-    Badge._ctor(self, nil, owner, { 12/255, 127/255, 86/255, 1 }, "status_wolfgang", nil, nil, true)
+    Badge._ctor(self, nil, owner, TINT, "status_wolfgang", nil, nil, true)
 
 	self.cur_mighty_state = nil
 
@@ -32,6 +35,7 @@ local RATE_SCALE_ANIM =
 
 function MightyBadge:RefreshMightiness()
 	local mighty_state = self.owner:GetCurrentMightinessState()
+
 	if mighty_state ~= self.cur_mighty_state then
 		if mighty_state == "mighty" then
 			self.circleframe:GetAnimState():SetPercent("frame", 0)
@@ -70,6 +74,44 @@ function MightyBadge:OnUpdate(dt)
             self.mightyarrow:GetAnimState():PlayAnimation(anim, true)
         end
     end
+end
+
+function MightyBadge:SetPercent(val)
+
+    local original_val = val
+    local max = 100
+
+    if val*100 > max then
+        self.anim:GetAnimState():SetMultColour(unpack(OVERTINT))
+        self.circleframe:GetAnimState():Hide("spikes")
+        local newmax = 10
+        if ThePlayer:HasTag("wolfgang_overbuff_5") then
+           newmax = 50
+        elseif ThePlayer:HasTag("wolfgang_overbuff_4") then
+            newmax = 40
+        elseif ThePlayer:HasTag("wolfgang_overbuff_3") then
+            newmax = 30
+        elseif ThePlayer:HasTag("wolfgang_overbuff_2") then
+            newmax = 20
+        end
+        val = ((val * 100) -100) / newmax
+    else
+        self.anim:GetAnimState():SetMultColour(unpack(TINT))        
+        self.circleframe:GetAnimState():Show("spikes")
+    end        
+
+    if self.circular_meter ~= nil then
+        self.circular_meter:GetAnimState():SetPercent("meter", val)
+    else
+        self.anim:GetAnimState():SetPercent("anim", 1 - val)
+        if self.circleframe ~= nil and not self.dont_animate_circleframe then
+            self.circleframe:GetAnimState():SetPercent("frame", 1 - val)
+        end
+    end
+
+    --print(val, max, val * max)
+    self.num:SetString(tostring(math.ceil(original_val * max)))
+    self.percent = val
 end
 
 return MightyBadge

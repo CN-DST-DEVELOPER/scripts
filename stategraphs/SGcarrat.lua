@@ -4,6 +4,8 @@ local actionhandlers =
 {
     ActionHandler(ACTIONS.EAT, "eat"),
     ActionHandler(ACTIONS.GOHOME, "gohome"),
+    ActionHandler(ACTIONS.PICKUP, "pickup"),
+    ActionHandler(ACTIONS.DROP, "pickup"),
 }
 local BEEFALOTEST_MUST_TAGS = {"beefalo"}
 local BEEFALOTEST_CANT_TAGS = {"baby"}
@@ -268,6 +270,38 @@ local states =
                 inst.SoundEmitter:PlaySound(inst.sounds.eat)
             end),
             TimeEvent(25*FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        onexit = function(inst)
+            inst.Physics:SetActive(true)
+        end,
+    },
+
+    State {
+        name = "pickup",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.Physics:SetActive(false)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("eat_pre", false)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+        
+        timeline =
+        {
+            FrameEvent(3, function(inst)
+                inst.SoundEmitter:PlaySound(inst.sounds.eat)
+            end),
+            FrameEvent(9, function(inst)
                 inst:PerformBufferedAction()
             end),
         },

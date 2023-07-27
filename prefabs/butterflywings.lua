@@ -21,6 +21,8 @@ local function fn()
     inst.AnimState:SetBuild("butterfly_wings")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "vegetation_firm"
+
     inst:AddTag("cattoy")
 
     MakeInventoryFloatable(inst, "small", 0.03)

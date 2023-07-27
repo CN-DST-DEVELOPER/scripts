@@ -79,6 +79,11 @@ local PHASE_BLEND_TIMES =
 local SEASON_BLEND_TIME = 10
 local DEFAULT_BLEND_TIME = .25
 
+local FISHEYE_INTENSITY_MAX = 0.01
+local FISHEYE_INTENSITY_RATE = 1 / 0.4 -- 1 / (X seconds to max rate)
+local FISHEYE_SPEED_MAX = 0
+
+
 --------------------------------------------------------------------------
 --[[ Member variables ]]
 --------------------------------------------------------------------------
@@ -93,6 +98,7 @@ local _fullmoonphase = nil
 local _season = "autumn"
 local _alter_awake = false
 local _in_moonstorm = false
+local _in_raindome = false
 local _ambientcctable = _iscave and CAVE_COLOURCUBES or SEASON_COLOURCUBES.autumn
 local _insanitycctable = INSANITY_COLOURCUBES
 local _lunacycctable = LUNACY_COLOURCUBES
@@ -106,6 +112,9 @@ local _remainingblendtime = 0
 local _totalblendtime = 0
 local _fxtime = 0
 local _fxspeed = 0
+local _fisheyetime = 0
+local _fisheyespeed = 0
+local _fisheyeintensity = 0
 local _distortion_modifier = Profile:GetDistortionModifier()
 local _lunacyintensity = 0
 local _lunacyspeed = 0
@@ -215,11 +224,28 @@ local lunacy_cc_idx = 2
 local function SetLunacyIntensityParams(lunacy_distortion, sanity_distortion)
     --when lunacy intensity is transitioning, do a merge of the 2 states, based on lunacy intensity.
     local neg_lunacyintensity = 1 - _lunacyintensity
+    local distortion_factor = math.clamp((1 * _lunacyintensity) + ((1 - sanity_distortion) * neg_lunacyintensity) - _fisheyeintensity, 0, 1)
     PostProcessor:SetColourCubeLerp(sanity_cc_idx, sanity_distortion * neg_lunacyintensity)
     PostProcessor:SetColourCubeLerp(lunacy_cc_idx, lunacy_distortion * _lunacyintensity)
-    PostProcessor:SetDistortionFactor((1 * _lunacyintensity) + ((1 - sanity_distortion) * neg_lunacyintensity))
+    PostProcessor:SetDistortionFactor(distortion_factor)
     PostProcessor:SetOverlayBlend(lunacy_distortion * _lunacyintensity)
     PostProcessor:SetLunacyEnabled(_lunacyintensity > 0)
+end
+local function SetOnlyLunacyIntensityParams(lunacy_distortion)
+    local distortion_factor = math.clamp(1 - _fisheyeintensity, 0, 1)
+    PostProcessor:SetColourCubeLerp(sanity_cc_idx, 0)
+    PostProcessor:SetColourCubeLerp(lunacy_cc_idx, lunacy_distortion)
+    PostProcessor:SetDistortionFactor(distortion_factor)
+    PostProcessor:SetOverlayBlend(lunacy_distortion)
+    PostProcessor:SetLunacyEnabled(true)
+end
+local function SetOnlyInsanityIntensityParams(sanity_distortion)
+    local distortion_factor = math.clamp(1 - sanity_distortion * _distortion_modifier - _fisheyeintensity, 0, 1)
+    PostProcessor:SetColourCubeLerp(sanity_cc_idx, sanity_distortion)
+    PostProcessor:SetColourCubeLerp(lunacy_cc_idx, 0)
+    PostProcessor:SetDistortionFactor(distortion_factor)
+    PostProcessor:SetOverlayBlend(0)
+    PostProcessor:SetLunacyEnabled(false)
 end
 
 local function OnSanityDelta(player, data)
@@ -243,17 +269,9 @@ local function OnSanityDelta(player, data)
     if _lunacyintensity > 0 and _lunacyintensity < 1 then
         SetLunacyIntensityParams(lunacy_distortion, sanity_distortion)
     elseif is_lunacy and _lunacyintensity == 1 then
-		PostProcessor:SetColourCubeLerp(sanity_cc_idx, 0)
-		PostProcessor:SetColourCubeLerp(lunacy_cc_idx, lunacy_distortion)
-		PostProcessor:SetDistortionFactor(1)
-        PostProcessor:SetOverlayBlend(lunacy_distortion)
-        PostProcessor:SetLunacyEnabled(true)
+        SetOnlyLunacyIntensityParams(lunacy_distortion)
     elseif not is_lunacy and _lunacyintensity == 0 then
-		PostProcessor:SetColourCubeLerp(sanity_cc_idx, sanity_distortion)
-		PostProcessor:SetColourCubeLerp(lunacy_cc_idx, 0)
-		PostProcessor:SetDistortionFactor(1 - sanity_distortion * _distortion_modifier)
-        PostProcessor:SetOverlayBlend(0)
-        PostProcessor:SetLunacyEnabled(false)
+        SetOnlyInsanityIntensityParams(sanity_distortion)
     end
 
 	_fxspeed = easing.outQuad(1 - sanity_percent, 0, .2, 1) * _distortion_modifier
@@ -300,6 +318,14 @@ local function OnStormLevelChanged(inst, data)
     end
 end
 
+local function OnEnterRainDome(inst, data)
+    _in_raindome = true
+end
+
+local function OnExitRainDome(inst, data)
+    _in_raindome = false
+end
+
 local function OnPlayerActivated(inst, player)
     if _activatedplayer == player then
         return
@@ -308,12 +334,16 @@ local function OnPlayerActivated(inst, player)
         inst:RemoveEventCallback("ccoverrides", OnOverrideCCTable, player)
         inst:RemoveEventCallback("ccphasefn", OnOverrideCCPhaseFn, player)
 		inst:RemoveEventCallback("stormlevel", OnStormLevelChanged, player)
+        inst:RemoveEventCallback("enterraindome", OnEnterRainDome, player)
+        inst:RemoveEventCallback("exitraindome", OnExitRainDome, player)
     end
     _activatedplayer = player
     inst:ListenForEvent("sanitydelta", OnSanityDelta, player)
     inst:ListenForEvent("ccoverrides", OnOverrideCCTable, player)
     inst:ListenForEvent("ccphasefn", OnOverrideCCPhaseFn, player)
 	inst:ListenForEvent("stormlevel", OnStormLevelChanged, player)
+    inst:ListenForEvent("enterraindome", OnEnterRainDome, player)
+    inst:ListenForEvent("exitraindome", OnExitRainDome, player)
     if player.replica.sanity ~= nil then
         OnSanityDelta(player, { newpercent = player.replica.sanity:GetPercent(), sanitymode = player.replica.sanity:GetSanityMode() })
     end
@@ -326,6 +356,9 @@ local function OnPlayerDeactivated(inst, player)
     inst:RemoveEventCallback("ccoverrides", OnOverrideCCTable, player)
     inst:RemoveEventCallback("ccphasefn", OnOverrideCCPhaseFn, player)
 	inst:RemoveEventCallback("stormlevel", OnStormLevelChanged, player)
+    inst:RemoveEventCallback("enterraindome", OnEnterRainDome, player)
+    inst:RemoveEventCallback("exitraindome", OnExitRainDome, player)
+    OnExitRainDome()
     OnSanityDelta(player, { newpercent = 1, sanitymode = SANITY_MODE_INSANITY })
     OnOverrideCCTable(player, nil)
     if player == _activatedplayer then
@@ -433,6 +466,7 @@ inst:StartUpdatingComponent(self)
 --------------------------------------------------------------------------
 
 function self:OnUpdate(dt)
+    local needstoupdatepostprocessor = false
     if _overridecc == nil then
         if _remainingblendtime > dt and not ShouldSkipBlend() then
             _remainingblendtime = _remainingblendtime - dt
@@ -444,7 +478,17 @@ function self:OnUpdate(dt)
     end
 
     _fxtime = _fxtime + dt * _fxspeed
+    _fisheyetime = _fisheyetime + dt * _fisheyespeed
     PostProcessor:SetDistortionEffectTime(_fxtime)
+    PostProcessor:SetDistortionFishEyeTime(_fisheyetime)
+
+    local new_fisheyeintensity = math.clamp(_fisheyeintensity + (_in_raindome and FISHEYE_INTENSITY_RATE or -FISHEYE_INTENSITY_RATE) * dt, 0, 1)
+    if new_fisheyeintensity ~= _fisheyeintensity then
+        _fisheyeintensity = new_fisheyeintensity
+        PostProcessor:SetDistortionFishEyeIntensity(-_fisheyeintensity * FISHEYE_INTENSITY_MAX) -- NOTES(JBK): Negative intensity for the shader math.
+        _fisheyespeed = _fisheyeintensity * FISHEYE_SPEED_MAX
+        needstoupdatepostprocessor = true
+    end
 
     local new_lunacyintensity = math.clamp(_lunacyintensity + dt * _lunacyspeed, 0, 1)
     if new_lunacyintensity ~= _lunacyintensity then
@@ -459,7 +503,12 @@ function self:OnUpdate(dt)
             sanity_distortion = sanity_distortion * sanity_distortion
         end
         SetLunacyIntensityParams(lunacy_distortion, sanity_distortion)
+        needstoupdatepostprocessor = false
         PostProcessor:SetLunacyIntensity(_lunacyintensity)
+    end
+
+    if needstoupdatepostprocessor and ThePlayer and ThePlayer.replica.sanity ~= nil then
+        OnSanityDelta(ThePlayer, { newpercent = ThePlayer.replica.sanity:GetPercent(), sanitymode = ThePlayer.replica.sanity:GetSanityMode() })
     end
 end
 

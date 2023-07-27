@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "Wolfgang can't read in here.",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "Is hard to read monkey writing.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "Is hard to read monkey writing.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -891,6 +891,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Maybe is best to not go toward creepy light, yes?",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Wolfgang's scrapbook will fit no more!",
+
+    ANNOUNCE_COACH = 
+    {
+        "Do not worry, friends! Wolfgang is here to fight with you!",
+        "Remember what Wolfgang has taught you!",
+        "When you are scared, just think of Wolfgang!",
+        "Be brave, friends! Like Wolfgang!",
+        "You are strong! Strong like Wolfgang!",
+        "Believe in yourself, like Wolfgang believes in you!",
+        "Good job! Burning feeling in muscles means you're doing it right!",
+        "Do not give up!",
+        "Yes! You can do it!",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "They'll never listen to Wolfgang like this! Need to train!",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "Wolfgang's muscles are too impressive. Would not want to embarrass others.",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "Come, friends! Wolfgang will show you how it's done!",
+    ANNOUNCE_WOLFGANG_END_COACHING = "Is time to rest weary muscles.",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "Where is team?",
+        "Wolfgang needs team.",
+        "Let's go... team?",
+    },
 
 	BATTLECRY =
 	{
@@ -4537,6 +4560,9 @@ return{
         DUMBBELL_GEM = "Make muscles mighty!",
         POTATOSACK = "Ha! Lifting and potatoes are three of Wolfgang's favorite things!",
 
+        DUMBBELL_HEAT = "Wolfgang is getting good warm-up!",
+        DUMBBELL_REDGEM = "Is fiery, like Wolfgang's spirit!",
+        DUMBBELL_BLUEGEM = "Is icy, like... ice!",
 
         TERRARIUMCHEST =
 		{
@@ -4790,6 +4816,7 @@ return{
 		LUNAR_FORGE = "Is there a mighty hammer for Wolfgang to swing?",
 		LUNAR_FORGE_KIT = "Wolfgang will find good spot for it!",
 
+		LUNARPLANT_KIT = "Wolfgang will fix, good as new!",
 		ARMOR_LUNARPLANT = "Tough, like Wolfgang!",
 		LUNARPLANTHAT = "Wolfgang feels very safe inside.",
 		BOMB_LUNARPLANT = "Boom!",
@@ -4797,6 +4824,8 @@ return{
 		SWORD_LUNARPLANT = "Is sword of star-stuff.",
 		PICKAXE_LUNARPLANT = "Rocks will tremble before Wolfgang!",
 		SHOVEL_LUNARPLANT = "But is not shoe? Wolfgang is confused...",
+
+		BROKEN_FORGEDITEM = "Sorry friends, Wolfgang forgets his own strength.",
 
         PUNCHINGBAG = "Wolfgang will try to go easy on tiny punch man.",
 
@@ -4810,6 +4839,7 @@ return{
         FUSED_SHADELING_BOMB = "Boom bug!",
 
 		VOIDCLOTH = "Scary little rags.",
+		VOIDCLOTH_KIT = "Wolfgang will fix, good as new!",
 		VOIDCLOTHHAT = "Eep! Is too dark in there!",
 		ARMOR_VOIDCLOTH = "Creepy shirt is happy to be worn by Wolfgang.",
 
@@ -4827,6 +4857,39 @@ return{
         DREADSTONE_STACK = "Scary rock comes from scary place...",
         
         SCRAPBOOK_PAGE = "Is page of funny scribbles.",
+
+        LEIF_IDOL = "Beardman has made tiny tree.",
+        WOODCARVEDHAT = "Is thick and sturdy, like Wolfgang's own mighty skull!",
+        WALKING_STICK = "Is little toothpick for walking?",
+
+        IPECACSYRUP = "Will leafy green man be sad if Wolfgang doesn't have a taste?",
+        BOMB_LUNARPLANT_WORMWOOD = "Ha! Little leafy green friend has made it better!", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "Is dead.",
+        	GENERIC = "Leggy carrot is getting away!",
+        	HELD = "You are safe now, leggy carrot.",
+        	SLEEPING = "Leggy carrot is sleeping.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "Please stay close to Wolfgang.",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "Is little planty scrambler!",
+			RIPE = "Planty scrambler smells delicious today.",
+			SLEEPING = "Wolfgang will not disturb.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "Do not look! Is not done yet!",
+        SUPPORT_PILLAR = "Stay strong, mighty pillar!",
+        SUPPORT_PILLAR_COMPLETE = "Is mighty pillar!",
+        SUPPORT_PILLAR_BROKEN = "Is crumbled. Very sad.",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "Do not look! Is not done yet!",
+		SUPPORT_PILLAR_DREADSTONE = "Stay strong, mighty pillar!",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Mighty pillar is mighty... and little bit scary.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Poor scary pillar is broke. So sad.",
+
+        WOLFGANG_WHISTLE = "Wolfgang is good teacher!",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",
@@ -4843,6 +4906,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Plant needs a drink!",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Is hungry! What do plants like to eat...",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "Wolfgang will have a little chat with plant.",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

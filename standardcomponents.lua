@@ -1,3 +1,5 @@
+local DEBUG_MODE = BRANCH == "dev"
+
 function DefaultIgniteFn(inst)
     if inst.components.burnable ~= nil then
         inst.components.burnable:StartWildfire()
@@ -104,6 +106,10 @@ function DefaultBurntStructureFn(inst)
     if inst.components.wardrobe ~= nil then
         inst:RemoveComponent("wardrobe")
     end
+	if inst.components.constructionsite ~= nil then
+		inst.components.constructionsite:DropAllMaterials()
+		inst:RemoveComponent("constructionsite")
+	end
     if inst.Light then
         inst.Light:Enable(false)
     end
@@ -119,115 +125,135 @@ local burnfx =
 }
 
 function MakeSmallBurnable(inst, time, offset, structure, sym)
-    inst:AddComponent("burnable")
-    inst.components.burnable:SetFXLevel(2)
-    inst.components.burnable:SetBurnTime(time or 10)
-    inst.components.burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
-    inst.components.burnable:SetOnIgniteFn(DefaultBurnFn)
-    inst.components.burnable:SetOnExtinguishFn(DefaultExtinguishFn)
+    local burnable = inst:AddComponent("burnable")
+    burnable:SetFXLevel(2)
+    burnable:SetBurnTime(time or 10)
+    burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
+    burnable:SetOnIgniteFn(DefaultBurnFn)
+    burnable:SetOnExtinguishFn(DefaultExtinguishFn)
     if structure then
-        inst.components.burnable:SetOnBurntFn(DefaultBurntStructureFn)
+        burnable:SetOnBurntFn(DefaultBurntStructureFn)
     else
-        inst.components.burnable:SetOnBurntFn(DefaultBurntFn)
+        burnable:SetOnBurntFn(DefaultBurntFn)
     end
+
+    return burnable
 end
 
 function MakeMediumBurnable(inst, time, offset, structure, sym)
-    inst:AddComponent("burnable")
-    inst.components.burnable:SetFXLevel(3)
-    inst.components.burnable:SetBurnTime(time or 20)
-    inst.components.burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
-    inst.components.burnable:SetOnIgniteFn(DefaultBurnFn)
-    inst.components.burnable:SetOnExtinguishFn(DefaultExtinguishFn)
+    local burnable = inst:AddComponent("burnable")
+    burnable:SetFXLevel(3)
+    burnable:SetBurnTime(time or 20)
+    burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
+    burnable:SetOnIgniteFn(DefaultBurnFn)
+    burnable:SetOnExtinguishFn(DefaultExtinguishFn)
     if structure then
-        inst.components.burnable:SetOnBurntFn(DefaultBurntStructureFn)
+        burnable:SetOnBurntFn(DefaultBurntStructureFn)
     else
-        inst.components.burnable:SetOnBurntFn(DefaultBurntFn)
+        burnable:SetOnBurntFn(DefaultBurntFn)
     end
+
+    return burnable
 end
 
-
 function MakeLargeBurnable(inst, time, offset, structure, sym)
-    inst:AddComponent("burnable")
-    inst.components.burnable:SetFXLevel(4)
-    inst.components.burnable:SetBurnTime(time or 30)
-    inst.components.burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
-    inst.components.burnable:SetOnIgniteFn(DefaultBurnFn)
-    inst.components.burnable:SetOnExtinguishFn(DefaultExtinguishFn)
+    local burnable = inst:AddComponent("burnable")
+    burnable:SetFXLevel(4)
+    burnable:SetBurnTime(time or 30)
+    burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
+    burnable:SetOnIgniteFn(DefaultBurnFn)
+    burnable:SetOnExtinguishFn(DefaultExtinguishFn)
     if structure then
-        inst.components.burnable:SetOnBurntFn(DefaultBurntStructureFn)
+        burnable:SetOnBurntFn(DefaultBurntStructureFn)
     else
-        inst.components.burnable:SetOnBurntFn(DefaultBurntFn)
+        burnable:SetOnBurntFn(DefaultBurntFn)
     end
+
+    return burnable
 end
 
 function MakeSmallPropagator(inst)
-    inst:AddComponent("propagator")
-    inst.components.propagator.acceptsheat = true
-    inst.components.propagator:SetOnFlashPoint(DefaultIgniteFn)
-    inst.components.propagator.flashpoint = 5 + math.random()*5
-    inst.components.propagator.decayrate = 0.5
-    inst.components.propagator.propagaterange = 3 + math.random()*2
-    inst.components.propagator.heatoutput = 3 + math.random()*2--8
+    local propagator = inst:AddComponent("propagator")
+    propagator.acceptsheat = true
+    propagator:SetOnFlashPoint(DefaultIgniteFn)
+    propagator.flashpoint = 5 + math.random()*5
+    propagator.decayrate = 0.5
+    propagator.propagaterange = 3 + math.random()*2
+    propagator.heatoutput = 3 + math.random()*2--8
 
-    inst.components.propagator.damagerange = 2
-    inst.components.propagator.damages = true
+    propagator.damagerange = 2
+    propagator.damages = true
+
+    return propagator
 end
 
 function MakeMediumPropagator(inst)
-    inst:AddComponent("propagator")
-    inst.components.propagator.acceptsheat = true
-    inst.components.propagator:SetOnFlashPoint(DefaultIgniteFn)
-    inst.components.propagator.flashpoint = 15+math.random()*10
-    inst.components.propagator.decayrate = 0.5
-    inst.components.propagator.propagaterange = 5 + math.random()*2
-    inst.components.propagator.heatoutput = 5 + math.random()*3.5--12
+    local propagator = inst:AddComponent("propagator")
+    propagator.acceptsheat = true
+    propagator:SetOnFlashPoint(DefaultIgniteFn)
+    propagator.flashpoint = 15+math.random()*10
+    propagator.decayrate = 0.5
+    propagator.propagaterange = 5 + math.random()*2
+    propagator.heatoutput = 5 + math.random()*3.5--12
 
-    inst.components.propagator.damagerange = 3
-    inst.components.propagator.damages = true
+    propagator.damagerange = 3
+    propagator.damages = true
+
+    return propagator
 end
 
 function MakeLargePropagator(inst)
-    inst:AddComponent("propagator")
-    inst.components.propagator.acceptsheat = true
-    inst.components.propagator:SetOnFlashPoint(DefaultIgniteFn)
-    inst.components.propagator.flashpoint = 45+math.random()*10
-    inst.components.propagator.decayrate = 0.5
-    inst.components.propagator.propagaterange = 6 + math.random()*2
-    inst.components.propagator.heatoutput = 6 + math.random()*3.5--12
+    local propagator = inst:AddComponent("propagator")
+    propagator.acceptsheat = true
+    propagator:SetOnFlashPoint(DefaultIgniteFn)
+    propagator.flashpoint = 45+math.random()*10
+    propagator.decayrate = 0.5
+    propagator.propagaterange = 6 + math.random()*2
+    propagator.heatoutput = 6 + math.random()*3.5--12
 
-    inst.components.propagator.damagerange = 3
-    inst.components.propagator.damages = true
+    propagator.damagerange = 3
+    propagator.damages = true
+
+    return propagator
 end
 
 function MakeSmallBurnableCharacter(inst, sym, offset)
-    inst:AddComponent("burnable")
-    inst.components.burnable:SetFXLevel(1)
-    inst.components.burnable:SetBurnTime(6)
-    inst.components.burnable.canlight = false
-    inst.components.burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym)
-    MakeSmallPropagator(inst)
-    inst.components.propagator.acceptsheat = false
+    local burnable = inst:AddComponent("burnable")
+    burnable:SetFXLevel(1)
+    burnable:SetBurnTime(6)
+    burnable.canlight = false
+    burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym)
+
+    local propagator = MakeSmallPropagator(inst)
+    propagator.acceptsheat = false
+
+    return burnable, propagator
 end
 
 function MakeMediumBurnableCharacter(inst, sym, offset)
-    inst:AddComponent("burnable")
-    inst.components.burnable:SetFXLevel(2)
-    inst.components.burnable.canlight = false
-    inst.components.burnable:SetBurnTime(8)
-    inst.components.burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym)
-    MakeSmallPropagator(inst)
-    inst.components.propagator.acceptsheat = false
+    local burnable = inst:AddComponent("burnable")
+    burnable:SetFXLevel(2)
+    burnable.canlight = false
+    burnable:SetBurnTime(8)
+    burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym)
+
+    local propagator = MakeSmallPropagator(inst)
+    propagator.acceptsheat = false
+
+    return burnable, propagator
 end
 
 function MakeLargeBurnableCharacter(inst, sym, offset, scale)
-    inst:AddComponent("burnable")
-    inst.components.burnable:SetFXLevel(3)
-    inst.components.burnable.canlight = false
-    inst.components.burnable:SetBurnTime(10)
-    inst.components.burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym, nil, scale)
-    MakeLargePropagator(inst)
-    inst.components.propagator.acceptsheat = false
+    local burnable = inst:AddComponent("burnable")
+    burnable:SetFXLevel(3)
+    burnable.canlight = false
+    burnable:SetBurnTime(10)
+    burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym, nil, scale)
+
+    local propagator = MakeLargePropagator(inst)
+    propagator.acceptsheat = false
+
+    return burnable, propagator
 end
 
 local shatterfx =
@@ -1426,6 +1452,43 @@ end
 function AddToRegrowthManager(inst)
     inst:ListenForEvent("onremove", OnStartRegrowth)
     inst.OnStartRegrowth = OnStartRegrowth -- For any special cases that need to call this.
+end
+
+--------------------------------------------------------------------------
+
+function MakeForgeRepairable(inst, material, onbroken, onrepaired)
+	local function _onbroken(inst)
+		if inst.components.equippable ~= nil and inst.components.equippable:IsEquipped() then
+			local owner = inst.components.inventoryitem.owner
+			if owner ~= nil and owner.components.inventory ~= nil then
+				local item = owner.components.inventory:Unequip(inst.components.equippable.equipslot)
+				if item ~= nil then
+					owner.components.inventory:GiveItem(item, nil, owner:GetPosition())
+				end
+			end
+		end
+		if onbroken ~= nil then
+			onbroken(inst)
+		end		
+	end
+
+	--V2C: asserts to prevent overwriting callbacks already setup by the prefab
+
+	if inst.components.armor ~= nil then
+		assert(not (DEBUG_MODE and inst.components.armor.onfinished ~= nil))
+		inst.components.armor:SetKeepOnFinished(true)
+		inst.components.armor:SetOnFinished(_onbroken)
+	elseif inst.components.finiteuses ~= nil then
+		assert(not (DEBUG_MODE and inst.components.finiteuses.onfinished ~= nil))
+		inst.components.finiteuses:SetOnFinished(_onbroken)
+	elseif inst.components.fueled ~= nil then
+		assert(not (DEBUG_MODE and inst.components.fueled.depleted ~= nil))
+		inst.components.fueled:SetDepletedFn(_onbroken)
+	end
+
+	inst:AddComponent("forgerepairable")
+	inst.components.forgerepairable:SetRepairMaterial(material)
+	inst.components.forgerepairable:SetOnRepaired(onrepaired)
 end
 
 --------------------------------------------------------------------------

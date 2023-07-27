@@ -45,6 +45,8 @@ local function fn()
     inst:AddTag("marble")
 	inst:AddTag("heavyarmor")
 
+    inst.scrapbook_specialinfo = "ARMORMARBLE"
+
     inst.foleysound = "dontstarve/movement/foley/marblearmour"
 
     local swap_data = {bank = "armor_marble", anim = "anim"}

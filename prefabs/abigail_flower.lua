@@ -131,6 +131,7 @@ local function fn()
     MakeInventoryPhysics(inst)
 
     inst.scrapbook_deps = {"ghostflower","nightmarefuel"}
+    inst.scrapbook_specialinfo = "ABIGAIL_FLOWER"
 
     inst.MiniMapEntity:SetIcon("abigail_flower.png")
 

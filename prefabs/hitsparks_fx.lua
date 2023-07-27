@@ -3,6 +3,8 @@ local assets =
 	Asset("ANIM", "anim/lavaarena_hit_sparks_fx.zip"),
 }
 
+--------------------------------------------------------------------------
+
 local function PushColour(inst, r, g, b)
 	if inst.target.components.colouradder == nil then
 		inst.target:AddComponent("colouradder")
@@ -20,10 +22,11 @@ local function UpdateFlash(inst)
 	if inst.target:IsValid() then
 		if inst.flashstep < 4 then
 			local value = (inst.flashstep > 2 and 4 - inst.flashstep or inst.flashstep) * .05
-            if inst.colouroverride then
-                PushColour(inst, value * inst.colouroverride[1], value * inst.colouroverride[2], value * inst.colouroverride[3])
+			if inst.flashcolour ~= nil then
+				local r, g, b = unpack(inst.flashcolour)
+				PushColour(inst, value * r, value * g, value * b)
             else
-			    PushColour(inst, value, value, value)
+				PushColour(inst, value, value, value)
             end
 			inst.flashstep = inst.flashstep + 1
 			return
@@ -35,7 +38,19 @@ local function UpdateFlash(inst)
 	inst.components.updatelooper:RemoveOnUpdateFn(UpdateFlash)
 end
 
-local function Setup(inst, attacker, target, projectile, colouroverride)
+local function StartFlash(inst, target, flashcolour)
+	inst:AddComponent("updatelooper")
+	inst.components.updatelooper:AddOnUpdateFn(UpdateFlash)
+	inst.target = target
+	inst.flashstep = 1
+	inst.flashcolour = flashcolour
+	inst.OnRemoveEntity = PopColour
+	UpdateFlash(inst)
+end
+
+--------------------------------------------------------------------------
+
+local function Setup(inst, attacker, target, projectile, flashcolour)
 	local x, y, z = target.Transform:GetWorldPosition()
 	local radius = target:GetPhysicsRadius(.5)
 	local source = projectile or attacker
@@ -46,16 +61,33 @@ local function Setup(inst, attacker, target, projectile, colouroverride)
 	end
 	inst.Transform:SetPosition(x, .5, z)
 
-	inst:AddComponent("updatelooper")
-	inst.components.updatelooper:AddOnUpdateFn(UpdateFlash)
-	inst.target = target
-	inst.flashstep = 1
-    inst.colouroverride = colouroverride
-	inst.OnRemoveEntity = PopColour
-	UpdateFlash(inst)
+	StartFlash(inst, target, flashcolour)
 end
 
-local function PlaySparksAnim(proxy)
+local function SetupReflect(inst, attacker, target, projectile, flashcolour)
+	local x, y, z = target.Transform:GetWorldPosition()
+	local rot
+	local source = projectile or attacker
+	if source ~= nil and source:IsValid() then
+		local x1, y1, z1 = source.Transform:GetWorldPosition()
+		if x ~= x1 or z ~= z1 then
+			local dx = x - x1
+			local dz = z - z1
+			local rescale_radius = source:GetPhysicsRadius(.5) / math.sqrt(dx * dx + dz * dz)
+			x = x1 + dx * rescale_radius
+			z = z1 + dz * rescale_radius
+			rot = math.atan2(dz, -dx) * RADIANS
+		end
+	end
+	inst.Transform:SetPosition(x, 1 + math.random(), z)
+	inst.Transform:SetRotation((rot or target.Transform:GetRotation()) + 90)
+
+	StartFlash(inst, target, flashcolour)
+end
+
+--------------------------------------------------------------------------
+
+local function PlaySparksAnim(proxy, horizontal)
 	local inst = CreateEntity()
 
 	inst:AddTag("FX")
@@ -77,42 +109,54 @@ local function PlaySparksAnim(proxy)
     if proxy.black:value() then
         inst.AnimState:SetMultColour(0, 0, 0, 1)
     end
+	if horizontal then
+		inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+	end
 
 	inst:ListenForEvent("animover", inst.Remove)
 end
 
-local function fn()
-	local inst = CreateEntity()
+--------------------------------------------------------------------------
 
-	inst.entity:AddTransform()
-	inst.entity:AddNetwork()
+local function MakeFX(name, horizontal, setupfn)
+	local function fn()
+		local inst = CreateEntity()
 
-	inst:AddTag("FX")
+		inst.entity:AddTransform()
+		inst.entity:AddNetwork()
 
-	--Dedicated server does not need to spawn the local fx
-	if not TheNet:IsDedicated() then
-		--Delay one frame so that we are positioned properly before starting the effect
-		--or in case we are about to be removed
-		inst:DoTaskInTime(0, PlaySparksAnim)
-	end
+		inst:AddTag("FX")
 
-	inst.flip = net_bool(inst.GUID, "hitsparks_fx.flip")
-	inst.black = net_bool(inst.GUID, "hitsparks_fx.black")
+		--Dedicated server does not need to spawn the local fx
+		if not TheNet:IsDedicated() then
+			--Delay one frame so that we are positioned properly before starting the effect
+			--or in case we are about to be removed
+			inst:DoTaskInTime(0, PlaySparksAnim, horizontal)
+		end
 
-	inst.entity:SetPristine()
+		inst.flip = net_bool(inst.GUID, "hitsparks_fx.flip")
+		inst.black = net_bool(inst.GUID, "hitsparks_fx.black")
 
-	if not TheWorld.ismastersim then
+		inst.entity:SetPristine()
+
+		if not TheWorld.ismastersim then
+			return inst
+		end
+
+		inst.persists = false
+		inst:DoTaskInTime(1, inst.Remove)
+
+		inst.flip:set(math.random() < .5)
+
+		inst.Setup = setupfn
+
 		return inst
 	end
 
-	inst.persists = false
-	inst:DoTaskInTime(1, inst.Remove)
-
-	inst.flip:set(math.random() < .5)
-
-	inst.Setup = Setup
-
-	return inst
+	return Prefab(name, fn, assets)
 end
 
-return Prefab("hitsparks_fx", fn, assets)
+--------------------------------------------------------------------------
+
+return MakeFX("hitsparks_fx", false, Setup),
+	MakeFX("hitsparks_reflect_fx", true, SetupReflect)

@@ -182,6 +182,12 @@ function Grogginess:MaximizeGrogginess()
     end
 end
 
+function Grogginess:SetPercent(percent)
+    local delta = (self:GetResistance() * percent) - self.grog_amount
+
+    self:AddGrogginess(delta)
+end
+
 function Grogginess:SubtractGrogginess(grogginess)
     if grogginess <= 0 then
         return

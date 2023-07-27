@@ -147,6 +147,8 @@ local function MakeShell(octave, common_postinit, master_postinit, prefabs)
         inst.AnimState:SetBuild("singingshell")
 		inst.AnimState:PlayAnimation("idle")
 
+		inst.pickupsound = "rock"
+
 		inst:AddTag("singingshell")
 
 		MakeInventoryFloatable(inst, FLOATER_SIZES[octave_str].size, 0, FLOATER_SIZES[octave_str].scale)

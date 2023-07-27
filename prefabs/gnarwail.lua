@@ -486,6 +486,7 @@ local function gnarwail()
     inst:AddTag("scarytocookiecutters")
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         return inst
     end

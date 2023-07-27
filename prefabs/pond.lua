@@ -436,13 +436,6 @@ local function OnStopIsAcidRaining(inst)
     end
 end
 
-local function OnStopIsRaining(inst)
-    if not inst.acidinfused then
-        -- Stop bubbling when idle even if slightly acidic.
-        SetBackToNormal_Cave(inst)
-    end
-end
-
 local function OnPondCaveMinedFinished(inst, miner)
     local pt = inst:GetPosition()
     for i = 1, 2 + math.random(2) do
@@ -480,7 +473,8 @@ local function pondcave()
     local acidlevel = inst:AddComponent("acidlevel")
     inst:ListenForEvent("acidleveldelta", OnAcidLevelDelta_Cave)
     acidlevel:SetOnStopIsAcidRainingFn(OnStopIsAcidRaining)
-    acidlevel:SetOnStopIsRainingFn(OnStopIsRaining)
+	acidlevel:SetOnStopIsRainingFn(OnStopIsAcidRaining)
+	inst:ListenForEvent("gainrainimmunity", OnStopIsAcidRaining)
 
     inst.planttype = "pond_algae"
     inst.task = inst:DoTaskInTime(0, SpawnPlants)

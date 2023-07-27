@@ -7,7 +7,7 @@ local assets =
 
 local prefabs =
 {
-
+	"construction_container",
 }
 
 local construction_data = {

@@ -26,7 +26,7 @@ local function DoSplash(inst)
     for _, v in pairs(ents) do
         local moisture = v.components.moisture
         if moisture ~= nil then
-            local waterproofness = (v.components.inventory and math.min(v.components.inventory:GetWaterproofness(), 1)) or 0
+            local waterproofness = moisture:GetWaterproofness()
             moisture:DoDelta(SPLASH_WETNESS * (1 - waterproofness))
 
             local entity_splash = SpawnPrefab("splash")

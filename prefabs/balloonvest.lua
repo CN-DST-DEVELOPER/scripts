@@ -65,6 +65,8 @@ local function fn()
 
     inst.foleysound = "wes/common/foley/balloon_vest"
 
+    inst.scrapbook_specialinfo = "BALLOONVEST"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

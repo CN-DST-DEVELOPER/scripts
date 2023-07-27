@@ -27,6 +27,7 @@ function OceanFishingHook:SetLureData(lure_data, lure_fns)
 	end
 end
 
+--V2C: is that supposed to be _CalcCharm?
 function OceanFishingHook:_ClacCharm(fish)
 	local fish_lure_prefs = fish ~= nil and fish.fish_def.lures or nil
 

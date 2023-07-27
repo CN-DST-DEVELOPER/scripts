@@ -187,6 +187,8 @@ end
 local function makeslurtle()
     local inst = commonfn("slurtle", "slurtle", "slurtle")
 
+    inst.scrapbook_removedeps = {"armorsnurtleshell"}
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -216,6 +218,8 @@ end
 
 local function makesnurtle()
     local inst = commonfn("snurtle", "slurtle_snaily", "snurtle")
+
+    inst.scrapbook_removedeps = {"slurtlehat"}
 
     if not TheWorld.ismastersim then
         return inst

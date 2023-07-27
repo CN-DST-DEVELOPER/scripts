@@ -174,6 +174,8 @@ local function fn()
     inst:AddTag("bell")
     inst:AddTag("donotautopick")
 
+    inst.scrapbook_specialinfo = "BEEFBELL"
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

@@ -154,6 +154,17 @@ end
 BrainCommon.PanicWhenScared = PanicWhenScared
 
 --------------------------------------------------------------------------
+
+local function IsUnderIpecacsyrupEffect(inst)
+    return inst:HasDebuff("ipecacsyrup_buff")
+end
+
+BrainCommon.IsUnderIpecacsyrupEffect = IsUnderIpecacsyrupEffect
+BrainCommon.IpecacsyrupPanicTrigger = function(inst)
+    return WhileNode(function() return BrainCommon.IsUnderIpecacsyrupEffect(inst) end, "IpecacsyrupPanicTrigger", Panic(inst))
+end
+
+--------------------------------------------------------------------------
 -- Actions: MINE, CHOP
 
 local MINE_TAGS = { "MINE_workable" }
@@ -281,7 +292,7 @@ local function IgnoreThis(sometarget, ignorethese, leader, worker)
     ignorethese[sometarget].task = leader:DoTaskInTime(5, Unignore, sometarget, ignorethese)
 end
 
-local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirst, positionoverride, ignorethese, wholestacks, allowpickables)
+local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirst, positionoverride, ignorethese, wholestacks, allowpickables, custom_pickup_filter)
     local activeitem = inst.components.inventory:GetActiveItem()
     if activeitem ~= nil then
         inst.components.inventory:DropItem(activeitem, true, true)
@@ -317,10 +328,10 @@ local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirs
 
     local item, pickable
     if pickup_range_local ~= nil then
-        item, pickable = FindPickupableItem(leader, pickup_range_local, furthestfirst, inst:GetPosition(), ignorethese, onlytheseprefabs, allowpickables, inst)
+        item, pickable = FindPickupableItem(leader, pickup_range_local, furthestfirst, inst:GetPosition(), ignorethese, onlytheseprefabs, allowpickables, inst, custom_pickup_filter)
     end
     if item == nil then
-        item, pickable = FindPickupableItem(leader, pickup_range, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, inst)
+        item, pickable = FindPickupableItem(leader, pickup_range, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, inst, custom_pickup_filter)
     end
     if item == nil then
         return nil
@@ -369,9 +380,10 @@ local function NodeAssistLeaderPickUps(self, parameters)
     local ignorethese = parameters.ignorethese
     local wholestacks = parameters.wholestacks
     local allowpickables = parameters.allowpickables
+    local custom_pickup_filter = parameters.custom_pickup_filter
 
     local function CustomPickUpAction(inst)
-        return PickUpAction(inst, pickup_range, pickup_range_local, furthestfirst, positionoverridefn ~= nil and positionoverridefn(inst) or positionoverride, ignorethese, wholestacks, allowpickables)
+        return PickUpAction(inst, pickup_range, pickup_range_local, furthestfirst, positionoverridefn ~= nil and positionoverridefn(inst) or positionoverride, ignorethese, wholestacks, allowpickables, custom_pickup_filter)
     end
 
 	local give_cond_fn = give_range_sq ~= nil and

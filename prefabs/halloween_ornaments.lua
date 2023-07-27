@@ -35,6 +35,8 @@ local function MakeOrnament(ornamentid)
         local fp = FLOATER_PROPERTIES[ornamentid]
         MakeInventoryFloatable(inst, fp[1], fp[2], fp[3])
 
+        inst.scrapbook_specialinfo = "HALLOWEEN_ORNAMENT"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

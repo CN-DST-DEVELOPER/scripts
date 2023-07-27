@@ -23,7 +23,9 @@ local SentientAxe = Class(function(self, inst)
     self.say_task = nil
     self.warnlevel = 0
     self.waslow = false
+    self._lastcarvingtalks = {}
 
+    self._onbuilditem = function(owner, data) self:OnBuildItem(data.recipe ~= nil and data.recipe.name) end
     self._onfinishedwork = function(owner, data) self:OnFinishedWork(data.target, data.action) end
     self._onwereeaterchanged = function(owner, data) self:OnWereEaterChanged(data.old, data.new, data.istransforming) end
     self._onstartwereplayer = function() self:OnBecomeWere() end
@@ -58,6 +60,7 @@ function SentientAxe:SetOwner(owner)
         if self.owner ~= nil then
             self.inst:RemoveEventCallback("ondropped", toground)
             self.inst:RemoveEventCallback("equipped", onequipped)
+            self.inst:RemoveEventCallback("builditem", self._onbuilditem, self.owner)
             self.inst:RemoveEventCallback("finishedwork", self._onfinishedwork, self.owner)
             self.inst:RemoveEventCallback("wereeaterchanged", self._onwereeaterchanged, self.owner)
             self.inst:RemoveEventCallback("startwereplayer", self._onstartwereplayer, self.owner)
@@ -66,9 +69,11 @@ function SentientAxe:SetOwner(owner)
         self.owner = owner
         self.warnlevel = 0
         self.waslow = false
+        self._lastcarvingtalks = {}
         if owner ~= nil then
             self.inst:ListenForEvent("ondropped", toground)
             self.inst:ListenForEvent("equipped", onequipped)
+            self.inst:ListenForEvent("builditem", self._onbuilditem, owner)
             self.inst:ListenForEvent("finishedwork", self._onfinishedwork, owner)
             self.inst:ListenForEvent("wereeaterchanged", self._onwereeaterchanged, owner)
             self.inst:ListenForEvent("startwereplayer", self._onstartwereplayer, owner)
@@ -78,6 +83,20 @@ function SentientAxe:SetOwner(owner)
             end
             self:ScheduleConversation()
         end
+    end
+end
+
+function SentientAxe:OnBuildItem(recipename)
+    if recipename == nil then return end
+
+    local entry = "carve_"..recipename
+
+    if self.owner ~= nil and
+        STRINGS.LUCY[entry] and
+        (self._lastcarvingtalks[entry] == nil or self._lastcarvingtalks[entry] + TUNING.LUCY_CARVING_TALK_COOLDOWN < GetTime())
+    then
+        self._lastcarvingtalks[entry] = GetTime()
+        self:Say(STRINGS.LUCY[entry])
     end
 end
 

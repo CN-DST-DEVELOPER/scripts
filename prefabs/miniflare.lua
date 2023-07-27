@@ -179,6 +179,8 @@ local function flare_fn()
     inst.AnimState:SetBuild("flare")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_specialinfo = "MINIFLARE"
+
     MakeInventoryFloatable(inst, "large", nil, {0.65, 0.4, 0.65})
 
     inst:AddTag("donotautopick")

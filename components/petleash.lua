@@ -5,14 +5,25 @@ local PetLeash = Class(function(self, inst)
     self.pets = {}
     self.maxpets = 1
     self.numpets = 0
+    self.maxpetsperprefab = nil
+    self.numpetsperprefab = nil
 
     self.onspawnfn = nil
     self.ondespawnfn = nil
+    self.onpetremoved = nil
 
     self._onremovepet = function(pet)
         if self.pets[pet] ~= nil then
             self.pets[pet] = nil
-            self.numpets = self.numpets - 1
+
+            if self:IsPetAPrefabLimitedOne(pet.prefab) then
+                self.numpetsperprefab[pet.prefab] = self.numpetsperprefab[pet.prefab] - 1
+            else
+                self.numpets = self.numpets - 1
+            end
+            if self.onpetremoved ~= nil then
+                self.onpetremoved(self.inst, pet)
+            end
         end
     end
 end)
@@ -29,6 +40,10 @@ function PetLeash:SetOnDespawnFn(fn)
     self.ondespawnfn = fn
 end
 
+function PetLeash:SetOnRemovedFn(fn)
+    self.onpetremoved = fn
+end
+
 function PetLeash:SetMaxPets(num)
     self.maxpets = num
 end
@@ -43,6 +58,57 @@ end
 
 function PetLeash:IsFull()
     return self.numpets >= self.maxpets
+end
+
+function PetLeash:IsPetAPrefabLimitedOne(prefab)
+    if self.maxpetsperprefab == nil then
+        return false
+    end
+
+    return self.maxpetsperprefab[prefab] ~= nil
+end
+
+function PetLeash:SetMaxPetsForPrefab(prefab, maxpets)
+    self.maxpetsperprefab = self.maxpetsperprefab or {}
+    self.maxpetsperprefab[prefab] = maxpets
+
+    self.numpetsperprefab = self.numpetsperprefab or {}
+    self.numpetsperprefab[prefab] = self.numpetsperprefab[prefab] or 0
+end
+
+function PetLeash:GetMaxPetsForPrefab(prefab)
+    if self.maxpetsperprefab == nil then
+        return 0
+    end
+
+    return self.maxpetsperprefab[prefab] or 0
+end
+
+function PetLeash:GetNumPetsForPrefab(prefab)
+    if self.numpetsperprefab == nil then
+        return 0
+    end
+
+    return self.numpetsperprefab and self.numpetsperprefab[prefab] or 0
+end
+
+function PetLeash:GetPetsWithPrefab(prefab)
+    if self:GetNumPetsForPrefab(prefab) == 0 then
+        return nil
+    end
+
+    local pets = {}
+    for k, v in pairs(self.pets) do
+        if v.prefab == prefab then
+            table.insert(pets, v)
+        end
+    end
+
+    return pets
+end
+
+function PetLeash:IsFullForPrefab(prefab)
+    return self:GetNumPetsForPrefab(prefab) >= self:GetMaxPetsForPrefab(prefab)
 end
 
 function PetLeash:HasPetWithTag(tag)
@@ -64,7 +130,11 @@ end
 
 local function LinkPet(self, pet)
     self.pets[pet] = pet
-    self.numpets = self.numpets + 1
+    if self:IsPetAPrefabLimitedOne(pet.prefab) then
+        self.numpetsperprefab[pet.prefab] = self.numpetsperprefab[pet.prefab] + 1
+    else
+        self.numpets = self.numpets + 1
+    end
     self.inst:ListenForEvent("onremove", self._onremovepet, pet)
     pet.persists = false
 
@@ -74,12 +144,21 @@ local function LinkPet(self, pet)
 end
 
 function PetLeash:SpawnPetAt(x, y, z, prefaboverride, skin)
-    local petprefab = prefaboverride or self.petprefab
-    if self.numpets >= self.maxpets or petprefab == nil then
+    local prefab = prefaboverride or self.petprefab
+    if prefab == nil then
         return nil
     end
+    if self:IsPetAPrefabLimitedOne(prefab) then
+        if self:IsFullForPrefab(prefab) then
+            return nil
+        end
+    else
+        if self:IsFull() then
+            return nil
+        end
+    end
 
-    local pet = SpawnPrefab(petprefab, skin, nil, self.inst.userid)
+    local pet = SpawnPrefab(prefab, skin, nil, self.inst.userid)
     if pet ~= nil then
         LinkPet(self, pet)
 

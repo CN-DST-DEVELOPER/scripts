@@ -1313,6 +1313,73 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 115,
 	},
+	pack_ancient1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_ancient1.xml",
+		display_tex = "ancient1.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wolfgang_ancient", "woodie_ancient", "wormwood_ancient", },
+		output_items = {  "wolfgang_ancient", "body_wolfgang_ancient", "woodie_ancient", "body_woodie_ancient", "hand_woodie_ancient", "wormwood_ancient", "body_wormwood_ancient", "hand_wormwood_ancient", "legs_wormwood_ancient", },
+		release_group = 146,
+	},
+	pack_ancient1_items =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 2,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_ancient1_items.xml",
+		display_tex = "ancient1_items.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "mighty_gym_ancient", "tent_ancient", "treasurechest_ancient", "meatrack_ancient", "fence_ancient", "fence_gate_ancient", "armor_bramble_ancient", },
+		output_items = {  "mighty_gym_ancient", "tent_ancient", "treasurechest_ancient", "meatrack_ancient", "fence_ancient", "fence_gate_ancient", "armor_bramble_ancient", },
+		release_group = 146,
+	},
+	pack_ancient_wolfgang =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 103,
+		build_name_override = "wolfgang_ancient",
+		display_atlas = "bigportraits/wolfgang_ancient.xml",
+		display_tex = "wolfgang_ancient_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wolfgang_ancient", "body_wolfgang_ancient", },
+		output_items = {  "wolfgang_ancient", "body_wolfgang_ancient", },
+		release_group = 146,
+	},
+	pack_ancient_woodie =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 107,
+		build_name_override = "woodie_ancient",
+		display_atlas = "bigportraits/woodie_ancient.xml",
+		display_tex = "woodie_ancient_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "woodie_ancient", "body_woodie_ancient", "hand_woodie_ancient", },
+		output_items = {  "woodie_ancient", "body_woodie_ancient", "hand_woodie_ancient", },
+		release_group = 146,
+	},
+	pack_ancient_wormwood =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 114,
+		build_name_override = "wormwood_ancient",
+		display_atlas = "bigportraits/wormwood_ancient.xml",
+		display_tex = "wormwood_ancient_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wormwood_ancient", "body_wormwood_ancient", "hand_wormwood_ancient", "legs_wormwood_ancient", },
+		output_items = {  "wormwood_ancient", "body_wormwood_ancient", "hand_wormwood_ancient", "legs_wormwood_ancient", },
+		release_group = 146,
+	},
 	pack_barber_items =
 	{
 		type = "purchase",
@@ -6109,6 +6176,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 132,
 	},
+	playerportrait_bg_armorruinsan =
+	{
+		type = "playerportrait",
+		skin_tags = { "ARTNOUVEAU", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 146,
+	},
 	playerportrait_bg_arrowsignpostcircus =
 	{
 		type = "playerportrait",
@@ -7032,6 +7106,13 @@ MISC_ITEMS =
 		skin_tags = { "NAUTICAL", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 132,
+	},
+	profileflair_armor_ruinsan =
+	{
+		type = "profileflair",
+		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 146,
 	},
 	profileflair_arrowsignpost_circus =
 	{

@@ -9,6 +9,8 @@ if TheNet:IsDedicated() then
     function PostProcessor__index:SetDistortionEffectTime(time) end
     function PostProcessor__index:SetDistortionFactor(factor) end
     function PostProcessor__index:SetDistortionRadii(inner, outer) end
+    function PostProcessor__index:SetDistortionFishEyeIntensity(intensity) end
+    function PostProcessor__index:SetDistortionFishEyeTime(time) end
     function PostProcessor__index:SetBloomEnabled(enabled) end
     function PostProcessor__index:IsBloomEnabled() return true end
     function PostProcessor__index:SetDistortionEnabled(enabled) end
@@ -64,6 +66,14 @@ end
 
 function PostProcessor__index:SetDistortionRadii(inner, outer)
     self:SetUniformVariable(UniformVariables.DISTORTION_PARAMS, nil, nil, inner, outer)
+end
+
+function PostProcessor__index:SetDistortionFishEyeIntensity(intensity)
+    self:SetUniformVariable(UniformVariables.DISTORTION_FISHEYE_PARAMS, intensity)
+end
+
+function PostProcessor__index:SetDistortionFishEyeTime(time)
+    self:SetUniformVariable(UniformVariables.DISTORTION_FISHEYE_PARAMS, nil, time)
 end
 
 local bloom_enabled = false
@@ -209,9 +219,10 @@ end
 
 function BuildDistortShader()
     UniformVariables.DISTORTION_PARAMS = PostProcessor:AddUniformVariable("DISTORTION_PARAMS", 4)
+    UniformVariables.DISTORTION_FISHEYE_PARAMS = PostProcessor:AddUniformVariable("FISHEYE_PARAMS", 2)
 
     PostProcessorEffects.Distort = PostProcessor:AddPostProcessEffect("shaders/postprocess_distort.ksh")
-    PostProcessor:SetEffectUniformVariables(PostProcessorEffects.Distort, UniformVariables.DISTORTION_PARAMS)
+    PostProcessor:SetEffectUniformVariables(PostProcessorEffects.Distort, UniformVariables.DISTORTION_PARAMS, UniformVariables.DISTORTION_FISHEYE_PARAMS)
 end
 
 function BuildLunacyShader()

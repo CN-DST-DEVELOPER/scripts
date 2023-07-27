@@ -556,6 +556,8 @@ local function MakeAltar(name, bank, build, anim, common_postinit, master_postin
         inst.MiniMapEntity:SetPriority(5)
         inst.MiniMapEntity:SetIcon(name..".png")
 
+        inst.scrapbook_specialinfo = "ALTARPLUG"
+
         inst.Light:SetFalloff(LIGHT_FALLOFF)
         inst.Light:SetIntensity(LIGHT_INTENSITY)
         inst.Light:SetRadius(LIGHT_RADIUS)

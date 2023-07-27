@@ -230,8 +230,7 @@ local function onupdatefueledraining(inst)
     local owner = inst.components.inventoryitem.owner
     inst.components.fueled.rate =
         owner ~= nil and
-        owner.components.sheltered ~= nil and
-        owner.components.sheltered.sheltered and
+		(owner.components.sheltered ~= nil and owner.components.sheltered.sheltered or owner.components.rainimmunity ~= nil) and
         1 or 1 + TUNING.REDLANTERN_RAIN_RATE * TheWorld.state.precipitationrate
 end
 

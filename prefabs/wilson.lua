@@ -8,6 +8,7 @@ local assets =
     Asset("ANIM", "anim/ui_beard_2x1.zip"),
     Asset("ANIM", "anim/ui_beard_1x1.zip"),
     Asset("ANIM", "anim/player_idles_wilson.zip"),
+    Asset("SCRIPT", "scripts/prefabs/skilltree_wilson.lua"),    
 }
 
 local prefabs =

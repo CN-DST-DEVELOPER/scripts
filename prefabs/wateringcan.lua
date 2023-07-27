@@ -126,6 +126,9 @@ local function MakeWateringCan(name, uses, water_amount)
 
         inst.displaynamefn = displaynamefn
 
+        inst.scrapbook_specialinfo = "WATERINGCAN"
+        inst.scrapbook_subcat = "tool"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

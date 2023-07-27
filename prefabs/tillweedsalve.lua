@@ -24,6 +24,8 @@ local function fn()
 
     inst:AddTag("show_spoilage")
 
+    inst.scrapbook_specialinfo = "TILLWEEDSALVE"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

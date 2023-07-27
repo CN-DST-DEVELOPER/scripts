@@ -473,6 +473,7 @@ local foods =
 			eater:AddDebuff("healthregenbuff", "healthregenbuff")
         end,
         floater = {"small", nil, 0.85},
+		scrapbook_healthvalue = 122, -- First tick + total ticks
 	},
 
     --new!
@@ -893,6 +894,7 @@ local foods =
 			eater:AddDebuff("sweettea_buff", "sweettea_buff")
         end,
 		card_def = {ingredients = {{"forgetmelots", 1}, {"honey", 1}, {"ice", 2}} },
+		scrapbook_sanityvalue = 45 -- first tick + total ticks
 	},
 
 	koalefig_trunk =
@@ -1041,6 +1043,7 @@ local foods =
         oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_BEEFALO,
 		OnPutInInventory = function(inst, owner) if owner ~= nil and owner:IsValid() then owner:PushEvent("learncookbookstats", inst.food_basename or inst.prefab) end end,
 		card_def = {ingredients = {{"twigs", 3}, {"acorn", 1}} },
+		scrapbook ={specialinfo="BEEFALOFEED"}
 	},
 
 	beefalotreat = 
@@ -1059,6 +1062,7 @@ local foods =
         floater = {"med", nil, 0.85},
         oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_BEEFALO,
 		OnPutInInventory = function(inst, owner) if owner ~= nil and owner:IsValid() then owner:PushEvent("learncookbookstats", inst.food_basename or inst.prefab) end end,
+		scrapbook ={specialinfo="BEEFALOTREAT"}
 	},
 }
 

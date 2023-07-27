@@ -92,6 +92,8 @@ local function fn()
     inst.DynamicShadow:SetSize(1, .5)
     inst.Transform:SetFourFaced()
 
+    inst.scrapbook_specialinfo = "BERNIE_ACTIVE"
+
     inst.AnimState:SetBank("bernie")
     inst.AnimState:SetBuild("bernie_build")
     inst.AnimState:PlayAnimation("idle_loop", true)

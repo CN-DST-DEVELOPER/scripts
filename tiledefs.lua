@@ -119,7 +119,7 @@ TileManager.AddTile(
         is_shoreline = true,
         ocean_depth = "SHALLOW",
         colors = COASTAL_SHORE_OCEAN_COLOR,
-        wavetint = WAVETINTS.shallow
+        wavetint = WAVETINTS.shallow,
     },
     {
         name = "map_edge",
@@ -141,7 +141,7 @@ TileManager.AddTile(
         is_shoreline = true,
         ocean_depth = "SHALLOW",
         colors = BRINEPOOL_SHORE_OCEAN_COLOR,
-        wavetint = WAVETINTS.brinepool
+        wavetint = WAVETINTS.brinepool,
     },
     {
         name = "map_edge",
@@ -162,7 +162,7 @@ TileManager.AddTile(
         mudsound = "dontstarve/movement/run_mud",
         ocean_depth = "SHALLOW",
         colors = COASTAL_OCEAN_COLOR,
-        wavetint = WAVETINTS.shallow
+        wavetint = WAVETINTS.shallow,
     },
     {
         name = "map_edge",
@@ -183,7 +183,7 @@ TileManager.AddTile(
         mudsound = "dontstarve/movement/run_mud",
         ocean_depth = "SHALLOW",
         colors = WATERLOG_OCEAN_COLOR,
-        wavetint = WAVETINTS.waterlog
+        wavetint = WAVETINTS.waterlog,
     },
     {
         name = "map_edge",
@@ -204,7 +204,7 @@ TileManager.AddTile(
         mudsound = "dontstarve/movement/run_mud",
         ocean_depth = "SHALLOW",
         colors = BRINEPOOL_OCEAN_COLOR,
-        wavetint = WAVETINTS.brinepool
+        wavetint = WAVETINTS.brinepool,
     },
     {
         name = "map_edge",
@@ -225,7 +225,7 @@ TileManager.AddTile(
         mudsound = "dontstarve/movement/run_mud",
         ocean_depth = "BASIC",
         colors = SWELL_OCEAN_COLOR,
-        wavetint = WAVETINTS.swell
+        wavetint = WAVETINTS.swell,
     },
     {
         name = "map_edge",
@@ -246,7 +246,7 @@ TileManager.AddTile(
         mudsound = "dontstarve/movement/run_mud",
         ocean_depth = "DEEP",
         colors = ROUGH_OCEAN_COLOR,
-        wavetint = WAVETINTS.rough
+        wavetint = WAVETINTS.rough,
     },
     {
         name = "map_edge",
@@ -267,7 +267,7 @@ TileManager.AddTile(
         mudsound = "dontstarve/movement/run_mud",
         ocean_depth = "VERY_DEEP",
         colors = HAZARDOUS_OCEAN_COLOR,
-        wavetint = WAVETINTS.hazardous
+        wavetint = WAVETINTS.hazardous,
     },
     {
         name = "map_edge",
@@ -290,7 +290,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_gateway_mini"
+        noise_texture="quagmire_gateway_mini",
     }
 )
 
@@ -308,7 +308,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_citystone_mini"
+        noise_texture="quagmire_citystone_mini",
     }
 )
 
@@ -326,7 +326,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_parkfield_mini"
+        noise_texture="quagmire_parkfield_mini",
     }
 )
 
@@ -344,7 +344,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_parkstone_mini"
+        noise_texture="quagmire_parkstone_mini",
     }
 )
 
@@ -362,7 +362,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_peatforest_mini"
+        noise_texture="quagmire_peatforest_mini",
     }
 )
 
@@ -386,6 +386,7 @@ TileManager.AddTile(
     },
     {
         name = "road",
+        pickupsound = "rock",
     }
 )
 
@@ -403,12 +404,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_pebblebeach"
+        noise_texture="mini_pebblebeach",
     },
     {
         name = "pebblebeach",
         bank_build = "turf_moon",
-        --pickupsound = "CHEEEZY"
+        pickupsound = "rock",
     }
 )
 
@@ -426,12 +427,13 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_pebblebeach"
+        noise_texture="mini_pebblebeach",
     },
     {
         name = "monkey_ground",
         anim = "monkey_ground",
         bank_build = "turf_monkey_ground",
+        pickupsound = "grainy",
     }
 )
 
@@ -449,11 +451,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_pebblebeach"
+        noise_texture="mini_pebblebeach",
     },
     {
         name = "shellbeach",
         bank_build = "turf_shellbeach",
+        pickupsound = "rock",
     }
 )
 
@@ -471,10 +474,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_marsh_noise"
+        noise_texture="mini_marsh_noise",
     },
     {
         name = "marsh",
+        pickupsound = "squidgy",
     }
 )
 
@@ -493,10 +497,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_rocky_noise"
+        noise_texture="mini_rocky_noise",
     },
     {
         name = "rocky",
+        pickupsound = "rock",
     }
 )
 
@@ -514,10 +519,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_grass2_noise"
+        noise_texture="mini_grass2_noise",
     },
     {
         name = "savanna",
+        pickupsound = "vegetation_grassy",
     }
 )
 
@@ -535,10 +541,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_forest_noise"
+        noise_texture="mini_forest_noise",
     },
     {
         name = "forest",
+        pickupsound = "vegetation_grassy",
     }
 )
 
@@ -556,10 +563,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_grass_noise"
+        noise_texture="mini_grass_noise",
     },
     {
         name = "grass",
+        pickupsound = "vegetation_grassy",
     }
 )
 
@@ -578,7 +586,8 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_dirt_noise"
+        noise_texture="mini_dirt_noise",
+        pickupsound = "grainy",
     }
 )
 
@@ -596,10 +605,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_deciduous_noise"
+        noise_texture="mini_deciduous_noise",
     },
     {
         name = "deciduous",
+        pickupsound = "cloth",
     }
 )
 
@@ -617,11 +627,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_desert_dirt_noise"
+        noise_texture="mini_desert_dirt_noise",
     },
     {
         name = "desertdirt", -- Inventory item
         anim = "dirt", -- Ground item
+        pickupsound = "grainy",
     }
 )
 
@@ -639,10 +650,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_cave_noise"
+        noise_texture="mini_cave_noise",
     },
     {
         name = "cave",
+        pickupsound = "squidgy",
     }
 )
 
@@ -660,10 +672,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_fungus_noise"
+        noise_texture="mini_fungus_noise",
     },
     {
         name = "fungus",
+        pickupsound = "vegetation_firm",
     }
 )
 
@@ -681,10 +694,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_fungus_red_noise"
+        noise_texture="mini_fungus_red_noise",
     },
     {
         name = "fungus_red",
+        pickupsound = "vegetation_firm",
     }
 )
 
@@ -702,10 +716,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_fungus_green_noise"
+        noise_texture="mini_fungus_green_noise",
     },
     {
         name = "fungus_green",
+        pickupsound = "vegetation_firm",
     }
 )
 
@@ -723,11 +738,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="Ground_noise_moon_fungus_mini"
+        noise_texture="Ground_noise_moon_fungus_mini",
     },
     {
         name = "fungus_moon",
         bank_build = "turf_fungus_moon",
+        pickupsound = "vegetation_firm",
     }
 )
 
@@ -745,10 +761,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_sinkhole_noise"
+        noise_texture="mini_sinkhole_noise",
     },
     {
         name = "sinkhole",
+        pickupsound = "squidgy",
     }
 )
 
@@ -767,11 +784,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_rock_noise"
+        noise_texture="mini_rock_noise",
     },
     {
         name = "underrock", -- Inventory item
         anim = "rock", -- Ground item
+        pickupsound = "rock",
     }
 )
 
@@ -789,10 +807,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_mud_noise"
+        noise_texture="mini_mud_noise",
     },
     {
         name = "mud",
+        pickupsound = "squidgy",
     }
 )
 
@@ -810,11 +829,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="Ground_noise_archive_mini"
+        noise_texture="Ground_noise_archive_mini",
     },
     {
         name = "archive",
         bank_build = "turf_archives",
+        pickupsound = "rock",
     }
 )
 
@@ -832,11 +852,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_ruinsbrick_noise"
+        noise_texture="mini_ruinsbrick_noise",
     },
     {
         name = "ruinsbrick_glow",
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -854,11 +875,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_ruinsbrick_noise"
+        noise_texture="mini_ruinsbrick_noise",
     },
     {
         name = "ruinsbrick",
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -876,11 +898,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_ruinstile_noise"
+        noise_texture="mini_ruinstile_noise",
     },
     {
         name = "ruinstiles_glow",
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -898,11 +921,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_ruinstile_noise"
+        noise_texture="mini_ruinstile_noise",
     },
     {
         name = "ruinstiles",
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -920,11 +944,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_ruinstile_noise"
+        noise_texture="mini_ruinstile_noise",
     },
     {
         name = "ruinstrim_glow",
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -942,11 +967,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_ruinstrim_noise"
+        noise_texture="mini_ruinstrim_noise",
     },
     {
         name = "ruinstrim",
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -964,11 +990,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_meteor"
+        noise_texture="mini_meteor",
     },
     {
         name = "meteor",
         bank_build = "turf_moon",
+        pickupsound = "rock",
     }
 )
 
@@ -989,7 +1016,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_marsh_noise"
+        noise_texture="mini_marsh_noise",
     }
 )
 
@@ -1010,10 +1037,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_dragonfly_noise"
+        noise_texture="mini_dragonfly_noise",
     },
     {
         name = "dragonfly",
+        pickupsound = "rock",
     }
 )
 
@@ -1033,10 +1061,11 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_woodfloor_noise"
+        noise_texture="mini_woodfloor_noise",
     },
     {
         name = "woodfloor",
+        pickupsound="wood",
     }
 )
 
@@ -1058,11 +1087,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_checker_noise"
+        noise_texture="mini_checker_noise",
     },
     {
         name = "checkerfloor", -- Inventory item
         anim = "checker", -- Ground item
+        pickupsound = "rock",
     }
 )
 
@@ -1083,12 +1113,13 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_mosaictiles_grey_noise"
+        noise_texture="mini_mosaictiles_grey_noise",
     },
     {
         name = "mosaic_grey", -- Inventory item
         anim = "mosaic_grey", -- Ground item
-        bank_build = "turf_drama",        
+        bank_build = "turf_drama", 
+        pickupsound = "rock",
     }
 )
 TileManager.AddTile(
@@ -1107,12 +1138,13 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_mosaictiles_red_noise"
+        noise_texture="mini_mosaictiles_red_noise",
     },
     {
         name = "mosaic_red", -- Inventory item
         anim = "mosaic_red", -- Ground item
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 TileManager.AddTile(
@@ -1131,12 +1163,13 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_mosaictiles_blue_noise"
+        noise_texture="mini_mosaictiles_blue_noise",
     },
     {
         name = "mosaic_blue", -- Inventory item
         anim = "mosaic_blue", -- Ground item
         bank_build = "turf_drama",
+        pickupsound = "rock",
     }
 )
 
@@ -1156,12 +1189,13 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_carpet2_noise"
+        noise_texture="mini_carpet2_noise",
     },
     {
         name = "carpetfloor2", -- Inventory item
         anim = "carpet2", -- Ground item
         bank_build = "turf_drama",
+        pickupsound = "cloth",
     }
 )
 
@@ -1181,11 +1215,12 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_carpet_noise"
+        noise_texture="mini_carpet_noise",
     },
     {
         name = "carpetfloor", -- Inventory item
         anim = "carpet", -- Ground item
+        pickupsound = "cloth",
     }
 )
 
@@ -1203,7 +1238,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_soil_mini"
+        noise_texture="quagmire_soil_mini",
     }
 )
 
@@ -1223,12 +1258,13 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_beard_hair"
+        noise_texture="mini_beard_hair",
     },
     {
         name = "beard_rug", -- Inventory item
         anim = "turf_beard", -- Ground item
         bank_build = "turf_beard",
+        pickupsound = "cloth",
     }
 )
 
@@ -1246,7 +1282,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="quagmire_soil_mini"
+        noise_texture="quagmire_soil_mini",
     }
 )
 
@@ -1264,7 +1300,8 @@ TileManager.AddTile(
     },
     {
         name="lavaarena_floor_ms",
-        noise_texture="lavaarena_trim_mini"
+        noise_texture="lavaarena_trim_mini",
+        --pickupsound = "grainy",
     }
 )
 
@@ -1282,7 +1319,7 @@ TileManager.AddTile(
     },
     {
         name="lavaarena_floor_ms",
-        noise_texture="lavaarena_floor_mini"
+        noise_texture="lavaarena_floor_mini",
     }
 )
 
@@ -1302,7 +1339,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="Ground_noise_lunarrift_mini"
+        noise_texture="Ground_noise_lunarrift_mini",
     }
 )
 

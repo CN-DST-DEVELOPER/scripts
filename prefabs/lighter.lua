@@ -100,8 +100,7 @@ local function onupdatefueledraining(inst)
     local owner = inst.components.inventoryitem ~= nil and inst.components.inventoryitem.owner or nil
     inst.components.fueled.rate =
         owner ~= nil and
-        owner.components.sheltered ~= nil and
-        owner.components.sheltered.sheltered and
+		(owner.components.sheltered ~= nil and owner.components.sheltered.sheltered or owner.components.rainimmunity ~= nil) and
         1 or 1 + TUNING.LIGHTER_RAIN_RATE * TheWorld.state.precipitationrate
 end
 
@@ -187,6 +186,8 @@ local function fn()
     inst:AddTag("weapon")
 
     MakeInventoryFloatable(inst, "small", 0.05, 0.8)
+
+    inst.scrapbook_specialinfo = "LIGHTER"
 
     inst.entity:SetPristine()
 

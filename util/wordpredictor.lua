@@ -67,7 +67,9 @@ local function _find_prediction_start(dictionaries, text, cursor_pos)
 						end
 					end
 				end
-				break
+				if prediction ~= nil then
+					break
+				end
 			end
 		end
 		if prediction ~= nil then

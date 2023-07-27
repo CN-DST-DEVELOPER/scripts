@@ -18,6 +18,19 @@ local slot_ids =
     "swap_item2",
 }
 
+local gym_symbols = {
+    "woodenarm",
+    "wooden_circles",
+    "wheel",
+    "slackrope",
+    "machine_rope_comp",
+    "platform",
+    "brick",
+    "board",
+    "meter",
+    "bellfx_art",
+}
+
 function MightyGym:SetLevelArt(level, target)
     if not target then
         target = self.inst 
@@ -26,7 +39,12 @@ function MightyGym:SetLevelArt(level, target)
         target.AnimState:HideSymbol("meter_color2")
     else
         target.AnimState:ShowSymbol("meter_color2")
-        target.AnimState:OverrideSymbol("meter_color2", "mighty_gym", "meter_color"..level) 
+        local gym_skin = target.gym_skin or target.prefab == "mighty_gym" and target.AnimState:GetSkinBuild() or nil
+        if gym_skin and gym_skin ~= "" then
+            target.AnimState:OverrideSkinSymbol("meter_color2", gym_skin, "meter_color"..level)
+        else
+            target.AnimState:OverrideSymbol("meter_color2", "mighty_gym", "meter_color"..level)
+        end
     end
 end
 
@@ -185,10 +203,7 @@ function MightyGym:UnloadWeight()
 
     self.inst.SoundEmitter:PlaySound("wolfgang1/mightygym/item_removed")
 
-    self:SetLevelArt(self:CalcWeight())
-    if self.strongman then
-        self:SetLevelArt(self:CalcWeight(), self.strongman)
-    end    
+    self:SetLevelArt(self:CalcWeight(), self.strongman)
 end
 
 function MightyGym:CanWorkout(doer)
@@ -270,6 +285,11 @@ function MightyGym:StartWorkout(doer)
 end
 
 function MightyGym:StopWorkout()
+    if self.strongman.gym_skin and self.strongman.gym_skin ~= "" then
+        self.inst.AnimState:SetSkin(self.strongman.gym_skin, "mighty_gym")
+    else
+        self.inst.AnimState:SetBuild("mighty_gym")
+    end
     self.strongman.components.strongman:StopWorkout()
     self.strongman.components.hunger.burnratemodifiers:RemoveModifier(self.inst)
     self.strongman = nil
@@ -292,7 +312,7 @@ function onremoved(player)
 end
 
 function MightyGym:CharacterEnterGym(player)
-
+    player.gym_skin = self.inst.AnimState:GetSkinBuild()
     -- HIDE THE REAL GYM
     self.inst:Hide()
     if self.inst.Physics then
@@ -303,7 +323,13 @@ function MightyGym:CharacterEnterGym(player)
     -- SWAP THE PLAYER
     player:ApplyAnimScale("mightiness", 1)
 
-    player.AnimState:AddOverrideBuild("mighty_gym")
+    if player.gym_skin and player.gym_skin ~= "" then
+        for _, symbol in ipairs(gym_symbols) do
+            player.AnimState:OverrideSkinSymbol(symbol, player.gym_skin, symbol)
+        end
+    else
+        player.AnimState:AddOverrideBuild("mighty_gym")
+    end
     player.AnimState:AddOverrideBuild("fx_wolfgang")
 
     local x,y,z = self.inst.Transform:GetWorldPosition()
@@ -371,7 +397,14 @@ function MightyGym:CharacterExitGym(player)
             if player.components.health:IsDead() then
                 teleport = true
             else
-                player.AnimState:ClearOverrideBuild("mighty_gym")
+                if player.gym_skin and player.gym_skin ~= "" then
+                    for _, symbol in ipairs(gym_symbols) do
+                        player.AnimState:ClearOverrideSymbol(symbol)
+                    end
+                    player.gym_skin = nil
+                else
+                    player.AnimState:ClearOverrideBuild("mighty_gym")
+                end
                 player.AnimState:ClearOverrideBuild("fx_wolfgang")  
                 
                 player:ApplyAnimScale("mightiness", player.components.mightiness:GetScale())

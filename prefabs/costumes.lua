@@ -49,6 +49,8 @@ local function makecostume(name)
 
         MakeInventoryFloatable(inst, "small", nil, nil, nil, nil, COSTUME_FLOATER_SWAPDATA)
 
+        inst.scrapbook_specialinfo = "COSTUME"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

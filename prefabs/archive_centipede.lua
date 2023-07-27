@@ -265,6 +265,8 @@ local function fn_common(tag)
 
     inst.entity:SetPristine()
 
+    inst.scrapbook_removedeps = {"gears"}
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -477,6 +479,8 @@ local function huskfn()
     inst:AddTag("mech")
 
     inst.entity:SetPristine()
+
+    inst.scrapbook_removedeps = {"gears"}
 
     if not TheWorld.ismastersim then
         return inst

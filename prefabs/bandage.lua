@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBuild("bandage")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_specialinfo = "BANDAGE"
+
     MakeInventoryFloatable(inst)
 
     inst.entity:SetPristine()

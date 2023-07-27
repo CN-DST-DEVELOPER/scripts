@@ -1,3 +1,5 @@
+require("components/raindome") --load some global functions defined for this component
+
 local GroundTiles = require("worldtiledefs")
 
 --require_health being true means an entity is considered "dead" if it lacks the health replica.
@@ -27,7 +29,7 @@ function HandleDugGround(dug_ground, x, y, z)
     if spawnturf ~= nil then
         local loot = SpawnPrefab("turf_"..spawnturf.name)
         if loot.components.inventoryitem ~= nil then
-            loot.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+			loot.components.inventoryitem:InheritWorldWetnessAtXZ(x, z)
         end
         loot.Transform:SetPosition(x, y, z)
         if loot.Physics ~= nil then

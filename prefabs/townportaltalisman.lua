@@ -156,6 +156,8 @@ local function fn()
     inst:AddTag("townportaltalisman")
     inst:AddTag("townportal")
 
+    inst.scrapbook_specialinfo = "TOWNPORTALTALISMAN"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

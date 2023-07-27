@@ -21,6 +21,8 @@ local function fn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+    inst.pickupsound = "wood"
+
     MakeInventoryPhysics(inst)
 
     inst.AnimState:SetBank("livinglog")

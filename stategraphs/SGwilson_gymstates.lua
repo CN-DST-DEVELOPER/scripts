@@ -126,7 +126,7 @@ GymStates.AddGymStates = function(states, actionhandlers, events)
             local gym = inst.components.strongman.gym
             local old = inst.components.mightiness:GetState()
             local oldpercent = inst.components.mightiness:GetPercent()
-            inst.components.mightiness:DoDelta(gym.components.mightygym:CalculateMightiness(true), true, nil, true)
+            inst.components.mightiness:DoDelta(gym.components.mightygym:CalculateMightiness(true), true, nil, true, true)
             local newpercent = inst.components.mightiness:GetPercent() 
 
             local change = ""
@@ -151,7 +151,9 @@ GymStates.AddGymStates = function(states, actionhandlers, events)
         events = 
         {
             EventHandler("animqueueover", function(inst)
-                if inst.components.mightiness:GetPercent() == 1 then
+                --if inst.components.mightiness:GetPercent() == 1 then
+                --    print(inst.components.mightiness:GetCurrent(), inst.components.mightiness:GetMax(),inst.components.mightiness:GetOverMax())
+                if inst.components.mightiness:GetCurrent() >= inst.components.mightiness:GetMax() + inst.components.mightiness:GetOverMax() then 
                     exitgym(inst)
                 else
                     inst.sg.statemem.dontleavegym = true
@@ -174,7 +176,7 @@ GymStates.AddGymStates = function(states, actionhandlers, events)
             local gym = inst.components.strongman.gym    
             local old = inst.components.mightiness:GetState()
             local oldpercent = inst.components.mightiness:GetPercent()
-            inst.components.mightiness:DoDelta(gym.components.mightygym:CalculateMightiness(false), true, nil, true)
+            inst.components.mightiness:DoDelta(gym.components.mightygym:CalculateMightiness(false), true, nil, true, true)
             local newpercent = inst.components.mightiness:GetPercent() 
 
             local change = ""
@@ -199,7 +201,9 @@ GymStates.AddGymStates = function(states, actionhandlers, events)
         events = 
         {
             EventHandler("animqueueover", function(inst)
-                if inst.components.mightiness:GetPercent() == 1 then
+                --if inst.components.mightiness:GetPercent() == 1 then
+                --         print(inst.components.mightiness:GetCurrent(), inst.components.mightiness:GetMax(),inst.components.mightiness:GetOverMax())
+                if inst.components.mightiness:GetCurrent() >= inst.components.mightiness:GetMax() + inst.components.mightiness:GetOverMax() then 
                     exitgym(inst)
                 else                
                     inst.sg.statemem.dontleavegym = true

@@ -58,6 +58,8 @@ function Placer:OnUpdate(dt)
             self.inst.Transform:SetPosition(TheWorld.Map:GetTileCenterPoint(pt:Get()))
         elseif self.snap_to_meters then
             self.inst.Transform:SetPosition(math.floor(pt.x) + .5, 0, math.floor(pt.z) + .5)
+		elseif self.snaptogrid then
+			self.inst.Transform:SetPosition(math.floor(pt.x + .5), 0, math.floor(pt.z + .5))
         elseif self.snap_to_boat_edge then
             local boats = TheSim:FindEntities(pt.x, 0, pt.z, TUNING.MAX_WALKABLE_PLATFORM_RADIUS, self.BOAT_MUST_TAGS)
             local boat = GetClosest(self.inst, boats)
@@ -90,6 +92,9 @@ function Placer:OnUpdate(dt)
     elseif self.snap_to_meters then
         local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
         self.inst.Transform:SetPosition(math.floor(x) + .5, 0, math.floor(z) + .5)
+	elseif self.snaptogrid then
+		local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
+		self.inst.Transform:SetPosition(math.floor(x + .5), 0, math.floor(z + .5))
     elseif self.snap_to_boat_edge then
         local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
         local boat = ThePlayer:GetCurrentPlatform()

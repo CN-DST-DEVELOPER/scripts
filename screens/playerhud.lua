@@ -17,6 +17,7 @@ local SandOver = require "widgets/sandover"
 local SandDustOver = require "widgets/sanddustover"
 local MoonstormOver = require "widgets/moonstormover"
 local MoonstormOver_Lightning = require "widgets/moonstormover_lightning"
+local RainDomeOver = require("widgets/raindomeover")
 local Leafcanopy = require "widgets/leafcanopy"
 local MindControlOver = require "widgets/mindcontrolover"
 local InkOver = require "widgets/inkover"
@@ -122,17 +123,23 @@ function PlayerHud:CreateOverlays(owner)
     self.drops_alpha= 0
 
     self.inst:ListenForEvent("moisturedelta", function(inst, data)
-            if data.new > data.old then
+			if owner.components.raindomewatcher ~= nil and owner.components.raindomewatcher:IsUnderRainDome() then
+				self.dropsplash = nil
+				if self.droptask ~= nil then
+					self.droptask:Cancel()
+					self.droptask = nil
+				end
+			elseif data.new > data.old then
                 self.dropsplash = true
                 if self.droptask then
                     self.droptask:Cancel()
-                    self.droptask = nil
                 end
                 self.droptask = self.inst:DoSimTaskInTime(3,function() self.dropsplash = nil end)
             end
         end, owner)
 
     self.leafcanopy = self.overlayroot:AddChild(Leafcanopy(owner))
+    self.raindomeover = self.overlayroot:AddChild(RainDomeOver(owner))
 
     self.storm_root = self.over_root:AddChild(Widget("storm_root"))
     self.storm_overlays = self.storm_root:AddChild(Widget("storm_overlays"))

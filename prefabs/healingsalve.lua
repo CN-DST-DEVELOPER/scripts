@@ -18,6 +18,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.05, 0.95)
 
+    inst.scrapbook_specialinfo = "HEALINGSALVE"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

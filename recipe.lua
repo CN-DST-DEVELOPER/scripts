@@ -98,6 +98,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.product       = product or name
     self.tab           = tab					-- DEPRECATED
 
+    self.nameoverride  = more_data.nameoverride -- Override the name string in the crafting menu.
 	self.description   = more_data.description -- override the description string in the crafting menu
 
     self.imagefn       = type(image) == "function" and image or nil

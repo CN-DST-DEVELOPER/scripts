@@ -235,6 +235,17 @@ table.insert(prefs, CreatePrefabSkin("anchor_nautical_item",
 	release_group = 132,
 }))
 
+table.insert(prefs, CreatePrefabSkin("armor_bramble_ancient",
+{
+	base_prefab = "armor_bramble",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) armor_bramble_init_fn(inst, "armor_bramble_ancient") end,
+	skin_tags = { "ARMOR_BRAMBLE", "ANCIENT", "CRAFTABLE", },
+	release_group = 146,
+}))
+
 table.insert(prefs, CreatePrefabSkin("armor_dragonfly_fangedcollar",
 {
 	base_prefab = "armordragonfly",
@@ -332,6 +343,16 @@ table.insert(prefs, CreatePrefabSkin("armor_marble_valkyrie",
 	init_fn = function(inst) armormarble_init_fn(inst, "armor_marble_valkyrie") end,
 	skin_tags = { "ARMORMARBLE", "VALKYRIE", "CRAFTABLE", },
 	release_group = 103,
+}))
+
+table.insert(prefs, CreatePrefabSkin("armor_ruins_an",
+{
+	base_prefab = "armorruins",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) armorruins_init_fn(inst, "armor_ruins_an") end,
+	skin_tags = { "ARMORRUINS", "ARTNOUVEAU", "CRAFTABLE", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("armor_ruins_arcane",
@@ -1309,7 +1330,7 @@ table.insert(prefs, CreatePrefabSkin("bugnet_frog",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) bugnet_init_fn(inst, "bugnet_frog") end,
 	skin_tags = { "BUGNET", "CRAFTABLE", },
-	skin_sound = "dontstarve/frog/attack_voice",
+	skin_sound = { ["net"] = "dontstarve/frog/attack_voice", },
 	release_group = 95,
 }))
 
@@ -1321,7 +1342,7 @@ table.insert(prefs, CreatePrefabSkin("bugnet_lavaproof",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) bugnet_init_fn(inst, "bugnet_lavaproof") end,
 	skin_tags = { "BUGNET", "CRAFTABLE", "T_UPDATE", },
-	skin_sound = "terraria1/skins/weapon_whoosh",
+	skin_sound = { ["net"] = "terraria1/skins/weapon_whoosh", },
 	release_group = 125,
 }))
 
@@ -1332,7 +1353,7 @@ table.insert(prefs, CreatePrefabSkin("bugnet_spider",
 	rarity = "ProofOfPurchase",
 	init_fn = function(inst) bugnet_init_fn(inst, "bugnet_spider") end,
 	skin_tags = { "BUGNET", "CRAFTABLE", },
-	skin_sound = "dontstarve/creatures/spider/attack_grunt",
+	skin_sound = { ["net"] = "dontstarve/creatures/spider/attack_grunt", },
 	release_group = 59,
 }))
 
@@ -1343,7 +1364,7 @@ table.insert(prefs, CreatePrefabSkin("bugnet_spider_white",
 	rarity = "ProofOfPurchase",
 	init_fn = function(inst) bugnet_init_fn(inst, "bugnet_spider_white") end,
 	skin_tags = { "BUGNET", "CRAFTABLE", },
-	skin_sound = "dontstarve/creatures/spider/attack_grunt",
+	skin_sound = { ["net"] = "dontstarve/creatures/spider/attack_grunt", },
 	release_group = 59,
 }))
 
@@ -2245,6 +2266,29 @@ table.insert(prefs, CreatePrefabSkin("featherhat_victorian",
 	release_group = 113,
 }))
 
+table.insert(prefs, CreatePrefabSkin("fence_ancient",
+{
+	base_prefab = "fence",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) fence_init_fn(inst, "fence_ancient") end,
+	skin_tags = { "FENCE", "CRAFTABLE", "ANCIENT", },
+	release_group = 146,
+}))
+
+table.insert(prefs, CreatePrefabSkin("fence_ancient_item",
+{
+	base_prefab = "fence_item",
+	type = "item",
+	build_name_override = "fence_ancient",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) fence_item_init_fn(inst, "fence_ancient") end,
+	skin_tags = { },
+	release_group = 146,
+}))
+
 table.insert(prefs, CreatePrefabSkin("fence_factory",
 {
 	base_prefab = "fence",
@@ -2289,6 +2333,17 @@ table.insert(prefs, CreatePrefabSkin("fence_fantasy_item",
 	init_fn = function(inst) fence_item_init_fn(inst, "fence_fantasy") end,
 	skin_tags = { },
 	release_group = 128,
+}))
+
+table.insert(prefs, CreatePrefabSkin("fence_gate_ancient",
+{
+	base_prefab = "fence_gate",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) fence_gate_init_fn(inst, "fence_gate_ancient") end,
+	skin_tags = { "FENCE_GATE", "CRAFTABLE", "ANCIENT", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("fence_gate_gingerbread",
@@ -2563,6 +2618,18 @@ table.insert(prefs, CreatePrefabSkin("fence_victorianbronze_item",
 	release_group = 113,
 }))
 
+table.insert(prefs, CreatePrefabSkin("fencegate_ancient_item",
+{
+	base_prefab = "fence_gate_item",
+	type = "item",
+	build_name_override = "fence_gate_ancient",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) fence_gate_item_init_fn(inst, "fence_gate_ancient") end,
+	skin_tags = { },
+	release_group = 146,
+}))
+
 table.insert(prefs, CreatePrefabSkin("fencegate_gingerbread_item",
 {
 	base_prefab = "fence_gate_item",
@@ -2774,7 +2841,7 @@ table.insert(prefs, CreatePrefabSkin("firestaff_flamelash",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) firestaff_init_fn(inst, "firestaff_flamelash") end,
 	skin_tags = { "FIRESTAFF", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = "terraria1/skins/flamelash",
+	skin_sound = { ["genericuse"] = "terraria1/skins/flamelash", },
 	release_group = 125,
 }))
 
@@ -2993,7 +3060,7 @@ table.insert(prefs, CreatePrefabSkin("glasscutter_terraprisma",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) glasscutter_init_fn(inst, "glasscutter_terraprisma") end,
 	skin_tags = { "GLASSCUTTER", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = "terraria1/skins/terraprisma_summon",
+	skin_sound = { ["equip"] = "terraria1/skins/terraprisma_summon", },
 	release_group = 125,
 }))
 
@@ -3026,7 +3093,7 @@ table.insert(prefs, CreatePrefabSkin("glomling_puft",
 	rarity = "Loyal",
 	init_fn = function(inst) glomling_init_fn(inst, "glomling_puft", "glomling_build" ) end,
 	skin_tags = { "PET", "CRAFTABLE", },
-	skin_sound = "dontstarve_DLC001/creatures/together/puft/",
+	skin_sound = { ["genericuse"] = "dontstarve_DLC001/creatures/together/puft/", },
 	release_group = 76,
 }))
 
@@ -3346,7 +3413,7 @@ table.insert(prefs, CreatePrefabSkin("hammer_hammush",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) hammer_init_fn(inst, "hammer_hammush") end,
 	skin_tags = { "HAMMER", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = "terraria1/skins/hammush",
+	skin_sound = { ["hit"] = "terraria1/skins/hammush", },
 	release_group = 125,
 }))
 
@@ -3640,7 +3707,7 @@ table.insert(prefs, CreatePrefabSkin("icestaff_icerod",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) icestaff_init_fn(inst, "icestaff_icerod") end,
 	skin_tags = { "ICESTAFF", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = "terraria1/skins/icerod",
+	skin_sound = { ["genericuse"] = "terraria1/skins/icerod", },
 	release_group = 125,
 }))
 
@@ -3764,7 +3831,7 @@ table.insert(prefs, CreatePrefabSkin("krampus_sack_voidbag",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) krampus_sack_init_fn(inst, "krampus_sack_voidbag") end,
 	skin_tags = { "KRAMPUS_SACK", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = "terraria1/skins/voidbag",
+	skin_sound = { ["open_ui"] = "terraria1/skins/voidbag", },
 	release_group = 125,
 }))
 
@@ -4149,6 +4216,17 @@ table.insert(prefs, CreatePrefabSkin("mastupgradelamp_nautical",
 	release_group = 125,
 }))
 
+table.insert(prefs, CreatePrefabSkin("meatrack_ancient",
+{
+	base_prefab = "meatrack",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) meatrack_init_fn(inst, "meatrack_ancient") end,
+	skin_tags = { "ANCIENT", "MEATRACK", "CRAFTABLE", },
+	release_group = 146,
+}))
+
 table.insert(prefs, CreatePrefabSkin("meatrack_butcher",
 {
 	base_prefab = "meatrack",
@@ -4191,6 +4269,17 @@ table.insert(prefs, CreatePrefabSkin("mermhouse_crafted_fantasy",
 	init_fn = function(inst) mermhouse_crafted_init_fn(inst, "mermhouse_crafted_fantasy") end,
 	skin_tags = { "MERMHOUSE_CRAFTED", "FANTASY", "CRAFTABLE", },
 	release_group = 128,
+}))
+
+table.insert(prefs, CreatePrefabSkin("mighty_gym_ancient",
+{
+	base_prefab = "mighty_gym",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) mighty_gym_init_fn(inst, "mighty_gym_ancient") end,
+	skin_tags = { "MIGHTY_GYM", "ANCIENT", "CRAFTABLE", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("minerhat_bonnet",
@@ -4475,7 +4564,7 @@ table.insert(prefs, CreatePrefabSkin("moonstaff_portal",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) opalstaff_init_fn(inst, "starstaff_portal") end,
 	skin_tags = { },
-	skin_sound = "terraria1/skins/lunarportalstaff",
+	skin_sound = { ["cast"] = "terraria1/skins/lunarportalstaff", },
 	release_group = 125,
 }))
 
@@ -4728,7 +4817,7 @@ table.insert(prefs, CreatePrefabSkin("orangestaff_rodofdiscord",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) orangestaff_init_fn(inst, "orangestaff_rodofdiscord") end,
 	skin_tags = { "ORANGESTAFF", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = { "terraria1/skins/rod_discord", "", },
+	skin_sound = { ["preteleport"] = "terraria1/skins/rod_discord", },
 	release_group = 125,
 }))
 
@@ -5709,7 +5798,7 @@ table.insert(prefs, CreatePrefabSkin("reviver_lifecrystal",
 	init_fn = function(inst) reviver_init_fn(inst, "reviver_lifecrystal") end,
 	skin_tags = { "REVIVER", "T_UPDATE", "CRAFTABLE", },
 	fx_prefab = { "", "reviver_cupid_glow_fx", },
-	skin_sound = "terraria1/skins/life_crystal",
+	skin_sound = { ["genericuse"] = "terraria1/skins/life_crystal", },
 	release_group = 125,
 }))
 
@@ -6308,8 +6397,19 @@ table.insert(prefs, CreatePrefabSkin("telestaff_shadowbeam",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) telestaff_init_fn(inst, "telestaff_shadowbeam") end,
 	skin_tags = { "TELESTAFF", "T_UPDATE", "CRAFTABLE", },
-	skin_sound = "terraria1/skins/shadowbeamstaff",
+	skin_sound = { ["cast"] = "terraria1/skins/shadowbeamstaff", },
 	release_group = 125,
+}))
+
+table.insert(prefs, CreatePrefabSkin("tent_ancient",
+{
+	base_prefab = "tent",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) tent_init_fn(inst, "tent_ancient") end,
+	skin_tags = { "TENT", "ANCIENT", "CRAFTABLE", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("tent_beach",
@@ -6633,6 +6733,17 @@ table.insert(prefs, CreatePrefabSkin("trap_teeth_tiger",
 	init_fn = function(inst) trap_teeth_init_fn(inst, "trap_teeth_tiger") end,
 	skin_tags = { "TRAP_TEETH", "YOTP", "CRAFTABLE", },
 	release_group = 80,
+}))
+
+table.insert(prefs, CreatePrefabSkin("treasurechest_ancient",
+{
+	base_prefab = "treasurechest",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) treasurechest_init_fn(inst, "treasurechest_ancient") end,
+	skin_tags = { "CHEST", "CRAFTABLE", "ANCIENT", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("treasurechest_cake",
@@ -9390,7 +9501,7 @@ table.insert(prefs, CreatePrefabSkin("whip_snapthorn",
 	rarity_modifier = "Woven",
 	init_fn = function(inst) whip_init_fn(inst, "whip_snapthorn") end,
 	skin_tags = { "T_UPDATE", "WHIP", "CRAFTABLE", },
-	skin_sound = { "terraria1/skins/snapthorn", "terraria1/skins/snapthorn", },
+	skin_sound = { ["large"] = "terraria1/skins/snapthorn", ["small"] = "terraria1/skins/snapthorn", },
 	release_group = 125,
 }))
 
@@ -10738,6 +10849,18 @@ table.insert(prefs, CreatePrefabSkin("winterometer_circus",
 	release_group = 48,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wolfgang_ancient",
+{
+	base_prefab = "wolfgang",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "ANCIENT", "BASE", "WOLFGANG", },
+	bigportrait_anim = { build = "bigportraits/wolfgang_ancient.xml", symbol = "wolfgang_ancient_oval.tex"},
+	skins = { ghost_skin = "ghost_wolfgang_build", mighty_skin = "wolfgang_mighty_ancient", normal_skin = "wolfgang_ancient", wimpy_skin = "wolfgang_skinny_ancient", },
+	release_group = 146,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wolfgang_combatant",
 {
 	base_prefab = "wolfgang",
@@ -11043,6 +11166,18 @@ table.insert(prefs, CreatePrefabSkin("wonkey_none",
 	skins = { ghost_skin = "ghost_wonkey_build", normal_skin = "wonkey", },
 	torso_tuck_builds = { "wonkey", },
 	release_group = 133,
+}))
+
+table.insert(prefs, CreatePrefabSkin("woodie_ancient",
+{
+	base_prefab = "woodie",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "ANCIENT", "BASE", "WOODIE", },
+	bigportrait_anim = { build = "bigportraits/woodie_ancient.xml", symbol = "woodie_ancient_oval.tex"},
+	skins = { ghost_skin = "ghost_woodie_build", ghost_werebeaver_skin = "ghost_werebeaver_build", ghost_weregoose_skin = "ghost_weregoose_build", ghost_weremoose_skin = "ghost_weremoose_build", normal_skin = "woodie_ancient", werebeaver_skin = "werebeaver_build", weregoose_skin = "weregoose_build", weremoose_skin = "weremoose_build", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("woodie_combatant",
@@ -11394,6 +11529,19 @@ table.insert(prefs, CreatePrefabSkin("wormhole_worm",
 	init_fn = function(inst) wormhole_init_fn(inst, "wormhole_worm") end,
 	skin_tags = { "WORMHOLE", "CRAFTABLE", },
 	release_group = 115,
+}))
+
+table.insert(prefs, CreatePrefabSkin("wormwood_ancient",
+{
+	base_prefab = "wormwood",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "BASE", "WORMWOOD", "ANCIENT", },
+	bigportrait_anim = { build = "bigportraits/wormwood_ancient.xml", symbol = "wormwood_ancient_oval.tex"},
+	skins = { ghost_skin = "ghost_wormwood_ancient", normal_skin = "wormwood_ancient", stage_2 = "wormwood_ancient_stage2", stage_3 = "wormwood_ancient_stage3", stage_4 = "wormwood_ancient_stage4", },
+	has_alternate_for_body = { "wormwood_ancient", "wormwood_ancient_stage2", "wormwood_ancient_stage3", "wormwood_ancient_stage4", },
+	release_group = 146,
 }))
 
 table.insert(prefs, CreatePrefabSkin("wormwood_cactus",

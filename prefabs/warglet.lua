@@ -12,8 +12,6 @@ local prefabs =
 {
     "houndstooth",
     "monstermeat",
-    "redgem",
-    "bluegem",
     "splash_green",
 	"houndcorpse",
 }

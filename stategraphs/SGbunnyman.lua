@@ -20,6 +20,11 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    EventHandler("cheer", function(inst, data)
+        if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
+            inst.sg:GoToState("cheer")
+        end
+    end),
 }
 
 local states =
@@ -155,6 +160,24 @@ local states =
             inst.AnimState:PlayAnimation("hit")
             inst.Physics:Stop()
 			CommonHandlers.UpdateHitRecoveryDelay(inst)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+    State{
+        name = "cheer",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            CommonHandlers.UpdateHitRecoveryDelay(inst)
+            inst.AnimState:PlayAnimation("idle_happy")
+            inst.SoundEmitter:PlaySound("dontstarve/creatures/bunnyman/happy")
         end,
 
         events =

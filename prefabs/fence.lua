@@ -775,6 +775,8 @@ local function MakeInvItem(name, placement, animdata, isdoor)
 
         inst.entity:SetPristine()
 
+        inst.scrapbook_anim = "inventory"
+
         if not TheWorld.ismastersim then
             return inst
         end

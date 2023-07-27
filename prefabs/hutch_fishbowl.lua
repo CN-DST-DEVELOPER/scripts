@@ -188,6 +188,8 @@ local function fn()
     inst.AnimState:SetBuild("hutch_fishbowl")
     inst.AnimState:PlayAnimation("idle_loop", true)
 
+    inst.scrapbook_specialinfo = "HUTCHFISHBOWL"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

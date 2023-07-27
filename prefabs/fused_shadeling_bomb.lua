@@ -17,8 +17,6 @@ local GROW_TIME = 2 * 35 * FRAMES
 ----
 local function ball_start_growing(inst)
     inst.AnimState:PlayAnimation("ball_grow")
-
-    inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_grow")
 end
 
 local function ball_explode(inst)
@@ -36,14 +34,12 @@ local function make_ball()
 
 	inst.entity:AddTransform()
 	inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
 	inst.entity:AddFollower()
 
     inst.AnimState:SetBank("fused_shadeling_bomb")
     inst.AnimState:SetBuild("fused_shadeling_bomb")
     inst.AnimState:SetDeltaTimeMultiplier(0.5)
     inst.AnimState:PlayAnimation("ball_idle", true)
-    inst.AnimState:SetSymbolLightOverride("red_art", 1.0)
 
     inst.StartGrowing = ball_start_growing
     inst.Explode = ball_explode
@@ -100,13 +96,12 @@ local function do_explosion_effect(inst, ix, iy, iz)
     if not ix then
         ix, iy, iz = inst.Transform:GetWorldPosition()
     end
+    SpawnPrefab("fused_shadeling_bomb_death_fx").Transform:SetPosition(ix, iy, iz)
 
     local exploded_entities = TheSim:FindEntities(ix, iy, iz, EXPLODE_RANGE, EXPLODE_HIT_MUST_TAGS, EXPLODE_HIT_CANT_TAGS)
     for _, exploded_entity in ipairs(exploded_entities) do
         exploded_entity.components.combat:GetAttacked(inst, TUNING.FUSED_SHADELING_BOMB_EXPLOSION_DAMAGE, nil, nil, {planar = TUNING.FUSED_SHADELING_BOMB_EXPLOSION_PLANARDAMAGE})
     end
-
-    SpawnPrefab("fused_shadeling_bomb_death_fx").Transform:SetPosition(ix, iy, iz)
     SpawnPrefab("fused_shadeling_bomb_scorch").Transform:SetPosition(ix, iy, iz)
 end
 
@@ -121,7 +116,6 @@ local function do_quickfuse_bomb_toss(inst, ix, iy, iz, angle)
         speed * math.cos(angle),
         8 + 2 * math.random(),
         speed * math.sin(angle))
-    quickfuse_bomb.Transform:SetRotation(angle)
 end
 
 local EXTRA_QUICKFUSE_BOMBS = 3
@@ -137,14 +131,12 @@ local function do_full_explode(inst)
             GetRandomWithVariance(initial_angle + i * angle_per_bomb, PI/6)
         )
     end
-    inst:DoTaskInTime((EXTRA_QUICKFUSE_BOMBS + 1) * EXTRA_QUICKFUSE_TIMEPERBOMB, inst.Remove)
+    inst:DoTaskInTime((EXTRA_QUICKFUSE_BOMBS + 1) * EXTRA_QUICKFUSE_TIMEPERBOMB)
 
     do_explosion_effect(inst, ix, iy, iz)
 
     inst.persists = false
     inst:RemoveFromScene()
-
-    inst.SoundEmitter:KillSound("walk")
 end
 
 local RETARGET_MUST_TAGS = { "_combat" }
@@ -192,6 +184,8 @@ local function on_timer_done(inst, data)
         on_spawn_finished(inst)
     elseif data.name == START_GROW_TIMERNAME then
         inst._start_ball_growing:push()
+
+        inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
     elseif data.name == SIZE_UP_TIMERNAME then
         inst._current_scale = math.min(inst._current_scale + SIZE_UP_BY_TICK, FULL_SIZE)
         inst.AnimState:SetScale(inst._current_scale, inst._current_scale)
@@ -237,7 +231,7 @@ local function fn()
     inst.AnimState:SetBank("fused_shadeling_bomb")
     inst.AnimState:SetBuild("fused_shadeling_bomb")
     inst.AnimState:PlayAnimation("idle_ground", true)
-    inst.AnimState:HideSymbol("red_art")
+    inst.AnimState:Hide("RED")
     inst.scrapbook_anim = "idle_2"
     inst.scrapbook_weapondamage = TUNING.FUSED_SHADELING_BOMB_EXPLOSION_DAMAGE
     inst.scrapbook_planardamage = TUNING.FUSED_SHADELING_BOMB_EXPLOSION_PLANARDAMAGE
@@ -293,10 +287,6 @@ local function fn()
 end
 
 ----
-local function play_death_fx_sound(inst)
-    inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
-end
-
 local function death_fx_fn()
     local inst = CreateEntity()
 
@@ -308,18 +298,15 @@ local function death_fx_fn()
     inst.AnimState:SetBank("fused_shadeling_bomb")
     inst.AnimState:SetBuild("fused_shadeling_bomb")
     inst.AnimState:PlayAnimation("death_fx")
-    inst.AnimState:SetSymbolLightOverride("red_art", 1.0)
-
-    inst:AddTag("FX")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
 
+    inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
+
     inst.persists = false
-    inst:DoTaskInTime(0, play_death_fx_sound)
-    inst:DoTaskInTime(2/3, inst.Remove)
 
     return inst
 end
@@ -357,7 +344,6 @@ local function quickfuse_fn()
     inst.AnimState:SetBank("fused_shadeling_bomb")
     inst.AnimState:SetBuild("fused_shadeling_bomb")
     inst.AnimState:PlayAnimation("ball_grow", true)
-    inst.AnimState:SetSymbolLightOverride("red_art", 1.0)
 
     inst:SetPrefabNameOverride("fused_shadeling_bomb")
 

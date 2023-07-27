@@ -59,6 +59,8 @@ local function fn()
 
 	inst:AddTag("spider_whistle")
 
+    inst.scrapbook_specialinfo = "SPIDERWHISTLE"
+
 	inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

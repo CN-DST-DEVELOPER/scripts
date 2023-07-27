@@ -45,6 +45,13 @@ function fns.IsNearDanger(inst, hounded_ok)
         nil, nil, nopigdanger and DANGER_NOPIG_ONEOF_TAGS or DANGER_ONEOF_TAGS) ~= nil
 end
 
+--V2C: Things to explicitly hide mouseover Attack command when not Force Attacking.
+--     e.g. other players' shadow creatures
+--NOTE: Normally, non-hostile creatures still show "Attack" when you mouseover.
+function fns.TargetForceAttackOnly(inst, target)
+	return target.HostileToPlayerTest ~= nil and target:HasTag("shadowcreature") and not target:HostileToPlayerTest(inst)
+end
+
 function fns.SetGymStartState(inst)
     inst.Transform:SetNoFaced()
 
@@ -306,7 +313,7 @@ end
 
 local function DropWetTool(inst, data)
     --Tool slip.
-    if inst.components.moisture:GetSegs() < 4 or inst:HasTag("stronggrip") then
+	if inst.components.moisture:GetSegs() < 4 or inst:HasTag("stronggrip") or inst.components.rainimmunity ~= nil then
         return
     end
 
@@ -413,8 +420,9 @@ local PICKUPSOUNDS = {
     ["metal"] = "aqol/new_test/metal",
     ["rock"] = "aqol/new_test/rock",
     ["vegetation_firm"] = "aqol/new_test/vegetation_firm",
-    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",
-
+    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",    
+    ["squidgy"] = "aqol/new_test/squidgy",
+    ["grainy"] = "aqol/new_test/grainy",
     ["DEFAULT_FALLBACK"] = "dontstarve/HUD/collect_resource",
 }
 
@@ -568,10 +576,11 @@ end
 function fns.ArmorBroke(inst, data)
     if data.armor ~= nil then
         local sameArmor = inst.components.inventory:FindItem(function(item)
-            return item.prefab == data.armor.prefab
+			return item.prefab == data.armor.prefab and item.components.equippable ~= nil
         end)
         if sameArmor ~= nil then
-            inst.components.inventory:Equip(sameArmor)
+			local force_ui_anim = data.armor.components.armor.keeponfinished
+			inst.components.inventory:Equip(sameArmor, nil, nil, force_ui_anim)
         end
     end
 end
@@ -649,11 +658,13 @@ end
 local function AddActivePlayerComponents(inst)
     inst:AddComponent("hudindicatorwatcher")
     inst:AddComponent("playerhearing")
+	inst:AddComponent("raindomewatcher")
 end
 
 local function RemoveActivePlayerComponents(inst)
     inst:RemoveComponent("hudindicatorwatcher")
     inst:RemoveComponent("playerhearing")
+	inst:RemoveComponent("raindomewatcher")
 end
 
 local function ActivateHUD(inst)
@@ -1360,7 +1371,9 @@ end
 --------------------------------------------------------------------------
 
 local function DoEffects(pet)
-    SpawnPrefab(pet:HasTag("flying") and "spawn_fx_small_high" or "spawn_fx_small").Transform:SetPosition(pet.Transform:GetWorldPosition())
+    if not pet.no_spawn_fx then
+        SpawnPrefab(pet:HasTag("flying") and "spawn_fx_small_high" or "spawn_fx_small").Transform:SetPosition(pet.Transform:GetWorldPosition())
+    end
 end
 
 local function OnSpawnPet(inst, pet)
@@ -2147,6 +2160,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
 		inst.isplayer = true
 
+		inst.TargetForceAttackOnly = fns.TargetForceAttackOnly
+
         if common_postinit ~= nil then
             common_postinit(inst)
         end
@@ -2181,6 +2196,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._underleafcanopy = net_bool(inst.GUID, "localplayer._underleafcanopy","underleafcanopydirty")
         inst._lunarportalmax = net_event(inst.GUID, "localplayer._lunarportalmax")
         inst._shadowportalmax = net_event(inst.GUID, "localplayer._shadowportalmax")
+        inst._skilltreeactivatedany = net_event(inst.GUID, "localplayer._skilltreeactivatedany")
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
             inst.yotb_skins_sets = net_shortint(inst.GUID, "player.yotb_skins_sets")
@@ -2288,7 +2304,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		inst:AddComponent("damagetypebonus")
 
         inst:AddComponent("planardamage")
-        inst.components.planardamage:SetBaseDamage(0)
+        inst:AddComponent("planardefense")
 
         local gamemode = TheNet:GetServerGameMode()
         if gamemode == "lavaarena" then

@@ -1,6 +1,8 @@
 local ConstructionSite = Class(function(self, inst)
     self.inst = inst
 
+	self._enabled = net_bool(inst.GUID, "constructionsite._enabled")
+
     if TheWorld.ismastersim then
         self.classified = SpawnPrefab("constructionsite_classified")
         self.classified.entity:SetParent(inst.entity)
@@ -47,6 +49,10 @@ end
 --Server interface
 --------------------------------------------------------------------------
 
+function ConstructionSite:SetEnabled(enabled)
+	self._enabled:set(enabled)
+end
+
 function ConstructionSite:SetBuilder(builder)
     self.classified.Network:SetClassifiedTarget(builder or self.inst)
     if self.inst.components.constructionsite == nil then
@@ -62,6 +68,10 @@ end
 --------------------------------------------------------------------------
 --Common interface
 --------------------------------------------------------------------------
+
+function ConstructionSite:IsEnabled()
+	return self._enabled:value()
+end
 
 function ConstructionSite:IsBuilder(guy)
     if self.inst.components.constructionsite ~= nil then

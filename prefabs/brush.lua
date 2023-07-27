@@ -34,6 +34,9 @@ local function fn()
     local swap_data = {sym_build = "swap_beefalobrush", bank = "beefalobrush"}
     MakeInventoryFloatable(inst, "med", 0.15, {1.1, 0.5, 1.1}, true, -15, swap_data)
 
+    inst.scrapbook_specialinfo = "BRUSH"
+    inst.scrapbook_subcat = "tool"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

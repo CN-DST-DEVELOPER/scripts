@@ -183,3 +183,17 @@ TheMixer:AddNewMix("silence", 0, 8,
     [sfx] = 1,
     [slurp] = 0,
 })
+
+TheMixer:AddNewMix("flying", 2, 3,
+{
+    [amb] = .4,
+    [cloud] = .4,
+    [music] = .7,
+    [voice] = .2,
+    [movement] = .2,
+    [creature] = .2,
+    [player] = 1,
+    [HUD] = 1,
+    [sfx] = .2,
+    [slurp] = 0,
+})

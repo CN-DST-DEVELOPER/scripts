@@ -124,7 +124,9 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/rifts2.fev"),
     Asset("FILE", "sound/rifts2.fsb"),
 
-    
+    Asset("SOUNDPACKAGE", "sound/meta2.fev"),
+    Asset("FILE", "sound/meta2.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods
@@ -418,6 +420,9 @@ local assets =
 
     Asset("ATLAS", "images/skilltree2.xml"),
     Asset("IMAGE", "images/skilltree2.tex"),
+
+    Asset("ATLAS", "images/skilltree3.xml"),
+    Asset("IMAGE", "images/skilltree3.tex"),
 
     Asset("ATLAS", "images/skilltree_icons.xml"),
     Asset("IMAGE", "images/skilltree_icons.tex"),    

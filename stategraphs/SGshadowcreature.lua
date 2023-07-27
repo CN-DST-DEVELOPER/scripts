@@ -29,6 +29,10 @@ local events =
     CommonHandlers.OnLocomote(false, true),
 }
 
+local function onattackreflected(inst)
+	inst.sg.statemem.attackreflected = true
+end
+
 local function FinishExtendedSound(inst, soundid)
     inst.SoundEmitter:KillSound("sound_"..tostring(soundid))
     inst.sg.mem.soundcache[soundid] = nil
@@ -102,7 +106,18 @@ local states =
         timeline =
         {
             TimeEvent(14*FRAMES, function(inst) PlayExtendedSound(inst, "attack") end),
-            TimeEvent(16*FRAMES, function(inst) inst.components.combat:DoAttack(inst.sg.statemem.target) end),
+			TimeEvent(16*FRAMES, function(inst)
+				--The stategraph event handler is delayed, so it won't be
+				--accurate for detecting attacks due to damage reflection
+				inst:ListenForEvent("attacked", onattackreflected)
+				inst.components.combat:DoAttack(inst.sg.statemem.target)
+				inst:RemoveEventCallback("attacked", onattackreflected)
+			end),
+			FrameEvent(17, function(inst)
+				if inst.sg.statemem.attackreflected and not inst.components.health:IsDead() then
+					inst.sg:GoToState("hit")
+				end
+			end),
         },
 
         events =

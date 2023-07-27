@@ -228,7 +228,7 @@ local function ReticuleTargetFn(inst)
     dir.x = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
     dir.y = 0
     dir.z = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
-    local deadzone = .3
+	local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
 
     if math.abs(dir.x) >= deadzone or math.abs(dir.z) >= deadzone then
         dir = dir:GetNormalized()

@@ -45,6 +45,8 @@ local MOUNTED_CAST_TAGS = {"pocketwatch_mountedcast"}
 local function healfn()
 	local inst = PocketWatchCommon.common_fn("pocketwatch", "pocketwatch_marble", Heal_DoCastSpell, true, MOUNTED_CAST_TAGS)
 
+	inst.scrapbook_specialinfo = "POCKETWATCH_HEAL"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -148,6 +150,8 @@ local function revivefn()
 
 	inst.GetActionVerb_CAST_POCKETWATCH = "REVIVER"
 	inst.pocketwatch_CanTarget = Revive_CanTarget
+
+	inst.scrapbook_specialinfo = "POCKETWATCH_REVIVE"
 
     if not TheWorld.ismastersim then
         return inst
@@ -290,6 +294,8 @@ local function recallfn()
 
 	inst.GetActionVerb_CAST_POCKETWATCH = Recall_GetActionVerb
 
+	inst.scrapbook_specialinfo = "POCKETWATCH_RECALL"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -399,6 +405,7 @@ local function warpfn()
 	local inst = PocketWatchCommon.common_fn("pocketwatch", "pocketwatch_warp", Warp_DoCastSpell, true, WARP_WATCH_TAGS)
 
 	inst.GetActionVerb_CAST_POCKETWATCH = "WARP"
+	inst.scrapbook_specialinfo = "POCKETWATCH_WARP"
 
     if not TheWorld.ismastersim then
         return inst

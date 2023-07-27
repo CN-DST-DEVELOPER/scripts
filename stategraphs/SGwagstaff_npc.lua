@@ -284,7 +284,7 @@ local states =
 						inst.components.trader:Enable()
 					end
 					if inst.components.constructionsite ~= nil then
-						inst.components.constructionsite:SetCanConstruct(true)
+						inst.components.constructionsite:Enable()
 					end
                     inst.request_task = inst:DoPeriodicTask(10,inst.doplayerrequest)
                 end
@@ -298,7 +298,7 @@ local states =
 				inst.components.trader:Disable()
 			end
 			if inst.components.constructionsite ~= nil then
-				inst.components.constructionsite:SetCanConstruct(false)
+				inst.components.constructionsite:Disable()
 			end
             if inst.request_task then
                 inst.request_task:Cancel()

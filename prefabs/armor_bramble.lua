@@ -26,7 +26,13 @@ local function OnBlocked(owner, data, inst)
 end
 
 local function onequip(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "armor_bramble", "swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "armor_bramble")
+    else
+		owner.AnimState:OverrideSymbol("swap_body", "armor_bramble", "swap_body")
+    end
 
     inst:ListenForEvent("blocked", inst._onblocked, owner)
     inst:ListenForEvent("attacked", inst._onblocked, owner)
@@ -37,6 +43,11 @@ local function onunequip(inst, owner)
 
     inst:RemoveEventCallback("blocked", inst._onblocked, owner)
     inst:RemoveEventCallback("attacked", inst._onblocked, owner)
+
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
 end
 
 local function fn()
@@ -54,6 +65,7 @@ local function fn()
     inst.AnimState:SetBuild("armor_bramble")
     inst.AnimState:PlayAnimation("anim")
 
+    inst.scrapbook_specialinfo = "ARMORBRAMBLE"
     inst.scrapbook_damage = TUNING.ARMORBRAMBLE_DMG
 
     inst.foleysound = "dontstarve/movement/foley/cactus_armor"

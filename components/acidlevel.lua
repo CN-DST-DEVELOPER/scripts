@@ -41,8 +41,10 @@ local AcidLevel = Class(function(self, inst)
     self:OnIsRaining(TheWorld.state.israining)
 end)
 
-function AcidLevel:DoAcidRainTick()
-    local inst, self = self, self.components.acidlevel -- Entity-Component perspective switch.
+local function DoAcidRainTick(inst, self)
+	if inst.components.rainimmunity ~= nil then
+		return
+	end
 
     local damage = TUNING.ACIDRAIN_DAMAGE_TIME * TUNING.ACIDRAIN_DAMAGE_PER_SECOND -- Do not apply rate here.
     local rate = (inst.components.moisture and inst.components.moisture:_GetMoistureRateAssumingRain() or TheWorld.state.precipitationrate)
@@ -76,13 +78,13 @@ function AcidLevel:DoAcidRainTick()
     end
 end
 
-function AcidLevel:DoRainTick()
-    local inst, self = self, self.components.acidlevel -- Entity-Component perspective switch.
-
+local function DoRainTick(inst, self)
+	if inst.components.rainimmunity ~= nil then
+		return
+	end
     local rate = (inst.components.moisture and inst.components.moisture:_GetMoistureRateAssumingRain() or TheWorld.state.precipitationrate) * TUNING.ACIDRAIN_DAMAGE_TIME
     self:DoDelta(-rate)
 end
-
 
 function AcidLevel:SetOverrideAcidRainTickFn(fn)
     -- Return 0 in overrideacidraintick to skip default behaviour on the inst.
@@ -92,11 +94,10 @@ function AcidLevel:GetOverrideAcidRainTickFn()
     return self.overrideacidraintick
 end
 
-
 function AcidLevel:OnIsAcidRaining(isacidraining)
     if isacidraining then
         if self.inst.acidlevel_acid_task == nil then
-            self.inst.acidlevel_acid_task = self.inst:DoPeriodicTask(TUNING.ACIDRAIN_DAMAGE_TIME, self.DoAcidRainTick, math.random() * TUNING.ACIDRAIN_DAMAGE_TIME)
+            self.inst.acidlevel_acid_task = self.inst:DoPeriodicTask(TUNING.ACIDRAIN_DAMAGE_TIME, DoAcidRainTick, math.random() * TUNING.ACIDRAIN_DAMAGE_TIME, self)
         end
         if self.onstartisacidrainingfn then
             self.onstartisacidrainingfn(self.inst)
@@ -113,7 +114,7 @@ end
 function AcidLevel:OnIsRaining(israining)
     if israining then
         if self.inst.acidlevel_rain_task == nil then
-            self.inst.acidlevel_rain_task = self.inst:DoPeriodicTask(TUNING.ACIDRAIN_DAMAGE_TIME, self.DoRainTick, math.random() * TUNING.ACIDRAIN_DAMAGE_TIME)
+            self.inst.acidlevel_rain_task = self.inst:DoPeriodicTask(TUNING.ACIDRAIN_DAMAGE_TIME, DoRainTick, math.random() * TUNING.ACIDRAIN_DAMAGE_TIME, self)
         end
         if self.onstartisrainingfn then
             self.onstartisrainingfn(self.inst)

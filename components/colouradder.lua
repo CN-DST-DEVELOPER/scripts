@@ -30,6 +30,8 @@ function ColourAdder:AttachChild(child)
 		local r, g, b, a = self:GetCurrentColour()
 		if child.components.colouradder ~= nil then
 			child.components.colouradder:PushColour(self.inst, r, g, b, a)
+		elseif child.components.colouraddersync ~= nil then
+			child.components.colouraddersync:SyncColour(r, g, b, a)
 		else
 			child.AnimState:SetAddColour(r, g, b, a)
 		end
@@ -63,10 +65,16 @@ end
 
 function ColourAdder:OnSetColour(r, g, b, a)
     self.colour[1], self.colour[2], self.colour[3], self.colour[4] = r, g, b, a
-    self.inst.AnimState:SetAddColour(r, g, b, a)
+	if self.inst.components.colouraddersync ~= nil then
+		self.inst.components.colouraddersync:SyncColour(r, g, b, a)
+	else
+		self.inst.AnimState:SetAddColour(r, g, b, a)
+	end
     for k, v in pairs(self.children) do
 		if k.components.colouradder ~= nil then
 			k.components.colouradder:PushColour(self.inst, r, g, b, a)
+		elseif k.components.colouraddersync ~= nil then
+			k.components.colouraddersync:SyncColour(r, g, b, a)
 		else
 			k.AnimState:SetAddColour(r, g, b, a)
 		end

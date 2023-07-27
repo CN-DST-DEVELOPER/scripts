@@ -120,7 +120,8 @@ local RETARGET_ONEOF_TAGS = { "character", "animal", "monster" }
 local function KillerRetarget(inst)
     return FindEntity(inst, SpringCombatMod(8),
         function(guy)
-            return inst.components.combat:CanTarget(guy)
+            return inst.components.combat:CanTarget(guy) and
+                not (guy.components.skilltreeupdater and guy.components.skilltreeupdater:IsActivated("wormwood_bees"))
         end,
         RETARGET_MUST_TAGS,
         RETARGET_CANT_TAGS,
@@ -131,7 +132,8 @@ local function SpringBeeRetarget(inst)
     return TheWorld.state.isspring and
         FindEntity(inst, 4,
             function(guy)
-                return inst.components.combat:CanTarget(guy)
+                return inst.components.combat:CanTarget(guy) and
+                    not (guy.components.skilltreeupdater and guy.components.skilltreeupdater:IsActivated("wormwood_bees"))
             end,
 			RETARGET_MUST_TAGS,
 			RETARGET_CANT_TAGS,

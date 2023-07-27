@@ -59,6 +59,8 @@ local function fn()
     inst.AnimState:SetBuild("bloodpump")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_specialinfo = "REVIVER"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

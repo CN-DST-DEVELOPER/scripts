@@ -66,6 +66,9 @@ local function staff_fn()
     local swap_data = {sym_build = "swap_tornado_stick", bank = "tornado_stick"}
     MakeInventoryFloatable(inst, "med", 0.05, {1.0, 0.4, 1.0}, true, -20, swap_data)
 
+    inst.scrapbook_subcat = "weapon"
+    inst.scrapbook_specialinfo = "STAFFTORNADO"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

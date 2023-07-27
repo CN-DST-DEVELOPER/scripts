@@ -414,7 +414,10 @@ function Builder:GetIngredientWetness(ingredients)
         for k, v in pairs(ents) do
             table.insert(wetness,
             {
-                wetness = k.components.inventoryitem ~= nil and k.components.inventoryitem:GetMoisture() or TheWorld.state.wetness,
+				wetness =
+					(k.components.inventoryitem ~= nil and k.components.inventoryitem:GetMoisture()) or
+					(k.components.rainimmunity == nil and TheWorld.state.wetness) or
+					0,
                 num = v,
             })
         end

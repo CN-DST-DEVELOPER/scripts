@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "Grrr, can't read! Too dark here!",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "Glurgh... can't read monkey scribbles.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "Glurgh... can't read monkey scribbles.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -890,6 +890,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "N-not scared of weird light, florp!",
 
     ANNOUNCE_SCRAPBOOK_FULL = "No more room in scrappy book.",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+    },
 
 	BATTLECRY =
 	{
@@ -4536,6 +4559,9 @@ return{
         DUMBBELL_GEM = "Muscly mustache man leave rocks everywhere.",
         POTATOSACK = "Snacks! Mine!!",
 
+        DUMBBELL_HEAT = "Muscly mustache man leave rocks everywhere.",
+        DUMBBELL_REDGEM = "Glurp! Hot rocks!",
+        DUMBBELL_BLUEGEM = "Glorph! Too cold!",
 
         TERRARIUMCHEST =
 		{
@@ -4789,6 +4815,7 @@ return{
 		LUNAR_FORGE = "Make shiny things.",
 		LUNAR_FORGE_KIT = "Look easy to build, florp.",
 
+		LUNARPLANT_KIT = "Fix-up stuff.",
 		ARMOR_LUNARPLANT = "Tough and glowy!",
 		LUNARPLANTHAT = "Cage for head, florp?",
 		BOMB_LUNARPLANT = "Hee-hee-hee... boom!!",
@@ -4796,6 +4823,8 @@ return{
 		SWORD_LUNARPLANT = "It mine!! Me want glowy sword!",
 		PICKAXE_LUNARPLANT = "It real good at breaking stuff.",
 		SHOVEL_LUNARPLANT = "Good scooper-upper, florp.",
+
+		BROKEN_FORGEDITEM = "Didn't break it!! Was someone else!",
 
         PUNCHINGBAG = "Allowed to hit it? Yay!!",
 
@@ -4809,6 +4838,7 @@ return{
         FUSED_SHADELING_BOMB = "It gonna 'splode!",
 
 		VOIDCLOTH = "All torn up.",
+		VOIDCLOTH_KIT = "Fix-up stuff.",
 		VOIDCLOTHHAT = "It dark inside!",
 		ARMOR_VOIDCLOTH = "Scary shirt...",
 
@@ -4826,6 +4856,39 @@ return{
         DREADSTONE_STACK = "Oooh, big shiny rock!",
         
         SCRAPBOOK_PAGE = "Found page for scrappy book!",
+
+        LEIF_IDOL = "Aww, little Treebeast!",
+        WOODCARVEDHAT = "Wood choppy man make it with metal choppy friend!",
+        WALKING_STICK = "Wicker-lady say is for walking, not for poking Wen-dee...",
+
+        IPECACSYRUP = "Smell good! Like swamp and rot!",
+        BOMB_LUNARPLANT_WORMWOOD = "Leafy make it different. How?", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "It not moving anymore.",
+        	GENERIC = "What that?",
+        	HELD = "Food or pet, florp?",
+        	SLEEPING = "It sleeping now.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "Follow me, glowy bug!",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "It not easy being green.",
+			RIPE = "Smell like... fruit?",
+			SLEEPING = "It taking a nap.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "Need rocks! MORE ROCKS!!",
+        SUPPORT_PILLAR = "Hey, stop it! Not allowed to break, florp!",
+        SUPPORT_PILLAR_COMPLETE = "Made with own two claws!",
+        SUPPORT_PILLAR_BROKEN = "Didn't do it!",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "Need rocks! MORE ROCKS!!",
+		SUPPORT_PILLAR_DREADSTONE = "Hey, stop it! Not allowed to break, florp!",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Pretty pretty pillar, florp!",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Glorp! Found it like that.",
+
+        WOLFGANG_WHISTLE = "Shiny... maybe he not mind if me borrow...",
     },
 
     DESCRIBE_GENERIC = "What that?",
@@ -4842,6 +4905,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Need water!",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Need plant food.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "Wicker-lady say plant like talking to...",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

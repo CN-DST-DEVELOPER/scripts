@@ -373,7 +373,13 @@ params.construction_container =
         {
             text = STRINGS.ACTIONS.APPLYCONSTRUCTION.GENERIC,
             position = Vector3(0, -94, 0),
-        }
+		},
+		--V2C: -override the default widget sound, which is heard only by the client
+		--     -most containers disable the client sfx via skipopensnd/skipclosesnd,
+		--      and play it in world space through the prefab instead.
+		opensound = "dontstarve/wilson/chest_open",
+		closesound = "dontstarve/wilson/chest_close",
+		--
     },
     usespecificslotsforitems = true,
     type = "cooker",
@@ -403,10 +409,12 @@ function params.construction_container.widget.buttoninfo.validfn(inst)
     return inst.replica.container ~= nil and not inst.replica.container:IsEmpty()
 end
 
+params.construction_repair_container = deepcopy(params.construction_container)
+params.construction_repair_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.REPAIR
+
 --------------------------------------------------------------------------
 --[[ enable_shadow_rift_construction_container ]]
 --------------------------------------------------------------------------
-
 
 params.enable_shadow_rift_construction_container = deepcopy(params.construction_container)
 

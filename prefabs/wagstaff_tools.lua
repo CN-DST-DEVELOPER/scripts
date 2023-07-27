@@ -106,6 +106,8 @@ local function maketool(name, build, bank, state ,erodeparam)
         inst:ListenForEvent("ms_playerdespawn", nameupdater, TheWorld)
         inst:ListenForEvent("ms_playerdespawnanddelete", nameupdater, TheWorld)
 
+        inst.scrapbook_specialinfo = "WAGSTAFF_TOOL"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

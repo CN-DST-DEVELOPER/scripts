@@ -25,14 +25,14 @@ local SkillTreeWidget = Class(Widget, function(self, prefabname, targetdata, fro
 
     self.midlay = self.root:AddChild(Widget())
 
-    self.bg_tree = self.root:AddChild(Image("images/skilltree2.xml", "wilson_background_shadowbranch_white.tex"))
+    self.bg_tree = self.root:AddChild(Image(GetSkilltreeBG(self.target.."_background.tex"), self.target.."_background.tex"))
     self.bg_tree:SetPosition(2,-20)
     self.bg_tree:ScaleToSize(600, 460)
 
     if self.fromfrontend then
         local color = UICOLOURS.GOLD
         self.bg_tree:SetTint(color[1],color[2],color[3],0.6)
-    else 
+    else
         local color = UICOLOURS.BLACK
         self.bg_tree:SetTint(color[1],color[2],color[3],1)
     end
@@ -129,23 +129,22 @@ function SkillTreeWidget:RespecSkills()
 end
 
 function SkillTreeWidget:SpawnFavorOverlay(pre)
-    if not self.fromfrontend then
-
+    if not self.fromfrontend and (self.midlay ~= nil and self.midlay.splash == nil) then
         local favor = nil
         if self.readonly then
             local skillselection = TheSkillTree:GetNamesFromSkillSelection(self.targetdata.skillselection, self.targetdata.prefab)
-            if skillselection["wilson_allegiance_shadow"] then
+            if skilltreedefs.FN.CountTags(self.targetdata.prefab, "shadow_favor", skillselection) then -- skillselection["wilson_allegiance_shadow"]
                 favor = "skills_shadow"
-            elseif skillselection["wilson_allegiance_lunar"] then
+            elseif skilltreedefs.FN.CountTags(self.targetdata.prefab, "lunar_favor", skillselection) then -- skillselection["wilson_allegiance_lunar"]
                 favor = "skills_lunar"
             end
         else
 
             local skilltreeupdater = ThePlayer and ThePlayer.components.skilltreeupdater or nil
             if skilltreeupdater then
-                if skilltreeupdater:IsActivated("wilson_allegiance_shadow") then
+                if skilltreedefs.FN.CountTags(self.targetdata.prefab, "shadow_favor") > 0 then   -- skilltreeupdater:IsActivated("wilson_allegiance_shadow")
                     favor = "skills_shadow"
-                elseif skilltreeupdater:IsActivated("wilson_allegiance_lunar") then
+                elseif skilltreedefs.FN.CountTags(self.targetdata.prefab, "lunar_favor") > 0 then -- skilltreeupdater:IsActivated("wilson_allegiance_lunar")
                     favor = "skills_lunar"
                 end
             end
@@ -161,11 +160,11 @@ function SkillTreeWidget:SpawnFavorOverlay(pre)
             end
             if pre then
                 local sound = "wilson_rework/ui/shadow_skill"
-            
+
                 if favor == "skills_lunar" then
                     sound = "wilson_rework/ui/lunar_skill"
                 end
-            
+
                 TheFrontEnd:GetSound():PlaySound(sound)
                 self.midlay.splash:GetAnimState():PlayAnimation("pre",false)
                 self.midlay.splash:GetAnimState():PushAnimation("idle",false)
@@ -175,23 +174,23 @@ function SkillTreeWidget:SpawnFavorOverlay(pre)
 
             self.midlay.splash.inst:ListenForEvent("animover", function()
                 local chance = 0.3
-                if favor == "skills_lunar" then                     
-                    chance = 0.05 
+                if favor == "skills_lunar" then
+                    chance = 0.05
                 end
                 if math.random() < chance then
                     self.midlay.splash:GetAnimState():PlayAnimation("twitch",false)
                     self.midlay.splash:GetAnimState():PushAnimation("idle",false)
                 else
                     self.midlay.splash:GetAnimState():PlayAnimation("idle",false)
-                end                
+                end
             end)
         end
     end
 end
 
 function SkillTreeWidget:Kill()
-	--ThePlantRegistry:Save() -- for saving filter settings
-	SkillTreeWidget._base.Kill(self)
+    --ThePlantRegistry:Save() -- for saving filter settings
+    SkillTreeWidget._base.Kill(self)
 end
 
 function SkillTreeWidget:OnControl(control, down)
@@ -202,8 +201,22 @@ function SkillTreeWidget:OnControl(control, down)
         return true
     end
 
+    if not down and not TheInput:ControllerAttached() and control ==  CONTROL_ACTION then
+        local skilltree = self.root.tree
+
+        if not skilltree.selectedskill or
+            not skilltree.skillgraphics[skilltree.selectedskill].status.activatable or
+            not skilltree.infopanel.activatebutton:IsVisible()
+        then
+            return false
+        end
+
+        self.root.infopanel.activatebutton.onclick()
+
+        return true
+    end
+
     return false
-    
 end
 
 function SkillTreeWidget:GetSelectedSkill()
@@ -214,8 +227,8 @@ function SkillTreeWidget:GetHelpText()
     local controller_id = TheInput:GetControllerID()
     local t = {}
 
-	if self.root.infopanel.respec_button:IsVisible() then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id,  CONTROL_MENU_MISC_1).. " " .. STRINGS.SKILLTREE.RESPEC)
+    if self.root.infopanel.respec_button:IsVisible() then
+        table.insert(t, TheInput:GetLocalizedControl(controller_id,  CONTROL_MENU_MISC_1).. " " .. STRINGS.SKILLTREE.RESPEC)
     end
 
     return table.concat(t, "  ")

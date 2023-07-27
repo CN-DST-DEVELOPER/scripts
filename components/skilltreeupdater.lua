@@ -48,6 +48,16 @@ function SkillTreeUpdater:GetNamesFromSkillSelection(skillselection) -- NOTES(JB
     return self.skilltree:GetNamesFromSkillSelection(skillselection, self.inst.prefab)
 end
 
+function SkillTreeUpdater:CountSkillTag(tag)
+    local characterprefab = self.inst.prefab
+
+    return skilltreedefs.FN.CountTags(characterprefab, tag, self.skilltree.activatedskills[characterprefab])
+end
+
+function SkillTreeUpdater:HasSkillTag(tag)
+    return self:CountSkillTag(tag) > 0
+end
+
 
 function SkillTreeUpdater:ActivateSkill_Client(skill, unlocks) -- NOTES(JBK): Use ActivateSkill instead.
     local characterprefab = ThePlayer.prefab
@@ -67,6 +77,7 @@ function SkillTreeUpdater:ActivateSkill_Server(skill, unlocks) -- NOTES(JBK): Us
         onactivate(self.inst)
     end
     self.inst:PushEvent("onactivateskill_server", {skill = skill,})
+    self.inst._skilltreeactivatedany:push()
 end
 function SkillTreeUpdater:ActivateSkill(skill, prefab, fromrpc)
     -- should ignore the prefab paramater as that's just used skilltreedata at frontend
@@ -250,11 +261,6 @@ function SkillTreeUpdater:SendFromSkillTreeBlob(inst)
             -- Do not use nor send skillxp here.
         end
     end
-end
-
-function SkillTreeUpdater:HasSkillTag(tag)
-    local characterprefab = self.inst.prefab
-    return skilltreedefs.FN.CountTags(characterprefab,tag) > 0
 end
 
 function SkillTreeUpdater:OnLoad(data)

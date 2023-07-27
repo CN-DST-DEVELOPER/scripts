@@ -933,11 +933,12 @@ end
 
 local SCRAPBOOK_CANT_TAGS = {"FX", "DECOR", "INLIMBO"}
 local function UpdateScrapbook(inst)
+	--assert(inst = ThePlayer)
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, TUNING.SCRAPBOOK_UPDATERADIUS, nil, SCRAPBOOK_CANT_TAGS) 
     for _, ent in ipairs(ents) do
         if IsEntityDead(ent) then
-            TheScrapbookPartitions:SetInspectedByCharacter(ent.prefab, ThePlayer.prefab)
+            TheScrapbookPartitions:SetInspectedByCharacter(ent.prefab, inst.prefab)
         else
             TheScrapbookPartitions:SetSeenInGame(ent.prefab)
         end

@@ -87,7 +87,7 @@ local function do_water_explosion_effect(inst, affected_entity, owner, position)
             if loot ~= nil then
                 loot.Transform:SetPosition(ae_x, ae_y, ae_z)
                 if loot.components.inventoryitem ~= nil then
-                    loot.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+					loot.components.inventoryitem:InheritWorldWetnessAtTarget(affected_entity)
                 end
                 if loot.components.stackable ~= nil
                         and affected_entity.components.pickable.numtoharvest > 1 then
@@ -208,6 +208,8 @@ local function trident()
     inst.AnimState:PlayAnimation("idle")
 
     MakeInventoryFloatable(inst, "med", 0.05, {1.1, 0.5, 1.1}, true, -9, FLOATER_SWAP_DATA)
+
+    inst.scrapbook_specialinfo = "TRIDENT"
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

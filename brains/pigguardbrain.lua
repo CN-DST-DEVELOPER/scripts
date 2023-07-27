@@ -72,6 +72,7 @@ function PigGuardBrain:OnStart()
     {
         BrainCommon.PanicWhenScared(self.inst, .2, "PIG_TALK_PANICBOSS"),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.IpecacsyrupPanicTrigger(self.inst),
         ChattyNode(self.inst, "PIG_GUARD_TALK_FIGHT",
             WhileNode(function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
                 ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)))),

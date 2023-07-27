@@ -141,6 +141,8 @@ local function basecrystal_fn(anim_prefix, physics_size)
     inst.AnimState:PlayAnimation(anim_prefix, true)
     inst.AnimState:SetLightOverride(0.1)
 
+    inst.pickupsound = "gem"
+
     inst:AddTag("birdblocker")
     inst:AddTag("boulder")
     inst:AddTag("crystal")

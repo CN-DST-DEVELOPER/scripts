@@ -43,6 +43,8 @@ local function makepiece(name)
         inst:AddTag("nonpotatable")
         inst:AddTag("heavy")
 
+        inst.scrapbook_specialinfo = "SUSPICIOUSMARBLE"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

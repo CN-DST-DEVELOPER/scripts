@@ -21,30 +21,44 @@ local cookedprefabs =
     "small_puff",
 }
 
+local function mooncap_oneaten_knockout(eater)
+    if not (eater.components.freezable and eater.components.freezable:IsFrozen()) and
+            not (eater.components.pinnable and eater.components.pinnable:IsStuck()) and
+            not (eater.components.fossilizable and eater.components.fossilizable:IsFossilized()) then
+
+        local sleeptime = TUNING.MOON_MUSHROOM_SLEEPTIME
+
+        local mount = (eater.components.rider ~= nil and eater.components.rider:GetMount()) or nil
+        if mount then
+            mount:PushEvent("ridersleep", { sleepiness = 4, sleeptime = sleeptime })
+        end
+
+        if eater.components.sleeper then
+            eater.components.sleeper:AddSleepiness(4, sleeptime)
+        elseif eater.components.grogginess then
+            eater.components.grogginess:AddGrogginess(2, sleeptime)
+        else
+            eater:PushEvent("knockedout")
+        end
+
+        return true
+    end
+
+    return false
+end
+
+local function mooncap_oneaten_delayed(eater)
+    if mooncap_oneaten_knockout(eater) then
+        local eater_skilltreeupdater = eater.components.skilltreeupdater
+        if eater_skilltreeupdater and eater_skilltreeupdater:IsActivated("wormwood_moon_cap_eating") then
+            eater:PushEvent("mooncap_cloud")
+        end
+    end
+end
+
 local function mooncap_oneaten(inst, eater)
     -- DoTaskInTime is to let the eat animation finish, since we don't have a callback for that.
-    eater:DoTaskInTime(0.5, function()
-        if eater:IsValid() and
-                not (eater.components.freezable ~= nil and eater.components.freezable:IsFrozen()) and
-                not (eater.components.pinnable ~= nil and eater.components.pinnable:IsStuck()) and
-                not (eater.components.fossilizable ~= nil and eater.components.fossilizable:IsFossilized()) then
-
-            local sleeptime = TUNING.MOON_MUSHROOM_SLEEPTIME
-
-            local mount = eater.components.rider ~= nil and eater.components.rider:GetMount() or nil
-            if mount ~= nil then
-                mount:PushEvent("ridersleep", { sleepiness = 4, sleeptime = sleeptime })
-            end
-
-            if eater.components.sleeper ~= nil then
-                eater.components.sleeper:AddSleepiness(4, sleeptime)
-            elseif eater.components.grogginess ~= nil then
-                eater.components.grogginess:AddGrogginess(2, sleeptime)
-            else
-                eater:PushEvent("knockedout")
-            end
-        end
-    end)
+    eater:DoTaskInTime(0.5, mooncap_oneaten_delayed)
 end
 
 local function capfn()
@@ -60,6 +74,8 @@ local function capfn()
     inst.AnimState:SetBuild("moon_cap")
     inst.AnimState:PlayAnimation("moon_cap")
     inst.scrapbook_anim = "moon_cap"
+
+    inst.pickupsound = "vegetation_firm"
 
     --cookable (from cookable component) added to pristine state for optimization
     inst:AddTag("cookable")
@@ -105,6 +121,7 @@ local function capfn()
     return inst
 end
 
+----
 local function mooncap_cooked_oneaten(inst, eater)
     if eater:IsValid() and eater.components.grogginess ~= nil then
         eater.components.grogginess:ResetGrogginess()

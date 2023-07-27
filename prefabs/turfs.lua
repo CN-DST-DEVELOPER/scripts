@@ -41,6 +41,8 @@ local function make_turf(tile, data)
 
         MakeInventoryFloatable(inst, "med", nil, 0.65)
 
+        inst.scrapbook_specialinfo = "TURF"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

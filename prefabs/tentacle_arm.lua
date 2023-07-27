@@ -118,6 +118,8 @@ local function fn()
     inst:AddTag("wet")
     inst:AddTag("soulless")
 
+    inst.scrapbook_removedeps = {"monstermeat"}
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

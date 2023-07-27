@@ -79,6 +79,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
+    inst.scrapbook_specialinfo = "SCRAPBOOKPAGE"
+
     inst.entity:SetPristine()
 
     inst.GetActivateVerb = GetActivateVerb

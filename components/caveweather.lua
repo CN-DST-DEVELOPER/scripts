@@ -146,6 +146,7 @@ local _temperature = TUNING.STARTING_TEMP
 local _rainsound = false
 local _treerainsound = nil
 local _umbrellarainsound = false
+local _barriersound = false
 local _seasonprogress = 0
 local _groundoverlay = nil
 
@@ -230,6 +231,20 @@ local function StopUmbrellaRainSound()
         _umbrellarainsound = false
         TheFocalPoint.SoundEmitter:KillSound("umbrellarainsound")
     end
+end
+
+local function StartBarrierSound()
+	if not _barriersound then
+		_barriersound = true
+		TheFocalPoint.SoundEmitter:PlaySound("meta2/voidcloth_umbrella/barrier_amb", "barriersound")
+	end
+end
+
+local function StopBarrierSound()
+	if _barriersound then
+		_barriersound = false
+		TheFocalPoint.SoundEmitter:KillSound("barriersound")
+	end
 end
 
 local function SetGroundOverlay(overlay, level)
@@ -578,6 +593,11 @@ function self:OnUpdate(dt)
         StopAmbientRainSound()
         StopTreeRainSound()
         StopUmbrellaRainSound()
+		if _activatedplayer ~= nil and _activatedplayer.components.raindomewatcher ~= nil and _activatedplayer.components.raindomewatcher:IsUnderRainDome() then
+			StartBarrierSound()
+		else
+			StopBarrierSound()
+		end
         if _hasfx then
             _rainfx.particles_per_tick = 0
             _rainfx.splashes_per_tick = 0
@@ -589,12 +609,20 @@ function self:OnUpdate(dt)
         if _activatedplayer == nil then
             StopTreeRainSound()
             StopUmbrellaRainSound()
+			StopBarrierSound()
+		elseif _activatedplayer.components.raindomewatcher ~= nil and _activatedplayer.components.raindomewatcher:IsUnderRainDome() then
+			StopTreeRainSound()
+			StopUmbrellaRainSound()
+			StartBarrierSound()
+			preciprate_sound = math.min(.1, preciprate_sound * .5)
         elseif _activatedplayer.replica.sheltered ~= nil and _activatedplayer.replica.sheltered:IsSheltered() then
             StartTreeRainSound()
             StopUmbrellaRainSound()
-            preciprate_sound = preciprate_sound - .4
+			StopBarrierSound()
+			preciprate_sound = preciprate_sound - .4
         else
             StopTreeRainSound()
+			StopBarrierSound()
             if _activatedplayer.replica.inventory:EquipHasTag("umbrella") then
                 preciprate_sound = preciprate_sound - .4
                 StartUmbrellaRainSound()
@@ -602,7 +630,11 @@ function self:OnUpdate(dt)
                 StopUmbrellaRainSound()
             end
         end
-        StartAmbientRainSound(preciprate_sound)
+		if preciprate_sound > 0 then
+			StartAmbientRainSound(preciprate_sound)
+		else
+			StopAmbientRainSound()
+		end
         if _hasfx then
             if _preciptype:value() == PRECIP_TYPES.rain then
                 _rainfx.particles_per_tick = 5 * preciprate

@@ -33,6 +33,8 @@ local function MakeWrap(name, containerprefab, tag, cheapfuel)
             inst:AddTag(tag)
         end
 
+        inst.scrapbook_specialinfo = "BUNDLEWRAP",
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
@@ -64,7 +66,7 @@ local function MakeWrap(name, containerprefab, tag, cheapfuel)
     return Prefab(name.."wrap", fn, assets, prefabs)
 end
 
-local function MakeContainer(name, build)
+local function MakeContainer(name, build, tag)
     local assets =
     {
         Asset("ANIM", "anim/"..build..".zip"),
@@ -77,6 +79,10 @@ local function MakeContainer(name, build)
         inst.entity:AddNetwork()
 
         inst:AddTag("bundle")
+
+		if tag ~= nil then
+			inst:AddTag(tag)
+		end
 
         --V2C: blank string for controller action prompt
         inst.name = " "
@@ -263,6 +269,8 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         if setupdata ~= nil and setupdata.common_postinit ~= nil then
             setupdata.common_postinit(inst, setupdata)
         end
+
+        inst.scrapbook_specialinfo = "BUNDLE"
 
         inst.entity:SetPristine()
 
@@ -551,7 +559,8 @@ local wetpouch =
 }
 
 return MakeContainer("bundle_container", "ui_bundle_2x2"),
-    MakeContainer("construction_container", "ui_bundle_2x2"),
+	MakeContainer("construction_container", "ui_construction_4x1"),
+	MakeContainer("construction_repair_container", "ui_construction_4x1", "repairconstructionsite"),
     --"bundle", "bundlewrap"
     MakeBundle("bundle", false, nil, { "waxpaper" }),
     MakeWrap("bundle", "bundle_container", nil, false),

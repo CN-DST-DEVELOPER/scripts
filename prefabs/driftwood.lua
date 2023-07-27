@@ -17,6 +17,8 @@ local function fn()
     inst.AnimState:SetBuild("driftwood_log")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "wood"
+
 	--waterproofer (from waterproofer component) added to pristine state for optimization
     inst:AddTag("waterproofer")
 

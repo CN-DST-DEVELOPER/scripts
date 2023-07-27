@@ -313,6 +313,8 @@ local function capcommonfn(data)
     inst.AnimState:PlayAnimation(data.animname.."_cap")
     inst.scrapbook_anim = data.animname.."_cap"
 
+    inst.pickupsound = "vegetation_firm"
+
     --cookable (from cookable component) added to pristine state for optimization
     inst:AddTag("cookable")
     inst:AddTag("mushroom")

@@ -245,8 +245,7 @@ local function onupdatefueledraining(inst)
     local owner = inst.components.inventoryitem ~= nil and inst.components.inventoryitem.owner or nil
     inst.components.fueled.rate =
         owner ~= nil and
-        owner.components.sheltered ~= nil and
-        owner.components.sheltered.sheltered and
+		(owner.components.sheltered ~= nil and owner.components.sheltered.sheltered or owner.components.rainimmunity ~= nil) and
         (inst._fuelratemult or 1) or
         (1 + TUNING.TORCH_RAIN_RATE * TheWorld.state.precipitationrate) * (inst._fuelratemult or 1)
 end
@@ -455,6 +454,8 @@ local function fn()
 	inst:AddTag("keep_equip_toss")
 
 	MakeInventoryFloatable(inst, "med", nil, 0.68)
+
+    inst.scrapbook_specialinfo = "TORCH"
 
     inst.entity:SetPristine()
 

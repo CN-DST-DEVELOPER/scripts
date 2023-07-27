@@ -176,6 +176,8 @@ end
 local function MakeTeethTrapNormal()
     local inst = common_fn("trap_teeth", "trap_teeth", true)
 
+    inst.scrapbook_specialinfo = "TRAPTEETH"
+
     if not TheWorld.ismastersim then
         return inst
     end

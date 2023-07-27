@@ -26,6 +26,10 @@ local function MakeSaddle(name, data)
         inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("idle")
 
+        if data.scrapbook_specialinfo then
+            inst.scrapbook_specialinfo = data.scrapbook_specialinfo
+        end
+
         inst.mounted_foleysound = "dontstarve/beefalo/saddle/"..data.foley
 
         local swap_data = {bank = "saddlebasic", anim = "idle"}
@@ -71,6 +75,7 @@ local data = {
         uses = TUNING.SADDLE_BASIC_USES,
         speedmult = TUNING.SADDLE_BASIC_SPEEDMULT,
         floater = {"med", 0.1, 1.0},
+        scrapbook_specialinfo = "SADDLE",
     },
     war = {
         bonusdamage = TUNING.SADDLE_WAR_BONUS_DAMAGE,
@@ -79,6 +84,7 @@ local data = {
         speedmult = TUNING.SADDLE_WAR_SPEEDMULT,
         floater = {"small", 0.1, 0.7},
         extra_tags = {"combatmount"},
+        scrapbook_specialinfo = "SADDLEWAR",
     },
     race = {
         bonusdamage = TUNING.SADDLE_RACE_BONUS_DAMAGE,
@@ -86,6 +92,7 @@ local data = {
         uses = TUNING.SADDLE_RACE_USES,
         speedmult = TUNING.SADDLE_RACE_SPEEDMULT,
         floater = {"large", 0.05, 0.68},
+        scrapbook_specialinfo = "SADDLERACE",
     },
 }
 

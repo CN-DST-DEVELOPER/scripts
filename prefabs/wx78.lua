@@ -313,7 +313,7 @@ local function moisturetrack_update(inst)
         initiate_moisture_update(inst)
     end
 
-    if inst:HasTag("moistureimmunity") then
+	if inst.components.moisture:IsForceDry() then
         return
     end
 

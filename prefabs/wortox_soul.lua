@@ -89,6 +89,8 @@ local function fn()
     -- Optional tag to control if the item is not a "cooldown until" meter but a "bonus while" meter.
     inst:AddTag("rechargeable_bonus")
 
+    inst.scrapbook_specialinfo = "WORTOX_SOUL"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -609,6 +609,8 @@ local function create_chester()
     inst:AddTag("notraptrigger")
     inst:AddTag("noauradamage")
 
+    inst.scrapbook_specialinfo = "CHESTER"
+
     inst.MiniMapEntity:SetIcon("chester.png")
     inst.MiniMapEntity:SetCanUseCache(false)
 

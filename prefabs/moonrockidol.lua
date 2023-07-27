@@ -76,6 +76,8 @@ local function fn()
     inst:AddTag("moonportalkey")
     inst:AddTag("donotautopick")
 
+    inst.scrapbook_specialinfo = "MOONROCKIDOL"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

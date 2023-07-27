@@ -80,9 +80,9 @@ local function CalcDapperness(inst, owner)
 	local insanity = owner.components.sanity ~= nil and owner.components.sanity:IsInsanityMode()
 	local other = GetSetBonusEquip(inst, owner)
 	if other ~= nil then
-		return (insanity and (inst.regentask ~= nil or other.regentask ~= nil) and TUNING.CRAZINESS_MED or TUNING.CRAZINESS_SMALL) * 0.5
+		return (insanity and (inst.regentask ~= nil or other.regentask ~= nil) and TUNING.CRAZINESS_MED or 0) * 0.5
 	end
-	return insanity and inst.regentask ~= nil and TUNING.CRAZINESS_MED or TUNING.CRAZINESS_SMALL
+	return insanity and inst.regentask ~= nil and TUNING.CRAZINESS_MED or 0
 end
 
 local function fn()
@@ -103,6 +103,8 @@ local function fn()
 
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization
 	inst:AddTag("shadowlevel")
+
+	inst.scrapbook_specialinfo = "ARMORDREADSTONE"
 
 	inst.foleysound = "dontstarve/movement/foley/dreadstonearmour"
 

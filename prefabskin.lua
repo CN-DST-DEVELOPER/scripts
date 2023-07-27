@@ -17,6 +17,62 @@ BASE_FEET_SIZE = {}
 SKIN_FX_PREFAB = {}
 SKIN_SOUND_FX = {}
 
+local function AddSkinSounds(inst)
+    -- NOTES(JBK): Do not do fancy shorthand loops these should be easily searchable.
+    -- FIXME(JBK): These variable names for them being stored on the inst are not consistent.
+    local sounds = SKIN_SOUND_FX[inst:GetSkinName()]
+    if sounds then
+        -- Weapon
+        inst.hit_skin_sound = sounds.hit
+        -- Whip
+        inst.skin_sound_small = sounds.small
+        inst.skin_sound_large = sounds.large
+        -- Equipment
+        inst.skin_equip_sound = sounds.equip
+        -- Chest
+        inst.skin_place_sound = sounds.place
+        inst.skin_open_sound = sounds.open
+        inst.skin_close_sound = sounds.close
+        -- Bundle Wrap
+        inst.skin_wrap_sound = sounds.wrap
+        -- Bug Net
+        inst.overridebugnetsound = sounds.net
+        -- Glomling, reviver, staff
+        inst.skin_sound = sounds.genericuse -- FIXME(JBK): This variable name on both sides and split the objects out.
+        -- Staff
+        inst.skin_castsound = sounds.cast
+        -- Orange Staff
+        if inst.components.blinkstaff and (sounds.preteleport or sounds.postteleport) then
+            inst.components.blinkstaff:SetSoundFX(sounds.preteleport, sounds.postteleport)
+        end
+    end
+end
+local function RemoveSkinSounds(inst)
+    -- Weapon
+    inst.hit_skin_sound = nil
+    -- Whip
+    inst.skin_sound_small = nil
+    inst.skin_sound_large = nil
+    -- Equipment
+    inst.skin_equip_sound = nil
+    -- Chest
+    inst.skin_place_sound = nil
+    inst.skin_open_sound = nil
+    inst.skin_close_sound = nil
+    -- Bundle Wrap
+    inst.skin_wrap_sound = nil
+    -- Bug Net
+    inst.overridebugnetsound = nil
+    -- Glomling, reviver, staff
+    inst.skin_sound = nil
+    -- Staff
+    inst.skin_castsound = nil
+    -- Orange Staff
+    if inst.components.blinkstaff then
+        inst.components.blinkstaff:ResetSoundFX()
+    end
+end
+
 
 
 --------------------------------------------------------------------------
@@ -75,18 +131,35 @@ batbat_clear_fn = function(inst) basic_clear_fn(inst, "batbat" ) end
 boomerang_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "boomerang" ) end
 boomerang_clear_fn = function(inst) basic_clear_fn(inst, "boomerang" ) end
 
+mighty_gym_init_fn = function(inst, build_name)
+    basic_init_fn(inst, build_name, "mighty_gym")
+    local mightygym = inst.components.mightygym
+    if mightygym then
+        mightygym:SetLevelArt(mightygym:CalcWeight(), mightygym.strongman)
+    end
+end
+mighty_gym_clear_fn = function(inst)
+    basic_clear_fn(inst, "mighty_gym")
+    local mightygym = inst.components.mightygym
+    if mightygym then
+        mightygym:SetLevelArt(mightygym:CalcWeight(), mightygym.strongman)
+    end
+end
+armor_bramble_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_bramble") end
+armor_bramble_clear_fn = function(inst) basic_clear_fn(inst, "armor_bramble") end
+
 hammer_init_fn = function(inst, build_name)
     if string.find( build_name, "_invisible") ~= nil then
         inst.components.floater.do_bank_swap = false
     end
     basic_init_fn( inst, build_name, "swap_hammer" )
 
-    inst.hit_skin_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 hammer_clear_fn = function(inst)
     inst.components.floater.do_bank_swap = true
     basic_clear_fn(inst, "swap_hammer" )
-    inst.hit_skin_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 torch_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_torch" ) end
@@ -111,16 +184,11 @@ whip_init_fn = function(inst, build_name)
         return
     end
 
-    local skin_sounds = SKIN_SOUND_FX[inst:GetSkinName()]
-    if skin_sounds then
-        inst.skin_sound_small = skin_sounds[1]
-        inst.skin_sound_large = skin_sounds[2]
-    end
+    AddSkinSounds(inst)
 end
 whip_clear_fn = function(inst)
     basic_clear_fn( inst, "whip" )
-    inst.skin_sound_small = nil
-    inst.skin_sound_large = nil
+    RemoveSkinSounds(inst)
 end
 
 multitool_axe_pickaxe_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "multitool_axe_pickaxe") end
@@ -255,11 +323,12 @@ yellowamulet_init_fn = function(inst, build_name)
     if not TheWorld.ismastersim then
         return
     end
-    inst.skin_equip_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+
+    AddSkinSounds(inst)
 end
 yellowamulet_clear_fn = function(inst)
     basic_clear_fn( inst, "amulets" )
-    inst.skin_equip_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 book_brimstone_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "books") end
@@ -338,12 +407,13 @@ walrushat_init_fn = function(inst, build_name)
     if not TheWorld.ismastersim then
         return
     end
-    inst.skin_equip_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+
+    AddSkinSounds(inst)
 end
 walrushat_clear_fn = function(inst)
     basic_clear_fn(inst, "hat_walrus" )
     
-    inst.skin_equip_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 winterhat_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "hat_winter" ) end
@@ -428,19 +498,12 @@ treasurechest_init_fn = function(inst, build_name)
         return
     end
 
-    local sounds = SKIN_SOUND_FX[inst:GetSkinName()]
-    if sounds ~= nil then
-        inst.skin_place_sound = SKIN_SOUND_FX[inst:GetSkinName()][1]
-        inst.skin_open_sound = SKIN_SOUND_FX[inst:GetSkinName()][2]
-        inst.skin_close_sound = SKIN_SOUND_FX[inst:GetSkinName()][3]
-    end
+    AddSkinSounds(inst)
 end
 treasurechest_clear_fn = function(inst)
     basic_clear_fn(inst, "treasure_chest" )
 
-    inst.skin_place_sound = nil
-    inst.skin_open_sound = nil
-    inst.skin_close_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 dragonflychest_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "dragonfly_chest" ) end
@@ -772,7 +835,8 @@ wathgrithrhat_init_fn = function(inst, build_name, opentop)
     if not TheWorld.ismastersim then
         return
     end
-    inst.skin_equip_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    
+    AddSkinSounds(inst)
 end
 wathgrithrhat_clear_fn = function(inst)
     basic_clear_fn(inst, "hat_wathgrithr" )
@@ -780,7 +844,7 @@ wathgrithrhat_clear_fn = function(inst)
     inst:RemoveTag("open_top_hat")
     inst.components.equippable:SetOnEquip(inst._skinfns.simple_onequip)
 
-    inst.skin_equip_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 
@@ -929,30 +993,27 @@ function bundlewrap_init_fn(inst, build_name)
     if not TheWorld.ismastersim then
         return
     end
-    if SKIN_SOUND_FX[inst:GetSkinName()] ~= nil then
-        inst.skin_open_sound = SKIN_SOUND_FX[inst:GetSkinName()][1]
-        inst.skin_wrap_sound = SKIN_SOUND_FX[inst:GetSkinName()][2]
-    end
+
+    AddSkinSounds(inst)
 end
 function bundlewrap_clear_fn(inst)
     basic_clear_fn(inst, "bundle" )
     inst.components.bundlemaker:SetSkinData()
  
-    inst.skin_open_sound = nil
-    inst.skin_wrap_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 function bundle_init_fn(inst, build_name)
     basic_init_fn( inst, build_name, "bundle" )
     inst:UpdateInventoryImage()
 
-    inst.skin_wrap_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 function bundle_clear_fn(inst)
     basic_clear_fn(inst, "bundle" )
     inst:UpdateInventoryImage()
 
-    inst.skin_wrap_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 
@@ -995,11 +1056,12 @@ function bugnet_init_fn(inst, build_name)
 
     basic_init_fn( inst, build_name, "swap_bugnet" )
 
-    inst.overridebugnetsound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 function bugnet_clear_fn(inst)
     basic_clear_fn(inst, "swap_bugnet" )
-    inst.overridebugnetsound = nil
+
+    RemoveSkinSounds(inst)
 end
 
 --------------------------------------------------------------------------
@@ -1200,7 +1262,7 @@ function glomling_init_fn(inst, build_name, default_build)
     end
 
     inst.AnimState:SetSkin(build_name, default_build)
-    inst.skin_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 
 
@@ -1213,7 +1275,8 @@ end
 
 function critter_glomling_clear_fn(inst)
     inst.AnimState:SetBuild("glomling_build")
-    inst.skin_sound = nil
+
+    RemoveSkinSounds(inst)
 end
 function critter_glomling_builder_clear_fn(inst)
     inst.linked_skinname = nil
@@ -1709,7 +1772,7 @@ function reviver_init_fn(inst, build_name)
         end
     end
 
-    inst.skin_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 
     inst:skin_switched()
 end
@@ -1724,7 +1787,7 @@ function reviver_clear_fn(inst)
     inst.PlayBeatAnimation = inst.DefaultPlayBeatAnimation
     inst.highlightchildren = nil
 
-    inst.skin_sound = nil
+    RemoveSkinSounds(inst)
 
     inst:skin_switched()
 end
@@ -1872,12 +1935,12 @@ function glasscutter_init_fn(inst, build_name)
         return
     end
 
-    inst.skin_equip_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 function glasscutter_clear_fn(inst)
     basic_clear_fn(inst, "glasscutter" )
 
-    inst.skin_equip_sound = nil
+    RemoveSkinSounds(inst)
 end
 --------------------------------------------------------------------------
 --[[ Staff skin functions ]]
@@ -1890,24 +1953,24 @@ local function staff_init_fn(inst, build_name)
     basic_init_fn( inst, build_name, "staffs" )
     inst.AnimState:OverrideSymbol("grass", "staffs", "grass")
 
-    inst.skin_sound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 local function staff_clear_fn(inst)
     basic_clear_fn(inst, "staffs" )
     inst.AnimState:ClearOverrideSymbol("grass")
 
-    inst.skin_sound = nil
+    RemoveSkinSounds(inst)
 end
 
 local function caststaff_init_fn(inst, build_name)
     staff_init_fn(inst, build_name)
 
-    inst.skin_sound = nil
-    inst.skin_castsound = SKIN_SOUND_FX[inst:GetSkinName()]
+    AddSkinSounds(inst)
 end
 local function caststaff_clear_fn(inst)
     staff_clear_fn(inst)
-    inst.skin_castsound = nil
+
+    RemoveSkinSounds(inst)
 end
 
 function orangestaff_init_fn(inst, build_name)
@@ -1933,11 +1996,6 @@ function orangestaff_init_fn(inst, build_name)
         if skin_fx[3] ~= nil then
             inst.components.blinkstaff:SetFX(skin_fx[3], skin_fx[4])
         end
-    end
-
-    local sound_fx = SKIN_SOUND_FX[inst:GetSkinName()] 
-    if sound_fx ~= nil then
-        inst.components.blinkstaff:SetSoundFX(sound_fx[1], sound_fx[2])
     end
 end
 function orangestaff_clear_fn(inst)

@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "It's much too dark to make any sense of this.",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "The apes seem to have neglected to mark any particular sites on this map.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "The apes seem to have neglected to mark any particular sites on this map.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -890,6 +890,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "As nonsensical as it sounds, there is something dark about that \"light\"...",
 
     ANNOUNCE_SCRAPBOOK_FULL = "My scrapbook has already been completed.",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
 
 	BATTLECRY =
 	{
@@ -4536,6 +4559,9 @@ return{
         DUMBBELL_GEM = "A bit of exercise can be quite beneficial to one's health.",
         POTATOSACK = "He seems to have a deep fondness for tubers.",
 
+        DUMBBELL_HEAT = "An interesting combination of exercise and temperature regulation.",
+        DUMBBELL_REDGEM = "Careful dear, that looks suspiciously combustible.",
+        DUMBBELL_BLUEGEM = "My, it's ice-cold to the touch!",
 
         TERRARIUMCHEST =
 		{
@@ -4789,6 +4815,7 @@ return{
 		LUNAR_FORGE = "It utilizes crystallized energy to reshape and reinforce organic material.",
 		LUNAR_FORGE_KIT = "It should be a simple matter to construct it.",
 
+		LUNARPLANT_KIT = "Now that I'm familiar with the material, it's a simple matter to repair it.",
 		ARMOR_LUNARPLANT = "Surprisingly effective plant-based armor.",
 		LUNARPLANTHAT = "It does not fit well over my glasses, but I suppose I must make do.",
 		BOMB_LUNARPLANT = "Unstable energy, barely held together by a hardy plant epidermis.",
@@ -4796,6 +4823,8 @@ return{
 		SWORD_LUNARPLANT = "The energy has been stabilized enough to form a functional blade.",
 		PICKAXE_LUNARPLANT = "A surprisingly effective mining and crushing implement.",
 		SHOVEL_LUNARPLANT = "A surprisingly effective digging implement.",
+
+		BROKEN_FORGEDITEM = "With the right materials, it could be repaired.",
 
         PUNCHINGBAG = "A useful tool for testing a weapon's efficacy.",
 
@@ -4809,6 +4838,7 @@ return{
         FUSED_SHADELING_BOMB = "Its body is highly volatile.",
 
 		VOIDCLOTH = "This unusual fabric may be quite useful.",
+		VOIDCLOTH_KIT = "Now that I'm familiar with the material, it's a simple matter to repair it.",
 		VOIDCLOTHHAT = "Prolonged use will surely have detrimental effects on the mind.",
 		ARMOR_VOIDCLOTH = "Armor against metaphysical damage.",
 
@@ -4826,6 +4856,39 @@ return{
         DREADSTONE_STACK = "Its source must lie even deeper underground.",
         
         SCRAPBOOK_PAGE = "What a hideous sight! A page torn from its book!",
+
+        LEIF_IDOL = "I believe it requires the application of a flame.",
+        WOODCARVEDHAT = "A bit utilitarian, but sturdy enough.",
+        WALKING_STICK = "An impressive level of detail, considering it was carved with an axe.",
+
+        IPECACSYRUP = "Ingesting it would be detrimental to one's health.",
+        BOMB_LUNARPLANT_WORMWOOD = "Our verdant friend seems to have worked his magic on this.", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "Perhaps that was unnecessary.",
+        	GENERIC = "My, another plant and animal hybrid. How odd.",
+        	HELD = "The plant and animal matter has fused in total harmony.",
+        	SLEEPING = "It's in a deep sleep.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "If it could be convinced to stay still, it would make an excellent reading light.",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "Plant and animal have merged into one in this specimen.",
+			RIPE = "It does smell quite delicious.",
+			SLEEPING = "It's in a deep sleep.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "It appears some construction is required.",
+        SUPPORT_PILLAR = "I'm afraid it will not be able to withstand these tectonic shifts forever.",
+        SUPPORT_PILLAR_COMPLETE = "That should stabilize the cave's ceiling for now.",
+        SUPPORT_PILLAR_BROKEN = "It would be prudent to attempt some repairs.",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "It appears some construction is required.",
+		SUPPORT_PILLAR_DREADSTONE = "I'm afraid it will not be able to withstand these tectonic shifts forever.",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Dreadstone. This will hold.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Broken? Perhaps this material is not as indestructible as I surmised.",
+
+        WOLFGANG_WHISTLE = "Please try to keep the noise to a minimum, dear.",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",
@@ -4842,6 +4905,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "It could use a little hydration.",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "It requires more nutrient-rich soil.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "I should stimulate its growth with some conversation.",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

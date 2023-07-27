@@ -60,6 +60,8 @@ local function fn()
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization
 	inst:AddTag("shadowlevel")
 
+    inst.scrapbook_specialinfo = "ARMORSANITY"
+
     inst.foleysound = "dontstarve/movement/foley/nightarmour"
 
     local swap_data = {bank = "armor_sanity", anim = "anim"}

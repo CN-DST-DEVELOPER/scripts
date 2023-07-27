@@ -122,6 +122,8 @@ local function rock_avocado_fruit_full()
     inst.AnimState:SetBuild("rock_avocado_fruit_build")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "rock"
+
     inst:AddTag("molebait")
 
     MakeInventoryPhysics(inst)
@@ -384,6 +386,9 @@ local function rock_avocado_fruit_sprout()
     MakeInventoryFloatable(inst, "small", nil, 0.4)
 
     inst:AddTag("deployedplant")
+
+    inst.scrapbook_specialinfo = "PLANTABLE"
+    inst.scrapbook_anim = "idle_seed"
 
     inst.entity:SetPristine()
 

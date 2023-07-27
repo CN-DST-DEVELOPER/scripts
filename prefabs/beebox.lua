@@ -131,7 +131,11 @@ local function onharvest(inst, picker, produce)
 			AwardPlayerAchievement("honey_harvester", picker)
 		end
         updatelevel(inst)
-        if inst.components.childspawner ~= nil and not TheWorld.state.iswinter then
+
+        if inst.components.childspawner ~= nil and
+            not TheWorld.state.iswinter and
+            not (picker ~= nil and picker.components.skilltreeupdater ~= nil and picker.components.skilltreeupdater:IsActivated("wormwood_bees"))
+        then
             inst.components.childspawner:ReleaseAllChildren(picker)
         end
     end

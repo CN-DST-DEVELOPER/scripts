@@ -112,6 +112,8 @@ local function fn()
     local swap_data = {sym_build = "swap_boomerang"}
     MakeInventoryFloatable(inst, "small", 0.18, {0.8, 0.9, 0.8}, true, -6, swap_data)
 
+    inst.scrapbook_specialinfo = "BOOMERANG"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

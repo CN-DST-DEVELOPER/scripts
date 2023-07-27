@@ -721,6 +721,8 @@ end
 local function normal()
     local inst = common(false)
 
+    inst.scrapbook_removedeps = {"strawhat","tophat"}
+
     if not TheWorld.ismastersim then
         return inst
     end

@@ -52,6 +52,8 @@ local function fn()
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
 
+    inst.scrapbook_specialinfo = "FENCEROTATOR"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

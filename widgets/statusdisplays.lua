@@ -523,7 +523,10 @@ function StatusDisplays:HealthDelta(data)
             self.heart:PulseRed()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/health_down")
         elseif data.overtime then
-            --ignore pulse for healthdelta overtime
+            -- Ignore red pulse and green pulse sound for healthdelta overtime
+            if data.newpercent > data.oldpercent then
+                self.heart:PulseGreen()
+            end
         elseif data.newpercent > data.oldpercent then
             self.heart:PulseGreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/health_up")

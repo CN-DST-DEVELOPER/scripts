@@ -27,7 +27,10 @@ local function OnDeath(inst)
 end
 
 local function OnRespawned(inst)
-    inst.components.grue:Start()
+	local self = inst.components.grue
+	if next(self.immunity) == nil then
+		self:Start()
+	end
 end
 
 local function OnInit(inst, self)
@@ -38,7 +41,20 @@ local function OnInit(inst, self)
     inst:ListenForEvent("invincibletoggle", OnInvincibleToggle)
     inst:ListenForEvent("death", OnDeath)
     inst:ListenForEvent("ms_respawnedfromghost", OnRespawned)
-    self:Start()
+
+	if inst:IsInLight() then
+		self:AddImmunity("light")
+	end
+	if inst.components.playervision ~= nil and inst.components.playervision:HasNightVision() then
+		self:AddImmunity("nightvision")
+	end
+	if inst.components.health ~= nil and inst.components.health:IsInvincible() then
+		self:AddImmunity("invincible")
+	end
+
+	if next(self.immunity) == nil then
+		self:Start()
+	end
 end
 
 local Grue = Class(function(self, inst)
@@ -57,6 +73,14 @@ local Grue = Class(function(self, inst)
 
     self.inittask = inst:DoTaskInTime(0, OnInit, self)
 end)
+
+function Grue:OnRemoveEntity()
+	--Prevent items being removed at the same time from triggering loss of
+	--immunity and thus restarting updating while we are becoming invalid.
+	for k in pairs(self.immunity) do
+		self.immunity[k] = nil
+	end
+end
 
 function Grue:OnRemoveFromEntity()
     self:Stop()
@@ -107,15 +131,21 @@ function Grue:SetResistance(resistance)
 end
 
 function Grue:AddImmunity(source)
-    self.immunity[source or self] = true
-    self:Stop()
+	source = source or self
+	if not self.immunity[source] then
+		self.immunity[source or self] = true
+		self:Stop()
+	end
 end
 
 function Grue:RemoveImmunity(source)
-    self.immunity[source or self] = nil
-    if next(self.immunity) == nil then
-        self:Start()
-    end
+	source = source or self
+	if self.immunity[source] then
+		self.immunity[source] = nil
+		if next(self.immunity) == nil then
+			self:Start()
+		end
+	end
 end
 
 --Deprecated; kept around for mod backward compatibility

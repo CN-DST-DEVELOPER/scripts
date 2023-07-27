@@ -38,7 +38,7 @@ function WateryProtection:SpreadProtectionAtPoint(x, y, z, dist, noextinguish)
             v.components.temperature:SetTemperature(v.components.temperature:GetCurrent() - self.temperaturereduction)
         end
         if self.addwetness > 0 and v.components.moisture ~= nil then
-            local waterproofness = v.components.inventory and math.min(v.components.inventory:GetWaterproofness(),1) or 0
+            local waterproofness = v.components.moisture:GetWaterproofness()
             v.components.moisture:DoDelta(self.addwetness * (1 - waterproofness))
         end
     end

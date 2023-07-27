@@ -61,6 +61,8 @@ local function fn()
     inst:AddTag("trader")
 	inst:AddTag("give_dolongaction")
 
+    inst.scrapbook_specialinfo = "CRATEREDMOONROCK"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

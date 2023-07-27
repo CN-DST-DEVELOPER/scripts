@@ -142,12 +142,12 @@ end
 
 function InventoryItemMoisture:GetTargetMoisture()
     --If floating in the ocean, use OCEAN_WETNESS
-	--If there is no owner, use world moisture
+	--If there is no owner, use world moisture (account for "rainimmunity")
     --If owner is player, use player moisture
     --Otherwise (most likely a container), keep items dry
     local owner = self.inst.components.inventoryitem.owner
     return (self.inst.components.floater ~= nil and self.inst.components.floater.showing_effect and TUNING.OCEAN_WETNESS)
-        or (owner == nil and (TheWorld.state.israining and TheWorld.state.wetness or 0))
+		or (owner == nil and (TheWorld.state.israining and self.inst.components.rainimmunity == nil and TheWorld.state.wetness or 0))
         or (owner.components.moisture ~= nil and owner.components.moisture:GetMoisture())
         or 0
 end

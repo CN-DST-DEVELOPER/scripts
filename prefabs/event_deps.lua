@@ -218,8 +218,8 @@ local SPECIAL_EVENT_DEPS =
         {
             assets =
             {
-
-                Asset("ANIM", "anim/dst_menu_rift2.zip"),
+                Asset("ANIM", "anim/dst_menu_meta2.zip"),
+                Asset("PKGREF", "anim/dst_menu_rift2.zip"),
                 Asset("PKGREF", "anim/dst_menu_lunarrifts.zip"),
 
                 Asset("PKGREF", "anim/dst_menu_wilson.zip"),

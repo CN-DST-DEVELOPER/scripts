@@ -210,6 +210,8 @@ local function itemfn()
 
     inst:AddTag("usedeploystring")
 
+    inst.scrapbook_specialinfo = "WX78SCANNER"
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

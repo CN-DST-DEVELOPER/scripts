@@ -68,6 +68,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", 0.125, 0.65)
 
+    inst.scrapbook_specialinfo = "CANDYBAG"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -88,8 +90,6 @@ local function fn()
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("candybag")
-    inst.components.container.skipclosesnd = true
-    inst.components.container.skipopensnd = true
 
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)

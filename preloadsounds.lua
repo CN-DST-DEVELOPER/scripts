@@ -201,10 +201,13 @@ local MainSounds =
     "rifts.fsb",
 
     "aqol.fev",
-    "aqol.fsb",    
+    "aqol.fsb",
 
     "rifts2.fev",
     "rifts2.fsb",
+
+    "meta2.fev",
+    "meta2.fsb",
 }
 
 function PreloadSoundList(list)

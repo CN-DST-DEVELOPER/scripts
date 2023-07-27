@@ -118,7 +118,7 @@ self.inst = inst
 
 --Private
 local _map = inst.Map
-local _lightattenuation = false
+local _lightattenuation = inst.state.phase ~= "day"
 local _seasonmix = "autumn"
 local _rainmix = false
 local _heavyrainmix = false

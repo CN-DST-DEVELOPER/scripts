@@ -22,7 +22,12 @@ local function onfinished_normal(inst)
 end
 
 local function DoThorns(inst, pos)
-    SpawnPrefab("bramblefx_trap").Transform:SetPosition(pos:Get())
+    local thorns = SpawnPrefab("bramblefx_trap")
+
+    if thorns ~= nil then
+        thorns.Transform:SetPosition(pos:Get())
+        thorns.canhitplayers = not inst.proficiently_deployed
+    end
 end
 
 local function OnExplode(inst)--, target)
@@ -37,6 +42,8 @@ local function OnExplode(inst)--, target)
 end
 
 local function OnReset(inst)
+    inst.last_reset = GetTime()
+
     if inst.components.inventoryitem ~= nil then
         inst.components.inventoryitem.nobounce = true
     end
@@ -67,6 +74,8 @@ local function SetInactive(inst)
     end
     inst.MiniMapEntity:SetEnabled(false)
     inst.AnimState:PlayAnimation("inactive")
+
+    inst.proficiently_deployed = nil
 end
 
 local function OnDropped(inst)
@@ -77,6 +86,8 @@ local function ondeploy(inst, pt, deployer)
     inst.components.mine:Reset()
     inst.Physics:Stop()
     inst.Physics:Teleport(pt:Get())
+
+    inst.proficiently_deployed = deployer.components.skilltreeupdater ~= nil and deployer.components.skilltreeupdater:IsActivated("wormwood_blooming_farmrange3")
 end
 
 local function OnHaunt(inst, haunter)
@@ -92,6 +103,18 @@ local function OnHaunt(inst, haunter)
         return true
     end
     return false
+end
+
+local function OnSave(inst, data)
+    if inst.proficiently_deployed then
+        data.proficiently_deployed = true
+    end
+end
+
+local function OnLoad(inst, data)
+    if data ~= nil and data.proficiently_deployed then
+        inst.proficiently_deployed = true
+    end
 end
 
 local function fn()
@@ -114,6 +137,7 @@ local function fn()
     inst.scrapbook_damage = TUNING.TRAP_BRAMBLE_DAMAGE
 
     inst:AddTag("trap")
+    inst:AddTag("trap_bramble")
 
     MakeInventoryFloatable(inst, "small", nil, {1.2, 0.8, 1.2})
 
@@ -148,6 +172,9 @@ local function fn()
     inst.components.hauntable:SetOnHauntFn(OnHaunt)
 
     inst.components.mine:Reset()
+
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
 
     return inst
 end

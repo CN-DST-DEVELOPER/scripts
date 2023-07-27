@@ -1955,7 +1955,7 @@ end
 local _showradius_ent =  nil
 
 function c_showradius(radius, parent)
-    if type(radius) == "number" then
+    if checknumber(radius) then
         -- Sqrt because Transform applies scaling exponentially.
         --  300: Game Unit to Pixel conversion.
         -- 1900: Firefighter texture size.

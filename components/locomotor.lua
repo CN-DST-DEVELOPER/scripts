@@ -170,6 +170,7 @@ local function ServerGetSpeedMultiplier(self)
             end
         end
     end
+
     return mult * (self:TempGroundSpeedMultiplier() or self.groundspeedmultiplier) * self.throttle
 end
 
@@ -200,6 +201,7 @@ local function ClientGetSpeedMultiplier(self)
             end
         end
     end
+
     return mult * (self:TempGroundSpeedMultiplier() or self.groundspeedmultiplier) * self.throttle
 end
 

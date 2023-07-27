@@ -26,6 +26,8 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
+    inst.pickupsound = "vegetation_firm"
+
     inst.Light:SetFalloff(0.7)
     inst.Light:SetIntensity(.5)
     inst.Light:SetRadius(0.5)

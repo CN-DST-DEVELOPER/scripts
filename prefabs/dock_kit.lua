@@ -67,6 +67,8 @@ local function fn()
     inst.AnimState:SetBuild("dock_kit")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "wood"
+
     MakeInventoryFloatable(inst, "med", 0.2, 0.75)
 
     inst:AddTag("groundtile")

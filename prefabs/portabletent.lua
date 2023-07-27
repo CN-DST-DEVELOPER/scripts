@@ -276,6 +276,8 @@ local function itemfn()
 
     MakeInventoryFloatable(inst, nil, 0.05, 0.7)
 
+    inst.scrapbook_anim = "idle_item"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

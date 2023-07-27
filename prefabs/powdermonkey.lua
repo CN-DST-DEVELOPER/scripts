@@ -246,6 +246,8 @@ local function fn()
     inst.AnimState:OverrideSymbol("fx_water_spray", "splash_water_rot", "fx_water_spray")
 
     inst.AnimState:Hide("ARM_carry")
+    inst.scrapbook_hide = {"ARM_carry"}
+    inst.scrapbook_specialinfo = "POWDERMONKEY"
 
     inst:AddTag("character")
     inst:AddTag("monkey")
@@ -260,8 +262,9 @@ local function fn()
     inst.components.talker:MakeChatter()
     inst.components.talker.ontalk = ontalk
 
-
     inst.speech_override_fn = speech_override_fn
+
+    inst.scrapbook_removedeps = {"oar_monkey"}
 
     inst.entity:SetPristine()
 

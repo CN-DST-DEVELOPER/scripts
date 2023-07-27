@@ -727,6 +727,7 @@ return
 	},
 	wolfgang =
 	{
+		"body_wolfgang_ancient",
 		"body_wolfgang_cook",
 		"body_wolfgang_formal",
 		"body_wolfgang_formalp",
@@ -769,6 +770,7 @@ return
 		"legs_wolfgang_strongman",
 		"legs_wolfgang_victorian",
 		"legs_wolfgang_wolfman",
+		"wolfgang_ancient",
 		"wolfgang_combatant",
 		"wolfgang_cook",
 		"wolfgang_formal",
@@ -795,6 +797,7 @@ return
 	},
 	woodie =
 	{
+		"body_woodie_ancient",
 		"body_woodie_cook",
 		"body_woodie_formal",
 		"body_woodie_formalp",
@@ -823,6 +826,7 @@ return
 		"feet_woodie_hockey",
 		"feet_woodie_ice",
 		"feet_woodie_nature",
+		"hand_woodie_ancient",
 		"hand_woodie_gladiator",
 		"hand_woodie_hippie",
 		"hand_woodie_hockey",
@@ -842,6 +846,7 @@ return
 		"legs_woodie_pirate",
 		"legs_woodie_victorian",
 		"legs_woodie_yule",
+		"woodie_ancient",
 		"woodie_combatant",
 		"woodie_cook",
 		"woodie_formal",
@@ -868,6 +873,7 @@ return
 	},
 	wormwood =
 	{
+		"body_wormwood_ancient",
 		"body_wormwood_cactus",
 		"body_wormwood_ice",
 		"body_wormwood_lunar",
@@ -880,6 +886,7 @@ return
 		"body_wormwood_shadow",
 		"body_wormwood_victorian",
 		"body_wormwood_yule",
+		"hand_wormwood_ancient",
 		"hand_wormwood_cactus",
 		"hand_wormwood_ice",
 		"hand_wormwood_lunar",
@@ -890,6 +897,7 @@ return
 		"hand_wormwood_shadow",
 		"hand_wormwood_victorian",
 		"hand_wormwood_yule",
+		"legs_wormwood_ancient",
 		"legs_wormwood_cactus",
 		"legs_wormwood_ice",
 		"legs_wormwood_lunar",
@@ -900,6 +908,7 @@ return
 		"legs_wormwood_shadow",
 		"legs_wormwood_victorian",
 		"legs_wormwood_yule",
+		"wormwood_ancient",
 		"wormwood_cactus",
 		"wormwood_ice",
 		"wormwood_lunar",

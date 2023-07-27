@@ -20,7 +20,7 @@ end
 local function GetWorldControllerVector()
     local xdir = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
     local ydir = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
-    local deadzone = .3
+	local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
     if math.abs(xdir) >= deadzone or math.abs(ydir) >= deadzone then
         local dir = TheCamera:GetRightVec() * xdir - TheCamera:GetDownVec() * ydir
         return dir:GetNormalized()
@@ -1882,14 +1882,17 @@ function PlayerController:DoInspectButton()
         return
     end
 
-    if buffaction.action == ACTIONS.LOOKAT and
-        buffaction.target ~= nil and
-        buffaction.target.components.playeravatardata ~= nil and
-        self.inst.HUD ~= nil then
-        local client_obj = buffaction.target.components.playeravatardata:GetData()
-        if client_obj ~= nil then
-            client_obj.inst = buffaction.target
-            self.inst.HUD:TogglePlayerInfoPopup(client_obj.name, client_obj, true, buffaction.target)
+    if buffaction.action == ACTIONS.LOOKAT and buffaction.target ~= nil then
+        if buffaction.target.components.playeravatardata ~= nil and self.inst.HUD ~= nil then
+            local client_obj = buffaction.target.components.playeravatardata:GetData()
+            if client_obj ~= nil then
+                client_obj.inst = buffaction.target
+                self.inst.HUD:TogglePlayerInfoPopup(client_obj.name, client_obj, true, buffaction.target)
+            end
+        end
+        if self.handler ~= nil then
+			--assert(self.inst == ThePlayer)
+            TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target.prefab, self.inst.prefab)
         end
     end
 
@@ -2410,6 +2413,7 @@ function PlayerController:OnUpdate(dt)
     self:DoPredictHopping(dt)
 
 	if not isenabled and not ishudblocking then
+		self:DoClientBusyOverrideLocomote()
 		return
 	end
 
@@ -2422,9 +2426,12 @@ function PlayerController:OnUpdate(dt)
 		isbusy = false
 	end
 
-    if isbusy or
-        self:DoPredictWalking(dt) or
-        self:DoDragWalking(dt) then
+	if isbusy then
+		self:DoClientBusyOverrideLocomote()
+		self.recent_bufferedaction.act = nil
+	elseif self:DoPredictWalking(dt)
+		or self:DoDragWalking(dt)
+		then
 		self.recent_bufferedaction.act = nil
     else
         local aimingcannon = self.inst.components.boatcannonuser ~= nil and self.inst.components.boatcannonuser:GetCannon() ~= nil
@@ -3032,8 +3039,8 @@ function PlayerController:OnRemotePredictWalking(x, z, isdirectwalking, isstart)
 end
 
 function PlayerController:OnRemotePredictOverrideLocomote(dir)
-	if self.ismastersim and self:IsEnabled() and self.handler == nil then
-		if self.inst.sg:HasStateTag("overridelocomote") and not self:IsBusy() then
+	if self.ismastersim and self.handler == nil and self.inst.sg:HasStateTag("overridelocomote") then
+		if self:IsEnabled() and not self:IsBusy() or self.classified.busyremoteoverridelocomote:value() then
 			if self.inst.sg:HasStateTag("canrotate") then
 				self.inst.Transform:SetRotation(dir)
 			end
@@ -3177,6 +3184,20 @@ function PlayerController:IsLocalOrRemoteHopping()
     local locomotor = self.inst.components.locomotor
     if locomotor ~= nil then return locomotor.hopping end
     return false
+end
+
+function PlayerController:DoClientBusyOverrideLocomote()
+	--This is specifically for passing overridelocomote events to the
+	--server when we're in a busy state and/or controls are disabled.
+	--e.g. Moose tackle can be cancelled using directional input, but
+	--     the state itself is still busy.
+	if not self.ismastersim and
+		self.handler ~= nil and
+		self.classified.busyremoteoverridelocomote:value() and
+		GetWorldControllerVector() ~= nil
+	then
+		self:RemotePredictOverrideLocomote()
+	end
 end
 
 function PlayerController:DoPredictWalking(dt)
@@ -3572,8 +3593,9 @@ function PlayerController:DoAction(buffaction, spellbook)
         self.locomotor:PreviewAction(buffaction, true)
     end
 
-    if ThePlayer and buffaction.action == ACTIONS.LOOKAT and buffaction.target then
-        TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target.prefab, ThePlayer.prefab)
+    if self.handler ~= nil and buffaction.action == ACTIONS.LOOKAT and buffaction.target then
+		--assert(self.inst == ThePlayer)
+        TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target.prefab, self.inst.prefab)
     end
 end
 
@@ -4237,9 +4259,6 @@ function PlayerController:RemoteInspectItemFromInvTile(item)
             self.locomotor:PreviewAction(buffaction, true)
         end
     end
-    if ThePlayer and item then
-        TheScrapbookPartitions:SetInspectedByCharacter(item.prefab, ThePlayer.prefab)
-    end
 end
 
 function PlayerController:RemoteDropItemFromInvTile(item, single)
@@ -4380,12 +4399,15 @@ function PlayerController:OnLocomotorBufferedAction(act)
 	end
 end
 
-local function OnNewState(inst, data)
+local function OnNewState(inst)--, data)
+	--V2C: -Don't use data.statename
+	--     -"newstate" events are fired off in reverse order when chaining GoToState calls in the state's onenter
+	--
 	--#V2C #client_prediction
 	--force dirty
 	--see SGWilson_client -> ClearCachedServerState
 	inst.player_classified.currentstate:set_local(0)
-	inst.player_classified.currentstate:set(data ~= nil and data.statename or 0)
+	inst.player_classified.currentstate:set(inst.sg ~= nil and inst.sg.currentstate.name or 0)
 end
 
 function PlayerController:OnRemoteToggleMovementPrediction(val)

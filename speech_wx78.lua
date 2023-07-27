@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "INSUFFICIENT LIGHT, UNABLE TO ANALYZE",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "INSUFFICIENT DATA. THIS IS WORTHLESS",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "INSUFFICIENT DATA. THIS IS WORTHLESS",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -389,12 +389,12 @@ return{
 
 		CAST_SPELLBOOK =
 		{
---fallback to speech_wilson.lua 			NO_TOPHAT = "only_used_by_waxwell",
+			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
 		CASTAOE =
 		{
---fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+			NO_MAX_SANITY = "only_used_by_waxwell",
 		},
     },
 
@@ -419,11 +419,11 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 
 	--waxwell specific
---fallback to speech_wilson.lua 	ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
---fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
---fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
---fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
---fallback to speech_wilson.lua 	ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
+	ANNOUNCE_SHADOWLEVEL_ITEM = "only_used_by_waxwell",
+	ANNOUNCE_EQUIP_SHADOWLEVEL_T1 = "only_used_by_waxwell",
+	ANNOUNCE_EQUIP_SHADOWLEVEL_T2 = "only_used_by_waxwell",
+	ANNOUNCE_EQUIP_SHADOWLEVEL_T3 = "only_used_by_waxwell",
+	ANNOUNCE_EQUIP_SHADOWLEVEL_T4 = "only_used_by_waxwell",
 
     --wolfgang specific
 --fallback to speech_wilson.lua     ANNOUNCE_NORMALTOMIGHTY = "only_used_by_wolfang",
@@ -890,6 +890,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "SOMETHING EVIL IS HAPPENING WITHOUT ME!",
 
     ANNOUNCE_SCRAPBOOK_FULL = "PAPER DATA RECEPTACLE STATUS: 100% COMPLETE",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+    },
 
 	BATTLECRY =
 	{
@@ -4536,6 +4559,9 @@ return{
         DUMBBELL_GEM = "MINION UPGRADE EQUIPMENT",
         POTATOSACK = "ILLOGICAL. CARRY ME INSTEAD",
 
+        DUMBBELL_HEAT = "A DUAL-PURPOSE MINION ENHANCER",
+        DUMBBELL_REDGEM = "FLAMETHROWER ATTACHMENT FOR THE LARGE ONE",
+        DUMBBELL_BLUEGEM = "TELL THEM TO \"FREEZE\" BEFORE YOU THROW IT. IT WILL BE HUMOROUS",
 
         TERRARIUMCHEST =
 		{
@@ -4789,6 +4815,7 @@ return{
 		LUNAR_FORGE = "GREETINGS, COUSIN",
 		LUNAR_FORGE_KIT = "ASSEMBLY REQUIRED",
 
+		LUNARPLANT_KIT = "ITEM RESTORATION HARDWARE",
 		ARMOR_LUNARPLANT = "THE DEAD HUSK OF MY ENEMY IS AN EXCELLENT DAMAGE BUFFER",
 		LUNARPLANTHAT = "ACTIVATE HEADLIGHTS",
 		BOMB_LUNARPLANT = "THROWABLE DEVASTATION",
@@ -4796,6 +4823,8 @@ return{
 		SWORD_LUNARPLANT = "SPACE SWORD! SPACE SWORD!!",
 		PICKAXE_LUNARPLANT = "COMMENCE OBLITERATION",
 		SHOVEL_LUNARPLANT = "ENHANCED DIGGING IMPLEMENT",
+
+		BROKEN_FORGEDITEM = "MATERIALS REQUIRED TO REBOOT",
 
         PUNCHINGBAG = "TARGET PRACTICE",
 
@@ -4809,6 +4838,7 @@ return{
         FUSED_SHADELING_BOMB = "WARNING: CONTENTS UNDER PRESSURE",
 
 		VOIDCLOTH = "ALL THAT IS LEFT OF MY ENEMIES",
+		VOIDCLOTH_KIT = "ITEM RESTORATION HARDWARE",
 		VOIDCLOTHHAT = "IT WOULD BE A SHAME TO HIDE MY PERFECT MECHANICAL FACE",
 		ARMOR_VOIDCLOTH = "THE IRON CHAINS ARE A NICE TOUCH",
 
@@ -4826,6 +4856,39 @@ return{
         DREADSTONE_STACK = "IF I COULD JUST GET TO THE SOURCE!",
         
         SCRAPBOOK_PAGE = "I WILL ADD THIS INFORMATION TO MY PAPER DATA RECEPTACLE",
+
+        LEIF_IDOL = "HA! IT IS CARVED FROM ITS OWN DEAD ORGANIC MATTER",
+        WOODCARVEDHAT = "HE DIDN'T CARVE IT WITH HIS TEETH. THIS IS PROGRESS",
+        WALKING_STICK = "RUDIMENTARY SPEED BOOSTER",
+
+        IPECACSYRUP = "CONTAINS NO NUTRITIONAL VALUE",
+        BOMB_LUNARPLANT_WORMWOOD = "MY PLANT MINION IS PROVING HIMSELF TO BE VERY USEFUL", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "IT IS DEAD",
+        	GENERIC = "THIS CARROT IS MORE IRRITATING THAN MOST",
+        	HELD = "STOP YOUR WRIGGLING",
+        	SLEEPING = "IT HAS POWERED DOWN",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "WHO GAVE THE DISGUSTING ORGANIC LIGHT SOURCE LOCOMOTION?",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "HA HA. THEY HATE EACH OTHER",
+			RIPE = "I WANT TO EAT IT",
+			SLEEPING = "IT'S A SLEEPER-SAL",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "LARGE QUANTITIES OF STONE REQUIRED",
+        SUPPORT_PILLAR = "STRUCTURAL INTEGRITY HAS BEEN COMPROMISED",
+        SUPPORT_PILLAR_COMPLETE = "A TOWERING MONUMENT TO MY GREATNESS",
+        SUPPORT_PILLAR_BROKEN = "DRAT",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "LARGE QUANTITIES OF STONE REQUIRED",
+		SUPPORT_PILLAR_DREADSTONE = "STRUCTURAL INTEGRITY HAS BEEN COMPROMISED",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "SUPERIOR MATERIAL AND CONSTRUCTION. MUST BE ONE OF MINE",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "NOT ONE OF MINE",
+
+        WOLFGANG_WHISTLE = "UGH! THE WHISTLE INCREASES HIS AUTHORITY!",
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",
@@ -4842,6 +4905,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "IT NEEDS WATER FOR SOME REASON",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "SUB-OPTIMAL SOIL DETECTED. NUTRIENTS REQUIRED",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "WHAT DO YOU NEED? WHAT DO YOU NEED?!",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

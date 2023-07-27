@@ -80,7 +80,7 @@ local function getstatus(inst)
 		local pst = inst.components.dryer.foodtype == FOODTYPE.MEAT and "" or "_NOTMEAT"
         return (inst.components.dryer:IsDone() and "DONE"..pst)
             or (inst.components.dryer:IsDrying() and
-                (TheWorld.state.israining and "DRYINGINRAIN"..pst or "DRYING"..pst))
+                (TheWorld.state.israining and inst.components.rainimmunity == nil and "DRYINGINRAIN"..pst or "DRYING"..pst))
             or nil
     end
 end

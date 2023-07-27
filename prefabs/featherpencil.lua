@@ -20,6 +20,8 @@ local function fn()
     inst.AnimState:SetBuild("feather_pencil")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.scrapbook_specialinfo = "FEATHERPENCIL"
+
     inst:AddTag("cattoy")
 
     MakeInventoryFloatable(inst, "med", 0.15, 0.65)

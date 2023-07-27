@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "The world is too dark... I can't see it clearly.",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "There's nothing marked on this map... what a cruel joke.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "There's nothing marked on this map... what a cruel joke.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -894,6 +894,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "That glow... does it lead to my doom?",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Nothing more will fit in my scrapbook.",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
 
 	BATTLECRY =
 	{
@@ -4540,6 +4563,9 @@ return{
         DUMBBELL_GEM = "Who would choose to carry such a burden...",
         POTATOSACK = "Large enough to hold a corpse... or a few dozen potatoes.",
 
+        DUMBBELL_HEAT = "It may warm the body, but not the heart.",
+        DUMBBELL_REDGEM = "It inflicts burning pain.",
+        DUMBBELL_BLUEGEM = "It chills me to my core.",
 
         TERRARIUMCHEST =
 		{
@@ -4793,6 +4819,7 @@ return{
 		LUNAR_FORGE = "Will I be able to create anything of use?",
 		LUNAR_FORGE_KIT = "I should try to put these scattered pieces together...",
 
+		LUNARPLANT_KIT = "You can't always fix what's broken. But sometimes you can.",
 		ARMOR_LUNARPLANT = "Shining armor, but no knight to save us.",
 		LUNARPLANTHAT = "It lets me hide my face from the world.",
 		BOMB_LUNARPLANT = "An instrument of destruction.",
@@ -4800,6 +4827,8 @@ return{
 		SWORD_LUNARPLANT = "A shining beacon of pain.",
 		PICKAXE_LUNARPLANT = "It makes the endless toil a bit easier.",
 		SHOVEL_LUNARPLANT = "Some things should stay buried... but not today.",
+
+		BROKEN_FORGEDITEM = "A broken mockery of what it once was.",
 
         PUNCHINGBAG = "Some are simply made to suffer.",
 
@@ -4813,6 +4842,7 @@ return{
         FUSED_SHADELING_BOMB = "They lead such short, explosive lives.",
 
 		VOIDCLOTH = "Tattered remains.",
+		VOIDCLOTH_KIT = "You can't always fix what's broken. But sometimes you can.",
 		VOIDCLOTHHAT = "I can disappear into the darkness within.",
 		ARMOR_VOIDCLOTH = "This ragged cloak will either protect me, or be my shroud.",
 
@@ -4830,6 +4860,39 @@ return{
         DREADSTONE_STACK = "Do I dare imagine what kind of darkness it grew from?",
         
         SCRAPBOOK_PAGE = "A lost and lonely page.",
+
+        LEIF_IDOL = "Let's play \"funeral pyre.\"",
+        WOODCARVEDHAT = "Today, a pine hat... perhaps tomorrow a pine box.",
+        WALKING_STICK = "What a funny little walking cane.",
+
+        IPECACSYRUP = "I'd like a poison that is less stinky, please.",
+        BOMB_LUNARPLANT_WORMWOOD = "It's far deadlier than before.", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "It is no more.",
+        	GENERIC = "I despise how it skitters...",
+        	HELD = "Freedom is not for you.",
+        	SLEEPING = "It is arrested by deepest sleep.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "A small spot of light in the darkness... waiting to be snuffed out.",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "It prefers to be alone.",
+			RIPE = "You simply look too delicious.",
+			SLEEPING = "It is arrested by deepest sleep.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "What hides beneath that shroud?",
+        SUPPORT_PILLAR = "The cracks have started to show...",
+        SUPPORT_PILLAR_COMPLETE = "It promises protection, but for how long?",
+        SUPPORT_PILLAR_BROKEN = "Nothing good can last...",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "What hides beneath that shroud?",
+		SUPPORT_PILLAR_DREADSTONE = "The cracks have started to show...",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Dreadful, yet comforting.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Eventually, we all fall.",
+
+        WOLFGANG_WHISTLE = "Abigail, I saw you whispering at Wolfgang to make us do pushups!",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",
@@ -4846,6 +4909,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Perhaps it might need some water?",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "It is starved for nutrients.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "Perhaps it just needs some reassurance.",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

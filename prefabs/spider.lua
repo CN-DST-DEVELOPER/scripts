@@ -860,6 +860,8 @@ end
 local function create_healer()
     local inst = create_common("spider", "spider_wolf_build", "spider_healer")
 
+    inst.scrapbook_specialinfo = "SPIDER_HEALER"
+
     if not TheWorld.ismastersim then
         return inst
     end

@@ -141,6 +141,8 @@ local function fn()
 
     inst.foleysound = "dontstarve/wilson/onemanband"
 
+    inst.scrapbook_specialinfo = "ONEMANBAND"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -133,6 +133,8 @@ local function feather_fn()
     inst.components.floater:SetSize("med")
     inst.components.floater:SetVerticalOffset(0.05)
 
+    inst.scrapbook_specialinfo = "FEATHERFAN"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -151,6 +153,8 @@ local function perd_fn()
     inst.components.floater:SetSize("large")
     inst.components.floater:SetVerticalOffset(0.15)
     inst.components.floater:SetScale({0.55, 0.5, 0.55})
+
+    inst.scrapbook_overridedata = {"swap_fan", "fan", "swap_fan_perd"}
 
     if not TheWorld.ismastersim then
         return inst

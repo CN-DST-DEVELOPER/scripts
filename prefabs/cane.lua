@@ -47,11 +47,16 @@ local function fn()
     local swap_data = {sym_build = "swap_cane"}
     MakeInventoryFloatable(inst, "med", 0.05, {0.85, 0.45, 0.85}, true, 1, swap_data)
 
+    inst.scrapbook_subcat = "tool"
+    inst.scrapbook_specialinfo = "CANE"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_animoffsetx = 30
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(TUNING.CANE_DAMAGE)

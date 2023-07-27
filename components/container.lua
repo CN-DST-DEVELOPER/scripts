@@ -377,7 +377,7 @@ function Container:GetAllItems()
     return collected_items
 end
 
-function Container:Open(doer, open_sfx_override)
+function Container:Open(doer)
     if doer ~= nil and self.openlist[doer] == nil then
         if not self.skipautoclose then
             self.inst:StartUpdatingComponent(self)
@@ -399,14 +399,16 @@ function Container:Open(doer, open_sfx_override)
         if doer.HUD ~= nil then
             doer.HUD:OpenContainer(self.inst, self:IsSideWidget())
             doer:PushEvent("refreshcrafting")
-            if  not self.inst.replica.container:ShouldSkipOpenSnd() then
-                if self:IsSideWidget()  then
-                    TheFocalPoint.SoundEmitter:PlaySound(SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or "dontstarve/wilson/backpack_open")
-                else
-                    --if then
-                        TheFocalPoint.SoundEmitter:PlaySound(open_sfx_override or "dontstarve/HUD/Together_HUD/container_open")
-                    --end
-                end
+			if not self.inst.replica.container:ShouldSkipOpenSnd() then
+                -- FIXME(JBK): The changes here need a way to tie the self.widget back to the entity to GetSkinBuild from for other containers like pillar and bundle wraps.
+                -- Replicate to the other three spots in container and container_replica.
+				local skinsound = self.inst.AnimState and SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or nil
+				TheFocalPoint.SoundEmitter:PlaySound(
+					skinsound and skinsound.open_ui or
+					(self.widget ~= nil and self.widget.opensound) or
+					(self:IsSideWidget() and "dontstarve/wilson/backpack_open") or
+					"dontstarve/HUD/Together_HUD/container_open"
+				)
             end
         elseif self.widget ~= nil
             and self.widget.buttoninfo ~= nil
@@ -446,11 +448,13 @@ function Container:Close(doer)
             doer.HUD:CloseContainer(self.inst, self:IsSideWidget())
             doer:PushEvent("refreshcrafting")
             if not self.inst.replica.container:ShouldSkipCloseSnd() then
-                if self:IsSideWidget() then
-                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/wilson/backpack_close")
-                else                
-                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/container_close")
-                end
+				local skinsound = self.inst.AnimState and SKIN_SOUND_FX[self.inst.AnimState:GetSkinBuild()] or nil
+				TheFocalPoint.SoundEmitter:PlaySound(
+					skinsound and skinsound.close_ui or
+					(self.widget ~= nil and self.widget.closesound) or
+					(self:IsSideWidget() and "dontstarve/wilson/backpack_close") or
+					"dontstarve/HUD/Together_HUD/container_close"
+				)
             end
         elseif doer.components.playeractionpicker ~= nil then
             doer.components.playeractionpicker:UnregisterContainer(self.inst)

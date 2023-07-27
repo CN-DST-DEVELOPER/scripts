@@ -82,7 +82,9 @@ function Tackler:CheckCollision(ignores)
                         and v.components.health ~= nil
                         and not v.components.health:IsDead()
                         and self.inst.components.combat ~= nil
-                        and self.inst.components.combat:IsValidTarget(v) then
+						and self.inst.components.combat:CanTarget(v)
+						and not (self.inst.TargetForceAttackOnly ~= nil and self.inst:TargetForceAttackOnly(v))
+					then
                         if v:HasTag("structure") then
                             target = v
                             targetdist = d
@@ -118,7 +120,9 @@ function Tackler:CheckCollision(ignores)
             v.inst.components.combat ~= nil and
             v.inst.components.health ~= nil and
             not v.inst.components.health:IsDead() and
-            self.inst.components.combat:IsValidTarget(v.inst) then
+			self.inst.components.combat:CanTarget(v.inst) and
+			not (self.inst.TargetForceAttackOnly ~= nil and self.inst:TargetForceAttackOnly(v.inst))
+		then
             if ignores ~= nil then
                 ignores[v.inst] = true
             end

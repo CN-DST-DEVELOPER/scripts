@@ -7,6 +7,8 @@ local assets =
 local prefabs =
 {
     "rocks",
+    "meat",
+    "flint",
 }
 
 local brain = require "brains/rockybrain"

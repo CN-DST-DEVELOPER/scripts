@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "No point trying to read this here.",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "Huh. Monkeys are really bad at making maps.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "Huh. Monkeys are really bad at making maps.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -897,6 +897,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Did anyone else see that weird glow?",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Looks like stuff I already know.",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
 
 	BATTLECRY =
 	{
@@ -4543,6 +4566,9 @@ return{
         DUMBBELL_GEM = "Did he really need to make it so fancy?",
         POTATOSACK = "I could make it a roasted potato sack, just say the word!",
 
+        DUMBBELL_HEAT = "Let's get you all fired up for your workout, big guy!",
+        DUMBBELL_REDGEM = "Yeah! Feel the burn!!",
+        DUMBBELL_BLUEGEM = "Ugh! Why is it so cold?",
 
         TERRARIUMCHEST =
 		{
@@ -4796,6 +4822,7 @@ return{
 		LUNAR_FORGE = "What gives? That little fire doesn't even feel warm!",
 		LUNAR_FORGE_KIT = "Right. Now I guess I have to build it.",
 
+		LUNARPLANT_KIT = "Do I look like the kind of person who fixes things? Ugh, fiiiiine...",
 		ARMOR_LUNARPLANT = "I make it look good.",
 		LUNARPLANTHAT = "How am I supposed to see in that thing?",
 		BOMB_LUNARPLANT = "Heh. Think fast!",
@@ -4803,6 +4830,8 @@ return{
 		SWORD_LUNARPLANT = "It's okay, but now I really want a fire sword.",
 		PICKAXE_LUNARPLANT = "The dumb plant still gets to hit stuff. It's what it would've wanted.",
 		SHOVEL_LUNARPLANT = "Alright, time to find some stuff to dig up!",
+
+		BROKEN_FORGEDITEM = "Welp, looks like it's busted.",
 
         PUNCHINGBAG = "Think fast, dummy!",
 
@@ -4816,6 +4845,7 @@ return{
         FUSED_SHADELING_BOMB = "They sure go out with a bang.",
 
 		VOIDCLOTH = "Finders keepers!",
+		VOIDCLOTH_KIT = "Do I look like the kind of person who fixes things? Ugh, fiiiiine...",
 		VOIDCLOTHHAT = "You never know who might really be hiding under that hood.",
 		ARMOR_VOIDCLOTH = "I think I look good in red.",
 
@@ -4833,6 +4863,39 @@ return{
         DREADSTONE_STACK = "It's growing from way down below.",
         
         SCRAPBOOK_PAGE = "Another page for the emergency kindling supply- I mean scrapbook.",
+
+        LEIF_IDOL = "See how fun it is to burn trees? I knew he'd come around.",
+        WOODCARVEDHAT = "Oooh, what a flammable- I mean, fancy hat!",
+        WALKING_STICK = "That'll make a nice poker stick.",
+
+        IPECACSYRUP = "Eww, the smell's enough to make you sick!",
+        BOMB_LUNARPLANT_WORMWOOD = "Wormwood must've been messing around with that one.", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "Ew, it's dead.",
+        	GENERIC = "I wanna roast it!",
+        	HELD = "It keeps squirming.",
+        	SLEEPING = "It's snoring.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "I'd rather use fire to light my way.",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "They're pretty cute.",
+			RIPE = "Mmm... Roast dragonfruit.",
+			SLEEPING = "Good night, little guy.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "Hmm. That looks suspiciously like work.",
+        SUPPORT_PILLAR = "I don't wanna be here when that thing finally breaks.",
+        SUPPORT_PILLAR_COMPLETE = "It's nice not having to worry about rocks falling on my head.",
+        SUPPORT_PILLAR_BROKEN = "I guess I'll have to keep an eye out for falling rocks again.",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "Hmm. That looks suspiciously like work.",
+		SUPPORT_PILLAR_DREADSTONE = "I don't wanna be here when that thing finally breaks.",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Cool. Wonder if it will burn.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Somebody should really repair this.",
+
+        WOLFGANG_WHISTLE = "I can't NOT listen to him when he's holding a shiny whistle!",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",
@@ -4849,6 +4912,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Looking nice and crispy!",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Ms. Wickerbottom's always going on about nutrients in the soil. Maybe it needs that.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "What do you want from me?!",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

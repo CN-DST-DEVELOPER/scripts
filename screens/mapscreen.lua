@@ -318,8 +318,8 @@ function MapScreen:OnUpdate(dt)
     local xdir = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
     local ydir = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
     local xmag = xdir * xdir + ydir * ydir
-    local deadzonesq = 0.3 * 0.3 -- TODO(JBK): Global controller deadzone setting.
-    if xmag >= deadzonesq then
+    local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+    if xmag >= deadzone * deadzone then
         self.minimap:Offset(xdir * s, ydir * s)
     end
 

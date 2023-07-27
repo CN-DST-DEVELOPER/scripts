@@ -14,6 +14,14 @@ local function ononcooldown(self, oncooldown)
     end
 end
 
+local function ongroundonly(self, groundonly)
+	if groundonly then
+		self.inst:AddTag("groundonlymachine")
+	else
+		self.inst:RemoveTag("groundonlymachine")
+	end
+end
+
 local Machine = Class(function(self, inst)
 	self.inst = inst
 	self.turnonfn = nil
@@ -21,16 +29,23 @@ local Machine = Class(function(self, inst)
     self.ison = false
 	self.cooldowntime = 3
     self.oncooldown = false
+	--self.groundonly = false
 end,
 nil,
 {
     ison = onison,
     oncooldown = ononcooldown,
+	groundonly = ongroundonly,
 })
 
 function Machine:OnRemoveFromEntity()
     self.inst:RemoveTag("turnedon")
     self.inst:RemoveTag("cooldown")
+	self.inst:RemoveTag("groundonlymachine")
+end
+
+function Machine:SetGroundOnlyMachine(groundonly)
+	self.groundonly = groundonly
 end
 
 function Machine:OnSave()
@@ -47,7 +62,6 @@ function Machine:OnLoad(data)
 end
 
 function Machine:TurnOn()
-
 	if self.cooldowntime > 0 then
 		self.oncooldown = true
 		self.inst:DoTaskInTime(self.cooldowntime, function() self.oncooldown = false end)
@@ -69,7 +83,6 @@ function Machine:CanInteract()
 end
 
 function Machine:TurnOff()
-
 	if self.cooldowntime > 0 then
 		self.oncooldown = true
 		self.inst:DoTaskInTime(self.cooldowntime, function() self.oncooldown = false end)
@@ -86,7 +99,6 @@ function Machine:IsOn()
 end
 
 function Machine:GetDebugString()
-
     return string.format("on=%s, cooldowntime=%2.2f, oncooldown=%s", tostring(self.ison), self.cooldowntime, tostring(self.oncooldown) )
 end
 

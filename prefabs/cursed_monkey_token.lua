@@ -62,6 +62,8 @@ local function fn()
     inst.AnimState:SetBuild("cursed_beads")
     inst.AnimState:PlayAnimation("idle1")
 
+    inst.scrapbook_specialinfo = "CURSEDMONKEYTOKEN"
+
     inst:AddTag("cattoy")
     inst:AddTag("monkey_token")
     inst:AddTag("nosteal")

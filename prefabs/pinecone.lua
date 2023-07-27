@@ -82,6 +82,8 @@ local function addcone(name, spawn_prefab, bank, build, anim, winter_tree)
 
         MakeInventoryFloatable(inst, "small", 0.05, 0.9)
 
+        inst.scrapbook_specialinfo = "PLANTABLE"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

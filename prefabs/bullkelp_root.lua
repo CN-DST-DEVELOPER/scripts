@@ -79,6 +79,8 @@ local function fn()
 
     inst.entity:SetPristine()
 
+    inst.scrapbook_anim = "dropped"
+
     if not TheWorld.ismastersim then
         return inst
     end

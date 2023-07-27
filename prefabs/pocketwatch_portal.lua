@@ -113,6 +113,8 @@ local function fn()
 
 	inst.GetActionVerb_CAST_POCKETWATCH = GetActionVerb
 
+	inst.scrapbook_specialinfo = "POCKETWATCH_PORTAL"
+
     if not TheWorld.ismastersim then
         return inst
     end

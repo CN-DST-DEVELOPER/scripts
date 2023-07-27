@@ -44,13 +44,29 @@ end
 local function StartGrowing(inst, giver, product)
     if inst.components.harvestable ~= nil then
         local is_spore = product:HasTag("spore")
-        local max_produce = is_spore and levels[1].amount or levels[2].amount
-        local productname = is_spore and spore_to_cap[product.prefab] or product.prefab
+
+        local grower_skilltreeupdater = giver.components.skilltreeupdater
+        local planter_is_improved = (grower_skilltreeupdater and grower_skilltreeupdater:IsActivated("wormwood_mushroomplanter_upgrade"))
+
+        local max_produce = ((is_spore or planter_is_improved) and levels[1].amount) or levels[2].amount
+        local productname = (is_spore and spore_to_cap[product.prefab]) or product.prefab
+
+        local grow_time_percent = 1.0
+
+        if grower_skilltreeupdater ~= nil then
+            if grower_skilltreeupdater:IsActivated("wormwood_mushroomplanter_ratebonus2") then
+                grow_time_percent = TUNING.WORMWOOD_MUSHROOMPLANTER_RATEBONUS_2
+            elseif grower_skilltreeupdater:IsActivated("wormwood_mushroomplanter_ratebonus1") then
+                grow_time_percent = TUNING.WORMWOOD_MUSHROOMPLANTER_RATEBONUS_1
+            end
+        end
+
+        local grow_time = grow_time_percent * TUNING.MUSHROOMFARM_FULL_GROW_TIME
 
         DoMushroomOverrideSymbol(inst, productname)
 
         inst.components.harvestable:SetProduct(productname, max_produce)
-        inst.components.harvestable:SetGrowTime(TUNING.MUSHROOMFARM_FULL_GROW_TIME / max_produce)
+        inst.components.harvestable:SetGrowTime(grow_time / max_produce)
         inst.components.harvestable:Grow()
 
         TheWorld:PushEvent("itemplanted", { doer = giver, pos = inst:GetPosition() }) --this event is pushed in other places too

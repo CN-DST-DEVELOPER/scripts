@@ -218,6 +218,8 @@ local function MakeItem(name, drawn)
 
         MakeInventoryFloatable(inst, "med", 0.05, 0.65)
 
+        inst.scrapbook_anim = "item"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

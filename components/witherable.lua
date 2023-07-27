@@ -68,11 +68,15 @@ local function DoPickableWither(inst, self)
     return true
 end
 
+local function IsExposedToRain(inst)
+	return TheWorld.state.israining and inst.components.rainimmunity == nil
+end
+
 local function WitherHandler(inst, self, force)
     self.task = nil
     self.task_to_time = nil
 
-    if not (force or (TheWorld.state.temperature > self.wither_temp and not TheWorld.state.israining)) then
+	if not (force or (TheWorld.state.temperature > self.wither_temp and not IsExposedToRain(inst))) then
         --Reschedule
         self:Start()
     else
@@ -116,7 +120,7 @@ local function RejuvenateHandler(inst, self, force)
     self.task = nil
     self.task_to_time = nil
 
-    if not (force or TheWorld.state.temperature < self.rejuvenate_temp or TheWorld.state.israining) then
+    if not (force or TheWorld.state.temperature < self.rejuvenate_temp or IsExposedToRain(inst)) then
         --Reschedule
         self:Start()
     elseif DoPickableRejuvenate(inst, self) then
@@ -224,7 +228,7 @@ end
 
 function Witherable:DelayRejuvenate(delay)
     if self:CanRejuvenate() then
-        if not TheWorld.state.israining then
+		if not IsExposedToRain(self.inst) then
             local t = GetTime() + delay
             if self.delay_to_time == nil or self.delay_to_time < t then
                 self.delay_to_time = t

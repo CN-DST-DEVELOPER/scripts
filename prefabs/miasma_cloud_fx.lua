@@ -313,26 +313,24 @@ local function OnUpdate(inst)
 	end
 
     local miasmamanager = TheWorld.components.miasmamanager
-    if miasmamanager then
-        local nearestfire = TheSim:FindEntities(x, y, z, FIRE_RADIUS, FIRE_MUST_TAGS)[1]
-        if nearestfire then
-            if miasmamanager:GetMiasmaAtPoint(x, y, z) then
-                miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, true)
-            elseif inst._miasma_kill_task == nil then
-                -- Fake diminishing an unmanaged miasma cloud.
-                inst._miasma_kill_task = inst:DoTaskInTime(TUNING.MIASMA_DIMINISH_INTERVAL_SECONDS * TUNING.MIASMA_MAXSTRENGTH, inst.Remove)
-            end
-            inst._diminishing:set(true)
-        else
-            if miasmamanager:GetMiasmaAtPoint(x, y, z) then
-                miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, false)
-            elseif inst._miasma_kill_task ~= nil then
-                -- Stop fake diminishing an unmanaged miasma cloud.
-                inst._miasma_kill_task:Cancel()
-                inst._miasma_kill_task = nil
-            end
-            inst._diminishing:set(false)
+    local nearestfire = TheSim:FindEntities(x, y, z, FIRE_RADIUS, FIRE_MUST_TAGS)[1]
+    if nearestfire then
+        if miasmamanager and miasmamanager:GetMiasmaAtPoint(x, y, z) then
+            miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, true)
+        elseif inst._miasma_kill_task == nil then
+            -- Fake diminishing an unmanaged miasma cloud.
+            inst._miasma_kill_task = inst:DoTaskInTime(TUNING.MIASMA_DIMINISH_INTERVAL_SECONDS * TUNING.MIASMA_MAXSTRENGTH, inst.Remove)
         end
+        inst._diminishing:set(true)
+    else
+        if miasmamanager and miasmamanager:GetMiasmaAtPoint(x, y, z) then
+            miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, false)
+        elseif inst._miasma_kill_task ~= nil then
+            -- Stop fake diminishing an unmanaged miasma cloud.
+            inst._miasma_kill_task:Cancel()
+            inst._miasma_kill_task = nil
+        end
+        inst._diminishing:set(false)
     end
 
 	inst:ClearWatcherTable(inst.watchers_toremove)

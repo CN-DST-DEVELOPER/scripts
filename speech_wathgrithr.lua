@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "This is nary the time nor place.",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "'Tis a map with no directions.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "'Tis a map with no directions.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -890,6 +890,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Hark! 'Tis a most unnatural light!",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I hath already completed my tome.",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
 
 	BATTLECRY =
 	{
@@ -4536,6 +4559,9 @@ return{
         DUMBBELL_GEM = "My friend, if you want to be fighting fit you must join me in combat!",
         POTATOSACK = "I have no use for a sack of non-meats.",
 
+        DUMBBELL_HEAT = "Training in comfort.",
+        DUMBBELL_REDGEM = "My ally wields a strange weapon, indeed.",
+        DUMBBELL_BLUEGEM = "My ally wields a strange weapon, indeed.",
 
         TERRARIUMCHEST =
 		{
@@ -4789,6 +4815,7 @@ return{
 		LUNAR_FORGE = "I shall forge weapons to rival the gods themselves!",
 		LUNAR_FORGE_KIT = "The forge must be built, forthwith!",
 
+		LUNARPLANT_KIT = "Even the sturdiest armor will sometimes need repairs.",
 		ARMOR_LUNARPLANT = "Armor crafted from a fallen foe.",
 		LUNARPLANTHAT = "A formidable helm, burning with an unearthly flame!",
 		BOMB_LUNARPLANT = "I have made the plant's power my own.",
@@ -4796,6 +4823,8 @@ return{
 		SWORD_LUNARPLANT = "Am I worthy of wielding a weapon of such brilliance?",
 		PICKAXE_LUNARPLANT = "Neither stone nor structure shall stand in my way!",
 		SHOVEL_LUNARPLANT = "The ground stands no chance against me.",
+
+		BROKEN_FORGEDITEM = "'Tis battered, but not lost!",
 
         PUNCHINGBAG = "Alas, 'tis not a very lively sparring partner.",
 
@@ -4809,6 +4838,7 @@ return{
         FUSED_SHADELING_BOMB = "'Tis small, but lively!",
 
 		VOIDCLOTH = "Remnants of a fallen foe.",
+		VOIDCLOTH_KIT = "Even the sturdiest armor will sometimes need repairs.",
 		VOIDCLOTHHAT = "I despise the thought of hiding one's face in combat.",
 		ARMOR_VOIDCLOTH = "This garb invites madness...",
 
@@ -4826,6 +4856,39 @@ return{
         DREADSTONE_STACK = "It hails from a place deeper and darker than even here.",
         
         SCRAPBOOK_PAGE = "From whence hath you come, mysterious page?",
+
+        LEIF_IDOL = "Tribute to an ancient woodland being.",
+        WOODCARVEDHAT = "A helm of the forest.",
+        WALKING_STICK = "Carved with a fine blade, by a skilled hand.",
+
+        IPECACSYRUP = "'Tis a most sickly-smelling syrup.",
+        BOMB_LUNARPLANT_WORMWOOD = "Ha! Look how my plant ally's power grows!", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "It has breathed its last.",
+        	GENERIC = "Vegetables are not to be trusted!",
+        	HELD = "I have you now, wicked vegetable.",
+        	SLEEPING = "A deceptive vegetable with no honor.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "Light the way, noble insect.",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "Meat impostor!",
+			RIPE = "I have no need for your fake meat.",
+			SLEEPING = "Grabbest thy shut eye!",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "The building hath commenced!",
+        SUPPORT_PILLAR = "This noble pillar hath withstood much for our sakes.",
+        SUPPORT_PILLAR_COMPLETE = "A glorious monument to our resilience!",
+        SUPPORT_PILLAR_BROKEN = "We shall rebuild!",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "The building hath commenced!",
+		SUPPORT_PILLAR_DREADSTONE = "This noble pillar hath withstood much for our sakes.",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "'Twould withstand Ragnarok.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How the mighty have fallen.",
+
+        WOLFGANG_WHISTLE = "My ally will get our forces fighting fit!",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",
@@ -4842,6 +4905,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "It thirsts for water.",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "You are unhappy with the dirt you have? Do not look to me to help you!",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "The feeble thing needs conversation to grow? Vikings thrive in stoic silence!",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

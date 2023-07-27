@@ -109,6 +109,8 @@ local function MakeSpikeFn(shape, size)
 
         inst.entity:SetPristine()
 
+        inst.scrapbook_adddeps = {"antlion"}
+
         if not TheWorld.ismastersim then
             return inst
         end

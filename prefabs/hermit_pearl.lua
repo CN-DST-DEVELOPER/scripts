@@ -52,6 +52,8 @@ end
 local function crackedfn()
     local inst = commonfn()
 
+    inst.scrapbook_anim = "cracked"
+
     inst.AnimState:SetBank("hermit_pearl")
     inst.AnimState:SetBuild("hermit_pearl")
     inst.AnimState:PlayAnimation("cracked")

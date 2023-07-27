@@ -181,6 +181,8 @@ local function fn()
     inst:AddTag("show_spoilage")
     inst:AddTag("moonstorm_spark")
 
+    inst.scrapbook_damage = TUNING.LIGHTNING_DAMAGE
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

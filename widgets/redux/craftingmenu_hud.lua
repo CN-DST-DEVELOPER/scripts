@@ -119,6 +119,7 @@ local CraftingMenuHUD = Class(Widget, function(self, owner, is_left_aligned)
     self.inst:ListenForEvent("sanitydelta", UpdateRecipesForSanityIngredients, self.owner)
     self.inst:ListenForEvent("techtreechange", UpdateRecipesForTechTreeChange, self.owner)
     self.inst:ListenForEvent("onactivateskill_client", event_UpdateRecipes, self.owner)
+    self.inst:ListenForEvent("localplayer._skilltreeactivatedany", event_UpdateRecipes, self.owner)
     self.inst:ListenForEvent("itemget", event_UpdateRecipes, self.owner)
     self.inst:ListenForEvent("itemlose", event_UpdateRecipes, self.owner)
     self.inst:ListenForEvent("newactiveitem", event_UpdateRecipes, self.owner)
@@ -273,18 +274,18 @@ function CraftingMenuHUD:RebuildRecipes()
 				--meta.can_build = true/false
 				--meta.build_state = string
 
-				local is_build_tag_restructed = not builder:CanLearn(recipe.name) -- canlearn is "not build tag restricted"
+				local is_build_tag_restricted = not builder:CanLearn(recipe.name) -- canlearn is "not build tag restricted"
 
 				if knows_recipe or should_hint_recipe or freecrafting then --Knows enough to see it
 				--and (self.filter == nil or self.filter(recipe.name, builder, nil)) -- Has no filter or passes the filter in place
 
-					if builder:IsBuildBuffered(recipe.name) and not is_build_tag_restructed then
+					if builder:IsBuildBuffered(recipe.name) and not is_build_tag_restricted then
 						meta.can_build = true
 						meta.build_state = "buffered"
 					elseif freecrafting then
 						meta.can_build = true
 						meta.build_state = "freecrafting"
-					elseif is_build_tag_restructed then
+					elseif is_build_tag_restricted then
 						meta.can_build = false
 						meta.build_state = "hide"
 					elseif knows_recipe then

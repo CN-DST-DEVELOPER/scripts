@@ -681,8 +681,14 @@ function EntityScript:GetAdjectivedName()
                 return ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.FUEL)
             end
         end
+		--broken
+		if self:HasTag("broken") then
+			return ConstructAdjectivedName(self, ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC), STRINGS.BROKENITEM)
+		end
         --generic
         return ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC)
+	elseif self:HasTag("broken") then
+		return ConstructAdjectivedName(self, name, STRINGS.BROKENITEM)
     end
     return name
 end
@@ -709,7 +715,9 @@ function EntityScript:GetIsWet()
     if replica ~= nil then
         return replica:IsWet()
     end
-    return self:HasTag("wet") or TheWorld.state.iswet or (self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
+	return self:HasTag("wet")
+		or (TheWorld.state.iswet and not self:HasTag("rainimmunity"))
+		or (self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
 end
 
 function EntityScript:GetSkinBuild()

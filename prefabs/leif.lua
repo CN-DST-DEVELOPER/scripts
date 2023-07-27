@@ -13,10 +13,9 @@ local assets =
 
 local prefabs =
 {
-    "meat",
-    "log",
-    "character_fire",
+    "monstermeat",
     "livinglog",
+    "character_fire",
 }
 
 local function SetLeifScale(inst, scale)

@@ -56,6 +56,22 @@ local function make_plantable(data)
             MakeInventoryFloatable(inst)
         end
 
+        if data.name == "berrybush" or 
+           data.name == "berrybush2" or 
+           data.name == "berrybush_juicy" or
+           data.name == "grass" or
+           data.name == "monkeytail" or
+           data.name == "bananabush" or
+           data.name == "rock_avocado_bush" then
+            inst.scrapbook_specialinfo = "PLANTABLE_FERTILIZE"
+        end
+
+        if data.name == "sapling" or
+           data.name == "sapling_moon" or
+           data.name == "marsh_bush" then
+            inst.scrapbook_specialinfo = "PLANTABLE"
+        end
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

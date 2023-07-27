@@ -22,6 +22,8 @@ local function fn()
 	inst.AnimState:SetSymbolLightOverride("SparkleBit", .5)
 	inst.AnimState:SetLightOverride(.1)
 
+    inst.pickupsound = "gem"
+
 	MakeInventoryFloatable(inst, "small", .1)
 
     inst.entity:SetPristine()

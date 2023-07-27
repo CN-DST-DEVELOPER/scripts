@@ -8,6 +8,7 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
+    CommonHandlers.OnIpecacPoop(),
     EventHandler("death", function(inst) inst.sg:GoToState("death", inst.sg.statemem.dead) end),
     EventHandler("giveuptarget", function(inst, data) if data.target then inst.sg:GoToState("howl") end end),
     EventHandler("newcombattarget", function(inst, data)
@@ -284,5 +285,6 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddIpecacPoopState(states)
 
 return StateGraph("moonpig", states, events, "idle")

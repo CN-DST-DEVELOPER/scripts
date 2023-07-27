@@ -71,6 +71,8 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
 
     MakeInventoryFloatable(inst, "small", nil, 0.68)
 
+    inst.scrapbook_specialinfo = "PADDLE"    
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

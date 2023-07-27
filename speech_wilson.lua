@@ -901,6 +901,29 @@ return {
 
     ANNOUNCE_SCRAPBOOK_FULL = "I already have all these.",
 
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+
 	BATTLECRY =
 	{
 		GENERIC = "Go for the eyes!",
@@ -4546,6 +4569,9 @@ return {
         DUMBBELL_GEM = "I'll conquer this weight with the power of-- ACK! My spine!!",
         POTATOSACK = "It's either filled with potato-shaped rocks or rock-shaped potatoes.",
 
+        DUMBBELL_HEAT = "It's good for a warm-up.",
+        DUMBBELL_REDGEM = "It'll really make you feel the burn.",
+        DUMBBELL_BLUEGEM = "You can't get much cooler than that.",
 
         TERRARIUMCHEST =
 		{
@@ -4799,6 +4825,7 @@ return {
 		LUNAR_FORGE = "Just the place to make something very clever and scientific.",
 		LUNAR_FORGE_KIT = "A simple combination of elements!",
 
+		LUNARPLANT_KIT = "I'm moonlighting as a tailor.",
 		ARMOR_LUNARPLANT = "This armor doesn't leaf any room for improvement.",
 		LUNARPLANTHAT = "It makes me look even brighter than usual.",
 		BOMB_LUNARPLANT = "Botany and chemistry, working together.",
@@ -4806,6 +4833,8 @@ return {
 		SWORD_LUNARPLANT = "It's hard not to make sound effects when I wave it around.",
 		PICKAXE_LUNARPLANT = "Smashing!",
 		SHOVEL_LUNARPLANT = "The dirt displacing possibilities are endless!",
+
+		BROKEN_FORGEDITEM = "It's broken, but I think I could repair it.",
 
         PUNCHINGBAG = "It comes with a finely calibrated ouch-o-meter.",
 
@@ -4819,6 +4848,7 @@ return {
         FUSED_SHADELING_BOMB = "Bombastic!",
 
 		VOIDCLOTH = "Those shadows are all cut from the same cloth.",
+		VOIDCLOTH_KIT = "My knowledge of sewing with shadows is patchy at best.",
 		VOIDCLOTHHAT = "It makes me feel dark and mysterious.",
 		ARMOR_VOIDCLOTH = "Oh drat, there's a tear across the front!",
 
@@ -4836,6 +4866,39 @@ return {
         DREADSTONE_STACK = "It's coming from deep down in those chasms...",
         
         SCRAPBOOK_PAGE = "Someone else out there likes to scrapbook.",
+
+        LEIF_IDOL = "Carving a tree out of wood seems a bit redundant.",
+        WOODCARVEDHAT = "It looks like it's been lovingly carved.",
+        WALKING_STICK = "It's a very nice stick.",
+
+        IPECACSYRUP = "I don't think I want to eat this.",
+        BOMB_LUNARPLANT_WORMWOOD = "Our friend seems to be getting more in touch with his lunar roots.", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "That's the end of that.",
+        	GENERIC = "Are carrots supposed to have legs?",
+        	HELD = "You're kind of ugly up close.",
+        	SLEEPING = "It's almost cute.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "How strange, carrying one makes my pocket feel lighter!",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "It's cute, but it's not ripe yet.",
+			RIPE = "I think it's ripe now.",
+			SLEEPING = "It's snoozing.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "It's all under wraps for now.",
+        SUPPORT_PILLAR = "I should really get around to fixing that.",
+        SUPPORT_PILLAR_COMPLETE = "It fills me with confidence.",
+        SUPPORT_PILLAR_BROKEN = "You were once tall and strong.",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "It's all under wraps for now.",
+		SUPPORT_PILLAR_DREADSTONE = "I should really get around to fixing that.",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "That looks dreadfully strong.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How dreadful.",
+
+        WOLFGANG_WHISTLE = "It gives me terrible flashbacks to the gym classes of my youth...",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",
@@ -4852,6 +4915,7 @@ return {
     DESCRIBE_PLANTSTRESSORMOISTURE = "This looks really dehydrated.",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "This poor plant needs nutrients!",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "It's hungry for some good conversation.",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

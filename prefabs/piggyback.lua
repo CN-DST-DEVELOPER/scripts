@@ -57,6 +57,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.1, 0.85)
 
+    inst.scrapbook_specialinfo = "PIGGYBACK"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -81,8 +83,6 @@ local function fn()
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("piggyback")
-    inst.components.container.skipclosesnd = true
-    inst.components.container.skipopensnd = true
 
     MakeHauntableLaunchAndDropFirstItem(inst)
 

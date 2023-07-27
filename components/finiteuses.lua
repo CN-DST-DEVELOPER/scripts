@@ -2,6 +2,8 @@ local function onfiniteuses(self)
     local repairable = self.inst.components.repairable
     if repairable then
         repairable:SetFiniteUsesRepairable(self.current < self.total)
+	elseif self.inst.components.forgerepairable ~= nil then
+		self.inst.components.forgerepairable:SetRepairable(self.current < self.total)
     end
 end
 

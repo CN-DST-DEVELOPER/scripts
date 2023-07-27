@@ -16,6 +16,9 @@ local assets =
     Asset("ATLAS", "images/fx5.xml"),
     Asset("IMAGE", "images/fx5.tex"),
 
+	Asset("ATLAS", "images/rain_dome_over.xml"),
+	Asset("IMAGE", "images/rain_dome_over.tex"),
+
     Asset("ANIM", "anim/sand_over.zip"),
 	Asset("ANIM", "anim/miasma_over.zip"),
     Asset("ANIM", "anim/moonstorm_over.zip"),

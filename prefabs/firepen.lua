@@ -82,6 +82,8 @@ local function fn()
     MakeInventoryPhysics(inst)
     MakeInventoryFloatable(inst, "med", 0.05, { .9, 0.5, .9 })
 
+    inst.scrapbook_specialinfo = "REDSTAFF"
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

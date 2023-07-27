@@ -21,6 +21,8 @@ local function commonfn(anim, dryable, cookable)
     inst.AnimState:SetBuild("frog_legs")
     inst.AnimState:PlayAnimation(anim)
 
+    --inst.pickupsound = "squidgy"
+
     inst:AddTag("smallmeat")
     inst:AddTag("catfood")
     inst:AddTag("rawmeat")

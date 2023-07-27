@@ -384,6 +384,8 @@ end
 local function red()
     local inst = commonfn("redamulet", "resurrector", true)
 
+    inst.scrapbook_specialinfo = "REDAMULET"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -427,6 +429,8 @@ local function blue()
     local inst = commonfn("blueamulet", "HASHEATER")
     --HASHEATER (from heater component) added to pristine state for optimization
 
+    inst.scrapbook_specialinfo = "BLUEAMULET"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -454,6 +458,8 @@ end
 local function purple()
     local inst = commonfn("purpleamulet")
 
+    inst.scrapbook_specialinfo = "PURPLEAMULET"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -478,6 +484,8 @@ end
 local function green()
     local inst = commonfn("greenamulet")
 
+    inst.scrapbook_specialinfo = "GREENAMULET"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -498,6 +506,8 @@ end
 
 local function orange()
     local inst = commonfn("orangeamulet", "repairshortaction", nil, true)
+
+    inst.scrapbook_specialinfo = "ORANGEAMULET"
 
     if not TheWorld.ismastersim then
         return inst
@@ -527,6 +537,8 @@ end
 
 local function yellow()
     local inst = commonfn("yellowamulet", nil, nil, true)
+
+    inst.scrapbook_specialinfo = "YELLOWAMULET"
 
     if not TheWorld.ismastersim then
         return inst

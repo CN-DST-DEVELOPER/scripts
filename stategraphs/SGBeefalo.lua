@@ -13,6 +13,9 @@ local actionhandlers =
     end),
 }
 
+local function go_to_idle(inst)
+    inst.sg:GoToState("idle")
+end
 
 local events=
 {
@@ -21,6 +24,7 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnIpecacPoop(),
 
     EventHandler("doattack", function(inst, data) if not inst.components.health:IsDead() then inst.sg:GoToState("attack", data.target) end end),
     EventHandler("death", function(inst)
@@ -167,7 +171,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -182,7 +186,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -205,7 +209,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -238,7 +242,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
 
         onexit = function(inst)
@@ -274,9 +278,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -292,7 +294,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -307,7 +309,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -346,7 +348,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -360,7 +362,7 @@ local states=
         end,
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -380,7 +382,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -437,9 +439,7 @@ local states=
             inst.sg:SetTimeout(1+math.random()*5)
         end,
 
-        ontimeout= function(inst)
-            inst.sg:GoToState("idle")
-        end,
+        ontimeout = go_to_idle,
 
     },
 
@@ -519,7 +519,7 @@ local states=
 
         events=
         {
-            EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animqueueover", go_to_idle),
         },
 
     },
@@ -590,7 +590,7 @@ local states=
 
         events=
         {
-            EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animqueueover", go_to_idle),
         },
     },
 
@@ -629,9 +629,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
 
 		onexit = function(inst)
@@ -671,7 +669,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -714,7 +712,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -809,9 +807,7 @@ local states=
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -843,9 +839,7 @@ local states=
 
         events=
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -879,6 +873,7 @@ CommonStates.AddWalkStates(
 CommonStates.AddSimpleState(states,"hit", "hit")
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddIpecacPoopState(states)
 
 CommonStates.AddSleepStates(states,
 {

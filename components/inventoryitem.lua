@@ -111,6 +111,18 @@ function InventoryItem:InheritMoisture(moisture, iswet)
     end
 end
 
+function InventoryItem:InheritWorldWetnessAtXZ(x, z)
+	if self.inst.components.inventoryitemmoisture ~= nil and not IsUnderRainDomeAtXZ(x, z) then
+		self.inst.components.inventoryitemmoisture:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+	end
+end
+
+function InventoryItem:InheritWorldWetnessAtTarget(target)
+	if self.inst.components.inventoryitemmoisture ~= nil and target.components.rainimmunity == nil then
+		self.inst.components.inventoryitemmoisture:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+	end
+end
+
 function InventoryItem:DiluteMoisture(item, count)
     if self.inst.components.inventoryitemmoisture ~= nil then
         self.inst.components.inventoryitemmoisture:DiluteMoisture(item, count)

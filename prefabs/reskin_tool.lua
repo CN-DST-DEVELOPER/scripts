@@ -83,6 +83,11 @@ local reskin_fx_info =
 	yellowstaff = { offset = 0.4 },
 }
 
+-- Testing and viewing skins on a more close level.
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("fxinfo", reskin_fx_info)
+end
+
 
 
 local function spellCB(tool, target, pos, caster)
@@ -244,6 +249,7 @@ local function tool_fn()
     inst:AddTag("veryquickcast")
 
     --inst.spelltype = "SCIENCE"
+    inst.scrapbook_specialinfo = "RESKINTOOL"
 
     local swap_data = {sym_build = "swap_reskin_tool", bank = "reskin_tool"}
     MakeInventoryFloatable(inst, "med", 0.05, {1.0, 0.4, 1.0}, true, -20, swap_data)

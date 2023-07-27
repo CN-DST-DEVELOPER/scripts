@@ -64,6 +64,8 @@ local function fn()
 	MakeHeavyObstaclePhysics(inst, PHYSICS_RADIUS)
 	inst:SetPhysicsRadiusOverride(PHYSICS_RADIUS)
 
+    inst.scrapbook_specialinfo = "SHELLCLUSTER"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

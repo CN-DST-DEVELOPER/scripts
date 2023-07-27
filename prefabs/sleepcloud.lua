@@ -92,6 +92,17 @@ local function CreateBase(isnew)
     return inst
 end
 
+local LUNAR_R, LUNAR_G, LUNAR_B, LUNAR_A = 0.2/0.6, 0.25/0.6, 1.0, 0.6
+local function CreateBaseLunar(isnew)
+    local inst = CreateBase(isnew)
+
+    inst.AnimState:SetMultColour(LUNAR_R, LUNAR_G, LUNAR_B, LUNAR_A)
+
+    return inst
+end
+
+----
+
 local function OnStateDirty(inst)
     if inst._state:value() > 0 then
         if inst._inittask ~= nil then
@@ -100,7 +111,7 @@ local function OnStateDirty(inst)
         end
         if inst._state:value() == 1 then
             if inst._basefx == nil then
-                inst._basefx = CreateBase(false)
+                inst._basefx = inst._create_base_fn(false)
                 inst._basefx.entity:SetParent(inst.entity)
             end
         elseif inst._basefx ~= nil then
@@ -204,7 +215,7 @@ local function OnLoad(inst, data)
 
         --Dedicated server does not need to spawn the local fx
         if not TheNet:IsDedicated() then
-            inst._basefx = CreateBase(false)
+            inst._basefx = inst._create_base_fn(false)
             inst._basefx.entity:SetParent(inst.entity)
         end
 
@@ -219,7 +230,7 @@ local function InitFX(inst)
 
     --Dedicated server does not need to spawn the local fx
     if not TheNet:IsDedicated() then
-        inst._basefx = CreateBase(true)
+        inst._basefx = inst._create_base_fn(true)
         inst._basefx.entity:SetParent(inst.entity)
     end
 end
@@ -315,8 +326,9 @@ local function fn()
 
     inst._inittask = inst:DoTaskInTime(0, InitFX)
 
-    inst.entity:SetPristine()
+    inst._create_base_fn = CreateBase
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         inst:ListenForEvent("statedirty", OnStateDirty)
 
@@ -342,6 +354,17 @@ local function fn()
 
     return inst
 end
+
+----
+local function lunar_fn()
+    local inst = fn()
+
+    inst._create_base_fn = CreateBaseLunar
+
+    return inst
+end
+
+----
 
 local function overlayfn()
     local inst = CreateEntity()
@@ -373,4 +396,5 @@ local function overlayfn()
 end
 
 return Prefab("sleepcloud", fn, assets, prefabs),
-    Prefab("sleepcloud_overlay", overlayfn, assets)
+    Prefab("sleepcloud_overlay", overlayfn, assets),
+    Prefab("sleepcloud_lunar", lunar_fn, assets, prefabs)

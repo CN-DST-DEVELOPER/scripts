@@ -221,6 +221,10 @@ end
 function DayWalkerSpawner:OnPostInit()
     if TUNING.SPAWN_DAYWALKER then
         self:WatchWorldState("cycles", self.OnDayChange)
+        if self.days_to_spawn <= 0 then
+            -- NOTES(JBK): Try to do a spawn in this case it means the component has yet to try to spawn one or failed to spawn one in an attempt.
+            self:OnDayChange()
+        end
     end
 end
 

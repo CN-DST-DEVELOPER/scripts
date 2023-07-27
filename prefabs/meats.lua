@@ -138,6 +138,8 @@ local function common(bank, build, anim, tags, dryable, cookable)
     inst.AnimState:PlayAnimation(anim)
     inst.scrapbook_anim = anim
 
+    --inst.pickupsound = "squidgy"
+
     inst:AddTag("meat")
     if tags ~= nil then
         for i, v in ipairs(tags) do

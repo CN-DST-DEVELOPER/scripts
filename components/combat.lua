@@ -542,6 +542,11 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
     self.lastattacker = attacker
 
     if self.inst.components.health ~= nil and damage ~= nil and damageredirecttarget == nil then
+        if self.inst.components.attackdodger ~= nil and self.inst.components.attackdodger:CanDodge(attacker) then
+            self.inst.components.attackdodger:Dodge()
+            damage, spdamage = 0, nil
+        end
+
         if self.inst.components.inventory ~= nil then
 			if attacker ~= nil and attacker.components.planarentity ~= nil and not self.inst.components.inventory:EquipHasSpDefenseForType("planar") then
 				attacker.components.planarentity:OnPlanarAttackUndefended(self.inst)

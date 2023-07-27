@@ -91,21 +91,31 @@ function FilterBar:AddFilter(text_fmt, on_tex, off_tex, id, filterfn)
     return btn
 end
 
+local modes = {
+    [1] = {name = "SORT_RELEASE", image = "sort_release.tex",},
+    [2] = {name = "SORT_NAME", image = "sort_name.tex",},
+    [3] = {name = "SORT_RARITY", image = "sort_rarity.tex",},
+    [4] = {name = "SORT_COUNT", image = "sort_count.tex",},
+}
+local MAX_MODES = #modes
+
+local function GetInfoForModeName(name)
+    for index, data in ipairs(modes) do
+        if data.name == name then
+            return index, data
+        end
+    end
+end
+
 function FilterBar:AddSorter()
 
-    local modes = {
-        SORT_RELEASE = "sort_release.tex",
-        SORT_NAME = "sort_name.tex",
-        SORT_RARITY = "sort_rarity.tex",
-        SORT_COUNT = "sort_count.tex",
-    }
-
-    local btn = TEMPLATES.IconButton("images/button_icons.xml", modes["SORT_RELEASE"])
+    local btn = TEMPLATES.IconButton("images/button_icons.xml", modes[1].image)
     btn:SetScale(0.9)
     btn.SetSortType = function(_,sort_mode)
 
         btn:SetHoverText( subfmt(STRINGS.UI.WARDROBESCREEN.SORT_MODE_FMT, { mode = STRINGS.UI.WARDROBESCREEN[sort_mode] }) )
-        btn.icon:SetTexture("images/button_icons.xml", modes[sort_mode] )
+        local index, data = GetInfoForModeName(sort_mode)
+        btn.icon:SetTexture("images/button_icons.xml", data.image)
 
         if not self.no_refresh_picker then
             self.picker:RefreshItems(self:_ConstructFilter())
@@ -114,10 +124,12 @@ function FilterBar:AddSorter()
     local function onclick()
         local sort_mode = Profile:GetItemSortMode() or "SORT_RELEASE"
 
-        sort_mode = next(modes, sort_mode)
-        if sort_mode == nil then
-            sort_mode = "SORT_RELEASE"
+        local index, data = GetInfoForModeName(sort_mode)
+        index = index + 1
+        if index > MAX_MODES then
+            index = 1
         end
+        sort_mode = modes[index].name
 
         Profile:SetItemSortMode(sort_mode)
         btn:SetSortType(sort_mode)

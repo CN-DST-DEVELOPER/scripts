@@ -141,6 +141,8 @@ local function fn()
 
     inst.displaynamefn = DisplayNameFn
 
+    inst.scrapbook_specialinfo = "SPEEDYBALLOON"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

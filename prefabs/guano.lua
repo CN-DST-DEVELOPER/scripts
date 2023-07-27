@@ -61,6 +61,8 @@ local function fn()
     inst.AnimState:PlayAnimation("dump")
     inst.AnimState:PushAnimation("idle")
 
+    --inst.pickupsound = "squidgy"
+
     MakeInventoryFloatable(inst, "med", 0.1, 0.73)
     MakeDeployableFertilizerPristine(inst)
 

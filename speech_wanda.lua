@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "It's too dark in here... I can't make anything out.",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "What is this gibberish? None of the islands around here are this shape.",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "What is this gibberish? None of the islands around here are this shape.",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -890,6 +890,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Something has shifted...",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Didn't I already fill out my scrapbook?",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfgang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+        "only_used_by_wolfgang",
+    },
 
 	BATTLECRY =
 	{
@@ -4536,6 +4559,9 @@ return{
         DUMBBELL_GEM = "What a dreadfully repetitive way to spend one's time.",
         POTATOSACK = "Who would want to lug this heavy thing around?",
 
+        DUMBBELL_HEAT = "Well, at least it's efficient.",
+        DUMBBELL_REDGEM = "Not the most conventional weapon, but to each their own.",
+        DUMBBELL_BLUEGEM = "Not the most conventional weapon, but to each their own.",
 
         TERRARIUMCHEST =
 		{
@@ -4789,6 +4815,7 @@ return{
 		LUNAR_FORGE = "Why waste time staring at it when I could be making something?",
 		LUNAR_FORGE_KIT = "Well, it's not going to build itself.",
 
+		LUNARPLANT_KIT = "Fixing it is faster than making a new one.",
 		ARMOR_LUNARPLANT = "Some extra protection is always welcome.",
 		LUNARPLANTHAT = "It's incredible that I can see anything while wearing it.",
 		BOMB_LUNARPLANT = "This should end a fight quickly.",
@@ -4796,6 +4823,8 @@ return{
 		SWORD_LUNARPLANT = "Oh, I quite like that one.",
 		PICKAXE_LUNARPLANT = "Unbelievably, it works rather well.",
 		SHOVEL_LUNARPLANT = "An odd, yet extremely efficient design.",
+
+		BROKEN_FORGEDITEM = "It looks well past its prime.",
 
         PUNCHINGBAG = "I could spare a moment to test my weapons... and let off some steam.",
 
@@ -4809,6 +4838,7 @@ return{
         FUSED_SHADELING_BOMB = "What a nasty little thing!",
 
 		VOIDCLOTH = "Tatters of spacetime.",
+		VOIDCLOTH_KIT = "Fixing it is faster than making a new one.",
 		VOIDCLOTHHAT = "Oooh, it makes one look rather mysterious, doesn't it?",
 		ARMOR_VOIDCLOTH = "I prefer chains that have a pocket watch at the end of them.",
 
@@ -4826,6 +4856,39 @@ return{
         DREADSTONE_STACK = "It's coming from deep below the surface.",
         
         SCRAPBOOK_PAGE = "Did I leave this here?",
+
+        LEIF_IDOL = "What a funny little trinket!",
+        WOODCARVEDHAT = "How rugged!",
+        WALKING_STICK = "Nothing like a walking stick to add some pep to one's step.",
+
+        IPECACSYRUP = "I'm not going to be fooled into tasting that, thank you very much!",
+        BOMB_LUNARPLANT_WORMWOOD = "Wait a tick... did they always look like that?", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "I think it's gone off.",
+        	GENERIC = "That's the liveliest carrot I've ever seen.",
+        	HELD = "Stop wriggling!",
+        	SLEEPING = "It's taking a quick little nap.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "I feel a bit reassured knowing it's nearby.",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "What a funny little creature.",
+			RIPE = "It's a shame they're so delicious.",
+			SLEEPING = "I guess it doesn't have anything better to do.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "Oh! I thought that was done already.",
+        SUPPORT_PILLAR = "Everything breaks down over time. Well, most things anyway.",
+        SUPPORT_PILLAR_COMPLETE = "I wonder how long it will last.",
+        SUPPORT_PILLAR_BROKEN = "Time has not been kind.",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "Oh! I thought that was done already.",
+		SUPPORT_PILLAR_DREADSTONE = "Everything breaks down over time. Well, most things anyway.",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Hmph. Time will tell.",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Does anything last?",
+
+        WOLFGANG_WHISTLE = "There's a time and a place for exercise, I suppose.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",
@@ -4842,6 +4905,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Oh botheration, did I forget to water it again?",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "I'm sure I gave it some fertilizer not too long ago... or maybe I will soon.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "Do I really have to talk to it?",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

@@ -211,6 +211,7 @@ local function mosquito()
     inst.maxdrinks = TUNING.MOSQUITO_MAX_DRINKS
     inst:ListenForEvent("onattackother", TakeDrink)
     SwapBelly(inst, 1)
+    inst.scrapbook_hide = {"body_2", "body_3", "body_4"}
 
     MakeHauntablePanic(inst)
     AddHauntableCustomReaction(inst, function(inst, haunter)

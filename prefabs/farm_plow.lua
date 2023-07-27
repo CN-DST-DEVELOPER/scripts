@@ -286,6 +286,8 @@ local function item_fn()
     inst.AnimState:PlayAnimation("idle_packed")
     inst.scrapbook_anim = "idle_packed"
 
+    inst.scrapbook_specialinfo = "FARMPLOW"
+
     inst:AddTag("usedeploystring")
     inst:AddTag("tile_deploy")
 

@@ -256,6 +256,8 @@ local function item_fn(data, name)
 	inst:AddTag("oceanfishing_bobber")
 	inst:AddTag("cattoy")
 
+	inst.scrapbook_specialinfo = "FLOAT"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -84,6 +84,8 @@ end
 local function bedroll_straw()
     local inst = common_fn("swap_bedroll_straw", "swap_bedroll_straw")
 
+    inst.scrapbook_specialinfo = "STRAWROLL"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -101,6 +103,8 @@ end
 
 local function bedroll_furry()
     local inst = common_fn("swap_bedroll_furry", "swap_bedroll_furry")
+
+    inst.scrapbook_specialinfo = "FURROLL"
 
     if not TheWorld.ismastersim then
         return inst

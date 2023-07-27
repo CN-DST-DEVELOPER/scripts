@@ -27,6 +27,8 @@ local prefabs =
     "burntground",
 
     "moon_device_meteor_spawner",
+
+	"construction_container",
 }
 
 local meteor_spawner_prefabs =

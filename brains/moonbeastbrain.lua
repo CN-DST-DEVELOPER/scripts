@@ -85,6 +85,7 @@ function MoonBeastBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.IpecacsyrupPanicTrigger(self.inst),
 
         --Teleported away, or moonbase got removed
         WhileNode(function() return LostMoonBase(self) end, "Lost Moonbase",

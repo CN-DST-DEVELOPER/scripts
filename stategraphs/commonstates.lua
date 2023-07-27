@@ -1913,3 +1913,33 @@ function PlayMiningFX(inst, target, nosound)
 end
 
 --------------------------------------------------------------------------
+
+local function IpecacPoop(inst)
+    if not (inst.sg:HasStateTag("busy") or (inst.components.health ~= nil and inst.components.health:IsDead())) then
+        inst.sg:GoToState("ipecacpoop")
+    end
+end
+
+CommonHandlers.OnIpecacPoop = function()
+    return EventHandler("ipecacpoop", IpecacPoop)
+end
+
+CommonStates.AddIpecacPoopState = function(states, anim)
+    anim = anim or "hit"
+
+    table.insert(states, State{
+        name = "ipecacpoop",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            inst.SoundEmitter:PlaySound("meta2/wormwood/laxative_poot")
+            inst.AnimState:PlayAnimation(anim)
+            inst.Physics:Stop()
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        },
+    })
+end

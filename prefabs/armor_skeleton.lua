@@ -194,6 +194,8 @@ local function fn()
     inst.AnimState:SetBuild("armor_skeleton")
     inst.AnimState:PlayAnimation("anim")
 
+    inst.scrapbook_specialinfo = "ARMORBONE"
+
     inst:AddTag("fossil")
 
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization

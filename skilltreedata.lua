@@ -88,8 +88,10 @@ function SkillTreeData:GetPlayerSkillSelection(characterprefab)
         if skilldefs then
             for skill in pairs(skills) do
                 local rpc_id = skilldefs[skill].rpc_id
-                local rpc_bit = 2 ^ rpc_id
-                bitfield = bit.bor(bitfield, rpc_bit)
+                if rpc_id then
+                    local rpc_bit = 2 ^ rpc_id
+                    bitfield = bit.bor(bitfield, rpc_bit)
+                end
             end
         end
     end
@@ -105,9 +107,11 @@ function SkillTreeData:GetNamesFromSkillSelection(skillselection, characterprefa
         local bitfield = skillselection[1]
         for skill, skilldata in pairs(skilldefs) do
             local rpc_id = skilldata.rpc_id
-            local rpc_bit = 2 ^ rpc_id
-            if bit.band(bitfield, rpc_bit) > 0 then
-                activatedskills[skill] = true
+            if rpc_id then
+                local rpc_bit = 2 ^ rpc_id
+                if bit.band(bitfield, rpc_bit) > 0 then
+                    activatedskills[skill] = true
+                end
             end
         end
     end

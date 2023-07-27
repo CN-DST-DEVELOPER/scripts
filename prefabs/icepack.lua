@@ -6,7 +6,7 @@ local assets =
 
 local prefabs =
 {
-    "ash",
+
 }
 
 local function onequip(inst, owner)
@@ -50,6 +50,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.15)
 
+    inst.scrapbook_specialinfo = "ICEPACK"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -69,8 +71,6 @@ local function fn()
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("icepack")
-    inst.components.container.skipclosesnd = true
-    inst.components.container.skipopensnd = true
 
     MakeHauntableLaunchAndDropFirstItem(inst)
 

@@ -447,6 +447,7 @@ local function fn()
     inst._musictask = nil
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         inst:ListenForEvent("isengageddirty", OnIsEngagedDirty)
 

@@ -200,6 +200,10 @@ local function basefn(build, tags)
     --
     inst:AddComponent("debuffable")
 
+	--
+	inst:AddComponent("colouradder")
+	inst:AddComponent("bloomer")
+
     --
     local health = inst:AddComponent("health")
     health:SetMaxHealth(MAX_NUM + 10)

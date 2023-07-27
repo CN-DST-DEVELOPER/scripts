@@ -39,6 +39,7 @@ AddModReleaseID( "R26_LOBBY_NETWORKQOL" )
 AddModReleaseID( "R27_REFRESH_WILSON" )
 AddModReleaseID( "R28_LUNAR_RIFT" )
 AddModReleaseID( "R29_SHADOW_RIFT" )
+AddModReleaseID( "R30_ST_WOODWOLFWORM" ) -- Keep worm and wood separate to lower confusion.
 
 -----------------------------------------------------------------------------------------------
 

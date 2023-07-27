@@ -23,7 +23,8 @@ end
 local function OnThrown(inst, owner, target, attacker)
 	inst.owner = owner
 	if inst.bounces == nil then
-		inst.bounces = owner ~= nil and owner.components.setbonus ~= nil and owner.components.setbonus:IsEnabled(EQUIPMENTSETNAMES.LUNARPLANT) and TUNING.STAFF_LUNARPLANT_SETBONUS_BOUNCES or TUNING.STAFF_LUNARPLANT_BOUNCES
+		local hat = attacker ~= nil and attacker.components.inventory ~= nil and attacker.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or nil
+		inst.bounces = hat ~= nil and hat.prefab == "lunarplanthat" and TUNING.STAFF_LUNARPLANT_SETBONUS_BOUNCES or TUNING.STAFF_LUNARPLANT_BOUNCES
 		inst.initial_hostile = target ~= nil and target:IsValid() and target:HasTag("hostile")
 	end
 end

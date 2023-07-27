@@ -85,8 +85,7 @@ local function fn()
     inst.use_heavy_obstacle_string_key = "LOAD_GYM"
 
     inst.AnimState:SetBank("mighty_gym")
-    inst.AnimState:SetBuild("wolfgang") --doesn't  actually matter since we'll be applying the base symbols with SetSkinsOnAnim.
-    inst.AnimState:AddOverrideBuild("mighty_gym")
+    inst.AnimState:SetBuild("mighty_gym")
     inst.AnimState:OverrideSymbol("fx_star", "fx_wolfgang", "fx_star")
     inst.AnimState:OverrideSymbol("fx_star_part", "fx_wolfgang", "fx_star_part")
 

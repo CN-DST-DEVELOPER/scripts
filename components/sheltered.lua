@@ -52,7 +52,7 @@ function Sheltered:SetSheltered(issheltered, level)
     elseif not self.sheltered and self.inst.replica.sheltered:IsSheltered() then
         self.sheltered = true
         self.inst:PushEvent("sheltered", { sheltered=true, level=self.sheltered_level })
-        if self.announcecooldown <= 0 and (TheWorld.state.israining or TheWorld.state.temperature >= TUNING.OVERHEAT_TEMP - 5) then
+		if self.announcecooldown <= 0 and (TheWorld.state.israining and self.inst.components.rainimmunity == nil or TheWorld.state.temperature >= TUNING.OVERHEAT_TEMP - 5) then
             self.inst.components.talker:Say(GetString(self.inst, "ANNOUNCE_SHELTER"))
             self.announcecooldown = TUNING.TOTAL_DAY_TIME
         end

@@ -127,7 +127,7 @@ function Crop:DoGrow(dt, nowither)
         if shouldgrow then
             local temp_rate =
                 (TheWorld.state.temperature < TUNING.MIN_CROP_GROW_TEMP and 0) or
-                (TheWorld.state.israining and 1 + TUNING.CROP_RAIN_BONUS * TheWorld.state.precipitationrate) or
+				(TheWorld.state.israining and self.inst.components.rainimmunity == nil and 1 + TUNING.CROP_RAIN_BONUS * TheWorld.state.precipitationrate) or
                 (TheWorld.state.isspring and 1 + TUNING.SPRING_GROWTH_MODIFIER / 3) or
                 1
             self.growthpercent = math.clamp(self.growthpercent + dt * self.rate * temp_rate, 0, 1)
@@ -213,7 +213,7 @@ function Crop:Harvest(harvester)
 
         if product ~= nil then
             if product.components.inventoryitem ~= nil then
-                product.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+				product.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
             end
 
             if harvester ~= nil then

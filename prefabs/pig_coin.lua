@@ -63,6 +63,8 @@ local function fn()
 
 	inst:AddTag("cointosscast") -- for coint toss casting
 
+    inst.scrapbook_specialinfo = "PIGCOIN"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

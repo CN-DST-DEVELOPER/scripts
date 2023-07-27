@@ -562,6 +562,8 @@ end
 local function fndefault()
     local inst = fncommon("hound", "hound_ocean", { "firehound", "icehound" }, nil, nil, {amphibious = true, canmutatefn = CanMutateFromCorpse})
 
+    inst.scrapbook_removedeps = {"bluegem", "redgem"}
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -581,6 +583,8 @@ end
 
 local function fnfire()
     local inst = fncommon("hound", "hound_red_ocean", { "hound", "icehound" }, nil, nil, {amphibious = true})
+
+    inst.scrapbook_removedeps = {"bluegem"}
 
     if not TheWorld.ismastersim then
         return inst
@@ -619,6 +623,8 @@ end
 
 local function fncold()
     local inst = fncommon("hound", "hound_ice_ocean", { "firehound", "hound" }, nil, nil, {amphibious = true})
+
+    inst.scrapbook_removedeps = {"redgem"}
 
     if not TheWorld.ismastersim then
         return inst
@@ -722,6 +728,8 @@ local function fnmutated()
     local inst = fncommon("hound", "hound_mutated", nil, nil, "hound_mutated", {amphibious = true})
     
     inst:AddTag("lunar_aligned")
+
+    inst.scrapbook_removedeps = {"redgem","bluegem"}
 
     if not TheWorld.ismastersim then
         return inst

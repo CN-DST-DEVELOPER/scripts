@@ -114,6 +114,7 @@ local function potion_fn(anim, potion_tunings, buff_prefab)
     inst.AnimState:SetBuild("ghostly_elixirs")
     inst.AnimState:PlayAnimation(anim)
     inst.scrapbook_anim = anim
+    inst.scrapbook_specialinfo = "GHOSTLYELIXER".. string.upper(anim)
 
     if potion_tunings.FLOATER ~= nil then
         MakeInventoryFloatable(inst, potion_tunings.FLOATER[1], potion_tunings.FLOATER[2], potion_tunings.FLOATER[3])

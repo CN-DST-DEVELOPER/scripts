@@ -41,6 +41,8 @@ local function fn()
 
     inst:AddTag("flower")
 
+    inst.pickupsound = "vegetation_grassy"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

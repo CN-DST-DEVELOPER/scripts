@@ -423,6 +423,7 @@ function PigBrain:OnStart()
             WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire",
                 ChattyNode(self.inst, "PIG_TALK_PANICFIRE",
                     Panic(self.inst))),
+            BrainCommon.IpecacsyrupPanicTrigger(self.inst),
             ChattyNode(self.inst, "PIG_TALK_FIGHT",
                 WhileNode( function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
                     ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST) )),

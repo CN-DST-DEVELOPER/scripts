@@ -235,6 +235,8 @@ local function makefn(name, asset, animated, smashsound, rubble, chair)
         inst.components.health:SetMaxHealth(GetRandomWithVariance(90, 20))
         inst.components.health.ondelta = OnHealthDelta
 
+        inst.scrapbook_maxhealth = 90
+
         inst:ListenForEvent("death", OnDeath)
 
         inst:AddComponent("lootdropper")

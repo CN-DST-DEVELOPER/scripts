@@ -190,6 +190,12 @@ local function CreateCapeFx()
 	return inst
 end
 
+local function OnColourChanged(inst, r, g, b, a)
+	for i, v in ipairs(inst.highlightchildren) do
+		v.AnimState:SetAddColour(r, g, b, a)
+	end
+end
+
 --------------------------------------------------------------------------
 
 local function fn()
@@ -223,6 +229,7 @@ local function fn()
 	inst.scrapbook_anim ="scrapbook"
 	inst.scrapbook_overridedata ={{"fx_fabric", "shadow_thrall_wings", "fx_fabric"},{"fx_fabric_particle", "shadow_thrall_wings", "fx_fabric_particle"},{"fx_flame_black", "shadow_thrall_wings", "fx_flame_black"},{"fx_flame_red", "shadow_thrall_wings", "fx_flame_red"}}
 
+	inst:AddComponent("colouraddersync")
 
 	--Dedicated server does not need to spawn the local fx
 	if not TheNet:IsDedicated() then
@@ -239,6 +246,8 @@ local function fn()
 		cape.Follower:FollowSymbol(inst.GUID, "cape_front_swap", nil, nil, nil, true)
 
 		inst.highlightchildren = { flames, fabric, cape }
+
+		inst.components.colouraddersync:SetColourChangedFn(OnColourChanged)
 	end
 
 	inst.displaynamefn = DisplayNameFn
@@ -284,6 +293,7 @@ local function fn()
 	inst.components.lootdropper.y_speed_variance = 3
 	inst.components.lootdropper.spawn_loot_inside_prefab = true
 
+	inst:AddComponent("colouradder")
 	inst:AddComponent("knownlocations")
 	inst:AddComponent("entitytracker")
 

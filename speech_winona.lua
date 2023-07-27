@@ -207,7 +207,7 @@ return{
 			--MapSpotRevealer/messagebottle
 			MESSAGEBOTTLEMANAGER_NOT_FOUND = "It's kinda hard to read in here...",--Likely trying to read messagebottle treasure map in caves
 
-            STASH_MAP_NOT_FOUND = "I can't make heads or monkey tails of it. Ha!",-- Likely trying to read stash map  in world without stash
+            STASH_MAP_NOT_FOUND = "I can't make heads or monkey tails of it. Ha!",-- Likely trying to read stash map  in world without stash                  
         },
         WRAPBUNDLE =
         {
@@ -896,6 +896,29 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "I've got a bad feelin'...",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I can't squeeze any more pages in my scrapbook.",
+
+    ANNOUNCE_COACH = 
+    {
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+    },
+    ANNOUNCE_WOLFGANG_WIMPY_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_MIGHTY_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_BEGIN_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_END_COACHING = "only_used_by_wolfang",
+    ANNOUNCE_WOLFGANG_NOTEAM = 
+    {
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+        "only_used_by_wolfang",
+    },
 
 	BATTLECRY =
 	{
@@ -4542,6 +4565,9 @@ return{
         DUMBBELL_GEM = "Awful fancy for something you just pick up and put down over and over.",
         POTATOSACK = "Always nice to have a snack on hand when you're workin'.",
 
+        DUMBBELL_HEAT = "Is that what he uses for a warm-up?",
+        DUMBBELL_REDGEM = "You'll really be feelin' the burn! Ha!",
+        DUMBBELL_BLUEGEM = "Better get some ice on that!",
 
         TERRARIUMCHEST =
 		{
@@ -4795,6 +4821,7 @@ return{
 		LUNAR_FORGE = "It's givin' me some bright ideas.",
 		LUNAR_FORGE_KIT = "Let's get this thing up and running!",
 
+		LUNARPLANT_KIT = "Never hurts to keep a repair kit handy.",
 		ARMOR_LUNARPLANT = "Built to last!",
 		LUNARPLANTHAT = "It should keep my noggin' nice and safe.",
 		BOMB_LUNARPLANT = "Anyone call for a demolition crew?",
@@ -4802,6 +4829,8 @@ return{
 		SWORD_LUNARPLANT = "It's a cut above most other swords I've seen. Ha!",
 		PICKAXE_LUNARPLANT = "Sure makes mining a breeze.",
 		SHOVEL_LUNARPLANT = "It makes digging things up almost too easy.",
+
+		BROKEN_FORGEDITEM = "I bet I could get it back in working order.",
 
         PUNCHINGBAG = "Whatcha say? Wanna go a few rounds?",
 
@@ -4815,6 +4844,7 @@ return{
         FUSED_SHADELING_BOMB = "Watch out, it's gonna blow!",
 
 		VOIDCLOTH = "I can work with any material.",
+		VOIDCLOTH_KIT = "Never hurts to keep a repair kit handy.",
 		VOIDCLOTHHAT = "Some folks think it's safer to be kept in the dark.",
 		ARMOR_VOIDCLOTH = "Looks pretty tattered, will it really protect me from anything?",
 
@@ -4832,6 +4862,39 @@ return{
         DREADSTONE_STACK = "Must be a lot of the stuff growing down there.",
         
         SCRAPBOOK_PAGE = "Let's see if there's anything interesting written on it.",
+
+        LEIF_IDOL = "That's some quality carving, there.",
+        WOODCARVEDHAT = "Gotta keep the old noggin' safe on the work site.",
+        WALKING_STICK = "Woodie and Lucy really stick together, huh?",
+
+        IPECACSYRUP = "That stuff can't be good for your health.",
+        BOMB_LUNARPLANT_WORMWOOD = "I think that little green fella did some tinkering.", -- Unused
+        WORMWOOD_MUTANTPROXY_CARRAT =
+        {
+        	DEAD = "That don't look good.",
+        	GENERIC = "Yer an orange nuisance, aintcha?",
+        	HELD = "Aw, I can't stay mad at you.",
+        	SLEEPING = "Sleep tight.",
+        },
+        WORMWOOD_MUTANTPROXY_LIGHTFLIER = "Doesn't even need a battery!",
+		WORMWOOD_MUTANTPROXY_FRUITDRAGON =
+		{
+			GENERIC = "You play nice with the other lizards now, hey?",
+			RIPE = "Lookit you, all orange!",
+			SLEEPING = "I hope you earned that break.",
+		},
+
+        SUPPORT_PILLAR_SCAFFOLD = "Looks like there's some buildin' to be done!",
+        SUPPORT_PILLAR = "Looks like it could use some repairs.",
+        SUPPORT_PILLAR_COMPLETE = "Good and sturdy!",
+        SUPPORT_PILLAR_BROKEN = "I'd better roll up my sleeves and get to rebuildin'.",
+
+		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "Looks like there's some buildin' to be done!",
+		SUPPORT_PILLAR_DREADSTONE = "Looks like it could use some repairs.",
+		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Now that's one mean lookin' pillar!",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Well don't just look at it. Let's get to fixin'.",
+
+        WOLFGANG_WHISTLE = "Whatcha need, coach?",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",
@@ -4848,6 +4911,7 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "You look like you could use some water.",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Better give it some nutrients.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "It needs a good talking to.",
+    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

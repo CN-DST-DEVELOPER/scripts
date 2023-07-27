@@ -70,6 +70,7 @@ local function fn()
     inst.AnimState:SetBank("krampus")
     inst.AnimState:SetBuild("krampus_build")
     inst.AnimState:PlayAnimation("run_loop", true)
+    inst.scrapbook_hide = {"ARM"}
 
     inst.entity:SetPristine()
 

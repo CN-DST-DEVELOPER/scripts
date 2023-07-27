@@ -51,6 +51,8 @@ local function common_fn(bank, build)
 
     MakeInventoryFloatable(inst, "med", 0.05, {0.78, 0.4, 0.78}, true, 7, {sym_build = "swap_pitchfork"})
 
+    inst.scrapbook_subcat = "tool"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

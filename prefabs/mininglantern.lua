@@ -246,6 +246,8 @@ local function fn()
 
     inst:AddTag("light")
 
+    inst.scrapbook_specialinfo = "LANTERN"
+
     MakeInventoryFloatable(inst, "med", 0.2, 0.65)
 
     inst.entity:SetPristine()

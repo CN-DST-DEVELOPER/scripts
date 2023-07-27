@@ -119,7 +119,7 @@ function Tune(overrides)
 		PLAYER_DAMAGE_TAKEN_MOD = 1,
 
         -- Controller specific tuning values.
-        CONTROLLER_DEADZONE_RADIUS = 0.3, -- TODO(JBK): Hook this up.
+		CONTROLLER_DEADZONE_RADIUS = 0.3,
 		CONTROLLER_RETICULE_INITIAL_DEADZONE_RADIUS = .5,
 		CONTROLLER_RETICULE_RSTICK_SPEED = 2,
         CONTROLLER_BLINKFOCUS_DISTANCESQ_MIN = 4,
@@ -362,6 +362,7 @@ function Tune(overrides)
         BRUSH_DAMAGE = wilson_attack*.8,
         OAR_DAMAGE = wilson_attack*.5,
         FENCE_ROTATOR_DAMAGE = wilson_attack,
+
         -------
 		PICKAXE_LUNARPLANT_DAMAGE = wilson_attack * 1.25 - 10,
 		PICKAXE_LUNARPLANT_PLANAR_DAMAGE = 10,
@@ -394,6 +395,7 @@ function Tune(overrides)
         SADDLE_RACE_SPEEDMULT = 1.55,
 
         CANE_SPEED_MULT = 1.25,
+        WALKING_STICK_SPEED_MULT = 1.15,
         PIGGYBACK_SPEED_MULT = 0.9,
         HEAVY_SPEED_MULT = 0.15,
 		ICEHAT_SPEED_MULT = 0.9,
@@ -1739,6 +1741,9 @@ function Tune(overrides)
         ARMOR_COOKIECUTTERHAT = wilson_health*5*multiplayer_armor_durability_modifier,
         ARMOR_COOKIECUTTERHAT_ABSORPTION = .7*multiplayer_armor_absorption_modifier,
 
+        ARMOR_WOODCARVED_HAT = wilson_health*2.5*multiplayer_armor_durability_modifier,
+        ARMOR_WOODCARVED_HAT_ABSORPTION = .7*multiplayer_armor_absorption_modifier,
+
         ARMORDRAGONFLY = wilson_health * 9*multiplayer_armor_durability_modifier,
         ARMORDRAGONFLY_ABSORPTION = 0.7*multiplayer_armor_absorption_modifier,
         ARMORDRAGONFLY_FIRE_RESIST = 1,
@@ -1795,6 +1800,8 @@ function Tune(overrides)
 		ARMOR_LUNARPLANT_HAT_PLANAR_DEF = 10,
 		ARMOR_LUNARPLANT_LUNAR_RESIST = 0.9,
 		ARMOR_LUNARPLANT_SETBONUS_LUNAR_RESIST = math.sqrt(0.75) / 0.9, --sqrt because two pieces combine to achieve this
+		ARMOR_LUNARPLANT_REFLECT_PLANAR_DMG = 10,
+		ARMOR_LUNARPLANT_REFLECT_PLANAR_DMG_VS_SHADOW = 20,
 
         --NOTE: + 20 * 10 <= 20 hits of defending 10 planar damage
 		ARMOR_VOIDCLOTH = wilson_health * 6 * multiplayer_armor_durability_modifier + 20 * 10,
@@ -2546,9 +2553,9 @@ function Tune(overrides)
         WOLFGANG_START_WIMPY_THRESH = 100,
         WOLFGANG_END_WIMPY_THRESH = 105,
 
-        WOLFGANG_HUNGER_RATE_MULT_MIGHTY = 3,
-        WOLFGANG_HUNGER_RATE_MULT_NORMAL = 1.5,
-        WOLFGANG_HUNGER_RATE_MULT_WIMPY = 1,
+        WOLFGANG_HUNGER_RATE_MULT_MIGHTY = 3,  -- depricated
+        WOLFGANG_HUNGER_RATE_MULT_NORMAL = 1.5, -- depricated
+        WOLFGANG_HUNGER_RATE_MULT_WIMPY = 1,    -- depricated
 
 		WOLFGANG_HEALTH = 200, -- this is used for the character descriptions, gameplay uses WOLFGANG_HEALTH_NORMAL
         WOLFGANG_HEALTH_MIGHTY = 300,
@@ -4397,6 +4404,7 @@ function Tune(overrides)
         WEREMOOSE_RUN_SPEED = 5.4, --x0.9 speed
         WEREMOOSE_ABSORPTION = .9,
         WEREMOOSE_DAMAGE = wilson_attack * 1.75,
+
         --
         WEREGOOSE_DRAIN_TIME = 15,
         WEREGOOSE_RUN_DRAIN_TIME_MULTIPLIER2 = 16,
@@ -5267,6 +5275,8 @@ function Tune(overrides)
             STARVE_TIME = total_day_time*2,
         },
 
+        LIGHTFLIER_FORMATION_SIZE = 3,
+
         LIGHTFLIER_FLOWER_REGROW_TIME = total_day_time*12, -- this refers to regrow after picked, not duration for regrowthmanager
         LIGHTFLIER_FLOWER_LIGHT_TIME = 140,
         LIGHTFLIER_FLOWER_LIGHT_TIME_VARIANCE = 50,
@@ -5515,6 +5525,7 @@ function Tune(overrides)
         LORDFRUITFLY_WALKSPEED = 4,
         LORDFRUITFLY_TRIGGER_RANGE = 15,
 
+        FRUITFLY_ONPICK_CHANCE = 0.05,
         FRUITFLY_DEAGGRO_DIST = 20,
         FRUITFLY_HEALTH = 100,
         FRUITFLY_DAMAGE = 5,
@@ -6069,10 +6080,18 @@ function Tune(overrides)
         DUMBBELL_CONSUMPTION_MARBLE = 0.3,
         DUMBBELL_CONSUMPTION_GEM = 0.2,
 
+        DUMBBELL_CONSUMPTION_BLUEGEM = 0.3,
+        DUMBBELL_CONSUMPTION_REDEM = 0.3,
+        DUMBBELL_CONSUMPTION_HEAT = 0.8,
+
         DUMBBELL_DAMAGE_ROCK = wilson_attack*.5,
         DUMBBELL_DAMAGE_GOLD = wilson_attack*.8,
         DUMBBELL_DAMAGE_MARBLE = wilson_attack,
         DUMBBELL_DAMAGE_GEM = wilson_attack * 1.25,
+
+        DUMBBELL_DAMAGE_HEAT = wilson_attack*.5,
+        DUMBBELL_DAMAGE_REDGEM =  wilson_attack * 1.25,
+        DUMBBELL_DAMAGE_BLUEGEM =  wilson_attack * 1.25,
 
 		-- Dumbbells are custom made tools (designed by Wolfgang for Wolfgang), not something to be tossed about...
 		DUMBBELL_ATTACK_CONSUMPTION_MULT = 2,
@@ -6132,6 +6151,8 @@ function Tune(overrides)
         BELL_SUCCESS_MAX_3 = nil, -- no perfect here
         BELL_MID_SUCCESS_MIN_3 = 0.25,
         BELL_MID_SUCCESS_MAX_3 = 0.75,
+
+        BELL_PERFECT_LEVEL_STARTING = 4, -- We can start getting perfects here.
 
         BELL_SUCCESS_MIN_4 = 0.45,
         BELL_SUCCESS_MAX_4 = 0.60,
@@ -6424,7 +6445,7 @@ function Tune(overrides)
         AUTOTERRAFORMER_REPEAT_DELAY = 0.25,
         ANTLIONHAT_USES = 400,
         NIGHTMAREFUEL_FINITEUSESREPAIRVALUE = 50,
-        
+
         -- Setting the Stage
         STAGEUSHER_ATTACK_PERIOD = 8,
         STAGEUSHER_ATTACK_DAMAGE = 80,
@@ -6537,7 +6558,7 @@ function Tune(overrides)
             0.9,
         },
 
-        SKILLS ={
+        SKILLS = {
             -- Torch fuel consumption multiplier.
             WILSON_TORCH_1 = 0.84,
             WILSON_TORCH_2 = 0.68,
@@ -6563,6 +6584,89 @@ function Tune(overrides)
             WILSON_ALLEGIANCE_VS_LUNAR_BONUS = 1.1,
             WILSON_ALLEGIANCE_LUNAR_RESIST = 0.9,
             WILSON_ALLEGIANCE_VS_SHADOW_BONUS = 1.1,
+
+            WOODIE = {
+                -- Weremeter drain rate multiplier.
+                WEREMETER = {
+                    1.2, -- Level 1 (~15% slower)
+                    1.4, -- Level 2 (~30% slower)
+                    1.8, -- Level 3 (~45% slower)
+                },
+
+                -- Pick animation lenght (in seconds).
+                QUICKPICK_TIMEOUT = {
+                    0.85, -- Level 1
+                    0.70, -- Level 2
+                    0.55, -- Level 3
+                },
+
+                DAMAGE_BONUS_VS_TREEGUARDS = math.sqrt(2), -- sqrt because two skill levels combine to hit 2x damage.
+
+                CURSE_MASTER_MIN_HUNGER = 0.15, -- Percent
+
+                BEAVER_WORK_MULTIPLIER = {
+                    MINE = 2.5, -- Level 1
+                    CHOP = 1.8, -- Level 2
+                },
+
+                MOOSE_HEALTH_REGEN = { -- (0.3 / seg)
+                    amount = 1.5,
+                    period = 5,
+                },
+
+                MOOSE_CANCEL_CHARGE_TIME = 7 * FRAMES,
+                MOOSE_RUN_SPEED_BONUS_MULT = 1.11, -- 1.11 * 5.4 ~ 6
+                MOOSE_REDUCED_GROGGINESS = 0.15, -- Percent
+                MOOSE_PLANAR_DEF = 15,
+
+                MOOSE_SMASH_DAMAGE = wilson_attack * 4,
+                MOOSE_SMASH_PLANAR_DAMAGE = 80,
+
+                GOOSE_DODGE_COOLDOWN_TIME = 5,
+                GOOSE_RUN_SPEED_BONUS_MULT = 1.19, -- 1.19 * 8.4 ~ 10
+
+                WERESKILL_WERENESS_CONSUMPTION = {
+                    BEAVER = -5,
+                    GOOSE  = -20,
+                },
+
+                ALLEGIANCE_SHADOW_RESIST = 0.9,
+                ALLEGIANCE_VS_LUNAR_BONUS = 1.1,
+                ALLEGIANCE_LUNAR_RESIST = 0.9,
+                ALLEGIANCE_VS_SHADOW_BONUS = 1.1,
+            },
+
+            WOLFGANG_MIGHTY_WORK_CHANCE_1 = 0.95,
+            WOLFGANG_MIGHTY_WORK_CHANCE_2 = 0.90,
+            WOLFGANG_MIGHTY_WORK_CHANCE_3 = 0.85,
+
+            WOLFGANG_DUMBELL_TOSS_1 = 1.5,
+            WOLFGANG_DUMBELL_TOSS_2 = 2,
+
+            WOLFGANG_ALLEGIANCE_SHADOW_RESIST_1 = 0.9,
+            WOLFGANG_ALLEGIANCE_VS_LUNAR_BONUS_1 = 1.1,
+            WOLFGANG_ALLEGIANCE_LUNAR_RESIST_1 = 0.9,
+            WOLFGANG_ALLEGIANCE_VS_SHADOW_BONUS_1 = 1.1,
+
+            WOLFGANG_ALLEGIANCE_VS_LUNAR_BONUS_2 = 1.2/1.1,
+            WOLFGANG_ALLEGIANCE_VS_SHADOW_BONUS_2 = 1.2/1.1,
+
+            WOLFGANG_ALLEGIANCE_VS_LUNAR_BONUS_3 = 1.3/1.2,
+            WOLFGANG_ALLEGIANCE_VS_SHADOW_BONUS_3 = 1.3/1.2,
+
+            WOLFGANG_PLANARDAMAGE_1 = 5,
+            WOLFGANG_PLANARDAMAGE_2 = 5,
+            WOLFGANG_PLANARDAMAGE_3 = 5,
+            WOLFGANG_PLANARDAMAGE_4 = 5,
+            WOLFGANG_PLANARDAMAGE_5 = 5,
+
+            WOLFGANG_NORMAL_SPEED = 1.1,
+
+            WOLFGANG_OVERBUFF_1 = 10,
+            WOLFGANG_OVERBUFF_2 = 20,
+            WOLFGANG_OVERBUFF_3 = 30,
+            WOLFGANG_OVERBUFF_4 = 40,
+            WOLFGANG_OVERBUFF_5 = 50,
         },
 
         WILSON_BEARD_BITS ={
@@ -6730,6 +6834,8 @@ function Tune(overrides)
 
         VOIDCLOTH_UMBRELLA_PERISHTIME = total_day_time*15,
         VOIDCLOTH_UMBRELLA_DAMAGE = wilson_attack,
+		VOIDCLOTH_UMBRELLA_DOME_RADIUS = 16,
+		VOIDCLOTH_UMBRELLA_DOME_RATE = 1.5,
 
         VOIDCLOTH_SCYTHE_USES = 200,
         VOIDCLOTH_SCYTHE_DAMAGE = wilson_attack * 2 - 30,
@@ -6742,6 +6848,63 @@ function Tune(overrides)
         WEAPONS_VOIDCLOTH_VS_LUNAR_BONUS = 1.1,
 		WEAPONS_VOIDCLOTH_SETBONUS_DAMAGE_MULT = 1.1,
 		WEAPONS_VOIDCLOTH_SETBONUS_PLANAR_DAMAGE = 5,
+
+        -- Wolfgang, Woodie, Wormwood Skill Trees
+
+        WALKING_STICK_PERISHTIME = 4 * total_day_time,
+        LEIF_IDOL_NUM_SPAWNS = 2,
+        LEIF_IDOL_SPAWN_RADIUS = 10,
+
+        LUCY_CARVING_TALK_COOLDOWN = 15, -- seconds
+
+        WORMWOOD_BLOOM_STAGE_DURATION_UPGRADED1 = total_day_time * 0.9,
+        WORMWOOD_BLOOM_STAGE_DURATION_UPGRADED2 = total_day_time * 0.75,
+        WORMWOOD_BLOOM_FULL_DURATION_UPGRADED = total_day_time * 4.5,
+        WORMWOOD_BLOOM_FULL_MAX_DURATION_UPGRADED = total_day_time * 7.5,
+
+        WORMWOOD_TENDRANGE_MULT = 1.5,
+
+        WORMWOOD_PHOTOSYNTHESIS_HEALTH_REGEN =
+        {
+            amount = 1,
+            period = 20,
+        },
+
+        LUNARPLANTTENTACLE_DAMAGE = 70,
+        LUNARPLANTTENTACLE_PLANARDAMAGE = 15,
+
+        WORMWOOD_ROOT_TIME = 6,
+        WORMWOOD_ROOT_DAMAGE = 10,
+
+        WORMWOOD_TRAP_BRAMBLE_AUTO_RESET_COOLDOWN = 3, -- seconds.
+
+        IPECAC_POOP_COUNT = 15,
+        IPECAC_TICK_TIME = 3,
+        IPECAC_DAMAGE_PER_TICK = 5,
+
+        WORMWOOD_MUSHROOMPLANTER_RATEBONUS_1 = 0.9,
+        WORMWOOD_MUSHROOMPLANTER_RATEBONUS_2 = 0.8,
+
+        WORMWOOD_PET_LIGHTFLIER_LIMIT = 6,
+        WORMWOOD_PET_FRUITDRAGON_LIMIT = 2,
+        WORMWOOD_PET_CARRAT_LIMIT = 4,
+
+        WORMWOOD_PET_CARRAT_LIFETIME = 3 * total_day_time,
+        WORMWOOD_PET_LIGHTFLIER_LIFETIME = 2.5 * total_day_time,
+        WORMWOOD_PET_FRUITDRAGON_LIFETIME = 2 * total_day_time,
+
+        WORMWOOD_PET_FRUITDRAGON_HEALTH = 600,
+        WORMWOOD_PET_FRUITDRAGON_ATTACK_PERIOD = 2,
+        WORMWOOD_PET_FRUITDRAGON_DAMAGE = 40,
+        WORMWOOD_PET_FRUITDRAGON_WALK_SPEED = 1,
+        WORMWOOD_PET_FRUITDRAGON_RUN_SPEED = 3,
+
+        QUAKE_BLOCKER_RANGE = 40,
+        DUMBBELL_HEAT_MAX_USES = 150,
+
+        WOLFGANG_COACH_BUFF = 2,
+        COACH_TIME_TO_INSPIRE = 7,
+        COACH_TIME_BUFF_LASTS = 10,
     }
 
     TUNING_MODIFIERS = {}

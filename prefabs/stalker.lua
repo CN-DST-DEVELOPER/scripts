@@ -43,6 +43,7 @@ local prefabs_forest =
 
 local prefabs_atrium =
 {
+    "shadowheart",
     "fossil_piece",
     "fossilspike",
     "fossilspike2",
@@ -1022,20 +1023,21 @@ local function trackattackers(inst,data)
 end
 
 local function AtriumOnDeath(inst,data)
+    if not inst:IsAtriumDecay() then
+        trackattackers(inst, data)
 
-    trackattackers(inst,data)
-    for ID, data in pairs(inst.attackerUSERIDs) do
-        for i, player in ipairs(AllPlayers) do
-            if player.userid == ID then 
-                SendRPCToClient(CLIENT_RPC.UpdateAccomplishment, player.userid, "fuelweaver_killed")
-                break
+        for ID, data in pairs(inst.attackerUSERIDs) do
+            for i, player in ipairs(AllPlayers) do
+                if player.userid == ID then 
+                    SendRPCToClient(CLIENT_RPC.UpdateAccomplishment, player.userid, "fuelweaver_killed")
+                    break
+                end
             end
         end
-    end
 
-    if not CheckAtriumDecay(inst) then
         SetMusicLevel(inst, 3)
     end
+
     if inst.miniontask ~= nil then
         inst.miniontask:Cancel()
         inst.miniontask = nil

@@ -196,6 +196,8 @@ end
 local function fire()
     local inst = common("idle_red", { "firedart" })
 
+    inst.scrapbook_specialinfo = "REDSTAFF"
+
     if not TheWorld.ismastersim then
         return inst
     end

@@ -25,6 +25,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+	CommonHandlers.OnIpecacPoop(),
     EventHandler("transformnormal", function(inst)
         if not inst.components.health:IsDead() then
             inst.sg:GoToState("transformNormal")
@@ -46,6 +47,10 @@ local events =
         end
     end),
 }
+
+local function go_to_idle(inst)
+    inst.sg:GoToState("idle")
+end
 
 local states =
 {
@@ -75,9 +80,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -108,9 +111,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -172,9 +173,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -196,9 +195,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -223,9 +220,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -242,9 +237,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -266,9 +259,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -283,9 +274,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -300,9 +289,7 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 }
@@ -340,5 +327,6 @@ CommonStates.AddSimpleActionState(states, "pickup", "pig_pickup", 10 * FRAMES, {
 CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4 * FRAMES, { "busy" })
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddIpecacPoopState(states)
 
 return StateGraph("pig", states, events, "idle", actionhandlers)

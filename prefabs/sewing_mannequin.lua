@@ -238,6 +238,10 @@ local function fn()
     inst.components.savedrotation.dodelayedpostpassapply = true
 
     -------------------------------------------------------
+	inst:AddComponent("colouradder")
+	inst:AddComponent("bloomer")
+
+    -------------------------------------------------------
     MakeMediumBurnable(inst, nil, nil, true)
     inst.components.burnable:SetOnBurntFn(mannequin_onburnt)
     MakeMediumPropagator(inst)

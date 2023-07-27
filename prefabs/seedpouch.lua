@@ -53,6 +53,8 @@ local function fn()
     local swap_data = {bank = "seedpouch", anim = "anim"}
     MakeInventoryFloatable(inst, "med", 0.125, 0.65, nil, nil, swap_data)
 
+    inst.scrapbook_specialinfo = "SEEDPOUCH"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -72,8 +74,6 @@ local function fn()
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("seedpouch")
-    inst.components.container.skipclosesnd = true
-    inst.components.container.skipopensnd = true
 
 	inst:AddComponent("preserver")
 	inst.components.preserver:SetPerishRateMultiplier(TUNING.SEEDPOUCH_PRESERVER_RATE)

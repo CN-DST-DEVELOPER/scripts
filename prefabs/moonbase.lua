@@ -200,7 +200,7 @@ local function ToggleMoonCharge(inst)
             if inst._staffinst ~= nil then
                 inst:RemoveChild(inst._staffinst)
                 inst._staffinst:ReturnToScene()
-                inst._staffinst.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+				inst._staffinst.components.inventoryitem:InheritWorldWetnessAtTarget(inst)
                 inst.components.lootdropper:FlingItem(inst._staffinst)
                 inst._staffinst = nil
                 inst._staffuse = nil
@@ -373,7 +373,7 @@ local function OnStaffTaken(inst, picker, loot)
         end
         inst:RemoveChild(inst._staffinst)
         inst._staffinst:ReturnToScene()
-        inst._staffinst.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+		inst._staffinst.components.inventoryitem:InheritWorldWetnessAtTarget(inst)
         if picker ~= nil then
             picker:PushEvent("picksomething", { object = inst, loot = inst._staffinst })
             picker.components.inventory:GiveItem(inst._staffinst, nil, inst:GetPosition())

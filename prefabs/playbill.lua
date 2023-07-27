@@ -32,6 +32,10 @@ local function makeplay(name, _assets, prefabs)
 
         MakeInventoryFloatable(inst, "med", 0.05, 0.68)
 
+        if name == "the_doll" then
+            inst.scrapbook_specialinfo = "PLAYBILL_THEDOLL"
+        end
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

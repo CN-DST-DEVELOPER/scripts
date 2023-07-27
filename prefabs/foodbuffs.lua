@@ -44,19 +44,16 @@ local function work_detach(inst, target)
 end
 
 local function moisture_attach(inst, target)
-    target:AddTag("moistureimmunity")
-    if target.components.moisture ~= nil then
-        target.components.moisture:ForceDry(true, inst)
-        target.components.moisture:SetWaterproofInventory(true)
-    end
+	if target.components.moistureimmunity == nil then
+		target:AddComponent("moistureimmunity")
+	end
+	target.components.moistureimmunity:AddSource(inst)
 end
 
 local function moisture_detach(inst, target)
-    target:RemoveTag("moistureimmunity")
-    if target.components.moisture ~= nil then
-        target.components.moisture:ForceDry(false, inst)
-        target.components.moisture:SetWaterproofInventory(false)
-    end
+	if target.components.moistureimmunity ~= nil then
+		target.components.moistureimmunity:RemoveSource(inst)
+	end
 end
 
 local function electric_attach(inst, target)

@@ -5,8 +5,16 @@ local assets =
 
 local prefabs =
 {
-    "spoiled_food",
+
 }
+
+local function GetHealthFn(inst, eater)
+    return eater ~= nil and eater:HasTag("cursemaster") and 0 or -TUNING.HEALING_MED
+end
+
+local function GetSanityFn(inst, eater)
+    return eater ~= nil and eater:HasTag("cursemaster") and 0 or -TUNING.SANITY_MED
+end
 
 local function MakeWereItem(were_mode)
     local function fn()
@@ -25,6 +33,7 @@ local function MakeWereItem(were_mode)
 
         inst:AddTag("monstermeat")
         inst:AddTag("wereitem")
+        inst:AddTag("unsafefood")
 
         if were_mode == "goose" then
             MakeInventoryFloatable(inst, "small", .15, { 1.3, 1.1, 1.3 })
@@ -41,9 +50,12 @@ local function MakeWereItem(were_mode)
         inst:AddComponent("edible")
         inst.components.edible.ismeat = true
         inst.components.edible.foodtype = FOODTYPE.MEAT
-        inst.components.edible.healthvalue = -TUNING.HEALING_MED
         inst.components.edible.hungervalue = TUNING.CALORIES_MED
-        inst.components.edible.sanityvalue = -TUNING.SANITY_MED
+        inst.components.edible:SetGetHealthFn(GetHealthFn)
+        inst.components.edible:SetGetSanityFn(GetSanityFn)
+
+        inst.scrapbook_healthvalue = -TUNING.HEALING_MED
+        inst.scrapbook_sanityvalue = -TUNING.SANITY_MED
 
         inst:AddComponent("bait")
         inst:AddComponent("tradable")
@@ -66,6 +78,7 @@ local function MakeWereItem(were_mode)
     return Prefab("wereitem_"..were_mode, fn, assets, prefabs)
 end
 
-return MakeWereItem("beaver"),
+return
+    MakeWereItem("beaver"),
     MakeWereItem("moose"),
     MakeWereItem("goose")

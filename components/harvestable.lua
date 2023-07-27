@@ -200,7 +200,7 @@ function Harvestable:Harvest(picker)
 				local loot = SpawnPrefab(self.product)
 				if loot ~= nil then
 					if loot.components.inventoryitem ~= nil then
-						loot.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+						loot.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
 					end
 					if picker ~= nil and picker.components.inventory ~= nil then
 						picker.components.inventory:GiveItem(loot, nil, pos)

@@ -224,8 +224,8 @@ function Wheel:OnUpdate(dt)
 		ydir = ydir + TheInput:GetAnalogControlValue(CONTROL_INVENTORY_UP) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_DOWN)
 	end
     local xmag = xdir * xdir + ydir * ydir
-    local deadzonesq = 0.3 * 0.3 -- TODO(JBK): Global controller deadzone setting.
-	if xmag < deadzonesq then
+    local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+	if xmag < deadzone * deadzone then
 		return
 	end
 	xmag = math.sqrt(xmag)

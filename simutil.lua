@@ -336,7 +336,11 @@ local PICKUP_CANT_TAGS = {
     -- Either
     "donotautopick",
 }
-local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker)
+local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker, extra_filter)
+    if extra_filter ~= nil and not extra_filter(worker, v, owner) then
+        return false
+    end
+    
     if AllBuilderTaggedRecipes[v.prefab] then
         return false
     end
@@ -383,10 +387,11 @@ local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, po
     if ba ~= nil and ba.target == v and (ba.action == ACTIONS.PICKUP or ba.action == ACTIONS.CHECKTRAP or ba.action == ACTIONS.PICK) then
         return false
     end
+
     return v, ispickable
 end
 -- This function looks for an item on the ground that could be ACTIONS.PICKUP (or ACTIONS.CHECKTRAP if a trap) by the owner and subsequently put into the owner's inventory.
-function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, worker)
+function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, worker, extra_filter)
     if owner == nil or owner.components.inventory == nil then
         return nil
     end
@@ -405,7 +410,7 @@ function FindPickupableItem(owner, radius, furthestfirst, positionoverride, igno
     for i = istart, iend, idiff do
         local v = ents[i]
         local ispickable = v:HasTag("pickable")
-        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker) then
+        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker, extra_filter) then
             return v, ispickable
         end
     end
@@ -611,6 +616,15 @@ end
 function GetScrapbookIconAtlas(imagename)
     local images1 = "images/scrapbook_icons1.xml"
     local images2 = "images/scrapbook_icons2.xml"
+    return TheSim:AtlasContains(images1, imagename) and images1
+            or TheSim:AtlasContains(images2, imagename) and images2
+            or nil
+end
+
+
+function GetSkilltreeBG(imagename)
+    local images1 = "images/skilltree2.xml"
+    local images2 = "images/skilltree3.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
             or nil

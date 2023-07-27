@@ -33,8 +33,12 @@ end
 local function onnear(inst, target)
     --hive pop open? Maybe rustle to indicate danger?
     --more and more come out the closer you get to the nest?
-    if inst.components.childspawner ~= nil then
-        inst.components.childspawner:ReleaseAllChildren(target, "killerbee")
+    local target_skilltreeupdater = (target and target.components.skilltreeupdater)
+    local childspawner = inst.components.childspawner
+
+    -- Some player skills can prevent killer bees from spawning just as the player walks by.
+    if childspawner and not (target_skilltreeupdater and target_skilltreeupdater:IsActivated("wormwood_bees")) then
+        childspawner:ReleaseAllChildren(target, "killerbee")
     end
 end
 

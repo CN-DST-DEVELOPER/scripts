@@ -26,6 +26,8 @@ local function fn()
     inst.AnimState:SetBuild("foliage")
     inst.AnimState:PlayAnimation("anim")
 
+    inst.pickupsound = "vegetation_grassy"
+
     inst:AddTag("cattoy")
 
     MakeInventoryFloatable(inst)

@@ -516,7 +516,7 @@ function Pickable:Pick(picker)
                     loot = SpawnPrefab(self.product)
                     if loot ~= nil then
                         if loot.components.inventoryitem ~= nil then
-                            loot.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+							loot.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
                         end
                         if self.numtoharvest > 1 and loot.components.stackable ~= nil then
                             loot.components.stackable:SetStackSize(self.numtoharvest)

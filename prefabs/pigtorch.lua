@@ -49,7 +49,10 @@ local function onextinguish(inst)
 end
 
 local function onupdatefueledraining(inst)
-    inst.components.fueled.rate = 1 + TUNING.PIGTORCH_RAIN_RATE * TheWorld.state.precipitationrate
+	inst.components.fueled.rate =
+		inst.components.rainimmunity == nil and
+		1 + TUNING.PIGTORCH_RAIN_RATE * TheWorld.state.precipitationrate or
+		1
 end
 
 local function onisraining(inst, israining)

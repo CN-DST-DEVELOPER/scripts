@@ -102,9 +102,9 @@ function Explosive:OnBurnt()
 
 					--V2C: still passing self.inst instead of attacker here, so we don't
 					--     use attacker for calculating damage mods.
-					v.components.combat:GetAttacked(self.inst, dmg, nil, nil, spdmg)
+					v.components.combat:GetAttacked(self.inst, dmg, nil, nil, spdmg) -- NOTES(JBK): The component combat might remove itself in the GetAttacked callback!
 
-					if attacker ~= nil and not (v.components.health ~= nil and v.components.health:IsDead()) and v:IsValid() then
+					if attacker ~= nil and v.components.combat ~= nil and not (v.components.health ~= nil and v.components.health:IsDead()) and v:IsValid() then
 						if attacker:IsValid() then
 							v.components.combat:SuggestTarget(attacker)
 						else

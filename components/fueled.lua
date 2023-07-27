@@ -66,6 +66,8 @@ local function onmaxfuel(self, maxfuel)
         else
             self.inst:RemoveTag("needssewing")
         end
+	elseif self.inst.components.forgerepairable ~= nil then
+		self.inst.components.forgerepairable:SetRepairable(self.currentfuel < maxfuel)
     end
 end
 

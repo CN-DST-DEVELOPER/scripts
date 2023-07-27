@@ -114,7 +114,10 @@ function CraftingMenuDetails:UpdateBuildButton(from_pin_slot)
 		if self.ingredients.hint_tech_ingredient ~= nil then
 			str = STRINGS.UI.CRAFTING.NEEDSTECH[self.ingredients.hint_tech_ingredient]
 		elseif not builder:CanLearn(recipe.name) then
-            str = STRINGS.UI.CRAFTING.NEEDSCHARACTER
+			-- If our recipe's builder tag is a skilltree tag, check if we're the skill tree owner,
+			-- and choose a string based on that.
+			str = (recipe.builder_tag ~= nil and self.owner.prefab == TECH_SKILLTREE_BUILDER_TAG_OWNERS[recipe.builder_tag] and STRINGS.UI.CRAFTING.NEEDSCHARACTERSKILL)
+				or STRINGS.UI.CRAFTING.NEEDSCHARACTER
 		else
             local prototyper_tree = self:_GetHintTextForRecipe(self.owner, recipe)
             str = STRINGS.UI.CRAFTING[hint_text[prototyper_tree] or prototyper_tree]
@@ -306,7 +309,7 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	-- Name
 	local title_width = width - 30
 	local name = root_left:AddChild(Text(UIFONT, name_font_size))
-	name:SetMultilineTruncatedString(STRINGS.NAMES[string.upper(recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)], 1, title_width, nil, nil, true)
+	name:SetMultilineTruncatedString(STRINGS.NAMES[string.upper(recipe.nameoverride or recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)], 1, title_width, nil, nil, true)
 	name:SetPosition(0, y - name_font_size/2)
 
 	y = y - name_font_size

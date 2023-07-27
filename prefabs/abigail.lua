@@ -425,6 +425,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_damage = "15-40"
+
     inst._playerlink = nil
 
     inst:SetBrain(brain)

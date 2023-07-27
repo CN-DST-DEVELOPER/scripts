@@ -161,6 +161,8 @@ local function fn()
 		inst.fertilizerkey = soil_amender_index_to_key[inst.fertilizer_index:value()]
 	end)
 
+	inst.scrapbook_specialinfo = "SOILAMENDER"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

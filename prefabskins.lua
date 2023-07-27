@@ -38,6 +38,10 @@ PREFAB_SKINS = {
 	{
 		"anchor_nautical_item",
 	},
+	armor_bramble =
+	{
+		"armor_bramble_ancient",
+	},
 	armor_sanity =
 	{
 		"armor_sanity_curve",
@@ -64,6 +68,7 @@ PREFAB_SKINS = {
 	},
 	armorruins =
 	{
+		"armor_ruins_an",
 		"armor_ruins_arcane",
 		"armor_ruins_bulky",
 		"armor_ruins_leaf",
@@ -450,6 +455,7 @@ PREFAB_SKINS = {
 	},
 	fence =
 	{
+		"fence_ancient",
 		"fence_factory",
 		"fence_fantasy",
 		"fence_gingerbread",
@@ -463,6 +469,7 @@ PREFAB_SKINS = {
 	},
 	fence_gate =
 	{
+		"fence_gate_ancient",
 		"fence_gate_gingerbread",
 		"fence_gate_gothic",
 		"fence_gate_picketbrown",
@@ -474,6 +481,7 @@ PREFAB_SKINS = {
 	},
 	fence_gate_item =
 	{
+		"fencegate_ancient_item",
 		"fencegate_gingerbread_item",
 		"fencegate_gothic_item",
 		"fencegate_picketbrown_item",
@@ -485,6 +493,7 @@ PREFAB_SKINS = {
 	},
 	fence_item =
 	{
+		"fence_ancient_item",
 		"fence_factory_item",
 		"fence_fantasy_item",
 		"fence_gingerbread_item",
@@ -739,6 +748,7 @@ PREFAB_SKINS = {
 	},
 	meatrack =
 	{
+		"meatrack_ancient",
 		"meatrack_butcher",
 		"meatrack_circus",
 		"meatrack_victorian",
@@ -746,6 +756,10 @@ PREFAB_SKINS = {
 	mermhouse_crafted =
 	{
 		"mermhouse_crafted_fantasy",
+	},
+	mighty_gym =
+	{
+		"mighty_gym_ancient",
 	},
 	minerhat =
 	{
@@ -1093,6 +1107,7 @@ PREFAB_SKINS = {
 	},
 	tent =
 	{
+		"tent_ancient",
 		"tent_beach",
 		"tent_circus",
 		"tent_leaf",
@@ -1143,6 +1158,7 @@ PREFAB_SKINS = {
 	},
 	treasurechest =
 	{
+		"treasurechest_ancient",
 		"treasurechest_cake",
 		"treasurechest_carpetbag",
 		"treasurechest_corruption",
@@ -1607,6 +1623,7 @@ PREFAB_SKINS = {
 	},
 	wolfgang =
 	{
+		"wolfgang_ancient",
 		"wolfgang_combatant",
 		"wolfgang_cook",
 		"wolfgang_formal",
@@ -1638,6 +1655,7 @@ PREFAB_SKINS = {
 	},
 	woodie =
 	{
+		"woodie_ancient",
 		"woodie_combatant",
 		"woodie_cook",
 		"woodie_formal",
@@ -1674,6 +1692,7 @@ PREFAB_SKINS = {
 	},
 	wormwood =
 	{
+		"wormwood_ancient",
 		"wormwood_cactus",
 		"wormwood_ice",
 		"wormwood_lunar",

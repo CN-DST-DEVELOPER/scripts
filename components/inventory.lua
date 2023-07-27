@@ -1059,7 +1059,7 @@ function Inventory:SetActiveItem(item)
     end
 end
 
-function Inventory:Equip(item, old_to_active, no_animation)
+function Inventory:Equip(item, old_to_active, no_animation, force_ui_anim)
     if item == nil or item.components.equippable == nil or not item:IsValid() or item.components.equippable:IsRestricted(self.inst) or (self.noheavylifting and item:HasTag("heavy")) then
         return
     end
@@ -1095,7 +1095,7 @@ function Inventory:Equip(item, old_to_active, no_animation)
         if handitem ~= nil then
             if handitem.components.inventoryitem.cangoincontainer then
                 self.silentfull = true
-                self:GiveItem(handitem)
+				self:GiveItem(handitem, nil, force_ui_anim and self.inst:GetPosition() or nil)
                 self.silentfull = false
             else
                 self:DropItem(handitem, true, true)
@@ -1125,7 +1125,7 @@ function Inventory:Equip(item, old_to_active, no_animation)
                 self:GiveActiveItem(leftovers)
             else
                 self.silentfull = true
-                self:GiveItem(leftovers)
+				self:GiveItem(leftovers, nil, force_ui_anim and self.inst:GetPosition() or nil)
                 self.silentfull = false
             end
         end
@@ -1139,7 +1139,7 @@ function Inventory:Equip(item, old_to_active, no_animation)
                 self:GiveActiveItem(olditem)
             else
                 self.silentfull = true
-                self:GiveItem(olditem)
+				self:GiveItem(olditem, nil, force_ui_anim and self.inst:GetPosition() or nil)
                 self.silentfull = false
             end
         end

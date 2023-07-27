@@ -6,10 +6,29 @@ local assets =
 local prefabs =
 {
 	"armor_lunarplant_glow_fx",
+	"hitsparks_reflect_fx",
+    "wormwood_vined_debuff",
 }
 
-local function OnBlocked(owner)
+local function OnHit(owner, data)
+    if not owner then return end
+
+    local attacker = data.attacker
+    if not attacker or not attacker.components.locomotor
+            or (attacker.components.health and attacker.components.health:IsDead()) then
+        return
+    end
+
+    local owner_skilltreeupdater = owner.components.skilltreeupdater
+    if owner_skilltreeupdater and owner_skilltreeupdater:IsActivated("wormwood_allegiance_lunar_plant_gear_1") then
+        attacker:AddDebuff("wormwood_vined_debuff", "wormwood_vined_debuff")
+    end
+end
+
+local function OnBlocked(owner, data)
 	owner.SoundEmitter:PlaySound("dontstarve/common/together/armor/cactus")
+
+    OnHit(owner, data)
 end
 
 local function OnEnabledSetBonus(inst)
@@ -30,6 +49,7 @@ local function onequip(inst, owner)
 	end
 
 	inst:ListenForEvent("blocked", OnBlocked, owner)
+    inst:ListenForEvent("attacked", OnHit, owner)
 
 	if inst.fx ~= nil then
 		inst.fx:Remove()
@@ -42,6 +62,7 @@ end
 local function onunequip(inst, owner)
 	owner.AnimState:ClearOverrideSymbol("swap_body")
 	inst:RemoveEventCallback("blocked", OnBlocked, owner)
+    inst:RemoveEventCallback("attacked", OnHit, owner)
 
 	local skin_build = inst:GetSkinBuild()
 	if skin_build ~= nil then
@@ -55,6 +76,52 @@ local function onunequip(inst, owner)
 	owner.AnimState:SetSymbolLightOverride("swap_body", 0)
 end
 
+local function SetupEquippable(inst)
+	inst:AddComponent("equippable")
+	inst.components.equippable.equipslot = EQUIPSLOTS.BODY
+	inst.components.equippable:SetOnEquip(onequip)
+	inst.components.equippable:SetOnUnequip(onunequip)
+end
+
+local SWAP_DATA_BROKEN = { bank = "armor_lunarplant", anim = "broken" }
+local SWAP_DATA = { bank = "armor_lunarplant", anim = "anim" }
+
+local function OnBroken(inst)
+	if inst.components.equippable ~= nil then
+		inst:RemoveComponent("equippable")
+		inst.AnimState:PlayAnimation("broken")
+		inst.components.floater:SetSwapData(SWAP_DATA_BROKEN)
+		inst:AddTag("broken")
+		inst.components.inspectable.nameoverride = "BROKEN_FORGEDITEM"
+	end
+end
+
+local function OnRepaired(inst)
+	if inst.components.equippable == nil then
+		SetupEquippable(inst)
+		inst.AnimState:PlayAnimation("anim")
+		inst.components.floater:SetSwapData(SWAP_DATA)
+		inst:RemoveTag("broken")
+		inst.components.inspectable.nameoverride = nil
+	end
+end
+
+local function ReflectDamageFn(inst, attacker, damage, weapon, stimuli, spdamage)
+	return 0,
+	{
+		planar = attacker ~= nil and attacker:HasTag("shadow_aligned")
+			and TUNING.ARMOR_LUNARPLANT_REFLECT_PLANAR_DMG_VS_SHADOW
+			or TUNING.ARMOR_LUNARPLANT_REFLECT_PLANAR_DMG,
+	}
+end
+
+local function OnReflectDamage(inst, data)
+	--data.attacker is the target we are reflecting dmg to
+	if data ~= nil and data.attacker ~= nil and data.attacker:IsValid() then
+		SpawnPrefab("hitsparks_reflect_fx"):Setup(inst.components.inventoryitem.owner or inst, data.attacker)
+	end
+end
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -66,6 +133,7 @@ local function fn()
 
 	inst:AddTag("lunarplant")
 	inst:AddTag("gestaltprotection")
+	inst:AddTag("show_broken_ui")
 
 	inst.AnimState:SetBank("armor_lunarplant")
 	inst.AnimState:SetBuild("armor_lunarplant")
@@ -73,8 +141,9 @@ local function fn()
 
 	inst.foleysound = "dontstarve/movement/foley/lunarplantarmour_foley"
 
-	local swap_data = { bank = "armor_lunarplant", anim = "anim" }
-	MakeInventoryFloatable(inst, "small", 0.2, 0.80, nil, nil, swap_data)
+	MakeInventoryFloatable(inst, "small", 0.2, 0.80, nil, nil, SWAP_DATA)
+
+	inst.scrapbook_specialinfo = "ARMORLUNARPLANT"
 
 	inst.entity:SetPristine()
 
@@ -91,10 +160,11 @@ local function fn()
 	inst:AddComponent("planardefense")
 	inst.components.planardefense:SetBaseDefense(TUNING.ARMOR_LUNARPLANT_PLANAR_DEF)
 
-	inst:AddComponent("equippable")
-	inst.components.equippable.equipslot = EQUIPSLOTS.BODY
-	inst.components.equippable:SetOnEquip(onequip)
-	inst.components.equippable:SetOnUnequip(onunequip)
+	inst:AddComponent("damagereflect")
+	inst.components.damagereflect:SetReflectDamageFn(ReflectDamageFn)
+	inst:ListenForEvent("onreflectdamage", OnReflectDamage)
+
+	SetupEquippable(inst)
 
 	inst:AddComponent("damagetyperesist")
 	inst.components.damagetyperesist:AddResist("lunar_aligned", inst, TUNING.ARMOR_LUNARPLANT_LUNAR_RESIST)
@@ -103,6 +173,8 @@ local function fn()
 	setbonus:SetSetName(EQUIPMENTSETNAMES.LUNARPLANT)
 	setbonus:SetOnEnabledFn(OnEnabledSetBonus)
 	setbonus:SetOnDisabledFn(OnDisabledSetBonus)
+
+	MakeForgeRepairable(inst, FORGEMATERIALS.LUNARPLANT, OnBroken, OnRepaired)
 
 	MakeHauntableLaunch(inst)
 
@@ -141,6 +213,12 @@ local function glow_OnRemoveEntity(inst)
 	end
 end
 
+local function glow_ColourChanged(inst, r, g, b, a)
+	for i, v in ipairs(inst.fx) do
+		v.AnimState:SetAddColour(r, g, b, a)
+	end
+end
+
 local function glow_SpawnFxForOwner(inst, owner)
 	inst.fx = {}
 	local frame
@@ -153,6 +231,7 @@ local function glow_SpawnFxForOwner(inst, owner)
 		fx.components.highlightchild:SetOwner(owner)
 		table.insert(inst.fx, fx)
 	end
+	inst.components.colouraddersync:SetColourChangedFn(glow_ColourChanged)
 	inst.OnRemoveEntity = glow_OnRemoveEntity
 end
 
@@ -165,6 +244,9 @@ end
 
 local function glow_AttachToOwner(inst, owner)
 	inst.entity:SetParent(owner.entity)
+	if owner.components.colouradder ~= nil then
+		owner.components.colouradder:AttachChild(inst)
+	end
 	--Dedicated server does not need to spawn the local fx
 	if not TheNet:IsDedicated() then
 		glow_SpawnFxForOwner(inst, owner)
@@ -178,6 +260,8 @@ local function glowfn()
 	inst.entity:AddNetwork()
 
 	inst:AddTag("FX")
+
+	inst:AddComponent("colouraddersync")
 
 	inst.entity:SetPristine()
 

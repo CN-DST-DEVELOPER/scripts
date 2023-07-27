@@ -51,22 +51,73 @@ end
 
 --------------------------------------------------------------------------
 
-local function OnEnabledSetBonus(inst)
-    inst.components.weapon:SetDamage(TUNING.VOIDCLOTH_SCYTHE_DAMAGE * TUNING.WEAPONS_VOIDCLOTH_SETBONUS_DAMAGE_MULT)
-    inst.components.planardamage:AddBonus(inst, TUNING.WEAPONS_VOIDCLOTH_SETBONUS_PLANAR_DAMAGE, "setbonus")
+local function SetBuffEnabled(inst, enabled)
+	if enabled then
+		if not inst._bonusenabled then
+			inst._bonusenabled = true
+			if inst.components.weapon ~= nil then
+				inst.components.weapon:SetDamage(TUNING.VOIDCLOTH_SCYTHE_DAMAGE * TUNING.WEAPONS_VOIDCLOTH_SETBONUS_DAMAGE_MULT)
+			end
+			inst.components.planardamage:AddBonus(inst, TUNING.WEAPONS_VOIDCLOTH_SETBONUS_PLANAR_DAMAGE, "setbonus")
+		end
+	elseif inst._bonusenabled then
+		inst._bonusenabled = nil
+		if inst.components.weapon ~= nil then
+			inst.components.weapon:SetDamage(TUNING.VOIDCLOTH_SCYTHE_DAMAGE)
+		end
+		inst.components.planardamage:RemoveBonus(inst, "setbonus")
+	end
 end
 
-local function OnDisabledSetBonus(inst)
-    inst.components.weapon:SetDamage(TUNING.VOIDCLOTH_SCYTHE_DAMAGE)
-    inst.components.planardamage:RemoveBonus(inst, "setbonus")
+local function SetBuffOwner(inst, owner)
+	if inst._owner ~= owner then
+		if inst._owner ~= nil then
+			inst:RemoveEventCallback("equip", inst._onownerequip, inst._owner)
+			inst:RemoveEventCallback("unequip", inst._onownerunequip, inst._owner)
+			inst._onownerequip = nil
+			inst._onownerunequip = nil
+			SetBuffEnabled(inst, false)
+		end
+		inst._owner = owner
+		if owner ~= nil then
+			inst._onownerequip = function(owner, data)
+				if data ~= nil then
+					if data.item ~= nil and data.item.prefab == "voidclothhat" then
+						SetBuffEnabled(inst, true)
+					elseif data.eslot == EQUIPSLOTS.HEAD then
+						SetBuffEnabled(inst, false)
+					end
+				end
+			end
+			inst._onownerunequip  = function(owner, data)
+				if data ~= nil and data.eslot == EQUIPSLOTS.HEAD then
+					SetBuffEnabled(inst, false)
+				end
+			end
+			inst:ListenForEvent("equip", inst._onownerequip, owner)
+			inst:ListenForEvent("unequip", inst._onownerunequip, owner)
+
+			local hat = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+			if hat ~= nil and hat.prefab == "voidclothhat" then
+				SetBuffEnabled(inst, true)
+			end
+		end
+	end
 end
 
 local function SetFxOwner(inst, owner)
+	if inst._fxowner ~= nil and inst._fxowner.components.colouradder ~= nil then
+		inst._fxowner.components.colouradder:DetachChild(inst.fx)
+	end
+	inst._fxowner = owner
     if owner ~= nil then
         inst.fx.entity:SetParent(owner.entity)
         inst.fx.Follower:FollowSymbol(owner.GUID, "swap_object", nil, nil, nil, true, nil, 2)
         inst.fx.components.highlightchild:SetOwner(owner)
         inst.fx:ToggleEquipped(true)
+		if owner.components.colouradder ~= nil then
+			owner.components.colouradder:AttachChild(inst.fx)
+		end
     else
         inst.fx.entity:SetParent(inst.entity)
         --For floating
@@ -77,7 +128,11 @@ local function SetFxOwner(inst, owner)
 end
 
 local function PushIdleLoop(inst)
-    inst.AnimState:PushAnimation("idle")
+	if inst.components.finiteuses:GetUses() > 0 then
+		inst.AnimState:PushAnimation("idle")
+	else
+		inst.AnimState:PlayAnimation("broken")
+	end
 end
 
 local function OnStopFloating(inst)
@@ -124,6 +179,7 @@ local function OnEquip(inst, owner)
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
     SetFxOwner(inst, owner)
+	SetBuffOwner(inst, owner)
 
     inst:ToggleTalking(true, owner)
 end
@@ -136,6 +192,7 @@ local function OnUnequip(inst, owner)
         owner:PushEvent("unequipskinneditem", inst:GetSkinName())
     end
     SetFxOwner(inst, nil)
+	SetBuffOwner(inst, nil)
 
     inst:ToggleTalking(false, owner)
 end
@@ -193,6 +250,78 @@ local function OnAttack(inst, attacker, target)
     end
 end
 
+local function SetupComponents(inst)
+	inst:AddComponent("equippable")
+	inst.components.equippable.dapperness = -TUNING.DAPPERNESS_MED
+	inst.components.equippable.is_magic_dapperness = true
+	inst.components.equippable:SetOnEquip(OnEquip)
+	inst.components.equippable:SetOnUnequip(OnUnequip)
+
+	inst:AddComponent("weapon")
+	inst.components.weapon:SetDamage(inst._bonusenabled and TUNING.VOIDCLOTH_SCYTHE_DAMAGE * TUNING.WEAPONS_VOIDCLOTH_SETBONUS_DAMAGE_MULT or TUNING.VOIDCLOTH_SCYTHE_DAMAGE)
+	inst.components.weapon:SetOnAttack(OnAttack)
+end
+
+local function DisableComponents(inst)
+	inst:RemoveComponent("equippable")
+	inst:RemoveComponent("weapon")
+end
+
+local FLOAT_SCALE_BROKEN = { 0.8, 0.4, 0.8 }
+local FLOAT_SCALE = { 1.2, 0.4, 1.2 }
+
+local function OnIsBrokenDirty(inst)
+	if inst.isbroken:value() then
+		inst.components.floater:SetSize("med")
+		inst.components.floater:SetVerticalOffset(0.25)
+		inst.components.floater:SetScale(FLOAT_SCALE_BROKEN)
+	else
+		inst.components.floater:SetSize("med")
+		inst.components.floater:SetVerticalOffset(0)
+		inst.components.floater:SetScale(FLOAT_SCALE)
+	end
+end
+
+local SWAP_DATA_BROKEN = { sym_build = "scythe_voidcloth", sym_name = "scythe_base_broken_float", bank = "scythe_voidcloth", anim = "broken" }
+local SWAP_DATA = { sym_build = "scythe_voidcloth", sym_name = "swap_scythe", bank = "scythe_voidcloth" }
+
+local function SetIsBroken(inst, isbroken)
+	if isbroken then
+		inst.components.floater:SetBankSwapOnFloat(true, -10, SWAP_DATA_BROKEN)
+		if inst.fx ~= nil then
+			inst.fx:Hide()
+		end
+	else
+		inst.components.floater:SetBankSwapOnFloat(true, -20, SWAP_DATA)
+		if inst.fx ~= nil then
+			inst.fx:Show()
+		end
+	end
+	inst.isbroken:set(isbroken)
+	OnIsBrokenDirty(inst)
+end
+
+local function OnBroken(inst)
+	if inst.components.equippable ~= nil then
+		DisableComponents(inst)
+		inst.AnimState:PlayAnimation("broken")
+		SetIsBroken(inst, true)
+		inst:AddTag("broken")
+		inst.components.inspectable.nameoverride = "BROKEN_FORGEDITEM"
+	end
+end
+
+local function OnRepaired(inst)
+	if inst.components.equippable == nil then
+		SetupComponents(inst)
+		inst.fx.AnimState:SetFrame(0)
+		inst.AnimState:PlayAnimation("idle", true)
+		SetIsBroken(inst, false)
+		inst:RemoveTag("broken")
+		inst.components.inspectable.nameoverride = nil
+	end
+end
+
 local function ScytheFn()
     local inst = CreateEntity()
 
@@ -211,6 +340,7 @@ local function ScytheFn()
     inst.OnRemoveEntity   = OnRemoveEntity
 
     inst:AddTag("sharp")
+	inst:AddTag("show_broken_ui")
 
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
@@ -220,7 +350,9 @@ local function ScytheFn()
 
     inst:AddTag("shadow_item")
 
-    MakeInventoryFloatable(inst, "med", 0.05, {1.5, 0.4, 1.5})
+	inst:AddComponent("floater")
+	inst.isbroken = net_bool(inst.GUID, "voidcloth_scythe.isbroken", "isbrokendirty")
+	SetIsBroken(inst, false)
 
     local talker = inst:AddComponent("talker")
     talker.fontsize = 28
@@ -247,6 +379,8 @@ local function ScytheFn()
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+		inst:ListenForEvent("isbrokendirty", OnIsBrokenDirty)
+
         return inst
     end
 
@@ -254,7 +388,6 @@ local function ScytheFn()
     inst._classified.entity:SetParent(inst.entity)
     inst._classified._parent = inst
     inst._classified:SetTarget(nil)
-
 
     local frame = math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1
     inst.AnimState:SetFrame(frame)
@@ -274,12 +407,7 @@ local function ScytheFn()
     local finiteuses = inst:AddComponent("finiteuses")
     finiteuses:SetMaxUses(TUNING.VOIDCLOTH_SCYTHE_USES)
     finiteuses:SetUses(TUNING.VOIDCLOTH_SCYTHE_USES)
-    finiteuses:SetOnFinished(inst.Remove)
     finiteuses:SetConsumption(ACTIONS.SCYTHE, 1)
-
-    local weapon = inst:AddComponent("weapon")
-    weapon:SetDamage(TUNING.VOIDCLOTH_SCYTHE_DAMAGE)
-    weapon:SetOnAttack(OnAttack)
 
     local planardamage = inst:AddComponent("planardamage")
     planardamage:SetBaseDamage(TUNING.VOIDCLOTH_SCYTHE_PLANAR_DAMAGE)
@@ -287,23 +415,13 @@ local function ScytheFn()
     local damagetypebonus = inst:AddComponent("damagetypebonus")
     damagetypebonus:AddBonus("lunar_aligned", inst, TUNING.WEAPONS_VOIDCLOTH_VS_LUNAR_BONUS)
 
-    local equippable = inst:AddComponent("equippable")
-    equippable.dapperness = -TUNING.DAPPERNESS_MED
-    equippable.is_magic_dapperness = true
-    equippable:SetOnEquip(OnEquip)
-    equippable:SetOnUnequip(OnUnequip)
+	SetupComponents(inst)
 
     inst:AddComponent("shadowlevel")
     inst.components.shadowlevel:SetDefaultLevel(TUNING.VOIDCLOTH_SCYTHE_SHADOW_LEVEL)
 
-    local setbonus = inst:AddComponent("setbonus")
-    setbonus:SetSetName(EQUIPMENTSETNAMES.VOIDCLOTH)
-    setbonus:SetOnEnabledFn(OnEnabledSetBonus)
-    setbonus:SetOnDisabledFn(OnDisabledSetBonus)
-
+	MakeForgeRepairable(inst, FORGEMATERIALS.VOIDCLOTH, OnBroken, OnRepaired)
     MakeHauntableLaunch(inst)
-
-    inst.components.floater:SetBankSwapOnFloat(true, -11, {sym_name = "swap_scythe", sym_build = "scythe_voidcloth", bank = "scythe_voidcloth"})
 
     inst.SayRandomLine = SayRandomLine
     inst.ToggleTalking = ToggleTalking
@@ -352,6 +470,12 @@ local function FxRemoveAll(inst)
     end
 end
 
+local function FxColourChanged(inst, r, g, b, a)
+	for i = 1, #inst.fx do
+		inst.fx[i].AnimState:SetAddColour(r, g, b, a)
+	end
+end
+
 local function FxOnEquipToggle(inst)
     local owner = inst.equiptoggle:value() and inst.entity:GetParent() or nil
     if owner ~= nil then
@@ -371,9 +495,11 @@ local function FxOnEquipToggle(inst)
             fx.AnimState:SetFrame(frame)
             fx.components.highlightchild:SetOwner(owner)
         end
+        inst.components.colouraddersync:SetColourChangedFn(FxColourChanged)
         inst.OnRemoveEntity = FxRemoveAll
     elseif inst.OnRemoveEntity ~= nil then
         inst.OnRemoveEntity = nil
+		inst.components.colouraddersync:SetColourChangedFn(nil)
         FxRemoveAll(inst)
     end
 end
@@ -403,6 +529,7 @@ local function FollowSymbolFxFn()
     inst.AnimState:PlayAnimation("swap_loop_3", true) --frame 3 is used for floating
 
     inst:AddComponent("highlightchild")
+	inst:AddComponent("colouraddersync")
 
     inst.equiptoggle = net_bool(inst.GUID, "voidcloth_scythe_fx.equiptoggle", "equiptoggledirty")
 

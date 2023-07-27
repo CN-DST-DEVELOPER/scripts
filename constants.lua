@@ -757,7 +757,7 @@ SPECIAL_EVENTS =
     YOT_CATCOON = "year_of_the_catcoon",
     YOTR = "year_of_the_bunnyman",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -1056,7 +1056,8 @@ FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.CARNIVAL and -- FIXME(JBK): Remove this line when the shadow rift update is done.
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_shadowrift"
+    "dontstarve/music/music_FE_survivorsguideone"
+    --"dontstarve/music/music_FE_shadowrift"
     --"dontstarve/music/music_FE_lunarrift"
     --"dontstarve/music/music_FE_daywalker"
     --"dontstarve/music/music_FE_maxwell"
@@ -1771,6 +1772,12 @@ MATERIALS =
 	DREADSTONE = "dreadstone",
 }
 
+FORGEMATERIALS =
+{
+	LUNARPLANT = "lunarplant",
+	VOIDCLOTH = "voidcloth",
+}
+
 UPGRADETYPES =
 {
     DEFAULT = "default",
@@ -1909,6 +1916,43 @@ TECH_INGREDIENT =
     --NOTE: Value is used as key for NAME string and inventory image
     --NOTE: Must be name of the tech + "_material"
     SCULPTING = "sculpting_material",
+}
+
+-- Identifies which builder tags are from which characters' skill trees,
+-- so that the crafting menu properly identifies that they're locked behind a skill
+-- for your current character.
+TECH_SKILLTREE_BUILDER_TAG_OWNERS =
+{
+    alchemist = "wilson",
+    gem_alchemistI = "wilson",
+    gem_alchemistII = "wilson",
+    gem_alchemistIII = "wilson",
+    ore_alchemistI = "wilson",
+    ore_alchemistII = "wilson",
+    ore_alchemistIII = "wilson",
+    ick_alchemistI = "wilson",
+    ick_alchemistII = "wilson",
+    ick_alchemistIII = "wilson",
+    skill_wilson_allegiance_shadow = "wilson",
+    skill_wilson_allegiance_lunar = "wilson",
+
+    wolfgang_dumbbell_crafting = "wolfgang",
+    wolfgang_coach = "wolfgang",
+
+    woodcarver1 = "woodie",
+    woodcarver2 = "woodie",
+    woodcarver3 = "woodie",
+
+    syrupcrafter = "wormwood",
+    saplingcrafter = "wormwood",
+    berrybushcrafter = "wormwood",
+    berrybushcrafter = "wormwood",
+    juicyberrybushcrafter = "wormwood",
+    reedscrafter = "wormwood",
+    lureplantcrafter = "wormwood",
+    carratcrafter = "wormwood",
+    lightfliercrafter = "wormwood",
+    fruitdragoncrafter = "wormwood",
 }
 
 -- IngredientMod must be one of the following values

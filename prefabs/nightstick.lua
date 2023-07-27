@@ -114,6 +114,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", 0.05, {1.1, 0.4, 1.1}, true, -19, {sym_build = "swap_nightstick"})
 
+    inst.scrapbook_specialinfo = "NIGHTSTICK"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

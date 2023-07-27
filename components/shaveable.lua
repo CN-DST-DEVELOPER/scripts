@@ -48,7 +48,7 @@ function Shaveable:Shave(shaver, shaving_implement)
         for k = 1, self.prize_count do
             local prize = SpawnPrefab(self.prize_prefab)
             if prize.components.inventoryitem ~= nil then
-                prize.components.inventoryitem:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
+				prize.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
             end
             if shaver ~= nil and shaver.components.inventory ~= nil then
                 shaver.components.inventory:GiveItem(prize, nil, position)

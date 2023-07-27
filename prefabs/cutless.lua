@@ -47,6 +47,8 @@ local function fn()
     local swap_data = {sym_name = "swap_cutless", sym_build = "cutless"}
     MakeInventoryFloatable(inst, "med", 0.05, {1.1, 0.5, 1.1}, true, -18, swap_data)
 
+    inst.scrapbook_specialinfo = "CUTLESS"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

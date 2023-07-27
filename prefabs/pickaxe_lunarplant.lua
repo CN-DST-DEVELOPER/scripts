@@ -3,14 +3,63 @@ local assets =
 	Asset("ANIM", "anim/pickaxe_lunarplant.zip"),
 }
 
-local function OnEnabledSetBonus(inst)
-	inst.components.weapon:SetDamage(inst.base_damage * TUNING.WEAPONS_LUNARPLANT_SETBONUS_DAMAGE_MULT)
-	inst.components.planardamage:AddBonus(inst, TUNING.WEAPONS_LUNARPLANT_SETBONUS_PLANAR_DAMAGE, "setbonus")
+local prefabs =
+{
+	"lunarplanttentacle",
+}
+
+local function SetBuffEnabled(inst, enabled)
+	if enabled then
+		if not inst._bonusenabled then
+			inst._bonusenabled = true
+			if inst.components.weapon ~= nil then
+				inst.components.weapon:SetDamage(inst.base_damage * TUNING.WEAPONS_LUNARPLANT_SETBONUS_DAMAGE_MULT)
+			end
+			inst.components.planardamage:AddBonus(inst, TUNING.WEAPONS_LUNARPLANT_SETBONUS_PLANAR_DAMAGE, "setbonus")
+		end
+	elseif inst._bonusenabled then
+		inst._bonusenabled = nil
+		if inst.components.weapon ~= nil then
+			inst.components.weapon:SetDamage(inst.base_damage)
+		end
+		inst.components.planardamage:RemoveBonus(inst, "setbonus")
+	end
 end
 
-local function OnDisabledSetBonus(inst)
-	inst.components.weapon:SetDamage(inst.base_damage)
-	inst.components.planardamage:RemoveBonus(inst, "setbonus")
+local function SetBuffOwner(inst, owner)
+	if inst._owner ~= owner then
+		if inst._owner ~= nil then
+			inst:RemoveEventCallback("equip", inst._onownerequip, inst._owner)
+			inst:RemoveEventCallback("unequip", inst._onownerunequip, inst._owner)
+			inst._onownerequip = nil
+			inst._onownerunequip = nil
+			SetBuffEnabled(inst, false)
+		end
+		inst._owner = owner
+		if owner ~= nil then
+			inst._onownerequip = function(owner, data)
+				if data ~= nil then
+					if data.item ~= nil and data.item.prefab == "lunarplanthat" then
+						SetBuffEnabled(inst, true)
+					elseif data.eslot == EQUIPSLOTS.HEAD then
+						SetBuffEnabled(inst, false)
+					end
+				end
+			end
+			inst._onownerunequip  = function(owner, data)
+				if data ~= nil and data.eslot == EQUIPSLOTS.HEAD then
+					SetBuffEnabled(inst, false)
+				end
+			end
+			inst:ListenForEvent("equip", inst._onownerequip, owner)
+			inst:ListenForEvent("unequip", inst._onownerunequip, owner)
+
+			local hat = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+			if hat ~= nil and hat.prefab == "lunarplanthat" then
+				SetBuffEnabled(inst, true)
+			end
+		end
+	end
 end
 
 local function onequip(inst, owner)
@@ -23,6 +72,7 @@ local function onequip(inst, owner)
 	end
 	owner.AnimState:Show("ARM_carry")
 	owner.AnimState:Hide("ARM_normal")
+	SetBuffOwner(inst, owner)
 end
 
 local function onunequip(inst, owner)
@@ -31,6 +81,75 @@ local function onunequip(inst, owner)
 	local skin_build = inst:GetSkinBuild()
 	if skin_build ~= nil then
 		owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+	end
+	SetBuffOwner(inst, nil)
+end
+
+local function SetupComponents(inst)
+	inst:AddComponent("equippable")
+	inst.components.equippable:SetOnEquip(onequip)
+	inst.components.equippable:SetOnUnequip(onunequip)
+
+	inst:AddComponent("tool")
+	inst.components.tool:SetAction(ACTIONS.HAMMER, TUNING.PICKAXE_LUNARPLANT_EFFICIENCY)
+	inst.components.tool:SetAction(ACTIONS.MINE, TUNING.PICKAXE_LUNARPLANT_EFFICIENCY)
+	inst.components.tool:EnableToughWork(true)
+
+	inst:AddComponent("weapon")
+	inst.components.weapon:SetDamage(inst._bonusenabled and inst.base_damage * TUNING.WEAPONS_LUNARPLANT_SETBONUS_DAMAGE_MULT or inst.base_damage)
+end
+
+local function DisableComponents(inst)
+	inst:RemoveComponent("equippable")
+	inst:RemoveComponent("tool")
+	inst:RemoveComponent("weapon")
+end
+
+local FLOAT_SCALE_BROKEN = { 1, 0.72, 1 }
+local FLOAT_SCALE = { 0.75, 0.4, 0.75 }
+
+local function OnIsBrokenDirty(inst)
+	if inst.isbroken:value() then
+		inst.components.floater:SetSize("small")
+		inst.components.floater:SetVerticalOffset(0.1)
+		inst.components.floater:SetScale(FLOAT_SCALE_BROKEN)
+	else
+		inst.components.floater:SetSize("med")
+		inst.components.floater:SetVerticalOffset(0.05)
+		inst.components.floater:SetScale(FLOAT_SCALE)
+	end
+end
+
+local SWAP_DATA_BROKEN = { sym_build = "pickaxe_lunarplant", sym_name = "swap_pickaxe_BROKEN_FORGEDITEM_float", bank = "pickaxe_lunarplant", anim = "broken" }
+local SWAP_DATA = { sym_build = "pickaxe_lunarplant", sym_name = "swap_pickaxe_lunarplant" }
+
+local function SetIsBroken(inst, isbroken)
+	if isbroken then
+		inst.components.floater:SetBankSwapOnFloat(true, -8, SWAP_DATA_BROKEN)
+	else
+		inst.components.floater:SetBankSwapOnFloat(true, -13, SWAP_DATA)
+	end
+	inst.isbroken:set(isbroken)
+	OnIsBrokenDirty(inst)
+end
+
+local function OnBroken(inst)
+	if inst.components.equippable ~= nil then
+		DisableComponents(inst)
+		inst.AnimState:PlayAnimation("broken")
+		SetIsBroken(inst, true)
+		inst:AddTag("broken")
+		inst.components.inspectable.nameoverride = "BROKEN_FORGEDITEM"
+	end
+end
+
+local function OnRepaired(inst)
+	if inst.components.equippable == nil then
+		SetupComponents(inst)
+		inst.AnimState:PlayAnimation("idle")
+		SetIsBroken(inst, false)
+		inst:RemoveTag("broken")
+		inst.components.inspectable.nameoverride = nil
 	end
 end
 
@@ -47,6 +166,8 @@ local function fn()
 	inst.AnimState:SetBuild("pickaxe_lunarplant")
 	inst.AnimState:PlayAnimation("idle")
 
+	inst:AddTag("show_broken_ui")
+
 	--inst:AddTag("sharp")
 	inst:AddTag("hammer")
 
@@ -56,56 +177,45 @@ local function fn()
 	--weapon (from weapon component) added to pristine state for optimization
 	inst:AddTag("weapon")
 
-	local swap_data = { sym_build = "pickaxe_lunarplant", sym_name = "swap_pickaxe_lunarplant" }
-	MakeInventoryFloatable(inst, "med", 0.05, { 0.75, 0.4, 0.75 }, true, -13, swap_data)
+	inst:AddComponent("floater")
+	inst.isbroken = net_bool(inst.GUID, "pickaxe_lunarplant.isbroken", "isbrokendirty")
+	SetIsBroken(inst, false)
 
 	inst.entity:SetPristine()
 
 	if not TheWorld.ismastersim then
+		inst:ListenForEvent("isbrokendirty", OnIsBrokenDirty)
+
 		return inst
 	end
 
 	-------
-	inst:AddComponent("tool")
-	inst.components.tool:SetAction(ACTIONS.HAMMER, TUNING.PICKAXE_LUNARPLANT_EFFICIENCY)
-	inst.components.tool:SetAction(ACTIONS.MINE, TUNING.PICKAXE_LUNARPLANT_EFFICIENCY)
-	inst.components.tool:EnableToughWork(true)
+	local finiteuses = inst:AddComponent("finiteuses")
+	finiteuses:SetMaxUses(TUNING.PICKAXE_LUNARPLANT_USES)
+	finiteuses:SetUses(TUNING.PICKAXE_LUNARPLANT_USES)
+	finiteuses:SetConsumption(ACTIONS.HAMMER, 1)
+	finiteuses:SetConsumption(ACTIONS.MINE, TUNING.HAMMER_USES / TUNING.PICKAXE_USES)
 
 	-------
-	inst:AddComponent("finiteuses")
-	inst.components.finiteuses:SetMaxUses(TUNING.PICKAXE_LUNARPLANT_USES)
-	inst.components.finiteuses:SetUses(TUNING.PICKAXE_LUNARPLANT_USES)
-	inst.components.finiteuses:SetOnFinished(inst.Remove)
-	inst.components.finiteuses:SetConsumption(ACTIONS.HAMMER, 1)
-	inst.components.finiteuses:SetConsumption(ACTIONS.MINE, TUNING.HAMMER_USES / TUNING.PICKAXE_USES)
-
-	-------
-	inst.lunarplantweapon = true -- Deprecated
 	inst.base_damage = TUNING.PICKAXE_LUNARPLANT_DAMAGE
-	inst:AddComponent("weapon")
-	inst.components.weapon:SetDamage(inst.base_damage)
 
-	inst:AddComponent("planardamage")
-	inst.components.planardamage:SetBaseDamage(TUNING.PICKAXE_LUNARPLANT_PLANAR_DAMAGE)
+	local planardamage = inst:AddComponent("planardamage")
+	planardamage:SetBaseDamage(TUNING.PICKAXE_LUNARPLANT_PLANAR_DAMAGE)
 
-	inst:AddComponent("damagetypebonus")
-	inst.components.damagetypebonus:AddBonus("shadow_aligned", inst, TUNING.WEAPONS_LUNARPLANT_VS_SHADOW_BONUS)
+	local damagetypebonus = inst:AddComponent("damagetypebonus")
+	damagetypebonus:AddBonus("shadow_aligned", inst, TUNING.WEAPONS_LUNARPLANT_VS_SHADOW_BONUS)
 
 	inst:AddComponent("inspectable")
 	inst:AddComponent("inventoryitem")
 
-	inst:AddComponent("equippable")
-	inst.components.equippable:SetOnEquip(onequip)
-	inst.components.equippable:SetOnUnequip(onunequip)
+	SetupComponents(inst)
 
-	local setbonus = inst:AddComponent("setbonus")
-	setbonus:SetSetName(EQUIPMENTSETNAMES.LUNARPLANT)
-	setbonus:SetOnEnabledFn(OnEnabledSetBonus)
-	setbonus:SetOnDisabledFn(OnDisabledSetBonus)
+	inst:AddComponent("lunarplant_tentacle_weapon")
 
+	MakeForgeRepairable(inst, FORGEMATERIALS.LUNARPLANT, OnBroken, OnRepaired)
 	MakeHauntableLaunch(inst)
 
 	return inst
 end
 
-return Prefab("pickaxe_lunarplant", fn, assets)
+return Prefab("pickaxe_lunarplant", fn, assets, prefabs)

@@ -176,6 +176,8 @@ local function fn()
     --cookable (from cookable component) added to pristine state for optimization
     inst:AddTag("cookable")
 
+    inst.scrapbook_specialinfo = "MOLE"
+
     MakeFeedableSmallLivestockPristine(inst)
 
     inst.displaynamefn = displaynamefn

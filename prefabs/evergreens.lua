@@ -470,6 +470,13 @@ local function make_stump(inst)
     end
 end
 
+local function TransformIntoLeif(inst, chopper)
+    inst.noleif = true
+    inst.leifscale = GetGrowthStages(inst)[inst.components.growable.stage].leifscale or 1
+    inst.chopper = chopper
+    inst:DoTaskInTime(1 + math.random() * 3, spawn_leif)
+end
+
 local LEIFTARGET_MUST_TAGS = { "evergreens", "tree" }
 local LEIFTARGET_CANT_TAGS = { "leif", "stump", "burnt" }
 local function chop_down_tree(inst, chopper)
@@ -517,10 +524,7 @@ local function chop_down_tree(inst, chopper)
                 for k = 1, (days_survived <= 30 and 1) or math.random(days_survived <= 80 and 2 or 3) do
                     local target = FindEntity(inst, TUNING.LEIF_MAXSPAWNDIST, find_leif_spawn_target, LEIFTARGET_MUST_TAGS, LEIFTARGET_CANT_TAGS)
                     if target ~= nil then
-                        target.noleif = true
-                        target.leifscale = GetGrowthStages(target)[target.components.growable.stage].leifscale or 1
-                        target.chopper = chopper
-                        target:DoTaskInTime(1 + math.random() * 3, spawn_leif)
+                        target:TransformIntoLeif(chopper)
                     end
                 end
             end
@@ -889,6 +893,8 @@ local function tree(name, build, stage, data)
         if build ~= "twiggy" then
             inst:AddComponent("petrifiable")
             inst.components.petrifiable:SetPetrifiedFn(onpetrifiedfn_evergreen)
+
+            inst.TransformIntoLeif = TransformIntoLeif
         end
 
         ---------------------

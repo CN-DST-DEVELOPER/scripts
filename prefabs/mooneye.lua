@@ -62,6 +62,8 @@ local function buildeye(colour)
 
         inst:AddTag("donotautopick")
 
+        inst.scrapbook_specialinfo = "MOONEYE"
+        
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

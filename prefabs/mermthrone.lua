@@ -10,7 +10,8 @@ local assets =
 local prefabs =
 {
     "mermthrone",
-    "mermking"
+	"mermking",
+	"construction_container",
 }
 
 local function OnConstructed(inst, doer)
@@ -49,6 +50,9 @@ end
 
 local function onhammered_construction(inst, worker)
     onhammered_common(inst, worker)
+	if inst.components.constructionsite ~= nil then
+		inst.components.constructionsite:DropAllMaterials()
+	end
     inst:Remove()
 end
 
@@ -62,6 +66,7 @@ local function onhit_construction(inst, worker)
      if not inst:HasTag("burnt") then
          inst.AnimState:PlayAnimation("hit")
          inst.AnimState:PushAnimation("idle", true)
+		inst.components.constructionsite:ForceStopConstruction()
      end
 end
 

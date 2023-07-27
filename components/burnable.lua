@@ -209,7 +209,7 @@ local function SmolderUpdate(inst, self)
         end
     end
 
-    if TheWorld.state.israining then
+	if TheWorld.state.israining and inst.components.rainimmunity == nil then
         -- smolder more slowly, or even unsmolder, if we're being rained on.
         if nearbyheat > 0 then
             local rainmod = 1.8 * TheWorld.state.precipitationrate

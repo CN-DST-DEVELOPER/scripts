@@ -154,11 +154,11 @@ local function OnHoundWarning(parent, houndwarningtype)
 end
 
 fns.OnPlayThemeMusic = function(parent, data)
-	if data ~= nil then
-		if data.theme == "farming" then
-			parent.player_classified.start_farming_music:push()
-		end
-	end
+    if data ~= nil then
+        if data.theme == "farming" then
+            parent.player_classified.start_farming_music:push()
+        end
+    end
 end
 
 local function OnMakeFriend(parent)
@@ -167,6 +167,10 @@ end
 
 local function OnFeedInContainer(parent)
     parent.player_classified.feedincontainerevent:push()
+end
+
+local function OnIdPlantSeed(parent)
+    parent.player_classified.idplantseedevent:push()
 end
 
 local function AddMorgueRecord(inst)
@@ -195,11 +199,11 @@ end
 
 fns.SetOldagerRate = function(inst, dps)
     assert(dps >= -30 and dps <= 30, "Player oldager_rate out of range: "..tostring(dps))
-	inst.oldager_rate:set(dps + 30)
+    inst.oldager_rate:set(dps + 30)
 end
 
 fns.GetOldagerRate = function(inst)
-	return inst.oldager_rate:value() - 30
+    return inst.oldager_rate:value() - 30
 end
 
 
@@ -327,7 +331,7 @@ local function OnSanityDirty(inst)
             overtime =
                 not (inst.issanitypulseup:value() and percent > oldpercent) and
                 not (inst.issanitypulsedown:value() and percent < oldpercent),
-			sanitymode = inst._parent.replica.sanity:GetSanityMode(),
+            sanitymode = inst._parent.replica.sanity:GetSanityMode(),
         }
         inst._oldsanitypercent = percent
         inst.issanitypulseup:set_local(false)
@@ -372,8 +376,8 @@ fns.OnInspirationDirty = function(inst)
         local data =
         {
             newpercent = percent,
-			slots_available = nil,
-			draining = inst.inspirationdraining:value(),
+            slots_available = nil,
+            draining = inst.inspirationdraining:value(),
         }
         inst._oldinspirationpercent = percent
         inst._parent:PushEvent("inspirationdelta", data)
@@ -385,7 +389,7 @@ end
 fns.OnHasInspirationBuffDirty = function(inst)
     if inst._parent ~= nil then
         inst._parent:PushEvent("hasinspirationbuff", {on = inst.hasinspirationbuff:value()})
-	end
+    end
 end
 
 fns.InMightyGymDirty = function(inst)
@@ -403,15 +407,15 @@ end
 
 fns.OnInspirationSongsDirty = function(inst, slot)
     if inst._parent ~= nil then
-		local song_def = INSPIRATION_BATTLESONG_DEFS.GetBattleSongDefFromNetID(inst.inspirationsongs[slot]:value())
-		inst._parent:PushEvent("inspirationsongchanged", {songdata = song_def, slotnum = slot})
+        local song_def = INSPIRATION_BATTLESONG_DEFS.GetBattleSongDefFromNetID(inst.inspirationsongs[slot]:value())
+        inst._parent:PushEvent("inspirationsongchanged", {songdata = song_def, slotnum = slot})
     end
 end
 
 local function OnMightinessDirty(inst)
     if inst._parent ~= nil then
         local percent = inst.currentmightiness:value() * .01
-        local data = 
+        local data =
         {
             oldpercent = inst._oldmightinesspercent,
             newpercent = percent,
@@ -660,9 +664,9 @@ local function OnStormLevelDirty(inst)
 end
 
 fns.OnIsInMiasmaDirty = function(inst)
-	if inst._parent ~= nil then
-		inst._parent:PushEvent("miasmalevel", { level = inst.isinmiasma:value() and 1 or 0 })
-	end
+    if inst._parent ~= nil then
+        inst._parent:PushEvent("miasmalevel", { level = inst.isinmiasma:value() and 1 or 0 })
+    end
 end
 
 local function OnBuildEvent(inst)
@@ -679,11 +683,11 @@ local function OnBuilderDamagedEvent(inst)
 end
 
 local function OnOpenCraftingMenuEvent(inst)
-	local player = inst._parent
+    local player = inst._parent
     if player ~= nil and TheFocalPoint.entity:GetParent() == player then
-		if player.HUD ~= nil then
-			player.HUD:OpenCrafting()
-		end
+        if player.HUD ~= nil then
+            player.HUD:OpenCrafting()
+        end
     end
 end
 
@@ -706,17 +710,17 @@ local function OnLearnMapEvent(inst)
 end
 
 local function OnRevealMapSpotEvent(inst)
-	local tx, ty, tz = inst.revealmapspot_worldx:value(), 0, inst.revealmapspot_worldz:value()
-	local player = inst._parent
+    local tx, ty, tz = inst.revealmapspot_worldx:value(), 0, inst.revealmapspot_worldz:value()
+    local player = inst._parent
 
-	if player ~= nil and player.HUD ~= nil then
-		player:DoTaskInTime(0, function()
-			if TheFocalPoint.entity:GetParent() == player then
-				TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/learn_map")
-			end
-			player.HUD.controls:ShowMap(Vector3(tx, ty, tz))
-		end)
-	end
+    if player ~= nil and player.HUD ~= nil then
+        player:DoTaskInTime(0, function()
+            if TheFocalPoint.entity:GetParent() == player then
+                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/Together_HUD/learn_map")
+            end
+            player.HUD.controls:ShowMap(Vector3(tx, ty, tz))
+        end)
+    end
 end
 
 local function OnRepairEvent(inst)
@@ -899,12 +903,18 @@ local function OnHoundWarningDirty(inst)
 end
 
 fns.StartFarmingMusicEvent = function(inst)
-	inst._parent:PushEvent("playfarmingmusic")
+    inst._parent:PushEvent("playfarmingmusic")
 end
 
 local function OnMakeFriendEvent(inst)
     if inst._parent ~= nil and TheFocalPoint.entity:GetParent() == inst._parent then
         TheFocalPoint.SoundEmitter:PlaySound("dontstarve/common/makeFriend")
+    end
+end
+
+fns.OnIdPlantSeedEvent = function(inst)
+    if inst._parent ~= nil and TheFocalPoint.entity:GetParent() == inst._parent then
+        TheFocalPoint.SoundEmitter:PlaySound("meta2/wormwood/identify_plant")
     end
 end
 
@@ -924,7 +934,7 @@ local function OnMorgueDirty(inst)
             location = "unknown",
             world = TheWorld.meta ~= nil and TheWorld.meta.level_id or "unknown",
             server = TheNet:GetServerName(),
-			date = os.date("%b %d, %y"),
+            date = os.date("%b %d, %y"),
         })
     end
 end
@@ -955,75 +965,68 @@ end
 
 --------------------------------------------------------------------------
 
-local function RegisterNetListeners(inst)
-    if TheWorld.ismastersim then
-        inst._parent = inst.entity:GetParent()
-        inst:ListenForEvent("healthdelta", OnHealthDelta, inst._parent)
-        inst:ListenForEvent("hungerdelta", OnHungerDelta, inst._parent)
-        inst:ListenForEvent("sanitydelta", OnSanityDelta, inst._parent)
-        inst:ListenForEvent("werenessdelta", OnWerenessDelta, inst._parent)
-        inst:ListenForEvent("attacked", OnAttacked, inst._parent)
-        inst:ListenForEvent("builditem", OnBuildSuccess, inst._parent)
-        inst:ListenForEvent("buildstructure", OnBuildSuccess, inst._parent)
-        inst:ListenForEvent("consumehealthcost", OnConsumeHealthCost, inst._parent)
-        inst:ListenForEvent("learnrecipe", OnLearnRecipeSuccess, inst._parent)
-        inst:ListenForEvent("learnmap", OnLearnMapSuccess, inst._parent)
-        inst:ListenForEvent("repair", OnRepairSuccess, inst._parent)
-        inst:ListenForEvent("performaction", OnPerformAction, inst._parent)
-        inst:ListenForEvent("actionfailed", OnActionFailed, inst._parent)
-        inst:ListenForEvent("carefulwalking", OnCarefulWalking, inst._parent)
-        inst:ListenForEvent("wormholetravel", OnWormholeTravel, inst._parent)
-        inst:ListenForEvent("makefriend", OnMakeFriend, inst._parent)
-        inst:ListenForEvent("feedincontainer", OnFeedInContainer, inst._parent)
-        inst:ListenForEvent("houndwarning", OnHoundWarning, inst._parent)
-        inst:ListenForEvent("play_theme_music", fns.OnPlayThemeMusic, inst._parent)
-    else
-        inst.ishealthpulseup:set_local(false)
-        inst.ishealthpulsedown:set_local(false)
-        inst.ishungerpulseup:set_local(false)
-        inst.ishungerpulsedown:set_local(false)
-        inst.issanitypulseup:set_local(false)
-        inst.issanitypulsedown:set_local(false)
-        inst.iswerenesspulseup:set_local(false)
-        inst.iswerenesspulsedown:set_local(false)
-        inst.pausepredictionframes:set_local(0)
-        inst:ListenForEvent("healthdirty", OnHealthDirty)
-        inst:ListenForEvent("istakingfiredamagedirty", OnIsTakingFireDamageDirty)
-        inst:ListenForEvent("istakingfiredamagelowdirty", OnIsTakingFireDamageLowDirty)
-        inst:ListenForEvent("combat.attackedpulse", OnAttackedPulseEvent)
-        inst:ListenForEvent("hungerdirty", OnHungerDirty)
-        inst:ListenForEvent("sanitydirty", OnSanityDirty)
-        inst:ListenForEvent("werenessdirty", OnWerenessDirty)
-        inst:ListenForEvent("inspirationdirty", fns.OnInspirationDirty)
-		inst:ListenForEvent("inspirationsong1dirty", function(_inst) fns.OnInspirationSongsDirty(_inst, 1) end)
-		inst:ListenForEvent("inspirationsong2dirty", function(_inst) fns.OnInspirationSongsDirty(_inst, 2) end)
-		inst:ListenForEvent("inspirationsong3dirty", function(_inst) fns.OnInspirationSongsDirty(_inst, 3) end)
-        inst:ListenForEvent("mightinessdirty", OnMightinessDirty)
-        inst:ListenForEvent("upgrademoduleenergyupdate", fns.OnEnergyLevelDirty)
-        inst:ListenForEvent("upgrademoduleslistdirty", fns.OnUpgradeModulesListDirty)
-        inst:ListenForEvent("uirobotsparksevent", fns.OnUIRobotSparks)
-        inst:ListenForEvent("freesoulhopsdirty", fns.OnFreeSoulhopsDirty)
-        inst:ListenForEvent("temperaturedirty", OnTemperatureDirty)
-        inst:ListenForEvent("moisturedirty", OnMoistureDirty)
-        inst:ListenForEvent("techtreesdirty", OnTechTreesDirty)
-        inst:ListenForEvent("recipesdirty", OnRecipesDirty)
-        inst:ListenForEvent("bufferedbuildsdirty", OnBufferedBuildsDirty)
-        inst:ListenForEvent("isperformactionsuccessdirty", OnIsPerformActionSuccessDirty)
-        inst:ListenForEvent("pausepredictionframesdirty", OnPausePredictionFramesDirty)
-        inst:ListenForEvent("iscarefulwalkingdirty", OnIsCarefulWalkingDirty)
-        inst:ListenForEvent("isghostmodedirty", OnGhostModeDirty)
-        inst:ListenForEvent("actionmeterdirty", OnActionMeterDirty)
-        inst:ListenForEvent("playerhuddirty", OnPlayerHUDDirty)
-        inst:ListenForEvent("playercamerashake", OnPlayerCameraShake)
-        inst:ListenForEvent("playerscreenflashdirty", OnPlayerScreenFlashDirty)
-        inst:ListenForEvent("attunedresurrectordirty", OnAttunedResurrectorDirty)
-        inst:ListenForEvent("cannondirty", fns.OnCannonDirty)
-    end
+local function RegisterNetListeners_mastersim(inst)
+    inst:ListenForEvent("healthdelta", OnHealthDelta, inst._parent)
+    inst:ListenForEvent("hungerdelta", OnHungerDelta, inst._parent)
+    inst:ListenForEvent("sanitydelta", OnSanityDelta, inst._parent)
+    inst:ListenForEvent("werenessdelta", OnWerenessDelta, inst._parent)
+    inst:ListenForEvent("attacked", OnAttacked, inst._parent)
+    inst:ListenForEvent("builditem", OnBuildSuccess, inst._parent)
+    inst:ListenForEvent("buildstructure", OnBuildSuccess, inst._parent)
+    inst:ListenForEvent("consumehealthcost", OnConsumeHealthCost, inst._parent)
+    inst:ListenForEvent("learnrecipe", OnLearnRecipeSuccess, inst._parent)
+    inst:ListenForEvent("learnmap", OnLearnMapSuccess, inst._parent)
+    inst:ListenForEvent("repair", OnRepairSuccess, inst._parent)
+    inst:ListenForEvent("performaction", OnPerformAction, inst._parent)
+    inst:ListenForEvent("actionfailed", OnActionFailed, inst._parent)
+    inst:ListenForEvent("carefulwalking", OnCarefulWalking, inst._parent)
+    inst:ListenForEvent("wormholetravel", OnWormholeTravel, inst._parent)
+    inst:ListenForEvent("makefriend", OnMakeFriend, inst._parent)
+    inst:ListenForEvent("feedincontainer", OnFeedInContainer, inst._parent)
+    inst:ListenForEvent("houndwarning", OnHoundWarning, inst._parent)
+    inst:ListenForEvent("idplantseed", OnIdPlantSeed, inst._parent)
+    inst:ListenForEvent("play_theme_music", fns.OnPlayThemeMusic, inst._parent)
+end
 
+local function RegisterNetListeners_local(inst)
+    inst:ListenForEvent("healthdirty", OnHealthDirty)
+    inst:ListenForEvent("istakingfiredamagedirty", OnIsTakingFireDamageDirty)
+    inst:ListenForEvent("istakingfiredamagelowdirty", OnIsTakingFireDamageLowDirty)
+    inst:ListenForEvent("combat.attackedpulse", OnAttackedPulseEvent)
+    inst:ListenForEvent("hungerdirty", OnHungerDirty)
+    inst:ListenForEvent("sanitydirty", OnSanityDirty)
+    inst:ListenForEvent("werenessdirty", OnWerenessDirty)
+    inst:ListenForEvent("inspirationdirty", fns.OnInspirationDirty)
+    inst:ListenForEvent("inspirationsong1dirty", function(_inst) fns.OnInspirationSongsDirty(_inst, 1) end)
+    inst:ListenForEvent("inspirationsong2dirty", function(_inst) fns.OnInspirationSongsDirty(_inst, 2) end)
+    inst:ListenForEvent("inspirationsong3dirty", function(_inst) fns.OnInspirationSongsDirty(_inst, 3) end)
+    inst:ListenForEvent("mightinessdirty", OnMightinessDirty)
+    inst:ListenForEvent("upgrademoduleenergyupdate", fns.OnEnergyLevelDirty)
+    inst:ListenForEvent("upgrademoduleslistdirty", fns.OnUpgradeModulesListDirty)
+    inst:ListenForEvent("uirobotsparksevent", fns.OnUIRobotSparks)
+    inst:ListenForEvent("freesoulhopsdirty", fns.OnFreeSoulhopsDirty)
+    inst:ListenForEvent("temperaturedirty", OnTemperatureDirty)
+    inst:ListenForEvent("moisturedirty", OnMoistureDirty)
+    inst:ListenForEvent("techtreesdirty", OnTechTreesDirty)
+    inst:ListenForEvent("recipesdirty", OnRecipesDirty)
+    inst:ListenForEvent("bufferedbuildsdirty", OnBufferedBuildsDirty)
+    inst:ListenForEvent("isperformactionsuccessdirty", OnIsPerformActionSuccessDirty)
+    inst:ListenForEvent("pausepredictionframesdirty", OnPausePredictionFramesDirty)
+    inst:ListenForEvent("iscarefulwalkingdirty", OnIsCarefulWalkingDirty)
+    inst:ListenForEvent("isghostmodedirty", OnGhostModeDirty)
+    inst:ListenForEvent("actionmeterdirty", OnActionMeterDirty)
+    inst:ListenForEvent("playerhuddirty", OnPlayerHUDDirty)
+    inst:ListenForEvent("playercamerashake", OnPlayerCameraShake)
+    inst:ListenForEvent("playerscreenflashdirty", OnPlayerScreenFlashDirty)
+    inst:ListenForEvent("attunedresurrectordirty", OnAttunedResurrectorDirty)
+    inst:ListenForEvent("cannondirty", fns.OnCannonDirty)
+end
+
+local function RegisterNetListeners_common(inst)
     inst:ListenForEvent("gym_bell_start", fns.OnGymBellStart)
     inst:ListenForEvent("inmightygymdirty", fns.InMightyGymDirty)
     inst:ListenForEvent("stormleveldirty", OnStormLevelDirty)
-	inst:ListenForEvent("isinmiasmadirty", fns.OnIsInMiasmaDirty)
+    inst:ListenForEvent("isinmiasmadirty", fns.OnIsInMiasmaDirty)
     inst:ListenForEvent("hasinspirationbuffdirty", fns.OnHasInspirationBuffDirty)
     inst:ListenForEvent("builder.build", OnBuildEvent)
     inst:ListenForEvent("builder.damaged", OnBuilderDamagedEvent)
@@ -1031,7 +1034,7 @@ local function RegisterNetListeners(inst)
     inst:ListenForEvent("builder.learnrecipe", OnLearnRecipeEvent)
     inst:ListenForEvent("inked", OnInkedEvent)
     inst:ListenForEvent("MapExplorer.learnmap", OnLearnMapEvent)
-	inst:ListenForEvent("MapSpotRevealer.revealmapspot", OnRevealMapSpotEvent)
+    inst:ListenForEvent("MapSpotRevealer.revealmapspot", OnRevealMapSpotEvent)
     inst:ListenForEvent("repair.repair", OnRepairEvent)
     inst:ListenForEvent("giftsdirty", OnGiftsDirty)
     inst:ListenForEvent("yotbskindirty", fns.OnYotbSkinDirty)
@@ -1045,8 +1048,29 @@ local function RegisterNetListeners(inst)
     inst:ListenForEvent("eater.feedincontainer", OnFeedInContainerEvent)
     inst:ListenForEvent("morguedirty", OnMorgueDirty)
     inst:ListenForEvent("houndwarningdirty", OnHoundWarningDirty)
-	inst:ListenForEvent("startfarmingmusicevent", fns.StartFarmingMusicEvent)
+    inst:ListenForEvent("idplantseedevent", fns.OnIdPlantSeedEvent)
+    inst:ListenForEvent("startfarmingmusicevent", fns.StartFarmingMusicEvent)
     inst:ListenForEvent("ingredientmoddirty", fns.RefreshCrafting)
+end
+
+local function RegisterNetListeners(inst)
+    if TheWorld.ismastersim then
+        inst._parent = inst.entity:GetParent()
+        RegisterNetListeners_mastersim(inst)
+    else
+        inst.ishealthpulseup:set_local(false)
+        inst.ishealthpulsedown:set_local(false)
+        inst.ishungerpulseup:set_local(false)
+        inst.ishungerpulsedown:set_local(false)
+        inst.issanitypulseup:set_local(false)
+        inst.issanitypulsedown:set_local(false)
+        inst.iswerenesspulseup:set_local(false)
+        inst.iswerenesspulsedown:set_local(false)
+        inst.pausepredictionframes:set_local(0)
+        RegisterNetListeners_local(inst)
+    end
+
+    RegisterNetListeners_common(inst)
 
     fns.OnInitialDirtyStates(inst)
 
@@ -1075,7 +1099,7 @@ function fns.OnInitialDirtyStates(inst)
     end
 
     OnStormLevelDirty(inst)
-	fns.OnIsInMiasmaDirty(inst)
+    fns.OnIsInMiasmaDirty(inst)
     OnGiftsDirty(inst)
     fns.OnYotbSkinDirty(inst)
     OnMountHurtDirty(inst)
@@ -1142,18 +1166,18 @@ local function fn()
     inst.iswerenesspulsedown = net_bool(inst.GUID, "wereness.dodeltaovertime(down)", "werenessdirty")
     inst.werenessdrainrate = net_smallbyte(inst.GUID, "wereness.drainrate")
 
-	--inspiration variables
+    --inspiration variables
     inst._oldinspirationpercent = 0
     inst.currentinspiration = net_byte(inst.GUID, "inspiration.current", "inspirationdirty")
     inst.inspirationdraining = net_bool(inst.GUID, "inspiration.draining", "inspirationdirty")
     inst.inspirationsongs =
-	{
-		net_tinybyte(inst.GUID, "inspiration.song1", "inspirationsong1dirty"),
-		net_tinybyte(inst.GUID, "inspiration.song2", "inspirationsong2dirty"),
-		net_tinybyte(inst.GUID, "inspiration.song3", "inspirationsong3dirty"),
-	}
+    {
+        net_tinybyte(inst.GUID, "inspiration.song1", "inspirationsong1dirty"),
+        net_tinybyte(inst.GUID, "inspiration.song2", "inspirationsong2dirty"),
+        net_tinybyte(inst.GUID, "inspiration.song3", "inspirationsong3dirty"),
+    }
     inst.hasinspirationbuff = net_bool(inst.GUID, "inspiration.hasbuff", "hasinspirationbuffdirty")
-    
+
     -- Mightiness
     --mighty gym variables
     -- this is used to know if someone is on a gym but also what the weight on the gym is when used.
@@ -1187,10 +1211,10 @@ local function fn()
     inst.freesoulhops = net_tinybyte(inst.GUID, "freesoulhops", "freesoulhopsdirty")
     inst.freesoulhops:set(0)
 
-	-- oldager
+    -- oldager
     inst.oldager_yearpercent = net_float(inst.GUID, "oldager.yearpercent")
     inst.oldager_rate = net_smallbyte(inst.GUID, "oldager.rate") -- use the Get and Set functions because this value is a signed value incoded into an unsigned net_var
-	inst.GetOldagerRate = fns.GetOldagerRate
+    inst.GetOldagerRate = fns.GetOldagerRate
 
     --Temperature variables
     inst._oldtemperature = TUNING.STARTING_TEMP
@@ -1209,8 +1233,8 @@ local function fn()
     inst.stormlevel = net_tinybyte(inst.GUID, "stormwatcher.stormlevel", "stormleveldirty")
     inst.stormtype = net_tinybyte(inst.GUID, "stormwatcher.stormtype")
 
-	--MiasmaWatcher variables
-	inst.isinmiasma = net_bool(inst.GUID, "miasmawatcher.isinmiasma", "isinmiasmadirty")
+    --MiasmaWatcher variables
+    inst.isinmiasma = net_bool(inst.GUID, "miasmawatcher.isinmiasma", "isinmiasmadirty")
 
     --Inked variables
     inst.inked = net_event(inst.GUID, "inked")
@@ -1251,8 +1275,9 @@ local function fn()
     inst.screenflash = net_tinybyte(inst.GUID, "frontend.screenflash", "playerscreenflashdirty")
     inst.wormholetravelevent = net_tinybyte(inst.GUID, "frontend.wormholetravel", "wormholetraveldirty")
     inst.houndwarningevent = net_tinybyte(inst.GUID, "frontend.houndwarning", "houndwarningdirty")
+    inst.idplantseedevent = net_event(inst.GUID, "idplantseedevent")
 
-	-- busy theme music
+    -- busy theme music
     inst.start_farming_music = net_event(inst.GUID, "startfarmingmusicevent")
 
     inst.isfadein:set(true)
@@ -1266,9 +1291,9 @@ local function fn()
     inst.ingredientmod = net_tinybyte(inst.GUID, "builder.ingredientmod", "ingredientmoddirty")
     for i, v in ipairs(TechTree.BONUS_TECH) do
         local bonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."bonus")
-		inst[string.lower(v).."bonus"] = bonus
-		local tempbonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."tempbonus", "techtreesdirty")
-		inst[string.lower(v).."tempbonus"] = tempbonus
+        inst[string.lower(v).."bonus"] = bonus
+        local tempbonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."tempbonus", "techtreesdirty")
+        inst[string.lower(v).."tempbonus"] = tempbonus
     end
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
         local level = net_tinybyte(inst.GUID, "builder.accessible_tech_trees."..v, "techtreesdirty")
@@ -1276,7 +1301,7 @@ local function fn()
         inst[string.lower(v).."level"] = level
     end
     inst.isfreebuildmode = net_bool(inst.GUID, "builder.freebuildmode", "recipesdirty")
-	inst.current_prototyper = net_entity(inst.GUID, "builder.current_prototyper", "current_prototyper_dirty")
+    inst.current_prototyper = net_entity(inst.GUID, "builder.current_prototyper", "current_prototyper_dirty")
     inst.opencraftingmenuevent = net_event(inst.GUID, "builder.opencraftingmenu")
     inst.recipes = {}
     inst.bufferedbuilds = {}
@@ -1291,10 +1316,10 @@ local function fn()
     --MapExplorer variables
     inst.learnmapevent = net_event(inst.GUID, "MapExplorer.learnmap")
 
-	--MapSpotRevealer variables
-	inst.revealmapspotevent = net_event(inst.GUID, "MapSpotRevealer.revealmapspot")
-	inst.revealmapspot_worldx = net_float(inst.GUID, "MapSpotRevealer.worldx")--note from branch: "second argument?"
-	inst.revealmapspot_worldz = net_float(inst.GUID, "MapSpotRevealer.worldz")
+    --MapSpotRevealer variables
+    inst.revealmapspotevent = net_event(inst.GUID, "MapSpotRevealer.revealmapspot")
+    inst.revealmapspot_worldx = net_float(inst.GUID, "MapSpotRevealer.worldx")--note from branch: "second argument?"
+    inst.revealmapspot_worldz = net_float(inst.GUID, "MapSpotRevealer.worldz")
 
     --Repair variables
     inst.repairevent = net_event(inst.GUID, "repair.repair")
@@ -1338,13 +1363,14 @@ local function fn()
     inst.isghostmode = net_bool(inst.GUID, "sg.isghostmode", "isghostmodedirty")
     inst.actionmeter = net_byte(inst.GUID, "sg.actionmeter", "actionmeterdirty")
     inst.actionmetertime = net_byte(inst.GUID, "sg.actionmetertime", "actionmeterdirty")
-	inst.currentstate = net_hash(inst.GUID, "sg.currentstate")
+    inst.currentstate = net_hash(inst.GUID, "sg.currentstate")
 
     --Locomotor variables
     inst.runspeed = net_float(inst.GUID, "locomotor.runspeed")
     inst.externalspeedmultiplier = net_float(inst.GUID, "locomotor.externalspeedmultiplier")
     inst.runspeed:set(TUNING.WILSON_RUN_SPEED)
     inst.externalspeedmultiplier:set(1)
+	inst.busyremoteoverridelocomote = net_bool(inst.GUID, "locomotor.busyremoteoverridelocomote")
 
     --CarefulWalking variables
     inst.iscarefulwalking = net_bool(inst.GUID, "carefulwalking.careful", "iscarefulwalkingdirty")
@@ -1382,7 +1408,7 @@ local function fn()
     inst.ShowActions = fns.ShowActions
     inst.ShowHUD = fns.ShowHUD
     inst.EnableMapControls = fns.EnableMapControls
-	inst.SetOldagerRate = fns.SetOldagerRate
+    inst.SetOldagerRate = fns.SetOldagerRate
 
     inst.persists = false
 

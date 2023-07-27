@@ -297,6 +297,8 @@ function Health:GetPercentWithPenalty()
 end
 
 function Health:IsInvincible()
+	--V2C: don't use "temp_invincible" for players, since they also need to use
+	--     "invincibletoggle" event, which doesn't work with "temp_invincible".
     return self.invincible or (self.inst.sg and self.inst.sg:HasStateTag("temp_invincible"))
 end
 

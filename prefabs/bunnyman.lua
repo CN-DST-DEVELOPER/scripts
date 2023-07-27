@@ -333,6 +333,8 @@ local function fn()
     inst.components.talker.offset = Vector3(0, -500, 0)
     inst.components.talker:MakeChatter()
 
+    inst.scrapbook_hide = {"hat","ARM_carry","HAIR_HAT"}
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
