@@ -1258,6 +1258,17 @@ t = {
                 FlagForRetrofitting_Cave(savedata, "retrofit_daywalker_content")
             end,
         },
+
+        {
+            version = 5.142, -- Beard Turf fixup for consoles
+            fn = function(savedata)
+                if IsConsole() then
+                    -- NOTES(JBK): This only applies to consoles so do not mess up modded worlds.
+                    FlagForRetrofitting_Forest(savedata, "console_beard_turf_fix")
+                    FlagForRetrofitting_Cave(savedata, "console_beard_turf_fix")
+                end
+            end,
+        },
     },
 }
 

@@ -1341,6 +1341,29 @@ function self:OnPostInit()
             end
         end
 	end
+
+    ---------------------------------------------------------------------------
+
+    if self.console_beard_turf_fix then
+        self.console_beard_turf_fix = nil
+        -- NOTES(JBK): This fixup works only because the old beard turfs that got changed into rift moon turfs do not place under tile data.
+        -- Do not use for other fixes in other cases without checking.
+        local undertile = TheWorld.components.undertile
+        if undertile then
+            local map = TheWorld.Map
+            local width, height = map:GetSize()
+            local find_tile = WORLD_TILES.RIFT_MOON
+            local replace_tile = WORLD_TILES.BEARD_RUG
+            for x = 0, width - 1 do
+                for y = 0, height - 1 do
+                    if map:GetTile(x, y) == find_tile and undertile:GetTileUnderneath(x, y) == nil then
+                        map:SetTile(x, y, replace_tile)
+                    end
+                end
+            end
+        end
+    end
+
 	---------------------------------------------------------------------------
 	if self.requiresreset then
 		print ("Retrofitting: Worldgen retrofitting requires the server to save and restart to fully take effect.")
@@ -1392,6 +1415,7 @@ function self:OnLoad(data)
         self.retrofit_terraria_terrarium = data.retrofit_terraria_terrarium or false
 		self.retrofit_alittledrama_content = data.retrofit_alittledrama_content or false
         self.retrofit_daywalker_content = data.retrofit_daywalker_content or false
+        self.console_beard_turf_fix = data.console_beard_turf_fix or false
     end
 end
 

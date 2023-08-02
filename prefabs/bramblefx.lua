@@ -28,7 +28,7 @@ local function OnUpdateThorns(inst)
                 if inst.owner ~= nil then
 					if inst.owner.components.combat ~= nil and
 						inst.owner.components.combat:CanTarget(v) and
-						inst.owner.components.combat:IsAlly(v)
+						not inst.owner.components.combat:IsAlly(v)
 					then
                         inst.ignore[v] = true
                         v.components.combat:GetAttacked(v.components.follower ~= nil and v.components.follower:GetLeader() == inst.owner and inst or inst.owner, inst.damage)
