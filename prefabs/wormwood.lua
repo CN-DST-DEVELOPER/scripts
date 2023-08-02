@@ -349,7 +349,14 @@ local function DoAOEeffect(inst)
 
     local should_grow_in_daylight = TheWorld.state.isday
     if grow_in_daylight and not should_grow_in_daylight then
-        should_grow_in_daylight = TheSim:FindEntities(x, y, z, TUNING.DAYLIGHT_SEARCH_RANGE, DAYLIGHT_MUST_TAGS, DAYLIGHT_CANT_TAGS)[1] ~= nil
+        local ents = TheSim:FindEntities(x, y, z, TUNING.DAYLIGHT_SEARCH_RANGE, DAYLIGHT_MUST_TAGS, DAYLIGHT_CANT_TAGS)
+        for _, v in ipairs(ents) do
+            local lightrad = v.Light:GetCalculatedRadius() * .7
+            if v:GetDistanceSqToPoint(x, y, z) < lightrad * lightrad then
+                should_grow_in_daylight = true
+                break
+            end
+        end
     end
 
     inst:UpdatePhotosynthesisState(should_grow_in_daylight)
@@ -678,6 +685,13 @@ local function UpdatePhotosynthesisState(inst, isday)
     end
 end
 
+local function OnEat(inst, food)
+	if food.prefab == "moon_cap" and inst.components.skilltreeupdater ~= nil and inst.components.skilltreeupdater:IsActivated("wormwood_moon_cap_eating") then
+		--Trigger stategraph event handler immediately instead of buffering.
+		inst.sg:HandleEvent("queue_post_eat_state", { post_eat_state = "mooncap_cloud", nointerrupt = true })
+	end
+end
+
 local function RemoveWormwoodPets(inst)
     local todespawn = {}
     for k, v in pairs(inst.components.petleash:GetPets()) do
@@ -735,6 +749,7 @@ local function master_postinit(inst)
     if inst.components.eater then
         --No health from food
         inst.components.eater:SetAbsorptionModifiers(0, 1, 1)
+		inst.components.eater:SetOnEatFn(OnEat)
     end
 
     if inst.components.petleash ~= nil then

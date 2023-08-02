@@ -4915,7 +4915,6 @@ return {
     DESCRIBE_PLANTSTRESSORMOISTURE = "This looks really dehydrated.",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "This poor plant needs nutrients!",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "It's hungry for some good conversation.",
-    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

@@ -70,12 +70,6 @@ local function ShouldTargetPlant(inst, plant)
     return leader == nil or not leader:IsTargetedByOther(inst, plant)
 end
 
-local ATTRACTOR_MUSTTAGS = {"fruitflyattractor"}
-local function NearbyFruitFlyAttractorPosition(inst)
-    local nearby_attractor = FindEntity(inst, SEE_DIST, nil, ATTRACTOR_MUSTTAGS)
-    return (nearby_attractor and nearby_attractor:GetPosition()) or nil
-end
-
 local FruitFlyBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -92,7 +86,6 @@ function FruitFlyBrain:OnStart()
             --lacks leader
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, GoHomeAction, "Go Home", true )),
-        Leash(self.inst, NearbyFruitFlyAttractorPosition, STOP_RUN_AWAY_DIST, RUN_AWAY_DIST),
         FindFarmPlant(self.inst, ACTIONS.ATTACKPLANT, false, GetFollowPos, ShouldTargetPlant),
         WhileNode(function() return ShouldSowWeeds(self.inst) end, "Should Sow Weeds",
             DoAction(self.inst, SowWeedsAction, "Sow Weeds", true )),

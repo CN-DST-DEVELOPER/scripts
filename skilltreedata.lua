@@ -172,7 +172,7 @@ function SkillTreeData:AddSkillXP(amount, characterprefab)
     end
     local newskillxp = math.clamp(oldskillxp + amount, 0, self:GetMaximumExperiencePoints())
 
-    if newskillxp ~= oldskillxp then
+    if newskillxp > oldskillxp or BRANCH == "dev" and newskillxp ~= oldskillxp then
         self.skillxp[characterprefab] = newskillxp
         self:UpdateSaveState(characterprefab)
         return true, newskillxp
@@ -287,8 +287,13 @@ end
 function SkillTreeData:Save(force_save, characterprefab)
     --print("[STData] Save")
     if force_save or (self.save_enabled and self.dirty) then
-        self.skillxp[characterprefab] = self.skillxp_backup or self.skillxp[characterprefab]
-        local str = json.encode({activatedskills = self.activatedskills_backup or self.activatedskills, skillxp = self.skillxp, })
+        local str
+        if characterprefab == "LOADFIXUP" then
+            str = json.encode({activatedskills = self.activatedskills, skillxp = self.skillxp, })
+        else
+            self.skillxp[characterprefab] = self.skillxp_backup or self.skillxp[characterprefab]
+            str = json.encode({activatedskills = self.activatedskills_backup or self.activatedskills, skillxp = self.skillxp, })
+        end
         TheSim:SetPersistentString("skilltree", str, false)
         self.dirty = false
     end
@@ -298,17 +303,33 @@ function SkillTreeData:Load()
     --print("[STData] Load")
     self.activatedskills = {}
     self.skillxp = {}
+    local needs_save = false
     TheSim:GetPersistentString("skilltree", function(load_success, data)
         if load_success and data ~= nil then
             local status, skilltree_data = pcall(function() return json.decode(data) end)
             if status and skilltree_data then
-                self.activatedskills = skilltree_data.activatedskills or self.activatedskills
-                self.skillxp = skilltree_data.skillxp or self.skillxp
+                if type(skilltree_data.activatedskills) == "table" and type(skilltree_data.skillxp) == "table" then
+                    for characterprefab, activatedskills in pairs(skilltree_data.activatedskills) do
+                        local skillxp = skilltree_data.skillxp[characterprefab]
+                        if skillxp == nil or not self:ValidateCharacterData(characterprefab, activatedskills, skillxp) then
+                            --print("[STData] Load clearing skill tree for character due to bad state", characterprefab)
+                            skilltree_data.activatedskills[characterprefab] = nil
+                            needs_save = true
+                        end
+                    end
+                    self.activatedskills = skilltree_data.activatedskills
+                    self.skillxp = skilltree_data.skillxp
+                else
+                    print("Failed to load activated skills or skillxp tables in skilltree!")
+                end
             else
                 print("Failed to load the data in skilltree!", status, skilltree_data)
             end
         end
     end)
+    if needs_save then
+        self:Save(true, "LOADFIXUP")
+    end
 end
 
 function SkillTreeData:UpdateSaveState(characterprefab)

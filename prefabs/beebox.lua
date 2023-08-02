@@ -134,7 +134,7 @@ local function onharvest(inst, picker, produce)
 
         if inst.components.childspawner ~= nil and
             not TheWorld.state.iswinter and
-            not (picker ~= nil and picker.components.skilltreeupdater ~= nil and picker.components.skilltreeupdater:IsActivated("wormwood_bees"))
+            not (picker ~= nil and picker.components.skilltreeupdater ~= nil and picker.components.skilltreeupdater:IsActivated("wormwood_bugs"))
         then
             inst.components.childspawner:ReleaseAllChildren(picker)
         end

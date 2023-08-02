@@ -338,10 +338,6 @@ local COMPONENT_ACTIONS =
             if inst:HasTag("tendable_farmplant") and not doer:HasTag("mime") then
                 table.insert(actions, ACTIONS.INTERACT_WITH)
             end
-
-            if right and inst:HasTag("israndomseed") and doer:HasTag("farmplantidentifier") then
-                table.insert(actions, ACTIONS.IDENTIFY_PLANT)
-            end
         end,
 
         fertilizerresearchable = function(inst, doer, actions, right)

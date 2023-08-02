@@ -6,6 +6,7 @@ local assets =
     Asset("ANIM", "anim/mushroom_farm_red_build.zip"),
     Asset("ANIM", "anim/mushroom_farm_green_build.zip"),
     Asset("ANIM", "anim/mushroom_farm_blue_build.zip"),
+    Asset("ANIM", "anim/mushroom_farm_moon_build.zip"),
 }
 
 local prefabs =
@@ -13,6 +14,7 @@ local prefabs =
     "red_cap",
     "green_cap",
     "blue_cap",
+    "moon_cap",
     "collapse_small",
     "spore_tall",
     "spore_medium",
@@ -240,7 +242,7 @@ local function onextinguish(inst)
     updatelevel(inst)
 end
 
-local function accepttest(inst, item)
+local function accepttest(inst, item, giver)
     if item == nil then
         return false
     elseif inst.remainingharvests == 0 then
@@ -251,9 +253,15 @@ local function accepttest(inst, item)
     elseif not (item:HasTag("mushroom") or item:HasTag("spore")) then
         return false, "MUSHROOMFARM_NEEDSSHROOM"
     elseif item:HasTag("moonmushroom") then
-        return false, "MUSHROOMFARM_NOMOONALLOWED"
+        local grower_skilltreeupdater = giver.components.skilltreeupdater
+        if grower_skilltreeupdater and grower_skilltreeupdater:IsActivated("wormwood_moon_cap_eating") then
+            return true
+        else
+            return false, "MUSHROOMFARM_NOMOONALLOWED"
+        end
+    else
+        return true
     end
-    return true
 end
 
 local function onacceptitem(inst, giver, item)

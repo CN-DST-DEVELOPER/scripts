@@ -4909,7 +4909,6 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Perhaps it might need some water?",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "It is starved for nutrients.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "Perhaps it just needs some reassurance.",
-    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

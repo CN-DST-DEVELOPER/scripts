@@ -18,7 +18,7 @@ self.inst = inst
 local _active_moonstorm_nodes = {}
 local _mapmarkers = {}
 
-self._moonstorm_nodes = net_bytearray(inst.GUID, "moonstorm.moonstorm_nodes", "moonstorm_nodes_dirty")
+self._moonstorm_nodes = net_ushortarray(inst.GUID, "moonstorm.moonstorm_nodes", "moonstorm_nodes_dirty")
 
 self.inst:ListenForEvent("moonstorm_nodes_dirty", function(w,data)
     TheWorld:PushEvent("moonstorm_nodes_dirty_relay",data)

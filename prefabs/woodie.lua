@@ -779,11 +779,17 @@ local function OnBeaverFighting(inst, data)
     end
 end
 
+local function OnBeaverOnMissOther(inst, data)
+    if not inst.sg:HasStateTag("tailslapping") then
+        OnBeaverFighting(inst, data)
+    end
+end
+
 local function SetUpGroundPounder(inst)
     local num_rings = 3
     inst.components.groundpounder.numRings = num_rings
     inst.components.groundpounder.radiusStepDistance = 2
-    inst.components.groundpounder.damageRings = num_rings
+    inst.components.groundpounder.damageRings = 1
     inst.components.groundpounder.destructionRings = num_rings
     inst.components.groundpounder.platformPushingRings = num_rings - 1
     inst.components.groundpounder.inventoryPushingRings = num_rings - 2
@@ -813,7 +819,7 @@ local function SetWereWorker(inst, mode)
             inst.components.worker:SetAction(ACTIONS.HAMMER, .25)
             inst:ListenForEvent("working", OnBeaverWorking)
             inst:ListenForEvent("onattackother", OnBeaverFighting)
-            inst:ListenForEvent("onmissother", OnBeaverFighting)
+            inst:ListenForEvent("onmissother", OnBeaverOnMissOther)
             OnBeaverWorking(inst)
 
             inst:AddComponent("groundpounder")

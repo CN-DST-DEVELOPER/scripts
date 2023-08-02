@@ -419,7 +419,10 @@ local function GetDisplayName(inst)
 	local registry_key = inst:GetPlantRegistryKey()
 	local research_stage = inst:GetResearchStage()
 
-	return not ThePlantRegistry:KnowsPlantName(registry_key, plantregistryinfo, research_stage) and STRINGS.NAMES.FARM_PLANT_UNKNOWN
+    local player_is_farmplantidentifier = (ThePlayer ~= nil and ThePlayer:HasTag("farmplantidentifier"))
+	local knows_plant_name = (player_is_farmplantidentifier or ThePlantRegistry:KnowsPlantName(registry_key, plantregistryinfo, research_stage))
+
+	return (not knows_plant_name and STRINGS.NAMES.FARM_PLANT_UNKNOWN)
 		or nil
 end
 

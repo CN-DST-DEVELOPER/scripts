@@ -6,11 +6,16 @@ end
 local mine_test_tags = { "monster", "character", "animal" }
 -- See entityreplica.lua
 local mine_must_tags = { "_combat" }
+local mine_no_tags = { "notraptrigger", "flying", "ghost", "playerghost", "spawnprotection" }
 
 local function MineTest(inst, self)
     if self.radius ~= nil then
-        local notags = { "notraptrigger", "flying", "ghost", "playerghost", "spawnprotection" }
-        table.insert(notags, self.alignment)
+		local notags
+		if self.alignment ~= nil then
+			notags = { "notraptrigger", "flying", "ghost", "playerghost", "spawnprotection", self.alignment }
+		else
+			notags = mine_no_tags
+		end
 
         local target = FindEntity(inst, self.radius, mine_test_fn, mine_must_tags, notags, mine_test_tags)
         if target ~= nil then

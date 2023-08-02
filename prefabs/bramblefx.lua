@@ -5,8 +5,8 @@ local assets =
 
 --DSV uses 4 but ignores physics radius
 local MAXRANGE = 3
-local NO_TAGS_NO_PLAYERS = { "bramble_resistant", "INLIMBO", "notarget", "noattack", "flight", "invisible", "player" }
-local NO_TAGS = { "bramble_resistant", "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost" }
+local NO_TAGS_NO_PLAYERS =	{ "bramble_resistant", "INLIMBO", "notarget", "noattack", "flight", "invisible", "wall", "player", "companion" }
+local NO_TAGS =				{ "bramble_resistant", "INLIMBO", "notarget", "noattack", "flight", "invisible", "wall", "playerghost" }
 local COMBAT_TARGET_TAGS = { "_combat" }
 
 local function OnUpdateThorns(inst)
@@ -26,16 +26,30 @@ local function OnUpdateThorns(inst)
                     inst.owner = nil
                 end
                 if inst.owner ~= nil then
-                    if inst.owner.components.combat ~= nil and inst.owner.components.combat:CanTarget(v) then
+					if inst.owner.components.combat ~= nil and
+						inst.owner.components.combat:CanTarget(v) and
+						inst.owner.components.combat:IsAlly(v)
+					then
                         inst.ignore[v] = true
                         v.components.combat:GetAttacked(v.components.follower ~= nil and v.components.follower:GetLeader() == inst.owner and inst or inst.owner, inst.damage)
                         --V2C: wisecracks make more sense for being pricked by picking
                         --v:PushEvent("thorns")
                     end
                 elseif v.components.combat:CanBeAttacked() then
-                    inst.ignore[v] = true
-                    v.components.combat:GetAttacked(inst, inst.damage)
-                    --v:PushEvent("thorns")
+					local isally = false
+					if not inst.canhitplayers then
+						--non-pvp, so don't hit any player followers (unless they are targeting a player!)
+						local leader = v.components.follower ~= nil and v.components.follower:GetLeader() or nil
+						isally = leader ~= nil and leader:HasTag("player") and
+							not (v.components.combat ~= nil and
+								v.components.combat.target ~= nil and
+								v.components.combat.target:HasTag("player"))
+					end
+					if not isally then
+						inst.ignore[v] = true
+						v.components.combat:GetAttacked(inst, inst.damage)
+						--v:PushEvent("thorns")
+					end
                 end
             end
         end

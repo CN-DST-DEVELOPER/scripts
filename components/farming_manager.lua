@@ -212,28 +212,12 @@ end
 local FRUITFLYSPAWNER_MUST_TAGS = { "fruitflyspawner" }
 local function OnFruitFlySpawnerActive(data)
     local plant = data.plant
-    if not TUNING.SPAWN_LORDFRUITFLY or plant:IsAsleep() or _worldsettingstimer:ActiveTimerExists(LORDFRUITFLY_TIMERNAME) or TheSim:FindFirstEntityWithTag("lordfruitfly") then
+    if not TUNING.SPAWN_LORDFRUITFLY or plant:IsAsleep() or _worldsettingstimer:ActiveTimerExists(LORDFRUITFLY_TIMERNAME) or TheSim:FindFirstEntityWithTag("lordfruitfly") or (data.check_others == true and not plant:IsNearPlayer(15, true)) then
         return
     end
-
     local x, y, z = plant.Transform:GetWorldPosition()
-
-	local nearby_players = FindPlayersInRange(x, y, z, 15, true)
-	if data.check_others and #nearby_players == 0 then
-		return
-	end
-
-	-- If there's a player nearby that attracts fruit flies, require fewer plants for a Lord to spawn.
-	local lord_spawner_count = TUNING.LORDFRUITFLY_SPAWNERCOUNT
-	for _, player in ipairs(nearby_players) do
-		if player:HasTag("fruitflyattractor") then
-			lord_spawner_count = 0.5 * lord_spawner_count
-			break
-		end
-	end
-	
     local ents = TheSim:FindEntities(x, y, z, TUNING.LORDFRUITFLY_SPAWNERRADIUS, FRUITFLYSPAWNER_MUST_TAGS)
-    if #ents >= lord_spawner_count then
+    if #ents >= TUNING.LORDFRUITFLY_SPAWNERCOUNT then
 		local lordfruitfly = SpawnPrefab("lordfruitfly")
         lordfruitfly.Transform:SetPosition(x, 20, z)
         lordfruitfly.sg:GoToState("land")

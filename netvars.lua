@@ -16,6 +16,7 @@
     net_entity              entity instance
     net_bytearray           array of 8-bit unsigned integers (max size = 31)
     net_smallbytearray      array of 6-bit unsigned integers (max size = 31)
+    net_ushortarray         array of 16-bit unsigned integers (max size = 31)
 
     * Arrays are expensive.  Avoid using them, especially if the values
       will change often.

@@ -23,11 +23,8 @@ end
 
 local function DoThorns(inst, pos)
     local thorns = SpawnPrefab("bramblefx_trap")
-
-    if thorns ~= nil then
-        thorns.Transform:SetPosition(pos:Get())
-        thorns.canhitplayers = not inst.proficiently_deployed
-    end
+	thorns.Transform:SetPosition(pos:Get())
+	thorns.canhitplayers = TheNet:GetPVPEnabled()
 end
 
 local function OnExplode(inst)--, target)
@@ -74,8 +71,6 @@ local function SetInactive(inst)
     end
     inst.MiniMapEntity:SetEnabled(false)
     inst.AnimState:PlayAnimation("inactive")
-
-    inst.proficiently_deployed = nil
 end
 
 local function OnDropped(inst)
@@ -86,8 +81,6 @@ local function ondeploy(inst, pt, deployer)
     inst.components.mine:Reset()
     inst.Physics:Stop()
     inst.Physics:Teleport(pt:Get())
-
-    inst.proficiently_deployed = deployer.components.skilltreeupdater ~= nil and deployer.components.skilltreeupdater:IsActivated("wormwood_blooming_farmrange3")
 end
 
 local function OnHaunt(inst, haunter)
@@ -103,18 +96,6 @@ local function OnHaunt(inst, haunter)
         return true
     end
     return false
-end
-
-local function OnSave(inst, data)
-    if inst.proficiently_deployed then
-        data.proficiently_deployed = true
-    end
-end
-
-local function OnLoad(inst, data)
-    if data ~= nil and data.proficiently_deployed then
-        inst.proficiently_deployed = true
-    end
 end
 
 local function fn()
@@ -172,9 +153,6 @@ local function fn()
     inst.components.hauntable:SetOnHauntFn(OnHaunt)
 
     inst.components.mine:Reset()
-
-    inst.OnSave = OnSave
-    inst.OnLoad = OnLoad
 
     return inst
 end

@@ -509,7 +509,7 @@ local function chop_down_tree(inst, chopper)
     end
 
     make_stump(inst)
-    inst.AnimState:PushAnimation(inst.anims.stump)
+    inst.AnimState:PushAnimation(inst.anims.stump, false)
 
     if GetBuild(inst).leif ~= nil then
         local days_survived = chopper.components.age ~= nil and chopper.components.age:GetAgeInDays() or TheWorld.state.cycles

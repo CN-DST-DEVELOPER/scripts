@@ -1044,7 +1044,7 @@ CRAFTING_FILTERS.STRUCTURES.recipes =
 	"minisign_item",
 
 	"support_pillar_scaffold",
-
+	"support_pillar_dreadstone_scaffold",
 }
 
 CRAFTING_FILTERS.MAGIC.recipes =

@@ -4912,7 +4912,6 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Looking nice and crispy!",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Ms. Wickerbottom's always going on about nutrients in the soil. Maybe it needs that.",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "What do you want from me?!",
-    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

@@ -19,25 +19,34 @@ local ORDERS =
 local function BuildSkillsData(SkillTreeFns)
     local skills =
     {
-        wormwood_butterfly_friend = {
-            title = SKILLTREESTRINGS.BUTTERFLY_FRIEND_TITLE,
-            desc = SKILLTREESTRINGS.BUTTERFLY_FRIEND_DESC,
-            icon = "wormwood_butterfly_friend",
-            pos = {(UI_LEFT + UI_RIGHT + (3 * TILE_HALFSIZE)) * 0.5, UI_BOTTOM},
+        wormwood_identify_plants2 = { -- NOTES(JBK): Changing the root name to force a respec it is not used elsewhere so this is safe.
+            title = SKILLTREESTRINGS.IDENTIFY_PLANTS_TITLE,
+            desc = SKILLTREESTRINGS.IDENTIFY_PLANTS_DESC,
+            icon = "wormwood_identify_plants",
+            pos = {(UI_LEFT + UI_RIGHT) * 0.5, UI_BOTTOM},
 
-            group = "crafting",
-            tags = {"crafting"},
+            group = "gathering",
+            tags = {},
             root = true,
+            onactivate = function(owner, from_load)
+                owner:AddTag("farmplantidentifier")
+            end,
+            ondeactivate = function(owner, from_load)
+                owner:RemoveTag("farmplantidentifier")
+            end,
             connects = {
                 "wormwood_saplingcrafting",
                 "wormwood_mushroomplanter_ratebonus1",
-            },
+                "wormwood_blooming_speed1",
+                "wormwood_blooming_farmrange1",
+            }
         },
+
         wormwood_saplingcrafting = {
             title = SKILLTREESTRINGS.SAPLINGCRAFTING_TITLE,
             desc = SKILLTREESTRINGS.SAPLINGCRAFTING_DESC,
             icon = "wormwood_saplingcrafting",
-            pos = {UI_VERTICAL_MIDDLE + 105, UI_BOTTOM + 10},
+            pos = {UI_VERTICAL_MIDDLE - 105, UI_BOTTOM + 10},
 
             group = "crafting",
             tags = {"crafting"},
@@ -55,7 +64,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.BERRYBUSHCRAFTING_TITLE,
             desc = SKILLTREESTRINGS.BERRYBUSHCRAFTING_DESC,
             icon = "wormwood_berrybushcrafting",
-            pos = {UI_VERTICAL_MIDDLE + 105 + 50, UI_BOTTOM + 10},
+            pos = {UI_VERTICAL_MIDDLE - 105 - 50, UI_BOTTOM + 10},
 
             group = "crafting",
             tags = {"crafting"},
@@ -74,7 +83,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.JUICYBERRYBUSHCRAFTING_TITLE,
             desc = SKILLTREESTRINGS.JUICYBERRYBUSHCRAFTING_DESC,
             icon = "wormwood_juicyberrybushcrafting",
-            pos = {UI_VERTICAL_MIDDLE + 165, UI_BOTTOM + 60},
+            pos = {UI_VERTICAL_MIDDLE - 115 - 60, UI_BOTTOM + 58},
 
             group = "crafting",
             tags = {"crafting"},
@@ -89,7 +98,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.REEDSCRAFTING_TITLE,
             desc = SKILLTREESTRINGS.REEDSCRAFTING_DESC,
             icon = "wormwood_reedscrafting",
-            pos = {UI_VERTICAL_MIDDLE + 105 + 100, UI_BOTTOM + 10},
+            pos = {UI_VERTICAL_MIDDLE - 105 - 100, UI_BOTTOM + 10},
 
             group = "crafting",
             tags = {"crafting"},
@@ -107,7 +116,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.LUREPLANTCRAFTING_TITLE,
             desc = SKILLTREESTRINGS.LUREPLANTCRAFTING_DESC,
             icon = "wormwood_lureplantbulbcrafting",
-            pos = {UI_VERTICAL_MIDDLE + 165 + 55, UI_BOTTOM + 60},
+            pos = {UI_VERTICAL_MIDDLE - 115 - 120, UI_BOTTOM + 58},
 
             group = "crafting",
             tags = {"crafting"},
@@ -123,7 +132,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.MUSHROOMPLANTER_RATEBONUS_1_TITLE,
             desc = SKILLTREESTRINGS.MUSHROOMPLANTER_RATEBONUS_1_DESC,
             icon = "wormwood_mushroomplanter_ratebonus1",
-            pos = {UI_VERTICAL_MIDDLE + 55, UI_BOTTOM + 45 + TILE_SIZE},
+            pos = {UI_VERTICAL_MIDDLE - 35, UI_BOTTOM + 65},
 
             group = "crafting",
             tags = {"crafting"},
@@ -135,7 +144,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.MUSHROOMPLANTER_RATEBONUS_2_TITLE,
             desc = SKILLTREESTRINGS.MUSHROOMPLANTER_RATEBONUS_2_DESC,
             icon = "wormwood_mushroomplanter_ratebonus2",
-            pos = {UI_VERTICAL_MIDDLE + 95, UI_BOTTOM + 115},
+            pos = {UI_VERTICAL_MIDDLE - 90, UI_BOTTOM + 95},
 
             group = "crafting",
             tags = {"crafting"},
@@ -148,7 +157,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.MUSHROOMPLANTER_UPGRADE_TITLE,
             desc = SKILLTREESTRINGS.MUSHROOMPLANTER_UPGRADE_DESC,
             icon = "wormwood_mushroomplanter_upgrade",
-            pos = {UI_VERTICAL_MIDDLE + 137, UI_BOTTOM + 145},
+            pos = {UI_VERTICAL_MIDDLE - 90, UI_BOTTOM + 145},
 
             group = "crafting",
             tags = {"crafting"},
@@ -160,7 +169,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.MOON_CAP_EATING_TITLE,
             desc = SKILLTREESTRINGS.MOON_CAP_EATING_DESC,
             icon = "wormwood_moon_cap_eating",
-            pos = {UI_VERTICAL_MIDDLE + 120, UI_BOTTOM + 187},
+            pos = {UI_VERTICAL_MIDDLE - 70, UI_BOTTOM + 190},
 
             group = "crafting",
             tags = {"crafting"},
@@ -169,7 +178,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.SYRUPCRAFTING_TITLE,
             desc = SKILLTREESTRINGS.SYRUPCRAFTING_DESC,
             icon = "wormwood_syrupcrafting",
-            pos = {UI_VERTICAL_MIDDLE + 43, UI_BOTTOM + 150},
+            pos = {UI_VERTICAL_MIDDLE - 30, UI_BOTTOM + 125},
 
             group = "crafting",
             tags = {"crafting"},
@@ -192,7 +201,7 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance2",
             tags = {"allegiance", "lock"},
             lock_open = function(prefabname, skillselection)
-                return SkillTreeFns.CountTags(prefabname, "crafting", skillselection) >= 6
+                return SkillTreeFns.CountTags(prefabname, "blooming", skillselection) >= 5
             end,
         },
 
@@ -242,31 +251,11 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"allegiance", "lunar", "lunar_favor"},
         },
 
-        wormwood_identify_plants = {
-            title = SKILLTREESTRINGS.IDENTIFY_PLANTS_TITLE,
-            desc = SKILLTREESTRINGS.IDENTIFY_PLANTS_DESC,
-            icon = "wormwood_identify_plants",
-            pos = {(UI_LEFT + UI_RIGHT - (3 * TILE_HALFSIZE)) * 0.5, UI_BOTTOM},
-
-            group = "gathering",
-            tags = {"blooming"},
-            root = true,
-            onactivate = function(owner, from_load)
-                owner:AddTag("farmplantidentifier")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("farmplantidentifier")
-            end,
-            connects = {
-                "wormwood_blooming_speed1",
-                "wormwood_blooming_farmrange1",
-            }
-        },
         wormwood_blooming_speed1 = {
             title = SKILLTREESTRINGS.BLOOMING_SPEED1_TITLE,
             desc = SKILLTREESTRINGS.BLOOMING_SPEED1_DESC,
             icon = "wormwood_blooming_speed1",
-            pos = {UI_VERTICAL_MIDDLE - 105, UI_BOTTOM + 10},
+            pos = {UI_VERTICAL_MIDDLE + 105, UI_BOTTOM + 10},
 
             group = "gathering",
             tags = {"blooming"},
@@ -288,7 +277,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.BLOOMING_SPEED2_TITLE,
             desc = SKILLTREESTRINGS.BLOOMING_SPEED2_DESC,
             icon = "wormwood_blooming_speed2",
-            pos = {UI_VERTICAL_MIDDLE - 105 - 50, UI_BOTTOM + 10},
+            pos = {UI_VERTICAL_MIDDLE + 105 + 50, UI_BOTTOM + 10},
 
             group = "gathering",
             tags = {"blooming"},
@@ -310,7 +299,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.BLOOMING_OVERHEATPROTECTION_TITLE,
             desc = SKILLTREESTRINGS.BLOOMING_OVERHEATPROTECTION_DESC,
             icon = "wormwood_blooming_overheatprotection",
-            pos = {UI_VERTICAL_MIDDLE - 115 - 60, UI_BOTTOM + 58},
+            pos = {UI_VERTICAL_MIDDLE + 165, UI_BOTTOM + 60},
 
             group = "gathering",
             tags = {"blooming"},
@@ -332,7 +321,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = SKILLTREESTRINGS.BLOOMING_MAX_UPGRADE_TITLE,
             desc = SKILLTREESTRINGS.BLOOMING_MAX_UPGRADE_DESC,
             icon = "wormwood_blooming_speed3",
-            pos = {UI_VERTICAL_MIDDLE - 105 - 100, UI_BOTTOM + 10},
+            pos = {UI_VERTICAL_MIDDLE + 105 + 100, UI_BOTTOM + 10},
 
             group = "gathering",
             tags = {"blooming"},
@@ -346,16 +335,15 @@ local function BuildSkillsData(SkillTreeFns)
                 end
             end,
             connects = {
-                "wormwood_blooming_petals",
+                "wormwood_blooming_photosynthesis",
             },
         },
 
-        -- Soft renamed to wormwood_blooming_photosynthesis.
-        wormwood_blooming_petals = {
+        wormwood_blooming_photosynthesis = {
             title = SKILLTREESTRINGS.BLOOMING_PHOTOSYNTHESIS_TITLE,
             desc = SKILLTREESTRINGS.BLOOMING_PHOTOSYNTHESIS_DESC,
             icon = "wormwood_blooming_photosynthesis",
-            pos = {UI_VERTICAL_MIDDLE - 115 - 120, UI_BOTTOM + 58},
+            pos = {UI_VERTICAL_MIDDLE + 165 + 55, UI_BOTTOM + 60},
 
             group = "gathering",
             tags = {"blooming"},
@@ -370,12 +358,11 @@ local function BuildSkillsData(SkillTreeFns)
             end,
         },
 
-        --
         wormwood_blooming_farmrange1 = {
             title = SKILLTREESTRINGS.BLOOMING_FARMRANGE1_TITLE,
             desc = SKILLTREESTRINGS.BLOOMING_FARMRANGE1_DESC,
             icon = "wormwood_blooming_farmrange1",
-            pos = {UI_VERTICAL_MIDDLE - 35, UI_BOTTOM + 65},
+            pos = {UI_VERTICAL_MIDDLE + 55, UI_BOTTOM + 45 + TILE_SIZE},
 
             group = "gathering",
             tags = {"blooming"},
@@ -386,60 +373,69 @@ local function BuildSkillsData(SkillTreeFns)
                 owner:RemoveTag("farmplantfastpicker")
             end,
             connects = {
-                "wormwood_blooming_farmrange2",
+                "wormwood_quick_selffertilizer",
             },
         },
 
-        -- Soft renamed to wormwood_quick_selffertilizer
-        wormwood_blooming_farmrange2 = {
+        wormwood_quick_selffertilizer = {
             title = SKILLTREESTRINGS.QUICK_SELFFERTILIZER_TITLE,
             desc = SKILLTREESTRINGS.QUICK_SELFFERTILIZER_DESC,
             icon = "wormwood_quick_selffertilizer",
-            pos = {UI_VERTICAL_MIDDLE - 90, UI_BOTTOM + 95},
+            pos = {UI_VERTICAL_MIDDLE + 95, UI_BOTTOM + 115},
 
             group = "gathering",
             tags = {"blooming"},
             connects = {
-                "wormwood_blooming_farmrange3",
-                "wormwood_bees",
+                "wormwood_blooming_trapbramble",
+                "wormwood_bugs",
             },
         },
-        wormwood_bees = {
-            title = SKILLTREESTRINGS.BEES_TITLE,
-            desc = SKILLTREESTRINGS.BEES_DESC,
-            icon = "wormwood_bees",
-            pos = {UI_VERTICAL_MIDDLE - 30, UI_BOTTOM + 125},
+        wormwood_bugs = {
+            title = SKILLTREESTRINGS.BUGS_TITLE,
+            desc = SKILLTREESTRINGS.BUGS_DESC,
+            icon = "wormwood_bugs",
+            pos = {UI_VERTICAL_MIDDLE + 43, UI_BOTTOM + 150},
 
             group = "gathering",
             tags = {"blooming"},
         },
 
-        -- Soft renamed to wormwood_blooming_trapbramble
-        wormwood_blooming_farmrange3 = {
-            title = SKILLTREESTRINGS.BLOOMING_FARMRANGE3_TITLE,
-            desc = SKILLTREESTRINGS.BLOOMING_FARMRANGE3_DESC,
-            icon = "wormwood_blooming_farmrange3",
-            pos = {UI_VERTICAL_MIDDLE - 90, UI_BOTTOM + 145},
+        wormwood_blooming_trapbramble = {
+            title = SKILLTREESTRINGS.BLOOMING_TRAPBRAMBLE_TITLE,
+            desc = SKILLTREESTRINGS.BLOOMING_TRAPBRAMBLE_DESC,
+            icon = "wormwood_blooming_trapbramble",
+            pos = {UI_VERTICAL_MIDDLE + 137, UI_BOTTOM + 145},
 
             group = "gathering",
             tags = {"blooming"},
             connects = {
-                "wormwood_fruitflies",
+                "wormwood_armor_bramble",
             },
         },
-        wormwood_fruitflies = {
-            title = SKILLTREESTRINGS.FRUITFLIES_TITLE,
-            desc = SKILLTREESTRINGS.FRUITFLIES_DESC,
-            icon = "wormwood_fruitflies",
-            pos = {UI_VERTICAL_MIDDLE - 70, UI_BOTTOM + 190},
+
+        wormwood_armor_bramble = {
+            title = SKILLTREESTRINGS.ARMOR_BRAMBLE_TITLE,
+            desc = SKILLTREESTRINGS.ARMOR_BRAMBLE_DESC,
+            icon = "wormwood_armor_bramble",
+            pos = {UI_VERTICAL_MIDDLE + 120, UI_BOTTOM + 187},
 
             group = "gathering",
             tags = {"blooming"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("fruitflyattractor")
+
+            onactivate = function(owner)
+                local item = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+
+                if item ~= nil and item:HasTag("bramble_resistant") and item._onattackother ~= nil then
+                    item:ListenForEvent("onattackother", item._onattackother, owner)
+                end
             end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("fruitflyattractor")
+
+            ondeactivate = function(owner)
+                local item = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+
+                if item ~= nil and item:HasTag("bramble_resistant") and item._onattackother ~= nil then
+                    item:RemoveEventCallback("onattackother", item._onattackother, owner)
+                end
             end,
         },
 
@@ -453,7 +449,7 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance1",
             tags = {"allegiance", "lock"},
             lock_open = function(prefabname, skillselection)
-                return SkillTreeFns.CountTags(prefabname, "blooming", skillselection) >= 6
+                return SkillTreeFns.CountTags(prefabname, "crafting", skillselection) >= 5
             end,
         },
         wormwood_allegiance_lunar_mutations_1 = {

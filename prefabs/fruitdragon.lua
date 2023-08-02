@@ -375,7 +375,6 @@ local function fn()
 
     inst.DynamicShadow:SetSize(2, 0.75)
     inst.Transform:SetFourFaced()
-    inst.Transform:SetScale(2, 2, 2) -- woops!
 
     MakeCharacterPhysics(inst, 1, 0.5)
 

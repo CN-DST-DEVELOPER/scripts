@@ -4909,7 +4909,6 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Thirsty",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Needs food!",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "Wants to talk",
-    DESCRIBE_PLANT_IDENTIFIED = "Is {plantname} friend!",
 
     EAT_FOOD =
     {

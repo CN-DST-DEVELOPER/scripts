@@ -985,8 +985,6 @@ STRINGS =
             BEAVER = "Tail Slap",
             GOOSE = "Takeoff",
         },
-
-        IDENTIFY_PLANT = "Identify",
     },
 
     -- PC controls get hex ranges EE90xx to EE9Fxx
@@ -14671,7 +14669,7 @@ STRINGS.SKILLTREE = {
         SYRUPCRAFTING_DESC = "Learn to craft Ipecaca Syrup to induce pooping in other creatures.",
 
         MOON_CAP_EATING_TITLE = "Moon Shroom Cloud",
-        MOON_CAP_EATING_DESC = "Release sleep-inducing spores when eating a Moon Shroom.",
+        MOON_CAP_EATING_DESC = "Learn how to plant Moon Shrooms in Mushroom Planters, and release sleep-inducing spores when eating them.",
 
         MUSHROOMPLANTER_RATEBONUS_1_TITLE = "Mushroom Mastery",
         MUSHROOMPLANTER_RATEBONUS_1_DESC = "Mushrooms planted in a Mushroom Planter grow a little faster.",
@@ -14718,14 +14716,14 @@ STRINGS.SKILLTREE = {
         QUICK_SELFFERTILIZER_TITLE = "Compost Care",
         QUICK_SELFFERTILIZER_DESC = "Heal faster with Compost Wraps.",
 
-        BLOOMING_FARMRANGE3_TITLE = "Bramble Trap Specialist",
-        BLOOMING_FARMRANGE3_DESC = "Reset nearby Bramble Traps while in full bloom.\nPlant Bramble Traps that don't hurt other players.",
+        BLOOMING_TRAPBRAMBLE_TITLE = "Bramble Trap Specialist",
+        BLOOMING_TRAPBRAMBLE_DESC = "Reset nearby Bramble Traps while in full bloom.",
 
-        FRUITFLIES_TITLE = "Fly Trap",
-        FRUITFLIES_DESC = "Fruit flies will be drawn to you instead of farm plants.\nThe Lord of the Fruit Flies is more likely to appear.",
+        ARMOR_BRAMBLE_TITLE = "Bramble Husk Specialist", --TODO
+        ARMOR_BRAMBLE_DESC = "Bramble Husk will release spikes when you hit your target 3 times without being attacked.", --TODO
 
-        BEES_TITLE = "Bee Kind",
-        BEES_DESC = "Killer bees won't leave their hives or attack unless provoked.",
+        BUGS_TITLE = "Bee Kind",
+        BUGS_DESC = "Bees and Butterflies will tolerate Wormwood, unless provoked.",
 
         COUNT_LOCK_2_DESC = "Learn enough right-branch skills to unlock.",
 
@@ -15005,7 +15003,7 @@ STRINGS.SCRAPBOOK = {
         WINTERTREE_ORNAMENT = "Can be hung in special trees grown in a Festive Tree Planter.",
         PLANTABLE = "Can be planted in the ground.",
         POCKETSCALE = "Used to measure the weight of Ocean Fish.",
-        POCKETWATCH_HEAL = "Rewinds Wanda's age 8 units. 2 minute cooldown.",
+        POCKETWATCH_HEAL = "Rewinds Wanda's age 8 years. 2 minute cooldown.",
         POCKETWATCH_REVIVE = "Wanda can haunt the watch as a ghost to revive herself, breaking the watch. The watch can be used on a Survivor's skeleton to revive them at the skeleton. 4 minute cooldown.",
         POCKETWATCH_WARP = "Teleports Wanda to the location marked on the ground.\n\nThe younger wanda is, the further back in time the marked location will be. Wanda is invulnerable for a short time during the teleport.\n\n2 second cooldown.",
         POCKETWATCH_RECALL = "Used to mark a spot, and then used again to teleport to that spot.\n\n8 minute cooldown. Even works between the Cave and the Forest.",

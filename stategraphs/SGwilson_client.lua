@@ -618,8 +618,6 @@ local actionhandlers =
 			or (inst:HasTag("weregoose") and "weregoose_takeoff_pre")
 			or nil
     end),
-
-    ActionHandler(ACTIONS.IDENTIFY_PLANT, "dolongaction"),
 }
 
 local events =

@@ -4905,7 +4905,6 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "It thirsts for water.",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "You are unhappy with the dirt you have? Do not look to me to help you!",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "The feeble thing needs conversation to grow? Vikings thrive in stoic silence!",
-    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

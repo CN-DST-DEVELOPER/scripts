@@ -42,6 +42,7 @@ local function finish_transformed_life(inst)
     carrot.Transform:SetPosition(ix, iy, iz)
 
     inst.components.lootdropper:FlingItem(carrot)
+    inst.components.inventory:DropEverything(true)
 
     local fx = SpawnPrefab("wormwood_lunar_transformation_finish")
     fx.Transform:SetPosition(ix, iy, iz)
@@ -67,6 +68,14 @@ local function OnAttacked(inst, data)
     end
 end
 
+local function Sleeper_SleepTest(inst)
+    return false
+end
+
+local function Sleeper_WakeTest(inst)
+    return true
+end
+
 
 local function fn()
     local inst = CreateEntity()
@@ -88,6 +97,7 @@ local function fn()
 
     inst.AnimState:SetScale(.8, .8)
     inst.AnimState:SetSymbolMultColour("carrat_eye", 0.7, 1, 0.7, 1)
+    inst.AnimState:SetSymbolLightOverride("carrat_eye", 0.2)
 
     inst:AddTag("animal")
     inst:AddTag("catfood")
@@ -99,6 +109,7 @@ local function fn()
     inst:AddTag("NOBLOCK")
     inst:AddTag("notraptrigger")
     inst:AddTag("wormwood_pet")
+    inst:AddTag("noauradamage")
 
     inst:SetPrefabNameOverride("carrat")
 
@@ -145,7 +156,8 @@ local function fn()
 
     inst:AddComponent("inspectable")
     local sleeper = inst:AddComponent("sleeper")
-    sleeper.watchlight = true
+    sleeper:SetSleepTest(Sleeper_SleepTest)
+    sleeper:SetWakeTest(Sleeper_WakeTest)
 
     local timer = inst:AddComponent("timer")
 	timer:StartTimer("finish_transformed_life", TUNING.WORMWOOD_PET_CARRAT_LIFETIME)

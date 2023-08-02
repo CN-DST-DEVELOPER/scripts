@@ -1032,8 +1032,6 @@ local actionhandlers =
 			or (inst:HasTag("weregoose") and "weregoose_takeoff_pre")
 			or nil
     end),
-
-    ActionHandler(ACTIONS.IDENTIFY_PLANT, "domediumaction"),
 }
 
 local events =
@@ -1622,15 +1620,6 @@ local events =
             end
         end
     end),
-
-    EventHandler("mooncap_cloud",
-        function(inst)
-            if not (inst.components.health:IsDead() or inst.sg:HasStateTag("sleeping") or
-                    (inst.components.freezable and inst.components.freezable:IsFrozen()) or
-                    (inst.components.pinnable and inst.components.pinnable:IsStuck())) then
-                inst.sg:GoToState("mooncap_cloud")
-            end
-        end),
 
     CommonHandlers.OnHop(),
 }
@@ -3710,6 +3699,7 @@ local states =
         {
             TimeEvent(7 * FRAMES, function(inst)
 				inst.SoundEmitter:PlaySound(inst.sg.statemem.action ~= nil and inst.sg.statemem.action.invobject ~= nil and inst.sg.statemem.action.invobject.hit_skin_sound or "dontstarve/wilson/hit")
+				inst.sg.statemem.recoilstate = "mine_recoil"
 				inst:PerformBufferedAction()
             end),
 
@@ -4726,13 +4716,20 @@ local states =
                 elseif inst.components.souleater ~= nil then
                     inst.components.souleater:EatSoul(inst.sg.statemem.feed)
                 end
+				--NOTE: "queue_post_eat_state" can be triggered immediately from the eat action
             end),
 
             TimeEvent(30 * FRAMES, function(inst)
-                inst.sg:RemoveStateTag("busy")
-                inst.sg:RemoveStateTag("pausepredict")
+				if inst.sg.statemem.queued_post_eat_state == nil then
+					inst.sg:RemoveStateTag("busy")
+					inst.sg:RemoveStateTag("pausepredict")
+				end
             end),
-
+			FrameEvent(52, function(inst)
+				if inst.sg.statemem.queued_post_eat_state ~= nil then
+					inst.sg:GoToState(inst.sg.statemem.queued_post_eat_state)
+				end
+			end),
             TimeEvent(70 * FRAMES, function(inst)
                 inst.SoundEmitter:KillSound("eating")
             end),
@@ -4740,9 +4737,18 @@ local states =
 
         events =
         {
+			EventHandler("queue_post_eat_state", function(inst, data)
+				--NOTE: this event can trigger instantly instead of buffered
+				if data ~= nil then
+					inst.sg.statemem.queued_post_eat_state = data.post_eat_state
+					if data.nointerrupt then
+						inst.sg:AddStateTag("nointerrupt")
+					end
+				end
+			end),
             EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle")
+					inst.sg:GoToState(inst.sg.statemem.queued_post_eat_state or "idle")
                 end
             end),
         },
@@ -4807,16 +4813,33 @@ local states =
                 else
                     inst:PerformBufferedAction()
                 end
-                inst.sg:RemoveStateTag("busy")
-                inst.sg:RemoveStateTag("pausepredict")
+				--NOTE: "queue_post_eat_state" can be triggered immediately from the eat action
+				if inst.sg.statemem.queued_post_eat_state == nil then
+					inst.sg:RemoveStateTag("busy")
+					inst.sg:RemoveStateTag("pausepredict")
+				end
             end),
+			FrameEvent(21, function(inst)
+				if inst.sg.statemem.queued_post_eat_state ~= nil then
+					inst.sg:GoToState(inst.sg.statemem.queued_post_eat_state)
+				end
+			end),
         },
 
         events =
         {
+			EventHandler("queue_post_eat_state", function(inst, data)
+				--NOTE: this event can trigger instantly instead of buffered
+				if data ~= nil then
+					inst.sg.statemem.queued_post_eat_state = data.post_eat_state
+					if data.nointerrupt then
+						inst.sg:AddStateTag("nointerrupt")
+					end
+				end
+			end),
             EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle")
+					inst.sg:GoToState(inst.sg.statemem.queued_post_eat_state or "idle")
                 end
             end),
         },
@@ -16094,16 +16117,22 @@ local states =
                 end
             end),
             TimeEvent(15 * FRAMES, function(inst)
+				inst.sg:RemoveStateTag("nointerrupt")
                 DoYawnSound(inst)
-                SpawnPrefab("sleepcloud_lunar").Transform:SetPosition(inst.Transform:GetWorldPosition())
+				local cloud = SpawnPrefab("sleepcloud_lunar")
+				cloud.Transform:SetPosition(inst.Transform:GetWorldPosition())
+				cloud:SetOwner(inst)
             end),
+			FrameEvent(55, function(inst)
+				inst.sg:RemoveStateTag("busy")
+				inst.sg:RemoveStateTag("pausepredict")
+			end),
         },
 
         events =
         {
             EventHandler("animover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.sg:RemoveStateTag("yawn")
                     inst.sg:GoToState("idle")
                 end
             end),
@@ -16735,7 +16764,7 @@ local states =
 
     State{
         name = "beaver_tailslap_pre",
-        tags = { "busy" },
+        tags = { "busy", "tailslapping" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("tail_slap_pre")
@@ -16761,7 +16790,7 @@ local states =
 
     State{
         name = "beaver_tailslap",
-		tags = { "busy", "pausepredict", "nomorph" },
+		tags = { "busy", "tailslapping", "pausepredict", "nomorph" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation("tail_slap")

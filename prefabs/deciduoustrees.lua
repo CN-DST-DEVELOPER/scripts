@@ -595,7 +595,7 @@ local function chop_down_tree(inst, chopper)
 
     inst:DoTaskInTime(.4, chop_down_tree_shake)
 
-    inst.AnimState:PushAnimation(inst.anims.stump)
+    inst.AnimState:PushAnimation(inst.anims.stump, false)
 
     make_stump(inst)
 end

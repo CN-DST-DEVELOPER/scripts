@@ -660,13 +660,18 @@ local function GetDisplayName(inst)
         return nil
     end
 
+    local player_is_farmplantidentifier = (ThePlayer ~= nil and ThePlayer:HasTag("farmplantidentifier"))
+
     if research_stage_info.learnseed then
-        local seed_name = (ThePlantRegistry:KnowsSeed(registry_key, plantregistryinfo) and ThePlantRegistry:KnowsPlantName(registry_key, plantregistryinfo)) and STRINGS.NAMES["KNOWN_"..string.upper(inst.plant_def.seed)] or STRINGS.NAMES[string.upper(inst.plant_def.seed)]
-        return subfmt(STRINGS.NAMES.FARM_PLANT_SEED, {seed = seed_name})
+        local seed_name = string.upper(inst.plant_def.seed)
+        if player_is_farmplantidentifier or (ThePlantRegistry:KnowsSeed(registry_key, plantregistryinfo) and ThePlantRegistry:KnowsPlantName(registry_key, plantregistryinfo)) then
+            seed_name = "KNOWN_"..seed_name
+        end
+        return subfmt(STRINGS.NAMES.FARM_PLANT_SEED, {seed = STRINGS.NAMES[seed_name]})
     end
 
-    return research_stage_info.is_rotten and STRINGS.NAMES.FARM_PLANT_ROTTEN
-        or not ThePlantRegistry:KnowsPlantName(registry_key, plantregistryinfo, research_stage) and STRINGS.NAMES.FARM_PLANT_UNKNOWN
+    return (research_stage_info.is_rotten and STRINGS.NAMES.FARM_PLANT_ROTTEN)
+        or (not (player_is_farmplantidentifier or ThePlantRegistry:KnowsPlantName(registry_key, plantregistryinfo, research_stage)) and STRINGS.NAMES.FARM_PLANT_UNKNOWN)
         or nil
 end
 
@@ -688,7 +693,7 @@ local function OnLootPrefabSpawned(inst, data)
 end
 
 local function on_planted(inst, data)
-    if data ~= nil and data.doer ~= nil and data.doer:HasTag("plantkin") then
+    if data and data.doer and data.doer:HasTag("plantkin") then
         inst.long_life = true
     end
 end
@@ -698,9 +703,21 @@ local function randomseed_become_identified(inst, doer)
     inst._identified_plant_type = inst._identified_plant_type or pickfarmplant()
 
     doer:PushEvent("idplantseed")
+    inst:RemoveTag("israndomseed")
 
     return inst._identified_plant_type
 end
+
+local function RandomSeedDescriptionFn(inst, viewer)
+    if not viewer:HasTag("farmplantidentifier") then
+        return nil
+    end
+
+    local plant_type = inst._identified_plant_type or inst:BeIdentified(viewer)
+    return (plant_type and GetDescription(viewer, inst, inst.components.inspectable:GetStatus(viewer)) .. " " .. STRINGS.NAMES[string.upper(plant_type)])
+        or nil
+end
+
 ----
 
 local function OnSave(inst, data)
@@ -738,6 +755,7 @@ local function OnLoad(inst, data)
 
         if data.identified_plant_type then
             inst._identified_plant_type = data.identified_plant_type
+            inst:RemoveTag("israndomseed")
         end
     end
 end
@@ -825,6 +843,10 @@ local function MakePlant(plant_def)
         inst:AddComponent("inspectable")
         inst.components.inspectable.getstatus = GetStatus
         inst.components.inspectable.nameoverride = "FARM_PLANT"
+        if plant_def.is_randomseed then
+            -- A plant identifier can tell which seed this is.
+            inst.components.inspectable.descriptionfn = RandomSeedDescriptionFn
+        end
 
         inst:AddComponent("plantresearchable")
         inst.components.plantresearchable:SetResearchFn(plantresearchfn)

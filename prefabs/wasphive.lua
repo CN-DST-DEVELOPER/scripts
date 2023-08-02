@@ -37,7 +37,7 @@ local function onnear(inst, target)
     local childspawner = inst.components.childspawner
 
     -- Some player skills can prevent killer bees from spawning just as the player walks by.
-    if childspawner and not (target_skilltreeupdater and target_skilltreeupdater:IsActivated("wormwood_bees")) then
+    if childspawner and not (target_skilltreeupdater and target_skilltreeupdater:IsActivated("wormwood_bugs")) then
         childspawner:ReleaseAllChildren(target, "killerbee")
     end
 end

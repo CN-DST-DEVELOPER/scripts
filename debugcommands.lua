@@ -244,8 +244,6 @@ function d_resetskilltree()
     local player = ConsoleCommandPlayer()
 
     if not player then
-        -- To use when we change a skill name and have saved data that cause a crash.
-        ErasePersistentString("skilltree", c_reset)
         return
     end
 

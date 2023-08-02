@@ -26,76 +26,13 @@ local function RetargetFn(inst)
     return inst.components.combat.target
 end
 
-local function GetRemainingTimeAwake(inst)
-    local max_awake_time = (TUNING.FRUITDRAGON.AWAKE_TIME_MIN + inst.sleep_variance * TUNING.FRUITDRAGON.AWAKE_TIME_VAR)
-    return max_awake_time - (GetTime() - inst._wakeup_time)
-end
-
-local function GetRemainingNapTime(inst)
-    local max_awake_time = (TUNING.FRUITDRAGON.NAP_TIME_MIN + inst.sleep_variance * TUNING.FRUITDRAGON.NAP_TIME_VAR)
-    return max_awake_time - (GetTime() - inst._nap_time)
-end
-
-local function StartNextNapTimer(inst)
-    inst._wakeup_time = GetTime()
-    inst.sleep_variance = math.random()
-end
-
-local function StartNappingTimer(inst)
-    inst._nap_time = GetTime()
-    inst.sleep_variance = math.random()
-end
-
 local function Sleeper_SleepTest(inst)
-    if (inst.components.combat and inst.components.combat.target) or inst.sg:HasStateTag("busy") then
-        return false
-    end
-
-    if inst.components.health and inst.components.health:GetPercent() > 0.9 then
-        return false
-    end
-
-    if TheWorld.state.isnight or GetRemainingTimeAwake(inst) <= 0 then
-        return true
-    end
-
     return false
 end
 
 local function Sleeper_WakeTest(inst)
-    if (inst.components.combat ~= nil and inst.components.combat.target ~= nil) then
-        return true
-    end
-
-    if TheWorld.state.isnight then
-        return false
-    end
-
-    if GetRemainingNapTime(inst) <= 0 then
-        inst._sleep_interrupted = false
-        return true
-    end
-
-    return false
+    return true
 end
-
-local function Sleeper_OnSleep(inst)
-    StartNappingTimer(inst)
-    if not inst.components.health:IsDead() then
-        inst.components.health:StartRegen(TUNING.FRUITDRAGON.NAP_REGEN_AMOUNT, TUNING.FRUITDRAGON.NAP_REGEN_INTERVAL)
-    end
-end
-
-local function Sleeper_OnWakeUp(inst)
-    if not inst.components.health:IsDead() then
-        inst.components.health:StopRegen()
-    end
-
-    StartNextNapTimer(inst)
-    inst._sleep_interrupted = true -- reseting it
-end
-
-----
 
 local function finish_transformed_life(inst)
     local ix, iy, iz = inst.Transform:GetWorldPosition()
@@ -115,30 +52,6 @@ local function OnTimerDone(inst, data)
     end
 end
 
-local function OnEntitySleep(inst)
-    inst.components.health:StopRegen()
-
-    inst._entitysleeptime = GetTime()
-end
-
-local function OnEntityWake(inst)
-    if inst._entitysleeptime == nil then
-        return
-    end
-
-    local dt = (GetTime() - inst._entitysleeptime)
-    if dt > 1 then
-        if not inst.components.health:IsDead() and inst.components.health:IsHurt() then
-            local estimated_naps = math.floor(dt / (40 + math.random() * 20))
-            inst.components.health:DoDelta(estimated_naps * (TUNING.FRUITDRAGON.NAP_TIME_MIN / TUNING.FRUITDRAGON.NAP_REGEN_INTERVAL)  * TUNING.FRUITDRAGON.NAP_REGEN_AMOUNT) -- fake regen
-        end
-    end
-
-    if not inst.components.health:IsDead() and inst.components.sleeper ~= nil and inst.components.sleeper:IsAsleep() then
-        inst.components.health:StartRegen(TUNING.FRUITDRAGON.NAP_REGEN_AMOUNT, TUNING.FRUITDRAGON.NAP_REGEN_INTERVAL, true)
-    end
-end
-
 local function OnAttacked(inst, data)
     if data.attacker ~= nil then
         if data.attacker.components.petleash and data.attacker.components.petleash:IsPet(inst) then
@@ -151,6 +64,18 @@ local function OnAttacked(inst, data)
             inst.components.combat:SuggestTarget(data.attacker)
         end
     end
+end
+
+local function OnHealthDelta(inst)
+    if inst.components.health:IsHurt() then
+        inst.components.health:StartRegen(TUNING.WORMWOOD_PET_FRUITDRAGON_HEALTH_REGEN_AMOUNT, TUNING.WORMWOOD_PET_FRUITDRAGON_HEALTH_REGEN_PERIOD)
+    else
+        inst.components.health:StopRegen()
+    end
+end
+
+local function OnLoad(inst, data)
+    OnHealthDelta(inst)
 end
 
 local fruit_dragon_sounds =
@@ -183,7 +108,6 @@ local function fn()
 
     inst.DynamicShadow:SetSize(2, 0.75)
     inst.Transform:SetFourFaced()
-    inst.Transform:SetScale(2, 2, 2) -- NOTES(JBK): Leave this as it is and only adjust AnimState size because of locomotor scaling.
 
     MakeCharacterPhysics(inst, 1, 0.5)
 
@@ -192,6 +116,7 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_loop")
     inst.AnimState:SetScale(.8, .8)
     inst.AnimState:SetSymbolMultColour("gecko_eye", 0.7, 1, 0.7, 1)
+    inst.AnimState:SetSymbolLightOverride("gecko_eye", 0.2)
 
     inst:AddTag("smallcreature")
     inst:AddTag("animal")
@@ -200,6 +125,7 @@ local function fn()
     inst:AddTag("NOBLOCK")
     inst:AddTag("notraptrigger")
     inst:AddTag("wormwood_pet")
+    inst:AddTag("noauradamage")
 
     inst:SetPrefabNameOverride("fruitdragon")
 
@@ -210,10 +136,6 @@ local function fn()
     end
 
     inst.sounds = fruit_dragon_sounds
-    inst._sleep_interrupted = true
-    inst._wakeup_time = GetTime()
-    inst._nap_time = -math.huge
-
 
     inst:AddComponent("inspectable")
 
@@ -234,13 +156,8 @@ local function fn()
     inst:AddComponent("lootdropper")
 
     inst:AddComponent("sleeper")
-    inst.components.sleeper.testperiod = 3
     inst.components.sleeper:SetWakeTest(Sleeper_WakeTest)
     inst.components.sleeper:SetSleepTest(Sleeper_SleepTest)
-    inst:ListenForEvent("gotosleep", Sleeper_OnSleep)
-    inst:ListenForEvent("onwakeup", Sleeper_OnWakeUp)
-
-    StartNextNapTimer(inst)
 
     inst:AddComponent("locomotor")
     inst.components.locomotor.runspeed = TUNING.WORMWOOD_PET_FRUITDRAGON_RUN_SPEED
@@ -260,12 +177,7 @@ local function fn()
     inst:AddComponent("follower")
     inst.no_spawn_fx = true
     inst.RemoveWormwoodPet = finish_transformed_life
-
-    inst.OnEntitySleep = OnEntitySleep
-    inst.OnEntityWake = OnEntityWake
-    if inst:IsAsleep() then
-        OnEntitySleep(inst)
-    end
+    inst.OnLoad = OnLoad
 
     return inst
 end

@@ -12,15 +12,31 @@ local function OnCooldown(inst)
     inst._cdtask = nil
 end
 
+local function DoThorns(inst, owner)
+    --V2C: tiny CD to limit chain reactions
+    inst._cdtask = inst:DoTaskInTime(.3, OnCooldown)
+
+    inst._hitcount = 0
+
+    SpawnPrefab("bramblefx_armor"):SetFXOwner(owner)
+
+    if owner.SoundEmitter ~= nil then
+        owner.SoundEmitter:PlaySound("dontstarve/common/together/armor/cactus")
+    end
+end
+
 local function OnBlocked(owner, data, inst)
     if inst._cdtask == nil and data ~= nil and not data.redirected then
-        --V2C: tiny CD to limit chain reactions
-        inst._cdtask = inst:DoTaskInTime(.3, OnCooldown)
+        DoThorns(inst, owner)
+    end
+end
 
-        SpawnPrefab("bramblefx_armor"):SetFXOwner(owner)
+local function OnAttackOther(owner, data, inst)
+    if inst._cdtask == nil and checknumber(inst._hitcount) then
+        inst._hitcount = inst._hitcount + 1
 
-        if owner.SoundEmitter ~= nil then
-            owner.SoundEmitter:PlaySound("dontstarve/common/together/armor/cactus")
+        if inst._hitcount >= TUNING.WORMWOOD_ARMOR_BRAMBLE_RELEASE_SPIKES_HITCOUNT then
+            DoThorns(inst, owner)
         end
     end
 end
@@ -36,6 +52,12 @@ local function onequip(inst, owner)
 
     inst:ListenForEvent("blocked", inst._onblocked, owner)
     inst:ListenForEvent("attacked", inst._onblocked, owner)
+
+    inst._hitcount = 0
+
+    if owner.components.skilltreeupdater ~= nil and owner.components.skilltreeupdater:IsActivated("wormwood_armor_bramble") then
+        inst:ListenForEvent("onattackother", inst._onattackother, owner)
+    end
 end
 
 local function onunequip(inst, owner)
@@ -43,6 +65,9 @@ local function onunequip(inst, owner)
 
     inst:RemoveEventCallback("blocked", inst._onblocked, owner)
     inst:RemoveEventCallback("attacked", inst._onblocked, owner)
+    inst:RemoveEventCallback("onattackother", inst._onattackother, owner)
+
+    inst._hitcount = nil
 
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
@@ -78,6 +103,8 @@ local function fn()
         return inst
     end
 
+    inst._hitcount = nil
+
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
 
@@ -99,7 +126,8 @@ local function fn()
 
     MakeHauntableLaunch(inst)
 
-    inst._onblocked = function(owner, data) OnBlocked(owner, data, inst) end
+    inst._onblocked      = function(owner, data)     OnBlocked(owner, data, inst) end
+    inst._onattackother  = function(owner, data) OnAttackOther(owner, data, inst) end
 
     return inst
 end

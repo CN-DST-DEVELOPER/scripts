@@ -18,6 +18,7 @@ local prefabs =
 	"armordreadstone_blueprint",
 	"dreadstonehat_blueprint",
 	"wall_dreadstone_item_blueprint",
+	"support_pillar_dreadstone_scaffold_blueprint",
 	"chesspiece_daywalker_sketch",
 }
 
@@ -38,6 +39,7 @@ SetSharedLootTable("daywalker",
 	{ "wall_dreadstone_item_blueprint", 1 },
 	{'chesspiece_daywalker_sketch', 1.00},
 })
+local BONUS_PILLAR_LOOT = { "support_pillar_dreadstone_scaffold_blueprint" }
 
 --------------------------------------------------------------------------
 
@@ -1096,6 +1098,13 @@ end
 
 --------------------------------------------------------------------------
 
+local function LootSetupFn(lootdropper)
+	lootdropper:SetLoot(lootdropper.inst.components.knownlocations:GetLocation("prison") == nil and BONUS_PILLAR_LOOT or nil)
+	lootdropper:SetChanceLootTable("daywalker")
+end
+
+--------------------------------------------------------------------------
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -1206,7 +1215,7 @@ local function fn()
 	inst.components.epicscare:SetRange(TUNING.DAYWALKER_EPICSCARE_RANGE)
 
 	inst:AddComponent("lootdropper")
-	inst.components.lootdropper:SetChanceLootTable("daywalker")
+	inst.components.lootdropper:SetLootSetupFn(LootSetupFn)
 	inst.components.lootdropper.min_speed = 1
 	inst.components.lootdropper.max_speed = 3
 	inst.components.lootdropper.y_speed = 14

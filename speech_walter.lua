@@ -4886,7 +4886,7 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "I bet there's some interesting secrets hiding under there!",
 		SUPPORT_PILLAR_DREADSTONE = "Don't worry Woby, I'm sure it'll be fine!",
 		SUPPORT_PILLAR_DREADSTONE_COMPLETE = "Absolutely indestructible!",
-		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How could it be so desctructible?",
+		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How could it be so destructible?",
 
         WOLFGANG_WHISTLE = "We're ready, coach! Right, Woby?",
     },
@@ -4905,7 +4905,6 @@ return{
     DESCRIBE_PLANTSTRESSORMOISTURE = "Do you think it needs some water, Woby?",
     DESCRIBE_PLANTSTRESSORNUTRIENTS = "Maybe it needs some better soil...",
     DESCRIBE_PLANTSTRESSORHAPPINESS = "I think it needs a story or two to cheer it up!",
-    DESCRIBE_PLANT_IDENTIFIED = "only_used_by_wormwood",
 
     EAT_FOOD =
     {

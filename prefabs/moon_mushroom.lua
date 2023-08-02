@@ -21,7 +21,7 @@ local cookedprefabs =
     "small_puff",
 }
 
-local function mooncap_oneaten_knockout(eater)
+local function mooncap_oneaten(inst, eater)
     if not (eater.components.freezable and eater.components.freezable:IsFrozen()) and
             not (eater.components.pinnable and eater.components.pinnable:IsStuck()) and
             not (eater.components.fossilizable and eater.components.fossilizable:IsFossilized()) then
@@ -40,25 +40,7 @@ local function mooncap_oneaten_knockout(eater)
         else
             eater:PushEvent("knockedout")
         end
-
-        return true
     end
-
-    return false
-end
-
-local function mooncap_oneaten_delayed(eater)
-    if mooncap_oneaten_knockout(eater) then
-        local eater_skilltreeupdater = eater.components.skilltreeupdater
-        if eater_skilltreeupdater and eater_skilltreeupdater:IsActivated("wormwood_moon_cap_eating") then
-            eater:PushEvent("mooncap_cloud")
-        end
-    end
-end
-
-local function mooncap_oneaten(inst, eater)
-    -- DoTaskInTime is to let the eat animation finish, since we don't have a callback for that.
-    eater:DoTaskInTime(0.5, mooncap_oneaten_delayed)
 end
 
 local function capfn()

@@ -248,60 +248,66 @@ local function DoAreaDrowsy(inst, sleeptimecache, sleepdelaycache)
         TheSim:FindEntities(x, y, z, range, nil, TARGET_PVP_CANT_TAGS, TARGET_PVP_ONEOF_TAGS) or
         TheSim:FindEntities(x, y, z, range, TARGET_MUST_TAGS, TARGET_CANT_TAGS)
     for i, v in ipairs(ents) do
-        local delayed = false
-        if (sleepdelaycache[v] or 0) > TICK_PERIOD then
-            if v.components.sleeper ~= nil then
-                if not v.components.sleeper:IsAsleep() then
-                    sleepdelaycache[v] = sleepdelaycache[v] - TICK_PERIOD
-                    delayed = true
-                end
-            elseif v.components.grogginess ~= nil
-                and not v.components.grogginess:IsKnockedOut() then
-                sleepdelaycache[v] = sleepdelaycache[v] - TICK_PERIOD
-                delayed = true
-            end
-        end
-        if not delayed and
-            not (v.components.combat ~= nil and v.components.combat:GetLastAttackedTime() + ATTACK_SLEEP_DELAY > t) and
-            not (v.components.burnable ~= nil and v.components.burnable:IsBurning()) and
-            not (v.components.freezable ~= nil and v.components.freezable:IsFrozen()) and
-            not (v.components.pinnable ~= nil and v.components.pinnable:IsStuck()) and
-            not (v.components.fossilizable ~= nil and v.components.fossilizable:IsFossilized()) then
-            local mount = v.components.rider ~= nil and v.components.rider:GetMount() or nil
-            if mount ~= nil then
-                mount:PushEvent("ridersleep", { sleepiness = TICK_VALUE, sleeptime = MAX_SLEEP_TIME })
-            end
-            if v.components.sleeper ~= nil then
-                local sleeptime = sleeptimecache[v] or MAX_SLEEP_TIME
-                v.components.sleeper:AddSleepiness(TICK_VALUE, sleeptime / v.components.sleeper:GetSleepTimeMultiplier())
-                if v.components.sleeper:IsAsleep() then
-                    sleeptimecache[v] = math.max(MIN_SLEEP_TIME, sleeptime - TICK_PERIOD)
-                    sleepdelaycache[v] = CHAIN_SLEEP_DELAY
-                else
-                    sleeptimecache[v] = nil
-                end
-            elseif v.components.grogginess ~= nil then
-                local sleeptime = sleeptimecache[v] or PLAYER_MAX_SLEEP_TIME
-                if v.components.grogginess:IsKnockedOut() then
-                    v.components.grogginess:ExtendKnockout(sleeptime)
-                    sleeptimecache[v] = math.max(PLAYER_MIN_SLEEP_TIME, sleeptime - TICK_PERIOD)
-                    sleepdelaycache[v] = CHAIN_SLEEP_DELAY
-                else
-                    v.components.grogginess:AddGrogginess(PLAYER_TICK_VALUE, sleeptime)
-                    if v.components.grogginess:IsKnockedOut() then
-                        sleeptimecache[v] = math.max(PLAYER_MIN_SLEEP_TIME, sleeptime - TICK_PERIOD)
-                        sleepdelaycache[v] = CHAIN_SLEEP_DELAY
-                    else
-                        sleeptimecache[v] = nil
-                    end
-                end
-            else
-                v:PushEvent("knockedout")
-            end
-        else
-            sleeptimecache[v] = nil
-        end
+		if v ~= inst.owner then
+			local delayed = false
+			if (sleepdelaycache[v] or 0) > TICK_PERIOD then
+				if v.components.sleeper ~= nil then
+					if not v.components.sleeper:IsAsleep() then
+						sleepdelaycache[v] = sleepdelaycache[v] - TICK_PERIOD
+						delayed = true
+					end
+				elseif v.components.grogginess ~= nil
+					and not v.components.grogginess:IsKnockedOut() then
+					sleepdelaycache[v] = sleepdelaycache[v] - TICK_PERIOD
+					delayed = true
+				end
+			end
+			if not delayed and
+				not (v.components.combat ~= nil and v.components.combat:GetLastAttackedTime() + ATTACK_SLEEP_DELAY > t) and
+				not (v.components.burnable ~= nil and v.components.burnable:IsBurning()) and
+				not (v.components.freezable ~= nil and v.components.freezable:IsFrozen()) and
+				not (v.components.pinnable ~= nil and v.components.pinnable:IsStuck()) and
+				not (v.components.fossilizable ~= nil and v.components.fossilizable:IsFossilized()) then
+				local mount = v.components.rider ~= nil and v.components.rider:GetMount() or nil
+				if mount ~= nil then
+					mount:PushEvent("ridersleep", { sleepiness = TICK_VALUE, sleeptime = MAX_SLEEP_TIME })
+				end
+				if v.components.sleeper ~= nil then
+					local sleeptime = sleeptimecache[v] or MAX_SLEEP_TIME
+					v.components.sleeper:AddSleepiness(TICK_VALUE, sleeptime / v.components.sleeper:GetSleepTimeMultiplier())
+					if v.components.sleeper:IsAsleep() then
+						sleeptimecache[v] = math.max(MIN_SLEEP_TIME, sleeptime - TICK_PERIOD)
+						sleepdelaycache[v] = CHAIN_SLEEP_DELAY
+					else
+						sleeptimecache[v] = nil
+					end
+				elseif v.components.grogginess ~= nil then
+					local sleeptime = sleeptimecache[v] or PLAYER_MAX_SLEEP_TIME
+					if v.components.grogginess:IsKnockedOut() then
+						v.components.grogginess:ExtendKnockout(sleeptime)
+						sleeptimecache[v] = math.max(PLAYER_MIN_SLEEP_TIME, sleeptime - TICK_PERIOD)
+						sleepdelaycache[v] = CHAIN_SLEEP_DELAY
+					else
+						v.components.grogginess:AddGrogginess(PLAYER_TICK_VALUE, sleeptime)
+						if v.components.grogginess:IsKnockedOut() then
+							sleeptimecache[v] = math.max(PLAYER_MIN_SLEEP_TIME, sleeptime - TICK_PERIOD)
+							sleepdelaycache[v] = CHAIN_SLEEP_DELAY
+						else
+							sleeptimecache[v] = nil
+						end
+					end
+				else
+					v:PushEvent("knockedout")
+				end
+			else
+				sleeptimecache[v] = nil
+			end
+		end
     end
+end
+
+local function SetOwner(inst, owner)
+	inst.owner = owner
 end
 
 local function fn()
@@ -345,6 +351,7 @@ local function fn()
 
     inst:ListenForEvent("timerdone", OnTimerDone)
 
+	inst.SetOwner = SetOwner
     inst.OnLoad = OnLoad
 
     inst._overlaytasks = {}

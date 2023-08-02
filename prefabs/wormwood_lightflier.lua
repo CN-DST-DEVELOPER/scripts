@@ -127,6 +127,7 @@ local function fn()
     inst:AddTag("NOBLOCK")
     inst:AddTag("notraptrigger")
     inst:AddTag("wormwood_pet")
+    inst:AddTag("noauradamage")
 
     MakeInventoryFloatable(inst)
 

@@ -33,7 +33,7 @@ local RUN_AWAY_PARAMS =
     tags = {"scarytoprey"},
     fn = function(guy)
         return not (guy.components.skilltreeupdater
-                and guy.components.skilltreeupdater:IsActivated("wormwood_butterfly_friend"))
+                and guy.components.skilltreeupdater:IsActivated("wormwood_bugs"))
     end,
 }
 

@@ -491,9 +491,6 @@ ACTIONS =
     -- WOODIE
     USE_WEREFORM_SKILL = Action({ rmb=true, distance=math.huge }),
 
-    -- WORMWOOD
-    IDENTIFY_PLANT = Action({priority=-1, rmb=true, mount_valid=true}),
-
     -- Rifts
     SCYTHE = Action({ rmb=true, distance=1.8, rangecheckfn=DefaultRangeCheck, invalid_hold_action=true }),
 	SITON = Action(),
@@ -4635,22 +4632,4 @@ end
 
 ACTIONS.USE_WEREFORM_SKILL.fn = function(act)
     return act.doer ~= nil and act.doer:UseWereFormSkill(act)
-end
-
-ACTIONS.IDENTIFY_PLANT.fn = function(act)
-    local target = act.target
-    if target then
-        local target_prefab = (target.BeIdentified and target:BeIdentified(act.doer))
-            or target.prefab
-
-        if target_prefab and act.doer then
-            local description = GetString(act.doer, "DESCRIBE_PLANT_IDENTIFIED")
-            if description and act.doer.components.talker then
-                description = subfmt(description, {plantname = STRINGS.NAMES[string.upper(target_prefab)]})
-                act.doer.components.talker:Say(description)
-            end
-        end
-        return true
-    end
-    return false
 end
