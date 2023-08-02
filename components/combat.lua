@@ -157,7 +157,9 @@ end
 
 local function OnBlankOutOver(inst, self)
     self.blanktask = nil
-    self.canattack = true
+    if inst:IsValid() then
+        self.canattack = true
+    end
 end
 
 function Combat:BlankOutAttacks(fortime)

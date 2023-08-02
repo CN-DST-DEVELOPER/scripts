@@ -165,7 +165,9 @@ local function fn()
 
     MakeHauntablePanic(inst)
 
-    inst:AddComponent("follower")
+    local follower = inst:AddComponent("follower")
+    follower:KeepLeaderOnAttacked()
+
     inst.no_spawn_fx = true
     inst.RemoveWormwoodPet = finish_transformed_life
 

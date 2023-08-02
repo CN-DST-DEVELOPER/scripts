@@ -729,8 +729,10 @@ end
 local function OnSaddleChanged(inst, data)
     if data.saddle ~= nil then
         inst:AddTag("companion")
+		inst:AddTag("notraptrigger")
     else
         inst:RemoveTag("companion")
+		inst:RemoveTag("notraptrigger")
     end
 end
 

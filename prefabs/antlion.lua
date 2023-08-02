@@ -113,7 +113,8 @@ local function AcceptTest(inst, item)
 end
 
 local function OnGivenItem(inst, giver, item)
-    if item.prefab == "heatrock" and item.currentTempRange ~= nil then
+    if item.currentTempRange ~= nil then
+        -- NOTES(JBK): currentTempRange is only on heatrock and now dumbbell_heat no need to check prefab here.
         local trigger =
             (item.currentTempRange <= 1 and "freeze") or
             (item.currentTempRange >= 4 and "burn") or

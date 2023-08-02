@@ -326,8 +326,8 @@ local function DoAOEeffect(inst)
 
     local reset_brambletraps, grow_in_daylight
     if skilltreeupdater ~= nil then
-        reset_brambletraps = skilltreeupdater:IsActivated("wormwood_blooming_farmrange3")
-        grow_in_daylight = skilltreeupdater:IsActivated("wormwood_blooming_petals")
+        reset_brambletraps = skilltreeupdater:IsActivated("wormwood_blooming_trapbramble")
+        grow_in_daylight = skilltreeupdater:IsActivated("wormwood_blooming_photosynthesis")
     end
 
     local interact_range_multiplier = (
@@ -668,7 +668,7 @@ end
 -- Also called from skilltree_wormwood.lua
 local function UpdatePhotosynthesisState(inst, isday)
     local should_photosynthesize = false
-    if isday and inst.fullbloom and inst.components.skilltreeupdater and inst.components.skilltreeupdater:IsActivated("wormwood_blooming_petals") and not inst:HasTag("playerghost") then
+    if isday and inst.fullbloom and inst.components.skilltreeupdater and inst.components.skilltreeupdater:IsActivated("wormwood_blooming_photosynthesis") and not inst:HasTag("playerghost") then
         should_photosynthesize = true
     end
     if should_photosynthesize ~= inst.photosynthesizing then

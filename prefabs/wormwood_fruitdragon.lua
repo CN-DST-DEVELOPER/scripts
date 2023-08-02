@@ -142,6 +142,7 @@ local function fn()
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.WORMWOOD_PET_FRUITDRAGON_HEALTH)
     inst.components.health.fire_damage_scale = 0
+    inst:ListenForEvent("healthdelta", OnHealthDelta)
 
     inst:AddComponent("combat")
     inst.components.combat:SetHurtSound("turnoftides/creatures/together/fruit_dragon/hit")
@@ -174,7 +175,9 @@ local function fn()
     timer:StartTimer("finish_transformed_life", TUNING.WORMWOOD_PET_FRUITDRAGON_LIFETIME)
     inst:ListenForEvent("timerdone", OnTimerDone)
     
-    inst:AddComponent("follower")
+    local follower = inst:AddComponent("follower")
+    follower:KeepLeaderOnAttacked()
+
     inst.no_spawn_fx = true
     inst.RemoveWormwoodPet = finish_transformed_life
     inst.OnLoad = OnLoad

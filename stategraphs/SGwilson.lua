@@ -15949,7 +15949,7 @@ local states =
         tags = { "doing", "busy", "nomorph", "self_fertilizing" },
 
         onenter = function(inst)
-            inst.sg.statemem.fast = inst.components.skilltreeupdater:IsActivated("wormwood_blooming_farmrange2")
+            inst.sg.statemem.fast = inst.components.skilltreeupdater:IsActivated("wormwood_quick_selffertilizer")
 
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("fertilize_pre")

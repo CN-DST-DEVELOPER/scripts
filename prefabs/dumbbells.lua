@@ -566,6 +566,9 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
             inst.components.finiteuses:SetMaxUses(TUNING.DUMBBELL_HEAT_MAX_USES)
             inst.components.finiteuses:SetUses(TUNING.DUMBBELL_HEAT_MAX_USES)
 
+            inst:AddComponent("tradable")
+            inst.components.tradable.rocktribute = 6
+
             inst:AddComponent("temperature")
             inst.components.temperature.current = TheWorld.state.temperature
             inst.components.temperature.inherentinsulation = TUNING.INSULATION_MED

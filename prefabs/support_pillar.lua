@@ -114,6 +114,11 @@ local function DoRegen(inst)
 		if oldsuffix ~= inst.suffix then
 			inst.AnimState:PlayAnimation("idle_repair"..inst.suffix)
 			inst.AnimState:PushAnimation("idle"..inst.suffix, false)
+			--In case we're interrupting something else (possible with LongUpdate)
+			if inst.suffix ~= "" then
+				inst.components.constructionsite:Enable()
+			end
+			inst.components.workable:SetWorkable(true)
 		end
 	end
 	--Remove sanity aura once we reach the reinforced portion
@@ -123,6 +128,32 @@ local function DoRegen(inst)
 	if inst.reinforced >= TUNING.SUPPORT_PILLAR_REINFORCED_LEVELS then
 		inst._regentask:Cancel()
 		inst._regentask = nil
+		inst.OnLongUpdate = nil
+	end
+end
+
+local function OnLongUpdateRegen(inst, dt)
+	if inst._regentask ~= nil then
+		local remaining = GetTaskRemaining(inst._regentask)
+		local timetonext = remaining
+		while dt > 0 do
+			if dt >= timetonext then
+				DoRegen(inst)
+				if inst._regentask == nil then
+					--Finished repairing
+					return
+				end
+				dt = dt - timetonext
+				timetonext = inst._regentask.period
+			else
+				timetonext = timetonext - dt
+				dt = 0
+			end
+		end
+		if timetonext ~= remaining then
+			inst._regentask:Cancel()
+			inst._regentask = inst:DoPeriodicTask(TUNING.SUPPORT_PILLAR_DREADSTONE_REGEN_PERIOD, DoRegen, timetonext)
+		end
 	end
 end
 
@@ -132,9 +163,11 @@ local function ToggleOrRestartRegen(inst, delay)
 		if inst._regentask ~= nil then
 			inst._regentask:Cancel()
 			inst._regentask = nil
+			inst.OnLongUpdate = nil
 		end
 		if inst.reinforced < TUNING.SUPPORT_PILLAR_REINFORCED_LEVELS and inst.suffix ~= "_4" then
 			inst._regentask = inst:DoPeriodicTask(TUNING.SUPPORT_PILLAR_DREADSTONE_REGEN_PERIOD, DoRegen, delay or TUNING.SUPPORT_PILLAR_DREADSTONE_REGEN_PERIOD + math.random())
+			inst.OnLongUpdate = OnLongUpdateRegen
 		end
 		--Sanity aura only when repairing the non-reinforced portion
 		if inst._regentask ~= nil and inst.suffix ~= "" then
@@ -369,7 +402,10 @@ local function OnConstructed(inst)
 		inst.AnimState:PushAnimation("idle"..inst.suffix, false)
 		if inst.suffix == "" then
 			inst.reinforced = TUNING.SUPPORT_PILLAR_REINFORCED_LEVELS
+		else --In case we're interrupting something else
+			inst.components.constructionsite:Enable()
 		end
+		inst.components.workable:SetWorkable(true)
 	end
 	ToggleOrRestartRegen(inst)
 end
