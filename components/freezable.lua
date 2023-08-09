@@ -23,7 +23,9 @@ end
 
 local function OnAttacked(inst, data)
     local self = inst.components.freezable
-    if self:IsFrozen() then
+	--IsValid check because other "attacked" handlers may have removed us
+	--NOTE: see how EntityScript:PushEvent caches all listeners; that is why an invalid entity could still reach this event listener
+	if self:IsFrozen() and inst:IsValid() then
         self.damagetotal = self.damagetotal + math.abs(data.damage)
         if self.damagetotal >= self.damagetobreak then
             self:Unfreeze()

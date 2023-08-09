@@ -347,13 +347,15 @@ function MermKingManager:LoadPostPass(newents, savedata)
 		TheWorld:PushEvent("onmermkingcreated", {king = self.king, throne = self:GetMainThrone()})
 	end
 
-	if savedata.candidate_transforming then
+	if savedata.candidate_transforming and newents[savedata.candidate_transforming] ~= nil then
 		self.candidate_transforming = newents[savedata.candidate_transforming].entity
 	end
 
 	if savedata.thrones then
 		for i,v in ipairs(savedata.thrones) do
-			table.insert(self.thrones, newents[v].entity)
+            if newents[v] ~= nil then
+                table.insert(self.thrones, newents[v].entity)
+            end
 		end
 	end
 

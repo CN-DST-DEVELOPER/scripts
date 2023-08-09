@@ -252,7 +252,7 @@ end
 function d_resetskilltree()
     local player = ConsoleCommandPlayer()
 
-    if not player then
+    if not (player and TheWorld.ismastersim) then
         return
     end
 

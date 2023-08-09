@@ -321,12 +321,13 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-1},
             group = "allegiance",
             tags = {"allegiance","lock"},
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end
-                    return TheGenericKV:GetKV("fuelweaver_killed") == "1"
-                end,
+            lock_open = function(prefabname, activatedskills, readonly) 
+                if readonly then
+                    return "question"
+                end
+
+                return TheGenericKV:GetKV("fuelweaver_killed") == "1"
+            end,
             root = true,
             connects = {
                 "wolfgang_allegiance_shadow_1",
@@ -339,12 +340,13 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-1},
             group = "allegiance",
             tags = {"allegiance","lock"},
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end 
-                    return TheGenericKV:GetKV("celestialchampion_killed") == "1"
-                end,
+            lock_open = function(prefabname, activatedskills, readonly) 
+                if readonly then
+                    return "question"
+                end
+
+                return TheGenericKV:GetKV("celestialchampion_killed") == "1"
+            end,
             root = true,
             connects = {
                 "wolfgang_allegiance_lunar_1",
@@ -358,16 +360,13 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end
-                    if SkillTreeFns.CountTags(prefabname, "lunar_favor", skillselection) > 0 then
-                        return nil
-                    else 
-                        return true
-                    end
-                end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                if SkillTreeFns.CountTags(prefabname, "lunar_favor", activatedskills) == 0 then
+                    return true
+                end
+
+                return nil -- Important to return nil and not false.
+            end,
             connects = {
                 "wolfgang_allegiance_shadow_1",
             },
@@ -379,16 +378,14 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-1},
             group = "allegiance",
             tags = {"allegiance","lock"},
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end
-                    if SkillTreeFns.CountTags(prefabname, "shadow_favor", skillselection) > 0 then                    
-                        return nil
-                    else 
-                        return true
-                    end
-                end,
+            root = true,
+            lock_open = function(prefabname, activatedskills, readonly)
+                if SkillTreeFns.CountTags(prefabname, "shadow_favor", activatedskills) == 0 then
+                    return true
+                end
+
+                return nil -- Important to return nil and not false.
+            end,
             connects = {
                 "wolfgang_allegiance_lunar_1",
             },

@@ -984,7 +984,10 @@ local RPC_HANDLERS =
             if isunlocked then
                 skilltreeupdater:ActivateSkill(skill, nil, true)
             else
-                skilltreeupdater:DeactivateSkill(skill, nil, true)
+                -- NOTES(JBK): If design changes this should be uncommented for now respec only happens during player selection screens or when we redefine the skill tree.
+                --skilltreeupdater:DeactivateSkill(skill, nil, true)
+                -- Clients manually sending this in with the console will now be in a desync state with their UI.
+                -- Similar actions like removing entities locally we can not protect against console use for all cases.
             end
         end
     end,

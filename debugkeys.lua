@@ -918,7 +918,7 @@ AddGlobalDebugKey(KEY_LEFTBRACKET, function()
     elseif TheInput:IsKeyDown(KEY_SHIFT) then
         TheSim:SetTimeScale(0)
     elseif TheInput:IsKeyDown(KEY_ALT) then
-        if ThePlayer then
+        if ThePlayer and TheWorld.ismastersim then
             local skilltreeupdater = ThePlayer.components.skilltreeupdater
             local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS[ThePlayer.prefab]
             if skilldefs then

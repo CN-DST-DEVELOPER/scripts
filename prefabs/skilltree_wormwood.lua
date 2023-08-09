@@ -200,8 +200,9 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {UI_RIGHT - 3.5, UI_TOP - 12},
             group = "allegiance2",
             tags = {"allegiance", "lock"},
-            lock_open = function(prefabname, skillselection)
-                return SkillTreeFns.CountTags(prefabname, "blooming", skillselection) >= 5
+            locks = {"wormwood_allegiance_lock_lunar_2"},
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountTags(prefabname, "blooming", activatedskills) >= 5
             end,
         },
 
@@ -448,8 +449,9 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {UI_LEFT + 13, UI_BOTTOM + 140},
             group = "allegiance1",
             tags = {"allegiance", "lock"},
-            lock_open = function(prefabname, skillselection)
-                return SkillTreeFns.CountTags(prefabname, "crafting", skillselection) >= 5
+            locks = {"wormwood_allegiance_lock_lunar_1"},
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountTags(prefabname, "crafting", activatedskills) >= 5
             end,
         },
         wormwood_allegiance_lunar_mutations_1 = {

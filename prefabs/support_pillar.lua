@@ -186,7 +186,7 @@ local function DoQuake(inst)
 	inst._quaketask = nil
 	inst.components.constructionsite:Disable()
 	local oldsuffix = inst.suffix
-	if Decrement(inst, nil) then
+	if Decrement(inst, nil, 1) then
 		ToggleOrRestartRegen(inst)
 	end
 	if inst.AnimState:IsCurrentAnimation("collapse") then
@@ -287,24 +287,33 @@ Increment = function(inst)
 end
 
 --forward declared
-Decrement = function(inst, worker)
-	if inst.reinforced > 0 then
+Decrement = function(inst, worker, numworks)
+	local crit = numworks >= 1000
+	if crit then
+		inst.reinforced = 0
+	elseif inst.reinforced > 0 then
 		inst.reinforced = inst.reinforced - 1
 		return true
 	end
 	local material = GetMaterial(inst.prefab)
-	if inst.components.constructionsite:RemoveMaterial(material, 1) > 0 then
+	numworks = inst.components.constructionsite:RemoveMaterial(material, crit and inst.components.constructionsite:GetMaterialCount(material) or 1)
+	if numworks > 0 then
 		local oldsuffix = inst.suffix
 		UpdateLevel(inst)
-		if material ~= "dreadstone" and (oldsuffix ~= inst.suffix or math.random() < 0.3) then
+		if material ~= "dreadstone" then
+			local numguaranteed = oldsuffix ~= inst.suffix and 1 or 0
+			numworks = math.floor((numworks - numguaranteed) * math.random() * 0.3) + numguaranteed
+			--# of material loot to drop
 			if worker ~= nil and worker.components.locomotor ~= nil then
 				inst.components.lootdropper:SetFlingTarget(worker:GetPosition(), 45)
 			else
 				inst.components.lootdropper:SetFlingTarget(nil, nil)
 			end
-			local loot = inst.components.lootdropper:SpawnLootPrefab(material)
-			local x, y, z = loot.Transform:GetWorldPosition()
-			loot.Physics:Teleport(x, 2 + math.random(), z)
+			for i = 1, numworks do
+				local loot = inst.components.lootdropper:SpawnLootPrefab(material)
+				local x, y, z = loot.Transform:GetWorldPosition()
+				loot.Physics:Teleport(x, 2 + math.random(), z)
+			end
 		end
 		return true
 	end
@@ -340,7 +349,7 @@ local function onhit(inst, worker, workleft, numworks)
 	end
 	inst.components.constructionsite:ForceStopConstruction()
 	local oldsuffix = inst.suffix
-	if Decrement(inst, worker) then
+	if Decrement(inst, worker, numworks) then
 		inst.components.workable:SetWorkLeft(5)
 		ToggleOrRestartRegen(inst)
 	end
@@ -356,7 +365,7 @@ local function onhit(inst, worker, workleft, numworks)
 			PushDebrisFX(inst, DEBRIS_FX.HIT)
 		end
 	elseif oldsuffix ~= "_4" then
-		inst.AnimState:PlayAnimation("idle_hit"..oldsuffix)
+		inst.AnimState:PlayAnimation("idle_hit_3")
 		if inst.suffix ~= oldsuffix then
 			PushDebrisFX(inst, DEBRIS_FX.HIT)
 		end
@@ -475,6 +484,7 @@ local function MakePillar(name, bank, build)
 		inst.MiniMapEntity:SetIcon(name..".png")
 
 		MakeObstaclePhysics(inst, PHYSICS_RADIUS, 6)
+        inst.Physics:SetDontRemoveOnSleep(true)
 
 		inst:SetDeployExtraSpacing(DEPLOY_EXTRA_SPACING)
 
@@ -640,6 +650,7 @@ local function MakeScaffold(name, bank, build)
 		inst.MiniMapEntity:SetIcon(basename..".png")
 
 		MakeObstaclePhysics(inst, PHYSICS_RADIUS, 6)
+        inst.Physics:SetDontRemoveOnSleep(true)
 
 		inst:SetDeployExtraSpacing(DEPLOY_EXTRA_SPACING)
 

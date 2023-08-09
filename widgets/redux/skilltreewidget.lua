@@ -130,24 +130,20 @@ end
 
 function SkillTreeWidget:SpawnFavorOverlay(pre)
     if not self.fromfrontend and (self.midlay ~= nil and self.midlay.splash == nil) then
-        local favor = nil
+        local favor, activatedskills, characterprefab
         if self.readonly then
-            local skillselection = TheSkillTree:GetNamesFromSkillSelection(self.targetdata.skillselection, self.targetdata.prefab)
-            if skilltreedefs.FN.CountTags(self.targetdata.prefab, "shadow_favor", skillselection) then -- skillselection["wilson_allegiance_shadow"]
-                favor = "skills_shadow"
-            elseif skilltreedefs.FN.CountTags(self.targetdata.prefab, "lunar_favor", skillselection) then -- skillselection["wilson_allegiance_lunar"]
-                favor = "skills_lunar"
-            end
+            characterprefab = self.targetdata.prefab
+            activatedskills = TheSkillTree:GetNamesFromSkillSelection(self.targetdata.skillselection, characterprefab)
         else
+            characterprefab = self.target
+            -- NOTES(JBK): This is not readonly so the player accessing it has access to its state and it is safe to assume TheSkillTree here.
+            activatedskills = TheSkillTree:GetActivatedSkills(characterprefab)
+        end
 
-            local skilltreeupdater = ThePlayer and ThePlayer.components.skilltreeupdater or nil
-            if skilltreeupdater then
-                if skilltreedefs.FN.CountTags(self.targetdata.prefab, "shadow_favor") > 0 then   -- skilltreeupdater:IsActivated("wilson_allegiance_shadow")
-                    favor = "skills_shadow"
-                elseif skilltreedefs.FN.CountTags(self.targetdata.prefab, "lunar_favor") > 0 then -- skilltreeupdater:IsActivated("wilson_allegiance_lunar")
-                    favor = "skills_lunar"
-                end
-            end
+        if skilltreedefs.FN.CountTags(characterprefab, "shadow_favor", activatedskills) > 0 then
+            favor = "skills_shadow"
+        elseif skilltreedefs.FN.CountTags(characterprefab, "lunar_favor", activatedskills) > 0 then
+            favor = "skills_lunar"
         end
 
         if favor then

@@ -325,7 +325,7 @@ function getdesc(skill, prefabname)
 end
 
 function SkillTreeBuilder:RefreshTree()
-    local characterprefab, availableskillpoints, skillselection, skilltreeupdater
+    local characterprefab, availableskillpoints, activatedskills, skilltreeupdater
     local frontend = self.fromfrontend
     local readonly = self.readonly
 
@@ -334,7 +334,7 @@ function SkillTreeBuilder:RefreshTree()
         self.root.xp:Hide()
 
         characterprefab = self.targetdata.prefab
-        skillselection = TheSkillTree:GetNamesFromSkillSelection(self.targetdata.skillselection, characterprefab)
+        activatedskills = TheSkillTree:GetNamesFromSkillSelection(self.targetdata.skillselection, characterprefab)
         availableskillpoints = 0
     else
     	characterprefab = self.target
@@ -348,10 +348,13 @@ function SkillTreeBuilder:RefreshTree()
     	end
 
         if skilltreeupdater == nil then
+            print("Weird state for skilltreebuilder missing skilltreeupdater component?")
             return -- FIXME(JBK): See if this panel should disappear at this time?
         end
 
         availableskillpoints = skilltreeupdater:GetAvailableSkillPoints(characterprefab)
+        -- NOTES(JBK): This is not readonly so the player accessing it has access to its state and it is safe to assume TheSkillTree here.
+        activatedskills = TheSkillTree:GetActivatedSkills(characterprefab)
     end
     
 	local function make_connected_clickable(skill)
@@ -378,13 +381,13 @@ function SkillTreeBuilder:RefreshTree()
 
 	for skill,graphics in pairs(self.skillgraphics) do
         if readonly then
-            if skillselection[skill] then
+            if activatedskills[skill] then
                 graphics.status.activated = true
                 --make_connected_clickable(skill)
             end
             if self.skilltreedef[skill].lock_open then
             	graphics.status.lock = true
-            	local lockstatus = self.skilltreedef[skill].lock_open(self.target, skillselection)
+            	local lockstatus = self.skilltreedef[skill].lock_open(characterprefab, activatedskills, readonly)
 				graphics.status.lock_open = lockstatus
 				
 			end
@@ -392,7 +395,7 @@ function SkillTreeBuilder:RefreshTree()
         	if self.skilltreedef[skill].lock_open then
         		-- MARK LOCKS and ACTIVATE CONNECTED ITEMS WHEN NOT LOCKED
 				graphics.status.lock = true
-				if self.skilltreedef[skill].lock_open(self.target) then
+				if self.skilltreedef[skill].lock_open(characterprefab, activatedskills, readonly) then
 					graphics.status.lock_open = true
 					make_connected_clickable(skill)
 				end
@@ -497,7 +500,7 @@ function SkillTreeBuilder:RefreshTree()
 		self.infopanel.respec_button:Hide()
 
 		if self.fromfrontend then
-            if skilltreedefs.FN.CountSkills(self.target) > 0 then
+            if skilltreedefs.FN.CountSkills(self.target, activatedskills) > 0 then
                 self.infopanel.respec_button:Show()
             end
             if self.sync_status then

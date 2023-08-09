@@ -24,6 +24,7 @@ local PlayerInspectable = Class(function(self, inst)
     inst:ListenForEvent("unequip", OnUnequip)
     inst:ListenForEvent("onactivateskill_server", OnSkillSelectionUpdated)
     inst:ListenForEvent("ondeactivateskill_server", OnSkillSelectionUpdated)
+    inst:ListenForEvent("onsetskillselection_server", OnSkillSelectionUpdated)
 end)
 
 return PlayerInspectable

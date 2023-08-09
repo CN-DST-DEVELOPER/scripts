@@ -1500,7 +1500,7 @@ local function OnForceTransform(inst, weremode)
 
     inst.components.wereness:SetWereMode(WEREMODE_NAMES[weremode])
     inst.components.wereness:SetPercent(1, true)
-    inst.components.wereness:StartDraining()
+    -- NOTES(JBK): Do not call StartDraining here it is handled by the stategraph callback.
 end
 
 --------------------------------------------------------------------------

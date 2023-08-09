@@ -70,8 +70,6 @@ local function BuildSkillsData(SkillTreeFns)
             onactivate = function(inst, fromload)
                     inst:AddTag("gem_alchemistIII")
                 end,
-            connects = {
-            },
         },
 
         wilson_alchemy_3 = {
@@ -114,9 +112,7 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"alchemy"},
             onactivate = function(inst, fromload)
                     inst:AddTag("ore_alchemistIII")
-                end,         
-            connects = {
-            },
+                end,
         },
 
         wilson_alchemy_4 = {
@@ -159,9 +155,7 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"alchemy"},
             onactivate = function(inst, fromload)
                     inst:AddTag("ick_alchemistIII")
-                end,        
-            connects = {
-            },
+                end,
         },
 
         wilson_torch_1 = {
@@ -221,8 +215,6 @@ local function BuildSkillsData(SkillTreeFns)
                         end
                     end
                 end,
-            connects = {
-            },
         },
         wilson_torch_4 = {
             title = STRINGS.SKILLTREE.WILSON.WILSON_TORCH_4_TITLE,
@@ -280,9 +272,7 @@ local function BuildSkillsData(SkillTreeFns)
                             equipped:applyskilleffect("wilson_torch_5", inst)
                         end
                     end
-                end,        
-            connects = {
-            },
+                end,
         }, 
 
         wilson_torch_lock_1 = {
@@ -292,7 +282,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "torch",
             tags = {"torch","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) return SkillTreeFns.CountTags(prefabname,"torch", skillselection) > 2 end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountTags(prefabname, "torch", activatedskills) > 2
+            end,
             connects = {
                 "wilson_torch_7",
             },
@@ -305,8 +297,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {2,-1},
             group = "torch",
             tags = {"torch"},
-            connects = {
-            },
         },    
 
         wilson_beard_1 = {
@@ -342,8 +332,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-2},
             group = "beard",
             tags = {"beard"},
-            connects = {
-            },
         },
 
         wilson_beard_4 = {
@@ -379,8 +367,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {1,-2},
             group = "beard",
             tags = {"beard"},
-            connects = {
-            },
         },
 
         wilson_beard_lock_1 = {
@@ -390,7 +376,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "beard",
             tags = {"beard","lock"},
             root = true,
-            lock_open = function(prefabname,skillselection) return SkillTreeFns.CountTags(prefabname,"beard", skillselection) > 2 end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountTags(prefabname, "beard", activatedskills) > 2
+            end,
             connects = {
                 "wilson_beard_7",
             },
@@ -408,8 +396,6 @@ local function BuildSkillsData(SkillTreeFns)
                 end,
             group = "beard",
             tags = {"beard"},
-            connects = {
-            },
         },
 
         wilson_allegiance_lock_1 = {
@@ -419,7 +405,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) return SkillTreeFns.CountSkills(prefabname, skillselection) >= 12 end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountSkills(prefabname, activatedskills) >= 12
+            end,
             connects = {
                 "wilson_allegiance_shadow",
             },
@@ -432,12 +420,13 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end
-                    return TheGenericKV:GetKV("fuelweaver_killed") == "1"
-                end,
+            lock_open = function(prefabname, activatedskills, readonly) 
+                if readonly then
+                    return "question"
+                end
+
+                return TheGenericKV:GetKV("fuelweaver_killed") == "1"
+            end,
             connects = {
                 "wilson_allegiance_shadow",
             },
@@ -450,16 +439,13 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end
-                    if SkillTreeFns.CountTags(prefabname, "lunar_favor", skillselection) > 0 then
-                        return nil
-                    else
-                        return true
-                    end 
-                end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                if SkillTreeFns.CountTags(prefabname, "lunar_favor", activatedskills) == 0 then
+                    return true
+                end
+    
+                return nil -- Important to return nil and not false.
+            end,
             connects = {
                 "wilson_allegiance_shadow",
             },
@@ -498,8 +484,6 @@ local function BuildSkillsData(SkillTreeFns)
                     damagetypebonus:RemoveBonus("lunar_aligned", inst, "wilson_allegiance_shadow")
                 end
             end,
-            connects = {
-            },
         },  
 
         wilson_allegiance_lock_3 = {
@@ -509,12 +493,13 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end 
-                    return TheGenericKV:GetKV("celestialchampion_killed") == "1"
-                end,
+            lock_open = function(prefabname, activatedskills, readonly) 
+                if readonly then
+                    return "question"
+                end
+
+                return TheGenericKV:GetKV("celestialchampion_killed") == "1"
+            end,
             connects = {
                 "wilson_allegiance_lunar",
             },
@@ -527,16 +512,13 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) 
-                    if skillselection then
-                        return "question"
-                    end
-                    if SkillTreeFns.CountTags(prefabname, "shadow_favor", skillselection) > 0 then
-                        return nil
-                    else 
-                        return true
-                    end
-                end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                if SkillTreeFns.CountTags(prefabname, "shadow_favor", activatedskills) == 0 then
+                    return true
+                end
+    
+                return nil -- Important to return nil and not false.
+            end,
             connects = {
                 "wilson_allegiance_lunar",
             },
@@ -575,8 +557,6 @@ local function BuildSkillsData(SkillTreeFns)
                     damagetypebonus:RemoveBonus("shadow_aligned", inst, "wilson_allegiance_lunar")
                 end
             end,
-            connects = {
-            },
         },
     }
 

@@ -2,24 +2,63 @@ local SKILLTREE_DEFS = {}
 local SKILLTREE_METAINFO = {}
 
 -- Wrapper function to help modders with their strange prefab names and tree validation process.
+local function PrintFixMe(error_message)
+    print(string.format("\n\nFIXME: %s\n\n", error_message))
+end
 local function CreateSkillTreeFor(characterprefab, skills)
     local RPC_LOOKUP = {}
     local rpc_id = 0
-    for k, v in orderedPairs(skills) do
-        if v.lock_open == nil then -- NOTES(JBK): Only include skills for this.
-            v.rpc_id = rpc_id
-            RPC_LOOKUP[rpc_id] = k
+    for skill_name, skill in orderedPairs(skills) do
+        if skill.lock_open == nil then -- NOTES(JBK): Only include skills for this.
+            skill.rpc_id = rpc_id
+            RPC_LOOKUP[rpc_id] = skill_name
             rpc_id = rpc_id + 1
+            -- NOTES(JBK): [Searchable "SN_SKILLSELECTION"] The engine will only use the first slot for a maximum of 32 skills at this time. Adding more data will not be shown to other players.
             if rpc_id >= 32 then
                 -- NOTES(JBK): If this goes beyond 32 it will not be shown to other players in the inspection panel.
                 -- It will not be networked during initial skill selection.
-                local err = string.format("Skill Tree for %s has TOO MANY skills! This will break networking.", characterprefab)
-                if BRANCH == "dev" then
-                    assert(false, err)
-                else
-                    print(err)
+                PrintFixMe(string.format("Skill Tree for %s has TOO MANY skills! This will break networking.", characterprefab))
+            end
+        end
+        if skill.connects then -- NOTES(JBK): These skills unlock as an 'or' gate.
+            if skill.connects[1] == nil then
+                PrintFixMe(string.format("Skill Tree for %s [skill %s] has NO connections! Remove this or add a connection.", characterprefab, skill_name))
+            end
+            for _, next_skill_name in ipairs(skill.connects) do
+                local next_skill = skills[next_skill_name]
+                if next_skill == nil then
+                    PrintFixMe(string.format("Skill Tree for %s [skill %s] has a bad 'connects' to unknown skill %s! Remove this or add a good connection.", characterprefab, skill_name, next_skill_name))
+                end
+                local must_have_one_of = next_skill.must_have_one_of or {}
+                next_skill.must_have_one_of = must_have_one_of
+                must_have_one_of[skill_name] = true
+                if next_skill.root then
+                    PrintFixMe(string.format("Skill Tree for %s [skill %s] has a bad 'root'! Remove 'root' because %s 'connects' to it.", characterprefab, next_skill_name, skill_name))
                 end
             end
+        end
+        if skill.locks then -- NOTES(JBK): These skills unlock as an 'and' gate.
+            if skill.locks[1] == nil then
+                PrintFixMe(string.format("Skill Tree for %s [skill %s] has NO locks! Remove 'locks' table or add lock requirements.", characterprefab, skill_name))
+            end
+            for _, lock_name in ipairs(skill.locks) do
+                local lock = skills[lock_name]
+                if lock == nil then
+                    PrintFixMe(string.format("Skill Tree for %s [skill %s] has a bad 'locks' name %s!", characterprefab, skill_name, lock_name))
+                end
+                local must_have_all_of = skill.must_have_all_of or {}
+                skill.must_have_all_of = must_have_all_of
+                must_have_all_of[lock_name] = true
+                if skill.root then
+                    PrintFixMe(string.format("Skill Tree for %s [skill %s] has a bad 'root'! Remove 'root' because %s 'locks' to it.", characterprefab, skill_name, lock_name))
+                end
+            end
+        end
+    end
+    for skill_name, skill in pairs(skills) do
+        if not (skill.root or skill.must_have_one_of or skill.must_have_all_of) then
+            -- NOTES(JBK): Floating skills are not going to be able to be properly validated because they are out of the tree ordering.
+            PrintFixMe(string.format("Skill Tree for %s [skill %s] is FLOATING! Connect the skill as either a 'root' or a connection from 'connects'.", characterprefab, skill_name))
         end
     end
     SKILLTREE_METAINFO[characterprefab] = { -- Must be first for metatable setting.
@@ -29,14 +68,13 @@ local function CreateSkillTreeFor(characterprefab, skills)
     SKILLTREE_DEFS[characterprefab] = skills
 end
 
-local function CountTags(prefab, targettag, skillselection)
-    local dataset = skillselection or TheSkillTree.activatedskills[prefab]
-    if not dataset then
+local function CountTags(prefab, targettag, activatedskills) -- NOTES(JBK): This function is ran on both server and client do not use TheSkillTree inside here.
+    if not activatedskills then
         return 0
     end
 
     local tag_count = 0
-    for skill in pairs(dataset) do
+    for skill in pairs(activatedskills) do
         local data = SKILLTREE_DEFS[prefab][skill]
         if data then
             for _, tag in ipairs(data.tags) do
@@ -49,9 +87,12 @@ local function CountTags(prefab, targettag, skillselection)
     return tag_count
 end
 
-local function CountSkills(prefab, skillselection)
-    local dataset = skillselection or TheSkillTree.activatedskills[prefab]
-    return (dataset and GetTableSize(dataset)) or 0
+local function CountSkills(prefab, activatedskills) -- NOTES(JBK): This function is ran on both server and client do not use TheSkillTree inside here.
+    if not activatedskills then
+        return 0
+    end
+
+    return GetTableSize(activatedskills)
 end
 
 ----------------------------------------------------------------------------------------------------------------------------
@@ -75,9 +116,12 @@ local function MakeFuelWeaverLock(extra_data, not_root)
         root = not not_root,
         group = "allegiance",
         tags = {"allegiance", "lock"},
-        lock_open = function(prefabname, skillselection)
-            return (skillselection ~= nil and "question")
-                or (TheGenericKV:GetKV("fuelweaver_killed") == "1")
+        lock_open = function(prefabname, activatedskills, readonly)
+            if readonly then
+                return "question"
+            end
+
+            return TheGenericKV:GetKV("fuelweaver_killed") == "1"
         end,
     }
 
@@ -96,10 +140,12 @@ local function MakeNoShadowLock(extra_data, not_root)
         root = not not_root,
         group = "allegiance",
         tags = {"allegiance", "lock"},
-        lock_open = function(prefabname, skillselection)
-            return (skillselection ~= nil and "question")
-                or (CountTags(prefabname, "shadow_favor", skillselection) == 0 and true)
-                or nil -- It's important that we return nil instead of false
+        lock_open = function(prefabname, activatedskills, readonly)
+            if CountTags(prefabname, "shadow_favor", activatedskills) == 0 then
+                return true
+            end
+
+            return nil -- Important to return nil and not false.
         end,
     }
 
@@ -118,9 +164,12 @@ local function MakeCelestialChampionLock(extra_data, not_root)
         root = not not_root,
         group = "allegiance",
         tags = {"allegiance", "lock"},
-        lock_open = function(prefabname, skillselection)
-            return (skillselection ~= nil and "question")
-                or (TheGenericKV:GetKV("celestialchampion_killed") == "1")
+        lock_open = function(prefabname, activatedskills, readonly)
+            if readonly then
+                return "question"
+            end
+
+            return TheGenericKV:GetKV("celestialchampion_killed") == "1"
         end,
     }
 
@@ -139,10 +188,12 @@ local function MakeNoLunarLock(extra_data, not_root)
         root = not not_root,
         group = "allegiance",
         tags = {"allegiance", "lock"},
-        lock_open = function(prefabname, skillselection)
-            return (skillselection ~= nil and "question")
-                or (CountTags(prefabname, "lunar_favor", skillselection) == 0 and true)
-                or nil -- It's important that we return nil instead of false
+        lock_open = function(prefabname, activatedskills, readonly)
+            if CountTags(prefabname, "lunar_favor", activatedskills) == 0 then
+                return true
+            end
+
+            return nil -- Important to return nil and not false.
         end,
     }
 

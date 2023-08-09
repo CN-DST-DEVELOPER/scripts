@@ -1178,14 +1178,14 @@ local function DoToolWork(act, workaction)
 
 		local numworks =
 			(	(	act.invobject ~= nil and
-				act.invobject.components.tool ~= nil and
-				act.invobject.components.tool:GetEffectiveness(workaction)
-			) or
-			(	act.doer ~= nil and
-				act.doer.components.worker ~= nil and
-				act.doer.components.worker:GetEffectiveness(workaction)
-			) or
-			1
+					act.invobject.components.tool ~= nil and
+					act.invobject.components.tool:GetEffectiveness(workaction)
+				) or
+				(	act.doer ~= nil and
+					act.doer.components.worker ~= nil and
+					act.doer.components.worker:GetEffectiveness(workaction)
+				) or
+				1
 			) *
 			(	act.doer.components.workmultiplier ~= nil and
 				act.doer.components.workmultiplier:GetMultiplier(workaction) or
@@ -1194,6 +1194,11 @@ local function DoToolWork(act, workaction)
 
 		local recoil
 		recoil, numworks = act.target.components.workable:ShouldRecoil(act.doer, act.invobject, numworks)
+
+		if act.doer.components.workmultiplier ~= nil then
+			numworks = act.doer.components.workmultiplier:ResolveSpecialWorkAmount(workaction, act.target, act.invobject, numworks, recoil)
+		end
+
 		if recoil and act.doer.sg ~= nil and act.doer.sg.statemem.recoilstate ~= nil then
 			act.doer.sg:GoToState(act.doer.sg.statemem.recoilstate, { target = act.target })
 			if numworks == 0 then

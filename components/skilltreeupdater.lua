@@ -48,10 +48,12 @@ function SkillTreeUpdater:GetNamesFromSkillSelection(skillselection) -- NOTES(JB
     return self.skilltree:GetNamesFromSkillSelection(skillselection, self.inst.prefab)
 end
 
-function SkillTreeUpdater:CountSkillTag(tag)
-    local characterprefab = self.inst.prefab
+function SkillTreeUpdater:GetActivatedSkills() -- NOTES(JBK): Gets the skill name key table for all currently activated skills.
+    return self.skilltree:GetActivatedSkills(self.inst.prefab)
+end
 
-    return skilltreedefs.FN.CountTags(characterprefab, tag, self.skilltree.activatedskills[characterprefab])
+function SkillTreeUpdater:CountSkillTag(tag)
+    return skilltreedefs.FN.CountTags(self.inst.prefab, tag, self:GetActivatedSkills())
 end
 
 function SkillTreeUpdater:HasSkillTag(tag)
@@ -59,17 +61,12 @@ function SkillTreeUpdater:HasSkillTag(tag)
 end
 
 
-function SkillTreeUpdater:ActivateSkill_Client(skill, unlocks) -- NOTES(JBK): Use ActivateSkill instead.
+function SkillTreeUpdater:ActivateSkill_Client(skill) -- NOTES(JBK): Use ActivateSkill instead.
     local characterprefab = ThePlayer.prefab
     --print("[STUpdater] ActivateSkill CLIENT", characterprefab, skill)
     ThePlayer:PushEvent("onactivateskill_client", {skill = skill,})
-    if unlocks ~= nil then
-        for _, v in ipairs(unlocks) do
-            ThePlayer:PushEvent("onunlockskill_client", {skill = v,})
-        end
-    end
 end
-function SkillTreeUpdater:ActivateSkill_Server(skill, unlocks) -- NOTES(JBK): Use ActivateSkill instead.
+function SkillTreeUpdater:ActivateSkill_Server(skill) -- NOTES(JBK): Use ActivateSkill instead.
     local characterprefab = self.inst.prefab
     --print("[STUpdater] ActivateSkill SERVER", characterprefab, skill)
     local onactivate = skilltreedefs.SKILLTREE_DEFS[characterprefab][skill].onactivate
@@ -83,7 +80,7 @@ function SkillTreeUpdater:ActivateSkill(skill, prefab, fromrpc)
     -- should ignore the prefab paramater as that's just used skilltreedata at frontend
     local characterprefab = self.inst.prefab
     if characterprefab and skill then
-        local updated, unlocks = self.skilltree:ActivateSkill(skill, characterprefab)
+        local updated = self.skilltree:ActivateSkill(skill, characterprefab)
         if self.silent then
             return
         end
@@ -91,16 +88,16 @@ function SkillTreeUpdater:ActivateSkill(skill, prefab, fromrpc)
         if updated then
             if TheWorld.ismastersim then
                 if self.inst.userid and (TheNet:IsDedicated() or (TheWorld.ismastersim and self.inst ~= ThePlayer)) then
-                    self:ActivateSkill_Server(skill, unlocks)
+                    self:ActivateSkill_Server(skill)
                     if not fromrpc then
                         SendRPCToClient(CLIENT_RPC.SetSkillActivatedState, self.inst.userid, self.skilltree:GetSkillIDFromName(characterprefab, skill), true)
                     end
                 else
-                    self:ActivateSkill_Client(skill, unlocks)
-                    self:ActivateSkill_Server(skill, unlocks)
+                    self:ActivateSkill_Client(skill)
+                    self:ActivateSkill_Server(skill)
                 end
             elseif self.inst == ThePlayer then
-                self:ActivateSkill_Client(skill, unlocks)
+                self:ActivateSkill_Client(skill)
                 if not fromrpc then
                     SendRPCToServer(RPC.SetSkillActivatedState, self.skilltree:GetSkillIDFromName(characterprefab, skill), true)
                 end
@@ -124,7 +121,7 @@ function SkillTreeUpdater:DeactivateSkill_Server(skill) -- NOTES(JBK): Use Deact
     end
     self.inst:PushEvent("ondeactivateskill_server", {skill = skill,})
 end
-function SkillTreeUpdater:DeactivateSkill(skill, prefab,  fromrpc)
+function SkillTreeUpdater:DeactivateSkill(skill, prefab, fromrpc)
     -- should ignore the prefab paramater as that's just used skilltreedata at frontend
     local characterprefab = self.inst.prefab
     if characterprefab and skill then
@@ -201,9 +198,13 @@ end
 -- NOTES(JBK): Data layer. Engage at your own risk.
 
 function SkillTreeUpdater:SetSilent(silent) -- Do not network nor activate callbacks and skip skill validation checks.
-    silent = silent or nil
+    silent = silent and true or nil
     self.silent = silent
-    self.skilltree.skip_validation = silent
+end
+
+function SkillTreeUpdater:SetSkipValidation(skip) -- Skip skill validation checks.
+    skip = skip and true or nil
+    self.skilltree.skip_validation = skip
 end
 
 function SkillTreeUpdater:OnSave()
@@ -211,7 +212,7 @@ function SkillTreeUpdater:OnSave()
     local skilltreeblobprefab = self.skilltreeblobprefab or self.inst.prefab
     --print("[STUpdater] OnSave", skilltreeblob, skilltreeblobprefab)
     if skilltreeblob ~= TheSkillTree.NILDATA then
-        return {skilltreeblob = skilltreeblob, skilltreeblobprefab = skilltreeblobprefab,}
+        return {skilltreeblob = skilltreeblob, skilltreeblobprefab = skilltreeblobprefab}
     end
 end
 
@@ -230,10 +231,12 @@ end
 function SkillTreeUpdater:SetPlayerSkillSelection(skillselection) -- NOTES(JBK): Applies an array table of bitfield entries of all activated skills and does not network anything.
     local activatedskills = self:GetNamesFromSkillSelection(skillselection)
     self:SetSilent(true)
+    self:SetSkipValidation(true)
     for skill, _ in pairs(activatedskills) do
         self:ActivateSkill(skill)
     end
     self:SetSilent(false)
+    self:SetSkipValidation(false)
     self.skilltreeblob = self.skilltree:EncodeSkillTreeData(self.inst.prefab)
     self.skilltreeblobprefab = self.inst.prefab
 end
@@ -249,15 +252,20 @@ function SkillTreeUpdater:SendFromSkillTreeBlob(inst)
         -- At this point the client will have sent their current XP to measure from so use that value and not the local stored invalid XP.
         if self.skilltree:ValidateCharacterData(self.inst.prefab, activatedskills, self:GetSkillXP()) then
             if activatedskills ~= nil then
+                self:SetSkipValidation(true) -- Validated already skip checking again.
                 self:SetSilent(true)
                 for skill, _ in pairs(activatedskills) do
                     self:DeactivateSkill(skill)
                 end
                 self:SetSilent(false)
-                -- The skills are validated so apply them and network them if need be.
+
+                -- Apply skills and network them if need be.
                 for skill, _ in pairs(activatedskills) do -- Two loops just in case of activation states.
                     self:ActivateSkill(skill)
                 end
+                self:SetSkipValidation(false)
+
+                self.inst:PushEvent("onsetskillselection_server")
             end
             -- Do not use nor send skillxp here.
         end
@@ -265,9 +273,11 @@ function SkillTreeUpdater:SendFromSkillTreeBlob(inst)
 end
 
 function SkillTreeUpdater:OnLoad(data)
-    self.skilltreeblob = data.skilltreeblob
-    self.skilltreeblobprefab = data.skilltreeblobprefab
-    --print("[STUpdater] OnLoad", self.skilltreeblob, self.skilltreeblobprefab)
+    if data then
+        self.skilltreeblob = data.skilltreeblob
+        self.skilltreeblobprefab = data.skilltreeblobprefab
+        --print("[STUpdater] OnLoad", self.skilltreeblob, self.skilltreeblobprefab)
+    end
 end
 
 return SkillTreeUpdater

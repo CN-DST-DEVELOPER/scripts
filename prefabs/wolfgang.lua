@@ -180,28 +180,29 @@ local function mightychange(inst, data)
     inst:RecalculateMightySpeed()
 end
 
+--V2C: Kinda hacky because it assumes this is called only once per work,
+--     which IS currently true.
+--     - returns a different value everytime
+--     - sound trigger is also happening here
+local function SpecialWorkMultiplierFn(inst, action, target, tool, numworks, recoil)
+	if not recoil and numworks ~= 0 and inst.components.mightiness:IsMighty() then
+		local chance =
+			(inst.components.skilltreeupdater:IsActivated("wolfgang_critwork_3") and TUNING.SKILLS.WOLFGANG_MIGHTY_WORK_CHANCE_3) or
+			(inst.components.skilltreeupdater:IsActivated("wolfgang_critwork_2") and TUNING.SKILLS.WOLFGANG_MIGHTY_WORK_CHANCE_2) or
+			(inst.components.skilltreeupdater:IsActivated("wolfgang_critwork_1") and TUNING.SKILLS.WOLFGANG_MIGHTY_WORK_CHANCE_1) or
+			TUNING.MIGHTY_WORK_CHANCE
+
+		if math.random() >= chance then
+			inst.SoundEmitter:PlaySound("meta2/wolfgang/critical_work")
+			return 99999
+		end
+	end
+end
+
 local function OnDoingWork(inst, data)
     if data ~= nil and data.target ~= nil then
 		local workable = data.target.components.workable
 		if workable ~= nil then
-			if inst.components.mightiness:IsMighty() then
-
-                local chance = TUNING.MIGHTY_WORK_CHANCE
-
-                if inst.components.skilltreeupdater:IsActivated("wolfgang_critwork_3") then
-                    chance = TUNING.SKILLS.WOLFGANG_MIGHTY_WORK_CHANCE_3
-                elseif inst.components.skilltreeupdater:IsActivated("wolfgang_critwork_2") then
-                   chance = TUNING.SKILLS.WOLFGANG_MIGHTY_WORK_CHANCE_2
-                elseif inst.components.skilltreeupdater:IsActivated("wolfgang_critwork_1") then
-                    chance =TUNING.SKILLS.WOLFGANG_MIGHTY_WORK_CHANCE_1
-                end
-
-				if workable.workleft > 0 and math.random() >= chance then
-                    inst.SoundEmitter:PlaySound("meta2/wolfgang/critical_work")
-					workable.workleft = 0
-				end
-			end
-
 			local work_action = workable:GetWorkAction() 
 			if work_action ~= nil then
 				local gains = TUNING.WOLFGANG_MIGHTINESS_WORK_GAIN[work_action.id]
@@ -646,6 +647,8 @@ local function master_postinit(inst)
         if inst.components.efficientuser == nil then
             inst:AddComponent("efficientuser")
         end
+
+		inst.components.workmultiplier:SetSpecialMultiplierFn(SpecialWorkMultiplierFn)
 
         inst:ListenForEvent("equip",   OnEquip)
         inst:ListenForEvent("unequip", OnUnequip)

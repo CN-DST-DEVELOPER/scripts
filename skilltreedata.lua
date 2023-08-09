@@ -118,6 +118,10 @@ function SkillTreeData:GetNamesFromSkillSelection(skillselection, characterprefa
     return activatedskills
 end
 
+function SkillTreeData:GetActivatedSkills(characterprefab)
+    return self.activatedskills[characterprefab]
+end
+
 -- NOTES(JBK): Very internal functions below see skilltreeupdater for use of things.
 
 function SkillTreeData:ActivateSkill(skill, characterprefab)
@@ -135,12 +139,12 @@ function SkillTreeData:ActivateSkill(skill, characterprefab)
             if next(skills) == nil then
                 self.activatedskills[characterprefab] = nil
             end
-            return false, nil
+            return false
         end
         self:UpdateSaveState(characterprefab)
-        return true, SKILLTREE_DEFS[characterprefab][skill].unlocks
+        return true
     end
-    return false, nil
+    return false
 end
 
 function SkillTreeData:DeactivateSkill(skill, characterprefab)
@@ -203,7 +207,7 @@ function SkillTreeData:OPAH_DoBackup()
     self.save_enabled = nil -- We will get a bunch of events from the server do not write to disk every time.
     -- The server is intending to send the client its known state to the local player.
     -- The local player will preserve its skill selection and other data it does not want to get stomped.
-    if self.activatedskills_backup == nil and next(self.activatedskills) ~= nil then
+    if self.activatedskills_backup == nil and self.activatedskills[characterprefab] ~= nil and next(self.activatedskills[characterprefab]) ~= nil then
         -- We have data on the local client, try to preserve it.
         self.activatedskills_backup = deepcopy(self.activatedskills)
         self.activatedskills = {}
@@ -216,6 +220,7 @@ function SkillTreeData:OPAH_DoBackup()
         local skilltreeupdater = ThePlayer.components.skilltreeupdater
         skilltreeupdater:AddSkillXP(xp)
     end
+    self.skip_validation = true
 end
 function SkillTreeData:OPAH_Ready()
     --print("[OPAH] TheSkillTree:Ready")
@@ -236,6 +241,7 @@ function SkillTreeData:OPAH_Ready()
 
     self.save_enabled = true -- Safe to write to disk again.
     self.ignorexp = nil
+    self.skip_validation = nil
     local skilltreeupdater = ThePlayer.components.skilltreeupdater
     skilltreeupdater:AddSkillXP(0) -- Update local client to see if it needs to show a notification.
 end
@@ -347,43 +353,73 @@ function SkillTreeData:UpdateSaveState(characterprefab)
     return false
 end
 
-function SkillTreeData:ValidateCharacterData(characterprefab, activatedskills, skillxp)
+local function ValidateCharacterData_PrintHelper(self, characterprefab, activatedskills, skillxp)
     local def = SKILLTREE_DEFS[characterprefab]
     if def == nil then
-        --print("Invalid skilltree characterprefab to ValidateCharacterData:", self.owner, characterprefab)
-        return false
+        return false -- No error message here because not all characters have skill trees.
     end
 
     if activatedskills == nil or skillxp == nil then
-        print("Invalid skilltree activatedskills or skillxp data to ValidateCharacterData:", self.owner, activatedskills, skillxp)
-        return false
+        return false, "No skills or no skillxp to validate against."
     end
 
-    local newskillxp = math.clamp(skillxp, 0, self:GetMaximumExperiencePoints())
+    local maxskillxp = self:GetMaximumExperiencePoints()
+    local newskillxp = math.clamp(skillxp, 0, maxskillxp)
     if skillxp ~= newskillxp then
-        print("Invalid skilltree skillxp to ValidateCharacterData:", self.owner, characterprefab, skillxp, newskillxp)
-        return false
+        return false, string.format("Out of range skillxp: %d !in [0, %d].", skillxp, maxskillxp)
     end
 
     local maxpointsallocatable = self:GetPointsForSkillXP(skillxp)
     local allocatedskills = table.count(activatedskills)
     if allocatedskills > maxpointsallocatable then
-        print("Invalid skilltree skill points to ValidateCharacterData:", self.owner, characterprefab, allocatedskills, maxpointsallocatable)
-        return false
+        return false, string.format("Too many allocated points for skillxp: %d > %d.", allocatedskills, maxpointsallocatable)
     end
 
     for skillname, _ in pairs(activatedskills) do
         local skilldef = def[skillname]
         if skilldef == nil then
-            print("Invalid skilltree skillname to ValidateCharacterData:", self.owner, characterprefab, skillname)
-            return false
+            return false, string.format("Bad skillname %s this could be from an official forced respec.", skillname)
+        end
+
+        -- NOTES(JBK): Validate skill connections.
+        if skilldef.must_have_one_of then
+            local has_one_of = false
+            for must_have_skillname, _ in pairs(skilldef.must_have_one_of) do
+                local must_have_skilldef = def[must_have_skillname]
+
+                local has_skill = activatedskills[must_have_skillname] ~= nil
+                local has_unlocked_lock = must_have_skilldef.lock_open ~= nil and must_have_skilldef.lock_open(characterprefab, activatedskills, true)
+                if has_skill or has_unlocked_lock then
+                    has_one_of = true
+                    break
+                end
+            end
+            if not has_one_of then
+                return false, string.format("Test must_have_one_of failed for skill %s.", skillname)
+            end
+        end
+        if skilldef.must_have_all_of then
+            for must_have_skillname, _ in pairs(skilldef.must_have_all_of) do
+                local must_have_skilldef = def[must_have_skillname]
+
+                local has_skill = activatedskills[must_have_skillname] ~= nil
+                local has_unlocked_lock = must_have_skilldef.lock_open ~= nil and must_have_skilldef.lock_open(characterprefab, activatedskills, true)
+                if not (has_skill or has_unlocked_lock) then
+                    return false, string.format("Test must_have_all_of failed for skill %s.", skillname)
+                end
+            end
         end
     end
 
-    -- FIXME(JBK): Skill locks validation.
-    -- Issue is that the skill activations can arrive out of order with respect to skill unlock order.
-
     return true
+end
+
+function SkillTreeData:ValidateCharacterData(characterprefab, activatedskills, skillxp)
+    local is_valid, error_message = ValidateCharacterData_PrintHelper(self, characterprefab, activatedskills, skillxp)
+    if not is_valid and error_message then
+        print(string.format("ValidateCharacterData failed for userid %s as %s: %s", self.owner and self.owner.userid or "N/A", characterprefab, error_message))
+    end
+    return is_valid
 end
 
 function SkillTreeData:ApplyCharacterData(characterprefab, skilltreedata)

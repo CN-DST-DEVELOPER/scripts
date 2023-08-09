@@ -119,7 +119,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "curse",
             tags = {"curse", "lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) return SkillTreeFns.CountTags(prefabname, "curse", skillselection) >= 6 end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountTags(prefabname, "curse", activatedskills) >= 6
+            end,
             connects = {
                 "woodie_curse_master",
             },
@@ -148,7 +150,7 @@ local function BuildSkillsData(SkillTreeFns)
             },
             onactivate = function(inst)
                 -- For load (skills activation occurs after onload functions).
-                if inst:IsWerebeaver() then
+                if inst:IsWerebeaver() and inst.components.worker ~= nil then
                     local modifiers = TUNING.SKILLS.WOODIE.BEAVER_WORK_MULTIPLIER
 
                     inst.components.worker:SetAction(ACTIONS.MINE, .5 * modifiers.MINE)
@@ -166,7 +168,7 @@ local function BuildSkillsData(SkillTreeFns)
             },
             onactivate = function(inst)
                 -- For load (skills activation occurs after onload functions).
-                if inst:IsWerebeaver() then
+                if inst:IsWerebeaver() and inst.components.worker ~= nil then
                     local modifiers = TUNING.SKILLS.WOODIE.BEAVER_WORK_MULTIPLIER
 
                     inst.components.worker:SetAction(ACTIONS.CHOP, 4 * modifiers.CHOP)
@@ -194,12 +196,11 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {BEAVER_POS_X, POS_Y_4},
             group = "curse",
             tags = {"curse", "lock"},
-            root = true,
-            lock_open = function(prefabname, skillselection)
+            lock_open = function(prefabname, activatedskills, readonly)
                 return
-                    SkillTreeFns.CountTags(prefabname, "beaver", skillselection) >= 3 and
-                    SkillTreeFns.CountTags(prefabname, "moose_epic", skillselection) == 0 and
-                    SkillTreeFns.CountTags(prefabname, "goose_epic", skillselection) == 0
+                    SkillTreeFns.CountTags(prefabname, "beaver", activatedskills) >= 3 and
+                    SkillTreeFns.CountTags(prefabname, "moose_epic", activatedskills) == 0 and
+                    SkillTreeFns.CountTags(prefabname, "goose_epic", activatedskills) == 0
             end,
             connects = {
                 "woodie_curse_epic_beaver",
@@ -259,12 +260,11 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {MOOSE_POS_X, POS_Y_4},
             group = "curse",
             tags = {"curse", "lock"},
-            root = true,
-            lock_open = function(prefabname, skillselection)
+            lock_open = function(prefabname, activatedskills, readonly)
                 return
-                    SkillTreeFns.CountTags(prefabname, "moose", skillselection) >= 3 and
-                    SkillTreeFns.CountTags(prefabname, "beaver_epic", skillselection) == 0 and
-                    SkillTreeFns.CountTags(prefabname, "goose_epic", skillselection) == 0
+                    SkillTreeFns.CountTags(prefabname, "moose", activatedskills) >= 3 and
+                    SkillTreeFns.CountTags(prefabname, "beaver_epic", activatedskills) == 0 and
+                    SkillTreeFns.CountTags(prefabname, "goose_epic", activatedskills) == 0
             end,
             connects = {
                 "woodie_curse_epic_moose",
@@ -340,12 +340,11 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {GOOSE_POS_X, POS_Y_4},
             group = "curse",
             tags = {"curse", "lock"},
-            root = true,
-            lock_open = function(prefabname, skillselection)
+            lock_open = function(prefabname, activatedskills, readonly)
                 return
-                    SkillTreeFns.CountTags(prefabname, "goose", skillselection) >= 3 and
-                    SkillTreeFns.CountTags(prefabname, "beaver_epic", skillselection) == 0 and
-                    SkillTreeFns.CountTags(prefabname, "moose_epic", skillselection) == 0
+                    SkillTreeFns.CountTags(prefabname, "goose", activatedskills) >= 3 and
+                    SkillTreeFns.CountTags(prefabname, "beaver_epic", activatedskills) == 0 and
+                    SkillTreeFns.CountTags(prefabname, "moose_epic", activatedskills) == 0
             end,
             connects = {
                 "woodie_curse_epic_goose",
@@ -468,7 +467,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, skillselection) return SkillTreeFns.CountSkills(prefabname, skillselection) >= 12 end,
+            lock_open = function(prefabname, activatedskills, readonly)
+                return SkillTreeFns.CountSkills(prefabname, activatedskills) >= 12
+            end,
         },
 
         woodie_allegiance_lock_2 = SkillTreeFns.MakeFuelWeaverLock(
