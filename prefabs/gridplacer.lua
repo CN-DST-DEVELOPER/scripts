@@ -64,7 +64,12 @@ local function tile_outline_fn()
 end
 
 local function turfhat_update(inst)
-    inst.Transform:SetPosition(TheWorld.Map:GetTileCenterPoint(inst.player.Transform:GetWorldPosition()))
+    local tx, ty, tz = TheWorld.Map:GetTileCenterPoint(inst.player.Transform:GetWorldPosition())
+    if not tx then
+        return
+    end
+
+    inst.Transform:SetPosition(tx, ty, tz)
 end
 
 local function SetPlayer(inst, player)

@@ -41,7 +41,7 @@ function MightyGym:SetLevelArt(level, target)
         target.AnimState:ShowSymbol("meter_color2")
         local gym_skin = target.gym_skin or target.prefab == "mighty_gym" and target.AnimState:GetSkinBuild() or nil
         if gym_skin and gym_skin ~= "" then
-            target.AnimState:OverrideSkinSymbol("meter_color2", gym_skin, "meter_color"..level)
+            target.AnimState:OverrideItemSkinSymbol("meter_color2", gym_skin, "meter_color"..level, self.inst.GUID, "mighty_gym")
         else
             target.AnimState:OverrideSymbol("meter_color2", "mighty_gym", "meter_color"..level)
         end
@@ -305,7 +305,7 @@ local function onstopworkout(inst, data)
     inst.gym.sg:GoToState("workout_pst", data.mightiness)
 end
 
-function onremoved(player)
+local function trytoexitgym(player)
     local gym = player.components.strongman and player.components.strongman.gym 
     if gym then
         gym.components.mightygym:CharacterExitGym(player)
@@ -326,7 +326,7 @@ function MightyGym:CharacterEnterGym(player)
 
     if player.gym_skin and player.gym_skin ~= "" then
         for _, symbol in ipairs(gym_symbols) do
-            player.AnimState:OverrideSkinSymbol(symbol, player.gym_skin, symbol)
+            player.AnimState:OverrideItemSkinSymbol(symbol, player.gym_skin, symbol, self.inst.GUID, "mighty_gym")
         end
     else
         player.AnimState:AddOverrideBuild("mighty_gym")
@@ -338,7 +338,8 @@ function MightyGym:CharacterEnterGym(player)
 
     player.sg:GoToState("mighty_gym_active_pre")
     
-    self.inst:ListenForEvent("onremove",onremoved,player)
+    self.inst:ListenForEvent("onremove",trytoexitgym,player)
+    self.inst:ListenForEvent("attacked", trytoexitgym, player)
 
     player:ListenForEvent("stopworkout",onstopworkout)
     if player.Physics ~= nil then
@@ -371,9 +372,16 @@ function MightyGym:CharacterEnterGym(player)
     self:StartWorkout(player)
 end
 
+local function saywisecrack(player)
+    if player.components.mightiness then
+        local state = string.upper(player.components.mightiness:GetState())
+        player.components.talker:Say(GetString(player, "ANNOUNCE_EXITGYM", state))
+    end
+end
 
 function MightyGym:CharacterExitGym(player)
-    self.inst:RemoveEventCallback("onremove",onremoved,player)
+    self.inst:RemoveEventCallback("onremove",trytoexitgym,player)
+    self.inst:RemoveEventCallback("attacked", trytoexitgym, player)
 
     local pos = Vector3(player.Transform:GetWorldPosition())
     --BRING REAL GYM BACK
@@ -389,8 +397,10 @@ function MightyGym:CharacterExitGym(player)
     local theta = self.inst.enterdirection and (self.inst.enterdirection *DEGREES)-PI or math.random() * PI * 2
     local offset = FindWalkableOffset(pos, theta, 3, 16, true, nil, nil, false, true) or Vector3(0,0,0)
     local teleport = false
-    
-    player.SetGymStopState(player)
+
+    if player.SetGymStopState ~= nil then
+        player:SetGymStopState()
+    end
 
     -- JUMP OUT PLAYER
     if player.components.health:IsDead() then
@@ -422,11 +432,9 @@ function MightyGym:CharacterExitGym(player)
         else
             player.sg.statemem.dontleavegym = true -- this is pretty confusing but basically, setting this true means that the gym wont auto try to run CharcterExitGym (THIS VERY FUNCTION) again.
             player.sg:GoToState("jumpout")
+            player.sg:AddStateTag("nointerrupt") -- Make the player treat this like a dismounting action.
             player.AnimState:SetFrame(4)
-            player:DoTaskInTime(0.3,function() 
-                local state = string.upper(player.components.mightiness:GetState())
-                player.components.talker:Say(GetString(player, "ANNOUNCE_EXITGYM", state))
-            end)
+            player:DoTaskInTime(0.3, saywisecrack)
             player.Transform:SetPosition(pos.x,pos.y,pos.z)
         end    
     end

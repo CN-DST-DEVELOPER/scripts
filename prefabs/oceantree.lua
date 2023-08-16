@@ -102,6 +102,10 @@ local function dig_up_stump(inst, chopper)
     inst:Remove()
 end
 
+local function DoRemovePhysicsColliders(inst)
+    RemovePhysicsColliders(inst)
+end
+
 local function chop_down_burnt_tree(inst, chopper)
     inst:RemoveComponent("workable")
     inst.SoundEmitter:PlaySound("dontstarve/forest/treeCrumble")
@@ -109,7 +113,12 @@ local function chop_down_burnt_tree(inst, chopper)
         inst.SoundEmitter:PlaySound("dontstarve/wilson/use_axe_tree")
     end
     inst.AnimState:PlayAnimation(inst.anims.chop_burnt)
-    RemovePhysicsColliders(inst)
+    if inst.boat_collided then -- NOTES(JBK): Hack workaround a physics callback calling another Physics mask clearing function will be a race condition if the physics engine crashes.
+        -- Delay a frame to get it off of a physics frame and into a game simulation frame.
+        inst:DoTaskInTime(0, DoRemovePhysicsColliders)
+    else
+        RemovePhysicsColliders(inst)
+    end
     inst:ListenForEvent("animover", inst.Remove)
     inst.components.lootdropper:SpawnLootPrefab("charcoal")
     inst.components.lootdropper:DropLoot()
@@ -370,7 +379,9 @@ local function OnCollide(inst, data)
                 inst:Remove()
             end
         elseif inst.components.workable ~= nil then
+            inst.boat_collided = true -- NOTES(JBK): Hack workaround a physics callback calling another Physics mask clearing function will be a race condition if the physics engine crashes.
             inst.components.workable:WorkedBy(data.other, hit_velocity * TUNING.OCEANTREE_CHOPS_NORMAL)
+            inst.boat_collided = nil
         end
     end
 end

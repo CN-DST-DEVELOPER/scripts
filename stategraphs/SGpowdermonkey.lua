@@ -225,7 +225,7 @@ local states =
             EventHandler("animover", function (inst)
                 inst.sg:GoToState("victory_pst", {say = inst.sg.statemem.say} )
             end),
-          --[[  EventHandler("onattacked", function (inst)
+          --[[  EventHandler("attacked", function (inst)
                 inst.sg:GoToState("hit")
             end),
             ]]

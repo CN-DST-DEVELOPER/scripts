@@ -38,15 +38,17 @@ local function CacheHasItemSlots(self)
 end
 
 local function OnEquipChanged(inst)
-    local self = inst.components.playercontroller
-    if self and (self.gridplacer ~= nil) == not inst.replica.inventory:EquipHasTag("turfhat") then
-        if self.gridplacer then
-            self.gridplacer:SetPlayer(nil)
-            self.gridplacer:Remove()
-            self.gridplacer = nil
-        else
-            self.gridplacer = SpawnPrefab("gridplacer_turfhat")
-            self.gridplacer:SetPlayer(self.inst)
+    if inst == ThePlayer then
+        local self = inst.components.playercontroller
+        if self and (self.gridplacer ~= nil) == not inst.replica.inventory:EquipHasTag("turfhat") then
+            if self.gridplacer then
+                self.gridplacer:SetPlayer(nil)
+                self.gridplacer:Remove()
+                self.gridplacer = nil
+            else
+                self.gridplacer = SpawnPrefab("gridplacer_turfhat")
+                self.gridplacer:SetPlayer(self.inst)
+            end
         end
     end
 end
@@ -2168,7 +2170,9 @@ function PlayerController:OnUpdate(dt)
 
 	if self.handler ~= nil and self.inst:HasTag("usingmagiciantool") then
 		self:CancelPlacement()
-		self:CancelDeployPlacement()
+        if not self:UsingMouse() then
+            self:CancelDeployPlacement()
+        end
 		self:CancelAOETargeting()
 	end
 

@@ -98,7 +98,7 @@ local function OnGetItem(inst, data, notrain)
             --inst:PushEvent("ratupdate")
             inst.components.trader:Disable()
             item.OnRemoveFn = function() inst.OnRemoveItem(inst) end
-            inst:ListenForEvent("removed", item.OnRemoveFn, item)
+            inst:ListenForEvent("onremove", item.OnRemoveFn, item)
             inst.components.shelf:PutItemOnShelf(data.item)
             -- inst.components.gym:SetTrainee(data.item)
             inst.AnimState:PlayAnimation("on")
@@ -180,7 +180,7 @@ local function OnRemoveItem(inst, taker, item)
     OnLoseItem(inst)
     if item and item:IsValid() then
         if item.OnRemoveFn then
-            inst:RemoveEventCallback("removed", item.OnRemoveFn, item)
+            inst:RemoveEventCallback("onremove", item.OnRemoveFn, item)
         end
     end
 end

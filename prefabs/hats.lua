@@ -3363,7 +3363,7 @@ local function MakeHat(name)
 				end
 				inst:ListenForEvent("equip", inst._onownerequip, owner)
 				inst:ListenForEvent("unequip", inst._onownerunequip, owner)
-				inst:ListenForEvent("onattacked", inst._onattacked, owner)
+				inst:ListenForEvent("attacked", inst._onattacked, owner)
 				inst:ListenForEvent("onattackother", inst._onattackother, owner)
 
 				inst.buff_stacks = 0

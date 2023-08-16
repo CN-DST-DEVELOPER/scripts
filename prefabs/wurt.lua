@@ -265,7 +265,7 @@ local function master_postinit(inst)
 
     inst:ListenForEvent("onmermkingcreated", function() RoyalUpgrade(inst) end, TheWorld)
     inst:ListenForEvent("onmermkingdestroyed", function() RoyalDowngrade(inst) end, TheWorld)
-    inst:ListenForEvent("onattacked", OnAttacked)
+    inst:ListenForEvent("attacked", OnAttacked)
 
     inst.OnSave = OnSave
     inst.OnPreLoad = OnPreLoad

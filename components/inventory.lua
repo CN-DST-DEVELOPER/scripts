@@ -1520,7 +1520,7 @@ function Inventory:DropEverythingWithTag(tag)
 
     if self.activeitem ~= nil then
         if self.activeitem:HasTag(tag) then
-            self:DropItem(self.activeitem)
+            self:DropItem(self.activeitem, true, true)
             self:SetActiveItem(nil)
         elseif self.activeitem.components.container ~= nil then
             table.insert(containers, self.activeitem)
@@ -1557,7 +1557,7 @@ function Inventory:DropEverything(ondeath, keepequip)
         ondeath = false
     end
     if self.activeitem ~= nil and not (ondeath and self.activeitem.components.inventoryitem.keepondeath) then
-        self:DropItem(self.activeitem)
+        self:DropItem(self.activeitem, true, true)
         self:SetActiveItem(nil)
     end
 
