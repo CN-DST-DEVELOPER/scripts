@@ -4586,8 +4586,28 @@ return{
         TWINOFTERROR1 = "Ah. Just what we needed, a fresh pair of eyes...",
         TWINOFTERROR2 = "Ah. Just what we needed, a fresh pair of eyes...",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Not my size, sadly.",
+		TURF_COTL_GOLD = "A bit gaudy, but it certainly makes an impression.",
+		TURF_COTL_BRICK = "Some quality stonework.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "A homely statue. Perhaps it can be improved.",
+			GENERIC = "Let's add a little fire for dramatic effect.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "How delightfully ominous.",
+			GENERIC = "Let's add a little fire for dramatic effect.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "There's something captivating about it.",
+			GENERIC = "Let's add a little fire for dramatic effect.",
+		},
+
         -- Year of the Catcoon
-        CATTOY_MOUSE = "The classic game of catcoon and mechnical mouse.",
+        CATTOY_MOUSE = "The classic game of catcoon and mechanical mouse.",
         KITCOON_NAMETAG = "I've named so many creatures at this point, the novelty has worn off.",
 
 		KITCOONDECOR1 =

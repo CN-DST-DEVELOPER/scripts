@@ -512,13 +512,14 @@ local wetpouch =
         trinket_8 = 1, -- plug
         trinket_9 = 1, -- buttons
         trinket_26 = .1, -- potatocup
+		cotl_trinket = 1,
         blueprint = 0.5,
     },
 
     UpdateLootBlueprint = function(loottable, doer)
         local builder = doer ~= nil and doer.components.builder or nil
-        loottable["deserthat_blueprint"] = (builder ~= nil and not builder:KnowsRecipe("deserthat")) and 1.3 or 0.1
-        loottable["antliontrinket"] = (builder ~= nil and builder:KnowsRecipe("deserthat")) and .8 or 0.1
+        loottable["deserthat_blueprint"] = (builder ~= nil and not builder:KnowsRecipe("deserthat")) and 2 or 0.1
+        loottable["antliontrinket"] = (builder ~= nil and builder:KnowsRecipe("deserthat")) and 2 or 0.1
     end,
 
     lootfn = function(inst, doer)

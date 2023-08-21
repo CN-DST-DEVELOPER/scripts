@@ -230,7 +230,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
 
     inst:AddComponent("tradable")
-    inst.components.tradable.rocktribute = 6
+    inst.components.tradable.rocktribute = 12
 
     inst:AddComponent("temperature")
     inst.components.temperature.current = TheWorld.state.temperature

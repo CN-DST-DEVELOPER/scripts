@@ -498,7 +498,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
             self.wasoncreep = true
         end
         self.groundspeedmultiplier = self.slowmultiplier
-    else
+    else 
         if self.wasoncreep and self.triggerscreep then
             self.inst:PushEvent("walkoffcreep")
         end
@@ -507,7 +507,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
         local current_ground_tile = TheWorld.Map:GetTileAtPoint(x, 0, z)
         self.groundspeedmultiplier = (self:IsFasterOnGroundTile(current_ground_tile) or 
                                      (self:FasterOnRoad() and ((RoadManager ~= nil and RoadManager:IsOnRoad(x, 0, z)) or GROUND_ROADWAYS[current_ground_tile])) or
-                                     (self:FasterOnCreep() and oncreep))
+                                     (oncreep and self:FasterOnCreep()))
 									 and self.fastmultiplier 
 									 or 1
     end

@@ -4592,6 +4592,26 @@ return{
         TWINOFTERROR1 = "You really can't help but admire the craftsmanship.",
         TWINOFTERROR2 = "C'mon, I only want to take you apart a little!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Awfully high-and-mighty, huh?",
+		TURF_COTL_GOLD = "Couldn't that gold have been used for somethin' more practical?",
+		TURF_COTL_BRICK = "Some good, dependable bricks.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "A little elbow grease, and it'll look good as new.",
+			GENERIC = "Looks like the fire's outta fuel.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "Now that's a well-built statue!",
+			GENERIC = "Looks like the fire's outta fuel.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Polished and gleaming!",
+			GENERIC = "Looks like the fire's outta fuel.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "I think it's got a squeaky wheel.",
         KITCOON_NAMETAG = "Name tags can be pretty handy in the workplace.",

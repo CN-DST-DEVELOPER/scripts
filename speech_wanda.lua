@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "That doesn't look like any clockwork I've ever seen.",
         TWINOFTERROR2 = "That doesn't look like any clockwork I've ever seen.",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "A little lost, are you?",
+		TURF_COTL_GOLD = "Surely there's a better use for all that gold?!",
+		TURF_COTL_BRICK = "You've seen one brick, you've seen them all.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "It does make a nice little fire, I suppose.",
+			GENERIC = "That seems a bit out of place, doesn't it?",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "It really is a lovely little statue.",
+			GENERIC = "That seems a bit out of place, doesn't it?",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "I suppose I can stay and watch it, just for a minute or two.",
+			GENERIC = "That seems a bit out of place, doesn't it?",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "What a clever little clockwork contraption!",
         KITCOON_NAMETAG = "This will make it easier to remember who's who at least.",

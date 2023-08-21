@@ -33,7 +33,7 @@ local function fn()
 
     inst:AddComponent("tradable")
     inst.components.tradable.goldvalue = TUNING.GOLD_VALUES.ANTLION
-    inst.components.tradable.rocktribute = 4
+    inst.components.tradable.rocktribute = 9
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM

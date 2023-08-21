@@ -3505,6 +3505,14 @@ STRINGS =
 
         BIGSHADOWTENTACLE = "Guardian Shadow Tentacle",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Red Crown",
+        TURF_COTL_BRICK = "Brick Flooring",
+        TURF_COTL_GOLD = "Gold Flooring",
+		COTL_TABERNACLE_LEVEL1 = "Humble Lamb Idol",
+		COTL_TABERNACLE_LEVEL2 = "Improved Lamb Idol",
+		COTL_TABERNACLE_LEVEL3 = "Immaculate Lamb Idol",
+
         -- WOLFGANG
         MIGHTY_GYM = "Mighty Gym",
         DUMBBELL = "Dumbbell",
@@ -4536,6 +4544,13 @@ STRINGS =
 
 		-- Terraria
         CRITTER_EYEOFTERROR_BUILDER = "Summon a friendly ocular companion.",
+
+		-- Cult of the Lamb
+		TURF_COTL_BRICK = "Individual bricks, brought together to serve a greater purpose.",
+        TURF_COTL_GOLD = "Set the groundwork for a new golden age.",
+		COTL_TABERNACLE_LEVEL1 = "A shoddy carving in the form of a lamb.",
+		COTL_TABERNACLE_LEVEL2 = "A refined statue to celebrate the lamb.",
+		COTL_TABERNACLE_LEVEL3 = "A dazzling monument to the lamb's glory.",
 
         -- WOLFGANG
         MIGHTY_GYM = "Bring on the brawn!",
@@ -8237,6 +8252,7 @@ STRINGS.UI =
             -- Settings
             INPUT = "Controller or Keyboard? Play Don't Starve Together your way.",
             VIBRATION = "Make your controller rumble at key gameplay moments.",
+			VIBRATION_WIRELESS = "Make your wireless controller rumble at key gameplay moments.",
             FX = "Change how loud things are in the world.",
             MUSIC = "Tone up or down the musical fanfare in your adventures.",
             AMBIENT = "The environment makes noise too, luckily you can control how loudly it does.",
@@ -11890,6 +11906,7 @@ STRINGS.UI =
             "Inv 13",
             "Inv 14",
             "Inv 15",
+            "Start Emoticon",
         },
 
         DEVICE_TITLE = "Controls",

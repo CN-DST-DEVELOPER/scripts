@@ -352,10 +352,12 @@ PREFAB_SKINS = {
 	},
 	critter_lamb =
 	{
+		"lamb_cotl",
 		"lamb_winter",
 	},
 	critter_lamb_builder =
 	{
+		"lamb_cotl_builder",
 		"lamb_winter_builder",
 	},
 	critter_perdling =
@@ -828,6 +830,7 @@ PREFAB_SKINS = {
 	},
 	nightsword =
 	{
+		"nightsword_cotl",
 		"nightsword_curve",
 		"nightsword_lightsbane",
 		"nightsword_sharp",
@@ -890,6 +893,12 @@ PREFAB_SKINS = {
 	pitchfork =
 	{
 		"pitchfork_invisible",
+	},
+	pottedfern =
+	{
+		"pottedfern_cotl",
+		"pottedfern_cotl2",
+		"pottedfern_cotl3",
 	},
 	premiumwateringcan =
 	{
@@ -1162,6 +1171,8 @@ PREFAB_SKINS = {
 		"treasurechest_cake",
 		"treasurechest_carpetbag",
 		"treasurechest_corruption",
+		"treasurechest_cotl_basic",
+		"treasurechest_cotl_fancy",
 		"treasurechest_crimson",
 		"treasurechest_cupid",
 		"treasurechest_cupidalt",

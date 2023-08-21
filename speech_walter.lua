@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "Somewhere, some poor giant robot is walking around completely blind...",
         TWINOFTERROR2 = "Somewhere, some poor giant robot is walking around completely blind...",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "I hope whoever lost it isn't missing it too much.",
+		TURF_COTL_GOLD = "That's a pretty fancy floor!",
+		TURF_COTL_BRICK = "A brick floor.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "That's one neat way to have a campfire!",
+			GENERIC = "Come on Woby, we need to find some kindling!",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "Wow, it looks so nice it's kind of hard to leave!",
+			GENERIC = "Come on Woby, we need to find some kindling!",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "I think I'll stay here and watch it... just a bit longer.",
+			GENERIC = "Come on Woby, we need to find some kindling!",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "Sorry Woby, that's for the kits to play with.",
         KITCOON_NAMETAG = "It looks almost like yours, Woby!",

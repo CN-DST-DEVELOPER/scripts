@@ -627,6 +627,7 @@ CRAFTING_FILTERS.LIGHT.recipes =
 	"torch",
 	"campfire",
 	"firepit",
+	"cotl_tabernacle_level1",
 	"coldfire",
 	"coldfirepit",
 	"pumpkin_lantern",
@@ -827,6 +828,7 @@ CRAFTING_FILTERS.COOKING.recipes =
 	"meatrack",
 	"campfire",
 	"firepit",
+	"cotl_tabernacle_level1",
 	"icebox",
 	"saltbox",
 	"icepack",
@@ -1104,6 +1106,7 @@ CRAFTING_FILTERS.WINTER.recipes =
 {
 	"campfire",
 	"firepit",
+	"cotl_tabernacle_level1",
 	"dragonflyfurnace",
 	"heatrock",
     "wx78module_heat",
@@ -1217,7 +1220,9 @@ CRAFTING_FILTERS.DECOR.recipes =
     "sewing_mannequin",
 
 	"turf_road",
+	"turf_cotl_brick",
 	"turf_woodfloor",
+	"turf_cotl_gold",
 	"turf_checkerfloor",
 	"turf_carpetfloor",
 	"turf_carpetfloor2",

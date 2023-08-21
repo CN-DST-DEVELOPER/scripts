@@ -170,6 +170,12 @@ local all_controls =
     {name=CONTROL_MENU_MISC_2, keyboard=nil, controller=CONTROL_MENU_MISC_2},
     {name=CONTROL_MENU_MISC_3, keyboard=nil, controller=CONTROL_MENU_MISC_3},
     {name=CONTROL_MENU_MISC_4, keyboard=nil, controller=CONTROL_MENU_MISC_4},
+
+    -- Chat based commands.
+    {name=CONTROL_TOGGLE_SLASH_COMMAND, keyboard=CONTROL_TOGGLE_SLASH_COMMAND, controller=nil},
+    {name=CONTROL_START_EMOJI, keyboard=CONTROL_START_EMOJI, controller=nil},
+
+    -- Available debug commands.
     {name=CONTROL_OPEN_DEBUG_CONSOLE, keyboard=CONTROL_OPEN_DEBUG_CONSOLE, controller=nil},
     {name=CONTROL_TOGGLE_LOG, keyboard=CONTROL_TOGGLE_LOG, controller=nil},
     {name=CONTROL_TOGGLE_DEBUGRENDER, keyboard=CONTROL_TOGGLE_DEBUGRENDER, controller=nil},

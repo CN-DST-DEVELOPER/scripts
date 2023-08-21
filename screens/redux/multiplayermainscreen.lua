@@ -346,7 +346,7 @@ end
 
 
 local function MakeMeta2Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_meta2")
+    anim:GetAnimState():SetBuild("dst_menu_meta2_cotl")
     anim:GetAnimState():SetBank("dst_menu_meta2")
     anim:GetAnimState():PlayAnimation("loop", true)
     anim:SetScale(.667)
@@ -1112,6 +1112,10 @@ function MultiplayerMainScreen:OnBecomeInactive()
 end
 
 function MultiplayerMainScreen:FinishedFadeIn()
+    if not TheFrontEnd:GetAccountManager():HasAuthToken() then
+        -- NOTES(JBK): We should not try doing any inventory actions without a logged in player.
+        return
+    end
     if HasNewSkinDLCEntitlements() then
         if IsSteam() or IsRail() then
             local popup_screen = PopupDialogScreen( STRINGS.UI.PURCHASEPACKSCREEN.GIFT_RECEIVED_TITLE, STRINGS.UI.PURCHASEPACKSCREEN.GIFT_RECEIVED_BODY,

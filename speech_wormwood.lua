@@ -4590,6 +4590,26 @@ return{
         TWINOFTERROR1 = "Big machine peeper!",
         TWINOFTERROR2 = "Big machine peeper!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Watching",
+		TURF_COTL_GOLD = "Pretty floor",
+		TURF_COTL_BRICK = "Rocks?",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "Fire! Careful, rock friend!",
+			GENERIC = "Little rock friend broken",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "Fire! Careful, rock friend!",
+			GENERIC = "Little rock friend feeling better",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Fire! Careful, rock friend!",
+			GENERIC = "Oh! Pretty!",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "Squeak squeak",
         KITCOON_NAMETAG = "For furry friends to wear",

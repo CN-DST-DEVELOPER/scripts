@@ -378,7 +378,7 @@ TileManager.AddTile(
         snowsound="dontstarve/movement/run_ice",
         mudsound = "dontstarve/movement/run_mud",
         hard = true,
-        roadways = true,
+		roadways = true,
     },
     {
         name = "map_edge",
@@ -387,6 +387,31 @@ TileManager.AddTile(
     {
         name = "road",
         pickupsound = "rock",
+    }
+)
+
+TileManager.AddTile(
+    "COTL_BRICK",
+    TileRanges.LAND,
+    {ground_name = "CotL_Brick"},
+    {
+        name="blocky",
+        noise_texture="ground_noise_cotl_brick",
+        runsound="dontstarve/movement/run_dirt",
+        walksound="dontstarve/movement/walk_dirt",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        hard = true,
+		roadways = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="ground_noise_cotl_brick_mini"
+    },
+    {
+        name = "cotl_brick", -- Inventory item
+        anim = "cotl_brick", -- Ground item
+        bank_build = "turf_cotl",
     }
 )
 
@@ -1070,6 +1095,31 @@ TileManager.AddTile(
 )
 
 
+
+TileManager.AddTile(
+    "COTL_GOLD",
+    TileRanges.LAND,
+    {ground_name = "CotL_Gold"},
+    {
+        name="blocky",
+        noise_texture="ground_noise_cotl_gold",
+        runsound="dontstarve/movement/run_marble",
+        walksound="dontstarve/movement/walk_marble",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        flooring = true,
+        hard = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="ground_noise_cotl_gold_mini"
+    },
+    {
+        name = "cotl_gold", -- Inventory item
+        anim = "cotl_gold", -- Ground item
+        bank_build = "turf_cotl",
+    }
+)
 
 TileManager.AddTile(
     "CHECKER",

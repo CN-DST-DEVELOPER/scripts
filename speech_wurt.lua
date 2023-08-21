@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "M-mermfolk not scared of any Ironfolk, flort!",
         TWINOFTERROR2 = "M-mermfolk not scared of any Ironfolk, flort!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Crown belong to Mermfolk now!",
+		TURF_COTL_GOLD = "Fancy ground.",
+		TURF_COTL_BRICK = "Buncha rocks for ground.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "It okay for statue of fuzzy scale-less.",
+			GENERIC = "Need fire, florp!",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "Statue small but strong, flort!",
+			GENERIC = "Need fire, florp!",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Such pretty statue...",
+			GENERIC = "Need fire, florp!",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "It so fast!",
         KITCOON_NAMETAG = "Fish necklace for little kitties.",

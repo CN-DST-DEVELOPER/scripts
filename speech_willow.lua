@@ -4593,6 +4593,26 @@ return{
         TWINOFTERROR1 = "Hey no fair, it brought backup!",
         TWINOFTERROR2 = "Hey no fair, it brought backup!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Finder's keepers.",
+		TURF_COTL_GOLD = "It reflects the firelight nicely.",
+		TURF_COTL_BRICK = "A bunch of bricks.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "That's better.",
+			GENERIC = "Aww, you want something to burn, don't you?",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "See? Things just look better when they're on fire.",
+			GENERIC = "Aww, you want something to burn, don't you?",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Burn, burn, burn!",
+			GENERIC = "Aww, you want something to burn, don't you?",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "I don't think I've ever actually seen a normal mouse around here.",
         KITCOON_NAMETAG = "I should test its fire resistance. Y'know, to make sure it's safe.",

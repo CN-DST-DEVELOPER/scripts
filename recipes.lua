@@ -730,7 +730,10 @@ Recipe2("hermitshop_supertacklecontainer",				{Ingredient("messagebottleempty", 
 Recipe2("hermitshop_winter_ornament_boss_hermithouse",	{Ingredient("messagebottleempty", 4)},														TECH.LOST,					{nounlock = true, sg_state="give", product="winter_ornament_boss_hermithouse"})
 Recipe2("hermitshop_winter_ornament_boss_pearl",		{Ingredient("messagebottleempty", 8)}, 														TECH.LOST,					{nounlock = true, sg_state="give", product="winter_ornament_boss_pearl"})
 
-
+-- Cult of the Lamb
+Recipe2("turf_cotl_gold",								{Ingredient("rocks", 1), Ingredient("goldnugget", 1)},										TECH.LOST,					{numtogive=4})
+Recipe2("turf_cotl_brick",								{Ingredient("cutstone", 1), Ingredient("flint", 2)},										TECH.LOST,					{numtogive=4})
+Recipe2("cotl_tabernacle_level1",						{Ingredient("rocks", 10), Ingredient("log", 2)},											TECH.LOST,					{placer="cotl_tabernacle_level1_placer",})
 
 ------------------------------- SPECIAL EVENTS -------------------------------
 
@@ -995,6 +998,10 @@ CONSTRUCTION_PLANS =
 
 	["support_pillar"] =			{ Ingredient("rocks", 40) },
 	["support_pillar_dreadstone"] =	{ Ingredient("dreadstone", 40) },
+
+	--Cult of the Lamb
+	["cotl_tabernacle_level1"] = { Ingredient("cutstone", 5), Ingredient("log", 1) },
+	["cotl_tabernacle_level2"] = { Ingredient("goldnugget", 10), Ingredient("cutstone", 10), Ingredient("log", 1) },
 }
 CONSTRUCTION_PLANS["support_pillar_scaffold"] = CONSTRUCTION_PLANS["support_pillar"]
 CONSTRUCTION_PLANS["support_pillar_dreadstone_scaffold"] = CONSTRUCTION_PLANS["support_pillar_dreadstone"]

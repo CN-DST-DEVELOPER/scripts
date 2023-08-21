@@ -6723,6 +6723,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 43,
 	},
+	playerportrait_bg_pottedferncotl =
+	{
+		type = "playerportrait",
+		skin_tags = { "C_UPDATE", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 147,
+	},
 	playerportrait_bg_pumpkinlantern =
 	{
 		type = "playerportrait",
@@ -7963,6 +7970,13 @@ MISC_ITEMS =
 		rarity = "Common",
 		rarity_modifier = "Woven",
 		release_group = 49,
+	},
+	profileflair_pottedfern_cotl =
+	{
+		type = "profileflair",
+		skin_tags = { "C_UPDATE", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 147,
 	},
 	profileflair_pumpkinlantern =
 	{

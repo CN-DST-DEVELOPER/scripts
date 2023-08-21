@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "Do thine worst, foul metal fiend!",
         TWINOFTERROR2 = "Do thine worst, foul metal fiend!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "A crown of ill omen.",
+		TURF_COTL_GOLD = "The land is covered in riches!",
+		TURF_COTL_BRICK = "Sturdy bricks.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "An altar to a wee fluffy beastie.",
+			GENERIC = "The flame must be lit!",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "The beastie's power grows.",
+			GENERIC = "The flame must be lit!",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Hail to the golden beast!",
+			GENERIC = "The flame must be lit!",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "T'would make for excellent target practice!",
         KITCOON_NAMETAG = "To me, tiny beastie! I shall gift thee with a warrior's name!",

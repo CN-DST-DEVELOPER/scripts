@@ -26,6 +26,10 @@ local prefabs =
     "trinket_9",
     "antliontrinket",
 	"chesspiece_antlion_sketch",
+
+	"turf_cotl_gold",
+	"turf_cotl_brick",
+	"cotl_tabernacle_level1",
 }
 
 SetSharedLootTable('antlion',
@@ -128,6 +132,7 @@ local function OnGivenItem(inst, giver, item)
     inst.tributer = giver
     inst.pendingrewarditem =
         (item.prefab == "antliontrinket" and {"townportal_blueprint", "antlionhat_blueprint"}) or
+		(item.prefab == "cotl_trinket" and {"turf_cotl_brick_blueprint", "turf_cotl_gold_blueprint", "cotl_tabernacle_level1_blueprint"}) or
         (item.components.tradable.goldvalue > 0 and "townportaltalisman") or
         nil
 

@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "I promise, I'm not as delicious as I appear!",
         TWINOFTERROR2 = "I promise, I'm not as delicious as I appear!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "What an odd little chapeau.",
+		TURF_COTL_GOLD = "This seems a bit much...",
+		TURF_COTL_BRICK = "A solid brick floor.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "Perhaps I could fix it up a bit.",
+			GENERIC = "This statue is hungry for fuel.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "What a sweet little statue.",
+			GENERIC = "This statue is hungry for fuel.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Such a comforting glow.",
+			GENERIC = "This statue is hungry for fuel.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "I'm afraid I don't have any clockwork cheese.",
         KITCOON_NAMETAG = "What shall I call you, mes petits chats?",

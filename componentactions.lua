@@ -260,7 +260,7 @@ local COMPONENT_ACTIONS =
         end,
 
         constructionsite = function(inst, doer, actions)
-            if not inst:HasTag("burnt") and not inst:HasTag("smolder") and not inst:HasTag("fire") then
+            if not inst:HasTag("burnt") and not inst:HasTag("smolder") and (not inst:HasTag("fire") or inst:HasTag("campfire")) then
 				local constructionsite = inst.replica.constructionsite
 				if constructionsite:IsEnabled() then
 					table.insert(actions,

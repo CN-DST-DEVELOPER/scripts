@@ -1206,6 +1206,11 @@ function PlayerHud:OnControl(control, down)
 			chat_input_screen.chat_edit:SetString("/")
 			TheFrontEnd:PushScreen(chat_input_screen)
 			return true
+		elseif control == CONTROL_START_EMOJI then
+			local chat_input_screen = ChatInputScreen(false)
+			chat_input_screen.chat_edit:SetString(":")
+			TheFrontEnd:PushScreen(chat_input_screen)
+			return true
         end
     elseif control == CONTROL_SHOW_PLAYER_STATUS then
         if not self:IsPlayerAvatarPopUpOpen() or self.playeravatarpopup.settled then
@@ -1272,12 +1277,10 @@ end
 function PlayerHud:OnRawKey(key, down)
     if PlayerHud._base.OnRawKey(self, key, down) then
         return true
-    elseif down and self.shown and key == KEY_SEMICOLON and TheInput:IsKeyDown(KEY_SHIFT) then
-        local chat_input_screen = ChatInputScreen(false)
-        chat_input_screen.chat_edit:SetString(":")
-        TheFrontEnd:PushScreen(chat_input_screen)
-        return true
     end
+    -- NOTES(JBK): Add controls to the files below to allow players to edit bound keys do not use OnRawKey for forced binds unless in dev only.
+    -- strings.lua, constants.lua, playerhud.lua, optionsscreen.lua, DontStarveInputHandler.h, DontStarveInputHandler.cpp, InputDefinitions.h
+    -- I am leaving this function stub here for dev testing only and maybe a mod already hooked it.
 end
 
 local DROPS_ALPHA_INCREASE_RATE = 0.01

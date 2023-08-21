@@ -4596,6 +4596,26 @@ return {
         TWINOFTERROR1 = "Maybe they're friendly? ...Maybe not.",
         TWINOFTERROR2 = "Maybe they're friendly? ...Maybe not.",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "What a crowning achievement.",
+		TURF_COTL_GOLD = "Don't walk on that, it was expensive!",
+		TURF_COTL_BRICK = "Bricks are the building blocks of the floor.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "What a soothing light.",
+			GENERIC = "It needs some fuel.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "What an inspirational figure!",
+			GENERIC = "It needs some fuel.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "I could stare at it forever... and ever...",
+			GENERIC = "It needs some fuel.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "Mice with wheels, what will science think up next?",
         KITCOON_NAMETAG = "I should think of some names! Let's see, Wilson Jr., Wilson Jr. 2...",

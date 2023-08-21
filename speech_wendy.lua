@@ -4590,6 +4590,26 @@ return{
         TWINOFTERROR1 = "Don't worry... Abby and I will make sure you leave this world together.",
         TWINOFTERROR2 = "Don't worry... Abby and I will make sure you leave this world together.",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "I wonder whose head it toppled from.",
+		TURF_COTL_GOLD = "If I follow the yellow bricks, will they take me home?",
+		TURF_COTL_BRICK = "Cold stone beneath my feet.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "A gentle glow from a gentle creature.",
+			GENERIC = "The fire has grown cold.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "Somehow, its presence puts my mind at ease.",
+			GENERIC = "The fire has grown cold.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Look how it glitters in the firelight, Abigail!",
+			GENERIC = "The fire has grown cold.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "The wheel is come full circle.",
         KITCOON_NAMETAG = "It's too painful to grow attached to things.",

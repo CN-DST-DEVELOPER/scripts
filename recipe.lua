@@ -176,7 +176,7 @@ function Recipe:SetModRPCID()
 end
 
 function GetValidRecipe(recname)
-    if not IsRecipeValidInGameMode(TheNet:GetServerGameMode(), recname) then
+    if TheNet == nil or not IsRecipeValidInGameMode(TheNet:GetServerGameMode(), recname) then
         return
     end
     local rec = AllRecipes[recname]

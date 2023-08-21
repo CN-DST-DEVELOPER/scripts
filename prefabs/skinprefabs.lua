@@ -3835,6 +3835,29 @@ table.insert(prefs, CreatePrefabSkin("krampus_sack_voidbag",
 	release_group = 125,
 }))
 
+table.insert(prefs, CreatePrefabSkin("lamb_cotl",
+{
+	base_prefab = "critter_lamb",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) pet_init_fn(inst, "lamb_cotl", "sheepington_build" ) end,
+	skin_tags = { "PET", "C_UPDATE", "CRAFTABLE", },
+	release_group = 147,
+}))
+
+table.insert(prefs, CreatePrefabSkin("lamb_cotl_builder",
+{
+	base_prefab = "critter_lamb_builder",
+	type = "item",
+	build_name_override = "lamb_cotl",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) critter_builder_init_fn(inst, "lamb_cotl" ) end,
+	skin_tags = { },
+	release_group = 147,
+}))
+
 table.insert(prefs, CreatePrefabSkin("lamb_winter",
 {
 	base_prefab = "critter_lamb",
@@ -4665,6 +4688,19 @@ table.insert(prefs, CreatePrefabSkin("mushroom_light_tiffany",
 	release_group = 87,
 }))
 
+table.insert(prefs, CreatePrefabSkin("nightsword_cotl",
+{
+	base_prefab = "nightsword",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	prefabs = { "nightsword_cotl_fx", },
+	init_fn = function(inst) nightsword_init_fn(inst, "nightsword_cotl") end,
+	skin_tags = { "C_UPDATE", "NIGHTSWORD", "CRAFTABLE", },
+	fx_prefab = { "nightsword_cotl_fx", },
+	release_group = 147,
+}))
+
 table.insert(prefs, CreatePrefabSkin("nightsword_curve",
 {
 	base_prefab = "nightsword",
@@ -5130,6 +5166,37 @@ table.insert(prefs, CreatePrefabSkin("pitchfork_invisible",
 	init_fn = function(inst) pitchfork_init_fn(inst, "pitchfork_invisible") end,
 	skin_tags = { "PITCHFORK", "INVISIBLE", "CRAFTABLE", },
 	release_group = 117,
+}))
+
+table.insert(prefs, CreatePrefabSkin("pottedfern_cotl",
+{
+	base_prefab = "pottedfern",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_cotl") end,
+	skin_tags = { "POTTEDFERN", "C_UPDATE", "CRAFTABLE", },
+	release_group = 147,
+	granted_items = { "pottedfern_cotl2", "pottedfern_cotl3", },
+}))
+
+table.insert(prefs, CreatePrefabSkin("pottedfern_cotl2",
+{
+	base_prefab = "pottedfern",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_cotl2") end,
+	skin_tags = { "POTTEDFERN", "C_UPDATE", "CRAFTABLE", },
+	release_group = 147,
+}))
+
+table.insert(prefs, CreatePrefabSkin("pottedfern_cotl3",
+{
+	base_prefab = "pottedfern",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_cotl3") end,
+	skin_tags = { "POTTEDFERN", "C_UPDATE", "CRAFTABLE", },
+	release_group = 147,
 }))
 
 table.insert(prefs, CreatePrefabSkin("premiumwateringcan_koalefant",
@@ -6776,6 +6843,28 @@ table.insert(prefs, CreatePrefabSkin("treasurechest_corruption",
 	init_fn = function(inst) treasurechest_init_fn(inst, "treasurechest_corruption") end,
 	skin_tags = { "CHEST", "CRAFTABLE", "T_UPDATE", },
 	release_group = 125,
+}))
+
+table.insert(prefs, CreatePrefabSkin("treasurechest_cotl_basic",
+{
+	base_prefab = "treasurechest",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) treasurechest_init_fn(inst, "treasurechest_cotl_basic") end,
+	skin_tags = { "CHEST", "CRAFTABLE", "C_UPDATE", },
+	release_group = 147,
+}))
+
+table.insert(prefs, CreatePrefabSkin("treasurechest_cotl_fancy",
+{
+	base_prefab = "treasurechest",
+	type = "item",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) treasurechest_init_fn(inst, "treasurechest_cotl_fancy") end,
+	skin_tags = { "CHEST", "C_UPDATE", "CRAFTABLE", },
+	release_group = 147,
 }))
 
 table.insert(prefs, CreatePrefabSkin("treasurechest_crimson",

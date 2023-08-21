@@ -19,6 +19,9 @@ local function onload(inst, data)
         inst.animname = data.anim
         inst.AnimState:PlayAnimation(inst.animname)
     end
+    if inst.skinname then
+        inst.AnimState:PlayAnimation("c")
+    end
 end
 
 local function onhammered(inst)

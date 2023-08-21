@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "How curious, I wonder who might have constructed such a thing?",
         TWINOFTERROR2 = "How curious, I wonder who might have constructed such a thing?",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Oh dear, did it just blink at me?",
+		TURF_COTL_GOLD = "Children, wipe your feet before you even think about walking on that floor!",
+		TURF_COTL_BRICK = "Brickwork, to be applied to the ground.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "This statue seems to have fallen into disrepair.",
+			GENERIC = "A small fire is needed to achieve the full effect.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "What a charming statue.",
+			GENERIC = "A small fire is needed to achieve the full effect.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "The firelight reflecting against the gold surface is almost hypnotic.",
+			GENERIC = "Fire is needed to achieve the full effect.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "A simple mechanism behind an entertaining toy for felines.",
         KITCOON_NAMETAG = "Ah, it does bring back memories of my dear old cat...",

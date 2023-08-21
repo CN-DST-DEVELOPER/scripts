@@ -4586,6 +4586,26 @@ return{
         TWINOFTERROR1 = "Aww, they brought a friend!",
         TWINOFTERROR2 = "Aww, they brought a friend!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Is it looking at us?",
+		TURF_COTL_GOLD = "We can make the ground shiny!",
+		TURF_COTL_BRICK = "Don't step on the cracks!",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "Maybe we should try to fix it up.",
+			GENERIC = "We should make a little fire.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "We like to imagine the little lamb is smiling at us!",
+			GENERIC = "We should make a little fire.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "It shines so bright, it almost hurts our eyes.",
+			GENERIC = "We should make a little fire.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "Run little mouse, run!",
         KITCOON_NAMETAG = "We always wanted a pet!",

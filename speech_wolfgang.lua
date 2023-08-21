@@ -4587,6 +4587,26 @@ return{
         TWINOFTERROR1 = "Eep! Big scary metal eyes even worse!",
         TWINOFTERROR2 = "Eep! Big scary metal eyes even worse!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Is spooky crown for tiny head.",
+		TURF_COTL_GOLD = "Wolfgang has never seen floor so fancy.",
+		TURF_COTL_BRICK = "Is bricks.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "Aw, is little statue!",
+			GENERIC = "Little statue needs fire!",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "Wolfgang likes looking at cute little lamb statue.",
+			GENERIC = "Little statue needs fire!",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "Tiny statue has grown mighty!",
+			GENERIC = "Little statue needs fire!",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "Eep! Oh, is not real.",
         KITCOON_NAMETAG = "Wolfgang will give tiny kitty good, strong name!",

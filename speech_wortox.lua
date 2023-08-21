@@ -4592,6 +4592,26 @@ return{
         TWINOFTERROR1 = "Double double, we're in trouble!",
         TWINOFTERROR2 = "Double double, we're in trouble!",
 
+		-- Cult of the Lamb
+		COTL_TRINKET = "Hyuyu, how tempting!",
+		TURF_COTL_GOLD = "All that gold, and this is what we have to show floor it.",
+		TURF_COTL_BRICK = "These bricks should do the trick.",
+		COTL_TABERNACLE_LEVEL1 =
+		{
+			LIT = "Let's linger by the light of this little lamb.",
+			GENERIC = "How it yearns for something to burn.",
+		},
+		COTL_TABERNACLE_LEVEL2 =
+		{
+			LIT = "The lamb is lit, why not stay for a bit?",
+			GENERIC = "How it yearns for something to burn.",
+		},
+		COTL_TABERNACLE_LEVEL3 =
+		{
+			LIT = "The lamb of gold, what a sight to behold.",
+			GENERIC = "How it yearns for something to burn.",
+		},
+
         -- Year of the Catcoon
         CATTOY_MOUSE = "Wind the bobbin up, pull, pull!",
         KITCOON_NAMETAG = "To help identify who's theirs and who's mine.",

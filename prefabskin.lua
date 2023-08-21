@@ -692,6 +692,20 @@ gravestone_clear_fn = function(inst)
 end
 
 --------------------------------------------------------------------------
+--[[ pottedfern skin functions ]]
+--------------------------------------------------------------------------
+pottedfern_init_fn = function(inst, build_name)
+    basic_init_fn( inst, build_name, "cave_ferns_potted")
+    inst.Transform:SetEightFaced()
+    inst.AnimState:PlayAnimation("c")
+end
+pottedfern_clear_fn = function(inst)
+    basic_clear_fn(inst, "cave_ferns_potted")
+    inst.Transform:SetNoFaced()
+    inst.AnimState:PlayAnimation(inst.animname)
+end
+
+--------------------------------------------------------------------------
 --[[ siesta hut skin functions ]]
 --------------------------------------------------------------------------
 siestahut_init_fn = function(inst, build_name)
