@@ -1579,6 +1579,11 @@ local PREFABS =
     ["lunarplant_kit"] = true,
     ["voidcloth_kit"] = true,
 
+    ["cotl_trinket"] = true,
+    ["turf_cotl_gold"] = true,
+    ["turf_cotl_brick"] = true,
+    ["cotl_tabernacle_level3"] = true,
+
     --["dropperweb"] = true, ? THIS ONE DOES NOT HAVE A PHYSICCAL THING
     --["bullkelp_beachedroot"]=true,
     --["boat_rotator_kit"]=true,

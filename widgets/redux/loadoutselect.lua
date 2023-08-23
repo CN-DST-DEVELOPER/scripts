@@ -292,10 +292,10 @@ function LoadoutSelect:SwitchContext()
 end
 
 function LoadoutSelect:_ShouldShowStartingItemSkinsButton()
-    local inv_item_list = (TUNING.GAMEMODE_STARTING_ITEMS[TheNet:GetServerGameMode()] or TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT)[string.upper(self.currentcharacter)]
+    local inv_item_list = GetUniquePotentialCharacterStartingInventoryItems(self.currentcharacter, true)
 
     local show_button = false
-    if inv_item_list ~= nil and #inv_item_list > 0 then
+    if inv_item_list[1] ~= nil then
         for _,item in pairs(inv_item_list) do
             if PREFAB_SKINS[item] then
                 show_button = true

@@ -124,3 +124,43 @@ function GetKilledByFromMorgueRow(data)
     return killed_by:gsub("(%a)([%w_']*)", tchelper)
 end
 
+function GetUniquePotentialCharacterStartingInventoryItems(character, with_bonus_items)
+    local inv_item_list = (TUNING.GAMEMODE_STARTING_ITEMS[TheNet:GetServerGameMode()] or TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT)[string.upper(character)]
+    if inv_item_list then
+        -- NOTES(JBK): Do a shallowcopy to not edit the base starting items tables from TUNING.
+        inv_item_list = shallowcopy(inv_item_list)
+    else
+        inv_item_list = {}
+    end
+
+    if with_bonus_items then
+        -- NOTES(JBK): Seasonal items could be added onto from mods iterate always and make it static by ordering alphabetically.
+        for _, season in orderedPairs(SEASONS) do
+            local extra_item_list = TUNING.EXTRA_STARTING_ITEMS[season]
+            if extra_item_list then
+                for _, v in ipairs(extra_item_list) do
+                    table.insert(inv_item_list, v)
+                end
+            end
+            local seasonal_item_list = TUNING.SEASONAL_STARTING_ITEMS[season]
+            if seasonal_item_list then
+                for _, v in ipairs(seasonal_item_list) do
+                    table.insert(inv_item_list, v)
+                end
+            end
+        end
+    end
+
+    -- NOTES(JBK): Remove duplicates we only want single instances.
+    local inv_item_list_no_dupes, inv_item_list_unique = {}, {}
+    for _, v in ipairs(inv_item_list) do
+        if inv_item_list_unique[v] == nil then
+            inv_item_list_unique[v] = true
+            table.insert(inv_item_list_no_dupes, v)
+        end
+    end
+    inv_item_list = inv_item_list_no_dupes
+
+    return inv_item_list
+end
+

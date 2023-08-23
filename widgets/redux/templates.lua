@@ -2051,23 +2051,14 @@ function TEMPLATES.MakeStartingInventoryWidget(c, left_align)
 		character = string.upper(character)
 		self._invitems:KillAllChildren()
 
-		local inv_item_list = (TUNING.GAMEMODE_STARTING_ITEMS[TheNet:GetServerGameMode()] or TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT)[character]
-		if inv_item_list ~= nil and #inv_item_list > 0 then
-			local inv_items, item_count = {}, {}
-			for _, v in ipairs(inv_item_list) do
-				if item_count[v] == nil then
-					item_count[v] = 1
-					table.insert(inv_items, v)
-				else
-					item_count[v] = item_count[v] + 1
-				end
-			end
+		local inv_item_list = GetUniquePotentialCharacterStartingInventoryItems(character, false)
+		if inv_item_list[1] ~= nil then
 
 			local scale = 0.85
 			local spacing = 5
 			local slot_width, total_width, x
 
-			for i, item in ipairs(inv_items) do
+			for i, item in ipairs(inv_item_list) do
 				local slot = root._invitems:AddChild(Image("images/hud.xml", "inv_slot.tex"))
 
 				local override_item_image = TUNING.STARTING_ITEM_IMAGE_OVERRIDE[item]
@@ -2079,15 +2070,10 @@ function TEMPLATES.MakeStartingInventoryWidget(c, left_align)
 				slot:SetScale(scale)
 				if slot_width == nil then
 					slot_width = 68 * scale
-					total_width = (slot_width * #inv_items + spacing * (#inv_items - 1))
+					total_width = (slot_width * #inv_item_list + spacing * (#inv_item_list - 1))
 					x = left_align and (slot_width/2) or (-total_width/2 + slot_width/2)
 				end
 				slot:SetPosition(x, -(title_h + spacing + slot_width/2))
-
-				if item_count[item] > 1 then
-					--local label = slot:AddChild(Text(NUMBERFONT, 32, tostring(item_count[item])))
-					--label:SetPosition(1, 15)
-				end
 
 				x = x + slot_width + spacing
 			end

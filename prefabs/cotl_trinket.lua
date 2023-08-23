@@ -27,6 +27,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "1"
+
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
 

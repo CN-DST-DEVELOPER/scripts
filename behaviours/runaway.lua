@@ -90,6 +90,28 @@ function RunAway:GetRunAngle(pt, hp, sp)
     return result_angle
 end
 
+local function ShouldGoHome(inst)
+    local homeseeker = inst.components.homeseeker
+    if homeseeker == nil then
+        return false
+    end
+
+    local home = homeseeker.home
+    if home == nil then
+        return false
+    end
+
+    if home.components.burnable ~= nil and home.components.burnable:IsBurning() then
+        return false
+    end
+
+    if home:HasTag("burnt") then
+        return false
+    end
+
+    return true
+end
+
 function RunAway:Visit()
     if self.status == READY then
         self.hunter = FindEntity(self.inst, self.see_dist, self.hunterfn, self.huntertags, self.hunternotags, self.hunteroneoftags)
@@ -106,7 +128,7 @@ function RunAway:Visit()
             self.status = FAILED
             self.inst.components.locomotor:Stop()
         else
-            if self.runshomewhenchased and self.inst.components.homeseeker ~= nil then
+            if self.runshomewhenchased and ShouldGoHome(self.inst) then
                 self.inst.components.homeseeker:GoHome(true)
             else
                 local pt = self.inst:GetPosition()

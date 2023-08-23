@@ -1940,16 +1940,9 @@ local function OnUserPickedCharacter(char, skin_base, clothing_body, clothing_ha
 
         local starting_skins = {}
         --get the starting inventory skins and send those along to the spawn request
-        local inv_item_list = (TUNING.GAMEMODE_STARTING_ITEMS[TheNet:GetServerGameMode()] or TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT)[string.upper(char)] or {}
+        local inv_item_list = GetUniquePotentialCharacterStartingInventoryItems(char, true)
 
-        local inv_items, item_count = {}, {}
-        for _, v in ipairs(inv_item_list) do
-            if item_count[v] == nil then
-                item_count[v] = 1
-                table.insert(inv_items, v)
-            end
-        end
-        for _, item in ipairs(inv_items) do
+        for _, item in ipairs(inv_item_list) do
             if PREFAB_SKINS[item] then
                 local skin_name = Profile:GetLastUsedSkinForItem(item)
                 starting_skins[item] = skin_name
