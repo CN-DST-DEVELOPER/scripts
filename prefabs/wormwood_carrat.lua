@@ -110,6 +110,7 @@ local function fn()
     inst:AddTag("notraptrigger")
     inst:AddTag("wormwood_pet")
     inst:AddTag("noauradamage")
+    inst:AddTag("soulless")
 
     inst:SetPrefabNameOverride("carrat")
 
@@ -167,6 +168,8 @@ local function fn()
 
     local follower = inst:AddComponent("follower")
     follower:KeepLeaderOnAttacked()
+    follower.keepdeadleader = true
+    follower.keepleaderduringminigame = true
 
     inst.no_spawn_fx = true
     inst.RemoveWormwoodPet = finish_transformed_life

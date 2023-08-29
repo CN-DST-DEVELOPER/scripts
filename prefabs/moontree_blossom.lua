@@ -26,6 +26,8 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:SetRayTestOnBB(true)
 
+    inst.pickupsound = "vegetation_grassy"
+
     inst:AddTag("cattoy")
     inst:AddTag("vasedecoration")
 
@@ -42,6 +44,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem:SetOnPickupFn(OnPickup)
 
+    inst:AddComponent("tradable")
     inst:AddComponent("vasedecoration")
 
     inst:AddComponent("stackable")

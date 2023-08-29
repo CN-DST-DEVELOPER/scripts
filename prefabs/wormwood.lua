@@ -808,6 +808,7 @@ local function master_postinit(inst)
     inst:ListenForEvent("ms_becameghost", OnBecameGhost)
     inst:ListenForEvent("ms_respawnedfromghost", OnRespawnedFromGhost)
 	inst:ListenForEvent("ms_playerreroll", RemoveWormwoodPets)
+	inst:ListenForEvent("death", RemoveWormwoodPets)
     inst:WatchWorldState("season", OnSeasonChange)
     WatchWorldPlants(inst)
 

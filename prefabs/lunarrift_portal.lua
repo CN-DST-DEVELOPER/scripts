@@ -57,7 +57,6 @@ local function do_portal_tiles(inst, portal_position, stage)
     end
 
     local _map = TheWorld.Map
-    local undertile = TheWorld.components.undertile
     local portal_tile_x, portal_tile_y = _map:GetTileCoordsAtPoint(ix, iy, iz)
 
     stage = stage or inst._stage
@@ -372,8 +371,6 @@ local function on_portal_removed(inst)
     local _map = TheWorld.Map
     local ix, iy, iz = inst.Transform:GetWorldPosition()
     local portal_tile_x, portal_tile_y = _map:GetTileCoordsAtPoint(ix, iy, iz)
-
-    local undertile = TheWorld.components.undertile
 
     inst._terraformer = inst._terraformer or make_terraformer_proxy(inst, ix, iy, iz)
     inst._terraformer:AddTerraformTask(portal_tile_x, portal_tile_y, 0, {0, 0}, true)

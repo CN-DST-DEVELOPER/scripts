@@ -611,12 +611,25 @@ function Map:CanCastAtPoint(pt, alwayspassable, allowwater, deployradius)
 	return false
 end
 
-function Map:IsAboveGroundInSquare(x, y, z, r)
+function Map:IsTileLandNoDocks(tile)
+    return TileGroupManager:IsLandTile(tile) and tile ~= WORLD_TILES.MONKEY_DOCK
+end
+
+function Map:IsAboveGroundInSquare(x, y, z, r, filterfn)
     r = r or 1
     for dx = -r, r do
         for dz = -r, r do
-            if not self:IsAboveGroundAtPoint(x + dx * TILE_SCALE, y, z + dz * TILE_SCALE, false) then
-                return false
+            if filterfn then
+                -- New logic allows for tile based filtering.
+                local tile = self:GetTileAtPoint(x + dx * TILE_SCALE, y, z + dz * TILE_SCALE)
+                if not filterfn(self, tile) then
+                    return false
+                end
+            else
+                -- Old logic assumes point based filtering with no ocean tiles but allows docks.
+                if not self:IsAboveGroundAtPoint(x + dx * TILE_SCALE, y, z + dz * TILE_SCALE, false) then
+                    return false
+                end
             end
         end
     end
@@ -702,7 +715,7 @@ local IS_CLEAR_AREA_RADIUS = TILE_SCALE * GOOD_ARENA_SQUARE_SIZE
 local NO_PLAYER_RADIUS = 35
 function Map:CheckForBadThingsInArena(pt, badthingsatspawnpoints)
     local x, y, z = pt.x, pt.y, pt.z
-    if self:IsAboveGroundInSquare(x, y, z, GOOD_ARENA_SQUARE_SIZE) and not IsAnyPlayerInRange(x, y, z, NO_PLAYER_RADIUS) then
+    if self:IsAboveGroundInSquare(x, y, z, GOOD_ARENA_SQUARE_SIZE, self.IsTileLandNoDocks) and not IsAnyPlayerInRange(x, y, z, NO_PLAYER_RADIUS) then
         local badthings = TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, nil, BADARENA_CANT_TAGS, BADARENA_ONEOF_TAGS)
         local badthingscount = #badthings
         for _, v in ipairs(badthings) do
@@ -767,7 +780,7 @@ function Map:FindBestSpawningPointForArena(CustomAllowTest, perfect_only, spawnp
     x, y, z = pt.x, pt.y, pt.z
 
     local function IsValidSpawningPoint_Bridge(pt)
-        return self:IsAboveGroundInSquare(pt.x, pt.y, pt.z, GOOD_ARENA_SQUARE_SIZE)
+        return self:IsAboveGroundInSquare(pt.x, pt.y, pt.z, GOOD_ARENA_SQUARE_SIZE, self.IsTileLandNoDocks)
     end
     
     for r = 5, 15, 5 do

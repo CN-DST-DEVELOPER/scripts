@@ -128,6 +128,7 @@ local function fn()
     inst:AddTag("notraptrigger")
     inst:AddTag("wormwood_pet")
     inst:AddTag("noauradamage")
+    inst:AddTag("soulless")
 
     MakeInventoryFloatable(inst)
 
@@ -170,6 +171,8 @@ local function fn()
 
     local follower = inst:AddComponent("follower")
     follower:KeepLeaderOnAttacked()
+    follower.keepdeadleader = true
+    follower.keepleaderduringminigame = true
 
     inst.SoundEmitter:PlaySound("grotto/creatures/light_bug/fly_LP", "loop")
 

@@ -88,6 +88,8 @@ local function fn()
     inst:AddTag("rechargeable")
     -- Optional tag to control if the item is not a "cooldown until" meter but a "bonus while" meter.
     inst:AddTag("rechargeable_bonus")
+	--waterproofer (from waterproofer component) added to pristine state for optimization
+	inst:AddTag("waterproofer")
 
     inst.scrapbook_specialinfo = "WORTOX_SOUL"
 
@@ -111,6 +113,9 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("soul")
+
+	inst:AddComponent("waterproofer")
+	inst.components.waterproofer:SetEffectiveness(0)
 
     inst:ListenForEvent("onputininventory", topocket)
     inst:ListenForEvent("ondropped", toground)

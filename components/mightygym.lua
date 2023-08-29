@@ -343,7 +343,7 @@ function MightyGym:CharacterEnterGym(player)
 
     player:ListenForEvent("stopworkout",onstopworkout)
     if player.Physics ~= nil then
-        MakeObstaclePhysics(player, 1)
+        ChangeToObstaclePhysics(player, 1)
     end
 
     if player.DynamicShadow ~= nil then
@@ -417,8 +417,8 @@ function MightyGym:CharacterExitGym(player)
         
         player:ApplyAnimScale("mightiness", player.components.mightiness:GetScale())
 
-        MakeCharacterPhysics(player, 75, .5)
         if player.Physics then
+            ChangeToCharacterPhysics(player, 75, .5)
             player.Physics:SetActive(true)
         end
         if player.DynamicShadow ~= nil then

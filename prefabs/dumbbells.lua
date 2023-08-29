@@ -61,7 +61,7 @@ local function ReticuleShouldHideFn(inst)
 	return not inst:HasTag("projectile")
 end
 
-local function HasFriendlyLeader(inst, target)
+local function HasFriendlyLeader(inst, target, attacker)
     local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
     
     if target_leader ~= nil then
@@ -83,10 +83,14 @@ local function HasFriendlyLeader(inst, target)
     return false
 end
 
-local function CanDamage(inst, target)
+local function CanDamage(inst, target, attacker)
     if target.components.minigame_participator ~= nil or target.components.combat == nil then
 		return false
 	end
+
+    --if attacker == target then -- NOTES(JBK): Uncomment this to able to hit yourself with physical damage.
+    --    return true
+    --end
 
     if target:HasTag("player") and not TheNet:GetPVPEnabled() then
         return false
@@ -102,7 +106,7 @@ local function CanDamage(inst, target)
         return false
     end
 
-    if HasFriendlyLeader(inst, target) then
+    if HasFriendlyLeader(inst, target, attacker) then
         return false
     end
 
@@ -144,16 +148,15 @@ end
 local AOE_ATTACK_MUST_TAGS = {"_combat", "_health"}
 local AOE_ATTACK_NO_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO"}
 local function OnThrownHit(inst, attacker, target)
-
-    if inst:HasTag("fireattack") then
-        for i=1,3 do
+    if inst.isfireattack then
+        for i = 1, 3 do
             local fire = SpawnPrefab("houndfire")
             inst.components.lootdropper:FlingItem(fire)
         end
     end
 
-	local pt = Vector3(inst.Transform:GetWorldPosition())
-	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 2, AOE_ATTACK_MUST_TAGS, AOE_ATTACK_NO_TAGS)
+	local x, y, z = inst.Transform:GetWorldPosition()
+	local ents = TheSim:FindEntities(x, y, z, 2, AOE_ATTACK_MUST_TAGS, AOE_ATTACK_NO_TAGS)
 
 --local damage = inst.components.weapon.damage
 
@@ -168,9 +171,10 @@ local function OnThrownHit(inst, attacker, target)
         end
         return damage
     end
-        
-	for i, ent in ipairs(ents) do    
-	    if CanDamage(inst, ent) then
+
+	for i, ent in ipairs(ents) do
+        local canfreeze = false
+	    if CanDamage(inst, ent, attacker) then
 			if attacker ~= nil and attacker:IsValid() then
 				attacker.components.combat.ignorehitrange = true
 				attacker.components.combat:DoAttack(ent, inst, inst)
@@ -178,11 +182,15 @@ local function OnThrownHit(inst, attacker, target)
 			else
 				ent.components.combat:GetAttacked(attacker, inst.components.weapon.damage(inst, inst.components.complexprojectile.attacker, ent) )
 			end
+            canfreeze = true
+        elseif attacker == ent then
+            canfreeze = true -- NOTES(JBK): Allow the thrower to still freeze themselves for cooling benefits.
 	    end
-
-        if inst:HasTag("iceattack") and ent.components.freezable ~= nil then
-            ent.components.freezable:AddColdness(2)
-        end        
+        if canfreeze then
+            if inst.isiceattack and ent.components.freezable ~= nil then
+                ent.components.freezable:AddColdness(2)
+            end
+        end
 	end
     
     inst.components.weapon.damage = olddamage
@@ -510,10 +518,10 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
 		inst:AddTag("keep_equip_toss")
         
         if name == "dumbbell_bluegem" then
-            inst:AddTag("iceattack")
+            inst.isiceattack = true
             inst.scrapbook_specialinfo = "DUMBBELLBLUE"
         elseif name == "dumbbell_redgem" then
-            inst:AddTag("fireattack")
+            inst.isfireattack = true
             inst.scrapbook_specialinfo = "DUMBBELLRED"
         elseif name == "dumbbell_heat" then
             inst:AddTag("HASHEATER")

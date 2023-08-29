@@ -387,6 +387,7 @@ local function fn()
 
     inst:AddComponent("knownlocations")
 	inst:AddComponent("timer")
+    inst:AddComponent("drownable")
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.RABBIT_HEALTH)

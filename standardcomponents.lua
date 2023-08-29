@@ -435,14 +435,22 @@ function ChangeToGhostPhysics(inst)
     return phys
 end
 
-function ChangeToCharacterPhysics(inst)
+function ChangeToCharacterPhysics(inst, mass, rad)
     local phys = inst.Physics
+    if mass then
+        phys:SetMass(mass)
+        phys:SetFriction(0)
+        phys:SetDamping(5)
+    end
     phys:SetCollisionGroup(COLLISION.CHARACTERS)
 	phys:SetCollisionMask(COLLISION.WORLD, COLLISION.OBSTACLES, COLLISION.SMALLOBSTACLES, COLLISION.CHARACTERS, COLLISION.GIANTS)
+    if rad then
+        phys:SetCapsule(rad, 1)
+    end
     return phys
 end
 
-function ChangeToObstaclePhysics(inst)
+function ChangeToObstaclePhysics(inst, rad, height)
     local phys = inst.Physics
     phys:SetCollisionGroup(COLLISION.OBSTACLES)
     phys:ClearCollisionMask()
@@ -451,6 +459,9 @@ function ChangeToObstaclePhysics(inst)
     phys:CollidesWith(COLLISION.ITEMS)
     phys:CollidesWith(COLLISION.CHARACTERS)
     phys:CollidesWith(COLLISION.GIANTS)
+    if rad then
+        phys:SetCapsule(rad, height or 2)
+    end
     return phys
 end
 
