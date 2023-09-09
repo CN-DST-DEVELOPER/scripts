@@ -2569,7 +2569,7 @@ ACTIONS_MAP_REMAP[ACTIONS.BLINK.code] = function(act, targetpos)
     end
     local aimassisted = false
     local distoverride = nil
-    if not TheWorld.Map:IsVisualGroundAtPoint(targetpos.x, targetpos.y, targetpos.z) then
+    if not TheWorld.Map:IsAboveGroundAtPoint(targetpos.x, targetpos.y, targetpos.z) then
         -- NOTES(JBK): No map tile at the cursor but the area might contain a boat that has a maprevealer component around it.
         -- First find a globalmapicon near here and look for if it is from a fogrevealer and assume it is on landable terrain.
         local ents = TheSim:FindEntities(targetpos.x, targetpos.y, targetpos.z, PLAYER_REVEAL_RADIUS * 0.4, BLINK_MAP_MUST)

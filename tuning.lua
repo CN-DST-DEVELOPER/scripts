@@ -3684,8 +3684,8 @@ function Tune(overrides)
 		FRUITDRAGON =
 		{
 			HEALTH = 900,
-			WALK_SPEED = 0.5,
-			RUN_SPEED = 2,
+			WALK_SPEED = 1,
+			RUN_SPEED = 4,
 
 			FIND_HOME_RANGE = 8,
 			ENTITY_SLEEP_FIND_HOME_RANGE = 15,

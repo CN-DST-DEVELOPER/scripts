@@ -255,6 +255,10 @@ local function CanBlinkTo(pt)
     return (TheWorld.Map:IsAboveGroundAtPoint(pt.x, pt.y, pt.z) or TheWorld.Map:GetPlatformAtPoint(pt.x, pt.z) ~= nil) and not TheWorld.Map:IsGroundTargetBlocked(pt)
 end
 
+local function CanBlinkFromWithMap(pt)
+    return true -- NOTES(JBK): Change this if there is a reason to anchor Wortox when trying to use the map to teleport.
+end
+
 local BLINKFOCUS_MUST_TAGS = { "blinkfocus" }
 
 local function ReticuleTargetFn(inst)
@@ -276,7 +280,7 @@ local function ReticuleTargetFn(inst)
 
     pos.y = 0
     for r = 13, 4, -.5 do
-        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, CanBlinkTo)
+        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, inst.CanBlinkTo)
         if offset ~= nil then
             pos.x = pos.x + offset.x
             pos.z = pos.z + offset.z
@@ -284,7 +288,7 @@ local function ReticuleTargetFn(inst)
         end
     end
     for r = 13.5, 16, .5 do
-        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, CanBlinkTo)
+        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, inst.CanBlinkTo)
         if offset ~= nil then
             pos.x = pos.x + offset.x
             pos.z = pos.z + offset.z
@@ -307,8 +311,16 @@ local function CanSoulhop(inst, souls)
 end
 
 local function GetPointSpecialActions(inst, pos, useitem, right)
-    if right and useitem == nil and CanBlinkTo(pos) and inst.CanSoulhop and inst:CanSoulhop() then
-        return { ACTIONS.BLINK }
+    if right and useitem == nil then
+        local canblink
+        if inst.checkingmapactions then
+            canblink = inst.CanBlinkFromWithMap(inst:GetPosition())
+        else
+            canblink = inst.CanBlinkTo(pos)
+        end
+        if canblink and inst.CanSoulhop and inst:CanSoulhop() then
+            return { ACTIONS.BLINK }
+        end
     end
     return {}
 end
@@ -431,6 +443,8 @@ local function common_postinit(inst)
 
     inst._freesoulhop_counter = 0
     inst.CanSoulhop = CanSoulhop
+    inst.CanBlinkTo = CanBlinkTo
+    inst.CanBlinkFromWithMap = CanBlinkFromWithMap
     inst:ListenForEvent("setowner", OnSetOwner)
 
     inst:AddComponent("reticule")

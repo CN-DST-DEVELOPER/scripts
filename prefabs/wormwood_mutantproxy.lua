@@ -28,7 +28,14 @@ local function MakeProxy(prefabname, product)
     local function finish_spawn(inst)
         if inst.builder and inst.builder.components.petleash then
             local x, y, z = inst.Transform:GetWorldPosition()
-            inst.builder.components.petleash:SpawnPetAt(x, y, z, product)
+            local pet = inst.builder.components.petleash:SpawnPetAt(x, y, z, product)
+            if pet then
+                if inst.builder.components.health and inst.builder.components.health:IsDead() then
+                    pet:RemoveWormwoodPet()
+                else
+                    pet:ListenForEvent("stopfollowing", pet.RemoveWormwoodPet)
+                end
+            end
         end
     end
 

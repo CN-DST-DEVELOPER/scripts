@@ -52,7 +52,7 @@ local function SleepTest(inst)
     if ( inst.components.follower and inst.components.follower.leader )
         or ( inst.components.combat and inst.components.combat.target )
         or inst.components.playerprox:IsPlayerClose()
-        or TheWorld.state.israining then
+        or TheWorld.state.israining and inst.components.rainimmunity == nil then
         return
     end
     if not inst.sg:HasStateTag("busy") and (not inst.last_wake_time or GetTime() - inst.last_wake_time >= inst.nap_interval) then
@@ -65,7 +65,7 @@ end
 local function WakeTest(inst)
     if not inst.last_sleep_time
         or GetTime() - inst.last_sleep_time >= inst.nap_length
-        or TheWorld.state.israining then
+        or TheWorld.state.israining and inst.components.rainimmunity == nil then
         inst.nap_interval = math.random(TUNING.MIN_CATNAP_INTERVAL, TUNING.MAX_CATNAP_INTERVAL)
         inst.last_wake_time = GetTime()
         return true

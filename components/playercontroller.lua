@@ -3943,11 +3943,15 @@ function PlayerController:GetMapActions(position)
 
     local pos = self.inst:GetPosition()
 
+    self.inst.checkingmapactions = true -- NOTES(JBK): Workaround flag to not add function argument changes for this task and lets things opt-in to special handling.
+
     local lmbact = self.inst.components.playeractionpicker:GetLeftClickActions(pos)[1]
     LMBaction = self:RemapMapAction(lmbact, position)
 
     local rmbact = self.inst.components.playeractionpicker:GetRightClickActions(pos)[1]
     RMBaction = self:RemapMapAction(rmbact, position)
+
+    self.inst.checkingmapactions = nil
 
     return LMBaction, RMBaction
 end

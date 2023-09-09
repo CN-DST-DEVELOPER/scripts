@@ -54,11 +54,13 @@ local function OnIsRaining(self, israining)
 end
 
 local function OnRainImmunity(inst)
-	if IsExposedToRain(inst) then
-		inst.components.dryer:Pause()
-	else
-		inst.components.dryer:Resume()
-	end
+    inst.components.dryer:Resume()
+end
+
+local function OnRainVulnerable(inst)
+    if IsExposedToRain(inst) then
+        inst.components.dryer:Pause()
+    end
 end
 
 local function StartWatchingRain(self)
@@ -66,7 +68,7 @@ local function StartWatchingRain(self)
         self.watchingrain = true
         self:WatchWorldState("israining", OnIsRaining)
 		self.inst:ListenForEvent("gainrainimmunity", OnRainImmunity)
-		self.inst:ListenForEvent("loserainimmunity", OnRainImmunity)
+		self.inst:ListenForEvent("loserainimmunity", OnRainVulnerable)
     end
 end
 
@@ -75,7 +77,7 @@ local function StopWatchingRain(self)
         self.watchingrain = nil
         self:StopWatchingWorldState("israining", OnIsRaining)
 		self.inst:RemoveEventCallback("gainrainimmunity", OnRainImmunity)
-		self.inst:RemoveEventCallback("loserainimmunity", OnRainImmunity)
+		self.inst:RemoveEventCallback("loserainimmunity", OnRainVulnerable)
     end
 end
 

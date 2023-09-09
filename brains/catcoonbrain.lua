@@ -92,6 +92,7 @@ local function GoHomeAction(inst)
         return BufferedAction(inst, home, ACTIONS.GOHOME)
     else
         inst.raining = false
+        inst:ScheduleRaining()
     end
 end
 

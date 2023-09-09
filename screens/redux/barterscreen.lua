@@ -227,10 +227,12 @@ function BarterScreen:_BuildDialog()
 end
 
 function BarterScreen:_OnCancel()
+    self.prev_screen.launched_commerce = nil
     TheFrontEnd:PopScreen()
 end
 
 function BarterScreen:_BarterComplete(success, status, sounds)
+    self.prev_screen.launched_commerce = nil
     if success then
         TheFrontEnd:PopScreen()
 

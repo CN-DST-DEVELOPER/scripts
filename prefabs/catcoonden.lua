@@ -188,7 +188,7 @@ local function getstatus(inst, viewer)
 end
 
 local function canspawn(inst)
-    return not TheWorld.state.israining
+    return not (TheWorld.state.israining and inst.components.rainimmunity == nil)
 end
 
 local function OnPreLoad(inst, data)

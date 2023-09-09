@@ -240,7 +240,7 @@ local function SleepTest(inst)
 	if ( inst.components.follower and inst.components.follower.leader )
 		or ( inst.components.combat and inst.components.combat.target )
 		or inst.components.playerprox:IsPlayerClose()
-		or TheWorld.state.israining then
+		or TheWorld.state.israining and inst.components.rainimmunity == nil then
 		return
 	end
 	if not inst.sg:HasStateTag("busy") and (not inst.last_wake_time or GetTime() - inst.last_wake_time >= inst.nap_interval) then
@@ -253,7 +253,7 @@ end
 local function WakeTest(inst)
 	if not inst.last_sleep_time
 		or GetTime() - inst.last_sleep_time >= inst.nap_length
-		or TheWorld.state.israining then
+		or TheWorld.state.israining and inst.components.rainimmunity == nil then
 		inst.nap_interval = math.random(TUNING.MIN_CATNAP_INTERVAL, TUNING.MAX_CATNAP_INTERVAL)
 		inst.last_wake_time = GetTime()
 		return true
@@ -308,11 +308,20 @@ local function OnRefuseItem(inst, item)
     end
 end
 
+local function ApplyRaining(inst)
+    inst._catcoonraintask = nil
+    inst.raining = TheWorld.state.israining
+end
+
+local function ScheduleRaining(inst)
+    if TheWorld.state.israining and inst.components.rainimmunity == nil and inst._catcoonraintask == nil then
+        inst._catcoonraintask = inst:DoTaskInTime(math.random(2,6), ApplyRaining)
+    end
+end
+
 local function OnIsRaining(inst, raining)
 	if raining then
-		inst:DoTaskInTime(math.random(2,6), function(inst)
-			inst.raining = true
-		end)
+        inst:ScheduleRaining()
 	end
 end
 
@@ -321,6 +330,22 @@ local function OnWentHome(inst)
 	if den ~= nil and den.CacheItemsAtHome ~= nil then
 		den:CacheItemsAtHome(inst)
 	end
+end
+
+local function OnLoadPostPass(inst, newents, data)
+    inst:ScheduleRaining()
+end
+
+local function OnRainImmunity(inst)
+    if inst._catcoonraintask ~= nil then
+        inst._catcoonraintask:Cancel()
+        inst._catcoonraintask = nil
+    end
+    inst.raining = false
+end
+
+local function OnRainVulnerable(inst)
+    inst:ScheduleRaining()
 end
 
 local function fn()
@@ -432,7 +457,13 @@ local function fn()
 	inst.friendGiftPrefabs = friendGiftPrefabs
 	inst.PickRandomGift = PickRandomGift
 
+    inst.ScheduleRaining = ScheduleRaining
+    inst.OnLoadPostPass = OnLoadPostPass
+
 	MakeHauntablePanicAndIgnite(inst)
+
+    inst:ListenForEvent("gainrainimmunity", OnRainImmunity)
+    inst:ListenForEvent("loserainimmunity", OnRainVulnerable)
 
 	return inst
 end

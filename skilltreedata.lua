@@ -426,7 +426,7 @@ function SkillTreeData:ApplyCharacterData(characterprefab, skilltreedata)
     --print("[STData] ApplyCharacterData", characterprefab, skilltreedata)
     local activatedskills, skillxp = self:DecodeSkillTreeData(skilltreedata)
     if self:ValidateCharacterData(characterprefab, activatedskills, skillxp) then
-        self.skillxp[characterprefab] = skillxp
+        self.skillxp[characterprefab] = math.max(self.skillxp[characterprefab] or 0, skillxp)
         self.activatedskills[characterprefab] = activatedskills
         return true
     end
