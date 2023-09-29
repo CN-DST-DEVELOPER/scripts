@@ -22,6 +22,7 @@ local function releasethrall(world, target)
                 --SPAWN THRALL FROM RIFT
                 self:SpawnGestalt(target, rift)
                 spawnfromrift = true
+                break -- One wave only!
             end
         end
 

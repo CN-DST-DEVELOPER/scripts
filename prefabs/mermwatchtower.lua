@@ -111,9 +111,9 @@ local function ToggleWinterTuning(inst, iswinter)
     end
 
     if iswinter then
-        inst.components.childspawner:SetRegenPeriod(TUNING.TOTAL_DAY_TIME * 6)
+        inst.components.childspawner:SetRegenPeriod(TUNING.MERMWATCHTOWER_REGEN_TIME * 12)
     else
-        inst.components.childspawner:SetRegenPeriod(TUNING.TOTAL_DAY_TIME * 0.5)
+        inst.components.childspawner:SetRegenPeriod(TUNING.MERMWATCHTOWER_REGEN_TIME)
     end
 end
 

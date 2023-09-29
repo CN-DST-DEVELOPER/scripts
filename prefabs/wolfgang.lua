@@ -193,7 +193,9 @@ local function SpecialWorkMultiplierFn(inst, action, target, tool, numworks, rec
 			TUNING.MIGHTY_WORK_CHANCE
 
 		if math.random() >= chance then
-			inst.SoundEmitter:PlaySound("meta2/wolfgang/critical_work")
+            if inst.player_classified ~= nil then
+                inst.player_classified.playworkcritsound:push()
+            end
 			return 99999
 		end
 	end

@@ -32,8 +32,6 @@ local function MakeProxy(prefabname, product)
             if pet then
                 if inst.builder.components.health and inst.builder.components.health:IsDead() then
                     pet:RemoveWormwoodPet()
-                else
-                    pet:ListenForEvent("stopfollowing", pet.RemoveWormwoodPet)
                 end
             end
         end

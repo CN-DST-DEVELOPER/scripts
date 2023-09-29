@@ -27,17 +27,24 @@ end
 
 local FIRE_TAGS = { "fire" }
 local function sanityfn(inst)--, dt)
-    local delta = inst.components.temperature:IsFreezing() and -TUNING.SANITYAURA_LARGE or 0
+    local sanity_cap = TUNING.SANITYAURA_LARGE
+    local sanity_per_ent = TUNING.SANITYAURA_TINY
+    local delta = inst.components.temperature:IsFreezing() and -sanity_cap or 0
     local x, y, z = inst.Transform:GetWorldPosition()
     local max_rad = 10
     local ents = TheSim:FindEntities(x, y, z, max_rad, FIRE_TAGS)
     for i, v in ipairs(ents) do
         if v.components.burnable ~= nil and v.components.burnable:IsBurning() then
+            local stack_size = v.components.stackable ~= nil and v.components.stackable.stacksize or 1
             local rad = v.components.burnable:GetLargestLightRadius() or 1
-            local sz = TUNING.SANITYAURA_TINY * math.min(max_rad, rad) / max_rad
+            local sz = stack_size * sanity_per_ent * math.min(max_rad, rad) / max_rad
             local distsq = inst:GetDistanceSqToInst(v) - 9
             -- shift the value so that a distance of 3 is the minimum
             delta = delta + sz / math.max(1, distsq)
+            if delta > sanity_cap then
+                delta = sanity_cap
+                break
+            end
         end
     end
     return delta
