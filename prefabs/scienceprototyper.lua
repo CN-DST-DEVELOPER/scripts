@@ -195,6 +195,8 @@ local function createmachine(level, name, soundprefix, techtree, giftsound)
         --prototyper (from prototyper component) added to pristine state for optimization
         inst:AddTag("prototyper")
 
+        inst.scrapbook_specialinfo = "SCIENCEPROTOTYPER"
+
         MakeSnowCoveredPristine(inst)
 
         inst.entity:SetPristine()

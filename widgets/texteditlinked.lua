@@ -53,7 +53,7 @@ function TextEditLinked:OnRawKey(key, down)
 			if self.OnLargePaste ~= nil and #clipboard > self.limit then
 				self:OnLargePaste()
 				if self.OnTextInputted ~= nil then
-					self.OnTextInputted()
+					self.OnTextInputted(down)
 				end
 				return true
 			else
@@ -76,7 +76,7 @@ function TextEditLinked:OnRawKey(key, down)
                     self.next_text_edit.pasting = false
                 end
 				if self.OnTextInputted ~= nil then
-					self.OnTextInputted()
+					self.OnTextInputted(down)
 				end
 				return true
 			end

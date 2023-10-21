@@ -51,13 +51,14 @@ local function fn()
 
 	MakeInventoryFloatable(inst, "small", 0.15, 0.65)
 
-	inst.scrapbook_specialinfo = "HALLOWEENPOTIONMOON"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_specialinfo = "HALLOWEENPOTIONMOON"
+	inst.scrapbook_anim = "idle_1"
 
 	inst:AddComponent("halloweenpotionmoon")
 	inst.components.halloweenpotionmoon:SetOnUseFn(onusefn)

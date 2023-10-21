@@ -12,7 +12,7 @@ local prefabs =
 
 local function DoCheckTemp(inst)
     if not inst:HasTag("burnt") then
-        inst.AnimState:SetPercent("meter", 1 - math.clamp(TheWorld.state.temperature, 0, TUNING.OVERHEAT_TEMP) / TUNING.OVERHEAT_TEMP)
+        inst.AnimState:SetPercent("meter", 1 - math.clamp(GetLocalTemperature(inst), 0, TUNING.OVERHEAT_TEMP) / TUNING.OVERHEAT_TEMP)
     end
 end
 
@@ -93,6 +93,8 @@ local function fn()
     inst:AddTag("structure")
 
     MakeSnowCoveredPristine(inst)
+
+    inst.scrapbook_specialinfo = "WINTEROMETOR"
 
     inst.entity:SetPristine()
 

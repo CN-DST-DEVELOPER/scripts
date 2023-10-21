@@ -195,10 +195,14 @@ local function fn()
     inst.components.talker.colour = TALKER_COLOUR
     inst.components.talker.offset = TALKER_OFFSET
 
+    inst.scrapbook_specialinfo = "SEWINGMANNEQUIN"
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = { "ARM_carry", "LANTERN_OVERLAY" }
 
     -------------------------------------------------------
     inst:AddComponent("inspectable")

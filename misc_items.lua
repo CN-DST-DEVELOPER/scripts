@@ -1912,6 +1912,20 @@ MISC_ITEMS =
 		output_items = {  "firestaff_meteor", "hammer_forge", "ruins_bat_heavy", "spear_forge_gungnir", "spear_forge_lance", "hambat_spiralcut", "book_brimstone_gilded", },
 		release_group = 53,
 	},
+	pack_formal1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_formal1.xml",
+		display_tex = "formal1.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "warly_formal", "wortox_formal", "wormwood_formal", },
+		output_items = {  "warly_formal", "body_warly_formal", "legs_warly_formal", "feet_warly_formal", "wortox_formal", "body_wortox_formal", "legs_wortox_formal", "wormwood_formal", "hand_wormwood_formal", "body_wormwood_formal", "legs_wormwood_formal", },
+		release_group = 148,
+	},
 	pack_gladiator_all =
 	{
 		type = "purchase",
@@ -4429,6 +4443,19 @@ MISC_ITEMS =
 		output_items = {  "warly_fisherman", "body_warly_fisherman", "feet_warly_fisherman", "legs_warly_fisherman", },
 		release_group = 71,
 	},
+	pack_warly_formal =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 115,
+		build_name_override = "warly_formal",
+		display_atlas = "bigportraits/warly_formal.xml",
+		display_tex = "warly_formal_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "warly_formal", "body_warly_formal", "legs_warly_formal", "feet_warly_formal", },
+		output_items = {  "warly_formal", "body_warly_formal", "legs_warly_formal", "feet_warly_formal", },
+		release_group = 148,
+	},
 	pack_warly_rose =
 	{
 		type = "purchase",
@@ -5469,6 +5496,34 @@ MISC_ITEMS =
 		output_items = {  "woodie_survivorp", "body_woodie_survivorp", },
 		release_group = 74,
 	},
+	pack_woodworking_fantasy =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_woodworking_fantasy.xml",
+		display_tex = "woodworking_fantasy.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "round_table_fantasy", "wood_table_fantasy", "chair_stool_fantasy", "wood_chair_fantasy", "decor_centerpiece_fantasy", "decor_flowervase_fantasy", "decor_lamp_fantasy", "decor_phonograph_fantasy", "decor_pictureframe_fantasy", "decor_portraitframe_fantasy", },
+		output_items = {  "round_table_fantasy", "wood_table_fantasy", "chair_stool_fantasy", "wood_chair_fantasy", "decor_centerpiece_fantasy", "decor_flowervase_fantasy", "decor_lamp_fantasy", "decor_phonograph_fantasy", "decor_pictureframe_fantasy", "decor_portraitframe_fantasy", },
+		release_group = 148,
+	},
+	pack_woodworking_handmade =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_woodworking_handmade.xml",
+		display_tex = "woodworking_handmade.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "round_table_handmade", "wood_table_handmade", "chair_stool_handmade", "wood_chair_handmade", "decor_centerpiece_handmade", "decor_flowervase_handmade", "decor_lamp_handmade", "decor_phonograph_handmade", "decor_pictureframe_handmade", "decor_portraitframe_handmade", },
+		output_items = {  "round_table_handmade", "wood_table_handmade", "chair_stool_handmade", "wood_chair_handmade", "decor_centerpiece_handmade", "decor_flowervase_handmade", "decor_lamp_handmade", "decor_phonograph_handmade", "decor_pictureframe_handmade", "decor_portraitframe_handmade", },
+		release_group = 148,
+	},
 	pack_wormwood_cactus =
 	{
 		type = "purchase",
@@ -5510,6 +5565,19 @@ MISC_ITEMS =
 		display_items = {  "wormwood_rose", "wormwood_cactus", "wormwood_mushroom", },
 		output_items = {  "wormwood_rose", "wormwood_cactus", "wormwood_mushroom", "body_wormwood_rose", "hand_wormwood_rose", "legs_wormwood_rose", "body_wormwood_cactus", "hand_wormwood_cactus", "legs_wormwood_cactus", "body_wormwood_mushroom", "hand_wormwood_mushroom", "legs_wormwood_mushroom", },
 		release_group = 68,
+	},
+	pack_wormwood_formal =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 114,
+		build_name_override = "wormwood_formal",
+		display_atlas = "bigportraits/wormwood_formal.xml",
+		display_tex = "wormwood_formal_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wormwood_formal", "hand_wormwood_formal", "body_wormwood_formal", "legs_wormwood_formal", },
+		output_items = {  "wormwood_formal", "hand_wormwood_formal", "body_wormwood_formal", "legs_wormwood_formal", },
+		release_group = 148,
 	},
 	pack_wormwood_mushroom =
 	{
@@ -5564,6 +5632,19 @@ MISC_ITEMS =
 		display_items = {  "wortox_none", "wortox_survivor", "wortox_original", "wortox_minotaur", },
 		output_items = {  "wortox_none", "wortox_survivor", "body_wortox_survivor", "hand_wortox_survivor", "legs_wortox_survivor", "wortox_minotaur", "body_wortox_minotaur", "hand_wortox_minotaur", "legs_wortox_minotaur", "wortox_original", "body_wortox_original", "hand_wortox_original", "legs_wortox_original", },
 		release_group = 63,
+	},
+	pack_wortox_formal =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 113,
+		build_name_override = "wortox_formal",
+		display_atlas = "bigportraits/wortox_formal.xml",
+		display_tex = "wortox_formal_oval.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wortox_formal", "body_wortox_formal", "legs_wortox_formal", },
+		output_items = {  "wortox_formal", "body_wortox_formal", "legs_wortox_formal", },
+		release_group = 148,
 	},
 	pack_wortox_minotaur =
 	{
@@ -6168,6 +6249,13 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 43,
+	},
+	playerportrait_bg_amuletyellowan =
+	{
+		type = "playerportrait",
+		skin_tags = { "ARTNOUVEAU", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 148,
 	},
 	playerportrait_bg_anchornautical =
 	{
@@ -7106,6 +7194,13 @@ MISC_ITEMS =
 		rarity = "Common",
 		rarity_modifier = "Woven",
 		release_group = 32,
+	},
+	profileflair_amulet_yellowan =
+	{
+		type = "profileflair",
+		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 148,
 	},
 	profileflair_anchor_nautical =
 	{

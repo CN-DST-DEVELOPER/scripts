@@ -787,8 +787,10 @@ end
 
 local function SetUpGroundPounder(inst)
     local num_rings = 3
+	inst.components.groundpounder:UseRingMode()
     inst.components.groundpounder.numRings = num_rings
-    inst.components.groundpounder.radiusStepDistance = 2
+    inst.components.groundpounder.radiusStepDistance = 2.75
+	inst.components.groundpounder.ringWidth = 1.5
     inst.components.groundpounder.damageRings = 1
     inst.components.groundpounder.destructionRings = num_rings
     inst.components.groundpounder.platformPushingRings = num_rings - 1
@@ -841,7 +843,7 @@ local function SetWereWorker(inst, mode)
         inst:RemoveComponent("groundpounder")
         inst:RemoveTag("toughworker")
 
-        if mode == WEREMODES.NONE and not inst:HasTag("playghost") then
+        if mode == WEREMODES.NONE and not inst:HasTag("playerghost") then
             inst:ListenForEvent("working", onworked)
         end
     end

@@ -330,7 +330,7 @@ local PICKUP_CANT_TAGS = {
     "minesprung", "mineactive", "catchable",
     "fire", "light", "spider", "cursed", "paired", "bundle",
     "heatrock", "deploykititem", "boatbuilder", "singingshell",
-    "archive_lockbox", "simplebook",
+    "archive_lockbox", "simplebook", "furnituredecor",
     -- Pickables
     "flower", "gemsocket", "structure",
     -- Either
@@ -613,19 +613,125 @@ function GetInventoryItemAtlas(imagename, no_fallback)
 	return atlas
 end
 
-function GetScrapbookIconAtlas(imagename)
+----------------------------------------------------------------------------------------------
+
+local scrapbookIconAtlasLookup = {}
+
+function RegisterScrapbookIconAtlas(atlas, imagename)
+	if atlas ~= nil and imagename ~= nil then
+		if scrapbookIconAtlasLookup[imagename] ~= nil then
+			if scrapbookIconAtlasLookup[imagename] ~= atlas then
+				print("RegisterScrapbookIconAtlas: Image '" .. imagename .. "' is already registered to atlas '" .. atlas .."'")
+			end
+		else
+			scrapbookIconAtlasLookup[imagename] = atlas
+		end
+	end
+end
+
+function GetScrapbookIconAtlas_Internal(imagename)
     local images1 = "images/scrapbook_icons1.xml"
     local images2 = "images/scrapbook_icons2.xml"
+    local images3 = "images/scrapbook_icons3.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
+            or TheSim:AtlasContains(images3, imagename) and images3
             or nil
 end
 
+function GetScrapbookIconAtlas(imagename)
+	local atlas = scrapbookIconAtlasLookup[imagename]
+	if atlas then
+		return atlas
+	end
 
-function GetSkilltreeBG(imagename)
+    atlas = GetScrapbookIconAtlas_Internal(imagename)
+
+	if atlas ~= nil then
+		scrapbookIconAtlasLookup[imagename] = atlas
+	end
+
+	return atlas
+end
+
+----------------------------------------------------------------------------------------------
+
+local skillTreeBGAtlasLookup = {}
+
+function RegisterSkilltreeBGAtlas(atlas, imagename)
+	if atlas ~= nil and imagename ~= nil then
+		if skillTreeBGAtlasLookup[imagename] ~= nil then
+			if skillTreeBGAtlasLookup[imagename] ~= atlas then
+				print("RegisterSkilltreeBGAtlas: Image '" .. imagename .. "' is already registered to atlas '" .. atlas .."'")
+			end
+		else
+			skillTreeBGAtlasLookup[imagename] = atlas
+		end
+	end
+end
+
+function GetSkilltreeBG_Internal(imagename)
     local images1 = "images/skilltree2.xml"
     local images2 = "images/skilltree3.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
             or nil
 end
+
+function GetSkilltreeBG(imagename)
+	local atlas = skillTreeBGAtlasLookup[imagename]
+	if atlas then
+		return atlas
+	end
+
+    atlas = GetSkilltreeBG_Internal(imagename)
+
+	if atlas ~= nil then
+		skillTreeBGAtlasLookup[imagename] = atlas
+	end
+
+	return atlas
+end
+
+local skillTreeIconsAtlasLookup = {}
+
+function RegisterSkilltreeIconsAtlas(atlas, imagename)
+	if atlas ~= nil and imagename ~= nil then
+		if skillTreeIconsAtlasLookup[imagename] ~= nil then
+			if skillTreeIconsAtlasLookup[imagename] ~= atlas then
+				print("RegisterSkilltreeIconsAtlas: Image '" .. imagename .. "' is already registered to atlas '" .. atlas .."'")
+			end
+		else
+			skillTreeIconsAtlasLookup[imagename] = atlas
+		end
+	end
+end
+
+function GetSkilltreeIconAtlas_Internal(imagename)
+    return "images/skilltree_icons.xml"
+
+    -- NOTES(DiogoW): For future!
+
+    -- local images1 = "images/skilltree_icons1.xml"
+    -- local images2 = "images/skilltree_icons2.xml"
+    -- return TheSim:AtlasContains(images1, imagename) and images1
+    --         or TheSim:AtlasContains(images2, imagename) and images2
+    --         or nil
+end
+
+function GetSkilltreeIconAtlas(imagename)
+	local atlas = skillTreeIconsAtlasLookup[imagename]
+	if atlas then
+		return atlas
+	end
+
+    atlas = GetSkilltreeIconAtlas_Internal(imagename)
+
+	if atlas ~= nil then
+		skillTreeIconsAtlasLookup[imagename] = atlas
+	end
+
+	return atlas
+end
+
+----------------------------------------------------------------------------------------------

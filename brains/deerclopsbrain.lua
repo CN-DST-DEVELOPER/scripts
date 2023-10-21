@@ -1,10 +1,9 @@
 require "behaviours/chaseandattack"
-require "behaviours/runaway"
 require "behaviours/wander"
 require "behaviours/doaction"
 require "behaviours/attackwall"
-require "behaviours/panic"
-require "behaviours/minperiod"
+require("behaviours/leash")
+require("behaviours/faceentity")
 require "giantutils"
 
 local SEE_DIST = 40
@@ -80,6 +79,41 @@ local function GetHomePos(inst)
     return inst.components.knownlocations:GetLocation("home")
 end
 
+local function GetTarget(inst)
+	return inst.components.combat.target
+end
+
+local function IsTarget(inst, target)
+	return inst.components.combat:TargetIs(target)
+end
+
+local function GetTargetPos(inst)
+	local target = GetTarget(inst)
+	return target ~= nil and target:GetPosition() or nil
+end
+
+local function ShouldGrowIce(inst)
+	if not inst.hasicelance or inst.sg:HasStateTag("staggered") then
+		return false
+	end
+	local burning = inst.components.burnable:IsBurning()
+	if not inst.components.combat:HasTarget() then
+		--out of combat: regrow missing ice when not burning
+		return not burning and inst._disengagetask == nil
+			and (	inst.sg.mem.noice ~= nil or
+					(inst.sg.mem.noeyeice and not (inst.hasfrenzy and inst:ShouldStayFrenzied()))
+				)
+	end
+	--in combat:
+	--  -when EYE spike is NOT burning
+	--    -either summon circle if needed (can be burning)
+	--    -or regrow ice when both are missing and when not burning
+	return not (burning and inst.sg.mem.noice == 1 and not inst.sg.mem.noeyeice)
+		and (	(inst.hasiceaura and inst.sg.mem.circle == nil and not (inst.hasfrenzy and inst:ShouldStayFrenzied())) or
+				(not burning and inst.sg.mem.noice == 1)
+			)
+end
+
 local DeerclopsBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -88,20 +122,39 @@ function DeerclopsBrain:OnStart()
     local root =
         PriorityNode(
         {
-            AttackWall(self.inst),
+			WhileNode(function() return ShouldGrowIce(self.inst) end, "IceGrow",
+				ActionNode(function()
+					self.inst:PushEvent("doicegrow")
+				end)),
+			ParallelNode{
+				AttackWall(self.inst),
+				ActionNode(function()
+					self.inst.components.combat.battlecryenabled = true
+				end),
+			},
+			WhileNode(function() return self.inst.components.combat:InCooldown() end, "Chase",
+				PriorityNode({
+					FailIfSuccessDecorator(
+						Leash(self.inst, GetTargetPos, TUNING.DEERCLOPS_ATTACK_RANGE, 3)),
+					FaceEntity(self.inst, GetTarget, IsTarget),
+				}, 0.5)),
             ChaseAndAttack(self.inst, CHASE_TIME, CHASE_DIST, nil, nil, nil, OceanChaseWaryDistance),
+			FailIfSuccessDecorator(
+				ActionNode(function()
+					self.inst.components.combat.battlecryenabled = true
+				end)),
             DoAction(self.inst, BaseDestroy, "DestroyBase", true),
             WhileNode(function() return self.inst:WantsToLeave() end, "Trying To Leave",
                 Wander(self.inst, GetHomePos, 30)),
 
             Wander(self.inst, GetWanderPos, 30, {minwwwalktime = 10}),
-        },1)
+		}, 0.5)
 
     self.bt = BT(self.inst, root)
 end
 
 function DeerclopsBrain:OnInitializationComplete()
-    self.inst.components.knownlocations:RememberLocation("spawnpoint", Point(self.inst.Transform:GetWorldPosition()))
+	self.inst.components.knownlocations:RememberLocation("spawnpoint", self.inst:GetPosition(), true)
 end
 
 return DeerclopsBrain

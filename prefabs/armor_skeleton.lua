@@ -14,6 +14,7 @@ local RESISTANCES =
     "_combat",
     "explosive",
     "quakedebris",
+    "lunarhaildebris",
     "caveindebris",
     "trapdamage",
 }
@@ -216,6 +217,9 @@ local function fn()
 
         return inst
     end
+
+    inst.scrapbook_fueled_rate = TUNING.MED_FUEL
+    inst.scrapbook_fueled_uses = true
 
     inst:AddComponent("inspectable")
 

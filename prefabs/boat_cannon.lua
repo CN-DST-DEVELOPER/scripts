@@ -278,6 +278,8 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
 	inst.AnimState:HideSymbol("cannon_flap_down")
 
+    inst.scrapbook_specialinfo = "BOATCANNON"
+
     inst:AddTag("boatcannon")
     inst.Transform:SetEightFaced()
 

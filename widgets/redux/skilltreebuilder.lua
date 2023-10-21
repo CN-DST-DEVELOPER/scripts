@@ -14,7 +14,6 @@ local LOCKSIZE = 24
 local SPACE = 5 
 
 local ATLAS = "images/skilltree.xml"
-local ATLAS_ICONS = "images/skilltree_icons.xml"
 local IMAGE_LOCKED = "locked.tex"
 local IMAGE_LOCKED_OVER = "locked_over.tex"
 local IMAGE_UNLOCKED = "unlocked.tex"
@@ -224,7 +223,8 @@ function SkillTreeBuilder:buildbuttons(panel,pos,data, offset)
 		end)
 
 		if subdata.icon then
-			skillicon = skillbutton:AddChild(Image(ATLAS_ICONS,subdata.icon..".tex"))
+			local tex = subdata.icon..".tex"
+			skillicon = skillbutton:AddChild(Image( GetSkilltreeIconAtlas(tex), tex ))
 			skillicon:ScaleToSize(TILESIZE-4, TILESIZE-4)
 			skillicon:MoveToFront()
 		end
@@ -498,6 +498,7 @@ function SkillTreeBuilder:RefreshTree()
 		self.infopanel.activatebutton:Hide()
 		self.infopanel.activatedtext:Hide()
 		self.infopanel.respec_button:Hide()
+		self.infopanel.activatedbg:Hide()
 
 		if self.fromfrontend then
             if skilltreedefs.FN.CountSkills(self.target, activatedskills) > 0 then
@@ -522,7 +523,8 @@ function SkillTreeBuilder:RefreshTree()
             if not readonly then
                 if availableskillpoints > 0 and self.skillgraphics[self.selectedskill].status.activatable and not skilltreeupdater:IsActivated(self.selectedskill, characterprefab) and not self.skilltreedef[self.selectedskill].lock_open then
 
-                    self.infopanel.activatebutton:Show()
+                	self.infopanel.activatedbg:Hide()
+                    self.infopanel.activatebutton:Show()                    
                     self.infopanel.activatebutton:SetOnClick(function()
                     	self:LearnSkill(skilltreeupdater,characterprefab)
                     end)
@@ -535,6 +537,7 @@ function SkillTreeBuilder:RefreshTree()
 
 			if self.skillgraphics[self.selectedskill].status.activated then
 				self.infopanel.activatedtext:Show()
+				self.infopanel.activatedbg:Show()
 			end
 		else
 			self.infopanel.desc:SetMultilineTruncatedString(STRINGS.SKILLTREE.INFOPANEL_DESC, 3, 240, nil,nil,true,6)

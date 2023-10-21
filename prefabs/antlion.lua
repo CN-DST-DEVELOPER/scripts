@@ -444,6 +444,9 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_maxhealth  = TUNING.ANTLION_HEALTH
+    inst.scrapbook_sanityaura = -TUNING.SANITYAURA_MED
+
     --Remove these tags so that they can be added properly when replicating components below
     inst:RemoveTag("__health")
     inst:RemoveTag("__combat")

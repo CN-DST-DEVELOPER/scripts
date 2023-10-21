@@ -61,6 +61,30 @@ local OldAgeBadge = Class(Badge, function(self, owner)
         end
     end, TheWorld)
 
+    self.inst:ListenForEvent("isacidsizzling", function(owner, isacidsizzling)
+        if isacidsizzling == nil then
+            isacidsizzling = owner:IsAcidSizzling()
+        end
+        if isacidsizzling then
+            if self.acidsizzling == nil then
+                self.acidsizzling = self.underNumber:AddChild(UIAnim())
+                self.acidsizzling:GetAnimState():SetBank("inventory_fx_acidsizzle")
+                self.acidsizzling:GetAnimState():SetBuild("inventory_fx_acidsizzle")
+                self.acidsizzling:GetAnimState():PlayAnimation("idle", true)
+                self.acidsizzling:GetAnimState():SetMultColour(.65, .62, .17, 0.8)
+                self.acidsizzling:GetAnimState():SetTime(math.random())
+                self.acidsizzling:SetScale(.2)
+                self.acidsizzling:GetAnimState():AnimateWhilePaused(false)
+                self.acidsizzling:SetClickable(false)
+            end
+        else
+            if self.acidsizzling ~= nil then
+                self.acidsizzling:Kill()
+                self.acidsizzling = nil
+            end
+        end
+    end, owner)
+
     self.hots = {}
     self._onremovehots = function(debuff)
         self.hots[debuff] = nil

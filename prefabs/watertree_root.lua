@@ -88,6 +88,7 @@ local function fn()
     inst.AnimState:SetBank("watertree_root")
     inst.AnimState:SetBuild("watertree_root")
     inst.AnimState:PlayAnimation("idle1",true)
+    inst.scrapbook_anim = "idle1"
 
     inst.entity:SetPristine()
 

@@ -393,10 +393,10 @@ local states =
 
         timeline =
         {
-            TimeEvent(39*FRAMES, function(inst)
+			FrameEvent(52, function(inst) inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound") end),
+			FrameEvent(58, function(inst)
                 inst.components.groundpounder:GroundPound()
                 BounceStuff(inst)
-                inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound")
             end),
         },
 
@@ -514,8 +514,16 @@ local states =
             inst.Physics:CollidesWith(COLLISION.WORLD)
         end,
 
-        onexit = function(inst)
+		timeline =
+		{
+			FrameEvent(8, function(inst) inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound") end),
+			FrameEvent(14, function(inst)
+				inst.components.groundpounder:GroundPound()
+				BounceStuff(inst)
+			end),
+		},
 
+        onexit = function(inst)
             inst.Physics:ClearMotorVelOverride()
 
             inst.components.locomotor:Stop()
@@ -523,19 +531,14 @@ local states =
             inst.sg.statemem.startpos = nil
             inst.sg.statemem.targetpos = nil
 
-            inst.OnChangeToObstacle(inst)
+			inst:OnChangeToObstacle()
         end,
         
         events=
         {
             EventHandler("animover", function(inst)
-                
-                inst.components.groundpounder:GroundPound()
-                BounceStuff(inst)
-
-                if inst.jumpland(inst) then
+				if inst:jumpland() then
                     inst.sg:GoToState("leap_attack_pst")
-                    inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound")
                 else
                     inst.sg:GoToState("stun",{land_stun=true})
                 end
@@ -551,11 +554,6 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("jump_atk_pst")
-            inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound")
-        end,
-
-        onexit = function(inst)
-            inst.components.groundpounder.numRings = 3
         end,
 
         events=

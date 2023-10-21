@@ -11,6 +11,7 @@ local LootDropper = Class(function(self, inst)
     self.chanceloottable = nil
 
     self.trappable = true
+    self.droprecipeloot = true
 
     self.lootfn = nil
     self.flingtargetpos = nil
@@ -197,11 +198,13 @@ function LootDropper:GenerateLoot()
         end
     end
 
-    local recipe = AllRecipes[self.inst.prefab]
-    if recipe then
-        local recipeloot = self:GetRecipeLoot(recipe)
-        for k,v in ipairs(recipeloot) do
-            table.insert(loots, v)
+    if self.droprecipeloot then
+        local recipe = AllRecipes[self.inst.prefab]
+        if recipe then
+            local recipeloot = self:GetRecipeLoot(recipe)
+            for k,v in ipairs(recipeloot) do
+                table.insert(loots, v)
+            end
         end
     end
 
@@ -212,11 +215,12 @@ function LootDropper:GenerateLoot()
     return loots
 end
 
-function LootDropper:GetAllPossibleLoot()
+function LootDropper:GetAllPossibleLoot(setuploot)
     local loots = {}
 
-    if self.lootsetupfn then
-        self.lootsetupfn(self)
+    -- NOTES(DiogoW): We don't want to run lootsetupfn if this function is not called for debugging purposes or for creating scrapbook data.
+    if setuploot and self.lootsetupfn then
+        self:lootsetupfn()
     end
 
     if self.randomhauntedloot then

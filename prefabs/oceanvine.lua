@@ -278,6 +278,7 @@ local function commonfn(Sim)
 	inst.AnimState:SetBank("oceanvine")
     inst.AnimState:SetBuild("oceanvine")
 	inst.AnimState:PlayAnimation("idle_fruit", true)
+    inst.scrapbook_anim = "idle_fruit"
 
 	inst:AddTag("hangingvine")
     inst:AddTag("flying")

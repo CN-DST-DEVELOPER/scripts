@@ -127,6 +127,10 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/meta2.fev"),
     Asset("FILE", "sound/meta2.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/rifts3.fev"),
+    Asset("FILE", "sound/rifts3.fsb"),
+    Asset("FILE", "sound/rifts3_AMB.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods
@@ -241,8 +245,10 @@ local assets =
 
     Asset("ATLAS", "images/scrapbook_icons1.xml"),
     Asset("IMAGE", "images/scrapbook_icons1.tex"), 
-    --Asset("ATLAS", "images/scrapbook_icons2.xml"),
-    --Asset("IMAGE", "images/scrapbook_icons2.tex"), 
+    Asset("ATLAS", "images/scrapbook_icons2.xml"),
+    Asset("IMAGE", "images/scrapbook_icons2.tex"), 
+    Asset("ATLAS", "images/scrapbook_icons3.xml"),
+    Asset("IMAGE", "images/scrapbook_icons3.tex"),     
 
     Asset("ATLAS", "images/crafting_menu.xml"),
     Asset("IMAGE", "images/crafting_menu.tex"),

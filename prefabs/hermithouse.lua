@@ -289,6 +289,7 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
 		inst.AnimState:SetBank("hermitcrab_home")
 		inst.AnimState:SetBuild("hermitcrab_home")
 		inst.AnimState:PlayAnimation("idle_stage4", true)
+        inst.scrapbook_anim = "idle_stage1"
 
 		if construction_data then
 			--inst.AnimState:SetAddColour(construction_data.level / #construction_data, 0, 0, 0)
@@ -303,6 +304,8 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
 
         MakeSnowCoveredPristine(inst)
 
+        inst.scrapbook_proxy = "hermithouse"
+
 		inst.entity:SetPristine()
 
         if client_postinit ~= nil then
@@ -312,7 +315,6 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
 		if not TheWorld.ismastersim then
 			return inst
 		end
-
 
         if name == "hermithouse_construction1" then
             inst.nolight = true

@@ -1602,6 +1602,8 @@ local function GetPickupAction(self, target, tool)
         return ACTIONS.HARVEST
     elseif target:HasTag("donecooking") and not target:HasTag("burnt") then
         return ACTIONS.HARVEST
+    elseif target:HasTag("inventoryitemholder_take") and not target:HasTag("fire") then
+        return ACTIONS.TAKEITEM
     elseif tool ~= nil and tool:HasTag("unsaddler") and target:HasTag("saddled") and not IsEntityDead(target) then
         return ACTIONS.UNSADDLE
     elseif tool ~= nil and tool:HasTag("brush") and target:HasTag("brushable") and not IsEntityDead(target) then
@@ -1755,6 +1757,7 @@ function PlayerController:GetActionButtonAction(force_target)
                 "brushable",
                 "tapped_harvestable",
                 "tendable_farmplant",
+                "inventoryitemholder_take",
             }
             if tool ~= nil then
                 for k, v in pairs(TOOLACTIONS) do
@@ -1894,7 +1897,7 @@ function PlayerController:DoInspectButton()
         end
         if self.handler ~= nil then
 			--assert(self.inst == ThePlayer)
-            TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target.prefab, self.inst.prefab)
+            TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target, self.inst.prefab)
         end
     end
 
@@ -2784,6 +2787,7 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
     local max_rad = 6
     local min_rad_sq = min_rad * min_rad
     local max_rad_sq = max_rad * max_rad
+
     local rad =
             self.controller_target ~= nil and
             math.max(min_rad, math.min(max_rad, math.sqrt(self.inst:GetDistanceSqToInst(self.controller_target)))) or
@@ -2815,10 +2819,10 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
                     break
                 end
 
-                --Check distance including y value
+                -- Calculate the dsq to filter out objects, ignoring the y component for now.
                 local x1, y1, z1 = v.Transform:GetWorldPosition()
                 local dx, dy, dz = x1 - x, y1 - y, z1 - z
-                local dsq = dx * dx + dy * dy + dz * dz
+                local dsq = dx * dx + dz * dz
 
                 if fishing and v:HasTag("fishable") then
                     local r = v:GetPhysicsRadius(0)
@@ -2833,6 +2837,11 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
                             v == self.controller_attack_target or
                             dx * dirx + dz * dirz > 0))) and
                     CanEntitySeePoint(self.inst, x1, y1, z1) then
+
+                    -- Incorporate the y component after we've performed the inclusion radius test.
+                    -- We wait until now because we might disqualify our controller_target if its transform has a y component,
+                    -- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
+                    dsq = dsq + (dy * dy)
 
                     local dist = dsq > 0 and math.sqrt(dsq) or 0
                     local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
@@ -2855,6 +2864,10 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz)
                     --make it easier to haunt the portal for resurrection in endless mode
                     if v:HasTag("portal") then
                         score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+                    end
+
+                    if v:HasTag("hasfurnituredecoritem") then
+                        score = score * 0.5
                     end
 
                     --print(v, angle_component, dist_component, mult, add, score)
@@ -3599,7 +3612,7 @@ function PlayerController:DoAction(buffaction, spellbook)
 
     if self.handler ~= nil and buffaction.action == ACTIONS.LOOKAT and buffaction.target then
 		--assert(self.inst == ThePlayer)
-        TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target.prefab, self.inst.prefab)
+        TheScrapbookPartitions:SetInspectedByCharacter(buffaction.target, self.inst.prefab)
     end
 end
 

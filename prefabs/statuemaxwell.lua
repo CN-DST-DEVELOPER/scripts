@@ -98,6 +98,7 @@ local function fn()
     inst.AnimState:SetBank("statue_maxwell")
     inst.AnimState:SetBuild("statue_maxwell_build")
     inst.AnimState:PlayAnimation("idle_full")
+    inst.scrapbook_anim = "idle_full"
 
     inst.entity:SetPristine()
 

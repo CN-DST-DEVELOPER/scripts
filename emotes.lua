@@ -2,31 +2,31 @@ local EMOTES =
 {
     ["wave"] = {
         aliases = { "waves", "hi", "bye", "goodbye" },
-        data = { anim = { "emoteXL_waving1", "emoteXL_waving2", "emoteXL_waving3" }, randomanim = true, mounted = true },
+        data = { anim = { "emoteXL_waving1", "emoteXL_waving2", "emoteXL_waving3" }, randomanim = true, sitting = true, mounted = true },
     },
 
     ["rude"] = {
         aliases = { "goaway", "threaten" },
-        data = { anim = { "emoteXL_waving4" }, randomanim = true, mounted = true, mountsound = "angry" },
+        data = { anim = { "emoteXL_waving4" }, randomanim = true, sitting = true, mounted = true, mountsound = "angry" },
     },
 
     ["happy"] = {
-        data = { anim = "emoteXL_happycheer", mounted = true, mountsound = "yell" },
+        data = { anim = "emoteXL_happycheer", sitting = true, mounted = true, mountsound = "yell" },
     },
 
     ["angry"] = {
         aliases = { "anger", "grimace", "grimaces", "frustrate", "frustrated", "frustration" },
-        data = { anim = "emoteXL_angry", mounted = true, mountsound = "angry", mountsounddelay = 7 * FRAMES },
+        data = { anim = "emoteXL_angry", sitting = true, mounted = true, mountsound = "angry", mountsounddelay = 7 * FRAMES },
     },
 
     ["cry"] = {
         aliases = { "sad", "cries" },
-        data = { anim = "emoteXL_sad", fx = "tears", fxdelay = 17 * FRAMES, mounted = true, mountsound = "grunt" },
+        data = { anim = "emoteXL_sad", fx = "tears", fxdelay = 17 * FRAMES, sitting = true, mounted = true, mountsound = "grunt" },
     },
 
     ["no"] = {
         aliases = { "annoyed", "annoy", "shakehead", "shake", "confuse", "confused" },
-        data = { anim = "emoteXL_annoyed", mounted = true, mountsound = "grunt", mountsounddelay = 12 * FRAMES },
+        data = { anim = "emoteXL_annoyed", sitting = true, mounted = true, mountsound = "grunt", mountsounddelay = 12 * FRAMES },
     },
 
     ["joy"] = {
@@ -53,12 +53,12 @@ local EMOTES =
 
     ["facepalm"] = {
         aliases = { "doh", "slapintheface" },
-        data = { anim = "emoteXL_facepalm", mounted = true, mountsound = "grunt" },
+        data = { anim = "emoteXL_facepalm", sitting = true, mounted = true, mountsound = "grunt" },
     },
 
     ["kiss"] = {
         aliases = { "blowkiss", "smooch", "mwa", "mwah" },
-        data = { anim = "emoteXL_kiss", mounted = true, mountsound = "curious" },
+        data = { anim = "emoteXL_kiss", sitting = true, mounted = true, mountsound = "curious" },
     },
 
     ["pose"] = {
@@ -68,7 +68,7 @@ local EMOTES =
 
     ["toast"] = {
         aliases = { "toasting", "cheers" },
-        data = { anim = { "emote_pre_toast", "emote_loop_toast" }, mounted = true, soundoverride = "pose", loop = true, fx = false, sounddelay = 0.55, },
+        data = { anim = { "emote_pre_toast", "emote_loop_toast" }, sitting = true, mounted = true, soundoverride = "pose", loop = true, fx = false, sounddelay = 0.55, },
     },
 
     ["pet"] = {

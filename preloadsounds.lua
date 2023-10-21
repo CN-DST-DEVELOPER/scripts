@@ -208,6 +208,10 @@ local MainSounds =
 
     "meta2.fev",
     "meta2.fsb",
+
+    "rifts3.fev",
+    "rifts3.fsb",
+    "rifts3_AMB.fsb",
 }
 
 function PreloadSoundList(list)
@@ -228,7 +232,6 @@ function PreloadSounds()
     --      access the constants within function calls.
     PreloadSoundList({
         (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].bank) or
-        WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.CARNIVAL and -- FIXME(JBK): Remove this line when the shadow rift update is done.
         (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].bank) or
         "music_frontend.fsb",
     })

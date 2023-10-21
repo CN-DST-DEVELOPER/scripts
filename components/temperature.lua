@@ -281,13 +281,17 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
         return
     end
 
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+
     -- Can override range, e.g. in special containers
     local mintemp = self.mintemp
     local maxtemp = self.maxtemp
-    local ambient_temperature = TheWorld.state.temperature
-
+    
     local owner = self.inst.components.inventoryitem ~= nil and self.inst.components.inventoryitem.owner or nil
     local inside_pocket_container = owner ~= nil and owner:HasTag("pocketdimension_container")
+
+    local ambient_temperature = inside_pocket_container and TheWorld.state.temperature or GetTemperatureAtXZ(x, z)
+
     if owner ~= nil and owner:HasTag("fridge") and not owner:HasTag("nocool") then
         -- Inside a fridge, excluding icepack ("nocool")
         -- Don't cool it below freezing unless ambient temperature is below freezing
@@ -302,7 +306,6 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
         local ents
         if not inside_pocket_container then
             -- Prepare to figure out the temperature where we are standing
-            local x, y, z = self.inst.Transform:GetWorldPosition()
             ents = self.usespawnlight and
                 TheSim:FindEntities(x, y, z, ZERO_DISTANCE, nil, self.ignoreheatertags, UPDATE_SPAWNLIGHT_ONEOF_TAGS) or
                 TheSim:FindEntities(x, y, z, ZERO_DISTANCE, UPDATE_NOSPAWNLIGHT_MUST_TAGS, self.ignoreheatertags)
@@ -317,7 +320,6 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
             end
         end
 
-        --print(ambient_temperature, "ambient_temperature")
         if self.sheltered_level > 1 then
             ambient_temperature = math.min(ambient_temperature,  self.overheattemp - 5)
         end

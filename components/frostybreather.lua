@@ -82,7 +82,7 @@ end
 
 function FrostyBreather:OnTemperatureChanged(temperature)
     if not self.forced_breath then
-        if temperature > TUNING.FROSTY_BREATH then
+        if GetLocalTemperature(self.inst) > TUNING.FROSTY_BREATH then
             self:StopBreath()
         else
             self:StartBreath()

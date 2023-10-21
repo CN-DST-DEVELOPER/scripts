@@ -115,6 +115,7 @@ local function create_common(bankandbuild)
     inst.AnimState:SetBank(bankandbuild)
     inst.AnimState:SetBuild(bankandbuild)
     inst.AnimState:PlayAnimation("idle_asleep")
+    inst.scrapbook_anim = "idle_asleep"
 
     inst.entity:SetPristine()
 

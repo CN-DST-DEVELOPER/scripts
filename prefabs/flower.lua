@@ -19,11 +19,20 @@ local function setflowertype(inst, name)
     if inst.animname == nil or (name ~= nil and inst.animname ~= name) then
         if inst.animname == ROSE_NAME then
             inst:RemoveTag("thorny")
+
+            inst._isrose:set(false)
+            inst:OnIsRoseDirty()
         end
+
         inst.animname = name or (math.random() < ROSE_CHANCE and ROSE_NAME or names[math.random(#names)])
+
         inst.AnimState:PlayAnimation(inst.animname)
+
         if inst.animname == ROSE_NAME then
             inst:AddTag("thorny")
+
+            inst._isrose:set(true)
+            inst:OnIsRoseDirty()
         end
     end
 end
@@ -93,6 +102,10 @@ local function CheckForPlanted(inst)
     end
 end
 
+local function OnIsRoseDirty(inst)
+    inst.scrapbook_proxy = inst._isrose:value() and "flower_rose" or nil
+end
+
 local function commonfn(isplanted)
     local inst = CreateEntity()
 
@@ -108,9 +121,15 @@ local function commonfn(isplanted)
     inst:AddTag("flower")
     inst:AddTag("cattoy")
 
+    inst.OnIsRoseDirty = OnIsRoseDirty
+
+    inst._isrose = net_bool(inst.GUID, "flower._isrose", "isrosedirty")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+        inst:ListenForEvent("isrosedirty", inst.OnIsRoseDirty)
+
         return inst
     end
 
@@ -165,6 +184,11 @@ function rosefn()
     local inst = commonfn()
 
     inst:SetPrefabName("flower")
+    inst.scrapbook_anim = "rose"
+    inst.scrapbook_damage = TUNING.ROSE_DAMAGE
+    inst.scrapbook_speechname = "FLOWER"
+
+    inst.scrapbook_proxy = "flower_rose"
 
     if not TheWorld.ismastersim then
         return inst

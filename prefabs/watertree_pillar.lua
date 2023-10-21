@@ -442,11 +442,15 @@ local function fn()
         inst.components.canopyshadows.range = math.floor(TUNING.SHADE_CANOPY_RANGE/4)
     end
 
+    inst.scrapbook_specialinfo = "WATERTREEPILLAR"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_adddeps = { "oceanvine" }
 
     -- inst.target_num_oceanvines = nil
     -- inst.items_to_drop = nil

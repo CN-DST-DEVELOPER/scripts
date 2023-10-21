@@ -27,7 +27,8 @@ local function fn()
     inst.Physics:SetMass(1)
     inst.Physics:SetSphere(1)
 
-    inst.scrapbook_animoffsety = 10
+    inst.scrapbook_animoffsety = 5
+    inst.scrapbook_animpercent = 0.3
     inst.scrapbook_specialinfo = "POLLYROGERS"
 
     inst.DynamicShadow:SetSize(1, .75)

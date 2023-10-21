@@ -129,7 +129,7 @@ end
 
 --- Kill the fx.
 -- Returns true if there's a 'going out' animation and the owning entity shouldn't be removed instantly
-function FireFX:Extinguish()
+function FireFX:Extinguish(fast)
     if self.playingsound ~= nil then
         self.inst.SoundEmitter:KillSound("fire")
         self.playingsound = nil
@@ -138,8 +138,10 @@ function FireFX:Extinguish()
 
     if self.extinguishsoundtest == nil or self.extinguishsoundtest() then
         self.inst.SoundEmitter:PlaySound(self.extinguishsound or "dontstarve/common/fireOut")
-        if self.levels[self.level] ~= nil and self.levels[self.level].pst ~= nil then
-            self.inst.AnimState:PlayAnimation(self.levels[self.level].pst)
+		local leveldata = self.levels[self.level]
+		local anim = leveldata ~= nil and (fast and leveldata.pst_fast or leveldata.pst) or nil
+		if anim ~= nil then
+			self.inst.AnimState:PlayAnimation(anim)
             return true
         end
     end

@@ -53,8 +53,6 @@ local function fn()
     local swap_data = {bank = "seedpouch", anim = "anim"}
     MakeInventoryFloatable(inst, "med", 0.125, 0.65, nil, nil, swap_data)
 
-    inst.scrapbook_specialinfo = "SEEDPOUCH"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -165,7 +165,7 @@ local function fn()
     inst.AnimState:SetBank("bananabush")
     inst.AnimState:SetBuild("bananabush")
     inst.AnimState:PlayAnimation("idle_small", true)
-    inst.scrapbook_anim = "idle_small"
+    inst.scrapbook_anim = "idle_big"
 
     MakeSnowCoveredPristine(inst)
 

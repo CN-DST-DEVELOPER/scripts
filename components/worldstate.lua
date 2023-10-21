@@ -140,6 +140,7 @@ local function OnWeatherTick(src, data)
     SetVariable("pop", data.pop)
     SetVariable("precipitationrate", data.precipitationrate)
     SetVariable("snowlevel", data.snowlevel)
+    SetVariable("lunarhaillevel", data.lunarhaillevel)
     SetVariable("wetness", data.wetness)
 end
 
@@ -151,6 +152,7 @@ local function OnPrecipitationChanged(src, preciptype)
     SetVariable("precipitation", preciptype)
     SetVariable("israining", preciptype == "rain", "rain")
     SetVariable("issnowing", preciptype == "snow", "snow")
+    SetVariable("islunarhailing", preciptype == "lunarhail", "lunarhail")
     SetVariable("isacidraining", preciptype == "acidrain", "acidrain")
 end
 
@@ -245,10 +247,12 @@ self.data.pop = 0
 self.data.precipitationrate = 0
 self.data.precipitation = "none"
 self.data.israining = false
+self.data.islunarhailing = false
 self.data.isacidraining = false
 self.data.issnowing = false
 self.data.issnowcovered = false
 self.data.snowlevel = 0
+self.data.lunarhaillevel = 0
 self.data.wetness = 0
 self.data.iswet = false
 

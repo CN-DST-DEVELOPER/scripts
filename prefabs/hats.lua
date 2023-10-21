@@ -94,10 +94,12 @@ local function MakeHat(name)
         end
     end
 
+    -- This is not really implemented, can just use _onequip
 	fns.simple_onequip =  function(inst, owner, from_ground)
 		_onequip(inst, owner)
 	end
 
+    -- This is not really implemented, can just use _onunequip
 	fns.simple_onunequip = function(inst, owner, from_ground)
 		_onunequip(inst, owner)
 	end
@@ -269,8 +271,6 @@ local function MakeHat(name)
     fns.bee = function()
         local inst = simple(bee_custom_init)
 
-        inst.scrapbook_specialinfo = "BEEHAT"
-
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.73)
 
@@ -375,14 +375,13 @@ local function MakeHat(name)
     fns.woodcarved = function()
         local inst = simple(fns.woodcarved_custom_init)
 
-        inst.scrapbook_specialinfo = "WOODCARVEDHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
 
         inst:AddComponent("resistance")
         inst.components.resistance:AddResistance("quakedebris")
+        inst.components.resistance:AddResistance("lunarhaildebris")
         inst.components.resistance:SetOnResistDamageFn(fns.woodcarved_onhitbyquakedebris)
 
         inst:AddComponent("armor")
@@ -485,8 +484,6 @@ local function MakeHat(name)
     fns.ruins = function()
         local inst = simple(ruins_custom_init)
 
-        inst.scrapbook_specialinfo = "RUINSHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -563,8 +560,6 @@ local function MakeHat(name)
     fns.feather = function()
         local inst = simple()
 
-        inst.scrapbook_specialinfo = "FEATHERHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -608,7 +603,6 @@ local function MakeHat(name)
         inst.components.floater:SetVerticalOffset(0.1)
         inst.components.floater:SetScale(0.65)
 
-        inst.scrapbook_specialinfo = "BEEFALOHAT"
         if not TheWorld.ismastersim then
             return inst
         end
@@ -740,8 +734,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.6)
 
-        inst.scrapbook_specialinfo = "MINERHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -857,8 +849,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetVerticalOffset(0.1)
         inst.components.floater:SetScale(0.62)
-
-        inst.scrapbook_specialinfo = "SPIDERHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -1110,8 +1100,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.65)
 
-        inst.scrapbook_specialinfo = "BUSHHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -1166,8 +1154,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.68)
-
-        inst.scrapbook_specialinfo = "KELPHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -1356,7 +1342,7 @@ local function MakeHat(name)
 		inst:ListenForEvent("attacked", balloon_onownerattackedfn, owner)
     end
 
-    local function balloon_onunequip(inst, owner)
+    local function balloon_onunequip(inst, owner)        
         _onunequip(inst, owner)
 		inst:RemoveEventCallback("attacked", balloon_onownerattackedfn, owner)
     end
@@ -1377,7 +1363,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.65)
-        inst.scrapbook_specialinfo = "BALLOONHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -1476,8 +1461,6 @@ local function MakeHat(name)
     fns.walter = function()
         local inst = simple(walter_custom_init)
 
-        inst.scrapbook_specialinfo = "WALTERHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -1518,8 +1501,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.66)
-
-        inst.scrapbook_specialinfo = "ICEHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -1600,8 +1581,6 @@ local function MakeHat(name)
     fns.watermelon = function()
         local inst = simple(watermelon_custom_init)
 
-        inst.scrapbook_specialinfo = "WATERMELONHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -1666,8 +1645,6 @@ local function MakeHat(name)
 
     fns.mole = function()
         local inst = simple(mole_custom_init)
-
-        inst.scrapbook_specialinfo = "MOLEHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -1837,7 +1814,6 @@ local function MakeHat(name)
     fns.hive = function()
         local inst = simple(hive_custom_init)
 
-        inst.scrapbook_specialinfo = "HIVEHAT"
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.8)
 
@@ -1986,8 +1962,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
 
-        inst.scrapbook_specialinfo = "DESERTHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -2055,8 +2029,6 @@ local function MakeHat(name)
     fns.moonstorm_goggles = function()
         local inst = simple(moonstorm_custom_init)
 
-        inst.scrapbook_specialinfo = "MOONSTORMGOGGLESHAT"
-
         inst.components.floater:SetSize("med")        
         inst.components.floater:SetScale(0.72)
 
@@ -2113,8 +2085,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
-
-        inst.scrapbook_specialinfo = "EYEMASKHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -2188,8 +2158,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
-
-        inst.scrapbook_specialinfo = "ANTLIONHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -2356,8 +2324,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
 
-        inst.scrapbook_specialinfo = "POLLYROGERSHAT"
-
         inst.defaultanim = "anim"
 
         if not TheWorld.ismastersim then
@@ -2431,8 +2397,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
 
-        inst.scrapbook_specialinfo = "MONKEYSMALLHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -2473,8 +2437,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
-
-        inst.scrapbook_specialinfo = "MONKEYMEDIUMHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -2519,8 +2481,6 @@ local function MakeHat(name)
 
     local function skeleton()
         local inst = simple(skeleton_custom_init)
-
-        inst.scrapbook_specialinfo = "BONEHAT"
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.68)
@@ -2611,8 +2571,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.68)
 
-        inst.scrapbook_specialinfo = "MERMHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -2669,8 +2627,6 @@ local function MakeHat(name)
         local inst = simple()
 
         inst.components.floater:SetSize("med")
-
-        inst.scrapbook_specialinfo = "BATNOSEHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -2729,8 +2685,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.65)
 
-        inst.scrapbook_specialinfo = "PLANTREGISTRYHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -2770,8 +2724,6 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
-
-        inst.scrapbook_specialinfo = "NUTRIENTHAT"
 
         if not TheWorld.ismastersim then
             return inst
@@ -3014,8 +2966,6 @@ local function MakeHat(name)
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.68)
 
-        inst.scrapbook_specialinfo = "ALTERGUARDIANHAT"
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -3117,8 +3067,6 @@ local function MakeHat(name)
 
 	fns.dreadstone = function()
 		local inst = simple(dreadstone_custom_init)
-
-        inst.scrapbook_specialinfo = "DREADSTONEHAT"
 
 		if not TheWorld.ismastersim then
 			return inst
@@ -3230,8 +3178,6 @@ local function MakeHat(name)
 		inst.components.floater:SetSize("med")
 		inst.components.floater:SetVerticalOffset(0.25)
 		inst.components.floater:SetScale(.75)
-
-        inst.scrapbook_specialinfo = "LUNARPLANTHAT"
 
 		if not TheWorld.ismastersim then
 			return inst
@@ -3449,8 +3395,6 @@ local function MakeHat(name)
 		inst.components.floater:SetVerticalOffset(0.1)
 		inst.components.floater:SetScale(.75)
 
-        inst.scrapbook_specialinfo = "VOIDCLOTHHAT"
-
 		if not TheWorld.ismastersim then
 			return inst
 		end
@@ -3482,6 +3426,459 @@ local function MakeHat(name)
 
 		return inst
 	end
+
+    -----------------------------------------------------------------------------
+    -- WAGPUNK HAT
+
+    fns.wagpunk_attach_classified = function(inst, classified)
+        inst._classified = classified
+        inst.ondetachclassified = function() inst:DetachClassified() end
+        inst:ListenForEvent("onremove", inst.ondetachclassified, classified)
+    end
+
+    fns.wagpunk_detach_classified = function(inst)
+        inst._classified = nil
+        inst.ondetachclassified = nil
+    end
+
+    fns.wagpunk_onremoveentity = function(inst)
+        if inst._classified ~= nil then
+            if TheWorld.ismastersim then
+                inst._classified:Remove()
+                inst._classified = nil
+            else
+                inst._classified._parent = nil
+                inst:RemoveEventCallback("onremove", inst.ondetachclassified, inst._classified)
+                inst:DetachClassified()
+            end
+        end
+    end
+
+    fns.wagpunk_killsaytask = function(inst)
+        if inst.delaysaytask then
+            inst.delaysaytask:Cancel()
+            inst.delaysaytask = nil
+        end
+    end 
+
+    fns.wagpunk_dosayindelay = function(inst, string)
+        fns.wagpunk_killsaytask(inst)
+
+        inst.delaysaytask = inst:DoTaskInTime(0.5, function()
+            if inst._classified ~= nil then
+                inst._classified:Say(string)
+            end
+        end)
+    end
+
+    fns.wagpunk_ondonetalking = function(inst)
+        inst.localsounds.SoundEmitter:KillSound("talk")
+    end
+
+    fns.wagpunk_ontalk = function(inst)
+        local sound = inst._classified ~= nil and inst._classified:GetTalkSound() or nil
+        if sound ~= nil then
+            inst.localsounds.SoundEmitter:KillSound("talk")
+            inst.localsounds.SoundEmitter:PlaySound(sound, "talk")
+        end
+    end
+
+    fns.wagpunk_custom_init = function(inst)
+        inst:AddTag("show_broken_ui")
+
+        inst:AddComponent("talker")
+        inst.components.talker.fontsize = 28
+        inst.components.talker.font = TALKINGFONT
+        inst.components.talker.colour = Vector3(247/255, 196/255, 77/255)
+        inst.components.talker.offset = Vector3(0, 120, 0)
+
+        inst.Transform:SetScale(0.8, 0.8, 0.8)
+        inst.scrapbook_scale = 0.8
+
+        inst.AttachClassified = fns.wagpunk_attach_classified
+        inst.DetachClassified = fns.wagpunk_detach_classified
+        inst.OnRemoveEntity   = fns.wagpunk_onremoveentity
+
+        --Dedicated server does not need to spawn the local sound fx
+        if not TheNet:IsDedicated() then
+            inst.localsounds = CreateEntity()
+            inst.localsounds:AddTag("FX")
+
+            --[[Non-networked entity]]
+            inst.localsounds.entity:AddTransform()
+            inst.localsounds.entity:AddSoundEmitter()
+            inst.localsounds.entity:SetParent(inst.entity)
+            inst.localsounds:Hide()
+            inst.localsounds.persists = false
+            inst:ListenForEvent("ontalk", fns.wagpunk_ontalk)
+            inst:ListenForEvent("donetalking", fns.wagpunk_ondonetalking)
+        end
+    end
+
+    fns.wagpunk_spawnsteam = function(inst, prefab)
+        inst:DoTaskInTime(math.random() * 0.3, function()
+            if inst:IsValid() and not (inst.components.health ~= nil and inst.components.health:IsDead()) and not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen()) then
+                inst:AddChild(SpawnPrefab(prefab))
+            end
+        end)
+    end 
+
+    fns.wagpunk_spawnbufffx = function(owner)
+        fns.wagpunk_spawnsteam(owner,"wagpunksteam_hat_up")    
+    end
+
+    fns.wagpunk_reset = function(inst)
+        if inst._targettask then
+            inst._targettask:Cancel()
+            inst._targettask = nil
+        end 
+        inst._potencialtarget = nil
+
+        fns.wagpunk_dosayindelay(inst, STRINGS.WARBIS.STOP)
+
+        local owner = inst.components.inventoryitem.owner
+        if owner ~= nil then
+            if owner.components.combat ~= nil then
+                owner.components.combat.externaldamagemultipliers:SetModifier(inst, TUNING.ARMOR_WAGPUNK_HAT_STAGE0)
+            end
+
+            fns.wagpunk_spawnsteam(owner,"wagpunksteam_hat_down")
+
+            if owner.SoundEmitter ~= nil then
+                owner.SoundEmitter:KillSound("wagpunkambient_hat")
+            end
+        end
+
+        if inst.fx ~= nil then
+            inst.fx.level:set(1)
+        end
+    end
+
+    fns.wagpunk_setnewtarget = function(inst, target, owner)
+        if owner == nil or inst.components.equippable == nil or not target:IsValid() or target.components.health == nil or target.components.health:IsDead() then
+            if inst.fx ~= nil then
+                inst.fx.level:set(1)
+            end
+
+            if owner ~= nil and owner.SoundEmitter ~= nil then
+                owner.SoundEmitter:KillSound("wagpunkambient_hat")
+            end
+
+            return
+        end
+
+        if inst.fx ~= nil then
+            inst.fx.level:set(2)
+        end
+
+        if inst._targettask then
+            inst._targettask:Cancel()
+            inst._targettask = nil
+        end
+        inst._potencialtarget = nil
+
+        if inst and inst.components.targettracker then
+            if not inst.components.targettracker:IsTracking(target) then
+                inst.components.targettracker:TrackTarget(target)
+                fns.wagpunk_spawnbufffx(owner)
+
+                fns.wagpunk_dosayindelay(inst,STRINGS.WARBIS.START)
+            end
+
+            local armor = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+
+            if armor ~= nil and armor.components.targettracker ~= nil and not armor.components.targettracker:HasTarget() then
+                armor:SetNewTarget(target, owner)
+            end
+        end
+    end
+
+    fns.wagpunk_playambient = function(owner,level)
+        if not owner.SoundEmitter then return end
+
+        if not owner.SoundEmitter:PlayingSound("wagpunkambient_hat") then
+            owner.SoundEmitter:PlaySound("rifts3/wagpunk_armor/wagpunk_armor_hat_lp","wagpunkambient_hat")
+        end
+        owner.SoundEmitter:SetParameter("wagpunkambient_hat", "param00", level)
+    end
+
+    fns.wagpunk_OnAttack = function(owner, data)
+        local hat = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+        if hat._targettask and hat._potencialtarget == data.target then
+            return
+        end
+
+        if hat.components.targettracker:IsTracking(data.target) then
+            return 
+        end
+
+        if hat._targettask then
+            hat._targettask:Cancel()
+            hat._targettask = nil
+        end
+
+        hat._potencialtarget = nil
+
+        if data.target:IsValid() then
+            if hat.components.targettracker ~= nil and hat.components.targettracker:HasTarget() then
+                hat.components.targettracker:StopTracking(true)
+            else
+                fns.wagpunk_dosayindelay(hat, STRINGS.WARBIS.NEW)
+            end
+
+            if hat.fx ~= nil then
+                hat.fx.level:set(2)
+            end
+
+            fns.wagpunk_playambient(owner,0)
+
+            hat._potencialtarget = data.target
+            hat._targettask = hat:DoTaskInTime(2, hat.SetNewTarget, data.target, owner)
+        end
+    end
+
+    fns.wagpunk_timecheck = function(inst, targettime, lasttime)
+        local STAGE1 = TUNING.ARMORPUNK_STAGE1
+        local STAGE2 = TUNING.ARMORPUNK_STAGE2
+        local STAGE3 = TUNING.ARMORPUNK_STAGE3
+        local owner = inst.components.inventoryitem.owner
+
+        if owner ~= nil then
+            local saystring = nil
+
+            if STAGE3 <= targettime and lasttime < STAGE3 then
+                if inst.fx ~= nil then
+                    inst.fx.level:set(5)
+                end
+
+                if owner.components.combat ~= nil then
+                    owner.components.combat.externaldamagemultipliers:SetModifier(inst, TUNING.ARMOR_WAGPUNK_HAT_STAGE3)
+                end
+                
+                fns.wagpunk_playambient(owner,0.7)
+                -- ADD EFFECT 3
+                saystring = STRINGS.WARBIS.STAGE3
+                fns.wagpunk_spawnbufffx(owner)
+    
+            elseif STAGE2 <= targettime and lasttime < STAGE2 then
+                if inst.fx ~= nil then
+                    inst.fx.level:set(4)
+                end
+
+                if owner.components.combat ~= nil then
+                    owner.components.combat.externaldamagemultipliers:SetModifier(inst, TUNING.ARMOR_WAGPUNK_HAT_STAGE2)
+                end
+
+                fns.wagpunk_playambient(owner,0.5)
+                -- ADD EFFECT 2
+                saystring = STRINGS.WARBIS.STAGE2
+                fns.wagpunk_spawnbufffx(owner)
+
+            elseif STAGE1 <= targettime and lasttime < STAGE1 then
+                if inst.fx ~= nil then
+                    inst.fx.level:set(3)
+                end
+
+                if owner.components.combat ~= nil then
+                    owner.components.combat.externaldamagemultipliers:SetModifier(inst, TUNING.ARMOR_WAGPUNK_HAT_STAGE1)
+                end
+
+                fns.wagpunk_playambient(owner,0.3)
+               -- ADD EFFECT 1
+                fns.wagpunk_spawnbufffx(owner)
+                saystring = STRINGS.WARBIS.STAGE1
+
+            end
+
+            if saystring then
+                fns.wagpunk_dosayindelay(inst,saystring)
+            end
+        end
+    end
+
+    fns.wagpunk_test = function(inst,target)
+        return inst:GetDistanceSqToInst(target) <= TUNING.WAGPUNK_MAXRANGE*TUNING.WAGPUNK_MAXRANGE
+    end
+
+    fns.wagpunk_onequip = function(inst, owner)
+        _onequip(inst, owner)
+        inst:ListenForEvent("onattackother", fns.wagpunk_OnAttack, owner)
+
+        local armor = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+
+        if armor ~= nil and armor.components.targettracker ~= nil then
+            inst.components.targettracker:CloneTargetFrom(armor, TUNING.WAGPUNK_SYNC_TIME)
+        end
+
+        if owner and owner.components.combat then
+            owner.components.combat.externaldamagemultipliers:SetModifier(inst, TUNING.ARMOR_WAGPUNK_HAT_STAGE0)
+        end
+
+        inst.fx = SpawnPrefab("wagpunkhat_fx")
+
+        if inst.fx ~= nil then 
+            inst.fx:AttachToOwner(owner)
+            inst.fx.level:set(1)
+        end
+
+        inst._wearer:set(owner)
+
+        inst._classified:SetTarget(owner)
+    end
+
+    fns.wagpunk_onunequip = function(inst, owner)
+        _onunequip(inst, owner)
+
+        inst:RemoveEventCallback("onattackother", fns.wagpunk_OnAttack, owner)
+
+        if owner ~= nil and owner.components.combat ~= nil then
+            owner.components.combat.externaldamagemultipliers:RemoveModifier(inst)
+        end
+
+        inst.components.targettracker:StopTracking()
+
+        if owner ~= nil and owner.SoundEmitter ~= nil then
+            owner.SoundEmitter:KillSound("wagpunkambient_hat")
+        end
+
+        if inst.fx ~= nil then
+            inst.fx.level:set(1)
+            inst.fx:Remove()
+            inst.fx = nil
+        end
+
+        inst._wearer:set(nil)
+    end
+
+    fns.wagpunk_pause = function(inst)
+        inst._synch:push()
+        fns.wagpunk_dosayindelay(inst,STRINGS.WARBIS.SYNCHING) 
+    end
+    fns.wagpunk_unpause = function(inst)
+        local timetracking = inst.components.targettracker:GetTimeTracking()
+
+        if timetracking ~= nil then
+            fns.wagpunk_timecheck(inst, timetracking, 0)
+            fns.wagpunk_dosayindelay(inst,STRINGS.WARBIS.SYNCHED)
+        end
+    end
+
+    fns.wagpunk_trackerstart = function(inst,target)    
+        inst._target:set(target)
+    end
+
+    fns.wagpunk_trackerstop = function(inst,target)
+       inst._target:set(nil)        
+    end
+
+    fns.OnChangeTargetDirty = function(inst)
+        local wearer = inst._wearer:value()
+
+        if wearer == ThePlayer then
+            -- This is ThePlayer and there is no target, stop the targeting
+            if inst._target:value() == nil then
+                ThePlayer:PushEvent("wagpunkui_targetupdate", nil)
+            -- ThePlayer is wearing this hat, or it's broken then update the targeting
+            elseif inst.replica.inventoryitem:IsHeldBy(wearer) and (inst:HasTag("broken") or inst.replica.equippable:IsEquipped()) then
+                wearer:PushEvent("wagpunkui_targetupdate", inst._target:value())
+            end
+        end
+    end
+
+    fns.OnChangeWearerDirty = function(inst)
+        if inst._wearer:value() == ThePlayer then
+            ThePlayer:PushEvent("wagpunkui_worn",inst)
+        elseif ThePlayer ~= nil then
+            ThePlayer:PushEvent("wagpunkui_removed",inst)
+        end
+    end
+
+    local wagpunk_swap_data_broken = { bank = "wagpunkhat", anim = "broken" }
+
+    fns.wagpunk_onbroken = function(inst)
+        if inst.components.equippable ~= nil then
+            inst:RemoveComponent("equippable")
+            inst.AnimState:PlayAnimation("broken")
+            inst.components.floater:SetSwapData(wagpunk_swap_data_broken)
+            inst:AddTag("broken")
+            inst.components.inspectable.nameoverride = "BROKEN_FORGEDITEM"
+        end
+    end
+
+    fns.wagpunk_onrepaired = function(inst)
+        if inst.components.equippable == nil then
+            inst:AddComponent("equippable")
+            inst.components.equippable.equipslot = EQUIPSLOTS.HEAD
+            inst.components.equippable:SetOnEquip(fns.wagpunk_onequip)
+            inst.components.equippable:SetOnUnequip(fns.wagpunk_onunequip)
+            inst.components.equippable:SetOnEquipToModel(fns.simple_onequiptomodel)
+            inst.AnimState:PlayAnimation("anim")
+            inst.components.floater:SetSwapData(swap_data)
+            inst:RemoveTag("broken")
+            inst.components.inspectable.nameoverride = nil
+        end
+    end
+
+    fns.OnSynchDirty = function(inst)
+        if inst._wearer:value() then
+            inst._wearer:value():PushEvent("wagpunkui_synch", inst)
+        end
+    end
+
+    fns.wagpunk = function()
+        local inst = simple(fns.wagpunk_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetVerticalOffset(0.1)
+        inst.components.floater:SetScale(.75)
+
+        inst:ListenForEvent("targettracker_starttrack",fns.wagpunk_trackerstart)
+        inst:ListenForEvent("targettracker_stoptrack",fns.wagpunk_trackerstop)
+        
+        inst._wearer = net_entity(inst.GUID, "wagpunkhat.wearer", "OnChangeWearerDirty")
+        inst._target = net_entity(inst.GUID, "wagpunkhat.target", "OnChangeTargetDirty")
+        inst._synch = net_event(inst.GUID, "OnSynchDirty")
+
+        if not TheNet:IsDedicated() then
+            inst:ListenForEvent("OnChangeTargetDirty", fns.OnChangeTargetDirty)
+            inst:ListenForEvent("OnChangeWearerDirty", fns.OnChangeWearerDirty)
+            inst:DoTaskInTime(0, inst.ListenForEvent, "OnSynchDirty", fns.OnSynchDirty)         
+        end
+        inst._target:set_local(nil)
+
+        if not TheWorld.ismastersim then        
+            return inst
+        end
+
+        inst._classified = SpawnPrefab("wagpunkhat_classified")
+        inst._classified.entity:SetParent(inst.entity)
+        inst._classified._parent = inst
+        inst._classified:SetTarget(nil)
+
+        inst:AddComponent("targettracker")
+        inst.components.targettracker:SetOnTimeUpdateFn(fns.wagpunk_timecheck)
+        inst.components.targettracker:SetOnResetTarget(fns.wagpunk_reset)
+        inst.components.targettracker:SetShouldKeepTrackingFn(fns.wagpunk_test)
+        inst.components.targettracker:SetOnPauseFn(fns.wagpunk_pause)
+        inst.components.targettracker:SetOnResumeFn(fns.wagpunk_unpause)
+
+        inst.SetNewTarget = fns.wagpunk_setnewtarget 
+
+        inst:AddComponent("armor")
+        inst.components.armor:InitCondition(TUNING.ARMOR_WAGPUNK_HAT, TUNING.ARMOR_WAGPUNK_HAT_ABSORPTION)
+
+        local planardefense = inst:AddComponent("planardefense")
+        planardefense:SetBaseDefense(TUNING.ARMOR_WAGPUNK_HAT_PLANAR_DEF)
+
+        inst.components.equippable:SetOnEquip(fns.wagpunk_onequip)
+        inst.components.equippable:SetOnUnequip(fns.wagpunk_onunequip)
+
+        MakeForgeRepairable(inst, FORGEMATERIALS.WAGPUNKBITS, fns.wagpunk_onbroken, fns.wagpunk_onrepaired)
+        MakeHauntableLaunch(inst)
+
+        return inst
+    end
+    -----------------------------------------------------------------------------
 
     local fn = nil
     local assets = { Asset("ANIM", "anim/"..fname..".zip") }
@@ -3636,6 +4033,10 @@ local function MakeHat(name)
     	fn = fns.voidcloth
     elseif name == "woodcarved" then
     	fn = fns.woodcarved
+    elseif name == "wagpunk" then
+        prefabs = { "wagpunkhat_fx", "wagpunksteam_hat_up", "wagpunksteam_hat_down", "wagpunk_bits", "wagpunkhat_classified" }
+        table.insert(assets, Asset("ANIM", "anim/firefighter_placement.zip"))
+        fn = fns.wagpunk
     elseif name == "lunarplant_wormwood" then
     	prefabs = { "lunarplanthat_fx" }
     	fn = fns.lunarplant
@@ -3696,6 +4097,58 @@ local function alterguardianhatlightfn()
 end
 
 --------------------------------------------------------------------------
+
+local function wagpunkhat_CreateFxFollowFrame(i)
+    local inst = CreateEntity()
+
+    --[[Non-networked entity]]
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddFollower()
+
+    inst:AddTag("FX")
+
+    inst.AnimState:SetBank("wagpunkhat")
+    inst.AnimState:SetBuild("hat_wagpunk")
+    inst.anim = "idle"..tostring(i)
+    inst.AnimState:PlayAnimation(inst.anim, true)
+
+    inst:AddComponent("highlightchild")
+
+    inst.persists = false
+
+    return inst
+end
+
+local function wagpunkhat_fx_leveldirty(inst)
+    if inst.fx ~= nil then
+        if inst.level:value() then
+			local bank =
+				(inst.level:value() == 5 and "hat_wagpunk_05") or
+				(inst.level:value() == 4 and "hat_wagpunk_04") or
+				(inst.level:value() == 3 and "hat_wagpunk_03") or
+				(inst.level:value() == 2 and "hat_wagpunk_02") or
+				"wagpunkhat"
+
+            for i, v in ipairs(inst.fx) do
+				v.AnimState:SetBank(bank)
+            end
+        end
+    end
+
+    local owner = inst.entity:GetParent()
+
+    if owner ~= nil then
+        owner:PushEvent("wagpunk_changelevel", {level = inst.level:value()})
+    end
+end
+
+local function wagpunkhat_fx_common_postinit(inst)
+    inst.level = net_tinybyte(inst.GUID, "wagpunkhat_fx.level", "wagpunk_leveldirty")
+    if not TheNet:IsDedicated() then
+        inst:ListenForEvent("wagpunk_leveldirty", wagpunkhat_fx_leveldirty)
+    end
+end
 
 local function lunarplanthat_CreateFxFollowFrame(i)
 	local inst = CreateEntity()
@@ -3792,7 +4245,7 @@ local function SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend
 	local follow_symbol = isfullhelm and owner:HasTag("player") and owner.AnimState:BuildHasSymbol("headbase_hat") and "headbase_hat" or "swap_hat"
 	inst.fx = {}
 	local frame
-	for i = framebegin, frameend do
+	for i = framebegin, frameend do        
 		local fx = createfn(i)
 		frame = frame or math.random(fx.AnimState:GetCurrentAnimationNumFrames()) - 1
 		fx.entity:SetParent(owner.entity)
@@ -3813,13 +4266,13 @@ local function MakeFollowFx(name, data)
 		end
 	end
 
-	local function AttachToOwner(inst, owner)
+	local function AttachToOwner(inst, owner)        
 		inst.entity:SetParent(owner.entity)
 		if owner.components.colouradder ~= nil then
 			owner.components.colouradder:AttachChild(inst)
 		end
 		--Dedicated server does not need to spawn the local fx
-		if not TheNet:IsDedicated() then
+		if not TheNet:IsDedicated() then            
 			SpawnFollowFxForOwner(inst, owner, data.createfn, data.framebegin, data.frameend, data.isfullhelm)
 		end
 	end
@@ -3928,7 +4381,6 @@ return  MakeHat("straw"),
         MakeHat("alterguardian"),
         MakeHat("eyemask"),
         MakeHat("antlion"),
-
         MakeHat("mask_doll"),
         MakeHat("mask_dollbroken"),
         MakeHat("mask_dollrepaired"),
@@ -3938,18 +4390,16 @@ return  MakeHat("straw"),
         MakeHat("mask_king"),
         MakeHat("mask_tree"),
         MakeHat("mask_fool"),
-
         MakeHat("monkey_medium"),
         MakeHat("monkey_small"),
         MakeHat("polly_rogers"),
-
         MakeHat("nightcap"),
-
+        MakeHat("woodcarved"),
         MakeHat("dreadstone"),
+
         MakeHat("lunarplant"),
         MakeHat("voidcloth"),
-
-        MakeHat("woodcarved"),
+        MakeHat("wagpunk"),
 
 		MakeFollowFx("lunarplanthat_fx", {
 			createfn = lunarplanthat_CreateFxFollowFrame,
@@ -3964,8 +4414,20 @@ return  MakeHat("straw"),
 			framebegin = 1,
 			frameend = 3,
 			isfullhelm = true,
-			assets = { Asset("ANIM", "anim/hat_voidcloth.zip") }
+			assets = { Asset("ANIM", "anim/hat_voidcloth.zip") },
 		}),
+        MakeFollowFx("wagpunkhat_fx", {
+            createfn = wagpunkhat_CreateFxFollowFrame,
+            common_postinit = wagpunkhat_fx_common_postinit,
+            framebegin = 1,
+            frameend = 3,            
+            assets = { Asset("ANIM", "anim/hat_wagpunk.zip"),  
+                       Asset("ANIM", "anim/hat_wagpunk_02.zip"),  
+                       Asset("ANIM", "anim/hat_wagpunk_03.zip"),  
+                       Asset("ANIM", "anim/hat_wagpunk_04.zip"),  
+                       Asset("ANIM", "anim/hat_wagpunk_05.zip") },
+        }),
+
 
         Prefab("minerhatlight", minerhatlightfn),
         Prefab("alterguardianhatlight", alterguardianhatlightfn),

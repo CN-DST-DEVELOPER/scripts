@@ -112,6 +112,8 @@ local function fn()
     inst.AnimState:SetBank("gravestone")
     inst.AnimState:SetBuild("gravestones")
 
+    inst.scrapbook_anim = "grave1"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

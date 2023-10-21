@@ -138,8 +138,6 @@ local function fn()
 
 	inst.playfuelsound = net_event(inst.GUID, "pocketwatch_weapon.playfuelsound")
 
-	inst.scrapbook_specialinfo = "POCKETWATCH_WEAPON"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -148,6 +146,9 @@ local function fn()
 
         return inst
     end
+
+    inst.scrapbook_fueled_rate = TUNING.TINY_FUEL
+    inst.scrapbook_fueled_uses = true
 
     inst:AddComponent("inventoryitem")
     inst:AddComponent("lootdropper")

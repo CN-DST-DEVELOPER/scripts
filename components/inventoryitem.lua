@@ -22,6 +22,10 @@ local function oncanonlygoinpocket(self, canonlygoinpocket)
     self.inst.replica.inventoryitem:SetCanOnlyGoInPocket(canonlygoinpocket)
 end
 
+local function onisacidsizzling(self, isacidsizzling)
+    self.inst.replica.inventoryitem:SetIsAcidSizzling(isacidsizzling)
+end
+
 local function OnStackSizeChange(inst, data)
     local self = inst.components.inventoryitem
     if self.owner ~= nil then
@@ -57,6 +61,7 @@ local InventoryItem = Class(function(self, inst)
     self.trappable = true
     self.sinks = false
     self.droprandomdir = false
+    self.isacidsizzling = false
 
     self.pushlandedevents = true
     self:SetLanded(false, true)
@@ -78,6 +83,7 @@ nil,
     canbepickedup = oncanbepickedup,
     cangoincontainer = oncangoincontainer,
     canonlygoinpocket = oncanonlygoinpocket,
+    isacidsizzling = onisacidsizzling,
 })
 
 function InventoryItem:OnRemoveFromEntity()
@@ -103,6 +109,10 @@ end
 
 function InventoryItem:IsWet()
     return self.inst.components.inventoryitemmoisture ~= nil and self.inst.components.inventoryitemmoisture.iswet
+end
+
+function InventoryItem:IsAcidSizzling()
+    return self.inst.replica.inventoryitem:IsAcidSizzling()
 end
 
 function InventoryItem:InheritMoisture(moisture, iswet)

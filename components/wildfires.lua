@@ -45,14 +45,17 @@ local function checkforcanopyshade(obj)
     ents = TheSim:FindEntities(x,y,z, TUNING.SHADE_CANOPY_RANGE_SMALL, YES_TAGS_SHADECANOPY_SMALL)
     if #ents > 0 then
         return true
-    end    
+    end
 end
 
 local function CheckValidWildfireStarter(obj)
+    local x, y, z = obj.Transform:GetWorldPosition()
     if not obj:IsValid() or
         obj:HasTag("fireimmune") or
         checkforcanopyshade(obj) or
-        (obj.components.witherable ~= nil and obj.components.witherable:IsProtected()) then
+        (obj.components.witherable ~= nil and obj.components.witherable:IsProtected()) or
+        GetTemperatureAtXZ(x, z) <= TUNING.WILDFIRE_THRESHOLD
+    then
         return false --Invalid, immune, or temporarily protected
     elseif obj.components.pickable ~= nil then
         if obj.components.pickable:IsWildfireStarter() then

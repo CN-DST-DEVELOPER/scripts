@@ -49,6 +49,7 @@ local function createglass(name, preinit, postinit)
         inst.AnimState:PlayAnimation("f1")
 
 		inst:AddTag("moonglass_piece")
+		inst:AddTag("lunarhaildebris")
 
         if preinit then
            inst = preinit(inst)

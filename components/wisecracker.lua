@@ -169,6 +169,22 @@ local Wisecracker = Class(function(self, inst)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_HUNT_BEAST_NEARBY"))
     end)
 
+	inst:ListenForEvent("huntstartfork", function(inst)
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_HUNT_START_FORK"))
+	end)
+
+	inst:ListenForEvent("huntsuccessfulfork", function(inst)
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_HUNT_SUCCESSFUL_FORK"))
+	end)
+
+	inst:ListenForEvent("huntwrongfork", function(inst)
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_HUNT_WRONG_FORK"))
+	end)
+
+	inst:ListenForEvent("huntavoidfork", function(inst) -- TODO(JBK): Add this for other hunt mechanics.
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_HUNT_AVOID_FORK"))
+	end)
+
     inst:ListenForEvent("lightningdamageavoided", function(inst, data)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_LIGHTNING_DAMAGE_AVOIDED"))
     end)
@@ -246,6 +262,20 @@ local Wisecracker = Class(function(self, inst)
     end
     inst:ListenForEvent("foodbuffattached", OnFoodBuff)
     inst:ListenForEvent("foodbuffdetached", OnFoodBuff)
+
+	local function dochaironfire(inst, chair)
+		if chair ~= nil and chair:IsValid() and
+			chair.components.sittable ~= nil and
+			chair.components.sittable:IsOccupiedBy(inst) and
+			chair.components.burnable ~= nil and
+			chair.components.burnable:IsBurning()
+		then
+			inst.components.talker:Say(GetString(inst, "ANNOUNCE_CHAIR_ON_FIRE"))
+		end
+	end
+	inst:ListenForEvent("sittableonfire", function(inst, chair)
+		inst:DoTaskInTime(0.5, dochaironfire, chair)
+	end)
 
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "components/wisecracker").AddQuagmireEventListeners(inst)

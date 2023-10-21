@@ -235,6 +235,11 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_anim = "full"
+
+	inst.scrapbook_bank  = "salt_pillar2"
+    inst.scrapbook_build = "salt_pillar2"
+
     local land_time = (POPULATING and math.random()*5*FRAMES) or 0
     inst:DoTaskInTime(land_time, function(inst)
         inst.components.floater:OnLandedServer()

@@ -1,7 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/rock_ruins.zip"),
-    Asset("MINIMAP_IMAGE", "rock"),
+    Asset("MINIMAP_IMAGE", "ruins_cavein_obstacle"),
 }
 
 
@@ -279,6 +279,7 @@ local function baserock_fn(bank, build, anim, icon, tag, multcolour)
     else
         inst.AnimState:PlayAnimation(anim..inst.version)
     end
+    inst.scrapbook_anim = "full1"
 
     MakeSnowCoveredPristine(inst)
 
@@ -319,7 +320,7 @@ local function baserock_fn(bank, build, anim, icon, tag, multcolour)
 end
 
 local function fn()
-    local inst = baserock_fn("rock_ruins", "rock_ruins", "full", "rock.png", "charge_barrier")
+    local inst = baserock_fn("rock_ruins", "rock_ruins", "full", "ruins_cavein_obstacle.png", "charge_barrier")
 
     if not TheWorld.ismastersim then
         return inst

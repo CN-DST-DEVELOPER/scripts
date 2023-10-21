@@ -5,6 +5,12 @@ local prefabs_basic =
     "firehound",
     "monstermeat",
     "houndstooth",
+    "wargcorpse",
+    "koalefantcorpse_prop",
+    "koalefant_carcass",
+    "meat",
+    "trunk_summer",
+    "trunk_winter",
 }
 
 local prefabs_wave = prefabs_basic
@@ -18,10 +24,24 @@ local prefabs_clay =
 
 local prefabs_gingerbread =
 {
-	"warg_gooicing",
-	"wintersfeastfuel",
+    "warg_gooicing",
+    "wintersfeastfuel",
     "houndstooth",
-	"crumbs",
+    "crumbs",
+	"wargcorpse",
+}
+
+local prefabs_mutated =
+{
+    "warg",
+    "hound",
+    "icehound",
+    "firehound",
+	"warg_mutated_breath_fx",
+	"warg_mutated_ember_fx",
+	"spoiled_food",
+	"purebrilliance",
+    "chesspiece_warg_mutated_sketch",
 }
 
 local brain = require("brains/wargbrain")
@@ -55,6 +75,16 @@ local sounds_clay =
     death = "dontstarve_DLC001/creatures/together/claywarg/death",
     sleep = "dontstarve_DLC001/creatures/together/claywarg/sleep",
     alert = "dontstarve_DLC001/creatures/together/claywarg/alert",
+}
+
+local sounds_mutated =
+{
+	idle = "rifts3/mutated_varg/idle",
+	howl = "rifts3/mutated_varg/howl",
+	hit = "rifts3/mutated_varg/hit",
+	attack = "rifts3/mutated_varg/attack",
+	death = "rifts3/mutated_varg/death",
+	sleep = "rifts3/mutated_varg/sleep",
 }
 
 SetSharedLootTable('warg',
@@ -104,6 +134,23 @@ SetSharedLootTable('gingerbreadwarg',
     {'houndstooth',             0.33},
 })
 
+SetSharedLootTable('mutatedwarg',
+{
+	{ "spoiled_food",				  1.0  },
+	{ "spoiled_food",				  1.0  },
+	{ "spoiled_food",				  0.5  },
+	{ "purebrilliance",				  1.0  },
+	{ "purebrilliance",				  0.75 },
+    {'chesspiece_warg_mutated_sketch',1.00},
+})
+
+local scrapbook_removedeps_basic =
+{
+    "meat",
+    "trunk_summer",
+    "trunk_winter",
+}
+
 local RETARGET_MUST_TAGS = { "character" }
 local RETARGET_CANT_TAGS = { "wall", "warg", "hound" }
 local function RetargetFn(inst)
@@ -141,11 +188,11 @@ end
 local TARGETS_MUST_TAGS = {"player"}
 local TARGETS_CANT_TAGS = {"playerghost"}
 local function NumHoundsToSpawn(inst)
-    local numHounds = inst.base_hound_num 
+    local numHounds = inst.base_hound_num
 
-    local pt = Vector3(inst.Transform:GetWorldPosition())
-    local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.WARG_NEARBY_PLAYERS_DIST, TARGETS_MUST_TAGS, TARGETS_CANT_TAGS)
-    for i,player in ipairs(ents) do
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, TUNING.WARG_NEARBY_PLAYERS_DIST, TARGETS_MUST_TAGS, TARGETS_CANT_TAGS)
+    for i, player in ipairs(ents) do
         local playerAge = player.components.age:GetAgeInDays()
         local addHounds = math.clamp(Lerp(1, 4, playerAge/100), 1, 4)
         if inst.spawn_fewer_hounds then
@@ -153,7 +200,7 @@ local function NumHoundsToSpawn(inst)
         end
         numHounds = numHounds + addHounds
     end
-    local numFollowers = inst.components.leader:CountFollowers()
+	local numFollowers = inst.components.leader:CountFollowers() + inst.numfollowercorpses
     local num = math.min(numFollowers+numHounds/2, numHounds) -- only spawn half the hounds per howl
     num = (math.log(num)/0.4)+1 -- 0.4 is approx log(1.5)
 
@@ -238,7 +285,7 @@ local function GenerateClayFormation(rot, count)
     return ret
 end
 
-local function OnSpawnedForHunt(inst)
+local function OnSpawnedForHunt_Clay(inst, data)
     local x, y, z = inst.Transform:GetWorldPosition()
     --rot snaps to nearest 45 degrees
     --rot_facing has 15 degree offset (for better facing update during camera rotation)
@@ -253,7 +300,95 @@ local function OnSpawnedForHunt(inst)
     TossItems(inst, x, z, 1, 2)
 end
 
-local function OnEyeFlamesDirty(inst)
+local function OnForceSleep_Normal(inst, hounds)
+    if inst.components.sleeper ~= nil then
+        inst.components.sleeper:AddSleepiness(10 + 3 * math.random(), TUNING.PANFLUTE_SLEEPTIME)
+    end
+    for _, hound in ipairs(hounds) do
+        if hound:IsValid() and hound.components.sleeper ~= nil then
+            hound.components.sleeper:AddSleepiness(10 + 3 * math.random(), TUNING.PANFLUTE_SLEEPTIME)
+        end
+    end
+end
+
+local function OnVisibleFn_Normal(inst)
+	inst.sg:GoToState("spawn_shake")
+end
+
+local function WillUnhideFn_Normal(inst)
+    local player, distsq = inst:GetNearestPlayer(true)
+    if player and distsq < 225 then -- 15 * 15
+        return player
+    end
+
+    return nil
+end
+
+local function OnUnhideFn_Normal(inst, player)
+    if inst.components.combat ~= nil then
+        -- NOTES(JBK): ReturnToScene can activate a brain and cause the warg to target something else clear it by force now.
+        inst.components.combat:DropTarget()
+        inst.components.combat:SuggestTarget(player)
+    end
+end
+
+local function PropCreationFn_Normal(inst)
+    local ent = SpawnPrefab("koalefantcorpse_prop")
+    if TheWorld.state.iswinter then
+        ent:SetAltBuild()
+    end
+    ent.Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+    return ent
+end
+
+local function CarcassCreationFn_Normal(inst, score)
+    local ent = SpawnPrefab("koalefant_carcass")
+    if TheWorld.state.iswinter then
+        ent:MakeWinter()
+    end
+    ent.Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+	if ent.SetMeatPct ~= nil then
+		ent:SetMeatPct(Remap(score, 0, 1, 1 / 3, 1))
+	end
+
+    return ent
+end
+
+local function OnSpawnedForHunt_Normal(inst, data)
+    if data == nil then
+        return
+    end
+
+    -- NOTES(JBK): This came from a hunt investigation so let us make it a bit more special.
+
+    -- First spawn meats from a fake koalefant.
+    SimulateKoalefantDrops(inst)
+
+    -- Then check if this is spring loaded.
+    if data.action == HUNT_ACTIONS.PROP then
+        -- Took too long, make it an ambush!
+        if inst.components.prophider ~= nil then
+            inst.components.prophider:HideWithProp()
+        end
+    elseif data.action == HUNT_ACTIONS.SLEEP then
+        local radius = math.random() * 2 + 6
+        local hounds = inst:SpawnHounds(radius)
+
+        inst:DoTaskInTime(0, OnForceSleep_Normal, hounds) -- NOTES(JBK): Delay a frame for initialization to complete.
+    elseif data.action == HUNT_ACTIONS.SUCCESS then
+        local radius = math.random() * 2 + 6
+        local hounds = inst:SpawnHounds(radius)
+
+        local rescaled_score = (data.score - TUNING.HUNT_SCORE_SLEEP_RATIO) / (1 - TUNING.HUNT_SCORE_SLEEP_RATIO) -- Back to 0 to 1.
+        CarcassCreationFn_Normal(inst, rescaled_score)
+    else
+        -- FIXME(JBK): Unhandled state.
+    end
+end
+
+local function Clay_OnEyeFlamesDirty(inst)
     if TheWorld.ismastersim then
         if not inst._eyeflames:value() then
             inst.AnimState:SetLightOverride(0)
@@ -295,7 +430,19 @@ local function OnEyeFlamesDirty(inst)
     end
 end
 
+local function OnSave(inst, data)
+	data.looted = inst.looted
+end
+
+local function OnLoad(inst, data, ents)
+	inst.looted = data ~= nil and data.looted or nil
+	if inst.looted and inst.components.health:IsDead() then
+		inst.sg:GoToState("corpse")
+	end
+end
+
 local function OnClaySave(inst, data)
+	OnSave(inst, data)
     data.reanimated = not inst.sg:HasStateTag("statue") or nil
 end
 
@@ -379,25 +526,244 @@ local function GetStatus(inst)
 end
 
 local function LaunchGooIcing(inst)
-	local theta = math.random() * 2 * PI
-	local r = inst:GetPhysicsRadius(0) + 0.25 + math.sqrt(math.random()) * TUNING.WARG_GINGERBREAD_GOO_DIST_VAR
-	local x, y, z = inst.Transform:GetWorldPosition()
-	local dest_x, dest_z = math.cos(theta) * r + x, math.sin(theta) * r + z
+    local theta = math.random() * 2 * PI
+    local r = inst:GetPhysicsRadius(0) + 0.25 + math.sqrt(math.random()) * TUNING.WARG_GINGERBREAD_GOO_DIST_VAR
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local dest_x, dest_z = math.cos(theta) * r + x, math.sin(theta) * r + z
 
-	local goo = SpawnPrefab("warg_gooicing")
+    local goo = SpawnPrefab("warg_gooicing")
     goo.Transform:SetPosition(x, y, z)
-	goo.Transform:SetRotation(theta / DEGREES)
-	goo._caster = inst
+    goo.Transform:SetRotation(theta / DEGREES)
+    goo._caster = inst
 
-	Launch2(goo, inst, 1.5, 1, 3, .75)
+    Launch2(goo, inst, 1.5, 1, 3, .75)
 
-	inst._next_goo_time = GetTime() + TUNING.WARG_GINGERBREAD_GOO_COOLDOWN
+    inst._next_goo_time = GetTime() + TUNING.WARG_GINGERBREAD_GOO_COOLDOWN
 end
 
 local function NoGooIcing()
 end
 
-local function MakeWarg(name, bank, build, prefabs, tag)
+local function OnDead(inst)
+	--V2C: make sure we're still burning by the time we actually reach death in stategraph
+	if inst.components.burnable:IsBurning() then
+		inst.components.burnable:SetBurnTime(nil)
+		inst.components.burnable:ExtendBurning()
+	end
+end
+
+local function Mutated_OnDead(inst)
+	OnDead(inst)
+    if TheWorld ~= nil and TheWorld.components.lunarriftmutationsmanager ~= nil then
+        TheWorld.components.lunarriftmutationsmanager:SetMutationDefeated(inst)
+    end
+end
+
+local function Mutated_OnRemove(inst)
+	if inst.flame_pool ~= nil then
+		for i, v in ipairs(inst.flame_pool) do
+			v:Remove()
+		end
+		inst.flame_pool = nil
+	end
+	if inst.ember_pool ~= nil then
+		for i, v in ipairs(inst.ember_pool) do
+			v:Remove()
+		end
+		inst.ember_pool = nil
+	end
+end
+
+local function Mutated_OnTemp8Faced(inst)
+	if inst.temp8faced:value() then
+		inst.gestalt.Transform:SetEightFaced()
+		inst.eyeL.Transform:SetEightFaced()
+		inst.eyeR.Transform:SetEightFaced()
+		inst.mouthL.Transform:SetEightFaced()
+		inst.mouthR.Transform:SetEightFaced()
+	else
+		inst.gestalt.Transform:SetSixFaced()
+		inst.eyeL.Transform:SetSixFaced()
+		inst.eyeR.Transform:SetSixFaced()
+		inst.mouthL.Transform:SetSixFaced()
+		inst.mouthR.Transform:SetSixFaced()
+	end
+end
+
+local function Mutated_SwitchToEightFaced(inst)
+	if not inst.temp8faced:value() then
+		inst.temp8faced:set(true)
+		if not TheNet:IsDedicated() then
+			Mutated_OnTemp8Faced(inst)
+		end
+		inst.Transform:SetEightFaced()
+	end
+end
+
+local function Mutated_SwitchToSixFaced(inst)
+	if inst.temp8faced:value() then
+		inst.temp8faced:set(false)
+		if not TheNet:IsDedicated() then
+			Mutated_OnTemp8Faced(inst)
+		end
+		inst.Transform:SetSixFaced()
+	end
+end
+
+local function Mutated_CreateGestaltFlame()
+	local inst = CreateEntity()
+
+	inst:AddTag("FX")
+	--[[Non-networked entity]]
+	--inst.entity:SetCanSleep(false) --commented out; follow parent sleep instead
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst.Transform:SetSixFaced()
+
+	inst.AnimState:SetBank("lunar_flame")
+	inst.AnimState:SetBuild("lunar_flame")
+	inst.AnimState:PlayAnimation("gestalt_eye", true)
+	inst.AnimState:SetMultColour(1, 1, 1, 0.6)
+	inst.AnimState:SetLightOverride(0.1)
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	inst.AnimState:UsePointFiltering(true)
+
+	return inst
+end
+
+local function Mutated_CreateEyeFlame()
+	local inst = CreateEntity()
+
+	inst:AddTag("FX")
+	--[[Non-networked entity]]
+	--inst.entity:SetCanSleep(false) --commented out; follow parent sleep instead
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst.Transform:SetSixFaced()
+
+	inst.AnimState:SetBank("lunar_flame")
+	inst.AnimState:SetBuild("lunar_flame")
+	inst.AnimState:PlayAnimation("flameanim", true)
+	inst.AnimState:SetMultColour(1, 1, 1, 0.6)
+	inst.AnimState:SetLightOverride(0.1)
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+
+	return inst
+end
+
+local function Mutated_CreateMouthFlame()
+	local inst = CreateEntity()
+
+	inst:AddTag("FX")
+	--[[Non-networked entity]]
+	--inst.entity:SetCanSleep(false) --commented out; follow parent sleep instead
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst.Transform:SetSixFaced()
+
+	inst.AnimState:SetBank("lunar_flame")
+	inst.AnimState:SetBuild("lunar_flame")
+	inst.AnimState:PlayAnimation("mouthflameanim", true)
+	inst.AnimState:SetMultColour(1, 1, 1, 0.6)
+	inst.AnimState:SetLightOverride(0.1)
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+
+	return inst
+end
+
+local function Mutated_PushMusic(inst)
+	if inst.AnimState:IsCurrentAnimation("mutate") then
+		inst._playingmusic = false
+	elseif ThePlayer == nil then
+		inst._playingmusic = false
+	elseif ThePlayer:IsNear(inst, inst._playingmusic and 40 or 20) then
+		inst._playingmusic = true
+		ThePlayer:PushEvent("triggeredevent", { name = "gestaltmutant" })
+	elseif inst._playingmusic and not ThePlayer:IsNear(inst, 50) then
+		inst._playingmusic = false
+	end
+end
+
+local function SpawnHounds(inst, radius_override)
+    local hounds = nil
+    local hounded = TheWorld.components.hounded
+    if hounded == nil then
+        return hounds
+    end
+
+    local num = inst:NumHoundsToSpawn()
+    if inst.max_hound_spawns then
+        num = math.min(num,inst.max_hound_spawns)
+        inst.max_hound_spawns = inst.max_hound_spawns - num
+    end
+
+	local forcemutate = inst:HasTag("lunar_aligned") or nil
+    local pt = inst:GetPosition()
+    for i = 1, num do
+        local hound = hounded:SummonSpawn(pt, radius_override)
+        if hound ~= nil then
+            if hound.components.follower ~= nil then
+                hound.components.follower:SetLeader(inst)
+            end
+            if hounds == nil then
+                hounds = {}
+            end
+            table.insert(hounds, hound)
+        end
+    end
+    return hounds
+end
+
+local function OnCorpseRemoved(corpse)
+	local inst = corpse._warg
+	inst.followercorpses[corpse] = nil
+	inst.numfollowercorpses = inst.numfollowercorpses - 1
+end
+
+local function RememberFollowerCorpse(inst, corpse)
+	if inst.followercorpses[corpse] == nil then
+		corpse._warg = inst
+		inst.followercorpses[corpse] = true
+		inst.numfollowercorpses = inst.numfollowercorpses + 1
+		inst:ListenForEvent("onremove", OnCorpseRemoved, corpse)
+	end
+end
+
+local function ForgetFollowerCorpse(inst, corpse)
+	if inst.followercorpses[corpse] ~= nil then
+		inst:RemoveEventCallback("onremove", OnCorpseRemoved, corpse)
+		OnCorpseRemoved(corpse)
+		corpse._warg = nil
+	end
+end
+
+local mutated_scrapbook_overridedata = {
+    { "flameL", "warg_mutated_actions", "flameanim" },
+    { "flameR", "warg_mutated_actions", "flameanim" },
+    { "mouthflameL", "warg_mutated_actions", "mouthflameanim" },
+    { "mouthflameR", "warg_mutated_actions", "mouthflameanim" },
+}
+
+local function MakeWarg(data)
+    local name     = data.name
+    local bank     = data.bank
+    local build    = data.build
+    local prefabs  = data.prefabs
+    local tag      = data.tag
+	local epic     = data.epic
+
     local assets =
     {
         Asset("SOUND", "sound/vargr.fsb"),
@@ -407,9 +773,12 @@ local function MakeWarg(name, bank, build, prefabs, tag)
     elseif bank ~= build then
         table.insert(assets, Asset("ANIM", "anim/"..bank..".zip"))
     end
-	if tag == "gingerbread" then
+    if tag == "gingerbread" then
         table.insert(assets, Asset("ANIM", "anim/warg_gingerbread.zip"))
-	end
+    elseif tag == "lunar_aligned" then
+        table.insert(assets, Asset("ANIM", "anim/warg_mutated_actions.zip"))
+		table.insert(assets, Asset("ANIM", "anim/lunar_flame.zip"))
+    end
     table.insert(assets, Asset("ANIM", "anim/"..build..".zip"))
 
     local function fn()
@@ -433,12 +802,65 @@ local function MakeWarg(name, bank, build, prefabs, tag)
         inst:AddTag("houndfriend")
         inst:AddTag("largecreature")
 
+		if epic then
+			inst:AddTag("epic")
+		end
+
         if tag ~= nil then
             inst:AddTag(tag)
 
             if tag == "clay" then
                 inst._eyeflames = net_bool(inst.GUID, "claywarg._eyeflames", "eyeflamesdirty")
-                inst:ListenForEvent("eyeflamesdirty", OnEyeFlamesDirty)
+				inst:ListenForEvent("eyeflamesdirty", Clay_OnEyeFlamesDirty)
+			elseif tag == "lunar_aligned" then
+				inst.temp8faced = net_bool(inst.GUID, name..".temp8faced", "temp8faceddirty")
+
+				inst.AnimState:SetSymbolBloom("breath_02")
+				inst.AnimState:SetSymbolBrightness("breath_02", 1.5)
+
+				--Dedicated server does not need to trigger music
+				--Dedicated server does not need to spawn the local fx
+				if not TheNet:IsDedicated() then
+					inst._playingmusic = false
+					inst:DoPeriodicTask(1, Mutated_PushMusic, 0)
+
+					inst.gestalt = Mutated_CreateGestaltFlame()
+					inst.gestalt.entity:SetParent(inst.entity)
+					inst.gestalt.Follower:FollowSymbol(inst.GUID, "swap_gestalt_flame", 0, 0, 0, true)
+					local frames = inst.gestalt.AnimState:GetCurrentAnimationNumFrames()
+					local rnd = math.random(frames) - 1
+					inst.gestalt.AnimState:SetFrame(rnd)
+
+					inst.eyeL = Mutated_CreateEyeFlame()
+					inst.eyeL.entity:SetParent(inst.entity)
+					inst.eyeL.Follower:FollowSymbol(inst.GUID, "flameL", 0, 0, 0, true)
+					frames = inst.eyeL.AnimState:GetCurrentAnimationNumFrames()
+					rnd = math.random(frames) - 1
+					inst.eyeL.AnimState:SetFrame(rnd)
+
+					inst.eyeR = Mutated_CreateEyeFlame()
+					inst.eyeR.entity:SetParent(inst.entity)
+					inst.eyeR.Follower:FollowSymbol(inst.GUID, "flameR", 0, 0, 0, true)
+					rnd = (rnd + math.floor((0.35 + math.random() * 0.35) * frames)) % frames
+					inst.eyeR.AnimState:SetFrame(rnd)
+
+					inst.mouthL = Mutated_CreateMouthFlame()
+					inst.mouthL.entity:SetParent(inst.entity)
+					inst.mouthL.Follower:FollowSymbol(inst.GUID, "mouthflameL", 0, 0, 0, true)
+					frames = inst.mouthL.AnimState:GetCurrentAnimationNumFrames()
+					rnd = math.random(frames) - 1
+					inst.mouthL.AnimState:SetFrame(rnd)
+
+					inst.mouthR = Mutated_CreateMouthFlame()
+					inst.mouthR.entity:SetParent(inst.entity)
+					inst.mouthR.Follower:FollowSymbol(inst.GUID, "mouthflameR", 0, 0, 0, true)
+					rnd = (rnd + math.floor((0.35 + math.random() * 0.35) * frames)) % frames
+					inst.mouthR.AnimState:SetFrame(rnd)
+
+					if not TheWorld.ismastersim then
+						inst:ListenForEvent("temp8faceddirty", Mutated_OnTemp8Faced)
+					end
+				end
             end
         end
 
@@ -467,20 +889,32 @@ local function MakeWarg(name, bank, build, prefabs, tag)
         inst.components.combat:SetAttackPeriod(TUNING.WARG_ATTACKPERIOD)
         inst.components.combat:SetRetargetFunction(1, RetargetFn)
         inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
+		inst.components.combat.lastwasattackedtime = -math.huge --for brain
         inst:ListenForEvent("attacked", OnAttacked)
 
         inst:AddComponent("health")
-        inst.components.health:SetMaxHealth(TUNING.WARG_HEALTH)
+		if tag == "lunar_aligned" then
+			inst.components.health:SetMaxHealth(TUNING.MUTATED_WARG_HEALTH)
+		else
+			inst.components.health:SetMaxHealth(TUNING.WARG_HEALTH)
+		end
+		if tag ~= "clay" then
+			inst.components.health.nofadeout = true
+		end
 
         inst:AddComponent("lootdropper")
         inst.components.lootdropper:SetChanceLootTable(name)
 
         inst.base_hound_num = TUNING.WARG_BASE_HOUND_AMOUNT
 
+		inst.OnSave = OnSave
+		inst.OnLoad = OnLoad
+        inst.SpawnHounds = SpawnHounds
+
         if tag == "clay" then
             inst.NumHoundsToSpawn = NoHoundsToSpawn
-			inst.LaunchGooIcing = NoGooIcing
-            inst.OnSave = OnClaySave
+            inst.LaunchGooIcing = NoGooIcing
+			inst.OnSave = OnClaySave --Overriding, but does call the default OnSave as well
             inst.OnPreLoad = OnClayPreLoad
             inst.OnReanimated = OnClayReanimated
             inst.OnBecameStatue = OnClayBecameStatue
@@ -490,32 +924,73 @@ local function MakeWarg(name, bank, build, prefabs, tag)
             inst.sounds = sounds_clay
             inst.noidlesound = true
 
-            inst:ListenForEvent("spawnedforhunt", OnSpawnedForHunt)
+            inst:ListenForEvent("spawnedforhunt", OnSpawnedForHunt_Clay)
             inst:ListenForEvent("restoredfollower", OnRestoredFollower)
-		elseif tag == "gingerbread" then
+        elseif tag == "gingerbread" then
             inst.NumHoundsToSpawn = NoHoundsToSpawn
-			inst.LaunchGooIcing = LaunchGooIcing
+            inst.LaunchGooIcing = LaunchGooIcing
             inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/vargr/hit")
             inst:AddComponent("sleeper")
             inst.sounds = sounds_gingerbread
             inst.AnimState:AddOverrideBuild("gingerbread_pigman")
             MakeLargeBurnableCharacter(inst, "swap_fire")
+
+			inst:ListenForEvent("death", OnDead)
+        elseif tag == "lunar_aligned" then
+            inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/vargr/hit")
+
+			inst:AddComponent("planarentity")
+			inst:AddComponent("planardamage")
+			inst.components.planardamage:SetBaseDamage(TUNING.MUTATED_WARG_PLANAR_DAMAGE)
+
+			inst:AddComponent("timer")
+			inst.components.timer:StartTimer("flamethrower_cd", TUNING.MUTATED_WARG_FLAMETHROWER_CD + math.random() * 2)
+
+			inst.NumHoundsToSpawn = NumHoundsToSpawn
+            inst.LaunchGooIcing = NoGooIcing
+
+			inst.sounds = sounds_mutated
+			inst.flame_pool = {}
+			inst.ember_pool = {}
+			inst.canflamethrower = true
+
+            MakeLargeBurnableCharacter(inst, "swap_fire")
+			inst.components.burnable.nocharring = true
+
+            inst:ListenForEvent("death", Mutated_OnDead)
+			inst.OnRemoveEntity = Mutated_OnRemove
+
+			inst.SwitchToEightFaced = Mutated_SwitchToEightFaced
+			inst.SwitchToSixFaced = Mutated_SwitchToSixFaced
+
+            inst.scrapbook_overridedata = mutated_scrapbook_overridedata
         else
             inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/vargr/hit")
 
             inst:AddComponent("sleeper")
 
+            local prophider = inst:AddComponent("prophider")
+            prophider:SetPropCreationFn(PropCreationFn_Normal)
+            prophider:SetOnVisibleFn(OnVisibleFn_Normal)
+            prophider:SetWillUnhideFn(WillUnhideFn_Normal)
+            prophider:SetOnUnhideFn(OnUnhideFn_Normal)
+
             inst.NumHoundsToSpawn = NumHoundsToSpawn
-			inst.LaunchGooIcing = NoGooIcing
+            inst.LaunchGooIcing = NoGooIcing
 
             inst.sounds = sounds
 
+            inst.scrapbook_removedeps = scrapbook_removedeps_basic
+
             MakeLargeBurnableCharacter(inst, "swap_fire")
+
+			inst:ListenForEvent("death", OnDead)
+            inst:ListenForEvent("spawnedforhunt", OnSpawnedForHunt_Normal)
         end
 
         MakeLargeFreezableCharacter(inst)
 
-        inst:SetStateGraph("SGwarg")
+		inst:SetStateGraph("SGwarg")
 
         if tag == "clay" or tag == "gingerbread" then
             inst:AddComponent("hauntable")
@@ -524,9 +999,9 @@ local function MakeWarg(name, bank, build, prefabs, tag)
             MakeHauntableGoToState(inst, "howl", TUNING.HAUNT_CHANCE_OCCASIONAL, TUNING.HAUNT_COOLDOWN_MEDIUM, TUNING.HAUNT_CHANCE_LARGE)
         end
 
-		if tag == "gingerbread" then
+        if tag == "gingerbread" then
             inst.sg:GoToState("gingerbread_intro")
-		end
+        end
 
         inst:SetBrain(brain)
 
@@ -535,12 +1010,46 @@ local function MakeWarg(name, bank, build, prefabs, tag)
             inst.sg:GoToState("statue")
         end
 
+		inst.numfollowercorpses = 0
+		inst.followercorpses = {}
+		inst.RememberFollowerCorpse = RememberFollowerCorpse
+		inst.ForgetFollowerCorpse = ForgetFollowerCorpse
+
         return inst
     end
 
     return Prefab(name, fn, assets, prefabs)
 end
 
-return MakeWarg("warg", "warg", "warg_build", prefabs_basic, nil),
-    MakeWarg("claywarg", "claywarg", "claywarg", prefabs_clay, "clay"),
-    MakeWarg("gingerbreadwarg", "warg", "warg_gingerbread_build", prefabs_gingerbread, "gingerbread")
+return
+        MakeWarg({
+            name = "warg",
+            bank = "warg",
+            build = "warg_build",
+            prefabs = prefabs_basic,
+        }),
+
+        MakeWarg({
+            name = "claywarg",
+            bank = "claywarg",
+            build = "claywarg",
+            prefabs = prefabs_clay,
+            tag = "clay",
+        }),
+
+        MakeWarg({
+            name = "gingerbreadwarg",
+            bank = "warg",
+            build = "warg_gingerbread_build",
+            prefabs = prefabs_gingerbread,
+            tag = "gingerbread",
+        }),
+
+        MakeWarg({
+            name = "mutatedwarg",
+            bank = "warg",
+            build = "warg_mutated_actions",
+            prefabs = prefabs_mutated,
+            tag = "lunar_aligned",
+			epic = true,
+        })

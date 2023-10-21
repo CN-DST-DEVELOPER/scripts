@@ -123,6 +123,7 @@ local function fn()
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
+    inst.scarpbook_anim = "scrapbook"
 
     inst.Light:SetColour(111/255, 111/255, 227/255)
     inst.Light:SetIntensity(0.5)

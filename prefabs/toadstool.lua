@@ -924,7 +924,13 @@ local function common_fn(build)
     inst:AddComponent("grouptargeter")
 
     inst:AddComponent("groundpounder")
+	inst.components.groundpounder:UseRingMode()
+	inst.components.groundpounder.radiusStepDistance = 2.5
+	inst.components.groundpounder.ringWidth = 1.5
+	inst.components.groundpounder.damageRings = 3
+	inst.components.groundpounder.destructionRings = 3
     inst.components.groundpounder.platformPushingRings = 0
+	inst.components.groundpounder.numRings = 3
 
     inst:AddComponent("knownlocations")
 

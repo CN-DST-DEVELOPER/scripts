@@ -532,6 +532,10 @@ return {
 	ANNOUNCE_HUNT_BEAST_NEARBY = "This track is fresh. The beast must be nearby.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "The beast's trail ends here.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "This wet soil can't hold a footprint.",
+    ANNOUNCE_HUNT_START_FORK = "This trail looks dangerous.",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "No beast is a match for my wits!",
+    ANNOUNCE_HUNT_WRONG_FORK = "I get the feeling that something is watching me.",
+    ANNOUNCE_HUNT_AVOID_FORK = "This trail looks safer.",
 	ANNOUNCE_INV_FULL = "I can't carry any more stuff!",
 	ANNOUNCE_KNOCKEDOUT = "Ugh, my head!",
 	ANNOUNCE_LOWRESEARCH = "I didn't learn very much from that.",
@@ -900,6 +904,8 @@ return {
     ANNOUNCE_SHADOW_RIFT_MAX = "Something sinister's on the horizon.",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I already have all these.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1838,6 +1844,9 @@ return {
         CHESSPIECE_EYEOFTERROR = "It's giving me a stony stare.",
         CHESSPIECE_TWINSOFTERROR = "That was a terrible night of very uncomfortable eye contact.",
         CHESSPIECE_DAYWALKER = "Now he's off who-knows-were.",
+        CHESSPIECE_DEERCLOPS_MUTATED = "This sculpture is a bit of an eyesore.",
+        CHESSPIECE_WARG_MUTATED = "It's just missing that horrible breath.",
+        CHESSPIECE_BEARGER_MUTATED = "Somehow it seems crankier than the real one.",
 
         CHESSJUNK1 = "A pile of broken chess pieces.",
         CHESSJUNK2 = "Another pile of broken chess pieces.",
@@ -2214,6 +2223,7 @@ return {
 		KNIGHT = "Check it out!",
 		KOALEFANT_SUMMER = "Adorably delicious.",
 		KOALEFANT_WINTER = "It looks warm and full of meat.",
+		KOALEFANT_CARCASS = "Adorably dead.",
 		KRAMPUS = "He's going after my stuff!",
 		KRAMPUS_SACK = "Ew. It has Krampus slime all over it.",
 		LEIF = "He's huge!",
@@ -4919,6 +4929,106 @@ return {
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How dreadful.",
 
         WOLFGANG_WHISTLE = "It gives me terrible flashbacks to the gym classes of my youth...",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "It's got a little something in its eye.",
+        MUTATEDWARG = "What big, glowing eyes you have!",
+        MUTATEDBEARGER = "Things are about to get hairy...",
+
+        LUNARFROG = "Quit staring.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "It's over... right?",
+            BURNING  = "Can't be too careful.",
+            REVIVING = "I don't want to believe what my eyes are seeing!",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Why do I still feel uneasy?",
+            BURNING  = "It's for the best.",
+            REVIVING = "What in the name of science?!",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "What an unbearable stench!",
+            BURNING  = "That was close.",
+            REVIVING = "There must be a scientific explanation for this!",
+        },
+
+        BEARGERFUR_SACK = "There's still fur on it. Chilling.",
+        HOUNDSTOOTH_BLOWPIPE = "Teeth? Doesn't seem all that hygenic.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "How's that for an icy gaze?",    -- Enabled.
+            NOEYEBALL = "Someone lose an eye?",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Stand back everyone, I am a trained scientist!",
+
+        SECURITY_PULSE_CAGE = "Interesting. It's empty.",
+        SECURITY_PULSE_CAGE_FULL = "Aren't you the cutest little ball of pure energy?",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "It makes furniture.",
+            BURNT = "It doesn't make furniture anymore.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "I use tables periodically.",
+            HAS_ITEM = "I use tables periodically.",
+            BURNT = "I don't think I'll be using it anymore.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "I'd like to sit on that!",
+            OCCUPIED = "Somebody else is sitting on that.",
+            BURNT = "I wouldn't like to sit on that.",
+        },
+
+        DECOR_CENTERPIECE = "How sophisticated.",
+        DECOR_LAMP = "A welcoming light.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "A nice vase of flowers.",
+            EMPTY = "A nice vase without any flowers.",
+            WILTED = "Not looking very fresh.",
+            FRESHLIGHT = "It's nice to have a little light.",
+            OLDLIGHT = "I know I told Maxwell to replace the bulb.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "It's beautiful.",
+            UNDRAWN = "I should draw something in this.",
+        },
+        DECOR_PORTRAITFRAME = "Looking good!",
+
+        PHONOGRAPH = "Oh no, I've seen THAT before.",
+        RECORD = "Drat, I just got that song out of my head!",
+        RECORD_CREEPYFOREST = "A whole song on one record? Technology has come so far.",
+        RECORD_DANGER = "Not my favorite.",
+        RECORD_DAWN = "Needs more trumpet.",
+        RECORD_DRSTYLE = "A whole song on one record? Technology has come so far.",
+        RECORD_DUSK = "Needs more trumpet.",
+        RECORD_EFS = "One of their more experimental tracks.",
+        RECORD_END = "A whole song on one record? Technology has come so far.",
+        RECORD_MAIN = "Needs more trumpet.",
+        RECORD_WORKTOBEDONE = "One of their more experimental tracks.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "It's like they made it puzzling on purpose.",
+
+        WAGPUNKHAT = "It really gets my gears turning.",
+        ARMORWAGPUNK = "Fearsome and gearsome.",
+        WAGSTAFF_MACHINERY = "There might be some discoveries to be made in this pile of junk.",
+        WAGPUNK_BITS = "I bet I could make something incredibly scientific with this.",
+        WAGPUNKBITS_KIT = "Machines that fix other machines! What will science think of next?",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Fascinating! Illuminating! Brain-embiggening!",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

@@ -9,6 +9,18 @@ local prefabs =
 	"slingshotammo_rock_proj",
 }
 
+local SCRAPBOOK_DEPS =
+{
+    "slingshotammo_rock",
+    "slingshotammo_gold",
+    "slingshotammo_marble",
+    "slingshotammo_thulecite",
+    "slingshotammo_freeze",
+    "slingshotammo_slow",
+    "slingshotammo_poop",
+    "trinket_1",
+}
+
 local PROJECTILE_DELAY = 2 * FRAMES
 
 local function OnEquip(inst, owner)
@@ -111,6 +123,9 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_adddeps = SCRAPBOOK_DEPS
+    inst.scrapbook_weapondamage = { TUNING.SLINGSHOT_AMMO_DAMAGE_ROCKS, TUNING.SLINGSHOT_AMMO_DAMAGE_MAX }
 
     inst:AddComponent("inspectable")
 

@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I love a game of hide and seek!",
 	ANNOUNCE_HUNT_LOST_TRAIL = "You win this round!",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "Sabotaged by this realm's mushiness.",
+    ANNOUNCE_HUNT_START_FORK = "The game is afoot! Or rather, a claw! Hyuyu!",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "Aha! Advantage goes to the imp.",
+    ANNOUNCE_HUNT_WRONG_FORK = "My impish senses are tingling - something watches!",
+    ANNOUNCE_HUNT_AVOID_FORK = "A trail for the tenderfooted.",
 	ANNOUNCE_INV_FULL = "I only have two paws.",
 	ANNOUNCE_KNOCKEDOUT = "Oh, good morning!",
 	ANNOUNCE_LOWRESEARCH = "That wasn't very enlightening.",
@@ -895,6 +899,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Calling that \"light\" wouldn't be quite right.",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I already know everything there is to know, hyuyu!",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1834,6 +1840,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "He's gone, no matter how you look at it, hyuyu!",
         CHESSPIECE_TWINSOFTERROR = "What an eye-catching statue, hyuyu!",
         CHESSPIECE_DAYWALKER = "A boorish boar's bust!",
+        CHESSPIECE_DEERCLOPS_MUTATED = "She got quite the eyeful.",
+        CHESSPIECE_WARG_MUTATED = "Must we memorialize the mutated mutt?",
+        CHESSPIECE_BEARGER_MUTATED = "It bears a strong resemblance.",
 
         CHESSJUNK1 = "It looks quite broke, and that's no joke!",
         CHESSJUNK2 = "It looks quite broke, and that's no joke!",
@@ -2210,6 +2219,7 @@ return{
 		KNIGHT = "A knight in rusted armor!",
 		KOALEFANT_SUMMER = "A gentle beast with tiny horns.",
 		KOALEFANT_WINTER = "How do you do? Why are you blue?",
+		KOALEFANT_CARCASS = "Once gentle beast, now someone's feast.",
 		KRAMPUS = "Heh heh. No hard feelings?",
 		KRAMPUS_SACK = "He should have known I would not hold back.",
 		LEIF = "No need to fight, my great tree friend!",
@@ -4915,6 +4925,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "The Pillar of Dread looks rather dead, hyuyu!",
 
         WOLFGANG_WHISTLE = "Who knew a whistle held such sway, it makes folks listen to what you say!",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "My, you're looking sharp! New haircut?",
+        MUTATEDWARG = "This Rover has had quite the makeover!",
+        MUTATEDBEARGER = "I prefer the bare bear... barely.",
+
+        LUNARFROG = "Ever seen such a sight as a hopping night light?",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "Ol' One-Eyed has gone and died!",
+            BURNING  = "I was just yearning for the smell of burning.",
+            REVIVING = "A refund? I'm stunned.",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "A mutt in a permanent rut, hyuyu!",
+            BURNING  = "This hot dog needs a bun.",
+            REVIVING = "Death doesn't stick? Must be a new trick.",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Hibernation? More like termination! Hyuyu!",
+            BURNING  = "I'd love some toast to go with this roast!",
+            REVIVING = "The brute is reviving. Who did the unaliving?",
+        },
+
+        BEARGERFUR_SACK = "Is that where the mortals pack food away for the winter?",
+        HOUNDSTOOTH_BLOWPIPE = "A toothsome tooter shooter.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "What the eye sees stays icy! Hyuyu!",    -- Enabled.
+            NOEYEBALL = "It turned a blind eye!",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "I'll keep my eye on the prize, hyuyu!",
+
+        SECURITY_PULSE_CAGE = "It's orbless, more or less.",
+        SECURITY_PULSE_CAGE_FULL = "It absorbed the orb!",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "The mortal need to feel productive, if I may be so reductive.",
+            BURNT = "Who misunderstood it would be good to build it all of wood?",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Now, will the tables turn?",
+            HAS_ITEM = "The centerpiece has been set.",
+            BURNT = "Hyuyu! How silly!",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "I'll take a seat and rest my feet.",
+            OCCUPIED = "Move your rear, I want to sit here!",
+            BURNT = "I see this seat's been taken.",
+        },
+
+        DECOR_CENTERPIECE = "How wonderfully useless!",
+        DECOR_LAMP = "This little lamp's light is quite a delight.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "The space in the vase is filled with flowers.",
+            EMPTY = "There's nothing placed within the vase.",
+            WILTED = "Tiny flower on the table... you aren't looking very stable.",
+            FRESHLIGHT = "A light so bright I might still see at night!",
+            OLDLIGHT = "I'll try not to pout when that light soon goes out.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "A limited edition artist's rendition!",
+            UNDRAWN = "What a shame, just an empty frame.",
+        },
+        DECOR_PORTRAITFRAME = "A picture perfect portrait.",
+
+        PHONOGRAPH = "Ooo, music! I'm practically giddy!",
+        RECORD = "Encore!",
+        RECORD_CREEPYFOREST = "What a cheeky little tune.",
+        RECORD_DANGER = "Oh dear, what have we here?",
+        RECORD_DAWN = "A delight at first light!",
+        RECORD_DRSTYLE = "I think I heard this in a dream.",
+        RECORD_DUSK = "That's it?",
+        RECORD_EFS = "Oh dear, what have we here?",
+        RECORD_END = "That's it?",
+        RECORD_MAIN = "What a cheeky little tune.",
+        RECORD_WORKTOBEDONE = "Oh dear, what have we here?",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "This floor is soundly built, hyuyu!",
+
+        WAGPUNKHAT = "This should help me blow off some steam, hyuyu!",
+        ARMORWAGPUNK = "Don't leer at my gear.",
+        WAGSTAFF_MACHINERY = "This whole lot has been left to rot.",
+        WAGPUNK_BITS = "I'll have to settle for these scraps of metal.",
+        WAGPUNKBITS_KIT = "An automatic mechanical mechanic? Fantastic!",
+
+        WAGSTAFF_MUTATIONS_NOTE = "The writings of a visionary, or the ravings of a madman? Who's to say!",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

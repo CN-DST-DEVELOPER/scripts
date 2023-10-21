@@ -92,8 +92,6 @@ local function fn()
     inst.DynamicShadow:SetSize(1, .5)
     inst.Transform:SetFourFaced()
 
-    inst.scrapbook_specialinfo = "BERNIE_ACTIVE"
-
     inst.AnimState:SetBank("bernie")
     inst.AnimState:SetBuild("bernie_build")
     inst.AnimState:PlayAnimation("idle_loop", true)
@@ -109,6 +107,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_specialinfo = "BERNIE"
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.BERNIE_HEALTH)

@@ -631,6 +631,21 @@ function Inventory:ForEachItem(fn, ...)
     end
 end
 
+function Inventory:ForEachWetableItem(fn, ...)
+    -- Items that can get wet are inventory, equipment, and activeitem.
+    for k,v in pairs(self.itemslots) do
+        fn(v, ...)
+    end
+
+    for k,v in pairs(self.equipslots) do
+		fn(v, ...)
+    end
+
+    if self.activeitem then
+		fn(self.activeitem, ...)
+    end
+end
+
 function Inventory:ForEachEquipment(fn, ...)
     for k,v in pairs(self.equipslots) do
         fn(v, ...)

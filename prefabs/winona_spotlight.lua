@@ -756,6 +756,8 @@ local function fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(TheWorld.ismastersim and OnUpdateLightServer or OnUpdateLightClient)
 
+    inst.scrapbook_specialinfo = "WINONASPOTLIGHT"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

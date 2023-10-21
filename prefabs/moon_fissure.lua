@@ -168,7 +168,7 @@ local function fn()
 
     inst.AnimState:SetBank("moon_fissure")
     inst.AnimState:SetBuild("moon_fissure")
-    inst.AnimState:PlayAnimation("crack_idle", true)
+    inst.AnimState:PlayAnimation("crack_idle", true)    
     inst.AnimState:SetFinalOffset(3)
 
     inst._level = net_tinybyte(inst.GUID, "moonfissure.level", "leveldirty")
@@ -182,6 +182,9 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_removedeps = { "moon_altar_idol" }
+    inst.scrapbook_sanityaura = 100/(TUNING.SEG_TIME*4)
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus

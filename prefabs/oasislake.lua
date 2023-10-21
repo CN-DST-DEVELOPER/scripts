@@ -227,6 +227,13 @@ local function fn()
     inst.no_wet_prefix = true
     inst:SetDeployExtraSpacing(NO_DEPLOY_RADIUS)
 
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(320)
+    end
+
+    inst.scrapbook_inspectonseen = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -247,6 +254,8 @@ local function fn()
     inst.components.oasis.radius = TUNING.SANDSTORM_OASIS_RADIUS
 
     inst:AddComponent("watersource")
+
+
 
     inst.isdamp = false
     inst.driedup = false

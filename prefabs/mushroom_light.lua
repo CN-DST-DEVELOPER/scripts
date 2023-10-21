@@ -270,6 +270,8 @@ local function MakeMushroomLight(name, onlywhite, physics_rad)
 
         MakeSnowCoveredPristine(inst)
 
+        inst.scrapbook_specialinfo = "MUSHROOMLIGHT"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

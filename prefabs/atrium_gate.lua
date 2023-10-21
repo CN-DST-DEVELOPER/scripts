@@ -578,6 +578,8 @@ local function fn()
     inst._camerafocus = net_tinybyte(inst.GUID, "atrium_gate._camerafocus", "camerafocusdirty")
     inst._camerafocustask = nil
 
+    inst.scrapbook_specialinfo = "atriumgate"
+
     --Dedicated server does not need to spawn the flooring
     if not TheNet:IsDedicated() then
         CreateFloor().entity:SetParent(inst.entity)
@@ -593,6 +595,11 @@ local function fn()
 
     -- Server and Client component.
     inst:AddComponent("charliecutscene")
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(20)
+    end
 
     inst.entity:SetPristine()
 

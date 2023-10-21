@@ -647,6 +647,11 @@ local function fn()
 
     inst.OnRemoveEntity = RemoveBuildingBlockers
 
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(70)
+    end
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -29,8 +29,6 @@ local function fn()
 	inst:AddTag("simplebook")
     inst:AddTag("bookcabinet_item")
 
-    inst.scrapbook_specialinfo = "COOKBOOK"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

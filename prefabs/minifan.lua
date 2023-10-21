@@ -96,7 +96,6 @@ local function fn()
     MakeInventoryFloatable(inst, "med", 0.05, 0.75)
 
     inst.scrapbook_subcat = "tool"
-    inst.scrapbook_specialinfo = "MINIFAN"
 
     inst.entity:SetPristine()
 

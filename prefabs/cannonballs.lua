@@ -290,6 +290,9 @@ local function cannonball_item_fn()
 
     inst.projectileprefab = "cannonball_rock"
 
+    inst.scrapbook_weapondamage = TUNING.CANNONBALL_DAMAGE
+    inst.scrapbook_areadamage = TUNING.CANNONBALL_DAMAGE * TUNING.CANNONBALL_SPLASH_DAMAGE_PERCENT    
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

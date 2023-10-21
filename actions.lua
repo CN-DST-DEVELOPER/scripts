@@ -493,7 +493,7 @@ ACTIONS =
 
     -- Rifts
     SCYTHE = Action({ rmb=true, distance=1.8, rangecheckfn=DefaultRangeCheck, invalid_hold_action=true }),
-	SITON = Action(),
+	SITON = Action({invalid_hold_action = true,}),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -1634,6 +1634,8 @@ ACTIONS.GIVE.stroverridefn = function(act)
 			return subfmt(STRINGS.ACTIONS.GIVE.APPLY, { item = act.invobject:GetBasicDisplayName() })
 		elseif act.target:HasTag("wintersfeasttable") then
 			return subfmt(STRINGS.ACTIONS.GIVE.PLACE_ITEM, { item = act.invobject:GetBasicDisplayName() })
+		elseif act.target:HasTag("inventoryitemholder_give") then
+			return subfmt(STRINGS.ACTIONS.GIVE.PLACE_ITEM, { item = act.invobject:GetBasicDisplayName() })
         elseif act.target.nameoverride ~= nil and act.invobject:HasTag("quagmire_stewer") then
             return subfmt(STRINGS.ACTIONS.GIVE[string.upper(act.target.nameoverride)], { item = act.invobject:GetBasicDisplayName() })
         elseif act.target:HasTag("quagmire_altar") then
@@ -1674,6 +1676,15 @@ ACTIONS.GIVE.fn = function(act)
             return true
         elseif act.target.components.moontrader ~= nil then
             return act.target.components.moontrader:AcceptOffering(act.doer, act.invobject)
+        elseif act.target.components.furnituredecortaker then
+            local able, reason = act.target.components.furnituredecortaker:AbleToAcceptDecor(act.invobject, act.doer)
+            if not able then
+                return false, reason
+            else
+                return act.target.components.furnituredecortaker:AcceptDecor(act.invobject, act.doer)
+            end
+        elseif act.target.components.inventoryitemholder ~= nil then
+            return act.target.components.inventoryitemholder:GiveItem(act.invobject, act.doer)
         elseif act.target.components.quagmire_cookwaretrader ~= nil then
             return act.target.components.quagmire_cookwaretrader:AcceptCookware(act.doer, act.invobject)
         elseif act.target.components.quagmire_altar ~= nil then
@@ -2168,7 +2179,7 @@ ACTIONS.INVESTIGATE.fn = function(act)
 end
 
 ACTIONS.COMMENT.fn = function(act)
-    if act.doer.components.talker ~= nil and act.doer.comment_data then
+    if act.doer.components.talker and act.doer.comment_data then
         act.doer.components.talker:Say(act.doer.comment_data.speech)
         act.doer.comment_data = nil
     end
@@ -2385,10 +2396,13 @@ ACTIONS.USEKLAUSSACKKEY.fn = function(act)
 end
 
 ACTIONS.TEACH.strfn = function(act)
-    if act.invobject:HasTag("scrapbook_data") then
-        return "SCRAPBOOK"
-    end
-	return act.invobject ~= nil and act.invobject.components.mapspotrevealer ~= nil and "READ" or nil
+    return
+        act.invobject ~= nil and (
+            (act.invobject:HasTag("scrapbook_note") and "NOTES") or
+            (act.invobject:HasTag("scrapbook_data") and "SCRAPBOOK") or
+            (act.invobject.components.mapspotrevealer ~= nil and "READ") or
+            nil
+        )
 end
 
 ACTIONS.TEACH.fn = function(act)
@@ -2486,6 +2500,9 @@ ACTIONS.TAKEITEM.fn = function(act)
     if act.target ~= nil and act.target.components.shelf ~= nil and act.target.components.shelf.cantakeitem then
         act.target.components.shelf:TakeItem(act.doer)
         return true
+
+    elseif act.target.components.inventoryitemholder ~= nil then
+        return act.target.components.inventoryitemholder:TakeItem(act.doer)
     end
 end
 
@@ -2494,9 +2511,9 @@ ACTIONS.TAKEITEM.strfn = function(act)
 end
 
 ACTIONS.TAKEITEM.stroverridefn = function(act)
-	if act.target.prefab == "table_winters_feast" then
+	if act.target.prefab == "table_winters_feast" or act.target:HasTag("inventoryitemholder_take") then
 		return STRINGS.ACTIONS.TAKEITEM.GENERIC
-	end
+    end
 
     local item = act.target.takeitem ~= nil and act.target.takeitem:value() or nil
     return item ~= nil and subfmt(STRINGS.ACTIONS.TAKEITEM.ITEM, { item = item:GetBasicDisplayName() }) or nil

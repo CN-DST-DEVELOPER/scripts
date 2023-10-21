@@ -426,6 +426,7 @@ end
 local function MorphShadowChester(inst)
 	inst:RemoveTag("fridge")
     inst:AddTag("spoiler")
+	inst:AddTag("shadow_aligned")
     inst.MiniMapEntity:SetIcon("chestershadow.png")
     inst.components.maprevealable:SetIcon("chestershadow.png")
 
@@ -449,6 +450,7 @@ end
 
 local function MorphSnowChester(inst)
 	inst:RemoveTag("spoiler")
+	inst:RemoveTag("shadow_aligned")
     inst:AddTag("fridge")
     inst.MiniMapEntity:SetIcon("chestersnow.png")
     inst.components.maprevealable:SetIcon("chestersnow.png")
@@ -469,6 +471,7 @@ end
 local function MorphNormalChester(inst)
     inst:RemoveTag("fridge")
     inst:RemoveTag("spoiler")
+	inst:RemoveTag("shadow_aligned")
     inst.MiniMapEntity:SetIcon("chester.png")
     inst.components.maprevealable:SetIcon("chester.png")
 
@@ -608,8 +611,6 @@ local function create_chester()
     inst:AddTag("chester")
     inst:AddTag("notraptrigger")
     inst:AddTag("noauradamage")
-
-    inst.scrapbook_specialinfo = "CHESTER"
 
     inst.MiniMapEntity:SetIcon("chester.png")
     inst.MiniMapEntity:SetCanUseCache(false)

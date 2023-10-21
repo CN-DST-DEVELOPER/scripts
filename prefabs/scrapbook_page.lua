@@ -21,15 +21,14 @@ local function OnScrapbookDataTaught(inst, doer, diduse)
                 inst.components.stackable:Get(1):Remove()
             else
                 inst:Remove()
-            end            
+            end
         else
             -- Their book is full.
             if doer.components.talker then
                 doer.components.talker:Say(GetString(doer, "ANNOUNCE_SCRAPBOOK_FULL"))
-            end            
+            end
         end
     end
-
 end
 
 local function OnTeach(inst, doer)
@@ -56,11 +55,45 @@ local function OnTeach(inst, doer)
     return true
 end
 
-local function GetActivateVerb(inst, doer)
-    return "SCRAPBOOK"
+local function Special_DisplayNameFn(inst)
+    local name = STRINGS.SCRAPBOOK.SPECIAL_SCRAPBOOK_PAGES.UNKNOWN
+
+    local id = inst._id:value()
+
+    local page_data = id > 0 and SPECIAL_SCRAPBOOK_PAGES_LOOKUP[id] or nil
+
+    if page_data ~= nil then
+        name = STRINGS.SCRAPBOOK.SPECIAL_SCRAPBOOK_PAGES[page_data.name] or STRINGS.SCRAPBOOK.SPECIAL_SCRAPBOOK_PAGES.UNKNOWN
+    end
+
+    return subfmt(STRINGS.NAMES.SCRAPBOOK_PAGE_FMT, { name = name})
 end
 
-local function fn()
+local function Special_SetId(inst, id)
+    local page_data = SPECIAL_SCRAPBOOK_PAGES_LOOKUP[id]
+
+    if page_data ~= nil then
+        inst._id:set(id)
+    end
+end
+
+local function Special_OnSave(inst, data)
+    local id = inst._id:value()
+
+    local page_data = id > 0 and SPECIAL_SCRAPBOOK_PAGES_LOOKUP[id] or nil
+
+    data.name = page_data ~= nil and page_data.name or nil
+end
+
+local function Special_OnLoad(inst, data)
+    if data == nil then return end
+
+    if data.name ~= nil then
+        inst:SetId(SPECIAL_SCRAPBOOK_PAGES[data.name])
+    end
+end
+
+local function commonfn(special)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -79,38 +112,65 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
-    inst.scrapbook_specialinfo = "SCRAPBOOKPAGE"
+    if special then
+        inst._id = net_smallbyte(inst.GUID, "scrapbook_page._id")
+
+        inst.displaynamefn = Special_DisplayNameFn
+
+        inst:SetPrefabNameOverride("scrapbook_page")
+
+        inst.scrapbook_proxy = "scrapbook_page"
+    end
 
     inst.entity:SetPristine()
-
-    inst.GetActivateVerb = GetActivateVerb
 
     if not TheWorld.ismastersim then
         return inst
     end
 
+    inst.scrapbook_specialinfo = "SCRAPBOOKPAGE"
+
     inst.OnScrapbookDataTaught = OnScrapbookDataTaught
 
-    inst:AddComponent("stackable")
-    inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
-
+    inst:AddComponent("erasablepaper")
     inst:AddComponent("inspectable")
+    inst:AddComponent("inventoryitem")
+    inst:AddComponent("tradable")
+
+    if special then
+        inst.components.inventoryitem:ChangeImageName("scrapbook_page")
+
+        inst.SetId = Special_SetId
+
+        inst.OnSave = Special_OnSave
+        inst.OnLoad = Special_OnLoad
+    else
+        inst:AddComponent("stackable")
+        inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
+    end
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
 
-    inst:AddComponent("tradable")
-
     inst:AddComponent("scrapbookable")
-    inst.components.scrapbookable.onteach = OnTeach
+    inst.components.scrapbookable:SetOnTeachFn(OnTeach)
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)
-    MakeHauntableLaunchAndIgnite(inst)
 
-    inst:AddComponent("inventoryitem")
+    MakeHauntableLaunchAndIgnite(inst)
 
     return inst
 end
 
-return Prefab("scrapbook_page", fn, assets)
+
+local function regularfn()
+    return commonfn(false)
+end
+local function specialfn()
+    return commonfn(true)
+end
+
+return
+        Prefab("scrapbook_page",         regularfn, assets),
+        Prefab("scrapbook_page_special", specialfn, assets)

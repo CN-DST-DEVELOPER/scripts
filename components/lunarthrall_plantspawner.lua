@@ -249,7 +249,7 @@ end)
 function Lunarthrall_plantspawner:MoveGestaltToPlant(thrall)
     local target = thrall.plant_target
 
-    local pos = target and target:GetPosition() or nil
+    local pos = target ~= nil and target:IsValid() and target:GetPosition() or nil
 
     if not pos then
         thrall:Remove()
@@ -479,7 +479,6 @@ function Lunarthrall_plantspawner:GetDebugString()
 end
 
 function Lunarthrall_plantspawner:LongUpdate(dt)
-
     if self._nextspawn then 
         local time = GetTaskRemaining(self._nextspawn)
         self._nextspawn:Cancel()
@@ -493,6 +492,30 @@ function Lunarthrall_plantspawner:LongUpdate(dt)
         self._spawntask= nil
         self._spawntask = self.inst:DoTaskInTime(math.max(0.1,time-dt), setTimeForPoralRelease)
     end    
+end
+
+function Lunarthrall_plantspawner:RemoveWave()
+    if self.waves_to_release == nil or self.waves_to_release <= 0 then return end
+
+    self.waves_to_release = self.waves_to_release - 1
+
+    if self.waves_to_release <= 0 then
+        if self._spawntask ~= nil then
+            self._spawntask:Cancel()
+            self._spawntask = nil
+        end
+
+        if self._nextspawn  ~= nil then
+            self._nextspawn:Cancel()
+            self._nextspawn = nil
+        end
+
+        self.waves_to_release = nil
+
+        if self.currentrift ~= nil then
+            self.inst.components.timer:StartTimer("endrift", 10)
+        end
+    end
 end
 
 function Lunarthrall_plantspawner:setHerdsOnPlantable(plantable)

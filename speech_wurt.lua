@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "Where these footprints go?",
 	ANNOUNCE_HUNT_LOST_TRAIL = "No more prints, flort.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "Dirt too wet for tracks, have mud bath instead!",
+    ANNOUNCE_HUNT_START_FORK = "Danger way!",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "Glorp! Me sneak!",
+    ANNOUNCE_HUNT_WRONG_FORK = "Flurp! Me feel eyeballs!",
+    ANNOUNCE_HUNT_AVOID_FORK = "Easy way! Boring!",
 	ANNOUNCE_INV_FULL = "Don't have enough pockets, florp.",
 	ANNOUNCE_KNOCKEDOUT = "Glurgh... head hurt...",
 	ANNOUNCE_LOWRESEARCH = "Don't get it...",
@@ -890,6 +894,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "N-not scared of weird light, florp!",
 
     ANNOUNCE_SCRAPBOOK_FULL = "No more room in scrappy book.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This not fine!!",
 
     ANNOUNCE_COACH = 
     {
@@ -1537,7 +1543,7 @@ return{
             FULL = "Lemme out!",
         },
 
-		MAXWELLPHONOGRAPH = "Music comes out of it, florp!",--single player
+		MAXWELLPHONOGRAPH = "Music come out of it, florp!",--single player
 		BOOMERANG = "Come-back stick!",
 		PIGGUARD = "Glurp, he even scarier than others.",
 		ABIGAIL =
@@ -1828,6 +1834,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "Oh no... got dried out, glorp...",
         CHESSPIECE_TWINSOFTERROR = "Ha ha, they just rocks now!",
         CHESSPIECE_DAYWALKER = "Grrr... why we have nasty Pig statue?!",
+        CHESSPIECE_DEERCLOPS_MUTATED = "Bye bye deer. No more eye pokey",
+        CHESSPIECE_WARG_MUTATED = "Poor doggy. Not so bad",
+        CHESSPIECE_BEARGER_MUTATED = "Remember bad teddy",
 
         CHESSJUNK1 = "It all broken.",
         CHESSJUNK2 = "Didn't do it!!",
@@ -2204,6 +2213,7 @@ return{
 		KNIGHT = "Springy Ironfolk.",
 		KOALEFANT_SUMMER = "What big ears you have!",
 		KOALEFANT_WINTER = "What big ears you have!",
+		KOALEFANT_CARCASS = "Glurgh... stinky dead thing!",
 		KRAMPUS = "Big meanie!!",
 		KRAMPUS_SACK = "It jingles!",
 		LEIF = "Treebeast!!",
@@ -4909,6 +4919,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Glorp! Found it like that.",
 
         WOLFGANG_WHISTLE = "Shiny... maybe he not mind if me borrow...",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Poor deer. Want me pull out eye pokey?",
+        MUTATEDWARG = "Spikey doggy.",
+        MUTATEDBEARGER = "Bad teddy.",
+
+        LUNARFROG = "What happened to you, froggy?",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "Oh dear, deer dead.",
+            BURNING  = "At least she warm now.",
+            REVIVING = "Uh oh.",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Doggy sleeping?",
+            BURNING  = "Doggy getting crispy.",
+            REVIVING = "This bad, florp?",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Deady teddy.",
+            BURNING  = "Lucky me have no fur.",
+            REVIVING = "Glorp! Teddy awake!",
+        },
+
+        BEARGERFUR_SACK = "Blegh. Better not get teddy hair in food!",
+        HOUNDSTOOTH_BLOWPIPE = "Awww, doggy teeth here!",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "Hi Eye!",    -- Enabled.
+            NOEYEBALL = "Glorp! Who take shiny eyeball?",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Look easy to build, flort.",
+
+        SECURITY_PULSE_CAGE = "Glorp! Empty!",
+        SECURITY_PULSE_CAGE_FULL = "Oooh, like glowy ball.",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "Wood cutty thing!",
+            BURNT = "Who play with fire?",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Table not set yet!",
+            HAS_ITEM = "Wicker-lady! Table all set!",
+            BURNT = "Didn't do it, florp!",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Oooh, fancy sitting-place!",
+            OCCUPIED = "Wanna turn! Move over!",
+            BURNT = "Aww...",
+        },
+
+        DECOR_CENTERPIECE = "What this? Can't even eat it!",
+        DECOR_LAMP = "Pretty light for table.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Glurgh. Have ugly flower in it.",
+            EMPTY = "Think fish would look better in there than flower.",
+            WILTED = "Fish wouldn't get wilty like this, florp.",
+            FRESHLIGHT = "Friendly little light.",
+            OLDLIGHT = "Need new light.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "It hard to draw with claws...",
+            UNDRAWN = "Glurgh. It blank and boring!",
+        },
+        DECOR_PORTRAITFRAME = "It hard to draw with claws...",
+
+        PHONOGRAPH = "Music come out of it, florp!",
+        RECORD = "Again.",
+        RECORD_CREEPYFOREST = "Boring. Next one.",
+        RECORD_DANGER = "Next.",
+        RECORD_DAWN = "What else?",
+        RECORD_DRSTYLE = "Too long.",
+        RECORD_DUSK = "Next.",
+        RECORD_EFS = "Don't like. Next.",
+        RECORD_END = "Next.",
+        RECORD_MAIN = "Boring. Next one.",
+        RECORD_WORKTOBEDONE = "Don't like. Next.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Why floor make weird sounds, florp?",
+
+        WAGPUNKHAT = "Nice Ironfolk hat.",
+        ARMORWAGPUNK = "Ooh, Ironfolk shirt.",
+        WAGSTAFF_MACHINERY = "Hey! Weird scale-less leave stuff everywhere, florpt!",
+        WAGPUNK_BITS = "Blegh. Not food.",
+        WAGPUNKBITS_KIT = "It good at fixing. Like Weenowna-lady!",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Moo-tay-shuns... studdy? Glurgh, this one really hard!",
     },
 
     DESCRIBE_GENERIC = "What that?",

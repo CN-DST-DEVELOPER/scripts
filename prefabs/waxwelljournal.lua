@@ -662,6 +662,9 @@ local function fn()
 		return inst
 	end
 
+	inst.scrapbook_fueled_rate = SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_PILLARS)
+	inst.scrapbook_fueled_uses = true
+
 	inst.swap_build = "book_maxwell"
 
 	inst:AddComponent("inspectable")

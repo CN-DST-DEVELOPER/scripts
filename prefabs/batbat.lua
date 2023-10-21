@@ -76,8 +76,6 @@ local function fn()
     local swap_data = {sym_build = "swap_batbat"}
     MakeInventoryFloatable(inst, "large", 0.05, {0.8, 0.35, 0.8}, true, -27, swap_data)
 
-    inst.scrapbook_specialinfo = "BATBAT"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -956,6 +956,21 @@ local function InsertPostInitFunctions(env, isworldgen, isfrontend)
 		RegisterInventoryItemAtlas(atlas, prefabname)
 	end
 
+	env.RegisterScrapbookIconAtlas = function(atlas, tex)
+		initprint("RegisterScrapbookIconAtlas", atlas, tex)
+		RegisterScrapbookIconAtlas(atlas, tex)
+	end
+
+	env.RegisterSkilltreeBGForCharacter = function(atlas, charactername)
+		initprint("AddSkilltreeBGForCharacter", atlas, charactername)
+		RegisterSkilltreeBGAtlas(atlas, charactername.."_background.tex")
+	end
+
+	env.RegisterSkilltreeIconsAtlas = function(atlas, tex)
+		initprint("RegisterSkilltreeIconsAtlas", atlas, tex)
+		RegisterSkilltreeIconsAtlas(atlas, tex)
+	end
+
 	-- For modding loading tips
 	env.AddLoadingTip = function(stringtable, id, tipstring, controltipdata)
 		if stringtable == nil or id == nil or tipstring == nil then

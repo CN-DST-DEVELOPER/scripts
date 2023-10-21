@@ -529,7 +529,7 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
             inst:AddTag("heatrock")
             inst.scrapbook_anim = "idle"
             inst.scrapbook_specialinfo = "DUMBBELLHEAT"
-        else 
+        else
             inst.scrapbook_specialinfo = "DUMBBELL"
         end
 

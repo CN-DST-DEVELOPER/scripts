@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I smell dung and beast sweat.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "Drat! It got away.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "I can't follow it in these conditions!",
+    ANNOUNCE_HUNT_START_FORK = "Those vicious claw marks do not bode well...",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "The creature is unaware it's being pursued. Now, to strike.",
+    ANNOUNCE_HUNT_WRONG_FORK = "I fear I might have underestimated my prey...",
+    ANNOUNCE_HUNT_AVOID_FORK = "I'll stick to hunting less dangerous game.",
 	ANNOUNCE_INV_FULL = "My pockets are full.",
 	ANNOUNCE_KNOCKEDOUT = "Ugh. My head hurts.",
 	ANNOUNCE_LOWRESEARCH = "That wasn't very informative.",
@@ -890,6 +894,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Something's stirring...",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I know all I need to already.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1828,6 +1834,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "An eye could never best a master of illusion such as I.",
         CHESSPIECE_TWINSOFTERROR = "The most troublesome pair I've ever seen.",
         CHESSPIECE_DAYWALKER = "Seems like anyone can get a statue these days.",
+        CHESSPIECE_DEERCLOPS_MUTATED = "I take great offense to anyone trying to improve on my designs.",
+        CHESSPIECE_WARG_MUTATED = "It was a bad dog.",
+        CHESSPIECE_BEARGER_MUTATED = "It'll scare away anyone with good taste.",
 
         CHESSJUNK1 = "There's a reason I never finished that.",
         CHESSJUNK2 = "That one was a jerk.",
@@ -2204,6 +2213,7 @@ return{
 		KNIGHT = "Such quality workmanship!",
 		KOALEFANT_SUMMER = "A distant cousin of the beefalo.",
 		KOALEFANT_WINTER = "It has its winter coat on.",
+		KOALEFANT_CARCASS = "What else can I say about this dirty carcass?",
 		KRAMPUS = "You won't catch me!",
 		KRAMPUS_SACK = "It's really light.",
 		LEIF = "Disgusting creature!",
@@ -4909,6 +4919,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Surprise, surprise.",
 
         WOLFGANG_WHISTLE = "Ah yes. What could be more motivating than the shriek of a whistle?",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "That creature has seen better days.",
+        MUTATEDWARG = "I don't care for the new look.",
+        MUTATEDBEARGER = "It's even more brutish than before.",
+
+        LUNARFROG = "Repulsive.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "Disgusting.",
+            BURNING  = "It's best to be rid of it.",
+            REVIVING = "The wretch is being puppeteered!",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Best to dispose of it, quickly.",
+            BURNING  = "That takes care of that.",
+            REVIVING = "Something has taken hold of it!",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Ugh. I can't just leave that lying around.",
+            BURNING  = "That's one problem solved.",
+            REVIVING = "The \"moon's\" influence is growing...",
+        },
+
+        BEARGERFUR_SACK = "Portable indeed. Wilson can carry it.",
+        HOUNDSTOOTH_BLOWPIPE = "Houndstooth? Both deadly and debonair.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "Keeps it cold like my heart.",    -- Enabled.
+            NOEYEBALL = "Don't say I didn't warn you when it all goes up in flames.",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Do I have to do everything around here?",
+
+        SECURITY_PULSE_CAGE = "It's empty. Someone do something.",
+        SECURITY_PULSE_CAGE_FULL = "It's full. Someone do something.",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "I never cared for woodworking. The sawdust gets everywhere.",
+            BURNT = "Too bad.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Someone should really set this table.",
+            HAS_ITEM = "Someone should really set this table.",
+            BURNT = "It didn't go with the decor anyway.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "I'm appalled by the idea of sitting for some reason.",
+            OCCUPIED = "Good. You sit. Forever.",
+            BURNT = "Better that way.",
+        },
+
+        DECOR_CENTERPIECE = "Bland.",
+        DECOR_LAMP = "Who's afraid of the dark?",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Purely decorative.",
+            EMPTY = "An empty vessel awaiting decoration or light.",
+            WILTED = "Every lovely flower must one day wilt.",
+            FRESHLIGHT = "A temporary reprieve from the shadow.",
+            OLDLIGHT = "I believe it is Wilson's turn to fetch bulbs.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "Uninspired.",
+            UNDRAWN = "If only life were that simple.",
+        },
+        DECOR_PORTRAITFRAME = "My my, aren't we special.",
+
+        PHONOGRAPH = "That accursed thing!",
+        RECORD = "Destroy it!",
+        RECORD_CREEPYFOREST = "Forgive me if I've lost my taste for music.",
+        RECORD_DANGER = "Silence would be preferable.",
+        RECORD_DAWN = "Forgive me if I've lost my taste for music.",
+        RECORD_DRSTYLE = "Silence would be preferable.",
+        RECORD_DUSK = "Silence would be preferable.",
+        RECORD_EFS = "Silence would be preferable.",
+        RECORD_END = "Forgive me if I've lost my taste for music.",
+        RECORD_MAIN = "Silence would be preferable.",
+        RECORD_WORKTOBEDONE = "Forgive me if I've lost my taste for music.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Rather devious.",
+
+        WAGPUNKHAT = "This machine really thinks it can tell me what to do?",
+        ARMORWAGPUNK = "What it lacks in style it almost makes up for in pure, stubborn resilience.",
+        WAGSTAFF_MACHINERY = "The interloper could at least clean up after himself.",
+        WAGPUNK_BITS = "Someone should collect this bric-à-brac and put it to use.",
+        WAGPUNKBITS_KIT = "A machine to fix a machine? What is this world coming to?",
+
+        WAGSTAFF_MUTATIONS_NOTE = "What have we here? More of that lunacy?",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

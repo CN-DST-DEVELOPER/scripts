@@ -25,9 +25,9 @@ local function UpdateFlash(inst)
 			if inst.flashcolour ~= nil then
 				local r, g, b = unpack(inst.flashcolour)
 				PushColour(inst, value * r, value * g, value * b)
-            else
+			else
 				PushColour(inst, value, value, value)
-            end
+			end
 			inst.flashstep = inst.flashstep + 1
 			return
 		else
@@ -68,6 +68,7 @@ local function SetupReflect(inst, attacker, target, projectile, flashcolour)
 	local x, y, z = target.Transform:GetWorldPosition()
 	local rot
 	local source = projectile or attacker
+
 	if source ~= nil and source:IsValid() then
 		local x1, y1, z1 = source.Transform:GetWorldPosition()
 		if x ~= x1 or z ~= z1 then
@@ -79,7 +80,35 @@ local function SetupReflect(inst, attacker, target, projectile, flashcolour)
 			rot = math.atan2(dz, -dx) * RADIANS
 		end
 	end
+
 	inst.Transform:SetPosition(x, 1 + math.random(), z)
+	inst.Transform:SetRotation((rot or target.Transform:GetRotation()) + 90)
+
+	StartFlash(inst, target, flashcolour)
+end
+
+local function SetupPiercing(inst, attacker, target, projectile, flashcolour, inverted, offset_y)
+	local x, y, z = (projectile or attacker).Transform:GetWorldPosition()
+	local rot
+	local source = target
+	
+	if source ~= nil and source:IsValid() then
+		local x1, y1, z1 = source.Transform:GetWorldPosition()
+		if x ~= x1 or z ~= z1 then
+			local dx = x - x1
+			local dz = z - z1
+			local rescale_radius = source:GetPhysicsRadius(.5) / math.sqrt(dx * dx + dz * dz)
+			x = x1 + dx * rescale_radius
+			z = z1 + dz * rescale_radius
+			rot = math.atan2(dz, -dx) * RADIANS
+			
+			if not inverted then
+				rot = rot + 180
+			end
+		end
+	end
+
+	inst.Transform:SetPosition(x, offset_y or (1 + math.random()), z)
 	inst.Transform:SetRotation((rot or target.Transform:GetRotation()) + 90)
 
 	StartFlash(inst, target, flashcolour)
@@ -106,9 +135,9 @@ local function PlaySparksAnim(proxy, horizontal)
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 	inst.AnimState:SetFinalOffset(1)
 	inst.AnimState:SetScale(proxy.flip:value() and -.7 or .7, .7)
-    if proxy.black:value() then
-        inst.AnimState:SetMultColour(0, 0, 0, 1)
-    end
+	if proxy.black:value() then
+		inst.AnimState:SetMultColour(0, 0, 0, 1)
+	end
 	if horizontal then
 		inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
 	end
@@ -158,5 +187,7 @@ end
 
 --------------------------------------------------------------------------
 
-return MakeFX("hitsparks_fx", false, Setup),
-	MakeFX("hitsparks_reflect_fx", true, SetupReflect)
+return
+		MakeFX( "hitsparks_fx",          false, Setup         ),
+		MakeFX( "hitsparks_reflect_fx",  true,  SetupReflect  ),
+		MakeFX( "hitsparks_piercing_fx", true,  SetupPiercing )

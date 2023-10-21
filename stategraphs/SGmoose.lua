@@ -533,6 +533,6 @@ CommonStates.AddSleepStates(states,
 		end),
 	},
 })
-CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
 
 return StateGraph("moose", states, events, "idle", actionhandlers)

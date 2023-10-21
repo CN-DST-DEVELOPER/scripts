@@ -30,7 +30,7 @@ end
 local function onhit(inst)
     if not inst:HasTag("burnt") then
         inst.AnimState:PlayAnimation("hit")
-        inst.AnimState:PushAnimation("idle", true)
+        inst.AnimState:PushAnimation(inst.components.prototyper.on and "proximity_loop" or "idle", inst.components.prototyper.on)
     end
 end
 
@@ -112,7 +112,7 @@ end
 local function onopen(inst)
     if not inst:HasTag("burnt") then
         inst.AnimState:PlayAnimation("hit")
-        inst.AnimState:PushAnimation("idle", true)
+        inst.AnimState:PushAnimation(inst.components.prototyper.on and "proximity_loop" or "idle", inst.components.prototyper.on)
         inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_open")
     end
 end
@@ -120,7 +120,7 @@ end
 local function onclose(inst)
     if not inst:HasTag("burnt") then
         inst.AnimState:PlayAnimation("hit")
-        inst.AnimState:PushAnimation("idle", true)
+        inst.AnimState:PushAnimation(inst.components.prototyper.on and "proximity_loop" or "idle", inst.components.prototyper.on)
         inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_close")
     end
 end

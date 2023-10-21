@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "Hush... The creature is near.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "I've lost the tracks.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "It's too muddy for trailing.",
+    ANNOUNCE_HUNT_START_FORK = "A battle lies at the end of this trail. Onward!",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "My quarry will not suspect my presence...",
+    ANNOUNCE_HUNT_WRONG_FORK = "My warrior instincts are telling me something is not right...",
+    ANNOUNCE_HUNT_AVOID_FORK = "Perhaps I shall start with an easier prey.",
 	ANNOUNCE_INV_FULL = "I'm carrying all I can!",
 	ANNOUNCE_KNOCKEDOUT = "Ugh, my head.",
 	ANNOUNCE_LOWRESEARCH = "That wasn't very exciting.",
@@ -890,6 +894,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Hark! 'Tis a most unnatural light!",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I hath already completed my tome.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1828,6 +1834,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "I shall feast my eyes upon this trophy!",
         CHESSPIECE_TWINSOFTERROR = "A battle I shan't soon forget.",
         CHESSPIECE_DAYWALKER = "The beast proved himself to be a worthy adversary!",
+        CHESSPIECE_DEERCLOPS_MUTATED = "T'was an unnatural thing. Slaying it was a kindness.",
+        CHESSPIECE_WARG_MUTATED = "T'was no match for my spear.",
+        CHESSPIECE_BEARGER_MUTATED = "May the beast now be at peace.",
 
         CHESSJUNK1 = "It's only a pile of fallen warriors.",
         CHESSJUNK2 = "More fallen mechanical warriors.",
@@ -2204,6 +2213,7 @@ return{
 		KNIGHT = "I taste a battle on the breeze!",
 		KOALEFANT_SUMMER = "Dearest creature... I am going to eat you.",
 		KOALEFANT_WINTER = "Poor unsuspecting meat beast.",
+		KOALEFANT_CARCASS = "This creature is no more.",
 		KRAMPUS = "You don't scare me, goat!",
 		KRAMPUS_SACK = "The sack itself is the present.",
 		LEIF = "That is an ancient woodland being.",
@@ -4909,6 +4919,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How the mighty have fallen.",
 
         WOLFGANG_WHISTLE = "My ally will get our forces fighting fit!",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "The beast hath been changed by strange magicks!",
+        MUTATEDWARG = "It is possessed by angry spirits!",
+        MUTATEDBEARGER = "The beast seeks vengeance!",
+
+        LUNARFROG = "This frog hath seen too much.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "It fought bravely.",
+            BURNING  = "May thine spirit be released to Valhalla.",
+            REVIVING = "What's this? The fight is not over!",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "The creature is slain.",
+            BURNING  = "Thou art worthy of a Viking funeral.",
+            REVIVING = "The beast's spirit will not be put to rest!",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Thou were a worthy foe.",
+            BURNING  = "May we meet again in Valhalla.",
+            REVIVING = "There's still fight left in the creature!",
+        },
+
+        BEARGERFUR_SACK = "It will preserve the freshness of my kills.",
+        HOUNDSTOOTH_BLOWPIPE = "A beautiful ranged weapon. Fit for a coward.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "The cold doth sooth me.",    -- Enabled.
+            NOEYEBALL = "Where art thou, cursed eye?",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Fear not the heat, I shall build this posthaste.",
+
+        SECURITY_PULSE_CAGE = "'Tis a trap!",
+        SECURITY_PULSE_CAGE_FULL = "It burns bright like the sword of Surtr.",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "A carpenter's saw is merely another blade for me to master!",
+            BURNT = "It seems my training hath come to an abrupt end.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "No sorrier sight than a bare table. Let us plunder!",
+            HAS_ITEM = "Not the most impressive piece of loot.",
+            BURNT = "The gods need not more tables.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "A warrior doth not sit.",
+            OCCUPIED = "On your feet, soldier!",
+            BURNT = "The gods hath no need for chairs.",
+        },
+
+        DECOR_CENTERPIECE = "Pretty... useless.",
+        DECOR_LAMP = "A warrior hath no need for light!",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Saveth them for my funeral.",
+            EMPTY = "Empty. Shall we use it for target practice?",
+            WILTED = "Beauty fades. Glory is forever.",
+            FRESHLIGHT = "It burns bright.",
+            OLDLIGHT = "The light wanes.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "The work of a child, no doubt.",
+            UNDRAWN = "I shall paint it with the blood of mine enemies.",
+        },
+        DECOR_PORTRAITFRAME = "A fallen comrade?",
+
+        PHONOGRAPH = "A mechanical songstress.",
+        RECORD = "T'would be a kindness to keep it from reaching the ears of my ally.",
+        RECORD_CREEPYFOREST = "Music is nourishment for thy soul!",
+        RECORD_DANGER = "Let us play a rousing war song!",
+        RECORD_DAWN = "Thy melody is most soothing.",
+        RECORD_DRSTYLE = "The musicians play with such passion!",
+        RECORD_DUSK = "Thy melody is most soothing.",
+        RECORD_EFS = "Doth the tempo not make one's heart race with excitement?",
+        RECORD_END = "The showstopper!",
+        RECORD_MAIN = "Music is nourishment for thy soul!",
+        RECORD_WORKTOBEDONE = "Music is nourishment for thy soul!",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "What if I just stab it?",
+
+        WAGPUNKHAT = "This helm doth be possessed by the spirit of a cunning warrior.",
+        ARMORWAGPUNK = "It grants the wearer a fleetness of foot to rival Hermod himself.",
+        WAGSTAFF_MACHINERY = "Be these the remains of a sacked outpost?",
+        WAGPUNK_BITS = "What use would a warrior have for such leavings?",
+        WAGPUNKBITS_KIT = "How may one kill with this?",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Save it for the scholars!",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

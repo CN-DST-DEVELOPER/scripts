@@ -131,6 +131,75 @@ local function CustomOnHaunt(inst)
     return true
 end
 
+local function OnForceSleep(inst)
+    if inst.components.sleeper ~= nil then
+        inst.components.sleeper:AddSleepiness(10 + 3 * math.random(), TUNING.PANFLUTE_SLEEPTIME)
+    end
+end
+
+local function OnVisibleFn(inst)
+	inst.sg:GoToState("spawn_shake")
+end
+
+local function WillUnhideFn(inst)
+    local player, distsq = inst:GetNearestPlayer(true)
+    if player and distsq < 225 then -- 15 * 15
+        return player
+    end
+
+    return nil
+end
+
+local function OnUnhideFn(inst, player)
+    if inst.components.periodicspawner ~= nil then
+        inst.components.periodicspawner:SafeStart()
+    end
+    if inst.components.combat ~= nil then
+        -- NOTES(JBK): ReturnToScene can activate a brain and cause the warg to target something else clear it by force now.
+        inst.components.combat:DropTarget()
+        inst.components.combat:SuggestTarget(player)
+    end
+end
+
+local function OnHideFn(inst)
+    if inst.components.periodicspawner ~= nil then
+        inst.components.periodicspawner:Stop()
+    end
+end
+
+local function PropCreationFn(inst)
+    local corpse = SpawnPrefab("koalefantcorpse_prop")
+    if TheWorld.state.iswinter then
+        corpse:SetAltBuild()
+    end
+    corpse.Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+    return corpse
+end
+
+local function OnSpawnedForHunt(inst, data)
+    if data == nil then
+        return
+    end
+
+    -- NOTES(JBK): This came from a hunt investigation so let us make it a bit more special.
+
+    -- First spawn meats from a fake koalefant.
+    SimulateKoalefantDrops(inst)
+
+    -- Then check if this is spring loaded.
+    if data.action == HUNT_ACTIONS.PROP then
+        -- Took too long, make it an ambush!
+        if inst.components.prophider ~= nil then
+            inst.components.prophider:HideWithProp()
+        end
+    elseif data.action == HUNT_ACTIONS.SLEEP or data.action == HUNT_ACTIONS.SUCCESS then
+        inst:DoTaskInTime(0, OnForceSleep) -- NOTES(JBK): Delay a frame for initialization to complete.
+    else
+        -- FIXME(JBK): Unhandled state.
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -166,12 +235,12 @@ local function fn()
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })
 
-    inst:AddComponent("combat")
-    inst.components.combat.hiteffectsymbol = "spat_body"
-    inst.components.combat:SetRetargetFunction(1, Retarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
-    inst.components.combat:SetAttackPeriod(3)
-    inst.components.combat:SetHurtSound(sounds.hit)
+    local combat = inst:AddComponent("combat")
+    combat.hiteffectsymbol = "spat_body"
+    combat:SetRetargetFunction(1, Retarget)
+    combat:SetKeepTargetFunction(KeepTarget)
+    combat:SetAttackPeriod(3)
+    combat:SetHurtSound(sounds.hit)
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.SPAT_HEALTH)
@@ -185,19 +254,19 @@ local function fn()
 
     inst:ListenForEvent("attacked", OnAttacked)
 
-    inst:AddComponent("periodicspawner")
-    inst.components.periodicspawner:SetPrefab("poop")
-    inst.components.periodicspawner:SetRandomTimes(40, 60)
-    inst.components.periodicspawner:SetDensityInRange(20, 2)
-    inst.components.periodicspawner:SetMinimumSpacing(8)
-    inst.components.periodicspawner:Start()
+    local periodicspawner = inst:AddComponent("periodicspawner")
+    periodicspawner:SetPrefab("poop")
+    periodicspawner:SetRandomTimes(40, 60)
+    periodicspawner:SetDensityInRange(20, 2)
+    periodicspawner:SetMinimumSpacing(8)
+    periodicspawner:Start()
 
     MakeLargeBurnableCharacter(inst, "spat_body")
     MakeLargeFreezableCharacter(inst, "spat_body")
 
-    inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
-    inst.components.locomotor.walkspeed = 1.5
-    inst.components.locomotor.runspeed = 7
+    local locomotor = inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
+    locomotor.walkspeed = 1.5
+    locomotor.runspeed = 7
 
     inst:AddComponent("sleeper")
     inst.components.sleeper:SetResistance(3)
@@ -210,6 +279,15 @@ local function fn()
 
     inst.weaponitems = {}
     EquipWeapons(inst)
+
+    local prophider = inst:AddComponent("prophider")
+    prophider:SetPropCreationFn(PropCreationFn)
+    prophider:SetOnVisibleFn(OnVisibleFn)
+    prophider:SetWillUnhideFn(WillUnhideFn)
+    prophider:SetOnUnhideFn(OnUnhideFn)
+    prophider:SetOnHideFn(OnHideFn)
+
+    inst:ListenForEvent("spawnedforhunt", OnSpawnedForHunt)
 
     return inst
 end
@@ -303,11 +381,11 @@ local function projectilefn()
     inst.persists = false
 
     inst:AddComponent("locomotor")
-    inst:AddComponent("complexprojectile")
-    inst.components.complexprojectile:SetOnHit(OnProjectileHit)
-    inst.components.complexprojectile:SetHorizontalSpeed(30)
-    inst.components.complexprojectile:SetLaunchOffset(Vector3(3, 2, 0))
-    inst.components.complexprojectile.usehigharc = false
+    local complexprojectile = inst:AddComponent("complexprojectile")
+    complexprojectile:SetOnHit(OnProjectileHit)
+    complexprojectile:SetHorizontalSpeed(30)
+    complexprojectile:SetLaunchOffset(Vector3(3, 2, 0))
+    complexprojectile.usehigharc = false
 
     return inst
 end

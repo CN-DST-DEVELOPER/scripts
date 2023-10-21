@@ -10,6 +10,20 @@ local events=
         end)
 }
 
+local function DoAttack(inst)
+	local target = inst.components.combat.target
+	inst.components.combat:DoAttack()
+	if inst.owner ~= nil and
+		target ~= nil and
+		target.components.combat ~= nil and
+		target.components.combat:TargetIs(inst) and
+		target.components.combat:CanTarget(inst.owner)
+	then
+		--forward aggro back to our owner
+		target.components.combat:SetTarget(inst.owner)
+	end
+end
+
 local states=
 {
     State{
@@ -68,8 +82,8 @@ local states=
 
         timeline=
         {
-            TimeEvent(7*FRAMES, function(inst) inst.components.combat:DoAttack() end),
-            TimeEvent(17*FRAMES, function(inst) inst.components.combat:DoAttack() end),
+			FrameEvent(7, DoAttack),
+			FrameEvent(17, DoAttack),
             TimeEvent(18*FRAMES, function(inst) inst.sg:RemoveStateTag("attack") end),
         },
 

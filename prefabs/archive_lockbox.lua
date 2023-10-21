@@ -6,7 +6,8 @@ local assets =
 
 local prefabs =
 {
-    "archive_dispencer_sfx"
+    "archive_dispencer_sfx",
+    "archive_lockbox",
 }
 
 local assetsdispencer =
@@ -294,6 +295,8 @@ local function dispencerfn()
 
     inst:AddTag("structure")
     inst:AddTag("dustable")
+
+    inst.scrapbook_specialinfo = "ARCHIVEDISPENCER"
 
     inst.entity:SetPristine()
 

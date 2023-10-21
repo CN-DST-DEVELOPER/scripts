@@ -201,6 +201,10 @@ local function fn(type_name, is_large)
 
     MakeSnowCoveredPristine(inst)
 
+    if not is_large then
+        inst.scrapbook_proxy = "driftwood_small1"
+    end
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

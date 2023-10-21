@@ -314,6 +314,9 @@ function MakeWallType(data)
             return inst
         end
 
+        inst.scrapbook_specialinfo = "WALLS"
+        inst.scrapbook_anim = "half"
+
         inst:AddComponent("inspectable")
         inst:AddComponent("lootdropper")
 

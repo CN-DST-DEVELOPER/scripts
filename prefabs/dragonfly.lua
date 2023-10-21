@@ -494,6 +494,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_damage = { TUNING.DRAGONFLY_DAMAGE, TUNING.DRAGONFLY_FIRE_DAMAGE }
+
     -- Component Definitions
 
     inst:AddComponent("health")
@@ -536,7 +538,16 @@ local function fn()
     inst.components.health.nofadeout = true --Handled in death state instead
     inst.components.health.fire_damage_scale = 0 -- Take no damage from fire
 
-    inst.components.groundpounder.numRings = 2
+	inst.components.groundpounder:UseRingMode()
+	inst.components.groundpounder.numRings = 3
+	inst.components.groundpounder.initialRadius = 1.5
+	inst.components.groundpounder.radiusStepDistance = 2
+	inst.components.groundpounder.ringWidth = 2
+	inst.components.groundpounder.damageRings = 2
+	inst.components.groundpounder.destructionRings = 3
+	inst.components.groundpounder.platformPushingRings = 3
+	inst.components.groundpounder.fxRings = 2
+	inst.components.groundpounder.fxRadiusOffset = 1.5
     inst.components.groundpounder.burner = true
     inst.components.groundpounder.groundpoundfx = "firesplash_fx"
     inst.components.groundpounder.groundpounddamagemult = 0.5

@@ -45,6 +45,7 @@ local function fn()
     inst.AnimState:SetBank("marble_pillar")
     inst.AnimState:SetBuild("marble_pillar")
     inst.AnimState:PlayAnimation("full")
+    inst.scrapbook_anim = "full"
 
     inst.MiniMapEntity:SetIcon("marblepillar.png")
 

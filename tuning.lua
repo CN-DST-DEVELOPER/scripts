@@ -932,6 +932,10 @@ function Tune(overrides)
         HUNT_COOLDOWNDEVIATION = total_day_time*0.3,
         HUNT_ALTERNATE_BEAST_CHANCE_MIN = 0.05,
         HUNT_ALTERNATE_BEAST_CHANCE_MAX = 0.33,
+        HUNT_SCORE_TIME_PER_NODE = 8,
+        HUNT_SCORE_TIME_PER_NODE_MAX = 10, -- Keep below 1.25 * SEG_TIME
+        HUNT_SCORE_PROP_RATIO = 0.25,
+        HUNT_SCORE_SLEEP_RATIO = 0.4, -- Keep bigger than HUNT_SCORE_PROP_RATIO.
 
         HUNT_RESET_TIME = 5,
         HUNT_SPRING_RESET_TIME = total_day_time * 3,
@@ -1379,6 +1383,10 @@ function Tune(overrides)
 			SHADOW_FORGE = TechTree.Create({
 				SHADOWFORGING = 2,
 			}),
+
+            CARPENTRY_STATION = TechTree.Create({
+                CARPENTRY = 2,
+            }),
 		},
 
         RABBIT_HEALTH = 25 * multiplayer_attack_modifier,
@@ -2523,10 +2531,10 @@ function Tune(overrides)
         LAVAE_HATCH_FAIL_TIME = night_time,
 
         BEARGER_HEALTH = 3000 * 2, -- harder for multiplayer
-        BEARGER_DAMAGE = 200,
+		BEARGER_DAMAGE = 175,
         BEARGER_ATTACK_PERIOD = 3,
         BEARGER_MELEE_RANGE = 6,
-        BEARGER_ATTACK_RANGE = 6,
+		BEARGER_ATTACK_RANGE = 5,
         BEARGER_CALM_WALK_SPEED = 3,
         BEARGER_ANGRY_WALK_SPEED = 6,
         BEARGER_RUN_SPEED = 10,
@@ -4607,6 +4615,8 @@ function Tune(overrides)
 		SLINGSHOT_AMMO_DAMAGE_THULECITE = wilson_attack * 1.5,	-- 51
 		SLINGSHOT_AMMO_DAMAGE_SLOW = wilson_attack * 0.5,		-- 17
 		SLINGSHOT_AMMO_DAMAGE_TRINKET_1 = wilson_attack * 1.75,	-- 59.5
+
+        SLINGSHOT_AMMO_DAMAGE_MAX = wilson_attack * 1.75, -- NOTE(DiogoW): Please update this when adding more powerful ammo.
 
         WALTER_TREE_SANITY_RADIUS = 10,
         WALTER_TREE_SANITY_THRESHOLD = 5,
@@ -6812,8 +6822,8 @@ function Tune(overrides)
         -- Damage over times.
         ACIDRAIN_DAMAGE_TIME = 1.5, -- How quickly the game polls to deal acidrain damage.
         ACIDRAIN_DAMAGE_PER_SECOND = 2.0,
-        ACIDRAIN_DAMAGE_FUELED_SCALER = 1.0,
-        ACIDRAIN_PERISHABLE_ROT_PERCENT = 0.01,
+        ACIDRAIN_DAMAGE_FUELED_SCALER = 2.0,
+        ACIDRAIN_PERISHABLE_ROT_PERCENT = 0.007,
         -- Side effects.
         ACIDRAIN_BOULDER_WORK = 3,
         ACIDRAIN_BOULDER_WORK_STARTS_PERCENT = 0.5, -- What percentage of the acid level of the pond should it be for work to start.
@@ -6935,6 +6945,154 @@ function Tune(overrides)
         WOLFGANG_COACH_BUFF = 2,
         COACH_TIME_TO_INSPIRE = 7,
         COACH_TIME_BUFF_LASTS = 10,
+
+        -- Rifts 3
+
+        LUNARHAIL_DEBRIS_DAMAGE = 30,
+        LUNARHAIL_DEBRIS_DAMAGE_RADIUS = 2,
+        LUNARHAIL_DEBRIS_SPAWN_SCALE_RATE_MIN = 0.04,
+        LUNARHAIL_DEBRIS_SPAWN_SCALE_RATE_MAX = 0.4,
+        LUNARHAIL_DEBRIS_SPAWN_RADIUS = 60,
+        LUNARHAIL_DEBRIS_LIFETIME = 5, -- Seconds.
+        LUNARHAIL_DEBRIS_KEEP_CHANCE = 0.25,
+
+        LUNARHAIL_EVENT_COOLDOWN = 10 * total_day_time,
+        LUNARHAIL_EVENT_TIME = 3 * seg_time,
+
+		MUTATED_DEERCLOPS_HEALTH = 6000,
+		MUTATED_DEERCLOPS_DAMAGE = 150,
+		MUTATED_DEERCLOPS_PLANAR_DAMAGE = 30,
+		MUTATED_DEERCLOPS_ATTACK_RANGE = 13,
+		MUTATED_DEERCLOPS_ATTACK_PERIOD = 3,
+		MUTATED_DEERCLOPS_COMBO_ATTACK_PERIOD = 4,
+		MUTATED_DEERCLOPS_ICELANCE_DAMAGE = 200,
+		MUTATED_DEERCLOPS_ICELANCE_RANGE = { min = 6, max = 14 },
+		MUTATED_DEERCLOPS_STAGGER_TIME = 6,
+		MUTATED_DEERCLOPS_FRENZY_MIN_TIME = 12,
+		MUTATED_DEERCLOPS_FRENZY_HP = 1200 / 6000,
+
+		MUTATED_BEARGER_HEALTH = 8000,
+		MUTATED_BEARGER_DAMAGE = 175,
+		MUTATED_BEARGER_PLANAR_DAMAGE = 30,
+		MUTATED_BEARGER_ATTACK_RANGE = 6,
+		MUTATED_BEARGER_ATTACK_PERIOD = 3,
+		MUTATED_BEARGER_STAGGER_TIME = 6,
+        MUTATED_BEARGER_TARGET_RANGE = 14,
+		MUTATED_BEARGER_SINKHOLERADIUS = 3,
+		MUTATED_BEARGER_RECOVERY_HP = 800 / 8000,
+
+		MUTATED_WARG_HEALTH = 3000,
+		MUTATED_WARG_STAGGER_TIME = 6,
+		MUTATED_WARG_COLDFIRE_TEMPERATURE = -2,
+		MUTATED_WARG_FLAMETHROWER_CD = 8,
+		MUTATED_WARG_PLANAR_DAMAGE = 30,
+		MUTATED_WARG_FLAMETHROWER_DAMAGE = 20,
+
+		KOALEFANT_CARCASS_MEAT_PER_LEVEL = 10, --3 levels
+		KOALEFANT_CARCASS_DECAY_TIME = total_day_time * 0.5,
+
+        CORPSE_GESTALT_WALK_SPEED = 15,
+        CORPSE_GESTALT_RUN_SPEED = 20,
+
+        FROG_RAIN_LUNARFROG_CHANCE = 0.6,
+
+        LUNARFROG_HEALTH = 150,
+        LUNARFROG_DAMAGE = 10,
+        LUNARFROG_PLANAR_DAMAGE = 5,
+        LUNARFROG_ATTACK_PERIOD = 1,
+        LUNARFROG_TARGET_DIST = 4,
+        LUNARFROG_ONATTACK_GROGGINESS = 0.35,
+        LUNARFROG_ADDITIONAL_LOOT_CHANCE = 0.5,
+        LUNARFROG_ITEMS_TO_STEAL_MIN = 2,
+        LUNARFROG_ITEMS_TO_STEAL_MAX = 4,
+
+        BEARGERFUR_SACK_PRESERVER_RATE = 0.05,
+
+        DEERCLOPSEYEBALL_SENTRYWARD_RADIUS = 35,
+        DEERCLOPSEYEBALL_SENTRYWARD_GROUND_ICE_RADIUS = 3.5,
+        DEERCLOPSEYEBALL_SENTRYWARD_TEMPERATURE_OVERRIDE = -10,
+
+        DEERCLOPSEYEBALL_SENTRYWARD_ROCK_ICE_SPAWN_BASETIME = 7 * total_day_time,
+        DEERCLOPSEYEBALL_SENTRYWARD_ROCK_ICE_SPAWN_VARIANCE = 5 * total_day_time,
+        DEERCLOPSEYEBALL_SENTRYWARD_ROCK_ICE_MAX_DENSITY_RAD = 12,
+        DEERCLOPSEYEBALL_SENTRYWARD_ROCK_ICE_MAX_DENSITY = 6,
+        DEERCLOPSEYEBALL_SENTRYWARD_ROCK_ICE_MIN_SPACING = 5,
+
+        ROCK_ICE_TEMPERATURE_GROW_MELT_TIME = 5 * total_day_time,
+
+        HOUNDSTOOTH_BLOWPIPE_DAMAGE = wilson_attack,
+        HOUNDSTOOTH_BLOWPIPE_PLANAR_DAMAGE = wilson_attack,
+        HOUNDSTOOTH_BLOWPIPE_VS_SHADOW_BONUS = 1.1, -- Multiplier.
+        HOUNDSTOOTH_BLOWPIPE_PROJECTILE_SPEED = 25,
+        HOUNDSTOOTH_BLOWPIPE_ATTACK_DIST = 12,
+        HOUNDSTOOTH_BLOWPIPE_ATTACK_DIST_MAX = 16,
+
+        VASE_FLOWER_SWAPS =
+        {
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = true,   sanityboost = 0 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = true,   sanityboost = 0 },
+            { lightsource = true,   sanityboost = 0 },
+            { lightsource = true,   sanityboost = 0 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+            { lightsource = false,  sanityboost = 5 },
+        },
+
+        VASE_FLOWER_MAP =
+        {   -- These are indexes into VASE_FLOWER_SWAPS above.
+            petals              = { 1, 2, 3, 4, 6, 10, 11, 12 },
+            lightbulb           = { 5, 7, 8 },
+            wormlight           = { 9 },
+            wormlight_lesser    = { 9 },
+            forgetmelots        = { 13, 14 },
+            moon_tree_blossom   = { 15 },
+        },
+
+        PHONOGRAPH_PLAY_TIME = 64,
+        PHONOGRAPH_TEND_RANGE = 8,
+
+        --NOTE: + 20 * 5 <= 20 hits of defending 5 planar damage
+        ARMORPUNK = wilson_health*6*multiplayer_armor_durability_modifier + 20 * 5,
+        ARMORPUNK_ABSORPTION = 0.85*multiplayer_armor_absorption_modifier,
+        ARMORPUNK_PLANAR_DEF = 5,
+
+        ARMORPUNK_SPEED_MULT_STAGE0 = 1.10,
+        ARMORPUNK_SPEED_MULT_STAGE1 = 1.15,
+        ARMORPUNK_SPEED_MULT_STAGE2 = 1.20,
+        ARMORPUNK_SPEED_MULT_STAGE3 = 1.30,
+
+        ARMORPUNK_STAGE1 = 10,
+        ARMORPUNK_STAGE2 = 16,
+        ARMORPUNK_STAGE3 = 20,
+
+        --NOTE: + 20 * 5 <= 20 hits of defending 5 planar damage
+        ARMOR_WAGPUNK_HAT = wilson_health * 6 * multiplayer_armor_durability_modifier + 20 * 5,
+        ARMOR_WAGPUNK_HAT_ABSORPTION = 0.85 * multiplayer_armor_absorption_modifier,
+        ARMOR_WAGPUNK_HAT_PLANAR_DEF = 5,
+
+        ARMOR_WAGPUNK_HAT_STAGE0 = 1.05,
+        ARMOR_WAGPUNK_HAT_STAGE1 = 1.10,
+        ARMOR_WAGPUNK_HAT_STAGE2 = 1.15,
+        ARMOR_WAGPUNK_HAT_STAGE3 = 1.20,
+
+        WAGPUNK_MAXRANGE = 16,
+        WAGPUNK_SYNC_TIME = 3,
+
+        WAGSTAFF_MACHINERY_BLUEPRINT_CHANCE = 0.4,
+        WAGSTAFF_MACHINERY_NUM_BLUEPRINTS = 1,
+
+        WAGSTAFF_MACHINE_HINT_TIME = { min = total_day_time, max = 15*total_day_time },
+
+        WAGSTAFF_SPAWN_MACHINE_TIME = 4 * total_day_time,
+        WAGSTAFF_SPAWN_MACHINE_TIME_VARIATION = 3 * total_day_time,
     }
 
     TUNING_MODIFIERS = {}

@@ -342,6 +342,8 @@ local function beebox_hermit(inst)
     inst.AnimState:PlayAnimation("idle")
 
 	inst:AddTag("antlion_sinkhole_blocker")
+
+    inst.scrapbook_specialinfo = "BEEBOX"
 end
 
 local function beebox_master(inst)

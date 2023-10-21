@@ -60,8 +60,6 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.15, 0.9)
 
-    inst.scrapbook_specialinfo = "SPIDERHEALER"
-
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

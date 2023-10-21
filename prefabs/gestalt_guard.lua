@@ -211,6 +211,8 @@ local function fn()
 		inst.components.transparentonsanity:ForceUpdate()
 	end
 
+	inst.scrapbook_inspectonseen = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

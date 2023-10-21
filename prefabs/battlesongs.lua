@@ -93,21 +93,6 @@ local function song_fn(songdata, prefabname)
     inst:AddTag("battlesong")
 
     inst.songdata = songdata
-    if prefabname == "battlesong_sanityaura" then
-        inst.scrapbook_specialinfo = "BATTLESONG_SANITYAURA"
-    elseif prefabname == "battlesong_durability" then
-        inst.scrapbook_specialinfo = "BATTLESONG_DURABILITY"
-    elseif prefabname == "battlesong_healthgain" then
-        inst.scrapbook_specialinfo = "BATTLESONG_HEALTHGAIN"
-    elseif prefabname == "battlesong_sanitygain" then
-        inst.scrapbook_specialinfo = "BATTLESONG_SANITYGAIN"
-    elseif prefabname == "battlesong_fireresistance" then
-        inst.scrapbook_specialinfo = "BATTLESONG_FIRERESISTANCE"
-    elseif prefabname == "battlesong_instant_taunt" then
-        inst.scrapbook_specialinfo = "BATTLESONG_TAUNT"
-    elseif prefabname == "battlesong_instant_panic" then
-        inst.scrapbook_specialinfo = "BATTLESONG_PANIC"        
-    end
 
     inst.entity:SetPristine()
 

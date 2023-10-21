@@ -445,6 +445,40 @@ function Map:IsSurroundedByWater(x, y, z, radius)
     return true
 end
 
+function Map:IsSurroundedByLand(x, y, z, radius)
+    radius = radius + 1 --add 1 to radius for map overhang, way cheaper than doing an IsVisualGround test
+    local num_edge_points = math.ceil((radius*2) / 4) - 1
+
+    --test the corners first
+    if not self:IsLandTileAtPoint(x + radius, y, z + radius) then return false end
+    if not self:IsLandTileAtPoint(x - radius, y, z + radius) then return false end
+    if not self:IsLandTileAtPoint(x + radius, y, z - radius) then return false end
+    if not self:IsLandTileAtPoint(x - radius, y, z - radius) then return false end
+
+    --if the radius is less than 1(2 after the +1), it won't have any edges to test and we can end the testing here.
+    if num_edge_points == 0 then return true end
+
+    local dist = (radius*2) / (num_edge_points + 1)
+    --test the edges next
+    for i = 1, num_edge_points do
+        local idist = dist * i
+        if not self:IsLandTileAtPoint(x - radius + idist, y, z + radius) then return false end
+        if not self:IsLandTileAtPoint(x - radius + idist, y, z - radius) then return false end
+        if not self:IsLandTileAtPoint(x - radius, y, z - radius + idist) then return false end
+        if not self:IsLandTileAtPoint(x + radius, y, z - radius + idist) then return false end
+    end
+
+    --test interior points last
+    for i = 1, num_edge_points do
+        local idist = dist * i
+        for j = 1, num_edge_points do
+            local jdist = dist * j
+            if not self:IsLandTileAtPoint(x - radius + idist, y, z - radius + jdist) then return false end
+        end
+    end
+    return true
+end
+
 function Map:GetNearestPointOnWater(x, z, radius, iterations)
     local test_increment = radius / iterations
 

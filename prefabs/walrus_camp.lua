@@ -436,6 +436,11 @@ local function create()
     --inst:AddTag("tent")
     inst:AddTag("antlion_sinkhole_blocker")
 
+    inst.scrapbook_build = "walrus_house"
+    inst.scrapbook_bank = "walrus_house"
+    inst.scrapbook_anim = "idle"
+    inst.scrapbook_specialinfo = "WALRUSCAMP"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

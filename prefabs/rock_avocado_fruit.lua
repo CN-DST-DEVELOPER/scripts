@@ -192,6 +192,8 @@ local function rock_avocado_fruit_ripe()
         return inst
     end
 
+    inst.scrapbook_anim = "idle_split_open"
+
     inst:AddComponent("edible")
     inst.components.edible.healthvalue = TUNING.HEALING_TINY
     inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
@@ -246,6 +248,8 @@ local function rock_avocado_fruit_ripe_cooked()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "cooked"
 
     inst:AddComponent("edible")
     inst.components.edible.healthvalue = TUNING.HEALING_SMALL
@@ -329,6 +333,9 @@ local function rock_avocado_fruit_sprout_sapling()
 
     inst.MiniMapEntity:SetIcon("rock_avocado.png")
 
+    inst.scrapbook_anim = "idle_buried_seed"
+    inst.scrapbook_adddeps = { "rock_avocado_bush" }
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -389,6 +396,7 @@ local function rock_avocado_fruit_sprout()
 
     inst.scrapbook_specialinfo = "PLANTABLE"
     inst.scrapbook_anim = "idle_seed"
+    inst.scrapbook_adddeps = { "rock_avocado_fruit_sprout_sapling" }
 
     inst.entity:SetPristine()
 

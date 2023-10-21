@@ -81,6 +81,7 @@ local reskin_fx_info =
 	winterometer = { offset = 0.8, scale = 1.3 },
 	wormhole = { scale = 1.3 },
 	yellowstaff = { offset = 0.4 },
+    mighty_gym = {offset = 2, scale = 2.7},
 }
 
 -- Testing and viewing skins on a more close level.

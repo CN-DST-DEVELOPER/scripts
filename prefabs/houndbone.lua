@@ -57,6 +57,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "piece1"
+
     local bonetype = math.random(#names)
     inst.animname = names[bonetype]
     inst.AnimState:PlayAnimation(inst.animname)

@@ -1,15 +1,19 @@
 local function DoSpawn(inst, self)
-    if self.task ~= nil then
-        self.task:Cancel()
-        self.task = nil
-    end
-    self.target_time = nil
-    self:TrySpawn()
-    self:Start()
+    self:DoSpawn()
 end
+
+local function _isnumber(n)
+    return type(n) == "number"
+end
+
+local MISSING_SPAWN_POS_RETRY_TIME = 15
+local GENERAL_RETRY_TIME_PERCENT = 0.25
+
+----------------------------------------------------------------------------------------
 
 local PeriodicSpawner = Class(function(self, inst)
     self.inst = inst
+
     self.basetime = 40
     self.randtime = 60
     self.prefab = nil
@@ -24,25 +28,35 @@ local PeriodicSpawner = Class(function(self, inst)
     self.spawnoffscreen = false
 end)
 
+----------------------------------------------------------------------------------------
+
 function PeriodicSpawner:SetPrefab(prefab)
+    assert(type(prefab) == "function" or Prefabs[prefab] ~= nil)
+
     self.prefab = prefab
 end
 
 function PeriodicSpawner:SetRandomTimes(basetime, variance, no_reset)
+    assert(_isnumber(basetime) and _isnumber(variance))
+
     self.basetime = basetime
     self.randtime = variance
-    if self.task and not no_reset then
-        self:Stop()
+
+    if self.task ~= nil and not no_reset then
         self:Start()
     end
 end
 
 function PeriodicSpawner:SetDensityInRange(range, density)
+    assert(_isnumber(range) and _isnumber(density))
+
     self.range = range
     self.density = density
 end
 
 function PeriodicSpawner:SetMinimumSpacing(spacing)
+    assert(_isnumber(spacing))
+
     self.spacing = spacing
 end
 
@@ -58,30 +72,72 @@ function PeriodicSpawner:SetSpawnTestFn(fn)
     self.spawntest = fn
 end
 
-local PERIODICSPAWNER_CANTTAGS = { "INLIMBO" }
-function PeriodicSpawner:TrySpawn(prefab)
-    prefab = prefab or self.prefab
+function PeriodicSpawner:SetGetSpawnPointFn(fn)
+    self.getspawnpointfn = fn
+end
 
-    if type(prefab) == "function" then
-        prefab = prefab(self.inst)
+----------------------------------------------------------------------------------------
+
+function PeriodicSpawner:Start(timeoverride)
+    local time = timeoverride or (self.basetime + math.random()*self.randtime)
+
+    self:Stop()
+
+    self.target_time = GetTime() + time
+    self.task = self.inst:DoTaskInTime(time, DoSpawn, self)
+end
+
+function PeriodicSpawner:SafeStart(timeoverride)
+    if self.target_time == nil then
+        self:Start(timeoverride)
     end
+end
+
+function PeriodicSpawner:Stop()
+    self.target_time = nil
+
+    if self.task ~= nil then
+        self.task:Cancel()
+        self.task = nil
+    end
+end
+
+----------------------------------------------------------------------------------------
+
+local PERIODICSPAWNER_CANTTAGS = { "INLIMBO" }
+
+function PeriodicSpawner:TrySpawn(prefab)
+    prefab = FunctionOrValue(prefab or self.prefab, self.inst)
 
     if not (prefab and self.inst:IsValid()) or
         (self.spawnoffscreen and not self.inst:IsAsleep()) or
-        (self.spawntest ~= nil and not self.spawntest(self.inst)) then
-        return false
+        (self.spawntest ~= nil and not self.spawntest(self.inst))
+    then
+        return false, self.basetime * GENERAL_RETRY_TIME_PERCENT
     end
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
 
+    local spawnpos = Vector3(x, y , z)
+
+    if self.getspawnpointfn ~= nil then
+        spawnpos = self.getspawnpointfn(self.inst)
+
+        if spawnpos == nil then
+            return false, MISSING_SPAWN_POS_RETRY_TIME
+        end
+    end
+
     if self.range ~= nil or self.spacing ~= nil then
         local density = self.density or 0
+
         if density <= 0 then
             return false
         end
 
         local ents = TheSim:FindEntities(x, y, z, self.range or self.spacing, nil, PERIODICSPAWNER_CANTTAGS)
         local count = 0
+
         for i, v in ipairs(ents) do
             if v.prefab == prefab then
                 --can't spawn if anything within "spacing"
@@ -90,83 +146,100 @@ function PeriodicSpawner:TrySpawn(prefab)
                 if self.range == nil or (
                     self.spacing ~= nil and (
                         self.spacing >= self.range or
-                        v:GetDistanceSqToPoint(x, y, z) < self.spacing * self.spacing
+                        v:GetDistanceSqToPoint(spawnpos.x, 0, spawnpos.z) < self.spacing * self.spacing
                     )
                 ) then
                     return false
                 end
+
                 count = count + 1
+
                 if count >= density then
                     return false
                 end
             end
         end
     end
-    local inst = nil
+
+    local ent = nil
+
     --V2C: using TheWorld.Map:GetPlatformAtPoint(x, z) instead of self.inst:GetCurrentPlatform()
     --     because the spawner may not detect platforms.
     --     e.g. Glommer is flying, and does not detect platforms, but spawns glommerfuel.
-    if TheWorld.components.flotsamgenerator ~= nil and not TheWorld.Map:IsVisualGroundAtPoint(x, y, z) and not TheWorld.Map:GetPlatformAtPoint(x, z) then
-        inst = TheWorld.components.flotsamgenerator:SpawnFlotsam(Vector3(x,y,z),prefab,true)
+
+    if TheWorld.components.flotsamgenerator ~= nil and
+        not TheWorld.Map:IsVisualGroundAtPoint(spawnpos:Get()) and
+        not TheWorld.Map:GetPlatformAtPoint(spawnpos.x, spawnpos.z)
+    then
+        ent = TheWorld.components.flotsamgenerator:SpawnFlotsam(spawnpos, prefab, true)
     else
-        inst = SpawnPrefab(prefab)
-        inst.Transform:SetPosition(x, y, z)
+        ent = SpawnPrefab(prefab)
+
+        if ent ~= nil then
+            ent.Transform:SetPosition(spawnpos:Get())
+        end
     end
+
     if self.onspawn ~= nil then
-        self.onspawn(self.inst, inst)
+        self.onspawn(self.inst, ent)
     end
+
     return true
 end
 
-function PeriodicSpawner:Start()
-    local t = self.basetime + math.random()*self.randtime
-    self.target_time = GetTime() + t
-    self.task = self.inst:DoTaskInTime(t, DoSpawn, self)
+function PeriodicSpawner:DoSpawn()
+    local success, timeoverride = self:TrySpawn()
+
+    self:Start(timeoverride)
 end
 
-function PeriodicSpawner:Stop()
-    self.target_time = nil
-    if self.task then
-        self.task:Cancel()
-        self.task = nil
-    end
-end
-
-function PeriodicSpawner:ForceNextSpawn()
-    DoSpawn(self.inst, self)
-end
-
---[[
-function PeriodicSpawner:OnEntitySleep()
-    self:Stop()
-end
-
-function PeriodicSpawner:OnEntityWake()
-    self:Start()
-end
---]]
+----------------------------------------------------------------------------------------
 
 function PeriodicSpawner:LongUpdate(dt)
-    if self.target_time then
-        if self.task then
-            self.task:Cancel()
-            self.task = nil
-        end
-        local time_to_wait = self.target_time - GetTime() - dt
+    if self.target_time == nil then
+        return
+    end
 
-        if time_to_wait <= 0 then
-            DoSpawn(self.inst, self)
-        else
-            self.target_time = GetTime() + time_to_wait
-            self.task = self.inst:DoTaskInTime(time_to_wait, DoSpawn, self)
-        end
+    local new_time = self.target_time - GetTime() - dt
+
+    if new_time <= 0 then
+        self:DoSpawn()
+    else
+        self:Start(new_time)
     end
 end
 
+----------------------------------------------------------------------------------------
+
+function PeriodicSpawner:OnSave()
+    local time = GetTime()
+
+    if self.target_time ~= nil and self.target_time > time then
+        return { time = math.floor(self.target_time - time) }
+    end
+end
+
+function PeriodicSpawner:OnLoad(data)
+    if data ~= nil and data.time ~= nil then
+        self:Start(data.time)
+    end
+end
+
+----------------------------------------------------------------------------------------
+
+PeriodicSpawner.ForceNextSpawn = PeriodicSpawner.DoSpawn
 PeriodicSpawner.OnRemoveFromEntity = PeriodicSpawner.Stop
 
+----------------------------------------------------------------------------------------
+
 function PeriodicSpawner:GetDebugString()
-    return string.format("Next Spawn: %s prefab: %s", self.target_time and string.format("%.1f", self.target_time - GetTime()) or "never", tostring(self.prefab))
+    return string.format(
+        "Next Spawn: %s prefab: %s",
+        self.target_time and string.format("%.1f", self.target_time - GetTime()) or "never",
+        tostring(self.prefab)
+    )
 end
+
+----------------------------------------------------------------------------------------
 
 return PeriodicSpawner

@@ -22,8 +22,8 @@ local _frogs = {}
 local _frogcap = 0
 local _spawntime = TUNING.FROG_RAIN_DELAY
 local _updating = false
+local _lunarriftopen = false
 
-local _chance = TUNING.FROG_RAIN_CHANCE
 local _localfrogs = {
     min = TUNING.FROG_RAIN_LOCAL_MIN,
     max = TUNING.FROG_RAIN_LOCAL_MAX,
@@ -48,8 +48,12 @@ local function GetSpawnPoint(pt)
     end
 end
 
+local function GetFrogPrefab(spawn_point)
+    return _lunarriftopen and math.random() <= TUNING.FROG_RAIN_LUNARFROG_CHANCE and "lunarfrog" or "frog"
+end
+
 local function SpawnFrog(spawn_point)
-    local frog = SpawnPrefab("frog")
+    local frog = SpawnPrefab(GetFrogPrefab(spawn_point))
     frog.persists = false
     if math.random() < .5 then
         frog.Transform:SetRotation(180)
@@ -94,13 +98,18 @@ local function ToggleUpdate(force)
     if _worldstate.isspring and -- frogs only come out in the spring!
         _worldstate.israining and
         _worldstate.precipitationrate > TUNING.FROG_RAIN_PRECIPITATION and
-        _worldstate.moistureceil > TUNING.FROG_RAIN_MOISTURE then
+        _worldstate.moistureceil > TUNING.FROG_RAIN_MOISTURE
+    then
         if not _updating then
             _updating = true
+            _lunarriftopen = TheWorld.components.riftspawner ~= nil and TheWorld.components.riftspawner:IsLunarPortalActive()
+
             for i, v in ipairs(_activeplayers) do
                 ScheduleSpawn(v, true)
             end
         elseif force then
+            _lunarriftopen = TheWorld.components.riftspawner ~= nil and TheWorld.components.riftspawner:IsLunarPortalActive()
+
             for i, v in ipairs(_activeplayers) do
                 CancelSpawn(v)
                 ScheduleSpawn(v, true)
@@ -125,7 +134,7 @@ end
 --------------------------------------------------------------------------
 
 local function OnIsRaining(inst, israining)
-    if israining and (math.random() < _chance) then -- only add fromgs to some rains
+    if israining and (math.random() < TUNING.FROG_RAIN_CHANCE) then -- only add fromgs to some rains
         _frogcap = math.random(_localfrogs.min, _localfrogs.max)
     else
         _frogcap = 0
@@ -241,11 +250,7 @@ end
 --------------------------------------------------------------------------
 
 function self:GetDebugString()
-    local frog_count = 0
-    for k, v in pairs(_frogs) do
-        frog_count = frog_count + 1
-    end
-    return string.format("Frograin: %d/%d, updating:%s min: %2.2f max:%2.2f", frog_count, _frogcap, tostring(_updating), _spawntime.min, _spawntime.max)
+    return string.format("Frograin: %d/%d, updating:%s min: %2.2f max:%2.2f", GetTableSize(_frogs), _frogcap, tostring(_updating), _spawntime.min, _spawntime.max)
 end
 
 --------------------------------------------------------------------------

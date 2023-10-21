@@ -286,12 +286,14 @@ end
 local function TryPerish(item)
     if item:IsInLimbo() then
         local owner = item.components.inventoryitem ~= nil and item.components.inventoryitem.owner or nil
-        if owner == nil or
+        if owner == nil or 
             (   owner.components.container ~= nil and
                 not owner.components.container:IsOpen() and
-                owner:HasTag("structure")   ) then
-            --in limbo but not inventory or container?
-            --or in a closed chest
+                owner:HasOneOfTags({ "structure", "portablestorage" })
+            )
+        then
+            -- In limbo but not inventory or container?
+            -- or in a closed chest/storage.
             return
         end
     end

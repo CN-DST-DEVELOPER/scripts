@@ -231,6 +231,7 @@ local function fn()
     inst.AnimState:SetBank("glommer_statue")
     inst.AnimState:SetBuild("glommer_statue")
     inst.AnimState:PlayAnimation("full")
+    inst.scrapbook_anim = "full"
 
     inst.Light:SetRadius(0)
     inst.Light:SetIntensity(.9)
@@ -244,6 +245,11 @@ local function fn()
     inst.lighttask = nil
 
     inst.entity:AddTag("statue")
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(120)
+    end
 
     inst.entity:SetPristine()
 

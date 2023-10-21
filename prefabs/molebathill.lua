@@ -91,6 +91,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "idle"
+
     inst:AddComponent("lootdropper")
     inst.components.lootdropper.numrandomloot = 2
     for prefab, chance in pairs(RANDOM_LOOT_TABLE) do

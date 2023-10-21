@@ -90,8 +90,12 @@ local function fn()
     inst.AnimState:OverrideSymbol("fx_star_part", "fx_wolfgang", "fx_star_part")
 
     inst.AnimState:PlayAnimation("idle_empty", true)
+    inst.scrapbook_anim = "idle_empty"
+    inst.scrapbook_overridebuild = "mighty_gym"
 
     MakeSnowCoveredPristine(inst)
+
+    inst.scrapbook_specialinfo = "MIGHTYGYM"
 
     inst.entity:SetPristine()
 

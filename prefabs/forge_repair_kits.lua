@@ -23,6 +23,12 @@ local function MakeKit(name, material)
 
 		MakeInventoryFloatable(inst, "small", 0.2, { 1.4, 1, 1 })
 
+		if name == "lunarplant_kit" then
+			inst.scrapbook_specialinfo = "LUNARPLANTKIT"
+		elseif name == "voidcloth_kit" then
+			inst.scrapbook_specialinfo = "VOIDCLOTHKIT"
+		end
+
 		inst.entity:SetPristine()
 
 		if not TheWorld.ismastersim then
@@ -48,4 +54,5 @@ local function MakeKit(name, material)
 end
 
 return MakeKit("lunarplant_kit", FORGEMATERIALS.LUNARPLANT),
-	MakeKit("voidcloth_kit", FORGEMATERIALS.VOIDCLOTH)
+	MakeKit("voidcloth_kit", FORGEMATERIALS.VOIDCLOTH),
+	MakeKit("wagpunkbits_kit", FORGEMATERIALS.WAGPUNKBITS)

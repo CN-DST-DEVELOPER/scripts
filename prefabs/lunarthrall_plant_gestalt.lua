@@ -5,11 +5,6 @@ local assets =
     Asset("ANIM", "anim/lunarthrall_plant_gestalt.zip"),
 }
 
-local prefabs =
-{
-
-}
-
 local function Spawn(inst)
     inst.components.timer:StartTimer("justspawned",15)
     inst.Transform:SetRotation(math.random()*360)
@@ -48,6 +43,7 @@ local function fn()
     inst.AnimState:SetBank("lunarthrall_plant_gestalt")
     inst.AnimState:PlayAnimation("idle", true)
     inst.AnimState:SetMultColour(1,1,1,0.6)
+	inst.AnimState:SetLightOverride(0.1)
     inst.AnimState:UsePointFiltering(true)
 
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
@@ -80,4 +76,4 @@ local function fn()
     return inst
 end
 
-return Prefab("lunarthrall_plant_gestalt", fn, assets, prefabs)
+return Prefab("lunarthrall_plant_gestalt", fn, assets)

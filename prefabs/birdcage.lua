@@ -506,6 +506,7 @@ local function fn()
     inst.AnimState:SetBank("birdcage")
     inst.AnimState:SetBuild("bird_cage")
     inst.AnimState:PlayAnimation("idle_empty")
+    inst.scrapbook_anim ="idle_empty"
 
     inst:AddTag("structure")
     inst:AddTag("cage")

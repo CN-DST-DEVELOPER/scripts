@@ -90,6 +90,8 @@ local function digup(inst, digger)
 end
 
 local function sapling_fn(build, anim, growprefab, tag, fireproof, overrideloot)
+    local scrapbook_adddep = growprefab == tag and tag.."_tall" or string.gsub(growprefab, "short", "tall")
+
     local function fn()
         local inst = CreateEntity()
 
@@ -113,6 +115,9 @@ local function sapling_fn(build, anim, growprefab, tag, fireproof, overrideloot)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_anim = anim
+        inst.scrapbook_adddeps = {scrapbook_adddep}
 
         inst.growprefab = growprefab
         inst.StartGrowing = startgrowing
@@ -147,11 +152,12 @@ local function sapling_fn(build, anim, growprefab, tag, fireproof, overrideloot)
     return fn
 end
 
-return Prefab("pinecone_sapling", sapling_fn("pinecone", "idle_planted", "evergreen_short", "evergreen"), pinecone_assets, pinecone_prefabs),
-    Prefab("lumpy_sapling", sapling_fn("pinecone", "idle_planted2", "evergreen_sparse_short", "evergreen_sparse"), pinecone_assets, pinecone_prefabs),
-    Prefab("acorn_sapling", sapling_fn("acorn", "idle_planted", "deciduoustree", "deciduoustree"), acorn_assets, acorn_prefabs),
-    Prefab("twiggy_nut_sapling", sapling_fn("twiggy_nut", "idle_planted", "twiggy_short", "twiggytree"),  twiggy_nut_assets, twiggy_nut_prefabs),
-    Prefab("marblebean_sapling", sapling_fn("marblebean", "idle_planted", "marbleshrub_short", "marbleshrub", true, {"marblebean"}),  marblebean_assets, marblebean_prefabs),
-    Prefab("moonbutterfly_sapling", sapling_fn("baby_moon_tree", "idle", "moon_tree_short", "moon_tree"), moonbutterfly_assets, moonbutterfly_prefabs),
-    Prefab("palmcone_sapling", sapling_fn("palmcone_seed", "idle_planted", "palmconetree_short", "palmconetree"), palmcone_assets, palmcone_prefabs)
+return
+    Prefab("pinecone_sapling",      sapling_fn("pinecone", "idle_planted", "evergreen_short", "evergreen"),                             pinecone_assets,        pinecone_prefabs      ),
+    Prefab("lumpy_sapling",         sapling_fn("pinecone", "idle_planted2", "evergreen_sparse_short", "evergreen_sparse"),              pinecone_assets,        pinecone_prefabs      ),
+    Prefab("acorn_sapling",         sapling_fn("acorn", "idle_planted", "deciduoustree", "deciduoustree"),                              acorn_assets,           acorn_prefabs         ),
+    Prefab("twiggy_nut_sapling",    sapling_fn("twiggy_nut", "idle_planted", "twiggy_short", "twiggytree"),                             twiggy_nut_assets,      twiggy_nut_prefabs    ),
+    Prefab("marblebean_sapling",    sapling_fn("marblebean", "idle_planted", "marbleshrub_short", "marbleshrub", true, {"marblebean"}), marblebean_assets,      marblebean_prefabs    ),
+    Prefab("moonbutterfly_sapling", sapling_fn("baby_moon_tree", "idle", "moon_tree_short", "moon_tree"),                               moonbutterfly_assets,   moonbutterfly_prefabs ),
+    Prefab("palmcone_sapling",      sapling_fn("palmcone_seed", "idle_planted", "palmconetree_short", "palmconetree"),                  palmcone_assets,        palmcone_prefabs      )
 

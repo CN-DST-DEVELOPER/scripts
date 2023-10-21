@@ -323,7 +323,7 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSimpleActionState(states, "eat", "eat", 20 * FRAMES, { "busy" })
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
-CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddIpecacPoopState(states)
 
 return StateGraph("werepig", states, events, "idle", actionhandlers)

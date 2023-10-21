@@ -373,6 +373,9 @@ local function fn()
     inst.AnimState:SetBuild("monkey_island_portal")
     inst.AnimState:PlayAnimation("out_idle", true)
 
+    inst.scrapbook_anim = "out_idle"
+    inst.scrapbook_specialinfo = "MONKEYISLANDPORTAL"
+
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
     inst.AnimState:SetLightOverride(1)
 

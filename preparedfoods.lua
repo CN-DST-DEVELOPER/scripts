@@ -1043,7 +1043,6 @@ local foods =
         oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_BEEFALO,
 		OnPutInInventory = function(inst, owner) if owner ~= nil and owner:IsValid() then owner:PushEvent("learncookbookstats", inst.food_basename or inst.prefab) end end,
 		card_def = {ingredients = {{"twigs", 3}, {"acorn", 1}} },
-		scrapbook ={specialinfo="BEEFALOFEED"}
 	},
 
 	beefalotreat = 
@@ -1062,7 +1061,6 @@ local foods =
         floater = {"med", nil, 0.85},
         oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_BEEFALO,
 		OnPutInInventory = function(inst, owner) if owner ~= nil and owner:IsValid() then owner:PushEvent("learncookbookstats", inst.food_basename or inst.prefab) end end,
-		scrapbook ={specialinfo="BEEFALOTREAT"}
 	},
 }
 

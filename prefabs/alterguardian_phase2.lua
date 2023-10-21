@@ -341,6 +341,8 @@ local function fn()
     inst:AddTag("soulless")
     inst:AddTag("lunar_aligned")
 
+    inst.scrapbook_proxy = "alterguardian_phase1"
+
     inst._musicdirty = net_event(inst.GUID, "alterguardian_phase2._musicdirty", "musicdirty")
     inst._playingmusic = false
     --inst._musictask = nil

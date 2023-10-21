@@ -39,7 +39,7 @@ local function item(name, animated, sound, radius)
         inst:Remove()
     end
 
-    local function OnBuilt(inst)
+    local function OnBuilt(inst, data)
         if animated then
             inst.AnimState:PlayAnimation("hit")
             inst.AnimState:PushAnimation("idle", false)
@@ -48,6 +48,11 @@ local function item(name, animated, sound, radius)
 		if inst.OnEntityWake == Chair_OnEntityWake then
 			inst.noshadelingtask = inst:DoTaskInTime(0, Chair_ClearNoShadeling)
 		end
+
+        if inst.prefab == "ruinsrelic_chair" then
+            local builder = (data and data.builder) or nil
+            TheWorld:PushEvent("CHEVO_makechair", {target = inst, doer = builder})
+        end
     end
 
     local function fn()
@@ -71,6 +76,8 @@ local function item(name, animated, sound, radius)
 			inst.AnimState:SetFinalOffset(-1)
 
 			inst:AddTag("structure")
+			inst:AddTag("limited_chair")
+            inst:AddTag("uncomfortable_chair")
 		end
 
         inst.entity:SetPristine()

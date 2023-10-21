@@ -6,9 +6,17 @@ local assets =
 local prefabs =
 {
 	"ruinsrelic_chair_blueprint",
+	"nightmarefuel",
+	"horrorfuel",
 }
 
 local LOOT =
+{
+	"ruinsrelic_chair_blueprint",
+	"nightmarefuel",
+}
+
+local LOOT_RIFT =
 {
 	"ruinsrelic_chair_blueprint",
 	"horrorfuel",
@@ -99,7 +107,8 @@ local function fn()
 	inst.AnimState:SetBank("ruins_shadeling")
 	inst.AnimState:SetBuild("ruins_shadeling")
 	inst.AnimState:PlayAnimation("sit", true)
-	inst.AnimState:SetLightOverride(1)
+	inst.AnimState:HideSymbol("shad_parts2_red")
+	inst.AnimState:HideSymbol("shad_head_white")
 
 	if not TheNet:IsDedicated() then
 		-- this is purely view related
@@ -126,8 +135,6 @@ local function fn()
 	inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
 	inst.components.combat.hiteffectsymbol = "shad_head"
 
-	inst:AddComponent("planarentity")
-
 	inst:AddComponent("lootdropper")
 	inst.components.lootdropper:SetLoot(LOOT)
 
@@ -136,6 +143,28 @@ local function fn()
 	inst.OnEntitySleep = OnEntitySleep
 	inst.OnEntityWake = OnEntityWake
 	inst.persists = false
+
+	local function CheckRift()
+		local riftspawner = TheWorld.components.riftspawner
+		if riftspawner ~= nil and riftspawner:IsShadowPortalActive() then
+			if inst.components.planarentity == nil then
+				inst:AddComponent("planarentity")
+				inst.components.lootdropper:SetLoot(LOOT_RIFT)
+				inst.AnimState:ShowSymbol("shad_parts2_red")
+				inst.AnimState:ShowSymbol("shad_head_white")
+				inst.AnimState:SetLightOverride(1)
+			end
+		elseif inst.components.planarentity ~= nil then
+			inst:RemoveComponent("planarentity")
+			inst.components.lootdropper:SetLoot(LOOT)
+			inst.AnimState:HideSymbol("shad_parts2_red")
+			inst.AnimState:HideSymbol("shad_head_white")
+			inst.AnimState:SetLightOverride(0)
+		end
+	end
+	inst:ListenForEvent("ms_riftaddedtopool", CheckRift, TheWorld)
+	inst:ListenForEvent("ms_riftremovedfrompool", CheckRift, TheWorld)
+	CheckRift()
 
 	return inst
 end

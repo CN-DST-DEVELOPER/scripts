@@ -289,7 +289,15 @@ end
 
 local function DoCommentAction(inst)
     if inst.comment_data then
-        return BufferedAction(inst, nil, ACTIONS.COMMENT, nil, inst.comment_data.pos)
+        if inst.comment_data.speech then
+            return BufferedAction(inst, nil, ACTIONS.COMMENT, nil, inst.comment_data.pos, nil, inst.comment_data.distance)
+        else
+            local buffered_action = BufferedAction(inst, nil, ACTIONS.WALKTO, nil, inst.comment_data.pos, nil, inst.comment_data.distance)
+            if buffered_action then
+                buffered_action:AddSuccessAction(function() inst.comment_data = nil end)
+            end
+            return buffered_action
+        end
     end
 end
 
@@ -387,7 +395,7 @@ local function DoBottleToss(inst)
             local x,y,z = source.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x,y,z, inst.island_radius, FISHING_MARKER_TAGS)
             if #ents > 0 then
-                local pos = Vector3(ents[math.random(1,#ents)].Transform:GetWorldPosition())
+                local pos = ents[math.random(1,#ents)]:GetPosition()
 
                 if pos then
                     local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
@@ -403,6 +411,28 @@ local function DoBottleToss(inst)
                     inst.dotalkingtimers(inst)
                     return BufferedAction(inst, nil, ACTIONS.WATER_TOSS, bottle, pos)
                 end
+            end
+        end
+    end
+end
+
+local SITTABLE_TAGS = {"cansit"}
+local SITTABLE_WONT_TAGS = {"uncomfortable_chair"}
+local function DoChairSit(inst)
+    if not inst:HasTag("sitting_on_chair") and not inst.components.timer:TimerExists("sat_on_chair") then
+        local source = inst.CHEVO_marker
+        if source then
+            local x,y,z = source.Transform:GetWorldPosition()
+            local ents = TheSim:FindEntities(x,y,z, inst.island_radius, SITTABLE_TAGS, SITTABLE_WONT_TAGS)
+            local target = nil
+            if #ents > 0 then
+                for _, ent in ipairs(ents)do
+                    target = ent
+                    break
+                end
+            end
+            if target then
+                return BufferedAction(inst, target, ACTIONS.SITON)
             end
         end
     end
@@ -430,24 +460,30 @@ function HermitBrain:OnStart()
         PriorityNode{
             WhileNode( function() return not self.inst.sg:HasStateTag("mandatory") end, "unfriendly",
                 PriorityNode{
-                ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_ATTEMPT_TRADE) end,
-                    FaceEntity(self.inst, GetTraderFn, KeepTraderFn)),
-                FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
-                IfNode( function() return runawaytest(self.inst) end, "unfriendly",
+                    WhileNode( function() return self.inst.comment_data ~= nil end, "comment",
+                        DoAction(self.inst, DoCommentAction, "comment", true, 10 )),
+                    ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_ATTEMPT_TRADE) end,
+                        FaceEntity(self.inst, GetTraderFn, KeepTraderFn)),
+                    FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
+                    IfNode( function() return runawaytest(self.inst) end, "unfriendly",
                         RunAway(self.inst, "player", START_RUN_DIST, STOP_RUN_DIST)),
-                IfNode( function() return self.inst.components.friendlevels.level > TUNING.HERMITCRAB.UNFRIENDLY_LEVEL end, "friendly",
-                      FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn)),
-                WhileNode( function() return self.inst.comment_data ~= nil end, "comment",
-                            DoAction(self.inst, DoCommentAction, "comment", true )),
-                DoAction(self.inst, DoReel, "reel", true ),
-                IfNode( function() return not self.inst.sg:HasStateTag("alert") and not self.inst.sg:HasStateTag("npc_fishing") and not self.inst.sg:HasStateTag("busy") and not self.inst.components.locomotor.dest end, "not fishing",
-                    PriorityNode{
-                        DoAction(self.inst, DoHarvestMeat, "meat harvest", true ),
-                        DoAction(self.inst, DoHarvestBerries, "berry harvest", true ),
-                        DoAction(self.inst, DoFishingAction, "gone fishing", true ),
-                        DoAction(self.inst, DoBottleToss, "bottle", true ),
-                        Wander(self.inst, GetHomePos, MAX_WANDER_DIST, nil, nil, nil, nil, {should_run = false})
-                    },0.5),
+                    IfNode( function() return self.inst.components.friendlevels.level > TUNING.HERMITCRAB.UNFRIENDLY_LEVEL end, "friendly",
+                        FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn, 7)),
+                    DoAction(self.inst, DoReel, "reel", true ),
+                    IfNode( function() return not self.inst.sg:HasStateTag("alert")
+                                        and not self.inst.sg:HasStateTag("npc_fishing")
+                                        and not self.inst.sg:HasStateTag("busy")
+                                        and not self.inst.components.locomotor.dest end, "Not Acting",
+                        PriorityNode{
+                            DoAction(self.inst, DoHarvestMeat, "meat harvest", true ),
+                            DoAction(self.inst, DoHarvestBerries, "berry harvest", true ),
+                            DoAction(self.inst, DoChairSit, "sit on chairs", true ),
+                            DoAction(self.inst, DoFishingAction, "gone fishing", true ),
+                            DoAction(self.inst, DoBottleToss, "bottle", true ),
+                            IfNode( function() return not self.inst.sg:HasStateTag("sitting") end, "not sitting",
+                                Wander(self.inst, GetHomePos, MAX_WANDER_DIST, nil, nil, nil, nil, {should_run = false})
+                            ),
+                        },0.5),
                 },0.5),
         }, 0.5)
 

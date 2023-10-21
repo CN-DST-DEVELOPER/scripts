@@ -1425,11 +1425,10 @@ local states =
 					local dx = inst.sg.statemem.targetpos.x - x
 					local dz = inst.sg.statemem.targetpos.z - z
 					if dx ~= 0 or dz ~= 0 then
-						local dist = math.sqrt(dx * dx + dz * dz)
 						local rot1 = math.atan2(-dz, dx)
 						local diff = DiffAngleRad(inst.Transform:GetRotation() * DEGREES, rot1)
 						if diff * RADIANS < 60 then
-							dist = dist * math.cos(diff)
+							local dist = math.sqrt(dx * dx + dz * dz) * math.cos(diff)
 							local maxdist = (12 + 20 + 3 * 36) * FRAMES
 							inst.sg.statemem.speedmult = math.clamp(math.abs(dist / maxdist), 0.25, 1.2)
 						else

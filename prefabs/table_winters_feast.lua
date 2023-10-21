@@ -467,6 +467,7 @@ local function fn()
     end
 
     --MakeSnowCoveredPristine(inst)
+    inst.scrapbook_specialinfo = "TABLEWINTERSFEAST"
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

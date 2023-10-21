@@ -40,9 +40,7 @@ function RuinsShadelingSpawner:TrySpawnShadeling(chair)
 	if self.shadeling == nil and
 		self.cooldowntask == nil and
 		chair.components.sittable ~= nil and
-		not chair.components.sittable:IsOccupied() and
-		self.inst.components.riftspawner ~= nil and
-		self.inst.components.riftspawner:IsShadowPortalActive() then
+		not chair.components.sittable:IsOccupied() then
 		--
 		local x, y, z = chair.Transform:GetWorldPosition()
 		if self.inst.Map:FindVisualNodeAtPoint(x, y, z, "Nightmare") then

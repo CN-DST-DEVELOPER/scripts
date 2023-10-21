@@ -150,11 +150,17 @@ local function BasePile(style)
     inst.AnimState:SetBuild("chessmonster_ruins")
     inst.AnimState:PlayAnimation("idle"..inst.style)
 
+    inst.scrapbook_proxy = "chessjunk"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_deps = { "bishop_nightmare", "rook_nightmare", "knight_nightmare" }
+    inst.scrapbook_anim = "idle1"
+    inst.scrapbook_speechname = "chessjunk1"
 
     inst:AddComponent("inspectable")
 

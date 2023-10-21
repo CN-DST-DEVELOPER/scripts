@@ -231,13 +231,14 @@ local function MakeOrnament(ornamentid, overridename, lightdata, build, float_sc
 
         MakeInventoryFloatable(inst)
 
-        inst.scrapbook_specialinfo = "WINTERTREE_ORNAMENT"
-
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_specialinfo = "WINTERTREE_ORNAMENT"
+        inst.scrapbook_build = build
 
         inst:AddComponent("inspectable")
         inst:AddComponent("inventoryitem")

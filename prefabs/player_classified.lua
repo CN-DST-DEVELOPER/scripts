@@ -675,6 +675,12 @@ fns.OnIsInMiasmaDirty = function(inst)
     end
 end
 
+fns.OnIsAcidSizzlingDirty = function(inst)
+    if inst._parent ~= nil then
+        inst._parent:PushEvent("isacidsizzling", inst.isacidsizzling:value())
+    end
+end
+
 local function OnBuildEvent(inst)
     if inst._parent ~= nil and TheFocalPoint.entity:GetParent() == inst._parent then
         TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/collect_newitem")
@@ -1034,6 +1040,7 @@ local function RegisterNetListeners_common(inst)
     inst:ListenForEvent("inmightygymdirty", fns.InMightyGymDirty)
     inst:ListenForEvent("stormleveldirty", OnStormLevelDirty)
     inst:ListenForEvent("isinmiasmadirty", fns.OnIsInMiasmaDirty)
+    inst:ListenForEvent("isacidsizzlingdirty", fns.OnIsAcidSizzlingDirty)
     inst:ListenForEvent("hasinspirationbuffdirty", fns.OnHasInspirationBuffDirty)
     inst:ListenForEvent("builder.build", OnBuildEvent)
     inst:ListenForEvent("builder.damaged", OnBuilderDamagedEvent)
@@ -1107,6 +1114,7 @@ function fns.OnInitialDirtyStates(inst)
 
     OnStormLevelDirty(inst)
     fns.OnIsInMiasmaDirty(inst)
+    fns.OnIsAcidSizzlingDirty(inst)
     OnGiftsDirty(inst)
     fns.OnYotbSkinDirty(inst)
     OnMountHurtDirty(inst)
@@ -1243,6 +1251,9 @@ local function fn()
 
     --MiasmaWatcher variables
     inst.isinmiasma = net_bool(inst.GUID, "miasmawatcher.isinmiasma", "isinmiasmadirty")
+
+    -- AcidRain variables
+    inst.isacidsizzling = net_bool(inst.GUID, "acidrain.isacidsizzling", "isacidsizzlingdirty")
 
     --Inked variables
     inst.inked = net_event(inst.GUID, "inked")

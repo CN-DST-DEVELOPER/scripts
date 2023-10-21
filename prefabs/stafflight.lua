@@ -84,6 +84,10 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
         inst._pulseoffs = 0
         inst._pulsetime = net_float(inst.GUID, "_pulsetime", "pulsetimedirty")
 
+        inst.scrapbook_persishable = is_hot and TUNING.YELLOWSTAFF_STAR_DURATION or TUNING.OPALSTAFF_STAR_DURATION
+
+        inst.scrapbook_anim = "idle_loop"
+
         inst:DoPeriodicTask(.1, pulse_light)
 
         inst.Light:SetColour(unpack(colour))
@@ -98,6 +102,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
         end
         inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
+        
         --HASHEATER (from heater component) added to pristine state for optimization
         inst:AddTag("HASHEATER")
 

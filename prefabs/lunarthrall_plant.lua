@@ -404,8 +404,8 @@ local function CreateFlame()
     inst.AnimState:SetBank("lunarthrall_plant")
     inst.AnimState:SetBuild("lunarthrall_plant_front")
     inst.AnimState:PlayAnimation("gestalt_fx", true)
-    inst.AnimState:SetMultColour(0.6,0.6,0.6,0.6)
-    inst.AnimState:SetLightOverride(1)
+	inst.AnimState:SetMultColour(1, 1, 1, 0.6)
+	inst.AnimState:SetLightOverride(0.1)
     inst.AnimState:SetFrame( math.random(inst.AnimState:GetCurrentAnimationNumFrames()) -1)
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
@@ -433,6 +433,9 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_med", true)
     inst.AnimState:SetFinalOffset(1)
     inst.scrapbook_anim = "scrapbook"
+    inst.scrapbook_specialinfo = "LUNARTHRALLPLANT"
+    inst.scrapbook_planardamage = TUNING.LUNARTHRALL_PLANT_PLANAR_DAMAGE
+
 
     inst.customPlayAnimation = customPlayAnimation
     inst.customPushAnimation = customPushAnimation

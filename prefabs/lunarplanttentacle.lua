@@ -42,6 +42,8 @@ local function fn()
         return inst
     end
 
+	--inst.owner is set when spawned from lunarplant_tentacle_weapon
+
     --
     local health = inst:AddComponent("health")
     health:SetMaxHealth(TUNING.TENTACLE_HEALTH)

@@ -8,7 +8,6 @@ local assets =
 local prefabs =
 {
     "rabbit",
-    "smallmeat",
 }
 
 local function OnIsCollapsedDirty(inst)

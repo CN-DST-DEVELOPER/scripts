@@ -144,6 +144,8 @@ local function fn()
 
     MakeSnowCoveredPristine(inst)
 
+    inst.scrapbook_specialinfo = "LIGHTNINGROD"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

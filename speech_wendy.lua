@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I sense the beast's presence nearby.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "This trail leads nowhere.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "No trail, just a bunch of muck.",
+    ANNOUNCE_HUNT_START_FORK = "This path reeks of danger and death. Shall we?",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "The creature hasn't seen me yet...",
+    ANNOUNCE_HUNT_WRONG_FORK = "Abigail? Was that you...?",
+    ANNOUNCE_HUNT_AVOID_FORK = "I suppose this trail would be safer. Sigh.",
 	ANNOUNCE_INV_FULL = "I can carry no more.",
 	ANNOUNCE_KNOCKEDOUT = "Yet, again I wake to life. Sigh.",
 	ANNOUNCE_LOWRESEARCH = "Pithy knowledge...",
@@ -894,6 +898,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "That glow... does it lead to my doom?",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Nothing more will fit in my scrapbook.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine. Really.",
 
     ANNOUNCE_COACH = 
     {
@@ -1832,6 +1838,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "Its stony gaze will glare for eternity.",
         CHESSPIECE_TWINSOFTERROR = "I still remember watching the light leave their eyes.",
         CHESSPIECE_DAYWALKER = "A reminder that kindness only leads to pain.",
+        CHESSPIECE_DEERCLOPS_MUTATED = "The beast came back even colder than before.",
+        CHESSPIECE_WARG_MUTATED = "Why was it able to come back? It's not fair...",
+        CHESSPIECE_BEARGER_MUTATED = "Its new lease on life was, well, short-lived.",
 
         CHESSJUNK1 = "Cold, dead artificial life.",
         CHESSJUNK2 = "Cold, dead artificial life.",
@@ -2208,6 +2217,7 @@ return{
 		KNIGHT = "A cold, soulless horse.",
 		KOALEFANT_SUMMER = "A beast of solitude.",
 		KOALEFANT_WINTER = "It stands against the cruel elements.",
+		KOALEFANT_CARCASS = "Somehow, it comforts me.",
 		KRAMPUS = "Hello, foul creature of the underworld.",
 		KRAMPUS_SACK = "It smells of goat.",
 		LEIF = "A lumbering beast.",
@@ -4913,6 +4923,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Eventually, we all fall.",
 
         WOLFGANG_WHISTLE = "Abigail, I saw you whispering at Wolfgang to make us do pushups!",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Forced to continue its cursed existence... I pity it.",
+        MUTATEDWARG = "It only lives for malice.",
+        MUTATEDBEARGER = "Don't worry. Abby and I will put you out of your misery.",
+
+        LUNARFROG = "What horrors have you seen, little frog?",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "This body is nothing but an empty vessel.",
+            BURNING  = "Ashes to ashes.",
+            REVIVING = "You should stay down.",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "All that remains is a corpse.",
+            BURNING  = "It is at peace now.",
+            REVIVING = "You would return to this life?",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Laid to rest.",
+            BURNING  = "Reduced to ashes, scattered on the wind.",
+            REVIVING = "Is this what you really want?",
+        },
+
+        BEARGERFUR_SACK = "I already carry the coldness within.",
+        HOUNDSTOOTH_BLOWPIPE = "Delivering sweet death from a distance.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "No colder than a world without Abigail.",    -- Enabled.
+            NOEYEBALL = "Hot. Cold. What does it matter?",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "I guess I could set this up and be helpful.",
+
+        SECURITY_PULSE_CAGE = "I feel the same way.",
+        SECURITY_PULSE_CAGE_FULL = "It must be nice.",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "Perhaps I could make something nice.",
+            BURNT = "...Perhaps not.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Abigail's favorite hiding spot.'.",
+            HAS_ITEM = "Abigail's favorite hiding spot'.",
+            BURNT = "Just as well.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Abigail?",
+            OCCUPIED = "You might be sitting on Abigail.",
+            BURNT = "Oh well.",
+        },
+
+        DECOR_CENTERPIECE = "The mortal obsession with material things.",
+        DECOR_LAMP = "Great.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "We pulled the flowers from their homes for our own amusement.",
+            EMPTY = "I feel the urge to stare into it.",
+            WILTED = "I think it's lovelier this way...",
+            FRESHLIGHT = "It's illuminating... for now.",
+            OLDLIGHT = "It, too, will die.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "It will be worth more after the artist dies.",
+            UNDRAWN = "Leave it.",
+        },
+        DECOR_PORTRAITFRAME = "In the end, all we have are pictures.",
+
+        PHONOGRAPH = "Shall we have a danse macabre?",
+        RECORD = "I wondered if I'd ever hear that song again.",
+        RECORD_CREEPYFOREST = "Does this music lift your spirits, Abigail?",
+        RECORD_DANGER = "Does this music lift your spirits, Abigail?",
+        RECORD_DAWN = "Does this music lift your spirits, Abigail?",
+        RECORD_DRSTYLE = "Does this music lift your spirits, Abigail?",
+        RECORD_DUSK = "I wonder if father still listens to his record collection.",
+        RECORD_EFS = "A song of sweet foreboding.",
+        RECORD_END = "I wonder if father still listens to his record collection.",
+        RECORD_MAIN = "I wonder if father still listens to his record collection.",
+        RECORD_WORKTOBEDONE = "I wonder if father still listens to his record collection.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Abigail was better at these things.",
+
+        WAGPUNKHAT = "How freeing it would be, to think like an emotionless machine.",
+        ARMORWAGPUNK = "Even the thickest metal couldn't protect my heart.",
+        WAGSTAFF_MACHINERY = "All the broken remains.",
+        WAGPUNK_BITS = "Only parts of a greater whole. Just like me.",
+        WAGPUNKBITS_KIT = "Some things are beyond repair.",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Somebody's last words?",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

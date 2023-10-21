@@ -5,7 +5,7 @@ local prefabs =
 
 local function InMood(inst)
     if inst.components.periodicspawner ~= nil then
-        inst.components.periodicspawner:Start()
+        inst.components.periodicspawner:SafeStart()
     end
     if inst.components.herd ~= nil then
         for k, v in pairs(inst.components.herd.members) do

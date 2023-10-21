@@ -35,7 +35,7 @@ function FrogBrain:OnStart()
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, function() return GoHomeAction(self.inst) end, "go home", true )),
-		WhileNode(function() return TheWorld and not TheWorld.state.isnight end, "IsNotNight",
+		WhileNode(function() return TheWorld and not TheWorld.state.isnight and (not self.inst.islunar or not TheWorld.state.isfullmoon) end, "IsNotNightOrIsLunarFrogAndIsFullMoon",
 			Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST)),
 		StandStill(self.inst, function() return self.inst.sg:HasStateTag("idle") end, nil),
     }, .25)

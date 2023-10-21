@@ -1,26 +1,94 @@
+local function StopSizzle(item)
+    item._acidsizzlingtimer = nil
+    item.components.inventoryitem.isacidsizzling = false
+end
+
+local function MakeSizzle(item)
+    item.components.inventoryitem.isacidsizzling = true
+    if item._acidsizzlingtimer ~= nil then
+        item._acidsizzlingtimer:Cancel()
+        item._acidsizzlingtimer = nil
+    end
+    item._acidsizzlingtimer = item:DoTaskInTime(TUNING.ACIDRAIN_DAMAGE_TIME * 1.1, StopSizzle)
+end
+
+local function StopSizzlePlayer(player)
+    player._acidsizzlingtimer = nil
+    if player.player_classified then
+        player.player_classified.isacidsizzling:set(false)
+    end
+end
+
+local function MakeSizzlePlayer(player)
+    if player.player_classified then
+        player.player_classified.isacidsizzling:set(true)
+        if player._acidsizzlingtimer ~= nil then
+            player._acidsizzlingtimer:Cancel()
+            player._acidsizzlingtimer = nil
+        end
+        player._acidsizzlingtimer = player:DoTaskInTime(TUNING.ACIDRAIN_DAMAGE_TIME * 1.1, StopSizzlePlayer)
+    end
+end
+
 local function DoAcidRainDamageOnEquipped(item, damage)
-    if item.components.waterproofer then
-        if item:HasTag("acidrainimmune") then
+    if item:HasTag("acidrainimmune") then
+        return
+    end
+
+    local dosizzle = false
+
+    if item.components.armor then
+        item.components.armor:TakeDamage(damage)
+        if not item:IsValid() then
             return
         end
+        dosizzle = true
+    end
 
-        if item.components.armor then
-            item.components.armor:TakeDamage(damage)
+    if item.components.fueled and item.components.fueled.fueltype == FUELTYPE.USAGE then
+        item.components.fueled:DoDelta(-damage * TUNING.ACIDRAIN_DAMAGE_FUELED_SCALER)
+        if not item:IsValid() then
+            return
         end
+        dosizzle = true
+    end
 
-        if item.components.fueled and item.components.fueled.fueltype == FUELTYPE.USAGE and item.components.fueled.consuming then
-            item.components.fueled:DoDelta(-damage * TUNING.ACIDRAIN_DAMAGE_FUELED_SCALER)
-        end
+    if dosizzle then
+        MakeSizzle(item)
     end
 end
 
 local function DoAcidRainRotOnAllItems(item, percent)
+    if item:HasTag("acidrainimmune") then
+        return
+    end
+
+    local dosizzle = false
+
     if item.components.perishable then
-        if item:HasTag("acidrainimmune") then
+        item.components.perishable:ReducePercent(percent)
+        if not item:IsValid() then
             return
         end
+        dosizzle = true
+    end
 
-        item.components.perishable:ReducePercent(percent)
+    if dosizzle then
+        MakeSizzle(item)
+    end
+end
+
+local function DoAcidRainDamageOnHealth(inst, damage)
+    if inst:HasTag("acidrainimmune") then
+        return
+    end
+
+    if damage > 0 and inst.player_classified then
+        MakeSizzlePlayer(inst)
+    end
+
+    if inst.components.health then
+        inst.components.health:DoDelta(-damage, false, "acidrain")
     end
 end
 
@@ -34,6 +102,7 @@ local AcidLevel = Class(function(self, inst)
 
     self.DoAcidRainDamageOnEquipped = DoAcidRainDamageOnEquipped -- Mods.
     self.DoAcidRainRotOnAllItems = DoAcidRainRotOnAllItems -- Mods.
+    self.DoAcidRainDamageOnHealth = DoAcidRainDamageOnHealth -- Mods.
 
     self:WatchWorldState("isacidraining", self.OnIsAcidRaining)
     self:OnIsAcidRaining(TheWorld.state.isacidraining)
@@ -54,9 +123,35 @@ local function DoAcidRainTick(inst, self)
             damage = 0
         else
             -- Melt worn waterproofer equipment.
-            inst.components.inventory:ForEachEquipment(self.DoAcidRainDamageOnEquipped, damage)
-            -- Spoil perishables, using rate.
-            inst.components.inventory:ForEachItem(self.DoAcidRainRotOnAllItems, rate * TUNING.ACIDRAIN_PERISHABLE_ROT_PERCENT)
+            local waterproofers, total_effectiveness = nil, 0
+            for slot, item in pairs(inst.components.inventory.equipslots) do
+                if item.components.waterproofer then
+                    local effectiveness = item.components.waterproofer:GetEffectiveness()
+                    if effectiveness > 0 then
+                        if not waterproofers then
+                            waterproofers = {}
+                        end
+                        table.insert(waterproofers, item)
+                        total_effectiveness = total_effectiveness + effectiveness
+                    end
+                end
+            end
+            if waterproofers then
+                total_effectiveness = math.clamp(total_effectiveness, 0, 1)
+
+                local damageabsorbed = total_effectiveness * damage
+                damage = damage - damageabsorbed
+
+                local damagesplit = damageabsorbed / #waterproofers
+                for _, item in ipairs(waterproofers) do
+                    self.DoAcidRainDamageOnEquipped(item, damagesplit)
+                end
+            end
+
+            if damage > 0 then
+                -- Spoil perishables, using rate.
+                inst.components.inventory:ForEachWetableItem(self.DoAcidRainRotOnAllItems, rate * TUNING.ACIDRAIN_PERISHABLE_ROT_PERCENT * TUNING.ACIDRAIN_DAMAGE_TIME)
+            end
         end
     end
 
@@ -71,10 +166,8 @@ local function DoAcidRainTick(inst, self)
         damage = fn(inst, damage) or damage
     end
 
-    if damage ~= 0 then
-        if inst.components.health then
-            inst.components.health:DoDelta(-damage, false, "acidrain")
-        end
+    if damage ~= 0 then -- NOTES(JBK): In case GetOverrideAcidRainTickFn returns a negative value to heal.
+        self.DoAcidRainDamageOnHealth(inst, damage)
     end
 end
 

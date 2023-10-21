@@ -60,14 +60,13 @@ local function try_retarget(inst)
 end
 
 ----
-local function on_spawned_by(inst, data)
-    local portal = (data and data.portal) or nil
-    if portal then
+local function OnSpawnedBy(inst, portal, delay)
+    if portal ~= nil then
         inst.components.entitytracker:TrackEntity("portal", portal)
         inst:ListenForEvent("onremove", inst._on_portal_removed, portal)
     end
 
-    inst.sg:GoToState("spawn_delay", (data and data.time) or FRAMES)
+    inst.sg:GoToState("spawn_delay", delay or FRAMES)
 end
 
 ----
@@ -101,16 +100,15 @@ local function reset_character_physics(inst)
 end
 
 ----
-local function on_save(inst, data)
-    data.despawning = inst.sg.mem.despawning
-end
 
-local function on_load(inst, data)
-    if data then
-        if data.despawning and inst.sg then
-            inst.sg.mem.despawning = true
-        end
-    end
+local function on_load_post_pass(inst)
+	local portal = inst.components.entitytracker:GetEntity("portal")
+
+	if portal ~= nil then
+        inst:ListenForEvent("onremove", inst._on_portal_removed, portal)
+    else
+        inst._on_portal_removed()
+	end
 end
 
 ----
@@ -174,8 +172,9 @@ local function fn()
         return inst
     end
 
-    --
     inst.sounds = sounds
+
+    inst.OnSpawnedBy = OnSpawnedBy
 
     --
     inst._RemoveCharacterPhysics = remove_character_physics
@@ -229,15 +228,14 @@ local function fn()
     timer:StartTimer("initialize", 0)
 
     --
-    inst.OnSave = on_save
-    inst.OnLoad = on_load
+
+    inst.OnLoadPostPass = on_load_post_pass
 
     --
     inst:SetStateGraph("SGfused_shadeling")
     inst:SetBrain(brain)
 
     --
-    inst:ListenForEvent("onspawnedby", on_spawned_by)
     inst:ListenForEvent("timerdone", on_timer_done)
     inst:ListenForEvent("attacked", on_attacked)
 

@@ -148,7 +148,9 @@ end
 
 --------------------------------------------------------------------------
 local function ondeath(inst, data)
-    inst.sg:GoToState("death", data)
+	if not inst.sg:HasStateTag("dead") then
+		inst.sg:GoToState("death", data)
+	end
 end
 
 CommonHandlers.OnDeath = function()
@@ -1294,6 +1296,10 @@ CommonHandlers.OnNoSleepTimeEvent = function(t, fn)
     end)
 end
 
+CommonHandlers.OnNoSleepFrameEvent = function(frame, fn)
+	return CommonHandlers.OnNoSleepTimeEvent(frame * FRAMES, fn)
+end
+
 local function sleepexonanimover(inst)
     if inst.AnimState:AnimDone() then
         inst.sg.statemem.continuesleeping = true
@@ -1745,7 +1751,7 @@ local function DoWashAshore(inst, skip_splash)
 	inst.components.drownable:WashAshore()
 end
 
-CommonStates.AddSinkAndWashAsoreStates = function(states, anims, timelines, fns)
+CommonStates.AddSinkAndWashAshoreStates = function(states, anims, timelines, fns)
 	anims = anims or {}
 	timelines = timelines or {}
 	fns = fns or {}
@@ -1885,7 +1891,8 @@ CommonStates.AddSinkAndWashAsoreStates = function(states, anims, timelines, fns)
 	})
 end
 
-CommonStates.AddSinkAndWashAshoreStates = CommonStates.AddSinkAndWashAsoreStates
+--Backward compatibility for originally mispelt function name
+CommonStates.AddSinkAndWashAsoreStates = CommonStates.AddSinkAndWashAshoreStates
 
 --------------------------------------------------------------------------
 
@@ -1939,7 +1946,9 @@ CommonStates.AddIpecacPoopState = function(states, anim)
 
         events =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", idleonanimover),
         },
     })
 end
+
+--------------------------------------------------------------------------

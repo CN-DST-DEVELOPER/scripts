@@ -23,6 +23,20 @@ local loot_winter = {"meat","meat","meat","meat","meat","meat","meat","meat","tr
 local loot_fire = {"meat","meat","meat","meat","meat","meat","meat","meat","trunk"}
 --V2C: "trunk" is a dummy loot prefab that should be converted to "trunk_cooked"
 
+function SimulateKoalefantDrops(inst) -- Intentionally global.
+    -- NOTES(JBK): This simulates a koalefant being spawned and slain followed up with meats eaten at random.
+    -- 'inst' must have lootdropper already.
+    -- Dependencies of "meat", "trunk_winter", "trunk_summer" are expected in the prefabs table for any prefab using this.
+    for i = 1, 2 do
+        local loot = SpawnPrefab("meat")
+        inst.components.lootdropper:FlingItem(loot)
+    end
+    if math.random() < 0.5 then
+        local loot = SpawnPrefab(TheWorld.state.iswinter and "trunk_winter" or "trunk_summer")
+        inst.components.lootdropper:FlingItem(loot)
+    end
+end
+
 local WAKE_TO_RUN_DISTANCE = 10
 local SLEEP_NEAR_ENEMY_DISTANCE = 14
 
@@ -85,6 +99,9 @@ local function create_base(build)
     if not TheWorld.ismastersim then
         return inst
     end
+
+    -- Let the lootdropper take care of adding these dependencies correctly.
+    inst.scrapbook_deps = {}
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })

@@ -69,6 +69,7 @@ local function makeMarbleTree(animnumber)
         if animnumber > 0 then
             inst.AnimState:PlayAnimation("full_"..animnumber)
         end
+        inst.scrapbook_anim ="full_1"
 
         MakeSnowCoveredPristine(inst)
 

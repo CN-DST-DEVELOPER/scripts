@@ -177,6 +177,10 @@ end
 function RiftSpawner:EnableLunarRifts(src)
     self.lunar_rifts_enabled = true
     self:TryToStartTimer(src)
+
+    if self.inst.components.wagpunk_manager ~= nil then
+        self.inst.components.wagpunk_manager:Enable()
+    end
 end
 
 function RiftSpawner:EnableShadowRifts(src)
@@ -216,6 +220,11 @@ function RiftSpawner:SetEnabledSetting(src, enabled_difficulty)
     if enabled_difficulty == "never" then
         self.lunar_rifts_enabled = false
         self._worldsettingstimer:StopTimer(RIFTSPAWN_TIMERNAME)
+
+        if self.inst.components.wagpunk_manager ~= nil then
+            self.inst.components.wagpunk_manager:Disable()
+        end
+
     elseif enabled_difficulty == "always" then
         self:EnableLunarRifts(src)
     end

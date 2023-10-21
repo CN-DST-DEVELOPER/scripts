@@ -81,8 +81,6 @@ local function fn()
     inst.AnimState:SetBuild("healing_cream")
     inst.AnimState:PlayAnimation("idle")
 
-    inst.scrapbook_specialinfo = "COMPOSTWRAP"
-
     --heal_fertilize (from fertilizer component) added to pristine state for optimization
     inst:AddTag("heal_fertilize")
 

@@ -148,12 +148,15 @@ local function makemound(name)
         inst.AnimState:SetBank(name)
         inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("1_1")
+        inst.scrapbook_anim ="1_8"
 
         inst:AddTag("structure")
 
         --trader (from trader component) added to pristine state for optimization
         --inst:AddTag("trader")
         --Trader will be disabled by default constructor
+
+        inst.scrapbook_specialinfo = "FOSSILSTALKER"
 
         inst.entity:SetPristine()
 

@@ -139,6 +139,8 @@ local function falls2()
 
     inst:SetPrefabNameOverride("moonglass_rock")
 
+    inst.scrapbook_proxy = "grotto_pool_small"
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

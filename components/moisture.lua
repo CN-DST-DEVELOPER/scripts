@@ -283,7 +283,7 @@ function Moisture:GetDryingRate(moisturerate)
 
     local rate = self.baseDryingRate
         + easing.linear(heaterPower, self.minPlayerTempDrying, self:GetSegs() < 3 and 2 or 5, 1)
-        + easing.linear(TheWorld.state.temperature, self.minDryingRate, self.maxDryingRate, self.optimalDryingTemp)
+        + easing.linear(GetLocalTemperature(self.inst), self.minDryingRate, self.maxDryingRate, self.optimalDryingTemp)
         + easing.inExpo(self:GetMoisture(), 0, 1, self.maxmoisture)
 
     return math.clamp(rate, 0, self.maxDryingRate + self.maxPlayerTempDrying)

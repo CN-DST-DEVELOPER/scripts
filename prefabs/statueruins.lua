@@ -31,6 +31,15 @@ local prefabs =
 	"ruins_statue_mage_nogem",
 }
 
+local scrapbook_removedeps =
+{
+    "marble",
+    "ruins_statue_head",
+	"ruins_statue_head_nogem",
+	"ruins_statue_mage",
+	"ruins_statue_mage_nogem",
+}
+
 local gemlist =
 {
     "greengem",
@@ -233,6 +242,7 @@ local function commonfn(small)
         inst.AnimState:SetBank("statue_ruins")
         inst.AnimState:SetBuild("statue_ruins")
     end
+    inst.scrapbook_anim ="idle_full"
 
     inst.MiniMapEntity:SetIcon("statue_ruins.png")
 
@@ -263,6 +273,9 @@ local function commonfn(small)
 
         return inst
     end
+
+    inst.scrapbook_removedeps = scrapbook_removedeps
+
 
     inst:AddComponent("inspectable")
 

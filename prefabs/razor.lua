@@ -20,8 +20,6 @@ local function fn()
     MakeInventoryFloatable(inst, "small", 0.08, {0.9, 0.7, 0.9}, true, -2, {sym_build = "swap_razor"})
     inst:AddTag("donotautopick")
 
-    inst.scrapbook_specialinfo = "RAZOR"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

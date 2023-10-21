@@ -18,6 +18,7 @@ local hotspring_prefabs =
     "moonglass",
     "bluegem",
     "redgem",
+    "bathbomb",
 }
 
 local MINED_GLASS_LOOT_TABLE = {"moonglass", "moonglass", "moonglass", "moonglass", "moonglass"}
@@ -238,7 +239,7 @@ local function hotspring()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-    MakeSmallObstaclePhysics(inst, 1)
+	MakePondPhysics(inst, 1)
 
     inst.AnimState:SetBuild("crater_pool")
     inst.AnimState:SetBank("crater_pool")

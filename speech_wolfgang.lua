@@ -523,6 +523,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "Animal is close!",
 	ANNOUNCE_HUNT_LOST_TRAIL = "No animal here.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "Animal tracks is mud now.",
+    ANNOUNCE_HUNT_START_FORK = "Wolfgang not afraid to follow this scary trail, just don't feel like.",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "Wolfgang is coming to get you, big scary creature!",
+    ANNOUNCE_HUNT_WRONG_FORK = "Something watching Wolfgang, but Wolfgang not scared... and Wolfgang not cry!",
+    ANNOUNCE_HUNT_AVOID_FORK = "Wolfgang prefer dangerous trail, but don't mind this safe trail.",
 	ANNOUNCE_INV_FULL = "My mighty arms can carry no more.",
 	ANNOUNCE_KNOCKEDOUT = "Ugh, I must have hit head.",
 	ANNOUNCE_LOWRESEARCH = "Is tiny information.",
@@ -891,6 +895,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Maybe is best to not go toward creepy light, yes?",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Wolfgang's scrapbook will fit no more!",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "Wolfgang is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1829,6 +1835,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "No like the way it look at Wolfgang.",
         CHESSPIECE_TWINSOFTERROR = "Brrr, still sends chill down Wolfgang's spine.",
         CHESSPIECE_DAYWALKER = "Wolfgang has bigger muscles, see?",
+        CHESSPIECE_DEERCLOPS_MUTATED = "Wolfgang not scared of statue, but be careful with pointy part.",
+        CHESSPIECE_WARG_MUTATED = "Cute doggy, but dead is better.",
+        CHESSPIECE_BEARGER_MUTATED = "Wolfgang stronger than bear. Just have off day.",
 
         CHESSJUNK1 = "Metal junk.",
         CHESSJUNK2 = "Metal junk.",
@@ -2205,6 +2214,7 @@ return{
 		KNIGHT = "Horsey horse!",
 		KOALEFANT_SUMMER = "Nose meat!",
 		KOALEFANT_WINTER = "So soft, I want to squish it!",
+		KOALEFANT_CARCASS = "No nose meat for Wolfgang. So sad.",
 		KRAMPUS = "Scary goat man! Run!",
 		KRAMPUS_SACK = "Goat man finally give up his sack!",
 		LEIF = "Wood man!",
@@ -4910,6 +4920,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Poor scary pillar is broke. So sad.",
 
         WOLFGANG_WHISTLE = "Wolfgang is good teacher!",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Wolfgang not afraid of terryifying deer monster with sharp things. Right?",
+        MUTATEDWARG = "Good monster doggy. Don't kill Wolfgang.",
+        MUTATEDBEARGER = "No fair, giant killing beast have armor too?",
+
+        LUNARFROG = "This weird froggy make Wolfgang uncomfortable.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "Ha! Big bad guy not so tough now- wait, is dead, yes?",
+            BURNING  = "Wolfgang not crying. Is smoke.",
+            REVIVING = "No-no-no. This not what Wolfgang sign for.",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Doggy has died. Moment of silent. Start now.",
+            BURNING  = "Why burn doggy? Already dead.",
+            REVIVING = "Oh. Should have burn doggy.",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Is dead, yes?",
+            BURNING  = "Better this way.",
+            REVIVING = "Is unnatural and disturbing. Wolfgang not like.",
+        },
+
+        BEARGERFUR_SACK = "Keep food cold and Wolfgang fed.",
+        HOUNDSTOOTH_BLOWPIPE = "This use doggy teeth. Is not creepy at all.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "Scary eye put chill in Wolfgang's spine.",    -- Enabled.
+            NOEYEBALL = "Okay, scary eye gone but now is too hot for Wolfgang.",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Is not ready! Wolfgang will fix this.",
+
+        SECURITY_PULSE_CAGE = "Is too small for Wolfgang to hide in. Not that Wolfgang need to hide.",
+        SECURITY_PULSE_CAGE_FULL = "Glowing ball of energy not explode, right?",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "Who mightier? Man or machine? Wrong. Wolfgang.",
+            BURNT = "Poor little saw.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Is table.",
+            HAS_ITEM = "Is table.",
+            BURNT = "Is not table anymore.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Is tiny chair strong enough to hold Wolfgang?",
+            OCCUPIED = "Do not worry, friend. Wolfgang will stand.",
+            BURNT = "Chair looks burnt and sad.",
+        },
+
+        DECOR_CENTERPIECE = "Tiny thing has no purpose. Is what makes it fancy.",
+        DECOR_LAMP = "Wolfgang likes little light.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Pretty little flower.",
+            EMPTY = "Wolfgang will be careful not to break.",
+            WILTED = "Little flowers are weaker than usual.",
+            FRESHLIGHT = "Wolfgang does not like dark.",
+            OLDLIGHT = "Please do not go out, little light.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "Is art!",
+            UNDRAWN = "Is picture of nothing!",
+        },
+        DECOR_PORTRAITFRAME = "Next draw Wolfgang's good side!",
+
+        PHONOGRAPH = "Is box that sings!",
+        RECORD = "This give Wolfgang bad feelings.",
+        RECORD_CREEPYFOREST = "No. Wolfgang don't like.",
+        RECORD_DANGER = "Terrible!",
+        RECORD_DAWN = "Ah yes. Soothing Wolfgang soul.",
+        RECORD_DRSTYLE = "Watch Wolfgang dance!",
+        RECORD_DUSK = "Is make Wolfgang sad.",
+        RECORD_EFS = "Terrible!",
+        RECORD_END = "Eh. Is okay.",
+        RECORD_MAIN = "Eh. Is okay.",
+        RECORD_WORKTOBEDONE = "Music for make big muscles.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Floor is making sounds!",
+
+        WAGPUNKHAT = "Robot hat make Wolfgang more deadly? Impossible. Give to me.",
+        ARMORWAGPUNK = "Wolfgang not need robot armor for protection, only like it for color.",
+        WAGSTAFF_MACHINERY = "Wolfgang is not sure he likes old man leaving garbage around.",
+        WAGPUNK_BITS = "Funny metal bits.",
+        WAGPUNKBITS_KIT = "Is robot armor fixer.",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Wolfgang has no interest in old man scribblemarks.",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

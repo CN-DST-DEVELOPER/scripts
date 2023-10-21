@@ -123,6 +123,7 @@ local function fn()
     inst:AddTag("insect")
     inst:AddTag("smallcreature")
     inst:AddTag("lightbattery")
+    inst:AddTag("lunar_aligned")
 
     inst:AddTag("NOBLOCK")
     inst:AddTag("notraptrigger")

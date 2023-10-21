@@ -524,6 +524,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I'll find you!",
 	ANNOUNCE_HUNT_LOST_TRAIL = "Ohh... he got away.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "Boooo, I lost track of him in the mud.",
+    ANNOUNCE_HUNT_START_FORK = "I don't like the look of those marks... not that I'm scared or anything!",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "Heh... I've got the drop on 'em!",
+    ANNOUNCE_HUNT_WRONG_FORK = "Did you hear something? Er... must be my imagination...",
+    ANNOUNCE_HUNT_AVOID_FORK = "I'm not scared, I'd just... rather go this way!",
 	ANNOUNCE_INV_FULL = "I can only carry so much!!",
 	ANNOUNCE_KNOCKEDOUT = "Argh, my little head!",
 	ANNOUNCE_LOWRESEARCH = "Boo, that was boring.",
@@ -897,6 +901,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "Did anyone else see that weird glow?",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Looks like stuff I already know.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is great!",
 
     ANNOUNCE_COACH = 
     {
@@ -1835,6 +1841,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "I still feel an evil presence watching me...",
         CHESSPIECE_TWINSOFTERROR = "Great, another creepy statue.",
         CHESSPIECE_DAYWALKER = "How come jerks always seem to get statues?",
+        CHESSPIECE_DEERCLOPS_MUTATED = "We kicked its butt, and then we kicked it again.",
+        CHESSPIECE_WARG_MUTATED = "I SAID we should've burned it, but nope, nobody listens to me...",
+        CHESSPIECE_BEARGER_MUTATED = "I guess I'd be cranky too if I was woken up from the Big Sleep.",
 
         CHESSJUNK1 = "Dead windup horsey.",
         CHESSJUNK2 = "Dead windup priest.",
@@ -2211,6 +2220,7 @@ return{
 		KNIGHT = "It's a pony!",
 		KOALEFANT_SUMMER = "We will be great friends!",
 		KOALEFANT_WINTER = "He sure looks warm...",
+		KOALEFANT_CARCASS = "It's dead. Shall I do the honors?",
 		KRAMPUS = "Stay back, you big jerk!",
 		KRAMPUS_SACK = "The holidays came early this year!",
 		LEIF = "He looks flammable!",
@@ -4916,6 +4926,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Somebody should really repair this.",
 
         WOLFGANG_WHISTLE = "I can't NOT listen to him when he's holding a shiny whistle!",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Er... no hard feelings, right?",
+        MUTATEDWARG = "Don't worry, you're still gonna go down in flames.",
+        MUTATEDBEARGER = "Did I ever mention my best friend is a bear?",
+
+        LUNARFROG = "Ew, ew, ew!! Too many eyes!!",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "That body looks cold. I should fix that.",
+            BURNING  = "Nice and toasty!",
+            REVIVING = "That's... not good.",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Ugh. I can't just leave that thing lying around.",
+            BURNING  = "Who doesn't like a bonfire?",
+            REVIVING = "Oh come ON!!",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "I should burn it. Just in case.",
+            BURNING  = "It's so relaxing to watch it burn.",
+            REVIVING = "I knew I should've burnt it when I had the chance!!",
+        },
+
+        BEARGERFUR_SACK = "Can't believe we made a cooler out of you.",
+        HOUNDSTOOTH_BLOWPIPE = "If only it shot flaming teeth.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "But how will anything burn?",    -- Enabled.
+            NOEYEBALL = "There we go.",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Fine. I'll build it. But I might burn it later.",
+
+        SECURITY_PULSE_CAGE = "It's empty. So what?",
+        SECURITY_PULSE_CAGE_FULL = "Great, it glows. But does it burn?",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "I love stuff made out of wood! It burns so well!",
+            BURNT = "See?",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "That will definitely burn.",
+            HAS_ITEM = "That will definitely burn.",
+            BURNT = "Yup. It burned.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "That will definitely burn.",
+            OCCUPIED = "You sure you want to sit there? That chair may spontaneously combust.",
+            BURNT = "Aww, it's over.",
+        },
+
+        DECOR_CENTERPIECE = "Okay.",
+        DECOR_LAMP = "A torch works just as well.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Just a bunch of dumb flowers.",
+            EMPTY = "It's empty. Might as well burn it.",
+            WILTED = "Those need replacing.",
+            FRESHLIGHT = "Not as good as a fire, but at least we won't be in the dark.",
+            OLDLIGHT = "We're gonna be in the dark soon.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "It's fine.",
+            UNDRAWN = "My burning desire isn't to draw.",
+        },
+        DECOR_PORTRAITFRAME = "It's missing the fire in their eyes.",
+
+        PHONOGRAPH = "Oh, Maxwell will love this.",
+        RECORD = "Hey Max, it's your favorite!",
+        RECORD_CREEPYFOREST = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_DANGER = "There's something so nostalgic about the way it pops and crackles.",
+        RECORD_DAWN = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_DRSTYLE = "There's something so nostalgic about the way it pops and crackles.",
+        RECORD_DUSK = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_EFS = "There's something so nostalgic about the way it pops and crackles.",
+        RECORD_END = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_MAIN = "There's something so nostalgic about the way it pops and crackles.",
+        RECORD_WORKTOBEDONE = "It's always nice to have some music while you're busy burning stuff.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "It won't burn? Well, I'm out of ideas.",
+
+        WAGPUNKHAT = "Aww, it's a hat that teaches nerds how to fight!",
+        ARMORWAGPUNK = "It looks pretty fireproof, but there's only one way to know for sure...",
+        WAGSTAFF_MACHINERY = "Someone really should burn this scrap heap.",
+        WAGPUNK_BITS = "What am I supposed to do with that?",
+        WAGPUNKBITS_KIT = "Nice doodad.",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Looks important. I'll burn it later.",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

@@ -141,6 +141,21 @@ local function terraformer_remainingtasktimefortile(inst, tx, ty)
 end
 
 ------------------------------------------------------------------
+
+local function terraformer_onparentremoved(inst)
+    for index, task_data in pairs(inst._terraform_tasks) do
+        if task_data.task ~= nil then
+            task_data.task:Cancel()
+        end
+        if task_data.visuals ~= nil then
+            task_data.visuals:Remove()
+        end
+    end
+
+    inst._terraform_tasks = {}
+end
+
+
 local function terraformer_forcefinishterraform(inst)
     for index, task_data in pairs(inst._terraform_tasks) do
         if task_data.task then
@@ -188,9 +203,16 @@ local function on_terraformer_longupdate(inst, delta_time)
     if inst._terraform_tasks then
         for task_index, task_data in pairs(inst._terraform_tasks) do
             local time_remaining = GetTaskRemaining(task_data.task)
+            local new_time = math.max(FRAMES, time_remaining - delta_time)
+
             task_data.task:Cancel()
+
+            if task_data.visuals ~= nil then
+                task_data.visuals:SetAppearTime(new_time)
+            end
+
             task_data.task = inst:DoTaskInTime(
-                math.max(FRAMES, time_remaining - delta_time),
+                new_time,
                 (task_data.is_revert and _RevertTile) or _TerraformTile,
                 task_data.tx, task_data.ty
             )
@@ -221,7 +243,8 @@ local function terraformerfn()
 
     --
     inst.AddTerraformTask = terraformer_addtask
-    inst.TaskTimeForTile = terraformer_remainingtasktimefortile
+    inst.OnParentRemoved  = terraformer_onparentremoved
+    inst.TaskTimeForTile  = terraformer_remainingtasktimefortile
 
     --
     inst:ListenForEvent("forcefinishterraforming", terraformer_forcefinishterraform)
@@ -298,7 +321,12 @@ local function terraformer_visuals_appear(inst)
 
     inst.AnimState:PlayAnimation("grow"..inst._facing_direction)
     inst.AnimState:PushAnimation("grow_idle"..inst._facing_direction, true)
-    inst.components.timer:StartTimer("do_glow", FINISH_DELAY)
+    
+    if inst.components.timer:TimerExists("do_glow") then
+        inst.components.timer:SetTimeLeft("do_glow", FINISH_DELAY)
+    else
+        inst.components.timer:StartTimer("do_glow", FINISH_DELAY)
+    end
 
     terraformer_queue_sounds(inst)
 end
@@ -310,7 +338,12 @@ local function terraformer_visuals_setappeartime(inst, time)
             inst._hidden = false
         end
         inst.AnimState:PlayAnimation("grow_idle"..inst._facing_direction, true)
-        inst.components.timer:StartTimer("do_glow", time)
+
+        if inst.components.timer:TimerExists("do_glow") then
+            inst.components.timer:SetTimeLeft("do_glow", time)
+        else
+            inst.components.timer:StartTimer("do_glow", time)
+        end
     else
         inst.components.timer:StartTimer("do_appear", time - FINISH_DELAY)
     end

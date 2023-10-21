@@ -30,8 +30,6 @@ local function bathbomb()
 
     MakeInventoryFloatable(inst, "small", 0.2)
 
-    inst.scrapbook_specialinfo = "BATHBOMB"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

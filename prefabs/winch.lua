@@ -400,8 +400,8 @@ local function OnLoadPostPass(inst)
 			end
 		end
 
-		if inst:GetCurrentPlatform() ~= nil then
-			if inst.components.winch ~= nil then
+		if inst.components.winch ~= nil then
+			if inst:GetCurrentPlatform() ~= nil then
 				if inst.components.winch.is_static then
 					if inst.components.winch.line_length > 0 then
 						inst.components.winch:StartRaising()
@@ -415,6 +415,9 @@ local function OnLoadPostPass(inst)
 						inst.components.winch:FullyLowered()
 					end
 				end
+
+			elseif not inst:HasTag("lowered_ground") then
+				inst.components.winch:FullyRaised()
 			end
 		end
 

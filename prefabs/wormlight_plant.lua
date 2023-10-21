@@ -48,6 +48,7 @@ local function fn()
     inst.AnimState:SetBank("worm")
     inst.AnimState:SetBuild("worm")
     inst.AnimState:PlayAnimation("berry_idle", true)
+    inst.scrapbook_anim = "berry_idle"
 
     inst.Light:SetRadius(1.5)
     inst.Light:SetIntensity(0.8)

@@ -134,7 +134,7 @@ local function statuefn()
     inst.AnimState:SetBank("archive_moon_statue")
     inst.AnimState:SetBuild("archive_moon_statue")
     inst.AnimState:PlayAnimation("idle_full_"..inst.anim)
-    inst.scrapbook_anim = "idle_full_"..inst.anim
+    inst.scrapbook_anim = "idle_full_1"
 
     inst:AddTag("structure")
     inst:AddTag("statue")
@@ -234,6 +234,8 @@ local function runefn()
 
     inst:SetPrefabNameOverride("archive_rune_statue")
 
+    inst.scrapbook_specialinfo = "ARCHIVERUNESTATUE"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -330,11 +332,16 @@ local function securityfn()
     inst:AddTag("statue")
     inst:AddTag("dustable")
 
+    inst.scrapbook_specialinfo = "ARCHIVESECURITYDESK"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "idle"
+
     -------------------
     inst.canspawn = false
 
@@ -390,9 +397,47 @@ local function securitywaypointfn()
     return inst
 end
 
+----------------------------------------------------------------------------------------------------
+
 local brain = require("brains/archive_securitypulsebrain")
 
 local SFXRANGE = 4
+
+local POWERPOINT_POSSESSION_RANGE = 0.2
+
+local POWERPOINT_MUST_TAGS = { "security_powerpoint" }
+local POWERPOINT_CAN_TAGS =  { "INLIMBO", "FX" }
+
+local function FindSecurityPulseTarget(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, inst.possession_range, POWERPOINT_MUST_TAGS, POWERPOINT_CAN_TAGS)
+
+    for i=#ents, 1, -1 do
+        local ent = ents[i]
+
+        if ent.components.health ~= nil and ent.components.health:GetPercent() < (ent.MED_THRESHOLD_DOWN or 1) then
+            table.remove(ents, i)
+        end
+    end
+
+    if ents[1] ~= nil then
+        ents[1]:PushEvent("possess", { possesser = inst })
+    end
+end
+
+local function OnLocomote(inst)
+    if inst.components.locomotor:WantsToMoveForward() then
+        inst.components.locomotor:WalkForward()
+    else
+        inst.components.locomotor:StopMoving()
+    end
+end
+
+local function SetSfxPosition(inst)
+    if inst.sfx_prefab ~= nil then
+        inst.sfx_prefab.Transform:SetPosition(SFXRANGE, 0, 0)
+    end
+end
 
 local function securitypulsefn()
     local inst = CreateEntity()
@@ -426,40 +471,23 @@ local function securitypulsefn()
     end
 
     inst.patrol = true
+    inst.possession_range = POWERPOINT_POSSESSION_RANGE
 
-    inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
+    inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.ARCHIVE_SECURITY.WALK_SPEED
 
-    inst:ListenForEvent("locomote", function(inst)
-        local should_move = inst.components.locomotor:WantsToMoveForward()
-        if should_move then
-            inst.components.locomotor:WalkForward()
-        else
-            inst.components.locomotor:StopMoving()
-        end
-    end)
-
-    local CENTIPEDE_MUST_TAGS= {"security_powerpoint"}
-
-    inst:DoPeriodicTask(.25,function()
-        local x,y,z = inst.Transform:GetWorldPosition()
-        local ents = TheSim:FindEntities(x,y,z, 1,CENTIPEDE_MUST_TAGS)
-        for i=#ents,1,-1 do
-            if ents[i].components.health:GetPercent() < ents[i].MED_THRESHOLD_DOWN then
-                table.remove(ents,i)
-            end
-        end
-        if #ents > 0 then
-            ents[1]:PushEvent("possess",{possesser = inst})
-        end
-    end)
+    inst.OnLocomote = OnLocomote -- Mods
+    inst.FindSecurityPulseTarget = FindSecurityPulseTarget -- Mods
 
     inst.sfx_prefab = inst:SpawnChild("archive_security_pulse_sfx")
-    inst:DoTaskInTime(0,function()
-        inst.sfx_prefab.Transform:SetPosition(SFXRANGE,0,0)
-    end)
+
+    inst:ListenForEvent("locomote", inst.OnLocomote)
+
+    inst:DoPeriodicTask(.25, inst.FindSecurityPulseTarget)
+    inst:DoTaskInTime(0, SetSfxPosition)
 
     inst:SetBrain(brain)
+
     return inst
 end
 
@@ -755,6 +783,8 @@ local function switchfn()
     --trader (from trader component) added to pristine state for optimization
     inst:AddTag("trader")
 
+    inst.scrapbook_proxy = "archive_switch_base"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -840,11 +870,22 @@ local function switchbasefn()
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(1)
 
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(220)
+    end
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "idle_empty"
+    inst.scrapbook_bank = "archive_switch"
+    inst.scrapbook_build = "archive_switch"
+    inst.scrapbook_specialinfo = "ARCHIVESWITCH"
+    inst.scrapbook_speechname = "archive_switch"
 
     inst:DoTaskInTime(0,function()
         local x,y,z = inst.Transform:GetWorldPosition()
@@ -936,6 +977,9 @@ local function portalfn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "scrapbook"
+    inst.scrapbook_overridedata = { "archive_portal_base_01", "archive_portal_base", "archive_portal_base_01" }
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatusportal

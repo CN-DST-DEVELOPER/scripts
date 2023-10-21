@@ -361,13 +361,23 @@ local function mainfn()
     inst:AddTag("NOCLICK")
     inst:AddTag("DECOR")
 
-    inst.status = "off"
+    inst.scrapbook_inspectonseen = true
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(220)
+    end
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.status = "off"
+
+    inst.scrapbook_specialinfo = "ORCHESTRINA"
+    inst.scrapbook_anim = "scrapbook"
 
     inst:DoTaskInTime(0,function()
         local base = SpawnPrefab("archive_orchestrina_base")
@@ -381,6 +391,7 @@ local function mainfn()
             testforlockbox(inst)
         end
     end)
+
     inst.testforlockbox = testforlockbox
 
     return inst

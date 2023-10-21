@@ -128,6 +128,11 @@ local TRIGGERED_DANGER_MUSIC =
 		"dontstarve/music/music_epicfight_daywalker",
 	},
 
+	gestaltmutant =
+	{
+		"dontstarve/music/music_epicfight_gestalt_mutants",
+	},
+
     default =
     {
         "dontstarve/music/music_epicfight_ruins",

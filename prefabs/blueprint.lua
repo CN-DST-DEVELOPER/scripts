@@ -118,6 +118,8 @@ local function fn(is_rare)
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
+    inst.scrapbook_proxy = "blueprint"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

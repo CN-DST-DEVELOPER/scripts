@@ -133,8 +133,6 @@ local function feather_fn()
     inst.components.floater:SetSize("med")
     inst.components.floater:SetVerticalOffset(0.05)
 
-    inst.scrapbook_specialinfo = "FEATHERFAN"
-
     if not TheWorld.ismastersim then
         return inst
     end

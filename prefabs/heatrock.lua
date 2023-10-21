@@ -216,13 +216,14 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.2)
 
-    inst.scrapbook_specialinfo = "HEATROCK"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_fueled_rate = TUNING.HEATROCK_NUMUSES
+    inst.scrapbook_fueled_uses = true
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus

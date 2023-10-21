@@ -107,7 +107,6 @@ local function BuildSkillsData(SkillTreeFns)
             title = STRINGS.SKILLTREE.WOLFGANG.WOLFGANG_DUMBBELL_CRAFTING_TITLE,
             desc = STRINGS.SKILLTREE.WOLFGANG.WOLFGANG_DUMBBELL_CRAFTING_DESC,
             icon = "wolfgang_dumbbell_crafting",
-            root = true,
             pos = {X+CATGAP+GAP*2,Y},
             --pos = {1,0},
             group = "training",

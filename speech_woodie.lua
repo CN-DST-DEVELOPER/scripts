@@ -523,6 +523,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "The beastie is nearby.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "I'm more of a woodsman than a hunter anyway.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "The beastie's tracks washed away.",
+    ANNOUNCE_HUNT_START_FORK = "Well there's a trail to trouble, eh Luce?",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "We got'er cornered, Luce.",
+    ANNOUNCE_HUNT_WRONG_FORK = "I can feel some beastie's beady eyes on me.",
+    ANNOUNCE_HUNT_AVOID_FORK = "This trail looks like a skate in the park.",
 	ANNOUNCE_INV_FULL = "I can't carry any more kit.",
 	ANNOUNCE_KNOCKEDOUT = "Ow. What was that?",
 	ANNOUNCE_LOWRESEARCH = "That was barely even worth it, eh?",
@@ -891,6 +895,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "I don't like the look of that light.",
 
     ANNOUNCE_SCRAPBOOK_FULL = "Looks like stuff I already know aboot.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine, eh.",
 
     ANNOUNCE_COACH = 
     {
@@ -1829,6 +1835,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "That's the worst case of cataract I've ever seen.",
         CHESSPIECE_TWINSOFTERROR = "They make a good lookin' statue, eh?",
         CHESSPIECE_DAYWALKER = "Not lookin' so tough now, eh?",
+        CHESSPIECE_DEERCLOPS_MUTATED = "She'd look great up on the mantle.",
+        CHESSPIECE_WARG_MUTATED = "There's a good dog.",
+        CHESSPIECE_BEARGER_MUTATED = "We sure showed big boy, eh Luce?",
 
         CHESSJUNK1 = "Dead metal.",
         CHESSJUNK2 = "Dead metal.",
@@ -2205,6 +2214,7 @@ return{
 		KNIGHT = "Never did care for horses.",
 		KOALEFANT_SUMMER = "He looks tasty.",
 		KOALEFANT_WINTER = "They get tastier in the winter.",
+		KOALEFANT_CARCASS = "Looks like somethin' else got to it first.",
 		KRAMPUS = "Back off, hoser!",
 		KRAMPUS_SACK = "Seems wrong to take someone else's sack.",
 		LEIF = "I'm sorry aboot all of those trees!",
@@ -4910,6 +4920,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Well, that's all she wrote.",
 
         WOLFGANG_WHISTLE = "He'd better not ask me to start doing jumping jacks...",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "It's growin' icicles? Must be from Quebec.",
+        MUTATEDWARG = "You are one strange lookin' pooch.",
+        MUTATEDBEARGER = "Lookit those mitts! Someone get this tendy a twig!",
+
+        LUNARFROG = "They glow now, eh? Alrighty then.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "What's that Luce? Yup, she'll look great on the wall.",
+            BURNING  = "Smoke'em if you got'em.",
+            REVIVING = "What in the name of sweet Celine?",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Someone punched this pooch's ticket.",
+            BURNING  = "Burnt blacker than a pile o' pucks.",
+            REVIVING = "Not somethin' you see everyday, eh Luce?",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "He's a whole lotta backbacon.",
+            BURNING  = "Smokey!",
+            REVIVING = "Well that's no good, eh?",
+        },
+
+        BEARGERFUR_SACK = "Keeps things nice and frosty, eh?",
+        HOUNDSTOOTH_BLOWPIPE = "Almost spits more teeth than a Montreal Canadien.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "She'll keep the brews frosty all summer, eh?",    -- Enabled.
+            NOEYEBALL = "The eye's been lifted? Where are we? Toronto?",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Better get buildin', eh?",
+
+        SECURITY_PULSE_CAGE = "Somebody better get to unemptying this trap.",
+        SECURITY_PULSE_CAGE_FULL = "Great Lakes, I think she caught something!",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "Don't worry Luce. She's got nothin' on ya.",
+            BURNT = "Lucy! Tell me you didn't.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "That's a nice wood grain, eh?",
+            HAS_ITEM = "Hey, yer covering up that quality wood!",
+            BURNT = "Too bad, eh?",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Just look at that quality woodworking!",
+            OCCUPIED = "They're takin' a load off, eh?",
+            BURNT = "It's just so sad...",
+        },
+
+        DECOR_CENTERPIECE = "I'm pretty sure it's makin' a statement. Aboot something.",
+        DECOR_LAMP = "I'd rather have natural light, but it'll do.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "A little bit of nature makes everything nicer.",
+            EMPTY = "It could use a bit of nature.",
+            WILTED = "Well, that's that.",
+            FRESHLIGHT = "Aboot time we brightened this place up, eh?",
+            OLDLIGHT = "We need bulbs, eh.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "Looks pretty realistic, eh?",
+            UNDRAWN = "It ain't much to look at with no picture in it.",
+        },
+        DECOR_PORTRAITFRAME = "It's their spitting image!",
+
+        PHONOGRAPH = "Look at this phonograph.",
+        RECORD = "Classic.",
+        RECORD_CREEPYFOREST = "You can really swing an axe to this.",
+        RECORD_DANGER = "This gets me all fired up.",
+        RECORD_DAWN = "What a nifty number, eh Luce?",
+        RECORD_DRSTYLE = "What a nifty number, eh Luce?",
+        RECORD_DUSK = "What a nifty number, eh Luce?",
+        RECORD_EFS = "This gets me all fired up.",
+        RECORD_END = "This gets me all fired up.",
+        RECORD_MAIN = "What a nifty number, eh Luce?",
+        RECORD_WORKTOBEDONE = "You can really swing an axe to this.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "That's one fancy floor, eh?",
+
+        WAGPUNKHAT = "Looks like some sorta techie tin toque.",
+        ARMORWAGPUNK = "Does it come in plaid?",
+        WAGSTAFF_MACHINERY = "Hey! Someone's littered up the natural landscape!",
+        WAGPUNK_BITS = "Some odd bits of metal.",
+        WAGPUNKBITS_KIT = "A mechanical mechanic, eh? What'll they think up next.",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Can't make heads or tails of it myself, but it seems important.",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

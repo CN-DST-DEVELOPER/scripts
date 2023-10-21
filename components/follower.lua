@@ -377,8 +377,17 @@ function Follower:IsLeaderSame(otherfollower)
 end
 
 function Follower:KeepLeaderOnAttacked()
-    self.keepleaderonattacked = true
-    self.inst:RemoveEventCallback("attacked", onattacked)
+	if not self.keepleaderonattacked then
+		self.keepleaderonattacked = true
+		self.inst:RemoveEventCallback("attacked", onattacked)
+	end
+end
+
+function Follower:LoseLeaderOnAttacked()
+	if self.keepleaderonattacked then
+		self.keepleaderonattacked = nil
+		self.inst:ListenForEvent("attacked", onattacked)
+	end
 end
 
 function Follower:LongUpdate(dt)

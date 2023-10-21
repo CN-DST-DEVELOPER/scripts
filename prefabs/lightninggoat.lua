@@ -139,7 +139,7 @@ local function OnAttacked(inst, data)
     end
 end
 
-local function onspawnedforhunt(inst)
+local function onspawnedforhunt(inst, data)
 	TheWorld:PushEvent("ms_sendlightningstrike", inst:GetPosition())
 end
 

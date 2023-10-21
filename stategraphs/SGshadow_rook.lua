@@ -101,6 +101,6 @@ ShadowChess.States.AddDespawn(states, "disappear")
 ShadowChess.States.AddAppear(states, "appear")
 
 CommonStates.AddWalkStates(states)
-CommonStates.AddSinkAndWashAsoreStates(states, {washashore = {"teleport_pre", "teleport_pst"}})
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = {"teleport_pre", "teleport_pst"}})
 
 return StateGraph("shadow_rook", states, ShadowChess.CommonEventList, "appear")

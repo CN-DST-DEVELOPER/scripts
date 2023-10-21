@@ -41,6 +41,9 @@ local function makepiece(name, socket_product)
         inst.AnimState:SetBuild("swap_altar_"..name.."piece")
         inst.AnimState:PlayAnimation("anim")
 
+        inst.scrapbook_anim = "anim"
+        inst.scrapbook_specialinfo = "ALTARPLUG"
+
         inst:AddTag("irreplaceable")
         inst:AddTag("nonpotatable")
         inst:AddTag("heavy")
@@ -155,6 +158,9 @@ local function makerockpiece(name, socket_product)
 		inst.AnimState:SetBank(anim)
 		inst.AnimState:SetBuild(anim)
 		inst.AnimState:PlayAnimation("full")
+
+        inst.scrapbook_anim = "full"
+        inst.scrapbook_specialinfo = "MOON_ALTAR_ROCK"
 
 		MakeSnowCoveredPristine(inst)
 

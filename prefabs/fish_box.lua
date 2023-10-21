@@ -139,7 +139,10 @@ local function fn()
     inst.AnimState:SetBuild("fish_box")
     inst.AnimState:PlayAnimation("closed")
 
-    MakeSnowCoveredPristine(inst)
+    inst.scrapbook_anim = "closed"
+    inst.scrapbook_specialinfo = "FISHBOX"
+
+   	MakeSnowCoveredPristine(inst)
 
     inst.entity:SetPristine()
 

@@ -144,7 +144,6 @@ local function fn()
     inst.components.reticule.ispassableatallpoints = true
     
     inst.scrapbook_subcat = "tool"
-    inst.scrapbook_specialinfo = "OCEANFISHINGROD"
 
     inst.entity:SetPristine()
 

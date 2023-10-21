@@ -37,6 +37,9 @@ local SKETCHES =
     { item = "chesspiece_catcoon",			recipe = "chesspiece_catcoon_builder",			image = "chesspiece_catcoon_sketch" },
     { item = "chesspiece_manrabbit",        recipe = "chesspiece_manrabbit_builder",        image = "chesspiece_manrabbit_sketch" },
     { item = "chesspiece_daywalker",        recipe = "chesspiece_daywalker_builder",        image = "chesspiece_daywalker_sketch" },
+    { item = "chesspiece_deerclops_mutated",recipe = "chesspiece_deerclops_mutated_builder" },
+    { item = "chesspiece_warg_mutated",		recipe = "chesspiece_warg_mutated_builder" },
+    { item = "chesspiece_bearger_mutated",	recipe = "chesspiece_bearger_mutated_builder" },
 	
 }
 

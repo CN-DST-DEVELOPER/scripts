@@ -355,6 +355,7 @@ local function UmbrellaFn()
     inst:AddTag("acidrainimmune")
 	inst:AddTag("shadow_item")
 	inst:AddTag("show_broken_ui")
+	inst:AddTag("lunarhailprotection")
 
     --waterproofer (from waterproofer component) added to pristine state for optimization
     inst:AddTag("waterproofer")

@@ -920,7 +920,7 @@ function Combat:CalcDamage(target, weapon, multiplier)
 	if spdamage ~= nil then
 		local spmult =
 			damagetypemult *
-			playermultiplier *
+			--playermultiplier * --@V2C excluded to avoid tuning nightmare
 			pvpmultiplier
 
 		if spmult ~= 1 then
@@ -965,11 +965,16 @@ local function _CalcReflectedDamage(inst, attacker, dmg, weapon, stimuli, reflec
 end
 
 function Combat:CalcReflectedDamage(targ, dmg, weapon, stimuli, reflect_list, spdmg)
+    if self.ignoredamagereflect then
+        return 0, nil
+    end
+
 	if targ.components.rider ~= nil and targ.components.rider:IsRiding() then
 		local dmg1, spdmg1 = _CalcReflectedDamage(targ.components.rider:GetMount(), self.inst, dmg, weapon, stimuli, reflect_list, spdmg)
 		local dmg2, spdmg2 = _CalcReflectedDamage(targ.components.rider:GetSaddle(), self.inst, dmg, weapon, stimuli, reflect_list, spdmg)
 		return dmg1 + dmg2, SpDamageUtil.MergeSpDamage(spdmg1, spdmg2)
 	end
+
 	return _CalcReflectedDamage(targ, self.inst, dmg, weapon, stimuli, reflect_list, spdmg)
 end
 

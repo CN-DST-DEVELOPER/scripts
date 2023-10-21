@@ -283,6 +283,8 @@ local function maketree(name, data, state)
             return inst
         end
 
+        inst.scrapbook_specialinfo = "TREE"
+
         local color = .5 + math.random() * .5
         inst.AnimState:SetMultColour(color, color, color, 1)
 		inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)

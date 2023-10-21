@@ -243,6 +243,10 @@ local function fn()
 
     inst:SetDeployExtraSpacing(4)
 
+    inst.scrapbook_anim = "scrapbook"
+    inst.scrapbook_specialinfo = "ANTLIONSINKHOLE"
+    inst.scrapbook_inspectonseen = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

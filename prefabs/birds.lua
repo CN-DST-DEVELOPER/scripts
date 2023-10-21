@@ -266,10 +266,6 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
         --cookable (from cookable component) added to pristine state for optimization
         inst:AddTag("cookable")
 
-        if name == "canary" then
-            inst.scrapbook_specialinfo = "CANARY"
-        end
-
         inst.Transform:SetTwoFaced()
 
         inst.AnimState:SetBank(bank or "crow")

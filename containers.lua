@@ -1317,6 +1317,48 @@ function params.bookstation.itemtestfn(container, item, slot)
 end
 
 --------------------------------------------------------------------------
+--[[ beargerfur_sack ]]
+--------------------------------------------------------------------------
+
+params.beargerfur_sack =
+{
+    widget =
+    {
+        slotpos = {},
+        slotbg  = {},
+        animbank  = "ui_icepack_2x3",
+        animbuild = "ui_icepack_2x3",
+        pos = Vector3(75, 195, 0),
+        side_align_tip = 160,
+    },
+    type = "chest",
+}
+
+for y = 0, 2 do
+    for x = 0, 1 do
+        table.insert(params.beargerfur_sack.widget.slotpos, Vector3(-163 + (75 * x),   -75 * y + 73,   0))
+        table.insert(params.beargerfur_sack.widget.slotbg, { image = "coooked_food_slot.tex", atlas = "images/hud2.xml" })
+    end
+end
+
+function params.beargerfur_sack.itemtestfn(container, item, slot)
+    -- Prepared food.
+    return item:HasTag("beargerfur_sack_valid") or item:HasTag("preparedfood")
+end
+
+--------------------------------------------------------------------------
+--[[ houndstooth_blowpipe ]]
+--------------------------------------------------------------------------
+
+params.houndstooth_blowpipe = deepcopy(params.slingshot)
+
+params.houndstooth_blowpipe.widget.slotbg = {{ image = "houndstooth_ammo_slot.tex", atlas = "images/hud2.xml" }}
+
+function params.houndstooth_blowpipe.itemtestfn(container, item, slot)
+	return item:HasTag("blowpipeammo")
+end
+
+--------------------------------------------------------------------------
 --[[ quagmire_pot ]]
 --------------------------------------------------------------------------
 

@@ -125,6 +125,14 @@ local function poolfn()
 
     inst:SetDeployExtraSpacing(2)
 
+    inst.scrapbook_specialinfo = "GROTTOPOOL"
+
+    inst.scrapbook_build = "moonglass_bigwaterfall"
+    inst.scrapbook_bank  = "moonglass_bigwaterfall"
+    inst.scrapbook_anim   = "water_small1"
+
+    inst.scrapbook_adddeps = { "moonglass" }
+
     if not TheNet:IsDedicated() then
         -- Register into the waterfall sound system.
         inst:DoTaskInTime(0, register_pool)

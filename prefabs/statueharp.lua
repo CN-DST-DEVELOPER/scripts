@@ -96,6 +96,9 @@ local function fn()
     inst.AnimState:OverrideSymbol("swap_statue", "statue_small_harp_build", "swap_statue")
     inst.AnimState:PlayAnimation("full")
 
+    inst.scrapbook_build = "statue_small_harp_build"
+    inst.scrapbook_anim = "full"
+
     inst.MiniMapEntity:SetIcon("statue_small.png")
 
     inst.entity:SetPristine()

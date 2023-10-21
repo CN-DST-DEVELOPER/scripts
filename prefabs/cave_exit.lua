@@ -46,6 +46,8 @@ local function fn()
     inst.AnimState:SetBuild("cave_exit")
     inst.AnimState:PlayAnimation("open")
 
+    inst.scrapbook_anim = "open"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

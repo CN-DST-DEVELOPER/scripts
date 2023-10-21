@@ -89,6 +89,30 @@ local HealthBadge = Class(Badge, function(self, owner, art)
         end
     end, owner)
 
+    self.inst:ListenForEvent("isacidsizzling", function(owner, isacidsizzling)
+        if isacidsizzling == nil then
+            isacidsizzling = owner:IsAcidSizzling()
+        end
+        if isacidsizzling then
+            if self.acidsizzling == nil then
+                self.acidsizzling = self.underNumber:AddChild(UIAnim())
+                self.acidsizzling:GetAnimState():SetBank("inventory_fx_acidsizzle")
+                self.acidsizzling:GetAnimState():SetBuild("inventory_fx_acidsizzle")
+                self.acidsizzling:GetAnimState():PlayAnimation("idle", true)
+                self.acidsizzling:GetAnimState():SetMultColour(.65, .62, .17, 0.8)
+                self.acidsizzling:GetAnimState():SetTime(math.random())
+                self.acidsizzling:SetScale(.2)
+                self.acidsizzling:GetAnimState():AnimateWhilePaused(false)
+                self.acidsizzling:SetClickable(false)
+            end
+        else
+            if self.acidsizzling ~= nil then
+                self.acidsizzling:Kill()
+                self.acidsizzling = nil
+            end
+        end
+    end, owner)
+
     self:StartUpdating()
 end)
 
@@ -134,6 +158,7 @@ function HealthBadge:OnUpdate(dt)
     if (self.owner.IsFreezing ~= nil and self.owner:IsFreezing()) or
         (self.owner.replica.health ~= nil and self.owner.replica.health:IsTakingFireDamageFull()) or
         (self.owner.replica.hunger ~= nil and self.owner.replica.hunger:IsStarving()) or
+        self.acidsizzling ~= nil or
         next(self.corrosives) ~= nil then
         down = "_most"
     elseif self.owner.IsOverheating ~= nil and self.owner:IsOverheating() then

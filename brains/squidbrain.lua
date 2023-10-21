@@ -66,8 +66,20 @@ end
 local OCEANFISH_TAGS = {"oceanfish"}
 
 local function GetFoodTarget(inst)
-    if inst.foodtarget and not inst.foodtarget:IsValid() then
-        inst.foodtarget = nil
+    if inst.foodtarget then
+        local should_forget = false
+        if not inst.foodtarget:IsValid() then
+            should_forget = true
+        else
+            local owner = inst.foodtarget.components.inventoryitem ~= nil and inst.foodtarget.components.inventoryitem:GetGrandOwner() or nil
+            if owner ~= nil and owner:HasTag("pocketdimension_container") then
+                should_forget = true
+            end
+        end
+
+        if should_forget then
+            inst.foodtarget = nil
+        end
     end
     local target = inst.foodtarget or FindEntity(inst, SEE_FOOD_DIST, function(food)
                 return TheWorld.Map:IsOceanAtPoint(inst.Transform:GetWorldPosition())

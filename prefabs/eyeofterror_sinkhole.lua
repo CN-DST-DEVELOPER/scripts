@@ -235,4 +235,5 @@ local function MakeSinkhole(name, radius, scale, maxwork, toughworker)
 end
 
 return MakeSinkhole("eyeofterror_sinkhole", TUNING.EYEOFTERROR_CHOMP_SINKHOLERADIUS, OBJECT_SCALE, false, false),
-	MakeSinkhole("daywalker_sinkhole", TUNING.DAYWALKER_SLAM_SINKHOLERADIUS, 1, true, true)
+	MakeSinkhole("daywalker_sinkhole", TUNING.DAYWALKER_SLAM_SINKHOLERADIUS, 1, true, true),
+	MakeSinkhole("bearger_sinkhole", TUNING.MUTATED_BEARGER_SINKHOLERADIUS, 1, true, true)

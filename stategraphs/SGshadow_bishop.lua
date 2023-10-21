@@ -240,6 +240,6 @@ ShadowChess.States.AddAppear(states, "appear")
 
 
 CommonStates.AddWalkStates(states)
-CommonStates.AddSinkAndWashAsoreStates(states, {washashore = "appear"})
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "appear"})
 
 return StateGraph("shadow_bishop", states, ShadowChess.CommonEventList, "appear")

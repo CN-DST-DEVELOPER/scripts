@@ -561,8 +561,6 @@ local function fn()
     inst._islighton = net_bool(inst.GUID, "terrarium._islighton", "lightdirty")
     inst._islighton:set(false)
 
-    inst.scrapbook_specialinfo = "TERRARIUM"
-
     inst.entity:SetPristine()
 
     inst.scrapbook_hide = {"terrarium_tree_crimson"}

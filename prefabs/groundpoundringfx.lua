@@ -26,6 +26,14 @@ local function PlayRingAnim(proxy)
     inst.AnimState:SetSortOrder( 3 )
 
     inst:ListenForEvent("animover", inst.Remove)
+
+	if proxy._fastforward:value() then
+		inst.AnimState:SetFrame(5)
+	end
+end
+
+local function FastForward(inst)
+	inst._fastforward:set(true)
 end
 
 local function fn()
@@ -40,8 +48,10 @@ local function fn()
     if not TheNet:IsDedicated() then
         --Delay one frame so that we are positioned properly before starting the effect
         --or in case we are about to be removed
-        inst:DoTaskInTime(0, PlayRingAnim)
+		inst:DoTaskInTime(0, PlayRingAnim)
     end
+
+	inst._fastforward = net_bool(inst.GUID, "groundpoundring_fx._fastforward")
 
     inst.entity:SetPristine()
 
@@ -49,6 +59,7 @@ local function fn()
         return inst
     end
 
+	inst.FastForward = FastForward
     inst.persists = false
     inst:DoTaskInTime(3, inst.Remove)
 

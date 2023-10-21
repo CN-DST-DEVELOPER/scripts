@@ -602,6 +602,11 @@ local function tree(name, stage, data)
 
         MakeSnowCoveredPristine(inst)
 
+        inst.scrapbook_specialinfo = "OCEANTREE"
+        inst.scrapbook_proxy = "oceantree_tall"
+        inst.scrapbook_speechname = inst.prefab
+        inst.scrapbook_anim = "sway1_loop"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

@@ -148,6 +148,43 @@ end
 armor_bramble_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_bramble") end
 armor_bramble_clear_fn = function(inst) basic_clear_fn(inst, "armor_bramble") end
 
+wood_table_round_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_round") end
+wood_table_round_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_round") end
+wood_table_square_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_square") end
+wood_table_square_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_square") end
+wood_stool_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_chair_stool") end
+wood_stool_clear_fn = function(inst) basic_clear_fn(inst, "wood_chair_stool") end
+wood_chair_init_fn = function(inst, build_name)
+    basic_init_fn(inst, build_name, "wood_chair_chair")
+    if not TheWorld.ismastersim then
+        return
+    end
+    if inst.back then
+        inst.back.AnimState:OverrideItemSkinSymbol("chair01_parts", build_name, "chair01_parts", inst.GUID, "wood_chair_chair")
+    end
+end
+wood_chair_clear_fn = function(inst)
+    basic_clear_fn(inst, "wood_chair_chair")
+    if not TheWorld.ismastersim then
+        return
+    end
+    if inst.back then
+        inst.back.AnimState:ClearOverrideSymbol("chair01_parts")
+    end
+end
+decor_centerpiece_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_centerpiece") end
+decor_centerpiece_clear_fn = function(inst) basic_clear_fn(inst, "decor_centerpiece") end
+decor_flowervase_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_flowervase") end
+decor_flowervase_clear_fn = function(inst) basic_clear_fn(inst, "decor_flowervase") end
+decor_lamp_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_lamp") end
+decor_lamp_clear_fn = function(inst) basic_clear_fn(inst, "decor_lamp") end
+phonograph_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "phonograph") end
+phonograph_clear_fn = function(inst) basic_clear_fn(inst, "phonograph") end
+decor_pictureframe_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_pictureframe") end
+decor_pictureframe_clear_fn = function(inst) basic_clear_fn(inst, "decor_pictureframe") end
+decor_portraitframe_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_portraitframe") end
+decor_portraitframe_clear_fn = function(inst) basic_clear_fn(inst, "decor_portraitframe") end
+
 hammer_init_fn = function(inst, build_name)
     if string.find( build_name, "_invisible") ~= nil then
         inst.components.floater.do_bank_swap = false
@@ -1679,6 +1716,35 @@ function mast_clear_fn(inst, build_name)
     inst.AnimState:SetBuild("boat_mast2_wip")
 end
 
+--------------------------------------------------------------------------
+--[[ record skin functions ]]
+--------------------------------------------------------------------------
+record_init_fn = function(inst, build_name, trackname)
+    basic_init_fn(inst, build_name, "records")
+
+    inst.nameoverride = build_name
+
+    if not TheWorld.ismastersim then
+        return
+    end
+
+    if trackname then
+        inst.songToPlay_skin = trackname
+    end
+
+    inst.linked_skinname = build_name
+    AddSkinSounds(inst)
+end
+record_clear_fn = function(inst)
+    basic_clear_fn(inst, "records")
+
+    inst.nameoverride = nil
+
+    inst.songToPlay_skin = nil
+
+    inst.linked_skinname = nil
+    RemoveSkinSounds(inst)
+end
 
 --------------------------------------------------------------------------
 --[[ Mast Malbatross skin functions ]] 

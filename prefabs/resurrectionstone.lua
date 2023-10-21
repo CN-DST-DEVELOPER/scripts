@@ -362,6 +362,13 @@ local function fn()
     inst._enablelights:set(true)
     inst.GetTouchStoneID = GetTouchStoneID
 
+    inst.scrapbook_anim = "idle_activate"
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(320)
+    end
+
     inst.entity:SetPristine()
 
     inst:DoTaskInTime(0, OnInit)

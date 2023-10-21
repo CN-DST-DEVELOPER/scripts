@@ -109,9 +109,11 @@ local function fn()
     inst.AnimState:SetBank("wasphive")
     inst.AnimState:SetBuild("wasphive")
     inst.AnimState:PlayAnimation("cocoon_small", true)
+    inst.scrapbook_anim = "cocoon_small"
 
     inst:AddTag("structure")
     inst:AddTag("hive")
+
     inst:AddTag("WORM_DANGER")
 
     MakeSnowCoveredPristine(inst)

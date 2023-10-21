@@ -13,6 +13,16 @@ local prefabs =
     "eyeturret_base",
 }
 
+SetSharedLootTable("eyeturret",
+{
+    {'thulecite',         1.00},
+    {'thulecite',         0.75},
+    {'thulecite_pieces',  1.00},
+    {'thulecite_pieces',  0.75},
+    {'thulecite_pieces',  0.50},
+    {'thulecite_pieces',  0.25},
+})
+
 local brain = require "brains/eyeturretbrain"
 
 local MAX_LIGHT_FRAME = 24
@@ -244,6 +254,9 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "scrapbook"
+    inst.scrapbook_overridedata = {"horn", "eyeball_turret_base", "horn"}
+
     inst.base = SpawnPrefab("eyeturret_base")
     inst.base.entity:SetParent(inst.entity)
     inst.highlightchildren = { inst.base }
@@ -276,7 +289,10 @@ local function fn()
     inst.components.sanityaura.aura = -TUNING.SANITYAURA_TINY
 
     inst:AddComponent("inspectable")
+
     inst:AddComponent("lootdropper")
+    inst.components.lootdropper:SetChanceLootTable("eyeturret")
+    inst.components.lootdropper.droprecipeloot = false
 
     inst:ListenForEvent("attacked", OnAttacked)
 
@@ -321,7 +337,11 @@ local function basefn()
     return inst
 end
 
+local function PlacerPostInit(inst)
+    inst.AnimState:OverrideSymbol("horn", "eyeball_turret_base", "horn")
+end
+
 return Prefab("eyeturret", fn, assets, prefabs),
     Prefab("eyeturret_item", itemfn, assets, prefabs),
-    MakePlacer("eyeturret_item_placer", "eyeball_turret", "eyeball_turret", "idle_place"),
+    MakePlacer("eyeturret_item_placer", "eyeball_turret", "eyeball_turret", "idle_place", nil, nil, nil, nil, nil, nil, PlacerPostInit),
     Prefab("eyeturret_base", basefn, baseassets)

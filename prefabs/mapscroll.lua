@@ -50,8 +50,6 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.85)
 
-    inst.scrapbook_specialinfo = "MAPSCROLL"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -282,11 +282,18 @@ local function MakeSpikeFn(shape, size)
         inst:AddTag("object")
         inst:AddTag("stone")
 
+        inst.scrapbook_proxy = shape == "spike" and "sandspike" or nil
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_anim = shape == "spike" and "tall_pst" or "block_pst"
+        inst.scrapbook_animpercent = 1
+        inst.scrapbook_maxhealth = { TUNING.SANDSPIKE.HEALTH.SHORT, TUNING.SANDSPIKE.HEALTH.TALL }
+        inst.scrapbook_damage    = { TUNING.SANDSPIKE.DAMAGE.SHORT, TUNING.SANDSPIKE.DAMAGE.TALL }
 
         inst:AddComponent("health")
         inst.components.health:SetMaxHealth(TUNING.SANDSPIKE.HEALTH[string.upper(inst.animname)])
@@ -314,7 +321,7 @@ local function MakeSpikeFn(shape, size)
 end
 
 --For searching: sandspike_short, sandspike_med, sandspike_tall
-local prefabs = {}
+local prefabs = { "glassspike" }
 local ret = {}
 for i, v in ipairs(SPIKE_SIZES) do
     local name = "sandspike_"..v

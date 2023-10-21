@@ -39,6 +39,8 @@ local function fn()
     inst.AnimState:SetBuild("flowers_evil")
     inst.AnimState:SetRayTestOnBB(true)
 
+    inst.scrapbook_anim = "f1"
+
     inst:AddTag("flower")
 
     inst.pickupsound = "vegetation_grassy"
@@ -48,6 +50,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_removedeps = { "nightmarefuel" }
 
     inst.animname = names[math.random(#names)]
     inst.AnimState:PlayAnimation(inst.animname)

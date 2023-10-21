@@ -220,7 +220,7 @@ CommonStates.AddWalkStates(
 
 CommonStates.AddIdle(states)
 CommonStates.AddFrozenStates(states)
-CommonStates.AddSinkAndWashAsoreStates(states, {washashore = "transform_ent_mad"})
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "transform_ent_mad"})
 
 return StateGraph("leif", states, events, "idle", actionhandlers)
 

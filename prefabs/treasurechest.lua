@@ -101,6 +101,10 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
         inst.AnimState:PlayAnimation("closed")
         inst.scrapbook_anim="closed"
 
+        if name == "pandoraschest" or name == "terrariumchest" then
+            inst.scrapbook_specialinfo = "TREASURECHEST"
+        end
+
 		MakeSnowCoveredPristine(inst)
 
         if common_postinit ~= nil then
@@ -160,7 +164,29 @@ end
 --[[ pandora ]]
 --------------------------------------------------------------------------
 
+local pandora_scrapbook_adddeps = {
+    "armorwood",
+    "footballhat",
+    "spear",
+    "nightmarefuel",
+    "redgem",
+    "bluegem",
+    "purplegem",
+    "thulecite_pieces",
+    "thulecite",
+    "yellowgem",
+    "orangegem",
+    "greengem",
+    "batbat",
+    "firestaff",
+    "icestaff",
+    "multitool_axe_pickaxe",
+    "spider_dropper",
+}
+
 local function pandora_master_postinit(inst)
+    inst.scrapbook_adddeps = pandora_scrapbook_adddeps
+
     inst:ListenForEvent("resetruins", function()
         local was_open = inst.components.container:IsOpen()
 
@@ -190,7 +216,26 @@ end
 --[[ minotaur ]]
 --------------------------------------------------------------------------
 
+local minotaur_scrapbook_adddeps = {
+    "atrium_key",
+    "armorruins",
+    "ruinshat",
+    "ruins_bat",
+    "orangestaff",
+    "yellowstaff",
+    "orangeamulet",
+    "yellowamulet",
+    "yellowgem",
+    "orangegem",
+    "greengem",
+    "thulecite",
+    "thulecite_pieces",
+    "gears",
+}
+
 local function minotuar_master_postinit(inst)
+    inst.scrapbook_adddeps = minotaur_scrapbook_adddeps
+
     inst:ListenForEvent("resetruins", function()
         inst.components.container:Close()
         inst.components.container:DropEverything()
@@ -226,7 +271,28 @@ local function terrarium_removefx(inst)
 	end
 end
 
+local terrarium_scrapbook_adddeps = {
+    "terrarium",
+    "spear",
+    "blowdart_pipe",
+    "boomerang",
+    "fireflies",
+    "razor",
+    "grass_umbrella",
+    "papyrus",
+    "gunpowder",
+    "cutstone",
+    "marble",
+    "rope",
+    "healingsalve",
+    "torch",
+    "messagebottleempty",
+    "goldnugget",
+    "log",
+}
+
 local function terrarium_master_postinit(inst)
+    inst.scrapbook_adddeps = terrarium_scrapbook_adddeps
     inst.components.inspectable.getstatus = terrarium_GetStatus
 
 	if TUNING.SPAWN_EYEOFTERROR then
@@ -326,7 +392,10 @@ local function sunken_common_postinit(inst)
 	inst:SetPhysicsRadiusOverride(SUNKEN_PHYSICS_RADIUS)
 end
 
+local sunken_scrapbook_adddeps = require("messagebottletreasures").GetPrefabs()
+
 local function sunken_master_postinit(inst)
+    inst.scrapbook_adddeps = sunken_scrapbook_adddeps
     inst.components.workable:SetOnWorkCallback(sunken_onhit)
 
     inst.components.inspectable.getstatus = sunken_GetStatus

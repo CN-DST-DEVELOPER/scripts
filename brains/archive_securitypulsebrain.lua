@@ -7,8 +7,6 @@ local MAX_FOLLOW = 2
 local TARGET_FOLLOW = 1
 local WAYPOINT_RANGE = 34
 
-
-
 local Archive_SecurityPulseBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -76,25 +74,38 @@ local function findwaypoint(inst)
     return target
 end
 
-local CENTIPEDE_MUST_TAGS= {"security_powerpoint"}
-local function findcentipede(inst)
-    local x,y,z = inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x,y,z, 20,CENTIPEDE_MUST_TAGS)
-    for i=#ents,1,-1 do
-        if not ents[i].MED_THRESHOLD_DOWN or ents[i].components.health:GetPercent() < ents[i].MED_THRESHOLD_DOWN then
-            table.remove(ents,i)
+---------------------------------------------------------------------------------------------------------
+
+local POWERPOINT_MUST_TAGS = { "security_powerpoint" }
+local POWERPOINT_CAN_TAGS =  { "INLIMBO", "FX" }
+
+local function FindPowerPoint(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, 20, POWERPOINT_MUST_TAGS, POWERPOINT_CAN_TAGS)
+
+    for i=#ents, 1, -1 do
+        local ent = ents[i]
+
+        if ent.components.health ~= nil and ent.components.health:GetPercent() < (ent.MED_THRESHOLD_DOWN or 1) then
+            table.remove(ents, i)
         end
     end
-    if #ents > 0 then
+
+    if ents[1] ~= nil then
         return ents[1]
     end
 end
 
 function Archive_SecurityPulseBrain:OnStart()
+    local possession_range = self.inst.possession_range
+
+    local MIN_FOLLOW_POWERPOINT    = possession_range
+    local TARGET_FOLLOW_POWERPOINT = possession_range
+
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.patrol == true end, "find centipedes",
-            Follow(self.inst, findcentipede, MIN_FOLLOW, TARGET_FOLLOW, MAX_FOLLOW, false)),
+        WhileNode(function() return self.inst.patrol == true end, "find power point",
+            Follow(self.inst, FindPowerPoint, MIN_FOLLOW_POWERPOINT, TARGET_FOLLOW_POWERPOINT, MAX_FOLLOW, false, nil, true)),
         WhileNode(function() return self.inst.patrol == true end, "find waypoints",
             Follow(self.inst, findwaypoint, MIN_FOLLOW, TARGET_FOLLOW, MAX_FOLLOW, false)),
         StandStill(self.inst),

@@ -294,13 +294,17 @@ end
 function self:_RefreshSoilMoisture(dt)
 	local rain_rate = TheWorld.state.israining and TheWorld.state.precipitationrate or 0
 	local world_wetness = TheWorld.state.wetness
-	local world_temp = TheWorld.state.temperature
 
 	for index, soilmoisture in pairs(_moisturegrid.grid) do
 		if soilmoisture < world_wetness then
 			-- the soil will never by dryer than the ground's wetness
 			SetSoilMoisture(index, world_wetness)
 		else
+			local tx, ty = _moisturegrid:GetXYFromIndex(index)
+			local x, y, z = TheWorld.Map:GetTileCenterPoint(tx, ty)
+
+			local world_temp = GetTemperatureAtXZ(x, z)
+
 			-- if its raining, then add moisture based on how hard its raining, otherwise, the world temp may do some drying
 			local world_rate = rain_rate > 0 and (rain_rate * SOIL_RAIN_MOD)
 						or Remap(Clamp(world_temp, MIN_DRYING_TEMP, MAX_DRYING_TEMP), MIN_DRYING_TEMP, MAX_DRYING_TEMP, SOIL_MIN_TEMP_DRY_RATE, SOIL_MAX_TEMP_DRY_RATE)	--

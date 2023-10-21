@@ -244,6 +244,10 @@ end
 local function insanityrock()
     local inst = commonfn({"insanityrock"})
 
+    inst.scrapbook_anim = "idle_inactive" 
+    inst.scrapbook_proxy = "sanityrock"
+    inst.scrapbook_specialinfo = "SANITYROCK"
+
     inst.activeonsane = false
 
     return inst
@@ -251,6 +255,8 @@ end
 
 local function sanityrock()
     local inst = commonfn({"sanityrock"})
+
+    inst.scrapbook_anim = "idle_active" 
 
     inst.activeonsane = true
 

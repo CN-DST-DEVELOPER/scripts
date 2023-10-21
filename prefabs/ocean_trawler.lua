@@ -138,6 +138,8 @@ local function fn()
     --[[MakeInventoryFloatable(inst, "med", nil, {1.3, 0.9, 1.1})
     inst.components.floater.bob_percent = 0]]
 
+    inst.scrapbook_specialinfo = "OCEANTRAWLER"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

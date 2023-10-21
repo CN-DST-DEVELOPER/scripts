@@ -110,6 +110,9 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_bank  = "gingerbread_house2"
+    inst.scrapbook_build = "gingerbread_house2"
+
 	if not POPULATING then
 		sethousetype(inst)
 	end

@@ -47,11 +47,13 @@ local land_prefabs =
 {
     "wobster_sheller_dead",
     "wobster_sheller_dead_cooked",
+    "wobster_den",
 }
 
 local moonglass_land_prefabs =
 {
     "moonglass",
+    "moonglass_wobster_den",
 }
 
 local dead_prefabs =
@@ -180,6 +182,8 @@ local function base_water_wobster(build_name, fish_def)
 
     inst.AnimState:SetSortOrder(ANIM_SORT_ORDER_BELOW_GROUND.UNDERWATER)
     inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
+
+    inst.scrapbook_proxy = fish_def.prefab.."_land"
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
@@ -404,12 +408,23 @@ local function base_land_wobster(build_name, nameoverride, fish_def, fadeout, co
 end
 
 local function wobster_land()
-    return base_land_wobster("lobster_sheller", "wobster_sheller", WOBSTER_FISH_DEF, false, "wobster_sheller_dead_cooked")
+    local inst = base_land_wobster("lobster_sheller", "wobster_sheller", WOBSTER_FISH_DEF, false, "wobster_sheller_dead_cooked")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst:AddComponent("halloweenmoonmutable")
+    inst.components.halloweenmoonmutable:SetPrefabMutated("wobster_moonglass_land")
+
+    return inst
 end
 
 local function moonglass_land()
     local inst = base_land_wobster("lobster_moonglass", "wobster_moonglass", MOONGLASS_WOBSTER_FISH_DEF, true)
+
     inst:AddTag("lunar_aligned")
+
     return inst
 end
 

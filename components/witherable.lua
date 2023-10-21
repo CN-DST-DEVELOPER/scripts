@@ -76,7 +76,7 @@ local function WitherHandler(inst, self, force)
     self.task = nil
     self.task_to_time = nil
 
-	if not (force or (TheWorld.state.temperature > self.wither_temp and not IsExposedToRain(inst))) then
+	if not (force or (GetLocalTemperature(inst) > self.wither_temp and not IsExposedToRain(inst))) then
         --Reschedule
         self:Start()
     else
@@ -120,7 +120,7 @@ local function RejuvenateHandler(inst, self, force)
     self.task = nil
     self.task_to_time = nil
 
-    if not (force or TheWorld.state.temperature < self.rejuvenate_temp or IsExposedToRain(inst)) then
+    if not (force or GetLocalTemperature(inst) < self.rejuvenate_temp or IsExposedToRain(inst)) then
         --Reschedule
         self:Start()
     elseif DoPickableRejuvenate(inst, self) then

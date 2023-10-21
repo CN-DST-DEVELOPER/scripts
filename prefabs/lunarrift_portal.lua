@@ -264,7 +264,7 @@ end
 
 --------------------------------------------------------------------------------
 local function setmaxminimapstatus(inst)
-    inst.MiniMapEntity:SetCanUseCache(true)
+    inst.MiniMapEntity:SetCanUseCache(false)
     inst.MiniMapEntity:SetDrawOverFogOfWar(true)
     inst.MiniMapEntity:SetPriority(22)
     inst.MiniMapEntity:SetIcon("lunarrift_portal_max.png")
@@ -371,6 +371,10 @@ local function on_portal_removed(inst)
     local _map = TheWorld.Map
     local ix, iy, iz = inst.Transform:GetWorldPosition()
     local portal_tile_x, portal_tile_y = _map:GetTileCoordsAtPoint(ix, iy, iz)
+
+    if inst._terraformer ~= nil then
+        inst._terraformer:OnParentRemoved()
+    end
 
     inst._terraformer = inst._terraformer or make_terraformer_proxy(inst, ix, iy, iz)
     inst._terraformer:AddTerraformTask(portal_tile_x, portal_tile_y, 0, {0, 0}, true)
@@ -569,6 +573,10 @@ local function portalfn()
     inst.AnimState:PlayAnimation("stage_1_appear")
     inst.AnimState:PushAnimation("stage_1_loop", true)
 
+    inst.scrapbook_anim = "stage_3_loop"
+    inst.scrapbook_nodamage = true
+    inst.scrapbook_specialinfo = "LUNARRIFTPORTAL"
+
     inst.AnimState:SetLightOverride(1)
 
     inst.Light:SetIntensity(0.7)
@@ -618,6 +626,7 @@ local function portalfn()
     ----------------------------------------------------------
     local groundpounder = inst:AddComponent("groundpounder")
     table.insert(groundpounder.noTags, "lunar_aligned")
+	groundpounder:UseRingMode()
     groundpounder.damageRings = 6
     groundpounder.destructionRings = 0
     groundpounder.platformPushingRings = 6

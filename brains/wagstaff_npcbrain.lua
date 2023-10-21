@@ -99,11 +99,34 @@ local function ShouldGoToClue(inst)
     end
 end
 
+local function DoMachineHint(inst)
+    inst.components.talker:Say(STRINGS.WAGSTAFF_GOTTOHINT[math.random(#STRINGS.WAGSTAFF_GOTTOHINT)])
+end
+
+local function ShouldGoToMachine(inst)
+    local machinepos = inst.components.knownlocations:GetLocation("machine")
+
+    if machinepos ~= nil then
+        inst:DoTaskInTime(1.5, DoMachineHint)
+        inst:DoTaskInTime(3.5, inst.erode, 2, nil, true)
+
+        return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, machinepos, nil, .2)
+    end
+end
+
+
 local Wagstaff_NPCBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
 function Wagstaff_NPCBrain:OnStart()
+    local in_hint = WhileNode( function() return self.inst.components.knownlocations:GetLocation("machine") end, "IsHintingWagstaff",
+        PriorityNode{
+            IfNode(function() return self.inst.components.knownlocations:GetLocation("machine") end, "Go To Clue",
+                DoAction(self.inst, ShouldGoToMachine, "Go to machine", true )),
+            StandStill(self.inst),
+        }, .5)
+
     local in_hunt = WhileNode( function() return self.inst.hunt_stage == "hunt" end, "IsHuntWagstaff",
         PriorityNode{
             IfNode(function() return self.inst.components.knownlocations:GetLocation("clue") end, "Go To Clue",
@@ -117,6 +140,7 @@ function Wagstaff_NPCBrain:OnStart()
     local root =
         PriorityNode(
         {
+            in_hint,
             in_hunt,
             ChattyNode(self.inst, "WAGSTAFF_NPC_ATTEMPT_TRADE",
                 FaceEntity(self.inst, GetTraderFn, KeepTraderFn)),

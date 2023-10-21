@@ -115,7 +115,6 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", 0.1, 0.6)
 
-    inst.scrapbook_specialinfo = "COMPASS"
     inst.scrapbook_subcat = "tool"
 
     inst.entity:SetPristine()

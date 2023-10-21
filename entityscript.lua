@@ -719,6 +719,24 @@ function EntityScript:GetIsWet()
 		or (TheWorld.state.iswet and not self:HasTag("rainimmunity"))
 		or (self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
 end
+--Can be used on clients
+function EntityScript:IsAcidSizzling()
+    if self:HasTag("acidrainimmune") then
+        return false
+    end
+
+    local replica = self.replica.inventoryitem
+    if replica ~= nil then
+        return replica:IsAcidSizzling()
+    end
+
+    local player_classified = self.player_classified
+    if player_classified ~= nil then
+        return player_classified.isacidsizzling:value()
+    end
+
+    return false
+end
 
 function EntityScript:GetSkinBuild()
     if self.skin_build_name == nil then

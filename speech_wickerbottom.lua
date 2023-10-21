@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "The appearance of this track indicates recent activity.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "The trail is no longer distinguishable.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "The trail's been washed away by the precipitation.",
+    ANNOUNCE_HUNT_START_FORK = "I suspect whatever lies at the end of this trail will be formidable.",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "It seems I've managed to track the creature without alerting it.",
+    ANNOUNCE_HUNT_WRONG_FORK = "Oh dear... I have the most peculiar sensation that I'm being observed.",
+    ANNOUNCE_HUNT_AVOID_FORK = "This trail will likely yeild less dangerous results.",
 	ANNOUNCE_INV_FULL = "I can't carry anything more.",
 	ANNOUNCE_KNOCKEDOUT = "Oof, that's one way to get some rest, I suppose.",
 	ANNOUNCE_LOWRESEARCH = "Not a great resource, but there were useful bits.",
@@ -890,6 +894,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "As nonsensical as it sounds, there is something dark about that \"light\"...",
 
     ANNOUNCE_SCRAPBOOK_FULL = "My scrapbook has already been completed.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is unacceptable.",
 
     ANNOUNCE_COACH = 
     {
@@ -1828,6 +1834,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "A trophy that doubles as a useful anatomical model.",
         CHESSPIECE_TWINSOFTERROR = "A stone rendition of a pair of mechanical marvels.",
         CHESSPIECE_DAYWALKER = "An accurate stone model of that ill-behaved creature.",
+        CHESSPIECE_DEERCLOPS_MUTATED = "Such a strange and grotesque affliction...",
+        CHESSPIECE_WARG_MUTATED = "There is much I still don't understand about this beast.",
+        CHESSPIECE_BEARGER_MUTATED = "The artist truly captured its ferocity!",
 
         CHESSJUNK1 = "The magician's unfinished projects?",
         CHESSJUNK2 = "The magician's unfinished projects?",
@@ -2204,6 +2213,7 @@ return{
 		KNIGHT = "An automatic equine.",
 		KOALEFANT_SUMMER = "Koalefanta Proboscidea.",
 		KOALEFANT_WINTER = "Koalefanta Proboscidea in thick winter pelage.",
+		KOALEFANT_CARCASS = "This creature has expired.",
 		KRAMPUS = "It's a mythological holiday monster.",
 		KRAMPUS_SACK = "It seems bigger inside than out.",
 		LEIF = "I... don't even know.",
@@ -4909,6 +4919,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Broken? Perhaps this material is not as indestructible as I surmised.",
 
         WOLFGANG_WHISTLE = "Please try to keep the noise to a minimum, dear.",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "The reanimation process seems to have altered its physicality.",
+        MUTATEDWARG = "Its body has been drastically altered.",
+        MUTATEDBEARGER = "The parasite seems capable of altering its host body to suit its needs.",
+
+        LUNARFROG = "It possesses a truly unnecessary abundance of eyes.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "It might be prudent to dispose of the body.",
+            BURNING  = "It's the safest course of action.",
+            REVIVING = "Goodness! Something is reanimating the body!",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "I'd rather not leave such a thing lying around.",
+            BURNING  = "A necessary precaution.",
+            REVIVING = "Some parasitic entity is utilizing the body as a host!",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "It could lead to trouble if it's not promptly disposed of.",
+            BURNING  = "I'm relieved to see it go.",
+            REVIVING = "Oh dear. It seems I'm too late.",
+        },
+
+        BEARGERFUR_SACK = "A portable chilling unit. Well and good, but cold food makes my teeth ache.",
+        HOUNDSTOOTH_BLOWPIPE = "An improvised dental projectile device.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "An implement that conditions the air, or ambient-temperature-reduction-device for short.",    -- Enabled.
+            NOEYEBALL = "It is rendered useless without the eye of that beast.",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "It should be a simple matter to construct it.",
+
+        SECURITY_PULSE_CAGE = "I have not come across this in any book.",
+        SECURITY_PULSE_CAGE_FULL = "The glowing object inside emits some sort of energy.",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "I could use a new reading chair.",
+            BURNT = "I suppose my reading chair will have to wait.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Perfect for enjoying a cup of tea and a good book.",
+            HAS_ITEM = "Perfect for enjoying a cup of tea and a good book.",
+            BURNT = "What a shame.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Reminds me of the chair in my reading nook.",
+            OCCUPIED = "If you're going to sit, you might as well read.",
+            BURNT = "Can't we have any nice things?",
+        },
+
+        DECOR_CENTERPIECE = "I suppose it's pretty, but it doesn't do much.",
+        DECOR_LAMP = "Now I can read my books at night.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "It's pleasant to see a little decor out here.",
+            EMPTY = "Ah, could use a doily, wouldn't you say?",
+            WILTED = "A pity. Shall we find replacements?",
+            FRESHLIGHT = "The more light to read by the better, in my opinion.",
+            OLDLIGHT = "It is Maxwell's turn to procure bulbs. I've it written down right here.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "Sure. Why not?",
+            UNDRAWN = "All art begins with a blank page.",
+        },
+        DECOR_PORTRAITFRAME = "A decent resemblance.",
+
+        PHONOGRAPH = "The music was better back in my day.",
+        RECORD = "I could see it getting a tad repetitive.",
+        RECORD_CREEPYFOREST = "I can't imagine where one would find a record press out here.",
+        RECORD_DANGER = "I can't imagine where one would find a record press out here.",
+        RECORD_DAWN = "I can't imagine where one would find a record press out here.",
+        RECORD_DRSTYLE = "The music was better back in my day.",
+        RECORD_DUSK = "The music was better back in my day.",
+        RECORD_EFS = "The music was better back in my day.",
+        RECORD_END = "The music was better back in my day.",
+        RECORD_MAIN = "I can't imagine where one would find a record press out here.",
+        RECORD_WORKTOBEDONE = "I can't imagine where one would find a record press out here.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "There must be a manual somewhere.",
+
+        WAGPUNKHAT = "It analyzes combat in order to augment the physical capabilities of the wearer.",
+        ARMORWAGPUNK = "I do wish it wasn't quite so noisy.",
+        WAGSTAFF_MACHINERY = "Someone neglected to clean up their mess.",
+        WAGPUNK_BITS = "Where are the instructions?",
+        WAGPUNKBITS_KIT = "We should consult the manual before using this.",
+
+        WAGSTAFF_MUTATIONS_NOTE = "I have a bad feeling about what is written here.",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

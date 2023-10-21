@@ -789,7 +789,7 @@ local actionhandlers =
 			if not (inst.sg:HasStateTag(attack_tag) and action.target == inst.sg.statemem.attacktarget or inst.components.health:IsDead()) then
                 local weapon = inst.components.combat ~= nil and inst.components.combat:GetWeapon() or nil
                 return (weapon == nil and "attack")
-                    or (weapon:HasTag("blowdart") and "blowdart")
+                    or (weapon:HasOneOfTags({"blowdart", "blowpipe"}) and "blowdart")
 					or (weapon:HasTag("slingshot") and "slingshot_shoot")
                     or (weapon:HasTag("thrown") and "throw")
                     or (weapon:HasTag("pillow") and "attack_pillow_pre")
@@ -17971,16 +17971,18 @@ local states =
 		},
 	},
 
+	--------------------------------------------------------------------------
+	--Sitting states
+
 	State{
 		name = "start_sitting",
 		tags = { "busy" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
-			inst.Transform:SetPredictedNoFaced()
-			inst.AnimState:PlayAnimation("sit_pre")
 			local buffaction = inst:GetBufferedAction()
 			local chair = buffaction ~= nil and buffaction.target or nil
+			local nofaced
 			if chair ~= nil and chair:IsValid() then
 				inst.Transform:SetRotation(chair.Transform:GetRotation())
 				if inst:PerformBufferedAction() and
@@ -17988,10 +17990,20 @@ local states =
 					chair.components.sittable:IsOccupiedBy(inst) then
 					--
 					inst:AddTag("sitting_on_chair")
+					if chair:HasTag("limited_chair") then
+						inst:AddTag("limited_sitting")
+						nofaced = true
+					end
 					inst.sg.statemem.chair = chair
 				end
 			else
 				inst:ClearBufferedAction()
+			end
+			if nofaced then
+				inst.Transform:SetPredictedNoFaced()
+				inst.AnimState:PlayAnimation("sit_pre_nofaced")
+			else
+				inst.AnimState:PlayAnimation("sit_pre")
 			end
 		end,
 
@@ -18009,6 +18021,7 @@ local states =
 			inst.Transform:ClearPredictedFacingModel()
 			if not inst.sg.statemem.sitting then
 				inst:RemoveTag("sitting_on_chair")
+				inst:RemoveTag("limited_sitting")
 				local chair = inst.sg.statemem.chair
 				if chair ~= nil and
 					chair:IsValid() and
@@ -18036,16 +18049,27 @@ local states =
 				return
 			end
 			inst.components.locomotor:Stop()
-			inst.Transform:SetNoFaced()
-			inst.AnimState:PlayAnimation("sit_jump")
 			inst:AddTag("sitting_on_chair")
+			if chair:HasTag("limited_chair") then
+				inst:AddTag("limited_sitting")
+				inst.Transform:SetNoFaced()
+				inst.AnimState:SetBankAndPlayAnimation("wilson_sit_nofaced", "sit_jump")
+			else
+				inst.AnimState:SetBankAndPlayAnimation("wilson_sit", "sit_jump")
+			end
 			inst.sg.statemem.chair = chair
 			inst.sg.statemem.onremovechair = function(chair)
 				inst.sg.statemem.chair = nil
+				inst.sg.statemem.stop = true
 				inst.sg:GoToState("stop_sitting_pst")
 			end
 			inst.sg.statemem.onbecomeunsittable = function(chair)
-				inst.sg:GoToState("stop_sitting_pst")
+				inst.sg.statemem.sitting = true
+				inst.sg.statemem.jumpoff = true
+				inst.sg:GoToState("sit_jumpoff", {
+					chair = inst.sg.statemem.chair,
+					isphysicstoggle = inst.sg.statemem.isphysicstoggle,
+				})
 			end
 			inst:ListenForEvent("onremove", inst.sg.statemem.onremovechair, chair)
 			inst:ListenForEvent("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
@@ -18063,6 +18087,11 @@ local states =
 			end
 			ToggleOffPhysics(inst)
 		end,
+
+		timeline =
+		{
+			FrameEvent(11, function(inst) inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt", nil, 0.5) end),
+		},
 
 		events =
 		{
@@ -18082,9 +18111,15 @@ local states =
 
 		onexit = function(inst)
 			inst.Physics:Stop()
-			if not inst.sg.statemem.sitting then
+			if not inst.sg.statemem.sitting or inst.sg.statemem.jumpoff then
 				inst:RemoveTag("sitting_on_chair")
+				inst:RemoveTag("limited_sitting")
 				inst.Transform:SetFourFaced()
+			end
+			if not inst.sg.statemem.sitting then
+				if not inst.sg.statemem.stop then
+					inst.AnimState:SetBank("wilson")
+				end
 				if inst.sg.statemem.isphysicstoggle then
 					ToggleOnPhysics(inst)
 				end
@@ -18116,46 +18151,72 @@ local states =
 				inst.sg.statemem.isphysicstoggle = data.isphysicstoggle
 			end
 			if chair == nil or not chair:IsValid() or chair.components.sittable == nil then
+				inst.sg.statemem.stop = true
 				inst.sg:GoToState("stop_sitting_pst")
 				return
 			elseif not chair.components.sittable:IsOccupied() then
 				chair.components.sittable:SetOccupier(inst)
 			elseif not chair.components.sittable:IsOccupiedBy(inst) then
+				inst.sg.statemem.stop = true
 				inst.sg:GoToState("stop_sitting_pst")
 				return
 			end
 			if inst.sg.statemem.onremovechair == nil then
 				inst.sg.statemem.onremovechair = function(chair)
 					inst.sg.statemem.chair = nil
+					inst.sg.statemem.stop = true
 					inst.sg:GoToState("stop_sitting_pst")
 				end
 				inst:ListenForEvent("onremove", inst.sg.statemem.onremovechair, chair)
 			end
 			if inst.sg.statemem.onbecomeunsittable == nil then
 				inst.sg.statemem.onbecomeunsittable = function(chair)
-					inst.sg:GoToState("stop_sitting_pst")
+					inst.sg.statemem.sitting = true
+					inst.sg.statemem.jumpoff = true
+					inst.sg:GoToState("sit_jumpoff", {
+						chair = inst.sg.statemem.chair,
+						isphysicstoggle = inst.sg.statemem.isphysicstoggle,
+					})
 				end
 				inst:ListenForEvent("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
 			end
 			if not inst.sg.statemem.isphysicstoggle then
 				ToggleOffPhysics(inst)
 			end
-			inst.sg.statemem.chair = chair
-			inst:AddTag("sitting_on_chair")
 			inst.components.locomotor:StopMoving()
-			inst.Transform:SetNoFaced()
+			inst.sg.statemem.chair = chair
+			local bank = "wilson_sit"
+			inst:AddTag("sitting_on_chair")
+			if chair:HasTag("limited_chair") then
+				inst:AddTag("limited_sitting")
+				inst.Transform:SetNoFaced()
+				inst.sg.statemem.noemotes = true
+				bank = "wilson_sit_nofaced"
+			end
 			if landed then
-				inst.AnimState:PlayAnimation("sit_loop_pre")
+				inst.AnimState:SetBankAndPlayAnimation(bank, "sit_loop_pre")
 				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
 			else
-				inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+				inst.AnimState:SetBankAndPlayAnimation(bank, "sit"..tostring(math.random(2)).."_loop", true)
 			end
 			inst.Physics:Teleport(chair.Transform:GetWorldPosition())
+
+			inst.sg.statemem.interrupt_emote = function(inst)
+				if inst.sg.statemem.emotefxtask ~= nil then
+					inst.sg.statemem.emotefxtask:Cancel()
+					inst.sg.statemem.emotefxtask = nil
+				end
+				if inst.sg.statemem.emotesoundtask ~= nil then
+					inst.sg.statemem.emotesoundtask:Cancel()
+					inst.sg.statemem.emotesoundtask = nil
+				end
+			end
 		end,
 
 		events =
 		{
 			EventHandler("ontalk", function(inst)
+				inst.sg.statemem.interrupt_emote(inst)
 				local duration = inst.sg.statemem.talktask ~= nil and GetTaskRemaining(inst.sg.statemem.talktask) or 1.5 + math.random() * .5
 				inst.AnimState:PlayAnimation("sit_dial", true)
 				if inst.sg.statemem.sittalktask ~= nil then
@@ -18180,15 +18241,18 @@ local states =
 				return OnDoneTalking_Override(inst)
 			end),
 			EventHandler("equip", function(inst, data)
+				inst.sg.statemem.interrupt_emote(inst)
 				inst.AnimState:PlayAnimation(data.eslot == EQUIPSLOTS.HANDS and "sit_item_out" or "sit_item_hat")
 				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
 			end),
 			EventHandler("unequip", function(inst, data)
+				inst.sg.statemem.interrupt_emote(inst)
 				inst.AnimState:PlayAnimation(data.eslot == EQUIPSLOTS.HANDS and "sit_item_in" or "sit_item_hat")
 				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
 			end),
 			EventHandler("performaction", function(inst, data)
 				if data ~= nil and data.action ~= nil and data.action.action == ACTIONS.DROP then
+					inst.sg.statemem.interrupt_emote(inst)
 					inst.AnimState:PlayAnimation("sit_item_hat")
 					inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
 				end
@@ -18196,10 +18260,75 @@ local states =
 			EventHandler("locomote", function(inst, data)
 				if data ~= nil and data.remoteoverridelocomote or inst.components.locomotor:WantsToMoveForward() then
 					inst.sg.statemem.sitting = true
+					inst.sg.statemem.stop = true
 					inst.sg:GoToState("stop_sitting", {
 						chair = inst.sg.statemem.chair,
 						isphysicstoggle = inst.sg.statemem.isphysicstoggle,
 					})
+				end
+				return true
+			end),
+			EventHandler("emote", function(inst, data)
+				if data.sitting and
+					not inst.sg.statemem.noemotes and
+					(	not data.requires_validation or
+						TheInventory:CheckClientOwnership(inst.userid, data.item_type)
+					)
+				then
+					inst.sg.statemem.interrupt_emote(inst)
+
+					--Not supported
+					assert(data.tags == nil)
+
+					local anim = data.anim
+					local animtype = type(anim)
+					if data.randomanim and animtype == "table" then
+						anim = anim[math.random(#anim)]
+						animtype = type(anim)
+					end
+					if animtype == "table" and #anim <= 1 then
+						anim = anim[1]
+						animtype = type(anim)
+					end
+
+					if animtype == "string" then
+						inst.AnimState:PlayAnimation(anim, data.loop)
+						if not data.loop then
+							inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop", true)
+						end
+					elseif animtype == "table" then
+						inst.AnimState:PlayAnimation(anim[1])
+						for i = 2, #anim do
+							inst.AnimState:PushAnimation(anim[i])
+						end
+						if not data.loop then
+							inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop", true)
+						end
+					end
+
+					if data.fx then --fx might be a boolean, so don't do ~= nil
+						if data.fxdelay == nil or data.fxdelay == 0 then
+							DoEmoteFX(inst, data.fx)
+						else
+							inst.sg.statemem.emotefxtask = inst:DoTaskInTime(data.fxdelay, DoEmoteFX, data.fx)
+						end
+					elseif data.fx ~= false then
+						DoEmoteFX(inst, "emote_fx")
+					end
+
+					if data.sound then --sound might be a boolean, so don't do ~= nil
+						if (data.sounddelay or 0) <= 0 then
+							inst.SoundEmitter:PlaySound(data.sound)
+						else
+							inst.sg.statemem.emotesoundtask = inst:DoTaskInTime(data.sounddelay, DoForcedEmoteSound, data.sound)
+						end
+					elseif data.sound ~= false then
+						if (data.sounddelay or 0) <= 0 then
+							DoEmoteSound(inst, data.soundoverride, data.soundlooped)
+						else
+							inst.sg.statemem.emotesoundtask = inst:DoTaskInTime(data.sounddelay, DoEmoteSound, data.soundoverride, data.soundlooped)
+						end
+					end
 				end
 				return true
 			end),
@@ -18211,9 +18340,15 @@ local states =
 				inst:RemoveEventCallback("onremove", inst.sg.statemem.onremovechair, chair)
 				inst:RemoveEventCallback("becomeunsittable", inst.sg.statemem.onbecomeunsittable, chair)
 			end
-			if not inst.sg.statemem.sitting then
+			if not inst.sg.statemem.sitting or inst.sg.statemem.jumpoff then
 				inst:RemoveTag("sitting_on_chair")
+				inst:RemoveTag("limited_sitting")
 				inst.Transform:SetFourFaced()
+			end
+			if not inst.sg.statemem.sitting then
+				if not inst.sg.statemem.stop then
+					inst.AnimState:SetBank("wilson")
+				end
 				if inst.sg.statemem.isphysicstoggle then
 					ToggleOnPhysics(inst)
 				end
@@ -18240,6 +18375,9 @@ local states =
 				inst.sg.statemem.sittalktask:Cancel()
 			end
 			CancelTalk_Override(inst)
+			if inst.sg.statemem.interrupt_emote ~= nil then
+				inst.sg.statemem.interrupt_emote(inst)
+			end
 		end,
 	},
 
@@ -18256,29 +18394,40 @@ local states =
 				inst.sg.statemem.isphysicstoggle = data.isphysicstoggle
 			end
 			if chair == nil or not chair:IsValid() or chair.components.sittable == nil then
+				inst.sg.statemem.stop = true
 				inst.sg:GoToState("stop_sitting_pst")
 				return
 			elseif not chair.components.sittable:IsOccupied() then
 				chair.components.sittable:SetOccupier(inst)
 			elseif not chair.components.sittable:IsOccupiedBy(inst) then
+				inst.sg.statemem.stop = true
 				inst.sg:GoToState("stop_sitting_pst")
 				return
 			end
 			if not inst.sg.statemem.isphysicstoggle then
 				ToggleOffPhysics(inst)
 			end
-			inst:AddTag("sitting_on_chair")
-			inst.sg.statemem.chair = chair
 			inst.components.locomotor:Stop()
-			inst.Transform:SetNoFaced()
-			inst.AnimState:PlayAnimation("sit_off")
+			inst.sg.statemem.chair = chair
+			inst.sg.statemem.rot = inst.Transform:GetRotation()
+			inst.Transform:SetRotation(chair.Transform:GetRotation())
+			inst:AddTag("sitting_on_chair")
+			if chair:HasTag("limited_chair") then
+				inst:AddTag("limited_sitting")
+				inst.Transform:SetNoFaced()
+				inst.AnimState:SetBankAndPlayAnimation("wilson_sit_nofaced", "sit_off")
+			else
+				inst.AnimState:SetBankAndPlayAnimation("wilson_sit", "sit_off")
+			end
 		end,
 
 		events =
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.Transform:SetRotation(inst.sg.statemem.rot)
 					inst.sg.statemem.sitting = true
+					--inst.sg.statemem.jumpoff = true
 					inst.sg:GoToState("sit_jumpoff", {
 						chair = inst.sg.statemem.chair,
 						isphysicstoggle = inst.sg.statemem.isphysicstoggle,
@@ -18289,8 +18438,12 @@ local states =
 
 		onexit = function(inst)
 			inst:RemoveTag("sitting_on_chair")
+			inst:RemoveTag("limited_sitting")
+			inst.Transform:SetFourFaced()
 			if not inst.sg.statemem.sitting then
-				inst.Transform:SetFourFaced()
+				if not inst.sg.statemem.stop then
+					inst.AnimState:SetBank("wilson")
+				end
 				if inst.sg.statemem.isphysicstoggle then
 					ToggleOnPhysics(inst)
 				end
@@ -18330,6 +18483,7 @@ local states =
 				inst.sg.statemem.isphysicstoggle = data.isphysicstoggle
 			end
 			if chair == nil or not chair:IsValid() then
+				inst.sg.statemem.stop = true
 				inst.sg:GoToState("stop_sitting_pst")
 				return
 			end
@@ -18338,8 +18492,7 @@ local states =
 			end
 			inst.sg.statemem.chair = chair
 			inst.components.locomotor:Stop()
-			inst.Transform:SetNoFaced()
-			inst.AnimState:PlayAnimation("sit_jump_off")
+			inst.AnimState:SetBankAndPlayAnimation("wilson", "sit_jump_off")
 			local radius = inst:GetPhysicsRadius(0) + chair:GetPhysicsRadius(0)
 			if radius > 0 then
 				inst.Physics:SetMotorVel(radius * 30 / inst.AnimState:GetCurrentAnimationNumFrames(), 0, 0)
@@ -18356,6 +18509,11 @@ local states =
 			end
 		end,
 
+		timeline =
+		{
+			FrameEvent(11, PlayFootstep),
+		},
+
 		events =
 		{
 			EventHandler("animover", function(inst)
@@ -18363,13 +18521,16 @@ local states =
 					if inst.sg.statemem.safepos ~= nil and not inst:IsOnPassablePoint() then
 						inst.Physics:Teleport(inst.sg.statemem.safepos.x, 0, inst.sg.statemem.safepos.z)
 					end
-					inst.sg:GoToState("stop_sitting_pst")
+					inst.sg.statemem.stop = true
+					inst.sg:GoToState("stop_sitting_pst", true)
 				end
 			end),
 		},
 
 		onexit = function(inst)
-			inst.Transform:SetFourFaced()
+			if not inst.sg.statemem.stop then
+				inst.AnimState:SetBank("wilson")
+			end
 			inst.Physics:Stop()
 			if inst.sg.statemem.isphysicstoggle then
 				ToggleOnPhysics(inst)
@@ -18389,9 +18550,12 @@ local states =
 		name = "stop_sitting_pst",
 		tags = { "idle", "overridelocomote" },
 
-		onenter = function(inst)
+		onenter = function(inst, skipsound)
 			inst.components.locomotor:StopMoving()
-			inst.AnimState:PlayAnimation("sit_off_pst")
+			inst.AnimState:SetBankAndPlayAnimation("wilson", "sit_off_pst")
+			if not skipsound then
+				PlayFootstep(inst)
+			end
 		end,
 
 		timeline =
@@ -18408,6 +18572,7 @@ local states =
 			end),
 		},
 	},
+	--------------------------------------------------------------------------
 }
 
 local hop_timelines =

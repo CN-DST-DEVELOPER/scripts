@@ -45,7 +45,7 @@ local function ontalk(inst)
     local sound = inst._classified ~= nil and inst._classified:GetTalkSound() or nil
     if sound ~= nil then
         inst.localsounds.SoundEmitter:KillSound("talk")
-        inst.localsounds.SoundEmitter:PlaySound(sound)
+        inst.localsounds.SoundEmitter:PlaySound(sound, "talk")
     end
 end
 
@@ -375,6 +375,8 @@ local function ScytheFn()
         inst:ListenForEvent("ontalk", ontalk)
         inst:ListenForEvent("donetalking", ondonetalking)
     end
+
+    inst.scrapbook_specialinfo = "VOIDCLITHSCYTHE"
 
     inst.entity:SetPristine()
 

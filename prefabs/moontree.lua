@@ -572,6 +572,10 @@ local function moon_tree(name, stage, data)
         inst:SetPrefabName("moon_tree")
         inst:AddTag("moon_tree") -- for plantregrowth
 
+        inst.scrapbook_specialinfo = "TREE"
+        inst.scrapbook_proxy = "moon_tree_tall"
+        inst.scrapbook_speechname = inst.prefab
+
         MakeSnowCoveredPristine(inst)
 
         inst.entity:SetPristine()

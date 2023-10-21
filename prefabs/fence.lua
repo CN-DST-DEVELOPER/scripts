@@ -602,6 +602,10 @@ local function MakeWall(name, anims, isdoor, klaussackkeyid)
             return inst
         end
 
+        inst.scrapbook_anim  = "idle"
+        inst.scrapbook_build = anims.wide
+        inst.scrapbook_bank  = anims.wide
+
         inst:AddComponent("inspectable")
 
         if isdoor then
@@ -774,8 +778,6 @@ local function MakeInvItem(name, placement, animdata, isdoor)
 		MakeInventoryFloatable(inst, "small", nil, 1.1)
 
         inst.entity:SetPristine()
-
-        inst.scrapbook_anim = "inventory"
 
         if not TheWorld.ismastersim then
             return inst

@@ -234,6 +234,7 @@ end
 local function rockfn()
     local inst = commonfn("med")
 
+    inst.scrapbook_anim = "med"
     inst:SetPrefabNameOverride("spiderhole")
 
     if not TheWorld.ismastersim then

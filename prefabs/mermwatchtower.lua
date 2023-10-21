@@ -164,6 +164,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_speechname = "mermwatchtower_regular"
+
     inst:AddComponent("lootdropper")
 
     inst:AddComponent("workable")

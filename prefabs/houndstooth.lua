@@ -18,6 +18,9 @@ local function fn()
     inst.AnimState:SetBuild("hounds_tooth")
     inst.AnimState:PlayAnimation("idle")
 
+    inst:AddTag("blowpipeammo")
+    inst:AddTag("reloaditem_ammo") -- Action string.
+
     inst.pickupsound = "rock"
 
     MakeInventoryFloatable(inst, "small", nil, {0.6, 0.55, 0.6})
@@ -28,6 +31,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst:AddComponent("reloaditem")
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM

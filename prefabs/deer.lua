@@ -429,10 +429,7 @@ local function common_fn(gem)
     inst.AnimState:SetBank("deer")
     inst.AnimState:SetBuild("deer_build")
     inst.AnimState:PlayAnimation("idle_loop", true)
-    inst.scrapbook_overridedata = {}
-    table.insert(inst.scrapbook_overridedata, {"swap_antler_red", "deer_build", "swap_antler1"})
-    table.insert(inst.scrapbook_overridedata, {"swap_neck_collar", "deer_build", "swap_neck"})
-    inst.scrapbook_hide = {"CHAIN"}
+
     if gem ~= nil then
         if gem ~= "red" then
             inst.AnimState:OverrideSymbol("swap_antler_red", "deer_build", "swap_antler_"..gem)
@@ -461,13 +458,17 @@ local function common_fn(gem)
     inst:AddTag("deer")
     inst:AddTag("animal")
 
-    inst.scrapbook_deps = {"meat","deer_antler1","deer_antler2","deer_antler3"}
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_overridedata = {{"swap_neck_collar", "deer_build", "swap_neck" }, {"swap_antler_red", "deer_build", "swap_antler1"}}
+    inst.scrapbook_hide = { "CHAIN" }
+    inst.scrapbook_deps = { "meat", "deer_antler1", "deer_antler2", "deer_antler3"}
+    inst.scrapbook_anim = "idle"
+
 
     inst.gem = gem
 

@@ -309,7 +309,10 @@ local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
-local function GetSpawnPoint(pt)
+local function GetSpawnPoint(pt, radius_override)
+    if radius_override == nil then
+        radius_override = SPAWN_DIST
+    end
 	if TheWorld.has_ocean then
 		local function OceanSpawnPoint(offset)
 			local x = pt.x + offset.x
@@ -318,7 +321,7 @@ local function GetSpawnPoint(pt)
 			return TheWorld.Map:IsAboveGroundAtPoint(x, y, z, true) and NoHoles(pt)
 		end
 
-		local offset = FindValidPositionByFan(math.random() * 2 * PI, SPAWN_DIST, 12, OceanSpawnPoint)
+		local offset = FindValidPositionByFan(math.random() * 2 * PI, radius_override, 12, OceanSpawnPoint)
 		if offset ~= nil then
 			offset.x = offset.x + pt.x
 			offset.z = offset.z + pt.z
@@ -328,7 +331,7 @@ local function GetSpawnPoint(pt)
 		if not TheWorld.Map:IsAboveGroundAtPoint(pt:Get()) then
 			pt = FindNearbyLand(pt, 1) or pt
 		end
-		local offset = FindWalkableOffset(pt, math.random() * 2 * PI, SPAWN_DIST, 12, true, true, NoHoles)
+		local offset = FindWalkableOffset(pt, math.random() * 2 * PI, radius_override, 12, true, true, NoHoles)
 		if offset ~= nil then
 			offset.x = offset.x + pt.x
 			offset.z = offset.z + pt.z
@@ -369,8 +372,8 @@ local function GetSpawnPrefab(upgrade)
 	return _spawndata.base_prefab
 end
 
-local function SummonSpawn(pt, upgrade)
-    local spawn_pt = GetSpawnPoint(pt)
+local function SummonSpawn(pt, upgrade, radius_override)
+    local spawn_pt = GetSpawnPoint(pt, radius_override)
     if spawn_pt ~= nil then
         local spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
         if spawn ~= nil then
@@ -681,9 +684,9 @@ function self:ForceReleaseSpawn(target)
 	end
 end
 
--- Creates a hound near 'pt'
-function self:SummonSpawn(pt)
-    return pt ~= nil and SummonSpawn(pt) or nil
+-- Creates a hound near 'pt' with optional radius 'radius_override'
+function self:SummonSpawn(pt, radius_override)
+    return pt ~= nil and SummonSpawn(pt, nil, radius_override) or nil
 end
 
 -- Spawns the next wave for debugging

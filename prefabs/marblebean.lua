@@ -37,8 +37,6 @@ local function fn()
     inst:AddTag("molebait")
     inst:AddTag("treeseed")
 
-    inst.scrapbook_specialinfo = "MARBLEBEAN"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -355,7 +355,7 @@ TileManager.AddTile(
     {
         name = "grass2",
         noise_texture = "quagmire_peatforest_noise",
-        runsound="dontstarve/movement/rrun_marsh",
+        runsound="dontstarve/movement/run_marsh",
         walksound="dontstarve/movement/walk_marsh",
         snowsound="dontstarve/movement/run_ice",
         mudsound = "dontstarve/movement/run_mud",

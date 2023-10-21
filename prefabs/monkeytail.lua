@@ -90,6 +90,8 @@ local function fn()
     inst.AnimState:SetBank("grass")
     inst.AnimState:SetBuild("reeds_monkeytails")
     inst.AnimState:PlayAnimation("idle", true)
+
+    inst.scrapbook_specialinfo = "NEEDFERTILIZER"
     
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

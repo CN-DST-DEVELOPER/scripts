@@ -229,6 +229,8 @@ local function itemfn()
         return inst
     end
 
+    inst.scrapbook_anim = "idle_ground"
+
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")

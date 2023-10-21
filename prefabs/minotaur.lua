@@ -34,6 +34,7 @@ local prefabs =
     "minotaur_blood3",
     "minotaur_blood_big",
     "support_pillar_scaffold_blueprint",
+    "minotaurchest",
 }
 
 local prefabs_chest =
@@ -557,7 +558,13 @@ local function fn()
     inst.components.combat:SetRange(4.1-0.5,4.1+0.5)
 
     inst:AddComponent("groundpounder")
+	inst.components.groundpounder:UseRingMode()
+	inst.components.groundpounder.damageRings = 2
+	inst.components.groundpounder.destructionRings = 2
+	inst.components.groundpounder.platformPushingRings = 0
     inst.components.groundpounder.numRings = 2
+	inst.components.groundpounder.radiusStepDistance = 2
+	inst.components.groundpounder.ringWidth = 1.65
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.MINOTAUR_HEALTH)

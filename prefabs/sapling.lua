@@ -16,14 +16,12 @@ local prefabs =
 {
     "twigs",
     "dug_sapling",
-    "spoiled_food",
 }
 
 local moon_prefabs =
 {
     "twigs",
     "dug_sapling_moon",
-    "spoiled_food",
 }
 
 local function ontransplantfn(inst)

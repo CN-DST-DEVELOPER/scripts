@@ -152,7 +152,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-    MakeSmallObstaclePhysics(inst, 1.95)
+	MakePondPhysics(inst, 1.95)
 
     inst.AnimState:SetBuild("lava_tile")
     inst.AnimState:SetBank("lava_tile")
@@ -160,6 +160,9 @@ local function fn()
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
+
+    inst.scrapbook_anim = "bubble_lava"
+    inst.scrapbook_specialinfo = "LAVAPOND"
 
     inst.MiniMapEntity:SetIcon("lava_pond.png")
 

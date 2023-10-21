@@ -33,11 +33,15 @@ local function fn()
     inst:AddTag("notarget")
     inst:AddTag("shadow_aligned")
 
+    inst.scrapbook_inspectonseen = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+	--inst.owner is set when spawned from ruins_bat, slingshotammo
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.TENTACLE_HEALTH)

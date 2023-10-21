@@ -64,8 +64,7 @@ local function MakeTrinket(num)
 
         inst.AnimState:SetBank("trinkets")
         inst.AnimState:SetBuild("trinkets")
-        inst.AnimState:PlayAnimation(tostring(num))
-        inst.scrapbook_anim = tostring(num)
+        inst.AnimState:PlayAnimation(tostring(num))        
         inst.AnimState:SetMultColour(unpack(MIN_FADE_COLOUR))
         inst.AnimState:SetHaunted(true)
 
@@ -76,6 +75,10 @@ local function MakeTrinket(num)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_anim = tostring(num)
+        inst.scrapbook_specialinfo = "LOSTTOY"
+        inst.scrapbook_alpha = 0.4
 
         inst._current_fade = MIN_FADE_VALUE
 

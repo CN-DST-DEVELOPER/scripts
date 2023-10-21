@@ -226,6 +226,9 @@ function SetConsoleLocalRemoteHistory(history)
     end
 end
 
+-- NOTES(JBK): Caching these to only walk the tables once if a player opens the console or has it enabled to open they should know what they are doing for memory usage.
+local prediction_command_c, prediction_command_d, prefab_names
+
 function ConsoleScreen:DoInit()
 	--SetPause(true,"console")
 	TheInput:EnableDebugToggle(false)
@@ -276,34 +279,42 @@ function ConsoleScreen:DoInit()
 	self.console_edit:SetString("")
 
 	--setup prefab keys
-    local prefab_names = {}
-	for name,_ in pairs(Prefabs) do
-		table.insert(prefab_names, name)
-	end
+    if not prefab_names then
+        prefab_names = {}
+        for name, _ in pairs(Prefabs) do
+            table.insert(prefab_names, name)
+        end
+    end
 
 	self.console_edit:EnableWordPrediction({width = 1000, mode=Profile:GetConsoleAutocompleteMode()})
 	self.console_edit:AddWordPredictionDictionary({words = prefab_names, delim = '"', postfix='"', skip_pre_delim_check=true})
 	self.console_edit:AddWordPredictionDictionary({words = prefab_names, delim = "'", postfix="'", skip_pre_delim_check=true})
-	local prediction_command = {
-		"addelectricity", "allbooks", "announce", "armor", "armour", "autoteleportplayers",
-		"boatcollision",
-		"cancelmaintaintasks", "connect", "countallprefabs", "countprefabs", "counttagged",
-		"debugshards", "despawn", "doscenario", "dump", "dumpentities", "dumpseasons", "dumpworldstate",
-		"emptyworld",
-		"find", "findnext", "findtag", "forcecrash", "freecrafting",
-		"gatherplayers", "getmaxplayers", "getnumplayers", "give", "giveingredients", "goadventuring", "godmode", "gonext", "goto", "gotoroom", "groundtype", "guitartab",
-		"inst",
-		"knownassert",
-		"list", "listallplayers", "listplayers", "listtag",
-		"maintainall", "maintainhealth", "maintainhunger", "maintainmoisture", "maintainsanity", "maintaintemperature", "makeboat", "makeboatspiral", "makecrabboat", "makegrassboat", "makeinvisible", "mat", "mermking", "mermthrone", "migrateto", "migrationportal", "move",
-		"netstats",
-		"pos", "printpos", "printtextureinfo",
-		"regenerateshard", "regenerateworld", "remote", "remove", "removeall", "removeallwithtags", "removeat", "repeatlastcommand", "reregisterportals", "reset", "rollback", "rotateccw", "rotatecw",
-		"save", "searchprefabs", "sel", "sel_health", "select", "selectnear", "selectnext", "sethealth", "sethunger", "setinspiration", "setmightiness", "setminhealth", "setmoisture", "setrotation", "setsanity", "settemperature", "setwereness", "shellsfromtable", "shutdown", "simphase", "skip", "sounddebug", "sounddebugui", "spawn", "speedmult", "speedup", "startinggear", "startvote", "stopvote", "summonbearger", "summondeerclops", "summonmalbatross", "supergodmode",
-		"teleport", "tile",
-		"worldstatedebug", "showradius",
-	}
-	self.console_edit:AddWordPredictionDictionary({words = prediction_command, delim = "c_", num_chars = 0})
+
+    local should_c = not prediction_command_c
+    -- NOTES(JBK): In production debugcommands is not loaded this package.loaded check is here if a player manually loads it up later.
+    local should_d = not prediction_command_d and package.loaded["debugcommands"]
+
+    if should_c or should_d then
+        if should_c then
+            prediction_command_c = {}
+        end
+        if should_d then
+            prediction_command_d = {}
+        end
+        for k, v in pairs(_G) do
+            if type(v) == "function" then
+                if should_c and k:find("c_") == 1 then
+                    table.insert(prediction_command_c, k:sub(3, -1))
+                elseif should_d and k:find("d_") == 1 then
+                    table.insert(prediction_command_d, k:sub(3, -1))
+                end
+            end
+        end
+    end
+    self.console_edit:AddWordPredictionDictionary({words = prediction_command_c, delim = "c_", num_chars = 0})
+    if prediction_command_d then
+        self.console_edit:AddWordPredictionDictionary({words = prediction_command_d, delim = "d_", num_chars = 0})
+    end
 
 	self.console_edit:SetForceEdit(true)
     self.console_edit.OnStopForceEdit = function() self:Close() end

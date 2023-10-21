@@ -428,6 +428,10 @@ local function MakeDeviceStage(name, client_postinit, master_postinit, construct
 
         MakeSnowCoveredPristine(inst)
 
+        inst.scrapbook_anim = "stage1_idle"
+        inst.scrapbook_specialinfo = "MOONDEVICE"
+        inst.scrapbook_proxy = "moon_device"
+
 		inst.entity:SetPristine()
 
         if client_postinit ~= nil then

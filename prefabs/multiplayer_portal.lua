@@ -77,6 +77,9 @@ local function MakePortal(name, bank, build, assets, prefabs, common_postinit, m
 
         inst:SetDeployExtraSpacing(2)
 
+        inst.scrapbook_specialinfo = "MULTIPLAYERPORTAL"
+        inst.scrapbook_proxy = "multiplayer_portal"
+
         if common_postinit ~= nil then
             common_postinit(inst)
         end
@@ -86,6 +89,8 @@ local function MakePortal(name, bank, build, assets, prefabs, common_postinit, m
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_adddeps = { "moonrockidol", "multiplayer_portal_moonrock_constr_plans" }
 
         inst:SetStateGraph("SGmultiplayerportal")
 
@@ -147,6 +152,13 @@ local STONE_SOUNDS =
 
 local function stone_common_postinit(inst)
     inst.sounds = TheWorld.ismastersim and STONE_SOUNDS or nil
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(-130)
+    end
+
+    inst.scrapbook_inspectonseen = true
 end
 
 local function construction_common_postinit(inst)

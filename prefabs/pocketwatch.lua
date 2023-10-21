@@ -45,8 +45,6 @@ local MOUNTED_CAST_TAGS = {"pocketwatch_mountedcast"}
 local function healfn()
 	local inst = PocketWatchCommon.common_fn("pocketwatch", "pocketwatch_marble", Heal_DoCastSpell, true, MOUNTED_CAST_TAGS)
 
-	inst.scrapbook_specialinfo = "POCKETWATCH_HEAL"
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -139,7 +137,7 @@ local function Revive_OnHaunt(inst, haunter)
 	if haunter:HasTag("pocketwatchcaster") and inst.components.pocketwatch:CastSpell(haunter, haunter) then
 		inst.components.lootdropper:DropLoot()
 	    SpawnPrefab("brokentool").Transform:SetPosition(inst.Transform:GetWorldPosition())
-		inst:Remove() -- cannot withstand the paradox of being haunted by Wanda’s timeline
+		inst:Remove() -- cannot withstand the paradox of being haunted by Wandaï¿½s timeline
 	else
         Launch(inst, haunter, TUNING.LAUNCH_SPEED_SMALL)
 	end
@@ -150,8 +148,6 @@ local function revivefn()
 
 	inst.GetActionVerb_CAST_POCKETWATCH = "REVIVER"
 	inst.pocketwatch_CanTarget = Revive_CanTarget
-
-	inst.scrapbook_specialinfo = "POCKETWATCH_REVIVE"
 
     if not TheWorld.ismastersim then
         return inst
@@ -294,8 +290,6 @@ local function recallfn()
 
 	inst.GetActionVerb_CAST_POCKETWATCH = Recall_GetActionVerb
 
-	inst.scrapbook_specialinfo = "POCKETWATCH_RECALL"
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -405,7 +399,6 @@ local function warpfn()
 	local inst = PocketWatchCommon.common_fn("pocketwatch", "pocketwatch_warp", Warp_DoCastSpell, true, WARP_WATCH_TAGS)
 
 	inst.GetActionVerb_CAST_POCKETWATCH = "WARP"
-	inst.scrapbook_specialinfo = "POCKETWATCH_WARP"
 
     if not TheWorld.ismastersim then
         return inst

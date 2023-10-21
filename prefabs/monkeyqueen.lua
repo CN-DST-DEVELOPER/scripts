@@ -151,6 +151,12 @@ local function fn()
     inst.components.talker.ontalk = ontalk
 
     inst.speech_override_fn = speech_override_fn    
+    inst.scrapbook_anim = "scrapbook"
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(-190)
+    end
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

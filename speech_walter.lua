@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I learned all about tracking in the Pioneers! It went thataway!",
 	ANNOUNCE_HUNT_LOST_TRAIL = "I uh... think I lost the trail...",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "There's too many footprints in this wet ground!",
+    ANNOUNCE_HUNT_START_FORK = "This trail could be dangerous, but a Pinetree Pioneer has no fear!",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "Don't worry Woby, we're gonna catch them by surprise!",
+    ANNOUNCE_HUNT_WRONG_FORK = "Huh... I have the weirdest feeling something's watching me.",
+    ANNOUNCE_HUNT_AVOID_FORK = "Aww, but the other trail looks so much more exciting...",
 	ANNOUNCE_INV_FULL = "I already have too many supplies to carry.",
 	ANNOUNCE_KNOCKEDOUT = "W-Woby...? Oooh... what happened?",
 	ANNOUNCE_LOWRESEARCH = "That wasn't very informative.",
@@ -890,6 +894,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "What was that weird light? We should check it out, Woby!",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I've already filled out my scrapbook.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1828,6 +1834,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "Nothing to see here, folks! Ha ha, get it Woby?",
         CHESSPIECE_TWINSOFTERROR = "Is this one of those sculptures where the eyes follow you around the room?",
         CHESSPIECE_DAYWALKER = "I sure hope we get to see him again!",
+        CHESSPIECE_DEERCLOPS_MUTATED = "I still feel kind of bad for her.",
+        CHESSPIECE_WARG_MUTATED = "They weren't nearly as nice as you, Woby.",
+        CHESSPIECE_BEARGER_MUTATED = "We bearly escaped! Get it?",
 
         CHESSJUNK1 = "I don't think they're going to get up anytime soon.",
         CHESSJUNK2 = "I don't think they're going to get up anytime soon.",
@@ -2204,6 +2213,7 @@ return{
 		KNIGHT = "Just horsing around...",
 		KOALEFANT_SUMMER = "The trail led us right to it.",
 		KOALEFANT_WINTER = "So you're the one who left those tracks!",
+		KOALEFANT_CARCASS = "Should we say a few words, Woby?",
 		KRAMPUS = "Hey! Did you rifle through my supplies?",
 		KRAMPUS_SACK = "It smells... goat-y.",
 		LEIF = "They've come to take their revenge!",
@@ -4909,6 +4919,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "How could it be so destructible?",
 
         WOLFGANG_WHISTLE = "We're ready, coach! Right, Woby?",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Aww, I think that poor Deerclops is sick!",
+        MUTATEDWARG = "That Varg doesn't look so good...",
+        MUTATEDBEARGER = "A zombie Bearger? Neat!",
+
+        LUNARFROG = "I wonder what it's like to see through so many eyes?",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "Poor Deerclops...",
+            BURNING  = "I'm going to miss her.",
+            REVIVING = "Look Woby, she's okay!",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "Why couldn't we be friends?",
+            BURNING  = "D-don't look, Woby...",
+            REVIVING = "Hey, they're getting up!",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "I'm sorry...",
+            BURNING  = "This isn't a fun campfire...",
+            REVIVING = "Back from the dead!",
+        },
+
+        BEARGERFUR_SACK = "We can keep our snacks cold when we go exploring, Woby!",
+        HOUNDSTOOTH_BLOWPIPE = "Don't worry, Woby. Your teeth are safe.",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "The way it just stares at me is so creepy. I love it.",    -- Enabled.
+            NOEYEBALL = "Something is missing. Woby, that eyeball is not a toy!",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Woby, wanna help me put this together?",
+
+        SECURITY_PULSE_CAGE = "It's empty, Woby. Let's find something to put in there.",
+        SECURITY_PULSE_CAGE_FULL = "I wonder if there is a glowing ball trapping badge.",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "Now I can work towards my carpentry badge!",
+            BURNT = "I guess my carpentry badge will have to wait.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "Woby, no paws on the table!",
+            HAS_ITEM = "Woby, no paws on the table!",
+            BURNT = "Someone forgot their fire saftey!",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Sorry Woby, that's not for you.",
+            OCCUPIED = "Sorry Woby, that's not for you.",
+            BURNT = "That's why we should never play with matches.",
+        },
+
+        DECOR_CENTERPIECE = "It's cool. I guess.",
+        DECOR_LAMP = "Turn it off when we tell ghost stories.",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Careful with that, Woby.",
+            EMPTY = "Woby, did you eat the flower?",
+            WILTED = "It looks sad.",
+            FRESHLIGHT = "Oooh, useful.",
+            OLDLIGHT = "We should find a fresh one, Woby!",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "Is it upside down?",
+            UNDRAWN = "Woby, wanna do a pawprint painting?",
+        },
+        DECOR_PORTRAITFRAME = "It really looks like them! Right, Woby?",
+
+        PHONOGRAPH = "It's almost as good as a radio. Almost.",
+        RECORD = "I could listen to this forever!",
+        RECORD_CREEPYFOREST = "It's no Midnight Broadcast, but it's still pretty good.",
+        RECORD_DANGER = "Woby likes to howl along, don't you girl?",
+        RECORD_DAWN = "It's no Midnight Broadcast, but it's still pretty good.",
+        RECORD_DRSTYLE = "Woby likes to howl along, don't you girl?",
+        RECORD_DUSK = "Woby likes to howl along, don't you girl?",
+        RECORD_EFS = "It's no Midnight Broadcast, but it's still pretty good.",
+        RECORD_END = "Oh, that's a good one!",
+        RECORD_MAIN = "Woby likes to howl along, don't you girl?",
+        RECORD_WORKTOBEDONE = "It's no Midnight Broadcast, but it's still pretty good.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Wanna solve a puzzle, Woby?",
+
+        WAGPUNKHAT = "It's going to suck out my brain! Ha ha, probably not.",
+        ARMORWAGPUNK = "I'll be part boy, part machine!",
+        WAGSTAFF_MACHINERY = "Don't you just love junk, Woby? Never know what we'll find!",
+        WAGPUNK_BITS = "Oooh, nice! Wonder what we can do with these.",
+        WAGPUNKBITS_KIT = "Cool! A thingamajigy!",
+
+        WAGSTAFF_MUTATIONS_NOTE = "These notes contain important clues to a mystery, Woby.",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",
@@ -4928,7 +5038,7 @@ return{
 
     EAT_FOOD =
     {
-        TALLBIRDEGG_CRACKED = "If I'm the first one they see, they might think I'm their mom.",
+        TALLBIRDEGG_CRACKED = "I sure miss mom's scrambled eggs...",
 		WINTERSFEASTFUEL = "Mmmm, tastes like a perfectly toasted s'more.",
     },
 }

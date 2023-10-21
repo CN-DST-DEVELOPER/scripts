@@ -1955,6 +1955,8 @@ end
 local _showradius_ent =  nil
 
 function c_showradius(radius, parent)
+    parent = parent or ConsoleWorldEntityUnderMouse() or ConsoleCommandPlayer()
+
     if checknumber(radius) then
         -- Sqrt because Transform applies scaling exponentially.
         --  300: Game Unit to Pixel conversion.
@@ -1982,8 +1984,6 @@ function c_showradius(radius, parent)
             _showradius_ent.AnimState:SetLayer(LAYER_BACKGROUND)
             _showradius_ent.AnimState:SetSortOrder(1)
             _showradius_ent.AnimState:SetAddColour(0, .2, .5, 0)
-
-            _showradius_ent.entity:SetParent(ConsoleCommandPlayer().entity)
         end
 
         if parent ~= nil then

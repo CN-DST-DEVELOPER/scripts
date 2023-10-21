@@ -110,12 +110,42 @@ function DefaultBurntStructureFn(inst)
 		inst.components.constructionsite:DropAllMaterials()
 		inst:RemoveComponent("constructionsite")
 	end
+	if inst.components.inventoryitemholder ~= nil then
+		inst.components.inventoryitemholder:TakeItem()
+		inst:RemoveComponent("inventoryitemholder")
+	end
     if inst.Light then
         inst.Light:Enable(false)
     end
     if inst.components.burnable then
         inst:RemoveComponent("burnable")
     end
+end
+
+function DefaultBurntCorpseFn(inst)
+	if not inst.components.burnable.nocharring then
+		inst.AnimState:SetMultColour(.2, .2, .2, 1)
+	end
+	inst.components.burnable.fastextinguish = true
+	inst:AddTag("NOCLICK")
+	inst.persists = false
+	ErodeAway(inst)
+end
+
+function DefaultExtinguishCorpseFn(inst)
+	--NOTE: nil check burnable in case we reach here via removing burnable component
+	if inst.persists and inst.components.burnable ~= nil then
+		if not inst.components.burnable.nocharring then
+			inst.AnimState:SetMultColour(.2, .2, .2, 1)
+		end
+		inst:AddTag("NOCLICK")
+		inst.persists = false
+		if inst.components.burnable.fastextinguish then
+			ErodeAway(inst)
+		else
+			inst:DoTaskInTime(0.5 + math.random() * 0.5, ErodeAway)
+		end
+	end
 end
 
 local burnfx =
@@ -254,6 +284,45 @@ function MakeLargeBurnableCharacter(inst, sym, offset, scale)
     propagator.acceptsheat = false
 
     return burnable, propagator
+end
+
+function MakeSmallBurnableCorpse(inst, time, sym, offset, scale)
+	local burnable = inst:AddComponent("burnable")
+	burnable:SetFXLevel(1)
+	burnable:SetBurnTime(time or 6)
+	burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym, nil, scale)
+	burnable:SetOnExtinguishFn(DefaultExtinguishCorpseFn)
+	burnable:SetOnBurntFn(DefaultBurntCorpseFn)
+
+	local propagator = MakeSmallPropagator(inst)
+
+	return burnable, propagator
+end
+
+function MakeMediumBurnableCorpse(inst, time, sym, offset, scale)
+	local burnable = inst:AddComponent("burnable")
+	burnable:SetFXLevel(2)
+	burnable:SetBurnTime(time or 8)
+	burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym, nil, scale)
+	burnable:SetOnExtinguishFn(DefaultExtinguishCorpseFn)
+	burnable:SetOnBurntFn(DefaultBurntCorpseFn)
+
+	local propagator = MakeSmallPropagator(inst)
+
+	return burnable, propagator
+end
+
+function MakeLargeBurnableCorpse(inst, time, sym, offset, scale)
+	local burnable = inst:AddComponent("burnable")
+	burnable:SetFXLevel(3)
+	burnable:SetBurnTime(time or 10)
+	burnable:AddBurnFX(burnfx.character, offset or Vector3(0, 0, 1), sym, nil, scale)
+	burnable:SetOnExtinguishFn(DefaultExtinguishCorpseFn)
+	burnable:SetOnBurntFn(DefaultBurntCorpseFn)
+
+	local propagator = MakeMediumPropagator(inst)
+
+	return burnable, propagator
 end
 
 local shatterfx =
@@ -561,6 +630,19 @@ function MakeSmallHeavyObstaclePhysics(inst, rad, height)
     phys:CollidesWith(COLLISION.CHARACTERS)
     phys:SetCapsule(rad, height or 2)
     return phys
+end
+
+function MakePondPhysics(inst, rad, height)
+	inst:AddTag("blocker")
+	local phys = inst.entity:AddPhysics()
+	phys:SetMass(0) --Bullet wants 0 mass for static objects
+	phys:SetCollisionGroup(COLLISION.OBSTACLES)
+	phys:ClearCollisionMask()
+	phys:CollidesWith(COLLISION.ITEMS)
+	phys:CollidesWith(COLLISION.CHARACTERS)
+	phys:CollidesWith(COLLISION.GIANTS)
+	phys:SetCapsule(rad, height or 2)
+	return phys
 end
 
 function RemovePhysicsColliders(inst)

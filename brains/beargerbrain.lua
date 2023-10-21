@@ -30,12 +30,7 @@ local PICKABLE_FOODS =
 }
 
 local function EatFoodAction(inst) --Look for food to eat
-    -- If we don't check that the target is not a beehive, we will keep doing targeting stuff while there's precious honey on the ground
-    if inst.sg:HasStateTag("busy")
-            and not inst.sg:HasStateTag("wantstoeat")
-            and (inst.components.combat ~= nil and
-            inst.components.combat.target ~= nil and
-            not inst.components.combat.target:HasTag("beehive")) then
+	if inst.sg:HasStateTag("busy") and not inst.sg:HasStateTag("wantstoeat") then
         return
     end
 
@@ -44,7 +39,13 @@ local function EatFoodAction(inst) --Look for food to eat
         if target ~= nil then
             return BufferedAction(inst, target, ACTIONS.EAT)
         end
+	else
+		return
     end
+
+	if inst.sg:HasStateTag("busy") then
+		return
+	end
 
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, SEE_FOOD_DIST, nil, NO_TAGS, inst.components.eater:GetEdibleTags())
@@ -66,9 +67,10 @@ end
 local function StealFoodAction(inst) --Look for things to take food from (EatFoodAction handles picking up/ eating)
     -- Food On Ground > Pots = Farms = Drying Racks > Beebox > Mushroom Farm > Look In Fridge > Chests > Backpacks (on ground) > Plants
 
-    if inst.sg:HasStateTag("busy")
-        or (inst.components.inventory ~= nil and
-            inst.components.inventory:IsFull()) then
+	if inst.sg:HasStateTag("busy") or
+		inst.components.inventory == nil or
+		inst.components.inventory:IsFull()
+	then
         return
     end
 
@@ -170,6 +172,9 @@ end
 local BEEHIVE_TAGS = { "beehive" }
 
 local function AttackHiveAction(inst)
+	if inst.components.eater == nil then
+		return
+	end
     local hive = FindEntity(inst, SEE_STRUCTURE_DIST, function(guy)
             return inst.components.combat:CanTarget(guy) and guy:IsOnValidGround()
         end,
@@ -178,7 +183,9 @@ local function AttackHiveAction(inst)
 end
 
 local function ShouldEatFoodFn(inst)
-    if not inst.seenbase then
+	if inst.components.eater == nil then
+		return false
+	elseif not inst.seenbase then
         --check if we're near player base
         local x, y, z = inst.Transform:GetWorldPosition()
         if #TheSim:FindEntities(x, y, z, SEE_STRUCTURE_DIST, BASE_TAGS) >= 2 then
@@ -189,7 +196,7 @@ local function ShouldEatFoodFn(inst)
 end
 
 local function GetHome(inst)
-    return TheWorld.state.season == "summer" and inst.homelocation or nil
+	return TheWorld.state.issummer and inst.components.knownlocations:GetLocation("spawnpoint") or nil
 end
 
 local function GetTargetDistance(inst)
@@ -211,12 +218,11 @@ end
 
 local OUTSIDE_CATAPULT_RANGE = TUNING.WINONA_CATAPULT_MAX_RANGE + TUNING.WINONA_CATAPULT_KEEP_TARGET_BUFFER + TUNING.MAX_WALKABLE_PLATFORM_RADIUS + 1
 local function OceanDistanceTest(inst, target)
-    if inst.cangroundpound and not target:HasTag("beehive") and
-            CanProbablyReachTargetFromShore(inst, target, TUNING.BEARGER_ATTACK_RANGE - 0.25) then
-        return TUNING.BEARGER_ATTACK_RANGE - 0.25
-    else
-        return OUTSIDE_CATAPULT_RANGE
-    end
+	return not inst.components.timer:TimerExists("GroundPound")
+		and not target:HasTag("beehive")
+		and CanProbablyReachTargetFromShore(inst, target, TUNING.BEARGER_ATTACK_RANGE - 0.25)
+		and TUNING.BEARGER_ATTACK_RANGE - 0.25
+		or OUTSIDE_CATAPULT_RANGE
 end
 
 local function InRamDistance(inst, target)
@@ -243,60 +249,64 @@ local BeargerBrain = Class(Brain, function(self, inst)
 end)
 
 function BeargerBrain:OnStart()
+	local ismutated = self.inst:HasTag("lunar_aligned")
+	local root = PriorityNode({
+		WhileNode(
+			function()
+				return not (self.inst.sg:HasStateTag("jumping") or
+							self.inst.sg:HasStateTag("staggered"))
+			end,
+			"<busy state guard>",
+			PriorityNode({
+				IfNode(function() return not ismutated end, "NormalPanic",
+					BrainCommon.PanicTrigger(self.inst)),
 
-    local root =
-        PriorityNode(
-        {
-            -- Liz: Removed offscreen behaviour at Jamie's request, pending a solution to repopulate trees & stuff over time.
-            -- Also, this will need to be done by a periodic task instead since brain updates don't run when the entity is asleep.
-            -- (It does trigger before the entity goes to sleep, so we can probably just have BeargerOffScreen set up its own periodic task)
-            --WhileNode(function() return OutsidePlayerRange(self.inst) end, "OffScreen", BeargerOffScreen(self.inst)),
+				WhileNode(
+					function()
+						if not self.inst.canrunningbutt and self.inst.components.timer:TimerExists("GroundPound") then
+							return false
+						end
+						local target = self.inst.components.combat.target
+						return target ~= nil
+							and not target:HasTag("beehive")
+							and (self.inst.sg:HasStateTag("running") or InRamDistance(self.inst, target))
+					end,
+					"Charge Behaviours",
+					ChaseAndRam(self.inst, MAX_CHASE_TIME, GIVE_UP_DIST, MAX_CHARGE_DIST)),
 
-			BrainCommon.PanicTrigger(self.inst),
+				ChaseAndAttack(self.inst, TUNING.BEARGER_MAX_CHASE_TIME, 60, nil, nil, true, OceanDistanceTest),
 
-            WhileNode(function()
-                    return self.inst.cangroundpound
-                        and self.inst.components.combat.target ~= nil
-                        and not self.inst.components.combat.target:HasTag("beehive")
-                        and (self.inst.sg:HasStateTag("running") or InRamDistance(self.inst, self.inst.components.combat.target))
-                end,
-                "Charge Behaviours", ChaseAndRam(self.inst, MAX_CHASE_TIME, GIVE_UP_DIST, MAX_CHARGE_DIST)),
+				WhileNode(function() return ShouldEatFoodFn(self.inst) end, "At Base",
+					PriorityNode({
+						DoAction(self.inst, EatFoodAction),
+						DoAction(self.inst, StealFoodAction),
+					})),
 
-            ChaseAndAttack(self.inst, TUNING.BEARGER_MAX_CHASE_TIME, 60, nil, nil, true, OceanDistanceTest),
+				DoAction(self.inst, EatFoodAction),
+				DoAction(self.inst, StealFoodAction),
+				DoAction(self.inst, AttackHiveAction, "AttackHive", nil, 7),
 
-            WhileNode(function() return ShouldEatFoodFn(self.inst) end, "At Base",
-                PriorityNode(
-                {
-                    DoAction(self.inst, EatFoodAction),
-                    DoAction(self.inst, StealFoodAction),
-                })),
+				Wander(self.inst,
+					GetHome,
+					GetTargetDistance,
+					{
+						minwalktime = 2,
+						randwalktime = 3,
+						minwaittime = .1,
+						randwaittime = .6,
+					},
+					GetWanderDirection,
+					SetWanderDirection),
 
-            DoAction(self.inst, EatFoodAction),
-            DoAction(self.inst, StealFoodAction),
-            DoAction(self.inst, AttackHiveAction, "AttackHive", nil, 7),
-
-            Wander(self.inst,
-                    GetHome,
-                    GetTargetDistance,
-                    {
-                        minwalktime = 2,
-                        randwalktime = 3,
-                        minwaittime = .1,
-                        randwaittime = .6,
-                    },
-                    GetWanderDirection,
-                    SetWanderDirection
-                ),
-
-            StandStill(self.inst),
-
-        }, .25)
+				StandStill(self.inst),
+			}, 0.25)),
+	}, 0.25)
 
     self.bt = BT(self.inst, root)
 end
 
 function BeargerBrain:OnInitializationComplete()
-    self.inst.components.knownlocations:RememberLocation("spawnpoint", Point(self.inst.Transform:GetWorldPosition()))
+	self.inst.components.knownlocations:RememberLocation("spawnpoint", self.inst:GetPosition(), true)
 end
 
 return BeargerBrain

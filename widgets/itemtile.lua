@@ -6,7 +6,7 @@ local UIAnim = require "widgets/uianim"
 
 local function DoInspected(invitem, tried)
     if ThePlayer then
-        TheScrapbookPartitions:SetInspectedByCharacter(invitem.prefab, ThePlayer.prefab)
+        TheScrapbookPartitions:SetInspectedByCharacter(invitem, ThePlayer.prefab)
     elseif not tried then
         invitem:DoTaskInTime(0, DoInspected, true) -- Delay a frame in case of load order desync only try once and then giveup.
     end
@@ -86,6 +86,7 @@ local ItemTile = Class(Widget, function(self, invitem)
     --self.image:SetClickable(false)
 
 	self:ToggleShadowFX()
+	self:HandleAcidSizzlingFX()
 
     if self.rechargeframe ~= nil then
         self.recharge = self:AddChild(UIAnim())
@@ -212,6 +213,14 @@ local ItemTile = Class(Widget, function(self, invitem)
                 end
             end
         end, invitem)
+        
+    self.inst:ListenForEvent("acidsizzlingchange",
+        function(invitem, isacidsizzling)
+            if not self.isactivetile then
+                self:HandleAcidSizzlingFX(isacidsizzling)
+            end
+        end,
+    invitem)
 
     if not self.ismastersim then
         self.inst:ListenForEvent("stacksizepreview",
@@ -284,6 +293,7 @@ function ItemTile:Refresh()
         else
             self.wetness:Hide()
         end
+        self:HandleAcidSizzlingFX()
     end
 end
 
@@ -482,6 +492,7 @@ function ItemTile:StartDrag()
             self.spoilage:Hide()
         end
         self.wetness:Hide()
+        self:HandleAcidSizzlingFX(false)
         if self.bg ~= nil then
             self.bg:Hide()
         end
@@ -598,6 +609,30 @@ function ItemTile:SetIsEquip(isequip)
 		self.showequipshadowfx = shadowfx or nil
 		self:ToggleShadowFX()
 	end
+end
+
+function ItemTile:HandleAcidSizzlingFX(isacidsizzling)
+    if isacidsizzling == nil then
+        isacidsizzling = self.item:IsAcidSizzling()
+    end
+    if isacidsizzling then
+        if self.acidsizzling == nil then
+            self.acidsizzling = self.image:AddChild(UIAnim())
+            self.acidsizzling:GetAnimState():SetBank("inventory_fx_acidsizzle")
+            self.acidsizzling:GetAnimState():SetBuild("inventory_fx_acidsizzle")
+            self.acidsizzling:GetAnimState():PlayAnimation("idle", true)
+            self.acidsizzling:GetAnimState():SetMultColour(.65, .62, .17, 0.8)
+            self.acidsizzling:GetAnimState():SetTime(math.random())
+            self.acidsizzling:SetScale(.25)
+            self.acidsizzling:GetAnimState():AnimateWhilePaused(false)
+            self.acidsizzling:SetClickable(false)
+        end
+    else
+        if self.acidsizzling ~= nil then
+            self.acidsizzling:Kill()
+            self.acidsizzling = nil
+        end
+    end
 end
 
 return ItemTile

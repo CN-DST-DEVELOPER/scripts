@@ -134,6 +134,7 @@ local function fn()
     inst.AnimState:SetBank("hedgehound_bush")
     inst.AnimState:SetBuild("hedgehound_bush")
     inst.AnimState:PlayAnimation("idle", true)
+    inst.scrapbook_anim = "bush_idle"
 
     inst:AddTag("thorny")
 
@@ -143,6 +144,9 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hidehealth = true
+    inst.scrapbook_adddeps = { "hedgehound" }
 
     inst:AddComponent("inspectable")
 

@@ -128,10 +128,14 @@ local function fn()
 
     MakeSnowCoveredPristine(inst)
 
+    inst.scrapbook_specialinfo = "SHADOWFORGE"
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "proximity_loop"
 
     inst._activecount = 0
     inst._activetask = nil

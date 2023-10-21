@@ -86,6 +86,8 @@ local function fn()
 	inst:SetPhysicsRadiusOverride(0.25)
     inst.Transform:SetEightFaced()
 
+    inst.scrapbook_specialinfo = "BOATMAGNET"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

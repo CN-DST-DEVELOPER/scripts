@@ -74,14 +74,9 @@ local function MakeTackleContainer(name, bank, build, assets)
         local swap_data = {bank = bank, anim = "closed"}
         MakeInventoryFloatable(inst, "med", nil, nil, nil, nil, swap_data)
 
-        if name == "tacklecontainer" then
-            inst.scrapbook_specialinfo = "TACKLECONTAINER"    
-        end
-        if name == "supertacklecontainer" then
-            inst.scrapbook_specialinfo = "SUPERTACKLECONTAINER"
-        end
-
         inst.entity:SetPristine()
+
+        inst:AddTag("portablestorage")
 
         if not TheWorld.ismastersim then
             return inst

@@ -318,6 +318,7 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 		loadingtips = Profile:GetLoadingTipsOption(),
 		defaultcloudsaves = Profile:GetDefaultCloudSaves(),
 		scrapbookhuddisplay = Profile:GetScrapbookHudDisplay(),
+		poidisplay = Profile:GetPOIDisplay(),
 	}
 
 	if IsWin32() then
@@ -643,6 +644,7 @@ function OptionsScreen:Save(cb)
 	Profile:SetMinimapZoomCursorEnabled( self.options.minimapzoomcursor )
 	Profile:SetDefaultCloudSaves( self.options.defaultcloudsaves )
 	Profile:SetScrapbookHudDisplay( self.options.scrapbookhuddisplay )
+	Profile:SetPOIDisplay( self.options.poidisplay )	
 
 	if self.integratedbackpackSpinner:IsEnabled() then
 		Profile:SetIntegratedBackpack( self.options.integratedbackpack )
@@ -769,6 +771,7 @@ function OptionsScreen:Apply()
 	Profile:SetLoadingTipsOption( self.working.loadingtips )
 	Profile:SetDefaultCloudSaves( self.options.defaultcloudsaves )
 	Profile:SetScrapbookHudDisplay( self.options.scrapbookhuddisplay )
+	Profile:SetPOIDisplay( self.options.poidisplay )
 	
 	DoAutopause()
 	local pausescreen = TheFrontEnd:GetOpenScreenOfType("PauseScreen")
@@ -1812,6 +1815,14 @@ function OptionsScreen:_BuildAdvancedSettings()
 			self:UpdateMenu()
 		end
 
+	self.poidisplaySpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.POIDISPLAY, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.POIDISPLAY)
+	self.poidisplaySpinner.OnChanged =
+		function( _, data )
+			self.working.poidisplay = data
+			--self:Apply()
+			self:UpdateMenu()
+		end		
+
 	self.minimapzoomcursorSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.MINIMAPZOOMCURSOR, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.MINIMAPZOOMCURSOR)
 	self.minimapzoomcursorSpinner.OnChanged =
 		function( _, data )
@@ -1913,6 +1924,7 @@ function OptionsScreen:_BuildAdvancedSettings()
 	table.insert( self.left_spinners, self.animatedHeadsSpinner )
     table.insert( self.left_spinners, self.wathgrithrfontSpinner)
 	table.insert( self.left_spinners, self.waltercameraSpinner)
+	table.insert( self.left_spinners, self.poidisplaySpinner)
 
 	table.insert( self.right_spinners, self.consoleautopauseSpinner )
 	table.insert( self.right_spinners, self.craftingmenubufferedbuildautocloseSpinner )
@@ -2427,6 +2439,7 @@ function OptionsScreen:InitializeSpinners(first)
     self.movementpredictionSpinner:SetSelectedIndex(EnabledOptionsIndex(self.working.movementprediction))
 	self.wathgrithrfontSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.wathgrithrfont ) )
 	self.waltercameraSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.waltercamera ) )
+	self.poidisplaySpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.poidisplay ) )
 	self.minimapzoomcursorSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.minimapzoomcursor ) )
 	self.boatcameraSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.boatcamera ) )
 	self.integratedbackpackSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.integratedbackpack ) )

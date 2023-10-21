@@ -47,7 +47,7 @@ function IceOver:OnIceChange()
     while all_up_thresh[self.laststep + 1] ~= nil and
         temp < all_up_thresh[self.laststep + 1] and
         self.laststep < num_steps and
-        (temp < 0 or TheWorld.state.iswinter) do
+        (temp < 0 or TheWorld.state.iswinter or GetLocalTemperature(self.owner) < 0) do
 
         self.laststep = self.laststep + 1
         isup = true

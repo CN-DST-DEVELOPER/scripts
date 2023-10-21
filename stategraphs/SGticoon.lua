@@ -421,6 +421,6 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddHopStates(states, true)
-CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
 
 return StateGraph("titcoon", states, events, "idle", actionhandlers)

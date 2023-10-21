@@ -533,7 +533,7 @@ local function OnLoadPostPass(inst)
     end
 end
 
-local function MakeAltar(name, bank, build, anim, common_postinit, master_postinit, prefabs, work)
+local function MakeAltar(name, bank, build, anim, common_postinit, master_postinit, prefabs, work, scrapbookanim)
     local assets =
     {
         Asset("ANIM", "anim/"..build..".zip"),
@@ -555,8 +555,6 @@ local function MakeAltar(name, bank, build, anim, common_postinit, master_postin
 
         inst.MiniMapEntity:SetPriority(5)
         inst.MiniMapEntity:SetIcon(name..".png")
-
-        inst.scrapbook_specialinfo = "ALTARPLUG"
 
         inst.Light:SetFalloff(LIGHT_FALLOFF)
         inst.Light:SetIntensity(LIGHT_INTENSITY)
@@ -582,6 +580,9 @@ local function MakeAltar(name, bank, build, anim, common_postinit, master_postin
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_specialinfo = "MOONALTAR"
+        inst.scrapbook_anim = scrapbookanim
 
         inst._sounds = sounds[name]
         -- inst._activetask = nil
@@ -703,9 +704,41 @@ local function link_fx_spawner_fn()
     return inst
 end
 
-return MakeAltar("moon_altar", "moon_altar", "moon_altar", "idle1",                 moon_altar_common_postinit,         moon_altar_master_postinit,         moon_altar_prefabs),
-    MakeAltar("moon_altar_cosmic", "moon_altar_crown", "moon_altar_crown", "idle",  nil,                                moon_altar_cosmic_master_postinit,  moon_altar_crown_prefabs),
-    MakeAltar("moon_altar_astral", "moon_altar_claw", "moon_altar_claw", "idle1",       moon_altar_astral_common_postinit,  moon_altar_astral_master_postinit,  moon_altar_astral_prefabs, TUNING.MOON_ALTAR_ASTRAL_COMPLETE_WORK),
-    Prefab("moon_altar_astral_marker_1", markerfn("moon_altar_icon"), nil, moon_altar_astral_prefabs),
-    Prefab("moon_altar_astral_marker_2", markerfn("moon_altar_ward"), nil, moon_altar_astral_prefabs),
-    Prefab("moon_altar_link_fx_spawner", link_fx_spawner_fn, nil, link_fx_spawner_prefabs)
+return
+        MakeAltar(
+            "moon_altar",                   -- name
+            "moon_altar",                   -- bank
+            "moon_altar",                   -- build
+            "idle1",                        -- anim
+            moon_altar_common_postinit,     -- common_postinit
+            moon_altar_master_postinit,     -- master_postinit
+            moon_altar_prefabs,             -- prefabs
+            nil,                            -- work
+            "idle3"                        -- scrapbookanim
+        ),
+        MakeAltar(
+            "moon_altar_cosmic",
+            "moon_altar_crown",
+            "moon_altar_crown",
+            "idle",
+            nil,
+            moon_altar_cosmic_master_postinit,
+            moon_altar_crown_prefabs,
+            nil,
+            "idle"
+        ),
+        MakeAltar(
+            "moon_altar_astral",
+            "moon_altar_claw",
+            "moon_altar_claw",
+            "idle1",
+            moon_altar_astral_common_postinit,
+            moon_altar_astral_master_postinit,
+            moon_altar_astral_prefabs,
+            TUNING.MOON_ALTAR_ASTRAL_COMPLETE_WORK,
+            "idle2"
+        ),
+
+        Prefab("moon_altar_astral_marker_1", markerfn("moon_altar_icon"), nil, moon_altar_astral_prefabs),
+        Prefab("moon_altar_astral_marker_2", markerfn("moon_altar_ward"), nil, moon_altar_astral_prefabs),
+        Prefab("moon_altar_link_fx_spawner", link_fx_spawner_fn,          nil, link_fx_spawner_prefabs  )

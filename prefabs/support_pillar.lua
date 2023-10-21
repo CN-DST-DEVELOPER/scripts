@@ -26,6 +26,54 @@ end
 
 --------------------------------------------------------------------------
 
+local CIRCLE_RADIUS_SCALE = 1888 / 150 / 2 -- Source art size / anim_scale / 2 (halved to get radius).
+
+local function CreateHelperRadiusCircle()
+    local inst = CreateEntity()
+
+    --[[Non-networked entity]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+
+    inst:AddTag("CLASSIFIED")
+    inst:AddTag("NOCLICK")
+    inst:AddTag("placer")
+
+    inst.AnimState:SetBank("firefighter_placement")
+    inst.AnimState:SetBuild("firefighter_placement")
+    inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:SetAddColour(0, .2, .5, 0)
+    inst.AnimState:SetLightOverride(1)
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+    inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+    inst.AnimState:SetSortOrder(3)
+
+    local scale = TUNING.QUAKE_BLOCKER_RANGE / CIRCLE_RADIUS_SCALE -- Convert to rescaling for our desired range.
+
+    inst.AnimState:SetScale(scale, scale)
+
+    return inst
+end
+
+local function OnEnableHelper(inst, enabled)
+    if enabled then
+        if inst.helper == nil then
+            inst.helper = CreateHelperRadiusCircle()
+
+            inst.helper.entity:SetParent(inst.entity)
+        end
+
+    elseif inst.helper ~= nil then
+        inst.helper:Remove()
+        inst.helper = nil
+    end
+end
+
+--------------------------------------------------------------------------
+
 local PHYSICS_RADIUS = 1.45
 local DEPLOY_EXTRA_SPACING = 2.5
 
@@ -518,6 +566,12 @@ local function MakePillar(name, bank, build)
 		inst:SetPrefabNameOverride(name.."_broken")
 		inst:DoTaskInTime(0, RegisterPathFinding)
 
+		-- Dedicated server does not need deployhelper.
+		if not TheNet:IsDedicated() then
+			inst:AddComponent("deployhelper")
+			inst.components.deployhelper.onenablehelper = OnEnableHelper
+		end
+
 		inst.entity:SetPristine()
 
 		if not TheWorld.ismastersim then
@@ -526,6 +580,8 @@ local function MakePillar(name, bank, build)
 
 			return inst
 		end
+
+		inst.scrapbook_anim = "idle"
 
 		inst.suffix = "_4"
 		inst.reinforced = 0
@@ -663,6 +719,8 @@ local function MakeScaffold(name, bank, build)
 		if build ~= "support_pillar" then
 			inst.AnimState:OverrideSymbol("pillar_scaffold", "support_pillar", "pillar_scaffold")
 			inst.AnimState:OverrideSymbol("pillar_scaffold_90s", "support_pillar", "pillar_scaffold_90s")
+
+			inst.scrapbook_overridedata = {{"pillar_scaffold", "support_pillar", "pillar_scaffold"}, {"pillar_scaffold_90s", "support_pillar", "pillar_scaffold_90s"}}
 		end
 
 		if build == "support_pillar_dreadstone" then
@@ -715,34 +773,10 @@ local function placer_override_build_point(inst)
 end
 
 local function placer_postinit_fn(inst)
-	local inner = CreateEntity()
+    local helper = CreateHelperRadiusCircle()
+    helper.entity:SetParent(inst.entity)
 
-	--[[Non-networked entity]]
-	inner.entity:SetCanSleep(false)
-	inner.persists = false
-
-	inner.entity:AddTransform()
-	inner.entity:AddAnimState()
-
-	inner:AddTag("CLASSIFIED")
-	inner:AddTag("NOCLICK")
-	inner:AddTag("placer")
-
-	inner.AnimState:SetBank("firefighter_placement")
-	inner.AnimState:SetBuild("firefighter_placement")
-	inner.AnimState:PlayAnimation("idle")
-	inner.AnimState:SetAddColour(0, .2, .5, 0)
-	inner.AnimState:SetLightOverride(1)
-	inner.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-	inner.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
-	inner.AnimState:SetSortOrder(3)
-
-	local scale = 1888 / 150 / 2 --source_art_size / anim_scale / 2 (halved to get radius)
-	scale = TUNING.QUAKE_BLOCKER_RANGE / scale --convert to rescaling for our desired range
-	inner.AnimState:SetScale(scale, scale)
-
-	inner.entity:SetParent(inst.entity)
-	inst.components.placer:LinkEntity(inner)
+    inst.components.placer:LinkEntity(helper)
 	inst.components.placer.override_build_point_fn = placer_override_build_point
 end
 

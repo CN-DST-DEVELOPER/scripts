@@ -792,15 +792,9 @@ IS_YEAR_OF_THE_SPECIAL_EVENTS =
 
 ---------------------------------------------------------
 -- Reminder: update event_deps.lua
-if WORLD_SPECIAL_EVENT == SPECIAL_EVENTS.CARNIVAL then -- FIXME(JBK): Remove this block when the shadow rift update is done.
-    SPECIAL_EVENT_GLOBAL_PREFABS = { SPECIAL_EVENTS.NONE.."_event_global" }
-    SPECIAL_EVENT_BACKEND_PREFABS = { SPECIAL_EVENTS.NONE.."_event_backend" }
-    SPECIAL_EVENT_FRONTEND_PREFABS = { SPECIAL_EVENTS.NONE.."_event_frontend" }
-else
-    SPECIAL_EVENT_GLOBAL_PREFABS = { WORLD_SPECIAL_EVENT.."_event_global" }
-    SPECIAL_EVENT_BACKEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_backend" }
-    SPECIAL_EVENT_FRONTEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_frontend" }
-end
+SPECIAL_EVENT_GLOBAL_PREFABS = { WORLD_SPECIAL_EVENT.."_event_global" }
+SPECIAL_EVENT_BACKEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_backend" }
+SPECIAL_EVENT_FRONTEND_PREFABS = { WORLD_SPECIAL_EVENT.."_event_frontend" }
 
 FESTIVAL_EVENT_GLOBAL_PREFABS = { WORLD_FESTIVAL_EVENT.."_fest_global" }
 FESTIVAL_EVENT_BACKEND_PREFABS = { WORLD_FESTIVAL_EVENT.."_fest_backend" }
@@ -1056,9 +1050,9 @@ end
 --  sound = "dontstarve/music/music_FE"
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
-    WORLD_SPECIAL_EVENT ~= SPECIAL_EVENTS.CARNIVAL and -- FIXME(JBK): Remove this line when the shadow rift update is done.
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_survivorsguideone"
+    "dontstarve/music/music_FE_riftsthree"
+    --"dontstarve/music/music_FE_survivorsguideone"
     --"dontstarve/music/music_FE_shadowrift"
     --"dontstarve/music/music_FE_lunarrift"
     --"dontstarve/music/music_FE_daywalker"
@@ -1165,6 +1159,8 @@ TECH =
 
 	SHADOWFORGING_ONE = { SHADOWFORGING = 1 },
 	SHADOWFORGING_TWO = { SHADOWFORGING = 2 },
+
+    CARPENTRY_TWO = { CARPENTRY = 2 },
 }
 
 -- See cell_data.h
@@ -1778,6 +1774,7 @@ FORGEMATERIALS =
 {
 	LUNARPLANT = "lunarplant",
 	VOIDCLOTH = "voidcloth",
+    WAGPUNKBITS = "wagpunk_bits",
 }
 
 UPGRADETYPES =
@@ -1947,7 +1944,6 @@ TECH_SKILLTREE_BUILDER_TAG_OWNERS =
 
     syrupcrafter = "wormwood",
     saplingcrafter = "wormwood",
-    berrybushcrafter = "wormwood",
     berrybushcrafter = "wormwood",
     juicyberrybushcrafter = "wormwood",
     reedscrafter = "wormwood",
@@ -2529,6 +2525,12 @@ STORM_TYPES =
     MOONSTORM = 2,
 }
 
+HUNT_ACTIONS = {
+    SUCCESS = 0,
+    PROP = 1,
+    SLEEP = 2,
+}
+
 LOADING_SCREEN_TIP_OPTIONS =
 {
     ALL = 1,
@@ -2596,7 +2598,25 @@ SCRAPBOOK_CATS = {
     "item",
     "food",
     "giant",
+    "thing",
+    "POI",
 }
+
+SPECIAL_SCRAPBOOK_PAGES_LOOKUP =
+{
+    --[[
+    {
+        name = "ID",
+        entries = { "entry1", "entry2", "..." },
+    },
+    ]]
+}
+
+SPECIAL_SCRAPBOOK_PAGES = {}
+
+for i, data in ipairs(SPECIAL_SCRAPBOOK_PAGES_LOOKUP) do
+    SPECIAL_SCRAPBOOK_PAGES[data.name] = i
+end
 
 -- When using a controller or on console, some control IDs are different than on non-console, but use the same tips.
 LOADING_SCREEN_CONTROLLER_ID_LOOKUP =

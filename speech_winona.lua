@@ -522,6 +522,10 @@ return{
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I didn't order lunch to go. Get'em!",
 	ANNOUNCE_HUNT_LOST_TRAIL = "Gah! I lost it.",
 	ANNOUNCE_HUNT_LOST_TRAIL_SPRING = "Err, are those my footprints? Shoot!",
+    ANNOUNCE_HUNT_START_FORK = "This trail looks like a doozy.",
+    ANNOUNCE_HUNT_SUCCESSFUL_FORK = "I think we got the jump on this critter.",
+    ANNOUNCE_HUNT_WRONG_FORK = "I'm gettin' the heebie-jeebies. Somethin's watchin' me.",
+    ANNOUNCE_HUNT_AVOID_FORK = "This trail looks like a cake walk.",
 	ANNOUNCE_INV_FULL = "I only got two hands.",
 	ANNOUNCE_KNOCKEDOUT = "Yeowch! Hello workman's comp!",
 	ANNOUNCE_LOWRESEARCH = "I'll take what I can get.",
@@ -896,6 +900,8 @@ return{
     ANNOUNCE_SHADOW_RIFT_MAX = "I've got a bad feelin'...",
 
     ANNOUNCE_SCRAPBOOK_FULL = "I can't squeeze any more pages in my scrapbook.",
+
+    ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
 
     ANNOUNCE_COACH = 
     {
@@ -1834,6 +1840,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "An eye (statue) for an eye (monster)!",
         CHESSPIECE_TWINSOFTERROR = "A fresh pair of eyes is just what we needed around here!",
         CHESSPIECE_DAYWALKER = "It's so lifelike, I can almost smell the bad breath.",
+        CHESSPIECE_DEERCLOPS_MUTATED = "She's almost a looker.",
+        CHESSPIECE_WARG_MUTATED = "Now this is a pooch I could play with.",
+        CHESSPIECE_BEARGER_MUTATED = "That was one ornery son of a beast.",
 
         CHESSJUNK1 = "A heap of spare parts.",
         CHESSJUNK2 = "A heap of spare parts.",
@@ -2210,6 +2219,7 @@ return{
 		KNIGHT = "Incredible! Let me look at those gears!",
 		KOALEFANT_SUMMER = "Hey! You look tasty!",
 		KOALEFANT_WINTER = "Hey! You look tasty!",
+		KOALEFANT_CARCASS = "Poor thing's dead as a doornail.",
 		KRAMPUS = "Some sort of... festive devil?",
 		KRAMPUS_SACK = "I could carry a whole warehouse in that thing!",
 		LEIF = "The trees have eyes!!",
@@ -4915,6 +4925,106 @@ return{
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Well don't just look at it. Let's get to fixin'.",
 
         WOLFGANG_WHISTLE = "Whatcha need, coach?",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Shoulda wore safety goggles. Or is it goggle?",
+        MUTATEDWARG = "Whose yard did you get out of?",
+        MUTATEDBEARGER = "Grumpy hasn't had his mornin' cup of joe yet.",
+
+        LUNARFROG = "Hop along now, lil' freakshow.",
+
+        DEERCLOPSCORPSE =
+        {
+            GENERIC  = "She's the deerly departed.",
+            BURNING  = "There's no comin' back from that.",
+            REVIVING = "That just ain't right.",
+        },
+
+        WARGCORPSE =
+        {
+            GENERIC  = "I'm sure someone loved this monstrous mutt.",
+            BURNING  = "Is that really necessary?",
+            REVIVING = "There's nothing in the manual about this.",
+        },
+
+        BEARGERCORPSE =
+        {
+            GENERIC  = "Big boy took the ol' dirt nap.",
+            BURNING  = "He'll be smokin' for days.",
+            REVIVING = "Oh boy...",
+        },
+
+        BEARGERFUR_SACK = "Weirdest lunch bucket I've ever seen.",
+        HOUNDSTOOTH_BLOWPIPE = "Shoots dog teeth? What will they think of next?",
+        DEERCLOPSEYEBALL_SENTRYWARD =
+        {
+            GENERIC = "That is one creepy refrigeration unit.",    -- Enabled.
+            NOEYEBALL = "It needs that spooky ol' eye to work.",  -- Disabled.
+        },
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Time to roll up the ol' sleeves!",
+
+        SECURITY_PULSE_CAGE = "Well, there's a whole lotta nothin' inside.",
+        SECURITY_PULSE_CAGE_FULL = "Sure it's bright, but what else does it do?",
+
+		CARPENTRY_STATION =
+        {
+            GENERIC = "I... love you.",
+            BURNT = "You didn't deserve this.",
+        },
+
+        WOOD_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "I don't care if it's fancy, just solidly built.",
+            HAS_ITEM = "It's doin' what tables do.",
+            BURNT = "A shame to see that craftsmanship go to waste.",
+        },
+
+        WOOD_CHAIR =
+        {
+            GENERIC = "Looks sturdy enough.",
+            OCCUPIED = "Looks like that seat's spoken for.",
+            BURNT = "I ain't one to sit around anyway.",
+        },
+
+        DECOR_CENTERPIECE = "Looks like some frou-frou clutter to me.",
+        DECOR_LAMP = "A good lamp will keep ya workin' through the night!",
+        DECOR_FLOWERVASE =
+        {
+            GENERIC = "Lookin' fresh as a daisy!",
+            EMPTY = "Looks nice enough, but it feels kinda empty.",
+            WILTED = "I think it's time to retire this one.",
+            FRESHLIGHT = "It ain't a lamp, but it'll work.",
+            OLDLIGHT = "That's not gonna last much longer.",
+        },
+        DECOR_PICTUREFRAME =
+        {
+            GENERIC = "One of them highbrow \"still life\" pieces, huh?",
+            UNDRAWN = "That frame looks kinda plain with nothin' in it.",
+        },
+        DECOR_PORTRAITFRAME = "It's a pretty good likeness.",
+
+        PHONOGRAPH = "Nothin' like some music to get through the workday faster.",
+        RECORD = "Just plain unsettlin'.",
+        RECORD_CREEPYFOREST = "That's a real toe-tapper!",
+        RECORD_DANGER = "This ain't at all relaxin'.",
+        RECORD_DAWN = "Here we go.",
+        RECORD_DRSTYLE = "She's a doozy.",
+        RECORD_DUSK = "Rather somber, ain't it?",
+        RECORD_EFS = "Here we go.",
+        RECORD_END = "Not my cupa.",
+        RECORD_MAIN = "Here we go.",
+        RECORD_WORKTOBEDONE = "Work up a sweat with this one.",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Some mighty complicated engineering went into this.",
+
+        WAGPUNKHAT = "Love me a steam-powered murder helmet as much as the next gal but clunky much?",
+        ARMORWAGPUNK = "Well ain't that a fancy lil' robo-romper.",
+        WAGSTAFF_MACHINERY = "I bet I could break this stuff down for parts.",
+        WAGPUNK_BITS = "Don't let its looks fool you, these are some high-quality parts!",
+        WAGPUNKBITS_KIT = "Nifty!",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Some interestin' theories here...",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

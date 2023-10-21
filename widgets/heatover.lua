@@ -65,7 +65,7 @@ function HeatOver:OnHeatChange()
 	while all_up_thresh[self.laststep+1] ~= nil and
 		temp > all_up_thresh[self.laststep+1] and
 		self.laststep < num_steps and
-		(temp >= 65 or TheWorld.state.issummer) do
+		(temp >= 65 or TheWorld.state.issummer or GetLocalTemperature(self.owner) >= 65) do
 
 		self.laststep = self.laststep + 1
 		isup = true

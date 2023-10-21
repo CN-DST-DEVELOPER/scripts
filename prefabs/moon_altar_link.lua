@@ -146,11 +146,20 @@ local function fn()
     inst.AnimState:SetBuild("moon_geyser")
     inst.AnimState:SetBank("moon_altar_geyser")
     inst.AnimState:PlayAnimation("stage0_low_idle", true)
+    inst.scrapbook_anim = "stage1_idle"
+    inst.scrapbook_animoffsetx = 12
 
     inst.AnimState:SetLightOverride(1)
 
     inst:AddTag("NOBLOCK")
     inst:AddTag("moon_altar_link")
+
+    inst.scrapbook_specialinfo = "MOONALTARLINK"
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(70)
+    end
 
     inst.entity:SetPristine()
 

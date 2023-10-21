@@ -66,6 +66,8 @@ local function fn()
     inst.AnimState:SetBuild("dock_woodposts")
     inst.AnimState:PlayAnimation("idle1")
 
+    inst.scrapbook_inspectonseen = true
+
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst

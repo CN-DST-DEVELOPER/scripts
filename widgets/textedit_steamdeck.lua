@@ -334,7 +334,7 @@ function TextEdit:OnRawKey(key, down)
         end
 
         if self.OnTextInputted ~= nil then
-            self.OnTextInputted()
+            self.OnTextInputted(down)
         end
     end
 

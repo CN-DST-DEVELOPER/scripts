@@ -310,6 +310,9 @@ local function fn()
         inst.components.deployhelper.onenablehelper = OnEnableHelper
     end
 
+    inst.scrapbook_anim = "idle_on_loop"
+    inst.scrapbook_overridedata = { "swap_meter", "firefighter_meter", "10" }
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

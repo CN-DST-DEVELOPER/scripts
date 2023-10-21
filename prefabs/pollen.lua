@@ -104,7 +104,7 @@ local function fn()
             local vx = .03 * (math.random() - .5)
             local vy = 0
             local vz = .03 * (math.random() - .5)
-            if worldstate.isday and worldstate.temperature > TUNING.WILDFIRE_THRESHOLD then
+            if worldstate.isday and GetTemperatureAtXZ(x, z) > TUNING.WILDFIRE_THRESHOLD then
                 vx = vx * .1
                 vy = .01
                 vz = vz * .1
@@ -134,7 +134,7 @@ local function fn()
         inst.interval = inst.interval + 1
         if 10 < inst.interval then
             inst.interval = 0
-            if worldstate.isday and worldstate.temperature > TUNING.WILDFIRE_THRESHOLD then
+            if worldstate.isday and GetLocalTemperature(inst) > TUNING.WILDFIRE_THRESHOLD then
                 local sin_val = .01 * math.sin(inst.time * .8)
                 effect:SetAcceleration(0, 0, sin_val, 0)
             else

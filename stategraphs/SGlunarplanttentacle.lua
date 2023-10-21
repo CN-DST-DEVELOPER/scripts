@@ -61,7 +61,19 @@ CommonStates.AddFrozenStates(states)
 
 CommonStates.AddSimpleState(states, "attack", "atk", {"attack"}, "attack_pst",
 {
-    FrameEvent(15, function(inst) inst.components.combat:DoAttack() end),
+	FrameEvent(15, function(inst)
+		local target = inst.components.combat.target
+		inst.components.combat:DoAttack()
+		if inst.owner ~= nil and
+			target ~= nil and
+			target.components.combat ~= nil and
+			target.components.combat:TargetIs(inst) and
+			target.components.combat:CanTarget(inst.owner)
+		then
+			--forward aggro back to our owner
+			target.components.combat:SetTarget(inst.owner)
+		end
+	end),
     FrameEvent(18, function(inst) inst.sg:RemoveStateTag("attack") end),
 },
 {

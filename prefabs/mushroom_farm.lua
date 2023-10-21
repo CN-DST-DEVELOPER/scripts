@@ -348,6 +348,8 @@ local function fn()
 
     MakeSnowCoveredPristine(inst)
 
+    inst.scrapbook_specialinfo = "MUSHROOMFARM"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

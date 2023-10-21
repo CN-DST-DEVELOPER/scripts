@@ -53,7 +53,6 @@ local function fn()
     MakeInventoryFloatable(inst, "med", 0.05, {0.8, 0.4, 0.8}, true, -12, floater_swap_data)
 
     inst.scrapbook_subcat = "tool"
-    inst.scrapbook_specialinfo = "FISHINGROD"
 
     inst.entity:SetPristine()
 

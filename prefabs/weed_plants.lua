@@ -505,7 +505,6 @@ local function MakeWeed(weed_def)
         inst:AddTag("farm_plant")
 		inst:AddTag("farm_plant_killjoy")
 		inst:AddTag("weed")
-        inst:AddTag("lunarplant_target")
 		inst:AddTag("plant")
 		inst:AddTag("plantresearchable")
 		inst:AddTag("weedplantstress")
@@ -534,6 +533,9 @@ local function MakeWeed(weed_def)
         if not TheWorld.ismastersim then
             return inst
         end
+
+		inst.scrapbook_overridedata= {"soil01", "farm_soil", "soil01"}
+		inst.scrapbook_anim = "crop_full"
 
 		inst.UpdateResearchStage = UpdateResearchStage
 

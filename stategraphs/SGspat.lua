@@ -70,6 +70,35 @@ local states=
         end,
     },
 
+	State{
+		name = "spawn_shake",
+		tags = { "busy", "invisible", "noattack", "temp_invincible" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("spawn_shake")
+			inst.SoundEmitter:PlaySound("dontstarve/common/deathpoof")
+		end,
+
+		timeline =
+		{
+			FrameEvent(3, function(inst)
+				inst.sg:RemoveStateTag("invisible")
+				inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("temp_invincible")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("bellow", { count = 2 })
+				end
+			end),
+		},
+	},
+
     State{
         name = "shake",
         tags = {"canrotate"},
@@ -87,17 +116,24 @@ local states=
 
     State{
         name = "bellow",
-        tags = {"canrotate"},
+        tags = {"busy", "canrotate"},
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("bellow")
             inst.SoundEmitter:PlaySound(inst.sounds.grunt)
+            inst.sg.statemem.count = data and data.count or nil
         end,
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+            EventHandler("animover", function(inst)
+                if inst.sg.statemem.count ~= nil and inst.sg.statemem.count > 1 then
+                    inst.sg:GoToState("bellow", {count=inst.sg.statemem.count - 1})
+                else
+                    inst.sg:GoToState("idle")
+                end
+            end),
         },
     },
 

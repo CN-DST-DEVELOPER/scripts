@@ -537,7 +537,7 @@ CommonStates.AddWalkStates(
     })
 
 CommonStates.AddFrozenStates(states)
-CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"},
 {
     hop_pre =

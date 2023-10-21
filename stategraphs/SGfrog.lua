@@ -48,19 +48,24 @@ local events=
 local FROG_TAGS = {"frog"}
 local states=
 {
-
     State{
-
         name = "idle",
         tags = {"idle", "canrotate"},
         onenter = function(inst, playanim)
             inst.Physics:Stop()
+
+            local anim = inst.islunar and math.random() <= 0.7 and "idle2" or "idle"
+
             if playanim then
                 inst.AnimState:PlayAnimation(playanim)
-                inst.AnimState:PushAnimation("idle", true)
+                inst.AnimState:PushAnimation(anim, true)
+
+            elseif inst.AnimState:IsCurrentAnimation("idle") or inst.AnimState:IsCurrentAnimation("idle2") then
+                inst.AnimState:PushAnimation(anim, true)
             else
-                inst.AnimState:PlayAnimation("idle", true)
+                inst.AnimState:PlayAnimation(anim)
             end
+
             inst.sg:SetTimeout(1*math.random()+.5)
         end,
 
@@ -72,7 +77,8 @@ local states=
                 local ents = TheSim:FindEntities(x,y,z, 10, FROG_TAGS)
 
                 local volume = math.max(0.5, 1 - (#ents - 1)*0.1)
-                inst.SoundEmitter:PlaySound("dontstarve/frog/grunt", nil, volume)
+                inst.SoundEmitter:PlaySound(inst.sounds.grunt, nil, volume)
+
                 inst.sg:GoToState("idle")
             end
         end,
@@ -104,7 +110,7 @@ local states=
                 inst.components.locomotor:RunForward()
             end ),
             TimeEvent(20*FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve/frog/walk")
+                inst.SoundEmitter:PlaySound(inst.sounds.walk)
                 inst.Physics:Stop()
             end ),
         },
@@ -132,7 +138,7 @@ local states=
                 inst.components.locomotor:WalkForward()
             end ),
             TimeEvent(20*FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve/frog/walk")
+                inst.SoundEmitter:PlaySound(inst.sounds.walk)
                 inst.Physics:Stop()
             end ),
         },
@@ -163,8 +169,8 @@ local states=
 
         timeline=
         {
-            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/frog/attack_spit") end),
-            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/frog/attack_voice") end),
+            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.attack_spit) end),
+            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.attack_voice) end),
             TimeEvent(25*FRAMES, function(inst) inst.components.combat:DoAttack() end),
         },
 
@@ -198,7 +204,7 @@ local states=
 				inst.Physics:SetDamping(5)
                 inst.Physics:Teleport(pt.x,pt.y,pt.z)
 	            inst.DynamicShadow:Enable(true)
-                inst.SoundEmitter:PlaySound("dontstarve/frog/splat")
+                inst.SoundEmitter:PlaySound(inst.sounds.splat)
                 inst.sg:GoToState("idle", "jump_pst")
             end
         end,
@@ -209,7 +215,7 @@ local states=
         tags = {"busy"},
 
         onenter = function(inst)
-            inst.SoundEmitter:PlaySound("dontstarve/frog/grunt")
+            inst.SoundEmitter:PlaySound(inst.sounds.grunt)
             inst.AnimState:PlayAnimation("hit")
             inst.Physics:Stop()
 			CommonHandlers.UpdateHitRecoveryDelay(inst)
@@ -226,7 +232,7 @@ local states=
         tags = {"busy"},
 
         onenter = function(inst)
-            inst.SoundEmitter:PlaySound("dontstarve/frog/die")
+            inst.SoundEmitter:PlaySound(inst.sounds.die)
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
@@ -254,11 +260,11 @@ local states=
 CommonStates.AddSleepStates(states,
 {
 	waketimeline = {
-		TimeEvent(0*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/frog/wake") end ),
+		TimeEvent(0*FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.wake) end ),
 	},
 })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddHopStates(states, true, {loop = "jump"})--, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
-CommonStates.AddSinkAndWashAsoreStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
 
 return StateGraph("frog", states, events, "idle", actionhandlers)

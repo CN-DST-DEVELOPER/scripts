@@ -123,7 +123,7 @@ local function fn(bank, build, anim, minimap, isbackground)
 
     if TheNet:GetServerIsClientHosted() and not (TheShard:IsMaster() or TheShard:IsSecondary()) then
         --On non-sharded servers we'll make these vanish for now, but still generate them
-        --into the world so that they can magically appear in existing saves when sharded
+        --into the world so that they can magically appear in existing saves when sharded        
         RemovePhysicsColliders(inst)
         inst.AnimState:SetScale(0,0)
         inst.MiniMapEntity:SetEnabled(false)
@@ -139,6 +139,16 @@ end
 
 local function closed_fn()
     local inst = fn("cave_entrance", "cave_entrance", "idle_closed", "cave_closed.png", false)
+
+    inst.scrapbook_anim = "idle_closed"    
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("pointofinterest")
+        inst.components.pointofinterest:SetHeight(200)
+        inst.components.pointofinterest:SetShouldShowFn(function(inst)
+            return not inst:HasTag("NOCLICK")
+        end)
+    end
 
     if not TheWorld.ismastersim then
         return inst

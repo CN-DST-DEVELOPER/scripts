@@ -64,6 +64,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "f1"
+
     SetFossilType(inst, math.random(NUM_FOSSIL_TYPES))
 
     inst:AddComponent("stackable")

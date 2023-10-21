@@ -375,6 +375,7 @@ local function fn()
     inst.AnimState:SetBank("mast_01")
     inst.AnimState:SetBuild("boat_mast2_wip")
     inst.AnimState:PlayAnimation("closed")
+    inst.scrapbook_anim = "open_loop"
 
     inst.MiniMapEntity:SetIcon("mast.png")
 
@@ -402,8 +403,11 @@ local function malbatrossfn()
     inst.AnimState:SetBank("mast_malbatross")
     inst.AnimState:SetBuild("boat_mast_malbatross_build")
     inst.AnimState:PlayAnimation("closed")
+    inst.scrapbook_anim = "open_loop"
 
     inst.MiniMapEntity:SetIcon("mast_malbatross.png")
+
+    inst.scrapbook_specialinfo = "MASTMALBATROSS"
 
     inst.entity:SetPristine()
 

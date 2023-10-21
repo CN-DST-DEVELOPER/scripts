@@ -372,6 +372,7 @@ local function create_common_pre(inst, bank, build, radius, max_health, item_col
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
 
     inst.scrapbook_anim = "idle_full"
+    inst.scrapbook_inspectonseen = true
 
     if scale then
         inst.AnimState:SetScale(scale,scale,scale)
@@ -763,6 +764,8 @@ local function pirate_fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_deps = { "pirate_flag_pole", "prime_mate", "powder_monkey" }
 
     inst = create_master_pst(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
 

@@ -203,8 +203,6 @@ local function flare_fn()
     inst.AnimState:SetBuild("flare_large")
     inst.AnimState:PlayAnimation("idle")
 
-    inst.scrapbook_specialinfo = "MEGAFLARE"
-
     MakeInventoryFloatable(inst, "large", nil, {0.65, 0.4, 0.65})
 
     inst:AddTag("donotautopick")

@@ -139,6 +139,7 @@ local function fn()
 	inst.AnimState:SetBank("magician_chest")
 	inst.AnimState:SetBuild("magician_chest")
 	inst.AnimState:PlayAnimation("closed")
+	inst.scrapbook_anim = "closed"
 
 	MakeSnowCoveredPristine(inst)
 
@@ -150,6 +151,8 @@ local function fn()
 	if not TheNet:IsDedicated() then
 		inst:ListenForEvent("showopenfxdirty", OnShowOpenFX)
 	end]]
+
+	inst.scrapbook_specialinfo = "MAGICIANCHEST"
 
 	inst.entity:SetPristine()
 

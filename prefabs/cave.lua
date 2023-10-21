@@ -86,6 +86,7 @@ local prefabs =
     "chessjunk",
     "pandoraschest",
     "sacred_chest",
+    "pond_cave",
 
     -- GROTTO
     "archive_centipede",

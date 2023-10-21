@@ -91,8 +91,6 @@ local function fn()
 	--waterproofer (from waterproofer component) added to pristine state for optimization
 	inst:AddTag("waterproofer")
 
-    inst.scrapbook_specialinfo = "WORTOX_SOUL"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

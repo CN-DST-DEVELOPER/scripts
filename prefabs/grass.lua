@@ -228,6 +228,8 @@ local function grass(name, stage)
         --witherable (from witherable component) added to pristine state for optimization
         inst:AddTag("witherable")
 
+        inst.scrapbook_specialinfo = "NEEDFERTILIZER"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

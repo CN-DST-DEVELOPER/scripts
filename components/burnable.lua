@@ -62,6 +62,7 @@ local Burnable = Class(function(self, inst)
 
     --self.nocharring = false --default almost everything chars
     --self.ignorefuel = false --set true if igniting/extinguishing should not start/stop fuel consumption
+	--self.fastextinguish = false --set true to use fast version of extinguish fx if available
 
     self.task = nil
     self.smolder_task = nil
@@ -121,8 +122,10 @@ end
 -- @param offset The offset from the burning entity/symbol that the effect should appear at
 -- @param followsymbol Optional symbol for the effect to follow
 -- @param followaschild Optional flag to force fx to be a child even when it has a follow symbol
-function Burnable:AddBurnFX(prefab, offset, followsymbol, followaschild, scale)
-    table.insert(self.fxdata, { prefab = prefab, x = offset.x, y = offset.y, z = offset.z, follow = followsymbol, followaschild = followaschild or nil, scale = scale or 1 })
+-- @param scale Optional scale for the fx
+-- @param followlayered Optional flag to follow the symbol's transform and layering
+function Burnable:AddBurnFX(prefab, offset, followsymbol, followaschild, scale, followlayered)
+	table.insert(self.fxdata, { prefab = prefab, x = offset.x, y = offset.y, z = offset.z, follow = followsymbol, followaschild = followaschild or nil, followlayered = followlayered or nil, scale = scale or 1 })
 end
 
 function Burnable:OverrideBurnFXBuild(build)
@@ -194,6 +197,7 @@ end
 
 function Burnable:OnRemoveEntity()
     self:StopSmoldering()
+	self.fastextinguish = true
     self:KillFX()
 end
 
@@ -245,18 +249,19 @@ function Burnable:StartWildfire()
 
         self.smoke = SpawnPrefab("smoke_plant")
         if self.smoke ~= nil then
-            if #self.fxdata == 1 and self.fxdata[1].follow then
-                if self.fxdata[1].followaschild then
+			local fxdata1 = #self.fxdata == 1 and self.fxdata[1] or nil
+			if fxdata1 ~= nil and fxdata1.follow ~= nil then
+				if fxdata1.followaschild then
                     self.inst:AddChild(self.smoke)
                 end
                 local follower = self.smoke.entity:AddFollower()
-                local xoffs, yoffs, zoffs = self.fxdata[1].x, self.fxdata[1].y, self.fxdata[1].z
+				local xoffs, yoffs, zoffs = fxdata1.x, fxdata1.y, fxdata1.z
                 if self.fxoffset ~= nil then
                     xoffs = xoffs + self.fxoffset.x
                     yoffs = yoffs + self.fxoffset.y
                     zoffs = zoffs + self.fxoffset.z
                 end
-                follower:FollowSymbol(self.inst.GUID, self.fxdata[1].follow, xoffs, yoffs, zoffs)
+				follower:FollowSymbol(self.inst.GUID, fxdata1.follow, xoffs, yoffs, zoffs, fxdata1.followlayered)
             else
                 self.inst:AddChild(self.smoke)
             end
@@ -301,11 +306,25 @@ local function DoneBurning(inst, self)
     end
 end
 
+local function OnHealthErodeAway(inst)
+	local self = inst.components.burnable
+	self.fastextinguish = true
+	self:KillFX()
+end
+
 local function OnKilled(inst)
     local self = inst.components.burnable
     if self ~= nil and self:IsBurning() and not self.nocharring then
         inst.AnimState:SetMultColour(.2, .2, .2, 1)
     end
+
+	--@V2C: #HACK, sync up burn fx to health component's auto-ErodeAway
+	if inst.components.health ~= nil and not inst.components.health.nofadeout then
+		if self.task ~= nil then
+			self.task:Cancel()
+		end
+		self.task = inst:DoTaskInTime(inst.components.health.destroytime or 2, OnHealthErodeAway)
+	end
 end
 
 function Burnable:Ignite(immediate, source, doer)
@@ -459,7 +478,7 @@ function Burnable:SpawnFX(immediate)
                     self.inst:AddChild(fx)
                 end
                 fx.entity:AddFollower()
-                fx.Follower:FollowSymbol(self.inst.GUID, v.follow, xoffs, yoffs, zoffs)
+				fx.Follower:FollowSymbol(self.inst.GUID, v.follow, xoffs, yoffs, zoffs, v.followlayered)
             else
                 self.inst:AddChild(fx)
                 fx.Transform:SetPosition(xoffs, yoffs, zoffs)
@@ -483,7 +502,7 @@ function Burnable:FixFX()
         if fx.Follower ~= nil then
             for k, v in pairs(self.fxdata) do
                 if v.prefab == fx.prefab and v.follow ~= nil then
-                    fx.Follower:FollowSymbol(self.inst.GUID, v.follow, v.x + fxoffset.x, v.y + fxoffset.y, v.z + fxoffset.z)
+					fx.Follower:FollowSymbol(self.inst.GUID, v.follow, v.x + fxoffset.x, v.y + fxoffset.y, v.z + fxoffset.z, v.followlayered)
                     break
                 end
             end
@@ -494,7 +513,7 @@ end
 function Burnable:KillFX()
     for i = #self.fxchildren, 1, -1 do
         local fx = self.fxchildren[i]
-        if fx.components.firefx ~= nil and fx.components.firefx:Extinguish() then
+		if fx.components.firefx ~= nil and fx.components.firefx:Extinguish(self.fastextinguish) then
             --remove once the pst animation has finished
             --schedule it as well in case it goes asleep
             fx:ListenForEvent("animover", fx.Remove)

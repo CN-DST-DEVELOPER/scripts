@@ -118,7 +118,6 @@ local function makespore(data)
         inst.AnimState:SetBuild(data.build)
         inst.AnimState:SetBank("mushroom_spore")
         inst.AnimState:PlayAnimation("flight_cycle", true)
-        inst.scrapbook_anim = "flight_cycle"
 
         inst.DynamicShadow:Enable(false)
 
@@ -138,6 +137,10 @@ local function makespore(data)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_anim = "flight_cycle"
+        inst.scrapbook_animoffsety = 65
+        inst.scrapbook_animpercent = 0.36
 
         inst:AddComponent("inspectable")
 

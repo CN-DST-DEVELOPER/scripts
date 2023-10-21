@@ -265,11 +265,11 @@ local function fn_common(tag)
 
     inst.entity:SetPristine()
 
-    inst.scrapbook_removedeps = {"gears"}
-
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_removedeps = {"gears"}
 
     inst.recentlycharged = {}
     inst.Physics:SetCollisionCallback(oncollide)
@@ -480,11 +480,12 @@ local function huskfn()
 
     inst.entity:SetPristine()
 
-    inst.scrapbook_removedeps = {"gears"}
-
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_removedeps = {"gears"}
+    inst.scrapbook_anim = "idle_full"
 
     inst:AddComponent("lootdropper")
     inst:AddComponent("health")

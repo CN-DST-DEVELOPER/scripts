@@ -235,8 +235,6 @@ local function fn()
 
 	inst.playfuelsound = net_event(inst.GUID, "thurible.playfuelsound")
 
-    inst.scrapbook_specialinfo = "THURIBLE"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

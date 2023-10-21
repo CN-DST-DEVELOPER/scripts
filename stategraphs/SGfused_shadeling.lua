@@ -25,6 +25,7 @@ local events =
     end),
 
     EventHandler("do_despawn", function(inst)
+        inst.persists = false
         inst.sg.mem.despawning = true
     end),
 }

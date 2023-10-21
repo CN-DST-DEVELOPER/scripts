@@ -70,8 +70,13 @@ local function fn()
     inst.AnimState:SetBuild("mastupgrade_lamp")
     inst.AnimState:PlayAnimation("full")
 
+    inst.scrapbook_anim = "full"
+    inst.scrapbook_specialinfo = "MASTUPGRADELAMP"
+
     inst:AddTag("NOCLICK")
     inst:AddTag("DECOR")
+
+    inst.scrapbook_inspectonseen = true
 
     inst.entity:SetPristine()
 

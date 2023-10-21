@@ -1,4 +1,4 @@
-Follow = Class(BehaviourNode, function(self, inst, target, min_dist, target_dist, max_dist, canrun, alwayseval)
+Follow = Class(BehaviourNode, function(self, inst, target, min_dist, target_dist, max_dist, canrun, alwayseval, inlimbo_invalid)
     BehaviourNode._ctor(self, "Follow")
     self.inst = inst
     self.target = target
@@ -26,6 +26,7 @@ Follow = Class(BehaviourNode, function(self, inst, target, min_dist, target_dist
 
     self.canrun = canrun ~= false
     self.alwayseval = alwayseval ~= false
+    self.inlimbo_invalid = inlimbo_invalid
     self.currenttarget = nil
     self.action = "STAND"
 end)
@@ -105,8 +106,9 @@ function Follow:Visit()
     if self.status == RUNNING then
         if self.currenttarget == nil
             or not self.currenttarget:IsValid()
-            or (self.currenttarget.components.health ~= nil and
-                self.currenttarget.components.health:IsDead()) then
+            or (self.currenttarget.components.health ~= nil and self.currenttarget.components.health:IsDead())
+            or (self.inlimbo_invalid and self.currenttarget:IsInLimbo())
+        then
             self.status = FAILED
             self.inst.components.locomotor:Stop()
             return

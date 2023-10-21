@@ -72,6 +72,8 @@ local function fn()
 		inst.AnimState:Hide("eye")
 	end
 
+    inst.scrapbook_proxy = "livingtree"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -98,8 +98,6 @@ local function messagebottlefn()
 	MakeInventoryPhysics(inst)
 	MakeInventoryFloatable(inst, "small", -0.04, 1)
 
-	inst.scrapbook_specialinfo = "MESSAGEBOTTLE"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

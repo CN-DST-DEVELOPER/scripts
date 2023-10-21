@@ -436,7 +436,8 @@ local COMPONENT_ACTIONS =
             if right and not inst:HasTag("cooldown") and
                 not inst:HasTag("fueldepleted") and
                 not inst:HasTag("alwayson") and
-                not inst:HasTag("emergency") then
+                not inst:HasTag("emergency") and
+                    inst:HasTag("enabled") then
 				local inventoryitem = inst.replica.inventoryitem
 				local held = inventoryitem ~= nil and inventoryitem:IsHeld()
 				if inst:HasTag("groundonlymachine") and (held or (inst.components.floater ~= nil and inst.components.floater:IsFloating())) then
@@ -644,7 +645,7 @@ local COMPONENT_ACTIONS =
         end,
 
         sittable = function(inst, doer, actions, right)
-            if inst:HasTag("cansit") then
+			if inst:HasTag("cansit") and not inst:HasTag("fire") then
                 table.insert(actions, ACTIONS.SITON)
             end
         end,
@@ -830,6 +831,12 @@ local COMPONENT_ACTIONS =
         yotc_racestart = function(inst, doer, actions, right)
             if right and not (inst:HasTag("burnt") or inst:HasTag("fire") or inst:HasTag("race_on")) then
                 table.insert(actions, ACTIONS.START_CARRAT_RACE)
+            end
+        end,
+
+        inventoryitemholder = function(inst, doer, actions, right)
+            if inst:HasTag("inventoryitemholder_take") and not inst:HasTag("fire") then
+                table.insert(actions, ACTIONS.TAKEITEM)
             end
         end,
     },
@@ -1096,6 +1103,12 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        furnituredecor = function(inst, doer, target, actions)
+            if target:HasTag("furnituredecortaker") then
+                table.insert(actions, ACTIONS.GIVE)
+            end
+        end,
+
         ghostlyelixir = function(inst, doer, target, actions)
             if target:HasTag("ghostlyelixirable") then
                 table.insert(actions, ACTIONS.GIVE)
@@ -1159,6 +1172,8 @@ local COMPONENT_ACTIONS =
                     table.insert(actions, ACTIONS.GIVE)
                 elseif target:HasTag("boatcannon") and not target:HasTag("burnt") and not target:HasTag("fire") and inst:HasTag("boatcannon_ammo") and not target:HasTag("ammoloaded") then
                     table.insert(actions, ACTIONS.BOAT_CANNON_LOAD_AMMO)
+                elseif target:HasTag("inventoryitemholder_give") and not target:HasTag("burnt") and not target:HasTag("fire") then
+                    table.insert(actions, ACTIONS.GIVE)
                 end
             end
         end,
@@ -1795,7 +1810,7 @@ local COMPONENT_ACTIONS =
         end,
 
         fencerotator = function(inst, doer, target, actions, right)
-            if target:HasTag("rotatableobject") and not inst:HasTag("fire") and not inst:HasTag("burnt") then
+            if target:HasTag("rotatableobject") and not inst:HasTag("fire") and not inst:HasTag("burnt") and (not target:HasTag("faced_chair") or target:HasTag("cansit")) then
                 if right then
                     table.insert(actions, ACTIONS.ROTATE_FENCE)
                 end
@@ -2084,7 +2099,7 @@ local COMPONENT_ACTIONS =
         end,
 
         machine = function(inst, doer, actions, right)
-			if right and not inst:HasTag("cooldown") and not inst:HasTag("fueldepleted") then
+			if right and not inst:HasTag("cooldown") and not inst:HasTag("fueldepleted") and inst:HasTag("enabled") then
 				local inventoryitem = inst.replica.inventoryitem
 				local held = inventoryitem ~= nil and inventoryitem:IsHeld()
 				if inst:HasTag("groundonlymachine") and (held or (inst.components.floater ~= nil and inst.components.floater:IsFloating())) then

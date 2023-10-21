@@ -131,6 +131,8 @@ local function fn()
     inst.AnimState:SetBuild("moondial_build")
     inst.AnimState:PlayAnimation("idle_new")
 
+    inst.scrapbook_anim = "idle_new"
+
     inst.Light:Enable(false)
     inst.Light:SetFalloff(.7)
     inst.Light:SetIntensity(0.6)

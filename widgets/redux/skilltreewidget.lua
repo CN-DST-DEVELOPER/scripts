@@ -44,24 +44,29 @@ local SkillTreeWidget = Class(Widget, function(self, prefabname, targetdata, fro
     self.root.infopanel.bg:ScaleToSize(470, 130)
     self.root.infopanel.bg:SetPosition(0, -10)
 
+    self.root.infopanel.activatedbg = self.root.infopanel:AddChild(Image("images/skilltree.xml", "skilltree_backgroundart.tex"))
+    self.root.infopanel.activatedbg:ScaleToSize(470/2.4, 156/3)  -- 196 , 52
+    self.root.infopanel.activatedbg:SetPosition(0, -58)
+
+    self.root.infopanel.activatedtext = self.root.infopanel:AddChild(Text(HEADERFONT, 18, STRINGS.SKILLTREE.ACTIVATED, UICOLOURS.BLACK))
+    self.root.infopanel.activatedtext:SetPosition(0,-62)
+    self.root.infopanel.activatedtext:SetSize(20)
+
     self.root.infopanel.activatebutton = self.root.infopanel:AddChild(ImageButton("images/global_redux.xml", "button_carny_long_normal.tex", "button_carny_long_hover.tex", "button_carny_long_disabled.tex", "button_carny_long_down.tex"))
     self.root.infopanel.activatebutton.image:SetScale(1)
     self.root.infopanel.activatebutton:SetFont(CHATFONT)
-    self.root.infopanel.activatebutton:SetPosition(0,-37)
+    self.root.infopanel.activatebutton:SetPosition(0,-61)
     self.root.infopanel.activatebutton.text:SetColour(0,0,0,1)
     self.root.infopanel.activatebutton:SetScale(0.5)
     self.root.infopanel.activatebutton:SetText(STRINGS.SKILLTREE.ACTIVATE)
 
-    self.root.infopanel.activatedtext = self.root.infopanel:AddChild(Text(HEADERFONT, 18, STRINGS.SKILLTREE.ACTIVATED, UICOLOURS.BLACK))
-    self.root.infopanel.activatedtext:SetPosition(0,-37)
-    self.root.infopanel.activatedtext:SetSize(20)
 
     self.root.infopanel.title = self.root.infopanel:AddChild(Text(HEADERFONT, 18, "title", UICOLOURS.BROWN_DARK))
     self.root.infopanel.title:SetPosition(0,28)
     self.root.infopanel.title:SetVAlign(ANCHOR_TOP)
 
-    self.root.infopanel.desc = self.root.infopanel:AddChild(Text(CHATFONT, 13, "desc", UICOLOURS.BROWN_DARK))
-    self.root.infopanel.desc:SetPosition(0,0)
+    self.root.infopanel.desc = self.root.infopanel:AddChild(Text(CHATFONT, 16, "desc", UICOLOURS.BROWN_DARK))
+    self.root.infopanel.desc:SetPosition(0,-8)
     self.root.infopanel.desc:SetHAlign(ANCHOR_LEFT)
     self.root.infopanel.desc:SetVAlign(ANCHOR_TOP)
     self.root.infopanel.desc:SetMultilineTruncatedString(STRINGS.SKILLTREE.INFOPANEL_DESC, 3, 400, nil,nil,true,6)

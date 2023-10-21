@@ -636,6 +636,7 @@ STRINGS =
             GENERIC = "Learn",
             READ = "Read",
             SCRAPBOOK = "Add to Scrapbook",
+            NOTES = "Study",
         },
         TURNON = "Turn On",
         TURNOFF =
@@ -1776,6 +1777,7 @@ STRINGS =
 
         ANIMAL_TRACK = "Animal Track",
         DIRTPILE = "Suspicious Dirt Pile",
+		KOALEFANT_CARCASS = "Koalefant Carcass",
         KOALEFANT_SUMMER = "Koalefant",
         KOALEFANT_WINTER = "Koalefant",
         TRUNK_SUMMER = "Koalefant Trunk",
@@ -1872,8 +1874,11 @@ STRINGS =
         BLUEPRINT = "Blueprint",
         BLUEPRINT_RARE = "{item} Blueprint",
         SKETCH = "{item} Sketch",
+        SKETCH_SCRAPBOOK = "Sketch",
         TACKLESKETCH = "{item} Advert",
+        TACKLESKETCH_SCRAPBOOK = "Advert",
         COOKINGRECIPECARD = "{item} Recipe Card",
+        COOKINGRECIPECARD_SCRAPBOOK = "Recipe Card",
         BAT = "Batilisk",
         TEAMLEADER = "Team Leader",
         BATWING = "Batilisk Wing",
@@ -2238,6 +2243,9 @@ STRINGS =
 		CHESSPIECE_EYEOFTERROR = "Eye Of Terror Figure",
         CHESSPIECE_TWINSOFTERROR = "Twins of Terror Figure",
         CHESSPIECE_DAYWALKER = "Nightmare Werepig Figure",
+        CHESSPIECE_DEERCLOPS_MUTATED = "Crystal Deerclops Figure",
+        CHESSPIECE_WARG_MUTATED = "Possessed Varg Figure",
+        CHESSPIECE_BEARGER_MUTATED = "Armored Bearger Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2273,6 +2281,9 @@ STRINGS =
 		CHESSPIECE_EYEOFTERROR_BUILDER = "Eye Of Terror Figure",
         CHESSPIECE_TWINSOFTERROR_BUILDER = "Twins of Terror Figure",
         CHESSPIECE_DAYWALKER_BUILDER = "Nightmare Werepig Figure",
+        CHESSPIECE_DEERCLOPS_MUTATED_BUILDER = "Crystal Deerclops Figure",
+        CHESSPIECE_WARG_MUTATED_BUILDER = "Possessed Varg Figure",
+        CHESSPIECE_BEARGER_MUTATED_BUILDER = "Armored Bearger Figure",
 
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
@@ -2287,6 +2298,9 @@ STRINGS =
         CHESSPIECE_GUARDIANPHASE3_SKETCH = "Celestial Champion Figure Sketch",
         CHESSPIECE_MANRABBIT_SKETCH = "Bunnyman Figure Sketch",
         CHESSPIECE_DAYWALKER_SKETCH = "Nightmare Werepig Sketch",
+        CHESSPIECE_DEERCLOPS_MUTATED_SKETCH = "Crystal Deerclops Sketch",
+        CHESSPIECE_WARG_MUTATED_SKETCH = "Possessed Varg Sketch",
+        CHESSPIECE_BEARGER_MUTATED_SKETCH = "Armored Bearger Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -3402,6 +3416,7 @@ STRINGS =
         -- Moon Storms
         WAGSTAFF_NPC = "Grainy Transmission",
         WAGSTAFF_NPC_PSTBOSS = "Grainy Transmission",
+        WAGSTAFF_NPC_MUTATIONS = "Grainy Transmission",
         ALTERGUARDIAN_CONTAINED = "Lunar Essence Extractor",
 
         ALTERGUARDIAN_PHASE1 = "Celestial Champion",
@@ -3737,6 +3752,7 @@ STRINGS =
         DREADSTONE_STACK = "Dreadstone Outcrop",
 
         SCRAPBOOK_PAGE = "Lost Scrapbook Page",
+		SCRAPBOOK_PAGE_FMT = "{name} Scrapbook Page",
 
         -- Wolfgang, Woodie, Wormwood Skill Trees
         LEIF_IDOL = "Treeguard Idol",
@@ -3757,6 +3773,52 @@ STRINGS =
 		SUPPORT_PILLAR_DREADSTONE_BROKEN = "Dreadstone Pillar Wreckage",
 
         WOLFGANG_WHISTLE = "Coaching Whistle",
+
+        -- Rifts 3
+
+        MUTATEDDEERCLOPS = "Crystal Deerclops",
+        MUTATEDWARG = "Possessed Varg",
+        MUTATEDBEARGER = "Armored Bearger",
+
+        LUNARFROG = "Bright-Eyed Frog",
+
+        BEARGERFUR_SACK = "Polar Bearger Bin",
+        DEERCLOPSEYEBALL_SENTRYWARD = "Ice Crystaleyezer",
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Ice Crystaleyezer Kit",
+        HOUNDSTOOTH_BLOWPIPE = "Howlitzer",
+
+        SECURITY_PULSE_CAGE = "Spark Ark",
+        SECURITY_PULSE_CAGE_FULL = "Spark Ark",
+
+        CARPENTRY_STATION = "Sawhorse",
+
+        PHONOGRAPH = "Gramophone",
+        RECORD = "Record",
+        RECORD_CREEPYFOREST = "Creepy Forest",
+        RECORD_DRSTYLE = "D.R. Style",
+        RECORD_EFS = "E.F.S.",
+
+        WOOD_CHAIR = "Wooden Chair",
+        WOOD_STOOL = "Wooden Stool",
+        WOOD_TABLE_ROUND = "Round Wooden Table", -- might want to keep "wood" b/c there might be other table materials
+        WOOD_TABLE_SQUARE = "Square Wooden Table", -- same as above
+        DECOR_CENTERPIECE = "Art?",
+        DECOR_LAMP = "Table Lamp",
+        DECOR_FLOWERVASE = "Table Vase",
+        DECOR_PICTUREFRAME = "Empty Frame",
+        DECOR_PICTUREFRAME_DRAWN = "{item} Drawing",
+        DECOR_PORTRAITFRAME = "Pleasant Portrait",
+
+        ARCHIVE_ORCHESTRINA_MAIN = "Ancient Orchestrina",
+
+        ARMORWAGPUNK = "W.A.R.B.I.S. Armor",
+        WAGPUNKHAT = "W.A.R.B.I.S. Head Gear",
+
+        WAGSTAFF_MACHINERY = "Abandoned Junk",
+        WAGPUNK_BITS = "Scrap",
+        WAGPUNKBITS_KIT = "Auto-Mat-O-Chanic",
+
+        WAGSTAFF_MUTATIONS_NOTE = "Research Notes",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4183,6 +4245,9 @@ STRINGS =
 		CHESSPIECE_EYEOFTERROR_BUILDER = "Its stony gaze reminds you of an evil presence.",
         CHESSPIECE_TWINSOFTERROR_BUILDER = "Double the eyes, double the terror.",
         CHESSPIECE_DAYWALKER_BUILDER = "A stone likeness of a pig-headed prisoner.",
+        CHESSPIECE_DEERCLOPS_MUTATED_BUILDER = "A truly eye-catching sculpture.",
+        CHESSPIECE_WARG_MUTATED_BUILDER = "A rather fetching statue.",
+        CHESSPIECE_BEARGER_MUTATED_BUILDER = "A soul-bearing rendition of a ferocious favorite.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4698,6 +4763,31 @@ STRINGS =
 		SUPPORT_PILLAR_DREADSTONE_SCAFFOLD = "The power of darkness holds up well under pressure.",
         WOLFGANG_WHISTLE = "Let out your inner coach!",
 
+        -- Rifts 3
+
+        BEARGERFUR_SACK = "A portable fridge. Cool.",
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Take a break from sunburn with freezer burn.",
+        HOUNDSTOOTH_BLOWPIPE = "Like biting, but from a distance.",
+
+        CARPENTRY_STATION = "Quit horsing around and make some furniture.",
+
+        WOOD_CHAIR = "A wooden chair to sit on.",
+        WOOD_STOOL = "A wooden stool to sit on.",
+        WOOD_TABLE_ROUND = "A round wooden table to put things on.",
+        WOOD_TABLE_SQUARE = "A square wooden table to put things on.",
+        DECOR_CENTERPIECE = "A centerpiece to show off your excellent taste.",
+        DECOR_LAMP = "A comforting little light.",
+        DECOR_FLOWERVASE = "A nice place to put all your fresh-cut flowers.",
+        DECOR_PICTUREFRAME = "Frame a picture of your favorite belongings.",
+        DECOR_PORTRAITFRAME = "Frame your friends, it's fun!",
+
+        ARMORWAGPUNK = "Kick it into high gear, full steam ahead!",
+        WAGPUNKHAT =   "Look smart, fight smart.",
+        WAGPUNKBITS_KIT = "Your handy-dandy W.A.R.B.I.S. repair tool!",
+
+        PHONOGRAPH = "Sit back, relax, and listen to the soundtrack of your nightmares.",
+        RECORD = "Constant classics on vinyl.",
+
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -4958,6 +5048,11 @@ STRINGS =
                 MED = {"Nothing says autumn like some tasty Fallounder..."},
                 HIGH = {"Would you bring me a Fallounder, dearie?"},
             },
+            MAKE_CHAIR = {
+                LOW = {"(Grumble) my shell is killing me...","Nowhere to sit around here..."},
+                MED = {"There's nowhere to sit and rest this old chitin..."},
+                HIGH = {"What this place really needs is a nice place to sit and chat."},
+            },
     },
 
     HERMITCRAB_INVESTIGATE = {
@@ -4980,6 +5075,21 @@ STRINGS =
                 LOW = {"Fantastic. My old pest was removed by my new pest."},
                 MED = {"Well, glad that's taken care of."},
                 HIGH = {"You really showed that awful plant!"},
+            },
+            MAKE_UNCOMFORTABLE_CHAIR = {
+                LOW = {"You expect me to sit on that rickety thing?"},
+                MED = {"Is that a chair, or an art project gone wrong?"},
+                HIGH = {"Oh. Well... I can tell you worked hard on it, dearie!"},
+            },
+            GIVE_CARPENTRY_BLUEPRINT = {
+                LOW = {"Here. Learn how to build a proper chair."},
+                MED = {"I give you credit for trying, but next time get it right."},
+                HIGH = {"Here, let me give you a few pointers."},
+            },
+            MAKE_CHAIR = {
+                LOW = {"Hmph. Well, at least it looks like it won't fall apart."},
+                MED = {"I didn't take you for a carpenter, much less a half-competent one!"},
+                HIGH = {"It's lovely, dearie! The perfect place to rest my aching shell."},
             },
     },
 
@@ -5091,12 +5201,17 @@ STRINGS =
                 MED = {"Oh... thanks. Here, take this for your trouble."},
                 HIGH = {"Thank you dearie! Here, why don't you take one of these."},
             },
+            MAKE_CHAIR = {
+                LOW = {"Hmph. Well, at least it looks like it won't fall apart."},
+                MED = {"I didn't take you for a carpenter, much less a half-competent one!"},
+                HIGH = {"It's lovely, dearie! The perfect place to rest my aching shell."},
+            },
     },
 
-    HERMITCRAB_STORE_UNLOCK_1 = {{"So do you want to trade?","or are you just wasting my time?"}},
+    HERMITCRAB_STORE_UNLOCK_1 = {{"So do you want to trade?","Or are you just wasting my time?"}},
     HERMITCRAB_STORE_UNLOCK_2 = {{"I miiight have some lures to trade...","if you can afford them."}},
     HERMITCRAB_STORE_UNLOCK_3 = {{"Alright, you've twisted my claw."," I'll show you my GOOD lures."}},
-    HERMITCRAB_STORE_UNLOCK_4 = {{"I've got some new things to trade","but they don't come cheap!"}},
+    HERMITCRAB_STORE_UNLOCK_4 = {{"I've got some new things to trade,","but they don't come cheap!"}},
     HERMITCRAB_STORE_UNLOCK_5 = {{"This old shell must be going soft...","I put something special in the shop."}},
 
     HERMITCRAB_PLANTED_LUREPLANT_DIED = {
@@ -6337,10 +6452,71 @@ STRINGS =
     WAGSTAFF_GOTTAGO1 = "Aha! This selenological anomaly can only mean one thing!",
     WAGSTAFF_GOTTAGO2 = "Now is my chance!",
 
+    -- Script.
+    WAGSTAFF_NPC_DEFEAT_TWO_MORE_MUTATIONS =
+    {
+        "Illuminating! It would greatly aid my research...",
+        "If you could repeat this exemplary performance...",
+        "With another specimen displaying similar mutations.",
+    },
+
+    -- Script.
+    WAGSTAFF_NPC_DEFEAT_ONE_MORE_MUTATION =
+    {
+        "Well done!",
+        "But perhaps one more.",
+        "For scientific accuracy, of course.",
+        "You understand.",
+    },
+    
+    -- Script.
+    WAGSTAFF_NPC_ALL_MUTATIONS_DEFEATED = {
+        "Right. A third specimen. I did ask for another, didn't I?",
+        "You dallied so long I nearly forgot!",
+        "For your troubles, the fruits of our research.",
+        "I think taking it down to the subterranean archives...",
+        "Will prove most enlightening.",
+    },
+
+    -- Random Line.
+    WAGSTAFF_NPC_ANALYSIS_OVER =
+    {
+        "Now, if you'll excuse me, I have much to do.",
+        "Farewell!",
+        "Until next time.",
+        "Best of luck to you! I must be off.",
+    },
+
+    -- Random script.
+    WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED =
+    {
+        {
+            "I have all the data I require from this creature.",
+            "However... I suppose I mustn't let your efforts go unrewarded.",
+        },
+        {
+            "Still at it, are you? I must commend your zeal for research.",
+            "Here, a contribution to your continued studies.",
+        },
+        {
+            "I'm afraid we have nothing more to gain from analyzing this poor creature.",
+            "Take this, as a token of my gratitude for your efforts.",
+        },
+    },
+
+    WAGSTAFF_GOTTOHINT = {
+        "Just a bit more research... I'm close, I'm sure of it!",
+        "A few more samples, yes, that's what I need...",
+        "Now where did I leave my notes? I'm sure they were somewhere around here...",
+        "Onto the next experiment!",
+        "Progress waits for no one!",
+    },
+
     -- Terraria
     EYEOFTERROR_COMING = "You feel an evil presence watching you...",
     EYEOFTERROR_TARGET = "The Eye of Terror turns its gaze toward {player_name}",
     EYEOFTERROR_CANCEL = "The evil presence has subsided.",
+
 
     TWINS_COMING = "This is going to be a terrible night...",
     TWINS_TARGET = "The Twins turn their gaze toward {player_name}",
@@ -6454,6 +6630,19 @@ STRINGS =
 		"HUFF... HUFF...",
         "BETTER... YES, MUCH BETTER.",
 	},
+
+    WARBIS = {
+        -- Well, a rather beautifully intelligent system.
+        START    = "W.A.R.B.I.S. IS ANALYZING...",
+        STAGE1   = "W.A.R.B.I.S. UPGRADING!",
+        STAGE2   = "W.A.R.B.I.S. AMPLIFYING!!",
+        STAGE3   = "W.A.R.B.I.S. EXTREME FUNCTION!!!",
+        
+        STOP     = "W.A.R.B.I.S. TRACKING LOST.",
+        NEW      = "W.A.R.B.I.S. HAS NEW TARGET!",
+        SYNCHING = "W.A.R.B.I.S. IS SYNCHING...",
+        SYNCHED  = "W.A.R.B.I.S. HAS SYNCHED.",
+    },
 }
 
 STRINGS.BUNNYMANNAMES =
@@ -6937,8 +7126,9 @@ STRINGS.UI =
         NEEDSCREATURESCANNING = "Scan living creatures to collect data!",
         NEEDSSKILL = "Learn new skills.",
         NEEDSBOOKSTATION = "Build a bookcase to craft your books.",
-		NEEDSLUNARFORGING_TWO = "Use a Brightsmithy to forge a prototype!",
-		NEEDSSHADOWFORGING_TWO = "Use a Shadowcraft Plinth to create a prototype!",
+        NEEDSLUNARFORGING_TWO = "Can only be forged at a Brightsmithy.",
+        NEEDSSHADOWFORGING_TWO = "Can only be crafted a Shadowcraft Plinth.",
+        NEEDSCARPENTRY_TWO = "Use a Sawhorse to build a prototype!",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
 		NEEDSYOTV = "Available during Year of the Varg!",
@@ -7465,7 +7655,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Skill Spotlight:\nWormwood, Wolfgang, Woodie\nBeta Build",
+		MAINBANNER_BETA_TITLE = "Host of Horrors\nBeta Build",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -7977,7 +8167,7 @@ STRINGS.UI =
 		PROTOTYPERS = "Prototypers & Stations",
 		REFINE = "Refined Materials",
 		WEAPONS = "Weapons",
-		ARMOUR = "Armour",
+		ARMOUR = "Armor",
 		CLOTHING = "Clothing",
 		RESTORATION = "Healing",
 		MAGIC = "Magic",
@@ -8177,9 +8367,10 @@ STRINGS.UI =
         MINIMAPZOOMCURSOR = "Zoom Cursor Focus:",
         VIBRATION = "Vibration:",
         WATHGRITHRFONT = "Wigfrid's Umlauts:",
-        WALTERCAMERA = "Campfire Camera:",
+        WALTERCAMERA = "Campfire Camera:",        
         BOATCAMERA = "Seafaring Camera:",
         BACKPACKMODE = "Backpack Layout:",
+        POIDISPLAY = "Point of Interest Icons:",
         AUTOPAUSE = "Auto-Pause:",
         CONSOLEAUTOPAUSE = "Console Auto-Pause:",
         CRAFTINGAUTOPAUSE = "Crafting Auto-Pause:",
@@ -8196,7 +8387,6 @@ STRINGS.UI =
         TEXTURESTREAMING = "Texture Streaming:",
         THREADEDRENDER = "Threaded Render:",
 		SCREEN_FLASH_INTENSITY = "Screen Flashes:",
-		SCREEN_FLASH_INTENSITY_SWITCH = "Photosensitivity Mode:",
         DYNAMIC_TREE_SHADOWS = "Canopy Shadows:",
 		INVERTCAMERAROTATION = "Camera Rotation",
         RESTART_TEXTURE_STREAMING_TITLE = "Restart Required",
@@ -8293,7 +8483,6 @@ STRINGS.UI =
             DISTORTION = "Allows you to turn off screen distortions in the game, especially notable during moments of insanity.",
             BLOOM = "Increases the visual intensity of lights.",
             SCREEN_FLASH_INTENSITY = "Control the intensity of screen flashes during explosions and lightning strikes.",
-			SCREEN_FLASH_INTENSITY_SWITCH = "Control the intensity of flashing effects during explosions and lightning strikes.",
             DYNAMIC_TREE_SHADOWS = "Renders the ground shadow while under a canopy.",
 			DISPLAYAREA = "Maximize the screen size on your display.",
 			INVERTCAMERAROTATION = "Flips the camera rotation direction.",
@@ -8307,6 +8496,7 @@ STRINGS.UI =
             CONSOLEAUTOPAUSE = "Allows the server to auto-pause while the console screen is open.",
             DEFAULTCLOUDSAVES = "Chooses whether new saves will be stored in the cloud or not by default.",
 			COMMANDWHEEL = "Allows you to control your player movement and the Command / Emote Wheel independently.",
+            POIDISPLAY = "Hide all the Point of Interest Icons.",
     },
 
     },
@@ -14738,8 +14928,8 @@ STRINGS.SKILLTREE = {
         BLOOMING_TRAPBRAMBLE_TITLE = "Bramble Trap Specialist",
         BLOOMING_TRAPBRAMBLE_DESC = "Reset nearby Bramble Traps while in full bloom.",
 
-        ARMOR_BRAMBLE_TITLE = "Bramble Husk Specialist", --TODO
-        ARMOR_BRAMBLE_DESC = "Bramble Husk will release spikes when you hit your target 3 times without being attacked.", --TODO
+        ARMOR_BRAMBLE_TITLE = "Bramble Husk Specialist",
+        ARMOR_BRAMBLE_DESC = "Every three-hit attack streak you land without taking damage triggers a burst of spikes from your Bramble Husk.",
 
         BUGS_TITLE = "Bee Kind",
         BUGS_DESC = "Bees and Butterflies will tolerate Wormwood, unless provoked.",
@@ -14760,11 +14950,11 @@ STRINGS.SKILLTREE = {
 STRINGS.SCRAPBOOK = {
     CATS = {
         FOOD = "Food",
-        CREATURES = "Creature",
+        CREATURES = "Creatures",
         ITEMS = "Items",
         GIANTS = "Giants",
         THINGS = "Things",
-        POI = "POI",
+        POI = "Points of\nInterest", --POI
         BIOMES = "Biomes",
         SEASONS = "Seasons",
     },
@@ -14788,7 +14978,7 @@ STRINGS.SCRAPBOOK = {
         HAT = "Hat",
         BATTLESONG = "Battlesong",
         MUTATOR = "Mutator",
-        CONTAINER = "Container",
+        CONTAINER = "Storage",
         FARMPLANT = "Farm Plant",
         WALL = "Wall",
         TURF = "Turf",
@@ -14801,14 +14991,22 @@ STRINGS.SCRAPBOOK = {
         PIG = "Pig",
         BIRD = "Bird",
         INSECT = "Insect",
-        SHELL = "shell",
+        SHELL = "Shell",
+        HAUNTEDTOY = "Haunted Toy",
+        STRUCTURE = "Structure",
+        TREE = "Tree",
+        ATRIUM = "Ancient",
+        SEAFARING = "Seafaring",
+        CRAFTINGSTATION = "Crafting Station",
+        BACKPACK = "Backpack",
+        RIDING = "Beefalo Riding",
     },
 
     SANITYDESC ={
         NEGHIGH = "VERY SCARY",
         NEGMED = "QUITE SCARY",
-        NEGLOW = "A LITTLE SCARY",
-        POSLOW = "A LITTLE CALMING",
+        NEGSMALL = "A LITTLE SCARY",
+        POSSMALL = "A LITTLE CALMING",
         POSMED = "QUITE CALMING",
         POSHIGH = "VERY CALMING",
     },
@@ -14840,10 +15038,14 @@ STRINGS.SCRAPBOOK = {
     DATA_USES = " USES",
     DATA_ARMOR_ABSORB = "ABSORBS ",
     DATA_WETNESS = "STOPS ",
-    DATA_PERSEC = "/SEC",
+    DATA_PERSEC = " / SEC",
+    DATA_PERMIN = " / MIN",
     DATA_SEWABLE = "REPAIRED\nBY SEWING",
     DATA_FLOAT_RANGE = "CAST RANGE ",
     DATA_FLOAT_ACCURACY = "ACCURACY ",
+    DATA_NOBREAK = "DOES NOT BREAK",
+    DATA_SPLASHDAMAGE = " SPLASH DAMAGE",
+    DATA_REPAIRABLE = "REPAIRED BY",
 
     DATA_LURE_CHARM = "LURE CHARM ",
     DATA_LURE_DIST = "BONUS RANGE +",
@@ -14854,9 +15056,26 @@ STRINGS.SCRAPBOOK = {
 
     NEW_SCRAPBOOK_ENTRY = "Scrapbook\nUpdated",
     CLEARFLASH = "Clear all \"NEW\"",
-    DATA_DAYS =" DAYS",
+    DATA_SECONDS = " SECONDS",
+    DATA_MINUTE = " MINUTE",
+    DATA_MINUTES = " MINUTES",
+    DATA_DAY = " DAY",
+    DATA_DAYS = " DAYS",
     DATA_CRAFTING = "CRAFTABLE",
-    DATA_LIGHTBATTERY = "Emits Light",
+    DATA_LIGHTBATTERY = "EMITS LIGHT",
+
+    DATA_WORKABLE_HAMMER = "CAN BE HAMMERED",
+    DATA_WORKABLE_CHOP = "CAN BE CHOPPED",
+    DATA_WORKABLE_DIG = "CAN BE DUG",
+    DATA_WORKABLE_MINE = "CAN BE MINED",
+
+    DATA_PICKABLE = "CAN BE PICKED",
+    DATA_STEWER = "CAN PREPARE FOOD",
+    DATA_FISHABLE = "CAN BE FISHED",
+    DATA_HARVESTABLE = "CAN BE HARVESTED", 
+    DATA_BURNABLE = "CAN BE BURNED", 
+    DATA_NON_PLAYER_FOOD = "NON-SURVIVOR FOOD",
+    DATA_INSULATION = " INSULATION",
 
     NOTE_SHADOW_ALIGNED = "SHADOW ALIGNED",
     NOTE_LUNAR_ALIGNED = "LUNAR ALIGNED",
@@ -14872,7 +15091,7 @@ STRINGS.SCRAPBOOK = {
         CHESTER = "Things can be stored in Chester much like a treasure chest.",
         HUTCH = "Things can be stored in Hutch much like a treasure chest.",
         BEEFALO = "Watch out for an aggressive mating season.\n\nFeed and care for one of these beasts, and maybe you can saddle them.",
-        BERNIE_ACTIVE = "A powerful friend when Willow's mind approaches insanity.",
+        BERNIE = "A powerful friend when Willow's mind approaches insanity.",
         CANARY = "Sensitive to vapours, they tend to die when monstrous poisons are detected nearby.",
         POLLYROGERS = "Gathers loot nearby.",
         MOLE = "Ever played \"Whack-A-Mole\"? What a great game.",
@@ -14885,7 +15104,7 @@ STRINGS.SCRAPBOOK = {
         BEEHAT = "The protection this hat offers only really works on Bees and Bee-like creatures.",
         HIVEHAT = "Makes scary things around you relaxing instead.",
         ARMORBONE = "Every 5 seconds, one incoming hit will be completely ignored.",
-        BONEHAT = "Wearing this will drive you instantly insane; even the shadows will tolerate you.",
+        SKELETONHAT = "Wearing this will drive you instantly insane; even the shadows will tolerate you.",
         ARMORBRAMBLE = "This thorny husk deals its damage when attacked.",
         ARMORDREADSTONE = "This armor slowly repairs itself.",
         DREADSTONEHAT = "This helm slowly repairs itself.",
@@ -14903,8 +15122,8 @@ STRINGS.SCRAPBOOK = {
         BATTLESONG_HEALTHGAIN = "Nearby friends will heal when fighting. Wigfrid will heal a little more too.",
         BATTLESONG_SANITYGAIN = "Nearby friends will gain sanity when fighting. Wigfrid will gain a little more too.",
         BATTLESONG_FIRERESISTANCE = "Reduce fire damage by 34%.",
-        BATTLESONG_TAUNT = "Draw the attention of nearby enemies.",
-        BATTLESONG_PANIC = "Panic nearby enemies.",
+        BATTLESONG_INSTANT_TAUNT = "Draw the attention of nearby enemies.",
+        BATTLESONG_INSTANT_PANIC = "Panic nearby enemies.",
         BEEFBELL = "Name and bond with one Beefalo at a time. Bonded Beefalo will follow the holder, even into caves and offline.",
         PLANTABLE_FERTILIZE = "This needs some fertilizing after planting.",
         SCANDATA = "Data is used to craft Circuits for WX-78.",
@@ -14941,7 +15160,7 @@ STRINGS.SCRAPBOOK = {
         PURPLESTAFF = "Teleports targets to a random location or to a fueled Telelocator Focus.",
         BLUESTAFF = "Shoots freezing projectiles.",
         REDSTAFF = "Shoots projectiles that ignite targets on fire.",
-        ARMORLUNARPLANT = "Reflects damage back at Shadow Aligned enemies.",
+        ARMORLUNARPLANT = "Reflects damage back at enemies and even more for ones that are Shadow Aligned.",
         LUNARPLANTHAT = "Glows in the dark and augments the Brightshade Staff with 2 more projectile bounces.\nAdds +5 Planar Damage to weapons with Planar Damage.",
         DENBEDAZZLER = "Bedazzle a Spider Den to pacify the spiders nearby. Bedazzled dens do not grow.",
         TOWNPORTALTALISMAN = "When another survivor is channeling a Lazy Deserter, use this to teleport to them.",
@@ -14983,13 +15202,13 @@ STRINGS.SCRAPBOOK = {
         PIGTOKEN = "Given to the Pig King to initiate a Wrestling Match.",
         WINTERSFEASTCOOKEDFOODS = "Captures the spirit of food when this is put on a Winter's Feast Table. The more, the merrier.",
         GUNPOWDER = "Will explode for 200 damage when lit.",
-        MOONSTORMGOGGLESHAT = "Improves vision in a storm.\n\nWill help locate mysterious holograms.",
+        MOONSTORM_GOGGLESHAT = "Improves vision in a storm.\n\nWill help locate mysterious holograms.",
         BALLOONHAT = "Protects from lightning strikes.",
         BEEFALOHAT = "Makes the wearer friendly to Beefalo in heat.",
         BUSHHAT = "Wearer can hide under the bush and will not be attacked by creatures as long as they didn't see the survivor hide.",
-        MONKEYMEDIUMHAT = "Reduces collision damage and decay damage on boats by half.",
-        MONKEYSMALLHAT = "Wearer will perform boat activities faster and uses half as much oar durability.",
-        POLLYROGERSHAT = "Polly Roger will fly down and follow the wearer, fetching nearby items.",
+        MONKEY_MEDIUMHAT = "Reduces collision damage and decay damage on boats by half.",
+        MONKEY_SMALLHAT = "Wearer will perform boat activities faster and uses half as much oar durability.",
+        POLLY_ROGERSHAT = "Polly Roger will fly down and follow the wearer, fetching nearby items.",
         MERMHAT = "Merm will treat the wearer like a merm.",
         DESERTHAT = "Improves vision in a storm.",
         ALTERGUARDIANHAT = "When sanity is above 85%, Attacking will summon a minor Gestalt that also attacks the target for 42 damage, but costs 1 sanity each attack.\n\nIt is a source of light when worn. Spores stored in the hat can alter its light color.",                
@@ -14997,7 +15216,7 @@ STRINGS.SCRAPBOOK = {
         FEATHERHAT = "Roughly doubles the number of birds that will land near the wearer.",
         MUSHHAT = "Reduces hunger by 25%. Periodically Spawns Mushroom Spores.",
         PLANTREGISTRYHAT = "Researching garden plants at different stages of growth adds to the Plant Registery.",
-        NUTRIENTHAT = "Researching garden plants at different stages of growth adds to the Plant Registery.\n\nWearer can see the quantity of nutrients in farm soil.",
+        NUTRIENTSGOGGLESHAT = "Researching garden plants at different stages of growth adds to the Plant Registery.\n\nWearer can see the quantity of nutrients in farm soil.",
         ICEHAT = "Wearer's wetness will rapidly rises up to 50%. Slows the wearer by 10%.",
         BATNOSEHAT = "Restores 3.9 Hunger every 5 seconds.",
         MINERHAT = "Provides light for nearly one day.",
@@ -15006,7 +15225,7 @@ STRINGS.SCRAPBOOK = {
         KELPHAT = "As a Merm, Wurt reverses the sanity loss into sanity gain.",
         SPIDERHAT = "Up to 10 Spiders nearby will follow the wearer, but creatures who attack spiders will also attack the wearer.\n\nDoes not work on Spiders spawned by a Spider Queen.",
         ANTLIONHAT = "The wearer will dig up turf they are standing on and place turf when it is loaded with turf items.",
-        SPIDERHEALER = "Heals Webber for 8 Health and spiders in an area for 80 Health.",
+        SPIDER_HEALER = "Heals Webber for 8 Health and spiders in an area for 80 Health.",
         HEALINGSALVE = "Heals 20 Health.",
         BANDAGE = "Heals 30 Health.",
         SCRAPBOOKPAGE = "Adds missing information to your Scrapbook",
@@ -15014,8 +15233,8 @@ STRINGS.SCRAPBOOK = {
         MAPSCROLL = "Contains map data of the survivor who created it. Used to share map information.",
         MARBLEBEAN = "Can be planted in the ground.",
         MESSAGEBOTTLE = "Some messages are notes, some are maps to special locations.",
-        LANTERN = "This item creates light for its duration.\n\nIt does not break when its duration is finished and can be refueled.",
-        OPALSTAFF = "Creates a polar light the cools survivors and gives light for 2 day.",
+        LANTERN = "This item creates light for its duration.\n\nIt does not break when its duration is finished and can be refuled.",
+        OPALSTAFF = "Creates a Polar Light.",
         MOONROCKIDOL = "When used at a Celestial Portal, the survivor can change to a different survivor.",
         MOSQUITOSACK = "Can be used to heal 8 health.",
         GHOSTFLOWER = "Used by Wendy to craft Ghostly Elixirs.",
@@ -15071,7 +15290,7 @@ STRINGS.SCRAPBOOK = {
         WX78MODULE_MOVESPEED = "Plugs into WX78's circuit board.\n\nRequires 6 sockets and raises movment speed by 25%.",
         WX78MODULE_MOVESPEED2 = "Plugs into WX78's circuit board.\n\nRequires 2 sockets.\nThe first raises movement speed by 25%.\nThe second raises movement speed by 15%.\nThe third raises movement speed by 10%.\nSo the maxmimum speed boost can be 50%.",
         WX78MODULE_HEAT = "Plugs into WX78's circuit board.\n\nRequires 3 sockets and raises body temperature 20 degrees, increases spoil rate of inventory by 25% and increases drying rate by 10%. Will also warm nearby survivors.",
-        WX78MODULE_NIGHVISION = "Plugs into WX78's circuit board.\n\nRequires 4 sockets and lets the user see in the dark. Turns on at night and when entering the Caves.",
+        WX78MODULE_NIGHTVISION = "Plugs into WX78's circuit board.\n\nRequires 4 sockets and lets the user see in the dark. Turns on at night and when entering the Caves.",
         WX78MODULE_COLD = "Plugs into WX78's circuit board.\n\nRequires 3 sockets and lowers body temperature 20 degrees and decreases spoil rate of inventory by 25%. Will also cool nearby survivors.\n\nIf WX78's wetness reaches 95%, it will drop to 0% and 2 Ice will be spawned.",
         WX78MODULE_TASER = "Plugs into WX78's circuit board.\n\nRequires 2 sockets and deals 20 electrical damage to WX78's attackers.\n\nThis module also makes WX78 immune to electrical damage.",
         WX78MODULE_LIGHT = "Plugs into WX78's circuit board.\n\nRequires 3 sockets and creates light.",
@@ -15089,7 +15308,7 @@ STRINGS.SCRAPBOOK = {
         COMPASS = "Will reveal users location on the map to other survivors also holding a Compass.",
         CUTLESS = "Knocks items out of targets inventory.",
         WATERINGCAN = "Adds 25 points of moisture to Garden Soil per use.\n\nCan also put out fires and stop smouldering.",
-        FENCEROTATOR = "Rotates rotatable structures like fences and signs.",
+        FENCEROTATOR = "Rotates rotatable structures like fences, signs and chairs.",
         HOE = "Use on Garden Soil to create dirt piles where survivors can plant seeds.",
         SADDLEHORN = "Removes saddles from a Beefalo without reducing saddle durability.",
         DUMBBELLRED = "When equipped Wolfgang can Lift to raise his Mightiness.\n\nWhen thrown it creates fire where it lands.",
@@ -15122,11 +15341,172 @@ STRINGS.SCRAPBOOK = {
         FLOAT = "Used with a Sea Fishing Rod.",
         BUNDLE = "Can be unwrapped to release items inside.",
         BUNDLEWRAP = "Can package up to 4 stacks of items into one item that can be unpacked later.",
-        SPICEGARLIC = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Garlic reduces the damage they take to their health by 33%.\n\nDuration 4 minutes.",
-        SPICESUGAR = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Honey Crystals doubles their rate of Minign Chopping and Hammering.\n\nDuration 4 minutes.",
-        SPICECHILI = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Chili Flakes adds 20% damage to their attacks.\n\nDuration 4 minutes.\n\nAlso raises temperature 15 degrees for 15 seconds.",
-        SPICESALT = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Seasoning Salt grants 25% more healing for healing effects.\n\nDuration 4 minutes.",
+        SPICE_GARLIC = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Garlic reduces the damage they take to their health by 33%.\n\nDuration 4 minutes.",
+        SPICE_SUGAR = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Honey Crystals doubles their rate of Mining Chopping and Hammering.\n\nDuration 4 minutes.",
+        SPICE_CHILI = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Chili Flakes adds 20% damage to their attacks.\n\nDuration 4 minutes.\n\nAlso raises temperature 15 degrees for 15 seconds.",
+        SPICE_SALT = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Seasoning Salt grants 25% more healing for healing effects.\n\nDuration 4 minutes.",
+        BLUEPRINT = "It teaches you how to build a specific thing.",
 
+        -- things
+        ATRIUMGATE = "A broken stone ring that has an empty socket at the base.",
+        ATRIUMRUBBLE = "A crumbling object with writing that can be inspected.",
+        ANIMALTRACK = "A footprint of an animal that was walking somewhere.",
+        ARCHIVERESONATOR = "An mysterious device that burns arrows into the dirt.",
+        TENTACLEPILLARHOLE = "A hole leading to a tunnel that leads somewhere else.",
+        BOATCANNON = "Can be loaded with cannoballs.\n\nOnce loaded, it can be aimed to fire. The direction can be changed by standing next it from differnet sides before aiming.",
+        SACREDCHEST = "A container with 6 slots. Could be a 6 item combination lock, only Metheus knows.",
+        TREASURECHEST = "A container with 9 slots.",
+        MINOTAURCHEST = "A container with 12 slots.",
+        DRAGONFLYCHEST = "A fireproof container with 12 slots.",
+        DAYWALKERPILLAR = "Can be mined down to reveal a darker core made of harder material.",
+        LUNARTHRALLPLANT = "Wraps itself around a growing plant blocking it from the survivors.",
+        MASTUPGRADELAMP = "This item creates light for its duration.\n\nIt does not break when its duration is finished and can be refueled.",
+        STAFFLIGHT = "Works like a campfire for its duration, creating light and heat and will ignite things nearby. It can also be used to cook food.",
+		STAFFCOLDLIGHT = "Cools survivors and gives light for 2 days.",
+        COLDFIRE = "Works like a campfire, but makes things colder instead of heating them.",
+        MOONSTORMSTATIC = "An experiment being worked on by a mysterious hologram that requires the survivors help.",
+        FARMPLOW = "Digs a tile of ground into farm soil that can be hoed to grow seeds into plants.",       
+        WATERTREEPILLAR = "This tree has a great canopy of leaves that shades the ground in an area bellow it and offers 35% protection from rain and cools survivor a small amount.",
+        TREE = "Standing near a tree offers 35% protection from rain and cools survivor a small amount.",
+        LOSTTOY = "Ghostly apparition of a spirit's lost toy.",
+        STATUEGLOMMER = "A strange statue, reflecting the light of the moon during the day.",
+        NEEDFERTILIZER = "Needs fertilization if transplanted.",
+        HOTSPRING = "Hotsprings are like baths for some people.",
+        EYETURRET = "A tower that shoots a ranged attack at hostile creatures and regenerates 12 Health a second.",
+        MOON_ALTAR_ROCK = "An object trapped inside moon rock.",
+        BOATBUMPERKELP = "Absorbs collision damage of the boat it is mounted on. Can be repaired with Kelp.",
+        BOATBUMPERSHELL = "Absorbs collision damage of the boat it is mounted on. Can be repaired with Broken Shells.",
+        OCEANTREE = "Standing near a tree offers 35% protection from rain and cools survivor a small amount.\n\nWith help, it can grow to gigantic size.",
+        MASTUPGRADELIGHTNINGCONDUCTOR = "Lightning that would strike nearby will instead strike this, charging it.",
+        ALTERGUARDIANCONTAINED = "A contraption used by mysterious hologram.",
+        LAVAPOND = "Raises the heat of Survivors nearby and will ignite nearby objects on fire.",
+        SCULPTURE = "An incomplete sculpture.",
+        NIGHTMARELIGHT = "When these emit light they become scarier draining 10 Sanity a second, and when fully illuminated they drain 15 sanity a second.",
+        SANITYROCK = "A strange object that reacts to the sanity of those around it.",
+        OCEANTRAWLER = "A container with 4 slots that eventually fills with fish. Once full, over time there is a chance the fish will break the net and escape.\n\nCan be filled with bait for a better chance of catching fish.",
+        PONDCAVE = "If filled with acid, this pond will crust over with Nitre.",
+        PUMPKINLANTERN = "Creates a small amount of light while it lasts.",
+        SHADOWRIFTPORTAL = "A one way door of shadow that grows over time and then expires to pop up somewhere else some time later.",
+        LUNARRIFTPORTAL = "A one way door of moon energy that grows over time and then expires to pop up somewhere else some time later.",
+        CRITTERDEN = "Survivors can craft a pet from here to follow them around.",
+        MERMTHRONE = "A nearby Merm will take up residence here and if fed, will grow into a King of Merms.",
+        LUNARRIFTCRYSTAL = "A particularly hard material. Tools without special qualities may bounce off sometimes.",
+        GROTTOPOOL = "The Moon Crater dirt infused water will form Moon Glass crystals if the water is clear and the light is right.",
+        MUSHROOMSPROUT = "Strange mushroom stalks that grant the Toadstool extra strength, toughness and speed.",
+        SCIENCEPROTOTYPER = "Standing near this device will provide the survivor with new things they can craft.\n\nCrafting something new for the first time gives a boost of 15 Sanity.\n\nOnce an item is crafted, the survivor will know how to craft that item even away from the machine.",
+        ANCHOR = "When the anchor hits the bottom of the water, it will cause drag on the boats speed usually stopping it. The deeper the water, the longer the anchor will take to hit the bottom, and longer it will be to wheel it back up.",
+        ARCHIVESECURITYDESK = "When powered and a survivor walks nearby, this device will release a ball of energy that then begins roaming the Archive Maze.",
+        CROCKPOT = "A 4 slot container that will receive ingredients for food.\n\nPlacing 4 items in the container will allow them to be cooked creating some kind of food depending on the items put in to begin with.",
+        ARCHIVERUNESTATUE = "An old object with writing that can be inspected.",
+        CRAFTINGSTATION = "Standing near this device will provide the survivor with new things they can craft.",
+        BEEBOX = "If there are 6 or more flowers around a bee box, bees will produce honey inside the bee box.",
+        BEEFALOGROOMER = "A survivor can hitch a bonded beefalo to this groomer, and then add or change the Beefalo's clothing.",
+        BIRDCAGE = "A bird can be placed in this cage.\n\nMake sure to feed the bird.\n\nIf the bird is fed fruit or vegetables, the bird will pass out seeds from those crops.\n\nIf the bird is fed meats, it may lay an egg.",
+        BOOKSTATION = "A 20 slot container for Books and papyrus.\n\nBooks inside restore 1 durability every 30 seconds, double if Wickerbottom is close by.\n\nAlso, the library works like an Alchemy Engine, providing nearby survivors with new things they can craft.",
+        LUNARFORGE = "Standing near this device will provide the survivor with new things they can craft that are based on Pure Brilliance.",
+        SHADOWFORGE = "Standing near this device will provide the survivor with new things they can craft that are based on Pure Horror.",
+        PORTABLETENT = "Sleeping in the tent restores 1 Sanity and 2 health per second, but costs 1 Hunger per second.\n\nAs a Pinetree Pioneer, it costs Walter 1 Hunger every 2 seconds instead.\n\nAlso wetness is reduced 1 per second as well temperature is raised for 40 Degrees by 1 per second.",
+        CARTOGRAPHYDESK = "Allows survivors to craft Map Scrolls to exchange their map information.\n\nUsing Blueprints, Sketches, Costume Patterns, Scrapbook Pages, Adverts or Recipe Cards on this will turn them into blank Papyrus.",
+        MOONALTAR = "Standing near this device will provide the survivor with new things they can craft.",
+        COMPOSTINGBIN = "Can receive up to 6 \"wet\" and \"dry\" items. When it has at least 2 items, it begins composting.\n\nThe more items it has the faster it will produce compost.\n\nIt works faster if it has a ballance of \"wet\" and \"dry\" items.",
+        COMPOST = "Will add 24 Nutrients when used on Farm Soil.",
+        MEATRACK = "Certain items can be put on the rack and begin drying. After drying for some time, the item will turn into a dried version of itself.",
+        COLDFIREPIT = "Works like a Fire Pit, but makes things colder instead of heating them.",
+        FIREPIT = "While fueled, it creates light and heat.\n\nIt can also cook food into their cooked versions.\n\nIs not removed when its fuel is consumed.",
+        CAMPFIRE = "While fueled, it creates light and heat.\n\nIt can also cook food into their cooked versions.\n\nIs removed when its fuel is used up.",
+        WATERPUMP = "When placed on a boat, it can be manually operated  to draw water from the ocean to spray on nearby fires and smoldering items.",
+        TROPHYSCALEFISH = "Survivors can put a fish in the bowl and it will show its weight.\n\nOnce full, only heavier fish will go in the scale and will kick out the lighter fish.",
+        ARCHIVEDISPENCER = "An ancient device that ejects strange relics.",
+        SCARECROW = "Keeps crows away, so that Canaries will come instead.\n\nYou can also dress it in skins collected in your wardrobe.",
+        HERMITHOUSE = "The house of a Crabby Hermit that looks like it could use a fix up.",
+        CATCOONDEN = "The den of a Catcoon and the place they store items they have carried off.\n\nThose items can be picked up here, but the Catcoon won't like it.",
+        ICEBOX = "A container with 9 slots that can hold food items.\n\nItems inside will expire half as fast.",
+        FIRESUPPRESSOR = "Can be turned on and off. While fueled and on, if a fire appears within its range, it will fling a snowball at it to put it out.",
+        LIGHTNINGROD = "Lightning that would strike nearby will instead strike this, charging it.",
+        MOONDEVICE = "A complex contraption to contain a geyser of energy that has several stages of construction.",
+        MADSCIENCELAB = "Standing near this device will provide the survivor with new Experiments they can craft.",
+        MAGICIANCHEST = "A 12 slot container that is actually a singular storage location that all \nmagic storage\n items access.",
+        --TOPHAT_MAGICIAN = "A 12 slot container that is actually a singular storage location that all \nmagic storage\n items access.",
+        SEWINGMANNEQUIN = "Survivors can place equip slot items on this mannequin, and then they can use it to quick swap those items with what they are currently equipped with.",
+        WINTERSFEASTOVEN = "Standing near this device will provide the survivor with special crafting options of \"Winters Feast food\" they can start cooking at this oven.",
+        MAST = "It can be quickly unfurled and furled with effort. When unfurled the sail increases the boats forward velocity by 2.5.\n\nEach mast placed is 30% less efficient than the last.\n\nThe Steering Wheel can be used to rotate the forward direction of the Mast.",
+        RESURECTIONSTATUE = "Once constructed, a single survivor can attune themselves to it for the cost of 40 Health.\n\nAfter attuning, when the survivor becomes as ghost, they can use the special button on the screen to respawn at the Effigy's location and it is destroyed.",
+        MIGHTYGYM = "A structure constructable by Wolfgang to increase his Might by lifting at the right timing.\n\nIt requires two heavy objects be placed on its platforms to function. The higher the quality of the heavy objects, the more Might Wolfgang will get with each lift.",
+        MOONDIAL = "The level of water reflects the current and upcoming state of the moon, overflowing with water during a full moon.",
+        MUSHROOMLIGHT = "A container with 4 slots that will accept \nlight\n objects like Lightbulbs. The more items it has, the larger a radius of light it will create.",
+        MUSHROOMFARM = "Requires some kind of mushroom or spore planted on it to start growing new mushrooms.\n\nIt takes nearly 4 days for it to reach maximum yield of Mushrooms when harvested.\n\nAfter being harvested 4 times it must be fertilized with a Living Log.",
+        BOATMAGNET = "This structure must first be paired with a Nautopilot Beacon.\n\nAfter it is paired, it will pull itself towards the beacon.\n\nIf on a boat, it will increase the velocity of the boat in its direction.",
+        NIGHTLIGHT = "When fueled, it creates light and drains Sanity of survivors around it at a rate or 3 per minite in the day and 8 per minute at night.",
+        SENTRYWARD = "This device is a marker for the minimap as well it will keep an area of the minimap around it updated live.",
+        FOSSILSTALKER =  "The fossilized skeleton of a strange beast.\n\nPaleontology is hard and it is hard to put old bones back together. Not all of the finished products are correctly assembled.",
+        PIGTORCH = "A structure that creates light when fueled.\n\nPig Guards nearby will keep it fueled.",
+        WINCH = "When constructed on a boat, its claw can be lowered into the water to grab objects deep under the water. If it finds something to grab, it will reel it up to the boat.",
+        PORTABLECOOKPOT = "A 4 slot container that will receive ingredients for food.\n\nPlacing 4 items in the container will allow them to be cooked creating some kind of food depending on the items put in to begin with.\n\nIt can be dismantled back into an inventory item.",
+        PORTABLEBLENDER = "Standing near this device will provide the survivor with new Seasonings they can craft.",
+        PORTABLESPICER = "A container with 2 slots. One for a prepared food dish and one for a Seasoning.\n\nIf filled with one of each, it will spice the food with the provided seasoning.",
+        SCULPTINGTABLE = "When an item of Cut Stone, Marble or Moon Glass is placed on the table, a nearby survivor will be able to craft the material into a chosen sculpture.",
+        TROPHYSCALEOVERSIZEDVEGGIES = "Survivors can put a vegetable in the basket. If it is an oversized vegetable, it will show its weight.\n\nOnce full, only heavier vegetables will go in the scale and will kick out the lighter one.",
+        RAINOMETER = "Once constructed it will indicate the weather or very soon to be weather.",
+        RUINS_CHAIR = "A chair. You can sit in it.",
+        SALTBOX = "A container with 9 slots that will accept food ingredient items.\n\nIt quadruples the time before the food will spoil",
+        SALTLICK = "A constructed Saltlick will attract nearby Beefalo and other herd like animals.\n\nThey will lick the saltlick, eventually depleting it.\n\nBeefalo who use the saltlick will pause their domestication decay.",
+        DRAGONFLYFURNACE = "Provides a small amount of light and a large amount of heat like a campfire.",
+        SIESTAHUT = "Useable in the day.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.\n\nWill cool the survivor's temperature to 40 degrees. ",
+        HOMESIGN = "When placed, it allows the survivor to write a message that can be read by themselves or other survivors later.",
+        SISTURN = "A 4 slot container that can hold petals.\n\nWhen full of petals it raises nearby survivors Sanity by 25 per minute.\n\nAs well, Abigail's health regenerates 4x faster.\n\nWhent he petals rot, they will drop out of the container onto the ground as rot.",
+        SPIDERDEN = "Creates a patch of webbing on the ground near it that slows survivors and some creatures that walk on it.\n\nComes in several sizes and grows to fit its spider population.",
+        STEERINGWHEEL = "When deployed on a boat, a survivor can use it to rotate the boats direction.",
+        TACKLESTATION = "Standing near this device will provide the survivor with new Lures and Floats they can craft.",
+        TENT = "A survivor can use the tent at Dusk or Night.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.\n\nWill cool the survivor's temperature to 15 degrees. ",
+        TURFCRAFTINGSTATION = "Standing near this device will provide the survivor with new Turf they can craft.",
+        TOWNPORTAL = "At the cost of 15 Sanity, a survivor can activate the device and then consume 40 Sanity per minute while they keep it active. A second survivor can use another Lazy Deserter or a Desert Stone to teleport to the active one. The teleport costs 50 Sanity.",
+        WINTEROMETOR = "This device tells you the current temperature between 0 and 35 degrees.\n\nIt turns blue during the Winter.",
+        DUSTMOTHDEN = "If it is encrusted with Thulecite it can be mined off.",
+        FISHBOX = "When placed on a boat or docks it is a 20 slot container that will hold sea life. Fish in the container will slowly unspoil.",
+        WARDROBE = "A survivor can add, remove and change their outfit with collected skins.",
+        MASTMALBATROSS = "It can be quickly furled and unfurled with effort. When unfurled the sail increases the boats forward velocity by 4.\n\nEach mast placed is 30% less efficient than the last.\n\nThe Steering Wheel can be used to rotate the forward direction of the Mast.",
+        WINONACATAPULT = "In order to operate it must be powered by a nearby Generator or G.E.M.erator.\n\nWhen powered, it will automatically attack hostile creatures in range.",
+        WINONABATTERYHIGH = "Gems must be socketed in order to have power. Each gem socketed adds 1/3 of the total charge available.\n\nWhen fully charged it has enough power to operate one device for 6 days.",
+        WINONABATTERYLOW = "When fully charged, it has enough power to operate one device for 1 day.",
+        WINONASPOTLIGHT = "When powered, it will shine a spotlight on the nearest survivor.\n\nIf there are more than 1 spotlight and more than one survivor nearby, they will priortize having different targets.",
+        TABLEWINTERSFEAST = "Only special Winter's Feast dishes can be placed on this table.\n\nWhen the \"food\" on this table is \"eaten\" it gives a Winter's Cheer buff to the survivor.\n\nThe buff heals the survivor 0.5 Health per second, 10 Sanity per minute and 75 Hunger per day as well as halting the regular hunger drain.\n\nThe buff's duration is based on how grand the feast is. More tables connected together, more survivors feasting together and  a varied number of dishes will increase the duration of the buff.",
+        TELEBASE = "This device requires 3 purple gems to be active\n\nA survivor that uses a Telelocator Staff will teleport to the nearest active Telelocator Focus and consume the gems.",
+        TOADSTOOLCAP = "It can be chopped. Go ahead and chop it.\n\nPlease chop it.",
+        TUMBLEWEED = "These bounce around the desert and collect junk along the way.\n\nAll sorts of crazy junk.\n\nYou'd be surprised.",
+        MONKEYISLANDPORTAL = "A entrance into the world from somewhere, Monkeys and other debris keep dropping out of it.",
+        WALLS = "Can be repaired using the inventory wall items.\n\nCan be build up 4 levels.",
+        WALRUSCAMP = "A hunter's camp designed for Winter use.",
+        WORMHOLE = "Jumping into this hole costs 15 points of Sanity.\n\nWhere will it come out?",
+        LUNARPLANTKIT = "Will restore durability of tools and weapons crafted with Brightshade Husks.",
+        VOIDCLOTHKIT = "Will restore durability of tools and weapons crafted with Void Cloth.",
+        MOONROCKSEED = "Standing near this device will provide the survivor with new items they can craft.",
+        VOIDCLITHSCYTHE = "This tool will Reap harvestables in an area around it, not just a single item.",
+        ANTLIONSINKHOLE = "Survivors will be slowed trying to walk across these.\n\nSomething must be making the ground weaker.",
+        BEARGERFUR_SACK = "A carriable container with 6 slots that can hold prepared food.\n\nThe food stored in it will be preserved for a long time.",
+        DEERCLOPSEYEBALL_SENTRYWARD = "Makes the surrounding environment cool, if holding a Deerclops Eyeball.\n\nWildfires will not occur nearby, also preventing plant withering. It affects how quickly things dry out, including soil moisture, and how quickly they perish.\n\nCreates Mini Glaciers around itself over time.",
+        ARCHIVESWITCH = "How many Survivors does it take to change a lightbulb?",
+        ORCHESTRINA = "Found deep in the long-forgotten archives of an ancient civilization, this noteworthy device is as melodious as it is mysterious. Solving its riddle might just be the key to unlocking a wellspring of ancient knowledge.",        
+        MOONALTARLINK = "It feels like there's a storm coming...",
+        MOONBASE = "\"'Neath full moon's light, ye place the key;\nA rod whose call the stars doth heed.\nBut be ye warned, 'fore prize be claimed,\nSurvive the horde, lest ye be maimed.\"",
+        CHARLIE_STAGE_POST = "A gift graciously bestowed to you by the Queen of the Constant, to enrich your sad, futile little lives. She was even kind enough to prepare costumes and a script!",
+        OASISLAKE = "With this prime waterfront real estate in an otherwise unforgiving desert, Survivors can build their summer homes and take a break from deadly heat, wildfires, and dehydration!",
+        HERMITCRAB = "This cantankerous crustacean isn't the easiest to get along with, but with a bit of time and care, you might just discover that there's more to her underneath that hard outer shell.",
+        PIGKING = "Ruling his village with a cloven hoof, this head of swine is known to be firm but fair in his dealings with outsiders.",
+        MONKEYQUEEN = "This banana-obsessed monarch has a gift for lifting curses, and presiding over her motley crew of privateering primates.",
+        RESURRECTIONSTONE = "Tired of getting dead? Leave your worries behind by finding a handy Touch Stone!",
+        BEEQUEENHIVE = "This enormous and extremely pokable beehive is packed with sweet honey and other surprises.",
+        MULTIPLAYERPORTAL = "Enter and re-enter the amazing Constant again and again through this perennial portal.",
+        ARMORWAGPUNK = "\"Well, A Rather Beautifully Intelligent System.\" Uses a complicated assortment of cogs and circuitry for computing.\n\nOnce a target has been selected, as long as it stays in range, the W.A.R.B.I.S. begins calculating optimal performance to fight the target.\n\nThe armor improves the wearer's speed as it analyzes the target, ending at a 30% speed boost.\n\nWhen combined with the W.A.R.B.I.S. headgear, the two will sync up for a few moments sharing target information.",
+        WAGPUNKHAT   = "\"Well, A Rather Beautifully Intelligent System.\" Uses a complicated assortment of cogs and circuitry for computing.\n\nOnce a target has been selected, as long as it stays in range, the W.A.R.B.I.S. begins calculating optimal performance to fight the target.\n\nThe head gear improves the wearer's damage as it analyzes the target, ending at a 20% damage increase.\n\nWhen combined with the W.A.R.B.I.S. armor, the two will sync up for a few moments sharing target information.\n\nWearing the W.A.R.B.I.S. Head Gear also provides the wearer with a Dramatically Updating Diagram (or D.U.D.) which provides information on which target is currently being analyzed and what level the W.A.R.B.I.S. has reached.",
+        WAGSTAFF_MACHINERY = "Seems like someone was just working here. Whatever they were making, I guess they finished it.",
+        WAGSTAFF_MUTATIONS_NOTE = "\n\"Day 56 - Lunar Mutations Study\"\n\n\"It seems as though these strange entities that emerged from the rifts are in search of living hosts... or perhaps once living.\"\n\n\"NOTE: The following creatures warrant immediate study as I suspect they may be the most viable as hosts:\"\n\n• Frog\n• Pengull\n• Varg\n• Koalefant\n• Deerclops\n\n\"Other possible Rift entity host candidates:\"\n\n• Grass Gekko\n• Hound\n• Bearger\n• Mosling\n",
+
+    },
+
+    -- Full name: "{name} Scrapbook Page"
+    SPECIAL_SCRAPBOOK_PAGES =
+    {
+        UNKNOWN = "Lost",
     },
 }
 

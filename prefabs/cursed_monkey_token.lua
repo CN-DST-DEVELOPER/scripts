@@ -62,8 +62,6 @@ local function fn()
     inst.AnimState:SetBuild("cursed_beads")
     inst.AnimState:PlayAnimation("idle1")
 
-    inst.scrapbook_specialinfo = "CURSEDMONKEYTOKEN"
-
     inst:AddTag("cattoy")
     inst:AddTag("monkey_token")
     inst:AddTag("nosteal")
@@ -78,6 +76,9 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_tex = "cursed_beads4"
+    inst.scrapbook_specialinfo = "CURSEDMONKEYTOKEN"
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.canonlygoinpocket = true

@@ -151,6 +151,8 @@ local function fn()
     inst.AnimState:PlayAnimation("eggnest", false)
 	inst.AnimState:SetFinalOffset(-1)
 
+    inst.scrapbook_anim = "eggnest"
+
     inst:AddTag("antlion_sinkhole_blocker")
 
     inst.entity:SetPristine()

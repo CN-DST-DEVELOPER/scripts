@@ -222,6 +222,7 @@ local function basefn(build, loot_table_name, child_name)
     inst.AnimState:SetBank("lobster_den")
     inst.AnimState:SetBuild(build)
     inst.AnimState:PlayAnimation("full")
+    inst.scrapbook_anim = "eyes_loop"
 
     MakeInventoryFloatable(inst, "med", 0.1, {1.1, 0.9, 1.1})
     inst.components.floater.bob_percent = 0

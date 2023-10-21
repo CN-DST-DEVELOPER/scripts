@@ -34,19 +34,26 @@ end
 
 function Friendlevels:DoRewards(target)
     local gifts = {}
-    for i, reward in ipairs(self.queuedrewards) do
-        if reward.level == nil then
-            gifts = ConcatArrays(gifts, self.defaultrewards(self.inst, target, reward.task))
-        else
+    for _, reward in ipairs(self.queuedrewards) do
+        if reward.level then
             gifts = ConcatArrays(gifts, self.levelrewards[reward.level](self.inst, target, reward.task))
+        else
+            gifts = ConcatArrays(gifts, self.defaultrewards(self.inst, target, reward.task))
         end
+    end
+
+    if self.specifictaskreward then
+        for _, reward in ipairs(self.specifictaskreward) do
+            table.insert(gifts, SpawnPrefab(reward))
+        end
+        self.specifictaskreward = nil
     end
 
     self.queuedrewards = {}
     return gifts
 end
 
-function Friendlevels:CompleteTask(task,doer)
+function Friendlevels:CompleteTask(task, doer)
     local defaulttask = false
 
     if not self.friendlytasks[task].complete and self.level < #self.levelrewards then
@@ -92,10 +99,10 @@ function Friendlevels:OnLoad(data)
 end
 
 function Friendlevels:LoadPostPass(newents, data)
-	if data ~= nil and data.taskscomplete ~= nil then
-		for i,task in ipairs(self.friendlytasks) do
-			if data.taskscomplete[i] then
-				task.complete = data.taskscomplete[i].complete
+	if data and data.taskscomplete then
+		for taskindex, task in ipairs(self.friendlytasks) do
+			if data.taskscomplete[taskindex] then
+				task.complete = data.taskscomplete[taskindex].complete
 			end
 		end
 	end

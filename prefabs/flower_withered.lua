@@ -31,6 +31,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "wf3"
+
     inst.animname = "wf"..tostring(math.random(3))
     inst.AnimState:PlayAnimation(inst.animname)
 

@@ -172,11 +172,15 @@ local function makegargoyle(data)
 
         inst:SetPrefabNameOverride("gargoyle_"..data.name)
 
+        inst.scrapbook_proxy = "gargoyle_"..data.name.."death"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_adddeps = { "moonbase" }
 
         if data.named then
             --Remove these tags so that they can be added properly when replicating components below

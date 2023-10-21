@@ -17,12 +17,62 @@ end
 
 local firelevels =
 {
-    {anim="loop_small", pre="pre_small", pst="post_small", sound="dontstarve/common/campfire", radius=2, intensity=.6, falloff=.7, colour = {197/255,197/255,170/255}, soundintensity=1},
-    {anim="loop_med", pre="pre_med", pst="post_med",  sound="dontstarve/common/treefire", radius=3, intensity=.75, falloff=.5, colour = {255/255,255/255,192/255}, soundintensity=1},
-    {anim="loop_large", pre="pre_large", pst="post_large",  sound="dontstarve/common/forestfire", radius=4, intensity=.8, falloff=.33, colour = {197/255,197/255,170/255}, soundintensity=1},
+	{
+		anim = "loop_small",
+		pre = "pre_small",
+		pst = "post_small",
+		pst_fast = "post_small_fast",
+		sound = "dontstarve/common/campfire",
+		radius = 2,
+		intensity = .6,
+		falloff = .7,
+		colour = { 197/255, 197/255, 170/255},
+		soundintensity = 1,
+	},
+	{
+		anim = "loop_med",
+		pre = "pre_med",
+		pst = "post_med",
+		pst_fast = "post_med_fast",
+		sound = "dontstarve/common/treefire",
+		radius = 3,
+		intensity = .75,
+		falloff = .5,
+		colour = { 255/255, 255/255, 192/255 },
+		soundintensity = 1,
+	},
+	{
+		anim = "loop_large",
+		pre = "pre_large",
+		pst = "post_large",
+		pst_fast = "post_large_fast",
+		sound = "dontstarve/common/forestfire",
+		radius = 4,
+		intensity = .8,
+		falloff = .33,
+		colour = { 197/255, 197/255, 170/255 },
+		soundintensity = 1,
+	},
 }
 
-local function fn()
+local flickerlevels =
+{
+	{},
+	{},
+	{
+		anim = "loop_fire_flicker",
+		pre = "loop_fire_flicker",
+		pst = "loop_fire_flicker",
+		sound = "dontstarve/common/treefire",
+		radius = 3,
+		intensity = 0.75,
+		falloff = 0.5,
+		colour = { 197/255, 197/255, 170/255 },
+		soundintensity = 1,
+	},
+}
+
+local function commonfn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -43,17 +93,40 @@ local function fn()
 
     inst.entity:SetPristine()
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
-    inst:AddComponent("firefx")
-    inst.components.firefx.levels = firelevels
-
-    inst:AddComponent("heater")
-    inst.components.heater.heatfn = GetHeatFn
-
     return inst
 end
 
-return Prefab("character_fire", fn, assets, prefabs)
+local function firefn()
+	local inst = commonfn()
+
+	if not TheWorld.ismastersim then
+		return inst
+	end
+
+	inst:AddComponent("firefx")
+	inst.components.firefx.levels = firelevels
+
+	inst:AddComponent("heater")
+	inst.components.heater.heatfn = GetHeatFn
+
+	return inst
+end
+
+local function flickerfn()
+	local inst = commonfn()
+
+	if not TheWorld.ismastersim then
+		return inst
+	end
+
+	inst:AddComponent("firefx")
+	inst.components.firefx.levels = flickerlevels
+
+	inst:AddComponent("heater")
+	inst.components.heater.heat = 65
+
+	return inst
+end
+
+return Prefab("character_fire", firefn, assets, prefabs),
+	Prefab("character_fire_flicker", flickerfn, assets, prefabs)

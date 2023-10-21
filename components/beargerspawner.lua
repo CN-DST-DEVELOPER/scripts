@@ -125,6 +125,11 @@ local function ReleaseHassler(targetPlayer)
         print("Not spawning bearger - already at maximum number")
         return nil
     end
+	local mutant = TheSim:FindFirstEntityWithTag("bearger_blocker")
+	if mutant ~= nil then
+		--Not spawning bearger - mutant exists
+		return nil
+	end
 
     local spawn_pt = GetSpawnPoint(targetPlayer:GetPosition())
     if spawn_pt ~= nil then

@@ -253,8 +253,6 @@ local function waterballoon_fn()
     -- From watersource component
     inst:AddTag("watersource")
 
-    inst.scrapbook_specialinfo = "WATERBALLOON"
-
     if not TheWorld.ismastersim then
         return inst
     end

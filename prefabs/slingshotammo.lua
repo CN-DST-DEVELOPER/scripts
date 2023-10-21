@@ -45,11 +45,12 @@ local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
-local function SpawnShadowTentacle(target, pt, starting_angle)
+local function SpawnShadowTentacle(inst, attacker, target, pt, starting_angle)
     local offset = FindWalkableOffset(pt, starting_angle, 2, 3, false, true, NoHoles, false, true)
     if offset ~= nil then
         local tentacle = SpawnPrefab("shadowtentacle")
         if tentacle ~= nil then
+			tentacle.owner = attacker
             tentacle.Transform:SetPosition(pt.x + offset.x, 0, pt.z + offset.z)
             tentacle.components.combat:SetTarget(target)
 
@@ -70,7 +71,7 @@ local function OnHit_Thulecite(inst, attacker, target)
         end
 
 		local theta = math.random() * 2 * PI
-		SpawnShadowTentacle(target, pt, theta)
+		SpawnShadowTentacle(inst, attacker, target, pt, theta)
     end
 
     inst:Remove()
@@ -270,6 +271,7 @@ local function inv_fn(ammo_def)
     return inst
 end
 
+-- NOTE(DiogoW): Add an entry to SCRAPBOOK_DEPS table in prefabs/slingshot.lua when adding a new ammo.
 local ammo =
 {
 	{

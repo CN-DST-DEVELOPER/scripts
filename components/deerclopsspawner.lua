@@ -181,10 +181,12 @@ local function ReleaseHassler(targetPlayer)
 
         if hassler ~= nil then
             hassler.Physics:Teleport(spawn_pt:Get())
-            local target = GetClosestInstWithTag(STRUCTURE_TAGS, targetPlayer, 40)
-            if target ~= nil then
-                hassler.components.knownlocations:RememberLocation("targetbase", target:GetPosition())
-            end
+			if not hassler.ignorebase then
+				local target = GetClosestInstWithTag(STRUCTURE_TAGS, targetPlayer, 40)
+				if target ~= nil then
+					hassler.components.knownlocations:RememberLocation("targetbase", target:GetPosition())
+				end
+			end
             -- Liz: home location is now chosen right before going there, to make sure that deerclops can walk there.
             return hassler
         end

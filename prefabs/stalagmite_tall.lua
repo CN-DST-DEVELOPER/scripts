@@ -88,6 +88,8 @@ local function commonfn(anim)
         return inst
     end
 
+    inst.scrapbook_anim = "full_1"
+
     inst.type = "_"..tostring(math.random(2)) -- left or right handed rock
     inst.AnimState:PlayAnimation(anim..inst.type)
 
