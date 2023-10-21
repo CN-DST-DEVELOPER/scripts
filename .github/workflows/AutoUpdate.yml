@@ -36,8 +36,8 @@ jobs:
         run: |
           version=$(cat ${{ github.workspace }}/temp/version.txt | grep -o [0-9]*)
           if [ "$(git describe --abbrev=0)" != "$version" ]; then 
-            echo "::set-output name=need_update::True"
-            echo "::set-output name=version::$version"
+            echo "need_update=True" >> $GITHUB_OUTPUT
+            echo "version=$version" >> $GITHUB_OUTPUT
           fi
 
   update:
