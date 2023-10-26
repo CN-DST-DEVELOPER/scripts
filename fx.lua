@@ -2805,6 +2805,7 @@ local fx =
         sound = "rifts3/wagpunk_armor/upgrade",
         fn = function(inst)
             inst.Transform:SetFourFaced()
+            inst.AnimState:SetFinalOffset(3)
         end,
     },
     {
@@ -2815,6 +2816,7 @@ local fx =
         sound = "rifts3/wagpunk_armor/downgrade",
         fn = function(inst)
             inst.Transform:SetFourFaced()
+            inst.AnimState:SetFinalOffset(3)
         end,
     },
     {
@@ -2825,6 +2827,7 @@ local fx =
         sound = "rifts3/wagpunk_armor/upgrade",
         fn = function(inst)
             inst.Transform:SetFourFaced()
+            inst.AnimState:SetFinalOffset(3)
         end,
     },
     {
@@ -2835,6 +2838,7 @@ local fx =
         sound = "rifts3/wagpunk_armor/downgrade",
         fn = function(inst)
             inst.Transform:SetFourFaced()
+            inst.AnimState:SetFinalOffset(3)
         end,
     },
 ----------------------------------------------------------

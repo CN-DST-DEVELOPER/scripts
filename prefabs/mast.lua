@@ -385,6 +385,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_facing  = FACING_DOWN
+
     fn_pst(inst)
 
 	if inst.components.mast ~= nil then
@@ -407,13 +409,14 @@ local function malbatrossfn()
 
     inst.MiniMapEntity:SetIcon("mast_malbatross.png")
 
-    inst.scrapbook_specialinfo = "MASTMALBATROSS"
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_specialinfo = "MASTMALBATROSS"
+    inst.scrapbook_facing  = FACING_DOWN
 
     fn_pst(inst)
 

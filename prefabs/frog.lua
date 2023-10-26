@@ -55,7 +55,7 @@ local RETARGET_CANT_TAGS = { "merm" }
 local LUNAR_RETARGET_CANT_TAGS = { "merm", "lunar_aligned" }
 
 local function retargetfn(inst)
-    if not inst.components.health:IsDead() and not inst.components.sleeper:IsAsleep() then
+	if not inst.components.health:IsDead() and not (inst.components.sleeper ~= nil and inst.components.sleeper:IsAsleep()) then
         local target_dist = inst.islunar and TUNING.LUNARFROG_TARGET_DIST or TUNING.FROG_TARGET_DIST
         local cant_tags   = inst.islunar and LUNAR_RETARGET_CANT_TAGS or RETARGET_CANT_TAGS
 
@@ -75,8 +75,8 @@ local function ShouldSleep(inst)
         return false -- frogs either go to their home, or just sit on the ground.
     end
 
-    -- Homeless frogs will sleep at night. Lunar frogs won't sleep during a full moon.
-    return TheWorld.state.isnight and (not inst.islunar or not TheWorld.state.isfullmoon)
+	-- Homeless frogs will sleep at night.
+	return TheWorld.state.isnight
 end
 
 local function OnAttacked(inst, data)
@@ -110,7 +110,7 @@ local function OnHitOther(inst, other, damage)
     end
 end
 
-local function commonfn(build, commonfn)
+local function commonfn(build, common_postinit)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -135,8 +135,8 @@ local function commonfn(build, commonfn)
     inst:AddTag("frog")
     inst:AddTag("canbetrapped")
 
-    if commonfn ~= nil then
-        commonfn(inst)
+	if common_postinit ~= nil then
+		common_postinit(inst)
     end
 
     inst.entity:SetPristine()
@@ -157,9 +157,6 @@ local function commonfn(build, commonfn)
     inst:SetStateGraph("SGfrog")
 
     inst:SetBrain(brain)
-
-    inst:AddComponent("sleeper")
-    inst.components.sleeper:SetSleepTest(ShouldSleep)
 
     inst:AddComponent("health")
 
@@ -185,12 +182,6 @@ local function commonfn(build, commonfn)
     return inst
 end
 
-local function lunarcommonfn(inst)
-    inst.Transform:SetScale(LUNARFROG_SCALE, LUNARFROG_SCALE, LUNARFROG_SCALE)
-
-    inst:AddTag("lunar_aligned")
-end
-
 local function normalfn()
     local inst = commonfn("frog")
 
@@ -200,6 +191,9 @@ local function normalfn()
 
     inst.sounds = NORMAL_SOUNDS
 
+	inst:AddComponent("sleeper")
+	inst.components.sleeper:SetSleepTest(ShouldSleep)
+
     inst.components.health:SetMaxHealth(TUNING.FROG_HEALTH)
 
     inst.components.combat:SetDefaultDamage(TUNING.FROG_DAMAGE)
@@ -208,8 +202,21 @@ local function normalfn()
     return inst
 end
 
+local function lunar_common_postinit(inst)
+	inst.Transform:SetScale(LUNARFROG_SCALE, LUNARFROG_SCALE, LUNARFROG_SCALE)
+
+	inst:AddTag("lunar_aligned")
+
+	inst.AnimState:SetSymbolLightOverride("flameanim", 0.1)
+	inst.AnimState:SetSymbolBloom("flameanim")
+	--inst.AnimState:SetSymbolLightOverride("frogeye", 0.1)
+	--inst.AnimState:SetSymbolLightOverride("frogeye_back", 0.1)
+	--@V2C: can't target the frog eyes because not all anims use the
+	--      back comp with individual eye symbols.
+end
+
 local function lunarfn()
-    local inst = commonfn("froglunar_build", lunarcommonfn)
+	local inst = commonfn("froglunar_build", lunar_common_postinit)
 
     if not TheWorld.ismastersim then
         return inst

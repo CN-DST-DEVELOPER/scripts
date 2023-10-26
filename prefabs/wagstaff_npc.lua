@@ -1097,7 +1097,6 @@ local function MutationsQuestFn()
     inst._dialogue_script = Mutations_BuildDialogueScript()
 
     inst:AddComponent("inspectable")
-    inst.components.inspectable.nameoverride = "WAGSTAFF_NPC"
 
     inst.AnimState:SetErosionParams(0, SHADER_CUTOFF_HEIGHT, -1.0)
 
@@ -1182,7 +1181,6 @@ local function WagpunkFn()
     --inst._dialogue_script = Mutations_BuildDialogueScript()
 
     inst:AddComponent("inspectable")
-    inst.components.inspectable.nameoverride = "WAGSTAFF_NPC"
 
     inst.AnimState:SetErosionParams(0, SHADER_CUTOFF_HEIGHT, -1.0)
 

@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "You dare spit at me?!",
 
         WAGSTAFF_NPC = "What is he up to now?",
+
+        WAGSTAFF_NPC_MUTATIONS = "Oh I'm sorry, were you saying something? I was too busy fighting for my life.",
+        WAGSTAFF_NPC_WAGPUNK = "The old goat should watch his step.",
+
         ALTERGUARDIAN_CONTAINED = "Ah, now I see...",
 
         WAGSTAFF_TOOL_1 = "Hmph. So I'm to fetch his tools for him now?",

@@ -390,13 +390,23 @@ local function RestoreLeader(inst)
     end
 end
 
-local function OnStopFollowing(inst)
+local function OnStopFollowing(inst, data)
     inst.leader_offset = nil
+	local leader = inst.components.entitytracker:GetEntity("leader")
     if not inst.components.health:IsDead() then
-        local leader = inst.components.entitytracker:GetEntity("leader")
         if leader ~= nil and not leader.components.health:IsDead() then
             inst.leadertask = inst:DoTaskInTime(.2, RestoreLeader)
         end
+	else
+		--temp bridge until replaced by an actual hound_corpse.
+		--otherwise, there's a tiny window during the death anim for too many
+		--hounds to be summoned.
+		if leader == nil and data ~= nil and data.leader ~= nil and data.leader:IsValid() then
+			leader = data.leader
+		end
+		if leader.RememberFollowerCorpse ~= nil and inst:IsValid() then
+			leader:RememberFollowerCorpse(inst)
+		end
     end
 end
 

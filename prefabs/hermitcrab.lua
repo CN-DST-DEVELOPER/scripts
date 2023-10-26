@@ -249,7 +249,41 @@ local function OnLoad(inst, data)
     end
 end
 
+
+local function is_carpentry_blueprint(item)
+    return (item.prefab == "blueprint" and item.recipetouse == "carpentry_station")
+end
+
+local function generate_comment_data_for_loaded_target(inst, target)
+    local general_friend_level = inst:getgeneralfriendlevel()
+    local script, distance = nil, nil
+    if target:HasTag("uncomfortable_chair") then
+        script = {
+            Line(STRINGS.HERMITCRAB_INVESTIGATE.MAKE_UNCOMFORTABLE_CHAIR[general_friend_level][1])
+        }
+
+        local stored_blueprint = inst.components.inventory:FindItem(is_carpentry_blueprint)
+        if stored_blueprint then
+            inst.components.entitytracker:TrackEntity("commentitemtotoss", stored_blueprint)
+            table.insert(script, Line(STRINGS.HERMITCRAB_INVESTIGATE.GIVE_CARPENTRY_BLUEPRINT[general_friend_level][1]))
+        end
+        distance = 1.0
+    end
+
+    return script, distance
+end
+
 local function OnLoadPostPass(inst, new_ents, data)
+    local comment_target = inst.components.entitytracker:GetEntity("commenttarget")
+    if comment_target and not inst.comment_data then
+        local comment_script, comment_distance = generate_comment_data_for_loaded_target(inst, comment_target)
+        inst.comment_data = {
+            pos = comment_target:GetPosition(),
+            speech = comment_script,
+            distance = comment_distance
+        }
+    end
+
 	-- This is only done for retrofitting, it is not normally needed, do not copy/paste this
 
 	if inst._shop_level ~= nil and inst._shop_level >= 5 then
@@ -817,50 +851,79 @@ local function initfriendlevellisteners(inst)
         local target = data.target
         local target_x, target_y, target_z = target.Transform:GetWorldPosition()
         local source_x, source_y, source_z = source.Transform:GetWorldPosition()
-        if distsq(target_x, target_z, source_x, source_z) < ISLAND_RADIUS * ISLAND_RADIUS then
-            local doer = data.doer
-            local target_is_uncomfortable = target:HasTag("uncomfortable_chair")
-            local blueprint_given = false
-            if target_is_uncomfortable then
-                if doer ~= nil and doer.components.builder ~= nil
-                        and not doer.components.builder:KnowsRecipe("carpentry_station") then
-                    local blueprint_already_nearby = false
-                    local nearby_blueprints = TheSim:FindEntities(source_x, source_y, source_z, ISLAND_RADIUS, FIND_BLUEPRINT_TAGS)
-                    for _, nearby_blueprint in ipairs(nearby_blueprints) do
-                        if nearby_blueprint.prefab == "blueprint" and nearby_blueprint.recipetouse == "carpentry_station" then
-                            blueprint_already_nearby = true
-                            break
+        if distsq(target_x, target_z, source_x, source_z) >= ISLAND_RADIUS * ISLAND_RADIUS then
+            return
+        end
+
+        local entitytracker = inst.components.entitytracker
+
+        local doer = data.doer
+        local target_is_uncomfortable = target:HasTag("uncomfortable_chair")
+        local blueprint_given = false
+        local blueprint_on_ground, blueprint_in_limbo = false, false
+        local doer_knows_blueprint = (doer == nil or (doer.components.builder ~= nil and doer.components.builder:KnowsRecipe("carpentry_station")))
+        if target_is_uncomfortable and not doer_knows_blueprint then
+            local blueprint_in_inventory = nil
+            local nearby_blueprints = TheSim:FindEntities(source_x, source_y, source_z, ISLAND_RADIUS, FIND_BLUEPRINT_TAGS)
+            for _, nearby_blueprint in ipairs(nearby_blueprints) do
+                if is_carpentry_blueprint(nearby_blueprint) then
+                    -- Track the blueprint separately if it's in our own inventory, as it might be there due to
+                    -- a save/load, or some other interruption. If it's the only one, we'll want to toss it out,
+                    -- and not try to create a new one. It also shouldn't block giving out the blueprints.
+                    if nearby_blueprint.components.inventoryitem:IsHeldBy(inst) then
+                        blueprint_in_inventory = nearby_blueprint
+                    else
+                        if nearby_blueprint:IsInLimbo() then
+                            blueprint_in_limbo = true
+                        else
+                            blueprint_on_ground = true
                         end
+                        break
                     end
+                end
+            end
 
-                    if not blueprint_already_nearby then
-                        inst.commentitemstotoss = inst.commentitemstotoss or {}
+            if not blueprint_on_ground and not blueprint_in_limbo then
+                if not entitytracker:GetEntity("commentitemtotoss") then
+                    if blueprint_in_inventory then
+                        entitytracker:TrackEntity("commentitemtotoss", blueprint_in_inventory)
+                    else
                         local carpentry_blueprint = SpawnPrefab("carpentry_station_blueprint")
-                        table.insert(inst.commentitemstotoss, carpentry_blueprint)
+                        entitytracker:TrackEntity("commentitemtotoss", carpentry_blueprint)
                         inst.components.inventory:GiveItem(carpentry_blueprint)
-
-                        blueprint_given = true
                     end
                 end
+
+                blueprint_given = true
+            end
+        end
+
+        -- INVESTIGATE
+        if not inst.comment_data then
+            entitytracker:TrackEntity("commenttarget", target)
+
+            local general_friend_level = inst:getgeneralfriendlevel()
+            local lines = {}
+            if target_is_uncomfortable then
+                table.insert(lines, Line(STRINGS.HERMITCRAB_INVESTIGATE.MAKE_UNCOMFORTABLE_CHAIR[general_friend_level][1]))
             end
 
-            -- INVESTIGATE
-            if not inst.comment_data then
-                local general_friend_level = inst:getgeneralfriendlevel()
-                local INVESTIGATE_CHAIR_TABLE = (target_is_uncomfortable and STRINGS.HERMITCRAB_INVESTIGATE.MAKE_UNCOMFORTABLE_CHAIR)
-                    or nil
-                local out_script = (INVESTIGATE_CHAIR_TABLE and INVESTIGATE_CHAIR_TABLE[general_friend_level][1]) or nil
-                if blueprint_given then
-                    out_script = (out_script ~= nil and {Line(out_script)}) or {}
-                    table.insert(out_script, Line(STRINGS.HERMITCRAB_INVESTIGATE.GIVE_CARPENTRY_BLUEPRINT[general_friend_level][1]))
+            local additional_lines_table = (blueprint_given and STRINGS.HERMITCRAB_INVESTIGATE.GIVE_CARPENTRY_BLUEPRINT[general_friend_level])
+                or (doer_knows_blueprint and STRINGS.HERMITCRAB_INVESTIGATE.ALREADY_KNOWS_CARPENTRY[general_friend_level])
+                or (blueprint_on_ground and STRINGS.HERMITCRAB_INVESTIGATE.CARPENTRY_BLUEPRINT_ONGROUND[general_friend_level])
+                or (blueprint_in_limbo and STRINGS.HERMITCRAB_INVESTIGATE.CARPENTRY_BLUEPRINT_ININVENTORY[general_friend_level])
+                or nil
+            if additional_lines_table then
+                for _, line in ipairs(additional_lines_table) do
+                    table.insert(lines, Line(line))
                 end
-
-                inst.comment_data = {
-                    pos = target:GetPosition(),
-                    distance = 1.0,
-                    speech = out_script,
-                }
             end
+
+            inst.comment_data = {
+                pos = target:GetPosition(),
+                distance = 1.0,
+                speech = lines,
+            }
         end
     end, TheWorld)
 
@@ -1324,6 +1387,7 @@ local function fn()
     end
 
     inst.scrapbook_hide = { "ARM_carry", "HAT", "HAIR_HAT", "HEAD_HAT" }
+    inst.scrapbook_facing  = FACING_DOWN
 
     inst.components.talker.ontalk = ontalk
 

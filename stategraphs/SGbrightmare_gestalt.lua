@@ -135,7 +135,7 @@ local states=
 
     State{
         name = "relocating",
-        tags = {"busy", "noattack", "hidden"},
+		tags = { "busy", "noattack", "hidden", "invisible" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()

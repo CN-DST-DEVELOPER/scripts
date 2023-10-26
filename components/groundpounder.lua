@@ -298,7 +298,7 @@ local function OnDestroyRing(inst, self, pt, radius, points, breakobjects, dodam
 	self:DestroyRing(pt, radius, points, breakobjects, dodamage, pushplatforms, pushinventoryitems, spawnfx, ents_hit, platforms_hit)
 end
 
-function GroundPounder:GroundPound(pt)
+function GroundPounder:GroundPound(pt, ents_hit)
     pt = pt or self.inst:GetPosition()
 
 	local fx = SpawnPrefab(self.groundpoundringfx)
@@ -318,8 +318,10 @@ function GroundPounder:GroundPound(pt)
     local points = self:GetPoints(pt)
     local delay = 0
 	local radius = self.initialRadius
-	local ents_hit = {}
 	local platforms_hit = {}
+	if ents_hit == nil then
+		ents_hit = {}
+	end
     for i = 1, self.numRings do
 		if self.usePointMode then
 			--Deprecated

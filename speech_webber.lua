@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "Stop spitting at us!",
 
         WAGSTAFF_NPC = "Should we help him? I don't mind, but he's not so sure...",
+
+        WAGSTAFF_NPC_MUTATIONS = "Hi Mister, do you have any games we can play instead?",
+        WAGSTAFF_NPC_WAGPUNK = "Should we play follow the leader?",
+
         ALTERGUARDIAN_CONTAINED = "It's sucking up all the glowy stuff!",
 
         WAGSTAFF_TOOL_1 = "Is that the thing we're looking for?",
@@ -4976,8 +4980,8 @@ return{
 
         WOOD_CHAIR =
         {
-            GENERIC = "Mother said we could never sit still.",
-            OCCUPIED = "Mother said we could never sit still.",
+            GENERIC = "Mother said I could never sit still.",
+            OCCUPIED = "Mother said I could never sit still.",
             BURNT = "We thought we smelled burning.",
         },
 
@@ -5014,7 +5018,7 @@ return{
 
         WAGPUNKHAT = "What's one more voice in our head?",
         ARMORWAGPUNK = "Ms. Wickerbottom said to keep our fingers away from the gears.",
-        WAGSTAFF_MACHINERY = "We're not supposed to play in scrap piles, no matter how much we want to.'",
+        WAGSTAFF_MACHINERY = "We're not supposed to play in scrap piles, no matter how much we want to.",
         WAGPUNK_BITS = "We love puzzles!",
         WAGPUNKBITS_KIT = "We want to play with the toy!",
 

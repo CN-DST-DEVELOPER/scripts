@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "Maybe it's a cardinal? A... really sick cardinal?",
 
         WAGSTAFF_NPC = "Hey Mister, are you okay? You're uh... flickering...?",
+
+        WAGSTAFF_NPC_MUTATIONS = "Maybe this is my chance to earn my Helping the Elderly badge!",
+        WAGSTAFF_NPC_WAGPUNK = "Gee Mister, you move fast for a senior!",
+
         ALTERGUARDIAN_CONTAINED = "Wow, we sure are lucky he happened to have that with him!",
 
         WAGSTAFF_TOOL_1 = "Maybe this is what he's looking for?",

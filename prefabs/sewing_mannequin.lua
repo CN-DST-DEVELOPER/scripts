@@ -203,6 +203,7 @@ local function fn()
     end
 
     inst.scrapbook_hide = { "ARM_carry", "LANTERN_OVERLAY" }
+    inst.scrapbook_facing  = FACING_DOWN
 
     -------------------------------------------------------
     inst:AddComponent("inspectable")

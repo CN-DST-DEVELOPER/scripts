@@ -4467,6 +4467,10 @@ return {
         BIRD_MUTANT_SPITTER = "I don't like the way it's looking at me...",
 
         WAGSTAFF_NPC = "As a fellow man of science, I'm compelled to help him!",
+
+        WAGSTAFF_NPC_MUTATIONS = "Science never rests!",
+        WAGSTAFF_NPC_WAGPUNK = "I wonder where he's off to...",
+
         ALTERGUARDIAN_CONTAINED = "It's draining the energy right out of that monster!",
 
         WAGSTAFF_TOOL_1 = "That has to be the tool I'm looking for!",

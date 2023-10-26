@@ -200,7 +200,7 @@ end
 
 --------------------------------------------------------------------------
 
-local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, targets)
+local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, targets, knockback_existing_targets)
 	inst.components.combat.ignorehitrange = true
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local rot = inst.Transform:GetRotation() * DEGREES
@@ -209,20 +209,25 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
 		z = z - dist * math.sin(rot)
 	end
 	for i, v in ipairs(TheSim:FindEntities(x, y, z, radius + AOE_RANGE_PADDING, AOE_TARGET_MUSTHAVE_TAGS, AOE_TARGET_CANT_TAGS)) do
-		if v ~= inst and
-			not (targets ~= nil and targets[v]) and
-			v:IsValid() and not v:IsInLimbo()
-			and not (v.components.health ~= nil and v.components.health:IsDead())
+		if v ~= inst and v:IsValid() and not v:IsInLimbo() and
+			not (v.components.health ~= nil and v.components.health:IsDead())
 		then
-			local range = radius + v:GetPhysicsRadius(0)
-			local distsq = v:GetDistanceSqToPoint(x, y, z)
-			if distsq < range * range and inst.components.combat:CanTarget(v) then
-				inst.components.combat:DoAttack(v)
-				if mult ~= nil then
-					v:PushEvent("knockback", { knocker = inst, radius = radius + dist, strengthmult = (v.components.inventory ~= nil and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult, forcelanded = forcelanded })
-				end
-				if targets ~= nil then
-					targets[v] = true
+			local is_existing_target = targets ~= nil and targets[v]
+			if not is_existing_target or knockback_existing_targets then
+				local range = radius + v:GetPhysicsRadius(0)
+				local distsq = v:GetDistanceSqToPoint(x, y, z)
+				if distsq < range * range then
+					local should_knockback = is_existing_target
+					if not is_existing_target and inst.components.combat:CanTarget(v) then
+						inst.components.combat:DoAttack(v)
+						should_knockback = true
+						if targets ~= nil then
+							targets[v] = true
+						end
+					end
+					if should_knockback and mult ~= nil then
+						v:PushEvent("knockback", { knocker = inst, radius = radius + dist, strengthmult = (v.components.inventory ~= nil and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult, forcelanded = forcelanded })
+					end
 				end
 			end
 		end
@@ -1365,7 +1370,8 @@ local states =
 				pt.y = 0
 				pt.z = pt.z - dist * math.sin(rot)
 
-				inst.components.groundpounder:GroundPound(pt)
+				inst.sg.statemem.targets = {}
+				inst.components.groundpounder:GroundPound(pt, inst.sg.statemem.targets)
 				inst.SoundEmitter:PlaySound("rifts3/mutated_bearger/buttslam")
 			end),
 			FrameEvent(9, function(inst)
@@ -1375,8 +1381,8 @@ local states =
 				x = x + dist * math.cos(rot)
 				z = z - dist * math.sin(rot)
 
-				inst.sg.statemem.targets = {}
-				DoAOEAttack(inst, dist, 4, 1.2, 1.5, nil, inst.sg.statemem.targets)
+				--extra "true" to knockback existing targets from groundpound
+				DoAOEAttack(inst, dist, 4, 1.2, 1.5, nil, inst.sg.statemem.targets, true)
 				ToggleOnCharacterCollisions(inst)
 
 				local sinkhole = SpawnPrefab("bearger_sinkhole")

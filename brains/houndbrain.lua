@@ -190,7 +190,7 @@ function HoundBrain:OnStart()
 						function()
 							return not ismutated and (
 								not self.inst.components.combat:HasTarget() or
-								self.inst.components.combat:GetLastAttackedTime() + 10 < GetTime()
+								self.inst.components.combat:GetLastAttackedTime() + TUNING.HOUND_FIND_CARCASS_DELAY < GetTime()
 							)
 						end,
 						"not attacked",

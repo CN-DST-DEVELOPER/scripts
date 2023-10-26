@@ -376,7 +376,8 @@ local function GetHuntedBeast(hunt, spawn_pt)
     end
 
     if hunt.monster_track_num then
-        if IsLunarPortalActive() then
+        local needs_mutated_warg = TheWorld.components.lunarriftmutationsmanager ~= nil and not TheWorld.components.lunarriftmutationsmanager:HasDefeatedThisMutation("mutatedwarg")
+        if needs_mutated_warg and IsLunarPortalActive() then
             return "warg"
         end
 
@@ -396,7 +397,10 @@ local function SpawnHuntedBeast(hunt, pt, doer)
         return false
     end
 
-    local seconds_per_node = hunt.score / (hunt.numtrackstospawn - 1)
+    if hunt.lastdirttime ~= nil and hunt.trackspawned > 1 then
+        hunt.score = hunt.score + (GetTime() - hunt.lastdirttime)
+    end
+    local seconds_per_node = hunt.score / hunt.numtrackstospawn
     local score_unclamped = (TUNING.HUNT_SCORE_TIME_PER_NODE_MAX - seconds_per_node) / (TUNING.HUNT_SCORE_TIME_PER_NODE_MAX - TUNING.HUNT_SCORE_TIME_PER_NODE)
     hunt.score = math.clamp(score_unclamped, 0, 1)
     --print("scoring:", seconds_per_node, score_unclamped, hunt.score)

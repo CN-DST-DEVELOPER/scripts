@@ -638,6 +638,7 @@ TheInventory:AddRestrictedBuildFromLua( "cave_exit_fantasy", "cave_exit_fantasy"
 TheInventory:AddRestrictedBuildFromLua( "cave_exit_gothic", "cave_exit_gothic", false )
 TheInventory:AddRestrictedBuildFromLua( "cavein_boulder_kettlebell", "cavein_boulder_kettlebell", false )
 TheInventory:AddRestrictedBuildFromLua( "chair_stool_fantasy", "chair_stool_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "chair_stool_hallowed", "chair_stool_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "chair_stool_handmade", "chair_stool_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "chester_lamb", "chester_eyebone_lamb", false )
 TheInventory:AddRestrictedBuildFromLua( "chester_walrus", "chester_eyebone_walrus", false )
@@ -654,16 +655,22 @@ TheInventory:AddRestrictedBuildFromLua( "cookpot_tureen", "cookpot_tureen", fals
 TheInventory:AddRestrictedBuildFromLua( "critterlab_fantasy", "critterlab_fantasy", false )
 TheInventory:AddRestrictedBuildFromLua( "critterlab_gothic", "critterlab_gothic", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_centerpiece_fantasy", "decor_centerpiece_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "decor_centerpiece_hallowed", "decor_centerpiece_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_centerpiece_handmade", "decor_centerpiece_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_flowervase_fantasy", "decor_flowervase_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "decor_flowervase_hallowed", "decor_flowervase_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_flowervase_handmade", "decor_flowervase_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_lamp_fantasy", "decor_lamp_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "decor_lamp_hallowed", "decor_lamp_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_lamp_handmade", "decor_lamp_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_phonograph_fantasy", "decor_phonograph_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "decor_phonograph_hallowed", "decor_phonograph_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_phonograph_handmade", "decor_phonograph_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_pictureframe_fantasy", "decor_pictureframe_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "decor_pictureframe_hallowed", "decor_pictureframe_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_pictureframe_handmade", "decor_pictureframe_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_portraitframe_fantasy", "decor_portraitframe_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "decor_portraitframe_hallowed", "decor_portraitframe_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "decor_portraitframe_handmade", "decor_portraitframe_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "dock_woodposts_carved", "dock_woodposts_carved", false )
 TheInventory:AddRestrictedBuildFromLua( "dock_woodposts_carved2", "dock_woodposts_carved2", false )
@@ -1587,6 +1594,7 @@ TheInventory:AddRestrictedBuildFromLua( "mysterybox_nature_4", "mysterybox_natur
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_terraria", "mysterybox_terraria", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_trickortreat", "mysterybox_trickortreat", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_trickortreat_alt", "mysterybox_trickortreat_alt", false )
+TheInventory:AddRestrictedBuildFromLua( "mysterybox_trickortreat_furniture", "mysterybox_trickortreat_furniture", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_ugly_3", "mysterybox_ugly_3", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_victorian_4", "mysterybox_victorian_4", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_wormholes", "mysterybox_wormholes", false )
@@ -1651,6 +1659,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_fantasy_items2", "pack_fantasy_ite
 TheInventory:AddRestrictedBuildFromLua( "pack_forge_armor", "pack_forge_armor", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_forge_weapons", "pack_forge_weapons", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_formal1", "pack_formal1", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_formal_all", "pack_formal_all", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_gladiator_all", "pack_gladiator_all", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_gladiator_wathgrithr", "pack_gladiator_wathgrithr", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_gladiator_waxwell", "pack_gladiator_waxwell", false )
@@ -1920,6 +1929,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_woodie_rose", "pack_woodie_rose", 
 TheInventory:AddRestrictedBuildFromLua( "pack_woodie_shadow", "pack_woodie_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_woodie_survivor", "pack_woodie_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_woodworking_fantasy", "pack_woodworking_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_woodworking_hallowed", "pack_woodworking_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_woodworking_handmade", "pack_woodworking_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wormwood_cactus", "pack_wormwood_cactus", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_wormwood_deluxe", "pack_wormwood_deluxe", false )
@@ -2422,6 +2432,7 @@ TheInventory:AddRestrictedBuildFromLua( "reviver_cupid_4", "reviver_cupid_4alt",
 TheInventory:AddRestrictedBuildFromLua( "reviver_cupid", "reviver_cupid_alt", false )
 TheInventory:AddRestrictedBuildFromLua( "reviver_lifecrystal", "reviver_lifecrystal", false )
 TheInventory:AddRestrictedBuildFromLua( "round_table_fantasy", "round_table_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "round_table_hallowed", "round_table_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "round_table_handmade", "round_table_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "ruins_bat_an", "ruins_bat_an", false )
 TheInventory:AddRestrictedBuildFromLua( "ruins_bat_arcane", "ruins_bat_arcane", false )
@@ -2960,8 +2971,10 @@ TheInventory:AddRestrictedBuildFromLua( "wolfgang_mighty_wrestler", "wolfgang_wr
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_wrestler", "wolfgang_wrestler", false )
 TheInventory:AddRestrictedBuildFromLua( "wolfgang_skinny_wrestler", "wolfgang_wrestler", false )
 TheInventory:AddRestrictedBuildFromLua( "wood_chair_fantasy", "wood_chair_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "wood_chair_hallowed", "wood_chair_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "wood_chair_handmade", "wood_chair_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "wood_table_fantasy", "wood_table_fantasy", false )
+TheInventory:AddRestrictedBuildFromLua( "wood_table_hallowed", "wood_table_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "wood_table_handmade", "wood_table_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "woodie_ancient", "woodie_ancient", false )
 TheInventory:AddRestrictedBuildFromLua( "woodie_combatant", "woodie_combatant", false )
@@ -3764,7 +3777,7 @@ TheInventory:AddGenericKVKey( "fuelweaver_killed" )
 TheInventory:AddGenericKVKey( "wonkey_played" )
 
 if TheInventory.AddScrapbook0Key == nil then
-    TheInventory:ValidateWithSignature( "7a57544805592e6caa42392ba46a9fafe2c0f92a4dd149a7feea109819f9b31cbf746989e489f50c7b02501fbf72765c2b8ca71187c1de73e9000e765207d126661627849364300644170b8bba04fa4c75173b6e002d1e058f510f08195868e226d8192ef70c9c9a24521e84d7d73600b0cfe777c94d1636d80651375fc1e945437c03dcd39e41bbf76a2c80b8a6223d55ee50513e17e0b67a8df7ee25e9e9a857f8b9c3b5dca2ef6d0fd3922ca4753cd72b906af270c3c606e2554f8dbd9dd8004481291e4181be3bf3fc58a13f96b1e1bdabc18b665f9f55b0e4c432fbde6bb6b98e05f934fc3e9a4c9cd06015851f0b3050a069bb1262044a0a3dc5e07c28bd268a5383f704624e567e83c11f006ff9e3f7d02023e36ce695c4fb9abbd49affc43824cabf971771fc08ce3072b1444f0ea5eb80f140bba58c64cbc5ccde9406c7af3cad4339c851fd63280ff43a745171ca683a22d2c0db17ba4236471435b2ce44c8f2776cd198384f25c88c9785de3c941be0d54ee60445cb1a35465f93eae7b8940d1db887b42669f26c134d5f23f17e55f4e79d2f7f99eaec3a8f80d060244cb124212ca83e101aaa2214f09a2370e85f770bd74679746e08325e220f87272581d77aba14c3bc984a7915c943cb4a15323cae2ab17510202e619fb7e052e7b2fbaf0520586956d9c776382de689cbbf64009e0c89e89075b867673e42" )
+    TheInventory:ValidateWithSignature( "0596b96fb74505ce8fa44dd18b96e96dc9ac2f8d1d15b0c8f60dc3bc709a16bc1935f11baed34d27436d76faa8921f812590721798ab632e51ca08a23fe5b7e6a86c13dc419abccc7d5a665e77bbe5d579b777313829b388cdc9856884812a8c43afcf6ddb928c340e50c2cb7cf4bab7b7b12dda5b193f6e5a93045b9765ae90905812b69852269818ccb24c9061c63d36e641d084a0fef5dcb6c5a152a0c8aa377321b9059afd80226223fb6b72105e63013ac0e95f18f2b349b677979a971b8d4f7b3613b99d0fb4f3c59023646ab2eb685c2e50d4efb825ac23cb32ddf5d901a67c45c0a59226e51ecb9267eb5f26edd8f48a9fa11020eb747e95942c0b106731adcc950014523fd3863453474c59ff16d1517c110e4488927a9fdfe74f884d77a4adb121c5057804916d551902af862d246b8be1112133c3791ced39d6f518bf0d363c5b2de3bd90a3d855d312d06248e0f2c5a33036f4be4b23c55b06556d231942909b9534dad182453a49122e20bc462dad6a10a626121e8f3336057d7cc8d8d3f258c4e1389e4daa59001c4ccfca0a8f6427b5c94af836009edc8c8243e0f6bd0d139a1f05ee9a5a14701f458173f1e98ad83afebb4e66c7715fc414d3aa760b501553ea07949f877434bfcd3a56989277f6fa71faf3570deacfa9af25f4f133f482136937a6c9b0c7c390ad38467e55f4cd0204aaf16532868e7f9a" )
 else -- Temporary protection guard for platforms missing the engine change 1.
 
 TheInventory:AddScrapbook5Key( "679F8765" ) -- abigail
@@ -7273,9 +7286,19 @@ TheInventory:AddScrapbook12Key( "4374C56C" ) -- yellowstaff
 --TheInventory:AddItemIDPairing(2034, "wood_table_handmade")
 --TheInventory:AddItemIDPairing(2035, "wormwood_formal")
 --TheInventory:AddItemIDPairing(2036, "wortox_formal")
+--TheInventory:AddItemIDPairing(2037, "chair_stool_hallowed")
+--TheInventory:AddItemIDPairing(2038, "decor_centerpiece_hallowed")
+--TheInventory:AddItemIDPairing(2039, "decor_flowervase_hallowed")
+--TheInventory:AddItemIDPairing(2040, "decor_lamp_hallowed")
+--TheInventory:AddItemIDPairing(2041, "decor_phonograph_hallowed")
+--TheInventory:AddItemIDPairing(2042, "decor_pictureframe_hallowed")
+--TheInventory:AddItemIDPairing(2043, "decor_portraitframe_hallowed")
+--TheInventory:AddItemIDPairing(2044, "round_table_hallowed")
+--TheInventory:AddItemIDPairing(2045, "wood_chair_hallowed")
+--TheInventory:AddItemIDPairing(2046, "wood_table_hallowed")
 
 if TheInventory.AddFreeItemForEveryone == nil then
-    TheInventory:ValidateWithSignature( "3fb8cb578b16371c17f861de82c8444fa3b3d54c926794b71370b9f45f07954df2141167520b762a841bd74eaced6d7c3fc678a03f65b844dccf5362fa06b6ff3cd7b73c6c3d99d0bfd3e1e93de6e7dd94032fa81979c6ed71490f6890230ed55573289ed02a53b2039ab75540f378925b73d612e564d3832bbaa6b6d7f2d6256027cebc5c4c860f0b52e55d7d606c4dde63eb5e41682befe80d1c15dc1920d1dfe37d48ce46a40138b91c3dfba792f1127469144e8f1603e7cdfa7581ef8eb9830ccd041fee65018eab44426f696cc33be414561fb59a870e2f22102e1adb07a194f67023ddbfcec3ed396b69cbf225b04c9e03df4a1e4ebee0e51221fe936508a626f77e6138a13635bc50156e9361797aaa3318d2152b135e796272044bc3b5da9a83ef81ba4d4d2882a3c2f2ed491d45baa4ae4337a4349f5d11f0d2bf6e336a13543359d2ff359bcf2803851ddf6119cbe9ac52faa558e2fb16bba9f21735b520c6c328c7ab1980cafa454d0dd058bbc509c3dae2a240adf16a54054f878fa65498f8a8dfc2f33e0ddd76d542468bc08fb8fd0bd777dda0e447131069626ffff9c3e43c50857e60bfcb69892194733570147cc8f7a0d1b6c053c0900bc6348954dda1b5acc78d828f6cf00d9d3f644ab1e639773ef3c6751e84c0148f8a54a3ea78175c0d2852f24833c3c89bba8cca5fe2fa017006b901fedf33ff16f9" )
+    TheInventory:ValidateWithSignature( "45cefa468e84fbdcdc56f4f272dea6afe05b489e3cf70884333624861deb57976160ce412e4fd403eba553570ff36954802253cd9c8988ade2a79d8e52bb6d53750ecbc93130a80886de81518a9e83813079005a5ce4495170763a9bab33e218b5ce0b6ea0433205dd86fdcee10091f44a95ee3fa63888f3f46831d7f93b372d4daf931de7cf672eb4c2cfd4441f27bac30676aa218a4d6a36825a11c2273b9b3e47724115b96898654112e8684b8662a36977efafb7322cc8cde139df9837cb2ce2827d2f070bfae12cb6692fbeb7f7cd17195078a41905c58ffe73c889c9e98805bfc3542cda5b4353d30f860f4986d38958887fee2ea1a3abace74f33778ad3771dae37b5676620267145a8433747a53c287a48aa8a31e619a20c4cbd1e35b76afa2c34c9ec7af8e434074f320c1edc491912cc3416698751e5622354e61c26fce1fdc388d527ea25e863de747ec85d4b44a32b34ef31c6c08ca8b0aa0a36ed18ffeaa646f007ad8c5bb196aecb81ea6ee0857c3a4ab103adf6b23debe15cc0f8ab24dff5ec4c6361da218896ddf52458b996f8fe09bac2f61303ce7308aa41d05ce2bd9cc863bf70975f93cfac485e89cc006e7fd4bf030935687e9f566c171a9dcb6e0095fc79392cff5554d1d1c0c252bf97485a82c5abffe0a3156dcd00916e8bcf28f5815cfe2e3538f6e954bf951c3de34bcddbcbde597ef03d0243" )
 else -- Temporary protection guard for platforms missing the engine change 2.
 
 -- These are free items for everyone and are not networked.
@@ -7330,7 +7353,7 @@ TheInventory:AddFreeItemForEveryone("record_creepyforest") -- 148
 TheInventory:AddFreeItemForEveryone("record_drstyle") -- 148
 TheInventory:AddFreeItemForEveryone("record_efs") -- 148
 
-TheInventory:ValidateWithSignature( "abb77abb5b6fb399dc284b78f9593f2b16b9ce7996c3b1d466ee997a21bd484c11da58cac414e19835d02d77f98e0fd88f39f486723a62de52aed87d6f2ec879514a3e012f8344354f6650c435677adc6d30e2c292223dab7c69322558dee478b1829af74199e5f8851fd3e8a6b7af6f468d68924b423a22dc34303478f7f805aa88b1e145eccd39122a357dfff586bdc507d34c52288bc7a171c32c24d0f2be73e934b94626b25ab30d23abe7d9328d0a505716504fe6b8eb20a51d513906c9998e495c988c17cc6fef395d46c7a7506f8db3940a134f019dc82881b47d419e3e35d90b8672a72e26271099e33139866eec09da99b5710762298d440fbd258f01f4b74818b5082ea085dab51a583d4f54844e3cc8ec166d71ae1752518dee58f4de2fb0f0fe313262e9c463ace12b839644c47ce84e7213daae585ef00d3d328d5a081c7d877a9bf38ccdd6b8f776e985af20b79e93b5694429be0ead97bfe8d77705792e497b6f1f627373b608d540b38e8f9514286cbced5af2196a3cf2529fad88ba6624468dd21e35aecbd1cda42c867a9ca17e63c0413c78c94e5c07a6f6174cf188bdc0227639e4a1cf5b7b3b795762abbe73c3dad86c1710668e1ed509ebbe4f3068763b912cedfd244ccf26c9f8958bf8d973ba931357fc03c17af836e06eba9519aeca4dfbb321f95f409ad03c4c84885a111016f756e5429f971e" )
+TheInventory:ValidateWithSignature( "4db4c20adf1eb64fd2b95386ac394553c45e075f6afa9f2057121c51c6fafcd14d8873a069c9c72e7fb3f1dae336e906afc194eefc4671a75b875ac7907e86549a4a806636092828ae7886cb27d4e20eafcb367d0a5dafa7a6669eaab23ac2437915a9cf3b475031004a1cb3e4fd80f7bd47cb04b8517e24372d1383efd7374a770a45ea2cc1c1bad86bea3ae0426df98a797921b62125ee9557a71c3e62d595cd72485321eea5e57117b30a624242dee8e1c3dbcc1eb2c2e84f7096116863c19ce4cbc9f818debba7e33bbd7a0b3e32d69f5f90ed976db521bd2e6702bd78c50e327ba0e4805657f6e03ca56ee906fe0ac6cd599e50cddaef51765767e520541fc15d1522bc10e7bdfec126e1e4dd088a4302c2c2cfa02d05731d2be0787c337628fdcde22429ecd742792eec66168b4d7348eec8f718f703cf1384fd5d03ecca3428f4176de9641d3f54525299999c5a5d343172cdb8580ce40552496c62d9613d5bf16dcea7d1503e80cec07613d0b3a2d27400cf91f55ba972e21358ed44e74a727a2ad66f72b757d289a6d125425bf50a5336f71d10e66003f2a530b3f4daf12938b528ca7d75714117389a5b8f534609c3bfac69de3f677f063c16f0825b2102f7ec5f6a5243851e62c4b15860583b10c8c86461e1c2e3c31ae07975c57afb8f5b1fab6d1eb9a2fd438db212d428ee2d2b4f6f5a5700a09b9f2b0b010c" )
 
 end -- Temporary protection guard for platforms missing the engine change 2.
 

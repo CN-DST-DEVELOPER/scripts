@@ -2315,6 +2315,9 @@ function d_createscrapbookdata(print_missing_icons)
         return
     end
 
+    local _specialevent = WORLD_SPECIAL_EVENT
+    WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+
     print(prettyline)
     print("SCRAPBOOK DATA - WARNINGS!\n")
 
@@ -2604,6 +2607,8 @@ function d_createscrapbookdata(print_missing_icons)
         AddInfo( "build", t.scrapbook_build or t.AnimState:GetBuild() )
         AddInfo( "bank",  t.scrapbook_bank or t.AnimState:GetCurrentBankName() )
         AddInfo( "anim",  anim )
+
+        AddInfo( "facing",  t.scrapbook_facing )
 
         AddInfo( "alpha",  t.scrapbook_alpha )
 
@@ -3077,6 +3082,8 @@ function d_createscrapbookdata(print_missing_icons)
     end
 
     Scrapbook_WriteToFile(scrapbookdata)
+
+    WORLD_SPECIAL_EVENT = _specialevent
 
     exporter_data_helper:write("}\n")
     exporter_data_helper:close()

@@ -57,6 +57,12 @@ local function Say(inst, string, sound_override)
     inst.timeouttask = inst:DoTaskInTime(1, OnSayTimeout)
 end
 
+local function ShutUp(inst)
+    if inst._parent ~= nil then
+        inst._parent.components.talker:ShutUp()
+    end
+end
+
 local function SetTarget(inst, target)
     inst.Network:SetClassifiedTarget(target)
     local istarget = target == nil or target == ThePlayer
@@ -124,6 +130,7 @@ local function fn()
 
     --Server interface
     inst.Say = Say
+    inst.ShutUp = ShutUp
     inst.SetTarget = SetTarget
 
     inst.timeouttask = nil

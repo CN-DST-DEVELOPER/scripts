@@ -4461,6 +4461,10 @@ return{
         BIRD_MUTANT_SPITTER = "Something is terribly wrong with that bird.",
 
         WAGSTAFF_NPC = "He flickers and fades... perhaps he's a spirit?",
+
+        WAGSTAFF_NPC_MUTATIONS = "This apparition always has some sort of task he wants help with.",
+        WAGSTAFF_NPC_WAGPUNK = "Off to haunt someone else?",
+
         ALTERGUARDIAN_CONTAINED = "It's draining the life from that creature...",
 
         WAGSTAFF_TOOL_1 = "Oh, I wish I knew if this is the tool he asked for...",
@@ -4973,8 +4977,8 @@ return{
 
         WOOD_TABLE = -- Shared between the round and square tables.
         {
-            GENERIC = "Abigail's favorite hiding spot.'.",
-            HAS_ITEM = "Abigail's favorite hiding spot'.",
+            GENERIC = "Abigail's favorite hiding spot.",
+            HAS_ITEM = "Abigail's favorite hiding spot.",
             BURNT = "Just as well.",
         },
 

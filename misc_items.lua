@@ -1284,6 +1284,16 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 124,
 	},
+	mysterybox_trickortreat_furniture =
+	{
+		type = "mysterybox",
+		skin_tags = { "MYSTERYBOX", },
+		build_name_override = "pack_hallowed",
+		box_build = "box_shop_hallowed",
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 149,
+	},
 	mysterybox_ugly_3 =
 	{
 		type = "mysterybox",
@@ -1925,6 +1935,20 @@ MISC_ITEMS =
 		display_items = {  "warly_formal", "wortox_formal", "wormwood_formal", },
 		output_items = {  "warly_formal", "body_warly_formal", "legs_warly_formal", "feet_warly_formal", "wortox_formal", "body_wortox_formal", "legs_wortox_formal", "wormwood_formal", "hand_wormwood_formal", "body_wormwood_formal", "legs_wormwood_formal", },
 		release_group = 148,
+	},
+	pack_formal_all =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_formal_all.xml",
+		display_tex = "formal_all.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "willow_formalp", "winona_formalp", "woodie_formalp", "wurt_formal", "wendy_formalp", "walter_formal", "wathgrithr_formalp", "wes_formalp", "webber_formalp", "wanda_formal", "wolfgang_formalp", "wx78_formalp", "wickerbottom_formalp", "waxwell_formalp", "wilson_formalp", "warly_formal", "wormwood_formal", "wortox_formal", },
+		output_items = {  "willow_formalp", "body_willow_formalp", "feet_formal_stilettop_black_scribble", "winona_formalp", "body_winona_formalp", "woodie_formalp", "body_woodie_formalp", "feet_fleece_bootp_brown_sepia", "wurt_formal", "body_wurt_formal", "hand_wurt_formal", "legs_wurt_formal", "wendy_formalp", "body_wendy_formalp", "feet_maryjanesp_white_pure", "abigail_formal", "walter_formal", "body_walter_formal", "feet_walter_formal", "legs_walter_formal", "walterhat_formal", "wathgrithr_formalp", "body_wathgrithr_formalp", "wes_formalp", "body_wes_formalp", "webber_formalp", "body_webber_formalp", "webber_beard_formal", "wanda_formal", "body_wanda_formal", "hand_wanda_formal", "feet_wanda_formal", "wolfgang_formalp", "body_wolfgang_formalp", "feet_ridingbootp_white_pure", "wx78_formalp", "body_wx78_formalp", "wickerbottom_formalp", "body_wickerbottom_formalp", "feet_formal_highheelp_white_pure", "waxwell_formalp", "body_waxwell_formalp", "feet_formal_winklepickerp_white_ivory", "hand_waxwell_formalp", "wilson_formalp", "body_wilson_formalp", "hand_wilson_formalp", "feet_formal_lowheelp_black_scribble", "wilson_beard_formal", "warly_formal", "body_warly_formal", "legs_warly_formal", "feet_warly_formal", "wormwood_formal", "hand_wormwood_formal", "body_wormwood_formal", "legs_wormwood_formal", "wortox_formal", "body_wortox_formal", "legs_wortox_formal", },
+		release_group = 149,
 	},
 	pack_gladiator_all =
 	{
@@ -5509,6 +5533,20 @@ MISC_ITEMS =
 		display_items = {  "round_table_fantasy", "wood_table_fantasy", "chair_stool_fantasy", "wood_chair_fantasy", "decor_centerpiece_fantasy", "decor_flowervase_fantasy", "decor_lamp_fantasy", "decor_phonograph_fantasy", "decor_pictureframe_fantasy", "decor_portraitframe_fantasy", },
 		output_items = {  "round_table_fantasy", "wood_table_fantasy", "chair_stool_fantasy", "wood_chair_fantasy", "decor_centerpiece_fantasy", "decor_flowervase_fantasy", "decor_lamp_fantasy", "decor_phonograph_fantasy", "decor_pictureframe_fantasy", "decor_portraitframe_fantasy", },
 		release_group = 148,
+	},
+	pack_woodworking_hallowed =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_woodworking_hallowed.xml",
+		display_tex = "woodworking_hallowed.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "round_table_hallowed", "wood_table_hallowed", "chair_stool_hallowed", "wood_chair_hallowed", "decor_centerpiece_hallowed", "decor_flowervase_hallowed", "decor_lamp_hallowed", "decor_phonograph_hallowed", "decor_pictureframe_hallowed", "decor_portraitframe_hallowed", },
+		output_items = {  "round_table_hallowed", "wood_table_hallowed", "chair_stool_hallowed", "wood_chair_hallowed", "decor_centerpiece_hallowed", "decor_flowervase_hallowed", "decor_lamp_hallowed", "decor_phonograph_hallowed", "decor_pictureframe_hallowed", "decor_portraitframe_hallowed", },
+		release_group = 149,
 	},
 	pack_woodworking_handmade =
 	{

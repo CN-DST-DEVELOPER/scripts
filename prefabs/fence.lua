@@ -602,9 +602,10 @@ local function MakeWall(name, anims, isdoor, klaussackkeyid)
             return inst
         end
 
-        inst.scrapbook_anim  = "idle"
-        inst.scrapbook_build = anims.wide
-        inst.scrapbook_bank  = anims.wide
+        inst.scrapbook_anim    = "idle"
+        inst.scrapbook_build   = anims.wide
+        inst.scrapbook_bank    = anims.wide
+        inst.scrapbook_facing  = FACING_DOWN
 
         inst:AddComponent("inspectable")
 

@@ -4463,6 +4463,10 @@ return{
         BIRD_MUTANT_SPITTER = "There's something... off about it.",
 
         WAGSTAFF_NPC = "Mr. Wagstaff! Is that really you?",
+
+        WAGSTAFF_NPC_MUTATIONS = "Er, will I be gettin' overtime for this?",
+        WAGSTAFF_NPC_WAGPUNK = "Hey! Wait up!",
+
         ALTERGUARDIAN_CONTAINED = "The machine's sucking up all the energy from that thing...",
 
         WAGSTAFF_TOOL_1 = "Found the Reticulating Buffer! Better get it back to the bossman.",

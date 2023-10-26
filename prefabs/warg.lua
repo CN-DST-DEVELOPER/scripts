@@ -154,7 +154,7 @@ local scrapbook_removedeps_basic =
 local RETARGET_MUST_TAGS = { "character" }
 local RETARGET_CANT_TAGS = { "wall", "warg", "hound" }
 local function RetargetFn(inst)
-    return not (inst.sg:HasStateTag("hidden") or inst.sg:HasStateTag("statue"))
+	return not (inst:IsInLimbo() or inst.sg:HasStateTag("hidden") or inst.sg:HasStateTag("statue"))
         and FindEntity(
                 inst,
                 TUNING.WARG_TARGETRANGE,
@@ -169,7 +169,7 @@ end
 
 local function KeepTargetFn(inst, target)
     return target ~= nil
-        and not (inst.sg:HasStateTag("hidden") or inst.sg:HasStateTag("statue"))
+		and not (inst:IsInLimbo() or inst.sg:HasStateTag("hidden") or inst.sg:HasStateTag("statue"))
         and inst:IsNear(target, 40)
         and inst.components.combat:CanTarget(target)
         and not target.components.health:IsDead()
@@ -350,6 +350,8 @@ local function CarcassCreationFn_Normal(inst, score)
     ent.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
 	if ent.SetMeatPct ~= nil then
+		score = math.clamp(1 - score, 0, 1)
+		score = 1 - score * score
 		ent:SetMeatPct(Remap(score, 0, 1, 1 / 3, 1))
 	end
 
@@ -797,6 +799,7 @@ local function MakeWarg(data)
         MakeCharacterPhysics(inst, 1000, 1)
 
         inst:AddTag("monster")
+		inst:AddTag("hostile")
         inst:AddTag("warg")
         inst:AddTag("scarytoprey")
         inst:AddTag("houndfriend")

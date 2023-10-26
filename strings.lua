@@ -4676,6 +4676,7 @@ STRINGS =
         YOTR_FOOD3 = "This dessert looks almost too good to eat.",
         YOTR_FOOD4 = "Puffy balls of chewy goodness.",
         YOTR_TOKEN = "Tell a Bunnyman you'd like to try your hand at a pillow battle.",
+        YOTR_FIGHTRING_KIT = "A ring to bring the brawlin' bunnies.",
 
         HANDPILLOW_BEEFALOWOOL = "It packs a woolly wallop!",
         HANDPILLOW_KELP = "Nobody likes a wet blanket. Wet pillows aren't much better.",
@@ -5085,6 +5086,21 @@ STRINGS =
                 LOW = {"Here. Learn how to build a proper chair."},
                 MED = {"I give you credit for trying, but next time get it right."},
                 HIGH = {"Here, let me give you a few pointers."},
+            },
+            CARPENTRY_BLUEPRINT_ONGROUND = {
+                LOW = {"Hmph. Leaving my blueprint lying around like that...","Ungrateful whipper-snappers!"},
+                MED = {"If I'd known it would get tossed on the ground,","I wouldn't have bothered giving up that blueprint!"},
+                HIGH = {"Isn't that my blueprint over there?"},
+            },
+            CARPENTRY_BLUEPRINT_ININVENTORY = {
+                LOW = {"Leave me alone, I already gave away my blueprint!"},
+                MED = {"Still haven't gotten around to reading that blueprint, hm?"},
+                HIGH = {"Have you had a chance to give that blueprint a read, dearie?"},
+            },
+            ALREADY_KNOWS_CARPENTRY = {
+                LOW = {"I already gave you my blueprint, quit pestering me!"},
+                MED = {"Didn't I already give you my blueprint?","Trying to take advantage of a sweet old lady, are you?"},
+                HIGH = {"You already know everything I can teach you, dearie."},
             },
             MAKE_CHAIR = {
                 LOW = {"Hmph. Well, at least it looks like it won't fall apart."},
@@ -14821,19 +14837,19 @@ STRINGS.SKILLTREE = {
         WOLFGANG_AUTO_GYM_DESC = "Perfect your gym workout.\nMini game will complete automatically.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_TITLE = "Mighty Weapons I",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_DESC = "Bring out the full strength of planar weapons.\nAdd +5 Planar Damage to planar weapons when Mighty.",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_1_DESC = "Bring out the full strength of planar melee weapons.\nAdd +5 Planar Damage to planar melee weapons when Mighty.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_TITLE = "Mighty Weapons II",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_DESC = "Bring out the full strength of planar weapons.\nAdd +10 Planar Damage to planar weapons when Mighty.",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_2_DESC = "Bring out the full strength of planar melee weapons.\nAdd +10 Planar Damage to planar melee weapons when Mighty.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_TITLE = "Mighty Weapons III",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_DESC = "Bring out the full strength of planar weapons.\nAdd +15 Planar Damage to planar weapons when Mighty.",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_DESC = "Bring out the full strength of planar melee weapons.\nAdd +15 Planar Damage to planar melee weapons when Mighty.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_TITLE = "Mighty Weapons IV",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_DESC = "Bring out the full strength of planar weapons.\nAdd +20 Planar Damage to planar weapons when Mighty.",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_DESC = "Bring out the full strength of planar melee  weapons.\nAdd +20 Planar Damage to planar melee weapons when Mighty.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_TITLE = "Mighty Weapons V",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_DESC = "Bring out the full strength of planar weapons.\nAdd +25 Planar Damage to planar weapons when Mighty.",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_DESC = "Bring out the full strength of planar melee weapons.\nAdd +25 Planar Damage to planar melee weapons when Mighty.",
         ---
         WOLFGANG_ALLEGIANCE_SHADOW_1_TITLE = "Shadow Guard I",
         WOLFGANG_ALLEGIANCE_SHADOW_1_DESC = "The Queen will reward your loyalty with devastating strength.\nAdd +10% of total damage fighting Lunar-aligned creatures when Mighty.",
@@ -15056,11 +15072,12 @@ STRINGS.SCRAPBOOK = {
 
     NEW_SCRAPBOOK_ENTRY = "Scrapbook\nUpdated",
     CLEARFLASH = "Clear all \"NEW\"",
-    DATA_SECONDS = " SECONDS",
-    DATA_MINUTE = " MINUTE",
-    DATA_MINUTES = " MINUTES",
-    DATA_DAY = " DAY",
-    DATA_DAYS = " DAYS",
+    DATA_SECONDS = "SECONDS",
+    DATA_MINUTE = "MINUTE",
+    DATA_MINUTES = "MINUTES",
+    DATA_DAY = "DAY",
+    DATA_DAYS = "DAYS",
+    DATA_TIME = "{time} {txt}",
     DATA_CRAFTING = "CRAFTABLE",
     DATA_LIGHTBATTERY = "EMITS LIGHT",
 
@@ -15374,8 +15391,8 @@ STRINGS.SCRAPBOOK = {
         HOTSPRING = "Hotsprings are like baths for some people.",
         EYETURRET = "A tower that shoots a ranged attack at hostile creatures and regenerates 12 Health a second.",
         MOON_ALTAR_ROCK = "An object trapped inside moon rock.",
-        BOATBUMPERKELP = "Absorbs collision damage of the boat it is mounted on. Can be repaired with Kelp.",
-        BOATBUMPERSHELL = "Absorbs collision damage of the boat it is mounted on. Can be repaired with Broken Shells.",
+        BOAT_BUMPER_KELP = "Absorbs collision damage of the boat it is mounted on. Can be repaired with Kelp.",
+        BOAT_BUMPER_SHELL = "Absorbs collision damage of the boat it is mounted on. Can be repaired with Broken Shells.",
         OCEANTREE = "Standing near a tree offers 35% protection from rain and cools survivor a small amount.\n\nWith help, it can grow to gigantic size.",
         MASTUPGRADELIGHTNINGCONDUCTOR = "Lightning that would strike nearby will instead strike this, charging it.",
         ALTERGUARDIANCONTAINED = "A contraption used by mysterious hologram.",
@@ -15425,7 +15442,7 @@ STRINGS.SCRAPBOOK = {
         LIGHTNINGROD = "Lightning that would strike nearby will instead strike this, charging it.",
         MOONDEVICE = "A complex contraption to contain a geyser of energy that has several stages of construction.",
         MADSCIENCELAB = "Standing near this device will provide the survivor with new Experiments they can craft.",
-        MAGICIANCHEST = "A 12 slot container that is actually a singular storage location that all \nmagic storage\n items access.",
+        MAGICIANCHEST = "A 12 slot container that is actually a singular storage location that all \"magic storage\" items access.",
         --TOPHAT_MAGICIAN = "A 12 slot container that is actually a singular storage location that all \nmagic storage\n items access.",
         SEWINGMANNEQUIN = "Survivors can place equip slot items on this mannequin, and then they can use it to quick swap those items with what they are currently equipped with.",
         WINTERSFEASTOVEN = "Standing near this device will provide the survivor with special crafting options of \"Winters Feast food\" they can start cooking at this oven.",

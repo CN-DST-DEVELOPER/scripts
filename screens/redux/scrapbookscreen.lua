@@ -77,12 +77,12 @@ local function GetPeriodString(period)
 		local minutes = math.floor(period/60*100)/100
 
 		if minutes < 1 then
-			return period..STRINGS.SCRAPBOOK.DATA_SECONDS
+			return subfmt(STRINGS.SCRAPBOOK.DATA_TIME, { time = period, txt = STRINGS.SCRAPBOOK.DATA_SECONDS })
 		end
 
-		return minutes..(minutes <= 1 and STRINGS.SCRAPBOOK.DATA_MINUTE or STRINGS.SCRAPBOOK.DATA_MINUTES)
+		return subfmt(STRINGS.SCRAPBOOK.DATA_TIME, { time = minutes, txt = (minutes <= 1 and STRINGS.SCRAPBOOK.DATA_MINUTE or STRINGS.SCRAPBOOK.DATA_MINUTES) }) 
 	else
-		return days..(days <= 1 and STRINGS.SCRAPBOOK.DATA_DAY or STRINGS.SCRAPBOOK.DATA_DAYS)
+		return subfmt(STRINGS.SCRAPBOOK.DATA_TIME, { time = days, txt = (days <= 1 and STRINGS.SCRAPBOOK.DATA_DAY or STRINGS.SCRAPBOOK.DATA_DAYS) })
 	end
 end
 
@@ -1615,45 +1615,53 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 	local offsety = 0
 	local offsetx = 0
 	local animal = nil
+
 	if data then
     	animal = photostack:AddChild(UIAnim())
-		animal:GetAnimState():SetBuild(data.build)
-		animal:GetAnimState():SetBank(data.bank)
-		animal:GetAnimState():SetPercent(data.anim or "", data.animpercent or rand())
+		local animstate = animal:GetAnimState()
+
+		animstate:SetBuild(data.build)
+		animstate:SetBank(data.bank)
+		animstate:SetPercent(data.anim or "", data.animpercent or rand())
+
+		if data.facing then
+			animal:SetFacing(data.facing)
+			animstate:MakeFacingDirty()
+		end
 
 		if data.alpha then
-			animal:GetAnimState():SetMultColour(1, 1, 1, data.alpha)
+			animstate:SetMultColour(1, 1, 1, data.alpha)
 		end
 
 		if data.overridebuild then
-			animal:GetAnimState():AddOverrideBuild(data.overridebuild)
+			animstate:AddOverrideBuild(data.overridebuild)
 		end
 
-		animal:GetAnimState():Hide("snow")
+		animstate:Hide("snow")
 
 		if data.hide then
 			for i,hide in ipairs(data.hide) do
-				animal:GetAnimState():Hide(hide)
+				animstate:Hide(hide)
 			end
 		end
 
 		if data.hidesymbol then
 			for i,hide in ipairs(data.hidesymbol) do
-				animal:GetAnimState():HideSymbol(hide)
+				animstate:HideSymbol(hide)
 			end
 		end
 
 		if data.overridesymbol then
 			if type(data.overridesymbol[1]) ~= "table" then
-				animal:GetAnimState():OverrideSymbol(data.overridesymbol[1], data.overridesymbol[2], data.overridesymbol[3])
+				animstate:OverrideSymbol(data.overridesymbol[1], data.overridesymbol[2], data.overridesymbol[3])
 			else
 				for i,set in ipairs( data.overridesymbol ) do
-					animal:GetAnimState():OverrideSymbol(set[1], set[2], set[3])
+					animstate:OverrideSymbol(set[1], set[2], set[3])
 				end
 			end
 		end
 
-		local x1, y1, x2, y2 = animal:GetAnimState():GetVisualBB()
+		local x1, y1, x2, y2 = animstate:GetVisualBB()
 
 		local ax,ay = animal:GetBoundingBoxSize()
 

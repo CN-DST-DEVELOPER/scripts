@@ -190,7 +190,7 @@ end
 --Hard limit target list size since casting does multiple passes it
 local SPELL_MAX_TARGETS = 20
 local SPELLTARGET_MUST_TAGS = { "_combat", "_health" }
-local SPELLTARGET_CANT_TAGS = { "INLIMBO", "playerghost", "deergemresistance" }
+local SPELLTARGET_CANT_TAGS = { "INLIMBO", "playerghost", "deergemresistance", "notarget" }
 local function FindCastTargets(inst, target)
     if target ~= nil then
         --Single target for deer without keeper

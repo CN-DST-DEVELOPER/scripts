@@ -154,6 +154,8 @@ local function AddChair(ret, name, bank, build, hasback)
 			inst.highlightchildren = { inst.back }
 		end
 
+		inst.scrapbook_facing  = FACING_DOWN
+
 		inst:AddComponent("inspectable")
         inst.components.inspectable.nameoverride = "WOOD_CHAIR"
         inst.components.inspectable.getstatus = GetStatus

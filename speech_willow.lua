@@ -4464,6 +4464,10 @@ return{
         BIRD_MUTANT_SPITTER = "Oh yeah?! Two can play at that game... PTOOEY!",
 
         WAGSTAFF_NPC = "Uuuugh, old people always seem to need help with something or other.",
+
+        WAGSTAFF_NPC_MUTATIONS = "Now what?",
+        WAGSTAFF_NPC_WAGPUNK = "That's right, old man. Move along.",
+
         ALTERGUARDIAN_CONTAINED = "What's that weird machine?",
 
         WAGSTAFF_TOOL_1 = "I've got a feeling this belongs to that old guy.",

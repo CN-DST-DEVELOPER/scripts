@@ -7,6 +7,7 @@ local assets =
     Asset("ANIM", "anim/player_mount_wes_2.zip"),
     Asset("ANIM", "anim/player_mime.zip"),
     Asset("ANIM", "anim/player_mime2.zip"),
+	Asset("ANIM", "anim/player_sit_mime.zip"),
     Asset("ANIM", "anim/player_idles_wes.zip"),
 }
 

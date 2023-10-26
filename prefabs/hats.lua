@@ -3515,16 +3515,27 @@ local function MakeHat(name)
         end
     end
 
-    fns.wagpunk_spawnsteam = function(inst, prefab)
-        inst:DoTaskInTime(math.random() * 0.3, function()
-            if inst:IsValid() and not (inst.components.health ~= nil and inst.components.health:IsDead()) and not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen()) then
-                inst:AddChild(SpawnPrefab(prefab))
-            end
-        end)
+    local function SpawnSteamFX_Internal(inst, prefab)
+        if inst:IsValid() and not (inst.components.health ~= nil and inst.components.health:IsDead()) and not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen()) then
+            inst:AddChild(SpawnPrefab(prefab))
+        end
+    end
+
+    fns.wagpunk_spawnsteam = function(inst, owner, fx)
+        if owner == nil or not owner:IsValid() then return end
+
+        if inst._spawnsteamfx ~= nil then
+            inst._spawnsteamfx:Cancel()
+            inst._spawnsteamfx = nil
+        end
+    
+        local delay = math.random() * 0.3
+    
+        inst._spawnsteamfx = owner:DoTaskInTime(delay, SpawnSteamFX_Internal, fx)
     end 
 
-    fns.wagpunk_spawnbufffx = function(owner)
-        fns.wagpunk_spawnsteam(owner,"wagpunksteam_hat_up")    
+    fns.wagpunk_spawnbufffx = function(inst, owner)
+        fns.wagpunk_spawnsteam(inst, owner, "wagpunksteam_hat_up")    
     end
 
     fns.wagpunk_reset = function(inst)
@@ -3542,7 +3553,7 @@ local function MakeHat(name)
                 owner.components.combat.externaldamagemultipliers:SetModifier(inst, TUNING.ARMOR_WAGPUNK_HAT_STAGE0)
             end
 
-            fns.wagpunk_spawnsteam(owner,"wagpunksteam_hat_down")
+            fns.wagpunk_spawnsteam(inst, owner, "wagpunksteam_hat_down")
 
             if owner.SoundEmitter ~= nil then
                 owner.SoundEmitter:KillSound("wagpunkambient_hat")
@@ -3580,7 +3591,7 @@ local function MakeHat(name)
         if inst and inst.components.targettracker then
             if not inst.components.targettracker:IsTracking(target) then
                 inst.components.targettracker:TrackTarget(target)
-                fns.wagpunk_spawnbufffx(owner)
+                fns.wagpunk_spawnbufffx(inst, owner)
 
                 fns.wagpunk_dosayindelay(inst,STRINGS.WARBIS.START)
             end
@@ -3658,7 +3669,7 @@ local function MakeHat(name)
                 fns.wagpunk_playambient(owner,0.7)
                 -- ADD EFFECT 3
                 saystring = STRINGS.WARBIS.STAGE3
-                fns.wagpunk_spawnbufffx(owner)
+                fns.wagpunk_spawnbufffx(inst, owner)
     
             elseif STAGE2 <= targettime and lasttime < STAGE2 then
                 if inst.fx ~= nil then
@@ -3672,7 +3683,7 @@ local function MakeHat(name)
                 fns.wagpunk_playambient(owner,0.5)
                 -- ADD EFFECT 2
                 saystring = STRINGS.WARBIS.STAGE2
-                fns.wagpunk_spawnbufffx(owner)
+                fns.wagpunk_spawnbufffx(inst, owner)
 
             elseif STAGE1 <= targettime and lasttime < STAGE1 then
                 if inst.fx ~= nil then
@@ -3685,9 +3696,16 @@ local function MakeHat(name)
 
                 fns.wagpunk_playambient(owner,0.3)
                -- ADD EFFECT 1
-                fns.wagpunk_spawnbufffx(owner)
+                fns.wagpunk_spawnbufffx(inst, owner)
                 saystring = STRINGS.WARBIS.STAGE1
 
+            elseif STAGE1 > targettime and lasttime <= 0 then
+                if inst.fx ~= nil then
+                    inst.fx.level:set(2)
+                end
+
+                fns.wagpunk_spawnbufffx(inst, owner)
+                fns.wagpunk_playambient(owner,0)
             end
 
             if saystring then
@@ -3729,7 +3747,20 @@ local function MakeHat(name)
     fns.wagpunk_onunequip = function(inst, owner)
         _onunequip(inst, owner)
 
+        local armor = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+
+        if armor ~= nil and armor.components.targettracker ~= nil and armor.components.targettracker:IsCloningTarget() then
+            armor.components.targettracker:StopTracking()
+        end
+
         inst:RemoveEventCallback("onattackother", fns.wagpunk_OnAttack, owner)
+
+        if inst._targettask then
+            inst._targettask:Cancel()
+            inst._targettask = nil
+        end
+
+        inst._potencialtarget = nil
 
         if owner ~= nil and owner.components.combat ~= nil then
             owner.components.combat.externaldamagemultipliers:RemoveModifier(inst)
@@ -3742,10 +3773,15 @@ local function MakeHat(name)
         end
 
         if inst.fx ~= nil then
-            inst.fx.level:set(1)
             inst.fx:Remove()
             inst.fx = nil
         end
+
+        if inst._classified ~= nil then
+            inst._classified:ShutUp()
+        end
+
+        fns.wagpunk_killsaytask(inst)
 
         inst._wearer:set(nil)
     end
@@ -3754,13 +3790,22 @@ local function MakeHat(name)
         inst._synch:push()
         fns.wagpunk_dosayindelay(inst,STRINGS.WARBIS.SYNCHING) 
     end
-    fns.wagpunk_unpause = function(inst)
-        local timetracking = inst.components.targettracker:GetTimeTracking()
 
-        if timetracking ~= nil then
-            fns.wagpunk_timecheck(inst, timetracking, 0)
-            fns.wagpunk_dosayindelay(inst,STRINGS.WARBIS.SYNCHED)
+    fns.wagpunk_unpause = function(inst)
+        local timetracking = inst.components.targettracker:GetTimeTracking() or 0
+
+        local owner = inst.components.inventoryitem:GetGrandOwner()
+        local armor = owner ~= nil and owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+
+        if armor ~= nil and armor.components.targettracker ~= nil then
+            local armor_timetracking = armor.components.targettracker:GetTimeTracking()
+
+            if armor_timetracking ~= nil and armor_timetracking > timetracking then
+                inst.components.targettracker:SetTimeTracking(armor_timetracking)
+            end
         end
+
+        fns.wagpunk_dosayindelay(inst, STRINGS.WARBIS.SYNCHED)
     end
 
     fns.wagpunk_trackerstart = function(inst,target)    
@@ -3768,7 +3813,7 @@ local function MakeHat(name)
     end
 
     fns.wagpunk_trackerstop = function(inst,target)
-       inst._target:set(nil)        
+       inst._target:set(nil)
     end
 
     fns.OnChangeTargetDirty = function(inst)
@@ -3846,7 +3891,7 @@ local function MakeHat(name)
         end
         inst._target:set_local(nil)
 
-        if not TheWorld.ismastersim then        
+        if not TheWorld.ismastersim then
             return inst
         end
 

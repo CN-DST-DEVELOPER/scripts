@@ -306,11 +306,16 @@ local actionhandlers =
 
     ActionHandler(ACTIONS.COMMENT, function(inst, action)
         if not inst.sg:HasStateTag("talking") then
-            if inst.commentitemstotoss then
+            local entitytracker = inst.components.entitytracker
+            local comment_item = entitytracker:GetEntity("commentitemtotoss")
+            if comment_item then
                 inst.itemstotoss = inst.itemstotoss or {}
-                ConcatArrays(inst.itemstotoss, inst.commentitemstotoss)
-                inst.commentitemstotoss = nil
+                table.insert(inst.itemstotoss, comment_item)
+                entitytracker:ForgetEntity("commentitemtotoss")
             end
+
+            entitytracker:ForgetEntity("commenttarget")
+
             return "talkto"
         end
     end),

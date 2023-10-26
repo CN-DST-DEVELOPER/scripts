@@ -46,6 +46,14 @@ function TargetTracker:IsTracking(testtarget)
     return self.target == testtarget
 end
 
+function TargetTracker:IsPaused()
+    return self.pausetime ~= nil
+end
+
+function TargetTracker:IsCloningTarget()
+    return (self.timetracking or 0) <= 0 and self:IsPaused()
+end
+
 function TargetTracker:GetTimeTracking()
     return self.timetracking
 end
@@ -54,6 +62,10 @@ end
 
 function TargetTracker:SetTimeTracking(time)
     self.timetracking = time
+
+    if self.ontimeupdatefn ~= nil then
+        self.ontimeupdatefn(self.inst, self.timetracking, 0)
+    end
 end
 
 function TargetTracker:CloneTargetFrom(item, pausetime)
@@ -62,7 +74,6 @@ function TargetTracker:CloneTargetFrom(item, pausetime)
     end
 
     self.inst.components.targettracker:TrackTarget(item.components.targettracker.target)
-    self.inst.components.targettracker:SetTimeTracking(item.components.targettracker.timetracking)
 
     if pausetime ~= nil then
         self.inst.components.targettracker:Pause(pausetime)
@@ -92,6 +103,7 @@ end
 function TargetTracker:StopTracking(reset)
     self.target = nil
     self.timetracking = nil
+    self.pausetime = nil
 
     self.inst:PushEvent("targettracker_stoptrack")
 
@@ -123,7 +135,19 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function TargetTracker:OnUpdate(dt)
-    if self.pausetime ~= nil then
+    if self.target == nil or
+        not self.target:IsValid() or
+        self.target:IsInLimbo() or
+        self.target:IsAsleep() or
+        self.target.components.health == nil or
+        self.target.components.health:IsDead() or
+        (self.shouldkeeptrackingfn ~= nil and not self.shouldkeeptrackingfn(self.inst, self.target))
+    then
+        self:StopTracking(true)
+        return
+    end
+
+    if self:IsPaused() then
         self.pausetime = self.pausetime - dt
 
         if self.pausetime <= 0 then
@@ -133,22 +157,8 @@ function TargetTracker:OnUpdate(dt)
                 self.onresumefn(self.inst)
             end
         end
-    end
 
-    if self.pausetime == nil and self.timetracking ~= nil then
-
-        if self.target == nil or
-            not self.target:IsValid() or
-            self.target:IsInLimbo() or
-            self.target:IsAsleep() or
-            self.target.components.health == nil or
-            self.target.components.health:IsDead() or
-            (self.shouldkeeptrackingfn ~= nil and not self.shouldkeeptrackingfn(self.inst, self.target))
-        then
-            self:StopTracking(true)
-            return
-        end
-
+    elseif self.timetracking ~= nil then
         self.lasttime     = self.timetracking
         self.timetracking = self.timetracking + dt
 

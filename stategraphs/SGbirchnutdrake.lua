@@ -66,7 +66,7 @@ local states =
 
     State{
         name = "spawn",
-        tags = { "busy", "hidden", "noattack" },
+        tags = { "busy", "hidden", "invisible", "noattack" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -88,7 +88,7 @@ local states =
 
     State{
         name = "ground_idle",
-        tags = { "idle", "hidden", "noattack" },
+        tags = { "idle", "hidden", "invisible", "noattack" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -105,7 +105,7 @@ local states =
 
     State{
         name = "enter",
-        tags = { "busy", "hidden", "noattack" },
+        tags = { "busy", "hidden", "invisible", "noattack" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -127,7 +127,7 @@ local states =
 
     State{
         name = "exit_pre",
-        tags = { "busy", "hidden", "noattack", "exit" },
+        tags = { "busy", "hidden", "invisible", "noattack", "exit" },
 
         onenter = function(inst, idleanim)
             inst.sg.mem.exit = nil
@@ -145,7 +145,7 @@ local states =
 
     State{
         name = "exit",
-        tags = { "busy", "hidden", "noattack", "exit" },
+        tags = { "busy", "hidden", "invisible", "noattack", "exit" },
 
         onenter = function(inst)
             inst.sg.mem.exit = nil

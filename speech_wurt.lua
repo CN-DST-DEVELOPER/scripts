@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "Pt-ooey back at you, florp!",
 
         WAGSTAFF_NPC = "Is another scale-less? Can't smell him, florpt...",
+
+        WAGSTAFF_NPC_MUTATIONS = "Weird scale-less is back!",
+        WAGSTAFF_NPC_WAGPUNK = "Where he going, florp?",
+
         ALTERGUARDIAN_CONTAINED = "What that thing for?",
 
         WAGSTAFF_TOOL_1 = "Hmm... it have no smell, like weird scale-less.",

@@ -73,6 +73,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "idle3"
+
     ---------------------------------------------------------------
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot(loot)
@@ -119,7 +121,6 @@ local function itemfn()
     inst.AnimState:SetBank("dock_woodposts")
     inst.AnimState:SetBuild("dock_woodposts")
     inst.AnimState:PlayAnimation("item")
-    inst.scrapbook_anim = "item"
 
     MakeInventoryFloatable(inst, "med", 0.2, 0.75)
     

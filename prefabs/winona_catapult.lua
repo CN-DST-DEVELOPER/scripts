@@ -466,6 +466,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_facing  = FACING_DOWNRIGHT
+
     inst._state = 1
 
     inst:AddComponent("inspectable")

@@ -61,7 +61,7 @@ local sounds =
 
 local RETARGET_ONEOF_TAGS = {"player", "monster"}
 local function Retarget(inst)
-    return FindEntity(
+	return not inst:IsInLimbo() and FindEntity(
         inst,
         TUNING.SPAT_TARGET_DIST,
         function(guy)
@@ -70,11 +70,11 @@ local function Retarget(inst)
         nil,
         nil,
         RETARGET_ONEOF_TAGS
-    )
+	) or nil
 end
 
 local function KeepTarget(inst, target)
-    return target:IsNear(inst, TUNING.SPAT_CHASE_DIST)
+	return not inst:IsInLimbo() and target:IsNear(inst, TUNING.SPAT_CHASE_DIST)
 end
 
 local function OnAttacked(inst, data)

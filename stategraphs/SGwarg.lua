@@ -793,9 +793,11 @@ local states =
 						local t = GetTime()
 						for i, v in ipairs(hounds) do
 							--for brain, so hounds called in mid-fight won't go for carcass right away
-							v.components.combat.lastwasattackedtime = t - math.random() * 4
+							local delay = 4 + math.random() * 2
+							v.components.combat.lastwasattackedtime = t - TUNING.HOUND_FIND_CARCASS_DELAY + delay
 						end
 					end
+					inst.sg.mem.dohowl = nil
                 end
             end),
 			FrameEvent(36, function(inst)

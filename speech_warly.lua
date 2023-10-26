@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "Something is definitely amiss here.",
 
         WAGSTAFF_NPC = "Bonjour! Are you in need of assistance?",
+
+        WAGSTAFF_NPC_MUTATIONS = "Monsieur, I aim to please.",
+        WAGSTAFF_NPC_WAGPUNK = "The gentleman is in a rush to get somewhere.",
+
         ALTERGUARDIAN_CONTAINED = "It's gobbling up all the energy!",
 
         WAGSTAFF_TOOL_1 = "This must be what I'm looking for!",

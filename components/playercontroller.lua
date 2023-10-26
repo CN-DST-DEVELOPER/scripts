@@ -1162,8 +1162,11 @@ function PlayerController:DoControllerUseItemOnSelfFromInvTile(item)
     if not self.deploy_mode and
         item.replica.inventoryitem:IsDeployable(self.inst) and
         item.replica.inventoryitem:IsGrandOwner(self.inst) then
-        self.deploy_mode = true
-        return
+		local rider = self.inst.replica.rider
+		if not (rider ~= nil and rider:IsRiding()) then
+			self.deploy_mode = true
+			return
+		end
     end
     self.inst.replica.inventory:ControllerUseItemOnSelfFromInvTile(item)
 end
@@ -4173,18 +4176,24 @@ function PlayerController:GetItemUseAction(active_item, target)
 		act = BufferedAction(self.inst, nil, ACTIONS.USEMAGICTOOL, active_item)
 	end
 
-    --V2C: Use self actions blocked by controller R.Dpad "TOGGLE_DEPLOY_MODE"
-    --     e.g. Murder/Plant, Eat/Plant
-    if act ~= nil or not (active_item.replica.inventoryitem:IsDeployable(self.inst) and active_item.replica.inventoryitem:IsGrandOwner(self.inst)) then
-        return act
-    end
-    act = --[[rmb]] self.inst.components.playeractionpicker:GetInventoryActions(active_item, true)
-    act = act[1] ~= nil and act[1].action ~= ACTIONS.TOGGLE_DEPLOY_MODE and act[1] or act[2]
-    if act == nil then
-        act = --[[lmb]] self.inst.components.playeractionpicker:GetInventoryActions(active_item, false)
-        act = act[1] ~= nil and act[1].action ~= ACTIONS.TOGGLE_DEPLOY_MODE and act[1] or act[2]
-    end
-    return act ~= nil and act.action ~= ACTIONS.LOOKAT and act or nil
+	if act ~= nil then
+		return act
+	elseif active_item.replica.inventoryitem:IsDeployable(self.inst) and active_item.replica.inventoryitem:IsGrandOwner(self.inst) then
+		--Deployable item, no item use action generated yet
+		local rider = self.inst.replica.rider
+		if not (rider ~= nil and rider:IsRiding()) then
+			--V2C: When not mounted, use self actions blocked by controller R.Dpad "TOGGLE_DEPLOY_MODE"
+			--     So force it onto L.Dpad instead here
+			--     e.g. Murder/Plant, Eat/Plant
+			act = --[[rmb]] self.inst.components.playeractionpicker:GetInventoryActions(active_item, true)
+			act = act[1] ~= nil and act[1].action ~= ACTIONS.TOGGLE_DEPLOY_MODE and act[1] or act[2]
+			if act == nil then
+				act = --[[lmb]] self.inst.components.playeractionpicker:GetInventoryActions(active_item, false)
+				act = act[1] ~= nil and act[1].action ~= ACTIONS.TOGGLE_DEPLOY_MODE and act[1] or act[2]
+			end
+			return act ~= nil and act.action ~= ACTIONS.LOOKAT and act or nil
+		end
+	end
 end
 
 function PlayerController:RemoteUseItemFromInvTile(buffaction, item)

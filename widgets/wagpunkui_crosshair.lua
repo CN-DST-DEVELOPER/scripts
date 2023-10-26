@@ -14,7 +14,7 @@ local Wagpunkui_crosshair =  Class(UIAnim, function(self, owner)
 
     self:GetAnimState():SetBank("wagstaff_armor_target")
     self:GetAnimState():SetBuild("wagstaff_armor_target")
-    self:GetAnimState():PlayAnimation("circle_meter")
+    self:GetAnimState():PlayAnimation("distance_meter")
     self:GetAnimState():AnimateWhilePaused(false)
 
 end)

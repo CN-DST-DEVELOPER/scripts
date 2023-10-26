@@ -179,7 +179,7 @@ return{
             BURNING = "Fire! Don't like fire!",
             INUSE = "Someone else's",
             NOTENOUGHHAIR = "Not fuzzy enough",
-            NOOCCUPANT = "Need Shaggy Buddy.",
+            NOOCCUPANT = "Need Shaggy Buddy",
         },
         ATTUNE =
         {
@@ -612,7 +612,7 @@ return{
     ANNOUNCE_REVIVED_OTHER_CORPSE = "Made better",
     ANNOUNCE_REVIVED_FROM_CORPSE = "Thank you!",
 
-    ANNOUNCE_FLARE_SEEN = "See friend make pretty light.",
+    ANNOUNCE_FLARE_SEEN = "See friend make pretty light",
     ANNOUNCE_MEGA_FLARE_SEEN = "Look out friend! Bad things coming!",
     ANNOUNCE_OCEAN_SILHOUETTE_INCOMING = "Water friend?",
 
@@ -1095,7 +1095,7 @@ return{
             GHOST = "Hello, Floaty Friend",
             BEAVER = "Friend Eater! Keep away!",
             BEAVERGHOST = "Can't eat friends anymore",
-            MOOSE = "Like Branch Head better than Friend Eater.",
+            MOOSE = "Like Branch Head better than Friend Eater",
             MOOSEGHOST = "Branch Head friend is floaty!",
             GOOSE = "Oh. Friend made small!",
             GOOSEGHOST = "Hello floaty friend!",
@@ -3511,7 +3511,7 @@ return{
         	GENERIC = "Pool party!",
         	BOMBED = "Warm now. Glowy",
         	GLASS = "Ice? Nope",
-			EMPTY = "Muddy.",
+			EMPTY = "Muddy",
         },
         MOONGLASS = "Ouch! Sharp!",
         MOONGLASS_CHARGED = "Glowy sharp things",
@@ -3591,7 +3591,7 @@ return{
         BOAT_GRASS_ITEM = "Friends help make Floaty",
         STEERINGWHEEL_ITEM = "For pointing Floaty",
         ANCHOR_ITEM = "Heavy...",
-        MAST_ITEM = "Tall friend for Floater.",
+        MAST_ITEM = "Tall friend for Floater",
         MUTATEDHOUND =
         {
         	DEAD = "Dead now?",
@@ -3739,7 +3739,7 @@ return{
 
         WOBSTER_SHELLER = "Snappy Glub Glub",
         WOBSTER_DEN = "Wet nest",
-        WOBSTER_SHELLER_DEAD = "Oh. Belly stuff now.",
+        WOBSTER_SHELLER_DEAD = "Oh. Belly stuff now",
         WOBSTER_SHELLER_DEAD_COOKED = "Why changed color?",
 
         LOBSTERBISQUE = "Still snappy?",
@@ -4461,6 +4461,10 @@ return{
         BIRD_MUTANT_SPITTER = "Tweeter sick?",
 
         WAGSTAFF_NPC = "Hello! Oh, goodbye... oh, hello!",
+
+        WAGSTAFF_NPC_MUTATIONS = "Need help?",
+        WAGSTAFF_NPC_WAGPUNK = "Follow?",
+
         ALTERGUARDIAN_CONTAINED = "Locked away",
 
         WAGSTAFF_TOOL_1 = "Thing?",
@@ -4692,7 +4696,7 @@ return{
         CANNONBALL_ROCK_ITEM = "Rock big, good for go boom",
 
         OCEAN_TRAWLER = {
-            GENERIC = "Catch Glub Glubs.",
+            GENERIC = "Catch Glub Glubs",
             LOWERED = "Busy now",
             CAUGHT = "Yay!!",
             ESCAPED = "Aww... Glub Glubs leave?",
@@ -4713,7 +4717,7 @@ return{
             ACTIVATED = "Calling big Pull Rock here",
         },
         DOCK_KIT = "Makes home for Floaties",
-        DOCK_WOODPOSTS_ITEM = "Plant friends on dock.",
+        DOCK_WOODPOSTS_ITEM = "Plant friends on dock",
 
         MONKEYHUT =
         {
@@ -4960,7 +4964,7 @@ return{
             GENERIC = "Branch head eye make cold",    -- Enabled.
             NOEYEBALL = "Where branch head eye?",  -- Disabled.
         },
-        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Not done yet.",
+        DEERCLOPSEYEBALL_SENTRYWARD_KIT = "Not done yet",
 
         SECURITY_PULSE_CAGE = "Big nothing",
         SECURITY_PULSE_CAGE_FULL = "Hello, pretty light ball",

@@ -1657,6 +1657,17 @@ table.insert(prefs, CreatePrefabSkin("chair_stool_fantasy",
 	release_group = 148,
 }))
 
+table.insert(prefs, CreatePrefabSkin("chair_stool_hallowed",
+{
+	base_prefab = "wood_stool",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) wood_stool_init_fn(inst, "chair_stool_hallowed") end,
+	skin_tags = { "WOOD_STOOL", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
+}))
+
 table.insert(prefs, CreatePrefabSkin("chair_stool_handmade",
 {
 	base_prefab = "wood_stool",
@@ -1837,6 +1848,17 @@ table.insert(prefs, CreatePrefabSkin("decor_centerpiece_fantasy",
 	release_group = 148,
 }))
 
+table.insert(prefs, CreatePrefabSkin("decor_centerpiece_hallowed",
+{
+	base_prefab = "decor_centerpiece",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) decor_centerpiece_init_fn(inst, "decor_centerpiece_hallowed") end,
+	skin_tags = { "DECOR_CENTERPIECE", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
+}))
+
 table.insert(prefs, CreatePrefabSkin("decor_centerpiece_handmade",
 {
 	base_prefab = "decor_centerpiece",
@@ -1857,6 +1879,17 @@ table.insert(prefs, CreatePrefabSkin("decor_flowervase_fantasy",
 	init_fn = function(inst) decor_flowervase_init_fn(inst, "decor_flowervase_fantasy") end,
 	skin_tags = { "DECOR_FLOWERVASE", "FANTASY", "CRAFTABLE", },
 	release_group = 148,
+}))
+
+table.insert(prefs, CreatePrefabSkin("decor_flowervase_hallowed",
+{
+	base_prefab = "decor_flowervase",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) decor_flowervase_init_fn(inst, "decor_flowervase_hallowed") end,
+	skin_tags = { "DECOR_FLOWERVASE", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
 }))
 
 table.insert(prefs, CreatePrefabSkin("decor_flowervase_handmade",
@@ -1881,6 +1914,17 @@ table.insert(prefs, CreatePrefabSkin("decor_lamp_fantasy",
 	release_group = 148,
 }))
 
+table.insert(prefs, CreatePrefabSkin("decor_lamp_hallowed",
+{
+	base_prefab = "decor_lamp",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) decor_lamp_init_fn(inst, "decor_lamp_hallowed") end,
+	skin_tags = { "DECOR_LAMP", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
+}))
+
 table.insert(prefs, CreatePrefabSkin("decor_lamp_handmade",
 {
 	base_prefab = "decor_lamp",
@@ -1901,6 +1945,17 @@ table.insert(prefs, CreatePrefabSkin("decor_phonograph_fantasy",
 	init_fn = function(inst) phonograph_init_fn(inst, "decor_phonograph_fantasy") end,
 	skin_tags = { "PHONOGRAPH", "FANTASY", "CRAFTABLE", },
 	release_group = 148,
+}))
+
+table.insert(prefs, CreatePrefabSkin("decor_phonograph_hallowed",
+{
+	base_prefab = "phonograph",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) phonograph_init_fn(inst, "decor_phonograph_hallowed") end,
+	skin_tags = { "PHONOGRAPH", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
 }))
 
 table.insert(prefs, CreatePrefabSkin("decor_phonograph_handmade",
@@ -1925,6 +1980,17 @@ table.insert(prefs, CreatePrefabSkin("decor_pictureframe_fantasy",
 	release_group = 148,
 }))
 
+table.insert(prefs, CreatePrefabSkin("decor_pictureframe_hallowed",
+{
+	base_prefab = "decor_pictureframe",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) decor_pictureframe_init_fn(inst, "decor_pictureframe_hallowed") end,
+	skin_tags = { "DECOR_PICTUREFRAME", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
+}))
+
 table.insert(prefs, CreatePrefabSkin("decor_pictureframe_handmade",
 {
 	base_prefab = "decor_pictureframe",
@@ -1945,6 +2011,17 @@ table.insert(prefs, CreatePrefabSkin("decor_portraitframe_fantasy",
 	init_fn = function(inst) decor_portraitframe_init_fn(inst, "decor_portraitframe_fantasy") end,
 	skin_tags = { "DECOR_PORTRAITFRAME", "FANTASY", "CRAFTABLE", },
 	release_group = 148,
+}))
+
+table.insert(prefs, CreatePrefabSkin("decor_portraitframe_hallowed",
+{
+	base_prefab = "decor_portraitframe",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) decor_portraitframe_init_fn(inst, "decor_portraitframe_hallowed") end,
+	skin_tags = { "DECOR_PORTRAITFRAME", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
 }))
 
 table.insert(prefs, CreatePrefabSkin("decor_portraitframe_handmade",
@@ -6072,6 +6149,17 @@ table.insert(prefs, CreatePrefabSkin("round_table_fantasy",
 	init_fn = function(inst) wood_table_round_init_fn(inst, "round_table_fantasy") end,
 	skin_tags = { "WOOD_TABLE_ROUND", "FANTASY", "CRAFTABLE", },
 	release_group = 148,
+}))
+
+table.insert(prefs, CreatePrefabSkin("round_table_hallowed",
+{
+	base_prefab = "wood_table_round",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) wood_table_round_init_fn(inst, "round_table_hallowed") end,
+	skin_tags = { "WOOD_TABLE_ROUND", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
 }))
 
 table.insert(prefs, CreatePrefabSkin("round_table_handmade",
@@ -11496,6 +11584,17 @@ table.insert(prefs, CreatePrefabSkin("wood_chair_fantasy",
 	release_group = 148,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wood_chair_hallowed",
+{
+	base_prefab = "wood_chair",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) wood_chair_init_fn(inst, "wood_chair_hallowed") end,
+	skin_tags = { "WOOD_CHAIR", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wood_chair_handmade",
 {
 	base_prefab = "wood_chair",
@@ -11516,6 +11615,17 @@ table.insert(prefs, CreatePrefabSkin("wood_table_fantasy",
 	init_fn = function(inst) wood_table_square_init_fn(inst, "wood_table_fantasy") end,
 	skin_tags = { "WOOD_TABLE_SQUARE", "FANTASY", "CRAFTABLE", },
 	release_group = 148,
+}))
+
+table.insert(prefs, CreatePrefabSkin("wood_table_hallowed",
+{
+	base_prefab = "wood_table_square",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst) wood_table_square_init_fn(inst, "wood_table_hallowed") end,
+	skin_tags = { "WOOD_TABLE_SQUARE", "HALLOWED", "CRAFTABLE", },
+	release_group = 149,
 }))
 
 table.insert(prefs, CreatePrefabSkin("wood_table_handmade",

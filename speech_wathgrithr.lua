@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "You think you can challenge me, winged fiend?",
 
         WAGSTAFF_NPC = "Hail stranger! Are ye friend or foe?",
+
+        WAGSTAFF_NPC_MUTATIONS = "'Twas my pleasure dispatching that beast.",
+        WAGSTAFF_NPC_WAGPUNK = "The man doth make haste.",
+
         ALTERGUARDIAN_CONTAINED = "It's ferrying this warrior's soul to the next realm.",
 
         WAGSTAFF_TOOL_1 = "Mayhaps this is what I seek.",

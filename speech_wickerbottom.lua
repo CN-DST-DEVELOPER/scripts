@@ -4457,6 +4457,10 @@ return{
         BIRD_MUTANT_SPITTER = "The poor thing appears to have been altered by its proximity to the storm.",
 
         WAGSTAFF_NPC = "He seems to be conducting research on the storm, I should assist him.",
+
+        WAGSTAFF_NPC_MUTATIONS = "Rather convenient of him to show up now that the hard work is done.",
+        WAGSTAFF_NPC_WAGPUNK = "Ah, the pursuit of knowledge.",
+
         ALTERGUARDIAN_CONTAINED = "I wonder what he means to do with all that energy.",
 
         WAGSTAFF_TOOL_1 = "Oh dear, I wonder whether that is the tool he requested or not...",

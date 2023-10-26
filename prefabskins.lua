@@ -396,26 +396,31 @@ PREFAB_SKINS = {
 	decor_centerpiece =
 	{
 		"decor_centerpiece_fantasy",
+		"decor_centerpiece_hallowed",
 		"decor_centerpiece_handmade",
 	},
 	decor_flowervase =
 	{
 		"decor_flowervase_fantasy",
+		"decor_flowervase_hallowed",
 		"decor_flowervase_handmade",
 	},
 	decor_lamp =
 	{
 		"decor_lamp_fantasy",
+		"decor_lamp_hallowed",
 		"decor_lamp_handmade",
 	},
 	decor_pictureframe =
 	{
 		"decor_pictureframe_fantasy",
+		"decor_pictureframe_hallowed",
 		"decor_pictureframe_handmade",
 	},
 	decor_portraitframe =
 	{
 		"decor_portraitframe_fantasy",
+		"decor_portraitframe_hallowed",
 		"decor_portraitframe_handmade",
 	},
 	dock_woodposts =
@@ -897,6 +902,7 @@ PREFAB_SKINS = {
 	phonograph =
 	{
 		"decor_phonograph_fantasy",
+		"decor_phonograph_hallowed",
 		"decor_phonograph_handmade",
 	},
 	pickaxe =
@@ -1704,21 +1710,25 @@ PREFAB_SKINS = {
 	wood_chair =
 	{
 		"wood_chair_fantasy",
+		"wood_chair_hallowed",
 		"wood_chair_handmade",
 	},
 	wood_stool =
 	{
 		"chair_stool_fantasy",
+		"chair_stool_hallowed",
 		"chair_stool_handmade",
 	},
 	wood_table_round =
 	{
 		"round_table_fantasy",
+		"round_table_hallowed",
 		"round_table_handmade",
 	},
 	wood_table_square =
 	{
 		"wood_table_fantasy",
+		"wood_table_hallowed",
 		"wood_table_handmade",
 	},
 	woodie =

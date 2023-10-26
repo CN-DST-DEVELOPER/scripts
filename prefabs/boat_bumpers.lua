@@ -224,18 +224,14 @@ function MakeBumperType(data)
         MakeSnowCoveredPristine(inst)
 
         inst.OnRemoveEntity = onremove
-        if data.name == "kelp" then
-            inst.scrapbook_specialinfo = "BOATBUMPERKELP"
-        end
-        if data.name == "shell" then
-            inst.scrapbook_specialinfo = "BOATBUMPERSHELL"
-        end
 
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_anim = "idle_1"
 
         inst:AddComponent("inspectable")
         inst:AddComponent("lootdropper")

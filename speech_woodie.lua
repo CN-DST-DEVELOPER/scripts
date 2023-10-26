@@ -4458,6 +4458,10 @@ return{
         BIRD_MUTANT_SPITTER = "See? You can never trust a bird!",
 
         WAGSTAFF_NPC = "Looks like you're doing somthin' important. How aboot I lend you a hand, eh?",
+
+        WAGSTAFF_NPC_MUTATIONS = "Sounds like he could use our help, eh?",
+        WAGSTAFF_NPC_WAGPUNK = "Where's that old-timer running off to?",
+
         ALTERGUARDIAN_CONTAINED = "Guess he couldn't have brought that sooner, eh?",
 
         WAGSTAFF_TOOL_1 = "I'd better run it back to that old-timer.",

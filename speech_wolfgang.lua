@@ -4458,6 +4458,10 @@ return{
         BIRD_MUTANT_SPITTER = "Something wrong with that bird.",
 
         WAGSTAFF_NPC = "Do not worry, Wolfgang is here to help flickery science man.",
+
+        WAGSTAFF_NPC_MUTATIONS = "Flickery science man is back!",
+        WAGSTAFF_NPC_WAGPUNK = "Wait for Wolfgang!",
+
         ALTERGUARDIAN_CONTAINED = "Old man brought big fancy thingamobob with him!",
 
         WAGSTAFF_TOOL_1 = "Wolfgang found thing for funny old man!",

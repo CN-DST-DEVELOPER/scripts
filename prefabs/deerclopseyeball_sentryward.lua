@@ -446,6 +446,7 @@ local function sentrywardfn()
 
     inst.scrapbook_anim = "hit"
     inst.scrapbook_animpercent = 1
+    inst.scrapbook_hide = { "eyeball", "crystal_hand_ice" }
 
     inst.OnEyeballGiven = OnEyeballGiven
     inst.OnEyeballTaken = OnEyeballTaken

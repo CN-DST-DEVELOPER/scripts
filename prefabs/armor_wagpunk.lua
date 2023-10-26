@@ -45,9 +45,14 @@ end
 local function SpawnSteamFX(inst, owner, fx)
     if owner == nil or not owner:IsValid() then return end
 
+    if inst._spawnsteamfx ~= nil then
+        inst._spawnsteamfx:Cancel()
+        inst._spawnsteamfx = nil
+    end
+
     local delay = math.random() * 0.3
 
-    owner:DoTaskInTime(delay, SpawnSteamFX_Internal, fx)
+    inst._spawnsteamfx = owner:DoTaskInTime(delay, SpawnSteamFX_Internal, fx)
 end
 
 local function SpawnBuffFX(inst, owner)
@@ -155,26 +160,6 @@ local function TimeCheck(inst, targettime, lasttime)
 
     local owner = inst.components.inventoryitem.owner
 
-    if STAGE1 <= targettime and lasttime < STAGE1 then
-        if inst.fx ~= nil then
-            inst.fx.level:set(3)
-        end
-        inst.components.equippable.walkspeedmult = TUNING.ARMORPUNK_SPEED_MULT_STAGE1
-        if owner then
-            inst:SpawnBuffFX(owner)
-            inst:PlayAmbientSound(owner, 0.3)
-        end
-    end
-    if STAGE2 <= targettime and lasttime < STAGE2 then
-        if inst.fx ~= nil then
-            inst.fx.level:set(4)
-        end
-        inst.components.equippable.walkspeedmult = TUNING.ARMORPUNK_SPEED_MULT_STAGE2
-        if owner then
-            inst:SpawnBuffFX(owner)
-            inst:PlayAmbientSound(owner, 0.5)
-        end
-    end
     if STAGE3 <= targettime and lasttime < STAGE3 then
         if inst.fx ~= nil then
             inst.fx.level:set(5)
@@ -183,6 +168,38 @@ local function TimeCheck(inst, targettime, lasttime)
         if owner then
             inst:SpawnBuffFX(owner)
             inst:PlayAmbientSound(owner, 0.7)
+        end
+
+    elseif STAGE2 <= targettime and lasttime < STAGE2 then
+        if inst.fx ~= nil then
+            inst.fx.level:set(4)
+        end
+        inst.components.equippable.walkspeedmult = TUNING.ARMORPUNK_SPEED_MULT_STAGE2
+        if owner then
+            inst:SpawnBuffFX(owner)
+            inst:PlayAmbientSound(owner, 0.5)
+        end
+
+    elseif STAGE1 <= targettime and lasttime < STAGE1 then
+        if inst.fx ~= nil then
+            inst.fx.level:set(3)
+        end
+        inst.components.equippable.walkspeedmult = TUNING.ARMORPUNK_SPEED_MULT_STAGE1
+        if owner then
+            inst:SpawnBuffFX(owner)
+            inst:PlayAmbientSound(owner, 0.3)
+        end
+
+    elseif STAGE1 > targettime and lasttime <= 0 then
+        if inst.fx ~= nil then
+            inst.fx.level:set(2)
+        end
+
+        inst.components.equippable.walkspeedmult = TUNING.ARMORPUNK_SPEED_MULT_STAGE0
+
+        if owner then
+            inst:SpawnBuffFX(owner)
+            inst:PlayAmbientSound(owner, 0)
         end
     end
 end
@@ -228,6 +245,14 @@ local function OnEquip(inst, owner)
 end
 
 local function OnUnequip(inst, owner)
+    inst:KillTargetTask()
+
+    local hat = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+
+    if hat ~= nil and hat.components.targettracker ~= nil and hat.components.targettracker:IsCloningTarget() then
+        hat.components.targettracker:StopTracking()
+    end
+
     owner.AnimState:ClearOverrideSymbol("swap_body")
 
     local skin_build = inst:GetSkinBuild()
@@ -237,6 +262,8 @@ local function OnUnequip(inst, owner)
 
     inst:RemoveEventCallback("blocked",       inst.OnBlocked, owner)
     inst:RemoveEventCallback("onattackother", inst.OnAttack,  owner)
+
+    inst.components.equippable.walkspeedmult = 1
 
     inst.components.targettracker:StopTracking()
 
@@ -251,10 +278,17 @@ local function OnUnequip(inst, owner)
 end
 
 local function UnpauseFn(inst)
-    local timetracking = inst.components.targettracker:GetTimeTracking()
+    local timetracking = inst.components.targettracker:GetTimeTracking() or 0
 
-    if timetracking ~= nil then
-        inst:TimeCheck(timetracking, 0)
+    local owner = inst.components.inventoryitem:GetGrandOwner()
+    local hat = owner ~= nil and owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+
+    if hat ~= nil and hat.components.targettracker ~= nil then
+        local hat_timetracking = hat.components.targettracker:GetTimeTracking()
+
+        if hat_timetracking ~= nil and hat_timetracking > timetracking then
+            inst.components.targettracker:SetTimeTracking(hat_timetracking)
+        end
     end
 end
 

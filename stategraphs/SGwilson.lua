@@ -18217,17 +18217,26 @@ local states =
 		{
 			EventHandler("ontalk", function(inst)
 				inst.sg.statemem.interrupt_emote(inst)
-				local duration = inst.sg.statemem.talktask ~= nil and GetTaskRemaining(inst.sg.statemem.talktask) or 1.5 + math.random() * .5
-				inst.AnimState:PlayAnimation("sit_dial", true)
 				if inst.sg.statemem.sittalktask ~= nil then
 					inst.sg.statemem.sittalktask:Cancel()
-				end
-				inst.sg.statemem.sittalktask = inst:DoTaskInTime(duration, function(inst)
 					inst.sg.statemem.sittalktask = nil
-					if inst.AnimState:IsCurrentAnimation("sit_dial") then
-						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+				end
+				local duration = inst.sg.statemem.talktask ~= nil and GetTaskRemaining(inst.sg.statemem.talktask) or 1.5 + math.random() * .5
+				if inst:HasTag("mime") then
+					inst.AnimState:PlayAnimation("sit_mime1")
+					for i = 2, math.floor(duration / inst.AnimState:GetCurrentAnimationLength() + 0.5) do
+						inst.AnimState:PushAnimation("sit_mime1")
 					end
-				end)
+					inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+				else
+					inst.AnimState:PlayAnimation("sit_dial", true)
+					inst.sg.statemem.sittalktask = inst:DoTaskInTime(duration, function(inst)
+						inst.sg.statemem.sittalktask = nil
+						if inst.AnimState:IsCurrentAnimation("sit_dial") then
+							inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+						end
+					end)
+				end
 				return OnTalk_Override(inst)
 			end),
 			EventHandler("donetalking", function(inst)

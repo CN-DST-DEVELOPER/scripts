@@ -4463,6 +4463,10 @@ return{
         BIRD_MUTANT_SPITTER = "This peculiar storm has changed its form.",
 
         WAGSTAFF_NPC = "Hyuyuyu! He's not all there!",
+
+        WAGSTAFF_NPC_MUTATIONS = "Shall I assist with his to-do list?",
+        WAGSTAFF_NPC_WAGPUNK = "Perhaps he's late for an important date.",
+
         ALTERGUARDIAN_CONTAINED = "Oh ho! It seems he has some tricks up his sleeve.",
 
         WAGSTAFF_TOOL_1 = "Hoohoo! You're not from around this plane, are you?",
