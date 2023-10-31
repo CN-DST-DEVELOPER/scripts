@@ -92,7 +92,7 @@ local function Update(inst, dt)
 			end
 		else
 			modifier = TUNING.PERISH_GROUND_MULT
-            if TheWorld.state.isacidraining and not IsUnderRainDomeAtXZ(pos.x, pos.z) then
+			if TheWorld.state.isacidraining and inst.components.rainimmunity == nil then
                 local rate = (inst.components.moisture and inst.components.moisture:_GetMoistureRateAssumingRain() or TheWorld.state.precipitationrate)
                 local percent_to_reduce = rate * TUNING.ACIDRAIN_PERISHABLE_ROT_PERCENT * dt
 

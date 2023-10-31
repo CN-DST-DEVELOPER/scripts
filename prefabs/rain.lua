@@ -50,12 +50,36 @@ local MIN_LIFETIME = 2
 
 --------------------------------------------------------------------------
 
-local function SpawnRaindropAtXZ(x, z, fastforward)
-	local raindrop = SpawnPrefab("raindrop")
+local function GetPooledFx(prefab, pool)
+	local fx = table.remove(pool.ents)
+	if fx ~= nil then
+		fx:ReturnToScene()
+		fx:RestartFx()
+	else
+		fx = SpawnPrefab(prefab)
+		fx.pool = pool
+	end
+	return fx
+end
+
+local function ClearPoolEnts(ents)
+	for i = 1, #ents do
+		ents[i]:Remove()
+		ents[i] = nil
+	end
+end
+
+local function SpawnRaindropAtXZ(inst, x, z, fastforward)
+	local raindrop = GetPooledFx("raindrop", inst.raindrop_pool)
 	raindrop.Transform:SetPosition(x, 0, z)
 	if fastforward ~= nil then
 		raindrop.AnimState:FastForward(fastforward)
 	end
+end
+
+local function OnRemoveEntity(inst)
+	ClearPoolEnts(inst.raindrop_pool.ents)
+	inst.raindrop_pool.valid = false
 end
 
 --------------------------------------------------------------------------
@@ -88,6 +112,8 @@ local function fn()
     effect:EnableDepthTest(0, true)
 
     -----------------------------------------------------
+
+	inst.raindrop_pool = { valid = true, ents = {} }
 
     local rng = math.random
     local tick_time = TheSim:GetTickTime()
@@ -143,27 +169,30 @@ local function fn()
 
     local function updateFunc(fastforward)
 		local x, y, z = inst.Transform:GetWorldPosition()
-		local left_sx, right_sx, bottom_sy
-		local under_domes = GetRainDomesAtXZ(x, z)
-		if #under_domes > 0 then
-			left_sx, bottom_sy = TheSim:GetScreenPos(x, 0, z)
-			left_sx, right_sx = math.huge, -math.huge
-			local right_vec = TheCamera:GetRightVec()
-			for i, v in ipairs(under_domes) do
-				local r = 16--v.components.raindome.radius
-				local rvx = right_vec.x * r
-				local rvz = right_vec.z * r
-				local x1, y1, z1 = v.Transform:GetWorldPosition()
-				local x2 = TheSim:GetScreenPos(x1 + rvx, 0, z1 + rvz)
-				right_sx = math.max(right_sx, x2)
-				x2 = TheSim:GetScreenPos(x1 - rvx, 0, z1 - rvz)
-				left_sx = math.min(left_sx, x2)
-			end
-		end
 
-		while inst.num_particles_to_emit > 0 do
-			emit_fn(x, z, left_sx, right_sx, bottom_sy)
-			inst.num_particles_to_emit = inst.num_particles_to_emit - 1
+		if inst.num_particles_to_emit > 0 then
+			local left_sx, right_sx, bottom_sy
+			local under_domes = GetRainDomesAtXZ(x, z)
+			if #under_domes > 0 then
+				left_sx, bottom_sy = TheSim:GetScreenPos(x, 0, z)
+				left_sx, right_sx = math.huge, -math.huge
+				local right_vec = TheCamera:GetRightVec()
+				for i, v in ipairs(under_domes) do
+					local r = 16--v.components.raindome.radius
+					local rvx = right_vec.x * r
+					local rvz = right_vec.z * r
+					local x1, y1, z1 = v.Transform:GetWorldPosition()
+					local x2 = TheSim:GetScreenPos(x1 + rvx, 0, z1 + rvz)
+					right_sx = math.max(right_sx, x2)
+					x2 = TheSim:GetScreenPos(x1 - rvx, 0, z1 - rvz)
+					left_sx = math.min(left_sx, x2)
+				end
+			end
+
+			while inst.num_particles_to_emit > 0 do
+				emit_fn(x, z, left_sx, right_sx, bottom_sy)
+				inst.num_particles_to_emit = inst.num_particles_to_emit - 1
+			end
 		end
 
         while inst.num_splashes_to_emit > 0 do
@@ -176,7 +205,7 @@ local function fn()
 				last_domes = domes
 				last_domes_ticks = 30
 			else
-				SpawnRaindropAtXZ(x1, z1, fastforward)
+				SpawnRaindropAtXZ(inst, x1, z1, fastforward)
 			end
 
 			--Extra raindrop for domes
@@ -194,7 +223,7 @@ local function fn()
 							x1 = x2 + math.cos(theta) * r
 							z1 = z2 - math.sin(theta) * r
 							if not IsUnderRainDomeAtXZ(x1, z1) then
-								SpawnRaindropAtXZ(x1, z1, fastforward)
+								SpawnRaindropAtXZ(inst, x1, z1, fastforward)
 							end
 						end
 					elseif #last_domes > 1 then
@@ -216,7 +245,12 @@ local function fn()
         end
 
         inst.num_particles_to_emit = inst.num_particles_to_emit + inst.particles_per_tick
-        inst.num_splashes_to_emit = inst.num_splashes_to_emit + inst.splashes_per_tick
+
+		if inst.splashes_per_tick > 0 then
+			inst.num_splashes_to_emit = inst.num_splashes_to_emit + inst.splashes_per_tick
+		else
+			ClearPoolEnts(inst.raindrop_pool.ents)
+		end
     end
 
     EmitterManager:AddEmitter(inst, nil, updateFunc)
@@ -230,6 +264,8 @@ local function fn()
             effect:FastForward(0, dt)
         end
     end
+
+	inst.OnRemoveEntity = OnRemoveEntity
 
     return inst
 end

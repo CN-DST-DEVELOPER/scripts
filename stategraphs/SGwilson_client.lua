@@ -669,8 +669,12 @@ local states =
 
         onenter = function(inst, pushanim)
             inst.entity:SetIsPredictingMovement(false)
-            inst.components.locomotor:Stop()
-            inst.components.locomotor:Clear()
+			if inst.sg.lasttags and not inst.sg.lasttags["busy"] then
+				inst.components.locomotor:StopMoving()
+			else
+				inst.components.locomotor:Stop()
+				inst.components.locomotor:Clear()
+			end
 
             if pushanim == "cancel" then
                 return

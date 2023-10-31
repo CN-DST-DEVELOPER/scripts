@@ -2198,7 +2198,14 @@ function PlayerController:OnUpdate(dt)
 				end
 				self:DoAction(self.attack_buffer)
 			else
-				self.locomotor:PushAction(self.attack_buffer, true)
+				--Check for duplicate actions
+				local currentbuffaction = self.inst:GetBufferedAction()
+				if not (currentbuffaction ~= nil and
+						currentbuffaction.action == self.attack_buffer.action and
+						currentbuffaction.target == self.attack_buffer.target)
+				then
+					self.locomotor:PushAction(self.attack_buffer, true)
+				end
 			end
 		end
 		self.attack_buffer = nil

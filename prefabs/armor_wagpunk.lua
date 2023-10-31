@@ -275,6 +275,11 @@ local function OnUnequip(inst, owner)
         inst.fx:Remove()
         inst.fx = nil
     end
+
+    if inst._spawnsteamfx ~= nil then
+        inst._spawnsteamfx:Cancel()
+        inst._spawnsteamfx = nil
+    end
 end
 
 local function UnpauseFn(inst)

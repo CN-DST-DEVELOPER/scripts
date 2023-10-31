@@ -752,10 +752,10 @@ local function ForgetFollowerCorpse(inst, corpse)
 end
 
 local mutated_scrapbook_overridedata = {
-    { "flameL", "warg_mutated_actions", "flameanim" },
-    { "flameR", "warg_mutated_actions", "flameanim" },
-    { "mouthflameL", "warg_mutated_actions", "mouthflameanim" },
-    { "mouthflameR", "warg_mutated_actions", "mouthflameanim" },
+    { "flameL",      "lunar_flame", "flameanim",      0.6 },
+    { "flameR",      "lunar_flame", "flameanim",      0.6 },
+    { "mouthflameL", "lunar_flame", "mouthflameanim", 0.6 },
+    { "mouthflameR", "lunar_flame", "mouthflameanim", 0.6 },
 }
 
 local function MakeWarg(data)

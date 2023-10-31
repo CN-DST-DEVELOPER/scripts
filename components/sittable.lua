@@ -10,7 +10,7 @@ local Sittable = Class(function(self, inst)
 	self.inst = inst
 	self.occupier = nil
 
-	self._onremoveoccupier = function() self.occupier = nil end
+	self._onremoveoccupier = function() self:SetOccupier(nil) end
 
 	inst:AddTag("cansit")
 end,

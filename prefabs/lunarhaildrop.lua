@@ -22,8 +22,18 @@ local function OnAnimOver(inst)
 		inst:DoTaskInTime(inst.delay, PlayPstAnim, "ground1_pst")
 	elseif inst.AnimState:IsCurrentAnimation("ground2") then
 		inst:DoTaskInTime(inst.delay, PlayPstAnim, "ground2_pst")
+	elseif inst.pool ~= nil and inst.pool.valid then
+		inst:RemoveFromScene()
+		table.insert(inst.pool.ents, inst)
 	else
 		inst:Remove()
+	end
+end
+
+local function RestartFx(inst)
+	inst.AnimState:PlayAnimation("anim")
+	if math.random() < 0.5 then
+		inst.AnimState:SetScale(-1, 1)
 	end
 end
 
@@ -40,12 +50,11 @@ local function fn()
 
     inst.AnimState:SetBuild("lunarhaildrop")
     inst.AnimState:SetBank("lunarhaildrop")
-    inst.AnimState:PlayAnimation("anim")
-	if math.random() < 0.5 then
-		inst.AnimState:SetScale(-1, 1)
-	end
+	RestartFx(inst)
 
 	inst:ListenForEvent("animover", OnAnimOver)
+
+	inst.RestartFx = RestartFx
 
     return inst
 end

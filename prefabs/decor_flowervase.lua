@@ -7,6 +7,19 @@ local assets =
     Asset("INV_IMAGE", "decor_flowervase_wilted"),
 }
 
+local function RefreshImage(inst)
+	local skinname = inst:GetSkinName()
+	local imagename =
+		inst._flower_id and
+		((skinname or "decor_flowervase")..(inst._wilttask and "_flowers" or "_wilted")) or
+		skinname
+		--nil if it's default empty and unskinned
+
+	if inst.components.inventoryitem.imagename ~= imagename then
+		inst.components.inventoryitem:ChangeImageName(imagename)
+	end
+end
+
 local function flower_vase_updatelight(inst)
     if inst._wilttask then
         local remaining = GetTaskRemaining(inst._wilttask) / TUNING.ENDTABLE_FLOWER_WILTTIME
@@ -58,8 +71,7 @@ local function flower_vase_wilt_flower(inst)
         inst._wilttask = nil
     end
 
-    local imagename = (inst:GetSkinBuild() or "decor_flowervase") .. "_wilted"
-    inst.components.inventoryitem:ChangeImageName(imagename)
+	RefreshImage(inst)
 end
 
 local function flower_vase_set_flower(inst, flower_id, wilt_time, giver)
@@ -99,8 +111,7 @@ local function flower_vase_set_flower(inst, flower_id, wilt_time, giver)
         inst._wilttask = inst:DoTaskInTime(wilt_time, flower_vase_wilt_flower)
     end
 
-    local imagename = (inst:GetSkinBuild() or "decor_flowervase") .. "_flowers"
-    inst.components.inventoryitem:ChangeImageName(imagename)
+	RefreshImage(inst)
 end
 
 --
@@ -275,6 +286,8 @@ local function fn()
     inst.OnLongUpdate = OnLongUpdate
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+
+	inst.RefreshImage = RefreshImage --used by prefabskin.lua as well, to support reskin_tool
 
     return inst
 end

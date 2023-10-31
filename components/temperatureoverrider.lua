@@ -1,57 +1,38 @@
-local _sizes = {}
-local _maxsize = 0
+local _overriders = {}
 
-local function _reg_active_overrider_size(size)
-    _maxsize = math.max(size, _maxsize)
-    _sizes[size] = (_sizes[size] or 0) + 1
+local function _reg_active_overrider(inst)
+	_overriders[inst] = true
 end
 
-local function _unreg_active_overrider_size(size)
-    if _sizes[size] > 1 then
-        _sizes[size] = _sizes[size] - 1
-    else
-        _sizes[size] = nil
-        if size == _maxsize then
-            _maxsize = 0
-            for k in pairs(_sizes) do
-                _maxsize = math.max(k, _maxsize)
-            end
-        end
-    end
+local function _unreg_active_overrider(inst)
+	_overriders[inst] = nil
 end
 
 ----------------------------------------------------------------------------------
-
 -- Globals
 
-local TEMPERATURE_OVERRIDER_MUST_TAGS = { "temperatureoverrider" }
-
 function GetTemperatureAtXZ(x, z)
-    if _maxsize <= 0 then
-        return TheWorld.state.temperature
-    end
+	local mindsq = math.huge
+	local closest_ent = nil
+	for ent in pairs(_overriders) do
+		local dsq = ent:GetDistanceSqToPoint(x, 0, z)
+		if dsq < mindsq then
+			local r = ent.components.temperatureoverrider:GetActiveRadius()
+			if dsq <= r * r then
+				--for dsq check, use <=, not <, to match spatial hash query
+				mindsq = dsq
+				closest_ent = ent
+			end
+		end
+	end
 
-    local overriders = TheSim:FindEntities(x, 0, z, _maxsize, TEMPERATURE_OVERRIDER_MUST_TAGS)
-
-    for i, ent in ipairs(overriders) do
-        local r = ent.components.temperatureoverrider:GetActiveRadius()
-
-        if r >= _maxsize or ent:GetDistanceSqToPoint(x, 0, z) <= r * r then
-            --for dsq check, use <=, not <, to match spatial hash query
-            return ent.components.temperatureoverrider:GetTemperature()
-        end
-    end
-
-    return TheWorld.state.temperature
+	return closest_ent ~= nil
+		and closest_ent.components.temperatureoverrider:GetTemperature()
+		or TheWorld.state.temperature
 end
 
 function GetLocalTemperature(inst)
-    if _maxsize <= 0 then
-        return TheWorld.state.temperature
-    end
-
     local x, y, z = inst.Transform:GetWorldPosition()
-
     return GetTemperatureAtXZ(x, z)
 end
 
@@ -65,13 +46,11 @@ end
 
 local function OnActiveRadiusDirty(inst)
     local self = inst.components.temperatureoverrider
-    if self._lastactiveradius ~= 0 then
-        _unreg_active_overrider_size(self._lastactiveradius)
-    end
-    self._lastactiveradius = self._activeradius:value()
-    if self._lastactiveradius ~= 0 then
-        _reg_active_overrider_size(self._lastactiveradius)
-    end
+	if self._activeradius:value() == 0 then
+		_unreg_active_overrider(inst)
+	else
+		_reg_active_overrider(inst)
+	end
 end
 
 local TemperatureOverrider = Class(function(self, inst)
@@ -90,9 +69,7 @@ local TemperatureOverrider = Class(function(self, inst)
         self.enabled = false
         self._temperature:set(25)
     else
-        self._lastactiveradius = 0
-        self.OnActiveRadiusDirty = OnActiveRadiusDirty
-        inst:ListenForEvent("_activeradiusdirty", self.OnActiveRadiusDirty)
+		inst:ListenForEvent("_activeradiusdirty", OnActiveRadiusDirty)
     end
 end,
 nil,
@@ -109,7 +86,7 @@ end
 
 function TemperatureOverrider:OnRemoveEntity()
     if self._activeradius:value() ~= 0 then
-        _unreg_active_overrider_size(self._activeradius:value())
+		_unreg_active_overrider(self.inst)
     end
 end
 
@@ -152,18 +129,11 @@ end
 
 function TemperatureOverrider:SetActiveRadius_Internal(new, old)
     if new ~= old then
-        if old ~= 0 then
-            _unreg_active_overrider_size(old)
-            if new == 0 then
-                self.inst:RemoveTag("temperatureoverrider")
-            end
-        end
-        if new ~= 0 then
-            if old == 0 then
-                self.inst:AddTag("temperatureoverrider")
-            end
-            _reg_active_overrider_size(new)
-        end
+		if new == 0 then
+			_unreg_active_overrider(self.inst)
+		elseif old == 0 then
+			_reg_active_overrider(self.inst)
+		end
         self._activeradius:set(new)
     end
 end

@@ -4998,7 +4998,7 @@ return{
         DECOR_PICTUREFRAME =
         {
             GENERIC = "Looks like it was done in no time at all.",
-            UNDRAWN = "Is this a commentary on predestination?",
+            UNDRAWN = "A blank canvas, containing infinite possibilities.",
         },
         DECOR_PORTRAITFRAME = "A moment captured in time.",
 

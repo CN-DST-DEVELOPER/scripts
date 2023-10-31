@@ -21,12 +21,16 @@ local function IsStringDirty(inst)
 end
 
 local function OnSayDirty(inst)
-    if inst._parent ~= nil and IsStringDirty(inst) then
+    if inst._parent == nil then return end
+
+    if IsStringDirty(inst) then
         local string = _STRINGS[inst.string:value()]
 
         if string ~= nil then
             inst._parent.components.talker:Say(string, nil, nil, nil, true)
         end
+    else
+        inst._parent.components.talker:ShutUp()
     end
 end
 
@@ -58,9 +62,7 @@ local function Say(inst, string, sound_override)
 end
 
 local function ShutUp(inst)
-    if inst._parent ~= nil then
-        inst._parent.components.talker:ShutUp()
-    end
+    inst.sound_override:set(0)
 end
 
 local function SetTarget(inst, target)

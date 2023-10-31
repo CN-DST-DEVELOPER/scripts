@@ -135,6 +135,8 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function TargetTracker:OnUpdate(dt)
+    if not self._updating then return end -- For LongUpdate.
+
     if self.target == nil or
         not self.target:IsValid() or
         self.target:IsInLimbo() or
@@ -168,7 +170,6 @@ function TargetTracker:OnUpdate(dt)
     end
 end
 
--- NOTES(DiogoW): Doesn't support self.pausetime + self.timetracking.
 TargetTracker.LongUpdate = TargetTracker.OnUpdate
 
 ----------------------------------------------------------------------------------------------------

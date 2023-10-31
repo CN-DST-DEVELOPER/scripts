@@ -3777,6 +3777,11 @@ local function MakeHat(name)
             inst.fx = nil
         end
 
+        if inst._spawnsteamfx ~= nil then
+            inst._spawnsteamfx:Cancel()
+            inst._spawnsteamfx = nil
+        end
+
         if inst._classified ~= nil then
             inst._classified:ShutUp()
         end

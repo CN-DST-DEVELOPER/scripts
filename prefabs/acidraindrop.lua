@@ -3,8 +3,25 @@ local assets =
     Asset("ANIM", "anim/nitre_smoke_fx.zip"),
 }
 
+local function OnAnimOver(inst)
+	if inst.pool ~= nil and inst.pool.valid then
+		inst:RemoveFromScene()
+		table.insert(inst.pool.ents, inst)
+	else
+		inst:Remove()
+	end
+end
+
 local function sizzle(inst, r)
     inst.SoundEmitter:PlaySound("rifts2/caves/acid_sizzle", nil, 0.5 + r)
+end
+
+local function RestartFx(inst)
+	local r = math.random() * 0.4 + 0.1
+	inst.AnimState:SetScale(r, r)
+	inst.AnimState:PlayAnimation("smoke_"..math.random(3))
+
+	inst:DoTaskInTime(0, sizzle, r)
 end
 
 local function fn()
@@ -21,13 +38,11 @@ local function fn()
 
     inst.AnimState:SetBuild("nitre_smoke_fx")
     inst.AnimState:SetBank("nitre_smoke_fx")
-    local r = math.random() * 0.4 + 0.1
-    inst.AnimState:SetScale(r, r)
-    inst.AnimState:PlayAnimation("smoke_" .. math.random(3))
+	RestartFx(inst)
 
-    inst:DoTaskInTime(0, sizzle, r)
+	inst:ListenForEvent("animover", OnAnimOver)
 
-	inst:ListenForEvent("animover", inst.Remove)
+	inst.RestartFx = RestartFx
 
     return inst
 end

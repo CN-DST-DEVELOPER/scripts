@@ -23,6 +23,7 @@ local recipes_filter = require("recipes_filter")
 
 local Screen = require "widgets/screen"
 local Subscreener = require "screens/redux/subscreener"
+local TextButton = require "widgets/textbutton"
 local ImageButton = require "widgets/imagebutton"
 local Menu = require "widgets/menu"
 local Grid = require "widgets/grid"
@@ -144,9 +145,16 @@ local ScrapbookScreen = Class(Screen, function( self, prev_screen, default_secti
     end
 
 	if DEBUG_MODE then
-        self.debugentry = self.root:AddChild(Text(HEADERFONT, 24, "", UICOLOURS.WHITE))
+        self.debugentry = self.root:AddChild(TextButton())
+        self.debugentry:SetTextSize(24)
+        self.debugentry:SetFont(HEADERFONT)
         self.debugentry:SetVAnchor(ANCHOR_BOTTOM)
         self.debugentry:SetHAnchor(ANCHOR_RIGHT)
+		self.debugentry.clickoffset = Vector3(0, 0, 0)
+
+        self.debugentry:SetOnClick(function()
+            nolineprint(self.debugentry.build..".fla")
+        end)
 	end
 
     self:SetPlayerKnowledge()
@@ -1654,9 +1662,17 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		if data.overridesymbol then
 			if type(data.overridesymbol[1]) ~= "table" then
 				animstate:OverrideSymbol(data.overridesymbol[1], data.overridesymbol[2], data.overridesymbol[3])
+
+				if data.overridesymbol[4] then
+					animstate:SetSymbolMultColour(data.overridesymbol[1], 1, 1, 1, tonumber(data.overridesymbol[4]))
+				end
 			else
-				for i,set in ipairs( data.overridesymbol ) do
+				for i, set in ipairs( data.overridesymbol ) do
 					animstate:OverrideSymbol(set[1], set[2], set[3])
+
+					if set[4] then
+						animstate:SetSymbolMultColour(set[1], 1, 1, 1, tonumber(set[4]))
+					end
 				end
 			end
 		end
@@ -2118,11 +2134,13 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 	end
 
 	if self.debugentry ~= nil and data ~= nil then
-		local msg = string.format("DEBUG - Entry:\n%s", tostring(page.entry or "???"))
+		local msg = string.format("DEBUG - Entry:\n%s\n%s.fla", tostring(page.entry or "???"), tostring(data.build or "???"))
 
-		self.debugentry:SetString(msg)
+		self.debugentry.entry = page.entry
+		self.debugentry.build = data.build
+		self.debugentry:SetText(msg)
 
-        local w, h = self.debugentry:GetRegionSize()
+        local w, h = self.debugentry.text:GetRegionSize()
         self.debugentry:SetPosition(-w/2 - 10, h/2 + 10) -- 10 Pixel padding, bottom right screen justification.
 	end
 

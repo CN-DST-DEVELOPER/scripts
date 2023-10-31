@@ -174,14 +174,38 @@ wood_chair_clear_fn = function(inst)
 end
 decor_centerpiece_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_centerpiece") end
 decor_centerpiece_clear_fn = function(inst) basic_clear_fn(inst, "decor_centerpiece") end
-decor_flowervase_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_flowervase") end
-decor_flowervase_clear_fn = function(inst) basic_clear_fn(inst, "decor_flowervase") end
+decor_flowervase_init_fn = function(inst, build_name)
+	basic_init_fn(inst, build_name, "decor_flowervase")
+	if not TheWorld.ismastersim then
+		return
+	end
+	inst:RefreshImage()
+end
+decor_flowervase_clear_fn = function(inst)
+	basic_clear_fn(inst, "decor_flowervase")
+	if not TheWorld.ismastersim then
+		return
+	end
+	inst:RefreshImage()
+end
 decor_lamp_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_lamp") end
 decor_lamp_clear_fn = function(inst) basic_clear_fn(inst, "decor_lamp") end
 phonograph_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "phonograph") end
 phonograph_clear_fn = function(inst) basic_clear_fn(inst, "phonograph") end
-decor_pictureframe_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_pictureframe") end
-decor_pictureframe_clear_fn = function(inst) basic_clear_fn(inst, "decor_pictureframe") end
+decor_pictureframe_init_fn = function(inst, build_name)
+	basic_init_fn(inst, build_name, "decor_pictureframe")
+	if not TheWorld.ismastersim then
+		return
+	end
+	inst:RefreshImage()
+end
+decor_pictureframe_clear_fn = function(inst)
+	basic_clear_fn(inst, "decor_pictureframe")
+	if not TheWorld.ismastersim then
+		return
+	end
+	inst:RefreshImage()
+end
 decor_portraitframe_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_portraitframe") end
 decor_portraitframe_clear_fn = function(inst) basic_clear_fn(inst, "decor_portraitframe") end
 

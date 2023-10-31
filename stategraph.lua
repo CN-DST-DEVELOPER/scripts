@@ -326,6 +326,7 @@ StateGraphInstance = Class( function (self, stategraph, inst)
     self.laststate = nil
     self.bufferedevents={}
     self.inst = inst
+	self.tags = {}
     self.statemem = {}
     self.mem = {}
     self.statestarttime = 0
@@ -534,6 +535,7 @@ function StateGraphInstance:GoToState(statename, params)
 --    end
 
     self.statemem = {}
+	self.lasttags = self.tags
     self.tags = {}
     if state.tags ~= nil then
         for k, v in pairs(state.tags) do
@@ -578,6 +580,7 @@ function StateGraphInstance:GoToState(statename, params)
 
     self.inst:PushEvent("newstate", {statename = statename})
 
+	self.lasttags = nil
     self.lastupdatetime = GetTime()
     self.statestarttime = self.lastupdatetime
     SGManager:OnEnterNewState(self)
@@ -598,21 +601,15 @@ function StateGraphInstance:RemoveStateTag(tag)
 end
 
 function StateGraphInstance:HasStateTag(tag)
-    return self.tags and (self.tags[tag] == true)
+	return self.tags[tag] == true
 end
 
 function StateGraphInstance:HasAnyStateTag(...)
-    if not self.tags then
-        return false
-    end
-
-    local input_tags = {...}
-    for _, tag in ipairs(input_tags) do
-        if self.tags[tag] == true then
+	for _, tag in ipairs({...}) do
+		if self.tags[tag] then
             return true
         end
     end
-
     return false
 end
 

@@ -2672,8 +2672,12 @@ local states =
         tags = { "idle", "canrotate" },
 
         onenter = function(inst, pushanim)
-            inst.components.locomotor:Stop()
-            inst.components.locomotor:Clear()
+			if inst.sg.lasttags and not inst.sg.lasttags["busy"] then
+				inst.components.locomotor:StopMoving()
+			else
+				inst.components.locomotor:Stop()
+				inst.components.locomotor:Clear()
+			end
 
             if inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() then
                 inst.sg:GoToState("sink_fast")

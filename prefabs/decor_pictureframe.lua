@@ -14,8 +14,30 @@ local function item_frame_displaynamefn(inst)
         or STRINGS.NAMES.DECOR_PICTUREFRAME
 end
 
+local function OnImageNameDirty(inst)
+	inst.drawnameoverride = #inst._imagename:value() > 0 and STRINGS.NAMES.DECOR_PICTUREFRAME_DRAWING or nil
+end
+
+local function RefreshImage(inst)
+	local skinname = inst:GetSkinName()
+	local imagename =
+		#inst._imagename:value() > 0 and
+		((skinname or "decor_pictureframe").."_drawn") or
+		skinname
+		--nil if it's default empty and unskinned
+
+	if inst.components.inventoryitem.imagename ~= imagename then
+		inst.components.inventoryitem:ChangeImageName(imagename)
+	end
+end
+
+local function SetImageNameAndIcon(inst, name)
+	inst._imagename:set(name)
+	OnImageNameDirty(inst)
+	RefreshImage(inst)
+end
+
 local function item_frame_ondrawn(inst, image, src, atlas, bgimage, bgatlas)
-    local inventoryitem = inst.components.inventoryitem
     if image then
         inst.AnimState:OverrideSymbol("SWAP_SIGN", atlas or GetInventoryItemAtlas(image..".tex"), image..".tex")
         if not bgimage then
@@ -27,18 +49,10 @@ local function item_frame_ondrawn(inst, image, src, atlas, bgimage, bgatlas)
         inst.components.drawable:SetCanDraw(false)
 
         if src then
-            inst._imagename:set(src.drawnameoverride or src:GetBasicDisplayName() or "")
+			SetImageNameAndIcon(inst, src.drawnameoverride or src:GetBasicDisplayName() or "")
             --inst.SoundEmitter:PlaySound("dontstarve/common/together/draw")
-
-            if inventoryitem.imagename ~= "decor_pictureframe_drawn" then
-                inventoryitem:ChangeImageName("decor_pictureframe_drawn")
-            end
         else
-            inst._imagename:set("")
-
-            if inventoryitem.imagename ~= "decor_pictureframe" then
-                inventoryitem:ChangeImageName("decor_pictureframe")
-            end
+			SetImageNameAndIcon(inst, "")
         end
     else
         inst.AnimState:ClearOverrideSymbol("SWAP_SIGN")
@@ -48,11 +62,7 @@ local function item_frame_ondrawn(inst, image, src, atlas, bgimage, bgatlas)
         if not (burnable and burnable:IsBurning()) then
             inst.components.drawable:SetCanDraw(true)
         end
-        inst._imagename:set("")
-
-        if inventoryitem.imagename ~= "decor_pictureframe" then
-            inventoryitem:ChangeImageName("decor_pictureframe")
-        end
+		SetImageNameAndIcon(inst, "")
     end
 end
 
@@ -94,13 +104,9 @@ local function OnLoad(inst, data)
         else
             imagename = STRINGS.NAMES[string.upper(drawable_image)]
         end
-
-        if inst.components.inventoryitem.imagename ~= "decor_pictureframe_drawn" then
-            inst.components.inventoryitem:ChangeImageName("decor_pictureframe_drawn")
-        end
     end
 
-    inst._imagename:set(imagename)
+	SetImageNameAndIcon(inst, imagename)
 end
 
 local function fn()
@@ -121,13 +127,17 @@ local function fn()
     inst:AddTag("furnituredecor") -- From "furnituredecor", for optimization
 
     -- So that we can inject the name of the thing we've drawn into the display name
-    inst._imagename = net_string(inst.GUID, "decor_pictureframe._imagename")
+	inst._imagename = net_string(inst.GUID, "decor_pictureframe._imagename", "imagenamedirty")
     inst.displaynamefn = item_frame_displaynamefn
+	--inst.drawnameoverride = nil
 
     MakeInventoryFloatable(inst, "med", 0.05, 0.85)
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
+		inst:ListenForEvent("imagenamedirty", OnImageNameDirty)
+
         return inst
     end
 
@@ -158,6 +168,8 @@ local function fn()
     --
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+
+	inst.RefreshImage = RefreshImage --used by prefabskin.lua as well, to support reskin_tool
 
     return inst
 end

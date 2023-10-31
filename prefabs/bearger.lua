@@ -703,6 +703,11 @@ local function Mutated_PushMusic(inst)
 	end
 end
 
+local mutated_scrapbook_overridedata = {
+    { "flameL", "lunar_flame", "flameanim", 0.6 },
+    { "flameR", "lunar_flame", "flameanim", 0.6 },
+}
+
 local function mutatedcommonfn(inst)
     inst:AddTag("lunar_aligned")
 	inst:AddTag("bearger_blocker")
@@ -745,6 +750,8 @@ local function mutatedfn()
 
         return inst
     end
+
+    inst.scrapbook_overridedata = mutated_scrapbook_overridedata
 
 	inst.cancombo = true
 	inst.canbutt = true
