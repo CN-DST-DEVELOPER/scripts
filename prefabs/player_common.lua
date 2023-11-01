@@ -798,6 +798,8 @@ end
 
 local function OnCancelMovementPrediction(inst)
 	--Use stategraph event logic, but triggered instantly instead of buffering.
+	--NOTE: not just calling inst.sg:GoToState("idle", "cancel") because an event
+	--      allows states to override the handler.
 	inst.sg:HandleEvent("sg_cancelmovementprediction")
 end
 

@@ -1,15 +1,28 @@
 local TIMEOUT = 2
 
+--#V2C #client_prediction
+--Clear locally, and on server force dirty when setting new state, even if it was
+--same as previous state. Avoid false positives when repeating same action state.
+--See playercontroller -> OnNewState
+local function ClearCachedServerState(inst)
+	if inst.player_classified ~= nil then
+		inst.player_classified.currentstate:set_local(0)
+	end
+end
+
 local actionhandlers =
 {
     ActionHandler(ACTIONS.HAUNT, "haunt_pre"),
-    ActionHandler(ACTIONS.JUMPIN, "jumpin"),
+	ActionHandler(ACTIONS.JUMPIN, "jumpin_pre"),
     ActionHandler(ACTIONS.REMOTERESURRECT, "remoteresurrect"),
     ActionHandler(ACTIONS.MIGRATE, "migrate"),
 }
 
 local events =
 {
+	EventHandler("sg_cancelmovementprediction", function(inst)
+		inst.sg:GoToState("idle", "cancel")
+	end),
     EventHandler("locomote", function(inst)
         if inst.sg:HasStateTag("busy") or inst:HasTag("busy") then
             return
@@ -37,22 +50,31 @@ local states =
 
         onenter = function(inst, pushanim)
             inst.entity:SetIsPredictingMovement(false)
+
+			if pushanim == "cancel" or inst:HasTag("nopredict") or inst:HasTag("pausepredict") then
+				--prediction interrupted by server state
+				inst.components.locomotor:Stop()
+				inst.components.locomotor:Clear()
+                inst:ClearBufferedAction()
+                return
+            elseif pushanim == "noanim" then
+				--server confirmed our preview action
+				inst.components.locomotor:Stop()
+				inst.components.locomotor:Clear()
+				ClearCachedServerState(inst)
+				--use timeout for clearing preview bufferedaction
+                inst.sg:SetTimeout(TIMEOUT)
+                return
+            end
+
+			--predicted idle state
 			if inst.sg.lasttags and not inst.sg.lasttags["busy"] then
 				inst.components.locomotor:StopMoving()
 			else
 				inst.components.locomotor:Stop()
 				inst.components.locomotor:Clear()
 			end
-
-            if pushanim == "cancel" then
-                return
-            elseif inst:HasTag("nopredict") or inst:HasTag("pausepredict") then
-                inst:ClearBufferedAction()
-                return
-            elseif pushanim == "noanim" then
-                inst.sg:SetTimeout(TIMEOUT)
-                return
-            end
+			inst:ClearBufferedAction()
 
             if pushanim then
                 inst.AnimState:PushAnimation("idle")
@@ -91,6 +113,7 @@ local states =
     State{
         name = "remoteresurrect",
         tags = { "doing", "busy" },
+		server_states = { "remoteresurrect" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -102,7 +125,7 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+			if inst.sg:ServerStateMatches() then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
@@ -122,6 +145,7 @@ local states =
     State{
         name = "haunt_pre",
         tags = { "doing", "busy" },
+		server_states = { "haunt_pre" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -133,7 +157,7 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+			if inst.sg:ServerStateMatches() then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
@@ -151,8 +175,9 @@ local states =
     },
 
     State{
-        name = "jumpin",
+        name = "jumpin_pre",
         tags = { "doing", "busy", "canrotate" },
+		server_states = { "jumpin_pre", "jumpin" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -164,7 +189,7 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+			if inst.sg:ServerStateMatches() then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end
@@ -184,6 +209,7 @@ local states =
     State{
         name = "migrate",
         tags = { "doing", "busy", "canrotate" },
+		server_states = { "migrate" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -195,7 +221,7 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst:HasTag("doing") then
+			if inst.sg:ServerStateMatches() then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end

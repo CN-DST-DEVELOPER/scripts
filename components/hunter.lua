@@ -45,8 +45,10 @@ local _wargshrines = SourceModifierList(inst, false, SourceModifierList.boolean)
 local OnUpdateHunt
 local ResetHunt
 
-local function IsLunarPortalActive()
-    return TheWorld.components.riftspawner ~= nil and TheWorld.components.riftspawner:IsLunarPortalActive()
+local function ShouldDoHuntedWargTrack()
+    local needs_mutated_warg = TheWorld.components.lunarriftmutationsmanager ~= nil and not TheWorld.components.lunarriftmutationsmanager:HasDefeatedThisMutation("mutatedwarg")
+    local is_lunar_portal_active = TheWorld.components.riftspawner ~= nil and TheWorld.components.riftspawner:IsLunarPortalActive()
+    return needs_mutated_warg and is_lunar_portal_active
 end
 
 local function GetMaxHunts()
@@ -249,7 +251,7 @@ local function StartDirt(hunt, position)
 
     hunt.numtrackstospawn = math.random(MIN_TRACKS, MAX_TRACKS)
 
-    if IsLunarPortalActive() then
+    if ShouldDoHuntedWargTrack() then
         hunt.monster_track_num = 0
     elseif math.random() <= GetAlternateBeastChance(hunt) then
         hunt.monster_track_num = math.random(math.floor(hunt.numtrackstospawn / 2), hunt.numtrackstospawn - 2)
@@ -376,8 +378,7 @@ local function GetHuntedBeast(hunt, spawn_pt)
     end
 
     if hunt.monster_track_num then
-        local needs_mutated_warg = TheWorld.components.lunarriftmutationsmanager ~= nil and not TheWorld.components.lunarriftmutationsmanager:HasDefeatedThisMutation("mutatedwarg")
-        if needs_mutated_warg and IsLunarPortalActive() then
+        if ShouldDoHuntedWargTrack() then
             return "warg"
         end
 

@@ -71,6 +71,9 @@ local function Update(inst, dt)
         end
 
         local pos = owner ~= nil and owner:GetPosition() or self.inst:GetPosition()
+        local inside_pocket_container = owner ~= nil and owner:HasTag("pocketdimension_container")
+    
+        local ambient_temperature = inside_pocket_container and TheWorld.state.temperature or GetTemperatureAtXZ(pos.x, pos.z)
 
 		if owner then
 			if owner.components.preserver ~= nil then
@@ -105,7 +108,7 @@ local function Update(inst, dt)
 			modifier = modifier * TUNING.PERISH_WET_MULT
 		end
 
-		if GetTemperatureAtXZ(pos.x, pos.z) < 0 then
+		if ambient_temperature < 0 then
 			if inst:HasTag("frozen") and not self.frozenfiremult then
 				modifier = TUNING.PERISH_COLD_FROZEN_MULT
 			else
@@ -117,7 +120,7 @@ local function Update(inst, dt)
 			modifier = modifier * TUNING.PERISH_FROZEN_FIRE_MULT
 		end
 
-		if GetTemperatureAtXZ(pos.x, pos.z) > TUNING.OVERHEAT_TEMP then
+		if ambient_temperature > TUNING.OVERHEAT_TEMP then
 			modifier = modifier * TUNING.PERISH_SUMMER_MULT
 		end
 
@@ -138,7 +141,7 @@ local function Update(inst, dt)
         if inst.components.edible ~= nil and inst.components.edible.temperaturedelta ~= nil and inst.components.edible.temperaturedelta > 0 and not (owner ~= nil and owner:HasTag("nocool")) then
             if owner ~= nil and owner:HasTag("fridge") then
                 inst.components.edible:AddChill(1)
-            elseif GetTemperatureAtXZ(pos.x, pos.z) < TUNING.OVERHEAT_TEMP - 5 then
+            elseif ambient_temperature < TUNING.OVERHEAT_TEMP - 5 then
                 inst.components.edible:AddChill(.25)
             end
         end

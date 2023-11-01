@@ -1640,6 +1640,7 @@ CLOTHING =
 		type = "body",
 		skin_tags = { "LUNAR", "CLOTHING_BODY", "CLOTHING", },
 		symbol_overrides = { "arm_upper", "torso_pelvis", "torso", },
+		symbol_hides = { "skirt", },
 		torso_tuck = "untucked",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",

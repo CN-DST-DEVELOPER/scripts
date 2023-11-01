@@ -623,8 +623,6 @@ local actionhandlers =
 local events =
 {
 	EventHandler("sg_cancelmovementprediction", function(inst)
-		inst.components.locomotor:Clear()
-		inst:ClearBufferedAction()
 		inst.sg:GoToState("idle", "cancel")
 	end),
     EventHandler("locomote", function(inst)
@@ -669,23 +667,31 @@ local states =
 
         onenter = function(inst, pushanim)
             inst.entity:SetIsPredictingMovement(false)
+
+			if pushanim == "cancel" or inst:HasTag("nopredict") or inst:HasTag("pausepredict") then
+				--prediction interrupted by server state
+				inst.components.locomotor:Stop()
+				inst.components.locomotor:Clear()
+                inst:ClearBufferedAction()
+                return
+            elseif pushanim == "noanim" then
+				--server confirmed our preview action
+				inst.components.locomotor:Stop()
+				inst.components.locomotor:Clear()
+				ClearCachedServerState(inst)
+				--use timeout for clearing preview bufferedaction
+                inst.sg:SetTimeout(TIMEOUT)
+                return
+            end
+
+			--predicted idle state
 			if inst.sg.lasttags and not inst.sg.lasttags["busy"] then
 				inst.components.locomotor:StopMoving()
 			else
 				inst.components.locomotor:Stop()
 				inst.components.locomotor:Clear()
 			end
-
-            if pushanim == "cancel" then
-                return
-            elseif inst:HasTag("nopredict") or inst:HasTag("pausepredict") then
-                inst:ClearBufferedAction()
-                return
-            elseif pushanim == "noanim" then
-				ClearCachedServerState(inst)
-                inst.sg:SetTimeout(TIMEOUT)
-                return
-            end
+			inst:ClearBufferedAction()
 
             --V2C: Only predict looped anims. For idles with a pre, stick with
             --     "idle_loop" and wait for server to trigger the custom anims

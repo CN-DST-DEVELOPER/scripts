@@ -2678,6 +2678,7 @@ local states =
 				inst.components.locomotor:Stop()
 				inst.components.locomotor:Clear()
 			end
+			inst:ClearBufferedAction()
 
             if inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() then
                 inst.sg:GoToState("sink_fast")
