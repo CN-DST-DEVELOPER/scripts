@@ -2091,12 +2091,28 @@ function PlayerController:OnUpdate(dt)
     end
 
     if self.draggingonground and not (isenabled and TheInput:IsControlPressed(CONTROL_PRIMARY)) then
+		local buffaction
         if self.locomotor ~= nil then
             self.locomotor:Stop()
+			if isenabled then
+				buffaction = self.locomotor.bufferedaction
+			else
+				self.locomotor:Clear()
+			end
         end
         self.draggingonground = false
         self.startdragtime = nil
         TheFrontEnd:LockFocus(false)
+
+		--restart any buffered actions that may have been pushed at the
+		--same time as the user releasing draggingonground
+		if buffaction then
+			if self.ismastersim then
+				self.locomotor:PushAction(buffaction)
+			else
+				self.locomotor:PreviewAction(buffaction)
+			end
+		end
     end
 
     --ishudblocking set to true lets us know that the only reason for isenabled returning false is due to HUD wanting to handle some input.
@@ -2405,6 +2421,7 @@ function PlayerController:OnUpdate(dt)
 
 					if self:CanLocomote() then
 						self.locomotor:Stop()
+						self.locomotor:Clear()
 					end
 				elseif self.actionholding then
 					self:ClearActionHold()
@@ -3461,8 +3478,11 @@ function PlayerController:DoDirectWalking(dt)
         self.dragwalking = false
         self.predictwalking = false
     elseif self.directwalking or self.dragwalking then
+		local buffaction
         if self:CanLocomote() and self.controller_attack_override == nil then
             self.locomotor:Stop()
+			--instead of self.locomotor:Clear()
+			buffaction = self.locomotor.bufferedaction
         end
         self.directwalking = false
         self.dragwalking = false
@@ -3473,6 +3493,15 @@ function PlayerController:DoDirectWalking(dt)
                 self:RemoteStopWalking()
             end
         end
+		--restart any buffered actions that may have been pushed at the
+		--same time as the user letting go of directwalking controls
+		if buffaction then
+			if self.ismastersim then
+				self.locomotor:PushAction(buffaction)
+			else
+				self.locomotor:PreviewAction(buffaction)
+			end
+		end
     end
 end
 
@@ -3527,9 +3556,12 @@ function PlayerController:OnLeftUp()
         return
     end
 
+	local buffaction
     if self.draggingonground then
         if self:CanLocomote() and not IsWalkButtonDown() then
             self.locomotor:Stop()
+			--instead of self.locomotor:Clear()
+			buffaction = self.locomotor.bufferedaction
         end
         self.draggingonground = false
         self.startdragtime = nil
@@ -3540,6 +3572,16 @@ function PlayerController:OnLeftUp()
     if not self.ismastersim then
         self:RemoteStopControl(CONTROL_PRIMARY)
     end
+
+	--restart any buffered actions that may have been pushed at the
+	--same time as the user releasing draggingonground
+	if buffaction then
+		if self.ismastersim then
+			self.locomotor:PushAction(buffaction)
+		else
+			self.locomotor:PreviewAction(buffaction)
+		end
+	end
 end
 
 function PlayerController:DoAction(buffaction, spellbook)
@@ -4451,6 +4493,7 @@ function PlayerController:OnRemoteToggleMovementPrediction(val)
 	if self.ismastersim and self.remote_predicting ~= val then
 		self.remote_predicting = val
 		self.locomotor:Stop()
+		self.locomotor:Clear()
 		self.locomotor:SetAllowPlatformHopping(not val)
 		self:ResetRemoteController()
 		if val then

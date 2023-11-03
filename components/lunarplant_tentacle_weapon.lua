@@ -57,7 +57,10 @@ local function NoHoles(pt)
 end
 
 function LunarPlant_Tentacle_Weapon:OnAttack(owner, attack_data)
-    if self.should_do_tentacles_fn and not self.should_do_tentacles_fn(self.inst, owner, attack_data) then
+	if attack_data == nil or attack_data.weapon ~= self.inst then
+		--e.g. could be attack events from projectiles fired before we equipped this weapon
+		return
+	elseif self.should_do_tentacles_fn and not self.should_do_tentacles_fn(self.inst, owner, attack_data) then
         return
     end
 
