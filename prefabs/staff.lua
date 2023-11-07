@@ -636,7 +636,7 @@ local function destroystructure(staff, target)
 		target.components.inventoryitemholder:TakeItem()
 	end
 
-   	target:PushEvent("ondeconstructstructure", caster)
+    target:PushEvent("ondeconstructstructure", caster)
 
     if target.components.stackable ~= nil then
         --if it's stackable we only want to destroy one of them.

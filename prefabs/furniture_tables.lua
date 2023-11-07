@@ -27,6 +27,13 @@ local function OnDecorTaken(inst, item)
 end
 
 --
+local function TossDecorItem(inst)
+    local item = inst.components.furnituredecortaker:TakeItem()
+    if item then
+        inst.components.lootdropper:FlingItem(item)
+    end
+end
+
 local function OnHammer(inst, worker, workleft, workcount)
     inst.AnimState:PlayAnimation("hit")
     inst.AnimState:PushAnimation("idle")
@@ -39,10 +46,7 @@ local function OnHammered(inst, worker)
 
     inst.components.lootdropper:DropLoot()
 
-    local item = inst.components.furnituredecortaker:TakeItem()
-    if item then
-        inst.components.lootdropper:FlingItem(item)
-    end
+    TossDecorItem(inst)
 
     inst:Remove()
 end
@@ -160,6 +164,7 @@ local function AddTable(results, prefab_name, data)
         --
         inst:ListenForEvent("onbuilt", OnBuilt)
         inst:ListenForEvent("onburnt", OnBurnt)
+        inst:ListenForEvent("ondeconstructstructure", TossDecorItem)
 
         --
         inst.OnSave = OnSave
