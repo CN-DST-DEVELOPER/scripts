@@ -44,6 +44,7 @@ local mutated_prefabs =
 	"purebrilliance",
 	"ice",
 	"chesspiece_deerclops_mutated_sketch",
+	"winter_ornament_boss_mutateddeerclops",
 }
 
 local normal_sounds =

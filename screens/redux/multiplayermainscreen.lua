@@ -356,14 +356,14 @@ local function MakeLunarMutantsBanner(self, banner_root, anim)
     anim:GetAnimState():SetBank("dst_menu_rift3_BG")
     anim:GetAnimState():PlayAnimation("loop", true)
     anim:SetScale(.667)
-    anim:Hide("HALLOW")
+    anim:GetAnimState():Hide("HOLLOW")
 
     local anim_front = banner_root:AddChild(UIAnim())
     anim_front:GetAnimState():SetBuild("dst_menu_rift3")
     anim_front:GetAnimState():SetBank ("dst_menu_rift3")
     anim_front:GetAnimState():PlayAnimation("loop", true)
     anim_front:SetScale(.667)
-    anim_front:Hide("HALLOW")
+    anim_front:GetAnimState():Hide("HOLLOW")
 end
 
 
@@ -436,7 +436,7 @@ function MakeBanner(self)
 		--
 		--REMINDER: Check MakeBannerFront as well!
 		--
-        MakeLunarMutantsBanner_hallowednights(self, banner_root, anim)
+        MakeLunarMutantsBanner(self, banner_root, anim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
         MakeYOTRBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTC) then

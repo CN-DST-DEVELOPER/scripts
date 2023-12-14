@@ -9,6 +9,7 @@ local prefabs =
 	"voidcloth",
 	"horrorfuel",
 	"nightmarefuel",
+	"winter_ornament_shadowthralls",
 }
 
 local brain = require("brains/shadowthrall_hands_brain")
@@ -122,6 +123,16 @@ local function DisplayNameFn(inst)
 end
 
 --------------------------------------------------------------------------
+
+local function GetWintersFeastOrnaments(inst)
+	local horns = inst.components.entitytracker:GetEntity("horns")
+	local wings = inst.components.entitytracker:GetEntity("wings")
+
+	return horns == nil and wings == nil and { basic = 1, special = "winter_ornament_shadowthralls" } or nil
+end
+
+--------------------------------------------------------------------------
+
 
 local function CreateFlameFx()
 	local inst = CreateEntity()
@@ -265,6 +276,7 @@ local function fn()
 
 	inst:AddComponent("lootdropper")
 	inst.components.lootdropper:SetChanceLootTable("shadowthrall_hands")
+	inst.components.lootdropper.GetWintersFeastOrnaments = GetWintersFeastOrnaments
 	inst.components.lootdropper.y_speed = 4
 	inst.components.lootdropper.y_speed_variance = 3
 	inst.components.lootdropper.spawn_loot_inside_prefab = true

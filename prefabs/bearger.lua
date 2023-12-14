@@ -43,6 +43,7 @@ local mutated_prefabs =
 	"spoiled_food",
 	"purebrilliance",
 	"chesspiece_bearger_mutated_sketch",
+	"winter_ornament_boss_mutatedbearger",
 }
 
 local brain = require("brains/beargerbrain")

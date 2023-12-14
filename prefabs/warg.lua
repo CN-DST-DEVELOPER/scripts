@@ -42,6 +42,7 @@ local prefabs_mutated =
 	"spoiled_food",
 	"purebrilliance",
     "chesspiece_warg_mutated_sketch",
+    "winter_ornament_boss_mutatedwarg",
 }
 
 local brain = require("brains/wargbrain")

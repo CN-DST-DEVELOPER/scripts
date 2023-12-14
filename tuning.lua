@@ -3487,9 +3487,14 @@ function Tune(overrides)
             ANTLION          = {basic=1, special="winter_ornament_boss_antlion"},
             MALBATROSS       = {basic=1, special="winter_ornament_boss_malbatross"},
             EYEOFTERROR      = {basic=1},
-            TWINOFTERROR1     = {basic=1, special="winter_ornament_boss_eyeofterror1"},
-            TWINOFTERROR2     = {basic=1, special="winter_ornament_boss_eyeofterror2"},
+            TWINOFTERROR1    = {basic=1, special="winter_ornament_boss_eyeofterror1"},
+            TWINOFTERROR2    = {basic=1, special="winter_ornament_boss_eyeofterror2"},
             ALTERGUARDIAN_PHASE3 = {basic=2},
+    
+            DAYWALKER        = {basic=1, special="winter_ornament_boss_daywalker"},
+            MUTATEDDEERCLOPS = {basic=1, special="winter_ornament_boss_mutateddeerclops"},
+            MUTATEDBEARGER   = {basic=1, special="winter_ornament_boss_mutatedbearger"},
+            MUTATEDWARG      = {basic=1, special="winter_ornament_boss_mutatedwarg"},
         },
 
         WINTERS_FEAST_LOOT_EXCLUSION =

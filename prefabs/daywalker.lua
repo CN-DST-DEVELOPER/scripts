@@ -21,6 +21,7 @@ local prefabs =
 	"wall_dreadstone_item_blueprint",
 	"support_pillar_dreadstone_scaffold_blueprint",
 	"chesspiece_daywalker_sketch",
+	"winter_ornament_boss_daywalker",
 }
 
 local brain = require("brains/daywalkerbrain")

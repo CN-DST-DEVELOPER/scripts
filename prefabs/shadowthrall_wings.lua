@@ -9,6 +9,7 @@ local prefabs =
 	"voidcloth",
 	"horrorfuel",
 	"nightmarefuel",
+	"winter_ornament_shadowthralls",
 }
 
 local brain = require("brains/shadowthrall_wings_brain")
@@ -104,9 +105,9 @@ local function OnLoadPostPass(inst)
 		if horns ~= nil and horns.sg ~= nil then
 			table.insert(team, horns)
 		end
-		local wings = inst.components.entitytracker:GetEntity("wings")
-		if wings ~= nil and wings.sg ~= nil then
-			table.insert(team, wings)
+		local hands = inst.components.entitytracker:GetEntity("hands")
+		if hands ~= nil and hands.sg ~= nil then
+			table.insert(team, hands)
 		end
 		local t = GetTime()
 		for i = 1, #team do
@@ -118,6 +119,15 @@ end
 
 local function DisplayNameFn(inst)
 	return ThePlayer ~= nil and ThePlayer:HasTag("player_shadow_aligned") and STRINGS.NAMES.SHADOWTHRALL_WINGS_ALLEGIANCE or nil
+end
+
+--------------------------------------------------------------------------
+
+local function GetWintersFeastOrnaments(inst)
+	local hands = inst.components.entitytracker:GetEntity("hands")
+	local horns = inst.components.entitytracker:GetEntity("horns")
+
+	return hands == nil and horns == nil and { basic = 1, special = "winter_ornament_shadowthralls" } or nil
 end
 
 --------------------------------------------------------------------------
@@ -289,6 +299,7 @@ local function fn()
 
 	inst:AddComponent("lootdropper")
 	inst.components.lootdropper:SetChanceLootTable("shadowthrall_wings")
+	inst.components.lootdropper.GetWintersFeastOrnaments = GetWintersFeastOrnaments
 	inst.components.lootdropper.y_speed = 4
 	inst.components.lootdropper.y_speed_variance = 3
 	inst.components.lootdropper.spawn_loot_inside_prefab = true
