@@ -305,7 +305,7 @@ local function fn()
     inst.displaynamefn = displaynamefn
     inst.scrapbook_anim = "mushroom_toad_idle_loop"
     inst.scrapbook_specialinfo = "TOADSTOOLCAP"
-    inst.scrapbook_workable = ACTIONS.CHOP.id
+    inst.scrapbook_workable = ACTIONS.CHOP
 
     inst.entity:SetPristine()
 

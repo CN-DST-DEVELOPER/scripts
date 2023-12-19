@@ -60,7 +60,6 @@ local SkillTreeWidget = Class(Widget, function(self, prefabname, targetdata, fro
     self.root.infopanel.activatebutton:SetScale(0.5)
     self.root.infopanel.activatebutton:SetText(STRINGS.SKILLTREE.ACTIVATE)
 
-
     self.root.infopanel.title = self.root.infopanel:AddChild(Text(HEADERFONT, 18, "title", UICOLOURS.BROWN_DARK))
     self.root.infopanel.title:SetPosition(0,28)
     self.root.infopanel.title:SetVAlign(ANCHOR_TOP)
@@ -159,6 +158,9 @@ function SkillTreeWidget:SpawnFavorOverlay(pre)
                 self.midlay.splash:GetAnimState():SetMultColour(0.7,0.7,0.7,0.7)
                 self.midlay.splash:SetPosition(0,-10)
             end
+            if favor == "skills_shadow" then
+                self.midlay.splash:SetPosition(0,-12)
+            end            
             if pre then
                 local sound = "wilson_rework/ui/shadow_skill"
 

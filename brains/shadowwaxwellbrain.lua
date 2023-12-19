@@ -391,22 +391,49 @@ function ShadowWaxwellBrain:OnStart()
             -- Keep watch out for danger.
             avoid_explosions,
             avoid_danger,
-			WhileNode(function() return self.inst.sg:HasStateTag("phasing") or self.inst.sg:HasStateTag("recoil") end, "Busy",
-				ActionNode(function() end)),
-            -- Do the work needed to be done.
-			WhileNode(function() return not (self.inst.sg:HasStateTag("phasing") or self.inst.sg:HasStateTag("recoil")) end, "Keep Working",
-				DoAction(self.inst, function() return FindAnyEntityToWorkActionsOn(self.inst, pickupparams.ignorethese) end)),
-			-- This Leash is to stop chasing after leader with loot if they keep moving too far away.
-			Leash(self.inst, GetSpawn, pickupparams.range + 4, math.min(6, pickupparams.range)),
-            BrainCommon.NodeAssistLeaderPickUps(self, pickupparams),
-            -- Leashing is low priority.
-			Leash(self.inst, GetSpawn, math.min(8, pickupparams.range), math.min(4, pickupparams.range)),
-            -- Wander around and stare.
-			face_leader,
-			ParallelNode{
-				CreateWanderer(self, math.min(6, pickupparams.range)),
-				CreateIdleOblivion(self, TUNING.SHADOWWAXWELL_MINION_IDLE_DESPAWN_TIME, pickupparams.range),
-			},
+			WhileNode(
+				function()
+					return not (self.inst.sg:HasStateTag("phasing") or
+								self.inst.sg:HasStateTag("recoil"))
+				end,
+				"<busy state guard>",
+				PriorityNode({
+					-- Do the work needed to be done.
+					WhileNode(
+						function()
+							self.keepworking = false
+							return true
+						end,
+						"Keep Working",
+						DoAction(self.inst, function()
+							local act = FindAnyEntityToWorkActionsOn(self.inst, pickupparams.ignorethese)
+							if act then
+								--@V2C: check if our action matches "prechop", "premine", "predig" etc.
+								--      because the stategraph would just reject the same action.
+								if self.inst.sg:HasStateTag("pre"..string.lower(act.action.id)) then
+									self.keepworking = true
+								else
+									return act
+								end
+							end
+						end)),
+					--@V2C: This is very gnarly, but this is so we can stay as "Keep Working" even when
+					--      DoAction failed above, when we're still waiting on the stategraph to repeat
+					--      work actions.
+					FailIfSuccessDecorator(ConditionWaitNode(
+						function() return not self.keepworking end, "Repeating action")),
+					-- This Leash is to stop chasing after leader with loot if they keep moving too far away.
+					Leash(self.inst, GetSpawn, pickupparams.range + 4, math.min(6, pickupparams.range)),
+					BrainCommon.NodeAssistLeaderPickUps(self, pickupparams),
+					-- Leashing is low priority.
+					Leash(self.inst, GetSpawn, math.min(8, pickupparams.range), math.min(4, pickupparams.range)),
+					-- Wander around and stare.
+					face_leader,
+					ParallelNode{
+						CreateWanderer(self, math.min(6, pickupparams.range)),
+						CreateIdleOblivion(self, TUNING.SHADOWWAXWELL_MINION_IDLE_DESPAWN_TIME, pickupparams.range),
+					},
+				}, 0.25)),
         }, 0.25)
     elseif self.inst.prefab == "shadowprotector" then
         root = PriorityNode({ -- This protector is set to defend an area and then vanish.

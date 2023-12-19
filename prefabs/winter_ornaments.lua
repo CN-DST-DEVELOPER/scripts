@@ -330,11 +330,11 @@ local ornament =
     MakeOrnament("boss_eyeofterror2", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
     MakeOrnament("boss_wagstaff", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
 
-    MakeOrnament("boss_daywalker",        "winter_ornamentboss", nil, "winter_ornaments2023", 0.6),
-    MakeOrnament("shadowthralls",         "winter_ornamentboss", nil, "winter_ornaments2023", 0.6),
-    MakeOrnament("boss_mutateddeerclops", "winter_ornamentboss", nil, "winter_ornaments2023", 0.6),
-    MakeOrnament("boss_mutatedbearger",   "winter_ornamentboss", nil, "winter_ornaments2023", 0.6),
-    MakeOrnament("boss_mutatedwarg",      "winter_ornamentboss", nil, "winter_ornaments2023", 0.6),
+    MakeOrnament("boss_daywalker",        "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
+    MakeOrnament("shadowthralls",         "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
+    MakeOrnament("boss_mutateddeerclops", "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
+    MakeOrnament("boss_mutatedbearger",   "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
+    MakeOrnament("boss_mutatedwarg",      "winter_ornamentboss", nil, "winter_ornaments2023", 1.3),
 }
 
 for i = 1, NUM_BASIC_ORNAMENT do

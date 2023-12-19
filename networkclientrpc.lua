@@ -1103,6 +1103,16 @@ local CLIENT_RPC_HANDLERS =
         TheGenericKV:SetKV(name, "1")
     end,
 
+    UpdateCountAccomplishment = function(name, maxvalue)
+        local current = tonumber(TheGenericKV:GetKV(name) or 0)
+
+        if maxvalue ~= nil and current >= maxvalue then
+            return
+        end
+
+        TheGenericKV:SetKV(name, tostring(current + 1))
+    end,
+
     SetSkillActivatedState = function(skill_rpc_id, isunlocked)
         local characterprefab = ThePlayer.prefab or nil
         if characterprefab == nil then

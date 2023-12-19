@@ -19,6 +19,8 @@ local Weapon = Class(function(self, inst)
     self.projectile = nil
     self.stimuli = nil
     --self.overridestimulifn = nil
+    --self.electric_damage_mult = nil
+    --self.electric_wet_damage_mult = nil
 
     self.attackwearmultipliers = SourceModifierList(self.inst)
 
@@ -67,8 +69,11 @@ function Weapon:SetProjectileOffset(offset)
     self.projectile_offset = offset
 end
 
-function Weapon:SetElectric()
+function Weapon:SetElectric(damage_mult, wet_damage_mult)
     self.stimuli = "electric"
+
+    self.electric_damage_mult = damage_mult
+    self.electric_wet_damage_mult = wet_damage_mult
 end
 
 function Weapon:SetOverrideStimuliFn(fn)
@@ -143,7 +148,7 @@ function Weapon:LaunchProjectile(attacker, target)
         end
 
         if self.onprojectilelaunched ~= nil then
-            self.onprojectilelaunched(self.inst, attacker, target)
+            self.onprojectilelaunched(self.inst, attacker, target, proj)
         end
     end
 end

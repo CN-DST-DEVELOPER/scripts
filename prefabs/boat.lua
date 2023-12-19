@@ -1,3 +1,4 @@
+-- ASSETS
 local wood_assets =
 {
     Asset("ANIM", "anim/boat_test.zip"),
@@ -9,6 +10,12 @@ local grass_assets =
     Asset("ANIM", "anim/boat_grass.zip"),
     Asset("MINIMAP_IMAGE", "boat_grass"),
 }
+
+local ice_assets =
+{
+    Asset("ANIM", "anim/boat_ice.zip"),
+}
+
 
 local pirate_assets =
 {
@@ -28,6 +35,13 @@ local grass_item_assets =
     Asset("INV_IMAGE", "boat_grass_item"),
 }
 
+local ice_item_assets =
+{
+    Asset("ANIM", "anim/boat_grass_item.zip"),
+    Asset("INV_IMAGE", "boat_grass_item"),
+}
+
+-- PREFABS
 local prefabs =
 {
     "mast",
@@ -48,16 +62,6 @@ local prefabs =
     "boat_grass_item_collision",
     "walkingplank",
     "walkingplank_grass",
-
-    "boat_rotator",
-    "boat_cannon",
-    "boat_magnet",
-    "boat_magnet_beacon",
-
-    "boat_bumper_kelp",
-    "boat_bumper_shell",
-
-    "boat_pirate",
 }
 
 local grass_prefabs =
@@ -74,6 +78,13 @@ local pirate_prefabs =
 
 }
 
+local ice_prefabs =
+{
+    "boat_ice_deploy_blocker",
+    "boatlip_ice",
+    "degrade_fx_ice",
+}
+
 local item_prefabs =
 {
     "boat",
@@ -84,6 +95,7 @@ local grass_item_prefabs =
     "boat_grass",
 }
 
+--
 local sounds ={
     place = "turnoftides/common/together/boat/place",
     creak = "turnoftides/common/together/boat/creak",
@@ -104,8 +116,20 @@ local sounds_grass ={
     movement = "monkeyisland/grass_boat/movement",
 }
 
+local sounds_ice =
+{
+    place = "dontstarve_DLC001/common/iceboulder_hit",
+    creak = "dontstarve_DLC001/common/iceboulder_hit",
+    damage = "dontstarve_DLC001/common/iceboulder_hit",
+    sink = "dontstarve_DLC001/common/iceboulder_hit",
+    hit = "dontstarve_DLC001/common/iceboulder_hit",
+    thunk = "dontstarve_DLC001/common/iceboulder_hit",
+    movement = "dontstarve_DLC001/common/iceboulder_hit",
+}
+
+local BOAT_COLLISION_SEGMENT_COUNT = 20
+
 local BOATBUMPER_MUST_TAGS = { "boatbumper" }
-local BOATCANNON_MUST_TAGS = { "boatcannon" }
 
 local function OnLoadPostPass(inst)
     local boatring = inst.components.boatring
@@ -128,19 +152,6 @@ local function OnLoadPostPass(inst)
         -- Need to further rotate the bumpers to account for the boat's rotation
         bumper.Transform:SetRotation(-angle + 90)
     end
-
-    -- Cannons
-    --[[local cannons = TheSim:FindEntities(x, y, z, boatring:GetRadius(), BOATCANNON_MUST_TAGS)
-    for i, cannon in ipairs(cannons) do
-        local cannonpos = cannon:GetPosition()
-        local angle = GetAngleFromBoat(inst, cannonpos.x, cannonpos.z) / DEGREES
-
-        cannon.Transform:SetRotation(-angle)
-    end]]
-end
-
-local function OnRepaired(inst)
-    --inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/repair_with_wood")
 end
 
 local function OnSpawnNewBoatLeak(inst, data)
@@ -298,36 +309,15 @@ local function StartBoatPhysics(inst)
     inst.Physics:SetDontRemoveOnSleep(true)
 end
 
-local function speed(inst)
-    if not inst.startpos then
-
-        inst.startpos = Vector3(inst.Transform:GetWorldPosition())
-        inst.starttime = GetTime()
-        inst.speedtask = inst:DoPeriodicTask(FRAMES, function()
-            local pt = Vector3(inst.Transform:GetWorldPosition())
-            local dif = distsq(pt.x,pt.z,inst.startpos.x,inst.startpos.z)
-            --print("DIST",dif,GetTime() - inst.starttime)
-        end)
-    else
-        inst.startpos = nil
-        inst.speedtask:Cancel()
-        inst.speedtask = nil
-        inst.starttime = nil
-    end
-end
-
 local function SpawnFragment(lp, prefix, offset_x, offset_y, offset_z, ignite)
     local fragment = SpawnPrefab(prefix)
     fragment.Transform:SetPosition(lp.x + offset_x, lp.y + offset_y, lp.z + offset_z)
 
-    if offset_y > 0 then
-        local physics = fragment.Physics
-        if physics ~= nil then
-            physics:SetVel(0, -0.25, 0)
-        end
+    if offset_y > 0 and fragment.Physics then
+        fragment.Physics:SetVel(0, -0.25, 0)
     end
 
-    if ignite then
+    if ignite and fragment.components.burnable then
         fragment.components.burnable:Ignite()
     end
 
@@ -340,13 +330,19 @@ local function OnEntityReplicated(inst)
     inst.Transform:SetInterpolateRotation(true)
 end
 
-local function create_common_pre(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
+local function create_common_pre(inst, bank, build, data)
+    data = data or {}
+
+    local radius = data.radius or TUNING.BOAT.RADIUS
+
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
-    inst.entity:AddMiniMapEntity()
-    inst.MiniMapEntity:SetIcon("boat.png")
-    inst.MiniMapEntity:SetPriority(-1)
+    if data.minimap_image then
+        inst.entity:AddMiniMapEntity()
+        inst.MiniMapEntity:SetIcon(data.minimap_image)
+        inst.MiniMapEntity:SetPriority(-1)
+    end
     inst.entity:AddNetwork()
 
     inst:AddTag("ignorewalkableplatforms")
@@ -374,38 +370,50 @@ local function create_common_pre(inst, bank, build, radius, max_health, item_col
     inst.scrapbook_anim = "idle_full"
     inst.scrapbook_inspectonseen = true
 
-    if scale then
-        inst.AnimState:SetScale(scale,scale,scale)
+    if data.scale then
+        inst.AnimState:SetScale(data.scale, data.scale, data.scale)
     end
 
-    inst:AddComponent("walkableplatform")
-    inst.components.walkableplatform.platform_radius = radius
+    --
+    local walkableplatform = inst:AddComponent("walkableplatform")
+    walkableplatform.platform_radius = radius
 
+    --
+    local healthsyncer = inst:AddComponent("healthsyncer")
+    healthsyncer.max_health = data.max_health or TUNING.BOAT.HEALTH
 
-    inst:AddComponent("healthsyncer")
-    inst.components.healthsyncer.max_health = max_health
+    --
+    local waterphysics = inst:AddComponent("waterphysics")
+    waterphysics.restitution = 0.75
 
-    inst:AddComponent("waterphysics")
-    inst.components.waterphysics.restitution = 0.75
-
-    inst:AddComponent("reticule")
-    inst.components.reticule.targetfn = ReticuleTargetFn
-    inst.components.reticule.ispassableatallpoints = true
+    --
+    local reticule = inst:AddComponent("reticule")
+    reticule.targetfn = ReticuleTargetFn
+    reticule.ispassableatallpoints = true
     inst.on_start_steering = on_start_steering
     inst.on_stop_steering = on_stop_steering
 
+    --
     inst.doplatformcamerazoom = net_bool(inst.GUID, "doplatformcamerazoom", "doplatformcamerazoomdirty")
 
 	if not TheNet:IsDedicated() then
-        inst:ListenForEvent("endsteeringreticule", function(inst,data)  if ThePlayer and ThePlayer == data.player then inst:on_stop_steering() end end)
-        inst:ListenForEvent("starsteeringreticule", function(inst,data) if ThePlayer and ThePlayer == data.player then inst:on_start_steering() end end)
+        inst:ListenForEvent("endsteeringreticule", function(inst2, event_data)
+            if ThePlayer and ThePlayer == event_data.player then
+                inst2:on_stop_steering()
+            end
+        end)
+        inst:ListenForEvent("starsteeringreticule", function(inst2, event_data)
+            if ThePlayer and ThePlayer == event_data.player then
+                inst2:on_start_steering()
+            end
+        end)
 
         inst:AddComponent("boattrail")
 	end
 
-    inst:AddComponent("boatringdata")
-    inst.components.boatringdata:SetRadius(radius)
-    inst.components.boatringdata:SetNumSegments(8)
+    local boatringdata = inst:AddComponent("boatringdata")
+    boatringdata:SetRadius(radius)
+    boatringdata:SetNumSegments(8)
 
     if not TheWorld.ismastersim then
         inst.OnEntityReplicated = OnEntityReplicated
@@ -414,62 +422,129 @@ local function create_common_pre(inst, bank, build, radius, max_health, item_col
     return inst
 end
 
-local function create_master_pst(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip, plank_prefab)
+local function empty_loot_function() end
+
+local function InstantlyBreakBoat(inst)
+    -- This is not for SGboat but is for safety on physics.
+    if inst.components.boatphysics then
+        inst.components.boatphysics:SetHalting(true)
+    end
+    --Keep this in sync with SGboat.
+    for k in pairs(inst.components.walkableplatform:GetEntitiesOnPlatform()) do
+        k:PushEvent("abandon_ship")
+    end
+    for k in pairs(inst.components.walkableplatform:GetPlayersOnPlatform()) do
+        k:PushEvent("onpresink")
+    end
+    inst.sinkloot()
+    if inst.postsinkfn then
+        inst:postsinkfn()
+    end
+    inst:Remove()
+end
+
+local function GetSafePhysicsRadius(inst)
+    return (inst.components.hull ~= nil and inst.components.hull:GetRadius() or TUNING.BOAT.RADIUS) + 0.18 -- Add a small offset for item overhangs.
+end
+
+local function IsBoatEdgeOverLand(inst, override_position_pt)
+    local map = TheWorld.Map
+    local radius = inst:GetSafePhysicsRadius()
+    local segment_count = BOAT_COLLISION_SEGMENT_COUNT * 2
+    local segment_span = math.pi * 2 / segment_count
+    local x, y, z
+    if override_position_pt then
+        x, y, z = override_position_pt:Get()
+    else
+        x, y, z = inst.Transform:GetWorldPosition()
+    end
+    for segement_idx = 0, segment_count do
+        local angle = segement_idx * segment_span
+
+        local angle0 = angle - segment_span / 2
+        local x0 = math.cos(angle0) * radius
+        local z0 = math.sin(angle0) * radius
+        if not map:IsOceanTileAtPoint(x + x0, 0, z + z0) or map:IsVisualGroundAtPoint(x + x0, 0, z + z0) then
+            return true
+        end
+
+        local angle1 = angle + segment_span / 2
+        local x1 = math.cos(angle1) * radius
+        local z1 = math.sin(angle1) * radius
+        if not map:IsOceanTileAtPoint(x + x1, 0, z + z1) or map:IsVisualGroundAtPoint(x + x1, 0, z + z1) then
+            return true
+        end
+    end
+
+    return false
+end
+
+local PLANK_EDGE_OFFSET = -0.05
+local function create_master_pst(inst, data)
+    data = data or {}
+
+    local radius = data.radius or TUNING.BOAT.RADIUS
 
     inst.Physics:SetDontRemoveOnSleep(true)
-    inst.item_collision_prefab = item_collision_prefab
+    inst.item_collision_prefab = data.item_collision_prefab
     EnableBoatItemCollision(inst)
 
     inst.entity:AddPhysicsWaker() --server only component
     inst.PhysicsWaker:SetTimeBetweenWakeTests(TUNING.BOAT.WAKE_TEST_TIME)
 
-    inst:AddComponent("hull")
-    inst.components.hull:SetRadius(radius)
-    inst.components.hull:SetBoatLip(SpawnPrefab(boatlip),scale)
+    local hull = inst:AddComponent("hull")
+    hull:SetRadius(radius)
 
-    local walking_plank = SpawnPrefab(plank_prefab or "walkingplank")
-    local edge_offset = -0.05
-    inst.components.hull:AttachEntityToBoat(walking_plank, 0, radius + edge_offset, true)
-    inst.components.hull:SetPlank(walking_plank)
+    if data.boatlip_prefab then
+        hull:SetBoatLip(SpawnPrefab(data.boatlip_prefab), data.scale or 1.0)
+    end
 
-    inst:AddComponent("repairable")
-    inst.components.repairable.repairmaterial = MATERIALS.WOOD
-    inst.components.repairable.onrepaired = OnRepaired
+    if data.plank_prefab then
+        local walking_plank = SpawnPrefab(data.plank_prefab)
+        hull:AttachEntityToBoat(walking_plank, 0, radius + PLANK_EDGE_OFFSET, true)
+        hull:SetPlank(walking_plank)
+    end
 
+    if not data.fireproof then
+        inst.activefires = 0
+
+        local burnable_locator = SpawnPrefab("burnable_locator_medium")
+        burnable_locator.boat = inst
+        hull:AttachEntityToBoat(burnable_locator, 0, 0, true)
+
+        burnable_locator = SpawnPrefab("burnable_locator_medium")
+        burnable_locator.boat = inst
+        hull:AttachEntityToBoat(burnable_locator, 2.5, 0, true)
+
+        burnable_locator = SpawnPrefab("burnable_locator_medium")
+        burnable_locator.boat = inst
+        hull:AttachEntityToBoat(burnable_locator, -2.5, 0, true)
+
+        burnable_locator = SpawnPrefab("burnable_locator_medium")
+        burnable_locator.boat = inst
+        hull:AttachEntityToBoat(burnable_locator, 0, 2.5, true)
+
+        burnable_locator = SpawnPrefab("burnable_locator_medium")
+        burnable_locator.boat = inst
+        hull:AttachEntityToBoat(burnable_locator, 0, -2.5, true)
+    end
+
+    --
+    local repairable = inst:AddComponent("repairable")
+    repairable.repairmaterial = MATERIALS.WOOD
+
+    --
     inst:AddComponent("boatring")
-
     inst:AddComponent("hullhealth")
     inst:AddComponent("boatphysics")
     inst:AddComponent("boatdrifter")
     inst:AddComponent("savedrotation")
 
     inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(max_health)
+    inst.components.health:SetMaxHealth(data.max_health or TUNING.BOAT.HEALTH)
     inst.components.health.nofadeout = true
 
-	inst.activefires = 0
-
-	local burnable_locator = SpawnPrefab("burnable_locator_medium")
-	burnable_locator.boat = inst
-	inst.components.hull:AttachEntityToBoat(burnable_locator, 0, 0, true)
-
-	burnable_locator = SpawnPrefab("burnable_locator_medium")
-	burnable_locator.boat = inst
-	inst.components.hull:AttachEntityToBoat(burnable_locator, 2.5, 0, true)
-
-	burnable_locator = SpawnPrefab("burnable_locator_medium")
-	burnable_locator.boat = inst
-	inst.components.hull:AttachEntityToBoat(burnable_locator, -2.5, 0, true)
-
-	burnable_locator = SpawnPrefab("burnable_locator_medium")
-	burnable_locator.boat = inst
-	inst.components.hull:AttachEntityToBoat(burnable_locator, 0, 2.5, true)
-
-	burnable_locator = SpawnPrefab("burnable_locator_medium")
-	burnable_locator.boat = inst
-	inst.components.hull:AttachEntityToBoat(burnable_locator, 0, -2.5, true)
-
-    inst:SetStateGraph("SGboat")
+    inst:SetStateGraph(data.stategraph or "SGboat")
 
     inst.StopBoatPhysics = StopBoatPhysics
     inst.StartBoatPhysics = StartBoatPhysics
@@ -477,9 +552,10 @@ local function create_master_pst(inst, bank, build, radius, max_health, item_col
     inst.OnPhysicsWake = OnPhysicsWake
     inst.OnPhysicsSleep = OnPhysicsSleep
 
-    inst.sinkloot = function() end
-
-    inst.speed = speed
+    inst.sinkloot = empty_loot_function
+    inst.InstantlyBreakBoat = InstantlyBreakBoat
+    inst.GetSafePhysicsRadius = GetSafePhysicsRadius
+    inst.IsBoatEdgeOverLand = IsBoatEdgeOverLand
 
     inst.OnLoadPostPass = OnLoadPostPass
 
@@ -487,7 +563,7 @@ local function create_master_pst(inst, bank, build, radius, max_health, item_col
 end
 
 local function build_boat_collision_mesh(radius, height)
-    local segment_count = 20
+    local segment_count = BOAT_COLLISION_SEGMENT_COUNT
     local segment_span = math.pi * 2 / segment_count
 
     local triangles = {}
@@ -533,9 +609,6 @@ local function build_boat_collision_mesh(radius, height)
 
 	return triangles
 end
-
---local PLAYER_COLLISION_MESH = build_boat_collision_mesh(4.1, 3)
---local ITEM_COLLISION_MESH = build_boat_collision_mesh(4.2, 3)
 
 local function boat_player_collision_template(radius)
     local inst = CreateEntity()
@@ -607,25 +680,28 @@ local function boat_item_collision_template(radius)
 end
 
 local function ondeploy(inst, pt, deployer)
-    local boat = SpawnPrefab(inst.deploy_product, inst.linked_skinname, inst.skin_id )
-    if boat ~= nil then
-        if boat.skinname ~= nil and boat.components.hull ~= nil then
-            if boat.components.hull.plank.prefab == "walkingplank" then
-                local plank_skinname = "walkingplank" .. string.sub(boat.skinname, 5)
-                TheSim:ReskinEntity( boat.components.hull.plank.GUID, nil, plank_skinname, boat.skin_id )
-            end
+    local boat = SpawnPrefab(inst.deploy_product, inst.linked_skinname, inst.skin_id)
+    if not boat then return end
+
+    local boat_hull = boat.components.hull
+    if boat.skinname and boat_hull and boat_hull.plank then
+        if boat_hull.plank.prefab == "walkingplank" then
+            local plank_skinname = "walkingplank" .. string.sub(boat.skinname, 5)
+            TheSim:ReskinEntity( boat_hull.plank.GUID, nil, plank_skinname, boat.skin_id )
         end
-        
-        boat.Physics:SetCollides(false)
-        boat.Physics:Teleport(pt.x, 0, pt.z)
-        boat.Physics:SetCollides(true)
-
-        boat.sg:GoToState("place")
-
-		boat.components.hull:OnDeployed()
-
-        inst:Remove()
     end
+
+    boat.Physics:SetCollides(false)
+    boat.Physics:Teleport(pt.x, 0, pt.z)
+    boat.Physics:SetCollides(true)
+
+    boat.sg:GoToState("place")
+
+    if boat_hull then
+        boat_hull:OnDeployed()
+    end
+
+    inst:Remove()
 end
 
 local function wood_fn()
@@ -633,48 +709,52 @@ local function wood_fn()
 
     local bank = "boat_01"
     local build = "boat_test"
-    local radius = TUNING.BOAT.RADIUS
-    local max_health = TUNING.BOAT.HEALTH
-    local item_collision_prefab = "boat_item_collision"
-    local scale = nil
-    local boatlip = "boatlip"
 
-    inst = create_common_pre(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
+    local WOOD_BOAT_DATA = {
+        radius = TUNING.BOAT.RADIUS,
+        max_health = TUNING.BOAT.HEALTH,
+        item_collision_prefab = "boat_item_collision",
+        boatlip_prefab = "boatlip",
+        plank_prefab = "walkingplank",
+        minimap_image = "boat.png",
+    }
+
+    inst = create_common_pre(inst, bank, build, WOOD_BOAT_DATA)
 
     inst.walksound = "wood"
 
     inst.components.walkableplatform.player_collision_prefab = "boat_player_collision"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst = create_master_pst(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
+    inst = create_master_pst(inst, WOOD_BOAT_DATA)
 
 	inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak)
     inst.boat_crackle = "fx_boat_crackle"
 
+    inst.sounds = sounds
+
     inst.sinkloot = function()
-            local ignitefragments = inst.activefires > 0
-            local locus_point = Vector3(inst.Transform:GetWorldPosition())
-            local num_loot = 3
-            for i = 1, num_loot do
-                local r = math.sqrt(math.random())*(TUNING.BOAT.RADIUS-2) + 1.5
-                local t = i * PI2/num_loot + math.random() * (PI2/(num_loot * .5))
-                SpawnFragment(locus_point, "boards",  math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
-            end
+        local ignitefragments = inst.activefires > 0
+        local locus_point = inst:GetPosition()
+        local num_loot = 3
+        local loot_angle = PI2/num_loot
+        for i = 1, num_loot do
+            local r = math.sqrt(math.random())*(WOOD_BOAT_DATA.radius - 2) + 1.5
+            local t = (i + 2 * math.random()) * loot_angle
+            SpawnFragment(locus_point, "boards", math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
         end
+    end
 
     inst.postsinkfn = function()
-            local fx_boat_crackle = SpawnPrefab("fx_boat_pop")
-            fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
-            inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= 1})
-            inst.SoundEmitter:PlaySoundWithParams(inst.sounds.sink)
-        end
-
-    inst.sounds = sounds
+        local fx_boat_crackle = SpawnPrefab("fx_boat_pop")
+        fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= 1})
+        inst.SoundEmitter:PlaySoundWithParams(inst.sounds.sink)
+    end
 
     return inst
 end
@@ -684,58 +764,63 @@ local function grass_fn()
 
     local bank = "boat_grass"
     local build = "boat_grass"
-    local radius = TUNING.BOAT.GRASS_BOAT.RADIUS
-    local max_health = TUNING.BOAT.HEALTH
-    local item_collision_prefab = "boat_grass_item_collision"
-    local scale = 0.75
-    local boatlip = "boatlip_grass"
-    local plank_prefab = "walkingplank_grass"
+    local GRASS_BOAT_DATA = {
+        radius = TUNING.BOAT.GRASS_BOAT.RADIUS,
+        max_health = TUNING.BOAT.HEALTH,
+        item_collision_prefab = "boat_grass_item_collision",
+        scale = 0.75,
+        boatlip_prefab = "boatlip_grass",
+        plank_prefab = "walkingplank_grass",
+        minimap_image = "boat_grass.png",
+    }
 
-    inst = create_common_pre(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
+    inst = create_common_pre(inst, bank, build, GRASS_BOAT_DATA)
 
     inst.leaky = true
     inst.material = "grass"
 
-    inst.MiniMapEntity:SetIcon("boat_grass.png")
-
-    inst.walksound = "marsh" --"tallgrass"
+    inst.walksound = "marsh"
     inst.second_walk_sound = "tallgrass"
 
     inst.components.walkableplatform.player_collision_prefab = "boat_grass_player_collision"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst = create_master_pst(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip, plank_prefab)
+    inst = create_master_pst(inst, GRASS_BOAT_DATA)
 
 	inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak_Grass)
 
-    inst.components.hullhealth:SetSelfDegrading(5)
-    inst.components.hullhealth.degradefx = "degrade_fx_grass"
-    inst.components.hullhealth.leakproof = true
+    inst.sounds = sounds_grass
+
+    local hullhealth = inst.components.hullhealth
+    hullhealth:SetSelfDegrading(5)
+    hullhealth.degradefx = "degrade_fx_grass"
+    hullhealth.leakproof = true
 
     inst.components.repairable.repairmaterial = MATERIALS.HAY
 
     inst.sinkloot = function()
-            local ignitefragments = inst.activefires > 0
-            local locus_point = Vector3(inst.Transform:GetWorldPosition())
-            local num_loot = 6
-            for i = 1, num_loot do
-                local r = math.sqrt(math.random())*(TUNING.BOAT.RADIUS-2) + 1.5
-                local t = i * PI2/num_loot + math.random() * (PI2/(num_loot * .5))
-                SpawnFragment(locus_point, "cutgrass",  math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
-            end
+        local ignitefragments = inst.activefires > 0
+        local locus_point = inst:GetPosition()
+        local num_loot = 6
+        local loot_angle = PI2/num_loot
+        for i = 1, num_loot do
+            local r = math.sqrt(math.random())*(GRASS_BOAT_DATA.radius-2) + 1.5
+            local t = (i + 2 * math.random()) * loot_angle
+            SpawnFragment(locus_point, "cutgrass", math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
         end
-    inst.sounds = sounds_grass
+    end
     inst.postsinkfn = function(inst)
-                local erode = SpawnPrefab("boat_grass_erode")
-                erode.Transform:SetPosition(inst.Transform:GetWorldPosition())
-                local erode_water = SpawnPrefab("boat_grass_erode_water")
-                erode_water.Transform:SetPosition(inst.Transform:GetWorldPosition())
-            end
+        local ix, iy, iz = inst.Transform:GetWorldPosition()
+        local erode = SpawnPrefab("boat_grass_erode")
+        erode.Transform:SetPosition(ix, iy, iz)
+
+        local erode_water = SpawnPrefab("boat_grass_erode_water")
+        erode_water.Transform:SetPosition(ix, iy, iz)
+    end
 
     return inst
 end
@@ -745,54 +830,190 @@ local function pirate_fn()
 
     local bank = "boat_01"
     local build = "boat_pirate"
-    local radius = TUNING.BOAT.RADIUS
-    local max_health = TUNING.BOAT.HEALTH
-    local item_collision_prefab = "boat_item_collision"
-    local scale = nil
-    local boatlip = "boatlip"
+    local PIRATE_BOAT_DATA = {
+        radius = TUNING.BOAT.RADIUS,
+        max_health = TUNING.BOAT.HEALTH,
+        item_collision_prefab = "boat_item_collision",
+        scale = nil,
+        boatlip_prefab = "boatlip",
+        minimap_image = "boat_pirate.png",
+    }
 
-    inst = create_common_pre(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
-
-    inst.MiniMapEntity:SetIcon("boat_pirate.png")
+    inst = create_common_pre(inst, bank, build, PIRATE_BOAT_DATA)
 
     inst.walksound = "wood"
 
     inst.components.walkableplatform.player_collision_prefab = "boat_player_collision"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst.scrapbook_deps = { "pirate_flag_pole", "prime_mate", "powder_monkey" }
 
-    inst = create_master_pst(inst, bank, build, radius, max_health, item_collision_prefab, scale, boatlip)
+    inst = create_master_pst(inst, PIRATE_BOAT_DATA)
 
-	inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak)
+    inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak)
+
     inst.boat_crackle = "fx_boat_crackle"
+    inst.sounds = sounds
 
     inst.sinkloot = function()
-            local ignitefragments = inst.activefires > 0
-            local locus_point = Vector3(inst.Transform:GetWorldPosition())
-            local num_loot = 3
-            for i = 1, num_loot do
-                local r = math.sqrt(math.random())*(TUNING.BOAT.RADIUS-2) + 1.5
-                local t = i * PI2/num_loot + math.random() * (PI2/(num_loot * .5))
-                SpawnFragment(locus_point, "boards",  math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
-            end
+        local ignitefragments = inst.activefires > 0
+        local locus_point = inst:GetPosition()
+        local num_loot = 3
+        local loot_angle = PI2/num_loot
+        for i = 1, num_loot do
+            local r = math.sqrt(math.random())*(PIRATE_BOAT_DATA.radius-2) + 1.5
+            local t = (i + 2 * math.random()) * loot_angle
+            SpawnFragment(locus_point, "boards", math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
         end
+    end
 
     inst.postsinkfn = function()
-            local fx_boat_crackle = SpawnPrefab("fx_boat_pop")
-            fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
-            inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= 1})
-            inst.SoundEmitter:PlaySoundWithParams(inst.sounds.sink)
-        end
+        local fx_boat_crackle = SpawnPrefab("fx_boat_pop")
+        fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= 1})
+        inst.SoundEmitter:PlaySoundWithParams(inst.sounds.sink)
+    end
 
-    inst.sounds = sounds
     return inst
 end
+
+-- ICE FLOE
+local OCEAN_ICE_NO_DEPLOY_RADIUS = TUNING.OCEAN_ICE_RADIUS + 0.1
+local function ice_floe_deploy_blocker_fn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddNetwork()
+
+    -- Prevent things from being deployed onto the ice floes. 
+    inst:SetDeployExtraSpacing(OCEAN_ICE_NO_DEPLOY_RADIUS)
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    return inst
+end
+
+local function ice_ondeath(inst)
+	if inst:IsAsleep() then
+		if not inst.sg:HasStateTag("dead") then
+			for ent in pairs(inst.components.walkableplatform:GetEntitiesOnPlatform()) do
+				ent:PushEvent("abandon_ship")
+			end
+		end
+		inst.sinkloot_asleep()
+		inst:Remove()
+	end
+end
+
+local function ice_fn()
+    local inst = CreateEntity()
+
+    local bank = "boat_ice"
+    local build = "boat_ice"
+    local OCEANICE_BOAT_DATA = {
+        radius = TUNING.OCEAN_ICE_RADIUS,
+        max_health = TUNING.OCEAN_ICE_HEALTH,
+        item_collision_prefab = "boat_ice_item_collision",
+        boatlip_prefab = "boatlip_ice",
+        stategraph = "SGboat_ice",
+    }
+
+    inst = create_common_pre(inst, bank, build, OCEANICE_BOAT_DATA)
+
+    inst:RemoveTag("wood") -- Cookie Cutters should not eat it.
+
+    inst.material = "ice"
+    inst.walksound = "ice"
+
+    inst.components.walkableplatform.player_collision_prefab = "boat_ice_player_collision"
+
+    local boattrail = inst.components.boattrail
+    if boattrail then
+        local scale = TUNING.OCEAN_ICE_RADIUS / TUNING.BOAT.RADIUS
+        boattrail.scale_x = scale
+        boattrail.scale_y = scale
+
+        boattrail.radius = boattrail.radius * scale
+    end
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.GetIdleLevel = function()
+        local health_percent = inst.components.health:GetPercent()
+        return (health_percent > 0.66 and "1")
+            or (health_percent > 0.33 and "2")
+            or "3"
+    end
+
+    inst = create_master_pst(inst, OCEANICE_BOAT_DATA)
+
+	inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak)
+	inst:ListenForEvent("death", ice_ondeath)
+
+    inst.components.hullhealth:SetSelfDegrading(1)
+    inst.components.hullhealth.leakproof = true
+
+    inst.components.repairable.repairmaterial = nil
+
+    inst.sounds = sounds_ice
+    inst.boat_crackle = "mining_ice_fx"
+
+    inst:DoTaskInTime(FRAMES, function(i)
+        local ix, iy, iz = i.Transform:GetWorldPosition()
+        local deploy_blocker = SpawnPrefab("boat_ice_deploy_blocker")
+        deploy_blocker.Transform:SetPosition(ix, iy, iz)
+    end)
+
+    inst.sinkloot = function()
+        local ignitefragments = (inst.activefires > 0)
+        local locus_point = inst:GetPosition()
+        local num_loot = 3
+        local loot_angle = PI2/num_loot
+        local loot_radius = (OCEANICE_BOAT_DATA.radius/2)
+        for i = 1, num_loot do
+            local r = (1 + math.sqrt(math.random()))*loot_radius
+            local t = (i + 2 * math.random()) * loot_angle
+            SpawnFragment(locus_point, "ice", math.cos(t) * r, 0, math.sin(t) * r, ignitefragments)
+
+            r = (1 + math.sqrt(math.random()))*loot_radius
+            t = t + loot_angle * (0.3 + 0.6 * math.random())
+            SpawnFragment(locus_point, "degrade_fx_ice", math.cos(t) * r, 0, math.sin(t) * r)
+        end
+    end
+	inst.sinkloot_asleep = function()
+		local num_loot = math.random(3) - 1
+		if num_loot > 0 then
+			local locus_point = inst:GetPosition()
+			local loot_angle = PI2/num_loot
+			local loot_radius = (OCEANICE_BOAT_DATA.radius/2)
+			for i = 1, num_loot do
+				local r = (1 + math.sqrt(math.random()))*loot_radius
+				local t = (i + 2 * math.random()) * loot_angle
+				SpawnFragment(locus_point, "ice", math.cos(t) * r, 0, math.sin(t) * r, false)
+			end
+		end
+	end
+    inst.postsinkfn = function(inst)
+        local break_fx = SpawnPrefab("mining_ice_fx")
+        break_fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    end
+
+    return inst
+end
+
+-- ITEMS
 
 function CLIENT_CanDeployBoat(inst, pt, mouseover, deployer, rotation)
     return TheWorld.Map:CanDeployBoatAtPointInWater(pt, inst, mouseover,
@@ -826,16 +1047,16 @@ local function common_item_fn_pre(inst)
 end
 
 local function common_item_fn_pst(inst)
-    inst:AddComponent("deployable")
-    inst.components.deployable.ondeploy = ondeploy
-    inst.components.deployable:SetDeploySpacing(DEPLOYSPACING.LARGE)
-    inst.components.deployable:SetDeployMode(DEPLOYMODE.CUSTOM)
+    local deployable = inst:AddComponent("deployable")
+    deployable.ondeploy = ondeploy
+    deployable:SetDeploySpacing(DEPLOYSPACING.LARGE)
+    deployable:SetDeployMode(DEPLOYMODE.CUSTOM)
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
 
-    inst:AddComponent("fuel")
-    inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
+    local fuel = inst:AddComponent("fuel")
+    fuel.fuelvalue = TUNING.LARGE_FUEL
 
     MakeLargeBurnable(inst)
     MakeLargePropagator(inst)
@@ -852,7 +1073,6 @@ local function item_fn()
     inst.deploy_product = "boat"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -874,7 +1094,6 @@ local function grass_item_fn()
     inst.deploy_product = "boat_grass"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -885,6 +1104,7 @@ local function grass_item_fn()
     return inst
 end
 
+-- COLLISIONS
 local function boat_player_collision_fn()
     return boat_player_collision_template(TUNING.BOAT.RADIUS)
 end
@@ -901,6 +1121,16 @@ local function boat_grass_item_collision_fn()
     return boat_item_collision_template(TUNING.BOAT.GRASS_BOAT.RADIUS)
 end
 
+--
+local function boat_ice_player_collision_fn()
+    return boat_player_collision_template(TUNING.OCEAN_ICE_RADIUS)
+end
+
+local function boat_ice_item_collision_fn()
+    return boat_item_collision_template(TUNING.OCEAN_ICE_RADIUS)
+end
+
+--
 return Prefab("boat", wood_fn, wood_assets, prefabs),
        Prefab("boat_grass", grass_fn, grass_assets, grass_prefabs),
        Prefab("boat_player_collision", boat_player_collision_fn),
@@ -910,6 +1140,11 @@ return Prefab("boat", wood_fn, wood_assets, prefabs),
 
        Prefab("boat_grass_player_collision", boat_grass_player_collision_fn),
        Prefab("boat_grass_item_collision", boat_grass_item_collision_fn),
+
+       Prefab("boat_ice", ice_fn, ice_assets, ice_prefabs),
+       Prefab("boat_ice_player_collision", boat_ice_player_collision_fn),
+       Prefab("boat_ice_item_collision", boat_ice_item_collision_fn),
+       Prefab("boat_ice_deploy_blocker", ice_floe_deploy_blocker_fn),
 
        Prefab("boat_item", item_fn, item_assets, item_prefabs),
        MakePlacer("boat_item_placer", "boat_01", "boat_test", "idle_full", true, false, false, nil, nil, nil, nil, 6),

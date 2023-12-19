@@ -196,14 +196,14 @@ local function onunequip(inst, owner)
 end
 
 local function applyskilleffect(inst, skill)
-    if skill == "wilson_torch_1" then
-        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_1)
+    if skill == "wilson_torch_3" then
+        removeskillfueleffect(inst)
+        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_3)        
     elseif skill == "wilson_torch_2" then
         removeskillfueleffect(inst)
         applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_2)
-    elseif skill == "wilson_torch_3" then
-        removeskillfueleffect(inst)
-        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_3)
+    elseif skill == "wilson_torch_1" then
+        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_1)
     end
 
     if skill == "wilson_torch_4" then
@@ -236,7 +236,7 @@ end
 
 local function onattack(weapon, attacker, target)
     --target may be killed or removed in combat damage phase
-    if target ~= nil and target:IsValid() and target.components.burnable ~= nil and math.random() < TUNING.TORCH_ATTACK_IGNITE_PERCENT * target.components.burnable.flammability then
+    if target ~= nil and target:IsValid() and target.components.burnable ~= nil and (math.random() < TUNING.TORCH_ATTACK_IGNITE_PERCENT * target.components.burnable.flammability or attacker.components.skilltreeupdater:IsActivated("willow_controlled_burn_1")) then
         target.components.burnable:Ignite(nil, attacker)
     end
 end

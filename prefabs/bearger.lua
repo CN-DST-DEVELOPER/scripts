@@ -236,6 +236,10 @@ local function OnGroundPound(inst)
 end
 
 local function OnHitOther(inst, data)
+    if data.redirected then
+        return
+    end
+
 	if inst.sg:HasStateTag("weapontoss") and data.target ~= nil and data.target.components.inventory ~= nil and not data.target:HasTag("stronggrip") then
         local item = data.target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
         if item ~= nil then
@@ -712,6 +716,7 @@ local mutated_scrapbook_overridedata = {
 local function mutatedcommonfn(inst)
     inst:AddTag("lunar_aligned")
 	inst:AddTag("bearger_blocker")
+	inst:AddTag("noepicmusic")
 
 	inst.temp8faced = net_bool(inst.GUID, "mutatedbearger.temp8faced", "temp8faceddirty")
 

@@ -346,6 +346,12 @@ function LootDropper:SpawnLootPrefab( lootprefab, pt, linked_skinname, skin_id, 
             loot:PushEvent("on_loot_dropped", {dropper = self.inst})
             self.inst:PushEvent("loot_prefab_spawned", {loot = loot})
 
+            -- make it smoulder when dropped if the parent was in controlled burn
+            if self.inst.components.burnable and self.inst.components.burnable:GetControlledBurn() and loot.components.burnable then
+
+                loot.components.burnable:StartWildfire()
+            end
+
             return loot
         end
     end
@@ -358,8 +364,10 @@ function LootDropper:DropLoot(pt)
             self.inst.components.burnable:IsBurning() and
             (self.inst.components.fueled == nil or self.inst.components.burnable.ignorefuel)) then
 
+
         local isstructure = self.inst:HasTag("structure")
         for k, v in pairs(prefabs) do
+            
             if TUNING.BURNED_LOOT_OVERRIDES[v] ~= nil then
                 prefabs[k] = TUNING.BURNED_LOOT_OVERRIDES[v]
             elseif PrefabExists(v.."_cooked") then
@@ -370,6 +378,8 @@ function LootDropper:DropLoot(pt)
             --     while hammering AFTER burnt give back good ingredients.
             --     It *should* ALWAYS return ash based on certain types of
             --     ingredients (wood), but we'll let them have this one :O
+            elseif self.inst.components.burnable and self.inst.components.burnable:GetControlledBurn() then
+                -- Leave it be, but we will drop it smouldering.            
             elseif (not isstructure and not self.inst:HasTag("tree")) or self.inst:HasTag("hive") then -- because trees have specific burnt loot and "hive"s are structures...
                 prefabs[k] = "ash"
             end

@@ -275,17 +275,29 @@ function WordPredictionWidget:RefreshPredictions(reset)
 				end)
 				btn:SetOnSelect(function()
 					if self.active_prediction_btn ~= nil and self.active_prediction_btn + self.start_index - 1 ~= i then
-						self.prediction_btns[self.active_prediction_btn]:Unselect()
+						local prev_btn = self.prediction_btns[self.active_prediction_btn]
+						prev_btn._unselecting = true
+						prev_btn:Unselect()
+						prev_btn._unselecting = nil
 					end
 					self.active_prediction_btn = i - self.start_index + 1
 				end)
 				btn.ongainfocus = function()
-					btn:Select()
+					if not btn._unselecting then
+						btn:Select()
+					end
 				end
 				btn.AllowOnControlWhenSelected = true
 
 				if self:IsMouseOnly() then
-					btn.onlosefocus = function() if btn.selected then btn:Unselect() self.active_prediction_btn = nil end end
+					btn.onlosefocus = function()
+						if btn:IsSelected() then
+							btn._unselecting = true
+							btn:Unselect()
+							btn._unselecting = nil
+							self.active_prediction_btn = nil
+						end
+					end
 				end
 
 				local sx, sy = btn.text:GetRegionSize()

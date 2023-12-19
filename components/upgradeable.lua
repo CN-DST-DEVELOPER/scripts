@@ -36,6 +36,14 @@ nil,
 	numstages = onstage,
 })
 
+function Upgradeable:SetOnUpgradeFn(fn)
+	self.onupgradefn = fn
+end
+
+function Upgradeable:SetCanUpgradeFn(fn)
+	self.canupgradefn = fn
+end
+
 function Upgradeable:GetStage()
 	return self.stage
 end
@@ -66,10 +74,6 @@ function Upgradeable:CanUpgrade()
 	end
 
 	return not_at_max
-end
-
-function Upgradeable:SetCanUpgradeFn(fn)
-	self.canupgradefn = fn
 end
 
 function Upgradeable:Upgrade(obj, upgrade_performer)

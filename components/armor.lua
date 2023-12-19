@@ -1,3 +1,5 @@
+local SourceModifierList = require("util/sourcemodifierlist")
+
 local function PercentChanged(inst, data)
 	if inst.components.armor ~= nil and data.percent ~= nil then
 		if inst.components.forgerepairable ~= nil then
@@ -18,6 +20,9 @@ local Armor = Class(function(self, inst)
     self.maxcondition = 100
     self.tags = nil
     self.weakness = nil
+
+    self.conditionlossmultipliers = SourceModifierList(self.inst)
+
 	--self.onfinished = nil
 	--self.keeponfinished = nil
     self.inst:ListenForEvent("percentusedchange", PercentChanged)
@@ -149,6 +154,8 @@ function Armor:GetBonusDamage(attacker, weapon)
 end
 
 function Armor:TakeDamage(damage_amount)
+    damage_amount = damage_amount * self.conditionlossmultipliers:Get()
+
     self:SetCondition(self.condition - damage_amount)
     if self.ontakedamage ~= nil then
         self.ontakedamage(self.inst, damage_amount)

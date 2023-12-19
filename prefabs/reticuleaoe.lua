@@ -232,12 +232,17 @@ return MakeReticule("reticuleaoe", "idle"),
     MakeReticule("reticuleaoesummon", "idle_summon"),
 	MakeReticule("reticuleaoe_1_6", "idle_1_6"),
 	MakeReticule("reticuleaoe_1d2_12", "idle_1d2_12"),
+    MakeReticule("reticuleaoe5line", "idle_5live"),
 	--ping scales to grow radius by .2 (or .1 of inner ring for summons)
     MakePing("reticuleaoeping", "idle", 1.05),
     MakePing("reticuleaoesmallping", "idle_small", 1.1),
     MakePing("reticuleaoesummonping", "idle_summon", 1.0667),
 	MakePing("reticuleaoeping_1_6", "idle_1_6", 1.1),
 	MakePing("reticuleaoeping_1d2_12", "idle_1d2_12", 1.08333),
+    MakePing("reticuleaoeping5line", "idle_5live", 1.08333),    
+
+    MakePing("reticuleaoefiretarget_1ping", "idle_summon_target", 1.08333),    
+    
     MakeTarget("reticuleaoehostiletarget", "idle_target", { 1, .25, 0, 1 }),
     MakeTarget("reticuleaoefriendlytarget", "idle_target", { 0, 1, .25, 1 }),
     MakeTarget("reticuleaoecctarget", "idle_target", { .3, .5, .2, 1 }),
@@ -245,4 +250,7 @@ return MakeReticule("reticuleaoe", "idle"),
     MakeTarget("reticuleaoesummontarget", "idle_summon_target", { .3, .5, .2, 1 }),
 	MakeTarget("reticuleaoesummontarget_1", "idle_target_1", { .3, .5, .2, 1 }),
 	MakeTarget("reticuleaoesummontarget_1d2", "idle_target_1d2", { .3, .5, .2, 1 }),
-	MakeTarget("reticuleaoeshadowtarget_6", "idle_target_6", { .1, .1, .1, 1 })
+	MakeTarget("reticuleaoeshadowtarget_6", "idle_target_6", { .1, .1, .1, 1 }),
+    MakeTarget("reticuleaoefiretarget_1", "idle_summon_target", { 255/255, 161/255, 61/255, 1 })
+
+    

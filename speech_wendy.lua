@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -796,8 +798,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5027,6 +5031,29 @@ return{
         WAGPUNKBITS_KIT = "Some things are beyond repair.",
 
         WAGSTAFF_MUTATIONS_NOTE = "Somebody's last words?",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "My heart has no desire to sing.",
+
+        WATHGRITHR_IMPROVEDHAT = "Being a commander must be terribly lonely.",
+        SPEAR_WATHGRITHR_LIGHTNING = "Such terrible destructive power...",
+
+        BATTLESONG_CONTAINER = "A hollow container.",
+
+        SADDLE_WATHGRITHR = "It has wings, but will never fly.",
+
+        WATHGRITHR_SHIELD = "What do I have that's worth protecting?",
+
+        BATTLESONG_SHADOWALIGNED = "My heart has no desire to sing.",
+        BATTLESONG_LUNARALIGNED = "My heart has no desire to sing.",
+
+		SHARKBOI = "It has a bite no colder than reality.",
+        BOOTLEG = "It will just take me from one unpleasant place to another.",
+        OCEANWHIRLPORTAL = "It calls to me.",
+
+        EMBERLIGHT = "At least it warms my hands.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

@@ -85,6 +85,11 @@ local ItemTile = Class(Widget, function(self, invitem)
 
     --self.image:SetClickable(false)
 
+    -- NOTES(JBK): Apply invitem.itemtile_tagname before other things they are treated to be part of the item instead of an overlay.
+    if invitem.itemtile_lightning then
+        self.image.itemtile_lightning = self.image:AddChild(Image(GetInventoryItemAtlas("itemtile_lightning.tex"), "itemtile_lightning.tex", "default.tex"))
+    end
+
 	self:ToggleShadowFX()
 	self:HandleAcidSizzlingFX()
 

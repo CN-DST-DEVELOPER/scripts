@@ -8,11 +8,16 @@ local grass_assets =
     Asset("ANIM", "anim/boat_grass.zip"),
 }
 
+local ice_assets =
+{
+    Asset("ANIM", "anim/boat_ice.zip"),
+}
+
 local prefabs =
 {
 }
 
-local function commonfn()
+local function commonfn(bank, build)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -23,8 +28,8 @@ local function commonfn()
     inst:AddTag("NOBLOCK")
     inst:AddTag("DECOR")
 
-    inst.AnimState:SetBank("boat_01")
-    inst.AnimState:SetBuild("boat_test")
+    inst.AnimState:SetBank(bank or "boat_01")
+    inst.AnimState:SetBuild(build or "boat_test")
     inst.AnimState:PlayAnimation("lip", true)
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGroundFixed)
     inst.AnimState:SetLayer(LAYER_BELOW_GROUND)
@@ -47,23 +52,17 @@ local function commonfn()
 end
 
 local function fn()
-    local inst = commonfn()
-    return inst
+    return commonfn()
 end
 
 local function grassfn()
-    local inst = commonfn()
+    return commonfn("boat_grass", "boat_grass")
+end
 
-    inst.AnimState:SetBuild("boat_grass")    
-    inst.AnimState:SetBank("boat_grass")
-
-    inst.entity:SetPristine()
-    if not TheWorld.ismastersim then
-        return inst
-    end    
-
-    return inst
+local function icefn()
+    return commonfn("boat_ice", "boat_ice")
 end
 
 return Prefab("boatlip", fn, assets, prefabs),
-    Prefab("boatlip_grass", grassfn, grass_assets, prefabs)
+    Prefab("boatlip_grass", grassfn, grass_assets, prefabs),
+    Prefab("boatlip_ice", icefn, ice_assets, prefabs)

@@ -67,7 +67,7 @@ local events =
 local AOE_RANGE_PADDING = 3
 local TARGET_MUSTHAVE_TAGS = { "_health", "_combat" }
 local TARGET_CANT_TAGS = { "brightmareboss", "brightmare", "INLIMBO", "flight", "invisible", "notarget", "noattack" }
-local TARGET_ONEOF_TAGS = { "animal", "character", "monster", "shadowminion", "smallcreature" }
+local TARGET_ONEOF_TAGS = { "animal", "character", "monster", "shadowminion", "smallcreature", "largecreature" }
 local function DoAOEAttack(inst, range)
     local x,y,z = inst.Transform:GetWorldPosition()
     local targets = TheSim:FindEntities(

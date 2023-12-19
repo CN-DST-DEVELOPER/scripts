@@ -1,3 +1,5 @@
+local SourceModifierList = require("util/sourcemodifierlist")
+
 local DOZE_OFF_TIME = 2
 
 local PATHFIND_PERIOD = 1
@@ -142,7 +144,7 @@ local function ServerExternalSpeedMutliplier(self)
 end
 
 local function ClientExternalSpeedMultiplier(self)
-    return self.inst.player_classified ~= nil and self.inst.player_classified.externalspeedmultiplier:value() or self.externalspeedmultiplier
+	return (self.inst.player_classified and self.inst.player_classified.externalspeedmultiplier:value() or self.externalspeedmultiplier) * self:GetPredictExternalSpeedMultipler()
 end
 
 local function ServerGetSpeedMultiplier(self)
@@ -292,6 +294,7 @@ local LocoMotor = Class(function(self, inst)
 
     --self.isupdating = nil
     --self.predictrunspeed = nil
+	--self.predictexternalspeedmultiplier = nil
 end,
 nil,
 {
@@ -439,6 +442,25 @@ function LocoMotor:GetExternalSpeedMultiplier(source, key)
         return m
     end
     return src_params.multipliers[key] or 1
+end
+
+function LocoMotor:SetPredictExternalSpeedMultiplier(source, key, m)
+	if not self.predictexternalspeedmultiplier then
+		self.predictexternalspeedmultiplier = SourceModifierList(self.inst)
+	end
+	self.predictexternalspeedmultiplier:SetModifier(source, m, key)
+end
+
+--key is optional if you want to remove the entire source
+function LocoMotor:RemovePredictExternalSpeedMultiplier(source, key)
+	if self.predictexternalspeedmultiplier then
+		self.predictexternalspeedmultiplier:RemoveModifier(source, key)
+	end
+end
+
+--key is optional if you want to calculate the entire source
+function LocoMotor:GetPredictExternalSpeedMultipler(source, key)
+	return self.predictexternalspeedmultiplier and self.predictexternalspeedmultiplier:Get() or 1
 end
 
 function LocoMotor:SetSlowMultiplier(m)

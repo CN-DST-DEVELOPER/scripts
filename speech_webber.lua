@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "We want to play with the toy!",
 
         WAGSTAFF_MUTATIONS_NOTE = "Is it a story?",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "We like singing songs!",
+
+        WATHGRITHR_IMPROVEDHAT = "Can we wear it? Pleeeaaase?",
+        SPEAR_WATHGRITHR_LIGHTNING = "It gets our fur all full of static!",
+
+        BATTLESONG_CONTAINER = "Remember to put all the songs away when you're done!",
+
+        SADDLE_WATHGRITHR = "Wigfrid takes good care of her steed.",
+
+        WATHGRITHR_SHIELD = "Will it protect us from getting squashed?",
+
+        BATTLESONG_SHADOWALIGNED = "We like singing songs!",
+        BATTLESONG_LUNARALIGNED = "We like singing songs!",
+
+		SHARKBOI = "Maybe it just wants to play with us.",
+        BOOTLEG = "Someone forgot their foot inside!",
+        OCEANWHIRLPORTAL = "We love spinny boat rides!",
+
+        EMBERLIGHT = "We like it warm and toasty!",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

@@ -26,4 +26,16 @@ TileManager.AddFalloffTexture(
     }
 )
 
+TileManager.AddFalloffTexture(
+    FALLOFF_IDS.OCEANICE_FALLOFF,
+    {
+        name = "oceanice_falloff",
+        noise_texture = "images/square.tex",
+        should_have_falloff = TileGroups.OceanIceTiles,
+        should_have_falloff_result = true,
+        neighbor_needs_falloff = TileGroups.TransparentOceanTiles,
+        neighbor_needs_falloff_result = true,
+    }
+)
+
 mod_protect_TileManager = true

@@ -135,51 +135,61 @@ function SkillTreeBuilder:GetDefaultFocus()
 	end
 end
 
-function SkillTreeBuilder:SetFocusChangeDirs()
+local function GetFocusChangeButton(self, current, fn, boost_dir)
+	local list = {}
 
-	local function getButton(current,fn)
-		local list = {}
-		for i,data in ipairs(self.buttongrid) do
-			if fn(current,data) and current ~= data then
-				table.insert(list,data)
-			end
+	for i, data in ipairs(self.buttongrid) do
+		if current ~= data and fn(current,data) then
+			table.insert(list, data)
 		end
-		local choice = nil
-		local currentdist = math.huge
-		if #list > 0 then
-			for i=#list,1,-1 do
-				local xdiff = math.abs(list[i].x - current.x)
-				local ydiff = math.abs(list[i].y - current.y)
-				local dist = (xdiff*xdiff) + (ydiff*ydiff)
-
-				if dist < currentdist then
-					choice = list[i]
-					currentdist = dist
-				end
-			end
-		end
-		
-		return choice and choice.button or nil
 	end
 
-	--find the button absolute positions relative to the skill tree widget
-	for i,data in ipairs(self.buttongrid) do
+	local choice = nil
+	local currentdist = math.huge
+
+	if #list > 0 then
+		for i=#list, 1, -1 do
+			local xdiff = math.abs(list[i].x - current.x) * (boost_dir == "X" and 0.65 or 1)
+			local ydiff = math.abs(list[i].y - current.y) * (boost_dir == "Y" and 0.65 or 1)
+			local dist = (xdiff*xdiff) + (ydiff*ydiff)
+
+			if dist < currentdist then
+				choice = list[i]
+				currentdist = dist
+			end
+		end
+	end
+	
+	return choice and choice.button or nil
+end
+
+function SkillTreeBuilder:SetFocusChangeDirs()
+	-- Find the button absolute positions relative to the skill tree widget.
+	for i, data in ipairs(self.buttongrid) do
 		data.x = data.x + data.button.parent:GetPosition().x
 		data.y = data.y + data.button.parent:GetPosition().y
 	end
 
-	for i,data in ipairs(self.buttongrid) do
-		local up = getButton(data, function(a,b) return b.y > a.y and math.abs(b.x - a.x) <= TILEUNIT/0.5 end)
-		if up then data.button:SetFocusChangeDir(MOVE_UP, up) end
+	for i, data in ipairs(self.buttongrid) do
+		local up = GetFocusChangeButton(self, data, function(a,b) return b.y > a.y and math.abs(b.x - a.x) <= TILEUNIT/0.5 end, "Y")
+		if up ~= nil then
+			data.button:SetFocusChangeDir(MOVE_UP, up)
+		end
 		
-		local down = getButton(data,function(a,b) return b.y < a.y and math.abs(b.x - a.x) <= TILEUNIT/0.5 end)
-		if down then data.button:SetFocusChangeDir(MOVE_DOWN, down) end
+		local down = GetFocusChangeButton(self, data, function(a,b) return b.y < a.y and math.abs(b.x - a.x) <= TILEUNIT/0.5 end, "Y")
+		if down ~= nil then
+			data.button:SetFocusChangeDir(MOVE_DOWN, down)
+		end
 
-		local left = getButton(data,function(a,b) return b.x < a.x and math.abs(b.y - a.y) <= TILEUNIT/0.5 end)
-		if left then data.button:SetFocusChangeDir(MOVE_LEFT, left) end
+		local left = GetFocusChangeButton(self, data, function(a,b) return b.x < a.x and math.abs(b.y - a.y) <= TILEUNIT/0.5 end, "X")
+		if left ~= nil then
+			data.button:SetFocusChangeDir(MOVE_LEFT, left)
+		end
 
-		local right = getButton(data,function(a,b) return b.x > a.x and math.abs(b.y - a.y) <= TILEUNIT/0.5 end)
-		if right then data.button:SetFocusChangeDir(MOVE_RIGHT, right) end
+		local right = GetFocusChangeButton(self, data, function(a,b) return b.x > a.x and math.abs(b.y - a.y) <= TILEUNIT/0.5 end, "X")
+		if right ~= nil then
+			data.button:SetFocusChangeDir(MOVE_RIGHT, right)
+		end
 	end
 end
 
@@ -551,8 +561,6 @@ function SkillTreeBuilder:LearnSkill(skilltreeupdater, characterprefab)
 			return
 		end
 	    skilltreeupdater:ActivateSkill(self.selectedskill, characterprefab)
-	    
-	    TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/skill_mastered") -- wilson_rework/ui/skill_mastered
 
 	    local pos = self.skillgraphics[self.selectedskill].button:GetPosition()
 	    local clickfx = self:AddChild(UIAnim())
@@ -562,9 +570,20 @@ function SkillTreeBuilder:LearnSkill(skilltreeupdater, characterprefab)
 	    clickfx.inst:ListenForEvent("animover", function() clickfx:Kill() end)
 	    clickfx:SetPosition(pos.x,pos.y + 15)
 
-	    if  skilltreedefs.FN.SkillHasTags( self.selectedskill, "shadow", self.target) or skilltreedefs.FN.SkillHasTags( self.selectedskill, "lunar", self.target) then
+		local isshadow = skilltreedefs.FN.SkillHasTags( self.selectedskill, "shadow_favor", self.target)
+		local islunar =  skilltreedefs.FN.SkillHasTags( self.selectedskill, "lunar_favor",  self.target)
+
+		local sound = 
+			(isshadow and "wilson_rework/ui/shadow_skill") or
+			(islunar  and "wilson_rework/ui/lunar_skill") or
+			"wilson_rework/ui/skill_mastered"
+			
+		TheFrontEnd:GetSound():PlaySound(sound)
+
+	    if isshadow or islunar then
 	    	self.skilltreewidget:SpawnFavorOverlay(true)
 		end
+
 	    self:RefreshTree()
 	end
 end

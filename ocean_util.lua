@@ -8,6 +8,24 @@ function IsLandTile(tile)
     return TileGroupManager:IsLandTile(tile)
 end
 
+function GetOceanDepthAtPosition(x, y, z)
+    local tile = TheWorld.Map:GetTileAtPoint(x, y, z)
+    if tile == nil then
+        return nil
+    end
+
+    local tile_info = GetTileInfo(tile)
+    if tile_info == nil then
+        return nil
+    end
+
+    return tile_info.ocean_depth -- Can be nil.
+end
+
+function GetOceanDepthAtPoint(pt)
+    return GetOceanDepthAtPosition(pt.x, pt.y, pt.z)
+end
+
 local WAVE_SPAWN_DISTANCE = 1.5
 function SpawnAttackWaves(position, rotation, spawn_radius, numWaves, totalAngle, waveSpeed, wavePrefab, idleTime, instantActive)
     wavePrefab = wavePrefab or "wave_med"

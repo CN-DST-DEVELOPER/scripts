@@ -23,6 +23,10 @@ local function CheckFishingOceanRange(doer, dest)
 	local test_pt = doer_pos + dir:GetNormalized() * (doer:GetPhysicsRadius(0) + 0.25)
 
     if TheWorld.Map:IsVisualGroundAtPoint(test_pt.x, 0, test_pt.z) or TheWorld.Map:GetPlatformAtPoint(test_pt.x, test_pt.z) ~= nil then
+        if FindVirtualOceanEntity(test_pt.x, 0, test_pt.z) ~= nil then
+            return true
+        end
+
 		return false
 	else
         return true
@@ -51,9 +55,13 @@ local function CheckOceanFishingCastRange(doer, dest)
 	local target_pos = Vector3(dest:GetPoint())
 	local dir = target_pos - doer_pos
 
-	local test_pt = doer_pos + dir:GetNormalized() * (doer:GetPhysicsRadius(0) + 0.25)
+	local test_pt = doer_pos + dir:GetNormalized() * (doer:GetPhysicsRadius(0) + 1.5)
 
     if TheWorld.Map:IsVisualGroundAtPoint(test_pt.x, 0, test_pt.z) or TheWorld.Map:GetPlatformAtPoint(test_pt.x, test_pt.z) ~= nil then
+        if FindVirtualOceanEntity(test_pt.x, 0, test_pt.z) ~= nil then
+            return true
+        end
+
 		return false
 	else
         return true
@@ -262,7 +270,7 @@ ACTIONS =
     FISH = Action(),
     REEL = Action({ instant=true }),
     OCEAN_FISHING_POND = Action(),
-    OCEAN_FISHING_CAST = Action({priority=3, rmb=true, customarrivecheck=CheckOceanFishingCastRange, is_relative_to_platform=true, disable_platform_hopping=true}),
+    OCEAN_FISHING_CAST = Action({priority=3, rmb=true, customarrivecheck=CheckOceanFishingCastRange, is_relative_to_platform=true, disable_platform_hopping=true, invalid_hold_action=true}),
     OCEAN_FISHING_REEL = Action({priority=5, rmb=true, do_not_locomote=true, silent_fail = true }),
     OCEAN_FISHING_STOP = Action({instant=true}),
     OCEAN_FISHING_CATCH = Action({priority=6, instant=true}),
@@ -322,8 +330,13 @@ ACTIONS =
     CONSTRUCT = Action({ distance=2.5 }),
     STOPCONSTRUCTION = Action({ instant=true, distance=2 }),
     APPLYCONSTRUCTION = Action({ instant=true, distance=2 }),
+	--channeling for scene entity
     STARTCHANNELING = Action({ priority=2, distance=2.1 }), -- Keep higher priority over smother for waterpump but do something else if channelable is added to more things.
     STOPCHANNELING = Action({ instant=true, distance=2.1 }),
+	--channeling for equipped item
+	START_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true }),
+	STOP_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true }),
+	--
 	APPLYPRESERVATIVE = Action(),
     COMPARE_WEIGHABLE = Action({ encumbered_valid=true, priority=HIGH_ACTION_PRIORITY }),
 	WEIGH_ITEM = Action(),
@@ -335,6 +348,7 @@ ACTIONS =
     PERFORM = Action({ rmb=true, distance=1.5, invalid_hold_action=true }),
 
     TOSS = Action({priority=1, rmb=true, distance=8, mount_valid=true }),
+    TOSS_MAP = Action({ priority=HIGH_ACTION_PRIORITY, customarrivecheck=ArriveAnywhere, rmb=true, mount_valid=true, map_action=true, }),
     NUZZLE = Action(),
     WRITE = Action(),
     ATTUNE = Action(),
@@ -931,6 +945,10 @@ ACTIONS.BOARDPLATFORM.fn = function(act)
 end
 
 ACTIONS.OCEAN_FISHING_POND.fn = function(act)
+    if act.target:HasTag("virtualocean") then
+        return true
+    end
+
 	return false, "WRONGGEAR"
 end
 
@@ -2255,9 +2273,16 @@ ACTIONS.RESETMINE.fn = function(act)
 end
 
 ACTIONS.ACTIVATE.fn = function(act)
-    if act.target.components.activatable ~= nil and (act.target.components.burnable == nil or not (act.target.components.burnable:IsSmoldering() or act.target.components.burnable:IsBurning())) and act.target.components.activatable:CanActivate(act.doer) then
-        local success, msg = act.target.components.activatable:DoActivate(act.doer)
-        return (success ~= false), msg -- note: for legacy reasons, nil will be true
+    
+    if act.target.components.activatable ~= nil and (act.target.components.burnable == nil or not (act.target.components.burnable:IsSmoldering() or act.target.components.burnable:IsBurning())) then
+
+        local success, msg = act.target.components.activatable:CanActivate(act.doer)
+        if success == false then
+            return false, msg        
+        else
+            success, msg = act.target.components.activatable:DoActivate(act.doer)
+            return (success ~= false), msg -- note: for legacy reasons, nil will be true
+        end
     end
 end
 
@@ -2449,19 +2474,24 @@ ACTIONS.TURNOFF.fn = function(act)
     end
 end
 
-ACTIONS.USEITEM.fn = function(act)
-    if act.invobject ~= nil and
-        act.invobject.components.useableitem ~= nil and
-        act.invobject.components.useableitem:CanInteract() and
-        act.doer.components.inventory ~= nil and
-        act.doer.components.inventory:IsOpenedBy(act.doer) then
-		--V2C: kinda hack since USEITEM is instant action, and the useableitem will
-		--     liklely force state change (bad!) instead.
-		act.doer.sg.statemem.is_going_to_action_state = true
-		local ret = act.invobject.components.useableitem:StartUsingItem(act.doer)
-		--And clear it now in case no state change happened
-		act.doer.sg.statemem.is_going_to_action_state = nil
-		return ret
+ACTIONS.USEITEM.fn = function(act)    
+    if act.invobject ~= nil then
+        if  act.invobject.components.toggleableitem ~= nil and 
+            act.invobject.components.toggleableitem:CanInteract(act.doer) then
+            local ret = act.invobject.components.toggleableitem:ToggleItem(act.doer)
+            return ret
+        elseif act.invobject.components.useableitem ~= nil and
+            act.invobject.components.useableitem:CanInteract(act.doer) and
+            act.doer.components.inventory ~= nil and
+            act.doer.components.inventory:IsOpenedBy(act.doer) then
+    		--V2C: kinda hack since USEITEM is instant action, and the useableitem will
+    		--     liklely force state change (bad!) instead.
+    		act.doer.sg.statemem.is_going_to_action_state = true
+    		local ret = act.invobject.components.useableitem:StartUsingItem(act.doer)
+    		--And clear it now in case no state change happened
+    		act.doer.sg.statemem.is_going_to_action_state = nil
+    		return ret
+        end
     end
 end
 
@@ -2899,6 +2929,9 @@ ACTIONS.TOSS.fn = function(act)
                     pos = act:GetActionPoint()
                 end
                 projectile.components.complexprojectile:Launch(pos, act.doer)
+                if act.from_map then
+                    act.doer:CloseMinimap()
+                end
                 return true
             end
         end
@@ -2906,6 +2939,59 @@ ACTIONS.TOSS.fn = function(act)
 end
 
 ACTIONS.WATER_TOSS.fn = ACTIONS.TOSS.fn
+
+ACTIONS.TOSS_MAP.stroverridefn = function(act)
+    return act.doer ~= nil and act.invobject ~= nil and act.invobject.CanTossOnMap ~= nil and act.invobject:CanTossOnMap(act.doer) and STRINGS.ACTIONS.TOSS or nil
+end
+
+local function ActionCanMapToss(act)
+    if act.doer ~= nil and act.invobject ~= nil and act.invobject.CanTossOnMap ~= nil then
+        return act.invobject:CanTossOnMap(act.doer)
+    end
+    return false
+end
+
+ACTIONS.TOSS_MAP.fn = function(act)
+	local act_pos = act:GetActionPoint()
+    if ActionCanMapToss(act) then
+        act.from_map = true
+        return ACTIONS.TOSS.fn(act)
+    end
+end
+
+ACTIONS_MAP_REMAP[ACTIONS.TOSS.code] = function(act, targetpos)
+    if act.doer == nil or act.invobject == nil then
+        return nil
+    end
+
+    local min_dist = act.invobject.map_remap_min_dist
+    local max_dist = act.invobject.map_remap_max_dist
+    if min_dist or max_dist then
+        local x, y, z = act.doer.Transform:GetWorldPosition()
+        local dx, dz = targetpos.x - x, targetpos.z - z
+        if dx == 0 and dz == 0 then
+            dx = 1
+        end
+        local dist = math.sqrt(dx * dx + dz * dz)
+        if min_dist and dist <= min_dist then
+            targetpos.x = x + dx * (min_dist / dist)
+            targetpos.z = z + dz * (min_dist / dist)
+        elseif max_dist and dist >= max_dist then
+            targetpos.x = x + dx * (max_dist / dist)
+            targetpos.z = z + dz * (max_dist / dist)
+        end
+    end
+
+    if not TheWorld.Map:IsOceanTileAtPoint(targetpos.x, targetpos.y, targetpos.z) or TheWorld.Map:IsVisualGroundAtPoint(targetpos.x, targetpos.y, targetpos.z) then
+        return nil
+    end
+
+    local act_remap = BufferedAction(act.doer, nil, ACTIONS.TOSS_MAP, act.invobject, targetpos)
+    if not ActionCanMapToss(act_remap) then
+        return nil
+    end
+    return act_remap
+end
 
 ACTIONS.UPGRADE.fn = function(act)
     if act.invobject and act.target and
@@ -3147,6 +3233,35 @@ ACTIONS.STOPCHANNELING.fn = function(act)
         act.target.components.channelable:StopChanneling(true)
     end
     return true
+end
+
+ACTIONS.START_CHANNELCAST.strfn = function(act)
+	return act.invobject and act.invobject:HasTag("lighter") and "LIGHTER" or nil
+end
+
+ACTIONS.START_CHANNELCAST.fn = function(act)
+	if act.doer and act.doer.components.channelcaster then
+		if act.invobject == nil then
+			--off-hand channel casting
+			return act.doer.components.channelcaster:StartChanneling()
+		elseif act.invobject.components.channelcastable and not act.invobject.components.channelcastable:IsAnyUserChanneling() then
+			--equipped item channel casting
+			return act.doer.components.channelcaster:StartChanneling(act.invobject)
+		end
+	end
+	return false
+end
+
+ACTIONS.STOP_CHANNELCAST.strfn = ACTIONS.START_CHANNELCAST.strfn
+
+ACTIONS.STOP_CHANNELCAST.fn = function(act)
+	if act.invobject and
+		act.invobject.components.channelcastable and
+		act.invobject.components.channelcastable:IsUserChanneling(act.doer)
+	then
+		act.invobject.components.channelcastable:StopChanneling()
+	end
+	return true
 end
 
 ACTIONS.BUNDLE.fn = function(act)
@@ -3999,11 +4114,11 @@ ACTIONS.SING.fn = function(act)
         local songdata = act.invobject.songdata
         if songdata ~= nil then
 
-            if singinginspiration:IsSongActive(songdata) then --we need this test incase the client asks to do this action due to lag.
+            if singinginspiration:IsSongActive(songdata, act.invobject) then --we need this test incase the client asks to do this action due to lag.
                 return true
             end
 
-            if singinginspiration:CanAddSong(songdata) then
+            if singinginspiration:CanAddSong(songdata, act.invobject) then
                 act.invobject.components.singable:Sing(act.doer)
             end
         end
@@ -4585,6 +4700,10 @@ ACTIONS.STOPUSINGMAGICTOOL.fn = function(act)
 	return true
 end
 
+ACTIONS.USESPELLBOOK.strfn = function(act)
+    return act.doer:HasTag("pyromaniac") and "PYROKINESIS" or nil
+end
+
 ACTIONS.USESPELLBOOK.pre_action_cb = function(act)
 	if act.doer.HUD ~= nil and act.invobject ~= nil and act.invobject.components.spellbook ~= nil then
 		local inventory = act.doer.replica.inventory
@@ -4615,6 +4734,10 @@ ACTIONS.USESPELLBOOK.fn = function(act)
 		act.doer.components.boatcannonuser:SetCannon(nil)
 	end
 	return not (act.invobject.components.fueled ~= nil and act.invobject.components.fueled:IsEmpty())
+end
+
+ACTIONS.CLOSESPELLBOOK.strfn = function(act)
+    return act.doer:HasTag("pyromaniac") and "PYROKINESIS" or nil
 end
 
 ACTIONS.CLOSESPELLBOOK.pre_action_cb = function(act)

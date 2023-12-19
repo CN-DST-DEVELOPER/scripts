@@ -18,6 +18,8 @@ RESOLUTION_Y = 720
 PLAYER_REVEAL_RADIUS = 30.0 -- NOTES(JBK): Keep in sync with MiniMapRenderer.cpp!
 PLAYER_CAMERA_SEE_DISTANCE = 40.0 -- NOTES(JBK): Based off of an approximation of the maximum default camera distance before seeing clouds and is the screen diagonal.
 PLAYER_CAMERA_SEE_DISTANCE_SQ = PLAYER_CAMERA_SEE_DISTANCE * PLAYER_CAMERA_SEE_DISTANCE -- Helper.
+PLAYER_CAMERA_SHOULD_SNAP_DISTANCE = 20.0 -- NOTES(JBK): This is an approximate distance traveled where the camera should snap and fade out to not cause disorientations.
+PLAYER_CAMERA_SHOULD_SNAP_DISTANCE_SQ = PLAYER_CAMERA_SHOULD_SNAP_DISTANCE * PLAYER_CAMERA_SHOULD_SNAP_DISTANCE -- Helper.
 
 MAX_FE_SCALE = 3 --Default if you don't call SetMaxPropUpscale
 MAX_HUD_SCALE = 1.25
@@ -683,10 +685,13 @@ TERRAFORM_IMMUNE = {}
 GROUND_FLOORING = {} --These tiles are flooring (stuff shouldn't grow on them)
 GROUND_HARD = {} --not plantable
 GROUND_ROADWAYS = {} -- Player speed boosting enabled.
+GROUND_NOGROUNDOVERLAYS = {} -- Stops rendering of snow or water etc overlays this table is immutable after initialization or engine crashes may occur.
+GROUND_ISTEMPTILE = {} -- Tiles that are temporarily placed as a layer using the undertile component.
 
 FALLOFF_IDS = {
     FALLOFF = 1,
     DOCK_FALLOFF = 2,
+    OCEANICE_FALLOFF = 3,
 }
 
 GROUND_CREEP_IDS = {
@@ -1450,9 +1455,10 @@ ANIM_SORT_ORDER =
 {
 	OCEAN_UNDERWATER = 0,
 	OCEAN_WAVES = 1,
-	OCEAN_BOAT = 2,
-    OCEAN_BOAT_BUMPERS = 3,
-	OCEAN_SKYSHADOWS = 4,
+	OCEAN_WHIRLPORTAL = 2,
+	OCEAN_BOAT = 3,
+    OCEAN_BOAT_BUMPERS = 4,
+	OCEAN_SKYSHADOWS = 5,
 }
 
 ANIM_SORT_ORDER_BELOW_GROUND =
@@ -1783,6 +1789,7 @@ UPGRADETYPES =
     SPIDER = "spider",
     WATERPLANT = "waterplant",
     MAST = "mast",
+    SPEAR_LIGHTNING = "spear_lightning",
 }
 
 LOCKTYPE =
@@ -1802,6 +1809,7 @@ FUELTYPE =
     PIGTORCH = "PIGTORCH",
     CHEMICAL = "CHEMICAL",
     WORMLIGHT = "WORMLIGHT",
+    LIGHTER = "LIGHTER",
 }
 
 OCCUPANTTYPE =
@@ -1926,31 +1934,42 @@ TECH_SKILLTREE_BUILDER_TAG_OWNERS =
     gem_alchemistI = "wilson",
     gem_alchemistII = "wilson",
     gem_alchemistIII = "wilson",
-    ore_alchemistI = "wilson",
-    ore_alchemistII = "wilson",
-    ore_alchemistIII = "wilson",
     ick_alchemistI = "wilson",
     ick_alchemistII = "wilson",
     ick_alchemistIII = "wilson",
-    skill_wilson_allegiance_shadow = "wilson",
+    ore_alchemistI = "wilson",
+    ore_alchemistII = "wilson",
+    ore_alchemistIII = "wilson",
     skill_wilson_allegiance_lunar = "wilson",
+    skill_wilson_allegiance_shadow = "wilson",
 
-    wolfgang_dumbbell_crafting = "wolfgang",
     wolfgang_coach = "wolfgang",
+    wolfgang_dumbbell_crafting = "wolfgang",
 
     woodcarver1 = "woodie",
     woodcarver2 = "woodie",
     woodcarver3 = "woodie",
 
-    syrupcrafter = "wormwood",
-    saplingcrafter = "wormwood",
     berrybushcrafter = "wormwood",
-    juicyberrybushcrafter = "wormwood",
-    reedscrafter = "wormwood",
-    lureplantcrafter = "wormwood",
     carratcrafter = "wormwood",
-    lightfliercrafter = "wormwood",
     fruitdragoncrafter = "wormwood",
+    juicyberrybushcrafter = "wormwood",
+    lightfliercrafter = "wormwood",
+    lureplantcrafter = "wormwood",
+    reedscrafter = "wormwood",
+    saplingcrafter = "wormwood",
+    syrupcrafter = "wormwood",
+
+    battlesongcontainermaker = "wathgrithr",
+    battlesonginstantrevivemaker = "wathgrithr",
+    battlesonglunaralignedmaker = "wathgrithr",
+    battlesongshadowalignedmaker = "wathgrithr",
+    saddlewathgrithrmaker = "wathgrithr",
+    spearwathgrithrlightningmaker = "wathgrithr",
+    wathgrithrimprovedhatmaker = "wathgrithr",
+    wathgrithrshieldmaker = "wathgrithr",
+
+    fire_mastery_1 = "willow",
 }
 
 -- IngredientMod must be one of the following values
@@ -2192,6 +2211,7 @@ WORMHOLETYPE =
 {
     WORM = 0,
     TENTAPILLAR = 1,
+    OCEANWHIRLPORTAL = 2,
 }
 
 -- Houndwarning level
@@ -2610,6 +2630,11 @@ SPECIAL_SCRAPBOOK_PAGES_LOOKUP =
         entries = { "entry1", "entry2", "..." },
     },
     ]]
+}
+
+BERNIEALLEGIANCE ={
+    SHADOW = 1,
+    LUNAR = 2,
 }
 
 SPECIAL_SCRAPBOOK_PAGES = {}

@@ -862,6 +862,24 @@ local function OnPlayerMinimapCenter(inst)
     end
 end
 
+local function DoMinimapClose(inst)
+    local player = inst._parent
+
+    if player ~= nil and player.HUD ~= nil then
+        player.HUD.controls:HideMap()
+    end
+end
+
+local function OnPlayerMinimapClose(inst)
+    if inst._parent ~= nil and inst._parent.HUD ~= nil then
+        if TheWorld.ismastersim then
+            DoMinimapClose(inst)
+        else
+            inst:DoTaskInTime(0, DoMinimapClose)
+        end
+    end
+end
+
 local function OnPlayerFadeDirty(inst)
     if inst._parent ~= nil and inst._parent.HUD ~= nil then
         local iswhite = inst.fadetime:value() >= 32
@@ -884,6 +902,8 @@ local function OnWormholeTravelDirty(inst)
             TheFocalPoint.SoundEmitter:PlaySound("dontstarve/common/teleportworm/travel")
         elseif inst._parent.player_classified.wormholetravelevent:value() == WORMHOLETYPE.TENTAPILLAR then
             TheFocalPoint.SoundEmitter:PlaySound("dontstarve/cave/tentapiller_hole_travel")
+        elseif inst._parent.player_classified.wormholetravelevent:value() == WORMHOLETYPE.OCEANWHIRLPORTAL then
+            TheFocalPoint.SoundEmitter:PlaySound("meta3/whirlpool/whirlpool_travel")
         end
     end
 end
@@ -1056,6 +1076,7 @@ local function RegisterNetListeners_common(inst)
     inst:ListenForEvent("playercameradirty", OnPlayerCameraDirty)
     inst:ListenForEvent("playercamerasnap", OnPlayerCameraSnap)
     inst:ListenForEvent("playerminimapcenter", OnPlayerMinimapCenter)
+    inst:ListenForEvent("playerminimapclose", OnPlayerMinimapClose)
     inst:ListenForEvent("playerfadedirty", OnPlayerFadeDirty)
     inst:ListenForEvent("wormholetraveldirty", OnWormholeTravelDirty)
     inst:ListenForEvent("leader.makefriend", OnMakeFriendEvent)
@@ -1287,6 +1308,7 @@ local function fn()
 
     --Player minimap variables
     inst.minimapcenter = net_bool(inst.GUID, "playerminimap.center", "playerminimapcenter")
+    inst.minimapclose = net_bool(inst.GUID, "playerminimap.close", "playerminimapclose")
 
     --Player front end variables
     inst.isfadein = net_bool(inst.GUID, "frontend.isfadein", "playerfadedirty")
@@ -1396,6 +1418,10 @@ local function fn()
 
     --BoatCannonUser variables
     inst.cannon = net_entity(inst.GUID, "boatcannonuser.cannon", "cannondirty")
+
+	--ChannelCaster variables
+	inst.ischannelcasting = net_bool(inst.GUID, "channelcaster.ishcannelcasting")
+	inst.ischannelcastingitem = net_bool(inst.GUID, "channelcaster.ischannelcastingitem")
 
     --Morgue variables
     inst.isdeathbypk = net_bool(inst.GUID, "morgue.isdeathbypk", "morguedirty")

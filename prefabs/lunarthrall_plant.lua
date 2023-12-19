@@ -445,6 +445,8 @@ local function fn()
     inst:AddTag("lunar_aligned")
     inst:AddTag("hostile")
     inst:AddTag("lunarthrall_plant")
+    inst:AddTag("retaliates")
+    inst:AddTag("NPCcanaggro")
 
 	inst.highlightchildren = {}
 
@@ -764,6 +766,7 @@ local function vineendfn()
     inst:AddTag("lunarthrall_plant_end")
     inst:AddTag("hostile")
     inst:AddTag("soulless")
+    inst:AddTag("NPCcanaggro")
 
     inst.AnimState:SetBank("lunarthrall_plant_vine")
     inst.AnimState:SetBuild("lunarthrall_plant_vine")

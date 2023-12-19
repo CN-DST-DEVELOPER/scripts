@@ -817,6 +817,10 @@ local function MakeWarg(data)
                 inst._eyeflames = net_bool(inst.GUID, "claywarg._eyeflames", "eyeflamesdirty")
 				inst:ListenForEvent("eyeflamesdirty", Clay_OnEyeFlamesDirty)
 			elseif tag == "lunar_aligned" then
+				if epic then
+					inst:AddTag("noepicmusic")
+				end
+
 				inst.temp8faced = net_bool(inst.GUID, name..".temp8faced", "temp8faceddirty")
 
 				inst.AnimState:SetSymbolBloom("breath_02")
@@ -996,12 +1000,8 @@ local function MakeWarg(data)
 
 		inst:SetStateGraph("SGwarg")
 
-        if tag == "clay" or tag == "gingerbread" then
-            inst:AddComponent("hauntable")
-            inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
-        else
-            MakeHauntableGoToState(inst, "howl", TUNING.HAUNT_CHANCE_OCCASIONAL, TUNING.HAUNT_COOLDOWN_MEDIUM, TUNING.HAUNT_CHANCE_LARGE)
-        end
+		inst:AddComponent("hauntable")
+		inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
         if tag == "gingerbread" then
             inst.sg:GoToState("gingerbread_intro")

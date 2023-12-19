@@ -334,6 +334,7 @@ local function fn()
     inst:AddTag("hostile")
     inst:AddTag("veggie")
     inst:AddTag("wildfirepriority")
+    inst:AddTag("NPCcanaggro")
 
     inst.MiniMapEntity:SetIcon("eyeplant.png")
 

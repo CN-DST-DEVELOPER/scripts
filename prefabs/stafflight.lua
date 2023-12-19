@@ -7,7 +7,7 @@ local function kill_sound(inst)
 end
 
 local function kill_light(inst)
-    inst.AnimState:PlayAnimation("disappear")
+    inst.AnimState:PlayAnimation(inst.pst or "disappear")
     inst:ListenForEvent("animover", kill_sound)
     inst:DoTaskInTime(1, inst.Remove) --originally 0.6, padded for network
     inst.persists = false
@@ -58,7 +58,7 @@ local function onhaunt(inst)
     return true
 end
 
-local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
+local function makestafflight(name, is_hot, anim, colour, idles, is_fx, pre, pst)
     local assets =
     {
         Asset("ANIM", "anim/"..anim..".zip"),
@@ -84,7 +84,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
         inst._pulseoffs = 0
         inst._pulsetime = net_float(inst.GUID, "_pulsetime", "pulsetimedirty")
 
-        inst.scrapbook_persishable = is_hot and TUNING.YELLOWSTAFF_STAR_DURATION or TUNING.OPALSTAFF_STAR_DURATION
+        inst.scrapbook_persishable = name == "emberlight" and TUNING.EMBER_STAR_DURATION or is_hot and TUNING.YELLOWSTAFF_STAR_DURATION or TUNING.OPALSTAFF_STAR_DURATION
 
         inst.scrapbook_anim = "idle_loop"
 
@@ -96,7 +96,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
 
         inst.AnimState:SetBank(anim)
         inst.AnimState:SetBuild(anim)
-        inst.AnimState:PlayAnimation("appear")
+        inst.AnimState:PlayAnimation(pre or "appear")
         if #idles == 1 then
             inst.AnimState:PushAnimation(idles[1], true)
         end
@@ -173,7 +173,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
             inst.components.hauntable:SetOnHauntFn(onhaunt)
 
             inst:AddComponent("timer")
-            inst.components.timer:StartTimer("extinguish", is_hot and TUNING.YELLOWSTAFF_STAR_DURATION or TUNING.OPALSTAFF_STAR_DURATION)
+            inst.components.timer:StartTimer("extinguish", name == "emberlight" and TUNING.EMBER_STAR_DURATION or is_hot and TUNING.YELLOWSTAFF_STAR_DURATION or TUNING.OPALSTAFF_STAR_DURATION)
             inst:ListenForEvent("timerdone", ontimer)
 
             inst.SoundEmitter:PlaySound("dontstarve/common/staff_star_create")
@@ -182,6 +182,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx)
         if #idles > 1 then
             inst:ListenForEvent("animover", PlayRandomStarIdle)
         end
+        inst.pst = pst
 
         return inst
     end
@@ -191,4 +192,5 @@ end
 
 return makestafflight("stafflight", true, "star_hot", { 223 / 255, 208 / 255, 69 / 255 }, { "idle_loop" }, false),
     makestafflight("staffcoldlight", false, "star_cold", { 64 / 255, 64 / 255, 208 / 255 }, { "idle_loop", "idle_loop2", "idle_loop3" }, false),
-    makestafflight("staffcoldlightfx", false, "star_cold", { 64 / 255, 64 / 255, 208 / 255 }, { "idle_loop", "idle_loop2", "idle_loop3" }, true)
+    makestafflight("staffcoldlightfx", false, "star_cold", { 64 / 255, 64 / 255, 208 / 255 }, { "idle_loop", "idle_loop2", "idle_loop3" }, true),
+    makestafflight("emberlight", true, "flameball_fx", { 250 / 255, 149 / 255, 18 / 255 }, { "idle_loop" }, false, "pre", "post")

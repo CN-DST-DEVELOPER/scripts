@@ -66,7 +66,13 @@ function Activatable:OnRemoveFromEntity()
 end
 
 function Activatable:CanActivate(doer)
-    return self.CanActivateFn == nil or self.CanActivateFn(self.inst, doer)
+    local success, msg = true, nil
+    
+    if self.CanActivateFn then
+        success, msg = self.CanActivateFn(self.inst, doer)
+    end
+
+    return success, msg
 end
 
 function Activatable:DoActivate(doer)

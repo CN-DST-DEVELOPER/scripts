@@ -24,6 +24,7 @@ local CANNONBALL_SPLASH_DAMAGE_PERCENT = TUNING.CANNONBALL_SPLASH_DAMAGE_PERCENT
 local CANNONBALL_PASS_THROUGH_TIME_BUFFER = TUNING.CANNONBALL_PASS_THROUGH_TIME_BUFFER -- to prevent the cannonball from hitting the same target multiple times as it passes through
 
 local MUST_ONE_OF_TAGS = { "_combat", "_health", "blocker" }
+local PROJECTILE_EXCLUDETAGS = { "INLIMBO", "notarget", "noattack", "invisible", "playerghost" }
 local AREAATTACK_EXCLUDETAGS = { "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost" }
 
 local INITIAL_LAUNCH_HEIGHT = 0.1
@@ -84,6 +85,8 @@ local function OnHit(inst, attacker, target)
     -- Look for stuff on the ocean/ground and launch them
     local x, y, z = inst.Transform:GetWorldPosition()
     local position = inst:GetPosition()
+
+    -- NOTES (DiogoW): AREAATTACK_EXCLUDETAGS is in the wrong place, but "fixing it" will break some things. Needs more investigation.
     local affected_entities = TheSim:FindEntities(x, 0, z, CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDETAGS) -- Set y to zero to look for objects floating on the ocean
     for i, affected_entity in ipairs(affected_entities) do
         -- Look for fish in the splash radius, kill and spawn their loot if hit
@@ -152,10 +155,9 @@ local function OnHit(inst, attacker, target)
 end
 
 local function OnUpdateProjectile(inst)
-
     -- Look to hit targets while the cannonball is flying through the air
     local x, y, z = inst.Transform:GetWorldPosition()
-    local targets = TheSim:FindEntities(x, 0, z, CANNONBALL_RADIUS, nil, nil, MUST_ONE_OF_TAGS) -- Set y to zero to look for objects on the ground
+    local targets = TheSim:FindEntities(x, 0, z, CANNONBALL_RADIUS, PROJECTILE_EXCLUDETAGS, nil, MUST_ONE_OF_TAGS) -- Set y to zero to look for objects on the ground
     for i, target in ipairs(targets) do
 
         -- Ignore hitting bumpers while flying through the air

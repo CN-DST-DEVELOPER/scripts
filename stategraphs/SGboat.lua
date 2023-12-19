@@ -41,6 +41,7 @@ local states =
     State{
         name = "ready_to_snap",
         onenter = function(inst)
+            -- Keep this in sync with InstantlyBreakBoat.
             local ents = inst.components.walkableplatform:GetEntitiesOnPlatform()
             for ent in pairs(ents) do    
                 ent:PushEvent("abandon_ship")
@@ -64,6 +65,7 @@ local states =
             inst.AnimState:PlayAnimation("crack")
             inst.sg:SetTimeout(1)
 
+            -- Keep this in sync with InstantlyBreakBoat.
             for k in pairs(inst.components.walkableplatform:GetPlayersOnPlatform()) do
                 k:PushEvent("onpresink")
             end
@@ -119,6 +121,7 @@ local states =
     State{
         name = "popping",
         onenter = function(inst)
+            -- Keep this in sync with InstantlyBreakBoat.
             inst.sinkloot()
             if inst.postsinkfn then
                 inst:postsinkfn()

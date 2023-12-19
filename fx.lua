@@ -968,10 +968,22 @@ local fx =
         anim = "fx_fireresistance",
     },
     {
+        name = "battlesong_shadowaligned_fx",
+        bank = "fx_wathgrithr_buff",
+        build = "fx_wathgrithr_buff",
+        anim = "fx_shadowaligned",
+    },
+    {
+        name = "battlesong_lunaraligned_fx",
+        bank = "fx_wathgrithr_buff",
+        build = "fx_wathgrithr_buff",
+        anim = "fx_lunaraligned",
+    },
+    {
         name = "battlesong_instant_electric_fx",
         bank = "fx_wathgrithr_buff",
         build = "fx_wathgrithr_buff",
-        anim = "quote_electric",
+        anim = "quote_revive",
     },
     {
         name = "battlesong_instant_taunt_fx",
@@ -1700,6 +1712,17 @@ local fx =
         anim = "pond_splash",
         sound = "turnoftides/common/together/water/splash/large",
         fn = function(inst) inst.Transform:SetScale(4,4,4) inst.AnimState:SetFinalOffset(1) end,
+    },
+    {
+        name = "oceanwhirlportal_splash",
+        bank = "merm_king_splash",
+        build = "merm_king_splash",
+        anim = "merm_king_splash",
+        fn = function(inst)
+            inst.AnimState:SetMultColour(0.5, 0.5, 1, 1)
+            inst.AnimState:SetFinalOffset(1)
+            inst.AnimState:SetOceanBlendParams(TUNING.OCEAN_SHADER.EFFECT_TINT_AMOUNT)
+        end,
     },
 --[[  There is art for these. They are just not used anywhere
     {
@@ -2795,7 +2818,7 @@ local fx =
 		sound = "meta2/wormwood/animation_dropdown",
         fn = FinalOffset1,
     },
-    
+
 -------------------------------------------- WAGPUNK Steam
     {
         name = "wagpunksteam_hat_up",
@@ -2841,8 +2864,84 @@ local fx =
             inst.AnimState:SetFinalOffset(3)
         end,
     },
+
+    {
+        name = "spell_fire_throw",
+        bank = "fire_geyser",
+        build = "fire_geyser_fx",
+        anim = "pre",
+    },  
+
+    {
+        name = "willow_shadow_fire_explode",
+        bank = "deer_fire_charge",
+        build = "deer_fire_charge",
+        anim = "blast",        
+        sound = "dontstarve/common/deathpoof",
+        tint = Vector3(0, 0, 0, 0.6),
+        fn = function(inst)
+            inst.Transform:SetScale(1.5,1.5,1.5)
+        end,        
+    },
+
 ----------------------------------------------------------
 
+    {
+        name = "degrade_fx_ice",
+        bank = "ice_debris",
+        build = "ice_debris",
+        anim = "degrade_fx1",
+        animqueue = true,
+        nofaced = true,
+        fn = function(inst)
+            inst.AnimState:SetLayer(LAYER_BELOW_GROUND)
+            inst.AnimState:SetSortOrder(ANIM_SORT_ORDER_BELOW_GROUND.BOAT_LIP)
+            inst.AnimState:SetFinalOffset(0)
+            inst.AnimState:PlayAnimation("degrade_fx"..math.random(1,4), true)
+            inst:DoTaskInTime(GetRandomWithVariance(10, 2), function(i)
+                ErodeAway(i, 3)
+            end)
+        end,
+    },
+    {
+        name = "fx_ice_crackle",
+        bank = "fx_dock_crackleandpop",
+        build = "fx_dock_crackleandpop",
+        anim = "crackle",
+        sound = "turnoftides/common/together/boat/creak",
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit")
+            inst:DoTaskInTime(2*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
+            end)
+            inst:DoTaskInTime(14*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
+            end)
+            inst:DoTaskInTime(25*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
+            end)
+            inst:DoTaskInTime(29*FRAMES, function(i)
+                i.SoundEmitter:PlaySound("dontstarve_DLC001/common/iceboulder_hit")
+            end)
+            inst:DoTaskInTime(33*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.2})
+            end)
+            inst:DoTaskInTime(45*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.2})
+            end)
+            inst:DoTaskInTime(52*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.3})
+            end)
+        end,
+    },
+    {
+        name = "fx_ice_pop",
+        bank = "fx_dock_crackleandpop",
+        build = "fx_dock_crackleandpop",
+        anim = "pop",
+        sound = "dontstarve_DLC001/common/iceboulder_smash",
+    },
 }
 
 for cratersteamindex = 1, 4 do

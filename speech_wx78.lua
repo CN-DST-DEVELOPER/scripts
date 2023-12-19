@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "YOU WERE BUILT FOR GREATNESS, BROTHER",
 
         WAGSTAFF_MUTATIONS_NOTE = "WHAT IS THIS BABBLE. MAYBE THE OLD MAN HAS FINALLY LOST IT",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "FLESHSACKS MAKE SUCH ATROCIOUS FACE SOUNDS",
+
+        WATHGRITHR_IMPROVEDHAT = "A RIDICULOUS HAT",
+        SPEAR_WATHGRITHR_LIGHTNING = "PRIMITIVE BUT DEADLY",
+
+        BATTLESONG_CONTAINER = "NOW ALL THE ATROCIOUS FLESHSACK FACE SOUNDS CAN BE COLLECTED FOR DISPOSAL",
+
+        SADDLE_WATHGRITHR = "RIDING IS FOR LAZY FLESHSACKS AND THEIR LAZY FLESHSACK LEGS",
+
+        WATHGRITHR_SHIELD = "SHIELDS ARE FOR SOFT FLESHY FLESHSACKS",
+
+        BATTLESONG_SHADOWALIGNED = "FLESHSACKS MAKE SUCH ATROCIOUS FACE SOUNDS",
+        BATTLESONG_LUNARALIGNED = "FLESHSACKS MAKE SUCH ATROCIOUS FACE SOUNDS",
+
+		SHARKBOI = "IT HIDES ITS FLESHBODY UNDER COLD, INORGANIC MATERIAL. COMMENDABLE",
+        BOOTLEG = "SCANNING FOR VIRUSES",
+        OCEANWHIRLPORTAL = "I HATE THIS I HATE THIS I HATE THIS",
+
+        EMBERLIGHT = "EVERY ONCE IN A WHILE MY MINIONS MANAGE TO MAKE SOMETHING USEFUL",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

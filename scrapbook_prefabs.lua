@@ -1661,6 +1661,26 @@ local PREFABS =
     ["chesspiece_warg_mutated"] = true,
     ["chesspiece_bearger_mutated"] = true,
 
+    -- Meta 3
+
+    ["battlesong_container"] = true,
+    ["battlesong_instant_revive"] = true,
+    ["battlesong_lunaraligned"] = true,
+    ["battlesong_shadowaligned"] = true,
+    ["saddle_wathgrithr"] = true,
+    ["wathgrithr_shield"] = true,
+    ["spear_wathgrithr_lightning_charged"] = true,
+    ["spear_wathgrithr_lightning"] = true,
+    ["wathgrithr_improvedhat"] = true,
+
+    ["emberlight"] = true,
+    ["willow_ember"] = true,
+
+    ["sharkboi"] = true,
+    ["sharkboi_icespike"] = true,
+    
+    ["bootleg"] = true,
+    ["oceanwhirlportal"] = true,
 
     ["winter_ornament_boss_daywalker"] = true,
     ["winter_ornament_shadowthralls"] = true,

@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
     ANNOUNCE_WANDA_YOUNGTONORMAL = "It's alright, I still have time...",
     ANNOUNCE_WANDA_NORMALTOOLD = "I don't have much time left!",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "What will they think of next?",
 
         WAGSTAFF_MUTATIONS_NOTE = "Someone must have a lot of time on their hands.",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Oh, you wouldn't want to hear me sing... would you?",
+
+        WATHGRITHR_IMPROVEDHAT = "A few wings is nothing, I once saw a hat with an entire pheasant on top.",
+        SPEAR_WATHGRITHR_LIGHTNING = "I do hope I'm still on her good side...",
+
+        BATTLESONG_CONTAINER = "Wonderfully efficient song storage.",
+
+        SADDLE_WATHGRITHR = "It certainly makes an impression.",
+
+        WATHGRITHR_SHIELD = "Some added protection is more than welcome.",
+
+        BATTLESONG_SHADOWALIGNED = "Oh, you wouldn't want to hear me sing... would you?",
+        BATTLESONG_LUNARALIGNED = "Oh, you wouldn't want to hear me sing... would you?",
+
+		SHARKBOI = "A brute if I've ever seen one!",
+        BOOTLEG = "Hmph. That's no proper spacial displacement device, just a cheap knockoff!",
+        OCEANWHIRLPORTAL = "If it's the quickest way out of here, I suppose I can't be picky.",
+
+        EMBERLIGHT = "Saves me the trouble of finding firewood.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

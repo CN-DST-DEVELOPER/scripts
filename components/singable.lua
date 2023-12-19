@@ -21,7 +21,7 @@ function Singable:Sing(singer)
         self.onsingfn(self.inst, singer)
     end
 
-    singer.components.singinginspiration:AddSong(self.inst.songdata)
+    singer.components.singinginspiration:AddSong(self.inst.songdata, nil, self.inst)
 end
 
 return Singable

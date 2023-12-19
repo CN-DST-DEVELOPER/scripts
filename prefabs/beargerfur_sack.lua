@@ -1,5 +1,6 @@
 local ASSETS_CONTAINER =
 {
+    Asset("ANIM", "anim/ui_icepack_2x3.zip"),
     Asset("ANIM", "anim/beargerfur_sack.zip"),
 }
 
@@ -22,7 +23,7 @@ local PREFABS_FX =
 
 local sounds =
 {
-    open = "rifts3/bearger_sack/open_f5_loopstart",
+    open  = "rifts3/bearger_sack/open_f5_loopstart",
     close = "rifts3/bearger_sack/close",
 }
 

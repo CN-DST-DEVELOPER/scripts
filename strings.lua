@@ -591,6 +591,7 @@ STRINGS =
             PICK_FLOWER = "Pick Flower From",
             EQUIPMENTSWAP = "Swap Clothes",
             SPIN = "Spin",
+            CALM = "Calm",
         },
 
 		OPEN_CRAFTING =
@@ -749,6 +750,16 @@ STRINGS =
             PUMP = "Pump",
         },
         STOPCHANNELING = "Stop Channeling",
+		START_CHANNELCAST =
+		{
+			GENERIC = "Start Channeling",
+			LIGHTER = "Absorb Fire",
+		},
+		STOP_CHANNELCAST =
+		{
+			GENERIC = "Stop Channeling",
+			LIGHTER = "Stop Absorbing Fire",
+		},
         CASTAOE =
         {
             GENERIC = "Cast Spell",
@@ -764,6 +775,9 @@ STRINGS =
             LAVAARENA_LUCY = "Chuck Lucy",
             LAVAARENA_FIREBOMB = "Hearthsfire Bomb",
             LAVAARENA_HEAVYBLADE = "Parry",
+            WATHGRITHR_SHIELD = "Block",
+            SPEAR_WATHGRITHR_LIGHTNING = "Lightning Strike",
+            SPEAR_WATHGRITHR_LIGHTNING_CHARGED = "Lightning Strike",
         },
         DISMANTLE = "Dismantle",
         TACKLE = "Charge",
@@ -950,8 +964,14 @@ STRINGS =
 		-- Waxwell
 		USEMAGICTOOL = "Use",
 		STOPUSINGMAGICTOOL = "Stop",
-		USESPELLBOOK = "Read",
-		CLOSESPELLBOOK = "Close",
+		USESPELLBOOK = {
+            GENERIC = "Read",
+            PYROKINESIS = "Stoke Embers",
+        },
+		CLOSESPELLBOOK = {
+            GENERIC = "Close",
+            PYROKINESIS = "Extinguish",  
+        },
 
         -- Pirates
         ROTATE_BOAT_CLOCKWISE = "Rotate Starboard",
@@ -3820,6 +3840,32 @@ STRINGS =
         WAGPUNKBITS_KIT = "Auto-Mat-O-Chanic",
 
         WAGSTAFF_MUTATIONS_NOTE = "Research Notes",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Warrior's Reprise",
+
+        WATHGRITHR_IMPROVEDHAT = "Commander's Helm",
+        SPEAR_WATHGRITHR_LIGHTNING = "Elding Spear",
+        SPEAR_WATHGRITHR_LIGHTNING_CHARGED = "Charged Elding Spear",
+
+        BATTLESONG_CONTAINER = "Battle Call Canister",
+
+        SADDLE_WATHGRITHR = "Battle Saddle",
+
+        WATHGRITHR_SHIELD = "Battle Rönd",
+
+        BATTLESONG_SHADOWALIGNED = "Dark Lament",
+        BATTLESONG_LUNARALIGNED = "Enlightened Lullaby",
+
+        WILLOW_EMBER = "Ethereal Ember",
+        EMBERLIGHT = "Fire Ball",
+
+        SHARKBOI = "Frostjaw",
+        SHARKBOI_ICESPIKE = "Ice",
+
+        BOOTLEG = "Bootleg Getaway",
+        OCEANWHIRLPORTAL = "Whirlportal",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4790,6 +4836,22 @@ STRINGS =
         PHONOGRAPH = "Sit back, relax, and listen to the soundtrack of your nightmares.",
         RECORD = "Constant classics on vinyl.",
 
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Stir the hearts of your fallen comrades.",
+
+        WATHGRITHR_IMPROVEDHAT = "A helm fit for a Valkyrie queen.",
+        SPEAR_WATHGRITHR_LIGHTNING = "The power of lightning is yours to command.",
+
+        BATTLESONG_CONTAINER = "Store all your greatest hits.",
+
+        SADDLE_WATHGRITHR = "Warrior and steed, fighting as one!",
+
+        WATHGRITHR_SHIELD = "A shield can be a weapon too, if it believes in itself.",
+
+        BATTLESONG_SHADOWALIGNED = "Ward yourself and your allies against lunar foes.",
+        BATTLESONG_LUNARALIGNED = "Ward yourself and your allies against shadowy foes.",
+
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -5382,6 +5444,21 @@ STRINGS =
     },
     PIG_TALK_CONTEST_OOOH = {"OOOH","WOW","IS BEAUTY"},
     PIG_TALK_CONTEST_PANIC = {"MUST CHOOSE!","CHOICE HARD!"},
+
+	--NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
+	SHARKBOI_TALK_IDLE = {"HUH? WHAT HAPPENED?","HEY! WHATSA MATTER WITH YOU?","I FEEL LIKE A FISH OUTTA WATER...","I WAS JUST LOOKIN' FOR A QUICK BITE.","WHADAYA LOOKIN' AT?","YOU WANT A PIECE OF ME, TOUGH GUY?","YOU CRUISIN' FOR A BRUISIN?","WHY I OUGHTA..."},
+	SHARKBOI_TALK_FIGHT = {"TOUGH GUY, EH?","YOU'LL NEVER CATCH ME, SEE.","YOUSE DON'T STAND A CHANCE.","IT'S BITIN' TIME!","YOU'RE A REAL PIECE OF WORK, BUDDY.","YOU DON'T GET NO PASS.","I'LL PUT YOUSE ON ICE!","FREEZE!","YOUSE ON THIN ICE NOW!","YOU'LL BE SLEEPIN' WITH THE FISHES!","I'M NOT GONNA LET THIS SLIDE!","ICE TO EAT YA! HEH HEH."},
+	SHARKBOI_TALK_CHEER = {"PUT 'EM ON ICE!","WHACK 'EM!","GIVE 'EM THE OL' ONE-TWO!","FROSTBITE!","CHOMP! CHOMP!","CLIP 'EM!","ICE 'EM!","THEY AIN'T NO FRIEND OF OURS!","THIS IS OUR TURF!","FIN-ISH 'EM!"},
+	SHARKBOI_TALK_GLOAT = {"YOUSE BEEN ICED.","SEE YOUSE IN THE NEXT LIFE.","FUHGEDDABOUDIT.","END OF THE LINE.","YOU GOT CAUGHT.","YOU'RE FIN-ISHED.","BELLY-UP.","GAVE 'EM A BURIAL AT SEA.","HOOK, LINE AND SINKER.","VICTORY TASTES GOOD.","GUTTED.","SLEEPIN' WITH THE FISHES.","YOU'RE DONE, CHUM.","WHERE YOU BELONG, BOTTOM-FEEDER.","I GOT BIGGER FISH TO FRY.","LOOKIN' A LIL' GREEN AROUND THE GILLS THERE, MAC."},
+	SHARKBOI_TALK_GIVEUP = {"I BIT OFF MORE THAN I CAN CHEW.","I WAS OUTTA MY DEPTH.","UNCLE! UNCLE!","CAN'T WE WORK SOMETHIN' OUT?","YOU GOT ME BY THE GILLS.","I'M FIN-ISHED.","I FEEL S- SO COLD...","COLD-BLOODED, ACE. COLD-BLOODED.","I'M A FISH OUTTA WATER.","SPARE ME. I DIDN'T KNOW YOUSE WAS SO STRONG.","I GIVE UP, I GIVE UP. YEESH.","HOW DO YA FEEL ABOUT CATCH AND RELEASE?","ALRIGHT IT'S YOUR TURF NOW, BOSS.","OKAY, YOU CAUGHT ME FAIR AND SQUARE.","HOW'S ABOUT A TRUCE?","I CAN'T GO BACK INSIDE, LEMME WORK FOR YOU, BOSS.","MERCY, MERCY! YOU GOT ME.","OWW. YOU GOT WATER IN MY EYE. THAT REALLY HURT.","I SURRENDER, QUIT WHALE'N ON ME."},
+	SHARKBOI_TALK_FOLLOWWILSON = {"SURE, SKIP!","OK, BOSS!","AY CAP'N!","TIL MY LAST BREATH!","EASY PEASY.","WHATCHA NEED, BOSS?","YOU'RE A FRIEND OF OURS.","YOU GOT IT, BOSS.","WHY SO GLUM, CHUM?","LEMME AT 'EM.","I'D NEVER EAT YOU, BOSS.","JUST SAY THE WORD, BOSS.","I GOT YOUR BACK.","YOU SAY SOMETHIN', BOSS?","BOSS IS THE BEST.","WHO WE WHACKIN' BOSS?","LOOKIN' SHARP, BOSS.","WHERE TO, SKIP?"},
+    SHARKBOI_TALK_FRIENDLY = {"WOAH, WOAH! NO HARD FEELINGS, ALRIGHT?","I CAN MAKE YOUSE AN OFFER... IF YOUSE GOT THE GOODS.","LET'S COME TO AN ARRANGEMENT, IF YOU CATCH MY DRIFT.","LISTEN, MAYBE YOUSE AND ME AIN'T SO DIFFERENT.","I THINK WE COULD DO SOME BUSINESS, YOU AND ME.","HOWSABOUT YOU SCRATCH MY FIN AND I SCRATCH YOURS?","WHADAYA SAY TO A LIL' SQUID PRO QUO?","I AIN'T ONE TO REFUSE A NICE JUICY FISH. BIGGER THE BETTER.","DON'T WANT NO STINKIN' POND SCUM.","I'M ON A SEA FOOD DIET. I ONLY EATS IT IF IT'S FROM THE SEA."},
+	SHARKBOI_TALK_ATTEMPT_TRADE = {"INTERESTIN', REEL INTERESTIN'.","WHAT WE GOT HERE?","LET'S SEA WHATCHA GOT.","WHATCHA FISHIN' FOR?","HOPE YOUSE AIN'T WASTIN' MY TIME.","BETTER NOT BE NO RAW DEAL.","I DON'T WANT NO BAIT N' SWITCH.","OKAY, YOU REELED ME IN. WHATCHA GOT?"},
+	SHARKBOI_ACCEPT_OCEANFISH = {"NOW, THAT IS A BEAUTIFUL FISH."},
+	SHARKBOI_ACCEPT_BIG_OCEANFISH = {"HOLY MACKEREL, THAT'S A BIG ONE."},
+	SHARKBOI_REFUSE_NOT_OCEANFISH = {"IF IT AIN'T A FISH FROM THE OCEAN, I DON'T WANT IT."},
+	SHARKBOI_REFUSE_TOO_SMALL = {"DON'T INSULT ME WITH THIS PUNY THING. GIMME A BIG ONE."},
+	SHARKBOI_REFUSE_EMPTY = {"AIN'T GOT NO MORE. I'M CLEANED OUT."},
 
     --NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
     RABBIT_BATTLECRY = { "HOP!", "KILL!", "DIE!" },
@@ -6990,6 +7067,41 @@ STRINGS.MERMNAMES =
     "Trevor",
 }
 
+STRINGS.SHARKBOINAMES =
+{
+	"Steve",
+	"Ronnie",
+	"Finn",
+	"Stace",
+	"Tiffany",
+	"Gary",
+	"Mark",
+	"Donna",
+	"Meg",
+	"Deb",
+	"Parker",
+	"Cooper",
+	"Caleb",
+	"Gilleon",
+	"Jawson",
+	"Grey",
+	"Jimmy the Jaw",
+	"Bruce",
+	"Hammer Ed",
+	"Jumbo",
+	"Cousin Finny",
+	"Bullton",
+	"Tiger",
+	"Big Tuna",
+	"Mad Dogfish",
+	"Tony Shortfin",
+	"Larry Lemons",
+	"Ray",
+	"Marlin",
+	"Gill",
+
+}
+
 STRINGS.UI =
 {
 	TIME_FORMAT =
@@ -7672,7 +7784,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Host of Horrors\nBeta Build",
+		MAINBANNER_BETA_TITLE = "Skill Spotlight: Wigfrid & Willow\nBeta Build",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -14569,6 +14681,15 @@ STRINGS.SPELLS = {
 	--SHADOW_TOPHAT = "Imbue Top Hat",
 }
 
+STRINGS.PYROMANCY = {
+    FIRE_THROW = "Flame Cast (1 Embers)",
+    FIRE_BURST = "Combustion (4 Embers)",
+    FIRE_BALL = "Fire Ball (2 Embers)",
+    FIRE_FRENZY = "Burning Frenzy (2 Embers)",
+	LUNAR_FIRE = "Lunar Flame (5 Embers)",
+    SHADOW_FIRE = "Shadow Fire (5 Embers)",
+}
+
 STRINGS.SKILLTREE = {
     INFOPANEL = "Outfit",
     INFOPANEL_DESC = "Become a seasoned survivor!",
@@ -14593,6 +14714,14 @@ STRINGS.SKILLTREE = {
         MIGHT = "CHORES",
         TRAINING = "TRAINING",
         PLANARDAMAGE = "MIGHT",
+
+        LIGHTER = "LIGHTER",
+        BERNIE = "BERNIE",
+
+        SONGS = "HEADLINER",
+        ARSENAL = "ARSENAL",
+        BEEFALO = "RIDER",
+        --COMBAT = "COMBAT", -- Intentionally commented out.
     },
 
     ONLINE_DATA_USER_OFFLINE = "Login to use online skillset data.",
@@ -14847,7 +14976,7 @@ STRINGS.SKILLTREE = {
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_3_DESC = "Bring out the full strength of planar melee weapons.\nAdd +15 Planar Damage to planar melee weapons when Mighty.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_TITLE = "Mighty Weapons IV",
-        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_DESC = "Bring out the full strength of planar melee  weapons.\nAdd +20 Planar Damage to planar melee weapons when Mighty.",
+        WOLFGANG_MIGHTY_PLANAR_DAMAGE_4_DESC = "Bring out the full strength of planar melee weapons.\nAdd +20 Planar Damage to planar melee weapons when Mighty.",
 
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_TITLE = "Mighty Weapons V",
         WOLFGANG_MIGHTY_PLANAR_DAMAGE_5_DESC = "Bring out the full strength of planar melee weapons.\nAdd +25 Planar Damage to planar melee weapons when Mighty.",
@@ -14962,6 +15091,180 @@ STRINGS.SKILLTREE = {
         LUNAR_MUTATIONS_3_TITLE = "Lunar Cultivator III",
         LUNAR_MUTATIONS_3_DESC = "Tap into your lunar roots to transform Dragon Fruit into Saladmanders.\nSaladmanders you've created will attack things you do.",
     },
+
+    WILLOW = {
+        -- LIGHTER
+        WILLOW_CONTROLLED_BURN_1_TITLE = "Controlled Burning",
+        WILLOW_CONTROLLED_BURN_1_DESC = "Fires you set won't spread, and burnable loot will just smolder.\nItems like torches and Willow's lighter have a 100% chance to ignite targets.",
+        WILLOW_CONTROLLED_BURN_2_TITLE = "Burn Duration",
+        WILLOW_CONTROLLED_BURN_2_DESC = "Creatures burn for a longer time.",
+        WILLOW_CONTROLLED_BURN_3_TITLE = "Fire Fighter",
+        WILLOW_CONTROLLED_BURN_3_DESC = "Your fires deal more damage to creatures over time.",
+
+        WILLOW_ATTUNED_LIGHTER_TITLE = "Hungry Lighter",
+        WILLOW_ATTUNED_LIGHTER_DESC = "Stop things from burning by absorbing the flame (even when they're only smoldering) with your lighter.",
+        WILLOW_EMBERS_TITLE = "Ember Tender",
+        WILLOW_EMBERS_DESC = "Collect and use Embers to perform Pyrokinetic effects.\nYou can collect Embers from burned creatures with your lighter.\nUse Embers to refuel the lighter.",
+
+        WILLOW_FIRE_BURST_TITLE = "Spontaneous Combustion",
+        WILLOW_FIRE_BURST_DESC = "Use Embers to ignite creatures in an area near you.",
+        WILLOW_FIRE_BALL_TITLE = "Fire Ball",
+        WILLOW_FIRE_BALL_DESC = "Use Embers to create a ball of flame for heat and light.",
+        WILLOW_FIRE_FRENZY_TITLE = "Burning Frenzy",
+        WILLOW_FIRE_FRENZY_DESC = "For 60 seconds, add 25% weapon damage when attacking burning targets.",
+
+        WILLOW_LIGHTRADIUS_1_TITLE = "Brighter Lighter I",
+        WILLOW_LIGHTRADIUS_1_DESC = "Increase your lighter's brightness a little.",
+        WILLOW_LIGHTRADIUS_2_TITLE = "Brighter Lighter II",
+        WILLOW_LIGHTRADIUS_2_DESC = "Increase your lighter's brightness a lot.",
+
+        -- BERNIE
+        WILLOW_BERNIESPEED_1_TITLE = "Accelerant I",
+        WILLOW_BERNIESPEED_1_DESC = "Bernie's movement speed is a little faster.",
+        WILLOW_BERNIESPEED_2_TITLE = "Accelerant II",
+        WILLOW_BERNIESPEED_2_DESC = "Bernie's movement speed is much faster.",
+
+        WILLOW_BERNIESANITY_1_TITLE = "Bearly Sane I",
+        WILLOW_BERNIESANITY_1_DESC = "Bernie will become animated at a higher sanity threshold.",
+        WILLOW_BERNIESANITY_2_TITLE = "Bearly Sane II",
+        WILLOW_BERNIESANITY_2_DESC = "Bernie will become animated at an even higher sanity threshold.",
+        WILLOW_BERNIEAI_TITLE = "Hot-Headed",
+        WILLOW_BERNIEAI_DESC = "Bernie will activate to fight hostile lunar and shadow aligned creatures regardless of Willow's sanity.",
+
+        
+        WILLOW_BERNIEREGEN_1_TITLE = "Patch Up I",
+        WILLOW_BERNIEREGEN_1_DESC = "Bernie's health regenerates slowly.",
+        WILLOW_BERNIEREGEN_2_TITLE = "Patch Up II",
+        WILLOW_BERNIEREGEN_2_DESC = "Bernie's health regenerates quicker.",
+
+        WILLOW_BERNIE_LOCK_DESC = "Learn at least 4 Bernie skills to unlock.",
+        
+        WILLOW_BERNIEHEALTH_1_TITLE = "Tough Stuffing I",
+        WILLOW_BERNIEHEALTH_1_DESC = "Bernie's total health is a little higher.",
+        WILLOW_BERNIEHEALTH_2_TITLE = "Tough Stuffing II",
+        WILLOW_BERNIEHEALTH_2_DESC = "Bernie's total health is much higher.",
+
+        WILLOW_BERNIE_DOUBLE_LOCK_DESC = "Learn at least 8 Bernie skills to unlock.",
+
+        WILLOW_BURNINGBERNIE_TITLE = "Burning Bernie",
+        WILLOW_BURNINGBERNIE_DESC = "Igniting Bernie will give him a firey aura for a short time.\nEnemies that attack an ignited Bernie will take damage back.",
+
+
+        -- ALLIEGIANCE
+        WILLOW_ALLEGIANCE_LOCK_1_DESC = "Find and defeat the Ancient Fuelweaver.\nHave no Lunar Allegiance Skills.",
+        WILLOW_ALLEGIANCE_LOCK_2_DESC = "Learn 6 Bernie skills to unlock.",
+        WILLOW_ALLEGIANCE_LOCK_3_DESC = "Learn 7 Lighter skills to unlock.",        
+
+        WILLOW_ALLEGIANCE_SHADOW_1_TITLE = "Shadow Fire-Raiser",
+        WILLOW_ALLEGIANCE_SHADOW_1_DESC = "The Queen will reward your loyalty with the power of shadow fire.\nSummon multiple tendrils of black flame to seek out hostile targets.",
+        WILLOW_ALLEGIANCE_SHADOW_2_TITLE = "Shadow Bernie",
+        WILLOW_ALLEGIANCE_SHADOW_2_DESC = "Tap into the darkness to strengthen Bernie's planar attack and defense, particularly against lunar enemies.",
+
+        WILLOW_ALLEGIANCE_LOCK_4_DESC = "Find and defeat the Celestial Champion.\nHave no Shadow Allegiance Skills.",
+        WILLOW_ALLEGIANCE_LOCK_5_DESC = "Learn 7 Lighter skills to unlock.",
+        WILLOW_ALLEGIANCE_LOCK_6_DESC = "Learn 6 Bernie skills to unlock.",
+
+        WILLOW_ALLEGIANCE_LUNAR_1_TITLE = "Lunar Fire-Raiser",
+        WILLOW_ALLEGIANCE_LUNAR_1_DESC = "The Cryptic Founder will reward your curiosity with the formula for lunar flames.\nUse Embers to blast cold lunar flames.",
+        WILLOW_ALLEGIANCE_LUNAR_2_TITLE = "Lunar Bernie",
+        WILLOW_ALLEGIANCE_LUNAR_2_DESC = "Entreat the moon to strengthen Bernie's planar attack and defense, particularly against shadow enemies.",
+    },
+
+    WATHGRITHR =
+    {
+        WATHGRITHR_ARSENAL_SPEAR_1_TITLE = "Bragi's Blessing I",
+        WATHGRITHR_ARSENAL_SPEAR_1_DESC = "Inspiration gain rate will increase a little when attacking using Battle Spears.",
+
+        WATHGRITHR_ARSENAL_SPEAR_2_TITLE = "Bragi's Blessing II",
+        WATHGRITHR_ARSENAL_SPEAR_2_DESC = "Inspiration gain rate will increase a fair amount when attacking using Battle Spears.",
+
+        WATHGRITHR_ARSENAL_SPEAR_3_TITLE = "Elding Spear",
+        WATHGRITHR_ARSENAL_SPEAR_3_DESC = "Learn to craft the Elding Spear: an electric weapon that does more damage to wet targets.",
+
+        WATHGRITHR_ARSENAL_SPEAR_4_TITLE = "Elding Spear Enhancement I",
+        WATHGRITHR_ARSENAL_SPEAR_4_DESC = "The Elding Spear can now perform a special attack.\nThis attack repairs Charged Elding Spears if it hits a target.",
+
+        WATHGRITHR_ARSENAL_SPEAR_5_TITLE = "Elding Spear Enhancement II",
+        WATHGRITHR_ARSENAL_SPEAR_5_DESC = "Upgrade the Elding Spear using Restrained Static to deal +20 Planar Damage.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_ARSENAL_HELMET_1_TITLE = "Hard Helm I",
+        WATHGRITHR_ARSENAL_HELMET_1_DESC = "Battle Helms will be a little more durable when worn by Wigfrid.",
+
+        WATHGRITHR_ARSENAL_HELMET_2_TITLE = "Hard Helm II",
+        WATHGRITHR_ARSENAL_HELMET_2_DESC = "Battle Helms will be a fair amount more durable when worn by Wigfrid.",
+
+        WATHGRITHR_ARSENAL_HELMET_3_TITLE = "Commander's Helm",
+        WATHGRITHR_ARSENAL_HELMET_3_DESC = "Learn to craft the Commander's Helm: a helm that protects against knockback attacks.",
+
+        WATHGRITHR_ARSENAL_HELMET_4_TITLE = "Commander's Helm Enhancement I",
+        WATHGRITHR_ARSENAL_HELMET_4_DESC = "The Commander's Helm now has protection against planar damage.",
+
+        WATHGRITHR_ARSENAL_HELMET_5_TITLE = "Commander's Helm Enhancement II",
+        WATHGRITHR_ARSENAL_HELMET_5_DESC = "Wigfrid's natural healing ability will repair her Commander's Helm when she continues to fight at maximum health.",
+
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_ARSENAL_SHIELD_1_TITLE = "Battle Rönd",
+        WATHGRITHR_ARSENAL_SHIELD_1_DESC = "Learn to craft the Battle Rönd. This shield can be used to attack, block attacks, and provide extra protection while equipped.",
+
+        WATHGRITHR_ARSENAL_SHIELD_2_TITLE = "Battle Rönd Enhancement I",
+        WATHGRITHR_ARSENAL_SHIELD_2_DESC = "The duration of the Battle Rönd's ability to block attacks will be increased.",
+
+        WATHGRITHR_ARSENAL_SHIELD_3_TITLE = "Battle Rönd Enhancement II",
+        WATHGRITHR_ARSENAL_SHIELD_3_DESC = "After blocking an attack with the Battle Rönd, your next attack within 5 seconds will deal +15-30 damage based on the damage blocked.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_BEEFALO_1_TITLE = "Noble Mount I",
+        WATHGRITHR_BEEFALO_1_DESC = "Beefalos will be domesticated 15% faster.",
+
+        WATHGRITHR_BEEFALO_2_TITLE = "Noble Mount II",
+        WATHGRITHR_BEEFALO_2_DESC = "Beefalos will allow you to ride them for 30% longer.",
+
+        WATHGRITHR_BEEFALO_3_TITLE = "Noble Mount III",
+        WATHGRITHR_BEEFALO_3_DESC = "Riding a beefalo will make your inspiration slowly rise until it reaches the halfway mark.",
+
+        WATHGRITHR_BEEFALO_SADDLE_TITLE = "Battle Saddle",
+        WATHGRITHR_BEEFALO_SADDLE_DESC = "Learn to craft a new Beefalo Saddle that protects your Beefalo.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_SONGS_CONTAINER_LOCK_DESC = "Have 6 different Battle Calls in your inventory to unlock.",
+
+        WATHGRITHR_SONGS_CONTAINER_TITLE = "Battle Call Canister",
+        WATHGRITHR_SONGS_CONTAINER_DESC = "Learn to craft the Battle Call Canister, a storage solution for Battle Songs and Battle Stingers.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_SONGS_INSTANTSONG_CD_LOCK_DESC = "Perform Battle Stingers 10 times to unlock.",
+
+        WATHGRITHR_SONGS_INSTANTSONG_CD_TITLE = "Fighting Words",
+        WATHGRITHR_SONGS_INSTANTSONG_CD_DESC = "Battle Stingers will no longer consume Inspiration, and instead have a cooldown.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_SONGS_REVIVEWARRIOR_LOCK_DESC = "Play a Beefalo Horn to unlock.",
+
+        WATHGRITHR_SONGS_REVIVEWARRIOR_TITLE = "Encore",
+        WATHGRITHR_SONGS_REVIVEWARRIOR_DESC = "Learn to craft the Warrior's Reprise: Bring your allies back to life for an encore performance.",
+
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_COMBAT_DEFENSE_TITLE = "Mystic Resilience",
+        WATHGRITHR_COMBAT_DEFENSE_DESC = "Receive a divine blessing that will provide you with +5 Planar Defense.",
+        ----------------------------------------------------------------------------
+
+        WATHGRITHR_ALLEGIANCE_LOCK_1_DESC = "Learn 12 skills to unlock.",
+
+        WATHGRITHR_ALLEGIANCE_LUNAR_TITLE = "Lunar Melodist",
+        WATHGRITHR_ALLEGIANCE_LUNAR_DESC = "The Cryptic Founder will reward your curiosity with the ability to craft the Enlightened Lullaby.\nAllies take less damage from Lunar Aligned enemies and deal bonus damage to Shadow Aligned enemies.",
+        
+        WATHGRITHR_ALLEGIANCE_SHADOW_TITLE = "Shadow Chanteuse",
+        WATHGRITHR_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty with the ability to craft the Dark Lament.\nAllies take less damage from Shadow Aligned enemies and deal bonus damage to Lunar Aligned enemies.",
+    },
 }
 
 STRINGS.SCRAPBOOK = {
@@ -14993,7 +15296,7 @@ STRINGS.SCRAPBOOK = {
         ELIXER = "Elixir",
         CLOTHING = "Clothing",
         HAT = "Hat",
-        BATTLESONG = "Battlesong",
+        BATTLESONG = "Battle Call",
         MUTATOR = "Mutator",
         CONTAINER = "Storage",
         FARMPLANT = "Farm Plant",
@@ -15017,6 +15320,8 @@ STRINGS.SCRAPBOOK = {
         CRAFTINGSTATION = "Crafting Station",
         BACKPACK = "Backpack",
         RIDING = "Beefalo Riding",
+        COSTUME = "Stage Costume",
+        WINTERSFEASTFOOD = "Winter's Feast Dish",
     },
 
     SANITYDESC ={
@@ -15135,13 +15440,16 @@ STRINGS.SCRAPBOOK = {
         VOIDCLOTHHAT = "Damage from Shadow Planar damage weapons will ramp up with consecutive hits if you can keep attacking.\nGetting hit will break this damage chain.",
         VOIDCLOTHARMOR = "Wearing this scary robe makes you not care about how scary everything around you is.",
         BATHBOMB = "Makes a hot spring all warm, steamy, and glassy when dropped in.",
-        BATTLESONG_SANITYAURA = "Scary creatures seem about half as frightening when you're listening to this beautiful song.",
-        BATTLESONG_DURABILITY = "Reduce wear on your weapons by 25% while listening.",
-        BATTLESONG_HEALTHGAIN = "Nearby friends will heal when fighting. Wigfrid will heal a little more too.",
-        BATTLESONG_SANITYGAIN = "Nearby friends will gain sanity when fighting. Wigfrid will gain a little more too.",
-        BATTLESONG_FIRERESISTANCE = "Reduce fire damage by 34%.",
-        BATTLESONG_INSTANT_TAUNT = "Draw the attention of nearby enemies.",
-        BATTLESONG_INSTANT_PANIC = "Panic nearby enemies.",
+        BATTLESONG_SANITYAURA = "Scary creatures seem about half as frightening when you're listening to this beautiful song.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
+        BATTLESONG_DURABILITY = "Reduce wear on your weapons by 25% while listening.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
+        BATTLESONG_HEALTHGAIN = "Wigfrid and nearby allies will heal when fighting. Wigfrid will heal a little more too.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
+        BATTLESONG_SANITYGAIN = "Wigfrid and nearby allies will restore sanity when fighting.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
+        BATTLESONG_FIRERESISTANCE = "Wigfrid and nearby allies will not take fire damage.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
+        BATTLESONG_INSTANT_TAUNT = "Draw the attention of nearby enemies.\n\nThis is a Battle Stinger as it completes in an instant.",
+        BATTLESONG_INSTANT_PANIC = "Panic nearby enemies.\n\nThis is a Battle Stinger as it completes in an instant.",
+        BATTLESONG_INSTANT_REVIVE = "Revive up to 2 nearby allied players.\n\nThis is a Battle Stinger as it completes in an instant.",
+        BATTLESONG_SHADOWALIGNED = "Wigfrid and nearby allies take 10% less damage from Shadow Aligned enemies and deal 5% bonus damage to Lunar Aligned enemies.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
+        BATTLESONG_LUNARALIGNED = "Wigfrid and nearby allies take 10% less damage from Lunar Aligned enemies and deal 5% bonus damage to Shadow Aligned enemies.\n\nThis is a Battle Song. Wigfrid must continue to sing for its benefit.",
         BEEFBELL = "Name and bond with one Beefalo at a time. Bonded Beefalo will follow the holder, even into caves and offline.",
         PLANTABLE_FERTILIZE = "This needs some fertilizing after planting.",
         SCANDATA = "Data is used to craft Circuits for WX-78.",
@@ -15214,9 +15522,10 @@ STRINGS.SCRAPBOOK = {
         MINIFLARE = "Creates a flash in the sky that can be seen by all survivors on the minimap.",
         MEGAFLARE = "Creates a flash in the sky that can be seen by all survivors on the minimap.\n\nThis large flash will also draw the attention of some hostile creatures.",
         FARMPLOW = "Digs up a tile and turns it into Farm Soil.",
-        SADDLE = "Can be put onto a Beefalo if it's willing.",
-        SADDLEWAR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle, it also adds 16 damage to attacks made while riding.",
-        SADDLERACE = "Can be put onto a Beefalo if it's willing. Increases speed over a regular saddle.",
+        SADDLE_BASIC = "Can be put onto a Beefalo if it's willing.",
+        SADDLE_WAR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle, it also adds 16 damage to attacks made while riding.",
+        SADDLE_RACE = "Can be put onto a Beefalo if it's willing. Increases speed over a regular saddle.",
+        SADDLE_WATHGRITHR = "Can be put onto a Beefalo if it's willing. Slower than a regular saddle, it also reduces the damage taken by 40%.",
         PIGTOKEN = "Given to the Pig King to initiate a Wrestling Match.",
         WINTERSFEASTCOOKEDFOODS = "Captures the spirit of food when this is put on a Winter's Feast Table. The more, the merrier.",
         GUNPOWDER = "Will explode for 200 damage when lit.",
@@ -15275,7 +15584,7 @@ STRINGS.SCRAPBOOK = {
         SHELLCLUSTER = "Can be mined for Shell Bells.",
         SPIDERREPELLENT = "When used by webber, nearby aggressive spiders become passive and releases spiders following Webber.",
         SLURTLESLIME = "Will explode for 50 damage when lit. Also fuels Lanterns and Miner Hats.",
-        WORTOX_SOUL = "Wortox can eat these to heal 25 Health and lose 5 Sanity.\n\nThey can be released to heal all survivors nearby, max healing is 20 health which drops 2 points for each extra survivor to a minimum of 5 health.\n\nHe can also spend Souls to Soul Hop which teleports him.\n\nIf Wortox holds more than 20 Souls, he will release half and them and lose 20 Sanity.",
+        WORTOX_SOUL = "Wortox can eat these to restore 25 Hunger and lose 5 Sanity.\n\nThey can be released to heal all survivors nearby, max healing is 20 health which drops 2 points for each extra survivor to a minimum of 5 health.\n\nHe can also spend Souls to Soul Hop which teleports him.\n\nIf Wortox holds more than 20 Souls, he will release half and them and lose 20 Sanity.",
         SUPERTACKLECONTAINER = "A 15 slots container for holding Tackle.",
         TACKLECONTAINER = "A 6 slots container for holding Tackle.",
         SPEEDYBALLOON = "When held, it increases movement speed by 30% which drops to 20% and then 10% as it decays.\n\nIf dropped on the ground before completely decaying, it will float into the air after 1.5 seconds and its location will appear on the minimap to all survivors.",
@@ -15364,12 +15673,13 @@ STRINGS.SCRAPBOOK = {
         SPICE_CHILI = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Chili Flakes adds 20% damage to their attacks.\n\nDuration 4 minutes.\n\nAlso raises temperature 15 degrees for 15 seconds.",
         SPICE_SALT = "Can be added to Crock Pot food using a Portable Seasoning Station.\n\nEating a dish spiced with Seasoning Salt grants 25% more healing for healing effects.\n\nDuration 4 minutes.",
         BLUEPRINT = "It teaches you how to build a specific thing.",
+        WILLOWEMBER = "When a creature dies while on fire, they drop an etherial ember of some burnt essence of life.\n\nWhen Willow attunes with her lighter, eventually she can sense and collect Hot Embers with it.\n\nWillow can learn to use embers for a variety of Pyrokinetics.", 
 
         -- things
         ATRIUMGATE = "A broken stone ring that has an empty socket at the base.",
         ATRIUMRUBBLE = "A crumbling object with writing that can be inspected.",
         ANIMALTRACK = "A footprint of an animal that was walking somewhere.",
-        ARCHIVERESONATOR = "An mysterious device that burns arrows into the dirt.",
+        ARCHIVERESONATOR = "A mysterious device that burns arrows into the dirt.",
         TENTACLEPILLARHOLE = "A hole leading to a tunnel that leads somewhere else.",
         BOATCANNON = "Can be loaded with cannoballs.\n\nOnce loaded, it can be aimed to fire. The direction can be changed by standing next it from differnet sides before aiming.",
         SACREDCHEST = "A container with 6 slots. Could be a 6 item combination lock, only Metheus knows.",
@@ -15519,6 +15829,13 @@ STRINGS.SCRAPBOOK = {
         WAGSTAFF_MACHINERY = "Seems like someone was just working here. Whatever they were making, I guess they finished it.",
         WAGSTAFF_MUTATIONS_NOTE = "\n\"Day 56 - Lunar Mutations Study\"\n\n\"It seems as though these strange entities that emerged from the rifts are in search of living hosts... or perhaps once living.\"\n\n\"NOTE: The following creatures warrant immediate study as I suspect they may be the most viable as hosts:\"\n\n• Frog\n• Pengull\n• Varg\n• Koalefant\n• Deerclops\n\n\"Other possible Rift entity host candidates:\"\n\n• Grass Gekko\n• Hound\n• Bearger\n• Mosling\n",
 
+        SPEAR_WATHGRITHR_LIGHTNING = "Does electrical damage which does more damage to wet targets.",
+        SPEAR_WATHGRITHR_LIGHTNING_CHARGED = "Does electrical damage which does more damage to wet targets.\n\nIncreases movement speed by 20% when held.\n\nIt can only be equipped by Wigfrids who have the \"Elding Spear Enhancement II\" skill.",
+        WATHGRITHR_SHIELD = "Can be used to block attacks. Successfully blocking an attack decreases the block cooldown.\n\nIt can only be equipped by Wigfrids who have the \"Battle Rönd\" skill.",
+        BATTLESONG_CONTAINER = "A carriable container with 8 slots that can hold Battle Songs and Battle Stingers.",
+        EMBERLIGHT = "Works like a campfire for its duration, creating light and heat and will ignite things nearby. It can also be used to cook food.",
+        BOOTLEG = "Can be thrown into the sea to create a pair of connected Whirlportals. Boats sailing close to them will be brought to the other entrance.",
+        OCEANWHIRLPORTAL = "An ocean portal that allows boats to travel long distances.",
     },
 
     -- Full name: "{name} Scrapbook Page"

@@ -60,11 +60,19 @@ local function OnBuilt(inst)
 end
 
 --
+local function on_ignite(inst, source, doer)
+    inst._controlled_burn = doer and doer:HasTag("controlled_burner") or source and source:HasTag("controlled_burner") or nil
+    DefaultBurnFn(inst)
+end
+local function on_extinguish(inst)
+    inst._controlled_burn = nil
+    DefaultExtinguishFn(inst)
+end
 local function OnBurnt(inst)
     local item = inst.components.furnituredecortaker:TakeItem()
     if item then
         inst.components.lootdropper:FlingItem(item)
-        if item.components.burnable then
+        if not inst._controlled_burn and item.components.burnable ~= nil then
             item.components.burnable:Ignite()
         end
     end
@@ -78,9 +86,13 @@ local function OnSave(inst, data)
     if (inst.components.burnable and inst.components.burnable:IsBurning()) or inst:HasTag("burnt") then
         data.burnt = true
     end
+    data.controlled_burn = inst._controlled_burn
 end
 
 local function OnLoad(inst, data)
+    if data then
+        inst._controlled_burn = data.controlled_burn
+    end
 end
 
 local function OnLoadPostPass(inst, newents, data)
@@ -159,6 +171,8 @@ local function AddTable(results, prefab_name, data)
 
         --
         MakeMediumBurnable(inst, nil, nil, true)
+        inst.components.burnable:SetOnIgniteFn(on_ignite)
+        inst.components.burnable:SetOnExtinguishFn(on_extinguish)
         MakeMediumPropagator(inst)
 
         --

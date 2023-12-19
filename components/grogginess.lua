@@ -13,6 +13,7 @@ local Grogginess = Class(function(self, inst)
     self.wearoffduration = TUNING.GROGGINESS_WEAR_OFF_DURATION
     self.decayrate = TUNING.GROGGINESS_DECAY_RATE
     self.speedmod = nil
+	self.speedmodmult = 1 --bonus mulitplier on the calculated speedmod
     self.enablespeedmod = true
     self.isgroggy = false
     self.knockedout = false
@@ -35,6 +36,14 @@ function Grogginess:OnRemoveFromEntity()
     end
 end
 
+--Multiplier on speedmod, only when speedmod is applied.
+function Grogginess:SetSpeedModMultiplier(mult)
+	self.speedmodmult = mult
+	if self.speedmod then
+		self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "grogginess", self.speedmod * mult)
+	end
+end
+
 function DefaultKnockoutTest(inst)
     local self = inst.components.grogginess
     return self.grog_amount >= self:GetResistance()
@@ -53,7 +62,7 @@ function DefaultWhileGroggy(inst)
     local pct = self.grog_amount < self:GetResistance() and self.grog_amount / self:GetResistance() or 1
     self.speedmod = Remap(pct, 1, 0, TUNING.MIN_GROGGY_SPEED_MOD, TUNING.MAX_GROGGY_SPEED_MOD)
     if self.enablespeedmod then
-        inst.components.locomotor:SetExternalSpeedMultiplier(inst, "grogginess", self.speedmod)
+		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "grogginess", self.speedmod * self.speedmodmult)
     end
 end
 
@@ -63,7 +72,7 @@ function DefaultWhileWearingOff(inst)
     local pct = self.wearofftime < self.wearoffduration and easing.inQuad(self.wearofftime / self.wearoffduration, 0, 1, 1) or 1
     self.speedmod = Remap(pct, 0, 1, TUNING.MAX_GROGGY_SPEED_MOD, 1)
     if self.enablespeedmod then
-        inst.components.locomotor:SetExternalSpeedMultiplier(inst, "grogginess", self.speedmod)
+		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "grogginess", self.speedmod * self.speedmodmult)
     end
 end
 
@@ -114,7 +123,7 @@ function Grogginess:SetEnableSpeedMod(enable)
         if not self.enablespeedmod then
             self.enablespeedmod = true
             if self.speedmod ~= nil then
-                self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "grogginess", self.speedmod)
+				self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "grogginess", self.speedmod * self.speedmodmult)
             end
             if self.isgroggy then
                 self.inst:AddTag("groggy")

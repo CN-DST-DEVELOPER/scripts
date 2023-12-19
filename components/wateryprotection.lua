@@ -5,6 +5,7 @@ local WateryProtection = Class(function(self, inst)
     self.temperaturereduction = 0
     self.addcoldness = 0
     self.addwetness = 0
+    self.applywetnesstoitems = false
     self.extinguish = true
     self.extinguishheatpercent = 0
 	--self.protection_dist = nil
@@ -37,9 +38,13 @@ function WateryProtection:SpreadProtectionAtPoint(x, y, z, dist, noextinguish)
         if self.temperaturereduction > 0 and v.components.temperature ~= nil then
             v.components.temperature:SetTemperature(v.components.temperature:GetCurrent() - self.temperaturereduction)
         end
-        if self.addwetness > 0 and v.components.moisture ~= nil then
-            local waterproofness = v.components.moisture:GetWaterproofness()
-            v.components.moisture:DoDelta(self.addwetness * (1 - waterproofness))
+        if self.addwetness > 0 then
+            if v.components.moisture ~= nil then
+                local waterproofness = v.components.moisture:GetWaterproofness()
+                v.components.moisture:DoDelta(self.addwetness * (1 - waterproofness))
+            elseif self.applywetnesstoitems and v.components.inventoryitem ~= nil then
+                v.components.inventoryitem:AddMoisture(self.addwetness)
+            end
         end
     end
 

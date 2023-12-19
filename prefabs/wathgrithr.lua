@@ -4,9 +4,13 @@ local INSPIRATION_BATTLESONG_DEFS = require("prefabs/battlesongdefs")
 local assets =
 {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
+    Asset("SCRIPT", "scripts/prefabs/skilltree_wathgrithr.lua"),
+
     Asset("SOUND", "sound/wathgrithr.fsb"),
-    Asset("ANIM", "anim/wathgrithr_sing.zip"),
+
     Asset("ANIM", "anim/player_idles_wathgrithr.zip"),
+    Asset("ANIM", "anim/player_parry_shield.zip"),
+    Asset("ANIM", "anim/wathgrithr_sing.zip"),
     Asset("ANIM", "anim/wathgrithr_mount_sing.zip"),
 }
 
@@ -50,7 +54,7 @@ end
 
 local function onkilled(inst, data)
     local victim = data.victim
-    if IsValidVictim(victim) then
+    if inst.IsValidVictim(victim) then
         if not victim.components.health.nofadeout and (victim:HasTag("epic") or math.random() < 0.1) then
             local time = victim.components.health.destroytime or 2
             local x, y, z = victim.Transform:GetWorldPosition()
@@ -99,6 +103,53 @@ local function OnTakeDrowningDamage(inst)
     inst.components.singinginspiration:SetInspiration(0)
 end
 
+-------------------------------------------------------------------------------------------------------
+
+local function PlayRidingMusic(inst)
+    inst:PushEvent("playrideofthevalkyrie")
+end
+
+local function OnRidingDirty(inst)
+    if ThePlayer == nil or ThePlayer ~= inst then
+        return
+    end
+
+    if inst.components.skilltreeupdater:HasSkillTag("beefalo") and
+        inst.replica.rider ~= nil and
+        inst.replica.rider:IsRiding()
+    then
+        if inst._play_riding_music_task == nil then
+            inst._play_riding_music_task = inst:DoPeriodicTask(0.5, PlayRidingMusic)
+        end
+
+    elseif inst._play_riding_music_task ~= nil then
+        inst._play_riding_music_task:Cancel()
+        inst._play_riding_music_task = nil
+    end
+end
+
+-------------------------------------------------------------------------------------------------------
+
+local function OnSave(inst, data)
+    data.shieldmaker = inst:HasTag("wathgrithrshieldmaker") or nil
+    data.spearlighting_upgradeuser = inst:HasTag(UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser") or nil
+end
+
+-- To maintain restricted equipment equipped.
+local function OnPreLoad(inst, data)
+    if data == nil then return end
+
+    if data.shieldmaker ~= nil then
+        inst:AddTag("wathgrithrshieldmaker")
+    end
+
+    if data.spearlighting_upgradeuser ~= nil then
+        inst:AddTag(UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser")
+    end
+end
+
+-------------------------------------------------------------------------------------------------------
+
 local function common_postinit(inst)
     inst:AddTag("valkyrie")
     inst:AddTag("battlesinger")
@@ -119,6 +170,14 @@ local function common_postinit(inst)
 	inst.GetInspiration = GetInspiration
 	inst.GetInspirationSong = GetInspirationSong
 	inst.CalcAvailableSlotsForInspiration = CalcAvailableSlotsForInspiration
+
+    -- For forcing it while already riding.
+    inst._riding_music = net_event(inst.GUID, "wathgrithr._riding_music")
+
+    if not TheNet:IsDedicated() then
+        inst:ListenForEvent("isridingdirty", OnRidingDirty)
+        inst:ListenForEvent("wathgrithr._riding_music", OnRidingDirty)
+    end
 end
 
 local function master_postinit(inst)
@@ -141,16 +200,17 @@ local function master_postinit(inst)
     elseif TheNet:GetServerGameMode() == "quagmire" then
         --event_server_data("quagmire", "prefabs/wathgrithr").master_postinit(inst)
     else
+        inst.IsValidVictim = IsValidVictim
 
         inst:AddComponent("singinginspiration")
 		inst.components.singinginspiration:SetCalcAvailableSlotsForInspirationFn(CalcAvailableSlotsForInspiration)
-        inst.components.singinginspiration:SetValidVictimFn(IsValidVictim)
+        inst.components.singinginspiration:SetValidVictimFn(inst.IsValidVictim)
 
         inst:AddComponent("battleborn")
         inst.components.battleborn:SetBattlebornBonus(TUNING.WATHGRITHR_BATTLEBORN_BONUS)
         inst.components.battleborn:SetSanityEnabled(true)
         inst.components.battleborn:SetHealthEnabled(true)
-        inst.components.battleborn:SetValidVictimFn(IsValidVictim)
+        inst.components.battleborn:SetValidVictimFn(inst.IsValidVictim)
         inst.components.battleborn.allow_zero = false -- Don't regain stats if our attack is trying to deal literally 0 damage.
 
         if inst.components.drownable ~= nil then
@@ -159,6 +219,9 @@ local function master_postinit(inst)
 
         inst.components.combat.damagemultiplier = TUNING.WATHGRITHR_DAMAGE_MULT
         inst.components.health:SetAbsorptionAmount(TUNING.WATHGRITHR_ABSORPTION)
+
+        inst.OnSave = OnSave
+        inst.OnPreLoad = OnPreLoad
 
         inst:ListenForEvent("killed", onkilled)
     end

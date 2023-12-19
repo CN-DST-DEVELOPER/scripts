@@ -14,47 +14,69 @@ local AOE_RANGE = 0.9
 local AOE_RANGE_PADDING = 3
 local AOE_TARGET_TAGS = { "_combat" }
 local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "playerghost", "lunar_aligned" }
+local AOE_TARGET_CANT_TAGS_PVE = { "INLIMBO", "flight", "invisible", "player", "wall" }
+local AOE_TARGET_CANT_TAGS_PVP = { "INLIMBO", "flight", "invisible", "playerghost", "wall" }
 local MULTIHIT_FRAMES = 10
 
 local function OnUpdateHitbox(inst)
-	if not (inst.owner ~= nil and inst.owner.components.combat ~= nil and inst.owner:IsValid()) then
+	if not (inst.attacker and inst.attacker.components.combat and inst.attacker:IsValid()) then
 		return
 	end
-	inst.owner.components.combat.ignorehitrange = true
-	inst.owner.components.combat.ignoredamagereflect = true
+
+	local weapon
+	if inst.owner ~= inst.attacker then
+		if not (inst.owner and inst.owner:IsValid()) then
+			return
+		elseif inst.owner.components.weapon then
+			weapon = inst.owner
+		end
+	end
+
+	local cant_tags =
+		(not inst.attacker:HasTag("player") and AOE_TARGET_CANT_TAGS) or
+		(TheNet:GetPVPEnabled() and AOE_TARGET_CANT_TAGS_PVP) or 
+		AOE_TARGET_CANT_TAGS_PVE
+
+	inst.attacker.components.combat.ignorehitrange = true
+	inst.attacker.components.combat.ignoredamagereflect = true
 	local tick = GetTick()
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local radius = AOE_RANGE * inst.scale
-	local ents = TheSim:FindEntities(x, 0, z, radius + AOE_RANGE_PADDING, AOE_TARGET_TAGS, AOE_TARGET_CANT_TAGS)
-	for i, v in ipairs(ents) do
-		if v:IsValid() and not v:IsInLimbo() and not (v.components.health ~= nil and v.components.health:IsDead()) then
-			local range = radius + v:GetPhysicsRadius(0)
-			if v:GetDistanceSqToPoint(x, 0, z) < range * range then
-				local target_data = inst.targets[v]
-				if target_data == nil then
-					target_data = {}
-					inst.targets[v] = target_data
-				end
-				if target_data.tick ~= tick then
-					target_data.tick = tick
-					--Supercool
-					if v.components.temperature ~= nil then
-						local newtemp = math.max(v.components.temperature.mintemp, TUNING.MUTATED_WARG_COLDFIRE_TEMPERATURE)
-						if newtemp < v.components.temperature:GetCurrent() then
-							v.components.temperature:SetTemperature(newtemp)
-						end
+	local ents = TheSim:FindEntities(x, 0, z, radius + AOE_RANGE_PADDING, AOE_TARGET_TAGS, cant_tags)
+	for i, v in ipairs(ents) do	
+
+		if v ~= inst.attacker and v:IsValid() and not v:IsInLimbo() and not (v.components.health and v.components.health:IsDead()) then
+			
+			if not inst.attacker:HasTag("player") or not inst.attacker.components.combat:IsAlly(v) then		
+
+				local range = radius + v:GetPhysicsRadius(0)
+				if v:GetDistanceSqToPoint(x, 0, z) < range * range then
+					local target_data = inst.targets[v]
+					if target_data == nil then
+						target_data = {}
+						inst.targets[v] = target_data
 					end
-					--Hit
-					if (target_data.hit_tick == nil or target_data.hit_tick + MULTIHIT_FRAMES < tick) and inst.owner.components.combat:CanTarget(v) then
-						target_data.hit_tick = tick
-						inst.owner.components.combat:DoAttack(v)
+					if target_data.tick ~= tick then
+						target_data.tick = tick
+						--Supercool
+						if v.components.temperature ~= nil then
+							local newtemp = math.max(v.components.temperature.mintemp, TUNING.MUTATED_WARG_COLDFIRE_TEMPERATURE)
+							if newtemp < v.components.temperature:GetCurrent() then
+								v.components.temperature:SetTemperature(newtemp)
+							end
+						end
+						--Hit
+						if (target_data.hit_tick == nil or target_data.hit_tick + MULTIHIT_FRAMES < tick) and inst.attacker.components.combat:CanTarget(v) then
+							target_data.hit_tick = tick
+							inst.attacker.components.combat:DoAttack(v, weapon)
+						end
 					end
 				end
 			end
 		end
 	end
-	inst.owner.components.combat.ignorehitrange = false
-	inst.owner.components.combat.ignoredamagereflect = false
+	inst.attacker.components.combat.ignorehitrange = false
+	inst.attacker.components.combat.ignoredamagereflect = false
 end
 
 local function RefreshBrightness(inst)
@@ -118,8 +140,9 @@ local function KillFX(inst, fadeoption)
 	end
 end
 
-local function SetFXOwner(inst, owner)
+local function SetFXOwner(inst, owner, attacker)
 	inst.owner = owner
+	inst.attacker = attacker or owner
 end
 
 local function SpawnEmbers(inst, scale, fadeoption)

@@ -77,6 +77,7 @@ return {
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I think that's enough for one day.",
             MANNEQUIN_EQUIPSWAPFAILED = "I don't think he can wear this.",
             PILLOWFIGHT_NO_HANDPILLOW = "I need a pillow to fight with!",
+            NOTMYBERNIE = "My stuffed toy isn't so scary.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -405,6 +406,10 @@ return {
 		CASTAOE =
 		{
 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 
@@ -802,8 +807,10 @@ return {
 	},
 
     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+    ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+    ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5033,6 +5040,29 @@ return {
         WAGPUNKBITS_KIT = "Machines that fix other machines! What will science think of next?",
 
         WAGSTAFF_MUTATIONS_NOTE = "Fascinating! Illuminating! Brain-embiggening!",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "It's a very lively tune.",
+
+        WATHGRITHR_IMPROVEDHAT = "Does Wigfrid have any leadership experience? Or is she just winging it?",
+        SPEAR_WATHGRITHR_LIGHTNING = "It's amplified with electricity.",
+
+        BATTLESONG_CONTAINER = "Wow, it stores so many songs.",
+
+        SADDLE_WATHGRITHR = "Wigfrid made that? Looks like she winged it.",
+
+        WATHGRITHR_SHIELD = "Protect me!!",
+
+        BATTLESONG_SHADOWALIGNED = "Theater makes me fidgety.",
+        BATTLESONG_LUNARALIGNED = "Theater makes me fidgety.",
+
+		SHARKBOI = "Shiver me timbers!",
+        BOOTLEG = "Somewhere out there, a pirate is missing their bootie.",
+        OCEANWHIRLPORTAL = "I'll give it a whirl.",
+
+        EMBERLIGHT = "A fire without fuel? No matter.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

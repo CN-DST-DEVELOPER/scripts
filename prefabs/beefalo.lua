@@ -338,7 +338,7 @@ local function OnAttacked(inst, data)
         inst.components.domesticatable:DeltaTendency(TENDENCY.ORNERY, TUNING.BEEFALO_ORNERY_ATTACKED)
     else
         if data.attacker ~= nil and data.attacker:HasTag("player") then
-            inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_ATTACKED_BY_PLAYER_DOMESTICATION)
+            inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_ATTACKED_BY_PLAYER_DOMESTICATION, data.attacker)
             inst.components.domesticatable:DeltaObedience(TUNING.BEEFALO_DOMESTICATION_ATTACKED_BY_PLAYER_OBEDIENCE)
         end
         inst.components.combat:SetTarget(data.attacker)
@@ -444,7 +444,7 @@ end
 
 local function OnBrushed(inst, doer, numprizes)
     if numprizes > 0 and inst.components.domesticatable ~= nil then
-        inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_BRUSHED_DOMESTICATION)
+        inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_BRUSHED_DOMESTICATION, doer)
         inst.components.domesticatable:DeltaObedience(TUNING.BEEFALO_DOMESTICATION_BRUSHED_OBEDIENCE)
     end
 end
@@ -581,9 +581,16 @@ local function CalculateBuckDelay(inst)
         and 1
         or TUNING.BEEFALO_BUCK_TIME_UNDOMESTICATED_MULT
 
+    local rider = inst.components.rideable ~= nil and inst.components.rideable:GetRider()
+
+    local skillmult =
+        rider ~= nil and rider.components.skilltreeupdater ~= nil and rider.components.skilltreeupdater:HasSkillTag("beefalobucktime")
+        and TUNING.SKILLS.WATHGRITHR.WATHGRITHR_BEEFALO_BUCK_TIME_MOD
+        or 1
+
     local basedelay = Remap(domestication, 0, 1, TUNING.BEEFALO_MIN_BUCK_TIME, TUNING.BEEFALO_MAX_BUCK_TIME)
 
-    return basedelay * moodmult * beardmult * domesticmult
+    return basedelay * moodmult * beardmult * domesticmult * skillmult
 end
 
 local function OnBuckTime(inst)
@@ -643,7 +650,7 @@ local function OnHungerDelta(inst, data)
     end
 end
 
-local function OnEat(inst, food)
+local function OnEat(inst, food, feeder)
     local full = inst.components.hunger:GetPercent() >= 1
     if not full then
         inst.components.domesticatable:DeltaObedience(TUNING.BEEFALO_DOMESTICATION_FEED_OBEDIENCE)
@@ -651,7 +658,7 @@ local function OnEat(inst, food)
         inst.components.domesticatable:TryBecomeDomesticated()
     else
         inst.components.domesticatable:DeltaObedience(TUNING.BEEFALO_DOMESTICATION_OVERFEED_OBEDIENCE)
-        inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_OVERFEED_DOMESTICATION)
+        inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_OVERFEED_DOMESTICATION, feeder)
         inst.components.domesticatable:DeltaTendency(TENDENCY.PUDGY, TUNING.BEEFALO_PUDGY_OVERFEED)
     end
     inst:PushEvent("eat", { full = full, food = food })
@@ -962,6 +969,7 @@ local function beefalo()
         return inst
     end
 
+    inst:AddComponent("planardamage")
     inst:AddComponent("bloomer")
 
     inst:AddComponent("beard")

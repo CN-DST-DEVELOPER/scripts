@@ -2,7 +2,8 @@
 local Widget = require "widgets/widget"
 local Text = require "widgets/text"
 local ImageButton = require "widgets/imagebutton"
-
+local UIAnimButton = require("widgets/uianimbutton")
+local UIAnim = require("widgets/uianim")
 
 -------------------------------------------------------------------------------
 local Wheel = Class(Widget, function(self, name, owner, options)
@@ -12,6 +13,7 @@ local Wheel = Class(Widget, function(self, name, owner, options)
 
 	self.selected_label = self:AddChild(Text(UIFONT, 38, ""))
 	self.selected_label:SetPosition(0, 0)
+	self.selected_label:SetClickable(false)
 	self.items = {}
 	self.isopen = false
 	self.iscontroller = false
@@ -32,6 +34,12 @@ end
 -------------------------------------------------------------------------------
 -- dataset_name (optional): this is only optional for the root dataset, if there are nested datasets, then you must specify this for the nested ones.
 --
+local function SetUIAnimButtonData(w, fn, data)
+	if data then
+		fn(w, data.anim, data.loop)
+	end
+end
+
 function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 	dataset_name = dataset_name or "root"
 
@@ -57,12 +65,36 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 			self:SetItems(v.nestedwheel.items, v.nestedwheel.r, v.nestedwheel.f, v.nestedwheel.name)
 		end
 
-		local w = self:AddChild(ImageButton( v.atlas, v.normal, v.focus, v.disabled, v.down, v.selected, v.scale, v.offset ))
-		
-		w:SetImageNormalColour(.8, .8, .8, 1)
-		w:SetImageFocusColour( 1, 1, 1, 1)
-		w:SetImageDisabledColour(0.7, 0.7, 0.7, 0.7)
+		local w
+		if v.anims then
+			w = self:AddChild(UIAnimButton(v.bank, v.build))
+			w.animstate:Hide("mouseover")
+			--helpers to basically do this:
+			--    w:SetIdleAnim(v.anims.idle.anim, v.anims.idle.anim.loop)
+			--(except the anim data might be nil!!!)
+			SetUIAnimButtonData(w, w.SetIdleAnim, v.anims.idle)
+			SetUIAnimButtonData(w, w.SetFocusAnim, v.anims.focus)
+			SetUIAnimButtonData(w, w.SetDisabledAnim, v.anims.disabled)
+			SetUIAnimButtonData(w, w.SetDownAnim, v.anims.down)
+			SetUIAnimButtonData(w, w.SetSelectedAnim, v.anims.selected)
 
+			if v.checkcooldown then
+				w.cooldown = w:AddChild(UIAnim())
+				w.cooldown:SetClickable(false)
+				w.cooldown:GetAnimState():SetBank(v.bank)
+				w.cooldown:GetAnimState():SetBuild(v.build)
+				if v.cooldowncolor then
+					w.cooldown:GetAnimState():SetMultColour(unpack(v.cooldowncolor))
+				end
+				w.cooldown:Hide()
+			end
+		else
+			w = self:AddChild(ImageButton(v.atlas, v.normal, v.focus, v.disabled, v.down, v.selected, v.scale, v.offset))
+			w:SetImageNormalColour(.8, .8, .8, 1)
+			w:SetImageFocusColour( 1, 1, 1, 1)
+			w:SetImageDisabledColour(0.7, 0.7, 0.7, 0.7)
+		end
+		
 		if v.widget_scale ~= nil then
 			w:SetScale(v.widget_scale)
 		end
@@ -92,18 +124,31 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 			end
 		
 		w.ongainfocus = function()
-				w:MoveTo(v.pos, v.focus_pos, 0.1)
-				self.selected_label:SetString(v.label)
-				if v.onfocus ~= nil then
-					v.onfocus()
+				if w:IsEnabled() and not (w:IsSelected() or w:IsDisabledState()) then
+					w:MoveTo(v.pos, v.focus_pos, 0.1)
+					self.selected_label:SetString(v.label)
+					self.selected_label._currentwidget = w
+
+					local offset = Vector3(0,50,0)
+					local newpos = v.pos + offset
+					local newfocuspos = v.focus_pos + offset
+
+					self.selected_label:MoveTo(newpos, newfocuspos, 0.1)
+					if v.onfocus ~= nil then
+						v.onfocus()
+					end
 				end
 			end
 			
 		w.onlosefocus = function()
-				w:MoveTo( v.focus_pos, v.pos, 0.25 )
-				self.selected_label:SetString("")
+				if w:IsEnabled() and not (w:IsSelected() or w:IsDisabledState()) then
+					w:MoveTo( v.focus_pos, v.pos, 0.25 )
+				end
+				if self.selected_label._currentwidget == w then
+					self.selected_label:SetString("")
+				end
 			end
-		
+
 		if v.helptext ~= nil then
 			w:SetHelpTextMessage(v.helptext)
 		end
@@ -112,6 +157,7 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 		v.widget:Hide()
 	end
 
+	self.selected_label:MoveToFront()
 	self:Hide()
 
 	self.cur_cell_index = 0
@@ -146,33 +192,68 @@ function Wheel:Open(dataset_name)
 	self:Show()
 	self:Disable()
 	self:SetClickable(false)
-	self.cur_cell_index = 1
+	self.cur_cell_index = 0
 
-	self.selected_label:SetPosition(0, self.activeitems[1].pos.y * -0.5 )
+	self.selected_label:SetPosition(0, 0)
+	self.selected_label:SetString("")
+	self.selected_label._currentwidget = nil
 
-	local selected = self.activeitems[1]
+	local selected
 	for i, v in ipairs(self.activeitems) do
-		if v.checkenabled == nil or v.checkenabled() then
-			v.widget:Enable()
-		else
+		local disabled = v.checkenabled and not v.checkenabled(self.owner)
+		if v.checkcooldown then
+			SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, disabled and v.anims.disabled or v.anims.cooldown)
+			v.widget.cooldown.OnUpdate = function(cooldown, dt, forceinit)
+				local cd = v.checkcooldown(self.owner)
+				if cd then
+					if forceinit or v.widget.enabled then
+						v.widget:Disable()
+					end
+					if self.cur_cell_index == i then
+						self.cur_cell_index = 0
+					end
+					cooldown:GetAnimState():SetPercent("cooldown", math.clamp(1 - cd, 0, 1))
+					cooldown:Show()
+				else
+					if disabled then
+						if forceinit or v.widget.enabled then
+							v.widget:Disable()
+						end
+						if self.cur_cell_index == i then
+							self.cur_cell_index = 0
+						end
+					elseif forceinit or not v.widget.enabled then
+						v.widget:Enable()
+					end
+					cooldown:Hide()
+				end
+			end
+			v.widget.cooldown:StartUpdating()
+			v.widget.cooldown:OnUpdate(0, true)
+		elseif disabled then
+			SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, v.anims.disabled)
 			v.widget:Disable()
+		else
+			v.widget:Enable()
 		end
-		if v.selected then
+		if (v.selected or selected == nil) and v.widget.enabled then
 			selected = v
+			self.cur_cell_index = i
 		end
 		v.widget:MoveTo( Vector3(0,0,0), v.pos, 0.25 )
 		v.widget:Show()
 	end
 	if selected ~= nil then
-		local focus = selected.widget.enabled and self.iscontroller
-		if focus then
-			selected.widget:SetFocus()
-		end
-		selected.widget:MoveTo( Vector3(0,0,0), focus and selected.focus_pos or selected.pos, 0.25,
+		selected.widget:MoveTo(Vector3(0,0,0), self.iscontroller and not selected.widget:IsDisabledState() and selected.focus_pos or selected.pos, 0.25,
 			function()
 				self:SetClickable(true)
 				self:Enable()
 				if self.iscontroller then
+					if not selected.widget:IsDisabledState() then
+						selected.widget:SetFocus()
+					elseif self.activeitems[self.cur_cell_index] == selected then
+						self.cur_cell_index = 0
+					end
 					self:StartUpdating()
 				end
 			end)
@@ -197,6 +278,9 @@ function Wheel:Close()
 	end
 	
 	for i, v in ipairs(self.activeitems) do
+		if v.widget.cooldown then
+			v.widget.cooldown:StopUpdating()
+		end
 		v.widget:CancelMoveTo()
 		v.widget:Hide()
 	end

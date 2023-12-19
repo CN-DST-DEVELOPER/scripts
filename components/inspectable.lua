@@ -16,6 +16,10 @@ function Inspectable:SetDescription(desc)
     self.description = desc
 end
 
+function Inspectable:SetNameOverride(nameoverride)
+    self.nameoverride = nameoverride
+end
+
 function Inspectable:RecordViews(state)
     self.recordview = state ~= false
 end

@@ -290,6 +290,20 @@ local function GetStatus(inst)
     return inst.stage == "empty" and "MELTED" or nil
 end
 
+local function Sink(inst)
+                
+    for s,stage in ipairs(STAGES)do
+        if stage.name == inst.stage and stage.icecount and stage.icecount > 0 then
+            local pt = inst:GetPosition()
+            for i=1,stage.icecount do
+                inst.components.lootdropper:SpawnLootPrefab("ice", pt)
+            end
+        end
+    end
+
+    inst:Remove()
+end
+
 local function rock_ice_fn()
     local inst = CreateEntity()
 
@@ -374,6 +388,9 @@ local function rock_ice_fn()
 
     inst:ListenForEvent("firemelt", StartFireMelt)
     inst:ListenForEvent("stopfiremelt", StopFireMelt)
+    inst:ListenForEvent("abandon_ship", Sink)
+
+    
 
     inst:WatchWorldState("cycles", DayEnd)
 

@@ -333,6 +333,7 @@ local function ConfigureRunState(inst)
         inst.sg.statemem.riding = true
         inst.sg.statemem.groggy = inst:HasTag("groggy")
         inst.sg:AddStateTag("nodangle")
+		inst.sg:AddStateTag("noslip")
 
         local mount = inst.components.rider:GetMount()
         inst.sg.statemem.ridingwoby = mount and mount:HasTag("woby")
@@ -340,8 +341,14 @@ local function ConfigureRunState(inst)
     elseif inst.components.inventory:IsHeavyLifting() then
         inst.sg.statemem.heavy = true
 		inst.sg.statemem.heavy_fast = inst.components.mightiness ~= nil and inst.components.mightiness:IsMighty()
+		inst.sg:AddStateTag("noslip")
+	elseif inst:IsChannelCasting() then
+		inst.sg.statemem.channelcast = true
+		inst.sg.statemem.channelcastitem = inst:IsChannelCastingItem()
     elseif inst:HasTag("wereplayer") then
         inst.sg.statemem.iswere = true
+		inst.sg:AddStateTag("noslip")
+
         if inst:HasTag("weremoose") then
             if inst:HasTag("groggy") then
                 inst.sg.statemem.moosegroggy = true
@@ -365,6 +372,7 @@ local function ConfigureRunState(inst)
         inst.sg.statemem.groggy = true
     elseif inst:IsCarefulWalking() then
         inst.sg.statemem.careful = true
+		inst.sg:AddStateTag("noslip")
     else
         inst.sg.statemem.normal = true
         inst.sg.statemem.normalwonkey = inst:HasTag("wonkey") or nil
@@ -374,6 +382,8 @@ end
 local function GetRunStateAnim(inst)
     return ((inst.sg.statemem.heavy and inst.sg.statemem.heavy_fast) and "heavy_walk_fast")
         or (inst.sg.statemem.heavy and "heavy_walk")
+		or (inst.sg.statemem.channelcastitem and "channelcast_walk")
+		or (inst.sg.statemem.channelcast and "channelcast_oh_walk")
         or (inst.sg.statemem.sandstorm and "sand_walk")
         or ((inst.sg.statemem.groggy or inst.sg.statemem.moosegroggy or inst.sg.statemem.goosegroggy) and "idle_walk")
         or (inst.sg.statemem.careful and "careful_walk")
@@ -739,7 +749,8 @@ local actionhandlers =
                         (action.invobject:HasTag("blowdart") and "blowdart_special") or
                         (action.invobject:HasTag("throw_line") and "throw_line") or
 						(action.invobject:HasTag("book") and (inst:HasTag("canrepeatcast") and "book_repeatcast" or "book")) or
-                        (action.invobject:HasTag("parryweapon") and "parry_pre")
+                        (action.invobject:HasTag("parryweapon") and "parry_pre") or
+                        (action.invobject:HasTag("willow_ember") and "castspellmind")
                     )
                 or "castspell"
         end),
@@ -811,6 +822,18 @@ local actionhandlers =
 			end
 			return projectile ~= nil and projectile:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
 		end),
+        ActionHandler(ACTIONS.TOSS_MAP,
+            function(inst, action)
+                local projectile = action.invobject
+                if projectile == nil then
+                    --for Special action TOSS, we can also use equipped item.
+                    projectile = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                    if projectile ~= nil and not projectile:HasTag("special_action_toss") then
+                        projectile = nil
+                    end
+                end
+                return projectile ~= nil and projectile:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
+            end),
     ActionHandler(ACTIONS.UNPIN, "doshortaction"),
     ActionHandler(ACTIONS.CATCH, "catch_pre"),
 
@@ -888,6 +911,8 @@ local actionhandlers =
                 return "startchanneling"
             end
         end),
+	ActionHandler(ACTIONS.START_CHANNELCAST, "start_channelcast"),
+	ActionHandler(ACTIONS.STOP_CHANNELCAST, "stop_channelcast"),
     ActionHandler(ACTIONS.REVIVE_CORPSE, "revivecorpse"),
     ActionHandler(ACTIONS.DISMANTLE, "dolongaction"),
     ActionHandler(ACTIONS.TACKLE, "tackle_pre"),
@@ -982,6 +1007,11 @@ local actionhandlers =
             return "dolongaction"
         end
     end),
+
+    ActionHandler(ACTIONS.USEITEM, function(inst, action)        
+        return "doaction"
+    end),
+
     ActionHandler(ACTIONS.STOPUSINGITEM, "dolongaction"),
     ActionHandler(ACTIONS.YOTB_STARTCONTEST, "doshortaction"),
     ActionHandler(ACTIONS.YOTB_UNLOCKSKIN, "dolongaction"),
@@ -1111,6 +1141,7 @@ local events =
                     inst.sg:GoToState("parry_hit", {
                         timeleft = inst.sg.statemem.task ~= nil and GetTaskRemaining(inst.sg.statemem.task) or inst.sg.statemem.parrytime,
                         pushing = data.attacker ~= nil and data.attacker.sg ~= nil and data.attacker.sg:HasStateTag("pushing"),
+                        isshield = inst.sg.statemem.isshield,
                     })
                 end
 			elseif inst.sg:HasStateTag("devoured") then
@@ -1196,6 +1227,7 @@ local events =
                         (inst.sg.statemem.timeleft ~= nil and math.max(0, inst.sg.statemem.timeleft + inst.sg.statemem.timeleft0 - GetTime())) or
                         inst.sg.statemem.parrytime,
                     knockbackdata = data,
+                    isshield = inst.sg.statemem.isshield,
                 })
             else
                 inst.sg:GoToState((data.forcelanded or inst.components.inventory:EquipHasTag("heavyarmor") or inst:HasTag("heavybody")) and "knockbacklanded" or "knockback", data)
@@ -1224,6 +1256,12 @@ local events =
 	EventHandler("devoured", function(inst, data)
 		if not inst.components.health:IsDead() and data ~= nil and data.attacker ~= nil and data.attacker:IsValid() then
 			inst.sg:GoToState("devoured", data.attacker)
+		end
+	end),
+
+	EventHandler("feetslipped", function(inst)
+		if inst.sg:HasStateTag("running") and not inst.sg:HasStateTag("noslip") then
+			inst.sg:GoToState("slip")
 		end
 	end),
 
@@ -2701,7 +2739,7 @@ local states =
 			if inst.sg.mem.queuetalk_timeout ~= nil then
 				local remaining_talk_time = inst.sg.mem.queuetalk_timeout - GetTime()
 				inst.sg.mem.queuetalk_timeout = nil
-				if not inst:HasTag("ignoretalking") and not pushanim then
+				if not (pushanim or inst:HasTag("ignoretalking")) then
 					if remaining_talk_time > 1 then
 						if not inst:HasTag("mime") then
 							inst.sg:GoToState("talk")
@@ -2746,6 +2784,16 @@ local states =
             elseif inst.components.inventory:IsHeavyLifting() then
                 table.insert(anims, "heavy_idle")
                 dofunny = false
+			elseif inst:IsChannelCasting() then
+				inst.sg.statemem.channelcast = true
+				inst.sg.statemem.channelcastitem = inst:IsChannelCastingItem()
+				if inst.sg.lasttags and inst.sg.lasttags["keepchannelcasting"] then
+					--Came from a state that isn't channeling item specific
+					--so it would've animated back to regular idle instead.
+					table.insert(anims, inst.sg.statemem.channelcastitem and "channelcast_idle_pre" or "channelcast_oh_idle_pre")
+				end
+				table.insert(anims, inst.sg.statemem.channelcastitem and "channelcast_idle" or "channelcast_oh_idle")
+				dofunny = false
             else
                 inst.sg.statemem.ignoresandstorm = false
 				if inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
@@ -2831,6 +2879,12 @@ local states =
 					elseif not (inst.sg.statemem.sandstorm or inst.components.playervision:HasGoggleVision()) then
 						inst.sg:GoToState("idle")
 					end
+				end
+			end),
+			EventHandler("stopchannelcast", function(inst)
+				if inst.sg.statemem.channelcast and not inst:IsChannelCasting() then
+					inst.AnimState:PlayAnimation(inst.sg.statemem.channelcastitem and "channelcast_idle_pst" or "channelcast_oh_idle_pst")
+					inst.sg:GoToState("idle", true)
 				end
 			end),
         },
@@ -4022,9 +4076,11 @@ local states =
         tags = { "preparrying", "busy", "nomorph" },
 
         onenter = function(inst)
+            inst.sg.statemem.isshield = inst.bufferedaction ~= nil and inst.bufferedaction.invobject ~= nil and inst.bufferedaction.invobject:HasTag("shield")
+
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("parry_pre")
-            inst.AnimState:PushAnimation("parry_loop", true)
+            inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pre"  or "parry_pre")
+            inst.AnimState:PushAnimation(inst.sg.statemem.isshield and "shieldparry_loop" or "parry_loop", true)
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
             --V2C: using animover results in a slight hang on last frame of parry_pre
 
@@ -4083,9 +4139,9 @@ local states =
                 --Transfer talk task to parry_idle state
                 local talktask = inst.sg.statemem.talktask
                 inst.sg.statemem.talktask = nil
-                inst.sg:GoToState("parry_idle", { duration = inst.sg.statemem.parrytime, pauseframes = 30, talktask = talktask })
+                inst.sg:GoToState("parry_idle", { duration = inst.sg.statemem.parrytime, pauseframes = 30, talktask = talktask, isshield = inst.sg.statemem.isshield })
             else
-                inst.AnimState:PlayAnimation("parry_pst")
+                inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pst"  or "parry_pst")
                 inst.sg:GoToState("idle", true)
             end
         end,
@@ -4103,24 +4159,26 @@ local states =
         tags = { "notalking", "parrying", "nomorph" },
 
         onenter = function(inst, data)
+            inst.sg.statemem.isshield = data ~= nil and data.isshield
+
             inst.components.locomotor:Stop()
 
             if data ~= nil and data.duration ~= nil then
                 if data.duration > 0 then
                     inst.sg.statemem.task = inst:DoTaskInTime(data.duration, function(inst)
                         inst.sg.statemem.task = nil
-                        inst.AnimState:PlayAnimation("parry_pst")
+                        inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pst"  or "parry_pst")
                         inst.sg:GoToState("idle", true)
                     end)
                 else
-                    inst.AnimState:PlayAnimation("parry_pst")
+                    inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pst"  or "parry_pst")
                     inst.sg:GoToState("idle", true)
                     return
                 end
             end
 
             if not inst.AnimState:IsCurrentAnimation("parry_loop") then
-                inst.AnimState:PushAnimation("parry_loop", true)
+                inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_loop" or "parry_loop", true)
             end
 
             --Transferred over from parry_pre so it doesn't cut off abrubtly
@@ -4175,10 +4233,12 @@ local states =
         tags = { "parrying", "parryhit", "nomorph", "busy", "nopredict" },
 
         onenter = function(inst, data)
+            inst.sg.statemem.isshield = data ~= nil and data.isshield
+
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
-            inst.AnimState:PlayAnimation("parryblock")
+            inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparryblock" or "parryblock")
             inst.SoundEmitter:PlaySound("dontstarve/wilson/hit")
 
             local stun_frames = data ~= nil and data.pushing and 6 or 4
@@ -4203,7 +4263,11 @@ local states =
                 inst.sg:GoToState("idle")
             else
                 inst.sg.statemem.parrying = true
-                inst.sg:GoToState("parry_idle", inst.sg.statemem.timeleft ~= nil and { duration = math.max(0, inst.sg.statemem.timeleft + inst.sg.statemem.timeleft0 - GetTime()) } or nil)
+                inst.sg:GoToState("parry_idle",
+                    inst.sg.statemem.timeleft ~= nil and { duration = math.max(0, inst.sg.statemem.timeleft + inst.sg.statemem.timeleft0 - GetTime()), isshield = inst.sg.statemem.isshield }
+                    or inst.sg.statemem.isshield and { isshield = inst.sg.statemem.isshield }
+                    or nil
+                )
             end
         end,
 
@@ -4219,10 +4283,12 @@ local states =
         tags = { "parrying", "parryhit", "busy", "nopredict", "nomorph" },
 
         onenter = function(inst, data)
+            inst.sg.statemem.isshield = data ~= nil and data.isshield
+
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
-            inst.AnimState:PlayAnimation("parryblock")
+            inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparryblock" or "parryblock")
             inst.SoundEmitter:PlaySound("dontstarve/wilson/hit")
 
             if data ~= nil then
@@ -4278,7 +4344,11 @@ local states =
                 inst.sg:GoToState("idle")
             else
                 inst.sg.statemem.parrying = true
-                inst.sg:GoToState("parry_idle", inst.sg.statemem.timeleft ~= nil and { duration = math.max(0, inst.sg.statemem.timeleft + inst.sg.statemem.timeleft0 - GetTime()) } or nil)
+                inst.sg:GoToState("parry_idle",
+                    inst.sg.statemem.timeleft ~= nil and { duration = math.max(0, inst.sg.statemem.timeleft + inst.sg.statemem.timeleft0 - GetTime()), isshield = inst.sg.statemem.isshield }
+                    or inst.sg.statemem.isshield and { isshield = inst.sg.statemem.isshield }
+                    or nil
+                )
             end
         end,
 
@@ -5380,9 +5450,10 @@ local states =
         onenter = function(inst, noanim)
             if not noanim then
                 inst.AnimState:PlayAnimation(
-                    inst.components.inventory:IsHeavyLifting() and
-                    not inst.components.rider:IsRiding() and
-                    "heavy_dial_loop" or
+					(inst.components.inventory:IsHeavyLifting() and not inst.components.rider:IsRiding() and "heavy_dial_loop") or
+					(inst:IsChannelCasting() and (
+						inst:IsChannelCastingItem() and "channelcast_idle_dial_loop" or "channelcast_oh_idle_dial_loop"
+					)) or
                     "dial_loop",
                     true)
             end
@@ -5743,7 +5814,7 @@ local states =
 
     State{
         name = "doshortaction",
-        tags = { "doing", "busy" },
+		tags = { "doing", "busy", "keepchannelcasting" },
 
         onenter = function(inst, silent)
             inst.components.locomotor:Stop()
@@ -5789,6 +5860,7 @@ local states =
 
     State{
         name = "dosilentshortaction",
+		tags = { "keepchannelcasting" },
 
         onenter = function(inst)
             inst.sg:GoToState("doshortaction", true)
@@ -8460,10 +8532,10 @@ local states =
 									not inst.components.combat:IsAlly(v)
 								then
 									if v.components.planarentity ~= nil then
-										inst.components.planardamage:SetBaseDamage(TUNING.SKILLS.WOODIE.MOOSE_SMASH_PLANAR_DAMAGE)
+										inst.components.planardamage:AddBonus(inst, TUNING.SKILLS.WOODIE.MOOSE_SMASH_PLANAR_DAMAGE, "weremoose_smash")
 									end
 									inst.components.combat:DoAttack(v)
-									inst.components.planardamage:SetBaseDamage(0)
+									inst.components.planardamage:RemoveBonus(inst, "weremoose_smash")
 								end
 							end
 						end
@@ -8801,7 +8873,7 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst.sg.statemem.normalwonkey and inst.components.locomotor:GetTimeMoving() >= TUNING.WONKEY_TIME_TO_RUN then
+			if inst.sg.statemem.normalwonkey and not inst.sg.statemem.channelcast and inst.components.locomotor:GetTimeMoving() >= TUNING.WONKEY_TIME_TO_RUN then
                 inst.sg:GoToState("run_monkey_start")
                 return
             end
@@ -8855,8 +8927,11 @@ local states =
             end),
 
             --groggy
+			--channelcast
             TimeEvent(1 * FRAMES, function(inst)
-                if inst.sg.statemem.groggy then
+				if inst.sg.statemem.groggy or
+					inst.sg.statemem.channelcast
+				then
                     DoRunSounds(inst)
                     DoFoleySounds(inst)
                 elseif inst.sg.statemem.goose then
@@ -8867,7 +8942,9 @@ local states =
             end),
             TimeEvent(12 * FRAMES, function(inst)
                 if inst.sg.statemem.groggy or
-                    inst.sg.statemem.sandstorm then
+					inst.sg.statemem.channelcast or
+					inst.sg.statemem.sandstorm
+				then
                     DoRunSounds(inst)
                     DoFoleySounds(inst)
                 end
@@ -9265,7 +9342,7 @@ local states =
 
     State{
         name = "item_hat",
-        tags = { "idle" },
+		tags = { "idle", "keepchannelcasting" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -9284,7 +9361,7 @@ local states =
 
     State{
         name = "item_in",
-        tags = { "idle", "nodangle" },
+		tags = { "idle", "nodangle", "keepchannelcasting" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -9311,7 +9388,7 @@ local states =
 
     State{
         name = "item_out",
-        tags = { "idle", "nodangle" },
+		tags = { "idle", "nodangle", "keepchannelcasting" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -9663,14 +9740,18 @@ local states =
 
     State{
         name = "hit",
-        tags = { "busy", "pausepredict" },
+		tags = { "busy", "pausepredict", "keepchannelcasting" },
 
         onenter = function(inst, frozen)
             ForceStopHeavyLifting(inst)
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
-            inst.AnimState:PlayAnimation("hit")
+			inst.AnimState:PlayAnimation(
+				inst:IsChannelCasting() and (
+					inst:IsChannelCastingItem() and "channelcast_hit" or "channelcast_oh_hit"
+				) or "hit"
+			)
 
             if frozen == "noimpactsound" then
                 frozen = nil
@@ -9690,6 +9771,11 @@ local states =
         end,
 
         ontimeout = function(inst)
+			--V2C: -removing the tag now, since this is actually a supported "channeling_item"
+			--      state (i.e. has custom anim)
+			--     -the state enters with the tag though, to cheat having to create a separate
+			--      hit state for channeling items
+			inst.sg:RemoveStateTag("keepchannelcasting")
             inst.sg:GoToState("idle", true)
         end,
 
@@ -12703,6 +12789,59 @@ local states =
             end
         end,
     },
+    
+    State{
+        name = "castspellmind",
+		tags = { "doing", "busy", "canrotate" },
+
+        onenter = function(inst)
+            if inst.components.playercontroller ~= nil then
+                inst.components.playercontroller:Enable(false)
+            end
+
+            inst.SoundEmitter:PlaySound("meta3/willow/pyrokinetic_activate")
+
+            inst.AnimState:PlayAnimation("pyrocast_pre")
+            inst.AnimState:PushAnimation("pyrocast", false)
+            inst.components.locomotor:Stop()
+
+        end,
+
+        timeline =
+        {            
+            TimeEvent(15 * FRAMES, function(inst)
+                --V2C: NOTE! if we're teleporting ourself, we may be forced to exit state here!
+				if inst:PerformBufferedAction() and inst:IsChannelCasting() then
+					--V2C: didn't add this on enter state since we DO want to
+					--     cancel previous channelcasting
+					inst.sg:AddStateTag("keepchannelcasting")
+					inst.sg:GoToState("idle")
+				end
+            end),
+            TimeEvent(20 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+                if inst.components.playercontroller ~= nil then
+                    inst.components.playercontroller:Enable(true)
+                end
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            if inst.components.playercontroller ~= nil then
+                inst.components.playercontroller:Enable(true)
+            end         
+        end,
+    },
+
 
     State{
         name = "quicktele",
@@ -12860,9 +12999,12 @@ local states =
                     inst:ForceFacePoint(data.targetpos:Get())
                 end
                 if data.weapon.components.aoeweapon_lunge:DoLunge(inst, pos, data.targetpos) then
-                    inst.SoundEmitter:PlaySound("dontstarve/common/lava_arena/fireball")
+                    inst.SoundEmitter:PlaySound(data.weapon.components.aoeweapon_lunge.sound or "dontstarve/common/lava_arena/fireball")
                     inst.Physics:Teleport(data.targetpos.x, 0, data.targetpos.z)
-                    if not data.skipflash then
+
+                    -- aoeweapon_lunge:DoLunge can get us out of the state!
+                    -- And then, if onexit is run before this: bugs!
+                    if not data.skipflash and inst.sg.currentstate == "combat_lunge" then
                         inst.components.bloomer:PushBloom("lunge", "shaders/anim.ksh", -2)
                         inst.components.colouradder:PushColour("lunge", 1, 1, 0, 0)
                         inst.sg.statemem.flash = 1
@@ -15111,6 +15253,30 @@ local states =
         },
     },
 
+	--Basically an "instant" action but with animation if you were idle
+	State{
+		name = "start_channelcast",
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst:PerformBufferedAction()
+			inst.AnimState:PlayAnimation(inst:IsChannelCastingItem() and "channelcast_idle_pre" or "channelcast_oh_idle_pre")
+			inst.sg:GoToState("idle", true)
+		end,
+	},
+
+	--Basically an "instant" action but with animation if you were idle
+	State{
+		name = "stop_channelcast",
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation(inst:IsChannelCastingItem() and "channelcast_idle_pst" or "channelcast_oh_idle_pst")
+			inst:PerformBufferedAction()
+			inst.sg:GoToState("idle", true)
+		end,
+	},
+
     State{
         name = "till_start",
         tags = { "doing", "busy" },
@@ -16170,7 +16336,7 @@ local states =
                             inst:ClearBufferedAction()
                             inst.components.talker:Say(GetActionFailString(inst, "SING_FAIL", "SAMESONG"))
                             inst.sg:GoToState("idle")
-                        elseif singinginspiration:CanAddSong(songdata) then
+                        elseif singinginspiration:CanAddSong(songdata, buffaction.invobject) then
                             inst.sg:GoToState("sing")
                         else
                             inst.sg:GoToState("cantsing")
@@ -16245,9 +16411,18 @@ local states =
         tags = {},
 
         onenter = function(inst)
+            local buffaction = inst:GetBufferedAction()
+            local restricted_tag = buffaction and buffaction.invobject.songdata and buffaction.invobject.songdata.RESTRICTED_TAG or nil
+
             inst:ClearBufferedAction()
 
-            inst.components.talker:Say(GetString(inst, "ANNOUNCE_NOINSPIRATION"), nil, true)
+            local failstring =
+                restricted_tag ~= nil and
+                not inst:HasTag(restricted_tag) and
+                "ANNOUNCE_NOTSKILLEDENOUGH" or
+                "ANNOUNCE_NOINSPIRATION"
+
+            inst.components.talker:Say(GetString(inst, failstring), nil, true)
 
             inst.AnimState:PlayAnimation("sing_fail", false)
 
@@ -18586,7 +18761,277 @@ local states =
 			end),
 		},
 	},
+
 	--------------------------------------------------------------------------
+	--Slipping states
+
+	State{
+		name = "slip",
+		tags = { "busy", "nopredict", "nomorph", "jumping", "overridelocomote" },
+
+		onenter = function(inst)
+			ForceStopHeavyLifting(inst)
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+
+			if inst.components.slipperyfeet then
+				inst.components.slipperyfeet:SetCurrent(0)
+			end
+
+			inst.AnimState:PlayAnimation("slip_pre")
+			inst.AnimState:PushAnimation("slip_loop", false)
+
+			inst.sg.statemem.speed = inst.components.locomotor:GetRunSpeed()
+			inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.6, 0, 0)
+
+			inst.player_classified.busyremoteoverridelocomote:set(true)
+			inst.sg.statemem.trackcontrol = true
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.trackcontrol then
+				if inst.HUD then
+					local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+					if math.abs(TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)) >= deadzone or
+						math.abs(TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)) >= deadzone
+					then
+						if inst.sg.statemem.checkfall then
+							inst.sg.statemem.slipping = true
+							inst.sg:GoToState("slip_fall", inst.sg.statemem.speed * 0.25)
+							return
+						end
+						inst.sg.statemem.controltick = GetTick()
+					end
+				end
+
+				if inst.sg.statemem.trystoptracking and GetTick() - inst.sg.statemem.controltick > 10 then
+					inst.sg.statemem.trackcontrol = false
+				end
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(6, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.3, 0, 0) end),
+			FrameEvent(12, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.25, 0, 0) end),
+			FrameEvent(18, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.2, 0, 0) end),
+
+			FrameEvent(18, function(inst)
+				inst.sg.statemem.checkfall = true
+			end),
+			FrameEvent(20, function(inst)
+				if inst.sg.statemem.controltick then
+					inst.sg.statemem.trystoptracking = true
+				else
+					inst.sg.statemem.trackcontrol = false
+				end
+			end),
+		},
+
+		events =
+		{
+			EventHandler("locomote", function(inst, data)
+				if inst.sg.statemem.trackcontrol and data and data.remoteoverridelocomote or inst.components.locomotor:WantsToMoveForward() then
+					if inst.sg.statemem.checkfall then
+						inst.sg.statemem.slipping = true
+						inst.sg:GoToState("slip_fall", inst.sg.statemem.speed * 0.25)
+						return
+					end
+					inst.sg.statemem.controltick = GetTick()
+				end
+				return true
+			end),
+			EventHandler("animqueueover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.slipping = true
+					inst.sg:GoToState("slip_pst", inst.sg.statemem.speed)
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if not inst.sg.statemem.slipping then
+				inst.Physics:SetMotorVel(0, 0, 0)
+				inst.Physics:Stop()
+			end
+			inst.player_classified.busyremoteoverridelocomote:set(false)
+		end,
+	},
+
+	State{
+		name = "slip_pst",
+		tags = { "busy", "nopredict", "nomorph", "jumping" },
+
+		onenter = function(inst, speed)
+			inst.AnimState:PlayAnimation("slip_pst")
+			inst.sg.statemem.speed = speed or inst.components.locomotor:GetRunSpeed()
+			inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.15, 0, 0)
+		end,
+
+		timeline =
+		{
+			FrameEvent(2, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.1, 0, 0) end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.Physics:SetMotorVel(0, 0, 0)
+			inst.Physics:Stop()
+		end,
+	},
+
+	State{
+		name = "slip_fall",
+		tags = { "busy", "nopredict", "nomorph", "jumping" },
+
+		onenter = function(inst, speed)
+			ForceStopHeavyLifting(inst)
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+
+			if inst.components.slipperyfeet then
+				inst.components.slipperyfeet:SetCurrent(0)
+			end
+
+			inst.AnimState:PlayAnimation("slip_fall_pre")
+
+			if speed then
+				inst.sg.statemem.speed = speed
+				inst.Physics:SetMotorVel(speed * 0.8, 0, 0)
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(9, function(inst)
+				inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
+				PlayFootstep(inst)
+			end),
+			FrameEvent(11, function(inst)
+				DoHurtSound(inst)
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.64, 0, 0)
+				end
+			end),
+			--held 2 frames on purpose =P
+			FrameEvent(13, function(inst)
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.32, 0, 0)
+				end
+			end),
+			FrameEvent(14, function(inst)
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.16, 0, 0)
+				end
+			end),
+			FrameEvent(15, function(inst)
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.08, 0, 0)
+				end
+			end),
+			FrameEvent(16, function(inst)
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.04, 0, 0)
+				end
+			end),
+			FrameEvent(17, function(inst)
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(0, 0, 0)
+					inst.Physics:Stop()
+				end
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("slip_fall_loop")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.speed then
+				inst.Physics:SetMotorVel(0, 0, 0)
+				inst.Physics:Stop()
+			end
+		end,
+	},
+
+	State{
+		name = "slip_fall_loop",
+		tags = { "busy", "nomorph", "overridelocomote" },
+
+		onenter = function(inst)
+			ForceStopHeavyLifting(inst)
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+
+			if inst.components.slipperyfeet then
+				inst.components.slipperyfeet:SetCurrent(0)
+			end
+
+			inst.AnimState:PlayAnimation("slip_fall_idle")
+
+			inst.player_classified.busyremoteoverridelocomote:set(true)
+		end,
+
+		onupdate = function(inst)
+			if inst.HUD then
+				local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+				if math.abs(TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)) >= deadzone or
+					math.abs(TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)) >= deadzone
+				then
+					inst.sg:GoToState("slip_fall_pst")
+				end
+			end
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst, data)
+				if data ~= nil and data.remoteoverridelocomote or inst.components.locomotor:WantsToMoveForward() then
+					inst.sg:GoToState("slip_fall_pst")
+				end
+				return true
+			end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("slip_fall_pst")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.player_classified.busyremoteoverridelocomote:set(false)
+		end,
+	},
+
+	State{
+		name = "slip_fall_pst",
+		tags = { "busy", "nomorph" },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("slip_fall_pst")
+		end,
+
+		timeline =
+		{
+			FrameEvent(6, function(inst) PlayFootstep(inst, 0.6) end),
+			FrameEvent(12, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+	},
 }
 
 local hop_timelines =

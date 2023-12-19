@@ -70,6 +70,7 @@ local function OnDeploy(inst, pt, deployer)
     local moontree = SpawnPrefab("moonbutterfly_sapling")
     if moontree then
         moontree.Transform:SetPosition(pt:Get())
+        moontree.SoundEmitter:PlaySound("dontstarve/wilson/plant_tree")
         inst.components.stackable:Get():Remove()
     end
 end

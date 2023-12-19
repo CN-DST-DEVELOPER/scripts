@@ -11,7 +11,7 @@ local function OnBlocked(owner, data)
         data.attacker.components.burnable ~= nil and
         not data.redirected and
         not data.attacker:HasTag("thorny") then
-        data.attacker.components.burnable:Ignite()
+        data.attacker.components.burnable:Ignite(nil,nil,owner)
     end
 end
 

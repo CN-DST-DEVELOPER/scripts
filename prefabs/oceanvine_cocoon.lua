@@ -290,7 +290,7 @@ local function fn()
     inst.MiniMapEntity:SetIcon("oceanvine_cocoon.png")
 
     inst:AddTag("flying")
-    inst:AddTag("ignorewalkableplatform")
+    inst:AddTag("ignorewalkableplatforms")
     inst:AddTag("NOBLOCK")                  -- To not block boat deployment.
     inst:AddTag("plant")
     inst:AddTag("spidercocoon")
@@ -405,7 +405,7 @@ local function burntfn()
     inst.AnimState:PlayAnimation("burnt", true)
 
     inst:AddTag("flying")
-    inst:AddTag("ignorewalkableplatform")
+    inst:AddTag("ignorewalkableplatforms")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

@@ -132,15 +132,25 @@ local function spellCB(tool, target, pos, caster)
                 local new_reskinname = nil
 
                 if PREFAB_SKINS[prefab_to_skin] ~= nil then
+                    local must_have, must_not_have
+                    if target.ReskinToolFilterFn ~= nil then
+                        must_have, must_not_have = target:ReskinToolFilterFn()
+                    end
                     for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
-                        if search_for_skin then
-                            if cached_skin == item_type then
-                                search_for_skin = false
-                            end
-                        else
-                            if TheInventory:CheckClientOwnership(userid, item_type) then
-                                new_reskinname = item_type
-                                break
+                        local skip_this = false
+                        if must_have ~= nil and not StringContainsAnyInArray(item_type, must_have) or must_not_have ~= nil and StringContainsAnyInArray(item_type, must_not_have) then
+                            skip_this = true
+                        end
+                        if not skip_this then
+                            if search_for_skin then
+                                if cached_skin == item_type then
+                                    search_for_skin = false
+                                end
+                            else
+                                if TheInventory:CheckClientOwnership(userid, item_type) then
+                                    new_reskinname = item_type
+                                    break
+                                end
                             end
                         end
                     end

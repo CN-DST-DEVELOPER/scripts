@@ -146,6 +146,10 @@ function SinkholeSpawner:SpawnSinkhole(spawnpt)
 
     local function IsValidSinkholePosition(offset)
         local x1, z1 = x + offset.x, z + offset.z
+        local tile = TheWorld.Map:GetTileAtPoint(x1, 0, z1)
+        if GROUND_ISTEMPTILE[tile] then
+            return false
+        end
         if #TheSim:FindEntities(x1, 0, z1, TUNING.ANTLION_SINKHOLE.RADIUS * 1.9, SINKHOLD_BLOCKER_TAGS) > 0 then
             return false
         end

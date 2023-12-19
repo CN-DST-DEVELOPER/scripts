@@ -616,6 +616,7 @@ end
 
 local function mutatedcommonfn(inst)
     inst:AddTag("lunar_aligned")
+	inst:AddTag("noepicmusic")
 
 	inst.AnimState:Hide("gestalt_eye")
 

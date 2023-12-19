@@ -409,7 +409,8 @@ local function fn()
     MakeLargeFreezableCharacter(inst)
     inst.components.freezable:SetResistance(8)
 
-    MakeHauntableGoToStateWithChanceFunction(inst, "atk_chop", hauntchancefn, TUNING.ALTERGUARDIAN_PHASE2_ATTACK_PERIOD, TUNING.HAUNT_SMALL)
+	inst:AddComponent("hauntable")
+	inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:ListenForEvent("phasetransition", OnPhaseTransition)
     inst:ListenForEvent("attacked", OnAttacked)

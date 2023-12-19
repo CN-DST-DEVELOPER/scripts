@@ -366,6 +366,13 @@ local function MakeLunarMutantsBanner(self, banner_root, anim)
     anim_front:GetAnimState():Hide("HOLLOW")
 end
 
+local function MakeMeta3Banner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_meta3")
+    anim:GetAnimState():SetBank("dst_menu_meta3")
+    anim:GetAnimState():PlayAnimation("loop", true)
+    anim:SetScale(.667)
+end
+
 
 local function MakeLunarMutantsBanner_hallowednights(self, banner_root, anim)
     anim:GetAnimState():SetBuild("dst_menu_rift3_BG")
@@ -436,7 +443,7 @@ function MakeBanner(self)
 		--
 		--REMINDER: Check MakeBannerFront as well!
 		--
-        MakeLunarMutantsBanner(self, banner_root, anim)
+        MakeMeta3Banner(self, banner_root, anim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
         MakeYOTRBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTC) then
@@ -446,7 +453,7 @@ function MakeBanner(self)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
 		--MakeDramaBanner(self, banner_root, anim)        
         --MakeHallowedNightsBanner(self, banner_root, anim)
-        MakeLunarMutantsBanner_hallowednights(self, banner_root, anim)
+        MakeMeta3Banner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
         --MakeMeta2Banner(self, banner_root, anim)
         MakeCawnivalBanner(self, banner_root, anim)
@@ -454,7 +461,7 @@ function MakeBanner(self)
 		--*** !!! ***
 		--REMINDER: Check MakeBannerFront as well!
 		--
-        MakeLunarMutantsBanner(self, banner_root, anim)
+        MakeMeta3Banner(self, banner_root, anim)
 		--MakeMeta2Banner(self, banner_root, anim)
         --MakeDramaBanner(self, banner_root, anim)
         --MakeDefaultBanner(self, banner_root, anim)
@@ -473,7 +480,7 @@ function MakeBanner(self)
 	if title_str then
 		if title_str ~= nil then
 			local x = 170
-			local y = 75
+			local y = 15
 			local text_width = 880
 
 			local font_size = 22

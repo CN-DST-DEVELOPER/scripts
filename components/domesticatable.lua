@@ -52,7 +52,8 @@ end
 function Domesticatable:Validate()
     if self.obedience <= self.minobedience
         and self.inst.components.hunger:GetPercent() <= 0
-        and self.domestication <= 0 then
+        and self.domestication <= 0
+    then
         self:CancelTask()
         return false
     end
@@ -98,10 +99,26 @@ local function DoDeltaObedience(self, delta)
     end
 end
 
-local function DoDeltaDomestication(self, delta)
+local function ApplyDomesticationSkillMult(inst, delta, doer)
+    doer = doer or (inst.components.rideable ~= nil and inst.components.rideable:GetRider()) or nil
+
+    if doer ~= nil and doer.components.skilltreeupdater ~= nil and doer.components.skilltreeupdater:HasSkillTag("beefalodomestication") then
+        return delta * TUNING.SKILLS.WATHGRITHR.WATHGRITHRHAT_BEEFALO_DOMESTICATION_MOD
+    end
+
+    return delta
+end
+
+local function DoDeltaDomestication(self, delta, doer)
+    if delta > 0 then
+        delta = ApplyDomesticationSkillMult(self.inst, delta, doer)
+    end
+
     local old = self.domestication
+
     self.domestication = math.max(math.min(self.domestication + delta, 1), 0)
     self.maxobedience = 1
+
     if old ~= self.domestication then
         self.inst:PushEvent("domesticationdelta", { old = old, new = self.domestication })
         return true
@@ -137,8 +154,8 @@ function Domesticatable:DeltaObedience(delta)
     end
 end
 
-function Domesticatable:DeltaDomestication(delta)
-    if DoDeltaDomestication(self, delta) then
+function Domesticatable:DeltaDomestication(delta, doer)
+    if DoDeltaDomestication(self, delta, doer) then
         self:CheckForChanges()
         self:CheckAndStartTask()
     end

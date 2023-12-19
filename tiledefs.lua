@@ -1038,10 +1038,33 @@ TileManager.AddTile(
         cannotbedug = true,
         flooring = true,
         hard = true,
+        istemptile = true,
     },
     {
         name="map_edge",
         noise_texture="mini_marsh_noise",
+    }
+)
+
+TileManager.AddTile(
+    "OCEAN_ICE",
+    TileRanges.LAND,
+    {ground_name = "Ice Floe"},
+    {
+        name="ocean_ice",
+        noise_texture="noise_oceanice",
+		runsound="dontstarve/movement/run_iceslab",
+		walksound="dontstarve/movement/walk_iceslab",
+		snowsound="dontstarve/movement/run_iceslab", --shouldn't actually be used:
+		mudsound="dontstarve/movement/run_iceslab", --nogroundoverlays flag should ignore snow/mud levels
+        nogroundoverlays = true,
+        cannotbedug = true,
+        hard = true,
+        istemptile = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_oceanice_noise",
     }
 )
 
@@ -1386,6 +1409,7 @@ TileManager.AddTile(
         mudsound="dontstarve/movement/run_mud",
         cannotbedug = true,
         hard = true,
+        istemptile = true,
     },
     {
         name="map_edge",

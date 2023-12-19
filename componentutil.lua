@@ -41,3 +41,21 @@ function HandleDugGround(dug_ground, x, y, z)
         SpawnPrefab("sinkhole_spawn_fx_"..tostring(math.random(3))).Transform:SetPosition(x, y, z)
     end
 end
+
+local VIRTUALOCEAN_HASTAGS = {"virtualocean"}
+local VIRTUALOCEAN_CANTTAGS = {"INLIMBO"}
+function FindVirtualOceanEntity(x, y, z, r)
+    local ents = TheSim:FindEntities(x, y, z, r or MAX_PHYSICS_RADIUS, VIRTUALOCEAN_HASTAGS, VIRTUALOCEAN_CANTTAGS)
+    for _, ent in ipairs(ents) do
+        if ent.Physics ~= nil then
+            local radius = ent.Physics:GetRadius()
+            local ex, ey, ez = ent.Transform:GetWorldPosition()
+            local dx, dz = ex - x, ez - z
+            if dx * dx + dz * dz <= radius * radius then
+                return ent
+            end
+        end
+    end
+
+    return nil
+end

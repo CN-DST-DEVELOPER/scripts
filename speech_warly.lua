@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "Reminds me of my mixer.",
 
         WAGSTAFF_MUTATIONS_NOTE = "Zut alors! I thought it would be a recipe!",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "I didn't know she was such an accomplished singer!",
+
+        WATHGRITHR_IMPROVEDHAT = "Mademoiselle Wigfrid does have a very commanding presence.",
+        SPEAR_WATHGRITHR_LIGHTNING = "A rather formidable skewer!",
+
+        BATTLESONG_CONTAINER = "When it's not holding songs, perhaps it could hold soup?",
+
+        SADDLE_WATHGRITHR = "Too much? Mais non, I think the wings are very tasteful!",
+
+        WATHGRITHR_SHIELD = "Mon dieu, it's heavier than it looks!",
+
+        BATTLESONG_SHADOWALIGNED = "I didn't know she was such an accomplished singer!",
+        BATTLESONG_LUNARALIGNED = "I didn't know she was such an accomplished singer!",
+
+		SHARKBOI = "It looks rather tough.",
+        BOOTLEG = "Oh... oh my, was this someone's actual leg?",
+        OCEANWHIRLPORTAL = "Someone is really stirring the soup.",
+
+        EMBERLIGHT = "Willow left this burner unattended.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

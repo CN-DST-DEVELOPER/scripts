@@ -126,6 +126,11 @@ local function PlayAmbientSound(inst, owner, level)
 end
 
 local function OnAttack(owner, data)
+    if data.target == owner then
+        -- Don't track us.
+        return
+    end
+
     local armor = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
 
     if armor.components.targettracker:IsTracking(data.target) or

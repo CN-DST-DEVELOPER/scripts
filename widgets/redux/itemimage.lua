@@ -114,20 +114,10 @@ function ItemImage:OnLoseFocus()
     self:Shrink()
 end
 
-function ItemImage:OnEnable()
-	self._base.OnEnable(self)
-    if self.focus then
-        self:OnGainFocus()
-    else
-        self:OnLoseFocus()
-    end
-end
-
 function ItemImage:OnDisable()
 	self._base.OnDisable(self)
 	self:OnLoseFocus()
 end
-
 
 function ItemImage:Embiggen()
 	self.frame:SetScale(self.image_scale * 1.18)

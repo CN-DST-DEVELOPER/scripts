@@ -74,8 +74,4 @@ function SkinsPuppet:SetSkins(prefabname, base_item, clothing_names, skip_change
 	self.last_skins.beef_tail = clothing_names.beef_tail
 end
 
-function SkinsPuppet:OnGainFocus()
-	self._base.OnGainFocus(self)
-end
-
 return SkinsPuppet

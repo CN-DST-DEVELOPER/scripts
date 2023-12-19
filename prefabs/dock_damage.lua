@@ -3,27 +3,20 @@ local assets =
     Asset("ANIM", "anim/dock_damage.zip"),
 }
 
-
-local function updateart(inst)
-    if inst.damage < 0.33 then
-        inst.AnimState:PlayAnimation("idle1") 
-    elseif inst.damage <0.66 then
-        inst.AnimState:PlayAnimation("idle2") 
-    else
-        inst.AnimState:PlayAnimation("idle3") 
-    end
-end
-
 local function setdamagepercent(inst,damage)
     inst.damage = damage
-    updateart(inst)
+
+    local idle_index = (damage < 0.33 and "1")
+        or (damage < 0.66 and "2")
+        or "3"
+    inst.AnimState:PlayAnimation("idle"..idle_index)
 end
 
 local function OnRepaired(inst, doer, repair_item)
     local repairvalue = repair_item.components.repairer and repair_item.components.repairer.healthrepairvalue
     if repairvalue then
-        if TheWorld.components.dockmanager ~= nil then
-            -- Damage any docks we hit.
+        if TheWorld.components.dockmanager then
+            -- Repair the dock at our location if we are repaired.
             local x, y, z = inst.Transform:GetWorldPosition()
             TheWorld.components.dockmanager:DamageDockAtPoint(x, y, z, -repairvalue)
         end
@@ -60,9 +53,6 @@ local function fn()
     inst.components.repairable.onrepaired = OnRepaired
     inst.components.repairable.healthrepairable = true
     inst.components.repairable.justrunonrepaired = true
-
-    --inst:AddComponent("health")
-
 
     inst.setdamagepecent = setdamagepercent
     inst.damage = 0

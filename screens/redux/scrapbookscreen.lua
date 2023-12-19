@@ -1707,6 +1707,14 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
     local extraoffsetbgx = data and data.animoffsetbgx or 0
     local extraoffsetbgy = data and data.animoffsetbgy or 0
 
+	if extraoffsetbgx > 0 then
+		offsetx = offsetx + extraoffsetbgx/2
+	end
+
+	if extraoffsetbgy > 0 then
+		offsety = offsety + extraoffsetbgy/2
+	end
+
     local BG_X = (ACTUAL_X + BUFFER+ extraoffsetbgx)
     local BG_Y = (ACTUAL_Y + BUFFER+ extraoffsetbgy)
 
@@ -1717,7 +1725,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 
     CUSTOM_ANIMOFFSET = Vector3(offsetx,-offsety,0)
     local extraoffsetx = data and data.animoffsetx or 0
-    local extraoffsety = data and data.animoffsety or 0    
+    local extraoffsety = data and data.animoffsety or 0
 
     local posx =(CUSTOM_ANIMOFFSET.x+extraoffsetx) *(data and data.scale or 1)
     local posy =(CUSTOM_ANIMOFFSET.y+extraoffsety) *(data and data.scale or 1)
@@ -1733,8 +1741,11 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 
     photostack:SetRotation(rotation)
 
-    local rotheight = calculteRotatedHeight(rotation,ACTUAL_X, ACTUAL_Y)
-	local rotwidth = calculteRotatedWidth(rotation,ACTUAL_X, ACTUAL_Y)
+	local ROT_X = ACTUAL_X + extraoffsetbgx
+	local ROT_Y = ACTUAL_Y + extraoffsetbgy
+
+    local rotheight = calculteRotatedHeight(rotation, ROT_X, ROT_Y)
+	local rotwidth = calculteRotatedWidth(rotation, ROT_X, ROT_Y)
 
 	if statwidget then
 	    local pos_s = statwidget:GetPosition()
@@ -1751,7 +1762,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 
 	local finalheight = ( (rotheight+20 > math.abs(statsheight)) or (data and data.knownlevel < 2) ) and rotheight+20 or math.abs(statsheight)
 
-    height = height - finalheight - section_space -(extraoffsetbgy/2)
+    height = height - finalheight - section_space - extraoffsetbgy
 
 	if data and data.knownlevel == 1 then
 		local inspectbody 

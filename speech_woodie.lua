@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -793,8 +795,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5024,6 +5028,29 @@ return{
         WAGPUNKBITS_KIT = "A mechanical mechanic, eh? What'll they think up next.",
 
         WAGSTAFF_MUTATIONS_NOTE = "Can't make heads or tails of it myself, but it seems important.",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Don't recognize the song. Maybe it wasn't released in Canada.",
+
+        WATHGRITHR_IMPROVEDHAT = "Minus the wings and horn, it's basically a toque.",
+        SPEAR_WATHGRITHR_LIGHTNING = "Luce, I swear. Lightning attacks aren't important to me.",
+
+        BATTLESONG_CONTAINER = "She's a nifty tune holder.",
+
+        SADDLE_WATHGRITHR = "Like the wings of a giant bird. Ugh.",
+
+        WATHGRITHR_SHIELD = "That'll take a lickin', eh Luce?",
+
+        BATTLESONG_SHADOWALIGNED = "Don't recognize the song. Maybe it wasn't released in Canada.",
+        BATTLESONG_LUNARALIGNED = "Don't recognize the song. Maybe it wasn't released in Canada.",
+
+		SHARKBOI = "I normally like ice fishin', but not when the fish bite back!",
+        BOOTLEG = "How aboot we leg it out of here, eh?",
+        OCEANWHIRLPORTAL = "Hold your breath, Lucy!",
+
+        EMBERLIGHT = "Just keep it away from the trees, eh?",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

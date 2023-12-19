@@ -118,3 +118,6 @@ TileGroupManager:AddInvalidTile(TileGroups.LandTilesNotDock, WORLD_TILES.MONKEY_
 
 TileGroups.DockTiles = TileGroupManager:AddTileGroup()
 TileGroupManager:AddValidTile(TileGroups.DockTiles, WORLD_TILES.MONKEY_DOCK)
+
+TileGroups.OceanIceTiles = TileGroupManager:AddTileGroup()
+TileGroupManager:AddValidTile(TileGroups.OceanIceTiles, WORLD_TILES.OCEAN_ICE)

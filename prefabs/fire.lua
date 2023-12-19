@@ -17,12 +17,12 @@ end
 
 local firelevels =
 {
-    {anim="level1", sound="dontstarve/common/campfire", radius=2, intensity=.75, falloff=.33, colour = {197/255,197/255,170/255}, soundintensity=.1},
-    {anim="level2", sound="dontstarve/common/campfire", radius=3, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.3},
-    {anim="level3", sound="dontstarve/common/campfire", radius=4, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.6},
-    {anim="level4", sound="dontstarve/common/campfire", radius=5, intensity=.9, falloff=.25, colour = {255/255,190/255,121/255}, soundintensity=1},
-    {anim="level4", sound="dontstarve/common/forestfire", radius=6, intensity=.9, falloff=.2, colour = {255/255,190/255,121/255}, soundintensity=1},
-    {anim="level5", sound="dontstarve/common/forestfire", radius=7, intensity=.9, falloff=.2, colour = {255/255,190/255,121/255}, soundintensity=1},
+    {anim="level1", anim_controlled_burn="level1_controlled_burn", sound="dontstarve/common/campfire", radius=2, intensity=.75, falloff=.33, colour = {197/255,197/255,170/255}, soundintensity=.1},
+    {anim="level2", anim_controlled_burn="level2_controlled_burn", sound="dontstarve/common/campfire", radius=3, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.3},
+    {anim="level3", anim_controlled_burn="level3_controlled_burn", sound="dontstarve/common/campfire", radius=4, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.6},
+    {anim="level4", anim_controlled_burn="level4_controlled_burn", sound="dontstarve/common/campfire", radius=5, intensity=.9, falloff=.25, colour = {255/255,190/255,121/255}, soundintensity=1},
+    {anim="level4", anim_controlled_burn="level4_controlled_burn", sound="dontstarve/common/forestfire", radius=6, intensity=.9, falloff=.2, colour = {255/255,190/255,121/255}, soundintensity=1},
+    {anim="level5", anim_controlled_burn="level5_controlled_burn", sound="dontstarve/common/forestfire", radius=7, intensity=.9, falloff=.2, colour = {255/255,190/255,121/255}, soundintensity=1},
 }
 
 local function fn()

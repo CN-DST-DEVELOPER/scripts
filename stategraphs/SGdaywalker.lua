@@ -322,10 +322,10 @@ local CHATTER_DELAYS =
 	["DAYWALKER_ATTACK"] =			{ delay = 4, len = 1.5 },
 }
 
-local function TryChatter(inst, strtblname, index, force)
+local function TryChatter(inst, strtblname, index, ignoredelay)
 	local t = GetTime()
 	local delays = CHATTER_DELAYS[strtblname]
-	if force or (inst.sg.mem.lastchatter or 0) + (delays ~= nil and delays.delay or 0) < t then
+	if ignoredelay or (inst.sg.mem.lastchatter or 0) + (delays ~= nil and delays.delay or 0) < t then
 		inst.sg.mem.lastchatter = t
 		inst.components.talker:Chatter(strtblname, index or math.random(#STRINGS[strtblname]), delays ~= nil and delays.len or nil)
 	end

@@ -197,6 +197,24 @@ return
 			"hand_wanda_ice",
 			"feet_wanda_ice",
 		},
+		{
+			"walter_yule",
+			"body_walter_yule",
+			"legs_walter_yule",
+			"feet_walter_yule",
+			"walterhat_yule",
+		},
+		{
+			"wendy_yule",
+			"body_wendy_yule",
+			"hand_wendy_yule",
+			"feet_wendy_yule",
+		},
+		{
+			"webber_yule",
+			"body_webber_yule",
+			"webber_beard_yule",
+		},
 	},
 	emote_fistshake =
 	{

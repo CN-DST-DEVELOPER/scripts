@@ -283,6 +283,40 @@ local function IsCarefulWalking(inst)
     return inst.player_classified ~= nil and inst.player_classified.iscarefulwalking:value()
 end
 
+fns.IsChannelCasting = function(inst)
+	return inst.player_classified and inst.player_classified.ischannelcasting:value()
+end
+
+fns.IsChannelCastingItem = function(inst)
+	return inst.player_classified and inst.player_classified.ischannelcastingitem:value()
+end
+
+--Solve for a resultmult so that:
+--    resultmult * mult = MIN(recalcmult, mult)
+local function MinMult(recalcmult, mult)
+	return recalcmult < mult and recalcmult / mult or 1
+end
+
+fns.OnStartChannelCastingItem = function(inst, item)
+	--channelcaster speedmult stacks with other status speedmults
+	--but we don't actually want that
+	--so temporarily adjust the other mults so that when stacked, will equal the min
+	local mult = TUNING.CHANNELCAST_SPEED_MOD
+	inst.components.grogginess:SetSpeedModMultiplier(1 / math.max(TUNING.MAX_GROGGY_SPEED_MOD, mult))
+	inst.components.sandstormwatcher:SetSandstormSpeedMultiplier(MinMult(TUNING.SANDSTORM_SPEED_MOD, mult))
+	inst.components.moonstormwatcher:SetMoonstormSpeedMultiplier(MinMult(TUNING.MOONSTORM_SPEED_MOD, mult))
+	inst.components.miasmawatcher:SetMiasmaSpeedMultiplier(MinMult(TUNING.MIASMA_SPEED_MOD, mult))
+	inst.components.carefulwalker:SetCarefulWalkingSpeedMultiplier(MinMult(TUNING.CAREFUL_SPEED_MOD, mult))
+end
+
+fns.OnStopChannelCastingItem = function(inst)
+	inst.components.grogginess:SetSpeedModMultiplier(1)
+	inst.components.sandstormwatcher:SetSandstormSpeedMultiplier(TUNING.SANDSTORM_SPEED_MOD)
+	inst.components.moonstormwatcher:SetMoonstormSpeedMultiplier(TUNING.MOONSTORM_SPEED_MOD)
+	inst.components.miasmawatcher:SetMiasmaSpeedMultiplier(TUNING.MIASMA_SPEED_MOD)
+	inst.components.carefulwalker:SetCarefulWalkingSpeedMultiplier(TUNING.CAREFUL_SPEED_MOD)
+end
+
 local function ShouldAcceptItem(inst, item)
     if inst:HasTag("playerghost") then
         return item.prefab == "reviver" and inst:IsOnPassablePoint()
@@ -1433,6 +1467,14 @@ fns.ResetMinimapOffset = function(inst) -- NOTES(JBK): Please use this only when
     end
 end
 
+fns.CloseMinimap = function(inst) -- NOTES(JBK): Please use this only when necessary.
+    if TheWorld.ismastersim then
+        --Forces a netvar to be dirty regardless of value
+        inst.player_classified.minimapclose:set_local(false)
+        inst.player_classified.minimapclose:set(false)
+    end
+end
+
 local function SetCameraDistance(inst, distance)
     if TheWorld.ismastersim then
         inst.player_classified.cameradistance:set(distance or 0)
@@ -1783,13 +1825,14 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/shadow_hands.zip"),
         Asset("ANIM", "anim/player_wrap_bundle.zip"),
         Asset("ANIM", "anim/player_hideseek.zip"),
+		Asset("ANIM", "anim/player_slip.zip"),
 
         Asset("ANIM", "anim/player_wardrobe.zip"),
         Asset("ANIM", "anim/player_skin_change.zip"),
         Asset("ANIM", "anim/player_receive_gift.zip"),
         Asset("ANIM", "anim/shadow_skinchangefx.zip"),
         Asset("ANIM", "anim/player_townportal.zip"),
-        Asset("ANIM", "anim/player_channel.zip"),
+        Asset("ANIM", "anim/player_channel.zip"), --channeling scene entity
         Asset("ANIM", "anim/player_construct.zip"),
         Asset("SOUND", "sound/sfx.fsb"),
         Asset("SOUND", "sound/wilson.fsb"),
@@ -1819,6 +1862,10 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_encumbered.zip"),
         Asset("ANIM", "anim/player_encumbered_fast.zip"),
         Asset("ANIM", "anim/player_encumbered_jump.zip"),
+		Asset("ANIM", "anim/player_channelcast_basic.zip"), --channelcast using held item (can walk)
+		Asset("ANIM", "anim/player_channelcast_hit.zip"),
+		Asset("ANIM", "anim/player_channelcast_oh_basic.zip"), --channelcast using off-hand (can walk)
+		Asset("ANIM", "anim/player_channelcast_oh_hit.zip"),
 
         Asset("ANIM", "anim/player_sandstorm.zip"),
         Asset("ANIM", "anim/player_tiptoe.zip"),
@@ -1902,6 +1949,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         "player_classified",
         "inventory_classified",
         "wonkey",
+        "spellbookcooldown",
     }
 
     if starting_inventory ~= nil or customprefabs ~= nil then
@@ -1953,6 +2001,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		inst.IsInMiasma = fns.IsInMiasma -- Didn't want to make miasmawatcher a networked component
 		inst.IsInAnyStormOrCloud = fns.IsInAnyStormOrCloud -- Use this instead of GetStormLevel, to include things like Miasma clouds
         inst.IsCarefulWalking = IsCarefulWalking -- Didn't want to make carefulwalking a networked component
+		inst.IsChannelCasting = fns.IsChannelCasting -- Didn't want to make channelcaster a networked component
+		inst.IsChannelCastingItem = fns.IsChannelCastingItem -- Didn't want to make channelcaster a networked component
         inst.EnableMovementPrediction = EnableMovementPrediction
         inst.EnableBoatCamera = fns.EnableBoatCamera
         inst.ShakeCamera = ShakeCamera
@@ -2173,6 +2223,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst:AddComponent("walkableplatformplayer")
         inst:AddComponent("boatcannonuser")
 
+		inst:AddComponent("spellbookcooldowns")
+
 		if TheNet:GetServerGameMode() == "lavaarena" then
             inst:AddComponent("healthsyncer")
         end
@@ -2297,6 +2349,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         end
 
 		inst.components.areaaware:StartWatchingTile(WORLD_TILES.RIFT_MOON)
+		inst.components.areaaware:StartWatchingTile(WORLD_TILES.OCEAN_ICE)
 
         inst:AddComponent("bloomer")
         inst:AddComponent("colouradder")
@@ -2444,6 +2497,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.components.grogginess:SetResistance(3)
         inst.components.grogginess:SetKnockOutTest(ex_fns.ShouldKnockout)
 
+		inst:AddComponent("slipperyfeet")
+
         inst:AddComponent("sleepingbaguser")
 
         inst:AddComponent("colourtweener")
@@ -2471,6 +2526,10 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst:AddComponent("stageactor")
 
+		inst:AddComponent("channelcaster")
+		inst.components.channelcaster:SetOnStartChannelingFn(fns.OnStartChannelCastingItem)
+		inst.components.channelcaster:SetOnStopChannelingFn(fns.OnStopChannelCastingItem)
+
         inst:AddComponent("experiencecollector")
 
         inst:AddInherentAction(ACTIONS.PICK)
@@ -2487,6 +2546,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.ShowHUD = ShowHUD
         inst.ShowPopUp = fns.ShowPopUp
         inst.ResetMinimapOffset = fns.ResetMinimapOffset
+        inst.CloseMinimap = fns.CloseMinimap
         inst.SetCameraDistance = SetCameraDistance
         inst.SetCameraZoomed = SetCameraZoomed
         inst.SnapCamera = SnapCamera

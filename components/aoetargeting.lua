@@ -23,6 +23,7 @@ local AOETargeting = Class(function(self, inst)
     self.targetprefab = nil
     self.alwaysvalid = false
 	self.allowwater = false
+	self.allowriding = true
 	self.deployradius = 0
     self.range = 8
 	self.shouldrepeatcastfn = nil
@@ -55,6 +56,10 @@ end
 
 function AOETargeting:SetAllowWater(val)
 	self.allowwater = val ~= false
+end
+
+function AOETargeting:SetAllowRiding(val)
+	self.allowriding = val ~= false
 end
 
 function AOETargeting:SetRange(range)

@@ -262,6 +262,7 @@ local function fn()
     inst:AddTag("cavedweller")
     inst:AddTag("tentacle_pillar")
     inst:AddTag("wet")
+    inst:AddTag("NPCcanaggro")
 
     inst.MiniMapEntity:SetIcon("tentacle_pillar.png")
 

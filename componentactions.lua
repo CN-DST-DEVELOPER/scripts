@@ -6,7 +6,8 @@ local function CanCastFishingNetAtPoint(thrower, target_x, target_z)
     local min_throw_distance = 2
     local thrower_x, thrower_y, thrower_z = thrower.Transform:GetWorldPosition()
 
-    if TheWorld.Map:IsOceanAtPoint(target_x, 0, target_z) and VecUtil_LengthSq(target_x - thrower_x, target_z - thrower_z) > min_throw_distance * min_throw_distance then
+    local isoceanactionable = TheWorld.Map:IsOceanAtPoint(target_x, 0, target_z) or FindVirtualOceanEntity(target_x, 0, target_z) ~= nil
+    if isoceanactionable and VecUtil_LengthSq(target_x - thrower_x, target_z - thrower_z) > min_throw_distance * min_throw_distance then
         return true
     end
 	return false
@@ -87,7 +88,7 @@ end
 local function GetFishingAction(doer, fishing_target)
 	if doer:HasTag("fishing_idle") then
 		if fishing_target ~= nil and not fishing_target:HasTag("projectile") then
-			if fishing_target:HasTag("oceachfishing_catchable") then -- not fishing_target:HasTag("partiallyhooked") then
+			if fishing_target:HasTag("oceanfishing_catchable") then -- not fishing_target:HasTag("partiallyhooked") then
 				if fishing_target:HasTag("fishinghook") then
 					return ACTIONS.OCEAN_FISHING_STOP
 				else
@@ -1612,11 +1613,17 @@ local COMPONENT_ACTIONS =
     {
         aoespell = function(inst, doer, pos, actions, right, target)
 			if right then
+				if doer.HUD and doer.components.playercontroller and not doer.components.playercontroller:IsAOETargeting() then
+					--@V2C: #FORGE_AOE_RCLICK *searchable*
+					--      -Forge used to strip all r.click actions even before starting aoe targeting,
+					--       so this early out was not needed until now.
+					return
+				end
 				local inventory = doer.replica.inventory
 				if inventory ~= nil and inventory:GetActiveItem() ~= nil then
 					return
 				end
-				local alwayspassable, allowwater, deployradius
+				local alwayspassable, allowwater, deployradius, allowriding
 				local aoetargeting = inst.components.aoetargeting
 				if aoetargeting ~= nil then
 					if not aoetargeting:IsEnabled() then
@@ -1625,8 +1632,12 @@ local COMPONENT_ACTIONS =
 					alwayspassable = aoetargeting.alwaysvalid
 					allowwater = aoetargeting.allowwater
 					deployradius = aoetargeting.deployradius
+					allowriding = aoetargeting.allowriding
 				end
-				if TheWorld.Map:CanCastAtPoint(pos, alwayspassable, allowwater, deployradius) then
+
+				local isriding = not allowriding and doer.replica.rider ~= nil and doer.replica.rider:IsRiding()
+
+				if not isriding and TheWorld.Map:CanCastAtPoint(pos, alwayspassable, allowwater, deployradius) then
 					table.insert(actions, ACTIONS.CASTAOE)
 				end
 			end
@@ -1640,7 +1651,8 @@ local COMPONENT_ACTIONS =
         end,
 
         complexprojectile = function(inst, doer, pos, actions, right, target)
-            if right and not TheWorld.Map:IsGroundTargetBlocked(pos)
+            if right and (not TheWorld.Map:IsGroundTargetBlocked(pos) or (inst:HasTag("complexprojectile_showoceanaction") and TheWorld.Map:IsOceanAtPoint(pos.x, 0, pos.z)))
+                and (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer))
 				and not (inst.replica.equippable ~= nil and (inst.replica.equippable:IsRestricted(doer) or inst.replica.equippable:ShouldPreventUnequipping()))
 				and not inst:HasTag("special_action_toss") then
 				table.insert(actions, ACTIONS.TOSS)
@@ -1782,10 +1794,22 @@ local COMPONENT_ACTIONS =
 			end
         end,
 
+		channelcastable = function(inst, doer, target, actions, right)
+			if target == doer and doer.IsChannelCasting then
+				if not doer:IsChannelCasting() then
+					table.insert(actions, ACTIONS.START_CHANNELCAST)
+				elseif doer:IsChannelCastingItem() then
+					--don't give stop action when we're using off-hand channelcast
+					table.insert(actions, ACTIONS.STOP_CHANNELCAST)
+				end
+			end
+		end,
+
         complexprojectile = function(inst, doer, target, actions, right)
             if right and
                 not (doer.components.playercontroller ~= nil and doer.components.playercontroller.isclientcontrollerattached) and
                 not TheWorld.Map:IsGroundTargetBlocked(target:GetPosition()) and
+                (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer)) and
 				(inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer) and not inst.replica.equippable:ShouldPreventUnequipping()) and
 				not inst:HasTag("special_action_toss") then
 
@@ -1996,6 +2020,17 @@ local COMPONENT_ACTIONS =
                 table.insert(actions, ACTIONS.BUNDLE)
             end
         end,
+
+		channelcastable = function(inst, doer, actions)
+			if doer.IsChannelCasting then
+				if not doer:IsChannelCasting() then
+					table.insert(actions, ACTIONS.START_CHANNELCAST)
+				elseif doer:IsChannelCastingItem() then
+					--don't give stop action when we're using off-hand channelcast
+					table.insert(actions, ACTIONS.STOP_CHANNELCAST)
+				end
+			end
+		end,
 
         container = function(inst, doer, actions)
             if not inst:HasTag("burnt") then
@@ -2226,7 +2261,7 @@ local COMPONENT_ACTIONS =
                 --if this is needed in the future, don't copy the code, write either a client component, or a replica.
                 local cansing = false
                 if doer.components.singinginspiration then
-                    cansing = songdata.INSTANT or not doer.components.singinginspiration:IsSongActive(songdata)
+                    cansing = songdata.INSTANT or not doer.components.singinginspiration:IsSongActive(songdata, inst)
                 else
                     local issongactive = false
                     if doer.player_classified then
@@ -2335,12 +2370,19 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        useableitem = function(inst, doer, actions)
+        useableitem = function(inst, doer, actions)        
             if not inst:HasTag("inuse") and
                 inst.replica.equippable ~= nil and
                 inst.replica.equippable:IsEquipped() and
                 doer.replica.inventory ~= nil and
                 doer.replica.inventory:IsOpenedBy(doer) then
+                table.insert(actions, ACTIONS.USEITEM)
+            end
+        end,
+
+        toggleableitem = function(inst, doer, actions)    
+            local inventoryitem = inst.replica.inventoryitem
+            if inventoryitem ~= nil and inventoryitem:IsGrandOwner(doer) then
                 table.insert(actions, ACTIONS.USEITEM)
             end
         end,

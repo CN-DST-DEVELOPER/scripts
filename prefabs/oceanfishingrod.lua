@@ -67,9 +67,27 @@ local function OnTackleChanged(inst, data)
 	end
 end
 
-local function reticuletargetfn(inst, pos)
-	local offset = inst.replica.oceanfishingrod ~= nil and inst.replica.oceanfishingrod:GetMaxCastDist() or TUNING.OCEANFISHING_TACKLE.BASE.dist_max
-    return Vector3(ThePlayer.entity:LocalToWorldSpace(offset, 0.001, 0)) -- raised this off the ground a touch so it wont have any z-fighting with the ground biome transition tiles.
+local OCEANFISHINGFOCUS_MUST_TAGS = {"oceanfishingfocus"}
+
+local function reticuletargetfn(inst)
+	local cast_distance = inst.replica.oceanfishingrod ~= nil and inst.replica.oceanfishingrod:GetMaxCastDist() or TUNING.OCEANFISHING_TACKLE.BASE.dist_max
+
+    local rotation = ThePlayer.Transform:GetRotation()
+    local pos = ThePlayer:GetPosition()
+
+    local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, cast_distance, OCEANFISHINGFOCUS_MUST_TAGS)
+    for _, v in ipairs(ents) do
+        local epos = v:GetPosition()
+        if distsq(pos, epos) > math.max(cast_distance * 0.5, 3) then
+            local angletoepos = inst:GetAngleToPoint(epos)
+            local angleto = math.abs(anglediff(rotation, angletoepos))
+            if angleto < TUNING.CONTROLLER_OCEANFISHINGFOCUS_ANGLE then
+                return epos
+            end
+        end
+    end
+
+    return Vector3(ThePlayer.entity:LocalToWorldSpace(cast_distance, 0.001, 0)) -- raised this off the ground a touch so it wont have any z-fighting with the ground biome transition tiles.
 end
 
 local function reticuleshouldhidefn(inst)

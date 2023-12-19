@@ -262,6 +262,7 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
         inst:AddTag("smallcreature")
         inst:AddTag("likewateroffducksback")
         inst:AddTag("stunnedbybomb")
+        inst:AddTag("noember")
 
         --cookable (from cookable component) added to pristine state for optimization
         inst:AddTag("cookable")

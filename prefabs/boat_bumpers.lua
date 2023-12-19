@@ -18,7 +18,7 @@ local function getanimthreshold(inst, percent)
 end
 
 local function onhealthchange(inst, old_percent, new_percent)
-    if inst == nil or not inst:IsValid() or inst.sg:HasStateTag("dead") then
+    if not inst or not inst:IsValid() or inst.sg:HasStateTag("dead") then
         return
     end
 
@@ -28,11 +28,11 @@ local function onhealthchange(inst, old_percent, new_percent)
     if new_percent <= 0 then
         inst.sg:GoToState("death")
     elseif oldindex ~= newindex then
-        if newindex > oldindex then
-            inst.sg:GoToState("changegrade", {index = oldindex, newindex = newindex})
-        else
-            inst.sg:GoToState("changegrade", {index = newindex, newindex = newindex, isupgrade = true})
-        end
+        inst.sg:GoToState("changegrade", {
+            index = oldindex,
+            newindex = newindex,
+            isupgrade = (newindex > oldindex) or nil,
+        })
     end
 end
 
@@ -53,9 +53,6 @@ local function onload(inst, data)
         local stateindex = getanimthreshold(inst, healthpercent)
         inst.sg:GoToState("idle", { index = stateindex })
     end
-end
-
-local function onremove(inst)
 end
 
 local PLAYER_TAGS = { "player" }
@@ -223,10 +220,8 @@ function MakeBumperType(data)
 
         MakeSnowCoveredPristine(inst)
 
-        inst.OnRemoveEntity = onremove
 
         inst.entity:SetPristine()
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -237,40 +232,40 @@ function MakeBumperType(data)
         inst:AddComponent("lootdropper")
         inst:AddComponent("savedrotation")
 
-        inst:AddComponent("repairable")
-        inst.components.repairable.repairmaterial = data.material
-        inst.components.repairable.onrepaired = onrepaired
-        inst.components.repairable.testvalidrepairfn = ValidRepairFn
+        local repairable = inst:AddComponent("repairable")
+        repairable.repairmaterial = data.material
+        repairable.onrepaired = onrepaired
+        repairable.testvalidrepairfn = ValidRepairFn
 
         inst:ListenForEvent("onbuilt", onbuilt)
         inst:ListenForEvent("boatcollision", onhit)
         inst:ListenForEvent("death", ondeath)
 
-        inst:AddComponent("health")
-        inst.components.health:SetMaxHealth(data.maxhealth)
-        inst.components.health.ondelta = onhealthchange
-        inst.components.health.nofadeout = true
-        inst.components.health.canheal = false
+        local health = inst:AddComponent("health")
+        health:SetMaxHealth(data.maxhealth)
+        health.ondelta = onhealthchange
+        health.nofadeout = true
+        health.canheal = false
 
         if data.flammable then
-            MakeMediumBurnable(inst)
+            local burnable = MakeMediumBurnable(inst)
             MakeLargePropagator(inst)
-            inst.components.burnable.flammability = .5
-            inst.components.burnable.nocharring = true
+            burnable.flammability = .5
+            burnable.nocharring = true
 
             --lame!
             if data.name == "kelp" then
                 inst.components.propagator.flashpoint = 30 + math.random() * 10
             end
         else
-            inst.components.health.fire_damage_scale = 0
+            health.fire_damage_scale = 0
         end
 
-        inst:AddComponent("workable")
-        inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-        inst.components.workable:SetWorkLeft(data.name == MATERIALS.MOONROCK and TUNING.MOONROCKWALL_WORK or 3)
-        inst.components.workable:SetOnFinishCallback(onhammered)
-        inst.components.workable:SetOnWorkCallback(onhit)
+        local workable = inst:AddComponent("workable")
+        workable:SetWorkAction(ACTIONS.HAMMER)
+        workable:SetWorkLeft(data.name == MATERIALS.MOONROCK and TUNING.MOONROCKWALL_WORK or 3)
+        workable:SetOnFinishCallback(onhammered)
+        workable:SetOnWorkCallback(onhit)
 
         MakeHauntableWork(inst)
 

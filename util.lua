@@ -386,6 +386,16 @@ function ArrayIntersection(...)
 	return ret
 end
 
+-- NOTES(JBK): Check if string input has any substring in a given array.
+function StringContainsAnyInArray(input, array)
+    for _, substring in ipairs(array) do
+        if input:find(substring) then
+            return true
+        end
+    end
+    return false
+end
+
 -- merge two map-style tables, overwriting duplicate keys with the latter map's value
 function MergeMaps(...)
 	local ret = {}

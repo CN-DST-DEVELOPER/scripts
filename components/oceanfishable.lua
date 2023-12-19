@@ -66,7 +66,7 @@ end
 
 function OceanFishable:SetRod(rod)
 	if self.rod ~= rod then
-		self.inst:RemoveTag("oceachfishing_catchable")
+		self.inst:RemoveTag("oceanfishing_catchable")
 
 		local prev_rod = self.rod
 		self.rod = rod
@@ -139,9 +139,9 @@ function OceanFishable:OnUpdate(dt)
 	end
 
 	if self.rod ~= nil and self.inst:IsValid() and self.inst:IsNear(self.rod, self.catch_distance) then
-		self.inst:AddTag("oceachfishing_catchable")
+		self.inst:AddTag("oceanfishing_catchable")
 	else
-		self.inst:RemoveTag("oceachfishing_catchable")
+		self.inst:RemoveTag("oceanfishing_catchable")
 	end
 
 	self:UpdateRunSpeed()

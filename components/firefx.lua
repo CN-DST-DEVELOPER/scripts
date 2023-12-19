@@ -81,7 +81,8 @@ function FireFX:SetPercentInLevel(percent)
     self.light.Light:SetIntensity(percent * (highval_i - lowval_i) + lowval_i)
 end
 
-function FireFX:SetLevel(lev, immediate)
+function FireFX:SetLevel(lev, immediate, controlled_burn)
+    self.controlled_burn = controlled_burn
     if lev > 0 and lev ~= self.level then
         if self.playignitesound and (self.level == nil or lev > self.level) then
             self.inst.SoundEmitter:PlaySound(self.lightsound or (lev >= self.bigignitesoundthresh and "dontstarve/common/fireBurstLarge" or "dontstarve/common/fireBurstSmall"))
@@ -93,12 +94,13 @@ function FireFX:SetLevel(lev, immediate)
 
         self.level = math.min(lev, #self.levels)
         local params = self.levels[self.level]
+
         if immediate or params.pre == nil then
-            self.inst.AnimState:PlayAnimation(params.anim, true)
+            self.inst.AnimState:PlayAnimation(self.controlled_burn and params.anim_controlled_burn or params.anim, true)            
         else
-            self.inst.AnimState:PlayAnimation(params.pre)
-            self.inst.AnimState:PushAnimation(params.anim, true)
-        end
+            self.inst.AnimState:PlayAnimation(self.controlled_burn and params.pre_controlled_burn or params.pre)
+            self.inst.AnimState:PushAnimation(self.controlled_burn and params.anim_controlled_burn or params.anim, true)
+        end        
 
         self.current_radius = self:GetLevelRadius(self.level)
         self.light.Light:Enable(true)
@@ -139,7 +141,7 @@ function FireFX:Extinguish(fast)
     if self.extinguishsoundtest == nil or self.extinguishsoundtest() then
         self.inst.SoundEmitter:PlaySound(self.extinguishsound or "dontstarve/common/fireOut")
 		local leveldata = self.levels[self.level]
-		local anim = leveldata ~= nil and (fast and leveldata.pst_fast or leveldata.pst) or nil
+		local anim = leveldata ~= nil and ((fast and leveldata.pst_fast) or (self.controlled_burn and leveldata.pst_controlled_burn) or  leveldata.pst) or nil
 		if anim ~= nil then
 			self.inst.AnimState:PlayAnimation(anim)
             return true

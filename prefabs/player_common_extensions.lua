@@ -218,6 +218,8 @@ local function CommonActualRez(inst)
     inst.components.grogginess:SetResistance(3)
     inst.components.grogginess:SetKnockOutTest(ShouldKnockout)
 
+	inst:AddComponent("slipperyfeet")
+
     inst.components.moisture:ForceDry(false, inst)
 
     inst.components.sheltered:Start()
@@ -549,6 +551,7 @@ local function CommonPlayerDeath(inst)
     inst:RemoveComponent("propagator")
 
     inst:RemoveComponent("grogginess")
+	inst:RemoveComponent("slipperyfeet")
 
     inst.components.moisture:ForceDry(true, inst)
 

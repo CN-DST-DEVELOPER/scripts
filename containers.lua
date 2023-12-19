@@ -1337,7 +1337,7 @@ params.beargerfur_sack =
 for y = 0, 2 do
     for x = 0, 1 do
         table.insert(params.beargerfur_sack.widget.slotpos, Vector3(-163 + (75 * x),   -75 * y + 73,   0))
-        table.insert(params.beargerfur_sack.widget.slotbg, { image = "coooked_food_slot.tex", atlas = "images/hud2.xml" })
+        table.insert(params.beargerfur_sack.widget.slotbg, { image = "preparedfood_slot.tex", atlas = "images/hud2.xml" })
     end
 end
 
@@ -1356,6 +1356,39 @@ params.houndstooth_blowpipe.widget.slotbg = {{ image = "houndstooth_ammo_slot.te
 
 function params.houndstooth_blowpipe.itemtestfn(container, item, slot)
 	return item:HasTag("blowpipeammo")
+end
+
+--------------------------------------------------------------------------
+--[[ battlesong_container ]]
+--------------------------------------------------------------------------
+
+params.battlesong_container =
+{
+    widget =
+    {
+        slotpos = {},
+        slotbg  = {},
+        animbank  = "ui_backpack_2x4",
+        animbuild = "ui_backpack_2x4",
+        pos = Vector3(75, 195, 0),
+        side_align_tip = 160,
+    },
+    type = "chest",
+}
+
+local battlesong_container_bg = { image = "battlesong_slot.tex", atlas = "images/hud2.xml" }
+
+for y = 0, 3 do
+    table.insert(params.battlesong_container.widget.slotpos, Vector3(-162     , -75 * y + 114, 0))
+    table.insert(params.battlesong_container.widget.slotpos, Vector3(-162 + 75, -75 * y + 114, 0))
+
+    table.insert(params.battlesong_container.widget.slotbg, battlesong_container_bg)
+    table.insert(params.battlesong_container.widget.slotbg, battlesong_container_bg)
+end
+
+function params.battlesong_container.itemtestfn(container, item, slot)
+    -- Battlesongs.
+    return item:HasTag("battlesong")
 end
 
 --------------------------------------------------------------------------

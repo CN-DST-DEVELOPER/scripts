@@ -182,10 +182,15 @@ local states=
 
         onenter = function(inst)
             inst.tired = true
+            inst:RemoveTag("retaliates")
             inst:customPlayAnimation("tired_pre_"..inst.targetsize)
             inst.SoundEmitter:PlaySound("rifts/lunarthrall/tired_pre")
         end,
 
+        onexit = function(inst)
+            inst:AddTag("retaliates")
+        end,
+        
         events =
         {
             EventHandler("animover", function(inst) if inst.AnimState:AnimDone() then inst.sg:GoToState("tired") end end),
@@ -197,8 +202,13 @@ local states=
         tags = {"idle","tired"},
 
         onenter = function(inst)
+            inst:RemoveTag("retaliates")
             inst.tired = true
             inst:customPlayAnimation("tired_loop_"..inst.targetsize)
+        end,
+
+        onexit = function(inst)
+            inst:AddTag("retaliates")
         end,
 
         events =
@@ -212,6 +222,7 @@ local states=
         tags = {"idle","tried","wake"},
 
         onenter = function(inst)
+            inst:RemoveTag("retaliates")
 			if not inst.SoundEmitter:PlayingSound("wakeLP") then
 				inst.SoundEmitter:PlaySound("rifts/lunarthrall/rustle_wakeup_LP", "wakeLP")
 			end
@@ -230,8 +241,9 @@ local states=
         },
 
         onexit = function(inst)
+            inst:AddTag("retaliates")
             if not inst.sg.statemem.tired_wake then
-                inst.SoundEmitter:KillSound("wakeLP")
+                inst.SoundEmitter:KillSound("wakeLP")                
             end
         end,
     },
@@ -241,11 +253,13 @@ local states=
         tags = {"busy"},
 
         onenter = function(inst)
+            inst:RemoveTag("retaliates")
             inst:customPlayAnimation("tired_pst_"..inst.targetsize)
         end,
 
         onexit = function(inst)
             inst.SoundEmitter:KillSound("wakeLP")
+            inst:AddTag("retaliates")
             inst.wake = nil
             inst.tired = nil
             inst.vinelimit = TUNING.LUNARTHRALL_PLANT_VINE_LIMIT

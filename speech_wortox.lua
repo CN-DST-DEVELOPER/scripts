@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -797,8 +799,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5029,6 +5033,29 @@ return{
         WAGPUNKBITS_KIT = "An automatic mechanical mechanic? Fantastic!",
 
         WAGSTAFF_MUTATIONS_NOTE = "The writings of a visionary, or the ravings of a madman? Who's to say!",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Singing is good for the soul.",
+
+        WATHGRITHR_IMPROVEDHAT = "One horn must do if not born with two.",
+        SPEAR_WATHGRITHR_LIGHTNING = "That is a shockingly good point.",
+
+        BATTLESONG_CONTAINER = "I've been told I can carry a tune.",
+
+        SADDLE_WATHGRITHR = "That'll be the saddle to ride cattle into battle, hyuyu!",
+
+        WATHGRITHR_SHIELD = "Wield this shield on the battlefield.",
+
+        BATTLESONG_SHADOWALIGNED = "Singing is good for the soul.",
+        BATTLESONG_LUNARALIGNED = "Singing is good for the soul.",
+
+		SHARKBOI = "That's one cool customer, hyuyu!",
+        BOOTLEG = "Hyuyu! Who cobbled this together?",
+        OCEANWHIRLPORTAL = "Oooh goodie! A watery vortex for little ol' Wortox!",
+
+        EMBERLIGHT = "Aren't you a bit big for a will-o'-the-wisp?",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

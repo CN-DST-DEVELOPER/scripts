@@ -1307,6 +1307,17 @@ CLOTHING =
 		rarity_modifier = "Woven",
 		release_group = 115,
 	},
+	body_walter_yule =
+	{
+		type = "body",
+		skin_tags = { "YULE", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", "arm_lower", },
+		symbol_hides = { "arm_upper_skin", },
+		torso_tuck = "untucked",
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 150,
+	},
 	body_wanda_bishop =
 	{
 		type = "body",
@@ -2250,6 +2261,18 @@ CLOTHING =
 		rarity_modifier = "Woven",
 		release_group = 80,
 	},
+	body_webber_yule =
+	{
+		type = "body",
+		skin_tags = { "YULE", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "arm_lower", "arm_upper", "foot", "hand", "leg", "torso", "torso_pelvis", },
+		symbol_hides = { "skirt", "arm_upper_skin", },
+		symbol_in_base_hides = { "arm_lower_cuff", },
+		torso_tuck = "untucked",
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 150,
+	},
 	body_wendy_cook =
 	{
 		type = "body",
@@ -2461,6 +2484,17 @@ CLOTHING =
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",
 		release_group = 43,
+	},
+	body_wendy_yule =
+	{
+		type = "body",
+		skin_tags = { "YULE", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "arm_lower", "arm_upper", "leg", "skirt", "torso", "torso_pelvis", },
+		symbol_hides = { "arm_upper_skin", },
+		torso_tuck = "untucked",
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 150,
 	},
 	body_wes_clown =
 	{
@@ -5447,6 +5481,16 @@ CLOTHING =
 		feet_cuff_size = 2,
 		release_group = 106,
 	},
+	feet_walter_yule =
+	{
+		type = "feet",
+		skin_tags = { "YULE", "CLOTHING_FEET", "CLOTHING", },
+		symbol_overrides = { "foot", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		feet_cuff_size = 2,
+		release_group = 150,
+	},
 	feet_wanda_formal =
 	{
 		type = "feet",
@@ -5825,6 +5869,16 @@ CLOTHING =
 		rarity_modifier = "Woven",
 		feet_cuff_size = 1,
 		release_group = 43,
+	},
+	feet_wendy_yule =
+	{
+		type = "feet",
+		skin_tags = { "YULE", "CLOTHING_FEET", "CLOTHING", },
+		symbol_overrides = { "foot", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		feet_cuff_size = 5,
+		release_group = 150,
 	},
 	feet_wes_clown =
 	{
@@ -7011,6 +7065,16 @@ CLOTHING =
 		rarity = "Spiffy",
 		rarity_modifier = "Woven",
 		release_group = 43,
+	},
+	hand_wendy_yule =
+	{
+		type = "hand",
+		skin_tags = { "YULE", "CLOTHING_HAND", "CLOTHING", },
+		symbol_overrides = { "hand", },
+		symbol_in_base_hides = { "arm_lower_cuff", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 150,
 	},
 	hand_wes_gladiator =
 	{
@@ -8738,6 +8802,16 @@ CLOTHING =
 		rarity_modifier = "Woven",
 		has_leg_boot = true,
 		release_group = 115,
+	},
+	legs_walter_yule =
+	{
+		type = "legs",
+		skin_tags = { "YULE", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "leg", "torso_pelvis", },
+		symbol_hides = { "skirt", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 150,
 	},
 	legs_wanda_nature =
 	{

@@ -26,10 +26,6 @@ local function MakeSaddle(name, data)
         inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("idle")
 
-        if data.scrapbook_specialinfo then
-            inst.scrapbook_specialinfo = data.scrapbook_specialinfo
-        end
-
         inst.mounted_foleysound = "dontstarve/beefalo/saddle/"..data.foley
 
         local swap_data = {bank = "saddlebasic", anim = "idle"}
@@ -55,12 +51,20 @@ local function MakeSaddle(name, data)
         inst.components.saddler:SetSwaps(name, "swap_saddle")
         inst.components.saddler:SetDiscardedCallback(ondiscarded)
 
+        if data.absorption ~= nil then
+            inst.components.saddler:SetAbsorption(data.absorption)
+        end
+
         inst:AddComponent("finiteuses")
         inst.components.finiteuses:SetMaxUses(data.uses)
         inst.components.finiteuses:SetUses(data.uses)
         inst.components.finiteuses:SetOnFinished(onusedup)
 
         MakeHauntableLaunch(inst)
+
+        if data.postinit ~= nil then
+            data.postinit(inst)
+        end
 
         return inst
     end
@@ -75,7 +79,6 @@ local data = {
         uses = TUNING.SADDLE_BASIC_USES,
         speedmult = TUNING.SADDLE_BASIC_SPEEDMULT,
         floater = {"med", 0.1, 1.0},
-        scrapbook_specialinfo = "SADDLE",
     },
     war = {
         bonusdamage = TUNING.SADDLE_WAR_BONUS_DAMAGE,
@@ -84,7 +87,6 @@ local data = {
         speedmult = TUNING.SADDLE_WAR_SPEEDMULT,
         floater = {"small", 0.1, 0.7},
         extra_tags = {"combatmount"},
-        scrapbook_specialinfo = "SADDLEWAR",
     },
     race = {
         bonusdamage = TUNING.SADDLE_RACE_BONUS_DAMAGE,
@@ -92,10 +94,27 @@ local data = {
         uses = TUNING.SADDLE_RACE_USES,
         speedmult = TUNING.SADDLE_RACE_SPEEDMULT,
         floater = {"large", 0.05, 0.68},
-        scrapbook_specialinfo = "SADDLERACE",
+        postinit = function(inst)
+            inst.scrapbook_animoffsetbgy = 20
+        end
+    },
+    wathgrithr = {
+        bonusdamage = TUNING.SADDLE_WATHGRITHR_BONUS_DAMAGE,
+        foley = "wigfrid_foley",
+        uses = TUNING.SADDLE_WATHGRITHR_USES,
+        speedmult = TUNING.SADDLE_WATHGRITHR_SPEEDMULT,
+        absorption = TUNING.SADDLE_WATHGRITHR_ABSORPTION,
+        floater = {"med", 0.1, 1.2},
+        extra_tags = {"combatmount"},
+        postinit = function(inst)
+            inst.scrapbook_scale = 0.7
+            inst.scrapbook_animoffsetbgy = 60
+        end
     },
 }
 
-return  MakeSaddle("saddle_basic", data.basic),
-        MakeSaddle("saddle_war", data.war),
-        MakeSaddle("saddle_race", data.race)
+return 
+        MakeSaddle("saddle_basic",      data.basic      ),
+        MakeSaddle("saddle_war",        data.war        ),
+        MakeSaddle("saddle_race",       data.race       ),
+        MakeSaddle("saddle_wathgrithr", data.wathgrithr )

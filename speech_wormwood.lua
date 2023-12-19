@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -796,8 +798,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -3999,7 +4003,7 @@ return{
         WATERPLANT_BABY = "Baby friend",
         WATERPLANT_PLANTER = "Find nice spot for friend",
 
-        SHARK = "Bad chomper!",
+        SHARK = "Bad Chomper!",
 
         MASTUPGRADE_LAMP_ITEM = "Night light",
         MASTUPGRADE_LIGHTNINGROD_ITEM = "Zzzzt catcher",
@@ -5027,6 +5031,29 @@ return{
         WAGPUNKBITS_KIT = "Robot clothes fixer",
 
         WAGSTAFF_MUTATIONS_NOTE = "Book leaf?",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Biiiig mouth sounds",
+
+        WATHGRITHR_IMPROVEDHAT = "Tweeter hat",
+        SPEAR_WATHGRITHR_LIGHTNING = "Pokey Stick make zzzzt",
+
+        BATTLESONG_CONTAINER = "Biiiig mouth sounds go here",
+
+        SADDLE_WATHGRITHR = "Wings but no fly? Aww",
+
+        WATHGRITHR_SHIELD = "Feel safe with hard shell",
+
+        BATTLESONG_SHADOWALIGNED = "Biiiig mouth sounds",
+        BATTLESONG_LUNARALIGNED = "Biiiig mouth sounds",
+
+		SHARKBOI = "Icy Chomper!",
+        BOOTLEG = "Oh. Branch inside?",
+        OCEANWHIRLPORTAL = "Spinny water!",
+
+        EMBERLIGHT = "Hot! Hot!!",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "Friend?",

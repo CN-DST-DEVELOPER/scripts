@@ -87,6 +87,22 @@ local function CountTags(prefab, targettag, activatedskills) -- NOTES(JBK): This
     return tag_count
 end
 
+local function HasTag(prefab, targettag, activatedskills) -- NOTES(JBK): This function is ran on both server and client do not use TheSkillTree inside here.
+    if not activatedskills then
+        return false
+    end
+
+    for skill in pairs(activatedskills) do
+        local data = SKILLTREE_DEFS[prefab][skill]
+
+        if data and table.contains(data.tags, targettag) then
+            return true
+        end
+    end
+
+    return false
+end
+
 local function CountSkills(prefab, activatedskills) -- NOTES(JBK): This function is ran on both server and client do not use TheSkillTree inside here.
     if not activatedskills then
         return 0
@@ -208,6 +224,7 @@ end
 
 local FN = {
     CountSkills = CountSkills,
+    HasTag = HasTag,
     CountTags = CountTags,
     SkillHasTags = SkillHasTags,
 
@@ -224,6 +241,8 @@ local SKILLTREE_CHARACTERS = {
     "woodie",
     "wolfgang",
     "wormwood",
+    "willow",
+    "wathgrithr",
 }
 
 for _, character in ipairs(SKILLTREE_CHARACTERS) do

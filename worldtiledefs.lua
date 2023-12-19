@@ -135,8 +135,8 @@ function PlayFootstep(inst, volume, ispredicted)
             if tile ~= nil and tileinfo ~= nil then
                 local x, y, z = inst.Transform:GetWorldPosition()
                 local oncreep = TheWorld.GroundCreep:OnCreep(x, y, z)
-                local onsnow = TheWorld.state.snowlevel > 0.15
-                local onmud = TheWorld.state.wetness > 15
+				local onsnow = not tileinfo.nogroundoverlays and TheWorld.state.snowlevel > 0.15
+				local onmud = not tileinfo.nogroundoverlays and TheWorld.state.wetness > 15
 
                 local size_inst = inst
                 if inst:HasTag("player") then

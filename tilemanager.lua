@@ -177,6 +177,14 @@ local function AddTile(tile_name, tile_range, tile_data, ground_tile_def, minima
         if ground_tile_def.cannotbedug then
             TERRAFORM_IMMUNE[tile_id] = true
         end
+        if ground_tile_def.nogroundoverlays then
+            -- NOTES(JBK): This is tied to rendering so it must be immutable after initialization so there are no mutexes needed for speed.
+            GROUND_NOGROUNDOVERLAYS[tile_id] = true
+        end
+        if ground_tile_def.istemptile then
+            -- NOTES(JBK): This is used to be able to tell if a current tile is temporary and uses the undertile component, to allow for avoiding placement on them.
+            GROUND_ISTEMPTILE[tile_id] = true
+        end
 
         AddAssets(ground_tile_def, assets)
     end

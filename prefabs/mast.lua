@@ -434,24 +434,23 @@ local function malbatrossfn()
 end
 
 local function setondeploy(inst, prefab)
-    local function ondeploy(inst, pt, deployer, rot)
-        local mast = SpawnPrefab( prefab, inst.linked_skinname, inst.skin_id )
-        if mast ~= nil then
-            mast.Physics:SetCollides(false)
-            mast.Physics:Teleport(pt.x, 0, pt.z)
-            mast.Physics:SetCollides(true)
-            mast.SoundEmitter:PlaySound("turnoftides/common/together/boat/mast/place")
-            mast.AnimState:PlayAnimation("place")
-            mast.AnimState:PushAnimation("closed", false)
-            if rot then
-                mast.Transform:SetRotation(rot)
-                mast.save_rotation = true
-            end
-            inst:Remove()
-        end
-    end
+    inst.components.deployable.ondeploy = function(inst2, pt, deployer, rotation)
+        local mast = SpawnPrefab( prefab, inst2.linked_skinname, inst2.skin_id )
+        if not mast then return end
 
-    inst.components.deployable.ondeploy = ondeploy
+        mast.Physics:SetCollides(false)
+        mast.Physics:Teleport(pt.x, 0, pt.z)
+        mast.Physics:SetCollides(true)
+        mast.SoundEmitter:PlaySound("turnoftides/common/together/boat/mast/place")
+        mast.AnimState:PlayAnimation("place")
+        mast.AnimState:PushAnimation("closed", false)
+        if rotation then
+            mast.Transform:SetRotation(rotation)
+            mast.save_rotation = true
+        end
+
+        inst2:Remove()
+    end
 end
 
 

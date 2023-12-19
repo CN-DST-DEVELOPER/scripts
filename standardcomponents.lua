@@ -1149,6 +1149,7 @@ function MakeHauntablePlayAnim(inst, anim, animloop, pushanim, animduration, end
     end)
 end
 
+--V2C: NOT SAFE TO USE WITH CREATURE STATEGRAPHS
 function MakeHauntableGoToState(inst, state, chance, cooldown, haunt_value)
     if not (inst and inst.sg) or not state then return end
 
@@ -1165,6 +1166,7 @@ function MakeHauntableGoToState(inst, state, chance, cooldown, haunt_value)
     end)
 end
 
+--V2C: NOT SAFE TO USE WITH CREATURE STATEGRAPHS
 function MakeHauntableGoToStateWithChanceFunction(inst, state, chancefn, cooldown, haunt_value)
     if not (inst and inst.sg) or not state then return end
     if not inst.components.hauntable then inst:AddComponent("hauntable") end

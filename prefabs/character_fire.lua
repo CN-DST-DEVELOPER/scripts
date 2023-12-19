@@ -22,6 +22,11 @@ local firelevels =
 		pre = "pre_small",
 		pst = "post_small",
 		pst_fast = "post_small_fast",
+
+		anim_controlled_burn = "loop_small_controlled_burn",
+		pre_controlled_burn = "pre_small_controlled_burn",
+		pst_controlled_burn = "post_small_controlled_burn",
+
 		sound = "dontstarve/common/campfire",
 		radius = 2,
 		intensity = .6,
@@ -34,6 +39,11 @@ local firelevels =
 		pre = "pre_med",
 		pst = "post_med",
 		pst_fast = "post_med_fast",
+
+		anim_controlled_burn = "loop_med_controlled_burn",
+		pre_controlled_burn = "pre_med_controlled_burn",
+		pst_controlled_burn = "post_med_controlled_burn",
+
 		sound = "dontstarve/common/treefire",
 		radius = 3,
 		intensity = .75,
@@ -46,6 +56,11 @@ local firelevels =
 		pre = "pre_large",
 		pst = "post_large",
 		pst_fast = "post_large_fast",
+
+		anim_controlled_burn = "loop_large_controlled_burn",
+		pre_controlled_burn = "pre_large_controlled_burn",
+		pst_controlled_burn = "post_large_controlled_burn",
+
 		sound = "dontstarve/common/forestfire",
 		radius = 4,
 		intensity = .8,

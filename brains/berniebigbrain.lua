@@ -17,7 +17,8 @@ local RUN_FOLLOW_THRESHOLD = TARGET_FOLLOW_DIST + 1 --run until within this dist
 local MIN_COMBAT_TARGET_DIST = 11
 local MAX_COMBAT_TARGET_DIST = 14
 local FIND_LEADER_DIST_SQ = 22 * 22
-local LOSE_LEADER_DIST_SQ = 30 * 30
+local LOSE_LEADER_DIST = 30
+local LOSE_LEADER_DIST_SQ = LOSE_LEADER_DIST * LOSE_LEADER_DIST
 local MIN_ACTIVE_TIME = 4
 local DEACTIVATE_DELAY = 16
 local FOLLOWER_SANITY_THRESHOLD = .5
@@ -36,9 +37,21 @@ local function SetLeader(self, leader)
             else
                 leader.bigbernies[self.inst] = true
             end
+
+            self.inst:onLeaderChanged(leader)
         end
-        self._leader = leader
+        self._leader = leader      
     end
+end
+
+local function countbigbernies(leader)
+    local count = 0
+    if leader.bigbernies then
+        for bernie,i in pairs(leader.bigbernies)do
+            count = count + 1
+        end
+    end
+    return count
 end
 
 local function ShouldDeactivate(self)
@@ -46,34 +59,54 @@ local function ShouldDeactivate(self)
         if self.inst.sg:HasStateTag("busy") then
             return false
         end
-
-        SetLeader(self, nil) --V2C: not redundant, this will clear .bigbernies
     end
 
+    local x, y, z = self.inst.Transform:GetWorldPosition()
     local closestleader = nil
     local iscrazy = false
     local rangesq = FIND_LEADER_DIST_SQ
-    local x, y, z = self.inst.Transform:GetWorldPosition()
-    for i, v in ipairs(AllPlayers) do
-        if v:HasTag("bernieowner") and v.bigbernies == nil and (v.entity:IsVisible() or (v.sg ~= nil and v.sg.currentstate.name == "quicktele")) then
-            if v.components.sanity:IsCrazy() then
-                local distsq = v:GetDistanceSqToPoint(x, y, z)
-                if distsq < (iscrazy and rangesq or FIND_LEADER_DIST_SQ) then
-                    iscrazy = true
-                    rangesq = distsq
-                    closestleader = v
-                end
-            elseif not iscrazy and v.components.sanity:GetPercent() < FOLLOWER_SANITY_THRESHOLD then
-                local distsq = v:GetDistanceSqToPoint(x, y, z)
-                if distsq < rangesq then
-                    rangesq = distsq
-                    closestleader = v
+
+    if self._leader then
+		if not self._leader:IsValid() then
+			SetLeader(self, nil)
+		else
+			local distsq = self._leader:GetDistanceSqToPoint(x, y, z)
+			if distsq < LOSE_LEADER_DIST_SQ and (self.inst:isleadercrazy(self._leader) or self.inst:hotheaded(self._leader) )then
+				iscrazy = true
+			else
+				SetLeader(self, nil)
+			end
+		end
+    end
+    
+    if not self._leader then
+        
+        for i, v in ipairs(AllPlayers) do
+            if v:HasTag("bernieowner") and (v.bigbernies == nil or v.bigbernies[self.inst]) and (v.entity:IsVisible() or (v.sg ~= nil and v.sg.currentstate.name == "quicktele")) then
+                if self.inst.isleadercrazy(self.inst,v) or self.inst:hotheaded(v) then
+                    local distsq = v:GetDistanceSqToPoint(x, y, z)
+                    if distsq < (iscrazy and rangesq or FIND_LEADER_DIST_SQ) then
+                        iscrazy = true
+                        rangesq = distsq
+                        closestleader = v
+                    end
+                elseif not iscrazy and v.components.sanity:GetPercent() < FOLLOWER_SANITY_THRESHOLD then
+                    local distsq = v:GetDistanceSqToPoint(x, y, z)
+                    if distsq < rangesq then
+                        rangesq = distsq
+                        closestleader = v
+                    end
                 end
             end
         end
+       
+        SetLeader(self, closestleader)
     end
 
-    SetLeader(self, closestleader)
+    if self.inst.should_shrink then
+        self.inst.should_shrink = nil
+        return true
+    end
 
     if iscrazy or self.inst.sg:HasStateTag("busy") then
         return false
@@ -84,6 +117,7 @@ local function ShouldDeactivate(self)
             return false
         end
     end
+
     return self.inst:GetTimeAlive() >= MIN_ACTIVE_TIME
 end
 
@@ -92,7 +126,11 @@ local function KeepLeaderFn(inst, leader)
     return leader:IsValid()
         and (leader.entity:IsVisible() or (leader.sg ~= nil and leader.sg.currentstate.name == "quicktele"))
         and leader.components.sanity:GetPercent() < FOLLOWER_SANITY_THRESHOLD
-        and inst:IsNear(leader, LOSE_LEADER_DIST_SQ)
+		--and inst:IsNear(leader, LOSE_LEADER_DIST)
+		--@V2C: -Just don't check distance, it was always bugged at LOSE_LEADER_DIST_SQ
+		--       which would almost never have gone out of range.
+		--      -Fixing to LOSE_LEADER_DIST would introduce new (undesired?) behaviour
+		--       of droppng leader more often.
 end
 
 local function GetLeader(self)

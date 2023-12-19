@@ -353,6 +353,11 @@ function Map:IsDockAtPoint(x, y, z)
     return tile == WORLD_TILES.MONKEY_DOCK
 end
 
+function Map:IsOceanIceAtPoint(x, y, z)
+    local tile = self:GetTileAtPoint(x, y, z)
+    return tile == WORLD_TILES.OCEAN_ICE
+end
+
 
 function Map:CanDeployBoatAtPointInWater(pt, inst, mouseover, data)
     local tile = self:GetTileAtPoint(pt.x, pt.y, pt.z)
@@ -649,6 +654,10 @@ function Map:IsTileLandNoDocks(tile)
     return TileGroupManager:IsLandTile(tile) and tile ~= WORLD_TILES.MONKEY_DOCK
 end
 
+function Map:IsTileOcean(tile)
+    return TileGroupManager:IsOceanTile(tile)
+end
+
 function Map:IsAboveGroundInSquare(x, y, z, r, filterfn)
     r = r or 1
     for dx = -r, r do
@@ -670,14 +679,54 @@ function Map:IsAboveGroundInSquare(x, y, z, r, filterfn)
     return true
 end
 
+
+
+
+
 local GOOD_ARENA_SQUARE_SIZE = 6
+local IS_CLEAR_AREA_RADIUS = TILE_SCALE * GOOD_ARENA_SQUARE_SIZE
+local NO_PLAYER_RADIUS = 35
+----------------------------------------------------------------------------------------
+-- Land
 local GOODARENAPOINTS_CACHE_SIZE_MIN = 50 -- 50 points are good enough for a good placement strategy.
 local GOODARENAPOINTS_CACHE_SIZE_MAX = 100 -- Do not exceed hard limit for memory's sake.
 local GOODARENAPOINTS_ITERATIONS_PER_TICK = 20
 local GOODARENAPOINTS_TIME_PER_TICK = 0.1
 local GOODARENAPOINTS_SIZE_INTERVAL = 50 -- Tiles to go by per interval.
+
+
 local GoodArenaPoints = {}
 local GoodArenaPoints_Count = 0
+function Map:ClearGoodArenaPoints()
+    GoodArenaPoints = {}
+    GoodArenaPoints_Count = 0
+end
+function Map:GetGoodArenaPoints()
+    return GoodArenaPoints, GoodArenaPoints_Count
+end
+
+local BADARENA_CANT_TAGS = {"tree", "boulder", "spiderden", "okayforarena"}
+local BADARENA_ONEOF_TAGS = {"structure", "blocker", "plant", "antlion_sinkhole_blocker"}
+function Map:CheckForBadThingsInArena(pt, badthingsatspawnpoints)
+    local x, y, z = pt.x, pt.y, pt.z
+    if self:IsAboveGroundInSquare(x, y, z, GOOD_ARENA_SQUARE_SIZE, self.IsTileLandNoDocks) and not IsAnyPlayerInRange(x, y, z, NO_PLAYER_RADIUS) then
+        local badthings = TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, nil, BADARENA_CANT_TAGS, BADARENA_ONEOF_TAGS)
+        local badthingscount = #badthings
+        for _, v in ipairs(badthings) do
+            if (v.components.pickable == nil or not v.components.pickable.transplanted) and v:HasTag("plant") then
+                badthingscount = badthingscount - 1
+            end
+        end
+        if badthingsatspawnpoints then
+            badthingsatspawnpoints[pt] = badthingscount
+        end
+        if badthingscount == 0 then
+            return false -- No bad things are here.
+        end
+    end
+    return true -- Bad things are here.
+end
+
 function Map:StartFindingGoodArenaPoints()
     self:StopFindingGoodArenaPoints()
 
@@ -734,38 +783,7 @@ function Map:StopFindingGoodArenaPoints()
         TheWorld._GoodArenaPoints_Task = nil
     end
 end
-function Map:ClearGoodArenaPoints()
-    GoodArenaPoints = {}
-    GoodArenaPoints_Count = 0
-end
-function Map:GetGoodArenaPoints()
-    return GoodArenaPoints, GoodArenaPoints_Count
-end
 
-
-local BADARENA_CANT_TAGS = {"tree", "boulder", "spiderden", "okayforarena"}
-local BADARENA_ONEOF_TAGS = {"structure", "blocker", "plant", "antlion_sinkhole_blocker"}
-local IS_CLEAR_AREA_RADIUS = TILE_SCALE * GOOD_ARENA_SQUARE_SIZE
-local NO_PLAYER_RADIUS = 35
-function Map:CheckForBadThingsInArena(pt, badthingsatspawnpoints)
-    local x, y, z = pt.x, pt.y, pt.z
-    if self:IsAboveGroundInSquare(x, y, z, GOOD_ARENA_SQUARE_SIZE, self.IsTileLandNoDocks) and not IsAnyPlayerInRange(x, y, z, NO_PLAYER_RADIUS) then
-        local badthings = TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, nil, BADARENA_CANT_TAGS, BADARENA_ONEOF_TAGS)
-        local badthingscount = #badthings
-        for _, v in ipairs(badthings) do
-            if (v.components.pickable == nil or not v.components.pickable.transplanted) and v:HasTag("plant") then
-                badthingscount = badthingscount - 1
-            end
-        end
-        if badthingsatspawnpoints then
-            badthingsatspawnpoints[pt] = badthingscount
-        end
-        if badthingscount == 0 then
-            return false -- No bad things are here.
-        end
-    end
-    return true -- Bad things are here.
-end
 function Map:FindBestSpawningPointForArena(CustomAllowTest, perfect_only, spawnpoints)
     if not spawnpoints then
         -- If spawnpoints is nil use the cached good points as reference.
@@ -835,4 +853,176 @@ function Map:FindBestSpawningPointForArena(CustomAllowTest, perfect_only, spawnp
     end
 
     return x, y, z
+end
+-- Land
+----------------------------------------------------------------------------------------
+-- Ocean
+local GOODOCEANARENAPOINTS_CACHE_SIZE_MIN = 50 -- 50 points are good enough for a good placement strategy.
+local GOODOCEANARENAPOINTS_CACHE_SIZE_MAX = 100 -- Do not exceed hard limit for memory's sake.
+local GOODOCEANARENAPOINTS_ITERATIONS_PER_TICK = 10
+local GOODOCEANARENAPOINTS_TIME_PER_TICK = 0.2
+local GOODOCEANARENAPOINTS_SIZE_INTERVAL = 50 -- Tiles to go by per interval.
+
+
+local GoodOceanArenaPoints = {}
+local GoodOceanArenaPoints_Count = 0
+function Map:ClearGoodOceanArenaPoints()
+    GoodOceanArenaPoints = {}
+    GoodOceanArenaPoints_Count = 0
+end
+function Map:GetGoodOceanArenaPoints()
+    return GoodOceanArenaPoints, GoodOceanArenaPoints_Count
+end
+
+local BADOCEANARENA_CANT_TAGS = {"tree", "boulder", "spiderden", "okayforarena", "FX", "DECOR", "NOCLICK"}
+local BADOCEANARENA_ONEOF_TAGS = {"structure", "blocker", "antlion_sinkhole_blocker", "ignorewalkableplatforms"}
+function Map:CheckForBadThingsInOceanArena(pt, badthingsatspawnpoints)
+    local x, y, z = pt.x, pt.y, pt.z
+    if self:IsAboveGroundInSquare(x, y, z, GOOD_ARENA_SQUARE_SIZE, self.IsTileOcean) and not IsAnyPlayerInRange(x, y, z, NO_PLAYER_RADIUS) then
+        local badthings = TheSim:FindEntities(x, y, z, IS_CLEAR_AREA_RADIUS, nil, BADOCEANARENA_CANT_TAGS, BADOCEANARENA_ONEOF_TAGS)
+        local badthingscount = #badthings
+        if badthingsatspawnpoints then
+            badthingsatspawnpoints[pt] = badthingscount
+        end
+        if badthingscount == 0 then
+            return false -- No bad things are here.
+        end
+    end
+    return true -- Bad things are here.
+end
+
+function Map:StartFindingGoodOceanArenaPoints()
+    if TheWorld.components.sharkboimanager and TheWorld.components.sharkboimanager.TEMP_DEBUG_RATE then
+        GOODOCEANARENAPOINTS_ITERATIONS_PER_TICK = 3000
+        GOODOCEANARENAPOINTS_TIME_PER_TICK = 0.0
+    end
+    self:StopFindingGoodOceanArenaPoints()
+
+    local w, h = self:GetSize()
+    w = w * TILE_SCALE / 2
+    h = h * TILE_SCALE / 2
+    local check_pt = Vector3(-w, 0, -h)
+    local check_iter_scale = GOODOCEANARENAPOINTS_SIZE_INTERVAL * TILE_SCALE
+    local check_pt_offset = Vector3(0, 0, 0)
+
+    local function DoIteration()
+        --print("DoIteration", GoodOceanArenaPoints_Count, check_pt_offset.x, check_pt_offset.z, check_pt.x, check_pt.z)
+        for i = 1, GOODOCEANARENAPOINTS_ITERATIONS_PER_TICK do
+            -- Check.
+            if not self:CheckForBadThingsInOceanArena(check_pt) then
+                GoodOceanArenaPoints_Count = GoodOceanArenaPoints_Count + 1
+                GoodOceanArenaPoints[GoodOceanArenaPoints_Count] = Vector3(check_pt:Get()) -- Copy.
+                --SpawnPrefab("sentryward").Transform:SetPosition(check_pt:Get())
+                if GoodOceanArenaPoints_Count >= GOODOCEANARENAPOINTS_CACHE_SIZE_MAX then
+                    self:StopFindingGoodOceanArenaPoints()
+                end
+            end
+
+            -- Iterate.
+            check_pt.x = check_pt.x + check_iter_scale
+            if check_pt.x > w then
+                check_pt.x = -w + check_pt_offset.x
+                check_pt.z = check_pt.z + check_iter_scale
+                if check_pt.z > h then
+                    check_pt.z = -h + check_pt_offset.z
+                    -- Restart whole grid scan happened here get a new offset.
+                    check_pt_offset.x = math.random() * check_iter_scale
+                    check_pt_offset.z = math.random() * check_iter_scale
+                    if GoodOceanArenaPoints_Count >= GOODOCEANARENAPOINTS_CACHE_SIZE_MIN then
+                        -- We have at least the cache size from one scan stop finding more.
+                        self:StopFindingGoodOceanArenaPoints()
+                    end
+                end
+            end
+        end
+    end
+    TheWorld._GoodOceanArenaPoints_Task = TheWorld:DoPeriodicTask(GOODOCEANARENAPOINTS_TIME_PER_TICK, DoIteration)
+end
+function Map:StopFindingGoodOceanArenaPoints()
+    if TheWorld._GoodOceanArenaPoints_Task ~= nil then
+        TheWorld._GoodOceanArenaPoints_Task:Cancel()
+        TheWorld._GoodOceanArenaPoints_Task = nil
+    end
+end
+
+function Map:FindBestSpawningPointForOceanArena(CustomAllowTest, perfect_only, spawnpoints)
+    if not spawnpoints then
+        -- If spawnpoints is nil use the cached good points as reference.
+        spawnpoints = GoodOceanArenaPoints
+        -- Shuffle the points around randomly.
+        shuffleArray(GoodOceanArenaPoints)
+    end
+
+
+    local badthingsatspawnpoints = {}
+    local x, y, z
+    local spawnpointscount = #spawnpoints
+    if spawnpointscount == 0 then
+        return nil, nil, nil -- No point.
+    end
+
+    -- Perfect test for an ideal arena.
+    for i, v in ipairs(spawnpoints) do
+        x, y, z = v.x, v.y, v.z
+        if CustomAllowTest(self, x, y, z) and not self:CheckForBadThingsInOceanArena(v, badthingsatspawnpoints) then
+            return x, y, z -- No bad things nearby and roomy for tiles very good point.
+        end
+    end
+
+    if perfect_only then
+        if spawnpoints == GoodOceanArenaPoints then
+            -- There are no good arena points for what called this so let us try to make more good ones for the cache.
+            self:ClearGoodOceanArenaPoints()
+            self:StartFindingGoodOceanArenaPoints()
+        end
+        return nil, nil, nil
+    end
+
+    -- Try a best case if structures are okay to get.
+    local best_count = 999999
+    for v, badthingscount in pairs(badthingsatspawnpoints) do
+        if badthingscount < best_count then
+            best_count = badthingscount
+            return v.x, v.y, v.z
+        end
+    end
+
+
+    -- Try to find something ground available.
+    local pt = spawnpoints[math.random(spawnpointscount)]
+    x, y, z = pt.x, pt.y, pt.z
+
+    local function IsValidSpawningPoint_Bridge(pt)
+        return self:IsAboveGroundInSquare(pt.x, pt.y, pt.z, GOOD_ARENA_SQUARE_SIZE, self.IsTileOcean)
+    end
+    
+    for r = 5, 15, 5 do
+        local offset = FindWalkableOffset(pt, math.random() * TWOPI, r, 8, false, false, IsValidSpawningPoint_Bridge, true)
+        if offset ~= nil then
+            x = x + offset.x
+            z = z + offset.z
+            return x, y, z -- Do not care for amount of structures but it is roomy for tiles.
+        end
+    end
+
+    if not x then
+        if spawnpoints == GoodOceanArenaPoints then
+            -- There are no good arena points for what called this so let us try to make more good ones for the cache.
+            self:ClearGoodOceanArenaPoints()
+            self:StartFindingGoodOceanArenaPoints()
+        end
+    end
+
+    return x, y, z
+end
+-- Ocean
+----------------------------------------------------------------------------------------
+
+function Map:IsPointInSharkBoiArena(x, y, z)
+    local world = TheWorld
+    if world.net == nil or world.net.components.sharkboimanagerhelper == nil then
+        return false
+    end
+
+    return world.net.components.sharkboimanagerhelper:IsPointInArena(x, y, z)
 end

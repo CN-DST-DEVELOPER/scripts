@@ -62,6 +62,12 @@ local function OnAttack(inst, attacker, target)
     target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst })
 end
 
+local function projectilelaunched(inst, attacker, target, proj)
+    if attacker:HasTag("controlled_burner") then
+        proj:AddTag("controlled_burner")
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -108,6 +114,7 @@ local function fn()
     inst.components.weapon:SetRange(8, 10)
     inst.components.weapon:SetOnAttack(OnAttack)
     inst.components.weapon:SetProjectile("fire_projectile")
+    inst.components.weapon:SetOnProjectileLaunched(projectilelaunched)
 
     inst:AddComponent("inspectable")
 

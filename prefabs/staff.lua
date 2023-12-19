@@ -47,6 +47,12 @@ local prefabs =
 
 ---------RED STAFF---------
 
+local function projectilelaunched_red(inst, attacker, target, proj)
+    if attacker:HasTag("controlled_burner") then
+        proj:AddTag("controlled_burner")
+    end
+end
+
 local function onattack_red(inst, attacker, target, skipsanity)
     if not skipsanity and attacker ~= nil then
         if attacker.components.staffsanity then
@@ -69,7 +75,7 @@ local function onattack_red(inst, attacker, target, skipsanity)
                 target.components.fueled.secondaryfueltype ~= FUELTYPE.BURNABLE) then
             --does not take burnable fuel, so just burn it
             if target.components.burnable.canlight or target.components.combat ~= nil then
-                target.components.burnable:Ignite(true)
+                target.components.burnable:Ignite(true, attacker)
             end
         elseif target.components.fueled.accepting then
             --takes burnable fuel, so fuel it
@@ -819,8 +825,9 @@ local function red()
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(0)
     inst.components.weapon:SetRange(8, 10)
-    inst.components.weapon:SetOnAttack(onattack_red)
+    inst.components.weapon:SetOnAttack(onattack_red)    
     inst.components.weapon:SetProjectile("fire_projectile")
+    inst.components.weapon:SetOnProjectileLaunched(projectilelaunched_red)
 
     inst.components.finiteuses:SetMaxUses(TUNING.FIRESTAFF_USES)
     inst.components.finiteuses:SetUses(TUNING.FIRESTAFF_USES)

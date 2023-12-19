@@ -2,7 +2,7 @@ local song_tunings = require("prefabs/battlesongdefs").song_defs
 
 local function oninspirationdelta(inst)
     if inst._owner and inst._owner.components.singinginspiration and
-    inst._owner.components.singinginspiration:CanAddSong(inst.songdata) then
+    inst._owner.components.singinginspiration:CanAddSong(inst.songdata, inst) then
         inst.components.inventoryitem:ChangeImageName(inst.prefab)
     else
         inst.components.inventoryitem:ChangeImageName(inst.prefab.."_unavaliable")
@@ -67,13 +67,40 @@ end
 
 local function onunequipped(inst, container)
     inst:RemoveEventCallback("unequipped", inst._onunequipped, container)
-    updateinvimage(inst, container)
+    inst:UpdateInvImage(container)
 end
 
 local function onequipped(inst, container, owner)
     inst:RemoveEventCallback("equipped", inst._onequipped, container)
-    updateinvimage(inst, container)
+    inst:UpdateInvImage(container)
 end
+
+local function IsBattleSong(item)
+    return item:HasTag("battlesong")
+end
+
+local function OnPutInInventory(inst, owner)
+    inst:UpdateInvImage(owner)
+
+    if owner ~= nil and
+        owner:HasTag("battlesinger") and
+        owner.components.skilltreeupdater ~= nil and
+        not owner.components.skilltreeupdater:IsActivated("wathgrithr_songs_container")
+    then
+        local battlesongs = owner.components.inventory:FindItems(IsBattleSong)
+
+        local battlesongs_prefabs = {}
+
+        for i, item in ipairs(battlesongs) do
+            battlesongs_prefabs[item.prefab] = true
+        end
+
+        if GetTableSize(battlesongs_prefabs) >= TUNING.SKILLS.WATHGRITHR.BATTLESONGS_CONTAINER_NUM_BATTLESONGS_TO_UNLOCK then
+            SendRPCToClient(CLIENT_RPC.UpdateAccomplishment, owner.userid, "wathgrithr_container_unlocked")
+        end
+    end
+end
+
 
 local function song_fn(songdata, prefabname)
     local inst = CreateEntity()
@@ -100,15 +127,24 @@ local function song_fn(songdata, prefabname)
         return inst
     end
 
+    inst.UpdateInvImage = updateinvimage
+
 	-- inst:AddComponent("finiteuses")
  --    inst.components.finiteuses:SetOnFinished(inst.Remove)
  --    inst.components.finiteuses:SetMaxUses(songdata.USES)
  --    inst.components.finiteuses:SetUses(songdata.USES)
 
+    if inst.songdata.INSTANT then
+        inst:AddComponent("rechargeable")
+        inst.components.rechargeable:SetOnDischargedFn(oninspirationdelta)
+        inst.components.rechargeable:SetOnChargedFn(oninspirationdelta)
+    end
+
     inst:AddComponent("singable")
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
     MakeHauntableLaunch(inst)
 
@@ -121,8 +157,7 @@ local function song_fn(songdata, prefabname)
     inst._onequipped = function(container, data) onequipped(inst, container, data.owner) end
     inst._onunequipped = function(container, data) onunequipped(inst, container) end
 
-    inst:ListenForEvent("onputininventory", updateinvimage)
-    inst:ListenForEvent("ondropped", updateinvimage)
+    inst:ListenForEvent("ondropped", inst.UpdateInvImage)
 
     return inst
 end

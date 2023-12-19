@@ -110,7 +110,7 @@ local function fn()
     --Sneak these into pristine state for optimization
     inst:AddTag("_named")
 
-    inst.scrapbook_workable = ACTIONS.HAMMER.id
+    inst.scrapbook_workable = ACTIONS.HAMMER
 
     inst.entity:SetPristine()
 

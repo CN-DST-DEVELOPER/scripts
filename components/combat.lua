@@ -556,8 +556,14 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
 		local damagetypemult = 1
 		if self.inst.components.rideable ~= nil then
 			local saddle = self.inst.components.rideable.saddle
-			if saddle ~= nil and saddle.components.damagetyperesist ~= nil then
-				damagetypemult = saddle.components.damagetyperesist:GetResist(attacker, weapon)
+			if saddle ~= nil then
+                if saddle.components.damagetyperesist ~= nil then
+				    damagetypemult = saddle.components.damagetyperesist:GetResist(attacker, weapon)
+                end
+
+                if saddle.components.saddler ~= nil then
+                    damage, spdamage = saddle.components.saddler:ApplyDamage(damage, attacker, weapon, spdamage)
+                end
 			end
 		end
 		if self.inst.components.damagetyperesist ~= nil then
@@ -627,7 +633,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
         if attacker ~= nil then
 			attacker:PushEvent("onhitother", { target = self.inst, damage = damage, damageresolved = damageresolved, stimuli = stimuli, spdamage = spdamage, weapon = weapon, redirected = damageredirecttarget })
             if attacker.components.combat ~= nil and attacker.components.combat.onhitotherfn ~= nil then
-				attacker.components.combat.onhitotherfn(attacker, self.inst, damage, stimuli, weapon, damageresolved, spdamage)
+				attacker.components.combat.onhitotherfn(attacker, self.inst, damage, stimuli, weapon, damageresolved, spdamage, damageredirecttarget)
             end
         end
     else
@@ -1115,14 +1121,26 @@ function Combat:DoAttack(targ, weapon, projectile, stimuli, instancemult, instra
 	local reflected_spdmg
     local reflect_list = {}
     if targ.components.combat ~= nil then
-        local mult =
-            (   stimuli == "electric" or
-                (weapon ~= nil and weapon.components.weapon ~= nil and weapon.components.weapon.stimuli == "electric")
+        local mult = 1
+
+        local _weapon_cmp = weapon ~= nil and weapon.components.weapon or nil
+
+        if  (
+                stimuli == "electric" or
+                (_weapon_cmp ~= nil and _weapon_cmp.stimuli == "electric")
             )
-            and not (targ:HasTag("electricdamageimmune") or
-                    (targ.components.inventory ~= nil and targ.components.inventory:IsInsulated()))
-            and TUNING.ELECTRIC_DAMAGE_MULT + TUNING.ELECTRIC_WET_DAMAGE_MULT * (targ.components.moisture ~= nil and targ.components.moisture:GetMoisturePercent() or (targ:GetIsWet() and 1 or 0))
-            or 1
+            and not
+            (
+                targ:HasTag("electricdamageimmune") or
+                (targ.components.inventory ~= nil and targ.components.inventory:IsInsulated())
+            )
+        then
+            local electric_damage_mult = _weapon_cmp ~= nil and _weapon_cmp.electric_damage_mult or TUNING.ELECTRIC_DAMAGE_MULT
+            local electric_wet_damage_mult = _weapon_cmp ~= nil and _weapon_cmp.electric_wet_damage_mult or TUNING.ELECTRIC_WET_DAMAGE_MULT
+
+            mult = electric_damage_mult + electric_wet_damage_mult * (targ.components.moisture ~= nil and targ.components.moisture:GetMoisturePercent() or (targ:GetIsWet() and 1 or 0))
+        end
+
 		local dmg, spdmg = self:CalcDamage(targ, weapon, mult)
 		dmg = dmg * (instancemult or 1)
         --Calculate reflect first, before GetAttacked destroys armor etc.

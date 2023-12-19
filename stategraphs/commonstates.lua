@@ -357,7 +357,7 @@ CommonStates.AddRunStates = function(states, timelines, anims, softstop, delayst
         tags = { "moving", "running", "canrotate" },
 
         onenter = function(inst)
-			if fns ~= nil and fns.startonenter ~= nil then
+			if fns ~= nil and fns.startonenter ~= nil then -- this has to run before RunForward so that startonenter has a chance to update the run speed
 				fns.startonenter(inst)
 			end
 			if delaystart then
@@ -366,9 +366,6 @@ CommonStates.AddRunStates = function(states, timelines, anims, softstop, delayst
 	            inst.components.locomotor:RunForward()
 			end
             inst.AnimState:PlayAnimation(get_loco_anim(inst, anims ~= nil and anims.startrun or nil, "run_pre"))
-			if fns ~= nil and fns.startonenter ~= nil then
-				fns.startonenter(inst)
-			end
         end,
 
         timeline = timelines ~= nil and timelines.starttimeline or nil,
@@ -392,8 +389,11 @@ CommonStates.AddRunStates = function(states, timelines, anims, softstop, delayst
 				fns.runonenter(inst)
 			end
             inst.components.locomotor:RunForward()
-            local anim_to_play = get_loco_anim(inst, anims ~= nil and anims.run or nil, "run_loop")
-            inst.AnimState:PlayAnimation(anim_to_play, true)
+			--V2C: -normally we wouldn't restart an already looping anim
+			--     -however, changing this might affect softstop behaviour
+			--     -i.e. PushAnimation over a looping anim (first play vs subsequent loops)
+			--     -why do we even tell it to loop here then?  for smoother playback on clients
+			inst.AnimState:PlayAnimation(get_loco_anim(inst, anims ~= nil and anims.run or nil, "run_loop"), true)
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
 
@@ -420,9 +420,6 @@ CommonStates.AddRunStates = function(states, timelines, anims, softstop, delayst
             else
                 inst.AnimState:PlayAnimation(get_loco_anim(inst, anims ~= nil and anims.stoprun or nil, "run_pst"))
             end
-			if fns ~= nil and fns.endonenter ~= nil then
-				fns.endonenter(inst)
-			end
         end,
 
         timeline = timelines ~= nil and timelines.endtimeline or nil,
@@ -492,6 +489,10 @@ CommonStates.AddWalkStates = function(states, timelines, anims, softstop, delays
 				fns.walkonenter(inst)
 			end
             inst.components.locomotor:WalkForward()
+			--V2C: -normally we wouldn't restart an already looping anim
+			--     -however, changing this might affect softstop behaviour
+			--     -i.e. PushAnimation over a looping anim (first play vs subsequent loops)
+			--     -why do we even tell it to loop here then?  for smoother playback on clients
             inst.AnimState:PlayAnimation(get_loco_anim(inst, anims ~= nil and anims.walk or nil, "walk_loop"), true)
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,

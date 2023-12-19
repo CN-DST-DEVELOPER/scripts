@@ -88,12 +88,14 @@ local function OnGoingHome(inst)
     SpawnPrefab("frogsplash").Transform:SetPosition(inst.Transform:GetWorldPosition())
 end
 
-local function OnHitOther(inst, other, damage)
+local function OnHitOther(inst, other, damage, stimuli, weapon, damageresolved, spdamage, damageredirecttarget)
     if inst.islunar then
-        local n = GetRandomMinMax(TUNING.LUNARFROG_ITEMS_TO_STEAL_MIN, TUNING.LUNARFROG_ITEMS_TO_STEAL_MAX)
+        if not damageredirecttarget then
+            local n = GetRandomMinMax(TUNING.LUNARFROG_ITEMS_TO_STEAL_MIN, TUNING.LUNARFROG_ITEMS_TO_STEAL_MAX)
 
-        for i=1, n do
-            inst.components.thief:StealItem(other)
+            for i=1, n do
+                inst.components.thief:StealItem(other)
+            end
         end
 
         local grogginess = other.components.grogginess
@@ -105,7 +107,7 @@ local function OnHitOther(inst, other, damage)
             other.components.grogginess:AddGrogginess(TUNING.LUNARFROG_ONATTACK_GROGGINESS)
         end
 
-    else
+    elseif not damageredirecttarget then
         inst.components.thief:StealItem(other)
     end
 end

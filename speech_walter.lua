@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "Cool! A thingamajigy!",
 
         WAGSTAFF_MUTATIONS_NOTE = "These notes contain important clues to a mystery, Woby.",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "This seems a bit more complicated than the songs I learned in the Pioneers.",
+
+        WATHGRITHR_IMPROVEDHAT = "Woah, that's a lot of wings for one hat!",
+        SPEAR_WATHGRITHR_LIGHTNING = "How shocking! Get it?",
+
+        BATTLESONG_CONTAINER = "It's like a special backpack for songs!",
+
+        SADDLE_WATHGRITHR = "Wanna try it on, Woby? Don't worry, I was just kidding!",
+
+        WATHGRITHR_SHIELD = "I feel safer already!",
+
+        BATTLESONG_SHADOWALIGNED = "This seems a bit more complicated than the songs I learned in the Pioneers.",
+        BATTLESONG_LUNARALIGNED = "This seems a bit more complicated than the songs I learned in the Pioneers.",
+
+		SHARKBOI = "Better watch out for frostbite!",
+        BOOTLEG = "Sorry Woby, that bone isn't for you.",
+        OCEANWHIRLPORTAL = "I don't think my water safety badge prepared me for that.",
+
+        EMBERLIGHT = "There's no wood in this campfire. Oh well.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

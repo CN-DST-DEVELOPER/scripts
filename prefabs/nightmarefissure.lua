@@ -346,7 +346,7 @@ local function OnFissureMinedFinished(inst, worker)
     for i = 1, 3 do
         inst.components.lootdropper:SpawnLootPrefab("dreadstone", pt)
     end
-    inst.SoundEmitter:PlaySound("dontstarve/impacts/lava_arena/fossilized_break") -- FIXME(JBK): Better sound.
+    inst.SoundEmitter:PlaySound("dontstarve/impacts/lava_arena/fossilized_break")
     local shadowthrallmanager = TheWorld.components.shadowthrallmanager
     if shadowthrallmanager then
         shadowthrallmanager:OnFissureMinedFinished(inst)

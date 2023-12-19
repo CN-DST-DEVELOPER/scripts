@@ -93,19 +93,19 @@ end
 
 -- Will only run if the button is manually told to start updating: we don't want a bunch of unnecessarily updating widgets
 function Button:OnUpdate(dt)
-	if self.down then
-		if self.whiledown then
-			self.whiledown()
-		end
+	if self.down and self.whiledown then
+		self.whiledown()
 	end
 end
 
 function Button:OnGainFocus()
 	Button._base.OnGainFocus(self)
 
-    if self:IsEnabled() and not self.selected and TheFrontEnd:GetFadeLevel() <= 0 then
-    	if self.text then self.text:SetColour(self.textfocuscolour) end
-		TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_mouseover", nil, ClickMouseoverSoundReduction())
+	if self:IsEnabled() and not self:IsSelected() then
+		self.text:SetColour(self.textfocuscolour)
+		if TheFrontEnd:GetFadeLevel() <= 0 then
+			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_mouseover", nil, ClickMouseoverSoundReduction())
+		end
 	end
 
     if self.ongainfocus then
@@ -123,12 +123,15 @@ end
 function Button:OnLoseFocus()
 	Button._base.OnLoseFocus(self)
 
-	if self:IsEnabled() and not self.selected then
+	if self.down then
+		self.down = false
+		self:ResetPreClickPosition()
+		self:StopUpdating()
+	end
+
+	if not (self:IsDisabledState() or self:IsSelected()) then
 		self.text:SetColour(self.textcolour)
 	end
-	self:ResetPreClickPosition()
-
-	self.down = false
 
     if self.onlosefocus then
         self.onlosefocus(self:IsEnabled())
@@ -136,15 +139,26 @@ function Button:OnLoseFocus()
 end
 
 function Button:OnEnable()
-	if not self.focus and not self.selected then --Note(Peter):This causes the disabled font to remain on an enabled text button, if it has focus (EG: When you click on a button and the button is temporarily disabled). Why do we check the focus here?
-		self.text:SetColour(self.textcolour)
-	    self.text:SetFont(self.font)
+	if not self:IsSelected() then
+		self.text:SetFont(self.font)
+		if self:IsFocusedState() then
+			self:OnGainFocus()
+		else
+			self:OnLoseFocus()
+		end
 	end
 end
 
 function Button:OnDisable()
-    self.text:SetColour(self.textdisabledcolour)
-    self.text:SetFont(self.fontdisabled)
+	if self.down then
+		self.down = false
+		self:ResetPreClickPosition()
+		self:StopUpdating()
+	end
+	if not self:IsSelected() then
+		self.text:SetColour(self.textdisabledcolour)
+		self.text:SetFont(self.fontdisabled)
+	end
 end
 
 -- Calling "Select" on a button makes it behave as if it were disabled (i.e. won't respond to being clicked), but will still be able
@@ -166,7 +180,15 @@ end
 
 -- This is roughly equivalent to OnDisable
 function Button:OnSelect()
+	if self.down then
+		self.down = false
+		self:ResetPreClickPosition()
+		self:StopUpdating()
+	end
 	self.text:SetColour(self.textselectedcolour)
+	if not self.enabled then --in case we were disabled
+		self.text:SetFont(self.font)
+	end
     if self.onselect then
         self.onselect()
     end
@@ -174,25 +196,39 @@ end
 
 -- This is roughly equivalent to OnEnable
 function Button:OnUnselect()
-	if self:IsEnabled() then
-		if self.focus then
-			if self.text then
-				self.text:SetColour(self.textfocuscolour[1],self.textfocuscolour[2],self.textfocuscolour[3],self.textfocuscolour[4])
-			end
-		else
-			self:OnLoseFocus()
-		end
-	else
+	if self:IsDisabledState() then
 		self:OnDisable()
+	else
+		self:OnEnable()
 	end
     if self.onunselect then
         self.onunselect()
     end
 end
 
+--------------------------------------------------------------------------
+--V2C: IsEnabled() checks hierarchy, but OnEnable()/OnDisable() don't notify children.
+--     These helpers will give more consistent behaviour regarding the state of the button.
+--NOTE: While the selected, enabled, focus flags aren't mutually exclusive, we can only
+--      be in one of these states at a time visually, ordered by priority below.
+
 function Button:IsSelected()
 	return self.selected
 end
+
+function Button:IsDisabledState()
+	return not (self.enabled or self:IsSelected())
+end
+
+function Button:IsFocusedState()
+	return self.focus and self:IsEnabled() and not self:IsSelected()
+end
+
+function Button:IsNormalState()
+	return self.enabled and not (self.focus and self:IsEnabled()) and not self:IsSelected()
+end
+
+--------------------------------------------------------------------------
 
 function Button:SetOnClick( fn )
     self.onclick = fn
@@ -220,7 +256,7 @@ end
 
 function Button:SetFont(font)
 	self.font = font
-	if self:IsEnabled() then
+	if not self:IsDisabledState() then
 		self.text:SetFont(font)
 		if self.text_shadow then
 			self.text_shadow:SetFont(font)
@@ -230,7 +266,7 @@ end
 
 function Button:SetDisabledFont(font)
 	self.fontdisabled = font
-	if not self:IsEnabled() then
+	if self:IsDisabledState() then
 		self.text:SetFont(font)
 		if self.text_shadow then
 			self.text_shadow:SetFont(font)
@@ -245,7 +281,7 @@ function Button:SetTextColour(r,g,b,a)
 		self.textcolour = r
 	end
 
-	if self:IsEnabled() and not self.focus and not self.selected then
+	if self:IsNormalState() then
 		self.text:SetColour(self.textcolour)
 	end
 end
@@ -257,7 +293,7 @@ function Button:SetTextFocusColour(r,g,b,a)
 		self.textfocuscolour = r
 	end
 
-	if self.focus and not self.selected then
+	if self:IsFocusedState() then
 		self.text:SetColour(self.textfocuscolour)
 	end
 end
@@ -269,7 +305,7 @@ function Button:SetTextDisabledColour(r,g,b,a)
 		self.textdisabledcolour = r
 	end
 
-	if not self:IsEnabled() then
+	if self:IsDisabledState() then
 		self.text:SetColour(self.textdisabledcolour)
 	end
 end
@@ -281,7 +317,7 @@ function Button:SetTextSelectedColour(r,g,b,a)
 		self.textselectedcolour = r
 	end
 
-	if self.selected then
+	if self:IsSelected() then
 		self.text:SetColour(self.textselectedcolour)
 	end
 end
@@ -301,10 +337,14 @@ function Button:SetText(msg, dropShadow, dropShadowOffset)
     	self.name = msg or "button"
         self.text:SetString(msg)
         self.text:Show()
-        if self:IsEnabled() then
-			self.text:SetColour(self.selected and self.textselectedcolour or (self.focus and self.textfocuscolour or self.textcolour))
-		else
+		if self:IsDisabledState() then
 			self.text:SetColour(self.textdisabledcolour)
+		else
+			self.text:SetColour(
+				(self:IsSelected() and self.textselectedcolour) or
+				(self:IsFocusedState() and self.textfocuscolour) or
+				self.textcolour
+			)
 		end
 
 		if dropShadow then

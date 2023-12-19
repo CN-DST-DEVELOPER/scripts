@@ -176,6 +176,8 @@ PREFAB_SKINS = {
 	bernie_big =
 	{
 		"bernie_cat_big",
+		"bernie_cat_lunar_build",
+		"bernie_cat_shadow_build",
 	},
 	bernie_inactive =
 	{
@@ -302,6 +304,7 @@ PREFAB_SKINS = {
 	},
 	coldfirepit =
 	{
+		"coldfirepit_an",
 		"coldfirepit_flower",
 		"coldfirepit_gothic",
 		"coldfirepit_teeth",
@@ -1114,6 +1117,20 @@ PREFAB_SKINS = {
 		"spear_wathgrithr_valkyrie",
 		"spear_wathgrithr_wrestle",
 	},
+	spear_wathgrithr_lightning =
+	{
+		"spear_wathgrithr_lightning_lunar",
+		"spear_wathgrithr_lightning_northern",
+		"spear_wathgrithr_lightning_valkyrie",
+		"spear_wathgrithr_lightning_wrestle",
+	},
+	spear_wathgrithr_lightning_charged =
+	{
+		"spear_wathgrithr_lightning_charged_lunar",
+		"spear_wathgrithr_lightning_charged_northern",
+		"spear_wathgrithr_lightning_charged_valkyrie",
+		"spear_wathgrithr_lightning_charged_wrestle",
+	},
 	stagehand =
 	{
 		"stagehand_carpet",
@@ -1310,6 +1327,7 @@ PREFAB_SKINS = {
 		"walter_survivor",
 		"walter_ventriloquist",
 		"walter_victorian",
+		"walter_yule",
 	},
 	walterhat =
 	{
@@ -1324,6 +1342,7 @@ PREFAB_SKINS = {
 		"walterhat_survivor",
 		"walterhat_ventriloquist",
 		"walterhat_victorian",
+		"walterhat_yule",
 	},
 	wanda =
 	{
@@ -1404,6 +1423,12 @@ PREFAB_SKINS = {
 		"wathgrithr_wrestler",
 		"wathgrithr_yule",
 	},
+	wathgrithr_improvedhat =
+	{
+		"wathgrithr_improvedhat_lunar",
+		"wathgrithr_improvedhat_valkyrie",
+		"wathgrithr_improvedhat_wrestle",
+	},
 	wathgrithrhat =
 	{
 		"wathgrithrhat_lunar",
@@ -1461,6 +1486,7 @@ PREFAB_SKINS = {
 		"webber_survivorp",
 		"webber_victorian",
 		"webber_wrestler",
+		"webber_yule",
 	},
 	webber_beard =
 	{
@@ -1478,6 +1504,7 @@ PREFAB_SKINS = {
 		"webber_beard_survivor",
 		"webber_beard_victorian",
 		"webber_beard_wrestler",
+		"webber_beard_yule",
 	},
 	wendy =
 	{
@@ -1503,6 +1530,7 @@ PREFAB_SKINS = {
 		"wendy_survivor",
 		"wendy_survivorp",
 		"wendy_victorian",
+		"wendy_yule",
 	},
 	wes =
 	{

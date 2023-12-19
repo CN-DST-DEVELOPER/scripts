@@ -38,7 +38,8 @@ local function OnProjectileLand(inst, caster, target)
 	if rod ~= nil and rod:IsValid() then
 		local x, y, z = inst.Transform:GetWorldPosition()
 
-		if TheWorld.Map:IsOceanAtPoint(x, y, z) then
+        local virtualoceanent = FindVirtualOceanEntity(x, y, z)
+		if virtualoceanent ~= nil or TheWorld.Map:IsOceanAtPoint(x, y, z) then
 			local bobber = SpawnPrefab(inst._floater_prefab)
 			bobber.Transform:SetPosition(x, y, z)
 			bobber:ForceFacePoint(caster.Transform:GetWorldPosition())
@@ -53,6 +54,9 @@ local function OnProjectileLand(inst, caster, target)
 				bobber.components.oceanfishinghook:SetLureData(rod.components.oceanfishingrod:GetLureData(), rod.components.oceanfishingrod:GetLureFunctions())
 			end
 
+            if virtualoceanent ~= nil then
+                virtualoceanent:PushEvent("startfishinginvirtualocean", {fisher = caster, rod = rod,})
+            end
 		elseif TheWorld.Map:IsPassableAtPoint(x, y, z) then
 			rod.components.oceanfishingrod:StopFishing("badcast")
 

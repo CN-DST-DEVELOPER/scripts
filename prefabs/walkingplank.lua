@@ -100,18 +100,5 @@ local function grassfn()
     return inst
 end
 
-local function ondeploy(inst, pt, deployer)
-    local plank = SpawnPrefab("walkingplank")
-    if plank ~= nil then
-        plank.Transform:SetPosition(pt:Get())
-        plank.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/place")
-        plank.AnimState:PlayAnimation("place")
-        plank.AnimState:PushAnimation("idle")
-
-        inst:Remove()
-    end
-end
-
-
 return Prefab("walkingplank", fn, assets, prefabs),
         Prefab("walkingplank_grass", grassfn, assets_grass, prefabs)

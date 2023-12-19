@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "We should consult the manual before using this.",
 
         WAGSTAFF_MUTATIONS_NOTE = "I have a bad feeling about what is written here.",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "Musical notation, if I'm not mistaken.",
+
+        WATHGRITHR_IMPROVEDHAT = "An even further departure from historical accuracy, I'm afraid.",
+        SPEAR_WATHGRITHR_LIGHTNING = "An electrically conductive spear! How intriguing.",
+
+        BATTLESONG_CONTAINER = "A specialized container for sheet music.",
+
+        SADDLE_WATHGRITHR = "It follows that a beast used in battle should be well-armored.",
+
+        WATHGRITHR_SHIELD = "I'm happy to see her exploring more defensive tactics.",
+
+        BATTLESONG_SHADOWALIGNED = "Musical notation, if I'm not mistaken.",
+        BATTLESONG_LUNARALIGNED = "Musical notation, if I'm not mistaken.",
+
+		SHARKBOI = "This brute has broken innumerable laws of nature, and I simply will not have it.",
+        BOOTLEG = "As far as teleportation methods go, it's quite unrefined.",
+        OCEANWHIRLPORTAL = "One typically avoids sailing into a whirlpool, but sense and reason seem to mean nothing in this place.",
+
+        EMBERLIGHT = "Nothing like some unnatural fire to warm yourself with on a chilly day.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

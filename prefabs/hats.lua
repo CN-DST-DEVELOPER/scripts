@@ -1390,6 +1390,63 @@ local function MakeHat(name)
     local function wathgrithr_custom_init(inst)
         --waterproofer (from waterproofer component) added to pristine state for optimization
         inst:AddTag("waterproofer")
+
+        inst:AddTag("battlehelm")
+    end
+
+    fns.wathgrithr_applyskills = function(inst, owner)
+        local _skilltreeupdater = owner.components.skilltreeupdater
+
+        if _skilltreeupdater == nil then
+            return
+        end
+
+        local skill_level = owner.components.skilltreeupdater:CountSkillTag("helmetcondition")
+
+        if skill_level > 0 and inst.components.armor ~= nil then
+            inst.components.armor.conditionlossmultipliers:SetModifier(inst, TUNING.SKILLS.WATHGRITHR.WATHGRITHRHAT_DURABILITY_MOD[skill_level], "arsenal_helm")
+        end
+
+        if not inst._is_improved_hat then
+            return
+        end
+
+        if _skilltreeupdater:IsActivated("wathgrithr_arsenal_helmet_4") then
+            inst.components.planardefense:AddBonus(inst, TUNING.SKILLS.WATHGRITHR.HELM_PLANAR_DEF, "wathgrithr_arsenal_helmet_4")
+        end
+
+        if _skilltreeupdater:IsActivated("wathgrithr_arsenal_helmet_5") then
+            inst:AddTag("battleborn_repairable")
+        end
+    end
+
+    fns.wathgrithr_removeskills = function(inst, owner)
+        if inst.components.armor ~= nil then
+            inst.components.armor.conditionlossmultipliers:RemoveModifier(inst, "arsenal_helm")
+        end
+
+        if not inst._is_improved_hat then
+            return
+        end
+
+        inst.components.planardefense:RemoveBonus(inst, "wathgrithr_arsenal_helmet_4")
+        inst:RemoveTag("battleborn_repairable")
+    end
+
+    fns.wathgrithr_onequip = function(inst, owner)
+        if inst:HasTag("open_top_hat") then
+            fns.opentop_onequip(inst, owner)
+        else
+            _onequip(inst, owner)
+        end
+
+        inst:ApplySkillsChanges(owner)
+    end
+
+    fns.wathgrithr_onunequip = function(inst, owner)
+        _onunequip(inst, owner)
+
+        inst:RemoveSkillsChanges(owner)
     end
 
     fns.wathgrithr = function()
@@ -1399,11 +1456,52 @@ local function MakeHat(name)
             return inst
         end
 
+        inst.ApplySkillsChanges  = fns.wathgrithr_applyskills
+        inst.RemoveSkillsChanges = fns.wathgrithr_removeskills
+
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_WATHGRITHRHAT, TUNING.ARMOR_WATHGRITHRHAT_ABSORPTION)
 
+        inst.components.equippable:SetOnEquip(fns.wathgrithr_onequip)
+        inst.components.equippable:SetOnUnequip(fns.wathgrithr_onunequip)
+
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+        return inst
+    end
+
+    local function wathgrithr_improved_custom_init(inst)
+        wathgrithr_custom_init(inst)
+
+        inst:AddTag("heavyarmor")
+    end
+
+    fns.wathgrithr_improved = function()
+        local inst = simple(wathgrithr_improved_custom_init)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst._is_improved_hat = true
+
+        inst.ApplySkillsChanges  = fns.wathgrithr_applyskills
+        inst.RemoveSkillsChanges = fns.wathgrithr_removeskills
+
+        inst:AddComponent("armor")
+        inst.components.armor:InitCondition(TUNING.ARMOR_WATHGRITHR_IMPROVEDHAT, TUNING.ARMOR_WATHGRITHR_IMPROVEDHAT_ABSORPTION)
+
+        inst:AddComponent("planardefense")
+
+        inst.components.equippable:SetOnEquip(fns.wathgrithr_onequip)
+        inst.components.equippable:SetOnUnequip(fns.wathgrithr_onunequip)
+
+        inst:AddComponent("waterproofer")
+        inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALLMED)
+
+        inst:AddComponent("insulator")
+        inst.components.insulator:SetInsulation(TUNING.INSULATION_SMALL)
 
         return inst
     end
@@ -3614,6 +3712,11 @@ local function MakeHat(name)
     end
 
     fns.wagpunk_OnAttack = function(owner, data)
+        if data.target == owner then
+            -- Don't track us.
+            return
+        end
+
         local hat = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
         if hat._targettask and hat._potencialtarget == data.target then
             return
@@ -3977,6 +4080,8 @@ local function MakeHat(name)
         fn = fns.mole
     elseif name == "wathgrithr" then
         fn = fns.wathgrithr
+    elseif name == "wathgrithr_improved" then
+        fn = fns.wathgrithr_improved
     elseif name == "walter" then
         fn = fns.walter
     elseif name == "ice" then
@@ -4087,9 +4192,6 @@ local function MakeHat(name)
         prefabs = { "wagpunkhat_fx", "wagpunksteam_hat_up", "wagpunksteam_hat_down", "wagpunk_bits", "wagpunkhat_classified" }
         table.insert(assets, Asset("ANIM", "anim/firefighter_placement.zip"))
         fn = fns.wagpunk
-    elseif name == "lunarplant_wormwood" then
-    	prefabs = { "lunarplanthat_fx" }
-    	fn = fns.lunarplant
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -4404,6 +4506,7 @@ return  MakeHat("straw"),
         MakeHat("ruins"),
         MakeHat("mole"),
         MakeHat("wathgrithr"),
+        MakeHat("wathgrithr_improved"),
         MakeHat("walter"),
         MakeHat("ice"),
         MakeHat("rain"),

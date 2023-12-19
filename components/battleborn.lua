@@ -1,3 +1,12 @@
+local function RepairEquipment(item, delta)
+    if item:HasTag("battleborn_repairable") and
+        item.components.armor ~= nil and
+        item.components.armor:IsDamaged()
+    then
+        item.components.armor:Repair(delta * TUNING.BATTLEBORN_REPAIR_EQUIPMENT_MULT)
+    end
+end
+
 local Battleborn = Class(function(self, inst)
     self.inst = inst
 
@@ -16,6 +25,8 @@ local Battleborn = Class(function(self, inst)
 
     self.inst:ListenForEvent("onattackother", function(inst, data) self:OnAttack(data) end)
     self.inst:ListenForEvent("death", function(inst) self:OnDeath() end)
+
+    self.RepairEquipment = RepairEquipment  -- Mods
 end)
 
 
@@ -93,7 +104,12 @@ function Battleborn:OnAttack(data)
             --consume battleborn if enough has been stored
             if self.battleborn > self.battleborn_trigger_threshold then
                 if self.health_enabled then
-                    self.inst.components.health:DoDelta(self.battleborn, false, "battleborn")
+                    if self.inst.components.health:IsHurt() then
+                        self.inst.components.health:DoDelta(self.battleborn, false, "battleborn")
+
+                    elseif self.inst.components.inventory ~= nil then
+                        self.inst.components.inventory:ForEachEquipment(self.RepairEquipment, self.battleborn)
+                    end
                 end
 
                 if self.sanity_enabled then

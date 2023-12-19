@@ -75,21 +75,21 @@ function CrewMember:Row()
     if self.boat and self.boat:IsValid() then
         local platform = self.boat
         local bc = self.boat.components.boatcrew
-        if bc and platform == nil or not platform:IsValid() then return end    
+        if bc and (not platform or not platform:IsValid()) then return end
 
-        local boat_physics = platform.components.boatphysics
-        if boat_physics == nil then return end
+        local platform_boatphysics = platform.components.boatphysics
+        if not platform_boatphysics then return end
 
-        local can_Stop = false
-        if platform.components.boatcrew and platform.components.boatcrew.target then
-            local target_boat_physics = platform.components.boatcrew.target.components.boatphysics
-            local target_vector = Vector3(target_boat_physics.velocity_x,0,target_boat_physics.velocity_z)
-            local local_vector = Vector3(boat_physics.velocity_x,0,boat_physics.velocity_z)
+        local can_stop = false
+        local platform_boatcrew = platform.components.boatcrew
+        if platform_boatcrew and platform_boatcrew.target then
+            local target_boatphysics = platform_boatcrew.target.components.boatphysics
+            local target_vector = Vector3(target_boatphysics.velocity_x, 0, target_boatphysics.velocity_z)
+            local local_vector = Vector3(platform_boatphysics.velocity_x, 0, platform_boatphysics.velocity_z)
 
             local combo = target_vector + local_vector
-
             if combo:Length() <= local_vector:Length() then
-                can_Stop = true
+                can_stop = true
             end
         end
 
@@ -106,34 +106,36 @@ function CrewMember:Row()
                direction = "away"
             end
 
-        elseif platform.components.boatcrew and platform.components.boatcrew.target and platform.components.boatcrew.target:IsValid() and platform:GetDistanceSqToInst(platform.components.boatcrew.target) < 10*10 and can_Stop then                        
+        elseif platform_boatcrew and platform_boatcrew.target
+                and platform_boatcrew.target:IsValid()
+                and platform:GetDistanceSqToInst(platform_boatcrew.target) < 100
+                and can_stop then
             direction = "stop"
         end
 
         local row_dir_x, row_dir_z = nil, nil
-        
         if self.boat.components.boatcrew then
             row_dir_x, row_dir_z = self.boat.components.boatcrew:GetHeadingNormal()
         end
-            
+
         if not row_dir_x or not row_dir_z then
-            local pos = Vector3(self.boat.Transform:GetWorldPosition())
+            local boat_x, boat_y, boat_z = self.boat.Transform:GetWorldPosition()
             local doer_x, doer_y, doer_z = self.inst.Transform:GetWorldPosition()
-            row_dir_x, row_dir_z = VecUtil_Normalize(pos.x - doer_x, pos.z - doer_z)
+            row_dir_x, row_dir_z = VecUtil_Normalize(boat_x - doer_x, boat_z - doer_z)
         end
 
         if direction == "stop" then
-            row_dir_x = boat_physics.velocity_x * -1
-            row_dir_z = boat_physics.velocity_z * -1
+            row_dir_x = platform_boatphysics.velocity_x * -1
+            row_dir_z = platform_boatphysics.velocity_z * -1
             row_dir_x, row_dir_z = VecUtil_Normalize(row_dir_x, row_dir_z)
         elseif direction == "away" then
             row_dir_x = row_dir_x  * -1
-            row_dir_z = row_dir_z  * -1 
+            row_dir_z = row_dir_z  * -1
         end
 
         row_dir_x, row_dir_z = VecUtil_Normalize(row_dir_x, row_dir_z)
 
-        boat_physics:ApplyRowForce(row_dir_x, row_dir_z, self.force , self.max_velocity)
+        platform_boatphysics:ApplyRowForce(row_dir_x, row_dir_z, self.force, self.max_velocity)
     end
 end
 

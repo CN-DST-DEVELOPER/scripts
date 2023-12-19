@@ -848,10 +848,10 @@ local function on_planted_prefab_picked(inst)
 	end
 end
 
-local function on_planted_prefab_ignite(inst)
+local function on_planted_prefab_ignite(inst, source, doer)
     local carrat = spawn_carrat_from_planted()
     carrat.Transform:SetPosition(inst.Transform:GetWorldPosition())
-    carrat.components.burnable:Ignite()
+    carrat.components.burnable:Ignite(nil, source, doer)
 
 	if inst._color ~= nil then
 		carrat._setcolorfn(carrat, inst._color)

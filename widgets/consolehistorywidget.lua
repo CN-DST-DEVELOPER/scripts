@@ -198,18 +198,30 @@ function ConsoleHistoryWidget:RefreshHistory(history, remotehistory, index)
 		end)
 		btn:SetOnSelect(function()
 			if self.active_selection_btn ~= nil and self.active_selection_btn ~= i then
-				self.selection_btns[self.active_selection_btn - self.start_offset]:Unselect()
+				local prev_btn = self.selection_btns[self.active_selection_btn - self.start_offset]
+				prev_btn._unselecting = true
+				prev_btn:Unselect()
+				prev_btn._unselecting = nil
 			end
 			self.active_selection_btn = i
 			self.text_edit.inst:PushEvent("onhistoryupdated", #console_history - i + 1)
 		end)
 		btn.ongainfocus = function()
-			btn:Select()
+			if not btn._unselecting then
+				btn:Select()
+			end
 		end
 		btn.AllowOnControlWhenSelected = true
 
 		if self:IsMouseOnly() then
-			btn.onlosefocus = function() if btn.selected then btn:Unselect() self.active_selection_btn = nil end end
+			btn.onlosefocus = function()
+				if btn:IsSelected() then
+					btn._unselecting = true
+					btn:Unselect()
+					btn._unselecting = nil
+					self.active_selection_btn = nil
+				end
+			end
 		end
 
 		local sx, sy = btn.text:GetRegionSize()

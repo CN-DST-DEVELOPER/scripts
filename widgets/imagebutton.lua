@@ -77,16 +77,14 @@ function ImageButton:SetTextures(atlas, normal, focus, disabled, down, selected,
 end
 
 function ImageButton:_RefreshImageState()
-    if self:IsSelected() then
+	if self:IsSelected() then
         self:OnSelect()
-    elseif self:IsEnabled() then
-        if self.focus then
-            self:OnGainFocus()
-        else
-            self:OnLoseFocus()
-        end
-    else
-        self:OnDisable()
+	elseif self:IsDisabledState() then
+		self:OnDisable()
+	elseif self:IsFocusedState() then
+		self:OnGainFocus()
+	else
+		self:OnLoseFocus()
     end
 end
 
@@ -114,7 +112,7 @@ function ImageButton:OnGainFocus()
         self.hover_overlay:Show()
     end
 
-    if self:IsSelected() then return end
+	if self:IsSelected() or self:IsDisabledState() then return end
 
     if self:IsEnabled() then
         self.image:SetTexture(self.atlas, self.image_focus)
@@ -125,18 +123,18 @@ function ImageButton:OnGainFocus()
                 self.image:ScaleToSize(self.size_x, self.size_y)
             end
         end
-    end
 
-    if not self.ignore_standard_scaling  and self.image_focus == self.image_normal and self.scale_on_focus and self.focus_scale then
-        self.image:SetScale(self.focus_scale[1], self.focus_scale[2], self.focus_scale[3])
-    end
+		if not self.ignore_standard_scaling  and self.image_focus == self.image_normal and self.scale_on_focus and self.focus_scale then
+			self.image:SetScale(self.focus_scale[1], self.focus_scale[2], self.focus_scale[3])
+		end
 
-    if self.imagefocuscolour then
-        self.image:SetTint(unpack(self.imagefocuscolour))
-    end
+		if self.imagefocuscolour then
+			self.image:SetTint(unpack(self.imagefocuscolour))
+		end
 
-    if self.focus_sound then
-        TheFrontEnd:GetSound():PlaySound(self.focus_sound)
+		if self.focus_sound then
+			TheFrontEnd:GetSound():PlaySound(self.focus_sound)
+		end
     end
 end
 
@@ -147,7 +145,7 @@ function ImageButton:OnLoseFocus()
         self.hover_overlay:Hide()
     end
 
-    if self:IsSelected() then return end
+	if self:IsSelected() or self:IsDisabledState() then return end
 
     if self:IsEnabled() then
         self.image:SetTexture(self.atlas, self.image_normal)
@@ -159,6 +157,9 @@ function ImageButton:OnLoseFocus()
             end
         end
     end
+
+	--NOTE: The rest will run even if our parent is disabled
+	--      (snap to "normal" state)
 
     if not self.ignore_standard_scaling and self.image_focus == self.image_normal and self.scale_on_focus and self.normal_scale then        
         self.image:SetScale(self.normal_scale[1], self.normal_scale[2], self.normal_scale[3])
@@ -218,17 +219,31 @@ function ImageButton:OnControl(control, down)
     end
 end
 
-function ImageButton:OnEnable()
-	ImageButton._base.OnEnable(self)
-    if self.focus then
-        self:OnGainFocus()
-    else
-        self:OnLoseFocus()
-    end
+--------------------------------------------------------------------------
+--V2C: IsEnabled() checks hierarchy, but OnEnable()/OnDisable() don't notify children.
+--     These helpers will give more consistent behaviour regarding the state of the button.
+
+ImageButton.IsSelectedState = ImageButton.IsSelected
+
+function ImageButton:IsDisabledState()
+	return not (self.enabled or self:IsSelected())
 end
+
+function ImageButton:IsFocusedState()
+	return self.focus and self:IsEnabled() and not self:IsSelected()
+end
+
+function ImageButton:IsNormalState()
+	return self.enabled and not (self.focus and self:IsEnabled()) and not self:IsSelected()
+end
+
+--------------------------------------------------------------------------
 
 function ImageButton:OnDisable()
 	ImageButton._base.OnDisable(self)
+
+	if self:IsSelected() then return end
+
 	self.image:SetTexture(self.atlas, self.image_disabled)
 
     if self.imagedisabledcolour then
@@ -257,16 +272,6 @@ function ImageButton:OnSelect()
     end
 end
 
--- This is roughly equivalent to OnEnable--it's what happens when canceling the Selected state. An unselected button will behave normally.
-function ImageButton:OnUnselect()
-    ImageButton._base.OnUnselect(self)
-    if self:IsEnabled() then
-        self:OnEnable()
-    else
-        self:OnDisable()
-    end
-end
-
 function ImageButton:GetSize()
     return self.image:GetSize()
 end
@@ -278,7 +283,7 @@ function ImageButton:SetFocusScale(scaleX, scaleY, scaleZ)
         self.focus_scale = scaleX
     end
 
-    if self.focus and self.scale_on_focus and not self.selected then
+	if self.scale_on_focus and self:IsFocusedState() then
         self.image:SetScale(self.focus_scale[1], self.focus_scale[2], self.focus_scale[3])
     end
 end
@@ -290,7 +295,7 @@ function ImageButton:SetNormalScale(scaleX, scaleY, scaleZ)
         self.normal_scale = scaleX
     end
 
-    if not self.scale_on_focus or not self.focus then
+	if not (self.scale_on_focus and self:IsFocusedState()) then
         self.image:SetScale(self.normal_scale[1], self.normal_scale[2], self.normal_scale[3])
     end
 end
@@ -302,7 +307,7 @@ function ImageButton:SetImageNormalColour(r,g,b,a)
         self.imagenormalcolour = r
     end
 
-    if self:IsEnabled() and not self.focus and not self.selected then
+	if self:IsNormalState() then
         self.image:SetTint(self.imagenormalcolour[1], self.imagenormalcolour[2], self.imagenormalcolour[3], self.imagenormalcolour[4])
     end
 end
@@ -314,7 +319,7 @@ function ImageButton:SetImageFocusColour(r,g,b,a)
         self.imagefocuscolour = r
     end
 
-    if self.focus and not self.selected then
+	if self:IsFocusedState() then
         self.image:SetTint(unpack(self.imagefocuscolour))
     end
 end
@@ -326,7 +331,7 @@ function ImageButton:SetImageDisabledColour(r,g,b,a)
         self.imagedisabledcolour = r
     end
 
-    if not self:IsEnabled() then
+	if self:IsDisabledState() then
         self.image:SetTint(unpack(self.imagedisabledcolour))
     end
 end
@@ -338,7 +343,7 @@ function ImageButton:SetImageSelectedColour(r,g,b,a)
         self.imageselectedcolour = r
     end
 
-    if self.selected then
+	if self:IsSelected() then
         self.image:SetTint(unpack(self.imageselectedcolour))
     end
 end

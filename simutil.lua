@@ -673,8 +673,10 @@ end
 function GetSkilltreeBG_Internal(imagename)
     local images1 = "images/skilltree2.xml"
     local images2 = "images/skilltree3.xml"
+    local images3 = "images/skilltree4.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
+            or TheSim:AtlasContains(images3, imagename) and images3
             or nil
 end
 

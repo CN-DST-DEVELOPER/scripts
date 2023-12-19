@@ -56,6 +56,80 @@ local function DoMountSound(inst, mount, sound)
     end
 end
 
+--------------------------------------------------------------------------
+
+local CheckPreviewChannelCastAction --forward declare
+
+local function StopPreviewChannelCast(inst)
+	if inst.sg.mem.preview_channelcast_task then
+		inst.sg.mem.preview_channelcast_task:Cancel()
+		inst.sg.mem.preview_channelcast_task = nil
+		inst.sg.mem.preview_channelcast_action = nil
+		inst:RemoveEventCallback("performaction", CheckPreviewChannelCastAction)
+		inst.components.locomotor:RemovePredictExternalSpeedMultiplier(inst, "preview_channelcast")
+	end
+end
+
+CheckPreviewChannelCastAction = function(inst)
+	if inst:IsChannelCasting() == (inst.sg.mem.preview_channelcast_action.action == ACTIONS.START_CHANNELCAST) then
+		StopPreviewChannelCast(inst)
+	end
+end
+
+--Used for both START_CHANNELCAST and STOP_CHANNELCAST
+local function StartPreviewChannelCast(inst, buffaction)
+	if buffaction.action == ACTIONS.START_CHANNELCAST then
+		if inst:IsChannelCasting() then
+			StopPreviewChannelCast(inst)
+			return
+		end
+		inst.components.locomotor:SetPredictExternalSpeedMultiplier(inst, "preview_channelcast", TUNING.CHANNELCAST_SPEED_MOD)
+	elseif buffaction.action == ACTIONS.STOP_CHANNELCAST then
+		if not inst:IsChannelCasting() then
+			StopPreviewChannelCast(inst)
+			return
+		end
+		inst.components.locomotor:SetPredictExternalSpeedMultiplier(inst, "preview_channelcast", 1 / TUNING.CHANNELCAST_SPEED_MOD)
+	else
+		StopPreviewChannelCast(inst)
+		return
+	end
+
+	if inst.sg.mem.preview_channelcast_task then
+		inst.sg.mem.preview_channelcast_task:Cancel()
+	else
+		inst:ListenForEvent("performaction", CheckPreviewChannelCastAction)
+	end
+	inst.sg.mem.preview_channelcast_task = inst:DoTaskInTime(TIMEOUT, StopPreviewChannelCast)
+	inst.sg.mem.preview_channelcast_action = buffaction
+end
+
+local function IsChannelCasting(inst)
+	--essentially prediction, since the actions aren't busy w/ lag states
+	local buffaction = inst.sg.mem.preview_channelcast_action
+	if buffaction then
+		return buffaction.action == ACTIONS.START_CHANNELCAST
+		--Don't use "or inst:IsChannelCasting()"
+		--We want to be able to return false here when predicting!
+	end
+	--otherwise return server state
+	return inst:IsChannelCasting()
+end
+
+local function IsChannelCastingItem(inst)
+	--essentially prediction, since the actions aren't busy w/ lag states
+	local buffaction = inst.sg.mem.preview_channelcast_action
+	if buffaction then
+		return buffaction.invobject ~= nil
+		--Don't use "or inst:IsChannelCastingItem()"
+		--We want to be able to return false here when predicting!
+	end
+	--otherwise return server state
+	return inst:IsChannelCastingItem()
+end
+
+--------------------------------------------------------------------------
+
 local function ConfigureRunState(inst)
     if inst.replica.rider ~= nil and inst.replica.rider:IsRiding() then
         inst.sg.statemem.riding = true
@@ -67,6 +141,9 @@ local function ConfigureRunState(inst)
     elseif inst.replica.inventory:IsHeavyLifting() then
         inst.sg.statemem.heavy = true
 		inst.sg.statemem.heavy_fast = inst:HasTag("mightiness_mighty")
+	elseif IsChannelCasting(inst) then
+		inst.sg.statemem.channelcast = true
+		inst.sg.statemem.channelcastitem = IsChannelCastingItem(inst)
     elseif inst:HasTag("wereplayer") then
         inst.sg.statemem.iswere = true
         if inst:HasTag("weremoose") then
@@ -101,6 +178,8 @@ end
 local function GetRunStateAnim(inst)
     return ((inst.sg.statemem.heavy and inst.sg.statemem.heavy_fast) and "heavy_walk_fast")
 		or (inst.sg.statemem.heavy and "heavy_walk")
+		or (inst.sg.statemem.channelcastitem and "channelcast_walk")
+		or (inst.sg.statemem.channelcast and "channelcast_oh_walk")
         or (inst.sg.statemem.sandstorm and "sand_walk")
         or ((inst.sg.statemem.groggy or inst.sg.statemem.moosegroggy or inst.sg.statemem.goosegroggy) and "idle_walk")
         or (inst.sg.statemem.careful and "careful_walk")
@@ -367,7 +446,8 @@ local actionhandlers =
                         (action.invobject:HasTag("blowdart") and "blowdart_special") or
                         (action.invobject:HasTag("throw_line") and "throw_line") or
                         (action.invobject:HasTag("book") and "book") or
-                        (action.invobject:HasTag("parryweapon") and "parry_pre")
+						(action.invobject:HasTag("parryweapon") and "parry_pre") or
+						(action.invobject:HasTag("willow_ember") and "castspellmind")
                     )
                 or "castspell"
         end),
@@ -433,6 +513,18 @@ local actionhandlers =
 			end
 			return projectile ~= nil and projectile:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
 		end),
+        ActionHandler(ACTIONS.TOSS_MAP,
+            function(inst, action)
+                local projectile = action.invobject
+                if projectile == nil then
+                    --for Special action TOSS, we can also use equipped item.
+                    projectile = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                    if projectile ~= nil and not projectile:HasTag("special_action_toss") then
+                        projectile = nil
+                    end
+                end
+                return projectile ~= nil and projectile:HasTag("keep_equip_toss") and "throw_keep_equip" or "throw"
+            end),
     ActionHandler(ACTIONS.UNPIN, "doshortaction"),
     ActionHandler(ACTIONS.CATCH, "catch_pre"),
     ActionHandler(ACTIONS.CHANGEIN, "usewardrobe"),
@@ -496,6 +588,8 @@ local actionhandlers =
                 return "startchanneling"
             end
         end),
+	ActionHandler(ACTIONS.START_CHANNELCAST, "start_channelcast"),
+	ActionHandler(ACTIONS.STOP_CHANNELCAST, "stop_channelcast"),
     ActionHandler(ACTIONS.REVIVE_CORPSE, "dolongaction"),
     ActionHandler(ACTIONS.DISMANTLE, "dolongaction"),
     ActionHandler(ACTIONS.TACKLE, "tackle_pre"),
@@ -720,6 +814,9 @@ local states =
 			else
                 anim =
                     (inst.replica.inventory ~= nil and inst.replica.inventory:IsHeavyLifting() and "heavy_idle") or
+					(	IsChannelCasting(inst) and
+						(IsChannelCastingItem(inst) and "channelcast_idle" or "channelcast_oh_idle")
+					) or
 					(   inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() and
                         (   inst.AnimState:IsCurrentAnimation("sand_walk_pst") or
                             inst.AnimState:IsCurrentAnimation("sand_walk") or
@@ -904,16 +1001,21 @@ local states =
             end),
 
             --groggy
+			--channelcast
             TimeEvent(1 * FRAMES, function(inst)
                 if inst.sg.statemem.groggy or
-                    inst.sg.statemem.goose then
+					inst.sg.statemem.channelcast or
+					inst.sg.statemem.goose
+				then
                     DoRunSounds(inst)
                     DoFoleySounds(inst)
                 end
             end),
             TimeEvent(12 * FRAMES, function(inst)
                 if inst.sg.statemem.groggy or
-                    inst.sg.statemem.sandstorm then
+					inst.sg.statemem.channelcast or
+					inst.sg.statemem.sandstorm
+				then
                     DoRunSounds(inst)
                     DoFoleySounds(inst)
                 end
@@ -1420,9 +1522,11 @@ local states =
 		server_states = { "parry_pre", "parry_idle" },
 
         onenter = function(inst)
+            inst.sg.statemem.isshield = inst.bufferedaction ~= nil and inst.bufferedaction.invobject ~= nil and inst.bufferedaction.invobject:HasTag("shield")
+ 
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("parry_pre")
-            inst.AnimState:PushAnimation("parry_loop", true)
+            inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pre"  or "parry_pre")
+            inst.AnimState:PushAnimation(inst.sg.statemem.isshield and "shieldparry_loop" or "parry_pre", true)
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -1434,14 +1538,14 @@ local states =
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.AnimState:PlayAnimation("parry_pst")
+                inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pst"  or "parry_pst")
                 inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.AnimState:PlayAnimation("parry_pst")
+            inst.AnimState:PlayAnimation(inst.sg.statemem.isshield and "shieldparry_pst"  or "parry_pst")
             inst.sg:GoToState("idle", true)
         end,
     },
@@ -2997,6 +3101,38 @@ local states =
             inst.sg:GoToState("idle")
         end,
     },
+    
+    State{
+        name = "castspellmind",
+        tags = { "doing", "busy", "canrotate" },
+		server_states = { "castspellmind" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("pyrocast_pre")
+			inst.AnimState:PushAnimation("pyrocast_lag", false)
+
+            inst.SoundEmitter:PlaySound("meta3/willow/pyrokinetic_activate")
+
+            inst:PerformPreviewBufferedAction()
+            inst.sg:SetTimeout(TIMEOUT)
+        end,
+
+        onupdate = function(inst)
+            if inst.sg:ServerStateMatches() then
+                if inst.entity:FlattenMovementPrediction() then
+                    inst.sg:GoToState("idle", "noanim")
+                end
+            elseif inst.bufferedaction == nil then
+                inst.sg:GoToState("idle")
+            end
+        end,
+
+        ontimeout = function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle")
+        end,
+    },
 
     State{
         name = "play_gnarwail_horn",
@@ -4242,6 +4378,87 @@ local states =
             inst.sg:GoToState("idle", true)
         end,
     },
+
+	--Basically an "instant" action but with animation if you were idle
+	State{
+		name = "start_channelcast",
+		tags = { "idle", "canrotate" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			if inst.bufferedaction then
+				inst:PerformPreviewBufferedAction()
+				StartPreviewChannelCast(inst, inst.bufferedaction)
+			end
+			if IsChannelCastingItem(inst) then
+				inst.sg.statemem.channelcastitem = true
+				inst.AnimState:PlayAnimation("channelcast_idle_pre")
+				inst.AnimState:PushAnimation("channelcast_idle")
+			else
+				inst.AnimState:PlayAnimation("channelcast_oh_idle_pre")
+				inst.AnimState:PushAnimation("channelcast_oh_idle")
+			end
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst:IsChannelCasting() then
+				if inst.entity:FlattenMovementPrediction() then
+					StopPreviewChannelCast(inst)
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation(inst.sg.statemem.channelcastitem and "channelcast_idle_pst" or "channelcast_oh_idle_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation(inst.sg.statemem.channelcastitem and "channelcast_idle_pst" or "channelcast_oh_idle_pst")
+			inst.sg:GoToState("idle", true)
+		end,
+	},
+
+	--Basically an "instant" action but with animation if you were idle
+	State{
+		name = "stop_channelcast",
+		tags = { "idle", "canrotate" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			if inst.bufferedaction then
+				inst:PerformPreviewBufferedAction()
+				StartPreviewChannelCast(inst, inst.bufferedaction)
+			end
+			if IsChannelCastingItem(inst) then
+				inst.sg.statemem.channelcastitem = true
+				inst.AnimState:PlayAnimation("channelcast_idle_pst")
+			else
+				inst.AnimState:PlayAnimation("channelcast_oh_idle_pst")
+			end
+			inst.AnimState:PushAnimation("idle_loop")
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if not inst:IsChannelCasting() then
+				if inst.entity:FlattenMovementPrediction() then
+					StopPreviewChannelCast(inst)
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation(inst.sg.statemem.channelcastitem and "channelcast_idle_pre" or "channelcast_oh_idle_pre")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation(inst.sg.statemem.channelcastitem and "channelcast_idle_pre" or "channelcast_oh_idle_pre")
+			inst.sg:GoToState("idle", true)
+		end,
+	},
 
     State{
         name = "till_start",

@@ -117,6 +117,7 @@ local function fn()
     inst:AddTag("tentacle_pillar_arm")
     inst:AddTag("wet")
     inst:AddTag("soulless")
+    inst:AddTag("NPCcanaggro")
 
     inst.scrapbook_removedeps = {"monstermeat"}
 

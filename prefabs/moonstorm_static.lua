@@ -138,6 +138,9 @@ local function itemfn()
 
     inst:AddComponent("tradable")
 
+    inst:AddComponent("upgrader")
+    inst.components.upgrader.upgradetype = UPGRADETYPES.SPEAR_LIGHTNING
+
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")

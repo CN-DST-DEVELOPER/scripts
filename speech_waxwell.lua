@@ -395,6 +395,8 @@ return{
 		CASTAOE =
 		{
 			NO_MAX_SANITY = "I fear my mind can't take the strain...",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
 		},
     },
 
@@ -792,8 +794,10 @@ return{
 	},
 
 --fallback to speech_wilson.lua     ANNOUNCE_NOINSPIRATION = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_NOTSKILLEDENOUGH = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_TAUNT_BUFF = "only_used_by_wathgrithr",
 --fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_PANIC_BUFF = "only_used_by_wathgrithr",
+--fallback to speech_wilson.lua     ANNOUNCE_BATTLESONG_INSTANT_REVIVE_BUFF = "only_used_by_wathgrithr",
 
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_YOUNGTONORMAL = "only_used_by_wanda",
 --fallback to speech_wilson.lua     ANNOUNCE_WANDA_NORMALTOOLD = "only_used_by_wanda",
@@ -5023,6 +5027,29 @@ return{
         WAGPUNKBITS_KIT = "A machine to fix a machine? What is this world coming to?",
 
         WAGSTAFF_MUTATIONS_NOTE = "What have we here? More of that lunacy?",
+
+        -- Meta 3
+
+        BATTLESONG_INSTANT_REVIVE = "No. I do NOT sing.",
+
+        WATHGRITHR_IMPROVEDHAT = "Now she's just showing off.",
+        SPEAR_WATHGRITHR_LIGHTNING = "I can sense the power crackling within it.",
+
+        BATTLESONG_CONTAINER = "As good a place as any to stash sheet music away.",
+
+        SADDLE_WATHGRITHR = "I suppose the beast deserves a bit of protection.",
+
+        WATHGRITHR_SHIELD = "How uncharacteristically pragmatic of her.",
+
+        BATTLESONG_SHADOWALIGNED = "No. I do NOT sing.",
+        BATTLESONG_LUNARALIGNED = "No. I do NOT sing.",
+
+		SHARKBOI = "Who dreamed up this icy abomination?",
+        BOOTLEG = "Best not to think about where it's been.",
+        OCEANWHIRLPORTAL = "Is it safe? We should send Wilson in first.",
+
+        EMBERLIGHT = "Neat trick.",
+        WILLOW_EMBER = "only_used_by_willow",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

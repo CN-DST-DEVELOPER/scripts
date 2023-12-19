@@ -1,6 +1,8 @@
 local SMOLDER_TICK_TIME = 2
 local SourceModifierList = require("util/sourcemodifierlist")
 
+local willow_ember_common = require("prefabs/willow_ember_common")
+
 local function oncanlight(self)
     if not self.burning and self.canlight then
         self.inst:AddTag("canlight")
@@ -327,8 +329,29 @@ local function OnKilled(inst)
 	end
 end
 
+function Burnable:IsControlledBurn()
+    return self.controlled_burn
+end
+
+function Burnable:GetControlledBurn()
+    return self.controlled_burn
+end
+
 function Burnable:Ignite(immediate, source, doer)
+    -- NOTE ON DAMAGE: Burning damage is done in the propagator component, not the burnable component.
     if not (self.burning or self.inst:HasTag("fireimmune")) then
+
+        local controlled_burn_source = doer and doer:HasTag("controlled_burner") and doer or source and source:HasTag("controlled_burner") and source
+
+        if controlled_burn_source then
+            self.controlled_burn = {
+                duration_creature = controlled_burn_source.components.skilltreeupdater:IsActivated("willow_controlled_burn_2") and TUNING.CONTROLLED_BURN_DURATION_CREATURE_MULT or nil,                
+                damage = controlled_burn_source.components.skilltreeupdater:IsActivated("willow_controlled_burn_3") and TUNING.CONTROLLED_BURN_DAMAGE_MULT or nil
+            }
+        else
+            self.controlled_burn = nil
+        end
+
         self:StopSmoldering()
 
         self.burning = true
@@ -352,11 +375,18 @@ function Burnable:Ignite(immediate, source, doer)
     end
 end
 
+function Burnable:CalculateControlledBurnDuration()
+    if self.controlled_burn.duration_creature and self.inst.components.health then
+        return self.controlled_burn.duration_creature
+    end
+end
+
+
 function Burnable:ExtendBurning()
     if self.task ~= nil then
         self.task:Cancel()
     end
-    self.task = self.burntime ~= nil and self.inst:DoTaskInTime(self.burntime, DoneBurning, self) or nil
+    self.task = self.burntime ~= nil and self.inst:DoTaskInTime(self.burntime * (self.controlled_burn and self:CalculateControlledBurnDuration() or 1), DoneBurning, self) or nil
 end
 
 function Burnable:LongUpdate(dt)
@@ -434,6 +464,8 @@ function Burnable:Extinguish(resetpropagator, heatpct, smotherer)
             end
         end
 
+        self.controlled_burn = nil
+
         self.burning = false
         self:KillFX()
         if self.inst.components.fueled ~= nil and not self.ignorefuel then
@@ -487,7 +519,7 @@ function Burnable:SpawnFX(immediate)
             table.insert(self.fxchildren, fx)
             if fx.components.firefx ~= nil then
                 fx.components.firefx.radius_levels = v.radius_levels
-                fx.components.firefx:SetLevel(self.fxlevel, immediate)
+                fx.components.firefx:SetLevel(self.fxlevel, immediate, self.controlled_burn)
                 fx.components.firefx:AttachLightTo(self.inst)
             end
         end
