@@ -77,8 +77,8 @@ function Hull:OnSave()
 	return save_data
 end
 
-function Hull:OnLoad(data)	
-    if data.plank_skinname then
+function Hull:LoadPostPass(ents, data)
+	if data.plank_skinname and self.plank then
 		TheSim:ReskinEntity( self.plank.GUID, nil, data.plank_skinname, data.plank_skin_name )
 	end
 end

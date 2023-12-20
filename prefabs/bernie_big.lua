@@ -299,7 +299,7 @@ local function onLeaderChanged(inst,leader)
     if leader and ( leader.components.skilltreeupdater:IsActivated("willow_allegiance_lunar_bernie") or leader.components.skilltreeupdater:IsActivated("willow_allegiance_shadow_bernie") )  then
         if leader.components.skilltreeupdater:IsActivated("willow_allegiance_lunar_bernie") then
             inst:AddTag("lunar_aligned")
-            damagetyperesist = inst.components.damagetypebonus
+            local damagetyperesist = inst.components.damagetyperesist
             if damagetyperesist then
                 damagetyperesist:AddResist("lunar_aligned", inst, TUNING.SKILLS.WILLOW_ALLEGIANCE_LUNAR_RESIST, "willow_allegiance_lunar")
             end
