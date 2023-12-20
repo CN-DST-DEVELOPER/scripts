@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Is enough games for Wolfgang.",
             MANNEQUIN_EQUIPSWAPFAILED = "Is not for cloth man. Wolfgang will keep.",
             PILLOWFIGHT_NO_HANDPILLOW = "Wolfgang needs pillow for fighting!",
+            NOTMYBERNIE = "Giant murder bear only follow to tiny torchlady.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,6 +398,8 @@ return{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 

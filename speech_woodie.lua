@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "How aboot we do it again another day?",
             MANNEQUIN_EQUIPSWAPFAILED = "Guess that won't work, eh?",
             PILLOWFIGHT_NO_HANDPILLOW = "I should grab a pillow first, eh?",
+            NOTMYBERNIE = "Uh, Willow? Might wanna take control of your bear, eh?",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,6 +398,8 @@ return{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 

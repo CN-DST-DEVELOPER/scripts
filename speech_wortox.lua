@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "If we play any more, it's gonna be a chore.",
             MANNEQUIN_EQUIPSWAPFAILED = "Oh what a shame, I thought it would suit you.",
             PILLOWFIGHT_NO_HANDPILLOW = "A pillow must be promptly procured.",
+            NOTMYBERNIE = "Willow! What are you doin' while your bruin causes such ruin?",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,6 +398,8 @@ return{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 

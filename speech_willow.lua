@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "They look tired. Let's play again tomorrow!",
             MANNEQUIN_EQUIPSWAPFAILED = "Nah, it looks better on me.",
             PILLOWFIGHT_NO_HANDPILLOW = "Hey, don't I need a pillow first?",
+            NOTMYBERNIE = "Sorry. Wrong Bernie. As you were.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,8 +398,8 @@ return{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "I need more embers! Heh. Better get back to burning.",
             NO_TARGETS = "There is nothing scary to burn nearby.",
-            CANT_SPELL_MOUNTED = "My beast is too flamable for that kind of fun.", --[[TODO]]
-            SPELL_ON_COOLDOWN = "I need to give it a moment.", --[[TODO]]            
+            CANT_SPELL_MOUNTED = "My beast is too flamable for that kind of fun.",
+            SPELL_ON_COOLDOWN = "I need to give it a moment.", 
 		},
     },
 

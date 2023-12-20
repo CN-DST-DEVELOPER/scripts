@@ -37,7 +37,8 @@ local throwfirelevels =
 local CLOSERANGE = 1
 
 local TARGETS_MUST = {"_health"}
-local TARGETS_CANT = {"player","invisible"}
+local TARGETS_ONEOF = { "hostile", "_combat" }
+local TARGETS_CANT = { "INLIMBO", "flight", "player", "invisible", "noattack", "notarget" }
 
 local FLAME_MUST = {"willow_shadow_flame"}
 
@@ -51,10 +52,20 @@ local function settarget(inst,target,life,source)
             local theta = inst.Transform:GetRotation() * DEGREES
             local radius = CLOSERANGE
 
-            if not target or not target:IsValid() or target.components.health:IsDead() or target.sg:HasStateTag("noattack") then
+			if target == nil or
+				not (target:IsValid() and target.entity:IsVisible()) or
+				target:IsInLimbo() or
+				target.components.health:IsDead() or
+				(target.sg and target.sg:HasStateTag("noattack")) or
+				target:HasTag("invisible") or
+				target:HasTag("notarget") or
+				target:HasTag("flight")
+			then
+				target = nil
                 inst.shadow_ember_target = nil
+
                 local pos = Vector3(inst.Transform:GetWorldPosition())
-                local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 20, TARGETS_MUST,TARGETS_CANT)
+				local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 20, TARGETS_MUST, TARGETS_CANT, TARGETS_ONEOF)
 
                 local targets = {}
                 local flameents = TheSim:FindEntities(pos.x, pos.y, pos.z, 20, FLAME_MUST)
@@ -65,27 +76,22 @@ local function settarget(inst,target,life,source)
                 end
 
                 if #ents > 0 then
-                    for i=#ents,1,-1 do
-                        local ent = ents[i]
-                        if  (    ent:HasTag("hostile") or
-                                (ent.components.combat and ent.components.combat.target and ent.components.combat.target == source)        ) and
-                            (not ent.components.follower or not ent.components.follower.leader or ent.components.follower.leader ~= source ) and 
-                            not targets[ent] and 
-                            not ent.sg:HasStateTag("noattack")
+					for i, ent in ipairs(ents) do
+						if not targets[ent] and
+							ent.entity:IsVisible() and
+							(	ent:HasTag("hostile") or
+								(ent.components.combat and ent.components.combat:TargetIs(source))
+							) and
+                            not (ent.components.follower and ent.components.follower:GetLeader() == source)
                         then
-                            --keep
-                        else
-                            table.remove(ents,i)
+							target = ent
+							inst.shadow_ember_target = target
+							break
                         end
                     end
-
-                    target = ents[1]
-                    inst.shadow_ember_target = target
-                else
-                    target = nil
                 end
             end
-            if target and target:IsValid() and not target.components.health:IsDead() then
+			if target then
                 local dist = inst:GetDistanceSqToInst(target)
 
                 if dist<CLOSERANGE*CLOSERANGE then

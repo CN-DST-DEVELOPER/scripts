@@ -171,6 +171,16 @@ local function spawnfirefx(pos)
     end
 end
 
+local function DoBurstFire(doer, inst, ent)
+	if ent:IsValid() then
+		if ent.components.burnable then
+			ent.components.burnable:Ignite(nil, inst, doer)
+		else
+			ent:PushEvent("onlighterlight")
+		end
+	end
+end
+
 local function TryBurstFire(inst, doer, pos)
     if CheckStackSize(inst, doer, "fireburst") then
         local ents = willow_ember_common.GetBurstTargets(doer)
@@ -181,19 +191,10 @@ local function TryBurstFire(inst, doer, pos)
         end
 
         for i, ent in ipairs(ents) do
-            local distsq = doer:GetDistanceSqToInst(ent)
-
             if ent ~= doer then
+				local distsq = doer:GetDistanceSqToInst(ent)
                 local time = Remap(distsq, 0, TUNING.FIRE_BURST_RANGE*TUNING.FIRE_BURST_RANGE, 0, 0.5)
-
-                inst:DoTaskInTime(time, function()
-                    if ent.components.burnable then
-                        ent.components.burnable:Ignite(nil, inst, doer)
-                    else
-                        ent:PushEvent("onlighterlight")
-                    end
-                end)
-
+				doer:DoTaskInTime(time, DoBurstFire, inst, ent)
                 success = true
             end
         end

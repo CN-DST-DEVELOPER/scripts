@@ -213,7 +213,6 @@ return
 		{
 			"webber_yule",
 			"body_webber_yule",
-			"webber_beard_yule",
 		},
 	},
 	emote_fistshake =

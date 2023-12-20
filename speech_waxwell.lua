@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "Playtime is over for now.",
             MANNEQUIN_EQUIPSWAPFAILED = "No, that would be ridiculous.",
             PILLOWFIGHT_NO_HANDPILLOW = "If I'm going to humiliate myself, I can at least do it properly.",
+            NOTMYBERNIE = "Willow, your abominable bear is running amok!",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,6 +398,8 @@ return{
 			NO_MAX_SANITY = "I fear my mind can't take the strain...",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 

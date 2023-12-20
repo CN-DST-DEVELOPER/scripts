@@ -1186,6 +1186,16 @@ function FrontEnd:OnTextInput(text)
     end
 end
 
+--V2C: -exclude resolution scaling
+--     -useful when parents already have SCALEMODE_PROPORTIONAL
+function FrontEnd:GetProportionalHUDScale()
+	local size = Profile:GetHUDSize()
+	local min_scale = .75
+	local max_scale = 1.1
+
+	return easing.linear(size, min_scale, max_scale - min_scale, 10)
+end
+
 function FrontEnd:GetHUDScale()
     local size = Profile:GetHUDSize()
     local min_scale = .75

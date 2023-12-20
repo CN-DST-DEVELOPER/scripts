@@ -179,7 +179,7 @@ function SlipperyFeet:LongUpdate(dt)
 end
 
 function SlipperyFeet:GetDebugString()
-	return string.format("%.1f/%.1f \(%+.1f/s\)", self.slippiness, self.threshold, self._updating["accumulate"] and self:CalcAccumulatingSpeed() or -self.decay_spd)
+	return string.format("%.1f/%.1f (%+.1f/s)", self.slippiness, self.threshold, self._updating["accumulate"] and self:CalcAccumulatingSpeed() or -self.decay_spd)
 end
 
 return SlipperyFeet

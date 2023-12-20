@@ -38,6 +38,11 @@ local function goinactive(inst)
 end
 
 local function gobig(inst,leader)
+
+    if leader.bigbernies then
+        return
+    end
+
     local skin_name = inst:GetSkinName()
     if skin_name ~= nil then
         skin_name = skin_name:gsub("_shadow_build", ""):gsub("_lunar_build", ""):gsub("_active", "_big")
@@ -46,10 +51,17 @@ local function gobig(inst,leader)
     local big = SpawnPrefab("bernie_big", skin_name, inst.skin_id, nil)
     if big ~= nil then
         --Rescale health %
+        if not leader.bigbernies then
+            leader.bigbernies = {}
+        end
+
+        leader.bigbernies[big] = true
         
         big.Transform:SetPosition(inst.Transform:GetWorldPosition())
         big.Transform:SetRotation(inst.Transform:GetRotation())
         big.components.health:SetPercent(inst.components.health:GetPercent())
+
+        big:onLeaderChanged(leader)
 
         inst:Remove()
 

@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "I believe I should take some time to rest.",
             MANNEQUIN_EQUIPSWAPFAILED = "That does not belong on a mannequin.",
             PILLOWFIGHT_NO_HANDPILLOW = "I will require a pillow to participate.",
+            NOTMYBERNIE = "This monstrous animated teddy bear is loyal only to our dear Willow.",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,6 +398,8 @@ return{
 --fallback to speech_wilson.lua 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 

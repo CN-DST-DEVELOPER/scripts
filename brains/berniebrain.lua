@@ -98,9 +98,11 @@ end
 local function ShouldGoBig(self)
     local x, y, z = self.inst.Transform:GetWorldPosition()
 
+    self._leader = nil
+
     for i, v in ipairs(AllPlayers) do
         if v:HasTag("bernieowner") and
-            v.bigbernies == nil and   -- or (v.components.skilltreeupdater:IsActivated("willow_berniedouble") and countbigbernies(v) < 2 )
+            v.bigbernies == nil and
             v.blockbigbernies == nil and            
             (self.inst.isleadercrazy(self.inst,v) or self.inst:hotheaded(v)) and
             v.entity:IsVisible() and
@@ -116,15 +118,19 @@ local function OnEndBlockBigBernies(leader)
     leader.blockbigbernies = nil
 end
 
-local function DoGoBig(inst, leader)
-    if leader ~= nil then
-        if leader.blockbigbernies ~= nil then
-            leader.blockbigbernies:Cancel()
+local function DoGoBig(inst,leader)
+    if leader and not leader.bigbernies then
+        if  leader ~= nil then
+            if  leader.blockbigbernies ~= nil then
+                 leader.blockbigbernies:Cancel()
+            end
+            --V2C: block other big bernies from triggering, since brain needs time to detect initial leader
+             leader.blockbigbernies =  leader:DoTaskInTime(.5, OnEndBlockBigBernies)
         end
-        --V2C: block other big bernies from triggering, since brain needs time to detect initial leader
-        leader.blockbigbernies = leader:DoTaskInTime(.5, OnEndBlockBigBernies)
+        inst:GoBig( leader )        
+    else 
+        leader = nil
     end
-    inst:GoBig(leader)
 end
 
 function BernieBrain:OnStart()

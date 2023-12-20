@@ -67,6 +67,7 @@ return{
 			KITCOON_HIDEANDSEEK_ONE_GAME_PER_DAY = "THEY NEED TO RECHARGE",
             MANNEQUIN_EQUIPSWAPFAILED = "THE CLOTHSACK CANNOT BE TRUSTED WITH SOMETHING LIKE THIS",
             PILLOWFIGHT_NO_HANDPILLOW = "ERROR: PILLOW REQUIRED FOR COMBAT",
+            NOTMYBERNIE = "OBEY ME, BEAR!",
 		},
 		OPEN_CRAFTING =
 		{
@@ -397,6 +398,8 @@ return{
 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow", 
 		},
     },
 

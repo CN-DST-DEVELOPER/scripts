@@ -151,7 +151,7 @@ local function removeskilleffects(inst,brightnessvalue)
 end
 
 local function testforattunedskill(inst,owner)
-    if owner.components.skilltreeupdater:IsActivated("willow_attuned_lighter") then
+	if owner.components.skilltreeupdater and owner.components.skilltreeupdater:IsActivated("willow_attuned_lighter") then
         if inst.components.channelcastable == nil then
             inst:AddComponent("channelcastable")
             inst.components.channelcastable:SetOnStartChannelingFn(OnStartChanneling)
@@ -254,7 +254,10 @@ end
 
 local function onattack(weapon, attacker, target)
     --target may be killed or removed in combat damage phase
-    if target ~= nil and target:IsValid() and target.components.burnable ~= nil and (math.random() < TUNING.LIGHTER_ATTACK_IGNITE_PERCENT * target.components.burnable.flammability or attacker.components.skilltreeupdater:IsActivated("willow_controlled_burn_1") ) then
+	if target and target:IsValid() and target.components.burnable and (
+		attacker.components.skilltreeupdater and attacker.components.skilltreeupdater:IsActivated("willow_controlled_burn_1") or
+		math.random() < TUNING.LIGHTER_ATTACK_IGNITE_PERCENT * target.components.burnable.flammability
+	) then
         target.components.burnable:Ignite(nil, attacker)
     end
 end

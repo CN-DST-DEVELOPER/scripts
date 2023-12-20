@@ -295,6 +295,45 @@ local function onLeaderChanged(inst,leader)
     end 
     inst.components.health:SetPercent(percent)
 
+
+    if leader and ( leader.components.skilltreeupdater:IsActivated("willow_allegiance_lunar_bernie") or leader.components.skilltreeupdater:IsActivated("willow_allegiance_shadow_bernie") )  then
+        if leader.components.skilltreeupdater:IsActivated("willow_allegiance_lunar_bernie") then
+            inst:AddTag("lunar_aligned")
+            damagetyperesist = inst.components.damagetypebonus
+            if damagetyperesist then
+                damagetyperesist:AddResist("lunar_aligned", inst, TUNING.SKILLS.WILLOW_ALLEGIANCE_LUNAR_RESIST, "willow_allegiance_lunar")
+            end
+            local damagetypebonus = inst.components.damagetypebonus
+            if damagetypebonus then
+                damagetypebonus:AddBonus("shadow_aligned", inst, TUNING.SKILLS.WILLOW_ALLEGIANCE_VS_SHADOW_BONUS, "willow_allegiance_lunar")
+            end
+        end
+        if leader.components.skilltreeupdater:IsActivated("willow_allegiance_shadow_bernie") then
+            inst:AddTag("shadow_aligned")
+            local damagetyperesist = inst.components.damagetyperesist
+            if damagetyperesist then
+                damagetyperesist:AddResist("shadow_aligned", inst, TUNING.SKILLS.WILLOW_ALLEGIANCE_SHADOW_RESIST, "willow_allegiance_shadow")
+            end
+            local damagetypebonus = inst.components.damagetypebonus
+            if damagetypebonus then
+                damagetypebonus:AddBonus("lunar_aligned", inst, TUNING.SKILLS.WILLOW_ALLEGIANCE_VS_LUNAR_BONUS, "willow_allegiance_shadow")                        
+            end
+        end        
+    else
+        inst:RemoveTag("shadow_aligned")
+        inst:RemoveTag("lunar_aligned")
+        local damagetyperesist = inst.components.damagetyperesist
+        if damagetyperesist then
+            damagetyperesist:RemoveResist("shadow_aligned", inst, "willow_allegiance_shadow")
+            damagetyperesist:RemoveResist("lunar_aligned", inst, "willow_allegiance_lunar")
+        end
+        local damagetypebonus = inst.components.damagetypebonus
+        if damagetypebonus then
+            damagetypebonus:RemoveBonus("shadow_aligned", inst, "willow_allegiance_lunar")
+            damagetypebonus:RemoveBonus("lunar_aligned", inst, "willow_allegiance_shadow")
+        end        
+    end
+
     if leader and leader.components.skilltreeupdater:IsActivated("willow_burnignbernie") then
         inst:AddTag("canlight")
         inst:ListenForEvent("onlighterlight", OnLighterLight)
@@ -650,6 +689,9 @@ local function fn()
 
     inst:AddComponent("hauntable")
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
+
+    inst:AddComponent("damagetyperesist")
+    inst:AddComponent("damagetypebonus")
 
     inst.hit_recovery = TUNING.BERNIE_BIG_HIT_RECOVERY
 

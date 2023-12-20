@@ -1030,7 +1030,7 @@ function PlayerHud:OpenSpellWheel(invobject, items, radius, focus_radius)
 			end
 		end
 	end
-	self.controls.spellwheel:SetScale(TheFrontEnd:GetHUDScale())
+	self.controls.spellwheel:SetScale(TheFrontEnd:GetProportionalHUDScale()) --instead of GetHUDScale(), because parent already has SCALEMODE_PROPORTIONAL
 	self.controls.spellwheel:SetItems(itemscpy, radius, focus_radius)
 	self.controls.spellwheel:Open()
 	local old = self.controls.spellwheel.invobject

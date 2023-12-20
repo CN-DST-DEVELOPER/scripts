@@ -33,14 +33,14 @@ local function SetLeader(self, leader)
         end
         if leader ~= nil then
             if leader.bigbernies == nil then
-                leader.bigbernies = { [self.inst] = true }
-            else
-                leader.bigbernies[self.inst] = true
+                leader.bigbernies = {}    
             end
+
+            leader.bigbernies[self.inst] = true
 
             self.inst:onLeaderChanged(leader)
         end
-        self._leader = leader      
+        self._leader = leader
     end
 end
 
@@ -125,7 +125,7 @@ local function KeepLeaderFn(inst, leader)
     --V2C: re-checking "bernieowner" tag is redundant
     return leader:IsValid()
         and (leader.entity:IsVisible() or (leader.sg ~= nil and leader.sg.currentstate.name == "quicktele"))
-        and leader.components.sanity:GetPercent() < FOLLOWER_SANITY_THRESHOLD
+        and (leader.components.sanity:GetPercent() < FOLLOWER_SANITY_THRESHOLD or inst:hotheaded(leader))
 		--and inst:IsNear(leader, LOSE_LEADER_DIST)
 		--@V2C: -Just don't check distance, it was always bugged at LOSE_LEADER_DIST_SQ
 		--       which would almost never have gone out of range.

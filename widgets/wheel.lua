@@ -201,7 +201,7 @@ function Wheel:Open(dataset_name)
 	local selected
 	for i, v in ipairs(self.activeitems) do
 		local disabled = v.checkenabled and not v.checkenabled(self.owner)
-		if v.checkcooldown then
+		if v.checkcooldown and v.anims then --cooldowns only supported with anims
 			SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, disabled and v.anims.disabled or v.anims.cooldown)
 			v.widget.cooldown.OnUpdate = function(cooldown, dt, forceinit)
 				local cd = v.checkcooldown(self.owner)
@@ -231,7 +231,9 @@ function Wheel:Open(dataset_name)
 			v.widget.cooldown:StartUpdating()
 			v.widget.cooldown:OnUpdate(0, true)
 		elseif disabled then
-			SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, v.anims.disabled)
+			if v.anims then
+				SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, v.anims.disabled)
+			end
 			v.widget:Disable()
 		else
 			v.widget:Enable()

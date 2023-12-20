@@ -19,7 +19,8 @@ local function retargetfn(inst)
                     guy:HasTag("character") or
                     guy:HasTag("monster") or
                     guy:HasTag("animal"))
-                and (guy:HasTag("player") or not guy.sg:HasStateTag("hiding"))
+				and (guy:HasTag("player") or
+					not (guy.sg and guy.sg:HasStateTag("hiding")))
         end,
         RETARGET_MUST_TAGS,
         RETARGET_CANT_TAGS)
@@ -32,7 +33,8 @@ local function shouldKeepTarget(inst, target)
         and target.components.health ~= nil
         and not target.components.health:IsDead()
         and target:IsNear(inst, TUNING.TENTACLE_STOPATTACK_DIST)
-        and (target:HasTag("player") or not target.sg:HasStateTag("hiding"))
+		and (target:HasTag("player") or
+			not (target.sg and target.sg:HasStateTag("hiding")))
 end
 
 local function OnAttacked(inst, data)
