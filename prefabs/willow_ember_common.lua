@@ -69,44 +69,44 @@ end
 
 local CREATURES_MUST = { "_combat" }
 local CREATURES_CAN  = { "monster", "smallcreature", "largecreature", "animal", "bigbernie", "character" }
-local CREATURES_CANT = { "FX", "INLIMBO", "DECOR", "playerghost", "NOCLICK", "ghost"}
+local CREATURES_CANT = { "INLIMBO", "flight", "player", "ghost", "invisible", "noattack", "notarget" }
 
 -- Is also called from the client-side.
 local function GetBurstTargets(player)
     local x, y, z = player.Transform:GetWorldPosition()
 
     local ents = TheSim:FindEntities(x, 0, z, TUNING.FIRE_BURST_RANGE, CREATURES_MUST, CREATURES_CANT, CREATURES_CAN)
-
-
-    --filter out not burnables, things burning
-    for i=#ents, 1, -1 do
-        if not ents[i]:HasTag("canlight") and not ents[i]:HasTag("nolight") and not ents[i]:HasTag("fire")  then
-            table.remove(ents,i)
-        end
-    end
-    
-    -- filter out things that are allies or followers of allies, but not burnable bernie
-    for i=#ents, 1, -1 do
+	local j = 1
+	for i, v in ipairs(ents) do
         local should_remove = false
 
-        -- remove alies
-        if player.replica.combat:IsAlly(ents[i]) or player.replica.combat:TargetHasFriendlyLeader(ents[i]) then
-            should_remove = true     
-        end
-        -- remove companions
-        if ents[i]:HasTag("companion") then
-            should_remove = true
-        end
+		if not (v:HasTag("canlight") or v:HasTag("nolight")) or v:HasTag("fire") then
+			--filter out not burnables or things already burning
+			should_remove = true
+		else
+			-- filter out things that are allies or followers of allies, but not burnable bernie
+			local combat = player.replica.combat
+			local isally = combat and combat:IsAlly(v)
+			if not (isally and v:HasTag("bigbernie") and v:HasTag("canlight")) then
+				if isally or combat == nil or combat:TargetHasFriendlyLeader(v) then
+					-- remove alies
+					should_remove = true
+				elseif v:HasTag("companion") then
+					-- remove companions (regardless if they failed ally check)
+					should_remove = true
+				end
+			end
+		end
 
-        -- bring back a friendly burnable burnie
-        if ents[i]:HasTag("bigbernie") and ents[i]:HasTag("canlight") and player.replica.combat:IsAlly(ents[i]) then
-             should_remove = false
-        end
-        
-        if should_remove then
-            table.remove(ents,i)
+		if not should_remove then
+			ents[j] = v
+			j = j + 1
         end
     end
+
+	for i = j, #ents do
+		ents[i] = nil
+	end
 
     return ents
 end

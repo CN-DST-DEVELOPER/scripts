@@ -474,6 +474,7 @@ local prefabs =
     "degrade_fx_ice",
 	"sharkboi",
     "icefishing_hole",
+    "sharkboi_ice_hazard",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")

@@ -23,7 +23,7 @@ local events =
 	EventHandler("sg_cancelmovementprediction", function(inst)
 		inst.sg:GoToState("idle", "cancel")
 	end),
-    EventHandler("locomote", function(inst)
+	EventHandler("locomote", function(inst, data)
         if inst.sg:HasStateTag("busy") or inst:HasTag("busy") then
             return
         end
@@ -37,6 +37,10 @@ local events =
         elseif is_moving and not should_move then
             inst.sg:GoToState("idle")
         elseif not is_moving and should_move then
+			--V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+			if data and data.dir then
+				inst.Transform:SetRotation(data.dir)
+			end
             inst.sg:GoToState("run")
         end
     end),

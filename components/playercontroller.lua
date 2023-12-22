@@ -3133,7 +3133,7 @@ function PlayerController:OnRemotePredictOverrideLocomote(dir)
 			if self.inst.sg:HasStateTag("canrotate") then
 				self.inst.Transform:SetRotation(dir)
 			end
-			self.inst:PushEvent("locomote", { remoteoverridelocomote = true })
+			self.inst:PushEvent("locomote", { dir = dir, remoteoverridelocomote = true })
 		end
 	end
 end
@@ -3973,9 +3973,9 @@ function PlayerController:OnRightClick(down)
 			end
 		end
 		if not closed then
+			self.inst.replica.inventory:ReturnActiveItem()
 			local rider = self.inst.replica.rider
 			if not (rider and rider:IsRiding()) then
-				self.inst.replica.inventory:ReturnActiveItem()
 				self:TryAOETargeting()
 			end
 		end
@@ -4498,12 +4498,12 @@ function PlayerController:OnRemoteBufferedAction()
 				--excludes self:IsLocalOrRemoteHopping() as well, ie. y ~= 6
 				local x, y, z = self.inst.Transform:GetWorldPosition()
 				if x ~= self.remote_vector.x or z ~= self.remote_vector.z then
+					local dir = math.atan2(z - self.remote_vector.z, self.remote_vector.x - x) * RADIANS
 					if self.inst.sg:HasStateTag("canrotate") then
-						local dir = math.atan2(z - self.remote_vector.z, self.remote_vector.x - x) / DEGREES
 						self.inst.Transform:SetRotation(dir)
 					end
 					--Force us to interrupt and go to movement state immediately
-					self.inst.sg:HandleEvent("locomote", { force_idle_state = true }) --force idle state in case this tiny motion was meant to cancel an action
+					self.inst.sg:HandleEvent("locomote", { dir = dir, force_idle_state = true }) --force idle state in case this tiny motion was meant to cancel an action
 					self.inst.Transform:SetPosition(self.remote_vector.x, 0, self.remote_vector.z)
 				end
 			end

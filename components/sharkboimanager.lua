@@ -255,6 +255,7 @@ function self:DoCleanup()
     if newradius < self.arena.radius then
         self:ForEachTileInBetween(newradius, self.arena.radius, self.DestroyIceTileAtPoint)
         self:SetDesiredArenaRadius(newradius)
+        _world:PushEvent("ms_cleanupticksharkboiarena")
     else
         self:ForceCleanup()
     end
@@ -355,6 +356,8 @@ function self:ForceCleanup()
     if self.arena.sharkboi then
         self.arena.sharkboi:Remove() -- Automatically nils.
     end
+
+    _world:PushEvent("ms_cleanedupsharkboiarena")
 end
 
 function self:GetFishPrefab()
@@ -536,7 +539,8 @@ function self:CreateFishingHole(x, y, z)
 end
 
 function self:CreateEntityDecorationsAtPoint(x, y, z)
-    for i = 1, 3 do
+    -- Function stub for mods.
+    --[[for i = 1, 3 do
         if math.random() < 0.1 then
             local rad = math.random() * TILE_SCALE -- Not * 0.5 to give both overlap and potentially put ice in the ocean.
             local theta = math.random() * PI2
@@ -547,7 +551,7 @@ function self:CreateEntityDecorationsAtPoint(x, y, z)
                 ice.Transform:SetPosition(ex, y, ez)
             end
         end
-    end
+    end]]
 end
 
 function self:ArenaFinishCreating()
@@ -555,6 +559,26 @@ function self:ArenaFinishCreating()
 
     local x, y, z = self.arena.origin.x, self.arena.origin.y, self.arena.origin.z
     self.arena.fishinghole = self:CreateFishingHole(x, y, z)
+
+    -- NOTES(JBK): This is about 80 entities generated.
+    for r = TILE_SCALE, self.MAX_ARENA_SIZE * 4, TILE_SCALE * 2 do
+        for i = 1, math.max(r * 0.15, 2) do
+            local theta = math.random() * PI2
+            local rad = r + math.random() * TILE_SCALE
+            local ex, ez = x + rad * math.cos(theta), z + rad * math.sin(theta)
+            if TheSim:FindEntities(ex, y, ez, MAX_PHYSICS_RADIUS)[1] == nil then
+                local ice = SpawnPrefab("sharkboi_ice_hazard")
+                ice.Transform:SetPosition(ex, y, ez)
+                if r < self.MAX_ARENA_SIZE * 2 then
+                    ice:SetStage("tall")
+                elseif r < self.MAX_ARENA_SIZE * 3 then
+                    ice:SetStage("medium")
+                else
+                    ice:SetStage("short")
+                end
+            end
+        end
+    end
 
     -- Initialize event listeners hookups and other post processing.
     self:StartEventListeners()

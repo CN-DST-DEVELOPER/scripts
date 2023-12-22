@@ -18,7 +18,7 @@ end
 require "consolecommands"
 
 local fcts = {
-    string = function(value) return string_format('%q', value) end,
+    string = function(value) return string.format('%q', value) end,
     number = function(value) return value end,
     boolean = function(value) return tostring(value) end,
     ['nil'] = function(value) return 'nil' end,

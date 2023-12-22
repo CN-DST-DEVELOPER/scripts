@@ -310,6 +310,7 @@ function SkillTreeData:Load()
     self.activatedskills = {}
     self.skillxp = {}
     local needs_save = false
+    local really_bad_state = false
     TheSim:GetPersistentString("skilltree", function(load_success, data)
         if load_success and data ~= nil then
             local status, skilltree_data = pcall(function() return json.decode(data) end)
@@ -326,14 +327,32 @@ function SkillTreeData:Load()
                     self.activatedskills = skilltree_data.activatedskills
                     self.skillxp = skilltree_data.skillxp
                 else
+                    really_bad_state = true
                     print("Failed to load activated skills or skillxp tables in skilltree!")
                 end
             else
+                really_bad_state = true
                 print("Failed to load the data in skilltree!", status, skilltree_data)
             end
+        else
+            really_bad_state = true
+            print("Failed to load skilltree file itself!")
         end
     end)
+    if really_bad_state then
+        print("Trying to apply online cache of skilltree data..")
+        if self:ApplyOnlineProfileData() then
+            print("Was a success, using old stored XP values of:")
+            dumptable(self.skillxp)
+            print("Also using old stored skill selection values of:")
+            dumptable(self.activatedskills)
+            needs_save = true
+        else
+            print("Which also failed. This error is unrecoverable. Skill tree will be cleared.")
+        end
+    end
     if needs_save then
+        print("Saving skilltree file as a fixup.")
         self:Save(true, "LOADFIXUP")
     end
 end

@@ -1095,8 +1095,16 @@ local events =
                 inst.sg:GoToState("run_stop")
             end
         elseif not is_moving and should_move then
+			--V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+			if data and data.dir then
+				inst.Transform:SetRotation(data.dir)
+			end
             inst.sg:GoToState("run_start")
-        elseif data.force_idle_state and not (is_moving or should_move or inst.sg:HasStateTag("idle") or inst:HasTag("is_furling"))  then
+        elseif data.force_idle_state and not (is_moving or should_move or inst.sg:HasStateTag("idle") or inst:HasTag("is_furling")) then
+			--V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+			if data and data.dir then
+				inst.Transform:SetRotation(data.dir)
+			end
             inst.sg:GoToState("idle")
         end
     end),
@@ -12995,12 +13003,60 @@ local states =
                 inst.AnimState:PlayAnimation("lunge_pst")
                 inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
                 local pos = inst:GetPosition()
+				local dir
                 if pos.x ~= data.targetpos.x or pos.z ~= data.targetpos.z then
-                    inst:ForceFacePoint(data.targetpos:Get())
+					dir = inst:GetAngleToPoint(data.targetpos)
+					inst.Transform:SetRotation(dir)
                 end
                 if data.weapon.components.aoeweapon_lunge:DoLunge(inst, pos, data.targetpos) then
                     inst.SoundEmitter:PlaySound(data.weapon.components.aoeweapon_lunge.sound or "dontstarve/common/lava_arena/fireball")
-                    inst.Physics:Teleport(data.targetpos.x, 0, data.targetpos.z)
+
+					--Make sure we don't land direclty on world boundary, where
+					--physics may end up popping in the wrong direction to void
+					local x, z = data.targetpos.x, data.targetpos.z
+					if dir then
+						local theta = dir * DEGREES
+						local cos_theta = math.cos(theta)
+						local sin_theta = math.sin(theta)
+						local x1, z1
+						local map = TheWorld.Map
+						if not map:IsPassableAtPoint(x, 0, z) then
+							--scan for nearby land in case we were slightly off
+							--adjust position slightly toward valid ground
+							if map:IsPassableAtPoint(x + 0.1 * cos_theta, 0, z - 0.1 * sin_theta) then
+								x1 = x + 0.5 * cos_theta
+								z1 = z - 0.5 * sin_theta
+							elseif map:IsPassableAtPoint(x - 0.1 * cos_theta, 0, z + 0.1 * sin_theta) then
+								x1 = x - 0.5 * cos_theta
+								z1 = z + 0.5 * sin_theta
+							end
+						else
+							--scan to make sure we're not just on the edge of land, could result in popping to the wrong side
+							--adjust position slightly away from invalid ground
+							if not map:IsPassableAtPoint(x + 0.1 * cos_theta, 0, z - 0.1 * sin_theta) then
+								x1 = x - 0.4 * cos_theta
+								z1 = z + 0.4 * sin_theta
+							elseif not map:IsPassableAtPoint(x - 0.1 * cos_theta, 0, z + 0.1 * sin_theta) then
+								x1 = x + 0.4 * cos_theta
+								z1 = z - 0.4 * sin_theta
+							end
+						end
+
+						if x1 and map:IsPassableAtPoint(x1, 0, z1) then
+							x, z = x1, z1
+						end
+					end
+
+					--V2C: -physics doesn't resolve correctly if we teleport from
+					--      one point colliding with world to another point still
+					--      colliding with world.
+					--     -#HACK use mass change to force physics refresh.
+					local mass = inst.Physics:GetMass()
+					if mass > 0 then
+						inst.sg.statemem.restoremass = mass
+						inst.Physics:SetMass(mass + 1)
+					end
+					inst.Physics:Teleport(x, 0, z)
 
                     -- aoeweapon_lunge:DoLunge can get us out of the state!
                     -- And then, if onexit is run before this: bugs!
@@ -13025,6 +13081,12 @@ local states =
 
         timeline =
         {
+			FrameEvent(8, function(inst)
+				if inst.sg.statemem.restoremass ~= nil then
+					inst.Physics:SetMass(inst.sg.statemem.restoremass)
+					inst.sg.statemem.restoremass = nil
+				end
+			end),
             TimeEvent(12 * FRAMES, function(inst)
                 inst.components.bloomer:PopBloom("lunge")
             end),
@@ -13040,6 +13102,9 @@ local states =
         },
 
         onexit = function(inst)
+			if inst.sg.statemem.restoremass ~= nil then
+				inst.Physics:SetMass(inst.sg.statemem.restoremass)
+			end
             inst.components.bloomer:PopBloom("lunge")
             inst.components.colouradder:PopColour("lunge")
         end,

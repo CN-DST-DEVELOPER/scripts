@@ -719,7 +719,7 @@ local events =
 	EventHandler("sg_cancelmovementprediction", function(inst)
 		inst.sg:GoToState("idle", "cancel")
 	end),
-    EventHandler("locomote", function(inst)
+	EventHandler("locomote", function(inst, data)
 		--#HACK for hopping prediction: ignore busy when boathopping... (?_?)
 		if (inst.sg:HasStateTag("busy") or inst:HasTag("busy")) and
 			not (inst.sg:HasStateTag("boathopping") or inst:HasTag("boathopping")) then
@@ -746,6 +746,10 @@ local events =
         elseif is_moving and not should_move then
             inst.sg:GoToState("run_stop")
         elseif not is_moving and should_move then
+			--V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+			if data and data.dir then
+				inst.Transform:SetRotation(data.dir)
+			end
             inst.sg:GoToState("run_start")
         end
     end),

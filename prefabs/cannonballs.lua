@@ -5,27 +5,24 @@ local assets =
 
 local prefabs_item =
 {
-	"cannonball_rock",
+    "cannonball_rock",
 }
 
 local prefabs =
 {
-	"bullkelp_root",
-	"cannonball_used",
-	"crab_king_waterspout",
-	"wave_splash",
+    "bullkelp_root",
+    "cannonball_used",
+    "crab_king_waterspout",
+    "wave_splash",
 }
 
--- TODO: Move these to tuning.lua!
-local CANNONBALL_RADIUS = TUNING.CANNONBALL_RADIUS
-local CANNONBALL_DAMAGE = TUNING.CANNONBALL_DAMAGE
-local CANNONBALL_SPLASH_RADIUS = TUNING.CANNONBALL_SPLASH_RADIUS
-local CANNONBALL_SPLASH_DAMAGE_PERCENT = TUNING.CANNONBALL_SPLASH_DAMAGE_PERCENT
-local CANNONBALL_PASS_THROUGH_TIME_BUFFER = TUNING.CANNONBALL_PASS_THROUGH_TIME_BUFFER -- to prevent the cannonball from hitting the same target multiple times as it passes through
+local PROJECTILE_MUST_ONE_OF_TAGS = { "_combat", "_health", "blocker" }
+local PROJECTILE_EXCLUDE_TAGS = { "INLIMBO", "notarget", "noattack", "invisible", "playerghost" }
 
-local MUST_ONE_OF_TAGS = { "_combat", "_health", "blocker" }
-local PROJECTILE_EXCLUDETAGS = { "INLIMBO", "notarget", "noattack", "invisible", "playerghost" }
-local AREAATTACK_EXCLUDETAGS = { "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost" }
+local ONHIT_MUST_ONE_OF_TAGS = { "oceanfishable", "kelp", "_inventoryitem", "wave" }
+local ONHIT_EXCLUDE_TAGS = { "INLIMBO", "noattack", "flight", "invisible", "playerghost" }
+
+local AREAATTACK_EXCLUDE_TAGS = { "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost" }
 
 local INITIAL_LAUNCH_HEIGHT = 0.1
 local SPEED_XZ = 4
@@ -67,7 +64,7 @@ end
 local function OnHit(inst, attacker, target)
 
     -- Do splash damage upon hitting the ground
-    inst.components.combat:DoAreaAttack(inst, CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDETAGS)
+    inst.components.combat:DoAreaAttack(inst, TUNING.CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDE_TAGS)
 
     -- One last check to see if the projectile landed on a boat
     if target == nil then
@@ -86,8 +83,7 @@ local function OnHit(inst, attacker, target)
     local x, y, z = inst.Transform:GetWorldPosition()
     local position = inst:GetPosition()
 
-    -- NOTES (DiogoW): AREAATTACK_EXCLUDETAGS is in the wrong place, but "fixing it" will break some things. Needs more investigation.
-    local affected_entities = TheSim:FindEntities(x, 0, z, CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDETAGS) -- Set y to zero to look for objects floating on the ocean
+    local affected_entities = TheSim:FindEntities(x, 0, z, TUNING.CANNONBALL_SPLASH_RADIUS, nil, ONHIT_EXCLUDE_TAGS, ONHIT_MUST_ONE_OF_TAGS) -- Set y to zero to look for objects floating on the ocean
     for i, affected_entity in ipairs(affected_entities) do
         -- Look for fish in the splash radius, kill and spawn their loot if hit
         if affected_entity.components.oceanfishable ~= nil then
@@ -114,7 +110,7 @@ local function OnHit(inst, attacker, target)
                 if loot ~= nil then
                     loot.Transform:SetPosition(ae_x, ae_y, ae_z)
                     if loot.components.inventoryitem ~= nil then
-						loot.components.inventoryitem:InheritWorldWetnessAtTarget(affected_entity)
+                        loot.components.inventoryitem:InheritWorldWetnessAtTarget(affected_entity)
                     end
                     if loot.components.stackable ~= nil
                             and affected_entity.components.pickable.numtoharvest > 1 then
@@ -148,7 +144,7 @@ local function OnHit(inst, attacker, target)
 
         if TheWorld.components.dockmanager ~= nil then
             -- Damage any docks we hit.
-            TheWorld.components.dockmanager:DamageDockAtPoint(x, y, z, CANNONBALL_DAMAGE)
+            TheWorld.components.dockmanager:DamageDockAtPoint(x, y, z, TUNING.CANNONBALL_DAMAGE)
         end
     end
     inst:Remove()
@@ -157,20 +153,20 @@ end
 local function OnUpdateProjectile(inst)
     -- Look to hit targets while the cannonball is flying through the air
     local x, y, z = inst.Transform:GetWorldPosition()
-    local targets = TheSim:FindEntities(x, 0, z, CANNONBALL_RADIUS, PROJECTILE_EXCLUDETAGS, nil, MUST_ONE_OF_TAGS) -- Set y to zero to look for objects on the ground
+    local targets = TheSim:FindEntities(x, 0, z, TUNING.CANNONBALL_RADIUS, nil, PROJECTILE_EXCLUDE_TAGS, PROJECTILE_MUST_ONE_OF_TAGS) -- Set y to zero to look for objects on the ground
     for i, target in ipairs(targets) do
 
         -- Ignore hitting bumpers while flying through the air
         if target ~= nil and target ~= inst.components.complexprojectile.attacker and not target:HasTag("boatbumper") then
             -- Do damage to entities with health
-            if target.components.combat and GetTime() - target.components.combat.lastwasattackedtime > CANNONBALL_PASS_THROUGH_TIME_BUFFER then
-                target.components.combat:GetAttacked(inst, CANNONBALL_DAMAGE, nil)
+            if target.components.combat and GetTime() - target.components.combat.lastwasattackedtime > TUNING.CANNONBALL_PASS_THROUGH_TIME_BUFFER then
+                target.components.combat:GetAttacked(inst, TUNING.CANNONBALL_DAMAGE, nil)
             end
 
             -- Remove and do splash damage if it hits a wall
             if target:HasTag("wall") and target.components.health then
                 if not target.components.health:IsDead() then
-                    inst.components.combat:DoAreaAttack(inst, CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDETAGS)
+                    inst.components.combat:DoAreaAttack(inst, TUNING.CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDE_TAGS)
                     SpawnPrefab("cannonball_used").Transform:SetPosition(inst.Transform:GetWorldPosition())
                     inst:Remove()
                     return
@@ -201,7 +197,7 @@ local function common_fn(bank, build, anim, tag, isinventoryitem)
         inst.Physics:SetRestitution(0)
         inst.Physics:ClearCollisionMask()
         inst.Physics:CollidesWith(COLLISION.GROUND)
-        inst.Physics:SetSphere(CANNONBALL_RADIUS)
+        inst.Physics:SetSphere(TUNING.CANNONBALL_RADIUS)
         inst.Physics:SetCollides(false) -- The cannonball hitting targets will be handled in OnUpdateProjectile() with FindEntities()
 
         if not TheNet:IsDedicated() then
@@ -252,8 +248,8 @@ local function common_fn(bank, build, anim, tag, isinventoryitem)
     inst:AddComponent("complexprojectile")
 
     inst:AddComponent("combat")
-    inst.components.combat:SetDefaultDamage(CANNONBALL_DAMAGE)
-    inst.components.combat:SetAreaDamage(CANNONBALL_SPLASH_RADIUS, CANNONBALL_SPLASH_DAMAGE_PERCENT)
+    inst.components.combat:SetDefaultDamage(TUNING.CANNONBALL_DAMAGE)
+    inst.components.combat:SetAreaDamage(TUNING.CANNONBALL_SPLASH_RADIUS, TUNING.CANNONBALL_SPLASH_DAMAGE_PERCENT)
 
     return inst
 end
@@ -293,7 +289,7 @@ local function cannonball_item_fn()
     inst.projectileprefab = "cannonball_rock"
 
     inst.scrapbook_weapondamage = TUNING.CANNONBALL_DAMAGE
-    inst.scrapbook_areadamage = TUNING.CANNONBALL_DAMAGE * TUNING.CANNONBALL_SPLASH_DAMAGE_PERCENT    
+    inst.scrapbook_areadamage = TUNING.CANNONBALL_DAMAGE * TUNING.CANNONBALL_SPLASH_DAMAGE_PERCENT
 
     inst.entity:SetPristine()
 
@@ -313,4 +309,4 @@ local function cannonball_item_fn()
 end
 
 return Prefab("cannonball_rock", cannonball_fn, assets, prefabs),
-	Prefab("cannonball_rock_item", cannonball_item_fn, assets, prefabs_item)
+    Prefab("cannonball_rock_item", cannonball_item_fn, assets, prefabs_item)

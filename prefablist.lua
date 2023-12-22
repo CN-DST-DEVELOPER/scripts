@@ -981,6 +981,7 @@ PREFABFILES = {
   "shark",
   "sharkboi",
   "sharkboi_fx",
+  "sharkboi_ice_hazard",
   "sharkboi_icespike",
   "shatter",
   "shell_cluster",

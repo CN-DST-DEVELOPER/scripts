@@ -295,6 +295,7 @@ local LocoMotor = Class(function(self, inst)
     --self.isupdating = nil
     --self.predictrunspeed = nil
 	--self.predictexternalspeedmultiplier = nil
+	--self.pusheventwithdirection = false --mainly for players, to handle initial move dir, and not have to add "canrotate" to all interruptible states
 end,
 nil,
 {
@@ -919,7 +920,7 @@ function LocoMotor:WalkInDirection(direction, should_run)
     if self.directdrive then
         self:WalkForward()
     end
-    self.inst:PushEvent("locomote")
+	self.inst:PushEvent("locomote", self.pusheventwithdirection and { dir = direction } or nil)
     self:StartUpdatingInternal()
 end
 
@@ -943,7 +944,7 @@ function LocoMotor:RunInDirection(direction, throttle)
     if self.directdrive then
         self:RunForward()
     end
-    self.inst:PushEvent("locomote")
+	self.inst:PushEvent("locomote", self.pusheventwithdirection and { dir = direction } or nil)
     self:StartUpdatingInternal()
 end
 
@@ -1151,6 +1152,8 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
         end
     end
 
+	local facedir
+
     --Print(VERBOSITY.DEBUG, "OnUpdate", self.inst.prefab)
     if self.dest then
         --Print(VERBOSITY.DEBUG, "    w dest")
@@ -1262,7 +1265,8 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
                 end
             end
 
-            if not self.inst.sg or self.inst.sg:HasStateTag("canrotate") then
+			local canrotate = self.inst.sg == nil or self.inst.sg:HasStateTag("canrotate")
+			if canrotate or self.pusheventwithdirection then
                 --Print(VERBOSITY.DEBUG, "CANROTATE")
                 local facepos_x, facepos_y, facepos_z = destpos_x, destpos_y, destpos_z
 
@@ -1297,14 +1301,22 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
                     facepos_x, facepos_y, facepos_z = steppos_x, steppos_y, steppos_z
                 end
 
+				facedir = self.inst:GetAngleToPoint(facepos_x, facepos_y, facepos_z)
+
                 local x,y,z = self.inst.Physics:GetMotorVel()
                 if x < 0 then
-                    --Print(VERBOSITY.DEBUG, "SET ROT", facepos)
-                    local angle = self.inst:GetAngleToPoint(facepos_x, facepos_y, facepos_z)
-                    self.inst.Transform:SetRotation(180 + angle)
-                else
-                    --Print(VERBOSITY.DEBUG, "FACE PT", facepos)
-                    self.inst:FacePoint(facepos_x, facepos_y, facepos_z)
+					facedir = facedir + 180
+					if canrotate then
+						--V2C: matching legacy behaviour, where this ignores busy state
+						--Print(VERBOSITY.DEBUG, "SET ROT", facedir)
+						self.inst.Transform:SetRotation(facedir)
+					end
+				elseif canrotate and not (self.inst.sg and self.inst.sg:HasStateTag("busy")) then
+					--V2C: while I'd like to remove the busy check,
+					--     we'll keep it to match legacy behaviour:
+					--     it used to call self.inst:FacePoint(...)
+					--Print(VERBOSITY.DEBUG, "FACE PT", Point(facepos_x, facepos_y, facepos_z))
+					self.inst.Transform:SetRotation(facedir)
                 end
             end
 
@@ -1331,7 +1343,7 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
     end
 
     if should_locomote then
-        self.inst:PushEvent("locomote")
+		self.inst:PushEvent("locomote", self.pusheventwithdirection and facedir and { dir = facedir } or nil)
     elseif not self.wantstomoveforward and not self:WaitingForPathSearch() then
         self:ResetPath()
         self:StopUpdatingInternal()

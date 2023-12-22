@@ -128,6 +128,20 @@ local function launch_away(item, position)
     item.Physics:SetVel(SPEED * cosa, 2 + SPEED, SPEED * sina)
 end
 
+local FLOATEROBJECT_TAGS = {"floaterobject"}
+function self:FixupFloaterObjects(x, z, tile_radius_plus_overhang, is_ocean_tile)
+    local floaterobjects = TheSim:FindEntities(x, 0, z, tile_radius_plus_overhang, FLOATEROBJECT_TAGS)
+    for _, floaterobject in ipairs(floaterobjects) do
+        if floaterobject.components.floater then
+            local fx, fy, fz = floaterobject.Transform:GetWorldPosition()
+            if is_ocean_tile or _map:IsOceanTileAtPoint(fx, fy, fz) then
+                floaterobject:PushEvent("on_landed")
+            else
+                floaterobject:PushEvent("on_no_longer_landed")
+            end
+        end
+    end
+end
 function self:CreateIceAtTile(tile_x, tile_y, x, z)
     local current_tile = nil
     local undertile = _world.components.undertile
@@ -200,6 +214,7 @@ function self:CreateIceAtTile(tile_x, tile_y, x, z)
             ent.components.inventoryitem:SetLanded(false, true)
         end
     end
+    self:FixupFloaterObjects(x, z, tile_radius_plus_overhang)
 
     return true
 end
@@ -255,7 +270,9 @@ function self:DestroyIceAtPoint(x, y, z)
 
     local dx, dy, dz = _map:GetTileCenterPoint(tile_x, tile_y)
 
-    if IsOceanTile(old_tile) then
+    local tile_radius_plus_overhang = ((TILE_SCALE / 2) + 1.0) * 1.4142
+    local is_ocean_tile = IsOceanTile(old_tile)
+    if is_ocean_tile then
         local icefloe = nil
 
         local floe_vector_x, floe_vector_y = 0, 0
@@ -277,17 +294,15 @@ function self:DestroyIceAtPoint(x, y, z)
             local push_x, push_z = x - offset_tile_x, z - offset_tile_z
             local pushnormal_x, pushnormal_z = VecUtil_NormalizeNoNaN(push_x, push_z)
 
-            icefloe = SpawnPrefab("boat_ice")
-            icefloe.Transform:SetPosition(
-                dx + (TUNING.OCEAN_ICE_RADIUS * pushnormal_x),
-                0,
-                dz + (TUNING.OCEAN_ICE_RADIUS * pushnormal_z)
-            )
-            icefloe.components.boatphysics:ApplyRowForce(pushnormal_x, pushnormal_z, TUNING.OCEAN_ICE_BREAK_FORCE, 10.0)
+            local bx, bz = dx + (TUNING.OCEAN_ICE_RADIUS * pushnormal_x), dz + (TUNING.OCEAN_ICE_RADIUS * pushnormal_z)
+            if TheSim:FindEntities(bx, 0, bz, MAX_PHYSICS_RADIUS, FLOATEROBJECT_TAGS)[1] == nil then
+                icefloe = SpawnPrefab("boat_ice")
+                icefloe.Transform:SetPosition(bx, 0, bz)
+                icefloe.components.boatphysics:ApplyRowForce(pushnormal_x, pushnormal_z, TUNING.OCEAN_ICE_BREAK_FORCE, 10.0)
+            end
         end
 
         -- Behaviour pulled from walkableplatform's onremove/DestroyObjectsOnPlatform response.
-        local tile_radius_plus_overhang = ((TILE_SCALE / 2) + 1.0) * 1.4142
         local entities_near_ice = TheSim:FindEntities(x, 0, z, tile_radius_plus_overhang, nil, IGNORE_ICE_DROWNING_ONREMOVE_TAGS)
         for _, ent in ipairs(entities_near_ice) do
             if ent ~= icefloe then
@@ -315,6 +330,7 @@ function self:DestroyIceAtPoint(x, y, z)
             end
         end
     end
+    self:FixupFloaterObjects(x, z, tile_radius_plus_overhang, is_ocean_tile)
 
     -- Throw out some loot for presentation.
     SpawnPrefab("fx_ice_pop").Transform:SetPosition(dx, 0, dz)
