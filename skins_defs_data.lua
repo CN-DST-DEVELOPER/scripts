@@ -3693,6 +3693,7 @@ TheInventory:AddSkinDLCInput( "pack_wurt_deluxe", 1167330, 0 )
 TheInventory:AddSkinDLCInput( "pack_yotc_bundle", 1230830, 0 )
 TheInventory:AddSkinDLCInput( "pack_yule_all", 1205500, 0 )
 TheInventory:AddSkinDLCInput( "pack_yule_all2", 1836630, 0 )
+TheInventory:AddSkinDLCInput( "pack_yule_all3", 2769680, 0 )
 TheInventory:AddSkinDLCInput( "pack_yule_items", 1205501, 0 )
 
 TheInventory:AddCookBookKey( "asparagussoup" )

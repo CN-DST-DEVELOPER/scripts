@@ -925,6 +925,7 @@ local function ice_fn()
         item_collision_prefab = "boat_ice_item_collision",
         boatlip_prefab = "boatlip_ice",
         stategraph = "SGboat_ice",
+        fireproof = true,
     }
 
     inst = create_common_pre(inst, bank, build, OCEANICE_BOAT_DATA)
@@ -977,7 +978,7 @@ local function ice_fn()
     end)
 
     inst.sinkloot = function()
-        local ignitefragments = (inst.activefires > 0)
+        local ignitefragments = false --(inst.activefires > 0)
         local locus_point = inst:GetPosition()
         local num_loot = 3
         local loot_angle = PI2/num_loot

@@ -7,6 +7,8 @@ local assets =
 
 local prefabs =
 {
+	"ash",
+	"charcoal",
     "campfirefire",
     "collapse_small",
 	"cotl_tabernacle_level2",
@@ -177,6 +179,13 @@ local function OnSave(inst, data)
     data.queued_charcoal = inst.queued_charcoal or nil
 end
 
+local function OnPreLoad(inst)
+	--V2C: -charcoal gets queued from constructor maxing out fuel level
+	--     -need to clear that before loading, otherwise extinguished
+	--      save data will drop an extra charcoal
+	inst.queued_charcoal = nil
+end
+
 local function OnLoad(inst, data)
     if data ~= nil and data.queued_charcoal then
         inst.queued_charcoal = true
@@ -246,6 +255,7 @@ local function fn(data)
 
     inst.disable_charcoal = data.disable_charcoal
     inst.OnSave = OnSave
+	inst.OnPreLoad = OnPreLoad
     inst.OnLoad = OnLoad
 
 	if data.construction_product then

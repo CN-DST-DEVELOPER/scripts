@@ -18,8 +18,8 @@ local function onrestrictedtag(self, restrictedtag)
     end
 end
 
-local function onpreventunequipping(self, equipslot)
-    self.inst.replica.equippable:SetPreventUnequipping(true)
+local function onpreventunequipping(self, prevent)
+    self.inst.replica.equippable:SetPreventUnequipping(prevent)
 end
 
 local Equippable = Class(function(self, inst)

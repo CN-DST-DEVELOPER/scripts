@@ -513,7 +513,7 @@ function HermitBrain:OnStart()
             IfNode( function() return not self.inst.sg:HasStateTag("busy") and TheWorld.state.issnowing and has_coat(self.inst) and not using_coat(self.inst) end, "coat",
                     DoAction(self.inst, EquipCoat, "coat", true )),
             IfNode( function() return not self.inst.sg:HasStateTag("busy") and not TheWorld.state.issnowing and using_coat(self.inst) end, "stop coat",
-                    DoAction(self.inst, UnEquipBody, "stop umbrella", true )),
+                    DoAction(self.inst, UnEquipBody, "stop coat", true )),
 
             DoAction(self.inst, DoThrow, "toss item", true ),
             DoAction(self.inst, DoTalkQueue, "finish talking", true ),

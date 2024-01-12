@@ -180,7 +180,7 @@ end
 
 -- This is roughly equivalent to OnDisable
 function Button:OnSelect()
-	if self.down then
+	if self.down and not self.AllowOnControlWhenSelected then
 		self.down = false
 		self:ResetPreClickPosition()
 		self:StopUpdating()

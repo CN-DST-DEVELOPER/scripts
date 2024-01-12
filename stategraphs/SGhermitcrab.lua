@@ -4098,8 +4098,6 @@ local states =
 
                     inst.sg.statemem.chair = chair
 
-                    inst.components.timer:StartTimer("sat_on_chair", TUNING.TOTAL_DAY_TIME)
-
                     inst.sg.statemem.nofaced = chair:HasTag("limited_chair")
                     if inst.sg.statemem.nofaced then
                         inst.Transform:SetNoFaced()

@@ -1844,7 +1844,7 @@ return{
         CHESSPIECE_DAYWALKER = "Wolfgang has bigger muscles, see?",
         CHESSPIECE_DEERCLOPS_MUTATED = "Wolfgang not scared of statue, but be careful with pointy part.",
         CHESSPIECE_WARG_MUTATED = "Cute doggy, but dead is better.",
-        CHESSPIECE_BEARGER_MUTATED = "Wolfgang stronger than bear. Just have off day.",
+        CHESSPIECE_BEARGER_MUTATED = "Wolfgang stronger than bear. Even weird bear.",
 
         CHESSJUNK1 = "Metal junk.",
         CHESSJUNK2 = "Metal junk.",

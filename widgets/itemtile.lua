@@ -292,7 +292,7 @@ function ItemTile:Refresh()
         self.item.replica.inventoryitem:DeserializeUsage()
     end
 
-    if not self.isactivetile then
+	if not self.isactivetile and self.wetness then
         if self.item:GetIsWet() then
             self.wetness:Show()
         else

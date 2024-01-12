@@ -329,15 +329,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "bernie",
             tags = {"lock"},
             root = true,
-            lock_open = function(prefabname, activatedskills, readonly) 
-                if readonly then
-                    return "question"
-                end
-
+            lock_open = function(prefabname, activatedskills, readonly)
                 local bernie_skills = SkillTreeFns.CountTags(prefabname, "bernie", activatedskills)
                 return bernie_skills >= 4
-
-                --return true
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -389,15 +383,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "bernie",
             tags = {"lock"},
             root = true,
-            lock_open = function(prefabname, activatedskills, readonly) 
-                if readonly then
-                    return "question"
-                end
-
+            lock_open = function(prefabname, activatedskills, readonly)
                 local bernie_skills = SkillTreeFns.CountTags(prefabname, "bernie", activatedskills)
                 return bernie_skills >= 8
-
-                --return true
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -432,14 +420,17 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, activatedskills, readonly) 
+            lock_open = function(prefabname, activatedskills, readonly)
+                local lunar_skills = SkillTreeFns.CountTags(prefabname, "lunar_favor", activatedskills)
+                if lunar_skills > 0 then
+                    return false
+                end
+
                 if readonly then
                     return "question"
                 end
-                local lunar_skills = SkillTreeFns.CountTags(prefabname, "lunar_favor", activatedskills)
 
-                return lunar_skills <=0 and TheGenericKV:GetKV("fuelweaver_killed") == "1"
-                --return true
+                return TheGenericKV:GetKV("fuelweaver_killed") == "1"
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -458,13 +449,8 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"allegiance","lock"},
             root = true,            
             lock_open = function(prefabname, activatedskills, readonly) 
-                if readonly then
-                    return "question"
-                end
-
                 local bernie_skills = SkillTreeFns.CountTags(prefabname, "bernie", activatedskills)
                 return bernie_skills >= 6
-                --return true
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -482,14 +468,8 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"allegiance","lock"},
             root = true,
             lock_open = function(prefabname, activatedskills, readonly) 
-                if readonly then
-                    return "question"
-                end
-                
                 local lighter_skills = SkillTreeFns.CountTags(prefabname, "lighter", activatedskills)
                 return lighter_skills >= 7
-
-                --return true
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -563,15 +543,17 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, activatedskills, readonly) 
+            lock_open = function(prefabname, activatedskills, readonly)
+                local shadow_skills = SkillTreeFns.CountTags(prefabname, "shadow_favor", activatedskills)
+                if shadow_skills > 0 then
+                    return false
+                end
+
                 if readonly then
                     return "question"
                 end
-                local shadow_skills = SkillTreeFns.CountTags(prefabname, "shadow_favor", activatedskills)
 
-                return shadow_skills <= 0 and TheGenericKV:GetKV("celestialchampion_killed") == "1"
-
-                --return true
+                return TheGenericKV:GetKV("celestialchampion_killed") == "1"
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -589,14 +571,8 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"allegiance","lock"},
             root = true,
             lock_open = function(prefabname, activatedskills, readonly) 
-                if readonly then
-                    return "question"
-                end
-                
                 local lighter_skills = SkillTreeFns.CountTags(prefabname, "lighter", activatedskills)
                 return lighter_skills >= 7
-
-                --return true
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")
@@ -613,15 +589,9 @@ local function BuildSkillsData(SkillTreeFns)
             group = "allegiance",
             tags = {"allegiance","lock"},
             root = true,
-            lock_open = function(prefabname, activatedskills, readonly) 
-                if readonly then
-                    return "question"
-                end
-
+            lock_open = function(prefabname, activatedskills, readonly)
                 local bernie_skills = SkillTreeFns.CountTags(prefabname, "bernie", activatedskills)
                 return bernie_skills >= 6
-
-                --return true
             end,            
             onactivate = function(inst, fromload)
                     --inst:AddTag("alchemist")

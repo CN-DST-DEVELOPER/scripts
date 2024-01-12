@@ -4849,8 +4849,8 @@ STRINGS =
 
         WATHGRITHR_SHIELD = "A shield can be a weapon too, if it believes in itself.",
 
-        BATTLESONG_SHADOWALIGNED = "Ward yourself and your allies against lunar foes.",
-        BATTLESONG_LUNARALIGNED = "Ward yourself and your allies against shadowy foes.",
+        BATTLESONG_SHADOWALIGNED = "Ward yourself and your allies against shadow attacks, and deal heavier blows to lunar foes.",
+        BATTLESONG_LUNARALIGNED = "Ward yourself and your allies against lunar attacks, and deal heavier blows to shadowy foes.",
 
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 

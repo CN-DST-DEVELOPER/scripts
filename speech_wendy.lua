@@ -2928,7 +2928,7 @@ return{
 
         YOTB_BEEFALOSHRINE =
         {
-            GENERIC = "The highest honor this beast of burden will likely ever recieve.",
+            GENERIC = "The highest honor this beast of burden will likely ever receive.",
             EMPTY = "It demands an offering.",
             BURNT = "There's nothing left of it.",
         },

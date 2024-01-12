@@ -1655,10 +1655,6 @@ local function UseWereFormSkill(inst, act)
             inst.Physics:Teleport(pos.x, 0, pos.z)
             inst:ResetMinimapOffset()
             inst:SnapCamera()
-
-            if TheWorld and TheWorld.components.walkableplatformmanager then -- NOTES(JBK): Workaround for teleporting too far causing the client to lose sync.
-                TheWorld.components.walkableplatformmanager:PostUpdate(0)
-            end
         end
     end
 end

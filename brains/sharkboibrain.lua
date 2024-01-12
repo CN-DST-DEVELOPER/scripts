@@ -11,6 +11,16 @@ local SharkboiBrain = Class(Brain, function(self, inst)
 	Brain._ctor(self, inst)
 end)
 
+--see "idle" state
+local function TryRestoreCanRotate(inst)
+	if inst.sg:HasStateTag("try_restore_canrotate") then
+		inst.sg:RemoveStateTag("try_restore_canrotate")
+		inst.sg:AddStateTag("canrotate")
+		inst.Transform:SetFourFaced()
+		inst.components.locomotor.pusheventwithdirection = false
+	end
+end
+
 local function GetTarget(inst)
 	return inst.components.combat.target
 end
@@ -26,7 +36,10 @@ end
 
 local function GetNearbyPlayerFn(inst)
 	local player, distsq = FindClosestPlayerToInst(inst, 6, true)
-	return player
+	if player then
+		TryRestoreCanRotate(inst)
+		return player
+	end
 end
 
 local function KeepNearbyPlayerFn(inst, target)
@@ -42,6 +55,7 @@ local function _GetTraderFn(inst, minrangesq, maxrangesq)
 				local distsq = v:GetDistanceSqToPoint(x, y, z)
 				if distsq < maxrangesq and distsq >= minrangesq and inst.components.trader:IsTryingToTradeWithMe(v) then
 					inst:SetIsTradingFlag(true, 0.5 + FRAMES)
+					TryRestoreCanRotate(inst)
 					return v
 				end
 			end

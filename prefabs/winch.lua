@@ -108,7 +108,6 @@ local function turn_off_boat_drag(inst)
 end
 
 local function turn_on_boat_drag(inst, boat, duration)
-	boat = boat
 	if boat == nil then
 		return nil
 	end

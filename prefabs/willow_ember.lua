@@ -141,6 +141,8 @@ local function ThrowFire_SpawnFire(inst, doer, pos)
                     end
                 end
             end
+        elseif target ~= doer and target:HasTag("canlight") then
+            target:PushEvent("onlighterlight")
         end
     end
 end

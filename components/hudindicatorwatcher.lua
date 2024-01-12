@@ -1,6 +1,10 @@
 --local TIMEOUT = 20
 
 local function OnItemExited(self, item)
+    if self.inst.HUD == nil then
+        return
+    end
+
     for i, v in ipairs(self.offScreenItems) do
         if v == item then
             self.inst.HUD:RemoveTargetIndicator(v)
@@ -15,7 +19,8 @@ local HudIndicatorWatcher = Class(function(self, inst)
 
     self.offScreenItems = {}
     self.onScreenItemsLastTick = {}
-    -- self.recentTargetRemoved = {}
+    --self.recentTargetRemoved = {}
+
     self.onitemexited = function(world, item)
         OnItemExited(self, item)
     end
@@ -27,20 +32,27 @@ local HudIndicatorWatcher = Class(function(self, inst)
 end)
 
 function HudIndicatorWatcher:OnRemoveFromEntity()
-    if self.offScreenItems ~= nil then
-        self.inst:RemoveEventCallback("playerexited", self.onitemexited, TheWorld)
-        self.inst:RemoveEventCallback("unregister_hudindicatable", self.onitemexited, TheWorld)
-        for i, v in ipairs(self.offScreenItems) do
-            self.inst.HUD:RemoveTargetIndicator(v)
-        end
-        self.offScreenItems = nil
+    if self.offScreenItems == nil then
+        return
     end
+
+    self.inst:RemoveEventCallback("playerexited", self.onitemexited, TheWorld)
+    self.inst:RemoveEventCallback("unregister_hudindicatable", self.onitemexited, TheWorld)
+
+    if self.inst.HUD == nil then
+        return
+    end
+
+    for i, v in ipairs(self.offScreenItems) do
+        self.inst.HUD:RemoveTargetIndicator(v)
+    end
+
+    self.offScreenItems = nil
 end
 
 HudIndicatorWatcher.OnRemoveEntity = HudIndicatorWatcher.OnRemoveFromEntity
 
 function HudIndicatorWatcher:ShouldShowIndicator(target)
-
     return target.components.hudindicatable:ShouldTrack(self.inst)
       --  and table.contains(self.onScreenItemsLastTick, target)
 end
@@ -50,6 +62,10 @@ function HudIndicatorWatcher:ShouldRemoveIndicator(target)
 end
 
 function HudIndicatorWatcher:OnUpdate()
+    if self.inst.HUD == nil then
+        return
+    end
+
     local checked = {}
 
     --Check which indicators' players have moved within view or too far
@@ -76,6 +92,7 @@ function HudIndicatorWatcher:OnUpdate()
                 end
             end
         end
+
         --[[
         self.onScreenItemsLastTick = {}
          for i, v in pairs(TheWorld.components.hudindicatablemanager.items) do
@@ -85,7 +102,6 @@ function HudIndicatorWatcher:OnUpdate()
         end
         ]]
     end
-
 end
 
 return HudIndicatorWatcher

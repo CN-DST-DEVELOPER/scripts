@@ -2988,10 +2988,20 @@ local function UpdateControllerConflictingTargets(self)
     end
     -- NOTES(JBK): This is for handling when there are two targets on a controller but one should take super priority over the other.
     -- Most of this will be workarounds in appearance as there are no sure fire ways to guarantee what two entities should be prioritized by actions alone as they need additional context.
-    if target:HasTag("mermthrone") and attacktarget:HasTag("merm") then
-        -- Inspecting a throne but could interact with a Merm, Merm takes priority.
-        target = attacktarget
-        self.controller_target_age = 0
+    if target ~= attacktarget then
+        if target:HasTag("mermthrone") and attacktarget:HasTag("merm") then
+            -- Inspecting a throne but could interact with a Merm, Merm takes priority.
+            target = attacktarget
+            self.controller_target_age = 0
+        elseif target:HasTag("crabking_claw") and attacktarget:HasTag("crabking_claw") then
+            -- Two claws let us try targeting the closest one because it will most likely be the one next to a boat.
+            if self.inst:GetDistanceSqToInst(target) < self.inst:GetDistanceSqToInst(attacktarget) then
+                attacktarget = target
+            else
+                target = attacktarget
+                self.controller_target_age = 0
+            end
+        end
     end
 
     self.controller_target, self.controller_attack_target = target, attacktarget
@@ -3282,6 +3292,7 @@ function PlayerController:DoClientBusyOverrideLocomote()
 	--     the state itself is still busy.
 	if not self.ismastersim and
 		self.handler ~= nil and
+		self.classified and
 		self.classified.busyremoteoverridelocomote:value() and
 		GetWorldControllerVector() ~= nil
 	then

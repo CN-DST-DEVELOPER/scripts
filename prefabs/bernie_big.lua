@@ -197,6 +197,13 @@ local function KeepTargetFn(inst, target)
     return inst.components.combat:CanTarget(target) and inst:IsNear(target, TARGET_DIST) and not target:HasTag("retaliates")
 end
 
+local function ShouldAggro(combat, target)
+    if target:HasTag("player") then
+        return TheNet:GetPVPEnabled()
+    end
+    return true
+end
+
 local function OnAttacked(inst, data)
     local attacker = data ~= nil and data.attacker or nil
     if attacker ~= nil and not PreventTargetingOnAttacked(inst, attacker, TheNet:GetPVPEnabled() and "bernieowner" or "player") then
@@ -676,6 +683,7 @@ local function fn()
     inst.components.combat:SetRange(TUNING.BERNIE_BIG_ATTACK_RANGE, TUNING.BERNIE_BIG_HIT_RANGE)
     inst.components.combat:SetRetargetFunction(1, RetargetFn)
     inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
+    inst.components.combat:SetShouldAggroFn(ShouldAggro)
     inst.components.combat.battlecryinterval = 16
     inst.components.combat.hiteffectsymbol = "body"
 

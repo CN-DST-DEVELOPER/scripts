@@ -52,37 +52,31 @@ local function settarget(inst,target,life,source)
             local theta = inst.Transform:GetRotation() * DEGREES
             local radius = CLOSERANGE
 
-			if target == nil or
-				not (target:IsValid() and target.entity:IsVisible()) or
-				target:IsInLimbo() or
-				target.components.health:IsDead() or
-				(target.sg and target.sg:HasStateTag("noattack")) or
-				target:HasTag("invisible") or
-				target:HasTag("notarget") or
-				target:HasTag("flight")
-			then
+			if not (source and source.components.combat and source:IsValid()) then
+				target = nil
+				inst.shadow_ember_target = nil
+			elseif target == nil or not source.components.combat:CanTarget(target) then
 				target = nil
                 inst.shadow_ember_target = nil
 
-                local pos = Vector3(inst.Transform:GetWorldPosition())
-				local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 20, TARGETS_MUST, TARGETS_CANT, TARGETS_ONEOF)
-
-                local targets = {}
-                local flameents = TheSim:FindEntities(pos.x, pos.y, pos.z, 20, FLAME_MUST)
-                for i,flame in ipairs(flameents)do
-                    if flame.shadow_ember_target then
-                        targets[flame.shadow_ember_target] = true
-                    end
-                end
-
+				local x, y, z = inst.Transform:GetWorldPosition()
+				local ents = TheSim:FindEntities(x, y, z, 20, TARGETS_MUST, TARGETS_CANT, TARGETS_ONEOF)
                 if #ents > 0 then
+					local targets = {}
+					local flameents = TheSim:FindEntities(x, y, z, 20, FLAME_MUST)
+					for i, flame in ipairs(flameents) do
+						if flame.shadow_ember_target then
+							targets[flame.shadow_ember_target] = true
+						end
+					end
+
 					for i, ent in ipairs(ents) do
 						if not targets[ent] and
-							ent.entity:IsVisible() and
 							(	ent:HasTag("hostile") or
 								(ent.components.combat and ent.components.combat:TargetIs(source))
 							) and
-                            not (ent.components.follower and ent.components.follower:GetLeader() == source)
+							not (ent.components.follower and ent.components.follower:GetLeader() == source) and
+							source.components.combat:CanTarget(ent)
                         then
 							target = ent
 							inst.shadow_ember_target = target
@@ -91,6 +85,7 @@ local function settarget(inst,target,life,source)
                     end
                 end
             end
+
 			if target then
                 local dist = inst:GetDistanceSqToInst(target)
 

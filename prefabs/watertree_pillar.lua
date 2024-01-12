@@ -425,6 +425,7 @@ local function fn()
 
     inst:AddTag("cocoon_home")
     inst:AddTag("shadecanopy")
+    inst:AddTag("ignorewalkableplatforms")
 
     inst.MiniMapEntity:SetIcon("oceantree_pillar.png")
 

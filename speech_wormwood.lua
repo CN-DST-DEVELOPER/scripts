@@ -2224,7 +2224,7 @@ return{
 		KNIGHT = "Neigh machine",
 		KOALEFANT_SUMMER = "Bruamp! Bruamp!",
 		KOALEFANT_WINTER = "Bruamp! Bruamp!",
-		KOALEFANT_CARCASS = "Braump...? Not anymore",
+		KOALEFANT_CARCASS = "Bruamp...? Not anymore",
 		KRAMPUS = "Mean Branch Head",
 		KRAMPUS_SACK = "Full of stuff?",
 		LEIF = "Hello!... Hello?",

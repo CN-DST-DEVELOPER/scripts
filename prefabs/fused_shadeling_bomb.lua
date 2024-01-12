@@ -131,7 +131,7 @@ local function do_full_explode(inst)
             GetRandomWithVariance(initial_angle + i * angle_per_bomb, PI/6)
         )
     end
-    inst:DoTaskInTime((EXTRA_QUICKFUSE_BOMBS + 1) * EXTRA_QUICKFUSE_TIMEPERBOMB)
+    inst:DoTaskInTime((EXTRA_QUICKFUSE_BOMBS + 1) * EXTRA_QUICKFUSE_TIMEPERBOMB, inst.Remove)
 
     do_explosion_effect(inst, ix, iy, iz)
 
@@ -307,6 +307,7 @@ local function death_fx_fn()
     inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
 
     inst.persists = false
+    inst:ListenForEvent("animover", inst.Remove)
 
     return inst
 end

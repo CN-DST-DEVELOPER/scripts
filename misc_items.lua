@@ -6141,6 +6141,7 @@ MISC_ITEMS =
 		type = "purchase",
 		skin_tags = { },
 		featured_pack = true,
+		steam_dlc_id = 2769680,
 		display_order = 1,
 		build_name_override = "pack_ice_all",
 		display_atlas = "images/iap_images_yule3.xml",

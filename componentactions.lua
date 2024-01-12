@@ -391,12 +391,18 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        inspectable = function(inst, doer, actions)
+		inspectable = function(inst, doer, actions, right)
             if inst ~= doer and
                 (doer.CanExamine == nil or doer:CanExamine()) and
                 (doer.sg == nil or (doer.sg:HasStateTag("idle") and not doer.sg:HasStateTag("moving") or doer.sg:HasStateTag("channeling"))) and
                 (doer:HasTag("idle") and not doer:HasTag("moving") or doer:HasTag("channeling")) then
                 --Check state graph as well in case there is movement prediction
+
+				--@V2C: #FORGE_AOE_RCLICK *searchable*
+				--      -Forge used to strip ALL r.click actions, so now we manually strip LOOKAT action.
+				if right and doer.components.playercontroller and doer.components.playercontroller:HasAOETargeting() then
+					return
+				end
                 table.insert(actions, ACTIONS.LOOKAT)
             end
         end,

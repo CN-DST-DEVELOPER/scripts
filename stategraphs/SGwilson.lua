@@ -13011,7 +13011,7 @@ local states =
                 if data.weapon.components.aoeweapon_lunge:DoLunge(inst, pos, data.targetpos) then
                     inst.SoundEmitter:PlaySound(data.weapon.components.aoeweapon_lunge.sound or "dontstarve/common/lava_arena/fireball")
 
-					--Make sure we don't land direclty on world boundary, where
+					--Make sure we don't land directly on world boundary, where
 					--physics may end up popping in the wrong direction to void
 					local x, z = data.targetpos.x, data.targetpos.z
 					if dir then
@@ -15712,9 +15712,6 @@ local states =
 
             if data.warpback_data ~= nil then
                 inst.Physics:Teleport(data.warpback_data.dest_x, data.warpback_data.dest_y, data.warpback_data.dest_z)
-                if TheWorld and TheWorld.components.walkableplatformmanager then -- NOTES(JBK): Workaround for teleporting too far causing the client to lose sync.
-                    TheWorld.components.walkableplatformmanager:PostUpdate(0)
-                end
             end
             inst:PushEvent("onwarpback", data.warpback_data)
 
@@ -16055,9 +16052,6 @@ local states =
             local dest = data and data.dest or nil
             if dest ~= nil then
                 inst.Physics:Teleport(dest:Get())
-                if TheWorld and TheWorld.components.walkableplatformmanager then -- NOTES(JBK): Workaround for teleporting too far causing the client to lose sync.
-                    TheWorld.components.walkableplatformmanager:PostUpdate(0)
-                end
             else
                 dest = inst:GetPosition()
             end
@@ -18845,6 +18839,7 @@ local states =
 
 			inst.AnimState:PlayAnimation("slip_pre")
 			inst.AnimState:PushAnimation("slip_loop", false)
+			inst.SoundEmitter:PlaySound("dontstarve/movement/iceslab_slipping")
 
 			inst.sg.statemem.speed = inst.components.locomotor:GetRunSpeed()
 			inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.6, 0, 0)
@@ -18878,6 +18873,7 @@ local states =
 		timeline =
 		{
 			FrameEvent(6, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.3, 0, 0) end),
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("dontstarve/movement/iceslab_slipping") end),
 			FrameEvent(12, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.25, 0, 0) end),
 			FrameEvent(18, function(inst) inst.Physics:SetMotorVel(inst.sg.statemem.speed * 0.2, 0, 0) end),
 
@@ -18890,6 +18886,7 @@ local states =
 				else
 					inst.sg.statemem.trackcontrol = false
 				end
+				inst.SoundEmitter:PlaySound("dontstarve/movement/iceslab_slipping", nil, 0.5)
 			end),
 		},
 
@@ -18967,6 +18964,7 @@ local states =
 			end
 
 			inst.AnimState:PlayAnimation("slip_fall_pre")
+			inst.SoundEmitter:PlaySound("dontstarve/movement/slip_fall_whoop")
 
 			if speed then
 				inst.sg.statemem.speed = speed
@@ -18976,10 +18974,7 @@ local states =
 
 		timeline =
 		{
-			FrameEvent(9, function(inst)
-				inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
-				PlayFootstep(inst)
-			end),
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("dontstarve/movement/slip_fall_thud") end),
 			FrameEvent(11, function(inst)
 				DoHurtSound(inst)
 				if inst.sg.statemem.speed then

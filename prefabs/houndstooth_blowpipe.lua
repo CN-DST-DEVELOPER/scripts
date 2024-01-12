@@ -82,6 +82,7 @@ local function OnAmmoLoaded(inst, data)
         inst.components.weapon:SetProjectile("houndstooth_proj")
         inst.components.weapon:SetRange(TUNING.HOUNDSTOOTH_BLOWPIPE_ATTACK_DIST, TUNING.HOUNDSTOOTH_BLOWPIPE_ATTACK_DIST_MAX)
         inst:AddTag("blowpipe") -- For SG state.
+        inst:AddTag("rangedweapon")
     end
 end
 
@@ -90,6 +91,7 @@ local function OnAmmoUnloaded(inst, data)
         inst.components.weapon:SetProjectile(nil)
         inst.components.weapon:SetRange(nil)
         inst:RemoveTag("blowpipe") -- For SG state.
+        inst:RemoveTag("rangedweapon")
     end
 end
 
@@ -187,8 +189,6 @@ local function WeaponFn()
     inst.AnimState:SetBank("blow_dart")
     inst.AnimState:SetBuild("blow_dart")
     inst.AnimState:PlayAnimation("idle_houndstooth")
-
-    inst:AddTag("rangedweapon")
 
     --weapon (from weapon component) added to pristine state for optimization.
     inst:AddTag("weapon")

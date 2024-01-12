@@ -63,9 +63,13 @@ local events =
 	CommonHandlers.OnSleepEx(),
 	CommonHandlers.OnWakeEx(),
 
-	EventHandler("locomote", function(inst)
+	EventHandler("locomote", function(inst, data)
 		if inst.components.locomotor:WantsToMoveForward() then
 			if inst.sg:HasStateTag("idle") then
+				--V2C: in case we were in "idle" without "canrotate"
+				if data and data.dir then
+					inst.Transform:SetRotation(data.dir)
+				end
 				--start moving
 				inst.sg:GoToState(
 					(inst.sg:HasStateTag("fin") and "fin_start") or
@@ -482,6 +486,8 @@ local states =
 				return
 			elseif norotate then
 				inst.sg:RemoveStateTag("canrotate")
+				inst.sg:AddStateTag("try_restore_canrotate") --for brain
+				inst.components.locomotor.pusheventwithdirection = true
 			end
 			inst.components.locomotor:Stop()
 			inst.AnimState:PlayAnimation("idle", true)
@@ -491,6 +497,7 @@ local states =
 			if not inst.sg.statemem.keepsixfaced then
 				inst.Transform:SetFourFaced()
 			end
+			inst.components.locomotor.pusheventwithdirection = false
 		end,
 	},
 
@@ -572,7 +579,7 @@ local states =
 
 		timeline =
 		{
-			FrameEvent(26, function(inst)
+			FrameEvent(27, function(inst)
 				if inst.pendingreward then
 					inst.sg.statemem.keepsixfaced = true
 					inst.sg:GoToState("give", inst.sg.mem.pendinggiver)
@@ -586,7 +593,8 @@ local states =
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
-					inst.sg:GoToState("idle")
+					inst.sg.statemem.keepsixfaced = true
+					inst.sg:GoToState("idle", true)
 				end
 			end),
 		},
@@ -624,14 +632,14 @@ local states =
 
 		timeline =
 		{
-			FrameEvent(6, function(inst)
+			FrameEvent(12, function(inst)
 				if inst.pendingreward then
 					inst:GiveReward(inst.sg.statemem.giver)
 				end
 				inst.sg.statemem.giver = nil
 				inst.sg.mem.pendinggiver = nil
 			end),
-			FrameEvent(13, function(inst)
+			FrameEvent(23, function(inst)
 				if inst.pendingreward then
 					inst.sg.statemem.keepsixfaced = true
 					inst.sg:GoToState("give", inst.sg.mem.pendinggiver)
@@ -645,7 +653,8 @@ local states =
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
-					inst.sg:GoToState("idle")
+					inst.sg.statemem.keepsixfaced = true
+					inst.sg:GoToState("idle", true)
 				end
 			end),
 		},

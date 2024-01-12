@@ -502,6 +502,7 @@ local function fn()
 
     inst:AddTag("shadecanopysmall")
     inst:AddTag("event_trigger")
+    inst:AddTag("ignorewalkableplatforms")
 
     inst.MiniMapEntity:SetIcon("oceantree_pillar_small.png")
 

@@ -495,6 +495,9 @@ function ErodeAway(inst, erode_time)
     if inst.DynamicShadow ~= nil then
         inst.DynamicShadow:Enable(false)
     end
+    if inst.components.floater ~= nil then
+        inst.components.floater:Erode(time_to_erode)
+    end
 
     inst:StartThread(function()
         local ticks = 0

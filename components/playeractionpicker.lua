@@ -117,7 +117,12 @@ function PlayerActionPicker:GetSceneActions(useitem, right)
         useitem:HasTag("inspectable") and
         (self.inst.sg == nil or self.inst.sg:HasStateTag("moving") or self.inst.sg:HasStateTag("idle")) and
         (self.inst:HasTag("moving") or self.inst:HasTag("idle")) then
-        sorted_acts = self:SortActionList({ ACTIONS.WALKTO }, useitem)
+
+		--@V2C: #FORGE_AOE_RCLICK *searchable*
+		--      -Forge used to strip ALL r.click actions, so now we manually strip WALKTO action.
+		if not right and self.inst.components.playercontroller:HasAOETargeting() then
+			sorted_acts = self:SortActionList({ ACTIONS.WALKTO }, useitem)
+		end
     end
 
     return sorted_acts

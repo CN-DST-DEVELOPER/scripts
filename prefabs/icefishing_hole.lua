@@ -66,11 +66,9 @@ local function fn()
     inst.Physics:CollidesWith(COLLISION.GIANTS)
     inst.Physics:SetTriangleMesh(build_hole_collision_mesh(1.7, 6, 16))
 
-    inst.Transform:SetRotation(90)
-
     inst.AnimState:SetBuild("icefishing_hole")
     inst.AnimState:SetBank("icefishing_hole")
-    inst.AnimState:PlayAnimation("working", true)
+	inst.AnimState:PlayAnimation("idle", true)
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGroundFixed)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     --inst.AnimState:SetOceanBlendParams(TUNING.OCEAN_SHADER.EFFECT_TINT_AMOUNT)

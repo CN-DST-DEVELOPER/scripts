@@ -1,7 +1,8 @@
 local Floater = Class(function(self, inst)
     self.inst = inst
 
-    if TheNet:GetIsMasterSimulation() then
+    self.ismastersim = TheNet:GetIsMasterSimulation()
+    if self.ismastersim then
         self.inst:ListenForEvent("on_landed", function() self:OnLandedServer() end)
         self.inst:ListenForEvent("on_no_longer_landed", function() self:OnNoLongerLandedServer() end)
         self.inst:ListenForEvent("onremove", function() self:OnNoLongerLandedServer() end)
@@ -13,6 +14,15 @@ local Floater = Class(function(self, inst)
                 self:OnLandedClient()
             else
                 self:OnNoLongerLandedClient()
+            end
+        end)
+        self.inst:ListenForEvent("erodetimedirty", function()
+            local erode_time = self._erode_time:value()
+            if self.front_fx ~= nil then
+                ErodeAway(self.front_fx, erode_time)
+            end
+            if self.back_fx ~= nil then
+                ErodeAway(self.back_fx, erode_time)
             end
         end)
     end
@@ -31,6 +41,7 @@ local Floater = Class(function(self, inst)
     self.splash = true
 
     self._is_landed = net_bool(inst.GUID, "floater._is_landed", "landeddirty")
+    self._erode_time = net_float(inst.GUID, "floater._erode_time", "erodetimedirty")
 end)
 
 --small/med/large
@@ -176,6 +187,12 @@ function Floater:SwitchToDefaultAnim(force_switch)
         if self.swap_data ~= nil then
             self.inst.AnimState:ClearOverrideSymbol("swap_spear")
         end
+    end
+end
+
+function Floater:Erode(erode_time)
+    if self.ismastersim and self.showing_effect then
+        self._erode_time:set(erode_time)
     end
 end
 
