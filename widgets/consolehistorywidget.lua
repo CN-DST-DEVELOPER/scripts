@@ -15,13 +15,6 @@ local ConsoleHistoryWidget = Class(Widget, function(self, text_edit, remote_exec
 	self.text_edit = text_edit
 	self.console_remote_execute = remote_execute
 
-	local function onwordpredictionupdated()
-		if self:IsVisible() then
-			self:Hide()
-		end
-	end
-	self.text_edit.inst:ListenForEvent("onwordpredictionupdated", onwordpredictionupdated)
-
 	self.enter_complete = string.match(mode, "enter", 1, true) ~= nil
 	self.tab_complete = string.match(mode, "tab", 1, true) ~= nil
 
@@ -59,7 +52,6 @@ function ConsoleHistoryWidget:IsMouseOnly()
 end
 
 function ConsoleHistoryWidget:OnRawKey(key, down)
-
 	if key == KEY_TAB then
 		self:Hide()
 		return self.tab_complete
@@ -71,10 +63,9 @@ function ConsoleHistoryWidget:OnRawKey(key, down)
 				self.selection_btns[self.active_selection_btn - self.start_offset + 1]:Select()
 			else
 				local history = ConsoleScreenSettings:GetConsoleHistory()
-				local remotehistory = ConsoleScreenSettings:GetConsoleLocalRemoteHistory()
 				if self.active_selection_btn < #history then
 					local index = #history - self.active_selection_btn + 1
-					self:RefreshHistory(history, remotehistory, index - 1)
+					self:RefreshHistory(history, index - 1)
 					TheFrontEnd:StopTrackingMouse()
 				end
 			end
@@ -86,12 +77,11 @@ function ConsoleHistoryWidget:OnRawKey(key, down)
 				self.selection_btns[self.active_selection_btn - self.start_offset - 1]:Select()
 			else
 				local history = ConsoleScreenSettings:GetConsoleHistory()
-				local remotehistory = ConsoleScreenSettings:GetConsoleLocalRemoteHistory()
 				local index = #history - self.active_selection_btn + 1
 				if index >= #history then
 					self.text_edit:SetString("")
 				else
-					self:RefreshHistory(history, remotehistory, index + 1)
+					self:RefreshHistory(history, index + 1)
 					TheFrontEnd:StopTrackingMouse()
 				end
 			end
@@ -100,7 +90,6 @@ function ConsoleHistoryWidget:OnRawKey(key, down)
 	elseif key == KEY_ESCAPE then
 		return true
 	end
-
 	return false
 end
 
@@ -117,10 +106,11 @@ function ConsoleHistoryWidget:OnControl(control, down)
 	return false
 end
 
-function ConsoleHistoryWidget:Show(history, remotehistory, index)
+function ConsoleHistoryWidget:Show(history, index)
 	self._base.Show(self)
+	TheFrontEnd:StopTrackingMouse()
 	self:Enable()
-	self:RefreshHistory(history, remotehistory, index)
+	self:RefreshHistory(history, index)
 end
 
 function ConsoleHistoryWidget:Hide()
@@ -138,26 +128,14 @@ function ConsoleHistoryWidget:Dismiss()
 	self:Disable()
 end
 
-function ConsoleHistoryWidget:RefreshHistory(history, remotehistory, index)
-	if history == nil then
+function ConsoleHistoryWidget:RefreshHistory(history, index)
+	if not (history and #history > 0) then
 		return
 	end
-
-	local console_history = {}
-	local console_localremote_history = {}
-	shallowcopy(history, console_history)
-	shallowcopy(remotehistory, console_localremote_history)
-
-	if #console_history <= 0 then
-		return
-	end
-
-	console_history = table.reverse(console_history)
-	console_localremote_history = table.reverse(console_localremote_history)
 
 	-- Index is reversed, so need to account for this
-	self.active_selection_btn = index and (#console_history - index + 1) or 1
-	self.start_offset = self.active_selection_btn ~= nil and self.active_selection_btn > MAX_LINES and self.active_selection_btn - MAX_LINES or 0
+	self.active_selection_btn = index and (#history - index + 1) or 1
+	self.start_offset = self.active_selection_btn > MAX_LINES and self.active_selection_btn - MAX_LINES or 0
 
 	self.selection_btns = {}
 	self.history_root:KillAllChildren()
@@ -168,7 +146,7 @@ function ConsoleHistoryWidget:RefreshHistory(history, remotehistory, index)
 	local backing_height = self.sizey + 4
 
 	local start = 1 + self.start_offset
-	for i = start, #console_history do
+	for i = start, #history do
 		if i - self.start_offset > MAX_LINES then
 			break
 		end
@@ -178,7 +156,7 @@ function ConsoleHistoryWidget:RefreshHistory(history, remotehistory, index)
 		btn:SetTextColour(UICOLOURS.GOLD_CLICKABLE)
 		btn:SetTextFocusColour(UICOLOURS.GOLD_CLICKABLE)
 		btn:SetTextSelectedColour(UICOLOURS.GOLD_FOCUS)
-		btn:SetText(console_history[i])
+		btn:SetText(history[#history - i + 1].str)
 		btn:SetTextSize(FONT_SIZE)
 		btn.clickoffset = Vector3(0,0,0)
 
@@ -204,7 +182,7 @@ function ConsoleHistoryWidget:RefreshHistory(history, remotehistory, index)
 				prev_btn._unselecting = nil
 			end
 			self.active_selection_btn = i
-			self.text_edit.inst:PushEvent("onhistoryupdated", #console_history - i + 1)
+			self.text_edit.inst:PushEvent("onhistoryupdated", #history - i + 1)
 		end)
 		btn.ongainfocus = function()
 			if not btn._unselecting then
@@ -239,7 +217,7 @@ function ConsoleHistoryWidget:RefreshHistory(history, remotehistory, index)
 		self.selection_btns[self.active_selection_btn - self.start_offset]:Select()
 	end
 
-	local num_rows = math.min(#console_history, MAX_LINES)
+	local num_rows = math.min(#history, MAX_LINES)
 	self.backing:SetSize(self.max_width, backing_height * num_rows)
 	local pos = backing_height * (num_rows - 1)
 	self.backing:SetPosition(-5, pos * 0.5)

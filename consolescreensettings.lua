@@ -14,33 +14,48 @@ function ConsoleScreenSettings:Reset()
 end
 
 function ConsoleScreenSettings:GetConsoleHistory()
-	return self.persistdata["history"] or {}
-end
-
-function ConsoleScreenSettings:GetConsoleLocalRemoteHistory()
-	return self.persistdata["localremotehistory"] or {}
+	return self.persistdata["historylines"] or {}
 end
 
 function ConsoleScreenSettings:AddLastExecutedCommand(command_str, toggle_remote_execute)
-	if self.persistdata["history"] == nil then
-		self.persistdata["history"] = {}
-	end
-	table.insert(self.persistdata["history"], command_str)
+	--trim whitespace
+	command_str = command_str:gsub("^%s*(.-)%s*$", "%1")
 
-	if self.persistdata["localremotehistory"] == nil then
-		self.persistdata["localremotehistory"] = {}
-	end
-	table.insert(self.persistdata["localremotehistory"], toggle_remote_execute)
-
-	-- Remove the oldest executed command if over the max number of saved commands
-	if #self.persistdata["history"] > MAX_SAVED_COMMANDS then
-		table.remove(self.persistdata["history"], 1)
+	if #command_str <= 0 or command_str == "c_repeatlastcommand()" then
+		--Don't record history for c_repeatlastcommand() or empty strings
+		return
 	end
 
-	if #self.persistdata["localremotehistory"] > MAX_SAVED_COMMANDS then
-		table.remove(self.persistdata["localremotehistory"], 1)
+	toggle_remote_execute = toggle_remote_execute == true or nil
+
+	local history = self.persistdata["historylines"]
+	if history == nil then
+		history = {}
+		self.persistdata["historylines"] = history
+	else
+		for i = #history, 1, -1 do
+			local v = history[i]
+			if v.str == command_str then
+				if v.remote ~= toggle_remote_execute then
+					v.remote = toggle_remote_execute
+					self.dirty = true
+				end
+				if i ~= #history then
+					table.remove(history, i)
+					table.insert(history, v)
+					self.dirty = true
+				end
+				--duplicate found and shifted to the bottom
+				return
+			end
+		end
+
+		while #history >= MAX_SAVED_COMMANDS do
+			table.remove(history, 1)
+		end
 	end
 
+	table.insert(history, { str = command_str, remote = toggle_remote_execute })
 	self.dirty = true
 end
 
@@ -90,11 +105,20 @@ function ConsoleScreenSettings:OnLoad(str, callback)
 		print ("ConsoleScreenSettings loaded ".. self:GetSaveName(), #str)
 
 		self.persistdata = TrackedAssert("TheSim:GetPersistentString ConsoleScreenSettings",  json.decode, str)
-
 		self.dirty = false
-		self:Save()
-		if callback then
-			callback(true)
+
+		--V2C: #CONSOLE_HISTORY_REFACTOR convert old savedata
+		if self.persistdata["history"] then
+			self.persistdata["historylines"] = {}
+			for i, v in ipairs(self.persistdata["history"]) do
+				v = v:gsub("^%s*(.-)%s*$", "%1")
+				if #v > 0 then
+					table.insert(self.persistdata["historylines"], { str = v, remote = self.persistdata["localremotehistory"][i] or nil })
+				end
+			end
+			self.persistdata["history"] = nil
+			self.persistdata["localremotehistory"] = nil
+			self.dirty = true
 		end
 	end
 end

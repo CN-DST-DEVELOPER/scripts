@@ -260,7 +260,7 @@ local function CanActivate(inst, doer)
 	return inst:HasTag("winch_ready")
 end
 
-local function onitemget(inst, data, no_CHEVO_event)
+local function onitemget(inst, data)
 	local item = data.item
 	inst.components.shelf:PutItemOnShelf(item)
 
@@ -272,9 +272,7 @@ local function onitemget(inst, data, no_CHEVO_event)
 		end
 	end
 
-	if not no_CHEVO_event then
-		inst:DoTaskInTime(0,function() TheWorld:PushEvent("CHEVO_heavyobject_winched",{target=inst,doer=nil}) end)
-	end
+    inst:DoTaskInTime(0,function() TheWorld:PushEvent("CHEVO_heavyobject_winched",{target=inst,doer=nil}) end)
 end
 
 local function onitemlose(inst, data)

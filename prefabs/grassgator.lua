@@ -113,13 +113,12 @@ end
 
 local function findnewshallowlocation(inst, range)
     if not range then 
-        range = 25 + (math.random()*5)
+        range = 15 + (math.random()*5) -- Keep in sync with SGgrassgator [GGRANGECHECK]
     end
     inst.surfacelocation = nil
-    local range = 25 + (math.random()*5)
     local pos = Vector3(inst.Transform:GetWorldPosition())
     local angle = (inst.Transform:GetRotation()-180) * DEGREES 
-    local finaloffset = FindValidPositionByFan(angle, range or 8, 8, function(offset)
+    local finaloffset = FindValidPositionByFan(angle, range, 8, function(offset)
         local x, z = pos.x + offset.x, pos.z + offset.z
 
         local tile = TheWorld.Map:GetTileAtPoint(x,0,z)

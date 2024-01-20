@@ -179,6 +179,10 @@ local function MakeCreatureCorpse(data)
         inst.AnimState:PlayAnimation("corpse")
 		inst.AnimState:SetFinalOffset(1)
 
+		if data.tag ~= nil then
+			inst:AddTag(data.tag)
+		end
+
         inst.creature = creature
         inst.nameoverride = nameoverride
         inst.displaynamefn = DisplayNameFn

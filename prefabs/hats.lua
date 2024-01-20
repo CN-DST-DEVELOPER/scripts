@@ -3028,6 +3028,11 @@ local function MakeHat(name)
 		inst:RemoveEventCallback("sanitydelta", inst._onsanitydelta, owner)
 		inst:RemoveEventCallback("onattackother", inst.alterguardian_spawngestalt_fn, owner)
 
+		if inst._task then
+			inst._task:Cancel()
+			inst._task = nil
+		end
+
         if inst._light ~= nil then
             inst._light:Remove()
             inst._light = nil

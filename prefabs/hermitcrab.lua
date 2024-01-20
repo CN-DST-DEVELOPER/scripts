@@ -787,7 +787,7 @@ local friendlytasks ={
     [TASKS.FIX_HOUSE_2] =       {completestrings=STRINGS.HERMITCRAB_REWARD.FIX_HOUSE_2},
     [TASKS.FIX_HOUSE_3] =       {completestrings=STRINGS.HERMITCRAB_REWARD.FIX_HOUSE_3},
     [TASKS.PLANT_FLOWERS] =     {completestrings=STRINGS.HERMITCRAB_REWARD.PLANT_FLOWERS,     complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.PLANT_FLOWERS,      complaintest=plantflowerscomplainfn,   onetime = true},
-    [TASKS.REMOVE_JUNK] =       {completestrings=STRINGS.HERMITCRAB_REWARD.REMOVE_JUNK,       complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.REMOVE_JUNK},
+    [TASKS.REMOVE_JUNK] =       {completestrings=STRINGS.HERMITCRAB_REWARD.REMOVE_JUNK,       complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.REMOVE_JUNK, onetime = true},
     [TASKS.PLANT_BERRIES] =     {completestrings=STRINGS.HERMITCRAB_REWARD.PLANT_BERRIES,     complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.PLANT_BERRIES,      complaintest=berriescomplainfn,        onetime = true},
     [TASKS.FILL_MEATRACKS] =    {completestrings=STRINGS.HERMITCRAB_REWARD.FILL_MEATRACKS,    complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.FILL_MEATRACKS,     complaintest=meatcomplainfn},
     [TASKS.GIVE_HEAVY_FISH] =   {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_HEAVY_FISH,   complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_HEAVY_FISH},

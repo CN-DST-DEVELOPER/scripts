@@ -1345,19 +1345,13 @@ function c_reregisterportals()
 end
 
 function c_repeatlastcommand()
-    local history = GetConsoleHistory()
-    local localremotehistory = GetConsoleLocalRemoteHistory()
-    if #history > 0 then
-        if history[#history] == "c_repeatlastcommand()" then
-            -- top command is this one, so we want the second last command
-            history[#history] = nil
-            localremotehistory[#localremotehistory] = nil
-        end
-
-        if localremotehistory[#localremotehistory] then
-            ConsoleRemote("%s", {history[#history]})
+	local history = ConsoleScreenSettings:GetConsoleHistory()
+	if #history > 0 then
+		local last = history[#history]
+		if last.remote and TheNet:GetIsClient() and (TheNet:GetIsServerAdmin() or IsConsole()) then
+			ConsoleRemote("%s", { last.str })
         else
-            ExecuteConsoleCommand(history[#history])
+			ExecuteConsoleCommand(last.str)
         end
     end
 end

@@ -9,12 +9,9 @@ local ConsoleHistoryWidget = require "widgets/consolehistorywidget"
 -- fix syntax highlighting due to above list: "'
 
 -- To start your game with a prepopulated history, add to your customcommands.lua:
---      require "screens/consolescreen"
---      table.insert(GetConsoleHistory(), 'c_give("batbat")')
+--      ConsoleScreenSettings:AddLastExecutedCommand('c_give("batbat"', true)
 
 local DEBUG_MODE = BRANCH == "dev"
-local CONSOLE_HISTORY = {}
-local CONSOLE_LOCALREMOTE_HISTORY = {}
 
 local ConsoleScreen = Class(Screen, function(self)
 	Screen._ctor(self, "ConsoleScreen")
@@ -33,7 +30,7 @@ function ConsoleScreen:OnBecomeActive()
 	self.console_edit:SetFocus()
 	self.console_edit:SetEditing(true)
 
-    self:ToggleRemoteExecute(true) -- if we are admin, start in remote mode
+	self:ToggleRemoteExecute(InGamePlay()) -- if we are admin, start in remote mode
 end
 
 function ConsoleScreen:OnBecomeInactive()
@@ -79,9 +76,13 @@ function ConsoleScreen:ToggleRemoteExecute(force)
         	self.console_remote_execute:SetString(STRINGS.UI.CONSOLESCREEN.LOCALEXECUTE)
         	self.console_remote_execute:SetColour(1,0.7,0.7,1)
         end
-    elseif self.toggle_remote_execute then
-        self.console_remote_execute:Hide()
-        self.toggle_remote_execute = false
+	else
+		self.console_remote_execute:Hide()
+		if force == true or force == false then
+			self.toggle_remote_execute = force
+		else
+			self.toggle_remote_execute = TheNet:GetIsServer()
+		end
     end
 end
 
@@ -108,34 +109,38 @@ function ConsoleScreen:OnRawKeyHandler(key, down)
 	if down then return end
 
 	if key == KEY_UP then
-		local len = #CONSOLE_HISTORY
+		local history = ConsoleScreenSettings:GetConsoleHistory()
+		local len = #history
 		if len > 0 then
 			if self.history_idx ~= nil then
-				self.history_idx = math.max( 1, self.history_idx - 1 )
+				self.history_idx = math.clamp(self.history_idx - 1, 1, len)
 			else
 				self.history_idx = len
 			end
-			self.console_edit:SetString( CONSOLE_HISTORY[ self.history_idx ] )
-			self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[self.history_idx] )
+			local historyline = history[self.history_idx]
+			self.console_edit:SetString(historyline.str)
+			self:ToggleRemoteExecute(historyline.remote or false) --can't pass nil, otherwise it will auto-toggle
 			if BRANCH == "dev" then
-				self.console_history:Show(CONSOLE_HISTORY, CONSOLE_LOCALREMOTE_HISTORY, self.history_idx)
+				self.console_history:Show(history, self.history_idx)
 			end
 			self.console_edit.inst:PushEvent("onconsolehistoryupdated")
 		end
 	elseif key == KEY_DOWN then
-		local len = #CONSOLE_HISTORY
+		local history = ConsoleScreenSettings:GetConsoleHistory()
+		local len = #history
 		if len > 0 then
 			if self.history_idx ~= nil then
-				if self.history_idx == len then
+				if self.history_idx >= len then
 					self.console_edit:SetString( "" )
-					self:ToggleRemoteExecute( true )
+					self:ToggleRemoteExecute(InGamePlay())
 					self.history_idx = len + 1
 				else
-					self.history_idx = math.min( len, self.history_idx + 1 )
-					self.console_edit:SetString( CONSOLE_HISTORY[ self.history_idx ] )
-					self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[self.history_idx] )
+					self.history_idx = self.history_idx + 1
+					local historyline = history[self.history_idx]
+					self.console_edit:SetString(historyline.str)
+					self:ToggleRemoteExecute(historyline.remote or false) --can't pass nil, otherwise it will auto-toggle
 					if BRANCH == "dev" then
-						self.console_history:Show(CONSOLE_HISTORY, CONSOLE_LOCALREMOTE_HISTORY, self.history_idx)
+						self.console_history:Show(history, self.history_idx)
 					end
 					self.console_edit.inst:PushEvent("onconsolehistoryupdated")
 				end
@@ -158,13 +163,10 @@ function ConsoleScreen:Run()
     SuUsedAdd("console_used")
 
 	if fnstr ~= "" then
-		table.insert( CONSOLE_HISTORY, fnstr )
-		table.insert( CONSOLE_LOCALREMOTE_HISTORY, self.toggle_remote_execute )
-
 		ConsoleScreenSettings:AddLastExecutedCommand(fnstr, self.toggle_remote_execute)
 	end
 
-	if self.toggle_remote_execute then
+	if self.toggle_remote_execute and TheNet:GetIsClient() and (TheNet:GetIsServerAdmin() or IsConsole()) then
         local x, y, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
 		TheNet:SendRemoteExecute(fnstr, x, z)
 	else
@@ -204,26 +206,6 @@ function ConsoleScreen:OnTextEntered()
         self.runtask:Cancel()
 	end
     self.runtask = self.inst:DoTaskInTime(0, DoRun, self)
-end
-
-function GetConsoleHistory()
-    return CONSOLE_HISTORY
-end
-
-function GetConsoleLocalRemoteHistory()
-    return CONSOLE_LOCALREMOTE_HISTORY
-end
-
-function SetConsoleHistory(history)
-    if type(history) == "table" and type(history[1]) == "string" then
-        CONSOLE_HISTORY = history
-    end
-end
-
-function SetConsoleLocalRemoteHistory(history)
-    if type(history) == "table" and type(history[1]) == "boolean" then
-        CONSOLE_LOCALREMOTE_HISTORY = history
-    end
 end
 
 -- NOTES(JBK): Caching these to only walk the tables once if a player opens the console or has it enabled to open they should know what they are doing for memory usage.
@@ -334,19 +316,24 @@ function ConsoleScreen:DoInit()
 		self.console_history:SetPosition(-sx * 0.5, sy * 0.5 + 5)
 		self.console_history:Hide()
 
-		local function onconsolehistoryitemclicked()
-			self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[ self.history_idx ] )
-		end
-		self.console_history.inst:ListenForEvent("onconsolehistoryitemclicked", onconsolehistoryitemclicked)
-	end
+		self.console_history.inst:ListenForEvent("onconsolehistoryitemclicked", function()
+			local history = ConsoleScreenSettings:GetConsoleHistory()
+			local historyline = history[self.history_idx]
+			if historyline then
+				self:ToggleRemoteExecute(historyline.remote or false) --can't pass nil, otherwise it will auto-toggle
+			else
+				self:ToggleRemoteExecute(InGamePlay())
+			end
+		end)
 
-	-- Load saved last entered console commands
-	if CONSOLE_HISTORY and #CONSOLE_HISTORY <= 0 then
-		shallowcopy(ConsoleScreenSettings:GetConsoleHistory(), CONSOLE_HISTORY)
-	end
-
-	if CONSOLE_LOCALREMOTE_HISTORY and #CONSOLE_LOCALREMOTE_HISTORY <= 0 then
-		shallowcopy(ConsoleScreenSettings:GetConsoleLocalRemoteHistory(), CONSOLE_LOCALREMOTE_HISTORY)
+		self.console_edit.inst:ListenForEvent("onwordpredictionupdated", function()
+			if self.console_history:IsVisible() then
+				self.console_history:Hide()
+				if not InGamePlay() then
+					self:ToggleRemoteExecute(false)
+				end
+			end
+		end)
 	end
 
 	local function onhistoryupdated(inst, index)
@@ -354,8 +341,16 @@ function ConsoleScreen:DoInit()
 			return
 		end
 		self.history_idx = index
-		self.console_edit:SetString( CONSOLE_HISTORY[ self.history_idx ] )
-		self:ToggleRemoteExecute( CONSOLE_LOCALREMOTE_HISTORY[ self.history_idx ] )
+
+		local history = ConsoleScreenSettings:GetConsoleHistory()
+		local historyline = history[self.history_idx]
+		if historyline then
+			self.console_edit:SetString(historyline.str or "")
+			self:ToggleRemoteExecute(historyline.remote or false) --can't pass nil, otherwise it will auto-toggle
+		else
+			self.console_edit:SetString("")
+			self:ToggleRemoteExecute(InGamePlay())
+		end
 	end
 
 	self.console_edit.inst:ListenForEvent("onhistoryupdated", onhistoryupdated)

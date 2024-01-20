@@ -1313,7 +1313,7 @@ if DEBUGGER_ENABLED then
     print('Debuggee start ->', startResult, breakerType )
 end
 
-ConsoleScreenSettings:Load( function() end )
+ConsoleScreenSettings:Load()
 
 Print(VERBOSITY.DEBUG, "[Loading profile and save index]")
 Profile:Load( function()
