@@ -1,5 +1,8 @@
 local events =
 {
+    EventHandler("onturnon", function(inst)
+        inst.sg:GoToState("activate")
+    end),
 }
 
 --V2C: TERRIBLE, but not worth the effort to refactor.

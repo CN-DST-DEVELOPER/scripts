@@ -558,7 +558,7 @@ local actionhandlers =
 				or "book"
         end),
     ActionHandler(ACTIONS.MAKEBALLOON, "makeballoon"),
-    ActionHandler(ACTIONS.DEPLOY, "doshortaction"),
+	ActionHandler(ACTIONS.DEPLOY, function(inst, action) return action.invobject and action.invobject.components.complexprojectile and "throw_deploy" or "doshortaction" end),
     ActionHandler(ACTIONS.DEPLOY_TILEARRIVE, "doshortaction"),
     ActionHandler(ACTIONS.STORE, "doshortaction"),
     ActionHandler(ACTIONS.DROP,
@@ -8092,6 +8092,54 @@ local states =
             end
         end,
     },
+
+	State{
+		name = "throw_deploy",
+		tags = { "doing", "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("useitem_dir_pre") --8 frames
+			inst.AnimState:PushAnimation("deploytoss_pre")
+			inst.AnimState:PushAnimation("deploytoss", false)
+
+			local buffaction = inst:GetBufferedAction()
+			if buffaction then
+				if buffaction.pos then
+					inst:ForceFacePoint(buffaction:GetActionPoint():Get())
+				end
+				local deployable = buffaction.invobject and buffaction.invobject.components.deployable or nil
+				local override = deployable and deployable.deploytoss_symbol_override or nil
+				if override then
+					inst.AnimState:OverrideSymbol("swap_deploytoss_object", override.build, override.symbol)
+				end
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(15, function(inst)
+				inst:PerformBufferedAction()
+			end),
+			FrameEvent(22, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("equip", function(inst, data)
+				inst.sg:GoToState("idle")
+			end),
+			EventHandler("unequip", function(inst, data)
+				inst.sg:GoToState("idle")
+			end),
+		},
+
+		onexit = function(inst)
+			inst.AnimState:ClearOverrideSymbol("swap_deploytoss_object")
+		end,
+	},
 
 	State{
 		name = "throw_keep_equip",

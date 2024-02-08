@@ -1,10 +1,6 @@
-
 local Appraisable = Class(function(self, inst)
 	self.inst = inst
-end,
-nil,
-{
-})
+end)
 
 function Appraisable:CanAppraise(target)
 	if self.canappraisefn then

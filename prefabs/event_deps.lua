@@ -189,6 +189,17 @@ local SPECIAL_EVENT_DEPS =
         },
     },
 
+    [SPECIAL_EVENTS.YOTD] =
+    {
+        frontend =
+        {
+            assets =
+            {
+                Asset("ANIM", "anim/dst_menu_yotd.zip"),
+            },
+        },
+    },
+
     [SPECIAL_EVENTS.YOTR] =
     {
         frontend =

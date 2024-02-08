@@ -11,9 +11,16 @@ local prefabs =
 }
 
 local function CLIENT_CanDeployDockKit(inst, pt, mouseover, deployer, rotation)
-    local tile = TheWorld.Map:GetTileAtPoint(pt.x, 0, pt.z)
+    local x, y, z = pt:Get()
+    local tile = TheWorld.Map:GetTileAtPoint(x, 0, z)
     if (tile == WORLD_TILES.OCEAN_COASTAL_SHORE or tile == WORLD_TILES.OCEAN_COASTAL) then
-        local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(pt.x, 0, pt.z)
+        for _, entity_on_tile in ipairs(TheWorld.Map:GetEntitiesOnTileAtPoint(x, 0, z)) do
+            if entity_on_tile:HasTag("dockjammer") then
+                return false
+            end
+        end
+
+        local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(x, 0, z)
         local found_adjacent_safetile = false
         for x_off = -1, 1, 1 do
             for y_off = -1, 1, 1 do

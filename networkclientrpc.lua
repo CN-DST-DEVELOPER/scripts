@@ -795,9 +795,9 @@ local RPC_HANDLERS =
             printinvalid("SetMovementPredictionEnabled", player)
             return
         end
-        local pc = player.components.playercontroller
-        if pc ~= nil then
-            player.components.playercontroller:OnRemoteToggleMovementPrediction(enabled)
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			playercontroller:OnRemoteToggleMovementPrediction(enabled)
         end
     end,
 
@@ -960,9 +960,9 @@ local RPC_HANDLERS =
             printinvalid("DoActionOnMap PARAMS", player)
             return
         end
-        local pc = player.components.playercontroller
-        if pc then
-            pc:OnMapAction(action, Vector3(x, 0, z))
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			playercontroller:OnMapAction(action, Vector3(x, 0, z))
         end
     end,
 

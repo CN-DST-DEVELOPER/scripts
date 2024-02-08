@@ -1,48 +1,46 @@
 local BoatMagnet = Class(function(self, inst)
     self.inst = inst
-	self.boat = nil
-    self.beacon = nil
-    self.magnet_guid = nil
+	--self.boat = nil
+    --self.beacon = nil
+    --self.magnet_guid = nil
+    --self.pair_tags = nil
 
     self.canpairwithfn = function(beacon)
-            if beacon == nil or beacon.components.boatmagnetbeacon == nil then
-                return false
-            end
-            local pairedmagnet = beacon.components.boatmagnetbeacon:PairedMagnet()
-            return pairedmagnet == nil
-        end
-
-	self.OnBoatRemoved = function() self.boat = nil end
-    self.OnBoatDeath = function() self:OnDeath() end
-
-    self.OnBeaconRemoved = function()
-        self:UnpairWithBeacon()
-    end
-    self.OnBeaconDeath = function()
-        self:UnpairWithBeacon()
+        return beacon ~= nil
+            and beacon.components.boatmagnetbeacon ~= nil
+            and beacon.components.boatmagnetbeacon:PairedMagnet() == nil
     end
 
+    self.OnBoatRemoved = function()
+        self.boat = nil
+    end
+
+    --self.onpairedwithbeaconfn = nil
+    --self.onunpairedwithbeaconfn = nil
+
+    --self.beaconturnedonfn = nil
     self.OnBeaconTurnedOn = function()
-        if not self:IsBeaconOnSameBoat(self.beacon) then
-            self.inst.sg:GoToState("pull")
-        else
-            self.inst.sg:GoToState("idle")
+        if self.beaconturnedonfn then
+            self.beaconturnedonfn(self.inst, self.beacon)
         end
     end
 
+    --self.beaconturnedofffn = nil
     self.OnBeaconTurnedOff = function()
-        self.inst.sg:GoToState("pull_pst")
+        if self.beaconturnedofffn then
+            self.beaconturnedofffn(self.inst, self.beacon)
+        end
     end
 
-    self.OnInventoryBeaconLoaded = function(inst, data)
+    self.OnInventoryBeaconLoaded = function(_, data)
         if data and data.guid == self.prev_guid then
             self:PairWithBeacon(data.inst)
         end
     end
 
-	self._setup_boat_task = self.inst:DoTaskInTime(0, function()
+    self._setup_boat_task = self.inst:DoTaskInTime(0, function()
         self:SetBoat(self.inst:GetCurrentPlatform())
-		self._setup_boat_task = nil
+        self._setup_boat_task = nil
     end)
 end)
 
@@ -54,48 +52,48 @@ function BoatMagnet:OnSave()
 end
 
 function BoatMagnet:OnLoad(data)
-    if data == nil then
+    if not data then
         return
     end
 
-    self.magnet_guid = data.magnet_guid or data.prev_guid -- NOTES(JBK): 'prev_guid' is for beta worlds that might have this old vague name.
+    -- NOTES(JBK): 'prev_guid' is for beta worlds that might have this old vague name.
+    self.magnet_guid = data.magnet_guid or data.prev_guid
 end
 
 function BoatMagnet:OnRemoveFromEntity()
-	if self._setup_boat_task ~= nil then
-		self._setup_boat_task:Cancel()
+    if self._setup_boat_task then
+        self._setup_boat_task:Cancel()
         self._setup_boat_task = nil
-	end
+    end
     self:UnpairWithBeacon() -- Handles event listeners.
 end
 
 function BoatMagnet:OnRemoveEntity()
-    if self ~= nil then
+    if self then
         self:SetBoat(nil)
     end
 end
 
 function BoatMagnet:SetBoat(boat)
-	if boat == self.boat then return end
+    if boat == self.boat then return end
 
-	if self.boat ~= nil then
+    if self.boat then
         self.boat.components.boatphysics:RemoveMagnet(self)
         self.inst:RemoveEventCallback("onremove", self.OnBoatRemoved, boat)
-        self.inst:RemoveEventCallback("death", self.OnBoatDeath, boat)
+        self.inst:RemoveEventCallback("death", self.OnDeath, boat)
     end
 
     self.boat = boat
 
-    if boat ~= nil then
+    if boat then
         self.boat.components.boatphysics:AddMagnet(self)
         self.inst:ListenForEvent("onremove", self.OnBoatRemoved, boat)
-        self.inst:ListenForEvent("death", self.OnBoatDeath, boat)
+        self.inst:ListenForEvent("death", self.OnDeath, boat)
     end
 end
 
 function BoatMagnet:OnDeath()
 	if self.inst:IsValid() then
-	    --self.inst.SoundEmitter:KillSound("boat_movement")
         self:SetBoat(nil)
 	end
 end
@@ -109,59 +107,56 @@ function BoatMagnet:PairedBeacon()
 end
 
 function BoatMagnet:IsBeaconOnSameBoat(beacon)
-    if beacon == nil then
-        return false
-    end
-    local beaconcmp = beacon.components.boatmagnetbeacon
-    return beaconcmp ~= nil and self.boat ~= beaconcmp:GetBoat()
+    return beacon ~= nil
+        and beacon.components.boatmagnetbeacon ~= nil
+        and beacon.components.boatmagnetbeacon:GetBoat() == self.boat
 end
 
 local BEACON_MUST_TAGS = { "boatmagnetbeacon" }
 function BoatMagnet:FindNearestBeacon()
     -- Pair with the closest beacon in range
-    local nearestbeacon = FindClosestEntity(self.inst, TUNING.BOAT.BOAT_MAGNET.PAIR_RADIUS, true, BEACON_MUST_TAGS, nil, nil, self.canpairwithfn)
-    if nearestbeacon ~= nil and nearestbeacon.components.boatmagnetbeacon ~= nil and nearestbeacon.components.boatmagnetbeacon:PairedMagnet() == nil then
-        return nearestbeacon
-    end
-
-    return nil
+    local pair_tags = self.pair_tags or BEACON_MUST_TAGS
+    local nearestbeacon = FindClosestEntity(self.inst, TUNING.BOAT.BOAT_MAGNET.PAIR_RADIUS, true, pair_tags, nil, nil, self.canpairwithfn)
+    return (nearestbeacon ~= nil
+            and nearestbeacon.components.boatmagnetbeacon ~= nil
+            and nearestbeacon.components.boatmagnetbeacon:PairedMagnet() == nil
+            and nearestbeacon)
+        or nil
 end
 
 function BoatMagnet:PairWithBeacon(beacon)
-    if beacon == nil or beacon.components.boatmagnetbeacon == nil then
+    if not beacon or not beacon.components.boatmagnetbeacon then
         return
     end
 
     self.beacon = beacon
     beacon.components.boatmagnetbeacon:PairWithMagnet(self.inst)
 
-    self.inst:ListenForEvent("onremove", self.OnBeaconRemoved, beacon)
-    self.inst:ListenForEvent("death", self.OnBeaconDeath, beacon)
+    self.inst:ListenForEvent("onremove", self.UnpairWithBeacon, beacon)
+    self.inst:ListenForEvent("death", self.UnpairWithBeacon, beacon)
     self.inst:ListenForEvent("onturnon", self.OnBeaconTurnedOn, beacon)
     self.inst:ListenForEvent("onturnoff", self.OnBeaconTurnedOff, beacon)
 
     self.inst:StartUpdatingComponent(self)
 
-    if beacon.components.boatmagnetbeacon:IsTurnedOff() or self:IsBeaconOnSameBoat(beacon) then
-        self.inst.sg:GoToState("idle")
-    else
-        self.inst.sg:GoToState("pull_pre")
+    if self.onpairedwithbeaconfn then
+        self.onpairedwithbeaconfn(self.inst, beacon)
     end
 
     self.inst:AddTag("paired")
 end
 
 function BoatMagnet:UnpairWithBeacon()
-    if self.beacon == nil then
+    if not self.beacon then
         return
     end
 
-    self.inst:RemoveEventCallback("onremove", self.OnBeaconRemoved, self.beacon)
-    self.inst:RemoveEventCallback("death", self.OnBeaconDeath, self.beacon)
+    self.inst:RemoveEventCallback("onremove", self.UnpairWithBeacon, self.beacon)
+    self.inst:RemoveEventCallback("death", self.UnpairWithBeacon, self.beacon)
     self.inst:RemoveEventCallback("onturnon", self.OnBeaconTurnedOn, self.beacon)
     self.inst:RemoveEventCallback("onturnoff", self.OnBeaconTurnedOff, self.beacon)
 
-    if self.beacon.components.boatmagnetbeacon ~= nil then
+    if self.beacon.components.boatmagnetbeacon then
         self.beacon.components.boatmagnetbeacon:UnpairWithMagnet()
     end
 
@@ -169,78 +164,81 @@ function BoatMagnet:UnpairWithBeacon()
 
     self.inst:StopUpdatingComponent(self)
 
-    if not self.inst.sg:HasStateTag("burnt") then
-        self.inst.sg:GoToState("pull_pst")
+    if self.onunpairedwithbeaconfn then
+        self.onunpairedwithbeaconfn(self.inst)
     end
 
     self.inst:RemoveTag("paired")
 end
 
 function BoatMagnet:GetFollowTarget()
-    if self.beacon == nil or self.beacon.components.boatmagnetbeacon == nil then
+    if not self.beacon then
         return nil
     end
 
-    local beacon = self.beacon.components.boatmagnetbeacon
-    local beaconboat = beacon:GetBoat()
-    local followtarget = beaconboat or (beacon:IsPickedUp() and beacon.inst.entity:GetParent()) or self.beacon
+    local beacon_boatmagnetbeacon = self.beacon.components.boatmagnetbeacon
+    if not beacon_boatmagnetbeacon then
+        return nil
+    end
 
-    return followtarget
+    return beacon_boatmagnetbeacon:GetBoat() or
+        (beacon_boatmagnetbeacon:IsPickedUp() and beacon_boatmagnetbeacon.inst.entity:GetParent())
+        or self.beacon
 end
 
 function BoatMagnet:CalcMaxVelocity()
-    if self.beacon == nil or self.beacon.components.boatmagnetbeacon == nil or self.boat == nil then
+    if not self.boat or not self.beacon
+            or not self.beacon.components.boatmagnetbeacon
+            or self.beacon.components.boatmagnetbeacon:IsTurnedOff() then
+        return 0
+    end
+
+    local followtarget = self:GetFollowTarget()
+    if not followtarget then
         return 0
     end
 
     -- Beyond a set distance, apply an exponential rate for catch-up speed, otherwise match the speed of the beacon its following
     local direction, distance = self:CalcMagnetDirection()
 
-    local followtarget = self:GetFollowTarget()
-    if followtarget == nil then
-        return 0
-    end
-
     local beaconboat = self.beacon.components.boatmagnetbeacon:GetBoat()
 
-    local beaconspeed = beaconboat == nil and followtarget.components.locomotor and math.min(followtarget.components.locomotor:GetRunSpeed(), TUNING.BOAT.MAX_VELOCITY)
+    local beaconspeed = (beaconboat == nil and followtarget.components.locomotor ~= nil and math.min(followtarget.components.locomotor:GetRunSpeed(), TUNING.BOAT.MAX_VELOCITY))
                         or (beaconboat ~= nil and math.min(beaconboat.components.boatphysics:GetVelocity(), TUNING.BOAT.MAX_FORCE_VELOCITY))
                         or 0
 
-    local mindistance = self.boat.components.hull ~= nil and self.boat.components.hull:GetRadius() or 1
-    if beaconboat ~= nil and beaconboat.components.hull ~= nil then
+    local mindistance = (self.boat.components.hull ~= nil and self.boat.components.hull:GetRadius()) or 1
+    if beaconboat and beaconboat.components.hull then
         mindistance = mindistance + beaconboat.components.hull:GetRadius()
     end
 
     -- If the beacon boat is turning, reduce max speed to prevent too much drifting while turning
     local magnetboatdirection = self.boat.components.boatphysics:GetMoveDirection()
-    local beaconboatdirection = beaconboat == nil and followtarget.components.locomotor and Vector3(followtarget.Physics:GetVelocity())
+    local magnetdir_x, magnetdir_z = VecUtil_NormalizeNoNaN(magnetboatdirection.x, magnetboatdirection.z)
+
+    local beaconboatdirection = (beaconboat == nil and followtarget.components.locomotor and Vector3(followtarget.Physics:GetVelocity()))
                             or (beaconboat ~= nil and beaconboat.components.boatphysics:GetMoveDirection())
                             or Vector3(0, 0, 0)
-    local boatspeed = self.boat.components.boatphysics:GetVelocity()
-
-    local magnetdir_x, magnetdir_z = VecUtil_NormalizeNoNaN(magnetboatdirection.x, magnetboatdirection.z)
     local beacondir_x, beacondir_z = VecUtil_NormalizeNoNaN(beaconboatdirection.x, beaconboatdirection.z)
 
-    local turnspeedmodifier = boatspeed > 0 and beaconspeed > 0 and math.max(VecUtil_Dot(magnetdir_x, magnetdir_z, beacondir_x, beacondir_z), 0) or 1
+    local boatspeed = self.boat.components.boatphysics:GetVelocity()
+
+    local turnspeedmodifier = (boatspeed > 0 and beaconspeed > 0 and math.max(VecUtil_Dot(magnetdir_x, magnetdir_z, beacondir_x, beacondir_z), 0)) or 1
     local maxdistance = TUNING.BOAT.BOAT_MAGNET.MAX_DISTANCE / 2
 
-    if not self.beacon.components.boatmagnetbeacon:IsTurnedOff() then
-        if distance > mindistance then
-            local base = math.pow(TUNING.BOAT.BOAT_MAGNET.MAX_VELOCITY + TUNING.BOAT.BOAT_MAGNET.CATCH_UP_SPEED, 1 / maxdistance)
-            local maxspeed = beaconspeed + (math.pow(base, distance - mindistance) - 1) * turnspeedmodifier
-            return math.min(maxspeed, TUNING.BOAT.BOAT_MAGNET.MAX_VELOCITY + TUNING.BOAT.BOAT_MAGNET.CATCH_UP_SPEED)
-        else
-            local maxspeed = beaconspeed * turnspeedmodifier
-            return math.min(maxspeed, TUNING.BOAT.BOAT_MAGNET.MAX_VELOCITY)
-        end
+    if distance > mindistance then
+        local base = math.pow(TUNING.BOAT.BOAT_MAGNET.MAX_VELOCITY + TUNING.BOAT.BOAT_MAGNET.CATCH_UP_SPEED, 1 / maxdistance)
+        local maxspeed = beaconspeed + (math.pow(base, distance - mindistance) - 1) * turnspeedmodifier
+        return math.min(maxspeed, TUNING.BOAT.BOAT_MAGNET.MAX_VELOCITY + TUNING.BOAT.BOAT_MAGNET.CATCH_UP_SPEED)
+    else
+        local maxspeed = beaconspeed * turnspeedmodifier
+        return math.min(maxspeed, TUNING.BOAT.BOAT_MAGNET.MAX_VELOCITY)
     end
-    return 0
 end
 
 function BoatMagnet:CalcMagnetDirection()
     local followtarget = self:GetFollowTarget()
-    if followtarget == nil then
+    if not followtarget then
         return Vector3(0, 0, 0)
     end
 
@@ -257,51 +255,64 @@ function BoatMagnet:CalcMagnetDirection()
 end
 
 function BoatMagnet:CalcMagnetForce()
-    if self.beacon == nil or self.boat == nil then
+    if not self.beacon or not self.boat then
         return 0
     end
 
     local beacon = self.beacon.components.boatmagnetbeacon
     local boatphysics = self.boat.components.boatphysics
-    if beacon == nil or beacon:IsTurnedOff() or boatphysics == nil then
+    if not beacon or beacon:IsTurnedOff() or not boatphysics then
         return 0
     end
 
     -- If on a boat, follow the boat, otherwise follow the entity that's carrying the beacon in their inventory
-    local beaconboat = beacon:GetBoat()
     local followtarget = self:GetFollowTarget()
-    if followtarget == nil then
+    if not followtarget then
         return 0
     end
 
     local direction, distance  = self:CalcMagnetDirection()
 
     -- Calcuate the minimum distance a magnet can reach the beacon so boats don't ram into one another
-    local mindistance = self.boat.components.hull ~= nil and self.boat.components.hull:GetRadius() + 1 or 1
-    if beaconboat ~= nil and beaconboat.components.hull ~= nil then
-        mindistance = mindistance + beaconboat.components.hull:GetRadius()
+    local mindistance = 1
+
+    local self_hull = self.boat.components.hull
+    if self_hull then
+        mindistance = mindistance + (self_hull:GetRadius() or 0)
+    else
+        local beaconboat = beacon:GetBoat()
+        local beaconboat_hull = (beaconboat and beaconboat.components.hull) or nil
+        if beaconboat_hull then
+            mindistance = mindistance + (beaconboat_hull:GetRadius() or 0)
+        end
     end
 
-    return distance > mindistance and TUNING.BOAT.BOAT_MAGNET.MAGNET_FORCE or 0
+    return (distance > mindistance and TUNING.BOAT.BOAT_MAGNET.MAGNET_FORCE) or 0
 end
 
 function BoatMagnet:OnUpdate(dt)
-    if self.boat == nil or self.beacon == nil or self.beacon.components.boatmagnetbeacon == nil then
+    if not self.boat or not self.beacon then
         return
     end
 
-    local beaconboat = self.beacon.components.boatmagnetbeacon:GetBoat()
+    local beacon_boatmagnetbeacon = self.beacon.components.boatmagnetbeacon
+    if not beacon_boatmagnetbeacon then
+        return
+    end
+
+    local beaconboat = beacon_boatmagnetbeacon:GetBoat()
+    local boat_is_beaconboat = (self.boat == beaconboat)
 
     -- Handle if the beacon is being carried on the same boat as the magnet
-    if self.boat == beaconboat and self.inst.sg:HasStateTag("pulling") then
-        self.inst.sg:GoToState("pull_pst")
+    if boat_is_beaconboat then
+        self.inst:PushEvent("boatmagnet_pull_stop")
         return
-    elseif self.boat ~= beaconboat and self.inst.sg:HasStateTag("idle") and not self.beacon.components.boatmagnetbeacon:IsTurnedOff() then
-        self.inst.sg:GoToState("pull_pre")
+    elseif not boat_is_beaconboat and not beacon_boatmagnetbeacon:IsTurnedOff() then
+        self.inst:PushEvent("boatmagnet_pull_start")
     end
 
     local followtarget = self:GetFollowTarget()
-    if followtarget == nil then
+    if not followtarget then
         self:UnpairWithBeacon()
         return
     end
@@ -315,11 +326,15 @@ function BoatMagnet:OnUpdate(dt)
     end
 
     -- Rotate to face the target it's following. If on the same boat, set rotation to zero.
-    if self.boat ~= beaconboat then
-        self.inst.Transform:SetRotation(-VecUtil_GetAngleInDegrees(direction.x, direction.z))
-    else
-        self.inst.Transform:SetRotation(0)
-    end
+    self.inst.Transform:SetRotation(
+        (not boat_is_beaconboat and -VecUtil_GetAngleInDegrees(direction.x, direction.z))
+        or 0
+    )
+end
+
+--
+function BoatMagnet:GetDebugString()
+    return (self.beacon ~= nil and tostring(self.beacon)) or ""
 end
 
 return BoatMagnet

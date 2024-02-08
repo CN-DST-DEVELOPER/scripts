@@ -136,8 +136,8 @@ local MainSounds =
     "webber2.fsb",
 
     "webber1.fev",
-    "webber1.fsb",	
-	
+    "webber1.fsb",
+
     "waterlogged2.fev",
     "waterlogged2.fsb",
 	"waterlogged2_amb.fsb",
@@ -147,7 +147,7 @@ local MainSounds =
 	"waterlogged1_amb.fsb",
 
 	"wanda2.fev",
-    "wanda2.fsb",	
+    "wanda2.fsb",
 
     "wanda1.fev",
     "wanda1.fsb",
@@ -180,7 +180,7 @@ local MainSounds =
 
     "wickerbottom_rework.fev",
     "wickerbottom_rework.fsb",
-    
+
     --"skin_sfx.fev",
     --"skin_sfx.fsb",
 
@@ -215,6 +215,10 @@ local MainSounds =
 
     "meta3.fev",
     "meta3.fsb",
+
+    "yotd2024.fev",
+    "yotd2024.fsb",
+    --"yotd2024_music.fsb",
 }
 
 function PreloadSoundList(list)

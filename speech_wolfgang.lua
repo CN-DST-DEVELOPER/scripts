@@ -928,6 +928,10 @@ return{
         "Let's go... team?",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Wolfgang must get closer to start!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Would be very short race...",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "Wolfgang must make room for other racers!",
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -5054,6 +5058,43 @@ return{
 
         EMBERLIGHT = "Tiny torchlady makes good fires.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "Look! Is shiny little kill beast.",
+            EMPTY = "Is wanting burnt tree bits to nibble?",
+            BURNT = "Is very sad.",
+        },
+
+        DRAGONBOAT_KIT = "Wolfgang will make pretty boat!",
+        DRAGONBOAT_PACK = "Wolfgang's boat will be mighty as a dragon!",
+
+        BOATRACE_CHECKPOINT = "Is point for checking",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Will find good spot, leave it to Wolfgang!",
+        BOATRACE_START = "Is starting place for boat race.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Where is best place for race to start?",
+
+        BOATRACE_PRIMEMATE = "Wolfgang does not remember inviting spooky monkey.",
+        BOATRACE_SPECTATOR_DRAGONLING = "Aha! You have come to marvel at the mighty Wolfgang?",
+
+        YOTD_STEERINGWHEEL = "Wolfgang likes steering shiny captain wheel.",
+        YOTD_STEERINGWHEEL_ITEM = "Is for making little whirly steer-wheel.",
+        YOTD_OAR = "Stand back and watch the mighty rowing of Wolfgang!",
+        YOTD_ANCHOR = "Ha! Shiny anchor is not heavy for Wolfgang!",
+        YOTD_ANCHOR_ITEM = "Is for making big boat weight.",
+        MAST_YOTD = "Wind works for Wolfgang!",
+        MAST_YOTD_ITEM = "Is for making big sail-stick.",
+        BOAT_BUMPER_YOTD = "Eep! Oh, is not monster, just Wolfgang's boat.",
+        BOAT_BUMPER_YOTD_KIT = "Will keep boat safe.",
+        BOATRACE_SEASTACK = "Mighty boat is stronger than tiny buoy... Wolfgang hopes.",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Wolfgang will throw as easily as a tiny pebble!",
+        BOATRACE_SEASTACK_MONKEY = "Mighty boat is stronger than tiny buoy... Wolfgang hopes.",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Wolfgang will throw as easily as a tiny pebble!",
+        MASTUPGRADE_LAMP_YOTD = "Tiny fire beast will light the way.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Put fire up high. Is safer that way.",
+        WALKINGPLANK_YOTD = "Is fancy diving plank, yes?",
+        CHESSPIECE_YOTD = "Wolfgang crushed Dragonfly race!",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

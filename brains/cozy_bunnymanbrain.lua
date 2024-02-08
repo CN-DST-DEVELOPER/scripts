@@ -12,39 +12,27 @@ require "behaviours/wander"
 
 local BrainCommon = require("brains/braincommon")
 
-local MIN_FOLLOW_DIST = 2
-local TARGET_FOLLOW_DIST = 5
-local MAX_FOLLOW_DIST = 9
 local MAX_WANDER_DIST = 3
 
 local MAX_ARENA_WANDER_DIST = TUNING.BUNNY_RING_MINIGAME_ARENA_RADIUS - 1.25
 
-local LEASH_RETURN_DIST = 5
-local LEASH_MAX_DIST = 5
-
 local START_FACE_DIST = 4
 local KEEP_FACE_DIST = 6
-
 local GAMERANGE = 10
 
 local SPOILSPORT_DATA = {text=STRINGS.COZY_RABBIT_SPOILSPORT}
-local CHEER_DATA = {text=STRINGS.COZY_RABBIT_CHEER}
-local CHEER_DATA_MOON = {text=STRINGS.COZY_RABBIT_MOON}
 
-local function getcheer() 
+local function getcheer()
     return {text=STRINGS.COZY_RABBIT_CHEER[math.random(1,#STRINGS.COZY_RABBIT_CHEER)]}
-end 
-local function getmooncheer() 
+end
+local function getmooncheer()
     return {text=STRINGS.COZY_RABBIT_MOON[math.random(1,#STRINGS.COZY_RABBIT_MOON)]}
-end 
-
-local QUESTION_DATA = {text=STRINGS.COZY_RABBIT_QUESTION_DANGER}
+end
 
 local function fightringfilter(shrine,rabbit)
     return rabbit and (not rabbit.components.minigame_spectator
         and not rabbit.components.minigame_participator)
 end
-
 
 local function KeepTraderFn(inst, target)
     return inst.components.trader:IsTryingToTradeWithMe(target)
@@ -121,7 +109,6 @@ local function gotopillowlocation(inst)
 end
 
 local function shouldgobacktocave(inst)
-
     if IsSpecialEventActive(SPECIAL_EVENTS.YOTR) and inst.components.entitytracker:GetEntity("shrine") then
         return nil
     end
@@ -146,8 +133,8 @@ local function shouldgotopillowforsleep(inst)
     end
 end
 
+local QUESTION_DATA = {text=STRINGS.COZY_RABBIT_QUESTION_DANGER}
 local function shouldcheer(inst)
-
     if inst.components.sleeper:IsAsleep() then
         return nil
     end
@@ -190,44 +177,29 @@ local function dropprizeforplayer(inst)
     end
 end
 
-local function minigamepillowswing(inst)
-    if not inst.components.combat:HasTarget() then
-        inst.components.combat:TryRetarget()
-    end
-
-    local target = inst.components.combat.target
-    if target then
-        return BufferedAction(inst, target, ACTIONS.ATTACK)
-    else
-        return nil
-    end
-end
-
 local function randompillowswing(inst)
     if inst.components.sleeper:IsAsleep() then
         return nil
     end
 
-    local x,y,z = inst.Transform:GetWorldPosition()
     local shrine = inst.components.entitytracker:GetEntity("shrine")
     local ents = shrine and shrine:getrabbits(fightringfilter) or {}
-    for i, ent in ipairs(ents)do
-
+    for _, ent in ipairs(ents)do
         if ent ~= inst and math.random()<0.2 then
             inst.components.combat:SetTarget(ent)
             inst.components.timer:StartTimer("pillow_attack_cooldown", 10)
             local ba = BufferedAction(inst, ent, ACTIONS.ATTACK)
             if ba then
-                local clear_target = function()
+                inst._clear_target = inst._clear_target or function()
                     inst.components.combat:SetTarget(nil)
                 end
-                ba:AddSuccessAction(clear_target)
-                ba:AddFailAction(clear_target)
+                ba:AddSuccessAction(inst._clear_target)
+                ba:AddFailAction(inst._clear_target)
             end
             return ba
         end
     end
-  
+
     return nil
 end
 
@@ -266,7 +238,7 @@ local function KeepFaceTargetFn(inst, target)
 end
 
 -----------------------------------------------
--- carrot spin 
+-- carrot spin
 
 -- Look at spinning bunny
 local function GetSpinFaceTargetFn(inst)
@@ -280,7 +252,7 @@ local function GetSpinFaceTargetFn(inst)
     end
 
     local target = nil
-    for i,ent in ipairs(ents)do
+    for _, ent in ipairs(ents)do
         if ent.carrotgamestatus then
             target = ent
             break
@@ -295,7 +267,7 @@ local function KeepSpinFaceTargetFn(inst, target)
         and inst:IsValid() and target:IsValid()
         and target.carrotgamestatus
 end
--- END Loot at spinnign bunny.
+-- END Loot at spinning bunny.
 
 local function sayspoilsport(inst)
     if inst.sg:HasStateTag("idle") then
@@ -330,12 +302,11 @@ local function goopnoteatenintime(inst)
     local shrine = inst.components.entitytracker:GetEntity("shrine")
     if shrine and shrine.gameinprogress then
         shrine:DoTaskInTime(2, goopnoteatenintime_reaction)
-            end
+    end
 end
 -- END ----------------------
 
 local function checkforcarrotgame(inst)
-
     if inst.components.minigame_spectator
             or inst.components.minigame_participator
             or inst.components.knownlocations:GetLocation("pillowfightlocation")
@@ -351,11 +322,9 @@ local function checkforcarrotgame(inst)
     local shrine = inst.components.entitytracker:GetEntity("shrine")
     if not shrine then
         return nil
-    end
-    if shrine.gameinprogress then
+    elseif shrine.gameinprogress then
         return true
     elseif not TheWorld.state.isday and not inst.components.timer:TimerExists("shouldspincheck") then
-
         inst.components.timer:StartTimer("shouldspincheck", math.random()*10)
 
         if next(inst.components.inventory:GetItemByName("carrot", 1)) ~= nil
@@ -368,6 +337,7 @@ local function checkforcarrotgame(inst)
             return true
         end
     end
+
     return nil
 end
 
@@ -387,16 +357,18 @@ local function carrotgameplayer(inst)
         end
         if shrine.gameinprogress == "winner" then
             if shrine.gamewinner ~= inst then
-                if inst.sg:HasStateTag("idle") and shrine.gamewinner and shrine.gamewinner:IsValid() and math.random() < 0.3 then
+                if math.random() < 0.3 and
+                        inst.sg:HasStateTag("idle") and
+                        shrine.gamewinner and shrine.gamewinner:IsValid() then
                     inst:ForceFacePoint(shrine.gamewinner.Transform:GetWorldPosition())
 
                     if not inst.components.timer:TimerExists("cheertimer") then
                         local choice = STRINGS.COZY_RABBIT_WINNER[math.random(1,#STRINGS.COZY_RABBIT_WINNER)]
-                        inst:DoTaskInTime(math.random()*0.3, function() 
+                        inst:DoTaskInTime(math.random()*0.3, function()
                                 if shrine.gamewinner then
-                                    inst:PushEvent("cheer", {text=subfmt(choice, {winner=shrine.gamewinner.name})}) 
-                                end 
-                            end) 
+                                    inst:PushEvent("cheer", {text=subfmt(choice, {winner=shrine.gamewinner.name})})
+                                end
+                            end)
 
                         inst.components.timer:StartTimer("cheertimer",math.random() + 2)
                     end
@@ -408,7 +380,7 @@ local function carrotgameplayer(inst)
             if not inst.sg:HasStateTag("emote") then
                 inst:PushEvent("dance", {text=STRINGS.COZY_RABBIT_YAY})
             end
-        end  
+        end
     end
 end
 
@@ -450,14 +422,13 @@ local function carrotgamemanager(inst)
 
         if inst.carrotgamestatus == "drop" then
             local carrot = next(inst.components.inventory:GetItemByName("carrot",1))
-            
             if not carrot then
                 carrot = SpawnPrefab("carrot")
                 inst.components.inventory:GiveItem(carrot)
             end
             inst.components.entitytracker:TrackEntity("carrot",carrot)
 
-            inst:ListenForEvent("onpickup", function(food,data)
+            inst:ListenForEvent("onpickup", function(_, data)
                     if data.owner ~= inst then
                         inst:OnAttacked()
                     end
@@ -483,7 +454,6 @@ local function carrotgamemanager(inst)
 
         if inst.carrotgamestatus == "wait" then
             local carrot = inst.components.entitytracker:GetEntity("carrot")
-        
             if carrot then
                 if not carrot.components.inventoryitem.owner then
                     inst:ForceFacePoint(carrot.Transform:GetWorldPosition())
@@ -529,7 +499,10 @@ local function carrotgamemanager(inst)
                 end
             end
 
-            if target then
+            if not target then
+                -- no winner
+                inst:finishgame()
+            else
                 --target = FindClosestPlayerToInst(inst,40)   -- DEBUG FOR TESTING PLAYER WIN
 
                 shrine.gameinprogress = "winner"
@@ -542,10 +515,6 @@ local function carrotgamemanager(inst)
                 target.light.Transform:SetScale(0.75, 0.75, 0.75)
                 target.light:DoTaskInTime(5, target.light.fadeout)
                 target:AddChild(target.light)
-
-            else
-                -- no winner
-                inst:finishgame()
             end
         end
 
@@ -570,7 +539,8 @@ local function carrotgamemanager(inst)
 
                 goop.yotr_targeteater = shrine.gamewinner
                 goop:ListenForEvent("oneaten", function(food,data)
-                        if data.eater == food.yotr_targeteater and inst.components.timer:TimerExists("yotr_waitforplayertoeat") then
+                        if data.eater == food.yotr_targeteater and
+                                inst.components.timer:TimerExists("yotr_waitforplayertoeat") then
                             inst.carrotgamestatus = "givenuggets"
                             inst.components.timer:StopTimer("yotr_waitforplayertoeat")
                         end
@@ -581,7 +551,7 @@ local function carrotgamemanager(inst)
                     inst.components.timer:StartTimer("yotr_waitforplayertoeat",10)
                 end
             elseif goop.components.inventoryitem.owner == inst then
-                local pos = nil
+                local pos
 
                 if shrine.gamewinner and shrine.gamewinner ~= inst then
                     local radius = 3
@@ -645,12 +615,14 @@ end
 local function eatgoop(inst)
     if inst.gooptoeat and not inst.gooptoeat.components.inventoryitem.owner then
         return BufferedAction(inst, inst.gooptoeat, ACTIONS.EAT)
-        end
+    end
 end
 ---------------------------------------------
 
 local function getpillow(inst)
-    if inst.components.sleeper:IsAsleep() or inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("emote") then
+    if inst.components.sleeper:IsAsleep() or
+            inst.sg:HasStateTag("busy") or
+            inst.sg:HasStateTag("emote") then
         return nil
     end
 
@@ -757,7 +729,7 @@ function CozyBunnymanBrain:OnStart()
                     if self.inst.components.knownlocations then
                         local minigame = self.inst.components.minigame_participator:GetMinigame()
                         if minigame and minigame.components.minigame and minigame.components.minigame:GetIsIntro() then
-                            return true -- If the start position doesn't exist, we'll fail the Leash and continue anyway.
+                            return true -- If the start position doesn't exist, we'll fail the Leash and continue anyway
                         end
                     end
 

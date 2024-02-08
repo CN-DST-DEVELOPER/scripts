@@ -212,7 +212,7 @@ local function AddConstrainedPhysicsObj(boat, physics_obj)
     physics_obj:DoTaskInTime(0, function()
 		if boat:IsValid() then
 			physics_obj.Transform:SetPosition(boat.Transform:GetWorldPosition())
-   			physics_obj.Physics:ConstrainTo(boat.entity)
+            physics_obj.Physics:ConstrainTo(boat.entity)
 		end
 	end)
 end
@@ -882,7 +882,6 @@ local function pirate_fn()
 end
 
 -- ICE FLOE
-local OCEAN_ICE_NO_DEPLOY_RADIUS = TUNING.OCEAN_ICE_RADIUS + 0.1
 local function ice_floe_deploy_blocker_fn()
     local inst = CreateEntity()
 
@@ -890,7 +889,7 @@ local function ice_floe_deploy_blocker_fn()
     inst.entity:AddNetwork()
 
     -- Prevent things from being deployed onto the ice floes. 
-    inst:SetDeployExtraSpacing(OCEAN_ICE_NO_DEPLOY_RADIUS)
+    inst:SetDeployExtraSpacing(TUNING.OCEAN_ICE_RADIUS + 0.1)
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
@@ -1114,6 +1113,7 @@ local function boat_item_collision_fn()
     return boat_item_collision_template(TUNING.BOAT.RADIUS)
 end
 
+-- Grass boat collisions
 local function boat_grass_player_collision_fn()
     return boat_player_collision_template(TUNING.BOAT.GRASS_BOAT.RADIUS)
 end
@@ -1133,12 +1133,14 @@ end
 
 --
 return Prefab("boat", wood_fn, wood_assets, prefabs),
-       Prefab("boat_grass", grass_fn, grass_assets, grass_prefabs),
        Prefab("boat_player_collision", boat_player_collision_fn),
        Prefab("boat_item_collision", boat_item_collision_fn),
+       Prefab("boat_item", item_fn, item_assets, item_prefabs),
+       MakePlacer("boat_item_placer", "boat_01", "boat_test", "idle_full", true, false, false, nil, nil, nil, nil, 6),
 
        Prefab("boat_pirate", pirate_fn, pirate_assets, prefabs),
 
+       Prefab("boat_grass", grass_fn, grass_assets, grass_prefabs),
        Prefab("boat_grass_player_collision", boat_grass_player_collision_fn),
        Prefab("boat_grass_item_collision", boat_grass_item_collision_fn),
 
@@ -1147,7 +1149,5 @@ return Prefab("boat", wood_fn, wood_assets, prefabs),
        Prefab("boat_ice_item_collision", boat_ice_item_collision_fn),
        Prefab("boat_ice_deploy_blocker", ice_floe_deploy_blocker_fn),
 
-       Prefab("boat_item", item_fn, item_assets, item_prefabs),
-       MakePlacer("boat_item_placer", "boat_01", "boat_test", "idle_full", true, false, false, nil, nil, nil, nil, 6),
        Prefab("boat_grass_item", grass_item_fn, grass_item_assets, grass_item_prefabs),
        MakePlacer("boat_grass_item_placer", "boat_grass", "boat_grass", "idle_full", true, false, false, 0.85, nil, nil, nil, 4.5)

@@ -535,6 +535,7 @@ STRINGS =
             WATER = "Launch",
             PORTABLE = "Place",
             DEPLOY = "Deploy",
+			DEPLOY_TOSS = "Toss",
             FERTILIZE_GROUND = "Fertilize Plot",
         },
         DEPLOY =
@@ -548,6 +549,7 @@ STRINGS =
             WATER = "Launch",
             PORTABLE = "Place",
             DEPLOY = "Deploy",
+			DEPLOY_TOSS = "Toss",
             FERTILIZE_GROUND = "Fertilize Plot",
         },
 
@@ -2266,6 +2268,7 @@ STRINGS =
         CHESSPIECE_DEERCLOPS_MUTATED = "Crystal Deerclops Figure",
         CHESSPIECE_WARG_MUTATED = "Possessed Varg Figure",
         CHESSPIECE_BEARGER_MUTATED = "Armored Bearger Figure",
+        CHESSPIECE_YOTD = "Start Tower Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2304,7 +2307,7 @@ STRINGS =
         CHESSPIECE_DEERCLOPS_MUTATED_BUILDER = "Crystal Deerclops Figure",
         CHESSPIECE_WARG_MUTATED_BUILDER = "Possessed Varg Figure",
         CHESSPIECE_BEARGER_MUTATED_BUILDER = "Armored Bearger Figure",
-
+        CHESSPIECE_YOTD_BUILDER = "Start Tower Figure",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
         CHESSPIECE_ANCHOR_SKETCH = "Anchor Figure Sketch",
@@ -2317,10 +2320,11 @@ STRINGS =
         CHESSPIECE_CRABKING_SKETCH = "Crab King Figure Sketch",
         CHESSPIECE_GUARDIANPHASE3_SKETCH = "Celestial Champion Figure Sketch",
         CHESSPIECE_MANRABBIT_SKETCH = "Bunnyman Figure Sketch",
-        CHESSPIECE_DAYWALKER_SKETCH = "Nightmare Werepig Sketch",
-        CHESSPIECE_DEERCLOPS_MUTATED_SKETCH = "Crystal Deerclops Sketch",
-        CHESSPIECE_WARG_MUTATED_SKETCH = "Possessed Varg Sketch",
-        CHESSPIECE_BEARGER_MUTATED_SKETCH = "Armored Bearger Sketch",
+        CHESSPIECE_DAYWALKER_SKETCH = "Nightmare Werepig Figure Sketch",
+        CHESSPIECE_DEERCLOPS_MUTATED_SKETCH = "Crystal Deerclops Figure Sketch",
+        CHESSPIECE_WARG_MUTATED_SKETCH = "Possessed Varg Figure Sketch",
+        CHESSPIECE_BEARGER_MUTATED_SKETCH = "Armored Bearger Figure Sketch",
+        CHESSPIECE_YOTD_SKETCH = "Start Tower Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -3866,6 +3870,38 @@ STRINGS =
 
         BOOTLEG = "Bootleg Getaway",
         OCEANWHIRLPORTAL = "Whirlportal",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE = "Dragonfly Shrine",
+
+        DRAGONBOAT_BODY = "Dragonfly Boat",
+        DRAGONBOAT_KIT = "Dragonfly Boat Kit",
+        DRAGONBOAT_PACK = "Decked-Out Dragonfly Boat Kit",
+
+        BOATRACE_CHECKPOINT = "Race Checkpoint",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Race Checkpoint Kit",
+        BOATRACE_START = "Start Tower",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Start Tower Kit",
+
+        BOATRACE_PRIMEMATE = "Charlie's Racer",
+        BOATRACE_SPECTATOR_DRAGONLING = "Broodling Spectator",
+
+        YOTD_STEERINGWHEEL = "Dragonfly Boat Wheel",
+        YOTD_STEERINGWHEEL_ITEM = "Dragonfly Boat Wheel Kit",
+        YOTD_OAR = "Claw Oar",
+        YOTD_ANCHOR = "Claw Anchor",
+        YOTD_ANCHOR_ITEM = "Claw Anchor Kit",
+        MAST_YOTD = "Dragonfly Wing Mast",
+        MAST_YOTD_ITEM = "Dragonfly Wing Mast Kit",
+        BOAT_BUMPER_YOTD = "Fanged Bumper",
+        BOAT_BUMPER_YOTD_KIT = "Fanged Bumper Kit",
+        BOATRACE_SEASTACK = "Golden Buoy",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Golden Buoy Kit",
+        BOATRACE_SEASTACK_MONKEY = "Thorny Buoy",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Thorny Buoy Kit",
+        MASTUPGRADE_LAMP_YOTD = "Dragonfly Light",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Dragonfly Light Kit",
+        WALKINGPLANK_YOTD = "Scaled Plank",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4295,6 +4331,7 @@ STRINGS =
         CHESSPIECE_DEERCLOPS_MUTATED_BUILDER = "A truly eye-catching sculpture.",
         CHESSPIECE_WARG_MUTATED_BUILDER = "A rather fetching statue.",
         CHESSPIECE_BEARGER_MUTATED_BUILDER = "A soul-bearing rendition of a ferocious favorite.",
+        CHESSPIECE_YOTD_BUILDER = "A tribute to getting things off to a fiery start.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4306,6 +4343,7 @@ STRINGS =
         CHESSPIECE_MALBATROSS_SKETCH = "A sculpture sketch of the mighty Malbatross.",
         CHESSPIECE_CRABKING_SKETCH = "A sculpture sketch of the Crab King",
         CHESSPIECE_MANRABBIT_SKETCH = "A sculpture sketch of a playful Bunnyman.",
+        CHESSPIECE_YOTD_SKETCH = "A sculpture sketch of a Dragonfly boat race Start Tower.",
 
         CRITTER_GLOMLING_BUILDER = "Befriend a bouncy Glomglom.",
         CRITTER_DRAGONLING_BUILDER = "Befriend a noble Broodling.",
@@ -4852,6 +4890,23 @@ STRINGS =
         BATTLESONG_SHADOWALIGNED = "Ward yourself and your allies against shadow attacks, and deal heavier blows to lunar foes.",
         BATTLESONG_LUNARALIGNED = "Ward yourself and your allies against lunar attacks, and deal heavier blows to shadowy foes.",
 
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE = "Make offerings to the fiery Dragonfly.",
+
+        DRAGONBOAT_KIT = "Achieve ocean dragonhood.",
+        DRAGONBOAT_PACK = "Equipped with all the draconic fixings.",
+
+
+        YOTD_STEERINGWHEEL_ITEM = "Take the wheel and go for gold!",
+        YOTD_OAR = "A little-known fact about Dragonflies: they're surprisingly good swimmers.",
+        YOTD_ANCHOR_ITEM = "The gold standard of ship anchors.",
+        MAST_YOTD_ITEM = "No Dragonflies were harmed in the making of this mast.",
+        BOAT_BUMPER_YOTD_KIT = "No one will mess with a dragon that's bared its fangs.",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "One person's buoy is another's barrier.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Light your way with dragon fire.",
+
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Ready, set, boat!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "It's not the destination, it's the journey.",
     },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -7784,7 +7839,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Skill Spotlight: Wigfrid & Willow\nBeta Build",
+		MAINBANNER_BETA_TITLE = "Year of the Dragonfly",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -9550,6 +9605,7 @@ STRINGS.UI =
         YEAR_OF_THE_BEEFALO = "Year of the Beefalo",
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
         YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
+        YEAR_OF_THE_DRAGONFLY = "Year of the Dragonfly",
 
         PREFABSWAPS = "Changing Resources",
         PREFABSWAPS_START = "Starting Resource Variety",
@@ -12259,7 +12315,7 @@ STRINGS.UI =
             [5] = "Generic Controller",
             [6] = "Touch Input",
             [7] = "Steam Controller",
-            [8] = "PS4 Controller", --for PC/OSX/Linux
+            [8] = "PS5 Controller",
             [9] = "Unknown",
             [10] = "Switch Controller",
             [11] = "Steam Deck",
@@ -12492,40 +12548,40 @@ STRINGS.UI =
                 "(Slider 1)",
                 "(Slider 1)",
             },
-            -- PS4
+            -- PS4 Dual Shock 4
             [4] =
             {
                 [0] = "Unknown",
 
                 -- Digital
-                "\238\136\143",--"DPad Up",
-                "\238\136\140",--"DPad Down",
-                "\238\136\141",--"DPad Left",
-                "\238\136\142",--"DPad Right"
-                "\238\136\132",--"Start",
-                "\238\136\133",--"Back",
-                "\238\136\134",--"Left Stick",
-                "\238\136\137",--"Right Stick",
-                "\238\136\135",--"Left Bumper",
-                "\238\136\138",--"Right Bumper",
-                "\238\136\128",--"Button A",
-                "\238\136\129",--"Button B",
-                "\238\136\130",--"Button X",
-                "\238\136\131",--"Button Y",
+                "\238\136\143",-- 1 "DPad Up",
+                "\238\136\140",-- 2 "DPad Down",
+                "\238\136\141",-- 3 "DPad Left",
+                "\238\136\142",-- 4 "DPad Right"
+                "\238\136\132",-- 5 "Options (Start)",
+                "\238\136\133",-- 6 "Share (Select, Back)",
+                "\238\136\134",-- 7 "L3",
+                "\238\136\137",-- 8 "R3",
+                "\238\136\135",-- 9 "Left Bumper",
+                "\238\136\138",--10 "Right Bumper",
+                "\238\136\128",--11 "Cross",
+                "\238\136\129",--12 "Circle",
+                "\238\136\130",--13 "Square",
+                "\238\136\131",--14 "Triangle",
 
                 -- Analog
-                "\238\136\146",--"Left Thumb Left",
-                "\238\136\147",--"Left Thumb Right",
-                "\238\136\145",--"Left Thumb Down",
-                "\238\136\144",--"Left Thumb Up",
-                "\238\136\150",--"Right Thumb Left",
-                "\238\136\151",--"Right Thumb Right",
-                "\238\136\149",--"Right Thumb Down",
-                "\238\136\148",--"Right Thumb Up",
-                "\238\136\136",--"Left Trigger",
-                "\238\136\136",--"Left Trigger",
-                "\238\136\139",--"Right Trigger",
-                "\238\136\139",--"Right Trigger",
+                "\238\136\146",--15 "Left Thumb Left",
+                "\238\136\147",--16 "Left Thumb Right",
+                "\238\136\145",--17 "Left Thumb Down",
+                "\238\136\144",--18 "Left Thumb Up",
+                "\238\136\150",--19 "Right Thumb Left",
+                "\238\136\151",--20 "Right Thumb Right",
+                "\238\136\149",--21 "Right Thumb Down",
+                "\238\136\148",--22 "Right Thumb Up",
+                "\238\136\136",--23 "Left Trigger",
+                "\238\136\136",--24 "Left Trigger",
+                "\238\136\139",--25 "Right Trigger",
+                "\238\136\139",--26 "Right Trigger",
             },
             -- Vita Remote Play
             [5] =
@@ -12577,39 +12633,39 @@ STRINGS.UI =
 
                 -- not used since steam controllers identify as xbox360 controllers
             },
-            -- DualShock4 on PC
+            -- PS5 Dual Sense
             [8] =
             {
                 [0] = "Unknown",
 
-                "\238\136\143",--"DPad Up"
-                "\238\136\140",--"DPad Down"
-                "\238\136\141",--"DPad Left",
-                "\238\136\142",--"DPad Right"
-                "\238\136\132",--"Options (Start)",
-                "\238\136\133",--"Back" but not really. It's the Share button which looks the same as the Options button
-                "\238\136\134",--"L3"
-                "\238\136\137",--"R3"
-                "\238\136\135",--"L1",
-                "\238\136\138",--"R1"
-                "\238\136\128",--"Cross",
-                "\238\136\129",--"Circle",
-                "\238\136\130",--"Square",
-                "\238\136\131",--"Triangle",
+                "\238\136\143",-- 1 "DPad Up"
+                "\238\136\140",-- 2 "DPad Down"
+                "\238\136\141",-- 3 "DPad Left",
+                "\238\136\142",-- 4 "DPad Right"
+                "\238\136\132",-- 5 "Options (Start)",
+                "\238\136\133",-- 6 "Share (Select, Back)",
+                "\238\136\134",-- 7 "L3",
+                "\238\136\137",-- 8 "R3",
+                "\238\136\135",-- 9 "Left Bumper",
+                "\238\136\138",--10 "Right Bumper"
+                "\238\136\128",--11 "Cross",
+                "\238\136\129",--12 "Circle",
+                "\238\136\130",--13 "Square",
+                "\238\136\131",--14 "Triangle",
 
                 -- Analog
-                "\238\136\146",--"Left Thumb Left",
-                "\238\136\147",--"Left Thumb Right",
-                "\238\136\144",--"Left Thumb Up",
-                "\238\136\145",--"Left Thumb Down",
-                "\238\136\150",--"Right Thumb Left",
-                "\238\136\151",--"Right Thumb Right",
-                "\238\136\136",--"Left Trigger",
-                "\238\136\136",--"Left Trigger",
-                "\238\136\139",--"Right Trigger",
-                "\238\136\139",--"Right Trigger",
-                "\238\136\148",--"Right Thumb Up",
-                "\238\136\149",--"Right Thumb Down",
+                "\238\136\146",--15 "Left Thumb Left",
+                "\238\136\147",--16 "Left Thumb Right",
+                "\238\136\144",--17 "Left Thumb Up",
+                "\238\136\145",--18 "Left Thumb Down",
+                "\238\136\150",--19 "Right Thumb Left",
+                "\238\136\151",--20 "Right Thumb Right",
+                "\238\136\136",--21 "Left Trigger",
+                "\238\136\136",--22 "Left Trigger",
+                "\238\136\139",--23 "Right Trigger",
+                "\238\136\139",--24 "Right Trigger",
+                "\238\136\148",--25 "Right Thumb Up",
+                "\238\136\149",--26 "Right Thumb Down",
             },
             --Unknown
             [9] =
@@ -13019,6 +13075,7 @@ STRINGS.UI =
         YEAR_OF_THE_BEEFALO = "Year of the Beefalo",
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
         YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
+        YEAR_OF_THE_DRAGONFLY = "Year of the Dragonfly",
     },
 
     SAVELOAD =
@@ -15782,7 +15839,7 @@ STRINGS.SCRAPBOOK = {
         SIESTAHUT = "Useable in the day.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.",
         HOMESIGN = "When placed, it allows the survivor to write a message that can be read by themselves or other survivors later.",
         SISTURN = "A 4 slot container that can hold petals.\n\nWhen full of petals it raises nearby survivors Sanity by 25 per minute.\n\nAs well, Abigail's health regenerates 4x faster.\n\nWhen the petals rot, they will drop out of the container onto the ground as rot.",
-        SPIDERDEN = "Creates a patch of webbing on the ground near it that slows survivors and some creatures that walk on it.\n\nComes in several sizes and grows to fit its spider population.",
+        SPIDERDEN = "Creates a patch of webbing on the ground near it that slows survivors and some creatures that walk on it.\n\nComes in several sizes and grows to fit its spider population.\n\nWebber may upgrade these with Silk.",
         STEERINGWHEEL = "When deployed on a boat, a survivor can use it to rotate the boats direction.",
         TACKLESTATION = "Standing near this device will provide the survivor with new Lures and Floats they can craft.",
         TENT = "A survivor can use the tent at Dusk or Night.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.",

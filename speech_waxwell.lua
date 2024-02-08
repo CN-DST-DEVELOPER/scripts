@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Oh, I'm not close enough to the starting point? Well maybe it should come to me!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "I think you're forgetting something, pal.",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "Perhaps some space should be cleared around the Start Tower.",
+
 	BATTLECRY =
 	{
 		GENERIC = "To arms!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "Neat trick.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "Great.",
+            EMPTY = "Charcoal? How imaginative.",
+            BURNT = "Move along. Show's over.",
+        },
+
+        DRAGONBOAT_KIT = "I'm not the roll-up-your-sleeves type. Ask the handywoman.",
+        DRAGONBOAT_PACK = "Here I am, toiling away for a frivolous diversion.",
+
+        BOATRACE_CHECKPOINT = "Are we there yet?",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Whatever.",
+        BOATRACE_START = "Can I just wait here for everyone to be done?",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Wherever.",
+
+        BOATRACE_PRIMEMATE = "Are you supposed to be intimidating?",
+        BOATRACE_SPECTATOR_DRAGONLING = "Enjoying the show, pal?",
+
+        YOTD_STEERINGWHEEL = "That's the place for the person in charge. Me.",
+        YOTD_STEERINGWHEEL_ITEM = "Hard labor? Isn't that Winona's forte?",
+        YOTD_OAR = "Must I?",
+        YOTD_ANCHOR = "Such exquisite craftsmanship. Into the water it goes.",
+        YOTD_ANCHOR_ITEM = "Can't someone else assemble it?",
+        MAST_YOTD = "Those \"wings\" haven't been clipped from a real Dragonfly. A pity.",
+        MAST_YOTD_ITEM = "Do I look like a shipyard laborer?",
+        BOAT_BUMPER_YOTD = "I always thought boats could use more teeth.",
+        BOAT_BUMPER_YOTD_KIT = "Ugh. These menial tasks do not suit me.",
+        BOATRACE_SEASTACK = "Out of my way!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "A waypoint. Or perhaps a well-timed obstacle...",
+        BOATRACE_SEASTACK_MONKEY = "Hm. Someone's feeling prickly.",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "A waypoint. Or perhaps a well-timed obstacle...",
+        MASTUPGRADE_LAMP_YOTD = "How dare you look down on me!",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Far more practical than setting a fire on our boat.",
+        WALKINGPLANK_YOTD = "If I must walk the plank I suppose I can do it in style.",
+        CHESSPIECE_YOTD = "Always nice to be reminded of my victories.",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

@@ -479,8 +479,6 @@ local function fn()
     inst.components.talker.offset = Vector3(0, -500, 0)
     inst.components.talker:MakeChatter()
 
-    inst.entity:SetPristine()
-
     inst:WatchWorldState("isfullmoon", function(inst, isfullmoon)
         if isfullmoon then
             inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
@@ -489,8 +487,7 @@ local function fn()
         end
     end)
 
-    
-
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

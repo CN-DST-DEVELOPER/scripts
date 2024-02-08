@@ -19,6 +19,7 @@ local Boatcrew = Class(function(self, inst)
     self.members = {}
     self.membercount = 0
     self.membertag = nil
+    self.loot_per_member = TUNING.BOATCREW_LOOT_PER_MEMBER
     self.captain = nil
 
     self.tinkertargets = {}
@@ -34,9 +35,8 @@ local Boatcrew = Class(function(self, inst)
     self.flee = nil
 
     self.status = "hunting"
---math.random() * 2 + 6
     self.task = self.inst:DoPeriodicTask(2, _OnUpdate, nil, self)
-    self.inst:ListenForEvent("onremove", function() 
+    self.inst:ListenForEvent("onremove", function()
         if TheWorld.components.piratespawner then
             TheWorld.components.piratespawner:RemoveShipData(self.inst)
         end
@@ -45,49 +45,50 @@ local Boatcrew = Class(function(self, inst)
 end)
 
 function Boatcrew:TestForLootToSteal()
-    local loot = false
-    for member,bool in pairs(self.members) do
+    local has_loot = false
+    for member in pairs(self.members) do
         if member ~= self.captain and not member.nothingtosteal then
-            loot = true 
+            has_loot = true
             break
         end
     end
-    return loot
+    return has_loot
 end
 
 function Boatcrew:TestForVictory()
-    if self:CountPirateLoot() > (self:CountCrew()*3) then
+    if self:CountPirateLoot() > (self:CountCrew()*self.loot_per_member) then
         return true
-    end
-    for member,bool in pairs(self.members)do 
-        if member.victory then
-            return true
+    else
+        for member in pairs(self.members) do
+            if member.victory then
+                return true
+            end
         end
+    end
+end
+
+local function do_victory_for_crewmember(_, member)
+    if member and member:IsValid() then
+        member.victory = true
+        local string_index = math.random(1, #STRINGS["MONKEY_BATTLECRY_VICTORY_CHEER"])
+        member:PushEvent("cheer", { say=STRINGS["MONKEY_BATTLECRY_VICTORY_CHEER"][string_index] })
     end
 end
 
 function Boatcrew:CrewCheer()
-    for member,bool in pairs(self.members) do
+    for member in pairs(self.members) do
         if not member.victory then
-            self.inst:DoTaskInTime((math.random()*0.4)+0.2, function() 
-                member.victory = true
-                member:PushEvent("cheer",{ say=STRINGS["MONKEY_BATTLECRY_VICTORY_CHEER"][math.random(1,#STRINGS["MONKEY_BATTLECRY_VICTORY_CHEER"])] })
-            end)
+            self.inst:DoTaskInTime((math.random()*0.4)+0.2, do_victory_for_crewmember, member)
         end
     end
 end
 
-
 function Boatcrew:CountPirateLoot()
     local loot = 0
-    for member,bool in pairs(self.members)do
-        for k,v in pairs(member.components.inventory.itemslots)do
-            if not v:HasTag("personal_possession") then
-                if v.components.stackable then
-                    loot = loot + v.components.stackable.stacksize
-                else
-                    loot = loot + 1
-                end
+    for member in pairs(self.members) do
+        for _, slot_item in pairs(member.components.inventory.itemslots) do
+            if not slot_item:HasTag("personal_possession") then
+                loot = loot + (slot_item.components.stackable and slot_item.components.stackable.stacksize or 1)
             end
         end
     end
@@ -95,82 +96,63 @@ function Boatcrew:CountPirateLoot()
 end
 
 function Boatcrew:CountCrew()
-    local crew = 0
-    for member,bool in pairs(self.members)do
-        crew = crew + 1
-    end
-    return crew
+    return GetTableSize(self.members)
 end
 
 function Boatcrew:OnRemoveFromEntity()
     self.task:Cancel()
-    for k, v in pairs(self.members) do
-        RemoveMemberListeners(self, k)
+    for member in pairs(self.members) do
+        RemoveMemberListeners(self, member)
     end
 end
 
 function Boatcrew:OnRemoveEntity()
-    for k, v in pairs(self.members) do
-        self:RemoveMember(k)
+    for member in pairs(self.members) do
+        self:RemoveMember(member)
     end
-end
-
-function Boatcrew:GetDebugString()
-    local str = ""
-    return str
 end
 
 function Boatcrew:SetMemberTag(tag)
     self.membertag = tag
-	if tag == nil then
-		self.membersearchtags = nil
-	else
-		self.membersearchtags = { "crewmember", tag }
-	end
+    self.membersearchtags = (tag ~= nil and { "crewmember", tag }) or nil
 end
 
 function Boatcrew:areAllCrewOnBoat()
-    local allthere = true
-    for member in pairs(self.members)do
+    for member in pairs(self.members) do
         if member:GetCurrentPlatform() ~= member.components.crewmember.boat then
-            allthere = false
-            break
+            return false
         end
     end
-    return allthere
+    return true
 end
 
 function Boatcrew:GetHeadingNormal()
-
     local pt = nil
-    local boatpt = Vector3(self.inst.Transform:GetWorldPosition())
+    local boatpt = self.inst:GetPosition()
 
-    if self.target then     
-
+    if self.target then
         if self.status == "retreat" and self:areAllCrewOnBoat() then
-            local x,y,z = self.target.Transform:GetWorldPosition()
-            local heading = self.inst:GetAngleToPoint(x, 0, z)
-            local offset = Vector3(1 * math.cos( heading*DEGREES ), 0, -1 * math.sin( heading*DEGREES ))
-            pt = Vector3(boatpt.x +offset.x,0,boatpt.z + offset.z)
+            local x, _, z = self.target.Transform:GetWorldPosition()
+            local heading = self.inst:GetAngleToPoint(x, 0, z) * DEGREES
+            pt = boatpt + Vector3(math.cos(heading), 0, -math.sin(heading))
+            pt.y = 0
         else
-            pt = Vector3(self.target.Transform:GetWorldPosition())
-
-            local scaler = Remap(distsq(pt.x, pt.z, boatpt.x, boatpt.z),0,10*10, 0,1)
+            pt = self.target:GetPosition()
 
             if self.target.components.boatphysics then
+                local scaler = Remap(distsq(pt.x, pt.z, boatpt.x, boatpt.z), 0, 100, 0, 1)
                 pt.x  = pt.x + (self.target.components.boatphysics.velocity_x * scaler)
                 pt.z  = pt.z + (self.target.components.boatphysics.velocity_z * scaler)
             end
         end
 
     elseif self.heading then
-        local offset = Vector3(1 * math.cos( self.heading*DEGREES ), 0, -1 * math.sin( self.heading*DEGREES ))
-        pt = Vector3(boatpt.x +offset.x,0,boatpt.z + offset.z)
+        local heading = self.heading * DEGREES
+        pt = boatpt + Vector3(math.cos(heading), 0, -math.sin(heading))
+        pt.y = 0
     end
-    
-    if pt then
-        return VecUtil_Normalize(pt.x - boatpt.x  , pt.z - boatpt.z)
-    end
+
+    return (pt ~= nil and VecUtil_Normalize(pt.x - boatpt.x, pt.z - boatpt.z)) or nil
 end
 
 function Boatcrew:SetHeading(heading)
@@ -204,10 +186,12 @@ end
 
 function Boatcrew:SetCaptain(captain)
     if self.captain then
-        self.captain:RemoveEventCallback("onremove",removecaptain)
+        self.captain:RemoveEventCallback("onremove", removecaptain)
     end
     self.captain = captain
-    self.captain:ListenForEvent("onremove",removecaptain)
+    if captain then
+        captain:ListenForEvent("onremove", removecaptain)
+    end
 end
 
 function Boatcrew:AddMember(inst, setcaptain)
@@ -222,7 +206,7 @@ function Boatcrew:AddMember(inst, setcaptain)
         end
         if self.addmember ~= nil then
             self.addmember(self.inst, inst)
-        end        
+        end
     end
     if setcaptain then
         self:SetCaptain(inst)
@@ -232,18 +216,19 @@ end
 function Boatcrew:RemoveMember(inst)
     if self.members[inst] then
 
-        if inst.components.crewmember and inst.components.crewmember.leavecrewfn then
-            inst.components.crewmember.leavecrewfn(inst)
+        local crewmember = inst.components.crewmember
+        if crewmember then
+            crewmember:OnLeftCrew()
         end
 
-        if self.removemember ~= nil then
+        if self.removemember then
             self.removemember(self.inst, inst)
         end
 
         RemoveMemberListeners(self, inst)
 
-        if inst.components.crewmember ~= nil then
-            inst.components.crewmember:SetBoat(nil)
+        if crewmember then
+            crewmember:SetBoat(nil)
         end
         self.membercount = self.membercount - 1
         self.members[inst] = nil

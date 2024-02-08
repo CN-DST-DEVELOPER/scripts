@@ -606,6 +606,7 @@ local WORLDSETTINGS_GROUP = {
 			["year_of_the_beefalo"] = {value = "default", image = "yotb_beefaloshrine.tex", masteroption = true, master_controlled = true, order = 8},
 			["year_of_the_catcoon"] = {value = "default", image = "yot_catcoonshrine.tex", masteroption = true, master_controlled = true, order = 9},
 			["year_of_the_bunnyman"] = {value = "default", image = "yotr_rabbitshrine.tex", masteroption = true, master_controlled = true, order = 10},
+			["year_of_the_dragonfly"] = {value = "default", image = "yotd_dragonshrine.tex", masteroption = true, master_controlled = true, order = 11},
 		}
 	},
 	["global"] = {

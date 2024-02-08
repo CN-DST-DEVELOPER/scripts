@@ -298,7 +298,7 @@ CRAFTING_FILTERS.SPECIAL_EVENT.recipes =
 	"yotb_beefaloshrine",
 	"yot_catcoonshrine",
 	"yotr_rabbitshrine",
-
+	"yotd_dragonshrine",
 
 }
 
@@ -442,6 +442,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_deerclops_mutated_builder",
 	"chesspiece_warg_mutated_builder",
 	"chesspiece_bearger_mutated_builder",
+	"chesspiece_yotd_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -470,6 +471,21 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"halloween_experiment_volatile",
 	"halloween_experiment_moon",
 	"halloween_experiment_root",
+
+    -- Year of the Dragon
+    "dragonboat_pack",
+    "boatrace_start_throwable_deploykit",
+    "boatrace_checkpoint_throwable_deploykit",
+	"boatrace_seastack_throwable_deploykit",
+    "dragonboat_kit",
+    "yotd_steeringwheel_item",
+    "yotd_oar",
+    "yotd_anchor_item",
+    "mast_yotd_item",
+	"boat_bumper_yotd_kit",
+    "mastupgrade_lamp_item_yotd",
+    "yotd_boatpatch_proxy",
+	"chesspiece_yotd_sketch",
 
 	-- Year of the Rabbit
 	"yotr_fightring_kit",
@@ -932,6 +948,7 @@ CRAFTING_FILTERS.SEAFARING.recipes =
 
 	"boat_bumper_kelp_kit",
 	"boat_bumper_shell_kit",
+	"boat_bumper_yotd_kit",
 
 	"boat_cannon_kit",
 	"cannonball_rock_item",
@@ -940,6 +957,7 @@ CRAFTING_FILTERS.SEAFARING.recipes =
 
 	"mastupgrade_lamp_item",
 	"mastupgrade_lightningrod_item",
+    "mastupgrade_lamp_item_yotd",
 
 	"fish_box",
 	"winch",

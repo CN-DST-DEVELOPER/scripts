@@ -297,7 +297,7 @@ function InventoryItem:CanDeploy(pt, mouseover, deployer, rot)
 end
 
 function InventoryItem:SetUseGridPlacer(usegridplacer)
-    self.classified.usegridplacer:set(usegridplacer)
+	self.classified.usegridplacer:set(usegridplacer or false)
 end
 
 function InventoryItem:GetDeployPlacerName()

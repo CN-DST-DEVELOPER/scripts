@@ -120,6 +120,9 @@ function HullHealth:RefreshLeakIndicator(leak_idx)
 		leak_indicator.components.boatleak:SetBoat(self.inst)
 
 		self.leak_indicators[leak_idx] = leak_indicator
+		self.inst:ListenForEvent("onremove", function()
+			self.leak_indicators[leak_idx] = nil
+		end, leak_indicator)
 	end
 
 	leak_indicator.components.boatleak:SetState((leak_damage >= self.med_leak_dmg and "med_leak") or "small_leak")

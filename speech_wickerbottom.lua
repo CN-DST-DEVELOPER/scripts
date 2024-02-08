@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "I must be in closer proximity to the starting point before we can begin.",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "The matter of placing checkpoints seems to have been overlooked.",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "I should endeavor to make some space around the starting point.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Combat!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "Nothing like some unnatural fire to warm yourself with on a chilly day.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "A tribute to a creature with both reptilian and insectoid traits.",
+            EMPTY = "I suspect it requires a tribute of charcoal.",
+            BURNT = "It has expired.",
+        },
+
+        DRAGONBOAT_KIT = "It would make sense to construct this near the water.",
+        DRAGONBOAT_PACK = "Everything I need has been conveniently collected into a singular package.",
+
+        BOATRACE_CHECKPOINT = "This should help us stay on course.",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "It's placement must be strategic.",
+        BOATRACE_START = "I do love a good old fashioned boat race.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "We must determine the best spot to start and finish the race.",
+
+        BOATRACE_PRIMEMATE = "A shadowy opponent to keep things interesting.",
+        BOATRACE_SPECTATOR_DRAGONLING = "It seems content to watch the proceedings.",
+
+        YOTD_STEERINGWHEEL = "Let us be off, then!",
+        YOTD_STEERINGWHEEL_ITEM = "A necessity should we want to steer our boat.",
+        YOTD_OAR = "It never occurred to me how perfectly paddle-shaped the native Diptera's forearm is.",
+        YOTD_ANCHOR = "One of the more curious uses for gold I've seen yet.",
+        YOTD_ANCHOR_ITEM = "It will allow us to create an anchor for our ships.",
+        MAST_YOTD = "I don't believe those are in fact the wings of a Diptera.",
+        MAST_YOTD_ITEM = "A tool for harnessing the wind's power.",
+        BOAT_BUMPER_YOTD = "The effect is admittedly quite striking.",
+        BOAT_BUMPER_YOTD_KIT = "It would be wise to equip the boat with a protective barrier.",
+        BOATRACE_SEASTACK = "Best to avoid that!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "I wouldn't dream of using any underhanded tactics to win. I'll exercise caution.",
+        BOATRACE_SEASTACK_MONKEY = "Best to avoid that!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "I wouldn't dream of using any underhanded tactics to win. I'll exercise caution.",
+        MASTUPGRADE_LAMP_YOTD = "An eclectic design, but no less useful.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "I'm always in need of a good reading light.",
+        WALKINGPLANK_YOTD = "An escape route I'd rather not take, despite the fine trimmings.",
+        CHESSPIECE_YOTD = "A curious combination; the fire-breathing Diptera and seafaring.",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

@@ -82,7 +82,7 @@ local function ShouldGoToClue(inst)
                     static.Transform:SetPosition(pos.x+ offset.x, pos.y, pos.z+ offset.z)
                   --  inst:FacePoint(static:GetPosition())
                     inst:DoTaskInTime(0,function()
-                        inst:ForceFacePoint(pos.x, pos.y, pos.z)
+                        inst:ForceFacePoint(pos.x+ offset.x, pos.y, pos.z+ offset.z)
                     end)
                     inst.static = static
                     inst:ListenForEvent("onremove", function()

@@ -2,7 +2,7 @@ local Badge = require "widgets/badge"
 local UIAnim = require "widgets/uianim"
 
 local SANITY_TINT = { 232 / 255, 123 / 255, 15 / 255, 1 }
-local LUNACY_TINT = { 191 / 255, 232 / 255, 240, 255, 1 }
+local LUNACY_TINT = { 191 / 255, 232 / 255, 240 / 255, 1 }
 
 local function OnGhostDeactivated(inst)
     if inst.AnimState:IsCurrentAnimation("ghost_deactivate") then

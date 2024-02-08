@@ -3,11 +3,6 @@ local assets =
     Asset("ANIM", "anim/boat_magnet.zip"),
 }
 
-local item_assets =
-{
-    Asset("ANIM", "anim/boat_magnet.zip"),
-}
-
 local prefabs =
 {
     "collapse_small",
@@ -23,20 +18,18 @@ local function on_hammered(inst, hammerer)
     inst:Remove()
 end
 
-local function onignite(inst)
-	DefaultBurnFn(inst)
-end
-
 local function onburnt(inst)
 	DefaultBurntStructureFn(inst)
 
-    local magnet = inst.components.magnet
-	if magnet ~= nil and magnet.boat ~= nil then
-		magnet.boat.components.boatphysics:RemoveMagnet(magnet)
+    local boatmagnet = inst.components.boatmagnet
+    if boatmagnet then
+        if boatmagnet.boat then
+            boatmagnet.boat.components.boatphysics:RemoveMagnet(boatmagnet)
+        end
+        inst:RemoveComponent("boatmagnet")
     end
 
 	inst.sg:GoToState("burnt")
-	inst:RemoveComponent("boatmagnet")
 end
 
 local function onbuilt(inst)
@@ -44,28 +37,49 @@ local function onbuilt(inst)
     inst.sg:GoToState("place")
 end
 
+-- Boat magnet callbacks
+local function onpairedwithbeacon(inst, beacon)
+    local state = ((beacon.components.boatmagnetbeacon:IsTurnedOff()
+        or inst.components.boatmagnet:IsBeaconOnSameBoat(beacon)) and "idle")
+        or "pull_pre"
+    inst.sg:GoToState(state)
+end
+
+local function onunpairedwithbeacon(inst)
+    if not inst.sg:HasStateTag("burnt") then
+        inst.sg:GoToState("pull_pst")
+    end
+end
+
+local function beaconturnedon(inst, beacon)
+    inst.sg:GoToState(
+        (inst.components.boatmagnet:IsBeaconOnSameBoat(beacon) and "idle")
+        or "pull"
+    )
+end
+
+local function beaconturnedoff(inst)
+    inst.sg:GoToState("pull_pst")
+end
+
+--
 local function onsave(inst, data)
-	if inst.components.burnable ~= nil and inst.components.burnable:IsBurning() or inst:HasTag("burnt") then
+	if inst.components.burnable and inst.components.burnable:IsBurning() or inst:HasTag("burnt") then
 		data.burnt = true
 	end
 end
 
 local function onload(inst, data)
-	if data ~= nil and data.burnt == true then
+	if data and data.burnt == true then
         inst.components.burnable.onburnt(inst)
 	end
 end
 
 local function getstatus(inst, viewer)
     local magnetcmp = inst.components.boatmagnet
-    if magnetcmp and magnetcmp:IsActivated() then
-        return "ACTIVATED"
-    else
-        return "GENERIC"
-    end
+    return (magnetcmp ~= nil and magnetcmp:IsActivated() and "ACTIVATED")
+        or "GENERIC"
 end
-
-
 
 local function fn()
     local inst = CreateEntity()
@@ -94,22 +108,26 @@ local function fn()
         return inst
     end
 
-    inst:AddComponent("inspectable")
-    inst.components.inspectable.getstatus = getstatus
+    --
+    local inspectable = inst:AddComponent("inspectable")
+    inspectable.getstatus = getstatus
 
-    inst:AddComponent("boatmagnet")
+    --
+    local boatmagnet = inst:AddComponent("boatmagnet")
+    boatmagnet.onpairedwithbeaconfn = onpairedwithbeacon
+    boatmagnet.onunpairedwithbeaconfn = onunpairedwithbeacon
+    boatmagnet.beaconturnedonfn = beaconturnedon
+    boatmagnet.beaconturnedofffn = beaconturnedoff
 
     inst:AddComponent("lootdropper")
 
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(3)
-    inst.components.workable:SetOnFinishCallback(on_hammered)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(3)
+    workable:SetOnFinishCallback(on_hammered)
 
-    MakeSmallBurnable(inst, nil, nil, true)
-	inst.components.burnable:SetOnIgniteFn(onignite)
-    inst.components.burnable:SetOnBurntFn(onburnt)
-
+    local burnable = MakeSmallBurnable(inst, nil, nil, true)
+    burnable:SetOnBurntFn(onburnt)
 
     MakeSmallPropagator(inst)
 
@@ -126,5 +144,5 @@ local function fn()
 end
 
 return Prefab("boat_magnet", fn, assets, prefabs),
-       MakeDeployableKitItem("boat_magnet_kit", "boat_magnet", "boat_magnet", "boat_magnet", "kit", item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}, { deployspacing = DEPLOYSPACING.MEDIUM }),
+       MakeDeployableKitItem("boat_magnet_kit", "boat_magnet", "boat_magnet", "boat_magnet", "kit", assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}, { deployspacing = DEPLOYSPACING.MEDIUM }),
        MakePlacer("boat_magnet_kit_placer", "boat_magnet", "boat_magnet", "idle")

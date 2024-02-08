@@ -29,7 +29,7 @@ end
 
 local function checkforleakimmune(inst)
     local boat = inst:GetCurrentPlatform()
-    if boat == nil or boat.components.hullhealth.leakproof then
+    if not boat or boat.components.hullhealth.leakproof then
         local x, y, z = inst.Transform:GetWorldPosition()
         print("Warning: A boat leak tried to spawn on land or a leakproof boat at", x, y, z)
         inst:Remove()
@@ -37,7 +37,6 @@ local function checkforleakimmune(inst)
 end
 
 local function fn()
-
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -49,7 +48,6 @@ local function fn()
     inst.AnimState:SetBuild("boat_leak_build")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end

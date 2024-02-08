@@ -12,6 +12,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.ROW, "row"),
     ActionHandler(ACTIONS.REPAIR_LEAK, "action"),
     ActionHandler(ACTIONS.ABANDON, "dive"),
+    ActionHandler(ACTIONS.TOSS, "action"),
 }
 
 local events=
@@ -22,21 +23,33 @@ local events=
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
     EventHandler("doattack", function(inst, data)
-        if not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
+        if not ((inst.components.health ~= nil and inst.components.health:IsDead())
+                or inst.sg:HasStateTag("busy")) then
             inst.sg:GoToState("attack")
         end
     end),
     EventHandler("command", function(inst, data)
-        if not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
-          inst.sg:GoToState("taunt")
+        if not ((inst.components.health ~= nil and inst.components.health:IsDead())
+                or inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("taunt")
         end
     end),
     EventHandler("onsink", function(inst, data)
-        if (inst.components.health == nil or not inst.components.health:IsDead()) and not inst.sg:HasStateTag("drowning") and (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown()) then
-                SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
-				inst.components.inventory:DropEverything(true)
-                inst:Remove()
+        if (inst.components.health == nil or not inst.components.health:IsDead())
+                and not inst.sg:HasStateTag("drowning")
+                and (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown()) then
+            SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
+            if inst.components.inventory and inst.components.inventory.dropondeath then
+                inst.components.inventory:DropEverything(true)
             end
+            inst:Remove()
+        end
+    end),
+    EventHandler("cheer", function(inst)
+        if not ((inst.components.health ~= nil and inst.components.health:IsDead())
+                or inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("cheer")
+        end
     end),
 }
 
@@ -57,26 +70,17 @@ local states =
             inst.SoundEmitter:PlaySound("monkeyisland/primemate/idle")
         end,
 
-        timeline =
-        {
-
-        },
-
         events=
         {
             EventHandler("animover", function(inst)
-
-                if inst.components.combat.target and
-                    inst.components.combat.target:HasTag("player") then
-
-                    if math.random() < 0.05 then
-                        inst.sg:GoToState("taunt")
-                        return
-                    end
-                end
-
-                inst.sg:GoToState("idle")
-
+                local combat = inst.components.combat
+                local next_state = (combat ~= nil
+                    and combat.target ~= nil
+                    and math.random() < 0.05
+                    and combat.target:HasTag("player")
+                    and "taunt")
+                    or "idle"
+                inst.sg:GoToState(next_state)
             end),
         },
     },
@@ -86,7 +90,12 @@ local states =
         name = "action",
         tags = {"busy"},
         onenter = function(inst, playanim)
-            inst.components.timer:StartTimer("patch_boat_Cooldown",3)
+            -- (SAM): actions other than patching the boat might hit this timer;
+            -- unsure if we want to reset in those cases or not, so, for now, just test
+            -- for existence to avoid the warning message that gets printed.
+            if not inst.components.timer:TimerExists("patch_boat_cooldown") then
+                inst.components.timer:StartTimer("patch_boat_cooldown", 3)
+            end
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("pig_pickup", true)
             inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
@@ -103,22 +112,22 @@ local states =
         }
     },
 
-
     State{
         name = "row",
         onenter = function(inst, playanim)
+            inst.Physics:Stop()
+
 			local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			if equipped ~= nil and equipped.components.oar == nil then
+			if equipped ~= nil and not equipped.components.oar then
 				inst.components.inventory:Unequip(equipped)
 				inst.components.inventory:GiveItem(equipped)
 				equipped = nil
 			end
-			if equipped == nil then
+			if not equipped then
 				equipped = SpawnPrefab("oar_monkey")
 				equipped:AddTag("personal_possession")
 				inst.components.inventory:Equip(equipped)
 			end
-            inst.Physics:Stop()
             inst.AnimState:PlayAnimation("row_pre",false)
             inst.AnimState:PushAnimation("row_loop",false)
             inst.AnimState:PushAnimation("row_pst",false)
@@ -132,7 +141,7 @@ local states =
             end),
             TimeEvent(13*FRAMES, function(inst)
                inst.SoundEmitter:PlaySound("monkeyisland/primemate/row")
-            end),     
+            end),
         },
 
         events=
@@ -150,7 +159,6 @@ local states =
     },
 
     State{
-
         name = "eat",
         onenter = function(inst, playanim)
             inst.Physics:Stop()
@@ -164,7 +172,7 @@ local states =
 
         events=
         {
-            EventHandler("animover", function (inst)
+            EventHandler("animover", function(inst)
                 inst.sg:GoToState("idle")
             end),
         }
@@ -194,7 +202,7 @@ local states =
         onenter = function(inst)
             local platform = inst:GetCurrentPlatform()
             if platform then
-                local pt = Vector3(inst.Transform:GetWorldPosition())
+                local pt = inst:GetPosition()
                 local angle = platform:GetAngleToPoint(pt)
                 inst.Transform:SetRotation(angle)
             end
@@ -217,21 +225,17 @@ local states =
 
                 inst.Physics:SetMotorVelOverride(5,0,0)
             end),
-
-            TimeEvent(30*FRAMES, function(inst)
-                
-            end),
         },
 
         onexit = function(inst)
             inst.components.locomotor:Stop()
             inst.components.locomotor:EnableGroundSpeedMultiplier(true)
             inst.Physics:ClearMotorVelOverride()
-            
+
             inst.Physics:ClearLocalCollisionMask()
             if inst.sg.statemem.collisionmask ~= nil then
                 inst.Physics:SetCollisionMask(inst.sg.statemem.collisionmask)
-            end   
+            end
         end,
 
         events=
@@ -242,7 +246,9 @@ local states =
                 else
                     SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
 
-					inst.components.inventory:DropEverything(true)
+                    if inst.components.inventory and inst.components.inventory.dropondeath then
+                        inst.components.inventory:DropEverything(true)
+                    end
                     inst:Remove()
                 end
             end),
@@ -262,6 +268,21 @@ local states =
         end,
 
         events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        },
+    },
+
+    State{
+        name = "cheer",
+        tags = { "busy", "cheering" },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("buff")
+        end,
+
+        events =
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
         },
@@ -293,21 +314,21 @@ CommonStates.AddSleepStates(states,
     starttimeline =
     {
         TimeEvent(1*FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/sleep_pre") 
+            inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/sleep_pre")
         end),
     },
 
     sleeptimeline =
     {
         TimeEvent(1*FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/sleep_lp", "sleep_lp") 
+            inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/sleep_lp", "sleep_lp")
         end),
     },
 
     endtimeline =
     {
         TimeEvent(1*FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/sleep_pst") 
+            inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/sleep_pst")
         end),
     },
 },{
@@ -322,14 +343,13 @@ CommonStates.AddCombatStates(states,
     {
 		TimeEvent(9 * FRAMES, function(inst)
             inst.components.combat:DoAttack()
-            --inst.SoundEmitter:PlaySound("dontstarve/creatures/monkey"..inst.soundtype.."/attack")
         end),
     },
 
     hittimeline =
     {
         TimeEvent(1*FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound("monkeyisland/primemate/hit") 
+            inst.SoundEmitter:PlaySound("monkeyisland/primemate/hit")
         end),
     },
 

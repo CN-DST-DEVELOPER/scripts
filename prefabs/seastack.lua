@@ -121,25 +121,25 @@ local function fn()
 
     inst.scrapbook_anim = "1_full"
 
-    inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetChanceLootTable('seastack')
-    inst.components.lootdropper.max_speed = 2
-    inst.components.lootdropper.min_speed = 0.3
-    inst.components.lootdropper.y_speed = 14
-    inst.components.lootdropper.y_speed_variance = 4
-    inst.components.lootdropper.spawn_loot_inside_prefab = true
+    local lootdropper = inst:AddComponent("lootdropper")
+    lootdropper:SetChanceLootTable('seastack')
+    lootdropper.max_speed = 2
+    lootdropper.min_speed = 0.3
+    lootdropper.y_speed = 14
+    lootdropper.y_speed_variance = 4
+    lootdropper.spawn_loot_inside_prefab = true
 
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.MINE)
-    inst.components.workable:SetWorkLeft(TUNING.SEASTACK_MINE)
-    inst.components.workable:SetOnWorkCallback(OnWork)
-    inst.components.workable.savestate = true
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.MINE)
+    workable:SetWorkLeft(TUNING.SEASTACK_MINE)
+    workable:SetOnWorkCallback(OnWork)
+    workable.savestate = true
 
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("upgradeable")
-    inst.components.upgradeable.upgradetype = UPGRADETYPES.WATERPLANT
-    inst.components.upgradeable.onupgradefn = on_upgraded
+    local upgradeable = inst:AddComponent("upgradeable")
+    upgradeable.upgradetype = UPGRADETYPES.WATERPLANT
+    upgradeable.onupgradefn = on_upgraded
 
     MakeHauntableWork(inst)
 

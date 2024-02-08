@@ -1658,9 +1658,9 @@ local COMPONENT_ACTIONS =
 
         complexprojectile = function(inst, doer, pos, actions, right, target)
             if right and (not TheWorld.Map:IsGroundTargetBlocked(pos) or (inst:HasTag("complexprojectile_showoceanaction") and TheWorld.Map:IsOceanAtPoint(pos.x, 0, pos.z)))
-                and (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer))
+                and (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer, pos))
 				and not (inst.replica.equippable ~= nil and (inst.replica.equippable:IsRestricted(doer) or inst.replica.equippable:ShouldPreventUnequipping()))
-				and not inst:HasTag("special_action_toss") then
+				and not (inst:HasTag("special_action_toss") or inst:HasTag("deployable")) then
 				table.insert(actions, ACTIONS.TOSS)
             end
         end,
@@ -1673,7 +1673,7 @@ local COMPONENT_ACTIONS =
                 elseif inst.replica.inventoryitem:CanDeploy(pos, nil, doer, (doer.components.playercontroller ~= nil and doer.components.playercontroller.deployplacer ~= nil) and doer.components.playercontroller.deployplacer.Transform:GetRotation() or 0) then
                     if inst:HasTag("tile_deploy") then
                         table.insert(actions, ACTIONS.DEPLOY_TILEARRIVE)
-                    else
+					elseif not (inst.CanTossInWorld and inst:HasTag("projectile") and not inst:CanTossInWorld(doer, pos)) then
                         table.insert(actions, ACTIONS.DEPLOY)
                     end
                 end
@@ -1812,14 +1812,15 @@ local COMPONENT_ACTIONS =
 		end,
 
         complexprojectile = function(inst, doer, target, actions, right)
-            if right and
-                not (doer.components.playercontroller ~= nil and doer.components.playercontroller.isclientcontrollerattached) and
-                not TheWorld.Map:IsGroundTargetBlocked(target:GetPosition()) and
-                (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer)) and
-				(inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer) and not inst.replica.equippable:ShouldPreventUnequipping()) and
-				not inst:HasTag("special_action_toss") then
+            if right and not (doer.components.playercontroller ~= nil and doer.components.playercontroller.isclientcontrollerattached) then
+                local targetpos = target:GetPosition()
+                if not TheWorld.Map:IsGroundTargetBlocked(targetpos) and
+                    (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer, targetpos)) and
+                    (inst.replica.equippable == nil or not inst.replica.equippable:IsRestricted(doer) and not inst.replica.equippable:ShouldPreventUnequipping()) and
+					not (inst:HasTag("special_action_toss") or inst:HasTag("deployable")) then
 
-                table.insert(actions, ACTIONS.TOSS)
+                    table.insert(actions, ACTIONS.TOSS)
+                end
             end
         end,
 

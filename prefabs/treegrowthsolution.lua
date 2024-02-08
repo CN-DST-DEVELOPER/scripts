@@ -27,7 +27,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
-    
+
     inst.AnimState:SetBank("treegrowthsolution")
     inst.AnimState:SetBuild("treegrowthsolution")
     inst.AnimState:PlayAnimation("item")
@@ -49,33 +49,33 @@ local function fn()
         return inst
     end
 
-    inst:AddComponent("fertilizerresearchable")
-    inst.components.fertilizerresearchable:SetResearchFn(fertilizerresearchfn)
+    local fertilizerresearchable = inst:AddComponent("fertilizerresearchable")
+    fertilizerresearchable:SetResearchFn(fertilizerresearchfn)
 
-    inst:AddComponent("fertilizer")
-    inst.components.fertilizer.fertilizervalue = TUNING.TREEGROWTH_FERTILIZE
-    inst.components.fertilizer.soil_cycles = TUNING.TREEGROWTH_SOILCYCLES
-    inst.components.fertilizer.withered_cycles = TUNING.TREEGROWTH_WITHEREDCYCLES
-    inst.components.fertilizer:SetNutrients(FERTILIZER_DEFS.treegrowthsolution.nutrients)
+    local fertilizer = inst:AddComponent("fertilizer")
+    fertilizer.fertilizervalue = TUNING.TREEGROWTH_FERTILIZE
+    fertilizer.soil_cycles = TUNING.TREEGROWTH_SOILCYCLES
+    fertilizer.withered_cycles = TUNING.TREEGROWTH_WITHEREDCYCLES
+    fertilizer:SetNutrients(FERTILIZER_DEFS.treegrowthsolution.nutrients)
 
-    inst:AddComponent("treegrowthsolution")
-    inst.components.treegrowthsolution.fx_prefab = "treegrowthsolution_use_fx"
+    local treegrowthsolution = inst:AddComponent("treegrowthsolution")
+    treegrowthsolution.fx_prefab = "treegrowthsolution_use_fx"
 
-    inst:AddComponent("stackable")
-    inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
+    local stackable = inst:AddComponent("stackable")
+    stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
 
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetSinks(false)
+    local inventoryitem = inst:AddComponent("inventoryitem")
+    inventoryitem:SetSinks(false)
 
-    inst:AddComponent("boatpatch")
-    inst.components.boatpatch.patch_type = "treegrowth"
+    local boatpatch = inst:AddComponent("boatpatch")
+    boatpatch.patch_type = "treegrowth"
 
-    inst:AddComponent("repairer")
-    inst.components.repairer.repairmaterial = MATERIALS.WOOD
-    inst.components.repairer.healthrepairvalue = TUNING.REPAIR_TREEGROWTH_HEALTH
-    inst.components.repairer.boatrepairsound = "waterlogged1/common/use_figjam"
+    local repairer = inst:AddComponent("repairer")
+    repairer.repairmaterial = MATERIALS.WOOD
+    repairer.healthrepairvalue = TUNING.REPAIR_TREEGROWTH_HEALTH
+    repairer.boatrepairsound = "waterlogged1/common/use_figjam"
 
     MakeDeployableFertilizer(inst)
     MakeHauntableLaunchAndSmash(inst)

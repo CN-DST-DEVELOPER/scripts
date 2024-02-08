@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "I should scootch my boat a bit closer to the starting point.",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Oh botheration, the checkpoints need to be set up before the race, not after!",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "I should clear some space. If I'm not mistaken, a competitor will be dropping in.",
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "Saves me the trouble of finding firewood.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "I wonder what assortment of knickknacks I can craft here.",
+            EMPTY = "It looks to be in dire need of charcoal.",
+            BURNT = "There's no reversing that.",
+        },
+
+        DRAGONBOAT_KIT = "Time is wasting. We'd better get to it.",
+        DRAGONBOAT_PACK = "An instant boat. You've got to admire the efficiency of it.",
+
+        BOATRACE_CHECKPOINT = "A progress marker.",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Must find the most logical spot for this.",
+        BOATRACE_START = "We should start this race on time.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Where to begin?",
+
+        BOATRACE_PRIMEMATE = "Looks like it won't just be a race against time.",
+        BOATRACE_SPECTATOR_DRAGONLING = "You could always stop staring and help me paddle.",
+
+        YOTD_STEERINGWHEEL = "I certainly hope all this gold doesn't weigh down the boat.",
+        YOTD_STEERINGWHEEL_ITEM = "I hope I don't forget to add that to the boat.",
+        YOTD_OAR = "Dragonflies are surprisingly well suited for paddling.",
+        YOTD_ANCHOR = "Quite the afternoonified anchor.",
+        YOTD_ANCHOR_ITEM = "I guess it might be useful... but I'd rather not to stay in one place for too long.",
+        MAST_YOTD = "Quite impressive-looking, isn't it?",
+        MAST_YOTD_ITEM = "That'll be the... sail holder bit.",
+        BOAT_BUMPER_YOTD = "I wouldn't like to be the one bumping into those horns.",
+        BOAT_BUMPER_YOTD_KIT = "It'll make me feel slightly safer at sea. Slightly.",
+        BOATRACE_SEASTACK = "Botheration, these buoys are slowing me down!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "This could be troublesome, if deployed at exactly the right moment...",
+        BOATRACE_SEASTACK_MONKEY = "Botheration, these buoys are slowing me down!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "This could be troublesome, if deployed at exactly the right moment...",
+        MASTUPGRADE_LAMP_YOTD = "A bit unsettling, but at least it casts a decent light.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "I feel a little better now.",
+        WALKINGPLANK_YOTD = "Fancier, but no less ominous.",
+        CHESSPIECE_YOTD = "Back where it all began... the boat race, anyway.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

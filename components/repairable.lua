@@ -44,7 +44,7 @@ local Repairable = Class(function(self, inst)
 
     local workable = inst.components.workable
     if workable then
-        self:SetWorkRepairable(workable.maxwork ~= nil and workable.workleft < workable.maxwork and workable.workable)
+        self:SetWorkRepairable(workable.workable and workable.maxwork ~= nil and workable.workleft < workable.maxwork)
     end
 
     local health = inst.components.health
@@ -93,7 +93,8 @@ function Repairable:NeedsRepairs()
     if self.inst.components.health ~= nil then
         return self.inst.components.health:GetPercent() < NEEDSREPAIRS_THRESHOLD
     elseif self.inst.components.workable ~= nil and self.inst.components.workable.workleft ~= nil then
-        return self.inst.components.workable.workable and self.inst.components.workable.workleft < self.inst.components.workable.maxwork * NEEDSREPAIRS_THRESHOLD
+        return self.inst.components.workable.workable
+            and self.inst.components.workable.workleft < self.inst.components.workable.maxwork * NEEDSREPAIRS_THRESHOLD
     elseif self.inst.components.perishable ~= nil and self.inst.components.perishable.perishremainingtime ~= nil then
         return self.inst.components.perishable.perishremainingtime < self.inst.components.perishable.perishtime * NEEDSREPAIRS_THRESHOLD
     elseif self.inst.components.finiteuses ~= nil then
@@ -102,58 +103,79 @@ function Repairable:NeedsRepairs()
     return false
 end
 
+local function address_repair_amount(self, repair_item_repairer)
+    local health = self.inst.components.health
+    if health then
+        if health:GetPercent() >= 1 then
+            return false
+        end
+        health:DoDelta(repair_item_repairer.healthrepairvalue)
+        health:DoDelta(repair_item_repairer.healthrepairpercent * health.maxhealth)
+        return true
+    end
+
+    local workable = self.inst.components.workable
+    if workable ~= nil and workable.workleft ~= nil then
+        if not workable.workable or workable.workleft >= workable.maxwork then
+            return false
+        end
+        workable:SetWorkLeft(workable.workleft + repair_item_repairer.workrepairvalue)
+        return true
+    end
+
+    local perishable = self.inst.components.perishable
+    if perishable ~= nil and perishable.perishremainingtime ~= nil then
+        if perishable.perishremainingtime >= perishable.perishtime then
+            return false
+        end
+        perishable:SetPercent(perishable:GetPercent() + repair_item_repairer.perishrepairpercent)
+        return true
+    end
+
+    local finiteuses = self.inst.components.finiteuses
+    if finiteuses then
+        if finiteuses:GetPercent() >= 1 then
+            return false
+        end
+        finiteuses:Repair(repair_item_repairer.finiteusesrepairvalue)
+        return true
+    end
+
+    -- If not justrunonrepaired either, this is not repairable, and we should fail out.
+    return self.inst.components.repairable.justrunonrepaired
+end
+
 function Repairable:Repair(doer, repair_item)
     if self.testvalidrepairfn and not self.testvalidrepairfn(self.inst, repair_item) then
         return false
-    elseif repair_item.components.repairer == nil or self.repairmaterial ~= repair_item.components.repairer.repairmaterial then
+    end
+
+    local repair_item_repairer = repair_item.components.repairer
+    if not repair_item_repairer or self.repairmaterial ~= repair_item_repairer.repairmaterial then
         --wrong material
         return false
-    elseif self.checkmaterialfn ~= nil then
+    elseif self.checkmaterialfn then
         local success, reason = self.checkmaterialfn(self.inst, repair_item)
         if not success then
             return false, reason
         end
     end
 
-    if self.inst.components.health ~= nil then
-        if self.inst.components.health:GetPercent() >= 1 then
-            return false
-        end
-        self.inst.components.health:DoDelta(repair_item.components.repairer.healthrepairvalue)
-        self.inst.components.health:DoDelta(repair_item.components.repairer.healthrepairpercent * self.inst.components.health.maxhealth)
-    elseif self.inst.components.workable ~= nil and self.inst.components.workable.workleft ~= nil then
-        if not self.inst.components.workable.workable or self.inst.components.workable.workleft >= self.inst.components.workable.maxwork then
-            return false
-        end
-        self.inst.components.workable:SetWorkLeft(self.inst.components.workable.workleft + repair_item.components.repairer.workrepairvalue)
-    elseif self.inst.components.perishable ~= nil and self.inst.components.perishable.perishremainingtime ~= nil then
-        if self.inst.components.perishable.perishremainingtime >= self.inst.components.perishable.perishtime then
-            return false
-        end
-        self.inst.components.perishable:SetPercent(self.inst.components.perishable:GetPercent() + repair_item.components.repairer.perishrepairpercent)
-    elseif self.inst.components.finiteuses ~= nil then
-        if self.inst.components.finiteuses:GetPercent() >= 1 then
-            return false
-        end
-        self.inst.components.finiteuses:Repair(repair_item.components.repairer.finiteusesrepairvalue)
-    elseif self.inst.components.repairable.justrunonrepaired then
-
-    else
-        --not repairable
+    if not address_repair_amount(self, repair_item_repairer) then
         return false
     end
 
-    if repair_item.components.repairer.boatrepairsound then
+    if repair_item_repairer.boatrepairsound then
         self.inst.SoundEmitter:PlaySound(repair_item.components.repairer.boatrepairsound)
     end
 
-    if repair_item.components.stackable ~= nil then
+    if repair_item.components.stackable then
         repair_item.components.stackable:Get():Remove()
     else
         repair_item:Remove()
     end
 
-    if self.onrepaired ~= nil then
+    if self.onrepaired then
         self.onrepaired(self.inst, doer, repair_item)
     end
 

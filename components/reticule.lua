@@ -6,61 +6,56 @@ playercontroller.lua equip and unequip events.
 
 local Reticule = Class(function(self, inst)
     self.inst = inst
-    self.targetpos = nil
     self.ease = false
     self.smoothing = 6.66
-    self.targetfn = nil
-    self.mousetargetfn = nil
-    self.updatepositionfn = nil
     self.reticuleprefab = "reticule"
-    self.reticule = nil
     self.validcolour = { 204 / 255, 131 / 255, 57 / 255, 1 }
     self.invalidcolour = { 1, 0, 0, 1 }
     self.currentcolour = self.invalidcolour
     self.mouseenabled = false
-	self.twinstickmode = nil
-	self.twinstickrange = nil
-    self.followhandler = nil
     self.fadealpha = 1
     self.blipalpha = 1
-    self.pingprefab = nil
+
+    --self.targetpos = nil
+    --self.targetfn = nil
+    --self.mousetargetfn = nil
+    --self.updatepositionfn = nil
+    --self.reticule = nil
+	--self.twinstickmode = nil
+	--self.twinstickrange = nil
+    --self.followhandler = nil
+    --self.pingprefab = nil
+	--self.ispassableatallpoints = nil
+	--self.validfn = nil
+
     self._oncameraupdate = function(dt) self:OnCameraUpdate(dt) end
 end)
 
 function Reticule:CreateReticule()
-    if self.reticule == nil then
-        self.reticule = SpawnPrefab(self.reticuleprefab)
-        if self.reticule == nil then
-            return
-        end
-    end
+	self.reticule = self.reticule or SpawnPrefab(self.reticuleprefab)
+	if not self.reticule then
+		return
+	end
 
     if self.mouseenabled and not TheInput:ControllerAttached() then
-        if self.followhandler == nil then
-            self.followhandler = TheInput:AddMoveHandler(function(x, y)
+		self.followhandler = self.followhandler or TheInput:AddMoveHandler(function(x, y)
                 local x1, y1, z1 = TheSim:ProjectScreenPos(x, y)
-                local pos = x1 ~= nil and y1 ~= nil and z1 ~= nil and Vector3(x1, y1, z1) or nil
-                if self.mousetargetfn ~= nil then
-                    self.targetpos = self.mousetargetfn(self.inst, pos)
-                else
-                    self.targetpos = pos
-                end
+                local pos = (x1 ~= nil and y1 ~= nil and z1 ~= nil and Vector3(x1, y1, z1)) or nil
+				self.targetpos = (self.mousetargetfn ~= nil and self.mousetargetfn(self.inst, pos))
+					or pos
                 self:UpdatePosition()
             end)
-        end
+
         local pos = TheInput:GetWorldPosition()
-        if self.mousetargetfn ~= nil then
-            self.targetpos = self.mousetargetfn(self.inst, pos)
-        else
-            self.targetpos = pos
-        end
+		self.targetpos = (self.mousetargetfn ~= nil and self.mousetargetfn(self.inst, pos))
+			or pos
         self.fadealpha = 1
     else
-        if self.followhandler ~= nil then
+        if self.followhandler then
             self.followhandler:Remove()
             self.followhandler = nil
         end
-        if self.targetfn ~= nil then
+        if self.targetfn then
             self.targetpos = self.targetfn(self.inst)
         end
         self.fadealpha = 1
@@ -74,11 +69,11 @@ function Reticule:CreateReticule()
 end
 
 function Reticule:DestroyReticule()
-    if self.reticule ~= nil then
+    if self.reticule then
         self.reticule:Remove()
         self.reticule = nil
     end
-    if self.followhandler ~= nil then
+    if self.followhandler then
         self.followhandler:Remove()
         self.followhandler = nil
     end
@@ -89,39 +84,46 @@ function Reticule:DestroyReticule()
 end
 
 function Reticule:PingReticuleAt(pos)
-    if self.pingprefab ~= nil and pos ~= nil then
-		local platform
-		if pos:is_a(DynamicPosition) then
-			platform = pos.walkable_platform
-			pos = pos:GetPosition()
+	if not self.pingprefab or not pos then
+		return
+	end
+
+	local platform
+	if pos:is_a(DynamicPosition) then
+		platform = pos.walkable_platform
+		pos = pos:GetPosition()
+		if not pos then
+			return
 		end
-		if pos ~= nil then
-			local ping = SpawnPrefab(self.pingprefab)
-			if ping ~= nil then
-				ping.AnimState:SetMultColour(unpack(self.validcolour))
-				ping.AnimState:SetAddColour(.2, .2, .2, 0)
-				if self.updatepositionfn ~= nil then
-					self.updatepositionfn(self.inst, pos, ping)
-				else
-					ping.Transform:SetPosition(pos.x, 0, pos.z)
-				end
-				if platform ~= nil then
-					--Assume valid otherwise pos would've been nil
-					--assert(platform:IsValid())
-					ping.Transform:SetPosition(platform.entity:WorldToLocalSpace(ping.Transform:GetWorldPosition()))
-					ping.entity:SetParent(platform.entity)
-					ping:ListenForEvent("onremove", function()
-						ping.Transform:SetPosition(ping.Transform:GetWorldPosition())
-						ping.entity:SetParent(nil)
-					end, platform)
-				end
-			end
-		end
-    end
+	end
+
+	local ping = SpawnPrefab(self.pingprefab)
+	if not ping then
+		return
+	end
+
+	ping.AnimState:SetMultColour(unpack(self.validcolour))
+	ping.AnimState:SetAddColour(.2, .2, .2, 0)
+	if self.updatepositionfn then
+		self.updatepositionfn(self.inst, pos, ping)
+	else
+		ping.Transform:SetPosition(pos.x, 0, pos.z)
+	end
+
+	if platform then
+		--Assume valid otherwise pos would've been nil
+		--assert(platform:IsValid())
+		ping.Transform:SetPosition(platform.entity:WorldToLocalSpace(ping.Transform:GetWorldPosition()))
+		ping.entity:SetParent(platform.entity)
+		ping:ListenForEvent("onremove", function()
+			ping.Transform:SetPosition(ping.Transform:GetWorldPosition())
+			ping.entity:SetParent(nil)
+		end, platform)
+	end
 end
 
 function Reticule:Blip()
-    if self.reticule ~= nil then
+    if self.reticule then
         self.blipalpha = 0
         self.inst:StartUpdatingComponent(self)
         self:UpdateColour()
@@ -140,54 +142,76 @@ function Reticule:OnUpdate(dt)
 end
 
 function Reticule:UpdateColour()
-    local a = self.targetpos ~= nil and self.fadealpha * self.blipalpha or self.blipalpha
-    self.reticule.AnimState:SetMultColour(self.currentcolour[1], self.currentcolour[2], self.currentcolour[3], self.currentcolour[4] * a)
+    local alpha_mod = (self.targetpos ~= nil and self.fadealpha * self.blipalpha) or self.blipalpha
+	local r, g, b, alpha = self.currentcolour[1], self.currentcolour[2], self.currentcolour[3], self.currentcolour[4] * alpha_mod
+
+    self.reticule.AnimState:SetMultColour(r, g, b, alpha)
+
+	local reticule_children = self.reticule.children
+	if reticule_children then
+		for reticule_child in pairs(reticule_children) do
+			reticule_child.AnimState:SetMultColour(r, g, b, alpha)
+		end
+	end
 end
 
 function Reticule:UpdatePosition(dt)
-    if self.targetpos ~= nil then
-        local x, y, z = self.targetpos:Get()
+    if self.targetpos then
+        local x, _, z = self.targetpos:Get()
+
 		local alwayspassable, allowwater, deployradius
 		local aoetargeting = self.inst.components.aoetargeting
-		if aoetargeting ~= nil then
+		if aoetargeting then
 			alwayspassable = aoetargeting.alwaysvalid
 			allowwater = aoetargeting.allowwater
 			deployradius = aoetargeting.deployradius
 		end
 		alwayspassable = alwayspassable or self.ispassableatallpoints
-		if TheWorld.Map:CanCastAtPoint(self.targetpos, alwayspassable, allowwater, deployradius) then
+
+		local is_valid_position = TheWorld.Map:CanCastAtPoint(self.targetpos, alwayspassable, allowwater, deployradius)
+			and (self.validfn == nil or self.validfn(self.inst, self.reticule, self.targetpos, alwayspassable, allowwater, deployradius))
+		if is_valid_position then
             self.currentcolour = self.validcolour
             self.reticule.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+			if self.reticule.children then
+				for reticule_child in pairs(self.reticule.children) do
+					reticule_child.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+				end
+			end
         else
             self.currentcolour = self.invalidcolour
             self.reticule.AnimState:ClearBloomEffectHandle()
+			if self.reticule.children then
+				for reticule_child in pairs(self.reticule.children) do
+					reticule_child.AnimState:ClearBloomEffectHandle()
+				end
+			end
         end
 
-        if self.ease and dt ~= nil then
-            local x0, y0, z0 = self.reticule.Transform:GetWorldPosition()
+        if self.ease and dt then
+            local x0, __, z0 = self.reticule.Transform:GetWorldPosition()
             x = Lerp(x0, x, dt * self.smoothing)
             z = Lerp(z0, z, dt * self.smoothing)
         end
-        if self.updatepositionfn ~= nil then
+
+        if self.updatepositionfn then
             self.updatepositionfn(self.inst, Vector3(x, 0, z), self.reticule, self.ease, self.smoothing, dt)
         else
             self.reticule.Transform:SetPosition(x, 0, z)
         end
     end
-    self:UpdateColour()
+	if self.reticule then
+		self:UpdateColour()
+	end
 end
 
 function Reticule:OnCameraUpdate(dt)
-    if self.followhandler ~= nil then
+    if self.followhandler then
         self.fadealpha = TheInput:GetHUDEntityUnderMouse() ~= nil and math.max(.3, self.fadealpha - .2) or math.min(1, self.fadealpha + .2)
         local pos = TheInput:GetWorldPosition()
-        if self.mousetargetfn ~= nil then
-            self.targetpos = self.mousetargetfn(self.inst, pos)
-        else
-            self.targetpos = pos
-        end
+        self.targetpos = (self.mousetargetfn ~= nil and self.mousetargetfn(self.inst, pos)) or pos
         self:UpdatePosition(nil)
-	elseif self.targetfn ~= nil then
+	elseif self.targetfn then
 		if self.twinstickmode ~= nil and TheInput:ControllerAttached() then
 			if self.twinstickmode == 1 then
 				self:UpdateTwinStickMode1()
@@ -227,19 +251,20 @@ function Reticule:UpdateTwinStickMode1()
 				self.twinstickz = self.twinstickz * range
 			end
 		end
+
 		--re-apply offset relative to screen
-		local x, y, z = self.inst.Transform:GetWorldPosition()
+		local x, _, z = self.inst.Transform:GetWorldPosition()
 		if self.twinstickx ~= 0 or self.twinstickz ~= 0 then
 			local heading = TheCamera:GetHeadingTarget() * DEGREES
 			local sin_heading = math.sin(heading)
 			local cos_heading = math.cos(heading)
-			self.targetpos.x = x + self.twinstickx * cos_heading - self.twinstickz * sin_heading
-			self.targetpos.z = z + self.twinstickx * sin_heading + self.twinstickz * cos_heading
+			self.targetpos.x = x + (self.twinstickx * cos_heading) - (self.twinstickz * sin_heading)
+			self.targetpos.z = z + (self.twinstickx * sin_heading) + (self.twinstickz * cos_heading)
 		else
 			self.targetpos.x, self.targetpos.z = x, z
 		end
-		--
-		if self.mousetargetfn ~= nil then
+
+		if self.mousetargetfn then
 			self.targetpos = self.mousetargetfn(self.inst, self.targetpos)
 		end
 	else
@@ -256,8 +281,8 @@ function Reticule:UpdateTwinStickMode1()
 				local heading = -TheCamera:GetHeadingTarget() * DEGREES
 				local sin_heading = math.sin(heading)
 				local cos_heading = math.cos(heading)
-				self.twinstickx = x * cos_heading - z * sin_heading
-				self.twinstickz = x * sin_heading + z * cos_heading
+				self.twinstickx = (x * cos_heading) - (z * sin_heading)
+				self.twinstickz = (x * sin_heading) + (z * cos_heading)
 			else
 				self.twinstickx, self.twinstickz = x, z
 			end
@@ -296,15 +321,15 @@ function Reticule:UpdateTwinStickMode2()
 		xmag = Remap(xmag, deadzone, math.max(1, xmag), 0, 1)
 		xmag = xmag * xmag
 		--find outer edge of range that we're aiming at
-		local x, y, z = self.inst.Transform:GetWorldPosition()
+		local x, _, z = self.inst.Transform:GetWorldPosition()
 		local range = self.twinstickrange or 8
 		x = x + dx * range
 		z = z + dz * range
 		--lerp toward outer edge from the auto-target point instead of true center
 		self.targetpos.x = self.targetpos.x * (1 - xmag) + x * xmag
 		self.targetpos.z = self.targetpos.z * (1 - xmag) + z * xmag
-		--
-		if self.mousetargetfn ~= nil then
+
+		if self.mousetargetfn then
 			self.targetpos = self.mousetargetfn(self.inst, self.targetpos)
 		end
 	end
@@ -319,7 +344,7 @@ function Reticule:ClearTwinStickOverrides()
 end
 
 function Reticule:ShouldHide()
-	return self.shouldhidefn ~= nil and self.shouldhidefn(self.inst) or false
+	return (self.shouldhidefn ~= nil and self.shouldhidefn(self.inst)) or false
 end
 
 Reticule.OnRemoveFromEntity = Reticule.DestroyReticule

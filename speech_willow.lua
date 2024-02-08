@@ -934,6 +934,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Everyone cram close to the starting tower so we can get this over with!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Uuugh, I forgot to put up the stupid checkpoints!",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "I guess I should make some room, in case anyone else joins.",
+
 	BATTLECRY =
 	{
 		GENERIC = "It's you or me!",
@@ -5060,6 +5064,43 @@ return{
 
         EMBERLIGHT = "I made that. No big deal.",
         WILLOW_EMBER = "Aren't they beautiful?",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "All hail the fire breather!",
+            EMPTY = "It's hungry for charcoal.",
+            BURNT = "Nice.",
+        },
+
+        DRAGONBOAT_KIT = "Who wants to build this thing? Anyone?",
+        DRAGONBOAT_PACK = "All the boat junk you could ever need in one package.",
+
+        BOATRACE_CHECKPOINT = "Yup. That's a checkpoint.",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Does this thing even float?",
+        BOATRACE_START = "Let's just get this over with.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Does it HAVE to go in the water?",
+
+        BOATRACE_PRIMEMATE = "That thing better not cheat.",
+        BOATRACE_SPECTATOR_DRAGONLING = "Alright little guy, ready to watch me win?",
+
+        YOTD_STEERINGWHEEL = "I'm great at steering! I don't even crash that often!",
+        YOTD_STEERINGWHEEL_ITEM = "Can't sail without that.",
+        YOTD_OAR = "It feels wrong to put it in the water... burning it after should even things out.",
+        YOTD_ANCHOR = "It better be the only thing going into the water today.",
+        YOTD_ANCHOR_ITEM = "Ooo, let's build an anchor.",
+        MAST_YOTD = "Fly my pretty, fly!",
+        MAST_YOTD_ITEM = "You can't call it \"sailing\" if you don't have a sail.",
+        BOAT_BUMPER_YOTD = "Alright, a boat with teeth is kinda cool.",
+        BOAT_BUMPER_YOTD_KIT = "I guess building some bumpers is better than sinking.",
+        BOATRACE_SEASTACK = "Don't you dare hit my boat!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Maybe I could have some fun with this...",
+        BOATRACE_SEASTACK_MONKEY = "Don't you dare hit my boat!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Maybe I could have some fun with this...",
+        MASTUPGRADE_LAMP_YOTD = "There's fire in its eyes.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Alternatively, I could just set the mast on fire.",
+        WALKINGPLANK_YOTD = "I'm not setting foot on that, no matter how good it looks!",
+        CHESSPIECE_YOTD = "Too many boats, not enough fire.",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

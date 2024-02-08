@@ -285,7 +285,7 @@ local actionhandlers =
 					or "book"
         end),
 	ActionHandler(ACTIONS.MAKEBALLOON, "dolongaction"),
-    ActionHandler(ACTIONS.DEPLOY, "doshortaction"),
+	ActionHandler(ACTIONS.DEPLOY, function(inst, action) return action.invobject and action.invobject:HasTag("projectile") and "throw_deploy" or "doshortaction" end),
     ActionHandler(ACTIONS.DEPLOY_TILEARRIVE, "doshortaction"),
     ActionHandler(ACTIONS.STORE, "doshortaction"),
     ActionHandler(ACTIONS.DROP,
@@ -5118,6 +5118,44 @@ local states =
 			inst.sg:GoToState("idle", true)
         end,
     },
+
+	State{
+		name = "throw_deploy",
+		server_states = { "throw_deploy" },
+		forward_server_states = true,
+		onenter = function(inst) inst.sg:GoToState("use_inventory_item_dir_busy") end,
+	},
+
+	State{
+		name = "use_inventory_item_dir_busy", --directional version with facings
+		tags = { "doing", "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("useitem_dir_pre")
+			inst.AnimState:PushAnimation("useitem_dir_lag", false)
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("useitem_dir_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("useitem_pst")
+			inst.sg:GoToState("idle", true)
+		end,
+	},
 
 	State{
 		name = "bedroll",

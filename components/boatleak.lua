@@ -7,13 +7,26 @@ local BoatLeak = Class(function(self, inst)
 	self.isdynamic = false
 end)
 
+local function set_repair_state(inst, repair_state)
+    if inst.components.boatleak then
+        inst.components.boatleak:SetState(repair_state)
+    end
+end
+
 function BoatLeak:Repair(doer, patch_item)
     if not self.inst:HasTag("boat_leak") then return false end
 
-    if patch_item.components.repairer and self.inst:GetCurrentPlatform() and self.inst:GetCurrentPlatform().components.repairable then
-        self.inst:GetCurrentPlatform().components.repairable:Repair(doer, patch_item)
-        -- consumed in the repair
-    else
+    local did_repair = false
+    if patch_item.components.repairer then
+        local current_platform = self.inst:GetCurrentPlatform()
+        if current_platform and current_platform.components.repairable then
+            current_platform.components.repairable:Repair(doer, patch_item)
+            -- consumed in the repair
+            did_repair = true
+        end
+    end
+
+    if not did_repair then
         if patch_item.components.stackable ~= nil then
             patch_item.components.stackable:Get():Remove()
         else
@@ -21,16 +34,12 @@ function BoatLeak:Repair(doer, patch_item)
         end
     end
 
-    local repair_state = "repaired"
-    local patch_type = (patch_item.components.boatpatch ~= nil and patch_item.components.boatpatch:GetPatchType()) or nil
-    if patch_type ~= nil then
-        repair_state = repair_state.."_"..patch_type
-    end
+    local patch_type = (patch_item.components.boatpatch ~= nil and patch_item.components.boatpatch:GetPatchType())
+        or nil
+    local repair_state = (patch_type ~= nil and "repaired_"..patch_type) or "repaired"
 
     self.inst.AnimState:PlayAnimation("leak_small_pst")
-    self.inst:DoTaskInTime(0.4, function(inst)
-        self:SetState(repair_state)
-    end)
+    self.inst:DoTaskInTime(0.4, set_repair_state, repair_state)
 
 	return true
 end
@@ -39,12 +48,12 @@ function BoatLeak:ChangeToRepaired(repair_build_name, sndoverride)
     self.inst:RemoveTag("boat_leak")
     self.inst:AddTag("boat_repaired_patch")
 
-    local anim_state = self.inst.AnimState
-    anim_state:SetBuild(repair_build_name)
-    anim_state:SetBankAndPlayAnimation("boat_repair", "pre_idle")
-    anim_state:SetSortOrder(3)
-    anim_state:SetOrientation(ANIM_ORIENTATION.OnGround)
-    anim_state:SetLayer(LAYER_BACKGROUND)
+    local AnimState = self.inst.AnimState
+    AnimState:SetBuild(repair_build_name)
+    AnimState:SetBankAndPlayAnimation("boat_repair", "pre_idle")
+    AnimState:SetSortOrder(3)
+    AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+    AnimState:SetLayer(LAYER_BACKGROUND)
 
     if not sndoverride then
         self.inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/repair")
@@ -65,20 +74,20 @@ end
 function BoatLeak:SetState(state, skip_open)
 	if state == self.current_state then return end
 
-    local anim_state = self.inst.AnimState
+    local AnimState = self.inst.AnimState
 
 	if state == "small_leak" then
         self.inst:RemoveTag("boat_repaired_patch")
 	    self.inst:AddTag("boat_leak")
 
-        anim_state:SetBuild(self.leak_build)
-		anim_state:SetBankAndPlayAnimation("boat_leak", "leak_small_pre")
-    	anim_state:PushAnimation("leak_small_loop", true)
-        anim_state:SetSortOrder(0)
-        anim_state:SetOrientation(ANIM_ORIENTATION.BillBoard)
-        anim_state:SetLayer(LAYER_WORLD)
+        AnimState:SetBuild(self.leak_build)
+		AnimState:SetBankAndPlayAnimation("boat_leak", "leak_small_pre")
+        AnimState:PushAnimation("leak_small_loop", true)
+        AnimState:SetSortOrder(0)
+        AnimState:SetOrientation(ANIM_ORIENTATION.BillBoard)
+        AnimState:SetLayer(LAYER_WORLD)
         if skip_open then
-            anim_state:SetTime(11 * FRAMES)
+            AnimState:SetTime(11 * FRAMES)
         end
 
         self.inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/fountain_small_LP", "small_leak")
@@ -92,14 +101,14 @@ function BoatLeak:SetState(state, skip_open)
         self.inst:RemoveTag("boat_repaired_patch")
 	    self.inst:AddTag("boat_leak")
 
-        anim_state:SetBuild(self.leak_build)
-		anim_state:SetBankAndPlayAnimation("boat_leak", "leak_med_pre")
-    	anim_state:PushAnimation("leak_med_loop", true)
-        anim_state:SetSortOrder(0)
-        anim_state:SetOrientation(ANIM_ORIENTATION.BillBoard)
-        anim_state:SetLayer(LAYER_WORLD)
+        AnimState:SetBuild(self.leak_build)
+		AnimState:SetBankAndPlayAnimation("boat_leak", "leak_med_pre")
+        AnimState:PushAnimation("leak_med_loop", true)
+        AnimState:SetSortOrder(0)
+        AnimState:SetOrientation(ANIM_ORIENTATION.BillBoard)
+        AnimState:SetLayer(LAYER_WORLD)
         if skip_open then
-            anim_state:SetTime(11 * FRAMES)
+            AnimState:SetTime(11 * FRAMES)
         end
 
         self.inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/fountain_medium_LP", "med_leak")
@@ -132,7 +141,16 @@ end
 
 function BoatLeak:SetBoat(boat)
     self.boat = boat
+end
 
+function BoatLeak:IsFinishedSpawning()
+    if self.current_state == "small_leak" then
+        return self.inst.AnimState:IsCurrentAnimation("leak_small_loop")
+    elseif self.current_state == "med_leak" then
+        return self.inst.AnimState:IsCurrentAnimation("leak_med_loop")
+    else
+        return true
+    end
 end
 
 -- Note: Currently save and load is only used for dynamic leaks (e.g. caused by cookie cutter). Saving/loading

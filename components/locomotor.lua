@@ -289,6 +289,7 @@ local LocoMotor = Class(function(self, inst)
 	--self.hop_distance_fn = nil
     self.hopping = false
     self.time_before_next_hop_is_allowed = 0
+	--self.hop_delay = nil
 
     self.faster_on_tiles = {}
 
@@ -302,6 +303,20 @@ nil,
     runspeed = onrunspeed,
     externalspeedmultiplier = onexternalspeedmultiplier,
 })
+
+function LocoMotor:EnableHopDelay(enable)
+	if enable == false then
+		self.hop_delay = nil
+	elseif self.hop_delay == nil then
+		self.hop_delay =
+		{
+			toplatform = nil,
+			fromplatform = nil,
+			starttick = -1,
+			lasttick = -1,
+		}
+	end
+end
 
 function LocoMotor:StartUpdatingInternal()
     self.isupdating = true
@@ -1043,6 +1058,25 @@ function LocoMotor:ScanForPlatformInDir(my_platform, map, my_x, my_z, dir_x, dir
             --print(i, is_at_edge, my_platform, platform, pt_x - my_x, pt_z - my_z, is_water, step_size)
             if is_at_edge and platform ~= my_platform then
                 if platform ~= nil or not is_water then
+					if self.hop_delay then
+						--keep pushing toward the same direction during the delay before the hop is actually triggered
+						local delay = math.max(
+							platform and platform.components.platformhopdelay and platform.components.platformhopdelay:GetDelayTicks() or 0,
+							my_platform and my_platform.components.platformhopdelay and my_platform.components.platformhopdelay:GetDelayTicks() or 0
+						)
+						if delay > 0 then
+							local tick = GetTick()
+							if platform ~= self.hop_delay.toplatform or my_platform ~= self.hop_delay.fromplatform or tick > self.hop_delay.lasttick + 1 then
+								self.hop_delay.toplatform = platform
+								self.hop_delay.fromplatform = my_platform
+								self.hop_delay.starttick = tick
+							end
+							self.hop_delay.lasttick = tick
+							if tick - self.hop_delay.starttick < delay then
+								return false, 0, 0, nil
+							end
+						end
+					end
                     --print("SUCCESS!")
                     if is_first_hop_point then
                         is_first_hop_point = false

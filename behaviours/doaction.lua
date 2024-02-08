@@ -43,10 +43,10 @@ function DoAction:Visit()
     end
 
     if self.status == RUNNING then
-    	if self.timeout and (GetTime() - self.time > self.timeout) then
-    		self.status = FAILED
-    		--print("Action timed out, failing")
-    	end
+        if self.timeout and (GetTime() - self.time > self.timeout) then
+            self.status = FAILED
+            --print("Action timed out, failing")
+        end
 
         if self.pendingstatus then
             self.status = self.pendingstatus

@@ -763,8 +763,9 @@ SPECIAL_EVENTS =
     YOTB = "year_of_the_beefalo",
     YOT_CATCOON = "year_of_the_catcoon",
     YOTR = "year_of_the_bunnyman",
+    YOTD = "year_of_the_dragonfly",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.WINTERS_FEAST
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.YOTD
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -792,6 +793,7 @@ IS_YEAR_OF_THE_SPECIAL_EVENTS =
     [SPECIAL_EVENTS.YOTB] = true,
 	[SPECIAL_EVENTS.YOT_CATCOON] = true,
     [SPECIAL_EVENTS.YOTR] = true,
+    [SPECIAL_EVENTS.YOTD] = true,
 }
 
 
@@ -866,6 +868,13 @@ SPECIAL_EVENT_MUSIC =
     {
         bank = "music_frontend_yotg.fsb",
         sound = "dontstarve/music/music_FE_yotg",
+    },
+
+    --year of the dragonfly
+    [SPECIAL_EVENTS.YOTD] =
+    {
+        bank = "music.fsb",
+        sound = "dontstarve/music/music_FE_boatrace",
     },
 
 	-- crow carnival
@@ -1121,6 +1130,7 @@ TECH =
     BEEFOFFERING_THREE = { BEEFOFFERING = 3 },
     CATCOONOFFERING_THREE = { CATCOONOFFERING = 3 },
     RABBITOFFERING_THREE = { RABBITOFFERING = 3 },
+    DRAGONOFFERING_THREE = { DRAGONOFFERING = 3 },
 
     MADSCIENCE_ONE = { MADSCIENCE = 1 },
 	CARNIVAL_PRIZESHOP_ONE = { CARNIVAL_PRIZESHOP = 1 },
@@ -1151,6 +1161,7 @@ TECH =
     YOTB = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOT_CATCOON = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTR = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
+    YOTD = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
 
     LOST = { MAGIC = 10, SCIENCE = 10, ANCIENT = 10 },
 

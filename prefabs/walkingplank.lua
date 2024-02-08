@@ -10,29 +10,22 @@ local assets_grass =
     Asset("ANIM", "anim/boat_plank_grass_build.zip"),
 }
 
+local assets_yotd =
+{
+    Asset("ANIM", "anim/boat_plank.zip"),
+    Asset("ANIM", "anim/boat_plank_yotd_build.zip"),
+}
+
 local prefabs =
 {
     "collapse_small",
 }
-
-local function on_hammered(inst, hammerer)
-    inst.components.lootdropper:DropLoot()
-
-    local collapse_fx = SpawnPrefab("collapse_small")
-    collapse_fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
-    collapse_fx:SetMaterial("wood")
-
-    inst.components.anchor:SetIsAnchorLowered(false)
-
-    inst:Remove()
-end
 
 local function common_pre(inst)
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
-    --MakeObstaclePhysics(inst, .2)
 
     inst:SetStateGraph("SGwalkingplank")
 
@@ -46,33 +39,32 @@ local function common_pre(inst)
     -- from walkingplank component
     inst:AddTag("walkingplank")
 
-    inst:AddTag("ignorewalkableplatforms") -- because it is a child of the boat    
+    inst:AddTag("ignorewalkableplatforms") -- because it is a child of the boat
+
     return inst
 end
 
 local function common_pst(inst)
     inst.persists = false
 
-    inst:AddComponent("walkingplank")
-    inst:AddComponent("hauntable")
+    local hauntable = inst:AddComponent("hauntable")
+    hauntable:SetHauntValue(TUNING.HAUNT_TINY)
+
     inst:AddComponent("inspectable")
-    inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     -- The loot that this drops is generated from the uncraftable recipe; see recipes.lua for the items.
     inst:AddComponent("lootdropper")
+
+    inst:AddComponent("walkingplank")
 
     return inst
 end
 
 
 local function fn()
+    local inst = common_pre(CreateEntity())
 
-    local inst = CreateEntity()
-
-    inst = common_pre(inst)
-    
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -83,14 +75,26 @@ local function fn()
 end
 
 local function grassfn()
+    local inst = common_pre(CreateEntity())
 
-    local inst = CreateEntity()
-
-    inst = common_pre(inst)
     inst.AnimState:SetBuild("boat_plank_grass_build")
 
     inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
 
+    inst = common_pst(inst)
+
+    return inst
+end
+
+local function yotdfn()
+    local inst = common_pre(CreateEntity())
+
+    inst.AnimState:SetBuild("boat_plank_yotd_build")
+
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
@@ -101,4 +105,5 @@ local function grassfn()
 end
 
 return Prefab("walkingplank", fn, assets, prefabs),
-        Prefab("walkingplank_grass", grassfn, assets_grass, prefabs)
+        Prefab("walkingplank_grass", grassfn, assets_grass, prefabs),
+        Prefab("walkingplank_yotd", yotdfn, assets_yotd, prefabs)

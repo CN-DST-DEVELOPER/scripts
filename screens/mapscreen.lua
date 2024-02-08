@@ -176,10 +176,9 @@ function MapScreen:SetZoom(zoom_target)
 end
 
 function MapScreen:UpdateMapActions(x, y, z)
-    if ThePlayer and ThePlayer.components.playeractionpicker and ThePlayer.components.playercontroller then
-        local pc = ThePlayer.components.playercontroller
-        pc.LMBaction, pc.RMBaction = pc:GetMapActions(Vector3(x, y, z))
-        return pc.LMBaction, pc.RMBaction
+    local playercontroller = ThePlayer and ThePlayer.components.playercontroller or nil
+    if playercontroller and ThePlayer.components.playeractionpicker then
+        return playercontroller:UpdateActionsToMapActions(Vector3(x, y, z))
     end
     return nil, nil
 end
@@ -468,17 +467,17 @@ function MapScreen:OnControl(control, down)
         return false
     end
 
-    local pc = ThePlayer and ThePlayer.components.playercontroller
+	local playercontroller = ThePlayer and ThePlayer.components.playercontroller or nil
 
-    if pc and control == CONTROL_ROTATE_LEFT then
-        pc:RotLeft()
-    elseif pc and control == CONTROL_ROTATE_RIGHT then
-        pc:RotRight()
+	if playercontroller and control == CONTROL_ROTATE_LEFT then
+		playercontroller:RotLeft()
+	elseif playercontroller and control == CONTROL_ROTATE_RIGHT then
+		playercontroller:RotRight()
     elseif control == CONTROL_MAP_ZOOM_IN then -- NOTES(JBK): Keep these here for mods but modify their value to do nothing with new code.
         self:DoZoomIn(0)
     elseif control == CONTROL_MAP_ZOOM_OUT then
         self:DoZoomOut(0)
-    elseif pc and (control == CONTROL_SECONDARY or control == CONTROL_CONTROLLER_ATTACK) then
+	elseif playercontroller and (control == CONTROL_SECONDARY or control == CONTROL_CONTROLLER_ATTACK) then
         local x, y, z = self:GetWorldPositionAtCursor()
         local _, RMBaction = self:UpdateMapActions(x, y, z)
         if RMBaction then
@@ -486,7 +485,7 @@ function MapScreen:OnControl(control, down)
                 SetAutopaused(false)
                 self.quitting = true
             end
-            pc:OnMapAction(RMBaction.action.code, Vector3(x, y, z))
+			playercontroller:OnMapAction(RMBaction.action.code, Vector3(x, y, z))
         end
     else
         return false
@@ -503,9 +502,9 @@ function MapScreen:GetHelpText()
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MAP_ZOOM_IN) .. " " .. STRINGS.UI.HELP.ZOOM_IN)
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MAP_ZOOM_OUT) .. " " .. STRINGS.UI.HELP.ZOOM_OUT)
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
-    local pc = ThePlayer and ThePlayer.components.playercontroller or nil
-    if pc and pc.RMBaction then
-        table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. pc.RMBaction:GetActionString())
+	local playercontroller = ThePlayer and ThePlayer.components.playercontroller or nil
+	if playercontroller and playercontroller.RMBaction then
+		table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. playercontroller.RMBaction:GetActionString())
     end
 
     return table.concat(t, "  ")

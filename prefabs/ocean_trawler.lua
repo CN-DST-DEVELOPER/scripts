@@ -13,17 +13,10 @@ local function onsave(inst, data)
 end
 
 local function onload(inst, data)
-
     if data and data.burnt and inst.components.burnable ~= nil and inst.components.burnable.onburnt ~= nil then
         inst.components.burnable.onburnt(inst)
     end
 end
-
---[[local function OnInit(inst)
-    if inst.components.oceantrawler then
-        inst.components.oceantrawler:CheckForMalbatross()
-    end
-end]]
 
 local function onopen(inst)
     inst.SoundEmitter:PlaySound("monkeyisland/trawlingpole/open")
@@ -85,25 +78,22 @@ end
 
 local function GetStatus(inst, viewer)
     local oceantrawler = inst.components.oceantrawler
-    if oceantrawler then
-        local escaped = oceantrawler:HasFishEscaped()
-        if oceantrawler:IsLowered() and not escaped then
-            return "LOWERED"
-        elseif escaped then
-            return "ESCAPED"
-        elseif oceantrawler:HasCaughtItem() then
-            return "CAUGHT"
-        else
-            return "GENERIC"
-        end
-    else
-        return "GENERIC"
-    end
+    if not oceantrawler then return "GENERIC" end
+
+    local escaped = oceantrawler:HasFishEscaped()
+    return (not escaped and oceantrawler:IsLowered() and "LOWERED")
+        or (escaped and "ESCAPED")
+        or (oceantrawler:HasCaughtItem() and "CAUGHT")
+        or "GENERIC"
 end
 
 local function FishPreserverRate(inst, item)
     local oceantrawler = inst.components.oceantrawler
-    return oceantrawler and oceantrawler:IsLowered() and (item ~= nil and item:HasTag("fish")) and TUNING.OCEAN_TRAWLER_LOWERED_PERISH_RATE or nil
+    return (oceantrawler
+        and oceantrawler:IsLowered()
+        and (item ~= nil and item:HasTag("fish"))
+        and TUNING.OCEAN_TRAWLER_LOWERED_PERISH_RATE)
+        or nil
 end
 
 local function fn()
@@ -135,9 +125,6 @@ local function fn()
     inst.AnimState:SetBuild("ocean_trawler")
     inst.AnimState:PlayAnimation("idle")
 
-    --[[MakeInventoryFloatable(inst, "med", nil, {1.3, 0.9, 1.1})
-    inst.components.floater.bob_percent = 0]]
-
     inst.scrapbook_specialinfo = "OCEANTRAWLER"
 
     inst.entity:SetPristine()
@@ -146,35 +133,30 @@ local function fn()
         return inst
     end
 
-    --[[local land_time = (POPULATING and math.random()*5*FRAMES) or 0
-    inst:DoTaskInTime(land_time, function(inst)
-        inst.components.floater:OnLandedServer()
-    end)]]
-
     inst:ListenForEvent("onbuilt", onbuilt)
 
-    inst:AddComponent("container")
-    inst.components.container:WidgetSetup("ocean_trawler")
-    inst.components.container.onopenfn = onopen
-    inst.components.container.onclosefn = onclose
-    inst.components.container.skipclosesnd = true
-    inst.components.container.skipopensnd = true
+    local container = inst:AddComponent("container")
+    container:WidgetSetup("ocean_trawler")
+    container.onopenfn = onopen
+    container.onclosefn = onclose
+    container.skipclosesnd = true
+    container.skipopensnd = true
 
-    inst:AddComponent("inspectable")
-    inst.components.inspectable.getstatus = GetStatus
+    local inspectable = inst:AddComponent("inspectable")
+    inspectable.getstatus = GetStatus
 
     inst:AddComponent("lootdropper")
 
     inst:ListenForEvent("death", ondeath)
 
-    inst:AddComponent("preserver")
-    inst.components.preserver:SetPerishRateMultiplier(FishPreserverRate)
+    local preserver = inst:AddComponent("preserver")
+    preserver:SetPerishRateMultiplier(FishPreserverRate)
 
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(3)
-    inst.components.workable:SetOnFinishCallback(onhammered)
-    inst.components.workable:SetOnWorkCallback(onhit)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(3)
+    workable:SetOnFinishCallback(onhammered)
+    workable:SetOnWorkCallback(onhit)
 
     inst:AddComponent("oceantrawler")
     inst:SetStateGraph("SGoceantrawler")
@@ -189,8 +171,6 @@ local function fn()
     inst.OnLoad = onload
 
     MakeSnowCovered(inst)
-
-    --inst:DoTaskInTime(0, OnInit)
 
     return inst
 end

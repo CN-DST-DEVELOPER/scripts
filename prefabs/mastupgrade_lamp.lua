@@ -3,6 +3,11 @@ local assets =
     Asset("ANIM", "anim/mastupgrade_lamp.zip"),
 }
 
+local yotd_assets =
+{
+    Asset("ANIM", "anim/yotd_mastupgrade_lamp.zip"),
+}
+
 local prefabs =
 {
 	"collapse_small",
@@ -130,17 +135,42 @@ local function itemfn()
 
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetSinks(false)
+    local inventoryitem = inst:AddComponent("inventoryitem")
+    inventoryitem:SetSinks(false)
 
-    inst:AddComponent("upgrader")
-    inst.components.upgrader.upgradetype = UPGRADETYPES.MAST
-    inst.components.upgrader.upgradevalue = 1
+    local upgrader = inst:AddComponent("upgrader")
+    upgrader.upgradetype = UPGRADETYPES.MAST
+    upgrader.upgradevalue = 1
 
     MakeHauntableLaunchAndSmash(inst)
 
     return inst
 end
 
+local function yotd_fn()
+    local inst = fn()
+
+    inst.AnimState:SetBuild("yotd_mastupgrade_lamp")
+
+    return inst
+end
+
+local function yotd_itemfn()
+    local inst = itemfn()
+
+    inst.AnimState:SetBuild("yotd_mastupgrade_lamp")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.upgrade_override = "mastupgrade_lamp_yotd"
+
+    return inst
+end
+
 return Prefab("mastupgrade_lamp_item", itemfn, assets, prefabs),
-    Prefab("mastupgrade_lamp", fn, assets)
+    Prefab("mastupgrade_lamp", fn, assets),
+
+    Prefab("mastupgrade_lamp_item_yotd", yotd_itemfn, yotd_assets, prefabs),
+    Prefab("mastupgrade_lamp_yotd", yotd_fn, yotd_assets, prefabs)

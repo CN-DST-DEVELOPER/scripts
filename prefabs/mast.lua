@@ -17,6 +17,16 @@ local malbatross_assets =
     Asset("MINIMAP_IMAGE", "mast_malbatross"),
 }
 
+local yotd_assets =
+{
+    Asset("ANIM", "anim/yotd_boat_mast.zip"),
+
+    Asset("ANIM", "anim/yotd_boat_mast_kit.zip"),
+
+    Asset("INV_IMAGE", "mast_yotd_item"),
+    Asset("MINIMAP_IMAGE", "mast_yotd"),
+}
+
 local upgrade_assets =
 {
     lamp =
@@ -43,6 +53,14 @@ local malbatross_prefabs =
 	"boat_malbatross_mast_sink_fx",
 	"collapse_small",
     "mast_malbatross_item", -- deprecated but kept for existing worlds and mods
+    "mastupgrade_lamp",
+    "mastupgrade_lightningrod",
+}
+
+local yotd_prefabs =
+{
+    "collapse_small",
+    "mast_yotd_sink_fx",
     "mastupgrade_lamp",
     "mastupgrade_lightningrod",
 }
@@ -105,11 +123,13 @@ local function lamp_turnon(inst)
     if not inst.components.fueled:IsEmpty() then
         inst.components.fueled:StartConsuming()
 
-        if inst._lamp == nil then
+        if not inst._lamp then
+            local upgrade_prefab = (inst.saved_upgraded_from_item ~= nil and inst.saved_upgraded_from_item.upgrade_override)
+                or "mastupgrade_lamp"
             if inst.saved_upgraded_from_item ~= nil and inst.saved_upgraded_from_item.linked_skinname then
-                inst._lamp = SpawnPrefab("mastupgrade_lamp", inst.saved_upgraded_from_item.linked_skinname, inst.saved_upgraded_from_item.skin_id )
+                inst._lamp = SpawnPrefab(upgrade_prefab, inst.saved_upgraded_from_item.linked_skinname, inst.saved_upgraded_from_item.skin_id )
             else
-                inst._lamp = SpawnPrefab("mastupgrade_lamp")
+                inst._lamp = SpawnPrefab(upgrade_prefab)
             end
             inst._lamp._mast = inst
             lamp_fuelupdate(inst)
@@ -130,14 +150,14 @@ local function lamp_turnon(inst)
 end
 
 local function upgrade_lamp(inst, no_built_callback)
-    inst:AddComponent("fueled")
-    inst.components.fueled:InitializeFuelLevel(TUNING.MAST_LAMP_LIGHTTIME)
-    inst.components.fueled:SetDepletedFn(lamp_turnoff)
-    inst.components.fueled:SetUpdateFn(lamp_fuelupdate)
-    inst.components.fueled:SetTakeFuelFn(lamp_turnon)
-    inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
-    inst.components.fueled.accepting = true
-    inst.components.fueled.canbespecialextinguished = true
+    local fueled = inst:AddComponent("fueled")
+    fueled:InitializeFuelLevel(TUNING.MAST_LAMP_LIGHTTIME)
+    fueled:SetDepletedFn(lamp_turnoff)
+    fueled:SetUpdateFn(lamp_fuelupdate)
+    fueled:SetTakeFuelFn(lamp_turnon)
+    fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
+    fueled.accepting = true
+    fueled.canbespecialextinguished = true
 
     inst:AddTag("firefuellight")
 
@@ -151,19 +171,21 @@ local function upgrade_lamp(inst, no_built_callback)
 end
 
 local function upgrade_lightningrod(inst, no_built_callback)
+    local upgrade_prefab = (inst.saved_upgraded_from_item ~= nil and inst.saved_upgraded_from_item.upgrade_override)
+        or "mastupgrade_lightningrod"
     if inst.saved_upgraded_from_item ~= nil and inst.saved_upgraded_from_item.linked_skinname then
-        inst._lightningrod = SpawnPrefab("mastupgrade_lightningrod", inst.saved_upgraded_from_item.linked_skinname, inst.saved_upgraded_from_item.skin_id )
+        inst._lightningrod = SpawnPrefab(upgrade_prefab, inst.saved_upgraded_from_item.linked_skinname, inst.saved_upgraded_from_item.skin_id )
     else
-        inst._lightningrod = SpawnPrefab("mastupgrade_lightningrod")
+        inst._lightningrod = SpawnPrefab(upgrade_prefab)
     end
 
     inst._lightningrod.entity:SetParent(inst.entity)
 
     local top = nil
     if inst.saved_upgraded_from_item ~= nil and inst.saved_upgraded_from_item.linked_skinname then
-        top = SpawnPrefab("mastupgrade_lightningrod_top", inst.saved_upgraded_from_item.linked_skinname .. "_top", inst.saved_upgraded_from_item.skin_id )
+        top = SpawnPrefab(upgrade_prefab.."_top", inst.saved_upgraded_from_item.linked_skinname .. "_top", inst.saved_upgraded_from_item.skin_id )
     else
-        top = SpawnPrefab("mastupgrade_lightningrod_top")
+        top = SpawnPrefab(upgrade_prefab.."_top")
     end
     top.entity:SetParent(inst.entity)
     top.entity:AddFollower():FollowSymbol(inst.GUID, "mastupgrade_lightningrod_top", 0, 0, 0)
@@ -181,10 +203,18 @@ local function upgrade_lightningrod(inst, no_built_callback)
 end
 
 local function OnUpgrade(inst, performer, upgraded_from_item)
-    local numupgrades = inst.components.upgradeable.numupgrades
     if upgraded_from_item.linked_skinname ~= nil then
-        inst.saved_upgraded_from_item = { linked_skinname = upgraded_from_item.linked_skinname, skin_id = upgraded_from_item.skin_id }
+        inst.saved_upgraded_from_item = {}
+        inst.saved_upgraded_from_item.linked_skinname = upgraded_from_item.linked_skinname
+        inst.saved_upgraded_from_item.skin_id = upgraded_from_item.skin_id
     end
+
+    if upgraded_from_item.upgrade_override then
+        inst.saved_upgraded_from_item = inst.saved_upgraded_from_item or {}
+        inst.saved_upgraded_from_item.upgrade_override = upgraded_from_item.upgrade_override
+    end
+
+    local numupgrades = inst.components.upgradeable.numupgrades
     if numupgrades == 1 then
         upgrade_lamp(inst)
     elseif numupgrades == 2 then
@@ -433,6 +463,35 @@ local function malbatrossfn()
     return inst
 end
 
+local function yotd_fn()
+    local inst = CreateEntity()
+
+    fn_pre(inst)
+
+    inst.AnimState:SetBank("mast_01")
+    inst.AnimState:SetBuild("yotd_boat_mast")
+    inst.AnimState:PlayAnimation("closed")
+    inst.scrapbook_anim = "open_loop"
+
+    inst.MiniMapEntity:SetIcon("mast_yotd.png")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.scrapbook_facing  = FACING_DOWN
+
+    fn_pst(inst)
+
+    if inst.components.mast then
+        inst.components.mast.sink_fx = "mast_yotd_sink_fx"
+    end
+
+    return inst
+end
+
+-- Item functions
 local function setondeploy(inst, prefab)
     inst.components.deployable.ondeploy = function(inst2, pt, deployer, rotation)
         local mast = SpawnPrefab( prefab, inst2.linked_skinname, inst2.skin_id )
@@ -495,7 +554,6 @@ local function item_fn()
     inst.AnimState:PlayAnimation("IDLE")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -515,7 +573,6 @@ local function malbatross_item_fn()
     inst.AnimState:PlayAnimation("idle")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -527,9 +584,35 @@ local function malbatross_item_fn()
     return inst
 end
 
+local function yotd_item_fn()
+    local inst = CreateEntity()
+
+    item_fn_pre(inst)
+
+    inst.AnimState:SetBank("seafarer_mast")
+    inst.AnimState:SetBuild("yotd_boat_mast_kit")
+    inst.AnimState:PlayAnimation("idle")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    item_fn_pst(inst)
+
+    setondeploy(inst, "mast_yotd")
+
+    return inst
+end
+
 return Prefab("mast", fn, assets, prefabs),
        Prefab("mast_item", item_fn, assets),
        MakePlacer("mast_item_placer", "mast_01", "boat_mast2_wip", "closed", nil,nil,nil,nil,0,"eight"),
+
        Prefab("mast_malbatross", malbatrossfn, malbatross_assets, malbatross_prefabs),
        Prefab("mast_malbatross_item", malbatross_item_fn, malbatross_assets),
-       MakePlacer("mast_malbatross_item_placer", "mast_malbatross", "boat_mast_malbatross_build", "closed", nil,nil,nil,nil,0,"eight")
+       MakePlacer("mast_malbatross_item_placer", "mast_malbatross", "boat_mast_malbatross_build", "closed", nil,nil,nil,nil,0,"eight"),
+
+       Prefab("mast_yotd", yotd_fn, yotd_assets, yotd_prefabs),
+       Prefab("mast_yotd_item", yotd_item_fn, yotd_assets),
+       MakePlacer("mast_yotd_item_placer", "mast_01", "yotd_boat_mast", "closed", nil, nil, nil, nil, 0, "eight")

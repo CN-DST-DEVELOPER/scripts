@@ -931,6 +931,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "The starting point is too far away...",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "No checkpoints... I suppose I can't do anything right.",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "This place is too cluttered... there's hardly room to breathe...",
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -5057,6 +5061,43 @@ return{
 
         EMBERLIGHT = "At least it warms my hands.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "Let us remember this monster.",
+            EMPTY = "It demands a burnt offering.",
+            BURNT = "And to dust you shall return.",
+        },
+
+        DRAGONBOAT_KIT = "I can help set this up, I guess.",
+        DRAGONBOAT_PACK = "I suppose I can make myself useful in some small way and put it together.",
+
+        BOATRACE_CHECKPOINT = "Where do we go from here?",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "I should throw this in the water.",
+        BOATRACE_START = "Is this the start or the end? Or the start of the end?",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Does it matter where? It's all a game isn't it?",
+
+        BOATRACE_PRIMEMATE = "We are all just racing to the end.",
+        BOATRACE_SPECTATOR_DRAGONLING = "Will you silently bear witness to what befalls us?",
+
+        YOTD_STEERINGWHEEL = "Where would I even go?",
+        YOTD_STEERINGWHEEL_ITEM = "It would make a steering wheel...",
+        YOTD_OAR = "I can paddle and paddle, and still feel like I'm going nowhere.",
+        YOTD_ANCHOR = "Its golden luster will be lost beneath the sea.",
+        YOTD_ANCHOR_ITEM = "It's for a burdensome boat anchor.",
+        MAST_YOTD = "Maybe I could sail far away...",
+        MAST_YOTD_ITEM = "It's for making a mast.",
+        BOAT_BUMPER_YOTD = "My boat is baring its teeth.",
+        BOAT_BUMPER_YOTD_KIT = "I suppose I should make myself useful.",
+        BOATRACE_SEASTACK = "Why try to avoid the inevitable?",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "A useful guide, or a marker for a watery grave...",
+        BOATRACE_SEASTACK_MONKEY = "Why try to avoid the inevitable?",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "A useful guide, or a marker for a watery grave...",
+        MASTUPGRADE_LAMP_YOTD = "How long before that fire in your eyes goes out?",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "A meager light to combat the darkness.",
+        WALKINGPLANK_YOTD = "It looks so inviting.",
+        CHESSPIECE_YOTD = "If only I could have a new start.",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

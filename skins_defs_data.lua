@@ -295,6 +295,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wanda_bishop", "body_wanda_bishopp
 TheInventory:AddRestrictedBuildFromLua( "body_wanda_formal", "body_wanda_formal", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wanda_ice", "body_wanda_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wanda_lunar", "body_wanda_lunar", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wanda_masquerade", "body_wanda_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wanda_nature", "body_wanda_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wanda_shadow", "body_wanda_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wanda_steampunk", "body_wanda_steampunk", false )
@@ -321,6 +322,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_gladiator", "body_wathg
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_ice", "body_wathgrithr_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_lunar", "body_wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_magma", "body_wathgrithr_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_masquerade", "body_wathgrithr_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_nature", "body_wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_pirate", "body_wathgrithr_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wathgrithr_rose", "body_wathgrithr_rose", false )
@@ -343,6 +345,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_waxwell_krampus", "body_waxwell_kr
 TheInventory:AddRestrictedBuildFromLua( "body_waxwell_krampus", "body_waxwell_krampusp", false )
 TheInventory:AddRestrictedBuildFromLua( "body_waxwell_lunar", "body_waxwell_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_waxwell_magma", "body_waxwell_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "body_waxwell_masquerade", "body_waxwell_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "body_waxwell_nature", "body_waxwell_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_waxwell_rose", "body_waxwell_rose", false )
 TheInventory:AddRestrictedBuildFromLua( "body_waxwell_rose", "body_waxwell_rosep", false )
@@ -467,6 +470,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wilson_ice", "body_wilson_ice", fa
 TheInventory:AddRestrictedBuildFromLua( "body_wilson_lunar", "body_wilson_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wilson_madscientist", "body_wilson_madscientist", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wilson_magma", "body_wilson_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wilson_masquerade", "body_wilson_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wilson_nature", "body_wilson_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wilson_pigguard", "body_wilson_pigguard", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wilson_pigguard", "body_wilson_pigguardp", false )
@@ -574,6 +578,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_wortox_victorian", "body_wortox_vi
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_cave", "body_wurt_cave", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_formal", "body_wurt_formal", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_ice", "body_wurt_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "body_wurt_masquerade", "body_wurt_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_nature", "body_wurt_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_pirate", "body_wurt_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "body_wurt_rose", "body_wurt_rose", false )
@@ -855,12 +860,14 @@ TheInventory:AddRestrictedBuildFromLua( "feet_warly_shadow", "feet_warly_shadow"
 TheInventory:AddRestrictedBuildFromLua( "feet_warly_victorian", "feet_warly_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_gladiator", "feet_wathgrithr_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_ice", "feet_wathgrithr_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_masquerade", "feet_wathgrithr_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_nature", "feet_wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_scarecrow", "feet_wathgrithr_scarecrow", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_wrestler", "feet_wathgrithr_wrestler", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_wathgrithr_yule", "feet_wathgrithr_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_waxwell_gladiator", "feet_waxwell_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_waxwell_lunar", "feet_waxwell_lunar", false )
+TheInventory:AddRestrictedBuildFromLua( "feet_waxwell_masquerade", "feet_waxwell_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_waxwell_nature", "feet_waxwell_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_waxwell_wizard", "feet_waxwell_wizard", false )
 TheInventory:AddRestrictedBuildFromLua( "feet_webber_gladiator", "feet_webber_gladiator", false )
@@ -1135,6 +1142,7 @@ TheInventory:AddRestrictedBuildFromLua( "hand_wilson_ice", "hand_wilson_ice", fa
 TheInventory:AddRestrictedBuildFromLua( "hand_wilson_lunar", "hand_wilson_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wilson_madscientist", "hand_wilson_madscientist", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wilson_magma", "hand_wilson_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "hand_wilson_masquerade", "hand_wilson_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wilson_victorian", "hand_wilson_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_wilson_yule", "hand_wilson_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "hand_winona_factory", "hand_winona_factory", false )
@@ -1327,6 +1335,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_walter_shadow", "legs_walter_shado
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_ventriloquist", "legs_walter_ventriloquist", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_victorian", "legs_walter_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_walter_yule", "legs_walter_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_wanda_masquerade", "legs_wanda_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wanda_nature", "legs_wanda_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wanda_shadow", "legs_wanda_shadow", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wanda_steampunk", "legs_wanda_steampunk", false )
@@ -1343,6 +1352,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_warly_victorian", "legs_warly_vict
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_gladiator", "legs_wathgrithr_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_lunar", "legs_wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_magma", "legs_wathgrithr_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_masquerade", "legs_wathgrithr_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_nature", "legs_wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_pirate", "legs_wathgrithr_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_valkyrie", "legs_wathgrithr_valkyrie", false )
@@ -1350,6 +1360,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_wathgrithr_victorian", "legs_wathg
 TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_gladiator", "legs_waxwell_gladiator", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_ice", "legs_waxwell_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_magma", "legs_waxwell_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_masquerade", "legs_waxwell_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_nature", "legs_waxwell_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_vampire", "legs_waxwell_vampire", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_waxwell_victorian", "legs_waxwell_victorian", false )
@@ -1369,6 +1380,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_wilson_gladiator", "legs_wilson_gl
 TheInventory:AddRestrictedBuildFromLua( "legs_wilson_ice", "legs_wilson_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wilson_lunar", "legs_wilson_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wilson_magma", "legs_wilson_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_wilson_masquerade", "legs_wilson_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wilson_nature", "legs_wilson_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_wilson_yule", "legs_wilson_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_winona_frankenstein", "legs_winona_frankenstein", false )
@@ -1769,11 +1781,17 @@ TheInventory:AddRestrictedBuildFromLua( "pack_magma_wolfgang", "pack_magma_wolfg
 TheInventory:AddRestrictedBuildFromLua( "pack_magma_woodie", "pack_magma_woodie", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_magma_wx78", "pack_magma_wx78", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_1", "pack_masquerade_1", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_2", "pack_masquerade_2", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_wanda", "pack_masquerade_wanda", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_warly", "pack_masquerade_warly", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_wathgrithr", "pack_masquerade_wathgrithr", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_waxwell", "pack_masquerade_waxwell", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_wes", "pack_masquerade_wes", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_willow", "pack_masquerade_willow", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_wilson", "pack_masquerade_wilson", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_woodie", "pack_masquerade_woodie", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_wortox", "pack_masquerade_wortox", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_masquerade_wurt", "pack_masquerade_wurt", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_mighty_items", "pack_mighty_items", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_nature_all", "pack_nature_all", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_nature_all2", "pack_nature_all2", false )
@@ -2127,6 +2145,7 @@ TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_steeringwheelnautical
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_suspisciousdirtpile", "playerportrait_bg_suspisciousdirtpile", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_telebasecrystal", "playerportrait_bg_telebasecrystal", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_telestaffcrystal", "playerportrait_bg_telestaffcrystal", true )
+TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_tentan", "playerportrait_bg_tentan", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_tentcircus", "playerportrait_bg_tentcircus", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_thickforest", "playerportrait_bg_thickforest", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_toothtraps", "playerportrait_bg_toothtraps", true )
@@ -2305,6 +2324,7 @@ TheInventory:AddRestrictedBuildFromLua( "profileflair_steeringwheel_nautical", "
 TheInventory:AddRestrictedBuildFromLua( "profileflair_tallbird_eye", "profileflair_tallbird_eye", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_telebase_crystal", "profileflair_telebase_crystal", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_telestaff_crystal", "profileflair_telestaff_crystal", true )
+TheInventory:AddRestrictedBuildFromLua( "profileflair_tent_an", "profileflair_tent_an", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_tent_circus", "profileflair_tent_circus", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_theforge_battlestandard", "profileflair_theforge_battlestandard", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_theforge_battlestandardattack", "profileflair_theforge_battlestandardattack", true )
@@ -2514,6 +2534,7 @@ TheInventory:AddRestrictedBuildFromLua( "telebase_crystal", "telebase_crystal", 
 TheInventory:AddRestrictedBuildFromLua( "telebase_hallowpylon", "telebase_hallowpylon", false )
 TheInventory:AddRestrictedBuildFromLua( "telestaff_crystal", "telestaff_crystal", false )
 TheInventory:AddRestrictedBuildFromLua( "telestaff_shadowbeam", "telestaff_shadowbeam", false )
+TheInventory:AddRestrictedBuildFromLua( "tent_an", "tent_an", false )
 TheInventory:AddRestrictedBuildFromLua( "tent_ancient", "tent_ancient", false )
 TheInventory:AddRestrictedBuildFromLua( "tent_beach", "tent_beach", false )
 TheInventory:AddRestrictedBuildFromLua( "tent_circus", "tent_circus", false )
@@ -2637,6 +2658,10 @@ TheInventory:AddRestrictedBuildFromLua( "ghost_wanda_build", "wanda_lunar", fals
 TheInventory:AddRestrictedBuildFromLua( "wanda_lunar", "wanda_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wanda_lunar_old", "wanda_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wanda_lunar_young", "wanda_lunar", false )
+TheInventory:AddRestrictedBuildFromLua( "ghost_wanda_build", "wanda_masquerade", false )
+TheInventory:AddRestrictedBuildFromLua( "wanda_masquerade", "wanda_masquerade", false )
+TheInventory:AddRestrictedBuildFromLua( "wanda_masquerade_old", "wanda_masquerade", false )
+TheInventory:AddRestrictedBuildFromLua( "wanda_masquerade_young", "wanda_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "ghost_wanda_build", "wanda_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wanda_nature", "wanda_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wanda_nature_old", "wanda_nature", false )
@@ -2695,6 +2720,7 @@ TheInventory:AddRestrictedBuildFromLua( "wathgrithr_improvedhat_valkyrie", "wath
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_improvedhat_wrestle", "wathgrithr_improvedhat_wrestle", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_lunar", "wathgrithr_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_magma", "wathgrithr_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "wathgrithr_masquerade", "wathgrithr_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_nature", "wathgrithr_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_pirate", "wathgrithr_pirate", false )
 TheInventory:AddRestrictedBuildFromLua( "wathgrithr_rose", "wathgrithr_rose", false )
@@ -2722,6 +2748,7 @@ TheInventory:AddRestrictedBuildFromLua( "waxwell_krampus_d", "waxwell_krampus_d"
 TheInventory:AddRestrictedBuildFromLua( "waxwell_krampus_d", "waxwell_krampus_p", false )
 TheInventory:AddRestrictedBuildFromLua( "waxwell_lunar", "waxwell_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "waxwell_magma", "waxwell_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "waxwell_masquerade", "waxwell_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "waxwell_nature", "waxwell_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "waxwell_rose", "waxwell_rose", false )
 TheInventory:AddRestrictedBuildFromLua( "waxwell_rose", "waxwell_rosep", false )
@@ -2871,6 +2898,7 @@ TheInventory:AddRestrictedBuildFromLua( "wilson_beard_ice", "wilson_beard_ice", 
 TheInventory:AddRestrictedBuildFromLua( "wilson_beard_lunar", "wilson_beard_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_beard_madscience", "wilson_beard_madscience", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_beard_magma", "wilson_beard_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "wilson_beard_masquerade", "wilson_beard_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_beard_nature", "wilson_beard_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_beard_pigguard", "wilson_beard_pigguard", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_beard_rose", "wilson_beard_rose", false )
@@ -2887,6 +2915,7 @@ TheInventory:AddRestrictedBuildFromLua( "wilson_ice", "wilson_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_lunar", "wilson_lunar", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_madscience", "wilson_madscience", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_magma", "wilson_magma", false )
+TheInventory:AddRestrictedBuildFromLua( "wilson_masquerade", "wilson_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_nature", "wilson_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_pigguard", "wilson_pigguard", false )
 TheInventory:AddRestrictedBuildFromLua( "wilson_pigguard_d", "wilson_pigguard_d", false )
@@ -3159,6 +3188,9 @@ TheInventory:AddRestrictedBuildFromLua( "wurt_formal_powerup", "wurt_formal", fa
 TheInventory:AddRestrictedBuildFromLua( "ghost_wurt_ice", "wurt_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "wurt_ice", "wurt_ice", false )
 TheInventory:AddRestrictedBuildFromLua( "wurt_ice_powerup", "wurt_ice", false )
+TheInventory:AddRestrictedBuildFromLua( "ghost_wurt_masquerade", "wurt_masquerade", false )
+TheInventory:AddRestrictedBuildFromLua( "wurt_masquerade", "wurt_masquerade", false )
+TheInventory:AddRestrictedBuildFromLua( "wurt_masquerade_powerup", "wurt_masquerade", false )
 TheInventory:AddRestrictedBuildFromLua( "ghost_wurt_nature", "wurt_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wurt_nature", "wurt_nature", false )
 TheInventory:AddRestrictedBuildFromLua( "wurt_nature_powerup", "wurt_nature", false )
@@ -3842,7 +3874,7 @@ TheInventory:AddGenericKVKey( "wathgrithr_container_unlocked" )
 TheInventory:AddGenericKVKey( "wathgrithr_horn_played" )
 
 if TheInventory.AddScrapbook0Key == nil then
-    TheInventory:ValidateWithSignature( "1b184ce942346f755f34ab63854eded909d280695d79971359d7abe4db6a4fc3aea59cc620fc3c0400eace56d25ef0499ae3820f584798378f33d935e8ef1434a751e05fc6cf5d6dbf2e3c82936e9722726537821d4644f57a9456eb5c5dc9f3f3acf1a1c0aee173f744d363c87c2f279ced74c564e6b4d8544d92e889dc796b0d88720bbb74fd794581d0690574d4148f4215f63181a48183b522caef1cd0752ca69e5d048530b115de88f8d7e828b68443d29bb6b490ac4773e5115c1c31a4e1e4c65d249d0d0ae071530cd2331eb0943810ea56fe4b987f882d98b363064ac53f3fe8e85e02c7c0fc4c76e39ff2e59a84ece5e5e02435f7a5b55ce1c757a974eb3c72eafda63637f5e84d6beb4799b0ba5ed7778605c98c2b8092df0db9924bc5b5d995ab8b2291cbd5d499e606959d70534c3e174cdcb0abe127709640517acc467131e706617b841a5a52ab8486cac465defe8a9feecaf73ab5ceebae68755c02dd404a785d20d6344eaa28b6d8001781220b3e4ec9ace736dbf40773e2b09842fa0712cd9e01c5496c1024744a172487de05723348bf233574d952b4c46c2f13b87755545a907d6b9ea8f39ba8bee88048f0e075ffa34146027d524c255f34c98a106bd37b2b329ed1e40762a564382ad7dddc6f4cd602c506f5f5ac5c40b4fbe16c0e103f8b44dfd2690aebf96b24142978cb1a5953b430fce9cff1a2" )
+    TheInventory:ValidateWithSignature( "59ebb32f2b50414acc15cdf9f6a52a0f0862431d0144b088a66d0812245e6fa44415101e1d96cc6af5cb0ee4c500ba84f32605f16886a8ad7f9a73e2bef0520e0d2e5aead2fb00d6a46c6b362e7bf43ea86a14d200c0e51d20f39779ffe291b9505b3404c87b18809fde8c721ddf1d805563003719ba5c1a830b7cbe936275a874a0c5ab4a2f85a0c6b17099bb962c84982927899f307a64b6d48f06838b0fc4b9d501392cbec8bb4a8022563dcbb2d2a6dc1d7fc17a9419e8022216d8fdfa2f6c9b00a6cf9c6575184bc39089579db702e1513ee2701c162829d3285f287dde66bf7808e88f60c8623c424bcd2ac4f636b68365e98f3bd934b0969770734424d8c58f44c3f34534c7d0e9253569b997daa3fd85a3a6861671380b5393e8591683d3239caa4da0f0a41c0f30bcdd77f42c8e3d1641ecfec335f3622584836cc0c3dc32a5be75f6bb811f11e3619ddc0e54b89fda2a43d06fa0278d50ecc87b513cc25b0277794fc58c60fd5ba899b53f5a819685a4aca81bee27bd0d673f81e0f3cdca554ec89ed48363f397db55a9565f65265e18e9d6b4ccb4a69f9e8c63e379ae1fb354a22824ee90a2bac4a65497dc1bb432711865220c60620537be86ceb7cecfb5d53058559943ed6fcae96f0aae869afa0063cec7f22edbf31e1b948efe02298e503b5d3ecd8f9cd252641fd06b96d2eb17ca1ab49afb68c5125f45cc" )
 else -- Temporary protection guard for platforms missing the engine change 1.
 
 TheInventory:AddScrapbook5Key( "679F8765" ) -- abigail
@@ -4095,14 +4127,9 @@ TheInventory:AddScrapbook6Key( "5FBEEFE6" ) -- chesspiece_anchor
 TheInventory:AddScrapbook2Key( "B9B93E52" ) -- chesspiece_antlion
 TheInventory:AddScrapbook15Key( "D3EC778F" ) -- chesspiece_bearger
 TheInventory:AddScrapbook14Key( "5674D2AE" ) -- chesspiece_bearger_mutated
-TheInventory:AddScrapbook15Key( "B25ECF4F" ) -- chesspiece_beefalo
 TheInventory:AddScrapbook9Key( "3ED7F9D9" ) -- chesspiece_beequeen
 TheInventory:AddScrapbook14Key( "ABA820E" ) -- chesspiece_bishop
 TheInventory:AddScrapbook2Key( "8FB26EC2" ) -- chesspiece_butterfly
-TheInventory:AddScrapbook2Key( "D7DBB222" ) -- chesspiece_carrat
-TheInventory:AddScrapbook0Key( "A6053170" ) -- chesspiece_catcoon
-TheInventory:AddScrapbook2Key( "7870B372" ) -- chesspiece_clayhound
-TheInventory:AddScrapbook1Key( "DEEA0AD1" ) -- chesspiece_claywarg
 TheInventory:AddScrapbook8Key( "9F49CAD8" ) -- chesspiece_crabking
 TheInventory:AddScrapbook1Key( "C574BF61" ) -- chesspiece_daywalker
 TheInventory:AddScrapbook10Key( "B15EFCCA" ) -- chesspiece_deerclops
@@ -4112,11 +4139,9 @@ TheInventory:AddScrapbook11Key( "9EEAEA2B" ) -- chesspiece_eyeofterror
 TheInventory:AddScrapbook0Key( "CED7BA60" ) -- chesspiece_formal
 TheInventory:AddScrapbook10Key( "2ECD3E5A" ) -- chesspiece_guardianphase3
 TheInventory:AddScrapbook11Key( "C28674BB" ) -- chesspiece_hornucopia
-TheInventory:AddScrapbook0Key( "8BFAF70" ) -- chesspiece_kitcoon
 TheInventory:AddScrapbook13Key( "6F88EC4D" ) -- chesspiece_klaus
 TheInventory:AddScrapbook14Key( "541E8F9E" ) -- chesspiece_knight
 TheInventory:AddScrapbook11Key( "23BD9ECB" ) -- chesspiece_malbatross
-TheInventory:AddScrapbook3Key( "B8F795A3" ) -- chesspiece_manrabbit
 TheInventory:AddScrapbook8Key( "A88DF978" ) -- chesspiece_minotaur
 TheInventory:AddScrapbook2Key( "BBD25112" ) -- chesspiece_moon
 TheInventory:AddScrapbook11Key( "2B512E4B" ) -- chesspiece_moosegoose
@@ -4196,6 +4221,7 @@ TheInventory:AddScrapbook10Key( "FF9D356A" ) -- dock_kit
 TheInventory:AddScrapbook10Key( "A456043A" ) -- dock_woodposts
 TheInventory:AddScrapbook8Key( "424403B8" ) -- dock_woodposts_item
 TheInventory:AddScrapbook5Key( "19F41FD5" ) -- dragon_scales
+TheInventory:AddScrapbook6Key( "E2571846" ) -- dragonbodyhat
 TheInventory:AddScrapbook3Key( "C47E1C73" ) -- dragonchilisalad
 TheInventory:AddScrapbook0Key( "CA200AA0" ) -- dragonfly
 TheInventory:AddScrapbook1Key( "D2C60301" ) -- dragonflychest
@@ -4204,7 +4230,9 @@ TheInventory:AddScrapbook1Key( "B1E7B61" ) -- dragonfruit
 TheInventory:AddScrapbook5Key( "359C8405" ) -- dragonfruit_cooked
 TheInventory:AddScrapbook1Key( "9FEA6E31" ) -- dragonfruit_oversized
 TheInventory:AddScrapbook4Key( "8FF1B004" ) -- dragonfruit_seeds
+TheInventory:AddScrapbook8Key( "6CC8A628" ) -- dragonheadhat
 TheInventory:AddScrapbook9Key( "CF09A4D9" ) -- dragonpie
+TheInventory:AddScrapbook8Key( "B1B3CD38" ) -- dragontailhat
 TheInventory:AddScrapbook11Key( "3C4C114B" ) -- dreadstone
 TheInventory:AddScrapbook0Key( "85A73BB0" ) -- dreadstonehat
 TheInventory:AddScrapbook11Key( "6969E25B" ) -- driftwood_log
@@ -4291,6 +4319,7 @@ TheInventory:AddScrapbook4Key( "32A347A4" ) -- fig
 TheInventory:AddScrapbook2Key( "BC5E3D02" ) -- fig_cooked
 TheInventory:AddScrapbook3Key( "C5412FB3" ) -- figatoni
 TheInventory:AddScrapbook9Key( "F2079AC9" ) -- figkabab
+TheInventory:AddScrapbook2Key( "4E2A3B42" ) -- firecrackers
 TheInventory:AddScrapbook11Key( "24B8F3B" ) -- fireflies
 TheInventory:AddScrapbook14Key( "1BAA7BAE" ) -- firehound
 TheInventory:AddScrapbook13Key( "CCA36A0D" ) -- firenettles
@@ -4879,6 +4908,7 @@ TheInventory:AddScrapbook2Key( "AB67FEE2" ) -- red_cap_cooked
 TheInventory:AddScrapbook6Key( "BA4090A6" ) -- red_mushroom
 TheInventory:AddScrapbook5Key( "2A2E3095" ) -- red_mushroomhat
 TheInventory:AddScrapbook14Key( "BCBAA3E" ) -- redgem
+TheInventory:AddScrapbook5Key( "2C76FFB5" ) -- redlantern
 TheInventory:AddScrapbook15Key( "65D9BBDF" ) -- redmooneye
 TheInventory:AddScrapbook1Key( "CC92E0C1" ) -- reeds
 TheInventory:AddScrapbook10Key( "640234BA" ) -- refined_dust
@@ -4920,7 +4950,6 @@ TheInventory:AddScrapbook1Key( "2EF75831" ) -- ruins_chair
 TheInventory:AddScrapbook7Key( "57A80367" ) -- ruins_statue_head
 TheInventory:AddScrapbook9Key( "3E57DA99" ) -- ruins_statue_mage
 TheInventory:AddScrapbook0Key( "E16C07D0" ) -- ruinshat
-TheInventory:AddScrapbook14Key( "BBBC468E" ) -- ruinsrelic_chair
 TheInventory:AddScrapbook14Key( "EFE1AB3E" ) -- sacred_chest
 TheInventory:AddScrapbook6Key( "DEB59676" ) -- saddle_basic
 TheInventory:AddScrapbook9Key( "A801BD29" ) -- saddle_race
@@ -7396,9 +7425,30 @@ TheInventory:AddScrapbook12Key( "4374C56C" ) -- yellowstaff
 --TheInventory:AddItemIDPairing(2059, "webber_beard_yule")
 --TheInventory:AddItemIDPairing(2060, "webber_yule")
 --TheInventory:AddItemIDPairing(2061, "wendy_yule")
+--TheInventory:AddItemIDPairing(2062, "body_wanda_masquerade")
+--TheInventory:AddItemIDPairing(2063, "body_wathgrithr_masquerade")
+--TheInventory:AddItemIDPairing(2064, "body_waxwell_masquerade")
+--TheInventory:AddItemIDPairing(2065, "body_wilson_masquerade")
+--TheInventory:AddItemIDPairing(2066, "body_wurt_masquerade")
+--TheInventory:AddItemIDPairing(2067, "feet_wathgrithr_masquerade")
+--TheInventory:AddItemIDPairing(2068, "feet_waxwell_masquerade")
+--TheInventory:AddItemIDPairing(2069, "hand_wilson_masquerade")
+--TheInventory:AddItemIDPairing(2070, "legs_wanda_masquerade")
+--TheInventory:AddItemIDPairing(2071, "legs_wathgrithr_masquerade")
+--TheInventory:AddItemIDPairing(2072, "legs_waxwell_masquerade")
+--TheInventory:AddItemIDPairing(2073, "legs_wilson_masquerade")
+--TheInventory:AddItemIDPairing(2074, "playerportrait_bg_tentan")
+--TheInventory:AddItemIDPairing(2075, "profileflair_tent_an")
+--TheInventory:AddItemIDPairing(2076, "tent_an")
+--TheInventory:AddItemIDPairing(2077, "wanda_masquerade")
+--TheInventory:AddItemIDPairing(2078, "wathgrithr_masquerade")
+--TheInventory:AddItemIDPairing(2079, "waxwell_masquerade")
+--TheInventory:AddItemIDPairing(2080, "wilson_beard_masquerade")
+--TheInventory:AddItemIDPairing(2081, "wilson_masquerade")
+--TheInventory:AddItemIDPairing(2082, "wurt_masquerade")
 
 if TheInventory.AddFreeItemForEveryone == nil then
-    TheInventory:ValidateWithSignature( "7e8e5be95a445f851b5b7d6cdc9c5a38b65f7c98ef527eed3c546003c2e933a6c315245fa5f43b02e142a910866af1e162d898ae5a9bb9a093ceb0c8397ce4b59d7c08f9269adac5b894dbfa9e98bd934a777b16c475fcb0ab90a0d133fb1852f78ba2cb9240fe0db94c813b95d50dda2caf5871e1ec940b73c412d105fa776aa20fd29e5013dd0610d95a0b2d1be74f2868a3d922d63823e1246e2051c9f28a52d9eee70ccc9216b70d27946378779e762ce921489c6e802968dfabea7b56f05137ce6de84c01d99a15b01941617546ffb8210fef4b93b41d6caa879c8e19912b3007ecbef2d0a97203c60f559e55fd1ada7833d1b9894518c36046d46b1c03155f855209433a77cc4bc8e0302c8375a5a81ffe52eb876325dfc0fac6bd1aaefea908a7808c9f93cb712c9f2f6f03e636f73befd54e200c0d32d3ac7612479c5fbb72cf318f5121a7dff54123a89ee39759f3f07430dfaaf7d303b7521a0acd17b56f5c5baff526263bd340d14f4cceb51e753bd68d406518792e64fd5d51a2e6ff80738b741493146f16238df27a99d277afed8e9389c5396c794f7bf3871f8afc3bae1e37d786f542a7bb5973b08fdc67e734409563a810fd205fa809a4a608509e85b07368b3f3bc89c67ee7044922e8af5d309e85b722367a9c99b012385dc9b230ca8e40171e90c94a3af2f996bf0a4d2997ab0a1ae9625b2abd3431b9" )
+    TheInventory:ValidateWithSignature( "85a8e527fe630173b11aad78d91ccab076efc01e9ad7a1e755cd19f1a9b40d2a2297158febb3f2c1055c192deedb2493547cf3a60f3862affaaa648483ff3311313158e153fca9ac39391f6a37755ef23c31be6cd9aab7d2668e703296901e13f9479f64fd93ab5576f293ac13df42cebfe230b834d9319c31ac0ca037658f49f17a57accfe7fe25f30a48d06b2bd4ba0569563763a29432fd06650207f6d0c41791c813a901ea8e364bbabacf932f1eee7bc3a74ae2e087d741e212186e646fc4e171a16b63ca3ea378beb2b5284a0f8ab0330f491c0bf887d01cb06f17ca171c064ddb20e4cc501a4229a9abc90123797ab193a88335293baa7903de8fb277a2f9da6dfdda52fa918a1f0c492d113224d89a22e519918b274b19a9c1c53d44c7735ce8b7ccc4cee8e725f620f26a3fab6f05047640b914937640fd9db0f65194a33094ed6ad1852fa0b44225e34af1c67b4f498091a5ea638bdff0527485cb4e0f8bb78728c4bffc8a750b04a94ae2ec9619fd26b78809e99d71e9f9815dc494eb7b422a2ccf8134d0f1dea6703903233b2b6fbed55cfa5306f7d042401a11121fe0eeca80ff58cff0297f8878fa0d54c8674390f4e561b6a23a5bcba6eb2b394b78a993b500c4b028f6280bfc76492c621c60e81b04c9cecd3ff62e556a001234d17cb8570201d60d1a4b22f0a45a844e744ddc683e83d91975a308f07292" )
 else -- Temporary protection guard for platforms missing the engine change 2.
 
 -- These are free items for everyone and are not networked.
@@ -7453,7 +7503,7 @@ TheInventory:AddFreeItemForEveryone("record_creepyforest") -- 148
 TheInventory:AddFreeItemForEveryone("record_drstyle") -- 148
 TheInventory:AddFreeItemForEveryone("record_efs") -- 148
 
-TheInventory:ValidateWithSignature( "4cf0a5fd09fb912f360d99c4b9a71ce337d6213690d999a699dd57056bb67e4a3b0fc2815c377a5aab682f731aa5721b21652bf1007933b1b2121d3aef8a705726b9559a5ec323d5e2ce7c2a26ff56f2981d8bc988e7ef36804e910e908f45003cecc0e44c3434b0d62d6c201293dbb880d8e4b0c94e068d3f0d79ad5da727e4ab401b4aa9f4eadaeb1511a6e0db0edbb7b162084dca47b725b4169ef12bd923ad8cef1ad476dd272fc2ad0cfc8843425501d340cf31c2c7820f25432677299fcdc0b21ce76bc81ce78788c413441bfd1c42f654f9393dc84d58255c8bcde491aeb08c71d32658d014103e65f6be89f3e68316d618bfd5ad074f79a4673ca956836e1c7c70893b7ca9f2a1f15cf70d4955f8e1cb73b55f2b9596948f31c416cef24c29c1e6028052afb8957bfe06f62768f42cd7bdcdf5c6480a7b654d2da1e3915da772e35c929b630785d9e99e1504b11e1d6b82c0e20c92fd2a6eed338afd493f7487aa66b80e3b484b771cd2fea98e1892131679ab2b69096f12da0f125deade8e3507986e81eac9fda37dc01aebe3ac0b0ae3f2dbf507a193928ace7159d14cab7b8c3f71235fea1068311260f89eb4e7c9b6226a709ce82e7cb720e7085739f3a98a3351c88a786b66b4df531d6e3bb95aa4ed79b2282e5ac9233899777a7de8a09fcd350a946b4104033a65f2db5d2f5d92036c08a23545aaf91b53c7" )
+TheInventory:ValidateWithSignature( "9894b40cf84cc9614cff9e6fcf6c0dbda86e13bd5793cdf68cb2cf1d14c3b6a29521e7a0c2501e40dc07d76f5ce6ddc5565ab492a0c1fc1bf1f65b7cb6c28efa205313f9ff89d0013b716150e04c34f6fa305fe9bfa215a42d77a75416d0b6980103c899d54985ac57bd946274c1da3e02921041414314c0dd005d85de9808a90e7e3d413d5499ef1d9809173519a6c36116cca8d406b70ec5c31bfe940c3fa3085754ab83aef7a13e12c44e4f5d34d0a2d08fff40f741d76eba62b0029a690bd53b5f36a6e365c508ae64d1178df0fc92ebb926d6c26f38394fe631ef4106503ce720a1513c943b43e7879a08d2dc8c965bdf3a65ad53307838fcf2267809779f8c4af17a3fa854b44b4bdfad4d47751fa90d6c688b6b6eb3bf06f25faebbb11266e42b8d7fcce2e1a1501aa5db8d0994b77f88678b8f719f8da2d239b91ee608453ba2f0ddcb41151eceb5acd25339c35f5d3d84127bc4c2e3dda53f39bd08b337d0d2e49afcb97d322169bd9a94f43e48fb9bf88403dabaaaf49d050ed7c3bf547941a7f4ae4834f1e36bebd41446c09ee2aa3e90da1388eb5dac56197799809f060baf3e89d661f21daad28f36321a1bfde4a201b57c7541aa56a4d7823e214eb0c3ba1ec26e36174a5671f59cf754fe406ce37dc79000700d90fd03c00120c4d9198cc00f8cb9ddb7b5883f0fa8b149085b4176629c55470d678a1535e5" )
 
 end -- Temporary protection guard for platforms missing the engine change 2.
 

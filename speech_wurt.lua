@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Gotta get closer to start, florp!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Hey! Race not even set up yet!!",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "Glurgh. No room for anybody else to race.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -1841,9 +1845,9 @@ return{
         CHESSPIECE_EYEOFTERROR = "Oh no... got dried out, glorp...",
         CHESSPIECE_TWINSOFTERROR = "Ha ha, they just rocks now!",
         CHESSPIECE_DAYWALKER = "Grrr... why we have nasty Pig statue?!",
-        CHESSPIECE_DEERCLOPS_MUTATED = "Bye bye deer. No more eye pokey",
-        CHESSPIECE_WARG_MUTATED = "Poor doggy. Not so bad",
-        CHESSPIECE_BEARGER_MUTATED = "Remember bad teddy",
+        CHESSPIECE_DEERCLOPS_MUTATED = "Bye bye deer. No more eye pokey.",
+        CHESSPIECE_WARG_MUTATED = "Poor doggy. Not so bad.",
+        CHESSPIECE_BEARGER_MUTATED = "Remember bad teddy.",
 
         CHESSJUNK1 = "It all broken.",
         CHESSJUNK2 = "Didn't do it!!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "Pretty...",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "Gimme stuff!",
+            EMPTY = "Want burny stuff? Say \"please\"!",
+            BURNT = "Maybe it like it that way?",
+        },
+
+        DRAGONBOAT_KIT = "Gonna be best boat. Because it mine!",
+        DRAGONBOAT_PACK = "My boat, all mine!",
+
+        BOATRACE_CHECKPOINT = "It show the way!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Gonna put it in best spot. Not telling where.",
+        BOATRACE_START = "This the start place.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Hurry up, wanna start race!!",
+
+        BOATRACE_PRIMEMATE = "You gonna lose! Nyeeeehhh!!",
+        BOATRACE_SPECTATOR_DRAGONLING = "Gonna win, just watch, florp!",
+
+        YOTD_STEERINGWHEEL = "Me steer, me steer!",
+        YOTD_STEERINGWHEEL_ITEM = "This go on boat?",
+        YOTD_OAR = "Gonna have claws just as big one day, you gonna see!",
+        YOTD_ANCHOR = "Carful not to hurt any fishies on way down, florp!",
+        YOTD_ANCHOR_ITEM = "Can make boat-stopper!",
+        MAST_YOTD = "Everything better with scales.",
+        MAST_YOTD_ITEM = "Pieces for boat thing.",
+        BOAT_BUMPER_YOTD = "Grrr! Boat gonna bite you!",
+        BOAT_BUMPER_YOTD_KIT = "Gonna decorate boat, florp.",
+        BOATRACE_SEASTACK = "Glorp! Don't hit boat!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Don't worry, won't throw in front of your boat! (Hee-hee...)",
+        BOATRACE_SEASTACK_MONKEY = "Glorp! Don't hit boat!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Don't worry, won't throw in front of your boat! (Hee-hee...)",
+        MASTUPGRADE_LAMP_YOTD = "Have pretty glowy eyes.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Tall boat light!",
+        WALKINGPLANK_YOTD = "Ooooh, fancy jumpy board!",
+        CHESSPIECE_YOTD = "Why it not start? Wanna race again!",
     },
 
     DESCRIBE_GENERIC = "What that?",

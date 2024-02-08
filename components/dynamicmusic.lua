@@ -163,6 +163,7 @@ local BUSYTHEMES = {
     STAGEPLAY_DRAMATIC = 15,
     PILLOWFIGHT = 16,
     RIDEOFTHEVALKYRIE = 17,
+    BOATRACE = 18,
 }
 
 --------------------------------------------------------------------------
@@ -424,6 +425,14 @@ local function StartRideoftheValkyrieMusic(player)
     StartBusyTheme(player, BUSYTHEMES.RIDEOFTHEVALKYRIE, "dontstarve/music/music_wigfrid_valkyrie", 2)
 end
 
+local function StartBoatRaceMusic(player)
+    if _dangertask or _pirates_near then
+        return
+    end
+
+    StartBusyTheme(player, BUSYTHEMES.BOATRACE, "dontstarve/music/music_boatrace", 2)
+end
+
 local function ExtendBusy()
     if _busytask ~= nil then
         _extendtime = math.max(_extendtime, GetTime() + 10)
@@ -666,6 +675,7 @@ local function StartPlayerListeners(player)
     inst:ListenForEvent("stageplaymusic", StartStageplayMusic, player)
     inst:ListenForEvent("playpillowfightmusic", StartPillowFightMusic, player)
     inst:ListenForEvent("playrideofthevalkyrie", StartRideoftheValkyrieMusic, player)
+    inst:ListenForEvent("playboatracemusic", StartBoatRaceMusic, player)
 end
 
 local function StopPlayerListeners(player)
@@ -688,6 +698,7 @@ local function StopPlayerListeners(player)
     inst:RemoveEventCallback("stageplaymusic", StartStageplayMusic, player)
     inst:RemoveEventCallback("playpillowfightmusic", StartPillowFightMusic, player)
     inst:RemoveEventCallback("playrideofthevalkyrie", StartRideoftheValkyrieMusic, player)
+    inst:RemoveEventCallback("playboatracemusic", StartBoatRaceMusic, player)
 end
 
 local function OnPhase(inst, phase)

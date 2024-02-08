@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "I have strayed too far from the starting place!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Alas, there is nary a waypoint to guide me in this race!",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "Space for a challenger must be made, lest I be forced to race alone.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Valhalla awaits!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "My ally's flame burns bright as her fighting spirit.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "A shrine to a fearsome firey beast.",
+            EMPTY = "It demands an offering of charcoal.",
+            BURNT = "It is done.",
+        },
+
+        DRAGONBOAT_KIT = "Let us construct the most formidable vessel these cursed waters have ever touched.",
+        DRAGONBOAT_PACK = "It posesses all that a mighty vessel might require.",
+
+        BOATRACE_CHECKPOINT = "Onward!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Chart a course for victory!",
+        BOATRACE_START = "I shall triumph, in the name of the Valyrie!",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "The location is unimportant. Only know that I will arrive first.",
+
+        BOATRACE_PRIMEMATE = "You just don't know it yet, but I have won already.",
+        BOATRACE_SPECTATOR_DRAGONLING = "A witness to my impending triumph!",
+
+        YOTD_STEERINGWHEEL = "Great dragon, steer me to victory!",
+        YOTD_STEERINGWHEEL_ITEM = "A vital piece of a glorious vessel.",
+        YOTD_OAR = "I will swipe at the waves with the ferocity of a dragon!",
+        YOTD_ANCHOR = "May it grip the sea floor with all its strength.",
+        YOTD_ANCHOR_ITEM = "I will craft the finest ship in the land!",
+        MAST_YOTD = "May it catch the wind as well as a dragon's wing.",
+        MAST_YOTD_ITEM = "To harness the winds upon mine vessel!",
+        BOAT_BUMPER_YOTD = "A fearsome defense indeed!",
+        BOAT_BUMPER_YOTD_KIT = "It shall shield my vessel from harm.",
+        BOATRACE_SEASTACK = "Ha! A Viking can maneuver her ship as easily as breathing!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "I must cast it into the sea!",
+        BOATRACE_SEASTACK_MONKEY = "Ha! A Viking can maneuver her ship as easily as breathing!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "I must cast it into the sea!",
+        MASTUPGRADE_LAMP_YOTD = "It watches over me.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "We shall keep the flame burning bright!",
+        WALKINGPLANK_YOTD = "Nay, a Viking doesn't quit so easily!",
+        CHESSPIECE_YOTD = "A monument to my triumph.",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

@@ -22,13 +22,19 @@ local monkey_assets =
     Asset("ANIM", "anim/swap_oar_monkey.zip"),
 }
 
-local function onequip(inst, owner, swap_build)
+local yotd_assets =
+{
+    Asset("ANIM", "anim/yotd_oar.zip"),
+    --Asset("ANIM", "anim/swap_yotd_oar.zip"),
+}
+
+local function onequip(inst, owner, swap_build, swap_symbol)
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
         owner:PushEvent("equipskinneditem", inst:GetSkinName())
-        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, swap_build, inst.GUID, swap_build)
+        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, swap_build, inst.GUID, swap_symbol or swap_build)
     else
-        owner.AnimState:OverrideSymbol("swap_object", swap_build, swap_build)
+        owner.AnimState:OverrideSymbol("swap_object", swap_build, swap_symbol or swap_build)
     end
 
     owner.AnimState:Show("ARM_carry")
@@ -71,10 +77,9 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
 
     MakeInventoryFloatable(inst, "small", nil, 0.68)
 
-    inst.scrapbook_specialinfo = "PADDLE"    
+    inst.scrapbook_specialinfo = "PADDLE"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -86,10 +91,15 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
 		inst.components.edible.hungervalue = 0
 	end
 
+    --
     inst:AddComponent("inventoryitem")
-    inst:AddComponent("oar")
-    inst.components.oar.force = data.FORCE
-    inst.components.oar.max_velocity = data.MAX_VELOCITY
+
+    --
+    local oar = inst:AddComponent("oar")
+    oar.force = data.FORCE
+    oar.max_velocity = data.MAX_VELOCITY
+
+    --
     inst:AddComponent("inspectable")
 
     if is_waterproof then
@@ -97,32 +107,35 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
         inst.components.waterproofer:SetEffectiveness(0)
     end
 
-    inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(data.DAMAGE)
-    inst.components.weapon.attackwear = data.ATTACKWEAR
+    --
+    local weapon = inst:AddComponent("weapon")
+    weapon:SetDamage(data.DAMAGE)
+    weapon.attackwear = data.ATTACKWEAR
 
+    --
+    local equippable = inst:AddComponent("equippable")
+    equippable:SetOnEquip(function(inst, owner) onequip(inst, owner, swap_build) end)
+    equippable:SetOnUnequip(onunequip)
 
-    inst:AddComponent("equippable")
-    inst.components.equippable:SetOnEquip(function(inst, owner) onequip(inst, owner, swap_build) end)
-    inst.components.equippable:SetOnUnequip(onunequip)
-
+    --
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)
 
 	if fuel_value ~= nil then
-		inst:AddComponent("fuel")
-		inst.components.fuel.fuelvalue = fuel_value
+		local fuel = inst:AddComponent("fuel")
+		fuel.fuelvalue = fuel_value
 	end
 
-    inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(data.USES)
-    inst.components.finiteuses:SetUses(data.USES)
-    inst.components.finiteuses:SetOnFinished(onfiniteusesfinished)
-    inst.components.finiteuses:SetConsumption(ACTIONS.ROW, 1)
-    inst.components.finiteuses:SetConsumption(ACTIONS.ROW_CONTROLLER, 1)
-    inst.components.finiteuses:SetConsumption(ACTIONS.ROW_FAIL, data.ROW_FAIL_WEAR)
-    inst.components.finiteuses.modifyuseconsumption = function(uses, action, doer, target)
-        if (action == ACTIONS.ROW or action == ACTIONS.ROW_FAIL or action == ACTIONS.ROW_CONTROLLER )and doer:HasTag("master_crewman") then
+    local finiteuses = inst:AddComponent("finiteuses")
+    finiteuses:SetMaxUses(data.USES)
+    finiteuses:SetUses(data.USES)
+    finiteuses:SetOnFinished(onfiniteusesfinished)
+    finiteuses:SetConsumption(ACTIONS.ROW, 1)
+    finiteuses:SetConsumption(ACTIONS.ROW_CONTROLLER, 1)
+    finiteuses:SetConsumption(ACTIONS.ROW_FAIL, data.ROW_FAIL_WEAR)
+    finiteuses.modifyuseconsumption = function(uses, action, doer, target)
+        if (action == ACTIONS.ROW or action == ACTIONS.ROW_FAIL or action == ACTIONS.ROW_CONTROLLER)
+                and doer:HasTag("master_crewman") then
             uses = uses /2
         end
         return uses
@@ -138,18 +151,33 @@ local function oar()
 end
 
 local function driftwood_oar()
-    return  fn(TUNING.BOAT.OARS.DRIFTWOOD, "oar_driftwood", "swap_oar_driftwood", TUNING.MED_FUEL, true, true)
+    return fn(TUNING.BOAT.OARS.DRIFTWOOD, "oar_driftwood", "swap_oar_driftwood", TUNING.MED_FUEL, true, true)
 end
 
 local function malbatrossbeak()
     return fn(TUNING.BOAT.OARS.MALBATROSS, "malbatross_beak", "swap_malbatross_beak", nil, nil)
 end
 
-local function monkey_oar()    
+local function monkey_oar()
     return fn(TUNING.BOAT.OARS.MONKEY, "oar_monkey", "swap_oar_monkey", TUNING.MED_FUEL, true)
+end
+
+local function yotd_oar()
+    local swap_build = "yotd_oar"
+
+    local inst = fn(TUNING.BOAT.OARS.DRIFTWOOD, "yotd_oar", swap_build, TUNING.MED_FUEL, true, true)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.equippable:SetOnEquip(function(i, owner) onequip(i, owner, swap_build, "swap_oar") end)
+
+    return inst
 end
 
 return  Prefab("oar", oar, wood_assets),
         Prefab("oar_driftwood", driftwood_oar, driftwood_assets),
         Prefab("malbatross_beak", malbatrossbeak, beak_assets),
-        Prefab("oar_monkey", monkey_oar, monkey_assets)
+        Prefab("oar_monkey", monkey_oar, monkey_assets),
+        Prefab("yotd_oar", yotd_oar, yotd_assets)

@@ -331,36 +331,46 @@ local shatterfx =
 }
 
 function MakeTinyFreezableCharacter(inst, sym, offset)
-    inst:AddComponent("freezable")
-    inst.components.freezable:SetShatterFXLevel(1)
-    inst.components.freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+    local freezable = inst:AddComponent("freezable")
+    freezable:SetShatterFXLevel(1)
+    freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+
+    return freezable
 end
 
 function MakeSmallFreezableCharacter(inst, sym, offset)
-    inst:AddComponent("freezable")
-    inst.components.freezable:SetShatterFXLevel(2)
-    inst.components.freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+    local freezable = inst:AddComponent("freezable")
+    freezable:SetShatterFXLevel(2)
+    freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+
+    return freezable
 end
 
 function MakeMediumFreezableCharacter(inst, sym, offset)
-    inst:AddComponent("freezable")
-    inst.components.freezable:SetShatterFXLevel(3)
-    inst.components.freezable:SetResistance(2)
-    inst.components.freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+    local freezable = inst:AddComponent("freezable")
+    freezable:SetShatterFXLevel(3)
+    freezable:SetResistance(2)
+    freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+
+    return freezable
 end
 
 function MakeLargeFreezableCharacter(inst, sym, offset)
-    inst:AddComponent("freezable")
-    inst.components.freezable:SetShatterFXLevel(4)
-    inst.components.freezable:SetResistance(3)
-    inst.components.freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+    local freezable = inst:AddComponent("freezable")
+    freezable:SetShatterFXLevel(4)
+    freezable:SetResistance(3)
+    freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+
+    return freezable
 end
 
 function MakeHugeFreezableCharacter(inst, sym, offset)
-    inst:AddComponent("freezable")
-    inst.components.freezable:SetShatterFXLevel(5)
-    inst.components.freezable:SetResistance(4)
-    inst.components.freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+    local freezable = inst:AddComponent("freezable")
+    freezable:SetShatterFXLevel(5)
+    freezable:SetResistance(4)
+    freezable:AddShatterFX(shatterfx.character, offset or Vector3(0, 0, 0), sym)
+
+    return freezable
 end
 
 function MakeInventoryPhysics(inst, mass, rad)
@@ -1487,22 +1497,24 @@ function AddDefaultRippleSymbols(inst, ripple, shadow)
 end
 
 function MakeInventoryFloatable(inst, size, offset, scale, swap_bank, float_index, swap_data)
-    inst:AddComponent("floater")
-    inst.components.floater:SetSize(size or "small")
+    local floater = inst:AddComponent("floater")
+    floater:SetSize(size or "small")
 
-    if offset ~= nil then
-        inst.components.floater:SetVerticalOffset(offset)
+    if offset then
+        floater:SetVerticalOffset(offset)
     end
 
-    if scale ~= nil then
-        inst.components.floater:SetScale(scale)
+    if scale then
+        floater:SetScale(scale)
     end
 
     if swap_bank then
-        inst.components.floater:SetBankSwapOnFloat(swap_bank, float_index, swap_data)
+        floater:SetBankSwapOnFloat(swap_bank, float_index, swap_data)
     elseif swap_data then
-        inst.components.floater:SetSwapData(swap_data)
+        floater:SetSwapData(swap_data)
     end
+
+    return floater
 end
 
 --------------------------------------------------------------------------
@@ -1532,11 +1544,13 @@ function MakeDeployableFertilizerPristine(inst)
 end
 
 function MakeDeployableFertilizer(inst)
-    inst:AddComponent("deployable")
-    inst.components.deployable:SetDeployMode(DEPLOYMODE.CUSTOM)
-    inst.components.deployable.ondeploy = fertilizer_ondeploy
-    inst.components.deployable:SetUseGridPlacer(false)
-    inst.components.deployable.keep_in_inventory_on_deploy = true
+    local deployable = inst:AddComponent("deployable")
+    deployable:SetDeployMode(DEPLOYMODE.CUSTOM)
+    deployable.ondeploy = fertilizer_ondeploy
+    deployable:SetUseGridPlacer(false)
+    deployable.keep_in_inventory_on_deploy = true
+
+    return deployable
 end
 
 --------------------------------------------------------------------------

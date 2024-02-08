@@ -57,7 +57,6 @@ local InventoryItem = Class(function(self, inst)
     self.keepondeath = false
     self.atlasname = nil
     self.imagename = nil
-    self.onactiveitemfn = nil
     self.trappable = true
     self.sinks = false
     self.droprandomdir = false
@@ -157,6 +156,7 @@ function InventoryItem:SetOnDroppedFn(fn)
     self.ondropfn = fn
 end
 
+--V2C: Deprecated; please rethink your code if you need to use this
 function InventoryItem:SetOnActiveItemFn(fn)
     self.onactiveitemfn = fn
 end

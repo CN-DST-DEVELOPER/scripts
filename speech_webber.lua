@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "We're not close enough to the starting point!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Oops! We forgot to set up the checkpoints!",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "We should make some room, in case somebody wants to join in!",
+
 	BATTLECRY =
 	{
 		GENERIC = "En garde!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "We like it warm and toasty!",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "We love making things!",
+            EMPTY = "We think it wants burnt stuff!",
+            BURNT = "This makes us sad.",
+        },
+
+        DRAGONBOAT_KIT = "We can help build it!",
+        DRAGONBOAT_PACK = "It's got everything a boat needs!",
+
+        BOATRACE_CHECKPOINT = "Check! It's a checkpoint!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "We get to decide where it goes?",
+        BOATRACE_START = "Last one back here is a rotten egg!",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Should we start here? How about there? Or there?",
+
+        BOATRACE_PRIMEMATE = "Hi! Wanna race?",
+        BOATRACE_SPECTATOR_DRAGONLING = "It's nice of him to cheer us on.",
+
+        YOTD_STEERINGWHEEL = "Can we steer for the race? Pleeeaase?",
+        YOTD_STEERINGWHEEL_ITEM = "That's for making a steering wheel.",
+        YOTD_OAR = "We wish our claws were this big.",
+        YOTD_ANCHOR = "Grab onto the sea floor real tight, okay?",
+        YOTD_ANCHOR_ITEM = "That's for making an anchor.",
+        MAST_YOTD = "We could look at those shimmery scales all day!",
+        MAST_YOTD_ITEM = "That's for building a mast.",
+        BOAT_BUMPER_YOTD = "Now our boat has fangs too!",
+        BOAT_BUMPER_YOTD_KIT = "Now we can play bumper boats!",
+        BOATRACE_SEASTACK = "Careful! Don't hit the floaty!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Where should we throw the floaty?",
+        BOATRACE_SEASTACK_MONKEY = "Careful! Don't hit the floaty!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Where should we throw the floaty?",
+        MASTUPGRADE_LAMP_YOTD = "We feel a lot better having a night light around.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Now our boat can have a light!",
+        WALKINGPLANK_YOTD = "It's not much fun, but a least it's pretty.",
+        CHESSPIECE_YOTD = "We had a lot of fun that day!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

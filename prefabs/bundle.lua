@@ -347,6 +347,7 @@ local redpouch_yotc =
         inst:SetPrefabNameOverride("redpouch")
     end,
 }
+
 local yotc_seedpacket_loots =
 {
 	set1 =
@@ -395,6 +396,20 @@ local redpouch_yotr =
     end,
     common_postinit = function(inst, setupdata)
         inst:SetPrefabNameOverride("redpouch")
+    end,
+}
+
+local redpouch_yotd =
+{
+    common_postinit = function(inst, setupdata)
+        inst:SetPrefabNameOverride("redpouch")
+
+        MakeInventoryFloatable(inst, nil, 0.15)
+    end,
+    master_postinit = function(inst, setupdata)
+        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
+
+        inst.components.inventoryitem:SetSinks(false)
     end,
 }
 
@@ -575,6 +590,7 @@ return MakeContainer("bundle_container", "ui_bundle_2x2"),
     MakeBundle("redpouch_yotb", false, nil, nil, true, redpouch_yotb),
     MakeBundle("redpouch_yot_catcoon", false, nil, nil, true, redpouch_yot_catcoon),
     MakeBundle("redpouch_yotr",        false, nil, nil, true, redpouch_yotr),
+    MakeBundle("redpouch_yotd",        false, nil, nil, true, redpouch_yotd),
 	MakeBundle("yotc_seedpacket", true, nil, nil, true, yotc_seedpacket),
 	MakeBundle("yotc_seedpacket_rare", true, nil, nil, true, yotc_seedpacket_rare),
 	MakeBundle("carnival_seedpacket", true, nil, nil, true, carnival_seedpacket),

@@ -330,7 +330,7 @@ local function OnKilled(inst)
 end
 
 function Burnable:IsControlledBurn()
-    return self.controlled_burn
+    return self.controlled_burn ~= nil
 end
 
 function Burnable:GetControlledBurn()

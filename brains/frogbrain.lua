@@ -39,7 +39,7 @@ function FrogBrain:OnStart()
                 if self.inst.islunar then
                     return true -- NOTES(JBK): Lunar frogs will always stay awake they do not have a sleeper component.
                 end
-                return TheWorld and TheWorld.state.isnight
+                return TheWorld and not TheWorld.state.isnight
             end, "ShouldWanderSleepTest",
 			Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST)),
 		StandStill(self.inst, function() return self.inst.sg:HasStateTag("idle") end, nil),

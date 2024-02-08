@@ -3,6 +3,11 @@ local assets =
     Asset("ANIM", "anim/boat_anchor.zip"),
 }
 
+local yotd_assets =
+{
+    Asset("ANIM", "anim/yotd_anchor.zip"),
+}
+
 local item_assets =
 {
     Asset("ANIM", "anim/seafarer_anchor.zip"),
@@ -57,6 +62,13 @@ local function onanchorlowered(inst)
 	inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/ocean_hit")
 end
 
+local function initialize(inst)
+    local px, py, pz = inst.Transform:GetWorldPosition()
+    if TheWorld.Map:IsVisualGroundAtPoint(px, py, pz) then
+        inst.AnimState:Hide("fx")
+    end
+end
+
 local function onsave(inst, data)
 	if inst.components.burnable ~= nil and inst.components.burnable:IsBurning() or inst:HasTag("burnt") then
 		data.burnt = true
@@ -70,8 +82,7 @@ local function onload(inst, data)
     end
 end
 
-local function fn()
-
+local function common_fn(build)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -80,7 +91,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst.AnimState:SetBank("boat_anchor")
-    inst.AnimState:SetBuild("boat_anchor")
+    inst.AnimState:SetBuild(build or "boat_anchor")
 
     inst:AddTag("structure")
 
@@ -96,34 +107,31 @@ local function fn()
 
 	inst:AddComponent("anchor")
 
-	inst:AddComponent("boatdrag")
-	inst.components.boatdrag.drag = TUNING.BOAT.ANCHOR.BASIC.ANCHOR_DRAG
-	inst.components.boatdrag.max_velocity_mod = TUNING.BOAT.ANCHOR.BASIC.MAX_VELOCITY_MOD
-	inst.components.boatdrag.sailforcemodifier = TUNING.BOAT.ANCHOR.BASIC.SAILFORCEDRAG
+	local boatdrag = inst:AddComponent("boatdrag")
+	boatdrag.drag = TUNING.BOAT.ANCHOR.BASIC.ANCHOR_DRAG
+	boatdrag.max_velocity_mod = TUNING.BOAT.ANCHOR.BASIC.MAX_VELOCITY_MOD
+	boatdrag.sailforcemodifier = TUNING.BOAT.ANCHOR.BASIC.SAILFORCEDRAG
 
-    inst:AddComponent("hauntable")
     inst:AddComponent("inspectable")
-    inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
+
+    local hauntable = inst:AddComponent("hauntable")
+    hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:SetStateGraph("SGanchor")
 
     -- The loot that this drops is generated from the uncraftable recipe; see recipes.lua for the items.
     inst:AddComponent("lootdropper")
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(3)
-    inst.components.workable:SetOnFinishCallback(on_hammered)
-    inst.components.workable:SetOnWorkCallback(onhit)
+
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(3)
+    workable:SetOnFinishCallback(on_hammered)
+    workable:SetOnWorkCallback(onhit)
 
 	inst:ListenForEvent("onbuilt", onbuilt)
 	inst:ListenForEvent("anchor_lowered", onanchorlowered)
 
-    inst:DoTaskInTime(0,function()
-        local pt = Vector3(inst.Transform:GetWorldPosition())
-        if TheWorld.Map:IsVisualGroundAtPoint(pt.x,pt.y,pt.z) then
-            inst.AnimState:Hide("fx")
-        end
-    end)
+    inst:DoTaskInTime(0, initialize)
 
 	inst.OnSave = onsave
     inst.OnLoad = onload
@@ -131,18 +139,21 @@ local function fn()
     return inst
 end
 
-local function ondeploy(inst, pt, deployer)
-    local anchor = SpawnPrefab("anchor")
-    if anchor ~= nil then
-        anchor.Transform:SetPosition(pt:Get())
-        anchor.SoundEmitter:PlaySound("turnoftides/common/together/boat/anchor/place")
-        anchor.AnimState:PlayAnimation("place")
-        anchor.AnimState:PushAnimation("idle")
+local function fn()
+    return common_fn()
+end
 
-        inst:Remove()
-    end
+local function yotd_fn()
+    return common_fn("yotd_anchor")
 end
 
 return Prefab("anchor", fn, assets, prefabs),
        MakeDeployableKitItem("anchor_item", "anchor", "seafarer_anchor", "seafarer_anchor", "idle", item_assets, nil, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
-       MakePlacer("anchor_item_placer", "boat_anchor", "boat_anchor", "idle")
+       MakePlacer("anchor_item_placer", "boat_anchor", "boat_anchor", "idle"),
+
+       Prefab("yotd_anchor", yotd_fn, yotd_assets, prefabs),
+       MakeDeployableKitItem(
+            "yotd_anchor_item", "yotd_anchor",
+            "seafarer_anchor", "yotd_anchor", "idle",
+            item_assets, nil, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
+       MakePlacer("yotd_anchor_item_placer", "boat_anchor", "yotd_anchor", "idle")

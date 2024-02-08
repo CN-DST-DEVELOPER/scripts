@@ -497,109 +497,104 @@ local function fn()
     inst.scrapbook_damage = { TUNING.DRAGONFLY_DAMAGE, TUNING.DRAGONFLY_FIRE_DAMAGE }
 
     -- Component Definitions
-
-    inst:AddComponent("health")
-    inst:AddComponent("groundpounder")
-    inst:AddComponent("combat")
-	inst:AddComponent("stuckdetection")
+    local combat = inst:AddComponent("combat")
+    local damagetracker = inst:AddComponent("damagetracker")
     inst:AddComponent("explosiveresist")
-    inst:AddComponent("sleeper")
-    inst:AddComponent("lootdropper")
-    inst:AddComponent("inspectable")
-    inst:AddComponent("locomotor")
-    inst:AddComponent("knownlocations")
-    inst:AddComponent("inventory")
-    inst:AddComponent("timer")
+    local groundpounder = inst:AddComponent("groundpounder")
     inst:AddComponent("grouptargeter")
-    inst:AddComponent("damagetracker")
-    inst:AddComponent("stunnable")
-    inst:AddComponent("healthtrigger")
-    inst:AddComponent("rampingspawner")
+    local health = inst:AddComponent("health")
+    local healthtrigger = inst:AddComponent("healthtrigger")
+    local inspectable = inst:AddComponent("inspectable")
+    inst:AddComponent("inventory")
+    inst:AddComponent("knownlocations")
+    local lootdropper = inst:AddComponent("lootdropper")
+    local locomotor = inst:AddComponent("locomotor")
     inst:AddComponent("moisture")
+    local rampingspawner = inst:AddComponent("rampingspawner")
+    local sleeper = inst:AddComponent("sleeper")
+	local stuckdetection = inst:AddComponent("stuckdetection")
+    local stunnable = inst:AddComponent("stunnable")
+    inst:AddComponent("timer")
+
     inst:SetStateGraph("SGdragonfly")
     inst:SetBrain(brain)
 
     -- Component Init
+    combat:SetDefaultDamage(TUNING.DRAGONFLY_DAMAGE)
+    combat:SetAttackPeriod(TUNING.DRAGONFLY_ATTACK_PERIOD)
+    combat.playerdamagepercent = 0.5
+    combat:SetRange(TUNING.DRAGONFLY_ATTACK_RANGE, TUNING.DRAGONFLY_HIT_RANGE)
+    combat:SetRetargetFunction(3, RetargetFn)
+    combat:SetKeepTargetFunction(KeepTargetFn)
+    combat.battlecryenabled = false
+    combat.hiteffectsymbol = "dragonfly_body"
+    combat:SetHurtSound("dontstarve_DLC001/creatures/dragonfly/hurt")
 
-    inst.components.damagetracker.damage_threshold = TUNING.DRAGONFLY_BREAKOFF_DAMAGE
-    inst.components.damagetracker.damage_threshold_fn = DoBreakOff
+    damagetracker.damage_threshold = TUNING.DRAGONFLY_BREAKOFF_DAMAGE
+    damagetracker.damage_threshold_fn = DoBreakOff
 
-    inst.components.stunnable.stun_threshold = TUNING.DRAGONFLY_STUN
-    inst.components.stunnable.stun_period = TUNING.DRAGONFLY_STUN_PERIOD
-    inst.components.stunnable.stun_duration = TUNING.DRAGONFLY_STUN_DURATION
-    inst.components.stunnable.stun_resist = TUNING.DRAGONFLY_STUN_RESIST
-    inst.components.stunnable.stun_cooldown = TUNING.DRAGONFLY_STUN_COOLDOWN
+    groundpounder:UseRingMode()
+    groundpounder.numRings = 3
+    groundpounder.initialRadius = 1.5
+    groundpounder.radiusStepDistance = 2
+    groundpounder.ringWidth = 2
+    groundpounder.damageRings = 2
+    groundpounder.destructionRings = 3
+    groundpounder.platformPushingRings = 3
+    groundpounder.fxRings = 2
+    groundpounder.fxRadiusOffset = 1.5
+    groundpounder.burner = true
+    groundpounder.groundpoundfx = "firesplash_fx"
+    groundpounder.groundpounddamagemult = 0.5
+    groundpounder.groundpoundringfx = "firering_fx"
 
-    inst.components.healthtrigger:AddTrigger(0.8, OnHealthTrigger)
-    inst.components.healthtrigger:AddTrigger(0.5, OnHealthTrigger)
-    inst.components.healthtrigger:AddTrigger(0.2, OnHealthTrigger)
+    health:SetMaxHealth(TUNING.DRAGONFLY_HEALTH)
+    health.nofadeout = true --Handled in death state instead
+    health.fire_damage_scale = 0 -- Take no damage from fire
 
-    inst.components.health:SetMaxHealth(TUNING.DRAGONFLY_HEALTH)
-    inst.components.health.nofadeout = true --Handled in death state instead
-    inst.components.health.fire_damage_scale = 0 -- Take no damage from fire
+    healthtrigger:AddTrigger(0.8, OnHealthTrigger)
+    healthtrigger:AddTrigger(0.5, OnHealthTrigger)
+    healthtrigger:AddTrigger(0.2, OnHealthTrigger)
 
-	inst.components.groundpounder:UseRingMode()
-	inst.components.groundpounder.numRings = 3
-	inst.components.groundpounder.initialRadius = 1.5
-	inst.components.groundpounder.radiusStepDistance = 2
-	inst.components.groundpounder.ringWidth = 2
-	inst.components.groundpounder.damageRings = 2
-	inst.components.groundpounder.destructionRings = 3
-	inst.components.groundpounder.platformPushingRings = 3
-	inst.components.groundpounder.fxRings = 2
-	inst.components.groundpounder.fxRadiusOffset = 1.5
-    inst.components.groundpounder.burner = true
-    inst.components.groundpounder.groundpoundfx = "firesplash_fx"
-    inst.components.groundpounder.groundpounddamagemult = 0.5
-    inst.components.groundpounder.groundpoundringfx = "firering_fx"
+    inspectable:RecordViews()
 
-    inst.components.combat:SetDefaultDamage(TUNING.DRAGONFLY_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.DRAGONFLY_ATTACK_PERIOD)
-    inst.components.combat.playerdamagepercent = 0.5
-    --inst.components.combat:SetAreaDamage(6, 0.8)
-    inst.components.combat:SetRange(TUNING.DRAGONFLY_ATTACK_RANGE, TUNING.DRAGONFLY_HIT_RANGE)
-    inst.components.combat:SetRetargetFunction(3, RetargetFn)
-    inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
-    inst.components.combat.battlecryenabled = false
-    inst.components.combat.hiteffectsymbol = "dragonfly_body"
-    inst.components.combat:SetHurtSound("dontstarve_DLC001/creatures/dragonfly/hurt")
+    lootdropper:SetChanceLootTable("dragonfly")
 
-	inst.components.stuckdetection:SetTimeToStuck(2)
+    locomotor:EnableGroundSpeedMultiplier(false)
+    locomotor:SetTriggersCreep(false)
+    locomotor.pathcaps = { ignorewalls = true, allowocean = true }
+    locomotor.walkspeed = TUNING.DRAGONFLY_SPEED
 
-    inst.components.sleeper:SetResistance(4)
-    inst.components.sleeper:SetSleepTest(ShouldSleep)
-    inst.components.sleeper:SetWakeTest(ShouldWake)
-    inst.components.sleeper.diminishingreturns = true
+    rampingspawner.getspawnposfn = GetLavaePos
+    rampingspawner.onstartfn = OnSpawnStart
+    rampingspawner.onstopfn = OnSpawnStop
 
-    inst.components.lootdropper:SetChanceLootTable("dragonfly")
+    sleeper:SetResistance(4)
+    sleeper:SetSleepTest(ShouldSleep)
+    sleeper:SetWakeTest(ShouldWake)
+    sleeper.diminishingreturns = true
 
-    inst.components.inspectable:RecordViews()
+    stuckdetection:SetTimeToStuck(2)
 
-    inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorewalls = true, allowocean = true }
-    inst.components.locomotor.walkspeed = TUNING.DRAGONFLY_SPEED
-
-    inst.components.rampingspawner.getspawnposfn = GetLavaePos
-    inst.components.rampingspawner.onstartfn = OnSpawnStart
-    inst.components.rampingspawner.onstopfn = OnSpawnStop
+    stunnable.stun_threshold = TUNING.DRAGONFLY_STUN
+    stunnable.stun_period = TUNING.DRAGONFLY_STUN_PERIOD
+    stunnable.stun_duration = TUNING.DRAGONFLY_STUN_DURATION
+    stunnable.stun_resist = TUNING.DRAGONFLY_STUN_RESIST
+    stunnable.stun_cooldown = TUNING.DRAGONFLY_STUN_COOLDOWN
 
     -- Event Watching
-
-    inst._ontargetdeathtask = nil
+    --inst._ontargetdeathtask = nil
     inst._ontargetdeath = function()
-        if inst._ontargetdeathtask == nil then
-            inst._ontargetdeathtask = inst:DoTaskInTime(2, OnTargetDeathTask)
-        end
+        inst._ontargetdeathtask = inst._ontargetdeathtask or inst:DoTaskInTime(2, OnTargetDeathTask)
     end
 
-    inst:ListenForEvent("newcombattarget", OnNewTarget)
-    inst:ListenForEvent("rampingspawner_spawn", OnLavaeSpawn)
-    inst:ListenForEvent("rampingspawner_death", OnLavaeDeath)
-    inst:ListenForEvent("moisturedelta", OnMoistureDelta)
-    inst:ListenForEvent("timerdone", OnTimerDone)
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDeath) --Get rid of lavaes.
+    inst:ListenForEvent("moisturedelta", OnMoistureDelta)
+    inst:ListenForEvent("newcombattarget", OnNewTarget)
+    inst:ListenForEvent("rampingspawner_death", OnLavaeDeath)
+    inst:ListenForEvent("rampingspawner_spawn", OnLavaeSpawn)
+    inst:ListenForEvent("timerdone", OnTimerDone)
 
     -- Variables
 
@@ -614,13 +609,13 @@ local function fn()
     inst.can_ground_pound = false
     inst.hit_recovery = TUNING.DRAGONFLY_HIT_RECOVERY
 
-    MakeHugeFreezableCharacter(inst)
-    inst.components.freezable:SetResistance(TUNING.DRAGONFLY_FREEZE_THRESHOLD)
-    inst.components.freezable.damagetobreak = TUNING.DRAGONFLY_FREEZE_RESIST
-    inst.components.freezable.diminishingreturns = true
+    local freezable = MakeHugeFreezableCharacter(inst)
+    freezable:SetResistance(TUNING.DRAGONFLY_FREEZE_THRESHOLD)
+    freezable.damagetobreak = TUNING.DRAGONFLY_FREEZE_RESIST
+    freezable.diminishingreturns = true
 
-    MakeLargePropagator(inst)
-    inst.components.propagator.decayrate = 0
+    local propagator = MakeLargePropagator(inst)
+    propagator.decayrate = 0
 
     return inst
 end

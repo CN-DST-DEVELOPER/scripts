@@ -931,6 +931,10 @@ return{
         "only_used_by_wolfang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Oh. Too far!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Forgot something",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "No room for Floaters",
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -5057,6 +5061,43 @@ return{
 
         EMBERLIGHT = "Hot! Hot!!",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "Little house for Patuey Fly",
+            EMPTY = "Needs burnt rock",
+            BURNT = "Patuey Fly likes fire too much",
+        },
+
+        DRAGONBOAT_KIT = "Fancy Floaty!",
+        DRAGONBOAT_PACK = "All the fancy Floaty bits!",
+
+        BOATRACE_CHECKPOINT = "That way!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Need to plant it on the water",
+        BOATRACE_START = "Start Place",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Need to plant it on the water",
+
+        BOATRACE_PRIMEMATE = "Scary Cheeky want to race?",
+        BOATRACE_SPECTATOR_DRAGONLING = "Will try not to splash!",
+
+        YOTD_STEERINGWHEEL = "Shiny wheel",
+        YOTD_STEERINGWHEEL_ITEM = "For pointing Floaty",
+        YOTD_OAR = "Aaah! Oh, is not real.",
+        YOTD_ANCHOR = "Hold onto sea bottom",
+        YOTD_ANCHOR_ITEM = "Heavy...",
+        MAST_YOTD = "Friend is all dressed up",
+        MAST_YOTD_ITEM = "Tall friend for Floater",
+        BOAT_BUMPER_YOTD = "Thank you for keeping Floaty safe!",
+        BOAT_BUMPER_YOTD_KIT = "Will help protect Floaty",
+        BOATRACE_SEASTACK = "Look out!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Throw into water! Wheee!",
+        BOATRACE_SEASTACK_MONKEY = "Look out!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Throw into water! Wheee!",
+        MASTUPGRADE_LAMP_YOTD = "Glowy friend watching",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "Night light",
+        WALKINGPLANK_YOTD = "Splashy jump spot",
+        CHESSPIECE_YOTD = "Fire! Oh... is rock",
     },
 
     DESCRIBE_GENERIC = "Friend?",

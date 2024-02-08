@@ -937,6 +937,10 @@ return {
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "I'd better get my boat closer to the Start Tower.",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "I should set up some checkpoints first.",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "There isn't enough room for anyone else to join in.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Go for the eyes!",
@@ -5063,6 +5067,43 @@ return {
 
         EMBERLIGHT = "A fire without fuel? No matter.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "I'm burning with curiosity to see what's on offer.",
+            EMPTY = "It might like a piece of charcoal.",
+            BURNT = "Things got a little heated.",
+        },
+
+        DRAGONBOAT_KIT = "I'd better stop dragon my feet and build it.",
+        DRAGONBOAT_PACK = "Boat building made easy!",
+
+        BOATRACE_CHECKPOINT = "There's the checkpoint!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "One more thing to check off my list.",
+        BOATRACE_START = "You have to start somewhere.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Where to start?",
+
+        BOATRACE_PRIMEMATE = "Someone's shadowing me!",
+        BOATRACE_SPECTATOR_DRAGONLING = "Its support is getting me all fired up!",
+
+        YOTD_STEERINGWHEEL = "That'll steer me in the right direction. And the left direction.",
+        YOTD_STEERINGWHEEL_ITEM = "That's going to be the steering wheel.",
+        YOTD_OAR = "It's a really handy paddle.",
+        YOTD_ANCHOR = "I wouldn't want my boat to fly away.",
+        YOTD_ANCHOR_ITEM = "Now I can build an anchor.",
+        MAST_YOTD = "That's one scaly sail.",
+        MAST_YOTD_ITEM = "Now I can build a mast.",
+        BOAT_BUMPER_YOTD = "When you mess with a dragon boat, you get the horns!",
+        BOAT_BUMPER_YOTD_KIT = "A soon-to-be boat bumper.",
+        BOATRACE_SEASTACK = "Buoy oh buoy!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Buoy oh buoy!",
+        BOATRACE_SEASTACK_MONKEY = "Buoy oh buoy!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Buoy oh buoy!",
+        MASTUPGRADE_LAMP_YOTD = "Aww, just look how its eyes light up when it sees me!",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "I'm full of bright ideas.",
+        WALKINGPLANK_YOTD = "Dressing it up doesn't make me feel better about using it.",
+        CHESSPIECE_YOTD = "Just the sight of it gets my heart racing!",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

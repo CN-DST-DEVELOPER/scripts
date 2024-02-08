@@ -1317,6 +1317,11 @@ function Tune(overrides)
                 PERDOFFERING = 1,
             }),
 
+            DRAGONSHRINE = TechTree.Create({
+                DRAGONOFFERING = 3,
+                PERDOFFERING = 1,
+            }),
+
             MADSCIENCE = TechTree.Create({
                 MADSCIENCE = 1,
             }),
@@ -6346,6 +6351,9 @@ function Tune(overrides)
         PIRATE_SPAWN_DELAY = {min=20, max=30}, --{min=30, max=180},
 		PIRATE_STASH_INV_SIZE = 20,
 
+        CREWMEMBER_TARGET_DSQ = 100, -- 10 * 10
+        BOATCREW_LOOT_PER_MEMBER = 3,
+
         MONKEY_WALK_SPEED_PENALTY = -0.5,
 
         PALMCONETREE_REGROWTH = {
@@ -7282,7 +7290,7 @@ function Tune(overrides)
         CONTROLLED_BURN_DURATION_CREATURE_MULT = 3,
 
         FIRE_BURST_RANGE = 10,
-        
+
         BERNIE_PLANAR_DAMAGE = 5,
         BERNIE_PLANAR_DEFENCE = 15,
 
@@ -7300,6 +7308,28 @@ function Tune(overrides)
         OCEAN_ICE_TILE_HEALTH = 200,
         OCEAN_ICE_BREAK_FORCE = 1.15,
 
+        -- Year of the Dragon
+        DRAGON_BOAT_RADIUS = 3.0,
+        DRAGON_BOAT_HEALTH = 200,
+
+        MAX_BOATRACE_COMPONENT_DISTANCE = 30,
+
+        BOATRACE_THROWABLE_DEPLOY_LAUNCHSPEED = 20,
+        BOATRACE_THROWABLE_DEPLOY_GRAVITY = -35,
+        BOATRACE_THROWABLE_MIN_DISTANCE = 0.0,
+        BOATRACE_THROWABLE_MAX_DISTANCE = 8.0,
+        BOATRACE_START_INCLUSION_PROXIMITY = 12.0,
+        BOATRACE_DEFAULT_PROXIMITY = 6.0,
+        BOATRACE_AUTOMATIC_CHECKPOINT_COUNT = 3,
+        BOATRACE_AUTOMATIC_CHECKPOINT_MINRADIUS = 13,
+        BOATRACE_MIN_COUNT_FOR_SHADOWBOAT = 3,
+        BOATRACE_PRIMEMATE_BUOYCHANCE = 0.35,
+
+        BOATRACE_SEASTACK_EXTRA_RESTITUTION = 0.5,
+        BOATRACE_SEASTACK_DAMAGE_TO_WORK = wilson_attack,
+
+        BOATRACE_SPECTATOR_TARGET_DISTANCE = 1.5,
+        BOATRACE_SPECTATOR_MAX_DISTANCE = 3.5,
     }
 
     TUNING_MODIFIERS = {}

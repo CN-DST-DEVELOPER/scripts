@@ -1762,6 +1762,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_actions_reversedeath.zip"),
         Asset("ANIM", "anim/player_actions_cannon.zip"),
 		Asset("ANIM", "anim/player_actions_scythe.zip"),
+		Asset("ANIM", "anim/player_actions_deploytoss.zip"),
 
         Asset("ANIM", "anim/player_boat.zip"),
         Asset("ANIM", "anim/player_boat_plank.zip"),

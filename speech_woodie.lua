@@ -928,6 +928,10 @@ return{
         "only_used_by_wolfang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Better scooch a bit closer to the starting point, eh?",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Looks like I'm forgetting something.",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "I should clear the start area for any other boats. It's only polite.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Get over here, eh!",
@@ -3594,7 +3598,7 @@ return{
         BOAT_ITEM = "It contains the base of the boat.",
         BOAT_GRASS_ITEM = "I'd rather have a boat made of good, dependable wood.",
         STEERINGWHEEL_ITEM = "We should set up the base of the boat first.",
-        ANCHOR_ITEM = "'Little elbow grease and we'll have an anchor.",
+        ANCHOR_ITEM = "A little elbow grease and we'll have an anchor.",
         MAST_ITEM = "Better build it if we don't wanna row all day.",
         MUTATEDHOUND =
         {
@@ -5054,6 +5058,43 @@ return{
 
         EMBERLIGHT = "Just keep it away from the trees, eh?",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "Lookin' good!",
+            EMPTY = "How aboot givin' it some charcoal?",
+            BURNT = "All burnt up.",
+        },
+
+        DRAGONBOAT_KIT = "Fancy a sail, Lucy?",
+        DRAGONBOAT_PACK = "Everything's all packed and ready to go, eh?",
+
+        BOATRACE_CHECKPOINT = "Keep your eye on the next checkpoint, Luce!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Let's get it out on the water, eh?",
+        BOATRACE_START = "A boat race? If you want a challenge, try log rolling.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Let's get it out on the water, eh?",
+
+        BOATRACE_PRIMEMATE = "That's one shady lookin' sailor.",
+        BOATRACE_SPECTATOR_DRAGONLING = "You here to watch the race, bud?",
+
+        YOTD_STEERINGWHEEL = "Let's give 'er a spin!",
+        YOTD_STEERINGWHEEL_ITEM = "Better make sure the boat's base is built first.",
+        YOTD_OAR = "I'll paddle my way through the race if I have to.",
+        YOTD_ANCHOR = "Pretty fancy for an anchor, eh?",
+        YOTD_ANCHOR_ITEM = "A little elbow grease and we'll have an anchor.",
+        MAST_YOTD = "Awfully flashy, but it gets the job done, eh?",
+        MAST_YOTD_ITEM = "Better build it if we don't wanna row all day.",
+        BOAT_BUMPER_YOTD = "Everyone will be givin' this boat a wide berth alright.",
+        BOAT_BUMPER_YOTD_KIT = "A bit of padding might be a good idea.",
+        BOATRACE_SEASTACK = "Watch out for that buoy!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Into the water with ya!",
+        BOATRACE_SEASTACK_MONKEY = "Watch out for that buoy!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Into the water with ya!",
+        MASTUPGRADE_LAMP_YOTD = "It's mighty nice lookin' up there.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "That'll lighten things up around here.",
+        WALKINGPLANK_YOTD = "You can fancy it up, but I still don't want to use it.",
+        CHESSPIECE_YOTD = "Some nice stonework. Would've looked even better carved outta pine.",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

@@ -499,6 +499,47 @@ function c_give(prefab, count, dontselect)
     end
 end
 
+-- Put item(s) into the player's inventory; equip the first one if it is equippable.
+function c_equip(prefab, count, dontselect)
+    local MainCharacter = ConsoleCommandPlayer()
+    if not MainCharacter then
+        return nil
+    end
+
+    prefab = string.lower(prefab)
+
+    local first = nil
+    local equip_result = false
+    for i = 1, count or 1 do
+        local inst = DebugSpawn(prefab)
+        if inst ~= nil then
+            if not first then
+                first = inst
+                print("equipping", inst)
+                equip_result = MainCharacter.components.inventory:Equip(inst)
+                if not equip_result then
+                    MainCharacter.components.inventory:GiveItem(inst)
+                elseif not dontselect then
+                    SetDebugEntity(inst)
+                end
+            else
+                print("giving ", inst)
+                MainCharacter.components.inventory:GiveItem(inst)
+            end
+
+            -- We want to have our equipped one selected; if we failed to equip,
+            -- we want to select the last thing we spawn, because of stackable.
+            if not equip_result and not dontselect then
+                SetDebugEntity(inst)
+            end
+
+            SuUsed("c_equip_"..inst.prefab)
+        end
+    end
+
+    return first
+end
+
 -- Receives a prefab and gives the player all ingredients to craft that prefab
 -- Nothing happens if there's no recipe
 function c_giveingredients(prefab)

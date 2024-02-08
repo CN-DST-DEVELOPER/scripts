@@ -68,13 +68,9 @@ local function onhit(inst, attacker, target)
     inst:ListenForEvent("animqueueover", inst.Remove)
 end
 
-local function CanTossOnMap(inst, doer)
+local function CanTossOnMap(_, doer)
     local platform = doer:GetCurrentPlatform()
-    if platform == nil or not platform:HasTag("boat") then
-        return false
-    end
-
-    return true
+    return (platform ~= nil and platform:HasTag("boat"))
 end
 
 local function InitMapDecorations(inst) -- NOTES(JBK): This is used in mapscreen and has access to minimap icons.
@@ -162,3 +158,34 @@ local function fn()
 end
 
 return Prefab("bootleg", fn, assets, prefabs)
+	--[[MakeDeployableKitItem("bootleg", "oceanwhirlportal", "bootleg", "bootleg", "idle", assets,
+		{ size = "med", scale = 0.62 }, --floatable_data
+		nil,--{ "action_pulls_up_map" },
+		nil,
+		{
+			deploymode = DEPLOYMODE.WATER,
+			deployspacing = DEPLOYSPACING.LESS, --#TODO
+			deploytoss_symbol_override = { build = "swap_bootleg", symbol = "swap_bootleg" },
+			common_postinit = function(inst)
+				inst.entity:AddSoundEmitter()
+
+				inst.map_remap_min_dist = ACTIONS.TOSS.distance + TUNING.OCEANWHIRLPORTAL_BOAT_INTERACT_DISTANCE * 2
+				--inst.CanTossInWorld = CanTossOnMap
+				inst.CanTossOnMap = CanTossOnMap
+				inst.InitMapDecorations = InitMapDecorations
+				inst.CalculateMapDecorations = CalculateMapDecorations
+			end,
+			master_postinit = function(inst)
+				inst.CreateOceanWhirlportal = CreateOceanWhirlportal
+
+				local complexprojectile = inst:AddComponent("complexprojectile")
+				complexprojectile:SetHorizontalSpeed(15)
+				complexprojectile:SetGravity(-35)
+				complexprojectile:SetLaunchOffset(Vector3(.25, 1, 0))
+				complexprojectile:SetOnLaunch(onthrown)
+				complexprojectile:SetOnHit(onhit)
+			end,
+		}
+	),
+	MakePlacer("bootleg_placer", "bootleg", "bootleg", "idle", nil, nil, nil, nil, nil, nil, nil, 6)
+	]]

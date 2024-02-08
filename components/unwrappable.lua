@@ -34,11 +34,20 @@ function Unwrappable:WrapItems(items, doer)
     if #items > 0 then
         self.origin = TheWorld.meta.session_identifier
         self.itemdata = {}
-        for i, v in ipairs(items) do
-            local data = v:GetSaveRecord()
+        local item, is_string
+        for _, v in ipairs(items) do
+            is_string = (type(v) == "string")
+            item = (is_string and SpawnPrefab(v)) or v
+
+            local data = item:GetSaveRecord()
             table.insert(self.itemdata, data)
+
+            if is_string then
+                item:Remove()
+            end
         end
-        if self.onwrappedfn ~= nil then
+
+        if self.onwrappedfn then
             self.onwrappedfn(self.inst, #self.itemdata, doer)
         end
     end

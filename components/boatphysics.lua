@@ -42,11 +42,11 @@ local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a
         boat_physics._recent_collisions[other.GUID] = current_tick
         ----------------------------------------------------------------------------------------
 
-    	local relative_velocity_x = boat_physics.velocity_x
-    	local relative_velocity_z = boat_physics.velocity_z
+        local relative_velocity_x = boat_physics.velocity_x
+        local relative_velocity_z = boat_physics.velocity_z
 
-    	local other_boat_physics = other.components.boatphysics
-    	if other_boat_physics ~= nil then
+        local other_boat_physics = other.components.boatphysics
+        if other_boat_physics ~= nil then
             if other_boat_physics.cached_velocity_x and other_boat_physics.cached_velocity_z then
                 relative_velocity_x = relative_velocity_x - other_boat_physics.cached_velocity_x
                 relative_velocity_z = relative_velocity_z - other_boat_physics.cached_velocity_z
@@ -58,17 +58,17 @@ local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a
                 relative_velocity_x = relative_velocity_x - other_boat_physics.velocity_x
                 relative_velocity_z = relative_velocity_z - other_boat_physics.velocity_z
             end
-    	end
+        end
 
-    	local speed = VecUtil_Length(relative_velocity_x, relative_velocity_z)
+        local speed = VecUtil_Length(relative_velocity_x, relative_velocity_z)
 
-    	local velocity_normalized_x, velocity_normalized_z = relative_velocity_x, relative_velocity_z
-    	if speed > 0 then
-    		velocity_normalized_x, velocity_normalized_z = velocity_normalized_x / speed, velocity_normalized_z / speed
-    	end
+        local velocity_normalized_x, velocity_normalized_z = relative_velocity_x, relative_velocity_z
+        if speed > 0 then
+            velocity_normalized_x, velocity_normalized_z = velocity_normalized_x / speed, velocity_normalized_z / speed
+        end
 
-    	local hit_normal_x, hit_normal_z = VecUtil_Normalize(world_normal_on_b_x, world_normal_on_b_z)
-    	local hit_dot_velocity = VecUtil_Dot(hit_normal_x, hit_normal_z, velocity_normalized_x, velocity_normalized_z)
+        local hit_normal_x, hit_normal_z = VecUtil_Normalize(world_normal_on_b_x, world_normal_on_b_z)
+        local hit_dot_velocity = VecUtil_Dot(hit_normal_x, hit_normal_z, velocity_normalized_x, velocity_normalized_z)
 
         if not other_boat_physics then --if other is a boat, then in its OnCollide callback it will push the event outside this loop.
             inst:PushEvent("on_collide", {
@@ -103,18 +103,18 @@ local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a
         })
 
 		--[[
-    	print("HIT DOT:", hit_dot_velocity)
-    	print("HIT NORMAL:", hit_normal_x, hit_normal_z)
-    	print("VELOCITY:", velocity_normalized_x, velocity_normalized_z)
-    	print("PUSH BACK:", push_back)
-    	]]--
+        print("HIT DOT:", hit_dot_velocity)
+        print("HIT NORMAL:", hit_normal_x, hit_normal_z)
+        print("VELOCITY:", velocity_normalized_x, velocity_normalized_z)
+        print("PUSH BACK:", push_back)
+        ]]--
 
-    	other:PushEvent("hit_boat", inst)
+        other:PushEvent("hit_boat", inst)
 
         local destroyed_other = not other:IsValid()
 
         local restitution = (other.components.waterphysics and other.components.waterphysics.restitution) or 1
-    	local push_back = restitution * math.max(speed, 0) * math.abs(hit_dot_velocity)
+        local push_back = restitution * math.max(speed, 0) * math.abs(hit_dot_velocity)
         if destroyed_other then
             push_back = push_back * 0.35
         end
@@ -126,7 +126,7 @@ local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a
 
         ShakeAllCamerasOnPlatform(CAMERASHAKE.FULL, destroyed_other and 1.5 or 0.7, 0.02, (destroyed_other and 0.45 or 0.15) * shake_percent, inst)
 
-    	boat_physics.velocity_x, boat_physics.velocity_z = boat_physics.velocity_x + push_back * hit_normal_x, boat_physics.velocity_z + push_back * hit_normal_z
+        boat_physics.velocity_x, boat_physics.velocity_z = boat_physics.velocity_x + push_back * hit_normal_x, boat_physics.velocity_z + push_back * hit_normal_z
     end
 end
 
@@ -333,7 +333,7 @@ function BoatPhysics:GetMaxVelocity()
     local max_vel = 0
 
     local mast_maxes = {}
-    for k,v in pairs(self.masts) do
+    for k in pairs(self.masts) do
 		local vel = k:CalcMaxVelocity()
         if vel ~= 0 then
             table.insert(mast_maxes, vel)
@@ -342,13 +342,13 @@ function BoatPhysics:GetMaxVelocity()
 
     table.sort(mast_maxes)
     local mult = 1
-    for i,mast_vel in ipairs(mast_maxes)do
+    for _, mast_vel in ipairs(mast_maxes)do
         max_vel = max_vel + (mast_vel * mult)
         mult = mult * 0.7
     end
 
     local magnet_maxes = {}
-    for k,v in pairs(self.magnets) do
+    for k in pairs(self.magnets) do
 		local vel = k:CalcMaxVelocity()
         if vel ~= 0 then
             table.insert(magnet_maxes, vel)
@@ -356,15 +356,15 @@ function BoatPhysics:GetMaxVelocity()
     end
 
     table.sort(magnet_maxes)
-    local mult = 1
-    for i,magnet_vel in ipairs(magnet_maxes) do
+    mult = 1
+    for _, magnet_vel in ipairs(magnet_maxes) do
         max_vel = max_vel + (magnet_vel * mult)
         mult = mult * 0.7
     end
 
     max_vel = max_vel * self.max_velocity
 
-    for k,v in pairs(self.boatdraginstances) do
+    for _, v in pairs(self.boatdraginstances) do
         max_vel = max_vel * v.max_velocity_mod
     end
 
@@ -592,10 +592,12 @@ function BoatPhysics:OnUpdate(dt)
     local time = GetTime()
     if self.lastzoomtime == nil or time - self.lastzoomtime > 1.0 then
         local should_zoom_out = sail_force > 0 and total_anchor_drag <= 0
-        if not self.inst.doplatformcamerazoom:value() and should_zoom_out then
-            self.inst.doplatformcamerazoom:set(true)
-        elseif self.inst.doplatformcamerazoom:value() and not should_zoom_out then
-            self.inst.doplatformcamerazoom:set(false)
+        if self.inst.doplatformcamerazoom then
+            if not self.inst.doplatformcamerazoom:value() and should_zoom_out then
+                self.inst.doplatformcamerazoom:set(true)
+            elseif self.inst.doplatformcamerazoom:value() and not should_zoom_out then
+                self.inst.doplatformcamerazoom:set(false)
+            end
         end
 
         self.lastzoomtime = time

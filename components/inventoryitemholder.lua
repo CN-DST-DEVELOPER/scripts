@@ -53,6 +53,7 @@ end
 
 function InventoryItemHolder:CanGive(item, giver)
     return
+            not self:IsHolding() and
             item.components.inventoryitem ~= nil and
             (
                 self.allowed_tags == nil or item:HasOneOfTags(self.allowed_tags)

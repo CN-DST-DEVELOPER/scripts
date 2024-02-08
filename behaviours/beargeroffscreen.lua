@@ -179,28 +179,26 @@ function BeargerOffScreen:Roam()
 end
 
 function BeargerOffScreen:Visit()
+    local t = GetTime()
 	if self.status == READY then
 		self.status = RUNNING
 		self:SetupRoaming()
-        	local t = GetTime()
 		if t >= self.waittime or not self.waittime then
 			self.waittime = t + timePerStep
 		end
-		self:Sleep(0.01)
 	else
-        	local t = GetTime()
 		if t >= self.waittime or not self.waittime then
 			self:Roam()
 			self.waittime = t + timePerStep
 		end
-		self:Sleep(0.01)
 	end
+    self:Sleep(0.01)
 end
 
 function FindWalkableOffsetWithBoundary(position, start_angle, radius, attempts, check_los, ignore_walls, boundarypoints)
-    	if ignore_walls == nil then
-        	ignore_walls = true
-    	end
+    if ignore_walls == nil then
+        ignore_walls = true
+    end
 
 	local test = function(offset)
 		local run_point = position+offset
@@ -222,20 +220,18 @@ function FindWalkableOffsetWithBoundary(position, start_angle, radius, attempts,
 			return false
 		end
 		return true
-
 	end
 
 	return FindValidPositionByFan(start_angle, radius, attempts, test)
 end
 
 function BeargerOffScreen:GetRandomWanderDestWithinBoundary(lookAhead, moveRadius, curAngle)
-        local attempts = 8
-        local angle = self.lastangle or math.random() * 2 * PI
+    local attempts = 8
+    local angle = self.lastangle or math.random() * 2 * PI
 	angle = angle + math.random() - 0.5
 
-        local pt = Point(self.inst.Transform:GetWorldPosition())
-        local offset, check_angle, deflected = FindWalkableOffsetWithBoundary(pt, angle, lookAhead, attempts, true, true,self.boundary) -- if we can't avoid walls, at least avoid water
-	--self.lastangle = check_angle
+    local pt = Point(self.inst.Transform:GetWorldPosition())
+    local offset, check_angle, deflected = FindWalkableOffsetWithBoundary(pt, angle, lookAhead, attempts, true, true,self.boundary) -- if we can't avoid walls, at least avoid water
 
 	local x,y,z = self.inst.Transform:GetWorldPosition()
 	local fraction = moveRadius / lookAhead
@@ -258,7 +254,7 @@ function BeargerOffScreen:PickNewDirection_Rampage()
 		-- (alternatively, see if we can reach any of the verts first, if all fails, random walk and find a new roamspot later on?)
 		if TheWorld.Pathfinder:IsClear(x, y, z,
 						dstx, dsty, dstz,
-		                               {ignorewalls = true, ignorecreep = true}) then
+		                {ignorewalls = true, ignorecreep = true}) then
 			-- yay, we can go there
 			local dx = dstx - x
 			local dz = dstz - z
@@ -280,8 +276,7 @@ end
 -- walking along gridlines
 function BeargerOffScreen:PickNewDirection()
 	if not self.finaldest then
-		-- First time here
-		-- find the closest node we can reach
+		-- First time here; find the closest node we can reach
 		local x,y,z = self.inst.Transform:GetWorldPosition()
 		local node = GetClosestNode(x,z)
 		self.finaldest = {node = node, x=node.x, y=node.y}

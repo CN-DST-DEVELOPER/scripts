@@ -162,7 +162,7 @@ ActionHandler = Class(
         self.action = action
 
         if type(state) == "string" then
-            self.deststate = function(inst) return state end
+            self.deststate = function(_) return state end
         else
             self.deststate = state
         end

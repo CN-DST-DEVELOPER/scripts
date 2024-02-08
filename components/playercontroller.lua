@@ -4085,6 +4085,16 @@ function PlayerController:GetMapActions(position)
     return LMBaction, RMBaction
 end
 
+function PlayerController:UpdateActionsToMapActions(position)
+    -- NOTES(JBK): This should be called from a map interface to update the player's current actions to the ones the map has.
+    -- Currently used by mapscreen.
+    local LMBaction, RMBaction = self:GetMapActions(position)
+
+    self.LMBaction, self.RMBaction = LMBaction, RMBaction
+
+    return LMBaction, RMBaction
+end
+
 function PlayerController:OnMapAction(actioncode, position)
     local act = ACTIONS_BY_ACTION_CODE[actioncode]
     if act == nil or not act.map_action then

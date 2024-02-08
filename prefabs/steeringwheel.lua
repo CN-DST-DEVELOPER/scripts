@@ -6,7 +6,9 @@ local assets =
 local item_assets =
 {
     Asset("ANIM", "anim/seafarer_wheel.zip"),
-    Asset("INV_IMAGE", "steeringwheel_item")
+    Asset("INV_IMAGE", "steeringwheel_item"),
+
+    Asset("ANIM", "anim/yotd_steeringwheel.zip"),
 }
 
 local prefabs =
@@ -88,7 +90,7 @@ local function onload(inst, data)
 	end
 end
 
-local function fn()
+local function common_fn(build)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -97,7 +99,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst.AnimState:SetBank("boat_wheel")
-    inst.AnimState:SetBuild("boat_wheel")
+    inst.AnimState:SetBuild(build or "boat_wheel")
     inst.AnimState:PlayAnimation("idle")
 	inst.AnimState:SetFinalOffset(1)
 
@@ -106,28 +108,26 @@ local function fn()
 	inst:SetPhysicsRadiusOverride(0.25)
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("steeringwheel")
-	inst.components.steeringwheel:SetOnStartSteeringFn(on_start_steering)
-	inst.components.steeringwheel:SetOnStopSteeringFn(on_stop_steering)
+    local steeringwheel = inst:AddComponent("steeringwheel")
+	steeringwheel:SetOnStartSteeringFn(on_start_steering)
+	steeringwheel:SetOnStopSteeringFn(on_stop_steering)
 
     inst:AddComponent("lootdropper")
 
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(3)
-    inst.components.workable:SetOnFinishCallback(on_hammered)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(3)
+    workable:SetOnFinishCallback(on_hammered)
 
-    MakeSmallBurnable(inst, nil, nil, true)
-	inst.components.burnable:SetOnIgniteFn(onignite)
-    inst.components.burnable:SetOnBurntFn(onburnt)
-
+    local burnable = MakeSmallBurnable(inst, nil, nil, true)
+    burnable:SetOnIgniteFn(onignite)
+    burnable:SetOnBurntFn(onburnt)
 
     MakeSmallPropagator(inst)
 
@@ -135,24 +135,30 @@ local function fn()
 
     inst:ListenForEvent("onbuilt", onbuilt)
 
-	inst.OnSave = onsave
+    inst.OnSave = onsave
     inst.OnLoad = onload
 
     return inst
 end
 
-local function ondeploy(inst, pt, deployer)
-    local wheel = SpawnPrefab("steeringwheel")
-    if wheel ~= nil then
-        wheel.Transform:SetPosition(pt:Get())
-        wheel.SoundEmitter:PlaySound("turnoftides/common/together/boat/steering_wheel/place")
-        wheel.AnimState:PlayAnimation("place")
-        wheel.AnimState:PushAnimation("idle")
+local function fn()
+    return common_fn()
+end
 
-        inst:Remove()
-    end
+local function yotd_fn()
+    return common_fn("yotd_steeringwheel")
 end
 
 return Prefab("steeringwheel", fn, assets, prefabs),
-       MakeDeployableKitItem("steeringwheel_item", "steeringwheel", "seafarer_wheel", "seafarer_wheel", "idle", item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
-       MakePlacer("steeringwheel_item_placer", "boat_wheel", "boat_wheel", "idle")
+        MakeDeployableKitItem(
+            "steeringwheel_item", "steeringwheel",
+            "seafarer_wheel", "seafarer_wheel", "idle",
+            item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
+        MakePlacer("steeringwheel_item_placer", "boat_wheel", "boat_wheel", "idle"),
+
+        Prefab("yotd_steeringwheel", yotd_fn, assets, prefabs),
+        MakeDeployableKitItem(
+            "yotd_steeringwheel_item", "yotd_steeringwheel",
+            "seafarer_wheel", "yotd_steeringwheel", "idle",
+            item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
+        MakePlacer("yotd_steeringwheel_item_placer", "boat_wheel", "yotd_steeringwheel", "idle")

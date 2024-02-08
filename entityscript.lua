@@ -1362,6 +1362,18 @@ function EntityScript:DoTaskInTime(time, fn, ...)
     return per
 end
 
+function EntityScript:PushEventInTime(time, eventname, data)
+    self.pendingtasks = self.pendingtasks or {}
+
+    local event_function = function(inst)
+        inst:PushEvent(eventname, data)
+    end
+    local per = scheduler:ExecuteInTime(time, event_function, self.GUID, self, data)
+    self.pendingtasks[per] = true
+    per.onfinish = task_finish
+    return per
+end
+
 function EntityScript:GetTaskInfo(time)
     local taskinfo = {}
     taskinfo.start = GetTime()

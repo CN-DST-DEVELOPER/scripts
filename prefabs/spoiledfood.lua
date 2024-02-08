@@ -31,7 +31,7 @@ local fish_loot = {"spoiled_food", "boneshard"}
 local FERTILIZER_DEFS = require("prefabs/fertilizer_nutrient_defs").FERTILIZER_DEFS
 
 local function fish_onhit(inst, worker, workleft, workdone)
-	local num_loots = math.clamp(workdone / TUNING.SPOILED_FISH_WORK_REQUIRED, 1, TUNING.SPOILED_FISH_LOOT.WORK_MAX_SPAWNS)
+	local num_loots = math.floor(math.clamp(workdone / TUNING.SPOILED_FISH_WORK_REQUIRED, 1, TUNING.SPOILED_FISH_LOOT.WORK_MAX_SPAWNS))
 	num_loots = math.min(num_loots, inst.components.stackable:StackSize())
 
 	if inst.components.stackable:StackSize() > num_loots then

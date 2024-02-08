@@ -28,6 +28,7 @@ local function ConfigurePlayerLocomotor(inst)
     inst.components.locomotor:SetFasterOnCreep(inst:HasTag("spiderwhisperer"))
     inst.components.locomotor:SetTriggersCreep(not inst:HasTag("spiderwhisperer"))
     inst.components.locomotor:SetAllowPlatformHopping(true)
+	inst.components.locomotor:EnableHopDelay(true)
 	inst.components.locomotor.hop_distance_fn = GetHopDistance
 	inst.components.locomotor.pusheventwithdirection = true
 end

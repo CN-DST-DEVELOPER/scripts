@@ -31,28 +31,21 @@ function DebugSpawn(prefab)
 end
 
 function GetClosest(target, entities)
-    local max_dist = nil
-    local min_dist = nil
+    local min_dsq = nil
+    local closest_entity = nil
 
-    local closest = nil
+    local target_position = target:GetPosition()
 
-    local tpos = target:GetPosition()
+    for _, entity in pairs(entities) do
+        local dsq = distsq(target_position, entity:GetPosition())
 
-    for k,v in pairs(entities) do
-        local epos = v:GetPosition()
-        local dist = distsq(tpos, epos)
-
-        if not max_dist or dist > max_dist then
-            max_dist = dist
-        end
-
-        if not min_dist or dist < min_dist then
-            min_dist = dist
-            closest = v
+        if not min_dsq or dsq < min_dsq then
+            min_dsq = dsq
+            closest_entity = entity
         end
     end
 
-    return closest
+    return closest_entity
 end
 
 function SpawnAt(prefab, loc, scale, offset)
@@ -264,17 +257,17 @@ function GetRandomItem(choices)
         return
     end
 
- 	local choice = math.random(numChoices) -1
+    local choice = math.random(numChoices) -1
 
- 	local picked = nil
- 	for k,v in pairs(choices) do
- 		picked = v
- 		if choice<= 0 then
- 			break
- 		end
- 		choice = choice -1
- 	end
- 	assert(picked~=nil)
+    local picked = nil
+    for k,v in pairs(choices) do
+        picked = v
+        if choice<= 0 then
+            break
+        end
+        choice = choice -1
+    end
+    assert(picked~=nil)
 	return picked
 end
 
@@ -547,17 +540,17 @@ function distsq(v1, v2, v3, v4)
     assert(v1, "Something is wrong: v1 is nil stale component reference?")
     assert(v2, "Something is wrong: v2 is nil stale component reference?")
 
-    --special case for 2dvects passed in as numbers
     if v4 and v3 and v2 and v1 then
+        --special case for 2dvects passed in as numbers
         local dx = v1-v3
         local dy = v2-v4
         return dx*dx + dy*dy
+    else
+        local dx = (v1.x or v1[1]) - (v2.x or v2[1])
+        local dy = (v1.y or v1[2]) - (v2.y or v2[2])
+        local dz = (v1.z or v1[3]) - (v2.z or v2[3])
+        return dx*dx+dy*dy+dz*dz
     end
-
-    local dx = (v1.x or v1[1]) - (v2.x or v2[1])
-    local dy = (v1.y or v1[2]) - (v2.y or v2[2])
-    local dz = (v1.z or v1[3]) - (v2.z or v2[3])
-    return dx*dx+dy*dy+dz*dz
 end
 
 local memoizedFilePaths = {}
@@ -1479,7 +1472,7 @@ function GetCircleEdgeSnapTransform(segments, radius, base_pt, pt, angle)
     local start = angle or 0
 
     for midangle = -start, 360 - start, segmentangle do
-        local facing = Vector3(math.cos(midangle / RADIANS), 0 , math.sin(midangle / RADIANS))
+        local facing = Vector3(math.cos(midangle / RADIANS), 0, math.sin(midangle / RADIANS))
         if IsWithinAngle(base_pt, facing, segmentangle / RADIANS, pt) then
             snap_point = base_pt + facing * radius
             snap_angle = midangle
@@ -1490,15 +1483,17 @@ function GetCircleEdgeSnapTransform(segments, radius, base_pt, pt, angle)
 end
 
 function SnapToBoatEdge(inst, boat, override_pt)
-    if boat == nil then
+    if not boat then
         return
     end
 
     local pt = override_pt or inst:GetPosition()
     local boatpos = boat:GetPosition()
-    local radius = boat.components.boatringdata and boat.components.boatringdata:GetRadius() - 0.1 or 0
-    local boatsegments = boat.components.boatringdata and boat.components.boatringdata:GetNumSegments() or 0
     local boatangle = boat.Transform:GetRotation()
+
+    local boatringdata = boat.components.boatringdata
+    local radius = (boatringdata ~= nil and boatringdata:GetRadius() - 0.1) or 0
+    local boatsegments = (boatringdata ~= nil and boatringdata:GetNumSegments()) or 0
 
     local snap_point, snap_angle = GetCircleEdgeSnapTransform(boatsegments, radius, boatpos, pt, boatangle)
     if snap_point ~= nil then
@@ -1512,11 +1507,12 @@ end
 
 -- Returns the angle from the boat's position to (x, z), in radians
 function GetAngleFromBoat(boat, x, z)
-    if boat == nil then
-        return
+    if boat then
+        local boatpos = boat:GetPosition()
+        return math.atan2(z - boatpos.z, x - boatpos.x)
+    else
+        return nil
     end
-    local boatpos = boat:GetPosition()
-    return math.atan2(z - boatpos.z, x - boatpos.x)
 end
 
 local Chars = {}

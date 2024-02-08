@@ -102,6 +102,10 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
             inst:AddTag("usedeployspacingasoffset")
         end
 
+		if deployable_data.common_postinit then
+			deployable_data.common_postinit(inst)
+		end
+
 		inst.entity:SetPristine()
 
 		if not TheWorld.ismastersim then
@@ -126,13 +130,20 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
 		end
 
 		inst._prefab_to_deploy = prefab_to_deploy
-		inst:AddComponent("deployable")
-		inst.components.deployable.ondeploy = deployablekititem_ondeploy
+		local deployable = inst:AddComponent("deployable")
+		deployable.ondeploy = deployablekititem_ondeploy
         if deployable_data.deploymode then
-            inst.components.deployable:SetDeployMode(deployable_data.deploymode)
+            deployable:SetDeployMode(deployable_data.deploymode)
         end
         if deployable_data.deployspacing then
-			inst.components.deployable:SetDeploySpacing(deployable_data.deployspacing)
+			deployable:SetDeploySpacing(deployable_data.deployspacing)
+		end
+
+		deployable.restrictedtag = deployable_data.restrictedtag
+		deployable:SetUseGridPlacer(deployable_data.usegridplacer)
+
+		if deployable_data.deploytoss_symbol_override then
+			deployable:SetDeployTossSymbolOverride(deployable_data.deploytoss_symbol_override)
 		end
 
 		if burnable and burnable.fuelvalue then

@@ -299,8 +299,8 @@ function d_teleportboat(x, y, z)
     local walkableplatform = boat.components.walkableplatform
     if walkableplatform ~= nil then
         local players = walkableplatform:GetPlayersOnPlatform()
-        for player, _ in pairs(players) do
-            player:SnapCamera()
+        for player_on_platform in pairs(players_on_platform) do
+            player_on_platform:SnapCamera()
         end
     end
 end
@@ -2418,6 +2418,29 @@ local scrapbook_finiteuses_useamount_modifiers =
     "bedazzler",
 }
 
+local TechTree = require("techtree")
+
+local NOT_ALLOWED_RECIPE_TECH =
+{
+    [TechTree.Create(TECH.PERDOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.WARGOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.PIGOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.CARRATOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.BEEFOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.CATCOONOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.RABBITOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.DRAGONOFFERING_THREE)] = true,
+
+    [TechTree.Create(TECH.YOTG)] = true,
+    [TechTree.Create(TECH.YOTV)] = true,
+    [TechTree.Create(TECH.YOTP)] = true,
+    [TechTree.Create(TECH.YOTC)] = true,
+    [TechTree.Create(TECH.YOTB)] = true,
+    [TechTree.Create(TECH.YOT_CATCOON)] = true,
+    [TechTree.Create(TECH.YOTR)] = true,
+    [TechTree.Create(TECH.YOTD)] = true,
+}
+
 function d_createscrapbookdata(print_missing_icons)
     if not TheWorld.state.isautumn or TheWorld.state.israining then
         -- Force the season (many entities change the build/animation during certain seasons).
@@ -3024,10 +3047,19 @@ function d_createscrapbookdata(print_missing_icons)
                 end
             end
         end
+        
+        local statue_sketch = AllRecipes[entry.."_sketch"]
+        if statue_sketch ~= nil and NOT_ALLOWED_RECIPE_TECH[statue_sketch.level] then
+            print(string.format("[!!!!] [ %s ] sketch is only available during a specific Chinese new year... So the statue don't go into the scrapbook.", entry))
+        end
 
         local recipe = AllRecipes[t.prefab]
 
         if recipe ~= nil then
+            if NOT_ALLOWED_RECIPE_TECH[recipe.level] then
+                print(string.format("[!!!!] [ %s ] is from a Chinese New Year event... These don't go into the scrapbook.", entry))
+            end
+
             if recipe.builder_tag then
                 ------  CRAFTING ICON  ------
                 local character = RECIPE_BUILDER_TAG_LOOKUP[recipe.builder_tag]
@@ -3055,6 +3087,11 @@ function d_createscrapbookdata(print_missing_icons)
         local item_prefab = entry.."_item"
         if scrapbookprefabs[item_prefab] then
             deps[item_prefab] = true
+        end
+
+        local kit_prefab = entry.."_kit"
+        if scrapbookprefabs[kit_prefab] then
+            deps[kit_prefab] = true
         end
 
         local _perishable = t.components.perishable
@@ -3207,9 +3244,9 @@ function d_createscrapbookdata(print_missing_icons)
                 str,
                 string.format(
                     "%s:\n    File: %s.fla\n    Anim: %s%s",
-                    data.icon,
-                    data.file,
-                    data.anim,
+                    data.icon or "??",
+                    data.file or "??",
+                    data.anim or "??",
                     data.hide ~= nil and string.format("\n    Hide Layers: [ %s ]", data.hide) or ""
                 )
             )
@@ -3376,5 +3413,49 @@ function d_testdps(time, target)
         inst:RemoveEventCallback("attacked", _DamageListenerFn)
         inst._damage_count = nil
         inst._dpstesttask = nil
+    end)
+end
+
+function d_timeddebugprefab(x, y, z, lifetime, prefab)
+    lifetime = lifetime or 7
+    prefab = prefab or "log"
+
+    local debug_item = SpawnPrefab(prefab)
+    debug_item.Transform:SetPosition(x, y, z)
+    debug_item:DoTaskInTime(lifetime, debug_item.Remove)
+
+    return debug_item -- In case you want to do a multcolour or anything else.
+end
+
+function d_prizepouch(prefab, nugget_count)
+    nugget_count = nugget_count or 0
+    prefab = prefab or "redpouch"
+
+    local pouch = SpawnPrefab(prefab)
+    if nugget_count > 0 then
+        local prize_items = {}
+        for _ = 1, nugget_count do
+            table.insert(prize_items, SpawnPrefab("lucky_goldnugget"))
+        end
+        pouch.components.unwrappable:WrapItems(prize_items)
+        for _, prize_item in ipairs(prize_items) do
+            prize_item:Remove()
+        end
+    end
+
+    pouch.Transform:SetPosition(ConsoleWorldPosition():Get())
+end
+
+function d_boatracepointers()
+    local spawning_list = {}
+    for _ = 1, 8 do
+        table.insert(spawning_list, "boatrace_checkpoint_indicator")
+    end
+
+    local index_counter = 1
+    d_spawnlist(spawning_list, 4, function(pointer)
+        pointer._index = index_counter
+        pointer.AnimState:OverrideSymbol("pointer_tail_art", "boatrace_checkpoint_indicator", "pointer_tail"..index_counter)
+        index_counter = index_counter + 1
     end)
 end

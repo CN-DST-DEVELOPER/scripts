@@ -134,6 +134,10 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/meta3.fev"),
     Asset("FILE", "sound/meta3.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/yotd2024.fev"),
+    Asset("FILE", "sound/yotd2024.fsb"),
+    --Asset("FILE", "sound/yotd2024_music.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods

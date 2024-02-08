@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "We've got to get closer to the Start Tower, Woby!",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Whoops, I might've forgot to set up the checkpoints...",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "We need to make some room for other racers, Woby!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Sorry!!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "There's no wood in this campfire. Oh well.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "What should we make, Woby?",
+            EMPTY = "I think it wants something burnt.",
+            BURNT = "I guess that's it then.",
+        },
+
+        DRAGONBOAT_KIT = "Stand back everyone, this looks like a job for a Pinetree Pioneer.",
+        DRAGONBOAT_PACK = "Wow, how did they pack this all up so tightly?",
+
+        BOATRACE_CHECKPOINT = "Hope it doesn't float away.",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Where should we toss this, Woby?",
+        BOATRACE_START = "So this is where we start the race.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Hmm, I wonder where we should start the race.",
+
+        BOATRACE_PRIMEMATE = "We're not afraid of a little friendly competition. Right, Woby?",
+        BOATRACE_SPECTATOR_DRAGONLING = "Look Woby! I think he's rooting for us!",
+
+        YOTD_STEERINGWHEEL = "I'll steer us straight to the finish line!",
+        YOTD_STEERINGWHEEL_ITEM = "It's probably a good idea to add a steering wheel.",
+        YOTD_OAR = "A dragon boat needs a dragon paddle.",
+        YOTD_ANCHOR = "That's gotta be the fanciest anchor I've ever seen.",
+        YOTD_ANCHOR_ITEM = "I've got all the supplies ready to build an anchor.",
+        MAST_YOTD = "It's made of tough dragon scales!",
+        MAST_YOTD_ITEM = "A mast would be useful.",
+        BOAT_BUMPER_YOTD = "Neat! Are those real dragon claws?",
+        BOAT_BUMPER_YOTD_KIT = "It's always best to be prepared!",
+        BOATRACE_SEASTACK = "Buoy off the port side! Er, I mean starboard! I'll double check my handbook...",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "I'll have it in the water in a jiffy!",
+        BOATRACE_SEASTACK_MONKEY = "Buoy off the port side! Er, I mean starboard! I'll double check my handbook...",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "I'll have it in the water in a jiffy!",
+        MASTUPGRADE_LAMP_YOTD = "Did I ever tell the story about the sea creature with the big glowing eyes?",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "I guess it's safer than having a campfire on the deck...",
+        WALKINGPLANK_YOTD = "Oh, I'm good at diving! I got a badge for it!",
+        CHESSPIECE_YOTD = "Racing was fun, even if I didn't get a badge for it...",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

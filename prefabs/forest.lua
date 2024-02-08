@@ -475,6 +475,8 @@ local prefabs =
 	"sharkboi",
     "icefishing_hole",
     "sharkboi_ice_hazard",
+
+    -- Year of the Dragon
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -591,6 +593,7 @@ local function master_postinit(inst)
 
     inst:AddComponent("carnivalevent")
 
+    inst:AddComponent("yotd_raceprizemanager")
     inst:AddComponent("yotc_raceprizemanager")
     inst:AddComponent("yotb_stagemanager")
 

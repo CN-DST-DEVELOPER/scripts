@@ -1303,7 +1303,13 @@ local fx =
         bank = "redpouch_yotr",
         build = "redpouch_yotr",
         anim = "unwrap",
-    },    
+    },
+    {
+        name = "redpouch_yotd_unwrap",
+        bank = "redpouch",
+        build = "redpouch",
+        anim = "unwrap",
+    },
     {
         name = "yotc_seedpacket_unwrap",
         bank = "bundle",
@@ -2870,18 +2876,18 @@ local fx =
         bank = "fire_geyser",
         build = "fire_geyser_fx",
         anim = "pre",
-    },  
+    },
 
     {
         name = "willow_shadow_fire_explode",
         bank = "deer_fire_charge",
         build = "deer_fire_charge",
-        anim = "blast",        
+        anim = "blast",
         sound = "dontstarve/common/deathpoof",
         tint = Vector3(0, 0, 0, 0.6),
         fn = function(inst)
             inst.Transform:SetScale(1.5,1.5,1.5)
-        end,        
+        end,
     },
 
 ----------------------------------------------------------
@@ -2941,6 +2947,19 @@ local fx =
         build = "fx_dock_crackleandpop",
         anim = "pop",
         sound = "dontstarve_DLC001/common/iceboulder_smash",
+    },
+    {
+        name = "mast_yotd_sink_fx",
+        bank = "mast_01",
+        build = "yotd_boat_mast",
+        anim = "sink",
+    },
+    {
+        name = "boat_bumper_hit_yotd",
+        bank = "boat_bumper",
+        build = "boat_bumper_yotd",
+        anim = "fx_kelp",
+        sound = "dontstarve/characters/woodie/moose/hit",
     },
 }
 

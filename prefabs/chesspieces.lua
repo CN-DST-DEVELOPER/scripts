@@ -53,6 +53,7 @@ local PIECES =
     {name="deerclops_mutated",   moonevent=false,    gymweight=4},
     {name="warg_mutated",        moonevent=false,    gymweight=4},
     {name="bearger_mutated",     moonevent=false,    gymweight=4},
+    {name="yotd",                moonevent=false,    gymweight=3},
 }
 
 local MOON_EVENT_RADIUS = 12

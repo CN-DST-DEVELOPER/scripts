@@ -932,6 +932,10 @@ return{
         "only_used_by_wolfang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "Me and the start are too far apart.",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Whoopsie! I'll make a point to check first.",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "I should make space, so someone can join the race.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Let's have some fun.",
@@ -5059,6 +5063,43 @@ return{
 
         EMBERLIGHT = "Aren't you a bit big for a will-o'-the-wisp?",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "What delightful surprises are you hoarding?",
+            EMPTY = "Rumble and grumble, it wants charcoal!",
+            BURNT = "Someone went and started the fun without me!",
+        },
+
+        DRAGONBOAT_KIT = "Whereabouts to set this boat afloat?",
+        DRAGONBOAT_PACK = "A fully-stocked boat, ready to float!",
+
+        BOATRACE_CHECKPOINT = "There's a point in need of checking!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Where should I place the next stop for the race?",
+        BOATRACE_START = "The fun has just begun!",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "Shall I get started?",
+
+        BOATRACE_PRIMEMATE = "A challenger, I see. You won't catch me!",
+        BOATRACE_SPECTATOR_DRAGONLING = "Clap! Clap if you believe in me!",
+
+        YOTD_STEERINGWHEEL = "I'll give the wheel a spin and see if I win!",
+        YOTD_STEERINGWHEEL_ITEM = "I can see the appeal of a steering wheel.",
+        YOTD_OAR = "I'll win today, even if I must claw my way. Hyuyu!",
+        YOTD_ANCHOR = "Dipped in gold, now dropped in the drink.",
+        YOTD_ANCHOR_ITEM = "Such funny ship things I could build.",
+        MAST_YOTD = "Sails of shimmering scales.",
+        MAST_YOTD_ITEM = "A mast to sail the ocean vast.",
+        BOAT_BUMPER_YOTD = "Ever been bitten by a boat before?",
+        BOAT_BUMPER_YOTD_KIT = "But idle hands are such good playthings!",
+        BOATRACE_SEASTACK = "Buoy ahoy!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Hyuyu, a bouncing baby buoy!",
+        BOATRACE_SEASTACK_MONKEY = "Buoy ahoy!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Hyuyu, a bouncing baby buoy!",
+        MASTUPGRADE_LAMP_YOTD = "How kind to share your bright glare!",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "A light to lead us through the night.",
+        WALKINGPLANK_YOTD = "A last resort, dressed up for sport.",
+        CHESSPIECE_YOTD = "From hot to stone cold.",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

@@ -106,11 +106,16 @@ end
 
 local function ExtraDeployDist(doer, dest, bufferedaction)
 	if dest ~= nil then
+		local invobject = bufferedaction and bufferedaction.invobject or nil
+		if invobject and invobject:HasTag("projectile") then
+			return 8 - ACTIONS.DEPLOY.distance
+		end
+
 		local target_x, target_y, target_z = dest:GetPoint()
 
 		local is_on_water = TheWorld.Map:IsOceanTileAtPoint(target_x, 0, target_z) and not TheWorld.Map:IsPassableAtPoint(target_x, 0, target_z)
 		if is_on_water then
-			return ((bufferedaction ~= nil and bufferedaction.invobject ~= nil and bufferedaction.invobject:HasTag("usedeployspacingasoffset") and bufferedaction.invobject.replica.inventoryitem ~= nil and bufferedaction.invobject.replica.inventoryitem:DeploySpacingRadius()) or 0) + 1.0
+			return ((invobject and invobject:HasTag("usedeployspacingasoffset") and invobject.replica.inventoryitem ~= nil and invobject.replica.inventoryitem:DeploySpacingRadius()) or 0) + 1.0
 		end
 	end
     return 0
@@ -913,18 +918,14 @@ local function row(act)
         oar = nil
     end
 
-    if oar == nil and not act.doer.components.crewmember then
+    if not oar and not act.doer.components.crewmember then
         return false
-    end
-
-    local pos = act:GetActionPoint()
-    if pos == nil then
-        pos = act.target:GetPosition()
     end
 
     if act.doer.components.crewmember then
         act.doer.components.crewmember:Row()
     elseif oar then
+        local pos = act:GetActionPoint() or act.target:GetPosition()
         oar.components.oar:Row(act.doer, pos)
         act.doer:PushEvent("working",{}) -- it's not actually doing work, but it can fall out of your hand when wet.
     end
@@ -1132,7 +1133,15 @@ end
 ACTIONS.DEPLOY.fn = function(act)
 	local act_pos = act:GetActionPoint()
     if act.invobject ~= nil and act.invobject.components.deployable ~= nil and act.invobject.components.deployable:CanDeploy(act_pos, nil, act.doer, act.rotation) then
-        if act.invobject.components.deployable.keep_in_inventory_on_deploy then
+		if act.invobject.components.complexprojectile then
+			if act.doer.components.inventory then
+				local projectile = act.doer.components.inventory:DropItem(act.invobject, false)
+				if projectile then
+					projectile.components.complexprojectile:Launch(act_pos, act.doer)
+					return true
+				end
+			end
+		elseif act.invobject.components.deployable.keep_in_inventory_on_deploy then
             return act.invobject.components.deployable:Deploy(act_pos, act.doer, act.rotation)
         else
             local container = act.doer.components.inventory or act.doer.components.container
@@ -1151,6 +1160,7 @@ end
 ACTIONS.DEPLOY.strfn = function(act)
     return act.invobject ~= nil
         and (   (act.invobject:HasTag("usedeploystring") and "DEPLOY") or
+				(act.invobject:HasTag("projectile") and "DEPLOY_TOSS") or
                 (act.invobject:HasTag("groundtile") and "GROUNDTILE") or
                 (act.invobject:HasTag("wallbuilder") and "WALL") or
                 (act.invobject:HasTag("fencebuilder") and "FENCE") or
@@ -2786,6 +2796,8 @@ ACTIONS.FEED.fn = function(act)
                             for k, v in pairs(loots) do
                                 local loot = SpawnPrefab(v)
                                 if loot ~= nil then
+                                    -- NOTES(JBK): Searchable for inventory component reference.
+                                    -- inventory:GiveItem(
                                     container:GiveItem(loot, murdered.prevslot)
                                 end
                             end
@@ -2909,32 +2921,50 @@ ACTIONS.FAN.fn = function(act)
 end
 
 ACTIONS.TOSS.fn = function(act)
-	if act.doer ~= nil and act.doer.components.inventory ~= nil then
-		local projectile = act.invobject
-		if projectile == nil then
-			--for Special action TOSS, we can also use equipped item.
-			projectile = act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			if projectile ~= nil and not projectile:HasTag("special_action_toss") then
-				projectile = nil
-			end
-		end
-		if projectile ~= nil and projectile.components.complexprojectile ~= nil and not (projectile.components.equippable ~= nil and (projectile.components.equippable:IsRestricted(act.doer) or projectile.components.equippable:ShouldPreventUnequipping())) then
-			projectile = act.doer.components.inventory:DropItem(projectile, false)
-			if projectile ~= nil then
-                local pos = nil
-                if act.target then
-                    pos = act.target:GetPosition()
-                    projectile.components.complexprojectile.targetoffset = {x=0,y=1.5,z=0}
-                else
-                    pos = act:GetActionPoint()
-                end
-                projectile.components.complexprojectile:Launch(pos, act.doer)
-                if act.from_map then
-                    act.doer:CloseMinimap()
-                end
-                return true
-            end
+    if not act.doer then
+        return nil
+    end
+
+    local doer_inventory = act.doer.components.inventory
+    if not doer_inventory then
+        return nil
+    end
+
+    local projectile = act.invobject
+    if not projectile then
+        --for Special action TOSS, we can also use equipped item.
+        projectile = doer_inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        if projectile ~= nil and not projectile:HasTag("special_action_toss") then
+            projectile = nil
         end
+    end
+    if not projectile then
+        return nil
+    end
+
+    local equippable = projectile.components.equippable
+    if not projectile.components.complexprojectile or
+            (equippable ~= nil and (equippable:IsRestricted(act.doer) or equippable:ShouldPreventUnequipping())) then
+        return nil
+    end
+
+    projectile = doer_inventory:DropItem(projectile, false)
+    if projectile then
+        local pos
+        if act.target then
+            pos = act.target:GetPosition()
+            projectile.components.complexprojectile.targetoffset = {x=0,y=1.5,z=0}
+        else
+            pos = act:GetActionPoint()
+        end
+
+        projectile.components.complexprojectile:Launch(pos, act.doer)
+
+        if act.from_map then
+            act.doer:CloseMinimap()
+        end
+
+        return true
     end
 end
 

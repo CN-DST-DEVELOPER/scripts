@@ -71,12 +71,11 @@ function ComplexProjectile:CalculateTrajectory(startPos, endPos, speed)
     local dz = endPos.z - startPos.z
 
     local rangeSq = dx * dx + dz * dz
-    local range = math.sqrt(rangeSq)
     local discriminant = speedSq * speedSq - g * (g * rangeSq + 2 * dy * speedSq)
     local angle
     if discriminant >= 0 then
         local discriminantSqrt = math.sqrt(discriminant)
-        local gXrange = g * range
+        local gXrange = g * math.sqrt(rangeSq)
         local angleA = math.atan((speedSq - discriminantSqrt) / gXrange)
         local angleB = math.atan((speedSq + discriminantSqrt) / gXrange)
         angle = self.usehigharc and math.max(angleA, angleB) or math.min(angleA, angleB)

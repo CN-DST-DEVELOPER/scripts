@@ -118,11 +118,15 @@ local function luckyfn()
 	    inst:AddTag("minigameitem")
 	end
 
+    inst.pickupsound = "metal"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_overridedata = {"nugget", "gold_nugget", "lucky_goldnugget"}
 
     inst:AddComponent("edible")
     inst.components.edible.foodtype = FOODTYPE.ELEMENTAL

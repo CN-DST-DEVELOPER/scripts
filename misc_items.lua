@@ -3268,6 +3268,33 @@ MISC_ITEMS =
 		output_items = {  "willow_masquerade", "body_willow_masquerade", "feet_willow_masquerade", "warly_masquerade", "body_warly_masquerade", "hand_warly_masquerade", "legs_warly_masquerade", "feet_warly_masquerade", "wortox_masquerade", "body_wortox_masquerade", "legs_wortox_masquerade", "wes_masquerade", "body_wes_masquerade", "legs_wes_masquerade", "woodie_masquerade", "body_woodie_masquerade", "hand_woodie_masquerade", "legs_woodie_masquerade", },
 		release_group = 140,
 	},
+	pack_masquerade_2 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_masquerade2.xml",
+		display_tex = "masquerade2.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wanda_masquerade", "wathgrithr_masquerade", "wurt_masquerade", "waxwell_masquerade", "wilson_masquerade", "wilson_beard_masquerade", },
+		output_items = {  "wanda_masquerade", "body_wanda_masquerade", "legs_wanda_masquerade", "wathgrithr_masquerade", "body_wathgrithr_masquerade", "legs_wathgrithr_masquerade", "feet_wathgrithr_masquerade", "wurt_masquerade", "body_wurt_masquerade", "waxwell_masquerade", "body_waxwell_masquerade", "legs_waxwell_masquerade", "feet_waxwell_masquerade", "wilson_masquerade", "body_wilson_masquerade", "legs_wilson_masquerade", "hand_wilson_masquerade", "wilson_beard_masquerade", },
+		release_group = 151,
+	},
+	pack_masquerade_wanda =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 118,
+		build_name_override = "wanda_masquerade",
+		display_atlas = "bigportraits/wanda_masquerade.xml",
+		display_tex = "wanda_masquerade_oval.tex",
+		box_build = "box_shop_character",
+		display_items = {  "wanda_masquerade", "body_wanda_masquerade", "legs_wanda_masquerade", },
+		output_items = {  "wanda_masquerade", "body_wanda_masquerade", "legs_wanda_masquerade", },
+		release_group = 151,
+	},
 	pack_masquerade_warly =
 	{
 		type = "purchase",
@@ -3280,6 +3307,32 @@ MISC_ITEMS =
 		display_items = {  "warly_masquerade", "body_warly_masquerade", "hand_warly_masquerade", "legs_warly_masquerade", "feet_warly_masquerade", },
 		output_items = {  "warly_masquerade", "body_warly_masquerade", "hand_warly_masquerade", "legs_warly_masquerade", "feet_warly_masquerade", },
 		release_group = 140,
+	},
+	pack_masquerade_wathgrithr =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 110,
+		build_name_override = "wathgrithr_masquerade",
+		display_atlas = "bigportraits/wathgrithr_masquerade.xml",
+		display_tex = "wathgrithr_masquerade_oval.tex",
+		box_build = "box_shop_character",
+		display_items = {  "wathgrithr_masquerade", "body_wathgrithr_masquerade", "legs_wathgrithr_masquerade", "feet_wathgrithr_masquerade", },
+		output_items = {  "wathgrithr_masquerade", "body_wathgrithr_masquerade", "legs_wathgrithr_masquerade", "feet_wathgrithr_masquerade", },
+		release_group = 151,
+	},
+	pack_masquerade_waxwell =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_masquerade",
+		display_atlas = "bigportraits/waxwell_masquerade.xml",
+		display_tex = "waxwell_masquerade_oval.tex",
+		box_build = "box_shop_character",
+		display_items = {  "waxwell_masquerade", "body_waxwell_masquerade", "legs_waxwell_masquerade", "feet_waxwell_masquerade", },
+		output_items = {  "waxwell_masquerade", "body_waxwell_masquerade", "legs_waxwell_masquerade", "feet_waxwell_masquerade", },
+		release_group = 151,
 	},
 	pack_masquerade_wes =
 	{
@@ -3307,6 +3360,19 @@ MISC_ITEMS =
 		output_items = {  "willow_masquerade", "body_willow_masquerade", "feet_willow_masquerade", },
 		release_group = 140,
 	},
+	pack_masquerade_wilson =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 101,
+		build_name_override = "wilson_masquerade",
+		display_atlas = "bigportraits/wilson_masquerade.xml",
+		display_tex = "wilson_masquerade_oval.tex",
+		box_build = "box_shop_character",
+		display_items = {  "wilson_masquerade", "body_wilson_masquerade", "legs_wilson_masquerade", "hand_wilson_masquerade", "wilson_beard_masquerade", },
+		output_items = {  "wilson_masquerade", "body_wilson_masquerade", "legs_wilson_masquerade", "hand_wilson_masquerade", "wilson_beard_masquerade", },
+		release_group = 151,
+	},
 	pack_masquerade_woodie =
 	{
 		type = "purchase",
@@ -3332,6 +3398,19 @@ MISC_ITEMS =
 		display_items = {  "wortox_masquerade", "body_wortox_masquerade", "legs_wortox_masquerade", },
 		output_items = {  "wortox_masquerade", "body_wortox_masquerade", "legs_wortox_masquerade", },
 		release_group = 140,
+	},
+	pack_masquerade_wurt =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 116,
+		build_name_override = "wurt_masquerade",
+		display_atlas = "bigportraits/wurt_masquerade.xml",
+		display_tex = "wurt_masquerade_oval.tex",
+		box_build = "box_shop_character",
+		display_items = {  "wurt_masquerade", "body_wurt_masquerade", },
+		output_items = {  "wurt_masquerade", "body_wurt_masquerade", },
+		release_group = 151,
 	},
 	pack_mighty_items =
 	{
@@ -7123,6 +7202,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 102,
 	},
+	playerportrait_bg_tentan =
+	{
+		type = "playerportrait",
+		skin_tags = { "ARTNOUVEAU", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 151,
+	},
 	playerportrait_bg_tentcircus =
 	{
 		type = "playerportrait",
@@ -8452,6 +8538,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 102,
 	},
+	profileflair_tent_an =
+	{
+		type = "profileflair",
+		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 151,
+	},
 	profileflair_tent_circus =
 	{
 		type = "profileflair",
@@ -9271,6 +9364,14 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 102,
+	},
+	wilson_beard_masquerade =
+	{
+		type = "beard",
+		skin_tags = { "MASQUERADE", "WILSON_BEARD", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 151,
 	},
 	wilson_beard_nature =
 	{

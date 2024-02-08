@@ -1033,6 +1033,35 @@ AddGameDebugKey(KEY_KP_MINUS, function()
     return true
 end)
 
+-- Boat teleporting helpers
+local TELEPORTBOAT_ITEM_MUST_TAGS = {"_inventoryitem",}
+local TELEPORTBOAT_ITEM_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO",}
+local TELEPORTBOAT_BLOCKER_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "_inventoryitem",}
+local function try_boat_teleport(boat, x, y, z)
+    local boatradius = boat:GetSafePhysicsRadius()
+
+    boat.Physics:Teleport(x, y, z)
+    if boat.boat_item_collision then
+        -- NOTES(JBK): This must also teleport or it will fling items off of it in a comical fashion from the physics constraint it has.
+        boat.boat_item_collision.Physics:Teleport(x, y, z)
+    end
+
+    local item_ents = TheSim:FindEntities(x, y, z, boatradius, TELEPORTBOAT_ITEM_MUST_TAGS, TELEPORTBOAT_ITEM_CANT_TAGS)
+    for _, ent in ipairs(item_ents) do
+        ent.components.inventoryitem:SetLanded(false, true)
+    end
+
+    local walkableplatform = boat.components.walkableplatform
+    if walkableplatform then
+        local players = walkableplatform:GetPlayersOnPlatform()
+        for player in pairs(players) do
+            player:SnapCamera()
+        end
+    end
+
+    return true
+end
+
 local wormholetarget = nil
 local tentaholetarget = nil
 AddGameDebugKey(KEY_T, function()
@@ -1043,6 +1072,7 @@ AddGameDebugKey(KEY_T, function()
     else
         local player = ConsoleCommandPlayer()
         if player then
+            local boat = (TheInput:IsKeyDown(KEY_CTRL) and player:GetCurrentPlatform()) or nil
             local topscreen = TheFrontEnd:GetActiveScreen()
             if topscreen.minimap ~= nil then
 
@@ -1053,18 +1083,31 @@ AddGameDebugKey(KEY_T, function()
                 local x,y,z = topscreen.minimap:MapPosToWorldPos( mousemappos:Get() )
 
                 if TheWorld ~= nil and not TheWorld.ismastersim then
-                    ConsoleRemote("c_teleport(%d, %d, %d)", {x, 0, y})
+                    if boat then
+                        ConsoleRemote("d_teleportboat(%d, %d, %d)", {x, 0, y})
+                    else
+                        ConsoleRemote("c_teleport(%d, %d, %d)", {x, 0, y})
+                    end
                 else
-                    player.Physics:Teleport(x, 0, y)
+                    if not boat or not try_boat_teleport(boat, x, 0, y) then
+                        player.Physics:Teleport(x, 0, y)
+                    end
                 end
                 topscreen.minimap.minimap:ResetOffset()
             else
                 if TheWorld ~= nil and not TheWorld.ismastersim then
                     local x, y, z = ConsoleWorldPosition():Get()
                     player.Transform:SetPosition(x, y, z)
-                    ConsoleRemote("c_teleport(%d, %d, %d)", {x, y, z})
+                    if boat then
+                        ConsoleRemote("d_teleportboat(%d, %d, %d)", {x, y, z})
+                    else
+                        ConsoleRemote("c_teleport(%d, %d, %d)", {x, y, z})
+                    end
                 else
-                    player.Physics:Teleport(TheInput:GetWorldPosition():Get())
+                    local x, y, z = TheInput:GetWorldPosition():Get()
+                    if not boat or not try_boat_teleport(boat, x, y, z) then
+                        player.Physics:Teleport(x, y, z)
+                    end
                 end
             end
         end

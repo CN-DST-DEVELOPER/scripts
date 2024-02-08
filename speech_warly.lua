@@ -927,6 +927,10 @@ return{
         "only_used_by_wolfgang",
     },
 
+    ANNOUNCE_YOTD_NOBOATS = "I seem to have drifted a bit too far from the starting point.",
+    ANNOUNCE_YOTD_NOCHECKPOINTS = "Ah! There is no race without checkpoints!",
+    ANNOUNCE_YOTD_NOTENOUGHBOATS = "Perhaps I should make a little space, in case someone wants to drop in.",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'm also an accomplished butcher!",
@@ -5053,6 +5057,43 @@ return{
 
         EMBERLIGHT = "Willow left this burner unattended.",
         WILLOW_EMBER = "only_used_by_willow",
+
+        -- Year of the Dragon
+        YOTD_DRAGONSHRINE =
+        {
+            GENERIC = "I wonder what delights it will produce.",
+            EMPTY = "Like a barbeque, it requires charcoal.",
+            BURNT = "Burnt to a crisp!",
+        },
+
+        DRAGONBOAT_KIT = "Just like a gravy boat, minus the gravy.",
+        DRAGONBOAT_PACK = "Just add water, and voila!",
+
+        BOATRACE_CHECKPOINT = "Almost there!",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Let us throw it in the soup.",
+        BOATRACE_START = "A good place to start.",
+        BOATRACE_START_THROWABLE_DEPLOYKIT = "What a big decision.",
+
+        BOATRACE_PRIMEMATE = "I hope you enjoy the bitter taste of defeat!",
+        BOATRACE_SPECTATOR_DRAGONLING = "Bonjour! Are you here to cheer me on?",
+
+        YOTD_STEERINGWHEEL = "Today I am sailing in style!",
+        YOTD_STEERINGWHEEL_ITEM = "We can't set sail without this.",
+        YOTD_OAR = "Somehow it's making me hungry for a big juicy drumstick...",
+        YOTD_ANCHOR = "It seems a shame to drop such a dazzling thing into the sea.",
+        YOTD_ANCHOR_ITEM = "Looks like a recipe for an anchor.",
+        MAST_YOTD = "Mon dieu! I feel as though I am not sailing, but flying!",
+        MAST_YOTD_ITEM = "An important ingredient for any sailboat.",
+        BOAT_BUMPER_YOTD = "Ferocious!",
+        BOAT_BUMPER_YOTD_KIT = "I will feel a bit safer with an extra layer wrapped around my boat.",
+        BOATRACE_SEASTACK = "Buoy ahead!",
+        BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Where to put it... I wouldn't want anyone to run into it!",
+        BOATRACE_SEASTACK_MONKEY = "Buoy ahead!",
+        BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Where to put it... I wouldn't want anyone to run into it!",
+        MASTUPGRADE_LAMP_YOTD = "The petite dragon watches over us.",
+        MASTUPGRADE_LAMP_ITEM_YOTD = "It does lighten the mood considerably.",
+        WALKINGPLANK_YOTD = "That doesn't look safe... but it does look quite nice.",
+        CHESSPIECE_YOTD = "Ah, the sweet taste of victory!",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

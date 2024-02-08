@@ -371,8 +371,13 @@ function Map:CanDeployBoatAtPointInWater(pt, inst, mouseover, data)
 
     local entities = TheSim:FindEntities(pt.x, 0, pt.z, TUNING.MAX_WALKABLE_PLATFORM_RADIUS + boat_radius + boat_extra_spacing, WALKABLE_PLATFORM_TAGS)
     for i, v in ipairs(entities) do
-        if v.components.walkableplatform and math.sqrt(v:GetDistanceSqToPoint(pt.x, 0, pt.z)) <= (v.components.walkableplatform.platform_radius + boat_radius + boat_extra_spacing) then
-            return false
+        local v_walkableplatform = v.components.walkableplatform
+        if v_walkableplatform then
+            local distance_to_position = math.sqrt(v:GetDistanceSqToPoint(pt.x, 0, pt.z))
+            local test_distance = (v_walkableplatform.platform_radius + boat_radius + boat_extra_spacing)
+            if distance_to_position <= test_distance then
+                return false
+            end
         end
     end
 

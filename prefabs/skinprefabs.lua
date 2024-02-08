@@ -6903,6 +6903,16 @@ table.insert(prefs, CreatePrefabSkin("telestaff_shadowbeam",
 	release_group = 125,
 }))
 
+table.insert(prefs, CreatePrefabSkin("tent_an",
+{
+	base_prefab = "tent",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) tent_init_fn(inst, "tent_an") end,
+	skin_tags = { "TENT", "ARTNOUVEAU", "CRAFTABLE", },
+	release_group = 151,
+}))
+
 table.insert(prefs, CreatePrefabSkin("tent_ancient",
 {
 	base_prefab = "tent",
@@ -8129,6 +8139,21 @@ table.insert(prefs, CreatePrefabSkin("wanda_lunar",
 	release_group = 136,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wanda_masquerade",
+{
+	base_prefab = "wanda",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WANDA", },
+	bigportrait_anim = { build = "bigportraits/wanda_masquerade.xml", symbol = "wanda_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_wanda_build", normal_skin = "wanda_masquerade", old_skin = "wanda_masquerade_old", young_skin = "wanda_masquerade_young", },
+	has_alternate_for_body = { "wanda_masquerade_old", },
+	has_alternate_for_skirt = { "wanda_masquerade_old", },
+	feet_cuff_size = { wanda_masquerade = 1, },
+	release_group = 151,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wanda_nature",
 {
 	base_prefab = "wanda",
@@ -8653,6 +8678,18 @@ table.insert(prefs, CreatePrefabSkin("wathgrithr_magma",
 	release_group = 51,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wathgrithr_masquerade",
+{
+	base_prefab = "wathgrithr",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WATHGRITHR", },
+	bigportrait_anim = { build = "bigportraits/wathgrithr_masquerade.xml", symbol = "wathgrithr_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_wathgrithr_build", normal_skin = "wathgrithr_masquerade", },
+	release_group = 151,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wathgrithr_nature",
 {
 	base_prefab = "wathgrithr",
@@ -8984,6 +9021,18 @@ table.insert(prefs, CreatePrefabSkin("waxwell_magma",
 	bigportrait_anim = { build = "bigportraits/waxwell_magma.xml", symbol = "waxwell_magma_oval.tex"},
 	skins = { ghost_skin = "ghost_waxwell_build", normal_skin = "waxwell_magma", },
 	release_group = 51,
+}))
+
+table.insert(prefs, CreatePrefabSkin("waxwell_masquerade",
+{
+	base_prefab = "waxwell",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WAXWELL", },
+	bigportrait_anim = { build = "bigportraits/waxwell_masquerade.xml", symbol = "waxwell_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_waxwell_build", normal_skin = "waxwell_masquerade", },
+	release_group = 151,
 }))
 
 table.insert(prefs, CreatePrefabSkin("waxwell_nature",
@@ -10914,6 +10963,19 @@ table.insert(prefs, CreatePrefabSkin("wilson_magma",
 	release_group = 51,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wilson_masquerade",
+{
+	base_prefab = "wilson",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WILSON", },
+	bigportrait_anim = { build = "bigportraits/wilson_masquerade.xml", symbol = "wilson_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_wilson_build", normal_skin = "wilson_masquerade", },
+	linked_beard = "wilson_beard_masquerade",
+	release_group = 151,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wilson_nature",
 {
 	base_prefab = "wilson",
@@ -12695,6 +12757,21 @@ table.insert(prefs, CreatePrefabSkin("wurt_ice",
 	has_alternate_for_body = { "wurt_ice", },
 	feet_cuff_size = { wurt_ice_powerup = -1, wurt_ice = -1, },
 	release_group = 138,
+}))
+
+table.insert(prefs, CreatePrefabSkin("wurt_masquerade",
+{
+	base_prefab = "wurt",
+	type = "base",
+	rarity = "Elegant",
+	rarity_modifier = "Woven",
+	skin_tags = { "MASQUERADE", "BASE", "WURT", },
+	bigportrait_anim = { build = "bigportraits/wurt_masquerade.xml", symbol = "wurt_masquerade_oval.tex"},
+	skins = { ghost_skin = "ghost_wurt_masquerade", normal_skin = "wurt_masquerade", powerup = "wurt_masquerade_powerup", },
+	torso_tuck_builds = { "wurt_masquerade", "wurt_masquerade_powerup", },
+	has_alternate_for_body = { "wurt_masquerade", },
+	feet_cuff_size = { wurt_ice_powerup = -1, wurt_ice = -1, },
+	release_group = 151,
 }))
 
 table.insert(prefs, CreatePrefabSkin("wurt_nature",

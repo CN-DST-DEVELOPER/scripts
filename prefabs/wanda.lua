@@ -51,7 +51,7 @@ local function PlayAgingFx(inst, fx_name)
 end
 
 local function UpdateSkinMode(inst, mode, delay)
-	if inst.queued_skinmode_task ~= nil then
+	if inst.updateskinmodetask ~= nil then
 		inst.updateskinmodetask:Cancel()
 		inst.updateskinmodetask = nil
 	end

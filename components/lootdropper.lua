@@ -367,7 +367,6 @@ function LootDropper:DropLoot(pt)
 
         local isstructure = self.inst:HasTag("structure")
         for k, v in pairs(prefabs) do
-            
             if TUNING.BURNED_LOOT_OVERRIDES[v] ~= nil then
                 prefabs[k] = TUNING.BURNED_LOOT_OVERRIDES[v]
             elseif PrefabExists(v.."_cooked") then
@@ -379,7 +378,7 @@ function LootDropper:DropLoot(pt)
             --     It *should* ALWAYS return ash based on certain types of
             --     ingredients (wood), but we'll let them have this one :O
             elseif self.inst.components.burnable and self.inst.components.burnable:GetControlledBurn() then
-                -- Leave it be, but we will drop it smouldering.            
+                -- Leave it be, but we will drop it smouldering.
             elseif (not isstructure and not self.inst:HasTag("tree")) or self.inst:HasTag("hive") then -- because trees have specific burnt loot and "hive"s are structures...
                 prefabs[k] = "ash"
             end

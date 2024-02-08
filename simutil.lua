@@ -168,7 +168,7 @@ function FindSafeSpawnLocation(x, y, z)
 end
 
 function FindNearbyLand(position, range)
-    local finaloffset = FindValidPositionByFan(math.random() * 2 * PI, range or 8, 8, function(offset)
+    local finaloffset = FindValidPositionByFan(math.random() * TWOPI, range or 8, 8, function(offset)
         local x, z = position.x + offset.x, position.z + offset.z
         return TheWorld.Map:IsAboveGroundAtPoint(x, 0, z)
             and not TheWorld.Map:IsPointNearHole(Vector3(x, 0, z))
@@ -181,7 +181,7 @@ function FindNearbyLand(position, range)
 end
 
 function FindNearbyOcean(position, range)
-    local finaloffset = FindValidPositionByFan(math.random() * 2 * PI, range or 8, 8, function(offset)
+    local finaloffset = FindValidPositionByFan(math.random() * TWOPI, range or 8, 8, function(offset)
         local x, z = position.x + offset.x, position.z + offset.z
         return TheWorld.Map:IsOceanAtPoint(x, 0, z)
             and not TheWorld.Map:IsPointNearHole(Vector3(x, 0, z))
@@ -196,7 +196,7 @@ end
 function GetRandomInstWithTag(tag, inst, radius)
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, radius, type(tag) == "string" and { tag } or tag)
-    return #ents > 0 and ents[math.random(1, #ents)] or nil
+    return (#ents > 0 and ents[math.random(1, #ents)]) or nil
 end
 
 function GetClosestInstWithTag(tag, inst, radius)
@@ -208,8 +208,8 @@ end
 function DeleteCloseEntsWithTag(tag, inst, radius)
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, radius, type(tag) == "string" and { tag } or tag)
-    for i, v in ipairs(ents) do
-        v:Remove()
+    for _, ent in ipairs(ents) do
+        ent:Remove()
     end
 end
 

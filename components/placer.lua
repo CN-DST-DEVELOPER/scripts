@@ -165,13 +165,13 @@ function Placer:OnUpdate(dt)
 
         if self.mouse_blocked then
             self.inst:Hide()
-            for i, v in ipairs(self.linked) do
+            for _, v in ipairs(self.linked) do
                 v:Hide()
             end
         else
             self.inst.AnimState:SetAddColour(.25, .75, .25, 0)
             self.inst:Show()
-            for i, v in ipairs(self.linked) do
+            for _, v in ipairs(self.linked) do
                 v.AnimState:SetAddColour(.25, .75, .25, 0)
                 v:Show()
             end
@@ -184,13 +184,13 @@ function Placer:OnUpdate(dt)
 
         if self.mouse_blocked then
             self.inst:Hide()
-            for i, v in ipairs(self.linked) do
+            for _, v in ipairs(self.linked) do
                 v:Hide()
             end
         else
             self.inst.AnimState:SetAddColour(.75, .25, .25, 0)
             self.inst:Show()
-            for i, v in ipairs(self.linked) do
+            for _, v in ipairs(self.linked) do
                 v.AnimState:SetAddColour(.75, .25, .25, 0)
                 v:Show()
             end

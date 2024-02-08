@@ -259,6 +259,7 @@ local function master_postinit(inst)
     inst:AddComponent("mermkingmanager")
     inst:AddComponent("feasts")
 
+    inst:AddComponent("yotd_raceprizemanager")
     inst:AddComponent("yotc_raceprizemanager")
     inst:AddComponent("yotb_stagemanager")
 

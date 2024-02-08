@@ -173,9 +173,12 @@ end
 local BOAT_MUST = {"boat"}
 local function commandboat(inst)
     if inst.components.crewmember then
-        local boat = inst:GetCurrentPlatform() == inst.components.crewmember.boat and inst:GetCurrentPlatform()
-         if boat then 
-            local bc = inst.components.crewmember.boat.components.boatcrew
+        local boat = inst:GetCurrentPlatform()
+        if boat ~= inst.components.crewmember.boat then
+            boat = nil
+        end
+        if boat then
+            local bc = boat.components.boatcrew
             if bc then
                 if bc.status == "hunting" then
                     local x,y,z = inst.Transform:GetWorldPosition()
@@ -191,9 +194,9 @@ local function commandboat(inst)
                             end
                         end
                     end
-                    
+
                     bc:SetTarget(nil)
-                    
+
                     if target then
                         if not bc.target or not bc:IsValid() then
                             bc:SetTarget(target)
@@ -262,13 +265,6 @@ local function onmonkeychange(inst, data)
             inst.components.combat:DropTarget()
         end
     end
-end
-
-local function modifiedsleeptest(inst)
-    if inst.components.crewmember then
-        return nil
-    end
-    return DefaultSleepTest(inst)
 end
 
 local function ontalk(inst, script)
@@ -370,8 +366,6 @@ local function fn()
     inst:AddComponent("sleeper")
     inst.components.sleeper.sleeptestfn = onmonkeychange
     inst.components.sleeper.waketestfn = DefaultWakeTest
-
-    inst:AddComponent("areaaware")
 
     inst:AddComponent("drownable")
 
