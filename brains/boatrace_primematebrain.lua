@@ -104,6 +104,56 @@ local function FixBoat(inst)
     end
 end
 
+-- Fire Prevention
+local function is_waterballoon(item)
+    return (item.components.wateryprotection ~= nil)
+        and (item.components.complexprojectile ~= nil)
+end
+
+local BOATFIRE_ONEOF_TAGS = {"fire", "smolder"}
+local function PutOutBoatFire(inst)
+    if inst.components.timer:TimerExists("waterballoon_throw_cooldown") then
+        return nil
+    end
+
+    local inventory = inst.components.inventory
+    local waterballoon = inventory:FindItem(is_waterballoon)
+    if not waterballoon then
+        for _ = 1, 3 do
+            waterballoon = SpawnPrefab("waterballoon")
+            inventory:GiveItem(waterballoon)
+        end
+    end
+
+    local fire = nil
+    local crewmember_boat = (inst.components.crewmember ~= nil and inst.components.crewmember.boat) or nil
+    if crewmember_boat then
+        local bx, by, bz = crewmember_boat.Transform:GetWorldPosition()
+        local radius = (crewmember_boat.components.walkableplatform and crewmember_boat.components.walkableplatform.platform_radius)
+            or TUNING.DRAGON_BOAT_RADIUS
+        local entities_on_boat = TheSim:FindEntities(bx, by, bz, radius, nil, nil, BOATFIRE_ONEOF_TAGS)
+
+        if entities_on_boat then
+            local fire_fxlevel = -1
+            local burnable
+            for _, entity_on_boat in pairs(entities_on_boat) do
+                burnable = entity_on_boat.components.burnable
+                if burnable and (burnable:IsBurning() or burnable:IsSmoldering())
+                        and burnable.fxlevel > fire_fxlevel then
+                    fire_fxlevel = burnable.fxlevel
+                    fire = entity_on_boat
+                end
+            end
+        end
+    end
+
+    if fire then
+        inst._last_row_position = nil
+        inst.components.timer:StartTimer("waterballoon_throw_cooldown", 5)
+        return BufferedAction(inst, fire, ACTIONS.TOSS, waterballoon)
+    end
+end
+
 -- Boat Rowing
 local function RowBoat(inst)
     if inst.components.timer:TimerExists("rowcooldown") then
@@ -193,6 +243,7 @@ function BoatRace_PrimemateBrain:OnStart()
 
         DoAction(self.inst, TryBuoyToss, "toss buoy"),
         DoAction(self.inst, FixBoat, "patch boat"),
+        DoAction(self.inst, PutOutBoatFire, "put out fire"),
         DoAction(self.inst, RowBoat, "rowing", nil, 1.0),
         Follow(self.inst, GetBoat, 0, 1, 1.75),
         Wander(self.inst, FindWanderPoint, FindMaximumWanderDistance, WANDER_DATA),

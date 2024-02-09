@@ -229,6 +229,7 @@ local function fn()
     --
     local inventory = inst:AddComponent("inventory")
     inventory:DisableDropOnDeath()
+    inventory.maxslots = 10
 
     --
     inst:AddComponent("knownlocations")

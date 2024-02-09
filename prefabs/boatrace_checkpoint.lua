@@ -58,7 +58,9 @@ end
 local function SetStartPoint(inst, startpoint)
     local entitytracker = inst.components.entitytracker
     entitytracker:ForgetEntity("startpoint")
-    entitytracker:TrackEntity("startpoint", startpoint)
+    if startpoint then
+        entitytracker:TrackEntity("startpoint", startpoint)
+    end
 end
 
 --
@@ -94,7 +96,8 @@ end
 
 -- Race callbacks
 local function OnBeaconAtCheckpoint(inst, beacon)
-    if not beacon or inst._found_beacons[beacon] then
+    local startpoint = inst.components.entitytracker:GetEntity("startpoint")
+    if not beacon or inst._found_beacons[beacon] or not startpoint or not startpoint._boatrace_on then
         return
     end
 
@@ -103,18 +106,19 @@ local function OnBeaconAtCheckpoint(inst, beacon)
     inst.AnimState:PushAnimation((inst._lights_on and "idle_on") or "idle_off", true)
 
     beacon:PushEvent("checkpoint_found")
+        
+    startpoint:PushEvent("beacon_reached_checkpoint", {
+        beacon = beacon,
+        checkpoint = inst,
+    })
 
-    local startpoint = inst.components.entitytracker:GetEntity("startpoint")
-    if startpoint then
-        startpoint:PushEvent("beacon_reached_checkpoint", {
-            beacon = beacon,
-            checkpoint = inst,
-        })
-    end
+end
+
+local function OnRaceStartTimerEnd(inst)
+    inst.components.boatrace_proximitychecker:OnStartRace()
 end
 
 local function OnRaceStarted(inst)
-    inst.components.boatrace_proximitychecker:OnStartRace()
     inst.components.workable:SetWorkable(false)
     inst:ToggleLight(true)
 end
@@ -140,6 +144,7 @@ end
 
 
 local function OnRaceOver(inst)
+    SetStartPoint(inst, nil)
     inst:DoTaskInTime(1 + math.random(), ResetCheckpoint)
 end
 local function registercheckpoint(inst)
@@ -237,6 +242,7 @@ local function fn()
     --
     inst:ListenForEvent("onbuilt", OnBuilt)
     inst:ListenForEvent("boatrace_start", OnRaceStarted)
+    inst:ListenForEvent("boatrace_starttimerended", OnRaceStartTimerEnd)
     inst:ListenForEvent("boatrace_finish", OnRaceOver)
     inst:ListenForEvent("onremove", Onremoved)
 

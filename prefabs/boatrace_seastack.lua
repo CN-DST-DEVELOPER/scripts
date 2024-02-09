@@ -21,7 +21,9 @@ local function OnWorkFinished(inst)
 
     inst:SetPhysicsRadiusOverride(nil)
 
-    inst.components.lootdropper:DropLoot(pt)
+    if inst.components.lootdropper then
+        inst.components.lootdropper:DropLoot(pt)
+    end
 
     local fx = SpawnPrefab("balloon_pop_body")
     fx.Transform:SetPosition(pt:Get())
@@ -40,11 +42,12 @@ end
 local function ShouldKeepTarget(_) return false end
 
 local function OnHitByAttack(inst, attacker, damage, specialdamage)
-    local work_done = math.max(1, math.floor(damage / TUNING.BOATRACE_SEASTACK_DAMAGE_TO_WORK))
-    inst.components.workable:WorkedBy(attacker, work_done)
+    if inst.components.workable then
+        local work_done = math.max(1, math.floor(damage / TUNING.BOATRACE_SEASTACK_DAMAGE_TO_WORK))
+        inst.components.workable:WorkedBy(attacker, work_done)
+    end
 end
 
-local DAMAGE_SCALE = 0.5
 local function OnCollide(inst, data)
     inst.SoundEmitter:PlaySound(HIT_SOUND)
 end
@@ -224,6 +227,13 @@ local function monkeyfn()
 
     --
     inst:AddComponent("inspectable")
+
+    --
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(3)
+    workable:SetOnWorkCallback(OnWork)
+    workable.savestate = true
 
     --
     MakeHauntableWork(inst)

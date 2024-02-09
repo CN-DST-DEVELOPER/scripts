@@ -146,6 +146,7 @@ local function reset_boatrace(inst)
             if beacon:IsValid() then
                 beacon.parent.finished = nil
                 beacon:PushEvent("boatrace_finish", finish_data)
+                beacon.parent.yotd_beacon = nil
             end
         end
     end
@@ -161,6 +162,7 @@ local function reset_boatrace(inst)
     inst.activator = nil
     inst._beacons = nil
     inst.fuse_off_frame = nil
+    inst._boatrace_on = nil
 
     inst.indices = shuffleArray({1, 2, 3, 4, 5, 6, 7, 8})
 
@@ -264,7 +266,6 @@ local function updateloop(inst)
                 if beacon_boat and beacon_boat.components.walkableplatform then
                     if (next(beacon_boat.components.walkableplatform:GetPlayersOnPlatform()) == nil) then
                         remove_beacon = true
-                        beacon_boat.yotd_beacon = nil
                     end
                 end
             end
@@ -272,6 +273,7 @@ local function updateloop(inst)
             if remove_beacon then
                 table.insert(inst.indices, beacon.index)
                 beacon:PushEvent("boatrace_idle_disappear")
+                beacon.parent.yotd_beacon = nil
                 inst._beacons[beacon] = nil
             end
         end
@@ -456,8 +458,13 @@ local function do_event_start(inst)
             end
         end
 
+        for checkpoint in pairs(inst._checkpoints) do
+            checkpoint:PushEvent("boatrace_starttimerended")
+        end
+
         inst.sg:GoToState("on")
 
+        inst._boatrace_on = true
         inst.components.boatrace_proximitychecker:OnStartRace()
     else
         inst.SoundEmitter:PlaySound("yotd2024/startingpillar/fail")

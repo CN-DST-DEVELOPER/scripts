@@ -347,7 +347,7 @@ local function GetSafePhysicsRadius(inst)
     return (inst.components.hull and inst.components.hull:GetRadius() or TUNING.DRAGON_BOAT_RADIUS)
         + 0.18 -- Add a small offset for item overhangs.
 end
-
+local BOAT_COLLISION_SEGMENT_COUNT = 20
 local function IsBoatEdgeOverLand(inst, override_position_pt)
     local map = TheWorld.Map
     local radius = inst:GetSafePhysicsRadius()
