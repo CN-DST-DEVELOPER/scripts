@@ -6389,6 +6389,16 @@ table.insert(prefs, CreatePrefabSkin("shovel_feathered",
 	release_group = 102,
 }))
 
+table.insert(prefs, CreatePrefabSkin("shovel_heart",
+{
+	base_prefab = "shovel",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) shovel_init_fn(inst, "shovel_heart") end,
+	skin_tags = { "SHOVEL", "CRAFTABLE", },
+	release_group = 152,
+}))
+
 table.insert(prefs, CreatePrefabSkin("shovel_invisible",
 {
 	base_prefab = "shovel",

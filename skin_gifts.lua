@@ -177,6 +177,7 @@ local SKIN_GIFT_TYPES =
 	saddle_basic_yotbalt = "YOTB",
 	saltbox_nautical = "TWITCH_DROP",
 	saltbox_shaker = "TWITCH_DROP",
+	shovel_heart = "CUPID",
 	starstaff_crystal = "TWITCH_DROP",
 	steeringwheel_nautical = "TWITCH_DROP",
 	telebase_crystal = "TWITCH_DROP",

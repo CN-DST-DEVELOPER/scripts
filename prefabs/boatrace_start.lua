@@ -162,7 +162,6 @@ local function reset_boatrace(inst)
     inst.activator = nil
     inst._beacons = nil
     inst.fuse_off_frame = nil
-    inst._boatrace_on = nil
 
     inst.indices = shuffleArray({1, 2, 3, 4, 5, 6, 7, 8})
 
@@ -464,7 +463,6 @@ local function do_event_start(inst)
 
         inst.sg:GoToState("on")
 
-        inst._boatrace_on = true
         inst.components.boatrace_proximitychecker:OnStartRace()
     else
         inst.SoundEmitter:PlaySound("yotd2024/startingpillar/fail")
@@ -537,7 +535,7 @@ local function OnCheckpointReached(inst, data)
     local checkpoint = data.checkpoint
 
     -- If this was one of our checkpoints, record that this beacon touched the checkpoint.
-    if inst._checkpoints[checkpoint] then
+    if inst._checkpoints[checkpoint] and inst._beacons then
         inst._beacons[beacon][checkpoint] = true
     end
 end

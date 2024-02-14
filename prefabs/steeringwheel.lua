@@ -25,6 +25,10 @@ local function on_start_steering(inst, sailor)
         local skin_build = GetBuildForItem(inst.skinname)
         sailor.AnimState:OverrideItemSkinSymbol( "boat_wheel_round", skin_build, "boat_wheel_round", inst.GUID, "player_boat")
         sailor.AnimState:OverrideItemSkinSymbol( "boat_wheel_stick", skin_build, "boat_wheel_stick", inst.GUID, "player_boat")
+    elseif inst._steeringwheel_build_override then
+        -- NOTES(JBK): Hack for "skinned" base steeringwheels.
+        sailor.AnimState:OverrideSymbol("boat_wheel_round", inst._steeringwheel_build_override, "boat_wheel_round")
+        sailor.AnimState:OverrideSymbol("boat_wheel_stick", inst._steeringwheel_build_override, "boat_wheel_stick")
     else
         sailor.AnimState:AddOverrideBuild("player_boat")
     end
@@ -111,6 +115,8 @@ local function common_fn(build)
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst._steeringwheel_build_override = build
 
     inst:AddComponent("inspectable")
 

@@ -23,9 +23,7 @@ local function onburnt(inst)
 
     local boatmagnet = inst.components.boatmagnet
     if boatmagnet then
-        if boatmagnet.boat then
-            boatmagnet.boat.components.boatphysics:RemoveMagnet(boatmagnet)
-        end
+        boatmagnet:SetBoat(nil)
         inst:RemoveComponent("boatmagnet")
     end
 

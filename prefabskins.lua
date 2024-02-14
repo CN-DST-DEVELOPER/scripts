@@ -1087,6 +1087,7 @@ PREFAB_SKINS = {
 	shovel =
 	{
 		"shovel_feathered",
+		"shovel_heart",
 		"shovel_invisible",
 		"shovel_northern",
 		"shovel_victorian",

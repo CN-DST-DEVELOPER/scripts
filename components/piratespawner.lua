@@ -773,7 +773,7 @@ function self:LoadPostPass(newents, savedata)
         for k,v in ipairs(savedata.shipdatas) do
             local shipdata = {}
             if v.boat then
-                local boat = newents[v.boat].entity
+                local boat = newents[v.boat] and newents[v.boat].entity or nil
                 if boat then
                     shipdata.boat = boat
                     setpirateboat(boat)
@@ -789,7 +789,7 @@ function self:LoadPostPass(newents, savedata)
             end
             shipdata.crew = {}
             for i,crew in ipairs(v.crew) do
-                local crewmember = newents[crew].entity
+                local crewmember = newents[crew] and newents[crew].entity or nil
                 if crewmember then
                     table.insert(shipdata.crew,crewmember)
                     setcrewmember(crewmember,shipdata.boat)

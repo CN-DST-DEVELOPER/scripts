@@ -282,6 +282,9 @@ local function rugfn()
     inst.AnimState:SetLayer( LAYER_BACKGROUND )
     inst.AnimState:SetSortOrder( 3 )
 
+    inst:AddTag("DECOR")
+    inst:AddTag("NOCLICK")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

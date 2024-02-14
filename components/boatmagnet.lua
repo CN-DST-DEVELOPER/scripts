@@ -11,8 +11,13 @@ local BoatMagnet = Class(function(self, inst)
             and beacon.components.boatmagnetbeacon:PairedMagnet() == nil
     end
 
-    self.OnBoatRemoved = function()
-        self.boat = nil
+    self.ClearEverything = function()
+        if self._setup_boat_task then
+            self._setup_boat_task:Cancel()
+            self._setup_boat_task = nil
+        end
+        self:SetBoat(nil)
+        self:UnpairWithBeacon()
     end
 
     --self.onpairedwithbeaconfn = nil
@@ -69,9 +74,7 @@ function BoatMagnet:OnRemoveFromEntity()
 end
 
 function BoatMagnet:OnRemoveEntity()
-    if self then
-        self:SetBoat(nil)
-    end
+    self:ClearEverything()
 end
 
 function BoatMagnet:SetBoat(boat)
@@ -79,23 +82,17 @@ function BoatMagnet:SetBoat(boat)
 
     if self.boat then
         self.boat.components.boatphysics:RemoveMagnet(self)
-        self.inst:RemoveEventCallback("onremove", self.OnBoatRemoved, boat)
-        self.inst:RemoveEventCallback("death", self.OnDeath, boat)
+        self.inst:RemoveEventCallback("onremove", self.ClearEverything, self.boat)
+        self.inst:RemoveEventCallback("death", self.ClearEverything, self.boat)
     end
 
     self.boat = boat
 
     if boat then
-        self.boat.components.boatphysics:AddMagnet(self)
-        self.inst:ListenForEvent("onremove", self.OnBoatRemoved, boat)
-        self.inst:ListenForEvent("death", self.OnDeath, boat)
+        boat.components.boatphysics:AddMagnet(self)
+        self.inst:ListenForEvent("onremove", self.ClearEverything, boat)
+        self.inst:ListenForEvent("death", self.ClearEverything, boat)
     end
-end
-
-function BoatMagnet:OnDeath()
-	if self.inst:IsValid() then
-        self:SetBoat(nil)
-	end
 end
 
 function BoatMagnet:IsActivated()

@@ -97,7 +97,7 @@ end
 -- Race callbacks
 local function OnBeaconAtCheckpoint(inst, beacon)
     local startpoint = inst.components.entitytracker:GetEntity("startpoint")
-    if not beacon or inst._found_beacons[beacon] or not startpoint or not startpoint._boatrace_on then
+    if not beacon or inst._found_beacons[beacon] or not startpoint or not startpoint._beacons then
         return
     end
 

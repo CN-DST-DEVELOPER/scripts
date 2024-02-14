@@ -4034,6 +4034,8 @@ local skin_assets =
 	Asset("PKGREF", "anim/dynamic/seedpouch_rustic.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/shovel_feathered.zip"),
 	Asset("PKGREF", "anim/dynamic/shovel_feathered.dyn"),
+	Asset("DYNAMIC_ANIM", "anim/dynamic/shovel_heart.zip"),
+	Asset("PKGREF", "anim/dynamic/shovel_heart.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/shovel_invisible.zip"),
 	Asset("PKGREF", "anim/dynamic/shovel_invisible.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/shovel_northern.zip"),
