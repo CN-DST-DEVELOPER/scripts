@@ -6395,7 +6395,7 @@ table.insert(prefs, CreatePrefabSkin("shovel_heart",
 	type = "item",
 	rarity = "Loyal",
 	init_fn = function(inst) shovel_init_fn(inst, "shovel_heart") end,
-	skin_tags = { "SHOVEL", "CRAFTABLE", },
+	skin_tags = { "HEART", "SHOVEL", "CRAFTABLE", },
 	release_group = 152,
 }))
 

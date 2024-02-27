@@ -687,8 +687,8 @@ function MultiplayerMainScreen:DoInit()
 	-- new MOTD
 
     local kit_puppet_positions = {
-        { x = 90.0, y = 20.0, scale = 0.75 },
-        { x = 390.0, y = 20.0, scale = 0.75 },
+        { x = 90.0, y = -25.0, scale = 0.75 },
+        { x = 390.0, y = -25.0, scale = 0.75 },
     }
     self.kit_puppet = self.fixed_root:AddChild(KitcoonPuppet( Profile, nil, kit_puppet_positions ))
 
