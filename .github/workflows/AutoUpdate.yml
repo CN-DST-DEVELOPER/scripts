@@ -35,7 +35,7 @@ jobs:
         id: result
         run: |
           version=$(cat ${{ github.workspace }}/temp/version.txt | grep -o [0-9]*)
-          if [ "$(git describe --abbrev=0)" != "$version" ]; then 
+          if [ "$(git describe --abbrev=0)" != "$version" ]; then
             echo "need_update=True" >> $GITHUB_OUTPUT
             echo "version=$version" >> $GITHUB_OUTPUT
           fi
@@ -69,6 +69,10 @@ jobs:
           cd ${{ github.workspace }}/temp/scripts
           rm -rf !(.git/|.github/)
           unzip -qd ${{ github.workspace }}/temp ${{ github.workspace }}/temp/data/databundles/scripts.zip
+
+      - name: generate version.txt in /scripts/
+        run: |
+          echo "${{ needs.check.outputs.version }}" > "${{ github.workspace }}/temp/scripts/version.txt"
 
       - name: push
         run: |
