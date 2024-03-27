@@ -191,17 +191,17 @@ function RainDome:OnUpdate(dt)
 
 	local oldtargets = self.targets
 	local x, y, z = self.inst.Transform:GetWorldPosition()
-	for i, v in ipairs(TheSim:FindEntities(x, y, z, self.radius, TAGS, NOTAGS)) do
-		if oldtargets[v] then
-			oldtargets[v] = nil
+	for _, target in ipairs(TheSim:FindEntities(x, y, z, self.radius, TAGS, NOTAGS)) do
+		if oldtargets[target] then
+			oldtargets[target] = nil
 		else
-			if v.components.rainimmunity == nil then
-				v:AddComponent("rainimmunity")
+			if not target.components.rainimmunity then
+				target:AddComponent("rainimmunity")
 			end
-			v.components.rainimmunity:AddSource(self.inst)
+			target.components.rainimmunity:AddSource(self.inst)
 		end
-		self.newtargets[v] = true
-		awake = awake or not v:IsAsleep()
+		self.newtargets[target] = true
+		awake = awake or not target:IsAsleep()
 	end
 	for tgt in pairs(oldtargets) do
 		if tgt.components.rainimmunity ~= nil and tgt:IsValid() then

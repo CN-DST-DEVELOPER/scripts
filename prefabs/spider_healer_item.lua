@@ -71,7 +71,7 @@ local function fn()
     
     inst:AddComponent("healer")
     inst.components.healer:SetHealthAmount(0)
-    inst.components.healer.onhealfn = OnHealFn
+    inst.components.healer:SetOnHealFn(OnHealFn)
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
 

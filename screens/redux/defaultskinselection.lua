@@ -165,11 +165,13 @@ function DefaultSkinSelectionPopup:GetSkinsList( item )
     local skins_list = {}
     if PREFAB_SKINS[item] then
         for _,item_type in pairs(PREFAB_SKINS[item]) do
-            local has_item = TheInventory:CheckOwnership(item_type)
-            if has_item then
-                local data  = {}
-                data.item = item_type
-                table.insert(skins_list, data)
+            if not PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] then
+                local has_item = TheInventory:CheckOwnership(item_type)
+                if has_item then
+                    local data  = {}
+                    data.item = item_type
+                    table.insert(skins_list, data)
+                end
             end
         end
     end

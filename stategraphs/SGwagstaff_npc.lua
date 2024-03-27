@@ -264,7 +264,7 @@ local states =
         onenter = function(inst, target)
             inst.Physics:Stop()
 
-            inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_CAPTURESTART)
+            inst.components.talker:Chatter("WAGSTAFF_NPC_CAPTURESTART", nil, nil, nil, CHATPRIORITIES.LOW)
 
             inst.AnimState:PlayAnimation("build_pre")
             inst.AnimState:PushAnimation("build_loop", true)
@@ -339,22 +339,19 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                if inst.rifts_are_open then
-                    inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_CAPTURESTOP1)
-                    inst.sg:GoToState("talk", "capture_emotebuffer_bonus")
-                else
-                    inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_CAPTURESTOP)
-                    inst.sg:GoToState("talk", "capture_emotebuffer")
-                end
+                local chatter_string = (inst.rifts_are_open and "WAGSTAFF_NPC_CAPTURESTOP1")
+                    or "WAGSTAFF_NPC_CAPTURESTOP"
+                inst.components.talker:Chatter(chatter_string, nil, nil, nil, CHATPRIORITIES.LOW)
+
+                local push_anim = (inst.rifts_are_open and "capture_emotebuffer_bonus")
+                    or "capture_emotebuffer"
+                inst.sg:GoToState("talk", push_anim)
             end),
         },
 
         ontimeout = function(inst)
-            if inst.rifts_are_open then
-                inst.sg:GoToState("capture_emotebuffer_bonus")
-            else
-                inst.sg:GoToState("capture_emotebuffer")
-            end
+            inst.sg:GoToState((inst.rifts_are_open and "capture_emotebuffer_bonus")
+                or "capture_emotebuffer")
         end,
     },
 
@@ -373,7 +370,7 @@ local states =
         end,
 
         ontimeout = function(inst)
-            inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_CAPTURESTOP)
+            inst.components.talker:Chatter("WAGSTAFF_NPC_CAPTURESTOP", nil, nil, nil, CHATPRIORITIES.LOW)
             inst.sg:GoToState("talk", "capture_emotebuffer")
         end,
     },
@@ -393,11 +390,9 @@ local states =
         end,
 
         ontimeout = function(inst)
-            if inst:HasTag("shard_recieved") then
-                inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_CAPTURESTOP3)
-            else
-                inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_CAPTURESTOP2)
-            end
+            local speech_entry = (inst:HasTag("shard_recieved") and "WAGSTAFF_NPC_CAPTURESTOP3")
+                or "WAGSTAFF_NPC_CAPTURESTOP2"
+            inst.components.talker:Chatter(speech_entry, nil, nil, nil, CHATPRIORITIES.LOW)
             inst.sg:GoToState("talk", "capture_emote")
         end,
     },
@@ -489,7 +484,8 @@ local states =
         end,
 
         ontimeout = function(inst)
-            inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_ANALYSIS_OVER[math.random(#STRINGS.WAGSTAFF_NPC_ANALYSIS_OVER)])
+            local string_name = "WAGSTAFF_NPC_ANALYSIS_OVER"
+            inst.components.talker:Chatter(string_name, math.random(#string_name), nil, nil, CHATPRIORITIES.LOW)
             inst.sg:GoToState("talk", "analyzing_pst")
         end,
     },

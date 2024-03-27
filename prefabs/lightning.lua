@@ -43,6 +43,14 @@ local function PlayThunderSound(lighting)
 end
 
 local function StartFX(inst)
+    local pt = Vector3(inst.Transform:GetWorldPosition())
+    if TheWorld.net.components.moonstorms and TheWorld.net.components.moonstorms:IsPointInMoonstorm(pt) then
+        local new = SpawnPrefab("moonstorm_lightning")
+        new.Transform:SetPosition(pt.x,pt.y,pt.z)
+        inst:Remove()
+        return
+    end
+
 	for i, v in ipairs(AllPlayers) do
 		local distSq = v:GetDistanceSqToInst(inst)
 		local k = math.max(0, math.min(1, distSq / LIGHTNING_MAX_DIST_SQ))

@@ -118,14 +118,6 @@ local function boat_command_update(inst)
     end
 end
 
-local function item_remove(item) item:Remove() end
-local function on_remove(inst)
-    local inventory = inst.components.inventory
-    if not inventory then return end
-
-    inventory:ForEachItem(item_remove)
-end
-
 local function sleep_ai_update(inst)
     local crewmember = inst.components.crewmember
     if not crewmember then return end
@@ -254,9 +246,6 @@ local function fn()
     --
     inst:DoTaskInTime(FRAMES, initialize)
     inst:DoPeriodicTask(1, boat_command_update)
-
-    --
-    inst:ListenForEvent("onremove", on_remove)
 
     --
     inst:SetBrain(brain)

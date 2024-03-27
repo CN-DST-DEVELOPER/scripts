@@ -46,7 +46,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function InventoryItem:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function InventoryItem:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified:Remove()
@@ -57,9 +58,14 @@ function InventoryItem:OnRemoveFromEntity()
             self:DetachClassified()
         end
     end
-end
+end]]
 
-InventoryItem.OnRemoveEntity = InventoryItem.OnRemoveFromEntity
+function InventoryItem:OnRemoveEntity()
+	if self.classified and TheWorld.ismastersim then
+		self.classified:Remove()
+		self.classified = nil
+	end
+end
 
 function InventoryItem:AttachClassified(classified)
     self.classified = classified
@@ -246,7 +252,15 @@ function InventoryItem:IsDeployable(deployer)
         return false
     end
     local restrictedtag = self.classified.deployrestrictedtag:value()
-    return restrictedtag == nil or restrictedtag == 0 or (deployer ~= nil and deployer:HasTag(restrictedtag))
+	if restrictedtag and restrictedtag ~= 0 and not (deployer and deployer:HasTag(restrictedtag)) then
+		return false
+	end
+	local rider = deployer and deployer.replica.rider or nil
+	if rider and rider:IsRiding() then
+		--can only deploy tossables while mounted
+		return self.inst:HasTag("projectile")
+	end
+	return true
 end
 
 function InventoryItem:SetDeploySpacing(deployspacing)

@@ -244,7 +244,7 @@ CommonStates.AddSimpleState = function(states, name, anim, tags, finishstate, ti
 				fns.onenter(inst, params)
 			end
         end,
-        
+
         timeline = timeline,
 
         events =
@@ -281,7 +281,7 @@ CommonStates.AddSimpleActionState = function(states, name, anim, time, tags, fin
 			end
         end,
 
-        timeline = timeline or 
+        timeline = timeline or
         {
             TimeEvent(time, performbufferedaction),
         },

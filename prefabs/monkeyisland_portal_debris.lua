@@ -5,22 +5,23 @@ local assets =
 
 local prefabs =
 {
-    "cutstone",
+    "collapse_small",
+    "wagpunk_bits",
     "gears",
     "trinket_6", --Frazzled Wires
 }
 
-local loot =
+SetSharedLootTable("monkeyisland_portal_debris",
 {
-    "cutstone",
-    "gears",
-    "trinket_6", --Frazzled Wires
-}
+    {"wagpunk_bits", 0.85},
+    {"gears",        0.25},
+    {"trinket_6",    0.25},
+})
 
 local function OnHammered(inst, worker)
     inst.components.lootdropper:DropLoot()
     
-    local fx = SpawnPrefab("collapse_big")
+    local fx = SpawnPrefab("collapse_small")
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     fx:SetMaterial("metal")
 
@@ -70,7 +71,7 @@ local function fn()
 
     ---------------------------------------------------------------
     inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetLoot(loot)
+    inst.components.lootdropper:SetChanceLootTable("monkeyisland_portal_debris")
 
     ---------------------------------------------------------------
     inst:AddComponent("workable")

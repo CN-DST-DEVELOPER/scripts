@@ -1269,6 +1269,30 @@ t = {
                 end
             end,
         },
+        {
+            version = 5.143, -- Junk Yard - new content
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_junkyard_content")
+            end,
+        },
+        {
+            version = 5.144, -- Junk Yard - remove fence_junk_pre_rotator instances
+            fn = function(savedata)
+                savedata.retrofit_junkyardv2_content = true
+            end,
+        },
+        {
+            version = 5.145, -- Junk Yard - Try to spawn a whole setpiece if any of the pieces are missing.
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_junkyardv3_content")
+            end,
+        },
+        {
+            version = 5.146, -- rift_terraformer fix
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "remove_rift_terraformers_fix")
+            end,
+        },
     },
 }
 

@@ -219,6 +219,9 @@ local MainSounds =
     "yotd2024.fev",
     "yotd2024.fsb",
     --"yotd2024_music.fsb",
+
+    "qol1.fev",
+    "qol1.fsb",
 }
 
 function PreloadSoundList(list)

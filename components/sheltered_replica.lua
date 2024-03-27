@@ -28,12 +28,13 @@ local Sheltered = Class(function(self, inst)
     self._task = inst:DoTaskInTime(0, Initialize, self)
 end)
 
-function Sheltered:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Sheltered:OnRemoveFromEntity()
     if self._task ~= nil then
         self._task:Cancel()
     end
     self.inst.AnimState:OverrideShade(1)
-end
+end]]
 
 function Sheltered:StartSheltered(level)
     self._issheltered:set(true)

@@ -160,6 +160,8 @@ local function sapling_common(inst, is_moon)
     MakeSmallPropagator(inst)
     MakeNoGrowInWinter(inst)
     MakeHauntableIgnite(inst)
+    MakeWaxablePlant(inst)
+
     ---------------------
     inst._is_moon = is_moon
 

@@ -69,14 +69,14 @@ local function pushsafetospawn(inst)
 end
 
 local function ReturnChildren(inst)
-    for k, child in pairs(inst.components.childspawner.childrenoutside) do
+    for _, child in pairs(inst.components.childspawner.childrenoutside) do
         if child.components.homeseeker ~= nil then
             child.components.homeseeker:GoHome()
         end
         child:PushEvent("gohome")
     end
 
-    if inst.task == nil then
+    if not inst.task then
         inst.task = inst:DoTaskInTime(math.random(60, 120), pushsafetospawn)
     end
 end
@@ -101,8 +101,24 @@ local function ongohome(inst, child)
 end
 
 local function onsafetospawn(inst)
-    if inst.components.childspawner ~= nil then
+    if TheWorld.state.isacidraining then
+        -- Acid rain isn't safe, but we don't have a nice way to track if it's ongoing.
+        -- So just check when we try to go safe, and restart the waiting task if we have to.
+        if inst.task then
+            inst.task:Cancel()
+            inst.task = nil
+        end
+
+        inst.task = inst:DoTaskInTime(math.random(60, 120), pushsafetospawn)
+    elseif inst.components.childspawner ~= nil then
         inst.components.childspawner:StartSpawning()
+    end
+end
+
+local function onacidrainresponse(inst)
+    -- recheck if it's acid raining, in case it decided to stop in the meantime.
+    if TheWorld.state.isacidraining then
+        inst:PushEvent("monkeydanger")
     end
 end
 
@@ -157,40 +173,39 @@ local function fn()
     inst:AddTag("cavedweller")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst:AddComponent("childspawner")
-    inst.components.childspawner:SetRegenPeriod(TUNING.MONKEYBARREL_REGEN_PERIOD)
-    inst.components.childspawner:SetSpawnPeriod(TUNING.MONKEYBARREL_SPAWN_PERIOD)
+    local childspawner = inst:AddComponent("childspawner")
+    childspawner:SetRegenPeriod(TUNING.MONKEYBARREL_REGEN_PERIOD)
+    childspawner:SetSpawnPeriod(TUNING.MONKEYBARREL_SPAWN_PERIOD)
     if TUNING.MONKEYBARREL_CHILDREN.max == 0 then
-        inst.components.childspawner:SetMaxChildren(0)
+        childspawner:SetMaxChildren(0)
     else
-        inst.components.childspawner:SetMaxChildren(math.random(TUNING.MONKEYBARREL_CHILDREN.min, TUNING.MONKEYBARREL_CHILDREN.max))
+        childspawner:SetMaxChildren(math.random(TUNING.MONKEYBARREL_CHILDREN.min, TUNING.MONKEYBARREL_CHILDREN.max))
     end
 
     WorldSettings_ChildSpawner_SpawnPeriod(inst, TUNING.MONKEYBARREL_SPAWN_PERIOD, TUNING.MONKEYBARREL_ENABLED)
     WorldSettings_ChildSpawner_RegenPeriod(inst, TUNING.MONKEYBARREL_REGEN_PERIOD, TUNING.MONKEYBARREL_ENABLED)
     if not TUNING.MONKEYBARREL_ENABLED then
-        inst.components.childspawner.childreninside = 0
+        childspawner.childreninside = 0
     end
 
-    inst.components.childspawner:StartRegen()
-    inst.components.childspawner.childname = "monkey"
-    inst.components.childspawner:StartSpawning()
-    inst.components.childspawner.ongohome = ongohome
-    inst.components.childspawner:SetSpawnedFn(shake)
+    childspawner:StartRegen()
+    childspawner.childname = "monkey"
+    childspawner:StartSpawning()
+    childspawner.ongohome = ongohome
+    childspawner:SetSpawnedFn(shake)
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('monkey_barrel')
 
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(4)
-    inst.components.workable:SetOnFinishCallback(onhammered)
-    inst.components.workable:SetOnWorkCallback(onhit)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(4)
+    workable:SetOnFinishCallback(onhammered)
+    workable:SetOnWorkCallback(onhit)
 
     local function ondanger()
         if inst.components.childspawner ~= nil then
@@ -204,6 +219,11 @@ local function fn()
 
     --Monkeys all return on danger
     inst:ListenForEvent("monkeydanger", ondanger)
+
+    -- Monkeys all return when acid rain starts
+    inst:WatchWorldState("isacidraining", function()
+        inst:DoTaskInTime(3 + 7 * math.random(), onacidrainresponse)
+    end)
 
     inst:ListenForEvent("safetospawn", onsafetospawn)
 

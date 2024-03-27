@@ -37,7 +37,7 @@ local function ReturnToPlayerAfterFinishedScan(inst)
         offset = FindWalkableOffset(flyto_position, angle_to_leader, 1.0)
     else
         flyto_position = inst:GetPosition()
-        offset = FindWalkableOffset(flyto_position, 2*PI*math.random(), math.random(0.5, 1.5))
+        offset = FindWalkableOffset(flyto_position, TWOPI*math.random(), GetRandomMinMax(0.5, 1.5))
     end
 
     if offset then

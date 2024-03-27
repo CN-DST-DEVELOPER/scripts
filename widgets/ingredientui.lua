@@ -41,7 +41,11 @@ local IngredientUI = Class(ImageButton, function(self, atlas, image, quantity, o
             if builder ~= nil then
                 quantity = RoundBiasedUp(quantity * builder:IngredientMod())
             end
-            self.quant:SetString(string.format("%d/%d", on_hand, quantity))
+			if on_hand > 999 then
+				self.quant:SetString(string.format("999+/%d", quantity))
+			else
+				self.quant:SetString(string.format("%d/%d", on_hand, quantity))
+			end
         elseif recipe_type == CHARACTER_INGREDIENT.MAX_HEALTH
             or recipe_type == CHARACTER_INGREDIENT.MAX_SANITY then
             self.quant:SetString(string.format("-%2.0f%%", quantity * 100))

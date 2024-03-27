@@ -5,7 +5,11 @@
 --  There is up to an UPDATE_TIME error when an enity wakes due to the random start time.
 --  At this point moisture is not critical enough to factor for these
 
+--V2C: Don't worry about the time error, it doesn't even account
+--     for changes in target moisture while we are asleep either
+
 local UPDATE_TIME = 1.0
+local SLOW_UPDATE_TIME = 2 --switch to this period when we've reached target moisture
 
 local function onmoisture(self, moisture)
     self._replica:SetMoistureLevel(moisture)
@@ -40,39 +44,17 @@ local function debugUpdate()
 end
 ]]
 local function DoUpdate(inst)
-	inst.components.inventoryitemmoisture:UpdateMoisture(UPDATE_TIME)
+	local self = inst.components.inventoryitemmoisture
+	local dt = self.moistureupdatetask.period
+	local nextdt = self:UpdateMoisture(dt) and UPDATE_TIME or SLOW_UPDATE_TIME
+	if dt ~= nextdt then
+		self.moistureupdatetask:Cancel()
+		self.moistureupdatetask = inst:DoPeriodicTask(nextdt, DoUpdate)
+	end
 
 --	if debug_print_moisture_updates then
 --		debugUpdate()
 --	end
-end
-
-local function StartUpdateTask(inst)
-	if inst.moistureupdatetask == nil then
-		local update_offset = math.random()*UPDATE_TIME
-		inst.moistureupdatetask = inst:DoPeriodicTask(UPDATE_TIME, DoUpdate, update_offset)
-	end
-end
-
-local function OnSleep(inst)
-	if inst.moistureupdatetask ~= nil then
-		inst.moistureupdatetask:Cancel()
-		inst.moistureupdatetask = nil
-	end
-
-	inst._entitysleeptime = GetTime()
-end
-
-local function OnWake(inst)
-	if inst._entitysleeptime == nil then
-		return
-	end
-
-	local time_slept = GetTime() - inst._entitysleeptime
-	if time_slept > 0 then
-		inst.components.inventoryitemmoisture:UpdateMoisture(time_slept)
-	end
-	StartUpdateTask(inst)
 end
 
 local InventoryItemMoisture = Class(function(self, inst)
@@ -82,11 +64,6 @@ local InventoryItemMoisture = Class(function(self, inst)
 
     self._replica = nil
     --Don't initialize .moisture and .iswet until we have a link to inventoryitem replica
-
-	inst:ListenForEvent("entitysleep", OnSleep)
-    inst:ListenForEvent("entitywake", OnWake)
-
-	StartUpdateTask(inst)
 end,
 nil,
 {
@@ -105,17 +82,37 @@ function InventoryItemMoisture:OnRemoveFromEntity()
     self.moisture = 0
     self.iswet = false
 
-	self.inst:RemoveEventCallback("entitysleep", OnSleep)
-    self.inst:RemoveEventCallback("entitywake", OnWake)
+	if self.moistureupdatetask then
+		self.moistureupdatetask:Cancel()
+		self.moistureupdatetask = nil
+	end
+end
 
-	if self.inst.moistureupdatetask ~= nil then
-		self.inst.moistureupdatetask:Cancel()
-		self.inst.moistureupdatetask = nil
+function InventoryItemMoisture:OnEntitySleep()
+	if self.moistureupdatetask then
+		self.moistureupdatetask:Cancel()
+		self.moistureupdatetask = nil
+	end
+
+	self._entitysleeptime = GetTime()
+end
+
+function InventoryItemMoisture:OnEntityWake()
+	local updated
+	if self._entitysleeptime then
+		local time_slept = GetTime() - self._entitysleeptime
+		if time_slept > 0 then
+			updated = self:UpdateMoisture(time_slept)
+		end
+		self._entitysleeptime = nil
+	end
+	if self.moistureupdatetask == nil then
+		self.moistureupdatetask = self.inst:DoPeriodicTask(updated and UPDATE_TIME or SLOW_UPDATE_TIME, DoUpdate, math.random() * UPDATE_TIME)
 	end
 end
 
 function InventoryItemMoisture:InheritMoisture(moisture, iswet)
-    self.moisture = math.max(0, moisture)
+	self.moisture = math.clamp(moisture, 0, TUNING.MAX_WETNESS)
     self.iswet = (iswet and moisture > TUNING.MOISTURE_DRY_THRESHOLD) or moisture >= TUNING.MOISTURE_WET_THRESHOLD
 end
 
@@ -126,12 +123,17 @@ function InventoryItemMoisture:DiluteMoisture(item, count)
     end
 end
 
+function InventoryItemMoisture:MakeMoistureAtLeast(min)
+	self.moisture = math.max(self.moisture, min)
+	self.iswet = self.iswet or min > TUNING.MOISTURE_DRY_THRESHOLD
+end
+
 function InventoryItemMoisture:DoDelta(delta)
     self:SetMoisture(self.moisture + delta)
 end
 
 function InventoryItemMoisture:SetMoisture(moisture)
-    self.moisture = math.max(0, moisture)
+	self.moisture = math.clamp(moisture, 0, TUNING.MAX_WETNESS)
     if moisture >= TUNING.MOISTURE_WET_THRESHOLD then
         self.iswet = true
     elseif moisture <= TUNING.MOISTURE_DRY_THRESHOLD then
@@ -141,12 +143,12 @@ function InventoryItemMoisture:SetMoisture(moisture)
 end
 
 function InventoryItemMoisture:GetTargetMoisture()
-    --If floating in the ocean, use OCEAN_WETNESS
+	--If floating in the ocean, use MAX_WETNESS (not OCEAN_WETNESS, that is initial wetness when entering ocean)
 	--If there is no owner, use world moisture (account for "rainimmunity")
     --If owner is player, use player moisture
     --Otherwise (most likely a container), keep items dry
     local owner = self.inst.components.inventoryitem.owner
-    return (self.inst.components.floater ~= nil and self.inst.components.floater.showing_effect and TUNING.OCEAN_WETNESS)
+	return (self.inst.components.floater ~= nil and self.inst.components.floater.showing_effect and TUNING.MAX_WETNESS)
 		or (owner == nil and (TheWorld.state.israining and self.inst.components.rainimmunity == nil and TheWorld.state.wetness or 0))
         or (owner.components.moisture ~= nil and owner.components.moisture:GetMoisture())
         or 0
@@ -159,7 +161,10 @@ function InventoryItemMoisture:UpdateMoisture(dt)
         self:SetMoisture(math.min(targetMoisture, self.moisture + 0.5 * dt))
     elseif target_delta < 0 then
         self:SetMoisture(math.max(targetMoisture, self.moisture - dt))
+	else
+		return false --no change
     end
+	return true --changed
 end
 
 function InventoryItemMoisture:OnSave()
@@ -173,7 +178,7 @@ end
 
 function InventoryItemMoisture:OnLoad(data)
     if data ~= nil then
-        self.moisture = math.max(0, data.moisture or 0)
+		self.moisture = math.clamp(data.moisture or 0, 0, TUNING.MAX_WETNESS)
         self.iswet = (data.wet == true)
     end
 end

@@ -8,9 +8,7 @@ local function OnEntityReplicated(inst)
     inst._parent = inst.entity:GetParent()
     if inst._parent == nil then
         print("Unable to initialize classified data for inventory item")
-    elseif inst._parent.replica.inventoryitem ~= nil then
-        inst._parent.replica.inventoryitem:AttachClassified(inst)
-    else
+	elseif not inst._parent:TryAttachClassifiedToReplicaComponent(inst, "inventoryitem") then
         inst._parent.inventoryitem_classified = inst
         inst.OnRemoveEntity = OnRemoveEntity
     end
@@ -136,7 +134,7 @@ local function RegisterNetListeners(inst)
     inst:ListenForEvent("perishdirty", DeserializePerish)
     inst:ListenForEvent("rechargedirty", DeserializeRecharge)
     inst:ListenForEvent("rechargetimedirty", DeserializeRechargeTime)
-    inst:ListenForEvent("stacksizedirty", OnStackSizeDirty, inst._parent)
+	inst:ListenForEvent("inventoryitem_stacksizedirty", OnStackSizeDirty, inst._parent)
     inst:ListenForEvent("iswetdirty", OnIsWetDirty, inst._parent)
     inst:ListenForEvent("isacidsizzlingdirty", OnIsAcidSizzlingDirty, inst._parent)
 end

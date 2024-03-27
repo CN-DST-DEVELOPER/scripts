@@ -76,6 +76,10 @@ function Equippable:SetOnUnequip(fn)
     self.onunequipfn = fn
 end
 
+function Equippable:SetDappernessFn(fn)
+    self.dapperfn = fn
+end
+
 function Equippable:SetOnEquipToModel(fn)
     self.onequiptomodelfn = fn
 end

@@ -308,22 +308,21 @@ local function hauntchancefn(inst)
 end
 
 local function dropLootFn(lootdropper)
+    if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
+        local SELECTION = {
+            "winter_ornament_boss_celestialchampion1",
+            "winter_ornament_boss_celestialchampion2",
+            "winter_ornament_boss_celestialchampion3",
+            "winter_ornament_boss_celestialchampion4",
+        }
 
-        if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
-            local SELECTION = {
-                "winter_ornament_boss_celestialchampion1",
-                "winter_ornament_boss_celestialchampion2",
-                "winter_ornament_boss_celestialchampion3",
-                "winter_ornament_boss_celestialchampion4",
-            }
-        
-            for i=1,2 do
-                local ornamentnum = math.random(1,#SELECTION)
-                local ornament = SELECTION[ornamentnum]
-                table.remove(SELECTION,ornamentnum)
-                lootdropper:AddChanceLoot(ornament, 1)
-            end
+        for _=1,2 do
+            local ornamentnum = math.random(1,#SELECTION)
+            local ornament = SELECTION[ornamentnum]
+            table.remove(SELECTION,ornamentnum)
+            lootdropper:AddChanceLoot(ornament, 1)
         end
+    end
 end
 
 local function trackattackers(inst,data)

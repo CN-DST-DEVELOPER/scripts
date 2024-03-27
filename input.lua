@@ -251,6 +251,13 @@ function Input:GetWorldPosition()
     return x ~= nil and y ~= nil and z ~= nil and Vector3(x, y, z) or nil
 end
 
+function Input:GetWorldXZWithHeight(height)
+	local x, y = TheSim:GetPosition()
+	local z
+	x, y, z = TheSim:ProjectScreenPos(x, y, height)
+	return x, z
+end
+
 function Input:GetAllEntitiesUnderMouse()
     return self.mouse_enabled and self.entitiesundermouse or {}
 end

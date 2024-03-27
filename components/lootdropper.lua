@@ -48,6 +48,12 @@ function LootDropper:AddRandomLoot(prefab, weight)
     self.totalrandomweight = self.totalrandomweight + weight
 end
 
+function LootDropper:ClearRandomLoot()
+    self.randomloot = nil
+    self.totalrandomweight = nil
+    self.numrandomloot = nil
+end
+
 -- This overrides the normal loot table while haunted
 function LootDropper:AddRandomHauntedLoot(prefab, weight)
     if not self.randomhauntedloot then
@@ -340,7 +346,7 @@ function LootDropper:SpawnLootPrefab( lootprefab, pt, linked_skinname, skin_id, 
                 end
             end
 
-        -- here? so we can run a full drop loot?
+            -- here? so we can run a full drop loot?
             self:FlingItem(loot, pt)
 
             loot:PushEvent("on_loot_dropped", {dropper = self.inst})
@@ -348,7 +354,6 @@ function LootDropper:SpawnLootPrefab( lootprefab, pt, linked_skinname, skin_id, 
 
             -- make it smoulder when dropped if the parent was in controlled burn
             if self.inst.components.burnable and self.inst.components.burnable:GetControlledBurn() and loot.components.burnable then
-
                 loot.components.burnable:StartWildfire()
             end
 

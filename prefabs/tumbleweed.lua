@@ -348,7 +348,7 @@ local function OnEntityWake(inst)
     end)
 end
 
-local function OnLongAction(inst)
+local function OnLongAction(inst)--, doer)
     inst.Physics:Stop()
     inst.components.blowinwind:Stop()
     inst:RemoveEventCallback("animover", startmoving)

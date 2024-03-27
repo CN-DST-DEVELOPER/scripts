@@ -19,12 +19,6 @@ local prefabs =
 local brain = require "brains/monkeybrain"
 local nightmarebrain = require "brains/nightmaremonkeybrain"
 
-local SLEEP_DIST_FROMHOME = 1
-local SLEEP_DIST_FROMTHREAT = 20
-local MAX_CHASEAWAY_DIST = 80
-local MAX_TARGET_SHARES = 5
-local SHARE_TARGET_DIST = 40
-
 local LOOT = { "smallmeat", "cave_banana" }
 local FORCED_NIGHTMARE_LOOT = { "nightmarefuel" }
 SetSharedLootTable('monkey',
@@ -62,15 +56,15 @@ local function oneat(inst)
     if inst.components.inventory ~= nil then
         local maxpoop = 3
         local poopstack = inst.components.inventory:FindItem(IsPoop)
-        if poopstack == nil or poopstack.components.stackable.stacksize < maxpoop then
+        if not poopstack or poopstack.components.stackable.stacksize < maxpoop then
             inst.components.inventory:GiveItem(SpawnPrefab("poop"))
         end
     end
 end
 
 local function onthrow(weapon, inst)
-    if inst.components.inventory ~= nil and inst.components.inventory:FindItem(IsPoop) ~= nil then
-        inst.components.inventory:ConsumeByName("poop", 1)
+    if inst.components.inventory ~= nil then
+        inst.components.inventory:ConsumeByName("poop")
     end
 end
 
@@ -127,15 +121,15 @@ local function OnAttacked(inst, data)
     inst.task = inst:DoTaskInTime(math.random(55, 65), _ForgetTarget) --Forget about target after a minute
 
     local x, y, z = inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, 30, MONKEY_TAGS)
-    for i, v in ipairs(ents) do
-        if v ~= inst and v.components.combat then
-            v.components.combat:SuggestTarget(data.attacker)
-            SetHarassPlayer(v, nil)
-            if v.task ~= nil then
-                v.task:Cancel()
+    local monkeys = TheSim:FindEntities(x, y, z, 30, MONKEY_TAGS)
+    for _, monkey in ipairs(monkeys) do
+        if monkey ~= inst and monkey.components.combat then
+            monkey.components.combat:SuggestTarget(data.attacker)
+            SetHarassPlayer(monkey, nil)
+            if monkey.task ~= nil then
+                monkey.task:Cancel()
             end
-            v.task = v:DoTaskInTime(math.random(55, 65), _ForgetTarget) --Forget about target after a minute
+            monkey.task = monkey:DoTaskInTime(math.random(55, 65), _ForgetTarget) --Forget about target after a minute
         end
     end
 end
@@ -154,12 +148,13 @@ local function FindTargetOfInterest(inst)
         -- Get all players in range
         local targets = FindPlayersInRange(x, y, z, 25)
         -- randomly iterate over all players until we find one we're interested in.
-        for i = 1, #targets do
+        for _ = 1, #targets do
             local randomtarget = math.random(#targets)
             local target = targets[randomtarget]
             table.remove(targets, randomtarget)
             --Higher chance to follow if he has bananas
-            if target.components.inventory ~= nil and math.random() < (target.components.inventory:FindItem(IsBanana) ~= nil and .6 or .15) then
+            if target.components.inventory ~= nil and
+                    math.random() < (target.components.inventory:FindItem(IsBanana) ~= nil and .6 or .15) then
                 SetHarassPlayer(inst, target)
                 return
             end
@@ -186,9 +181,6 @@ local function retargetfn(inst)
 end
 
 local function shouldKeepTarget(inst)
-    --[[if inst:HasTag("nightmare") then
-        return true
-    end]]
     return true
 end
 
@@ -209,21 +201,22 @@ local function OnMonkeyDeath(inst, data)
     end
 end
 
+local function onpickup_delayed(inst, item)
+    if item:IsValid() and
+            item.components.inventoryitem ~= nil and
+            item.components.inventoryitem.owner == inst then
+        inst.components.inventory:Equip(item)
+    end
+end
 local function OnPickup(inst, data)
     local item = data.item
     if item ~= nil and
-        item.components.equippable ~= nil and
-        item.components.equippable.equipslot == EQUIPSLOTS.HEAD and
-        not inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) then
+            item.components.equippable ~= nil and
+            item.components.equippable.equipslot == EQUIPSLOTS.HEAD and
+            not inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) then
         --Ugly special case for how the PICKUP action works.
         --Need to wait until PICKUP has called "GiveItem" before equipping item.
-        inst:DoTaskInTime(0, function()
-            if item:IsValid() and
-                item.components.inventoryitem ~= nil and
-                item.components.inventoryitem.owner == inst then
-                inst.components.inventory:Equip(item)
-            end
-        end)
+        inst:DoTaskInTime(0, onpickup_delayed, item)
     end
 end
 
@@ -280,6 +273,8 @@ local function SetNormalMonkey(inst)
     inst.components.lootdropper:SetLoot(LOOT)
     inst.components.lootdropper:SetChanceLootTable(nil)
 
+    inst.components.acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
     inst.components.combat:SetTarget(nil)
 
     inst:ListenForEvent("entity_death", inst.listenfn, TheWorld)
@@ -298,6 +293,8 @@ local function SetNightmareMonkey(inst)
         inst.task = nil
     end
 
+    inst.components.acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.BERSERKER)
+
     inst.components.combat:SetTarget(nil)
 
     inst:RemoveEventCallback("entity_death", inst.listenfn, TheWorld)
@@ -306,11 +303,10 @@ end
 local function SetNightmareMonkeyLoot(inst, forced)
 	if forced then
 		inst.components.lootdropper:SetLoot(FORCED_NIGHTMARE_LOOT)
-		inst.components.lootdropper:SetChanceLootTable("monkey")
 	else
 		inst.components.lootdropper:SetLoot(nil)
-		inst.components.lootdropper:SetChanceLootTable("monkey")
 	end
+    inst.components.lootdropper:SetChanceLootTable("monkey")
 end
 
 local function IsForcedNightmare(inst)
@@ -322,7 +318,11 @@ local function IsWorldNightmare(inst, phase)
 end
 
 local function OnTimerDone(inst, data)
-	if data ~= nil and data.name == "forcenightmare" then
+	if not data then
+        return
+    end
+
+    if data.name == "forcenightmare" then
 		if IsWorldNightmare(inst, TheWorld.state.nightmarephase) and inst:HasTag("nightmare") then
 			SetNightmareMonkeyLoot(inst, false)
 		else
@@ -424,7 +424,6 @@ local function fn()
     inst:AddTag("animal")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -442,29 +441,28 @@ local function fn()
 
     inst:AddComponent("thief")
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor:SetSlowMultiplier( 1 )
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorecreep = false }
-    inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor:SetSlowMultiplier( 1 )
+    locomotor:SetTriggersCreep(false)
+    locomotor.pathcaps = { ignorecreep = false }
+    locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
 
-    inst:AddComponent("combat")
-    inst.components.combat:SetAttackPeriod(TUNING.MONKEY_ATTACK_PERIOD)
-    inst.components.combat:SetRange(TUNING.MONKEY_MELEE_RANGE)
-    inst.components.combat:SetRetargetFunction(1, retargetfn)
-
-    inst.components.combat:SetKeepTargetFunction(shouldKeepTarget)
-    inst.components.combat:SetDefaultDamage(0)  --This doesn't matter, monkey uses weapon damage
+    local combat = inst:AddComponent("combat")
+    combat:SetAttackPeriod(TUNING.MONKEY_ATTACK_PERIOD)
+    combat:SetRange(TUNING.MONKEY_MELEE_RANGE)
+    combat:SetRetargetFunction(1, retargetfn)
+    combat:SetKeepTargetFunction(shouldKeepTarget)
+    combat:SetDefaultDamage(0)  --This doesn't matter, monkey uses weapon damage
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.MONKEY_HEALTH)
 
-    inst:AddComponent("periodicspawner")
-    inst.components.periodicspawner:SetPrefab("poop")
-    inst.components.periodicspawner:SetRandomTimes(200,400)
-    inst.components.periodicspawner:SetDensityInRange(20, 2)
-    inst.components.periodicspawner:SetMinimumSpacing(15)
-    inst.components.periodicspawner:Start()
+    local periodicspawner = inst:AddComponent("periodicspawner")
+    periodicspawner:SetPrefab("poop")
+    periodicspawner:SetRandomTimes(200,400)
+    periodicspawner:SetDensityInRange(20, 2)
+    periodicspawner:SetMinimumSpacing(15)
+    periodicspawner:Start()
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot(LOOT)
@@ -478,6 +476,10 @@ local function fn()
     inst.components.sleeper.waketestfn = NocturnalWakeTest
 
     inst:AddComponent("areaaware")
+
+    inst:AddComponent("acidinfusible")
+    inst.components.acidinfusible:SetFXLevel(1)
+    inst.components.acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGmonkey")

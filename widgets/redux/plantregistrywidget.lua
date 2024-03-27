@@ -129,13 +129,13 @@ function PlantRegistryWidget:_PositionTabs(tabs, w, y)
 end
 
 function PlantRegistryWidget:OnControlTabs(control, down)
-	if control == CONTROL_OPEN_CRAFTING then
+	if control == CONTROL_MENU_L2 then
 		local tab = self.tabs[((self.last_selected._tabindex - 1) % #self.tabs) + 1]
 		if not down then
 			tab.onclick()
 			return true
 		end
-	elseif control == CONTROL_OPEN_INVENTORY then
+	elseif control == CONTROL_MENU_R2 then
 		local tab = self.tabs[((self.last_selected._tabindex + 1) % #self.tabs) + 1]
 		if not down then
 			tab.onclick()
@@ -158,7 +158,7 @@ function PlantRegistryWidget:GetHelpText()
     local t = {}
 
 	if #self.tabs > 1 then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_CRAFTING).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_L2).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
 	end
 
     return table.concat(t, "  ")

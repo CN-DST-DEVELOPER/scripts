@@ -10,7 +10,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Hunger:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Hunger:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified = nil
@@ -21,7 +22,7 @@ function Hunger:OnRemoveFromEntity()
     end
 end
 
-Hunger.OnRemoveEntity = Hunger.OnRemoveFromEntity
+Hunger.OnRemoveEntity = Hunger.OnRemoveFromEntity]]
 
 function Hunger:AttachClassified(classified)
     self.classified = classified

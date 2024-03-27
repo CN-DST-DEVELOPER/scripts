@@ -4,7 +4,6 @@ require "behaviours/faceentity"
 require "behaviours/chaseandattack"
 require "behaviours/runaway"
 require "behaviours/doaction"
---require "behaviours/choptree"
 require "behaviours/findlight"
 require "behaviours/panic"
 require "behaviours/chattynode"
@@ -114,7 +113,10 @@ local function GetTraderFn(inst)
     for i, v in ipairs(players) do
         if inst.components.trader:IsTryingToTradeWithMe(v) then
 
-            inst.components.npc_talker:Say(getstring(inst,STRINGS.HERMITCRAB_ATTEMPT_TRADE), nil, true)
+            local gfl = inst.getgeneralfriendlevel(inst)
+            local chatter_name = "HERMITCRAB_ATTEMPT_TRADE."..gfl
+            inst.components.npc_talker:Chatter(chatter_name, math.random(#(STRINGS["HERMITCRAB_ATTEMPT_TRADE"][gfl])), nil, nil, true)
+
             if inst.components.timer:TimerExists("speak_time") then
                 inst.components.timer:SetTimeLeft("speak_time", TUNING.HERMITCRAB.SPEAKTIME)
             else
@@ -191,7 +193,7 @@ local function getfriendlevelspeech(inst, target)
     if not inst.components.timer:TimerExists("speak_time") then
 
         local level = inst.components.friendlevels.level
-        local str = STRINGS.HERMITCRAB_GREETING[level][math.random(1,#STRINGS.HERMITCRAB_GREETING[level])]
+        local str = STRINGS.HERMITCRAB_GREETING[level][math.random(#STRINGS.HERMITCRAB_GREETING[level])]
 
         if type(str) == "table" then
             local new = {}
@@ -259,7 +261,11 @@ local function GetFaceTargetFn(inst)
 
     if shouldface and not inst.sg:HasStateTag("busy") and not inst.sg:HasStateTag("alert") and not inst.hasgreeted then
         local str = getfriendlevelspeech(inst, target)
-        if str then inst.components.npc_talker:Say(str, nil, true) end
+        if str then
+            -- TODO (SAM) Leaving this as Say for now, because some of the getfriendspeechlevel options
+            -- format in the player's name.
+            inst.components.npc_talker:Say(str, nil, true)
+        end
         inst.hasgreeted = true
     end
 
@@ -325,13 +331,7 @@ local function DoHarvestBerries(inst)
     if source then
         local x,y,z = source.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x,y,z, inst.island_radius, PICKABLE_TAGS)
-        local target = nil
-        if #ents > 0 then
-            for i,ent in ipairs(ents)do
-                target = ent
-                break
-            end
-        end
+        local target = (#ents > 0 and ents[1]) or nil
         if target then
             return BufferedAction(inst, target, ACTIONS.PICK)
         end
@@ -381,7 +381,11 @@ local function runawaytest(inst)
         end
         if player and not inst.sg:HasStateTag("busy") and not inst.hasgreeted then
             local str = getfriendlevelspeech(inst, player)
-            if str then inst.components.npc_talker:Say(str,nil,true) end
+            if str then
+                -- TODO (SAM) Leaving this as Say for now, because some of the getfriendspeechlevel options
+                -- format in the player's name.
+                inst.components.npc_talker:Say(str, nil, true)
+            end
             inst.hasgreeted = true
         end
         return true
@@ -450,6 +454,13 @@ local function DoThrow(inst)
     end
 end
 
+local CHATTERPARAMS_LOW = {
+	echotochatpriority = CHATPRIORITIES.LOW,
+}
+local CHATTERPARAMS_HIGH = {
+	echotochatpriority = CHATPRIORITIES.HIGH,
+}
+
 local HermitBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -462,7 +473,10 @@ function HermitBrain:OnStart()
                 PriorityNode{
                     WhileNode( function() return self.inst.comment_data ~= nil end, "comment",
                         DoAction(self.inst, DoCommentAction, "comment", true, 10 )),
-                    ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_ATTEMPT_TRADE) end,
+                    ChattyNode(self.inst, {
+                            name = function(inst) return "HERMITCRAB_ATTEMPT_TRADE."..inst.getgeneralfriendlevel(inst) end,
+                            chatterparams = CHATTERPARAMS_LOW,
+                        },
                         FaceEntity(self.inst, GetTraderFn, KeepTraderFn)),
                     FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
                     IfNode( function() return runawaytest(self.inst) end, "unfriendly",
@@ -490,10 +504,10 @@ function HermitBrain:OnStart()
     local night = WhileNode( function() return not TheWorld.state.isday and not allnighttest(self.inst) end, "IsNight",
         PriorityNode{
             RunAway(self.inst, "player", START_RUN_DIST, STOP_RUN_DIST, function(target) return ShouldRunAway(self.inst, target) end ),
-            ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_GO_HOME) end ,
+            ChattyNode(self.inst, { name = "HERMITCRAB_GO_HOME", chatterparams = CHATTERPARAMS_LOW },
                 WhileNode( function() return not TheWorld.state.iscaveday or not self.inst:IsInLight() end, "Cave nightness",
                     DoAction(self.inst, GoHomeAction, "go home", true ))),
-            ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_PANIC) end,
+            ChattyNode(self.inst, { name = "HERMITCRAB_PANIC", chatterparams = CHATTERPARAMS_LOW },
                 Panic(self.inst)),
         }, 1)
 
@@ -502,7 +516,7 @@ function HermitBrain:OnStart()
         {
 
             WhileNode( function() return BrainCommon.ShouldTriggerPanic(self.inst) end, "PanicHaunted",
-                ChattyNode(self.inst, function(inst) return getstring(inst,STRINGS.HERMITCRAB_PANICHAUNT) end,
+                ChattyNode(self.inst, { name = "HERMITCRAB_PANICHAUNT", chatterparams = CHATTERPARAMS_LOW },
                     Panic(self.inst))),
             RunAway(self.inst, function(guy) return guy:HasTag("pig") and guy.components.combat and guy.components.combat.target == self.inst end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST ),
 

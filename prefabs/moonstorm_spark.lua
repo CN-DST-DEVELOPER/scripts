@@ -72,7 +72,6 @@ local function checkforcrowding(inst)
 end
 
 local function onpickup(inst)
-
     --These last longer when held
     inst.components.perishable:SetLocalMultiplier( TUNING.SEG_TIME * 3/ TUNING.PERISH_SLOW )
     inst.SoundEmitter:KillSound("idle_LP")
@@ -127,6 +126,11 @@ end
 
 local function onworked(inst, worker)
     if worker.components.inventory ~= nil then
+
+        if TheWorld.components.moonstormmanager then
+            TheWorld.components.moonstormmanager:DoTestForSparks()
+        end
+
         worker.components.inventory:GiveItem(inst, nil, inst:GetPosition())
         worker.SoundEmitter:PlaySound("dontstarve/common/butterfly_trap")
         inst.SoundEmitter:KillSound("idle_LP")

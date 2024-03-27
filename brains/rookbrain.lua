@@ -30,16 +30,17 @@ end
 
 local function GetFaceTargetFn(inst)
     local homePos = inst.components.knownlocations:GetLocation("home")
-    if homePos ~= nil and inst:GetDistanceSqToPoint(homePos:Get()) > GO_HOME_DIST * GO_HOME_DIST then
-        return
+    if homePos ~= nil and inst:GetDistanceSqToPoint(homePos:Get()) > (GO_HOME_DIST * GO_HOME_DIST) then
+        return nil
     end
     local target = FindClosestPlayerToInst(inst, START_FACE_DIST, true)
-    return target ~= nil and not target:HasTag("notarget") and target or nil
+    return (target ~= nil and not target:HasTag("notarget") and target)
+        or nil
 end
 
 local function KeepFaceTargetFn(inst, target)
     local homePos = inst.components.knownlocations:GetLocation("home")
-    return (homePos == nil or
+    return (not homePos or
             inst:GetDistanceSqToPoint(homePos:Get()) <= GO_HOME_DIST * GO_HOME_DIST)
         and not target:HasTag("notarget")
         and inst:IsNear(target, KEEP_FACE_DIST)
@@ -51,20 +52,22 @@ local function ShouldGoHome(inst)
     end
 
     local homePos = inst.components.knownlocations:GetLocation("home")
-    if homePos == nil then
-        return
+    if not homePos then
+        return false
     end
 
     local dist_sq = inst:GetDistanceSqToPoint(homePos:Get())
     return dist_sq > GO_HOME_DIST * GO_HOME_DIST
-        or (inst.components.combat.target == nil and
+        or (not inst.components.combat.target and
             dist_sq > CHASE_GIVEUP_DIST * CHASE_GIVEUP_DIST)
 end
 
 function RookBrain:OnStart()
     local root = PriorityNode(
     {
-        WhileNode(function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end,
+        WhileNode(function() return not self.inst.components.combat.target
+                    or not self.inst.components.combat:InCooldown()
+                end,
             "RamAttack",
             ChaseAndRam(self.inst, MAX_CHASE_TIME, CHASE_GIVEUP_DIST, MAX_CHARGE_DIST)),
         WhileNode(function()
@@ -74,12 +77,16 @@ function RookBrain:OnStart()
                             self.inst.components.follower.leader ~= nil)
             end,
             "Dodge",
-            RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
+            RunAway(self.inst, function()
+                    return self.inst.components.combat.target
+                end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
 		BrainCommon.PanicTrigger(self.inst),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, GoHomeAction, "Go Home", false)),
 
-        Follow(self.inst, function() return self.inst.components.follower ~= nil and self.inst.components.follower.leader or nil end,
+        Follow(self.inst, function() return (self.inst.components.follower ~= nil
+                    and self.inst.components.follower.leader) or nil
+                end,
             5, 7, 12, false),
 
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),

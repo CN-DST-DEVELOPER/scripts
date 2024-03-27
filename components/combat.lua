@@ -505,10 +505,10 @@ function Combat:BattleCry()
         if self.nextbattlecrytime == nil or t > self.nextbattlecrytime then
             self:ResetBattleCryCooldown(t)
             if self.inst.components.talker ~= nil then
-                local cry, strid = self:GetBattleCryString(self.target)
+                local cry, strid, echotochatpriority = self:GetBattleCryString(self.target)
                 if cry ~= nil then
                     if strid ~= nil then
-                        self.inst.components.talker:Chatter(cry, strid, 2)
+                        self.inst.components.talker:Chatter(cry, strid, 2, nil, echotochatpriority)
                     else
                         self.inst.components.talker:Say(cry, 2)
                     end

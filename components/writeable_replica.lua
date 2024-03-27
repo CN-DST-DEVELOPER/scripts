@@ -21,7 +21,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Writeable:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Writeable:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified:Remove()
@@ -32,9 +33,14 @@ function Writeable:OnRemoveFromEntity()
             self:DetachClassified()
         end
     end
-end
+end]]
 
-Writeable.OnRemoveEntity = Writeable.OnRemoveFromEntity
+function Writeable:OnRemoveEntity()
+	if self.classified and TheWorld.ismastersim then
+		self.classified:Remove()
+		self.classified = nil
+	end
+end
 
 --------------------------------------------------------------------------
 --Client triggers writing based on receiving access to classified data

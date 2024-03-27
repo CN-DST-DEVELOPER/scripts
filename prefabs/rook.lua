@@ -28,17 +28,17 @@ local prefabs_nightmare =
 
 local brain = require "brains/rookbrain"
 
-SetSharedLootTable('rook',
+SetSharedLootTable("rook",
 {
-    {'gears',  1.0},
-    {'gears',  1.0},
+    {"gears",  1.0},
+    {"gears",  1.0},
 })
 
-SetSharedLootTable('rook_nightmare',
+SetSharedLootTable("rook_nightmare",
 {
-    {'gears',            1.0},
-    {'nightmarefuel',    0.6},
-    {'thulecite_pieces', 0.5},
+    {"gears",            1.0},
+    {"nightmarefuel",    0.6},
+    {"thulecite_pieces", 0.5},
 })
 
 local function ShouldSleep(inst)
@@ -70,11 +70,10 @@ local function onothercollide(inst, other)
     if not other:IsValid() or inst.recentlycharged[other] then
         return
     elseif other:HasTag("smashable") and other.components.health ~= nil then
-        --other.Physics:SetCollides(false)
         other.components.health:Kill()
     elseif other.components.workable ~= nil
-        and other.components.workable:CanBeWorked()
-        and other.components.workable.action ~= ACTIONS.NET then
+            and other.components.workable:CanBeWorked()
+            and other.components.workable.action ~= ACTIONS.NET then
         SpawnPrefab("collapse_small").Transform:SetPosition(other.Transform:GetWorldPosition())
         other.components.workable:Destroy(inst)
         if other:IsValid() and other.components.workable ~= nil and other.components.workable:CanBeWorked() then
@@ -91,9 +90,9 @@ end
 
 local function oncollide(inst, other)
     if not (other ~= nil and other:IsValid() and inst:IsValid())
-        or inst.recentlycharged[other]
-        or other:HasTag("player")
-        or Vector3(inst.Physics:GetVelocity()):LengthSq() < 42 then
+            or inst.recentlycharged[other]
+            or other:HasTag("player")
+            or Vector3(inst.Physics:GetVelocity()):LengthSq() < 42 then
         return
     end
     ShakeAllCameras(CAMERASHAKE.SIDE, .5, .05, .1, inst, 40)
@@ -116,7 +115,7 @@ local function CreateWeapon(inst)
     inst.weapon = weapon
 end
 
-local function RememberKnownLocation(inst)
+local function SetHomePosition(inst)
     inst.components.knownlocations:RememberLocation("home", inst:GetPosition())
 end
 
@@ -143,12 +142,11 @@ local function common_fn(build, tag)
     inst:AddTag("chess")
     inst:AddTag("rook")
 
-    if tag ~= nil then
+    if tag then
         inst:AddTag(tag)
     end
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -156,51 +154,63 @@ local function common_fn(build, tag)
     inst.recentlycharged = {}
     inst.Physics:SetCollisionCallback(oncollide)
 
-    inst:AddComponent("lootdropper")
+    --
+    local combat = inst:AddComponent("combat")
+    combat.hiteffectsymbol = "spring"
+    combat:SetAttackPeriod(TUNING.ROOK_ATTACK_PERIOD)
+    combat:SetDefaultDamage(TUNING.ROOK_DAMAGE)
+    combat:SetRetargetFunction(3, Retarget)
+    combat:SetKeepTargetFunction(KeepTarget)
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor.walkspeed = TUNING.ROOK_WALK_SPEED
-    inst.components.locomotor.runspeed =  TUNING.ROOK_RUN_SPEED
-
-    inst:SetStateGraph("SGrook")
-    inst:SetBrain(brain)
-
-    inst:AddComponent("sleeper")
-    inst.components.sleeper:SetWakeTest(ShouldWake)
-    inst.components.sleeper:SetSleepTest(ShouldSleep)
-    inst.components.sleeper:SetResistance(3)
-
-    inst:AddComponent("health")
-    inst:AddComponent("combat")
-    inst.components.combat.hiteffectsymbol = "spring"
-    inst.components.combat:SetAttackPeriod(2)
-    inst.components.combat:SetRetargetFunction(3, Retarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
-
-    inst.components.health:SetMaxHealth(TUNING.ROOK_HEALTH)
-    inst.components.combat:SetDefaultDamage(TUNING.ROOK_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.ROOK_ATTACK_PERIOD)
-    --inst.components.combat.playerdamagepercent = 2
-
+    --
     inst:AddComponent("follower")
 
+    --
+    local health = inst:AddComponent("health")
+    health:SetMaxHealth(TUNING.ROOK_HEALTH)
+
+    --
+    inst:AddComponent("inspectable")
+
+    --
     inst:AddComponent("inventory")
 
-    inst:AddComponent("inspectable")
+    --
     inst:AddComponent("knownlocations")
 
-    MakeHauntablePanic(inst)
+    --
+    inst:AddComponent("lootdropper")
 
-    inst:DoTaskInTime(0, RememberKnownLocation)
+    --
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor.walkspeed = TUNING.ROOK_WALK_SPEED
+    locomotor.runspeed =  TUNING.ROOK_RUN_SPEED
 
+    --
+    local sleeper = inst:AddComponent("sleeper")
+    sleeper:SetWakeTest(ShouldWake)
+    sleeper:SetSleepTest(ShouldSleep)
+    sleeper:SetResistance(3)
+
+    --
     MakeLargeBurnableCharacter(inst, "swap_fire", nil, 1.4)
     MakeMediumFreezableCharacter(inst, "innerds")
 
-    inst:ListenForEvent("attacked", OnAttacked)
+    --
+    MakeHauntablePanic(inst)
 
+    --
     CreateWeapon(inst)
 
-    --inst:AddComponent("debugger")
+    --
+    inst:SetStateGraph("SGrook")
+    inst:SetBrain(brain)
+
+    --
+    inst:DoTaskInTime(0, SetHomePosition)
+
+    --
+    inst:ListenForEvent("attacked", OnAttacked)
 
     return inst
 end
@@ -212,7 +222,7 @@ local function rook_fn()
         return inst
     end
 
-    inst.components.lootdropper:SetChanceLootTable('rook')
+    inst.components.lootdropper:SetChanceLootTable("rook")
 
     inst.kind = ""
     inst.soundpath = "dontstarve/creatures/rook/"
@@ -223,19 +233,24 @@ end
 
 local function rook_nightmare_fn()
     local inst = common_fn("rook_nightmare", "cavedweller")
-    
+
     inst:AddTag("shadow_aligned")
 
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst.components.lootdropper:SetChanceLootTable('rook_nightmare')
+    --
+    local acidinfusible = inst:AddComponent("acidinfusible")
+    acidinfusible:SetFXLevel(2)
+    acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
+    --
+    inst.components.lootdropper:SetChanceLootTable("rook_nightmare")
 
     inst.kind = "_nightmare"
     inst.soundpath = "dontstarve/creatures/rook_nightmare/"
     inst.effortsound = "dontstarve/creatures/rook_nightmare/rattle"
-    --TimeEvent(10*FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.soundpath .. "steam") end ),
 
     return inst
 end

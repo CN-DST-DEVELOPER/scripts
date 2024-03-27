@@ -26,17 +26,17 @@ local prefabs_nightmare =
 
 local brain = require "brains/knightbrain"
 
-SetSharedLootTable('knight',
+SetSharedLootTable("knight",
 {
-    {'gears',  1.0},
-    {'gears',  1.0},
+    {"gears",  1.0},
+    {"gears",  1.0},
 })
 
-SetSharedLootTable('knight_nightmare',
+SetSharedLootTable("knight_nightmare",
 {
-    {'gears',             1.0},
-    {'nightmarefuel',     0.6},
-    {'thulecite_pieces',  0.5},
+    {"gears",             1.0},
+    {"nightmarefuel",     0.6},
+    {"thulecite_pieces",  0.5},
 })
 
 local function ShouldSleep(inst)
@@ -59,7 +59,7 @@ local function OnAttacked(inst, data)
     clockwork_common.OnAttacked(inst, data)
 end
 
-local function RememberKnownLocation(inst)
+local function SetHomePosition(inst)
     inst.components.knownlocations:RememberLocation("home", inst:GetPosition())
 end
 
@@ -80,61 +80,71 @@ local function fn_common(build, tag)
     inst.AnimState:SetBank("knight")
     inst.AnimState:SetBuild(build)
 
-    inst:AddTag("monster")
-    inst:AddTag("hostile")
     inst:AddTag("chess")
+    inst:AddTag("hostile")
     inst:AddTag("knight")
+    inst:AddTag("monster")
 
     if tag ~= nil then
         inst:AddTag(tag)
     end
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst.kind = ""
+    --inst.kind = ""
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor.walkspeed = TUNING.KNIGHT_WALK_SPEED
+    --
+    local combat = inst:AddComponent("combat")
+    combat.hiteffectsymbol = "spring"
+    combat:SetAttackPeriod(TUNING.KNIGHT_ATTACK_PERIOD)
+    combat:SetDefaultDamage(TUNING.KNIGHT_DAMAGE)
+    combat:SetRetargetFunction(3, Retarget)
+    combat:SetKeepTargetFunction(KeepTarget)
 
-    inst:SetStateGraph("SGknight")
-
-    inst:SetBrain(brain)
-
-    inst:AddComponent("sleeper")
-    inst.components.sleeper:SetWakeTest(ShouldWake)
-    inst.components.sleeper:SetSleepTest(ShouldSleep)
-    inst.components.sleeper:SetResistance(3)
-
-    inst:AddComponent("health")
-    inst:AddComponent("combat")
-    inst.components.combat.hiteffectsymbol = "spring"
-    inst.components.combat:SetAttackPeriod(TUNING.KNIGHT_ATTACK_PERIOD)
-    inst.components.combat:SetRetargetFunction(3, Retarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
-
-    inst.components.health:SetMaxHealth(TUNING.KNIGHT_HEALTH)
-    inst.components.combat:SetDefaultDamage(TUNING.KNIGHT_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.KNIGHT_ATTACK_PERIOD)
-
-    inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetChanceLootTable('knight')
-
-    inst:AddComponent("inspectable")
-    inst:AddComponent("knownlocations")
-
-    inst:DoTaskInTime(0, RememberKnownLocation)
-
+    --
     inst:AddComponent("follower")
 
+    --
+    local health = inst:AddComponent("health")
+    health:SetMaxHealth(TUNING.KNIGHT_HEALTH)
+
+    --
+    inst:AddComponent("inspectable")
+
+    --
+    inst:AddComponent("knownlocations")
+
+    --
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor.walkspeed = TUNING.KNIGHT_WALK_SPEED
+
+    --
+    inst:AddComponent("lootdropper")
+
+    --
+    local sleeper = inst:AddComponent("sleeper")
+    sleeper:SetWakeTest(ShouldWake)
+    sleeper:SetSleepTest(ShouldSleep)
+    sleeper:SetResistance(3)
+
+    --
     MakeMediumBurnableCharacter(inst, "spring")
     MakeMediumFreezableCharacter(inst, "spring")
 
+    --
     MakeHauntablePanic(inst)
 
+    --
+    inst:SetStateGraph("SGknight")
+    inst:SetBrain(brain)
+
+    --
+    inst:DoTaskInTime(0, SetHomePosition)
+
+    --
     inst:ListenForEvent("attacked", OnAttacked)
 
     return inst
@@ -148,6 +158,7 @@ local function fn()
     end
 
     inst.kind = ""
+    inst.components.lootdropper:SetChanceLootTable("knight")
 
     return inst
 end
@@ -161,8 +172,15 @@ local function nightmarefn()
         return inst
     end
 
+    --
+    local acidinfusible = inst:AddComponent("acidinfusible")
+    acidinfusible:SetFXLevel(2)
+    acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
+    --
     inst.kind = "_nightmare"
     inst.components.lootdropper:SetChanceLootTable("knight_nightmare")
+
     return inst
 end
 

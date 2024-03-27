@@ -233,7 +233,6 @@ function Spawner:ReleaseChild()
                 self.onspawnedfn(self.inst,child)
             end
         end
-        
     end
 
     if self:IsOccupied() then
@@ -298,9 +297,6 @@ function Spawner:GoHome(child)
         if child.components.burnable ~= nil and child.components.burnable:IsBurning() then
             child.components.burnable:Extinguish()
         end
-
-        --if child.components.health ~= nil and child.components.health:IsHurt() then
-        --end
 
         if child.components.homeseeker ~= nil then
             child:RemoveComponent("homeseeker")

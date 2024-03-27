@@ -88,7 +88,7 @@ end
 
 --Called from PlayerHud:OnControl
 function YotbToast:CheckControl(control, down)
-    if self.shown and down and control == CONTROL_CONTROLLER_ATTACK and
+    if self.shown and down and control == CONTROL_MENU_MISC_1 and
         self.owner.components.playercontroller:GetControllerAttackTarget() == nil then
         return true
     end
@@ -99,7 +99,7 @@ function YotbToast:UpdateControllerHelp()
         if self.opened and self.hud_focus then
             if self.controller_help == nil then
                 self.controller_help = self.tab_gift:AddChild(Text(UIFONT, 30))
-                self.controller_help:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_CONTROLLER_ATTACK).." "..STRINGS.UI.HUD.OPENGIFT)
+                self.controller_help:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_1).." "..STRINGS.UI.HUD.OPENGIFT)
                 self.controller_help:SetPosition(0, -70, 0)
                 self.controller_help:Hide()
             end

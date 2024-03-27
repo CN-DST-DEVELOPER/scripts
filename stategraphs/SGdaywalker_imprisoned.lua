@@ -43,7 +43,7 @@ local states =
 						"DAYWALKER_RE_IMPRISONED_NEAR"
 					) or
 					"DAYWALKER_IMPRISONED_NEAR"
-				inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]))
+				inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]), nil, nil, CHATPRIORITIES.HIGH)
 			end
 			if isnear then
 				inst.sg:SetTimeout(3 + 2 * math.random())
@@ -86,7 +86,7 @@ local states =
 			inst.AnimState:PlayAnimation("chained_1")
 			inst.SoundEmitter:PlaySound("daywalker/voice/struggle1")
 			local strtbl = "DAYWALKER_IMPRISONED_STRUGGLE"
-			inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]))
+			inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]), nil, nil, CHATPRIORITIES.LOW)
 		end,
 
 		timeline =
@@ -119,7 +119,7 @@ local states =
 		onenter = function(inst)
 			inst.AnimState:PlayAnimation("chained_2")
 			inst.SoundEmitter:PlaySound("daywalker/voice/struggle2")
-			inst.components.talker:Chatter("DAYWALKER_IMPRISONED_STRUGGLE", 2)
+			inst.components.talker:Chatter("DAYWALKER_IMPRISONED_STRUGGLE", 2, nil, nil, CHATPRIORITIES.HIGH)
 		end,
 
 		timeline =
@@ -211,7 +211,7 @@ local states =
 				local any, all = CheckPillars(inst)
 				if not all then
 					local strtbl = any and "DAYWALKER_IMPRISONED_PILLAR_BREAKING" or "DAYWALKER_IMPRISONED_STRUGGLE"
-					inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]))
+					inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]), nil, nil, CHATPRIORITIES.HIGH)
 				end
 			end
 		end,

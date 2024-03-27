@@ -16,7 +16,9 @@ local function DoThorns(inst, owner)
     --V2C: tiny CD to limit chain reactions
     inst._cdtask = inst:DoTaskInTime(.3, OnCooldown)
 
-    inst._hitcount = 0
+	if inst._hitcount then
+		inst._hitcount = 0
+	end
 
     SpawnPrefab("bramblefx_armor"):SetFXOwner(owner)
 
@@ -32,12 +34,17 @@ local function OnBlocked(owner, data, inst)
 end
 
 local function OnAttackOther(owner, data, inst)
-    if inst._cdtask == nil and checknumber(inst._hitcount) then
+	if inst._cdtask == nil and
+		owner.components.skilltreeupdater and
+		owner.components.skilltreeupdater:IsActivated("wormwood_armor_bramble")
+	then
         inst._hitcount = inst._hitcount + 1
 
         if inst._hitcount >= TUNING.WORMWOOD_ARMOR_BRAMBLE_RELEASE_SPIKES_HITCOUNT then
             DoThorns(inst, owner)
         end
+	else
+		inst._hitcount = 0
     end
 end
 
@@ -52,12 +59,11 @@ local function onequip(inst, owner)
 
     inst:ListenForEvent("blocked", inst._onblocked, owner)
     inst:ListenForEvent("attacked", inst._onblocked, owner)
+	if owner:HasTag("plantkin") then
+		inst:ListenForEvent("onattackother", inst._onattackother, owner)
+	end
 
     inst._hitcount = 0
-
-    if owner.components.skilltreeupdater ~= nil and owner.components.skilltreeupdater:IsActivated("wormwood_armor_bramble") then
-        inst:ListenForEvent("onattackother", inst._onattackother, owner)
-    end
 end
 
 local function onunequip(inst, owner)

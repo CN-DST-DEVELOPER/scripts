@@ -314,6 +314,8 @@ local function createbush(name, inspectname, berryname, master_postinit)
         MakeSnowCovered(inst)
         MakeNoGrowInWinter(inst)
 
+        MakeWaxablePlant(inst)
+
         master_postinit(inst)
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTG) then

@@ -1,9 +1,14 @@
 local ChannelCastable = Class(function(self, inst)
 	self.inst = inst
 	self.user = nil
+	self.strafing = true
 	self.onstartchannelingfn = nil
 	self.onstopchannelingfn = nil
 end)
+
+function ChannelCastable:SetStrafing(enable)
+	self.strafing = enable
+end
 
 function ChannelCastable:SetOnStartChannelingFn(fn)
 	self.onstartchannelingfn = fn

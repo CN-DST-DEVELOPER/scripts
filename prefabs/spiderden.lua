@@ -120,11 +120,11 @@ local function AddSleepingBag(inst)
 
     inst.components.sleepingbag.onsleep = onsleep
     inst.components.sleepingbag.onwake = onwake
-    
+
     inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 1.5
     inst.components.sleepingbag.hunger_tick = TUNING.SLEEP_HUNGER_PER_TICK * 1.5
     inst.components.sleepingbag.dryingrate = math.max(0, -TUNING.SLEEP_WETNESS_PER_TICK / TUNING.SLEEP_TICK_PERIOD)
-    
+
     inst.components.sleepingbag:SetTemperatureTickFn(temperaturetick)
 
     inst:AddTag("tent")
@@ -139,7 +139,8 @@ local function RemoveSleepingBag(inst)
 end
 
 local function SetStage(inst, stage, skip_anim)
-    if stage <= 3 and inst.components.childspawner ~= nil then -- if childspawner doesn't exist, then this den is burning down
+    -- if childspawner doesn't exist, then this den is burning down
+    if stage <= 3 and inst.components.childspawner ~= nil then
         inst.SoundEmitter:PlaySound("dontstarve/creatures/spider/spiderLair_grow")
         inst.components.childspawner:SetMaxChildren(math.floor(SpringCombatMod(TUNING.SPIDERDEN_SPIDERS[stage])))
         inst.components.childspawner:SetMaxEmergencyChildren(TUNING.SPIDERDEN_EMERGENCY_WARRIORS[stage])
@@ -339,20 +340,19 @@ end
 
 local function SpawnDefenders(inst, attacker)
     if not inst.components.health:IsDead() then
-        
         inst.SoundEmitter:PlaySound("dontstarve/creatures/spider/spiderLair_hit")
         inst.AnimState:PlayAnimation(inst.anims.hit_combat)
         inst.AnimState:PushAnimation(inst.anims.idle)
-        
+
         if inst.components.childspawner ~= nil then
             local max_release_per_stage = { 2, 4, 6 }
             local num_to_release = math.min(max_release_per_stage[inst.data.stage] or 1, inst.components.childspawner.childreninside)
             local num_warriors = math.min(num_to_release, TUNING.SPIDERDEN_WARRIORS[inst.data.stage])
-            
+
             num_to_release = math.floor(SpringCombatMod(num_to_release))
             num_warriors = math.floor(SpringCombatMod(num_warriors))
             num_warriors = num_warriors - inst.components.childspawner:CountChildrenOutside(IsDefender)
-            
+
             for k = 1, num_to_release do
                 inst.components.childspawner.childname = 
                             (TUNING.SPAWN_SPIDER_WARRIORS and k <= num_warriors and not inst:HasTag("bedazzled")) and 
@@ -396,21 +396,20 @@ end
 
 local function SpawnInvestigators(inst, data)
     if not inst.components.health:IsDead() and not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen()) then
-        
         inst.AnimState:PlayAnimation(inst.anims.hit)
         inst.AnimState:PushAnimation(inst.anims.idle)
-        
+
         if inst.components.childspawner ~= nil then
             local max_release_per_stage = { 1, 2, 3 }
             local num_to_release = math.min(max_release_per_stage[inst.data.stage] or 1, inst.components.childspawner.childreninside)
             num_to_release = math.floor(SpringCombatMod(num_to_release))
-            
+
             local num_investigators = inst.components.childspawner:CountChildrenOutside(IsInvestigator)
             num_to_release = num_to_release - num_investigators
-            
+
             local targetpos = data ~= nil and data.target ~= nil and data.target:GetPosition() or nil
-            
-            for k = 1, num_to_release do
+
+            for _ = 1, num_to_release do
                 local spider = inst.components.childspawner:SpawnChild()
                 if spider ~= nil and targetpos ~= nil then
                     spider.components.knownlocations:RememberLocation("investigate", targetpos)
@@ -425,18 +424,17 @@ local function SpawnInvestigators(inst, data)
 end
 
 local function SummonChildren(inst, data)
-    if not inst.components.health:IsDead() and not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen()) then
-        
+    if not inst.components.health:IsDead() and
+            not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen()) then
         inst.AnimState:PlayAnimation(inst.anims.hit)
         inst.AnimState:PushAnimation(inst.anims.idle)
-        
+
         if inst.components.childspawner ~= nil then
-            
             local children_released = inst.components.childspawner:ReleaseAllChildren()
 
             if children_released then
-                for i,v in ipairs(children_released) do
-                    v:AddDebuff("spider_summoned_buff", "spider_summoned_buff")
+                for _, child_released in ipairs(children_released) do
+                    child_released:AddDebuff("spider_summoned_buff", "spider_summoned_buff")
                 end
             end
 
@@ -449,9 +447,9 @@ end
 
 local function StartSpawning(inst)
     if inst.components.childspawner ~= nil and
-        not (inst.components.freezable ~= nil and
-            inst.components.freezable:IsFrozen()) and
-        not TheWorld.state.iscaveday then
+            not (inst.components.freezable ~= nil and
+                inst.components.freezable:IsFrozen()) and
+            not TheWorld.state.iscaveday then
         inst.components.childspawner:StartSpawning()
     end
 end
@@ -480,7 +478,6 @@ local function OnIgnite(inst)
 end
 
 local function OnFreeze(inst)
-    --print(inst, "OnFreeze")
     inst.SoundEmitter:PlaySound("dontstarve/common/freezecreature")
     inst.AnimState:PlayAnimation(inst.anims.freeze, true)
     inst.AnimState:OverrideSymbol("swap_frozen", "frozen", "frozen")
@@ -497,14 +494,12 @@ local function OnFreeze(inst)
 end
 
 local function OnThaw(inst)
-    --print(inst, "OnThaw")
     inst.AnimState:PlayAnimation(inst.anims.thaw, true)
     inst.SoundEmitter:PlaySound("dontstarve/common/freezethaw", "thawing")
     inst.AnimState:OverrideSymbol("swap_frozen", "frozen", "frozen")
 end
 
 local function OnUnFreeze(inst)
-    --print(inst, "OnUnFreeze")
     inst.AnimState:PlayAnimation(inst.anims.idle, true)
     inst.SoundEmitter:KillSound("thawing")
     inst.AnimState:ClearOverrideSymbol("swap_frozen")
@@ -564,9 +559,9 @@ end
 local function CanUpgrade(inst)
     if inst:HasTag("bedazzled") and not inst.shaving then
         return false, "BEDAZZLED"
+    else
+        return true
     end
-
-    return true
 end
 
 local growth_stages =
@@ -636,9 +631,7 @@ end
 local function OnShaved(inst, shaver, shaving_implement)
     local stage = inst.data.stage
     if stage == 1 then
-        -- Should we release all children instead?
         SpawnDefenders(inst, shaver)
-        --inst.components.childspawner:ReleaseAllChildren()
         inst.components.health:Kill()
     else
         inst.shaving = true
@@ -662,12 +655,27 @@ local function OnShaved(inst, shaver, shaving_implement)
     end
 end
 
-local function OnGoHome(inst, child)
+local function OnGoHome(_, child)
     -- Drops the hat before it goes home if it has any
     local hat = child.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
     if hat ~= nil then
         child.components.inventory:DropItem(hat)
     end
+end
+
+local function OnWork(inst, worker, workleft, numworks)
+	if not inst.components.health:IsDead() then
+		local hp = inst.components.health.currenthealth
+		local delta = TUNING.SPIDERDEN_HEALTH[1]
+		if numworks <= 0 and delta >= hp then
+			delta = hp - 1
+		end
+		inst.components.workable:SetWorkLeft(10)
+		inst.components.health:DoDelta(-delta)
+		if not inst.components.health:IsDead() then
+			OnHit(inst, worker)
+		end
+	end
 end
 
 local function MakeSpiderDenFn(den_level)
@@ -697,12 +705,13 @@ local function MakeSpiderDenFn(den_level)
         inst:AddTag("spiderden")
         inst:AddTag("bedazzleable")
         inst:AddTag("hive")
+		inst:AddTag("NPC_workable")
 
         MakeSnowCoveredPristine(inst)
 
         inst:SetPrefabName("spiderden")
 
-        inst.scrapbook_anim = "cocoon_large"        
+        inst.scrapbook_anim = "cocoon_large"
         inst.scrapbook_hidesymbol = {"bedazzled_flare"}
 
         inst.entity:SetPristine()
@@ -737,8 +746,6 @@ local function MakeSpiderDenFn(den_level)
         inst.components.childspawner.canemergencyspawn = TUNING.SPIDERDEN_ENABLED
 
         inst.components.childspawner:SetSpawnedFn(onspawnspider)
-        --inst.components.childspawner:SetMaxChildren(TUNING.SPIDERDEN_SPIDERS[stage])
-        --inst.components.childspawner:ScheduleNextSpawn(0)
         inst:ListenForEvent("creepactivate", SpawnInvestigators)
         inst.SummonChildren = SummonChildren
 
@@ -786,12 +793,11 @@ local function MakeSpiderDenFn(den_level)
         inst.components.growable:StartGrowing()
 
         ---------------------
-
-        --inst:AddComponent( "spawner" )
-        --inst.components.spawner:Configure( "resident", max, initial, rate )
-        --inst.spawn_weight = global_spawn_weight
-
         inst:AddComponent("inspectable")
+
+		inst:AddComponent("workable")
+		inst.components.workable:SetWorkAction(nil)
+		inst.components.workable:SetOnWorkCallback(OnWork)
 
         inst:AddComponent("hauntable")
         inst.components.hauntable.cooldown = TUNING.HAUNT_COOLDOWN_MEDIUM

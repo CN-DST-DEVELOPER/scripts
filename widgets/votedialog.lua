@@ -240,7 +240,7 @@ function VoteDialog:RefreshController()
 end
 
 function VoteDialog:SetControllerInstruction()
-    self.instruction:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INSPECT).." "..STRINGS.UI.VOTEDIALOG.VOTE)
+    self.instruction:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_2).." "..STRINGS.UI.VOTEDIALOG.VOTE)
 end
 
 function VoteDialog:HideDialog()
@@ -339,7 +339,7 @@ end
 
 --Called from PlayerHud:OnControl
 function VoteDialog:CheckControl(control, down)
-    if self.shown and down and self.enabled and control == CONTROL_INSPECT then
+    if self.shown and down and self.enabled and control == CONTROL_MENU_MISC_2 then
         self:RefreshController()
         if self.instruction.shown then
             self:OnOpenControllerVoteScreen()

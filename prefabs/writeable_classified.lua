@@ -12,9 +12,7 @@ local function OnEntityReplicated(inst)
     inst._parent = inst.entity:GetParent()
     if inst._parent == nil then
         print("Unable to initialize classified data for writeable")
-    elseif inst._parent.replica.writeable ~= nil then
-        inst._parent.replica.writeable:AttachClassified(inst)
-    else
+	elseif not inst._parent:TryAttachClassifiedToReplicaComponent(inst, "writeable") then
         inst._parent.writeable_classified = inst
         inst.OnRemoveEntity = OnRemoveEntity
     end

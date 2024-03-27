@@ -1367,6 +1367,67 @@ function TEMPLATES.ChatFlairBadge()
     return flair
 end
 
+function TEMPLATES.ChatterMessageBadge()
+    local flair = Widget("ChatterMessage Badge")
+
+    flair.bg = flair:AddChild(Image())
+    flair.bg:SetScale(0.8)
+
+    flair.flair_img = flair:AddChild(Image("images/npcchatflairs.xml", "npcchatflair_none.tex"))
+    flair.flair_img:SetScale(.55)
+    flair.flair_img:SetPosition(0, 31)
+
+    flair:Hide()
+    flair:SetClickable(false)
+
+    --Setup custom widget functions
+    flair.SetFlair = function(self, chatflair)
+        self.profileflair = chatflair
+
+        if self.profileflair then
+            local attempt_texture = ((not chatflair or chatflair == "default") and "npcchatflair_none.tex")
+                or chatflair..".tex"
+            self.flair_img:SetTexture("images/npcchatflairs.xml", attempt_texture, "npcchatflair_none.tex")
+        end
+    end
+
+    flair.GetFlair = function(self)
+        return self.profileflair
+    end
+
+    flair.SetBGIcon = function(self, bg_icon)
+        self.bg_icon = bg_icon
+        if self.bg_icon then
+            if bg_icon == "default" then
+                bg_icon = "playericon_bg_none"
+            end
+            self.bg:SetTexture("images/profileflair.xml", bg_icon .. ".tex", "playericon_bg_none.tex")
+        end
+    end
+
+    flair.GetBGIcon = function(self)
+        return self.bg_icon
+    end
+
+    flair.SetAlpha = function(self, a)
+        if a > 0.01 and self.profileflair then
+            self:Show()
+            self.bg:SetTint(1,1,1, a)
+            self.flair_img:SetTint(1,1,1, a)
+        else
+            self:Hide()
+        end
+    end
+
+    flair:SetScale(0.5)
+
+    flair.GetSize = function(self)
+        return self.flair_img:GetScaledSize()
+    end
+
+    return flair
+end
+
 function TEMPLATES.AnnouncementBadge()
     local announcement = Widget("chat announcement badge")
 
@@ -1870,7 +1931,7 @@ function TEMPLATES.ControllerFunctionsFromButtons(buttons)
             return false
         -- Hitting Esc fires both Pause and Cancel, so we can only handle pause
         -- when coming from gamepads.
-        elseif control ~= CONTROL_PAUSE or TheInput:ControllerAttached() then
+        elseif control ~= CONTROL_MENU_START or TheInput:ControllerAttached() then
             for i,v in ipairs(buttons) do
                 if control == v.controller_control then
                     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")

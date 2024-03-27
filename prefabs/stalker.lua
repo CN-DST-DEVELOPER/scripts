@@ -28,6 +28,7 @@ local prefabs_cave =
     "fossil_piece",
     "fossilspike",
     "nightmarefuel",
+    "blinkfocus_marker",
 }
 
 local prefabs_forest =
@@ -408,7 +409,7 @@ local function BattleCry(combat, target)
         "STALKER_PLAYER_BATTLECRY" or
         "STALKER_BATTLECRY"
 
-    return strtbl, math.random(#STRINGS[strtbl])
+    return strtbl, math.random(#STRINGS[strtbl]), CHATPRIORITIES.LOW
 end
 
 local function AtriumBattleCry(combat, target)
@@ -420,7 +421,7 @@ local function AtriumBattleCry(combat, target)
 
     strtbl = GetRepairedAtriumChatterLines(combat.inst, strtbl) or strtbl
 
-    return strtbl, math.random(#STRINGS[strtbl])
+    return strtbl, math.random(#STRINGS[strtbl]), CHATPRIORITIES.LOW
 end
 
 --For searching:
@@ -434,7 +435,7 @@ local function AtriumBattleChatter(inst, id, forcetext)
 
     strtbl = GetRepairedAtriumChatterLines(inst, strtbl) or strtbl
 
-    inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]), 2, forcetext)
+    inst.components.talker:Chatter(strtbl, math.random(#STRINGS[strtbl]), 2, forcetext, CHATPRIORITIES.LOW)
 end
 
 local function StartAbility(inst, ability)
@@ -560,8 +561,17 @@ local function SpawnSnare(inst, x, z, r, num, target)
     end
     if count <= 0 then
         return false
-    elseif target:IsValid() then
-        target:PushEvent("snared", { attacker = inst })
+    else
+        -- NOTES(JBK): This is for controllers to escape out of the prison without teleporting across the entire arena.
+        local duration = TUNING.STALKER_SNARE_TIME + TUNING.STALKER_SNARE_TIME_VARIANCE + 1
+        local blinkfocus = SpawnPrefab("blinkfocus_marker")
+        blinkfocus.Transform:SetPosition(x, 0, z)
+        blinkfocus:MakeTemporary(duration)
+        blinkfocus:SetMaxRange(r + 4)
+
+        if target:IsValid() then
+            target:PushEvent("snared", { attacker = inst })
+        end
     end
     return true
 end
@@ -1327,13 +1337,15 @@ local function common_fn(bank, build, shadowsize, canfight, atriumstalker)
     end
 
     if canfight then
-        inst:AddComponent("talker")
-        inst.components.talker.fontsize = 40
-        inst.components.talker.font = TALKINGFONT
-        inst.components.talker.colour = Vector3(238 / 255, 69 / 255, 105 / 255)
-        inst.components.talker.offset = Vector3(0, -700, 0)
-        inst.components.talker.symbol = "fossil_chest"
-        inst.components.talker:MakeChatter()
+        local talker = inst:AddComponent("talker")
+        talker.fontsize = 40
+        talker.font = TALKINGFONT
+        talker.colour = Vector3(238 / 255, 69 / 255, 105 / 255)
+        talker.offset = Vector3(0, -700, 0)
+        talker.symbol = "fossil_chest"
+        talker.name_colour = Vector3(233/256, 85/256, 107/256)
+        talker.chaticon = "npcchatflair_stalker"
+        talker:MakeChatter()
     end
 
     inst.entity:SetPristine()

@@ -14,6 +14,7 @@ local capprefabs =
 {
     "moon_cap_cooked",
     "small_puff",
+	"sleepcloud_lunar",
 }
 
 local cookedprefabs =
@@ -33,7 +34,11 @@ local function mooncap_oneaten(inst, eater)
             mount:PushEvent("ridersleep", { sleepiness = 4, sleeptime = sleeptime })
         end
 
-        if eater.components.sleeper then
+		if eater.components.skilltreeupdater and eater.components.skilltreeupdater:IsActivated("wormwood_moon_cap_eating") then
+			local cloud = SpawnPrefab("sleepcloud_lunar")
+			cloud.Transform:SetPosition(eater.Transform:GetWorldPosition())
+			cloud:SetOwner(eater)
+		elseif eater.components.sleeper then
             eater.components.sleeper:AddSleepiness(4, sleeptime)
         elseif eater.components.grogginess then
             eater.components.grogginess:AddGrogginess(2, sleeptime)

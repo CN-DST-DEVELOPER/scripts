@@ -85,7 +85,7 @@ return{
             NO_RACERS = "The veggie beasts must take their places for the race to commence!",
         },
 
-		DISMANTLE =
+		DISMANTLE = 
 		{
 			COOKING = "I will let it finish its work.",
 			INUSE = "I shall valiantly wait my turn.",
@@ -523,6 +523,7 @@ return{
 	ANNOUNCE_HIGHRESEARCH = "I am an excellent craftswoman.",
 	ANNOUNCE_HOUNDS = "The beasts are approaching...",
 	ANNOUNCE_WORMS = "The earth quakes with the approach of a foe!",
+    ANNOUNCE_ACIDBATS = "Show yourselves, winged foes!",
 	ANNOUNCE_HUNGRY = "How I long for a feast!",
 	ANNOUNCE_HUNT_BEAST_NEARBY = "Hush... The creature is near.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "I've lost the tracks.",
@@ -903,6 +904,8 @@ return{
     ANNOUNCE_SCRAPBOOK_FULL = "I hath already completed my tome.",
 
     ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
+
+    ANNOUNCE_HEALINGSALVE_ACIDBUFF_DONE = "My defense against the burning rain hath dwindled away!",
 
     ANNOUNCE_COACH = 
     {
@@ -1445,18 +1448,25 @@ return{
         {
             GENERIC = "What magic is this?",
             BLOOM = "An enthusiastic performance!",
+            ACIDCOVERED = "The smell fills me with loathing.",
         },
         MUSHTREE_MEDIUM =
         {
             GENERIC = "I do like its glow.",
             BLOOM = "What a great effect!",
+            ACIDCOVERED = "The smell fills me with loathing.",
         },
         MUSHTREE_SMALL =
         {
             GENERIC = "I don't care for mushrooms.",
             BLOOM = "I'll fight alongside you any day!",
+            ACIDCOVERED = "The smell fills me with loathing.",
         },
-        MUSHTREE_TALL_WEBBED = "This mushroom needs to be retired.",
+        MUSHTREE_TALL_WEBBED =
+        {
+            GENERIC = "This mushroom needs to be retired.",
+            ACIDCOVERED = "The smell fills me with loathing.",
+        },
         SPORE_TALL =
         {
             GENERIC = "At peace, benevolent river spirit.",
@@ -1936,7 +1946,11 @@ return{
 		DRAGONFLY = "Ah, dragon! At last we meet!",
 		ARMORDRAGONFLY = "Excellent armor for the heat of battle.",
 		DRAGON_SCALES = "Mystical scales.",
-		DRAGONFLYCHEST = "This chest is worthy of my weapons.",
+		DRAGONFLYCHEST =
+		{
+			GENERIC = "This chest is worthy of my weapons.",
+            UPGRADED_STACKSIZE = "This chest is worthy of my weapons, and then some.",
+		},
 		DRAGONFLYFURNACE =
 		{
 			HAMMERED = "It has seen much battle.",
@@ -2586,6 +2600,7 @@ return{
 		SILK = "Useful for binding, and for remembering victories past.",
 		SKELETON = "Rest easy in Valhalla.",
 		SCORCHED_SKELETON = "Rest easy, spirit. Your fight is over.",
+        SKELETON_NOTPLAYER = "Didst thou fall in battle, beast?",
 		SKULLCHEST = "Ah, that was a good battle.", --removed
 		SMALLBIRD =
 		{
@@ -2702,8 +2717,11 @@ return{
 		{
 			GENERIC = "A place to store my helm and spear whilst I rest.",
 			BURNT = "Its walls were torn down by fire.",
+            UPGRADED_STACKSIZE = "Enough room to store an entire armory!",
 		},
 		TREASURECHEST_TRAP = "I am always ready.",
+        CHESTUPGRADE_STACKSIZE = "Be this science or witchcraft?", -- Describes the kit upgrade item.
+		COLLAPSEDCHEST = "Who hath rendered a shambles of our booty?",
 		SACRED_CHEST =
 		{
 			GENERIC = "What foul manner of chest is this?",
@@ -3002,6 +3020,8 @@ return{
 		WALL_MOONROCK_ITEM = "Our fortress shall be impenetrable!",
 		WALL_DREADSTONE = "These fortifications will strike fear into my enemies' hearts!",
 		WALL_DREADSTONE_ITEM = "Fashioned from cursed stone.",
+        WALL_SCRAP = "It'll do.",
+        WALL_SCRAP_ITEM = "It'll do.",
 		FENCE = "Tis not my kind of fencing.",
         FENCE_ITEM = "Not for fortification. Merely the farm.",
         FENCE_GATE = "A tiny replica of Valhalla's gates.",
@@ -4112,6 +4132,7 @@ return{
         DUSTMERINGUE = "This food is not fit for a warrior, it's fit for the floor!",
 
         SHROOMCAKE = "A Viking would never stoop to eat such an unworthy thing.",
+        SHROOMBAIT = "What coward wouldst sedate a beast?",
 
         NIGHTMAREGROWTH = "The very ground hath split and released nightmares upon us!",
 
@@ -4842,6 +4863,12 @@ return{
 			GENERIC = "The pillar is weakened... mayhaps it could be broken.",
 			EXPOSED = "Only something of great might could crack that foul stone.",
 		},
+		DAYWALKER2 =
+		{
+			GENERIC = "The calm before the storm.",
+			BURIED = "It pains me to see a worthy adversary in such a state.",
+			HOSTILE = "Finally. Let us fight.",
+		},
 		ARMORDREADSTONE = "It will serve me well, despite its origins.",
 		DREADSTONEHAT = "Ready to bear the brunt of battle!",
 
@@ -5094,6 +5121,27 @@ return{
         MASTUPGRADE_LAMP_ITEM_YOTD = "We shall keep the flame burning bright!",
         WALKINGPLANK_YOTD = "Nay, a Viking doesn't quit so easily!",
         CHESSPIECE_YOTD = "A monument to my triumph.",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "This slime doth soothe me.",
+
+        BEESWAX_SPRAY = "It holds a fearsome enchantment.",
+        WAXED_PLANT = "Unnaturally preserved... it doth make one's skin crawl.", -- Used for all waxed plants, from farm plants to trees.
+
+        STORAGE_ROBOT = {
+            GENERIC = "Go forth to gather the spoils of war.",
+            BROKEN = "We must never forget our fallen comrades.",
+        },
+
+        SCRAP_MONOCLEHAT = "An enchanted eye, to view the whole battlefield at once.",
+        SCRAPHAT = "T'was won in an invigorating battle!",
+
+        FENCE_JUNK = "A sturdy barrier.",
+        JUNK_PILE = "Mayhaps a treasure lies inside?",
+        JUNK_PILE_BIG = "T'would be a disgrace to be slain by a falling pile of refuse...",
+
+        ARMOR_LUNARPLANT_HUSK = "This will make my plant ally more deadly in battle.",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

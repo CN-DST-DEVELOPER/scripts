@@ -252,52 +252,15 @@ end
 --------------------------------------------------------------------------
 
 local function CanBlinkTo(pt)
-    return (TheWorld.Map:IsAboveGroundAtPoint(pt.x, pt.y, pt.z) or TheWorld.Map:GetPlatformAtPoint(pt.x, pt.z) ~= nil) and not TheWorld.Map:IsGroundTargetBlocked(pt)
+    return TheWorld.Map:IsPassableAtPoint(pt:Get()) and not TheWorld.Map:IsGroundTargetBlocked(pt) -- NOTES(JBK): Keep in sync with blinkstaff. [BATELE]
 end
 
 local function CanBlinkFromWithMap(pt)
     return true -- NOTES(JBK): Change this if there is a reason to anchor Wortox when trying to use the map to teleport.
 end
 
-local BLINKFOCUS_MUST_TAGS = { "blinkfocus" }
-
 local function ReticuleTargetFn(inst)
-    local rotation = inst.Transform:GetRotation()
-    local pos = inst:GetPosition()
-
-    local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, TUNING.CONTROLLER_BLINKFOCUS_DISTANCE, BLINKFOCUS_MUST_TAGS)
-    for _, v in ipairs(ents) do
-        local epos = v:GetPosition()
-        if distsq(pos, epos) > TUNING.CONTROLLER_BLINKFOCUS_DISTANCESQ_MIN then
-            local angletoepos = inst:GetAngleToPoint(epos)
-            local angleto = math.abs(anglediff(rotation, angletoepos))
-            if angleto < TUNING.CONTROLLER_BLINKFOCUS_ANGLE then
-                return epos
-            end
-        end
-    end
-    rotation = rotation * DEGREES
-
-    pos.y = 0
-    for r = 13, 4, -.5 do
-        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, inst.CanBlinkTo)
-        if offset ~= nil then
-            pos.x = pos.x + offset.x
-            pos.z = pos.z + offset.z
-            return pos
-        end
-    end
-    for r = 13.5, 16, .5 do
-        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, inst.CanBlinkTo)
-        if offset ~= nil then
-            pos.x = pos.x + offset.x
-            pos.z = pos.z + offset.z
-            return pos
-        end
-    end
-    pos.x = pos.x + math.cos(rotation) * 13
-    pos.z = pos.z - math.sin(rotation) * 13
-    return pos
+    return ControllerReticle_Blink_GetPosition(inst, inst.CanBlinkTo)
 end
 
 local function CanSoulhop(inst, souls)

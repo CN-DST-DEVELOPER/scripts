@@ -22,7 +22,6 @@ local prefabs =
     "wormwood_plant_fx",
     "compostheal_buff",
     "wormwood_vined_debuff",
-    "sleepcloud_lunar",
 
     "wormwood_mutantproxy_carrat",
     "wormwood_mutantproxy_lightflier",
@@ -502,6 +501,9 @@ end
 
 local function OnFertilizedWithFormula(inst, value)
     if value > 0 and inst.components.bloomness then
+        if inst.components.skilltreeupdater:IsActivated("wormwood_blooming_max_upgrade") then
+            value = value * TUNING.WORMWOOD_BLOOM_MAX_UPGRADE_MULT
+        end
         inst.components.bloomness:Fertilize(value)
     end
 end
@@ -599,6 +601,19 @@ local function WLFSort(a, b) -- Better than roundcheck!
     return a.GUID < b.GUID
 end
 
+local function RecalculateLightFlierLight(inst)
+    local pets = inst.components.petleash and inst.components.petleash:GetPetsWithPrefab("wormwood_lightflier") or nil
+    if pets == nil then
+        return
+    end
+
+    local mult = Remap(#pets, 1, TUNING.WORMWOOD_PET_LIGHTFLIER_LIMIT, 1, 2)
+
+    for i, pet in ipairs(pets) do
+        pet.Light:SetRadius(1.8 * mult)
+    end
+end
+
 local function RecalculateLightFlierPattern(inst)
     local pets = inst.components.petleash and inst.components.petleash:GetPetsWithPrefab("wormwood_lightflier") or nil
     if pets then
@@ -613,10 +628,37 @@ local function RecalculateLightFlierPattern(inst)
     end
 end
 
+local function RecalculateDragonHealth(inst)
+    local pets = inst.components.petleash and inst.components.petleash:GetPetsWithPrefab("wormwood_fruitdragon") or nil
+    if pets == nil then
+        return
+    end
+
+    if #pets >= TUNING.WORMWOOD_PET_FRUITDRAGON_LIMIT then
+        for i, pet in ipairs(pets) do
+            local oldpercent = pet.components.health:GetPercent()
+            pet.components.health:SetMaxHealth(TUNING.WORMWOOD_PET_FRUITDRAGON_BUFF_HEALTH)
+            pet.components.health:SetCurrentHealth(TUNING.WORMWOOD_PET_FRUITDRAGON_BUFF_HEALTH*oldpercent)
+        end
+    else
+        for i, pet in ipairs(pets) do
+            local oldpercent = pet.components.health:GetPercent()
+            pet.components.health:SetMaxHealth(TUNING.WORMWOOD_PET_FRUITDRAGON_HEALTH)
+            pet.components.health:SetCurrentHealth(TUNING.WORMWOOD_PET_FRUITDRAGON_HEALTH*oldpercent)
+        end        
+    end
+end
+
 local function OnSpawnPet(inst, pet)
     if pet.prefab == "wormwood_lightflier" then
         inst:RecalculateLightFlierPattern()
+        inst:RecalculateLightFlierLight()
     end
+
+    if pet.prefab == "wormwood_fruitdragon" then
+        inst:RecalculateDragonHealth()
+    end
+
     if inst._OnSpawnPet ~= nil then
         inst:_OnSpawnPet(pet)
     end
@@ -625,7 +667,13 @@ end
 local function OnDespawnPet(inst, pet)
     if pet.prefab == "wormwood_lightflier" then
         inst:RecalculateLightFlierPattern()
+        inst:RecalculateLightFlierLight()
     end
+
+    if pet.prefab == "wormwood_fruitdragon" then
+        inst:RecalculateDragonHealth()
+    end
+
     if inst._OnDespawnPet ~= nil then
         inst:_OnDespawnPet(pet)
     end
@@ -634,7 +682,12 @@ end
 local function OnRemovedPet(inst, pet)
     if pet.prefab == "wormwood_lightflier" then
         inst:RecalculateLightFlierPattern()
+        inst:RecalculateLightFlierLight()
     end
+
+    if pet.prefab == "wormwood_fruitdragon" then
+        inst:RecalculateDragonHealth()
+    end    
 end
 
 local function OnNewSpawn(inst)
@@ -683,13 +736,6 @@ local function UpdatePhotosynthesisState(inst, isday)
             end
         end
     end
-end
-
-local function OnEat(inst, food)
-	if food.prefab == "moon_cap" and inst.components.skilltreeupdater ~= nil and inst.components.skilltreeupdater:IsActivated("wormwood_moon_cap_eating") then
-		--Trigger stategraph event handler immediately instead of buffering.
-		inst.sg:HandleEvent("queue_post_eat_state", { post_eat_state = "mooncap_cloud", nointerrupt = true })
-	end
 end
 
 local function RemoveWormwoodPets(inst)
@@ -749,7 +795,6 @@ local function master_postinit(inst)
     if inst.components.eater then
         --No health from food
         inst.components.eater:SetAbsorptionModifiers(0, 1, 1)
-		inst.components.eater:SetOnEatFn(OnEat)
     end
 
     if inst.components.petleash ~= nil then
@@ -814,6 +859,8 @@ local function master_postinit(inst)
 
     inst.UpdateBloomStage = UpdateBloomStage
     inst.RecalculateLightFlierPattern = RecalculateLightFlierPattern
+    inst.RecalculateDragonHealth = RecalculateDragonHealth
+    inst.RecalculateLightFlierLight = RecalculateLightFlierLight
     inst.UpdatePhotosynthesisState = UpdatePhotosynthesisState
 
     inst.OnPreLoad = OnPreLoad

@@ -1,6 +1,3 @@
-local WALK_SPEED = 4
-local RUN_SPEED = 7
-
 local MOLE_PEEK_INTERVAL = 20
 local MOLE_PEEK_VARIANCE = 5
 
@@ -75,6 +72,10 @@ local function KillStunnedSound(inst)
     inst.SoundEmitter:KillSound("stunned")
 end
 
+local function KillSniff(inst)
+    inst.SoundEmitter:KillSound("sniff")
+end
+
 local states =
 {
     State{
@@ -111,8 +112,12 @@ local states =
 
         timeline =
         {
-            TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge") end),
-            TimeEvent(3*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge_voice") end),
+            TimeEvent(1*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge")
+            end),
+            TimeEvent(3*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge_voice")
+            end),
         },
 
         events =
@@ -136,14 +141,18 @@ local states =
 
         timeline =
         {
-            TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge") end),
-            TimeEvent(3*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge_voice") end),
+            TimeEvent(1*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge")
+            end),
+            TimeEvent(3*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge_voice")
+            end),
             TimeEvent(26*FRAMES, function(inst)
                 if not inst.SoundEmitter:PlayingSound("sniff") then
                     inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/sniff", "sniff")
                 end
             end),
-            TimeEvent(77*FRAMES, function(inst) inst.SoundEmitter:KillSound("sniff") end),
+            TimeEvent(77*FRAMES, KillSniff),
         },
 
         events =
@@ -153,9 +162,7 @@ local states =
             end),
         },
 
-        onexit = function(inst)
-            inst.SoundEmitter:KillSound("sniff")
-        end,
+        onexit = KillSniff,
     },
 
     State{
@@ -175,7 +182,7 @@ local states =
                     inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/sniff", "sniff")
                 end
             end),
-            TimeEvent(52*FRAMES, function(inst) inst.SoundEmitter:KillSound("sniff") end),
+            TimeEvent(52*FRAMES, KillSniff),
         },
 
         events =
@@ -185,9 +192,7 @@ local states =
             end)
         },
 
-        onexit = function(inst)
-            inst.SoundEmitter:KillSound("sniff")
-        end,
+        onexit = KillSniff,
     },
 
     State{
@@ -202,14 +207,18 @@ local states =
 
         timeline =
         {
-            TimeEvent(9*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/pickup") end),
-            TimeEvent(12*FRAMES, function(inst) inst:PerformBufferedAction() end),
+            TimeEvent(9*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/pickup")
+            end),
+            TimeEvent(12*FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
             TimeEvent(27*FRAMES, function(inst)
                 if not inst.SoundEmitter:PlayingSound("sniff") then
                     inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/sniff", "sniff")
                 end
             end),
-            TimeEvent(78*FRAMES, function(inst) inst.SoundEmitter:KillSound("sniff") end),
+            TimeEvent(78*FRAMES, KillSniff),
         },
 
         events =
@@ -219,9 +228,7 @@ local states =
             end),
         },
 
-        onexit = function(inst)
-            inst.SoundEmitter:KillSound("sniff")
-        end,
+        onexit = KillSniff,
     },
 
     State{
@@ -231,17 +238,19 @@ local states =
             inst.Physics:Stop()
             inst:SetAbovePhysics()
             inst.AnimState:PlayAnimation("exit")
-            -- if inst.components.burnable:IsBurning() then
-            --     inst.components.burnable:Extinguish()
-            -- end
         end,
 
         timeline =
         {
-            TimeEvent(8*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/jump") end),
-            --TimeEvent(24*FRAMES, function(inst) end),
-            TimeEvent(26*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/retract") end),
-            TimeEvent(43*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/retract") end),
+            TimeEvent(8*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/jump")
+            end),
+            TimeEvent(26*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/retract")
+            end),
+            TimeEvent(43*FRAMES, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/retract")
+            end),
         },
 
         events =
@@ -278,7 +287,7 @@ local states =
                     inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/sniff", "sniff")
                 end
             end),
-            TimeEvent(52*FRAMES, function(inst) inst.SoundEmitter:KillSound("sniff") end),
+            TimeEvent(52*FRAMES, KillSniff),
         },
     },
 

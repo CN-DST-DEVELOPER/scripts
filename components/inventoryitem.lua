@@ -144,6 +144,18 @@ function InventoryItem:AddMoisture(delta)
     end
 end
 
+function InventoryItem:MakeMoistureAtLeast(min)
+	if self.inst.components.inventoryitemmoisture ~= nil then
+		self.inst.components.inventoryitemmoisture:MakeMoistureAtLeast(min)
+	end
+end
+
+function InventoryItem:DryMoisture()
+    if self.inst.components.inventoryitemmoisture ~= nil then
+        self.inst.components.inventoryitemmoisture:SetMoisture(0)
+    end
+end
+
 function InventoryItem:SetOwner(owner)
     self.owner = owner
 end

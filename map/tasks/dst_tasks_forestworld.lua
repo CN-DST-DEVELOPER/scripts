@@ -393,7 +393,7 @@ AddTask("MoonIsland_Baths", {
 	cove_room_name = "Empty_Cove",
 	cove_room_chance = 1,
 	cove_room_max_edges = 2,
-	required_prefabs = {"moon_fissure", "moon_fissure", "moon_altar_rock_glass", "moon_altar_rock_seed", "moon_altar_rock_idol"},
+	required_prefabs = {"moon_fissure", "moon_fissure", "moon_altar_rock_glass", "moon_altar_rock_seed", "moon_altar_rock_idol", "junk_pile_big"},
     colour={r=0.6,g=0.6,b=0.0,a=1},
 })
 

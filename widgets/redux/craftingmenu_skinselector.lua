@@ -160,16 +160,18 @@ function SkinSelector:GetSkinsList()
     local skins_list = {}
     if self.recipe and PREFAB_SKINS[self.recipe.product] then
         for _,item_type in pairs(PREFAB_SKINS[self.recipe.product]) do
-            local has_item, modified_time = TheInventory:CheckOwnershipGetLatest(item_type)
-            if has_item then
-                local data  = {}
-                data.type = type
-                data.item = item_type
-                data.timestamp = modified_time
-                table.insert(skins_list, data)
+            if not PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] then
+                local has_item, modified_time = TheInventory:CheckOwnershipGetLatest(item_type)
+                if has_item then
+                    local data  = {}
+                    data.type = type
+                    data.item = item_type
+                    data.timestamp = modified_time
+                    table.insert(skins_list, data)
 
-                if data.timestamp > self.timestamp then
-                    self.timestamp = data.timestamp
+                    if data.timestamp > self.timestamp then
+                        self.timestamp = data.timestamp
+                    end
                 end
             end
         end

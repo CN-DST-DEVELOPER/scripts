@@ -138,6 +138,9 @@ local assets =
     Asset("FILE", "sound/yotd2024.fsb"),
     --Asset("FILE", "sound/yotd2024_music.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/qol1.fev"),     
+    Asset("FILE", "sound/qol1.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods
@@ -463,6 +466,9 @@ local assets =
 
     Asset("ATLAS", "images/servericons.xml"),
     Asset("IMAGE", "images/servericons.tex"),
+
+    Asset("ATLAS", "images/npcchatflairs.xml"),
+    Asset("IMAGE", "images/npcchatflairs.tex"),
 
     -- Loading screen
     Asset("ATLAS", "images/loading_screen.xml"),

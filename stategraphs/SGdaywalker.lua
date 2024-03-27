@@ -1,18 +1,5 @@
 require("stategraphs/commonstates")
-
---------------------------------------------------------------------------
-
-local function DoRoarShake(inst)
-	ShakeAllCameras(CAMERASHAKE.FULL, 1.4, .02, .2, inst, 30)
-end
-
-local function DoPounceShake(inst)
-	ShakeAllCameras(CAMERASHAKE.FULL, .4, .02, .15, inst, 20)
-end
-
-local function DoDefeatShake(inst)
-	ShakeAllCameras(CAMERASHAKE.VERTICAL, .6, .025, .2, inst, 20)
-end
+local SGDaywalkerCommon = require("stategraphs/SGdaywalker_common")
 
 --------------------------------------------------------------------------
 
@@ -322,13 +309,9 @@ local CHATTER_DELAYS =
 	["DAYWALKER_ATTACK"] =			{ delay = 4, len = 1.5 },
 }
 
-local function TryChatter(inst, strtblname, index, ignoredelay)
-	local t = GetTime()
-	local delays = CHATTER_DELAYS[strtblname]
-	if ignoredelay or (inst.sg.mem.lastchatter or 0) + (delays ~= nil and delays.delay or 0) < t then
-		inst.sg.mem.lastchatter = t
-		inst.components.talker:Chatter(strtblname, index or math.random(#STRINGS[strtblname]), delays ~= nil and delays.len or nil)
-	end
+local function TryChatter(inst, strtblname, index, ignoredelay, echotochatpriority)
+	-- 'echotochatpriority' defaults to CHATPRIORITIES.LOW if nil is passed.
+	SGDaywalkerCommon.TryChatter(inst, CHATTER_DELAYS, strtblname, index, ignoredelay, echotochatpriority)
 end
 
 --------------------------------------------------------------------------
@@ -361,8 +344,8 @@ local states =
 		timeline =
 		{
 			--steps
-			FrameEvent(8, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.3) end),
-			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.3) end),
+			FrameEvent(8, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.3) end),
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.3) end),
 
 			FrameEvent(12, function(inst)
 				inst.sg:RemoveStateTag("notiredhit")
@@ -606,7 +589,7 @@ local states =
 					end
 				end
 			end),
-			FrameEvent(16, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.5) end),
+			FrameEvent(16, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.5) end),
 		},
 
 		ontimeout = function(inst)
@@ -658,18 +641,18 @@ local states =
 			inst.SoundEmitter:PlaySound("daywalker/voice/hurt")
 			inst.sg.mem.struggle_count = (inst.sg.mem.struggle_count or 0) + 1
 			inst.sg.mem.shrug_count = 0
-			TryChatter(inst, "DAYWALKER_SHAKE_LEECHES")
+			TryChatter(inst, "DAYWALKER_SHAKE_LEECHES", nil, nil, CHATPRIORITIES.HIGH)
 		end,
 
 		timeline =
 		{
-			FrameEvent(3, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.3) end),
+			FrameEvent(3, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.3) end),
 			FrameEvent(5, function(inst)
 				TryDetachLeech(inst, { "top", "right" }, 0.55 + math.random() * 0.1, true)
 				inst.sg.statemem.targets = {}
 				DoAOEAttack(inst, 0, 1.8, nil, nil, nil, inst.sg.statemem.targets)
 			end),
-			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.1) end),
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.1) end),
 			FrameEvent(11, function(inst)
 				TryDetachLeech(inst, { "left", "top" }, 0.55 + math.random() * 0.1, true)
 			end),
@@ -746,7 +729,7 @@ local states =
 		timeline =
 		{
 			FrameEvent(1, function(inst)
-				inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.1)
+				inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.1)
 				TryDetachLeech(inst, { "top", "right" }, 0.55 + math.random() * 0.1, true)
 			end),
 			FrameEvent(1, function(inst)
@@ -782,7 +765,7 @@ local states =
 			inst.Physics:SetMotorVelOverride(2, 0, 0)
 			inst.sg.mem.shrug_count = (inst.sg.mem.shrug_count or 0) + 1
 			inst.sg.mem.struggle_count = 0
-			TryChatter(inst, "DAYWALKER_SHAKE_LEECHES")
+			TryChatter(inst, "DAYWALKER_SHAKE_LEECHES", nil, nil, CHATPRIORITIES.HIGH)
 		end,
 
 		onupdate = function(inst)
@@ -801,7 +784,7 @@ local states =
 			end),
 			FrameEvent(8, function(inst)
 				inst.Physics:SetMotorVelOverride(6, 0, 0)
-				inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.6)
+				inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.6)
 			end),
 			FrameEvent(9, function(inst)
 				inst.Physics:SetMotorVelOverride(4, 0, 0)
@@ -812,7 +795,7 @@ local states =
 				inst.sg.statemem.colliding = false
 			end),
 			FrameEvent(12, function(inst) inst.Physics:SetMotorVelOverride(1, 0, 0) end),
-			FrameEvent(13, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.2) end),
+			FrameEvent(13, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.2) end),
 		},
 
 		events =
@@ -871,13 +854,13 @@ local states =
 				inst.Physics:SetMotorVelOverride(4, 0, 0)
 				inst.sg.statemem.colliding = true
 			end),
-			FrameEvent(6, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.6) end),
+			FrameEvent(6, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.6) end),
 			FrameEvent(7, function(inst)
 				inst.Physics:SetMotorVelOverride(2, 0, 0)
 				inst.sg.statemem.colliding = false
 			end),
 			FrameEvent(9, function(inst) inst.Physics:SetMotorVelOverride(1, 0, 0) end),
-			FrameEvent(11, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.2) end),
+			FrameEvent(11, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.2) end),
 			FrameEvent(12, function(inst)
 				inst.Physics:ClearMotorVelOverride()
 				inst.Physics:Stop()
@@ -951,7 +934,7 @@ local states =
 				inst.Physics:ClearMotorVelOverride()
 				inst.Physics:Stop()
 			end),
-			FrameEvent(13, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.4) end),
+			FrameEvent(13, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.4) end),
 		},
 
 		ontimeout = function(inst)
@@ -977,7 +960,7 @@ local states =
 			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
 			inst.AnimState:PlayAnimation("attach_"..(attachpos or "top").."_leech")
 			inst.SoundEmitter:PlaySound("daywalker/voice/hurt")
-			inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.2)
+			inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.2)
 			inst.sg.mem.detachtime = math.max(inst.sg.mem.detachtime or 0, GetTime() + 1)
 			TryChatter(inst, "DAYWALKER_LEECH_BITE")
 			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
@@ -1039,7 +1022,7 @@ local states =
 
 		timeline =
 		{
-			FrameEvent(9, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.4) end),
+			FrameEvent(9, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.4) end),
 			FrameEvent(11, function(inst)
 				if inst.sg.statemem.trytired and inst:IsFatigued() or inst.defeated then
 					inst.sg:GoToState("tired_pre")
@@ -1079,7 +1062,7 @@ local states =
 			inst.components.locomotor:Stop()
 			inst.components.locomotor:EnableGroundSpeedMultiplier(false)
 			inst.AnimState:PlayAnimation("run_pre")
-			inst.SoundEmitter:PlaySound("daywalker/action/step")
+			inst.SoundEmitter:PlaySound(inst.footstep)
 			if data ~= nil then
 				if data.target ~= nil and data.target:IsValid() then
 					inst:ForceFacePoint(data.target.Transform:GetWorldPosition())
@@ -1144,8 +1127,8 @@ local states =
 			FrameEvent(5, function(inst)
 				inst.sg.statemem.collides = nil
 			end),
-			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step") end),
-			FrameEvent(11, DoPounceShake),
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound(inst.footstep) end),
+			FrameEvent(11, SGDaywalkerCommon.DoPounceShake),
 			FrameEvent(12, function(inst)
 				inst.sg:AddStateTag("pounce_recovery")
 				inst.components.combat:SetDefaultDamage(TUNING.DAYWALKER_XCLAW_DAMAGE)
@@ -1315,7 +1298,7 @@ local states =
 		{
 			FrameEvent(0, function(inst)
 				inst.SoundEmitter:PlaySound("daywalker/voice/hurt")
-				inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.3)
+				inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.3)
 			end),
 			FrameEvent(18, function(inst)
 				inst.sg.statemem.decel = 0
@@ -1408,7 +1391,7 @@ local states =
 			FrameEvent(1, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/attack_slam_whoosh") end),
 			FrameEvent(2, function(inst)
 				inst.SoundEmitter:PlaySound("daywalker/voice/attack_big")
-				inst.SoundEmitter:PlaySound("daywalker/action/step")
+				inst.SoundEmitter:PlaySound(inst.footstep)
 			end),
 			FrameEvent(25, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/attack_slam_down") end),
 
@@ -1532,13 +1515,13 @@ local states =
 				inst.components.epicscare:Scare(5)
 			end),
 			FrameEvent(19, function(inst)
-				inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.3)
-				DoRoarShake(inst)
+				inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.3)
+				SGDaywalkerCommon.DoRoarShake(inst)
 			end),
 			FrameEvent(38, function(inst)
 				inst.sg:AddStateTag("caninterrupt")
 			end),
-			FrameEvent(47, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.2) end),
+			FrameEvent(47, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.2) end),
 			FrameEvent(50, function(inst)
 				inst.sg:RemoveStateTag("busy")
 			end),
@@ -1571,10 +1554,10 @@ local states =
 		timeline =
 		{
 			FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound("daywalker/voice/hurt") end),
-			FrameEvent(7, function(inst) inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.4) end),
+			FrameEvent(7, function(inst) inst.SoundEmitter:PlaySound(inst.footstep, nil, 0.4) end),
 			FrameEvent(23, function(inst) inst.SoundEmitter:PlaySound("daywalker/voice/speak_short") end),
 			FrameEvent(33, function(inst) inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt") end),
-			FrameEvent(34, DoDefeatShake),
+			FrameEvent(34, SGDaywalkerCommon.DoDefeatShake),
 			FrameEvent(36, function(inst)
 				inst.sg:AddStateTag("noattack")
 				if inst.defeated and not inst.looted then
@@ -1670,7 +1653,7 @@ local states =
 		timeline =
 		{
 			FrameEvent(13, function(inst)
-				TryChatter(inst, "DAYWALKER_POWERDOWN")
+				TryChatter(inst, "DAYWALKER_POWERDOWN", nil, nil, CHATPRIORITIES.HIGH)
 			end),
 		},
 
@@ -1693,99 +1676,14 @@ local states =
 	},
 }
 
-local function DoFootstep(inst, volume)
-	inst.sg.mem.lastfootstep = GetTime()
-	inst.SoundEmitter:PlaySound("daywalker/action/step", nil, volume)
-end
-
-local function OnEnterWalkingStates(inst)
-	inst:SetHeadTracking(true)
-	if inst:IsStalking() then
-		inst.sg:AddStateTag("stalking")
-	end
-end
-
-CommonStates.AddWalkStates(states,
+SGDaywalkerCommon.AddWalkStates(states)
+SGDaywalkerCommon.AddRunStates(states, nil,
 {
-	starttimeline =
-	{
-		FrameEvent(0, function(inst) DoFootstep(inst, 0.5) end),
-	},
-	walktimeline =
-	{
-		FrameEvent(19, DoFootstep),
-		FrameEvent(43, DoFootstep),
-	},
-	endtimeline =
-	{
-		FrameEvent(0, function(inst)
-			inst.sg.statemem.noexitstep = true
-			local t = GetTime()
-			if (inst.sg.mem.lastfootstep or -math.huge) + 0.5 < t then
-				inst.sg.mem.lastfootstep = t
-				inst.SoundEmitter:PlaySound("daywalker/action/step")
-			end
-		end),
-	},
-},
-nil, nil, nil,
-{
-	startonenter = OnEnterWalkingStates,
-	walkonenter = OnEnterWalkingStates,
-	endonenter = OnEnterWalkingStates,
-	endonexit = function(inst)
-		if not inst.sg.statemem.noexitstep then
-			local t = GetTime()
-			if (inst.sg.mem.lastfootstep or -math.huge) + 0.5 < t then
-				inst.sg.mem.lastfootstep = t
-				inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.5)
-			end
-		end
-	end,
-})
-
-CommonStates.AddRunStates(states,
-{
-	starttimeline =
-	{
-		FrameEvent(0, function(inst) DoFootstep(inst, 0.5) end),
-	},
-	runtimeline =
-	{
-		FrameEvent(9, DoFootstep),
-		FrameEvent(22, DoFootstep),
-	},
-	endtimeline =
-	{
-		FrameEvent(0, function(inst)
-			inst.sg.statemem.noexitstep = true
-			local t = GetTime()
-			if (inst.sg.mem.lastfootstep or -math.huge) + 0.3 < t then
-				inst.sg.mem.lastfootstep = t
-				inst.SoundEmitter:PlaySound("daywalker/action/step")
-			end
-		end),
-	},
-},
-nil, nil, nil,
-{
-	startonenter = function(inst)
-		inst:SetStalking(nil)
-	end,
 	runonenter = function(inst)
 		if not inst.components.combat:InCooldown() then
 			local target = inst.components.combat.target
-			if target ~= nil and DiffAngle(inst.Transform:GetRotation(), inst:GetAngleToPoint(target.Transform:GetWorldPosition())) < 45 then
+			if target and DiffAngle(inst.Transform:GetRotation(), inst:GetAngleToPoint(target.Transform:GetWorldPosition())) < 45 then
 				TryChatter(inst, "DAYWALKER_ATTACK")
-			end
-		end
-	end,
-	endonexit = function(inst)
-		if not inst.sg.statemem.noexitstep then
-			local t = GetTime()
-			if (inst.sg.mem.lastfootstep or -math.huge) + 0.3 < t then
-				inst.sg.mem.lastfootstep = t
-				inst.SoundEmitter:PlaySound("daywalker/action/step", nil, 0.5)
 			end
 		end
 	end,

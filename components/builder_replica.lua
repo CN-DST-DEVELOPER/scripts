@@ -14,7 +14,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Builder:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Builder:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified = nil
@@ -25,7 +26,7 @@ function Builder:OnRemoveFromEntity()
     end
 end
 
-Builder.OnRemoveEntity = Builder.OnRemoveFromEntity
+Builder.OnRemoveEntity = Builder.OnRemoveFromEntity]]
 
 function Builder:AttachClassified(classified)
     self.classified = classified

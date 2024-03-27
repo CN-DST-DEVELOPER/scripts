@@ -38,6 +38,8 @@ local mutations_prefabs =
 	"security_pulse_cage",
 }
 
+local WAGSTAFF_CHATTER_COLOUR = Vector3(231/256, 165/256, 75/256)
+
 --------------------------------------------------------------------------
 
 local function PushMusic(inst)
@@ -77,7 +79,7 @@ local SHADER_CUTOFF_HEIGHT = -0.125
 
 local function getline(data)
     if type(data) == "table" then
-        return data[math.random(1,#data)]
+        return data[math.random(#data)]
     else
         return data
     end
@@ -90,7 +92,8 @@ local function ShouldAcceptItem(inst, item)
 end
 
 local function OnGetItemFromPlayer(inst, giver, item)
-    inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THIS_TOOL))
+    local chatter_index = math.random(#STRINGS.WAGSTAFF_NPC_YES_THIS_TOOL)
+    inst.components.talker:Chatter("WAGSTAFF_NPC_YES_THIS_TOOL", chatter_index, nil, nil, CHATPRIORITIES.LOW)
     if TheWorld.components.moonstormmanager then
         TheWorld.components.moonstormmanager:foundTool()
         item:Remove()
@@ -98,66 +101,33 @@ local function OnGetItemFromPlayer(inst, giver, item)
 end
 
 local function OnRefuseItem(inst, giver, item)
+    local chatter_table, chatter_index
     if inst.tool_wanted then
-        inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NOT_THIS_TOOL))
+        chatter_table = "WAGSTAFF_NPC_NOT_THIS_TOOL"
+        chatter_index = math.random(#STRINGS.WAGSTAFF_NPC_NOT_THIS_TOOL)
     else
-        inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_TOO_BUSY))
+        chatter_table = "WAGSTAFF_NPC_TOO_BUSY"
+        chatter_index = math.random(#STRINGS.WAGSTAFF_NPC_TOO_BUSY)
     end
+    inst.components.talker:Chatter(chatter_table, chatter_index, nil, nil, CHATPRIORITIES.LOW)
 end
 
-local function OnAttacked(inst, data)
-
+local function do_tool_chatter(inst, string_table_name)
+    inst.components.talker:Chatter(string_table_name, nil, nil, nil, CHATPRIORITIES.HIGH)
+    inst:PushEvent("talk_experiment")
 end
 
-local function OnNewTarget(inst, data)
-
-end
-
-local function RetargetFn(inst)
-    return nil
-end
-
-local function KeepTargetFn(inst, target)
-    return nil
-end
-
-local function OnItemGet(inst, data)
-
-end
-
-local function OnItemLose(inst, data)
-
-end
-
-local function OnSave(inst, data)
-end
-
-local function OnLoad(inst, data)
-end
-
+local NUMTOOLS = 5
 local function WaitForTool(inst)
     inst:PushEvent("waitfortool")
 
-    local tools =
-    {
-        "wagstaff_tool_1",
-        "wagstaff_tool_2",
-        "wagstaff_tool_3",
-        "wagstaff_tool_4",
-        "wagstaff_tool_5",
-    }
-
-    local rand = math.random(1,#tools)
-    local tool = tools[rand]
+    local rand = math.random(NUMTOOLS)
+    local tool = "wagstaff_tool_"..rand
     inst.tool_wanted = tool
 
-    local str = getline(STRINGS["WAGSTAFF_NPC_WANT_TOOL_"..rand])
-    inst.components.talker:Say(str)
-    inst:PushEvent("talk_experiment")
-    inst.need_tool_task = inst:DoPeriodicTask(5,function()
-        inst.components.talker:Say(str)
-        inst:PushEvent("talk_experiment")
-    end)
+    local string_table_name = "WAGSTAFF_NPC_WANT_TOOL_"..rand
+    do_tool_chatter(inst, string_table_name)
+    inst.need_tool_task = inst:DoPeriodicTask(5, do_tool_chatter, nil, string_table_name)
 end
 
 local function OnRestoreItemPhysics(item)
@@ -199,38 +169,37 @@ local function giveblueprints(inst,player, recipe)
     end
 end
 
+local function do_no_way_erode(inst)
+    inst:erode(2, nil, true)
+end
+local function do_no_way_2(inst)
+    inst.components.talker:Chatter("WAGSTAFF_NPC_NO_WAY2", 1, nil, nil, CHATPRIORITIES.LOW)
+    inst:DoTaskInTime(2, do_no_way_erode)
+end
 local function waypointadvance(inst, txt)
     local newpos
     if TheWorld.components.moonstormmanager then
         newpos = TheWorld.components.moonstormmanager:AdvanceWagstaff(inst)
     end
     if newpos then
-        local speech = STRINGS.WAGSTAFF_NPC_THIS_WAY
-        if txt then
-            speech = txt
-        end
-        inst.components.talker:Say(getline(speech))
+        local speech = txt or "WAGSTAFF_NPC_THIS_WAY"
+        inst.components.talker:Chatter(speech, math.random(#STRINGS[speech]), nil, nil, CHATPRIORITIES.LOW)
         inst.components.knownlocations:RememberLocation("clue",newpos)
     else
         inst.busy = inst.busy and inst.busy + 1 or 1
-        inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NO_WAY1))
-        inst:DoTaskInTime(4,function()
-            inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NO_WAY2))
-            inst:DoTaskInTime(2,function()
-                inst:erode(2,nil,true)
-            end)
-        end)
+        inst.components.talker:Chatter("WAGSTAFF_NPC_NO_WAY1", 1, nil, nil, CHATPRIORITIES.LOW)
+        inst:DoTaskInTime(4, do_no_way_2)
     end
 end
 
 local function doblueprintcheck(inst)
-    for i, v in ipairs(AllPlayers) do
-        print("FOUND PLAYER",v.prefab)
-        if inst:GetDistanceSqToInst(v) < 12*12 then
-            giveblueprints(inst,v,"moonstorm_goggleshat")
-            giveblueprints(inst,v,"moon_device_construction1")
-            if not v.components.timer:TimerExists("wagstaff_npc_blueprints") then
-                v.components.timer:StartTimer("wagstaff_npc_blueprints",120)
+    for _, player in ipairs(AllPlayers) do
+        --print("FOUND PLAYER", player.prefab)
+        if inst:GetDistanceSqToInst(player) < 12*12 then
+            giveblueprints(inst,player,"moonstorm_goggleshat")
+            giveblueprints(inst,player,"moon_device_construction1")
+            if not player.components.timer:TimerExists("wagstaff_npc_blueprints") then
+                player.components.timer:StartTimer("wagstaff_npc_blueprints",120)
             end
         end
     end
@@ -259,7 +228,7 @@ local function onplayernear(inst,player)
     if inst.hunt_stage == "experiment" then
         inst:StartMusic()
         if TheWorld.components.moonstormmanager and not TheWorld.components.moonstormmanager.tools_task then
-            inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_START))
+            inst.components.talker:Chatter("WAGSTAFF_NPC_START", math.random(#STRINGS.WAGSTAFF_NPC_START), nil, nil, CHATPRIORITIES.LOW)
             TheWorld.components.moonstormmanager:beginWagstaffDefence(inst)
         end
     else
@@ -268,27 +237,23 @@ local function onplayernear(inst,player)
             TheWorld.components.moonstormmanager:AddMetplayer(player.userid)
 
             inst:PushEvent("talk")
-            inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_MEETING))
+            inst.components.talker:Chatter("WAGSTAFF_NPC_MEETING", 0, nil, nil, CHATPRIORITIES.LOW)
 
             inst:DoTaskInTime(3,function()
                 doblueprintcheck(inst)
 
                 inst:PushEvent("talk")
-                inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_MEETING_2))
+                inst.components.talker:Chatter("WAGSTAFF_NPC_MEETING2", 0, nil, nil, CHATPRIORITIES.LOW)
 
                 inst:DoTaskInTime(3,function()
-
                     inst:PushEvent("talk")
-                    inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_MEETING_3))
+                    inst.components.talker:Chatter("WAGSTAFF_NPC_MEETING3", 0, nil, nil, CHATPRIORITIES.LOW)
 
                     inst:DoTaskInTime(3,function()
-
                         inst:PushEvent("talk")
-                        inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_MEETING_4))
+                        inst.components.talker:Chatter("WAGSTAFF_NPC_MEETING4", 0, nil, nil, CHATPRIORITIES.LOW)
 
-                        inst:DoTaskInTime(3,function()
-                            waypointadvance(inst,STRINGS.WAGSTAFF_NPC_MEETING_5)
-                        end)
+                        inst:DoTaskInTime(3, waypointadvance, "WAGSTAFF_NPC_MEETING_5")
                     end)
                 end)
             end)
@@ -481,11 +446,14 @@ local function fn()
     --trader (from trader component) added to pristine state for optimization
     inst:AddTag("trader")
 
-    inst:AddComponent("talker")
-    inst.components.talker.fontsize = 35
-    inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
-    inst.components.talker:MakeChatter()
+    local talker = inst:AddComponent("talker")
+    talker.fontsize = 35
+    talker.font = TALKINGFONT
+    talker.offset = Vector3(0, -400, 0)
+    talker.name_colour = WAGSTAFF_CHATTER_COLOUR
+    talker.chaticon = "npcchatflair_wagstaff"
+    --talker.chaticonbg = "playerlevel_bg_quagmire"
+    talker:MakeChatter()
     --inst.talksoundoverride = "moonboss/characters/wagstaff/talk_LP"
 
     if not TheNet:IsDedicated() then
@@ -549,8 +517,6 @@ local function fn()
     -- inst.components.inspectable.getstatus = GetStatus
     ------------------------------------------
 
-    inst.OnSave = OnSave
-    inst.OnLoad = OnLoad
     inst.WaitForTool = WaitForTool
     inst.getline = getline
     inst.erode = erode
@@ -563,11 +529,10 @@ local function fn()
     inst:AddComponent("teleportedoverride")
     inst.components.teleportedoverride:SetDestPositionFn(teleport_override_fn)
 
-    --inst:ListenForEvent("entitysleep", OnSleep)
     inst:ListenForEvent("moonboss_defeated", function()
             inst.busy = inst.busy and inst.busy + 1 or 1
             inst:PushEvent("talk")
-            inst.components.talker:Say(getline(STRINGS.WAGSTAFF_GOTTAGO1))
+            inst.components.talker:Chatter("WAGSTAFF_GOTTAGO1", nil, nil, nil, CHATPRIORITIES.LOW)
             local msm = TheWorld.components.moonstormmanager
             if inst.hunt_stage == "experiment" and msm then
                 inst.failtasks = true
@@ -576,28 +541,26 @@ local function fn()
                     msm.spawn_wagstaff_test_task:Cancel()
                     msm.spawn_wagstaff_test_task = nil
                 end
-                inst.static:DoTaskInTime(5,function() inst.static.components.health:Kill() end)
+                inst.static:DoTaskInTime(5, function(st) st.components.health:Kill() end)
             end
 
-            inst:DoTaskInTime(4,function()
-                inst:PushEvent("talk")
-                inst.components.talker:Say(getline(STRINGS.WAGSTAFF_GOTTAGO2))
-                inst:erode(3,nil,true)
+            inst:DoTaskInTime(4,function(i)
+                i:PushEvent("talk")
+                i.components.talker:Chatter("WAGSTAFF_GOTTAGO2", nil, nil, nil, CHATPRIORITIES.LOW)
+                i:erode(3,nil,true)
             end)
 
             -- STOP MORE WAGSTAFFS FROM SPAWNING FOR A WHILE
 
         end, TheWorld)
     inst:ListenForEvent("ontalk", ontalk)
-    inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("entitysleep", OnEntitySleep)
-    inst:ListenForEvent("newcombattarget", OnNewTarget)
     inst:ListenForEvent("ms_stormchanged", function(src, data)
         if data and data.stormtype == STORM_TYPES.MOONSTORM and not inst.donexperiment then
             inst.busy = inst.busy and inst.busy + 1 or 1
             cleartasks(inst)
             inst:PushEvent("talk")
-            inst.components.talker:Say(inst.getline(STRINGS.WAGSTAFF_NPC_STORMPASS))
+            inst.components.talker:Chatter("WAGSTAFF_NPC_STORMPASS", nil, nil, nil, CHATPRIORITIES.LOW)
             inst:DoTaskInTime(3, function()
                 inst:erode(2,nil,true)
             end)
@@ -664,9 +627,9 @@ local function pstbossOnRefuseItem(inst, giver, item)
 				inst.request_task = nil
 			end
 
-			inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT1))
+            inst.components.talker:Chatter("WAGSTAFF_NPC_YES_THAT1", nil, nil, nil, CHATPRIORITIES.LOW)
 			inst:DoTaskInTime(3, function()
-				inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_YES_THAT2))
+                inst.components.talker:Chatter("WAGSTAFF_NPC_YES_THAT2", nil, nil, nil, CHATPRIORITIES.LOW)
 			end)
 
 			inst:RemoveComponent("trader")
@@ -678,7 +641,7 @@ local function pstbossOnRefuseItem(inst, giver, item)
 			inst.components.constructionsite:SetOnConstructedFn(ConstructionSite_OnConstructed)
 		end
 	else
-		inst.components.talker:Say(getline(STRINGS.WAGSTAFF_NPC_NOTTHAT))
+        inst.components.talker:Chatter("WAGSTAFF_NPC_NOTTHAT", nil, nil, nil, CHATPRIORITIES.LOW)
 		if inst.request_task ~= nil then
 			inst.request_task:Cancel()
 		end
@@ -687,7 +650,8 @@ local function pstbossOnRefuseItem(inst, giver, item)
 end
 
 local function doplayerrequest(inst)
-    inst.components.talker:Say(STRINGS.WAGSTAFF_NPC_REQUEST[inst.sg.statemem.request])
+    local echo_priority = (inst.sg.statemem.request >= 3 and CHATPRIORITIES.HIGH) or CHATPRIORITIES.LOW
+    inst.components.talker:Chatter("WAGSTAFF_NPC_REQUEST", inst.sg.statemem.request, nil, nil, echo_priority)
     inst.sg.statemem.request = inst.sg.statemem.request +1
     if inst.sg.statemem.request >= 9 then
         inst.sg.statemem.request = math.random(9,#STRINGS.WAGSTAFF_NPC_REQUEST)
@@ -810,11 +774,14 @@ local function pstbossfn()
     inst.Light:SetColour(255/255, 200/255, 200/255)
     inst.Light:Enable(true)
 
-    inst:AddComponent("talker")
-    inst.components.talker.fontsize = 35
-    inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
-    inst.components.talker:MakeChatter()
+    local talker = inst:AddComponent("talker")
+    talker.fontsize = 35
+    talker.font = TALKINGFONT
+    talker.offset = Vector3(0, -400, 0)
+    talker.name_colour = WAGSTAFF_CHATTER_COLOUR
+    talker.chaticon = "npcchatflair_wagstaff"
+    --talker.chaticonbg = "playerlevel_bg_lavaarena"
+    talker:MakeChatter()
 
     if not TheNet:IsDedicated() then
         inst:AddComponent("hudindicatable")
@@ -1075,11 +1042,13 @@ local function MutationsQuestFn()
     inst.Light:SetColour(255/255, 200/255, 200/255)
     inst.Light:Enable(false)
 
-    inst:AddComponent("talker")
-    inst.components.talker.fontsize = 35
-    inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
-    inst.components.talker:MakeChatter()
+    local talker = inst:AddComponent("talker")
+    talker.fontsize = 35
+    talker.font = TALKINGFONT
+    talker.offset = Vector3(0, -400, 0)
+    talker.name_colour = WAGSTAFF_CHATTER_COLOUR
+    talker.chaticon = "npcchatflair_wagstaff"
+    talker:MakeChatter()
 
     inst.entity:SetPristine()
 
@@ -1121,8 +1090,6 @@ local function wagpunk_ShowUp(inst)
     inst:Show()
     inst:PushEvent("doerode", ERODEIN)
 
-    inst.sg:GoToState("analyzing_pre")
-
     inst.SoundEmitter:PlaySound("moonstorm/common/alterguardian_contained/static_LP", "wagstaffnpc_static_loop")
 end
 
@@ -1162,11 +1129,13 @@ local function WagpunkFn()
     inst.Light:SetColour(255/255, 200/255, 200/255)
     inst.Light:Enable(false)
 
-    inst:AddComponent("talker")
-    inst.components.talker.fontsize = 35
-    inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
-    inst.components.talker:MakeChatter()
+    local talker = inst:AddComponent("talker")
+    talker.fontsize = 35
+    talker.font = TALKINGFONT
+    talker.offset = Vector3(0, -400, 0)
+    talker.name_colour = WAGSTAFF_CHATTER_COLOUR
+    talker.chaticon = "npcchatflair_wagstaff"
+    talker:MakeChatter()
 
     inst.entity:SetPristine()
 
@@ -1178,7 +1147,18 @@ local function WagpunkFn()
 
     inst.persists = false
 
+    ------------------------------------------
+    inst:AddComponent("timer")
+    inst:ListenForEvent("timerdone", ontimerdone)
+
+    ------------------------------------------
+    inst:AddComponent("knownlocations")
+    ------------------------------------------
+
     --inst._dialogue_script = Mutations_BuildDialogueScript()
+
+    inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
+    inst.components.locomotor.walkspeed = 3
 
     inst:AddComponent("inspectable")
 
@@ -1187,6 +1167,7 @@ local function WagpunkFn()
     inst:ListenForEvent("doerode", donpcerode)
 
     inst:SetStateGraph("SGwagstaff_npc")
+    inst:SetBrain(wagstaff_npcbrain)    
     
     inst.erode = erode
 

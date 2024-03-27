@@ -2,6 +2,7 @@ require "class"
 require("util/emoji")
 
 local MAX_CHAT_HISTORY = 100
+local NPC_CHATTER_MAX_CHAT_NO_DUPES = 20
 
 local ChatHistoryManager = Class(function(self)
     self.listeners = {}
@@ -17,6 +18,7 @@ function ChatHistoryManager:JoinServer()
 end
 
 ChatHistoryManager.MAX_CHAT_HISTORY = MAX_CHAT_HISTORY
+ChatHistoryManager.NPC_CHATTER_MAX_CHAT_NO_DUPES = NPC_CHATTER_MAX_CHAT_NO_DUPES
 
 function ChatHistoryManager:GetDisplayName(name, prefab)
     return name ~= "" and name or STRINGS.UI.SERVERADMINSCREEN.UNKNOWN_USER_NAME
@@ -37,6 +39,25 @@ function ChatHistoryManager:OnSystemMessage(message)
     self:AddToHistory(ChatTypes.SystemMessage, nil, nil, STRINGS.UI.SERVERADMINSCREEN.SYSTEMMESSAGE, message, WHITE)
 end
 
+function ChatHistoryManager:OnChatterMessage(inst, name_colour, message, colour, user_vanity, user_vanity_bg, priority)
+    if self.join_server then return end
+    if not Profile:GetNPCChatEnabled() then return end
+
+    priority = priority or 0
+    if Profile:GetNPCChatLevel() > priority then return end
+
+    if name_colour == nil then
+        name_colour = shallowcopy(DEFAULT_PLAYER_COLOUR)
+        name_colour[4] = 1 -- RGB to RGBA
+    end
+
+    -- Pack these because AddToHistory has too many arguments.
+    colour.name_colour = name_colour
+    local vanity = {icon = user_vanity, iconbg = user_vanity_bg}
+
+    self:AddToHistory(ChatTypes.ChatterMessage, nil, nil, inst:GetDisplayName(), message, colour, vanity)
+end
+
 function ChatHistoryManager:OnSay(guid, userid, netid, name, prefab, message, colour, whisper, isemote, user_vanity)
     if self.join_server then 
 		return 
@@ -45,7 +66,7 @@ function ChatHistoryManager:OnSay(guid, userid, netid, name, prefab, message, co
     name = self:GetDisplayName(name, prefab)
     local hud = ThePlayer and ThePlayer.HUD or nil
     local entity = Ents[guid]
-    if not whisper or (entity and hud and (hud:HasTargetIndicator(entity) or entity.entity:FrustumCheck())) then
+    if not whisper or (entity and hud and (hud:HasTargetIndicator(entity) or ThePlayer:GetDistanceSqToInst(entity) <= PLAYER_CAMERA_SEE_DISTANCE_SQ)) then -- NOTES(JBK): Replicate range check for chatter. [RCCHATTER]
         if isemote then
             self:AddToHistory(ChatTypes.Emote, userid, netid, nil, name.." "..message, colour, nil, true, true, TEXT_FILTER_CTX_CHAT)
         else
@@ -83,7 +104,7 @@ function ChatHistoryManager:GenerateChatMessage(type, sender_userid, sender_neti
             end
             chat_message.sender = sender_name
 
-            chat_message.s_colour = colour
+            chat_message.s_colour = colour.name_colour or colour
         end
     end
 
@@ -97,7 +118,17 @@ function ChatHistoryManager:GenerateChatMessage(type, sender_userid, sender_neti
     end
     chat_message.m_colour = m_colour
 
-    chat_message.icondata = icondata
+    if type == ChatTypes.ChatterMessage then
+        if icondata then
+            -- Table type enforced.
+            chat_message.icondata = icondata.icon
+            chat_message.icondatabg = icondata.iconbg
+        end
+    else
+        chat_message.icondata = icondata
+    end
+
+    colour.name_colour = nil -- Remove the reference.
 
     return chat_message
 end
@@ -106,6 +137,23 @@ function ChatHistoryManager:AddToHistory(type, sender_userid, sender_netid, send
     if self.join_server then return end
 
 	local chat_message = self:GenerateChatMessage(type, sender_userid, sender_netid, sender_name, message, colour, icondata, whisper, localonly, text_filter_context)
+
+    if type == ChatTypes.ChatterMessage then
+        -- NOTES(JBK): We do not want the NPC chats to be filled up with repeat messages so we will filter out the chat_message if it is a duplicate entry for any of the past recent entries.
+        for i = 1, self.NPC_CHATTER_MAX_CHAT_NO_DUPES do
+            local old_message = self:GetChatMessageAtIndex(i)
+            if old_message == nil then
+                break
+            end
+
+            if old_message.type == ChatTypes.ChatterMessage then
+                local is_dupe_message = old_message.message == chat_message.message and old_message.sender_name == chat_message.sender_name
+                if is_dupe_message then
+                    return
+                end
+            end
+        end
+    end
 
     self.history_start = (self.history_start % self.MAX_CHAT_HISTORY) + 1
 
@@ -308,6 +356,7 @@ ChatTypes = {
     SkinAnnouncement = 4,
     SystemMessage = 5,
     CommandResponse = 6,
+    ChatterMessage = 7, -- NOTES(JBK): This is not networked as a value and is used for client side effects and handling feel free to move this value around if needed.
 }
 
 NoWordFilterForChatType = 

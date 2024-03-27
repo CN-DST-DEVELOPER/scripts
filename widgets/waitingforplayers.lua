@@ -233,7 +233,7 @@ end
 function WaitingForPlayers:OnControl(control, down)
 	if Widget.OnControl(self, control, down) then return true end
 
-	if (not down) and control == CONTROL_PAUSE then
+	if (not down) and control == CONTROL_MENU_START then
 		if self.playerready_checkbox:IsEnabled() then
 			self.playerready_checkbox.onclick()
 		end
@@ -250,7 +250,7 @@ function WaitingForPlayers:GetHelpText()
 		if not self.playerready_checkbox.checked then
 			str = self:IsServerFull() and STRINGS.UI.LOBBY_WAITING_FOR_PLAYERS_SCREEN.LOCAL_PLAYER_READY_TO_START or subfmt(STRINGS.UI.LOBBY_WAITING_FOR_PLAYERS_SCREEN.LOCAL_PLAYER_VOTE_TO_START, {num=#self.players, max=TheNet:GetServerMaxPlayers()})
 		end
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. str)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. str)
 	end
 
     return table.concat(t, "  ")

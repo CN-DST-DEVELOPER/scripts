@@ -94,6 +94,24 @@ function Eater:SetCanEatGears()
     self.inst:AddTag(FOODTYPE.GEARS.."_eater")
 end
 
+function Eater:SetCanEatNitre(can_eat)
+    local tag = FOODTYPE.NITRE .. "_eater"
+    local hastag = self.inst:HasTag(tag)
+    if can_eat then
+        if not hastag then
+            table.insert(self.preferseating, FOODTYPE.NITRE)
+            table.insert(self.caneat, FOODTYPE.NITRE)
+            self.inst:AddTag(tag)
+        end
+    else
+        if hastag then
+            table.removearrayvalue(self.preferseating, FOODTYPE.NITRE)
+            table.removearrayvalue(self.caneat, FOODTYPE.NITRE)
+            self.inst:RemoveTag(tag)
+        end
+    end
+end
+
 function Eater:SetCanEatRaw()
     table.insert(self.preferseating, FOODTYPE.RAW)
     table.insert(self.caneat, FOODTYPE.RAW)

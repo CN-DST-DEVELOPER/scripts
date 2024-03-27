@@ -1,5 +1,3 @@
-
-
 local PLANT_DEFS = require("prefabs/farm_plant_defs").PLANT_DEFS
 
 local grow_sounds =
@@ -907,6 +905,8 @@ local function MakePlant(plant_def)
         if plant_def.is_randomseed then
             inst.BeIdentified = randomseed_become_identified
         end
+
+        MakeWaxablePlant(inst)
 
         inst:WatchWorldState("isnight", OnIsDark)
         inst:DoTaskInTime(0, OnIsDark)

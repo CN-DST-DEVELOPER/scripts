@@ -108,6 +108,36 @@ local function QueueRemove(inst)
 	end
 end
 
+local function IsSlipperyAtPosition(inst, x, y, z)
+    if inst.isfaded:value() then
+        return false
+    end
+
+    -- NOTES(JBK): This ice is more of an oval shape so we can approximate it based off of the geometry of the visual size.
+    local ex, ey, ez = inst.Transform:GetWorldPosition()
+    local bbx1, bby1, bbx2, bby2
+    if inst._ice and inst._ice:IsValid() then
+        bbx1, bby1, bbx2, bby2 = inst._ice.AnimState:GetVisualBB()
+    else
+        -- In case mods destroy the FX use a default fallback from a game expectation.
+        bbx1, bby1, bbx2, bby2 = -7.901, -6.978, 8.055, 6.029
+    end
+
+    -- First check a hull collision by seeing if the point is within the rectangle area.
+    if x < ex + bbx1 or x > ex + bbx2 or z < ez + bby1 or z > ez + bby2 then
+        return false
+    end
+
+    -- Ellipse check.
+    local a, b = (bbx2 - bbx1) * 0.5, (bby2 - bby1) * 0.5
+    local cx, cz = ex - x, ez - z
+    return ((cx * cx) / (a * a)) + ((cz * cz) / (b * b)) < 1
+end
+
+local function SlipperyRate(inst, target)
+    return 2.75
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -121,6 +151,9 @@ local function fn()
 
     inst._ice = CreateIceFX()
     inst._ice.entity:SetParent(inst.entity)
+
+    --slipperyfeettarget (from slipperyfeettarget component) added to pristine state for optimization
+    inst:AddTag("slipperyfeettarget")
 
     inst.fadeval = net_byte(inst.GUID, "penguin_ice.fadeval", "fadevaldirty")
     inst.isfaded = net_bool(inst.GUID, "penguin_ice.isfaded", "isfadeddirty")
@@ -137,6 +170,10 @@ local function fn()
 
         return inst
     end
+
+    local slipperyfeettarget = inst:AddComponent("slipperyfeettarget")
+    slipperyfeettarget:SetIsSlipperyAtPoint(IsSlipperyAtPosition)
+    slipperyfeettarget:SetSlipperyRate(SlipperyRate)
 
     inst:DoTaskInTime(0, OnInit)
 

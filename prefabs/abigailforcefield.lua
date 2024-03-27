@@ -51,7 +51,7 @@ local function fn(anim)
 	inst.components.debuff:SetAttachedFn(buff_OnAttached)
 	inst.components.debuff:SetDetachedFn(buff_OnDetached)
 
-	inst.persits = false
+	inst.persists = false
 
 	inst:ListenForEvent("animover", expire)
 

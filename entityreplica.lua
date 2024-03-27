@@ -84,6 +84,16 @@ function EntityScript:ReplicateEntity()
     end
 end
 
+--Attach classified should work for pre/unreplicated components as well
+function EntityScript:TryAttachClassifiedToReplicaComponent(classified, name)
+	local cmp = rawget(self.replica, "_")[name]
+	if cmp then
+		cmp:AttachClassified(classified)
+		return true
+	end
+	return false
+end
+
 -- Mod access
 function AddReplicableComponent(name)
     REPLICATABLE_COMPONENTS[name] = true

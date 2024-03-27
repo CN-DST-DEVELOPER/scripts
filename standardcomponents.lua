@@ -1,3 +1,5 @@
+local WAXED_PLANTS = require "prefabs/waxed_plant_common"
+
 local DEBUG_MODE = BRANCH == "dev"
 
 function DefaultIgniteFn(inst)
@@ -529,6 +531,24 @@ function ChangeToCharacterPhysics(inst, mass, rad)
     return phys
 end
 
+function ChangeToGiantCharacterPhysics(inst, mass, rad)
+	local phys = inst.Physics
+	if mass then
+		phys:SetMass(mass)
+		phys:SetFriction(0)
+		phys:SetDamping(5)
+	end
+	phys:SetCollisionGroup(COLLISION.GIANTS)
+	phys:ClearCollisionMask()
+	phys:CollidesWith(COLLISION.WORLD)
+	phys:CollidesWith(COLLISION.OBSTACLES)
+	phys:CollidesWith(COLLISION.CHARACTERS)
+	phys:CollidesWith(COLLISION.GIANTS)
+	if rad then
+		phys:SetCapsule(rad, 1)
+	end
+end
+
 function ChangeToObstaclePhysics(inst, rad, height)
     local phys = inst.Physics
     phys:SetCollisionGroup(COLLISION.OBSTACLES)
@@ -698,6 +718,7 @@ function MakeSnowCovered(inst)
     end
 end
 
+----------------------------------------------------------------------------------------
 local function oneat(inst)
     if inst.components.perishable ~= nil then
         inst.components.perishable:SetPercent(1)
@@ -1598,6 +1619,14 @@ function MakeForgeRepairable(inst, material, onbroken, onrepaired)
 	inst:AddComponent("forgerepairable")
 	inst.components.forgerepairable:SetRepairMaterial(material)
 	inst.components.forgerepairable:SetOnRepaired(onrepaired)
+end
+
+--------------------------------------------------------------------------
+
+function MakeWaxablePlant(inst)
+    local waxable = inst:AddComponent("waxable")
+    waxable:SetWaxfn(WAXED_PLANTS.WaxPlant)
+    waxable:SetNeedsSpray()
 end
 
 --------------------------------------------------------------------------

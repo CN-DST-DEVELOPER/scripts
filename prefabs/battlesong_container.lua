@@ -2,6 +2,7 @@ local assets =
 {
     Asset("ANIM", "anim/ui_icepack_2x3.zip"),
     Asset("ANIM", "anim/battlesong_container.zip"),
+    Asset("INV_IMAGE", "battlesong_container_open"),
 }
 
 local prefabs =
@@ -20,17 +21,27 @@ local SOUNDS =
 -----------------------------------------------------------------------------------------------
 
 local function OnOpen(inst)
-    if inst:HasTag("burnt") then return end
+    if inst:HasTag("burnt") then
+        return
+    end
 
     inst.AnimState:PlayAnimation("open")
+    inst.components.inventoryitem:ChangeImageName("battlesong_container_open")
     inst.SoundEmitter:PlaySound(inst._sounds.open)
 end
 
 local function OnClose(inst)
-    if inst:HasTag("burnt") then return end
+    if inst:HasTag("burnt") then
+        return
+    end
 
-    inst.AnimState:PlayAnimation("close")
-    inst.AnimState:PushAnimation("closed", false)
+    if inst.components.inventoryitem.owner == nil then
+        inst.AnimState:PlayAnimation("close")
+        inst.AnimState:PushAnimation("closed", false)
+    else
+        inst.AnimState:PlayAnimation("closed", false)
+    end
+    inst.components.inventoryitem:ChangeImageName()
     inst.SoundEmitter:PlaySound(inst._sounds.close)
 end
 

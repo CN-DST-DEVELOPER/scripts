@@ -65,11 +65,14 @@ local function fertilizerresearchfn(inst)
     return inst:GetFertilizerKey()
 end
 
-local function fn(common_init, mastersim_init, nutrients)
+local function fn(common_init, mastersim_init, nutrients, kind)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    if kind == "food" then
+        inst.entity:AddSoundEmitter()
+    end
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
@@ -146,9 +149,37 @@ local function food_init(inst)
 	inst:AddTag("oceanfishing_lure")
 end
 
+local function food_OnIsRaining(inst, israining)
+    if inst.components.inventoryitem.owner ~= nil then
+        -- NOTES(JBK): Do nothing if the item is in any inventory.
+        return
+    end
+
+    if israining then
+        inst.components.disappears:PrepareDisappear()
+    else
+        inst.components.disappears:StopDisappear()
+    end
+end
+
+local function food_OnPickup(inst)
+    inst.components.disappears:StopDisappear()
+end
+
+local function food_OnDropped(inst)
+    food_OnIsRaining(inst, TheWorld.state.israining)
+end
+
 local function food_mastersim_init(inst)
 	inst:AddComponent("oceanfishingtackle")
 	inst.components.oceanfishingtackle:SetupLure({build = "oceanfishing_lure_mis", symbol = "hook_spoiledfood", single_use = true, lure_data = TUNING.OCEANFISHING_LURE.SPOILED_FOOD})
+    local disappears = inst:AddComponent("disappears")
+    disappears.sound = "dontstarve/common/dust_blowaway" -- FIXME(JBK): Audio path.
+    disappears.anim = "dissolve"
+    inst:ListenForEvent("ondropped", food_OnDropped)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(food_OnPickup)
+    inst:WatchWorldState("israining", food_OnIsRaining)
+    food_OnIsRaining(inst, TheWorld.state.israining)
 end
 
 local function fish_init(inst)
@@ -196,6 +227,6 @@ local function fish_small_mastersim_init(inst)
 	inst:ListenForEvent("stacksizechange", fish_stack_size_changed)
 end
 
-return Prefab("spoiled_food", function() return fn(food_init, food_mastersim_init, FERTILIZER_DEFS.spoiled_food.nutrients) end, assets, prefabs),
-		Prefab("spoiled_fish", function() return fn(fish_init, fish_mastersim_init, FERTILIZER_DEFS.spoiled_fish.nutrients) end, fish_assets, fish_prefabs),
-        Prefab("spoiled_fish_small", function() return fn(fish_small_init, fish_small_mastersim_init, FERTILIZER_DEFS.spoiled_fish_small.nutrients) end, fish_small_assets, fish_prefabs)
+return Prefab("spoiled_food", function() return fn(food_init, food_mastersim_init, FERTILIZER_DEFS.spoiled_food.nutrients, "food") end, assets, prefabs),
+		Prefab("spoiled_fish", function() return fn(fish_init, fish_mastersim_init, FERTILIZER_DEFS.spoiled_fish.nutrients, nil) end, fish_assets, fish_prefabs),
+        Prefab("spoiled_fish_small", function() return fn(fish_small_init, fish_small_mastersim_init, FERTILIZER_DEFS.spoiled_fish_small.nutrients, nil) end, fish_small_assets, fish_prefabs)

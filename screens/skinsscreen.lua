@@ -373,13 +373,13 @@ function SkinsScreen:OnControl(control, down)
 
     if  TheInput:ControllerAttached() then
 
-    	if not down and control == CONTROL_PAUSE then
+    	if not down and control == CONTROL_MENU_START then
     		TheFrontEnd:Fade(false, SCREEN_FADE_TIME, function()
 		        TheFrontEnd:PushScreen(CharacterLoadoutSelectScreen(self.profile))
 		        TheFrontEnd:Fade(true, SCREEN_FADE_TIME)
 		    end)
 			return true
-		elseif not down and control == CONTROL_INSPECT then
+		elseif not down and control == CONTROL_MENU_MISC_2 then
 			TheFrontEnd:Fade(false, SCREEN_FADE_TIME, function()
 		       TheFrontEnd:PushScreen(TradeScreen(self.profile))
 		        TheFrontEnd:Fade(true, SCREEN_FADE_TIME)
@@ -452,9 +452,9 @@ function SkinsScreen:GetHelpText()
 
    	table.insert(t, self.scroll_list:GetHelpText())
 
-   	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.SKINSSCREEN.LOADOUT)
+   	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.SKINSSCREEN.LOADOUT)
 
-   	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.SKINSSCREEN.TRADE)
+   	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.SKINSSCREEN.TRADE)
 
    	if self.details_panel.set_info_btn.show_help then
    		table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKINSSCREEN.SET_INFO)

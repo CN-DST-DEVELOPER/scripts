@@ -486,7 +486,7 @@ function SkillTreeBuilder:RefreshTree()
 	end
 
 	self.root.xptotal:SetString(availableskillpoints)
-	if availableskillpoints <= 0 and TheSkillTree:GetSkillXP(characterprefab) >= TheSkillTree:GetMaximumExperiencePoints() then
+	if availableskillpoints <= 0 and TheSkillTree:GetSkillXP(characterprefab) >= TUNING.FIXME_DO_NOT_USE_FOR_MODS_NEW_MAX_XP_VALUE then -- >= TheSkillTree:GetMaximumExperiencePoints() then
 		self.root.xp_tospend:SetString(STRINGS.SKILLTREE.KILLPOINTS_MAXED)
 		local w, h = self.root.xp_tospend:GetRegionSize()
    		self.root.xp_tospend:SetPosition(30+(w/2),-3)		

@@ -120,7 +120,7 @@ function PlayerActionPicker:GetSceneActions(useitem, right)
 
 		--@V2C: #FORGE_AOE_RCLICK *searchable*
 		--      -Forge used to strip ALL r.click actions, so now we manually strip WALKTO action.
-		if not right and self.inst.components.playercontroller:HasAOETargeting() then
+		if not right or (self.inst.components.playercontroller ~= nil and not self.inst.components.playercontroller:HasAOETargeting()) then
 			sorted_acts = self:SortActionList({ ACTIONS.WALKTO }, useitem)
 		end
     end

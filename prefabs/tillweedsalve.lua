@@ -39,7 +39,7 @@ local function fn()
 
     inst:AddComponent("healer")
     inst.components.healer:SetHealthAmount(TUNING.HEALING_MEDSMALL)
-	inst.components.healer.onhealfn = OnUse
+	inst.components.healer:SetOnHealFn(OnUse)
 
     inst:AddComponent("perishable")
     inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)

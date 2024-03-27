@@ -496,6 +496,8 @@ local hermit_bundle =
     end,
 }
 
+local HERMIT_BUNDLE_SHELLS_SHELL_COUNT = 8
+
 local hermit_bundle_shells =
 {
     master_postinit = function(inst, setupdata)
@@ -505,14 +507,7 @@ local hermit_bundle_shells =
         inst:SetPrefabNameOverride("hermit_bundle")
     end,
     lootfn = function(inst, doer)
-        local loots = {}
-        local r = 0
-
-        table.insert(loots, weighted_random_choice(hermit_bundle_shell_loots))
-        table.insert(loots, weighted_random_choice(hermit_bundle_shell_loots))
-        table.insert(loots, weighted_random_choice(hermit_bundle_shell_loots))
-        table.insert(loots, weighted_random_choice(hermit_bundle_shell_loots))
-        return loots
+        return weighted_random_choices(hermit_bundle_shell_loots, HERMIT_BUNDLE_SHELLS_SHELL_COUNT)
     end,
 }
 

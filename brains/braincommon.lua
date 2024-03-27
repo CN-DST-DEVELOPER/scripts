@@ -168,9 +168,9 @@ end
 -- Actions: MINE, CHOP
 
 local MINE_TAGS = { "MINE_workable" }
-local MINE_CANT_TAGS = { "carnivalgame_part", "event_trigger" }
+local MINE_CANT_TAGS = { "carnivalgame_part", "event_trigger", "waxedplant" }
 local CHOP_TAGS = { "CHOP_workable" }
-local CHOP_CANT_TAGS = { "carnivalgame_part", "event_trigger" }
+local CHOP_CANT_TAGS = { "carnivalgame_part", "event_trigger", "waxedplant" }
 
 local function IsDeciduousTreeMonster(guy)
     return guy.monster and guy.prefab == "deciduoustree"

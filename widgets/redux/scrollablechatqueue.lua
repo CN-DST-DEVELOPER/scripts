@@ -100,7 +100,8 @@ function ScrollableChatQueue:MakeChatScrollList()
                     message.m_colour,
                     message.sender,
                     message.s_colour,
-                    message.icondata
+                    message.icondata,
+                    message.icondatabg
                 )
             else
                 chatline.history_index = nil
@@ -195,7 +196,8 @@ function ScrollableChatQueue:MakeChatScrollList()
                             m_colour = message_data.m_colour,
                             sender = first and message_data.sender or nil,
                             s_colour = first and message_data.s_colour or nil,
-                            icondata = first and message_data.icondata or nil
+                            icondata = first and message_data.icondata or nil,
+                            icondatabg = first and message_data.icondatabg or nil
                         }
                     end
                     i = i + 1

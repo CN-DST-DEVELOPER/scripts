@@ -264,11 +264,11 @@ function ViewCustomizationModalScreen:OnControl(control, down)
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         self:Cancel()
         return true
-    elseif control == CONTROL_OPEN_CRAFTING then
+    elseif control == CONTROL_MENU_L2 then
         OnClickTab(self, self.multileveltabs.selected_index + 1)
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         return true
-    elseif control == CONTROL_OPEN_INVENTORY then
+    elseif control == CONTROL_MENU_R2 then
         OnClickTab(self, self.multileveltabs.selected_index - 1)
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         return true

@@ -633,6 +633,9 @@ local function PopulateWorld(savedata, profile)
             if savedata.world_network ~= nil and savedata.world_network.persistdata ~= nil then
                 world.net:SetPersistData(savedata.world_network.persistdata)
             end
+            if savedata.shard_network ~= nil and savedata.shard_network.persistdata ~= nil then
+                world.shard:SetPersistData(savedata.shard_network.persistdata)
+            end
         end
 
 		WorldSettings_Overrides.areaambientdefault(savedata.map.prefab)

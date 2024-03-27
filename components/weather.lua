@@ -143,7 +143,7 @@ return Class(function(self, inst)
     local DRY_THRESHOLD = TUNING.MOISTURE_DRY_THRESHOLD
     local WET_THRESHOLD = TUNING.MOISTURE_WET_THRESHOLD
     local MIN_WETNESS = 0
-    local MAX_WETNESS = 100
+	local MAX_WETNESS = TUNING.MAX_WETNESS
     local MIN_WETNESS_RATE = 0
     local MAX_WETNESS_RATE = .75
     local MIN_DRYING_RATE = 0

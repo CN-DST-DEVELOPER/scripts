@@ -37,6 +37,7 @@ local PlayerProfile = Class(function(self)
         self.persistdata.craftingmenusensitivity = 12
         self.persistdata.inventorysensitivity = 16
 		self.persistdata.minimapzoomsensitivity = 15
+        self.persistdata.boathopdelay = 8
         self.persistdata.screenflash = 1
         self.persistdata.vibration = true
         self.persistdata.showpassword = false
@@ -89,6 +90,7 @@ function PlayerProfile:Reset()
         self.persistdata.craftingmenusensitivity = 12
         self.persistdata.inventorysensitivity = 16
 		self.persistdata.minimapzoomsensitivity = 15
+        self.persistdata.boathopdelay = 8
         self.persistdata.screenflash = 1
         self.persistdata.vibration = true
         self.persistdata.showpassword = false
@@ -142,6 +144,7 @@ function PlayerProfile:SoftReset()
         self.persistdata.craftingmenusensitivity = 12
         self.persistdata.inventorysensitivity = 16
 		self.persistdata.minimapzoomsensitivity = 15
+        self.persistdata.boathopdelay = 8
         self.persistdata.screenflash = 1
         self.persistdata.vibration = true
         self.persistdata.showpassword = false
@@ -694,6 +697,26 @@ function PlayerProfile:GetMiniMapZoomSensitivity()
 	end
 end
 
+function PlayerProfile:GetBoatHopDelay()
+ 	if USE_SETTINGS_FILE then
+		return tonumber(TheSim:GetSetting("misc", "boathopdelay") or 8)
+	else
+		return tonumber(self:GetValue("boathopdelay") or 8)
+	end
+end
+
+function PlayerProfile:SetBoatHopDelay(delay)
+ 	if USE_SETTINGS_FILE then
+		TheSim:SetSetting("misc", "boathopdelay", tostring(delay))
+	else
+		self:SetValue("boathopdelay", delay)
+		self.dirty = true
+	end
+    if ThePlayer then
+        ThePlayer:SynchronizeOneClientAuthoritativeSetting(CLIENTAUTHORITATIVESETTINGS.PLATFORMHOPDELAY, Profile:GetBoatHopDelay())
+    end
+end
+
 function PlayerProfile:SetDistortionEnabled(enabled)
  	if USE_SETTINGS_FILE then
 		TheSim:SetSetting("graphics", "distortion", tostring(enabled))
@@ -1138,6 +1161,34 @@ function PlayerProfile:GetAutoLoginEnabled()
 	end
 end
 
+function PlayerProfile:SetNPCChatLevel(level)
+    if USE_SETTINGS_FILE then
+        TheSim:SetSetting("misc", "npcchat", tostring(level))
+    else
+        self:SetValue("npcchat", level)
+        self.dirty = true
+    end
+end
+
+function PlayerProfile:GetNPCChatLevel()
+    if USE_SETTINGS_FILE then
+        local npcchat = TheSim:GetSetting("misc", "npcchat")
+		return (npcchat ~= nil and tonumber(npcchat)) or CHATPRIORITIES.LOW
+    else
+        return GetValueOrDefault(self.persistdata.npcchat, CHATPRIORITIES.LOW)
+    end
+end
+
+function PlayerProfile:GetNPCChatEnabled()
+    if USE_SETTINGS_FILE then
+        local npcchat = TheSim:GetSetting("misc", "npcchat")
+		return (npcchat == nil or npcchat ~= "0")
+    else
+		local npcchat = GetValueOrDefault(self.persistdata.npcchat, CHATPRIORITIES.LOW)
+        return npcchat > 0
+    end
+end
+
 function PlayerProfile:SetAnimatedHeadsEnabled(enabled)
 	if USE_SETTINGS_FILE then
 	   TheSim:SetSetting("misc", "animatedheads", tostring(enabled))
@@ -1175,6 +1226,24 @@ function PlayerProfile:GetAutoCavesEnabled()
 		return GetValueOrDefault( self.persistdata.autocaves, false )
 	end
 end
+
+function PlayerProfile:SetCavesStateRemembered()
+	if USE_SETTINGS_FILE then
+	   TheSim:SetSetting("misc", "cavesstateremembered", "true")
+    else
+	   self:SetValue("cavesstateremembered", true)
+	   self.dirty = true
+    end
+end
+
+function PlayerProfile:GetCavesStateRemembered()
+	if USE_SETTINGS_FILE then
+		return TheSim:GetSetting("misc", "cavesstateremembered") == "true"
+	else
+		return GetValueOrDefault( self.persistdata.cavesstateremembered, false )
+	end
+end
+
 
 function PlayerProfile:SetModsWarning(enabled)
 	if USE_SETTINGS_FILE then
@@ -1591,6 +1660,7 @@ function PlayerProfile:Set(str, callback, minimal_load)
 				self.persistdata.craftingmenusensitivity = 12
 				self.persistdata.inventorysensitivity = 16
 				self.persistdata.minimapzoomsensitivity = 15
+                self.persistdata.boathopdelay = 8
                 self.persistdata.vibration = true
                 self.persistdata.showpassword = false
                 self.persistdata.movementprediction = true

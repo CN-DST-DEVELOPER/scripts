@@ -100,7 +100,7 @@ local PEAK_PRECIPITATION_RANGES =
 local DRY_THRESHOLD = TUNING.MOISTURE_DRY_THRESHOLD
 local WET_THRESHOLD = TUNING.MOISTURE_WET_THRESHOLD
 local MIN_WETNESS = 0
-local MAX_WETNESS = 100
+local MAX_WETNESS = TUNING.MAX_WETNESS
 local MIN_WETNESS_RATE = 0
 local MAX_WETNESS_RATE = .75
 local MIN_DRYING_RATE = 0
@@ -154,6 +154,7 @@ local _groundoverlay = nil
 local _hasfx = not TheNet:IsDedicated()
 local _rainfx = _hasfx and SpawnPrefab("caverain") or nil
 local _acidrainfx = _hasfx and SpawnPrefab("caveacidrain") or nil
+local _acidrainfx_allowsfx = true
 
 --Light
 local _daylight = true
@@ -318,7 +319,7 @@ local StartPrecipitation = _ismastersim and function(temperature)
     _moisturefloor:set(RandomizeMoistureFloor(_season))
     _peakprecipitationrate:set(RandomizePeakPrecipitationRate(_season))
     local riftspawner = _world.components.riftspawner
-    if riftspawner and riftspawner:IsShadowPortalActive() then
+    if TUNING.ACIDRAIN_ENALBED and riftspawner and riftspawner:IsShadowPortalActive() then
         _preciptype:set(PRECIP_TYPES.acidrain)
     else
         _preciptype:set(PRECIP_TYPES.rain)
@@ -387,12 +388,21 @@ local function OnPhaseChanged(src, phase)
     _daylight = phase == "day"
 end
 
+local function OnChangeArea_fx(inst, area)
+    if area == nil or area.tags == nil then
+        _acidrainfx_allowsfx = false
+    else
+        _acidrainfx_allowsfx = _map:CanAreaTagsHaveAcidRain(area.tags)
+    end
+end
+
 local function OnPlayerActivated(src, player)
     _activatedplayer = player
     if _hasfx then
         _rainfx.entity:SetParent(player.entity)
         _acidrainfx.entity:SetParent(player.entity)
         self:OnPostInit()
+        player:ListenForEvent("changearea", OnChangeArea_fx)
     end
 end
 
@@ -403,7 +413,32 @@ local function OnPlayerDeactivated(src, player)
     if _hasfx then
         _rainfx.entity:SetParent(nil)
         _acidrainfx.entity:SetParent(nil)
+        player:RemoveEventCallback("changearea", OnChangeArea_fx)
     end
+end
+if _ismastersim then
+    local function OnChangeArea_logic(inst, area)
+        local acidlevel = inst.components.acidlevel
+        if acidlevel then
+            if area == nil or area.tags == nil then
+                acidlevel:SetIgnoreAcidRainTicks(false)
+            else
+                acidlevel:SetIgnoreAcidRainTicks(not _map:CanAreaTagsHaveAcidRain(area.tags))
+            end
+        end
+    end
+    local function OnPlayerJoined(world, player)
+        local areaaware = player.components.areaaware
+        if areaaware then
+            player:ListenForEvent("changearea", OnChangeArea_logic)
+            OnChangeArea_logic(player, areaaware:GetCurrentArea())
+        end
+    end
+    local function OnPlayerLeft(world, player)
+        player:RemoveEventCallback("changearea", OnChangeArea_logic)
+    end
+    _world:ListenForEvent("ms_playerjoined", OnPlayerJoined)
+    _world:ListenForEvent("ms_playerleft", OnPlayerLeft)
 end
 
 local OnForcePrecipitation = _ismastersim and function(src, enable)
@@ -464,9 +499,15 @@ if _hasfx then
 end
 
 --Register network variable sync events
-inst:ListenForEvent("moistureceildirty", function() _world:PushEvent("moistureceilchanged", _moistureceil:value()) end)
-inst:ListenForEvent("preciptypedirty", function() _world:PushEvent("precipitationchanged", PRECIP_TYPE_NAMES[_preciptype:value()]) end)
-inst:ListenForEvent("wetdirty", function() _world:PushEvent("wetchanged", _wet:value()) end)
+inst:ListenForEvent("moistureceildirty", function()
+    _world:PushEvent("moistureceilchanged", _moistureceil:value())
+end)
+inst:ListenForEvent("preciptypedirty", function()
+    _world:PushEvent("precipitationchanged", PRECIP_TYPE_NAMES[_preciptype:value()])
+end)
+inst:ListenForEvent("wetdirty", function()
+    _world:PushEvent("wetchanged", _wet:value())
+end)
 
 --Register events
 inst:ListenForEvent("seasontick", OnSeasonTick, _world)
@@ -616,21 +657,25 @@ function self:OnUpdate(dt)
 			StartBarrierSound()
 			preciprate_sound = math.min(.1, preciprate_sound * .5)
         elseif _activatedplayer.replica.sheltered ~= nil and _activatedplayer.replica.sheltered:IsSheltered() then
-            StartTreeRainSound()
+            if _acidrainfx_allowsfx then
+                StartTreeRainSound()
+            else
+                StopTreeRainSound()
+            end
             StopUmbrellaRainSound()
 			StopBarrierSound()
 			preciprate_sound = preciprate_sound - .4
         else
             StopTreeRainSound()
 			StopBarrierSound()
-            if _activatedplayer.replica.inventory:EquipHasTag("umbrella") then
+            if _acidrainfx_allowsfx and _activatedplayer.replica.inventory:EquipHasTag("umbrella") then
                 preciprate_sound = preciprate_sound - .4
                 StartUmbrellaRainSound()
             else
                 StopUmbrellaRainSound()
             end
         end
-		if preciprate_sound > 0 then
+		if _acidrainfx_allowsfx and preciprate_sound > 0 then
 			StartAmbientRainSound(preciprate_sound)
 		else
 			StopAmbientRainSound()

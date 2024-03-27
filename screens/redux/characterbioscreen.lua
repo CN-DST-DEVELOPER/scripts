@@ -71,7 +71,7 @@ function CharacterBioScreen:OnControl(control, down)
 	if not down and control == CONTROL_CANCEL then
 		TheFrontEnd:FadeBack()
 	    return true
-	elseif self.videos and not down and control == CONTROL_PAUSE and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+	elseif self.videos and not down and control == CONTROL_MENU_START and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
 		VisitURL(self.videos[1])
 		return true
 	elseif not down and control == CONTROL_MENU_MISC_1 then
@@ -86,7 +86,7 @@ function CharacterBioScreen:GetHelpText()
 	local t = {}
 	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 	if self.videos then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. "  " .. STRINGS.CHARACTER_DETAILS.VIDEO_BUTTON)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. "  " .. STRINGS.CHARACTER_DETAILS.VIDEO_BUTTON)
 	end
 	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. "  " .. STRINGS.UI.COLLECTIONSCREEN.SKINS)
 

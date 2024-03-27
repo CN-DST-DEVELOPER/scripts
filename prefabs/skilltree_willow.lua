@@ -395,6 +395,7 @@ local function BuildSkillsData(SkillTreeFns)
             },                
         },
 
+        -- FIXME(JBK): This is a typo 'burnign' only fix this when something else in the skill tree gets fixed and players need respec.
         willow_burnignbernie = {
             title = STRINGS.SKILLTREE.WILLOW.WILLOW_BURNINGBERNIE_TITLE,
             desc = STRINGS.SKILLTREE.WILLOW.WILLOW_BURNINGBERNIE_DESC,

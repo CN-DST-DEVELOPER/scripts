@@ -61,6 +61,9 @@ local function staff_fn()
     --Sneak these into pristine state for optimization
     inst:AddTag("quickcast")
 
+    inst.controller_use_attack_distance = ACTIONS.CASTSPELL.distance
+    inst.controller_should_use_attack_target = true
+
     inst.spelltype = "SCIENCE"
 
     local swap_data = {sym_build = "swap_tornado_stick", bank = "tornado_stick"}

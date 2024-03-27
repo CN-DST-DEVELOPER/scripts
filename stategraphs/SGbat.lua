@@ -10,8 +10,16 @@ local actionhandlers =
             return "action"
         end
     end),
-    ActionHandler(ACTIONS.EAT, "eat_loop"),
-    ActionHandler(ACTIONS.PICKUP, "eat_enter")
+    ActionHandler(ACTIONS.EAT, function(inst)
+        local ba = inst:GetBufferedAction()
+        if ba and ba.target and ba.target.prefab == "nitre" then
+            return "chew_ground"
+        else
+            return "eat_enter"
+        end
+    end),
+    ActionHandler(ACTIONS.PICKUP, "eat_enter"),
+    ActionHandler(ACTIONS.STEAL, "eat_enter")
 }
 
 local events=
@@ -26,6 +34,22 @@ local events=
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleepEx(),
 }
+
+local function DoChewSound(inst)
+    inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/flap") -- Always flap.
+
+    if not inst.sg.statemem.chewsounds then
+        return
+    end
+
+    inst.sg.statemem.chewsounds = inst.sg.statemem.chewsounds - 1
+    if inst.sg.statemem.chewsounds <= 0 then
+        inst.sg.statemem.chewsounds = nil
+        return
+    end
+
+    inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/chew")
+end
 
 local states =
 {
@@ -218,6 +242,62 @@ local states =
         events =
         {
             EventHandler("attacked", function(inst) inst.components.inventory:DropEverything() inst.sg:GoToState("idle") end) --drop food
+        },
+    },
+
+    State{
+        name = "chew_ground",
+        tags = {"busy"},
+
+        onenter = function(inst, data)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("chew_pre", false)
+
+            local chews = math.min(data and data.chews or math.random(14, 18), 18)
+            for i = 1, chews do
+                inst.AnimState:PushAnimation("chew_loop", false)
+            end
+
+            inst.AnimState:PushAnimation("chew_pst", false)
+
+            inst.sg.statemem.chewsounds = chews
+        end,
+
+        onexit = function(inst)
+
+        end,
+
+        timeline =
+        {
+            TimeEvent(6*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/flap") end),
+            TimeEvent((12 + 9 * 0)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 1)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 2)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 3)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 4)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 5)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 6)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 7)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 8)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 9)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 10)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 11)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 12)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 13)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 14)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 15)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 16)*FRAMES, DoChewSound),
+            TimeEvent((12 + 9 * 17)*FRAMES, DoChewSound),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                inst.lastmeal = GetTime()
+                inst:PerformBufferedAction()
+                inst.sg:GoToState("idle")
+            end),
+            EventHandler("attacked", function(inst) inst.components.inventory:DropEverything() inst.sg:GoToState("idle") end), --drop food
         },
     },
 }

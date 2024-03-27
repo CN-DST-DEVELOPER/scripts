@@ -65,9 +65,6 @@ local TASKS = {
     MAKE_CHAIR = 18,
 }
 
-local MAX_TARGET_SHARES = 5
-local SHARE_TARGET_DIST = 30
-
 local MEET_PLAYERS_RANGE_SQ = 20*20
 local MEET_PLAYERS_FREQUENCY = 1.5
 
@@ -157,7 +154,7 @@ end
 
 local function OnRefuseItem(inst, giver, item)
     if is_flowersalad(item) and inst.components.timer:TimerExists("salad") then
-        inst.components.npc_talker:Say(STRINGS.HERMITCRAB_REFUSE_SALAD[math.random(#STRINGS.HERMITCRAB_REFUSE_SALAD)])
+        inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_SALAD", nil)
     end
 
     if iscoat(item) then
@@ -165,9 +162,9 @@ local function OnRefuseItem(inst, giver, item)
         local coat = inst.components.inventory:FindItem(function(testitem) return iscoat(testitem) end) or (bodyequipped and  iscoat(bodyequipped) and bodyequipped )
 
         if coat then
-            inst.components.npc_talker:Say(STRINGS.HERMITCRAB_REFUSE_COAT_HASONE[math.random(#STRINGS.HERMITCRAB_REFUSE_COAT_HASONE)])
+            inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_COAT_HASONE", 1)
         elseif not TheWorld.state.issnowing then
-            inst.components.npc_talker:Say(STRINGS.HERMITCRAB_REFUSE_COAT[math.random(#STRINGS.HERMITCRAB_REFUSE_COAT)])
+            inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_COAT", 1)
         end
     end
 
@@ -176,13 +173,13 @@ local function OnRefuseItem(inst, giver, item)
         local umbrella = inst.components.inventory:FindItem(function(testitem) return testitem:HasTag("umbrella") end) or (handequipped and  handequipped:HasTag("umbrella") and handequipped )
 
         if umbrella then
-            inst.components.npc_talker:Say(STRINGS.HERMITCRAB_REFUSE_UMBRELLA_HASONE[math.random(#STRINGS.HERMITCRAB_REFUSE_UMBRELLA_HASONE)])
+            inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_UMBRELLA_HASONE", 1)
         elseif not TheWorld.state.israining then
-            inst.components.npc_talker:Say(STRINGS.HERMITCRAB_REFUSE_UMBRELLA[math.random(#STRINGS.HERMITCRAB_REFUSE_UMBRELLA)])
+            inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_UMBRELLA", 1)
         end
     end
     if item.components.insulator and item.components.insulator:GetInsulation() >= TUNING.INSULATION_LARGE and item.components.insulator:GetType() == SEASONS.WINTER and item.components.equippable.equipslot == EQUIPSLOTS.BODY and not TheWorld.state.issnowing then
-        inst.components.npc_talker:Say(STRINGS.HERMITCRAB_REFUSE_VEST[math.random(#STRINGS.HERMITCRAB_REFUSE_VEST)])
+        inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_VEST", 1)
     end
     inst.sg:GoToState("refuse")
 end
@@ -191,7 +188,7 @@ local normalbrain = require "brains/hermitcrabbrain"
 
 local function OnActivatePrototyper(inst, doer, recipe)
     local gfl = inst.getgeneralfriendlevel(inst)
-    inst.components.npc_talker:Say(STRINGS.HERMITCRAB_TALK_ONPURCHASE[gfl][math.random(#STRINGS.HERMITCRAB_TALK_ONPURCHASE[gfl])])
+    inst.components.npc_talker:Chatter("HERMITCRAB_TALK_ONPURCHASE."..gfl, 1)
 end
 
 local function EnableShop(inst, shop_level)
@@ -202,12 +199,6 @@ local function EnableShop(inst, shop_level)
 
     inst._shop_level = math.min(shop_level or inst._shop_level or 1, 5)
     inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES[SHOP_LEVELS[inst._shop_level]]
-end
-
-local function DisableShop(inst)
-    if inst.components.prototyper ~= nil then
-        inst:RemoveComponent("prototyper")
-    end
 end
 
 local function GetStatus(inst)
@@ -306,35 +297,27 @@ local function RegisterToBottleManager(inst)
 end
 
 local function getgeneralfriendlevel(inst)
-    local gfl = "LOW"
-    if inst.components.friendlevels.level > 3 and inst.components.friendlevels.level < 8 then
-        gfl = "MED"
-    elseif inst.components.friendlevels.level > 7 then
-        gfl = "HIGH"
-    end
-    return gfl
+    local level_number = inst.components.friendlevels.level
+    return (level_number > 7 and "HIGH")    -- 8+ for high
+        or (level_number > 3 and "MED")     -- 4-7 for med
+        or "LOW"
 end
 
 -- FRIENDLEVELS content
 local function complain(inst)
     local problems = inst.components.friendlevels.friendlytasks
-    local list = {}
+    local potential_complainstrings = {}
+    local num_complainstrings = 0
     for _, problem in ipairs(problems) do
         if problem.complain and not problem.complete and ( not problem.complaintest or problem.complaintest(inst) ) then
-            table.insert(list,problem.complianstrings)
+            table.insert(potential_complainstrings, problem.complainstrings)
+            num_complainstrings = num_complainstrings + 1
         end
     end
 
-    local random = nil
-    if #list > 1 then
-        random = math.random(1,#list)
-    elseif #list == 1 then
-        random = 1
-    end
-
-    if random then
+    if num_complainstrings > 0 then
         local gfl = getgeneralfriendlevel(inst)
-        inst.components.npc_talker:Say(list[random][gfl][math.random(#list[random][gfl])])
+        inst.components.npc_talker:Chatter(potential_complainstrings[math.random(num_complainstrings)].."."..gfl, nil)
 
         if inst.components.timer:TimerExists("speak_time") then
             inst.components.timer:StopTimer("speak_time")
@@ -346,56 +329,58 @@ local function complain(inst)
 end
 
 local function rewardcheck(inst)
-    if #inst.components.friendlevels.queuedrewards > 0 then
-        local task = nil
-        local group = nil
-        for _, reward in ipairs(inst.components.friendlevels.queuedrewards) do
-            if reward.task ~= "default" then
-                if not task then
-                    task = reward.task
-                else
-                    group = true
-                    break
-                end
-            end
-        end
-
-        local str
-        local gfl = inst.getgeneralfriendlevel(inst)
-        if gfl == "HIGH" and not inst.introduced then
-            inst.introduced = true
-            str = STRINGS.HERMITCRAB_INTRODUCE[math.random(1,#STRINGS.HERMITCRAB_INTRODUCE)]
-        elseif group then
-            str = STRINGS.HERMITCRAB_GROUP_REWARD[gfl][math.random(1,#STRINGS.HERMITCRAB_GROUP_REWARD[gfl])]
-        elseif task then
-            local problems = inst.components.friendlevels.friendlytasks
-
-            str = problems[task].completestrings[gfl][math.random(1,#problems[task].completestrings[gfl])]
-
-            if problems[task].specifictaskreward then
-                inst.components.friendlevels.specifictaskreward = problems[task].specifictaskreward
-            end
-        else
-            str = STRINGS.HERMITCRAB_DEFAULT_REWARD[gfl][math.random(1,#STRINGS.HERMITCRAB_DEFAULT_REWARD[gfl])]
-        end
-
-        local gifts = inst.components.friendlevels:DoRewards()
-
-        if #gifts > 0 then
-            inst.itemstotoss = inst.itemstotoss or {}
-
-            ConcatArrays(inst.itemstotoss, gifts)
-
-            for _, gift in ipairs(gifts) do
-                inst.components.inventory:GiveItem(gift)
-            end
-        end
-
-        -- overrides the hermit making a comment on a task that's been partially done,
-        -- to reward the player for one that is done
-        inst.comment_data = nil
-        return str
+    if #inst.components.friendlevels.queuedrewards <= 0 then
+        return
     end
+
+    local task = nil
+    local group = nil
+    for _, reward in ipairs(inst.components.friendlevels.queuedrewards) do
+        if reward.task ~= "default" then
+            if not task then
+                task = reward.task
+            else
+                group = true
+                break
+            end
+        end
+    end
+
+    local str
+    local gfl = inst.getgeneralfriendlevel(inst)
+    if gfl == "HIGH" and not inst.introduced then
+        inst.introduced = true
+        str = "HERMITCRAB_INTRODUCE"
+    elseif group then
+        str = "HERMITCRAB_GROUP_REWARD."..gfl
+    elseif task then
+        local problems = inst.components.friendlevels.friendlytasks
+        local problem_for_task = problems[task]
+
+        str = problem_for_task.completestrings.."."..gfl
+
+        if problem_for_task.specifictaskreward then
+            inst.components.friendlevels.specifictaskreward = problem_for_task.specifictaskreward
+        end
+    else
+        str = "HERMITCRAB_DEFAULT_REWARD."..gfl
+    end
+
+    local gifts = inst.components.friendlevels:DoRewards()
+    if #gifts > 0 then
+        inst.itemstotoss = inst.itemstotoss or {}
+
+        ConcatArrays(inst.itemstotoss, gifts)
+
+        for _, gift in ipairs(gifts) do
+            inst.components.inventory:GiveItem(gift)
+        end
+    end
+
+    -- overrides the hermit making a comment on a task that's been partially done,
+    -- to reward the player for one that is done
+    inst.comment_data = nil
+    return str
 end
 
 local STOP_RUN_DIST = 8
@@ -425,7 +410,7 @@ local function onTaskComplete(inst, defaulttask)
                 local sound = (not defaulttask
                     and "hookline_2/characters/hermit/friendship_music/"..inst.components.friendlevels.level)
                     or nil
-                inst.components.npc_talker:Say(str,nil,nil,sound)
+                inst.components.npc_talker:Chatter(str, nil, nil, nil, nil, sound)
             end
 
             if inst.giverewardstask then
@@ -451,8 +436,6 @@ local function storelevelunlocked(inst)
                 local player = FindClosestPlayerToInst(inst, STOP_RUN_DIST, true)
                 if player then
 
-                    local str = STRINGS["HERMITCRAB_STORE_UNLOCK_"..inst._shop_level][ math.random(1,#STRINGS["HERMITCRAB_STORE_UNLOCK_"..inst._shop_level]) ]
-
                     inst.components.timer:StartTimer("speak_time",TUNING.HERMITCRAB.SPEAKTIME)
                     if inst.components.timer:TimerExists("complain_time") then
                         local time = inst.components.timer:GetTimeLeft("complain_time")
@@ -460,7 +443,7 @@ local function storelevelunlocked(inst)
                     else
                         inst.components.timer:StartTimer("complain_time",10 + (math.random()*30))
                     end
-                    inst.components.npc_talker:Say(str)
+                    inst.components.npc_talker:Chatter("HERMITCRAB_STORE_UNLOCK_"..inst._shop_level, nil)
 
                     if inst.storelevelunlocktask then
                         inst.storelevelunlocktask:Cancel()
@@ -504,11 +487,11 @@ local function createbundle(inst,gifts)
             inst.pearlgiven = true
             table.insert(final,SpawnPrefab("hermit_pearl"))
             inst:DoTaskInTime(0,function()
-                inst.components.npc_talker:Say(STRINGS.HERMITCRAB_GIVE_PEARL)
+                inst.components.npc_talker:Chatter("HERMITCRAB_GIVE_PEARL")
             end)
         else
             inst:DoTaskInTime(0,function()
-                inst.components.npc_talker:Say(STRINGS.HERMITCRAB_WANT_HOUSE)
+                inst.components.npc_talker:Chatter("HERMITCRAB_WANT_HOUSE")
             end)
         end
     end
@@ -783,26 +766,25 @@ local function buildchairfn(inst)
 end
 
 local friendlytasks ={
-    [TASKS.FIX_HOUSE_1] =       {completestrings=STRINGS.HERMITCRAB_REWARD.FIX_HOUSE_1},
-    [TASKS.FIX_HOUSE_2] =       {completestrings=STRINGS.HERMITCRAB_REWARD.FIX_HOUSE_2},
-    [TASKS.FIX_HOUSE_3] =       {completestrings=STRINGS.HERMITCRAB_REWARD.FIX_HOUSE_3},
-    [TASKS.PLANT_FLOWERS] =     {completestrings=STRINGS.HERMITCRAB_REWARD.PLANT_FLOWERS,     complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.PLANT_FLOWERS,      complaintest=plantflowerscomplainfn,   onetime = true},
-    [TASKS.REMOVE_JUNK] =       {completestrings=STRINGS.HERMITCRAB_REWARD.REMOVE_JUNK,       complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.REMOVE_JUNK, onetime = true},
-    [TASKS.PLANT_BERRIES] =     {completestrings=STRINGS.HERMITCRAB_REWARD.PLANT_BERRIES,     complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.PLANT_BERRIES,      complaintest=berriescomplainfn,        onetime = true},
-    [TASKS.FILL_MEATRACKS] =    {completestrings=STRINGS.HERMITCRAB_REWARD.FILL_MEATRACKS,    complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.FILL_MEATRACKS,     complaintest=meatcomplainfn},
-    [TASKS.GIVE_HEAVY_FISH] =   {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_HEAVY_FISH,   complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_HEAVY_FISH},
-    [TASKS.REMOVE_LUREPLANT] =  {completestrings=STRINGS.HERMITCRAB_REWARD.REMOVE_LUREPLANT,  complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.REMOVE_LUREPLANT,   complaintest=lureplantcomplainfn},
-    [TASKS.GIVE_UMBRELLA] =     {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_UMBRELLA,     complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_UMBRELLA,      complaintest=umbrellacomplainfn},
-    [TASKS.GIVE_PUFFY_VEST] =   {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_PUFFY_VEST,   complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_PUFFY_VEST,    complaintest=puffycomplainfn},
-    [TASKS.GIVE_FLOWER_SALAD] = {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_FLOWER_SALAD, complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_FLOWER_SALAD,  complaintest=saladcomplainfn},
+    [TASKS.FIX_HOUSE_1] =       {completestrings="HERMITCRAB_REWARD.FIX_HOUSE_1"},
+    [TASKS.FIX_HOUSE_2] =       {completestrings="HERMITCRAB_REWARD.FIX_HOUSE_2"},
+    [TASKS.FIX_HOUSE_3] =       {completestrings="HERMITCRAB_REWARD.FIX_HOUSE_3"},
+    [TASKS.PLANT_FLOWERS] =     {completestrings="HERMITCRAB_REWARD.PLANT_FLOWERS",     complain=true, complainstrings="HERMITCRAB_COMPLAIN.PLANT_FLOWERS",      complaintest=plantflowerscomplainfn,   onetime = true},
+    [TASKS.REMOVE_JUNK] =       {completestrings="HERMITCRAB_REWARD.REMOVE_JUNK",       complain=true, complainstrings="HERMITCRAB_COMPLAIN.REMOVE_JUNK",     onetime = true},
+    [TASKS.PLANT_BERRIES] =     {completestrings="HERMITCRAB_REWARD.PLANT_BERRIES",     complain=true, complainstrings="HERMITCRAB_COMPLAIN.PLANT_BERRIES",      complaintest=berriescomplainfn,        onetime = true},
+    [TASKS.FILL_MEATRACKS] =    {completestrings="HERMITCRAB_REWARD.FILL_MEATRACKS",    complain=true, complainstrings="HERMITCRAB_COMPLAIN.FILL_MEATRACKS",     complaintest=meatcomplainfn},
+    [TASKS.GIVE_HEAVY_FISH] =   {completestrings="HERMITCRAB_REWARD.GIVE_HEAVY_FISH",   complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_HEAVY_FISH"},
+    [TASKS.REMOVE_LUREPLANT] =  {completestrings="HERMITCRAB_REWARD.REMOVE_LUREPLANT",  complain=true, complainstrings="HERMITCRAB_COMPLAIN.REMOVE_LUREPLANT",   complaintest=lureplantcomplainfn},
+    [TASKS.GIVE_UMBRELLA] =     {completestrings="HERMITCRAB_REWARD.GIVE_UMBRELLA",     complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_UMBRELLA",      complaintest=umbrellacomplainfn},
+    [TASKS.GIVE_PUFFY_VEST] =   {completestrings="HERMITCRAB_REWARD.GIVE_PUFFY_VEST",   complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_PUFFY_VEST",    complaintest=puffycomplainfn},
+    [TASKS.GIVE_FLOWER_SALAD] = {completestrings="HERMITCRAB_REWARD.GIVE_FLOWER_SALAD", complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_FLOWER_SALAD",  complaintest=saladcomplainfn},
 
-    [TASKS.GIVE_BIG_WINTER] = {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_FISH_WINTER,    complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_FISH_WINTER,  complaintest=fishwinterfn}, -- oceanfish_medium_8
-    [TASKS.GIVE_BIG_SUMMER] = {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_FISH_SUMMER,    complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_FISH_SUMMER,  complaintest=fishsummerfn}, -- oceanfish_small_8
-    [TASKS.GIVE_BIG_SPRING] = {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_FISH_SPRING,    complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_FISH_SPRING,  complaintest=fishspringfn}, -- oceanfish_small_7
-    [TASKS.GIVE_BIG_AUTUM]  = {completestrings=STRINGS.HERMITCRAB_REWARD.GIVE_FISH_AUTUM,     complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.GIVE_FISH_AUTUM,   complaintest=fishautumfn},  -- oceanfish_small_6
+    [TASKS.GIVE_BIG_WINTER] =   {completestrings="HERMITCRAB_REWARD.GIVE_FISH_WINTER",  complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_FISH_WINTER",  complaintest=fishwinterfn}, -- oceanfish_medium_8
+    [TASKS.GIVE_BIG_SUMMER] =   {completestrings="HERMITCRAB_REWARD.GIVE_FISH_SUMMER",  complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_FISH_SUMMER",  complaintest=fishsummerfn}, -- oceanfish_small_8
+    [TASKS.GIVE_BIG_SPRING] =   {completestrings="HERMITCRAB_REWARD.GIVE_FISH_SPRING",  complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_FISH_SPRING",  complaintest=fishspringfn}, -- oceanfish_small_7
+    [TASKS.GIVE_BIG_AUTUM]  =   {completestrings="HERMITCRAB_REWARD.GIVE_FISH_AUTUM",   complain=true, complainstrings="HERMITCRAB_COMPLAIN.GIVE_FISH_AUTUM",   complaintest=fishautumfn},  -- oceanfish_small_6
 
-    [TASKS.MAKE_CHAIR]      = {completestrings=STRINGS.HERMITCRAB_REWARD.MAKE_CHAIR,          complain=true, complianstrings=STRINGS.HERMITCRAB_COMPLAIN.MAKE_CHAIR,        complaintest=buildchairfn, onetime = true},
-
+    [TASKS.MAKE_CHAIR]      =   {completestrings="HERMITCRAB_REWARD.MAKE_CHAIR",        complain=true, complainstrings="HERMITCRAB_COMPLAIN.MAKE_CHAIR",        complaintest=buildchairfn, onetime = true},
 }
 
 local function initfriendlevellisteners(inst)
@@ -832,7 +814,9 @@ local function initfriendlevellisteners(inst)
             if not inst.comment_data then
                 inst.comment_data = {
                     pos = data.target:GetPosition(),
-                    speech = STRINGS.HERMITCRAB_INVESTIGATE.PLANT_FLOWERS[gfl][math.random(1,#STRINGS.HERMITCRAB_INVESTIGATE.PLANT_FLOWERS[gfl])],
+                    do_chatter = true,
+                    speech = "HERMITCRAB_INVESTIGATE.PLANT_FLOWERS."..gfl,
+                    chat_priority = CHATPRIORITIES.HIGH,
                 }
             end
 
@@ -946,7 +930,9 @@ local function initfriendlevellisteners(inst)
             if not inst.comment_data then
                 inst.comment_data = {
                     pos = data.target:GetPosition(),
-                    speech = STRINGS.HERMITCRAB_INVESTIGATE.FILL_MEATRACKS[gfl][math.random(1,#STRINGS.HERMITCRAB_INVESTIGATE.FILL_MEATRACKS[gfl])],
+                    do_chatter = true,
+                    speech = "HERMITCRAB_INVESTIGATE.FILL_MEATRACKS."..gfl,
+                    chat_priority = CHATPRIORITIES.HIGH,
                 }
             end
 
@@ -976,7 +962,9 @@ local function initfriendlevellisteners(inst)
             if not inst.comment_data then
                 inst.comment_data = {
                     pos = data.target:GetPosition(),
-                    speech = STRINGS.HERMITCRAB_INVESTIGATE.PLANT_BERRIES[gfl][math.random(1,#STRINGS.HERMITCRAB_INVESTIGATE.PLANT_BERRIES[gfl])],
+                    do_chatter = true,
+                    speech = "HERMITCRAB_INVESTIGATE.PLANT_BERRIES."..gfl,
+                    chat_priority = CHATPRIORITIES.HIGH,
                 }
             end
 
@@ -994,7 +982,7 @@ local function initfriendlevellisteners(inst)
             local x, y, z = source.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x, y, z, range, FIND_HEAVY_TAGS)
             if #ents == 0 then
-                inst.components.friendlevels:CompleteTask(TASKS.REMOVE_JUNK, data.doer)  
+                inst.components.friendlevels:CompleteTask(TASKS.REMOVE_JUNK, data.doer)
             end
         end
     end
@@ -1021,7 +1009,9 @@ local function initfriendlevellisteners(inst)
             if not inst.comment_data then
                 inst.comment_data = {
                     pos = data.target:GetPosition(),
-                    speech = STRINGS.HERMITCRAB_INVESTIGATE.REMOVE_LUREPLANT[gfl][math.random(1,#STRINGS.HERMITCRAB_INVESTIGATE.REMOVE_LUREPLANT[gfl])],
+                    do_chatter = true,
+                    speech = "HERMITCRAB_INVESTIGATE.REMOVE_LUREPLANT."..gfl,
+                    chat_priority = CHATPRIORITIES.HIGH,
                 }
             end
 
@@ -1037,7 +1027,9 @@ local function initfriendlevellisteners(inst)
             if not inst.comment_data then
                 inst.comment_data = {
                     pos = data.target:GetPosition(),
-                    speech = STRINGS.HERMITCRAB_PLANTED_LUREPLANT_DIED[gfl][math.random(1,#STRINGS.HERMITCRAB_PLANTED_LUREPLANT_DIED[gfl])],
+                    do_chatter = true,
+                    speech = "HERMITCRAB_PLANTED_LUREPLANT_DIED."..gfl,
+                    chat_priority = CHATPRIORITIES.LOW,
                 }
             end
         else
@@ -1092,10 +1084,10 @@ local function initfriendlevellisteners(inst)
                     end
                 end
 
-				str = STRINGS.HERMITCRAB_GETFISH_BIG[math.random(1,#STRINGS.HERMITCRAB_GETFISH_BIG)]
+				str = "HERMITCRAB_GETFISH_BIG"
             else
                 local weight = item.components.weighable:GetWeight()
-                str = subfmt(STRINGS.HERMITCRAB_REFUSE_SMALL_FISH[math.random(1,#STRINGS.HERMITCRAB_REFUSE_SMALL_FISH)], {weight = string.format("%0.2f", weight)})
+                str = subfmt(STRINGS.HERMITCRAB_REFUSE_SMALL_FISH[math.random(#STRINGS.HERMITCRAB_REFUSE_SMALL_FISH)], {weight = string.format("%0.2f", weight)})
 
                 inst.itemstotoss = inst.itemstotoss or {}
                 table.insert(inst.itemstotoss, item)
@@ -1127,7 +1119,7 @@ local function initfriendlevellisteners(inst)
             inst:PushEvent("eat_food")
             item:Remove()
         elseif item.prefab == "hermit_cracked_pearl" then
-            inst.components.npc_talker:Say(STRINGS.HERMITCRAB_GOT_PEARL)
+            inst.components.npc_talker:Chatter("HERMITCRAB_GOT_PEARL")
             item:RemoveTag("irreplaceable")
             item:Remove()
         elseif item.components.edible then
@@ -1139,6 +1131,15 @@ local function initfriendlevellisteners(inst)
             end
             inst:PushEvent("eat_food")
             item:Remove()
+        end
+    end)
+
+    -- Friend level deltas.
+    inst:ListenForEvent("friend_level_changed", function(inst, data)
+        local worldmeteorshower = TheWorld.components.worldmeteorshower
+        if worldmeteorshower ~= nil then
+            local odds = inst.components.friendlevels:GetLevel() / inst.components.friendlevels:GetMaxLevel()
+            worldmeteorshower.moonrockshell_chance_additionalodds:SetModifier(inst, odds, "pearl_tasks")
         end
     end)
 end
@@ -1232,7 +1233,9 @@ local function onmoonvent(inst,doer)
 
             inst.comment_data = {
                 pos = doer:GetPosition(),
-                speech = STRINGS.HERMITCRAB_MOON_FISSURE_VENT[gfl][math.random(1,#STRINGS.HERMITCRAB_MOON_FISSURE_VENT[gfl])],
+                do_chatter = true,
+                speech = "HERMITCRAB_MOON_FISSURE_VENT."..gfl,
+                chat_priority = CHATPRIORITIES.LOW,
             }
         end
     end
@@ -1285,17 +1288,16 @@ end
 local function retrofitconstuctiontasks(inst, house_prefab)
     if house_prefab == "hermithouse_construction2" then
         inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_1].complete = true
-		print("Retrofitting for Return Of Them: Turn of Tides - completed hermit house 1 friendship task.")
+		--print("Retrofitting for Return Of Them: Turn of Tides - completed hermit house 1 friendship task.")
     elseif house_prefab == "hermithouse_construction3" then
         inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_1].complete = true
         inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_2].complete = true
-		print("Retrofitting for Return Of Them: Turn of Tides - completed hermit house 1, 2 friendship tasks.")
+		--print("Retrofitting for Return Of Them: Turn of Tides - completed hermit house 1, 2 friendship tasks.")
     elseif house_prefab == "hermithouse" then
         inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_1].complete = true
         inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_2].complete = true
         inst.components.friendlevels.friendlytasks[TASKS.FIX_HOUSE_3].complete = true
-
-		print("Retrofitting for Return Of Them: Turn of Tides - completed hermit house 1, 2, 3 friendship tasks.")
+		--print("Retrofitting for Return Of Them: Turn of Tides - completed hermit house 1, 2, 3 friendship tasks.")
     end
 end
 
@@ -1361,6 +1363,8 @@ local function fn()
     inst:AddComponent("talker")
     inst.components.talker.colour = Vector3(252/255, 226/255, 219/255)
     inst.components.talker.offset = Vector3(0, -400, 0)
+    inst.components.talker.name_colour = Vector3(118/256, 89/256, 141/256)
+    inst.components.talker.chaticon = "npcchatflair_hermitcrab"
     inst.components.talker:MakeChatter()
     inst.components.talker.lineduration = TUNING.HERMITCRAB.SPEAKTIME - 0.5  -- the subtraction is to create a buffer between text.
 
@@ -1372,6 +1376,7 @@ local function fn()
     inst.components.talker.font = TALKINGFONT_HERMIT
 
     inst:AddComponent("npc_talker")
+    inst.components.npc_talker.default_chatpriority = CHATPRIORITIES.LOW
 
     if not TheNet:IsDedicated() then
         inst:AddComponent("pointofinterest")

@@ -128,6 +128,11 @@ local TRIGGERED_DANGER_MUSIC =
 		"dontstarve/music/music_epicfight_daywalker",
 	},
 
+	daywalker2 =
+	{
+		"dontstarve/music/music_epicfight_junkyardhog",
+	},
+
 	gestaltmutant =
 	{
 		"dontstarve/music/music_epicfight_gestalt_mutants",
@@ -789,6 +794,7 @@ local function OnEnableDynamicMusic(inst, enable)
             StopDanger()
             StopBusy()
             _soundemitter:KillSound("busy")
+            _busytheme = nil
             _isbusydirty = true
         end
         _isenabled = enable

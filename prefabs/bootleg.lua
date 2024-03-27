@@ -81,7 +81,7 @@ local function InitMapDecorations(inst) -- NOTES(JBK): This is used in mapscreen
             scale = 0.75,
         },
         {
-            atlas = "minimap/minimap_data.xml",
+            atlas = GetMinimapAtlas("oceanwhirlportal.png"),
             image = "oceanwhirlportal.png",
             --scale = 1.0,
         },

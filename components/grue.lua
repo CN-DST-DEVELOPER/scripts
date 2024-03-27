@@ -88,12 +88,12 @@ function Grue:OnRemoveFromEntity()
         self.inittask:Cancel()
         self.inittask = nil
     else
-        inst:RemoveEventCallback("enterdark", OnEnterDark)
-        inst:RemoveEventCallback("enterlight", OnEnterLight)
-        inst:RemoveEventCallback("nightvision", OnNightVision)
-        inst:RemoveEventCallback("invincibletoggle", OnInvincibleToggle)
-        inst:RemoveEventCallback("death", OnDeath)
-        inst:RemoveEventCallback("ms_respawnedfromghost", OnRespawned)
+        self.inst:RemoveEventCallback("enterdark", OnEnterDark)
+        self.inst:RemoveEventCallback("enterlight", OnEnterLight)
+        self.inst:RemoveEventCallback("nightvision", OnNightVision)
+        self.inst:RemoveEventCallback("invincibletoggle", OnInvincibleToggle)
+        self.inst:RemoveEventCallback("death", OnDeath)
+        self.inst:RemoveEventCallback("ms_respawnedfromghost", OnRespawned)
     end
 end
 

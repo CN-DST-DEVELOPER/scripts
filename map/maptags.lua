@@ -9,6 +9,7 @@ local function MakeTags()
 			["Terrarium_Spawner"] = true,
 			["CharlieStage_Spawner"] = true,
 			["StatueHarp_HedgeSpawner"] = true,
+			["Junkyard_Spawner"] = true,
 		}
 
 	local Terrarium_Spawners = 
@@ -111,6 +112,18 @@ local function MakeTags()
 
 										return "STATIC", "Charlie1"
 									end,
+			["Junkyard_Spawner"] = function(tagdata, level)
+										if tagdata["Junkyard_Spawner"] == false then
+											return
+										end
+										tagdata["Junkyard_Spawner"] = false
+
+										if level ~= nil and level.overrides ~= nil and level.overrides.junkyard == "never" then
+											return
+										end
+
+										return "STATIC", "junk_yard"
+									end,									
 
 			["StatueHarp_HedgeSpawner"] = function(tagdata, level)
 										if tagdata["StatueHarp_HedgeSpawner"] == false then

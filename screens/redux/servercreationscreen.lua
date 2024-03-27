@@ -125,7 +125,16 @@ function ServerCreationScreen:UpdatePresetMode(mode)
 end
 
 function ServerCreationScreen:OnNewGamePresetPicked(preset_id)
+
 	self.world_tabs[1]:OnCombinedPresetButton(preset_id)
+end
+
+
+function ServerCreationScreen:SetSecondaryLevel(levelsetting)
+    if levelsetting then
+        self.world_tabs[2]:AddMultiLevel()
+        self.world_tabs[2]:Refresh()
+    end
 end
 
 function ServerCreationScreen:UpdatePlaystyle(settings_overrides)
@@ -783,21 +792,21 @@ function ServerCreationScreen:OnControl(control, down)
             self:Cancel()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         else
-            if control == CONTROL_OPEN_CRAFTING then
+            if control == CONTROL_MENU_L2 then
                 self:SetTab(nil, -1)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-            elseif control == CONTROL_OPEN_INVENTORY then
+            elseif control == CONTROL_MENU_R2 then
                 self:SetTab(nil, 1)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             elseif self.save_slot < 0 or ShardSaveGameIndex:IsSlotEmpty(self.save_slot) then
-                if control == CONTROL_PAUSE and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+                if control == CONTROL_MENU_START and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
                     self:Create()
                     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 else
                     return false
                 end
             else
-                if control == CONTROL_PAUSE and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+                if control == CONTROL_MENU_START and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
                     self:Create()
                     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 else
@@ -936,9 +945,9 @@ function ServerCreationScreen:GetHelpText()
 
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_CRAFTING).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_L2).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
 
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE).." "..(self:CanResume() and STRINGS.UI.SERVERCREATIONSCREEN.RESUME or STRINGS.UI.SERVERCREATIONSCREEN.CREATE))
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START).." "..(self:CanResume() and STRINGS.UI.SERVERCREATIONSCREEN.RESUME or STRINGS.UI.SERVERCREATIONSCREEN.CREATE))
 
     return table.concat(t, "  ")
 end

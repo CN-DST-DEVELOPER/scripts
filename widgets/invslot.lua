@@ -110,7 +110,9 @@ function InvSlot:Click(stack_mod)
             elseif active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() and not container:AcceptsStacks() then
                 container:SwapOneOfActiveItemWithSlot(slot_number)
 
-            elseif container:AcceptsStacks() or not (active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack()) then
+			elseif (container:AcceptsStacks() or not (active_item.replica.stackable and active_item.replica.stackable:IsStack()))
+				and not (container_item.replica.stackable and container_item.replica.stackable:IsOverStacked())
+			then
                 --Swap active item with slot item
                 container:SwapActiveItemWithSlot(slot_number)
                 TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")

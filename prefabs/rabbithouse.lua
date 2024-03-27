@@ -89,9 +89,16 @@ local function OnStopCaveDay(inst)
     end
 end
 
+local function OnAcidRainingChanged(inst, isacidraining)
+    if not isacidraining and not TheWorld.state.iscaveday then
+        OnStopCaveDay(inst)
+    end
+end
+
 local function SpawnCheckCaveDay(inst)
     inst.inittask = nil
     inst:WatchWorldState("stopcaveday", OnStopCaveDay)
+    inst:WatchWorldState("isacidraining", OnAcidRainingChanged)
     if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
         if not TheWorld.state.iscaveday or
             (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
@@ -103,9 +110,9 @@ end
 local function oninit(inst)
     inst.inittask = inst:DoTaskInTime(math.random(), SpawnCheckCaveDay)
     if inst.components.spawner ~= nil and
-        inst.components.spawner.child == nil and
-        inst.components.spawner.childname ~= nil and
-        not inst.components.spawner:IsSpawnPending() then
+            inst.components.spawner.child == nil and
+            inst.components.spawner.childname ~= nil and
+            not inst.components.spawner:IsSpawnPending() then
         local child = SpawnPrefab(inst.components.spawner.childname)
         if child ~= nil then
             inst.components.spawner:TakeOwnership(child)

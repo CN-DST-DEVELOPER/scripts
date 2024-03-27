@@ -18,7 +18,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Rider:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Rider:OnRemoveFromEntity()
     if TheWorld.ismastersim then
         self.classified = nil
     else
@@ -31,7 +32,7 @@ function Rider:OnRemoveFromEntity()
     end
 end
 
-Rider.OnRemoveEntity = Rider.OnRemoveFromEntity
+Rider.OnRemoveEntity = Rider.OnRemoveFromEntity]]
 
 function Rider:AttachClassified(classified)
     self.classified = classified
@@ -59,7 +60,7 @@ local function GetPickupAction(inst, target)
             or (target.components.inventoryitem ~= nil and target.components.canbepickedup)
 
     if is_inventory
-            and not (target:HasTag("heavy") or target:HasTag("fire") or target:HasTag("catchable") or target:HasTag("spider")) then
+            and not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasTag("lighter")) or target:HasTag("catchable") or target:HasTag("spider")) then
         return (inst.components.playercontroller:HasItemSlots() or target.replica.equippable ~= nil or target.components.equippable ~= nil) and ACTIONS.PICKUP or nil
     elseif target:HasTag("pickable") and not target:HasTag("fire") then
         return ACTIONS.PICK

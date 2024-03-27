@@ -317,14 +317,11 @@ function SequenceNode:Reset()
 end
 
 function SequenceNode:Visit()
-
     if self.status ~= RUNNING then
         self.idx = 1
     end
 
-    local done = false
     while self.idx <= #self.children do
-
         local child = self.children[self.idx]
         child:Visit()
         if child.status == RUNNING or child.status == FAILED then
@@ -683,8 +680,6 @@ function ParallelNode:Visit()
         else
             any_done = true
         end
-
-
     end
 
     if done or (self.stoponanycomplete and any_done) then
@@ -770,7 +765,9 @@ function EventNode:Visit()
 end
 
 ---------------------------------------------------------------
-
+-- WhileNode: The While condition will be checked on every update,
+-- so subsequent nodes will be interrupted if they change the result
+-- of that condition.
 function WhileNode(cond, name, node)
     return ParallelNode
         {
@@ -780,7 +777,9 @@ function WhileNode(cond, name, node)
 end
 
 ---------------------------------------------------------------
-
+-- IfNode: Once the If condition passes, the brain will move on to
+-- the subsequent node, and continue executing it until that node succeeds or fails.
+-- The If condition will not be checked again until that time.
 function IfNode(cond, name, node)
     return SequenceNode
         {
@@ -810,10 +809,10 @@ end)
 function LatchNode:Visit()
     if self.status == READY then
         if GetTime() > self.currentlatchduration + self.lastlatchtime then
-            print("GONNA GO!", GetTime(), self.currentlatchduration, "----", GetTime()+self.currentlatchduration, ">", self.lastlatchtime)
+            --print("GONNA GO!", GetTime(), self.currentlatchduration, "----", GetTime()+self.currentlatchduration, ">", self.lastlatchtime)
             self.lastlatchtime = GetTime()
             self.currentlatchduration = FunctionOrValue(self.latchduration, self.inst)
-            print("New vals:", self.currentlatchduration , self.lastlatchtime)
+            --print("New vals:", self.currentlatchduration , self.lastlatchtime)
 
             self.status = RUNNING
         else

@@ -239,9 +239,10 @@ local lessdamagetaken_descriptions = {	-- Note: The data values should be named 
 
 local riftsenabled_descriptions = {
 	{ text = STRINGS.UI.SANDBOXMENU.SLIDENEVER, data = "never" },
-	{ text = STRINGS.UI.SANDBOXMENU.SLIDEDEFAULT, data = "default" },
-    { text = STRINGS.UI.SANDBOXMENU.ALWAYS, data = "always" },
+	{ text = STRINGS.UI.SANDBOXMENU.DETECT_AUTO, data = "default" },
+    { text = STRINGS.UI.SANDBOXMENU.DETECT_ALWAYS, data = "always" },
 }
+
 
 local descriptions = {
 	frequency_descriptions = frequency_descriptions,
@@ -383,6 +384,7 @@ local WORLDGEN_GROUP = {
 			["moon_fissure"] = {value = "default", image = "moon_fissure.tex", desc = worldgen_frequency_descriptions, world = {"forest"}},
 			["terrariumchest"] = {value = "default", image = "terrarium.tex", desc = yesno_descriptions, world={"forest"}},
 			["stageplays"] = {value = "default", image = "stageplays.tex", desc = yesno_descriptions, world={"forest"}},
+			["junkyard"] = {value = "default", image = "junkyard.tex", desc = yesno_descriptions, world={"forest"}},
 		}
 	},
 	["global"] = {
@@ -432,6 +434,9 @@ local WORLDSETTINGS_GROUP = {
 			["eyeofterror"] = {value = "default", image = "eyeofterror.tex", world={"forest"}},
 
 			["daywalker"] = {value = "default", image = "daywalker.tex", world={"cave"}},
+			["daywalker2"] = {value = "default", image = "daywalker2.tex", world={"forest"}}, -- Same TUNING but different icon for forest.
+
+			["sharkboi"] = {value = "default", image = "sharkboi.tex", world={"forest"}},
 			--NO_BOSS_TIME?
 		}
 	},
@@ -558,6 +563,7 @@ local WORLDSETTINGS_GROUP = {
 			["summerhounds"] = {value = "default", image = "summerhounds.tex", desc = yesno_descriptions, world={"forest"}, order = 3},
             ["rifts_frequency"] = {value = "default", image = "lunarrift_portal.tex", desc = frequency_descriptions, world={"forest"}},
             ["rifts_enabled"] = {value = "default", image = "lunarrift_portal.tex", desc = riftsenabled_descriptions, world={"forest"}},
+            ["lunarhail_frequency"] = {value = "default", image = "lunar_hail.tex", desc = frequency_descriptions, world={"forest"}},
 
 			["weather"] = {value = "default", image = "rain.tex", desc = frequency_descriptions, world={"forest", "cave"}},
 
@@ -566,7 +572,7 @@ local WORLDSETTINGS_GROUP = {
 			["atriumgate"] = {value = "default", image = "atriumgate.tex", desc = atrium_descriptions, world={"cave"}},
             ["rifts_frequency_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = frequency_descriptions, world={"cave"}},
             ["rifts_enabled_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = riftsenabled_descriptions, world={"cave"}},
-
+			["acidrain_enabled"] = {value = "always", image = "acid_rain.tex", desc = enableddisabled_descriptions, world={"cave"}},
 
 			--["disease_delay"] = {value = "default", image = "berrybush_diseased.tex", desc = disease_descriptions, world={"forest", "cave"}},
 		}

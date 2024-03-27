@@ -186,13 +186,13 @@ function MainScreen:OnControl(control, down)
     if MainScreen._base.OnControl(self,control, down) then return true end
 
     if DEBUG_MODE then
-        if control == CONTROL_PAUSE then
+        if control == CONTROL_MENU_START then
             -- Use gamepad start button to host game so you can keep mashing
             -- start to get into game.
             self:OnHostButton()
             return true
 
-        elseif control == CONTROL_MAP then
+        elseif control == CONTROL_MENU_BACK then
             -- Make gamepad back a compliment to start: join instead of host.
             self:OnJoinButton()
             return true
@@ -243,7 +243,7 @@ function MainScreen:OnLoginButton(push_mp_main_screen)
         if is_banned then -- We are banned
         	TheFrontEnd:PopScreen()
 	        TheNet:NotifyAuthenticationFailure()
-            OnNetworkDisconnect( banned_reason, true)
+            OnNetworkDisconnect( banned_reason, true, nil, nil, function() TheFrontEnd:PopScreen() GoToMultiplayerMainMenu(true) end)
         -- We are on a deprecated version of the game
         elseif must_upgrade then
         	TheFrontEnd:PopScreen()

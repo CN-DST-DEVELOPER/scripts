@@ -15,7 +15,7 @@ local function fn()
     inst.AnimState:SetBank("log")
     inst.AnimState:SetBuild("log")
     inst.AnimState:PlayAnimation("idle")
-    
+
     inst.pickupsound = "wood"
 
     MakeInventoryFloatable(inst, "med", 0.1, 0.75)
@@ -25,6 +25,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst:AddComponent("tradable")
 
 	inst:AddComponent("edible")
     inst.components.edible.foodtype = FOODTYPE.WOOD

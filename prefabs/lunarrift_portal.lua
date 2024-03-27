@@ -3,7 +3,15 @@ local assets =
     Asset("ANIM", "anim/lunar_rift_portal.zip"),
     Asset("ANIM", "anim/lunar_rift_portal_small.zip"),
     Asset("MINIMAP_IMAGE", "lunarrift_portal"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal1"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal2"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal3"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal4"),
     Asset("MINIMAP_IMAGE", "lunarrift_portal_max"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal_max1"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal_max2"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal_max3"),
+    Asset("MINIMAP_IMAGE", "lunarrift_portal_max4"),
 }
 
 local prefabs =
@@ -264,14 +272,8 @@ end
 
 --------------------------------------------------------------------------------
 local function setmaxminimapstatus(inst)
-    inst.MiniMapEntity:SetCanUseCache(false)
-    inst.MiniMapEntity:SetDrawOverFogOfWar(true)
-    inst.MiniMapEntity:SetPriority(22)
     inst.MiniMapEntity:SetIcon("lunarrift_portal_max.png")
-
-    inst.icon = SpawnPrefab("globalmapicon")
-    inst.icon:TrackEntity(inst)
-    inst.icon.MiniMapEntity:SetPriority(22)
+    inst.icon_max = true
 end
 
 --------------------------------------------------------------------------------
@@ -374,11 +376,15 @@ local function on_portal_removed(inst)
 
     if inst._terraformer ~= nil then
         inst._terraformer:OnParentRemoved()
+        if inst._terraformer.components.timer then
+            inst._terraformer.components.timer:StopTimer("remove")
+        end
     end
 
     inst._terraformer = inst._terraformer or make_terraformer_proxy(inst, ix, iy, iz)
     inst._terraformer:AddTerraformTask(portal_tile_x, portal_tile_y, 0, {0, 0}, true)
 
+    local maxdelay = 0
     local current_portal_radius = TILE_WIDTH_BY_STAGE[inst._stage]
     for index = 1, current_portal_radius do
         local horizontal_offset, vertical_offset = index, 0
@@ -386,17 +392,21 @@ local function on_portal_removed(inst)
         local base_time_delay = (current_portal_radius - index - 1)
 
         while horizontal_offset > -index do
+            local delay = (base_time_delay + 0.5*math.random()) * 2.0
+            maxdelay = math.max(maxdelay, delay)
             inst._terraformer:AddTerraformTask(
                 portal_tile_x + horizontal_offset,
                 portal_tile_y + vertical_offset,
-                (base_time_delay + 0.5*math.random()) * 2.0,
+                delay,
                 {horizontal_offset, vertical_offset},
                 true
             )
+            delay = (base_time_delay + 0.5*math.random()) * 2.0
+            maxdelay = math.max(maxdelay, delay)
             inst._terraformer:AddTerraformTask(
                 portal_tile_x - horizontal_offset,
                 portal_tile_y - vertical_offset,
-                (base_time_delay + 0.5*math.random()) * 2.0,
+                delay,
                 {horizontal_offset, vertical_offset},
                 true
             )
@@ -407,6 +417,11 @@ local function on_portal_removed(inst)
                 vertical_mod = -1
             end
         end
+    end
+
+    maxdelay = maxdelay + 0.1
+    if inst._terraformer.components.timer then
+        inst._terraformer.components.timer:StartTimer("remove", maxdelay)
     end
 
     if inst._crystals then
@@ -553,6 +568,31 @@ local function on_portal_load_postpass(inst, newents, data)
     end
 end
 
+
+local function do_marker_minimap_swap(inst)
+    inst.marker_index = inst.marker_index == nil and 0 or ((inst.marker_index + 1) % 4)
+    
+    local max = ""
+    if inst.icon_max then
+        max = "_max"
+    end
+
+    local marker_image = "lunarrift_portal"..max..(inst.marker_index +1)..".png"  --_max
+
+    --inst.MiniMapEntity:SetIcon(marker_image)
+    inst.icon.MiniMapEntity:SetIcon(marker_image)
+end
+
+local function show_minimap(inst)
+    -- Create a global map icon so the minimap icon is visible to other players as well.
+    inst.icon = SpawnPrefab("globalmapicon")
+    inst.icon:TrackEntity(inst)
+    inst.icon.MiniMapEntity:SetPriority(21)
+
+    inst:DoPeriodicTask(TUNING.STORM_SWAP_TIME, do_marker_minimap_swap)
+end
+
+
 --------------------------------------------------------------------------------
 local function portalfn()
     local inst = CreateEntity()
@@ -565,7 +605,9 @@ local function portalfn()
     inst.entity:AddNetwork()
 
     inst.MiniMapEntity:SetIcon("lunarrift_portal.png")
-    inst.MiniMapEntity:SetPriority(1)
+    inst.MiniMapEntity:SetCanUseCache(false)
+    inst.MiniMapEntity:SetDrawOverFogOfWar(true)
+    inst.MiniMapEntity:SetPriority(22)
 
     inst.AnimState:SetBank ("lunar_rift_portal")
     inst.AnimState:SetBuild("lunar_rift_portal")
@@ -621,7 +663,7 @@ local function portalfn()
     ----------------------------------------------------------
     local combat = inst:AddComponent("combat")
     combat:SetDefaultDamage(TUNING.RIFT_LUNAR1_GROUNDPOUND_DAMAGE)
-    combat.playerdamagepercent = 0.5
+    combat.playerdamagepercent = 0.5    
 
     ----------------------------------------------------------
     local groundpounder = inst:AddComponent("groundpounder")
@@ -653,6 +695,8 @@ local function portalfn()
     inst.OnSave = on_portal_save
     inst.OnLoad = on_portal_load
     inst.OnLoadPostPass = on_portal_load_postpass
+
+    inst:DoTaskInTime(0, show_minimap)
 
     return inst
 end

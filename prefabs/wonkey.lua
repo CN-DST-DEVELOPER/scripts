@@ -30,19 +30,12 @@ end
 local function master_postinit(inst)
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
 
-
-
     inst.components.foodaffinity:AddPrefabAffinity("cave_banana", TUNING.AFFINITY_15_CALORIES_SMALL)
 
     inst.customidleanim = "idle_wonkey"
     inst.talker_path_override = "monkeyisland/characters/"
 
     inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_WALK_SPEED_PENALTY
-
-    inst:DoTaskInTime(0,function() 
-            if TheWorld.components.piratespawner then
-            end
-        end)
 
     inst.components.health:SetMaxHealth(TUNING.WONKEY_HEALTH)
     inst.components.hunger:SetMax(TUNING.WONKEY_HUNGER)

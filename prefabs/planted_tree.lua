@@ -147,6 +147,8 @@ local function sapling_fn(build, anim, growprefab, tag, fireproof, overrideloot)
             MakeHauntableWork(inst)
         end
 
+        MakeWaxablePlant(inst)
+
         return inst
     end
     return fn

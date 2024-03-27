@@ -18,8 +18,9 @@ local brain = require("brains/cookiecutterbrain")
 
 SetSharedLootTable("cookiecutter",
 {
-    {"monstermeat",			1.0},
-    {"cookiecuttershell",	0.5},
+    {"monstermeat",			1.00},
+    {"cookiecuttershell",	0.50},
+    {"cookiecuttershell",	0.25},
 })
 
 local function OnAttacked(inst, data)

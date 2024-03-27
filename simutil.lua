@@ -617,6 +617,31 @@ function GetInventoryItemAtlas(imagename, no_fallback)
 end
 
 ----------------------------------------------------------------------------------------------
+function GetMinimapAtlas_Internal(imagename)
+    local images1 = "minimap/minimap_data1.xml"
+    local images2 = "minimap/minimap_data2.xml"
+    return TheSim:AtlasContains(images1, imagename) and images1
+            or TheSim:AtlasContains(images2, imagename) and images2
+            or nil
+end
+
+local minimapAtlasLookup = {}
+function GetMinimapAtlas(imagename)
+	local atlas = minimapAtlasLookup[imagename]
+	if atlas then
+		return atlas
+	end
+
+    atlas = GetMinimapAtlas_Internal(imagename)
+
+	if atlas ~= nil then
+		minimapAtlasLookup[imagename] = atlas
+	end
+
+	return atlas
+end
+
+----------------------------------------------------------------------------------------------
 
 local scrapbookIconAtlasLookup = {}
 

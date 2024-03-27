@@ -1,4 +1,3 @@
-
 local assets =
 {
     Asset("ANIM", "anim/marbleshrub.zip"),
@@ -202,6 +201,8 @@ local function MakeShrub(name, growthstage)
 
 		MakeHauntableWork(inst)
 		MakeSnowCovered(inst)
+
+		MakeWaxablePlant(inst)
 
 		inst.OnSave = onsave
 		inst.OnLoad = onload

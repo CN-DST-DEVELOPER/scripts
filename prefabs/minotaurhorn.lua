@@ -1,16 +1,20 @@
 local assets =
 {
-	Asset("ANIM", "anim/horn_rhino.zip"),
+    Asset("ANIM", "anim/horn_rhino.zip"),
 }
 
 local function fn()
-	local inst = CreateEntity()
+    local inst = CreateEntity()
 
-	inst.entity:AddTransform()
-	inst.entity:AddAnimState()
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
+
+    inst.AnimState:SetBank("horn_rhino")
+    inst.AnimState:SetBuild("horn_rhino")
+    inst.AnimState:PlayAnimation("idle")
 
     MakeInventoryFloatable(inst, "med", 0.05, 0.75)
 
@@ -18,13 +22,11 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:SetBank("horn_rhino")
-    inst.AnimState:SetBuild("horn_rhino")
-    inst.AnimState:PlayAnimation("idle")
-
     inst:AddComponent("inspectable")
-
     inst:AddComponent("inventoryitem")
+
+    inst:AddComponent("stackable")
+    inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
 
     inst:AddComponent("edible")
     inst.components.edible.foodtype = FOODTYPE.MEAT

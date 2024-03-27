@@ -83,7 +83,8 @@ function Tune(overrides)
         STACK_SIZE_SMALLITEM = 40,
 		STACK_SIZE_TINYITEM = 60,
 
-		OCEAN_WETNESS = 75, -- same as MAX_WETNESS in weather.lua
+		OCEAN_WETNESS = 75, --initial wetness level when things enter ocean
+		MAX_WETNESS = 100,
 
 		DEFAULT_TALKER_DURATION = 2.5,
 		MAX_TALKER_DURATION = 8.0,
@@ -124,8 +125,13 @@ function Tune(overrides)
 		CONTROLLER_RETICULE_RSTICK_SPEED = 2,
         CONTROLLER_BLINKFOCUS_DISTANCESQ_MIN = 4,
         CONTROLLER_BLINKFOCUS_DISTANCE = 8,
-        CONTROLLER_BLINKFOCUS_ANGLE = 30, -- Angle is for both sides of the facing direction so cone total size is double this value.
-        CONTROLLER_OCEANFISHINGFOCUS_ANGLE = 50, -- Angle is for both sides of the facing direction so cone total size is double this value.
+        -- NOTES(JBK): These Angles are for both sides of the facing direction so cone total size is double this value.
+        CONTROLLER_BLINKFOCUS_ANGLE = 30, -- For targeting onto a focus.
+        CONTROLLER_BLINKCONE_ANGLE = 30, -- For general blink teleports.
+        CONTROLLER_OCEANFISHINGFOCUS_ANGLE = 50,
+        CONTROLLER_BOATPLACEMENT_ANGLE = 135, -- Arc with 90 degree backside blind spot.
+        CONTROLLER_INTERACT_ANGLE = 60, -- Want things forward facing to be picked.
+        CONTROLLER_BOATINTERACT_ANGLE = 45, -- Want things forward facing to be picked.
 
         -- WX78 Refresh: WX78 min and max health variables kept for backwards compatibility & mods
         WX78_MIN_HEALTH = 150,
@@ -805,6 +811,10 @@ function Tune(overrides)
 
         MUSHROOMHAT_SPORE_TIME = seg_time * 2,
         MUSHROOMHAT_SLOW_HUNGER = 0.75,
+        MUSHROOMHAT_MOONSPORE_TIME = 1.5,
+        MUSHROOMHAT_MOONSPORE_TIME_VARIANCE = 0.25,
+        MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_COUNT = 3,
+        MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_DELAY = 0.25,
 
         MARBLESHRUB_MINE_SMALL = 6,  -- why are you even mining at this stage?
         MARBLESHRUB_MINE_NORMAL = 8, -- same as MARBLETREE_MINE
@@ -828,6 +838,8 @@ function Tune(overrides)
         SEASTACK_MINE = 9,
 		SEACOCOON_MINE = 1,
 		SHELL_CLUSTER_MINE = 3,
+
+        SKELETON_WORK = 3,
 
         PETRIFIED_TREE_SMALL = 2,
         PETRIFIED_TREE_NORMAL = 3,
@@ -1761,6 +1773,9 @@ function Tune(overrides)
         ARMOR_WOODCARVED_HAT = wilson_health*2.5*multiplayer_armor_durability_modifier,
         ARMOR_WOODCARVED_HAT_ABSORPTION = .7*multiplayer_armor_absorption_modifier,
 
+		ARMOR_SCRAP_HAT = wilson_health * 2.5 * multiplayer_armor_durability_modifier,
+		ARMOR_SCRAP_HAT_ABSORPTION = 0.85 * multiplayer_armor_absorption_modifier,
+
         ARMORDRAGONFLY = wilson_health * 9*multiplayer_armor_durability_modifier,
         ARMORDRAGONFLY_ABSORPTION = 0.7*multiplayer_armor_absorption_modifier,
         ARMORDRAGONFLY_FIRE_RESIST = 1,
@@ -2042,6 +2057,9 @@ function Tune(overrides)
 		REPAIR_DREADSTONE_HEALTH = 80,
 		REPAIR_DREADSTONE_WORK = 4,
 
+        REPAIR_SCRAP_HEALTH = 80,
+        REPAIR_SCRAP_WORK = 4,
+
         SCULPTURE_COMPLETE_WORK = 10,
         SCULPTURE_COVERED_WORK = 6,
 
@@ -2067,6 +2085,10 @@ function Tune(overrides)
 		DREADSTONEWALL_HEALTH = 800,
 		DREADSTONEWALL_PLAYERDAMAGEMOD = .25,
 		DREADSTONEWALL_WORK = 25,
+
+        SCRAPWALL_HEALTH = 600,
+        SCRAPWALL_PLAYERDAMAGEMOD = .25,
+        SCRAPWALL_WORK = 10,
 
         PORTAL_HEALTH_PENALTY = 0.25,
         HEART_HEALTH_PENALTY = 0.125,
@@ -2291,6 +2313,7 @@ function Tune(overrides)
         ROCKY_MAX_SCALE = 1.2,
         ROCKY_MIN_SCALE = .75,
         ROCKY_GROW_RATE = (1.2-.75) / (total_day_time*40),
+        ROCKY_ACIDRAIN_SHRINK_RATE = (1.2-0.75) / total_day_time,
         ROCKY_LOYALTY = seg_time*6,
         ROCKY_POLITENESS_LOYALTY_BONUS = seg_time * 2,
         ROCKY_ABSORB = 0.95,
@@ -3042,7 +3065,7 @@ function Tune(overrides)
         METEOR_SHOWER_LVL3_LRGMETEORS_MIN = 3,
         METEOR_SHOWER_LVL3_LRGMETEORS_MAX = 10,
 
-		MOONROCKSHELL_CHANCE = 0.34,
+		MOONROCKSHELL_CHANCE = 0.35, -- NOTES(JBK): This needs to be slightly bigger than 1 / 3 and I have it set so that 0.3 + CHANCE * 2 = 1.0.
 
         GROGGINESS_DECAY_RATE = .01,
         GROGGINESS_WEAR_OFF_DURATION = .5,
@@ -3524,6 +3547,7 @@ function Tune(overrides)
         DRAGONHAT_PERISHTIME = total_day_time, --only consumes while dancing
         YOTG_PERD_SPAWNCHANCE = .3,
         MAX_WALKABLE_PLATFORM_RADIUS = 4,
+        PLATFORM_HOP_DELAY_TICKS = 8,
         GOOD_LEAKSPAWN_PLATFORM_RADIUS = 9, -- (MAX_WALKABLE_PLATFORM_RADIUS * 0.75) ^2
         ROWING_RADIUS = 0.6,
         ROWING_RADIUS_ITERATIONS = 4,
@@ -4035,7 +4059,6 @@ function Tune(overrides)
                 BASIC =
                 {
                     MAX_VELOCITY = 2.5,
-        --            MAX_VELOCITY_MOD = 1.2,
                     SAIL_FORCE = 0.6,
                     RUDDER_TURN_DRAG = 0.23,
                 },
@@ -4043,7 +4066,6 @@ function Tune(overrides)
                 MALBATROSS =
                 {
                     MAX_VELOCITY = 4,
-      --              MAX_VELOCITY_MOD = 1.2,
                     SAIL_FORCE = 1.3,
                     RUDDER_TURN_DRAG = 0.23,
                 },
@@ -4153,6 +4175,8 @@ function Tune(overrides)
 				WETNESS = 100,
 			},
 		},
+
+        DEFAULT_LOCOMOTOR_HOP_DISTANCE = 6.0,
 
         CARRAT =
         {
@@ -4332,9 +4356,11 @@ function Tune(overrides)
         ARMORBRAMBLE_DMG = wilson_attack/1.5,
         ARMORBRAMBLE_ABSORPTION = .8*multiplayer_armor_absorption_modifier,
         ARMORBRAMBLE = wilson_health*5*multiplayer_armor_durability_modifier,
+        ARMORBRAMBLE_PLANAR_UPGRADE = 5,
+        ARMORBRAMBLE_DMG_PLANAR_UPGRADE = 5,
         TRAP_BRAMBLE_USES = 10,
         TRAP_BRAMBLE_DAMAGE = 40,
-        TRAP_BRAMBLE_RADIUS = 2.5,
+        TRAP_BRAMBLE_RADIUS = 2.5,        
         COMPOSTWRAP_SOILCYCLES = 20,
         COMPOSTWRAP_WITHEREDCYCLES = 2,
         COMPOSTWRAP_FERTILIZE = day_time * 6,
@@ -4698,7 +4724,7 @@ function Tune(overrides)
         BATTLESONG_DURABILITY_MOD = 0.75,
         BATTLESONG_NEG_SANITY_AURA_MOD = 0.5,
         BATTLESONG_FIRE_RESIST_MOD = 0, -- Full resistenace.
-        BATTLESONG_PANIC_TIME = 4,
+        BATTLESONG_PANIC_TIME = 6,
 
         BATTLESONG_HEALTHGAIN_DELTA = 1,
         BATTLESONG_HEALTHGAIN_DELTA_SINGER = 0.5,
@@ -5180,7 +5206,7 @@ function Tune(overrides)
         WATERPLANT =
         {
             DAMAGE = wilson_attack * 2,
-            ITEM_DAMAGE = wilson_attack * 0.7,
+            ITEM_DAMAGE = wilson_attack * 1.75,
             ATTACK_PERIOD = 5,
             YELLOW_ATTACK_PERIOD = 2.5,
             ATTACK_DISTANCE = 18,
@@ -5532,6 +5558,8 @@ function Tune(overrides)
 		WORMWOOD_COMPOST_HEAL_VALUES = { 4, 6, 8, 32 },
 		WORMWOOD_COMPOST_HEALOVERTIME_HEALTH = 2,
 		WORMWOOD_COMPOST_HEALOVERTIME_TICK = 2,
+
+        WORMWOOD_BLOOM_MAX_UPGRADE_MULT = 1.3,
 
 --[[
 		FERTILIZER_HEAL_1 = 2,
@@ -6539,7 +6567,7 @@ function Tune(overrides)
 		--
         SPAWN_DAYWALKER = true,
 		DAYWALKER_PILLAR_MINE = 10,
-        DAYWALKER_RESPAWN_DAYS_COUNT = 20, -- Days after the last defeat.
+        DAYWALKER_RESPAWN_DAYS_COUNT = 10, -- Days after the last defeat.
 
 		DAYWALKER_HEALTH = 10000,
 		DAYWALKER_HEALTH_REGEN = 25, --per second (only when not in combat)
@@ -6579,6 +6607,22 @@ function Tune(overrides)
 		DAYWALKER_DEAGGRO_DIST = 30,
 		DAYWALKER_EPICSCARE_RANGE = 10,
 
+		DAYWALKER2_ATTACK_PERIOD = { min = 3, max = 4 },
+		DAYWALKER2_ATTACK_RANGE = 3,
+		DAYWALKER2_ATTACK_SWING_DAMAGE = 125,
+		DAYWALKER2_TACKLE_DAMAGE = 100,
+		DAYWALKER2_TACKLE_RANGE = 8,
+		DAYWALKER2_TACKLE_SPEED = 13.5,
+		DAYWALKER2_CANNON_NEAR_DAMAGE_MULT = 2, --mult for ALTERGUARDIAN_PHASE3_LASERDAMAGE
+		DAYWALKER2_CANNON_FAR_DAMAGE_MULT = 0.5,
+		DAYWALKER2_CANNON_ATTACK_RANGE = 5,
+		DAYWALKER2_DAMAGE_TAKEN_MULT = 0.8, --basically his armor
+
+		DAYWALKER2_ITEM_USES = 3,
+		DAYWALKER2_MULTIWIELD_CD = 16,
+
+		DAYWALKER2_DEAGGRO_DIST_FROM_JUNK = 24,
+
 		SHADOW_LEECH_RUNSPEED = 6,
 		SHADOW_LEECH_HEALTH = 100,
 
@@ -6593,6 +6637,9 @@ function Tune(overrides)
 		SHARKBOI_TORPEDO_CD = 20,
 		SHARKBOI_STANDING_DIVE_CD = 24,
 
+		SHARKBOI_WATER_WALKSPEED = 2,
+		SHARKBOI_WATER_RUNSPEED = 7,
+
 		SHARKBOI_AGGRO_DIST = 15,
 		SHARKBOI_KEEP_AGGRO_DIST = 12,
 		SHARKBOI_DEAGGRO_DIST = 24,
@@ -6600,6 +6647,7 @@ function Tune(overrides)
 		SHARKBOI_ICE_MINE = 4/3,
 		SHARKBOI_ICE_LARGE_MINE = 8/3,
 
+        SPAWN_SHARKBOI = true,
         SHARKBOI_ARENA_COOLDOWN_DAYS = 20 * total_day_time,
         SHARKBOI_ARENA_SHRINK_TICK_TIME = 2,
         SHARKBOI_ARENA_SHRINK_DISTANCE = 0.1,
@@ -6624,22 +6672,26 @@ function Tune(overrides)
 
         -- WILSON REFRESH wilson_refresh
         SKILL_THRESHOLDS = {
-            5, --1
-            8, --2
-            8, --3
-            8, --4
-            10, --5
-            10, --6
-            10, --7
-            10, --8
-            10, --9
-            12, --10
-            12, --11
-            12, --12
-            15, --13
-            15, --14
-            15, --15
+            3,-- 5, --1
+            3,-- 8, --2
+            4,-- 8, --3
+            4,-- 8, --4
+            4, --10, --5
+            5, --10, --6
+            5, --10, --7
+            5, --10, --8
+            5, --10, --9
+            5, --12, --10
+            5, --12, --11
+            5, -- 12, --12
+            5, --15, --13
+            5, -- 15, --14
+            5, -- 15, --15
         },
+        -- FIXME(JBK): These are here because SKILL_THRESHOLDS has decreased but we do not want to clamp experience until out of beta.
+        -- We also need the client to know the new value for UI.
+        FIXME_DO_NOT_USE_FOR_MODS_OLD_MAX_XP_VALUE = 160,
+        FIXME_DO_NOT_USE_FOR_MODS_NEW_MAX_XP_VALUE = 68,
 
         TORCH_RADIUS = {
             2,
@@ -6775,8 +6827,8 @@ function Tune(overrides)
             WILLOW_BERNIESANITY_2 = 100/200,
 
             WILLOW_BERNIE_HEALTH_REGEN_PERIOD = 1,
-            WILLOW_BERNIE_HEALTH_REGEN_1 = 0.5,
-            WILLOW_BERNIE_HEALTH_REGEN_2 = 1,
+            WILLOW_BERNIE_HEALTH_REGEN_1 = 1,
+            WILLOW_BERNIE_HEALTH_REGEN_2 = 2,
 
             -- Lighter fuel consumption multiplier.
             WILLOW_CONSUMPTION_1 = 0.84,
@@ -6790,11 +6842,11 @@ function Tune(overrides)
             WILLOW_ALLEGIANCE_SHADOW_RESIST = 0.9,
             WILLOW_ALLEGIANCE_VS_LUNAR_BONUS = 1.1,
             WILLOW_ALLEGIANCE_LUNAR_RESIST = 0.9,
-            WILLOW_ALLEGIANCE_VS_SHADOW_BONUS = 1.1,            
+            WILLOW_ALLEGIANCE_VS_SHADOW_BONUS = 1.1,
 
             WATHGRITHR = {
-                BATTLESONG_INSTANT_COOLDOWN = 15,
-                BATTLESONG_INSTANT_COOLDOWN_HIGH = 3 * 60,
+                BATTLESONG_INSTANT_COOLDOWN = 10,
+                BATTLESONG_INSTANT_COOLDOWN_HIGH = 2.5 * 60,
 
                 INSTANTSONG_CD_UNLOCK_COUNT = 10,
                 BATTLESONGS_CONTAINER_NUM_BATTLESONGS_TO_UNLOCK = 6,
@@ -6936,17 +6988,18 @@ function Tune(overrides)
 		MIASMA_SPEED_MOD = .4,
         MIASMA_MAXSTRENGTH = 2, -- NOTES(JBK): It will take MIASMA_DIMINISH_INTERVAL_SECONDS * MIASMA_MAXSTRENGTH seconds to remove one miasma cloud maximally.
         MIASMA_SPACING = 1, -- In tiles.
-        MIASMA_SPREAD_INTERVAL_SECONDS = 10,
+        MIASMA_SPREAD_INTERVAL_SECONDS = 5,
         MIASMA_DIMINISH_INTERVAL_SECONDS = 1,
         MIASMA_MAX_CLOUDS = 50,
-        MIASMA_ODDS_CREATE = 0.75,
-        MIASMA_ODDS_SPREAD = 0.3,
+        MIASMA_ODDS_CREATE = 0.8,
+        MIASMA_ODDS_SPREAD = 0.5,
         MIASMA_MIN_DISTSQ_FROM_RIFT = 1 * 1 * 4, -- 4 is TILE_SCALE.
         MIASMA_MAX_DISTSQ_FROM_RIFT = 12 * 12 * 4, -- 4 is TILE_SCALE.
 
         MIASMA_DEBUFF_TICK_RATE = 2,
         MIASMA_DEBUFF_TICK_VALUE = -2,
 
+        ACIDRAIN_ENALBED = true, -- Managed by world settings.
         -- Damage over times.
         ACIDRAIN_DAMAGE_TIME = 1.5, -- How quickly the game polls to deal acidrain damage.
         ACIDRAIN_DAMAGE_PER_SECOND = 2.0,
@@ -6957,6 +7010,18 @@ function Tune(overrides)
         ACIDRAIN_BOULDER_WORK_STARTS_PERCENT = 0.5, -- What percentage of the acid level of the pond should it be for work to start.
         ACIDRAIN_BAT_SPEED_MULT = 1.25,
         ACIDRAIN_BAT_DAMAGE_MULT = 1.5,
+        -- NOTES(JBK): Making these too long will lessen the Umbralla keep it long enough to be useful and put them into tiers.
+        -- Early game items make them last short mid items medium and Umbralla is the late game strong one.
+        HEALINGSALVE_ACIDBUFF_DURATION = total_day_time / 2,
+        --ACIDICFOOD_ACIDBUFF_DURATION = total_day_time, -- Same as BUFF_MOISTUREIMMUNITY_DURATION in duration but for all characters able to make it.
+        -- acidbatwavemanager
+        ACIDBATWAVE_SPAWN_DISTANCE = 12,
+        ACIDBATWAVE_SPAWN_COUNT_MIN = 2,
+        ACIDBATWAVE_SPAWN_COUNT_MAX = 6,
+        ACIDBATWAVE_NUMBER_OF_ITEMS_TO_GUARANTEE_WAVE_SPAWN = 20,
+        ACIDBATWAVE_COOLDOWN_BETWEEN_WAVES = total_day_time / 2,
+        ACIDBATWAVE_TIME_FOR_WARNING = seg_time * 2,
+
 
         FISSURE_COOLDOWN_WALKED_AWAY = total_day_time / 8,
         FISSURE_COOLDOWN_DEFEATED_ANY_THRALLS = total_day_time * 3,
@@ -7028,7 +7093,7 @@ function Tune(overrides)
         WORMWOOD_PHOTOSYNTHESIS_HEALTH_REGEN =
         {
             amount = 1,
-            period = 20,
+            period = 10,
         },
 
         LUNARPLANTTENTACLE_DAMAGE = 70,
@@ -7057,6 +7122,7 @@ function Tune(overrides)
         WORMWOOD_PET_FRUITDRAGON_LIFETIME = 2 * total_day_time,
 
         WORMWOOD_PET_FRUITDRAGON_HEALTH = 600,
+        WORMWOOD_PET_FRUITDRAGON_BUFF_HEALTH = 900,
         WORMWOOD_PET_FRUITDRAGON_HEALTH_REGEN_AMOUNT = 5,
         WORMWOOD_PET_FRUITDRAGON_HEALTH_REGEN_PERIOD = 2.5,
         WORMWOOD_PET_FRUITDRAGON_ATTACK_PERIOD = 2,
@@ -7330,6 +7396,56 @@ function Tune(overrides)
 
         BOATRACE_SPECTATOR_TARGET_DISTANCE = 1.5,
         BOATRACE_SPECTATOR_MAX_DISTANCE = 3.5,
+
+        -- Rifts / Meta QoL
+
+        JUNK_PILE_STAGES = 3,
+		JUNK_FALL_DAMAGE = 30,
+
+        SCRAP_MONOCLE_EXTRA_VIEW_DIST = 15,
+        SCRAP_MONOCLEHAT_PERISHTIME = total_day_time * 12,
+
+        BEESWAX_SPRAY_USES = 75,
+
+        STORAGE_ROBOT_WORK_RADIUS = 15,
+        STORAGE_ROBOT_FUEL = total_day_time * 2,
+        STORAGE_ROBOT_WALKSPEED = {
+            FULL  = 5.0,
+            MED   = 4.25,
+            SMALL = 3.5,
+        },
+        STORAGE_ROBOT_MASS = {
+            FULL   = 80,
+            MED    = 115,
+            SMALL  = 150,
+        },
+
+        ACIDRAIN_PERISHLOOT_BASESAFEPERCENT = 0.4,
+        ACIDRAIN_MUSHTREE_PHASE_TIME = 0.9*total_day_time,
+        ACIDRAIN_MUSHTREE_UPDATE_TIME = 0.33*seg_time,
+
+        SPIDER_ACID_DAMAGE_CHANGE = 1.5,
+        SPIDER_ACID_DAMAGETAKEN_CHANGE = 0.75,
+
+        ACID_INFUSION_MULT = {
+            BERSERKER = {
+                DAMAGE = 1.5,
+                DAMAGE_TAKEN = 1.25,
+                SPEED = 1.25,
+            },
+
+            STRONGER = {
+                DAMAGE = 1.5,
+                DAMAGE_TAKEN = 0.75,
+                SPEED = 1.15,
+            },
+
+            WEAKER = {
+                DAMAGE = 0.85,
+                DAMAGE_TAKEN = 1.25,
+                SPEED = 0.85,
+            },
+        },
     }
 
     TUNING_MODIFIERS = {}

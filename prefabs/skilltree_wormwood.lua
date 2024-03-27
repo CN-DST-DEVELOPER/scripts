@@ -223,6 +223,7 @@ local function BuildSkillsData(SkillTreeFns)
                         owner.components.damagetypebonus:AddBonus("shadow_aligned", owner, TUNING.SKILLS.WILSON_ALLEGIANCE_VS_SHADOW_BONUS, "wormwood_allegiance_lunar")
                     end
                 end
+                owner:AddTag("lunarplant_husk_crafter")
             end,
             ondeactivate = function(owner, from_load)
                 if not owner.components.skilltreeupdater:IsActivated("wormwood_allegiance_lunar_mutations_1") then
@@ -234,6 +235,7 @@ local function BuildSkillsData(SkillTreeFns)
                         owner.components.damagetypebonus:RemoveBonus("shadow_aligned", owner, "wormwood_allegiance_lunar")
                     end
                 end
+                owner:RemoveTag("lunarplant_husk_crafter")
             end,
 
             group = "allegiance2",
@@ -326,15 +328,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "gathering",
             tags = {"blooming"},
-            onactivate = function(owner, from_load)
-                local bloomness = owner.components.bloomness
-                if bloomness then
-                    local skilltreeupdater = owner.components.skilltreeupdater
-                    if not skilltreeupdater:IsActivated("wormwood_blooming_speed3") then
-                        bloomness:SetDurations(bloomness.stage_duration, TUNING.WORMWOOD_BLOOM_FULL_DURATION_UPGRADED)
-                    end
-                end
-            end,
             connects = {
                 "wormwood_blooming_photosynthesis",
             },
@@ -422,22 +415,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "gathering",
             tags = {"blooming"},
-
-            onactivate = function(owner)
-                local item = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
-
-                if item ~= nil and item:HasTag("bramble_resistant") and item._onattackother ~= nil then
-                    item:ListenForEvent("onattackother", item._onattackother, owner)
-                end
-            end,
-
-            ondeactivate = function(owner)
-                local item = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
-
-                if item ~= nil and item:HasTag("bramble_resistant") and item._onattackother ~= nil then
-                    item:RemoveEventCallback("onattackother", item._onattackother, owner)
-                end
-            end,
         },
 
         wormwood_allegiance_lock_lunar_1 = SkillTreeFns.MakeCelestialChampionLock({

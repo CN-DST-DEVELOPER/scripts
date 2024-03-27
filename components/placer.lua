@@ -46,6 +46,19 @@ function Placer:GetDeployAction()
     end
 end
 
+function Placer:TestCanBuild() -- NOTES(JBK): This component assumes the self.inst is at the location to test.
+    local can_build, mouse_blocked
+    if self.override_testfn ~= nil then
+        can_build, mouse_blocked = self.override_testfn(self.inst)
+    elseif self.testfn ~= nil then
+        can_build, mouse_blocked = self.testfn(self.inst:GetPosition(), self.inst:GetRotation())
+    else
+        can_build = true
+        mouse_blocked = false
+    end
+    return can_build, mouse_blocked
+end
+
 function Placer:OnUpdate(dt)
     local rotating_from_boat_center
     local hide_if_cannot_build
@@ -107,7 +120,11 @@ function Placer:OnUpdate(dt)
         --V2C: this will keep ground orientation accurate and smooth,
         --     but unfortunately position will be choppy compared to parenting
         --V2C: switched to WallUpdate, so should be smooth now
-        self.inst.Transform:SetPosition(ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0))
+        local x, y, z = ThePlayer.entity:LocalToWorldSpace(self.offset, 0, 0)
+        self.inst.Transform:SetPosition(x, y, z)
+        if self.controllergroundoverridefn then
+            self.controllergroundoverridefn(self, ThePlayer, x, y, z)
+        end
     elseif self.inst.parent == nil then
 --        ThePlayer:AddChild(self.inst)
 --        self.inst.Transform:SetPosition(self.offset, 0, 0) -- this will cause the object to be rotated to face the same direction as the player, which is not what we want, rotate the camera if you want to rotate the object
@@ -137,14 +154,7 @@ function Placer:OnUpdate(dt)
 
 	local was_mouse_blocked = self.mouse_blocked
 
-    if self.override_testfn ~= nil then
-        self.can_build, self.mouse_blocked = self.override_testfn(self.inst)
-    elseif self.testfn ~= nil then
-        self.can_build, self.mouse_blocked = self.testfn(self.inst:GetPosition(), self.inst:GetRotation())
-    else
-        self.can_build = true
-        self.mouse_blocked = false
-    end
+    self.can_build, self.mouse_blocked = self:TestCanBuild()
 
     if hide_if_cannot_build and not self.can_build then
         self.mouse_blocked = true

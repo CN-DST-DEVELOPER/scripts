@@ -28,6 +28,14 @@ function AOESpell:CanCast(doer, pos)
 		return false
 	end
 
+	-- NOTES(DiogoW): Keep in sync with COMPONENT_ACTIONS.INVENTORY.spellbook
+	if self.inst.components.spellbook ~= nil and (
+		not self.inst.components.spellbook:CanBeUsedBy(doer) or
+		self.inst:HasTag("fueldepleted")
+	) then
+		return false
+	end
+
 	local alwayspassable, allowwater, deployradius, allowriding
 	local aoetargeting = self.inst.components.aoetargeting
 	if aoetargeting then

@@ -588,6 +588,21 @@ function Map:NodeAtPointHasTag(x, y, z, tag)
 	return node ~= nil and node.tags ~= nil and table.contains(node.tags, tag)
 end
 
+function Map:CanAreaTagsHaveAcidRain(tags)
+    return not table.contains(tags, "lunacyarea") and not table.contains(tags, "nocavein")
+end
+
+function Map:CanPointHaveAcidRain(x, y, z)
+    -- Note: If you care about the tile overlap then use FindVisualNodeAtPoint
+    local node_index = self:GetNodeIdAtPoint(x, y, z)
+    local node = TheWorld.topology.nodes[node_index]
+    if node == nil or node.tags == nil then
+        return false
+    end
+
+    return self:CanAreaTagsHaveAcidRain(node.tags)
+end
+
 function Map:GetRandomPointClustersForNodePrefix(prefixes, countpernode)
     local ret = {}
 

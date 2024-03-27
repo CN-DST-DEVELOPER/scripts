@@ -28,9 +28,18 @@ local function ResolveChatterString(self, strid, strtbl)
         return self.resolvechatterfn(self.inst, strid, strtbl)
     end
 
-    local stringtable = STRINGS[strtbl:value()]
-    if stringtable ~= nil then
-        return stringtable[strid:value()]
+    local strtbl_value = strtbl:value()
+    local table_entries = strtbl_value:split(".")
+    local num_entries = #table_entries
+    local stringtable = STRINGS
+    for i, entry in ipairs(table_entries) do
+        stringtable = stringtable[entry]
+        if stringtable == nil then
+            return nil
+        elseif i == num_entries then
+            local id = strid:value()
+            return (id == 0 and stringtable) or stringtable[id]
+        end
     end
 
     return nil
@@ -41,12 +50,22 @@ local function OnChatterDirty(inst)
     local self = inst.components.talker
 
     if #self.chatter.strtbl:value() > 0 then
-
         local str = ResolveChatterString(self, self.chatter.strid, self.chatter.strtbl)
-
         if str ~= nil then
             local t = self.chatter.strtime:value()
-            self:Say(str, t > 0 and t or nil, self.chatter.forcetext:value(), self.chatter.forcetext:value(), true)
+            local forcetext = self.chatter.forcetext:value()
+            self:Say(str, (t > 0 and t) or nil, forcetext, forcetext, true)
+
+            local echotochatpriority = self.chatter.echotochatpriority:value()
+            if echotochatpriority > 0 then
+                local hud = ThePlayer and ThePlayer.HUD or nil
+                if hud and ThePlayer:GetDistanceSqToInst(inst) <= PLAYER_CAMERA_SEE_DISTANCE_SQ then -- NOTES(JBK): Replicate range check for chatter. [RCCHATTER]
+                    -- Replicate to chat.
+                    local name_colour = self.name_colour and {self.name_colour.x, self.name_colour.y, self.name_colour.z, 1} or WHITE
+                    local colour = self.colour and {self.colour.x, self.colour.y, self.colour.z, 1} or WHITE
+                    ChatHistory:OnChatterMessage(inst, name_colour, str, colour, self.chaticon, self.chaticonbg, echotochatpriority)
+                end
+            end
             return
         end
     end
@@ -63,6 +82,7 @@ function Talker:MakeChatter()
             strid = net_smallbyte(self.inst.GUID, "talker.chatter.strid", "chatterdirty"),
             strtime = net_tinybyte(self.inst.GUID, "talker.chatter.strtime"),
             forcetext = net_bool(self.inst.GUID, "talker.chatter.forcetext"),
+            echotochatpriority = net_tinybyte(self.inst.GUID, "talker.chatter.echotochatpriority"),
         }
         if not TheWorld.ismastersim then
             self.inst:ListenForEvent("chatterdirty", OnChatterDirty)
@@ -76,14 +96,20 @@ local function OnCancelChatter(inst, self)
 end
 
 --NOTE: forcetext chatter translates to noanim + force say
-function Talker:Chatter(strtbl, strid, time, forcetext)
+-- NOTES(JBK): "echotochatpriority" will replicate the text into the player's chatbox if they are nearby to see it.
+function Talker:Chatter(strtbl, strid, time, forcetext, echotochatpriority)
     if self.chatter ~= nil and TheWorld.ismastersim then
         self.chatter.strtbl:set(strtbl)
         --force at least the id dirty, so that it's possible to repeat strings
+        strid = strid or 0
         self.chatter.strid:set_local(strid)
         self.chatter.strid:set(strid)
         self.chatter.strtime:set(time or 0)
         self.chatter.forcetext:set(forcetext == true)
+        echotochatpriority = (echotochatpriority == true and CHATPRIORITIES.LOW)
+            or ((echotochatpriority == false or echotochatpriority == nil) and CHATPRIORITIES.NOCHAT)
+            or echotochatpriority
+        self.chatter.echotochatpriority:set(echotochatpriority)
         if self.chatter.task ~= nil then
             self.chatter.task:Cancel()
         end
@@ -152,15 +178,20 @@ local function sayfn(self, script, nobroadcast, colour, text_filter_context, ori
                         self.mod_str_fn ~= nil and self.mod_str_fn(line.message) or line.message
                     )
             if ThePlayer and not self.inst:HasTag("monkey") and ThePlayer:HasTag("wonkey") then
-                display_message =  CraftGiberish()
+                display_message = CraftGiberish()
             end
 
-            if self.inst.speech_override_fn then  
+            if self.inst.speech_override_fn then
                 display_message = self.inst.speech_override_fn(self.inst,display_message)
             end
 
             if not nobroadcast then
-                TheNet:Talker(line.message, self.inst.entity, duration ~= TUNING.DEFAULT_TALKER_DURATION and duration or nil, text_filter_context, original_author_netid)
+                TheNet:Talker(
+                    line.message,
+                    self.inst.entity,
+                    (duration ~= TUNING.DEFAULT_TALKER_DURATION and duration) or nil,
+                    text_filter_context,
+                    original_author_netid)
             end
 
             if self.widget ~= nil then
@@ -169,7 +200,9 @@ local function sayfn(self, script, nobroadcast, colour, text_filter_context, ori
                     -- NOTES(JBK): Assume the text comes from the game if not specified.
                     text_filter_context = TEXT_FILTER_CTX_GAME
                 end
-		        local filtered_message = display_message ~= nil and ApplyLocalWordFilter(display_message, text_filter_context, original_author_netid) or display_message
+		        local filtered_message = (display_message ~= nil
+                        and ApplyLocalWordFilter(display_message, text_filter_context, original_author_netid))
+                    or display_message
                 self.widget.text:SetString(filtered_message)
             end
 

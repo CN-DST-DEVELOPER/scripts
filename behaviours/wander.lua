@@ -119,7 +119,7 @@ function Wander:PickNewDirection()
         local angle = (self.getdirectionFn and self.getdirectionFn(self.inst))
        -- print("got angle ", angle)
         if not angle then
-            angle = math.random()*2*PI
+			angle = math.random() * PI2
             --print("no angle, picked", angle, self.setdirectionFn)
             if self.setdirectionFn then
                 --print("set angle to ", angle)
@@ -129,12 +129,34 @@ function Wander:PickNewDirection()
 
         local radius = type(self.wander_dist) ~= "function" and self.wander_dist or self.wander_dist(self.inst)
         local attempts = self.offest_attempts
-		local find_offset_fn = self.inst.components.locomotor:IsAquatic() and FindSwimmableOffset or FindWalkableOffset
-        local offset, check_angle, deflected = find_offset_fn(pt, angle, radius, attempts, true, false, self.checkpointFn) -- try to avoid walls
-        if not check_angle then
-            --print(self.inst, "no los wander, fallback to ignoring walls")
-            offset, check_angle, deflected = find_offset_fn(pt, angle, radius, attempts, true, true, self.checkpointFn) -- if we can't avoid walls
+        local offset, check_angle, deflected
+
+        -- Aquatic means water ONLY (no land)
+        if self.inst.components.locomotor:IsAquatic() then
+            offset, check_angle, deflected = FindSwimmableOffset(
+                pt, angle, radius, attempts,
+                true, false, self.checkpointFn) -- try to avoid walls
+            if not check_angle then
+                --print(self.inst, "no los wander, fallback to ignoring walls")
+                offset, check_angle, deflected = FindSwimmableOffset(
+                    pt, angle, radius, attempts,
+                    true, true, self.checkpointFn) -- if we can't avoid walls
+            end
+        else
+            local can_pathfind_in_water = self.inst.components.locomotor:CanPathfindOnWater()
+            offset, check_angle, deflected = FindWalkableOffset(
+                pt, angle, radius, attempts,
+                true, false, self.checkpointFn,
+                can_pathfind_in_water) -- try to avoid walls
+            if not check_angle then
+                --print(self.inst, "no los wander, fallback to ignoring walls")
+                offset, check_angle, deflected = FindWalkableOffset(
+                    pt, angle, radius, attempts,
+                    true, true, self.checkpointFn,
+                    can_pathfind_in_water) -- if we can't avoid walls
+            end
         end
+
         if check_angle then
             angle = check_angle
             if self.setdirectionFn then

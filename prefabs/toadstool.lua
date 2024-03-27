@@ -391,15 +391,10 @@ local function DoMushroomSprout(inst, angles)
 
                 --toss flowers out of the way
                 for i, v in ipairs(TheSim:FindEntities(pt.x, 0, pt.z, 1, MUSHROOMSPROUT_TOSSFLOWERS_MUST_TAGS, MUSHROOMSPROUT_TOSSFLOWERS_CANT_TAGS)) do
-                    local num = v.components.pickable.numtoharvest or 1
-                    local product = v.components.pickable.product
-                    local x1, y1, z1 = v.Transform:GetWorldPosition()
-                    v.components.pickable:Pick(inst) -- only calling this to trigger callbacks on the object
-                    if product ~= nil and num > 0 then
-                        for i = 1, num do
-                            local loot = SpawnPrefab(product)
-                            loot.Transform:SetPosition(x1, 0, z1)
-                            table.insert(totoss, loot)
+					local success, loots = v.components.pickable:Pick(inst)
+					if loots then
+						for i, v in ipairs(loots) do
+							table.insert(totoss, v)
                         end
                     end
                 end

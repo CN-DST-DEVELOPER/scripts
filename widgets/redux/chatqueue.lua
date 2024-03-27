@@ -116,7 +116,8 @@ function ChatQueue:RefreshWidgets(full_update)
                         message_data.m_colour,
                         first and message_data.sender or nil,
                         first and message_data.s_colour or nil,
-                        first and message_data.icondata or nil
+                        first and message_data.icondata or nil,
+                        first and message_data.icondatabg or nil
                     )
                     i = i + 1
                     if i > CHAT_QUEUE_SIZE then

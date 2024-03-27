@@ -84,7 +84,7 @@ local function IsNearLeader(inst, dist)
     return leader ~= nil and inst:IsNear(leader, dist)
 end
 
-local TOWORK_CANT_TAGS = { "fire", "smolder", "event_trigger", "INLIMBO", "NOCLICK", "carnivalgame_part" }
+local TOWORK_CANT_TAGS = { "fire", "smolder", "event_trigger", "waxedplant", "INLIMBO", "NOCLICK", "carnivalgame_part" }
 local function FindEntityToWorkAction(inst, action, addtltags) -- DEPRECATED, use FindAnyEntityToWorkActionsOn.
     local leader = GetLeader(inst)
     if leader ~= nil then
@@ -177,7 +177,7 @@ local function FindAnyEntityToWorkActionsOn(inst, ignorethese) -- This is simila
 
     local target = inst.sg.statemem.target
     local action = nil
-    if target ~= nil and target:IsValid() and not (target:IsInLimbo() or target:HasTag("NOCLICK") or target:HasTag("event_trigger")) and
+    if target ~= nil and target:IsValid() and not (target:IsInLimbo() or target:HasTag("NOCLICK") or target:HasTag("event_trigger") or target:HasTag("waxedplant")) and
         target:IsOnValidGround() and target.components.workable ~= nil and target.components.workable:CanBeWorked() and
         not (target.components.burnable ~= nil and (target.components.burnable:IsBurning() or target.components.burnable:IsSmoldering())) and
         target.entity:IsVisible() then

@@ -1,5 +1,3 @@
-
-
 local WEED_DEFS = require("prefabs/weed_defs").WEED_DEFS
 
 local function ontendto(inst, doer)
@@ -581,6 +579,8 @@ local function MakeWeed(weed_def)
 			inst.components.burnable:SetOnIgniteFn(onignite)
 			inst.components.burnable:SetOnExtinguishFn(onextinguish)
 		end
+
+		MakeWaxablePlant(inst)
 
 		inst.OnSave = OnSave
 		inst.OnPreLoad = OnPreLoad

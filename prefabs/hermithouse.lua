@@ -23,7 +23,6 @@ end
 local function LightsOn(inst)
     if not inst:HasTag("burnt") and not inst.lightson then
         inst.Light:Enable(true)
-      --  inst.AnimState:PlayAnimation("lit", true)
         inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/house/light_on")
         inst.lightson = true
 
@@ -48,7 +47,6 @@ end
 local function LightsOff(inst)
     if not inst:HasTag("burnt") and inst.lightson then
         inst.Light:Enable(false)
-    --    inst.AnimState:PlayAnimation("idle", true)
         inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/house/light_off")
         inst.lightson = false
         if inst._window ~= nil then
@@ -66,7 +64,6 @@ local function onoccupieddoortask(inst)
         LightsOn(inst)
     end
 end
-
 
 local function onoccupied(inst, child)
     if not inst:HasTag("burnt") then
@@ -118,22 +115,9 @@ local function onvacate(inst, child)
     end
 end
 
-local function onfar(inst)
-    if not inst:HasTag("burnt") and inst.components.spawner:IsOccupied() then
-        LightsOn(inst)
-    end
-end
-
-local function onnear(inst)
-    local child = inst.components.spawner.child
-    if not inst:HasTag("burnt") and inst.components.spawner:IsOccupied() and child.components.friendlevels.level == 0 then
-        LightsOff(inst)
-    end
-end
-
 local function OnConstructed(inst, doer)
     local concluded = true
-    for i, v in ipairs(CONSTRUCTION_PLANS[inst.prefab] or {}) do
+    for _, v in ipairs(CONSTRUCTION_PLANS[inst.prefab] or {}) do
         if inst.components.constructionsite:GetMaterialCount(v.type) < v.amount then
             concluded = false
             break
@@ -151,7 +135,7 @@ local function OnConstructed(inst, doer)
         new_house.components.spawner:TakeOwnership(child)
         child:PushEvent("home_upgraded",{house=new_house,doer=doer})
         if ishome then
-        	new_house.components.spawner:GoHome(child)
+            new_house.components.spawner:GoHome(child)
         end
         new_house.AnimState:PlayAnimation("stage"..new_house.level.."_placing")
         new_house.AnimState:PushAnimation("idle_stage"..new_house.level)
@@ -215,7 +199,6 @@ local function spawncheckday(inst)
             (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
             inst.components.spawner:ReleaseChild()
         else
-            --inst.components.playerprox:ForceUpdate()
             onoccupieddoortask(inst)
         end
     end
@@ -256,10 +239,10 @@ local function getstatus(inst)
     end
 end
 
-local function MakeHermitCrabHouse(name, client_postinit, master_postinit, construction_data)
+local function MakeHermitCrabHouse(name, client_postinit, master_postinit, house_data)
 	local function fn()
 
-   		local inst = CreateEntity()
+        local inst = CreateEntity()
 
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
@@ -271,11 +254,8 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
 		inst.MiniMapEntity:SetIcon("hermitcrab_home2.png")
 
         inst:AddTag("structure")
-        if construction_data then
-            inst.level = construction_data.level
-        else
-            inst.level = 4
-        end
+
+        inst.level = (house_data and house_data.level) or 4
 
 		inst:SetPhysicsRadiusOverride(1.5)
 		MakeObstaclePhysics(inst, inst.physicsradiusoverride)
@@ -291,9 +271,8 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
 		inst.AnimState:PlayAnimation("idle_stage4", true)
         inst.scrapbook_anim = "idle_stage1"
 
-		if construction_data then
-			--inst.AnimState:SetAddColour(construction_data.level / #construction_data, 0, 0, 0)
-            inst.AnimState:PlayAnimation("idle_stage"..(construction_data.level), true)
+		if house_data then
+            inst.AnimState:PlayAnimation("idle_stage"..(house_data.level), true)
 
 			inst:AddTag("constructionsite")
 		end
@@ -306,12 +285,11 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
 
         inst.scrapbook_proxy = "hermithouse"
 
-		inst.entity:SetPristine()
-
-        if client_postinit ~= nil then
+        if client_postinit then
             client_postinit(inst)
         end
 
+		inst.entity:SetPristine()
 		if not TheWorld.ismastersim then
 			return inst
 		end
@@ -320,31 +298,26 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
             inst.nolight = true
             inst.MiniMapEntity:SetIcon("hermitcrab_home.png")
         end
---[[
-		inst:AddComponent("playerprox")
-		inst.components.playerprox:SetDist(10, 13)
-		inst.components.playerprox:SetOnPlayerNear(onnear)
-		inst.components.playerprox:SetOnPlayerFar(onfar)
-]]
-		inst:AddComponent("spawner")
-		inst.components.spawner:Configure("hermitcrab", TUNING.TOTAL_DAY_TIME*1)
-		inst.components.spawner.onoccupied = onoccupied
-		inst.components.spawner.onvacate = onvacate
-		inst.components.spawner:SetWaterSpawning(false, true)
-		inst.components.spawner:CancelSpawning()
 
-		if construction_data then
-			inst._construction_product = construction_data.construction_product
+		local spawner = inst:AddComponent("spawner")
+		spawner:Configure("hermitcrab", TUNING.TOTAL_DAY_TIME*1)
+		spawner.onoccupied = onoccupied
+		spawner.onvacate = onvacate
+		spawner:SetWaterSpawning(false, true)
+		spawner:CancelSpawning()
 
-			inst:AddComponent("constructionsite")
-			inst.components.constructionsite:SetConstructionPrefab("construction_container")
-			inst.components.constructionsite:SetOnConstructedFn(OnConstructed)
+		if house_data then
+			inst._construction_product = house_data.construction_product
+
+			local constructionsite = inst:AddComponent("constructionsite")
+			constructionsite:SetConstructionPrefab("construction_container")
+			constructionsite:SetOnConstructedFn(OnConstructed)
 		end
 
 		inst:SetPrefabNameOverride("hermithouse")
 
-		inst:AddComponent("inspectable")
-        inst.components.inspectable.getstatus = getstatus
+		local inspectable = inst:AddComponent("inspectable")
+        inspectable.getstatus = getstatus
 
 		inst:ListenForEvent("onbuilt", onconstruction_built)
 		inst.inittask = inst:DoTaskInTime(0, oninit)
@@ -371,14 +344,18 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, const
         return inst
 	end
 
-	local product = construction_data and construction_data.construction_product or nil
+	local product = (house_data and house_data.construction_product) or nil
 	return Prefab(name, fn, assets, prefabs, product)
 end
 
 local ret = {}
 table.insert(ret, MakeHermitCrabHouse("hermithouse"))
 for i = 1, #construction_data do
-	table.insert(ret, MakeHermitCrabHouse(construction_data[i].name, nil, nil, construction_data[i]))
+	table.insert(ret, MakeHermitCrabHouse(
+        construction_data[i].name,
+        construction_data[i].client_postinit,
+        construction_data[i].master_postinit,
+        construction_data[i]))
 end
 
 return unpack(ret)

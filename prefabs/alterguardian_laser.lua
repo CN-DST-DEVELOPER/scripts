@@ -36,13 +36,16 @@ local DAMAGE_ONEOF_TAGS = { "_combat", "pickable", "NPC_workable", "CHOP_workabl
 local LAUNCH_MUST_TAGS = { "_inventoryitem" }
 local LAUNCH_CANT_TAGS = { "locomotor", "INLIMBO" }
 
-local function DoDamage(inst, targets, skiptoss, skipscorch)
+local function DoDamage(inst, targets, skiptoss, skipscorch, scale, scorchscale, hitscale, heavymult, mult, forcelanded)
     inst.task = nil
 
     local x, y, z = inst.Transform:GetWorldPosition()
 
     -- First, get our presentation out of the way, since it doesn't change based on the find results.
     if inst.AnimState ~= nil then
+		if scale then
+			inst.AnimState:SetScale(scale, math.abs(scale))
+		end
         inst.AnimState:PlayAnimation("hit_"..tostring(math.random(5)))
         inst:Show()
         inst:DoTaskInTime(inst.AnimState:GetCurrentAnimationLength() + 2 * FRAMES, inst.Remove)
@@ -52,7 +55,11 @@ local function DoDamage(inst, targets, skiptoss, skipscorch)
         inst:DoTaskInTime(5 * FRAMES, DisableLight)
 
         if not skipscorch and TheWorld.Map:IsPassableAtPoint(x, 0, z, false) then
-            SpawnPrefab("alterguardian_laserscorch").Transform:SetPosition(x, 0, z)
+			local scorch = SpawnPrefab("alterguardian_laserscorch")
+			scorch.Transform:SetPosition(x, 0, z)
+			if scorchscale then
+				scorch.AnimState:SetScale(scorchscale, math.abs(scorchscale))
+			end
         end
 
         local fx = SpawnPrefab("alterguardian_lasertrail")
@@ -62,11 +69,36 @@ local function DoDamage(inst, targets, skiptoss, skipscorch)
         inst:DoTaskInTime(2 * FRAMES, inst.Remove)
     end
 
+	--for knockback
+	local disttocaster = mult and inst.caster and inst.caster:IsValid() and math.sqrt(inst.caster:GetDistanceSqToPoint(x, y, z)) or nil
+
+	local restoredmg, restorepdp
+	if inst.caster and inst.caster:IsValid() then
+		if inst.overridedmg then
+			restoredmg = inst.caster.components.combat.defaultdamage
+			inst.caster.components.combat:SetDefaultDamage(inst.overridedmg)
+		end
+		if inst.overridepdp then
+			restorepdp = inst.caster.components.combat.playerdamagepercent
+			inst.caster.components.combat.playerdamagepercent = inst.overridepdp
+		end
+		inst.caster.components.combat.ignorehitrange = true
+	end
+
+	--override the fx's combat damage as well in case it gets used, but no need to restore
+	if inst.overridedmg then
+		inst.components.combat:SetDefaultDamage(inst.overridedmg)
+	end
+	if inst.overridepdp then
+		inst.components.combat.playerdamagepercent = inst.overridepdp
+	end
     inst.components.combat.ignorehitrange = true
-    for _, v in ipairs(TheSim:FindEntities(x, 0, z, RADIUS + 3, nil, DAMAGE_CANT_TAGS, DAMAGE_ONEOF_TAGS)) do
+
+	local hitradius = RADIUS * (hitscale or 1)
+    for _, v in ipairs(TheSim:FindEntities(x, 0, z, hitradius + 3, nil, DAMAGE_CANT_TAGS, DAMAGE_ONEOF_TAGS)) do
         if not targets[v] and v:IsValid() and
                 not (v.components.health ~= nil and v.components.health:IsDead()) then
-            local range = RADIUS + v:GetPhysicsRadius(.5)
+			local range = hitradius + v:GetPhysicsRadius(.5)
             local dsq_to_laser = v:GetDistanceSqToPoint(x, y, z)
             if dsq_to_laser < range * range then
                 v:PushEvent("onalterguardianlasered")
@@ -90,7 +122,7 @@ local function DoDamage(inst, targets, skiptoss, skipscorch)
                 end
                 if isworkable then
                     targets[v] = true
-                    v.components.workable:Destroy(inst)
+					v.components.workable:Destroy(inst.caster and inst.caster:IsValid() and inst.caster or inst)
 
                     -- Completely uproot trees.
                     if v:HasTag("stump") then
@@ -100,29 +132,32 @@ local function DoDamage(inst, targets, skiptoss, skipscorch)
                         and v.components.pickable:CanBePicked()
                         and not v:HasTag("intense") then
                     targets[v] = true
-                    local num = v.components.pickable.numtoharvest or 1
-                    local product = v.components.pickable.product
-                    local x1, y1, z1 = v.Transform:GetWorldPosition()
-                    v.components.pickable:Pick(inst) -- only calling this to trigger callbacks on the object
-                    if product ~= nil and num > 0 then
-                        for i = 1, num do
-                            local loot = SpawnPrefab(product)
-                            loot.Transform:SetPosition(x1, 0, z1)
-                            skiptoss[loot] = true
-                            targets[loot] = true
-                            Launch(loot, inst, LAUNCH_SPEED)
+					local success, loots = v.components.pickable:Pick(inst)
+					if loots then
+						for i, v in ipairs(loots) do
+							skiptoss[v] = true
+							targets[v] = true
+							Launch(v, inst, LAUNCH_SPEED)
                         end
                     end
                 elseif v.components.combat == nil and v.components.health ~= nil then
                     targets[v] = true
                 elseif inst.components.combat:CanTarget(v) then
                     targets[v] = true
+
+					--for knockback
+					local strengthmult = mult and ((v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult) or nil
+
                     if inst.caster ~= nil and inst.caster:IsValid() then
-                        inst.caster.components.combat.ignorehitrange = true
                         inst.caster.components.combat:DoAttack(v)
-                        inst.caster.components.combat.ignorehitrange = false
+						if strengthmult then
+							v:PushEvent("knockback", { knocker = inst.caster, radius = disttocaster + hitradius, strengthmult = strengthmult, forcelanded = forcelanded })
+						end
                     else
                         inst.components.combat:DoAttack(v)
+						if strengthmult then
+							v:PushEvent("knockback", { knocker = inst, radius = hitradius, strengthmult = strengthmult, forcelanded = forcelanded })
+						end
                     end
 
                     SpawnPrefab("alterguardian_laserhit"):SetTarget(v)
@@ -151,11 +186,20 @@ local function DoDamage(inst, targets, skiptoss, skipscorch)
         end
     end
     inst.components.combat.ignorehitrange = false
+	if inst.caster and inst.caster:IsValid() then
+		inst.caster.components.combat.ignorehitrange = false
+		if restorepdp then
+			inst.caster.components.combat.playerdamagepercent = restorepdp
+		end
+		if restoredmg then
+			inst.caster.components.combat:SetDefaultDamage(restoredmg)
+		end
+	end
 
     -- After lasering stuff, try tossing any leftovers around.
-    for _, v in ipairs(TheSim:FindEntities(x, 0, z, RADIUS + 3, LAUNCH_MUST_TAGS, LAUNCH_CANT_TAGS)) do
+	for _, v in ipairs(TheSim:FindEntities(x, 0, z, hitradius + 3, LAUNCH_MUST_TAGS, LAUNCH_CANT_TAGS)) do
         if not skiptoss[v] then
-            local range = RADIUS + v:GetPhysicsRadius(.5)
+			local range = hitradius + v:GetPhysicsRadius(.5)
             if v:GetDistanceSqToPoint(x, y, z) < range * range then
                 if v.components.mine ~= nil then
                     targets[v] = true
@@ -182,15 +226,23 @@ local function DoDamage(inst, targets, skiptoss, skipscorch)
     end
 end
 
-local function Trigger(inst, delay, targets, skiptoss, skipscorch)
+local function Trigger(inst, delay, targets, skiptoss, skipscorch, scale, scorchscale, hitscale, heavymult, mult, forcelanded)
     if inst.task ~= nil then
         inst.task:Cancel()
         if (delay or 0) > 0 then
-            inst.task = inst:DoTaskInTime(delay, DoDamage, targets or {}, skiptoss or {}, skipscorch)
+			inst.task = inst:DoTaskInTime(delay, DoDamage, targets or {}, skiptoss or {}, skipscorch, scale, scorchscale, hitscale, heavymult, mult, forcelanded)
         else
-            DoDamage(inst, targets or {}, skiptoss or {}, skipscorch)
+			DoDamage(inst, targets or {}, skiptoss or {}, skipscorch, scale, scorchscale, hitscale, heavymult, mult, forcelanded)
         end
     end
+end
+
+--V2C: Added for daywalker2 due to buggy CC laser damage code.
+--     (Damage is different depending on whether .caster is provided or not.)
+--     Not worth "fixing" CC atm; as that should be treated as rebalancing.
+local function OverrideDamage(inst, damage, playerdamagepercent)
+	inst.overridedmg = damage
+	inst.overridepdp = playerdamagepercent
 end
 
 local function KeepTargetFn()
@@ -237,6 +289,7 @@ local function common_fn(isempty)
 
     inst.task = inst:DoTaskInTime(0, inst.Remove)
     inst.Trigger = Trigger
+	inst.OverrideDamage = OverrideDamage
     inst.persists = false
 
     return inst

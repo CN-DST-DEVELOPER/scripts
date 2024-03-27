@@ -59,6 +59,9 @@ local ChatLine = Class(Widget, function(self, chat_font, user_width, user_max_ch
 
     self.systemmessage = self.root:AddChild(TEMPLATES.SystemMessageBadge())
     self.systemmessage:SetPosition(-315, -12.5)
+
+    self.chattermessage = self.root:AddChild(TEMPLATES.ChatterMessageBadge())
+    self.chattermessage:SetPosition(-315, -12.5)
 end)
 
 function ChatLine:UpdateSkinAnnouncementPosition()
@@ -112,13 +115,15 @@ function ChatLine:UpdateAlpha(alpha)
             self.announcement:SetAlpha(alpha)
         elseif self.type == ChatTypes.Message then
             self.flair:SetAlpha(alpha)
+        elseif self.type == ChatTypes.ChatterMessage then
+            self.chattermessage:SetAlpha(alpha)
         end
     else
         self.root:Hide()
     end
 end
 
-function ChatLine:SetChatData(type, alpha, message, m_colour, sender, s_colour, icondata)
+function ChatLine:SetChatData(type, alpha, message, m_colour, sender, s_colour, icondata, icondatabg)
     self.type = type
     self.skin_data = nil
 
@@ -174,6 +179,7 @@ function ChatLine:SetChatData(type, alpha, message, m_colour, sender, s_colour, 
         self.flair:Hide()
         self.announcement:Hide()
         self.systemmessage:Hide()
+        self.chattermessage:Hide()
         if self.type == ChatTypes.SystemMessage then
             self.systemmessage:SetAlpha(alpha)
         elseif self.type == ChatTypes.Announcement then
@@ -185,6 +191,10 @@ function ChatLine:SetChatData(type, alpha, message, m_colour, sender, s_colour, 
         elseif self.type == ChatTypes.Message then
             self.flair:SetFlair(icondata)
             self.flair:SetAlpha(alpha)
+        elseif self.type == ChatTypes.ChatterMessage then
+            self.chattermessage:SetFlair(icondata)
+            self.chattermessage:SetBGIcon(icondatabg)
+            self.chattermessage:SetAlpha(alpha)
         --elseif message_data.type == ChatTypes.Emote then --emotes don't have an icon.
         end
     else

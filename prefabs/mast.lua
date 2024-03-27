@@ -267,15 +267,10 @@ end
 
 local function lootsetup(lootdropper)
     local inst = lootdropper.inst
-    local recipe = inst._lamp ~= nil and AllRecipes["mastupgrade_lamp_item"] or inst._lightningrod ~= nil and AllRecipes["mastupgrade_lightningrod_item"] or nil
+    local recipe = inst._lamp ~= nil and AllRecipes[inst._lamp.prefab] or inst._lightningrod ~= nil and AllRecipes[inst._lightningrod.prefab] or nil
 
     if recipe ~= nil then
-        local loots = {}
-
-        local recipeloot = lootdropper:GetRecipeLoot(recipe)
-        for k,v in ipairs(recipeloot) do
-            table.insert(loots, v)
-        end
+        local loots = lootdropper:GetRecipeLoot(recipe)
 
         if #loots > 0 then
             lootdropper:SetLoot(loots)

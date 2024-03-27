@@ -13,18 +13,34 @@ local supertacklecontainer_sounds =
 }
 
 local function onopen(inst)
-    if not inst:HasTag("burnt") then
-        inst.AnimState:PlayAnimation("open")
-        inst.SoundEmitter:PlaySound(inst._sounds.open)
+    if inst:HasTag("burnt") then
+        return
     end
+
+    inst.AnimState:PlayAnimation("open")
+    local skin_name = inst:GetSkinName() or inst._baseinventoryimagename
+    inst.components.inventoryitem:ChangeImageName(skin_name .. "_open")
+    inst.SoundEmitter:PlaySound(inst._sounds.open)
 end
 
 local function onclose(inst)
-    if not inst:HasTag("burnt") then
+    if inst:HasTag("burnt") then
+        return
+    end
+    
+    if inst.components.inventoryitem.owner == nil then
         inst.AnimState:PlayAnimation("close")
         inst.AnimState:PushAnimation("closed", false)
-        inst.SoundEmitter:PlaySound(inst._sounds.close)
+    else
+        inst.AnimState:PlayAnimation("closed", false)
     end
+    local skin_name = inst:GetSkinName()
+    if skin_name then
+        inst.components.inventoryitem:ChangeImageName(skin_name)
+    else
+        inst.components.inventoryitem:ChangeImageName()
+    end
+    inst.SoundEmitter:PlaySound(inst._sounds.close)
 end
 
 local function OnPutInInventory(inst)
@@ -105,6 +121,7 @@ local function MakeTackleContainer(name, bank, build, assets)
         inst:AddComponent("hauntable")
         inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
+        inst._baseinventoryimagename = name
         if name == "supertacklecontainer" then
             inst._sounds = supertacklecontainer_sounds
         else
@@ -120,5 +137,5 @@ local function MakeTackleContainer(name, bank, build, assets)
     return Prefab(name, fn, assets, prefabs)
 end
 
-return MakeTackleContainer("tacklecontainer", "tacklecontainer", "tacklecontainer", { Asset("ANIM", "anim/ui_tacklecontainer_3x2.zip") }),
-	MakeTackleContainer("supertacklecontainer", "supertacklecontainer", "supertacklecontainer", { Asset("ANIM", "anim/ui_tacklecontainer_3x5.zip") })
+return MakeTackleContainer("tacklecontainer", "tacklecontainer", "tacklecontainer", { Asset("ANIM", "anim/ui_tacklecontainer_3x2.zip"), Asset("INV_IMAGE", "tacklecontainer_open") }),
+	MakeTackleContainer("supertacklecontainer", "supertacklecontainer", "supertacklecontainer", { Asset("ANIM", "anim/ui_tacklecontainer_3x5.zip"), Asset("INV_IMAGE", "supertacklecontainer_open") })

@@ -17,12 +17,30 @@ local CHARGEDIST = 10
 
 local brain = require("brains/sharkbrain")
 
+-- 3-5 fishmeat, 1-3 barnacle, 2-3 flint, 3-5 rocks, 0-1 oceanfish_medium_2_inv
 SetSharedLootTable( 'shark',
 {
     {'fishmeat',            1.00},
     {'fishmeat',            1.00},
     {'fishmeat',            1.00},
-    {'fishmeat',            1.00},
+    {'fishmeat',            0.50},
+    {'fishmeat',            0.25},
+
+    {'barnacle',            1.00},
+    {'barnacle',            0.50},
+    {'barnacle',            0.25},
+
+    {'flint',               1.00},
+    {'flint',               1.00},
+    {'flint',               0.50},
+    
+    {'rocks',               1.00},
+    {'rocks',               1.00},
+    {'rocks',               1.00},
+    {'rocks',               0.50},
+    {'rocks',               0.50},
+    
+    {'oceanfish_medium_2_inv', 0.15},
 })
 
 local sounds = {
@@ -249,7 +267,7 @@ local function fn()
     inst.components.locomotor.walkspeed = TUNING.SHARK.WALK_SPEED_LAND
     inst.components.locomotor.runspeed = TUNING.SHARK.RUN_SPEED_LAND
 
-    inst.components.locomotor.pathcaps = { allowocean = true, ignoreland = true }
+	inst.components.locomotor.pathcaps = { allowocean = true, ignoreLand = true }
 
     inst:AddComponent("amphibiouscreature")
     inst.components.amphibiouscreature:SetBanks("shark", "shark_water")

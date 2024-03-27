@@ -46,7 +46,7 @@ local function OnBlinked(caster, self, dpt)
         caster.sg.statemem.onstopblinking()
     end
 	local pt = dpt:GetPosition()
-	if pt ~= nil and TheWorld.Map:IsPassableAtPoint(pt:Get()) and not TheWorld.Map:IsGroundTargetBlocked(pt) then
+	if pt ~= nil and TheWorld.Map:IsPassableAtPoint(pt:Get()) and not TheWorld.Map:IsGroundTargetBlocked(pt) then -- NOTES(JBK): Keep in sync with wortox. [BATELE]
 	    caster.Physics:Teleport(pt:Get())
 	end
     self:SpawnEffect(caster)

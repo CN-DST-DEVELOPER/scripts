@@ -20,11 +20,20 @@ end
 
 local events =
 {
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
-    EventHandler("death", function(inst) 
-        inst.sg:GoToState("death", inst.sg.statemem.dead) 
+    EventHandler("attacked", function(inst)
+        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then
+            inst.sg:GoToState("hit")
+        end
     end),
-    EventHandler("doattack", function(inst, data) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then inst.sg:GoToState("attack", data.target) end end),
+    EventHandler("death", function(inst)
+        inst.sg:GoToState("death", inst.sg.statemem.dead)
+    end),
+    EventHandler("doattack", function(inst, data)
+        if not inst.components.health:IsDead() and
+                (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("attack", data.target)
+        end
+    end),
 
 	--warglet needs this, since it uses wargbrain
 	EventHandler("dohowl", function(inst)
@@ -85,7 +94,8 @@ local events =
 
     --Moon hounds
     EventHandler("workmoonbase", function(inst, data)
-        if data ~= nil and data.moonbase ~= nil and not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
+        if data ~= nil and data.moonbase ~= nil and
+                not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
             inst.sg:GoToState("workmoonbase", data.moonbase)
         end
     end),
@@ -213,7 +223,14 @@ local states =
 
         events =
         {
-            EventHandler("animqueueover", function(inst) if math.random() < .333 then inst.components.combat:SetTarget(nil) inst.sg:GoToState("taunt") else inst.sg:GoToState("idle", "atk_pst") end end),
+            EventHandler("animqueueover", function(inst)
+                if math.random() < .333 then
+                    inst.components.combat:SetTarget(nil)
+                    inst.sg:GoToState("taunt")
+                else
+                    inst.sg:GoToState("idle", "atk_pst")
+                end
+            end),
         },
     },
 
@@ -583,8 +600,8 @@ local states =
 
         timeline =
         {
-            TimeEvent(13 * FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.bark) end),
-            TimeEvent(24 * FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.bark) end),
+            FrameEvent(13, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.bark) end),
+            FrameEvent(24, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.bark) end),
         },
 
         events =
@@ -616,12 +633,14 @@ local states =
 
         timeline =
         {
-            TimeEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.howl) end),
-            TimeEvent(10 * FRAMES, function(inst)
-                    if inst.sg.statemem.spawnhounds then
-                        SpawnHound(inst)
-                    end
-                end),
+            FrameEvent(0, function(inst)
+                inst.SoundEmitter:PlaySound(inst.sounds.howl)
+            end),
+            FrameEvent(10, function(inst)
+                if inst.sg.statemem.spawnhounds then
+                    SpawnHound(inst)
+                end
+            end),
         },
 
         events =
@@ -635,7 +654,11 @@ local states =
                 elseif inst.sg.statemem.count > 0 then
                     inst.sg:GoToState("howl", {count= inst.sg.statemem.count > 1 and inst.sg.statemem.count - 1 or -1})
                 elseif inst.sg.statemem.count == 0 and math.random() < 0.333 then
-                    inst.sg:GoToState("howl", {count= inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") and -1 or 0 })
+                    inst.sg:GoToState("howl", {
+                        count = (inst.components.follower.leader ~= nil
+                            and inst.components.follower.leader:HasTag("player")
+                            and -1) or 0
+                        })
                 else
                     inst.sg:GoToState("idle")
                 end
@@ -676,7 +699,7 @@ local states =
                     inst.AnimState:Resume()
                 end
             end),
-            TimeEvent(11 * FRAMES, function(inst)
+            FrameEvent(11, function(inst)
                 if inst.sg.statemem.clay then
                     PlayClayFootstep(inst)
                 end
@@ -691,7 +714,9 @@ local states =
 					corpse.Transform:SetPosition(inst.Transform:GetWorldPosition())
 					corpse.Transform:SetRotation(inst.Transform:GetRotation())
 					corpse.AnimState:MakeFacingDirty() -- Not needed for clients.
-					if inst.wargleader ~= nil and not inst.wargleader.components.health:IsDead() and inst.wargleader:IsValid() then
+					if inst.wargleader ~= nil and
+                            not inst.wargleader.components.health:IsDead()
+                            and inst.wargleader:IsValid() then
 						corpse:RememberWargLeader(inst.wargleader)
 					end
 					inst:Remove()
@@ -735,14 +760,11 @@ local states =
 
         timeline =
         {
-            --TimeEvent(14 * FRAMES, function(inst)
-            --    inst.SoundEmitter:PlaySound(inst.sounds.attack)
-            --end),
-            TimeEvent(16 * FRAMES, function(inst)
+            FrameEvent(16, function(inst)
                 local moonbase = inst.sg.statemem.moonbase
                 if moonbase ~= nil and
-                    moonbase.components.workable ~= nil and
-                    moonbase.components.workable:CanBeWorked() then
+                        moonbase.components.workable ~= nil and
+                        moonbase.components.workable:CanBeWorked() then
                     moonbase.components.workable:WorkedBy(inst, 1)
                     SpawnPrefab("mining_fx").Transform:SetPosition(moonbase.Transform:GetWorldPosition())
                     inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_stone_wall_sharp")
@@ -849,18 +871,18 @@ local states =
 
         timeline =
         {
-            TimeEvent(2 * FRAMES, PlayClayShakeSound),
-            TimeEvent(4 * FRAMES, PlayClayShakeSound),
-            TimeEvent(6 * FRAMES, PlayClayShakeSound),
-            TimeEvent(8 * FRAMES, PlayClayShakeSound),
-            TimeEvent(10 * FRAMES, PlayClayShakeSound),
-            TimeEvent(12 * FRAMES, PlayClayShakeSound),
-            TimeEvent(14 * FRAMES, function(inst)
+            FrameEvent(2, PlayClayShakeSound),
+            FrameEvent(4, PlayClayShakeSound),
+            FrameEvent(6, PlayClayShakeSound),
+            FrameEvent(8, PlayClayShakeSound),
+            FrameEvent(10, PlayClayShakeSound),
+            FrameEvent(12, PlayClayShakeSound),
+            FrameEvent(14, function(inst)
                 PlayClayShakeSound(inst)
                 PlayClayFootstep(inst)
             end),
-            TimeEvent(16 * FRAMES, PlayClayShakeSound),
-            TimeEvent(41 * FRAMES, PlayClayFootstep),
+            FrameEvent(16, PlayClayShakeSound),
+            FrameEvent(41, PlayClayFootstep),
         },
 
         events =
@@ -897,18 +919,18 @@ local states =
 
         timeline =
         {
-            TimeEvent(2 * FRAMES, PlayClayShakeSound),
-            TimeEvent(4 * FRAMES, PlayClayShakeSound),
-            TimeEvent(6 * FRAMES, PlayClayShakeSound),
-            TimeEvent(8 * FRAMES, PlayClayShakeSound),
-            TimeEvent(9 * FRAMES, PlayClayFootstep),
-            TimeEvent(10 * FRAMES, function(inst)
+            FrameEvent(2, PlayClayShakeSound),
+            FrameEvent(4, PlayClayShakeSound),
+            FrameEvent(6, PlayClayShakeSound),
+            FrameEvent(8, PlayClayShakeSound),
+            FrameEvent(9, PlayClayFootstep),
+            FrameEvent(10, function(inst)
                 PlayClayShakeSound(inst)
                 HideEyeFX(inst)
             end),
-            TimeEvent(12 * FRAMES, PlayClayShakeSound),
-            TimeEvent(14 * FRAMES, PlayClayShakeSound),
-            TimeEvent(16 * FRAMES, PlayClayShakeSound),
+            FrameEvent(12, PlayClayShakeSound),
+            FrameEvent(14, PlayClayShakeSound),
+            FrameEvent(16, PlayClayShakeSound),
         },
 
         events =
@@ -941,21 +963,12 @@ local states =
             inst.AnimState:PlayAnimation("mutated_hound_spawn")
         end,
 
-        timeline =
-        {
-            TimeEvent(TUNING.GARGOYLE_REANIMATE_DELAY, function(inst)
-            end),
-        },
-
         events =
         {
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("taunt")
             end),
         },
-
-        onexit = function(inst)
-        end,
     },
 }
 
@@ -975,13 +988,13 @@ CommonStates.AddAmphibiousCreatureHopStates(states,
 		end),
 	},
 	hop_pst = {
-		TimeEvent(4 * FRAMES, function(inst)
+		FrameEvent(4, function(inst)
 			if inst:HasTag("swimming") then
 				inst.components.locomotor:Stop()
 				SpawnPrefab("splash_green").Transform:SetPosition(inst.Transform:GetWorldPosition())
 			end
 		end),
-		TimeEvent(6 * FRAMES, function(inst)
+		FrameEvent(6, function(inst)
 			if not inst:HasTag("swimming") then
                 inst.components.locomotor:StopMoving()
 			end
@@ -993,7 +1006,7 @@ CommonStates.AddSleepStates(states,
 {
     sleeptimeline =
     {
-        TimeEvent(30 * FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.sleep) end),
+        FrameEvent(30, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.sleep) end),
     },
 })
 
@@ -1013,7 +1026,7 @@ CommonStates.AddRunStates(states,
                 end
             end
         end),
-        TimeEvent(4 * FRAMES, function(inst)
+        FrameEvent(4, function(inst)
             if inst:HasTag("swimming") then
                 inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/jump_small",nil,.25)
             else

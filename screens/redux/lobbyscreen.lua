@@ -137,7 +137,7 @@ local WxpPanel = Class(LobbyPanel, function(self, owner)
 	function self:OnControl(control, down)
 		if Widget.OnControl(self, control, down) then return true end
 
-        if TheInput:ControllerAttached() and (not down) and (control == CONTROL_PAUSE or control == CONTROL_ACCEPT) then
+        if TheInput:ControllerAttached() and (not down) and (control == CONTROL_MENU_START or control == CONTROL_ACCEPT) then
 			owner.next_button:onclick()
 			return true
         end
@@ -286,7 +286,7 @@ local CharacterSelectPanel = Class(LobbyPanel, function(self, owner)
 		if Widget.OnControl(self, control, down) then return true end
 
 		if TheInput:ControllerAttached() then
-			if (not down) and control == CONTROL_PAUSE then
+			if (not down) and control == CONTROL_MENU_START then
 				OnCharacterClick(self.character_scroll_list.selectedportrait.currentcharacter)
 				return true
 			end
@@ -336,7 +336,7 @@ local LoadoutPanel = Class(LobbyPanel, function(self, owner)
 		if Widget.OnControl(self, control, down) then return true end
 
 		if TheInput:ControllerAttached() then
-			if (not down) and control == CONTROL_PAUSE then
+			if (not down) and control == CONTROL_MENU_START then
 				owner.next_button:onclick()
 				return true
 			end
@@ -346,7 +346,7 @@ local LoadoutPanel = Class(LobbyPanel, function(self, owner)
 	function self:GetHelpText()
 	    local controller_id = TheInput:GetControllerID()
 		local t = {}
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. "  " .. self.next_button_title)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. "  " .. self.next_button_title)
 	    return table.concat(t, "  ")
 	end
 
@@ -477,7 +477,7 @@ local LavaarenaFestivalBookPannel = Class(LobbyPanel, function(self, owner)
 
 		if Widget.OnControl(self, control, down) then return true end
 
-        if TheInput:ControllerAttached() and (not down) and (control == CONTROL_PAUSE or control == CONTROL_ACCEPT) and owner.next_button:IsEnabled() then
+        if TheInput:ControllerAttached() and (not down) and (control == CONTROL_MENU_START or control == CONTROL_ACCEPT) and owner.next_button:IsEnabled() then
 			owner.next_button:onclick()
 			return true
         end
@@ -487,7 +487,7 @@ local LavaarenaFestivalBookPannel = Class(LobbyPanel, function(self, owner)
 	    local controller_id = TheInput:GetControllerID()
 		local t = {}
 		if owner.next_button:IsEnabled() then
-			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. "  " .. owner.next_button.text:GetString())
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. "  " .. owner.next_button.text:GetString())
 		end
 --		if not self.eventbook.focus then
 --			table.insert(t, self.eventbook:GetHelpText())

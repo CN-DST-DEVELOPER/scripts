@@ -71,57 +71,59 @@ local function StealFoodAction(inst)
     local ents = TheSim:FindEntities(x, y, z, SEE_FOOD_DIST, nil, STEALFOOD_CANT_TAGS, STEALFOOD_ONEOF_TAGS)
 
     for i, v in ipairs(ents) do
-        --go through player inv and find valid food
-        local inv = v.components.inventory
-        if inv and v:IsOnValidGround() then
-            local pack = inv:GetEquippedItem(EQUIPSLOTS.BODY)
-            local validfood = {}
-            if pack and pack.components.container then
-                for k = 1, pack.components.container.numslots do
-                    local item = pack.components.container.slots[k]
+        if not v:HasDebuff("healingsalve_acidbuff") then
+            --go through player inv and find valid food
+            local inv = v.components.inventory
+            if inv and v:IsOnValidGround() then
+                local pack = inv:GetEquippedItem(EQUIPSLOTS.BODY)
+                local validfood = {}
+                if pack and pack.components.container then
+                    for k = 1, pack.components.container.numslots do
+                        local item = pack.components.container.slots[k]
+                        if item and item.components.edible and inst.components.eater:CanEat(item) then
+                            table.insert(validfood, item)
+                        end
+                    end
+                end
+
+                for k = 1, inv.maxslots do
+                    local item = inv.itemslots[k]
                     if item and item.components.edible and inst.components.eater:CanEat(item) then
                         table.insert(validfood, item)
                     end
                 end
-            end
 
-            for k = 1, inv.maxslots do
-                local item = inv.itemslots[k]
-                if item and item.components.edible and inst.components.eater:CanEat(item) then
-                    table.insert(validfood, item)
+                if #validfood > 0 then
+                    local itemtosteal = validfood[math.random(1, #validfood)]
+                    if itemtosteal and
+                    itemtosteal.components.inventoryitem and
+                    itemtosteal.components.inventoryitem.owner and not
+                    itemtosteal.components.inventoryitem.owner:HasTag("slurtle") then
+                        local act = BufferedAction(inst, itemtosteal, ACTIONS.STEAL)
+                        act.validfn = function() return (itemtosteal.components.inventoryitem and itemtosteal.components.inventoryitem:IsHeld()) end
+                        act.attack = true
+                        return act
+                    end
                 end
             end
 
-            if #validfood > 0 then
-                local itemtosteal = validfood[math.random(1, #validfood)]
-                if itemtosteal and
-                itemtosteal.components.inventoryitem and
-                itemtosteal.components.inventoryitem.owner and not
-                itemtosteal.components.inventoryitem.owner:HasTag("slurtle") then
+            local container = v.components.container
+            if container then
+                local validfood = {}
+                for k = 1, container.numslots do
+                    local item = container.slots[k]
+                    if item and item.components.edible and inst.components.eater:CanEat(item) then
+                        table.insert(validfood, item)
+                    end
+                end
+
+                if #validfood > 0 then
+                    local itemtosteal = validfood[math.random(1, #validfood)]
                     local act = BufferedAction(inst, itemtosteal, ACTIONS.STEAL)
                     act.validfn = function() return (itemtosteal.components.inventoryitem and itemtosteal.components.inventoryitem:IsHeld()) end
                     act.attack = true
                     return act
                 end
-            end
-        end
-
-        local container = v.components.container
-        if container then
-            local validfood = {}
-            for k = 1, container.numslots do
-                local item = container.slots[k]
-                if item and item.components.edible and inst.components.eater:CanEat(item) then
-                    table.insert(validfood, item)
-                end
-            end
-
-            if #validfood > 0 then
-                local itemtosteal = validfood[math.random(1, #validfood)]
-                local act = BufferedAction(inst, itemtosteal, ACTIONS.STEAL)
-                act.validfn = function() return (itemtosteal.components.inventoryitem and itemtosteal.components.inventoryitem:IsHeld()) end
-                act.attack = true
-                return act
             end
         end
     end

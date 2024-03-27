@@ -635,6 +635,8 @@ local function tree(name, stage, data)
         -------------------
         MakeHauntableWorkAndIgnite(inst)
 
+        MakeWaxablePlant(inst)
+
         -------------------
         inst.OnSave = on_save
         inst.OnLoad = on_load

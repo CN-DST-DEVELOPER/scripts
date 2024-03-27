@@ -1,6 +1,8 @@
 local assets =
 {
 	Asset("ANIM", "anim/sharkboi_build.zip"),
+	Asset("ANIM", "anim/sharkboi_build_brows.zip"),
+	Asset("ANIM", "anim/sharkboi_build_manes.zip"),
 	Asset("ANIM", "anim/sharkboi_basic.zip"),
 	Asset("ANIM", "anim/sharkboi_action.zip"),
 	Asset("ANIM", "anim/sharkboi_actions1.zip"),
@@ -17,6 +19,7 @@ local prefabs =
 	"sharkboi_swipe_fx",
 	"splash_green_large",
 	"bootleg",
+	"sharkboi_water",
 }
 
 local brain = require("brains/sharkboibrain")
@@ -132,9 +135,9 @@ end
 local function OnTalk(inst)
 	if not inst.sg:HasStateTag("notalksound") then
 		if inst.sg:HasStateTag("defeated") then
-			inst.SoundEmitter:PlaySound("meta3/sharkboi/stunned_hit")
+			inst.SoundEmitter:PlaySound(inst.voicepath.."stunned_hit")
 		else
-			inst.SoundEmitter:PlaySound("meta3/sharkboi/talk")
+			inst.SoundEmitter:PlaySound(inst.voicepath.."talk")
 		end
 	end
 end
@@ -247,7 +250,7 @@ local function OnAttacked(inst, data)
 				target:IsNear(inst, TUNING.SHARKBOI_ATTACK_RANGE + target:GetPhysicsRadius(0))
 		) then
 			if inst.components.health.currenthealth > inst.components.health.minhealth then
-				StartAggro(inst)
+				inst:StartAggro()
 			end
 			inst.components.combat:SetTarget(data.attacker)
 		end
@@ -261,7 +264,7 @@ end
 local function OnKilledOther(inst, data)
 	if data and data.victim and data.victim:HasTag("player") then
 		if not inst:HasTag("ignoretalking") then
-			inst.components.talker:Chatter("SHARKBOI_TALK_GLOAT", math.random(#STRINGS.SHARKBOI_TALK_GLOAT), nil, true)
+			inst.components.talker:Chatter("SHARKBOI_TALK_GLOAT", math.random(#STRINGS.SHARKBOI_TALK_GLOAT), nil, true, CHATPRIORITIES.LOW)
 			inst.components.talker:IgnoreAll("gloat")
 			inst:DoTaskInTime(3, EndGloat)
 		end
@@ -374,7 +377,163 @@ end
 
 --------------------------------------------------------------------------
 
+local SKINTONE_SATURATION = 3
+local SKINTONE_DESATURATION = 1 / SKINTONE_SATURATION
+local SKINTONE_MIN_BRIGHTNESS = 0.8
+
+local SKINTONE_EXCLUDE_SYMBOLS =
+{
+	"sharkboi_jaw",
+	"sharkboi_cloak",
+	"sharkboi_eye_white",
+	"sharkboi_fin_middle_ice",
+	"sharkboi_fin_back_ice",
+	"sharkboi_tail_end_ice",
+	"sharkboi_fin_ice",
+	"ice_crack",
+	"ice_ol",
+}
+
+local function InvertSymbolHue(inst, symbol)
+	inst.AnimState:SetSymbolHue(symbol, -inst.hue)
+	inst.AnimState:SetSymbolSaturation(symbol, SKINTONE_DESATURATION)
+end
+
+local function ResetSymbolHue(inst, symbol)
+	inst.AnimState:SetSymbolHue(symbol, 0)
+	inst.AnimState:SetSymbolSaturation(symbol, 1)
+end
+
+local function InvertSymbolBrightness(inst, symbol)
+	inst.AnimState:SetSymbolBrightness(symbol, 1 / inst.brightness)
+end
+
+local function ResetSymbolBrightness(inst, symbol)
+	inst.AnimState:SetSymbolBrightness(symbol, 1)
+end
+
+local function HasWarPaint(inst)
+	return inst.brow and inst.brow >= 4 and inst.brow <= 7
+end
+
+local function RefreshWarPaintHue(inst)
+	--don't want skintone to affect war paint style brows
+	if inst.hue and HasWarPaint(inst) then
+		InvertSymbolHue(inst, "sharkboi_scarHead")
+		InvertSymbolHue(inst, "sharkboi_scarHead_centre")
+	else
+		ResetSymbolHue(inst, "sharkboi_scarHead")
+		ResetSymbolHue(inst, "sharkboi_scarHead_centre")
+	end
+end
+
+local function RefreshWarPaintBrightness(inst)
+	--don't want skintone to affect war paint style brows
+	if inst.brightness and HasWarPaint(inst) then
+		InvertSymbolBrightness(inst, "sharkboi_scarHead")
+		InvertSymbolBrightness(inst, "sharkboi_scarHead_centre")
+	else
+		ResetSymbolBrightness(inst, "sharkboi_scarHead")
+		ResetSymbolBrightness(inst, "sharkboi_scarHead_centre")
+	end
+end
+
+local function SetHue(inst, hue)
+	if hue and hue > 0 and hue < 1 then
+		if inst.hue ~= hue then
+			inst.hue = hue
+			inst.AnimState:SetHue(hue)
+			inst.AnimState:SetSaturation(SKINTONE_SATURATION)
+			--inverted hue/saturation for the symbols that we don't want affected
+			for i, v in ipairs(SKINTONE_EXCLUDE_SYMBOLS) do
+				InvertSymbolHue(inst, v)
+			end
+			RefreshWarPaintHue(inst)
+		end
+	elseif inst.hue then
+		inst.hue = nil
+		inst.AnimState:SetHue(0)
+		inst.AnimState:SetSaturation(1)
+		for i, v in ipairs(SKINTONE_EXCLUDE_SYMBOLS) do
+			ResetSymbolHue(inst, v)
+		end
+		RefreshWarPaintHue(inst)
+	end
+end
+
+local function SetBrightness(inst, brightness)
+	if brightness and brightness < 1 then
+		brightness = math.max(brightness, SKINTONE_MIN_BRIGHTNESS)
+		if inst.brightness ~= brightness then
+			inst.brightness = brightness
+			inst.AnimState:SetBrightness(brightness)
+			--inverted brightness for the symbols that we don't want affected
+			for i, v in ipairs(SKINTONE_EXCLUDE_SYMBOLS) do
+				InvertSymbolBrightness(inst, v)
+			end
+			RefreshWarPaintBrightness(inst)
+		end
+	elseif inst.brightness then
+		inst.brightness = nil
+		inst.AnimState:SetBrightness(1)
+		for i, v in ipairs(SKINTONE_EXCLUDE_SYMBOLS) do
+			ResetSymbolBrightness(inst, v)
+		end
+		RefreshWarPaintBrightness(inst)
+	end
+end
+
+local function SetBrow(inst, brow)
+	if brow and brow >= 1 and brow <= 8 then
+		if inst.brow ~= brow then
+			inst.brow = brow
+			inst.AnimState:OverrideSymbol("sharkboi_scarHead", "sharkboi_build_brows", "sharkboi_scarHead_"..tostring(brow))
+			inst.AnimState:OverrideSymbol("sharkboi_scarHead_centre", "sharkboi_build_brows", "sharkboi_scarHead_centre_"..tostring(brow))
+			RefreshWarPaintHue(inst)
+		end
+	elseif inst.brow then
+		inst.brow = nil
+		inst.AnimState:ClearOverrideSymbol("sharkboi_scarHead")
+		inst.AnimState:ClearOverrideSymbol("sharkboi_scarHead_centre")
+		RefreshWarPaintHue(inst)
+	end
+end
+
+local function SetMane(inst, mane)
+	if mane == 1 or mane == 2 then
+		if inst.mane ~= mane then
+			inst.mane = mane
+			inst.AnimState:OverrideSymbol("sharkboi_cloak", "sharkboi_build_manes", "sharkboi_cloak_"..tostring(mane))
+		end
+	elseif inst.mane then
+		inst.mane = nil
+		inst.AnimState:ClearOverrideSymbol("sharkboi_cloak")
+	end
+end
+
+local VOICE_PATHS =
+{
+	"meta3/sharkboi/sharkboi_a/",
+	"meta3/sharkboi/sharkboi_b/",
+	"meta3/sharkboi/sharkboi_c/",
+}
+
+local function SetVoice(inst, voice)
+	inst.voicepath = VOICE_PATHS[voice]
+	if inst.voicepath then
+		inst.voice = voice
+	else
+		inst.voice = nil
+		inst.voicepath = "meta3/sharkboi/"
+	end
+end
+
 local function OnSave(inst, data)
+	data.hue = inst.hue
+	data.brightness = inst.brightness
+	data.brow = inst.brow
+	data.mane = inst.mane
+	data.voice = inst.voice
 	data.aggro = inst:HasTag("hostile") or nil
 	data.reward = inst.pendingreward or nil
 	if inst.stock and inst.stock < MAX_TRADES then
@@ -383,6 +542,12 @@ local function OnSave(inst, data)
 end
 
 local function OnLoad(inst, data)
+	SetHue(inst, data and data.hue or nil)
+	SetBrightness(inst, data and data.brightness or nil)
+	SetBrow(inst, data and data.brow or nil)
+	SetMane(inst, data and data.mane or nil)
+	SetVoice(inst, data and data.voice or nil)
+
 	if inst.components.health.currenthealth <= inst.components.health.minhealth then
 		MakeTrader(inst)
 		if data then
@@ -394,7 +559,7 @@ local function OnLoad(inst, data)
 			end
 		end
 	elseif data and data.aggro then
-		StartAggro(inst)
+		inst:StartAggro()
 	end
 end
 
@@ -415,6 +580,19 @@ local function OnEntityWake(inst)
 	if inst.sleeptask then
 		inst.sleeptask:Cancel()
 		inst.sleeptask = nil
+	end
+end
+
+local function TrackFishingHole(inst, hole)
+	if inst.hole then
+		inst:RemoveEventCallback("onremove", inst._onremovehole, inst.hole)
+		inst._onremovehole = nil
+		inst.hole = nil
+	end
+	if hole then
+		inst.hole = hole
+		inst._onremovehole = function() inst.hole = nil end
+		inst:ListenForEvent("onremove", inst._onremovehole, hole)
 	end
 end
 
@@ -477,13 +655,15 @@ local function fn()
 	inst.AnimState:SetBuild("sharkboi_build")
 	inst.AnimState:PlayAnimation("idle", true)
 
-	inst:AddComponent("talker")
-	inst.components.talker.fontsize = 40
-	inst.components.talker.font = TALKINGFONT
-	inst.components.talker.colour = Vector3(unpack(WET_TEXT_COLOUR))
-	inst.components.talker.offset = Vector3(0, -400, 0)
-	inst.components.talker.symbol = "sharkboi_cloak"
-	inst.components.talker:MakeChatter()
+	local talker = inst:AddComponent("talker")
+	talker.fontsize = 40
+	talker.font = TALKINGFONT
+	talker.colour = Vector3(unpack(WET_TEXT_COLOUR))
+	talker.offset = Vector3(0, -400, 0)
+	talker.symbol = "sharkboi_cloak"
+	talker.name_colour = Vector3(131/256, 153/256, 172/256)
+	talker.chaticon = "npcchatflair_sharkboi"
+	talker:MakeChatter()
 
 	inst.finmode = net_bool(inst.GUID, "sharkboi.finmode", "finmodedirty")
 
@@ -507,6 +687,12 @@ local function fn()
 	inst:AddComponent("named")
 	inst.components.named.possiblenames = STRINGS.SHARKBOINAMES
 	inst.components.named:PickNewName()
+
+	SetHue(inst, 0)--math.random())
+	SetBrightness(inst, 1)--1 - math.random() * (1  - SKINTONE_MIN_BRIGHTNESS))
+	SetMane(inst, 0)--math.random(0, 2))
+	SetBrow(inst, 0)--math.random(0, 8))
+	SetVoice(inst, 0)--math.random(0, 3))
 
 	inst:AddComponent("inspectable")
 
@@ -564,6 +750,7 @@ local function fn()
 	inst:ListenForEvent("killed", OnKilledOther)
 
 	inst.trading = false
+    inst.StartAggro = StartAggro
 	inst.StopAggro = StopAggro
 	inst.MakeTrader = MakeTrader
 	inst.GiveReward = GiveReward
@@ -572,6 +759,7 @@ local function fn()
 	inst.OnLoad = OnLoad
 	inst.OnEntitySleep = OnEntitySleep
 	inst.OnEntityWake = OnEntityWake
+	inst.TrackFishingHole = TrackFishingHole
 
 	return inst
 end

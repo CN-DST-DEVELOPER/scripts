@@ -20,31 +20,24 @@ local MAX_WANDER_DIST = 20
 local LEASH_RETURN_DIST = 10
 local LEASH_MAX_DIST = 30
 
-local START_FACE_DIST = 6
-local KEEP_FACE_DIST = 8
-local START_RUN_DIST = 3
 local STOP_RUN_DIST = 30
 local MAX_CHASE_TIME = 10
 local MAX_CHASE_DIST = 30
-local SEE_LIGHT_DIST = 20
 local TRADE_DIST = 20
-local SEE_TREE_DIST = 15
-local SEE_TARGET_DIST = 20
 local SEE_FOOD_DIST = 10
 
 local SEE_BURNING_HOME_DIST_SQ = 20*20
 
-local KEEP_CHOPPING_DIST = 10
-
-local RUN_AWAY_DIST = 5
-local STOP_RUN_AWAY_DIST = 8
 local SEE_PLAYER_DIST = 6
 
 local GETTRADER_MUST_TAGS = { "player" }
 local FINDFOOD_CANT_TAGS = { "outofreach" }
 
 local function GetTraderFn(inst)
-    return FindEntity(inst, TRADE_DIST, function(target) return inst.components.trader:IsTryingToTradeWithMe(target) end, GETTRADER_MUST_TAGS)
+    return FindEntity(inst, TRADE_DIST,
+        function(target)
+            return inst.components.trader:IsTryingToTradeWithMe(target)
+        end, GETTRADER_MUST_TAGS)
 end
 
 local function KeepTraderFn(inst, target)
@@ -56,24 +49,28 @@ local function FindFoodAction(inst)
         return
     end
 
+    inst._can_eat_test = inst._can_eat_test or function(item)
+        return inst.components.eater:CanEat(item)
+    end
+
     local target =
-        inst.components.inventory ~= nil and
+        (inst.components.inventory ~= nil and
         inst.components.eater ~= nil and
-        inst.components.inventory:FindItem(function(item) return inst.components.eater:CanEat(item) end) or
+        inst.components.inventory:FindItem(inst._can_eat_test)) or
         nil
 
-    if target == nil then
+    if not target then
         local time_since_eat = inst.components.eater:TimeSinceLastEating()
-        if time_since_eat == nil or time_since_eat > TUNING.PIG_MIN_POOP_PERIOD * 2 then
+        if not time_since_eat or (time_since_eat > 2 * TUNING.PIG_MIN_POOP_PERIOD) then
             local noveggie = time_since_eat ~= nil and time_since_eat < TUNING.PIG_MIN_POOP_PERIOD * 4
             target = FindEntity(inst,
                 SEE_FOOD_DIST,
                 function(item)
-                    return item:GetTimeAlive() >= 8
-                        and item.prefab ~= "mandrake"
+                    return item.prefab ~= "mandrake"
                         and item.components.edible ~= nil
                         and (not noveggie or item.components.edible.foodtype == FOODTYPE.MEAT)
                         and inst.components.eater:CanEat(item)
+                        and item:GetTimeAlive() >= 8
                         and item:IsOnPassablePoint()
                 end,
                 nil,
@@ -82,11 +79,11 @@ local function FindFoodAction(inst)
         end
     end
 
-    return target ~= nil and BufferedAction(inst, target, ACTIONS.EAT) or nil
+    return (target ~= nil and BufferedAction(inst, target, ACTIONS.EAT)) or nil
 end
 
 local function HasValidHome(inst)
-    local home = inst.components.homeseeker ~= nil and inst.components.homeseeker.home or nil
+    local home = (inst.components.homeseeker ~= nil and inst.components.homeseeker.home) or nil
     return home ~= nil
         and home:IsValid()
         and not (home.components.burnable ~= nil and home.components.burnable:IsBurning())
@@ -95,18 +92,19 @@ end
 
 local function GoHomeAction(inst)
     if not inst.components.follower.leader and
-        HasValidHome(inst) and
-        not inst.components.combat.target then
-            return BufferedAction(inst, inst.components.homeseeker.home, ACTIONS.GOHOME)
+            not inst.components.combat.target and
+            HasValidHome(inst) then
+        return BufferedAction(inst, inst.components.homeseeker.home, ACTIONS.GOHOME)
     end
 end
 
 local function IsHomeOnFire(inst)
-    return inst.components.homeseeker
-        and inst.components.homeseeker.home
-        and inst.components.homeseeker.home.components.burnable
-        and inst.components.homeseeker.home.components.burnable:IsBurning()
-        and inst:GetDistanceSqToInst(inst.components.homeseeker.home) < SEE_BURNING_HOME_DIST_SQ
+    local homeseeker = inst.components.homeseeker
+    return homeseeker ~= nil
+        and homeseeker.home ~= nil
+        and homeseeker.home.components.burnable ~= nil
+        and homeseeker.home.components.burnable:IsBurning()
+        and inst:GetDistanceSqToInst(homeseeker.home) < SEE_BURNING_HOME_DIST_SQ
 end
 
 local function GetLeader(inst)
@@ -120,8 +118,9 @@ end
 local function GetNoLeaderHomePos(inst)
     if GetLeader(inst) then
         return nil
+    else
+        return GetHomePos(inst)
     end
-    return GetHomePos(inst)
 end
 
 local BunnymanBrain = Class(Brain, function(self, inst)
@@ -129,7 +128,6 @@ local BunnymanBrain = Class(Brain, function(self, inst)
 end)
 
 function BunnymanBrain:OnStart()
-    --print(self.inst, "PigBrain:OnStart")
     local root =
         PriorityNode(
         {
@@ -147,11 +145,13 @@ function BunnymanBrain:OnStart()
             WhileNode(function() return IsHomeOnFire(self.inst) end, "OnFire",
                 ChattyNode(self.inst, "RABBIT_PANICHOUSEFIRE",
                     Panic(self.inst))),
+            WhileNode(function() return TheWorld.state.isacidraining end, "IsAcidRaining", -- TODO @stevenm do we need the beardlord restriction...?
+                DoAction(self.inst, GoHomeAction, "go home", true ), 1),
             FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
             DoAction(self.inst, FindFoodAction),
             Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
             WhileNode(function() return not self.inst.beardlord and TheWorld.state.iscaveday end, "IsDay",
-                        DoAction(self.inst, GoHomeAction, "go home", true ), 1),
+                DoAction(self.inst, GoHomeAction, "go home", true ), 1),
             Leash(self.inst, GetNoLeaderHomePos, LEASH_MAX_DIST, LEASH_RETURN_DIST),
             Wander(self.inst, GetNoLeaderHomePos, MAX_WANDER_DIST)
         }, .5)

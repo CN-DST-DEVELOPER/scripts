@@ -129,7 +129,7 @@ function LobbyChatQueue:PushMessage(chat_message, silent)
         self:DoFocusHookups()
     end
 
-    local lobby_chat_line = self.scroll_list:AddChild(LobbyChatLine(self.chat_font, chat_message.type, chat_message.message, chat_message.m_colour, chat_message.sender, chat_message.s_colour, chat_message.icondata))
+    local lobby_chat_line = self.scroll_list:AddChild(LobbyChatLine(self.chat_font, chat_message.type, chat_message.message, chat_message.m_colour, chat_message.sender, chat_message.s_colour, chat_message.icondata, chat_message.icondatabg))
     table.insert(self.list_widgets, lobby_chat_line)
 
     for i = 1, lobby_chat_line:GetExtraLineCount() do

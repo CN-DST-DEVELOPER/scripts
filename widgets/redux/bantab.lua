@@ -445,7 +445,7 @@ function BanTab:OnControl(control, down)
 
     if not self.allEmpties and not down then
         if TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
-            if control == CONTROL_INSPECT then
+            if control == CONTROL_MENU_MISC_2 then
                 self:ClearPlayers()
                 return true
             end
@@ -459,7 +459,7 @@ function BanTab:GetHelpText()
     local t = {}
 
     if not self.allEmpties then
-        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.SERVERADMINSCREEN.CLEAR_PLAYERS)
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.SERVERADMINSCREEN.CLEAR_PLAYERS)
     end
 
     return table.concat(t, "  ")

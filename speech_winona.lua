@@ -85,7 +85,7 @@ return{
             NO_RACERS = "Whoever heard of a race with no racers?",
         },
 
-		DISMANTLE =
+		DISMANTLE = 
 		{
 			COOKING = "I'm all for striking while the iron's hot, but...",
 			INUSE = "No rush.",
@@ -523,6 +523,7 @@ return{
 	ANNOUNCE_HIGHRESEARCH = "Cutting edge!",
 	ANNOUNCE_HOUNDS = "Are those dogs I hear?",
 	ANNOUNCE_WORMS = "Was that a tremor?",
+    ANNOUNCE_ACIDBATS = "I don't like the sound of that.",
 	ANNOUNCE_HUNGRY = "When's lunch?",
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I didn't order lunch to go. Get'em!",
 	ANNOUNCE_HUNT_LOST_TRAIL = "Gah! I lost it.",
@@ -909,6 +910,8 @@ return{
     ANNOUNCE_SCRAPBOOK_FULL = "I can't squeeze any more pages in my scrapbook.",
 
     ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
+
+    ANNOUNCE_HEALINGSALVE_ACIDBUFF_DONE = "Uh oh, better slap on some more Acid Repellent.",
 
     ANNOUNCE_COACH = 
     {
@@ -1451,18 +1454,25 @@ return{
         {
             GENERIC = "It's huge!",
             BLOOM = "Whew. That's an odor.",
+            ACIDCOVERED = "What is that nasty stench?",
         },
         MUSHTREE_MEDIUM =
         {
             GENERIC = "That's a big mushroom!",
             BLOOM = "Stink.",
+            ACIDCOVERED = "What is that nasty stench?",
         },
         MUSHTREE_SMALL =
         {
             GENERIC = "I guess they grow better down here?",
             BLOOM = "Not a fan of the smell.",
+            ACIDCOVERED = "What is that nasty stench?",
         },
-        MUSHTREE_TALL_WEBBED = "There's spiders in the crawlspace.",
+        MUSHTREE_TALL_WEBBED =
+        {
+            GENERIC = "There's spiders in the crawlspace.",
+            ACIDCOVERED = "What is that nasty stench?",
+        },
         SPORE_TALL =
         {
             GENERIC = "I've breathed in worse stuff at work.",
@@ -1942,7 +1952,11 @@ return{
 		DRAGONFLY = "Get a load of this flying welding torch!",
 		ARMORDRAGONFLY = "Bit flashy, hey?",
 		DRAGON_SCALES = "Showy.",
-		DRAGONFLYCHEST = "For the snootiest of snoots.",
+		DRAGONFLYCHEST =
+		{
+			GENERIC = "For the snootiest of snoots.",
+            UPGRADED_STACKSIZE = "Snooty, but durable.",
+		},
 		DRAGONFLYFURNACE =
 		{
 			HAMMERED = "We oughta fix that.",
@@ -2592,6 +2606,7 @@ return{
 		SILK = "Unprocessed silk, fresh from the spider!",
 		SKELETON = "A workplace safety reminder.",
 		SCORCHED_SKELETON = "Yikes. Not a good way to go.",
+        SKELETON_NOTPLAYER = "Rest in peace, whatever you were.",
 		SKULLCHEST = "Is that supposed to scare me?", --removed
 		SMALLBIRD =
 		{
@@ -2708,8 +2723,11 @@ return{
 		{
 			GENERIC = "Handmade, so you know it's not up to snuff.",
 			BURNT = "Hope there was nothin' good inside.",
+            UPGRADED_STACKSIZE = "It's new and improved.",
 		},
 		TREASURECHEST_TRAP = "I don't need to be concerned about that.",
+        CHESTUPGRADE_STACKSIZE = "Looks like something the bossman would've come up with.", -- Describes the kit upgrade item.
+		COLLAPSEDCHEST = "Think everything will fit back inside once I fix it?",
 		SACRED_CHEST =
 		{
 			GENERIC = "Yeesh, it's givin' me the creeps",
@@ -3008,6 +3026,8 @@ return{
 		WALL_MOONROCK_ITEM = "Assembly time.",
 		WALL_DREADSTONE = "Well, at least it's sturdy.",
 		WALL_DREADSTONE_ITEM = "Assembly time.",
+        WALL_SCRAP = "A wall's a wall, I suppose.",
+        WALL_SCRAP_ITEM = "A wall's a wall, I suppose.",
 		FENCE = "A clearly handmade fence.",
         FENCE_ITEM = "Just needs to be assembled.",
         FENCE_GATE = "A clearly handmade gate.",
@@ -4118,6 +4138,7 @@ return{
         DUSTMERINGUE = "Ugh. Maybe one of those little moth guys will clean this mess up.",
 
         SHROOMCAKE = "Aw c'mon, it's not that bad.",
+        SHROOMBAIT = "I can't make heads or tails out of it.",
 
         NIGHTMAREGROWTH = "Charlie...",
 
@@ -4848,6 +4869,12 @@ return{
 			GENERIC = "That marble doesn't look structurally sound to me.",
 			EXPOSED = "I stand corrected. That rock ain't goin' nowhere.",
 		},
+		DAYWALKER2 =
+		{
+			GENERIC = "He seems to be minding his own business.",
+			BURIED = "He sure is in a sorry state.",
+			HOSTILE = "Take it easy, big boy!",
+		},
 		ARMORDREADSTONE = "That's some real high-grade protective equipment.",
 		DREADSTONEHAT = "Lookin' sharp! Literally.",
 
@@ -5100,6 +5127,27 @@ return{
         MASTUPGRADE_LAMP_ITEM_YOTD = "One less thing cluttering up the deck.",
         WALKINGPLANK_YOTD = "Sure it looks nice, but I ain't keen on using it anytime soon.",
         CHESSPIECE_YOTD = "We really brought the heat! Ha!",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "I guess you'd call it an antacid.",
+
+        BEESWAX_SPRAY = "I never liked perfume. Now I like it even less",
+        WAXED_PLANT = "It'll stay fresh as a daisy forever.", -- Used for all waxed plants, from farm plants to trees.
+
+        STORAGE_ROBOT = {
+            GENERIC = "Industrious lil' fella.",
+            BROKEN = "Poor lil' guy is all busted.",
+        },
+
+        SCRAP_MONOCLEHAT = "The bossman always said you gotta \"see the bigger picture.\"",
+        SCRAPHAT = "Now that's one industrial-strength hardhat!",
+
+        FENCE_JUNK = "It does the trick.",
+        JUNK_PILE = "Folks underestimate how much good stuff you can find in a scrap pile.",
+        JUNK_PILE_BIG = "Who's in charge here? Someone could get hurt!",
+
+        ARMOR_LUNARPLANT_HUSK = "Pretty well constructed, for a plant.",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

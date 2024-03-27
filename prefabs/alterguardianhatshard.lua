@@ -6,11 +6,26 @@ local assets =
     Asset("INV_IMAGE", "alterguardianhatshard_red"),
     Asset("INV_IMAGE", "alterguardianhatshard_blue"),
     Asset("INV_IMAGE", "alterguardianhatshard_green"),
+    Asset("INV_IMAGE", "alterguardianhatshard_open"),
+    Asset("INV_IMAGE", "alterguardianhatshard_red_open"),
+    Asset("INV_IMAGE", "alterguardianhatshard_blue_open"),
+    Asset("INV_IMAGE", "alterguardianhatshard_green_open"),
 }
 
+local function UpdateInventoryImage(inst)
+    local isopen = inst.components.container:IsOpen()
+    local name = "alterguardianhatshard" .. (inst._shardcolour or "") .. (isopen and "_open" or "")
+    inst.components.inventoryitem:ChangeImageName(name)
+end
+
 local function Bounce(inst)
-    inst.AnimState:PlayAnimation("bounce", false)
-    inst.AnimState:PushAnimation("idle", false)
+    if inst.components.inventoryitem.owner == nil then
+        inst.AnimState:PlayAnimation("bounce", false)
+        inst.AnimState:PushAnimation("idle", false)
+    else
+        inst.AnimState:PlayAnimation("idle", false)
+    end
+    UpdateInventoryImage(inst)
 end
 
 local function OnPutInInventory(inst)
@@ -42,18 +57,19 @@ local function UpdateLightState(inst)
         inst.AnimState:SetMultColour(MULT_TINT[g+b + 1], MULT_TINT[r+b + 1], MULT_TINT[r+g + 1], 1)
 
         if r == 1 then
-            inst.components.inventoryitem:ChangeImageName("alterguardianhatshard_red")
+            inst._shardcolour = "_red"
         elseif g == 1 then
-            inst.components.inventoryitem:ChangeImageName("alterguardianhatshard_green")
+            inst._shardcolour = "_green"
         elseif b == 1 then
-            inst.components.inventoryitem:ChangeImageName("alterguardianhatshard_blue")
+            inst._shardcolour = "_blue"
         end
     else
         inst.AnimState:ClearBloomEffectHandle()
         inst.AnimState:SetMultColour(.7, .7, .7, 1)
 
-        inst.components.inventoryitem:ChangeImageName("alterguardianhatshard")
+        inst._shardcolour = nil
     end
+    UpdateInventoryImage(inst)
 end
 
 local function fn()

@@ -146,10 +146,11 @@ local ScrapbookScreen = Class(Screen, function( self, prev_screen, default_secti
 
 	if DEBUG_MODE then
         self.debugentry = self.root:AddChild(TextButton())
-        self.debugentry:SetTextSize(24)
+        self.debugentry:SetTextSize(12)
         self.debugentry:SetFont(HEADERFONT)
         self.debugentry:SetVAnchor(ANCHOR_BOTTOM)
         self.debugentry:SetHAnchor(ANCHOR_RIGHT)
+		self.debugentry:SetScaleMode(SCALEMODE_PROPORTIONAL)
 		self.debugentry.clickoffset = Vector3(0, 0, 0)
 
         self.debugentry:SetOnClick(function()
@@ -1581,7 +1582,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		if data.fishable then
 			makeentry("icon_uses.tex",STRINGS.SCRAPBOOK.DATA_FISHABLE)
 		end		
-		if data.picakble then
+		if data.pickable then
 			makeentry("icon_action.tex",STRINGS.SCRAPBOOK.DATA_PICKABLE)			
 		end	
 		if data.harvestable then
@@ -2152,7 +2153,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		self.debugentry:SetText(msg)
 
         local w, h = self.debugentry.text:GetRegionSize()
-        self.debugentry:SetPosition(-w/2 - 10, h/2 + 10) -- 10 Pixel padding, bottom right screen justification.
+        self.debugentry:SetPosition(-w*2 - 5, h*2 + 5)
 	end
 
     return page
@@ -2202,7 +2203,7 @@ function ScrapbookScreen:OnControl(control, down)
 			return true
 		end
 
-	    if control == CONTROL_PAUSE and TheInput:ControllerAttached() then
+	    if control == CONTROL_MENU_START and TheInput:ControllerAttached() then
 			if self.columns_setting == 1 then
 				self.columns_setting = 2
 			elseif self.columns_setting == 2 then
@@ -2228,14 +2229,14 @@ function ScrapbookScreen:OnControl(control, down)
 			return true
 		end	
 
-	    if control == CONTROL_MAP then
+	    if control == CONTROL_MENU_BACK then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 			self:CycleChraterQuotes("right")
 			return true
 		end	
 
 		if self.flashestoclear then
-  			if control == CONTROL_CONTROLLER_ATTACK then
+  			if control == CONTROL_MENU_MISC_1 then
   				self.flashestoclear = nil
   				self:ClearFlashes()
 				return true
@@ -2254,17 +2255,17 @@ function ScrapbookScreen:GetHelpText()
 	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.SCRAPBOOK.CYCLE_CAT)
 
 	if self.character_panels and self.character_panels_total>1 then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MAP).. " " .. STRINGS.SCRAPBOOK.CYCLE_QUOTES)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_BACK).. " " .. STRINGS.SCRAPBOOK.CYCLE_QUOTES)
 	end
 
-	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.SCRAPBOOK.CYCLE_VIEW)
+	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.SCRAPBOOK.CYCLE_VIEW)
 
 	if self.searchbox.focus then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. STRINGS.SCRAPBOOK.SEARCH)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.SCRAPBOOK.SEARCH)
 	end
 
 	if self.flashestoclear then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.SCRAPBOOK.CLEARFLASH)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.SCRAPBOOK.CLEARFLASH)
 	end
 
 	return table.concat(t, "  ")

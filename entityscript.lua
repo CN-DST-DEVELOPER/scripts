@@ -203,17 +203,12 @@ function Entity:AddNetwork()
     end
 end
 
--------------------------------------------
---Replica components container with overriden accessor
-
-local Replica = Class(function(self, inst)
-    self.inst = inst
-    self._ = {}
-end)
-
-function Replica:__index(name)
-    return self._[name] == nil and getmetatable(self)[name] or self.inst:ValidateReplicaComponent(name, self._[name])
-end
+local replica_mt =
+{
+	__index = function(t, k)
+		return rawget(t, "inst"):ValidateReplicaComponent(k, rawget(t, "_")[k])
+	end,
+}
 
 EntityScript = Class(function(self, entity)
     self.entity = entity
@@ -241,7 +236,10 @@ EntityScript = Class(function(self, entity)
     self.platformfollowers = nil
 
     self.actionreplica = nil
-    self.replica = Replica(self)
+
+	--Replica components container with overriden accessor
+	self.replica = { _ = {}, inst = self }
+	setmetatable(self.replica, replica_mt)
 end)
 
 function EntityScript:GetSaveRecord()
@@ -556,23 +554,25 @@ function EntityScript:HasTag(tag)
     return self.entity:HasTag(tag)
 end
 
-function EntityScript:HasTags(tags)
-	for i = 1, #tags do
-		if not self.entity:HasTag(tags[i]) then
-			return false
-		end
-	end
-	return true
+function EntityScript:HasTags(...)
+    local tags = select(1, ...)
+    if type(tags) == "table" then
+        return self.entity:HasAllTags(unpack(tags))
+    else
+        return self.entity:HasAllTags(...)
+    end
 end
+EntityScript.HasAllTags = EntityScript.HasTags
 
-function EntityScript:HasOneOfTags(tags)
-	for i = 1, #tags do
-		if self.entity:HasTag(tags[i]) then
-			return true
-		end
-	end
-	return false
+function EntityScript:HasOneOfTags(...)
+    local tags = select(1, ...)
+    if type(tags) == "table" then
+        return self.entity:HasAnyTag(unpack(tags))
+    else
+        return self.entity:HasAnyTag(...)
+    end
 end
+EntityScript.HasAnyTag = EntityScript.HasOneOfTags
 
 require("entityreplica")
 --Additional initialization for network entity replicas
@@ -654,6 +654,9 @@ function EntityScript:GetAdjectivedName()
         return ConstructAdjectivedName(self, name, STRINGS.UI.HUD.SPOILED)
     elseif self:HasTag("withered") then
         return ConstructAdjectivedName(self, name, STRINGS.WITHEREDITEM)
+    elseif self:HasTag("waxedplant") then
+        -- No wet prefix for waxed plants.
+        return ConstructAdjectivedName(self, name, STRINGS.WAXEDPLANT)
     elseif not self.no_wet_prefix and (self.always_wet_prefix or self:GetIsWet()) then
         --custom
         if self.wet_prefix ~= nil then
@@ -1961,3 +1964,5 @@ function EntityScript:RemoveDebuff(name)
     end
     self.components.debuffable:RemoveDebuff(name)
 end
+
+require("entityscriptproxy")

@@ -178,6 +178,10 @@ local function set_stage(inst, stage)
         inst.components.lootdropper:SetLoot({ "moon_altar_ward", "moon_altar_icon"})
 
         inst:RemoveComponent("repairable")
+        local worldmeteorshower = TheWorld.components.worldmeteorshower
+        if worldmeteorshower ~= nil then
+            worldmeteorshower.moonrockshell_chance_additionalodds:SetModifier(inst, TUNING.MOONROCKSHELL_CHANCE, "celestial_altar")
+        end
 
         if not POPULATING then
             inst.components.moonaltarlinktarget:TryEstablishLink()
@@ -195,6 +199,10 @@ local function set_stage(inst, stage)
         inst.components.lootdropper:SetLoot({ "moon_altar_idol", "moon_altar_glass", "moon_altar_seed" })
 
         inst:RemoveComponent("repairable")
+        local worldmeteorshower = TheWorld.components.worldmeteorshower
+        if worldmeteorshower ~= nil then
+            worldmeteorshower.moonrockshell_chance_additionalodds:SetModifier(inst, TUNING.MOONROCKSHELL_CHANCE, "celestial_altar")
+        end
 
         if not POPULATING then
             inst.components.moonaltarlinktarget:TryEstablishLink()
@@ -489,6 +497,11 @@ local function moon_altar_cosmic_master_postinit(inst)
     addprototyper(inst)
 
     inst:ListenForEvent("on_fissure_socket", OnFissureSocket_CosmicPost)
+    -- NOTES(JBK): This altar should only exist after socketing so influence the odds as it spawns since it is one piece for the whole altar.
+    local worldmeteorshower = TheWorld.components.worldmeteorshower
+    if worldmeteorshower ~= nil then
+        worldmeteorshower.moonrockshell_chance_additionalodds:SetModifier(inst, TUNING.MOONROCKSHELL_CHANCE, "celestial_altar")
+    end
 
     inst.components.moonaltarlinktarget.canbelinkedfn = MoonAltarCosmicCanBeLinked
 

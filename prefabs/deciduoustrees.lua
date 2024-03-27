@@ -336,6 +336,13 @@ local function OnChangeLeaves(inst, monster, monsterout)
     else
         inst:RemoveTag("shelter")
     end
+
+    if monster then
+        inst:RemoveComponent("waxable")
+
+    elseif inst.components.waxable == nil then
+        MakeWaxablePlant(inst)
+    end
 end
 
 local function ChangeSizeFn(inst)
@@ -1096,6 +1103,13 @@ local function onload(inst, data)
             Sway(inst)
         end
     end
+
+    if inst.monster then
+        inst:RemoveComponent("waxable")
+
+    elseif inst.components.waxable == nil then
+        MakeWaxablePlant(inst)
+    end
 end
 
 local function OnSeasonChanged(inst, season)
@@ -1338,6 +1352,8 @@ local function makefn(build, stage, data)
         inst:WatchWorldState("season", OnSeasonChanged)
 
         inst.leaf_state = "normal"
+
+        MakeWaxablePlant(inst)
 
         inst.StartMonster = StartMonster
         inst.StopMonster = StopMonster

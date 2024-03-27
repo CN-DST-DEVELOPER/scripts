@@ -509,10 +509,8 @@ local function OnUnmarkForTeleport(inst, data)
 end
 
 local function battlecry(combatcmp, target)
-    local strtbl =
-        combatcmp.inst:HasTag("guard") and
-        "MERM_BATTLECRY" or
-        "MERM_BATTLECRY"
+    local strtbl = (combatcmp.inst:HasTag("guard") and "MERM_GUARD_BATTLECRY")
+        or "MERM_BATTLECRY"
     return strtbl, math.random(#STRINGS[strtbl])
 end
 

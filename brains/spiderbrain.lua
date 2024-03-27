@@ -80,7 +80,51 @@ local function KeepFaceTargetFn(inst, target)
     return inst.components.follower.leader == target
 end
 
+------------------------------------------------------------------------------------------
+
+local function Is_AcidInfusedSpitter(inst)
+    if not inst:HasTag("spider_spitter") or inst.components.acidinfusible == nil then
+        return false
+    end
+
+    if not inst.components.acidinfusible:IsInfused() then
+        return false
+    end
+
+    return true
+end
+
+local function AcidInfusedSpitter_GetFaceTargetFn(inst)
+    return Is_AcidInfusedSpitter(inst) and inst.components.combat:InCooldown() and inst.components.combat.target or nil
+end
+
+local function AcidInfusedSpitter_KeepFaceTargetFn(inst, target)
+    return Is_AcidInfusedSpitter(inst) and inst.components.combat:InCooldown() and inst.components.combat.target == target
+end
+
+local function AcidInfusedSpitter_ShouldRunAway(hunter, inst)
+    if not Is_AcidInfusedSpitter(inst) then
+        return false
+    end
+
+    local target = inst.components.combat.target
+
+    if target == nil or target ~= hunter then
+        return false
+    end
+
+    if inst:IsNear(hunter, TUNING.SPIDER_SPITTER_MELEE_RANGE) and not inst.components.combat:InCooldown() then
+        return false
+    end
+
+    return true
+end
+
+------------------------------------------------------------------------------------------
+
 function SpiderBrain:OnStart()
+    local SPITTER_SEE_DIST  = TUNING.SPIDER_SPITTER_ATTACK_RANGE - .5
+    local SPITTER_SAFE_DIST = TUNING.SPIDER_SPITTER_ATTACK_RANGE
 
     local pre_nodes = PriorityNode({
         BrainCommon.PanicWhenScared(self.inst, .3),
@@ -104,7 +148,11 @@ function SpiderBrain:OnStart()
 
     local attack_nodes = PriorityNode({
         IfNode(function() return not self.inst.bedazzled and self.inst.components.follower.leader == nil end, "AttackWall",
-            AttackWall(self.inst)),
+            AttackWall(self.inst)
+        ),
+
+        RunAway(self.inst,    AcidInfusedSpitter_ShouldRunAway, SPITTER_SEE_DIST, SPITTER_SAFE_DIST),
+        FaceEntity(self.inst, AcidInfusedSpitter_GetFaceTargetFn, AcidInfusedSpitter_KeepFaceTargetFn),
 
         ChaseAndAttack(self.inst, SpringCombatMod(TUNING.SPIDER_AGGRESSIVE_MAX_CHASE_TIME)),
     })

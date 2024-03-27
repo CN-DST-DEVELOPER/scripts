@@ -17,7 +17,9 @@ local function HasValidWaterTarget(inst)
 end
 
 local SEE_ITEM_DISTANCE = 15
-local NOT_TOSSABLE_TAGS = {"INLIMBO", "outofreach", "FX", "fishmeat"} -- NOTE: The gnarwail doesn't want to toss fish meat; it would rather eat it. But fish need to be tossed to become meat.
+-- NOTE: The gnarwail doesn't want to toss fish meat; it would rather eat it.
+-- But fish need to be tossed to become meat.
+local NOT_TOSSABLE_TAGS = {"INLIMBO", "outofreach", "FX", "fishmeat"}
 local ONE_OF_TOSSABLE_TAGS = {"oceanfish", "_inventoryitem"}
 local function GetNearbyTossTarget(inst)
     if inst.ready_to_toss then

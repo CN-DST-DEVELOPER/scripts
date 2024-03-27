@@ -1,5 +1,5 @@
 
-BufferedAction = Class(function(self, doer, target, action, invobject, pos, recipe, distance, forced, rotation)
+BufferedAction = Class(function(self, doer, target, action, invobject, pos, recipe, distance, forced, rotation, arrivedist)
     self.doer = doer
     self.target = target
     self.initialtargetowner = target ~= nil and target.components.inventoryitem ~= nil and target.components.inventoryitem.owner or nil
@@ -13,6 +13,7 @@ BufferedAction = Class(function(self, doer, target, action, invobject, pos, reci
     self.recipe = recipe
     self.options = {}
     self.distance = distance or action.distance
+    self.arrivedist = arrivedist or action.arrivedist
     self.forced = forced
     self.autoequipped = nil --true if invobject should've been auto-equipped
     self.skin = nil

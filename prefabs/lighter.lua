@@ -154,6 +154,7 @@ local function testforattunedskill(inst,owner)
 	if owner.components.skilltreeupdater and owner.components.skilltreeupdater:IsActivated("willow_attuned_lighter") then
         if inst.components.channelcastable == nil then
             inst:AddComponent("channelcastable")
+			inst.components.channelcastable:SetStrafing(false)
             inst.components.channelcastable:SetOnStartChannelingFn(OnStartChanneling)
             inst.components.channelcastable:SetOnStopChannelingFn(OnStopChanneling)
         end

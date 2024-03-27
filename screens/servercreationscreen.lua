@@ -714,24 +714,24 @@ function ServerCreationScreen:OnControl(control, down)
             self:Cancel()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         else
-            if control == CONTROL_OPEN_CRAFTING then
+            if control == CONTROL_MENU_L2 then
                 self:SetTab(nil, -1)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-            elseif control == CONTROL_OPEN_INVENTORY then
+            elseif control == CONTROL_MENU_R2 then
                 self:SetTab(nil, 1)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             elseif self.saveslot < 0 or SaveGameIndex:IsSlotEmpty(self.saveslot) then
-                if control == CONTROL_PAUSE and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+                if control == CONTROL_MENU_START and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
                     self:Create()
                     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 else
                     return false
                 end
             else
-                if control == CONTROL_MAP and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+                if control == CONTROL_MENU_BACK and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
                     self:DeleteSlot(self.saveslot)
                     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-                elseif control == CONTROL_PAUSE and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+                elseif control == CONTROL_MENU_START and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
                     self:Create()
                     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 else
@@ -1109,12 +1109,12 @@ function ServerCreationScreen:GetHelpText()
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 
     if self.saveslot > 0 or not SaveGameIndex:IsSlotEmpty(self.saveslot) then
-        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MAP) .. " " .. STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT)
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_BACK) .. " " .. STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT)
     end
 
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_CRAFTING).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_L2).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
 
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE).." "..(self.delete_button:IsEnabled() and STRINGS.UI.SERVERCREATIONSCREEN.RESUME or STRINGS.UI.SERVERCREATIONSCREEN.CREATE))
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START).." "..(self.delete_button:IsEnabled() and STRINGS.UI.SERVERCREATIONSCREEN.RESUME or STRINGS.UI.SERVERCREATIONSCREEN.CREATE))
 
     return table.concat(t, "  ")
 end

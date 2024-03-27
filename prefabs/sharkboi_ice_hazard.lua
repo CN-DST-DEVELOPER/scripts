@@ -120,6 +120,23 @@ local function SetStage(inst, stage, source, snap_to_stage)
     end
 
     inst.stage = STAGES[targetstage].name
+
+    if inst.components.workable ~= nil then
+        if source == "work" then
+            for i = currentstage, targetstage+1, -1 do
+                local pt = inst:GetPosition()
+                for i = 1, math.random(STAGES[i].icecount) do
+                    inst.components.lootdropper:SpawnLootPrefab("ice", pt)
+                end
+            end
+        end
+        if STAGES[targetstage].work < 0 then
+            inst.components.workable:SetWorkable(false)
+        else
+            inst.components.workable:SetWorkLeft(STAGES[targetstage].work)
+        end
+    end
+
     if not STAGES[targetstage].showrock then
         inst:Remove()
         return
@@ -157,22 +174,6 @@ local function SetStage(inst, stage, source, snap_to_stage)
         inst.MiniMapEntity:SetEnabled(false)
         RemovePhysicsColliders(inst)
         inst:PushEvent("on_no_longer_landed")
-    end
-
-    if inst.components.workable ~= nil then
-        if source == "work" then
-            for i = currentstage, targetstage+1, -1 do
-                local pt = inst:GetPosition()
-                for i = 1, math.random(STAGES[i].icecount) do
-                    inst.components.lootdropper:SpawnLootPrefab("ice", pt)
-                end
-            end
-        end
-        if STAGES[targetstage].work < 0 then
-            inst.components.workable:SetWorkable(false)
-        else
-            inst.components.workable:SetWorkLeft(STAGES[targetstage].work)
-        end
     end
 end
 

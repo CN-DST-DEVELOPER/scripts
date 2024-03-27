@@ -73,6 +73,7 @@ local reskin_fx_info =
 	telebase = { scale = 1.6 },
 	tent = { offset = 0.4, scale = 2.0 },
 	treasurechest = { offset = 0.1, scale = 1.1 },
+	treasurechest_upgraded = { offset = 0.1, scale = 1.3 },
 	umbrella = { offset = 0.4 },
 	wall_moonrock = { offset = 0.2, scale = 1.2 },
 	wall_ruins = { offset = 0.2, scale = 1.3 },
@@ -83,6 +84,13 @@ local reskin_fx_info =
 	yellowstaff = { offset = 0.4 },
     mighty_gym = {offset = 2, scale = 2.7},
 }
+local function GetReskinFXInfo(target)
+    if target.prefab == "treasurechest" and target._chestupgrade_stacksize then
+        return reskin_fx_info["treasurechest_upgraded"]
+    end
+
+    return reskin_fx_info[target.prefab] or {}
+end
 
 -- Testing and viewing skins on a more close level.
 if CAN_USE_DBUI then
@@ -105,7 +113,7 @@ local function spellCB(tool, target, pos, caster)
 
     local fx = SpawnPrefab(fx_prefab)
 
-    local fx_info = reskin_fx_info[target.prefab] or {}
+    local fx_info = GetReskinFXInfo(target)
 
     local scale_override = fx_info.scale or 1
     fx.Transform:SetScale(scale_override, scale_override, scale_override)
@@ -137,19 +145,21 @@ local function spellCB(tool, target, pos, caster)
                         must_have, must_not_have = target:ReskinToolFilterFn()
                     end
                     for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
-                        local skip_this = false
-                        if must_have ~= nil and not StringContainsAnyInArray(item_type, must_have) or must_not_have ~= nil and StringContainsAnyInArray(item_type, must_not_have) then
-                            skip_this = true
-                        end
+                        local skip_this = PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] or false
                         if not skip_this then
-                            if search_for_skin then
-                                if cached_skin == item_type then
-                                    search_for_skin = false
-                                end
-                            else
-                                if TheInventory:CheckClientOwnership(userid, item_type) then
-                                    new_reskinname = item_type
-                                    break
+                            if must_have ~= nil and not StringContainsAnyInArray(item_type, must_have) or must_not_have ~= nil and StringContainsAnyInArray(item_type, must_not_have) then
+                                skip_this = true
+                            end
+                            if not skip_this then
+                                if search_for_skin then
+                                    if cached_skin == item_type then
+                                        search_for_skin = false
+                                    end
+                                else
+                                    if TheInventory:CheckClientOwnership(userid, item_type) then
+                                        new_reskinname = item_type
+                                        break
+                                    end
                                 end
                             end
                         end
@@ -201,7 +211,7 @@ local function can_cast_fn(doer, target, pos)
 
     if PREFAB_SKINS[prefab_to_skin] ~= nil then
         for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
-            if TheInventory:CheckClientOwnership(doer.userid, item_type) then
+            if not PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] and TheInventory:CheckClientOwnership(doer.userid, item_type) then
                 return true
             end
         end

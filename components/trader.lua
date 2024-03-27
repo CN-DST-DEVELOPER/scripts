@@ -30,6 +30,8 @@ local Trader = Class(function(self, inst)
     self.test = nil
     self.abletoaccepttest = nil
 
+    self.acceptstacks = nil
+
     --V2C: Recommended to explicitly add tags to prefab pristine state
     --On construciton, "trader" tag is added by default
     --If acceptnontradable will be true, then "alltrader" tag should also be added
@@ -54,6 +56,10 @@ function Trader:IsTryingToTradeWithMe(inst)
             act.action == ACTIONS.GIVE)
 end
 
+function Trader:IsAcceptingStacks()
+    return self.acceptstacks
+end
+
 function Trader:Enable()
     self.enabled = true
 end
@@ -74,14 +80,22 @@ function Trader:SetAbleToAcceptTest(fn)
     self.abletoaccepttest = fn
 end
 
+function Trader:SetOnAccept(fn)
+    self.onaccept = fn
+end
+
+function Trader:SetAcceptStacks()
+    self.acceptstacks = true
+end
+
 -- Able to accept refers to physical ability, i.e. am I in combat, or sleeping, or dead
-function Trader:AbleToAccept(item, giver)
+function Trader:AbleToAccept(item, giver, count)
     local on_inventory = self.inst.components.inventoryitem ~= nil and self.inst.components.inventoryitem.owner ~= nil
 
     if not self.enabled or item == nil then
         return false
     elseif self.abletoaccepttest ~= nil then
-        return self.abletoaccepttest(self.inst, item, giver)
+        return self.abletoaccepttest(self.inst, item, giver, count)
     elseif self.inst.components.health ~= nil and self.inst.components.health:IsDead() then
         return false, "DEAD"
     elseif (self.inst.components.sleeper ~= nil and self.inst.components.sleeper:IsAsleep()) and not on_inventory then
@@ -94,16 +108,16 @@ end
 
 -- Wants to accept refers to desire, i.e. do I think that object is disgusting. This one triggers
 -- the "refuse" callback.
-function Trader:WantsToAccept(item, giver)
-    return self.enabled and (not self.test or self.test(self.inst, item, giver))
+function Trader:WantsToAccept(item, giver, count)
+    return self.enabled and (not self.test or self.test(self.inst, item, giver, count))
 end
 
 function Trader:AcceptGift(giver, item, count)
-    if not self:AbleToAccept(item, giver) then
+    if not self:AbleToAccept(item, giver, count) then
         return false
     end
 
-    if self:WantsToAccept(item, giver) then
+    if self:WantsToAccept(item, giver, count) then
         count = count or 1
 
         if item.components.stackable ~= nil and item.components.stackable.stacksize > count then
@@ -121,7 +135,7 @@ function Trader:AcceptGift(giver, item, count)
         end
 
         if self.onaccept ~= nil then
-            self.onaccept(self.inst, giver, item)
+            self.onaccept(self.inst, giver, item, count)
         end
 
         self.inst:PushEvent("trade", { giver = giver, item = item })

@@ -58,6 +58,7 @@ function Deployable:OnRemoveFromEntity()
         inventoryitem:SetDeployMode(DEPLOYMODE.NONE)
         inventoryitem:SetDeployRestrictedTag(nil)
     end
+	self.inst:RemoveTag("deployable")
 end
 
 function Deployable:SetDeployMode(mode)
@@ -82,9 +83,15 @@ function Deployable:SetDeployTossSymbolOverride(data)
 end
 
 function Deployable:IsDeployable(deployer)
-    return self.restrictedtag == nil
-        or self.restrictedtag:len() <= 0
-        or (deployer ~= nil and deployer:HasTag(self.restrictedtag))
+	if self.restrictedtag and self.restrictedtag:len() > 0 and not (deployer and deployer:HasTag(self.restrictedtag)) then
+		return false
+	end
+	local rider = deployer and deployer.components.rider or nil
+	if rider and rider:IsRiding() then
+		--can only deploy tossables while mounted
+		return self.inst.components.complexprojectile ~= nil
+	end
+	return true
 end
 
 function Deployable:CanDeploy(pt, mouseover, deployer, rot)

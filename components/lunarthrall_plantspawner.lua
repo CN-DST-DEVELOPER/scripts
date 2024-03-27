@@ -225,7 +225,6 @@ local function OnTimerDone(source,data)
     local self = TheWorld.components.lunarthrall_plantspawner
     if data and data.name then
         if data.name == "endrift" then
-            print("FINISH RIFT")
             self.currentrift:PushEvent("finish_rift")
             self.currentrift = nil
         end

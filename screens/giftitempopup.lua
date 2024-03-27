@@ -206,7 +206,7 @@ function GiftItemPopUp:OnControl(control, down)
         if not down and control == CONTROL_CANCEL then
             self:OnClose()
             return true
-        elseif not down and not self.disable_use_now and control == CONTROL_PAUSE then
+        elseif not down and not self.disable_use_now and control == CONTROL_MENU_START then
             self:ApplySkin()
             return true
         end
@@ -221,7 +221,7 @@ function GiftItemPopUp:GetHelpText()
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.ITEM_SCREEN.USE_LATER)
 
         if not self.disable_use_now then
-            table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.ITEM_SCREEN.USE_NOW)
+            table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.ITEM_SCREEN.USE_NOW)
         end
 
         return table.concat(t, "  ")

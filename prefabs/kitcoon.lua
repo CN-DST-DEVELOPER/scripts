@@ -395,7 +395,7 @@ local function hider_fn()
         return inst
     end
 
-	inst.persits = false
+	inst.persists = false
 
     inst._sound_task = inst:DoPeriodicTask(TUNING.KITCOON_HIDING_SOUND_FREQUENCY, play_hider_periodic_sound, math.random(TUNING.KITCOON_HIDING_SOUND_FREQUENCY))
 
@@ -430,7 +430,7 @@ local function hide_fx_fn()
         return inst
     end
 
-	inst.persits = false
+	inst.persists = false
 
 	inst:DoTaskInTime(1, inst.Remove)
 	inst:ListenForEvent("animover", inst.Remove)

@@ -415,6 +415,18 @@ local walldata =
 		repairhealth = TUNING.REPAIR_DREADSTONE_HEALTH * 4,
 		buildsound = "dontstarve/common/place_structure_stone",
 	},
+    {
+        name = MATERIALS.SCRAP,
+        material = "stone",
+        tags = { "stone", "scrap" },
+        loot = "wagpunk_bits",
+        maxloots = 1,
+        maxwork = TUNING.SCRAPWALL_WORK,
+        maxhealth = TUNING.SCRAPWALL_HEALTH,
+        playerdamagemod = TUNING.SCRAPWALL_PLAYERDAMAGEMOD,
+        repairhealth = TUNING.REPAIR_SCRAP_HEALTH * 4,
+        buildsound = "dontstarve/common/place_structure_stone",
+    },    
 }
 for i, v in ipairs(walldata) do
     local wall, item, placer = MakeWallType(v)

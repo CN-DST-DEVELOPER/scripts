@@ -7,12 +7,32 @@ require("camerashake")
 local function dummyfn()
 end
 
+local function onmaxdist(self, maxdist, old)
+    if maxdist ~= nil and self.extramaxdist ~= nil then
+        rawget(self, "_").maxdist[1] = maxdist + self.extramaxdist
+    end
+end
+
+local function onextramaxdist(self, extramaxdist, old)
+    self.maxdist = self.maxdist - (old or 0)
+
+    if self:CanControl() and
+        not self.cutscene and -- NOTES(DiogoW): self.cutscene seems unused.
+        not self.paused and   -- NOTES(DiogoW): self.paused seems unused.
+        (ThePlayer == nil or ThePlayer.components.playercontroller:IsEnabled())
+    then
+        self.distancetarget = (self.maxdist - self.mindist) * 0.7 + self.mindist
+    end
+end
+
 local FollowCamera = Class(function(self, inst)
     self.inst = inst
     self.target = nil
     self.currentpos = Vector3(0, 0, 0)
     self.currentscreenxoffset = 0
     self.distance = 30
+    self.maxdist = 0
+    self.extramaxdist = 0
     self.screenoffsetstack = {}
     self.updatelisteners = {}
     self:SetDefault()
@@ -21,7 +41,12 @@ local FollowCamera = Class(function(self, inst)
     self.onupdatefn = dummyfn
 
     self.gamemode_defaultfn = GetGameModeProperty("cameraoverridefn")
-end)
+end,
+nil,
+{
+    maxdist = onmaxdist,
+    extramaxdist = onextramaxdist,
+})
 
 function FollowCamera:SetDefaultOffset()
     self.targetoffset = Vector3(0, 1.5, 0)
@@ -103,11 +128,14 @@ function FollowCamera:SetMaxDistance(distance)
     self.maxdist = distance
 end
 
+function FollowCamera:SetExtraMaxDistance(distance)
+    self.extramaxdist = distance
+end
+
 function FollowCamera:SetGains(pan, heading, distance)
     self.pangain = pan
     self.headinggain = heading
     self.distancegain = distance
-
 end
 
 function FollowCamera:GetGains(pan, heading, distance)

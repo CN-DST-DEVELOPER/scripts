@@ -42,28 +42,22 @@ function SkillTreeData:GetSkillXP(characterprefab)
 end
 
 function SkillTreeData:GetMaximumExperiencePoints()
-    local tally = 0
-    for i,threshold in ipairs(TUNING.SKILL_THRESHOLDS)do
-        tally = tally + threshold
+    local totalxp = 0
+    for _, xpthreshold in ipairs(TUNING.SKILL_THRESHOLDS) do
+        totalxp = totalxp + xpthreshold
     end
-    return tally
+    return totalxp
 end
 
 function SkillTreeData:GetPointsForSkillXP(skillxp)
-    local tally = 0
-    local current = 0
-    for i, threshold in ipairs(TUNING.SKILL_THRESHOLDS) do
-        tally = tally + threshold
-
-        if skillxp < tally then
-            return current
-        end
-        current = i
-        if skillxp == tally then
-            return current
+    local totalxp = 0
+    for skillcount, xpthreshold in ipairs(TUNING.SKILL_THRESHOLDS) do
+        totalxp = totalxp + xpthreshold
+        if skillxp < totalxp then
+            return skillcount - 1
         end
     end
-    return 0
+    return #TUNING.SKILL_THRESHOLDS
 end
 
 function SkillTreeData:GetAvailableSkillPoints(characterprefab)
@@ -174,7 +168,7 @@ function SkillTreeData:AddSkillXP(amount, characterprefab)
     if self.ignorexp then
         return true, oldskillxp
     end
-    local newskillxp = math.clamp(oldskillxp + amount, 0, self:GetMaximumExperiencePoints())
+    local newskillxp = math.clamp(oldskillxp + amount, 0, TUNING.FIXME_DO_NOT_USE_FOR_MODS_OLD_MAX_XP_VALUE)--self:GetMaximumExperiencePoints())
 
     if newskillxp > oldskillxp or BRANCH == "dev" and newskillxp ~= oldskillxp then
         self.skillxp[characterprefab] = newskillxp
@@ -309,6 +303,10 @@ function SkillTreeData:Load()
     --print("[STData] Load")
     self.activatedskills = {}
     self.skillxp = {}
+    if TheNet:IsDedicated() then
+        -- NOTES(JBK): This file is trying to load on dedicated servers but these will not have skill trees so do not load anything only initialize blank data.
+        return
+    end
     local needs_save = false
     local really_bad_state = false
     TheSim:GetPersistentString("skilltree", function(load_success, data)
@@ -382,10 +380,8 @@ local function ValidateCharacterData_PrintHelper(self, characterprefab, activate
         return false, "No skills or no skillxp to validate against."
     end
 
-    local maxskillxp = self:GetMaximumExperiencePoints()
-    local newskillxp = math.clamp(skillxp, 0, maxskillxp)
-    if skillxp ~= newskillxp then
-        return false, string.format("Out of range skillxp: %d !in [0, %d].", skillxp, maxskillxp)
+    if skillxp < 0 then
+        return false, string.format("Out of range skillxp: %d < 0.", skillxp)
     end
 
     local maxpointsallocatable = self:GetPointsForSkillXP(skillxp)

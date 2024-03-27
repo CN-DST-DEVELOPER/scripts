@@ -113,15 +113,7 @@ function DestroyEntity(ent, destroyer, kill_all_creatures, remove_entity_as_fall
         elseif ent.components.pickable ~= nil
             and ent.components.pickable:CanBePicked()
             and not ent:HasTag("intense") then
-            local num = ent.components.pickable.numtoharvest or 1
-            local product = ent.components.pickable.product
-            local x1, y1, z1 = ent.Transform:GetWorldPosition()
-            ent.components.pickable:Pick(destroyer) -- only calling this to trigger callbacks on the object
-            if product ~= nil and num > 0 then
-                for i = 1, num do
-                    SpawnPrefab(product).Transform:SetPosition(x1, 0, z1)
-                end
-            end
+			ent.components.pickable:Pick(destroyer.components.inventory and TheWorld or destroyer) --make sure destroyer can't pocket the loot
 		elseif kill_all_creatures and health ~= nil then
 			if not health:IsDead() then
 				health:Kill()

@@ -38,7 +38,7 @@ end
 
 function ResurrectButton:OnShow()
     if self.hud_focus and TheInput:ControllerAttached() then
-        self.text:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_CONTROLLER_ATTACK).." "..STRINGS.ACTIONS.REMOTERESURRECT)
+        self.text:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_1).." "..STRINGS.ACTIONS.REMOTERESURRECT)
         self.text:Show()
     else
         self.text:Hide()
@@ -47,7 +47,7 @@ end
 
 --Called from PlayerHud:OnControl
 function ResurrectButton:CheckControl(control, down)
-    if self.shown and down and control == CONTROL_CONTROLLER_ATTACK then
+    if self.shown and down and control == CONTROL_MENU_MISC_1 then
         self:DoResurrect()
         return true
     end

@@ -70,6 +70,17 @@ local monster_params =
             },
         },
     },
+    acidbatwave =
+    {
+        range = TUNING.ACIDBATWAVE_SPAWN_DISTANCE,
+        levels =
+        {
+            {
+                sound = "dontstarve/cave/bat_distant",
+                distance = 0,
+            },
+        },
+    },
 }
 
 local function PlayWarningSound(proxy, sound, range, theta, radius)

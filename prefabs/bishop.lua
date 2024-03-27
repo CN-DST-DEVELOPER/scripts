@@ -30,18 +30,18 @@ local prefabs_nightmare =
 
 local brain = require "brains/bishopbrain"
 
-SetSharedLootTable('bishop',
+SetSharedLootTable("bishop",
 {
-    {'gears',       1.0},
-    {'gears',       1.0},
-    {'purplegem',   1.0},
+    {"gears",       1.0},
+    {"gears",       1.0},
+    {"purplegem",   1.0},
 })
 
-SetSharedLootTable('bishop_nightmare',
+SetSharedLootTable("bishop_nightmare",
 {
-    {'purplegem',         1.0},
-    {'nightmarefuel',     0.6},
-    {'thulecite_pieces',  0.5},
+    {"purplegem",         1.0},
+    {"nightmarefuel",     0.6},
+    {"thulecite_pieces",  0.5},
 })
 
 local function ShouldSleep(inst)
@@ -83,7 +83,7 @@ local function EquipWeapon(inst)
     end
 end
 
-local function RememberKnownLocation(inst)
+local function SetHomePosition(inst)
     inst.components.knownlocations:RememberLocation("home", inst:GetPosition())
 end
 
@@ -104,62 +104,76 @@ local function common_fn(build, tag)
     inst.AnimState:SetBank("bishop")
     inst.AnimState:SetBuild(build)
 
-    inst:AddTag("monster")
-    inst:AddTag("hostile")
-    inst:AddTag("chess")
     inst:AddTag("bishop")
+    inst:AddTag("chess")
+    inst:AddTag("hostile")
+    inst:AddTag("monster")
 
-    if tag ~= nil then
+    if tag then
         inst:AddTag(tag)
     end
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst:AddComponent("lootdropper")
+    --
+    local combat = inst:AddComponent("combat")
+    combat.hiteffectsymbol = "waist"
+    combat:SetAttackPeriod(TUNING.BISHOP_ATTACK_PERIOD)
+    combat:SetDefaultDamage(TUNING.BISHOP_DAMAGE)
+    combat:SetRetargetFunction(3, Retarget)
+    combat:SetKeepTargetFunction(KeepTarget)
+    combat:SetRange(TUNING.BISHOP_ATTACK_DIST)
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor.walkspeed = TUNING.BISHOP_WALK_SPEED
-
-    inst:SetStateGraph("SGbishop")
-    inst:SetBrain(brain)
-
-    inst:AddComponent("sleeper")
-    inst.components.sleeper:SetWakeTest(ShouldWake)
-    inst.components.sleeper:SetSleepTest(ShouldSleep)
-    inst.components.sleeper:SetResistance(3)
-
-    inst:AddComponent("combat")
-    inst.components.combat.hiteffectsymbol = "waist"
-    inst.components.combat:SetAttackPeriod(TUNING.BISHOP_ATTACK_PERIOD)
-    inst.components.combat:SetRange(TUNING.BISHOP_ATTACK_DIST)
-    inst.components.combat:SetRetargetFunction(3, Retarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
-
-    inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(TUNING.BISHOP_HEALTH)
-    inst.components.combat:SetDefaultDamage(TUNING.BISHOP_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.BISHOP_ATTACK_PERIOD)
-
-    inst:AddComponent("inventory")
-
-    inst:AddComponent("inspectable")
-    inst:AddComponent("knownlocations")
-
-    inst:DoTaskInTime(0, RememberKnownLocation)
-
+    --
     inst:AddComponent("follower")
 
+    --
+    local health = inst:AddComponent("health")
+    health:SetMaxHealth(TUNING.BISHOP_HEALTH)
+
+    --
+    inst:AddComponent("inspectable")
+
+    --
+    inst:AddComponent("inventory")
+
+    --
+    inst:AddComponent("knownlocations")
+
+    --
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor.walkspeed = TUNING.BISHOP_WALK_SPEED
+
+    --
+    inst:AddComponent("lootdropper")
+
+    --
+    local sleeper = inst:AddComponent("sleeper")
+    sleeper:SetWakeTest(ShouldWake)
+    sleeper:SetSleepTest(ShouldSleep)
+    sleeper:SetResistance(3)
+
+    --
     MakeMediumBurnableCharacter(inst, "waist")
     MakeMediumFreezableCharacter(inst, "waist")
 
+    --
     MakeHauntablePanic(inst)
 
+    --
+    inst:SetStateGraph("SGbishop")
+    inst:SetBrain(brain)
+
+    --
+    inst:DoTaskInTime(0, SetHomePosition)
+
+    --
     inst:ListenForEvent("attacked", OnAttacked)
 
+    --
     EquipWeapon(inst)
 
     return inst
@@ -172,7 +186,7 @@ local function bishop_fn()
         return inst
     end
 
-    inst.components.lootdropper:SetChanceLootTable('bishop')
+    inst.components.lootdropper:SetChanceLootTable("bishop")
     inst.kind = ""
     inst.soundpath = "dontstarve/creatures/bishop/"
     inst.effortsound = "dontstarve/creatures/bishop/idle"
@@ -189,7 +203,13 @@ local function bishop_nightmare_fn()
         return inst
     end
 
-    inst.components.lootdropper:SetChanceLootTable('bishop_nightmare')
+    --
+    local acidinfusible = inst:AddComponent("acidinfusible")
+    acidinfusible:SetFXLevel(3)
+    acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
+    --
+    inst.components.lootdropper:SetChanceLootTable("bishop_nightmare")
     inst.kind = "_nightmare"
     inst.soundpath = "dontstarve/creatures/bishop_nightmare/"
     inst.effortsound = "dontstarve/creatures/bishop_nightmare/rattle"

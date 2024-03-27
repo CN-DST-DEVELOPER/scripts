@@ -1256,7 +1256,7 @@ function FrontEnd:OnMouseButton(button, down, x, y)
         return true
     end
 
-    return CHEATS_ENABLED and BRANCH == "dev" and DoDebugMouse(button, down, x, y)
+    return CHEATS_ENABLED and DoDebugMouse(button, down, x, y)
 end
 
 function FrontEnd:OnMouseMove(x, y)

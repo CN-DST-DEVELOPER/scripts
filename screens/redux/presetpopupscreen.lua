@@ -374,7 +374,7 @@ function PresetPopupScreen:OnControl(control, down)
         if control == CONTROL_CANCEL then
             self:OnCancel()
             return true
-        elseif control == CONTROL_PAUSE then
+        elseif control == CONTROL_MENU_START then
             self:OnConfirmPreset()
             return true
         end
@@ -386,7 +386,7 @@ function PresetPopupScreen:GetHelpText()
     local t = {}
 
     table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.CANCEL)
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.CUSTOMIZATIONSCREEN.CONFIRM_PRESET)
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.CUSTOMIZATIONSCREEN.CONFIRM_PRESET)
 
 	return table.concat(t, "  ")
 end

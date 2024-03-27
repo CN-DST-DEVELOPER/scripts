@@ -1,5 +1,21 @@
 require("constants")
 
+local function grass_area()
+	local grass = {}
+
+	for i=1,math.random(4) do
+		table.insert(grass,"grass")
+	end
+
+	for i=1,math.random(3) do
+		if math.random() < 0.5 then
+			table.insert(grass,"evergreen_stump")
+		end
+	end
+
+	return grass
+end
+
 local function waterlogged_tree_area()
 	local stuff = {}
 
@@ -716,6 +732,7 @@ local ExampleLayout =
 		layout_position = LAYOUT_POSITION.CENTER,
 		disable_transform = true
     }),
+    ["skeleton_notplayer"] = StaticLayout.Get("map/static_layouts/skeleton_notplayer" ),
 
 --------------------------------------------------------------------------------
 -- RUINS
@@ -1229,7 +1246,20 @@ local ExampleLayout =
             monkeyhut_area = monkeyhut_area,
         },
 	}),
+
 --------------------------------------------------------------------------------
+-- Junk Yard
+--------------------------------------------------------------------------------
+	["junk_yard"] = StaticLayout.Get("map/static_layouts/junk_yard1", 
+	{
+		areas =
+		{
+			wobot_area = { "storage_robot" },
+			grass_area = grass_area,
+		}
+	}),
+
+--------------------------------------------------------------------------------	
 
 }
 

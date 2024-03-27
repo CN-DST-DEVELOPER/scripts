@@ -120,7 +120,7 @@ local function itemfn()
 
     inst.AnimState:SetBank("static_contained")
     inst.AnimState:SetBuild("static_ball_contained")
-    inst.AnimState:PlayAnimation("finish_idle")
+    inst.AnimState:PlayAnimation("finish_idle", true)
 
     inst:AddTag("moonstorm_static")
 

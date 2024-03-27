@@ -135,6 +135,8 @@ local function fn()
     local dx = math.cos(angle * DEGREES)
     effect:SetAcceleration(0, dx, -9.80, 1 )
 
+    local map = TheWorld.Map
+
 	local function emit_fn(x, z, left_sx, right_sx, bottom_sy)
         local vy = -1 + UnitRand() * -2
         local vz = 0
@@ -144,7 +146,7 @@ local function fn()
 		local px1 = x + px
 		local pz1 = z + pz
 
-		if not IsUnderRainDomeAtXZ(px1, pz1) then
+		if not IsUnderRainDomeAtXZ(px1, pz1) and map:CanPointHaveAcidRain(px1, 0, pz1) then
 			if bottom_sy ~= nil then
 				local psx, psy = TheSim:GetScreenPos(px1, 0, pz1)
 				if psy < bottom_sy and psx > left_sx and psx < right_sx then
@@ -162,8 +164,6 @@ local function fn()
     end
 
     local acidraindrop_offset = CreateDiscEmitter(20)
-
-    local map = TheWorld.Map
 
 	local last_domes = nil
 	local last_domes_ticks = 0
@@ -205,8 +205,8 @@ local function fn()
 			if #domes > 0 then
 				last_domes = domes
 				last_domes_ticks = 30
-			elseif map:IsPassableAtPoint(x1, 0, z1) then
-				SpawnRaindropAtXZ(inst, x1, z1, fastforward)
+			elseif map:IsPassableAtPoint(x1, 0, z1) and map:CanPointHaveAcidRain(x1, 0, z1) then
+                SpawnRaindropAtXZ(inst, x1, z1, fastforward)
 			end
 
 			--Extra raindrop for domes
@@ -223,8 +223,8 @@ local function fn()
 							local x2, y2, z2 = dome.Transform:GetWorldPosition()
 							x1 = x2 + math.cos(theta) * r
 							z1 = z2 - math.sin(theta) * r
-							if map:IsPassableAtPoint(x1, 0, z1) and not IsUnderRainDomeAtXZ(x1, z1) then
-								SpawnRaindropAtXZ(inst, x1, z1, fastforward)
+							if map:IsPassableAtPoint(x1, 0, z1) and not IsUnderRainDomeAtXZ(x1, z1) and map:CanPointHaveAcidRain(x1, 0, z1) then
+                                SpawnRaindropAtXZ(inst, x1, z1, fastforward)
 							end
 						end
 					elseif #last_domes > 1 then

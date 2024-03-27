@@ -15,7 +15,12 @@ local critterassets =
 	Asset("ANIM", "anim/singingshell_creature_basic.zip"),
 }
 
-local singingshellloot = { "slurtle_shellpieces" }
+SetSharedLootTable("singingshell",
+{
+    {"slurtle_shellpieces",   1.0},
+    {"slurtle_shellpieces",   0.3},
+})
+
 
 local FLOATER_SIZES =
 {
@@ -190,7 +195,7 @@ local function MakeShell(octave, common_postinit, master_postinit, prefabs)
 		inst.components.inventoryitem:ChangeImageName("singingshell_"..octave_str.."_"..inst._variation)
 
 		inst:AddComponent("lootdropper")
-		inst.components.lootdropper:SetLoot(singingshellloot)
+		inst.components.lootdropper:SetChanceLootTable("singingshell")
 
 		inst:AddComponent("workable")
 		inst.components.workable:SetWorkAction(ACTIONS.HAMMER)

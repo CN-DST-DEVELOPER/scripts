@@ -76,6 +76,10 @@ function PeriodicSpawner:SetGetSpawnPointFn(fn)
     self.getspawnpointfn = fn
 end
 
+function PeriodicSpawner:SetIgnoreFlotsamGenerator(ignores)
+    self.ignoreflotsamgenerator = ignores
+end
+
 ----------------------------------------------------------------------------------------
 
 function PeriodicSpawner:Start(timeoverride)
@@ -118,12 +122,12 @@ function PeriodicSpawner:TrySpawn(prefab)
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
 
-    local spawnpos = Vector3(x, y , z)
+    local spawnpos = Vector3(x, y, z)
 
     if self.getspawnpointfn ~= nil then
         spawnpos = self.getspawnpointfn(self.inst)
 
-        if spawnpos == nil then
+        if not spawnpos then
             return false, MISSING_SPAWN_POS_RETRY_TIME
         end
     end
@@ -138,15 +142,15 @@ function PeriodicSpawner:TrySpawn(prefab)
         local ents = TheSim:FindEntities(x, y, z, self.range or self.spacing, nil, PERIODICSPAWNER_CANTTAGS)
         local count = 0
 
-        for i, v in ipairs(ents) do
-            if v.prefab == prefab then
+        for _, nearby_ent in ipairs(ents) do
+            if nearby_ent.prefab == prefab then
                 --can't spawn if anything within "spacing"
                 --optimized to skip distance checks when we already
                 --know that FindEntities radius is within "spacing"
-                if self.range == nil or (
+                if not self.range or (
                     self.spacing ~= nil and (
                         self.spacing >= self.range or
-                        v:GetDistanceSqToPoint(spawnpos.x, 0, spawnpos.z) < self.spacing * self.spacing
+                        nearby_ent:GetDistanceSqToPoint(spawnpos.x, 0, spawnpos.z) < self.spacing * self.spacing
                     )
                 ) then
                     return false
@@ -161,22 +165,23 @@ function PeriodicSpawner:TrySpawn(prefab)
         end
     end
 
-    local ent = nil
+    local ent
 
     --V2C: using TheWorld.Map:GetPlatformAtPoint(x, z) instead of self.inst:GetCurrentPlatform()
     --     because the spawner may not detect platforms.
     --     e.g. Glommer is flying, and does not detect platforms, but spawns glommerfuel.
 
-    if TheWorld.components.flotsamgenerator ~= nil and
-        not TheWorld.Map:IsVisualGroundAtPoint(spawnpos:Get()) and
-        not TheWorld.Map:GetPlatformAtPoint(spawnpos.x, spawnpos.z)
+    local spawn_x, spawn_y, spawn_z = spawnpos:Get()
+    if not self.ignoreflotsamgenerator and TheWorld.components.flotsamgenerator ~= nil and
+        not TheWorld.Map:IsVisualGroundAtPoint(spawn_x, spawn_y, spawn_z) and
+        not TheWorld.Map:GetPlatformAtPoint(spawn_x, spawn_z)
     then
         ent = TheWorld.components.flotsamgenerator:SpawnFlotsam(spawnpos, prefab, true)
     else
         ent = SpawnPrefab(prefab)
 
         if ent ~= nil then
-            ent.Transform:SetPosition(spawnpos:Get())
+            ent.Transform:SetPosition(spawn_x, spawn_y, spawn_z)
         end
     end
 
@@ -188,7 +193,7 @@ function PeriodicSpawner:TrySpawn(prefab)
 end
 
 function PeriodicSpawner:DoSpawn()
-    local success, timeoverride = self:TrySpawn()
+    local _, timeoverride = self:TrySpawn()
 
     self:Start(timeoverride)
 end

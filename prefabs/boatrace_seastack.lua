@@ -101,7 +101,7 @@ local function fn()
 
     inst.AnimState:SetBank("boatrace_seastack")
     inst.AnimState:SetBuild("boatrace_seastack")
-    inst.AnimState:PlayAnimation("1_idle")
+    inst.AnimState:PlayAnimation("1_idle", true)
 
     local floater = MakeInventoryFloatable(inst, "med", 0.1, {1.1, 0.9, 1.1})
     floater.bob_percent = 0
@@ -112,8 +112,6 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
-
-    inst.scrapbook_anim = "1_idle"
 
     --
     inst:AddComponent("boatphysics")
@@ -195,7 +193,7 @@ local function monkeyfn()
 
     inst.AnimState:SetBank("boatrace_seastack")
     inst.AnimState:SetBuild("boatrace_seastack_monkey")
-    inst.AnimState:PlayAnimation("1_idle")
+    inst.AnimState:PlayAnimation("1_idle", true)
 
     local floater = MakeInventoryFloatable(inst, "med", 0.1, {1.1, 0.9, 1.1})
     floater.bob_percent = 0
@@ -206,8 +204,6 @@ local function monkeyfn()
     if not TheWorld.ismastersim then
         return inst
     end
-
-    inst.scrapbook_anim = "1_idle"
 
     --
     inst:AddComponent("boatphysics")
@@ -271,6 +267,7 @@ local MONKEY_KIT_DATA = {
     bank = "boatrace_seastack",
     build = "boatrace_seastack_monkey",
     anim = "kit_ground",
+    tags = {"nosteal"},
     prefab_to_deploy = "boatrace_seastack_monkey",
     product_fn = function(product, inst)
         product._spawner = inst._spawner

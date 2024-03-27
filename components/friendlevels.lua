@@ -59,6 +59,7 @@ function Friendlevels:CompleteTask(task, doer)
     if not self.friendlytasks[task].complete and self.level < #self.levelrewards then
         self.level = self.level + 1
         table.insert(self.queuedrewards, {level = self.level, task = task})
+        self.inst:PushEvent("friend_level_changed")
     elseif not self.friendlytasks[task] or not self.friendlytasks[task].complete or not self.friendlytasks[task].onetime then
         defaulttask = true
         if self.defaultrewards then
@@ -91,10 +92,13 @@ end
 
 function Friendlevels:OnLoad(data)
     self.enabled = data.enabled
-    self.level = data.level
+    self.level = data.level or 0
     self.queuedrewards = data.queuedrewards or {}
     if #self.queuedrewards > 0 then
         self.inst:PushEvent("friend_task_complete")
+    end
+    if self.level > 0 then
+        self.inst:PushEvent("friend_level_changed")
     end
 end
 

@@ -54,9 +54,7 @@ function ChaseAndRam:Visit()
     end
 
     if self.status == RUNNING then
-        local is_attacking = self.inst.sg:HasStateTag("attack")
-
-        if combat.target == nil or not combat.target.entity:IsValid() then
+        if not combat.target or not combat.target.entity:IsValid() then
             self.status = FAILED
             self.ram_vector = nil
             combat:SetTarget(nil)
@@ -81,10 +79,11 @@ function ChaseAndRam:Visit()
                 self.ram_vector = (hp-pt):GetNormalized()
             end
 
-            if math.abs(angle - math.abs(self.ram_angle)) <= 60 then
+            local offset_angle = math.abs(angle - math.abs(self.ram_angle))
+            if offset_angle <= 60 then
                 --Running action. This is the actual "Ram"
                 self.inst.components.locomotor:RunInDirection(self.ram_angle)
-            elseif math.abs(angle - math.abs(self.ram_angle)) > 60 and (dsq >= self.give_up_dist * self.give_up_dist) then
+            elseif offset_angle > 60 and (dsq >= (self.give_up_dist * self.give_up_dist)) then
                 --You have run past your target. Stop!
                 self.inst.components.locomotor:Stop()
                 self.status = FAILED
@@ -110,7 +109,7 @@ function ChaseAndRam:Visit()
                 self.inst:RemoveTag("ChaseAndRam")
                 return
             elseif (self.max_charge_dist ~= nil and distsq(self.startloc, self.inst:GetPosition()) >= self.max_charge_dist * self.max_charge_dist)
-                or (self.max_chase_time ~= nil and self.startruntime ~= nil and GetTime() - self.startruntime > self.max_chase_time) then
+                    or (self.max_chase_time ~= nil and self.startruntime ~= nil and GetTime() - self.startruntime > self.max_chase_time) then
                 self.status = FAILED
                 self.ram_vector = nil
                 self.inst.components.locomotor:Stop()

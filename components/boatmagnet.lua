@@ -153,7 +153,7 @@ function BoatMagnet:UnpairWithBeacon()
     self.inst:RemoveEventCallback("onturnon", self.OnBeaconTurnedOn, self.beacon)
     self.inst:RemoveEventCallback("onturnoff", self.OnBeaconTurnedOff, self.beacon)
 
-    if self.beacon.components.boatmagnetbeacon then
+    if self.beacon:IsValid() and self.beacon.components.boatmagnetbeacon then
         self.beacon.components.boatmagnetbeacon:UnpairWithMagnet()
     end
 

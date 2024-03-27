@@ -35,6 +35,7 @@ To add a new language:
   - PC Mouse:			132 to 135		0x84-0x87
   - DualShock4 on PC:	136 to 139		0x88-0x8B
   - PS4:				140 to 143		0x8A-0x8D
+  - Switch:             144 to 147      0x90-0x93
 - The third digit can be from 128 to 191, inclusive
   - no reserved meanings
 ***************************************************************
@@ -432,6 +433,7 @@ STRINGS =
 		{
 			 GENERIC = "Pick",
 			 HARVEST = "Harvest",
+             RUMMAGE = "Rummage",
 		},
         REPAIR =
         {
@@ -627,6 +629,8 @@ STRINGS =
         {
             GENERIC = "Heal",
             SELF = "Heal Self",
+            USE = "Use",
+            USEONSELF = "Use on Self",
         },
         UNLOCK =
         {
@@ -1026,6 +1030,7 @@ STRINGS =
     SMOLDERINGITEM = "Smoldering",
     DISEASEDITEM = "Diseased",
 	BROKENITEM = "Broken",
+	WAXEDPLANT = "Scared Stiff",
 
     WET_PREFIX =
     {
@@ -1459,6 +1464,7 @@ STRINGS =
         INSANITYROCK = "Obelisk",
         SANITYROCK = "Obelisk",
         SKELETON = "Skeleton",
+        SKELETON_NOTPLAYER = "Skeleton",
         SCORCHED_SKELETON = "Crispy Skeleton",
         SKELETON_PLAYER = "Skeleton",
         PIGHEAD = "Pig Head",
@@ -1530,6 +1536,8 @@ STRINGS =
         BEARDHAIR = "Beard Hair",
         FURTUFT = "Fur Tuft",
         TREASURECHEST = "Chest",
+        CHESTUPGRADE_STACKSIZE = "Elastispacer",
+		COLLAPSEDCHEST = "Broken-down Chest",
         DRAGONFLYCHEST = "Scaled Chest",
         DRAGONFLYFURNACE = "Scaled Furnace",
         SKULLCHEST = "Skullchest",
@@ -1784,6 +1792,7 @@ STRINGS =
         WALL_HAY_ITEM = "Hay Wall",
         WALL_MOONROCK_ITEM = "Moon Rock Wall",
 		WALL_DREADSTONE_ITEM = "Dreadstone Wall",
+        WALL_SCRAP_ITEM = "Scrap Wall",
 
         WALL_WOOD = "Wood Wall",
         WALL_STONE = "Stone Wall",
@@ -1791,6 +1800,7 @@ STRINGS =
         WALL_HAY = "Hay Wall",
         WALL_MOONROCK = "Moon Rock Wall",
 		WALL_DREADSTONE = "Dreadstone Wall",
+        WALL_SCRAP = "Scrap Wall",
 
         FENCE = "Wood Fence",
         FENCE_ITEM = "Wood Fence",
@@ -2203,6 +2213,7 @@ STRINGS =
         RED_MUSHROOMHAT = "Red Funcap",
         GREEN_MUSHROOMHAT = "Green Funcap",
         BLUE_MUSHROOMHAT = "Blue Funcap",
+        MOON_MUSHROOMHAT = "Lunar Funcap",
         MUSHROOM_LIGHT2 = "Glowcap",
         MUSHROOM_LIGHT = "Mushlight",
         SHROOM_SKIN = "Shroom Skin",
@@ -3348,6 +3359,7 @@ STRINGS =
         DUSTMERINGUE = "Amberosia",
 
         SHROOMCAKE = "Mushy Cake",
+        SHROOMBAIT = "Stuffed Night Cap",
 
         ARCHIVE_LOCKBOX_DISPENCER = "Fountain of Knowledge",
         ARCHIVE_PORTAL = "Sealed Portal",
@@ -3442,6 +3454,7 @@ STRINGS =
         WAGSTAFF_NPC_PSTBOSS = "Grainy Transmission",
         WAGSTAFF_NPC_MUTATIONS = "Grainy Transmission",
         ALTERGUARDIAN_CONTAINED = "Lunar Essence Extractor",
+        WAGSTAFF_NPC_WAGPUNK = "Grainy Transmission",
 
         ALTERGUARDIAN_PHASE1 = "Celestial Champion",
         ALTERGUARDIAN_PHASE2 = "Celestial Champion",
@@ -3706,6 +3719,7 @@ STRINGS =
 		HORRORFUEL = "Pure Horror",
 		DAYWALKER = "Nightmare Werepig",
 		DAYWALKER_PILLAR = "Cracked Pillar",
+		DAYWALKER2 = "Scrappy Werepig",
 		SHADOW_LEECH = "Parasitic Shadeling",
 		ARMORDREADSTONE = "Dreadstone Armor",
 		DREADSTONEHAT = "Dreadstone Helm",
@@ -3902,6 +3916,23 @@ STRINGS =
         MASTUPGRADE_LAMP_YOTD = "Dragonfly Light",
         MASTUPGRADE_LAMP_ITEM_YOTD = "Dragonfly Light Kit",
         WALKINGPLANK_YOTD = "Scaled Plank",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "Slimy Salve",
+
+        BEESWAX_SPRAY = "Embalming Spritz",
+        STORAGE_ROBOT = "W.O.B.O.T.",
+
+        SCRAP_MONOCLEHAT = "Horizon Expandinator",
+        SCRAPHAT = "Scrappy Chapauldron",
+
+        JUNK_PILE = "Junk Pile",
+        JUNK_PILE_BIG = "Teetering Junk Pile",
+
+        FENCE_JUNK = "Junky Fence",
+
+        ARMOR_LUNARPLANT_HUSK = "Brambleshade Armor",       
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4042,6 +4073,7 @@ STRINGS =
         BEEBOX = "Store your own bees.",
         BEEHAT = "Protection against angry bees.",
         TREASURECHEST = "A sturdy container.",
+        CHESTUPGRADE_STACKSIZE = "It's a bit of a stretch for some storage space.",
         DRAGONFLYCHEST = "A sturdy and fireproof container.",
         DRAGONFLYFURNACE = "Build yourself a fly flue.",
         BEDROLL_STRAW = "Sleep through the night.",
@@ -4267,6 +4299,7 @@ STRINGS =
         RED_MUSHROOMHAT = "It's like eating all kinds of mushrooms.",
         GREEN_MUSHROOMHAT = "It's like eating all kinds of mushrooms.",
         BLUE_MUSHROOMHAT = "It's like eating all kinds of mushrooms.",
+        MOON_MUSHROOMHAT = "It's like eating all kinds of mushrooms.",
         MUSHROOM_LIGHT2 = "Inspired by the lava lamp sciences.",
         MUSHROOM_LIGHT = "The perfect addition to any mush-Room.",
         SLEEPBOMB = "A throwable pouch full of sleep.",
@@ -4907,7 +4940,17 @@ STRINGS =
 
         BOATRACE_START_THROWABLE_DEPLOYKIT = "Ready, set, boat!",
         BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "It's not the destination, it's the journey.",
-    },    -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "What doesn't kill you makes you stronger.",
+
+        BEESWAX_SPRAY = "A petrifying preserver of plant life.",
+
+        WALL_SCRAP_ITEM = "A pile of junk, roughly wall-shaped.",
+
+        ARMOR_LUNARPLANT_HUSK = "Become the prickliest of them all.",
+    },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
 
@@ -5085,7 +5128,7 @@ STRINGS =
     MERM_TALK_HELP_HAMMER    = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"Smash! Smash!", "Florph! Florph!"}, {"Work hard, florp!", "Glort blut, florp!"}},
     MERM_TALK_FIND_FOOD      = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"This do fine.", "Glort grolt flut."}, {"Find something tasty!", "Glurt florpy flut!"}},
     MERM_BATTLECRY           = {{"Glorp! Go away!", "Glorp! Glorpy glup!"}, {"Destroy you!", "Wult glut!"},},
-    MERM_GUARD_BATTLECRY     = {{"To battle!", "Wult flrot!"}, {"For glory of Mermfolk!", "Flort Glurtsu flut!"}, {"ATTAAAACK!!", "GLOT FLOOOORPH!!"}, {"Defend King!", "Glurph Glurtsen!"}},
+    MERM_GUARD_BATTLECRY     = {{"To battle!", "Wult flrot!"}, {"For Mermfolk!", "Flort Glurtsu flut!"}, {"ATTAAAACK!!", "GLOT FLOOOORPH!!"}, {"Defend King!", "Glurph Glurtsen!"}},
     MERM_TALK_PANICBOSS      = {{"Something coming!", "Gloppy flort!"}, {"Aaah!! Bad thing! Bad thing!", "Gloooorph!! Glurph glot! Glurph glot!"}, {"It come to destroy us!", "Flort wult Glurtsu!"}},
     MERM_TALK_PANICBOSS_KING = {{"Rally to King!", "Glurtsen blut flort!"}, {"Hurry! Protect kingdom!", "Flurph flrot! Gloppy Glurtsam!"}, {"S-stay brave!!", "G-glop blut flrot!!"}},
 
@@ -5097,81 +5140,81 @@ STRINGS =
     MERM_KING_TALK_HUNGER_FULL =  "Have done well. Now go.",
 
 	HERMITCRAB_TALK_ONPURCHASE = {
-                LOW = {"Great. Now leave me alone."},
-                MED = {"Pleasure doing business."},
-                HIGH = {"Give me a holler if you need anything else!"},
-            },
+            LOW = {"Great. Now leave me alone."},
+            MED = {"Pleasure doing business."},
+            HIGH = {"Give me a holler if you need anything else!"},
+        },
     HERMITCRAB_COMPLAIN = {
-            PLANT_FLOWERS = {
-                LOW = {"Useless lazy bees... not a drop of honey..."},
-                MED = {"When I had my flower garden, the bees made honey all the time."},
-                HIGH = {{"Dearie, would you...","Help me plant some flowers?"}},
-            },
-            REMOVE_JUNK = {
-                LOW = {"(Grumble)... water's all full of junk..."},
-                MED = {"The water's so full of junk, I can't even see the fish!"},
-                HIGH = {"You look spry! Could you get rid of that junk in the water?"},
-            },
-            PLANT_BERRIES = {
-                LOW = {"All of my berry bushes died."},
-                MED = {"I miss my garden... I used to grow berries..."},
-                HIGH = {{"Care to help me with some gardening?","I need some new berry bushes."}},
-            },
-            FILL_MEATRACKS = {
-                LOW = {"Hmph... never any meat around here for drying..."},
-                MED = {{"My drying racks are empty again?","So much work for these old claws..."}},
-                HIGH = {"Could you dry some meat for me, dearie?"},
-            },
-            GIVE_HEAVY_FISH = {
-                LOW = {{"(Grumble)... only ever catch minnows...","Never a nice big fish..."}},
-                MED = {"If only SOMEONE could bring me some big, juicy fish..."},
-                HIGH = {{"If you could bring me some big fish...","I'd be so happy!"}},
-            },
-            REMOVE_LUREPLANT = {
-                LOW = {{"That horrible plant...","Such an eyesore..."}},
-                MED = {"That lureplant is going to take over my whole yard!"},
-                HIGH = {{"Would you be a dear?","Take care of that awful plant for me."}},
-            },
-            GIVE_UMBRELLA = {
-                LOW = {{"Miserable rain...","I'll catch my death..."}},
-                MED = {{"I'm getting soaked to the chitin!","If only I had an umbrella..."}},
-                HIGH = {{"What terrible weather.","Do you have an umbrella, dearie?"}},
-            },
-            GIVE_PUFFY_VEST = {
-                LOW = {"(Grumble) It's freezing out here!"},
-                MED = {"Brrr, this cold weather is terrible for my rheumatism."},
-                HIGH = {"Ooooh, I do wish I had something warm to wear."},
-            },
-            GIVE_FLOWER_SALAD = {
-                LOW = {"Hmph. No ingredients for flower salad around..."},
-                MED = {"My sweetie used to make my favorite... flower salad..."},
-                HIGH = {{"Flower salad brings back such memories...","Could you make some for me?"}},
-            },
-            GIVE_FISH_WINTER = {
-                LOW = {"Hmph. Should be Ice Bream season right about now."},
-                MED = {"I used to catch Ice Bream all through the winter..."},
-                HIGH = {"Dearie, could you catch an Ice Bream for me?"},
-            },
-            GIVE_FISH_SUMMER = {
-                LOW = {"The Scorching Sunfish should be migrating now."},
-                MED = {"Nothing says summer like some Scorching Sunfish..."},
-                HIGH = {"I would love a Scorching Sunfish, if you have it."},
-            },
-            GIVE_FISH_SPRING = {
-                LOW = {"Thought I saw some Bloomfin Tuna yesterday..."},
-                MED = {"This weather is perfect for Bloomfin Tuna..."},
-                HIGH = {"Let me know if you catch a Bloomfin Tuna, dearie!"},
-            },
-            GIVE_FISH_AUTUM = {
-                LOW = {"I think Fallounders are in season."},
-                MED = {"Nothing says autumn like some tasty Fallounder..."},
-                HIGH = {"Would you bring me a Fallounder, dearie?"},
-            },
-            MAKE_CHAIR = {
-                LOW = {"(Grumble) my shell is killing me...","Nowhere to sit around here..."},
-                MED = {"There's nowhere to sit and rest this old chitin..."},
-                HIGH = {"What this place really needs is a nice place to sit and chat."},
-            },
+        PLANT_FLOWERS = {
+            LOW = {"Useless lazy bees... not a drop of honey..."},
+            MED = {"When I had my flower garden, the bees made honey all the time."},
+            HIGH = {"Dearie, would you...","Help me plant some flowers?"},
+        },
+        REMOVE_JUNK = {
+            LOW = {"(Grumble)... water's all full of junk..."},
+            MED = {"The water's so full of junk, I can't even see the fish!"},
+            HIGH = {"You look spry! Could you get rid of that junk in the water?"},
+        },
+        PLANT_BERRIES = {
+            LOW = {"All of my berry bushes died."},
+            MED = {"I miss my garden... I used to grow berries..."},
+            HIGH = {"Care to help me with some gardening?","I need some new berry bushes."},
+        },
+        FILL_MEATRACKS = {
+            LOW = {"Hmph... never any meat around here for drying..."},
+            MED = {"My drying racks are empty again?","So much work for these old claws..."},
+            HIGH = {"Could you dry some meat for me, dearie?"},
+        },
+        GIVE_HEAVY_FISH = {
+            LOW = {"(Grumble)... only ever catch minnows...","Never a nice big fish..."},
+            MED = {"If only SOMEONE could bring me some big, juicy fish..."},
+            HIGH = {"If you could bring me some big fish...","I'd be so happy!"},
+        },
+        REMOVE_LUREPLANT = {
+            LOW = {"That horrible plant...","Such an eyesore..."},
+            MED = {"That lureplant is going to take over my whole yard!"},
+            HIGH = {"Would you be a dear?","Take care of that awful plant for me."},
+        },
+        GIVE_UMBRELLA = {
+            LOW = {"Miserable rain...","I'll catch my death..."},
+            MED = {"I'm getting soaked to the chitin!","If only I had an umbrella..."},
+            HIGH = {"What terrible weather.","Do you have an umbrella, dearie?"},
+        },
+        GIVE_PUFFY_VEST = {
+            LOW = {"(Grumble) It's freezing out here!"},
+            MED = {"Brrr, this cold weather is terrible for my rheumatism."},
+            HIGH = {"Ooooh, I do wish I had something warm to wear."},
+        },
+        GIVE_FLOWER_SALAD = {
+            LOW = {"Hmph. No ingredients for flower salad around..."},
+            MED = {"My sweetie used to make my favorite... flower salad..."},
+            HIGH = {"Flower salad brings back such memories...","Could you make some for me?"},
+        },
+        GIVE_FISH_WINTER = {
+            LOW = {"Hmph. Should be Ice Bream season right about now."},
+            MED = {"I used to catch Ice Bream all through the winter..."},
+            HIGH = {"Dearie, could you catch an Ice Bream for me?"},
+        },
+        GIVE_FISH_SUMMER = {
+            LOW = {"The Scorching Sunfish should be migrating now."},
+            MED = {"Nothing says summer like some Scorching Sunfish..."},
+            HIGH = {"I would love a Scorching Sunfish, if you have it."},
+        },
+        GIVE_FISH_SPRING = {
+            LOW = {"Thought I saw some Bloomfin Tuna yesterday..."},
+            MED = {"This weather is perfect for Bloomfin Tuna..."},
+            HIGH = {"Let me know if you catch a Bloomfin Tuna, dearie!"},
+        },
+        GIVE_FISH_AUTUM = {
+            LOW = {"I think Fallounders are in season."},
+            MED = {"Nothing says autumn like some tasty Fallounder..."},
+            HIGH = {"Would you bring me a Fallounder, dearie?"},
+        },
+        MAKE_CHAIR = {
+            LOW = {"(Grumble) my shell is killing me...","Nowhere to sit around here..."},
+            MED = {"There's nowhere to sit and rest this old chitin..."},
+            HIGH = {"What this place really needs is a nice place to sit and chat."},
+        },
     },
 
     HERMITCRAB_INVESTIGATE = {
@@ -5242,17 +5285,17 @@ STRINGS =
     },
 
     HERMITCRAB_DEFAULT_REWARD = {
-                LOW = {{"I guess you want something for helping me out?","Fine."}},
+                LOW = {"I guess you want something for helping me out?","Fine."},
                 MED = {"I guess it's not so bad having you around."},
                 HIGH = {"Such a big help! Thank you."},
             },
     HERMITCRAB_GROUP_REWARD = {
-                LOW = {{"I don't know what you're playing at","but don't think I owe you now!"}},
+                LOW = {"I don't know what you're playing at","but don't think I owe you now!"},
                 MED = {"You've been busy! I suppose I should repay you."},
-                HIGH = {{"You've done such a wonderful job!","Here, it's the least I can do."}},
+                HIGH = {"You've done such a wonderful job!","Here, it's the least I can do."},
             },
 
-    HERMITCRAB_INTRODUCE = {{"You've done so much for me.","Please, call me Pearl."}},
+    HERMITCRAB_INTRODUCE = {"You've done so much for me.","Please, call me Pearl."},
 
     HERMITCRAB_REWARD = {
             FIX_HOUSE_1 = {
@@ -5267,8 +5310,8 @@ STRINGS =
             },
             FIX_HOUSE_3 = {
                 LOW = {"Oh. That does look a bit better."},
-                MED = {{"I barely recognize the place!","Oh don't look worried, that's a good thing."}},
-                HIGH = {{"Oh, it's wonderful!","I feel like a Queen in her palace","Hoo-hoo!"}},
+                MED = {"I barely recognize the place!","Oh don't look worried, that's a good thing."},
+                HIGH = {"Oh, it's wonderful!","I feel like a Queen in her palace","Hoo-hoo!"},
             },
             PLANT_FLOWERS = {
                 LOW = {"Well, at least my bees are happy now."},
@@ -5278,12 +5321,12 @@ STRINGS =
             REMOVE_JUNK = {
                 LOW = {"Hmph. Took you long enough."},
                 MED = {"Should be easier to fish with all that junk gone!"},
-                HIGH = {{"Ahhh...","It's such a weight off my mind to have that junk gone."}},
+                HIGH = {"Ahhh...","It's such a weight off my mind to have that junk gone."},
             },
             PLANT_BERRIES = {
-                LOW = {{"You could've planted them in neater rows...","But I guess it'll do."}},
+                LOW = {"You could've planted them in neater rows...","But I guess it'll do."},
                 MED = {"I can't remember the last time I had fresh berries!"},
-                HIGH = {{"Ooooh, such a thoughtful young whipper-snapper!","Let me pinch your cheeks!"}},
+                HIGH = {"Ooooh, such a thoughtful young whipper-snapper!","Let me pinch your cheeks!"},
             },
             FILL_MEATRACKS = {
                 LOW = {"Let me guess, you want something in return? Fine..."},
@@ -5291,14 +5334,14 @@ STRINGS =
                 HIGH = {"I hope it wasn't too much trouble..."},
             },
             GIVE_HEAVY_FISH = {
-                LOW = {{"Why are you giving me this?","Wait, I never said I wouldn't take it!"}},
+                LOW = {"Why are you giving me this?","Wait, I never said I wouldn't take it!"},
                 MED = {"Ooooh, that's a hefty pile of fish!"},
-                HIGH = {{"Hoo-hoo!","That's some pretty impressive fish, dearie!"}},
+                HIGH = {"Hoo-hoo!","That's some pretty impressive fish, dearie!"},
             },
             REMOVE_LUREPLANT = {
-                LOW = {{"You think you deserve a reward or something?","Hmph."}},
+                LOW = {"You think you deserve a reward or something?","Hmph."},
                 MED = {"Guess you're at least a half decent weed killer."},
-                HIGH = {{"What a relief!","That plant's been side-eying me for some time."}},
+                HIGH = {"What a relief!","That plant's been side-eying me for some time."},
             },
             GIVE_UMBRELLA = {
                 LOW = {"I guess this will do."},
@@ -5313,7 +5356,7 @@ STRINGS =
             GIVE_FLOWER_SALAD = {
                 LOW = {"..."},
                 MED = {"...Thank you. It's been a long time."},
-                HIGH = {{"Thank you dearie...","Have you seen any other crabs on your travels?"}},
+                HIGH = {"Thank you dearie...","Have you seen any other crabs on your travels?"},
             },
             GIVE_FISH_WINTER = {
                 LOW = {"Hmph. You could've caught it faster if you used this."},
@@ -5342,11 +5385,11 @@ STRINGS =
             },
     },
 
-    HERMITCRAB_STORE_UNLOCK_1 = {{"So do you want to trade?","Or are you just wasting my time?"}},
-    HERMITCRAB_STORE_UNLOCK_2 = {{"I miiight have some lures to trade...","if you can afford them."}},
-    HERMITCRAB_STORE_UNLOCK_3 = {{"Alright, you've twisted my claw."," I'll show you my GOOD lures."}},
-    HERMITCRAB_STORE_UNLOCK_4 = {{"I've got some new things to trade,","but they don't come cheap!"}},
-    HERMITCRAB_STORE_UNLOCK_5 = {{"This old shell must be going soft...","I put something special in the shop."}},
+    HERMITCRAB_STORE_UNLOCK_1 = {"So do you want to trade?","Or are you just wasting my time?"},
+    HERMITCRAB_STORE_UNLOCK_2 = {"I miiight have some lures to trade...","if you can afford them."},
+    HERMITCRAB_STORE_UNLOCK_3 = {"Alright, you've twisted my claw."," I'll show you my GOOD lures."},
+    HERMITCRAB_STORE_UNLOCK_4 = {"I've got some new things to trade,","but they don't come cheap!"},
+    HERMITCRAB_STORE_UNLOCK_5 = {"This old shell must be going soft...","I put something special in the shop."},
 
     HERMITCRAB_PLANTED_LUREPLANT_DIED = {
                 LOW = {"Nice try.\nYou don't get anything for cleaning up your own messes."},
@@ -5362,7 +5405,7 @@ STRINGS =
     HERMITCRAB_ATTEMPT_TRADE = {
         LOW = {"Don't talk to me if you have nothing to trade.",},
         MED = {"Have anything to trade today?",},
-        HIGH = {{"My favorite customer!","What do you need today, dearie?",}},
+        HIGH = {"My favorite customer!","What do you need today, dearie?",},
     },
     HERMITCRAB_GETFISH_BIG = {"Now that's a proper-sized fish!"},
 
@@ -5371,7 +5414,7 @@ STRINGS =
 		"Wow, {weight}...\nI've never caught a fish this small.",
 		"Only {weight}?\nYou should have put it back.",
 		},
-    HERMITCRAB_REFUSE_SALAD = {{"I don't want that right now...","it makes me too sad..."}},
+    HERMITCRAB_REFUSE_SALAD = {"I don't want that right now...","it makes me too sad..."},
     HERMITCRAB_REFUSE_ICE_HOT = {"Don't be silly, it's already freezing out here!"},
     HERMITCRAB_REFUSE_ICE_HAD = {"I don't need any more ice."},
     HERMITCRAB_REFUSE_UMBRELLA = {"It's not even raining..."},
@@ -5392,17 +5435,18 @@ STRINGS =
     HERMITCRAB_ANNOUNCE_OCEANFISHING_IDLE_QUOTE = {
         "Hmph. The fish aren't biting today...",
         "Don't be so fussy, get on my hook!",
-        "\"I often look from the highest hill\"","\"that I might see my boatman...\"","hmm-de-dmm...",
+        "\"I often look from the highest hill, that I might see my boatman...\"",
+        "Hmm-de-dmm...",
         "Never seem to catch anything...",
     },
 
     HERMITCRAB_ANNOUNCE_OCEANFISHING_LINETOOLOOSE = {"Oooh, these tired old claws!",},
     HERMITCRAB_ANNOUNCE_OCEANFISHING_BADCAST = {"I'm not quite as good at this as I used to be...",},
-    HERMITCRAB_ANNOUNCE_OCEANFISHING_GOTAWAY = {{"Why you slippery little nincompoop!","Get back on my hook!"},},
+    HERMITCRAB_ANNOUNCE_OCEANFISHING_GOTAWAY = {"Why you slippery little nincompoop!","Get back on my hook!"},
     HERMITCRAB_ANNOUNCE_OCEANFISHING_BOTHERED = {
-        LOW = {"Ack! You made me lose my fish!",},
-        MED = {"You couldn't wait for a better time?",},
-        HIGH = {"I can always make time for you, dearie.",},
+        LOW = {"Ack! You made me lose my fish!"},
+        MED = {"You couldn't wait for a better time?"},
+        HIGH = {"I can always make time for you, dearie."},
     },
 
     HERMITCRAB_LEVEL10_PLAYERGOOD = {
@@ -5410,7 +5454,7 @@ STRINGS =
     },
 
     HERMITCRAB_LEVEL10_LOWHEALTH = {
-        {"Goodness, what happened to you?"," You need to be more careful!"},
+        {"Goodness, what happened to you?","You need to be more careful!"},
     },
     HERMITCRAB_LEVEL10_LOWSANITY = {
         {"You look like something's troubling you.","Is everything alright, dearie?"},
@@ -5419,7 +5463,7 @@ STRINGS =
         {"Hmph... you look skinny.","Have you been eating well?"},
     },
     HERMITCRAB_THROWBOTTLE = {
-        LOW = {{"You've been snatching up my bottles!","Now I need to send out twice as many!"}},
+        LOW = {"You've been snatching up my bottles!","Now I need to send out twice as many!"},
         MED = {"I suppose I'm glad they reached anyone, really."},
         HIGH = {"Maybe this will be the one to reach him..."},
     },
@@ -5436,6 +5480,9 @@ STRINGS =
     HERMITCRAB_GOT_PEARL = {"Oh...","...I think I understand now.","Thank you for bringing this back to me.","I'm so glad you kept coming back.","My friend."},
     HERMITCRAB_WANT_HOUSE = {"I could really use some help fixing up my house..."},
     HERMITCRAB_GIVE_PEARL = {"If you find my sweetie on your travels...","Could you... give him that pearl?","He'll recognize it."},
+
+    HERMITCRAB_ANNOUNCE_SPOOKED = "Did you see that?!",
+    HERMITCRAB_ANNOUNCE_TOOL_SLIP = "Wow, that tool is slippery!",
 
     --NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
     PIG_TALK_FOLLOWWILSON = { "YOU FRIEND", "I LOVE FRIEND", "YOU IS GOOD", "I FOLLOW!" },
@@ -6661,6 +6708,10 @@ STRINGS =
         "Progress waits for no one!",
     },
 
+    WAGSTAFF_JUNK_YARD_OCCUPIED = {
+        "Too crowded here for my work. I'll come back later",
+    },    
+
     -- Terraria
     EYEOFTERROR_COMING = "You feel an evil presence watching you...",
     EYEOFTERROR_TARGET = "The Eye of Terror turns its gaze toward {player_name}",
@@ -6778,6 +6829,39 @@ STRINGS =
 		--kneeling down tired, recovering health
 		"HUFF... HUFF...",
         "BETTER... YES, MUCH BETTER.",
+	},
+
+	DAYWALKER2_BURIED_FAR =
+	{
+		--buried under junkpile & player is on screen but not that close
+		--moaning/grunting/mumbling to self?
+		"ME STUCK!","TOO HEAVY!","MUST GET FREE!","SO ITCHY.", --see DAYWALKER_IMPRISONED_FAR
+	},
+	DAYWALKER2_BURIED_NEAR =
+	{
+		--buried under junkpile & player is nearby
+		--duplicate some of the lines from above, and add some asking player for help?
+		"HEY YOU!","HELP ME!","MUST GET FREE!","STOP STARING!","SO ITCHY.","COME CLOSER.","ME WON'T DESTROY YOU... PROMISE.", --see DAYWALKER_IMPISONED_NEAR
+	},
+	DAYWALKER2_RUMMAGE_SUCCESS =
+	{
+		--rummaging and found something good
+		"ME LIKE.","GOOD STUFF.","MINE.","YES!","MORE!","NICE.","NEED MORE POWER.","OOH.","MMM.",
+	},
+	DAYWALKER2_RUMMAGE_FAIL =
+	{
+		--rummaging and found nothing but trash
+		"TRASH!","BLEGH!","WORTHLESS.","USELESS!","RAAAAAAGGHH! ALL GARBAGE!",
+	},
+	DAYWALKER2_JUNK_WARNING =
+	{
+		--idle in junkyard, rummaging, warn players not to take his stuff
+		"ALL MINE.","DON'T TOUCH.","LAST WARNING.","GET LOST!","NOT FOR YOU!","GET OUT!",
+	},
+	DAYWALKER2_CHASE_AWAY =
+	{
+		--aggro on players, attack and chase them out of the junkyard
+		"ME DESTROY YOU!","THIEF!","RAAAAAAAAGGHH!","YOU MUST DIE!","IS ALL MINE!",
 	},
 
     WARBIS = {
@@ -7409,7 +7493,7 @@ STRINGS.UI =
             "Anne-Marie Cyr",
             "Matthew Barry",
             "Zachary Lockwood",
-            "Amanda Niles",
+            "Andy Niles",
 			"Auday Hussein",
             "Jesse Blackston",
             "Jeddy Zhang",
@@ -7428,7 +7512,13 @@ STRINGS.UI =
             "Margaret Lu",
             "Kial Natale",
             "Daniel Yu",
-            "Elaine Chen"
+            "Elaine Chen",
+            "Diogo Webber",
+            "Chris Chan",
+            "Rich Talmey",
+            "Jayson Thiessen",
+            "Amanda Wong",
+            "Kent Reimer",
         },
 
         ALTGAMES =
@@ -7839,11 +7929,21 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Year of the Dragonfly",
+		MAINBANNER_BETA_TITLE = "Scrappy Scavengers\nBeta Branch",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
         FAMILY_SHARED = "Family Sharing",
+
+        FAILED_INVENTORY_TITLE = "Inventory Download Failed",
+        FAILED_INVENTORY_BODY = "Unfortunately your Item Collection failed to complete downloading. Would you like to continue without your collection?",
+        FAILED_INVENTORY_YES = "Yes",
+        FAILED_INVENTORY_NO = "No",
+
+        PLAYER2_NOT_ONLINE = "Player 2 Offline",
+        PLAYER2_NOT_ONLINE_DESC = "Player 2 is currently offline. If player 2 is not using an online account, please switch player 2 to an online account and try again.",
+        INVITED_USER_NOT_LOGGED_IN = "Not Logged In",
+        INVITED_USER_NOT_LOGGED_IN_DESC = "The invited user is not logged in. Please log in as the invited user and accept the invite again to join.",
 
         OFFLINE = "Offline",
         OFFLINEMODE = "Connection to Klei Failed",
@@ -7948,6 +8048,8 @@ STRINGS.UI =
 		STATUS_ONLINE = "Signed In",
 		PLAYER_2_PRESS_START_PREFIX = "PRESS",
 		PLAYER_2_PRESS_START_POSTFIX = "TO JOIN",
+
+        PLAYER_2_CONTROLLER_DISCONNECTED = "CONTROLLER 2 DISCONNECTED",
     },
 
     PLANTREGISTRY = {
@@ -8072,6 +8174,7 @@ STRINGS.UI =
 		FOOD_EFFECTS_SANITY_REGEN = "Restores sanity over time",
 		FOOD_EFFECTS_HOT_SANITY_REGEN = "Warms the body and mind",
 		FOOD_EFFECTS_BEEFALO = "Treat your Beefalo",
+        FOOD_EFFECTS_SLEEP = "Puts one to sleep",
 
 		FOOD_TYPE_TITLE = "Type",
 		FOOD_TYPE_UNKNOWN = "?",
@@ -8278,6 +8381,7 @@ STRINGS.UI =
         WHACK = "Whack",
         HUNGRY = "Hungry",
         STARVING = "Starving",
+        DESTROY = "Destroy",
         DEATH_PET_NAME = "%s's %s", --e.g. "Vito's Cat"
         DEATH_ANNOUNCEMENT_1 = "was killed by",
         DEATH_ANNOUNCEMENT_2_MALE = ". He became a spooky ghost!",
@@ -8305,6 +8409,7 @@ STRINGS.UI =
             PLAYFUL = "Peppy",
             CRAFTY = "Crafty",
         },
+        LOCK_TARGET = "Lock Target",
 		UNLOCK_TARGET = "Unlock Target",
 
         LAVAARENA_WIN_TITLE = "Victory!",
@@ -8548,11 +8653,13 @@ STRINGS.UI =
         SCAPBOOKHUDDISPLAY = "Scrapbook Alerts:",
 		INVENTORYSENSITIVITY = "Inventory Sensitivity:",
         MINIMAPZOOMSENSITIVITY = "Zoom Sensitivity:",
+        BOATHOPDELAY = "Boat Hop Delay:",
         MINIMAPZOOMCURSOR = "Zoom Cursor Focus:",
         VIBRATION = "Vibration:",
         WATHGRITHRFONT = "Wigfrid's Umlauts:",
         WALTERCAMERA = "Campfire Camera:",        
         BOATCAMERA = "Seafaring Camera:",
+		PROMOTIONS = "Promotions:",
         BACKPACKMODE = "Backpack Layout:",
         POIDISPLAY = "Point of Interest Icons:",
         AUTOPAUSE = "Auto-Pause:",
@@ -8571,8 +8678,9 @@ STRINGS.UI =
         TEXTURESTREAMING = "Texture Streaming:",
         THREADEDRENDER = "Threaded Render:",
 		SCREEN_FLASH_INTENSITY = "Screen Flashes:",
+        SCREEN_FLASH_INTENSITY_SWITCH = "Photosensitivity Mode:",
         DYNAMIC_TREE_SHADOWS = "Canopy Shadows:",
-		INVERTCAMERAROTATION = "Camera Rotation",
+		INVERTCAMERAROTATION = "Camera Rotation:",
         RESTART_TEXTURE_STREAMING_TITLE = "Restart Required",
         RESTART_TEXTURE_STREAMING_BODY = "For Texture Streaming changes to take effect, you will have to exit and restart the game.",
         RESTART_THREADED_RENDER_TITLE = "Restart Required",
@@ -8584,6 +8692,7 @@ STRINGS.UI =
         AUTOSAVE = "Auto-save",
         AUTOMODS = "Auto-Subscribe Mods:",
         AUTOLOGIN = "Auto-Login:",
+        NPCCHAT = "Creature's Chat:",
         ANIMATED_HEADS = "Moving Head Icons:",
         SHOWPASSWORD = "Show Passwords:",
 		SERVER_NAME_PROFANITY_FILTER = "Filter Server Names:",
@@ -8600,7 +8709,7 @@ STRINGS.UI =
         OFFLINE_MODE_TITLE = "Offline Mode",
         OFFLINE_MODE_BODY = "Your selection is not available in offline mode. Please log in and try again.",
         KLEI_ID_PREFIX = "Klei ID: ",
-		COMMANDWHEEL = "Command / Emote Wheel Movement:",
+		COMMANDWHEEL = "Social Menu Movement:",
 
 		INTRO_MOVIE = "Intro Movie",
 		CREDITS = "Credits",
@@ -8611,6 +8720,20 @@ STRINGS.UI =
         LOADING_TIPS_SHOW_NONE = "None",
         LOADING_TIPS_TIPS_ONLY = "Tips Only",
         LOADING_TIPS_LORE_ONLY = "Lore Only",
+
+        NPCCHAT_ALL = "Most",
+        NPCCHAT_SOME = "Important",
+        NPCCHAT_NONE = "None",
+
+        CONTROLLER_LAYOUT = "Controller Layout:",
+        CONTROLLER_CUSTOM = "Custom",
+        RESET_LAYOUT = "Default All",
+        RESET_LAYOUT_BODY = "Do you want to reset all controls to their default values?\n\nYou will lose any changes you've made.\n",        
+        CHANGE_BINDING = "Change Binding",
+        CURRENT_CONTROL_TEXT = "Current %s",
+        DEFAULT_CONTROL_TEXT = "Default %s",
+        INV_ADJUST_STACK_SIZE = "Adjust stack size",
+        INV_USE_ITEM_ON_ITEM = "Use on item",
 
         TOOLTIPS =
         {
@@ -8638,8 +8761,10 @@ STRINGS.UI =
             SCAPBOOKHUDDISPLAY = "Toggle HUD notifications from the Scrapbook on and off.",
 			INVENTORYSENSITIVITY = "Adjust the input sensitivity while navigating through the inventory.",
             MINIMAPZOOMSENSITIVITY = "Adjust the input sensitivity while zooming in and out on the minimap.",
+            BOATHOPDELAY = "Adjust how much time is needed to start hopping onto and off of a boat.",
             MINIMAPZOOMCURSOR = "Zooming on the minimap will focus where the cursor is located.",
             AUTOLOGIN = "Log into your Klei account automatically when booting up Don't Starve Together.",
+            NPCCHAT = "Allows key dialogue from creatures in the world to be displayed in the chat box.",
             SHOWPASSWORD = "Show or hide your passwords.",
             BOATCAMERA = "Allows the camera to focus on your boat while sailing.",
             BACKPACKMODE = "Change how the contents of the backpack are displayed. Integrated with the inventory bar or separated at the side of the screen.",
@@ -8652,6 +8777,7 @@ STRINGS.UI =
             DATACOLLECTION = "We collect metrics and telemetry on Don't Starve Together, including how long and how often you play. This information helps us troubleshoot the game, provide rewards, and improve your experience. Refer to https://www.klei.com/privacy-policy for more information.",
             LOADING_TIPS = "Learn more about the lore and the gameplay of Don't Starve while your world loads.",
 			TARGETLOCKING = "Focus on one target at a time.",
+			PROMOTIONS = "Display store promotions in the main menus.",
 
             -- Graphics
             FULLSCREEN = "Fill your screen with Don't Starve Together.",
@@ -8667,6 +8793,7 @@ STRINGS.UI =
             DISTORTION = "Allows you to turn off screen distortions in the game, especially notable during moments of insanity.",
             BLOOM = "Increases the visual intensity of lights.",
             SCREEN_FLASH_INTENSITY = "Control the intensity of screen flashes during explosions and lightning strikes.",
+            SCREEN_FLASH_INTENSITY_SWITCH = "Control the intensity of flashing effects during explosions and lightning strikes.",
             DYNAMIC_TREE_SHADOWS = "Renders the ground shadow while under a canopy.",
 			DISPLAYAREA = "Maximize the screen size on your display.",
 			INVERTCAMERAROTATION = "Flips the camera rotation direction.",
@@ -8679,8 +8806,39 @@ STRINGS.UI =
             ANIMATED_HEADS = "Animates the survivor's heads in the menus.",
             CONSOLEAUTOPAUSE = "Allows the server to auto-pause while the console screen is open.",
             DEFAULTCLOUDSAVES = "Chooses whether new saves will be stored in the cloud or not by default.",
-			COMMANDWHEEL = "Allows you to control your player movement and the Command / Emote Wheel independently.",
+			COMMANDWHEEL = "Allows you to control your player movement and the Social Menu independently.",
             POIDISPLAY = "Hide all the Point of Interest Icons.",
+
+            -- controls
+            CONTROLLER_LAYOUT = "Use the default controls or customize them to your liking.",
+
+            CONTROLS_EDITOR = 
+            {
+                -- These are used in the Console version of the controls settings and thus only cover the controls available there
+                [57] = "Perform the default action on the current target.", --CONTROL_CONTROLLER_ACTION
+                [56] = "Attack the current target.", -- CONTROL_CONTROLLER_ATTACK
+                [58] = "Perform an alternate action on the current target (when applicable).", -- CONTROL_CONTROLLER_ALTACTION
+                [3] = "Inspect the current target.", -- CONTROL_INSPECT
+                [88] = "Lock on to the current target.", -- CONTROL_TARGET_LOCK
+                [89] = "Lock on to the next available target.", -- CONTROL_TARGET_CYCLE
+                [46] = "Open and Close the crafting menu.", -- CONTROL_OPEN_CRAFTING
+                [45] = "Open and Close the inventory bar.", -- CONTROL_OPEN_INVENTORY
+                [51] = "Examine the selected inventory item.", -- CONTROL_INVENTORY_EXAMINE
+                [52] = "Use the selected inventory item on yourself.", -- CONTROL_INVENTORY_USEONSELF
+                [53] = "Use the selected inventory item on the world.", -- CONTROL_INVENTORY_USEONSCENE
+                [54] = "Drop the selected inventory item.", -- CONTROL_INVENTORY_DROP
+                [55] = "Put part of the selected stack of inventory items into another inventory slot.", -- CONTROL_PUTSTACK
+                [59] = "Use the selected inventory item on another.", -- CONTROL_USE_ITEM_ON_ITEM
+                [87] = "Open and Close the Social Menu.", -- CONTROL_OPEN_COMMAND_WHEEL
+                [13] = "Pause and Unpause the game.", -- CONTROL_PAUSE
+                [14] = "Open and Close the minimap", -- CONTROL_MAP
+                [60] = "Zoom in while using the minimap.", -- CONTROL_MAP_ZOOM_IN
+                [61] = "Zoom out while using the minimap.", -- CONTROL_MAP_ZOOM_OUT
+                [11] = "Rotate the camera to the left.", -- CONTROL_ROTATE_LEFT
+                [12] = "Rotate the camera to the right.", -- CONTROL_ROTATE_RIGHT
+                [9] = "Move the camera closer to your character.", -- CONTROL_ZOOM_IN
+                [10] = "Move the camera farther from your character.", -- CONTROL_ZOOM_OUT
+            }
     },
 
     },
@@ -9659,9 +9817,11 @@ STRINGS.UI =
         WINTERHOUNDS = "Ice Hound Waves",
         SUMMERHOUNDS = "Fire Hound Waves",
         RIFTS_FREQUENCY = "Wild Rift Frequency",
-        RIFTS_ENABLED = "Wild Rifts Enabled",
+        RIFTS_ENABLED = "Wild Rifts",
         RIFTS_FREQUENCY_CAVE = "Wild Rift Frequency",
-        RIFTS_ENABLED_CAVE = "Wild Rifts Enabled",
+        RIFTS_ENABLED_CAVE = "Wild Rifts",
+        LUNARHAIL_FREQUENCY = "Lunar Hail",
+        ACIDRAIN_ENABLED = "Acid Rain",
         HOUNDMOUND = "Hound Mounds",
         MERMS = "Merms",
         TENTACLES = "Tentacles",
@@ -9801,8 +9961,12 @@ STRINGS.UI =
         HEALTHPENALTY = "Max Health Penalty",
 		LESSDAMAGETAKEN = "Damage Taken",
         STAGEPLAYS = "Stage Plays",
+        JUNKYARD = "Junk Yard",
 
         DAYWALKER = "Nightmare Werepig",
+        DAYWALKER2 = "Scrappy Werepig",
+        SHARKBOI = "Frostjaw",
+
 		-- End of world customization strings
     },
 
@@ -10168,7 +10332,14 @@ STRINGS.UI =
         SORT_MOSTDAYS = "Days Played",
         SORT_DATECREATED = "Date Created",
         SEARCH = "Search",
+        SAVEFROMNEWERVERSION = "Not playable - save data from newer game version",
 		NO_MATCHING_SERVERS = "No save games match your search.",
+        USECAVES_TITLE = "{server} or no {server}?",
+        USECAVES_DESC_CAVE = "Play with {server}, requires more PC Power as it runs multiple servers",
+        USECAVES_DESC_NOCAVE = "Play with no {server}, sad, but not as demanding on a computer",
+        USECAVES_NAME_CAVE = "{server}",
+        USECAVES_NAME_NOCAVE = "No {server}",
+        REMEMBERCOICE = "Remember my choice.",
     },
 
     CLOUDSERVERCREATIONSCREEN =
@@ -11401,7 +11572,7 @@ STRINGS.UI =
         NEW_STUFF = "Recent Discoveries",
         LOADING_STUFF = "Loading Discoveries...",
         NO_ITEMS = "Start playing to earn items!",
-		OFFLINE_NO_ITEMS = "Log in to starting earning items.",
+		OFFLINE_NO_ITEMS = "Log in to start earning items.",
         UNOPENED_BOXES_FMT = "{num_boxes} unopened Chests",
         MOST_COMMON_DEATH = "Often Killed By",
         MOST_COMMON_FRIEND = "Friendliest Friend",
@@ -12284,6 +12455,13 @@ STRINGS.UI =
             "Inv 14",
             "Inv 15",
             "Start Emoticon",
+            "Menu Back",
+            "Menu Start",
+            "Menu L2",
+            "Menu R2",
+            "Social Menu", 
+            "Toggle Target locking",
+            "Next Target",
         },
 
         DEVICE_TITLE = "Controls",
@@ -12483,7 +12661,7 @@ STRINGS.UI =
                 [1005] = "\238\132\131", --"Mouse Button 4",
                 [1006] = "\238\132\132", --"Mouse Button 5",
             },
-            -- Xbox360
+            -- Xbox on PC (CharlesB: XboxOne/Xbox Series is down below in index 13)
             [2] =
             {
                 [0] = "Unknown",
@@ -12548,7 +12726,7 @@ STRINGS.UI =
                 "(Slider 1)",
                 "(Slider 1)",
             },
-            -- PS4 Dual Shock 4
+            -- DualShock 4 on PC (CharlesB: PS4/PS5 is down below in index 12)
             [4] =
             {
                 [0] = "Unknown",
@@ -12587,22 +12765,29 @@ STRINGS.UI =
             [5] =
             {
                 [0] = "Unknown",
+                "", -- unused but needed to get the index to 2
 
                 -- Digital
-                "\238\136\143",--"DPad Up",
-                "\238\136\140",--"DPad Down",
-                "\238\136\141",--"DPad Left",
-                "\238\136\142",--"DPad Right"
-                "\238\136\132",--"Start",
-                "\238\136\133",--"Back",
                 "\238\136\156",--"Left Stick",					-- 57884
                 "\238\136\157",--"Right Stick",					-- 57885
+                "\238\136\132",--"Start",
+                "\238\136\143",--"DPad Up",
+                "\238\136\142",--"DPad Right"
+                "\238\136\140",--"DPad Down",
+                "\238\136\141",--"DPad Left",
+                "\238\136\154",--"Left Trigger",
+                "\238\136\155",--"Right Trigger",		-- 25
                 "\238\136\152",--"L",							-- 57880
                 "\238\136\153",--"R",					-- 10	-- 57881
-                "\238\136\128",--"Button A",
-                "\238\136\129",--"Button B",
-                "\238\136\130",--"Button X",
                 "\238\136\131",--"Button Y",
+                "\238\136\129",--"Button B",
+                "\238\136\128",--"Button A",
+                "\238\136\130",--"Button X",
+                "",
+                "",
+                "",
+                "",
+                "\238\136\133",--"Back",
 
                 -- Analog
                 "\238\136\146",--"Left Thumb Left",		-- 15
@@ -12670,6 +12855,8 @@ STRINGS.UI =
             --Unknown
             [9] =
             {
+                [0] = "Unknown",
+
                 "Unknown",
                 " - No Bind - ",
             },
@@ -12678,8 +12865,37 @@ STRINGS.UI =
             {
                 [0] = "Unknown",
 
-                "Unknown",
-                " - No Bind - ",
+                -- Digital
+                "\238\144\143",--"DPad Up"
+                "\238\144\140",--"DPad Down"
+                "\238\144\141",--"DPad Left",
+                "\238\144\142",--"DPad Right"
+                "\238\144\132",--"Start",
+                "\238\144\133",--"Select",
+                "\238\144\134",--"Left Stick"
+                "\238\144\137",--"Right Stick"
+                "\238\144\135",--"Left Bumper",
+                "\238\144\138",--"Right Bumper"
+                "\238\144\128",--"Button A",
+                "\238\144\129",--"Button B",
+                "\238\144\130",--"Button X",
+                "\238\144\131",--"Button Y",    
+
+                -- Analog
+                "\238\144\146",--"Left Thumb Left",
+                "\238\144\147",--"Left Thumb Right",
+                "\238\144\145",--"Left Thumb Down",
+                "\238\144\144",--"Left Thumb Up",
+                "\238\144\150",--"Right Thumb Left",
+                "\238\144\151",--"Right Thumb Right",
+                "\238\144\149",--"Right Thumb Down",
+                "\238\144\148",--"Right Thumb Up",
+                "\238\144\136",--"Left Trigger",
+                "\238\144\136",--"Left Trigger",
+                "\238\144\139",--"Right Trigger",
+                "\238\144\139",--"Right Trigger",
+				"\238\144\152",--"SL",
+                "\238\144\153",--"SR",
             },
 			-- Steam Deck
             [11] =
@@ -12727,6 +12943,85 @@ STRINGS.UI =
                 [284] = "\238\136\184",	-- "Mouse Button 4" = R4
                 [285] = "\238\136\185",	-- "Mouse Button 5" = R5
 
+            },
+            -- DualShock 4 on PS4/PS5 (CharlesB: PC is above in index 4, this one has the same icons but they've been reordered)
+            [12] =
+            {
+                [0] = "Unknown",      
+                "", -- unused but needed to get the index to 2
+
+                -- Digital
+                "\238\136\134",-- 2 "L3",
+                "\238\136\137",-- 3 "R3",
+                "\238\136\132",-- 4 "Options (Start)",
+                "\238\136\143",-- 5 "DPad Up",
+                "\238\136\142",-- 6 "DPad Right"
+                "\238\136\140",-- 7 "DPad Down",
+                "\238\136\141",-- 8 "DPad Left",
+                "\238\136\136",-- 9 "Left Trigger",
+                "\238\136\139",--10 "Right Trigger",
+                "\238\136\135",--11 "Left Bumper",
+                "\238\136\138",--12 "Right Bumper",                
+                "\238\136\131",--13 "Triangle",
+                "\238\136\129",--14 "Circle",
+                "\238\136\128",--15 "Cross",
+                "\238\136\130",--16 "Square",
+                "",
+                "",
+                "",
+                "",
+                "\238\136\133",--21 "Touchpad",
+
+                -- Analog
+                "\238\136\146",--22 "Left Thumb Left",
+                "\238\136\147",--23 "Left Thumb Right",
+                "\238\136\145",--24 "Left Thumb Down",
+                "\238\136\144",--25 "Left Thumb Up",
+                "\238\136\150",--26 "Right Thumb Left",
+                "\238\136\151",--27 "Right Thumb Right",
+                "\238\136\149",--28 "Right Thumb Down",
+                "\238\136\148",--29 "Right Thumb Up",
+                "\238\136\136",--30 "Left Trigger",
+                "\238\136\136",--31 "Left Trigger",
+                "\238\136\139",--32 "Right Trigger",
+                "\238\136\139",--33 "Right Trigger",
+            },            
+            -- Xbox on XboxOne/Xbox Series (CharlesB: PC is above in index 2, this one has the same icons but they've been reordered)
+            [13] =
+            {
+                [0] = "Unknown",
+                -- Digital
+				
+                "\238\128\136",--"Left Trigger",
+                "\238\128\139",--"Right Trigger",
+                "\238\128\132",--"Start",
+                "\238\128\133",--"Back",
+                "\238\128\128",--"Button A",
+                "\238\128\129",--"Button B",
+                "\238\128\130",--"Button X",
+                "\238\128\131",--"Button Y",
+                "\238\128\143",--"DPad Up"
+                "\238\128\140",--"DPad Down"
+                "\238\128\141",--"DPad Left",
+                "\238\128\142",--"DPad Right"
+                "\238\128\135",--"Left Bumper",
+                "\238\128\138",--"Right Bumper"
+                "\238\128\134",--"Left Stick"
+                "\238\128\137",--"Right Stick"
+
+                -- Analog
+                "\238\128\146",--"Left Thumb Left",
+                "\238\128\147",--"Left Thumb Right",
+                "\238\128\145",--"Left Thumb Down",
+                "\238\128\144",--"Left Thumb Up",
+                "\238\128\150",--"Right Thumb Left",
+                "\238\128\151",--"Right Thumb Right",
+                "\238\128\149",--"Right Thumb Down",
+                "\238\128\148",--"Right Thumb Up",
+                "\238\128\136",--"Left Trigger",
+                "\238\128\136",--"Left Trigger",
+                "\238\128\139",--"Right Trigger",
+                "\238\128\139",--"Right Trigger",
             },
         },
         PS4 =
@@ -13885,6 +14180,7 @@ STRINGS.KITCOON_NAMING =
 		"Ares",
 		--"Armella",
 		"Armello",
+        "Dineide",
     },
 }
 
@@ -15095,7 +15391,7 @@ STRINGS.SKILLTREE = {
         COUNT_LOCK_1_DESC = "Learn enough left-branch skills to unlock.",
 
         LUNAR_GEAR_1_TITLE = "Lunar Guardian I",
-        LUNAR_GEAR_1_DESC = "Seize foes and keep them rooted in place while wearing Brightshade Armor.",
+        LUNAR_GEAR_1_DESC = "Seize foes and keep them rooted in place while wearing Brightshade Armor.\nFuse Bramble Husks with Brightshade armor to create Brambleshade armor.",
 
         LUNAR_GEAR_2_TITLE = "Lunar Guardian II",
         LUNAR_GEAR_2_DESC = "Summon vines to join the fray while attacking with Brightshade melee weapons.",
@@ -15114,7 +15410,7 @@ STRINGS.SKILLTREE = {
         BLOOMING_SPEED2_DESC = "Reach full bloom much quicker.",
 
         BLOOMING_MAX_UPGRADE_TITLE = "Flower Power",
-        BLOOMING_MAX_UPGRADE_DESC = "Stay in full bloom longer.",
+        BLOOMING_MAX_UPGRADE_DESC = "Fertilization of Wormwood is boosted 30%.",
 
         BLOOMING_PHOTOSYNTHESIS_TITLE = "Photosynthesis",
         BLOOMING_PHOTOSYNTHESIS_DESC = "Slowly regenerate health when exposed to daylight in full bloom.",
@@ -15143,10 +15439,10 @@ STRINGS.SKILLTREE = {
         LUNAR_MUTATIONS_1_DESC = "Tap into your lunar roots to transform Carrots into Carrats.\nCarrats you've created will retrieve food they find on the ground.",
 
         LUNAR_MUTATIONS_2_TITLE = "Lunar Cultivator II",
-        LUNAR_MUTATIONS_2_DESC = "Tap into your lunar roots to transform Lightbulbs into Bulbous Lightbugs.\nBulbous Lightbugs you've created will follow you around.",
+        LUNAR_MUTATIONS_2_DESC = "Tap into your lunar roots to transform Lightbulbs into Bulbous Lightbugs.\nBulbous Lightbugs you've created will follow you around.\nThe more Lightbugs grouped together, the larger their light will glow.",
 
         LUNAR_MUTATIONS_3_TITLE = "Lunar Cultivator III",
-        LUNAR_MUTATIONS_3_DESC = "Tap into your lunar roots to transform Dragon Fruit into Saladmanders.\nSaladmanders you've created will attack things you do.",
+        LUNAR_MUTATIONS_3_DESC = "Tap into your lunar roots to transform Dragon Fruit into Saladmanders.\nSaladmanders you've created will attack things you do.\nTransforming maximum Saladmanders gives them a health boost.",
     },
 
     WILLOW = {
@@ -15835,13 +16131,14 @@ STRINGS.SCRAPBOOK = {
         RUINS_CHAIR = "A chair. You can sit in it.",
         SALTBOX = "A container with 9 slots that will accept food ingredient items.\n\nIt quadruples the time before the food will spoil",
         SALTLICK = "A constructed Saltlick will attract nearby Beefalo and other herd like animals.\n\nThey will lick the saltlick, eventually depleting it.\n\nBeefalo who use the saltlick will pause their domestication decay.",
-        DRAGONFLYFURNACE = "Provides a small amount of light and a large amount of heat like a campfire.",
+        DRAGONFLYFURNACE = "Provides a small amount of light and a large amount of heat like a campfire. It may also be used to destroy items.",
         SIESTAHUT = "Useable in the day.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.",
         HOMESIGN = "When placed, it allows the survivor to write a message that can be read by themselves or other survivors later.",
         SISTURN = "A 4 slot container that can hold petals.\n\nWhen full of petals it raises nearby survivors Sanity by 25 per minute.\n\nAs well, Abigail's health regenerates 4x faster.\n\nWhen the petals rot, they will drop out of the container onto the ground as rot.",
         SPIDERDEN = "Creates a patch of webbing on the ground near it that slows survivors and some creatures that walk on it.\n\nComes in several sizes and grows to fit its spider population.\n\nWebber may upgrade these with Silk.",
         STEERINGWHEEL = "When deployed on a boat, a survivor can use it to rotate the boats direction.",
         TACKLESTATION = "Standing near this device will provide the survivor with new Lures and Floats they can craft.",
+        CARPENTRY_STATION = "Standing near this device will provide the survivor with new Forniture they can craft.\n\nIt can also be used to quickly refine logs into boards.",
         TENT = "A survivor can use the tent at Dusk or Night.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.",
         TURFCRAFTINGSTATION = "Standing near this device will provide the survivor with new Turf they can craft.",
         TOWNPORTAL = "At the cost of 15 Sanity, a survivor can activate the device and then consume 40 Sanity per minute while they keep it active. A second survivor can use another Lazy Deserter or a Desert Stone to teleport to the active one. The teleport costs 50 Sanity.",
@@ -15858,7 +16155,7 @@ STRINGS.SCRAPBOOK = {
         TELEBASE = "This device requires 3 purple gems to be active\n\nA survivor that uses a Telelocator Staff will teleport to the nearest active Telelocator Focus and consume the gems.",
         TOADSTOOLCAP = "It can be chopped. Go ahead and chop it.\n\nPlease chop it.",
         TUMBLEWEED = "These bounce around the desert and collect junk along the way.\n\nAll sorts of crazy junk.\n\nYou'd be surprised.",
-        MONKEYISLANDPORTAL = "A entrance into the world from somewhere, Monkeys and other debris keep dropping out of it.",
+        MONKEYISLANDPORTAL = "A rift like spout from somewhere else, Monkeys and other debris keep dropping out of it.",
         WALLS = "Can be repaired using the inventory wall items.\n\nCan be build up 4 levels.",
         WALRUSCAMP = "A hunter's camp designed for Winter use.",
         WORMHOLE = "Jumping into this hole costs 15 points of Sanity.\n\nWhere will it come out?",
@@ -15893,6 +16190,17 @@ STRINGS.SCRAPBOOK = {
         EMBERLIGHT = "Works like a campfire for its duration, creating light and heat and will ignite things nearby. It can also be used to cook food.",
         BOOTLEG = "Can be thrown into the sea to create a pair of connected Whirlportals. Boats sailing close to them will be brought to the other entrance.",
         OCEANWHIRLPORTAL = "An ocean portal that allows boats to travel long distances.",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "Heals 20 Health and makes the survivor immune to Acid Rain for half of a day. Pacifies Snurtles and Slurtles for the duration.",
+
+        BEESWAX_SPRAY = "Freeze the stage of a plant. This will make it unproductive, but also not attractive to parasites.",
+        STORAGE_ROBOT = "An automaton capable of collecting and organizing items into containers. Store an item in a container next to it and it will know what to do!",
+
+        SCRAP_MONOCLEHAT = "Expands the survivor's vision range. Convenient during the day, uncomfortable at night.",
+
+        JUNK_PILE_BIG = "A towering pile of junk. There might be something surprising hiding inside...",
     },
 
     -- Full name: "{name} Scrapbook Page"

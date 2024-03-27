@@ -1,14 +1,16 @@
 local shader_filename = "shaders/minimap.ksh"
 local fs_shader = "shaders/minimapfs.ksh"
-local atlas_filename = "minimap/minimap_atlas.tex"
-local atlas_info_filename = "minimap/minimap_data.xml"
 
 local GroundTiles = require("worldtiledefs")
 
 local assets =
 {
-    Asset("ATLAS", atlas_info_filename),
-    Asset("IMAGE", atlas_filename),
+    Asset("DYNAMIC_ATLAS", "minimap/minimap_data.xml"), -- Legacy for mods.
+    Asset("PKGREF", "minimap/minimap_atlas.tex"), -- Legacy for mods.
+    Asset("ATLAS", "minimap/minimap_data1.xml"),
+    Asset("IMAGE", "minimap/minimap_atlas1.tex"),
+    Asset("ATLAS", "minimap/minimap_data2.xml"),
+    Asset("IMAGE", "minimap/minimap_atlas2.tex"),
 
     Asset("ATLAS", "images/hud.xml"),
     Asset("IMAGE", "images/hud.tex"),
@@ -37,7 +39,8 @@ local function fn()
 
     inst.MiniMap:SetEffects(shader_filename, fs_shader)
 
-    inst.MiniMap:AddAtlas(resolvefilepath(atlas_info_filename))
+    inst.MiniMap:AddAtlas(resolvefilepath("minimap/minimap_data1.xml"))
+    inst.MiniMap:AddAtlas(resolvefilepath("minimap/minimap_data2.xml"))
     for _, atlases in ipairs(ModManager:GetPostInitData("MinimapAtlases")) do
         for _, path in ipairs(atlases) do
             inst.MiniMap:AddAtlas(resolvefilepath(path))

@@ -214,7 +214,7 @@ function PlayerInfoPopup:OnControl(control, down)
         return true
     end
 
-    if control == CONTROL_OPEN_CRAFTING or control == CONTROL_OPEN_INVENTORY then
+    if control == CONTROL_MENU_L2 or control == CONTROL_MENU_R2 then
         if not down and self.root.tabs then
             self.root.tabs.controller(self)
             return true
@@ -228,7 +228,7 @@ function PlayerInfoPopup:GetHelpText()
     local controller_id = TheInput:GetControllerID()
     local t = {}
 
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_CRAFTING).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_L2).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
 
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 

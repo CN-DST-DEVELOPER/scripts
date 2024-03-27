@@ -1530,7 +1530,7 @@ function GetNextOwnedSkin(prefab, cur_skin)
 			end
 		end
 		for i = found + 1, #skin_list do
-			if TheInventory:CheckOwnership(skin_list[i]) then
+			if not PREFAB_SKINS_SHOULD_NOT_SELECT[skin_list[i]] and TheInventory:CheckOwnership(skin_list[i]) then
 				new_skin = skin_list[i]
 				break
 			end
@@ -1553,7 +1553,7 @@ function GetPrevOwnedSkin(prefab, cur_skin)
 			end
 		end
 		for i = found - 1, 1, -1 do
-			if TheInventory:CheckOwnership(skin_list[i]) then
+			if not PREFAB_SKINS_SHOULD_NOT_SELECT[skin_list[i]] and TheInventory:CheckOwnership(skin_list[i]) then
 				new_skin = skin_list[i]
 				break
 			end

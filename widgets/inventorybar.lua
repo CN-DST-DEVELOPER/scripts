@@ -531,13 +531,6 @@ function Inv:OnUpdate(dt)
     self:UpdateCursor()
 
     if self.shown then
-		if self.owner.components.playercontroller ~= nil and
-			self.owner.components.playercontroller.reticule ~= nil and
-			self.owner.components.playercontroller.reticule.twinstickmode ~= nil
-			then
-			return
-		end
-
         --this is intentionally unaware of focus
         if self.repeat_time <= 0 then
             self.reps = self.reps and (self.reps + 1) or 1
@@ -562,22 +555,34 @@ function Inv:OnUpdate(dt)
 				end
 			end
 
-			if TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) then
-				self:RefreshRepeatDelay(CONTROL_INVENTORY_LEFT)
-				self:CursorLeft()
-				return
-			elseif TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) then
-				self:RefreshRepeatDelay(CONTROL_INVENTORY_RIGHT)
-				self:CursorRight()
-				return
-			elseif TheInput:IsControlPressed(CONTROL_INVENTORY_UP) then
-				self:RefreshRepeatDelay(CONTROL_INVENTORY_UP)
-				self:CursorUp()
-				return
-			elseif TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) then
-				self:RefreshRepeatDelay(CONTROL_INVENTORY_DOWN)
-				self:CursorDown()
-				return
+			local ignore_rstick = false
+			if self.owner.components.playercontroller and
+				self.owner.components.playercontroller.reticule and
+				self.owner.components.playercontroller.reticule.twinstickmode
+			then
+				ignore_rstick = true
+			elseif self.owner.components.strafer and self.owner.components.strafer:IsAiming() then
+				ignore_rstick = true
+			end
+
+			if not ignore_rstick then
+				if TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) then
+					self:RefreshRepeatDelay(CONTROL_INVENTORY_LEFT)
+					self:CursorLeft()
+					return
+				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) then
+					self:RefreshRepeatDelay(CONTROL_INVENTORY_RIGHT)
+					self:CursorRight()
+					return
+				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_UP) then
+					self:RefreshRepeatDelay(CONTROL_INVENTORY_UP)
+					self:CursorUp()
+					return
+				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) then
+					self:RefreshRepeatDelay(CONTROL_INVENTORY_DOWN)
+					self:CursorDown()
+					return
+				end
 			end
 
 			self.repeat_time = 0

@@ -45,9 +45,6 @@ SetSharedLootTable('squid',
 local WAKE_TO_FOLLOW_DISTANCE = 8
 local SLEEP_NEAR_HOME_DISTANCE = 10
 local SHARE_TARGET_DIST = 30
-local HOME_TELEPORT_DIST = 30
-
-local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
 
 --Called from stategraph
 local function LaunchProjectile(inst, targetpos)

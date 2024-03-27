@@ -32,13 +32,10 @@ local _power_enabled = false
 --------------------------------------------------------------------------
 
 function self:SwitchPowerOn(setting)
-	print("SWITCHING ",setting)
 	if _power_enabled ~= true and setting == true then
-		print("ARCHIVE ON")
 		_power_enabled = true
 		self.inst:PushEvent("arhivepoweron")
 	elseif _power_enabled ~= false and setting  == false then
-		print("ARCHIVE OFF")
 		_power_enabled = false
 		self.inst:PushEvent("arhivepoweroff")
 	end

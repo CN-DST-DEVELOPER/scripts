@@ -86,16 +86,6 @@ end
 
 local MASS = 1000
 
-local function ChangeToGiantPhysics(inst)
-	inst.Physics:SetCollisionGroup(COLLISION.GIANTS)
-	inst.Physics:ClearCollisionMask()
-	inst.Physics:CollidesWith(COLLISION.WORLD)
-	inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-	inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-	inst.Physics:CollidesWith(COLLISION.GIANTS)
-	inst.Physics:SetMass(MASS)
-end
-
 --For clients
 local function OnFacingModelDirty(inst)
 	local numfacings = inst._facingmodel:value()
@@ -574,6 +564,7 @@ local function OnHeadTrackingDirty(inst)
 		end
 	elseif inst.head ~= nil then
 		inst.head:Remove()
+		inst.head = nil
 		inst.highlightchildren = nil
 	end
 end
@@ -914,7 +905,7 @@ local function MakeUnchained(inst)
 		inst.AnimState:ClearAllOverrideSymbols()
 		inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
 		inst.SoundEmitter:KillSound("chainloop")
-		ChangeToGiantPhysics(inst)
+		ChangeToGiantCharacterPhysics(inst, MASS)
 		EnableChains(inst, false)
 		inst:SetStateGraph("SGdaywalker")
 		inst.sg:GoToState("tired")
@@ -1130,19 +1121,22 @@ local function fn()
 	inst.AnimState:SetBank("daywalker")
 	inst.AnimState:SetBuild("daywalker_build")
 	inst.AnimState:PlayAnimation("idle", true)
+	inst.AnimState:Hide("ARM_CARRY")
 	inst.AnimState:SetSymbolLightOverride("ww_armlower_red", .6)
 	inst.AnimState:SetSymbolLightOverride("flake", .6)
 	inst.scrapbook_anim = "scrapbook"
 
 	inst.DynamicShadow:SetSize(3.5, 1.5)
 
-	inst:AddComponent("talker")
-	inst.components.talker.fontsize = 40
-	inst.components.talker.font = TALKINGFONT
-	inst.components.talker.colour = Vector3(238 / 255, 69 / 255, 105 / 255)
-	inst.components.talker.offset = Vector3(0, -400, 0)
-	inst.components.talker.symbol = "ww_hunch"
-	inst.components.talker:MakeChatter()
+	local talker = inst:AddComponent("talker")
+	talker.fontsize = 40
+	talker.font = TALKINGFONT
+	talker.colour = Vector3(238 / 255, 69 / 255, 105 / 255)
+	talker.offset = Vector3(0, -400, 0)
+	talker.symbol = "ww_hunch"
+	talker.name_colour = Vector3(159/256, 72/256, 93/256)
+	talker.chaticon = "npcchatflair_daywalker"
+	talker:MakeChatter()
 
 	inst._enablechains = net_bool(inst.GUID, "daywalker._enablechains", "chainsdirty")
 	inst._facingmodel = net_tinybyte(inst.GUID, "daywalker._facingmodel", "facingmodeldirty")
@@ -1172,6 +1166,8 @@ local function fn()
 		return inst
 	end
 
+	inst.footstep = "daywalker/action/step"
+
 	inst.components.talker.ontalk = OnTalk
 
 	inst:AddComponent("entitytracker")
@@ -1190,7 +1186,7 @@ local function fn()
 
 	inst:AddComponent("combat")
 	inst.components.combat:SetDefaultDamage(TUNING.DAYWALKER_DAMAGE)
-	inst.components.combat:SetAttackPeriod(TUNING.DAYWALKER_ATTACK_PERIOD)
+	inst.components.combat:SetAttackPeriod(TUNING.DAYWALKER_ATTACK_PERIOD.min)
 	inst.components.combat.playerdamagepercent = .5
 	inst.components.combat:SetRange(TUNING.DAYWALKER_ATTACK_RANGE)
 	inst.components.combat:SetRetargetFunction(3, RetargetFn)

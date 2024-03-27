@@ -94,6 +94,7 @@ local function OnProjectileLand(inst)
 		fish.Transform:SetPosition(x, y, z)
 		fish.Transform:SetRotation(inst.Transform:GetRotation())
 		fish.components.inventoryitem:SetLanded(true, false)
+		fish.components.inventoryitem:MakeMoistureAtLeast(TUNING.MAX_WETNESS)
 		if fish.flop_task then
 			fish.flop_task:Cancel()
 		end
@@ -438,6 +439,8 @@ local function inv_common(fish_def)
 	if fish_def.heater ~= nil then
 		inst:AddTag("HASHEATER") --(from heater component) added to pristine state for optimization
 	end
+
+	inst.no_wet_prefix = true
 
     inst.entity:SetPristine()
 

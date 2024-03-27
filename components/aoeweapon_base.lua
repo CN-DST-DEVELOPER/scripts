@@ -113,15 +113,7 @@ function AOEWeapon_Base:OnHit(doer, target)
         did_hit = true
     elseif self.canpick and target.components.pickable and target.components.pickable:CanBePicked()
             and not target:HasTag("intense") then
-        local num = target.components.pickable.numtoharvest or 1
-        local product = target.components.pickable.product
-        local x, _, z = target.Transform:GetWorldPosition()
-        target.components.pickable:Pick(doer) -- only calling this to trigger callbacks on the object
-        if product and num > 0 then
-            for i = 1, num do
-                SpawnPrefab(product).Transform:SetPosition(x, 0, z)
-            end
-        end
+		target.components.pickable:Pick(self.inst) --don't pass doer or they'll pocket the loot
 
         did_hit = true
     elseif doer.components.combat:CanTarget(target) and not doer.components.combat:IsAlly(target) then

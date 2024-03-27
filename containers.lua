@@ -784,6 +784,8 @@ params.treasurechest =
         slotpos = {},
         animbank = "ui_chest_3x3",
         animbuild = "ui_chest_3x3",
+        animbank_upgraded = "ui_chest_upgraded_3x3",
+        animbuild_upgraded = "ui_chest_upgraded_3x3",
         pos = Vector3(0, 200, 0),
         side_align_tip = 160,
     },
@@ -809,8 +811,10 @@ params.quagmire_safe.widget.animbuild = "quagmire_ui_chest_3x3"
 --[[ dragonflychest ]]
 --------------------------------------------------------------------------
 
-params.dragonflychest = params.shadowchester
 params.minotaurchest = params.shadowchester
+params.dragonflychest = deepcopy(params.shadowchester)
+params.dragonflychest.widget.animbank_upgraded = "ui_chester_upgraded_3x4"
+params.dragonflychest.widget.animbuild_upgraded = "ui_chester_upgraded_3x4"
 
 --------------------------------------------------------------------------
 --[[ antlionhat ]]
@@ -1389,6 +1393,60 @@ end
 function params.battlesong_container.itemtestfn(container, item, slot)
     -- Battlesongs.
     return item:HasTag("battlesong")
+end
+
+--------------------------------------------------------------------------
+--[[ dragonflyfurnace ]]
+--------------------------------------------------------------------------
+
+params.dragonflyfurnace =
+{
+    widget =
+    {
+        slotpos =
+        {
+            Vector3(-37.5, 32 + 4, 0),
+            Vector3(37.5, 32 + 4, 0),
+            Vector3(-37.5, -(32 + 4), 0),
+            Vector3(37.5, -(32 + 4), 0),
+        },
+        slotbg =
+        {
+            { image = "inv_slot_dragonflyfurnace.tex", atlas = "images/hud2.xml" },
+            { image = "inv_slot_dragonflyfurnace.tex", atlas = "images/hud2.xml" },
+            { image = "inv_slot_dragonflyfurnace.tex", atlas = "images/hud2.xml" },
+            { image = "inv_slot_dragonflyfurnace.tex", atlas = "images/hud2.xml" },
+        },
+        animbank = "ui_dragonflyfurnace_2x2",
+        animbuild = "ui_dragonflyfurnace_2x2",
+        pos = Vector3(200, 0, 0),
+        side_align_tip = 120,
+        buttoninfo =
+        {
+            text = STRINGS.UI.HUD.DESTROY,
+            position = Vector3(0, -100, 0),
+        }
+    },
+    type = "cooker",
+}
+
+function params.dragonflyfurnace.itemtestfn(container, item, slot)
+    return not item:HasOneOfTags("irreplaceable", "_container", "bundle")
+end
+
+function params.dragonflyfurnace.widget.buttoninfo.fn(inst, doer)
+    if inst.components.container ~= nil then
+        inst.components.container:DestroyContentsConditionally(inst.ShouldIncinerateItem)
+        if inst.OnContentsDestroyed ~= nil then
+            inst:OnContentsDestroyed()
+        end
+    elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+        SendRPCToServer(RPC.DoWidgetButtonAction, nil, inst)
+    end
+end
+
+function params.dragonflyfurnace.widget.buttoninfo.validfn(inst)
+    return inst.replica.container ~= nil and not inst.replica.container:IsEmpty()
 end
 
 --------------------------------------------------------------------------

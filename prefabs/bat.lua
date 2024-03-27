@@ -136,29 +136,39 @@ local function OnPreLoad(inst, data)
 end
 
 local function BatSleepTest(inst, ...)
-    if inst.acidinfused then
+    if inst.components.acidinfusible ~= nil and inst.components.acidinfusible:IsInfused() then
         return false
     end
     return NocturnalSleepTest(inst, ...)
 end
 
-local function OnIsAcidRaining(inst, isacidraining)
-    if isacidraining then
-        inst.AnimState:SetSymbolAddColour("bat_eye", .2, .5, 0, 0)
-        inst.AnimState:SetSymbolLightOverride("bat_eye", .5)
-        inst.components.locomotor.walkspeed = TUNING.BAT_WALK_SPEED * TUNING.ACIDRAIN_BAT_SPEED_MULT
-        inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE * TUNING.ACIDRAIN_BAT_DAMAGE_MULT)
-        inst.components.lootdropper:SetChanceLootTable("bat_acidinfused")
-        inst.components.combat:SetRetargetFunction(1, Retarget)
-        inst.acidinfused = true
-    else
-        inst.AnimState:SetSymbolAddColour("bat_eye", 0, 0, 0, 0)
-        inst.AnimState:SetSymbolLightOverride("bat_eye", 0)
-        inst.components.locomotor.walkspeed = TUNING.BAT_WALK_SPEED
-        inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
-        inst.components.lootdropper:SetChanceLootTable("bat")
-        inst.components.combat:SetRetargetFunction(3, Retarget)
-        inst.acidinfused = nil
+local function OnInfuse(inst)
+    inst.AnimState:SetSymbolAddColour("bat_eye", .2, .5, 0, 0)
+    inst.AnimState:SetSymbolLightOverride("bat_eye", .5)
+
+    inst.components.lootdropper:SetChanceLootTable("bat_acidinfused")
+
+    inst.components.combat:SetRetargetFunction(1, Retarget)
+
+    inst.components.eater:SetCanEatNitre(true)
+
+    if inst.components.thief == nil then
+        inst:AddComponent("thief")
+    end
+end
+
+local function OnUninfuse(inst)
+    inst.AnimState:SetSymbolAddColour("bat_eye", 0, 0, 0, 0)
+    inst.AnimState:SetSymbolLightOverride("bat_eye", 0)
+
+    inst.components.lootdropper:SetChanceLootTable("bat")
+
+    inst.components.combat:SetRetargetFunction(3, Retarget)
+
+    inst.components.eater:SetCanEatNitre(false)
+
+    if inst.components.thief ~= nil then
+        inst:RemoveComponent("thief")
     end
 end
 
@@ -197,46 +207,46 @@ local function fn()
         return inst
     end
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.walkspeed = TUNING.BAT_WALK_SPEED
-    inst.components.locomotor.pathcaps = { allowocean = true }
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor:EnableGroundSpeedMultiplier(false)
+    locomotor:SetTriggersCreep(false)
+    locomotor.walkspeed = TUNING.BAT_WALK_SPEED
+    locomotor.pathcaps = { allowocean = true }
 
     inst:SetStateGraph("SGbat")
     inst:SetBrain(brain)
 
-    inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODTYPE.MEAT }, { FOODTYPE.MEAT })
-    inst.components.eater:SetStrongStomach(true)
+    local eater = inst:AddComponent("eater")
+    eater:SetDiet({ FOODTYPE.MEAT }, { FOODTYPE.MEAT })
+    eater:SetStrongStomach(true)
 
-    inst:AddComponent("sleeper")
-    inst.components.sleeper:SetResistance(3)
-    inst.components.sleeper.sleeptestfn = BatSleepTest
-    inst.components.sleeper.waketestfn = NocturnalWakeTest
+    local sleeper = inst:AddComponent("sleeper")
+    sleeper:SetResistance(3)
+    sleeper.sleeptestfn = BatSleepTest
+    sleeper.waketestfn = NocturnalWakeTest
 
-    inst:AddComponent("combat")
-    inst.components.combat.hiteffectsymbol = "bat_body"
-    inst.components.combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.BAT_ATTACK_PERIOD)
-    inst.components.combat:SetRange(TUNING.BAT_ATTACK_DIST)
-    inst.components.combat:SetRetargetFunction(3, Retarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
+    local combat = inst:AddComponent("combat")
+    combat.hiteffectsymbol = "bat_body"
+    combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
+    combat:SetAttackPeriod(TUNING.BAT_ATTACK_PERIOD)
+    combat:SetRange(TUNING.BAT_ATTACK_DIST)
+    combat:SetRetargetFunction(3, Retarget)
+    combat:SetKeepTargetFunction(KeepTarget)
 
-    inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(TUNING.BAT_HEALTH)
+    local health = inst:AddComponent("health")
+    health:SetMaxHealth(TUNING.BAT_HEALTH)
 
-    inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetChanceLootTable("bat")
+    local lootdropper = inst:AddComponent("lootdropper")
+    lootdropper:SetChanceLootTable("bat")
 
     inst:AddComponent("inventory")
 
-    inst:AddComponent("periodicspawner")
-    inst.components.periodicspawner:SetPrefab("guano")
-    inst.components.periodicspawner:SetRandomTimes(120,240)
-    inst.components.periodicspawner:SetDensityInRange(30, 2)
-    inst.components.periodicspawner:SetMinimumSpacing(8)
-    inst.components.periodicspawner:Start()
+    local periodicspawner = inst:AddComponent("periodicspawner")
+    periodicspawner:SetPrefab("guano")
+    periodicspawner:SetRandomTimes(120,240)
+    periodicspawner:SetDensityInRange(30, 2)
+    periodicspawner:SetMinimumSpacing(8)
+    periodicspawner:Start()
 
     inst:AddComponent("inspectable")
 
@@ -245,13 +255,17 @@ local function fn()
     MakeMediumBurnableCharacter(inst, "bat_body")
     MakeMediumFreezableCharacter(inst, "bat_body")
 
-    inst:AddComponent("teamattacker")
-    inst.components.teamattacker.team_type = "bat"
+    local teamattacker = inst:AddComponent("teamattacker")
+    teamattacker.team_type = "bat"
 
     inst:ListenForEvent("attacked", OnAttacked)
-    inst.OnIsAcidRaining = OnIsAcidRaining -- Mods.
-    inst:WatchWorldState("isacidraining", inst.OnIsAcidRaining)
-    inst:OnIsAcidRaining(TheWorld.state.isacidraining)
+
+    local acidinfusible = inst:AddComponent("acidinfusible")
+    acidinfusible:SetFXLevel(3)
+    acidinfusible:SetDamageMultiplier(TUNING.ACIDRAIN_BAT_DAMAGE_MULT)
+    acidinfusible:SetSpeedMultiplier(TUNING.ACIDRAIN_BAT_SPEED_MULT)
+    acidinfusible:SetOnInfuseFn(OnInfuse)
+    acidinfusible:SetOnUninfuseFn(OnUninfuse)
 
     MakeHauntablePanic(inst)
 

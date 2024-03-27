@@ -132,8 +132,6 @@ function SnapshotTab:OnClickSnapshot(snapshot_num)
         return
     end
 
-    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-
     local day_text_header = ""
     if self.snapshots[snapshot_num].world_day ~= nil then
         day_text_header = subfmt(STRINGS.UI.SERVERADMINSCREEN.HEADER_DAY, {day_count = self.snapshots[snapshot_num].world_day} )

@@ -85,7 +85,7 @@ return{
             NO_RACERS = "I suppose I'll have to go find some Carrats...",
         },
 
-		DISMANTLE =
+		DISMANTLE = 
 		{
 			COOKING = "Mother warned me not to touch a pot while it's cooking.",
 			INUSE = "Someone's in there.",
@@ -523,6 +523,7 @@ return{
 	ANNOUNCE_HIGHRESEARCH = "I have seen the void and it is deep and dark.",
 	ANNOUNCE_HOUNDS = "The hounds are baying.",
 	ANNOUNCE_WORMS = "Uh-oh. I think we should leave.",
+    ANNOUNCE_ACIDBATS = "They've found us.",
 	ANNOUNCE_HUNGRY = "I am full of emptiness.",
 	ANNOUNCE_HUNT_BEAST_NEARBY = "I sense the beast's presence nearby.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "This trail leads nowhere.",
@@ -907,6 +908,8 @@ return{
     ANNOUNCE_SCRAPBOOK_FULL = "Nothing more will fit in my scrapbook.",
 
     ANNOUNCE_CHAIR_ON_FIRE = "This is fine. Really.",
+
+    ANNOUNCE_HEALINGSALVE_ACIDBUFF_DONE = "The acid rain may burn my flesh once more.",
 
     ANNOUNCE_COACH = 
     {
@@ -1449,18 +1452,25 @@ return{
         {
             GENERIC = "These are some strange trees.",
             BLOOM = "It's trying so hard. Why?",
+            ACIDCOVERED = "I know the scent of death and decay.",
         },
         MUSHTREE_MEDIUM =
         {
             GENERIC = "It looks like a rotting hat.",
             BLOOM = "All its efforts fall on rocky soil.",
+            ACIDCOVERED = "I know the scent of death and decay.",
         },
         MUSHTREE_SMALL =
         {
             GENERIC = "Do little gnomes live in these?",
             BLOOM = "It has a glowing presence.",
+            ACIDCOVERED = "I know the scent of death and decay.",
         },
-        MUSHTREE_TALL_WEBBED = "This one is frail and scorned. Like a friend.",
+        MUSHTREE_TALL_WEBBED =
+        {
+            GENERIC = "This one is frail and scorned. Like a friend.",
+            ACIDCOVERED = "I know the scent of death and decay.",
+        },
         SPORE_TALL =
         {
             GENERIC = "Be free, little one!",
@@ -1940,7 +1950,11 @@ return{
 		DRAGONFLY = "It's burning on the inside.",
 		ARMORDRAGONFLY = "I'd wear it inside-out.",
 		DRAGON_SCALES = "Scales of pain.",
-		DRAGONFLYCHEST = "Boom box.",
+		DRAGONFLYCHEST =
+		{
+			GENERIC = "Boom box.",
+            UPGRADED_STACKSIZE = "It holds multitudes, and refuses to burn away.",
+		},
 		DRAGONFLYFURNACE =
 		{
 			HAMMERED = "Pathetic.",
@@ -2590,6 +2604,7 @@ return{
 		SILK = "So slippery and fine.",
 		SKELETON = "I envy your escape.",
 		SCORCHED_SKELETON = "The flame has cleansed this poor wretched soul.",
+        SKELETON_NOTPLAYER = "All living things share the same fate. Thankfully.",
 		SKULLCHEST = "It shall contain my memento mori.", --removed
 		SMALLBIRD =
 		{
@@ -2706,8 +2721,11 @@ return{
 		{
 			GENERIC = "For which to contain my lucre.",
 			BURNT = "It couldn't even hold ashes.",
+            UPGRADED_STACKSIZE = "It's still not big enough to hold all my regrets.",
 		},
 		TREASURECHEST_TRAP = "Every once in awhile, things go my way.",
+        CHESTUPGRADE_STACKSIZE = "It will make the emptiness in my chest grow even bigger...", -- Describes the kit upgrade item.
+		COLLAPSEDCHEST = "Is the emptyness all around us now?",
 		SACRED_CHEST =
 		{
 			GENERIC = "It is touched by death.",
@@ -3006,6 +3024,8 @@ return{
 		WALL_MOONROCK_ITEM = "This gift from above should not go to waste.",
 		WALL_DREADSTONE = "Nothing will ever break through.",
 		WALL_DREADSTONE_ITEM = "As dark and impenetrable as my heart.",
+        WALL_SCRAP = "If junk can find new purpose, maybe... nah.",
+        WALL_SCRAP_ITEM = "If junk can find new purpose, maybe... nah.",
 		FENCE = "Sort of like an emotional barrier. But wood.",
         FENCE_ITEM = "We could use it to build a fence.",
         FENCE_GATE = "Will it keep others in, or out?",
@@ -4116,6 +4136,7 @@ return{
         DUSTMERINGUE = "A treat devoid of sweetness...",
 
         SHROOMCAKE = "Will it make me grow? Or shrink perhaps? Mushrooms are funny things.",
+        SHROOMBAIT = "Will it give me a dreamless sleep?",
 
         NIGHTMAREGROWTH = "Something wicked this way comes.",
 
@@ -4846,6 +4867,12 @@ return{
 			GENERIC = "We are all tethered to this place in one way or another.",
 			EXPOSED = "It is too strong, and I am too weak.",
 		},
+		DAYWALKER2 =
+		{
+			GENERIC = "He seems hungry for power. Perhaps to fill the void within.",
+			BURIED = "A soul crushed by the weight of the inescapable past.",
+			HOSTILE = "The rage is a mask to hide his pain.",
+		},
 		ARMORDREADSTONE = "Let the darkness surround me.",
 		DREADSTONEHAT = "What's the point?",
 
@@ -5098,6 +5125,27 @@ return{
         MASTUPGRADE_LAMP_ITEM_YOTD = "A meager light to combat the darkness.",
         WALKINGPLANK_YOTD = "It looks so inviting.",
         CHESSPIECE_YOTD = "If only I could have a new start.",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "I find it strangely soothing.",
+
+        BEESWAX_SPRAY = "The bottled scent of fear.",
+        WAXED_PLANT = "Stuck, unchanging, forever and ever...", -- Used for all waxed plants, from farm plants to trees.
+
+        STORAGE_ROBOT = {
+            GENERIC = "It lacks a soul.",
+            BROKEN = "Can a machine truly die?",
+        },
+
+        SCRAP_MONOCLEHAT = "I won't find what I'm looking for, no matter how far I can see.",
+        SCRAPHAT = "My head will be safe. My dignity, however...",
+
+        FENCE_JUNK = "Even these discarded pieces can manage to be useful.",
+        JUNK_PILE = "Could there be something worthwhile hiding deep inside?",
+        JUNK_PILE_BIG = "It's about to collapse... maybe I'll be here when it does.",
+
+        ARMOR_LUNARPLANT_HUSK = "I'd find it useful if I feared death.",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

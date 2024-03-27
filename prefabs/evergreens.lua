@@ -915,6 +915,9 @@ local function tree(name, build, stage, data)
         inst.OnLoad = onload
 
         MakeSnowCovered(inst)
+
+        MakeWaxablePlant(inst)
+
         ---------------------
 
         if GetBuild(inst).rebirth_loot ~= nil then

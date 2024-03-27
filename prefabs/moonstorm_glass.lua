@@ -133,6 +133,7 @@ local function fn()
 
     inst:AddTag("moonglass")
 
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -151,6 +152,8 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
+
+
 
     local TIME = 20
 
@@ -189,10 +192,12 @@ local function fn()
     end)
 
     inst:DoTaskInTime(0,function()
+
         local nub = SpawnPrefab("moonstorm_glass_nub")
         nub.Transform:SetPosition(inst.Transform:GetWorldPosition())
         nub.glass = inst
         inst.nub = nub
+
     end)
 
     return inst
@@ -228,6 +233,7 @@ local function nubfn()
     inst.AnimState:PlayAnimation("centre_idle1", true)
 
     inst:AddTag("moonglass")
+    inst:AddTag("moonstorm_glass")
 
     inst.entity:SetPristine()
 
@@ -242,11 +248,12 @@ local function nubfn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
 
+    inst:AddComponent("lootdropper")
+
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.MINE)
     inst.components.workable:SetWorkLeft(TUNING.ROCKS_MINE)
     inst.components.workable:SetOnWorkCallback(OnWorkNub)
-
 
     inst.setanim = setanim
 

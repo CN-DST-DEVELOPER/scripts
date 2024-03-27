@@ -704,8 +704,8 @@ local book_defs =
 
                 local items = player.components.inventory:ReferenceAllItems()
                 for _, item in ipairs(items) do
-                    if item.components.inventoryitemmoisture ~= nil then
-                        item.components.inventoryitemmoisture:SetMoisture(0)
+                    if item.components.inventoryitem ~= nil then
+                        item.components.inventoryitem:DryMoisture()
                     end
                 end
             end

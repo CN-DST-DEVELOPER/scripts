@@ -90,17 +90,12 @@ local function DoDamage(inst, targets, skiptoss)
                     and v.components.pickable:CanBePicked()
                     and not v:HasTag("intense") then
                     targets[v] = true
-                    local num = v.components.pickable.numtoharvest or 1
-                    local product = v.components.pickable.product
-                    local x1, y1, z1 = v.Transform:GetWorldPosition()
-                    v.components.pickable:Pick(inst) -- only calling this to trigger callbacks on the object
-                    if product ~= nil and num > 0 then
-                        for i = 1, num do
-                            local loot = SpawnPrefab(product)
-                            loot.Transform:SetPosition(x1, 0, z1)
-                            skiptoss[loot] = true
-                            targets[loot] = true
-                            Launch(loot, inst, LAUNCH_SPEED)
+					local success, loots = v.components.pickable:Pick(inst)
+					if loots then
+						for i, v in ipairs(loots) do
+							skiptoss[v] = true
+							targets[v] = true
+							Launch(v, inst, LAUNCH_SPEED)
                         end
                     end
                 elseif inst.components.combat:CanTarget(v) then

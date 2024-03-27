@@ -294,6 +294,10 @@ function self:CalcNewMoonstormBaseNodeIndex()
 	print("MoonstormManager failed to find a valid moonstorm base node")
 end
 
+function self:GetCelestialChampionsKilled()
+	return _alterguardian_defeated_count
+end
+
 function self:StartMoonstorm(set_first_node_index,nodes)
 	self:StopCurrentMoonstorm()
 
@@ -691,12 +695,15 @@ local MOONSTORM_SPARKS_MUST_HAVE= {"moonstorm_spark"}
 local MOONSTORM_SPARKS_CANT_HAVE= {"INLIMBO"}
 
 function self:DoTestForSparks()
+
 	for i, v in ipairs(_activeplayers) do
 		local pt = Vector3(v.Transform:GetWorldPosition())
 		if TheWorld.net.components.moonstorms and TheWorld.net.components.moonstorms:IsPointInMoonstorm(pt) then
 			local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 30, MOONSTORM_SPARKS_MUST_HAVE,MOONSTORM_SPARKS_CANT_HAVE)
+
 			if #ents < SPARKLIMIT then
 				local pos = FindWalkableOffset(pt, math.random()*2*PI, 5 + math.random()* 20, 16, nil, nil, customcheckfn, nil, nil)
+
 				if pos then
 					local spark = SpawnPrefab("moonstorm_spark")
 					spark.Transform:SetPosition(pt.x + pos.x,0,pt.z + pos.z)
@@ -851,11 +858,15 @@ end
 --------------------------------------------------------------------------
 
 function self:GetDebugString()
-
-	if true then
-		return nil
-	end
-
+    return string.format(
+        "AGKills: %d, StormMove: %d of %d, TaskWagstaff: %d, TaskSpark: %d, TaskLightning: %d",
+        _alterguardian_defeated_count,
+        self.stormdays or 0,
+		TUNING.MOONSTORM_MOVE_TIME,
+        GetTaskRemaining(self.spawn_wagstaff_test_task),
+        GetTaskRemaining(self.moonstorm_spark_task),
+        GetTaskRemaining(self.moonstorm_lightning_task)
+    )
 end
 
 end)

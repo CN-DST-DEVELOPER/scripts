@@ -142,15 +142,18 @@ local prefabs =
 	"shadowthrall_horns",
 	"shadowthrall_wings",
 	"ruins_shadeling",
+
+    "acidsmoke_fx",
 }
 
 local monsters =
 {
-    "worm",
+    {"worm", 4},
+    {"acidbatwave", 1},
 }
 for i, v in ipairs(monsters) do
-    for level = 1, 4 do
-        table.insert(prefabs, v.."warning_lvl"..tostring(level))
+    for level = 1, v[2] do
+        table.insert(prefabs, v[1].."warning_lvl"..tostring(level))
     end
 end
 monsters = nil
@@ -245,6 +248,7 @@ local function master_postinit(inst)
     inst:AddComponent("brightmarespawner")
     inst:AddComponent("toadstoolspawner")
     inst:AddComponent("grottowarmanager")
+    inst:AddComponent("acidbatwavemanager")
 
     --gameplay
     inst:AddComponent("caveins")

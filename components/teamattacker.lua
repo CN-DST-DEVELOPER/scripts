@@ -13,9 +13,10 @@ end
 local TeamAttacker = Class(function(self, inst)
 	self.inst = inst
 	self.inteam = false
-	self.teamleader = nil
-	self.formationpos = nil
-	self.order = nil
+	--self.teamleader = nil
+	--self.formationpos = nil
+	--self.order = nil
+    --self.ignoreformation = nil
 	self.searchradius = 50
 	self.leashdistance = 70
 	self.inst:StartUpdatingComponent(self)
@@ -33,19 +34,18 @@ function TeamAttacker:GetDebugString()
 end
 
 function TeamAttacker:SearchForTeam()
-	local pt = Vector3(self.inst.Transform:GetWorldPosition())
-	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, self.searchradius, self.teamsearchtags)
+	local pt = self.inst:GetPosition()
+	local potential_leaders = TheSim:FindEntities(pt.x, pt.y, pt.z, self.searchradius, self.teamsearchtags)
 
-	for k,v in pairs(ents) do
-		if not v.components.teamleader:IsTeamFull() then
-			v.components.teamleader:NewTeammate(self.inst)
+	for _, potential_leader in pairs(potential_leaders) do
+		if not potential_leader.components.teamleader:IsTeamFull() then
+			potential_leader.components.teamleader:NewTeammate(self.inst)
 			return true
 		end
     end
 end
 
 function TeamAttacker:OnEntitySleep()
-
 	if self.teamleader then
 		self.teamleader:OnLostTeammate(self.inst)
 	end
@@ -58,8 +58,10 @@ end
 
 function TeamAttacker:ShouldGoHome()
     local homePos = self.inst.components.knownlocations:GetLocation("home")
+	if not homePos then return false end
+
     local x,y,z = self.inst.Transform:GetWorldPosition()
-    return (homePos and distsq(homePos.x, homePos.z, x, z) > self.leashdistance*self.leashdistance)
+    return distsq(homePos.x, homePos.z, x, z) > (self.leashdistance*self.leashdistance)
 end
 
 function TeamAttacker:LeaveTeam()
@@ -68,35 +70,36 @@ function TeamAttacker:LeaveTeam()
 	end
 end
 
+function TeamAttacker:LeaveFormation()
+    self.ignoreformation = true
+end
+
+function TeamAttacker:JoinFormation()
+    self.ignoreformation = nil
+end
+
+function TeamAttacker:GetOrders()
+    return self.orders
+end
+
 function TeamAttacker:OnUpdate(dt)
 	if self:ShouldGoHome() then self:LeaveTeam() end
 
 	if self.teamleader and self.teamleader:CanAttack() then --did you find a team?
-		if self.orders == ORDERS.HOLD or self.orders == nil then --if you don't have anything to do.. look menacing
+		local has_warn_orders = (self.orders == ORDERS.WARN)
+		if not self.orders or has_warn_orders or self.orders == ORDERS.HOLD then --if you don't have anything to do.. look menacing
 			self.inst.components.combat:DropTarget()
 			if self.formationpos then
 				local destpos = self.formationpos
-        		local mypos = Point(self.inst.Transform:GetWorldPosition())
-        		if destpos and mypos then
-					if distsq(destpos, mypos) >= 0.15 then	--if you're almost at your target just stop.
-						self.inst.components.locomotor:GoToPoint(self.formationpos)
-					end
-				end
+                if destpos and not self.ignoreformation then
+                    local mypos = self.inst:GetPosition()
+                    if distsq(destpos, mypos) >= 0.15 then	--if you're almost at your target just stop.
+                        self.inst.components.locomotor:GoToPoint(self.formationpos)
+                    end
+                end
 
-				if self.inst.components.health.takingfiredamage then
+				if not has_warn_orders and self.inst.components.health.takingfiredamage then
 					self.orders = ORDERS.ATTACK
-				end
-
-			end
-		elseif self.orders == ORDERS.WARN then
-			self.inst.components.combat:DropTarget()
-			if self.formationpos then
-				local destpos = self.formationpos
-        		local mypos = Point(self.inst.Transform:GetWorldPosition())
-        		if destpos and mypos then
-					if distsq(destpos, mypos) >= 0.15 then	--if you're almost at your target just stop.
-						self.inst.components.locomotor:GoToPoint(self.formationpos)
-					end
 				end
 			end
 		elseif self.orders == ORDERS.ATTACK then	--You have been told to attack. Get the target from your leader.

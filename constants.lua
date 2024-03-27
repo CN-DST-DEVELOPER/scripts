@@ -193,6 +193,18 @@ CONTROL_INV_15 = 81
 
 CONTROL_START_EMOJI = 82
 
+-- extra menu controls that should have been above but it's too late to add them now
+CONTROL_MENU_BACK = 83
+CONTROL_MENU_START = 84
+CONTROL_MENU_L2 = 85
+CONTROL_MENU_R2 = 86
+
+CONTROL_OPEN_COMMAND_WHEEL = 87
+
+-- controller targetting
+CONTROL_TARGET_LOCK = 88
+CONTROL_TARGET_CYCLE = 89
+
 CONTROL_CUSTOM_START = 100
 
 XBOX_CONTROLLER_ID = 17
@@ -765,7 +777,7 @@ SPECIAL_EVENTS =
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.YOTD
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -1065,7 +1077,8 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_riftsthree"
+    "dontstarve/music/music_FE_junkyardhog"
+    --"dontstarve/music/music_FE_riftsthree"
     --"dontstarve/music/music_FE_survivorsguideone"
     --"dontstarve/music/music_FE_shadowrift"
     --"dontstarve/music/music_FE_lunarrift"
@@ -1081,6 +1094,21 @@ FE_MUSIC =
     --"dontstarve/music/music_FE_wanda"
     --"terraria1/common/music_main_eot"
 
+
+---------------------------------------------------------
+-- Pickup sounds for in game events.
+PICKUPSOUNDS = {
+    ["wood"] = "aqol/new_test/wood",
+    ["gem"] = "aqol/new_test/gem",
+    ["cloth"] = "aqol/new_test/cloth",
+    ["metal"] = "aqol/new_test/metal",
+    ["rock"] = "aqol/new_test/rock",
+    ["vegetation_firm"] = "aqol/new_test/vegetation_firm",
+    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",    
+    ["squidgy"] = "aqol/new_test/squidgy",
+    ["grainy"] = "aqol/new_test/grainy",
+    ["DEFAULT_FALLBACK"] = "dontstarve/HUD/collect_resource",
+}
 
 ---------------------------------------------------------
 NUM_HALLOWEENCANDY = 14
@@ -1785,6 +1813,7 @@ MATERIALS =
     SHELL = "shell",
     NIGHTMARE = "nightmare",
 	DREADSTONE = "dreadstone",
+    SCRAP = "scrap"
 }
 
 FORGEMATERIALS =
@@ -1801,6 +1830,7 @@ UPGRADETYPES =
     WATERPLANT = "waterplant",
     MAST = "mast",
     SPEAR_LIGHTNING = "spear_lightning",
+    CHEST = "chest",
 }
 
 LOCKTYPE =
@@ -1841,6 +1871,7 @@ FOODTYPE =
     BERRY = "BERRY", --hack for smallbird; berries are actually part of veggie
     RAW = "RAW", -- things which some animals can eat off the ground, but players need to cook
     BURNT = "BURNT", --For lavae.
+    NITRE = "NITRE", -- For acidbats; they are part of elemental.
     ROUGHAGE = "ROUGHAGE",
 	WOOD = "WOOD",
     GOODIES = "GOODIES",
@@ -2151,6 +2182,33 @@ PLANTREGISTRYUICOLOURS = {
 
 MAX_CHAT_INPUT_LENGTH = 150
 MAX_WRITEABLE_LENGTH = 200
+
+-- Used by exportprefabs to identify which "npcchatflairs" images to recognize.
+DST_NPCCHATTERLIST =
+{
+    "none", -- Default chatter/image name
+
+    "daywalker",
+    "daywalker_scrap",
+    "hermitcrab",
+    "sharkboi",
+    "stalker",
+    "wagstaff",
+}
+
+CHATPRIORITIES =
+{
+    -- Messages sent with priority 0 should never appear in chat history.
+    NOCHAT = 0,
+
+    LOW = 1,
+    HIGH = 2,
+
+    -- Keep this the highest value in the table.
+    -- Do not use this value for any messages, unless
+    -- it is desperately needed to be seen irrelevant of user settings.
+    MAX = 3,
+}
 
 --Bit flags, currently supports up to 8
 --Server may use these for things that clients need to know about
@@ -2661,4 +2719,9 @@ LOADING_SCREEN_CONTROLLER_ID_LOOKUP =
     [CONTROL_ACTION] = CONTROL_CONTROLLER_ACTION,
     [CONTROL_FORCE_INSPECT] = CONTROL_INSPECT,
     [CONTROL_SHOW_PLAYER_STATUS] = CONTROL_MENU_MISC_4,
+}
+
+-- Constants to reduce network overhead.
+CLIENTAUTHORITATIVESETTINGS = {
+    PLATFORMHOPDELAY = 0,
 }

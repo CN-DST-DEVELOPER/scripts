@@ -31,15 +31,6 @@ local function OnEntitySleep(inst)
     inst.SoundEmitter:KillSound("loop")
 end
 
-local function ReturnChildren(inst)
-    for k, child in pairs(inst.components.childspawner.childrenoutside) do
-        if child.components.homeseeker ~= nil then
-            child.components.homeseeker:GoHome()
-        end
-        child:PushEvent("gohome")
-    end
-end
-
 local function OnHit(inst, attacker, damage)
     if inst.components.childspawner ~= nil then
         inst.components.childspawner:SpawnChild(attacker)

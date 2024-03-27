@@ -177,6 +177,10 @@ local function common_fn(build)
     inst:AddComponent("drownable")
     ------------------------------------------
 
+    inst:AddComponent("acidinfusible")
+    inst.components.acidinfusible:SetFXLevel(3)
+    inst.components.acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
     inst:SetBrain(brain)
 
     inst:ListenForEvent("attacked", OnAttacked)

@@ -85,7 +85,7 @@ return{
             NO_RACERS = "What am I forgetting? Oh! The carrats!",
         },
 
-		DISMANTLE =
+		DISMANTLE = 
 		{
 			COOKING = "I'll have to be patient... just be patient... I can be patient!",
 			INUSE = "Could you hurry it up a little?",
@@ -523,6 +523,7 @@ return{
 	ANNOUNCE_HIGHRESEARCH = "That really got the gears in my head turning!",
 	ANNOUNCE_HOUNDS = "Wait a tick... did you hear something?",
 	ANNOUNCE_WORMS = "That rumble felt... ominous.",
+    ANNOUNCE_ACIDBATS = "Something's coming.",
 	ANNOUNCE_HUNGRY = "How long has it been since I last ate?",
 	ANNOUNCE_HUNT_BEAST_NEARBY = "An animal must've been through here just moments ago.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "Lost it. Maybe I should retrace my steps.",
@@ -903,6 +904,8 @@ return{
     ANNOUNCE_SCRAPBOOK_FULL = "Didn't I already fill out my scrapbook?",
 
     ANNOUNCE_CHAIR_ON_FIRE = "This is fine.",
+
+    ANNOUNCE_HEALINGSALVE_ACIDBUFF_DONE = "My time being unbothered by acid rain is, sadly, over.",
 
     ANNOUNCE_COACH = 
     {
@@ -1445,18 +1448,25 @@ return{
         {
             GENERIC = "I wonder how it got so big? Rather, I wonder what it's been feeding on...",
             BLOOM = "Don't you dare get any of those spores on me!",
+            ACIDCOVERED = "I will not soon forget this odor.",
         },
         MUSHTREE_MEDIUM =
         {
             GENERIC = "I never did like mushrooms.",
             BLOOM = "Ugh, it's trying to grow more mushrooms.",
+            ACIDCOVERED = "I will not soon forget this odor.",
         },
         MUSHTREE_SMALL =
         {
             GENERIC = "I'm going to trip over one of these if I'm not careful.",
             BLOOM = "Is it spore season again?",
+            ACIDCOVERED = "I will not soon forget this odor.",
         },
-        MUSHTREE_TALL_WEBBED = "A particularly bad mushroom.",
+        MUSHTREE_TALL_WEBBED =
+        {
+            GENERIC = "A particularly bad mushroom.",
+            ACIDCOVERED = "I will not soon forget this odor.",
+        },
         SPORE_TALL =
         {
             GENERIC = "They're looking for a place to latch onto.",
@@ -1936,7 +1946,11 @@ return{
 		DRAGONFLY = "Ohhhh I was really hoping to avoid dodging fiery bug monsters today.",
 		ARMORDRAGONFLY = "I think it looks better on me than it did on the bug.",
 		DRAGON_SCALES = "Fireproof material has served me well in the past. And future, come to think of it.",
-		DRAGONFLYCHEST = "Now that I'm not worried about my things burning up, I can worry about everything else.",
+		DRAGONFLYCHEST =
+		{
+			GENERIC = "Now that I'm not worried about my things burning up, I can worry about everything else.",
+            UPGRADED_STACKSIZE = "Big enough to keep all my trinkets safely stashed away.",
+		},
 		DRAGONFLYFURNACE =
 		{
 			HAMMERED = "If only I could go back in time and undo that decision. If only.",
@@ -2586,6 +2600,7 @@ return{
 		SILK = "It's surprisingly durable.",
 		SKELETON = "This one's beyond my power to save...",
 		SCORCHED_SKELETON = "Their life was snuffed out long ago.",
+        SKELETON_NOTPLAYER = "These old bones should remind us not to tarry.",
 		SKULLCHEST = "I'm not sure if I want to open it.", --removed
 		SMALLBIRD =
 		{
@@ -2702,8 +2717,11 @@ return{
 		{
 			GENERIC = "Less cluttering up my pockets means less cluttering up my mind.",
 			BURNT = "I probably should have seen that coming.",
+            UPGRADED_STACKSIZE = "I can always use more space for trinkets.",
 		},
 		TREASURECHEST_TRAP = "Did I leave this here? Hm...",
+        CHESTUPGRADE_STACKSIZE = "More space is always welcome, but more time would be preferred.", -- Describes the kit upgrade item.
+		COLLAPSEDCHEST = "It's a waste of time to repair if someone's just going to destroy it again.",
 		SACRED_CHEST =
 		{
 			GENERIC = "An ancient puzzle! How exciting!",
@@ -3002,6 +3020,8 @@ return{
 		WALL_MOONROCK_ITEM = "I feel safer already.",
 		WALL_DREADSTONE = "It's just a wall, nothing more than that.",
 		WALL_DREADSTONE_ITEM = "I'd better get it set up, no time to waste.",
+        WALL_SCRAP = "Hope it keeps us safe.",
+        WALL_SCRAP_ITEM = "Hope it keeps us safe.",
 		FENCE = "An incredibly ordinary wooden fence.",
         FENCE_ITEM = "Didn't I build that already?",
         FENCE_GATE = "An incredibly ordinary wooden gate.",
@@ -4112,6 +4132,7 @@ return{
         DUSTMERINGUE = "Alright, dust was a poor ingredient choice. This is why I don't cook!",
 
         SHROOMCAKE = "If it's a cake it can't be too terrible... right?",
+        SHROOMBAIT = "Who or what would want to eat that?",
 
         NIGHTMAREGROWTH = "They're here! I need to leave, quickly!",
 
@@ -4842,6 +4863,12 @@ return{
 			GENERIC = "They seem breakable... but I don't think that'd be wise.",
 			EXPOSED = "Oh botheration. I think I just remembered something...",
 		},
+		DAYWALKER2 =
+		{
+			GENERIC = "Well this is new.",
+			BURIED = "This is all too familiar.",
+			HOSTILE = "I guess we don't learn from the past.",
+		},
 		ARMORDREADSTONE = "It should keep me well protected, at least.",
 		DREADSTONEHAT = "That stone turned out to be rather useful.",
 
@@ -5094,6 +5121,27 @@ return{
         MASTUPGRADE_LAMP_ITEM_YOTD = "I feel a little better now.",
         WALKINGPLANK_YOTD = "Fancier, but no less ominous.",
         CHESSPIECE_YOTD = "Back where it all began... the boat race, anyway.",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "This wretched concoction might buy us a little time.",
+
+        BEESWAX_SPRAY = "If only I could make use of its unique preservation effects...",
+        WAXED_PLANT = "Perfectly preserved for all time.", -- Used for all waxed plants, from farm plants to trees.
+
+        STORAGE_ROBOT = {
+            GENERIC = "It certainly saves time.",
+            BROKEN = "Maybe its time had come.",
+        },
+
+        SCRAP_MONOCLEHAT = "It never hurts to view things from a wider angle.",
+        SCRAPHAT = "I like it much better as a hat.",
+
+        FENCE_JUNK = "As long as it keeps things out, I don't care how it looks.",
+        JUNK_PILE = "There might be something worth my time in there.",
+        JUNK_PILE_BIG = "I'm not eager to be crushed by a teetering pile of scrap metal.",
+
+        ARMOR_LUNARPLANT_HUSK = "It kills while it protects. Rather efficient.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

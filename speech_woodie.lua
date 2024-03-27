@@ -85,7 +85,7 @@ return{
             NO_RACERS = "Just who's racing against who, eh?",
         },
 
-		DISMANTLE =
+		DISMANTLE = 
 		{
 			COOKING = "Better to wait till the food's done, eh?",
 			INUSE = "Sorry! I'll wait till you're finished there.",
@@ -524,6 +524,7 @@ return{
 	ANNOUNCE_HIGHRESEARCH = "Informative.",
 	ANNOUNCE_HOUNDS = "There's something out there.",
 	ANNOUNCE_WORMS = "Oh geez. I hope you're ready, Lucy.",
+    ANNOUNCE_ACIDBATS = "You hear something, Lucy?",
 	ANNOUNCE_HUNGRY = "I'm getting peckish.",
 	ANNOUNCE_HUNT_BEAST_NEARBY = "The beastie is nearby.",
 	ANNOUNCE_HUNT_LOST_TRAIL = "I'm more of a woodsman than a hunter anyway.",
@@ -904,6 +905,8 @@ return{
     ANNOUNCE_SCRAPBOOK_FULL = "Looks like stuff I already know aboot.",
 
     ANNOUNCE_CHAIR_ON_FIRE = "This is fine, eh.",
+
+    ANNOUNCE_HEALINGSALVE_ACIDBUFF_DONE = "Looks like I'll be needin' another dose of Acid Repellent.",
 
     ANNOUNCE_COACH = 
     {
@@ -1446,18 +1449,25 @@ return{
         {
             GENERIC = "I can't let that stand.",
             BLOOM = "Chop it down before it spreads!",
+            ACIDCOVERED = "All the same to me. Let's get to choppin'.",
         },
         MUSHTREE_MEDIUM =
         {
             GENERIC = "Maybe I should chop it.",
             BLOOM = "I like the colour of this one.",
+            ACIDCOVERED = "All the same to me. Let's get to choppin'.",
         },
         MUSHTREE_SMALL =
         {
             GENERIC = "It's made of wood.",
             BLOOM = "Well, I can't cut it down now...",
+            ACIDCOVERED = "All the same to me. Let's get to choppin'.",
         },
-        MUSHTREE_TALL_WEBBED = "This one needs pruning, at least.",
+        MUSHTREE_TALL_WEBBED =
+        {
+            GENERIC = "This one needs pruning, at least.",
+            ACIDCOVERED = "All the same to me. Let's get to choppin'.",
+        },
         SPORE_TALL =
         {
             GENERIC = "A flying blue pinecone!",
@@ -1937,7 +1947,11 @@ return{
 		DRAGONFLY = "She'll burn all the trees before I can chop them!",
 		ARMORDRAGONFLY = "Plaid is all the armor I need.",
 		DRAGON_SCALES = "I still don't believe in dragons.",
-		DRAGONFLYCHEST = "Gaudy if you ask me.",
+		DRAGONFLYCHEST =
+		{
+			GENERIC = "Gaudy if you ask me.",
+            UPGRADED_STACKSIZE = "It's a bit much, eh? But at least it stores a lot.",
+		},
 		DRAGONFLYFURNACE =
 		{
 			HAMMERED = "It got even tackier, eh?",
@@ -2587,6 +2601,7 @@ return{
 		SILK = "Spiders give me the willies.",
 		SKELETON = "Sorry, friend.",
 		SCORCHED_SKELETON = "Yikes.",
+        SKELETON_NOTPLAYER = "Well, it's lookin' pretty dead.",
 		SKULLCHEST = "That's scary!", --removed
 		SMALLBIRD =
 		{
@@ -2703,8 +2718,11 @@ return{
 		{
 			GENERIC = "Wood is so handy! Look at all the things you can make!",
 			BURNT = "I guess wood does have a downside...",
+            UPGRADED_STACKSIZE = "Lots of storage, made of quality wood, what more could you ask for?",
 		},
 		TREASURECHEST_TRAP = "Something is not quite right aboot that chest.",
+        CHESTUPGRADE_STACKSIZE = "Guess this thing will hollow out more space in my storage chest?", -- Describes the kit upgrade item.
+		COLLAPSEDCHEST = "Nobody's blamin' you, Luce.",
 		SACRED_CHEST =
 		{
 			GENERIC = "It makes my beard hair stand on end.",
@@ -3003,6 +3021,8 @@ return{
 		WALL_MOONROCK_ITEM = "It's not much use like that.",
 		WALL_DREADSTONE = "Not exactly cozy, eh?",
 		WALL_DREADSTONE_ITEM = "I'd rather build walls out of lumber.",
+        WALL_SCRAP = "Are walls supposed to smell?",
+        WALL_SCRAP_ITEM = "Are walls supposed to smell?",
 		FENCE = "That's a good lookin' fence.",
         FENCE_ITEM = "A good project for a lazy afternoon.",
         FENCE_GATE = "Some nice woodwork there.",
@@ -4113,6 +4133,7 @@ return{
         DUSTMERINGUE = "Tastes terrible. And that's speakin' as someone who's eaten raw lumber.",
 
         SHROOMCAKE = "Mushy in more ways than one, eh?",
+        SHROOMBAIT = "That is just foul.",
 
         NIGHTMAREGROWTH = "Somethin' tells me that's not part of the natural environment.",
 
@@ -4843,6 +4864,12 @@ return{
 			GENERIC = "Looks sturdy... ish.",
 			EXPOSED = "That's some firmly planted stone.",
 		},
+		DAYWALKER2 =
+		{
+			GENERIC = "Hey there, buddy. You don't look so bad.",
+			BURIED = "Should we help him out, Luce?",
+			HOSTILE = "No good deed goes unpunished.",
+		},
 		ARMORDREADSTONE = "Lucy says black ain't my colour.",
 		DREADSTONEHAT = "Gotta protect the old noggin', eh?",
 
@@ -5095,6 +5122,27 @@ return{
         MASTUPGRADE_LAMP_ITEM_YOTD = "That'll lighten things up around here.",
         WALKINGPLANK_YOTD = "You can fancy it up, but I still don't want to use it.",
         CHESSPIECE_YOTD = "Some nice stonework. Would've looked even better carved outta pine.",
+
+        -- Rifts / Meta QoL
+
+        HEALINGSALVE_ACID = "Oh man, that's got a real funk to it.",
+
+        BEESWAX_SPRAY = "Lucy says she likes my own woody musk.",
+        WAXED_PLANT = "It won't wither away, but it also won't be growing anytime soon.", -- Used for all waxed plants, from farm plants to trees.
+
+        STORAGE_ROBOT = {
+            GENERIC = "We chop, and it collects.",
+            BROKEN = "Lucy! Did you do that?",
+        },
+
+        SCRAP_MONOCLEHAT = "I can see far and wide!",
+        SCRAPHAT = "Anything to protect the ol' dome, eh?",
+
+        FENCE_JUNK = "It's got nothin' on a sturdy wooden fence.",
+        JUNK_PILE = "Wouldn't hurt to root around there a bit, eh?",
+        JUNK_PILE_BIG = "That'll make one heckuva mess when it falls over.",
+
+        ARMOR_LUNARPLANT_HUSK = "That is some fine craftsmanship.",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

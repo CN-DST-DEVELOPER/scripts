@@ -26,7 +26,7 @@ local assets_fx =
 }
 
 
-local SMOKE_SIZE = 0.75
+local SMOKE_SIZE = 0.8
 local SMOKE_MAX_LIFETIME = 5.0
 local FIRE_DECAY_MULTIPLIER = 0.25 -- If a fire is nearby this is how much is multiplied for lifetimes.
 local EMBER_MAX_LIFETIME = 1.5 -- Max smoke lifetime when on fire.
@@ -87,8 +87,8 @@ local function InitEnvelope()
 		COLOUR_ENVELOPE_NAME_SMOKE,
 		{
 			{ 0,	IntColour(255, 255, 255, 0) },
-			{ .3,	IntColour(255, 255, 255, 255) },
-			{ .7,	IntColour(255, 255, 255, 255) },
+			{ .1,	IntColour(255, 255, 255, 255) },
+			{ .9,	IntColour(255, 255, 255, 255) },
 			{ 1,	IntColour(255, 255, 255, 0) },
 		}
 	)

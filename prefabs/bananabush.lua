@@ -202,7 +202,6 @@ local function fn()
 
     inst:AddComponent("simplemagicgrower")
     inst.components.simplemagicgrower:SetLastStage(#inst.components.growable.stages)
-
     --------------------------------------------------------------------------
     if not GetGameModeProperty("disable_transplanting") then
         inst:AddComponent("workable")
@@ -230,6 +229,8 @@ local function fn()
 
     --------------------------------------------------------------------------
     MakeHauntableIgnite(inst)
+
+    MakeWaxablePlant(inst)
 
     --------------------------------------------------------------------------
     inst.OnLoad = on_load

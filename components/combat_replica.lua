@@ -15,7 +15,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Combat:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Combat:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified = nil
@@ -26,7 +27,7 @@ function Combat:OnRemoveFromEntity()
     end
 end
 
-Combat.OnRemoveEntity = Combat.OnRemoveFromEntity
+Combat.OnRemoveEntity = Combat.OnRemoveFromEntity]]
 
 function Combat:AttachClassified(classified)
     self.classified = classified

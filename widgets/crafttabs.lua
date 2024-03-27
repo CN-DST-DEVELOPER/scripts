@@ -295,6 +295,7 @@ local CraftTabs = Class(Widget, function(self, owner, top_root)
     if TheWorld then
         self.inst:ListenForEvent("serverpauseddirty", UpdateRecipes, TheWorld)
     end
+	self.inst:ListenForEvent("cancelrefreshcrafting", function() self.needtoupdate = false end, self.owner)
     self:DoUpdateRecipes()
     self:SetScale(self.base_scale)
     self:StartUpdating()

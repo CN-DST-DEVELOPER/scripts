@@ -220,6 +220,13 @@ local function on_terraformer_longupdate(inst, delta_time)
     end
 end
 
+
+local function terraformer_timerdone(inst, data)
+    if data and data.name == "remove" then
+        inst:Remove()
+    end
+end
+
 ------------------------------------------------------------------
 local function terraformerfn()
     local inst = CreateEntity()
@@ -248,6 +255,8 @@ local function terraformerfn()
 
     --
     inst:ListenForEvent("forcefinishterraforming", terraformer_forcefinishterraform)
+    inst:AddComponent("timer")
+    inst:ListenForEvent("timerdone", terraformer_timerdone)
 
     --
     inst.OnSave = on_terraformer_save

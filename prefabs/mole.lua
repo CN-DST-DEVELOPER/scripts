@@ -26,23 +26,23 @@ local function OnAttacked(inst, data)
     --if data and data.weapon and data.weapon == "hammer" then return end
 
     local x,y,z = inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x,y,z, 30, MOLE_TAGS)
+    local moles = TheSim:FindEntities(x,y,z, 30, MOLE_TAGS)
 
-    local num_friends = 0
-    local maxnum = 5
-    for i,v in ipairs(ents) do
-        v:PushEvent("gohome")
+    local num_friends, max_friends = 0, 5
+    for _, mole in ipairs(moles) do
+        mole:PushEvent("gohome")
         num_friends = num_friends + 1
 
-        if num_friends > maxnum then
+        if num_friends > max_friends then
             break
         end
     end
 end
 
 local function OnWentHome(inst)
-    local molehill = inst.components.homeseeker and inst.components.homeseeker.home or nil
+    local molehill = (inst.components.homeseeker and inst.components.homeseeker.home) or nil
     if not molehill then return end
+
     if molehill.components.inventory then
         inst.components.inventory:TransferInventory(molehill)
     end
@@ -79,12 +79,12 @@ end
 
 local function OnLoad(inst, data)
     if data then
-        inst.needs_home_time = data.needs_home_time and -data.needs_home_time or nil
+        inst.needs_home_time = (data.needs_home_time ~= nil and -data.needs_home_time) or nil
     end
 end
 
 local function OnSave(inst, data)
-    data.needs_home_time = inst.needs_home_time and (GetTime() - inst.needs_home_time) or nil
+    data.needs_home_time = (inst.needs_home_time and (GetTime() - inst.needs_home_time)) or nil
 end
 
 local function SetUnderPhysics(inst)
@@ -107,10 +107,10 @@ local function SetAbovePhysics(inst)
 end
 
 local function displaynamefn(inst)
-    return inst:HasTag("noattack")
+    return (inst:HasTag("noattack")
         and not inst:HasTag("INLIMBO")
         and not (inst.replica.inventoryitem ~= nil and inst.replica.inventoryitem:CanBePickedUp())
-        and STRINGS.NAMES.MOLE_UNDERGROUND
+        and STRINGS.NAMES.MOLE_UNDERGROUND)
         or STRINGS.NAMES.MOLE_ABOVEGROUND
 end
 
@@ -121,7 +121,9 @@ local function getstatus(inst)
 end
 
 local function TestForMakeHome(inst)
-    if not (inst.components.homeseeker ~= nil and inst.components.homeseeker.home ~= nil and inst.components.homeseeker.home:IsValid()) then
+    if not (inst.components.homeseeker ~= nil and
+            inst.components.homeseeker.home ~= nil and
+            inst.components.homeseeker.home:IsValid()) then
         inst.needs_home_time = GetTime()
     end
 end
@@ -132,6 +134,16 @@ local function ondrop(inst)
     inst.SoundEmitter:KillSound("stunned")
     inst.sg:GoToState("stunned", true)
     TestForMakeHome(inst)
+end
+
+local function hauntable_reaction(inst)--, haunter)
+    if math.random() < TUNING.HAUNT_CHANCE_OFTEN then
+        local action = BufferedAction(inst, nil, ACTIONS.MOLEPEEK)
+        inst.components.locomotor:PushAction(action, true)
+        return true
+    else
+        return false
+    end
 end
 
 local function OnSleep(inst)
@@ -148,10 +160,8 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
-    --inst.entity:AddDynamicShadow()
     inst.entity:AddNetwork()
 
-    --inst.DynamicShadow:SetSize(1, .75)
     inst.Transform:SetFourFaced()
 
     MakeCharacterPhysics(inst, 99999, 0.5)
@@ -181,7 +191,6 @@ local function fn()
     inst.displaynamefn = displaynamefn
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         inst.isunder = nil --this flag is not valid on clients
 
@@ -190,11 +199,11 @@ local function fn()
 
     inst:AddComponent("tradable")
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor.walkspeed = 2.75
-    inst.components.locomotor:SetSlowMultiplier(1)
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = {ignorecreep = true,}
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor.walkspeed = 2.75
+    locomotor:SetSlowMultiplier(1)
+    locomotor:SetTriggersCreep(false)
+    locomotor.pathcaps = {ignorecreep = true,}
 
     inst:SetStateGraph("SGmole")
     inst:SetBrain(brain)
@@ -222,14 +231,14 @@ local function fn()
     inst.components.inventory.maxslots = 3
     inst.force_onwenthome_message = true
 
-    inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem.nobounce = true
-    inst.components.inventoryitem.canbepickedup = false
-    inst.components.inventoryitem.canbepickedupalive = true
-    inst.components.inventoryitem.trappable = false
-    inst.components.inventoryitem:SetSinks(true)
-    -- inst.components.inventoryitem:SetOnPickupFn(onpickup)
-    -- inst.components.inventoryitem:SetOnDroppedFn(ondrop) Done in MakeFeedableSmallLivestock
+    local inventoryitem = inst:AddComponent("inventoryitem")
+    inventoryitem.nobounce = true
+    inventoryitem.canbepickedup = false
+    inventoryitem.canbepickedupalive = true
+    inventoryitem.trappable = false
+    inventoryitem:SetSinks(true)
+    -- inventoryitem:SetOnPickupFn(onpickup)
+    -- inventoryitem:SetOnDroppedFn(ondrop) Done in MakeFeedableSmallLivestock
 
     inst:AddComponent("knownlocations")
     inst.last_above_time = 0
@@ -251,7 +260,6 @@ local function fn()
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
-    -- inst.OnEntityWake = OnWake
     inst.OnEntitySleep = OnSleep
     inst.OnRemoveEntity = OnRemove
     inst:ListenForEvent("enterlimbo", OnRemove)
@@ -264,14 +272,7 @@ local function fn()
 
     inst:DoTaskInTime(inst.make_home_delay, TestForMakeHome)
 
-    AddHauntableCustomReaction(inst, function(inst, haunter)
-        if math.random() < TUNING.HAUNT_CHANCE_OFTEN then
-            local action = BufferedAction(inst, nil, ACTIONS.MOLEPEEK)
-            inst.components.locomotor:PushAction(action, true)
-            return true
-        end
-        return false
-    end, nil, true, true)
+    AddHauntableCustomReaction(inst, hauntable_reaction, nil, true, true)
 
     return inst
 end

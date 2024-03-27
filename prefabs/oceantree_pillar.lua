@@ -342,7 +342,7 @@ local function chop_down_tree(inst, chopper)
 
     inst.components.lootdropper:DropLoot(pt)
     inst.removeme = true
-    inst.persits = false
+    inst.persists = false
     dropcanopystuff(inst, math.random(NUM_DROP_SMALL_ITEMS_MIN,NUM_DROP_SMALL_ITEMS_MAX), true )
     inst.logs = 15
     DropLogs(inst)
@@ -418,7 +418,7 @@ local function OnBurnt(inst)
     inst.AnimState:PlayAnimation("burnt",false)
 
     inst.removeme = true
-    inst.persits = false
+    inst.persists = false
     dropcanopystuff(inst, math.random(NUM_DROP_SMALL_ITEMS_MIN,NUM_DROP_SMALL_ITEMS_MAX), true )
     
     inst:DoTaskInTime(.5, function() ShakeAllCameras(CAMERASHAKE.FULL, 0.25, 0.03, 0.6, inst, 6) end)

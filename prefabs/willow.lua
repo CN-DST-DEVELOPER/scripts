@@ -157,6 +157,16 @@ local function updatelighters(inst)
     end
 end
 
+local function TargetIsHostile(inst, target)
+    if inst.HostileTest ~= nil then
+        return inst:HostileTest(target)
+    elseif target.HostileToPlayerTest ~= nil then
+        return target:HostileToPlayerTest(inst)
+    else
+        return target:HasTag("hostile")
+    end
+end
+
 local function common_postinit(inst)
     inst:AddTag("pyromaniac")
     inst:AddTag("expertchef")
@@ -207,6 +217,7 @@ local function master_postinit(inst)
 
     inst.updateembers = updateembers
     inst.updatelighters = updatelighters
+    inst.TargetIsHostile = TargetIsHostile
 
     inst:ListenForEvent("ms_becameghost", OnBecameGhost)
 

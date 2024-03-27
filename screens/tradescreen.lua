@@ -1275,7 +1275,7 @@ end
 local SCROLL_REPEAT_TIME = .15
 local MOUSE_SCROLL_REPEAT_TIME = 0
 local STICK_SCROLL_REPEAT_TIME = .25
-local reset_control = CONTROL_MAP
+local reset_control = CONTROL_MENU_BACK
 if IsConsole() then
 	reset_control = CONTROL_MENU_MISC_2
 end
@@ -1302,7 +1302,7 @@ function TradeScreen:OnControl(control, down)
 					self:Reset()
 				end
 				return true
-			elseif control == CONTROL_PAUSE then -- menu button / start button
+			elseif control == CONTROL_MENU_START then -- menu button / start button
 				if self:IsTradeAllowed() then
 					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 					self:Trade()
@@ -1311,7 +1311,7 @@ function TradeScreen:OnControl(control, down)
 					self:Reset()
 				end
 				return true
-			elseif control == CONTROL_INSPECT then -- Y button
+			elseif control == CONTROL_MENU_MISC_2 then -- Y button
 				if IsNotConsole() and PLATFORM ~= "WIN32_RAIL" then
 					VisitURL("https://steamcommunity.com/market/search?appid=322330")
 					return true
@@ -1342,7 +1342,7 @@ function TradeScreen:OnControl(control, down)
             return true
        	elseif control == CONTROL_ACCEPT and self.accept_waiting then
        		self:Reset()
-		elseif control == CONTROL_OPEN_INVENTORY then -- right trigger
+		elseif control == CONTROL_MENU_R2 then -- right trigger
 			self.do_nothing_on_activate = true
 			local bird_interact = nil
 			bird_interact = BirdInteractScreen(
@@ -1397,14 +1397,14 @@ function TradeScreen:GetHelpText()
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.TRADESCREEN.BACK)
 
 	if not self.machine_in_use and not self.transitioning then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. STRINGS.UI.TRADESCREEN.BIRDS )
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2) .. " " .. STRINGS.UI.TRADESCREEN.BIRDS )
 
 		if self.resetbtn:IsEnabled() then
 			table.insert(t,  TheInput:GetLocalizedControl(controller_id, reset_control) .. " " .. STRINGS.UI.TRADESCREEN.RESET)
 		end
 
 	    if self.tradebtn:IsEnabled() then
-	   		table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.TRADESCREEN.TRADE)
+	   		table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.TRADESCREEN.TRADE)
 	   	end
 	end
 
@@ -1425,7 +1425,7 @@ function TradeScreen:GetHelpText()
     end
 
 	if not IsRail() and IsNotConsole() then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.TRADESCREEN.MARKET)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.TRADESCREEN.MARKET)
 	end
 
     return table.concat(t, "  ")

@@ -682,6 +682,9 @@ local function tree(name, stage, data)
         inst.OnLoadPostPass = onloadpostpass
 
         MakeSnowCovered(inst)
+
+        MakeWaxablePlant(inst)
+
         ---------------------
 
         if data == "stump" then

@@ -565,7 +565,7 @@ end
 
 function Builder:DoBuild(recname, pt, rotation, skin)
     local recipe = GetValidRecipe(recname)
-    if recipe ~= nil and (self:IsBuildBuffered(recname) or self:HasIngredients(recipe)) then
+    if recipe ~= nil and (self:IsBuildBuffered(recname) or self:HasIngredients(recipe)) and not PREFAB_SKINS_SHOULD_NOT_SELECT[skin] then
         if recipe.placer ~= nil and
             self.inst.components.rider ~= nil and
             self.inst.components.rider:IsRiding() then

@@ -345,6 +345,19 @@ local function MakeHat(name)
         inst:AddTag("waterproofer")
     end
 
+    fns.football_onequip = function(inst, owner)
+        if inst:HasTag("open_top_hat") then
+            fns.opentop_onequip(inst, owner)
+        else
+            _onequip(inst, owner)
+        end
+    end
+
+    fns.football_onunequip = function(inst, owner)
+        _onunequip(inst, owner)
+    end
+
+
     fns.football = function()
         local inst = simple(football_custom_init)
 
@@ -357,6 +370,9 @@ local function MakeHat(name)
 
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+        inst.components.equippable:SetOnEquip(fns.football_onequip)
+        inst.components.equippable:SetOnUnequip(fns.football_onunequip)
 
         return inst
     end
@@ -1761,9 +1777,52 @@ local function MakeHat(name)
         return inst
     end
 
+    fns.mushroom_onattacked_moonspore_tryspawn = function(hat)
+        local periodicspawner = hat.components.periodicspawner
+        if periodicspawner == nil then
+            hat._moonspore_tryspawn_count = nil
+            return
+        end
+
+        periodicspawner:TrySpawn()
+
+        hat._moonspore_tryspawn_count = hat._moonspore_tryspawn_count - 1
+        if hat._moonspore_tryspawn_count <= 0 then
+            hat._moonspore_tryspawn_count = nil
+            return
+        end
+
+        hat:DoTaskInTime(TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_DELAY, fns.mushroom_onattacked_moonspore_tryspawn)
+    end
+    fns.mushroom_onattacked_moonspore = function(inst, data)
+        local hat = inst.components.inventory ~= nil and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or nil
+        if hat ~= nil then
+            if hat._moonspore_tryspawn_count == nil then
+                hat:DoTaskInTime(TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_DELAY, fns.mushroom_onattacked_moonspore_tryspawn)
+            end
+            hat._moonspore_tryspawn_count = TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_COUNT
+        end
+    end
+    fns.mushroom_spawnpoint_moonspore = function(inst)
+        local pos = inst:GetPosition()
+        local dist = GetRandomMinMax(0.1, 2.0)
+    
+        local offset = FindWalkableOffset(pos, math.random() * TWOPI, dist, 8)
+    
+        if offset ~= nil then
+            return pos + offset
+        end
+
+        return pos
+    end
+
     local function mushroom_onequip(inst, owner)
         _onequip(inst, owner)
         owner:AddTag("spoiler")
+        if inst._ismoonspore then
+            owner:AddTag("moon_spore_protection")
+            inst:ListenForEvent("attacked", fns.mushroom_onattacked_moonspore, owner)
+        end
 
         inst.components.periodicspawner:Start()
 
@@ -1776,7 +1835,10 @@ local function MakeHat(name)
     local function mushroom_onunequip(inst, owner)
         _onunequip(inst, owner)
         owner:RemoveTag("spoiler")
-
+        if inst._ismoonspore then
+            owner:RemoveTag("moon_spore_protection")
+            inst:RemoveEventCallback("attacked", fns.mushroom_onattacked_moonspore, owner)
+        end
         inst.components.periodicspawner:Stop()
 
         if owner.components.hunger ~= nil then
@@ -1809,8 +1871,17 @@ local function MakeHat(name)
         inst:AddTag("waterproofer")
     end
 
+    fns.mushroom_onspawn_moonspore = function(inst, spore)
+        spore._alwaysinstantpops = true
+    end
+
     local function common_mushroom(spore_prefab)
+        local ismoonspore = spore_prefab == "spore_moon"
         local inst = simple(mushroom_custom_init)
+
+        if ismoonspore then
+            inst._ismoonspore = true
+        end
 
         if not TheWorld.ismastersim then
             return inst
@@ -1827,8 +1898,14 @@ local function MakeHat(name)
 
         inst:AddComponent("periodicspawner")
         inst.components.periodicspawner:SetPrefab(spore_prefab)
-        inst.components.periodicspawner:SetRandomTimes(TUNING.MUSHROOMHAT_SPORE_TIME, 1, true)
-        --inst.components.periodicspawner:SetOnSpawnFn(onspawnfn) -- maybe we should add a spawn animation to the hat?
+        inst.components.periodicspawner:SetIgnoreFlotsamGenerator(true) -- NOTES(JBK): These spores float and self expire do not flotsam them.
+        if ismoonspore then
+            inst.components.periodicspawner:SetRandomTimes(TUNING.MUSHROOMHAT_MOONSPORE_TIME, TUNING.MUSHROOMHAT_MOONSPORE_TIME_VARIANCE, true)
+            inst.components.periodicspawner:SetOnSpawnFn(fns.mushroom_onspawn_moonspore)
+            inst.components.periodicspawner:SetGetSpawnPointFn(fns.mushroom_spawnpoint_moonspore)
+        else
+            inst.components.periodicspawner:SetRandomTimes(TUNING.MUSHROOMHAT_SPORE_TIME, 1, true)
+        end
 
         inst:AddComponent("insulator")
         inst.components.insulator:SetSummer()
@@ -1876,6 +1953,21 @@ local function MakeHat(name)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.7)
+
+        inst.scrapbook_specialinfo = "MUSHHAT"
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        return inst
+    end
+    
+    fns.moon_mushroom = function()
+        local inst = common_mushroom("spore_moon")
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.7)        
 
         inst.scrapbook_specialinfo = "MUSHHAT"
 
@@ -3063,6 +3155,21 @@ local function MakeHat(name)
         end
     end
 
+    fns.alterguardian_onsave = function(inst, data)
+        local equipper = inst.components.equippable:IsEquipped() and inst.components.inventoryitem:GetGrandOwner() or nil
+        local keep_closed = (equipper ~= nil and inst.components.container.opencount == 0 and equipper.userid) or inst.keep_closed -- Try to get new data and fallback to saved variable.
+
+        if keep_closed ~= nil then
+            data.owner_id = keep_closed
+        end
+    end
+
+    fns.alterguardian_onload = function(inst, data)
+        if data.owner_id ~= nil then
+            inst.keep_closed = data.owner_id
+        end
+    end
+
     fns.alterguardian = function()
         local inst = simple(alterguardian_custom_init)
 
@@ -3084,6 +3191,9 @@ local function MakeHat(name)
 
         inst:AddComponent("preserver")
         inst.components.preserver:SetPerishRateMultiplier(0)
+
+        inst.OnSave = fns.alterguardian_onsave
+		inst.OnLoad = fns.alterguardian_onload
 
         MakeHauntableLaunchAndPerish(inst)
 
@@ -4036,6 +4146,93 @@ local function MakeHat(name)
 
         return inst
     end
+
+    -----------------------------------------------------------------------------
+
+    fns.scrap_monocle_onequip = function(inst, owner)
+        fns.opentop_onequip(inst, owner)
+
+        if owner.isplayer then
+            owner:AddCameraExtraDistance(inst, TUNING.SCRAP_MONOCLE_EXTRA_VIEW_DIST)
+        end
+    end
+
+    fns.scrap_monocle_onunequip = function(inst, owner)
+        _onunequip(inst, owner)
+
+        if owner.isplayer then
+            owner:RemoveCameraExtraDistance(inst)
+        end
+    end
+
+    fns.scrap_monocle_custom_init = function(inst)
+        inst:AddTag("scrapmonolevision")
+    end
+
+    fns.scrap_monocle_dappernessfn = function(inst, owner)
+        return inst.dapperness_per_phase[TheWorld.state.phase] or TUNING.DAPPERNESS_TINY
+    end
+
+    fns.scrap_monocle = function()
+        local inst = simple(fns.scrap_monocle_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetVerticalOffset(0.1)
+        inst.components.floater:SetScale(.6)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        -- Here for mod compability.
+        inst.dapperness_per_phase = {
+            day   =   TUNING.DAPPERNESS_SMALL,
+            dusk  =   0,
+            night = - TUNING.DAPPERNESS_TINY,
+        }
+
+        inst.components.equippable:SetOnEquip(fns.scrap_monocle_onequip)
+        inst.components.equippable:SetOnUnequip(fns.scrap_monocle_onunequip)
+        inst.components.equippable:SetDappernessFn(fns.scrap_monocle_dappernessfn)
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled:InitializeFuelLevel(TUNING.SCRAP_MONOCLEHAT_PERISHTIME)
+        inst.components.fueled:SetDepletedFn(--[[generic_perish]]inst.Remove)
+        inst.components.fueled.no_sewing = true
+
+        MakeHauntableLaunch(inst)
+
+        return inst
+    end
+
+    -----------------------------------------------------------------------------
+
+	fns.scrap_custom_init = function(inst)
+		inst:AddTag("junk")
+	end
+
+    fns.scrap = function()
+		local inst = simple(fns.scrap_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetVerticalOffset(0.2)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+		inst:AddComponent("armor")
+		inst.components.armor:InitCondition(TUNING.ARMOR_SCRAP_HAT, TUNING.ARMOR_SCRAP_HAT_ABSORPTION)
+
+		inst:AddComponent("waterproofer")
+		inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+        MakeHauntableLaunch(inst)
+
+        return inst
+    end
+
     -----------------------------------------------------------------------------
 
     local fn = nil
@@ -4105,6 +4302,8 @@ local function MakeHat(name)
         fn = fns.green_mushroom
     elseif name == "blue_mushroom" then
         fn = fns.blue_mushroom
+    elseif name == "moon_mushroom" then
+        fn = fns.moon_mushroom            
     elseif name == "hive" then
         fn = fns.hive
     elseif name == "dragonhead" then
@@ -4197,6 +4396,10 @@ local function MakeHat(name)
         prefabs = { "wagpunkhat_fx", "wagpunksteam_hat_up", "wagpunksteam_hat_down", "wagpunk_bits", "wagpunkhat_classified" }
         table.insert(assets, Asset("ANIM", "anim/firefighter_placement.zip"))
         fn = fns.wagpunk
+    elseif name == "scrap_monocle" then
+        fn = fns.scrap_monocle
+    elseif name == "scrap" then
+        fn = fns.scrap
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -4558,6 +4761,9 @@ return  MakeHat("straw"),
         MakeHat("lunarplant"),
         MakeHat("voidcloth"),
         MakeHat("wagpunk"),
+        MakeHat("moon_mushroom"),
+        MakeHat("scrap_monocle"),
+        MakeHat("scrap"),
 
 		MakeFollowFx("lunarplanthat_fx", {
 			createfn = lunarplanthat_CreateFxFollowFrame,
@@ -4585,7 +4791,6 @@ return  MakeHat("straw"),
                        Asset("ANIM", "anim/hat_wagpunk_04.zip"),  
                        Asset("ANIM", "anim/hat_wagpunk_05.zip") },
         }),
-
 
         Prefab("minerhatlight", minerhatlightfn),
         Prefab("alterguardianhatlight", alterguardianhatlightfn),

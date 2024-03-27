@@ -2,6 +2,10 @@ local assets = {
     Asset("ANIM", "anim/icefishing_hole.zip"),
 }
 
+local prefabs = {
+    "splash_green_large",
+}
+
 local function build_hole_collision_mesh(radius, height, segment_count)
     local triangles = {}
     local y0 = 0
@@ -48,6 +52,38 @@ local function build_hole_collision_mesh(radius, height, segment_count)
 	return triangles
 end
 
+local function CheckForFixed(player, inst)
+    player._icefishing_hole_task = nil
+    if inst:IsValid() then
+        local x, _, z = inst.Transform:GetWorldPosition()
+        if player:GetDistanceSqToInst(inst) < inst._hole_radius * inst._hole_radius then
+            local ex, ey, ez = player.Transform:GetWorldPosition()
+            local dx, dz = ex - x, ez - z
+            local dist = math.sqrt(dx * dx + dz * dz)
+            local player_radius = (player.Physics:GetRadius() or 1) + .2
+            if dist == 0 then
+                dist = 1
+                dx = player_radius
+            else
+                dx, dz = (player_radius + inst._hole_radius) * dx / dist, (player_radius + inst._hole_radius) * dz / dist
+            end
+            player.Transform:SetPosition(x + dx, 0, z + dz)
+        end
+    end
+end
+local function OnPlayerNear(inst, player)
+    local x, _, z = inst.Transform:GetWorldPosition()
+    SpawnPrefab("splash_green_large").Transform:SetPosition(x, 0, z)
+    -- A fake redirected so that players do not see the red blood flash.
+    player:PushEvent("attacked", { attacker = inst, damage = 0, redirected = player })
+    player:PushEvent("knockback", { knocker = inst, radius = inst._hole_radius + 1 + math.random(), disablecollision = true })
+    if player._icefishing_hole_task ~= nil then
+        player._icefishing_hole_task:Cancel()
+        player._icefishing_hole_task = nil
+    end
+    player._icefishing_hole_task = player:DoTaskInTime(1, CheckForFixed, inst) -- In case the player is ignoring knockbacks we want them out.
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -64,7 +100,8 @@ local function fn()
     inst.Physics:CollidesWith(COLLISION.ITEMS)
     inst.Physics:CollidesWith(COLLISION.CHARACTERS)
     inst.Physics:CollidesWith(COLLISION.GIANTS)
-    inst.Physics:SetTriangleMesh(build_hole_collision_mesh(1.7, 6, 16))
+    local RADIUS = 1.7
+    inst.Physics:SetTriangleMesh(build_hole_collision_mesh(RADIUS, 6, 16))
 
     inst.AnimState:SetBuild("icefishing_hole")
     inst.AnimState:SetBank("icefishing_hole")
@@ -96,7 +133,14 @@ local function fn()
         return inst
     end
 
+    inst._hole_radius = RADIUS
+
+    local playerprox = inst:AddComponent("playerprox")
+    playerprox:SetTargetMode(playerprox.TargetModes.AllPlayers)
+    playerprox:SetOnPlayerNear(OnPlayerNear)
+    playerprox:SetDist(RADIUS, RADIUS) -- In case a player manages to get inside the fishing boundary uninvited.
+
     return inst
 end
 
-return Prefab( "icefishing_hole", fn, assets)
+return Prefab( "icefishing_hole", fn, assets, prefabs)

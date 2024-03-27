@@ -97,6 +97,7 @@ local AcidLevel = Class(function(self, inst)
 
     self.max = 100
     self.current = 0
+    --self.ignoreacidrainticks = nil
 
     --self.overrideacidraintick = nil
 
@@ -105,13 +106,35 @@ local AcidLevel = Class(function(self, inst)
     self.DoAcidRainDamageOnHealth = DoAcidRainDamageOnHealth -- Mods.
 
     self:WatchWorldState("isacidraining", self.OnIsAcidRaining)
-    self:OnIsAcidRaining(TheWorld.state.isacidraining)
     self:WatchWorldState("israining", self.OnIsRaining)
-    self:OnIsRaining(TheWorld.state.israining)
+    self.inst:DoTaskInTime(0, function() -- NOTES(JBK): LoadPostPass without regard to save data.
+        self:OnIsAcidRaining(TheWorld.state.isacidraining)
+        self:OnIsRaining(TheWorld.state.israining)
+    end)
 end)
 
+function AcidLevel:SetIgnoreAcidRainTicks(ignoreacidrainticks)
+    if self.ignoreacidrainticks ~= ignoreacidrainticks then
+        if self.inst.acidlevel_acid_task ~= nil then
+            -- Ticks are ticking.
+            if ignoreacidrainticks then
+                -- From allowing to ignoring.
+                if self.onstopisacidrainingfn then
+                    self.onstopisacidrainingfn(self.inst)
+                end
+            else
+                -- From ignoring to allowing.
+                if self.onstartisacidrainingfn then
+                    self.onstartisacidrainingfn(self.inst)
+                end
+            end
+        end
+        self.ignoreacidrainticks = ignoreacidrainticks
+    end
+end
+
 local function DoAcidRainTick(inst, self)
-	if inst.components.rainimmunity ~= nil then
+	if inst.components.rainimmunity ~= nil or self.ignoreacidrainticks then
 		return
 	end
 

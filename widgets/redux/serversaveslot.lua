@@ -273,7 +273,7 @@ function ServerSaveSlot:OnControl(control, down)
 		if control == CONTROL_ACCEPT then
 			self:onclick()
             return true
-		elseif control == CONTROL_MAP then
+		elseif control == CONTROL_MENU_BACK then
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             if IsConsole() then
                 self:OnDeleteButton()
@@ -290,7 +290,7 @@ function ServerSaveSlot:GetHelpText()
 	local controller_id = TheInput:GetControllerID()
 
 	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.HELP.SELECT)
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MAP) .. " " .. (IsConsole() and STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT or STRINGS.UI.SERVERCREATIONSCREEN.MANAGE_SLOT))
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_BACK) .. " " .. (IsConsole() and STRINGS.UI.SERVERCREATIONSCREEN.DELETE_SLOT or STRINGS.UI.SERVERCREATIONSCREEN.MANAGE_SLOT))
 
 	return table.concat(t, "  ")
 end

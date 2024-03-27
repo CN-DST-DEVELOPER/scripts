@@ -75,7 +75,8 @@ end
 
 --------------------------------------------------------------------------
 
-function Container:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Container:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified:Remove()
@@ -105,9 +106,23 @@ function Container:OnRemoveFromEntity()
             self.openers[player] = nil
         end
     end
-end
+end]]
 
-Container.OnRemoveEntity = Container.OnRemoveFromEntity
+function Container:OnRemoveEntity()
+	if TheWorld.ismastersim then
+		if self.classified then
+			self.classified:Remove()
+			self.classified = nil
+		end
+		for player, opener in pairs(self.openers) do
+			opener:Remove()
+			self.openers[player] = nil
+		end
+	elseif self.opener then
+		self.opener._parent = nil
+		self:DetachOpener()
+	end
+end
 
 --------------------------------------------------------------------------
 --Client triggers open/close based on receiving access to classified data
@@ -281,6 +296,20 @@ end
 
 function Container:ShouldSkipCloseSnd()
     return self._skipclosesnd:value()
+end
+
+function Container:EnableInfiniteStackSize(enable)
+	if self.classified then
+		self.classified.infinitestacksize:set(enable)
+	end
+end
+
+function Container:IsInfiniteStackSize()
+    if not self.classified then
+        return false
+    end
+
+    return self.classified.infinitestacksize:value()
 end
 
 function Container:CanTakeItemInSlot(item, slot)

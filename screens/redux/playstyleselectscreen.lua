@@ -8,6 +8,7 @@ local Grid = require "widgets/grid"
 local TEMPLATES = require "widgets/redux/templates"
 local OnlineStatus = require "widgets/onlinestatus"
 local ServerCreationScreen = require "screens/redux/servercreationscreen"
+local CaveSelectScreen = require "screens/redux/caveselectscreen"
 
 local KitcoonPuppet = require "widgets/kitcoonpuppet"
 
@@ -94,12 +95,18 @@ function PlaystyleSelectScreen:MakeStyleButton(playstyle_id)
 	button.bigicon:MoveToBack()
 
     button:SetOnClick(function()
-		TheFrontEnd:FadeToScreen(self.parent_screen, function() 
-			local s = ServerCreationScreen(self.parent_screen, self.slot_index)
-			s:OnNewGamePresetPicked(playstyle_def.default_preset)
-			TheFrontEnd:PopScreen(self)
-			return s
-		end)
+    	if Profile:GetCavesStateRemembered() then
+    		TheFrontEnd:FadeToScreen(self.parent_screen, function()
+				local s = ServerCreationScreen(self.parent_screen, self.slot_index)
+				s:OnNewGamePresetPicked(playstyle_def.default_preset)
+				TheFrontEnd:PopScreen(self)
+				return s
+			end)
+    	else    		
+    		TheFrontEnd:PushScreen(CaveSelectScreen(self, self.slot_index, playstyle_def.default_preset, self.parent_screen ))    
+    		TheFrontEnd:PopScreen(self)
+			TheFrontEnd:Fade(true, SCREEN_FADE_TIME)
+    	end
     end)
 
 	button:SetOnSelect(function()
@@ -118,6 +125,7 @@ function PlaystyleSelectScreen:MakeStyleButton(playstyle_id)
 end
 
 function PlaystyleSelectScreen:MakeStyleGrid()
+
 	local root = Widget("grid_root")
 
 	local grid = root:AddChild(Grid())

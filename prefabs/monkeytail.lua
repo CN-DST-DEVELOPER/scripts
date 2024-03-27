@@ -143,6 +143,8 @@ local function fn()
     ------------------------------------------------------------------------
     MakeNoGrowInWinter(inst)
 
+    MakeWaxablePlant(inst)
+
     ------------------------------------------------------------------------
     MakeHauntableIgnite(inst)
     

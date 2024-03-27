@@ -318,6 +318,12 @@ local function OnLootPrefabSpawned(inst, data)
 	end
 end
 
+local function OnWorkFinished(inst, worker)
+	if not inst.components.health:IsDead() then
+		inst.components.health:Kill()
+	end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -335,6 +341,7 @@ local function fn()
     inst:AddTag("veggie")
     inst:AddTag("wildfirepriority")
     inst:AddTag("NPCcanaggro")
+	inst:AddTag("NPC_workable")
 
     inst.MiniMapEntity:SetIcon("eyeplant.png")
 
@@ -368,6 +375,10 @@ local function fn()
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot({"lureplantbulb"})
+
+	inst:AddComponent("workable")
+	inst.components.workable:SetWorkAction(nil)
+	inst.components.workable:SetOnFinishCallback(OnWorkFinished)
 
     inst:AddComponent("minionspawner")
     inst.components.minionspawner.onminionattacked = HideBait

@@ -103,7 +103,9 @@ function DoDebugMouse(button, down,x,y)
 end
 
 function DoReload()
-    dofile("scripts/reload.lua")
+    -- NOTES(JBK): Do not use dofile.
+    package.loaded["scripts/reload.lua"] = nil
+    require("scripts/reload.lua")
 end
 
 -------------------------------------DEBUG KEYS

@@ -2289,10 +2289,10 @@ function ServerListingScreen:OnControl(control, down)
                 self:Cancel()
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             end
-        elseif control == CONTROL_PAUSE and self.selected_server and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
+        elseif control == CONTROL_MENU_START and self.selected_server and TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse then
             self:Join(false)
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-        elseif control == CONTROL_OPEN_CRAFTING or control == CONTROL_OPEN_INVENTORY then
+        elseif control == CONTROL_MENU_L2 or control == CONTROL_MENU_R2 then
             self:ToggleShowFilters()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         elseif control == CONTROL_MENU_MISC_2 and not TheNet:IsSearchingServers() then
@@ -2335,7 +2335,7 @@ function ServerListingScreen:GetHelpText()
 
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 
-    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_CRAFTING).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
+    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_L2).."/"..TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2).. " " .. STRINGS.UI.HELP.CHANGE_TAB)
 
     table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SERVERLISTINGSCREEN.CHANGE_SORT)
 
@@ -2344,7 +2344,7 @@ function ServerListingScreen:GetHelpText()
     end
 
     if self.selected_server then
-        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.SERVERLISTINGSCREEN.JOIN)
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.SERVERLISTINGSCREEN.JOIN)
     end
 
     return table.concat(t, "  ")

@@ -166,26 +166,31 @@ function MeteorShower:SpawnMeteor(mod)
         local met = SpawnPrefab("shadowmeteor")
         met.Transform:SetPosition(x + fan_offset.x, y + fan_offset.y, z + fan_offset.z)
 
-        if mod == nil then
-            mod = 1
-        end
-
-        --Randomize size, but only spawn small meteors on the periphery
         local peripheral = radius > TUNING.METEOR_SHOWER_SPAWN_RADIUS - TUNING.METEOR_SHOWER_CLEANUP_BUFFER
-        local rand = not peripheral and math.random() or 1
-        local cost = math.floor(1 / mod + .5)
-        if rand <= TUNING.METEOR_LARGE_CHANCE * mod and (self.large_remaining == nil or self.large_remaining >= cost) then
-            met:SetSize("large", mod)
-            if self.large_remaining ~= nil then
-                self.large_remaining = self.large_remaining - cost
-            end
-        elseif rand <= TUNING.METEOR_MEDIUM_CHANCE * mod  and (self.medium_remaining == nil or self.medium_remaining >= cost) then
-            met:SetSize("medium", mod)
-            if self.medium_remaining ~= nil then
-                self.medium_remaining = self.medium_remaining - cost
-            end
+
+        if self.should_have_rock_moon_shell and met:IsOnValidGround() then
+            met:SetSize("rockmoonshell", 1)
+            self.should_have_rock_moon_shell = nil
         else
-            met:SetSize("small", mod)
+            if mod == nil then
+                mod = 1
+            end
+            --Randomize size, but only spawn small meteors on the periphery
+            local rand = not peripheral and math.random() or 1
+            local cost = math.floor(1 / mod + .5)
+            if rand <= TUNING.METEOR_LARGE_CHANCE * mod and (self.large_remaining == nil or self.large_remaining >= cost) then
+                met:SetSize("large", mod)
+                if self.large_remaining ~= nil then
+                    self.large_remaining = self.large_remaining - cost
+                end
+            elseif rand <= TUNING.METEOR_MEDIUM_CHANCE * mod  and (self.medium_remaining == nil or self.medium_remaining >= cost) then
+                met:SetSize("medium", mod)
+                if self.medium_remaining ~= nil then
+                    self.medium_remaining = self.medium_remaining - cost
+                end
+            else
+                met:SetSize("small", mod)
+            end
         end
         met:SetPeripheral(peripheral)
         return met
@@ -211,6 +216,8 @@ end
 
 function MeteorShower:StartShower(level)
     self:StopShower()
+    local odds = TheWorld.components.worldmeteorshower ~= nil and TheWorld.components.worldmeteorshower:GetRockMoonShellWaveOdds() or 0
+    self.should_have_rock_moon_shell = math.random() < odds
 
     self.level = level or RandomizeLevel()
 
@@ -239,6 +246,7 @@ function MeteorShower:StopShower()
     self.medium_remaining = nil
     self.large_remaining = nil
     self.retries_remaining = nil
+    self.should_have_rock_moon_shell = nil
 end
 
 local function OnCooldown(inst, self)

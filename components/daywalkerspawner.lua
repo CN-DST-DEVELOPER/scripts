@@ -58,7 +58,7 @@ local ARENA_RADIUS = TILE_SCALE * 1.5 -- Must be <= IS_CLEAR_AREA_RADIUS!
 local ARENA_PILLARS = 3
 
 function DayWalkerSpawner:IncrementPowerLevel()
-    self.power_level = math.min(self.power_level + 1, 2) -- TODO(JBK): V2C
+    self.power_level = math.min(self.power_level + 1, 2)
 end
 
 function DayWalkerSpawner:GetPowerLevel()
@@ -196,6 +196,12 @@ function DayWalkerSpawner:OnDayChange()
         return
     end
 
+    local shard_daywalkerspawner = TheWorld.shard.components.shard_daywalkerspawner
+    if shard_daywalkerspawner ~= nil and shard_daywalkerspawner:GetLocationName() ~= "cavejail" then
+        return
+    end
+
+    --print("OnDayChange", self.days_to_spawn)
     local days_to_spawn = self.days_to_spawn
     if days_to_spawn > 0 then
         self.days_to_spawn = days_to_spawn - 1
@@ -216,6 +222,7 @@ function DayWalkerSpawner:WatchDaywalker(daywalker)
     self.inst:ListenForEvent("onremove", function()
 		if self.daywalker.defeated then
 			self:IncrementPowerLevel()
+            Shard_SyncBossDefeated("daywalker")
 		end
         self.daywalker = nil
     end, self.daywalker)

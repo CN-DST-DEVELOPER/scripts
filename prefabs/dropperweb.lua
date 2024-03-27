@@ -26,30 +26,34 @@ local WEBBED_TAGS = {"webbed"}
 local WEBBABLE_TAGS = {"webbable"}
 
 local function OnEntityWake(inst)
-    if GetTime() > inst.lastwebtime + TUNING.TOTAL_DAY_TIME then
-        local x,y,z = inst.Transform:GetWorldPosition()
-        local webbed = TheSim:FindEntities(x,y,z,TUNING.MUSHTREE_WEBBED_SPIDER_RADIUS, WEBBED_TAGS)
-        if #webbed < TUNING.MUSHTREE_WEBBED_MAX_PER_DEN then
-            local webbable = TheSim:FindEntities(x,y,z,TUNING.MUSHTREE_WEBBED_SPIDER_RADIUS, WEBBABLE_TAGS)
-            while GetTime() > inst.lastwebtime + TUNING.TOTAL_DAY_TIME
-                and #webbable > 0
-                and #webbed < TUNING.MUSHTREE_WEBBED_MAX_PER_DEN do
-
-                local r = math.random(#webbable)
-                local target = webbable[r]
-                local w_x,w_y,w_z = target.Transform:GetWorldPosition()
-                local spawned = SpawnPrefab("mushtree_tall_webbed")
-                spawned.Transform:SetPosition(w_x,w_y,w_z)
-                target:Remove()
-
-                -- these tables are discarded, this is just for counting
-                table.remove(webbable, r)
-                table.insert(webbed, target)
-                inst.lastwebtime = inst.lastwebtime + TUNING.TOTAL_DAY_TIME
-            end
-        end
-        inst.lastwebtime = GetTime()
+    local current_time = GetTime()
+    if current_time <= (inst.lastwebtime + TUNING.TOTAL_DAY_TIME) then
+        return
     end
+
+    local x,y,z = inst.Transform:GetWorldPosition()
+    local webbed = TheSim:FindEntities(x,y,z,TUNING.MUSHTREE_WEBBED_SPIDER_RADIUS, WEBBED_TAGS)
+    if #webbed < TUNING.MUSHTREE_WEBBED_MAX_PER_DEN then
+        local webbable = TheSim:FindEntities(x,y,z,TUNING.MUSHTREE_WEBBED_SPIDER_RADIUS, WEBBABLE_TAGS)
+        while current_time > (inst.lastwebtime + TUNING.TOTAL_DAY_TIME)
+            and #webbable > 0
+            and #webbed < TUNING.MUSHTREE_WEBBED_MAX_PER_DEN do
+
+            local r = math.random(#webbable)
+            local target = webbable[r]
+            local w_x,w_y,w_z = target.Transform:GetWorldPosition()
+            local spawned = SpawnPrefab("mushtree_tall_webbed")
+            spawned.Transform:SetPosition(w_x,w_y,w_z)
+            target:Remove()
+
+            -- these tables are discarded, this is just for counting
+            table.remove(webbable, r)
+            table.insert(webbed, target)
+            inst.lastwebtime = inst.lastwebtime + TUNING.TOTAL_DAY_TIME
+        end
+    end
+
+    inst.lastwebtime = current_time
 end
 
 local function OnPreLoad(inst, data)

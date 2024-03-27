@@ -28,9 +28,11 @@ local function fn()
         return inst
     end
 
-    inst:AddComponent("edible")
-    inst.components.edible.foodtype = FOODTYPE.ELEMENTAL
-    inst.components.edible.hungervalue = 2
+    local edible = inst:AddComponent("edible")
+    edible.foodtype = FOODTYPE.ELEMENTAL
+    edible.secondaryfoodtype = FOODTYPE.NITRE
+    edible.hungervalue = 2
+
     inst:AddComponent("tradable")
 
     inst:AddComponent("stackable")

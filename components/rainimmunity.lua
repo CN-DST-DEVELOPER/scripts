@@ -11,7 +11,8 @@ local RainImmunity = Class(function(self, inst)
 		end
 	end
 
-    -- NOTES(JBK): Using a component check in a callback to this event will not work EntityScript does not add the component until after this initialization happens.
+    -- NOTES(JBK): Using a component check in a callback to this event will not work;
+	-- EntityScript does not add the component until after this initialization happens.
     -- Assume the entity has the component when this event fires.
 	inst:PushEvent("gainrainimmunity")
 end)

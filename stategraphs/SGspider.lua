@@ -26,7 +26,7 @@ local events =
     EventHandler("attacked", function(inst)
         if not inst.components.health:IsDead() then
             if inst:HasTag("spider_warrior") or inst:HasTag("spider_spitter") or inst:HasTag("spider_moon") then
-                if not inst.sg:HasStateTag("attack") then -- don't interrupt attack or exit shield
+                if not inst.sg:HasAnyStateTag("attack", "moving") then -- don't interrupt attack, exit shield or moviment
                     inst.sg:GoToState("hit") -- can still attack
                 end
             elseif not inst.sg:HasStateTag("shield") then
@@ -360,32 +360,54 @@ local states =
 
     State{
         name = "spitter_attack",
-        tags = {"attack", "canrotate", "busy", "spitting"},
+        tags = {"attack", "busy", "spitting"},
 
         onenter = function(inst, target)
-            if inst.weapon and inst.components.inventory then
+            if inst.weapon ~= nil and inst.components.inventory ~= nil then
                 inst.components.inventory:Equip(inst.weapon)
             end
-            if inst.components.locomotor then
-                inst.components.locomotor:StopMoving()
-            end
+
+            inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("spit")
-            inst.sg.statemem.target = target
+
+            if target ~= nil and target:IsValid() then
+                inst.sg.statemem.target = target
+                inst.sg.statemem.targetpos = target:GetPosition()
+                inst:ForceFacePoint(inst.sg.statemem.targetpos)
+            end
+        end,
+
+        onupdate = function(inst)
+            if inst.sg.statemem.target ~= nil then
+                if inst.sg.statemem.target:IsValid() then
+                    local pos = inst.sg.statemem.targetpos
+
+                    pos.x, pos.y, pos.z = inst.sg.statemem.target.Transform:GetWorldPosition()
+                else
+                    inst.sg.statemem.target = nil
+                end
+            end
+
+            inst:ForceFacePoint(inst.sg.statemem.targetpos)
         end,
 
         onexit = function(inst)
-            if inst.components.inventory then
+            if inst.components.inventory ~= nil then
                 inst.components.inventory:Unequip(EQUIPSLOTS.HANDS)
             end
         end,
 
         timeline =
         {
-            TimeEvent(7*FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound(SoundPath(inst, "spit_web")) end),
+            FrameEvent(7, function(inst)
+                inst.SoundEmitter:PlaySound(SoundPath(inst, "spit_web"))
+            end),
 
-            TimeEvent(21*FRAMES, function(inst) inst.components.combat:DoAttack(inst.sg.statemem.target)
-                inst.SoundEmitter:PlaySound(SoundPath(inst, "spit_voice"))
+            FrameEvent(21, function(inst)
+                if inst.sg.statemem.target ~= nil then
+                    inst.components.combat:DoAttack(inst.sg.statemem.target)
+                    inst.SoundEmitter:PlaySound(SoundPath(inst, "spit_voice"))
+                end
             end),
         },
 

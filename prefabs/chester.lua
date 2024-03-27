@@ -419,6 +419,8 @@ local function SwitchToShadowContainerProxy(inst)
 				end
 			end
 		end
+
+		container:Close()
 		inst:RemoveComponent("container")
 	end
 end

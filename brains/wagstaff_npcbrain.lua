@@ -16,8 +16,6 @@ local MAX_WANDER_DIST = 20
 
 local TRADE_DIST = 20
 
-local HUNT_NUM = TUNING.WAGSTAFF_NPC_HUNTS
-
 local function GetTraderFn(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local players = FindPlayersInRange(x, y, z, TRADE_DIST, true)
@@ -73,7 +71,8 @@ local function ShouldGoToClue(inst)
                 if inst.hunt_count and inst.hunt_count == 0 then
                     inst.components.timer:StartTimer("wagstaff_movetime",10 + (math.random()*5))
                 end
-                if inst.hunt_count >= HUNT_NUM then
+            
+                if inst.hunt_count >= ((TheWorld.components.moonstormmanager and TheWorld.components.moonstormmanager:GetCelestialChampionsKilled() or 0) > 0 and 1 or TUNING.WAGSTAFF_NPC_HUNTS) then
                     inst.hunt_stage = "experiment"
                     local static = SpawnPrefab("moonstorm_static")
                     local radius = 1
@@ -114,14 +113,34 @@ local function ShouldGoToMachine(inst)
     end
 end
 
+local function DoJunkyardHint(inst)
+    inst.components.talker:Say(STRINGS.WAGSTAFF_JUNK_YARD_OCCUPIED[math.random(#STRINGS.WAGSTAFF_JUNK_YARD_OCCUPIED)])
+end
+
+local function ShouldGoToJunkYard(inst)
+    local junkpos = inst.components.knownlocations:GetLocation("junk")
+
+    if junkpos ~= nil then        
+        inst:DoTaskInTime(4, DoJunkyardHint)
+        inst:DoTaskInTime(6.5, inst.erode, 2, nil, true)
+        return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, junkpos, nil, .2)
+    end
+end
 
 local Wagstaff_NPCBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
 function Wagstaff_NPCBrain:OnStart()
+    local in_junk = WhileNode( function() return self.inst.components.knownlocations:GetLocation("junk") end, "IsJunkHintingWagstaff",
+        PriorityNode{            
+            IfNode(function() return self.inst.components.knownlocations:GetLocation("junk") end, "Go To Clue",
+                DoAction(self.inst, ShouldGoToJunkYard, "Go to junkyard", true )),
+            StandStill(self.inst),
+        }, .5)
+
     local in_hint = WhileNode( function() return self.inst.components.knownlocations:GetLocation("machine") end, "IsHintingWagstaff",
-        PriorityNode{
+        PriorityNode{            
             IfNode(function() return self.inst.components.knownlocations:GetLocation("machine") end, "Go To Clue",
                 DoAction(self.inst, ShouldGoToMachine, "Go to machine", true )),
             StandStill(self.inst),
@@ -140,6 +159,7 @@ function Wagstaff_NPCBrain:OnStart()
     local root =
         PriorityNode(
         {
+            in_junk,
             in_hint,
             in_hunt,
             ChattyNode(self.inst, "WAGSTAFF_NPC_ATTEMPT_TRADE",

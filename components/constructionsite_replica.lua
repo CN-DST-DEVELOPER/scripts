@@ -16,7 +16,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function ConstructionSite:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function ConstructionSite:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified:Remove()
@@ -27,9 +28,14 @@ function ConstructionSite:OnRemoveFromEntity()
             self:DetachClassified()
         end
     end
-end
+end]]
 
-ConstructionSite.OnRemoveEntity = ConstructionSite.OnRemoveFromEntity
+function ConstructionSite:OnRemoveEntity()
+	if self.classified and TheWorld.ismastersim then
+		self.classified:Remove()
+		self.classified = nil
+	end
+end
 
 --------------------------------------------------------------------------
 

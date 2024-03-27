@@ -8,6 +8,7 @@ local prefabs =
 local assets =
 {
     Asset("ANIM", "anim/dragonfly_furnace.zip"),
+    Asset("ANIM", "anim/ui_dragonflyfurnace_2x2.zip"),
     Asset("MINIMAP_IMAGE", "dragonfly_furnace"),
 }
 
@@ -37,6 +38,11 @@ local function onworked(inst)
     end
     inst.AnimState:PlayAnimation("hi_hit")
     inst.AnimState:PushAnimation("hi")
+
+    if inst.components.container ~= nil then
+        inst.components.container:DropEverything()
+        inst.components.container:Close()
+    end
 end
 
 local function BuiltTimeLine1(inst)
@@ -85,6 +91,27 @@ local function onload(inst, data)
     end
 end
 
+local function _CanBeOpened(inst)
+    inst.components.container.canbeopened = true
+end
+
+local function OnContentsDestroyed(inst)
+    inst.AnimState:PlayAnimation("incinerate")
+    inst.AnimState:PushAnimation("hi", true)
+
+    inst.components.container:Close()
+    inst.components.container.canbeopened = false
+
+    local time = inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime() + FRAMES
+
+    inst:DoTaskInTime(time, _CanBeOpened)
+end
+
+local function ShouldIncinerateItem(inst, item)
+    -- NOTES(JBK): Fruitcake hack. You think you can escape this so easily?
+    return item.prefab ~= "winter_food4"
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -128,7 +155,10 @@ local function fn()
         return inst
     end
 
-    inst.scrapbook_anim = "hi"
+    inst.OnContentsDestroyed = OnContentsDestroyed
+    inst.ShouldIncinerateItem = ShouldIncinerateItem
+
+    inst.scrapbook_anim = "hi" -- NOTES(JBK): Hey.
 
     -----------------------
     inst:AddComponent("workable")
@@ -136,6 +166,10 @@ local function fn()
     inst.components.workable:SetWorkLeft(6)
     inst.components.workable:SetOnFinishCallback(onworkfinished)
     inst.components.workable:SetOnWorkCallback(onworked)
+
+    -----------------------
+    inst:AddComponent("container")
+    inst.components.container:WidgetSetup("dragonflyfurnace")
 
     -----------------------
     inst:AddComponent("cooker")

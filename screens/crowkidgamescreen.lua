@@ -719,10 +719,10 @@ function CrowKidGameScreen:OnControl(control, down)
 	end
 	
 	if down then
-		if control == CONTROL_MENU_MISC_1 or control == CONTROL_PAUSE then
+		if control == CONTROL_MENU_MISC_1 or control == CONTROL_MENU_START then
 			self:InitGameBoard()
 			return true
-		elseif control == CONTROL_INSPECT then
+		elseif control == CONTROL_MENU_MISC_2 then
 			show_help_fn()
 			return true
 		end
@@ -739,10 +739,10 @@ function CrowKidGameScreen:GetHelpText()
 	end
 
 	if self.startbutton:IsEnabled() then
-		table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.TRADESCREEN.START)
+		table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.TRADESCREEN.START)
 	end
 
-	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.TRADESCREEN.CROWKID_GAME.HELP)
+	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.TRADESCREEN.CROWKID_GAME.HELP)
 	
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.SKINSSCREEN.BACK)
     

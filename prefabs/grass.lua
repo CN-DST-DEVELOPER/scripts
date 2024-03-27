@@ -267,12 +267,15 @@ local function grass(name, stage)
 			inst.components.workable:SetOnFinishCallback(dig_up)
 			inst.components.workable:SetWorkLeft(1)
 		end
+
         ---------------------
 
         MakeMediumBurnable(inst)
         MakeSmallPropagator(inst)
         MakeNoGrowInWinter(inst)
         MakeHauntableIgnite(inst)
+        MakeWaxablePlant(inst)
+
         ---------------------
 
         inst.OnPreLoad = OnPreLoad

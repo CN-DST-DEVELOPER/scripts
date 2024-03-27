@@ -59,6 +59,12 @@ local function OnEquipChanged(inst)
             TheWorld:PushEvent("nutrientsvision", { enabled = self.nutrientsvision })
         end
     end
+    if self.scrapmonolevision == not inst.replica.inventory:EquipHasTag("scrapmonolevision") then
+        self.scrapmonolevision = not self.scrapmonolevision
+        if not self.forcescrapmonolevision then
+            inst:PushEvent("scrapmonolevision", { enabled = self.scrapmonolevision })
+        end
+    end
 end
 
 local function OnInit(inst, self)
@@ -92,6 +98,8 @@ local PlayerVision = Class(function(self, inst)
     self.forcegogglevision = false
     self.nutrientsvision = false
     self.forcenutrientsvision = false
+    self.scrapmonolevision = false
+    self.forcescrapmonolevision = false
     self.overridecctable = nil
     self.currentcctable = nil
     self.currentccphasefn = nil
@@ -118,6 +126,10 @@ end
 
 function PlayerVision:HasNutrientsVision()
     return self.nutrientsvision or self.forcenutrientsvision
+end
+
+function PlayerVision:HasScrapMonoleVision()
+    return self.scrapmonolevision or self.forcescrapmonolevision
 end
 
 function PlayerVision:GetCCPhaseFn()
@@ -189,6 +201,15 @@ function PlayerVision:ForceNutrientVision(force)
         self.forcenutrientsvision = force == true
         if not self.nutrientsvision and self.inst == ThePlayer then
             TheWorld:PushEvent("nutrientsvision", { enabled = self.forcenutrientsvision })
+        end
+    end
+end
+
+function PlayerVision:ForceScrapMonoleVision(force)
+    if not self.forcescrapmonolevision ~= not force then
+        self.forcescrapmonolevision = force == true
+        if not self.scrapmonolevision then
+            self.inst:PushEvent("scrapmonolevision", { enabled = self.forcescrapmonolevision })
         end
     end
 end

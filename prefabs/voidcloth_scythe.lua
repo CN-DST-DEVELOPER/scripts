@@ -260,11 +260,15 @@ local function SetupComponents(inst)
 	inst:AddComponent("weapon")
 	inst.components.weapon:SetDamage(inst._bonusenabled and TUNING.VOIDCLOTH_SCYTHE_DAMAGE * TUNING.WEAPONS_VOIDCLOTH_SETBONUS_DAMAGE_MULT or TUNING.VOIDCLOTH_SCYTHE_DAMAGE)
 	inst.components.weapon:SetOnAttack(OnAttack)
+
+	inst:AddComponent("tool")
+	inst.components.tool:SetAction(ACTIONS.SCYTHE)
 end
 
 local function DisableComponents(inst)
 	inst:RemoveComponent("equippable")
 	inst:RemoveComponent("weapon")
+    inst:RemoveComponent("tool")
 end
 
 local FLOAT_SCALE_BROKEN = { 0.8, 0.4, 0.8 }
@@ -402,9 +406,6 @@ local function ScytheFn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
-
-    local tool = inst:AddComponent("tool")
-    tool:SetAction(ACTIONS.SCYTHE)
 
     local finiteuses = inst:AddComponent("finiteuses")
     finiteuses:SetMaxUses(TUNING.VOIDCLOTH_SCYTHE_USES)

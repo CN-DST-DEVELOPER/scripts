@@ -374,6 +374,17 @@ local RPC_HANDLERS =
 		end
 	end,
 
+	StrafeFacing = function(player, dir)
+		if not checknumber(dir) then
+			printinvalid("StrafeFacing", player)
+			return
+		end
+		local locomotor = player.components.locomotor
+		if locomotor and not (player.sg and player.sg:HasStateTag("busy")) then
+			locomotor:OnStrafeFacingChanged(dir)
+		end
+	end,
+
     StartHop = function(player, x, z, platform, has_platform)
         if not (checknumber(x) and
                 checknumber(z) and
@@ -1023,6 +1034,11 @@ local RPC_HANDLERS =
         end
     end,
 
+    SetClientAuthoritativeSetting = function(player, variable, value)
+        -- NOTES(JBK): Check passed in variables in the callback not in the RPC here.
+        player:SetClientAuthoritativeSetting(variable, value)
+    end,
+
     -- NOTES(JBK): RPC limit is at 128, with 1-127 usable.
 }
 
@@ -1206,6 +1222,10 @@ local SHARD_RPC_HANDLERS =
 
     ResyncWorldSettings = function(shardid)
         Shard_SyncWorldSettings(shardid, true)
+    end,
+
+    SyncBossDefeated = function(shardid, bossprefab) -- NOTES(JBK): This should not be called often enough to warrant a lookup table for bossprefab as an enum.
+        Shard_SyncBossDefeated(bossprefab, shardid)
     end,
 }
 

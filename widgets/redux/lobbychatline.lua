@@ -116,7 +116,7 @@ local function CalculateClosestSpacesAndTabs(desired_width, space_width, first_t
     return str
 end
 
-local LobbyChatLine = Class(Widget, function(self, chat_font, type, message, m_colour, sender, s_colour, icondata)
+local LobbyChatLine = Class(Widget, function(self, chat_font, type, message, m_colour, sender, s_colour, icondata, icondatabg)
     Widget._ctor(self, "LobbyChatLine")
 
     self.show_count = 0
@@ -133,8 +133,12 @@ local LobbyChatLine = Class(Widget, function(self, chat_font, type, message, m_c
     local is_skin_announcement = self.type == ChatTypes.SkinAnnouncement
 
     if self.type == ChatTypes.Message then
-            self.icon = self.root:AddChild(TEMPLATES.ChatFlairBadge())
+        self.icon = self.root:AddChild(TEMPLATES.ChatFlairBadge())
         self.icon:SetFlair(icondata)
+    elseif self.type == ChatTypes.ChatterMessage then
+        self.icon = self.root:AddChild(TEMPLATES.ChatterMessageBadge())
+        self.icon:SetFlair(icondata)
+        self.icon:SetBGIcon(icondatabg)
     elseif self.type == ChatTypes.SystemMessage then
         self.icon = self.root:AddChild(TEMPLATES.SystemMessageBadge())
     elseif self.type == ChatTypes.Announcement or is_skin_announcement then

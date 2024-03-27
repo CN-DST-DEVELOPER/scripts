@@ -132,6 +132,7 @@ local CraftingMenuHUD = Class(Widget, function(self, owner, is_left_aligned)
     if TheWorld then
         self.inst:ListenForEvent("serverpauseddirty", event_UpdateRecipes, TheWorld)
     end
+	self.inst:ListenForEvent("cancelrefreshcrafting", function() self.needtoupdate = false end, self.owner)
 
     self:Hide()
 end)

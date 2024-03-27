@@ -224,13 +224,12 @@ end
 
 function Perishable:SetPercent(percent)
 	if self.perishtime then
-		if percent < 0 then percent = 0 end
-		if percent > 1 then percent = 1 end
+        percent = math.clamp(percent, 0, 1)
 		self.perishremainingtime = percent*self.perishtime
 	    self.inst:PushEvent("perishchange", {percent = self.inst.components.perishable:GetPercent()})
 	end
 
-    if self.updatetask ~= nil then
+    if self.updatetask then
         self:StartPerishing()
     end
 end

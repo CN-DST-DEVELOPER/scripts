@@ -424,6 +424,12 @@ local function fn()
     inst.components.inspectable.getstatus = GetStatus
     ------------------------------------------
 
+    inst:AddComponent("acidinfusible")
+    inst.components.acidinfusible:SetFXLevel(2)
+    inst.components.acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
+    ------------------------------------------
+
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("newcombattarget", OnNewTarget)
 

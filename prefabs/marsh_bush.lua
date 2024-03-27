@@ -118,6 +118,8 @@ local function fn()
     MakeMediumPropagator(inst)
     MakeHauntableIgnite(inst)
 
+    MakeWaxablePlant(inst)
+
     return inst
 end
 

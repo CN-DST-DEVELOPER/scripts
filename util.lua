@@ -534,23 +534,24 @@ function GetRandomMinMax(min, max)
 end
 
 function distsq(v1, v2, v3, v4)
-
     -- PLEASE FORGIVE US! WE NEVER MEANT FOR IT TO END THIS WAY!
 
-    assert(v1, "Something is wrong: v1 is nil stale component reference?")
-    assert(v2, "Something is wrong: v2 is nil stale component reference?")
+	--V2C: disabling asserts. crash is fine, we don't need that assert message
+	--assert(v1, "Something is wrong: v1 is nil stale component reference?")
+	--assert(v2, "Something is wrong: v2 is nil stale component reference?")
 
-    if v4 and v3 and v2 and v1 then
+	--V2C: just check v3, would've crashed either way if params weren't correct
+	if v3 then--v4 and v3 and v2 and v1 then
         --special case for 2dvects passed in as numbers
         local dx = v1-v3
         local dy = v2-v4
         return dx*dx + dy*dy
-    else
-        local dx = (v1.x or v1[1]) - (v2.x or v2[1])
-        local dy = (v1.y or v1[2]) - (v2.y or v2[2])
-        local dz = (v1.z or v1[3]) - (v2.z or v2[3])
-        return dx*dx+dy*dy+dz*dz
     end
+
+	local dx = (v1.x or v1[1]) - (v2.x or v2[1])
+	local dy = (v1.y or v1[2]) - (v2.y or v2[2])
+	local dz = (v1.z or v1[3]) - (v2.z or v2[3])
+	return dx*dx+dy*dy+dz*dz
 end
 
 local memoizedFilePaths = {}
@@ -1771,6 +1772,124 @@ end
 
 function generic_error( err )
     return tostring(err).."\n"..debugstack()
+end
+
+-- NOTES(JBK): Controller reticles AKA reticules or handbags.
+local BLINKFOCUS_MUST_TAGS = { "blinkfocus" }
+function ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, rmin, rmax, riter, validwalkablefn)
+    -- If this function returns true the pos vector will be modified.
+    for r = rmin, rmax, riter do
+        local offset = FindWalkableOffset(pos, rotation, r, 1, false, true, validwalkablefn, false, true)
+        if offset ~= nil then
+            pos.x = pos.x + offset.x
+            pos.z = pos.z + offset.z
+            return true
+        end
+    end
+    -- Variable pos was not edited.
+    return false
+end
+function ControllerReticle_Blink_GetPosition_Direction(pos, rotation, maxrange, validwalkablefn)
+    -- If this function returns true the pos vector will be modified.
+    -- 12 to 6
+    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, maxrange or 12, 6, -.5, validwalkablefn) then
+        return true
+    end
+    -- 12.5 to 20
+    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, 12.5, maxrange or 20, .5, validwalkablefn) then
+        return true
+    end
+    -- Variable pos was not edited.
+    return false
+end
+function ControllerReticle_Blink_GetPosition(player, validwalkablefn)
+    local rotation = player.Transform:GetRotation()
+    local pos = player:GetPosition()
+
+    -- Obtain max range.
+    local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, TUNING.CONTROLLER_BLINKFOCUS_DISTANCE, BLINKFOCUS_MUST_TAGS)
+    local maxrange = nil
+    for _, v in ipairs(ents) do
+        local newmaxrange = v.maxrange and v.maxrange:value() or nil
+        if newmaxrange ~= nil and newmaxrange ~= 0 and (maxrange == nil or newmaxrange < maxrange) then
+            if player:GetDistanceSqToInst(v) < newmaxrange * newmaxrange then
+                maxrange = newmaxrange
+            end
+        end
+    end
+    -- Try to find blinkfocus.
+    for _, v in ipairs(ents) do
+        local epos = v:GetPosition()
+        local dsq = distsq(pos, epos)
+        if (maxrange == nil or dsq < maxrange * maxrange) and dsq > TUNING.CONTROLLER_BLINKFOCUS_DISTANCESQ_MIN then
+            local angletoepos = player:GetAngleToPoint(epos)
+            local angleto = math.abs(anglediff(rotation, angletoepos))
+            if angleto < TUNING.CONTROLLER_BLINKFOCUS_ANGLE then
+                return epos
+            end
+        end
+    end
+    -- Try to find forward spot.
+    rotation = rotation * DEGREES
+    pos.y = 0
+    -- NOTES(JBK): This is done this way to try to find a forward angle first and then go back and forth in a conical sweep away from the forward direction.
+    -- This will create a more intuitive feel for spots for the reticle location instead of a circular sweep.
+    -- Directly forward first.
+    if ControllerReticle_Blink_GetPosition_Direction(pos, rotation, maxrange, validwalkablefn) then
+        return pos
+    end
+    -- Conical sweep.
+    local SWEEPS = 10
+    local CONE_ANGLE = TUNING.CONTROLLER_BLINKCONE_ANGLE
+    for i = 1, SWEEPS do
+        local deviation = (i / SWEEPS) * CONE_ANGLE * DEGREES
+        if ControllerReticle_Blink_GetPosition_Direction(pos, rotation + deviation, maxrange, validwalkablefn) then
+            return pos
+        end
+        if ControllerReticle_Blink_GetPosition_Direction(pos, rotation - deviation, maxrange, validwalkablefn) then
+            return pos
+        end
+    end
+    -- One last try for very close forward oneshot to get a valid position.
+    if ControllerReticle_Blink_GetPosition_Oneshot(pos, rotation, maxrange or 4, 0, -.5, validwalkablefn) then
+        return pos
+    end
+    -- No valid point but we will return something for the reticle to use.
+    pos.x = pos.x + math.cos(rotation) * 12
+    pos.z = pos.z - math.sin(rotation) * 12
+    return pos
+end
+
+-- NOTES(JBK): Controller placer AKA should this placer move to a better spot so controllers can still place it.
+function ControllerPlacer_Boat_SpotFinder_Internal(placer, player, ox, oy, oz)
+    if placer:TestCanBuild() then
+        return
+    end
+    local x, y, z = player.Transform:GetWorldPosition()
+    local rotation = player.Transform:GetRotation() * DEGREES
+    -- Conical sweep.
+    local SWEEPS = 10
+    local CONE_ANGLE = TUNING.CONTROLLER_BOATPLACEMENT_ANGLE
+    for r = placer.offset, 1, -.5 do
+        for i = 1, SWEEPS do
+            local deviation = (i / SWEEPS) * CONE_ANGLE * DEGREES
+            local tx, tz = x + r * math.cos(rotation + deviation), z - r * math.sin(rotation + deviation)
+            placer.inst.Transform:SetPosition(tx, 0, tz)
+            if placer:TestCanBuild() then
+                return
+            end
+            tx, tz = x + r * math.cos(rotation - deviation), z - r * math.sin(rotation - deviation)
+            placer.inst.Transform:SetPosition(tx, 0, tz)
+            if placer:TestCanBuild() then
+                return
+            end
+        end
+    end
+    -- Reset it back to where it was before the modifications.
+    placer.inst.Transform:SetPosition(ox, oy, oz)
+end
+function ControllerPlacer_Boat_SpotFinder(inst)
+    inst.components.placer.controllergroundoverridefn = ControllerPlacer_Boat_SpotFinder_Internal
 end
 
 --END--

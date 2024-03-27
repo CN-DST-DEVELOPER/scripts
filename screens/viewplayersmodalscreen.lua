@@ -121,7 +121,7 @@ local ViewPlayersModalScreen = Class(Screen, function(self, players, maxPlayers)
 	            if Widget.OnControl(playerListing, control, down) then return true end
 
 	            if not down then
-	                if control == CONTROL_MAP then
+	                if control == CONTROL_MENU_BACK then
 	                    TheNet:ViewNetProfile(table.typecheckedgetfield(v, "string", "netid"))
 	                end
 	            end
@@ -202,7 +202,7 @@ function ViewPlayersModalScreen:GetHelpText()
     local t = {}
     table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 	if IsXB1() then
-    	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MAP) .. " " .. STRINGS.UI.PLAYERSTATUSSCREEN.VIEWGAMERCARD)
+    	table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_BACK) .. " " .. STRINGS.UI.PLAYERSTATUSSCREEN.VIEWGAMERCARD)
 	end
     return table.concat(t, "  ")
 end

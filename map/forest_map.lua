@@ -245,6 +245,8 @@ local TRANSLATE_TO_PREFABS = {
 
     -- Allow for the stageplays to be required world gen prefabs, but still disable-able via World Gen settings
 	["stageplays"] =		{"charlie_stage_post", "statueharp_hedgespawner"},
+	-- Allow for the junk piles to be required world gen prefabs, but still disable-able via World Gen settings
+	["junkyard"] =		    {"junk_pile", "junk_pile_big"},
 }
 
 local TRANSLATE_TO_CLUMP = {

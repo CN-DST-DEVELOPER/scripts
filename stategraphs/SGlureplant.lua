@@ -15,6 +15,16 @@ local events =
             )
         end
     end),
+
+	EventHandler("worked", function(inst)
+		if not inst.components.health:IsDead() then
+			inst.sg:GoToState(
+				(not inst.sg:HasStateTag("hiding") and "hitout") or
+				(inst.sg:HasStateTag("vine") and "hitin") or
+				"hithibernate"
+			)
+		end
+	end),
 }
 
 local states =

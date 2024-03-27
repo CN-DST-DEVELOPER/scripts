@@ -541,7 +541,7 @@ function LobbyScreen:OnControl(control, down)
     end
 
     if TheInput:ControllerAttached() and
-        self.can_accept and not down and control == CONTROL_PAUSE then
+        self.can_accept and not down and control == CONTROL_MENU_START then
 
         if (self.in_loadout) then
             StartGame(self)
@@ -885,7 +885,7 @@ function LobbyScreen:GetHelpText()
     end
 
     if self.can_accept then
-        table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE) .. " " .. STRINGS.UI.LOBBYSCREEN.SELECT)
+        table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.LOBBYSCREEN.SELECT)
     end
 
     return table.concat(t, "  ")

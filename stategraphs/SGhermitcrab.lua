@@ -463,13 +463,13 @@ local events =
 
                     if data.reason == "linesnapped" or data.reason == "toofaraway" then
                         inst.sg.statemem.continue = true
-                        inst.sg:GoToState("oceanfishing_linesnapped", {escaped_str = STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_LINESNAP})
+                        inst.sg:GoToState("oceanfishing_linesnapped", {escaped_str = "HERMITCRAB_ANNOUNCE_OCEANFISHING_LINESNAP"})
                     else
                         inst.sg.statemem.continue = true
-                        inst.sg:GoToState("oceanfishing_stop", {escaped_str = data.reason == "linetooloose" and STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_LINETOOLOOSE
-                                                                            or data.reason == "badcast" and STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_BADCAST
-                                                                            or (data.reason == "bothered") and STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_BOTHERED[inst.getgeneralfriendlevel(inst)]
-                                                                            or (data.reason ~= "reeledin") and STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_GOTAWAY
+                        inst.sg:GoToState("oceanfishing_stop", {escaped_str = data.reason == "linetooloose" and "HERMITCRAB_ANNOUNCE_OCEANFISHING_LINETOOLOOSE"
+                                                                            or data.reason == "badcast" and "HERMITCRAB_ANNOUNCE_OCEANFISHING_BADCAST"
+                                                                            or (data.reason == "bothered") and "HERMITCRAB_ANNOUNCE_OCEANFISHING_BOTHERED"..inst.getgeneralfriendlevel(inst)
+                                                                            or (data.reason ~= "reeledin") and "HERMITCRAB_ANNOUNCE_OCEANFISHING_GOTAWAY"
                                                                             or nil})
                     end
                 else
@@ -995,13 +995,16 @@ local states =
         timeline =
         {
             TimeEvent(24 * FRAMES, function(inst)
-                if inst.sg.statemem.target ~= nil and
-                    inst.sg.statemem.target:IsValid() and
-                    inst.sg.statemem.target:IsNear(inst, 6) and
-                    inst.sg.statemem.target.components.inventory:EquipHasTag("regal") and
-                    inst.components.talker ~= nil then
+                local target = inst.sg.statemem.target
+                if target ~= nil and target:IsValid() and
+                        target:IsNear(inst, 6) and
+                        target.components.inventory:EquipHasTag("regal") and
+                        inst.components.npc_talker ~= nil then
                     inst.dotalkingtimers(inst)
-                    inst.components.npc_talker:Say(STRINGS.HERMITCRAB_ANNOUNCE_ROYALTY[math.random(#STRINGS.HERMITCRAB_ANNOUNCE_ROYALTY)])
+                    inst.components.npc_talker:Chatter(
+                        "HERMITCRAB_ANNOUNCE_ROYALTY",
+                        math.random(#STRINGS.HERMITCRAB_ANNOUNCE_ROYALTY)
+                    )
                 else
                     inst.sg.statemem.notalk = true
                 end
@@ -2204,7 +2207,7 @@ local states =
             if inst.bufferedaction ~= nil then
                 inst.sg.statemem.action = inst.bufferedaction
                 if inst.bufferedaction.target ~= nil and inst.bufferedaction.target:IsValid() then
-                    inst.bufferedaction.target:PushEvent("startlongaction")
+					inst.bufferedaction.target:PushEvent("startlongaction", inst)
                 end
             end
         end,
@@ -2257,7 +2260,7 @@ local states =
             if inst.bufferedaction ~= nil then
                 inst.sg.statemem.action = inst.bufferedaction
                 if inst.bufferedaction.target ~= nil and inst.bufferedaction.target:IsValid() then
-                    inst.bufferedaction.target:PushEvent("startlongaction")
+					inst.bufferedaction.target:PushEvent("startlongaction", inst)
                 end
             end
         end,
@@ -2289,7 +2292,7 @@ local states =
             EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
                     local gfl = inst.getgeneralfriendlevel(inst)
-                    inst.components.npc_talker:Say( STRINGS.HERMITCRAB_HARVESTMEAT[gfl][math.random(1,#STRINGS.HERMITCRAB_HARVESTMEAT[gfl])]  )
+                    inst.components.npc_talker:Chatter("HERMITCRAB_HARVESTMEAT."..gfl)
                 end
             end),
         },
@@ -2416,10 +2419,18 @@ local states =
         timeline =
         {
             TimeEvent(30 * FRAMES, function(inst)
-                local weight = inst.sg.statemem.target ~= nil and inst.sg.statemem.target.components.weighable:GetWeight() or nil
-                if inst.sg.statemem.str then
+                --local weight = inst.sg.statemem.target ~= nil and inst.sg.statemem.target.components.weighable:GetWeight() or nil
+                local speech_string = inst.sg.statemem.str
+                if speech_string then
                     inst.dotalkingtimers(inst)
-                    inst.components.npc_talker:Say(inst.sg.statemem.str)
+                    if STRINGS[speech_string] ~= nil then
+                         -- If we were given a STRINGS index, assume we want to Chatter!
+                        inst.components.npc_talker:Chatter(speech_string)
+                    else
+                        -- TODO (SAM) This is a concession to needing to format in the weight of the fish.
+                        -- Would be nice to find a way to Chatter this, so we can do echotochat for it.
+                        inst.components.npc_talker:Say(speech_string)
+                    end
                 else
                     inst.AnimState:ClearOverrideBuild(inst.sg.statemem.target_build)
 					inst.AnimState:SetFrame(51)
@@ -2584,7 +2595,7 @@ local states =
         {
             EventHandler("animqueueover", function(inst)
                 local gfl = inst.getgeneralfriendlevel(inst)
-                inst.components.npc_talker:Say( STRINGS.HERMITCRAB_THROWBOTTLE[gfl][math.random(1,#STRINGS.HERMITCRAB_THROWBOTTLE[gfl])]  )
+                inst.components.npc_talker:Chatter("HERMITCRAB_THROWBOTTLE."..gfl)
                 inst.sg:GoToState("idle")
             end),
         },
@@ -3299,8 +3310,10 @@ local states =
         ontimeout = function(inst)
             if inst.components.talker ~= nil then
                 inst.dotalkingtimers(inst)
-                local fishing_idle_lines = STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_IDLE_QUOTE[math.random(#STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_IDLE_QUOTE)]
-                inst.components.npc_talker:Say(fishing_idle_lines, nil, nil, true)
+                inst.components.npc_talker:Chatter(
+                    "HERMITCRAB_ANNOUNCE_OCEANFISHING_IDLE_QUOTE",
+                    math.random(#STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_IDLE_QUOTE)
+                )
 
                 inst.sg:SetTimeout(inst.sg.timeinstate + TUNING.OCEAN_FISHING.IDLE_QUOTE_TIME_MIN + math.random() * TUNING.OCEAN_FISHING.IDLE_QUOTE_TIME_VAR)
             end
@@ -3444,7 +3457,7 @@ local states =
 
             if data ~= nil and data.escaped_str and inst.components.talker ~= nil then
                 inst.dotalkingtimers(inst)
-                inst.components.npc_talker:Say(data.escaped_str, nil, nil, true)
+                inst.components.npc_talker:Chatter(data.escaped_str, nil, nil, nil, nil, true)
             end
         end,
 
@@ -3483,7 +3496,8 @@ local states =
             TimeEvent(29*FRAMES, function(inst)
                 if inst.components.talker ~= nil then
                     inst.dotalkingtimers(inst)
-                    inst.components.npc_talker:Say(inst.sg.statemem.escaped_str or STRINGS.HERMITCRAB_ANNOUNCE_OCEANFISHING_LINESNAP, nil, nil, true)
+                    local chatter_name = inst.sg.statemem.escaped_str or "HERMITCRAB_ANNOUNCE_OCEANFISHING_LINESNAP"
+                    inst.components.npc_talker:Chatter(chatter_name, nil, nil, nil, nil, true)
                 end
             end),
         },
@@ -3621,7 +3635,7 @@ local states =
 
             if inst.components.talker ~= nil then
                 inst.dotalkingtimers(inst)
-                inst.components.npc_talker:Say(GetString(inst, "ANNOUNCE_TOOL_SLIP"))
+                inst.components.npc_talker:Chatter("HERMITCRAB_ANNOUNCE_TOOL_SLIP")
             end
 
             inst.sg:SetTimeout(10 * FRAMES)
@@ -3676,7 +3690,7 @@ local states =
             TimeEvent(20 * FRAMES, function(inst)
                 if inst.components.talker ~= nil then
                     inst.dotalkingtimers(inst)
-                    inst.components.npc_talker:Say(GetString(inst, "ANNOUNCE_SPOOKED"))
+                    inst.components.npc_talker:Chatter("HERMITCRAB_ANNOUNCE_SPOOKED")
                 end
             end),
             TimeEvent(49 * FRAMES, function(inst)

@@ -10,7 +10,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Health:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Health:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified = nil
@@ -21,7 +22,7 @@ function Health:OnRemoveFromEntity()
     end
 end
 
-Health.OnRemoveEntity = Health.OnRemoveFromEntity
+Health.OnRemoveEntity = Health.OnRemoveFromEntity]]
 
 function Health:AttachClassified(classified)
     self.classified = classified

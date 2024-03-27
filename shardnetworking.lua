@@ -181,3 +181,15 @@ function Shard_OnDiceRollRequest(user_id)
     RecentDiceRolls[user_id] = curt + TUNING.DICE_ROLL_COOLDOWN
     return true
 end
+
+---------------------------------------------
+
+function Shard_SyncBossDefeated(bossprefab, shardid) -- NOTES(JBK): Flipped shardid argument order to make calling this easier elsewhere.
+    if TheShard:IsMaster() then
+        if TheWorld then
+            TheWorld:PushEvent("master_shardbossdefeated", {bossprefab = bossprefab, shardid = shardid or TheShard:GetShardId(),})
+        end
+    else
+        SendRPCToShard(SHARD_RPC.SyncBossDefeated, SHARDID.MASTER, bossprefab)
+    end
+end

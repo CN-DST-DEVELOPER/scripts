@@ -123,7 +123,7 @@ AddRoom("CrappyDeepForest", {
 AddRoom("DeepForest", {
 					colour={r=0,g=.9,b=0,a=.50},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone"},
+					tags = {"ExitPiece", "Chester_Eyebone","Junkyard_Spawner"},
 					contents =  {
 									countstaticlayouts=
 									{

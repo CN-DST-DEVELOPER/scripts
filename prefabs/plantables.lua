@@ -1,5 +1,7 @@
 require "prefabutil"
 
+local WAXED_PLANTS = require "prefabs/waxed_plant_common"
+
 local function make_plantable(data)
     local bank = data.bank or data.name
     local assets =
@@ -179,9 +181,12 @@ local plantables =
 }
 
 local prefabs = {}
-for i, v in ipairs(plantables) do
-    table.insert(prefabs, make_plantable(v))
-    table.insert(prefabs, MakePlacer("dug_"..v.name.."_placer", v.bank or v.name, v.build or v.name, v.anim or "idle"))
+
+for _, data in ipairs(plantables) do
+    table.insert(prefabs, make_plantable(data))
+    table.insert(prefabs, MakePlacer("dug_"..data.name.."_placer", data.bank or data.name, data.build or data.name, data.anim or "idle"))
+
+    table.insert(prefabs, WAXED_PLANTS.CreateDugWaxedPlant(data))
 end
 
 return unpack(prefabs)

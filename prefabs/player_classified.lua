@@ -233,9 +233,7 @@ local function OnEntityReplicated(inst)
     else
         inst._parent:AttachClassified(inst)
         for i, v in ipairs({ "builder", "combat", "health", "hunger", "rider", "sanity" }) do
-            if inst._parent.replica[v] ~= nil then
-                inst._parent.replica[v]:AttachClassified(inst)
-            end
+			inst._parent:TryAttachClassifiedToReplicaComponent(inst, v)
         end
         for i, v in ipairs({ "playercontroller", "playervoter", "boatcannonuser" }) do
             if inst._parent.components[v] ~= nil then
@@ -624,6 +622,12 @@ local function OnPausePredictionFramesDirty(inst)
     end
 end
 
+fns.OnIsStrafingDirty = function(inst)
+	if inst._parent then
+		inst._parent:PushEvent(inst.isstrafing:value() and "startstrafing" or "stopstrafing")
+	end
+end
+
 local function OnIsCarefulWalkingDirty(inst)
     if inst._parent ~= nil then
         inst._parent:PushEvent("carefulwalking", { careful = inst.iscarefulwalking:value() })
@@ -802,6 +806,16 @@ local function OnPlayerCameraDirty(inst)
         else
             TheCamera:SetDefault()
         end
+    end
+end
+
+function fns.OnPlayerCameraExtraDistDirty(inst)
+    if inst._parent == nil or inst._parent.HUD == nil then
+        return
+    end
+
+    if inst.cameraextramaxdist:value() then
+        TheCamera:SetExtraMaxDistance(inst.cameraextramaxdist:value())
     end
 end
 
@@ -1044,6 +1058,7 @@ local function RegisterNetListeners_local(inst)
     inst:ListenForEvent("bufferedbuildsdirty", OnBufferedBuildsDirty)
     inst:ListenForEvent("isperformactionsuccessdirty", OnIsPerformActionSuccessDirty)
     inst:ListenForEvent("pausepredictionframesdirty", OnPausePredictionFramesDirty)
+	inst:ListenForEvent("isstrafingdirty", fns.OnIsStrafingDirty)
     inst:ListenForEvent("iscarefulwalkingdirty", OnIsCarefulWalkingDirty)
     inst:ListenForEvent("isghostmodedirty", OnGhostModeDirty)
     inst:ListenForEvent("actionmeterdirty", OnActionMeterDirty)
@@ -1074,6 +1089,7 @@ local function RegisterNetListeners_common(inst)
     inst:ListenForEvent("yotbskindirty", fns.OnYotbSkinDirty)
     inst:ListenForEvent("ismounthurtdirty", OnMountHurtDirty)
     inst:ListenForEvent("playercameradirty", OnPlayerCameraDirty)
+    inst:ListenForEvent("playercameraextradistdirty", fns.OnPlayerCameraExtraDistDirty)
     inst:ListenForEvent("playercamerasnap", OnPlayerCameraSnap)
     inst:ListenForEvent("playerminimapcenter", OnPlayerMinimapCenter)
     inst:ListenForEvent("playerminimapclose", OnPlayerMinimapClose)
@@ -1131,6 +1147,7 @@ function fns.OnInitialDirtyStates(inst)
             inst._oldmoisture = inst.moisture:value()
             UpdateAnimOverrideSanity(inst._parent)
         end
+		fns.OnIsStrafingDirty(inst)
     end
 
     OnStormLevelDirty(inst)
@@ -1300,6 +1317,7 @@ local function fn()
     --Player camera variables
     inst.cameradistance = net_smallbyte(inst.GUID, "playercamera.distance", "playercameradirty")
     inst.iscamerazoomed = net_bool(inst.GUID, "playercamera.iscamerazoomed", "playercameradirty")
+    inst.cameraextramaxdist = net_smallbyte(inst.GUID, "playercamera.extramaxdist", "playercameraextradistdirty")
     inst.camerasnap = net_bool(inst.GUID, "playercamera.snap", "playercamerasnap")
     inst.camerashakemode = net_tinybyte(inst.GUID, "playercamera.shakemode", "playercamerashake")
     inst.camerashaketime = net_byte(inst.GUID, "playercamera.shaketime")
@@ -1412,6 +1430,7 @@ local function fn()
     inst.runspeed:set(TUNING.WILSON_RUN_SPEED)
     inst.externalspeedmultiplier:set(1)
 	inst.busyremoteoverridelocomote = net_bool(inst.GUID, "locomotor.busyremoteoverridelocomote")
+	inst.isstrafing = net_bool(inst.GUID, "locomotor.isstrafing", "isstrafingdirty")
 
     --CarefulWalking variables
     inst.iscarefulwalking = net_bool(inst.GUID, "carefulwalking.careful", "iscarefulwalkingdirty")

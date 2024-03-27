@@ -78,7 +78,8 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
     local default_assets =
     {
         Asset("ANIM", "anim/"..build..".zip"),
-        Asset("ANIM", "anim/ui_chest_3x2.zip"),
+        Asset("ANIM", "anim/ui_chest_3x3.zip"),
+        Asset("ANIM", "anim/ui_chest_upgraded_3x3.zip"),
     }
     assets = assets ~= nil and JoinArrays(assets, default_assets) or default_assets
 
@@ -158,6 +159,88 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
     end
 
     return Prefab(name, fn, assets, prefabs)
+end
+
+--------------------------------------------------------------------------
+--[[ regular ]]
+--------------------------------------------------------------------------
+
+local function regular_getstatus(inst, viewer)
+    if inst._chestupgrade_stacksize then
+        return "UPGRADED_STACKSIZE"
+    end
+
+    return "GENERIC"
+end
+
+local function DoUpgradeVisuals(inst)
+    local skin_name = (inst.AnimState:GetSkinBuild() or ""):gsub("treasurechest_", "")
+    inst.AnimState:SetBank("chest_upgraded")
+    inst.AnimState:SetBuild("treasure_chest_upgraded")
+    if skin_name ~= "" then
+        skin_name = "treasurechest_upgraded_" .. skin_name
+        inst.AnimState:SetSkin(skin_name, "treasure_chest_upgraded")
+    end
+end
+
+local function OnUpgrade(inst, performer, upgraded_from_item)
+    local numupgrades = inst.components.upgradeable.numupgrades
+    if numupgrades == 1 then
+        inst._chestupgrade_stacksize = true
+        if inst.components.container ~= nil then -- NOTES(JBK): The container component goes away in the burnt load but we still want to apply builds.
+            inst.components.container:Close()
+            inst.components.container:EnableInfiniteStackSize(true)
+            inst.components.inspectable.getstatus = regular_getstatus
+        end
+        if upgraded_from_item then
+            -- Spawn FX from an item upgrade not from loads.
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local fx = SpawnPrefab("chestupgrade_stacksize_fx")
+            fx.Transform:SetPosition(x, y, z)
+            -- Delay chest visual changes to match fx.
+            local total_hide_frames = 6 -- NOTES(JBK): Keep in sync with fx.lua! [CUHIDERFRAMES]
+            inst:DoTaskInTime(total_hide_frames * FRAMES, DoUpgradeVisuals)
+        else
+            DoUpgradeVisuals(inst)
+        end
+    end
+    inst.components.upgradeable.upgradetype = nil
+
+    if inst.components.lootdropper ~= nil then
+        inst.components.lootdropper:SetLoot({ "alterguardianhatshard" })
+    end
+end
+
+local function regular_OnBurnt(inst)
+    inst.components.upgradeable.upgradetype = nil
+    inst.components.inspectable.getstatus = nil
+end
+
+local function regular_OnLoadPostPass(inst, newents, data)
+    if inst.components.upgradeable ~= nil and inst.components.upgradeable.numupgrades > 0 then
+        OnUpgrade(inst)
+    end
+end
+
+local function regular_OnDecontructStructure(inst, caster)
+    if inst.components.upgradeable ~= nil and inst.components.upgradeable.numupgrades > 0 then
+        if inst.components.lootdropper ~= nil then
+            inst.components.lootdropper:SpawnLootPrefab("alterguardianhatshard")
+        end
+    end
+end
+
+local function regular_master_postinit(inst)
+    inst.scrapbook_removedeps = { "alterguardianhatshard" }
+
+    local upgradeable = inst:AddComponent("upgradeable")
+    upgradeable.upgradetype = UPGRADETYPES.CHEST
+    upgradeable:SetOnUpgradeFn(OnUpgrade)
+
+    inst:ListenForEvent("onburnt", regular_OnBurnt)
+    inst:ListenForEvent("ondeconstructstructure", regular_OnDecontructStructure)
+
+    inst.OnLoadPostPass = regular_OnLoadPostPass
 end
 
 --------------------------------------------------------------------------
@@ -421,7 +504,7 @@ local function sunken_master_postinit(inst)
 	inst:ListenForEvent("on_submerge", sunken_OnSubmerge)
 end
 
-return MakeChest("treasurechest", "chest", "treasure_chest", false, nil, { "collapse_small" }),
+return MakeChest("treasurechest", "chest", "treasure_chest", false, regular_master_postinit, { "collapse_small", "chestupgrade_stacksize_fx", "alterguardianhatshard" }, { Asset("ANIM", "anim/treasure_chest_upgraded.zip") }),
     MakePlacer("treasurechest_placer", "chest", "treasure_chest", "closed"),
     MakeChest("pandoraschest", "pandoras_chest", "pandoras_chest", true, pandora_master_postinit, { "pandorachest_reset" }),
     MakeChest("minotaurchest", "pandoras_chest_large", "pandoras_chest_large", true, minotuar_master_postinit, { "collapse_small" }),

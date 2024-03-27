@@ -78,6 +78,7 @@ function InventoryItemHolder:GiveItem(item, giver)
         self.item:RemoveFromScene()
         self.item.Transform:SetPosition(0, 0, 0)
         self.item.components.inventoryitem:HibernateLivingItem()
+        self.item:AddTag("outofreach")
 
         if self.onitemgivenfn ~= nil then
             self.onitemgivenfn(self.inst, self.item, giver)
@@ -99,6 +100,8 @@ function InventoryItemHolder:TakeItem(taker)
     self.inst:RemoveChild(self.item)
 
     self.item.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
+
+    self.item:RemoveTag("outofreach")
 
     if taker ~= nil and taker:IsValid() and taker.components.inventory ~= nil then
         taker.components.inventory:GiveItem(self.item, nil, pos)

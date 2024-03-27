@@ -23,7 +23,8 @@ local SHIELD_TIME = 5
 
 local function GetFaceTargetFn(inst)
     local target = FindClosestPlayerToInst(inst, START_FACE_DIST, true)
-    return target ~= nil and not target:HasTag("notarget") and target or nil
+    return (target ~= nil and not target:HasTag("notarget") and target)
+        or nil
 end
 
 local function KeepFaceTargetFn(inst, target)
@@ -43,14 +44,17 @@ local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return
     elseif inst.components.inventory ~= nil and inst.components.eater ~= nil then
-        local target = inst.components.inventory:FindItem(function(item) return inst.components.eater:CanEat(item) end)
-        if target ~= nil then
+        inst._can_eat_food_test = inst._can_eat_food_test or function(item)
+            return inst.components.eater:CanEat(item)
+        end
+        local target = inst.components.inventory:FindItem(inst._can_eat_food_test)
+        if target then
             return BufferedAction(inst, target, ACTIONS.EAT)
         end
     end
 
     local target = FindEntity(inst, 15, CanPickup, EATFOOD_MUST_TAGS, EATFOOD_CANT_TAGS)
-    if target ~= nil then
+    if target then
         local ba = BufferedAction(inst, target, ACTIONS.PICKUP)
         ba.distance = 1.5
         return ba
@@ -61,16 +65,16 @@ local function ScaredLoseLoyalty(self)
     local t = GetTime()
     if t >= self.scareendtime then
         self.scaredelay = nil
-    elseif self.scaredelay == nil then
+    elseif not self.scaredelay then
         self.scaredelay = t + 3
     elseif t >= self.scaredelay then
         self.scaredelay = t + 3
         if math.random() < .2 and
-            self.inst.components.follower ~= nil and
-            self.inst.components.follower:GetLoyaltyPercent() > 0 and
-            self.inst.components.follower:GetLeader() ~= nil then
+                self.inst.components.follower ~= nil and
+                self.inst.components.follower:GetLoyaltyPercent() > 0 and
+                self.inst.components.follower:GetLeader() ~= nil then
             self.inst.components.follower:SetLeader(nil)
-            if self.inst.components.combat ~= nil then
+            if self.inst.components.combat then
                 self.inst.components.combat:SetTarget(nil)
             end
         end
@@ -82,7 +86,7 @@ local RockyBrain = Class(Brain, function(self, inst)
 end)
 
 function RockyBrain:OnStop()
-    if self.onepicscarefn ~= nil then
+    if self.onepicscarefn then
         self.inst:RemoveEventCallback("epicscare", self.onepicscarefn)
         self.onepicscarefn = nil
         self.scareendtime = nil
@@ -90,7 +94,7 @@ function RockyBrain:OnStop()
 end
 
 function RockyBrain:OnStart()
-    if self.scareendtime == nil then
+    if not self.scareendtime then
         self.scareendtime = 0
         self.onepicscarefn = function(inst, data)
             self.scareendtime = math.max(self.scareendtime, data.duration + GetTime() + math.random())
@@ -109,9 +113,13 @@ function RockyBrain:OnStart()
 		BrainCommon.PanicTrigger(self.inst),
         ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)),
         DoAction(self.inst, EatFoodAction),
-        Follow(self.inst, function(inst) return inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+        Follow(self.inst, function(inst)
+                return inst.components.follower.leader
+            end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
-        Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("herd") end, WANDER_DIST),
+        Wander(self.inst, function()
+                return self.inst.components.knownlocations:GetLocation("herd")
+            end, WANDER_DIST),
     }, .25)
 
     self.bt = BT(self.inst, root)

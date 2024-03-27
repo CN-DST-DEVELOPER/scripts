@@ -45,11 +45,12 @@ local function Retarget(inst, range)
                 if myLeader == guy then
                     return false
                 end
-                if myLeader ~= nil and myLeader:HasTag("player") and guy:HasTag("player") then
+                if myLeader ~= nil and myLeader.isplayer and guy.isplayer then
                     return false  -- don't automatically attack other players, wait for the leader's insturctions
                 end
-                local theirLeader = guy.components.follower ~= nil and guy.components.follower.leader or nil
-                local bothFollowingSamePlayer = myLeader ~= nil and myLeader == theirLeader and myLeader:HasTag("player")
+
+                local theirLeader = (guy.components.follower ~= nil and guy.components.follower.leader) or nil
+                local bothFollowingSamePlayer = (myLeader ~= nil and myLeader == theirLeader and myLeader.isplayer)
                 if bothFollowingSamePlayer or (guy:HasTag("chess") and theirLeader == nil) then
                     return false
                 end

@@ -26,17 +26,20 @@ function ContainerWidget:Open(container, doer)
     self:Close()
 
     local widget = container.replica.container:GetWidget()
+    local isinfinitestacksize = container.replica.container:IsInfiniteStackSize()
 
     if widget.bgatlas ~= nil and widget.bgimage ~= nil then
         self.bgimage:SetTexture(widget.bgatlas, widget.bgimage)
     end
 
     if widget.animbank ~= nil then
-        self.bganim:GetAnimState():SetBank(widget.animbank)
+        local animbank = isinfinitestacksize and widget.animbank_upgraded or widget.animbank
+        self.bganim:GetAnimState():SetBank(animbank)
     end
 
     if widget.animbuild ~= nil then
-        self.bganim:GetAnimState():SetBuild(widget.animbuild)
+        local animbuild = isinfinitestacksize and widget.animbuild_upgraded or widget.animbuild
+        self.bganim:GetAnimState():SetBuild(animbuild)
     end
 
     if widget.pos ~= nil then

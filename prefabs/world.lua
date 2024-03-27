@@ -144,6 +144,9 @@ local prefabs =
     "turf_desertdirt",
 
     "skeleton",
+    "skeleton_notplayer",
+    "skeleton_notplayer_1",
+    "skeleton_notplayer_2",
     "insanityrock",
     "sanityrock",
     "basalt",

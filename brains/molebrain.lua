@@ -86,19 +86,25 @@ function MoleBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
-        WhileNode( function() return ShouldMakeHome(self.inst) end, "HomeDugUp",
-            DoAction(self.inst, MakeNewHomeAction, "make home", false)),
+        WhileNode( function() return ShouldMakeHome(self.inst) end, "Home Dug Up",
+            DoAction(self.inst, MakeNewHomeAction, "Make Home", false)),
         WhileNode(function() return self.inst.flee == true end, "Flee",
             RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP)),
-        WhileNode(function() return (GetTime() > (self.inst.last_above_time + self.inst.peek_interval) and not self.inst.sg:HasStateTag("busy")) end, "Peek", --check if no buffered action?
-            DoAction(self.inst, PeekAction, "peek", false)),
-        WhileNode(function() return self.inst.components.inventory:IsFull() end, "DepositInv",
-            DoAction(self.inst, GoHomeAction, "go home", false)),
+        WhileNode(function() return TheWorld.state.isacidraining end, "Acid Raining",
+            DoAction(self.inst, GoHomeAction, "Go Home", false)),
+        WhileNode(function() return not self.inst.sg:HasStateTag("busy") and
+                                (GetTime() > (self.inst.last_above_time + self.inst.peek_interval))
+                            end, "Should Peek",
+            DoAction(self.inst, PeekAction, "Do Peek", false)),
+        WhileNode(function() return self.inst.components.inventory:IsFull() end, "Deposit Inventory",
+            DoAction(self.inst, GoHomeAction, "Go Home", false)),
         EventNode(self.inst, "gohome",
-            DoAction(self.inst, GoHomeAction, "go home", false)),
-        DoAction(self.inst, TakeBaitAction, "take bait", false),
-        WhileNode(function() return TheWorld.state.isday or (TheWorld.state.iscaveday and self.inst:IsInLight()) end, "IsDay",
-            DoAction(self.inst, GoHomeAction, "go home", false )),
+            DoAction(self.inst, GoHomeAction, "Go Home", false)),
+        DoAction(self.inst, TakeBaitAction, "Take Bait", false),
+        WhileNode(function() return TheWorld.state.isday or
+                            (TheWorld.state.iscaveday and self.inst:IsInLight())
+                        end, "Is Day",
+            DoAction(self.inst, GoHomeAction, "Go Home", false )),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),
     }, .25)
     self.bt = BT(self.inst, root)

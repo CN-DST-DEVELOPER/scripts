@@ -15,7 +15,8 @@ end)
 
 --------------------------------------------------------------------------
 
-function Sanity:OnRemoveFromEntity()
+--V2C: OnRemoveFromEntity not supported
+--[[function Sanity:OnRemoveFromEntity()
     if self.classified ~= nil then
         if TheWorld.ismastersim then
             self.classified = nil
@@ -26,7 +27,7 @@ function Sanity:OnRemoveFromEntity()
     end
 end
 
-Sanity.OnRemoveEntity = Sanity.OnRemoveFromEntity
+Sanity.OnRemoveEntity = Sanity.OnRemoveFromEntity]]
 
 local function OnIsSaneDirty(inst)
     local self = inst.replica.sanity

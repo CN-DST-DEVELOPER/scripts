@@ -153,7 +153,7 @@ function KitcoonGameScreen:OnControl(control, down)
 	if down and TheInput:ControllerAttached() then
 		
 		if Profile:GetKitIsHibernating() then
-			if control == CONTROL_OPEN_INVENTORY then
+			if control == CONTROL_MENU_R2 then
 				--wake
 				self.pouch:onclick()
 				return true
@@ -167,7 +167,7 @@ function KitcoonGameScreen:OnControl(control, down)
 				--feed
 				self.food:onclick()
 				return true
-			elseif control == CONTROL_OPEN_INVENTORY then
+			elseif control == CONTROL_MENU_R2 then
 				--go to sleep
 				self.pouch:onclick()
 				return true
@@ -194,7 +194,7 @@ function KitcoonGameScreen:GetHelpText()
 	else
 		if Profile:GetKitIsHibernating() then
 			local wake = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.WAKE, { name = self.profile:GetKitName() } )
-			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. wake)
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2) .. " " .. wake)
 		else
 			if not self.kit_puppet.animstate:IsCurrentAnimation("sleep_loop") then
 				--feed
@@ -207,7 +207,7 @@ function KitcoonGameScreen:GetHelpText()
 			end
 			
 			local hibernate = subfmt(STRINGS.UI.TRADESCREEN.KITCOON_GAME.HIBERNATE, { name = self.profile:GetKitName() } )
-			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY) .. " " .. hibernate)
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_R2) .. " " .. hibernate)
 		end
 
 		if #self.poops > 0 then

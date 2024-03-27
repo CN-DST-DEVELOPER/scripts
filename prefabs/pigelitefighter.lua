@@ -53,11 +53,13 @@ end
 
 local function OnAttacked(inst, data)
     local attacker = data ~= nil and data.attacker or nil
-	if attacker ~= nil and inst.components.follower ~= nil and inst.components.follower:GetLeader() == attacker then
-		PreventTargetingOnAttacked(inst, attacker, "player")
-		inst.components.follower:StopFollowing()
-	elseif attacker.components.combat ~= nil and inst.components.combat.target == nil then
-        inst.components.combat:SetTarget(attacker)
+	if attacker then
+		if inst.components.follower and inst.components.follower:GetLeader() == attacker then
+			PreventTargetingOnAttacked(inst, attacker, "player")
+			inst.components.follower:StopFollowing()
+		elseif attacker.components.combat and not inst.components.combat:HasTarget() then
+			inst.components.combat:SetTarget(attacker)
+		end
 	end
 end
 

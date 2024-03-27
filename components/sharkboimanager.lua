@@ -112,7 +112,7 @@ function self:FindWalkableOffsetInArena(sharkboi)
         return nil
     end
 
-    if sharkboi and self.arena.sharkboi ~= sharkboi then
+    if sharkboi and self.arena.sharkbois[sharkboi] == nil then
         return nil
     end
 
@@ -198,6 +198,11 @@ function self:SetArenaState(state)
 
     -- Both meaning this can happen from load or gameplay.
     if state == self.STATES.BOSSFIGHTING then
+        if self.arena.fishinghole then -- Delete the fishing hole.
+            local x, _, z = self.arena.fishinghole.Transform:GetWorldPosition()
+            SpawnPrefab("splash_green_large").Transform:SetPosition(x, 0, z)
+            self.arena.fishinghole:Remove() -- Automatically nils.
+        end
         self:StartShrinking()
     elseif state == self.STATES.CLEANUP then
         self:StopShrinking()
@@ -313,7 +318,7 @@ function self:TryToMakeArenaBig()
 
     -- Spawn entities.
     -- FIXME(JBK): Tile physics do not update on creation these decorations will be colliding on spawn and need a delay.
-    self:ForEachTileInBetween(0, self.MAX_ARENA_SIZE, self.CreateEntityDecorationsAtPoint)
+    self:ForEachTileInBetween(self.arena.radius, self.MAX_ARENA_SIZE, self.CreateEntityDecorationsAtPoint)
     self:SetDesiredArenaRadius(self.MAX_ARENA_SIZE)
 end
 
@@ -353,8 +358,10 @@ function self:ForceCleanup()
     if self.arena.fishinghole then
         self.arena.fishinghole:Remove() -- Automatically nils.
     end
-    if self.arena.sharkboi then
-        self.arena.sharkboi:Remove() -- Automatically nils.
+    if self.arena.sharkbois then
+        for sharkboi, _ in pairs(self.arena.sharkbois) do
+            sharkboi:Remove() -- Automatically nils.
+        end
     end
 
     _world:PushEvent("ms_cleanedupsharkboiarena")
@@ -403,17 +410,21 @@ function self:SpawnBoss()
         end
     end
 
-    -- Get the fishing fishinghole position and remove it.
+    -- Get the fishing fishinghole position but do not remove it we may get more sharkbois.
     local x, y, z
     if self.arena.fishinghole ~= nil then
         x, y, z = self.arena.fishinghole.Transform:GetWorldPosition()
-        self.arena.fishinghole:Remove() -- Automatically nils.
+        -- Retain the fishing hole now.
+		-- sharkboi spawn state will handle moving away from the hole
     else
         x, y, z = self.arena.origin.x, self.arena.origin.y, self.arena.origin.z
     end
 
     -- Spawn sparkboi.
-    self.arena.sharkboi = self:CreateSharkBoi(x, y, z)
+    local sharkboi = self:CreateSharkBoi(x, y, z)
+    self.arena.sharkbois = self.arena.sharkbois or {}
+    self.arena.sharkbois[sharkboi] = true
+	sharkboi:TrackFishingHole(self.arena.fishinghole)
 
     self:StartEventListeners()
 
@@ -421,7 +432,7 @@ function self:SpawnBoss()
     local topunt = TheSim:FindEntities(x, y, z, TUNING.ICEFISHING_HOLE_PUNT_DETECT_RADIUS, self.PUNT_MUST_TAGS, self.PUNT_CANT_TAGS)
     for _, puntme in ipairs(topunt) do
         if puntme.components.health == nil or not puntme.components.health:IsDead() then
-            puntme:PushEvent("knockback", {knocker = self.arena.sharkboi, radius = TUNING.ICEFISHING_HOLE_PUNT_PUSH_RADIUS * (math.random() * 0.5 + 0.5),})
+            puntme:PushEvent("knockback", {knocker = sharkboi, radius = TUNING.ICEFISHING_HOLE_PUNT_PUSH_RADIUS * (math.random() * 0.5 + 0.5),})
         end
     end
 end
@@ -434,9 +445,15 @@ self.OnPlayerFishCaught = function(inst, data)
     end
 
     self.arena.caughtfish = self.arena.caughtfish + 1
-    if self.arena.caughtfish >= TUNING.ICEFISHING_HOLE_FISH_NEEDED_TO_SPAWN then
-        if self.arena.state == self.STATES.CREATEDARENA then
-            self:SetArenaState(self.STATES.BOSSSPAWNED)
+    if (self.arena.caughtfish % TUNING.ICEFISHING_HOLE_FISH_NEEDED_TO_SPAWN) == 0 then
+        if TUNING.SPAWN_SHARKBOI then
+            if self.arena.state == self.STATES.CREATEDARENA then
+                self:SetArenaState(self.STATES.BOSSSPAWNED) -- Spawns a boss by default.
+            elseif self.arena.state == self.STATES.BOSSSPAWNED then
+                -- Spawn another one.
+                -- FIXME(JBK): Allow spawning of more when this is finished. [FIXMESHARKBOI]
+                --self:SpawnBoss()
+            end
         end
     end
 end
@@ -446,7 +463,13 @@ self.OnPlayerFishingTick = function(inst)
         return
     end
 
-    if math.random() < TUNING.ICEFISHING_HOLE_ODDS_TO_HOOK_FISH then
+    -- FIXME(JBK): Remove self.arena.state == self.STATES.BOSSSPAWNED when this is finished. [FIXMESHARKBOI]
+    local oddsoverride = nil
+    if not TUNING.SPAWN_SHARKBOI or self.arena.state == self.STATES.BOSSSPAWNED then
+        oddsoverride = TUNING.ICEFISHING_HOLE_ODDS_TO_HOOK_FISH / 4
+    end
+
+    if math.random() < (oddsoverride or TUNING.ICEFISHING_HOLE_ODDS_TO_HOOK_FISH) then
         local rod = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
         rod = (rod ~= nil and rod.components.oceanfishingrod ~= nil) and rod or nil
         local target = rod ~= nil and rod.components.oceanfishingrod.target or nil
@@ -499,22 +522,33 @@ self.OnAttacked_SharkBoi = function(inst, data)
     if is_player_hitting then
         if self.arena.state == self.STATES.BOSSSPAWNED then
             self:SetArenaState(self.STATES.BOSSFIGHTING)
+            for sharkboi, _ in pairs(self.arena.sharkbois) do -- Call in the thunder.
+                if sharkboi ~= inst then
+                    sharkboi:StartAggro()
+                    sharkboi.components.combat:SuggestTarget(data.attacker)
+                end
+            end
         end
     end
 end
 self.OnRemove_SharkBoi = function(inst, data)
-    self.arena.sharkboi = nil
-    self:SetArenaState(self.STATES.CLEANUP)
-    self:CooldownArena()
+    self.arena.sharkbois[inst] = nil
+    if next(self.arena.sharkbois) == nil then
+        self.arena.sharkbois = nil
+        self:SetArenaState(self.STATES.CLEANUP)
+        self:CooldownArena()
+    end
 end
 
 function self:StartEventListeners()
-    if self.arena.sharkboi and not self.arena.sharkboi._sbm_listening then
-        self.arena.sharkboi._sbm_listening = true
-        local function OnAttacked(_, data)
+    if self.arena.sharkbois then
+        for sharkboi, _ in pairs(self.arena.sharkbois) do
+            if not sharkboi._sbm_listening then
+                sharkboi._sbm_listening = true
+                sharkboi:ListenForEvent("attacked", self.OnAttacked_SharkBoi)
+                sharkboi:ListenForEvent("onremove", self.OnRemove_SharkBoi)
+            end
         end
-        self.arena.sharkboi:ListenForEvent("attacked", self.OnAttacked_SharkBoi)
-        self.arena.sharkboi:ListenForEvent("onremove", self.OnRemove_SharkBoi)
     end
     if self.arena.fishinghole and not self.arena.fishinghole._sbm_listening then
         self.arena.fishinghole._sbm_listening = true
@@ -540,6 +574,7 @@ end
 
 function self:CreateEntityDecorationsAtPoint(x, y, z)
     -- Function stub for mods.
+
     --[[for i = 1, 3 do
         if math.random() < 0.1 then
             local rad = math.random() * TILE_SCALE -- Not * 0.5 to give both overlap and potentially put ice in the ocean.
@@ -552,6 +587,22 @@ function self:CreateEntityDecorationsAtPoint(x, y, z)
             end
         end
     end]]
+
+
+        -- NOTES(DiogoW): Unimplemented, for now.
+    --[[
+        if math.random() < 0.1 then
+        local dx, dz = x - self.arena.origin.x, z - self.arena.origin.z
+
+        local dist_origin = dx * dx + dz * dz
+
+        if dist_origin > 9 then -- 3 * 3 = 9 to stay away from center of arena.
+            local fishbone = SpawnPrefab("fishbone_shadow")
+            fishbone.Transform:SetPosition(x, 0, z)
+        end
+    end
+    ]]
+
 end
 
 function self:ArenaFinishCreating()
@@ -653,6 +704,15 @@ function self:TryToPlaceOceanArena()
     if not x then
         return false
     end
+
+    -- Remove this point.
+    for i, v in ipairs(points) do
+        if v.x == x and v.y == y and v.z == z then
+            table.remove(points, i)
+            break
+        end
+    end
+    count = count - 1
     
     x, y, z = _map:GetTileCenterPoint(x, y, z)
     return self:PlaceOceanArenaAtPosition(x, y, z)
@@ -719,9 +779,12 @@ function self:OnSave()
     end
 
     local ents = {}
-    if self.arena.sharkboi then
-        data.sharkboi = self.arena.sharkboi.GUID
-        table.insert(ents, self.arena.sharkboi.GUID)
+    if self.arena.sharkbois then
+        data.sharkbois = {}
+        for sharkboi, _ in pairs(self.arena.sharkbois) do
+            table.insert(data.sharkbois, sharkboi.GUID)
+            table.insert(ents, sharkboi.GUID)
+        end
     end
     if self.arena.fishinghole then
         data.fishinghole = self.arena.fishinghole.GUID
@@ -758,17 +821,54 @@ function self:OnLoad(data)
     self.OnSeasonChange(self, _world.state.season)
 end
 
+local LOADFIX_CANT_TAGS = {"FX"}
 function self:LoadPostPass(newents, savedata)
     if self.arena == nil then
         return
     end
 
-    if newents[savedata.sharkboi] then
-        self.arena.sharkboi = newents[savedata.sharkboi].entity
-    end
-
     if newents[savedata.fishinghole] then
         self.arena.fishinghole = newents[savedata.fishinghole].entity
+    end
+
+    if newents[savedata.sharkboi] then -- NOTES(JBK): Deprecated field when there was only ever one sharkboi use sharkbois as a table.
+        self.arena.sharkbois = {
+            [newents[savedata.sharkboi].entity] = true,
+        }
+        if self.arena.state == self.STATES.BOSSSPAWNED and self.arena.fishinghole == nil then
+            -- NOTES(JBK): The boss was spawned in this save meaning that there are no fishing holes left and the boss has not been engaged yet.
+            -- We need to make a new fishing hole now.
+            -- A problem to solve is that things might now be in this location so we need to move things that are spawned in away from this area.
+            -- Players will automatically get punted from the icefishing_hole prefab.
+            local x, y, z = self.arena.origin.x, self.arena.origin.y, self.arena.origin.z
+            local loadfix_radius = 4 -- Not a perfect radius but good enough to add clearance for most things the player can self clean up things if they need back to the pond.
+            local ents = TheSim:FindEntities(x, y, z, loadfix_radius, nil, LOADFIX_CANT_TAGS)
+            for _, ent in ipairs(ents) do
+                if ent.Transform then
+                    local ex, ey, ez = ent.Transform:GetWorldPosition()
+                    local dx, dz = ex - x, ez - z
+                    local dist = math.sqrt(dx * dx + dz * dz)
+                    if dist == 0 then
+                        dist = 1
+                        dx = 1
+                    else
+                        dx, dz = loadfix_radius * dx / dist, loadfix_radius * dz / dist
+                    end
+                    ent.Transform:SetPosition(x + dx, y, z + dz)
+                end
+            end
+            self.arena.fishinghole = self:CreateFishingHole(x, y, z)
+        end
+    end
+    if savedata.sharkbois then
+        self.arena.sharkbois = {}
+        for _, sharkboiguid in ipairs(savedata.sharkbois) do
+            if newents[sharkboiguid] then
+				local sharkboi = newents[sharkboiguid].entity
+				self.arena.sharkbois[sharkboi] = true
+				sharkboi:TrackFishingHole(self.arena.fishinghole)
+            end
+        end
     end
 
     self:StartEventListeners()
@@ -783,9 +883,9 @@ function self:GetDebugString()
         return string.format("No Arena. FindTick: %.1f", GetTaskRemaining(self.findoceanarenatask))
     end
 
-    return string.format("State: %s, Sharkboi: %s, FishingHole: %s, Fish: %d, Cooldown: %.1f, Radius: %.1f, DesiredRadius: %.1f",
+    return string.format("State: %s, Sharkbois: %s, FishingHole: %s, Fish: %d, Cooldown: %.1f, Radius: %.1f, DesiredRadius: %.1f",
         self:GetArenaStateString(),
-        tostring(self.arena.sharkboi or "N/A"),
+        tostring(self.arena.sharkbois and table.count(self.arena.sharkbois) or "N/A"),
         tostring(self.arena.fishinghole or "N/A"),
         self.arena.caughtfish,
         GetTaskRemaining(self.arena.cooldowntask),
