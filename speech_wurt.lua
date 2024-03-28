@@ -2721,7 +2721,7 @@ return{
 		},
 		TREASURECHEST_TRAP = "Treasure!",
         CHESTUPGRADE_STACKSIZE = "Make boxes bigger? Glurgh. More fun to leave stuff on ground.", -- Describes the kit upgrade item.
-		COLLAPSEDCHEST = "Hee-hee, broke box.",
+		COLLAPSEDCHEST = "Didn't do it!!",
 		SACRED_CHEST =
 		{
 			GENERIC = "Wonder what inside?",

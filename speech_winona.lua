@@ -2727,10 +2727,10 @@ return{
 		},
 		TREASURECHEST_TRAP = "I don't need to be concerned about that.",
         CHESTUPGRADE_STACKSIZE = "Looks like something the bossman would've come up with.", -- Describes the kit upgrade item.
-		COLLAPSEDCHEST = "Think everything will fit back inside once I fix it?",
+		COLLAPSEDCHEST = "Yeesh, what a mess!",
 		SACRED_CHEST =
 		{
-			GENERIC = "Yeesh, it's givin' me the creeps",
+			GENERIC = "Yeesh, it's givin' me the creeps.",
 			LOCKED = "It's thinkin' real hard on it.",
 		},
 		TREECLUMP = "A big clump of tree.", --removed

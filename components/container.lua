@@ -120,8 +120,8 @@ function Container:SetNumSlots(numslots)
     self.numslots = numslots
 end
 
-function Container:DropItemBySlot(slot, drop_pos)
-    local item = self:RemoveItemBySlot(slot)
+function Container:DropItemBySlot(slot, drop_pos, keepoverstacked)
+	local item = self:RemoveItemBySlot(slot, keepoverstacked)
     if item ~= nil then
         drop_pos = drop_pos or self.inst:GetPosition()
 
@@ -133,16 +133,17 @@ function Container:DropItemBySlot(slot, drop_pos)
         item.prevslot = nil
         self.inst:PushEvent("dropitem", { item = item })
     end
+	return item
 end
 
-function Container:DropEverythingWithTag(tag, drop_pos)
+function Container:DropEverythingWithTag(tag, drop_pos, keepoverstacked)
     local containers = {}
 
     for i = 1, self.numslots do
         local item = self.slots[i]
         if item ~= nil then
             if item:HasTag(tag) then
-                self:DropItemBySlot(i, drop_pos)
+				self:DropItemBySlot(i, drop_pos, keepoverstacked)
             elseif item.components.container ~= nil then
                 table.insert(containers, item)
             end
@@ -150,14 +151,27 @@ function Container:DropEverythingWithTag(tag, drop_pos)
     end
 
     for i, v in ipairs(containers) do
-        v.components.container:DropEverythingWithTag(tag, drop_pos)
+		v.components.container:DropEverythingWithTag(tag, drop_pos, keepoverstacked)
     end
 end
 
-function Container:DropEverything(drop_pos)
+function Container:DropEverything(drop_pos, keepoverstacked)
     for i = 1, self.numslots do
-        self:DropItemBySlot(i, drop_pos)
+		self:DropItemBySlot(i, drop_pos, keepoverstacked)
     end
+end
+
+function Container:DropEverythingUpToMaxStacks(maxstacks, drop_pos)
+	local stacks = 0
+	while next(self.slots) do
+		for k, v in pairs(self.slots) do
+			self:DropItemBySlot(k, drop_pos, true)
+			stacks = stacks + 1
+			if stacks >= maxstacks then
+				return
+			end
+		end
+	end
 end
 
 function Container:DropItem(itemtodrop)
@@ -398,26 +412,11 @@ function Container:GiveItem(item, slot, src_pos, drop_on_fail)
     return false
 end
 
-function Container:RemoveItemBySlot(slot)
-    if slot and self.slots[slot] then
-        local item = self.slots[slot]
-        if item then
-            self.slots[slot] = nil
-			if self.infinitestacksize and item.components.stackable then
-				if not self.ignoreoverstacked then
-					self:DropOverstackedExcess(item)
-				end
-				item.components.stackable:SetIgnoreMaxSize(false)
-			end
-            if item.components.inventoryitem then
-                item.components.inventoryitem:OnRemoved()
-            end
-            self.inst:PushEvent("itemlose", {slot = slot, prev_item = item})
-        end
-        item.prevcontainer = self
-        item.prevslot = slot
-        return item
-    end
+function Container:RemoveItemBySlot(slot, keepoverstacked)
+	local item = slot and self.slots[slot] or nil
+	if item then
+		return self:RemoveItem_Internal(item, slot, true, keepoverstacked)
+	end
 end
 
 function Container:RemoveAllItems()
@@ -777,7 +776,7 @@ end
 function Container:OnSave()
     local data = {items= {}}
     local references = {}
-    local refs = {}
+	local refs
     for k,v in pairs(self.slots) do
         if v:IsValid() and v.persists then --only save the valid items
             data.items[k], refs = v:GetSaveRecord()
@@ -804,12 +803,18 @@ end
 
 --V2C: ***WARNING*** checkallcontainers not implemented here
 --     parameter exists to keep interface same as inventory component
-function Container:RemoveItem(item, wholestack, checkallcontainers, keepoverstacked)
-    if item == nil then
-        return
-    end
+function Container:RemoveItem(item, wholestack, _checkallcontainers_, keepoverstacked)
+	if item then
+		local slot = self:GetItemSlot(item)
+		if slot then
+			return self:RemoveItem_Internal(item, slot, wholestack, keepoverstacked)
+		end
+		return item
+	end
+end
 
-    local prevslot = self:GetItemSlot(item)
+function Container:RemoveItem_Internal(item, slot, wholestack, keepoverstacked)
+	--assert(item == self.slots[slot])
 
 	local stackable = item.components.stackable
 	if stackable and stackable:IsStack() then
@@ -818,27 +823,25 @@ function Container:RemoveItem(item, wholestack, checkallcontainers, keepoverstac
 			(keepoverstacked and stackable:IsOverStacked() and stackable.originalmaxsize) or
 			nil
 		if num then
-			local dec = item.components.stackable:Get(num)
+			local dec = stackable:Get(num)
 			dec.components.inventoryitem:OnRemoved()
-			dec.prevslot = prevslot
+			dec.prevslot = slot
 			dec.prevcontainer = self
 			return dec
 		end
 	end
 
-	if prevslot then
-		self.slots[prevslot] = nil
-		if self.infinitestacksize and item.components.stackable then
-			if not self.ignoreoverstacked then
-				self:DropOverstackedExcess(item)
-			end
-			item.components.stackable:SetIgnoreMaxSize(false)
+	self.slots[slot] = nil
+	if self.infinitestacksize and stackable then
+		if not self.ignoreoverstacked then
+			self:DropOverstackedExcess(item)
 		end
-		self.inst:PushEvent("itemlose", { slot = prevslot, prev_item = item })
-		item.components.inventoryitem:OnRemoved()
-		item.prevslot = prevslot
-		item.prevcontainer = self
+		stackable:SetIgnoreMaxSize(false)
 	end
+	self.inst:PushEvent("itemlose", { slot = slot, prev_item = item })
+	item.components.inventoryitem:OnRemoved()
+	item.prevslot = slot
+	item.prevcontainer = self
 
     return item
 end

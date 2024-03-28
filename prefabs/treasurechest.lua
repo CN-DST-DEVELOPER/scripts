@@ -1,5 +1,18 @@
 require "prefabutil"
 
+local assets_regular =
+{
+	Asset("ANIM", "anim/treasure_chest_upgraded.zip"),
+}
+
+local prefabs_regular =
+{
+	"collapse_small",
+	"chestupgrade_stacksize_fx",
+	"alterguardianhatshard",
+	"collapsed_treasurechest",
+}
+
 local SUNKEN_PHYSICS_RADIUS = .45
 
 local function onopen(inst)
@@ -52,6 +65,7 @@ local function onhit(inst, worker)
     end
 end
 
+--V2C: also used for restoredfromcollapsed
 local function onbuilt(inst)
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("closed", false)
@@ -166,11 +180,90 @@ end
 --------------------------------------------------------------------------
 
 local function regular_getstatus(inst, viewer)
-    if inst._chestupgrade_stacksize then
-        return "UPGRADED_STACKSIZE"
-    end
+	return inst._chestupgrade_stacksize and "UPGRADED_STACKSIZE" or nil
+end
 
-    return "GENERIC"
+local function regular_ConvertToCollapsed(inst, droploot, burnt)
+	if inst.components.burnable and inst.components.burnable:IsBurning() then
+		inst.components.burnable:Extinguish()
+	end
+
+	local x, y, z = inst.Transform:GetWorldPosition()
+	if droploot then
+		local fx = SpawnPrefab("collapse_small")
+		fx.Transform:SetPosition(x, y, z)
+		fx:SetMaterial("wood")
+		inst.components.lootdropper.min_speed = 2.25
+		inst.components.lootdropper.max_speed = 2.75
+		if burnt then
+			inst:AddTag("burnt")
+			inst.components.lootdropper:DropLoot()
+			inst:RemoveTag("burnt")
+		else
+			inst.components.lootdropper:DropLoot()
+		end
+		inst.components.lootdropper.min_speed = nil
+		inst.components.lootdropper.max_speed = nil
+	end
+
+	inst.components.container:Close()
+	inst.components.workable:SetWorkLeft(2)
+
+	local pile = SpawnPrefab("collapsed_treasurechest")
+	pile.Transform:SetPosition(x, y, z)
+	pile:SetChest(inst, burnt)
+end
+
+local function regular_Upgrade_OnHit(inst, worker)
+	if not inst:HasTag("burnt") then
+		if inst.components.container then
+			inst.components.container:DropEverything(nil, true)
+			inst.components.container:Close()
+		end
+		inst.AnimState:PlayAnimation("hit")
+		inst.AnimState:PushAnimation("closed", false)
+	end
+end
+
+local function regular_ShouldCollapse(inst)
+	if inst.components.container and inst.components.container.infinitestacksize then
+		--NOTE: should already have called DropEverything(nil, true) (worked or burnt or deconstructed)
+		--      so everything remaining counts as an "overstack"
+		local overstacks = 0
+		for k, v in pairs(inst.components.container.slots) do
+			local stackable = v.components.stackable
+			if stackable then
+				overstacks = overstacks + math.ceil(stackable:StackSize() / (stackable.originalmaxsize or stackable.maxsize))
+				if overstacks >= TUNING.COLLAPSED_CHEST_EXCESS_STACKS_THRESHOLD then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function regular_Upgrade_OnHammered(inst, worker)
+	if regular_ShouldCollapse(inst) then
+		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+		if not inst.components.container:IsEmpty() then
+			regular_ConvertToCollapsed(inst, true, false)
+			return
+		end
+	end
+
+	--fallback to default
+	onhammered(inst, worker)
+end
+
+local function regular_Upgrade_OnRestoredFromCollapsed(inst)
+	inst.AnimState:PlayAnimation("rebuild")
+	inst.AnimState:PushAnimation("closed", false)
+	if inst.skin_place_sound then
+		inst.SoundEmitter:PlaySound(inst.skin_place_sound)
+	else
+		inst.SoundEmitter:PlaySound("dontstarve/common/chest_craft")
+	end
 end
 
 local function DoUpgradeVisuals(inst)
@@ -209,17 +302,36 @@ local function OnUpgrade(inst, performer, upgraded_from_item)
     if inst.components.lootdropper ~= nil then
         inst.components.lootdropper:SetLoot({ "alterguardianhatshard" })
     end
+	inst.components.workable:SetOnWorkCallback(regular_Upgrade_OnHit)
+	inst.components.workable:SetOnFinishCallback(regular_Upgrade_OnHammered)
+	inst:ListenForEvent("restoredfromcollapsed", regular_Upgrade_OnRestoredFromCollapsed)
 end
 
 local function regular_OnBurnt(inst)
     inst.components.upgradeable.upgradetype = nil
     inst.components.inspectable.getstatus = nil
+
+	if inst.components.container then
+		inst.components.container:DropEverything(nil, true)
+	end
+
+	if regular_ShouldCollapse(inst) then
+		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+		if not inst.components.container:IsEmpty() then
+			regular_ConvertToCollapsed(inst, true, true)
+			return
+		end
+	end
+
+	--fallback to default
+	DefaultBurntStructureFn(inst)
 end
 
-local function regular_OnLoadPostPass(inst, newents, data)
+local function regular_OnLoad(inst, data, newents)
     if inst.components.upgradeable ~= nil and inst.components.upgradeable.numupgrades > 0 then
         OnUpgrade(inst)
     end
+	onload(inst, data, newents)
 end
 
 local function regular_OnDecontructStructure(inst, caster)
@@ -228,6 +340,18 @@ local function regular_OnDecontructStructure(inst, caster)
             inst.components.lootdropper:SpawnLootPrefab("alterguardianhatshard")
         end
     end
+
+	if regular_ShouldCollapse(inst) then
+		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+		if not inst.components.container:IsEmpty() then
+			regular_ConvertToCollapsed(inst, false, false)
+			inst.no_delete_on_deconstruct = true
+			return
+		end
+	end
+
+	--fallback to default
+	inst.no_delete_on_deconstruct = nil
 end
 
 local function regular_master_postinit(inst)
@@ -237,10 +361,10 @@ local function regular_master_postinit(inst)
     upgradeable.upgradetype = UPGRADETYPES.CHEST
     upgradeable:SetOnUpgradeFn(OnUpgrade)
 
-    inst:ListenForEvent("onburnt", regular_OnBurnt)
+	inst.components.burnable:SetOnBurntFn(regular_OnBurnt)
     inst:ListenForEvent("ondeconstructstructure", regular_OnDecontructStructure)
 
-    inst.OnLoadPostPass = regular_OnLoadPostPass
+	inst.OnLoad = regular_OnLoad
 end
 
 --------------------------------------------------------------------------
@@ -504,7 +628,7 @@ local function sunken_master_postinit(inst)
 	inst:ListenForEvent("on_submerge", sunken_OnSubmerge)
 end
 
-return MakeChest("treasurechest", "chest", "treasure_chest", false, regular_master_postinit, { "collapse_small", "chestupgrade_stacksize_fx", "alterguardianhatshard" }, { Asset("ANIM", "anim/treasure_chest_upgraded.zip") }),
+return MakeChest("treasurechest", "chest", "treasure_chest", false, regular_master_postinit, prefabs_regular, assets_regular),
     MakePlacer("treasurechest_placer", "chest", "treasure_chest", "closed"),
     MakeChest("pandoraschest", "pandoras_chest", "pandoras_chest", true, pandora_master_postinit, { "pandorachest_reset" }),
     MakeChest("minotaurchest", "pandoras_chest_large", "pandoras_chest_large", true, minotuar_master_postinit, { "collapse_small" }),

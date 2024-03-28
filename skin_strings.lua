@@ -3476,7 +3476,7 @@ STRINGS.SKIN_NAMES =
 
 STRINGS.SKIN_DESCRIPTIONS =
 {
-	abigail_creepy = "n/a",
+	abigail_creepy = "Legend says this flower is haunted by the spirit of a young girl.",
 	abigail_flower_creepy = "n/a",
 	abigail_flower_formal = "n/a",
 	abigail_flower_funeral = "n/a",

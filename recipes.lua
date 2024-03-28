@@ -1064,6 +1064,9 @@ CONSTRUCTION_PLANS =
 	["support_pillar"] =			{ Ingredient("rocks", 40) },
 	["support_pillar_dreadstone"] =	{ Ingredient("dreadstone", 40) },
 
+	["collapsed_treasurechest"] =	{ Ingredient("boards", 3), Ingredient("alterguardianhatshard", 1) },
+	["collapsed_dragonflychest"] =	{ Ingredient("dragon_scales", 1), Ingredient("boards", 4), Ingredient("goldnugget", 10), Ingredient("alterguardianhatshard", 1) },
+
 	--Cult of the Lamb
 	["cotl_tabernacle_level1"] = { Ingredient("cutstone", 5), Ingredient("log", 1) },
 	["cotl_tabernacle_level2"] = { Ingredient("goldnugget", 10), Ingredient("cutstone", 10), Ingredient("log", 1) },

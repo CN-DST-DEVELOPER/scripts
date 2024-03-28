@@ -246,6 +246,7 @@ PREFABFILES = {
   "coldfire",
   "coldfirefire",
   "coldfirepit",
+  "collapsedchest",
   "compass",
   "compost",
   "compostingbin",

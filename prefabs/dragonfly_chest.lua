@@ -13,7 +13,47 @@ local prefabs =
     "collapse_small",
     "chestupgrade_stacksize_taller_fx",
     "alterguardianhatshard",
+	"collapsed_dragonflychest",
 }
+
+local function ShouldCollapse(inst)
+	if inst.components.container and inst.components.container.infinitestacksize then
+		--NOTE: should already have called DropEverything(nil, true) (worked or deconstructed)
+		--      so everything remaining counts as an "overstack"
+		local overstacks = 0
+		for k, v in pairs(inst.components.container.slots) do
+			local stackable = v.components.stackable
+			if stackable then
+				overstacks = overstacks + math.ceil(stackable:StackSize() / (stackable.originalmaxsize or stackable.maxsize))
+				if overstacks >= TUNING.COLLAPSED_CHEST_EXCESS_STACKS_THRESHOLD then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function ConvertToCollapsed(inst, droploot)
+	local x, y, z = inst.Transform:GetWorldPosition()
+	if droploot then
+		local fx = SpawnPrefab("collapse_small")
+		fx.Transform:SetPosition(x, y, z)
+		fx:SetMaterial("wood")
+		inst.components.lootdropper.min_speed = 2.25
+		inst.components.lootdropper.max_speed = 2.75
+		inst.components.lootdropper:DropLoot()
+		inst.components.lootdropper.min_speed = nil
+		inst.components.lootdropper.max_speed = nil
+	end
+
+	inst.components.container:Close()
+	inst.components.workable:SetWorkLeft(2)
+
+	local pile = SpawnPrefab("collapsed_dragonflychest")
+	pile.Transform:SetPosition(x, y, z)
+	pile:SetChest(inst)
+end
 
 local function onopen(inst)
     inst.AnimState:PlayAnimation("open")
@@ -45,6 +85,34 @@ local function onhit(inst, worker)
     inst.AnimState:PushAnimation("closed", false)
 end
 
+local function upgrade_onhammered(inst, worker)
+	if ShouldCollapse(inst) then
+		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+		if not inst.components.container:IsEmpty() then
+			ConvertToCollapsed(inst, true)
+			return
+		end
+	end
+
+	--fallback to default
+	onhammered(inst, worker)
+end
+
+local function upgrade_onhit(inst, worker)
+	if inst.components.container ~= nil then
+		inst.components.container:DropEverything(nil, true)
+		inst.components.container:Close()
+	end
+	inst.AnimState:PlayAnimation("hit")
+	inst.AnimState:PushAnimation("closed", false)
+end
+
+local function OnRestoredFromCollapsed(inst)
+	inst.AnimState:PlayAnimation("rebuild")
+	inst.AnimState:PushAnimation("closed", false)
+	inst.SoundEmitter:PlaySound("dontstarve/common/dragonfly_chest_craft")
+end
+
 local function onbuilt(inst)
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("closed", false)
@@ -52,11 +120,7 @@ local function onbuilt(inst)
 end
 
 local function getstatus(inst, viewer)
-    if inst._chestupgrade_stacksize then
-        return "UPGRADED_STACKSIZE"
-    end
-
-    return "GENERIC"
+	return inst._chestupgrade_stacksize and "UPGRADED_STACKSIZE" or nil
 end
 
 local function DoUpgradeVisuals(inst)
@@ -95,9 +159,12 @@ local function OnUpgrade(inst, performer, upgraded_from_item)
     if inst.components.lootdropper ~= nil then
         inst.components.lootdropper:SetLoot({ "alterguardianhatshard" })
     end
+	inst.components.workable:SetOnWorkCallback(upgrade_onhit)
+	inst.components.workable:SetOnFinishCallback(upgrade_onhammered)
+	inst:ListenForEvent("restoredfromcollapsed", OnRestoredFromCollapsed)
 end
 
-local function OnLoadPostPass(inst, newents, data)
+local function OnLoad(inst, data, newents)
     if inst.components.upgradeable ~= nil and inst.components.upgradeable.numupgrades > 0 then
         OnUpgrade(inst)
     end
@@ -109,6 +176,18 @@ local function OnDecontructStructure(inst, caster)
             inst.components.lootdropper:SpawnLootPrefab("alterguardianhatshard")
         end
     end
+
+	if ShouldCollapse(inst) then
+		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+		if not inst.components.container:IsEmpty() then
+			ConvertToCollapsed(inst, false)
+			inst.no_delete_on_deconstruct = true
+			return
+		end
+	end
+
+	--fallback to default
+	inst.no_delete_on_deconstruct = nil
 end
 
 local function fn()
@@ -163,15 +242,14 @@ local function fn()
 
     AddHauntableDropItemOrWork(inst)
 
-    
     local upgradeable = inst:AddComponent("upgradeable")
     upgradeable.upgradetype = UPGRADETYPES.CHEST
     upgradeable:SetOnUpgradeFn(OnUpgrade)
     -- This chest cannot burn.
-    inst.OnLoadPostPass = OnLoadPostPass
+	inst.OnLoad = OnLoad
 
     return inst
 end
 
-return Prefab("dragonflychest", fn, assets),
+return Prefab("dragonflychest", fn, assets, prefabs),
     MakePlacer("dragonflychest_placer", "dragonfly_chest", "dragonfly_chest", "closed")

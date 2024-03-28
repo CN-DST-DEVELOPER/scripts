@@ -705,15 +705,6 @@ function self:TryToPlaceOceanArena()
         return false
     end
 
-    -- Remove this point.
-    for i, v in ipairs(points) do
-        if v.x == x and v.y == y and v.z == z then
-            table.remove(points, i)
-            break
-        end
-    end
-    count = count - 1
-    
     x, y, z = _map:GetTileCenterPoint(x, y, z)
     return self:PlaceOceanArenaAtPosition(x, y, z)
 end

@@ -355,7 +355,18 @@ function InventoryItem:RemoveFromOwner(wholestack)
 end
 
 function InventoryItem:OnRemoveEntity()
-    self:RemoveFromOwner(true)
+	if self.owner then
+		if self.owner.components.inventory then
+			self.owner.components.inventory:RemoveItem(self.inst, true)
+		else
+			local container = self.owner.components.container
+			if container then
+				container.ignoreoverstacked = true
+				container:RemoveItem(self.inst, true)
+				container.ignoreoverstacked = false
+			end
+		end
+	end
     TheWorld:PushEvent("forgetinventoryitem", self.inst)
 end
 

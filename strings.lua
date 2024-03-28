@@ -737,6 +737,7 @@ STRINGS =
             OFFER = "Offer Material",
             STORE = "Add Material",
 			REPAIR = "Repair",
+			REBUILD = "Rebuild",
         },
         STOPCONSTRUCTION =
         {
@@ -744,12 +745,14 @@ STRINGS =
             GENERIC_FMT = "Stop Building {name}",
             OFFER = "Stop Offering to",
 			REPAIR = "Stop Repairing",
+			REBUILD = "Stop Rebuilding",
         },
         APPLYCONSTRUCTION =
         {
             GENERIC = "Build",
             OFFER = "Offer",
 			REPAIR = "Repair",
+			REBUILD = "Rebuild",
         },
         STARTCHANNELING = {
             GENERIC = "Touch",

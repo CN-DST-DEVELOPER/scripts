@@ -577,7 +577,7 @@ local function destroystructure(staff, target)
     end
 
     if target.components.container ~= nil then
-        target.components.container:DropEverything()
+		target.components.container:DropEverything(nil, true)
     end
 
     if target.components.spawner ~= nil and target.components.spawner:IsOccupied() then
@@ -618,12 +618,14 @@ local function destroystructure(staff, target)
 
     target:PushEvent("ondeconstructstructure", caster)
 
-    if target.components.stackable ~= nil then
-        --if it's stackable we only want to destroy one of them.
-        target.components.stackable:Get():Remove()
-    else
-        target:Remove()
-    end
+	if not target.no_delete_on_deconstruct then
+		if target.components.stackable ~= nil then
+			--if it's stackable we only want to destroy one of them.
+			target.components.stackable:Get():Remove()
+		else
+			target:Remove()
+		end
+	end
 end
 
 local function HasRecipe(guy)

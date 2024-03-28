@@ -652,10 +652,10 @@ function Inventory:ForEachEquipment(fn, ...)
     end
 end
 
-function Inventory:RemoveItemBySlot(slot)
+function Inventory:RemoveItemBySlot(slot, keepoverstacked)
     if slot and self.itemslots[slot] then
         local item = self.itemslots[slot]
-        self:RemoveItem(item, true)
+		self:RemoveItem(item, true, nil, keepoverstacked)
         return item
     end
 end
@@ -1188,7 +1188,7 @@ function Inventory:Equip(item, old_to_active, no_animation, force_ui_anim)
     end
 end
 
-function Inventory:RemoveItem(item, wholestack, checkallcontainers)
+function Inventory:RemoveItem(item, wholestack, checkallcontainers, keepoverstacked)
     if item == nil then
         return
     end
@@ -1234,7 +1234,7 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers)
     end
 
     local overflow = self:GetOverflowContainer()
-    local overflow_item = overflow and overflow:RemoveItem(item, wholestack)
+	local overflow_item = overflow and overflow:RemoveItem(item, wholestack, nil, keepoverstacked)
     if overflow_item then
         return overflow_item
     end
@@ -1244,7 +1244,7 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers)
         for container_inst in pairs(containers) do
             local container = container_inst.components.container or container_inst.components.inventory
             if container and container ~= overflow and not container.excludefromcrafting then
-                local container_item = container:RemoveItem(item, wholestack)
+				local container_item = container:RemoveItem(item, wholestack, nil, keepoverstacked)
                 if container_item then
                     return container_item
                 end

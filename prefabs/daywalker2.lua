@@ -702,6 +702,30 @@ local function ShouldWake(inst)
 	return true
 end
 
+local function AddCombatStatusEffectComponents(inst)
+	MakeLargeBurnableCharacter(inst, "ww_cloth")
+	MakeLargeFreezableCharacter(inst, "ww_body")
+	inst.components.freezable:SetResistance(4)
+	inst.components.freezable.diminishingreturns = true
+
+	inst:AddComponent("sleeper")
+	inst.components.sleeper:SetResistance(4)
+	inst.components.sleeper:SetSleepTest(ShouldSleep)
+	inst.components.sleeper:SetWakeTest(ShouldWake)
+	inst.components.sleeper.diminishingreturns = true
+end
+
+local function RemoveCombatStatusEffectComponents(inst)
+	if inst.components.freezable.coldness > 0 then
+		inst.components.freezable:SpawnShatterFX()
+	end
+	inst.components.freezable:Reset()
+	inst:RemoveComponent("freezable")
+	inst:RemoveComponent("burnable")
+	inst:RemoveComponent("propagator")
+	inst:RemoveComponent("sleeper")
+end
+
 --------------------------------------------------------------------------
 
 local function MakeBuried(inst, junk)
@@ -739,14 +763,7 @@ local function MakeBuried(inst, junk)
 		inst.components.locomotor:Stop()
 		inst.components.health:SetInvincible(true)
 		inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
-		if inst.components.freezable.coldness > 0 then
-			inst.components.freezable:SpawnShatterFX()
-		end
-		inst.components.freezable:Reset()
-		inst:RemoveComponent("freezable")
-		inst:RemoveComponent("burnable")
-		inst:RemoveComponent("propagator")
-		inst:RemoveComponent("sleeper")
+		RemoveCombatStatusEffectComponents(inst)
 		inst:RemoveTag("hostile")
 		inst:AddTag("notarget")
 		inst.AnimState:Hide("junk_top")
@@ -795,10 +812,7 @@ local function MakeFreed(inst)
 		inst:ListenForEvent("newcombattarget", OnNewTarget)
 		inst:ListenForEvent("minhealth", OnMinHealth)
 		inst:ListenForEvent("ms_junkstolen", OnJunkStolen)
-		MakeLargeBurnableCharacter(inst, "ww_cloth")
-		MakeLargeFreezableCharacter(inst, "ww_body")
-		inst.components.freezable:SetResistance(4)
-		inst.components.freezable.diminishingreturns = true
+		AddCombatStatusEffectComponents(inst)
 		inst.components.timer:StopTimer("despawn")
 		inst.components.talker:ShutUp()
 		inst.components.health:SetInvincible(false)
@@ -851,14 +865,7 @@ local function MakeDefeated(inst)
 		inst.components.combat:DropTarget()
 		inst.components.combat:SetRetargetFunction(nil)
 		inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
-		if inst.components.freezable.coldness > 0 then
-			inst.components.freezable:SpawnShatterFX()
-		end
-		inst.components.freezable:Reset()
-		inst:RemoveComponent("freezable")
-		inst:RemoveComponent("burnable")
-		inst:RemoveComponent("propagator")
-		inst:RemoveComponent("sleeper")
+		RemoveCombatStatusEffectComponents(inst)
 		inst:RemoveTag("hostile")
 		inst:SetBrain(nil)
 		inst:SetHeadTracking(false)
@@ -1171,12 +1178,6 @@ local function fn()
 	inst:AddComponent("stuckdetection")
 	inst.components.stuckdetection:SetTimeToStuck(3)
 
-	inst:AddComponent("sleeper")
-	inst.components.sleeper:SetResistance(4)
-	inst.components.sleeper:SetSleepTest(ShouldSleep)
-	inst.components.sleeper:SetWakeTest(ShouldWake)
-	inst.components.sleeper.diminishingreturns = true
-
 	inst:AddComponent("colouradder")
 	inst:AddComponent("bloomer")
 
@@ -1208,10 +1209,7 @@ local function fn()
 	inst:AddComponent("teleportedoverride")
 	inst.components.teleportedoverride:SetDestPositionFn(teleport_override_fn)
 
-	MakeLargeBurnableCharacter(inst, "ww_cloth")
-	MakeLargeFreezableCharacter(inst, "ww_body")
-	inst.components.freezable:SetResistance(4)
-	inst.components.freezable.diminishingreturns = true
+	AddCombatStatusEffectComponents(inst)
 
 	inst.hit_recovery = TUNING.DAYWALKER_HIT_RECOVERY
 

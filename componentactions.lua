@@ -260,8 +260,12 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        constructionsite = function(inst, doer, actions)
-            if not inst:HasTag("burnt") and not inst:HasTag("smolder") and (not inst:HasTag("fire") or inst:HasTag("campfire")) then
+		constructionsite = function(inst, doer, actions, right)
+			if not right and inst:HasTag("pickable") then
+				--V2C: -pickable and constructionsite actions conflict
+				--     -not normal for constructionsites to have other actions, but collapsedchest does now
+				return
+			elseif not inst:HasTag("burnt") and not inst:HasTag("smolder") and (not inst:HasTag("fire") or inst:HasTag("campfire")) then
 				local constructionsite = inst.replica.constructionsite
 				if constructionsite:IsEnabled() then
 					table.insert(actions,

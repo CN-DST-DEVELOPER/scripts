@@ -89,7 +89,7 @@ local function setpirateboat(boat)
                     if item ~= nil then
                         --V2C: DropItem(item) does not drop whole stack
                         --container:DropItem(item)
-                        container:DropItemBySlot(i)
+						item = container:DropItemBySlot(i, nil, true)
                         stashloot(item)
                     end
                 end

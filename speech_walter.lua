@@ -2721,7 +2721,7 @@ return{
 		},
 		TREASURECHEST_TRAP = "There might be cursed pirate gold inside!",
         CHESTUPGRADE_STACKSIZE = "I can make more room for supplies!", -- Describes the kit upgrade item.
-		COLLAPSEDCHEST = "I can fix the forever treasure chest.",
+		COLLAPSEDCHEST = "It looks pretty messed-up... but I think I could fix it!",
 		SACRED_CHEST =
 		{
 			GENERIC = "There HAS to be something good in there, just look at it!",

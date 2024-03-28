@@ -360,9 +360,9 @@ ACTIONS =
     WRAPBUNDLE = Action({ instant=true }),
     UNWRAP = Action({ rmb=true, priority=2 }),
 	BREAK = Action({ rmb=true, priority=2 }),
-    CONSTRUCT = Action({ distance=2.5 }),
-    STOPCONSTRUCTION = Action({ instant=true, distance=2 }),
-    APPLYCONSTRUCTION = Action({ instant=true, distance=2 }),
+	CONSTRUCT = Action({ priority=1, distance=2.5 }),
+	STOPCONSTRUCTION = Action({ priority=1, instant=true, distance=2 }),
+	APPLYCONSTRUCTION = Action({ priority=1, instant=true, distance=2 }),
 	--channeling for scene entity
     STARTCHANNELING = Action({ priority=2, distance=2.1 }), -- Keep higher priority over smother for waterpump but do something else if channelable is added to more things.
     STOPCHANNELING = Action({ instant=true, distance=2.1 }),
@@ -3426,7 +3426,8 @@ ACTIONS.CONSTRUCT.strfn = function(act)
             )
         or  (
 				(act.target:HasTag("offerconstructionsite") and "OFFER_TO") or
-				(act.target:HasTag("repairconstructionsite") and "REPAIR")
+				(act.target:HasTag("repairconstructionsite") and "REPAIR") or
+				(act.target:HasTag("rebuildconstructionsite") and "REBUILD")
             )
         or nil
 end
@@ -3501,6 +3502,7 @@ end
 ACTIONS.STOPCONSTRUCTION.strfn = function(act)
 	return (act.target:HasTag("offerconstructionsite") and "OFFER")
 		or (act.target:HasTag("repairconstructionsite") and "REPAIR")
+		or (act.target:HasTag("rebuildconstructionsite") and "REBUILD")
 		or nil
 end
 
@@ -3512,9 +3514,9 @@ ACTIONS.STOPCONSTRUCTION.fn = function(act)
 end
 
 ACTIONS.APPLYCONSTRUCTION.strfn = function(act)
-	print(act.target, act.target:HasTag("repairconstructionsite"))
 	return (act.target:HasTag("offerconstructionsite") and "OFFER")
 		or (act.target:HasTag("repairconstructionsite") and "REPAIR")
+		or (act.target:HasTag("rebuildconstructionsite") and "REBUILD")
 		or nil
 end
 

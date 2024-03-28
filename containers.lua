@@ -412,6 +412,9 @@ end
 params.construction_repair_container = deepcopy(params.construction_container)
 params.construction_repair_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.REPAIR
 
+params.construction_rebuild_container = deepcopy(params.construction_container)
+params.construction_rebuild_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.REBUILD
+
 --------------------------------------------------------------------------
 --[[ enable_shadow_rift_construction_container ]]
 --------------------------------------------------------------------------

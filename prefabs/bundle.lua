@@ -572,6 +572,7 @@ local wetpouch =
 return MakeContainer("bundle_container", "ui_bundle_2x2"),
 	MakeContainer("construction_container", "ui_construction_4x1"),
 	MakeContainer("construction_repair_container", "ui_construction_4x1", "repairconstructionsite"),
+	MakeContainer("construction_rebuild_container", "ui_construction_4x1", "rebuildconstructionsite"),
     --"bundle", "bundlewrap"
     MakeBundle("bundle", false, nil, { "waxpaper" }),
     MakeWrap("bundle", "bundle_container", nil, false),
