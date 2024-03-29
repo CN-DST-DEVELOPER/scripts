@@ -219,11 +219,12 @@ end
 
 local function oversized_onperish(inst)
     -- vars for rotting on a gym
-    local gym = nil
+	local owner = inst.components.inventoryitem:GetGrandOwner()
+	local gym = owner and owner:HasTag("gym") and owner or nil
     local rot = nil
     local slot = nil
 
-    if inst.components.inventoryitem:GetGrandOwner() ~= nil and not inst.components.inventoryitem:GetGrandOwner():HasTag("gym") then
+	if owner and gym == nil then
         local loots = {}
         for i=1, #inst.components.lootdropper.loot do
             table.insert(loots, "spoiled_food")
@@ -233,8 +234,7 @@ local function oversized_onperish(inst)
     else
         rot = SpawnPrefab(inst.prefab.."_rotten")
         rot.Transform:SetPosition(inst.Transform:GetWorldPosition())
-        if inst.components.inventoryitem:GetGrandOwner() and inst.components.inventoryitem:GetGrandOwner():HasTag("gym") then
-            gym = inst.components.inventoryitem:GetGrandOwner()
+		if gym then
             slot = gym.components.inventory:GetItemSlot(inst)
         end
     end

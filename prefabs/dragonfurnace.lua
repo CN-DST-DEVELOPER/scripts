@@ -108,8 +108,18 @@ local function OnContentsDestroyed(inst)
 end
 
 local function ShouldIncinerateItem(inst, item)
+    local incinerate = true
+
     -- NOTES(JBK): Fruitcake hack. You think you can escape this so easily?
-    return item.prefab ~= "winter_food4"
+    if item.prefab == "winter_food4" then
+        incinerate = false
+    end
+
+    if incinerate == true then
+        item:PushEvent("onincinerated", {incinerator=inst})
+    end
+    
+    return incinerate
 end
 
 local function fn()

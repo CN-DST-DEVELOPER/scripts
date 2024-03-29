@@ -539,6 +539,22 @@ local function Spitter_OnAcidUninfuse(inst)
     inst.weapon.components.weapon:SetProjectile("spider_web_spit")
 end
 
+local function SoundPath(inst, event)
+    local creature = "spider"
+    if inst:HasTag("spider_healer") then
+        return "webber1/creatures/spider_cannonfodder/" .. event
+    elseif inst:HasTag("spider_moon") then
+        return "turnoftides/creatures/together/spider_moon/" .. event
+    elseif inst:HasTag("spider_warrior") then
+        creature = "spiderwarrior"
+    elseif inst:HasTag("spider_hider") or inst:HasTag("spider_spitter") then
+        creature = "cavespider"
+    else
+        creature = "spider"
+    end
+    return "dontstarve/creatures/" .. creature .. "/" .. event
+end
+
 local DIET = { FOODTYPE.MEAT }
 local BASE_PATHCAPS = { ignorecreep = true }
 local function create_common(bank, build, tag, common_init, extra_data)
@@ -705,6 +721,10 @@ local function create_common(bank, build, tag, common_init, extra_data)
 
     inst:WatchWorldState("iscaveday", OnIsCaveDay)
     OnIsCaveDay(inst, TheWorld.state.iscaveday)
+    
+    inst.SoundPath = SoundPath
+
+    inst:SetIncineratedSound(SoundPath(inst, "die"))
 
     inst.build = build
     inst.SetHappyFace = (extra_data and extra_data.SetHappyFaceFn) or SetHappyFace

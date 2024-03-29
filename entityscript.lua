@@ -1965,4 +1965,15 @@ function EntityScript:RemoveDebuff(name)
     self.components.debuffable:RemoveDebuff(name)
 end
 
+function EntityScript:SetIncineratedSound(sound)
+    if sound then
+        local function OnIncinerated(inst,data)
+            if data.incinerator then
+                data.incinerator.SoundEmitter:PlaySound(sound)
+            end
+        end    
+        self:ListenForEvent("onincinerated", OnIncinerated) 
+    end
+end
+
 require("entityscriptproxy")

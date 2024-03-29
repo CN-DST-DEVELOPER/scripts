@@ -68,6 +68,10 @@ local function Configure(inst, data)
     if data.multcolor then
         inst.AnimState:SetMultColour(unpack(data.multcolor))
     end
+
+    if inst.onconfigure_fn ~= nil then
+        inst.onconfigure_fn(inst)
+    end
 end
 
 -------------------------------------------------------------------------------------------------

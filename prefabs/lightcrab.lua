@@ -118,6 +118,7 @@ local function fn()
     MakeHauntablePanic(inst)
 
     MakeFeedableSmallLivestock(inst, TUNING.LIGHTCRAB_PERISH_TIME, nil, OnDropped)
+    inst:SetIncineratedSound("monkeyisland/lightcrab/death")
 
     return inst
 end

@@ -1709,6 +1709,7 @@ local PREFABS =
     ["skeleton_notplayer"] = true,
     ["scrap_monoclehat"] = true,
     ["scraphat"] = true,
+    ["armor_lunarplant_husk"] = true,
 
     --[[POI]]
     ["charlie_stage_post"] = true,

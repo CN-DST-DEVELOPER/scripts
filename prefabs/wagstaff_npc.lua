@@ -282,11 +282,6 @@ local function ontimerdone(inst, data)
         end
     end
 end
---[[
-local function OnSleep(inst)
-    inst:Remove()
-end
-]]
 
 local function erode(inst,time, erodein, removewhendone)
 
@@ -452,7 +447,6 @@ local function fn()
     talker.offset = Vector3(0, -400, 0)
     talker.name_colour = WAGSTAFF_CHATTER_COLOUR
     talker.chaticon = "npcchatflair_wagstaff"
-    --talker.chaticonbg = "playerlevel_bg_quagmire"
     talker:MakeChatter()
     --inst.talksoundoverride = "moonboss/characters/wagstaff/talk_LP"
 
@@ -780,7 +774,6 @@ local function pstbossfn()
     talker.offset = Vector3(0, -400, 0)
     talker.name_colour = WAGSTAFF_CHATTER_COLOUR
     talker.chaticon = "npcchatflair_wagstaff"
-    --talker.chaticonbg = "playerlevel_bg_lavaarena"
     talker:MakeChatter()
 
     if not TheNet:IsDedicated() then
@@ -1167,7 +1160,7 @@ local function WagpunkFn()
     inst:ListenForEvent("doerode", donpcerode)
 
     inst:SetStateGraph("SGwagstaff_npc")
-    inst:SetBrain(wagstaff_npcbrain)    
+    inst:SetBrain(wagstaff_npcbrain)
     
     inst.erode = erode
 

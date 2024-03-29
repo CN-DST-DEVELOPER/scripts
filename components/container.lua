@@ -174,6 +174,7 @@ function Container:DropEverythingUpToMaxStacks(maxstacks, drop_pos)
 	end
 end
 
+--V2C: this drops single, so no need to add "keepoverstacked"
 function Container:DropItem(itemtodrop)
 	--@V2C NOTE: not supported when using container_proxy because this
 	--           will be the pocket dimension_container at (0, 0, 0)
@@ -199,6 +200,7 @@ function Container:DropOverstackedExcess(item)
 	end
 end
 
+--V2C: this drops single, so no need to add "keepoverstacked"
 function Container:DropItemAt(itemtodrop, x, y, z)
 	if Vector3.is_instance(x) then
 		x, y, z = x:Get()
@@ -404,6 +406,7 @@ function Container:GiveItem(item, slot, src_pos, drop_on_fail)
     --default to true if nil
     if drop_on_fail ~= false then
         --@V2C NOTE: not supported when using container_proxy
+		self:DropOverstackedExcess(item)
         item.Transform:SetPosition(self.inst.Transform:GetWorldPosition())
         if item.components.inventoryitem ~= nil then
             item.components.inventoryitem:OnDropped(true)

@@ -267,9 +267,9 @@ function InvSlot:TradeItem(stack_mod)
     end
 end
 
-function InvSlot:DropItem(wholestack)
+function InvSlot:DropItem(single)
     if self.owner and self.owner.replica.inventory and self.tile and self.tile.item then
-        self.owner.replica.inventory:DropItemFromInvTile(self.tile.item, wholestack)
+		self.owner.replica.inventory:DropItemFromInvTile(self.tile.item, single)
     end
 end
 

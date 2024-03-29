@@ -321,7 +321,7 @@ function MakeWallType(data)
         inst:AddComponent("lootdropper")
 
         inst:AddComponent("repairable")
-        inst.components.repairable.repairmaterial = data.name == "ruins" and MATERIALS.THULECITE or data.name
+        inst.components.repairable.repairmaterial = data.name == "ruins" and MATERIALS.THULECITE or data.name == "scrap" and MATERIALS.GEARS or data.name
         inst.components.repairable.onrepaired = onrepaired
         inst.components.repairable.testvalidrepairfn = ValidRepairFn
 
@@ -416,7 +416,7 @@ local walldata =
 		buildsound = "dontstarve/common/place_structure_stone",
 	},
     {
-        name = MATERIALS.SCRAP,
+        name ="scrap",
         material = "stone",
         tags = { "stone", "scrap" },
         loot = "wagpunk_bits",

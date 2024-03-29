@@ -728,24 +728,39 @@ end
 local function onperish(inst)
     local owner = inst.components.inventoryitem.owner
     if owner ~= nil then
-        inst.components.inventoryitem:RemoveFromOwner(true)
-
+		local loots
         local container = owner.components.inventory or owner.components.container or nil
         if container ~= nil and inst.components.lootdropper ~= nil then
             local stacksize = inst.components.stackable ~= nil and inst.components.stackable.stacksize or 1
             if inst.components.health ~= nil then
                 owner:PushEvent("murdered", { victim = inst, stackmult = stacksize, negligent = true }) -- NOTES(JBK): This is a special case event already adding onto it.
             end
+			loots = {}
+			local loots_stackable = {}
             for i = 1, stacksize do
-                local loots = inst.components.lootdropper:GenerateLoot()
-                for k, v in pairs(loots) do
-                    local loot = SpawnPrefab(v)
-                    container:GiveItem(loot)
+				for i, v in ipairs(inst.components.lootdropper:GenerateLoot()) do
+					local stackable = loots_stackable[v]
+					if stackable then
+						if stackable:IsFull() then
+							stackable:SetIgnoreMaxSize(true)
+						end
+						stackable:SetStackSize(stackable:StackSize() + 1)
+					else
+						local loot = SpawnPrefab(v)
+						loots_stackable[v] = loot.components.stackable
+						table.insert(loots, loot)
+					end
                 end
             end
         end
 
         inst:Remove()
+
+		if loots then
+			for i, v in ipairs(loots) do
+				container:GiveItem(v)
+			end
+		end
     end
 end
 

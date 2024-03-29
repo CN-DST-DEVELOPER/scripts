@@ -106,19 +106,7 @@ local events =
 }
 
 local function SoundPath(inst, event)
-    local creature = "spider"
-    if inst:HasTag("spider_healer") then
-        return "webber1/creatures/spider_cannonfodder/" .. event
-    elseif inst:HasTag("spider_moon") then
-		return "turnoftides/creatures/together/spider_moon/" .. event
-    elseif inst:HasTag("spider_warrior") then
-        creature = "spiderwarrior"
-    elseif inst:HasTag("spider_hider") or inst:HasTag("spider_spitter") then
-        creature = "cavespider"
-    else
-        creature = "spider"
-    end
-    return "dontstarve/creatures/" .. creature .. "/" .. event
+    return inst:soundpath(event)
 end
 
 local states =

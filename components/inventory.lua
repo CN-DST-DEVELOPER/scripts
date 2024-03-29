@@ -660,12 +660,12 @@ function Inventory:RemoveItemBySlot(slot, keepoverstacked)
     end
 end
 
-function Inventory:DropItem(item, wholestack, randomdir, pos)
+function Inventory:DropItem(item, wholestack, randomdir, pos, keepoverstacked)
     if item == nil or item.components.inventoryitem == nil then
         return
     end
 
-    local dropped = item.components.inventoryitem:RemoveFromOwner(wholestack) or item
+	local dropped = item.components.inventoryitem:RemoveFromOwner(wholestack, keepoverstacked) or item
 
     if dropped ~= nil then
         if pos ~= nil then

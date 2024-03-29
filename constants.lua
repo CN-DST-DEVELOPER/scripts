@@ -1813,7 +1813,6 @@ MATERIALS =
     SHELL = "shell",
     NIGHTMARE = "nightmare",
 	DREADSTONE = "dreadstone",
-    SCRAP = "scrap"
 }
 
 FORGEMATERIALS =
@@ -2001,6 +2000,7 @@ TECH_SKILLTREE_BUILDER_TAG_OWNERS =
     reedscrafter = "wormwood",
     saplingcrafter = "wormwood",
     syrupcrafter = "wormwood",
+    lunarplant_husk_crafter = "wormwood",
 
     battlesongcontainermaker = "wathgrithr",
     battlesonginstantrevivemaker = "wathgrithr",

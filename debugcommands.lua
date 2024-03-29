@@ -1926,6 +1926,7 @@ local RECIPE_BUILDER_TAG_LOOKUP = {
     juicyberrybushcrafter = "wormwood",
     leifidolcrafter = "woodie",
     lightfliercrafter = "wormwood",
+    lunarplant_husk_crafter = "wormwood",
     lureplantcrafter = "wormwood",
     masterchef = "warly",
     merm_builder = "wurt",

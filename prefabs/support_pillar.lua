@@ -59,7 +59,7 @@ local function CreateHelperRadiusCircle()
 end
 
 local function OnEnableHelper(inst, enabled)
-    if enabled then
+    if enabled and (TheWorld == nil or TheWorld:HasTag("cave")) then
         if inst.helper == nil then
             inst.helper = CreateHelperRadiusCircle()
 

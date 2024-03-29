@@ -71,7 +71,7 @@ local function ShouldGoToClue(inst)
                 if inst.hunt_count and inst.hunt_count == 0 then
                     inst.components.timer:StartTimer("wagstaff_movetime",10 + (math.random()*5))
                 end
-            
+
                 if inst.hunt_count >= ((TheWorld.components.moonstormmanager and TheWorld.components.moonstormmanager:GetCelestialChampionsKilled() or 0) > 0 and 1 or TUNING.WAGSTAFF_NPC_HUNTS) then
                     inst.hunt_stage = "experiment"
                     local static = SpawnPrefab("moonstorm_static")
@@ -99,7 +99,7 @@ local function ShouldGoToClue(inst)
 end
 
 local function DoMachineHint(inst)
-    inst.components.talker:Say(STRINGS.WAGSTAFF_GOTTOHINT[math.random(#STRINGS.WAGSTAFF_GOTTOHINT)])
+    inst.components.talker:Chatter("WAGSTAFF_GOTTOHINT", math.random(#STRINGS.WAGSTAFF_GOTTOHINT), nil, nil, CHATPRIORITIES.LOW)
 end
 
 local function ShouldGoToMachine(inst)
@@ -114,13 +114,13 @@ local function ShouldGoToMachine(inst)
 end
 
 local function DoJunkyardHint(inst)
-    inst.components.talker:Say(STRINGS.WAGSTAFF_JUNK_YARD_OCCUPIED[math.random(#STRINGS.WAGSTAFF_JUNK_YARD_OCCUPIED)])
+    inst.components.talker:Chatter("WAGSTAFF_JUNK_YARD_OCCUPIED", 1, nil, nil, CHATPRIORITIES.HIGH)
 end
 
 local function ShouldGoToJunkYard(inst)
     local junkpos = inst.components.knownlocations:GetLocation("junk")
 
-    if junkpos ~= nil then        
+    if junkpos ~= nil then
         inst:DoTaskInTime(4, DoJunkyardHint)
         inst:DoTaskInTime(6.5, inst.erode, 2, nil, true)
         return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, junkpos, nil, .2)

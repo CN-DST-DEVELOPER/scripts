@@ -513,6 +513,8 @@ local function fn()
     MakeHauntablePanic(inst)
     MakeFeedableSmallLivestock(inst, TUNING.LIGHTFLIER.STARVE_TIME, OnPutInInventory, OnDropped)
 
+    inst:SetIncineratedSound("grotto/creatures/light_bug/death")
+    
     inst.SoundEmitter:PlaySound("grotto/creatures/light_bug/fly_LP", "loop")
 
     inst.EnableBuzz = EnableBuzz

@@ -18,12 +18,13 @@ local function OnPicked(inst, picker, loot)
 				picker.components.inventory:GiveItem(item, nil, inst:GetPosition())
 			else
 				local slot = inst.chest.components.container:GetItemSlot(item)
-				inst.components.container:DropItemBySlot(slot, inst:GetPosition(), true)
+				inst.chest.components.container:DropItemBySlot(slot, inst:GetPosition(), true)
 			end
 		end
 		empty = inst.chest.components.container:IsEmpty()
 	end
 	if empty then
+		inst.components.constructionsite:DropAllMaterials()
 		local fx = SpawnPrefab("collapse_small")
 		fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
 		fx:SetMaterial("wood")
@@ -37,6 +38,19 @@ local function OnPicked(inst, picker, loot)
 	end
 end
 
+local function OnSink(inst, data)
+	if inst.chest and inst.chest.components.container then
+		local pos = inst:GetPosition()
+		inst.chest.components.container:DropEverything(pos, true)
+		inst.chest.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS, pos)
+	end
+	inst.components.constructionsite:DropAllMaterials()
+	local fx = SpawnPrefab("collapse_small")
+	fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+	fx:SetMaterial("wood")
+	inst:Remove()
+end
+
 local function SetChest(inst, chest, burnt)
 	inst.chest = chest
 	if chest.components.workable then
@@ -48,7 +62,7 @@ local function SetChest(inst, chest, burnt)
 
 	if burnt then
 		inst.burnt = true
-		inst.AnimState:PlayAnimation("burnt")
+		inst.AnimState:PlayAnimation("collapsed_burnt")
 	end
 end
 
@@ -64,6 +78,15 @@ local function OnConstructed(inst, doer)
 			inst.chest:PushEvent("restoredfromcollapsed")
 		end
 		inst:Remove()
+	else
+		if inst.burnt then
+			inst.AnimState:PlayAnimation("collapsed_hit_burnt")
+			inst.AnimState:PushAnimation("collapsed_burnt", false)
+		else
+			inst.AnimState:PlayAnimation("collapsed_hit")
+			inst.AnimState:PushAnimation("collapsed_idle", false)
+		end
+		inst.SoundEmitter:PlaySound("dontstarve/wilson/pickup_wood")
 	end
 end
 
@@ -87,7 +110,7 @@ local function OnLoad(inst, data, newents)
 		end
 		if data.burnt then
 			inst.burnt = true
-			inst.AnimState:PlayAnimation("burnt")
+			inst.AnimState:PlayAnimation("collapsed_burnt")
 		end
 	end
 end
@@ -135,12 +158,14 @@ local function MakeCollapsedChest(name, build, bank)
 		inst.components.constructionsite:SetOnConstructedFn(OnConstructed)
 
 		inst:AddComponent("pickable")
-		inst.components.pickable.picksound = "dontstarve/wilson/pickup_reeds"
+		inst.components.pickable.picksound = "dontstarve/wilson/pickup_wood"
 		inst.components.pickable.onpickedfn = OnPicked
 		inst.components.pickable:SetUp(nil, 0)
 
 		inst:AddComponent("hauntable")
 		inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
+
+		inst:ListenForEvent("onsink", OnSink)
 
 		MakeSnowCovered(inst)
 

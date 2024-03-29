@@ -36,11 +36,18 @@ local throwfirelevels =
 
 local CLOSERANGE = 1
 
-local TARGETS_MUST = {"_health"}
-local TARGETS_ONEOF = { "_combat" }
-local TARGETS_CANT = { "INLIMBO", "invisible", "noattack", "notarget" }
+local TARGETS_MUST = { "_health", "_combat" }
+local TARGETS_CANT = { "INLIMBO", "invisible", "noattack", "notarget", "flight" }
 
-local FLAME_MUST = {"willow_shadow_flame"}
+local function TargetIsHostile(isplayer, source, target)
+	if source.HostileTest then
+		return source:HostileTest(target)
+	elseif isplayer and target.HostileToPlayerTest then
+		return target:HostileToPlayerTest(source)
+	else
+		return target:HasTag("hostile")
+	end
+end
 
 local function settarget(inst,target,life,source)
     local maxdeflect = 30
@@ -57,17 +64,35 @@ local function settarget(inst,target,life,source)
 			elseif target == nil or not source.components.combat:CanTarget(target) then
 				target = nil
 
+				local isplayer = source:HasTag("player")
+
 				local x, y, z = inst.Transform:GetWorldPosition()
-				local ents = TheSim:FindEntities(x, y, z, 20, TARGETS_MUST, TARGETS_CANT, TARGETS_ONEOF)
+				local ents = TheSim:FindEntities(x, y, z, 20, TARGETS_MUST, TARGETS_CANT)
 
                 if #ents > 0 then
+					--mimic playercontroller attack targeting
                     for i=#ents, 1, -1 do
                         local ent = ents[i]
-                        if source.TargetIsHostile and not source:TargetIsHostile(ent) then
-                            table.remove(ents,i)
-                        end
+						if not source.components.combat:CanTarget(ent) or
+							source.components.combat:IsAlly(ent)
+						then
+							table.remove(ents, i)
+						elseif isplayer and ent.HostileToPlayerTest and ent.components.shadowsubmissive and not ent:HostileToPlayerTest(source) then
+							--shadowsubmissive needs to ignore TargetIs() test,
+							--since they have you targeted even when not hostile
+							table.remove(ents, i)
+						elseif not ent.components.combat:TargetIs(source) then
+							if not TargetIsHostile(isplayer, source, ent) then
+								table.remove(ents, i)
+							elseif ent.components.follower then
+								local leader = ent.components.follower:GetLeader()
+								if leader and leader:HasTag("player") and not leader.components.combat:TargetIs(source) then
+									table.remove(ents, i)
+								end
+							end
+						end
                     end
-                end                                
+				end
 
                 if #ents > 0 then
 

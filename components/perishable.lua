@@ -291,7 +291,11 @@ function Perishable:Perish()
         local goop = SpawnPrefab(self.onperishreplacement)
         if goop ~= nil then
             if goop.components.stackable ~= nil and self.inst.components.stackable ~= nil then
-                goop.components.stackable:SetStackSize(self.inst.components.stackable.stacksize)
+				local stacksize = self.inst.components.stackable:StackSize()
+				if stacksize > goop.components.stackable.maxsize then
+					goop.components.stackable:SetIgnoreMaxSize(true)
+				end
+				goop.components.stackable:SetStackSize(stacksize)
             end
             local x, y, z = self.inst.Transform:GetWorldPosition()
             goop.Transform:SetPosition(x, y, z)

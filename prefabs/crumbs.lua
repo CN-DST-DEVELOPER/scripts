@@ -5,14 +5,6 @@ local assets =
     Asset("ANIM", "anim/cookie_crumbs.zip"),
 }
 
-local prefabs =
-{
-}
-
-local function perishfn(inst)
-	inst:Remove()
-end
-
 local function fn()
     local inst = CreateEntity()
 
@@ -58,9 +50,9 @@ local function fn()
     inst:AddComponent("perishable")
     inst.components.perishable:SetPerishTime(TUNING.PERISH_ONE_DAY)
     inst.components.perishable:StartPerishing()
-	inst.components.perishable.perishfn = perishfn
+	inst.components.perishable:SetOnPerishFn(inst.Remove)
 
     return inst
 end
 
-return Prefab("crumbs", fn, assets, prefabs)
+return Prefab("crumbs", fn, assets)

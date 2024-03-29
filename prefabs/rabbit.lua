@@ -423,6 +423,8 @@ local function fn()
 	--shadow_trap interaction
 	inst.has_nightmare_state = true
 	inst:ListenForEvent("ms_forcenightmarestate", OnForceNightmareState)
+    
+    inst:SetIncineratedSound(inst.sounds.scream)
 
     MakeFeedableSmallLivestock(inst, TUNING.RABBIT_PERISH_TIME, nil, OnDropped)
 

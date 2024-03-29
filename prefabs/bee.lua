@@ -240,6 +240,7 @@ local function commonfn(build, tags)
 
     MakeFeedableSmallLivestock(inst, TUNING.TOTAL_DAY_TIME*2, OnPickedUp, OnDropped)
 
+
     inst.buzzing = true
     inst.EnableBuzz = EnableBuzz
     inst.OnEntityWake = OnWake
@@ -286,6 +287,8 @@ local function workerbee()
     MakeHauntableChangePrefab(inst, "killerbee")
 	inst.components.hauntable.panicable = true
 
+    inst:SetIncineratedSound(inst.sounds.death)
+
     return inst
 end
 
@@ -311,6 +314,8 @@ local function killerbee()
 
     MakeHauntablePanic(inst)
     inst:ListenForEvent("spawnedfromhaunt", OnSpawnedFromHaunt)
+
+    inst:SetIncineratedSound(inst.sounds.death)
 
     return inst
 end

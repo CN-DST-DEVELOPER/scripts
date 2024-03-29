@@ -9,8 +9,16 @@ local function FuelTaken(inst, taker)
     end
 end
 
-local function onignite(inst)
+local function allanimalscanscream(inst)
     inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/livinglog_burn")
+end
+
+local function onignite(inst)
+    allanimalscanscream(inst)
+end
+
+local function oneaten(inst)
+    allanimalscanscream(inst)
 end
 
 local function fn()
@@ -63,6 +71,7 @@ local function fn()
     inst.components.repairer.boatrepairsound = "turnoftides/common/together/boat/repair_with_wood"
 
     inst:ListenForEvent("onignite", onignite)
+    inst:ListenForEvent("oneaten", oneaten)
 
     return inst
 end

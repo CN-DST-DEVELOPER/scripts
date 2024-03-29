@@ -880,7 +880,9 @@ ACTIONS.DROP.fn = function(act)
                 (act.invobject.components.inventoryitem ~= nil
                     and act.invobject.components.inventoryitem.droprandomdir)
                 or false,
-                act:GetActionPoint())
+				act:GetActionPoint(),
+				true -- <--keepoverstacked
+			)
         or nil
 end
 
@@ -2421,7 +2423,7 @@ ACTIONS.MURDER.fn = function(act)
     local murdered = act.invobject or act.target
     if murdered ~= nil and (murdered.components.health ~= nil or murdered.components.murderable ~= nil) then
         local x, y, z = act.doer.Transform:GetWorldPosition()
-        murdered.components.inventoryitem:RemoveFromOwner(true)
+		murdered = murdered.components.inventoryitem:RemoveFromOwner(true, true) or murdered
         murdered.Transform:SetPosition(x, y, z)
 
         if murdered.components.health ~= nil and murdered.components.health.murdersound ~= nil then

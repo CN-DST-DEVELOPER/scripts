@@ -798,6 +798,8 @@ local function fn()
     local _on_added_to_inventory = (yotc_carrat and yotc_on_inventory) or nil
     MakeFeedableSmallLivestock(inst, TUNING.CARRAT.PERISH_TIME, _on_added_to_inventory, on_dropped)
 
+    inst:SetIncineratedSound(inst.sounds.death)
+
     inst.GoToSubmerged = go_to_submerged
     inst.GoToEmerged = go_to_emerged
     inst.setbeefalocarratrat = setbeefalocarratrat

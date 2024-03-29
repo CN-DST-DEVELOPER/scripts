@@ -344,13 +344,13 @@ function InventoryItem:ChangeImageName(newname)
     self.inst:PushEvent("imagechange")
 end
 
-function InventoryItem:RemoveFromOwner(wholestack)
+function InventoryItem:RemoveFromOwner(wholestack, keepoverstacked)
     if self.owner == nil then
         return
     elseif self.owner.components.inventory ~= nil then
-        return self.owner.components.inventory:RemoveItem(self.inst, wholestack)
+		return self.owner.components.inventory:RemoveItem(self.inst, wholestack, nil, keepoverstacked)
     elseif self.owner.components.container ~= nil then
-        return self.owner.components.container:RemoveItem(self.inst, wholestack)
+		return self.owner.components.container:RemoveItem(self.inst, wholestack, nil, keepoverstacked)
     end
 end
 

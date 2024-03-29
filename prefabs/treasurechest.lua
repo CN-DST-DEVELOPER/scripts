@@ -245,9 +245,23 @@ end
 
 local function regular_Upgrade_OnHammered(inst, worker)
 	if regular_ShouldCollapse(inst) then
-		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
-		if not inst.components.container:IsEmpty() then
-			regular_ConvertToCollapsed(inst, true, false)
+		if TheWorld.Map:IsPassableAtPoint(inst.Transform:GetWorldPosition()) then
+			inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+			if not inst.components.container:IsEmpty() then
+				regular_ConvertToCollapsed(inst, true, false)
+				return
+			end
+		else
+			--sunk, drops more, but will lose the remainder
+			if inst.components.burnable ~= nil and inst.components.burnable:IsBurning() then
+				inst.components.burnable:Extinguish()
+			end
+			inst.components.lootdropper:DropLoot()
+			inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_EXCESS_STACKS_THRESHOLD)
+			local fx = SpawnPrefab("collapse_small")
+			fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+			fx:SetMaterial("wood")
+			inst:Remove()
 			return
 		end
 	end

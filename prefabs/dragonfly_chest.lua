@@ -87,9 +87,20 @@ end
 
 local function upgrade_onhammered(inst, worker)
 	if ShouldCollapse(inst) then
-		inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
-		if not inst.components.container:IsEmpty() then
-			ConvertToCollapsed(inst, true)
+		if TheWorld.Map:IsPassableAtPoint(inst.Transform:GetWorldPosition()) then
+			inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS)
+			if not inst.components.container:IsEmpty() then
+				ConvertToCollapsed(inst, true)
+				return
+			end
+		else
+			--sunk, drops more, but will lose the remainder
+			inst.components.lootdropper:DropLoot()
+			inst.components.container:DropEverythingUpToMaxStacks(TUNING.COLLAPSED_CHEST_EXCESS_STACKS_THRESHOLD)
+			local fx = SpawnPrefab("collapse_small")
+			fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+			fx:SetMaterial("wood")
+			inst:Remove()
 			return
 		end
 	end

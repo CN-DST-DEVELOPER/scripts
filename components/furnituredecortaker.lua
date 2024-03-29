@@ -70,7 +70,7 @@ end
 
 function FurnitureDecorTaker:AcceptDecor(item, giver)
     local stackable = item.components.stackable
-    if stackable then
+	if stackable and stackable:IsStack() then
         item = stackable:Get()
     else
         item.components.inventoryitem:RemoveFromOwner(true)
