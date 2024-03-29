@@ -37,7 +37,7 @@ local function DropBundle(inst, items)
             items[i] = SpawnPrefab(v)
         else
             items[i] = SpawnPrefab(v[1])
-            items[i].components.stackable.stacksize = v[2]
+			items[i].components.stackable:SetStackSize(v[2])
         end
     end
 

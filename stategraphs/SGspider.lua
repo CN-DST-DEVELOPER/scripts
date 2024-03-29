@@ -106,7 +106,7 @@ local events =
 }
 
 local function SoundPath(inst, event)
-    return inst:soundpath(event)
+    return inst:SoundPath(event)
 end
 
 local states =

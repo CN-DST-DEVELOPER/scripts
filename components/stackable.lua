@@ -76,7 +76,7 @@ function Stackable:OnSave()
 end
 
 function Stackable:OnLoad(data)
-    self.stacksize = data.stack or self.stacksize
+	self.stacksize = math.min(data.stack or self.stacksize, MAXUINT)
     self.inst:PushEvent("stacksizechange", {stacksize = self.stacksize, oldstacksize=1})
 end
 
@@ -86,7 +86,7 @@ end
 
 function Stackable:SetStackSize(sz)
     local old_size = self.stacksize
-    self.stacksize = sz
+	self.stacksize = math.min(sz, MAXUINT)
     self.inst:PushEvent("stacksizechange", {stacksize = sz, oldstacksize=old_size})
 end
 
@@ -179,7 +179,7 @@ function Stackable:Put(item, source_pos)
         end
 
         _src_pos = source_pos
-        self.stacksize = newsize
+		self.stacksize = math.min(newsize, MAXUINT)
         _src_pos = nil
         self.inst:PushEvent("stacksizechange", {stacksize = self.stacksize, oldstacksize=oldsize, src_pos = source_pos})
     end

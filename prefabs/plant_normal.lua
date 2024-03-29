@@ -84,7 +84,7 @@ local function onburnt(inst)
         end
 
         if inst.components.stackable ~= nil and product.components.stackable ~= nil then
-            product.components.stackable.stacksize = math.min(product.components.stackable.maxsize, inst.components.stackable.stacksize)
+			product.components.stackable:SetStackSize(math.min(product.components.stackable.maxsize, inst.components.stackable.stacksize))
         end
 
         product.Transform:SetPosition(inst.Transform:GetWorldPosition())

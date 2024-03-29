@@ -320,7 +320,7 @@ local function dogifting(inst)
                     local item = SpawnPrefab(v.prefab)
                     if item ~= nil then
                         if item.components.stackable ~= nil then
-                            item.components.stackable.stacksize = math.max(1, v.stack or 1)
+							item.components.stackable:SetStackSize(math.max(1, v.stack or 1))
                         end
                         table.insert(items, item)
                     end

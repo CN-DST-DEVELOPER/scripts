@@ -21,7 +21,7 @@ local function DropRewards(inst)
 		num_rewards = 3 + math.ceil(num_rewards * 5)
 
 		local tickets = SpawnPrefab("carnival_prizeticket")
-		tickets.components.stackable.stacksize = num_rewards
+		tickets.components.stackable:SetStackSize(num_rewards)
 		tickets.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
 		local token = SpawnPrefab("carnival_gametoken")

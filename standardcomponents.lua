@@ -35,7 +35,7 @@ function DefaultBurntFn(inst)
         ash.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
         if inst.components.stackable ~= nil then
-            ash.components.stackable.stacksize = math.min(ash.components.stackable.maxsize, inst.components.stackable.stacksize)
+			ash.components.stackable:SetStackSize(math.min(ash.components.stackable.maxsize, inst.components.stackable.stacksize))
         end
     end
 
