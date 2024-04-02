@@ -1862,10 +1862,8 @@ end
 
 -- NOTES(JBK): Controller placer AKA should this placer move to a better spot so controllers can still place it.
 function ControllerPlacer_Boat_SpotFinder_Internal(placer, player, ox, oy, oz)
-    if placer:TestCanBuild() then
-        return
-    end
     local x, y, z = player.Transform:GetWorldPosition()
+    x, z = math.floor(x), math.floor(z)
     local rotation = player.Transform:GetRotation() * DEGREES
     -- Conical sweep.
     local SWEEPS = 10
@@ -1873,12 +1871,12 @@ function ControllerPlacer_Boat_SpotFinder_Internal(placer, player, ox, oy, oz)
     for r = placer.offset, 1, -.5 do
         for i = 1, SWEEPS do
             local deviation = (i / SWEEPS) * CONE_ANGLE * DEGREES
-            local tx, tz = x + r * math.cos(rotation + deviation), z - r * math.sin(rotation + deviation)
+            local tx, tz = math.floor(x + r * math.cos(rotation + deviation)), math.floor(z - r * math.sin(rotation + deviation))
             placer.inst.Transform:SetPosition(tx, 0, tz)
             if placer:TestCanBuild() then
                 return
             end
-            tx, tz = x + r * math.cos(rotation - deviation), z - r * math.sin(rotation - deviation)
+            tx, tz = math.floor(x + r * math.cos(rotation - deviation)), math.floor(z - r * math.sin(rotation - deviation))
             placer.inst.Transform:SetPosition(tx, 0, tz)
             if placer:TestCanBuild() then
                 return

@@ -315,6 +315,10 @@ local function getmurdersound(inst, doer)
     return (IsForcedNightmare(inst) or IsCrazyGuy(doer)) and beardsounds.hurt or inst.sounds.hurt
 end
 
+local function getincineratesound(inst, doer)
+    return (IsForcedNightmare(inst) or IsCrazyGuy(doer)) and beardsounds.scream or inst.sounds.scream
+end
+
 local function drawimageoverride(inst, viewer)
     return (IsForcedNightmare(inst) or IsCrazyGuy(viewer)) and "beard_monster"
 end
@@ -392,6 +396,7 @@ local function fn()
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.RABBIT_HEALTH)
     inst.components.health.murdersound = getmurdersound
+    inst.incineratesound = getincineratesound
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLootSetupFn(LootSetupFunction)
@@ -423,8 +428,6 @@ local function fn()
 	--shadow_trap interaction
 	inst.has_nightmare_state = true
 	inst:ListenForEvent("ms_forcenightmarestate", OnForceNightmareState)
-    
-    inst:SetIncineratedSound(inst.sounds.scream)
 
     MakeFeedableSmallLivestock(inst, TUNING.RABBIT_PERISH_TIME, nil, OnDropped)
 

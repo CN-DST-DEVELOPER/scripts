@@ -850,6 +850,18 @@ local COMPONENT_ACTIONS =
                 table.insert(actions, ACTIONS.TAKEITEM)
             end
         end,
+
+        incinerator = function(inst, doer, actions, right)
+            if not inst:HasTag("burnt") and not (doer.replica.rider ~= nil and doer.replica.rider:IsRiding()) then
+                if right and 
+                    inst.replica.container ~= nil and
+                    not inst.replica.container:IsEmpty() and
+                    inst.replica.container:IsOpenedBy(doer)
+                then
+                    table.insert(actions, ACTIONS.INCINERATE)
+                end
+            end
+        end,
     },
 
     USEITEM = --args: inst, doer, target, actions, right

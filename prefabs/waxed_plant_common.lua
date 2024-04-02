@@ -99,6 +99,8 @@ local function Disappear(inst)
 
     RemovePhysicsColliders(inst)
 
+    inst.SoundEmitter:PlaySound("qol1/wax_spray/fade")
+
     local multcolor = inst.AnimState:GetMultColour()
 
     inst:StartThread(function()
@@ -116,7 +118,7 @@ local function Disappear(inst)
             inst.AnimState:SetMultColour(color, color, color, alpha)
 
             if inst.children ~= nil then
-                for _, child in inst.children do
+                for child, _ in pairs(inst.children) do
                     if child.AnimState ~= nil then
                         child.AnimState:SetErosionParams(0.2, 0.2, n)
                         child.AnimState:SetMultColour(color, color, color, alpha)
@@ -254,6 +256,7 @@ local function CreateWaxedPlant(data)
 
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
+        inst.entity:AddSoundEmitter()
         inst.entity:AddMiniMapEntity()
         inst.entity:AddNetwork()
 
@@ -423,7 +426,7 @@ local function CreateDugWaxedPlant(data)
         inst.plantprefab = data.name.."_waxed"
 
         -- NOTES(DiogoW): Not using inst.nameoverride because we are using inspectable.nameoverride.
-        inst.displayname = string.upper(data.nameoverride or data.name)
+        inst.displayname = string.upper(data.nameoverride or parentprefab)
         inst.displaynamefn = GetDisplayNameFn
 
         inst.entity:SetPristine()

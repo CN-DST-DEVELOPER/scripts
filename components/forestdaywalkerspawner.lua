@@ -117,6 +117,13 @@ function ForestDayWalkerSpawner:OnSave()
         refs = {daywalker_GUID}
     end
 
+    if self.bigjunk ~= nil then
+        local bigjunk_GUID = self.bigjunk.GUID
+        data.bigjunk_GUID = bigjunk_GUID
+        refs = refs or {}
+        table.insert(refs, bigjunk_GUID)
+    end
+
     return data, refs
 end
 
@@ -137,6 +144,13 @@ function ForestDayWalkerSpawner:LoadPostPass(ents, data)
         local daywalker = ents[daywalker_GUID]
         if daywalker ~= nil and daywalker.entity ~= nil then
             self:WatchDaywalker(daywalker.entity)
+        end
+    end
+    local bigjunk_GUID = data.bigjunk_GUID
+    if bigjunk_GUID ~= nil then
+        local bigjunk = ents[bigjunk_GUID]
+        if bigjunk ~= nil and bigjunk.entity ~= nil then
+            self.bigjunk = bigjunk.entity
         end
     end
 end

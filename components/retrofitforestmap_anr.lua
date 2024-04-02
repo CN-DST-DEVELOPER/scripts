@@ -1097,7 +1097,7 @@ local function Junkyard_NewContent_Retrofitting()
 		return false
 	end
     local is_valid_NO_DOCKS = function(x, y, z, prefab)
-        return not TheWorld.Map:IsDockAtPoint(x, y, z)
+        return TheWorld.Map:IsLandTileAtPoint(x, y, z) and not TheWorld.Map:IsDockAtPoint(x, y, z)
     end
 
     local NO_JUNK_FLAG = {} -- NOTES(JBK): Using a table here in case RetrofitNewContentPrefab changes and no one updates this callback for a unique variable.

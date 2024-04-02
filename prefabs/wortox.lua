@@ -83,6 +83,9 @@ local function OnStarvedTrapSouls(inst, data)
 end
 
 local function OnMurdered(inst, data)
+    if data.incinerated then
+        return -- NOTES(JBK): Do not give souls for this.
+    end
     local victim = data.victim
     if victim ~= nil and
         victim.nosoultask == nil and

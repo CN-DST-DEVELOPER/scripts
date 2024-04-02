@@ -73,7 +73,7 @@ local states =
         name = "idle",
         tags = { "idle" },
 
-        onenter = function(inst)
+        onenter = function(inst, busy)
             -- Safeguard.
             if inst.components.fueled:IsEmpty() then
                 inst.sg:GoToState("idle_broken")
@@ -81,17 +81,27 @@ local states =
                 return
             end
 
+            if busy then
+                inst.sg:AddStateTag("busy")
+            end
+
             inst.components.fueled:StopConsuming()
-            inst.components.locomotor:Stop()
+            inst.components.locomotor:StopMoving()
 
             inst.SoundEmitter:KillSound(WALK_SOUNDNAME)
 
             TryPlayingNeutralVocalizationSound(inst)
 
-            inst.AnimState:PlayAnimation("idle", true)
+            if not inst.AnimState:IsCurrentAnimation("idle") then
+                inst.AnimState:PlayAnimation("idle", true)
+            end
+
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
 
-        events = idle_on_animover,
+        ontimeout = function(inst)
+            inst.sg:GoToState("idle")
+        end,
     },
 
     State{

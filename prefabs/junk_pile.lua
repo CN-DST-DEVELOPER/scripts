@@ -111,6 +111,14 @@ end
 
 local JUNK_MOB_TAGS = { "junkmob" }
 
+local function SpawnLootForWorkedLevels(inst, worker, workleft, numwork)
+	local new_level = math.ceil(workleft)
+	local old_level = math.ceil(math.min(workleft + numwork, TUNING.JUNK_PILE_STAGES))
+	for i = new_level, old_level - 1 do
+		inst:SpawnLoot(worker)
+	end
+end
+
 local function OnWork(inst, worker, workleft, numwork)
 	local x, y, z
 	local workerisjunkmob = worker:HasTag("junkmob")
@@ -149,7 +157,7 @@ local function OnWork(inst, worker, workleft, numwork)
     if workleft <= 0 then
 		SpawnPrefab("junk_break_fx").Transform:SetPosition(inst.Transform:GetWorldPosition())
 		if not workerisjunkmob then
-			inst:SpawnLoot(worker)
+			SpawnLootForWorkedLevels(inst, worker, workleft, numwork)
 		end
         inst:Remove()
         return
@@ -159,20 +167,7 @@ local function OnWork(inst, worker, workleft, numwork)
 	inst:Shake(workleft)
 
 	if not workerisjunkmob then
-		local levels_crossed = numwork
-
-		if levels_crossed < 1 then
-			local new_level = math.ceil(workleft)
-			if math.ceil(workleft + numwork) > new_level then
-				levels_crossed = 1
-			end
-		end
-
-		if math.floor(levels_crossed) > 0 then
-			for i=1, levels_crossed do
-				inst:SpawnLoot(worker)
-			end
-		end
+		SpawnLootForWorkedLevels(inst, worker, workleft, numwork)
 	end
 end
 
@@ -240,9 +235,8 @@ local function SpawnLoot(inst, digger, nopickup)
             item.components.perishable:SetPercent(LOOT_PERISHABLE_PERCENT)
         end
 
-        if not nopickup and digger.components.inventory ~= nil then
+		if not nopickup and digger.components.inventory and digger.components.inventory:IsOpenedBy(digger) then
             digger.components.inventory:GiveItem(item, nil, inst:GetPosition())
-
         else
             inst.components.lootdropper:FlingItem(item)
         end

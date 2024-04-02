@@ -46,7 +46,7 @@ local function checkforcrowding(inst)
     end
 end
 
-local AREAATTACK_EXCLUDETAGS = { "leif", "spore", "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost", "shadow", "brightmare", "moon_spore_protection" }
+local AREAATTACK_EXCLUDETAGS = { "spore", "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost", "shadow", "brightmare", "moon_spore_protection" }
 local function onpopped(inst)
     inst.SoundEmitter:PlaySound("dontstarve/common/balloon_pop")
     inst.components.combat:DoAreaAttack(inst, TUNING.MOONSPORE_ATTACK_RANGE, nil, nil, nil, AREAATTACK_EXCLUDETAGS)

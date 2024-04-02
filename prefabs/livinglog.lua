@@ -3,14 +3,16 @@ local assets =
     Asset("ANIM", "anim/livinglog.zip"),
 }
 
+local SOUND_TORMENTED_SCREAM = "dontstarve/creatures/leif/livinglog_burn"
+
 local function FuelTaken(inst, taker)
     if taker ~= nil and taker.SoundEmitter ~= nil then
-        taker.SoundEmitter:PlaySound("dontstarve/creatures/leif/livinglog_burn")
+        taker.SoundEmitter:PlaySound(SOUND_TORMENTED_SCREAM)
     end
 end
 
 local function allanimalscanscream(inst)
-    inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/livinglog_burn")
+    inst.SoundEmitter:PlaySound(SOUND_TORMENTED_SCREAM)
 end
 
 local function onignite(inst)
@@ -72,6 +74,7 @@ local function fn()
 
     inst:ListenForEvent("onignite", onignite)
     inst:ListenForEvent("oneaten", oneaten)
+    inst.incineratesound = SOUND_TORMENTED_SCREAM -- NOTES(JBK): Pleasant orchestra.
 
     return inst
 end

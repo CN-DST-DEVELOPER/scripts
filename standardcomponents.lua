@@ -1643,5 +1643,3 @@ function MakeWaxablePlant(inst)
     waxable:SetWaxfn(WAXED_PLANTS.WaxPlant)
     waxable:SetNeedsSpray()
 end
-
---------------------------------------------------------------------------

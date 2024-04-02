@@ -645,6 +645,7 @@ local PREFABS =
     ["wx78_scanner_item"] = true,
     ["turf_archive"] = true,
     ["red_mushroomhat"] = true,
+    ["moon_mushroomhat"] = true,
     ["winter_ornament_boss_krampus"] = true,
     ["wx78module_bee"] = true,
     ["sewing_kit"] = true,

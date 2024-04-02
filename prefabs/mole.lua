@@ -269,7 +269,6 @@ local function fn()
     inst:ListenForEvent("molehill_dug_up", OnHomeDugUp)
 
     MakeFeedableSmallLivestock(inst, TUNING.TOTAL_DAY_TIME*2, onpickup, ondrop)
-    inst:SetIncineratedSound("dontstarve_DLC001/creatures/mole/death")
 
     inst:DoTaskInTime(inst.make_home_delay, TestForMakeHome)
 

@@ -541,6 +541,10 @@ ACTIONS =
     -- Rifts
     SCYTHE = Action({ rmb=true, distance=1.8, rangecheckfn=DefaultRangeCheck, invalid_hold_action=true }),
 	SITON = Action({invalid_hold_action = true,}),
+
+    -- Rifts / Meta QoL
+
+    INCINERATE = Action({ priority=1, mount_valid=true }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -1057,17 +1061,38 @@ ACTIONS.CHANGE_TACKLE.fn = function(act)
 			return true
 		end
 	else
-		local targetslot = act.invobject.components.inventoryitem:GetSlotNum() or equipped.components.container:GetSpecificSlotForItem(act.invobject)
+		local targetslot = equipped.components.container:GetSpecificSlotForItem(act.invobject)
 		if targetslot == nil then
 			return false
 		end
 
-        local owner = act.invobject.components.inventoryitem.owner
-        local container = owner and (owner.components.container or owner.components.inventory) or nil
-        if container ~= nil then
-            container:MoveItemFromAllOfSlot(targetslot, equipped, act.doer)
-        end
-        return true
+		local cur_item = equipped.components.container:GetItemInSlot(targetslot)
+		if cur_item == nil then
+			local item = act.invobject.components.inventoryitem:RemoveFromOwner(equipped.components.container.acceptsstacks, true)
+			equipped.components.container:GiveItem(item, targetslot, nil, false)
+		elseif equipped.components.container.acceptsstacks and act.invobject.prefab == cur_item.prefab and act.invobject.skinname == cur_item.skinname
+			and not (cur_item.components.stackable and cur_item.components.stackable:IsFull())
+		then
+			local item = act.invobject.components.inventoryitem:RemoveFromOwner(equipped.components.container.acceptsstacks, true)
+			if not equipped.components.container:GiveItem(act.invobject, targetslot, nil, false) then
+				if item.prevcontainer then
+					item.prevcontainer.inst.components.container:GiveItem(item, item.prevslot)
+				else
+					act.doer.components.inventory:GiveItem(item, item.prevslot)
+				end
+			end
+			return true
+		elseif (act.invobject.prefab ~= cur_item.prefab and (act.invobject.skinname == nil or act.invobject.skinname ~= cur_item.skinname)) or cur_item.components.perishable then
+			local item = act.invobject.components.inventoryitem:RemoveFromOwner(equipped.components.container.acceptsstacks, true)
+			local old_item = equipped.components.container:RemoveItemBySlot(targetslot)
+			if not equipped.components.container:GiveItem(item, targetslot, nil, false) then
+				act.doer.components.inventory:GiveItem(item, nil, act.doer:GetPosition())
+			end
+			if old_item then
+				act.doer.components.inventory:GiveItem(old_item, nil, act.doer:GetPosition())
+			end
+			return true
+		end
 	end
 	return false
 end
@@ -4881,4 +4906,12 @@ end
 
 ACTIONS.USE_WEREFORM_SKILL.fn = function(act)
     return act.doer ~= nil and act.doer:UseWereFormSkill(act)
+end
+
+ACTIONS.INCINERATE.fn = function(act)
+    if act.target.components.incinerator ~= nil then
+        return act.target.components.incinerator:Incinerate(act.doer)
+    end
+
+    return false
 end

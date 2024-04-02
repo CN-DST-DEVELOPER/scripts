@@ -68,8 +68,8 @@ local function OnOriginDirty(inst)
     end
 end
 
-local function OnEnableHelper(inst, enabled)
-    if enabled and not inst:HasTag("broken") then
+local function OnEnableHelper(inst, enabled, recipename, placerinst)
+    if enabled and recipename ~= nil and not inst:HasTag("broken") then
         if inst.helper == nil then
             inst.helper = CreateHelperRadiusCircle()
 
@@ -128,7 +128,7 @@ local function DoOnDroppedLogic(inst)
     inst:UpdateSpawnPoint()
     inst:OnInventoryChange()
 
-    inst.sg:GoToState(inst.components.fueled:IsEmpty() and "idle_broken" or "idle")
+    inst.sg:GoToState(inst.components.fueled:IsEmpty() and "idle_broken" or "idle", true)
 end
 
 local function OnDropped(inst)
@@ -137,13 +137,17 @@ local function OnDropped(inst)
 end
 
 local function OnPickup(inst, pickupguy, src_pos)
-    inst.sg:GoToState("idle")
+    inst.sg:GoToState("idle", true)
 
     if inst.brain ~= nil then
         inst.brain:UnignoreItem()
     end
 
     inst.components.fueled:StopConsuming()
+    
+    inst.components.locomotor:Stop()
+    inst.components.locomotor:Clear()
+    inst:ClearBufferedAction()
 
     inst.SoundEmitter:KillAllSounds()
 
@@ -225,9 +229,8 @@ end
 
 ---------------------------------------------------------------------------------------------------
 
-
 local CONTAINER_MUST_TAGS = { "_container" }
-local CONTAINER_CANT_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
+local CONTAINER_CANT_TAGS = { "portablestorage", "FX", "NOCLICK", "DECOR", "INLIMBO" }
 
 local function FindContainerWithItem(inst, item, count)
     count = count or 0
@@ -239,6 +242,8 @@ local function FindContainerWithItem(inst, item, count)
 
     for i, ent in ipairs(ents) do
         if ent.components.container ~= nil and
+            ent.components.container.type == "chest" and
+            ent.components.container.canbeopened and
             ent.components.container:Has(item.prefab, 1) and
             ent.components.container:CanAcceptCount(item, stack_maxsize) > count and
             ent:IsOnPassablePoint() and

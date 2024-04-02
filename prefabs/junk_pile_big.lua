@@ -97,9 +97,8 @@ local function SpawnLoot(inst, digger, nopickup)
             item.components.perishable:SetPercent(LOOT_PERISHABLE_PERCENT)
         end
 
-        if not nopickup and digger.components.inventory ~= nil then
+		if not nopickup and digger.components.inventory and digger.components.inventory:IsOpenedBy(digger) then
             digger.components.inventory:GiveItem(item, nil, inst:GetPosition())
-
         else
             inst.components.lootdropper:FlingItem(item)
         end
@@ -430,7 +429,12 @@ end
 local function OnSave(inst, data)
 	data.variations = inst.variations
 	data.daywalker_side = inst.daywalker_side
-	data.daywalker_state = inst.daywalker_state
+	if inst.daywalker_state then
+		data.daywalker_state = inst.daywalker_state
+		if inst.daywalker and inst.daywalker.components.health and inst.daywalker.components.health:IsHurt() then
+			data.daywalker_hp = inst.daywalker.components.health:GetPercent()
+		end
+	end
 end
 
 local function OnLoad(inst, data)
@@ -443,6 +447,9 @@ local function OnLoad(inst, data)
 			local state = data.daywalker_state
 			if state == nil or state == 1 or state == 2 then
 				spawn_daywalker(inst, side, state)
+				if data.daywalker_hp and inst.daywalker and inst.daywalker.components.health then
+					inst.daywalker.components.health:SetPercent(data.daywalker_hp)
+				end
 			end
 		end
 	end

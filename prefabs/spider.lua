@@ -724,7 +724,7 @@ local function create_common(bank, build, tag, common_init, extra_data)
     
     inst.SoundPath = SoundPath
 
-    inst:SetIncineratedSound(SoundPath(inst, "die"))
+    inst.incineratesound = SoundPath(inst, "die")
 
     inst.build = build
     inst.SetHappyFace = (extra_data and extra_data.SetHappyFaceFn) or SetHappyFace

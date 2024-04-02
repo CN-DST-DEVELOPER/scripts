@@ -49,8 +49,12 @@ end
 
 local function toground(inst)
     if inst._owner ~= nil then
-        inst._owner:RemoveTag("nightmaretracker")
         inst._owner:RemoveEventCallback("onremove", toground, inst)
+
+        if inst._owner.components.inventory == nil or not inst._owner.components.inventory:Has(inst.prefab, 1) then
+            inst._owner:RemoveTag("nightmaretracker")
+        end
+
         inst._owner = nil
     end
 end

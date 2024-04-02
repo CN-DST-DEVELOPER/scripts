@@ -97,6 +97,7 @@ local function fn()
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.LIGHTCRAB_HEALTH)
     inst.components.health.murdersound = "monkeyisland/lightcrab/hit"
+    inst.incineratesound = "monkeyisland/lightcrab/death"
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper.numrandomloot = 1
@@ -118,7 +119,6 @@ local function fn()
     MakeHauntablePanic(inst)
 
     MakeFeedableSmallLivestock(inst, TUNING.LIGHTCRAB_PERISH_TIME, nil, OnDropped)
-    inst:SetIncineratedSound("monkeyisland/lightcrab/death")
 
     return inst
 end

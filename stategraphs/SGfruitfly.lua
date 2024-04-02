@@ -101,6 +101,10 @@ local states=
 			StartFlap(inst)
 		end,
 
+		onexit = function(inst)
+			inst:ClearBufferedAction()
+		end,
+
 		timeline =
 		{
 			TimeEvent(77 * FRAMES, function(inst)

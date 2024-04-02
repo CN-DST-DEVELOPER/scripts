@@ -1706,6 +1706,7 @@ local states =
 		timeline =
 		{
 			FrameEvent(6, DoFootstep),
+			--FrameEvent(7, DoFootstepAOE), --bumped to start of tackle_loop
 		},
 
 		events =
@@ -1733,7 +1734,7 @@ local states =
 		onenter = function(inst, target)
 			inst.AnimState:PlayAnimation("tackle", true)
 			inst:StartAttackCooldown()
-			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength() * 3)
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength() * 3) --16 * 3
 			inst.sg.statemem.target = target
 			inst.sg.statemem.targets = {}
 			inst.sg.statemem.ignoreblock = true --for first few frames
@@ -1788,16 +1789,54 @@ local states =
 					targets = inst.sg.statemem.targets,
 					hit = inst.sg.statemem.hit,
 				})
+				return
+			end
+
+			if inst.sg.statemem.trample then
+				inst.sg.statemem.trample = nil
+				DoFootstepAOE(inst)
 			end
 		end,
 
 		timeline =
 		{
+			FrameEvent(0, DoFootstepAOE), --from tackle_pre
+
+			--loop 1
 			FrameEvent(7, DoFootstep),
 			FrameEvent(8, function(inst)
 				inst.sg.statemem.ignoreblock = nil
+				inst.sg.statemem.trample = true
 			end),
 			FrameEvent(15, DoFootstep),
+			FrameEvent(16, function(inst)
+				inst.sg.statemem.trample = true
+				DoFootstepAOE(inst)
+			end),
+
+			--loop 2
+			FrameEvent(23, DoFootstep),
+			FrameEvent(24, function(inst)
+				inst.sg.statemem.ignoreblock = nil
+				inst.sg.statemem.trample = true
+			end),
+			FrameEvent(31, DoFootstep),
+			FrameEvent(32, function(inst)
+				inst.sg.statemem.trample = true
+				DoFootstepAOE(inst)
+			end),
+
+			--loop 3
+			FrameEvent(39, DoFootstep),
+			FrameEvent(40, function(inst)
+				inst.sg.statemem.ignoreblock = nil
+				inst.sg.statemem.trample = true
+			end),
+			FrameEvent(47, DoFootstep),
+			FrameEvent(48, function(inst)
+				inst.sg.statemem.trample = true
+				DoFootstepAOE(inst)
+			end),
 		},
 
 		ontimeout = function(inst)

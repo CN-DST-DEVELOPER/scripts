@@ -1015,6 +1015,8 @@ STRINGS =
             BEAVER = "Tail Slap",
             GOOSE = "Takeoff",
         },
+
+        INCINERATE = "Destroy",
     },
 
     -- PC controls get hex ranges EE90xx to EE9Fxx
@@ -8384,7 +8386,6 @@ STRINGS.UI =
         WHACK = "Whack",
         HUNGRY = "Hungry",
         STARVING = "Starving",
-        DESTROY = "Destroy",
         DEATH_PET_NAME = "%s's %s", --e.g. "Vito's Cat"
         DEATH_ANNOUNCEMENT_1 = "was killed by",
         DEATH_ANNOUNCEMENT_2_MALE = ". He became a spooky ghost!",

@@ -1408,10 +1408,10 @@ params.dragonflyfurnace =
     {
         slotpos =
         {
-            Vector3(-37.5, 32 + 4, 0),
-            Vector3(37.5, 32 + 4, 0),
+            Vector3(-37.5,   32 + 4,  0),
+            Vector3( 37.5,   32 + 4,  0),
             Vector3(-37.5, -(32 + 4), 0),
-            Vector3(37.5, -(32 + 4), 0),
+            Vector3( 37.5, -(32 + 4), 0),
         },
         slotbg =
         {
@@ -1426,7 +1426,7 @@ params.dragonflyfurnace =
         side_align_tip = 120,
         buttoninfo =
         {
-            text = STRINGS.UI.HUD.DESTROY,
+            text = STRINGS.ACTIONS.INCINERATE,
             position = Vector3(0, -100, 0),
         }
     },
@@ -1434,17 +1434,14 @@ params.dragonflyfurnace =
 }
 
 function params.dragonflyfurnace.itemtestfn(container, item, slot)
-    return not item:HasOneOfTags("irreplaceable", "_container", "bundle")
+    return not item:HasTag("irreplaceable")
 end
 
 function params.dragonflyfurnace.widget.buttoninfo.fn(inst, doer)
     if inst.components.container ~= nil then
-        inst.components.container:DestroyContentsConditionally(inst.ShouldIncinerateItem)
-        if inst.OnContentsDestroyed ~= nil then
-            inst:OnContentsDestroyed()
-        end
+        BufferedAction(doer, inst, ACTIONS.INCINERATE):Do()
     elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
-        SendRPCToServer(RPC.DoWidgetButtonAction, nil, inst)
+        SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.INCINERATE.code, inst, ACTIONS.INCINERATE.mod_name)
     end
 end
 

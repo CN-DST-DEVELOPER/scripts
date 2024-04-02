@@ -257,19 +257,24 @@ function Container:IsSideWidget()
     return self.issidewidget
 end
 
-function Container:DestroyContents()
+function Container:DestroyContents(onpredestroyitemcallbackfn)
     for k = 1, self.numslots do
         local item = self:RemoveItemBySlot(k)
         if item ~= nil then
-            item:Remove()
+            if onpredestroyitemcallbackfn ~= nil then
+                onpredestroyitemcallbackfn(self.inst, item)
+            end
+            if item:IsValid() then
+                item:Remove()
+            end
         end
     end
 end
 
-function Container:DestroyContentsConditionally(filterfn)
+function Container:DestroyContentsConditionally(filterfn, onpredestroyitemcallbackfn)
     if filterfn == nil then
         -- NOTES(JBK): Revert to unconditionally.
-        self:DestroyContents()
+        self:DestroyContents(onpredestroyitemcallbackfn)
         return
     end
 
@@ -278,7 +283,12 @@ function Container:DestroyContentsConditionally(filterfn)
         if testitem and filterfn(self.inst, testitem) then
             local item = self:RemoveItemBySlot(k)
             if item ~= nil then
-                item:Remove()
+                if onpredestroyitemcallbackfn ~= nil then
+                    onpredestroyitemcallbackfn(self.inst, item)
+                end
+                if item:IsValid() then
+                    item:Remove()
+                end
             end
         end
     end

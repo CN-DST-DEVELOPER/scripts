@@ -287,7 +287,7 @@ local function workerbee()
     MakeHauntableChangePrefab(inst, "killerbee")
 	inst.components.hauntable.panicable = true
 
-    inst:SetIncineratedSound(inst.sounds.death)
+    inst.incineratesound = inst.sounds.death
 
     return inst
 end
@@ -315,7 +315,7 @@ local function killerbee()
     MakeHauntablePanic(inst)
     inst:ListenForEvent("spawnedfromhaunt", OnSpawnedFromHaunt)
 
-    inst:SetIncineratedSound(inst.sounds.death)
+    inst.incineratesound = inst.sounds.death
 
     return inst
 end

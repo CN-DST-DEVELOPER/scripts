@@ -1821,6 +1821,10 @@ local states =
 			FrameEvent(2, function(inst) inst.SoundEmitter:PlaySound("meta3/sharkboi/popup") end),
 			FrameEvent(3, DoDiggingShake),
 			FrameEvent(4, function(inst)
+				if ShouldBeDefeated(inst) then
+					inst.sg:GoToState("dive_dig_hit")
+					return
+				end
 				inst.sg:AddStateTag("noattack")
 				inst.sg:AddStateTag("temp_invincible")
 				ToggleOffAllObjectCollisions(inst)

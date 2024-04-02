@@ -95,7 +95,7 @@ local function _CanBeOpened(inst)
     inst.components.container.canbeopened = true
 end
 
-local function OnContentsDestroyed(inst)
+local function OnIncinerateItems(inst)
     inst.AnimState:PlayAnimation("incinerate")
     inst.AnimState:PushAnimation("hi", true)
 
@@ -113,12 +113,12 @@ local function ShouldIncinerateItem(inst, item)
     -- NOTES(JBK): Fruitcake hack. You think you can escape this so easily?
     if item.prefab == "winter_food4" then
         incinerate = false
+    elseif item:HasTag("irreplaceable") then
+        incinerate = false
+    elseif item.components.container ~= nil and not item.components.container:IsEmpty() then
+        incinerate = false
     end
 
-    if incinerate == true then
-        item:PushEvent("onincinerated", {incinerator=inst})
-    end
-    
     return incinerate
 end
 
@@ -165,10 +165,7 @@ local function fn()
         return inst
     end
 
-    inst.OnContentsDestroyed = OnContentsDestroyed
-    inst.ShouldIncinerateItem = ShouldIncinerateItem
-
-    inst.scrapbook_anim = "hi" -- NOTES(JBK): Hey.
+    inst.scrapbook_anim = "hi" -- NOTES(JBK): Hey. NOTES(DiogoW): Hello :)
 
     -----------------------
     inst:AddComponent("workable")
@@ -180,6 +177,11 @@ local function fn()
     -----------------------
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("dragonflyfurnace")
+
+    -----------------------
+    inst:AddComponent("incinerator")
+    inst.components.incinerator:SetOnIncinerateFn(OnIncinerateItems)
+    inst.components.incinerator:SetShouldIncinerateItemFn(ShouldIncinerateItem)
 
     -----------------------
     inst:AddComponent("cooker")

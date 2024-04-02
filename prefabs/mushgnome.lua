@@ -105,6 +105,7 @@ local function normal_fn()
     inst.Light:SetFalloff(0.5)
     inst.Light:SetRadius(0.6)
 
+    inst:AddTag("moon_spore_protection")
     inst:AddTag("leif")
     inst:AddTag("monster")
     inst:AddTag("tree")

@@ -111,9 +111,9 @@ function StorageRobotBrain:OnStart()
     {
         WhileNode( function() return not self.inst.sg:HasAnyStateTag("busy", "broken") end, "NO BRAIN WHEN BUSY OR BROKEN",
             PriorityNode({
-                DoAction( self.inst, self.PickUpAction,     "Pick Up Item",    true, 3 ),
-                DoAction( self.inst, self.StoreItemAction,  "Store Item",      true, 3 ),
-                DoAction( self.inst, self.GoHomeAction,     "Return to spawn", true, 3 ),
+                DoAction( self.inst, self.PickUpAction,     "Pick Up Item",    true ),
+                DoAction( self.inst, self.StoreItemAction,  "Store Item",      true ),
+                DoAction( self.inst, self.GoHomeAction,     "Return to spawn", true ),
                 StandStill(self.inst),
             }, .25)
         ),

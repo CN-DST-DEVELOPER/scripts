@@ -329,10 +329,10 @@ end
 
 function WagpunkManager:FindSpotForMachines()
 
-    if self.machinemarker and not self:IsWerepigInCharge(Vector3(self.machinemarker.Transform:GetWorldPosition())) then
+    if self.machinemarker and not self:IsWerepigInCharge(Vector3(self.machinemarker.Transform:GetWorldPosition())) then        
         local pos = Vector3(self.machinemarker.Transform:GetWorldPosition())
 
-        if not IsAnyPlayerInRange(pos.x, 0, pos.z, MAX_DIST_FROM_AN_PLAYER) then
+        if not IsAnyPlayerInRange(pos.x, 0, pos.z, MAX_DIST_FROM_AN_PLAYER) then 
             return pos, true
         else
             if not TheWorld.components.timer:TimerExists("junkwagpunk") then
@@ -349,6 +349,7 @@ function WagpunkManager:FindSpotForMachines()
             end
         end
     else
+
         local nodes = {}
 
         for index, node in ipairs(TheWorld.topology.nodes) do
@@ -370,7 +371,7 @@ function WagpunkManager:FindSpotForMachines()
             local new_x, new_z = new_node.cent[1], new_node.cent[2]
             local new_pos = Vector3(new_x, 0, new_z)
 
-            if IsAnyPlayerInRange(new_x, 0, new_z, MAX_DIST_FROM_AN_PLAYER) and
+            if not IsAnyPlayerInRange(new_x, 0, new_z, MAX_DIST_FROM_AN_PLAYER) and
                 (current_node == nil or VecUtil_LengthSq(new_x - current_x, new_z - current_z) > MIN_DIST_FROM_LAST_POSITION_SQ)
             then
                 local offset = FindWalkableOffset(new_pos, math.random()*TWOPI, math.random()*10, 16, nil, nil, IsPositionClearCenterPoint)

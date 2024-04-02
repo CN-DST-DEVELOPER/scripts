@@ -151,8 +151,10 @@ function Boatcrew:GetHeadingNormal()
         pt = boatpt + Vector3(math.cos(heading), 0, -math.sin(heading))
         pt.y = 0
     end
-
-    return (pt ~= nil and VecUtil_Normalize(pt.x - boatpt.x, pt.z - boatpt.z)) or nil
+    
+    if pt ~= nil then
+         return VecUtil_Normalize(pt.x - boatpt.x, pt.z - boatpt.z)
+    end
 end
 
 function Boatcrew:SetHeading(heading)

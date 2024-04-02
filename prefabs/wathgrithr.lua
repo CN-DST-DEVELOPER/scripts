@@ -53,6 +53,9 @@ local function IsValidVictim(victim)
 end
 
 local function onkilled(inst, data)
+    if data.incinerated then
+        return -- NOTES(JBK): Do not spawn spirits for this.
+    end
     local victim = data.victim
     if inst.IsValidVictim(victim) then
         if not victim.components.health.nofadeout and (victim:HasTag("epic") or math.random() < 0.1) then

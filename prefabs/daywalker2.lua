@@ -492,6 +492,18 @@ local PHASES =
 	},
 }
 
+local function CheckHealthPhase(inst)
+	local healthpct = inst.components.health:GetPercent()
+	for i = #PHASES, 1, -1 do
+		local v = PHASES[i]
+		if healthpct <= v.hp then
+			v.fn(inst)
+			return
+		end
+	end
+	PHASES[0].fn(inst)
+end
+
 --------------------------------------------------------------------------
 
 local function UpdatePlayerTargets(inst)
@@ -825,9 +837,7 @@ local function MakeFreed(inst)
 		inst.Physics:SetActive(true)
 		inst:SetStateGraph("SGdaywalker2")
 		inst.sg:GoToState("emerge")
-		if not inst.components.health:IsHurt() then
-			PHASES[0].fn(inst)
-		end
+		CheckHealthPhase(inst)
 		inst:SetBrain(brain)
 		if inst.brain == nil and not inst:IsAsleep() then
 			inst:RestartBrain()
@@ -848,8 +858,8 @@ local function MakeFreed(inst)
 	end
 end
 
-local function MakeDefeated(inst)
-	if not (inst.buried or inst.defated) and inst.hostile then
+local function MakeDefeated(inst, force)
+	if not (inst.buried or inst.defated) and (inst.hostile or force) then
 		inst.defeated = true
 		inst.hostile = false
 		OnThiefReset(inst)
@@ -900,17 +910,10 @@ local function OnSave(inst, data)
 end
 
 local function OnLoad(inst, data)
-	local healthpct = inst.components.health:GetPercent()
-	for i = #PHASES, 1, -1 do
-		local v = PHASES[i]
-		if healthpct <= v.hp then
-			v.fn(inst)
-			break
-		end
-	end
+	CheckHealthPhase(inst)
 
 	if inst.components.timer:TimerExists("despawn") then
-		inst:MakeDefeated()
+		inst:MakeDefeated(true)
 		if data and data.looted then
 			inst.looted = true
 			inst.sg:GoToState("defeat_idle_pre")
@@ -970,7 +973,7 @@ local function teleport_override_fn(inst)
 	if inst.defeated then
 		--Stay near junkyard; or, backup is just don't go too far
 		local pos = (junk or inst):GetPosition()
-		local offset = FindWalkableOffset(pos, TWOPI * math.random(), 4, 8, true, false)
+		local offset = FindWalkableOffset(pos, TWOPI * math.random(), 5, 8, true, false)
 		if offset then
 			pos.x = pos.x + offset.x
 			pos.z = pos.z + offset.z
