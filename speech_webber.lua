@@ -5119,7 +5119,7 @@ return{
         BOATRACE_SEASTACK_MONKEY_THROWABLE_DEPLOYKIT = "Where should we throw the floaty?",
         MASTUPGRADE_LAMP_YOTD = "We feel a lot better having a night light around.",
         MASTUPGRADE_LAMP_ITEM_YOTD = "Now our boat can have a light!",
-        WALKINGPLANK_YOTD = "It's not much fun, but a least it's pretty.",
+        WALKINGPLANK_YOTD = "It's not much fun, but at least it's pretty.",
         CHESSPIECE_YOTD = "We had a lot of fun that day!",
 
         -- Rifts / Meta QoL

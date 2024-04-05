@@ -404,18 +404,6 @@ local function ShouldRepeatFireBall(inst, doer)
     return CheckStackSize(inst, doer, "fireball")
 end
 
-local function ShouldRepeatFireFrenzy(inst, doer)
-    return CheckStackSize(inst, doer, "firefrenzy")
-end
-
-local function ShouldRepeatShadowFire(inst, doer)
-    return CheckStackSize(inst, doer, "shadowfire")
-end
-
-local function ShouldRepeatLunarFire(inst, doer)
-    return CheckStackSize(inst, doer, "lunarfire")
-end
-
 -------------------------------------------------------------
 local function burst_reticule_mouse_target_function(inst, mousepos)
     if mousepos == nil then
@@ -639,7 +627,7 @@ local SKILLTREE_SPELL_DEFS =
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.FIRE_FRENZY)
             inst.components.aoetargeting:SetDeployRadius(0)
-            inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatFireFrenzy)
+            inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoefiretarget_1"
             inst.components.aoetargeting.reticule.pingprefab = "reticuleaoefiretarget_1ping"
 
@@ -671,7 +659,7 @@ local SKILLTREE_SPELL_DEFS =
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.LUNAR_FIRE)
             inst.components.aoetargeting:SetDeployRadius(0)
-            inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatLunarFire)
+            inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleline"
             inst.components.aoetargeting.reticule.pingprefab = "reticulelineping"
 
@@ -718,7 +706,7 @@ local SKILLTREE_SPELL_DEFS =
         onselect = function(inst)
             inst.components.spellbook:SetSpellName(STRINGS.PYROMANCY.SHADOW_FIRE)
             inst.components.aoetargeting:SetDeployRadius(0)
-            inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatShadowFire)
+            inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
             inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe5line"
             inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping5line"
 

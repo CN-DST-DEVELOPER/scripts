@@ -829,7 +829,7 @@ local actionhandlers =
                         (action.invobject:HasTag("throw_line") and "throw_line") or
 						(action.invobject:HasTag("book") and (inst:HasTag("canrepeatcast") and "book_repeatcast" or "book")) or
                         (action.invobject:HasTag("parryweapon") and "parry_pre") or
-                        (action.invobject:HasTag("willow_ember") and "castspellmind")
+						(action.invobject:HasTag("willow_ember") and (inst:HasTag("canrepeatcast") and "repeatcastspellmind" or "castspellmind"))
                     )
                 or "castspell"
         end),
@@ -12982,40 +12982,84 @@ local states =
             end
         end,
     },
-    
+
+	State{
+		name = "repeatcastspellmind",
+		onenter = function(inst)
+			inst.sg:GoToState("castspellmind", true)
+		end,
+	},
+
     State{
         name = "castspellmind",
 		tags = { "doing", "busy", "canrotate" },
 
-        onenter = function(inst)
-            if inst.components.playercontroller ~= nil then
-                inst.components.playercontroller:Enable(false)
-            end
-
+		onenter = function(inst, repeatcast)
             inst.SoundEmitter:PlaySound("meta3/willow/pyrokinetic_activate")
 
-            inst.AnimState:PlayAnimation("pyrocast_pre")
-            inst.AnimState:PushAnimation("pyrocast", false)
+			if repeatcast then
+				inst.AnimState:PlayAnimation("pyrocast")
+				inst.sg.statemem.repeatcast = true
+			else
+				inst.AnimState:PlayAnimation("pyrocast_pre") --4 frames
+				inst.AnimState:PushAnimation("pyrocast", false)
+			end
             inst.components.locomotor:Stop()
 
+			local item = inst.bufferedaction and (inst.bufferedaction.target or inst.bufferedaction.invobject) or nil
+			if item.components.aoetargeting and not (item.components.spellbook and item.components.spellbook:HasSpellFn()) then
+				inst.sg.statemem.canrepeatcast = item.components.aoetargeting:CanRepeatCast()
+			elseif inst.components.playercontroller then
+				inst.components.playercontroller:Enable(false)
+			end
         end,
 
         timeline =
-        {            
-            TimeEvent(15 * FRAMES, function(inst)
-                --V2C: NOTE! if we're teleporting ourself, we may be forced to exit state here!
-				if inst:PerformBufferedAction() and inst:IsChannelCasting() then
-					--V2C: didn't add this on enter state since we DO want to
-					--     cancel previous channelcasting
-					inst.sg:AddStateTag("keepchannelcasting")
-					inst.sg:GoToState("idle")
+		{
+			FrameEvent(11, function(inst)
+				if inst.sg.statemem.repeatcast then
+					--V2C: NOTE! if we're teleporting ourself, we may be forced to exit state here!
+					if not inst:PerformBufferedAction() then
+						inst.sg.statemem.canrepeatcast = false
+						inst:RemoveTag("canrepeatcast")
+					elseif inst:IsChannelCasting() then
+						--V2C: didn't add this on enter state since we DO want to
+						--     cancel previous channelcasting
+						inst.sg:AddStateTag("keepchannelcasting")
+						inst.sg:GoToState("idle")
+					end
+				end
+			end),
+			FrameEvent(16, function(inst)
+				if inst.sg.statemem.repeatcast then
+					inst.sg:RemoveStateTag("busy")
+					if inst.sg.statemem.canrepeatcast then
+						inst:AddTag("canrepeatcast")
+					end
+				end
+			end),
+			--
+			FrameEvent(15, function(inst)
+				if not inst.sg.statemem.repeatcast then
+					--V2C: NOTE! if we're teleporting ourself, we may be forced to exit state here!
+					if not inst:PerformBufferedAction() then
+						inst.sg.statemem.canrepeatcast = false
+						inst:RemoveTag("canrepeatcast")
+					elseif inst:IsChannelCasting() then
+						--V2C: didn't add this on enter state since we DO want to
+						--     cancel previous channelcasting
+						inst.sg:AddStateTag("keepchannelcasting")
+						inst.sg:GoToState("idle")
+					end
 				end
             end),
-            TimeEvent(20 * FRAMES, function(inst)
-                inst.sg:RemoveStateTag("busy")
-                if inst.components.playercontroller ~= nil then
-                    inst.components.playercontroller:Enable(true)
-                end
+			FrameEvent(20, function(inst)
+				if not inst.sg.statemem.repeatcast then
+					inst.sg:RemoveStateTag("busy")
+					if inst.sg.statemem.canrepeatcast then
+						inst:AddTag("canrepeatcast")
+					end
+				end
             end),
         },
 
@@ -13031,10 +13075,10 @@ local states =
         onexit = function(inst)
             if inst.components.playercontroller ~= nil then
                 inst.components.playercontroller:Enable(true)
-            end         
+			end
+			inst:RemoveTag("canrepeatcast")
         end,
     },
-
 
     State{
         name = "quicktele",

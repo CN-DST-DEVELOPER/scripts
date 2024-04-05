@@ -619,7 +619,7 @@ local function firecannon(inst)
                         local angle = (cannon.Transform:GetRotation() -180) * DEGREES
                         local offset = FindWalkableOffset(cannonpos, angle, 2, 12, true, false, nil, true)
 
-                        if inst:GetDistanceSqToPoint(cannonpos+offset) <= (0.25*0.25) then
+                        if offset ~= nil and inst:GetDistanceSqToPoint(cannonpos+offset) <= (0.25*0.25) then
                             return BufferedAction(inst, cannon, ACTIONS.BOAT_CANNON_SHOOT)
                         end
                     end

@@ -846,6 +846,10 @@ local function EnableMovementPrediction(inst, enable)
                     (inst.player_classified == nil and inst:HasTag("playerghost"))
 
                 inst.Physics:Stop()
+
+				inst:AddComponent("embarker")
+				inst.components.embarker.embark_speed = TUNING.WILSON_RUN_SPEED
+
                 inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
                 if isghost then
                     ex_fns.ConfigureGhostLocomotor(inst)
@@ -881,6 +885,7 @@ local function EnableMovementPrediction(inst, enable)
                 inst.components.playercontroller.locomotor = nil
             end
             inst:RemoveComponent("locomotor")
+			inst:RemoveComponent("embarker")
             inst.Physics:Stop()
             print("Movement prediction disabled")
             --This is unfortunate but it doesn't seem like you can send an rpc on the first
@@ -2280,9 +2285,6 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst.userid = ""
 
-        inst:AddComponent("embarker")
-        inst.components.embarker.embark_speed = TUNING.WILSON_RUN_SPEED
-
         inst._sharksoundparam = net_float(inst.GUID, "localplayer._sharksoundparam","sharksounddirty")
         inst._winters_feast_music = net_event(inst.GUID, "localplayer._winters_feast_music")
         inst._hermit_music = net_event(inst.GUID, "localplayer._hermit_music")
@@ -2384,6 +2386,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst:AddComponent("maprevealable")
         inst.components.maprevealable:SetIconPriority(10)
+
+		inst:AddComponent("embarker")
+		inst.components.embarker.embark_speed = TUNING.WILSON_RUN_SPEED
 
         inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
         ex_fns.ConfigurePlayerLocomotor(inst)

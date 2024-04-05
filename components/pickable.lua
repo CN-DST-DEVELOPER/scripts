@@ -105,9 +105,7 @@ function Pickable:LongUpdate(dt)
             if self.targettime > time + dt then
                 --resechedule
                 local time_to_pickable = self.targettime - time - dt
-                if TheWorld.state.isspring then
-                    time_to_pickable = time_to_pickable * TUNING.SPRING_GROWTH_MODIFIER
-                end
+                time_to_pickable = SpringGrowthMod(time_to_pickable)
                 self.task = self.inst:DoTaskInTime(time_to_pickable, OnRegen)
                 self.targettime = time + time_to_pickable
             else
@@ -116,9 +114,7 @@ function Pickable:LongUpdate(dt)
             end
         else
             local time_to_pickable = self.getregentimertime(self.inst) - dt
-            if TheWorld.state.isspring then
-                time_to_pickable = time_to_pickable * TUNING.SPRING_GROWTH_MODIFIER
-            end
+            time_to_pickable = SpringGrowthMod(time_to_pickable)
             self.setregentimertime(self.inst, time_to_pickable)
         end
     end
@@ -152,9 +148,7 @@ function Pickable:Resume()
             self.paused = false
             if not (self.canbepicked or self:IsBarren()) then
                 if self.pause_time ~= nil then
-                    if TheWorld.state.isspring then
-                        self.pause_time = self.pause_time * TUNING.SPRING_GROWTH_MODIFIER
-                    end
+                    self.pause_time = SpringGrowthMod(self.pause_time)
                     if self.task ~= nil then
                         self.task:Cancel()
                     end
@@ -170,11 +164,9 @@ function Pickable:Resume()
         if not (self.canbepicked or self:IsBarren()) then
             local pause_time = self.getregentimertime(self.inst)
             if pause_time ~= nil then
-                if TheWorld.state.isspring then
-                    pause_time = pause_time * TUNING.SPRING_GROWTH_MODIFIER
-                end
+                pause_time = SpringGrowthMod(pause_time)
                 self.resumeregentimer(self.inst)
-                self.setregentimertime(self.inst, pause_time * TUNING.SPRING_GROWTH_MODIFIER)
+                self.setregentimertime(self.inst, pause_time)
             else
                 self:MakeEmpty()
             end
@@ -444,9 +436,7 @@ function Pickable:MakeEmpty()
         if self.getregentimefn ~= nil then
             time = self.getregentimefn(self.inst)
         end
-        if TheWorld.state.isspring then
-            time = time * TUNING.SPRING_GROWTH_MODIFIER
-        end
+        time = SpringGrowthMod(time)
 
         if not self.useexternaltimer then
             self.task = self.inst:DoTaskInTime(time, OnRegen)
@@ -549,9 +539,7 @@ function Pickable:Pick(picker)
         self.canbepicked = false
 
         if self.baseregentime ~= nil and not (self.paused or self:IsBarren() or self.inst:HasTag("withered")) then
-            if TheWorld.state.isspring then
-                self.regentime = self.baseregentime * TUNING.SPRING_GROWTH_MODIFIER
-            end
+            self.regentime = SpringGrowthMod(self.baseregentime)
 
             if not self.useexternaltimer then
                 if self.task ~= nil then

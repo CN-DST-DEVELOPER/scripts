@@ -6689,20 +6689,20 @@ STRINGS =
     },
 
     -- Random script.
-    WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED =
+    WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED1 =
     {
-        {
-            "I have all the data I require from this creature.",
-            "However... I suppose I mustn't let your efforts go unrewarded.",
-        },
-        {
-            "Still at it, are you? I must commend your zeal for research.",
-            "Here, a contribution to your continued studies.",
-        },
-        {
-            "I'm afraid we have nothing more to gain from analyzing this poor creature.",
-            "Take this, as a token of my gratitude for your efforts.",
-        },
+        "I have all the data I require from this creature.",
+        "However... I suppose I mustn't let your efforts go unrewarded.",
+    },
+    WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED2 =
+    {
+        "Still at it, are you? I must commend your zeal for research.",
+        "Here, a contribution to your continued studies.",
+    },
+    WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED3 =
+    {
+        "I'm afraid we have nothing more to gain from analyzing this poor creature.",
+        "Take this, as a token of my gratitude for your efforts.",
     },
 
     WAGSTAFF_GOTTOHINT = {
@@ -16142,7 +16142,7 @@ STRINGS.SCRAPBOOK = {
         SPIDERDEN = "Creates a patch of webbing on the ground near it that slows survivors and some creatures that walk on it.\n\nComes in several sizes and grows to fit its spider population.\n\nWebber may upgrade these with Silk.",
         STEERINGWHEEL = "When deployed on a boat, a survivor can use it to rotate the boats direction.",
         TACKLESTATION = "Standing near this device will provide the survivor with new Lures and Floats they can craft.",
-        CARPENTRY_STATION = "Standing near this device will provide the survivor with new Forniture they can craft.\n\nIt can also be used to quickly refine logs into boards.",
+        CARPENTRY_STATION = "Standing near this device will provide the survivor with new Furniture they can craft.\n\nIt can also be used to quickly refine logs into boards.",
         TENT = "A survivor can use the tent at Dusk or Night.\n\nSurvivor recovers 2 Health per second and 1 Sanity per second but consumes 0.33 Hunger per second. It also reduces 1 Wetness per second and lowers temperature 1 degree per second down to 40 degrees.",
         TURFCRAFTINGSTATION = "Standing near this device will provide the survivor with new Turf they can craft.",
         TOWNPORTAL = "At the cost of 15 Sanity, a survivor can activate the device and then consume 40 Sanity per minute while they keep it active. A second survivor can use another Lazy Deserter or a Desert Stone to teleport to the active one. The teleport costs 50 Sanity.",

@@ -5131,7 +5131,7 @@ return{
 
         STORAGE_ROBOT = {
             GENERIC = "Bonjour little forager.",
-            BROKEN = "The worse it smells, the better it works?",
+            BROKEN = "It has been scrambled.",
         },
 
         SCRAP_MONOCLEHAT = "It provides a lovely view!",

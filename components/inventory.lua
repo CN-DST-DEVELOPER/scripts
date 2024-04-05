@@ -1016,6 +1016,7 @@ function Inventory:GiveItem(inst, slot, src_pos)
             self.activeitem.components.stackable and
             inst.components.stackable and
             self.activeitem.prefab == inst.prefab and
+            self.activeitem.skinname == inst.skinname and
             not self.activeitem.components.stackable:IsFull()
             then
             self.activeitem.components.stackable:Put(inst, Vector3(self.inst.Transform:GetWorldPosition()))
@@ -1087,19 +1088,22 @@ function Inventory:Equip(item, old_to_active, no_animation, force_ui_anim)
     end
 
     -----
-    item.prevslot = self:GetItemSlot(item)
+	local iscontroller = self.inst.components.playercontroller and self.inst.components.playercontroller.isclientcontrollerattached
 
-    if item.prevslot == nil and
-        item.components.inventoryitem.owner ~= nil and
-        item.components.inventoryitem.owner.components.container ~= nil and
-        item.components.inventoryitem.owner.components.inventoryitem ~= nil then
-        item.prevcontainer = item.components.inventoryitem.owner.components.container
-        item.prevslot = item.components.inventoryitem.owner.components.container:GetItemSlot(item)
-    else
-        item.prevcontainer = nil
-    end
+    item.prevslot = self:GetItemSlot(item)
+	if item.prevslot then
+		item.prevcontainer = nil
+	else
+		local owner = item.components.inventoryitem.owner
+		if iscontroller then
+			item.prevcontainer = owner and owner.components.container or nil
+		else
+			item.prevcontainer = owner and owner.components.inventoryitem and owner.components.container or nil
+		end
+		item.prevslot = item.prevcontainer and item.prevcontainer:GetItemSlot(item) or nil
+	end
 	--controller swaps to the same slot
-	if olditem and self.inst.components.playercontroller and self.inst.components.playercontroller.isclientcontrollerattached then
+	if iscontroller and olditem and item.prevslot then
 		olditem.prevcontainer = item.prevcontainer
 		olditem.prevslot = item.prevslot
 	end
@@ -1126,9 +1130,9 @@ function Inventory:Equip(item, old_to_active, no_animation, force_ui_anim)
 
     local leftovers = nil
     if item.components.inventoryitem == nil then
-        item = self:RemoveItem(item, item.components.equippable.equipstack) or item
+        item = self:RemoveItem(item, item.components.equippable.equipstack, nil, true) or item
     elseif item.components.inventoryitem:IsHeld() then
-        item = item.components.inventoryitem:RemoveFromOwner(item.components.equippable.equipstack) or item
+        item = item.components.inventoryitem:RemoveFromOwner(item.components.equippable.equipstack, true) or item
     elseif item.components.stackable ~= nil and item.components.stackable:IsStack() and not item.components.equippable.equipstack then
         leftovers = item
         item = item.components.stackable:Get()

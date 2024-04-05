@@ -2665,7 +2665,7 @@ return{
 		TALLBIRDEGG_CRACKED =
 		{
 			COLD = "Needs warm",
-			GENERIC = "Tweet! ",
+			GENERIC = "Tweet!",
 			HOT = "Too hot!",
 			LONG = "(yawn)",
 			SHORT = "Tweeter coming soon!",

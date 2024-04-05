@@ -19,6 +19,7 @@ local prefabs =
 local brain = require "brains/storage_robotbrain"
 
 local SPAWNPOINT_NAME = "spawnpoint"
+local SPAWNPOINT_LOCAL_NAME = "spawnpoint_local"
 
 local NUM_FUELED_SECTIONS = 5
 local SECTION_MED = 2
@@ -69,7 +70,7 @@ local function OnOriginDirty(inst)
 end
 
 local function OnEnableHelper(inst, enabled, recipename, placerinst)
-    if enabled and recipename ~= nil and not inst:HasTag("broken") then
+    if enabled and recipename ~= nil and not inst:HasTag("broken") and inst:GetCurrentPlatform() == nil then
         if inst.helper == nil then
             inst.helper = CreateHelperRadiusCircle()
 
@@ -95,7 +96,18 @@ end
 ---------------------------------------------------------------------------------------------------
 
 local function GetSpawnPoint(inst)
-    return inst.components.knownlocations ~= nil and inst.components.knownlocations:GetLocation(SPAWNPOINT_NAME) or inst:GetPosition()
+    if inst.components.knownlocations ~= nil then
+        local local_pos = inst.components.knownlocations:GetLocation(SPAWNPOINT_LOCAL_NAME)
+        local platform = inst:GetCurrentPlatform()
+
+        if local_pos ~= nil and platform ~= nil then
+            return Vector3(platform.entity:LocalToWorldSpace(local_pos:Get()))
+        end
+
+        return inst.components.knownlocations:GetLocation(SPAWNPOINT_NAME) or inst:GetPosition()
+    end
+
+    return inst:GetPosition()
 end
 
 local function UpdateSpawnPoint(inst, dont_overwrite)
@@ -105,6 +117,16 @@ local function UpdateSpawnPoint(inst, dont_overwrite)
 
     if inst:IsOnPassablePoint() then
         local pos = inst:GetPosition()
+
+        local platform = inst:GetCurrentPlatform()
+
+        if platform ~= nil then
+            local local_pos = Vector3(platform.entity:WorldToLocalSpace(pos:Get()))
+
+            inst.components.knownlocations:RememberLocation(SPAWNPOINT_LOCAL_NAME, local_pos, dont_overwrite)
+        else
+            inst.components.knownlocations:ForgetLocation(SPAWNPOINT_LOCAL_NAME)
+        end
 
         if pos.x == 0 then
             -- Make sure something is dirty for sure.
@@ -232,6 +254,8 @@ end
 local CONTAINER_MUST_TAGS = { "_container" }
 local CONTAINER_CANT_TAGS = { "portablestorage", "FX", "NOCLICK", "DECOR", "INLIMBO" }
 
+local ALLOWED_CONTAINER_TYPES = { "chest", "pack" }
+
 local function FindContainerWithItem(inst, item, count)
     count = count or 0
     local x, y, z = inst:GetSpawnPoint():Get()
@@ -242,7 +266,7 @@ local function FindContainerWithItem(inst, item, count)
 
     for i, ent in ipairs(ents) do
         if ent.components.container ~= nil and
-            ent.components.container.type == "chest" and
+            table.contains(ALLOWED_CONTAINER_TYPES, ent.components.container.type) and
             ent.components.container.canbeopened and
             ent.components.container:Has(item.prefab, 1) and
             ent.components.container:CanAcceptCount(item, stack_maxsize) > count and
@@ -336,6 +360,15 @@ end
 ---------------------------------------------------------------------------------------------------
 
 local function DoOffscreenPickup(inst)
+    if not inst:IsAsleep() then
+        if inst._sleeptask ~= nil then
+            inst._sleeptask:Cancel()
+            inst._sleeptask = nil
+        end
+
+        return -- Safeguard.
+    end
+
     local item = inst:FindPickupableItem()
 
     if item == nil then
@@ -430,7 +463,7 @@ local function OnReachDestination(inst, data)
     end
 
     -- Snap to item position, so we are always layered correctly.
-    if data.target.components.inventoryitem ~= nil then
+    if data.target.components.inventoryitem ~= nil and data.target.components.container == nil then
         inst.Physics:Teleport(data.pos:Get())
     end
 end
@@ -569,6 +602,17 @@ end
 
 ---------------------------------------------------------------------------------------------------
 
+local function OnTeleported(inst)
+    inst:UpdateSpawnPoint()
+
+    if inst._sleeptask ~= nil and not inst:IsAsleep() then
+        inst._sleeptask:Cancel()
+        inst._sleeptask = nil
+    end
+end
+
+---------------------------------------------------------------------------------------------------
+
 local function GetStatus(inst, viewer)
     return inst.components.fueled:IsEmpty() and "BROKEN" or nil
 end
@@ -605,7 +649,7 @@ local function fn()
 
     inst.AnimState:SetBank("storage_robot")
     inst.AnimState:SetBuild("storage_robot")
-    inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:PlayAnimation("idle", true)
 
     inst.AnimState:SetScale(VISUAL_SCALE, VISUAL_SCALE)
 
@@ -694,6 +738,8 @@ local function fn()
 
     inst:ListenForEvent("equip",   inst.OnEquipSomething  )
     inst:ListenForEvent("unequip", inst.OnUnequipSomething)
+
+    inst:ListenForEvent("teleported", OnTeleported)
 
     inst.OnLoad = OnLoad
 

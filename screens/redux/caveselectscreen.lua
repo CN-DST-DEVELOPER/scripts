@@ -102,6 +102,16 @@ local CaveSelectScreen = Class(Screen, function(self, prev_screen, slot_index, p
                 STRINGS.UI.SERVERCREATIONSCREEN.REMEMBERCOICE) )--string.format(STRINGS.UI.SANDBOXMENU.AUTOADDLEVEL, tabname)))
     self.remember:SetPosition(-100,-180 +bump)
 
+
+
+	if TheInput:ControllerAttached() then
+    	self.style_grid:SetFocusChangeDir(MOVE_DOWN, self.remember)
+    	self.remember:SetFocusChangeDir(MOVE_UP, self.style_grid)
+    	self.remember:SetOnGainFocus(function()
+    		self:UpdateStyleInfo("")
+    	end)
+	end
+    
     self.default_focus = self.style_grid
 
 	self.default_playstyle:Select()
@@ -181,7 +191,7 @@ function CaveSelectScreen:MakeStyleGrid()
 	for i, caveoption in ipairs(caveoptions) do
 		local w = self:MakeStyleButton(caveoption)
 
-		w.button:SetOnGainFocus(function()
+		w.button:SetOnGainFocus(function()		
 			if self.selected ~= w.button then
 				if self.selected == self.default_playstyle then
 					self.default_playstyle:Unselect()
@@ -194,10 +204,7 @@ function CaveSelectScreen:MakeStyleGrid()
 
 		w.button:SetOnLoseFocus(function()
 			w.button:Unselect()
-			if self.selected == w.button then
-				self.selected = self.default_playstyle
-				self.default_playstyle:Select()
-			end
+			self.selected = nil
 		end)
 
 		table.insert(widgets, w)
@@ -266,6 +273,20 @@ function CaveSelectScreen:OnControl(control, down)
 			return true
 		end
 	end
+--[[
+    if control == CONTROL_MENU_L2 or control == CONTROL_MENU_R2 then
+        if not down and self.remember then
+            self.remember.controller(self)
+            return true
+        end
+    elseif control == CONTROL_MENU_MISC_1 then
+            self.remember.onclick()
+            return true
+	end
+   ]]
+
+--item:SetFocusChangeDir(MOVE_UP, up)
+	--self.remember
 end
 
 function CaveSelectScreen:_DoFocusHookups()

@@ -99,6 +99,8 @@ local function OnIncinerateItems(inst)
     inst.AnimState:PlayAnimation("incinerate")
     inst.AnimState:PushAnimation("hi", true)
 
+    inst.SoundEmitter:PlaySound("qol1/dragonfly_furnace/incinerate")
+
     inst.components.container:Close()
     inst.components.container.canbeopened = false
 

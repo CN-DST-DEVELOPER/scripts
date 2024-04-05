@@ -102,10 +102,14 @@ local states =
             inst.AnimState:PlayAnimation("dial_loop",true)
 
             DoTalkSound(inst)
-            inst.sg:SetTimeout(1.5 + math.random() * .5)
+            inst.sg:SetTimeout(2.0 + math.random() * .5)
         end,
 
         ontimeout = function(inst)
+            if inst.components.npc_talker and inst.components.npc_talker:haslines() then
+                inst.components.npc_talker:donextline()
+            end
+
             if inst.sg.statemem.exitstate then
                 inst.sg:GoToState(inst.sg.statemem.exitstate)
             else
@@ -116,6 +120,10 @@ local states =
         events =
         {
             EventHandler("donetalking", function(inst)
+                if inst.components.npc_talker and inst.components.npc_talker:haslines() then
+                    inst.components.npc_talker:donextline()
+                end
+
                 if inst.sg.statemem.exitstate then
                     inst.sg:GoToState(inst.sg.statemem.exitstate)
                 else
@@ -485,7 +493,7 @@ local states =
 
         ontimeout = function(inst)
             local string_name = "WAGSTAFF_NPC_ANALYSIS_OVER"
-            inst.components.talker:Chatter(string_name, math.random(#string_name), nil, nil, CHATPRIORITIES.LOW)
+            inst.components.talker:Chatter(string_name, math.random(#STRINGS[string_name]), nil, nil, CHATPRIORITIES.LOW)
             inst.sg:GoToState("talk", "analyzing_pst")
         end,
     },

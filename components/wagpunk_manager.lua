@@ -1,5 +1,4 @@
 local MIN_DIST_FROM_LAST_POSITION_SQ = 300 * 300
-local MAX_DIST_FROM_AN_PLAYER = 250
 
 local MAX_NUM_HINTS = 10
 local NUM_MACHINES_PER_SPAWN = 3
@@ -332,7 +331,7 @@ function WagpunkManager:FindSpotForMachines()
     if self.machinemarker and not self:IsWerepigInCharge(Vector3(self.machinemarker.Transform:GetWorldPosition())) then        
         local pos = Vector3(self.machinemarker.Transform:GetWorldPosition())
 
-        if not IsAnyPlayerInRange(pos.x, 0, pos.z, MAX_DIST_FROM_AN_PLAYER) then 
+        if not IsAnyPlayerInRange(pos.x, 0, pos.z, PLAYER_CAMERA_SEE_DISTANCE) then 
             return pos, true
         else
             if not TheWorld.components.timer:TimerExists("junkwagpunk") then
@@ -371,7 +370,7 @@ function WagpunkManager:FindSpotForMachines()
             local new_x, new_z = new_node.cent[1], new_node.cent[2]
             local new_pos = Vector3(new_x, 0, new_z)
 
-            if not IsAnyPlayerInRange(new_x, 0, new_z, MAX_DIST_FROM_AN_PLAYER) and
+            if not IsAnyPlayerInRange(new_x, 0, new_z, PLAYER_CAMERA_SEE_DISTANCE) and
                 (current_node == nil or VecUtil_LengthSq(new_x - current_x, new_z - current_z) > MIN_DIST_FROM_LAST_POSITION_SQ)
             then
                 local offset = FindWalkableOffset(new_pos, math.random()*TWOPI, math.random()*10, 16, nil, nil, IsPositionClearCenterPoint)

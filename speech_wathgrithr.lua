@@ -5098,7 +5098,7 @@ return{
 
         BOATRACE_CHECKPOINT = "Onward!",
         BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Chart a course for victory!",
-        BOATRACE_START = "I shall triumph, in the name of the Valyrie!",
+        BOATRACE_START = "I shall triumph, in the name of the Valkyrie!",
         BOATRACE_START_THROWABLE_DEPLOYKIT = "The location is unimportant. Only know that I will arrive first.",
 
         BOATRACE_PRIMEMATE = "You just don't know it yet, but I have won already.",

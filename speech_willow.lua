@@ -4428,7 +4428,7 @@ return{
 		KITCOONDEN =
 		{
 			GENERIC = "They're so small that they all fit.",
-            BURNT = "Nice. Hope they evacuated, though. ",
+            BURNT = "Nice. Hope they evacuated, though.",
 			PLAYING_HIDEANDSEEK = "They're out playing, let's go find em'!",
 			PLAYING_HIDEANDSEEK_TIME_ALMOST_UP = "Time's almost up, they're not gonna hide at home!!! Or is that what they want me to think... nope, it's empty, aargh!",
 		},
@@ -4873,7 +4873,7 @@ return{
 		DAYWALKER2 =
 		{
 			GENERIC = "Maybe I was wrong about him.",
-			BURIED = "He's going to one cranky pig.",
+			BURIED = "He's going to be one cranky pig.",
 			HOSTILE = "Temper, temper. Some things never change.",
 		},
 		ARMORDREADSTONE = "It's fine I guess.",

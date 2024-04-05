@@ -3910,7 +3910,7 @@ return{
         SPICE_SUGAR = "A saccharine collection of liquefied confection.",
         SPICE_CHILI = "I'll spike some mortal's food. Hyuyu!",
         SPICE_SALT = "Careful with that stuff!",
-        MONSTERTARTARE = "Monster flesh that's very fresh. ",
+        MONSTERTARTARE = "Monster flesh that's very fresh.",
         FRESHFRUITCREPES = "Fruits and berries put to bed.",
         FROGFISHBOWL = "I'd rather have a nice fresh soul.",
         POTATOTORNADO = "I think I remember when I used to eat food. Maybe.",
@@ -4630,7 +4630,7 @@ return{
 
         FROZENBANANADAIQUIRI = "Don't the mortals like to innovate? Hyuyu.",
         BUNNYSTEW = "Are mortals attracted to this smell?",
-        MILKYWHITES = "This loot from our fight does not bring delight. ",
+        MILKYWHITES = "This loot from our fight does not bring delight.",
 
         CRITTER_EYEOFTERROR = "I'm glad we could make amends, my ocular friend!",
 

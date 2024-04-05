@@ -2673,14 +2673,13 @@ local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
     local equipped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
     local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or 0
 
-    local min_rad = 4
-    local max_rad = math.max(math.max(min_rad, combat:GetAttackRangeWithWeapon()), forced_rad) + 3
-    local min_rad_sq = min_rad * min_rad
+	local min_rad = 3
+	local max_rad = math.max(forced_rad, combat:GetAttackRangeWithWeapon()) + 3.5
     local max_rad_sq = max_rad * max_rad
 
     --see entity_replica.lua for "_combat" tag
 
-	local nearby_ents = TheSim:FindEntities_Registered(x, y, z, max_rad, REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS)
+	local nearby_ents = TheSim:FindEntities_Registered(x, y, z, max_rad + 3, REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS)
     if self.controller_attack_target ~= nil then
         --Note: it may already contain controller_attack_target,
         --      so make sure to handle it only once later
@@ -2710,11 +2709,17 @@ local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
                 local dx, dy, dz = x1 - x, y1 - y, z1 - z
                 local dsq = dx * dx + dy * dy + dz * dz
 
-                if dsq < max_rad_sq and CanEntitySeePoint(self.inst, x1, y1, z1) then
+				--include physics radius for max range check since we don't have (dist - phys_rad) yet
+				local phys_rad = v:GetPhysicsRadius(0)
+				local max_range = max_rad + phys_rad
+
+				if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
                     local dist = dsq > 0 and math.sqrt(dsq) or 0
                     local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
-                    if dot > 0 or dist < min_rad then
-                        local score = dot + 1 - .5 * dsq / max_rad_sq
+					if dot > 0 or dist < min_rad + phys_rad then
+						--now calculate score with physics radius subtracted
+						dist = math.max(0, dist - phys_rad)
+						local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
 
                         if isally then
                             score = score * .25

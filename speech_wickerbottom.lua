@@ -2861,7 +2861,7 @@ return{
             EMPTY = "It needs a sacrifice of meat.",
             BURNT = "No use to me like this.",
 		},
-		PIG_TOKEN = "How did they could achieve such detail using pig hooves?",
+		PIG_TOKEN = "How did they manage to achieve such detail using pig hooves?",
 		PIG_COIN = "A boon from the Pig King.",
 		YOTP_FOOD1 = "A feast fit for a festival!",
 		YOTP_FOOD2 = "Not fit for human consumption.",
@@ -4623,7 +4623,7 @@ return{
         EYEOFTERROR_MINI_GROUNDED = "An eyeball... embryo? These creatures are quite perplexing.",
 
         FROZENBANANADAIQUIRI = "This would pair nicely with a short book.",
-        BUNNYSTEW = "Caloric, but nutritious. It smells wonderful, as well. ",
+        BUNNYSTEW = "Caloric, but nutritious. It smells wonderful, as well.",
         MILKYWHITES = "Tunica albuginea oculi, the opaque white covering of the vitreous humor. Also known as disgusting.",
 
         CRITTER_EYEOFTERROR = "Now, I wonder if your nerves are functional, or merely decorative...",
@@ -5097,7 +5097,7 @@ return{
         DRAGONBOAT_PACK = "Everything I need has been conveniently collected into a singular package.",
 
         BOATRACE_CHECKPOINT = "This should help us stay on course.",
-        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "It's placement must be strategic.",
+        BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Its placement must be strategic.",
         BOATRACE_START = "I do love a good old fashioned boat race.",
         BOATRACE_START_THROWABLE_DEPLOYKIT = "We must determine the best spot to start and finish the race.",
 

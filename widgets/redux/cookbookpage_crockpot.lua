@@ -127,6 +127,7 @@ function CookbookPageCrockPot:CreateRecipeBook()
 	self.details_root:AddChild(self:PopulateRecipeDetailPanel(self.all_recipes[ (TheCookbook.selected ~= nil and TheCookbook.selected[self.category] or 1) ]))
 
 	self:ApplyFilters()
+	self.recipe_grid:RefreshView()
 end
 
 local ingredient_icon_remap = {}

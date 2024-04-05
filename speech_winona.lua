@@ -3401,7 +3401,7 @@ return{
         QUAGMIRE_POT_HANGER_ITEM = "Ready for assembly.",
         QUAGMIRE_GRILL = "Time for a cookout!",
         QUAGMIRE_GRILL_ITEM = "I need to to find a firepit for this to work.",
-        QUAGMIRE_GRILL_SMALL = "Big enough for a small cookout. ",
+        QUAGMIRE_GRILL_SMALL = "Big enough for a small cookout.",
         QUAGMIRE_GRILL_SMALL_ITEM = "Now where can I put this...",
         QUAGMIRE_OVEN = "It's a regular ol' oven.",
         QUAGMIRE_OVEN_ITEM = "Welp. Another day, another project.",

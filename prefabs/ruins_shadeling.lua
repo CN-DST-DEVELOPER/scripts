@@ -98,6 +98,8 @@ local function fn()
 	inst.entity:AddSoundEmitter()
 	inst.entity:AddNetwork()
 
+	inst:SetPhysicsRadiusOverride(.26) --bigger than chair for targeting priority
+
 	inst:AddTag("shadowcreature")
 	inst:AddTag("monster")
 	inst:AddTag("shadow")

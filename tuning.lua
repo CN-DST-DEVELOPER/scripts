@@ -7414,7 +7414,7 @@ function Tune(overrides)
 		COLLAPSED_CHEST_MAX_EXCESS_STACKS_DROPS = 6,
 
         STORAGE_ROBOT_WORK_RADIUS = 15,
-        STORAGE_ROBOT_FUEL = total_day_time * 2,
+        STORAGE_ROBOT_FUEL = total_day_time * 3.5,
         STORAGE_ROBOT_WALKSPEED = {
             FULL  = 5.0,
             MED   = 4.25,

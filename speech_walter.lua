@@ -4894,7 +4894,7 @@ return{
 		STAFF_LUNARPLANT = "Yup, that's definitely magical.",
 		SWORD_LUNARPLANT = "A space sword! Neat!",
 		PICKAXE_LUNARPLANT = "Those are some really tough leaves!",
-		SHOVEL_LUNARPLANT = "I came up with the name! ",
+		SHOVEL_LUNARPLANT = "I came up with the name!",
 
 		BROKEN_FORGEDITEM = "Woby! Were you playing with that?",
 
@@ -5111,7 +5111,7 @@ return{
         YOTD_ANCHOR_ITEM = "I've got all the supplies ready to build an anchor.",
         MAST_YOTD = "It's made of tough dragon scales!",
         MAST_YOTD_ITEM = "A mast would be useful.",
-        BOAT_BUMPER_YOTD = "Neat! Are those real dragon claws?",
+        BOAT_BUMPER_YOTD = "Neat! Are those real dragon teeth?",
         BOAT_BUMPER_YOTD_KIT = "It's always best to be prepared!",
         BOATRACE_SEASTACK = "Buoy off the port side! Er, I mean starboard! I'll double check my handbook...",
         BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "I'll have it in the water in a jiffy!",

@@ -3175,6 +3175,13 @@ local states =
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
+
+			if inst:HasTag("canrepeatcast") and inst.entity:FlattenMovementPrediction() then
+				inst:PerformPreviewBufferedAction()
+				inst.sg:GoToState("idle", "noanim")
+				return
+			end
+
             inst.AnimState:PlayAnimation("pyrocast_pre")
 			inst.AnimState:PushAnimation("pyrocast_lag", false)
 

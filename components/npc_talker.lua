@@ -5,6 +5,8 @@ local Npc_talker = Class(function(self, inst)
     self.soundqueue = {}
     self.default_chatpriority = CHATPRIORITIES.NOCHAT
 
+    --self.speaktime = nil
+
     --self.inst:ListenForEvent("done_npc_talk", function(inst) self:checknextline() end)
 end)
 
@@ -102,9 +104,9 @@ function Npc_talker:donextline()
         if type(queue_item) == "table" then
             -- The Line object might get used with Say, so we need to filter those over too.
             if queue_item.message then
-                self.inst.components.talker:Say({queue_item})
+                self.inst.components.talker:Say({queue_item}, self.speaktime)
             else
-                self.inst.components.talker:Chatter(queue_item[1], queue_item[2], nil, nil, queue_item[3])
+                self.inst.components.talker:Chatter(queue_item[1], queue_item[2], self.speaktime, nil, queue_item[3])
             end
         else
             self.inst.components.talker:Say(queue_item)

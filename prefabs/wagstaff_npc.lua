@@ -860,28 +860,6 @@ local WAGSTAFF_MUTATIONS_DIALOGUE_LOOKUP =
     "WAGSTAFF_NPC_ALL_MUTATIONS_DEFEATED",
 }
 
-local function Mutations_BuildDialogueScript()
-    local dialogue = { regular = {}, task_completed = {} }
-
-    for index, entry in ipairs(WAGSTAFF_MUTATIONS_DIALOGUE_LOOKUP) do
-        for _, str in ipairs(STRINGS[entry]) do
-            dialogue.regular[index] = dialogue.regular[index] or {}
-            table.insert(dialogue.regular[index], Line(str, nil, MUTATATIONS_DIALOGUE_LINE_DURATION))
-        end
-    end
-
-    for index, tbl in ipairs(STRINGS.WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED) do
-        dialogue.task_completed[index] = dialogue.task_completed[index] or {}
-
-        for i, str in ipairs(tbl) do
-            table.insert(dialogue.task_completed[index], Line(str, nil, MUTATATIONS_DIALOGUE_LINE_DURATION))
-        end
-    end
-
-    return dialogue
-end
-
-
 local function Mutations_GiveSecurityPulseCage(inst)
     inst._giverewardtask = nil
 
@@ -934,19 +912,22 @@ local function _Mutations_TalkAboutMutatedCreature_Internal(inst)
             -- Making sure we are in this state, because this function can be called during analyzing state.
             inst.sg:GoToState("analyzing_pre")
 
-            inst.components.talker:Say(inst._dialogue_script.regular[num_defeated])
+            local strings_index = WAGSTAFF_MUTATIONS_DIALOGUE_LOOKUP[num_defeated]
+            inst.components.npc_talker:Chatter(strings_index)
+            inst.components.npc_talker:donextline()
 
-            inst.sg:GoToState("analyzing")
         else
             giverewardtask_time = MUTATIONS_TASK_DELAYS.GIVE_SECURITY_PULSE_CAGE_TASKCOMPLETED
 
             -- Making sure we are in this state, because this function can be called during analyzing state.
             inst.sg:GoToState("idle", "idle_loop")
 
-            inst.components.talker:Say(inst._dialogue_script.task_completed[math.random(#inst._dialogue_script.task_completed)])
-
-            inst.sg:GoToState("analyzing")
+            local strings_index = "WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED"..math.random(3)
+            inst.components.npc_talker:Chatter(strings_index)
+            inst.components.npc_talker:donextline()
         end
+
+        inst.sg:GoToState("analyzing")
 
         if quest_done and inst._giverewardtask == nil then
             inst._giverewardtask = inst:DoTaskInTime(giverewardtask_time, inst.GiveSecurityPulseCage)
@@ -1043,8 +1024,11 @@ local function MutationsQuestFn()
     talker.chaticon = "npcchatflair_wagstaff"
     talker:MakeChatter()
 
-    inst.entity:SetPristine()
+    local npc_talker = inst:AddComponent("npc_talker")
+    npc_talker.default_chatpriority = CHATPRIORITIES.HIGH
+    npc_talker.speaktime = 3.5
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
@@ -1055,8 +1039,6 @@ local function MutationsQuestFn()
     inst:Hide()
 
     inst.persists = false
-
-    inst._dialogue_script = Mutations_BuildDialogueScript()
 
     inst:AddComponent("inspectable")
 
@@ -1147,8 +1129,6 @@ local function WagpunkFn()
     ------------------------------------------
     inst:AddComponent("knownlocations")
     ------------------------------------------
-
-    --inst._dialogue_script = Mutations_BuildDialogueScript()
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 3

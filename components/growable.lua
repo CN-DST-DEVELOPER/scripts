@@ -44,8 +44,8 @@ function Growable:StartGrowing(time)
         end
 
         if timeToGrow ~= nil then
-            if self.springgrowth and TheWorld.state.isspring then
-                timeToGrow = timeToGrow * TUNING.SPRING_GROWTH_MODIFIER
+            if self.springgrowth then
+                timeToGrow = SpringGrowthMod(timeToGrow)
             end
             self.targettime = GetTime() + timeToGrow
 

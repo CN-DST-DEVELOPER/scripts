@@ -26,7 +26,8 @@ end
 --end
 
 local function SeasonalSpawningChanges(inst, season)
-    inst.components.periodicspawner:SetRandomTimes(season == SEASONS.SPRING and TUNING.ROCKY_SPAWN_DELAY * TUNING.SPRING_GROWTH_MODIFIER or TUNING.ROCKY_SPAWN_DELAY, TUNING.ROCKY_SPAWN_VAR)
+    local spawndelay = SpringGrowthMod(TUNING.ROCKY_SPAWN_DELAY)
+    inst.components.periodicspawner:SetRandomTimes(spawndelay, TUNING.ROCKY_SPAWN_VAR)
 end
 
 local function fn()

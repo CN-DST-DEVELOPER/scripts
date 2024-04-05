@@ -111,6 +111,18 @@ end
 
 local DAYLIGHT_SEARCH_RANGE = 30
 local CANGROW_TAGS = { "daylight", "lightsource" }
+function Crop:GetWorldGrowthRateMultiplier()
+    if TheWorld.state.temperature < TUNING.MIN_CROP_GROW_TEMP then
+        return 0
+    end
+    if TheWorld.state.israining and self.inst.components.rainimmunity == nil then
+        return 1 + TUNING.CROP_RAIN_BONUS * TheWorld.state.precipitationrate
+    end
+    if TheWorld.state.isspring then
+        return 1 + TUNING.SPRING_GROWTH_MODIFIER / 3
+    end
+    return 1
+end
 function Crop:DoGrow(dt, nowither)
     if not self.inst:HasTag("withered") and self.growthpercent < 1 then
         local shouldgrow = nowither or not TheWorld.state.isnight
@@ -125,11 +137,7 @@ function Crop:DoGrow(dt, nowither)
             end
         end
         if shouldgrow then
-            local temp_rate =
-                (TheWorld.state.temperature < TUNING.MIN_CROP_GROW_TEMP and 0) or
-				(TheWorld.state.israining and self.inst.components.rainimmunity == nil and 1 + TUNING.CROP_RAIN_BONUS * TheWorld.state.precipitationrate) or
-                (TheWorld.state.isspring and 1 + TUNING.SPRING_GROWTH_MODIFIER / 3) or
-                1
+            local temp_rate = self:GetWorldGrowthRateMultiplier()
             self.growthpercent = math.clamp(self.growthpercent + dt * self.rate * temp_rate, 0, 1)
             self.cantgrowtime = 0
         else

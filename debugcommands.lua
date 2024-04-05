@@ -2459,6 +2459,12 @@ function d_createscrapbookdata(print_missing_icons, noreset)
         return
     end
 
+    c_sethealth(1)
+    c_setsanity(1)
+    c_sethunger(1)
+    c_settemperature(25)
+    c_setmoisture(0)
+
     local _specialevent = WORLD_SPECIAL_EVENT
     WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
 
