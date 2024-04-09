@@ -99,68 +99,62 @@ local function applyskillbrightness(inst, value)
         for i,fx in ipairs(inst.fires) do
             fx:SetLightRange(value)
         end
-    end     
-end
-
-local function removeskillbrightness(inst, value)
-    if inst.fires then
-        for i,fx in ipairs(inst.fires) do
-            fx:SetLightRange(value)
-        end
-    end 
-end
-
-local function applyskillfueleffect(inst,value)
-    inst.components.fueled.rate_modifiers:SetModifier(inst, value,"willowskill")
-end
-local function removeskillfueleffect(inst)
-    inst.components.fueled.rate_modifiers:RemoveModifier(inst, "willowskill")
-end
-
-local function getskillfueleffectmodifier(inst, owner)
-    if not owner.components.skilltreeupdater then
-        return nil
     end
 end
 
-local function getskillbrightnesseffectmodifier(inst, owner)
-    if not owner.components.skilltreeupdater then
-        return nil
-    end    
-    if owner.components.skilltreeupdater:IsActivated("willow_lightradius_2") then
-        return TUNING.SKILLS.WILLOW_BRIGHTNESS_2
-    elseif   owner.components.skilltreeupdater:IsActivated("willow_lightradius_1") then
-        return TUNING.SKILLS.WILLOW_BRIGHTNESS_1
-    end
+--[[local function applyskillfueleffect(inst, value)
+	if value ~= 1 then
+		inst.components.fueled.rate_modifiers:SetModifier(inst, value, "willowskill")
+	else
+		inst.components.fueled.rate_modifiers:RemoveModifier(inst, "willowskill")
+	end
+end]]
+
+local function RefreshAttunedSkills(inst, owner)
+	local skilltreeupdater = owner and owner.components.skilltreeupdater or nil
+	if skilltreeupdater then
+		if skilltreeupdater:IsActivated("willow_attuned_lighter") then
+			if inst.components.channelcastable == nil then
+				inst:AddComponent("channelcastable")
+				inst.components.channelcastable:SetStrafing(false)
+				inst.components.channelcastable:SetOnStartChannelingFn(OnStartChanneling)
+				inst.components.channelcastable:SetOnStopChannelingFn(OnStopChanneling)
+			end
+		else
+			inst:RemoveComponent("channelcastable")
+		end
+
+		applyskillbrightness(inst,
+			(skilltreeupdater:IsActivated("willow_lightradius_2") and TUNING.SKILLS.WILLOW_BRIGHTNESS_2) or
+			(skilltreeupdater:IsActivated("willow_lightradius_1") and TUNING.SKILLS.WILLOW_BRIGHTNESS_1) or
+			1
+		)
+
+		--[[applyskillfueleffect(inst,
+			(skilltreeupdater:IsActivated("willow_consumption_3") and TUNING.SKILLS.WILLOW_CONSUMPTION_3) or
+			(skilltreeupdater:IsActivated("willow_consumption_2") and TUNING.SKILLS.WILLOW_CONSUMPTION_2) or
+			(skilltreeupdater:IsActivated("willow_consumption_1") and TUNING.SKILLS.WILLOW_CONSUMPTION_1) or
+			1
+		)]]
+	else
+		if owner then --don't need to remove when unequipped, less garbage
+			inst:RemoveComponent("channelcastable")
+		end
+		applyskillbrightness(inst, 1)
+		--applyskillfueleffect(inst, 1)
+	end
 end
 
-local function applylighterskilleffects(inst, data)
-    --SKILLTREE CODE
-    if data.fuelmod then
-        applyskillfueleffect(inst,data.fuelmod)
-    end
-    if data.brightnessmod then
-        applyskillbrightness(inst,data.brightnessmod)
-    end
-end
-
-local function removeskilleffects(inst,brightnessvalue)
-    --SKILLTREE CODE
-    removeskillbrightness(inst, 1)
-    removeskillfueleffect(inst)
-end
-
-local function testforattunedskill(inst,owner)
-	if owner.components.skilltreeupdater and owner.components.skilltreeupdater:IsActivated("willow_attuned_lighter") then
-        if inst.components.channelcastable == nil then
-            inst:AddComponent("channelcastable")
-			inst.components.channelcastable:SetStrafing(false)
-            inst.components.channelcastable:SetOnStartChannelingFn(OnStartChanneling)
-            inst.components.channelcastable:SetOnStopChannelingFn(OnStopChanneling)
-        end
-    else
-        inst:RemoveComponent("channelcastable")
-    end
+local function WatchSkillRefresh(inst, owner)
+	if inst._owner then
+		inst:RemoveEventCallback("onactivateskill_server", inst._onskillrefresh, inst._owner)
+		inst:RemoveEventCallback("ondeactivateskill_server", inst._onskillrefresh, inst._owner)
+	end
+	inst._owner = owner
+	if owner then
+		inst:ListenForEvent("onactivateskill_server", inst._onskillrefresh, owner)
+		inst:ListenForEvent("ondeactivateskill_server", inst._onskillrefresh, owner)
+	end
 end
 
 local function onequip(inst, owner)
@@ -179,8 +173,6 @@ local function onequip(inst, owner)
 
     owner.SoundEmitter:PlaySound("dontstarve/wilson/lighter_on")
 
-    inst:testforattunedskill(owner)
-
     if inst.fires == nil then
         inst.fires = {}
 
@@ -195,7 +187,8 @@ local function onequip(inst, owner)
         end
     end
 
-    applylighterskilleffects(inst, {fuelmod = getskillfueleffectmodifier(inst, owner), brightnessmod = getskillbrightnesseffectmodifier(inst, owner) } )
+	WatchSkillRefresh(inst, owner)
+	RefreshAttunedSkills(inst, owner)
 end
 
 local function onunequip(inst,owner)
@@ -216,26 +209,8 @@ local function onunequip(inst,owner)
     owner.AnimState:Show("ARM_normal")
     owner.SoundEmitter:PlaySound("dontstarve/wilson/lighter_off")
 
-    removeskilleffects(inst, getskillbrightnesseffectmodifier(inst, owner))
-end
-
-local function applyskilleffect(inst, skill)
-    if skill == "willow_consumption_3" then
-        removeskillfueleffect(inst)
-        applyskillfueleffect(inst,TUNING.SKILLS.WILLOW_CONSUMPTION_3)        
-    elseif skill == "willow_consumption_2" then
-        removeskillfueleffect(inst)
-        applyskillfueleffect(inst,TUNING.SKILLS.WILLOW_CONSUMPTION_2)
-    elseif skill == "willow_consumption_1" then
-        applyskillfueleffect(inst,TUNING.SKILLS.WILLOW_CONSUMPTION_1)
-    end
-
-    if skill == "willow_lightradius_1" then
-        applyskillbrightness(inst,TUNING.SKILLS.WILLOW_BRIGHTNESS_1)
-    elseif skill == "willow_lightradius_2" then
-        removeskillbrightness(inst,TUNING.SKILLS.WILLOW_BRIGHTNESS_1)
-        applyskillbrightness(inst,TUNING.SKILLS.WILLOW_BRIGHTNESS_2)    
-    end
+	WatchSkillRefresh(inst, nil)
+	RefreshAttunedSkills(inst, nil)
 end
 
 local function onequiptomodel(inst, owner, from_ground)
@@ -408,10 +383,8 @@ local function fn()
     inst.components.fueled.fueltype = FUELTYPE.LIGHTER
     inst.components.fueled.accepting = true
     inst.components.fueled:SetTakeFuelFn(ontakefuel)
-    
 
-    inst.applyskilleffect = applyskilleffect
-    inst.testforattunedskill = testforattunedskill
+	inst._onskillrefresh = function(owner) RefreshAttunedSkills(inst, owner) end
 
     inst:WatchWorldState("israining", onisraining)
     onisraining(inst, TheWorld.state.israining)

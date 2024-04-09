@@ -658,6 +658,16 @@ function Container:Has(item, amount, iscrafting)
     return num_found >= amount, num_found
 end
 
+function Container:HasItemThatMatches(fn, amount)
+	local num_found = 0
+	for k, v in pairs(self.slots) do
+		if fn(v) then
+			num_found = num_found + (v.components.stackable and v.components.stackable:StackSize() or 1)
+		end
+	end
+	return num_found >= amount, num_found
+end
+
 function Container:HasItemWithTag(tag, amount)
     local num_found = 0
     for k,v in pairs(self.slots) do

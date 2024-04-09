@@ -39,21 +39,15 @@ local function PickUpAction(inst)
 
     ----------------
 
-    local onlytheseprefabs
-
     local item = inst.components.inventory:GetFirstItemInAnySlot()
 
-    if item ~= nil then
-        if (item.components.stackable == nil or item.components.stackable:IsFull()) then
-            return
-        end
-
-        onlytheseprefabs = {[item.prefab] = true}
+    if item and (item.components.stackable == nil or item.components.stackable:IsFull()) then
+        return
     end
 
     ----------------
 
-    local item = inst:FindPickupableItem(onlytheseprefabs)
+    item = inst:FindItemToPickupAndStore(item)
 
     if item == nil then
         return

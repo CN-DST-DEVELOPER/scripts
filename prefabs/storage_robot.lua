@@ -116,25 +116,26 @@ local function UpdateSpawnPoint(inst, dont_overwrite)
     end
 
     if inst:IsOnPassablePoint() then
-        local pos = inst:GetPosition()
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local pos = Vector3(x, 0, z)
 
         local platform = inst:GetCurrentPlatform()
 
         if platform ~= nil then
-            local local_pos = Vector3(platform.entity:WorldToLocalSpace(pos:Get()))
+            local local_pos = Vector3(platform.entity:WorldToLocalSpace(x, 0, z))
 
             inst.components.knownlocations:RememberLocation(SPAWNPOINT_LOCAL_NAME, local_pos, dont_overwrite)
         else
             inst.components.knownlocations:ForgetLocation(SPAWNPOINT_LOCAL_NAME)
         end
 
-        if pos.x == 0 then
+        if x == 0 then
             -- Make sure something is dirty for sure.
             inst._originx:set_local(0)
         end
 
-        inst._originx:set(pos.x)
-        inst._originz:set(pos.z)
+        inst._originx:set(x)
+        inst._originz:set(z)
 
         inst.components.knownlocations:RememberLocation(SPAWNPOINT_NAME, pos, dont_overwrite)
     end
@@ -264,11 +265,15 @@ local function FindContainerWithItem(inst, item, count)
 
     local ents = TheSim:FindEntities(x, y, z, TUNING.STORAGE_ROBOT_WORK_RADIUS, CONTAINER_MUST_TAGS, CONTAINER_CANT_TAGS)
 
+    local function SamePrefabAndSkin(ent)
+        return ent.prefab == item.prefab and ent.skinname == item.skinname
+    end
+
     for i, ent in ipairs(ents) do
         if ent.components.container ~= nil and
             table.contains(ALLOWED_CONTAINER_TYPES, ent.components.container.type) and
             ent.components.container.canbeopened and
-            ent.components.container:Has(item.prefab, 1) and
+            ent.components.container:HasItemThatMatches(SamePrefabAndSkin, 1) and
             ent.components.container:CanAcceptCount(item, stack_maxsize) > count and
             ent:IsOnPassablePoint() and
             ent:GetCurrentPlatform() == inst:GetCurrentPlatform()
@@ -280,7 +285,7 @@ local function FindContainerWithItem(inst, item, count)
     return
 end
 
-local function FindPickupableItem_filter(inst, item, onlytheseprefabs)
+local function FindItemToPickupAndStore_filter(inst, item, match_item)
     -- Ignore ourself and other storage robots.
     if item:HasTag("storagerobot") then
         return
@@ -302,7 +307,7 @@ local function FindPickupableItem_filter(inst, item, onlytheseprefabs)
         return
     end
 
-    if onlytheseprefabs ~= nil and onlytheseprefabs[item.prefab] == nil then
+    if match_item ~= nil and not (item.prefab == match_item.prefab and item.skinname == match_item.skinname) then
         return
     end
 
@@ -315,7 +320,10 @@ local function FindPickupableItem_filter(inst, item, onlytheseprefabs)
     end
 
     -- Checks how many of this item we have.
-    local _, count = inst.components.inventory:Has(item.prefab, 1)
+    local function SamePrefabAndSkin(ent)
+        return ent.prefab == item.prefab and ent.skinname == item.skinname
+    end
+    local _, count = inst.components.inventory:HasItemThatMatches(SamePrefabAndSkin, 1)
 
     local container = inst:FindContainerWithItem(item, count)
 
@@ -338,7 +346,7 @@ local PICKUP_CANT_TAGS =
     "heavy", "outofreach",
 }
 
-local function FindPickupableItem(inst, onlytheseprefabs)
+local function FindItemToPickupAndStore(inst, match_item)
     local x, y, z    = inst.Transform:GetWorldPosition()
     local sx, xy, sz = inst:GetSpawnPoint():Get()
 
@@ -346,7 +354,7 @@ local function FindPickupableItem(inst, onlytheseprefabs)
 
     for i, ent in ipairs(ents) do
         if ent:GetDistanceSqToPoint(sx, xy, sz) <= TUNING.STORAGE_ROBOT_WORK_RADIUS * TUNING.STORAGE_ROBOT_WORK_RADIUS then
-            local item, container = FindPickupableItem_filter(inst, ent, onlytheseprefabs)
+            local item, container = FindItemToPickupAndStore_filter(inst, ent, match_item)
 
             if item ~= nil then
                 return item, container
@@ -369,7 +377,7 @@ local function DoOffscreenPickup(inst)
         return -- Safeguard.
     end
 
-    local item = inst:FindPickupableItem()
+    local item = inst:FindItemToPickupAndStore()
 
     if item == nil then
         inst:StartOffscreenPickupTask(5)
@@ -464,7 +472,9 @@ local function OnReachDestination(inst, data)
 
     -- Snap to item position, so we are always layered correctly.
     if data.target.components.inventoryitem ~= nil and data.target.components.container == nil then
-        inst.Physics:Teleport(data.pos:Get())
+        local x, y, z = data.pos:Get()
+
+        inst.Physics:Teleport(x, 0, z)
     end
 end
 
@@ -674,7 +684,7 @@ local function fn()
     inst.DoOffscreenPickup = DoOffscreenPickup
     inst.StartOffscreenPickupTask = StartOffscreenPickupTask
 
-    inst.FindPickupableItem = FindPickupableItem
+    inst.FindItemToPickupAndStore = FindItemToPickupAndStore
     inst.FindContainerWithItem = FindContainerWithItem
 
     inst.GetFueledSectionSuffix = GetFueledSectionSuffix

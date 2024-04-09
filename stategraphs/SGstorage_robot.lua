@@ -89,6 +89,7 @@ local states =
             inst.components.locomotor:StopMoving()
 
             inst.SoundEmitter:KillSound(WALK_SOUNDNAME)
+            inst.SoundEmitter:KillSound(ACTIVE_SOUNDNAME)
 
             TryPlayingNeutralVocalizationSound(inst)
 
@@ -271,6 +272,7 @@ CommonStates.AddWalkStates(
             inst.components.fueled:StopConsuming()
 
             inst.SoundEmitter:KillSound(WALK_SOUNDNAME)
+            inst.SoundEmitter:KillSound(ACTIVE_SOUNDNAME)
         end,
 
         walktimeline =

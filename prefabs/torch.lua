@@ -79,64 +79,52 @@ local function applyskillbrightness(inst, value)
         for i,fx in ipairs(inst.fires) do
             fx:SetLightRange(value)
         end
-    end     
-end
-
-local function removeskillbrightness(inst, value)
-    if inst.fires then
-        for i,fx in ipairs(inst.fires) do
-            fx:SetLightRange(value)
-        end
-    end 
-end
-
-local function applyskillfueleffect(inst,value)
-    inst.components.fueled.rate_modifiers:SetModifier(inst, value,"wilsonskill")
-end
-local function removeskillfueleffect(inst)
-    inst.components.fueled.rate_modifiers:RemoveModifier(inst, "wilsonskill")
-end
-
-local function getskillfueleffectmodifier(inst, owner)
-    if not owner.components.skilltreeupdater then
-        return nil
-    end
-    if owner.components.skilltreeupdater:IsActivated("wilson_torch_3") then
-        return TUNING.SKILLS.WILSON_TORCH_3
-    elseif owner.components.skilltreeupdater:IsActivated("wilson_torch_2") then
-        return TUNING.SKILLS.WILSON_TORCH_2
-    elseif owner.components.skilltreeupdater:IsActivated("wilson_torch_1") then
-        return TUNING.SKILLS.WILSON_TORCH_1
     end
 end
 
-local function getskillbrightnesseffectmodifier(inst, owner)
-    if not owner.components.skilltreeupdater then
-        return nil
-    end    
-    if owner.components.skilltreeupdater:IsActivated("wilson_torch_6") then
-        return TUNING.SKILLS.WILSON_TORCH_6
-    elseif   owner.components.skilltreeupdater:IsActivated("wilson_torch_5") then
-        return TUNING.SKILLS.WILSON_TORCH_5
-    elseif   owner.components.skilltreeupdater:IsActivated("wilson_torch_4") then
-        return TUNING.SKILLS.WILSON_TORCH_4
-    end
+local function applyskillfueleffect(inst, value)
+	if value ~= 1 then
+		inst.components.fueled.rate_modifiers:SetModifier(inst, value, "wilsonskill")
+	else
+		inst.components.fueled.rate_modifiers:RemoveModifier(inst, "wilsonskill")
+	end
 end
 
-local function applytorchskilleffects(inst, data)
-    --SKILLTREE CODE
-    if data.fuelmod then
-        applyskillfueleffect(inst,data.fuelmod)
-    end
-    if data.brightnessmod then
-        applyskillbrightness(inst,data.brightnessmod)
-    end
+local function getskillfueleffectmodifier(skilltreeupdater)
+	return (skilltreeupdater:IsActivated("wilson_torch_3") and TUNING.SKILLS.WILSON_TORCH_3)
+		or (skilltreeupdater:IsActivated("wilson_torch_2") and TUNING.SKILLS.WILSON_TORCH_2)
+		or (skilltreeupdater:IsActivated("wilson_torch_1") and TUNING.SKILLS.WILSON_TORCH_1)
+		or 1
 end
 
-local function removetorchskilleffects(inst,brightnessvalue)
-    --SKILLTREE CODE
-    removeskillbrightness(inst, 1)
-    removeskillfueleffect(inst)
+local function getskillbrightnesseffectmodifier(skilltreeupdater)
+	return (skilltreeupdater:IsActivated("wilson_torch_6") and TUNING.SKILLS.WILSON_TORCH_6)
+		or (skilltreeupdater:IsActivated("wilson_torch_5") and TUNING.SKILLS.WILSON_TORCH_5)
+		or (skilltreeupdater:IsActivated("wilson_torch_4") and TUNING.SKILLS.WILSON_TORCH_4)
+		or 1
+end
+
+local function RefreshAttunedSkills(inst, owner)
+	local skilltreeupdater = owner and owner.components.skilltreeupdater or nil
+	if skilltreeupdater then
+		applyskillbrightness(inst, getskillbrightnesseffectmodifier(skilltreeupdater))
+		applyskillfueleffect(inst, getskillfueleffectmodifier(skilltreeupdater))
+	else
+		applyskillbrightness(inst, 1)
+		applyskillfueleffect(inst, 1)
+	end
+end
+
+local function WatchSkillRefresh(inst, owner)
+	if inst._owner then
+		inst:RemoveEventCallback("onactivateskill_server", inst._onskillrefresh, inst._owner)
+		inst:RemoveEventCallback("ondeactivateskill_server", inst._onskillrefresh, inst._owner)
+	end
+	inst._owner = owner
+	if owner then
+		inst:ListenForEvent("onactivateskill_server", inst._onskillrefresh, owner)
+		inst:ListenForEvent("ondeactivateskill_server", inst._onskillrefresh, owner)
+	end
 end
 
 local function onequip(inst, owner)
@@ -171,7 +159,8 @@ local function onequip(inst, owner)
         end
     end
 
-    applytorchskilleffects(inst, {fuelmod = getskillfueleffectmodifier(inst, owner), brightnessmod = getskillbrightnesseffectmodifier(inst, owner) } )
+	WatchSkillRefresh(inst, owner)
+	RefreshAttunedSkills(inst, owner)
 end
 
 local function onunequip(inst, owner)
@@ -192,29 +181,8 @@ local function onunequip(inst, owner)
     owner.AnimState:Hide("ARM_carry")
     owner.AnimState:Show("ARM_normal")
 
-    removetorchskilleffects(inst, getskillbrightnesseffectmodifier(inst, owner))
-end
-
-local function applyskilleffect(inst, skill)
-    if skill == "wilson_torch_3" then
-        removeskillfueleffect(inst)
-        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_3)        
-    elseif skill == "wilson_torch_2" then
-        removeskillfueleffect(inst)
-        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_2)
-    elseif skill == "wilson_torch_1" then
-        applyskillfueleffect(inst,TUNING.SKILLS.WILSON_TORCH_1)
-    end
-
-    if skill == "wilson_torch_4" then
-        applyskillbrightness(inst,TUNING.SKILLS.WILSON_TORCH_4)
-    elseif skill == "wilson_torch_5" then
-        removeskillbrightness(inst,TUNING.SKILLS.WILSON_TORCH_4)
-        applyskillbrightness(inst,TUNING.SKILLS.WILSON_TORCH_5)
-    elseif skill == "wilson_torch_6" then
-        removeskillbrightness(inst,TUNING.SKILLS.WILSON_TORCH_5)
-        applyskillbrightness(inst,TUNING.SKILLS.WILSON_TORCH_6)
-    end    
+	WatchSkillRefresh(inst, nil)
+	RefreshAttunedSkills(inst, nil)
 end
 
 local function onequiptomodel(inst, owner, from_ground)
@@ -328,12 +296,16 @@ local function IgniteTossed(inst)
 		end
 	end
     if inst.thrower then
-        applytorchskilleffects(inst, {fuelmod = inst.thrower.fuelmod, brightnessmod = inst.thrower.brightnessmod } )
+		applyskillbrightness(inst, inst.thrower.brightnessmod or 1)
+		applyskillfueleffect(inst, inst.thrower.fuelmod or 1)
     end
 end
 
 local function OnThrown(inst, thrower)
-    inst.thrower = thrower and {fuelmod = getskillfueleffectmodifier(inst, thrower), brightnessmod = getskillbrightnesseffectmodifier(inst, thrower) } or nil
+	inst.thrower = thrower and thrower.components.skilltreeupdater and {
+		fuelmod = getskillfueleffectmodifier(thrower.components.skilltreeupdater),
+		brightnessmod = getskillbrightnesseffectmodifier(thrower.components.skilltreeupdater),
+	} or nil
 	inst.AnimState:PlayAnimation("spin_loop", true)
 	inst.SoundEmitter:PlaySound("wilson_rework/torch/torch_spin", "spin_loop")
 	PlayIgniteSound(inst, nil, true, true)
@@ -352,13 +324,12 @@ end
 
 local function RemoveThrower(inst)
     if inst.thrower then
-        removetorchskilleffects(inst,inst.thrower.brightnessmod)
+		if inst._owner == nil then
+			applyskillbrightness(inst, 1)
+			applyskillfueleffect(inst, 1)
+		end
 		inst.thrower = nil
     end
-end
-
-local function OnPickedUp(inst)
-    RemoveThrower(inst)
 end
 
 local function OnPutInInventory(inst, owner)
@@ -470,7 +441,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
-    inst.components.inventoryitem:SetOnPickupFn(OnPickedUp)
+	inst.components.inventoryitem:SetOnPickupFn(RemoveThrower)
 
     -----------------------------------
 
@@ -514,7 +485,7 @@ local function fn()
     inst.components.fueled:SetDepletedFn(inst.Remove)
     inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
 
-    inst.applyskilleffect = applyskilleffect
+	inst._onskillrefresh = function(owner) RefreshAttunedSkills(inst, owner) end
 
     inst:WatchWorldState("israining", onisraining)
     onisraining(inst, TheWorld.state.israining)

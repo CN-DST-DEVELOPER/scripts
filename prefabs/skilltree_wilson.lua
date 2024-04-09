@@ -165,15 +165,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {-214,176},
             --pos = {0,0},
             group = "torch",
-            tags = {"torch"},
-            onactivate = function(inst, fromload)
-                    if not fromload then
-                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                        if equipped and equipped.applyskilleffect then
-                            equipped:applyskilleffect("wilson_torch_1", inst)
-                        end
-                    end
-                end,
+            tags = {"torch", "torch1"},
             root = true,
             connects = {
                 "wilson_torch_2",
@@ -186,15 +178,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {-214,176-38},
             --pos = {0,-1},
             group = "torch",
-            tags = {"torch"},
-            onactivate = function(inst, fromload)
-                    if not fromload then
-                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                        if equipped and equipped.applyskilleffect then
-                            equipped:applyskilleffect("wilson_torch_2", inst)
-                        end
-                    end
-                end,        
+            tags = {"torch", "torch1"},
             connects = {
                 "wilson_torch_3",
             },
@@ -206,15 +190,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {-214,176-38-38},
             --pos = {0,-2},
             group = "torch",
-            tags = {"torch"},
-            onactivate = function(inst, fromload) 
-                    if not fromload then
-                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                        if equipped and equipped.applyskilleffect then
-                            equipped:applyskilleffect("wilson_torch_3", inst)
-                        end
-                    end
-                end,
+            tags = {"torch", "torch1"},
         },
         wilson_torch_4 = {
             title = STRINGS.SKILLTREE.WILSON.WILSON_TORCH_4_TITLE,
@@ -223,15 +199,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {-214+38,176},        
             --pos = {1,0},
             group = "torch",
-            tags = {"torch"},
-            onactivate = function(inst, fromload)
-                    if not fromload then
-                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                        if equipped and equipped.applyskilleffect then
-                            equipped:applyskilleffect("wilson_torch_4", inst)
-                        end
-                    end
-                end,        
+            tags = {"torch", "torch1"},
             root = true,
             connects = {
                 "wilson_torch_5",
@@ -244,15 +212,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {-214+38,176-38},
             --pos = {1,-1},
             group = "torch",
-            tags = {"torch"},
-            onactivate = function(inst, fromload)
-                    if not fromload then
-                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                        if equipped and equipped.applyskilleffect then
-                            equipped:applyskilleffect("wilson_torch_5", inst)
-                        end
-                    end
-                end,        
+            tags = {"torch", "torch1"},
             connects = {
                 "wilson_torch_6",
             },
@@ -264,15 +224,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {-214+38,176-38-38},
             --pos = {1,-2},
             group = "torch",
-            tags = {"torch"},
-            onactivate = function(inst, fromload)
-                    if not fromload then
-                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                        if equipped and equipped.applyskilleffect then
-                            equipped:applyskilleffect("wilson_torch_5", inst)
-                        end
-                    end
-                end,
+            tags = {"torch", "torch1"},
         }, 
 
         wilson_torch_lock_1 = {
@@ -283,7 +235,7 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"torch","lock"},
             root = true,
             lock_open = function(prefabname, activatedskills, readonly)
-                return SkillTreeFns.CountTags(prefabname, "torch", activatedskills) > 2
+                return SkillTreeFns.CountTags(prefabname, "torch1", activatedskills) > 2
             end,
             connects = {
                 "wilson_torch_7",
@@ -306,7 +258,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {66,176},
             --pos = {0,0},
             group = "beard",
-            tags = {"beard"},
+            tags = {"beard", "beard1"},
             root = true,
             connects = {
                 "wilson_beard_2",
@@ -319,7 +271,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {66,176-38},
             --pos = {0,-1},
             group = "beard",
-            tags = {"beard"},
+            tags = {"beard", "beard1"},
             connects = {
                 "wilson_beard_3",
             },
@@ -331,7 +283,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {66,176-38-38},
             --pos = {0,-2},
             group = "beard",
-            tags = {"beard"},
+            tags = {"beard", "beard1"},
         },
 
         wilson_beard_4 = {
@@ -341,7 +293,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {66+38,176},
             --pos = {1,0},
             group = "beard",
-            tags = {"beard"},
+            tags = {"beard", "beard1"},
             root = true,
             connects = {
                 "wilson_beard_5",
@@ -354,7 +306,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {66+38,176-38},
             --pos = {1,-1},
             group = "beard",
-            tags = {"beard"},
+            tags = {"beard", "beard1"},
             connects = {
                 "wilson_beard_6",
             },
@@ -366,7 +318,7 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {66+38,176-38-38},
             --pos = {1,-2},
             group = "beard",
-            tags = {"beard"},
+            tags = {"beard", "beard1"},
         },
 
         wilson_beard_lock_1 = {
@@ -377,7 +329,7 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"beard","lock"},
             root = true,
             lock_open = function(prefabname, activatedskills, readonly)
-                return SkillTreeFns.CountTags(prefabname, "beard", activatedskills) > 2
+                return SkillTreeFns.CountTags(prefabname, "beard1", activatedskills) > 2
             end,
             connects = {
                 "wilson_beard_7",

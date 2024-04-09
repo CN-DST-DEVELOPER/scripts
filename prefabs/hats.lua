@@ -1410,44 +1410,44 @@ local function MakeHat(name)
         inst:AddTag("battlehelm")
     end
 
-    fns.wathgrithr_applyskills = function(inst, owner)
-        local _skilltreeupdater = owner.components.skilltreeupdater
+	fns.wathgrithr_refreshattunedskills = function(inst, owner)
+		local skilltreeupdater = owner and owner.components.skilltreeupdater or nil
 
-        if _skilltreeupdater == nil then
-            return
-        end
+		if inst.components.armor then
+			local skill_level = skilltreeupdater and skilltreeupdater:CountSkillTag("helmetcondition") or 0
+			if skill_level > 0 then
+				inst.components.armor.conditionlossmultipliers:SetModifier(inst, TUNING.SKILLS.WATHGRITHR.WATHGRITHRHAT_DURABILITY_MOD[skill_level], "arsenal_helm")
+			else
+				inst.components.armor.conditionlossmultipliers:RemoveModifier(inst, "arsenal_helm")
+			end
+		end
 
-        local skill_level = owner.components.skilltreeupdater:CountSkillTag("helmetcondition")
+		if inst._is_improved_hat then
+			if skilltreeupdater and skilltreeupdater:IsActivated("wathgrithr_arsenal_helmet_4") then
+				inst.components.planardefense:AddBonus(inst, TUNING.SKILLS.WATHGRITHR.HELM_PLANAR_DEF, "wathgrithr_arsenal_helmet_4")
+			else
+				inst.components.planardefense:RemoveBonus(inst, "wathgrithr_arsenal_helmet_4")
+			end
 
-        if skill_level > 0 and inst.components.armor ~= nil then
-            inst.components.armor.conditionlossmultipliers:SetModifier(inst, TUNING.SKILLS.WATHGRITHR.WATHGRITHRHAT_DURABILITY_MOD[skill_level], "arsenal_helm")
-        end
+			if skilltreeupdater and skilltreeupdater:IsActivated("wathgrithr_arsenal_helmet_5") then
+				inst:AddTag("battleborn_repairable")
+			else
+				inst:RemoveTag("battleborn_repairable")
+			end
+		end
+	end
 
-        if not inst._is_improved_hat then
-            return
-        end
-
-        if _skilltreeupdater:IsActivated("wathgrithr_arsenal_helmet_4") then
-            inst.components.planardefense:AddBonus(inst, TUNING.SKILLS.WATHGRITHR.HELM_PLANAR_DEF, "wathgrithr_arsenal_helmet_4")
-        end
-
-        if _skilltreeupdater:IsActivated("wathgrithr_arsenal_helmet_5") then
-            inst:AddTag("battleborn_repairable")
-        end
-    end
-
-    fns.wathgrithr_removeskills = function(inst, owner)
-        if inst.components.armor ~= nil then
-            inst.components.armor.conditionlossmultipliers:RemoveModifier(inst, "arsenal_helm")
-        end
-
-        if not inst._is_improved_hat then
-            return
-        end
-
-        inst.components.planardefense:RemoveBonus(inst, "wathgrithr_arsenal_helmet_4")
-        inst:RemoveTag("battleborn_repairable")
-    end
+	fns.wathgrithr_watchskillrefresh = function(inst, owner)
+		if inst._owner then
+			inst:RemoveEventCallback("onactivateskill_server", inst._onskillrefresh, inst._owner)
+			inst:RemoveEventCallback("ondeactivateskill_server", inst._onskillrefresh, inst._owner)
+		end
+		inst._owner = owner
+		if owner then
+			inst:ListenForEvent("onactivateskill_server", inst._onskillrefresh, owner)
+			inst:ListenForEvent("ondeactivateskill_server", inst._onskillrefresh, owner)
+		end
+	end
 
     fns.wathgrithr_onequip = function(inst, owner)
         if inst:HasTag("open_top_hat") then
@@ -1456,13 +1456,15 @@ local function MakeHat(name)
             _onequip(inst, owner)
         end
 
-        inst:ApplySkillsChanges(owner)
+		fns.wathgrithr_watchskillrefresh(inst, owner)
+		fns.wathgrithr_refreshattunedskills(inst, owner)
     end
 
     fns.wathgrithr_onunequip = function(inst, owner)
         _onunequip(inst, owner)
 
-        inst:RemoveSkillsChanges(owner)
+		fns.wathgrithr_watchskillrefresh(inst, nil)
+		fns.wathgrithr_refreshattunedskills(inst, nil)
     end
 
     fns.wathgrithr = function()
@@ -1472,8 +1474,7 @@ local function MakeHat(name)
             return inst
         end
 
-        inst.ApplySkillsChanges  = fns.wathgrithr_applyskills
-        inst.RemoveSkillsChanges = fns.wathgrithr_removeskills
+		inst._onskillrefresh = function(owner) fns.wathgrithr_refreshattunedskills(inst, owner) end
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_WATHGRITHRHAT, TUNING.ARMOR_WATHGRITHRHAT_ABSORPTION)
@@ -1502,8 +1503,7 @@ local function MakeHat(name)
 
         inst._is_improved_hat = true
 
-        inst.ApplySkillsChanges  = fns.wathgrithr_applyskills
-        inst.RemoveSkillsChanges = fns.wathgrithr_removeskills
+		inst._onskillrefresh = function(owner) fns.wathgrithr_refreshattunedskills(inst, owner) end
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_WATHGRITHR_IMPROVEDHAT, TUNING.ARMOR_WATHGRITHR_IMPROVEDHAT_ABSORPTION)

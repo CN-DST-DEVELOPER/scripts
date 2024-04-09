@@ -2222,7 +2222,7 @@ function PlayerController:OnUpdate(dt)
     end
 
 	if self:IsAOETargeting() then
-		if self.reticule.inst:HasTag("fueldepleted") then
+		if not self.reticule.inst:IsValid() or self.reticule.inst:HasTag("fueldepleted") then
 			self:CancelAOETargeting()
 		else
 			local inventoryitem = self.reticule.inst.replica.inventoryitem

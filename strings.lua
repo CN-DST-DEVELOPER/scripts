@@ -8055,6 +8055,7 @@ STRINGS.UI =
 		PLAYER_2_PRESS_START_POSTFIX = "TO JOIN",
 
         PLAYER_2_CONTROLLER_DISCONNECTED = "CONTROLLER 2 DISCONNECTED",
+        XB1_PLAYER_2_CONTROLLER_DISCONNECTED = "GAMEPAD 2 DISCONNECTED",
     },
 
     PLANTREGISTRY = {
@@ -8730,6 +8731,7 @@ STRINGS.UI =
         NPCCHAT_NONE = "None",
 
         CONTROLLER_LAYOUT = "Controller Layout:",
+        XB1_CONTROLLER_LAYOUT = "Gamepad Layout:",
         CONTROLLER_CUSTOM = "Custom",
         RESET_LAYOUT = "Default All",
         RESET_LAYOUT_BODY = "Do you want to reset all controls to their default values?\n\nYou will lose any changes you've made.\n",        

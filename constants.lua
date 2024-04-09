@@ -1109,6 +1109,7 @@ PICKUPSOUNDS = {
     ["squidgy"] = "aqol/new_test/squidgy",
     ["grainy"] = "aqol/new_test/grainy",
     ["DEFAULT_FALLBACK"] = "dontstarve/HUD/collect_resource",
+	["NONE"] = nil, --reserved
 }
 
 ---------------------------------------------------------

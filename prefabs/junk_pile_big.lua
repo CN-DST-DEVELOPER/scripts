@@ -556,6 +556,7 @@ local function fn()
 	inst:AddTag("pickable_rummage_str")
 	inst:AddTag("NPC_workable")
 	inst:AddTag("noquickpick")
+	inst:AddTag("event_trigger")
 
 	MakeObstaclePhysics(inst, 3.6)
 

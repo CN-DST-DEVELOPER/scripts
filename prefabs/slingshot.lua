@@ -147,6 +147,7 @@ local function fn()
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("slingshot")
 	inst.components.container.canbeopened = false
+    inst.components.container.stay_open_on_hide = true
     inst:ListenForEvent("itemget", OnAmmoLoaded)
     inst:ListenForEvent("itemlose", OnAmmoUnloaded)
 

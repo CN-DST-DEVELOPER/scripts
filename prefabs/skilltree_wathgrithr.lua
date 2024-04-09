@@ -124,22 +124,6 @@ end
 --------------------------------------------------------------------------------------------------
 
 local ONACTIVATE_FNS = {
-    ArsenalSpear = function(inst)
-        local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-
-        if item ~= nil and item:HasTag("battlespear") then
-            item:ApplySkillsChanges(inst)
-        end
-    end,
-
-    ArsenalHelm = function(inst)
-        local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-
-        if item ~= nil and item:HasTag("battlehelm") then
-            item:ApplySkillsChanges(inst)
-        end
-    end,
-
     CombatDefense = function(inst)
         if inst.components.planardefense ~= nil then
             inst.components.planardefense:AddBonus(inst, TUNING.SKILLS.WATHGRITHR.BONUS_PLANAR_DEF, "wathgrithr_combat_defense")
@@ -180,22 +164,6 @@ local ONACTIVATE_FNS = {
 }
 
 local ONDEACTIVATE_FNS = {
-    ArsenalSpear = function(inst)
-        local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-
-        if item ~= nil and item:HasTag("battlespear") then
-            item:RemoveSkillsChanges(inst)
-        end
-    end,
-
-    ArsenalHelm = function (inst)
-        local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-
-        if item ~= nil and item:HasTag("battlehelm") then
-            item:RemoveSkillsChanges(inst)
-        end
-    end,
-
     CombatDefense = function(inst)
         if inst.components.planardefense ~= nil then
             inst.components.planardefense:RemoveBonus(inst, "wathgrithr_combat_defense")
@@ -254,9 +222,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             root = true,
             connects = { "wathgrithr_arsenal_spear_2" },
-
-            onactivate   = ONACTIVATE_FNS.ArsenalSpear,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalSpear,
         },
 
         -- Inspiration gain rate will increase a fair amount when attacking using Battle Spears.
@@ -265,9 +230,6 @@ local function BuildSkillsData(SkillTreeFns)
             tags = { "spear", "inspirationgain" },
 
             connects = { "wathgrithr_arsenal_spear_3" },
-
-            onactivate   = ONACTIVATE_FNS.ArsenalSpear,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalSpear,
         },
 
         -- Learn to craft the Lightning Spear.
@@ -290,9 +252,6 @@ local function BuildSkillsData(SkillTreeFns)
         wathgrithr_arsenal_spear_4 = {
             group = "arsenal",
             tags = { "spear" },
-
-            onactivate   = ONACTIVATE_FNS.ArsenalSpear,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalSpear,
         },
 
         -- Upgrade the Lightning Spear using Restrained Static to deal +20 Planar Damage.
@@ -313,9 +272,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             root = true,
             connects = { "wathgrithr_arsenal_helmet_2" },
-
-            onactivate = ONACTIVATE_FNS.ArsenalHelm,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalHelm,
         },
 
         -- Battle Helms will be a fair amount more durable when worn by Wigfrid.
@@ -324,9 +280,6 @@ local function BuildSkillsData(SkillTreeFns)
             tags = { "helmet", "helmetcondition" },
 
             connects = { "wathgrithr_arsenal_helmet_3" },
-
-            onactivate = ONACTIVATE_FNS.ArsenalHelm,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalHelm,
         },
 
         -- Learn to craft the Commander's Helm: a helm that protects against knockback attacks.
@@ -349,18 +302,12 @@ local function BuildSkillsData(SkillTreeFns)
         wathgrithr_arsenal_helmet_4 = {
             group = "arsenal",
             tags = { "helmet" },
-
-            onactivate = ONACTIVATE_FNS.ArsenalHelm,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalHelm,
         },
 
         -- Wigfrid's natural healing ability will repair her Commander's Helm when she continues to fight at maximum health.
         wathgrithr_arsenal_helmet_5 = {
             group = "arsenal",
             tags = { "helmet" },
-
-            onactivate = ONACTIVATE_FNS.ArsenalHelm,
-            ondeactivate = ONDEACTIVATE_FNS.ArsenalHelm,
         },
 
         --------------------------------------------------------------------------

@@ -130,33 +130,6 @@ local function OnBecameGhost(inst)
     end
 end
 
-local function updateembers(inst)
-    if inst.components.inventory then
-        local embers = inst.components.inventory:FindItems(function(item)
-            return  item:HasTag("willow_ember")
-        end)
-
-        for i,ember in ipairs(embers)do
-            ember._updatespells:push()
-            ember.updatespells(ember,inst)
-        end
-    end
-end
-
-local function updatelighters(inst)
-    if inst.components.inventory then
-        local lighters = inst.components.inventory:FindItems(function(item)
-            return  item:HasTag("lighter")
-        end)
-
-        for i,lighter in ipairs(lighters)do
-            if lighter.testforattunedskill ~= nil then
-                lighter:testforattunedskill(inst)
-            end
-        end
-    end
-end
-
 local function common_postinit(inst)
     inst:AddTag("pyromaniac")
     inst:AddTag("expertchef")
@@ -204,9 +177,6 @@ local function master_postinit(inst)
     inst.components.foodaffinity:AddPrefabAffinity("hotchili", TUNING.AFFINITY_15_CALORIES_LARGE)
 
     inst.components.combat.customdamagemultfn = CustomCombatDamage
-
-    inst.updateembers = updateembers
-    inst.updatelighters = updatelighters
 
     inst:ListenForEvent("ms_becameghost", OnBecameGhost)
 

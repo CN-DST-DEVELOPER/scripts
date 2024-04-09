@@ -490,9 +490,12 @@ local function CheckPocketRummageMem(inst)
 			if not stayopen and inst.sg.statemem.is_going_to_action_state then
 				local buffaction = inst:GetBufferedAction()
 				if buffaction and
-					buffaction.invobject and
-					buffaction.invobject.components.inventoryitem and
-					buffaction.invobject.components.inventoryitem:IsHeldBy(item)
+					(	buffaction.action == ACTIONS.BUILD or
+						(	buffaction.invobject and
+							buffaction.invobject.components.inventoryitem and
+							buffaction.invobject.components.inventoryitem:IsHeldBy(item)
+						)
+					)
 				then
 					stayopen = true
 				end
@@ -19388,34 +19391,7 @@ local states =
 			inst.SoundEmitter:KillSound("make")
 			CancelTalk_Override(inst)
 
-			local item = inst.sg.mem.pocket_rummage_item
-			if item then
-				if not (item.components.container and
-						item.components.container:IsOpenedBy(inst) and
-						item.components.inventoryitem and
-						item.components.inventoryitem:GetGrandOwner() == inst)
-				then
-					SetPocketRummageMem(inst, nil)
-				else
-					local stayopen = false
-					if inst.sg.statemem.is_going_to_action_state then
-						local buffaction = inst:GetBufferedAction()
-						if buffaction and
-							(	buffaction.action == ACTIONS.BUILD or
-								(	buffaction.invobject and
-									buffaction.invobject.components.inventoryitem and
-									buffaction.invobject.components.inventoryitem:IsHeldBy(item)
-								)
-							)
-						then
-							stayopen = true
-						end
-					end
-					if not stayopen then
-						ClosePocketRummageMem(inst)
-					end
-				end
-			end
+			CheckPocketRummageMem(inst)
 
 			if inst.bufferedaction == inst.sg.statemem.action and
 				not (inst.components.playercontroller and inst.components.playercontroller.lastheldaction == inst.bufferedaction)

@@ -460,7 +460,10 @@ end
 local function OnGotNewItem(inst, data)
     if data.slot ~= nil or data.eslot ~= nil or data.toactiveitem ~= nil then
         local sound = data.item and data.item.pickupsound or "DEFAULT_FALLBACK"
-        TheFocalPoint.SoundEmitter:PlaySound(PICKUPSOUNDS[sound])
+		sound = PICKUPSOUNDS[sound]
+		if sound then
+			TheFocalPoint.SoundEmitter:PlaySound(sound)
+		end
     end
 end
 

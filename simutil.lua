@@ -474,11 +474,11 @@ function CanEntitySeeTarget(inst, target)
     return CanEntitySeePoint(inst, x, y, z)
 end
 
-function SpringCombatMod(amount) -- NOTES(JBK): This is an amplification modifier to increase damage.
-    return TheWorld.state.isspring and amount * TUNING.SPRING_COMBAT_MOD or amount
+function SpringCombatMod(amount, forced) -- NOTES(JBK): This is an amplification modifier to increase damage.
+    return (forced or TheWorld.state.isspring) and amount * TUNING.SPRING_COMBAT_MOD or amount
 end
-function SpringGrowthMod(amount) -- NOTES(JBK): This is a reduction modifier to reduce timer durations.
-    return TheWorld.state.isspring and amount * TUNING.SPRING_GROWTH_MODIFIER or amount
+function SpringGrowthMod(amount, forced) -- NOTES(JBK): This is a reduction modifier to reduce timer durations.
+    return (forced or TheWorld.state.isspring) and amount * TUNING.SPRING_GROWTH_MODIFIER or amount
 end
 
 function TemporarilyRemovePhysics(obj, time)

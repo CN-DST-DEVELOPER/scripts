@@ -183,6 +183,7 @@ local function fn()
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("oceanfishingrod")
 	inst.components.container.canbeopened = false
+    inst.components.container.stay_open_on_hide = true
     inst:ListenForEvent("itemget", OnTackleChanged)
     inst:ListenForEvent("itemlose", OnTackleChanged)
 

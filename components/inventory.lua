@@ -1314,6 +1314,27 @@ function Inventory:Has(item, amount, checkallcontainers)
     return num_found >= amount, num_found
 end
 
+function Inventory:HasItemThatMatches(fn, amount)
+	local num_found = 0
+	for k, v in pairs(self.itemslots) do
+		if fn(v) then
+			num_found = num_found + (v.components.stackable and v.components.stackable:StackSize() or 1)
+		end
+	end
+
+	if self.activeitem and fn(self.activeitem) then
+		num_found = num_found + (self.activeitem.components.stackable and self.activeitem.components.stackable:StackSize() or 1)
+	end
+
+	local overflow = self:GetOverflowContainer()
+	if overflow then
+		local overflow_enough, overflow_found = overflow:HasItemThatMatches(fn, amount)
+		num_found = num_found + overflow_found
+	end
+
+	return num_found >= amount, num_found
+end
+
 function Inventory:HasItemWithTag(tag, amount)
     local num_found = 0
     for k, v in pairs(self.itemslots) do

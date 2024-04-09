@@ -25,11 +25,6 @@ local assets_lightning_fx =
     Asset("ANIM", "anim/spear_wathgrithr_lightning.zip"),
 }
 
-local prefabs_basic =
-{
-
-}
-
 local prefabs_lightning =
 {
     "reticuleline",
@@ -45,6 +40,41 @@ local prefabs_lightning_charged =
     "spear_wathgrithr_lightning_lunge_fx",
     "spear_wathgrithr_lightning_fx",
 }
+
+------------------------------------------------------------------------------------------------------------------------
+
+local function RefreshAttunedSkills(inst, owner, prevowner)
+	local skilltreeupdater = owner and owner.components.skilltreeupdater or nil
+
+	if owner and owner.components.singinginspiration then
+		local skill_level = skilltreeupdater and skilltreeupdater:CountSkillTag("inspirationgain") or 0
+		if skill_level > 0 then
+			owner.components.singinginspiration.gainratemultipliers:SetModifier(inst, TUNING.SKILLS.WATHGRITHR.INSPIRATION_GAIN_MULT[skill_level], "arsenal_spear")
+		else
+			owner.components.singinginspiration.gainratemultipliers:RemoveModifier(inst, "arsenal_spear")
+		end
+	end
+
+	if prevowner and prevowner.components.singinginspiration then
+		prevowner.components.singinginspiration.gainratemultipliers:RemoveModifier(inst, "arsenal_spear")
+	end
+
+	if inst.is_lightning_spear then
+		inst.components.aoetargeting:SetEnabled(inst.components.rechargeable:IsCharged() and skilltreeupdater and skilltreeupdater:IsActivated("wathgrithr_arsenal_spear_4"))
+	end
+end
+
+local function WatchSkillRefresh(inst, owner)
+	if inst._owner then
+		inst:RemoveEventCallback("onactivateskill_server", inst._onskillrefresh, inst._owner)
+		inst:RemoveEventCallback("ondeactivateskill_server", inst._onskillrefresh, inst._owner)
+	end
+	inst._owner = owner
+	if owner then
+		inst:ListenForEvent("onactivateskill_server", inst._onskillrefresh, owner)
+		inst:ListenForEvent("ondeactivateskill_server", inst._onskillrefresh, owner)
+	end
+end
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -71,7 +101,8 @@ local function OnEquip(inst, owner)
         owner.AnimState:OverrideSymbol("swap_object", inst._swapbuild, inst._swapsymbol)
     end
 
-    inst:ApplySkillsChanges(owner)
+	WatchSkillRefresh(inst, owner)
+	RefreshAttunedSkills(inst, owner)
 
     if inst.components.aoetargeting ~= nil and
         inst.components.aoetargeting:IsEnabled() and
@@ -101,7 +132,8 @@ local function OnUnequip(inst, owner)
         owner:PushEvent("unequipskinneditem", inst:GetSkinName())
     end
 
-    inst:RemoveSkillsChanges(owner)
+	WatchSkillRefresh(inst, nil)
+	RefreshAttunedSkills(inst, nil, owner)
 
     if inst.fx ~= nil then
         inst:SetFxOwner(nil)
@@ -192,42 +224,6 @@ local function Lightning_ReticuleUpdatePositionFn(inst, pos, reticule, ease, smo
         rot = Lerp((drot > 180 and rot0 + 360) or (drot < -180 and rot0 - 360) or rot0, rot, dt * smoothing)
     end
     reticule.Transform:SetRotation(rot)
-end
-
-------------------------------------------------------------------------------------------------------------------------
-
-local function ApplySkillsChanges(inst, owner)
-    local _skilltreeupdater = owner.components.skilltreeupdater
-
-    if _skilltreeupdater == nil then
-        return
-    end
-
-    local skill_level = owner.components.skilltreeupdater:CountSkillTag("inspirationgain")
-
-    if skill_level > 0 and owner.components.singinginspiration ~= nil then
-        owner.components.singinginspiration.gainratemultipliers:SetModifier(inst, TUNING.SKILLS.WATHGRITHR.INSPIRATION_GAIN_MULT[skill_level], "arsenal_spear")
-    end
-
-    if not inst.is_lightning_spear then
-        return
-    end
-
-    if inst.components.rechargeable:IsCharged() and _skilltreeupdater:IsActivated("wathgrithr_arsenal_spear_4") then
-        inst.components.aoetargeting:SetEnabled(true)
-    end
-end
-
-local function RemoveSkillsChanges(inst, owner)
-    if owner.components.singinginspiration ~= nil then
-        owner.components.singinginspiration.gainratemultipliers:RemoveModifier(inst, "arsenal_spear")
-    end
-
-    if not inst.is_lightning_spear then
-        return
-    end
-
-    inst.components.aoetargeting:SetEnabled(false)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -366,8 +362,7 @@ local function CommonFn(data)
     inst._swapbuild  = data.swapbuild
     inst._swapsymbol = data.swapsymbol
 
-    inst.ApplySkillsChanges  = ApplySkillsChanges
-    inst.RemoveSkillsChanges = RemoveSkillsChanges
+	inst._onskillrefresh = function(owner) RefreshAttunedSkills(inst, owner) end
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
@@ -676,7 +671,7 @@ end
 
 
 return
-        Prefab("spear_wathgrithr",                      BasicSpearFn,            assets_basic,                  prefabs_basic             ),
+        Prefab("spear_wathgrithr",                      BasicSpearFn,            assets_basic                                             ),
         Prefab("spear_wathgrithr_lightning",            LightningSpearFn,        assets_lightning,              prefabs_lightning         ),
         Prefab("spear_wathgrithr_lightning_charged",    LightningSpearChargedFn, assets_lightning_charged,      prefabs_lightning_charged ),
         Prefab("spear_wathgrithr_lightning_lunge_fx",   LungueTrailFxFn,         assets_lightning_lunge_fx                                ),
