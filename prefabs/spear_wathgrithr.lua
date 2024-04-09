@@ -60,7 +60,7 @@ local function RefreshAttunedSkills(inst, owner, prevowner)
 	end
 
 	if inst.is_lightning_spear then
-		inst.components.aoetargeting:SetEnabled(inst.components.rechargeable:IsCharged() and skilltreeupdater and skilltreeupdater:IsActivated("wathgrithr_arsenal_spear_4"))
+		inst.components.aoetargeting:SetEnabled(inst.components.rechargeable:IsCharged() and skilltreeupdater and skilltreeupdater:IsActivated("wathgrithr_arsenal_spear_4") or false)
 	end
 end
 
