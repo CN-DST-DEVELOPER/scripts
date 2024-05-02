@@ -430,7 +430,7 @@ local function OnEntityWake(inst)
 end
 
 local function OnEntitySleep(inst)
-    if inst:IsInLimbo() or inst.components.fueled:IsEmpty() then
+    if inst:IsInLimbo() or inst.components.fueled:IsEmpty() or inst.sg:HasStateTag("drowning") then
         return
     end
 
@@ -560,7 +560,15 @@ local function OnGetItemFromPlayer(inst, giver, item)
         end
 
         inst.components.inventory:Equip(item)
+
+        inst.sg.mem.last_vocalization_time = GetTime()
+        inst.SoundEmitter:PlaySound("qol1/collector_robot/pickup_voice"..inst:GetFueledSectionSuffix())
     end
+end
+
+local function OnRefuseItemFromPlayer(inst, giver, item)
+    inst.sg.mem.last_vocalization_time = GetTime()
+    inst.SoundEmitter:PlaySound("qol1/collector_robot/dropoff_voice"..inst:GetFueledSectionSuffix())
 end
 
 local function OnInventoryChange(inst, data)
@@ -736,6 +744,7 @@ local function fn()
     inst:AddComponent("trader")
     inst.components.trader:SetAcceptTest(ShouldAcceptItem)
     inst.components.trader:SetOnAccept(OnGetItemFromPlayer)
+    inst.components.trader:SetOnRefuse(OnRefuseItemFromPlayer)
     inst.components.trader.deleteitemonaccept = false
 
     inst:SetStateGraph("SGstorage_robot")

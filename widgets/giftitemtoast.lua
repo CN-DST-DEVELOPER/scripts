@@ -135,7 +135,7 @@ end
 
 --Called from PlayerHud:OnControl
 function GiftItemToast:CheckControl(control, down)
-    if self.shown and down and self.enabled and control == CONTROL_MENU_MISC_1 and
+    if self.shown and down and self.enabled and control == CONTROL_CONTROLLER_ATTACK and
         self.owner.components.playercontroller:GetControllerAttackTarget() == nil then
         self:DoOpenGift()
         return true
@@ -197,7 +197,7 @@ function GiftItemToast:UpdateControllerHelp()
         if self.enabled and self.opened and self.hud_focus then
             if self.controller_help == nil then
                 self.controller_help = self.tab_gift:AddChild(Text(UIFONT, 30))
-                self.controller_help:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_1).." "..STRINGS.UI.HUD.OPENGIFT)
+                self.controller_help:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_CONTROLLER_ATTACK).." "..STRINGS.UI.HUD.OPENGIFT)
                 self.controller_help:SetPosition(0, -70, 0)
                 self.controller_help:Hide()
             end

@@ -395,6 +395,16 @@ table.insert(prefs, CreatePrefabSkin("amulet_red_occulteye",
 	release_group = 32,
 }))
 
+table.insert(prefs, CreatePrefabSkin("amulet_red_rose",
+{
+	base_prefab = "amulet",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) amulet_init_fn(inst, "amulet_red_rose") end,
+	skin_tags = { "AMULET_RED", "ROSE", "CRAFTABLE", },
+	release_group = 155,
+}))
+
 table.insert(prefs, CreatePrefabSkin("amulet_yellow_an",
 {
 	base_prefab = "yellowamulet",
@@ -4560,6 +4570,16 @@ table.insert(prefs, CreatePrefabSkin("lightning_rod_robot",
 	release_group = 80,
 }))
 
+table.insert(prefs, CreatePrefabSkin("magician_chest_shadow",
+{
+	base_prefab = "magician_chest",
+	type = "item",
+	rarity = "ProofOfPurchase",
+	init_fn = function(inst) magician_chest_init_fn(inst, "magician_chest_shadow") end,
+	skin_tags = { "MAGICIAN_CHEST", "CRAFTABLE", },
+	release_group = 155,
+}))
+
 table.insert(prefs, CreatePrefabSkin("mast_crabking",
 {
 	base_prefab = "mast",
@@ -5311,6 +5331,16 @@ table.insert(prefs, CreatePrefabSkin("oceanfishingrod_ice_alt",
 	release_group = 129,
 }))
 
+table.insert(prefs, CreatePrefabSkin("oceanfishingrod_nautical",
+{
+	base_prefab = "oceanfishingrod",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) oceanfishingrod_init_fn(inst, "oceanfishingrod_nautical") end,
+	skin_tags = { "OCEANFISHINGROD", "NAUTICAL", "CRAFTABLE", },
+	release_group = 155,
+}))
+
 table.insert(prefs, CreatePrefabSkin("orangestaff_ancient",
 {
 	base_prefab = "orangestaff",
@@ -5976,6 +6006,16 @@ table.insert(prefs, CreatePrefabSkin("researchlab2_pod",
 	fx_prefab = { "researchlab2_pod_fx", },
 	marketable = true,
 	release_group = 29,
+}))
+
+table.insert(prefs, CreatePrefabSkin("researchlab2_science",
+{
+	base_prefab = "researchlab2",
+	type = "item",
+	rarity = "ProofOfPurchase",
+	init_fn = function(inst) researchlab2_init_fn(inst, "researchlab2_science") end,
+	skin_tags = { "ALCHEMY", "CRAFTABLE", },
+	release_group = 155,
 }))
 
 table.insert(prefs, CreatePrefabSkin("researchlab3_ancient",

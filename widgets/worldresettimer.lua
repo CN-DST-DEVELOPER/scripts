@@ -73,7 +73,7 @@ function WorldResetTimer:RefreshLayout()
         end
 
         local controller_id = TheInput:GetControllerID()
-        self.reset_text:SetString(STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1..TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START).."\n"..STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT2)
+        self.reset_text:SetString(STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1..TheInput:GetLocalizedControl(controller_id, CONTROL_PAUSE).."\n"..STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT2)
     else
         if self.reset_text ~= nil then
             self.reset_text:Kill()
@@ -128,7 +128,7 @@ function WorldResetTimer:OnUpdate(dt)
             self.root:SetPosition(0, self.y_pos)
         elseif self.reset_text ~= nil
             and self.reset_text:IsVisible()
-            and TheInput:IsControlPressed(CONTROL_MENU_START) then
+            and TheInput:IsControlPressed(CONTROL_PAUSE) then
             self.reset_hold_time = self.reset_hold_time + dt
             if self.reset_hold_time > 2 then
                 self:Reset()

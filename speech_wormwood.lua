@@ -5134,8 +5134,8 @@ return{
         WAXED_PLANT = "Screaming! Friends are screaming!", -- Used for all waxed plants, from farm plants to trees.
 
         STORAGE_ROBOT = {
-            GENERIC = "Go, grabby friend!",
-            BROKEN = "Help! Grabby friend is hurt!",
+            GENERIC = "Go, Grabby Friend!",
+            BROKEN = "Help! Grabby Friend is hurt!",
         },
 
         SCRAP_MONOCLEHAT = "Can see friends far away!",

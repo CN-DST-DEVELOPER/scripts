@@ -638,6 +638,31 @@ function c_listtag(tag)
     end
 end
 
+function c_kitcoon(name, age, build)
+    -- NOTES(JBK): This is for players who for outside forces or otherwise lost their kitcoon pet and want a way for it back.
+    -- The hope is that this function is easier to use and can be used by the community.
+    if type(name) ~= "string" or type(age) ~= "number" or type(build) ~= "string" or not table.contains(VALID_KITCOON_BUILDS, build) then
+        print("Invalid c_kitcoon use. c_kitcoon(\"name here\", #, \"build_name_here\")")
+        print("Example: c_kitcoon(\"kitty the IV\", 42, \"kitcoon_deciduous_build\")")
+        print("Age is how many days old it is. Valid build names are:")
+        for _, build in ipairs(VALID_KITCOON_BUILDS) do
+            print(build)
+        end
+        return
+    end
+    local now = os.time()
+    Profile:SetKitName(name)
+    Profile:SetKitLastTime(now)
+    Profile:SetKitBirthTime(now - age * 60 * 60 * 24)
+    Profile:SetKitBuild(build)
+    Profile:SetKitSize(1) -- Just make it large.
+    Profile:SetKitHunger(0.5)
+    Profile:SetKitHappiness(0.7)
+    Profile:SetKitPoops(0)
+    Profile:SetKitAbandonedMessage(false)
+    Profile:Save()
+end
+
 local lastroom = -1
 function c_gotoroom(roomname, inst)
     inst = ListingOrConsolePlayer(inst)

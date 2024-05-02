@@ -4,19 +4,6 @@ local UIAnim = require "widgets/uianim"
 
 local KitcoonNamePopup = require "screens/kitcoonnamepopup"
 
-local KIT_TYPES = 
-{
-    "kitcoon_forest_build",
-    "kitcoon_savanna_build",
-    "kitcoon_deciduous_build",
-    "kitcoon_marsh_build",
-    "kitcoon_grass_build",
-    "kitcoon_rocky_build",
-    "kitcoon_desert_build",
-    "kitcoon_moon_build",
-    "kitcoon_yot_build", 
-}
-
 local HUNGER_DELTA_EAT = 0.15
 local HUNGER_DRAIN_RATE = 1 / 100
 
@@ -170,7 +157,7 @@ function KitcoonPuppet:PickPosition( positions )
 end
 
 function KitcoonPuppet:InitNewKit()
-    local build = GetRandomItem( KIT_TYPES )
+    local build = GetRandomItem( VALID_KITCOON_BUILDS )
     Profile:SetKitBuild(build)
     
     self.size = MIN_SIZE

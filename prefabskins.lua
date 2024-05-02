@@ -45,6 +45,7 @@ PREFAB_SKINS = {
 	{
 		"amulet_red_heart",
 		"amulet_red_occulteye",
+		"amulet_red_rose",
 	},
 	anchor =
 	{
@@ -756,6 +757,10 @@ PREFAB_SKINS = {
 	{
 		"eyeplant_bulb_trap_plantera",
 	},
+	magician_chest =
+	{
+		"magician_chest_shadow",
+	},
 	mast =
 	{
 		"mast_crabking",
@@ -901,6 +906,7 @@ PREFAB_SKINS = {
 		"oceanfishingrod_hotline",
 		"oceanfishingrod_ice",
 		"oceanfishingrod_ice_alt",
+		"oceanfishingrod_nautical",
 	},
 	opalstaff =
 	{
@@ -1007,6 +1013,7 @@ PREFAB_SKINS = {
 		"researchlab2_crystal",
 		"researchlab2_gothic",
 		"researchlab2_pod",
+		"researchlab2_science",
 	},
 	researchlab3 =
 	{

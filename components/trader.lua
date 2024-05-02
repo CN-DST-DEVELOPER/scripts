@@ -84,6 +84,10 @@ function Trader:SetOnAccept(fn)
     self.onaccept = fn
 end
 
+function Trader:SetOnRefuse(fn)
+    self.onrefuse = fn
+end
+
 function Trader:SetAcceptStacks()
     self.acceptstacks = true
 end

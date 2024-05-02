@@ -112,7 +112,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     --Initialize physics
-    MakeTinyFlyingCharacterPhysics(inst, 1, .2)
+    MakeTinyFlyingCharacterPhysics(inst, 1, .5)
 
     inst.Transform:SetTwoFaced()
 

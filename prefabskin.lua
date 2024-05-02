@@ -126,6 +126,9 @@ krampus_sack_clear_fn = function(inst) basic_clear_fn(inst, "swap_krampus_sack" 
 piggyback_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_piggyback" ) end
 piggyback_clear_fn = function(inst) basic_clear_fn(inst, "swap_piggyback" ) end
 
+icepack_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "swap_icepack") end
+icepack_clear_fn = function(inst) basic_clear_fn(inst, "swap_icepack") end
+
 ruins_bat_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_ruins_bat" ) end
 ruins_bat_clear_fn = function(inst) basic_clear_fn(inst, "swap_ruins_bat" ) end
 
@@ -215,6 +218,8 @@ decor_pictureframe_clear_fn = function(inst)
 end
 decor_portraitframe_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "decor_portraitframe") end
 decor_portraitframe_clear_fn = function(inst) basic_clear_fn(inst, "decor_portraitframe") end
+magician_chest_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "magician_chest") end
+magician_chest_clear_fn = function(inst) basic_clear_fn(inst, "magician_chest") end
 
 hammer_init_fn = function(inst, build_name)
     if string.find( build_name, "_invisible") ~= nil then
@@ -281,6 +286,21 @@ whip_init_fn = function(inst, build_name)
 end
 whip_clear_fn = function(inst)
     basic_clear_fn( inst, "whip" )
+    RemoveSkinSounds(inst)
+end
+
+
+trident_init_fn = function(inst, build_name)
+    basic_init_fn(inst, build_name, "trident")
+
+    if not TheWorld.ismastersim then
+        return
+    end
+
+    AddSkinSounds(inst)
+end
+trident_clear_fn = function(inst)
+    basic_clear_fn(inst, "trident")
     RemoveSkinSounds(inst)
 end
 

@@ -88,7 +88,7 @@ end
 
 --Called from PlayerHud:OnControl
 function ScrapbookToast:CheckControl(control, down)
-    if self.shown and down and control == CONTROL_MENU_MISC_2 then
+    if self.shown and down and control == CONTROL_INSPECT_SELF then
         return true
     end
 end

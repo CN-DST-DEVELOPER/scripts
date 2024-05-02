@@ -114,6 +114,10 @@ local function SetupEquippable(inst)
 	inst.components.equippable.equipslot = EQUIPSLOTS.BODY
 	inst.components.equippable:SetOnEquip(onequip)
 	inst.components.equippable:SetOnUnequip(onunequip)
+
+	if inst._equippable_restrictedtag ~= nil then
+		inst.components.equippable.restrictedtag = inst._equippable_restrictedtag
+	end
 end
 
 local SWAP_DATA_BROKEN = { bank = "armor_lunarplant", anim = "broken" }
@@ -282,7 +286,8 @@ local function husk_master_postinit (inst)
 	inst._onblocked      = function(owner, data) OnHuskBlocked(owner, data, inst) end
 	inst._onattackother  = function(owner, data) OnAttackOther(owner, data, inst) end
 
-	inst.components.equippable.restrictedtag = "plantkin"
+	inst._equippable_restrictedtag = "plantkin"
+	inst.components.equippable.restrictedtag = inst._equippable_restrictedtag
 end
 
 local function huskfn()

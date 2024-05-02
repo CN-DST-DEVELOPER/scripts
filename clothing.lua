@@ -2630,8 +2630,9 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "LUNAR", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "arm_lower_cuff", "arm_lower", "arm_upper", "torso", "torso_pelvis", "foot", "leg", },
+		symbol_overrides = { "hand", "arm_lower", "arm_upper", "torso", "torso_pelvis", "foot", "leg", },
 		symbol_hides = { "skirt", "arm_upper_skin", },
+		symbol_in_base_hides = { "arm_lower_cuff", },
 		torso_tuck = "untucked",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",

@@ -498,6 +498,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 36,
 	},
+	loading_drama =
+	{
+		type = "loading",
+		skin_tags = { "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 155,
+	},
 	loading_dst10_signed =
 	{
 		type = "loading",
@@ -800,6 +808,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 54,
 	},
+	loading_webber_sad =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 155,
+	},
 	loading_webber_trailer =
 	{
 		type = "loading",
@@ -1095,6 +1111,14 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 98,
+	},
+	loading_wormwood3_trailer =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 155,
 	},
 	loading_wormwood_trailer =
 	{
@@ -6508,6 +6532,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 43,
 	},
+	playerportrait_bg_amuletredrose =
+	{
+		type = "playerportrait",
+		skin_tags = { "ROSE", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 155,
+	},
 	playerportrait_bg_amuletyellowan =
 	{
 		type = "playerportrait",
@@ -7473,6 +7504,13 @@ MISC_ITEMS =
 		rarity = "Common",
 		rarity_modifier = "Woven",
 		release_group = 32,
+	},
+	profileflair_amulet_red_rose =
+	{
+		type = "profileflair",
+		skin_tags = { "ROSE", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 155,
 	},
 	profileflair_amulet_yellowan =
 	{

@@ -100,7 +100,7 @@ end)
 function PlayerDeathNotification:RefreshLayout()
 	if TheInput:ControllerAttached() then
 		self.close_button_root:Hide()
-	    self.regen_text:SetString(STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_START)..STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT2)
+	    self.regen_text:SetString(STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PAUSE)..STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT2)
 		self.regen_text:Show()
 		self.regen_button:Hide()
 	else
@@ -190,7 +190,7 @@ end
 
 function PlayerDeathNotification:OnUpdate(dt)
     if self.started then
-        if TheInput:IsControlPressed(CONTROL_MENU_START) then
+        if TheInput:IsControlPressed(CONTROL_PAUSE) then
             self.reset_hold_time = self.reset_hold_time + dt
             if self.reset_hold_time > 2 then
                 self:DoRegenWorld()

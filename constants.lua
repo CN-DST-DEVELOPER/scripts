@@ -1859,6 +1859,18 @@ OCCUPANTTYPE =
     BIRD = "bird",
 }
 
+VALID_KITCOON_BUILDS = {
+    "kitcoon_forest_build",
+    "kitcoon_savanna_build",
+    "kitcoon_deciduous_build",
+    "kitcoon_marsh_build",
+    "kitcoon_grass_build",
+    "kitcoon_rocky_build",
+    "kitcoon_desert_build",
+    "kitcoon_moon_build",
+    "kitcoon_yot_build", 
+}
+
 FOODTYPE =
 {
     GENERIC = "GENERIC",

@@ -2,6 +2,7 @@
 
 local SKIN_GIFT_TYPES =
 {
+	amulet_red_rose = "TWITCH_DROP",
 	amulet_yellow_an = "TWITCH_DROP",
 	anchor_nautical = "TWITCH_DROP",
 	armor_ruins_an = "TWITCH_DROP",
@@ -49,6 +50,7 @@ local SKIN_GIFT_TYPES =
 	pack_rog_gift = "ROG",
 	pack_sw_gift = "SW",
 	panflute_an = "TWITCH_DROP",
+	playerportrait_bg_amuletredrose = "TWITCH_DROP",
 	playerportrait_bg_amuletyellowan = "TWITCH_DROP",
 	playerportrait_bg_anchornautical = "TWITCH_DROP",
 	playerportrait_bg_armorruinsan = "TWITCH_DROP",
@@ -107,6 +109,7 @@ local SKIN_GIFT_TYPES =
 	playerportrait_bg_wardrobeyule = "TWITCH_DROP",
 	playerportrait_bg_winterometercircus = "TWITCH_DROP",
 	pottedfern_cotl = "TWITCH_DROP",
+	profileflair_amulet_red_rose = "TWITCH_DROP",
 	profileflair_amulet_yellowan = "TWITCH_DROP",
 	profileflair_anchor_nautical = "TWITCH_DROP",
 	profileflair_armor_ruinsan = "TWITCH_DROP",
