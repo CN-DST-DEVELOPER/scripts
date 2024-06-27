@@ -288,7 +288,8 @@ local function fn()
     inst.MiniMapEntity:SetPriority(5)
     inst.MiniMapEntity:SetIcon("firesuppressor.png")
 
-    MakeObstaclePhysics(inst, 1)
+	inst:SetDeploySmartRadius(1.25) --recipe min_spacing/2
+    MakeObstaclePhysics(inst, 0.75)
 
     inst.AnimState:SetBank("firefighter")
     inst.AnimState:SetBuild("firefighter")

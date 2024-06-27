@@ -229,6 +229,8 @@ local function fn()
 
     inst.scrapbook_anim = "open_loop"
     inst.scrapbook_scale = 1.5
+    inst.scrapbook_animoffsetx = 30
+    inst.scrapbook_animoffsety = -10
     inst.scrapbook_animoffsetbgx = 80
     inst.scrapbook_animoffsetbgy = 40
 

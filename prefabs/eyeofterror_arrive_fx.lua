@@ -32,8 +32,8 @@ end
 
 local function OnUpdateLightColour(inst)
 	inst._lighttweener = inst._lighttweener + FRAMES * 1.25
-	if inst._lighttweener > 2 * PI then
-		inst._lighttweener = inst._lighttweener - 2*PI
+	if inst._lighttweener > TWOPI then
+		inst._lighttweener = inst._lighttweener - TWOPI
 	end
 	local x = inst._lighttweener
 	local s = .15

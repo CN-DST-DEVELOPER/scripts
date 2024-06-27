@@ -396,6 +396,7 @@ local function sentrywardfn()
 
     inst.MiniMapEntity:SetIcon("deerclopseyeball_sentryward_disabled.png")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
     MakeObstaclePhysics(inst, .1)
 
     inst.Transform:SetScale(SENTRYWARD_SCALE, SENTRYWARD_SCALE, SENTRYWARD_SCALE)

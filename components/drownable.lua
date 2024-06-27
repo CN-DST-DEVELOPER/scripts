@@ -45,7 +45,7 @@ function Drownable:Teleport()
     local radius = 2 + math.random() * 3
 
     local pt = Vector3(target_x, target_y, target_z)
-    local angle = math.random() * 2 * PI
+    local angle = math.random() * TWOPI
     local offset =
         FindWalkableOffset(pt, angle, radius, 8, true, false, NoPlayersOrHoles) or
         FindWalkableOffset(pt, angle, radius * 1.5, 6, true, false, NoPlayersOrHoles) or
@@ -61,6 +61,29 @@ function Drownable:Teleport()
     elseif self.inst.Transform ~= nil then
         self.inst.Transform:SetPosition(target_x, target_y, target_z)
     end
+end
+
+function Drownable:GetWashingAshoreTeleportSpot(excludeclosest)
+    local ex, ey, ez = self.inst.Transform:GetWorldPosition()
+    local x, y, z = FindRandomPointOnShoreFromOcean(ex, ey, ez, excludeclosest)
+    if x == nil then
+        x, y, z = ex, ey, ez
+    end
+
+    local radius = 2 + math.random() * 3
+    local angle = math.random() * TWOPI
+    local pt = Vector3(x, y, z)
+    local offset =
+        FindWalkableOffset(pt, angle, radius, 8, true, false, NoPlayersOrHoles) or
+        FindWalkableOffset(pt, angle, radius * 1.5, 6, true, false, NoPlayersOrHoles) or
+        FindWalkableOffset(pt, angle, radius, 8, true, false, NoHoles) or
+        FindWalkableOffset(pt, angle, radius * 1.5, 6, true, false, NoHoles)
+    if offset ~= nil then
+        x = x + offset.x
+        z = z + offset.z
+    end
+
+    return x, y, z
 end
 
 local function _oncameraarrive(inst)

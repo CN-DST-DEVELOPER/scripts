@@ -186,6 +186,8 @@ local function fn()
     inst.AnimState:UsePointFiltering(true)
     inst.AnimState:SetMultColour(0, 0, 0, 0.85)
 
+    inst.AnimState:Hide("ARM_carry_up")
+
     inst:AddTag("character")
     inst:AddTag("monkey")
     inst:AddTag("nomagic")

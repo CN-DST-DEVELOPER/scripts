@@ -65,7 +65,7 @@ local function IsValidSpawnPt(pt)
 end
 
 local function SpawnNightmareForPlayer(player, pt)
-	local theta = player.components.locomotor.isrunning and (player.Transform:GetRotation()*DEGREES + math.random()*PI - 0.5*PI) or (math.random() * 2 * PI)
+	local theta = player.components.locomotor.isrunning and (player.Transform:GetRotation()*DEGREES + math.random()*PI - 0.5*PI) or (math.random() * TWOPI)
 
 	local offset = FindWalkableOffset(pt, theta, 28 - 5*math.random(), 22, true, true, IsValidSpawnPt)
 				or FindWalkableOffset(pt, theta, 23 - 5*math.random(), 16, true, true, IsValidSpawnPt)
@@ -78,7 +78,7 @@ end
 
 
 local function SpawnBrightmareForPlayer(player, pt, target)
-	local theta = player.components.locomotor.isrunning and (player.Transform:GetRotation()*DEGREES + math.random()*PI - 0.5*PI) or (math.random() * 2 * PI)
+	local theta = player.components.locomotor.isrunning and (player.Transform:GetRotation()*DEGREES + math.random()*PI - 0.5*PI) or (math.random() * TWOPI)
 
 	local offset = FindWalkableOffset(pt, theta, 15 - 8*math.random(), 16, true, true, IsValidSpawnPt)
 				or FindWalkableOffset(pt, theta, 10 - 5*math.random(), 16, true, true, IsValidSpawnPt)
@@ -207,7 +207,7 @@ function self:SpawnFrontLines()
 
 	local function dospawn(prefab, p1, p2, percent, dir)
 		local pt = p1 + (p2-p1) * percent + dir*(offset_min)
-		local offset = FindWalkableOffset(pt, math.random()*2*PI, math.random()*noise_r, 8, true, true, NoHoles)
+		local offset = FindWalkableOffset(pt, math.random()*TWOPI, math.random()*noise_r, 8, true, true, NoHoles)
 		if offset ~= nil then
 			pt = pt + offset
 

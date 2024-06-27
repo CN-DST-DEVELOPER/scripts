@@ -32,6 +32,10 @@ local function onunequip(inst, owner)
     end
 end
 
+local function IsLifeDrainable(target)
+	return not target:HasAnyTag(SOULLESS_TARGET_TAGS) or target:HasTag("lifedrainable")
+end
+
 local function onattack(inst, owner, target)
     local skin_fx = SKIN_FX_PREFAB[inst:GetSkinName()]
     if skin_fx ~= nil and skin_fx[1] ~= nil and target ~= nil and target.components.combat ~= nil and target:IsValid() then
@@ -44,7 +48,7 @@ local function onattack(inst, owner, target)
             end
         end
     end
-    if owner.components.health ~= nil and owner.components.health:GetPercent() < 1 and not (target:HasTag("wall") or target:HasTag("engineering")) then
+	if owner.components.health and owner.components.health:IsHurt() and IsLifeDrainable(target) then
         owner.components.health:DoDelta(TUNING.BATBAT_DRAIN, false, "batbat")
 		if owner.components.sanity ~= nil then
 	        owner.components.sanity:DoDelta(-.5 * TUNING.BATBAT_DRAIN)

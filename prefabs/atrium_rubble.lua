@@ -72,6 +72,7 @@ local function fn()
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+    MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
     return inst
 end

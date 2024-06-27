@@ -81,6 +81,8 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("monkeytail.png")
     
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --plantables deployspacing/2
+
     inst:AddTag("plant")
     inst:AddTag("silviculture") -- for silviculture book
 

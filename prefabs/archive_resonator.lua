@@ -392,6 +392,7 @@ local function mainfn()
 
     inst.DynamicShadow:SetSize(1, .33)
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --archive_resonator_item deployspacing/2
     MakeObstaclePhysics(inst, 0.5)
     inst.Transform:SetEightFaced()
 

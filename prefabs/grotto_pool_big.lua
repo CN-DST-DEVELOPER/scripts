@@ -164,7 +164,7 @@ local function poolfn()
     
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(5)
 
     if not TheNet:IsDedicated() then
         -- Register into the waterfall sound system.

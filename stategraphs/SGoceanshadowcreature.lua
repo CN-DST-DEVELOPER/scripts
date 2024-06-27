@@ -71,6 +71,21 @@ local function SetRippleScale(inst, scale)
     inst._ripples.Transform:SetScale(scale, scale, scale)
 end
 
+local function TryDropTarget(inst)
+	local target = inst.components.combat.target
+	if target and not inst:ShouldKeepTarget(target) then
+		inst.components.combat:DropTarget()
+		return true
+	end
+end
+
+local function TryDespawn(inst)
+	if inst.sg.mem.forcedespawn or (inst.wantstodespawn and not inst.components.combat:HasTarget()) then
+		inst.sg:GoToState("disappear")
+		return true
+	end
+end
+
 local TELEPORT_ANGLE_VARIANCE = PI/4
 local IN_OCEAN_TELEPORT_RADIUS = 6
 
@@ -81,25 +96,23 @@ local states =
         tags = { "idle", "canrotate" },
 
         onenter = function(inst)
-            if inst.wantstodespawn then
-                local t = GetTime()
-                if t > inst.components.combat:GetLastAttackedTime() + 5 then
-                    local target = inst.components.combat.target
-                    if target == nil or
-                        target.components.combat == nil or
-                        not target.components.combat:IsRecentTarget(inst) or
-                        t > (target.components.combat.laststartattacktime or 0) + 5 then
-                        inst.sg:GoToState("disappear")
-                        return
-                    end
-                end
-            end
-
+			local dropped = TryDropTarget(inst)
+			if TryDespawn(inst) then
+				return
+			elseif dropped then
+				inst.sg:GoToState("taunt")
+				return
+			end
             inst.components.locomotor:StopMoving()
             if not inst.AnimState:IsCurrentAnimation("idle_loop") then
                 inst.AnimState:PlayAnimation("idle_loop", true)
             end
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
+
+		ontimeout = function(inst)
+			inst.sg:GoToState("idle")
+		end,
     },
 
     State{
@@ -189,14 +202,14 @@ local states =
                     local radius = boat.components.walkableplatform.platform_radius + TUNING.OCEANHORROR.ATTACH_OFFSET_PADDING
                     local theta = not inst.sg.statemem.force_random_angle_on_boat and target ~= nil
                         and (math.atan2(tz - bz, tx - bx) - (TELEPORT_ANGLE_VARIANCE * 0.5) + math.random() * TELEPORT_ANGLE_VARIANCE)
-                        or (math.random() * PI * 2)
+                        or (math.random() * TWOPI)
 
                     inst.Transform:SetPosition(math.cos(theta) * radius, 0, math.sin(theta) * radius)
                 else
                     inst._detach_from_boat_fn(inst)
 
                     local currentpos = inst:GetPosition()
-                    local offset = FindSwimmableOffset(currentpos, math.random() * PI * 2, IN_OCEAN_TELEPORT_RADIUS, 8)
+                    local offset = FindSwimmableOffset(currentpos, math.random() * TWOPI, IN_OCEAN_TELEPORT_RADIUS, 8)
                     if offset ~= nil then
                         inst.Transform:SetPosition(currentpos.x + offset.x, 0, currentpos.z + offset.z)
                     else
@@ -234,6 +247,7 @@ local states =
         tags = { "busy", "teleporting", "appearing" },
 
         onenter = function(inst)
+			TryDropTarget(inst)
             inst.AnimState:PlayAnimation("appear")
             inst.Physics:Stop()
             PlayExtendedSound(inst, "appear")
@@ -349,6 +363,19 @@ local states =
         },
     },
 }
-CommonStates.AddWalkStates(states)
+CommonStates.AddWalkStates(states,
+{
+	walktimeline =
+	{
+		FrameEvent(0, function(inst)
+			local dropped = TryDropTarget(inst)
+			if TryDespawn(inst) then
+				return
+			elseif dropped then
+				inst.sg:GoToState("taunt")
+			end
+		end),
+	},
+})
 
 return StateGraph("oceanshadowcreature", states, events, "appear", actionhandlers)

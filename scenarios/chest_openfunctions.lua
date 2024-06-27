@@ -82,31 +82,32 @@ local function summonmonsters(inst, scenariorunner, data)
 
 	local tospawn = math.random(1, 3)
 
-	local pt = Vector3(inst.Transform:GetWorldPosition())
-    local theta = math.random() * 2 * PI
+	local pt = inst:GetPosition()
+    local theta = math.random() * TWOPI
     local radius = 4
     local steps = 12
+	local step_decrement = (TWOPI / steps)
     local ground = TheWorld
 
 
-    for i = 1, steps do
+    for _ = 1, steps do
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         local wander_point = pt + offset
 
         if ground.Map and TileGroupManager:IsLandTile(ground.Map:GetTileAtPoint(wander_point.x, wander_point.y, wander_point.z)) then
-        	local spawn = SpawnPrefab(monster)
+			local spawn = SpawnPrefab(monster)
             spawn.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
-        	if initfn then
-        		initfn(spawn)
-        	end
+			if initfn then
+				initfn(spawn)
+			end
 
-        	tospawn = tospawn - 1
+			tospawn = tospawn - 1
 
-        	if tospawn <= 0 then
-        		break
-        	end
+			if tospawn <= 0 then
+				break
+			end
         end
-        theta = theta - (2 * PI / steps)
+        theta = theta - step_decrement
     end
 end
 

@@ -96,6 +96,8 @@ local function fn()
 
     inst.OnLoadPostPass = on_load_postpass
 
+    MakeRoseTarget_CreateFuel(inst)
+
     return inst
 end
 

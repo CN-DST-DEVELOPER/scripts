@@ -92,7 +92,7 @@ local function GetSpawnPoint(pt)
     if not TheWorld.Map:IsAboveGroundAtPoint(pt:Get()) then
         pt = FindNearbyLand(pt, 1) or pt
     end
-    local offset = FindWalkableOffset(pt, math.random() * 2 * PI, HASSLER_SPAWN_DIST, 12, true)
+    local offset = FindWalkableOffset(pt, math.random() * TWOPI, HASSLER_SPAWN_DIST, 12, true)
     if offset ~= nil then
         offset.x = offset.x + pt.x
         offset.z = offset.z + pt.z

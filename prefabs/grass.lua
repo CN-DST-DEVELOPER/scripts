@@ -216,6 +216,8 @@ local function grass(name, stage)
 
         inst.MiniMapEntity:SetIcon("grass.png")
 
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --plantables deployspacing/2
+
         inst.AnimState:SetBank("grass")
         inst.AnimState:SetBuild("grass1")
         inst.AnimState:PlayAnimation("idle", true)

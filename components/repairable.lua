@@ -105,7 +105,7 @@ end
 
 local function address_repair_amount(self, repair_item_repairer)
     local health = self.inst.components.health
-    if health then
+    if health and (repair_item_repairer.healthrepairvalue > 0 or repair_item_repairer.healthrepairpercent > 0) then
         if health:GetPercent() >= 1 then
             return false
         end
@@ -115,7 +115,7 @@ local function address_repair_amount(self, repair_item_repairer)
     end
 
     local workable = self.inst.components.workable
-    if workable ~= nil and workable.workleft ~= nil then
+    if workable ~= nil and workable.workleft ~= nil and repair_item_repairer.workrepairvalue > 0 then
         if not workable.workable or workable.workleft >= workable.maxwork then
             return false
         end
@@ -124,7 +124,7 @@ local function address_repair_amount(self, repair_item_repairer)
     end
 
     local perishable = self.inst.components.perishable
-    if perishable ~= nil and perishable.perishremainingtime ~= nil then
+    if perishable ~= nil and perishable.perishremainingtime ~= nil and repair_item_repairer.perishrepairpercent > 0 then
         if perishable.perishremainingtime >= perishable.perishtime then
             return false
         end
@@ -133,7 +133,7 @@ local function address_repair_amount(self, repair_item_repairer)
     end
 
     local finiteuses = self.inst.components.finiteuses
-    if finiteuses then
+    if finiteuses and repair_item_repairer.finiteusesrepairvalue > 0 then
         if finiteuses:GetPercent() >= 1 then
             return false
         end

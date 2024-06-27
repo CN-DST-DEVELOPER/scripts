@@ -136,7 +136,7 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
     finiteuses.modifyuseconsumption = function(uses, action, doer, target)
         if (action == ACTIONS.ROW or action == ACTIONS.ROW_FAIL or action == ACTIONS.ROW_CONTROLLER)
                 and doer:HasTag("master_crewman") then
-            uses = uses /2
+            uses = uses * TUNING.MASTER_CREWMAN_MULT.OAR_CONSUMPTION
         end
         return uses
     end

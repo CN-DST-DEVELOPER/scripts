@@ -128,7 +128,7 @@ local function fling_portal_loot(inst, loot_to_drop)
     else
         loot_to_drop.Transform:SetPosition(fling_pos:Get())
 
-        local hopout_offset = FindWalkableOffset(portal_pos, 2*PI*math.random(), 3, nil, true, false)
+        local hopout_offset = FindWalkableOffset(portal_pos, TWOPI*math.random(), 3, nil, true, false)
         if hopout_offset then
             portal_pos = portal_pos + hopout_offset
         end

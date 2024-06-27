@@ -9,7 +9,6 @@ local events =
 local actionhandlers =
 {
     ActionHandler( ACTIONS.PICKUP,    "pickup" ),
-    ActionHandler( ACTIONS.CHECKTRAP, "pickup" ),
     ActionHandler( ACTIONS.STORE,     "store"  ),
 }
 
@@ -37,11 +36,11 @@ local idle_on_animover = { EventHandler("animover", _ReturnToIdle) }
 ------------------------------------------------------------------------------------------------------------------------------
 
 local function MakeImmovable(inst)
-    inst.Physics:SetTempMass0(true)
+    inst.Physics:SetMass(0)
 end
 
 local function RestoreMobility(inst)
-    inst.Physics:SetTempMass0(false)
+    inst.Physics:SetMass(inst:GetFueledSectionMass())
 end
 
 local function PlaySectionSound(inst, sound, soundname)

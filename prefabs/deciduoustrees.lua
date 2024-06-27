@@ -1250,6 +1250,7 @@ local function makefn(build, stage, data)
         inst.entity:AddNetwork()
 
         MakeObstaclePhysics(inst, .25)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --seed/planted_tree deployspacing/2
 
         inst.MiniMapEntity:SetIcon("tree_leaf.png")
         inst.MiniMapEntity:SetPriority(-1)

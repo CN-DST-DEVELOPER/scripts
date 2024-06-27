@@ -78,14 +78,6 @@ function AmphibiousCreature:OnExitOcean()
 	end
 end
 
-function AmphibiousCreature:SetOnTileChangeFn(fn)
---	self.ontilechangefn = fn
-end
-
-function AmphibiousCreature:SetOnWaterChangeFn(fn)
---	self.onwaterchangefn = fn
-end
-
 function AmphibiousCreature:SetEnterWaterFn(fn)
 	self.enterwaterfn = fn
 end

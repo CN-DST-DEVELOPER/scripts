@@ -64,7 +64,7 @@ local function OnLoad(inst, data)
 	end
 end
 
-local function AddChair(ret, name, bank, build, hasback)
+local function AddChair(ret, name, bank, build, hasback, deploy_smart_radius)
 	local assets =
 	{
 		Asset("ANIM", "anim/"..build..".zip"),
@@ -127,6 +127,8 @@ local function AddChair(ret, name, bank, build, hasback)
 		inst.entity:AddAnimState()
 		inst.entity:AddSoundEmitter()
 		inst.entity:AddNetwork()
+
+		inst:SetDeploySmartRadius(deploy_smart_radius) --recipe min_spacing/2
 
 		MakeObstaclePhysics(inst, 0.25)
 
@@ -192,7 +194,7 @@ local function AddChair(ret, name, bank, build, hasback)
 end
 
 local ret = {}
-AddChair(ret, "wood_chair", "wood_chair", "wood_chair_chair", true)
-AddChair(ret, "wood_stool", "wood_chair", "wood_chair_stool", false)
+AddChair(ret, "wood_chair", "wood_chair", "wood_chair_chair", true, 0.875)
+AddChair(ret, "wood_stool", "wood_chair", "wood_chair_stool", false, 0.875)
 
 return unpack(ret)

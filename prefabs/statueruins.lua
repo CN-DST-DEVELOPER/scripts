@@ -291,6 +291,7 @@ local function commonfn(small)
     OnNightmarePhaseChanged(inst, TheWorld.state.nightmarephase, true)
 
     MakeHauntableWork(inst)
+    MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
     if small then
         inst.small = true

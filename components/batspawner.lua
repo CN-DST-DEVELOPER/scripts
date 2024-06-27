@@ -38,7 +38,7 @@ function BatSpawner:StartTracking(inst)
 end
 
 function BatSpawner:GetSpawnPoint(pt)
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = 6+math.random()*6
 
     local ground = TheWorld

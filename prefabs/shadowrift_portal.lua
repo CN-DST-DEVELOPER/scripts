@@ -384,7 +384,7 @@ local function portalfn()
     animstate:SetLayer(LAYER_BACKGROUND)
     animstate:SetSortOrder(2)
 
-    inst:SetDeployExtraSpacing(5)
+	inst:SetDeploySmartRadius(3.5)
 
     inst.AnimState:SetSymbolLightOverride("fx_beam",   1)
     inst.AnimState:SetSymbolLightOverride("fx_spiral", 1)
@@ -481,6 +481,7 @@ local function portalfxfn()
     inst:AddTag("NOCLICK")
     inst:AddTag("NOBLOCK")
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

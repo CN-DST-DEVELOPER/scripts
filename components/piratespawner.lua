@@ -1,4 +1,5 @@
-    --------------------------------------------------------------------------
+
+--------------------------------------------------------------------------
 --[[ Pirate Spawner class definition ]]
 --------------------------------------------------------------------------
 
@@ -11,152 +12,172 @@ assert(TheWorld.ismastersim, "Pirate Spawner should not exist on client")
 --------------------------------------------------------------------------
 
 local SourceModifierList = require("util/sourcemodifierlist")
+local messagebottletreasures = require("messagebottletreasures")
 
 --------------------------------------------------------------------------
 --[[ Constants ]]
 --------------------------------------------------------------------------
 
-local function shouldremoveitem(inst)
-	return not inst.components.inventoryitem.canbepickedup
-		or not inst.components.inventoryitem.cangoincontainer
-		or inst.components.inventoryitem.canonlygoinpocket
-		or inst:HasTag("personal_possession")
-		or inst:HasTag("cursed")
+local function ShouldRemoveItem(inst)
+	return
+        not inst.components.inventoryitem.canbepickedup or
+		not inst.components.inventoryitem.cangoincontainer or
+		inst.components.inventoryitem.canonlygoinpocket or
+		inst:HasTag("personal_possession") or
+		inst:HasTag("cursed")
 end
 
-local function processloot(inst, stash)
-	if inst:HasTag("irreplaceable") then
-		return
-	elseif shouldremoveitem(inst) then
-        inst:Remove()
-        return
-    end
-    -- Pirate Stash Crash Debugging
-    --print("Stashing:", inst, inst.prefab, inst:IsValid())
-    stash:stashloot(inst)
-end
+local function ProcessLoot(item, stash, owner)
+    if ShouldRemoveItem(item) then
+        item:Remove()
 
-local function stashloot(inst)
-    local ps = TheWorld.components.piratespawner
-    if not ps then
         return
     end
 
-    local stash = ps:GetCurrentStash()
-    if inst.components.inventoryitem then
-        processloot(inst,stash)
-    elseif inst.components.inventory then
-        local function checkitem(item)
-            if item then
-				if inst:HasTag("irreplaceable") then
-					inst.components.inventory:DropItem(item, true)
-				elseif shouldremoveitem(item) then
-                    item:Remove()
-                else
-                    inst.components.inventory:DropItem(item, true)
-                    processloot(item, stash)
-                end
-            end
-        end
-        inst.components.inventory:ForEachItem(checkitem)
+    if owner ~= nil and owner.components.inventory ~= nil then
+        owner.components.inventory:DropItem(inst, true)
+    end
+
+	if not item:HasTag("irreplaceable") then
+        stash:StashLoot(item)
     end
 end
 
-local function hitbycannon(boat, data)
-    if data.cause == "cannonball" then
-        if boat.components.boatcrew then
-            boat.components.boatcrew.flee = true
-            for k, v in pairs(boat.components.boatcrew.members) do
-                k:DoTaskInTime(math.random()* 0.3 + 0.2 , function()  if k and not k.components.health:IsDead() then k:PushEvent("victory",{say=STRINGS["MONKEY_TALK_RETREAT"][math.random(1,#STRINGS["MONKEY_TALK_RETREAT"])]} ) end  end)             
+local function SendLootToStash(inst, stash, owner)
+    stash = stash or (TheWorld.components.piratespawner ~= nil and TheWorld.components.piratespawner:GetCurrentStash()) or nil
+
+    if stash == nil then
+        return
+    end
+
+    if inst.components.inventoryitem ~= nil then
+        ProcessLoot(inst, stash)
+
+    elseif inst.components.inventory ~= nil then
+        inst.components.inventory:ForEachItem(ProcessLoot, stash, inst)
+
+    elseif inst.components.container ~= nil then
+        for i = 1, inst.components.container.numslots do
+            local item = inst.components.container.slots[i]
+
+            if item ~= nil then
+                --V2C: DropItem(item) does not drop whole stack
+                --inst.components.container:DropItem(item)
+                item = inst.components.container:DropItemBySlot(i, nil, true)
+
+                ProcessLoot(item, stash)
             end
         end
     end
 end
 
-local function setpirateboat(boat)
+local function Pirate_AnnounceRetreat(inst)
+    if not inst.components.health:IsDead() then
+        inst:PushEvent("victory", { say = STRINGS["MONKEY_TALK_RETREAT"][math.random(1, #STRINGS["MONKEY_TALK_RETREAT"])] })
+    end
+end
+
+local function HitByCannon(boat, data)
+    if data.cause ~= "cannonball" or boat.components.boatcrew == nil then
+        return
+    end
+
+    boat.components.boatcrew.flee = true
+
+    for member, _ in pairs(boat.components.boatcrew.members) do
+        member:DoTaskInTime(math.random()* 0.3 + 0.2 , Pirate_AnnounceRetreat)
+    end
+end
+
+local function OnPirateBoatVanish(boat)
+    if boat.components.walkableplatform == nil then
+        return
+    end
+
+    for ent in pairs(boat.components.walkableplatform:GetEntitiesOnPlatform()) do
+        if ent.components.inventoryitem ~= nil or ent.components.container ~= nil then
+            SendLootToStash(ent)
+
+        elseif ent:HasTag("pirate") then
+            SendLootToStash(ent)
+            ent:Remove()
+
+        elseif ent.components.health ~= nil then
+            ent.components.health:Kill()
+
+        else
+            ent:Remove()
+        end
+    end
+end
+
+local function SetPirateBoat(boat)
     boat:AddComponent("boatcrew")
     boat:AddComponent("vanish_on_sleep")
-	boat.components.vanish_on_sleep.vanishfn = function(boat_inner)
-        if not boat_inner.components.walkableplatform then
-            return
-        end
 
-        for ent in pairs(boat_inner.components.walkableplatform:GetEntitiesOnPlatform()) do
-            local container = ent.components.container
-            if container ~= nil then
-                for i = 1, container.numslots do
-                    local item = container.slots[i]
-                    if item ~= nil then
-                        --V2C: DropItem(item) does not drop whole stack
-                        --container:DropItem(item)
-						item = container:DropItemBySlot(i, nil, true)
-                        stashloot(item)
-                    end
+	boat.components.vanish_on_sleep.vanishfn = OnPirateBoatVanish
+
+    boat:ListenForEvent("spawnnewboatleak", HitByCannon)
+end
+
+local function ForgetMonkey(monkey)
+    local piratespawner = TheWorld.components.piratespawner
+
+    if piratespawner == nil then
+        return
+    end
+
+    for b=#piratespawner.shipdatas, 1, -1 do
+        local shipdata = piratespawner.shipdatas[b]
+
+        if shipdata.captain and shipdata.captain == monkey then
+            shipdata.captain = nil
+
+        else
+            for i=#shipdata.crew, 1, -1 do
+                if shipdata.crew[i] == monkey then
+                    table.remove(shipdata.crew, i)
+                    break
                 end
             end
-            if ent.components.inventoryitem ~= nil then
-                stashloot(ent)
-            elseif ent:HasTag("pirate") then
-                stashloot(ent)
-                ent:Remove()
-            elseif ent.components.health ~= nil then
-                ent.components.health:Kill()
-            else
-                ent:Remove()
-            end
+        end
+
+        if #shipdata.crew <= 0 and shipdata.captain == nil then
+            table.remove(piratespawner.shipdatas, b)
         end
     end
-    boat:ListenForEvent("spawnnewboatleak", hitbycannon)
+
 end
 
-local function forgetmonkey(monkey)
-    if TheWorld.components.piratespawner then
-        local ps = TheWorld.components.piratespawner
-        for b=#ps.shipdatas, 1,-1 do
-            local shipdata = ps.shipdatas[b]
-            if shipdata.captain and shipdata.captain == monkey then
-                shipdata.captain = nil
-            else
-                for i=#shipdata.crew, 1,-1 do
-                    if shipdata.crew[i] == monkey then
-                        table.remove(shipdata.crew,i)
-                        break
-                    end
-                end
-            end
-            if #shipdata.crew <= 0 and shipdata.captain == nil then
-                table.remove(ps.shipdatas,b)
-            end
-        end        
-    end
+local function RememberMonkey(monkey)
+    monkey:ListenForEvent("onremove", ForgetMonkey)
 end
 
-local function remembermonkey(monkey)
-    monkey:ListenForEvent("onremove", forgetmonkey)
-end
-
-local function setcaptain(captain,boat)
-    remembermonkey(captain)
+local function SetCaptain(captain, boat)
+    RememberMonkey(captain)
     captain:AddComponent("crewmember")
-    boat.components.boatcrew:AddMember(captain,true)
+
+    boat.components.boatcrew:AddMember(captain, true)
 end
 
-local function setcrewmember(monkey,boat)
-    remembermonkey(monkey)
+local function SetCrewMember(monkey, boat)
+    RememberMonkey(monkey)
     monkey:AddComponent("crewmember")
+
     monkey.components.crewmember.leavecrewfn = function()
-        if monkey.tinkertarget then
+        if monkey.tinkertarget ~= nil then
             monkey.ClearTinkerTarget(monkey)
         end
     end
+
     boat.components.boatcrew:AddMember(monkey)
 end
 
 
-local LIFESPAN = {	base = TUNING.TOTAL_DAY_TIME *3,
-					varriance = TUNING.TOTAL_DAY_TIME }
-
-
+local LIFESPAN = {
+    base      = TUNING.TOTAL_DAY_TIME * 3,
+    varriance = TUNING.TOTAL_DAY_TIME,
+}
 
 --------------------------------------------------------------------------
 --[[ Member variables ]]
@@ -246,8 +267,8 @@ self.inst:DoTaskInTime(0,function()
 end)
 
 
-local RANGE = 40 -- distance from player to spawn the flotsam.  should be 5 more than wanted
-local SHORTRANGE = 5 -- radius that must be clear for flotsam to appear
+local RANGE = 38 -- distance from player to spawn the boat.  should be 5 more than wanted
+local SHORTRANGE = 5 -- radius that must be clear for boat to appear
 
 local function DoAnnouncePirates(player)
 	if not (player.components.health:IsDead() or player:HasTag("playerghost")) and player.entity:IsVisible() then 
@@ -262,7 +283,7 @@ local function spawnpirateship(pt)
     local boat = SpawnPrefab("boat_pirate")
     shipdata.boat = boat
     boat.Transform:SetPosition(pt.x,pt.y,pt.z)
-    setpirateboat(boat)
+    SetPirateBoat(boat)
 
     local mast = SpawnPrefab("pirate_flag_pole")
     mast.Transform:SetPosition(pt.x,pt.y,pt.z)
@@ -270,7 +291,7 @@ local function spawnpirateship(pt)
     -- SPAWN CAPTAIN
     local captain = SpawnPrefab("prime_mate")
     captain.Transform:SetPosition(pt.x,pt.y,pt.z)
-    setcaptain(captain,boat)
+    SetCaptain(captain,boat)
     shipdata.captain = captain
     for i=1,2 do
         local item = SpawnPrefab("treegrowthsolution")
@@ -312,7 +333,7 @@ local function spawnpirateship(pt)
         local monkey = SpawnPrefab("powder_monkey")
         table.insert(shipdata.crew,monkey)        
         monkey.Transform:SetPosition(pt.x,pt.y,pt.z)
-        setcrewmember(monkey,boat)
+        SetCrewMember(monkey,boat)
 
         local cutless = SpawnPrefab("cutless")
         cutless:AddTag("personal_possession")
@@ -356,7 +377,7 @@ local function GetSpawnPoint(platform)
                    #TheSim:FindEntities(spawnpoint_x, spawnpoint_y, spawnpoint_z, SHORTRANGE, nil, SPAWNPOINT_2_ONEOF_TAGS) <= 0
         end
 
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local radius = RANGE
         local resultoffset = FindValidPositionByFan(theta, radius, 12, TestSpawnPoint)
 
@@ -366,17 +387,35 @@ local function GetSpawnPoint(platform)
     end
 end
 
-local function SpawnPiratesForPlayer(player)
+local function SpawnPiratesForPlayer(player, nodelivery, forcedelivery)
     --print("SPAWNING PIRATED FOR PLAYER",player.GUID)
 
     local spawnedPirates = false
     local boat =  player:GetCurrentPlatform()
-    if boat then       
-        local spawnpoint = GetSpawnPoint(boat)
+    if boat then
+        local spawnpoint = GetSpawnPoint(boat)        
 
         if spawnpoint ~= nil then
             spawnedPirates = true
             local shipdata = spawnpirateship(spawnpoint)
+
+            if forcedelivery or (math.random() < TUNING.MONKEY_PIRATE_TREASURE_BOAT_CHANCE and not nodelivery) then
+                shipdata.boat.components.boatcrew.status = "delivery"
+
+                local deflection = PI/4
+                local playerpos = player:GetPosition()
+                local theta = shipdata.boat:GetAngleToPoint(playerpos.x,0,playerpos.z)*DEGREES + ((math.random()*2*deflection)-deflection)
+                local radius = 100
+                local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
+                shipdata.boat.components.boatcrew:SetTarget(Vector3(playerpos.x +offset.x,0,playerpos.z +offset.z))
+
+                local x,y,z = shipdata.boat.Transform:GetWorldPosition()
+
+                messagebottletreasures.GenerateTreasure(Vector3(x+1.5, y, z+1.5))
+
+                local cannon = SpawnPrefab("boat_cannon")
+                cannon.Transform:SetPosition(x-1.5, y, z-1.5)
+            end
 
             self:SaveShipData(shipdata)
         end
@@ -407,7 +446,7 @@ local function onmegaflaredetonation(world,data)
                         if #players > 0 then
                             for i, player in ipairs(players) do
                                 if player:GetCurrentPlatform() then
-                                    SpawnPiratesForPlayer(player)
+                                    SpawnPiratesForPlayer(player, true)
                                     break
                                 end
                             end
@@ -484,7 +523,7 @@ function self:FindStashLocation()
 
         local randnode =  TheWorld.topology.nodes[ids[math.random(1,#ids)]]
         pt = Vector3(randnode.cent[1],0,randnode.cent[2])
-        local theta = math.random()* 2 * PI
+        local theta = math.random()*TWOPI
         local radius = 4 
         offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
 
@@ -502,14 +541,14 @@ function self:FindStashLocation()
 end
 
 function self:StashLoot(ent)
-    stashloot(ent)
+    SendLootToStash(ent)
 end
 
 local function generateloot(stash)
     
     local function additem(name)
         local item = SpawnPrefab(name)
-        stashloot(item)
+        SendLootToStash(item)
     end
 
     local day = GetAveragePlayerAgeInDays()
@@ -596,6 +635,10 @@ function self:SpawnPirates(pt)
 end
 
 --self.ScheduleSpawn = ScheduleSpawn
+
+function self:SpawnPiratesForPlayer(player, nodelivery, forcedelivery)
+     SpawnPiratesForPlayer(player, nodelivery, forcedelivery)
+ end
 
 local GRACETIME = 10
 
@@ -778,7 +821,7 @@ function self:LoadPostPass(newents, savedata)
                 local boat = newents[v.boat] and newents[v.boat].entity or nil
                 if boat then
                     shipdata.boat = boat
-                    setpirateboat(boat)
+                    SetPirateBoat(boat)
                 end
             end
             if v.captain then
@@ -786,7 +829,7 @@ function self:LoadPostPass(newents, savedata)
                 
                 if captain then
                     shipdata.captain = captain
-                    setcaptain(captain,shipdata.boat)
+                    SetCaptain(captain,shipdata.boat)
                 end
             end
             shipdata.crew = {}
@@ -794,7 +837,7 @@ function self:LoadPostPass(newents, savedata)
                 local crewmember = newents[crew] and newents[crew].entity or nil
                 if crewmember then
                     table.insert(shipdata.crew,crewmember)
-                    setcrewmember(crewmember,shipdata.boat)
+                    SetCrewMember(crewmember,shipdata.boat)
                 end
             end
             self:SaveShipData(shipdata)

@@ -32,9 +32,6 @@ local function on_get_item(inst, giver, item)
     inst.components.inventory:Equip(item)
 end
 
-local function on_refuse_item(inst, item)
-end
-
 --------------------------------------------------------------------------------
 local function onhammered(inst)
     inst.components.lootdropper:DropLoot()
@@ -173,6 +170,8 @@ local function fn()
     -- stageactor (from stageactor component) added to pristine state for optimization
     inst:AddTag("stageactor")
 
+	inst:SetDeploySmartRadius(0.75) --recipe min_spacing/2
+
     inst.DynamicShadow:SetSize(1.3, 0.6)
 
     inst.MiniMapEntity:SetIcon("sewing_mannequin.png")
@@ -219,24 +218,23 @@ local function fn()
     inst.components.inventory.maxslots = 0
 
     -------------------------------------------------------
-    inst:AddComponent("trader")
-    inst.components.trader:SetAbleToAcceptTest(should_accept_item)
-    inst.components.trader.onaccept = on_get_item
-    inst.components.trader.onrefuse = on_refuse_item
-    inst.components.trader.deleteitemonaccept = false
-    inst.components.trader.acceptnontradable = true
+    local trader = inst:AddComponent("trader")
+    trader:SetAbleToAcceptTest(should_accept_item)
+    trader.onaccept = on_get_item
+    trader.deleteitemonaccept = false
+    trader.acceptnontradable = true
 
     -------------------------------------------------------
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(6)
-    inst.components.workable:SetOnFinishCallback(onhammered)
-    inst.components.workable:SetOnWorkCallback(onhit)
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(6)
+    workable:SetOnFinishCallback(onhammered)
+    workable:SetOnWorkCallback(onhit)
 
     -------------------------------------------------------
-    inst:AddComponent("activatable")
-    inst.components.activatable.OnActivate = OnActivate
-    inst.components.activatable.quickaction = true
+    local activatable = inst:AddComponent("activatable")
+    activatable.OnActivate = OnActivate
+    activatable.quickaction = true
 
     -------------------------------------------------------
     inst:AddComponent("savedrotation")
@@ -247,8 +245,8 @@ local function fn()
 	inst:AddComponent("bloomer")
 
     -------------------------------------------------------
-    MakeMediumBurnable(inst, nil, nil, true)
-    inst.components.burnable:SetOnBurntFn(mannequin_onburnt)
+    local burnable = MakeMediumBurnable(inst, nil, nil, true)
+    burnable:SetOnBurntFn(mannequin_onburnt)
     MakeMediumPropagator(inst)
 
     -------------------------------------------------------

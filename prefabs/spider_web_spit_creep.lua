@@ -5,6 +5,7 @@ local function fn()
 	inst.entity:AddGroundCreepEntity()
     inst.entity:AddNetwork()
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

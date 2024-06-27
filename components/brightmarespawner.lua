@@ -58,7 +58,7 @@ local function FindGestaltSpawnPtForPlayer(player, wantstomorph)
 		local x1, z1 = x + offset.x, z + offset.z
 		return #TheSim:FindEntities(x1, 0, z1, 6, nil, nil, SPAWN_ONEOF_TAGS) == 0
 	end
-    local offset = FindValidPositionByFan(math.random() * 2 * PI,
+    local offset = FindValidPositionByFan(math.random() * TWOPI,
 											(wantstomorph and TUNING.GESTALT_SPAWN_MORPH_DIST or TUNING.GESTALT_SPAWN_DIST) + math.random() * 2 * TUNING.GESTALT_SPAWN_DIST_VAR - TUNING.GESTALT_SPAWN_DIST_VAR,
 											8,
 											IsValidGestaltSpawnPt)

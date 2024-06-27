@@ -83,7 +83,7 @@ local function toss_debris(debris_prefab, dx, dz)
     local dock_debris = SpawnPrefab(debris_prefab)
     dock_debris.Physics:Teleport(dx, 0.1, dz)
 
-    local debris_angle = 2*PI*math.random()
+    local debris_angle = TWOPI*math.random()
     local debris_speed = 2.5 + 2*math.random()
     dock_debris.Physics:SetVel(debris_speed * math.cos(debris_angle), 10, debris_speed * math.sin(debris_angle))
 end

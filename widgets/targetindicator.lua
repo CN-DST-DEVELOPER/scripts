@@ -2,20 +2,7 @@ local Image = require "widgets/image"
 local Widget = require "widgets/widget"
 local Text = require "widgets/text"
 
-local YOFFSETUP = 40
-local YOFFSETDOWN = 30
-local XOFFSET = 10
-
-local SHOW_DELAY = 0 --10
-
-local HEAD_SIZE = 60
-
 local ARROW_OFFSET = 65
-
-local TOP_EDGE_BUFFER = 20
-local BOTTOM_EDGE_BUFFER = 40
-local LEFT_EDGE_BUFFER = 67
-local RIGHT_EDGE_BUFFER = 80
 
 local MIN_SCALE = .5
 local MIN_ALPHA = .35
@@ -148,78 +135,18 @@ function TargetIndicator:OnUpdate()
     self:UpdatePosition(x, z)
 end
 
-local function GetXCoord(angle, width)
-    if angle >= 90 and angle <= 180 then -- left side
-        return 0
-    elseif angle <= 0 and angle >= -90 then -- right side
-        return width
-    else -- middle somewhere
-        if angle < 0 then
-            angle = -angle - 90
-        end
-        local pctX = 1 - (angle / 90)
-        return pctX * width
-    end
-end
-
-local function GetYCoord(angle, height)
-    if angle <= -90 and angle >= -180 then -- top side
-        return height
-    elseif angle >= 0 and angle <= 90 then -- bottom side
-        return 0
-    else -- middle somewhere
-        if angle < 0 then
-            angle = -angle
-        end
-        if angle > 90 then
-            angle = angle - 90
-        end
-        local pctY = (angle / 90)
-        return pctY * height
-    end
-end
-
 function TargetIndicator:UpdatePosition(targX, targZ)
-    local angleToTarget = self.owner:GetAngleToPoint(targX, 0, targZ)
-    local downVector = TheCamera:GetDownVec()
-    local downAngle = -math.atan2(downVector.z, downVector.x) / DEGREES
-    local indicatorAngle = (angleToTarget - downAngle) + 45
-    while indicatorAngle > 180 do indicatorAngle = indicatorAngle - 360 end
-    while indicatorAngle < -180 do indicatorAngle = indicatorAngle + 360 end
-
-    local scale = self:GetScale()
-    local w = 0
-    local h = 0
     local w0, h0 = self.head:GetSize()
     local w1, h1 = self.arrow:GetSize()
-    if w0 and w1 then
-        w = (w0 + w1)
-    end
-    if h0 and h1 then
-        h = (h0 + h1)
-    end
+    local scale = self:GetScale()
+    local w = ((w0 or 0) + (w1 or 0)) * 0.5 * scale.x
+    local h = ((h0 or 0) + (h1 or 0)) * 0.5 * scale.y
+    local x, y, angle = GetIndicatorLocationAndAngle(self.owner, targX, targZ, w, h)
 
-    local screenWidth, screenHeight = TheSim:GetScreenSize()
-
-    local x = GetXCoord(indicatorAngle, screenWidth)
-    local y = GetYCoord(indicatorAngle, screenHeight)
-
-    if x <= LEFT_EDGE_BUFFER + (.5 * w * scale.x) then
-        x = LEFT_EDGE_BUFFER + (.5 * w * scale.x)
-    elseif x >= screenWidth - RIGHT_EDGE_BUFFER - (.5 * w * scale.x) then
-        x = screenWidth - RIGHT_EDGE_BUFFER - (.5 * w * scale.x)
-    end
-
-    if y <= BOTTOM_EDGE_BUFFER + (.5 * h * scale.y) then
-        y = BOTTOM_EDGE_BUFFER + (.5 * h * scale.y)
-    elseif y >= screenHeight - TOP_EDGE_BUFFER - (.5 * h * scale.y) then
-        y = screenHeight - TOP_EDGE_BUFFER - (.5 * h * scale.y)
-    end
-
-    self:SetPosition(x,y,0)
+    self:SetPosition(x, y, 0)
     self.x = x
     self.y = y
-    self.angle = indicatorAngle
+    self.angle = angle
     self:PositionArrow()
     self:PositionLabel()
 end

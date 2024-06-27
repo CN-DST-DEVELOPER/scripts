@@ -250,6 +250,7 @@ local function MakeBeebox(name, common_postinit, master_postinit)
         inst.entity:AddNetwork()
         inst.entity:AddLightWatcher()
 
+		inst:SetDeploySmartRadius(1.25) --recipe min_spacing/2
         MakeObstaclePhysics(inst, .5)
 
         inst.MiniMapEntity:SetIcon("beebox.png")

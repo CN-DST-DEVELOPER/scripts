@@ -20,10 +20,10 @@ function Instrument:Play(musician)
     end
     if self.onheard ~= nil then
         local x, y, z = musician.Transform:GetWorldPosition()
-        local ents = TheSim:FindEntities(x, y, z, self.range, nil, NOTAGS)
-        for i, v in ipairs(ents) do
-            if v ~= self.inst then
-                self.onheard(v, musician, self.inst)
+        local listeners = TheSim:FindEntities(x, y, z, self.range, nil, NOTAGS)
+        for _, listener in ipairs(listeners) do
+            if listener ~= self.inst then
+                self.onheard(listener, musician, self.inst)
             end
         end
     end

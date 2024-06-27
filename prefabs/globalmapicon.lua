@@ -62,5 +62,14 @@ local function overfog_fn()
     return inst
 end
 
+local function overfog_seeable_fn()
+    local inst = fn()
+
+    inst.MiniMapEntity:SetDrawOverFogOfWar(true, true)
+
+    return inst
+end
+
 return Prefab("globalmapicon", overfog_fn),
-    Prefab("globalmapiconunderfog", fn)
+    Prefab("globalmapiconunderfog", fn),
+    Prefab("globalmapiconseeable", overfog_seeable_fn)

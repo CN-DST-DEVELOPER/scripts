@@ -1,7 +1,7 @@
 --[[
 local function DoSpawnMeteor(target, n)
     local pt = target:GetPosition()
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     --spread the meteors more once the player is a ghost
     local radius = target:HasTag("playerghost") and math.random(n + 1, 10 + n * 2) or math.random(n - 1, 5 + n * 2)
     local offset = FindWalkableOffset(pt, theta, radius, 12, true)

@@ -29,7 +29,7 @@ function Oar:Row(doer, pos)
 	boat_physics:ApplyRowForce(row_dir_x, row_dir_z, self.force * character_force_mult, self.max_velocity + character_extra_max_velocity)
 
 	doer:PushEvent("rowing")
-
+	platform:PushEvent("rowed", doer)
 end
 
 function Oar:RowFail(doer)

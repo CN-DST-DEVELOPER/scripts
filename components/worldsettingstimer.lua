@@ -123,7 +123,7 @@ function WorldSettingsTimer:ResumeTimer(name)
         self.timers[name].end_time = GetTime() + self.timers[name].timeleft
     end
 
-	return true
+    return true
 end
 
 function WorldSettingsTimer:GetTimeLeft(name)
@@ -143,6 +143,20 @@ function WorldSettingsTimer:SetTimeLeft(name, time)
     else
         self:PauseTimer(name)
         self.timers[name].timeleft = math.max(0, time)
+        self:ResumeTimer(name)
+    end
+end
+
+function WorldSettingsTimer:SetMaxTime(name, time)
+    if not self:ActiveTimerExists(name) or not self:TimerEnabled(name) then
+        return
+    elseif self:IsPaused(name) then
+        self.timers[name].timeleft = math.max(0, time) / self.timers[name].maxtime * self.timers[name].timeleft
+        self.timers[name].maxtime  = math.max(0, time)
+    else
+        self:PauseTimer(name)
+        self.timers[name].timeleft = math.max(0, time) / self.timers[name].maxtime * self.timers[name].timeleft
+        self.timers[name].maxtime  = math.max(0, time)
         self:ResumeTimer(name)
     end
 end

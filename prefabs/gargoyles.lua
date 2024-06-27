@@ -154,7 +154,7 @@ local function makegargoyle(data)
         inst.entity:AddSoundEmitter()
         inst.entity:AddNetwork()
 
-        inst.entity:AddTag("gargoyle")
+        inst:AddTag("gargoyle")
 
         if data.named then
             --Sneak these into pristine state for optimization

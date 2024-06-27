@@ -23,8 +23,8 @@ end
 
 local function exportSpawnersToEntites(add_entity_fn)
 	local fn = add_entity_fn or setEntity
-    for i, item in ipairs(bunch)do
-        fn(item.prefab, item.x, item.z )
+    for _, item in ipairs(bunch) do
+        fn(item.prefab, item.x, item.z)
     end
 end
 
@@ -42,11 +42,12 @@ local function checkIfValidGround(world, x, z, valid_tile_types, water)
     x = math.floor((WIDTH/2)+0.5 + (x/TILE_SCALE))
     z = math.floor((HEIGHT/2)+0.5 + (z/TILE_SCALE))
 
-	if x > OCEAN_POPULATION_EDGE_DIST and x < (WIDTH - OCEAN_POPULATION_EDGE_DIST) and z > OCEAN_POPULATION_EDGE_DIST and z < (HEIGHT - OCEAN_POPULATION_EDGE_DIST) then
+	if x > OCEAN_POPULATION_EDGE_DIST and x < (WIDTH - OCEAN_POPULATION_EDGE_DIST)
+            and z > OCEAN_POPULATION_EDGE_DIST and z < (HEIGHT - OCEAN_POPULATION_EDGE_DIST) then
 		local original_tile_type = world:GetTile(x, z)
 		if not TileGroupManager:IsInvalidTile(original_tile_type) then
 			if valid_tile_types then
-				for i, tiletype in ipairs(valid_tile_types)do
+				for _, tiletype in ipairs(valid_tile_types)do
 					if original_tile_type == tiletype then
 						return true
 					end
@@ -58,14 +59,11 @@ local function checkIfValidGround(world, x, z, valid_tile_types, water)
 end
 
 local function AddTempEnts(data,x,z,prefab)
-
-    local entity = {
+    table.insert(data, {
         x = x,
         z = z,
         prefab = prefab,
-    }
-
-    table.insert(data,entity)
+    })
 
     return data
 end
@@ -75,7 +73,7 @@ local function findEntsInRange(x,z,range)
 
     local dist = range*range
 
-    for k, item in ipairs(bunch) do
+    for _, item in ipairs(bunch) do
         local xdif = math.abs(x - item.x)
         local zdif = math.abs(z - item.z)
         if (xdif*xdif) + (zdif*zdif) < dist then
@@ -86,13 +84,13 @@ local function findEntsInRange(x,z,range)
     return ents
 end
 
-local function checkforblockingitems(x,z,range)
+local function checkforblockingitems(x,z)
     local spawnOK = true
 
-    for i, prefab in ipairs(bunches.BunchBlockers) do
-        local dist = 4*4
+    for _, prefab in ipairs(bunches.BunchBlockers) do
+        local dist = 16 -- 4*4
         if entities[prefab] then
-            for t, ent in ipairs( entities[prefab] ) do
+            for __, ent in ipairs( entities[prefab] ) do
                 local xdif = math.abs(x - ent.x)
                 local zdif = math.abs(z - ent.z)
                 if (xdif*xdif) + (zdif*zdif) < dist then
@@ -104,13 +102,6 @@ local function checkforblockingitems(x,z,range)
         end
     end
     return spawnOK
-end
-
-
-local function round(x)
-  x = x *10
-  local num = x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
-  return num/10
 end
 
 local function placeitemoffgrids(world, x1,z1, data)
@@ -183,7 +174,7 @@ function BunchSpawnerRun(world, add_entity_fn)
 
     for spawner_prefab, _ in pairs(bunches.Bunches)do
         if entities[spawner_prefab] then
-            for i, ent in ipairs(entities[spawner_prefab]) do
+            for _, ent in ipairs(entities[spawner_prefab]) do
                 BunchSpawnerRunSingleBatchSpawner(world, spawner_prefab, ent.x, ent.z, add_entity_fn)
             end
         end

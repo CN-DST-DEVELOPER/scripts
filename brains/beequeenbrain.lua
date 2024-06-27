@@ -146,7 +146,7 @@ local function ShouldDodge(self)
     end
     for i = 10, 20, 5 do
         local r = i + math.random() * 5
-        local theta = 2 * PI * math.random()
+        local theta = TWOPI * math.random()
         local dtheta = PI * .25
         for attempt = 1, 8 do
 			local offset = FindWalkableOffset(pos, theta, r, 1, true, true, nil, true, true)

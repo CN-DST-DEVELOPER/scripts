@@ -31,7 +31,7 @@ local function onhealthchange(inst, old_percent, new_percent)
         inst.sg:GoToState("changegrade", {
             index = oldindex,
             newindex = newindex,
-            isupgrade = (newindex > oldindex) or nil,
+            isupgrade = (newindex < oldindex) or nil,
         })
     end
 end
@@ -51,7 +51,7 @@ local function onload(inst, data)
     if inst.components.health then
         local healthpercent = inst.components.health:GetPercent()
         local stateindex = getanimthreshold(inst, healthpercent)
-        inst.sg:GoToState("idle", { index = stateindex })
+        inst.sg:GoToState("idle", stateindex)
     end
 end
 
@@ -107,6 +107,32 @@ local function CanDeployAtBoatEdge(inst, pt, mouseover, deployer, rot)
 
     local snap_point = GetCircleEdgeSnapTransform(boatsegments, radius, boatpos, pt, boatangle)
     return TheWorld.Map:CanDeployWalkablePeripheralAtPoint(snap_point, inst)
+end
+
+local function setup_boat_placer(inst)
+    inst.components.placer.snap_to_boat_edge = true
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+    inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+    inst.AnimState:SetSortOrder(ANIM_SORT_ORDER.OCEAN_BOAT_BUMPERS)
+    inst.AnimState:SetFinalOffset(1)
+end
+
+local function CrabkingKit_OnDroppedAsLoot(inst)
+    inst.components.stackable:SetStackSize(TUNING.BOAT.BUMPERS.CRABKING.STACKSIZE)
+
+    inst:RemoveEventCallback("on_loot_dropped", inst._OnDroppedAsLoot)
+end
+
+local function shell_kit_masterpostinit(inst)
+    inst.scrapbook_scale = 0.8
+end
+
+local function crabking_kit_masterpostinit(inst)
+    inst.scrapbook_scale = 0.7
+
+    inst._OnDroppedAsLoot = CrabkingKit_OnDroppedAsLoot -- Mods.
+
+    inst:ListenForEvent("on_loot_dropped", inst._OnDroppedAsLoot)
 end
 
 function MakeBumperType(data)
@@ -170,6 +196,10 @@ function MakeBumperType(data)
     end
 
     local function onhit(inst)
+        if inst.sg:HasStateTag("busy") then
+            return
+        end
+
         local healthpercent = inst.components.health:GetPercent()
         if healthpercent > 0 then
             local animindex = getanimthreshold(inst, healthpercent)
@@ -213,6 +243,8 @@ function MakeBumperType(data)
         inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
         inst.AnimState:SetSortOrder(ANIM_SORT_ORDER.OCEAN_BOAT_BUMPERS)
 
+        inst:SetPhysicsRadiusOverride(0.75) -- For action distance.
+
         for _, v in ipairs(data.tags) do
             inst:AddTag(v)
         end
@@ -223,6 +255,7 @@ function MakeBumperType(data)
         end
 
         inst.scrapbook_anim = "idle_1"
+        inst.scrapbook_scale = 0.7
 
         inst:AddComponent("inspectable")
         inst:AddComponent("lootdropper")
@@ -274,14 +307,6 @@ function MakeBumperType(data)
         return inst
     end
 
-    local function setup_boat_placer(inst)
-        inst.components.placer.snap_to_boat_edge = true
-        inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-        inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
-        inst.AnimState:SetSortOrder(ANIM_SORT_ORDER.OCEAN_BOAT_BUMPERS)
-        inst.AnimState:SetFinalOffset(1)
-    end
-
     return Prefab("boat_bumper_"..data.name, fn, assets, prefabs),
         MakeDeployableKitItem(
             "boat_bumper_"..data.name.."_kit",
@@ -292,13 +317,14 @@ function MakeBumperType(data)
             assets,
             {size = "med"},
             {"boat_accessory"},
-            {fuelvalue = TUNING.LARGE_FUEL},
+            data.flammable and {fuelvalue = TUNING.LARGE_FUEL} or nil,
             {
                 deploymode = DEPLOYMODE.CUSTOM,
                 deployspacing = DEPLOYSPACING.MEDIUM,
                 custom_candeploy_fn = CanDeployAtBoatEdge,
             },
-            TUNING.STACK_SIZE_MEDITEM
+            TUNING.STACK_SIZE_MEDITEM,
+            data.kitpostinit
         ),
         MakePlacer(
             "boat_bumper_"..data.name.."_kit_placer",
@@ -334,6 +360,7 @@ local boatbumperdata =
         maxhealth = TUNING.BOAT.BUMPERS.SHELL.HEALTH,
         flammable = true,
         buildsound = "dontstarve/common/place_structure_stone",
+        kitpostinit = shell_kit_masterpostinit,
     },
     {
         name = "yotd",
@@ -344,7 +371,17 @@ local boatbumperdata =
         maxhealth = TUNING.BOAT.BUMPERS.SHELL.HEALTH,
         flammable = false,
         buildsound = "dontstarve/common/place_structure_wood",
-        boatringsegments = 4,
+    },
+    {
+        name = "crabking",
+        material = MATERIALS.STONE,
+        tags = { "collision_world_safe" },
+        loot = "rocks",
+        maxloots = 3,
+        maxhealth = TUNING.BOAT.BUMPERS.CRABKING.HEALTH,
+        flammable = false,
+        buildsound = "dontstarve/common/place_structure_stone",
+        kitpostinit = crabking_kit_masterpostinit,
     },
 }
 for _, v in ipairs(boatbumperdata) do

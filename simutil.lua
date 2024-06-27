@@ -323,6 +323,35 @@ function FindSwimmableOffset(position, start_angle, radius, attempts, check_los,
             end)
 end
 
+local NO_CHARLIE_TAGS = {"lunacyarea"}
+function FindCharlieRezSpotFor(inst)
+    local x, y, z
+    local nightlightmanager = TheWorld.components.nightlightmanager
+    if nightlightmanager ~= nil then
+        local nightlights = nightlightmanager:GetNightLightsWithFilter(nightlightmanager.Filter_OnlyOutTags, NO_CHARLIE_TAGS)
+        local nightlight = nightlightmanager:FindClosestNightLightFromListToInst(nightlights, inst)
+        if nightlight ~= nil then
+            local theta = math.random() * PI2
+            x, y, z = nightlight.Transform:GetWorldPosition()
+            local radius = nightlight:GetPhysicsRadius(0) + 1
+            local offset = FindWalkableOffset(Vector3(x, y, z), theta, radius, 8, false, false, nil, false, false)
+            if offset then
+                x, z = x + offset.x, z + offset.z
+            else
+                x, z = x + radius * math.cos(theta), z + radius * math.sin(theta)
+            end
+        end
+    end
+    if x == nil then
+        if inst.components.drownable ~= nil then
+            x, y, z = inst.components.drownable:GetWashingAshoreTeleportSpot(true)
+        else
+            x, y, z = inst.Transform:GetWorldPosition() -- We tried.
+        end
+    end
+    return x, y, z
+end
+
 local PICKUP_MUST_ONEOF_TAGS = { "_inventoryitem", "pickable" }
 local PICKUP_CANT_TAGS = {
     -- Items
@@ -705,9 +734,11 @@ function GetSkilltreeBG_Internal(imagename)
     local images1 = "images/skilltree2.xml"
     local images2 = "images/skilltree3.xml"
     local images3 = "images/skilltree4.xml"
+    local images4 = "images/skilltree5.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
             or TheSim:AtlasContains(images3, imagename) and images3
+            or TheSim:AtlasContains(images4, imagename) and images4
             or nil
 end
 

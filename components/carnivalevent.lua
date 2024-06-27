@@ -38,8 +38,8 @@ local _plazas = {}
 local function GetCarnivalHostPortalLocation()
 	local pos = Vector3(TheWorld.components.playerspawner:GetAnySpawnPoint())
 
-	local offset = FindWalkableOffset(pos, math.random() * 2 * PI, PORTAL_LONG_DIST, 16)
-					or FindWalkableOffset(pos, math.random() * 2 * PI, PORTAL_SHORT_DIST, 16)
+	local offset = FindWalkableOffset(pos, math.random() * TWOPI, PORTAL_LONG_DIST, 16)
+					or FindWalkableOffset(pos, math.random() * TWOPI, PORTAL_SHORT_DIST, 16)
 					or Vector3(0, 0, 0)
 
     return pos + offset

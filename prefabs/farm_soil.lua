@@ -114,6 +114,7 @@ local function fn()
 
     inst:AddTag("soil")
 
+	inst:SetDeploySmartRadius(0.5) --match visuals, seeds use CUSTOM spacing
 	inst:SetPhysicsRadiusOverride(TUNING.FARM_PLANT_PHYSICS_RADIUS)
 
     inst.CanMouseThrough = CanMouseThrough

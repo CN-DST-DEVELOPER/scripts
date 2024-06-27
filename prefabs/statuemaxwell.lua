@@ -89,7 +89,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst:AddTag("maxwell")
-    inst.entity:AddTag("statue")
+    inst:AddTag("statue")
 
     MakeObstaclePhysics(inst, .66)
 
@@ -124,6 +124,8 @@ local function fn()
     inst.OnSave = OnSave
 
     MakeHauntableWork(inst)
+
+    MakeRoseTarget_CreateFuel(inst)
 
     return inst
 end

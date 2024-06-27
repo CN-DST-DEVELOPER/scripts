@@ -88,7 +88,7 @@ local function mineable_glass(name, anim)
 
         inst.no_wet_prefix = true
 
-        inst:SetDeployExtraSpacing(2)
+		inst:SetDeploySmartRadius(2)
 
         inst:SetPhysicsRadiusOverride(2)
 

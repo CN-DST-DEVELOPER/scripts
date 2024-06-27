@@ -503,7 +503,7 @@ end
 
 local function SpawnFriendlyFruitFly(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local offset = FindWalkableOffset(Vector3(x, y, z), math.random() * 2 * PI, 35, 12, true)
+    local offset = FindWalkableOffset(Vector3(x, y, z), math.random() * TWOPI, 35, 12, true)
     local fruitfly = SpawnPrefab("friendlyfruitfly")
     if fruitfly ~= nil then
         fruitfly.Physics:Teleport(offset ~= nil and offset.x + x or x, 0, offset ~= nil and offset.z + z or z)

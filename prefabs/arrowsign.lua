@@ -64,6 +64,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(0.75) --recipe min_spacing/2
     MakeObstaclePhysics(inst, .2)
 
     inst.MiniMapEntity:SetIcon("sign.png")

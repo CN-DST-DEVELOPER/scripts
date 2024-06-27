@@ -207,6 +207,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_scale = 0.75
+
     local locomotor = inst:AddComponent("locomotor")
     locomotor:EnableGroundSpeedMultiplier(false)
     locomotor:SetTriggersCreep(false)

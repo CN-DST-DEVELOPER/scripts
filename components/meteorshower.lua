@@ -152,7 +152,7 @@ end
 function MeteorShower:SpawnMeteor(mod)
     --Randomize spawn point
     local x, y, z = self.inst.Transform:GetWorldPosition()
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     -- Do some easing fanciness to make it less clustered around the spawner prefab
     local radius = easing.outSine(math.random(), math.random() * 7, TUNING.METEOR_SHOWER_SPAWN_RADIUS, 1)
 

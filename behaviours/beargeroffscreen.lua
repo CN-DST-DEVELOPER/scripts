@@ -111,7 +111,7 @@ function BeargerOffScreen:DropGroundPoundTrail()
 	local x,y,z = self.inst.Transform:GetWorldPosition()
 	for i=1,count do
 		local radius = poundTrailDropRadiusBase + math.random() * poundTrailDropRadiusVariance
-		local angle = math.random() * 2 * PI
+		local angle = math.random() * TWOPI
 		local offset = Vector3(radius * math.cos(angle), 0, radius * math.sin(angle))
 		self:DropTrailItem(x+offset.x, y, z+offset.z)
 	end
@@ -227,7 +227,7 @@ end
 
 function BeargerOffScreen:GetRandomWanderDestWithinBoundary(lookAhead, moveRadius, curAngle)
     local attempts = 8
-    local angle = self.lastangle or math.random() * 2 * PI
+    local angle = self.lastangle or math.random() * TWOPI
 	angle = angle + math.random() - 0.5
 
     local pt = Point(self.inst.Transform:GetWorldPosition())

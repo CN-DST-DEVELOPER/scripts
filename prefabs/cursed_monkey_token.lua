@@ -45,6 +45,13 @@ local function OnLoad(inst, data)
     seticons(inst)
 end
 
+local function OnTimerDone(inst, data)
+    if data.name == "errode" then
+        inst:StopUpdatingComponent(inst.components.curseditem)
+        ErodeAway(inst)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -90,6 +97,14 @@ local function fn()
 
     inst:AddComponent("curseditem")
     inst.components.curseditem.curse = "MONKEY"
+
+    inst:AddComponent("timer")
+    inst.components.timer:StartTimer("errode", TUNING.CURSED_TRINKET_LIFETIME)
+    inst:ListenForEvent("timerdone", OnTimerDone)
+
+    inst:ListenForEvent("onpickup", function() 
+            inst.components.timer:StopTimer("errode")
+        end)
 
     inst.seticons = seticons
 

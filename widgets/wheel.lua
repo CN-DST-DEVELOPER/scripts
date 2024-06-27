@@ -72,11 +72,11 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 			--helpers to basically do this:
 			--    w:SetIdleAnim(v.anims.idle.anim, v.anims.idle.anim.loop)
 			--(except the anim data might be nil!!!)
-			SetUIAnimButtonData(w, w.SetIdleAnim, v.anims.idle)
-			SetUIAnimButtonData(w, w.SetFocusAnim, v.anims.focus)
-			SetUIAnimButtonData(w, w.SetDisabledAnim, v.anims.disabled)
-			SetUIAnimButtonData(w, w.SetDownAnim, v.anims.down)
-			SetUIAnimButtonData(w, w.SetSelectedAnim, v.anims.selected)
+			SetUIAnimButtonData(w, w.SetIdleAnim, FunctionOrValue(v.anims.idle, self.owner))
+			SetUIAnimButtonData(w, w.SetFocusAnim, FunctionOrValue(v.anims.focus, self.owner))
+			SetUIAnimButtonData(w, w.SetDisabledAnim, FunctionOrValue(v.anims.disabled, self.owner))
+			SetUIAnimButtonData(w, w.SetDownAnim, FunctionOrValue(v.anims.down, self.owner))
+			SetUIAnimButtonData(w, w.SetSelectedAnim, FunctionOrValue(v.anims.selected, self.owner))
 
 			if v.checkcooldown then
 				w.cooldown = w:AddChild(UIAnim())
@@ -202,7 +202,7 @@ function Wheel:Open(dataset_name)
 	for i, v in ipairs(self.activeitems) do
 		local disabled = v.checkenabled and not v.checkenabled(self.owner)
 		if v.checkcooldown and v.anims then --cooldowns only supported with anims
-			SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, disabled and v.anims.disabled or v.anims.cooldown)
+			SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, disabled and FunctionOrValue(v.anims.disabled, self.owner) or FunctionOrValue(v.anims.cooldown, self.owner))
 			v.widget.cooldown.OnUpdate = function(cooldown, dt, forceinit)
 				local cd = v.checkcooldown(self.owner)
 				if cd then
@@ -232,7 +232,7 @@ function Wheel:Open(dataset_name)
 			v.widget.cooldown:OnUpdate(0, true)
 		elseif disabled then
 			if v.anims then
-				SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, v.anims.disabled)
+				SetUIAnimButtonData(v.widget, v.widget.SetDisabledAnim, FunctionOrValue(v.anims.disabled, self.owner))
 			end
 			v.widget:Disable()
 		else

@@ -106,6 +106,13 @@ nil,
 
 function Health:OnRemoveFromEntity()
     self:StopRegen()
+
+    if self.regensources ~= nil then
+        for source, _ in pairs(self.regensources) do
+            self:RemoveRegenSource(source)
+        end
+    end
+
     onpercent(self)
 end
 
@@ -232,6 +239,7 @@ local function DoRegen(inst, self)
     end
 end
 
+-- NOTES(DiogoW): Consider using Health:AddRegenSource, specially for players.
 function Health:StartRegen(amount, period, interruptcurrentregen)
     -- We don't always do this just for backwards compatibility sake. While unlikely, it's possible some modder was previously relying on
     -- the fact that StartRegen didn't stop the existing task. If they want to continue using that behavior, they now just need to add
@@ -248,6 +256,99 @@ function Health:StartRegen(amount, period, interruptcurrentregen)
 
     if self.regen.task == nil then
         self.regen.task = self.inst:DoPeriodicTask(self.regen.period, DoRegen, nil, self)
+    end
+end
+
+local function DoRegenFromSource(inst, self, amount, key)
+    if not self:IsDead() then
+        self:DoDelta(amount, true, "regen_"..key)
+    end
+end
+
+function Health:AddRegenSource(source, amount, period, key)
+    key = key or "key"
+
+    if self.regensources == nil then
+        self.regensources = {}
+    end
+
+    local src_params = self.regensources[source]
+
+    if src_params == nil then
+        self.regensources[source] = {
+            tasks = { [key] = 
+                {
+                    task = self.inst:DoPeriodicTask(period, DoRegenFromSource, nil, self, amount, key),
+                    amount = amount,
+                    period = period,
+                }
+            }
+        }
+
+        -- If the source is an object, then add a onremove event listener to cleanup if source is removed from the game.
+        if EntityScript.is_instance(source) then
+            self.regensources[source].onremove = function(source)
+                for key, data in pairs(self.regensources[source].tasks) do
+                    data.task:Cancel()
+                end
+                self.regensources[source] = nil
+            end
+
+            self.inst:ListenForEvent("onremove", self.regensources[source].onremove, source)
+        end
+
+    elseif src_params.tasks[key] ~= nil then
+        local data = src_params.tasks[key]
+
+        if data.amount ~= amount or data.period ~= period then
+            data.task:Cancel()
+
+            data.task = self.inst:DoPeriodicTask(period, DoRegenFromSource, nil, self, amount, key)
+            data.amount = amount
+            data.period = period
+        end
+
+    else
+        src_params.tasks[key] = 
+        {
+            task = self.inst:DoPeriodicTask(period, DoRegenFromSource, nil, self, amount, key),
+            amount = amount,
+            period = period,
+        }
+    end
+end
+
+-- Key is optional if you want to remove the entire source.
+function Health:RemoveRegenSource(source, key)
+    local src_params = self.regensources ~= nil and self.regensources[source] or nil
+
+    if src_params == nil then
+        return
+    
+    elseif key ~= nil then
+        src_params.tasks[key].task:Cancel()
+        src_params.tasks[key] = nil
+
+        if next(src_params.tasks) ~= nil then
+            -- This source still has other keys.
+
+            return
+        end
+    end
+
+    -- Remove the entire source.
+    if src_params.onremove ~= nil then
+        self.inst:RemoveEventCallback("onremove", src_params.onremove, source)
+    end
+
+    for key, data in pairs(self.regensources[source].tasks) do
+        data.task:Cancel()
+    end
+
+    self.regensources[source] = nil
+
+    if not next(self.regensources) then
+        self.regensources = nil
     end
 end
 
@@ -381,11 +482,8 @@ function Health:SetVal(val, cause, afflicter)
         self.inst:PushEvent("death", { cause = cause, afflicter = afflicter })
 
 		--Here, check if killing player or monster
-		if(self.inst:HasTag("player")) then
-			NotifyPlayerProgress("TotalPlayersKilled", 1, afflicter);
-		else
-			NotifyPlayerProgress("TotalEnemiesKilled", 1, afflicter);
-		end
+        local notify_type = (self.inst.isplayer and "TotalPlayersKilled") or "TotalEnemiesKilled"
+        NotifyPlayerProgress(notify_type, 1, afflicter)
 
         --V2C: If "death" handler removes ourself, then the prefab should explicitly set nofadeout = true.
         --     Intentionally NOT using IsValid() here to hide those bugs.
@@ -413,6 +511,10 @@ function Health:DoDelta(amount, overtime, cause, ignore_invincible, afflicter, i
         return 0
     elseif amount < 0 and not ignore_absorb then
         amount = amount * math.clamp(1 - (self.playerabsorb ~= 0 and afflicter ~= nil and afflicter:HasTag("player") and self.playerabsorb + self.absorb or self.absorb), 0, 1) * math.max(1 - self.externalabsorbmodifiers:Get(), 0)
+    end
+
+    if self.deltamodifierfn ~= nil then
+        amount = self.deltamodifierfn(self.inst, amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
     end
 
     if self.maxdamagetakenperhit ~= nil and amount < self.maxdamagetakenperhit and not self._ignore_maxdamagetakenperhit then

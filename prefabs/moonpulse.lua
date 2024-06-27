@@ -24,7 +24,7 @@ local WISP_SPAWN_OFFSET_VARIANCE = 32
 local function SpawnWisp(inst)
     if ThePlayer ~= nil and ThePlayer:IsValid() then
         local x, _, z = ThePlayer.Transform:GetWorldPosition()
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local offset = WISP_SPAWN_OFFSET_MIN + math.random() * WISP_SPAWN_OFFSET_VARIANCE
         SpawnPrefab("moon_altar_link_fx").Transform:SetPosition(x + math.cos(theta) * offset, 0, z + math.sin(theta) * offset)
 
@@ -158,7 +158,7 @@ local function Update(inst)
         local dist = VecUtil_Length(dx, dz)
 
         local normalized_range_coefficient = math.clamp(dist / DIST_FOR_MAX_COVERAGE, 0, 1)
-        local angle_to_player = theta - (PI / 4) - (((TheCamera.heading - 45) / 360) * 2 * PI)
+        local angle_to_player = theta - (PI / 4) - (((TheCamera.heading - 45) / 360) * TWOPI)
         PostProcessor:SetMoonPulseParams(angle_to_player, dist, inst.glow_intensity, inst.wave_progress)
         PostProcessor:SetMoonPulseGradingParams(angle_to_player, dist, inst.glow_intensity, inst.wave_progress)
     end

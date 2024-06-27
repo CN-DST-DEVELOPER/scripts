@@ -36,7 +36,7 @@ local function DropCrumb(inst)
     item.Transform:SetPosition(x, y + 2, z)
 
     local speed = math.random() * 2 + 2
-    local angle = math.random() * 2 * PI
+    local angle = math.random() * TWOPI
 
     item.Physics:SetVel(speed * math.cos(angle), math.random() * 2 + 8, speed * math.sin(angle))
 end

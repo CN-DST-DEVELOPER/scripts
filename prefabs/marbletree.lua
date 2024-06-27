@@ -60,6 +60,7 @@ local function makeMarbleTree(animnumber)
         inst.entity:AddNetwork()
 
         MakeObstaclePhysics(inst, 0.1)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --seed/planted_tree deployspacing/2
 
         inst.MiniMapEntity:SetIcon("marbletree.png")
         inst.MiniMapEntity:SetPriority(-1)

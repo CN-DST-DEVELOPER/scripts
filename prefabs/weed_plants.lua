@@ -497,6 +497,7 @@ local function MakeWeed(weed_def)
         inst.AnimState:PlayAnimation("crop_small")
 		inst.AnimState:OverrideSymbol("soil01", "farm_soil", "soil01")
 
+		inst:SetDeploySmartRadius(0.5) --match visuals, seeds use CUSTOM spacing
 		inst:SetPhysicsRadiusOverride(TUNING.FARM_PLANT_PHYSICS_RADIUS)
 
         inst:AddTag("plantedsoil")

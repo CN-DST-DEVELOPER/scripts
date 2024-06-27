@@ -1,8 +1,6 @@
 --------------------------------------------------------------------------
 --[[ squidspawner class definition ]]
 --------------------------------------------------------------------------
-local FISH_DATA = require("prefabs/oceanfishdef")
-
 return Class(function(self, inst)
 
 assert(TheWorld.ismastersim, "Squidspawner should not exist on client")
@@ -21,7 +19,6 @@ self.inst = inst
 --Private
 local _activeplayers = {}
 local _worldstate = TheWorld.state
-local _map = TheWorld.Map
 
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
@@ -36,7 +33,7 @@ local FISHABLE_TAGS = {"oceanfish", "oceanfishable"}
 local OCEANTRAWLER_TAGS = { "oceantrawler" }
 local function GetOceanTrawlerChanceModifier(spawnpoint)
     local oceantrawlers = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, OCEANTRAWLER_TAGS)
-    for i, trawler in ipairs(oceantrawlers) do
+    for _, trawler in ipairs(oceantrawlers) do
         if trawler.components.oceantrawler then
             return trawler.components.oceantrawler:GetOceanTrawlerSpawnChanceModifier(spawnpoint)
         end
@@ -44,76 +41,80 @@ local function GetOceanTrawlerChanceModifier(spawnpoint)
     return 1
 end
 
-local function testforsquid(comp, forcesquid)
+local function do_squid_spawn_for_herd(herd, spawnpoint)
+    local squid = SpawnPrefab("squid")
+    squid.Transform:SetPosition(spawnpoint.x, 0, spawnpoint.z)
+    squid:PushEvent("spawn")
+    herd.components.herd:AddMember(squid)
+end
 
-    if not TheWorld.state.isday then
-        local playerlist = {}
-        for i,player in pairs(_activeplayers)do
-            table.insert(playerlist,player)
+local function testforsquid(forcesquid)
+    if not forcesquid and _worldstate.isday then
+        return
+    end
+
+    local playerlist = shallowcopy(_activeplayers)
+
+    local scrambled = {}
+    for _=1,#_activeplayers do
+        local idx = math.random(#playerlist)
+        table.insert(scrambled,playerlist[idx])
+        table.remove(playerlist,idx)
+    end
+
+    local moonphase_max = TUNING.SQUID_MAX_NUMBERS[_worldstate.moonphase]
+    while scrambled[1] do
+        local spawnpoint = scrambled[1]:GetPosition()
+
+        local oceantrawlerchancemodifier = GetOceanTrawlerChanceModifier(spawnpoint)
+
+        local squidcount = #TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, SQUID_TAGS)
+        local fishlist = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, FISHABLE_TAGS)
+        local fishcount = #fishlist
+
+        local chance = TUNING.SQUID_CHANCE[_worldstate.moonphase] * (oceantrawlerchancemodifier or 1)
+        chance = Remap(math.min(fishcount, TUNING.SQUID_MAX_FISH), 0, TUNING.SQUID_MAX_FISH, 0, chance)
+        if _worldstate.isnight then
+            chance = chance * 2
         end
 
-        local scrambled = {}
-        for i=1,#_activeplayers do
-            local idx = math.random(1,#playerlist)
-            table.insert(scrambled,playerlist[idx])
-            table.remove(playerlist,idx)
+        local max
+
+        if _worldstate.iswaxingmoon then
+            chance = chance / 3
+            max = 2
+        else
+            max = moonphase_max
         end
 
-        while scrambled[1] do
-            local spawnpoint = Vector3(scrambled[1].Transform:GetWorldPosition())
+        if forcesquid or (squidcount < max and math.random() < chance) then
+            local herd = SpawnPrefab("squidherd")
+            local num = math.random(2, moonphase_max)
+            for _=1,num do
+                local squidspawnpoint = (fishcount ~= 0 and fishlist[math.random(fishcount)]:GetPosition())
+                    or spawnpoint
 
-            local oceantrawlerchancemodifier = GetOceanTrawlerChanceModifier(spawnpoint)
-
-        --    local tile_at_spawnpoint = TheWorld.Map:GetTileAtPoint(spawnpoint:Get())
-        --    if tile_at_spawnpoint == WORLD_TILES.OCEAN_SWELL or tile_at_spawnpoint == WORLD_TILES.OCEAN_ROUGH then
-
-            local squidcount = #TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, SQUID_TAGS)
-            local fishlist = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SQUID_TEST_RADIUS, FISHABLE_TAGS)
-            local fishcount = #fishlist
-
-            local chance = TUNING.SQUID_CHANCE[TheWorld.state.moonphase] * (oceantrawlerchancemodifier or 1)
-            chance = Remap(math.min(fishcount,TUNING.SQUID_MAX_FISH), 0, TUNING.SQUID_MAX_FISH, 0, chance)
-            if TheWorld.state.isnight then
-                chance = chance * 2
-            end
-
-            local max = TUNING.SQUID_MAX_NUMBERS[TheWorld.state.moonphase]
-
-            if TheWorld.state.iswaxingmoon then
-                chance = chance / 3
-                max = 2
-            end
-
-            if (squidcount < max and  math.random() < chance ) or forcesquid then
-                local herd = SpawnPrefab("squidherd")
-                local num = math.random(2,TUNING.SQUID_MAX_NUMBERS[TheWorld.state.moonphase])
-                for i=1,num do
-
-                    local squidspawnpoint = Vector3(fishlist[math.random(1,#fishlist)].Transform:GetWorldPosition())
-
-                    herd.Transform:SetPosition(squidspawnpoint.x, squidspawnpoint.y, squidspawnpoint.z)
-                    local angle = math.random()* 2 * PI
-                    local offset = FindSwimmableOffset(squidspawnpoint,angle,SQUID_SPAWN_RADIUS)
-                    if offset then
-                        comp.inst:DoTaskInTime(GetRandomMinMax(SQUID_TIMING[1], SQUID_TIMING[2]),function()
-                            local squid = SpawnPrefab("squid")
-                            squid.Transform:SetPosition(squidspawnpoint.x+offset.x,0,squidspawnpoint.z+offset.z)
-                            squid:PushEvent("spawn")
-                            herd.components.herd:AddMember(squid)
-                        end)
-                    end
+                herd.Transform:SetPosition(squidspawnpoint.x, squidspawnpoint.y, squidspawnpoint.z)
+                local angle = math.random()*TWOPI
+                local offset = FindSwimmableOffset(squidspawnpoint,angle,SQUID_SPAWN_RADIUS)
+                if offset then
+                    herd:DoTaskInTime(
+                        GetRandomMinMax(SQUID_TIMING[1], SQUID_TIMING[2]),
+                        do_squid_spawn_for_herd,
+                        squidspawnpoint + offset
+                    )
                 end
             end
+        end
 
-            -- remove nearby players from list
-            local player = scrambled[1]
-            table.remove(scrambled,1)
+        -- remove nearby players from list
+        local player = scrambled[1]
+        table.remove(scrambled,1)
 
-            if #scrambled > 0 then
-                for i = #scrambled, 1, -1 do
-                    if player:GetDistanceSqToInst(scrambled[i]) < 40 * 40 then
-                        table.remove(scrambled,i)
-                    end
+        if #scrambled > 0 then
+            for i = #scrambled, 1, -1 do
+                if player:GetDistanceSqToInst(scrambled[i]) < 1600 then -- 40*40
+                    table.remove(scrambled,i)
                 end
             end
         end
@@ -123,13 +124,9 @@ end
 --------------------------------------------------------------------------
 --[[ Private event handlers ]]
 --------------------------------------------------------------------------
---[[
-local function OnTargetSleep(target)
-    inst:DoTaskInTime(0, AutoRemoveTarget, target)
-end
-]]
+
 local function OnPlayerJoined(src, player)
-    for i, v in ipairs(_activeplayers) do
+    for _, v in ipairs(_activeplayers) do
         if v == player then
             return
         end
@@ -146,13 +143,9 @@ local function OnPlayerLeft(src, player)
     end
 end
 
-local function onschoolspawned(src,data)
-    testforsquid(self,data.spawnpoint)
-end
-
 local function spawntask()
-    if TheWorld.state.isnight or TheWorld.state.isdusk then
-        testforsquid(self)
+    if _worldstate.isnight or _worldstate.isdusk then
+        testforsquid()
         if inst.squidtask then
             inst.squidtask:Cancel()
             inst.squidtask = nil
@@ -171,55 +164,24 @@ end
 --------------------------------------------------------------------------
 
 --Initialize variables
-for i, v in ipairs(AllPlayers) do
+for _, v in ipairs(AllPlayers) do
     table.insert(_activeplayers, v)
 end
 
---Register events
---inst:ListenForEvent("moonphasechanged",moonphasechanged, TheWorld)
---inst:ListenForEvent("phasechanged",phasechanged, TheWorld)
---inst:ListenForEvent("schoolspawned",onschoolspawned, TheWorld)
 inst.spawntask = spawntask
 spawntask()
 
+--Register events
 inst:WatchWorldState("phase", function() spawntask() end)
 inst:ListenForEvent("ms_playerjoined", OnPlayerJoined, TheWorld)
 inst:ListenForEvent("ms_playerleft", OnPlayerLeft, TheWorld)
 
-
---------------------------------------------------------------------------
---[[ Save/Load ]]
---------------------------------------------------------------------------
-
-function self:OnSave()
-    return
-    {
-    --    maxbirds = _maxschools,
-    --    minspawndelay = _minspawndelay,
-    --    maxspawndelay = _maxspawndelay,
-    --    lastsquidattack = _lastsquidattack
-    }
-end
-
-function self:OnLoad(data)
-   -- _maxschools = data.maxbirds or TUNING.SCHOOL_SPAWN_MAX
-   -- _minspawndelay = data.minspawndelay or TUNING.SCHOOL_SPAWN_DELAY.min
-   -- _maxspawndelay = data.maxspawndelay or TUNING.SCHOOL_SPAWN_DELAY.max
-   -- _lastsquidattack = data.lastsquidattack or GetTime()
-end
-
 --------------------------------------------------------------------------
 --[[ Debug ]]
 --------------------------------------------------------------------------
---[[
-function self:GetDebugString()
-    local numschools = 0
-    for k, v in pairs(_schools) do
-        numschools = numschools + 1
-    end
-    return string.format("schools:%d/%d", numschools, _maxschools)
+function self:Debug_ForceTestForSquid()
+    testforsquid(true)
 end
-]]
 
 --------------------------------------------------------------------------
 --[[ End ]]

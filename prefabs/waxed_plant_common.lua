@@ -56,6 +56,10 @@ local function Configure(inst, data)
         if stump then
             RemovePhysicsColliders(inst)
             inst.components.workable:SetWorkAction(ACTIONS.DIG)
+
+            if inst.DynamicShadow ~= nil then
+                inst.DynamicShadow:Enable(false)
+            end
         end
     end
 
@@ -80,6 +84,8 @@ local function GetParentCurrentAnimation(inst, parent)
     local anim = inst.getanim_fn(parent)
 
     if not inst.animset[anim] then
+        print(string.format("<!> Wax action failed because GetParentCurrentAnimation (%s) is returning a invalid anim name (%s) and the options were [%s], please report this in the forums, including this warning. Thank you.", parent.prefab, tostring(anim), table.concat(table.getkeys(inst.animset), ", ")))
+
         return
     end
 
@@ -88,18 +94,28 @@ end
 
 -------------------------------------------------------------------------------------------------
 
-local function Disappear(inst)
+local function Disappear(inst, worker)
     local ticktime = TheSim:GetTickTime()
-
-    if inst.DynamicShadow ~= nil then
-        inst.DynamicShadow:Enable(false)
-    end
 
     inst.persists = false
 
     RemovePhysicsColliders(inst)
 
+    if inst.DynamicShadow ~= nil then
+        inst.DynamicShadow:Enable(false)
+    end
+
     inst.SoundEmitter:PlaySound("qol1/wax_spray/fade")
+
+    if inst.components.workable:GetWorkAction() == ACTIONS.CHOP and
+        not (worker ~= nil and worker:HasTag("playerghost"))
+    then
+        inst.SoundEmitter:PlaySound(
+            worker ~= nil and worker:HasTag("beaver") and
+            "dontstarve/characters/woodie/beaver_chop_tree" or
+            "dontstarve/wilson/use_axe_tree"
+        )
+    end
 
     local multcolor = inst.AnimState:GetMultColour()
 
@@ -134,23 +150,23 @@ local function Disappear(inst)
     end)
 
     if inst.ondisappear_fn ~= nil then
-        inst.ondisappear_fn(inst)
+        inst.ondisappear_fn(inst, worker)
     end
 end
 
-local function SpawnDugWaxedPlant(inst)
-    local plant = inst.components.lootdropper:SpawnLootPrefab("dug_"..inst.prefab)
+local function SpawnDugWaxedPlant(inst, worker)
+    local plant = inst.components.lootdropper:SpawnLootPrefab(FunctionOrValue(inst.dug_prefab, inst))
 
     plant:CopySaveData(inst)
 
     inst:Remove()
 end
 
-local function OnWorked(inst)
-    if inst.components.lootdropper ~= nil and Prefabs["dug_"..inst.prefab] ~= nil then
-        inst:SpawnDugWaxedPlant()
+local function OnWorked(inst, worker)
+    if inst.components.lootdropper ~= nil and Prefabs[FunctionOrValue(inst.dug_prefab, inst)] ~= nil then
+        inst:SpawnDugWaxedPlant(worker)
     else
-        inst:Disappear()
+        inst:Disappear(worker)
     end
 end
 
@@ -222,7 +238,7 @@ end
 Valid args:
     Required:
         - prefab (strings) - original plant prefab.
-        - bank (hash)
+        - bank (string)
         - build (string)
         - anim (string)
         - action (string) - workable action
@@ -231,8 +247,12 @@ Valid args:
 
     Optional:
         - physics (table) - physics fn, rad, height, restitution
+        - deploysmartradius - sets deploy smart radius
+        - deployspacing (enum) - DEPLOYSPACING enum used to set deploy smart radius
+        - mediumspacing (boolean) - use DEPLOYSPACING.MEDIUM to set deploy smart radius
         - minimapicon (string) - without .png
         - nameoverride (string)
+        - inventoryitem (string or function) - overrides inst.dug_prefab.
         - ondisappear_fn (function) - custom logic called at inst.Disappear
         - onconfigure_fn (function) - custom logic called at inst.Configure
         - multcolor (function) - arg in AnimState:SetMultColor(arg, arg, arg, 1)
@@ -265,6 +285,15 @@ local function CreateWaxedPlant(data)
 
             fn(inst, rad, height, restitution)
         end
+
+        inst:SetDeploySmartRadius(
+            data.deploysmartradius or
+            DEPLOYSPACING_RADIUS[
+                (data.mediumspacing and DEPLOYSPACING.MEDIUM) or
+                data.deployspacing or
+                DEPLOYSPACING.DEFAULT
+            ] / 2
+        )
 
         if data.minimapicon then
             inst.MiniMapEntity:SetIcon(data.minimapicon..".png")
@@ -301,9 +330,11 @@ local function CreateWaxedPlant(data)
         inst.ondisappear_fn = data.ondisappear_fn
         inst.onconfigure_fn = data.onconfigure_fn
 
-        inst.anim  = data.anim
+        inst.anim  = data.anim -- NOTES(DiogoW): Not the same as inst.savedata.anim!
         inst.build = data.build
         inst.bank  = data.bank
+
+        inst.dug_prefab = data.inventoryitem or ("dug_"..data.prefab.."_waxed")
 
         if data.multcolor then
             local color = data.multcolor(inst)
@@ -380,11 +411,32 @@ end
 
 -------------------------------------------------------------------------------------------------
 
+--[[
+
+Valid args:
+    Required:
+        - name (strings) - planted prefab.
+        - action (string) - workable action
+        - animset (table) - anim data
+        - getanim_fn (function) - Decides with animset entry will be chosen.
+
+    Optional:
+        - prefab (string) - original plant prefab. Default: "dug_" ..name
+        - bank (string)
+        - build (string)
+        - anim (string) - Anim to play. Default: "dropped"
+        - floater (table) - MakeInventoryFloatable args.
+        - deployspacing (enum) - DEPLOYSPACING enum
+        - mediumspacing (boolean) - calls deployable:SetDeploySpacing(DEPLOYSPACING.MEDIUM)
+        - common_postinit (function)
+        - master_postinit (function)
+]]
+
 local function CreateDugWaxedPlant(data)
     local bank  = data.bank  or data.name
     local build = data.build or data.name
 
-    local parentprefab = "dug_"..data.name
+    local parentprefab = data.prefab or ("dug_"..data.name)
 
     local prefabs =
     {
@@ -412,7 +464,7 @@ local function CreateDugWaxedPlant(data)
 
         inst.AnimState:SetBank(bank)
         inst.AnimState:SetBuild(build)
-        inst.AnimState:PlayAnimation("dropped")
+        inst.AnimState:PlayAnimation(data.animname or "dropped")
 
         MakeInventoryFloatable(inst, unpack(data.floater or {}))
 
@@ -428,6 +480,10 @@ local function CreateDugWaxedPlant(data)
         -- NOTES(DiogoW): Not using inst.nameoverride because we are using inspectable.nameoverride.
         inst.displayname = string.upper(data.nameoverride or parentprefab)
         inst.displaynamefn = GetDisplayNameFn
+
+        if data.common_postinit then
+            data.common_postinit(inst)
+        end
 
         inst.entity:SetPristine()
 
@@ -456,7 +512,9 @@ local function CreateDugWaxedPlant(data)
         inst.components.deployable.ondeploy = DugWaxedPlant_OnDeploy
         inst.components.deployable:SetDeployMode(DEPLOYMODE.PLANT)
 
-        if data.mediumspacing then
+        if data.deployspacing then
+            inst.components.deployable:SetDeploySpacing(data.deployspacing)
+        elseif data.mediumspacing then
             inst.components.deployable:SetDeploySpacing(DEPLOYSPACING.MEDIUM)
         end
 
@@ -464,6 +522,10 @@ local function CreateDugWaxedPlant(data)
         inst.OnLoad = DugWaxedPlant_OnLoad
 
         inst.CopySaveData = DugWaxedPlant_CopySaveData
+
+        if data.master_postinit then
+            data.master_postinit(inst)
+        end
 
         return inst
     end
@@ -508,7 +570,7 @@ local function WaxPlant(plant, doer, waxitem)
 
     plant:Remove()
 
-    return true
+    return true, nil, {waxed=waxed, data=data} -- Mods.
 end
 
 return

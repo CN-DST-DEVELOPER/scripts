@@ -60,6 +60,13 @@ function TileGroupManager__index:IsNoiseTile(tile)
     return false
 end
 
+function TileGroupManager__index:IsTemporaryTile(tile)
+    -- A group for tiles that are used with the undertile component,
+    -- to help avoid collisions in temporary tiles trying to go onto
+    -- the same spot.
+    return GROUND_ISTEMPTILE[tile]
+end
+
 local is_worldgen = rawget(_G, "WORLDGEN_MAIN") ~= nil
 if is_worldgen then return end
 
@@ -113,11 +120,16 @@ TileGroupManager:SetIsInvalidTileGroup(TileGroups.InvalidTiles)
 TileGroupManager:SetIsNoiseTileGroup(TileGroups.NoiseTiles)
 
 --falloff groups
-TileGroups.LandTilesNotDock = TileGroupManager:AddTileGroup(TileGroups.LandTiles)
-TileGroupManager:AddInvalidTile(TileGroups.LandTilesNotDock, WORLD_TILES.MONKEY_DOCK)
+TileGroups.LandTilesNotDock = TileGroupManager:AddTileGroup(TileGroups.LandTiles) -- Deprecated for TileGroups.LandTilesWithDefaultFalloff.
+TileGroupManager:AddInvalidTile(TileGroups.LandTilesNotDock, WORLD_TILES.MONKEY_DOCK) -- Deprecated!
+
+TileGroups.LandTilesWithDefaultFalloff = TileGroupManager:AddTileGroup(TileGroups.LandTiles)
+TileGroupManager:AddInvalidTile(TileGroups.LandTilesWithDefaultFalloff, WORLD_TILES.MONKEY_DOCK)
 
 TileGroups.DockTiles = TileGroupManager:AddTileGroup()
 TileGroupManager:AddValidTile(TileGroups.DockTiles, WORLD_TILES.MONKEY_DOCK)
 
 TileGroups.OceanIceTiles = TileGroupManager:AddTileGroup()
 TileGroupManager:AddValidTile(TileGroups.OceanIceTiles, WORLD_TILES.OCEAN_ICE)
+
+TileGroups.LandTilesInvisible = TileGroupManager:AddTileGroup(TileGroups.LandTiles)

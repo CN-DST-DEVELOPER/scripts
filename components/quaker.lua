@@ -236,7 +236,7 @@ local _GroundDetectionUpdate = _ismastersim and function(debris, override_densit
 
             if softbounce then
                 local speed = 3.2 + math.random()
-                local angle = math.random() * 2 * PI
+                local angle = math.random() * TWOPI
                 debris.Physics:SetMotorVel(0, 0, 0)
                 debris.Physics:SetVel(
                     speed * math.cos(angle),
@@ -357,7 +357,7 @@ end or nil
 local QUAKE_BLOCKER_MUST_TAGS = {"quake_blocker"}
 
 local GetSpawnPoint = _ismastersim and function(pt, rad, minrad)
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = math.random() * (rad or TUNING.FROG_RAIN_SPAWN_RADIUS)
 
     minrad = minrad ~= nil and minrad > 0 and minrad * minrad or nil

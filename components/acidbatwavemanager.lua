@@ -39,7 +39,7 @@ self.NoHoles = function(pt)
     return not _world.Map:IsPointNearHole(pt)
 end
 function self:GetAcidBatSpawnPoint(pt)
-    local offset = FindWalkableOffset(pt, math.random() * 2 * PI, self.spawn_dist, 12, true, true, self.NoHoles)
+    local offset = FindWalkableOffset(pt, math.random() * TWOPI, self.spawn_dist, 12, true, true, self.NoHoles)
     if offset ~= nil then
         offset.x = offset.x + pt.x
         offset.z = offset.z + pt.z

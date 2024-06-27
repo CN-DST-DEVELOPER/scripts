@@ -172,13 +172,13 @@ local function OnStartBurnAnim(inst)
     if inst.components.pickable ~= nil then
         inst:RemoveComponent("pickable")
     end
-    
+
     inst.components.burnable:SetOnExtinguishFn(inst.Remove)
 
     inst.AnimState:PlayAnimation("burn")
     inst:ListenForEvent("animover", inst.Remove)
 
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local spd = math.random() * 2
     local ash = SpawnPrefab("ash")
     ash.Transform:SetPosition(inst:GetPosition():Get())

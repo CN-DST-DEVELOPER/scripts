@@ -35,6 +35,10 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst:AddComponent("stackable")
 
+    inst:AddComponent("repairer")
+    inst.components.repairer.repairmaterial = MATERIALS.VITAE
+    inst.components.repairer.perishrepairpercent = 1
+
     inst:AddComponent("fillable")
     inst.components.fillable.filledprefab = "waterballoon"
 

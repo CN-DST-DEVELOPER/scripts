@@ -169,7 +169,7 @@ local function OnActivate(inst, doer)
 
             inst.sfx = SpawnPrefab("archive_dispencer_sfx")
             inst.sfx.SoundEmitter:PlaySound("grotto/common/archive_lockbox/LP", "loopsound")
-            local baserotation = math.random()*PI*2
+            local baserotation = math.random()*PI2
             local pos = Vector3(inst.Transform:GetWorldPosition())
             inst.sfx.soundlist = {
                 {angle=0,dist=20},

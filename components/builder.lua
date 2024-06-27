@@ -396,6 +396,11 @@ function Builder:AddRecipe(recname)
     self.inst.replica.builder:AddRecipe(recname)
 end
 
+function Builder:RemoveRecipe(recname)
+	table.removearrayvalue(self.recipes, recname)
+	self.inst.replica.builder:RemoveRecipe(recname)
+end
+
 function Builder:UnlockRecipe(recname)
     local recipe = GetValidRecipe(recname)
     if recipe ~= nil and not recipe.nounlock then

@@ -321,6 +321,7 @@ local WORLDGEN_GROUP = {
 			["moon_fruitdragon"] = {value = "default", image = "moon_fruitdragon.tex", world = {"forest"}},
 			["ocean_shoal"] = {value = "default", image = "ocean_shoal.tex", world = {"forest"}},
 			["ocean_wobsterden"] = {value = "default", image = "ocean_wobsterden.tex", world = {"forest"}},
+			["ocean_otterdens"] = {value = "default", image = "ocean_otterdens.tex", world={"forest"}},
 		}
 	},
 	["resources"] = {
@@ -488,6 +489,7 @@ local WORLDSETTINGS_GROUP = {
 			["wobsters"] = {value = "default", image = "wobsters.tex", world={"forest"}},
 			["gnarwail"] = {value = "default", image = "gnarwail.tex", world={"forest"}},
 			["fishschools"] = {value = "default", image = "fishschool.tex", world={"forest"}},
+			["otters_setting"] = {value = "default", image = "otter.tex", world={"forest"}},
 
 			["pigs_setting"] = {value ="default", image = "pigs.tex", world={"forest", "cave"}},
 			["bunnymen_setting"] = {value ="default", image = "bunnymen.tex", world={"forest", "cave"}},

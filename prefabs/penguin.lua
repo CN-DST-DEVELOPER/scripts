@@ -44,9 +44,6 @@ SetSharedLootTable( 'mutated_penguin',
     {'ice',             0.5},
 })
 
-local SLEEP_DIST_FROMHOME = 3
-local SLEEP_DIST_FROMTHREAT = 8
-local MAX_CHASEAWAY_DIST = 80
 local MAX_TARGET_SHARES = 5
 local SHARE_TARGET_DIST = 40
 
@@ -66,33 +63,6 @@ local function OnLoad(inst, data)
     end
 end
 
-local CHARACTER_TAGS = {"character"}
-local function ShouldSleep(inst)
-    local homePos = inst.components.knownlocations:GetLocation("rookery")
-    local myPos = Vector3(inst.Transform:GetWorldPosition())
-    if not (homePos and distsq(homePos, myPos) <= SLEEP_DIST_FROMHOME*SLEEP_DIST_FROMHOME)
-       or (inst.components.combat and inst.components.combat.target)
-       or (inst.components.burnable and inst.components.burnable:IsBurning())
-       or (inst.components.freezable and inst.components.freezable:IsFrozen()) then
-        return false
-    end
-    local nearestEnt = GetClosestInstWithTag(CHARACTER_TAGS, inst, SLEEP_DIST_FROMTHREAT)
-    return nearestEnt == nil
-end
-
-local function ShouldWake(inst)
-    local homePos = inst.components.knownlocations:GetLocation("rookery")
-    local myPos = Vector3(inst.Transform:GetWorldPosition())
-    if (homePos and distsq(homePos, myPos) > SLEEP_DIST_FROMHOME*SLEEP_DIST_FROMHOME)
-       or (inst.components.combat and inst.components.combat.target)
-       or (inst.components.burnable and inst.components.burnable:IsBurning())
-       or (inst.components.freezable and inst.components.freezable:IsFrozen()) then
-        return true
-    end
-    local nearestEnt = GetClosestInstWithTag(CHARACTER_TAGS, inst, SLEEP_DIST_FROMTHREAT)
-    return nearestEnt
-end
-
 local function GetStatus(inst)
     if inst.components.hunger then
         if inst.components.hunger:IsStarving(inst) then
@@ -103,43 +73,27 @@ local function GetStatus(inst)
     end
 end
 
-local function OnEat(inst, food)
---[[    if food.components.edible and math.random() <. 2 then
-        -- Not until we have a small poop...
-        local poo = SpawnPrefab("poop")
-        poo.components.fertilizer.fertilizervalue = TUNING.POOP_FERTILIZE/2
-        poo.components.fertilizer.soil_cycles = TUNING.POOP_SOILCYCLES/2
-        poo.Transform:SetPosition(inst.Transform:GetWorldPosition())
-        poo.Transform:SetScale(.5,.5,.5)
-    end
---]]
-end
-
 local function MakeTeam(inst, attacker)
-        local leader = SpawnPrefab("teamleader")
---print("<<<<<<<<================>>>>> Making TEAM:",attacker)
-        leader:AddTag("penguin")
-        leader.components.teamleader.threat = attacker
-        leader.components.teamleader.radius = 10
-        leader.components.teamleader:SetAttackGrpSize(5+math.random(1,3))
-        leader.components.teamleader.timebetweenattacks = 0  -- first attack happens immediately
-        leader.components.teamleader.attackinterval = 2  -- first attack happens immediately
-        leader.components.teamleader.maxchasetime = 10
-        leader.components.teamleader.min_team_size = 0
-        leader.components.teamleader.max_team_size = 8
-        leader.components.teamleader.team_type = inst.components.teamattacker.team_type
-        leader.components.teamleader:NewTeammate(inst)
-        leader.components.teamleader:BroadcastDistress(inst)
---print("<<<<<<<>>>>>")
+    local leader = SpawnPrefab("teamleader")
+    leader:AddTag("penguin")
+    local teamleader = leader.components.teamleader
+    teamleader.threat = attacker
+    teamleader.radius = 10
+    teamleader:SetAttackGrpSize(5+math.random(1,3))
+    teamleader.timebetweenattacks = 0  -- first attack happens immediately
+    teamleader.attackinterval = 2  -- first attack happens immediately
+    teamleader.maxchasetime = 10
+    teamleader.min_team_size = 0
+    teamleader.max_team_size = 8
+    teamleader.team_type = inst.components.teamattacker.team_type
+    teamleader:NewTeammate(inst)
+    teamleader:BroadcastDistress(inst)
 end
 
 local RETARGET_MUST_TAGS = { "_combat" }
 local RETARGET_CANT_TAGS = { "penguin" }
 local RETARGET_ONEOF_TAGS = { "character", "monster", "wall" }
 local function Retarget(inst)
-
-    local ta = inst.components.teamattacker
-
     if inst.components.hunger and not inst.components.hunger:IsStarving() then
         return nil
     end
@@ -152,12 +106,12 @@ local function Retarget(inst)
             RETARGET_ONEOF_TAGS
             )
 
-    if newtarget and ta and not ta.inteam and not ta:SearchForTeam() then
-        --print("===============================MakeTeam on Retarget")
+    local teamattacker = inst.components.teamattacker
+    if newtarget and teamattacker and not teamattacker.inteam and not teamattacker:SearchForTeam() then
         MakeTeam(inst, newtarget)
     end
 
-    if ta.inteam and not ta.teamleader:CanAttack() then
+    if teamattacker.inteam and not teamattacker.teamleader:CanAttack() then
         return newtarget
     end
 
@@ -175,13 +129,12 @@ local function MutatedRetarget(inst)
             RETARGET_MUTATED_ONEOF_TAGS
             )
 
-    local ta = inst.components.teamattacker
-    if newtarget and ta and not ta.inteam and not ta:SearchForTeam() then
-        --print("===============================MakeTeam on Retarget")
+    local teamattacker = inst.components.teamattacker
+    if newtarget and teamattacker and not teamattacker.inteam and not teamattacker:SearchForTeam() then
         MakeTeam(inst, newtarget)
     end
 
-    if ta.inteam and not ta.teamleader:CanAttack() then
+    if teamattacker.inteam and not teamattacker.teamleader:CanAttack() then
         return newtarget
     end
 
@@ -196,7 +149,6 @@ local function KeepTarget(inst, target)
         or inst.components.teamattacker.orders == "ATTACK" then
         return true
     else
-        --print(inst,"Loses TARGET")
         return false
     end
 end
@@ -206,18 +158,17 @@ local function ShareTargetFn(dude)
 end
 
 local function OnAttacked(inst, data)
-    if inst.components.teamattacker == nil then
+    local teamattacker = inst.components.teamattacker
+    if not teamattacker then
         return
     end
 
-    if not inst.components.teamattacker.inteam and not inst.components.teamattacker:SearchForTeam() then
-        --print("MakeTeam")
+    if not teamattacker.inteam and not teamattacker:SearchForTeam() then
         MakeTeam(inst, data.attacker)
     end
 
-    if inst.components.teamattacker.inteam and not inst.components.teamattacker.teamleader:CanAttack() then
+    if teamattacker.inteam and not teamattacker.teamleader:CanAttack() then
         local attacker = data ~= nil and data.attacker or nil
-        --print(inst,"OnAttack:settarget",attacker)
         inst.components.combat:SetTarget(attacker)
         inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, ShareTargetFn, MAX_TARGET_SHARES)
     end
@@ -233,14 +184,12 @@ end
 
 local function OnIgnite(inst)
     local egg = inst.components.inventory and inst.components.inventory:GetItemInSlot(1)
-    local newEgg
     if egg then
         inst.components.inventory:RemoveItemBySlot(1)
-        if egg.prefab == "bird_egg_cooked" or math.random() > .3 then
-            newEgg = SpawnPrefab("rottenegg")
-        else
-            newEgg = SpawnPrefab("bird_egg_cooked")
-        end
+        local newEgg = SpawnPrefab(
+            ((egg.prefab == "bird_egg_cooked" or math.random() > 0.3) and "rottenegg")
+            or "bird_egg_cooked"
+        )
         inst.components.inventory:GiveItem(newEgg, 1)
         egg:Remove()
     end
@@ -251,9 +200,7 @@ local function OnMoonMutate(inst, new_inst)
 end
 
 local function RememberKnownLocation(inst)
-    if inst:IsValid() then  -- yes it can die in one frame
-        inst.components.knownlocations:RememberLocation("home", Vector3(inst.Transform:GetWorldPosition()))
-    end
+    inst.components.knownlocations:RememberLocation("home", inst:GetPosition())
 end
 
 local function CheckAutoRemove(inst)
@@ -292,7 +239,6 @@ local function fn()
     inst:AddTag("herdmember")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -307,22 +253,22 @@ local function fn()
 
     inst:SetBrain(brain)
 
-    inst:AddComponent("combat")
-    inst.components.combat.hiteffectsymbol = "body"
-    inst.components.combat:SetAttackPeriod(TUNING.PENGUIN_ATTACK_PERIOD)
-    inst.components.combat:SetRange(TUNING.PENGUIN_ATTACK_DIST)
-    inst.components.combat:SetRetargetFunction(3, Retarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
-    inst.components.combat:SetDefaultDamage(TUNING.PENGUIN_DAMAGE)
-    inst.components.combat:SetAttackPeriod(3)
+    local combat = inst:AddComponent("combat")
+    combat.hiteffectsymbol = "body"
+    combat:SetAttackPeriod(TUNING.PENGUIN_ATTACK_PERIOD)
+    combat:SetRange(TUNING.PENGUIN_ATTACK_DIST)
+    combat:SetRetargetFunction(3, Retarget)
+    combat:SetKeepTargetFunction(KeepTarget)
+    combat:SetDefaultDamage(TUNING.PENGUIN_DAMAGE)
+    combat:SetAttackPeriod(3)
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.PENGUIN_HEALTH)
 
-    inst:AddComponent("hunger")
-    inst.components.hunger:SetMax(TUNING.PENGUIN_HUNGER)
-    inst.components.hunger:SetRate(TUNING.PENGUIN_HUNGER/TUNING.PENGUIN_STARVE_TIME)
-    inst.components.hunger:SetKillRate(TUNING.SMALLBIRD_HEALTH/TUNING.SMALLBIRD_STARVE_KILL_TIME)
+    local hunger = inst:AddComponent("hunger")
+    hunger:SetMax(TUNING.PENGUIN_HUNGER)
+    hunger:SetRate(TUNING.PENGUIN_HUNGER/TUNING.PENGUIN_STARVE_TIME)
+    hunger:SetKillRate(TUNING.SMALLBIRD_HEALTH/TUNING.SMALLBIRD_STARVE_KILL_TIME)
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('penguin')
@@ -345,23 +291,19 @@ local function fn()
     inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
     inst.components.eater:SetCanEatHorrible()
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
-    inst.components.eater:SetOnEatFn(OnEat)
 
     inst:AddComponent("sleeper")
     inst.components.sleeper:SetResistance(3)
-    -- inst.components.sleeper:SetNocturnal(false)
 
     inst:ListenForEvent("entermood", OnEnterMood)
     inst:ListenForEvent("leavemood", OnLeaveMood)
     inst:ListenForEvent("onignite", OnIgnite)
-    --inst.components.sleeper:SetSleepTest(ShouldSleep)
-    --inst.components.sleeper:SetWakeTest(ShouldWake)
 
     MakeSmallBurnableCharacter(inst, "body")
 
-    MakeMediumFreezableCharacter(inst, "body")
-    inst.components.freezable:SetResistance(5)
-    inst.components.freezable:SetDefaultWearOffTime(1)
+    local freezable = MakeMediumFreezableCharacter(inst, "body")
+    freezable:SetResistance(5)
+    freezable:SetDefaultWearOffTime(1)
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus
@@ -415,7 +357,6 @@ local function mutated_fn()
     inst:AddTag("herdmember")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -430,22 +371,22 @@ local function mutated_fn()
 
     inst:SetBrain(brain)
 
-    inst:AddComponent("combat")
-    inst.components.combat:SetDefaultDamage(TUNING.MUTATED_PENGUIN_DAMAGE)
-    inst.components.combat.hiteffectsymbol = "body"
-    inst.components.combat:SetAttackPeriod(TUNING.PENGUIN_ATTACK_PERIOD)
-    inst.components.combat:SetRange(TUNING.PENGUIN_ATTACK_DIST)
-    inst.components.combat:SetRetargetFunction(2, MutatedRetarget)
-    inst.components.combat:SetKeepTargetFunction(KeepTarget)
-    inst.components.combat:SetAttackPeriod(3)
+    local combat = inst:AddComponent("combat")
+    combat:SetDefaultDamage(TUNING.MUTATED_PENGUIN_DAMAGE)
+    combat.hiteffectsymbol = "body"
+    combat:SetAttackPeriod(TUNING.PENGUIN_ATTACK_PERIOD)
+    combat:SetRange(TUNING.PENGUIN_ATTACK_DIST)
+    combat:SetRetargetFunction(2, MutatedRetarget)
+    combat:SetKeepTargetFunction(KeepTarget)
+    combat:SetAttackPeriod(3)
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.MUTATED_PENGUIN_HEALTH)
 
-    inst:AddComponent("hunger")
-    inst.components.hunger:SetMax(TUNING.PENGUIN_HUNGER)
-    inst.components.hunger:SetRate(TUNING.PENGUIN_HUNGER/TUNING.PENGUIN_STARVE_TIME)
-    inst.components.hunger:SetKillRate(TUNING.SMALLBIRD_HEALTH/TUNING.SMALLBIRD_STARVE_KILL_TIME)
+    local hunger = inst:AddComponent("hunger")
+    hunger:SetMax(TUNING.PENGUIN_HUNGER)
+    hunger:SetRate(TUNING.PENGUIN_HUNGER/TUNING.PENGUIN_STARVE_TIME)
+    hunger:SetKillRate(TUNING.SMALLBIRD_HEALTH/TUNING.SMALLBIRD_STARVE_KILL_TIME)
 
     inst:AddComponent("sanityaura")
     inst.components.sanityaura.aura = -TUNING.SANITYAURA_SMALL
@@ -467,27 +408,23 @@ local function mutated_fn()
     inst.components.teamattacker.team_type = "penguin"
     inst.components.teamattacker.leashdistance = 99999
 
-    inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
-    inst.components.eater:SetCanEatHorrible()
-    inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
-    inst.components.eater:SetOnEatFn(OnEat)
+    local eater = inst:AddComponent("eater")
+    eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
+    eater:SetCanEatHorrible()
+    eater:SetStrongStomach(true) -- can eat monster meat!
 
     inst:AddComponent("sleeper")
     inst.components.sleeper:SetResistance(3)
-    -- inst.components.sleeper:SetNocturnal(false)
 
     inst:ListenForEvent("entermood", OnEnterMood)
     inst:ListenForEvent("leavemood", OnLeaveMood)
     inst:ListenForEvent("onignite", OnIgnite)
-    --inst.components.sleeper:SetSleepTest(ShouldSleep)
-    --inst.components.sleeper:SetWakeTest(ShouldWake)
 
     MakeSmallBurnableCharacter(inst, "body")
 
-    MakeMediumFreezableCharacter(inst, "body")
-    inst.components.freezable:SetResistance(5)
-    inst.components.freezable:SetDefaultWearOffTime(1)
+    local freezable = MakeMediumFreezableCharacter(inst, "body")
+    freezable:SetResistance(5)
+    freezable:SetDefaultWearOffTime(1)
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus

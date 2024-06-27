@@ -260,6 +260,9 @@ local prefabs =
 	-- Planar
 	"planar_hit_fx",
 	"planar_resist_fx",
+
+	-- vinebridgemanager
+	"vine_bridge_fx",
 }
 
 for _, v in pairs(require("prefabs/farm_plant_defs").PLANT_DEFS) do
@@ -432,6 +435,11 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
             if GROUND_NOGROUNDOVERLAYS[tile_id] then
                 TileGroupManager:SetNoGroundOverlays(tile_id) -- NOTES(JBK): Do not call this after the map finalizes a crashing race condition may occur!
             end
+            if GROUND_INVISIBLETILES[tile_id] then
+                TileGroupManager:SetInvisibleTile(tile_id) -- NOTES(JBK): Do not call this after the map finalizes a crashing race condition may occur!
+                TileGroupManager:AddValidTile(TileGroups.LandTilesInvisible, tile_id)
+                TileGroupManager:AddInvalidTile(TileGroups.LandTilesWithDefaultFalloff, tile_id)
+            end
             local handle = MapLayerManager:CreateRenderLayer(
                 tile_id, --embedded map array value
                 layer_properties.atlas or resolvefilepath(GroundAtlas(layer_properties.name)),
@@ -540,8 +548,12 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
         inst:AddComponent("farming_manager")
 
         inst:AddComponent("dockmanager")
+        inst:AddComponent("vinebridgemanager")
 
         inst:AddComponent("playerspawner")
+
+        inst:AddComponent("nightlightmanager")
+        inst:AddComponent("winonateleportpadmanager")
 
         --World health management
         inst:AddComponent("skeletonsweeper")

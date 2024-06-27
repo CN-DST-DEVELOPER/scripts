@@ -225,6 +225,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.25) --recipe min_spacing/2
     inst:SetPhysicsRadiusOverride(0.5)
     MakeObstaclePhysics(inst, inst.physicsradiusoverride)
 

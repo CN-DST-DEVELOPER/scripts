@@ -559,6 +559,7 @@ local function moon_tree(name, stage, data)
         inst.entity:AddNetwork()
 
         MakeObstaclePhysics(inst, .5)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.PLACER_DEFAULT] / 2) --seed/planted_tree deployspacing/2
 
         inst.MiniMapEntity:SetIcon("moon_tree.png")
         inst.MiniMapEntity:SetPriority(-1)

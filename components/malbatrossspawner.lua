@@ -46,7 +46,7 @@ local function SummonMalbatross(target_shoal, the_malbatross)
     _firstspawn = false
 
     local shoal_position = target_shoal:GetPosition()
-    local spawn_offset = FindSwimmableOffset(shoal_position, math.random() * 2 * PI, MALBATROSS_SPAWN_DIST, 12, true, false, nil, true)
+    local spawn_offset = FindSwimmableOffset(shoal_position, math.random() * TWOPI, MALBATROSS_SPAWN_DIST, 12, true, false, nil, true)
     local spawn_position = (spawn_offset and shoal_position + spawn_offset) or shoal_position
 
     if the_malbatross ~= nil then

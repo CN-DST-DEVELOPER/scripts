@@ -85,7 +85,7 @@ local function falls1()
 
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(1.5)
 
     inst:SetPhysicsRadiusOverride(2.5)
 
@@ -131,7 +131,7 @@ local function falls2()
 
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(1)
 
     inst:SetPhysicsRadiusOverride(2.5)
 

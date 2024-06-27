@@ -20,6 +20,7 @@ local function fn()
 
     inst:AddTag("cattoy")
     inst:AddTag("renewable")
+    inst:AddTag("cutgrass")
 
     MakeInventoryFloatable(inst, "med", 0.05, 0.68)
 

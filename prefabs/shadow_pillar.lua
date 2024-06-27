@@ -405,7 +405,7 @@ local function base_fn()
 	inst.AnimState:PushAnimation("idle")
 
 	inst.KillFX = Base_KillFX
-	inst.persist = false
+	inst.persists = false
 
 	return inst
 end

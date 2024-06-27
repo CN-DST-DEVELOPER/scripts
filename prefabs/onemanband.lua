@@ -37,7 +37,7 @@ local function band_update( inst )
                             owner.components.leader:AddFollower(v)
                         end
                     else
-                        if owner:HasTag("merm") or (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKing()) then
+                        if owner:HasTag("merm") or (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere()) then
                             owner.components.leader:AddFollower(v)
                         end
                     end
@@ -60,7 +60,7 @@ local function band_update( inst )
                             k.components.follower:AddLoyaltyTime(3)
                         end
                     else
-                        if owner:HasTag("merm") or (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKing()) then
+                        if owner:HasTag("merm") or (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere()) then
                             k.components.follower:AddLoyaltyTime(3)
                         end
                     end

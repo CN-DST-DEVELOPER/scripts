@@ -229,7 +229,7 @@ local function meteor_invitem_behaviour(inst, v)
         local dx, dz = vx - x, vz - z
         local spd = math.sqrt(dx * dx + dz * dz)
         local angle = (spd > 0 and math.atan2(dz / spd, dx / spd) + (math.random() * 20 - 10) * DEGREES)
-            or math.random() * 2 * PI
+            or math.random() * TWOPI
         spd = 3 + math.random() * 1.5
         v.Physics:Teleport(vx, 0, vz)
         v.Physics:SetVel(math.cos(angle) * spd, 0, math.sin(angle) * spd)
@@ -299,7 +299,7 @@ local function stage1_break(inst)
 
     local angle_offset = math.random() * PI
     for i = 1, 3 do
-        local theta = ((2 * PI) / 3) * i + angle_offset
+        local theta = (TWOPI / 3) * i + angle_offset
         local offset = 1 + math.random()
         spawnscorchmark(ix + math.cos(theta) * offset, iz + math.sin(theta) * offset, 1.1 + 0.4 * math.random())
     end
@@ -589,7 +589,7 @@ local function spawnmeteor(inst)
     local x, _, z = inst.Transform:GetWorldPosition()
 
     local offset = METEOR_OFFSET_MIN + math.random() * METEOR_OFFSET_VARIANCE
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
 
     SpawnPrefab("shadowmeteor").Transform:SetPosition(x + math.cos(theta) * offset, 0, z + math.sin(theta) * offset)
 end

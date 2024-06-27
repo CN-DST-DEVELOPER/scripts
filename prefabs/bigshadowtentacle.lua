@@ -5,6 +5,8 @@ local assets =
     Asset("SOUND", "sound/tentacle.fsb"),
 }
 
+local CAN_CHOOSE_TARGET_TAGS = {"animal", "character", "monster"}
+
 local RETARGET_MUST_TAGS = { "_combat", "_health" }
 local RETARGET_CANT_TAGS = { "minotaur" }
 local function retargetfn(inst)
@@ -13,12 +15,9 @@ local function retargetfn(inst)
         TUNING.TENTACLE_ATTACK_DIST,
         function(guy)
             return guy.prefab ~= inst.prefab
-                and guy.entity:IsVisible()
                 and not guy.components.health:IsDead()
                 and (guy.components.combat.target == inst or
-                    guy:HasTag("character") or
-                    guy:HasTag("monster") or
-                    guy:HasTag("animal"))
+                    guy:HasOneOfTags(CAN_CHOOSE_TARGET_TAGS))
 				and (guy:HasTag("player") or
 					not (guy.sg and guy.sg:HasStateTag("hiding")))
         end,
@@ -37,40 +36,11 @@ local function shouldKeepTarget(inst, target)
 			not (target.sg and target.sg:HasStateTag("hiding")))
 end
 
-local function OnAttacked(inst, data)
-    if data.attacker == nil then
-        return
-    end
-
-    local current_target = inst.components.combat.target
-
-    if current_target == nil then
-        --Don't want to handle initiating attacks here;
-        --We only want to handle switching targets.
-        return
-    elseif current_target == data.attacker then
-        --Already targeting our attacker, just update the time
-        inst._last_attacker = current_target
-        inst._last_attacked_time = GetTime()
-        return
-    end
-
-    local time = GetTime()
-    if inst._last_attacker == current_target and
-        inst._last_attacked_time + TUNING.TENTACLE_ATTACK_AGGRO_TIMEOUT >= time then
-        --Our target attacked us recently, stay on it!
-        return
-    end
-
-    --Switch to new target
-    inst.components.combat:SetTarget(data.attacker)
-    inst._last_attacker = data.attacker
-    inst._last_attacked_time = time
-end
-
 local function testremove(inst)
     if inst.sg:HasStateTag("idle") then
         inst:PushEvent("leave")
+    else
+        inst:DoTaskInTime(30, testremove)
     end
 end
 
@@ -96,7 +66,7 @@ local function fn()
     inst:AddTag("shadow")
     inst:AddTag("notarget")
     inst:AddTag("NOCLICK")
-    inst:AddTag("shadow_aligned") 
+    inst:AddTag("shadow_aligned")
 
     inst.entity:SetPristine()
 
@@ -123,9 +93,7 @@ local function fn()
 
     inst:SetStateGraph("SGbigshadowtentacle")
 
-    --inst:ListenForEvent("attacked", OnAttacked)
-    inst:PushEvent("arrive") 
-    --inst:DoTaskInTime(0, function()end)
+    inst:PushEvent("arrive")
     inst:DoTaskInTime(30, testremove)
 
     return inst

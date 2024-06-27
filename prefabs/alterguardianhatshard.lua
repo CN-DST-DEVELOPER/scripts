@@ -12,6 +12,11 @@ local assets =
     Asset("INV_IMAGE", "alterguardianhatshard_green_open"),
 }
 
+local assets_fx =
+{
+	Asset("ANIM", "anim/alterguardianhatshard.zip"),
+}
+
 local function UpdateInventoryImage(inst)
     local isopen = inst.components.container:IsOpen()
     local name = "alterguardianhatshard" .. (inst._shardcolour or "") .. (isopen and "_open" or "")
@@ -30,14 +35,13 @@ end
 
 local function OnPutInInventory(inst)
     inst.components.container:Close()
+	inst.Light:Enable(false)
 end
 
 local function OnDropped(inst)
-    inst.Light:Enable(true)
-end
-
-local function OnPickup(inst)
-    inst.Light:Enable(false)
+	if inst._shardcolour then
+		inst.Light:Enable(true)
+	end
 end
 
 local COLOUR_TINT = { 0.4, 0.2 }
@@ -53,6 +57,10 @@ local function UpdateLightState(inst)
 
         inst.Light:SetColour(COLOUR_TINT[g+b + 1] + r/3, COLOUR_TINT[r+b + 1] + g/3, COLOUR_TINT[r+g + 1] + b/3)
 
+        if not inst.components.inventoryitem:IsHeld() then
+            inst.Light:Enable(true)
+        end
+
         inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
         inst.AnimState:SetMultColour(MULT_TINT[g+b + 1], MULT_TINT[r+b + 1], MULT_TINT[r+g + 1], 1)
 
@@ -66,6 +74,7 @@ local function UpdateLightState(inst)
     else
         inst.AnimState:ClearBloomEffectHandle()
         inst.AnimState:SetMultColour(.7, .7, .7, 1)
+		inst.Light:Enable(false)
 
         inst._shardcolour = nil
     end
@@ -108,7 +117,6 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
     inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-    inst.components.inventoryitem:SetOnPickupFn(OnPickup)
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("alterguardianhatshard")
@@ -128,4 +136,63 @@ local function fn()
     return inst
 end
 
-return Prefab("alterguardianhatshard", fn, assets)
+local function SetShardColour(inst, colour)
+	if colour == "r" then
+		inst.AnimState:SetMultColour(1, 0.3, 0.3, 1)
+	elseif colour == "g" then
+		inst.AnimState:SetMultColour(0.3, 1, 0.3, 1)
+	elseif colour == "b" then
+		inst.AnimState:SetMultColour(0.3, 0.3, 1, 1)
+	--else
+	--	inst.AnimState:SetMultColour(1, 1, 1, 1)
+	end
+	inst.colour = colour
+end
+
+local function SetupFxFromHatShard(inst, shard)
+	if not shard.components.container:IsEmpty() then
+		local item = shard.components.container:GetItemInSlot(1)
+		SetShardColour(inst,
+			(item.prefab == MUSHTREE_SPORE_RED and "r") or
+			(item.prefab == MUSHTREE_SPORE_GREEN and "g") or
+			(item.prefab == MUSHTREE_SPORE_BLUE and "b") or
+			nil
+		)
+	end
+end
+
+--Used as symbol follower by winona_battery_high
+local function symbolfxfn()
+	local inst = CreateEntity()
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+	inst.entity:AddNetwork()
+
+	inst.AnimState:SetBank("alterguardianhatshard")
+	inst.AnimState:SetBuild("alterguardianhatshard")
+	inst.AnimState:PlayAnimation("float", true)
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	inst.AnimState:SetLightOverride(0.5)
+
+	inst:AddTag("FX")
+	inst:AddTag("NOCLICK")
+
+	inst.entity:SetPristine()
+
+	if not TheWorld.ismastersim then
+		return inst
+	end
+
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
+
+	inst.SetupFxFromHatShard = SetupFxFromHatShard
+
+	inst.persists = false
+
+	return inst
+end
+
+return Prefab("alterguardianhatshard", fn, assets),
+	Prefab("alterguardianhatshard_symbol_fx", symbolfxfn, assets_fx)

@@ -56,7 +56,7 @@ local function do_spawn_test(inst)
 
     local offset = FindWalkableOffset(
         player_position,
-        math.random() * PI * 2,
+        math.random() * TWOPI,
         spawn_distance,
         nil,
         false,

@@ -166,6 +166,13 @@ function WalkablePlatform:SetEntitiesOnPlatform()
     self.objects_on_platform = new_objects_on_platform
 end
 
+function WalkablePlatform:RemoveObject(obj) -- NOTES(JBK): Temporary workaround function for teleporting things off of a boat past entity sleep range. [TBTWARWB]
+    if self.objects_on_platform[obj] then
+        self.objects_on_platform[obj] = nil
+        self.inst:RemovePlatformFollower(obj)
+    end
+end
+
 function WalkablePlatform:SpawnPlayerCollision()
     if self.player_collision_prefab then
         self.player_collision = SpawnPrefab(self.player_collision_prefab)

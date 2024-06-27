@@ -154,6 +154,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
     MakeObstaclePhysics(inst, 0.4)
 
     inst:AddTag("structure")

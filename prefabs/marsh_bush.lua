@@ -75,6 +75,8 @@ local function fn()
     inst.entity:AddNetwork()
     inst.entity:AddMiniMapEntity()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --plantables deployspacing/2
+
     inst.AnimState:SetBuild("marsh_bush")
     inst.AnimState:SetBank("marsh_bush")
     inst.AnimState:PlayAnimation("idle", true)

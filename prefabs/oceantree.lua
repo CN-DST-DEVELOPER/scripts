@@ -132,6 +132,7 @@ local function OnBurnt(inst, immediate)
         inst:RemoveComponent("burnable")
         inst:RemoveComponent("propagator")
         inst:RemoveComponent("growable")
+        inst:RemoveComponent("timer")
         inst:RemoveComponent("hauntable")
         inst:RemoveTag("shelter")
         MakeHauntableWork(inst)
@@ -143,6 +144,8 @@ local function OnBurnt(inst, immediate)
             inst.components.workable:SetOnWorkCallback(nil)
             inst.components.workable:SetOnFinishCallback(chop_down_burnt_tree)
         end
+
+        inst:RemoveEventCallback("timerdone", inst.OnTimerDone)
     end
 
     if immediate then
@@ -304,6 +307,7 @@ local function make_stump(inst)
     inst:RemoveComponent("propagator")
     MakeSmallPropagator(inst)
     inst:RemoveComponent("workable")
+    inst:RemoveComponent("timer")
     inst:RemoveTag("shelter")
     inst:RemoveComponent("hauntable")
     MakeHauntableIgnite(inst)
@@ -317,6 +321,8 @@ local function make_stump(inst)
     if inst.components.growable ~= nil then
         inst.components.growable:StopGrowing()
     end
+
+    inst:RemoveEventCallback("timerdone", inst.OnTimerDone)
 
     inst.MiniMapEntity:SetIcon("oceantree_stump.png")
 end
@@ -424,28 +430,41 @@ local function MakeNotEnriched(inst)
     inst:RemoveTag("no_force_grow")
 end
 
+local function SpawnOceanTreePillar(inst)
+    local x, _, z = inst.Transform:GetWorldPosition()
+
+    local pillar = SpawnPrefab("oceantree_pillar")
+    pillar.Transform:SetPosition(x, 0, z)
+
+    if pillar.sproutfn ~= nil then
+        pillar:sproutfn()
+    end
+
+    inst:Remove()
+
+    return pillar -- Mods.
+end
+
 local function OnTimerDone(inst, data)
-    if data.name == "enriched_cooldown" then
-         if inst.supertall_growth_progress >= STAGES_TO_SUPERTALL then
-            local x, _, z = inst.Transform:GetWorldPosition()
+    if data.name ~= "enriched_cooldown" then
+        return
+    end
 
-            inst.AnimState:PlayAnimation("grow_tall_to_pillar",false)
+    if inst.supertall_growth_progress < STAGES_TO_SUPERTALL then
+        MakeNotEnriched(inst)
 
-            inst.SoundEmitter:PlaySound("waterlogged2/common/watertree_pillar/grow")
+        return
+    end
 
-            inst:ListenForEvent("animover", function()
-                if inst.AnimState:IsCurrentAnimation("grow_tall_to_pillar") then
-                    local new_obj = SpawnPrefab("oceantree_pillar")
-                    new_obj.Transform:SetPosition(x, 0, z)
-                    if new_obj.sproutfn ~= nil then
-                        new_obj:sproutfn()
-                    end
-                    inst:Remove()
-                end
-            end)
-        else
-            MakeNotEnriched(inst)
-        end
+    inst:RemoveComponent("workable")
+
+    if inst:IsAsleep() then
+        SpawnOceanTreePillar(inst)
+    else
+        inst.AnimState:PlayAnimation("grow_tall_to_pillar", false)
+        inst.SoundEmitter:PlaySound("waterlogged2/common/watertree_pillar/grow")
+
+        inst:DoTaskInTime(inst.AnimState:GetCurrentAnimationLength() + FRAMES, SpawnOceanTreePillar)
     end
 end
 
@@ -453,7 +472,10 @@ local function OnTreeGrowthSolution(inst, item)
     if (inst.supertall_growth_progress ~= nil and inst.supertall_growth_progress > 0) or inst.components.growable.stage == 3 then
         inst.supertall_growth_progress = (inst.supertall_growth_progress or 0) + 1
         MakeEnriched(inst)
-        inst.components.timer:StartTimer("enriched_cooldown", TUNING.OCEANTREE_ENRICHED_COOLDOWN_MIN + math.random() * TUNING.OCEANTREE_ENRICHED_COOLDOWN_VARIANCE)
+
+        if inst.components.timer ~= nil then
+            inst.components.timer:StartTimer("enriched_cooldown", TUNING.OCEANTREE_ENRICHED_COOLDOWN_MIN + math.random() * TUNING.OCEANTREE_ENRICHED_COOLDOWN_VARIANCE)
+        end
     else
         inst.components.growable:DoGrowth()
     end
@@ -510,19 +532,29 @@ local function onload(inst, data)
         if data.buds then
             inst.buds = data.buds
         end
+
         if data.buds_used then
             inst.buds_used = data.buds_used
-           
         end
+
         inst.supertall_growth_progress = data.supertall_growth_progress
     end
 end
 
 local function onloadpostpass(inst, newents, data)
-    if IsEnriched(inst) and not inst:HasTag("stump") and not inst:HasTag("burnt") then
-        MakeEnriched(inst)
+    if not inst:HasTag("stump") and not inst:HasTag("burnt") then
+        if IsEnriched(inst) then
+            MakeEnriched(inst)
+
+        elseif inst.supertall_growth_progress >= STAGES_TO_SUPERTALL then
+            -- We saved during SpawnOceanTreePillar task!
+            SpawnOceanTreePillar(inst)
+        end
     end
-    showbuds(inst)
+
+    if inst:IsValid() then -- SpawnOceanTreePillar removes inst.
+        showbuds(inst)
+    end
 end
 
 local function OnEntitySleep(inst)
@@ -621,6 +653,7 @@ local function tree(name, stage, data)
         inst.AnimState:SetBuild(build)
 
         inst.sproutfn = Sprout
+        inst.OnTimerDone = OnTimerDone
 
         inst.override_treegrowthsolution_fn = OnTreeGrowthSolution
         inst.supertall_growth_progress = 0
@@ -673,7 +706,7 @@ local function tree(name, stage, data)
         inst:AddComponent("hauntable")
 
         inst:ListenForEvent("on_collide", OnCollide)
-        inst:ListenForEvent("timerdone", OnTimerDone)
+        inst:ListenForEvent("timerdone", inst.OnTimerDone)
 
         ---------------------
 
@@ -697,8 +730,10 @@ local function tree(name, stage, data)
             inst:RemoveComponent("propagator")
             MakeSmallPropagator(inst)
             inst:RemoveComponent("growable")
+            inst:RemoveComponent("timer")
+            inst:RemoveEventCallback("timerdone", inst.OnTimerDone)
             inst.AnimState:PlayAnimation(inst.anims.stump)
-            inst.MiniMapEntity:SetIcon("evergreen_stump.png")
+            inst.MiniMapEntity:SetIcon("oceantree_stump.png")
 
             inst:DoTaskInTime(0, function()
                 RemovePhysicsColliders(inst)

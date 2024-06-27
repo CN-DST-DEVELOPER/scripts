@@ -126,6 +126,7 @@ local function fn()
 	-- for storytellingprop component
 	inst:AddTag("storytellingprop")
 
+	inst:SetDeploySmartRadius(1.6) --recipe min_spacing/2
     MakeObstaclePhysics(inst, .3)
 
     inst.entity:SetPristine()

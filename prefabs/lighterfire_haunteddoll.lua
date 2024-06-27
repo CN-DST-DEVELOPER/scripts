@@ -109,7 +109,7 @@ local function emit_smoke_fn(effect, sphere_emitter)
         lifetime,           -- lifetime
         px, py, pz,         -- position
         vx, vy, vz,         -- velocity
-        math.random() * 360,--* 2 * PI, -- angle
+        math.random() * 360,--* TWOPI, -- angle
         UnitRand(),         -- angle velocity
         u_offset, v_offset  -- uv offset
     )

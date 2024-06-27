@@ -27,19 +27,20 @@ end
 
 local function StartWave(inst)
     inst:PushEvent("MaxwellThreat")
-	local pt = Vector3(inst.Transform:GetWorldPosition())
-    local theta = math.random() * 2 * PI
+	local pt = inst:GetPosition()
+    local theta = math.random() * TWOPI
     local radius = 4
     local steps = math.random(3,4)
+    local step_decrement = (TWOPI / steps)
     local ground = TheWorld
     local player = GetPlayer()
     local spawnedguards = {}
     local settarget = function(inst, player)
-   		if inst and inst.brain then
+        if inst and inst.brain then
             inst.brain.followtarget = player
         end
-   	end
-    for i = 1, steps do
+    end
+    for _ = 1, steps do
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         local wander_point = pt + offset
 
@@ -47,25 +48,15 @@ local function StartWave(inst)
 			local particle = SpawnPrefab("poopcloud")
             particle.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
 
-        	local enemy = SpawnPrefab(enemytypes[math.random(1, #enemytypes)])
+            local enemy = SpawnPrefab(enemytypes[math.random(#enemytypes)])
             enemy.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
             enemy:DoTaskInTime(1, settarget, player)
             spawnedguards[enemy] = enemy
         end
-        theta = theta - (2 * PI / steps)
+        theta = theta - step_decrement
     end
 
     return spawnedguards
-end
-
-
-
-local function PlayerNear(inst)
-
-end
-
-local function PlayerFar(inst)
-
 end
 
 local function OnLoad(inst, scenariorunner)
@@ -76,9 +67,6 @@ local function OnLoad(inst, scenariorunner)
 	end)
 end
 
-local function OnDestroy(inst)
-
-end
 return
 {
 	OnLoad = OnLoad

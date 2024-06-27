@@ -1307,8 +1307,8 @@ local function teleport_override_fn(inst)
 					or inst
 
     local pt = target:GetPosition()
-    local offset = FindWalkableOffset(pt, math.random() * 2 * PI, 4, 8, true, false) or
-					FindWalkableOffset(pt, math.random() * 2 * PI, 8, 8, true, false)
+    local offset = FindWalkableOffset(pt, math.random() * TWOPI, 4, 8, true, false) or
+					FindWalkableOffset(pt, math.random() * TWOPI, 8, 8, true, false)
     if offset then
         pt = pt + offset
     end

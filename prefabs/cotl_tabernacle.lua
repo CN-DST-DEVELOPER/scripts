@@ -237,7 +237,8 @@ local function fn(data)
 		inst:AddTag("constructionsite")
 	end
 
-    MakeObstaclePhysics(inst, 1)
+	inst:SetDeploySmartRadius(1.25) --recipe min_spacing/2
+    MakeObstaclePhysics(inst, 0.75)
     MakeSnowCoveredPristine(inst)
 
     inst.scrapbook_proxy = data.scrapbook_proxy

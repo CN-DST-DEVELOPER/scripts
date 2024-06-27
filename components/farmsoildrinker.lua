@@ -9,7 +9,7 @@ local FarmSoilDrinker = Class(function(self, inst)
 end)
 
 function FarmSoilDrinker:OnRemoveFromEntity()
-    TheWorld:PushEvent("ms_registersoildrinker", self.inst)
+    TheWorld:PushEvent("ms_unregistersoildrinker", self.inst)
 end
 
 function FarmSoilDrinker:CopyFrom(rhs)

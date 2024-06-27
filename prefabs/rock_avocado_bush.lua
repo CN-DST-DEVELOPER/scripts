@@ -250,6 +250,7 @@ local function rock_avocado_bush()
     inst.AnimState:SetBuild("rock_avocado_build")
     inst.AnimState:PlayAnimation("idle1")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --plantables deployspacing/2
     MakeSmallObstaclePhysics(inst, .1)
 
     inst:AddTag("plant")

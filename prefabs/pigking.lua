@@ -341,8 +341,8 @@ local function OnTossGameItems(inst)
         table.insert(items, MINIGAME_ITEM)
     end
 	inst._minigame_gold_tossed = inst._minigame_gold_tossed + numgold
-    local angle = math.random() * 2 * PI
-    local delta = 2 * PI / (numgold + numprops + 1) --purposely leave a random gap
+    local angle = math.random() * TWOPI
+    local delta = TWOPI / (numgold + numprops + 1) --purposely leave a random gap
     local variance = delta * .4
     while #items > 0 do
         local item = SpawnPrefab(table.remove(items, math.random(#items)))
@@ -603,6 +603,7 @@ local function teletopos(inst)
 	pt.z = pt.z + math.sin(theta) * r
 	return pt
 end
+
 --------------------------------------------------------------------------
 
 local function fn()

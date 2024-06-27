@@ -41,7 +41,7 @@ local function updateposfn(inst)
     local currentpos = inst.components.knownlocations:GetLocation("nav".. inst.currentnav)
 
     for k,v in pairs(inst.components.herd.members)do
-        local angle = math.random()*2*PI
+        local angle = math.random()*TWOPI
         local dist = math.sqrt(math.random())* 4
         local offsetx = math.cos(angle) * dist
         local offsetz = math.sin(angle) * dist
@@ -65,7 +65,7 @@ local total = 1
             local loop = true
             local tries = 0
             local triesmax = 36
-            local angle = math.random()*2*PI
+            local angle = math.random()*TWOPI
             local dist = math.sqrt(math.random())*radiusMax + 50
             while loop == true do
                 if i == 3 then
@@ -73,7 +73,7 @@ local total = 1
                     loop = false
                 else
                     local origin = inst.components.knownlocations:GetLocation("nav1")
-                    angle = angle + ( (2*PI/triesmax) * tries)
+                    angle = angle + ( (TWOPI/triesmax) * tries)
                     local offsetx = math.cos(angle) * dist
                     local offsetz = math.sin(angle) * dist
                     local water = not TheWorld.Map:IsVisualGroundAtPoint(origin.x + offsetx,0, origin.z + offsetz) and TheWorld.Map:IsValidTileAtPoint(origin.x + offsetx,0, origin.z + offsetz)

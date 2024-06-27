@@ -162,6 +162,7 @@ local function BuildSkillsData(SkillTreeFns)
             connects = {
                 "willow_lightradius_2",
             },
+            defaultfocus = true,
         },
 
         willow_lightradius_2 = {

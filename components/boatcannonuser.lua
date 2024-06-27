@@ -104,11 +104,11 @@ function BoatCannonUser:OnCannonChanged(cannon)
 	end
 
 	if cannon ~= nil then
-		print("Start aiming", cannon)
+		--print("Start aiming", cannon)
 		--Delay to wait make sure cannon rotation gets set first
 		self.task = self.inst:DoTaskInTime(0, DoStartAiming, self, cannon)
 	elseif self.aimingcannon ~= nil then
-		print("Stop aiming cannon")
+		--print("Stop aiming cannon")
 	end
 
 	self.aimingcannon = cannon

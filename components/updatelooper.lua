@@ -58,9 +58,9 @@ function UpdateLooper:OnUpdate(dt)
         end
         if #self.onupdatefns <= 0 then
             self.inst:StopUpdatingComponent(self)
-        end         
+        end
         self.OnUpdatesToRemove = nil
-    end   
+    end
 
 	for i = #self.onupdatefns, 1, -1 do
         self.onupdatefns[i](self.inst, dt)
@@ -74,7 +74,7 @@ function UpdateLooper:LongUpdate(dt)
             table.removearrayvalue(self.longupdatefns, fn)
         end
         self.OnLongUpdatesToRemove = nil
-    end   
+    end
 
 	for i = #self.longupdatefns, 1, -1 do
         self.longupdatefns[i](self.inst, dt)
@@ -107,9 +107,9 @@ function UpdateLooper:OnWallUpdate(dt)
         end
         if #self.onwallupdatefns <= 0 then
             self.inst:StopWallUpdatingComponent(self)
-        end        
+        end
         self.OnWallUpdatesToRemove = nil
-    end 
+    end
 
 	for i = 1, #self.onwallupdatefns do
         self.onwallupdatefns[i](self.inst, dt)
@@ -136,7 +136,7 @@ end
 
 function UpdateLooper_PostUpdate()
 	for inst, fns in pairs(_PostUpdates) do
-		for i, fn in ipairs(fns) do
+		for _, fn in ipairs(fns) do
 			fn(inst)
 		end
 	end

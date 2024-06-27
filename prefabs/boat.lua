@@ -16,11 +16,25 @@ local ice_assets =
     Asset("ANIM", "anim/boat_ice.zip"),
 }
 
-
 local pirate_assets =
 {
     Asset("ANIM", "anim/boat_pirate.zip"),
     Asset("MINIMAP_IMAGE", "boat_pirate"),
+}
+
+local ancient_assets =
+{
+    Asset("ANIM", "anim/boat_ancient.zip"),
+    Asset("ANIM", "anim/boat_yotd.zip"),
+    Asset("ANIM", "anim/boat_leak_ancient_build.zip"),
+}
+
+local otterden_assets =
+{
+    Asset("ANIM", "anim/boat_otterden.zip"),
+    Asset("MINIMAP_IMAGE", "boat_otterden"),
+
+    Asset("ANIM", "anim/boat_otterden_tuft.zip"),
 }
 
 local item_assets =
@@ -35,10 +49,9 @@ local grass_item_assets =
     Asset("INV_IMAGE", "boat_grass_item"),
 }
 
-local ice_item_assets =
+local ancient_item_assets =
 {
-    Asset("ANIM", "anim/boat_grass_item.zip"),
-    Asset("INV_IMAGE", "boat_grass_item"),
+    Asset("ANIM", "anim/boat_ancient_kit.zip"),
 }
 
 -- PREFABS
@@ -73,16 +86,29 @@ local grass_prefabs =
     "fx_grass_boat_fluff",
 }
 
-local pirate_prefabs =
-{
-
-}
-
 local ice_prefabs =
 {
     "boat_ice_deploy_blocker",
     "boatlip_ice",
     "degrade_fx_ice",
+}
+
+local ancient_prefabs =
+{
+    "boatlip_ancient",
+    "walkingplank_ancient",
+    "boat_ancient_container",
+}
+
+local otterden_prefabs =
+{
+    "boatlip_otterden",
+    "boat_otterden_erode",
+    "boat_otterden_erode_water",
+    "fx_grass_boat_fluff",
+    "otterden",
+    "boat_otterden_player_collision",
+    "boat_otterden_item_collision",
 }
 
 local item_prefabs =
@@ -93,6 +119,11 @@ local item_prefabs =
 local grass_item_prefabs =
 {
     "boat_grass",
+}
+
+local ancient_item_prefabs =
+{
+    "boat_ancient",
 }
 
 --
@@ -133,16 +164,16 @@ local BOATBUMPER_MUST_TAGS = { "boatbumper" }
 
 local function OnLoadPostPass(inst)
     local boatring = inst.components.boatring
-    if boatring == nil then
+    if not boatring then
         return
     end
 
     -- If cannons and bumpers are on a boat, we need to rotate them to account for the boat's rotation
-    local x, y, z = inst:GetPosition():Get()
+    local x, y, z = inst.Transform:GetWorldPosition()
 
     -- Bumpers
     local bumpers = TheSim:FindEntities(x, y, z, boatring:GetRadius(), BOATBUMPER_MUST_TAGS)
-    for i, bumper in ipairs(bumpers) do
+    for _, bumper in ipairs(bumpers) do
         -- Add to boat bumper list for future reference
         table.insert(boatring.boatbumpers, bumper)
 
@@ -156,6 +187,8 @@ end
 
 local function OnSpawnNewBoatLeak(inst, data)
 	if data ~= nil and data.pt ~= nil then
+        data.pt.y = 0
+
 		local leak = SpawnPrefab("boat_leak")
 		leak.Transform:SetPosition(data.pt:Get())
 		leak.components.boatleak.isdynamic = true
@@ -166,9 +199,9 @@ local function OnSpawnNewBoatLeak(inst, data)
 
 		if inst.components.walkableplatform ~= nil then
 			inst.components.walkableplatform:AddEntityToPlatform(leak)
-			for k in pairs(inst.components.walkableplatform:GetPlayersOnPlatform()) do
-				if k:IsValid() then
-					k:PushEvent("on_standing_on_new_leak")
+			for player_on_platform in pairs(inst.components.walkableplatform:GetPlayersOnPlatform()) do
+				if player_on_platform:IsValid() then
+					player_on_platform:PushEvent("on_standing_on_new_leak")
 				end
 			end
 		end
@@ -181,7 +214,7 @@ end
 
 local function OnSpawnNewBoatLeak_Grass(inst, data)
 	if data ~= nil and data.pt ~= nil then
-		local leak_x, leak_y, leak_z = data.pt:Get()
+		local leak_x, _, leak_z = data.pt:Get()
 
         if inst.material == "grass" then
             SpawnPrefab("fx_grass_boat_fluff").Transform:SetPosition(leak_x, 0, leak_z)
@@ -206,15 +239,16 @@ local function RemoveConstrainedPhysicsObj(physics_obj)
     end
 end
 
+local function constrain_object_to_boat(physics_obj, boat)
+    if boat:IsValid() then
+        physics_obj.Transform:SetPosition(boat.Transform:GetWorldPosition())
+        physics_obj.Physics:ConstrainTo(boat.entity)
+    end
+end
 local function AddConstrainedPhysicsObj(boat, physics_obj)
 	physics_obj:ListenForEvent("onremove", function() RemoveConstrainedPhysicsObj(physics_obj) end, boat)
 
-    physics_obj:DoTaskInTime(0, function()
-		if boat:IsValid() then
-			physics_obj.Transform:SetPosition(boat.Transform:GetWorldPosition())
-            physics_obj.Physics:ConstrainTo(boat.entity)
-		end
-	end)
+    physics_obj:DoTaskInTime(0, constrain_object_to_boat, boat)
 end
 
 local function on_start_steering(inst)
@@ -231,34 +265,32 @@ local function on_stop_steering(inst)
 end
 
 local function ReticuleTargetFn(inst)
-
-    local range = 7
-    local pos = Vector3(inst.Transform:GetWorldPosition())
-
-    local dir = Vector3()
-    dir.x = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
-    dir.y = 0
-    dir.z = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
+    local dir = Vector3(
+        TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT),
+        0,
+        TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
+    )
 	local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
 
     if math.abs(dir.x) >= deadzone or math.abs(dir.z) >= deadzone then
         dir = dir:GetNormalized()
 
         inst.lastreticuleangle = dir
+    elseif inst.lastreticuleangle ~= nil then
+        dir = inst.lastreticuleangle
     else
-        if inst.lastreticuleangle then
-            dir = inst.lastreticuleangle
-        else
-            return nil
-        end
+        return nil
     end
 
     local Camangle = TheCamera:GetHeading()/180
     local theta = -PI *(0.5 - Camangle)
+    local sintheta, costheta = math.sin(theta), math.cos(theta)
 
-    local newx = dir.x * math.cos(theta) - dir.z *math.sin(theta)
-    local newz = dir.x * math.sin(theta) + dir.z *math.cos(theta)
+    local newx = dir.x*costheta - dir.z*sintheta
+    local newz = dir.x*sintheta + dir.z*costheta
 
+    local range = 7
+    local pos = inst:GetPosition()
     pos.x = pos.x - (newx * range)
     pos.z = pos.z - (newz * range)
 
@@ -290,12 +322,13 @@ local function OnPhysicsWake(inst)
     inst.components.boatphysics:StartUpdating()
 end
 
+local function physicssleep_stopupdating(inst)
+    inst.components.walkableplatform:StopUpdating()
+    inst.stopupdatingtask = nil
+end
 local function OnPhysicsSleep(inst)
     DisableBoatItemCollision(inst)
-    inst.stopupdatingtask = inst:DoTaskInTime(1, function()
-        inst.components.walkableplatform:StopUpdating()
-        inst.stopupdatingtask = nil
-    end)
+    inst.stopupdatingtask = inst:DoTaskInTime(1, physicssleep_stopupdating)
     inst.components.boatphysics:StopUpdating()
 end
 
@@ -390,6 +423,8 @@ local function create_common_pre(inst, bank, build, data)
     local reticule = inst:AddComponent("reticule")
     reticule.targetfn = ReticuleTargetFn
     reticule.ispassableatallpoints = true
+
+    --
     inst.on_start_steering = on_start_steering
     inst.on_stop_steering = on_stop_steering
 
@@ -430,13 +465,13 @@ local function InstantlyBreakBoat(inst)
         inst.components.boatphysics:SetHalting(true)
     end
     --Keep this in sync with SGboat.
-    for k in pairs(inst.components.walkableplatform:GetEntitiesOnPlatform()) do
-        k:PushEvent("abandon_ship")
+    for entity_on_platform in pairs(inst.components.walkableplatform:GetEntitiesOnPlatform()) do
+        entity_on_platform:PushEvent("abandon_ship")
     end
-    for k in pairs(inst.components.walkableplatform:GetPlayersOnPlatform()) do
-        k:PushEvent("onpresink")
+    for player_on_platform in pairs(inst.components.walkableplatform:GetPlayersOnPlatform()) do
+        player_on_platform:PushEvent("onpresink")
     end
-    inst.sinkloot()
+    inst:sinkloot()
     if inst.postsinkfn then
         inst:postsinkfn()
     end
@@ -451,7 +486,7 @@ local function IsBoatEdgeOverLand(inst, override_position_pt)
     local map = TheWorld.Map
     local radius = inst:GetSafePhysicsRadius()
     local segment_count = BOAT_COLLISION_SEGMENT_COUNT * 2
-    local segment_span = math.pi * 2 / segment_count
+    local segment_span = TWOPI / segment_count
     local x, y, z
     if override_position_pt then
         x, y, z = override_position_pt:Get()
@@ -482,6 +517,9 @@ end
 local PLANK_EDGE_OFFSET = -0.05
 local function create_master_pst(inst, data)
     data = data or {}
+
+    inst.leak_build = data.leak_build
+    inst.leak_build_override = data.leak_build_override
 
     local radius = data.radius or TUNING.BOAT.RADIUS
 
@@ -540,9 +578,9 @@ local function create_master_pst(inst, data)
     inst:AddComponent("boatdrifter")
     inst:AddComponent("savedrotation")
 
-    inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(data.max_health or TUNING.BOAT.HEALTH)
-    inst.components.health.nofadeout = true
+    local health = inst:AddComponent("health")
+    health:SetMaxHealth(data.max_health or TUNING.BOAT.HEALTH)
+    health.nofadeout = true
 
     inst:SetStateGraph(data.stategraph or "SGboat")
 
@@ -564,7 +602,7 @@ end
 
 local function build_boat_collision_mesh(radius, height)
     local segment_count = BOAT_COLLISION_SEGMENT_COUNT
-    local segment_span = math.pi * 2 / segment_count
+    local segment_span = TWOPI / segment_count
 
     local triangles = {}
     local y0 = 0
@@ -633,7 +671,6 @@ local function boat_player_collision_template(radius)
     inst:AddTag("NOCLICK")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -670,7 +707,6 @@ local function boat_item_collision_template(radius)
     inst:AddTag("ignorewalkableplatforms")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -703,6 +739,8 @@ local function ondeploy(inst, pt, deployer)
     end
 
     inst:Remove()
+
+    return boat
 end
 
 local function wood_fn()
@@ -826,6 +864,23 @@ local function grass_fn()
     return inst
 end
 
+
+local function pirate_initialize(inst)
+    local ents = inst.components.walkableplatform:GetEntitiesOnPlatform()
+
+    local function oncannonremoved(cannon)
+        table.removearrayvalue(inst.cannons, cannon)
+    end
+
+    for ent in pairs(ents) do
+        if ent:HasTag("boatcannon") then
+            table.insert(inst.cannons, ent)
+
+            ent:ListenForEvent("onremove", oncannonremoved)
+        end
+    end
+end
+
 local function pirate_fn()
     local inst = CreateEntity()
 
@@ -878,6 +933,335 @@ local function pirate_fn()
         inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= 1})
         inst.SoundEmitter:PlaySoundWithParams(inst.sounds.sink)
     end
+    inst.cannons = {}
+    
+    inst:DoTaskInTime(0, pirate_initialize)
+
+    return inst
+end
+
+local function do_boat_container_offset(boat, container)
+	if container ~= nil and container:IsValid() then
+    	container.Transform:SetPosition(boat.Transform:GetWorldPosition())
+    end
+end
+
+local ANCIENT_BOAT_SCALE = 1.334
+
+local function ancient_fn()
+    local inst = CreateEntity()
+
+    local bank  = "boat_yotd"
+    local build = "boat_ancient"
+
+    local ANCIENT_BOAT_DATA = {
+        radius = TUNING.BOAT.ANCIENT_BOAT.RADIUS,
+        max_health = TUNING.BOAT.ANCIENT_BOAT.HEALTH,
+        item_collision_prefab = "boat_item_collision",
+        scale = ANCIENT_BOAT_SCALE,
+        boatlip_prefab = "boatlip_ancient",
+        plank_prefab = "walkingplank_ancient",
+        minimap_image = "boat_ancient.png",
+        leak_build_override = "boat_leak_ancient_build",
+    }
+
+    inst = create_common_pre(inst, bank, build, ANCIENT_BOAT_DATA)
+
+    inst.walksound = "wood"
+
+    inst.components.walkableplatform.player_collision_prefab = "boat_player_collision"
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst = create_master_pst(inst, ANCIENT_BOAT_DATA)
+
+    if not POPULATING then
+        inst._container = SpawnPrefab("boat_ancient_container")
+        inst:DoTaskInTime(0, do_boat_container_offset, inst._container)
+    end
+
+    inst.components.hullhealth.max_health_damage = TUNING.BOAT.ANCIENT_BOAT.MAX_HULL_HEALTH_DAMAGE
+    inst.components.hullhealth.small_leak_dmg = TUNING.BOAT.ANCIENT_BOAT.SMALL_LEAK_DMG_THRESHOLD
+    inst.components.hullhealth.med_leak_dmg = TUNING.BOAT.ANCIENT_BOAT.MED_LEAK_DMG_THRESHOLD
+
+    inst._fire_damage = TUNING.BOAT.ANCIENT_BOAT.FIRE_DAMAGE
+
+	inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak)
+    inst.boat_crackle = "fx_boat_crackle"
+
+    inst.sounds = sounds
+
+    inst.sinkloot = function()
+        local ignitefragments = inst.activefires > 0
+        local locus_point = inst:GetPosition()
+        local num_loot = 3
+        local loot_angle = PI2/num_loot
+        for i = 1, num_loot do
+            local r = math.sqrt(math.random())*(ANCIENT_BOAT_DATA.radius - 2) + 1.5
+            local t = (i + 2 * math.random()) * loot_angle
+            SpawnFragment(locus_point, "boards", math.cos(t) * r,  0, math.sin(t) * r, ignitefragments)
+        end
+    end
+
+    inst.postsinkfn = function()
+        local fx_boat_crackle = SpawnPrefab("fx_boat_pop")
+        fx_boat_crackle.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        inst.SoundEmitter:PlaySoundWithParams(inst.sounds.damage, {intensity= 1})
+        inst.SoundEmitter:PlaySoundWithParams(inst.sounds.sink)
+    end
+
+    return inst
+end
+
+-- OTTER DEN PLATFORM
+local function OnRowed_OtterDen(inst, rower)
+    local entities_on_platform = inst.components.walkableplatform:GetEntitiesOnPlatform()
+    for entity_on_platform in pairs(entities_on_platform) do
+        if entity_on_platform:HasTag("angry_when_rowed") then
+            entity_on_platform:PushEvent("onmoved", rower)
+        end
+    end
+end
+
+local function otterden_comment_timeout(inst)
+    inst._comment_timeout_task = nil
+end
+local function otterden_start_erosion(inst, amount)
+    amount = amount or TUNING.BOAT_OTTERDEN_ERODE_RATE
+    inst.components.hullhealth:SetSelfDegrading(amount)
+    if not inst.AnimState:IsCurrentAnimation("crack") then
+        local start_frame = nil
+        if inst.AnimState:IsCurrentAnimation("crack_reverse") then
+            local current_crack_frame = inst.AnimState:GetCurrentAnimationFrame()
+            start_frame = 54 - current_crack_frame
+            if start_frame < 1 then start_frame = nil end
+        end
+        inst.AnimState:PlayAnimation("crack")
+        if start_frame then
+            inst.AnimState:SetFrame(start_frame)
+        end
+    end
+end
+local function otterden_stop_erosion(inst)
+    inst.components.hullhealth:SetSelfDegrading(0)
+    local start_frame = nil
+    if inst.AnimState:IsCurrentAnimation("crack") then
+        local current_crack_frame = inst.AnimState:GetCurrentAnimationFrame()
+        start_frame = 54 - current_crack_frame
+        if start_frame < 1 then start_frame = nil end
+    end
+    inst.AnimState:PlayAnimation("crack_reverse")
+    if start_frame then
+        inst.AnimState:SetFrame(start_frame)
+    end
+    inst.AnimState:PushAnimation("idle_full")
+end
+local function otterden_on_update(inst, dt)
+    -- If we're already missing our den, we should already be degrading,
+    -- so don't waste cycles checking map tiles or anything, and
+    -- don't accidentally stop doing the degrading for that.
+    local den = inst.components.entitytracker:GetEntity("otterden")
+    if not den then return end
+
+    local hullhealth = inst.components.hullhealth
+    local boat_tile = TheWorld.Map:GetTileAtPoint(inst.Transform:GetWorldPosition())
+    if boat_tile ~= WORLD_TILES.OCEAN_COASTAL
+            and boat_tile ~= WORLD_TILES.OCEAN_COASTAL_SHORE
+            and boat_tile ~= WORLD_TILES.OCEAN_WATERLOG
+            and TileGroupManager:IsOceanTile(boat_tile) then
+        if hullhealth.selfdegradingtime == 0 then
+            otterden_start_erosion(inst)
+            if inst._comment_timeout_task ~= nil then
+                return
+            end
+
+            local players_on_platform = inst.components.walkableplatform:GetPlayersOnPlatform()
+            if next(players_on_platform) ~= nil then
+                local random_player_on_platform = GetRandomKey(players_on_platform)
+                if random_player_on_platform then
+                    inst._comment_timeout_task = inst:DoTaskInTime(20, otterden_comment_timeout)
+                    random_player_on_platform:PushEvent("otterboaterosion_begin", "deepwater")
+                end
+            end
+        end
+    else
+        if hullhealth.selfdegradingtime == TUNING.BOAT_OTTERDEN_ERODE_RATE then
+            otterden_stop_erosion(inst)
+        end
+    end
+end
+
+local function otterden_initialize(inst)
+    local entitytracker = inst.components.entitytracker
+    local den = entitytracker:GetEntity("otterden")
+    if not den and not inst._den_spawned then
+        den = SpawnPrefab("otterden")
+        den.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        entitytracker:TrackEntity("otterden", den)
+        inst._den_spawned = true
+    end
+    inst:ListenForEvent("onremove", inst._on_den_removed, den)
+end
+
+local function on_dead_otterden_added(inst, den)
+    if not inst.components.entitytracker:GetEntity("otterden_dead") then
+        inst.components.entitytracker:TrackEntity("otterden_dead", den)
+        table.insert(inst.components.hullhealth.leak_indicators_dynamic, den)
+    end
+end
+
+local function otterden_onsave(inst, data)
+    if inst._den_spawned then
+        data.den_spawned = true
+    end
+
+    if inst.components.hullhealth.selfdegradingtime ~= 0 then
+        data.erosion_rate = inst.components.hullhealth.selfdegradingtime
+    end
+end
+
+local function otterden_onload(inst, data)
+    if data then
+        inst._den_spawned = data.den_spawned
+        if data.erosion_rate then
+            otterden_start_erosion(inst, data.erosion_rate)
+        end
+    end
+end
+
+local function otterden_onloadpostpass(inst, newents, data)
+    local dead_den = inst.components.entitytracker:GetEntity("otterden_dead")
+    if dead_den then
+        if inst.components.hullhealth then
+            table.insert(inst.components.hullhealth.leak_indicators_dynamic, dead_den)
+        end
+    end
+end
+
+local function CLIENT_MakeOtterdenTuft(inst, anim_index)
+    anim_index = anim_index or math.random(3)
+
+    local tuft = CreateEntity()
+    tuft:AddTag("FX")
+    --[[Non-networked entity]]
+    tuft.persists = false
+    tuft.entity:AddTransform()
+    tuft.entity:AddAnimState()
+    tuft.entity:SetParent(inst.entity)
+
+    tuft.AnimState:SetBank("boat_otterden_tuft")
+    tuft.AnimState:SetBuild("boat_otterden_tuft")
+    tuft.AnimState:PlayAnimation("idle"..anim_index)
+
+    return tuft
+end
+
+local function otterden_fn()
+    local inst = CreateEntity()
+
+    local bank = "boat_otterden"
+    local build = "boat_otterden"
+    local OTTERDEN_BOAT_DATA = {
+        radius = TUNING.BOAT.OTTERDEN_BOAT.RADIUS,
+        max_health = TUNING.BOAT.OTTERDEN_BOAT.HEALTH,
+        item_collision_prefab = "boat_otterden_item_collision",
+        boatlip_prefab = "boatlip_otterden",
+        minimap_image = "boat_otterden.png",
+    }
+
+    inst = create_common_pre(inst, bank, build, OTTERDEN_BOAT_DATA)
+
+    inst.material = "kelp"
+    inst.walksound = "marsh"
+    inst.second_walk_sound = "tallgrass"
+
+    inst.components.walkableplatform.player_collision_prefab = "boat_otterden_player_collision"
+
+    if not TheNet:IsDedicated() then
+        local tuft_angle, tuft_offset
+        local NUM_TUFTS = 6
+        for i = 1, NUM_TUFTS do
+            local tuft = CLIENT_MakeOtterdenTuft(inst)
+            tuft_angle = GetRandomWithVariance((i * TWOPI/NUM_TUFTS), PI/6)
+            tuft_offset = 1.0 + (OTTERDEN_BOAT_DATA.radius * 0.5) * (math.sqrt(math.random()))
+            tuft.Transform:SetPosition(
+                tuft_offset * math.cos(tuft_angle),
+                0,
+                tuft_offset * math.sin(tuft_angle)
+            )
+        end
+    end
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    --inst.scrapbook_deps = { "otter", "otterden" }
+
+    inst = create_master_pst(inst, OTTERDEN_BOAT_DATA)
+
+    inst:ListenForEvent("spawnnewboatleak", OnSpawnNewBoatLeak_Grass)
+    inst:ListenForEvent("rowed", OnRowed_OtterDen)
+
+    inst.sounds = sounds_grass
+
+    inst.components.repairable.repairmaterial = MATERIALS.KELP
+    inst.components.hullhealth.leakproof = true
+
+    -- Just start a steady regeneration on the boat, so that it can recover from being moved out to the deep ocean.
+    inst.components.health:StartRegen(1, 5*TUNING.BOAT_OTTERDEN_ERODE_RATE)
+
+    -- To track our den, especially between save/loads
+    inst:AddComponent("entitytracker")
+
+    --
+    inst._check_for_tile_degrade_task = inst:DoPeriodicTask(0.5, otterden_on_update, 0.5 * (1 + math.random()))
+
+    --
+    inst.sinkloot = function()
+        local ignitefragments = inst.activefires > 0
+        local locus_point = inst:GetPosition()
+        local num_loot = 6
+        local loot_angle = PI2/num_loot
+        local sqrt, random, sin, cos = math.sqrt, math.random, math.sin, math.cos
+        for i = 1, num_loot do
+            local r = sqrt(random())*(OTTERDEN_BOAT_DATA.radius-2) + 1.5
+            local t = (i + 2 * random()) * loot_angle
+            SpawnFragment(locus_point, "kelp", cos(t) * r, 0, sin(t) * r, ignitefragments)
+        end
+    end
+    inst.postsinkfn = function(inst)
+        local ix, iy, iz = inst.Transform:GetWorldPosition()
+        local erode = SpawnPrefab("boat_otterden_erode")
+        erode.Transform:SetPosition(ix, iy, iz)
+
+        local erode_water = SpawnPrefab("boat_otterden_erode_water")
+        erode_water.Transform:SetPosition(ix, iy, iz)
+    end
+
+    --
+    inst._on_den_removed = function()
+        local players_on_platform = inst.components.walkableplatform:GetPlayersOnPlatform()
+        if next(players_on_platform) ~= nil then
+            local random_player_on_platform = GetRandomKey(players_on_platform)
+            if random_player_on_platform then
+                random_player_on_platform:PushEvent("otterboaterosion_begin", "dengone")
+            end
+        end
+    end
+    inst:DoTaskInTime(0, otterden_initialize)
+
+    --
+    inst:ListenForEvent("dead_otterden_added", on_dead_otterden_added)
+
+    --
+    inst.OnSave = otterden_onsave
+    inst.OnLoad = otterden_onload
+    inst.OnLoadPostPass = otterden_onloadpostpass
 
     return inst
 end
@@ -1011,6 +1395,37 @@ local function ice_fn()
         break_fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     end
 
+    inst.SpawnFragment = SpawnFragment
+
+    return inst
+end
+
+local function ice_crabking_fn()
+    local inst = ice_fn()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    local function sinkloot()
+        local ignitefragments = false --(inst.activefires > 0)
+        local locus_point = inst:GetPosition()
+        local num_loot = 3
+        local loot_angle = TWOPI/num_loot
+        local loot_radius = (inst.components.hull:GetRadius()/2)
+        for i = 1, num_loot do
+            local r = (1 + math.sqrt(math.random()))*loot_radius
+            local t = (i + 2 * math.random()) * loot_angle
+            
+            r = (1 + math.sqrt(math.random()))*loot_radius
+            t = t + loot_angle * (0.3 + 0.6 * math.random())
+            inst.SpawnFragment(locus_point, "degrade_fx_ice", math.cos(t) * r, 0, math.sin(t) * r)
+        end
+    end
+    
+    inst.sinkloot = sinkloot
+    inst.components.health:SetVal(10)
+
     return inst
 end
 
@@ -1105,6 +1520,35 @@ local function grass_item_fn()
     return inst
 end
 
+local function ancient_ondeploy(...)
+    local boat = ondeploy(...)
+
+    boat._container:Hide()
+    boat._container:DoTaskInTime(.5, boat._container.OnPlaced)
+end
+
+local function ancient_item_fn()
+    local inst = CreateEntity()
+
+    inst = common_item_fn_pre(inst)
+
+    inst.deploy_product = "boat_ancient"
+
+    inst.AnimState:SetBank("seafarer_boat")
+    inst.AnimState:SetBuild("boat_ancient_kit")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst = common_item_fn_pst(inst)
+
+    inst.components.deployable.ondeploy = ancient_ondeploy
+
+    return inst
+end
+
 -- COLLISIONS
 local function boat_player_collision_fn()
     return boat_player_collision_template(TUNING.BOAT.RADIUS)
@@ -1132,6 +1576,18 @@ local function boat_ice_item_collision_fn()
     return boat_item_collision_template(TUNING.OCEAN_ICE_RADIUS)
 end
 
+local function boat_otterden_player_collision_fn()
+    return boat_player_collision_template(TUNING.BOAT.OTTERDEN_BOAT.RADIUS)
+end
+
+local function boat_otterden_item_collision_fn()
+    return boat_item_collision_template(TUNING.BOAT.OTTERDEN_BOAT.RADIUS)
+end
+
+local function ancient_placer_postinit(inst)
+    inst.AnimState:SetScale(ANCIENT_BOAT_SCALE, ANCIENT_BOAT_SCALE)
+end
+
 --
 return Prefab("boat", wood_fn, wood_assets, prefabs),
        Prefab("boat_player_collision", boat_player_collision_fn),
@@ -1141,11 +1597,20 @@ return Prefab("boat", wood_fn, wood_assets, prefabs),
 
        Prefab("boat_pirate", pirate_fn, pirate_assets, prefabs),
 
+       Prefab("boat_ancient", ancient_fn, ancient_assets, ancient_prefabs),
+       Prefab("boat_ancient_item", ancient_item_fn, ancient_item_assets, ancient_item_prefabs),
+       MakePlacer("boat_ancient_item_placer", "boat_yotd", "boat_ancient", "idle_full", true, false, false, nil, nil, nil, ancient_placer_postinit, 6),
+
+       Prefab("boat_otterden", otterden_fn, otterden_assets, otterden_prefabs),
+       Prefab("boat_otterden_player_collision", boat_otterden_player_collision_fn),
+       Prefab("boat_otterden_item_collision", boat_otterden_item_collision_fn),
+
        Prefab("boat_grass", grass_fn, grass_assets, grass_prefabs),
        Prefab("boat_grass_player_collision", boat_grass_player_collision_fn),
        Prefab("boat_grass_item_collision", boat_grass_item_collision_fn),
 
        Prefab("boat_ice", ice_fn, ice_assets, ice_prefabs),
+       Prefab("boat_ice_crabking", ice_crabking_fn, ice_assets, ice_prefabs),
        Prefab("boat_ice_player_collision", boat_ice_player_collision_fn),
        Prefab("boat_ice_item_collision", boat_ice_item_collision_fn),
        Prefab("boat_ice_deploy_blocker", ice_floe_deploy_blocker_fn),

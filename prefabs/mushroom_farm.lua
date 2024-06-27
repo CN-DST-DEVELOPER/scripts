@@ -315,6 +315,8 @@ end
 local function domagicgrowth(inst, doer)
     if inst.components.harvestable:Grow() then
         inst.components.harvestable:Disable()
+        inst.components.trader:Disable()
+
         inst:DoTaskInTime(0.5, domagicgrowth)
     else
         inst.components.harvestable:Enable()
@@ -330,6 +332,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1) --recipe min_spacing/2
     MakeObstaclePhysics(inst, .5)
 
     inst.MiniMapEntity:SetIcon("mushroom_farm.png")

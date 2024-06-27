@@ -14,6 +14,7 @@ local actionhandlers =
 {
     ActionHandler(ACTIONS.HAUNT, "haunt_pre"),
 	ActionHandler(ACTIONS.JUMPIN, "jumpin_pre"),
+    ActionHandler(ACTIONS.JUMPIN_MAP, "jumpin_pre"),
     ActionHandler(ACTIONS.REMOTERESURRECT, "remoteresurrect"),
     ActionHandler(ACTIONS.MIGRATE, "migrate"),
 }

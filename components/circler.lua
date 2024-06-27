@@ -31,7 +31,7 @@ function Circler:Start()
 
     self.speed = math.random(self.minSpeed, self.maxSpeed) * .01
     self.distance = math.random(self.minDist, self.maxDist)
-    self.angleRad = math.random() * 2 * PI
+    self.angleRad = math.random() * TWOPI
     self.offset = Vector3(self.distance * math.cos(self.angleRad), 0, -self.distance * math.sin(self.angleRad))
     self.facingAngle = self.angleRad * RADIANS
 
@@ -53,8 +53,8 @@ function Circler:SetCircleTarget(tar)
 end
 
 function Circler:GetSpeed(dt)
-    local speed = self.speed * 2 * PI * dt
-    return self.direction > 0 and -speed or speed
+    local speed = self.speed * TWOPI * dt
+    return (self.direction > 0 and -speed) or speed
 end
 
 function Circler:GetMinSpeed()

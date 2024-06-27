@@ -176,6 +176,50 @@ local function retargetfn(inst)
     return target2
 end
 
+--V2C: called from SG instead of combat component
+local function keeptargetfn(inst, target)
+	if inst.sg.mem.forcedespawn then
+		return true
+	elseif target.components.sanity == nil then
+		--not player; could be bernie or other creature
+		if inst.wantstodespawn then
+			--don't deaggro, so you can actually see the despawn
+			inst.sg.mem.forcedespawn = true
+		end
+		return true
+	elseif target.components.sanity:IsCrazy() then
+		inst._deaggrotime = nil
+		return true
+	end
+
+	--start deaggro timer when target is becomes sane
+	local t = GetTime()
+	if inst._deaggrotime == nil then
+		inst._deaggrotime = t
+		return true
+	end
+
+	--V2C: NOTE: -combat cmp sets lastwasattackedbytargettime when retargeting also
+	--           -so it may use the longer delay sometimes even when not attacked
+	--           -this is fine XD
+	--
+	--Deaggro if target has been sane for 2.5s, hasn't hit us in 6s, and hasn't tried to attack us for 5s
+	if inst._deaggrotime + 2.5 >= t or
+		inst.components.combat.lastwasattackedbytargettime + 6 >= t or
+		(	target.components.combat and
+			target.components.combat:IsRecentTarget(inst) and
+			(target.components.combat.laststartattacktime or 0) + 5 >= t
+		)
+	then
+		return true
+	elseif inst.wantstodespawn then
+		--don't deaggro, so you can actually see the despawn
+		inst.sg.mem.forcedespawn = true
+		return true
+	end
+	return false
+end
+
 local function onkilledbyother(inst, attacker)
     if attacker ~= nil and attacker.components.sanity ~= nil then
         attacker.components.sanity:DoDelta(inst.sanityreward or TUNING.SANITY_SMALL)
@@ -210,6 +254,9 @@ end
 
 local function OnNewCombatTarget(inst, data)
     NotifyBrainOfTarget(inst, data.target)
+
+	--Reset deaggro delay when we change targets
+	inst._deaggrotime = nil
 end
 
 local function OnDeath(inst, data)
@@ -351,9 +398,6 @@ local function fn()
     inst.components.locomotor.pathcaps = { allowocean = true, ignoreLand = true }
     inst.components.locomotor.walkspeed = TUNING.OCEANHORROR.SPEED
     inst.sounds = sounds
-    inst:SetStateGraph("SGoceanshadowcreature")
-
-    inst:SetBrain(brain)
 
     inst:AddComponent("sanityaura")
     inst.components.sanityaura.aurafn = CalcSanityAura
@@ -368,6 +412,8 @@ local function fn()
     inst.components.combat:SetDefaultDamage(TUNING.OCEANHORROR.DAMAGE)
     inst.components.combat:SetAttackPeriod(TUNING.OCEANHORROR.ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(3, retargetfn)
+	--inst.components.combat:SetKeepTargetFunction(keeptargetfn)
+	inst.ShouldKeepTarget = keeptargetfn --V2C: call from SG instead!
     inst.components.combat.onkilledbyother = onkilledbyother
     inst.components.combat:SetRange(TUNING.OCEANHORROR.ATTACK_RANGE)
 
@@ -387,6 +433,9 @@ local function fn()
     inst.ExchangeWithTerrorBeak = ExchangeWithTerrorBeak
 
     inst:ListenForEvent("onremove", OnRemove)
+
+	inst:SetStateGraph("SGoceanshadowcreature")
+	inst:SetBrain(brain)
 
     return inst
 end

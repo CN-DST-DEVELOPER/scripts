@@ -70,7 +70,7 @@ local function onspawnfn(inst, spawn)
 
     local offset = FindWalkableOffset(
         pos,
-        math.random() * 2 * PI,
+        math.random() * TWOPI,
         spawn:GetPhysicsRadius(0) + inst:GetPhysicsRadius(0),
         8
     )

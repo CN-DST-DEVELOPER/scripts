@@ -1101,6 +1101,40 @@ local ExampleLayout =
 		},
 	}),
 
+	["AbandonedBoat1"] = StaticLayout.Get("map/static_layouts/abandonedboat",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
+		areas = 
+		{
+			item_area1 = {math.random() >= .5 and "spoiled_fish_small" or "spoiled_fish"},
+			item_area2 = {math.random() >= .5 and "twigs" or "cutgrass"},
+			mast_area = {"mast_broken"},
+			fishing_item_area = {"chum"},
+			seastack_area = function() return math.random() < 0.9 and {"seastack"} or nil end
+		},
+	}),
+
+	["AbandonedBoat2"] = StaticLayout.Get("map/static_layouts/abandonedboat",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
+		areas = 
+		{
+			item_area1 = {math.random() >= .5 and "oar" or "oar_driftwood"},
+			item_area2 = {math.random() >= .5 and "twigs" or "cutgrass"},
+			mast_area = {},
+			fishing_item_area = {math.random() >= .5 and "oceanfishinglure_hermit_snow" or "oceanfishinglure_hermit_heavy"},
+			seastack_area = function() return math.random() < 0.9 and {"seastack"} or nil end
+		},
+	}),
+
+	["OceanMonument"] = StaticLayout.Get("map/static_layouts/oceanmonument",
+	{
+		start_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
+		fill_mask = PLACE_MASK.IGNORE_IMPASSABLE_BARREN_RESERVED,
+	}),
+
 --------------------------------------------------------------------------------
 -- Grotto
 --------------------------------------------------------------------------------

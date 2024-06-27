@@ -221,6 +221,76 @@ decor_portraitframe_clear_fn = function(inst) basic_clear_fn(inst, "decor_portra
 magician_chest_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "magician_chest") end
 magician_chest_clear_fn = function(inst) basic_clear_fn(inst, "magician_chest") end
 
+
+function boat_grass_item_init_fn(inst, build_name)
+    inst.linked_skinname = build_name --hack that relies on the build name to match the linked skinname
+    inst.AnimState:SetSkin(build_name, "seafarer_boat") --same hack is used here by the deployable code in player controller
+    inst.components.inventoryitem:ChangeImageName(inst:GetSkinName())
+end
+function boat_grass_item_clear_fn(inst)
+    inst.linked_skinname = nil
+    inst.AnimState:SetBuild("seafarer_boat")
+    inst.components.inventoryitem:ChangeImageName()
+end
+function boat_grass_init_fn(inst, build_name)
+    if inst.components.placer == nil and not TheWorld.ismastersim then
+        return
+    end
+    inst.AnimState:SetSkin(build_name, "boat_grass")
+end
+function boat_grass_clear_fn(inst)
+    inst.AnimState:SetBuild("boat_grass")
+end
+
+
+function walkingplank_grass_init_fn(inst, build_name)
+    if inst.components.placer == nil and not TheWorld.ismastersim then
+        return
+    end
+    inst.AnimState:SetSkin(build_name, "boat_plank_grass_build")
+end
+function walkingplank_grass_clear_fn(inst, build_name)
+    inst.AnimState:SetBuild("boat_plank_grass_build")
+end
+
+function winch_init_fn(inst, build_name)
+    if inst.components.placer ~= nil then
+        --Placers can run this on clients as well as servers
+        inst.AnimState:SetSkin(build_name, "boat_winch")
+        return
+    elseif not TheWorld.ismastersim then
+        return
+    end
+    inst.AnimState:SetSkin(build_name, "boat_winch")
+end
+function winch_clear_fn(inst)
+    inst.AnimState:SetBuild("boat_winch")
+end
+
+function ocean_trawler_init_fn(inst, build_name)
+    if inst.components.placer ~= nil then
+        --Placers can run this on clients as well as servers
+        inst.AnimState:SetSkin(build_name, "ocean_trawler")
+        return
+    elseif not TheWorld.ismastersim then
+        return
+    end
+    inst.AnimState:SetSkin(build_name, "ocean_trawler")
+end
+function ocean_trawler_clear_fn(inst)
+    inst.AnimState:SetBuild("ocean_trawler")
+end
+function ocean_trawler_kit_init_fn(inst, build_name)
+    inst.linked_skinname = build_name --hack that relies on the build name to match the linked skinname
+    inst.AnimState:SetSkin(build_name, "ocean_trawler") --same hack is used here by the deployable code in player controller
+    inst.components.inventoryitem:ChangeImageName(inst:GetSkinName())
+end
+function ocean_trawler_kit_clear_fn(inst)
+    inst.linked_skinname = nil
+    inst.AnimState:SetBuild("ocean_trawler")
+    inst.components.inventoryitem:ChangeImageName()
+end
+
 hammer_init_fn = function(inst, build_name)
     if string.find( build_name, "_invisible") ~= nil then
         inst.components.floater.do_bank_swap = false
@@ -2047,7 +2117,7 @@ local function cane_do_trail(inst)
     local mounted = owner.components.rider ~= nil and owner.components.rider:IsRiding()
     local map = TheWorld.Map
     local offset = FindValidPositionByFan(
-        math.random() * 2 * PI,
+        math.random() * TWOPI,
         (mounted and 1 or .5) + math.random() * .5,
         4,
         function(offset)

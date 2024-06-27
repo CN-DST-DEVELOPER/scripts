@@ -111,6 +111,7 @@ local function fn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
     MakeObstaclePhysics(inst, 0.4)
 
     inst.MiniMapEntity:SetPriority(5)

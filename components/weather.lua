@@ -1078,7 +1078,7 @@ return Class(function(self, inst)
 
                         local x, y, z = target.Transform:GetWorldPosition()
                         local radius = 2 + math.random() * 8
-                        local theta = math.random() * 2 * PI
+                        local theta = math.random() * TWOPI
                         local pos = Vector3(x + radius * math.cos(theta), y, z + radius * math.sin(theta))
                         _world:PushEvent("ms_sendlightningstrike", pos)
                     else

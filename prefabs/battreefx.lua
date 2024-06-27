@@ -51,6 +51,7 @@ local function SetViewerAndAnim(inst, viewer, anim)
         PlaySounds(inst)
         QueueBatOverlay(inst)
     else
+        -- hide it from the locally hosted server player
         inst.AnimState:OverrideMultColour(1, 1, 1, 0)
     end
 end

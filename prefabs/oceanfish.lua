@@ -34,10 +34,10 @@ local function Flop(inst)
 	end
 	inst.AnimState:PushAnimation("flop_pst", false)
 
-	inst.flopsnd1 = inst:DoTaskInTime((5+9)*FRAMES, function() flopsoundcheck(inst) end)
-	inst.flopsnd2 = inst:DoTaskInTime((5+9+13)*FRAMES, function() flopsoundcheck(inst) end)
-	inst.flopsnd3 = inst:DoTaskInTime((5+9+26)*FRAMES, function() flopsoundcheck(inst) end)
-	inst.flopsnd4 = inst:DoTaskInTime((5+9+39)*FRAMES, function() flopsoundcheck(inst) end)
+	inst.flopsnd1 = inst:DoTaskInTime((5+9)*FRAMES, flopsoundcheck)
+	inst.flopsnd2 = inst:DoTaskInTime((5+9+13)*FRAMES, flopsoundcheck)
+	inst.flopsnd3 = inst:DoTaskInTime((5+9+26)*FRAMES, flopsoundcheck)
+	inst.flopsnd4 = inst:DoTaskInTime((5+9+39)*FRAMES, flopsoundcheck)
 
 	inst.flop_task = inst:DoTaskInTime(math.random() + 2 + 0.5*num, Flop)
 end
@@ -72,8 +72,8 @@ end
 local function OnProjectileLand(inst)
 	local x, y, z = inst.Transform:GetWorldPosition()
 
-	local land_in_water = not TheWorld.Map:IsPassableAtPoint(x, y, z)
-	if land_in_water then
+	local landed_in_water = not TheWorld.Map:IsPassableAtPoint(x, y, z)
+	if landed_in_water then
 	    inst:RemoveComponent("complexprojectile")
 		inst.Physics:SetCollisionMask(SWIMMING_COLLISION_MASK)
 		inst.AnimState:SetSortOrder(ANIM_SORT_ORDER_BELOW_GROUND.UNDERWATER)
@@ -222,6 +222,16 @@ local function launch_water_projectile(inst, target_position)
     projectile.components.complexprojectile:Launch(target_position, inst, inst)
 end
 
+local function Inv_LootSetupFn(lootdropper)
+	local inst = lootdropper.inst
+
+	if inst.components.weighable ~= nil and
+		inst.components.weighable:GetWeightPercent() >= TUNING.WEIGHABLE_HEAVY_LOOT_WEIGHT_PERCENT
+	then
+		lootdropper:SetLoot(inst.fish_def.heavy_loot)
+	end
+end
+
 local function OnEntityWake(inst)
 	if inst.remove_task ~= nil then
 		inst.remove_task:Cancel()
@@ -249,7 +259,7 @@ local function OnLoad(inst, data)
         inst.components.herdmember.herdprefab = data.herdprefab
     end
     if data ~= nil and data.heavy then
-    	inst.heavy = data.heavy
+		inst.heavy = data.heavy
     end
 end
 
@@ -286,6 +296,7 @@ local function water_common(data)
 	inst:AddTag("NOCLICK")
 	inst:AddTag("NOBLOCK")
 	inst:AddTag("oceanfishable")
+    inst:AddTag("oceanfishable_creature")
 	inst:AddTag("oceanfishinghookable")
 	inst:AddTag("oceanfish")
 	inst:AddTag("swimming")
@@ -309,7 +320,6 @@ local function water_common(data)
 	inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -318,55 +328,57 @@ local function water_common(data)
 
 	--inst.leaving = nil
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.walkspeed = data and data.walkspeed or TUNING.OCEANFISH.WALKSPEED
-    inst.components.locomotor.runspeed = data and data.runspeed or TUNING.OCEANFISH.RUNSPEED
-	inst.components.locomotor.pathcaps = { allowocean = true, ignoreLand = true }
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor:EnableGroundSpeedMultiplier(false)
+    locomotor:SetTriggersCreep(false)
+    locomotor.walkspeed = data and data.walkspeed or TUNING.OCEANFISH.WALKSPEED
+    locomotor.runspeed = data and data.runspeed or TUNING.OCEANFISH.RUNSPEED
+    locomotor.pathcaps = { allowocean = true, ignoreLand = true }
 
-	inst:AddComponent("oceanfishable")
-	inst.components.oceanfishable.makeprojectilefn = OnMakeProjectile
-	inst.components.oceanfishable.onreelinginfn = OnReelingIn
-	inst.components.oceanfishable.onsetrodfn = OnSetRod
-	inst.components.oceanfishable:StrugglingSetup(inst.components.locomotor.walkspeed, inst.components.locomotor.runspeed, data.stamina or TUNING.OCEANFISH.FISHABLE_STAMINA)
-	inst.components.oceanfishable.catch_distance = TUNING.OCEAN_FISHING.FISHING_CATCH_DIST
+    local oceanfishable = inst:AddComponent("oceanfishable")
+    oceanfishable.makeprojectilefn = OnMakeProjectile
+    oceanfishable.onreelinginfn = OnReelingIn
+    oceanfishable.onsetrodfn = OnSetRod
+    oceanfishable:StrugglingSetup(inst.components.locomotor.walkspeed, inst.components.locomotor.runspeed, data.stamina or TUNING.OCEANFISH.FISHABLE_STAMINA)
+    oceanfishable.catch_distance = TUNING.OCEAN_FISHING.FISHING_CATCH_DIST
 
-    inst:AddComponent("eater")
+    local eater = inst:AddComponent("eater")
+
 	if data and data.diet then
-		inst.components.eater:SetDiet(data.diet.caneat or FOODGROUP.BERRIES_AND_SEEDS, data.diet.preferseating)
+		eater:SetDiet(data.diet.caneat or { FOODGROUP.BERRIES_AND_SEEDS }, data.diet.preferseating)
 	else
-		inst.components.eater:SetDiet(FOODGROUP.BERRIES_AND_SEEDS, FOODGROUP.BERRIES_AND_SEEDS)
+		eater:SetDiet({ FOODGROUP.BERRIES_AND_SEEDS }, { FOODGROUP.BERRIES_AND_SEEDS })
 	end
 
 	inst:AddComponent("knownlocations")
 
 	inst:AddComponent("timer")
 	inst:ListenForEvent("timerdone", OnTimerDone)
-	--inst.components.timer:StartTimer("lifespan", 30)
 
-    inst:AddComponent("herdmember")
-    inst.components.herdmember:Enable(false)
-	inst.components.herdmember.herdprefab = "schoolherd_"..data.prefab
+    local herdmember = inst:AddComponent("herdmember")
+    herdmember:Enable(false)
+	herdmember.herdprefab = "schoolherd_"..data.prefab
 
-	inst:AddComponent("weighable")
-	--inst.components.weighable.type = TROPHYSCALE_TYPES.FISH -- No need to set a weighable type, this is just here for data and will be copied over to the inventory item
-	inst.components.weighable:Initialize(inst.fish_def.weight_min, inst.fish_def.weight_max)
-	inst.components.weighable:SetWeight(Lerp(inst.fish_def.weight_min, inst.fish_def.weight_max, CalcNewSize()))
+	local weighable = inst:AddComponent("weighable")
+    -- No need to set a weighable type,
+    -- this is just here for data and will be copied over to the inventory item
+	--weighable.type = TROPHYSCALE_TYPES.FISH
+	weighable:Initialize(inst.fish_def.weight_min, inst.fish_def.weight_max)
+	weighable:SetWeight(Lerp(inst.fish_def.weight_min, inst.fish_def.weight_max, CalcNewSize()))
 
     if inst.fish_def.firesuppressant then
-        inst:AddComponent("firedetector")
-        inst.components.firedetector:SetOnFindFireFn(on_find_fire)
-        inst.components.firedetector.range = TUNING.OCEANFISH.SPRINKLER_DETECT_RANGE
-        inst.components.firedetector.detectPeriod = TUNING.OCEANFISH.SPRINKLER_DETECT_PERIOD
-        inst.components.firedetector.fireOnly = true
+        local firedetector = inst:AddComponent("firedetector")
+        firedetector:SetOnFindFireFn(on_find_fire)
+        firedetector.range = TUNING.OCEANFISH.SPRINKLER_DETECT_RANGE
+        firedetector.detectPeriod = TUNING.OCEANFISH.SPRINKLER_DETECT_PERIOD
+        firedetector.fireOnly = true
 
-        inst:AddComponent("wateryprotection")
-        inst.components.wateryprotection.extinguishheatpercent = TUNING.FIRESUPPRESSOR_EXTINGUISH_HEAT_PERCENT
-        inst.components.wateryprotection.temperaturereduction = TUNING.FIRESUPPRESSOR_TEMP_REDUCTION
-        inst.components.wateryprotection.witherprotectiontime = TUNING.FIRESUPPRESSOR_PROTECTION_TIME
-        inst.components.wateryprotection.addcoldness = TUNING.FIRESUPPRESSOR_ADD_COLDNESS
-        inst.components.wateryprotection:AddIgnoreTag("player")
+        local wateryprotection = inst:AddComponent("wateryprotection")
+        wateryprotection.extinguishheatpercent = TUNING.FIRESUPPRESSOR_EXTINGUISH_HEAT_PERCENT
+        wateryprotection.temperaturereduction = TUNING.FIRESUPPRESSOR_TEMP_REDUCTION
+        wateryprotection.witherprotectiontime = TUNING.FIRESUPPRESSOR_PROTECTION_TIME
+        wateryprotection.addcoldness = TUNING.FIRESUPPRESSOR_ADD_COLDNESS
+        wateryprotection:AddIgnoreTag("player")
 
         inst.LaunchProjectile = launch_water_projectile
 
@@ -383,6 +395,12 @@ local function water_common(data)
     inst.OnLoad = OnLoad
 
     return inst
+end
+
+local function OnInvCommonAnimOver(inst)
+    if inst.AnimState:IsCurrentAnimation("flop_loop") then
+        inst.SoundEmitter:PlaySound("dontstarve/common/fishingpole_fishland")
+    end
 end
 
 local function inv_common(fish_def)
@@ -443,10 +461,11 @@ local function inv_common(fish_def)
 	inst.no_wet_prefix = true
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_adddeps = ArrayUnion(fish_def.loot, fish_def.heavy_loot)
 
 	inst.fish_def = fish_def
 
@@ -455,43 +474,47 @@ local function inv_common(fish_def)
     inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem:SetOnPutInInventoryFn(onpickup)
 
-    inst:AddComponent("perishable")
-    inst.components.perishable:SetPerishTime(TUNING.PERISH_ONE_DAY)
-    inst.components.perishable:StartPerishing()
-    inst.components.perishable.onperishreplacement = fish_def.perish_product
-	inst.components.perishable.ignorewentness = true
+    local perishable = inst:AddComponent("perishable")
+    perishable:SetPerishTime(TUNING.PERISH_ONE_DAY)
+    perishable:StartPerishing()
+    perishable.onperishreplacement = fish_def.perish_product
+	perishable.ignorewentness = true
 
 	inst:AddComponent("murderable")
 
 	inst:AddComponent("lootdropper")
 	inst.components.lootdropper:SetLoot(fish_def.loot)
 
-    inst:AddComponent("edible")
-	if fish_def.edible_values ~= nil then
-		inst.components.edible.healthvalue = fish_def.edible_values.health or TUNING.HEALING_TINY
-		inst.components.edible.hungervalue = fish_def.edible_values.hunger or TUNING.CALORIES_SMALL
-		inst.components.edible.sanityvalue = fish_def.edible_values.sanity or 0
-		inst.components.edible.foodtype = fish_def.edible_values.foodtype or FOODTYPE.MEAT
-	else
-		inst.components.edible.healthvalue = 0
-		inst.components.edible.hungervalue = 0
-		inst.components.edible.sanityvalue = 0
-		inst.components.edible.foodtype = FOODTYPE.MEAT
-	end
-	if inst.components.edible.foodtype == FOODTYPE.MEAT then
-		--edible.ismeat doesn't appear to actually be used anywhere, might not be necessary.
-		inst.components.edible.ismeat = true
+	if fish_def.heavy_loot ~= nil then
+		inst.components.lootdropper:SetLootSetupFn(Inv_LootSetupFn)
 	end
 
-	inst:AddComponent("weighable")
-	inst.components.weighable.type = TROPHYSCALE_TYPES.FISH
-	inst.components.weighable:Initialize(fish_def.weight_min, fish_def.weight_max)
-	inst.components.weighable:SetWeight(Lerp(fish_def.weight_min, fish_def.weight_max, CalcNewSize()))
+    local edible = inst:AddComponent("edible")
+	if fish_def.edible_values ~= nil then
+		edible.healthvalue = fish_def.edible_values.health or TUNING.HEALING_TINY
+		edible.hungervalue = fish_def.edible_values.hunger or TUNING.CALORIES_SMALL
+		edible.sanityvalue = fish_def.edible_values.sanity or 0
+		edible.foodtype = fish_def.edible_values.foodtype or FOODTYPE.MEAT
+	else
+		edible.healthvalue = 0
+		edible.hungervalue = 0
+		edible.sanityvalue = 0
+		edible.foodtype = FOODTYPE.MEAT
+	end
+	if edible.foodtype == FOODTYPE.MEAT then
+		--edible.ismeat doesn't appear to actually be used anywhere, might not be necessary.
+		edible.ismeat = true
+	end
+
+	local weighable = inst:AddComponent("weighable")
+	weighable.type = TROPHYSCALE_TYPES.FISH
+	weighable:Initialize(fish_def.weight_min, fish_def.weight_max)
+	weighable:SetWeight(Lerp(fish_def.weight_min, fish_def.weight_max, CalcNewSize()))
 
 	if fish_def.cooking_product ~= nil then
-		inst:AddComponent("cookable")
-		inst.components.cookable.product = fish_def.cooking_product
-		inst.components.cookable.oncooked = fish_def.oncooked_fn
+		local cookable = inst:AddComponent("cookable")
+		cookable.product = fish_def.cooking_product
+		cookable.oncooked = fish_def.oncooked_fn
 	end
 
     inst:AddComponent("tradable")
@@ -500,23 +523,23 @@ local function inv_common(fish_def)
 	inst.flop_task = inst:DoTaskInTime(math.random() * 2 + 1, Flop)
 
 	if fish_def.heater ~= nil then
-		inst:AddComponent("heater")
-		inst.components.heater.heat = fish_def.heater.heat
-		inst.components.heater.heatfn = fish_def.heater.heatfn
-		inst.components.heater.carriedheat = fish_def.heater.carriedheat
-		inst.components.heater.carriedheatfn = fish_def.heater.carriedheatfn
-	    inst.components.heater.carriedheatmultiplier = fish_def.heater.carriedheatmultiplier or 1
+		local heater = inst:AddComponent("heater")
+		heater.heat = fish_def.heater.heat
+		heater.heatfn = fish_def.heater.heatfn
+		heater.carriedheat = fish_def.heater.carriedheat
+		heater.carriedheatfn = fish_def.heater.carriedheatfn
+	    heater.carriedheatmultiplier = fish_def.heater.carriedheatmultiplier or 1
 
 		if fish_def.heater.endothermic then
-	        inst.components.heater:SetThermics(false, true)
+	        heater:SetThermics(false, true)
 		end
 	end
 
 	if fish_def.propagator ~= nil then
-		inst:AddComponent("propagator")
-		inst.components.propagator.propagaterange = fish_def.propagator.propagaterange
-		inst.components.propagator.heatoutput = fish_def.propagator.heatoutput
-		inst.components.propagator:StartSpreading()
+		local propagator = inst:AddComponent("propagator")
+		propagator.propagaterange = fish_def.propagator.propagaterange
+		propagator.heatoutput = fish_def.propagator.heatoutput
+		propagator:StartSpreading()
 
 		inst:ListenForEvent("onputininventory", topocket)
 		inst:ListenForEvent("ondropped", toground)
@@ -525,11 +548,7 @@ local function inv_common(fish_def)
 	MakeHauntableLaunchAndPerish(inst)
 
 	inst:ListenForEvent("on_landed", OnInventoryLanded)
-	inst:ListenForEvent("animover", function()
-		if inst.AnimState:IsCurrentAnimation("flop_loop") then
-			inst.SoundEmitter:PlaySound("dontstarve/common/fishingpole_fishland")
-		end
-	end)
+	inst:ListenForEvent("animover", OnInvCommonAnimOver)
 	inst:ListenForEvent("on_loot_dropped", ondroppedasloot)
 
     return inst

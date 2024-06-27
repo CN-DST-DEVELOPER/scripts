@@ -29,6 +29,7 @@ local function MakeDummy(name, common_postinit, master_postinit)
 		inst.Label:SetColour(1, 1, 1)
 		inst.Label:Enable(true)
 
+		inst:SetDeploySmartRadius(1)
 		MakeObstaclePhysics(inst, .3)
 
 		inst.AnimState:SetBank("wilsonstatue")

@@ -372,6 +372,10 @@ function Widget:SetRotation(angle)
     self.inst.UITransform:SetRotation(angle)
 end
 
+function Widget:GetRotation()
+    return self.inst.UITransform:GetRotation()
+end
+
 function Widget:SetMaxPropUpscale(val)
     self.inst.UITransform:SetMaxPropUpscale(val)
 end

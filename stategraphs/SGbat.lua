@@ -198,10 +198,6 @@ local states =
             inst.AnimState:PlayAnimation("eat", false)
         end,
 
-        onexit = function(inst)
-
-        end,
-
         timeline =
         {
             TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/flap") end ),

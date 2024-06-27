@@ -349,6 +349,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
     MakeSmallObstaclePhysics(inst, .5)
 
     inst.MiniMapEntity:SetIcon("kitcoonden.png")

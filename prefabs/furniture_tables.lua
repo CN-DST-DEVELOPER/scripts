@@ -124,6 +124,8 @@ local function AddTable(results, prefab_name, data)
         inst.entity:AddSoundEmitter()
         inst.entity:AddNetwork()
 
+		inst:SetDeploySmartRadius(data.deploy_smart_radius) --recipe min_spacing/2
+
         MakeObstaclePhysics(inst, 0.7)
 
         inst.AnimState:SetBank(data.bank)
@@ -196,12 +198,14 @@ local result_tables = {}
 local WOOD_TABLE_DATA = {
     bank = "wood_table",
     build = "wood_table_round",
+	deploy_smart_radius = 0.875,
 }
 AddTable(result_tables, "wood_table_round", WOOD_TABLE_DATA)
 
 local WOOD_TABLE_2_DATA = {
     bank = "wood_table",
     build = "wood_table_square",
+	deploy_smart_radius = 0.875,
 }
 AddTable(result_tables, "wood_table_square", WOOD_TABLE_2_DATA)
 

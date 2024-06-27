@@ -129,21 +129,25 @@ end
 function Boatcrew:GetHeadingNormal()
     local pt = nil
     local boatpt = self.inst:GetPosition()
+    local x, _, z = nil,nil,nil
 
+    -- target can be a Vector3 or a prefab
     if self.target then
+
+        if self.target.GetPosition then
+            pt = self.target:GetPosition()
+        else
+            pt = self.target
+        end
+        
         if self.status == "retreat" and self:areAllCrewOnBoat() then
-            local x, _, z = self.target.Transform:GetWorldPosition()
-            local heading = self.inst:GetAngleToPoint(x, 0, z) * DEGREES
+            local heading = self.inst:GetAngleToPoint(pt.x, 0, pt.z) * DEGREES
             pt = boatpt + Vector3(math.cos(heading), 0, -math.sin(heading))
             pt.y = 0
-        else
-            pt = self.target:GetPosition()
-
-            if self.target.components.boatphysics then
-                local scaler = Remap(distsq(pt.x, pt.z, boatpt.x, boatpt.z), 0, 100, 0, 1)
-                pt.x  = pt.x + (self.target.components.boatphysics.velocity_x * scaler)
-                pt.z  = pt.z + (self.target.components.boatphysics.velocity_z * scaler)
-            end
+        elseif self.target.components and self.target.components.boatphysics then
+            local scaler = Remap(distsq(pt.x, pt.z, boatpt.x, boatpt.z), 0, 100, 0, 1)
+            pt.x  = pt.x + (self.target.components.boatphysics.velocity_x * scaler)
+            pt.z  = pt.z + (self.target.components.boatphysics.velocity_z * scaler)
         end
 
     elseif self.heading then
@@ -268,8 +272,9 @@ function Boatcrew:IsCrewOnDeck()
 end
 
 function Boatcrew:OnUpdate()
-
-    if self.target and (self:TestForLootToSteal() ~= true or self:TestForVictory() or self.flee ) then 
+    if self.status == "delivery" then
+        -- just deliver
+    elseif self.target and (self:TestForLootToSteal() ~= true or self:TestForVictory() or self.flee ) then 
         self.status = "retreat"
     elseif self.target then
         self.status = "assault"

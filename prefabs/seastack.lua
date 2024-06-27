@@ -1,7 +1,12 @@
+local easing = require("easing")
+
+------------------------------------------------------------------------------------------------------------------------------------
+
 local assets =
 {
     Asset("ANIM", "anim/water_rock_01.zip"),
     Asset("MINIMAP_IMAGE", "seastack"),
+    Asset("MINIMAP_IMAGE", "seastack_painted"),
 }
 
 local prefabs =
@@ -11,77 +16,149 @@ local prefabs =
     "waterplant_destroy",
 }
 
-SetSharedLootTable( 'seastack',
+------------------------------------------------------------------------------------------------------------------------------------
+
+SetSharedLootTable("seastack",
 {
-    {'rocks',  1.00},
-    {'rocks',  1.00},
-    {'rocks',  1.00},
-    {'rocks',  1.00},
+    {"rocks",  1.00},
+    {"rocks",  1.00},
+    {"rocks",  1.00},
+    {"rocks",  1.00},
 })
 
-local function updateart(inst)
+local COLLISION_DAMAGE_SCALE = 0.5
+
+local NUM_STACK_TYPES = 5
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+local function UpdateArt(inst)
     local workleft = inst.components.workable.workleft
+
     inst.AnimState:PlayAnimation(
         (workleft > 6 and inst.stackid.."_full") or
-        (workleft > 3 and inst.has_medium_state and inst.stackid.."_med") or inst.stackid.."_low"
+        (workleft > 3 and inst.has_medium_state and inst.stackid.."_med") or
+        inst.stackid.."_low"
     )
 end
 
 local function OnWork(inst, worker, workleft)
-    if workleft <= 0 then
-        TheWorld:PushEvent("CHEVO_seastack_mined", {target=inst,doer=worker})
-        local pt = inst:GetPosition()
-        SpawnPrefab("rock_break_fx").Transform:SetPosition(pt:Get())
+    if workleft > 0 then
+        inst:UpdateArt()
 
-        local loot_dropper = inst.components.lootdropper
-
-        inst:SetPhysicsRadiusOverride(nil)
-
-        loot_dropper:DropLoot(pt)
-
-        inst:Remove()
-    else
-        updateart(inst)
+        return
     end
+
+    SpawnPrefab("rock_break_fx").Transform:SetPosition(inst.Transform:GetWorldPosition())
+    TheWorld:PushEvent("CHEVO_seastack_mined", { target = inst, doer = worker }) -- Unused event?
+
+    inst:SetPhysicsRadiusOverride(nil)
+
+    inst.components.lootdropper:DropLoot()
+    inst:Remove()
 end
 
-local function on_upgraded(inst, upgrade_doer)
-    local sx, sy, sz = inst.Transform:GetWorldPosition()
+local function OnUpgraded(inst, doer)
+    local x, y, z = inst.Transform:GetWorldPosition()
 
     local baby = SpawnPrefab("waterplant_baby")
-    baby.Transform:SetPosition(sx, sy, sz)
+    baby.Transform:SetPosition(x, 0, z)
+
     if baby.WaitForRebirth ~= nil then
         baby:WaitForRebirth()
     end
 
-    local fx = SpawnPrefab("waterplant_destroy")
-    fx.Transform:SetPosition(sx, sy, sz)
-
-    if upgrade_doer ~= nil then
-        TheWorld:PushEvent("itemplanted", {doer = upgrade_doer, pos = Vector3(sx, sy, sz)})
+    if doer ~= nil then
+        TheWorld:PushEvent("itemplanted", { doer = doer, pos = Vector3(x, 0, z)})
     end
 
+    SpawnPrefab("waterplant_destroy").Transform:SetPosition(x, 0, z)
+
     inst:Remove()
+
+    return baby -- Mods.
 end
 
-local DAMAGE_SCALE = 0.5
 local function OnCollide(inst, data)
     local boat_physics = data.other.components.boatphysics
+
     if boat_physics ~= nil then
-        local hit_velocity = math.floor(math.abs(boat_physics:GetVelocity() * data.hit_dot_velocity) * DAMAGE_SCALE / boat_physics.max_velocity + 0.5)
+        local hit_velocity = math.floor(math.abs(boat_physics:GetVelocity() * data.hit_dot_velocity) * COLLISION_DAMAGE_SCALE / boat_physics.max_velocity + 0.5)
+
         inst.components.workable:WorkedBy(data.other, hit_velocity * TUNING.SEASTACK_MINE)
     end
 end
 
-local function onsave(inst, data)
+------------------------------------------------------------------------------------------------------------------------------------
+
+local function OnSave(inst, data)
     data.stackid = inst.stackid
+    data.tinted  = inst.tinted
 end
 
-local NUM_STACK_TYPES = 5
-local function onload(inst, data)
+local function OnLoad(inst, data)
+    if data == nil or data.tinted == nil then
+        inst:DoTaskInTime(0, inst.TestForPowderMonkeyTint)
+
+    elseif data.tinted ~= nil then
+        inst.tinted = data.tinted
+    end
+
+    if inst.tinted then
+        inst.AnimState:Show(math.random() > 0.5 and "paint_A" or "paint_B")
+        inst.MiniMapEntity:SetIcon("seastack_painted.png")
+    end
+
     inst.stackid = (data and data.stackid) or inst.stackid or math.random(NUM_STACK_TYPES)
-    updateart(inst)
+
+    inst:UpdateArt()
 end
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+local MONKEYQUEEN = nil -- Cached ent.
+
+local function TestForPowderMonkeyTint(inst)
+    if MONKEYQUEEN == nil or not MONKEYQUEEN:IsValid() then
+        MONKEYQUEEN = TheSim:FindFirstEntityWithTag("monkeyqueen")
+    end
+
+    if MONKEYQUEEN == nil or not MONKEYQUEEN:IsValid() then
+        inst.tinted = false
+
+        return
+    end
+
+    local dist_island = inst:GetDistanceSqToInst(MONKEYQUEEN)
+
+    if dist_island > TUNING.POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_RADIUS_SQ then
+        inst.tinted = false
+
+        return
+    end
+
+    inst.tinted = math.random() <= easing.linear(
+        dist_island,
+        TUNING.POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_CHANCE.max,
+        TUNING.POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_CHANCE.min - TUNING.POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_CHANCE.max,
+        TUNING.POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_RADIUS_SQ
+    )
+
+    if inst.tinted then
+        inst.AnimState:Show(math.random() > 0.5 and "paint_A" or "paint_B")
+        inst.MiniMapEntity:SetIcon("seastack_painted.png")
+    end
+end
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+local function CLIENT_ForceFloaterUpdate(inst)
+    inst.components.floater:OnLandedServer()
+end
+
+local SCRAPBOOK_HIDE_SYMBOL = { "paint_A", "paint_B"}
+
+------------------------------------------------------------------------------------------------------------------------------------
 
 local function fn()
     local inst = CreateEntity()
@@ -105,13 +182,15 @@ local function fn()
     inst.AnimState:SetBuild("water_rock_01")
     inst.AnimState:PlayAnimation("1_full")
 
+    inst.AnimState:Hide("paint_A")
+    inst.AnimState:Hide("paint_B")
+
     MakeInventoryFloatable(inst, "med", 0.1, {1.1, 0.9, 1.1})
+    inst.components.floater:SetIsObstacle()
     inst.components.floater.bob_percent = 0
 
-    local land_time = (POPULATING and math.random()*5*FRAMES) or 0
-    inst:DoTaskInTime(land_time, function(inst)
-        inst.components.floater:OnLandedServer()
-    end)
+    local land_time = POPULATING and (math.random() * 5 * FRAMES) or 0
+    inst:DoTaskInTime(land_time, CLIENT_ForceFloaterUpdate)
 
     inst.entity:SetPristine()
 
@@ -120,9 +199,16 @@ local function fn()
     end
 
     inst.scrapbook_anim = "1_full"
+    inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOL
+
+    inst.TestForPowderMonkeyTint = TestForPowderMonkeyTint
+    inst.UpdateArt = UpdateArt
+    inst._OnCollide = OnCollide
+
+    inst:AddComponent("inspectable")
 
     local lootdropper = inst:AddComponent("lootdropper")
-    lootdropper:SetChanceLootTable('seastack')
+    lootdropper:SetChanceLootTable("seastack")
     lootdropper.max_speed = 2
     lootdropper.min_speed = 0.3
     lootdropper.y_speed = 14
@@ -135,24 +221,22 @@ local function fn()
     workable:SetOnWorkCallback(OnWork)
     workable.savestate = true
 
-    inst:AddComponent("inspectable")
-
     local upgradeable = inst:AddComponent("upgradeable")
     upgradeable.upgradetype = UPGRADETYPES.WATERPLANT
-    upgradeable.onupgradefn = on_upgraded
+    upgradeable.onupgradefn = OnUpgraded
 
-    MakeHauntableWork(inst)
+    inst:ListenForEvent("on_collide", inst._OnCollide)
 
-    inst:ListenForEvent("on_collide", OnCollide)
-
+    -- For console spawning.
     if not POPULATING then
         inst.stackid = math.random(NUM_STACK_TYPES)
-        updateart(inst)
+        inst:UpdateArt()
     end
 
-    --------SaveLoad
-    inst.OnSave = onsave
-    inst.OnLoad = onload
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
+
+    MakeHauntableWork(inst)
 
     return inst
 end
@@ -168,6 +252,7 @@ local function spawnerfn()
     return inst
 end
 
-return Prefab("seastack", fn, assets, prefabs),
-       Prefab("seastack_spawner_swell", spawnerfn, assets, prefabs),
-       Prefab("seastack_spawner_rough", spawnerfn, assets, prefabs)
+return
+    Prefab("seastack",               fn,        assets, prefabs),
+    Prefab("seastack_spawner_swell", spawnerfn, assets, prefabs),
+    Prefab("seastack_spawner_rough", spawnerfn, assets, prefabs)

@@ -36,6 +36,7 @@ To add a new language:
   - DualShock4 on PC:	136 to 139		0x88-0x8B
   - PS4:				140 to 143		0x8A-0x8D
   - Switch:             144 to 147      0x90-0x93
+  - DualSense:          148 to 151		0x94-0x97
 - The third digit can be from 128 to 191, inclusive
   - no reserved meanings
 ***************************************************************
@@ -431,14 +432,16 @@ STRINGS =
         },
         PICK =
 		{
-			 GENERIC = "Pick",
-			 HARVEST = "Harvest",
-             RUMMAGE = "Rummage",
+            GENERIC = "Pick",
+            HARVEST = "Harvest",
+            RUMMAGE = "Rummage",
+            SEARCH = "Search",
 		},
         REPAIR =
         {
             GENERIC = "Repair",
 			SOCKET = "Socket",
+            REFRESH = "Refresh",
 		},
         PICKUP =
         {
@@ -461,7 +464,11 @@ STRINGS =
         ADDWETFUEL = "Add Wet Fuel",
         LIGHT = "Light",
         EXTINGUISH = "Extinguish",
-        LOOKAT = "Examine",
+		LOOKAT =
+		{
+			GENERIC = "Examine",
+			CLOSEINSPECT = "Closely Examine",
+		},
         TALKTO = "Talk to",
 		INTERACT_WITH =
 		{
@@ -596,6 +603,7 @@ STRINGS =
             EQUIPMENTSWAP = "Swap Clothes",
             SPIN = "Spin",
             CALM = "Calm",
+            GATHER_MERM = "Gather Merm",
         },
 
 		OPEN_CRAFTING =
@@ -618,12 +626,18 @@ STRINGS =
         {
             GENERIC = "Jump In",
             HAUNT = "Haunt",
+            MAP_WORMHOLE = "Choose Path",
         },
         TELEPORT =
         {
             GENERIC = "Use",
             TOWNPORTAL = "Touch",
         },
+		REMOTE_TELEPORT =
+		{
+			GENERIC = "Activate",
+			GENERIC_FMT = "Activate {item}",
+		},
         MURDER = "Murder",
         HEAL =
         {
@@ -644,6 +658,7 @@ STRINGS =
             READ = "Read",
             SCRAPBOOK = "Add to Scrapbook",
             NOTES = "Study",
+			SCAN = "Scan",
         },
         TURNON = "Turn On",
         TURNOFF =
@@ -680,6 +695,7 @@ STRINGS =
             SCIENCE = "Use Gadget",
             MUSIC = "Play",
             RESKIN = "Sweep",
+            TERRAFORM = "Marshify",
         },
         BLINK =
         {
@@ -976,10 +992,12 @@ STRINGS =
 		USESPELLBOOK = {
             GENERIC = "Read",
             PYROKINESIS = "Stoke Embers",
+			REMOTE = "Use",
         },
 		CLOSESPELLBOOK = {
             GENERIC = "Close",
             PYROKINESIS = "Extinguish",  
+			REMOTE = "Stop",
         },
 
         -- Pirates
@@ -2285,6 +2303,7 @@ STRINGS =
         CHESSPIECE_WARG_MUTATED = "Possessed Varg Figure",
         CHESSPIECE_BEARGER_MUTATED = "Armored Bearger Figure",
         CHESSPIECE_YOTD = "Start Tower Figure",
+        CHESSPIECE_SHARKBOI = "Frostjaw Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2324,6 +2343,7 @@ STRINGS =
         CHESSPIECE_WARG_MUTATED_BUILDER = "Possessed Varg Figure",
         CHESSPIECE_BEARGER_MUTATED_BUILDER = "Armored Bearger Figure",
         CHESSPIECE_YOTD_BUILDER = "Start Tower Figure",
+        CHESSPIECE_SHARKBOI_BUILDER = "Frostjaw Figure",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
         CHESSPIECE_ANCHOR_SKETCH = "Anchor Figure Sketch",
@@ -2341,6 +2361,7 @@ STRINGS =
         CHESSPIECE_WARG_MUTATED_SKETCH = "Possessed Varg Figure Sketch",
         CHESSPIECE_BEARGER_MUTATED_SKETCH = "Armored Bearger Figure Sketch",
         CHESSPIECE_YOTD_SKETCH = "Start Tower Figure Sketch",
+        CHESSPIECE_SHARKBOI_SKETCH = "Frostjaw Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -2899,6 +2920,22 @@ STRINGS =
         WINONA_SPOTLIGHT = "Winona's Spotlight",
         WINONA_BATTERY_LOW = "Winona's Generator",
         WINONA_BATTERY_HIGH = "Winona's G.E.M.erator",
+		--v3 Winona
+		WINONA_REMOTE = "Handy Remote",
+		WINONA_TELEBRELLA = "Portasol",
+		WINONA_TELEPORT_PAD_ITEM = "Teletransport Station",
+		WINONA_STORAGE_ROBOT = "W.I.N.bot",
+		INSPECTACLESHAT = "Inspectacles",
+		INSPECTACLESBOX = "Cachebox",
+		INSPECTACLESBOX2 = "Advanced Cachebox",
+		ROSEGLASSESHAT = "Rose-Colored Glasses",
+		CHARLIERESIDUE = "Dark Vestige",
+		CHARLIEROSE = "Fragile Rose",
+        WINONA_MACHINEPARTS_1 = "Doohickey",
+        WINONA_MACHINEPARTS_2 = "Gizmo",
+		WINONA_RECIPESCANNER = "Calibrated Perceiver",
+		WINONA_HOLOTELEPAD = "Unstable Transmission",
+		WINONA_HOLOTELEBRELLA = "Unstable Transmission",
 
         --Wortox
         WORTOX_SOUL = "Soul",
@@ -3150,6 +3187,24 @@ STRINGS =
         MERMGUARD = "Loyal Merm Guard",
         MERMKING = "King of the Merms",
         MERM_PRINCE = "Royal-In-Progress",
+        MOSQUITOMUSK = "Lil' Itchy",
+        MOSQUITOBOMB = "Skeeter Bomb",
+        MOSQUITOFERTILIZER = "Fertilizzzer",
+        MOSQUITOMERMSALVE = "Blood Shot",
+        OFFERING_POT = "Communal Kelp Dish",        
+        OFFERING_POT_UPGRADED = "Superior Communal Kelp Dish",
+        MERM_ARMORY = "Armermry",
+        MERM_ARMORY_UPGRADED = "Superior Armermry",
+        MERMARMORHAT = "Swamp Brawler Helmet",   
+        MERMARMORUPGRADEDHAT = "Swamp Warrior Helmet",
+
+        MERM_TOOLSHED = "Shoddy Tool Shed",
+        MERM_TOOLSHED_UPGRADED = "Slightly Less Shoddy Tool Shed",
+        MERM_TOOL = "Shoddy Tool",
+        MERM_TOOL_UPGRADED = "Slightly Less Shoddy Tool",
+
+        WURT_SWAMPITEM_SHADOW = "Dreaded Mudslinger",
+        WURT_SWAMPITEM_LUNAR = "Brilliant Mudslinger",
 
 		-- Walter
         WOBYBIG = "Woby",
@@ -3295,6 +3350,7 @@ STRINGS =
         MOON_FISSURE_PLUGGED = "Plugged Fissure",
 
         CHUM = "Fish Food",
+        CHUM_BLUEPRINT = "Fish Food Blueprint",
 
         TURF_SHELLBEACH_BLUEPRINT = "Shell Turf Blueprint",
 
@@ -3626,6 +3682,9 @@ STRINGS =
         BOAT_BUMPER_KELP_KIT = "Kelp Bumper Kit",
         BOAT_BUMPER_SHELL = "Shell Bumper",
         BOAT_BUMPER_SHELL_KIT = "Shell Bumper Kit",
+        BOAT_BUMPER_CRABKING = "Crab King Bumper",
+        BOAT_BUMPER_CRABKING_KIT = "Crab King Bumper Kit",
+
         BOAT_CANNON = "Cannon",
         BOAT_CANNON_KIT = "Cannon Kit",
         CANNONBALL_ROCK = "Cannonball",
@@ -3937,7 +3996,49 @@ STRINGS =
 
         FENCE_JUNK = "Junky Fence",
 
-        ARMOR_LUNARPLANT_HUSK = "Brambleshade Armor",       
+        ARMOR_LUNARPLANT_HUSK = "Brambleshade Armor",
+
+        -- Meta 4 / Ocean QoL
+
+        OTTER = "Marotter",
+        OTTERDEN = "Marotter Den",
+        OTTERDEN_DEAD = "Demolished Marotter Den",
+
+        BOAT_ANCIENT = "Archaic Boat",
+        BOAT_ANCIENT_ITEM = "Archaic Boat Kit",
+        BOAT_ANCIENT_CONTAINER = "Cargo Hold",
+        WALKINGPLANK_ANCIENT = "Archaic Plank",
+
+        ANCIENTTREE_SEED = "Surprising Seed",
+        ANCIENTTREE_SEED_PLANTED = "Planted Surprising Seed",
+
+        ANCIENTTREE_GEM = "Sproutrock",
+        ANCIENTTREE_GEM_SAPLING = "Young Sproutrock",
+        ANCIENTTREE_GEM_SAPLING_ITEM = "Sproutrock Sapling",
+
+        ANCIENTTREE_NIGHTVISION = "Gloomthorn",
+        ANCIENTTREE_NIGHTVISION_SAPLING = "Young Gloomthorn",
+        ANCIENTTREE_NIGHTVISION_SAPLING_ITEM = "Gloomthorn Sapling",
+
+        ANCIENTFRUIT_GEM = "Geode Fruit",
+        ANCIENTFRUIT_NIGHTVISION = "Nightberry",
+        ANCIENTFRUIT_NIGHTVISION_COOKED = "Cooked Nightberry",
+
+        BOATPATCH_KELP = "Kelp Patch",
+
+        CRABKING_MOB = "Crab Guard",
+        CRABKING_MOB_KNIGHT = "Crab Knight",
+
+        CRABKING_CANNONTOWER = "Cannon Tower",
+        CRABKING_ICEWALL = "Ice Barrier",
+
+        SALTLICK_IMPROVED = "Gourmet Salt Lick",
+
+        MERM_SHADOW = "Shadow Merm",
+        MERMGUARD_SHADOW = "Shadow Merm Guard",
+
+        MERM_LUNAR = "Mutated Merm",
+        MERMGUARD_LUNAR = "Mutated Merm Guard",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4370,6 +4471,7 @@ STRINGS =
         CHESSPIECE_WARG_MUTATED_BUILDER = "A rather fetching statue.",
         CHESSPIECE_BEARGER_MUTATED_BUILDER = "A soul-bearing rendition of a ferocious favorite.",
         CHESSPIECE_YOTD_BUILDER = "A tribute to getting things off to a fiery start.",
+        CHESSPIECE_SHARKBOI_BUILDER = "An homage to a cold-blooded bully.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4379,7 +4481,7 @@ STRINGS =
         CHESSPIECE_KITCOON_SKETCH = "A sculpture sketch of a kitcoon tower.",
         CHESSPIECE_CATCOON_SKETCH = "A sculpture sketch of a playful catcoon.",
         CHESSPIECE_MALBATROSS_SKETCH = "A sculpture sketch of the mighty Malbatross.",
-        CHESSPIECE_CRABKING_SKETCH = "A sculpture sketch of the Crab King",
+        CHESSPIECE_CRABKING_SKETCH = "A sculpture sketch of the Crab King.",
         CHESSPIECE_MANRABBIT_SKETCH = "A sculpture sketch of a playful Bunnyman.",
         CHESSPIECE_YOTD_SKETCH = "A sculpture sketch of a Dragonfly boat race Start Tower.",
 
@@ -4509,6 +4611,13 @@ STRINGS =
         WINONA_SPOTLIGHT = "Shine a light both day and night.",
         WINONA_BATTERY_LOW = "Someone's gotta keep the juice flowing.",
         WINONA_BATTERY_HIGH = "This one uses gems, so you know it's good.",
+		--v3 Winona
+		WINONA_REMOTE = "Control your creations with the push of a button.",
+		WINONA_TELEBRELLA = "The best way to send anything home is by the particle.",
+		WINONA_TELEPORT_PAD_ITEM = "When it comes to transporting items, this machine really delivers.",
+		WINONA_STORAGE_ROBOT = "This collector belongs in your collection.",
+		INSPECTACLESHAT = "Get on the same wavelength as your old boss.",
+		ROSEGLASSESHAT = "Seek out Charlie by looking at things through a new lens.",
 
         --Wormwood
         LIVINGLOG = "Put yourself into your work.",
@@ -4561,6 +4670,18 @@ STRINGS =
         MERMWATCHTOWER = "True warriors live within.",
         MERMHAT = "Merm-ify your friends.",
         MERMTHRONE_CONSTRUCTION = "Usher in a new Merm Monarchy.",
+        MOSQUITOMUSK = "Bring your little buddy to blend in with the bloodsuckers.",
+        MOSQUITOBOMB = "Show everyone what the buzz is about.",
+        MOSQUITOFERTILIZER = "Derived from all natural sources.",
+        MOSQUITOMERMSALVE = "A revitalizing transfusion for iron-deficient merms.",
+        OFFERING_POT = "A little kelp can go a long way.",
+        OFFERING_POT_UPGRADED = "A lot of kelp goes a longer way.",
+        MERM_ARMORY = "No merm should charge into battle without a well-fitting helmet.",
+        MERM_ARMORY_UPGRADED = "For merms with discerning taste in combat headgear.",
+        MERM_TOOLSHED = "A merm is only as good as their tools.",
+        MERM_TOOLSHED_UPGRADED = "The best workmermship demands the best tools.",
+        WURT_SWAMPITEM_SHADOW = "Bring home turf advantage to any fight, along with some writhing reinforcements.",
+        WURT_SWAMPITEM_LUNAR = "Transform the battlefield and your fearless followers with a mind-altering, mutating bang!",
 
 		-- Wendy
 		GHOSTLYELIXIR_SLOWREGEN = "Time heals all wounds.",
@@ -4652,6 +4773,7 @@ STRINGS =
         TURF_SHELLBEACH_BLUEPRINT = "A soft patch of sand scattered with shells.",
 
         CHUM = "Get chummy with the fish.",
+        CHUM_BLUEPRINT = "An old family recipe.",
 
         MASTUPGRADE_LAMP_ITEM = "An illuminating mast attachment.",
         MASTUPGRADE_LIGHTNINGROD_ITEM = "An electrifying addition to your mast.",
@@ -4955,6 +5077,11 @@ STRINGS =
         WALL_SCRAP_ITEM = "A pile of junk, roughly wall-shaped.",
 
         ARMOR_LUNARPLANT_HUSK = "Become the prickliest of them all.",
+
+        -- Meta 4 / Ocean QoL
+
+        BOATPATCH_KELP = "Keep your boat afloat... for a while, anyway.",
+        SALTLICK_IMPROVED = "Treat your beefalo to a taste of the finer things.",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -5128,14 +5255,17 @@ STRINGS =
 
     --NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
     MERM_TALK_FOLLOWWILSON   = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"You help Mermfolk!", "Glut Glurtsu flopt!"}, {"You okay.", "Florpy flort."}},
+    MERM_TALK_HELP_TILL      = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"Dig, diggy, dig!", "Grop, groppy, grop!"}, {"Work hard, florp!", "Glort blut, florp!"}},
     MERM_TALK_HELP_CHOP_WOOD = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"Chop, choppy, chop!", "Grop, groppy, grop!"}, {"Work hard, florp!", "Glort blut, florp!"}},
     MERM_TALK_HELP_MINE_ROCK = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"Break rock, easy!", "Wult wop, florty flort!"}, {"Work hard, florp!", "Glort blut, florp!"}},
     MERM_TALK_HELP_HAMMER    = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"Smash! Smash!", "Florph! Florph!"}, {"Work hard, florp!", "Glort blut, florp!"}},
     MERM_TALK_FIND_FOOD      = {{"Will come with you.", "Flort glut."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"This do fine.", "Glort grolt flut."}, {"Find something tasty!", "Glurt florpy flut!"}},
+    MERM_TALK_GET_HEALED     = {{"Feel good.", "Blurt Blorpy."}, {"Make Mermfolk strong!", "Blut gloppy Glurtsu!"}, {"This do fine.", "Glort grolt flut."}, {"You make feel better.", "Glut flort florp."}},
     MERM_BATTLECRY           = {{"Glorp! Go away!", "Glorp! Glorpy glup!"}, {"Destroy you!", "Wult glut!"},},
     MERM_GUARD_BATTLECRY     = {{"To battle!", "Wult flrot!"}, {"For Mermfolk!", "Flort Glurtsu flut!"}, {"ATTAAAACK!!", "GLOT FLOOOORPH!!"}, {"Defend King!", "Glurph Glurtsen!"}},
     MERM_TALK_PANICBOSS      = {{"Something coming!", "Gloppy flort!"}, {"Aaah!! Bad thing! Bad thing!", "Gloooorph!! Glurph glot! Glurph glot!"}, {"It come to destroy us!", "Flort wult Glurtsu!"}},
     MERM_TALK_PANICBOSS_KING = {{"Rally to King!", "Glurtsen blut flort!"}, {"Hurry! Protect kingdom!", "Flurph flrot! Gloppy Glurtsam!"}, {"S-stay brave!!", "G-glop blut flrot!!"}},
+    MERM_TALK_NEED_HEAL      = {{"Help, florp!", "Flopt, florp!"}, {"Hurt!", "Glorg!"}, {"No feel so good...", "Glorggu blurg..."}, {"Ouchie, ouchie!", "Glurk, glurk!"}},
 
     MERM_KING_TALK_HUNGER_STARVING = "Hungry... HUNGRY! HUNGRYYYY!!!",
     MERM_KING_TALK_HUNGER_CLOSE_STARVING = "Treachery... villainy! To let King waste away like this...",
@@ -5553,7 +5683,7 @@ STRINGS =
     PIG_TALK_CONTEST_PANIC = {"MUST CHOOSE!","CHOICE HARD!"},
 
 	--NOTE: Limit to 63 strings per table! (Using net_smallbyte for NPC chatter)
-	SHARKBOI_TALK_IDLE = {"HUH? WHAT HAPPENED?","HEY! WHATSA MATTER WITH YOU?","I FEEL LIKE A FISH OUTTA WATER...","I WAS JUST LOOKIN' FOR A QUICK BITE.","WHADAYA LOOKIN' AT?","YOU WANT A PIECE OF ME, TOUGH GUY?","YOU CRUISIN' FOR A BRUISIN?","WHY I OUGHTA..."},
+	SHARKBOI_TALK_IDLE = {"HUH? WHAT HAPPENED?","HEY! WHATSA MATTER WITH YOU?","I FEEL LIKE A FISH OUTTA WATER...","I WAS JUST LOOKIN' FOR A QUICK BITE.","WHADAYA LOOKIN' AT?","YOU WANT A PIECE OF ME, TOUGH GUY?","YOU CRUISIN' FOR A BRUISIN?","WHADAYA WANT, CHOWDERHEAD?","WHY I OUGHTA..."},
 	SHARKBOI_TALK_FIGHT = {"TOUGH GUY, EH?","YOU'LL NEVER CATCH ME, SEE.","YOUSE DON'T STAND A CHANCE.","IT'S BITIN' TIME!","YOU'RE A REAL PIECE OF WORK, BUDDY.","YOU DON'T GET NO PASS.","I'LL PUT YOUSE ON ICE!","FREEZE!","YOUSE ON THIN ICE NOW!","YOU'LL BE SLEEPIN' WITH THE FISHES!","I'M NOT GONNA LET THIS SLIDE!","ICE TO EAT YA! HEH HEH."},
 	SHARKBOI_TALK_CHEER = {"PUT 'EM ON ICE!","WHACK 'EM!","GIVE 'EM THE OL' ONE-TWO!","FROSTBITE!","CHOMP! CHOMP!","CLIP 'EM!","ICE 'EM!","THEY AIN'T NO FRIEND OF OURS!","THIS IS OUR TURF!","FIN-ISH 'EM!"},
 	SHARKBOI_TALK_GLOAT = {"YOUSE BEEN ICED.","SEE YOUSE IN THE NEXT LIFE.","FUHGEDDABOUDIT.","END OF THE LINE.","YOU GOT CAUGHT.","YOU'RE FIN-ISHED.","BELLY-UP.","GAVE 'EM A BURIAL AT SEA.","HOOK, LINE AND SINKER.","VICTORY TASTES GOOD.","GUTTED.","SLEEPIN' WITH THE FISHES.","YOU'RE DONE, CHUM.","WHERE YOU BELONG, BOTTOM-FEEDER.","I GOT BIGGER FISH TO FRY.","LOOKIN' A LIL' GREEN AROUND THE GILLS THERE, MAC."},
@@ -7524,6 +7654,7 @@ STRINGS.UI =
             "Jayson Thiessen",
             "Amanda Wong",
             "Kent Reimer",
+            "Garnet (G50) Syberg-Olsen",
         },
 
         ALTGAMES =
@@ -7934,7 +8065,7 @@ STRINGS.UI =
         CANT_LOAD_ROG = "Reign of Giants is not installed. Unable to load.",
 
 		MAINBANNER_ROT_BETA_TITLE = "Beta Build", --unused now.
-		MAINBANNER_BETA_TITLE = "Scrappy Scavengers\nBeta Branch",
+		MAINBANNER_BETA_TITLE = "Beta Branch",
 
         CONSOLE_EDITION_TEXT = "Console Edition",
 
@@ -8709,6 +8840,7 @@ STRINGS.UI =
         EULA = "Review the EULA",
         EULA_RESPONSE_CHANGED_TITLE = "Login Required",
         EULA_RESPONSE_CHANGED_BODY = "Your settings have changed and you must log in again to continue.",
+		PS4_SAVES = "Use PlayStation®4 save data",
 		BUGREPORT = "Submit a Bug Report",
         DYNAMICCONTENT_ENABLE = "Re-enable Dynamic Content",
         OFFLINE_MODE_TITLE = "Offline Mode",
@@ -9973,6 +10105,8 @@ STRINGS.UI =
         DAYWALKER2 = "Scrappy Werepig",
         SHARKBOI = "Frostjaw",
 
+        OCEAN_OTTERDENS = "Marotter Dens",
+        OTTERS_SETTING = "Marotters",
 		-- End of world customization strings
     },
 
@@ -10006,6 +10140,24 @@ STRINGS.UI =
         NO_SERVERS_CLOSE = "Close",
 
         CONNECTING_TO_SERVER = "Connecting to Server: {server}",
+    },
+
+    CROSS_SAVE_DIALOG =
+    {
+        TITLE = "Import save data?",
+        BODY = "PlayStation®4 save data has been found. Do you want to import it?",
+
+        YES = "Yes",
+        NO = "No",
+    },
+
+    CROSS_SAVE_DIALOG_CONFIRM =
+    {
+        TITLE = "Overwrite save data?",
+        BODY = "Importing will overwrite any existing save data. Are you sure?",
+
+        YES = "Yes",
+        NO = "No",
     },
 
     SERVERLISTINGSCREEN =
@@ -12503,6 +12655,9 @@ STRINGS.UI =
             [9] = "Unknown",
             [10] = "Switch Controller",
             [11] = "Steam Deck",
+            [12] = "DualSense",
+            [13] = "Switch Controller (left)",
+            [14] = "Switch Controller (right)",
         },
 
         INPUTS =
@@ -12824,7 +12979,7 @@ STRINGS.UI =
 
                 -- not used since steam controllers identify as xbox360 controllers
             },
-            -- PS5 Dual Sense
+            -- Dual Sense on PC (PS5 is down below in index 14)
             [8] =
             {
                 [0] = "Unknown",
@@ -12959,7 +13114,7 @@ STRINGS.UI =
                 -- Digital
                 "\238\136\134",-- 2 "L3",
                 "\238\136\137",-- 3 "R3",
-                "\238\136\132",-- 4 "Options (Start)",
+                "\238\135\190",-- 4 "Options (Start)",
                 "\238\136\143",-- 5 "DPad Up",
                 "\238\136\142",-- 6 "DPad Right"
                 "\238\136\140",-- 7 "DPad Down",
@@ -12976,7 +13131,7 @@ STRINGS.UI =
                 "",
                 "",
                 "",
-                "\238\136\133",--21 "Touchpad",
+                "\238\135\191",--21 "Touchpad",
 
                 -- Analog
                 "\238\136\146",--22 "Left Thumb Left",
@@ -12998,36 +13153,78 @@ STRINGS.UI =
                 [0] = "Unknown",
                 -- Digital
 				
-                "\238\128\136",--"Left Trigger",
-                "\238\128\139",--"Right Trigger",
-                "\238\128\132",--"Start",
-                "\238\128\133",--"Back",
-                "\238\128\128",--"Button A",
-                "\238\128\129",--"Button B",
-                "\238\128\130",--"Button X",
-                "\238\128\131",--"Button Y",
-                "\238\128\143",--"DPad Up"
-                "\238\128\140",--"DPad Down"
-                "\238\128\141",--"DPad Left",
-                "\238\128\142",--"DPad Right"
-                "\238\128\135",--"Left Bumper",
-                "\238\128\138",--"Right Bumper"
-                "\238\128\134",--"Left Stick"
-                "\238\128\137",--"Right Stick"
+                "\238\129\136",--"Left Trigger",
+                "\238\129\139",--"Right Trigger",
+                "\238\129\132",--"Start",
+                "\238\129\133",--"Back",
+                "\238\129\128",--"Button A",
+                "\238\129\129",--"Button B",
+                "\238\129\130",--"Button X",
+                "\238\129\131",--"Button Y",
+                "\238\129\143",--"DPad Up"
+                "\238\129\140",--"DPad Down"
+                "\238\129\141",--"DPad Left",
+                "\238\129\142",--"DPad Right"
+                "\238\129\135",--"Left Bumper",
+                "\238\129\138",--"Right Bumper"
+                "\238\129\134",--"Left Stick"
+                "\238\129\137",--"Right Stick"
 
                 -- Analog
-                "\238\128\146",--"Left Thumb Left",
-                "\238\128\147",--"Left Thumb Right",
-                "\238\128\145",--"Left Thumb Down",
-                "\238\128\144",--"Left Thumb Up",
-                "\238\128\150",--"Right Thumb Left",
-                "\238\128\151",--"Right Thumb Right",
-                "\238\128\149",--"Right Thumb Down",
-                "\238\128\148",--"Right Thumb Up",
-                "\238\128\136",--"Left Trigger",
-                "\238\128\136",--"Left Trigger",
-                "\238\128\139",--"Right Trigger",
-                "\238\128\139",--"Right Trigger",
+                "\238\129\146",--"Left Thumb Left",
+                "\238\129\147",--"Left Thumb Right",
+                "\238\129\145",--"Left Thumb Down",
+                "\238\129\144",--"Left Thumb Up",
+                "\238\129\150",--"Right Thumb Left",
+                "\238\129\151",--"Right Thumb Right",
+                "\238\129\149",--"Right Thumb Down",
+                "\238\129\148",--"Right Thumb Up",
+                "\238\129\136",--"Left Trigger",
+                "\238\129\136",--"Left Trigger",
+                "\238\129\139",--"Right Trigger",
+                "\238\129\139",--"Right Trigger",
+            },
+			--DualSense on PS5 (PC is above in index 8, this one has the same icons but they've been reordered)
+			[14] =
+            {
+                [0] = "Unknown",
+                "", -- unused but needed to get the index to 2
+
+                -- Digital
+                "\238\148\134",-- "L3",
+                "\238\148\137",-- "R3",
+                "\238\148\132",-- "Options (Start)",
+                "\238\148\143",-- "DPad Up",
+                "\238\148\142",-- "DPad Right"
+                "\238\148\140",-- "DPad Down",
+                "\238\148\141",-- "DPad Left",
+                "\238\148\136",-- "Left Trigger",
+                "\238\148\139",-- "Right Trigger",
+                "\238\148\135",-- "Left Bumper",
+                "\238\148\138",-- "Right Bumper",
+                "\238\148\131",-- "Triangle",
+                "\238\148\129",-- "Circle",
+                "\238\148\128",-- "Cross",
+                "\238\148\130",-- "Square",
+                "",
+                "",
+                "",
+                "",
+                "\238\148\133",-- "Touchpad",
+
+                -- Analog
+                "\238\148\146",--"Left Thumb Left",
+                "\238\148\147",--"Left Thumb Right",
+                "\238\148\145",--"Left Thumb Down",
+                "\238\148\144",--"Left Thumb Up",
+                "\238\148\150",--"Right Thumb Left",
+                "\238\148\151",--"Right Thumb Right",
+                "\238\148\149",--"Right Thumb Down",
+                "\238\148\148",--"Right Thumb Up",
+                "\238\148\136",--"Left Trigger",
+                "\238\148\136",--"Left Trigger",
+                "\238\148\139",--"Right Trigger",
+                "\238\148\139",--"Right Trigger",
             },
         },
         PS4 =
@@ -15049,6 +15246,13 @@ STRINGS.PYROMANCY = {
     SHADOW_FIRE = "Shadow Fire (5 Embers)",
 }
 
+STRINGS.ENGINEER_REMOTE = {
+	VOLLEY = "Target",
+	WAKEUP = "Arm Catapult",
+	BOOST = "Barrage",
+	ELEMENTAL_VOLLEY = "Planar Strike",
+}
+
 STRINGS.SKILLTREE = {
     INFOPANEL = "Outfit",
     INFOPANEL_DESC = "Become a seasoned survivor!",
@@ -15064,6 +15268,7 @@ STRINGS.SKILLTREE = {
         ALCHEMY = "ALCHEMY",
         TORCH = "TORCH",
         BEARD = "BEARD",
+
         SURVIVAL = "SURVIVAL",
         CURSE = "CURSE",
         HUMAN = "LUMBERJACK",
@@ -15081,6 +15286,9 @@ STRINGS.SKILLTREE = {
         ARSENAL = "ARSENAL",
         BEEFALO = "RIDER",
         --COMBAT = "COMBAT", -- Intentionally commented out.
+
+        AMPHIBIAN = "AMPHIBIAN",
+        SWAMPMASTER = "MERMDOM",
     },
 
     ONLINE_DATA_USER_OFFLINE = "Login to use online skillset data.",
@@ -15624,6 +15832,149 @@ STRINGS.SKILLTREE = {
         WATHGRITHR_ALLEGIANCE_SHADOW_TITLE = "Shadow Chanteuse",
         WATHGRITHR_ALLEGIANCE_SHADOW_DESC = "The Queen will reward your loyalty with the ability to craft the Dark Lament.\nAllies take less damage from Shadow Aligned enemies and deal bonus damage to Lunar Aligned enemies.",
     },
+
+    WINONA = {
+        -- Low shelf.
+        WINONA_SPOTLIGHT_HEATED_TITLE = "Hotlight",
+        WINONA_SPOTLIGHT_HEATED_DESC = "Upgrade your Spotlights to give off heat when it's cold out.",
+        WINONA_SPOTLIGHT_RANGE_TITLE = "Spacious Spotlight",
+        WINONA_SPOTLIGHT_RANGE_DESC = "Upgrade your Spotlights to illuminate a larger area.",
+        WINONA_PORTABLE_STRUCTURES_TITLE = "Portability",
+        WINONA_PORTABLE_STRUCTURES_DESC = "Easily dismantle your machines, and learn how to build a Handy Remote to remotely control Catapults.",
+        WINONA_GADGET_RECHARGE_TITLE = "Quick Charge",
+        WINONA_GADGET_RECHARGE_DESC = "Gadgets placed next to a Generator or G.E.M.erator recharge 100% faster.",
+        WINONA_BATTERY_IDLEDRAIN_TITLE = "Energy-Saver",
+        WINONA_BATTERY_IDLEDRAIN_DESC = "Generators and G.E.M.erators no longer consume energy while they're not in use.\nMachines connected to Generators won't consume energy while in sleep mode.",
+
+        WINONA_LOWSHELF_LOCK_DESC = "Learn 3 skills on the shelf below to unlock the skills on the shelf above.",
+        -- Mid shelf.
+        WINONA_CATAPULT_SPEED_1_TITLE = "Rapid-Fire I",
+        WINONA_CATAPULT_SPEED_1_DESC = "Tune-up your Catapults to increase their firing rate by 5%.",
+        WINONA_CATAPULT_SPEED_2_TITLE = "Rapid-Fire II",
+        WINONA_CATAPULT_SPEED_2_DESC = "Tune-up your Catapults to increase their firing rate by 10%.",
+        WINONA_CATAPULT_SPEED_3_TITLE = "Rapid-Fire III",
+        WINONA_CATAPULT_SPEED_3_DESC = "Tune-up your Catapults to increase their firing rate by 20%.",
+        WINONA_CATAPULT_AOE_1_TITLE = "Explosive Volley I",
+        WINONA_CATAPULT_AOE_1_DESC = "Modify your Catapults to deal damage to a 25% larger area.",
+        WINONA_CATAPULT_AOE_2_TITLE = "Explosive Volley II",
+        WINONA_CATAPULT_AOE_2_DESC = "Modify your Catapults to deal damage to a 50% larger area.",
+        WINONA_CATAPULT_AOE_3_TITLE = "Explosive Volley III",
+        WINONA_CATAPULT_AOE_3_DESC = "Modify your Catapults to deal damage to a 100% larger area.",
+
+        WINONA_PORTABLE_STRUCTURES_LOCK_DESC = "Requires the Portability skill and access to this shelf to unlock.",
+        WINONA_CATAPULT_VOLLEY_TITLE = "Precise Targeting",
+        WINONA_CATAPULT_VOLLEY_DESC = "All Catapults within range of your Handy Remote fire at your selected target.",
+        WINONA_CATAPULT_BOOST_TITLE = "Barrage",
+        WINONA_CATAPULT_BOOST_DESC = "All Catapults within range of your Handy Remote have an increased firing rate for a short period of time.",
+        WINONA_BATTERY_EFFICIENCY_1_TITLE = "Greater Generator I",
+        WINONA_BATTERY_EFFICIENCY_1_DESC = "Boost the efficiency of Generators and G.E.M.erators by 25%.",
+        WINONA_BATTERY_EFFICIENCY_2_TITLE = "Greater Generator II",
+        WINONA_BATTERY_EFFICIENCY_2_DESC = "Boost the efficiency of Generators and G.E.M.erators by 50%.",
+        WINONA_BATTERY_EFFICIENCY_3_TITLE = "Greater Generator III",
+        WINONA_BATTERY_EFFICIENCY_3_DESC = "Boost the efficiency of Generators and G.E.M.erators by 100%.",
+    
+        WINONA_MIDSHELF_LOCK_DESC = "Learn 6 total skills from the shelves below to unlock the skills on the shelf above.",
+        -- Shadow.
+        WINONA_SHADOW_1_TITLE = "Nightmare Generator",
+        WINONA_SHADOW_1_DESC = "Learn how to utilize Nightmare Fuel as a fuel source for Generators.",
+        WINONA_SHADOW_2_TITLE = "Pure Horror Generator",
+        WINONA_SHADOW_2_DESC = "Learn how to utilize Pure Horror as a fuel source for Generators.",
+
+        WINONA_SHADOW_3_LOCK_DESC = "Requires the Portability and Pure Horror Generator skills to unlock.",
+        WINONA_SHADOW_3_TITLE = "Shadow Strike",
+        WINONA_SHADOW_3_DESC = "Use your Handy Remote to select a target for a shadow-infused Catapult attack.",
+
+        WINONA_CHARLIE_1_TITLE = "Shadow Seeker I",
+        WINONA_CHARLIE_1_DESC = "The Queen imparts a design for enchanted glasses that reveal hidden traces of shadow magic.\nDoes she want you to find her?",
+        
+        WINONA_CHARLIE_2_LOCK_DESC = "Requires the Shadow Seeker I skill, and to not have Founder's Keepers II to unlock.",
+        WINONA_CHARLIE_2_TITLE = "Shadow Seeker II",
+        WINONA_CHARLIE_2_DESC = "Become more adept at locating traces of shadow magic.\nThe Queen will watch over you.",
+        -- Lunar.
+        WINONA_LUNAR_1_TITLE = "Enlightened G.E.M.erator",
+        WINONA_LUNAR_1_DESC = "Learn how to utilize Enlightened Shards as a fuel source for G.E.M.erators.",
+        WINONA_LUNAR_2_TITLE = "Brilliance G.E.M.erator",
+        WINONA_LUNAR_2_DESC = "Learn how to utilize Pure Brilliance as a fuel source for G.E.M.erators.",
+
+        WINONA_LUNAR_3_LOCK_DESC = "Requires the Portability and Brilliance G.E.M.erator skills to unlock.",
+        WINONA_LUNAR_3_TITLE = "Enlightened Strike",
+        WINONA_LUNAR_3_DESC = "Use your Handy Remote to select a target for a lunar essence-infused Catapult attack.",
+
+        WINONA_WAGSTAFF_1_TITLE = "Founder's Keepers I",
+        WINONA_WAGSTAFF_1_DESC = "Build a device inspired by the Cryptic Founder's designs to track down hidden supply caches.\nGain mastery over all technology found in Cacheboxes.",
+
+        WINONA_WAGSTAFF_2_LOCK_DESC = "Requires the Founder's Keepers I skill, and to not have Shadow Seeker II to unlock.",
+        WINONA_WAGSTAFF_2_TITLE = "Founder's Keepers II",
+        WINONA_WAGSTAFF_2_DESC = "Broaden the scope of your Inspectacles to locate higher-grade supply caches.\nGain mastery over all technology found in Advanced Cacheboxes.",
+    },
+
+    WURT = {
+        WURT_AMPHIBIAN_SANITY_1_TITLE = "Mental Fluidity I",
+        WURT_AMPHIBIAN_SANITY_2_TITLE = "Mental Fluidity II",
+        WURT_AMPHIBIAN_TEMPERATURE_TITLE = "All-Weather Scales",
+        WURT_AMPHIBIAN_THICKSKIN_1_TITLE = "Slippery Hide I",
+        WURT_AMPHIBIAN_THICKSKIN_2_TITLE = "Slippery Hide II",
+        WURT_AMPHIBIAN_HEALING_1_TITLE = "Hydrous Healing I",
+        WURT_AMPHIBIAN_HEALING_2_TITLE = "Hydrous Healing II",
+        WURT_MOSQUITO_CRAFT_1_TITLE = "Mosquito Incognito",
+        WURT_MOSQUITO_CRAFT_2_TITLE = "Itchcraft I",
+        WURT_MOSQUITO_CRAFT_3_TITLE = "Itchcraft II",
+
+        WURT_CIV_1_TITLE = "Community Feeder I",
+        WURT_CIV_1_2_TITLE = "Community Feeder II",
+        WURT_CIV_2_TITLE = "Industrious Merm I",
+        WURT_CIV_2_2_TITLE = "Industrious Merm II",
+        WURT_CIV_3_TITLE = "Hardheaded I",
+        WURT_CIV_3_2_TITLE = "Hardheaded II",
+
+        WURT_MERM_KING_HUNGER_1_TITLE = "Sated Sovereign I",
+        WURT_MERM_KING_HUNGER_2_TITLE = "Sated Sovereign II",
+        WURT_MERM_KING_HUNGER_3_TITLE = "Sated Sovereign III",
+        WURT_MERM_FLEE_TITLE = "Sensible Swamp Fighter",
+        WURT_PATHFINDER_TITLE = "Swamp Pathfinder",
+        
+        WURT_LUNAR_ALLEGIANCE_1_TITLE = "Lunar Mutated Merm",
+        WURT_LUNAR_ALLEGIANCE_2_TITLE = "Terra Mutation",
+        WURT_SHADOW_ALLEGIANCE_1_TITLE = "Shadow Resurrection Merm",
+        WURT_SHADOW_ALLEGIANCE_2_TITLE = "Terra Corruption",
+
+        WURT_AMPHIBIAN_SANITY_1_DESC = "Restore some sanity over time when wet. The more wet you are, the more sanity you restore.",
+        WURT_AMPHIBIAN_SANITY_2_DESC = "Restore a fair amount of sanity over time when wet.",
+        WURT_AMPHIBIAN_TEMPERATURE_DESC = "Greatly reduce the effect of wetness on body temperature. It also fairly reduces wetness loss due to heat sources.",
+        WURT_AMPHIBIAN_THICKSKIN_1_DESC = "Use wetness as protection. Damage will consume wetness instead of health.",
+        WURT_AMPHIBIAN_THICKSKIN_2_DESC = "Use wetness as protection more effectively. It also make you slowly get wet as you step through the corrupted or mutated marsh turfs.",
+        WURT_AMPHIBIAN_HEALING_1_DESC = "Slowly regenerate health when wet. The more wet you are, the more health you regenerate.",
+        WURT_AMPHIBIAN_HEALING_2_DESC = "Regenerate health when wet more effectively. It also make you slowly get wet as you step through the corrupted or mutated marsh turfs.",
+        WURT_MOSQUITO_CRAFT_1_DESC = "Learn to craft a cuddly buddy making Mosquitoes neutral to you.",
+        WURT_MOSQUITO_CRAFT_2_DESC = "Learn to craft Mosquito based items: Skeeter Bomb, Fertilizzzer and Blood Shot",
+        WURT_MOSQUITO_CRAFT_3_DESC = "Master the use of the Mosquito based items.\n\nWith the help of Lil' Itchy, catch mosquitos right from the air.",
+
+        WURT_CIV_1_DESC = "Learn to craft the Communal Kelp Dish to entice faster Merm growth and to call in Merm for action.",
+        WURT_CIV_1_2_DESC = "Learn to craft the Superior Communal Kelp Dish, it holds more kelp for even faster Merm growth and calling in Merm for action.",
+        WURT_CIV_2_DESC = "Learn to craft the Shoddy Tool Shed to equip your Merm workers with Shoddy Tools.",
+        WURT_CIV_2_2_DESC = "Learn to craft the Slightly Less Shoddy Tool shed, it provides Slightly Less Shoddy Tools.",
+        WURT_CIV_3_DESC = "Learn to craft the Armermry to equip your Loyal Merm Guards with Swamp Brawler Helmets.",
+        WURT_CIV_3_2_DESC = "Learn to craft the Superior Armermry, it provides Swamp Warrior Helmets.",
+
+        WURT_MERM_KING_HUNGER_1_DESC = "Increase the Merm King's maximum hunger.",
+        WURT_MERM_KING_HUNGER_2_DESC = "Increase the Merm King's maximum hunger even more.",
+        WURT_MERM_KING_HUNGER_3_DESC = "Slow the Merm King's digestion, so he takes longer to get hungry.",
+        WURT_MERM_FLEE_DESC = "Merm Guards will retreat from combat when low on health, and wait to be healed.",
+
+        WURT_PATHFINDER_DESC = "Survivors near Wurt will move like her through the Marsh.",
+        WURT_MERMKINGSHOULDERS_TITLE = "The King's Pauldron Quest",
+        WURT_MERMKINGSHOULDERS_DESC = "Add stony armor to the King's statuesque shoulders for greater stoutness in your Merm soldiers.",
+        WURT_MERMKINGCROWN_TITLE = "The King's Crown Quest",
+        WURT_MERMKINGCROWN_DESC = "Gift him a crown worn by kings long passed, and your merms will fight smarter so their lives may last.",
+        WURT_MERMKINGTRIDENT_TITLE = "The King's Trident Quest",
+        WURT_MERMKINGTRIDENT_DESC = "Offer this weapon best wielded at sea, and your Merms will attack with the deftness of three.",
+
+        WURT_ALLEGIANCE_LOCK_1_DESC = "Learn 12 skills to unlock.",
+        WURT_LUNAR_ALLEGIANCE_1_DESC = "Grant your loyal Merms the wondrous gift of Lunar mutation by feeding them Moon Shards.\nEmpower your mutant merm with Planar power using Pure Brilliance.",
+        WURT_LUNAR_ALLEGIANCE_2_DESC = "Morph any piece of land into sweet sweet Marsh.",
+        WURT_SHADOW_ALLEGIANCE_1_DESC = "Your Merm followers will have one foot in the Shadow world.\nInfuse shadow merm with Planar power using Pure Horror.",
+        WURT_SHADOW_ALLEGIANCE_2_DESC = "No land shall be safe from the dark and beautiful corruption of the Marsh.",
+    },
 }
 
 STRINGS.SCRAPBOOK = {
@@ -15735,6 +16086,8 @@ STRINGS.SCRAPBOOK = {
     DATA_OAR_VELOCITY = "MAX SPEED ",
     DATA_OAR_FORCE = "FORCE ",
 
+    SELECT_INFO_PAGE = "Left Page",
+    SELECT_ITEM_PAGE = "Right Page",
     NEW_SCRAPBOOK_ENTRY = "Scrapbook\nUpdated",
     CLEARFLASH = "Clear all \"NEW\"",
     DATA_SECONDS = "SECONDS",
@@ -15770,8 +16123,8 @@ STRINGS.SCRAPBOOK = {
 
     SPECIALINFO ={
         -- Creatures.
-        CHESTER = "Things can be stored in Chester much like a treasure chest.",
-        HUTCH = "Things can be stored in Hutch much like a treasure chest.",
+        CHESTER = "Things can be stored in Chester much like a chest.",
+        HUTCH = "Things can be stored in Hutch much like a chest.",
         BEEFALO = "Watch out for an aggressive mating season.\n\nFeed and care for one of these beasts, and maybe you can saddle them.",
         BERNIE = "A powerful friend when Willow's mind approaches insanity.",
         CANARY = "Sensitive to vapours, they tend to die when monstrous poisons are detected nearby.",
@@ -16207,6 +16560,25 @@ STRINGS.SCRAPBOOK = {
         SCRAP_MONOCLEHAT = "Expands the survivor's vision range. Convenient during the day, uncomfortable at night.",
 
         JUNK_PILE_BIG = "A towering pile of junk. There might be something surprising hiding inside...",
+
+        -- Meta 4 / Ocean QoL 
+
+        ANCIENTFRUIT_GEM = "Even the heart of stone can be cracked by a little warmth... or perhaps a lot.",
+        ANCIENTTREE_SEED = "An exotic seed that is very demanding on its growing conditions. There's a time and place for everything...",
+        BOAT_ANCIENT = "A reinforced boat with a built-in 16 slots container. They don't build them like they used to.",
+        BOAT_BUMPER_CRABKING = "A rock-like bumper that doesn't take damage when bumping into land. Take that, land!",
+        BOATPATCH_KELP = "A temporary solution for leaks. Sprung a leak? Use a kelp patch... then another... and another...",
+        MOSQUITOMUSK = "Containing \"essence de moustique\" making any holder seem friendly to wild mosquitos.",
+        MOSQUITOBOMB = "Packed so tight with wriggling friends that the explosive release of bugs inflicts damage to targets nearby.",
+        MOSQUITOMERMSALVE = "A useful healing device but only for merm, after all, the Mosquitos are mostly full of Merm blood to begin with.",
+
+        MERM_ARMORY = "While stocked with Cut Grass and Logs, Guard Merm will grab a Swamp Brawler Helmet from it, reducing its stores.\n\nSwamp Brawler Helmets are a cheap way for a merm to get 50% protection from damage for a short while.",
+        MERM_ARMORY_UPGRADED = "While stocked with Cut Grass and Logs, Guard Merm will grab a Swamp Warrior Helmet from it, reducing its stores.\n\nSwamp Warrior Helmets are a better design over their Brawler cousin, providing 70% resistance from damage for a longer period of time.",
+        MERM_TOOLSHED = "While stocked with twigs and rocks, regular Merm will grab a Shoddy Tool from it, reducing its stores.\n\nShoddy tools will increase the amount of work a merm does for a short time.\n\nWith a shoddy tool, follower Merm will help chop trees, mine rocks, dig in a garden and Till soil.",
+        MERM_TOOLSHED_UPGRADED = "While stocked with twigs and rocks, regular Merm will grab a Slightly Less Shoddy Tool from it, reducing its stores.\n\nSlightly Less Shoddy tools increase the amount of work a merm does a little more than their lesser sibling, the Shoddy Tool.\n\nWith a shoddy tool, follower Merm will help chop trees, mine rocks, dig in a garden and Till soil.",
+
+        OFFERING_POT = "Speeds up the respawning of Merm in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby merm to come eat the kelp and follow the Merm who summoned them.",        
+        OFFERING_POT_UPGRADED = "Speeds up the respawning of Merm in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby merm to come eat the kelp and follow the Merm who summoned them.",        
     },
 
     -- Full name: "{name} Scrapbook Page"

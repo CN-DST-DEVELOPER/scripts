@@ -289,7 +289,7 @@ function InventoryItem:DoDropPhysics(x, y, z, randomdir, speedmult)
         -- convert x, y, z to velocity
         if randomdir then
             local speed = ((heavy and 1 or 2) + math.random()) * (speedmult or 1)
-            local angle = math.random() * 2 * PI
+            local angle = math.random() * TWOPI
 			local cos_angle = math.cos(angle)
 			local sin_angle = math.sin(angle)
 			self.inst.Physics:Teleport(x + .01 * cos_angle, y, z - .01 * sin_angle)

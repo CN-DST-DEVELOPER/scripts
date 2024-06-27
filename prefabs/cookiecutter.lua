@@ -12,6 +12,8 @@ local prefabs =
 	"wood_splinter_jump",
 	"wood_splinter_drill",
 	"splash",
+
+	"fx_kelp_boat_fluff",
 }
 
 local brain = require("brains/cookiecutterbrain")

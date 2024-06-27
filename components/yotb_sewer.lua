@@ -48,7 +48,7 @@ local function dosew(inst, self)
     item.Transform:SetPosition(x,y+2,z)
 
     local speed = math.random() * 4 + 2
-    local angle = math.random() * 2 * PI * DEGREES
+    local angle = math.random() * TWOPI * DEGREES
     item.Physics:SetVel(speed * math.cos(angle), math.random() * 2 + 8, speed * math.sin(angle))
 
     -- Is this the networked variable we removed ealier?

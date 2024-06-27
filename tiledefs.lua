@@ -508,6 +508,48 @@ TileManager.AddTile(
 )
 
 TileManager.AddTile(
+    "LUNAR_MARSH",
+    TileRanges.LAND,
+    {ground_name = "Lunar Marsh"},
+    {
+        name="marsh",
+        noise_texture="Ground_noise_marsh",
+        runsound="dontstarve/movement/run_marsh",
+        walksound="dontstarve/movement/walk_marsh",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        cannotbedug = true,
+        hard = true,
+        istemptile = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_marsh_noise",
+    }
+)
+
+TileManager.AddTile(
+    "SHADOW_MARSH",
+    TileRanges.LAND,
+    {ground_name = "Shadow Marsh"},
+    {
+        name="marsh",
+        noise_texture="Ground_noise_marsh",
+        runsound="dontstarve/movement/run_marsh",
+        walksound="dontstarve/movement/walk_marsh",
+        snowsound="dontstarve/movement/run_ice",
+        mudsound="dontstarve/movement/run_mud",
+        cannotbedug = true,
+        hard = true,
+        istemptile = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_marsh_noise",
+    }
+)
+
+TileManager.AddTile(
     "ROCKY",
     TileRanges.LAND,
     {ground_name = "Rocky", old_static_id = GROUND.ROCKY},
@@ -1069,6 +1111,28 @@ TileManager.AddTile(
 )
 
 TileManager.AddTile(
+    "CHARLIE_VINE",
+    TileRanges.LAND,
+    {ground_name = "Charlie Vine"},
+    {
+        name="grass2",
+        noise_texture="ground_noise_vines",
+        runsound="dontstarve/movement/run_grass",
+        walksound="dontstarve/movement/walk_grass",
+        snowsound="dontstarve/movement/run_snow",
+        mudsound="dontstarve/movement/run_mud",
+        isinvisibletile = true,
+        cannotbedug = true,
+        hard = true,
+        istemptile = true,
+    },
+    {
+        name="map_edge",
+        noise_texture="mini_grass2_noise",
+    }
+)
+
+TileManager.AddTile(
     "SCALE",
     TileRanges.LAND,
     {ground_name = "Scale", old_static_id = GROUND.SCALE},
@@ -1352,6 +1416,7 @@ TileManager.AddTile(
         walksound="dontstarve/movement/walk_mud",
         snowsound="dontstarve/movement/run_snow",
         mudsound="dontstarve/movement/run_mud",
+        istemptile = true,
     },
     {
         name="map_edge",

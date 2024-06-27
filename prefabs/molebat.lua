@@ -36,7 +36,7 @@ end
 local function summon_ally(inst)
     local i_pos = inst:GetPosition()
 
-    local offset = FindWalkableOffset(i_pos, math.random()*2*PI, 3, 8, false, true)
+    local offset = FindWalkableOffset(i_pos, math.random()*TWOPI, 3, 8, false, true)
 
     -- If we fail to spawn, it's ok. Due to not setting entitytracker,
     -- we'll succeed again once our timer finishes.

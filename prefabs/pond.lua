@@ -90,8 +90,8 @@ local function SpawnPlants(inst)
 
     if inst.plants == nil then
         inst.plants = {}
-        for i = 1, math.random(2, 4) do
-            local theta = math.random() * 2 * PI
+        for _ = 1, math.random(2, 4) do
+            local theta = math.random() * TWOPI
             table.insert(inst.plants,
             {
                 offset =
@@ -237,7 +237,7 @@ local function commonfn(pondtype)
 
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(2)
 
     inst.entity:SetPristine()
 

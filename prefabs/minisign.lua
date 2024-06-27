@@ -153,6 +153,8 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:SetFinalOffset(1)
 
+	inst:SetDeploySmartRadius(0) --item has special NONE spacing
+
     inst:AddTag("sign")
 
     --drawable (from drawable component) added to pristine state for optimization

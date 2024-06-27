@@ -268,7 +268,7 @@ local function spawnfirefx(pos)
     local ring = SpawnPrefab("firering_fx")
     ring.Transform:SetPosition(pos.x,pos.y,pos.z)
 
-    local theta = math.random(2*PI)
+    local theta = math.random(TWOPI)
 
     for i=1,4 do
         local radius = 4
@@ -678,7 +678,7 @@ local SKILLTREE_SPELL_DEFS =
             inst.components.aoetargeting.reticule.updatepositionfn = burst_reticule_update_position_function
 
             if TheWorld.ismastersim then
-                inst.components.aoetargeting:SetTargetFX("reticulemultitarget")
+				inst.components.aoetargeting:SetTargetFX(nil)
                 inst.components.aoespell:SetSpellFn(FireBurstSpellFn)
                 inst.components.spellbook:SetSpellFn(nil)
             end
@@ -743,7 +743,7 @@ local SKILLTREE_SPELL_DEFS =
             inst.components.aoetargeting.reticule.updatepositionfn = single_reticule_update_position_function
 
             if TheWorld.ismastersim then
-                inst.components.aoetargeting:SetTargetFX("reticuleaoefiretarget_1")
+				inst.components.aoetargeting:SetTargetFX(nil)
                 inst.components.aoespell:SetSpellFn(FireFrenzySpellFn)
                 inst.components.spellbook:SetSpellFn(nil)
             end
@@ -775,7 +775,7 @@ local SKILLTREE_SPELL_DEFS =
             inst.components.aoetargeting.reticule.updatepositionfn = line_reticule_update_position_function
 
             if TheWorld.ismastersim then
-                inst.components.aoetargeting:SetTargetFX("reticuleaoefiretarget_1")
+				inst.components.aoetargeting:SetTargetFX(nil)
                 inst.components.aoespell:SetSpellFn(LunarFireSpellFn)
                 inst.components.spellbook:SetSpellFn(nil)
             end
@@ -822,7 +822,7 @@ local SKILLTREE_SPELL_DEFS =
             inst.components.aoetargeting.reticule.updatepositionfn = line_reticule_update_position_function
 
             if TheWorld.ismastersim then
-                inst.components.aoetargeting:SetTargetFX("reticuleaoe5line")
+				inst.components.aoetargeting:SetTargetFX(nil)
                 inst.components.aoespell:SetSpellFn(ShadowFireSpellFn)
                 inst.components.spellbook:SetSpellFn(nil)
             end

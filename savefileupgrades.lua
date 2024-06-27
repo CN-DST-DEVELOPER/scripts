@@ -1293,6 +1293,14 @@ t = {
                 FlagForRetrofitting_Forest(savedata, "remove_rift_terraformers_fix")
             end,
         },
+
+        -- 5.15 for Winona & Wurt beta
+        {
+            version = 5.151,
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_otterdens")
+            end,
+        },
     },
 }
 

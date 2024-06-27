@@ -188,6 +188,8 @@ end
 local function spawnerfn()
     local inst = commonfn("full", "cavespider_den.png", "spiderden", true)
 
+    inst.scrapbook_proxy = "spiderhole_rock"
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -233,12 +235,13 @@ end
 local function rockfn()
     local inst = commonfn("med")
 
-    inst.scrapbook_anim = "med"
     inst:SetPrefabNameOverride("spiderhole")
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "full"
 
     inst.components.workable:SetWorkAction(ACTIONS.MINE)
     inst.components.workable:SetOnWorkCallback(rock_onworked)

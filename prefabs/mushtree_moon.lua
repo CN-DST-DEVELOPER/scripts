@@ -30,7 +30,7 @@ local function onspawnfn(inst, spawn)
 
     local pos = inst:GetPosition()
     local radius = spawn:GetPhysicsRadius(0) + inst:GetPhysicsRadius(0) + 0.75
-    local offset = FindWalkableOffset(pos, math.random() * 2 * PI, radius, 8)
+    local offset = FindWalkableOffset(pos, math.random() * TWOPI, radius, 8)
 
     if offset ~= nil then
         pos = pos + offset

@@ -87,6 +87,7 @@ local function fn()
 
     MakeObstaclePhysics(inst, 1.3)
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

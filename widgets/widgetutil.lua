@@ -149,3 +149,78 @@ function DoRecipeClick(owner, recipe, skin)
         end
     end
 end
+
+local function GetXCoord(angle, width)
+    if angle >= 90 and angle <= 180 then -- left side
+        return 0
+    elseif angle <= 0 and angle >= -90 then -- right side
+        return width
+    else -- middle somewhere
+        if angle < 0 then
+            angle = -angle - 90
+        end
+        local pctX = 1 - (angle / 90)
+        return pctX * width
+    end
+end
+
+local function GetYCoord(angle, height)
+    if angle <= -90 and angle >= -180 then -- top side
+        return height
+    elseif angle >= 0 and angle <= 90 then -- bottom side
+        return 0
+    else -- middle somewhere
+        if angle < 0 then
+            angle = -angle
+        end
+        if angle > 90 then
+            angle = angle - 90
+        end
+        local pctY = (angle / 90)
+        return pctY * height
+    end
+end
+
+function GetIndicatorLocationAndAngle(owner, targX, targZ, w, h, bufferoverrides)
+    local angleToTarget = owner:GetAngleToPoint(targX, 0, targZ)
+    local downVector = TheCamera:GetDownVec()
+    local downAngle = -math.atan2(downVector.z, downVector.x) / DEGREES
+    local indicatorAngle = (angleToTarget - downAngle) + 45
+    while indicatorAngle > 180 do indicatorAngle = indicatorAngle - 360 end
+    while indicatorAngle < -180 do indicatorAngle = indicatorAngle + 360 end
+
+    local screenWidth, screenHeight = TheSim:GetScreenSize()
+
+    local x = GetXCoord(indicatorAngle, screenWidth)
+    local y = GetYCoord(indicatorAngle, screenHeight)
+
+    local TOP_EDGE_BUFFER = 20
+    local BOTTOM_EDGE_BUFFER = 40
+    local LEFT_EDGE_BUFFER = 67
+    local RIGHT_EDGE_BUFFER = 80
+    if bufferoverrides then
+        TOP_EDGE_BUFFER = bufferoverrides.TOP_EDGE_BUFFER or TOP_EDGE_BUFFER
+        BOTTOM_EDGE_BUFFER = bufferoverrides.BOTTOM_EDGE_BUFFER or BOTTOM_EDGE_BUFFER
+        LEFT_EDGE_BUFFER = bufferoverrides.LEFT_EDGE_BUFFER or LEFT_EDGE_BUFFER
+        RIGHT_EDGE_BUFFER = bufferoverrides.RIGHT_EDGE_BUFFER or RIGHT_EDGE_BUFFER
+    elseif bufferoverrides == false then
+        TOP_EDGE_BUFFER = 0
+        BOTTOM_EDGE_BUFFER = 0
+        LEFT_EDGE_BUFFER = 0
+        RIGHT_EDGE_BUFFER = 0
+    end
+
+    if x <= LEFT_EDGE_BUFFER + w then
+        x = LEFT_EDGE_BUFFER + w
+    elseif x >= screenWidth - RIGHT_EDGE_BUFFER - w then
+        x = screenWidth - RIGHT_EDGE_BUFFER - w
+    end
+
+    if y <= BOTTOM_EDGE_BUFFER + h then
+        y = BOTTOM_EDGE_BUFFER + h
+    elseif y >= screenHeight - TOP_EDGE_BUFFER - h then
+        y = screenHeight - TOP_EDGE_BUFFER - h
+    end
+
+    return x, y, indicatorAngle
+end

@@ -192,7 +192,7 @@ local function fn()
     inst:AddComponent("deployable")
     inst.components.deployable.ondeploy = OnDeploy
     inst.components.deployable:SetDeployMode(DEPLOYMODE.PLANT)
-    inst.components.deployable:SetDeploySpacing(TUNING.MOON_TREE_DEPLOY_SPACING)
+	inst.components.deployable:SetDeploySpacing(DEPLOYSPACING.PLACER_DEFAULT)
 
     MakeHauntablePanicAndIgnite(inst)
 

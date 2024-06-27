@@ -241,7 +241,7 @@ local function BuildSkillsData(SkillTreeFns)
                 -- For load (skills activation occurs after onload functions).
                 if inst:IsWeremoose() then
                     local regendata = TUNING.SKILLS.WOODIE.MOOSE_HEALTH_REGEN
-                    inst.components.health:StartRegen(regendata.amount, regendata.period)
+                    inst.components.health:AddRegenSource(inst, regendata.amount, regendata.period, "weremoose_skill")
                 end
             end,
         },
@@ -405,6 +405,7 @@ local function BuildSkillsData(SkillTreeFns)
             connects = {
                 "woodie_human_quickpicker_2",
             },
+            defaultfocus = true,
         },
 
         -- Collect stuff faster.

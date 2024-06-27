@@ -123,7 +123,7 @@ local function poolfn()
 
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(2.5)
 
     inst.scrapbook_specialinfo = "GROTTOPOOL"
 

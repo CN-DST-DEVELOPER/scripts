@@ -101,7 +101,7 @@ local MAX_PIECES = 5
 local function spawn_chum_piece(inst)
     if inst._numpieces < MAX_PIECES then
         local x, y, z = inst.Transform:GetWorldPosition()
-        local theta = math.random() * PI * 2
+        local theta = math.random() * TWOPI
         local offset = (math.sqrt(math.random()) * 2) + 2
         local spawnx, spawnz = x + math.cos(theta) * offset, z + math.sin(theta) * offset
         if TheWorld.Map:IsOceanAtPoint(spawnx, y, spawnz, false) then

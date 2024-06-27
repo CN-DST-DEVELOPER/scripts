@@ -83,7 +83,8 @@ local function SpawnArms(inst, attacker)
     local map = TheWorld.Map
     for r = 1, rings do
         local theta = GetRandomWithVariance(0, PI / 2)
-        for i = 1, steps do
+        local theta_decrement = (TWOPI / steps)
+        for _ = 1, steps do
             local radius = GetRandomWithVariance(ringdelta, ringdelta / 3) + minRadius
             local x = pt.x + radius * math.cos(theta)
             local z = pt.z - radius * math.sin(theta)
@@ -101,7 +102,7 @@ local function SpawnArms(inst, attacker)
                     return
                 end
             end
-            theta = theta - 2 * PI / steps
+            theta = theta - theta_decrement
         end
         minRadius = minRadius + ringdelta
     end

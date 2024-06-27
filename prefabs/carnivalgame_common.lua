@@ -204,6 +204,7 @@ local function carnival_station_fn(common_postinit, master_postinit)
 	inst.entity:AddMiniMapEntity()
 	inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
 	MakeObstaclePhysics(inst, .5)
 
     inst.Light:Enable(false)

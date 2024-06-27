@@ -65,7 +65,7 @@ local function fn()
     inst.AnimState:SetBank("livingtree_root")
     inst.AnimState:SetBuild("livingtree_root")
 
-	inst:SetDeployExtraSpacing(TUNING.LIVINGTREE_EXTRA_SPACING)
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --livingtree_root deployspacing/2
 
 	inst.AnimState:PlayAnimation("idle_planted_flask", true)
 	if not IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then

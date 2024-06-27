@@ -24,7 +24,7 @@ end
 local function triggertrap(inst, scenariorunner, data)
     --spawn ghosts in a circle around you
     local x, y, z = inst.Transform:GetWorldPosition()
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = 10
     local steps = 12
     local map = TheWorld.Map
@@ -40,7 +40,7 @@ local function triggertrap(inst, scenariorunner, data)
             ghost.Transform:SetPosition(x1, 0, z1)
             ghost:DoTaskInTime(1, settarget, player)
         end
-        theta = theta - (2 * PI / steps)
+        theta = theta - (TWOPI / steps)
     end
 
     if player ~= nil and player.components.sanity ~= nil then

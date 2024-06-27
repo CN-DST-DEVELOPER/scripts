@@ -679,7 +679,7 @@ local function ReturnActiveItemToSlot(inst, slot)
         if item == nil then
             local giveitem = SlotItem(inst._activeitem, slot)
             PushItemGet(inst, giveitem, true)
-        elseif item.replica.stackable ~= nil and item.prefab == inst._activeitem.prefab and item.AnimState:GetSkinBuild() == inst._activeitem.AnimState:GetSkinBuild() then --item.skinname == inst._activeitem.skinname (this does not work on clients, so we're going to use the AnimState hack instead)
+        elseif item.replica.stackable ~= nil and item.prefab == inst._activeitem.prefab and item:StackableSkinHack(inst._activeitem) then
             local stacksize = item.replica.stackable:StackSize() + inst._activeitem.replica.stackable:StackSize()
             local maxsize = item.replica.stackable:MaxSize()
             PushStackSize(inst, item, math.min(stacksize, maxsize), true)
@@ -734,7 +734,7 @@ end
 local function AddOneOfActiveItemToSlot(inst, slot)
     if not IsBusy(inst) and inst._activeitem ~= nil then
         local item = inst:GetItemInSlot(slot)
-        if item ~= nil and item.prefab == inst._activeitem.prefab and item.AnimState:GetSkinBuild() == inst._activeitem.AnimState:GetSkinBuild() then --item.skinname == inst._activeitem.skinname (this does not work on clients, so we're going to use the AnimState hack instead)
+        if item ~= nil and item.prefab == inst._activeitem.prefab and item:StackableSkinHack(inst._activeitem) then
             PushStackSize(inst, item, item.replica.stackable:StackSize() + 1, true)
             PushStackSize(inst, inst._activeitem, nil, nil, inst._activeitem.replica.stackable:StackSize() - 1, true)
             SendRPCToServer(RPC.AddOneOfActiveItemToSlot, slot)
@@ -745,7 +745,7 @@ end
 local function AddAllOfActiveItemToSlot(inst, slot)
     if not IsBusy(inst) and inst._activeitem ~= nil then
         local item = inst:GetItemInSlot(slot)
-        if item ~= nil and item.prefab == inst._activeitem.prefab and item.AnimState:GetSkinBuild() == inst._activeitem.AnimState:GetSkinBuild() then --item.skinname == inst._activeitem.skinname (this does not work on clients, so we're going to use the AnimState hack instead)
+        if item ~= nil and item.prefab == inst._activeitem.prefab and item:StackableSkinHack(inst._activeitem) then
             local stacksize = item.replica.stackable:StackSize() + inst._activeitem.replica.stackable:StackSize()
             local maxsize = item.replica.stackable:MaxSize()
             if stacksize <= maxsize then

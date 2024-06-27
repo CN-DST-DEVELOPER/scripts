@@ -171,7 +171,7 @@ function GetNewDeathAnnouncementString(theDead, source, pkname, sourceispet)
             message = theDead:GetDisplayName().." "..STRINGS.UI.HUD.DEATH_ANNOUNCEMENT_1.." "..source
         end
 
-        if not theDead.ghostenabled then
+		if not theDead.ghostenabled or theDead.charlie_vinesave then
             message = message.."."
         else
             local gender = GetGenderStrings(theDead.prefab)

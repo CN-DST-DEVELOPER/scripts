@@ -225,6 +225,7 @@ local function basefn(build, loot_table_name, child_name)
     inst.scrapbook_anim = "eyes_loop"
 
     MakeInventoryFloatable(inst, "med", 0.1, {1.1, 0.9, 1.1})
+    inst.components.floater:SetIsObstacle()
     inst.components.floater.bob_percent = 0
 
     inst.entity:SetPristine()

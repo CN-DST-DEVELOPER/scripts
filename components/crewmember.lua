@@ -106,7 +106,7 @@ function CrewMember:Row()
 
     local can_stop = false
     if boat_boatcrew_target then
-        local target_boat_physics = boat_boatcrew_target.components.boatphysics
+        local target_boat_physics = boat_boatcrew_target.components and boat_boatcrew_target.components.boatphysics or nil
         if target_boat_physics then
             local target_vector = Vector3(target_boat_physics.velocity_x, 0, target_boat_physics.velocity_z)
             local local_vector = Vector3(boat_physics_x, 0, boat_physics_z)
@@ -121,6 +121,7 @@ function CrewMember:Row()
 
     local direction = "toward"
     if boat_boatcrew.status == "retreat" then
+
         local allthere = true
         for member in pairs(boat_boatcrew.members) do
             if member:GetCurrentPlatform() ~= self.inst.components.crewmember.boat then
@@ -132,10 +133,12 @@ function CrewMember:Row()
             direction = "away"
         end
 
-    elseif boat_boatcrew_target and boat_boatcrew_target:IsValid()
-            and boat:GetDistanceSqToInst(boat_boatcrew_target) < self.max_target_dsq
+    elseif boat_boatcrew_target and
+        ((boat_boatcrew_target.IsValid and boat_boatcrew_target:IsValid() and boat:GetDistanceSqToInst(boat_boatcrew_target) < self.max_target_dsq) or 
+            (not boat_boatcrew_target.IsValid and boat:GetDistanceSqToPoint(boat_boatcrew_target) < self.max_target_dsq)) 
             and can_stop then
         direction = "stop"
+
     end
 
     local row_direction_x, row_direction_z
@@ -156,7 +159,9 @@ function CrewMember:Row()
         end
     end
 
-    boat_physics:ApplyRowForce(row_direction_x, row_direction_z, self.force, self.max_velocity)
+    boat_physics:ApplyRowForce(row_direction_x, row_direction_z, self.force, boat_boatcrew.status == "delivery" and self.max_velocity*.65 or self.max_velocity)
+
+	boat:PushEvent("rowed", self.inst)
 end
 
 function CrewMember:GetDebugString()

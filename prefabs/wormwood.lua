@@ -278,7 +278,7 @@ local function PlantTick(inst)
         local map = TheWorld.Map
         local pt = Vector3(0, 0, 0)
         local offset = FindValidPositionByFan(
-            math.random() * 2 * PI,
+            math.random() * TWOPI,
             math.random() * PLANTS_RANGE,
             3,
             function(offset)
@@ -727,12 +727,11 @@ local function UpdatePhotosynthesisState(inst, isday)
     if should_photosynthesize ~= inst.photosynthesizing then
         inst.photosynthesizing = should_photosynthesize
         if inst.components.health then
-            -- FIXME(JBK): Change this to a buff and remove health StartRegen StopRegen calls.
             if should_photosynthesize then
                 local regen = TUNING.WORMWOOD_PHOTOSYNTHESIS_HEALTH_REGEN
-                inst.components.health:StartRegen(regen.amount, regen.period)
+                inst.components.health:AddRegenSource(inst, regen.amount, regen.period, "photosynthesis_skill")
             else
-                inst.components.health:StopRegen()
+                inst.components.health:RemoveRegenSource(inst, "photosynthesis_skill")
             end
         end
     end

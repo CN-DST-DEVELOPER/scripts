@@ -129,7 +129,7 @@ function BlowInWind:OnUpdate(dt)
 			self.speedVarTime = 0
 			self.speedVarPeriod = GetRandomWithVariance(SPEED_VAR_PERIOD, SPEED_VAR_PERIOD_VARIANCE)
 		end
-		local speedvar = math.sin(2*PI*(self.speedVarTime / self.speedVarPeriod))
+		local speedvar = math.sin(TWOPI*(self.speedVarTime / self.speedVarPeriod))
 		local mult = Remap(speedvar, -1, 1, self.minSpeedMult, self.maxSpeedMult)
 		self.speed = self.speed * mult
 	end

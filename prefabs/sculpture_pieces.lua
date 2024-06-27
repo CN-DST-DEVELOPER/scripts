@@ -51,6 +51,8 @@ local function makepiece(name)
             return inst
         end
 
+        inst.scrapbook_scale = 0.85
+
         inst:AddComponent("heavyobstaclephysics")
         inst.components.heavyobstaclephysics:SetRadius(PHYSICS_RADIUS)
         inst.components.heavyobstaclephysics:MakeSmallObstacle()

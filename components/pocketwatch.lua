@@ -1,10 +1,6 @@
 
 local function oninactive(self, inactive)
-    if inactive then
-        self.inst:AddTag("pocketwatch_inactive")
-    else
-        self.inst:RemoveTag("pocketwatch_inactive")
-    end
+    self.inst:AddOrRemoveTag("pocketwatch_inactive", inactive)
 end
 
 local PocketWatch = Class(function(self, inst)
@@ -27,11 +23,12 @@ function PocketWatch:CanCast(doer, target, pos)
 end
 
 function PocketWatch:CastSpell(doer, target, pos)
-	if self.DoCastSpell ~= nil and self.inactive then
-		local success, reason = self.DoCastSpell(self.inst, doer, target, pos)
-		return success, reason
-	end
-	return false
+    if self.DoCastSpell ~= nil and self.inactive then
+        local success, reason = self.DoCastSpell(self.inst, doer, target, pos)
+        return success, reason
+    else
+        return false
+    end
 end
 
 return PocketWatch

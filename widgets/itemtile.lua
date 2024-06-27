@@ -368,7 +368,7 @@ function ItemTile:GetDescriptionString()
             end
         elseif active_item:IsValid() then
             if not (self.item.replica.equippable ~= nil and self.item.replica.equippable:IsEquipped()) then
-                if active_item.replica.stackable ~= nil and active_item.prefab == self.item.prefab and active_item.AnimState:GetSkinBuild() == self.item.AnimState:GetSkinBuild() then --active_item.skinname == self.item.skinname (this does not work on clients, so we're going to use the AnimState hack instead)
+                if active_item.replica.stackable ~= nil and active_item.prefab == self.item.prefab and self.item:StackableSkinHack(active_item) then
                     str = str.."\n"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PRIMARY)..": "..STRINGS.UI.HUD.PUT
                 else
                     str = str.."\n"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PRIMARY)..": "..STRINGS.UI.HUD.SWAP

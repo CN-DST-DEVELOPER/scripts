@@ -763,7 +763,7 @@ AddGameDebugKey(KEY_F8, function()
         return true
     end
     local pt = Vector3(player.Transform:GetWorldPosition())
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local numrings = 10 --How many rings of stuff you spawn
     local radius = 2 --Initial distance from player
     local radius_step_distance = 1 --How much the radius increases per ring.
@@ -776,7 +776,7 @@ AddGameDebugKey(KEY_F8, function()
     local numspawned = 0
     -- Walk the circle trying to find a valid spawn point
     for i = 1, numrings do
-        local circ = 2*PI*radius
+        local circ = TWOPI*radius
         local numitems = circ * itemdensity
 
         for i = 1, numitems do
@@ -788,7 +788,7 @@ AddGameDebugKey(KEY_F8, function()
                 local spawn = SpawnPrefab(GetRandomItem(items))
                 spawn.Transform:SetPosition(wander_point:Get())
             end
-            theta = theta - (2 * PI / numitems)
+            theta = theta - (TWOPI / numitems)
         end
         radius = radius + radius_step_distance
     end
@@ -1716,6 +1716,24 @@ function d_addemotekeys()
 	AddGameDebugKey(KEY_KP_8, function() UserCommands.RunUserCommand("shrug", {}, ThePlayer, false) end)
 	AddGameDebugKey(KEY_KP_9, function() UserCommands.RunUserCommand("wave", {}, ThePlayer, false) end)
 	AddGameDebugKey(KEY_KP_PERIOD, function() UserCommands.RunUserCommand("fistshake", {}, ThePlayer, false) end)
+
+end
+
+
+function d_gettiles()
+                            local pos = Vector3(ThePlayer.Transform:GetWorldPosition())
+                            local tiles = {}
+                            for x=-5,5,1 do
+                                for z=-5,5,1 do
+                                    local tx = pos.x + (x*4)
+                                    local tz = pos.z + (z*4)
+                                    local tile = TheWorld.Map:GetTileAtPoint(tx, 0, tz)
+                                    if tile == WORLD_TILES.FARMING_SOIL then
+                                        table.insert(tiles,{tx,tz})
+                                    end
+                                end
+                            end
+                            dumptable(tiles,1,1)
 
 end
 

@@ -271,6 +271,8 @@ function MakeWallType(data)
 
         inst.Transform:SetEightFaced()
 
+		inst:SetDeploySmartRadius(0.5) --DEPLOYMODE.WALL assumes spacing of 1
+
         MakeObstaclePhysics(inst, .5)
         inst.Physics:SetDontRemoveOnSleep(true)
 

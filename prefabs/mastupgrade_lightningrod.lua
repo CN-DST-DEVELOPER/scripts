@@ -119,9 +119,21 @@ end
 
 local function OnEntityReplicated(inst)
     local parent = inst.entity:GetParent()
-    if parent ~= nil and (parent.prefab == "mast" or parent.prefab == "mast_malbatross") then
-        parent.highlightchildren = parent.highlightchildren or {}
-        table.insert(parent.highlightchildren, inst)
+
+    if parent ~= nil and parent:HasTag("mast") then
+        if parent.highlightchildren ~= nil then
+            table.insert(parent.highlightchildren, inst)
+        else
+            parent.highlightchildren = { inst }
+        end
+    end
+end
+
+local function CLIENT_OnRemoveEntity(inst)
+    local parent = inst.entity:GetParent()
+
+    if parent ~= nil and parent.highlightchildren ~= nil then
+        table.removearrayvalue(parent.highlightchildren, inst)
     end
 end
 
@@ -151,6 +163,8 @@ local function basefn()
     inst.scrapbook_anim = "top"
     inst.scrapbook_specialinfo = "MASTUPGRADELIGHTNINGCONDUCTOR"
     inst.scrapbook_inspectonseen = true
+
+    inst.OnRemoveEntity = CLIENT_OnRemoveEntity
 
     inst.entity:SetPristine()
 
@@ -194,6 +208,8 @@ local function topfn()
     inst.AnimState:SetBank("mastupgrade_lightningrod_item")
     inst.AnimState:SetBuild("mastupgrade_lightningrod")
     inst.AnimState:PlayAnimation("top")
+
+    inst.OnRemoveEntity = CLIENT_OnRemoveEntity
 
     inst.entity:SetPristine()
 

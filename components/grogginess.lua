@@ -197,6 +197,14 @@ function Grogginess:SetPercent(percent)
     self:AddGrogginess(delta)
 end
 
+function Grogginess:MakeGrogginessAtLeast(min)
+    local delta = math.max(self.grog_amount, min) - self.grog_amount
+
+    if delta > 0 then
+        self:AddGrogginess(delta)
+    end
+end
+
 function Grogginess:SubtractGrogginess(grogginess)
     if grogginess <= 0 then
         return

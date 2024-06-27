@@ -122,6 +122,9 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_animoffsetbgx = 5
+    inst.scrapbook_animoffsetbgy = 30
+
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
 

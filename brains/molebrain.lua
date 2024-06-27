@@ -39,7 +39,7 @@ end
 
 local function MakeNewHomeAction(inst)
     local pos = inst:GetPosition()
-    local offset = FindWalkableOffset(pos, math.random() * 2 * PI, math.random(5, 15), 120, false, false, NoHoles)
+    local offset = FindWalkableOffset(pos, math.random() * TWOPI, math.random(5, 15), 120, false, false, NoHoles)
     if offset ~= nil then
         pos.x = pos.x + offset.x
         pos.y = 0

@@ -120,9 +120,10 @@ local states =
 
     State{
         name = "popping",
+        tags = {"popping"},
         onenter = function(inst)
             -- Keep this in sync with InstantlyBreakBoat.
-            inst.sinkloot()
+            inst:sinkloot()
             if inst.postsinkfn then
                 inst:postsinkfn()
             end

@@ -248,7 +248,7 @@ local function EstablishColony(loc)
     -- Find good spot far enough away from the other colonies
     radius = SEARCH_RADIUS
     while not newFlock.rookery and radius>30 do
-        newFlock.rookery = FindValidPositionByFan(math.random()*PI*2.0, radius, 32, testfn)
+        newFlock.rookery = FindValidPositionByFan(math.random()*PI2, radius, 32, testfn)
         radius = radius - 10
     end
 

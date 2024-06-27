@@ -3,7 +3,7 @@ local assets =
     Asset("ANIM", "anim/spider_healer_item.zip"),
 }
 
-local prefabs = 
+local prefabs =
 {
     "spider_heal_fx",
     "spider_heal_target_fx",
@@ -33,13 +33,12 @@ local function OnHealFn(inst, target)
         SpawnFx(target, "spider_heal_target_fx")
     end
 
-    local scale = 1
-    SpawnFx(target, "spider_heal_ground_fx", scale)
-    SpawnFx(target, "spider_heal_fx", scale)
+    SpawnFx(target, "spider_heal_ground_fx")
+    SpawnFx(target, "spider_heal_fx")
     local x,y,z = inst.Transform:GetWorldPosition()
     local other_spiders = TheSim:FindEntities(x, y, z, TUNING.SPIDER_HEALING_ITEM_RADIUS, SPIDER_TAGS, SPIDER_IGNORE_TAGS)
-    
-    for i, spider in ipairs(other_spiders) do
+
+    for _, spider in ipairs(other_spiders) do
         spider.components.health:DoDelta(TUNING.SPIDER_HEALING_ITEM_AMOUNT, false, inst.prefab)
         SpawnFx(spider, "spider_heal_target_fx")
     end
@@ -68,7 +67,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst:AddComponent("inspectable")
     inst:AddComponent("stackable")
-    
+
     inst:AddComponent("healer")
     inst.components.healer:SetHealthAmount(0)
     inst.components.healer:SetOnHealFn(OnHealFn)

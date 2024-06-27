@@ -387,11 +387,9 @@ end
 
 local function SetWereVision(inst, mode)
     if IsWereMode(mode) then
-        inst.components.playervision:ForceNightVision(true)
-        inst.components.playervision:SetCustomCCTable(BEAVERVISION_COLOURCUBES)
+        inst.components.playervision:PushForcedNightVision(inst, 2, BEAVERVISION_COLOURCUBES, false)
     else
-        inst.components.playervision:ForceNightVision(false)
-        inst.components.playervision:SetCustomCCTable(nil)
+        inst.components.playervision:PopForcedNightVision(inst)
     end
 end
 
@@ -906,9 +904,8 @@ local function SetWereFighter(inst, mode)
         local planardefense_skill = skilltreeupdater:IsActivated("woodie_curse_epic_moose")
 
         if healthregen_skill then
-            -- FIXME(JBK): Change this to a buff and remove health StartRegen StopRegen calls.
             local regendata = TUNING.SKILLS.WOODIE.MOOSE_HEALTH_REGEN
-            inst.components.health:StartRegen(regendata.amount, regendata.period)
+            inst.components.health:AddRegenSource(inst, regendata.amount, regendata.period, "weremoose_skill")
         end
 
         if planardefense_skill then
@@ -931,8 +928,7 @@ local function SetWereFighter(inst, mode)
         end
 
         inst.components.planardefense:RemoveBonus(inst, "weremoose_skill")
-        -- FIXME(JBK): Change this to a buff and remove health StartRegen StopRegen calls.
-        inst.components.health:StopRegen()
+        inst.components.health:RemoveRegenSource(inst, "weremoose_skill")
     end
 end
 

@@ -81,7 +81,7 @@ HALLUCINATION_TYPES.creepyeyes.spawnfn = function(inst, hallucination)
     local maxcount = math.max(2, math.min(6, math.floor((1 - sanity) * 5) * 2 - 2))
     if hallucination.count < maxcount then
         local radius = 5 + math.random() * 10
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local x, y, z = _player.Transform:GetWorldPosition()
         local x1 = x + radius * math.cos(theta)
         local z1 = z - radius * math.sin(theta)
@@ -144,7 +144,7 @@ HALLUCINATION_TYPES.shadowskittish.spawnfn = function(inst, hallucination)
     end
     local maxcount = math.max(4, math.min(8, math.floor((1 - sanity) * 5) * 2))
     if hallucination.count < maxcount then
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local x, y, z = _player.Transform:GetWorldPosition()
         local x1 = x + 15 * math.cos(theta)
         local z1 = z - 15 * math.sin(theta)

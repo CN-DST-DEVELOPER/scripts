@@ -297,7 +297,7 @@ local function TossLaunch(inst, launcher, basespeed, startheight, startradius)
 		local dist = math.sqrt(dsq)
 		angle = math.atan2(dz / dist, dx / dist) + (math.random() * 20 - 10) * DEGREES
 	else
-		angle = 2 * PI * math.random()
+		angle = TWOPI * math.random()
 	end
 	local sina, cosa = math.sin(angle), math.cos(angle)
 	local speed = basespeed + math.random()

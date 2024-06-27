@@ -328,6 +328,7 @@ function Tune(overrides)
         OCEANFISH_SEE_CHUM_DIST = 16,
 
 		WEIGHABLE_HEAVY_WEIGHT_PERCENT = 0.8, -- anything >= to this is "heavy" for its type of fish
+		WEIGHABLE_HEAVY_LOOT_WEIGHT_PERCENT = 0.7,
 
         STAGEHAND_HITS_TO_GIVEUP = 86,
         ENDTABLE_FLOWER_WILTTIME = total_day_time * 10,
@@ -1479,7 +1480,7 @@ function Tune(overrides)
         MOSQUITO_ATTACK_PERIOD = 7,
         MOSQUITO_MAX_DRINKS = 4,
         MOSQUITO_BURST_DAMAGE = 34,
-        MOSQUITO_BURST_RANGE = 4,
+        MOSQUITO_BURST_RANGE = 3.5,
 
         KRAMPUS_HEALTH = 200 * 1.5, -- harder for multiplayer
         KRAMPUS_DAMAGE = 50,
@@ -2029,7 +2030,6 @@ function Tune(overrides)
         TALLBIRDEGG_COOKED_HUNGER = 30,
 		TALLBIRD_MAKE_NEST_RADIUS = 2,
 
-        REPAIR_SCRAP_HEALTH = 30,
         REPAIR_CUTSTONE_HEALTH = 50,
         REPAIR_ROCKS_HEALTH = 50/3,
         REPAIR_GEMS_WORK = 1,
@@ -2131,21 +2131,21 @@ function Tune(overrides)
         SANITY_GHOST_PLAYER_DRAIN = -100/(night_time*30),
         MAX_SANITY_GHOST_PLAYER_DRAIN_MULT = 3,
 
-        SANITYAURA_TINY = 100/(seg_time*32),
-        SANITYAURA_SMALL_TINY = 100/(seg_time*20),
-        SANITYAURA_SMALL = 100/(seg_time*8),
-        SANITYAURA_MED = 100/(seg_time*5),
-        SANITYAURA_LARGE = 100/(seg_time*2),
-        SANITYAURA_HUGE = 100/(seg_time*.5),
-        SANITYAURA_SUPERHUGE = 100/(seg_time*.25),
+        SANITYAURA_TINY = 100/(seg_time*32),       -- 50    per day.
+        SANITYAURA_SMALL_TINY = 100/(seg_time*20), -- 80    per day.
+        SANITYAURA_SMALL = 100/(seg_time*8),       -- 200   per day.
+        SANITYAURA_MED = 100/(seg_time*5),         -- 320   per day.
+        SANITYAURA_LARGE = 100/(seg_time*2),       -- 800   per day.
+        SANITYAURA_HUGE = 100/(seg_time*.5),       -- 3,200 per day.
+        SANITYAURA_SUPERHUGE = 100/(seg_time*.25), -- 6,400 per day.
 
-        DAPPERNESS_TINY = 100/(day_time*15),
-        DAPPERNESS_SMALL = 100/(day_time*10),
-        DAPPERNESS_MED = 100/(day_time*6),
-        DAPPERNESS_MED_LARGE = 100/(day_time*4.5),
-        DAPPERNESS_LARGE = 100/(day_time*3),
-        DAPPERNESS_HUGE = 100/(day_time),
-        DAPPERNESS_SUPERHUGE = 100/(day_time*0.5),
+        DAPPERNESS_TINY = 100/(day_time*15),       -- 10.7 per day.
+        DAPPERNESS_SMALL = 100/(day_time*10),      -- 16.0 per day.
+        DAPPERNESS_MED = 100/(day_time*6),         -- 26.7 per day.
+        DAPPERNESS_MED_LARGE = 100/(day_time*4.5), -- 35.5 per day.
+        DAPPERNESS_LARGE = 100/(day_time*3),       -- 53.3 per day.
+        DAPPERNESS_HUGE = 100/(day_time),          -- 160  per day.
+        DAPPERNESS_SUPERHUGE = 100/(day_time*0.5), -- 320  per day.
 
         MOISTURE_SANITY_PENALTY_MAX = -100/(day_time*6), -- Was originally 10 days
 
@@ -3178,7 +3178,7 @@ function Tune(overrides)
         SALTLICK_CHECK_DIST = 20,
         SALTLICK_USE_DIST = 4,
         SALTLICK_DURATION = total_day_time / 8,
-        SALTLICK_MAX_LICKS = 240, -- 15 days @ 8 beefalo licks per day
+        SALTLICK_MAX_LICKS = 240, -- 15 days @ 8 beefalo licks per day (self / (SALTLICK_DURATION * SALTLICK_BEEFALO_USES))
         SALTLICK_BEEFALO_USES = 2,
         SALTLICK_KOALEFANT_USES = 4,
         SALTLICK_LIGHTNINGGOAT_USES = 1,
@@ -3560,8 +3560,8 @@ function Tune(overrides)
 		WINONA_HUNGER = wilson_hunger,
         WINONA_SANITY = wilson_sanity,
 
-
-        WINONA_ENGINEERING_SPACING = 3.2,
+		WINONA_ENGINEERING_SPACING = 3.2, --*DEPRECATED*
+		WINONA_ENGINEERING_FOOTPRINT = 1.6,
         --this is just the default recipe spacing
         --we still want to explicitly define it for engineering recipes because of the fixed range indicators
 
@@ -3569,21 +3569,83 @@ function Tune(overrides)
         WINONA_CATAPULT_HEALTH_REGEN_PERIOD = 10,
         WINONA_CATAPULT_HEALTH_REGEN = 400 * 10 / total_day_time,
         WINONA_CATAPULT_DAMAGE = wilson_attack * 1.25,
-        WINONA_CATAPULT_MIN_RANGE = 6,
+		WINONA_CATAPULT_PLANAR_DAMAGE = 30,
+		WINONA_CATAPULT_NON_PLANAR_DAMAGE = wilson_attack * 0.5,
+		WINONA_CATAPULT_HYBRID_PLANAR_DAMAGE = 40,
+		WINONA_CATAPULT_HYBRID_NON_PLANAR_DAMAGE = wilson_attack * 0.25,
+		WINONA_CATAPULT_MEGA_PLANAR_DAMAGE = 120,
+		WINONA_CATAPULT_DAMAGETYPE_MULT = 1.1,
+		WINONA_CATAPULT_TARGETING_MIN_RANGE = 5.5, --min range for whether to allow attacking
+		WINONA_CATAPULT_MIN_RANGE = 6, --min range for the actual target pos if we do attack
         WINONA_CATAPULT_MAX_RANGE = 15,
         WINONA_CATAPULT_ATTACK_PERIOD = 2.5,
         WINONA_CATAPULT_AOE_RADIUS = 1.25,
+		WINONA_CATAPULT_VOLLEY_QUEUE_SIZE = 3,
         WINONA_CATAPULT_KEEP_TARGET_BUFFER = 5,
+		WINONA_CATAPULT_POWER_LOAD_SLEEP_MODE = 0.05,
+		WINONA_CATAPULT_POWER_LOAD_IDLE = 0.1,
+		WINONA_CATAPULT_ATTACK_POWER_COST = { fuel = total_day_time / 120, shard = 0.125 },
+		WINONA_CATAPULT_MEGA_LUNAR_POWER_COST = { fuel = total_day_time / 3 + 0.0001, shard = 1 },
+		WINONA_CATAPULT_MEGA_SHADOW_POWER_COST = { fuel = total_day_time / 6 + 0.0001, shard = 1 },
+		WINONA_CATAPULT_SLEEP_MODE_DELAY = 30,
+		WINONA_CATAPULT_BASIC_SLEEP_MODE_DELAY = 20,
 
-        WINONA_SPOTLIGHT_RADIUS = 2.4,
-        WINONA_SPOTLIGHT_MIN_RANGE = 4,
-        WINONA_SPOTLIGHT_MAX_RANGE = 20,
+		TRAP_VINES_DAMAGE = 14,
+		TRAP_VINES_PLANAR_DAMAGE = 20,
+		TRAP_VINES_HIT_COOLDOWN = 1.5,
+		TRAP_VINES_DURATION = 300,
+		TRAP_VINES_SPEEDMULT = 2 / 3,
+
+		WINONA_SPOTLIGHT_RADIUS = 6.4 / 1.5,
+		WINONA_SPOTLIGHT_MIN_RANGE = 5.4,
+		WINONA_SPOTLIGHT_MAX_RANGE = 24,
+		WINONA_SPOTLIGHT_POWER_LOAD_ON = 0.5,
+		WINONA_SPOTLIGHT_POWER_LOAD_OFF = 0.05,
+
+		WINONA_TELEBRELLA_MAX_FUEL_TIME = total_day_time * 15,
+		WINONA_TELEBRELLA_TELEPORT_FUEL = total_day_time,
+		WINONA_TELEBRELLA_RECHARGE_RATE = -15,
+		WINONA_TELEBRELLA_POWER_LOAD_CHARGING = 0.1,
+
+		WINONA_TELEPORT_PAD_FOOTPRINT = 2,
+		WINONA_TELEPORT_PAD_POWER_LOAD_IDLE = 0.05,
+		WINONA_TELEPORT_PAD_POWER_COST_MIN = { fuel = total_day_time / 120, shard = 0.125 },
+		WINONA_TELEPORT_PAD_POWER_COST_MAX = { fuel = total_day_time * 2 + 0.0001, shard = 5.99 },
+
+		WINONA_STORAGE_ROBOT_WORK_RADIUS = 15,
+		WINONA_STORAGE_ROBOT_RUNSPEED = 5,
+		WINONA_STORAGE_ROBOT_FUEL = total_day_time,
+		WINONA_STORAGE_ROBOT_RECHARGE_RATE = -2,
+		WINONA_STORAGE_ROBOT_FOOTPRINT = 1,
+		WINONA_STORAGE_ROBOT_POWER_LOAD_CHARGING = 0.1,
+		WINONA_STORAGE_ROBOT_LOW_FUEL_PCT = 0.02,
 
         WINONA_BATTERY_LOW_MAX_FUEL_TIME = seg_time * 6,
         WINONA_BATTERY_LOW_FUEL_RATE_MULT = .375, --changes max fuel to last 1 full day, while still only costing 2 nitre
+		WINONA_BATTERY_LOW_SHADOW_FUEL_RATE_MULT = .1875, --changes max fuel to last 2 full days
+
         WINONA_BATTERY_HIGH_MAX_FUEL_TIME = total_day_time * 6,
-        WINONA_BATTERY_RANGE = 5,
-        WINONA_BATTERY_MIN_LOAD = .2,
+		WINONA_BATTERY_HIGH_SHARD_DELAY = 4, --seconds
+		WINONA_BATTERY_HIGH_SHARD_REGEN_MULT =
+		{
+			1,
+			0.5,
+			0.25,
+		},
+		WINONA_BATTERY_HIGH_OVERLOAD_THRESHOLD = 2, --seconds
+		WINONA_BATTERY_HIGH_OVERLOAD_DURATION = 10, --seconds
+
+		WINONA_BATTERY_RANGE = 6.6, --includes footprint
+		WINONA_BATTERY_MIN_LOAD = 0.1,
+
+		WINONA_REMOTE_RANGE = 30,
+		WINONA_REMOTE_FUEL = total_day_time,
+		WINONA_REMOTE_COST = total_day_time / 100,
+		WINONA_REMOTE_RECHARGE_RATE = -4,
+		WINONA_REMOTE_POWER_LOAD_CHARGING = 0.1,
+
+        VINEBRIDGE_DURATION = 18,
+        VINEBRIDGE_HEALTH = 200,
 
         --v2 Willow
         BERNIE_HEALTH = 1000,
@@ -3703,7 +3765,10 @@ function Tune(overrides)
         MOON_TREE_CHOPS_SMALL = 8,
         MOON_TREE_CHOPS_NORMAL = 12,
         MOON_TREE_CHOPS_TALL = 16,  -- 4 chops per log
-        MOON_TREE_DEPLOY_SPACING = 4,
+		MOON_TREE_DEPLOY_SPACING = 4,	--DO NOT USE! (use DEPLOYSPACING enums instead)
+										--NOTE: went with PLACER_DEFAULT (matches enum 4), but size 3.2
+										--      instead of LARGE (enum 5), which matches size 4
+										--      This results in no change in behaviour.
 
         MOONSPIDERDEN_WORK = 8,
         MOONSPIDERDEN_CREEPRADIUS = { 8, 12, 14 },
@@ -3987,16 +4052,33 @@ function Tune(overrides)
             MAX_DAMPENING = 1,
             MAX_VELOCITY = 1.2,
             MAX_VELOCITY_MOD = 1,
-            PUSH_BACK_VELOCITY = 1.75,
-            SCARY_MINSPEED_SQR = 1,
+            PUSH_BACK_VELOCITY = 1.75, -- Unused.
+            SCARY_MINSPEED_SQR = 1,  -- Unused.
             SCARY_MINSPEED = 1,
             RUDDER_TURN_SPEED = 0.6,
             NO_BUILD_BORDER_RADIUS = -0.2,
 			FIRE_DAMAGE = 5,
             BOATPHYSICS_COLLISION_TIME_BUFFER = 4 * FRAMES, --now unused.
 
+            SMALL_LEAK_DMG_THRESHOLD = 0.1,
+            MED_LEAK_DMG_THRESHOLD = 0.75,
+
             GRASS_BOAT = {
                 RADIUS = 3,
+            },
+
+            OTTERDEN_BOAT = {
+                RADIUS = 3.75,
+                HEALTH = 100,
+            },
+
+            ANCIENT_BOAT = {
+                RADIUS = 4,
+                HEALTH = 400,
+                MAX_HULL_HEALTH_DAMAGE = 40,
+                SMALL_LEAK_DMG_THRESHOLD = 0.2,
+                MED_LEAK_DMG_THRESHOLD = 0.85,
+                FIRE_DAMAGE = 3,
             },
 
 			GRASSBOAT_LEAK_DAMAGE = {
@@ -4087,6 +4169,12 @@ function Tune(overrides)
                 SHELL =
                 {
                     HEALTH = 40,
+                },
+
+                CRABKING =
+                {
+                    HEALTH = 150,
+                    STACKSIZE = 8,
                 },
             },
 
@@ -4363,7 +4451,7 @@ function Tune(overrides)
         ARMORBRAMBLE_DMG_PLANAR_UPGRADE = 5,
         TRAP_BRAMBLE_USES = 10,
         TRAP_BRAMBLE_DAMAGE = 40,
-        TRAP_BRAMBLE_RADIUS = 2.5,        
+        TRAP_BRAMBLE_RADIUS = 2.5,
         COMPOSTWRAP_SOILCYCLES = 20,
         COMPOSTWRAP_WITHEREDCYCLES = 2,
         COMPOSTWRAP_FERTILIZE = day_time * 6,
@@ -4784,12 +4872,12 @@ function Tune(overrides)
 
         MALBATROSS_DAMAGE_PLAYER_PERCENT = .5,
         MALBATROSS_ATTACK_PERIOD = 4,
-        MALBATROSS_ATTACK_RANGE = 5,
-        MALBATROSS_AOE_RANGE = 3,
+        MALBATROSS_ATTACK_RANGE = 4.5,
+        MALBATROSS_AOE_RANGE = 2.75,
         MALBATROSS_AOE_SCALE = 0.8,
         MALBATROSS_LOSE_TARGET_PERIOD = 60,
         MALBATROSS_BOAT_DAMAGE = 5,
-        MALBATROSS_BOAT_PUSH = 1,
+        MALBATROSS_BOAT_PUSH = 0.75,
         MALBATROSS_NOTHUNGRY_TIME =
         {
             MIN = 15,
@@ -4805,7 +4893,7 @@ function Tune(overrides)
         MALBATROSS_MAX_CHASEAWAY_DIST = 50,
         MALBATROSS_NOTICEPLAYER_DISTSQ = 400, -- 20 * 20
         MALBATROSS_STOLENFISH_AGGROCOUNT = 2,
-        MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.1,
+        MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.3,
 
         OCEANFISH_SHOAL =
         {
@@ -5063,24 +5151,27 @@ function Tune(overrides)
 			trinket_24				= 1,
 		},
 
-        CRABKING_HEALTH = 20000,
-        CRABKING_HEALTH_BONUS = 3000,
+        CRABKING_HEALTH = 12000,
+        CRABKING_HEALTH_BONUS = 1000,
 
         CRABKING_CLAW_BOATDAMAGE = 35,
-        CRABKING_CLAW_HEALTH = 500,
-        CRABKING_CLAW_HEALTH_BOOST = 50,
+        CRABKING_CLAW_HEALTH = 200,
+        CRABKING_CLAW_HEALTH_BOOST = 200,
         CRABKING_CLAW_WALK_SPEED = 1,
         CRABKING_CLAW_RUN_SPEED = 4,
         CRABKING_CLAW_RESPAWN_DELAY = 30,-- time each claw must regen for before being spawnable
-        CRABKING_CLAW_PLAYER_DAMAGE = 15,
+        CRABKING_CLAW_PLAYER_DAMAGE = 40,
+        CRABKING_CLAW_DAMAGE_BOOST = 10,
         CRABKING_CLAW_REGEN_DELAY = 5,  -- time between regening claws while healing
         CRABKING_BASE_CLAWS = 5,
+        CRABKING_BASE_CANNONS = 4,
+        CRABKING_BASE_MINIONS = 3,
 
         CRABKING_MAX_VELOCITY_MOD = 0,
         CRABKING_ANCHOR_DRAG = 10,
 
         CRABKING_STACKS = 20,
-        CRABKING_DEADLY_GEYSERS = 5,
+        CRABKING_DEADLY_GEYSERS = 8,
         CRABKING_GEYSER_BOATDAMAGE = 10,
 
         CRABKING_CAST_TIME = 8,
@@ -5093,8 +5184,8 @@ function Tune(overrides)
         CRABKING_BASE_FREEZE_AMOUNT = 40,
         CRABKING_FREEZE_INCRAMENT = 10,
         CRABKING_FREEZE_RANGE = 10,
-        CRABKING_REGEN = 650,
-        CRABKING_REGEN_BUFF = 100,
+        CRABKING_REGEN = 50,
+        CRABKING_REGEN_BUFF = 75,
 
         CRABKING_RESPAWN_TIME = total_day_time * 20,
         CRABKING_SPAWN_TIME = 1,
@@ -5102,7 +5193,8 @@ function Tune(overrides)
 
         CRABKING_CLAW_THRESHOLD = 0.9,
         CRABKING_HEAL_THRESHOLD = 0.85,
-        CRABKING_FREEZE_THRESHOLD = 0.85,
+        CRABKING_STAGE_2 = 0.85,
+        CRABKING_CLAW_ATTACKRANGE = 4.1,
 
         -- why not.
         CRABKING_DAMAGE = 150,
@@ -5111,12 +5203,55 @@ function Tune(overrides)
         CRABKING_AOE_RANGE = 3,
         CRABKING_AOE_SCALE = 0.8,
         CRABKING_ATTACK_PERIOD = 4,
+        CRABKING_ATTACK_TARGETRANGE = 25,
+        CRABKING_CANNONTIMER = 10,
+
+        CRABKING_STAGE1_THRESHOLD = 0.90,
+
+        CRABKING_FREEZE_THRESHOLD = 1500,
+
+        CRABKING_ICEWALL_HEALTH = 100,
+        CRABKING_ICEWALL_HEALTH_BONUS = 200,
+
+        CRABKING_MOB_HEALTH = 200,
+        CRABKING_MOB_HEALTH_BONUS = 40,
+        CRABKING_MOB_DAMAGE = 30,
+        CRABKING_MOB_ATTACK_PERIOD = 4,
+        CRABKING_MOB_ATTACK_RANGE = 3,
+        CRABKING_MOB_HIT_RANGE = 3,
+        CRABKING_MOB_MELEE_RANGE = 3,
+        CRABKING_MOB_TARGET_DIST = 10,
+        CRABKING_MOB_WAKE_RADIUS = 6,
+        CRABKING_MOB_WALK_SPEED = 4,
+        CRABKING_MOB_RUN_SPEED = 5,
+        CRABKING_MOB_CHASE_TIME = 8,
+
+        CRABKING_MOB_KNIGHT_HEALTH = 1000,
+        CRABKING_MOB_KNIGHT_ATTACK_RANGE = 4.5,
+        CRABKING_MOB_KNIGHT_DAMAGE = 80,
+
+        --CRABKING_CANNONTOWER_WORK = 9,
+        CRABKING_CANNONTOWER_BREACHTIME = 10,
+        CRABKING_CANNONTOWER_HEALTH = 300,
+        CRABKING_CANNONTOWER_HULL_SMASH_DAMAGE = 40,
+        CRABKING_MORTAR_DAMAGE = 20,
+        CRABKING_MORTAR_DAMAGE_BONUS = 5,
+
+        CRABKING_WAVE_ATTACK_TIMEOUT_TIME = 8,
+
+        MORTAR_DAMAGE = 50,
+        MORTAR_DAMAGE_STAGE_1 = 20,
+        MORTAR_DAMAGE_STAGE_2 = 30,
+        MORTAR_DAMAGE_STAGE_3 = 40,
+        MORTAR_DAMAGE_STAGE_4 = 50,
+
+        CRABKING_TAUNTTIME = 10,
 
         TRIDENT =
         {
-            DAMAGE = wilson_attack * 0.8, -- Same damage as an axe... hahaha.
-            OCEAN_DAMAGE = wilson_attack * 2,
-            USES = 150,
+            DAMAGE = wilson_attack * 1.5,
+            OCEAN_DAMAGE = wilson_attack * 2.25,
+            USES = 200,
             SPELL =
             {
                 USE_COUNT = 50,
@@ -5201,7 +5336,8 @@ function Tune(overrides)
             MEETING_RADIUS = 16,
         },
 
-        MESSAGEBOTTLE_NOTE_CHANCE = 0.66,
+        MESSAGEBOTTLE_NOTE_CHANCE = 0.4,
+        MAX_ACTIVE_TREASURE_HUNTS = 10,
 
         SINGINGSHELL_TRIGGER_RANGE = 4,
         SINGINGSHELL_FARM_PLANT_INTERACT_RANGE = 2,
@@ -5251,7 +5387,7 @@ function Tune(overrides)
 
         SHARK =
         {
-            DAMAGE = 30,
+            DAMAGE = 20,
             HEALTH = 1000,
             WALK_SPEED = 1,
             RUN_SPEED = 7,
@@ -5264,7 +5400,7 @@ function Tune(overrides)
             TARGET_DIST = 8, --20,
 
             AOE_RANGE = 3,
-            AOE_SCALE = 0.5,
+            AOE_SCALE = 0.5, -- Unused?
         },
 
         OCEANHORROR =
@@ -5553,6 +5689,7 @@ function Tune(overrides)
 
         COMPOSTWRAP_NUTRIENTS			= { 24, 32, 24 },
         GLOMMERFUEL_NUTRIENTS			= {  8,  8,  8 },
+        MOSQUITOFERTILIZER_NUTRIENTS    = { 12, 12, 12 },        
 
         TREEGROWTH_NUTRIENTS            = {  8, 32,  8 },
 
@@ -5742,7 +5879,7 @@ function Tune(overrides)
 
         MALBATROSS_SPAWNDELAY_BASE = total_day_time * 10,
         MALBATROSS_SPAWNDELAY_RANDOM = total_day_time * 5,
-        MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.25,
+        MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.5,
         SPAWN_MALBATROSS = true,
 
         EVERGREEN_REGROWTH_TIME_MULT = 1,
@@ -5770,7 +5907,7 @@ function Tune(overrides)
         SHARK_SPAWN_CHANCE = 0.075,
         SHARK_TEST_RADIUS = 100,
 
-        GNARWAIL_SPAWN_CHANCE = 0.075,
+        GNARWAIL_SPAWN_CHANCE = 0.1,
         GNARWAIL_TEST_RADIUS = 100,
 
         OCEAN_TRAWLER_SPAWN_FISH_MODIFIER = 2,
@@ -5786,10 +5923,10 @@ function Tune(overrides)
             ["full"] = 0,
         },
         SQUID_CHANCE = {
-            ["new"] = 0.2,
-            ["quarter"] = 0.1,
-            ["half"] = 0.05,
-            ["threequarter"] = 0.025,
+            ["new"] = 0.25,
+            ["quarter"] = 0.125,
+            ["half"] = 0.065,
+            ["threequarter"] = 0.03,
             ["full"] = 0,
         },
 
@@ -6374,13 +6511,16 @@ function Tune(overrides)
         POWDER_MONKEY_HEALTH = 200,
         POWDER_MONKEY_DAMAGE = 20,
 
+        POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_RADIUS_SQ = 350 * 350,
+        POWDER_MONKEY_TERRITORY_TINTED_SEASTACK_CHANCE = { min = 0.04, max = 0.1 },
+
         CUTLESS_DAMAGE = wilson_attack*.8,
         CUTLESS_USES = 150,
 
         PIRATE_SPAWN_MAX = 1,
       --  PIRATE_SPAWN_DELAY = {min=day_time/2, max=20*day_time}, --{min=30, max=180},
         PIRATE_SPAWN_DELAY = {min=20, max=30}, --{min=30, max=180},
-		PIRATE_STASH_INV_SIZE = 20,
+		PIRATE_STASH_INV_SIZE = 30,
 
         CREWMEMBER_TARGET_DSQ = 100, -- 10 * 10
         BOATCREW_LOOT_PER_MEMBER = 3,
@@ -6419,6 +6559,20 @@ function Tune(overrides)
 
         MONKEY_MEDIUM_HAT_PERISHTIME = total_day_time*6,
         POLLY_ROGERS_HAT_PERISHTIME = total_day_time*6,
+
+        MASTER_CREWMAN_MULT =
+        {
+            ANCHOR_RAISE_SPEED = 2,
+            RUDDER_TURN_SPEED = 1.5,
+            OAR_CONSUMPTION = 0.5,
+            LOWER_SAILT_BOOST = 2,
+        },
+
+        BOAT_HEALTH_BUFFER_MULT =
+        {
+            degradedamage = 2,
+            collide = 0.5,
+        },
 
         POLLY_ROGERS_WALK_SPEED= 7,
         POLLY_ROGERS_RUN_SPEED= 10,
@@ -6882,7 +7036,82 @@ function Tune(overrides)
                 ALLEGIANCE_VS_SHADOW_BONUS = 1.1,
 
             },
-          
+
+            WINONA = {
+                INSPECTACLES_COOLDOWNTIME = total_day_time * 0.5,
+                INSPECTACLES_TICK_TIME = 5, -- NOTES(JBK): Time per client side radio signal wave.
+                INSPECTACLES_UPGRADE_CHANCE = 0.25,
+
+                ROSEGLASSES_COOLDOWNTIME = total_day_time * 0.5,
+                ROSEGLASSES_UPGRADE_CHANCE = 0.05,
+                ROSEGLASSES_UPGRADE_CHANCE_INCREASED = 0.25,
+
+                CHARLIE_VINEBRIDGE_LENGTH_TILES = 3, -- How many tiles in a line can this make for each activation.
+                WORMHOLE_DETECTION_RADIUS = 20, -- Units away from a target position for valid action use.
+                TELEPAD_DETECTION_RADIUS = 2, -- Units away for an ideal teleport find, setting to the size of the teleporter approximately.
+
+				BATTERY_EFFICIENCY_RATE_MULT =
+				{
+					1 / (1 + 0.25),	--lasts 25% longer
+					1 / (1 + 0.5),	--lasts 50% longer
+					1 / (1 + 1.0),	--lasts 100% longer
+				},
+				CATAPULT_ATTACK_PERIOD_MULT =
+				{
+					1 / (1 + 0.05),	--5% faster
+					1 / (1 + 0.1),	--10% faster
+					1 / (1 + 0.2),	--20% faster
+				},
+				CATAPULT_AOE_RADIUS_MULT =
+				{
+					1 + 0.25,		--25% bigger
+					1 + 0.5,		--50% bigger
+					1 + 1.0,		--100% bigger
+				},
+				CATAPULT_BOOST_MULT = 1 / (1 + 0.5), --50% faster
+				CATAPULT_BOOST_DURATION = 20,
+				SPOTLIGHT_RADIUS2 = 6.4,
+				SPOTLIGHT_MIN_RANGE2 = 7.8,
+				SPOTLIGHT_MAX_RANGE2 = 26,
+                SPOTLIGHT_HEAT_VALUE = 60, -- NOTES(JBK): less powerful as emberlight from Willow which is 100.
+
+				QUICKCHARGE_MULT = 1 + 1.0, --100% faster
+            },
+
+            WURT = {
+                MAX_MOISTURE_TEMPERATURE_PENALTY_OFFSET = -20,
+                OPTIMAL_TEMPERATURE_DRYING_OFFSET = -1.5, -- New value = 0.5
+                MAX_TEMPERATURE_DRYING_OFFSET = -4, -- New value = 1
+
+                MERM_KING_MAX_HUNGER_MULT = {
+                    1.25, -- Level 1.
+                    1.50, -- Level 2.
+                },
+
+                MERM_KING_HUNGER_RATE_MULT = 0.85,
+
+                WETNESS_SANITY_DAPPERNESS = {
+                    100/(day_time*4.5), -- "35.5" per day (Level 1).
+                    100/(day_time*3.0), -- "53.3" per day (Level 2).
+                },
+
+                WETNESS_MOISTURE_ABSORBTION = {
+                    3.3333, -- Level 1: Extra health = ~30.
+                    2.0,    -- Level 2: Extra health =  50.
+                },
+
+                WETNESS_MOISTURE_HEALING = {
+                    { amount = 0.5, period = 6.5 }, -- Level 1: "37" a day.
+                    { amount = 0.5, period = 4.0 }, -- Level 2: "60" a day.
+                },
+
+                ALLEGIANCE_MARSHTILE_MOISTURE_RATE = 0.5,
+
+                ALLEGIANCE_SHADOW_RESIST = 0.9,
+                ALLEGIANCE_VS_LUNAR_BONUS = 1.1,
+                ALLEGIANCE_LUNAR_RESIST = 0.9,
+                ALLEGIANCE_VS_SHADOW_BONUS = 1.1,
+            },
         },
 
         WILSON_BEARD_BITS ={
@@ -7405,7 +7634,7 @@ function Tune(overrides)
         JUNK_PILE_STAGES = 3,
 		JUNK_FALL_DAMAGE = 30,
 
-        SCRAP_MONOCLE_EXTRA_VIEW_DIST = 15,
+        SCRAP_MONOCLE_EXTRA_VIEW_DIST = 20,
         SCRAP_MONOCLEHAT_PERISHTIME = total_day_time * 12,
 
         BEESWAX_SPRAY_USES = 75,
@@ -7452,6 +7681,138 @@ function Tune(overrides)
                 SPEED = 0.85,
             },
         },
+
+        -- Meta 4 / Ocean QoL
+
+        MONKEY_PIRATE_TREASURE_BOAT_CHANCE = 0.35,
+        CURSED_TRINKET_LIFETIME = seg_time*8,
+
+        OTTER_WATER_HOP_DISTANCE = 4.0,
+        OTTER_HEALTH = 350,
+        OTTER_DAMAGE = 35,
+        OTTER_RUNSPEED = 6,
+        OTTER_WALKSPEED = 3,
+        OTTER_HIT_RANGE = 2,
+        OTTER_ATTACK_RANGE = 3,
+        OTTER_ATTACK_PERIOD = 4,
+        OTTER_KEEPTARGET_DISTANCE = 20,
+        OTTER_SHARETARGET_DISTANCE = 20,
+        OTTER_MAX_INVENTORY_ITEMS = 3,
+        OTTER_EAT_DELAY = seg_time * 2,
+
+        OTTERDEN_HEALTH = 350,
+        OTTERDEN_REGEN_PERIOD = total_day_time*6,
+        OTTERDEN_SPAWN_PERIOD = 3*seg_time,
+        OTTERDEN_INVENTORY_SLOTS = 4,
+        OTTERDEN_ENABLED = true,
+
+        BOAT_OTTERDEN_ERODE_RATE = 1,
+
+        ANCIENTTREE_GROW_TIME =
+        {
+            { base =  5*total_day_time, random = 2*total_day_time }, -- Seed:   3-7  days.
+            { base = 10*total_day_time, random = 2*total_day_time }, -- Sprout: 8-12 days.
+        },
+
+        ANCIENTTREE_WORK = 20,
+        ANCIENT_TREE_SEED_CHANCE_RATE = 0.004, -- Per day. Reaches 0.6 at day 150.
+        ANCIENT_TREE_SEED_MIN_CHANCE = 0.1,
+        ANCIENT_TREE_SEED_MAX_CHANCE = 0.6,
+
+        ANCIENTTREE_NIGHTVISION_FRUIT_BUFF_DURATION = total_day_time / 2,
+
+        BOAT_REPAIR_KELP_REPAIR_TIME_SMALL_LEAK = total_day_time * .75,
+        BOAT_REPAIR_KELP_REPAIR_TIME_MED_LEAK   = total_day_time * .50,
+
+        ANCIENTFRUIT_GEM_MIN_HEAT = 40,
+        ANCIENTFRUIT_GEM_HATCH_TIME = 30,
+
+        ANCIENTFRUIT_GEM_TEMPERATURE_THRESHOLD =
+        {
+            MIN = 15,
+            WARMED = 25,
+            HEATED = 35,
+            MAX = 60,
+        },
+
+        SALTLICK_IMPROVED_MAX_LICKS = 480, -- 30 days @ 8 beefalo licks per day (self / (SALTLICK_DURATION * SALTLICK_BEEFALO_USES))
+
+        BOATLEAK_PLUG_WETNESS = 1,
+
+        BOAT_LEAK_PLUGGED_TIME = 20,
+        BOAT_LEAK_PLUGGED_TIME_VARIANCE = 5,
+
+        WURT_OFFERING_POT_RANGE = 7,
+        WURT_MAX_OFFERING_REGEN_MULT = 0.5,
+
+        WURT_TERRAFORMING_TIME = 4*seg_time,
+        WURT_TERRAFORMING_RECHARGE_TIME = total_day_time,
+        WURT_TERRAFORMING_FX_BASE = 2,
+        WURT_TERRAFORMING_FX_RAND = 10,
+        WURT_TERRAFORMING_TILERANGE = 3,
+        WURT_TERRAFORMING_SHADOW_PROCCHANCE = 0.5,
+
+        WURT_PATHFINDER_RANGE = 30,
+        WURT_MERM_INFESTATION_TIMER = 30,
+        WURT_BONUS_FERT = 8,
+
+        MOSQUITOBOMB_MOSQUITOS = 4,
+        BOMB_MOSQUITO_RANGE = 3,
+        BOMB_MOSQUITO_DAMAGE = wilson_attack*1.75,
+
+        MERM_HEALTHREGEN_TICK_VALUE = 5,
+        MERM_HEALTHREGEN_TICK_VALUE_PLAYER = 1,
+
+        MERM_HEALTHREGEN_DURATION = 10,
+        MERM_HEALTHREGEN_TICK_RATE = 1,
+
+        ARMOR_MERMARMORHAT = wilson_health*2*multiplayer_armor_durability_modifier,
+        ARMOR_MERMARMORHAT_ABSORPTION = .3*multiplayer_armor_absorption_modifier,
+
+        ARMOR_MERMARMORUPGRADEDHAT = wilson_health*3*multiplayer_armor_durability_modifier,
+        ARMOR_MERMARMORUPGRADEDHAT_ABSORPTION = .5*multiplayer_armor_absorption_modifier,
+
+        MERM_TOOL = {
+            USES = 50,
+            DAMAGE = wilson_attack * .5,
+            CONSUMPTION = {
+                CHOP = 1,
+                MINE = 3,
+                DIG  = 3,
+                TILL  = 1,
+            },
+            EFFICIENCY = 0.25,
+        },
+
+        MERM_TOOL_UPGRADED = {
+            USES = 100,
+            DAMAGE = wilson_attack * .5,
+            CONSUMPTION = {
+                CHOP = 1,
+                MINE = 3,
+                DIG  = 3,
+                TILL  = 1,
+            },
+            EFFICIENCY = 0.5,
+        },
+
+        WURT_PLANAR_BUFF_DAMAGE = 20,
+        WURT_PLANAR_DAMAGE_BUFF_MULT = 3/5,
+        WURT_PLANAR_TIME_BUFF_LASTS = 8*seg_time,
+
+        MERMKING_TRIDENTBUFF_TRIPLEHIT_CHANCE = 0.33,
+        MERMKING_TRIDENTBUFF_TRIPLEHIT_DAMAGECHANGE = 0.5,
+        MERMKING_CROWNBUFF_DODGE_COOLDOWN = 10,
+        MERMKING_CROWNBUFF_DODGE_SPEED = 8.5,
+        MERMKING_CROWNBUFF_SANITYAURA_MOD = 0.95,
+        MERMKING_PAULDRONBUFF_DEFENSEPERCENT = 0.15,
+        MERMKING_PAULDRONBUFF_DEFENSEPERCENT_PLAYER = 0.10,
+
+        MERM_LUNAR_GUARD_HEALTH = 660+40,
+        MERM_LUNAR_HEALTH = (250 * 2)+40,
+        MERM_LUNAR_THORN_DAMAGE = 40,
+
+
     }
 
     TUNING_MODIFIERS = {}

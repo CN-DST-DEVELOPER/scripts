@@ -6,27 +6,13 @@ require "behaviours/chaseandattack"
 require "behaviours/leash"
 local BrainCommon = require("brains/braincommon")
 
-local MIN_FOLLOW_DIST = 5
-local TARGET_FOLLOW_DIST = 7
-local MAX_FOLLOW_DIST = 10
- 
-local RETURN_DIST = 4 
+local RETURN_DIST = 4
 local BASE_DIST = 2
-
-local RUN_AWAY_DIST = 7
-local STOP_RUN_AWAY_DIST = 15
-
-local SEE_FOOD_DIST = 10
 
 local MAX_WANDER_DIST = 20
 
 local MAX_CHASE_TIME = 10
 local MAX_CHASE_DIST = 30
-
-local TIME_BETWEEN_EATING = 30
-
-local LEASH_RETURN_DIST = 15
-local LEASH_MAX_DIST = 20
 
 local SEE_PLAYER_DIST = 5
 local STOP_RUN_DIST = 10
@@ -35,21 +21,9 @@ local NO_LOOTING_TAGS = { "INLIMBO", "catchable", "fire", "irreplaceable", "heav
 local NO_PICKUP_TAGS = deepcopy(NO_LOOTING_TAGS)
 table.insert(NO_PICKUP_TAGS, "_container")
 
-local PICKUP_ONEOF_TAGS = { "_inventoryitem", "pickable", "readyforharvest" }
-
 local PowderMonkeyBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
-
-local ValidFoodsToPick =
-{
-    "berries",
-    "cave_banana",
-    "carrot",
-    "red_cap",
-    "blue_cap",
-    "green_cap",
-}
 
 local function findmaxwanderdistfn(inst)
     local dist = MAX_WANDER_DIST
@@ -61,41 +35,38 @@ local function findmaxwanderdistfn(inst)
 end
 
 local function findwanderpointfn(inst)
-    local loc = inst.components.knownlocations:GetLocation("home")
     local boat = inst:GetCurrentPlatform()
-    if boat then
-        loc = Vector3(boat.Transform:GetWorldPosition())
-    end
-    return loc
+    return (boat ~= nil and boat:GetPosition())
+        or inst.components.knownlocations:GetLocation("home")
 end
 
 
 local ROWBLOCKER_MUSTNOT = {"FX", "NOCLICK", "DECOR", "INLIMBO", "_inventoryitem"}
 local function rowboat(inst)
-
-    if not inst.components.crewmember or not inst.components.crewmember:Shouldrow() then
+    if not inst.components.crewmember
+            or not inst.components.crewmember:Shouldrow()
+            or inst.sg:HasStateTag("busy") then
         return nil
     end
 
-    if inst.sg:HasStateTag("busy") then
-        return
+    local boat = inst:GetCurrentPlatform() == inst.components.crewmember.boat and inst:GetCurrentPlatform()
+    if not boat then
+        return nil
     end
 
     local pos = inst.rowpos
-
-    local boat = inst:GetCurrentPlatform() == inst.components.crewmember.boat and inst:GetCurrentPlatform()
-    if boat and not pos then
-        local radius = boat.components.walkableplatform.platform_radius - 0.35 
+    if not pos then
+        local radius = boat.components.walkableplatform.platform_radius - 0.35
         local blocked = true
         local count = 0
         while blocked == true do
-            pos = Vector3(boat.Transform:GetWorldPosition())
+            pos = boat:GetPosition()
 
-            local offset = FindWalkableOffset(pos, math.random()*2*PI, radius, 12, false,false,nil,false,true)
+            local offset = FindWalkableOffset(pos, TWOPI*math.random(), radius, 12, false,false,nil,false,true)
             if offset then
                 pos = pos + offset
             end
-            
+
             local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 1.3, nil,ROWBLOCKER_MUSTNOT)
 
             if #ents == 1 and ents[1] == inst then
@@ -113,61 +84,53 @@ local function rowboat(inst)
             end
         end
     end
-    if pos and boat then
+
+    if pos then
         inst.rowpos = pos
         return BufferedAction(inst, nil, ACTIONS.ROW, nil, pos)
- --   else
- --       inst.rowpos = nil
-    end
-end
-
-local function removemonkey(inst)
-    local item = inst.stealitem
-    if item then
-        item:RemoveTag("piratemonkeyloot")
-        item:RemoveEventCallback("onremove", removemonkey, inst)
     end
 end
 
 local function reversemastcheck(ent)
-    if ent.components.mast and ent.components.mast.inverted and ent:HasTag("saillowered") and  not ent:HasTag("sail_transitioning") then
-        return true
-    end
+    return ent.components.mast ~= nil
+        and ent.components.mast.inverted
+        and ent:HasTag("saillowered")
+        and not ent:HasTag("sail_transitioning")
 end
 
 local function mastcheck(ent)
-    if ent.components.mast and ent:HasTag("sailraised") and not ent.components.mast.inverted then --and ent:HasTag("sailraised") and not ent:HasTag("sail_transitioning") then
-        return true
-    end
+    return ent.components.mast ~= nil
+        and not ent.components.mast.inverted
+        and ent:HasTag("sailraised")
 end
 
 local function anchorcheck(ent)
-    if ent.components.anchor and ent:HasTag("anchor_raised") and not ent:HasTag("anchor_transitioning") then
-        return true
-    end
+    return ent.components.anchor ~= nil
+        and ent:HasTag("anchor_raised")
+        and not ent:HasTag("anchor_transitioning")
 end
 
 local function chestcheck(ent)
-    if ent:HasTag("chest") and (not ent.components.container or not ent.components.container:IsEmpty()) then
-        return true
-    end
+    return
+        ent.components.container ~= nil and
+        not ent.components.container:IsEmpty() and
+        ent:HasTag("chest") and
+        not ent:HasTag("monkeyproof")
 end
 
 local DOTINKER_MUST_HAVE = {"structure"}
 local function Dotinker(inst)
-
-    if inst.sg:HasStateTag("busy") then
-        return
-    end
-
-    if  inst.components.timer and inst.components.timer:TimerExists("reactiondelay") then
+    if inst.sg:HasStateTag("busy")
+            or (inst.components.timer ~= nil
+                and inst.components.timer:TimerExists("reactiondelay")
+            ) then
         return nil
     end
 
-    local target = nil
-
-    local bc = inst.components.crewmember and inst.components.crewmember.boat and inst.components.crewmember.boat.components.boatcrew or nil
-
+    local bc = (inst.components.crewmember ~= nil
+        and inst.components.crewmember.boat ~= nil
+        and inst.components.crewmember.boat.components.boatcrew)
+        or nil
     if bc then
         local x,y,z = inst.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x, y, z, 10, DOTINKER_MUST_HAVE)
@@ -193,20 +156,15 @@ local function Dotinker(inst)
         end
 
         if #ents > 0 then
-            target = ents[1]
-        end
-
-        if target then
+            local target = ents[1]
             inst.tinkertarget = target
-          
+
             bc:reserveinkertarget(target)
             if anchorcheck(target) then
                 return BufferedAction(inst, target, ACTIONS.LOWER_ANCHOR)
-            end
-            if reversemastcheck(target) then
+            elseif reversemastcheck(target) then
                 return BufferedAction(inst, target, ACTIONS.RAISE_SAIL)
-            end
-            if mastcheck(target) then
+            elseif mastcheck(target) then
                 return BufferedAction(inst, target, ACTIONS.HAMMER)
             end
         end
@@ -222,7 +180,8 @@ local RETARGET_MUST_TAGS = { "_combat" }
 local RETARGET_CANT_TAGS = { "playerghost" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
 
-local CHEST_MUST_HAVE = {"chest"}
+local CHEST_MUST_TAGS = { "chest", "_container" }
+local CHEST_CANT_TAGS = { "monkeyproof" }
 
 local function shouldsteal(inst)
 
@@ -233,22 +192,22 @@ local function shouldsteal(inst)
     inst.nothingtosteal = nil
     if inst.components.inventory:IsFull() then
         return nil
-    end        
+    end
 
     if inst.components.combat.target and not inst.components.combat:InCooldown() then
         return nil
     end
 
     local boattarget = inst.components.crewmember and inst.components.crewmember.boat and inst.components.crewmember.boat.components.boatcrew and inst.components.crewmember.boat.components.boatcrew.target or nil
-
-    if (inst:GetCurrentPlatform() and inst.components.crewmember and inst:GetCurrentPlatform() == inst.components.crewmember.boat ) and not boattarget then
+    local current_platform = inst:GetCurrentPlatform()
+    if not boattarget and (current_platform and inst.components.crewmember and current_platform == inst.components.crewmember.boat ) then
         return nil
     end
 
     local x,y,z = inst.Transform:GetWorldPosition()
     local range = 15
-    
-    local ents = TheSim:FindEntities(x, y, z, range, ITEM_MUST,ITEM_MUSTNOT)
+
+    local ents = TheSim:FindEntities(x, y, z, range, ITEM_MUST, ITEM_MUSTNOT)
 
     if #ents > 0 then
         for i=#ents,1,-1 do
@@ -281,39 +240,37 @@ local function shouldsteal(inst)
         end
         inst.itemtosteal = ents[1]
         return BufferedAction(inst, inst.itemtosteal, ACTIONS.PICKUP)
-        --return true
     else
 
-        -- NOTING TO PICK UP.. 
+        -- NOTHING TO PICK UP.
 
         -- LOOK FOR A CHEST TO BUST
         local bc = inst.components.crewmember and inst.components.crewmember.boat and inst.components.crewmember.boat.components.boatcrew or nil
         if bc then
             local target = nil
-            local x,y,z = inst.Transform:GetWorldPosition()
-            local ents = TheSim:FindEntities(x, y, z, 10, CHEST_MUST_HAVE)
-            if #ents > 0 then
-                for i=#ents,1,-1 do
+            local chests = TheSim:FindEntities(x, y, z, 10, CHEST_MUST_TAGS, CHEST_CANT_TAGS)
+            if #chests > 0 then
+                for i=#chests,1,-1 do
 
-                    local ent = ents[i]
+                    local chest = chests[i]
                     local keep = false
 
-                    if chestcheck(ent) then
+                    if chestcheck(chest) then
                         keep = true
                     end
 
-                    if not bc or (bc:checktinkertarget(ent) and keep == true) then
+                    if not bc or (bc:checktinkertarget(chest) and keep == true) then
                         keep = false
                     end
 
                     if not keep then
-                        table.remove(ents,i)
+                        table.remove(chests,i)
                     end
                 end
             end
 
-            if #ents > 0 then
-                target = ents[1]
+            if #chests > 0 then
+                target = chests[1]
             end
 
             if target and chestcheck(target) then
@@ -322,17 +279,13 @@ local function shouldsteal(inst)
         end
         -- LOOK FOR SOMEONE TO PUNCH
 
-        if TheWorld.components.piratespawner and TheWorld.components.piratespawner.queen and TheWorld.components.piratespawner.queen.components.timer:TimerExists("right_of_passage") then
+        if TheWorld.components.piratespawner
+                and TheWorld.components.piratespawner.queen
+                and TheWorld.components.piratespawner.queen.components.timer:TimerExists("right_of_passage") then
             inst.nothingtosteal = true
             return nil
         end
---[[
-        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-        if not equipped or not equipped.prefab == "cutless" then
-            inst.nothingtosteal = true
-            return nil
-        end
-]]
+
         if not inst.components.combat.target then
             local target = FindEntity(
                     inst,
@@ -349,11 +302,11 @@ local function shouldsteal(inst)
                         local count = 0
                         for k,v in pairs(guy.components.inventory.itemslots) do
                             local keep = true
-                            
+
                             if v:HasTag("nosteal") then
                                 keep = false
                             end
-                        
+
                             if keep == true then
                                 count = count +1
                             end
@@ -383,16 +336,8 @@ local function shouldsteal(inst)
                 return BufferedAction(inst, target, ACTIONS.STEAL)
             else
                 inst.nothingtosteal = true
-            end    
+            end
         end
-    end
-end
-
-local function StealAction(inst)
-    local item = inst.itemtosteal 
-    inst.itemtosteal = nil
-    if item then
-        return BufferedAction(inst, item, ACTIONS.PICKUP)
     end
 end
 
@@ -448,13 +393,12 @@ local function DoAbandon(inst)
     end
 
     if not inst.abandon then
-        return
+        return nil
     end
 
     local pos = Vector3(0,0,0)
     local platform = inst:GetCurrentPlatform()
     if platform then
-    
         local x,y,z = inst.Transform:GetWorldPosition()
         local clear = false
         local count = 0
@@ -464,10 +408,11 @@ local function DoAbandon(inst)
             local radius = platform.components.walkableplatform.platform_radius - 0.5
             local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
 
-            local boatpos = Vector3(platform.Transform:GetWorldPosition())
+            local boatpos = platform:GetPosition()
 
             pos = Vector3( boatpos.x+offset.x,0,boatpos.z+offset.z )
 
+            -- SAM should offest be getting applied twice here...?
             if not TheWorld.Map:GetPlatformAtPoint(pos.x+ offset.x, pos.z+offset.z) then
                 clear = true
             end
@@ -519,32 +464,36 @@ local function HarvestBanana(inst)
     end
 end
 
-local function bananahandoff(inst)
-    -- has banana
-
-    if not TheWorld.components.piratespawner or not TheWorld.components.piratespawner.queen then
-        return nil
-    end
-
-    if TheWorld.components.piratespawner.queen then
-        if TheWorld.components.piratespawner.queen.sg:HasStateTag("busy") then
-            return nil
-        end
-    end
-
-    if inst.components.crewmember then 
-        return nil
-    end
-
-    local banana = inst.components.inventory:FindItem(function(item) 
-            return item:HasTag("monkeyqueenbribe")
-        end)
-
-    if banana and TheWorld.components.piratespawner and TheWorld.components.piratespawner.queen then
-        return BufferedAction(inst, TheWorld.components.piratespawner.queen, ACTIONS.GIVE, banana )
-    end   
+local function item_is_monkeyqueen_bribe(item)
+    return item:HasTag("monkeyqueenbribe")
 end
 
+local function bananahandoff(inst)
+    -- has banana
+    if not TheWorld.components.piratespawner then
+        return nil
+    end
+
+    local queen = TheWorld.components.piratespawner.queen
+    if not queen or queen.sg:HasStateTag("busy") then
+        return nil
+    end
+
+    if inst.components.crewmember then
+        return nil
+    end
+
+    local banana = inst.components.inventory:FindItem(item_is_monkeyqueen_bribe)
+    if banana then
+        return BufferedAction(inst, queen, ACTIONS.GIVE, banana)
+    end
+end
+
+local function is_stashable_item(item)
+    return item.prefab ~= "cave_banana"
+        and item.prefab ~= "cave_banana_cooked"
+        and not item:HasTag("personal_possession")
+end
 local function stashhomeloot(inst)
 
     local home = (inst.components.homeseeker ~= nil and inst.components.homeseeker.home)
@@ -555,84 +504,103 @@ local function stashhomeloot(inst)
         return nil
     end
 
-    local item = inst.components.inventory:FindItem(function(item) 
-            return not item:HasTag("personal_possession") and item.prefab ~= "cave_banana" and item.prefab ~= "cave_banana_cooked"
-        end)
+    local item = inst.components.inventory:FindItem(is_stashable_item)
     if item then
         return BufferedAction(inst, home, ACTIONS.GOHOME)
     end
 end
 
+
 local CANNON_MUST = {"boatcannon"}
 local BOAT_MUST = {"boat"}
-local function gotocannon(inst)
-    if inst.components.crewmember then
-        return nil
+
+local function hastargetboat(inst, arc)
+    local px, py, pz = inst.Transform:GetWorldPosition()
+
+    local cannons
+    if inst.components.crewmember and inst.components.crewmember.boat then
+        cannons = inst.components.crewmember.boat.cannons or {}
+    else
+        cannons = TheSim:FindEntities(px, py, pz, 25, CANNON_MUST) or {}
     end
-    local pos = Vector3(inst.Transform:GetWorldPosition())
 
-    local cannons = TheSim:FindEntities(pos.x, pos.y, pos.z, 25, CANNON_MUST)
+    if #cannons > 0 then
+        local targetboats = TheSim:FindEntities(px, py, pz, 25, BOAT_MUST)
 
-    for i,cannon in ipairs(cannons) do
-        if not cannon.operator or cannon.operator == inst then
-            local targetboats = TheSim:FindEntities(pos.x, pos.y, pos.z, 25, BOAT_MUST)
-            if #targetboats > 0 then
-                for i, boat in ipairs(targetboats) do
-                    if not cannon.components.timer:TimerExists("monkey_biz") then
-                        local boatpos = Vector3(boat.Transform:GetWorldPosition())
-                        local angle =cannon:GetAngleToPoint(boatpos.x,boatpos.y,boatpos.z)
-                        if math.abs( DiffAngle(angle, cannon.Transform:GetRotation()) ) < 45 then
-                            local cannonpos = Vector3(cannon.Transform:GetWorldPosition())
-                            local angle = (cannon.Transform:GetRotation() -180) * DEGREES
-                            local offset = FindWalkableOffset(cannonpos, angle, 2, 12, true, false, nil, true)
-                            if offset and inst:GetDistanceSqToPoint(cannonpos+offset) > (0.25*0.25) then
-
-                                cannon.operator = inst
-                                inst.cannon = cannon
-                                
-                                return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, cannonpos+offset)
-                            end
+        if #targetboats > 0 then
+            for _, boat in ipairs(targetboats) do
+                if not inst.components.crewmember or boat ~= inst.components.crewmember.boat then
+                    for _, cannon in ipairs(cannons) do
+                        if cannon:IsValid() and not cannon.components.timer:TimerExists("monkey_biz") and cannon:GetDistanceSqToInst(boat) < 25*25 then
+                            return {cannon=cannon,boat=boat}
                         end
                     end
                 end
             end
         end
+    end
+end
+
+local function findcannonspot(inst, cannon, boat)
+    local cannonpos = cannon:GetPosition()
+    local radius = 2
+    local theta = boat:GetAngleToPoint(cannonpos.x, cannonpos.y, cannonpos.z)* DEGREES
+    local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
+
+    if offset and inst:GetDistanceSqToPoint(cannonpos+offset) > (0.25*0.25) then
+        return cannonpos+offset
+    end
+end
+
+
+local function gotocannon(inst)
+    local arc = (not inst.components.crewmember and 45) or nil
+    local data = hastargetboat(inst, arc)
+    if data and data.cannon and data.boat then
+        local pos = findcannonspot(inst, data.cannon, data.boat)
+        if pos then
+            return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, pos)
+        end
+    end
+end
+
+local function monkeyinarc(inst, cannon, target)
+
+
+    local tx,ty,tz = target.Transform:GetWorldPosition()
+    local mx,my,mz = inst.Transform:GetWorldPosition()
+    local angle_to_target = cannon:GetAngleToPoint(tx, ty, tz)
+    local angle_to_monkey = cannon:GetAngleToPoint(mx, my, mz)
+
+    local function finddiff(a1,a2)
+        local diff = math.abs(a1 - a2)
+        if diff > 180 then
+            diff = math.abs(diff - 360)
+        end
+        return diff
+    end
+    local anglediff =  finddiff(angle_to_target,angle_to_monkey)
+    
+    print(inst.GUID, anglediff)
+
+    if anglediff < 90 then
+        return true
     end
 end
 
 local function firecannon(inst)
-    if inst.components.crewmember then
-        return nil
-    end
-    local pos = Vector3(inst.Transform:GetWorldPosition())
+    local arc = (not inst.components.crewmember and 45) or nil
+    local data = hastargetboat(inst, arc)
 
-    local cannon = inst.cannon
-    if cannon and cannon:IsValid() then
-        local targetboats = TheSim:FindEntities(pos.x, pos.y, pos.z, 25, BOAT_MUST)
-        if #targetboats > 0 then
-            for i, boat in ipairs(targetboats) do
-                if not cannon.components.timer:TimerExists("monkey_biz") then
-                    local boatpos = Vector3(boat.Transform:GetWorldPosition())
-                    local angle =cannon:GetAngleToPoint(boatpos.x,boatpos.y,boatpos.z)
-                    if math.abs( DiffAngle(angle, cannon.Transform:GetRotation()) ) < 45 then
-                        local cannonpos = Vector3(cannon.Transform:GetWorldPosition())
-                        local angle = (cannon.Transform:GetRotation() -180) * DEGREES
-                        local offset = FindWalkableOffset(cannonpos, angle, 2, 12, true, false, nil, true)
-
-                        if offset ~= nil and inst:GetDistanceSqToPoint(cannonpos+offset) <= (0.25*0.25) then
-                            return BufferedAction(inst, cannon, ACTIONS.BOAT_CANNON_SHOOT)
-                        end
-                    end
-                end
-            end
-        end
-    else
-        inst.cannon = nil
+    if data and data.cannon and data.boat and data.cannon:GetDistanceSqToInst(inst) < 2*2 and data.boat and not monkeyinarc(inst, data.cannon, data.boat) then
+        local bx, by, bz = data.boat.Transform:GetWorldPosition()
+        data.cannon.Transform:SetRotation(data.cannon:GetAngleToPoint(bx, by, bz) + math.random()*60-30)
+        return BufferedAction(inst, data.cannon, ACTIONS.BOAT_CANNON_SHOOT)
     end
 end
 
 local function shouldrun(inst)
-    return inst.components.timer:TimerExists("hit") and inst.components.combat.target
+    return inst.components.combat.target ~= nil and inst.components.timer:TimerExists("hit")
 end
 
 function PowderMonkeyBrain:OnStart()
@@ -664,17 +632,17 @@ function PowderMonkeyBrain:OnStart()
         DoAction(self.inst, gotocannon, "gotocannon", true ),
 
         DoAction(self.inst, rowboat,"rowing",nil,3),
-        
+
         ChattyNode(self.inst, "MONKEY_TALK_RETREAT",
             Follow(self.inst, ReturnToBoat, 0, 1, 2)),
 
         -- if should run away, go to and stay on your own boat.
         WhileNode(function() return ShouldRunFn(self.inst) end, "running away",
-            Leash(self.inst, function() return self.inst.components.crewmember and 
-                                        self.inst.components.crewmember.boat and 
-                                        Vector3(self.inst.components.crewmember.boat.Transform:GetWorldPosition())
+            Leash(self.inst, function() return self.inst.components.crewmember ~= nil and 
+                                        self.inst.components.crewmember.boat ~= nil and 
+                                        self.inst.components.crewmember.boat:GetPosition()
                                     end, RETURN_DIST, BASE_DIST)),
-        
+
         -- otherwise , tinter with stuff and
         DoAction(self.inst, Dotinker, "tinker", true ),
 
@@ -690,7 +658,11 @@ function PowderMonkeyBrain:OnStart()
                 DoAction(self.inst, GoToHut, "Go Home", true))),
 
         DoAction(self.inst, HarvestBanana, "harvestbanana", true ),
-        Wander(self.inst, function() return findwanderpointfn(self.inst) end, function() return findmaxwanderdistfn(self.inst) end, {minwalktime=0.2,randwalktime=.8,minwaittime=1,randwaittime=5})
+        Wander(self.inst,
+            function() return findwanderpointfn(self.inst) end,
+            function() return findmaxwanderdistfn(self.inst) end,
+            {minwalktime=0.2,randwalktime=.8,minwaittime=1,randwaittime=5}
+        )
 
     }, .25)
     self.bt = BT(self.inst, root)

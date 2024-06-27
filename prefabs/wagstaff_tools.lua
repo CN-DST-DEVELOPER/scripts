@@ -11,7 +11,7 @@ local function OnPickup(inst)
     inst.Light:Enable(false)
 end
 
-local function nameupdater(inst)
+local function displaynamefn(inst)
     if ThePlayer and ThePlayer.prefab ~= "winona" then
         return STRINGS.NAMES[string.upper(inst.prefab.."_LAYMAN")]
     else
@@ -101,10 +101,7 @@ local function maketool(name, build, bank, state ,erodeparam)
 
         MakeInventoryFloatable(inst, "med", 0.05, 0.68)
 
-        inst.displaynamefn = nameupdater
-
-        inst:ListenForEvent("ms_playerdespawn", nameupdater, TheWorld)
-        inst:ListenForEvent("ms_playerdespawnanddelete", nameupdater, TheWorld)
+        inst.displaynamefn = displaynamefn
 
         inst.scrapbook_specialinfo = "WAGSTAFF_TOOL"
 
@@ -136,7 +133,7 @@ local function maketool(name, build, bank, state ,erodeparam)
 end
 
 return maketool("wagstaff_tool_1", "wagstaff_tools","wagstaff_tools_all", "stethescope", -0.20),
-       maketool("wagstaff_tool_2", "wagstaff_tools","wagstaff_tools_all", "radio", -0.3),
+       maketool("wagstaff_tool_2", "wagstaff_tools","wagstaff_tools_all", "wrench", -0.172),
        maketool("wagstaff_tool_3", "wagstaff_tools","wagstaff_tools_all", "book", -0.175),
        maketool("wagstaff_tool_4", "wagstaff_tools","wagstaff_tools_all", "multitool",-0.136),
-       maketool("wagstaff_tool_5", "wagstaff_tools","wagstaff_tools_all", "wrench", -0.172)
+       maketool("wagstaff_tool_5", "wagstaff_tools","wagstaff_tools_all", "radio", -0.3)

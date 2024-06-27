@@ -32,7 +32,7 @@ local gnarwail_attack_horn_loot = {"gnarwail_horn"}
 -- We try to leverage FindSwimmableOffset to identify a resurface location that is in the ocean and not under a boat.
 local function TryGnarwailResurface(gnarwail_instance, horn_position)
     local resurface_radius = TUNING.MAX_WALKABLE_PLATFORM_RADIUS + TUNING.MAX_WALKABLE_PLATFORM_RADIUS + gnarwail_instance:GetPhysicsRadius(0)
-    local emerge_offset = FindSwimmableOffset(horn_position, math.random() * PI * 2, resurface_radius)
+    local emerge_offset = FindSwimmableOffset(horn_position, math.random() * TWOPI, resurface_radius)
     if emerge_offset then
         gnarwail_instance:ReturnToScene()
         gnarwail_instance.Transform:SetPosition(horn_position.x + emerge_offset.x, horn_position.y + emerge_offset.y, horn_position.z + emerge_offset.z)

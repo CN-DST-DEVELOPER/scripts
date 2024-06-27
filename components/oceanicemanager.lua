@@ -34,6 +34,7 @@ local _ice_damage_prefabs_grid = nil
 local WIDTH = nil
 local HEIGHT = nil
 
+local CRACK_MUST_TAGS = {"ice_crack_fx"}
 local IGNORE_ICE_DROWNING_ONREMOVE_TAGS = { "ignorewalkableplatforms", "ignorewalkableplatformdrowning", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO" }
 
 --------------------------------------------------------------------------
@@ -71,8 +72,7 @@ local function spawn_degrade_piece(center_x, center_z, spawn_angle)
     ice_degrade_fx.Transform:SetPosition(center_x, 0, center_z)
 end
 
-
-local function destroy_ice_at_point(world, dx, dz, oceanicemanager)
+local function destroy_ice_at_point(world, dx, dz, oceanicemanager, data)
     -- HACK for stopping the ice breaking until better plan is implimented
     local sharkboimanager = world.components.sharkboimanager
     if sharkboimanager ~= nil and sharkboimanager.arena ~= nil then
@@ -80,14 +80,13 @@ local function destroy_ice_at_point(world, dx, dz, oceanicemanager)
         if sharkboi ~= nil then
             if sharkboi:GetDistanceSqToPoint(dx, 0, dz) < 4 * 4 then
                 sharkboimanager:PauseArenaShrinking_Hack()
-                world:DoTaskInTime((70 + math.random(0, 10))*FRAMES, destroy_ice_at_point, dx, dz, oceanicemanager)
+                world:DoTaskInTime((70 + math.random(0, 10))*FRAMES, destroy_ice_at_point, dx, dz, oceanicemanager, data)
                 return
             end
         end
     end
     -- END HACK
-    oceanicemanager:DestroyIceAtPoint(dx, 0, dz)
-
+    oceanicemanager:DestroyIceAtPoint(dx, 0, dz, data)
 end
 
 local function create_ice_at_point(world, dx, dz, oceanicemanager)
@@ -98,6 +97,13 @@ local function start_destroy_for_tile(_, txy, wid, oceanicemanager)
     local center_x, center_y, center_z = _map:GetTileCenterPoint(txy % wid, math.floor(txy / wid))
 
     oceanicemanager:QueueDestroyForIceAtPoint(center_x, center_y, center_z)
+end
+
+local function removecrackedicefx(dx, dz)
+    local cracks = TheSim:FindEntities(dx, 0, dz, 4.5, CRACK_MUST_TAGS)
+    for i=#cracks, 1, -1 do
+        cracks[i]:Remove()
+    end
 end
 
 --------------------------------------------------------------------------
@@ -236,7 +242,7 @@ function self:QueueCreateIceAtPoint(x, y, z, data)
     end
 end
 
-function self:DestroyIceAtPoint(x, y, z)
+function self:DestroyIceAtPoint(x, y, z, data)
     local tile_x, tile_y = _map:GetTileCoordsAtPoint(x, y, z)
     local tile = _map:GetTile(tile_x, tile_y)
     if tile ~= WORLD_TILES.OCEAN_ICE then
@@ -262,43 +268,64 @@ function self:DestroyIceAtPoint(x, y, z)
         end
     end
 
+    local dx, dy, dz = _map:GetTileCenterPoint(tile_x, tile_y)
+
+                -- THIS IS HACKED IN TO SAVE THE PLAYER FOR NOW!
+                local hypotenuseSq = 8 + 1-- buffer.
+                local players = FindPlayersInRangeSq(dx, 0, dz, hypotenuseSq, true)
+                if players and #players >0 then
+                    for i, player in ipairs(players)do
+                        local px,py,pz = player.Transform:GetWorldPosition()
+                        local ptile_x, ptile_y = _map:GetTileCoordsAtPoint(px, py, pz)
+                        local ptile = _map:GetTile(ptile_x, ptile_y)
+                        if ptile == tile then
+                            player.Physics:Teleport(dx, dy, dz)
+                        end
+                    end
+                end
+
+    removecrackedicefx(dx, dz)
+
     _map:SetTile(tile_x, tile_y, old_tile)
 
     local grid_index = _marked_for_delete_grid:GetIndex(tile_x, tile_y)
     _marked_for_delete_grid:SetDataAtIndex(grid_index, nil)
     _ice_health_grid:SetDataAtIndex(grid_index, nil)
 
-    local dx, dy, dz = _map:GetTileCenterPoint(tile_x, tile_y)
-
     local tile_radius_plus_overhang = ((TILE_SCALE / 2) + 1.0) * 1.4142
     local is_ocean_tile = IsOceanTile(old_tile)
+
     if is_ocean_tile then
         local icefloe = nil
 
-        local floe_vector_x, floe_vector_y = 0, 0
-        local floe_count_x, floe_count_y = 0, 0
-        for x_offset = -1, 1, 1 do
-            for y_offset = -1, 1, 1 do
-                if ((x_offset == 0 and y_offset ~= 0) or (y_offset == 0 and x_offset ~= 0))
-                        and IsLandTile(_map:GetTile(tile_x + x_offset, tile_y + y_offset)) then
-                    floe_vector_x = floe_vector_x + x_offset
-                    floe_count_x = floe_count_x + math.abs(x_offset)
-                    floe_vector_y = floe_vector_y + y_offset
-                    floe_count_y = floe_count_y + math.abs(y_offset)
+        if data == nil or not data.silent then
+            local floe_vector_x, floe_vector_y = 0, 0
+            local floe_count_x, floe_count_y = 0, 0
+            for x_offset = -1, 1, 1 do
+                for y_offset = -1, 1, 1 do
+                    if ((x_offset == 0 and y_offset ~= 0) or (y_offset == 0 and x_offset ~= 0))
+                            and IsLandTile(_map:GetTile(tile_x + x_offset, tile_y + y_offset)) then
+                        floe_vector_x = floe_vector_x + x_offset
+                        floe_count_x = floe_count_x + math.abs(x_offset)
+                        floe_vector_y = floe_vector_y + y_offset
+                        floe_count_y = floe_count_y + math.abs(y_offset)
+                    end
                 end
             end
-        end
 
-        if floe_count_x < 2 and floe_count_y < 2 then
-            local offset_tile_x, offset_tile_y, offset_tile_z = _map:GetTileCenterPoint(tile_x + floe_vector_x, tile_y + floe_vector_y)
-            local push_x, push_z = x - offset_tile_x, z - offset_tile_z
-            local pushnormal_x, pushnormal_z = VecUtil_NormalizeNoNaN(push_x, push_z)
+            if floe_count_x < 2 and floe_count_y < 2 then
+                local offset_tile_x, offset_tile_y, offset_tile_z = _map:GetTileCenterPoint(tile_x + floe_vector_x, tile_y + floe_vector_y)
+                local push_x, push_z = x - offset_tile_x, z - offset_tile_z
+                local pushnormal_x, pushnormal_z = VecUtil_NormalizeNoNaN(push_x, push_z)
 
-            local bx, bz = dx + (TUNING.OCEAN_ICE_RADIUS * pushnormal_x), dz + (TUNING.OCEAN_ICE_RADIUS * pushnormal_z)
-            if TheSim:FindEntities(bx, 0, bz, MAX_PHYSICS_RADIUS, FLOATEROBJECT_TAGS)[1] == nil then
-                icefloe = SpawnPrefab("boat_ice")
-                icefloe.Transform:SetPosition(bx, 0, bz)
-                icefloe.components.boatphysics:ApplyRowForce(pushnormal_x, pushnormal_z, TUNING.OCEAN_ICE_BREAK_FORCE, 10.0)
+                local bx, bz = dx + (TUNING.OCEAN_ICE_RADIUS * pushnormal_x), dz + (TUNING.OCEAN_ICE_RADIUS * pushnormal_z)
+                if TheSim:FindEntities(bx, 0, bz, MAX_PHYSICS_RADIUS, FLOATEROBJECT_TAGS)[1] == nil then
+                    icefloe = SpawnPrefab(data ~= nil and data.icefloe_prefab or "boat_ice")
+                    icefloe.Transform:SetPosition(bx, 0, bz)
+                    icefloe.components.boatphysics:ApplyRowForce(pushnormal_x, pushnormal_z, TUNING.OCEAN_ICE_BREAK_FORCE, 10.0)
+
+                    TheWorld:PushEvent("icefloebreak", icefloe)
+                end
             end
         end
 
@@ -315,10 +342,10 @@ function self:DestroyIceAtPoint(x, y, z)
                     ent:PushEvent("onsink", {boat = nil, shore_pt = shore_point})
 
                     -- We're testing the overhang, so we need to verify that anything we find isn't
-                    -- still on some adjacent dock or land tile after we remove ourself.
+                    -- still on some adjacent dock or land tile or other platform after we remove ourself.
                     if ent:IsValid() and not has_drownable and not ent.entity:GetParent()
                         and not ent.components.amphibiouscreature
-                        and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
+                        and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) and not ent:GetCurrentPlatform() then
 
                         if ent.components.inventoryitem then
                             ent.components.inventoryitem:SetLanded(false, true)
@@ -330,23 +357,59 @@ function self:DestroyIceAtPoint(x, y, z)
             end
         end
     end
+
     self:FixupFloaterObjects(x, z, tile_radius_plus_overhang, is_ocean_tile)
 
-    -- Throw out some loot for presentation.
-    SpawnPrefab("fx_ice_pop").Transform:SetPosition(dx, 0, dz)
-    toss_debris("ice", dx, dz)
-    if math.random() > 0.40 then
-        toss_debris("ice", dx, dz)
-    end
+    if data == nil or not data.silent then
+        -- Throw out some loot for presentation.
+        SpawnPrefab("fx_ice_pop").Transform:SetPosition(dx, 0, dz)
 
-    local half_num_debris = 4
-    local angle_per_debris = TWOPI/half_num_debris
-    for i = 1, half_num_debris do
-        spawn_degrade_piece(dx, dz, (i + GetRandomWithVariance(0.50, 0.25)) * angle_per_debris)
-        spawn_degrade_piece(dx, dz, (i + GetRandomWithVariance(0.50, 0.25)) * angle_per_debris)
+        toss_debris("ice", dx, dz)
+
+        if math.random() > 0.40 then
+            toss_debris("ice", dx, dz)
+        end
+
+        local half_num_debris = 4
+        local angle_per_debris = TWOPI/half_num_debris
+        for i = 1, half_num_debris do
+            spawn_degrade_piece(dx, dz, (i + GetRandomWithVariance(0.50, 0.25)) * angle_per_debris)
+            spawn_degrade_piece(dx, dz, (i + GetRandomWithVariance(0.50, 0.25)) * angle_per_debris)
+        end
     end
 
     return true
+end
+
+local function spawncracks(x,z)
+    local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(x, 0, z)
+    local cx, cy, cz = TheWorld.Map:GetTileCenterPoint(tx, ty)
+
+    local S = TheWorld.Map:IsLandTileAtPoint(cx+4,cy,cz)
+    local N = TheWorld.Map:IsLandTileAtPoint(cx-4,cy,cz)
+    local E = TheWorld.Map:IsLandTileAtPoint(cx,cy,cz+4)
+    local W = TheWorld.Map:IsLandTileAtPoint(cx,cy,cz-4)
+
+    local function spawnfx(lx,lz, rot)  
+        if #TheSim:FindEntities(lx, 0, lz, 1, CRACK_MUST_TAGS)  < 1 then
+            local fx = SpawnPrefab("ice_crack_grid_fx")
+            fx.Transform:SetPosition(lx, 0, lz)
+            fx.Transform:SetRotation(rot)        
+        end
+    end
+
+    if N then
+        spawnfx(cx-2, cz,0)
+    end
+    if S then
+        spawnfx(cx+2, cz,180)
+    end
+    if E then
+        spawnfx(cx, cz+2,90)
+    end
+    if W then
+        spawnfx(cx, cz-2,270)
+    end
 end
 
 function self:QueueDestroyForIceAtPoint(x, y, z, data)
@@ -357,8 +420,12 @@ function self:QueueDestroyForIceAtPoint(x, y, z, data)
         _marked_for_delete_grid:SetDataAtPoint(tile_x, tile_y, true)
 
         SpawnPrefab("fx_ice_crackle").Transform:SetPosition(x, 0, z)
+        
+        local time = data and data.destroytime or (70 + math.random(0, 10))*FRAMES
 
-        _world:DoTaskInTime((70 + math.random(0, 10))*FRAMES, destroy_ice_at_point, x, z, self)
+        spawncracks(x,z)
+
+        _world:DoTaskInTime(time, destroy_ice_at_point, x, z, self, data)
 
         -- Send a breaking message to all of the prefabs on this point.
         local tile_at_point = (_world.components.undertile and _world.components.undertile:GetTileUnderneath(tile_x, tile_y))

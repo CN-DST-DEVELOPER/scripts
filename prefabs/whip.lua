@@ -29,7 +29,7 @@ end
 
 
 local CRACK_MUST_TAGS = { "_combat" }
-local CRACK_CANT_TAGS = { "player", "epic", "shadow", "shadowminion", "shadowchesspiece" }
+local CRACK_CANT_TAGS = { "player", "epic", "shadow", "shadowminion", "shadowchesspiece", "INLIMBO" }
 local function supercrack(inst)
     local owner = inst.components.inventoryitem and inst.components.inventoryitem:GetGrandOwner() or nil
     local x,y,z = inst.Transform:GetWorldPosition()

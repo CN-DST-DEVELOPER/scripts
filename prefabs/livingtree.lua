@@ -160,6 +160,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --livingtree_root deployspacing/2
     MakeObstaclePhysics(inst, .75)
 
     inst.MiniMapEntity:SetIcon("livingtree.png")

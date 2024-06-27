@@ -38,7 +38,7 @@ end
 
 function Leader:OnAttacked(attacker)
     if attacker ~= nil and not self:IsFollower(attacker) and self.inst ~= attacker and (attacker.components.minigame_participator == nil or (attacker:HasTag("player") and TheNet:GetPVPEnabled())) then
-        for k,v in pairs(self.followers) do
+        for k in pairs(self.followers) do
             if k.components.combat ~= nil and k.components.follower ~= nil and k.components.follower.canaccepttarget then
                 k.components.combat:SuggestTarget(attacker)
             end
@@ -52,7 +52,7 @@ function Leader:CountFollowers(tag)
     end
 
     local count = 0
-    for k,v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         if k:HasTag(tag) then
             count = count + 1
 		end
@@ -61,7 +61,7 @@ function Leader:CountFollowers(tag)
 end
 
 function Leader:IsTargetedByFollowers(target)
-    for follower, v in pairs(self.followers) do
+    for follower in pairs(self.followers) do
         if follower.combat ~= nil and follower.combat:TargetIs(target) then
             return true
         end
@@ -73,7 +73,7 @@ function Leader:OnNewTarget(target)
 		--dismissing pets, don't share target
 		return
 	elseif target == nil or (target.components.minigame_participator == nil or (target:HasTag("player") and TheNet:GetPVPEnabled())) then
-		for k,v in pairs(self.followers) do
+		for k in pairs(self.followers) do
 			if k.components.combat ~= nil and k.components.follower ~= nil and k.components.follower.canaccepttarget and k:IsValid() then
 				k.components.combat:SuggestTarget(target)
 			end
@@ -108,6 +108,10 @@ function Leader:AddFollower(follower)
         follower:PushEvent("startfollowing", { leader = self.inst })
 		NotifyPlayerProgress("TotalFollowersAcquired", 1, self.inst);
 
+        if self.onfolloweradded then
+            self.onfolloweradded(self.inst, follower)
+        end
+
         if not follower.components.follower.keepdeadleader then
             self.inst:ListenForEvent("death", self._onfollowerdied, follower)
         end
@@ -126,7 +130,7 @@ function Leader:AddFollower(follower)
 end
 
 function Leader:RemoveFollowersByTag(tag, validateremovefn)
-    for k,v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         if k:HasTag(tag) and (validateremovefn == nil or validateremovefn(k)) then
             self:RemoveFollower(k)
         end
@@ -134,13 +138,13 @@ function Leader:RemoveFollowersByTag(tag, validateremovefn)
 end
 
 function Leader:RemoveAllFollowers()
-    for k,v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         self:RemoveFollower(k)
     end
 end
 
 function Leader:RemoveAllFollowersOnDeath()
-    for k, v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         if not (k.components.follower ~= nil and k.components.follower.keepdeadleader) then
             self:RemoveFollower(k)
         end
@@ -148,7 +152,7 @@ function Leader:RemoveAllFollowersOnDeath()
 end
 
 function Leader:HaveFollowersCachePlayerLeader()
-    for k,v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         if k.components.follower then
             k.components.follower:CachePlayerLeader()
         end
@@ -156,7 +160,7 @@ function Leader:HaveFollowersCachePlayerLeader()
 end
 
 function Leader:IsBeingFollowedBy(prefabName)
-    for k,v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         if k.prefab == prefabName then
             return true
         end
@@ -170,7 +174,7 @@ function Leader:OnSave()
     end
 
     local followers = {}
-    for k, v in pairs(self.followers) do
+    for k in pairs(self.followers) do
         table.insert(followers, k.GUID)
     end
 

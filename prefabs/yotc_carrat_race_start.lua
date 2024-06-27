@@ -44,9 +44,9 @@ local function SpawnGhostRacer(inst, num_stat_points)
 	local ghost_racer = SpawnPrefab("carrat_ghostracer")
 	local pt = inst:GetPosition()
 
-    local offset = FindWalkableOffset(pt, math.random() * 2 * PI, 2, 16, true, false) or
-					FindWalkableOffset(pt, math.random() * 2 * PI, 1.5, 16, true, false) or
-					FindWalkableOffset(pt, math.random() * 2 * PI, 1, 16, true, false) or
+    local offset = FindWalkableOffset(pt, math.random() * TWOPI, 2, 16, true, false) or
+					FindWalkableOffset(pt, math.random() * TWOPI, 1.5, 16, true, false) or
+					FindWalkableOffset(pt, math.random() * TWOPI, 1, 16, true, false) or
 					Vector3(0, 0, 0)
 
 	ghost_racer.Transform:SetPosition(pt.x + offset.x, 0, pt.z + offset.z)

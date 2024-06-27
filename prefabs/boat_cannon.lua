@@ -26,9 +26,9 @@ local function onhammered(inst, worker)
     fx:SetMaterial("metal")
 
     -- Is the cannon loaded with ammo? Spawn it.
-    local cannoncmp = inst.components.boatcannon
-    if cannoncmp and cannoncmp:IsAmmoLoaded() then
-        local ammo = SpawnPrefab(cannoncmp.loadedammo .. "_item")
+    local boatcannon = inst.components.boatcannon
+    if boatcannon and boatcannon:IsAmmoLoaded() then
+        local ammo = SpawnPrefab(boatcannon.loadedammo .. "_item")
         if ammo then
             local pt = inst:GetPosition()
             ammo.Transform:SetPosition(pt:Get())
@@ -46,8 +46,8 @@ local function onhit(inst, worker)
 end
 
 local function getstatus(inst, viewer)
-    local cannoncmp = inst.components.boatcannon
-    if cannoncmp and cannoncmp:IsAmmoLoaded() then
+    local boatcannon = inst.components.boatcannon
+    if boatcannon and boatcannon:IsAmmoLoaded() then
         return "AMMOLOADED"
     else
         return "GENERIC"
@@ -271,6 +271,7 @@ local function fn()
     inst.entity:AddLight()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --match kit item
     MakeObstaclePhysics(inst, 0.25)
 
     inst.AnimState:SetBank("boat_cannon")

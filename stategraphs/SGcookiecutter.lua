@@ -523,14 +523,29 @@ local states =
 				inst.components.cookiecutterdrill:ResumeDrilling()
 
 				if inst.target_wood.material == "grass" then
-					inst.sg.statemem.fx_grass_task = inst:DoPeriodicTask(0.3, function(i)
+					inst._spawn_grass_fx_fluff_fn = inst._spawn_grass_fx_fluff_fn or function(i)
 						local fx = SpawnPrefab("fx_grass_boat_fluff")
 						local x,y,z = i.Transform:GetWorldPosition()
-						fx.Transform:SetPosition(i.Transform:GetWorldPosition(x+(math.random()*0.5)-0.25,0,z+(math.random()*0.5)-0.25))
-					end,0)
+						fx.Transform:SetPosition(x+(math.random()*0.5)-0.25, 0, z+(math.random()*0.5)-0.25)
+					end
+					inst.sg.statemem.fx_grass_task = inst:DoPeriodicTask(0.3, inst._spawn_grass_fx_fluff_fn, 0)
+				elseif inst.target_wood.material == "kelp" then
+					inst._spawn_kelp_fx_fn = inst._spawn_kelp_fx_fn or function(i)
+						local fx = SpawnPrefab("fx_kelp_boat_fluff")
+						local x,y,z = i.Transform:GetWorldPosition()
+						fx.Transform:SetPosition(x, 0, z)
+					end
+					inst.sg.statemem.fx_grass_task = inst:DoPeriodicTask(0.3, inst._spawn_kelp_fx_fn, 0)
 				end
 
-				inst.sg.statemem.fx_task = inst:DoPeriodicTask(inst.AnimState:GetCurrentAnimationLength(), function(i) SpawnPrefab("wood_splinter_drill").Transform:SetPosition(i.Transform:GetWorldPosition()) end, 0)
+				inst._spawn_wood_splinter_fn = inst._spawn_wood_splinter_fn or function(i)
+					SpawnPrefab("wood_splinter_drill").Transform:SetPosition(i.Transform:GetWorldPosition())
+				end
+				inst.sg.statemem.fx_task = inst:DoPeriodicTask(
+					inst.AnimState:GetCurrentAnimationLength(),
+					inst._spawn_wood_splinter_fn,
+					0
+				)
 			else
 				inst.sg:GoToState("drill_pst")
 			end

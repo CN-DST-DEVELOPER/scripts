@@ -69,7 +69,7 @@ end
 
 local function SpawnGlommer(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local offset = FindWalkableOffset(Vector3(x, y, z), math.random() * 2 * PI, 35, 12, true)
+    local offset = FindWalkableOffset(Vector3(x, y, z), math.random() * TWOPI, 35, 12, true)
     local glommer = SpawnPrefab("glommer")
     if glommer ~= nil then
         if glommer.components.follower.leader ~= inst then
@@ -244,7 +244,7 @@ local function fn()
     inst.islighton = net_bool(inst.GUID, "statueglommer.islighton", "lightdirty")
     inst.lighttask = nil
 
-    inst.entity:AddTag("statue")
+    inst:AddTag("statue")
 
     if not TheNet:IsDedicated() then
         inst:AddComponent("pointofinterest")

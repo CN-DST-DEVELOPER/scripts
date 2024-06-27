@@ -70,7 +70,7 @@ local function OnHit_Thulecite(inst, attacker, target)
             target = nil
         end
 
-		local theta = math.random() * 2 * PI
+		local theta = math.random() * TWOPI
 		SpawnShadowTentacle(inst, attacker, target, pt, theta)
     end
 

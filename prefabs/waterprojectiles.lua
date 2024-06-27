@@ -56,14 +56,15 @@ local bile_prefabs =
 }
 
 local function OnHitBile(inst, attacker, target)
-    SpawnPrefab("bile_splash").Transform:SetPosition(inst.Transform:GetWorldPosition())
+    local ix, iy, iz = inst.Transform:GetWorldPosition()
+    SpawnPrefab("bile_splash").Transform:SetPosition(ix, iy, iz)
     if inst:IsOnOcean() then
-        SpawnPrefab("bile_puddle_water").Transform:SetPosition(inst.Transform:GetWorldPosition())
+        SpawnPrefab("bile_puddle_water").Transform:SetPosition(ix, iy, iz)
     else
-        SpawnPrefab("bile_puddle_land").Transform:SetPosition(inst.Transform:GetWorldPosition())
+        SpawnPrefab("bile_puddle_land").Transform:SetPosition(ix, iy, iz)
     end
-    local pt = Vector3(inst.Transform:GetWorldPosition())
-    local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 2)
+
+    local ents = TheSim:FindEntities(ix, iy, iz, 2)
     for i,ent in ipairs(ents) do
         if ent.components.combat and not ent:HasTag("INLIMBO") and not ent:HasTag("playerghost") then
             ent.components.combat:GetAttacked(inst.shooter or inst, TUNING.MUTANT_BIRD_SPLASH_DAMAGE)
@@ -74,15 +75,15 @@ end
 
 
 local function OnHitInk(inst, attacker, target)
-    SpawnPrefab("ink_splash").Transform:SetPosition(inst.Transform:GetWorldPosition())
+    local ix, iy, iz = inst.Transform:GetWorldPosition()
+    SpawnPrefab("ink_splash").Transform:SetPosition(ix, iy, iz)
     if inst:IsOnOcean() then
-        SpawnPrefab("ink_puddle_water").Transform:SetPosition(inst.Transform:GetWorldPosition())
+        SpawnPrefab("ink_puddle_water").Transform:SetPosition(ix, iy, iz)
     else
-        SpawnPrefab("ink_puddle_land").Transform:SetPosition(inst.Transform:GetWorldPosition())
+        SpawnPrefab("ink_puddle_land").Transform:SetPosition(ix, iy, iz)
     end
-    local pt = Vector3(inst.Transform:GetWorldPosition())
-    local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 1)
-    for i,ent in ipairs(ents) do
+    local ents = TheSim:FindEntities(ix, iy, iz, 1)
+    for _, ent in ipairs(ents) do
         if ent.components.inkable then
             ent.components.inkable:Ink()
         end
@@ -377,7 +378,6 @@ local function bile_fn()
 
     return inst
 end
-
 
 return Prefab("snowball", snowball_fn, snowball_assets, snowball_prefabs),
     Prefab("waterballoon", waterballoon_fn, waterballoon_assets, waterballoon_prefabs),

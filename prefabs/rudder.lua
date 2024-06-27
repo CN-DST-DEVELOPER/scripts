@@ -3,6 +3,26 @@ local assets =
     Asset("ANIM", "anim/boat_pointer_small.zip"),
 }
 
+local function OnEntityReplicated(inst)
+    local parent = inst.entity:GetParent()
+
+    if parent ~= nil and parent:HasTag("mast") then
+        if parent.highlightchildren ~= nil then
+            table.insert(parent.highlightchildren, inst)
+        else
+            parent.highlightchildren = { inst }
+        end
+    end
+end
+
+local function CLIENT_OnRemoveEntity(inst)
+    local parent = inst.entity:GetParent()
+
+    if parent ~= nil and parent.highlightchildren ~= nil then
+        table.removearrayvalue(parent.highlightchildren, inst)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -23,13 +43,17 @@ local function fn()
 
     inst.Transform:SetRotation(90)
 
+    inst.OnRemoveEntity = CLIENT_OnRemoveEntity
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+        inst.OnEntityReplicated = OnEntityReplicated
+
         return inst
     end
 
-	inst.persists = false
+    inst.persists = false
 
     return inst
 end

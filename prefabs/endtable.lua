@@ -244,6 +244,8 @@ local function fn()
     inst.Light:SetColour(169/255, 231/255, 245/255)
     inst.Light:Enable(false)
 
+	inst:SetDeploySmartRadius(0.75) --recipe min_spacing/2
+
     MakeObstaclePhysics(inst, .6)
 
     inst:AddTag("structure")

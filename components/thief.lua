@@ -27,6 +27,9 @@ function Thief:StealItem(victim, itemtosteal, attack)
                 self.onstolen(self.inst, victim, item)
             end
             victim:PushEvent("onitemstolen", { item = item, thief = self.inst, })
+            return true
+        else
+            return false
         end
     elseif victim.components.container then
         local item = itemtosteal or victim.components.container:FindItem(item_is_stealable)
@@ -38,12 +41,16 @@ function Thief:StealItem(victim, itemtosteal, attack)
             self.inst.components.combat:DoAttack(victim.components.inventoryitem.owner)
         end
 
-        item = victim.components.container:DropItem(item)
+        victim.components.container:DropItem(item)
         if self.onstolen then
             self.onstolen(self.inst, victim, item)
         end
         victim:PushEvent("onitemstolen", { item = item, thief = self.inst, })
+
+        return item ~= nil
     end
+
+    return false
 end
 
 return Thief

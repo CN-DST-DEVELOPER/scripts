@@ -162,6 +162,7 @@ local function anim_buff_fn(potion_tunings)
 	inst.AnimState:Hide("burst")
 	inst.AnimState:SetFinalOffset(3)
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

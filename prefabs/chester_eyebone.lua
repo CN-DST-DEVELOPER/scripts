@@ -98,7 +98,7 @@ local function MorphNormalEyebone(inst)
 end
 
 local function GetSpawnPoint(pt)
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = SPAWN_DIST
     local offset = FindWalkableOffset(pt, theta, radius, 12, true)
     return offset ~= nil and (pt + offset) or nil

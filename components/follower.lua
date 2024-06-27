@@ -171,7 +171,7 @@ OnPlayerJoined = function(self, player)
         local cached_player_leader_timeleft = self.cached_player_leader_timeleft
         if self.inst:GetDistanceSqToInst(player) <= TUNING.FOLLOWER_REFOLLOW_DIST_SQ and
         (not cached_player_leader_timeleft or cached_player_leader_timeleft > current_time) then
-            
+
             if player.components.leader then
                 player.components.leader:AddFollower(self.inst)
             else
@@ -290,6 +290,10 @@ local function stopfollow(inst, self)
 end
 
 function Follower:AddLoyaltyTime(time)
+    if self.neverexpire then
+        return
+    end
+
     local leader = self.leader and self.leader.components.leader
     if leader and leader.loyaltyeffectiveness then
 		time = time * leader.loyaltyeffectiveness
@@ -320,6 +324,11 @@ function Follower:CancelLoyaltyTask()
 end
 
 function Follower:StopFollowing()
+    
+    if self.neverexpire then
+        return
+    end
+
     if self.inst:IsValid() then
         self.targettime = nil
         self.inst:PushEvent("loseloyalty", { leader = self.leader })

@@ -163,11 +163,7 @@ function MakeSmallBurnable(inst, time, offset, structure, sym)
     burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
     burnable:SetOnIgniteFn(DefaultBurnFn)
     burnable:SetOnExtinguishFn(DefaultExtinguishFn)
-    if structure then
-        burnable:SetOnBurntFn(DefaultBurntStructureFn)
-    else
-        burnable:SetOnBurntFn(DefaultBurntFn)
-    end
+    burnable:SetOnBurntFn((structure and DefaultBurntStructureFn) or DefaultBurntFn)
 
     return burnable
 end
@@ -179,11 +175,7 @@ function MakeMediumBurnable(inst, time, offset, structure, sym)
     burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
     burnable:SetOnIgniteFn(DefaultBurnFn)
     burnable:SetOnExtinguishFn(DefaultExtinguishFn)
-    if structure then
-        burnable:SetOnBurntFn(DefaultBurntStructureFn)
-    else
-        burnable:SetOnBurntFn(DefaultBurntFn)
-    end
+    burnable:SetOnBurntFn((structure and DefaultBurntStructureFn) or DefaultBurntFn)
 
     return burnable
 end
@@ -195,11 +187,7 @@ function MakeLargeBurnable(inst, time, offset, structure, sym)
     burnable:AddBurnFX(burnfx.generic, offset or Vector3(0, 0, 0), sym )
     burnable:SetOnIgniteFn(DefaultBurnFn)
     burnable:SetOnExtinguishFn(DefaultExtinguishFn)
-    if structure then
-        burnable:SetOnBurntFn(DefaultBurntStructureFn)
-    else
-        burnable:SetOnBurntFn(DefaultBurntFn)
-    end
+    burnable:SetOnBurntFn((structure and DefaultBurntStructureFn) or DefaultBurntFn)
 
     return burnable
 end
@@ -570,6 +558,23 @@ function ChangeToWaterObstaclePhysics(inst)
     return phys
 end
 
+function ChangeToInventoryItemPhysics(inst, mass, rad)
+    local phys = inst.Physics
+    if mass then
+        phys:SetMass(mass)
+        phys:SetFriction(.1)
+        phys:SetDamping(0)
+        phys:SetRestitution(.5)
+    end    
+    phys:SetCollisionGroup(COLLISION.ITEMS)
+    phys:SetCollisionMask(COLLISION.WORLD, COLLISION.OBSTACLES, COLLISION.SMALLOBSTACLES)
+    if rad then
+        phys:SetSphere(rad, 1)
+    end    
+    return phys
+end
+
+-- USED FOR THE DEPTH WORM
 function ChangeToInventoryPhysics(inst)
     local phys = inst.Physics
     phys:SetCollisionGroup(COLLISION.OBSTACLES)
@@ -1561,10 +1566,14 @@ local function fertilizer_ondeploy(inst, pt, deployer)
     local tile_x, tile_z = TheWorld.Map:GetTileCoordsAtPoint(pt:Get())
     local nutrients = inst.components.fertilizer.nutrients
     TheWorld.components.farming_manager:AddTileNutrients(tile_x, tile_z, nutrients[1], nutrients[2], nutrients[3])
-
+    
     inst.components.fertilizer:OnApplied(deployer)
     if deployer ~= nil and deployer.SoundEmitter ~= nil and inst.components.fertilizer.fertilize_sound ~= nil then
         deployer.SoundEmitter:PlaySound(inst.components.fertilizer.fertilize_sound)
+    end
+
+    if inst.ondeployed_fertilzier_extra_fn then
+        inst.ondeployed_fertilzier_extra_fn(inst, pt, deployer)
     end
 end
 

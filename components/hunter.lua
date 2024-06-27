@@ -228,15 +228,16 @@ local function SpawnDirt(pt, hunt)
 end
 
 local function GetRunAngle(pt, angle, radius)
-    -- NOTES(JBK): These angles tested should create spots that are able to be tile precision in size for a given radius so the attempts will scale up on that.
-    -- The reason for this is to give the hunt the maximum probability of success since it is one try.
+    -- NOTES(JBK): These angles tested should create spots that are able to be tile precision in size for a given radius,
+    -- so the attempts will scale up on that.
+    -- The reason for this is to give the hunt the maximum probability of success (since it only tries once).
     local attempts = math.ceil(PI2 / math.asin(TILE_SCALE / radius))
     local offset, result_angle = FindWalkableOffset(pt, angle, radius, attempts, true)
     return result_angle
 end
 
 local function GetNextSpawnAngle(pt, direction, radius)
-    local base_angle = direction or math.random() * 2 * PI
+    local base_angle = direction or math.random() * PI2
     local deviation = (math.random() * 2 - 1) * TUNING.TRACK_ANGLE_DEVIATION * DEGREES
     local start_angle = base_angle + deviation
     --print(string.format("   original: %2.2f, deviation: %2.2f, starting angle: %2.2f", base_angle/DEGREES, deviation/DEGREES, start_angle/DEGREES))

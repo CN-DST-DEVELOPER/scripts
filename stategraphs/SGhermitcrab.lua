@@ -223,12 +223,19 @@ local actionhandlers =
     ActionHandler(ACTIONS.PICK,
         function(inst, action)
             return action.target ~= nil
-                and action.target.components.pickable ~= nil
-                and (   (action.target.components.pickable.jostlepick and "dojostleaction") or
-                        (action.target.components.pickable.quickpick and "doshortaction") or
-                        (inst:HasTag("fastpicker") and "doshortaction") or
-                        (inst:HasTag("quagmire_fasthands") and "domediumaction") or
-                        "dolongaction"  )
+                and (action.target.components.pickable ~= nil
+                    and (   (action.target.components.pickable.jostlepick and "dojostleaction") or
+                            (action.target.components.pickable.quickpick and "doshortaction") or
+                            (inst:HasTag("fastpicker") and "doshortaction") or
+                            (inst:HasTag("quagmire_fasthands") and "domediumaction") or
+                            "dolongaction"
+                    )
+                ) or (action.target.components.searchable ~= nil
+                    and (   (action.target.components.searchable.jostlesearch and "dojostleaction") or
+                            (action.target.components.searchable.quicksearch and "doshortaction") or
+                            "dolongaction"
+                    )
+                )
                 or nil
         end),
     ActionHandler(ACTIONS.TAKEITEM,

@@ -33,10 +33,9 @@ local function MakeWrap(name, containerprefab, tag, cheapfuel)
             inst:AddTag(tag)
         end
 
-        inst.scrapbook_specialinfo = "BUNDLEWRAP",
+        inst.scrapbook_specialinfo = "BUNDLEWRAP"
 
         inst.entity:SetPristine()
-
         if not TheWorld.ismastersim then
             return inst
         end
@@ -146,7 +145,7 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
     }
 
     if loot ~= nil then
-        for i, v in ipairs(loot) do
+        for _, v in ipairs(loot) do
             table.insert(prefabs, v)
         end
     end
@@ -154,24 +153,14 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
     local function UpdateInventoryImage(inst)
         local suffix = inst.suffix or "_small"
         if variations ~= nil then
-            if inst.variation == nil then
-                inst.variation = math.random(variations)
-            end
-            suffix = suffix..tostring(inst.variation)
+            inst.variation = inst.variation or math.random(variations)
+            local variation_string = tostring(inst.variation)
 
-            local skin_name = inst:GetSkinName()
-            if skin_name ~= nil then
-                inst.components.inventoryitem:ChangeImageName(skin_name..(onesize and tostring(inst.variation) or suffix))
-            else
-                inst.components.inventoryitem:ChangeImageName(name..(onesize and tostring(inst.variation) or suffix))
-            end
+            suffix = (onesize and variation_string) or suffix..variation_string
+
+            inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or name)..suffix)
         elseif not onesize then
-            local skin_name = inst:GetSkinName()
-            if skin_name ~= nil then
-                inst.components.inventoryitem:ChangeImageName(skin_name..suffix)
-            else
-                inst.components.inventoryitem:ChangeImageName(name..suffix)
-            end
+            inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or name)..suffix)
         end
     end
 

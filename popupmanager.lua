@@ -27,7 +27,8 @@ POPUPS = {
     PLANTREGISTRY = PopupManagerWidget(),
     SKILLTREE = PopupManagerWidget(),
     PLAYERINFO = PopupManagerWidget(),
-    SCRAPBOOK = PopupManagerWidget(),    
+    SCRAPBOOK = PopupManagerWidget(),
+    INSPECTACLES = PopupManagerWidget(),
 }
 
 POPUPS_BY_POPUP_CODE = {}
@@ -137,6 +138,20 @@ POPUPS.SCRAPBOOK.fn = function(inst, show)
             inst.HUD:CloseScrapbookScreen()
         elseif not inst.HUD:OpenScrapbookScreen() then
             POPUPS.SCRAPBOOK:Close(inst)
+        end
+    end
+end
+
+POPUPS.INSPECTACLES.validaterpcfn = function(solution)
+    return optuint(solution)
+end
+
+POPUPS.INSPECTACLES.fn = function(inst, show)
+    if inst.HUD then
+        if not show then
+            inst.HUD:CloseInspectaclesScreen()
+        elseif not inst.HUD:OpenInspectaclesScreen() then
+            POPUPS.INSPECTACLES:Close(inst)
         end
     end
 end

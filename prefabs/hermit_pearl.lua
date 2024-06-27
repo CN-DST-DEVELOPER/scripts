@@ -3,12 +3,7 @@ local assets =
     Asset("ANIM", "anim/hermit_pearl.zip"),
 }
 
-local prefabs =
-{
-
-}
-
-local function commonfn()
+local function commonfn(anim)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -19,8 +14,13 @@ local function commonfn()
     MakeInventoryPhysics(inst)
 
     inst:AddTag("irreplaceable")
+    inst:AddTag("hermitpearl")
 
-	MakeInventoryFloatable(inst, "med", .15, 0.7)
+    inst.AnimState:SetBank("hermit_pearl")
+    inst.AnimState:SetBuild("hermit_pearl")
+    inst.AnimState:PlayAnimation(anim)
+
+    MakeInventoryFloatable(inst, "med", .15, 0.7)
 
     inst.entity:SetPristine()
 
@@ -28,10 +28,8 @@ local function commonfn()
         return inst
     end
 
-    inst:AddComponent("inventoryitem")
-
     inst:AddComponent("inspectable")
-
+    inst:AddComponent("inventoryitem")
     inst:AddComponent("tradable")
 
     MakeHauntableLaunch(inst)
@@ -40,26 +38,17 @@ local function commonfn()
 end
 
 local function fn()
-    local inst = commonfn()
+    local inst = commonfn("idle")
+
     inst:AddTag("gem")
 
-    inst.AnimState:SetBank("hermit_pearl")
-    inst.AnimState:SetBuild("hermit_pearl")
-    inst.AnimState:PlayAnimation("idle")
-
     return inst
 end
+
 local function crackedfn()
-    local inst = commonfn()
-
-    inst.scrapbook_anim = "cracked"
-
-    inst.AnimState:SetBank("hermit_pearl")
-    inst.AnimState:SetBuild("hermit_pearl")
-    inst.AnimState:PlayAnimation("cracked")
-
-    return inst
+    return commonfn("cracked")
 end
 
-return Prefab("hermit_pearl", fn, assets, prefabs),
-       Prefab("hermit_cracked_pearl", crackedfn, assets, prefabs)
+return
+    Prefab("hermit_pearl",         fn,        assets),
+    Prefab("hermit_cracked_pearl", crackedfn, assets)

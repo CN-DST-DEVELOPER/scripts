@@ -203,6 +203,7 @@ local function fn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.4) --recipe min_spacing/2
     MakeObstaclePhysics(inst, .6)
 
     inst.MiniMapEntity:SetPriority(5)

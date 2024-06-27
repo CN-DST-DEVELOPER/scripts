@@ -23,7 +23,7 @@ local function OnRandDirty(inst)
     end
 
     --Delay one frame in case we are about to be removed
-    inst:DoTaskInTime(0, PlayThunderSound, inst._rand:value() / 255 * 2 * PI, 10)
+    inst:DoTaskInTime(0, PlayThunderSound, inst._rand:value() / 255 * TWOPI, 10)
     inst._complete = true
 end
 

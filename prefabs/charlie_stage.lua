@@ -149,7 +149,7 @@ local REWARDPOOL = {
 local function OnPlayPerformed(inst, data)
     if not data.next and not data.error then
         local REWARDS = inst._rewardpool[math.random(1, #inst._rewardpool)]
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         for _, reward in ipairs(REWARDS) do -- NOTES(JBK): Keep this ipairs because rewards metadata is being stored in the table.
             inst:DoTaskInTime(1 + (math.random()*2), spawnhound, reward, theta)
             theta = theta + PI/6
@@ -492,6 +492,8 @@ local function postfn()
     inst:ListenForEvent("play_performed", OnPlayPerformed)
 
     inst:DoTaskInTime(0, setup)
+
+    MakeRoseTarget_CreateFuel(inst)
 
     return inst
 end

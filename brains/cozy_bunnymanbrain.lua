@@ -168,7 +168,7 @@ local function dropprizeforplayer(inst)
 
         local base_position = (winner and winner:GetPosition()) or my_position
         local offset_angle = (winner and winner:GetAngleToPoint(my_position) * DEGREES)
-            or 2*PI*math.random()
+            or TWOPI*math.random()
         local drop_position = base_position + Vector3(3*math.cos(offset_angle), 0, -3*math.sin(offset_angle))
 
         local drop_prize_action = BufferedAction(inst, nil, ACTIONS.DROP, prize_info.prize, drop_position)

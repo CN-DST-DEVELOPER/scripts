@@ -27,32 +27,34 @@ function KnownLocations:GetDebugString()
 end
 
 function KnownLocations:SerializeLocations()
-    local locs = {}
-        for k,v in pairs(self.locations) do
-            table.insert(locs, {name = k, x = v.x, y = v.y, z = v.z})
-        end
+    local locs = nil
+    for location_name, location_position in pairs(self.locations) do
+        locs = locs or {}
+        table.insert(locs, {
+            name = location_name,
+            x = location_position.x,
+            y = location_position.y,
+            z = location_position.z
+        })
+    end
     return locs
 end
 
 function KnownLocations:DeserializeLocations(data)
-    for k,v in pairs(data) do
-        self:RememberLocation(v.name, Vector3(v.x, v.y, v.z))
+    for _, location in pairs(data) do
+        self:RememberLocation(location.name, Vector3(location.x, location.y, location.z))
     end
 end
 
 function KnownLocations:OnSave()
-    local data = {}
-
-    data.locations = self:SerializeLocations()
-
-    return data
+    local serialized_locations = self:SerializeLocations()
+    return (serialized_locations ~= nil and {locations = serialized_locations})
+        or nil
 end
 
 function KnownLocations:OnLoad(data)
-    if data then
-        if data.locations then
-            self:DeserializeLocations(data.locations)
-        end
+    if data and data.locations then
+        self:DeserializeLocations(data.locations)
     end
 end
 

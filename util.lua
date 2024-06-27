@@ -243,7 +243,7 @@ end
 function GetTableSize(table)
 	local numItems = 0
 	if table ~= nil then
-		for k,v in pairs(table) do
+		for _ in pairs(table) do
 		    numItems = numItems + 1
 		end
 	end
@@ -511,18 +511,18 @@ function FlattenTree(tree, unique)
 end
 
 function GetRandomKey(choices)
- 	local choice = math.random(GetTableSize(choices)) -1
+    local choice = math.random(GetTableSize(choices)) -1
 
- 	local picked = nil
- 	for k,v in pairs(choices) do
- 		picked = k
- 		if choice<= 0 then
- 			break
- 		end
- 		choice = choice -1
- 	end
- 	assert(picked)
-	return picked
+    local picked = nil
+    for k in pairs(choices) do
+        picked = k
+        if choice<= 0 then
+            break
+        end
+        choice = choice -1
+    end
+    assert(picked)
+    return picked
 end
 
 function GetRandomWithVariance(baseval, randomval)

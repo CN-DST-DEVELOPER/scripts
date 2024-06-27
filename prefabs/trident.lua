@@ -65,7 +65,9 @@ local function do_water_explosion_effect(inst, affected_entity, owner, position)
     if affected_entity.components.health then
         local ae_combat = affected_entity.components.combat
         if ae_combat then
-            ae_combat:GetAttacked(owner, TUNING.TRIDENT.SPELL.DAMAGE, inst)
+            if ae_combat:CanBeAttacked(owner) then
+                ae_combat:GetAttacked(owner, TUNING.TRIDENT.SPELL.DAMAGE, inst)
+            end
         else
             affected_entity.components.health:DoDelta(-TUNING.TRIDENT.SPELL.DAMAGE, nil, inst.prefab, nil, owner)
         end

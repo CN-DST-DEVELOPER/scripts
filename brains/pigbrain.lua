@@ -27,7 +27,6 @@ local MAX_CHASE_DIST = 30
 local SEE_LIGHT_DIST = 20
 local TRADE_DIST = 20
 local SEE_TREE_DIST = 15
-local SEE_TARGET_DIST = 20
 local SEE_FOOD_DIST = 10
 
 local SEE_BURNING_HOME_DIST_SQ = 20*20
@@ -46,9 +45,9 @@ end
 local function GetTraderFn(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local players = FindPlayersInRange(x, y, z, TRADE_DIST, true)
-    for i, v in ipairs(players) do
-        if inst.components.trader:IsTryingToTradeWithMe(v) then
-            return v
+    for _, player in ipairs(players) do
+        if inst.components.trader:IsTryingToTradeWithMe(player) then
+            return player
         end
     end
 end
@@ -179,27 +178,19 @@ local function GetHomePos(inst)
 end
 
 local function GetNoLeaderHomePos(inst)
-    if GetLeader(inst) then
-        return nil
-    end
-    return GetHomePos(inst)
+    return (not GetLeader(inst) and GetHomePos(inst))
+        or nil
 end
 
 local LIGHTSOURCE_TAGS = {"lightsource"}
 local function GetNearestLightPos(inst)
     local light = GetClosestInstWithTag(LIGHTSOURCE_TAGS, inst, SEE_LIGHT_DIST)
-    if light then
-        return Vector3(light.Transform:GetWorldPosition())
-    end
-    return nil
+    return (light ~= nil and light:GetPosition()) or nil
 end
 
 local function GetNearestLightRadius(inst)
     local light = GetClosestInstWithTag(LIGHTSOURCE_TAGS, inst, SEE_LIGHT_DIST)
-    if light then
-        return light.Light:GetCalculatedRadius()
-    end
-    return 1
+    return (light ~= nil and light.Light:GetCalculatedRadius()) or 1
 end
 
 local function RescueLeaderAction(inst)
@@ -207,8 +198,9 @@ local function RescueLeaderAction(inst)
 end
 
 local function WantsToGivePlayerPigTokenAction(inst)
-	local leader = GetLeader(inst)
-	return leader ~= nil and inst.components.follower:GetLoyaltyPercent() >= TUNING.PIG_FULL_LOYALTY_PERCENT and inst.components.inventory:Has(inst._pig_token_prefab, 1)
+	return GetLeader(inst) ~= nil
+        and inst.components.follower:GetLoyaltyPercent() >= TUNING.PIG_FULL_LOYALTY_PERCENT
+        and inst.components.inventory:Has(inst._pig_token_prefab, 1)
 end
 
 local function GivePlayerPigTokenAction(inst)
@@ -270,7 +262,7 @@ end
 local function WatchingCheaters(inst)
     local minigame = WatchingMinigame(inst) or nil
     if minigame ~= nil and minigame._minigame_elites ~= nil then
-        for k, v in pairs(minigame._minigame_elites) do
+        for k in pairs(minigame._minigame_elites) do
             if k:WasCheated() then
                 return minigame
             end
@@ -307,10 +299,6 @@ local function IsWatchingMinigameIntro(inst)
 	return minigame ~= nil and minigame.sg ~= nil and minigame.sg:HasStateTag("intro")
 end
 
-local function GetGameLocation(inst)
-	return inst.components.knownlocations:GetLocation("pigking")
-end
-
 local PigBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -320,9 +308,8 @@ function PigBrain:OnStart()
 
     local in_contest = WhileNode( function() return self.inst:HasTag("NPC_contestant") end, "In contest",
         PriorityNode({
---            IfNode(function() return self.inst.yotb_post_to_mark end, "mark post",
                 DoAction(self.inst, CollctPrize, "collect prize", true ),
-                DoAction(self.inst, MarkPost, "mark post", true ),   --)
+                DoAction(self.inst, MarkPost, "mark post", true ),
             WhileNode( function() return self.inst.components.timer and self.inst.components.timer:TimerExists("contest_panic") end, "Panic Contest",
                 ChattyNode(self.inst, "PIG_TALK_CONTEST_PANIC",
                     Panic(self.inst))),

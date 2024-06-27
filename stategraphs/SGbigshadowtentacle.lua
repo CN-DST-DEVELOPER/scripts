@@ -2,21 +2,12 @@ require("stategraphs/commonstates")
 
 local events=
 {
---    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
---    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     CommonHandlers.OnFreeze(),
-    --[[
-    EventHandler("newcombattarget", function(inst,data)
-            if inst.sg:HasStateTag("idle") and data.target then
-                inst.sg:GoToState("taunt")
-            end
-        end)
-    ]]
-    EventHandler("arrive", function(inst,data)            
-            inst.sg:GoToState("arrive")            
+    EventHandler("arrive", function(inst)
+            inst.sg:GoToState("arrive")
         end),
-    EventHandler("leave", function(inst,data)            
-            inst.sg:GoToState("leave")            
+    EventHandler("leave", function(inst)
+            inst.sg:GoToState("leave")
         end),
 }
 
@@ -36,13 +27,13 @@ local states=
                 inst.sg:GoToState("idle")
             end),
         },
-    },    
+    },
 
     State{
         name = "leave",
         tags = {"busy"},
         onenter = function(inst)
-            inst.AnimState:PlayAnimation("breach_pst")            
+            inst.AnimState:PlayAnimation("breach_pst")
         end,
 
         events=
@@ -51,7 +42,7 @@ local states=
                 inst:Remove()
             end),
         },
-    },    
+    },
 
     State{
         name = "idle",
@@ -83,7 +74,7 @@ local states=
         },
         timeline=
         {
-            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/tentacle/tentacle_emerge_VO") end),
+            SoundTimeEvent(20*FRAMES, "dontstarve/tentacle/tentacle_emerge_VO"),
         },
     },
 
@@ -97,9 +88,9 @@ local states=
 
         timeline=
         {
-            TimeEvent(2*FRAMES, function(inst) inst.SoundEmitter:PlaySound("ancientguardian_rework/tentacle_shadow/whip") end),
+            SoundTimeEvent(2*FRAMES, "ancientguardian_rework/tentacle_shadow/whip"),
 			TimeEvent(7*FRAMES, function(inst) inst.components.combat:DoAttack() end),
-            TimeEvent(15*FRAMES, function(inst) inst.SoundEmitter:PlaySound("ancientguardian_rework/tentacle_shadow/whip") end),
+            SoundTimeEvent(15*FRAMES, "ancientguardian_rework/tentacle_shadow/whip"),
             TimeEvent(17*FRAMES, function(inst) inst.components.combat:DoAttack() end),
             TimeEvent(18*FRAMES, function(inst) inst.sg:RemoveStateTag("attack") end),
         },
@@ -107,11 +98,8 @@ local states=
         events=
         {
             EventHandler("animqueueover", function(inst)
-                if inst.components.combat.target then
-                    inst.sg:GoToState("attack")
-                else
-                    inst.sg:GoToState("attack_post")
-                end
+                inst.sg:GoToState((inst.components.combat.target ~= nil and "attack")
+                    or "attack_post")
             end),
         },
     },
@@ -124,7 +112,6 @@ local states=
         end,
         events=
         {
-          --  EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
             EventHandler("animover", function(inst) inst:Remove() end),
         },
     },

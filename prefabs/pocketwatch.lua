@@ -83,7 +83,7 @@ local function ReviveOwner(inst)
 	end
 	if owner.last_death_shardid == TheShard:GetShardId() then
 		owner:PushEvent("respawnfromghost", { source = inst })
-	end		
+	end
 end
 
 local function revive_reviverfn() -- this is used to revive players after pocketwatch_revive migrates them to another shard

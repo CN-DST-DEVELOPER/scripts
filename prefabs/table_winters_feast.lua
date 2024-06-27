@@ -446,6 +446,8 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.4) --recipe min_spacing/2
+
     MakeObstaclePhysics(inst, 1, 0.25)
 
 	inst:AddTag("structure")

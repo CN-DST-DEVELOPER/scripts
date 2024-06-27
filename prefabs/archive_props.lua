@@ -495,9 +495,9 @@ local function OnUpdatePulseSFX(inst,dt)
 	if inst.parent == nil then
 		inst:Remove()
 	else
-		local pt = Vector3(inst.Transform:GetWorldPosition())
+		local pt = inst:GetPosition()
 		local CIRCLE_TIME = 2
-		local rate = 2*PI/ CIRCLE_TIME
+		local rate = TWOPI/ CIRCLE_TIME
 		local theta = (inst.parent:GetAngleToPoint(pt)* DEGREES) + (rate * dt)
 		local offset = Vector3(SFXRANGE * math.cos( theta ), 0, -SFXRANGE * math.sin( theta ))
 		inst.Transform:SetPosition(offset.x,offset.y,offset.z)

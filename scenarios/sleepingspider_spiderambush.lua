@@ -2,33 +2,34 @@ local function OnWakeUp(inst, scenariorunner, data)
 -- Spawn spider queen here, disable scenario.
 	inst.components.sleeper.hibernate = false
 
-	local pt = Vector3(inst.Transform:GetWorldPosition())
-    local theta = math.random() * 2 * PI
+	local pt = inst:GetPosition()
+    local theta = math.random() * TWOPI
     local radius = 15
     local steps = 3
+    local step_decrement = (TWOPI/steps)
     local ground = TheWorld
     local player = data.attacker
 
     local settarget = function(inst, player)
         if inst and inst.brain then
-       		inst.brain.followtarget = player
+            inst.brain.followtarget = player
         end
-   	end
+    end
 
     -- Walk the circle trying to find a valid spawn point
-    for i = 1, steps do
+    for _ = 1, steps do
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         local wander_point = pt + offset
 
         if ground.Map and not TileGroupManager:IsImpassableTile(ground.Map:GetTileAtPoint(wander_point.x, wander_point.y, wander_point.z)) then
-        	local particle = SpawnPrefab("poopcloud")
+            local particle = SpawnPrefab("poopcloud")
             particle.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
 
-        	local spider = SpawnPrefab("spider_warrior")
+            local spider = SpawnPrefab("spider_warrior")
             spider.Transform:SetPosition( wander_point.x, wander_point.y, wander_point.z )
             spider:DoTaskInTime(1, settarget, player)
         end
-        theta = theta - (2 * PI / steps)
+        theta = theta - step_decrement
     end
 
 	scenariorunner:ClearScenario()

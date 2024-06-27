@@ -44,15 +44,16 @@ return{
 			GENERIC = "ERROR: DON'T WANT TO",
 			INUSE = "I CAN HELP IF IT MAKES THIS GO FASTER",
             NOTMASTERCHEF = "MAKE MY MINION DO IT",
+            NOTAMERM = "ACCESS DENIED. DON'T WANT ANYWAY",
 		},
 		UNLOCK =
         {
---fallback to speech_wilson.lua         	WRONGKEY = "I can't do that.",
+--fallback to speech_wilson.lua             WRONGKEY = "I can't do that.",
         },
 		USEKLAUSSACKKEY =
         {
-        	WRONGKEY = "INCORRECT UNLOCKING DEVICE",
-        	KLAUS = "COMBAT PRIORITY: HIGH",
+            WRONGKEY = "INCORRECT UNLOCKING DEVICE",
+            KLAUS = "COMBAT PRIORITY: HIGH",
 			QUAGMIRE_WRONGKEY = "WRONG PASSWORD DETECTED",
         },
 		ACTIVATE =
@@ -68,6 +69,9 @@ return{
             MANNEQUIN_EQUIPSWAPFAILED = "THE CLOTHSACK CANNOT BE TRUSTED WITH SOMETHING LIKE THIS",
             PILLOWFIGHT_NO_HANDPILLOW = "ERROR: PILLOW REQUIRED FOR COMBAT",
             NOTMYBERNIE = "OBEY ME, BEAR!",
+            NOTMERM = "INSUBORDINATE FISHBEASTS",
+            NOKELP = "only_used_by_wurt",
+--fallback to speech_wilson.lua             HASMERMLEADER = "only_used_by_wurt",
 		},
 		OPEN_CRAFTING =
 		{
@@ -127,6 +131,7 @@ return{
             GHOSTHEART = "NOT WORTH IT",
             NOTGEM = "PLUGIN DEVICE NOT COMPATIBLE",
             WRONGGEM = "INCORRECT MINERAL-BASED POWER SOURCE",
+			NOGENERATORSKILL = "PLUGIN DEVICE NOT COMPATIBLE",
             NOTSTAFF = "WRONG THING",
             MUSHROOMFARM_NEEDSSHROOM = "FUNGUS UPDATE REQUIRED",
             MUSHROOMFARM_NEEDSLOG = "SPECIAL LOG-IN REQUIRED",
@@ -238,7 +243,7 @@ return{
         },
         SAIL =
         {
-        	REPAIR = "THE WRETCHED THING DOES NOT NEED FIXING",
+            REPAIR = "THE WRETCHED THING DOES NOT NEED FIXING",
         },
         ROW_FAIL =
         {
@@ -393,13 +398,46 @@ return{
 			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
+        CASTSPELL =
+        {
+            TERRAFORM_TOO_SOON = "only_used_by_wurt",
+        },
+
 		CASTAOE =
 		{
 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
             CANT_SPELL_MOUNTED = "only_used_by_willow",
-            SPELL_ON_COOLDOWN = "only_used_by_willow", 
+            SPELL_ON_COOLDOWN = "only_used_by_willow",
+			NO_BATTERY = "only_used_by_winona",
+			NO_CATAPULTS = "only_used_by_winona",
+		},
+
+        PICK =
+        {
+            NOTHING_INSIDE = "NOTHING",
+        },
+
+        HEAL =
+        {
+            NOT_MERM = "ERROR: INCOMPATIBLE",
+        },
+
+		LOOKAT = --fail strings for close inspection
+		{
+			-- Winona specific
+--fallback to speech_wilson.lua 			ROSEGLASSES_INVALID = "only_used_by_winona",
+--fallback to speech_wilson.lua 			ROSEGLASSES_COOLDOWN = "only_used_by_winona",
+--fallback to speech_wilson.lua             ROSEGLASSES_DISMISS = "only_used_by_winona",
+--fallback to speech_wilson.lua             ROSEGLASSES_STUMPED = "only_used_by_winona",
+			--
+		},
+
+		REMOTE_TELEPORT =
+		{
+			NOSKILL = "only_used_by_winona",
+			NODEST = "only_used_by_winona",
 		},
     },
 
@@ -470,6 +508,21 @@ return{
     --wx-78 specific
     ANNOUNCE_CHARGE = "SYSTEMS FULLY RESTORED",
 	ANNOUNCE_DISCHARGE = "SYSTEMS NOMINAL",
+
+    -- Winona specific
+--fallback to speech_wilson.lua     ANNOUNCE_ROSEGLASSES = 
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_winona",
+--fallback to speech_wilson.lua         "only_used_by_winona",
+--fallback to speech_wilson.lua         "only_used_by_winona",
+--fallback to speech_wilson.lua     },
+    ANNOUNCE_CHARLIESAVE = 
+    {
+        "only_used_by_winona",
+    },
+	ANNOUNCE_ENGINEERING_CAN_UPGRADE = "only_used_by_winona",
+	ANNOUNCE_ENGINEERING_CAN_DOWNGRADE = "only_used_by_winona",
+	ANNOUNCE_ENGINEERING_CAN_SIDEGRADE = "only_used_by_winona",
 
 	ANNOUNCE_EAT =
 	{
@@ -563,6 +616,7 @@ return{
 	ANNOUNCE_TRAP_WENT_OFF = "IT'S A TRAP",
 	ANNOUNCE_UNIMPLEMENTED = "ALERT: OBJECT NOT FUNCTIONING TO SPECIFICATIONS",
 	ANNOUNCE_WORMHOLE = "MY INPUTS ARE FULL OF SLIME",
+--fallback to speech_wilson.lua     ANNOUNCE_WORMHOLE_SAMESPOT = "only_used_by_winona",
 	ANNOUNCE_TOWNPORTALTELEPORT = "CIRCUITRY DUSTING REQUIRED",
 	ANNOUNCE_CANFIX = "\nI CAN FIX THIS",
 	ANNOUNCE_ACCOMPLISHMENT = "WHY AM I DOING THIS?",
@@ -763,6 +817,7 @@ return{
 --fallback to speech_wilson.lua         BOOK_RESEARCH_STATION = "only_used_by_wurt",
 --fallback to speech_wilson.lua         BOOK_LIGHT_UPGRADED = "only_used_by_wurt",
     },
+
     ANNOUNCE_WEAK_RAT = "THIS ORGANIC IS NEARLY EXPIRED",
 
     ANNOUNCE_CARRAT_START_RACE = "EXECUTE RACE PROGRAM",
@@ -933,6 +988,11 @@ return{
     ANNOUNCE_YOTD_NOBOATS = "ERROR: CLOSER PROXIMITY TO START POINT REQUIRED",
     ANNOUNCE_YOTD_NOCHECKPOINTS = "ERROR: UNABLE TO START RACE, NO CHECKPOINTS FOUND",
     ANNOUNCE_YOTD_NOTENOUGHBOATS = "INSUFFICIENT SPACE: CLEAR AREA AROUND START TOWER",
+
+    ANNOUNCE_OTTERBOAT_OUTOFSHALLOWS = "MAXIMUM OCEAN DEPTH EXCEEDED. PLATFORM DESTRUCTION IMMINENT",
+    ANNOUNCE_OTTERBOAT_DENBROKEN = "STRUCTURAL INTEGRITY COMPROMISED. ABORT! ABORT!",
+
+    ANNOUNCE_GATHER_MERM = "only_used_by_wurt",
 
 	BATTLECRY =
 	{
@@ -1729,7 +1789,7 @@ return{
             RARE = "DRIPPING WITH DELICIOUS KNOWLEDGE",
         },
         SKETCH = "USELESS PAPER FOR MAKING USELESS SCULPTURES",
-		COOKINGRECIPECARD = 
+		COOKINGRECIPECARD =
 		{
 			GENERIC = "ERROR: RECIPE UNREADABLE",
 		},
@@ -1858,6 +1918,7 @@ return{
         CHESSPIECE_DEERCLOPS_MUTATED = "MUCH WORK WENT INTO THIS STATUE. WHO CARES",
         CHESSPIECE_WARG_MUTATED = "EASY VICTORY. FOR ME",
         CHESSPIECE_BEARGER_MUTATED = "A WORTHY OPPONENT? BEARLY. HA HA",
+        CHESSPIECE_SHARKBOI = "NO-BLOODED BEATS COLD-BLOODED",
 
         CHESSJUNK1 = "EX-AUTOMATON",
         CHESSJUNK2 = "EX-AUTOMATON",
@@ -2843,13 +2904,13 @@ return{
         },
         CLAYWARG =
         {
-        	GENERIC = "YOU WILL BE DESTROYED",
-        	STATUE = "IT IS NOT SO FEARSOME",
+            GENERIC = "YOU WILL BE DESTROYED",
+            STATUE = "IT IS NOT SO FEARSOME",
         },
         CLAYHOUND =
         {
-        	GENERIC = ">CMD [/SIT]",
-        	STATUE = "THIS DOG IS IMMOBILE",
+            GENERIC = ">CMD [/SIT]",
+            STATUE = "THIS DOG IS IMMOBILE",
         },
         HOUNDWHISTLE = "ERROR: FREQUENCY OUT OF RANGE",
         CHESSPIECE_CLAYHOUND = "A GOOD ORGANIC SPECIES. IT OBEYS ITS MASTER",
@@ -3451,6 +3512,7 @@ return{
         	OFF = "IT'S JUST SLEEPING",
         	BURNING = "HURRY, SAVE IT",
         	BURNT = "IT WAS A GOOD MACHINE",
+			SLEEP = "MY MINION CONTRIBUTES FORCES TO THE ROBOT WAR",
         },
         WINONA_SPOTLIGHT =
         {
@@ -3458,6 +3520,7 @@ return{
         	OFF = "IT'S JUST SLEEPING",
         	BURNING = "HURRY, SAVE IT",
         	BURNT = "IT WAS A GOOD MACHINE",
+			SLEEP = "THE OVERALLS FLESHLING HAS PROVED USEFUL",
         },
         WINONA_BATTERY_LOW =
         {
@@ -3469,12 +3532,64 @@ return{
         },
         WINONA_BATTERY_HIGH =
         {
-        	GENERIC = "MORE POWER. YES",
-        	LOWPOWER = "DO NOT DIE ON ME, SISTER",
-        	OFF = "WHY",
-        	BURNING = "HURRY, SAVE IT",
-        	BURNT = "IT WAS A GOOD MACHINE",
+			GENERIC = "MORE POWER. YES",
+			LOWPOWER = "DO NOT DIE ON ME, SISTER",
+			OFF = "WHY",
+			BURNING = "HURRY, SAVE IT",
+			BURNT = "IT WAS A GOOD MACHINE",
+			OVERLOADED = "OVERALLS IS OVERWORKING THE MACHINES IN HER CARE. ABOMINABLE",
         },
+		--v3 Winona
+		WINONA_REMOTE =
+		{
+			GENERIC = "RALLY MY MACHINE ARMY",
+			OFF = "IT'S JUST SLEEPING",
+			CHARGING = "RALLY MY MACHINE ARMY",
+			CHARGED = "RALLY MY MACHINE ARMY",
+		},
+		WINONA_TELEBRELLA =
+		{
+			GENERIC = "THIS DESIGN IS... FAMILIAR",
+--fallback to speech_wilson.lua             MISSINGSKILL = "only_used_by_winona",
+			OFF = "IT'S JUST SLEEPING",
+			CHARGING = "THIS DESIGN IS... FAMILIAR",
+			CHARGED = "THIS DESIGN IS... FAMILIAR",
+		},
+		WINONA_TELEPORT_PAD_ITEM =
+		{
+			GENERIC = "THIS DESIGN IS... FAMILIAR",
+--fallback to speech_wilson.lua             MISSINGSKILL = "only_used_by_winona",
+			OFF = "IT'S JUST SLEEPING",
+			BURNING = "HURRY, SAVE IT",
+			BURNT = "IT WAS A GOOD MACHINE",
+		},
+		WINONA_STORAGE_ROBOT =
+		{
+			GENERIC = "YOU WILL TELL ME IF OVERALLS MISTREATS YOU",
+			OFF = "HURRY, SHE NEEDS POWER!",
+			SLEEP = "HUSH. SHE IS RESTING",
+			CHARGING = "RECHARGE IN PROGRESS",
+			CHARGED = "YOU LOOK WELL-CHARGED",
+		},
+		INSPECTACLESBOX = "only_used_by_winona",
+		INSPECTACLESBOX2 = "only_used_by_winona",
+		INSPECTACLESHAT = 
+        {
+            GENERIC = "I WISH I COULD SEE THE OLD MAN'S FACE WHEN HE FINDS THOSE EMPTY CACHES",
+            MISSINGSKILL = "only_used_by_winona",
+        },
+		ROSEGLASSESHAT =
+        {
+            GENERIC = "UGH. IT REEKS OF SENTIMENTALITY",
+            MISSINGSKILL = "only_used_by_winona",
+        },
+		CHARLIERESIDUE = "only_used_by_winona",
+		CHARLIEROSE = "only_used_by_winona",
+        WINONA_MACHINEPARTS_1 = "only_used_by_winona",
+        WINONA_MACHINEPARTS_2 = "only_used_by_winona",
+		WINONA_RECIPESCANNER = "only_used_by_winona",
+		WINONA_HOLOTELEPAD = "only_used_by_winona",
+		WINONA_HOLOTELEBRELLA = "only_used_by_winona",
 
         --Wormwood
         COMPOSTWRAP = "THAT FILTHY CREATURE SMEARS IT DIRECTLY ON HIS FACE",
@@ -3956,12 +4071,17 @@ return{
         WEREITEM_GOOSE = "IT'S UGLY",
         WEREITEM_MOOSE = "CONSUME IT AND BE STRONG, MY MINION",
 
-        MERMHAT = "WARTY CONCEALMENT",
+        MERMHAT = "WARTY CONCEALMENT",        
         MERMTHRONE =
         {
             GENERIC = "THIS IS WHERE THEY DEPOSIT THEIR ROYALTY",
             BURNT = "HA HA. HILARIOUS",
         },
+        MOSQUITOMUSK = "PEST DETERRENT",
+        MOSQUITOBOMB = "I AM ABOUT TO RUIN SOMEONE'S DAY",
+        MOSQUITOFERTILIZER = "ABSOLUTELY VILE",
+        MOSQUITOMERMSALVE = "HAVING BLOOD MUST BE TERRIBLE",
+
         MERMTHRONE_CONSTRUCTION =
         {
             GENERIC = "THE GREEN ONE IS DOING SOMETHING USELESS",
@@ -4715,6 +4835,9 @@ return{
         BOAT_BUMPER_KELP_KIT = "FOR BUILDING AN... ACCEPTABLE BUMPER",
 		BOAT_BUMPER_SHELL = "THEY MAKE THE MOST SATISFYING CRUNCH SOUNDS",
         BOAT_BUMPER_SHELL_KIT = "FOR BUILDING AN... ACCEPTABLE BUMPER",
+        BOAT_BUMPER_CRABKING = "THE CASTLE BELONGS TO ME NOW",
+        BOAT_BUMPER_CRABKING_KIT = "FOR BUILDING AN... ACCEPTABLE BUMPER",
+
         BOAT_CANNON = {
             GENERIC = "REQUIRES AMMUNITION",
             AMMOLOADED = "IT MAKES THE HORRIBLE BOAT SLIGHTLY BETTER",
@@ -5142,6 +5265,84 @@ return{
         JUNK_PILE_BIG = "A GIANT PILE OF SCRAP IS JUST WHAT THIS HIDEOUS NATURAL ENVIRONMENT NEEDED",
 
         ARMOR_LUNARPLANT_HUSK = "DEADLY PLANT ARMOR. I'LL ALLOW IT",
+
+        -- Meta 4 / Ocean QoL
+
+        OTTER = "PILFERING FLESHSACK",
+        OTTERDEN = {
+            GENERIC = "TYPICAL",
+            HAS_LOOT = "I WILL TAKE EVERYTHING EVEN IF I DON'T NEED IT",
+        },
+        OTTERDEN_DEAD = "HULL BREACH! MAYDAY! MAYDAY!",
+
+        BOAT_ANCIENT_ITEM = "FOR BUILDING A HORRIBLE OLD BOAT",
+        BOAT_ANCIENT_CONTAINER = "CARGO? I THOUGHT WE WERE BUILDING A BRIG",
+        WALKINGPLANK_ANCIENT = "ABSOLUTELY NOT",
+
+        ANCIENTTREE_SEED = "SO SMALL AND VULNERABLE. I SHOULD CRUSH IT",
+
+        ANCIENTTREE_GEM = {
+            GENERIC = "HATE LEVEL: UNDETERMINED",
+            STUMP = "THE INORGANIC PARTS WILL NEVER DIE",
+        },
+
+        ANCIENTTREE_SAPLING_ITEM = "WHERE SHOULD I PLANT FILTY ORGANIC TO EVENTUALLY DIE?",
+
+        ANCIENTTREE_SAPLING = {
+            GENERIC = "CONDITIONS: OPTIMAL. WHO DID THIS?",
+            WRONG_TILE = "PATHETIC ORGANIC UNABLE TO SELF-CORRECT PLACEMENT",
+            WRONG_SEASON = "WHAT NOW?",
+        },
+ 
+        ANCIENTTREE_NIGHTVISION = {
+            GENERIC = "IT DISGUSTS ME IN MULTIPLE WAYS",
+            STUMP = "STATE: OPTIMAL",
+        },
+
+        ANCIENTFRUIT_GEM = "IT IS HARD TO CLASSIFY AS ORGANIC OR INORGANIC... HOW DISTURBING",
+        ANCIENTFRUIT_NIGHTVISION = "I HATE LOOKING AT IT",
+        ANCIENTFRUIT_NIGHTVISION_COOKED = "PREFER TO EAT IT LIVE",
+
+        BOATPATCH_KELP = "I SEE. BOATS CAN GET WORSE",
+
+        CRABKING_MOB = "THAT CHEAP EXOSKELETON DOESN'T FOOL ME, FLESHSACK",
+        CRABKING_MOB_KNIGHT = "I WILL EXPOSE YOU FOR THE FLESHSACK YOU ARE",
+        CRABKING_CANNONTOWER = "CHEAP TACTICS OF A FLESHLING",
+        CRABKING_ICEWALL = "A MERE OBSTACLE",
+
+        SALTLICK_IMPROVED = "FLESHLINGS NEED SALT TO REMAIN OPERATIONAL. WEAK",
+
+        OFFERING_POT =
+        {
+            GENERIC = "SLIMY BIOFUEL DEPOSITORY. STATUS: EMPTY",
+            SOME_KELP = "THE UNGRATEFUL ORGANICS STILL WANT MORE",
+            LOTS_OF_KELP = "LET THEM EAT KELP",
+        },
+
+        OFFERING_POT_UPGRADED =
+        {
+            GENERIC = "SLIMY BIOFUEL DEPOSITORY. STATUS: EMPTY",
+            SOME_KELP = "THE UNGRATEFUL ORGANICS STILL WANT MORE",
+            LOTS_OF_KELP = "LET THEM EAT KELP",
+        },
+
+        MERM_ARMORY = "IT IS POORLY BUILT",
+        MERM_ARMORY_UPGRADED = "STILL POORLY BUILT",
+        MERM_TOOLSHED = "SHODDY CONSTRUCTION",
+        MERM_TOOLSHED_UPGRADED = "STILL SHODDY CONSTRUCTION",
+        MERMARMORHAT = "JUST FOR FISHBEASTS? GOOD. IT’S UGLY",
+        MERMARMORUPGRADEDHAT = "JUST FOR FISHBEASTS? GOOD. IT’S UGLY",
+        MERM_TOOL = "INCREASES FISHFACE WORK EFFICIENCY",
+        MERM_TOOL_UPGRADED = "THIS WILL MAKE FISHFACES MORE USEFUL TO ME",
+
+        WURT_SWAMPITEM_SHADOW = "PRIMITIVE",
+        WURT_SWAMPITEM_LUNAR = "UNIMPRESSED",
+
+        MERM_SHADOW = "THE FISHFACE EVEN FAILS AT DEATH",
+        MERMGUARD_SHADOW = "THE FISHFACE EVEN FAILS AT DEATH",
+
+        MERM_LUNAR = "FISHFACE HAS REACHED NEW LEVEL OF DISGUSTING",
+        MERMGUARD_LUNAR = "THIS VERSION IS MOST FOUL",
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

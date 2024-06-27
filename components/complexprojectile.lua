@@ -38,6 +38,11 @@ function ComplexProjectile:SetHorizontalSpeed(speed)
     self.horizontalSpeed = speed
 end
 
+function ComplexProjectile:SetHorizontalSpeedForDistance(desired_horizontal_distance, fallback)
+    local speed = self:CalculateMinimumSpeedForDistance(desired_horizontal_distance) or fallback
+    self:SetHorizontalSpeed(speed)
+end
+
 function ComplexProjectile:SetGravity(g)
     self.gravity = g
 end
@@ -60,6 +65,27 @@ end
 
 function ComplexProjectile:SetOnUpdate(fn)
     self.onupdatefn = fn
+end
+
+function ComplexProjectile:CalculateMinimumSpeedForDistance(desired_horizontal_distance)
+    local g = -self.gravity
+    local dy = 0
+    if self.launchoffset then
+        dy = -self.launchoffset.y
+        desired_horizontal_distance = desired_horizontal_distance - self.launchoffset.x
+    end
+    if self.targetoffset then
+        dy = dy + self.targetoffset.y
+    end
+    local rangeSq = desired_horizontal_distance * desired_horizontal_distance
+    local b = -2 * dy * g
+    local c = -g * g * rangeSq
+    local discriminant = b * b - 4 * c
+    if discriminant < 0 then
+        return nil
+    end
+
+    return math.sqrt((-b + math.sqrt(discriminant)) / 2) + 0.001 -- Add small offset for floating point math.
 end
 
 function ComplexProjectile:CalculateTrajectory(startPos, endPos, speed)

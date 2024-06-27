@@ -260,7 +260,7 @@ function Combat:SetRetargetFunction(period, fn)
         self.retargettask = nil
     end
 
-    if period ~= nil and fn ~= nil then
+	if period and fn and not self.inst:IsAsleep() then
         self.retargettask = self.inst:DoPeriodicTask(period, dotryretarget, period*math.random(), self)
     end
 end
@@ -543,7 +543,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
 
     if self.inst.components.health ~= nil and damage ~= nil and damageredirecttarget == nil then
         if self.inst.components.attackdodger ~= nil and self.inst.components.attackdodger:CanDodge(attacker) then
-            self.inst.components.attackdodger:Dodge()
+            self.inst.components.attackdodger:Dodge(attacker)
             damage, spdamage = 0, nil
         end
 

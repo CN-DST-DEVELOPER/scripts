@@ -15,6 +15,12 @@ local prefabs_regular =
 
 local SUNKEN_PHYSICS_RADIUS = .45
 
+local SOUNDS = {
+    open  = "dontstarve/wilson/chest_open",
+    close = "dontstarve/wilson/chest_close",
+    built = "dontstarve/common/chest_craft",
+}
+
 local function onopen(inst)
     if not inst:HasTag("burnt") then
         inst.AnimState:PlayAnimation("open")
@@ -22,7 +28,7 @@ local function onopen(inst)
         if inst.skin_open_sound then
             inst.SoundEmitter:PlaySound(inst.skin_open_sound)
         else
-            inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_open")
+            inst.SoundEmitter:PlaySound(inst.sounds.open)
         end
     end
 end
@@ -35,7 +41,7 @@ local function onclose(inst)
         if inst.skin_close_sound then
             inst.SoundEmitter:PlaySound(inst.skin_close_sound)
         else
-            inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_close")
+            inst.SoundEmitter:PlaySound(inst.sounds.close)
         end
     end
 end
@@ -72,7 +78,7 @@ local function onbuilt(inst)
     if inst.skin_place_sound then
         inst.SoundEmitter:PlaySound(inst.skin_place_sound)
     else
-        inst.SoundEmitter:PlaySound("dontstarve/common/chest_craft")
+        inst.SoundEmitter:PlaySound(inst.sounds.built)
     end
 end
 
@@ -131,6 +137,8 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.sounds = SOUNDS
 
         inst:AddComponent("inspectable")
         inst:AddComponent("container")
@@ -276,7 +284,7 @@ local function regular_Upgrade_OnRestoredFromCollapsed(inst)
 	if inst.skin_place_sound then
 		inst.SoundEmitter:PlaySound(inst.skin_place_sound)
 	else
-		inst.SoundEmitter:PlaySound("dontstarve/common/chest_craft")
+		inst.SoundEmitter:PlaySound(inst.sounds.built)
 	end
 end
 
@@ -368,6 +376,10 @@ local function regular_OnDecontructStructure(inst, caster)
 	inst.no_delete_on_deconstruct = nil
 end
 
+local function regular_common_postinit(inst)
+	inst:SetDeploySmartRadius(0.5) --recipe min_spacing/2
+end
+
 local function regular_master_postinit(inst)
     inst.scrapbook_removedeps = { "alterguardianhatshard" }
 
@@ -431,6 +443,7 @@ local function pandora_master_postinit(inst)
             SpawnPrefab("pandorachest_reset").Transform:SetPosition(inst.Transform:GetWorldPosition())
         end
     end, TheWorld)
+    MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 end
 
 --------------------------------------------------------------------------
@@ -469,6 +482,8 @@ local function minotuar_master_postinit(inst)
 
         inst:Remove()
     end, TheWorld)
+
+    MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 end
 
 
@@ -642,10 +657,49 @@ local function sunken_master_postinit(inst)
 	inst:ListenForEvent("on_submerge", sunken_OnSubmerge)
 end
 
-return MakeChest("treasurechest", "chest", "treasure_chest", false, regular_master_postinit, prefabs_regular, assets_regular),
+local ANCIENT_SOUNDS = {
+    open  = "qol1/ancientboat/chest_open_f2",
+    close = "qol1/ancientboat/chest_close_f2",
+    built = "qol1/ancientboat/chest_place",
+}
+
+local function ancient_container_common_postinit(inst)
+    inst.AnimState:SetSortOrder(ANIM_SORT_ORDER.OCEAN_BOAT)
+    inst.AnimState:SetFinalOffset(2)
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+    inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+
+    inst:AddTag("NOBLOCK")
+    inst:AddTag("monkeyproof")
+end
+
+local function ancient_onsink(inst, data)
+    if inst.components.container ~= nil then
+        inst.components.container:DropEverything()
+    end
+end
+
+local function ancient_onplaced(inst) -- NOTES(DiogoW): This is called manually in boat.lua
+    inst:Show()
+
+    inst.AnimState:PlayAnimation("place")
+    inst.AnimState:PushAnimation("closed")
+
+    inst.SoundEmitter:PlaySound(inst.sounds.built)
+end
+
+local function ancient_container_master_postinit(inst)
+    inst.sounds = ANCIENT_SOUNDS
+    inst.OnPlaced = ancient_onplaced
+
+    inst:ListenForEvent("onsink", ancient_onsink)
+end
+
+return MakeChest("treasurechest", "chest", "treasure_chest", false, regular_master_postinit, prefabs_regular, assets_regular, regular_common_postinit),
     MakePlacer("treasurechest_placer", "chest", "treasure_chest", "closed"),
     MakeChest("pandoraschest", "pandoras_chest", "pandoras_chest", true, pandora_master_postinit, { "pandorachest_reset" }),
     MakeChest("minotaurchest", "pandoras_chest_large", "pandoras_chest_large", true, minotuar_master_postinit, { "collapse_small" }),
     MakeChest("terrariumchest", "chest", "treasurechest_terrarium", false, terrarium_master_postinit, { "collapse_small", "terrariumchest_fx" }, { Asset("ANIM", "anim/treasurechest_terrarium.zip") }),
 	Prefab("terrariumchest_fx", terrariumchest_fx_fn, { Asset("ANIM", "anim/terrariumchest_fx.zip") }, { "collapse_small" }),
-	MakeChest("sunkenchest", "sunken_treasurechest", "sunken_treasurechest", false, sunken_master_postinit, { "collapse_small", "underwater_salvageable", "splash_green" }, { Asset("ANIM", "anim/swap_sunken_treasurechest.zip") }, sunken_common_postinit, true)
+	MakeChest("sunkenchest", "sunken_treasurechest", "sunken_treasurechest", false, sunken_master_postinit, { "collapse_small", "underwater_salvageable", "splash_green" }, { Asset("ANIM", "anim/swap_sunken_treasurechest.zip") }, sunken_common_postinit, true),
+    MakeChest("boat_ancient_container", "boat_ancient_container", "boat_ancient_container", true, ancient_container_master_postinit, nil, { Asset("ANIM", "anim/ui_boat_ancient_4x4.zip") }, ancient_container_common_postinit, true)

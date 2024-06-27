@@ -378,8 +378,8 @@ end
 local function teleport_override_fn(inst)
 
     local pt = inst:GetPosition()
-    local offset = FindWalkableOffset(pt, math.random() * 2 * PI, 4, 8, true, false) or
-                    FindWalkableOffset(pt, math.random() * 2 * PI, 8, 8, true, false)
+    local offset = FindWalkableOffset(pt, math.random() * TWOPI, 4, 8, true, false) or
+                    FindWalkableOffset(pt, math.random() * TWOPI, 8, 8, true, false)
     if offset ~= nil then
         pt = pt + offset
     end
@@ -420,6 +420,7 @@ local function fn()
 
     inst:AddTag("character")
     inst:AddTag("wagstaff_npc")
+    inst:AddTag("moistureimmunity")
 
     inst.AnimState:SetBank("wilson")
     inst.AnimState:SetBuild("wagstaff")
@@ -587,7 +588,7 @@ local function spawn_device(inst, erode_data)
     inst._device = SpawnPrefab("alterguardian_contained")
 
     local ipos = inst:GetPosition()
-    local offset = FindWalkableOffset(ipos, 2*PI*math.random(), 2.0, nil, true)
+    local offset = FindWalkableOffset(ipos, TWOPI*math.random(), 2.0, nil, true)
     if offset then
         ipos = ipos + offset
     end
@@ -740,7 +741,9 @@ local function pstbossfn()
     inst.Transform:SetFourFaced()
 
     inst:AddTag("nomagic")
+	inst:AddTag("character")
     inst:AddTag("wagstaff_npc")
+    inst:AddTag("moistureimmunity")
     inst:AddTag("trader_just_show")
 
     --trader (from trader component) added to pristine state for optimization
@@ -996,7 +999,9 @@ local function MutationsQuestFn()
     inst.Transform:SetFourFaced()
 
     inst:AddTag("nomagic")
+	inst:AddTag("character")
     inst:AddTag("wagstaff_npc")
+    inst:AddTag("moistureimmunity")
 
     inst.AnimState:SetBank("wilson")
     inst.AnimState:SetBuild("wagstaff")
@@ -1086,7 +1091,9 @@ local function WagpunkFn()
     inst.Transform:SetFourFaced()
 
     inst:AddTag("nomagic")
+	inst:AddTag("character")
     inst:AddTag("wagstaff_npc")
+    inst:AddTag("moistureimmunity")
 
     inst.AnimState:SetBank("wilson")
     inst.AnimState:SetBuild("wagstaff")

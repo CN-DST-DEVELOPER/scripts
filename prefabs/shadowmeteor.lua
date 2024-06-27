@@ -121,7 +121,7 @@ local function onexplode(inst)
                             local angle =
                                 spd > 0 and
                                 math.atan2(dz / spd, dx / spd) + (math.random() * 20 - 10) * DEGREES or
-                                math.random() * 2 * PI
+                                math.random() * TWOPI
                             spd = 3 + math.random() * 1.5
                             v.Physics:Teleport(vx, 0, vz)
                             v.Physics:SetVel(math.cos(angle) * spd, 0, math.sin(angle) * spd)
@@ -132,11 +132,11 @@ local function onexplode(inst)
             end
         end
 
-        for i, v in ipairs(inst.loot) do
+        for _, v in ipairs(inst.loot) do
             if math.random() <= v.chance then
                 local canspawn = true
                 local force_spawn = false
-                
+
                 local targetprefab = v.prefab
                 if TheWorld.components.worldmeteorshower ~= nil then
                     local modifiedtargetprefab, forcemodified = TheWorld.components.worldmeteorshower:GetMeteorLootPrefab(targetprefab)

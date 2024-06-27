@@ -133,10 +133,10 @@ function Beard:Shave(who, withwhat)
             end
         end
         daysback = daysback +1
-    end     
+    end
 
     self.daysgrowth = self.daysgrowth - daysback
-    
+
     if self.daysgrowth <= 0 then
         self:Reset()
     end
@@ -149,7 +149,7 @@ function Beard:Shave(who, withwhat)
             local x, y, z = self.inst.Transform:GetWorldPosition()
             bit.Transform:SetPosition(x, y + 2, z)
             local speed = 1 + math.random()
-            local angle = math.random() * 2 * PI
+            local angle = math.random() * TWOPI
             bit.Physics:SetVel(speed * math.cos(angle), 2 + math.random() * 3, speed * math.sin(angle))
         end
     end

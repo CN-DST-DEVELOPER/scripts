@@ -105,6 +105,7 @@ local walldata =
     { name = "ruins_2",          material = "stone", tags = { "stone", "ruins" },                              maxloots = 2, maxhealth = TUNING.RUINSWALL_HEALTH    },
     { name = MATERIALS.MOONROCK, material = "stone", tags = { "stone", "moonrock" },                           maxloots = 2, maxhealth = TUNING.MOONROCKWALL_HEALTH },
 	{ name = MATERIALS.DREADSTONE, material = "stone", tags = { "stone", "dreadstone" },                       maxloots = 2, maxhealth = TUNING.DREADSTONEWALL_HEALTH },
+    { name = "scrap",            material = "stone", tags = { "stone", "scrap" },                              maxloots = 2, maxhealth = TUNING.SCRAPWALL_HEALTH },    
 }
 
 local wallprefabs = {}

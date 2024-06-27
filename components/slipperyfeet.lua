@@ -81,11 +81,11 @@ function SlipperyFeet:OnRemoveFromEntity()
 		self.inittask = nil
 	else
 		self.inst:RemoveEventCallback("on_OCEAN_ICE_tile", self.OnOceanIce)
-        if self.checknearbyentitytask ~= nil then
-            self.checknearbyentitytask:Cancel()
-            self.checknearbyentitytask = nil
-        end
 	end
+    if self.checknearbyentitytask ~= nil then
+        self.checknearbyentitytask:Cancel()
+        self.checknearbyentitytask = nil
+    end
 	self:Stop_Internal()
 end
 

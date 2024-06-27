@@ -133,15 +133,24 @@ end
 ----------------------------------------------------------------------------------------
 local function OnForcedNightVisionDirty(inst)
     if inst.components.playervision ~= nil then
-        inst.components.playervision:ForceNightVision(inst._forced_nightvision:value())
+        if inst._forced_nightvision:value() then
+            inst.components.playervision:PushForcedNightVision(inst)
+        else
+            inst.components.playervision:PopForcedNightVision(inst)
+        end
     end
 end
 
 local NIGHTVISIONMODULE_GRUEIMMUNITY_NAME = "wxnightvisioncircuit"
 local function SetForcedNightVision(inst, nightvision_on)
     inst._forced_nightvision:set(nightvision_on)
+
     if inst.components.playervision ~= nil then
-        inst.components.playervision:ForceNightVision(nightvision_on)
+        if nightvision_on then
+            inst.components.playervision:PushForcedNightVision(inst)
+        else
+            inst.components.playervision:PopForcedNightVision(inst)
+        end
     end
 
     -- The nightvision event might get consumed during save/loading,
@@ -405,7 +414,7 @@ local function OnDeath(inst)
             if gear ~= nil then
                 if gear.Physics ~= nil then
                     local speed = 2 + math.random()
-                    local angle = math.random() * 2 * PI
+                    local angle = math.random() * TWOPI
                     gear.Physics:Teleport(x, y + 1, z)
                     gear.Physics:SetVel(speed * math.cos(angle), speed * 3, speed * math.sin(angle))
                 else

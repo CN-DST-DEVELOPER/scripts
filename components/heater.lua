@@ -31,25 +31,38 @@ function Heater:IsExothermic()
 	return self.exothermic
 end
 
+function Heater:SetShouldFalloff(should_falloff)
+    self.stop_falloff = not should_falloff
+end
+
+function Heater:ShouldFalloff()
+    return not self.stop_falloff
+end
+
+function Heater:SetHeatRadiusCutoff(radius_cutoff)
+    self.radius_cutoff = radius_cutoff
+end
+
+function Heater:GetHeatRadiusCutoff()
+    return self.radius_cutoff
+end
+
 function Heater:GetHeat(observer)
-	if self.heatfn then
-		return self.heatfn(self.inst, observer)
-	end
-	return self.heat
+    return (self.heatfn ~= nil and self.heatfn(self.inst, observer))
+        or self.heat
 end
 
 function Heater:GetEquippedHeat(observer)
-	if self.equippedheatfn then
-		return self.equippedheatfn(self.inst, observer)
-	end
-	return self.equippedheat
+    return (self.equippedheatfn ~= nil and self.equippedheatfn(self.inst, observer))
+        or self.equippedheat
 end
 
 function Heater:GetCarriedHeat(observer)
 	if self.carriedheatfn then
 		return self.carriedheatfn(self.inst, observer), self.carriedheatmultiplier
-	end
-	return self.carriedheat, self.carriedheatmultiplier
+    else
+	    return self.carriedheat, self.carriedheatmultiplier
+    end
 end
 
 function Heater:GetDebugString()

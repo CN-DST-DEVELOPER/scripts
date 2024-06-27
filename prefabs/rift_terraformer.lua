@@ -143,7 +143,7 @@ end
 ------------------------------------------------------------------
 
 local function terraformer_onparentremoved(inst)
-    for index, task_data in pairs(inst._terraform_tasks) do
+    for _, task_data in pairs(inst._terraform_tasks) do
         if task_data.task ~= nil then
             task_data.task:Cancel()
         end
@@ -157,7 +157,7 @@ end
 
 
 local function terraformer_forcefinishterraform(inst)
-    for index, task_data in pairs(inst._terraform_tasks) do
+    for _, task_data in pairs(inst._terraform_tasks) do
         if task_data.task then
             task_data.task:Cancel()
             task_data.task = nil
@@ -171,7 +171,7 @@ end
 
 ------------------------------------------------------------------
 local function on_terraformer_save(inst, data)
-    for task_index, task_data in pairs(inst._terraform_tasks) do
+    for _, task_data in pairs(inst._terraform_tasks) do
         data.terraform_tasks = data.terraform_tasks or {}
         table.insert(data.terraform_tasks, {
             tx = task_data.tx,
@@ -201,7 +201,7 @@ end
 
 local function on_terraformer_longupdate(inst, delta_time)
     if inst._terraform_tasks then
-        for task_index, task_data in pairs(inst._terraform_tasks) do
+        for _, task_data in pairs(inst._terraform_tasks) do
             local time_remaining = GetTaskRemaining(task_data.task)
             local new_time = math.max(FRAMES, time_remaining - delta_time)
 

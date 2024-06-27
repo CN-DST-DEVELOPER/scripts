@@ -154,7 +154,12 @@ local Wisecracker = Class(function(self, inst)
     end)
 
     inst:ListenForEvent("wormholespit", function(inst, data)
-        inst.components.talker:Say(GetString(inst, "ANNOUNCE_WORMHOLE"))
+        if inst._failed_doneteleporting then
+            inst._failed_doneteleporting = nil
+            inst.components.talker:Say(GetString(inst, "ANNOUNCE_WORMHOLE_SAMESPOT"))
+        else
+            inst.components.talker:Say(GetString(inst, "ANNOUNCE_WORMHOLE"))
+        end
     end)
 
     inst:ListenForEvent("townportalteleport", function(inst, data)
@@ -277,6 +282,25 @@ local Wisecracker = Class(function(self, inst)
 		inst:DoTaskInTime(0.5, dochaironfire, chair)
 	end)
 
+    inst:ListenForEvent("otterboaterosion_begin", function(inst, reason)
+        local announce_string = (reason ~= nil and reason == "deepwater" and "ANNOUNCE_OTTERBOAT_OUTOFSHALLOWS")
+            or "ANNOUNCE_OTTERBOAT_DENBROKEN" -- "dengone"
+        inst.components.talker:Say(GetString(inst, announce_string))
+    end)
+
+    local function OnFishBuff(_, data)
+        if data ~= nil and data.buff ~= nil and
+                (   self.fishbuffname == nil or
+                    self.fishbuffpriority == nil or
+                    (data.priority ~= nil and data.priority > self.fishbuffpriority)
+                ) then
+            self.fishbuffname = data.buff
+            self.fishbuffpriority = data.priority
+        end
+    end
+    inst:ListenForEvent("fishbuffattached", OnFishBuff)
+    inst:ListenForEvent("fishbuffdetached", OnFishBuff)
+
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "components/wisecracker").AddQuagmireEventListeners(inst)
     end
@@ -308,6 +332,12 @@ function Wisecracker:OnUpdate(dt)
         end
         self.foodbuffname = nil
         self.foodbuffpriority = nil
+    elseif self.fishbuffname ~= nil then
+        if not is_talker_busy then
+            self.inst.components.talker:Say(GetString(self.inst, self.fishbuffname))
+        end
+        self.fishbuffname = nil
+        self.fishbuffpriority = nil
     end
 end
 

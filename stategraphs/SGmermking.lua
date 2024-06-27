@@ -32,6 +32,10 @@ local function DoChewSound(inst)
     inst.SoundEmitter:PlaySound("dontstarve/beefalo/chew")
 end
 
+local function go_to_idle(inst)
+    inst.sg:GoToState("idle")
+end
+
 local states=
 {
     State{
@@ -63,18 +67,16 @@ local states=
 
         timeline =
         {
-            TimeEvent(9*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/eat") end),
-            TimeEvent(27*FRAMES, DoChewSound),
-            TimeEvent(40*FRAMES, DoChewSound),
-            TimeEvent(51*FRAMES, DoChewSound),
-            TimeEvent(63*FRAMES, DoChewSound),
+            SoundFrameEvent(9, "dontstarve/characters/wurt/merm/king/eat"),
+            FrameEvent(27, DoChewSound),
+            FrameEvent(40, DoChewSound),
+            FrameEvent(51, DoChewSound),
+            FrameEvent(63, DoChewSound),
         },
 
         events =
         {
-            EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animqueueover", go_to_idle),
         },
     },
 
@@ -93,9 +95,7 @@ local states=
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -106,20 +106,17 @@ local states=
         onenter = function(inst)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("give")
-
         end,
 
         timeline =
         {
             TimeEvent(22*FRAMES, function(inst) inst:TradeItem() end),
-            TimeEvent(23*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/warcry")end),
+            SoundFrameEvent(23, "dontstarve/characters/wurt/merm/king/warcry"),
         },
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -136,8 +133,8 @@ local states=
         timeline =
         {
             -- Staff reaches the peak
-            TimeEvent(0*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/call") end),
-            TimeEvent(9*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/warcry") end),
+            SoundFrameEvent(0, "dontstarve/characters/wurt/merm/king/call"),
+            SoundFrameEvent(9, "dontstarve/characters/wurt/merm/king/warcry"),
             TimeEvent(30*FRAMES, function(inst) -- Staff hits the ground
                 inst.CallGuards(inst)
             end),
@@ -145,9 +142,7 @@ local states=
 
         events =
         {
-            EventHandler("animover", function(inst)
-                inst.sg:GoToState("idle")
-            end),
+            EventHandler("animover", go_to_idle),
         },
     },
 
@@ -165,7 +160,7 @@ local states=
 
         timeline =
         {
-            TimeEvent(8*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/talk") end),
+            SoundFrameEvent(8, "dontstarve/characters/wurt/merm/king/talk"),
         },
 
         events =
@@ -183,12 +178,31 @@ CommonStates.AddCombatStates(states,
 {
     hittimeline =
     {
-        TimeEvent(0*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/hit") end),
+        SoundFrameEvent(0, "dontstarve/characters/wurt/merm/king/hit"),
     },
     deathtimeline =
     {
-        TimeEvent(0*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/death") end),
+        SoundFrameEvent(0, "dontstarve/characters/wurt/merm/king/death"),
     },
+})
+
+CommonStates.AddSimpleState(states, "get_trident", "give", {"busy"}, nil, {
+    FrameEvent(23, function(inst)
+        inst.AnimState:OverrideSymbol("trident", "mermkingswaps", "trident")
+        inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/warcry")
+    end),
+})
+CommonStates.AddSimpleState(states, "get_crown", "give", {"busy"}, nil, {
+    FrameEvent(23, function(inst)
+        inst.AnimState:OverrideSymbol("crown", "mermkingswaps", "crown")
+        inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/warcry")
+    end),
+})
+CommonStates.AddSimpleState(states, "get_pauldron", "give", {"busy"}, nil, {
+    FrameEvent(23, function(inst)
+        inst.AnimState:OverrideSymbol("shoulder_lilly", "mermkingswaps", "shoulder_lilly")
+        inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/king/warcry")
+    end),
 })
 
 return StateGraph("mermking", states, events, "idle", actionhandlers)

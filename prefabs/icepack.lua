@@ -49,7 +49,7 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("icepack")
+    inst.AnimState:SetBank("backpack1")
     inst.AnimState:SetBuild("swap_icepack")
     inst.AnimState:PlayAnimation("anim")
 

@@ -97,6 +97,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(0.75) --recipe min_spacing/2
     MakeObstaclePhysics(inst, .1)
 
     inst.MiniMapEntity:SetIcon("nightlight.png")
@@ -153,6 +154,8 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:ListenForEvent("onbuilt", onbuilt)
+
+    TheWorld:PushEvent("ms_registernightlight", inst)
 
     return inst
 end

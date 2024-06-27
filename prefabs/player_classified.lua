@@ -480,6 +480,28 @@ fns.OnFreeSoulhopsDirty = function(inst)
 end
 
 ------------------------------------------------------------------------------
+-- Winona Inspectacles game
+
+fns.OnInspectaclesGameDirty = function(inst)
+    if inst._parent ~= nil then
+        inst._parent:PushEvent("inspectaclesgamechanged", {
+            gameid = inst.inspectacles_game:value(),
+            posx = inst.inspectacles_posx:value(),
+            posz = inst.inspectacles_posz:value(),
+        })
+    end
+end
+
+-- Winona Rose Glasses
+fns.OnRoseGlassesCooldownDirty = function(inst)
+    if inst._parent ~= nil then
+        inst._parent:PushEvent("roseglassescooldownchanged", {
+            isincooldown = inst.roseglasses_cooldown:value(),
+        })
+    end
+end
+
+------------------------------------------------------------------------------
 
 local function OnMoistureDirty(inst)
     if inst._parent ~= nil then
@@ -809,13 +831,23 @@ local function OnPlayerCameraDirty(inst)
     end
 end
 
-function fns.OnPlayerCameraExtraDistDirty(inst)
+local function DoMaximizeCameraDistance(inst)
+    TheCamera:MaximizeDistance()
+end
+
+function fns.OnPlayerCameraExtraDistDirty(inst, init)
     if inst._parent == nil or inst._parent.HUD == nil then
         return
     end
 
-    if inst.cameraextramaxdist:value() then
-        TheCamera:SetExtraMaxDistance(inst.cameraextramaxdist:value())
+    local cameraextramaxdist = inst.cameraextramaxdist:value()
+
+    if cameraextramaxdist then
+        TheCamera:SetExtraMaxDistance(cameraextramaxdist)
+
+        if init and cameraextramaxdist > 0 then
+            inst:DoTaskInTime(0, DoMaximizeCameraDistance)
+        end
     end
 end
 
@@ -1102,6 +1134,8 @@ local function RegisterNetListeners_common(inst)
     inst:ListenForEvent("idplantseedevent", fns.OnIdPlantSeedEvent)
     inst:ListenForEvent("startfarmingmusicevent", fns.StartFarmingMusicEvent)
     inst:ListenForEvent("ingredientmoddirty", fns.RefreshCrafting)
+    inst:ListenForEvent("inspectacles_gamedirty", fns.OnInspectaclesGameDirty)
+    inst:ListenForEvent("roseglasses_cooldowndirty", fns.OnRoseGlassesCooldownDirty)
 end
 
 local function RegisterNetListeners(inst)
@@ -1153,12 +1187,15 @@ function fns.OnInitialDirtyStates(inst)
     OnStormLevelDirty(inst)
     fns.OnIsInMiasmaDirty(inst)
     fns.OnIsAcidSizzlingDirty(inst)
+    fns.OnInspectaclesGameDirty(inst)
+    fns.OnRoseGlassesCooldownDirty(inst)
     OnGiftsDirty(inst)
     fns.OnYotbSkinDirty(inst)
     OnMountHurtDirty(inst)
     OnGhostModeDirty(inst)
     OnPlayerHUDDirty(inst)
     OnPlayerCameraDirty(inst)
+    fns.OnPlayerCameraExtraDistDirty(inst, true)
 end
 
 fns.FinishSeamlessPlayerSwap = function(parent)
@@ -1264,6 +1301,16 @@ local function fn()
     -- Wortox Soulhop free counter
     inst.freesoulhops = net_tinybyte(inst.GUID, "freesoulhops", "freesoulhopsdirty")
     inst.freesoulhops:set(0)
+
+    -- Winona inspectacles
+    inst.inspectacles_game = net_tinybyte(inst.GUID, "inspectacles_game", "inspectacles_gamedirty")
+    inst.inspectacles_game:set(0)
+    inst.inspectacles_posx = net_shortint(inst.GUID, "inspectacles_posx", "inspectacles_posxdirty")
+    inst.inspectacles_posz = net_shortint(inst.GUID, "inspectacles_posz", "inspectacles_poszdirty")
+    inst.inspectacles_posx:set(0)
+    inst.inspectacles_posz:set(0)
+    -- Winona rose glasses
+    inst.roseglasses_cooldown = net_bool(inst.GUID, "roseglasses_cooldown", "roseglasses_cooldowndirty")
 
     -- oldager
     inst.oldager_yearpercent = net_float(inst.GUID, "oldager.yearpercent")

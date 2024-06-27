@@ -52,7 +52,7 @@ local function DropItem(inst, data)
 
 		if item ~= nil then
 			local x, y, z = inst.Transform:GetWorldPosition()
-			local dir = math.random() * PI * 2
+			local dir = math.random() * TWOPI
 			item.Transform:SetPosition(x + math.cos(dir) * DROP_OFFSET, y, z + math.sin(dir) * DROP_OFFSET)
 		end
 	end
@@ -337,6 +337,7 @@ local function fn()
 	inst.entity:AddSoundEmitter()
 	inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.4) --recipe min_spacing/2
 	MakeObstaclePhysics(inst, .4)
 
 	inst.MiniMapEntity:SetPriority(5)

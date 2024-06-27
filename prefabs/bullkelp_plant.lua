@@ -72,6 +72,7 @@ local function fn()
     inst.MiniMapEntity:SetIcon("bullkelp_plant.png")
 
     MakeInventoryPhysics(inst, nil, 0.7)
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --bullkelp_root deployspacing/2
 
     inst.AnimState:SetBank("bullkelp")
     inst.AnimState:SetBuild("bullkelp")
@@ -79,11 +80,10 @@ local function fn()
 	inst.AnimState:SetFinalOffset(1)
 
 	AddDefaultRippleSymbols(inst, true, false)
-    
+
     inst:AddTag("kelp")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -101,12 +101,12 @@ local function fn()
     local color = 0.75 + math.random() * 0.25
     inst.AnimState:SetMultColour(color, color, color, 1)
 
-    inst:AddComponent("pickable")
-    inst.components.pickable.picksound = "turnoftides/common/together/water/harvest_plant"
-    inst.components.pickable:SetUp("kelp", TUNING.BULLKELP_REGROW_TIME)
-    inst.components.pickable.onregenfn = onregenfn
-    inst.components.pickable.onpickedfn = onpickedfn
-    inst.components.pickable.makeemptyfn = makeemptyfn
+    local pickable = inst:AddComponent("pickable")
+    pickable.picksound = "turnoftides/common/together/water/harvest_plant"
+    pickable:SetUp("kelp", TUNING.BULLKELP_REGROW_TIME)
+    pickable.onregenfn = onregenfn
+    pickable.onpickedfn = onpickedfn
+    pickable.makeemptyfn = makeemptyfn
 
     inst:AddComponent("inspectable")
 

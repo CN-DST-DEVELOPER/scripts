@@ -434,6 +434,8 @@ local function fn()
 	inst.AnimState:SetBuild("boat_winch")
 	inst.AnimState:PlayAnimation("idle", true)
 
+	inst:SetDeploySmartRadius(0.75) --recipe min_spacing/2
+
     inst:AddTag("structure")
 
 	inst.use_heavy_obstacle_string_key = "LOAD_WINCH"

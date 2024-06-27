@@ -158,7 +158,7 @@ local states =
     State{
         name = "popping",
         onenter = function(inst)
-            inst.sinkloot()
+            inst:sinkloot()
             if inst.postsinkfn then
                 inst:postsinkfn()
             end

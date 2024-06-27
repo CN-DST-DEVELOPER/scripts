@@ -23,7 +23,7 @@ local NUM_FX = 7
 local FX_THETA_DELTA = TWOPI / NUM_FX
 local FX_RADIUS = 1.6
 local function SpawnFx(inst, scale, pos)
-    local theta = math.random() * PI * 2
+    local theta = math.random() * TWOPI
 
     pos = pos or inst:GetPosition()
 
@@ -195,7 +195,7 @@ local function MakeSinkhole(name, radius, scale, maxwork, toughworker)
 			inst:AddTag("toughworker")
 		end
 
-		inst:SetDeployExtraSpacing(4)
+		inst:SetDeploySmartRadius(3 * scale)
 
 		inst.entity:SetPristine()
 

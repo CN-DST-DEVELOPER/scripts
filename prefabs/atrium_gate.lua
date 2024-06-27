@@ -492,7 +492,7 @@ local function CreateTerraformBlocker(parent)
 
     inst.entity:AddTransform()
 
-    inst:SetTerraformExtraSpacing(TERRAFORM_BLOCKER_RADIUS)
+    inst:SetTerraformExtraSpacing(TERRAFORM_BLOCKER_RADIUS + 0.01)
 
     return inst
 end
@@ -631,6 +631,7 @@ local function fn()
     inst:AddComponent("colourtweener")
 
     MakeHauntableWork(inst)
+    MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
     inst.OnLoadPostPass = OnLoadPostPass
     inst.OnPreLoad = OnPreLoad

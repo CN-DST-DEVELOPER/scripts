@@ -528,11 +528,10 @@ local function SpawnSnare(inst, x, z, r, num, target)
     local used = {}
     local queued = {}
     local count = 0
-    local dtheta = PI * 2 / num
-    local thetaoffset = math.random() * PI * 2
+    local dtheta = TWOPI / num
     local delaytoggle = 0
     local map = TheWorld.Map
-    for theta = math.random() * dtheta, PI * 2, dtheta do
+    for theta = math.random() * dtheta, TWOPI, dtheta do
         local x1 = x + r * math.cos(theta)
         local z1 = z + r * math.sin(theta)
         if map:IsPassableAtPoint(x1, 0, z1) and not map:IsPointNearHole(Vector3(x1, 0, z1)) then
@@ -674,8 +673,8 @@ local function SpawnChannelers(inst)
     {
         x = x,
         z = z,
-        angle = math.random() * 2 * PI,
-        delta = -2 * PI / count,
+        angle = math.random() * TWOPI,
+        delta = -TWOPI / count,
         count = count,
     }
     DoSpawnChanneler(inst)
@@ -754,7 +753,7 @@ local function SpawnMinions(inst, count)
         local ringweight = ring * ring / RING_TOTAL
         local ringcount = math.floor(count * ringweight + .5)
         if ringcount > 0 then
-            local delta = 2 * PI / ringcount
+            local delta = TWOPI / ringcount
             local radius = ring * RING_SIZE
             for i = 1, ringcount do
                 local angle = delta * i
@@ -827,7 +826,7 @@ local function GenerateSpiralSpikes(inst)
     local spacing = 1.7
     local radius = 2
     local deltaradius = .2
-    local angle = 2 * PI * math.random()
+    local angle = TWOPI * math.random()
     local deltaanglemult = (inst.reversespikes and -2 or 2) * PI * spacing
     inst.reversespikes = not inst.reversespikes
     local delay = 0
@@ -1165,7 +1164,7 @@ local function DoPlantBloom(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local map = TheWorld.Map
     local offset = FindValidPositionByFan(
-        math.random() * 2 * PI,
+        math.random() * TWOPI,
         math.random() * 3,
         8,
         function(offset)

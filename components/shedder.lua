@@ -38,7 +38,7 @@ function Shedder:DoMultiShed(max, random)
     for i = 1, num do
         local item = self:DoSingleShed()
         if item ~= nil and item.Physics ~= nil and item.Physics:IsActive() then
-            local angle = math.random() * 2 * PI
+            local angle = math.random() * TWOPI
             item.Physics:SetVel(math.cos(angle) * speed, 0, math.sin(angle) * speed)
         end
     end

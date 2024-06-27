@@ -222,6 +222,7 @@ local function blastfn()
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 	inst.AnimState:SetLightOverride(.5)
 
+    inst.entity:SetPristine()
 	if not TheWorld.ismastersim then
 		return inst
 	end

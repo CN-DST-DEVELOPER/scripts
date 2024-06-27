@@ -114,9 +114,9 @@ local function SetSoilMoisture(index, soil_moisture)
 					--obj:PushEvent("onsoilmoisturestatechange", {is_soil_moist = new_moisture > 0, was_soil_moist = prev_moisture > 0})
 					obj.components.farmsoildrinker:OnSoilMoistureStateChange(new_moisture > 0, prev_moisture > 0)
 					if new_moisture == 0 then
-						inst:RemoveTag("wildfireprotected")
+						obj:RemoveTag("wildfireprotected")
 					elseif prev_moisture == 0 then
-						inst:AddTag("wildfireprotected")
+						obj:AddTag("wildfireprotected")
 					end
 				end
 			end
@@ -153,7 +153,12 @@ local function OnTerraform(inst, data, isloading)
     if data.tile == WORLD_TILES.FARMING_SOIL then
 		if not isloading then
 			if not nutrients then
-				self:SetTileNutrients(x, y, GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX), GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX), GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX))
+				self:SetTileNutrients(
+					x, y,
+					GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX),
+					GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX),
+					GetRandomMinMax(TUNING.STARTING_NUTRIENTS_MIN, TUNING.STARTING_NUTRIENTS_MAX)
+				)
 			end
 			TheWorld.components.undertile:SetTileUnderneath(x, y, data.original_tile or nil)
 		end

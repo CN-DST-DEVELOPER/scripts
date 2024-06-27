@@ -122,6 +122,7 @@ local function common_fn(bank, build, isinventoryitem)
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2)
 
     inst.MiniMapEntity:SetIcon("trap_teeth.png")
 

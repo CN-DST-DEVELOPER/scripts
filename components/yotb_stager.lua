@@ -1027,7 +1027,7 @@ function YOTB_Stager:Tossprize(target, pattern, other)
 		end
 	else
 		local pattern = SpawnPrefab("yotb_pattern_fragment_"..math.random(1,3))
-		LaunchGameItem(self.inst, pattern, math.random()*2*PI, true)
+		LaunchGameItem(self.inst, pattern, math.random()*TWOPI, true)
 	end
 end
 

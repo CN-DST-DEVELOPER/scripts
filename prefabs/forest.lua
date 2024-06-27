@@ -448,6 +448,8 @@ local prefabs =
     "dock_woodposts",
     "fx_dock_crackle",
     "fx_dock_pop",
+    "fx_ice_crackle",
+    "ice_crack_grid_fx",
 
     "charlie_stage_post",
     "stageusher",
@@ -485,6 +487,8 @@ local prefabs =
     "fence_junk",
     "junk_pile",
     "junk_pile_big",
+
+    "boat_otterden",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")

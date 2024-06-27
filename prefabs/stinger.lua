@@ -18,6 +18,9 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.1, 0.7)
 
+    --selfstacker (from selfstacker component) added to pristine state for optimization
+    inst:AddTag("selfstacker")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -30,6 +33,9 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
+
+    local selfstacker = inst:AddComponent("selfstacker")
+    selfstacker:SetIgnoreMovingFast(true)
 
 	MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
 	MakeSmallPropagator(inst)

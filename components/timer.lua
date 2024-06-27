@@ -13,7 +13,7 @@ end
 
 function Timer:GetDebugString()
     local str = ""
-    for k, v in pairs(self.timers) do
+    for k in pairs(self.timers) do
         str = str..string.format(
             "\n    --%s: timeleft: %.2f paused: %s",
             k,

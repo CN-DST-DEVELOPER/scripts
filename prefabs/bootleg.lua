@@ -127,6 +127,9 @@ local function fn()
     inst.CanTossOnMap = CanTossOnMap
     inst.InitMapDecorations = InitMapDecorations
     inst.CalculateMapDecorations = CalculateMapDecorations
+    inst.valid_map_actions = {
+        [ACTIONS.TOSS] = true,
+    }
 
     inst.entity:SetPristine()
 
@@ -137,12 +140,14 @@ local function fn()
     inst.CreateOceanWhirlportal = CreateOceanWhirlportal
 
     inst:AddComponent("inspectable")
-
-    local inventoryitem = inst:AddComponent("inventoryitem")
+    inst:AddComponent("inventoryitem")
 
     local equippable = inst:AddComponent("equippable")
     equippable:SetOnEquip(onequip)
     equippable:SetOnUnequip(onunequip)
+
+    local stackable = inst:AddComponent("stackable")
+    stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
 
     -- NOTES(JBK): The component oceanthrowable looks unfinished at this time so I am repurposing the TOSS action.
     local complexprojectile = inst:AddComponent("complexprojectile")

@@ -35,10 +35,12 @@ function CanopyShadows:GenerateCanopyShadowPositions()
                 local newx = math.floor((x + i * 4) / 4) * 4 + 2
                 local newz = math.floor((z + t * 4) / 4) * 4 + 2
 
+                table.insert(self.canopy_positions, { newx, newz })
+
                 local shadetile_key = newx.."-"..newz
                 local shadetile = Canopyshadows[shadetile_key]
+
                 if not shadetile then
-                    table.insert(self.canopy_positions, {newx, newz})
                     Canopyshadows[shadetile_key] = {refs = 1, spawnrefs = 0}
                 else
                     shadetile.refs = shadetile.refs + 1

@@ -76,7 +76,7 @@ local function GetSpawnPoint(pt,platform)
                    #TheSim:FindEntities(spawnpoint_x, spawnpoint_y, spawnpoint_z, SHORTRANGE, nil, SPAWNPOINT_2_ONEOF_TAGS) <= 0
         end
 
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
 
         if platform and platform.components.boatphysics then
             local vel_x, vel_z = platform.components.boatphysics.velocity_x, platform.components.boatphysics.velocity_z

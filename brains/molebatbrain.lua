@@ -41,7 +41,7 @@ end
 
 local function CreateBurrow(inst)
     local burrow_position = inst:GetPosition()
-    local offset = FindWalkableOffset(burrow_position, math.random()*2*PI, math.random(4, 7), 10, true, false)
+    local offset = FindWalkableOffset(burrow_position, math.random()*TWOPI, math.random(4, 7), 10, true, false)
     if offset ~= nil then
         burrow_position = burrow_position + offset
     end

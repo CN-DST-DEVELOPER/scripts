@@ -20,8 +20,10 @@ function MermCandidate:ShouldTransform()
 end
 
 function MermCandidate:OnSave()
-    local data = { calories = self.calories, transformation_calories = self.transformation_calories}
-    return data
+    return {
+        calories = self.calories,
+        transformation_calories = self.transformation_calories
+    }
 end
 
 function MermCandidate:OnLoad(data)

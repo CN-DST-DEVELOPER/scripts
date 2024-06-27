@@ -34,7 +34,11 @@ local function GetPointSpecialActions(inst, pos, useitem, right)
 				useitem = inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 			end
 		end
-		if useitem ~= nil and useitem:HasTag("special_action_toss") and inst.components.skilltreeupdater:IsActivated("wilson_torch_7") then
+		if useitem and
+			useitem.prefab == "torch" and
+			inst.components.skilltreeupdater:IsActivated("wilson_torch_7") and
+			useitem:HasTag("special_action_toss")
+		then
 			return { ACTIONS.TOSS }
 		end
 	end
@@ -68,7 +72,9 @@ local function common_postinit(inst)
         inst:AddTag("quagmire_potmaster")
         inst:AddTag("quagmire_shopper")
     end
-    
+
+	inst:AddTag("scientist")
+
     --bearded (from beard component) added to pristine state for optimization
     inst:AddTag("bearded")
 

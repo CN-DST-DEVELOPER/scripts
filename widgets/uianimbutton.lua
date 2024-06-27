@@ -52,7 +52,9 @@ function UIAnimButton:OnControl(control, down)
                 self.animstate:PlayAnimation(self.downanimation, self.loops[self.downanimation])
             end
 
-            TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+            if not self.stopclicksound then
+                TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+            end
 
             self.down = true
             if self.whiledown then

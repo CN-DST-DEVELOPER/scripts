@@ -1,5 +1,6 @@
 local PLANT_DEFS = require("prefabs/farm_plant_defs").PLANT_DEFS
 local WEED_DEFS = require("prefabs/weed_defs").WEED_DEFS
+local ANCIENT_TREE_DEFS = require("prefabs/ancienttree_defs").TREE_DEFS
 
 -------------------------------------------------------------------------------------------------
 
@@ -56,6 +57,11 @@ end
 
 for i, data in pairs(WEED_DEFS) do
     table.insert(prefabs, data.prefab)
+end
+
+for type, data in pairs(ANCIENT_TREE_DEFS) do
+    table.insert(prefabs, "ancienttree_"..type)
+    table.insert(prefabs, "ancienttree_"..type.."_sapling")
 end
 
 for i, prefab in ipairs(prefabs) do

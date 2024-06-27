@@ -198,11 +198,10 @@ end
 
 local function SpawnSnare(inst, x, z, r, num, target)
     local count = 0
-    local dtheta = PI * 2 / num
-    local thetaoffset = math.random() * PI * 2
+    local dtheta = TWOPI / num
     local delaytoggle = 0
     local map = TheWorld.Map
-    for theta = math.random() * dtheta, PI * 2, dtheta do
+    for theta = math.random() * dtheta, TWOPI, dtheta do
         local x1 = x + r * math.cos(theta)
         local z1 = z + r * math.sin(theta)
         if map:IsPassableAtPoint(x1, 0, z1, false, true) and not map:IsPointNearHole(Vector3(x1, 0, z1)) then

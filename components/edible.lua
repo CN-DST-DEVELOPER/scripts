@@ -179,6 +179,9 @@ function Edible:OnEaten(eater)
     end
 
     self.inst:PushEvent("oneaten", { eater = eater })
+    if self.inst.eatensound ~= nil and eater.SoundEmitter ~= nil then
+        eater.SoundEmitter:PlaySound(self.inst.eatensound)
+    end
 end
 
 function Edible:AddChill(delta)

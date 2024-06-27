@@ -198,6 +198,7 @@ local function main_fn()
     inst.entity:AddNetwork()
     inst.entity:AddSoundEmitter()
 
+	inst:SetDeploySmartRadius(1) --match art (item uses CUSTOM spacing since snaps to tiles)
     MakeObstaclePhysics(inst, 0.5)
 
     inst.AnimState:SetBank("farm_plow")

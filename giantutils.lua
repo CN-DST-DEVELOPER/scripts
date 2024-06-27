@@ -3,7 +3,7 @@ local WANDER_AWAY_DIST = 100
 
 
 function GetWanderAwayPoint(pt)
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = WANDER_AWAY_DIST
 
     local ground = TheWorld
@@ -21,7 +21,7 @@ function GetWanderAwayPoint(pt)
                 { ignorewalls = true }) then
             return wander_point
         end
-        theta = theta - (2 * PI / steps)
+        theta = theta - (TWOPI / steps)
     end
 end
 

@@ -344,9 +344,9 @@ local function Retarget(inst)
         if inst.vinelimit > 0 then
             if target and ( not inst.components.freezable or not inst.components.freezable:IsFrozen()) then
 
-                local pos = Vector3(inst.Transform:GetWorldPosition())
+                local pos = inst:GetPosition()
 
-                local theta = math.random()*2*PI
+                local theta = math.random()*TWOPI
                 local radius = TUNING.LUNARTHRALL_PLANT_MOVEDIST
                 local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
                 pos = pos + offset

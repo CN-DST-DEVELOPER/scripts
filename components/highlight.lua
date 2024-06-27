@@ -79,17 +79,17 @@ function Highlight:OnUpdate(dt)
 end
 
 function Highlight:ApplyColour()
-    if self.inst.AnimState ~= nil then
-        local r = (self.highlight_add_colour_red or 0) + (self.base_add_colour_red or 0) + (self.flash_val or 0)
-        local g = (self.highlight_add_colour_green or 0) + (self.base_add_colour_green or 0) + (self.flash_val or 0)
-        local b = (self.highlight_add_colour_blue or 0) + (self.base_add_colour_blue or 0) + (self.flash_val or 0)
+	local r = (self.highlight_add_colour_red or 0) + (self.base_add_colour_red or 0) + (self.flash_val or 0)
+	local g = (self.highlight_add_colour_green or 0) + (self.base_add_colour_green or 0) + (self.flash_val or 0)
+	local b = (self.highlight_add_colour_blue or 0) + (self.base_add_colour_blue or 0) + (self.flash_val or 0)
+	if self.inst.AnimState then
         self.inst.AnimState:SetHighlightColour(r, g, b, 0)
-        if self.inst.highlightchildren ~= nil then
-            for i, v in ipairs(self.inst.highlightchildren) do
-                v.AnimState:SetHighlightColour(r, g, b, 0)
-            end
-        end
     end
+	if self.inst.highlightchildren then
+		for i, v in ipairs(self.inst.highlightchildren) do
+			v.AnimState:SetHighlightColour(r, g, b, 0)
+		end
+	end
 end
 
 function Highlight:Highlight(r, g, b)
@@ -128,8 +128,10 @@ function Highlight:UnHighlight()
 end
 
 function Highlight:OnRemoveFromEntity()
-    if self.inst:IsValid() and self.inst.AnimState ~= nil then
-        self.inst.AnimState:SetHighlightColour()
+	if self.inst:IsValid() then
+		if self.inst.AnimState then
+			self.inst.AnimState:SetHighlightColour()
+		end
         if self.inst.highlightchildren ~= nil then
             for i, v in ipairs(self.inst.highlightchildren) do
                 v.AnimState:SetHighlightColour()

@@ -1,6 +1,6 @@
 require("stategraphs/commonstates")
 
-local SWOOP_LOOP_TARGET_CANT_TAGS = {"INLIMBO", "fx", "malbatross", "boat"}
+local SWOOP_LOOP_TARGET_CANT_TAGS = {"INLIMBO", "fx", "malbatross", "boat", "boatbumper"}
 local SWOOP_LOOP_TARGET_ONEOF_TAGS = {"tree", "mast", "_health"}
 
 local actionhandlers =
@@ -51,7 +51,7 @@ local function spawnwave(inst, time)
     inst.spawnwaves(inst, 12, 360, 4, nil, 2, time or 2, nil, true)
 end
 
-local ATTACK_WAVE_SPEED = 5
+local ATTACK_WAVE_SPEED = 4
 local ATTACK_WAVE_IDLE_TIME = 1.5
 local ANGLE_OFFSET = 35*DEGREES
 local function SpawnMalbatrossAttackWaves(inst)

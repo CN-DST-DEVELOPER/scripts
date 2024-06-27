@@ -241,6 +241,7 @@ local function fn()
     inst.entity:AddDynamicShadow()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --item deployspacing/2
     inst:SetPhysicsRadiusOverride(.5)
     MakeObstaclePhysics(inst, inst.physicsradiusoverride)
 

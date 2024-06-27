@@ -117,7 +117,7 @@ local function start_wag_sequence(inst)
 
     local ipos = inst:GetPosition()
 
-    local offset = FindWalkableOffset(ipos, 2*PI*math.random(), 2.5)
+    local offset = FindWalkableOffset(ipos, TWOPI*math.random(), 2.5)
     if offset then
         ipos = ipos + offset
     end

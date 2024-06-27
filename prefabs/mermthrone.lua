@@ -16,7 +16,7 @@ local prefabs =
 
 local function OnConstructed(inst, doer)
     local concluded = true
-    for i, v in ipairs(CONSTRUCTION_PLANS[inst.prefab] or {}) do
+    for _, v in ipairs(CONSTRUCTION_PLANS[inst.prefab] or {}) do
         if inst.components.constructionsite:GetMaterialCount(v.type) < v.amount then
             concluded = false
             break
@@ -63,15 +63,17 @@ local function onhammered_regular(inst, worker)
 end
 
 local function onhit_construction(inst, worker)
-     if not inst:HasTag("burnt") then
-         inst.AnimState:PlayAnimation("hit")
-         inst.AnimState:PushAnimation("idle", true)
-		inst.components.constructionsite:ForceStopConstruction()
-     end
+    if not inst:HasTag("burnt") then
+        inst.AnimState:PlayAnimation("hit")
+        inst.AnimState:PushAnimation("idle", true)
+        inst.components.constructionsite:ForceStopConstruction()
+    end
 end
 
 local function onconstruction_built(inst)
     PreventCharacterCollisionsWithPlacedObjects(inst)
+    inst.AnimState:PlayAnimation("place")
+    inst.AnimState:PushAnimation("idle", true)
     inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/place")
 end
 
@@ -111,7 +113,6 @@ local function construction_fn()
     inst.scrapbook_specialinfo = "MERMTHRONE"
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -120,17 +121,18 @@ local function construction_fn()
     MakeLargeBurnable(inst, nil, nil, true)
     MakeMediumPropagator(inst)
 
-    inst:AddComponent("constructionsite")
-    inst.components.constructionsite:SetConstructionPrefab("construction_container")
-    inst.components.constructionsite:SetOnConstructedFn(OnConstructed)
+    local constructionsite = inst:AddComponent("constructionsite")
+    constructionsite:SetConstructionPrefab("construction_container")
+    constructionsite:SetOnConstructedFn(OnConstructed)
 
     inst:AddComponent("inspectable")
     inst:AddComponent("lootdropper")
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(4)
-    inst.components.workable:SetOnFinishCallback(onhammered_construction)
-    inst.components.workable:SetOnWorkCallback(onhit_construction)
+
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(4)
+    workable:SetOnFinishCallback(onhammered_construction)
+    workable:SetOnWorkCallback(onhit_construction)
 
     inst:ListenForEvent("onbuilt", onconstruction_built)
 
@@ -175,6 +177,13 @@ local function OnThroneRemoved(inst)
     end
 end
 
+local function Throne_Initialize(inst)
+    local mermkingmanager = TheWorld.components.mermkingmanager
+    if mermkingmanager and mermkingmanager:HasKingLocal() then
+        OnMermKingCreated(inst, {throne = mermkingmanager:GetMainThrone()})
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -199,7 +208,6 @@ local function fn()
     inst:AddTag("mermthrone")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -207,10 +215,11 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("lootdropper")
-    inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(4)
-    inst.components.workable:SetOnFinishCallback(onhammered_regular)
+
+    local workable = inst:AddComponent("workable")
+    workable:SetWorkAction(ACTIONS.HAMMER)
+    workable:SetWorkLeft(4)
+    workable:SetOnFinishCallback(onhammered_regular)
 
     MakeHauntableWork(inst)
     MakeLargeBurnable(inst, nil, nil, true)
@@ -222,11 +231,7 @@ local function fn()
     inst:ListenForEvent("onmermkingdestroyed", function (world, data) OnMermKingDestroyed(inst, data) end, TheWorld)
     inst:ListenForEvent("onremove", OnThroneRemoved)
 
-    inst:DoTaskInTime(0, function()
-        if TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKing() then
-            OnMermKingCreated(inst, {throne = TheWorld.components.mermkingmanager:GetMainThrone() })
-        end
-    end)
+    inst:DoTaskInTime(0, Throne_Initialize)
 
     inst.OnSave = onsave
     inst.OnLoad = onload

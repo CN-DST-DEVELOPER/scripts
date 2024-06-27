@@ -104,6 +104,7 @@ local function fn(data)
 	inst.Light:SetRadius(2)
 	inst.Light:SetColour(180/255, 195/255, 150/255)
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --match kit item
 	inst:SetPhysicsRadiusOverride(0.5)
 
 	LightOff(inst)
@@ -164,5 +165,5 @@ local function placer_postinit_fn(inst)
 end
 
 return Prefab("carnivaldecor_lamp", fn, assets),
-		MakeDeployableKitItem("carnivaldecor_lamp_kit", "carnivaldecor_lamp", "carnivaldecor_lamp", "carnivaldecor_lamp", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, nil, TUNING.STACK_SIZE_LARGEITEM),
+		MakeDeployableKitItem("carnivaldecor_lamp_kit", "carnivaldecor_lamp", "carnivaldecor_lamp", "carnivaldecor_lamp", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, { deployspacing = DEPLOYSPACING.LESS }, TUNING.STACK_SIZE_LARGEITEM),
 		MakePlacer("carnivaldecor_lamp_kit_placer", "carnivaldecor_lamp", "carnivaldecor_lamp", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn)

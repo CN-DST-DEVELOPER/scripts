@@ -71,7 +71,7 @@ local function respawner_OnTimerDone(inst, data)
 
 		if not TheWorld.Map:CanTillSoilAtPoint(x, y, z) then
 			local pt = Vector3(x, y, z)
-			local angle = math.random() * 2 * PI
+			local angle = math.random() * TWOPI
 
 			local offset = FindWalkableOffset(pt, angle, 2, 8, true, true, respawner_test_point, false, false)
 							or FindWalkableOffset(pt, angle, 3, 8, true, true, respawner_test_point, false, false)

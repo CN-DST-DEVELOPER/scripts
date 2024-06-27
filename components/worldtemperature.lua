@@ -143,7 +143,7 @@ local function CalculateSummerBloom(dt)
     if _summerbloom_time_to_new_modifier <= _summerbloom_current_time then
         -- start up the next throb
         local new_period = math.random(SUMMER_BLOOM_PERIOD_MIN, SUMMER_BLOOM_PERIOD_MAX)
-        _summerbloom_modifier = 2 * PI / new_period
+        _summerbloom_modifier = TWOPI / new_period
         _summerbloom_time_to_new_modifier = new_period
         _summerbloom_current_time = 0
         -- print("New Summer bloom phase",_summerbloom_time_to_new_modifier)

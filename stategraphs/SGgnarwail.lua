@@ -232,7 +232,7 @@ local states =
                     -- We want to grab the boat's position now, so we can account for movement after the attack delay.
                     inst.sg.statemem.boat_position_at_acquisition = targets_boat:GetPosition()
 
-                    local random_angle = 2*PI*math.random()
+                    local random_angle = TWOPI*math.random()
                     local hull_size = (targets_boat.components.hull ~= nil and targets_boat.components.hull:GetRadius()) or 2
                     local random_radius = math.sqrt(math.random()) * (hull_size - 1)
                     local boat_safety_offset = Vector3(random_radius * math.cos(random_angle), 0, -random_radius * math.sin(random_angle))
@@ -329,7 +329,7 @@ local states =
 
     State {
         name = "body_slam_pre",
-        tags = {"attack", "busy", "canrotate"},
+        tags = {"attack", "busy", "canrotate", "jumping"},
 
         onenter = function(inst, target)
             inst.Physics:Stop()
@@ -375,7 +375,7 @@ local states =
 
     State {
         name = "body_slam",
-        tags = {"attack", "busy", "longattack", "moving", "running", "diving"},
+        tags = {"attack", "busy", "longattack", "moving", "running", "diving", "jumping"},
 
         onenter = function(inst, target_position)
             inst:ForceFacePoint(target_position)

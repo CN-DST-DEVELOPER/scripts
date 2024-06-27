@@ -25,6 +25,7 @@ local function fn()
     inst:AddTag("cattoy")
     inst:AddTag("renewable")
 	inst:AddTag("oceanfishing_bobber")
+    inst:AddTag("twigs")
 
     MakeInventoryFloatable(inst, "med", nil, 0.68)
 

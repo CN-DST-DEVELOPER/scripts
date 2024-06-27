@@ -124,8 +124,7 @@ local function fn()
     inst:AddTag("groundhole")
     inst:AddTag("ignorewalkableplatforms") -- Just in case.
 
-    inst:SetDeployExtraSpacing(2)
-
+	inst:SetDeploySmartRadius(2)
 
     inst.entity:SetPristine()
 

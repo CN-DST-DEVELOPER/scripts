@@ -39,7 +39,7 @@ local function GetSpawnPoint(pt)
         return _map:IsAboveGroundAtPoint(spawnpoint:Get())
     end
 
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = math.random() * TUNING.FROG_RAIN_SPAWN_RADIUS
     local resultoffset = FindValidPositionByFan(theta, radius, 12, TestSpawnPoint)
 

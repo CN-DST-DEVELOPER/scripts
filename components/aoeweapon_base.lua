@@ -158,7 +158,7 @@ function AOEWeapon_Base:OnToss(doer, target, sourceposition, basespeed, startrad
         local dsq = dx * dx + dz * dz
         local dist = math.sqrt(dsq)
         local angle = (dsq > 0 and math.atan2(dz / dist, dx / dist) + (math.random() * 20 - 10) * DEGREES)
-            or 2 * PI * math.random()
+            or TWOPI * math.random()
         local sina, cosa = math.sin(angle), math.cos(angle)
 
         --V2C: test against edge of the world

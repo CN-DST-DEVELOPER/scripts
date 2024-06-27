@@ -69,18 +69,12 @@ local function OnAttacked(inst, data)
 end
 
 local function retargetfn(inst)
-    if true then
-        return nil
-    end
-
+    return nil
 end
 
 local function shouldKeepTarget(inst, target)
-    if inst.components.crewmember then
-        return true
-    else
-        return inst.components.combat:CanTarget(target)
-    end
+    return (inst.components.crewmember ~= nil)
+        or inst.components.combat:CanTarget(target)
 end
 
 local function OnPickup(inst, data)
@@ -114,14 +108,15 @@ local function OnSave(inst, data)
 			personal_item[k] = v.prefab
 		end
 	end
+	data.personal_item = (next(personal_item) ~= nil and personal_item) or nil
+
 	local personal_equip = {}
 	for k, v in pairs(inst.components.inventory.equipslots) do
 		if v.persists and v:HasTag("personal_possession") then
 			personal_equip[k] = v.prefab
 		end
 	end
-	data.personal_item = next(personal_item) ~= nil and personal_item or nil
-	data.personal_equip = next(personal_equip) ~= nil and personal_equip or nil
+	data.personal_equip = (next(personal_equip) ~= nil and personal_equip) or nil
 end
 
 local function OnLoad(inst, data)
@@ -147,9 +142,10 @@ end
 
 local function ClearTinkerTarget(inst)
     if inst.tinkertarget then
-        local bc = inst.components.crewmember and 
-                   inst.components.crewmember.boat and 
-                   inst.components.crewmember.boat.components.boatcrew or nil 
+        local bc = (inst.components.crewmember and
+                   inst.components.crewmember.boat and
+                   inst.components.crewmember.boat.components.boatcrew)
+                   or nil
         if bc then
             bc:removeinkertarget(inst.tinkertarget)
         end
@@ -164,38 +160,25 @@ end
 
 local function OnGotItem(inst,data)
     if data.item and (data.item.prefab == "cave_banana" or data.item.prefab == "cave_banana_cooked") then
-        inst:PushEvent("victory",{item = data.item, say = STRINGS["MONKEY_BATTLECRY_VICTORY"][math.random(1,#STRINGS["MONKEY_BATTLECRY_VICTORY"])]})
+        inst:PushEvent("victory", {
+            item = data.item,
+            say = STRINGS["MONKEY_BATTLECRY_VICTORY"][math.random(#STRINGS["MONKEY_BATTLECRY_VICTORY"])]
+        })
     end
 end
 
-local function OnAbandonShip(inst)
-    inst:DoTaskInTime((math.random()*1.5)+0.3 , function() inst.abandon = true end)
-end
-
 local function speech_override_fn(inst, speech)
-    if not ThePlayer or ThePlayer:HasTag("wonkey") then
-        return speech
-    else
-        return CraftMonkeySpeech()
-    end 
+    return (ThePlayer and not ThePlayer:HasTag("wonkey") and CraftMonkeySpeech())
+        or speech
 end
---[[
-local function giveupstring()
-    return "RABBIT_GIVEUP", math.random(#STRINGS["RABBIT_GIVEUP"])
-end
-]]
 
 local function battlecry(combatcmp, target)
-    local strtbl = nil
-    
     if target ~= nil then
-        if target:HasTag("monkey") ~= nil then
-            strtbl = "MONKEY_MONKEY_BATTLECRY"
-        elseif target.components.inventory ~= nil and target.components.inventory:NumItems() > 0 then
-            strtbl = "MONKEY_STUFF_BATTLECRY"
-        else
-            strtbl = "MONKEY_BATTLECRY"
-        end
+        local strtbl = (target:HasTag("monkey") and "MONKEY_MONKEY_BATTLECRY")
+            or (target.components.inventory ~= nil
+                and target.components.inventory:NumItems() > 0
+                and "MONKEY_STUFF_BATTLECRY")
+            or "MONKEY_BATTLECRY"
 
         return strtbl, math.random(#STRINGS[strtbl])
     end
@@ -203,21 +186,30 @@ end
 
 local function onmonkeychange(inst, data)
     if data and data.player then
-        if inst.components.combat and inst.components.combat.target and inst.components.combat.target == data.player then
+        if inst.components.combat and inst.components.combat.target == data.player then
             inst.components.combat:DropTarget()
         end
     end
 end
 
 local function modifiedsleeptest(inst)
-    if inst.components.crewmember then
-        return nil
-    end
-    return DefaultSleepTest(inst)
+    return (inst.components.crewmember == nil and DefaultSleepTest(inst))
+        or nil
 end
 
 local function ontalk(inst, script)
     inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/speak")
+end
+
+local function onhit(inst)
+    inst:ClearBufferedAction()
+end
+
+local function onremove(inst)
+    if inst.cannon then
+        inst.cannon.operator = nil
+    end
+    inst:ClearTinkerTarget()
 end
 
 local function fn()
@@ -255,25 +247,24 @@ local function fn()
 	inst:AddTag("scarytoprey")
     inst:AddTag("pirate")
 
-    inst:AddComponent("talker")
-    inst.components.talker.fontsize = 35
-    inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
-    inst.components.talker:MakeChatter()
-    inst.components.talker.ontalk = ontalk
+    local talker = inst:AddComponent("talker")
+    talker.fontsize = 35
+    talker.font = TALKINGFONT
+    talker.offset = Vector3(0, -400, 0)
+    talker:MakeChatter()
+    talker.ontalk = ontalk
 
     inst.speech_override_fn = speech_override_fn
 
     inst.scrapbook_removedeps = {"oar_monkey"}
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst.soundtype = ""
- 
+
     MakeMediumBurnableCharacter(inst,"m_skirt")
     MakeMediumFreezableCharacter(inst)
 
@@ -286,20 +277,19 @@ local function fn()
 
     inst:AddComponent("thief")
 
-    inst:AddComponent("locomotor")
-    inst.components.locomotor:SetSlowMultiplier( 1 )
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorecreep = false }
-    inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor:SetSlowMultiplier( 1 )
+    locomotor:SetTriggersCreep(false)
+    locomotor.pathcaps = { ignorecreep = false }
+    locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
 
-    inst:AddComponent("combat")
-    inst.components.combat:SetAttackPeriod(TUNING.MONKEY_ATTACK_PERIOD)
-    inst.components.combat:SetDefaultDamage(TUNING.POWDER_MONKEY_DAMAGE)
-    inst.components.combat:SetRange(TUNING.MONKEY_MELEE_RANGE)
-    inst.components.combat:SetRetargetFunction(1, retargetfn)
-    inst.components.combat:SetOnHit(function() inst:ClearBufferedAction() end)
-    inst.components.combat.GetBattleCryString = battlecry
-    --inst.components.combat.GetGiveUpString = giveupstring
+    local combat = inst:AddComponent("combat")
+    combat:SetAttackPeriod(TUNING.MONKEY_ATTACK_PERIOD)
+    combat:SetDefaultDamage(TUNING.POWDER_MONKEY_DAMAGE)
+    combat:SetRange(TUNING.MONKEY_MELEE_RANGE)
+    combat:SetRetargetFunction(1, retargetfn)
+    combat:SetOnHit(onhit)
+    combat.GetBattleCryString = battlecry
 
     inst.components.combat:SetKeepTargetFunction(shouldKeepTarget)
 
@@ -331,12 +321,7 @@ local function fn()
 
     inst.ClearTinkerTarget = ClearTinkerTarget
 
-    inst:ListenForEvent("onremove", function()
-        if inst.cannon then
-            inst.cannon.operator = nil
-        end
-        inst:ClearTinkerTarget()
-    end)
+    inst:ListenForEvent("onremove", onremove)
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGpowdermonkey")
@@ -348,7 +333,6 @@ local function fn()
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDeath)
     inst:ListenForEvent("itemget", OnGotItem)
-    --inst:ListenForEvent("abandon_ship", OnAbandonShip)
     inst:ListenForEvent("ms_seamlesscharacterspawned", onmonkeychange, TheWorld)
 
     MakeHauntablePanic(inst)

@@ -29,6 +29,7 @@ local function ground_fn()
     inst.AnimState:SetLayer( LAYER_BACKGROUND )
     inst.AnimState:SetSortOrder( 3 )
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
@@ -51,6 +52,7 @@ local function normal_fn()
     inst.AnimState:SetBank("abigail_attack_fx")
     inst.AnimState:SetBuild("abigail_attack_fx")
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

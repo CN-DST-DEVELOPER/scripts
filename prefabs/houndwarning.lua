@@ -13,7 +13,7 @@ local function PlayWarningSound(inst, radius)
     inst.entity:SetParent(TheFocalPoint.entity)
 
     --Everyone gets their own hounds and therefore their own warnings
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
 
     inst.Transform:SetPosition(radius * math.cos(theta), 0, radius * math.sin(theta))
     inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/distant")

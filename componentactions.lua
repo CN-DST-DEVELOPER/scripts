@@ -1,6 +1,5 @@
 require 'util'
 require 'vecutil'
-local BEEF_HASTAGS = {"beefalo"}
 
 local function CanCastFishingNetAtPoint(thrower, target_x, target_z)
     local min_throw_distance = 2
@@ -126,6 +125,7 @@ local function CheckRowOverride(doer, target)
 end
 
 local SCYTHE_ONEOFTAGS = {"plant", "lichen", "oceanvine", "kelp"}
+local KITCOON_MUST_TAGS = {"kitcoonden"}
 
 local function IsValidScytheTarget(target)
     return target:HasOneOfTags(SCYTHE_ONEOFTAGS)
@@ -143,10 +143,16 @@ local COMPONENT_ACTIONS =
     {
         activatable = function(inst, doer, actions, right)
             if inst:HasTag("inactive") then
-				if right or (inst.replica.inventoryitem == nil and not inst:HasTag("activatable_forceright")) then
-					if not inst:HasTag("smolder") and not inst:HasTag("fire") then
-		                table.insert(actions, ACTIONS.ACTIVATE)
-					end
+				--keep playercontroller.lua::GetPickupAction updated as well
+				if right and inst:HasTag("engineering") and doer:HasTag("portableengineer") then
+					--portableengineer needs r.click for dismantle
+					return
+				elseif not right and (inst.replica.inventoryitem or inst:HasTag("activatable_forceright")) then
+					--no l.click for inventoryitem or forceright
+					return
+				end
+				if not (inst:HasTag("smolder") or inst:HasTag("fire")) then
+					table.insert(actions, ACTIONS.ACTIVATE)
 				end
             end
         end,
@@ -351,6 +357,22 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+        grabbable = function(inst, doer, actions, right)
+            if not right then
+                return
+            end
+
+            -- NOTES(DiogoW): Please refactor this if more cases are added, spellcaster types is a good example.
+            if inst:HasTag("mosquito") and
+                doer.components.skilltreeupdater ~= nil and
+                doer.components.skilltreeupdater:IsActivated("wurt_mosquito_craft_3") and
+                doer.replica.inventory ~= nil and
+                doer.replica.inventory:HasItemWithTag("mosquitomusk", 1)
+            then
+                table.insert(actions, ACTIONS.NET)
+            end
+        end,
+
         groomer = function(inst, doer, actions, right)
             if inst:HasTag("groomer") and not inst:HasTag("fire") and not inst:HasTag("burnt") and not inst:HasTag("hitcher") and right then
                 table.insert(actions, ACTIONS.CHANGEIN)
@@ -426,7 +448,7 @@ local COMPONENT_ACTIONS =
         kitcoon = function(inst, doer, actions, right)
             if right then
 	            if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == doer then
-					if doer:HasTag("near_kitcoonden") and FindEntity(inst, TUNING.KITCOON_NEAR_DEN_DIST, nil, {"kitcoonden"}) ~= nil then
+					if doer:HasTag("near_kitcoonden") and FindEntity(inst, TUNING.KITCOON_NEAR_DEN_DIST, nil, KITCOON_MUST_TAGS) ~= nil then
 	                    table.insert(actions, ACTIONS.RETURN_FOLLOWER)
 					else
 	                    table.insert(actions, ACTIONS.ABANDON)
@@ -565,8 +587,9 @@ local COMPONENT_ACTIONS =
 
         portablestructure = function(inst, doer, actions, right)
             if right and not inst:HasTag("fire") and
-                (not inst:HasTag("mastercookware") or doer:HasTag("masterchef")) then
-
+				(not inst:HasTag("mastercookware") or doer:HasTag("masterchef")) and
+				(not inst:HasTag("engineering") or doer:HasTag("portableengineer"))
+			then
                 if  not inst.candismantle or inst.candismantle(inst) then
                     local container = inst.replica.container
                     if (container == nil or (container:CanBeOpened() and not container:IsOpenedBy(doer)))  then
@@ -646,6 +669,12 @@ local COMPONENT_ACTIONS =
         rider = function(inst, doer, actions)
             if inst == doer and inst.replica.rider:IsRiding() then
                 table.insert(actions, ACTIONS.DISMOUNT)
+            end
+        end,
+
+        searchable = function(inst, doer, actions)
+            if inst:HasTag("searchable") and not (inst:HasTag("fire") or inst:HasTag("intense")) then
+                table.insert(actions, ACTIONS.PICK)
             end
         end,
 
@@ -1374,6 +1403,18 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+		recipescanner = function(inst, doer, target, actions, right)
+			local recipe
+			if target.SCANNABLE_RECIPENAME then
+				recipe = GetValidRecipe(target.SCANNABLE_RECIPENAME)
+			else
+				recipe = AllRecipes[target.prefab]
+			end
+			if recipe and not (recipe.nounlock or FunctionOrValue(recipe.no_deconstruction, target)) then
+				table.insert(actions, ACTIONS.TEACH)
+			end
+		end,
+
         repairer = function(inst, doer, target, actions, right)
             if right then
                 if doer.replica.rider ~= nil and doer.replica.rider:IsRiding() then
@@ -1451,7 +1492,7 @@ local COMPONENT_ACTIONS =
         end,
 
         stackable = function(inst, doer, target, actions)
-            if inst.prefab == target.prefab and inst.AnimState:GetSkinBuild() == target.AnimState:GetSkinBuild() and --inst.skinname == target.skinname (this does not work on clients, so we're going to use the AnimState hack instead)
+            if inst.prefab == target.prefab and inst:StackableSkinHack(target) and
                 target.replica.stackable ~= nil and
                 not target.replica.stackable:IsFull() and
                 target.replica.inventoryitem ~= nil and
@@ -1769,18 +1810,26 @@ local COMPONENT_ACTIONS =
         end,
 
 		spellcaster = function(inst, doer, pos, actions, right, target)
-            if right then
-                local cast_on_water = inst:HasTag("castonpointwater")
-                if inst:HasTag("castonpoint") then
-                    local px, py, pz = pos:Get()
-                    if TheWorld.Map:IsAboveGroundAtPoint(px, py, pz, cast_on_water) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
-                        table.insert(actions, ACTIONS.CASTSPELL)
-                    end
-                elseif cast_on_water then
-                    local px, py, pz = pos:Get()
-                    if TheWorld.Map:IsOceanAtPoint(px, py, pz, false) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
-                        table.insert(actions, ACTIONS.CASTSPELL)
-                    end
+            if not right then
+                return
+            end
+
+            for k,v in pairs(SPELLTYPES) do
+                if inst:HasTag(v.."_spellcaster") and not doer:HasTag(v.."_spelluser") then
+                    return
+                end
+            end
+
+            local cast_on_water = inst:HasTag("castonpointwater")
+            if inst:HasTag("castonpoint") then
+                local px, py, pz = pos:Get()
+                if TheWorld.Map:IsAboveGroundAtPoint(px, py, pz, cast_on_water) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
+                    table.insert(actions, ACTIONS.CASTSPELL)
+                end
+            elseif cast_on_water then
+                local px, py, pz = pos:Get()
+                if TheWorld.Map:IsOceanAtPoint(px, py, pz, false) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
+                    table.insert(actions, ACTIONS.CASTSPELL)
                 end
             end
         end,
@@ -1953,7 +2002,19 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+		remoteteleporter = function(inst, doer, target, actions, right)
+			if target == doer and (not inst:HasTag("engineering") or doer:HasTag("handyperson")) then
+				table.insert(actions, ACTIONS.REMOTE_TELEPORT)
+			end
+		end,
+
         spellcaster = function(inst, doer, target, actions, right)
+            for k,v in pairs(SPELLTYPES) do
+                if inst:HasTag(v.."_spellcaster") and not doer:HasTag(v.."_spelluser") then
+                    return
+                end
+            end
+
             if right and not target:HasTag("nomagic") and (
                     inst:HasTag("castontargets") or
                     (inst:HasTag("castonrecipes") and AllRecipes[target.prefab] ~= nil and not FunctionOrValue(AllRecipes[target.prefab].no_deconstruction, target)) or
@@ -2266,6 +2327,15 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+		remoteteleporter = function(inst, doer, actions, right)
+			if doer and (not inst:HasTag("engineering") or doer:HasTag("handyperson")) then
+				local equippable = inst.replica.equippable
+				if equippable == nil or equippable:IsEquipped() then
+					table.insert(actions, ACTIONS.REMOTE_TELEPORT)
+				end
+			end
+		end,
+
         repellent = function(inst, doer, actions, right)
             if doer:HasTag("spiderwhisperer") then
                 table.insert(actions, ACTIONS.REPEL)
@@ -2348,6 +2418,12 @@ local COMPONENT_ACTIONS =
 		end,
 
         spellcaster = function(inst, doer, actions)
+            for k,v in pairs(SPELLTYPES) do
+                if inst:HasTag(v.."_spellcaster") and not doer:HasTag(v.."_spelluser") then
+                    return
+                end
+            end
+
             if inst:HasTag("castfrominventory") then
                 table.insert(actions, ACTIONS.CASTSPELL)
             end
@@ -2410,7 +2486,7 @@ local COMPONENT_ACTIONS =
         end,
 
         useableitem = function(inst, doer, actions)        
-            if not inst:HasTag("inuse") and
+            if not inst:HasAnyTag("inuse", "cannotuse") and
                 inst.replica.equippable ~= nil and
                 inst.replica.equippable:IsEquipped() and
                 doer.replica.inventory ~= nil and

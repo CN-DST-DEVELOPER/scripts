@@ -52,6 +52,7 @@ local function common_fn(data)
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
 	if data.physics_radius then
 		MakeObstaclePhysics(inst, data.physics_radius)
 	end

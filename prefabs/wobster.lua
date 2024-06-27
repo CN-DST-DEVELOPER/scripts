@@ -168,11 +168,13 @@ local function base_water_wobster(build_name, fish_def)
     inst.Physics:SetCollisionMask(SWIMMING_COLLISION_MASK)
     inst.Physics:SetCapsule(0.5, 1)
 
+    inst:AddTag("ediblefish_meat")
     inst:AddTag("ignorewalkableplatforms")
     inst:AddTag("NOBLOCK")
     inst:AddTag("NOCLICK")
     inst:AddTag("notarget")
     inst:AddTag("oceanfishable")
+    inst:AddTag("oceanfishable_creature")
     inst:AddTag("oceanfishinghookable")
     inst:AddTag("swimming")
 
@@ -241,7 +243,7 @@ local MOONGLASS_WOBSTER_FISH_DEF =
 local function moonglass_water()
     local inst = base_water_wobster("lobster_moonglass", MOONGLASS_WOBSTER_FISH_DEF)
     inst:AddTag("lunar_aligned")
-    return inst        
+    return inst
 end
 
 local function play_cooked_sound(inst)
@@ -325,7 +327,6 @@ local function base_land_wobster(build_name, nameoverride, fish_def, fadeout, co
     inst:AddTag("whackable")
 	inst:AddTag("smalloceancreature")
     inst:AddTag("stunnedbybomb")
-
 
     if cook_product ~= nil then
         --cookable (from cookable component) added to pristine state for optimization

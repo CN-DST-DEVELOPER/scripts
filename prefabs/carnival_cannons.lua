@@ -111,6 +111,7 @@ local function common_fn(data)
     inst:AddTag("structure")
     inst:AddTag("cattoy")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --match kit item
 	inst:SetPhysicsRadiusOverride(0.5)
 
 	if data.common_postinit then
@@ -187,7 +188,7 @@ end
 local objects = {}
 for prefabname, data in pairs(defs) do
     table.insert(objects, make_cannon(prefabname, data))
-	table.insert(objects, MakeDeployableKitItem(prefabname.."_kit", prefabname, data.bank, data.build, "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, {master_postinit = kit_master_postinit, deployspacing = DEPLOYSPACING.MEDIUM}, TUNING.STACK_SIZE_LARGEITEM))
+	table.insert(objects, MakeDeployableKitItem(prefabname.."_kit", prefabname, data.bank, data.build, "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, {master_postinit = kit_master_postinit, deployspacing = DEPLOYSPACING.LESS}, TUNING.STACK_SIZE_LARGEITEM))
 	table.insert(objects, MakePlacer(prefabname.."_kit_placer", data.bank, data.build, data.idleanim or "idle", nil, nil, nil, nil, nil, nil, placer_postinit_fn))
 end
 

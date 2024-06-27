@@ -44,6 +44,10 @@ local Floater = Class(function(self, inst)
     self._erode_time = net_float(inst.GUID, "floater._erode_time", "erodetimedirty")
 end)
 
+function Floater:SetIsObstacle(bool)
+	self.is_obstable = bool ~= false
+end
+
 --small/med/large
 function Floater:SetSize(size)
 	self.size = size
@@ -95,8 +99,9 @@ end
 function Floater:ShouldShowEffect()
 	local pos_x, pos_y, pos_z = self.inst.Transform:GetWorldPosition()
 
-	return  not TheWorld.Map:IsPassableAtPoint(pos_x, 0, pos_z) and
-            not TheWorld.Map:IsVisualGroundAtPoint(pos_x, 0, pos_z)
+	return
+        not TheWorld.Map:IsPassableAtPoint(pos_x, 0, pos_z, nil, self.is_obstable) and
+        not TheWorld.Map:IsVisualGroundAtPoint(pos_x, 0, pos_z)
 end
 
 function Floater:AttachEffect(effect)

@@ -10,60 +10,57 @@ local MermKingManager = Class(function(self, inst)
     self.candidate_transforming = nil
 
     self.inst:ListenForEvent("oncandidatekingarrived", function(inst, data)
-    	if data then
-    		if not self:IsCandidate(data.candidate) then
-    			print ("ERROR: WRONG CANDIDATE")
-    			return
-    		end
+		if data then
+			if not self:IsCandidate(data.candidate) then
+				return
+			end
 
-    		local throne = self:GetThrone(data.candidate)
-    		if not throne then
-    			print ("ERROR: NO THRONE IN PLACE")
-    			return
-    		end
+			local throne = self:GetThrone(data.candidate)
+			if not throne then
+				return
+			end
 
-    		self:CreateMermKing(data.candidate, throne)
-    	end
+			self:CreateMermKing(data.candidate, throne)
+		end
 	end)
 
     self.inst:ListenForEvent("onthronebuilt", function(inst, data)
-    	if data and data.throne then
+		if data and data.throne then
 			table.insert(self.thrones, data.throne)
 			self:FindMermCandidate(data.throne)
-    	end
+		end
 	end)
 
     self.inst:ListenForEvent("onthronedestroyed", function(inst, data)
-    	if data and data.throne then
-    		self:OnThroneDestroyed(data.throne)
-    	end
+		if data and data.throne then
+			self:OnThroneDestroyed(data.throne)
+		end
 	end)
 end)
 
 local function OnKingDeath(inst, data)
-	local manager = TheWorld.components.mermkingmanager
-	manager.king.persists = false
-
-	manager.king_dying = true
+	local mermkingmanager = TheWorld.components.mermkingmanager
+	mermkingmanager.king.persists = false
+	mermkingmanager.king_dying = true
 end
 
 local function OnKingRemoval(inst, data)
-	local manager = TheWorld.components.mermkingmanager
+	local mermkingmanager = TheWorld.components.mermkingmanager
 
-	manager.inst:RemoveEventCallback("onremove", OnKingRemoval, manager.king)
-	manager.inst:RemoveEventCallback("death", OnKingDeath, manager.king)
+	mermkingmanager.inst:RemoveEventCallback("onremove", OnKingRemoval, mermkingmanager.king)
+	mermkingmanager.inst:RemoveEventCallback("death", OnKingDeath, mermkingmanager.king)
 
-	TheWorld:PushEvent("onmermkingdestroyed", {throne = manager.main_throne})
+	TheWorld:PushEvent("onmermkingdestroyed", {throne = mermkingmanager.main_throne})
 
-	table.insert(manager.thrones, manager.main_throne)
+	table.insert(mermkingmanager.thrones, mermkingmanager.main_throne)
 
-	manager.main_throne = nil
-	manager.king = nil
-	manager.king_dying = false
+	mermkingmanager.main_throne = nil
+	mermkingmanager.king = nil
+	mermkingmanager.king_dying = false
 
-	for i,throne in pairs(manager.thrones) do
-		if manager:IsThroneValid(throne) then
-			manager:FindMermCandidate(throne)
+	for _, throne in pairs(mermkingmanager.thrones) do
+		if mermkingmanager:IsThroneValid(throne) then
+			mermkingmanager:FindMermCandidate(throne)
 		end
 	end
 end
@@ -87,7 +84,6 @@ local function OnCandidateRemoved(inst, data)
 end
 
 function MermKingManager:OnThroneDestroyed(throne)
-
 	local removal_index = nil
 	for index, throne_instance in ipairs(self.thrones) do
 		if throne == throne_instance then
@@ -101,7 +97,6 @@ function MermKingManager:OnThroneDestroyed(throne)
 	end
 
 	local candidate = self.candidates[throne]
-
 	if candidate ~= nil then
 		if self:IsCandidateAtThrone(candidate, throne) then
 			candidate:PushEvent("getup")
@@ -116,16 +111,16 @@ function MermKingManager:OnThroneDestroyed(throne)
 
 	if throne == self:GetMainThrone() then
 		self.main_throne = nil
-		-- This wil only happen with the deconstruction staff
-		if self.king ~= nil and self.king:IsValid() and self.king.components.health and not self.king.components.health:IsDead() then
+		-- This should only happen with the deconstruction staff
+		if self.king ~= nil and self.king:IsValid()
+				and self.king.components.health ~= nil
+				and not self.king.components.health:IsDead() then
 			self.king.components.health:Kill()
 		end
 	end
-
 end
 
 function MermKingManager:CreateMermKing(candidate, throne)
-
 	candidate.components.inventory:DropEverything()
     self.inst:RemoveEventCallback("onremove", OnCandidateRemoved, candidate)
 	self.inst:RemoveEventCallback("death", OnCandidateRemoved, candidate)
@@ -137,18 +132,18 @@ function MermKingManager:CreateMermKing(candidate, throne)
 	self.inst:ListenForEvent("death", OnKingDeath, self.king)
 
 	self.main_throne = throne
-	for i,v in ipairs(self.thrones) do
-		if v == throne then
+	for i, potential_throne in ipairs(self.thrones) do
+		if potential_throne == throne then
 			table.remove(self.thrones, i)
 			break
 		end
 	end
 
-	for k,v in pairs(self.candidates) do
-		if v.components.mermcandidate then
-			v.components.mermcandidate:ResetCalories()
-            self.inst:RemoveEventCallback("onremove", OnCandidateRemoved, v)
-			self.inst:RemoveEventCallback("death", OnCandidateRemoved, v)
+	for _, potential_candidate in pairs(self.candidates) do
+		if potential_candidate.components.mermcandidate then
+			potential_candidate.components.mermcandidate:ResetCalories()
+			self.inst:RemoveEventCallback("onremove", OnCandidateRemoved, potential_candidate)
+			self.inst:RemoveEventCallback("death", OnCandidateRemoved, potential_candidate)
 		end
 	end
 	self.candidates = {}
@@ -161,15 +156,14 @@ local MERMCANDIDATE_MUST_TAGS = {"merm"}
 local MERMCANDIDATE_CANT_TAGS = {"player", "mermking", "mermguard"}
 function MermKingManager:FindMermCandidate(throne)
 	-- Why are we finding a candidate if we already have a king?
-	if self:HasKing() then
-		print ("ERROR? Trying to find candidate when we already have a king")
+	if self:HasKingLocal() then
 		return
 	end
 
 	if throne then
 		local merm_candidate = FindEntity(throne, 50,
 			function(ent)
-				return ent:IsValid() and ent.components.health and not ent.components.health:IsDead() and not self:IsCandidate(ent)
+				return ent.components.health and not ent.components.health:IsDead() and not self:IsCandidate(ent)
 			end,
 		MERMCANDIDATE_MUST_TAGS, MERMCANDIDATE_CANT_TAGS)
 
@@ -180,16 +174,18 @@ function MermKingManager:FindMermCandidate(throne)
 end
 
 function MermKingManager:ShouldGoToThrone(merm, throne)
-	if throne ~= nil and self:IsThroneValid(throne) then
-		if self:GetKing() == nil and (self:GetCandidate(throne) == nil or self:IsThroneCandidate(merm, throne)) then
-			if self:GetCandidate(throne) == nil then
+	if throne ~= nil and not merm:HasTag("shadowminion") and self:IsThroneValid(throne) then
+		if not self:GetKing() then
+			if not self:GetCandidate(throne) then
 				self.candidates[throne] = merm
 				merm.components.inspectable.nameoverride = "MERM_PRINCE"
-                merm:AddTag("mermprince")
-                self.inst:ListenForEvent("onremove", OnCandidateRemoved, merm)
+				merm:AddTag("mermprince")
+				self.inst:ListenForEvent("onremove", OnCandidateRemoved, merm)
 				self.inst:ListenForEvent("death", OnCandidateRemoved, merm)
+				return true
+			elseif self:IsThroneCandidate(merm, throne) then
+				return true
 			end
-			return true
 		end
 	end
 
@@ -197,20 +193,24 @@ function MermKingManager:ShouldGoToThrone(merm, throne)
 end
 
 function MermKingManager:IsCandidateAtThrone(candidate, throne)
-	return throne and candidate and throne:IsNear(candidate, 0.5)
+	return throne ~= nil and throne:IsNear(candidate, 0.5)
 end
 
 function MermKingManager:ShouldTransform(merm)
 	local throne = self:GetThrone(merm)
 
-	local should_transform = merm and throne and self:IsCandidateAtThrone(merm, throne) and
-		  merm.components.mermcandidate:ShouldTransform() and (self.candidate_transforming == nil or self.candidate_transforming == merm)
+	local should_transform = merm ~= nil
+			and throne ~= nil
+			and self:IsCandidateAtThrone(merm, throne)
+			and merm.components.mermcandidate:ShouldTransform()
+			and (self.candidate_transforming == nil or self.candidate_transforming == merm)
 
-	if should_transform and self.candidate_transforming == nil then
-		self.candidate_transforming = merm
+	if should_transform then
+		self.candidate_transforming = self.candidate_transforming or merm
+		return true
+	else
+		return false
 	end
-
-	return should_transform
 end
 
 
@@ -234,8 +234,8 @@ function MermKingManager:IsThroneCandidate(merm, throne)
 end
 
 function MermKingManager:IsCandidate(merm)
-	for k,v in pairs(self.candidates) do
-		if v == merm then
+	for _, candidate in pairs(self.candidates) do
+		if candidate == merm then
 			return true
 		end
 	end
@@ -244,9 +244,9 @@ function MermKingManager:IsCandidate(merm)
 end
 
 function MermKingManager:GetThrone(merm)
-	for k,v in pairs(self.candidates) do
-		if v == merm then
-			return k
+	for throne, candidate in pairs(self.candidates) do
+		if candidate == merm then
+			return throne
 		end
 	end
 
@@ -262,8 +262,8 @@ function MermKingManager:IsThrone(throne)
 		return true
 	end
 
-	for i,v in ipairs(self.thrones) do
-		if v == throne then
+	for _, potential_throne in ipairs(self.thrones) do
+		if potential_throne == throne then
 			return true
 		end
 	end
@@ -271,18 +271,67 @@ function MermKingManager:IsThrone(throne)
 	return false
 end
 
-function MermKingManager:HasKing()
-	return self.king ~= nil and self.king:IsValid() and self.king.components.health and not self.king.components.health:IsDead()
+
+function MermKingManager:HasKingLocal() -- NOTES(JBK): The local version. Used for local world tapestry management only.
+    return self.king ~= nil and self.king:IsValid()
+        and self.king.components.health ~= nil
+        and not self.king.components.health:IsDead()
 end
 
+function MermKingManager:HasKingAnywhere() -- NOTES(JBK): Sharded version.
+    if self:HasKingLocal() then -- Local copy check first.
+        return true
+    end
+
+    local shard_mermkingwatcher = TheWorld.shard.components.shard_mermkingwatcher or nil
+    return (shard_mermkingwatcher ~= nil and shard_mermkingwatcher:HasMermKing())
+        or false
+end
+function MermKingManager:HasKing() -- NOTES(JBK): Deprecated function stub for mods do not use for game logic.
+    return self:HasKingAnywhere()
+end
+
+-- Merm King quest items
+function MermKingManager:HasTridentLocal()
+    return self:HasKingLocal() and self.king:HasTrident()
+end
+function MermKingManager:HasTridentAnywhere()
+    if self:HasTridentLocal() then return true end
+
+    local shard_mermkingwatcher = TheWorld.shard.components.shard_mermkingwatcher or nil
+    return (shard_mermkingwatcher ~= nil and shard_mermkingwatcher:HasTrident())
+        or false
+end
+
+function MermKingManager:HasCrownLocal()
+    return self:HasKingLocal() and self.king:HasCrown()
+end
+function MermKingManager:HasCrownAnywhere()
+    if self:HasCrownLocal() then return true end
+
+    local shard_mermkingwatcher = TheWorld.shard.components.shard_mermkingwatcher or nil
+    return (shard_mermkingwatcher ~= nil and shard_mermkingwatcher:HasCrown())
+        or false
+end
+
+function MermKingManager:HasPauldronLocal()
+    return self:HasKingLocal() and self.king:HasPauldron()
+end
+function MermKingManager:HasPauldronAnywhere()
+    if self:HasPauldronLocal() then return true end
+
+    local shard_mermkingwatcher = TheWorld.shard.components.shard_mermkingwatcher or nil
+    return (shard_mermkingwatcher ~= nil and shard_mermkingwatcher:HasPauldron())
+        or false
+end
+
+--
 function MermKingManager:OnSave()
 	local data = {}
 	local ents = {}
 
 	if next(self.candidates) ~= nil then
-		local candidates = {}
 		for k,v in pairs(self.candidates) do
-			candidates[k.GUID] = v.GUID
 			table.insert(ents, k.GUID)
 			table.insert(ents, v.GUID)
 		end
@@ -302,7 +351,7 @@ function MermKingManager:OnSave()
 	if #self.thrones > 0 then
 		data.thrones = {}
 
-		for i,v in ipairs(self.thrones) do
+		for _,v in ipairs(self.thrones) do
 			table.insert(data.thrones, v.GUID)
 			table.insert(ents, v.GUID)
 		end
@@ -352,13 +401,12 @@ function MermKingManager:LoadPostPass(newents, savedata)
 	end
 
 	if savedata.thrones then
-		for i,v in ipairs(savedata.thrones) do
+		for _, v in ipairs(savedata.thrones) do
             if newents[v] ~= nil then
                 table.insert(self.thrones, newents[v].entity)
             end
 		end
 	end
-
 end
 
 return MermKingManager

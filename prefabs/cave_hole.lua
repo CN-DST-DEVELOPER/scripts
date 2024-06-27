@@ -314,7 +314,7 @@ local function fn()
 
     inst.Transform:SetEightFaced()
 
-    inst:SetDeployExtraSpacing(5)
+	inst:SetDeploySmartRadius(3)
 
     --NOTE: Shadows are on WORLD_BACKGROUND sort order 1
     --      Hole goes above to hide shadows

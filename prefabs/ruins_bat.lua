@@ -43,7 +43,7 @@ local function onattack(inst, owner, target)
             pt = owner:GetPosition()
             target = nil
         end
-        local offset = FindWalkableOffset(pt, math.random() * 2 * PI, 2, 3, false, true, NoHoles, false, true)
+        local offset = FindWalkableOffset(pt, math.random() * TWOPI, 2, 3, false, true, NoHoles, false, true)
         if offset ~= nil then
             inst.SoundEmitter:PlaySound("dontstarve/common/shadowTentacleAttack_1")
             inst.SoundEmitter:PlaySound("dontstarve/common/shadowTentacleAttack_2")

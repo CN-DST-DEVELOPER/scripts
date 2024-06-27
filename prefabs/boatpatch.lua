@@ -1,15 +1,46 @@
-local assets =
+local assets_wood =
 {
     Asset("ANIM", "anim/boat_repair_build.zip"),
     Asset("ANIM", "anim/boat_repair.zip"),
 }
 
-local prefabs =
+local assets_kelp =
 {
-    "fishingnetvisualizer"
+    Asset("ANIM", "anim/boat_repair_kelp.zip"),
 }
 
-local function fn()
+local prefabs_wood =
+{
+    "fishingnetvisualizer",
+}
+
+local prefabs_kelp =
+{
+    "repaired_kelp_timeout_fx",
+}
+
+
+local CACHED_KELP_RECIPE_COST = nil
+
+local function CacheKelpRecipeCost(default)
+    local boatpatchrecipe = AllRecipes.boatpatch_kelp
+
+    if boatpatchrecipe == nil or boatpatchrecipe.ingredients == nil then
+        return default
+    end
+
+    local neededkelp = 0
+    for _, ingredient in ipairs(boatpatchrecipe.ingredients) do
+        if ingredient.type ~= "kelp" then
+            return default
+        end
+        neededkelp = neededkelp + ingredient.amount
+    end
+
+    return neededkelp
+end
+
+local function fn_wood()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -59,4 +90,47 @@ local function fn()
     return inst
 end
 
-return Prefab("boatpatch", fn, assets, prefabs)
+local function fn_kelp()
+    local inst = fn_wood()
+
+    inst:AddTag("show_spoilage")
+
+    inst.AnimState:SetBank("boat_repair_kelp")
+    inst.AnimState:SetBuild("boat_repair_kelp")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+    
+    if CACHED_KELP_RECIPE_COST == nil then
+        CACHED_KELP_RECIPE_COST = CacheKelpRecipeCost(3)
+    end
+
+    inst.components.boatpatch.patch_type = "kelp"
+
+    inst.components.repairer.repairmaterial = MATERIALS.KELP
+    inst.components.repairer.healthrepairvalue = TUNING.REPAIR_KELP_HEALTH * CACHED_KELP_RECIPE_COST
+    inst.components.repairer.boatrepairsound = "meta4/boat_patch/kelp_place"
+
+    inst.components.burnable:SetBurnTime(TUNING.SMALL_BURNTIME)
+
+    inst:AddComponent("bait")
+    inst:AddComponent("tradable")
+
+    inst:AddComponent("perishable")
+    inst.components.perishable.onperishreplacement = "spoiled_food"
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)
+    inst.components.perishable:StartPerishing()
+
+    inst:AddComponent("edible")
+    inst.components.edible.hungervalue = TUNING.CALORIES_TINY * CACHED_KELP_RECIPE_COST
+    inst.components.edible.healthvalue = -TUNING.HEALING_TINY * CACHED_KELP_RECIPE_COST
+    inst.components.edible.sanityvalue = (-TUNING.SANITY_SMALL * CACHED_KELP_RECIPE_COST) - TUNING.SANITY_MED -- Disgusting!
+    inst.components.edible.foodtype = FOODTYPE.VEGGIE
+
+    return inst
+end
+
+return
+    Prefab("boatpatch",      fn_wood, assets_wood, prefabs_wood),
+    Prefab("boatpatch_kelp", fn_kelp, assets_kelp, prefabs_kelp)

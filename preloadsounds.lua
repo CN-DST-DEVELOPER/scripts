@@ -222,6 +222,9 @@ local MainSounds =
 
     "qol1.fev",
     "qol1.fsb",
+
+    "meta4.fev",
+    "meta4.fsb",
 }
 
 function PreloadSoundList(list)

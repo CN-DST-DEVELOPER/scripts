@@ -210,6 +210,8 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(0.75) --recipe min_spacing/2
+
     inst.MiniMapEntity:SetIcon("dragonflychest.png")
 
     inst.AnimState:SetBank("dragonfly_chest")

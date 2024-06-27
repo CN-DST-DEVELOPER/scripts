@@ -48,7 +48,7 @@ local function ping_CreateDisc()
 	inst:AddTag("FX")
 	inst:AddTag("NOCLICK")
 	--[[Non-networked entity]]
-	--inst.entity:SetCanSleep(false) --use parent sleep
+	--inst.entity:SetCanSleep(false) --commented out; follow parent sleep instead
 	inst.persists = false
 
 	inst.entity:AddTransform()
@@ -181,7 +181,7 @@ local function impact_CreateExplosion()
 	inst:AddTag("FX")
 	inst:AddTag("NOCLICK")
 	--[[Non-networked entity]]
-	--inst.entity:SetCanSleep(false) --use parent sleep
+	--inst.entity:SetCanSleep(false) --commented out; follow parent sleep instead
 	inst.persists = false
 
 	inst.entity:AddTransform()

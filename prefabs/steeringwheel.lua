@@ -109,6 +109,7 @@ local function common_fn(build)
 
     inst:AddTag("structure")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --match kit item
 	inst:SetPhysicsRadiusOverride(0.25)
 
     inst.entity:SetPristine()
@@ -159,12 +160,12 @@ return Prefab("steeringwheel", fn, assets, prefabs),
         MakeDeployableKitItem(
             "steeringwheel_item", "steeringwheel",
             "seafarer_wheel", "seafarer_wheel", "idle",
-            item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
+            item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}, { deployspacing = DEPLOYSPACING.MEDIUM }),
         MakePlacer("steeringwheel_item_placer", "boat_wheel", "boat_wheel", "idle"),
 
         Prefab("yotd_steeringwheel", yotd_fn, assets, prefabs),
         MakeDeployableKitItem(
             "yotd_steeringwheel_item", "yotd_steeringwheel",
             "seafarer_wheel", "yotd_steeringwheel", "idle",
-            item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}),
+            item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}, { deployspacing = DEPLOYSPACING.MEDIUM }),
         MakePlacer("yotd_steeringwheel_item_placer", "boat_wheel", "yotd_steeringwheel", "idle")

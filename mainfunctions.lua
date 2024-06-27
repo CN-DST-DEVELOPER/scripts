@@ -374,14 +374,8 @@ function PrefabExists(name)
     return Prefabs[name] ~= nil
 end
 
-local renames =
-{
-    feather = "feather_crow",
-}
-
 function SpawnPrefab(name, skin, skin_id, creator)
     name = string.sub(name, string.find(name, "[^/]*$"))
-    name = renames[name] or name
     if skin and not IsItemId(skin) then
         print("Unknown skin", skin)
 		skin = nil

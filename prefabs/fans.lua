@@ -43,7 +43,7 @@ local function OnChanneling(inst, target)
         if pos ~= nil then
             local angle
             if inst.lasttornadoangle == nil then
-                angle = math.random() * 2 * PI
+                angle = math.random() * TWOPI
                 inst.lasttornadoangle = angle
             else
                 angle = inst.lasttornadoangle + PI

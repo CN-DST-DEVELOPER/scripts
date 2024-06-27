@@ -270,7 +270,7 @@ function self:GetSpawnPoint(pt)
                not moonstorm
     end
 
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = 6 + math.random() * 6
     local resultoffset = FindValidPositionByFan(theta, radius, 12, TestSpawnPoint)
 

@@ -44,20 +44,8 @@ local function launch_away(inst, position, use_variant_angle)
     local sina, cosa = math.sin(angle), math.cos(angle)
     inst.Physics:SetVel(SPEED_XZ * cosa, SPEED_Y, SPEED_XZ * sina)
 
-    -- Add a drop shadow component to the item as it flies through the air, then remove it when it lands
-    if inst.components.inventoryitem then
-        if not TheNet:IsDedicated() then
-            inst:AddComponent("groundshadowhandler")
-            inst.components.groundshadowhandler:SetSize(1, 0.5)
-            inst.components.inventoryitem:SetLanded(false, true)
-            inst:ListenForEvent("on_landed",
-                function(inst)
-                    if inst:IsOnOcean() then
-                        SpawnPrefab("wave_splash").Transform:SetPosition(inst.Transform:GetWorldPosition())
-                    end
-                    inst:RemoveComponent("groundshadowhandler")
-                end)
-        end
+    if inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:SetLanded(false, true)
     end
 end
 
@@ -152,28 +140,36 @@ end
 
 local function OnUpdateProjectile(inst)
     -- Look to hit targets while the cannonball is flying through the air
+    local selfboat = inst.shooter and inst.shooter:IsValid() and inst.shooter:GetCurrentPlatform() or nil
     local x, y, z = inst.Transform:GetWorldPosition()
     local targets = TheSim:FindEntities(x, 0, z, TUNING.CANNONBALL_RADIUS, nil, PROJECTILE_EXCLUDE_TAGS, PROJECTILE_MUST_ONE_OF_TAGS) -- Set y to zero to look for objects on the ground
     for i, target in ipairs(targets) do
-
         -- Ignore hitting bumpers while flying through the air
-        if target ~= nil and target ~= inst.components.complexprojectile.attacker and not target:HasTag("boatbumper") then
+        if target ~= nil and target ~= inst and target ~= inst.components.complexprojectile.attacker and not target:HasTag("boatbumper") then
+            -- NOTES(JBK): If things are on_other_boat they should get hit and hurt but conditionally if they are on the same boat.
+            local on_other_boat = selfboat == nil or target:GetCurrentPlatform() ~= selfboat
+            local is_wall = target:HasTag("wall")
+
             -- Do damage to entities with health
             if target.components.combat and GetTime() - target.components.combat.lastwasattackedtime > TUNING.CANNONBALL_PASS_THROUGH_TIME_BUFFER then
-                target.components.combat:GetAttacked(inst, TUNING.CANNONBALL_DAMAGE, nil)
+                if not is_wall or is_wall and on_other_boat then
+                    target.components.combat:GetAttacked(inst, TUNING.CANNONBALL_DAMAGE, nil)
+                end
             end
 
-            -- Remove and do splash damage if it hits a wall
-            if target:HasTag("wall") and target.components.health then
-                if not target.components.health:IsDead() then
-                    inst.components.combat:DoAreaAttack(inst, TUNING.CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDE_TAGS)
-                    SpawnPrefab("cannonball_used").Transform:SetPosition(inst.Transform:GetWorldPosition())
-                    inst:Remove()
-                    return
+            if on_other_boat then
+                -- Remove and do splash damage if it hits a wall
+                if is_wall and target.components.health then
+                    if not target.components.health:IsDead() then
+                        inst.components.combat:DoAreaAttack(inst, TUNING.CANNONBALL_SPLASH_RADIUS, nil, nil, nil, AREAATTACK_EXCLUDE_TAGS)
+                        SpawnPrefab("cannonball_used").Transform:SetPosition(inst.Transform:GetWorldPosition())
+                        inst:Remove()
+                        return
+                    end
+                -- Chop/knock down workable objects
+                elseif target.components.workable then
+                    target.components.workable:Destroy(inst)
                 end
-            -- Chop/knock down workable objects
-            elseif target.components.workable then
-                target.components.workable:Destroy(inst)
             end
         end
     end
@@ -284,7 +280,7 @@ local function cannonball_item_fn()
     inst.AnimState:SetBuild("cannonball_rock")
     inst.AnimState:PlayAnimation("idle")
 
-    inst.entity:AddTag("boatcannon_ammo")
+    inst:AddTag("boatcannon_ammo")
 
     inst.projectileprefab = "cannonball_rock"
 

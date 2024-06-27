@@ -184,7 +184,7 @@ return Class(function(self, inst)
             debris.Physics:SetDamping(.6)
 
             local speed = 2.2 + math.random()
-            local angle = math.random() * 2 * PI
+            local angle = math.random() * TWOPI
             debris.Physics:SetMotorVel(0, 0, 0)
             debris.Physics:SetVel(
                 speed * math.cos(angle),
@@ -320,18 +320,16 @@ return Class(function(self, inst)
     end
 
     local GetSpawnPoint = _ismastersim and function(pt, rad, minrad)
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local radius = math.random() * (rad or TUNING.LUNARHAIL_DEBRIS_SPAWN_RADIUS)
-    
-        minrad = minrad ~= nil and minrad > 0 and minrad * minrad or nil
-    
+
+        minrad = (minrad ~= nil and minrad > 0 and minrad * minrad) or nil
+
         local result_offset = FindValidPositionByFan(theta, radius, 12, function(offset)
-            local x = pt.x + offset.x
-            local z = pt.z + offset.z
-            return (minrad == nil or offset.x * offset.x + offset.z * offset.z >= minrad)
+            return (minrad == nil) or (offset.x * offset.x + offset.z * offset.z) >= minrad
         end)
-    
-        return result_offset ~= nil and pt + result_offset or nil
+
+        return (result_offset ~= nil and pt + result_offset) or nil
     end or nil
 
     local DoDropForPlayer = _ismastersim and function(player, reschedulefn)

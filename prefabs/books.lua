@@ -17,7 +17,7 @@ local SLEEPTARGET_CANT_TAGS = { "playerghost", "FX", "DECOR", "INLIMBO" }
 local GARDENING_CANT_TAGS = { "pickable", "stump", "withered", "barren", "INLIMBO" }
 
 local SILVICULTURE_ONEOF_TAGS = { "leif", "silviculture", "tree", "winter_tree" }
-local SILVICULTURE_CANT_TAGS = { "magicgrowth", "player", "FX", "pickable", "stump", "withered", "barren", "INLIMBO" }
+local SILVICULTURE_CANT_TAGS = { "magicgrowth", "player", "FX", "pickable", "stump", "withered", "barren", "INLIMBO", "ancienttree" }
 
 local HORTICULTURE_ONEOF_TAGS = { "plant", "lichen", "oceanvine", "mushroom_farm", "kelp" }
 local HORTICULTURE_CANT_TAGS = { "magicgrowth", "player", "FX", "leif", "pickable", "stump", "withered", "barren", "INLIMBO", "silviculture", "tree", "winter_tree" }
@@ -222,7 +222,7 @@ local book_defs =
             local positions = {}
 
             for k = 1, numtentacles do
-                local theta = math.random() * 2 * PI
+                local theta = math.random() * TWOPI
                 local radius = math.random(3, 8)
 
                 local result_offset = FindValidPositionByFan(theta, radius, 12, function(offset)
@@ -549,7 +549,7 @@ local book_defs =
             local failed_spawn = 0
             
             for i=1, TUNING.BOOK_FISH_AMOUNT do
-                local theta = math.random() * 2 * PI
+                local theta = math.random() * TWOPI
                 local failed_attempts = 0
                 local max_failed_attempts = 36
 

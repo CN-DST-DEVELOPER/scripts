@@ -414,7 +414,7 @@ local function CreateFormation(boulders)
     z = z / #boulders
 
     local formation = MakeQuadFormation()
-    local angle = math.random() * PI * 2
+    local angle = math.random() * TWOPI
     local cosa = math.cos(angle)
     local sina = math.sin(angle)
     local raisedboulder = nil

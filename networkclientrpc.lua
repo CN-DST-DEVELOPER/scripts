@@ -964,16 +964,17 @@ local RPC_HANDLERS =
     end,
 
     -- NOTES(JBK): OnMap RPCs are always world relative.
-    DoActionOnMap = function(player, action, x, z)
-        if not (checknumber(action) and
+    DoActionOnMap = function(player, actioncode, x, z, maptarget)
+        if not (checknumber(actioncode) and
                 checknumber(x) and
-                checknumber(z)) then
+                checknumber(z) and
+                optentity(maptarget)) then
             printinvalid("DoActionOnMap PARAMS", player)
             return
         end
 		local playercontroller = player.components.playercontroller
 		if playercontroller then
-			playercontroller:OnMapAction(action, Vector3(x, 0, z))
+			playercontroller:OnMapAction(actioncode, Vector3(x, 0, z), maptarget)
         end
     end,
 
@@ -1226,6 +1227,20 @@ local SHARD_RPC_HANDLERS =
 
     SyncBossDefeated = function(shardid, bossprefab) -- NOTES(JBK): This should not be called often enough to warrant a lookup table for bossprefab as an enum.
         Shard_SyncBossDefeated(bossprefab, shardid)
+    end,
+
+    SyncMermKingExists = function(shardid, exists)
+        Shard_SyncMermKingExists(exists, shardid)
+    end,
+
+    SyncMermKingTrident = function(shardid, exists)
+        Shard_SyncMermKingTrident(exists, shardid)
+    end,
+    SyncMermKingCrown = function(shardid, exists)
+        Shard_SyncMermKingCrown(exists, shardid)
+    end,
+    SyncMermKingPauldron = function(shardid, exists)
+        Shard_SyncMermKingPauldron(exists, shardid)
     end,
 }
 

@@ -40,7 +40,8 @@ local SKETCHES =
     { item = "chesspiece_deerclops_mutated",recipe = "chesspiece_deerclops_mutated_builder" },
     { item = "chesspiece_warg_mutated",		recipe = "chesspiece_warg_mutated_builder" },
     { item = "chesspiece_bearger_mutated",	recipe = "chesspiece_bearger_mutated_builder" },
-    { item = "chesspiece_yotd",				recipe = "chesspiece_yotd_builder",				image = "chesspiece_kitcoon_sketch" },
+    { item = "chesspiece_yotd",				recipe = "chesspiece_yotd_builder",				image = "chesspiece_yotd_sketch" },
+    { item = "chesspiece_sharkboi",         recipe = "chesspiece_sharkboi_builder" },
 }
 
 local function GetSketchID(item)

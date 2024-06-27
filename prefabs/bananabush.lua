@@ -155,6 +155,7 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --plantables deployspacing/2
     MakeSmallObstaclePhysics(inst, .1)
 
     inst:AddTag("bananabush")

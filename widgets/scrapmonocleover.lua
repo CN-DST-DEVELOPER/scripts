@@ -38,6 +38,10 @@ function ScrapMonocleOver:Toggle(show)
 end
 
 function ScrapMonocleOver:Enable()
+    if self.hidetask ~= nil then
+        self.hidetask:Cancel()
+        self.hidetask = nil
+    end
     self:Show()
 
     self:GetAnimState():PlayAnimation("over_pre")
@@ -49,7 +53,11 @@ function ScrapMonocleOver:Disable()
 
     local time = self.inst.AnimState:GetCurrentAnimationLength() + FRAMES
 
-    self.inst:DoTaskInTime(time, function(inst) self:Hide() end)
+    if self.hidetask ~= nil then
+        self.hidetask:Cancel()
+        self.hidetask = nil
+    end
+    self.hidetask = self.inst:DoTaskInTime(time, function(inst) self:Hide() end)
 end
 
 return ScrapMonocleOver

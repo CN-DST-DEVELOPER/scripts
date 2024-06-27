@@ -254,7 +254,7 @@ function Spawner:ReleaseChild()
 
                 local rad = .5 + self.inst:GetPhysicsRadius(0) + self.child:GetPhysicsRadius(0)
 
-                local start_angle = math.random() * 2 * PI
+                local start_angle = TWOPI * math.random()
 
                 local offset = FindWalkableOffset(Vector3(x, 0, z), start_angle, rad, 8, false, true, NoHoles, self.spawn_in_water or false, self.spawn_on_boats or false)
                 if offset == nil then
@@ -285,6 +285,7 @@ function Spawner:ReleaseChild()
 end
 
 function Spawner:GoHome(child)
+
     if self.child == child and not self:IsOccupied() then
         self.inst:AddChild(child)
         child.Transform:SetPosition(0,0,0)
@@ -307,6 +308,8 @@ function Spawner:GoHome(child)
         end
 
         return true
+    else 
+        child:PushEvent("gohomefailed", self.inst)
     end
 end
 

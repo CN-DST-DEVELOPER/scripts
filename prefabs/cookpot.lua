@@ -275,6 +275,7 @@ local function MakeCookPot(name, common_postinit, master_postinit, assets, prefa
         inst.entity:AddLight()
         inst.entity:AddNetwork()
 
+		inst:SetDeploySmartRadius(1) --recipe min_spacing/2
         MakeObstaclePhysics(inst, .5)
 
         inst.Light:Enable(false)

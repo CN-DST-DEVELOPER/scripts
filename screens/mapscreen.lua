@@ -178,7 +178,7 @@ end
 function MapScreen:UpdateMapActions(x, y, z)
     local playercontroller = ThePlayer and ThePlayer.components.playercontroller or nil
     if playercontroller and ThePlayer.components.playeractionpicker then
-        return playercontroller:UpdateActionsToMapActions(Vector3(x, y, z))
+        return playercontroller:UpdateActionsToMapActions(Vector3(x, y, z), self.maptarget)
     end
     return nil, nil
 end
@@ -190,164 +190,172 @@ function MapScreen:ProcessLMBDecorations(lmb, fresh)
     -- Nothing yet!
 end
 
+function MapScreen:ProcessRMBDecorations_BLINK_MAP(rmb, fresh)
+    local decor1, decor2, decor3
+    if fresh then
+        local image = "wortox_soul.tex"
+        local atlas = GetInventoryItemAtlas(image)
+        decor1 = self.decorationrootrmb:AddChild(Image(atlas, image))
+        decor1.text = decor1:AddChild(Text(NUMBERFONT, 42))
+        decor2 = self.decorationrootrmb:AddChild(Image(atlas, image))
+        decor2.text = decor2:AddChild(Text(NUMBERFONT, 42))
+        decor3 = self.decorationrootrmb:AddChild(Image(atlas, image))
+        decor3.text = decor3:AddChild(Text(NUMBERFONT, 42))
+        self.decorationdata.rmbents[1] = decor1
+        self.decorationdata.rmbents[2] = decor2
+        self.decorationdata.rmbents[3] = decor3
+    else
+        decor1 = self.decorationdata.rmbents[1]
+        decor2 = self.decorationdata.rmbents[2]
+        decor3 = self.decorationdata.rmbents[3]
+    end
+    local rmb_pos = rmb:GetActionPoint()
+    local px, py, pz = 0, 0, 0
+    if rmb.doer then
+        px, py, pz = rmb.doer.Transform:GetWorldPosition()
+    end
+    local dx, dz = rmb_pos.x - px, rmb_pos.z - pz
+    local dist = math.sqrt(dx * dx + dz * dz)
+    local zoomscale = 0.75 / self.minimap:GetZoom()
+    local alphascaler = math.clamp(rmb.distancecount - rmb.distancefloat, 0, 1)
+    local alphascale1 = alphascaler * 5 - 4
+    local alphascale2 = (1 - alphascaler) * 3 - 2
+    local w, h = TheSim:GetScreenSize()
+    w, h = w * 0.5, h * 0.5
+    -- TODO(JBK): Clean this up.
+    -- With the math the alphascale# no two icons will be present at any time now so this can simplify further.
+    -- Keeping the blob here for now in case this needs to change more.
+    if rmb.aimassisted then
+        decor3:Show()
+        local x, y = self.minimap:WorldPosToMapPos(rmb_pos.x, rmb_pos.z, 0)
+        decor3:SetPosition(x * w, y * h)
+        decor3:SetScale(zoomscale, zoomscale, 1)
+        decor3.text:SetString(tostring(rmb.distancecount))
+    else
+        decor3:Hide()
+    end
+    if dist < 0.1 then
+        decor1:Hide()
+        decor2:Hide()
+    elseif dist < rmb.distanceperhop - rmb.distancemod then
+        decor1:Hide()
+        decor2:Show()
+        local r = (rmb.distancecount * rmb.distanceperhop - rmb.distancemod) / dist
+        local ndx, ndz = dx * r + px, dz * r + pz
+        local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
+        decor2:SetPosition(x * w, y * h)
+        decor2:SetTint(alphascale2, alphascale2, alphascale2, alphascale2)
+        decor2:SetScale(zoomscale, zoomscale, 1)
+        decor2.text:SetString(tostring(rmb.distancecount + 1))
+        decor2.text:SetColour(alphascale2, alphascale2, alphascale2, alphascale2)
+    elseif dist < (rmb.distanceperhop - rmb.distancemod) * (rmb.maxsouls - 1) then
+        decor1:Show()
+        decor2:Show()
+        local r = ((rmb.distancecount - 1) * rmb.distanceperhop - rmb.distancemod) / dist
+        local ndx, ndz = dx * r + px, dz * r + pz
+        local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
+        decor1:SetPosition(x * w, y * h)
+        decor1:SetTint(alphascale1, alphascale1, alphascale1, alphascale1)
+        decor1:SetScale(zoomscale, zoomscale, 1)
+        decor1.text:SetString(tostring(rmb.distancecount))
+        decor1.text:SetColour(alphascale1, alphascale1, alphascale1, alphascale1)
+        r = (rmb.distancecount * rmb.distanceperhop - rmb.distancemod) / dist
+        ndx, ndz = dx * r + px, dz * r + pz
+        x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
+        decor2:SetPosition(x * w, y * h)
+        decor2:SetTint(alphascale2, alphascale2, alphascale2, alphascale2)
+        decor2:SetScale(zoomscale, zoomscale, 1)
+        decor2.text:SetString(tostring(rmb.distancecount + 1))
+        decor2.text:SetColour(alphascale2, alphascale2, alphascale2, alphascale2)
+    else
+        decor1:Show()
+        decor2:Hide()
+        local r = ((rmb.distancecount - 1) * rmb.distanceperhop - rmb.distancemod) / dist
+        local ndx, ndz = dx * r + px, dz * r + pz
+        local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
+        decor1:SetPosition(x * w, y * h)
+        decor1:SetTint(alphascale1, alphascale1, alphascale1, alphascale1)
+        decor1:SetScale(zoomscale, zoomscale, 1)
+        decor1.text:SetString(tostring(rmb.distancecount))
+        decor1.text:SetColour(alphascale1, alphascale1, alphascale1, alphascale1)
+    end
+end
+
+function MapScreen:ProcessRMBDecorations_TOSS_MAP(rmb, fresh)
+    local equippedhands = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    if equippedhands == nil then
+        return
+    end
+    
+    local does_custom = equippedhands.InitMapDecorations ~= nil and equippedhands.CalculateMapDecorations ~= nil
+    if does_custom then
+        if fresh then
+            local decordatas = equippedhands:InitMapDecorations()
+            for i, decordata in ipairs(decordatas) do
+                self.decorationdata.rmbents[i] = self.decorationrootrmb:AddChild(Image(decordata.atlas, decordata.image))
+                self.decorationdata.rmbents[i].scale = decordata.scale
+            end
+        end
+
+        local zoomscale = 1 / self.minimap:GetZoom()
+        local w, h = TheSim:GetScreenSize()
+        w, h = w * 0.5, h * 0.5
+
+        local rmb_pos = rmb:GetActionPoint()
+        local px, py, pz = 0, 0, 0
+        if rmb.doer then
+            px, py, pz = rmb.doer.Transform:GetWorldPosition()
+        end
+        equippedhands:CalculateMapDecorations(self.decorationdata.rmbents, px, pz, rmb_pos.x, rmb_pos.z)
+        for _, decor in ipairs(self.decorationdata.rmbents) do
+            local scaler = decor.scale or 1
+            local x, y = self.minimap:WorldPosToMapPos(decor.worldx, decor.worldz, 0)
+            decor:SetPosition(x * w, y * h)
+            decor:SetScale(zoomscale * scaler, zoomscale * scaler, 1)
+        end
+        return
+    end
+
+
+    -- Default behaviour is one default icon to toss towards a point.
+    local decor
+    if fresh then
+        local image = equippedhands.replica.inventoryitem:GetImage()
+        decor = self.decorationrootrmb:AddChild(Image(GetInventoryItemAtlas(image), image))
+        self.decorationdata.rmbents[1] = decor
+    else
+        decor = self.decorationdata.rmbents[1]
+    end
+
+    if decor == nil then
+        return
+    end
+    
+    local rmb_pos = rmb:GetActionPoint()
+    local px, py, pz = 0, 0, 0
+    if rmb.doer then
+        px, py, pz = rmb.doer.Transform:GetWorldPosition()
+    end
+    local dx, dz = rmb_pos.x - px, rmb_pos.z - pz
+    local zoomscale = 1 / self.minimap:GetZoom()
+    local w, h = TheSim:GetScreenSize()
+    w, h = w * 0.5, h * 0.5
+    
+    local r = 1
+    local ndx, ndz = dx * r + px, dz * r + pz
+    local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
+    decor:SetPosition(x * w, y * h)
+    decor:SetScale(zoomscale, zoomscale, 1)
+end
+
 function MapScreen:ProcessRMBDecorations(rmb, fresh)
     if fresh then
         self.decorationdata.rmbents = {}
     end
     if rmb.action == ACTIONS.BLINK_MAP then
-        local decor1, decor2, decor3
-        if fresh then
-            local image = "wortox_soul.tex"
-            local atlas = GetInventoryItemAtlas(image)
-            decor1 = self.decorationrootrmb:AddChild(Image(atlas, image))
-            decor1.text = decor1:AddChild(Text(NUMBERFONT, 42))
-            decor2 = self.decorationrootrmb:AddChild(Image(atlas, image))
-            decor2.text = decor2:AddChild(Text(NUMBERFONT, 42))
-            decor3 = self.decorationrootrmb:AddChild(Image(atlas, image))
-            decor3.text = decor3:AddChild(Text(NUMBERFONT, 42))
-            self.decorationdata.rmbents[1] = decor1
-            self.decorationdata.rmbents[2] = decor2
-            self.decorationdata.rmbents[3] = decor3
-        else
-            decor1 = self.decorationdata.rmbents[1]
-            decor2 = self.decorationdata.rmbents[2]
-            decor3 = self.decorationdata.rmbents[3]
-        end
-        local rmb_pos = rmb:GetActionPoint()
-        local px, py, pz = 0, 0, 0
-        if rmb.doer then
-            px, py, pz = rmb.doer.Transform:GetWorldPosition()
-        end
-        local dx, dz = rmb_pos.x - px, rmb_pos.z - pz
-        local dist = math.sqrt(dx * dx + dz * dz)
-        local zoomscale = 0.75 / self.minimap:GetZoom()
-        local alphascaler = math.clamp(rmb.distancecount - rmb.distancefloat, 0, 1)
-        local alphascale1 = alphascaler * 5 - 4
-        local alphascale2 = (1 - alphascaler) * 3 - 2
-        local w, h = TheSim:GetScreenSize()
-        w, h = w * 0.5, h * 0.5
-        -- TODO(JBK): Clean this up.
-        -- With the math the alphascale# no two icons will be present at any time now so this can simplify further.
-        -- Keeping the blob here for now in case this needs to change more.
-        if rmb.aimassisted then
-            decor3:Show()
-            local x, y = self.minimap:WorldPosToMapPos(rmb_pos.x, rmb_pos.z, 0)
-            decor3:SetPosition(x * w, y * h)
-            decor3:SetScale(zoomscale, zoomscale, 1)
-            decor3.text:SetString(tostring(rmb.distancecount))
-        else
-            decor3:Hide()
-        end
-        if dist < 0.1 then
-            decor1:Hide()
-            decor2:Hide()
-        elseif dist < rmb.distanceperhop - rmb.distancemod then
-            decor1:Hide()
-            decor2:Show()
-            local r = (rmb.distancecount * rmb.distanceperhop - rmb.distancemod) / dist
-            local ndx, ndz = dx * r + px, dz * r + pz
-            local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
-            decor2:SetPosition(x * w, y * h)
-            decor2:SetTint(alphascale2, alphascale2, alphascale2, alphascale2)
-            decor2:SetScale(zoomscale, zoomscale, 1)
-            decor2.text:SetString(tostring(rmb.distancecount + 1))
-            decor2.text:SetColour(alphascale2, alphascale2, alphascale2, alphascale2)
-        elseif dist < (rmb.distanceperhop - rmb.distancemod) * (rmb.maxsouls - 1) then
-            decor1:Show()
-            decor2:Show()
-            local r = ((rmb.distancecount - 1) * rmb.distanceperhop - rmb.distancemod) / dist
-            local ndx, ndz = dx * r + px, dz * r + pz
-            local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
-            decor1:SetPosition(x * w, y * h)
-            decor1:SetTint(alphascale1, alphascale1, alphascale1, alphascale1)
-            decor1:SetScale(zoomscale, zoomscale, 1)
-            decor1.text:SetString(tostring(rmb.distancecount))
-            decor1.text:SetColour(alphascale1, alphascale1, alphascale1, alphascale1)
-            r = (rmb.distancecount * rmb.distanceperhop - rmb.distancemod) / dist
-            ndx, ndz = dx * r + px, dz * r + pz
-            x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
-            decor2:SetPosition(x * w, y * h)
-            decor2:SetTint(alphascale2, alphascale2, alphascale2, alphascale2)
-            decor2:SetScale(zoomscale, zoomscale, 1)
-            decor2.text:SetString(tostring(rmb.distancecount + 1))
-            decor2.text:SetColour(alphascale2, alphascale2, alphascale2, alphascale2)
-        else
-            decor1:Show()
-            decor2:Hide()
-            local r = ((rmb.distancecount - 1) * rmb.distanceperhop - rmb.distancemod) / dist
-            local ndx, ndz = dx * r + px, dz * r + pz
-            local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
-            decor1:SetPosition(x * w, y * h)
-            decor1:SetTint(alphascale1, alphascale1, alphascale1, alphascale1)
-            decor1:SetScale(zoomscale, zoomscale, 1)
-            decor1.text:SetString(tostring(rmb.distancecount))
-            decor1.text:SetColour(alphascale1, alphascale1, alphascale1, alphascale1)
-        end
+        self:ProcessRMBDecorations_BLINK_MAP(rmb, fresh)
     elseif rmb.action == ACTIONS.TOSS_MAP then
-        local equippedhands = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-        if equippedhands == nil then
-            return
-        end
-        
-        local does_custom = equippedhands.InitMapDecorations ~= nil and equippedhands.CalculateMapDecorations ~= nil
-        if does_custom then
-            if fresh then
-                local decordatas = equippedhands:InitMapDecorations()
-                for i, decordata in ipairs(decordatas) do
-                    self.decorationdata.rmbents[i] = self.decorationrootrmb:AddChild(Image(decordata.atlas, decordata.image))
-                    self.decorationdata.rmbents[i].scale = decordata.scale
-                end
-            end
-
-            local zoomscale = 1 / self.minimap:GetZoom()
-            local w, h = TheSim:GetScreenSize()
-            w, h = w * 0.5, h * 0.5
-
-            local rmb_pos = rmb:GetActionPoint()
-            local px, py, pz = 0, 0, 0
-            if rmb.doer then
-                px, py, pz = rmb.doer.Transform:GetWorldPosition()
-            end
-            equippedhands:CalculateMapDecorations(self.decorationdata.rmbents, px, pz, rmb_pos.x, rmb_pos.z)
-            for _, decor in ipairs(self.decorationdata.rmbents) do
-                local scaler = decor.scale or 1
-                local x, y = self.minimap:WorldPosToMapPos(decor.worldx, decor.worldz, 0)
-                decor:SetPosition(x * w, y * h)
-                decor:SetScale(zoomscale * scaler, zoomscale * scaler, 1)
-            end
-            return
-        end
-
-
-        -- Default behaviour is one default icon to toss towards a point.
-        local decor
-        if fresh then
-            local image = equippedhands.replica.inventoryitem:GetImage()
-            decor = self.decorationrootrmb:AddChild(Image(GetInventoryItemAtlas(image), image))
-            self.decorationdata.rmbents[1] = decor
-        else
-            decor = self.decorationdata.rmbents[1]
-        end
-
-        if decor == nil then
-            return
-        end
-        
-        local rmb_pos = rmb:GetActionPoint()
-        local px, py, pz = 0, 0, 0
-        if rmb.doer then
-            px, py, pz = rmb.doer.Transform:GetWorldPosition()
-        end
-        local dx, dz = rmb_pos.x - px, rmb_pos.z - pz
-        local zoomscale = 1 / self.minimap:GetZoom()
-        local w, h = TheSim:GetScreenSize()
-        w, h = w * 0.5, h * 0.5
-        
-        local r = 1
-        local ndx, ndz = dx * r + px, dz * r + pz
-        local x, y = self.minimap:WorldPosToMapPos(ndx, ndz, 0)
-        decor:SetPosition(x * w, y * h)
-        decor:SetScale(zoomscale, zoomscale, 1)
+        self:ProcessRMBDecorations_TOSS_MAP(rmb, fresh)
     end
 end
 
@@ -477,15 +485,33 @@ function MapScreen:OnControl(control, down)
         self:DoZoomIn(0)
     elseif control == CONTROL_MAP_ZOOM_OUT then
         self:DoZoomOut(0)
-	elseif playercontroller and (control == CONTROL_SECONDARY or control == CONTROL_CONTROLLER_ATTACK) then
+	elseif playercontroller then
         local x, y, z = self:GetWorldPositionAtCursor()
-        local _, RMBaction = self:UpdateMapActions(x, y, z)
-        if RMBaction then
-            if not self.quitting and RMBaction.invobject ~= nil and RMBaction.invobject:HasTag("action_pulls_up_map") then
+        local LMBaction, RMBaction = self:UpdateMapActions(x, y, z)
+        if LMBaction and (control == CONTROL_PRIMARY or control == CONTROL_CONTROLLER_ACTION) then
+            if not self.quitting then
                 SetAutopaused(false)
                 self.quitting = true
             end
-			playercontroller:OnMapAction(RMBaction.action.code, Vector3(x, y, z))
+			playercontroller:OnMapAction(LMBaction.action.code, Vector3(x, y, z), self.maptarget)
+            if LMBaction.action.closes_map then
+                self.maptarget = nil
+                TheFrontEnd:PopScreen()
+                playercontroller._hack_ignore_held_controls = 0.1
+                playercontroller._hack_ignore_ups_for = {}
+            end
+        elseif RMBaction and (control == CONTROL_SECONDARY or control == CONTROL_CONTROLLER_ATTACK) then
+            if not self.quitting then
+                SetAutopaused(false)
+                self.quitting = true
+            end
+			playercontroller:OnMapAction(RMBaction.action.code, Vector3(x, y, z), self.maptarget)
+            if RMBaction.action.closes_map then
+                self.maptarget = nil
+                TheFrontEnd:PopScreen()
+                playercontroller._hack_ignore_held_controls = 0.1
+                playercontroller._hack_ignore_ups_for = {}
+            end
         end
     else
         return false

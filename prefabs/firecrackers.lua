@@ -30,7 +30,7 @@ local function DoPop(inst, remaining, total, level, hissvol)
             inst.AnimState:Hide("F"..tostring(i))
         end
 
-        local angle = math.random() * 2 * PI
+        local angle = math.random() * TWOPI
         local spd = 1.5
         inst.Physics:Teleport(x, math.max(y * .5, .1), z)
         inst.Physics:SetVel(math.cos(angle) * spd, 8, math.sin(angle) * spd)

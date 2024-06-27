@@ -185,7 +185,7 @@ end
 local function spawnfeather(inst,time)
     local feather = SpawnPrefab("malbatross_feather_fall")
     local pos = Vector3(inst.Transform:GetWorldPosition())
-    local angle = math.random() * 2* PI
+    local angle = math.random() * TWOPI
     local offset = Vector3(math.cos(angle), 0, -math.sin(angle)):Normalize() * (math.random()*2+ 1)
     pos = pos + offset
     feather.Transform:SetPosition(pos.x,pos.y,pos.z)

@@ -68,7 +68,7 @@ local function SpawnBees(inst, target)
             if bee ~= nil then
                 local x, y, z = inst.Transform:GetWorldPosition()
                 local dist = math.random()
-                local angle = math.random() * 2 * PI
+                local angle = math.random() * TWOPI
                 bee.Physics:Teleport(x + dist * math.cos(angle), y, z + dist * math.sin(angle))
                 if bee.components.combat ~= nil then
                     bee.components.combat:SetTarget(target)
@@ -197,6 +197,7 @@ local function BeeMine(name, alignment, skin, spawnprefab, isinventory)
         inst.entity:AddNetwork()
 
         MakeInventoryPhysics(inst)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2)
 
         inst.MiniMapEntity:SetIcon("beemine.png")
 

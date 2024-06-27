@@ -263,7 +263,7 @@ local function hotspring()
 
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(1.5)
 
     inst.entity:SetPristine()
 

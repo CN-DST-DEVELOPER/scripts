@@ -273,20 +273,7 @@ function CaveSelectScreen:OnControl(control, down)
 			return true
 		end
 	end
---[[
-    if control == CONTROL_MENU_L2 or control == CONTROL_MENU_R2 then
-        if not down and self.remember then
-            self.remember.controller(self)
-            return true
-        end
-    elseif control == CONTROL_MENU_MISC_1 then
-            self.remember.onclick()
-            return true
-	end
-   ]]
 
---item:SetFocusChangeDir(MOVE_UP, up)
-	--self.remember
 end
 
 function CaveSelectScreen:_DoFocusHookups()

@@ -128,7 +128,7 @@ local function emit_smoke_fn(effect, sphere_emitter)
         lifetime,           -- lifetime
         px, py + .35, pz,   -- position
         vx, vy, vz,         -- velocity
-        math.random() * 360,--* 2 * PI, -- angle
+        math.random() * 360,--* TWOPI, -- angle
         UnitRand() * 2,     -- angle velocity
         0, 0                -- uv offset
     )
@@ -146,7 +146,7 @@ local function emit_hand_fn(effect, sphere_emitter)
         HAND_MAX_LIFETIME,  -- lifetime
         px, py + .65, pz,   -- position
         vx, vy, vz,         -- velocity
-        0,                  --* 2 * PI, -- angle
+        0,                  --* TWOPI, -- angle
         UnitRand(),         -- angle velocity
         uv_offset, 0        -- uv offset
     )

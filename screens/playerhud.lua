@@ -25,6 +25,9 @@ local WagpunkUI = require "widgets/wagpunkui"
 local GogglesOver = require "widgets/gogglesover"
 local NutrientsOver = require "widgets/nutrientsover"
 local ScrapMonocleOver = require "widgets/scrapmonocleover"
+local NightVisionFruitOver = require "widgets/nightvisionfruitover"
+local InspectaclesOver = require("widgets/inspectaclesover")
+local RoseGlassesOver = require("widgets/roseglassesover")
 local BatOver = require "widgets/batover"
 local FlareOver = require "widgets/flareover"
 local EndOfMatchPopup = require "widgets/redux/endofmatchpopup"
@@ -39,6 +42,7 @@ local CookbookPopupScreen = require "screens/cookbookpopupscreen"
 local PlantRegistryPopupScreen = require "screens/plantregistrypopupscreen"
 local PlayerInfoPopupScreen = require "screens/playerinfopopupscreen"
 local ScrapbookScreen = require "screens/redux/scrapbookscreen"
+local InspectaclesScreen = require("screens/redux/inspectaclesscreen")
 
 local TargetIndicator = require "widgets/targetindicator"
 
@@ -173,6 +177,9 @@ function PlayerHud:CreateOverlays(owner)
     self.gogglesover = self.overlayroot:AddChild(GogglesOver(owner, self.storm_overlays))
     self.nutrientsover = self.overlayroot:AddChild(NutrientsOver(owner))
     self.scrapmonocleover = self.overlayroot:AddChild(ScrapMonocleOver(owner))
+    self.nightvisionfruitover = self.overlayroot:AddChild(NightVisionFruitOver(owner))
+    self.inspectaclesover = self.overlayroot:AddChild(InspectaclesOver(owner))
+    self.roseglassesover = self.overlayroot:AddChild(RoseGlassesOver(owner))
     self.bloodover = self.overlayroot:AddChild(BloodOver(owner))
     self.beefbloodover = self.overlayroot:AddChild(BeefBloodOver(owner))
     self.iceover = self.overlayroot:AddChild(IceOver(owner))
@@ -629,7 +636,7 @@ function PlayerHud:ClosePlayerInfoScreen()
     end
 end
 
-function PlayerHud:OpenScrapbookScreen(player_name, data, show_net_profile, force)
+function PlayerHud:OpenScrapbookScreen()
     self:CloseScrapbookScreen()
     self.scrapbookscreen = ScrapbookScreen(self.owner)
     self:OpenScreenUnderPause(self.scrapbookscreen)
@@ -642,6 +649,22 @@ function PlayerHud:CloseScrapbookScreen()
             TheFrontEnd:PopScreen(self.scrapbookscreen)
         end
         self.scrapbookscreen = nil
+    end
+end
+
+function PlayerHud:OpenInspectaclesScreen()
+    self:CloseInspectaclesScreen()
+    self.inspectaclesscreen = InspectaclesScreen(self.owner)
+    self:OpenScreenUnderPause(self.inspectaclesscreen)
+    return true
+end
+
+function PlayerHud:CloseInspectaclesScreen()
+    if self.inspectaclesscreen ~= nil then
+        if self.inspectaclesscreen.inst:IsValid() then
+            TheFrontEnd:PopScreen(self.inspectaclesscreen)
+        end
+        self.inspectaclesscreen = nil
     end
 end
 

@@ -14,7 +14,7 @@ local function GeneratePoints(inst)
     local ix, _, iz = inst.Transform:GetWorldPosition()
 
     local angle = 0
-    while angle < 2*PI do
+    while angle < TWOPI do
         local x = ix + RADIUS * math.cos(angle)
         local z = iz + RADIUS * math.sin(angle)
         table.insert(inst._points, {x, z})

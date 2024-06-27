@@ -356,6 +356,10 @@ local function on_load(inst, data)
     update_barnacle_layers(inst, inst.components.harvestable.produce / inst.components.harvestable.maxproduce)
 end
 
+local function on_landed_initialize(inst)
+    inst.components.floater:OnLandedServer()
+end
+
 local PRIZE_PREFAB = "barnacle"
 local function fn()
     local inst = CreateEntity()
@@ -401,6 +405,7 @@ local function fn()
     inst.AnimState:SetFinalOffset(1)
 
     MakeInventoryFloatable(inst, "med", 0.1, {1.1, 0.9, 1.1})
+    inst.components.floater:SetIsObstacle()
     inst.components.floater.bob_percent = 0
     inst.components.floater.splash = false
 
@@ -421,9 +426,7 @@ local function fn()
     inst.highlightchildren = { inst.base }
 
     local land_time = (POPULATING and math.random()*5*FRAMES) or 0
-    inst:DoTaskInTime(land_time, function(inst)
-        inst.components.floater:OnLandedServer()
-    end)
+    inst:DoTaskInTime(land_time, on_landed_initialize)
 
     inst:AddComponent("sleeper")
 

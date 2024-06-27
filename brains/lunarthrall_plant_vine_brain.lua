@@ -71,7 +71,7 @@ local function MoveToPointAction(inst)
 		else
 
 			if not inst.randomdirection then
-				inst.randomdirection = math.random()*2*PI
+				inst.randomdirection = math.random()*TWOPI
 			end
 
 			local anglediff = math.random() * (PI*.45)

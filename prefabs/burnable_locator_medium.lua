@@ -1,6 +1,8 @@
 local function applytickdamage(inst)
 	if inst.boat.components.health ~= nil then
-		inst.boat.components.health:DoFireDamage(TUNING.BOAT.FIRE_DAMAGE, nil, true)
+		local damage = inst.boat ~= nil and inst.boat._fire_damage or TUNING.BOAT.FIRE_DAMAGE
+
+		inst.boat.components.health:DoFireDamage(damage, nil, true)
 	end
 end
 

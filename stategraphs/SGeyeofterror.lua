@@ -833,7 +833,7 @@ local states =
 
                         SpawnPrefab("sinkhole_spawn_fx_"..math.random(3)).Transform:SetPosition(ix, iy, iz)
 
-                        local theta = math.random() * 2 * PI
+                        local theta = math.random() * TWOPI
                         for i = 1, 7 do
                             local dust = SpawnPrefab("sinkhole_spawn_fx_"..math.random(3))
 
@@ -847,7 +847,7 @@ local states =
                             local x_scale = (i % 2 == 0 and -s) or s
                             dust.Transform:SetScale(x_scale, s, s)
 
-                            theta = theta + (2*PI/7)
+                            theta = theta + (TWOPI/7)
                         end
                     end
                 end

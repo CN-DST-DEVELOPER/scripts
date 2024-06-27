@@ -34,7 +34,7 @@ local function UpdateOverrideSymbols(inst, state)
 end
 
 local function SpawnFx(inst, stage, scale)
-    local theta = math.random() * PI * 2
+    local theta = math.random() * TWOPI
     local num = 7
     local radius = 1.6
     local dtheta = TWOPI / num
@@ -233,7 +233,7 @@ local function fn()
     inst:AddTag("antlion_sinkhole_blocker")
     inst:AddTag("NOCLICK")
 
-    inst:SetDeployExtraSpacing(4)
+	inst:SetDeploySmartRadius(3)
 
     inst.scrapbook_anim = "scrapbook"
     inst.scrapbook_specialinfo = "ANTLIONSINKHOLE"

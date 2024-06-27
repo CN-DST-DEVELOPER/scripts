@@ -35,6 +35,7 @@ local function fn()
     --or in case we are about to be removed
     inst:DoTaskInTime(0, PlayBrokenAnim)
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

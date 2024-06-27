@@ -68,7 +68,7 @@ end
 
 local function LightningStrike(inst)
 	local rad = math.random(0,3)
-	local angle = math.random() * 2 * PI
+	local angle = math.random() * TWOPI
 	local offset = Vector3(rad * math.cos(angle), 0, -rad * math.sin(angle))
 
 	local pos = inst:GetPosition() + offset
@@ -273,7 +273,7 @@ local states=
 		tags = {"busy"},
 
 		onenter = function(inst)
-			local angle = math.random()*2*PI
+			local angle = math.random()*TWOPI
 			local speed = GetRandomWithVariance(3, 2)
 			inst.Physics:SetMotorVel(speed*math.cos(angle), 0, speed*math.sin(angle))
 			inst.AnimState:PlayAnimation("hatch")

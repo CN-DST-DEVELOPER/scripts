@@ -61,7 +61,7 @@ local function get_hint_location(inst)
     local position = closest_toy:GetPositionAdjacentTo(leader, TUNING.GHOST_HUNT.HINT_OFFSET)
     if position ~= nil then
         -- Add a little bit of fuzziness so the offset isn't a perfect line to the target.
-        local random_fuzziness_angle = math.random() * 2 * PI
+        local random_fuzziness_angle = math.random() * TWOPI
         position = position + Vector3(math.sin(random_fuzziness_angle), 0, math.cos(random_fuzziness_angle))
 
         inst.sg.mem.is_hinting = true
@@ -207,11 +207,8 @@ end
 local function toy_nearby_wander_angle(inst)
     local leader = get_follow_target(inst)
     local closest_toy = get_closest_toy(inst, leader, MIN_HINT_DSQ)
-    if closest_toy == nil then
-        return math.random() * 2 * PI
-    else
-        return GetRandomWithVariance(closest_toy:GetAngleToPoint(leader.Transform:GetWorldPosition()), 10)
-    end
+    return (closest_toy ~= nil and GetRandomWithVariance(closest_toy:GetAngleToPoint(leader.Transform:GetWorldPosition()), 10))
+        or (TWOPI * math.random())
 end
 
 local GRAVESTONE_WANDER_TIMES =

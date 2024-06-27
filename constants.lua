@@ -7,6 +7,7 @@ PI = math.pi
 PI2 = PI*2
 TWOPI = PI2
 SQRT2 = math.sqrt(2)
+GOLDENANGLE = PI * (3 - math.sqrt(5))
 DEGREES = PI/180
 RADIANS = 180/PI
 FRAMES = 1/30
@@ -699,12 +700,14 @@ GROUND_FLOORING = {} --These tiles are flooring (stuff shouldn't grow on them)
 GROUND_HARD = {} --not plantable
 GROUND_ROADWAYS = {} -- Player speed boosting enabled.
 GROUND_NOGROUNDOVERLAYS = {} -- Stops rendering of snow or water etc overlays this table is immutable after initialization or engine crashes may occur.
+GROUND_INVISIBLETILES = {} -- Stops rendering of the tile top and skirt but will still have overlays this table is immutable after initialization or engine crashes may occur.
 GROUND_ISTEMPTILE = {} -- Tiles that are temporarily placed as a layer using the undertile component.
 
 FALLOFF_IDS = {
     FALLOFF = 1,
     DOCK_FALLOFF = 2,
     OCEANICE_FALLOFF = 3,
+    INVISIBLE = 4,
 }
 
 GROUND_CREEP_IDS = {
@@ -1078,7 +1081,8 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_junkyardhog"
+    "dontstarve/music/music_FE_winonawurt"
+    --"dontstarve/music/music_FE_junkyardhog"
     --"dontstarve/music/music_FE_riftsthree"
     --"dontstarve/music/music_FE_survivorsguideone"
     --"dontstarve/music/music_FE_shadowrift"
@@ -1815,6 +1819,8 @@ MATERIALS =
     SHELL = "shell",
     NIGHTMARE = "nightmare",
 	DREADSTONE = "dreadstone",
+    SALT = "salt",
+    VITAE = "vitae",
 }
 
 FORGEMATERIALS =
@@ -1824,7 +1830,7 @@ FORGEMATERIALS =
     WAGPUNKBITS = "wagpunk_bits",
 }
 
-UPGRADETYPES =
+UPGRADETYPES = -- NOTES(JBK): Keep this table updated in export_accountitems.lua [EAITAB]
 {
     DEFAULT = "default",
     SPIDER = "spider",
@@ -1832,6 +1838,14 @@ UPGRADETYPES =
     MAST = "mast",
     SPEAR_LIGHTNING = "spear_lightning",
     CHEST = "chest",
+}
+
+SPELLTYPES = -- NOTES(JBK): Keep this table updated in export_accountitems.lua [EAITAB]
+{
+    WURT_SHADOW = "wurt_shadow",
+    WURT_LUNAR = "wurt_lunar",
+    SHADOW_SWAMP_BOMB = "shadow_swamp_bomb",
+    LUNAR_SWAMP_BOMB = "lunar_swamp_bomb",
 }
 
 LOCKTYPE =
@@ -2001,6 +2015,7 @@ TECH_SKILLTREE_BUILDER_TAG_OWNERS =
     wolfgang_coach = "wolfgang",
     wolfgang_dumbbell_crafting = "wolfgang",
 
+    leifidolcrafter = "woodie",
     woodcarver1 = "woodie",
     woodcarver2 = "woodie",
     woodcarver3 = "woodie",
@@ -2010,11 +2025,11 @@ TECH_SKILLTREE_BUILDER_TAG_OWNERS =
     fruitdragoncrafter = "wormwood",
     juicyberrybushcrafter = "wormwood",
     lightfliercrafter = "wormwood",
+    lunarplant_husk_crafter = "wormwood",
     lureplantcrafter = "wormwood",
     reedscrafter = "wormwood",
     saplingcrafter = "wormwood",
     syrupcrafter = "wormwood",
-    lunarplant_husk_crafter = "wormwood",
 
     battlesongcontainermaker = "wathgrithr",
     battlesonginstantrevivemaker = "wathgrithr",
@@ -2024,8 +2039,25 @@ TECH_SKILLTREE_BUILDER_TAG_OWNERS =
     spearwathgrithrlightningmaker = "wathgrithr",
     wathgrithrimprovedhatmaker = "wathgrithr",
     wathgrithrshieldmaker = "wathgrithr",
+    [UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser"] = "wathgrithr",
 
     fire_mastery_1 = "willow",
+
+    charliet1maker = "winona",
+    portableengineer = "winona",
+    wagstafft1maker = "winona",
+    wagstafft2maker = "winona",
+
+    merm_swampmaster_offeringpot = "wurt",
+    merm_swampmaster_offeringpot_upgraded = "wurt",
+    merm_swampmaster_mermtoolshed = "wurt",
+    merm_swampmaster_mermtoolshed_upgraded = "wurt",
+    merm_swampmaster_mermarmory = "wurt",
+    merm_swampmaster_mermarmory_upgraded = "wurt",
+    mosquitocraft_1 = "wurt",
+    mosquitocraft_2 = "wurt",
+    [SPELLTYPES.LUNAR_SWAMP_BOMB.."_spelluser"] = "wurt",
+    [SPELLTYPES.SHADOW_SWAMP_BOMB.."_spelluser"] = "wurt",
 }
 
 -- IngredientMod must be one of the following values
@@ -2099,6 +2131,12 @@ DEPLOYSPACING =
     LARGE = 5,
 }
 
+--V2C: Deploy spacing is a legacy system where this is actually the distance
+--     between our center point and other objects' center points.
+--     For newer things, half of DEPLOYSPACING_RADIUS is used to indicate our
+--     actual footprint radius, combined with nearby objects that have called
+--     SetDeploySmartRadius (or physics size for inventoryitems) to determine
+--     required deploy spacing.
 DEPLOYSPACING_RADIUS =
 {
     [DEPLOYSPACING.DEFAULT] = 2,
@@ -2733,6 +2771,26 @@ LOADING_SCREEN_CONTROLLER_ID_LOOKUP =
     [CONTROL_ACTION] = CONTROL_CONTROLLER_ACTION,
     [CONTROL_FORCE_INSPECT] = CONTROL_INSPECT,
     [CONTROL_SHOW_PLAYER_STATUS] = CONTROL_MENU_MISC_4,
+}
+
+-- The games for inspectacles with netvar inspectacles_game range [0..7]
+INSPECTACLES_GAMES = {
+    NONE = 0,
+    WIRES = 1,
+    --GEARS = 2,
+    --TAPE = 3,
+    FREE1 = 2, -- FIXME(JBK): Adjust the enum for games added.
+    --FREE2 = 5,
+    --FREE3 = 6,
+}
+INSPECTACLES_GAMES_LOOKUP = {}
+for name, i in pairs(INSPECTACLES_GAMES) do
+    INSPECTACLES_GAMES_LOOKUP[i] = name
+end
+
+CHARLIERESIDUE_MAP_ACTIONS = {
+    NONE = 0,
+    WORMHOLE = 1,
 }
 
 -- Constants to reduce network overhead.

@@ -323,11 +323,15 @@ function Input:OnUpdate()
         self.entitiesundermouse = TheSim:GetEntitiesAtScreenPoint(TheSim:GetPosition())
 
         local inst = self.entitiesundermouse[1]
+		inst = inst and inst.client_forward_target or inst
+
         if inst ~= nil and inst.CanMouseThrough ~= nil then
             local mousethrough, keepnone = inst:CanMouseThrough()
             if mousethrough then
                 for i = 2, #self.entitiesundermouse do
                     local nextinst = self.entitiesundermouse[i]
+					nextinst = nextinst and nextinst.client_forward_target or nextinst
+
                     if nextinst == nil or
                         nextinst:HasTag("player") or
                         (nextinst.Transform ~= nil) ~= (inst.Transform ~= nil) then
@@ -337,6 +341,7 @@ function Input:OnUpdate()
                         end
                         break
                     end
+
                     inst = nextinst
                     if nextinst.CanMouseThrough == nil then
                         mousethrough, keepnone = false, false

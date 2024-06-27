@@ -154,8 +154,8 @@ end
 
 local function teleport_override_fn(inst)
     local ipos = inst:GetPosition()
-    local offset = FindWalkableOffset(ipos, 2*PI*math.random(), 8, 8, true, false)
-        or FindWalkableOffset(ipos, 2*PI*math.random(), 12, 8, true, false)
+    local offset = FindWalkableOffset(ipos, TWOPI*math.random(), 8, 8, true, false)
+        or FindWalkableOffset(ipos, TWOPI*math.random(), 12, 8, true, false)
 
     return (offset ~= nil and ipos + offset) or ipos
 end

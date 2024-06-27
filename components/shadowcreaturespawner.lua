@@ -103,7 +103,7 @@ function self:SpawnShadowCreature(player, params)
     if player.components.sanity:GetPercent() < .1 and boat ~= nil then
         local boat_x, boat_y, boat_z = boat.Transform:GetWorldPosition()
 
-        local angle = math.random() * 2 * PI
+        local angle = math.random() * TWOPI
         local offset = (boat.components.walkableplatform ~= nil and boat.components.walkableplatform.platform_radius or 4) + 3 + math.random() * 8
         local spawn_x = boat_x + offset * math.cos(angle)
         local spawn_z = boat_z - offset * math.sin(angle)
@@ -130,7 +130,7 @@ function self:SpawnShadowCreature(player, params)
     else
         _failed_ocean_spawn_attempts = 0
 
-        local angle = math.random() * 2 * PI
+        local angle = math.random() * TWOPI
         x = x + 15 * math.cos(angle)
         z = z - 15 * math.sin(angle)
         if _map:IsPassableAtPoint(x, 0, z) then

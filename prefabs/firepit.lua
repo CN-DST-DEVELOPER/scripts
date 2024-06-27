@@ -148,6 +148,8 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.6) --recipe min_spacing/2
+
     inst.MiniMapEntity:SetIcon("firepit.png")
     inst.MiniMapEntity:SetPriority(1)
 

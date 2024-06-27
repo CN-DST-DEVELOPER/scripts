@@ -168,15 +168,15 @@ local function on_begin_quest(inst, doer)
 
         local ghost_position = inst:GetPosition()
 
-        local toy_center_offset = FindWalkableOffset(ghost_position, math.random()*2*PI, TUNING.GHOST_HUNT.TOY_DIST.BASE, nil, false)
+        local toy_center_offset = FindWalkableOffset(ghost_position, math.random()*TWOPI, TUNING.GHOST_HUNT.TOY_DIST.BASE, nil, false)
         if toy_center_offset then
             ghost_position = ghost_position + toy_center_offset
         end
 
         local toy_count = GetRandomMinMax(TUNING.GHOST_HUNT.TOY_COUNT.MIN, TUNING.GHOST_HUNT.TOY_COUNT.MAX)
-        local angle_increment = 2 * PI / toy_count
+        local angle_increment = TWOPI / toy_count
 
-        local initial_angle = math.random() * PI * 2
+        local initial_angle = math.random() * TWOPI
 
         -- Do a shuffle instead of random selection so that we don't get duplicates.
         local chosen_toys = shuffleArray(toy_types)

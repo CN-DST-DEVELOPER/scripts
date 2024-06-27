@@ -111,6 +111,7 @@ local function checkforshallowwater(inst)
     end
 end
 
+local TILEDEPTH_LOOKUP = TUNING.ANCHOR_DEPTH_TIMES -- FIXME(JBK): Relying on an arbitrary tuning table for winch instead of having a number value for depths in the tiledefs themselves.
 local function findnewshallowlocation(inst, range)
     if not range then 
         range = 15 + (math.random()*5) -- Keep in sync with SGgrassgator [GGRANGECHECK]
@@ -126,11 +127,12 @@ local function findnewshallowlocation(inst, range)
             local tile_info = GetTileInfo(tile)
             local iswater = not TheWorld.Map:IsVisualGroundAtPoint(x,0,z)
             if iswater and tile_info ~= nil and tile_info.ocean_depth ~= nil then
-                if tile_info.ocean_depth <= "SHALLOW" then                    
+                local depth_value = TILEDEPTH_LOOKUP[tile_info.ocean_depth]
+                if depth_value and depth_value <= TILEDEPTH_LOOKUP.SHALLOW then
                     return true
                 end
-            end            
-        end        
+            end
+        end
     end)
     if finaloffset then
         return pos+finaloffset

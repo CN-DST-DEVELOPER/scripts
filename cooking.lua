@@ -162,6 +162,7 @@ AddIngredientValues({"forgetmelots"}, {decoration=1})
 
 AddIngredientValues({"trunk_summer","trunk_winter","trunk_cooked"}, {meat=1})
 
+AddIngredientValues({"ancientfruit_nightvision"}, {fruit=1}, true)
 
 --our naming conventions aren't completely consistent, sadly
 local aliases =

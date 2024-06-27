@@ -43,6 +43,7 @@ local function fn(anim)
 	inst.AnimState:PlayAnimation(anim)
     inst.AnimState:SetFinalOffset(1)
 
+    inst.entity:SetPristine()
 	if not TheWorld.ismastersim then
 		return inst
 	end

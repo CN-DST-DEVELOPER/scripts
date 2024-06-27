@@ -62,6 +62,23 @@ local function OnAnimOverRemoveAfterSounds(inst)
     end
 end
 
+local function TryDropTarget(inst)
+	if inst.ShouldKeepTarget then --nightmarecreatures don't drop target
+		local target = inst.components.combat.target
+		if target and not inst:ShouldKeepTarget(target) then
+			inst.components.combat:DropTarget()
+			return true
+		end
+	end
+end
+
+local function TryDespawn(inst)
+	if inst.sg.mem.forcedespawn or (inst.wantstodespawn and not inst.components.combat:HasTarget()) then
+		inst.sg:GoToState("disappear")
+		return true
+	end
+end
+
 local states =
 {
     State{
@@ -69,25 +86,23 @@ local states =
         tags = { "idle", "canrotate" },
 
         onenter = function(inst)
-            if inst.wantstodespawn then
-                local t = GetTime()
-                if t > inst.components.combat:GetLastAttackedTime() + 5 then
-                    local target = inst.components.combat.target
-                    if target == nil or
-                        target.components.combat == nil or
-                        not target.components.combat:IsRecentTarget(inst) or
-                        t > (target.components.combat.laststartattacktime or 0) + 5 then
-                        inst.sg:GoToState("disappear")
-                        return
-                    end
-                end
-            end
-
+			local dropped = TryDropTarget(inst)
+			if TryDespawn(inst) then
+				return
+			elseif dropped then
+				inst.sg:GoToState("taunt")
+				return
+			end
             inst.components.locomotor:StopMoving()
             if not inst.AnimState:IsCurrentAnimation("idle_loop") then
                 inst.AnimState:PlayAnimation("idle_loop", true)
             end
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
+
+		ontimeout = function(inst)
+			inst.sg:GoToState("idle")
+		end,
     },
 
     State{
@@ -124,7 +139,8 @@ local states =
         {
             EventHandler("animqueueover", function(inst)
                 if math.random() < .333 then
-                    inst.components.combat:SetTarget(nil)
+					TryDropTarget(inst)
+					inst.forceretarget = true --V2C: try to keep legacy behaviour; it used SetTarget(nil) here, which would always result in a retarget
                     inst.sg:GoToState("taunt")
                 else
                     inst.sg:GoToState("idle")
@@ -181,6 +197,7 @@ local states =
         tags = { "busy" },
 
         onenter = function(inst)
+			TryDropTarget(inst)
             inst.AnimState:PlayAnimation("appear")
             inst.Physics:Stop()
             PlayExtendedSound(inst, "appear")
@@ -269,7 +286,7 @@ local states =
         {
             TimeEvent(40*FRAMES, function(inst)
                 local x,y,z = inst.Transform:GetWorldPosition()
-                print("TELEPORT OUT TERRORBEAK")
+				--print("TELEPORT OUT TERRORBEAK")
                 local fx = SpawnPrefab("shadow_teleport_out")
                 fx.Transform:SetPosition(x,y,z)
             end),
@@ -278,13 +295,27 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                print("EXCHANGE TERROR BEAK")
+				--print("EXCHANGE TERROR BEAK")
                 inst:ExchangeWithOceanTerror()
                 inst:Remove()
             end),
         },
     },
 }
-CommonStates.AddWalkStates(states)
+
+CommonStates.AddWalkStates(states,
+{
+	walktimeline =
+	{
+		FrameEvent(0, function(inst)
+			local dropped = TryDropTarget(inst)
+			if TryDespawn(inst) then
+				return
+			elseif dropped then
+				inst.sg:GoToState("taunt")
+			end
+		end),
+	},
+})
 
 return StateGraph("shadowcreature", states, events, "appear", actionhandlers)

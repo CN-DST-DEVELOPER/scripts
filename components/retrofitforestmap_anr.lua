@@ -273,8 +273,6 @@ local function TurnOfTidesRetrofitting_CleanupOceanPoution(inst)
 end
 
 local function SaltyRetrofitting_PopulateShoalSpawner()
-	local width, height = TheWorld.Map:GetSize()
-
 	local pop = {
 		OCEAN_SWELL = {
 			distributepercent = 0.0003,
@@ -685,7 +683,7 @@ local function MoonFissures()
 	if #options > 0 then
 		for i, ent in ipairs(options) do
 			local pos = Vector3(ent.Transform:GetWorldPosition())
-			local startangle = math.random()*PI*2
+			local startangle = math.random()*PI2
 			local offset_a = FindWalkableOffset(pos, startangle, 12, 36, true, true) or FindWalkableOffset(pos, startangle, 15, 36, true, true) or FindWalkableOffset(pos, startangle, 9, 36, true, true)
 			local offset_b = nil
 			if offset_a then
@@ -1190,6 +1188,43 @@ local function Junkyard_NewContent_Retrofitting()
         on_add_prefab(bigjunkpile, NO_JUNK_FLAG)
     end
 end
+
+local function SkilltreeSpotlightWinonaWurtRetrofitting_PopulateOtterDens()
+	local width, height = TheWorld.Map:GetSize()
+
+	local count = 0
+
+	local function SpawnBoatingSafePrefab(prefab, x, z)
+		if #TheSim:FindEntities(x, 0, z, TUNING.MAX_WALKABLE_PLATFORM_RADIUS + 4, WALKABLEPLATFORM_TAGS) == 0 then
+			local obj = SpawnPrefab(prefab)
+			obj.Transform:SetPosition(x, 0, z)
+			count = count + 1
+		end
+	end
+
+	local function populate_ocean(tile_type, contents)
+		for y = OCEAN_POPULATION_EDGE_DIST, height - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
+			for x = OCEAN_POPULATION_EDGE_DIST, width - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
+				if math.random() < contents.distributepercent and TheWorld.Map:GetTile(x, y) == tile_type then
+					SpawnBoatingSafePrefab(
+						contents.distributeprefab,
+						(x - width/2.0)*TILE_SCALE + math.random()*2-1,
+						(y - height/2.0)*TILE_SCALE + math.random()*2-1
+					)
+				end
+			end
+		end
+	end
+
+	populate_ocean(WORLD_TILES.OCEAN_COASTAL, {
+		distributepercent = 0.0009765625, -- 0.01 * 1/(3+6+1+0.24)
+		distributeprefab = "boat_otterden",
+	})
+
+	print("Retrofitting for Skilltree Spotlight: Winona & Wurt - Added " .. tostring(count) .. " Otter Dens.")
+end
+
+
 --------------------------------------------------------------------------
 --[[ Post initialization ]]
 --------------------------------------------------------------------------
@@ -1399,7 +1434,7 @@ function self:OnPostInit()
 									or body.prefab == "sculpture_rookbody" and 1.7
 									or nil
 						if radius ~= nil then
-							local offset = FindWalkableOffset(body:GetPosition(), math.random() * 2 * PI, radius, 60, false, false, NoHoles) or Vector3(2, 0, 0)
+							local offset = FindWalkableOffset(body:GetPosition(), math.random() * TWOPI, radius, 60, false, false, NoHoles) or Vector3(2, 0, 0)
 							obj.Transform:SetPosition((body:GetPosition() + offset):Get())
 
 							count = count + 1
@@ -1582,6 +1617,11 @@ function self:OnPostInit()
         end
     end
 
+	if self.retrofit_otterdens then
+        print("Retrofitting for Skilltree Spotlight: Winona & Wurt: Adding Otter Dens.")
+		SkilltreeSpotlightWinonaWurtRetrofitting_PopulateOtterDens()
+	end
+
 	---------------------------------------------------------------------------
 
 	if self.requiresreset then
@@ -1639,6 +1679,7 @@ function self:OnLoad(data)
         self.retrofit_junkyardv2_content = data.retrofit_junkyardv2_content or false
         self.retrofit_junkyardv3_content = data.retrofit_junkyardv3_content or false
         self.remove_rift_terraformers_fix = data.remove_rift_terraformers_fix or false
+		self.retrofit_otterdens = data.retrofit_otterdens or false
     end
 end
 

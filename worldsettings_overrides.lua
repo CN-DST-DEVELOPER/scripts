@@ -314,28 +314,28 @@ local applyoverrides_pre = {
             rare = {
                 MALBATROSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 20,
                 MALBATROSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 10,
-                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.05,
-                MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.125,
+                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.15,
+                MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.25,
             },
             --[[
             default = {
                 MALBATROSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 10,
                 MALBATROSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 5,
-                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.1,
-                MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.25,
+                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.3,
+                MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.5,
                 SPAWN_MALBATROSS = true,
             },
             --]]
             often = {
                 MALBATROSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 8,
                 MALBATROSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 4,
-                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.2,
-                MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.5,
+                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.6,
+                MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 0.75,
             },
             always = {
                 MALBATROSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 4,
                 MALBATROSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 2,
-                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.4,
+                MALBATROSS_HOOKEDFISH_SUMMONCHANCE = 0.9,
                 MALBATROSS_SHOAL_PERCENTAGE_TO_TEST = 1,
             },
         }
@@ -1025,10 +1025,10 @@ local applyoverrides_pre = {
                     ["full"] = 0,
                 },
                 SQUID_CHANCE = {
-                    ["new"] = 0.1,
-                    ["quarter"] = 0.05,
-                    ["half"] = 0.025,
-                    ["threequarter"] = 0.0125,
+                    ["new"] = 0.125,
+                    ["quarter"] = 0.065,
+                    ["half"] = 0.03,
+                    ["threequarter"] = 0.015,
                     ["full"] = 0,
                 },
             },
@@ -1044,10 +1044,10 @@ local applyoverrides_pre = {
                     ["full"] = 0,
                 },
                 SQUID_CHANCE = {
-                    ["new"] = 0.2,
-                    ["quarter"] = 0.1,
-                    ["half"] = 0.05,
-                    ["threequarter"] = 0.025,
+                    ["new"] = 0.25,
+                    ["quarter"] = 0.125,
+                    ["half"] = 0.065,
+                    ["threequarter"] = 0.03,
                     ["full"] = 0,
                 },
             },
@@ -1063,10 +1063,10 @@ local applyoverrides_pre = {
                     ["full"] = 0,
                 },
                 SQUID_CHANCE = {
-                    ["new"] = 0.4,
-                    ["quarter"] = 0.2,
-                    ["half"] = 0.1,
-                    ["threequarter"] = 0.05,
+                    ["new"] = 0.5,
+                    ["quarter"] = 0.25,
+                    ["half"] = 0.125,
+                    ["threequarter"] = 0.065,
                     ["full"] = 0,
                 },
             },
@@ -1081,11 +1081,11 @@ local applyoverrides_pre = {
                     ["full"] = 2,
                 },
                 SQUID_CHANCE = {
-                    ["new"] = 0.8,
-                    ["quarter"] = 0.4,
-                    ["half"] = 0.2,
-                    ["threequarter"] = 0.1,
-                    ["full"] = 0.05,
+                    ["new"] = 0.95,
+                    ["quarter"] = 0.5,
+                    ["half"] = 0.25,
+                    ["threequarter"] = 0.125,
+                    ["full"] = 0.065,
                 },
             },
         }
@@ -1913,21 +1913,21 @@ local applyoverrides_pre = {
                 GNARWAIL_TEST_RADIUS = 0,
             },
             few = {
-                GNARWAIL_SPAWN_CHANCE = 0.0375,
+                GNARWAIL_SPAWN_CHANCE = 0.05,
                 GNARWAIL_TEST_RADIUS = 150,
             },
             --[[
             default = {
-                GNARWAIL_SPAWN_CHANCE = 0.075,
+                GNARWAIL_SPAWN_CHANCE = 0.1,
                 GNARWAIL_TEST_RADIUS = 100,
             },
             --]]
             many = {
-                GNARWAIL_SPAWN_CHANCE = 0.15,
+                GNARWAIL_SPAWN_CHANCE = 0.2,
                 GNARWAIL_TEST_RADIUS = 75,
             },
             always = {
-                GNARWAIL_SPAWN_CHANCE = 0.3,
+                GNARWAIL_SPAWN_CHANCE = 0.4,
                 GNARWAIL_TEST_RADIUS = 50,
             },
         }
@@ -1972,6 +1972,30 @@ local applyoverrides_pre = {
                 SCHOOL_SPAWNER_MAX_FISH = 15,
                 SCHOOL_SPAWNER_BLOCKER_MOD = 1/1, -- 3 or more blockers will prevent spawning
                 SCHOOL_SPAWNER_BLOCKER_LIFETIME = TUNING.TOTAL_DAY_TIME / 4,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    otters_setting = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                OTTERDEN_ENABLED = false,
+            },
+            few = {
+                OTTERDEN_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 10,
+            },
+            --[[
+            default = {
+                OTTERDEN_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 6,
+                OTTERDEN_ENABLED = true,
+            },
+            --]]
+            many = {
+                OTTERDEN_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 3,
+            },
+            always = {
+                OTTERDEN_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 1,
             },
         }
         OverrideTuningVariables(tuning_vars[difficulty])

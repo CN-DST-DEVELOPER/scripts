@@ -801,6 +801,7 @@ local function MakePlant(plant_def)
         inst.AnimState:SetBuild(plant_def.build)
         inst.AnimState:OverrideSymbol("soil01", "farm_soil", "soil01")
 
+		inst:SetDeploySmartRadius(0.5) --match visuals, seeds use CUSTOM spacing
         inst:SetPhysicsRadiusOverride(TUNING.FARM_PLANT_PHYSICS_RADIUS)
 
         inst:AddTag("plantedsoil")

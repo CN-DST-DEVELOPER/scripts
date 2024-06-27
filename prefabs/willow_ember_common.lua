@@ -32,7 +32,7 @@ local function SpawnEmbersAt(victim, numembers)
     local x, y, z = victim.Transform:GetWorldPosition()
 
     if numembers == 2 then
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local radius = .4 + math.random() * .1
         fns.SpawnEmberAt(x + math.cos(theta) * radius, 0, z - math.sin(theta) * radius, victim, true)
         theta = GetRandomWithVariance(theta + PI, PI / 15)
@@ -43,8 +43,8 @@ local function SpawnEmbersAt(victim, numembers)
 
         if numembers > 1 then
             numembers = numembers - 1
-            local theta0 = math.random() * 2 * PI
-            local dtheta = 2 * PI / numembers
+            local theta0 = math.random() * TWOPI
+            local dtheta = TWOPI / numembers
             local thetavar = dtheta / 10
             local theta, radius
 

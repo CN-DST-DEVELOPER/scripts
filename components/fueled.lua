@@ -100,6 +100,7 @@ local Fueled = Class(function(self, inst)
     --self.firstperiodfull = nil
     --self.firstperioddt = nil
     self.bonusmult = 1
+	--self.multfn = nil
     self.depleted = nil
 end,
 nil,
@@ -153,8 +154,16 @@ function Fueled:IsEmpty()
     return self.currentfuel <= 0
 end
 
+function Fueled:IsFull()
+	return self.maxfuel > 0 and self.currentfuel >= self.maxfuel
+end
+
 function Fueled:SetSections(num)
     self.sections = num
+end
+
+function Fueled:SetMultiplierFn(fn)
+	self.multfn = fn
 end
 
 function Fueled:CanAcceptFuelItem(item)
@@ -173,6 +182,14 @@ function Fueled:ChangeSection(amount)
     self:DoDelta(amount * self.maxfuel / self.sections - 1)
 end
 
+function Fueled:SetCanTakeFuelItemFn(fn)
+	self.cantakefuelitemfn = fn
+end
+
+function Fueled:SetTakeFuelItemFn(fn)
+	self.ontakefuelitemfn = fn
+end
+
 function Fueled:SetTakeFuelFn(fn)
     self.ontakefuelfn = fn
 end
@@ -180,26 +197,31 @@ end
 function Fueled:TakeFuelItem(item, doer)
 	local fuel_obj = item or doer
 
-    if self:CanAcceptFuelItem(fuel_obj) then
+	if self:CanAcceptFuelItem(fuel_obj) and
+		(self.cantakefuelitemfn == nil or self.cantakefuelitemfn(self.inst, item, doer))
+	then
         local oldsection = self:GetCurrentSection()
 
+		local mult = self.multfn and self.multfn(self.inst, fuel_obj) or 1
         local wetmult = fuel_obj:GetIsWet() and TUNING.WET_FUEL_PENALTY or 1
         local masterymult = doer ~= nil and doer.components.fuelmaster ~= nil and doer.components.fuelmaster:GetBonusMult(fuel_obj, self.inst) or 1
 
 		local fuel = fuel_obj.components.fuel or fuel_obj.components.fueler
-
-        local fuelvalue = fuel.fuelvalue * self.bonusmult * wetmult * masterymult
+		local fuelvalue = fuel.fuelvalue * self.bonusmult * mult * wetmult * masterymult
 
         self:DoDelta(fuelvalue, doer)
 
         fuel:Taken(self.inst)
 
 		if item ~= nil then
+			if self.ontakefuelitemfn then
+				self.ontakefuelitemfn(self.inst, item, fuelvalue, doer)
+			end
 	        item:Remove()
 		end
 
         if self.ontakefuelfn ~= nil then
-            self.ontakefuelfn(self.inst, fuelvalue)
+			self.ontakefuelfn(self.inst, fuelvalue)
         end
         self.inst:PushEvent("takefuel", { fuelvalue = fuelvalue })
 
@@ -223,12 +245,11 @@ function Fueled:AddThreshold(percent, fn)
 end
 
 function Fueled:GetSectionPercent()
-    local section = self:GetCurrentSection()
-    return (self:GetPercent() - (section - 1)/self.sections) / (1/self.sections)
+	return self:GetPercent() * self.sections - self:GetCurrentSection() + 1
 end
 
 function Fueled:GetPercent()
-    return self.maxfuel > 0 and math.max(0, math.min(1, self.currentfuel / self.maxfuel)) or 0
+	return self.maxfuel > 0 and math.clamp(self.currentfuel / self.maxfuel, 0, 1) or 0
 end
 
 function Fueled:SetPercent(amount)

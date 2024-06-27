@@ -122,6 +122,7 @@ local function fn(songdata, dodelta_fn)
     inst:AddTag("DECOR") --"FX" will catch mouseover
     inst:AddTag("NOCLICK")
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

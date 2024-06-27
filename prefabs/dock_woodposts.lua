@@ -62,6 +62,8 @@ local function fn()
     inst.entity:AddNetwork()
     inst.entity:AddSoundEmitter()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --dock_woodposts_item deployspacing/2
+
     inst.AnimState:SetBank("dock_woodposts")
     inst.AnimState:SetBuild("dock_woodposts")
     inst.AnimState:PlayAnimation("idle1")

@@ -64,6 +64,7 @@ local function fn()
 
     inst:AddTag("structure")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --match kit item
 	inst:SetPhysicsRadiusOverride(0.25)
 
     inst.entity:SetPristine()
@@ -103,5 +104,5 @@ local function fn()
 end
 
 return Prefab("boat_rotator", fn, assets, prefabs),
-       MakeDeployableKitItem("boat_rotator_kit", "boat_rotator", "boat_rotator", "boat_rotator", "kit", item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}, { deployspacing = DEPLOYSPACING.MEDIUM }),
+       MakeDeployableKitItem("boat_rotator_kit", "boat_rotator", "boat_rotator", "boat_rotator", "kit", item_assets, {size = "med", scale = 0.77}, {"boat_accessory"}, {fuelvalue = TUNING.LARGE_FUEL}, { deployspacing = DEPLOYSPACING.LESS }),
        MakePlacer("boat_rotator_kit_placer", "boat_rotator", "boat_rotator", "idle")

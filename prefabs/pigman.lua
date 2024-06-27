@@ -579,6 +579,7 @@ local function common(moonbeast)
     inst.AnimState:SetBank("pigman")
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:Hide("hat")
+    inst.AnimState:Hide("ARM_carry_up")
 
     if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
         inst.AnimState:AddOverrideBuild("pigman_yotb")

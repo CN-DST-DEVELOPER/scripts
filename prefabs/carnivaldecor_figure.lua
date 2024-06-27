@@ -156,6 +156,7 @@ local function fn(data, carnival_season, bank)
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --match kit item
 	if data.physics_radius then
 		MakeObstaclePhysics(inst, data.physics_radius)
 	end
@@ -218,6 +219,8 @@ end
 
 local deployable_data = 
 {
+	deployspacing = DEPLOYSPACING.LESS,
+
 	OnSave = function(inst, data)
 		data.shape = inst.shape
 	end,
@@ -232,8 +235,8 @@ local function placer_postinit_fn(inst)
 end
 
 return Prefab("carnivaldecor_figure", fn_season1, assets, prefabs),
-	MakeDeployableKitItem("carnivaldecor_figure_kit", "carnivaldecor_figure", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL, deployspacing = DEPLOYSPACING.MEDIUM}, deployable_data),
+	MakeDeployableKitItem("carnivaldecor_figure_kit", "carnivaldecor_figure", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, deployable_data),
 	MakePlacer("carnivaldecor_figure_kit_placer", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn),
 	Prefab("carnivaldecor_figure_season2", fn_season2, assets_s2, prefabs),
-	MakeDeployableKitItem("carnivaldecor_figure_kit_season2", "carnivaldecor_figure_season2", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL, deployspacing = DEPLOYSPACING.MEDIUM}, deployable_data),
+	MakeDeployableKitItem("carnivaldecor_figure_kit_season2", "carnivaldecor_figure_season2", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, deployable_data),
 	MakePlacer("carnivaldecor_figure_kit_season2_placer", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn)

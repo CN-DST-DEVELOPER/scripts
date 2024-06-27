@@ -281,6 +281,7 @@ local function fn()
     inst.OnEntitySleep = OnEntitySleep
 
     inst.OnPreLoad = OnPreLoad
+    MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
     return inst
 end

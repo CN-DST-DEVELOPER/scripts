@@ -141,6 +141,7 @@ local function makedeco(name,bank,build)
         inst:AddTag("campfire")
         inst:AddTag("structure")
 
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --match kit item
         MakeObstaclePhysics(inst, .3)
 
         inst.entity:SetPristine()

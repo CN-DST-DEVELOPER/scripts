@@ -391,12 +391,12 @@ local function DropWetTool(inst, data)
                 local x1, y1, z1 = inst.Transform:GetWorldPosition()
                 x, y, z = data.target.Transform:GetWorldPosition()
                 angle = angle + (
-                    (x1 == x and z1 == z and math.random() * 2 * PI) or
+                    (x1 == x and z1 == z and math.random() * TWOPI) or
                     (projectile and math.atan2(z - z1, x - x1)) or
                     math.atan2(z1 - z, x1 - x)
                 )
             else
-                angle = angle + math.random() * 2 * PI
+                angle = angle + math.random() * TWOPI
             end
             local speed = projectile and 2 + math.random() or 3 + math.random() * 2
             tool.Physics:SetVel(math.cos(angle) * speed, 10, math.sin(angle) * speed)
@@ -670,6 +670,7 @@ local function RegisterMasterEventListeners(inst)
 	inst:ListenForEvent("changearea", fns.OnChangeArea)
 	inst:ListenForEvent("stormlevel", fns.OnStormLevelChanged)
 	inst:ListenForEvent("on_RIFT_MOON_tile", fns.OnRiftMoonTile)
+	inst:ListenForEvent("on_LUNAR_MARSH_tile", fns.OnRiftMoonTile)
 	inst:WatchWorldState("isnight", fns.OnAlterNight)
 	inst:WatchWorldState("isalterawake", fns.OnAlterNight)
 
@@ -1937,6 +1938,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_monkey_run.zip"),
 
         Asset("ANIM", "anim/player_acting.zip"),
+		Asset("ANIM", "anim/player_closeinspect.zip"),
 
         Asset("ANIM", "anim/player_attack_pillows.zip"),
 
@@ -2053,10 +2055,6 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
                 CanEntitySeeTarget(viewer, inst)
     end
 
-    local function OnUnderLeafCanopy(inst)
-
-    end
-
     local function OnChangeCanopyZone(inst, underleaves)
         inst._underleafcanopy:set(underleaves)
     end
@@ -2113,6 +2111,18 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
             elseif data.oldprefab == "wonkey" then
                 TheFocalPoint.SoundEmitter:PlaySound("monkeyisland/wonkycurse/detransform_music")
             end
+        end
+    end
+
+    local function OnFollowerRemoved(inst, follower)
+        if inst.additional_OnFollowerRemoved then
+            inst:additional_OnFollowerRemoved(follower)
+        end
+    end
+
+    local function OnFollowerAdded(inst, follower)
+        if inst.additional_OnFollowerAdded then
+            inst:additional_OnFollowerAdded(follower)
         end
     end
 
@@ -2312,7 +2322,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         end
 
         inst:ListenForEvent("sharksounddirty", OnSharkSound)
-        inst:ListenForEvent("underleafcanopydirty", OnUnderLeafCanopy)
+        --inst:ListenForEvent("underleafcanopydirty", OnUnderLeafCanopy)
 
         inst:ListenForEvent("finishseamlessplayerswap", onfinishseamlessplayerswap)
 
@@ -2381,6 +2391,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         end
 
 		inst.components.areaaware:StartWatchingTile(WORLD_TILES.RIFT_MOON)
+		inst.components.areaaware:StartWatchingTile(WORLD_TILES.LUNAR_MARSH)
 		inst.components.areaaware:StartWatchingTile(WORLD_TILES.OCEAN_ICE)
 
         inst:AddComponent("bloomer")
@@ -2511,6 +2522,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 	    inst:AddComponent("foodaffinity")
 
         inst:AddComponent("leader")
+        inst.components.leader.onfolloweradded = OnFollowerAdded  
+        inst.components.leader.onremovefollower = OnFollowerRemoved
+
         inst:AddComponent("age")
         inst:AddComponent("rider")
 

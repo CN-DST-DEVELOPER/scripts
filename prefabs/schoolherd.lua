@@ -45,7 +45,7 @@ local function updateposfn(inst)
 
     local currentpos = inst.components.knownlocations:GetLocation("nav".. inst.currentnav) or inst.components.knownlocations:GetLocation("nav1")
     for k, v in pairs(inst.components.herd.members)do
-        local angle = math.random() * 2 * PI
+        local angle = math.random() * TWOPI
         local dist = math.sqrt(math.random()) * 8
         local herd_offset = Vector3(currentpos.x + math.cos(angle) * dist, currentpos.y, currentpos.z + math.sin(angle) * dist)
         k.components.knownlocations:RememberLocation("herd_offset", herd_offset )
@@ -67,7 +67,7 @@ local function setupnavs(inst)
                 inst.components.knownlocations:RememberLocation("nav"..i, origin)
             else
                 local dist = math.sqrt(math.random())*(data and data.herdwandermin or 15) + (data and (data.herdwandermax - data.herdwandermin) or 15)
-                local swim_offset = FindSwimmableOffset(origin, math.random()*PI*2, dist, triesmax, true, nil, nil, true)
+                local swim_offset = FindSwimmableOffset(origin, math.random()*PI2, dist, triesmax, true, nil, nil, true)
                 if swim_offset then
                     inst.components.knownlocations:RememberLocation("nav"..i, Vector3(origin.x + swim_offset.x, 0, origin.z + swim_offset.z))
                 end

@@ -9,6 +9,8 @@ local prefabs =
     "flower_evil",
     "flower_withered",
     "planted_flower",
+	"small_puff",
+	"charlierose",
 }
 
 local names = {"f1","f2","f3","f4","f5","f6","f7","f8","f9","f10"}
@@ -106,6 +108,33 @@ local function OnIsRoseDirty(inst)
     inst.scrapbook_proxy = inst._isrose:value() and "flower_rose" or nil
 end
 
+--------------------------------------------------------------------------
+
+local function CanResidueBeSpawnedBy(inst, doer)
+    local skilltreeupdater = doer and doer.components.skilltreeupdater or nil
+    return skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") or false
+end
+
+local function OnResidueCreated(inst, owner, residue)
+	if not inst._isrose:value() then
+		setflowertype(inst, ROSE_NAME)
+		SpawnPrefab("small_puff").Transform:SetPosition(inst.Transform:GetWorldPosition())
+	end
+end
+
+local function OnResidueActivated(inst, doer)
+	if inst._isrose:value() and doer and doer.components.inventory then
+		local rose = SpawnPrefab("charlierose")
+		doer.components.inventory:GiveItem(rose, nil, inst:GetPosition())
+		if doer.SoundEmitter then
+			doer.SoundEmitter:PlaySound("meta4/charlie_residue/rose_activate")
+		end
+		inst:Remove()
+	end
+end
+
+--------------------------------------------------------------------------
+
 local function commonfn(isplanted)
     local inst = CreateEntity()
 
@@ -117,6 +146,8 @@ local function commonfn(isplanted)
     inst.AnimState:SetBuild("flowers")
     inst.AnimState:SetRayTestOnBB(true)
     inst.scrapbook_anim = "f1"
+
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --butterfly deployspacing/2
 
     inst:AddTag("flower")
     inst:AddTag("cattoy")
@@ -159,6 +190,12 @@ local function commonfn(isplanted)
 	inst:AddComponent("halloweenmoonmutable")
 	inst.components.halloweenmoonmutable:SetPrefabMutated("moonbutterfly_sapling")
 
+	local roseinspectable = inst:AddComponent("roseinspectable")
+	roseinspectable:SetCanResidueBeSpawnedBy(CanResidueBeSpawnedBy)
+	roseinspectable:SetOnResidueCreated(OnResidueCreated)
+	roseinspectable:SetOnResidueActivated(OnResidueActivated)
+	roseinspectable:SetForcedInduceCooldownOnActivate(true)
+
     if TheWorld:HasTag("cave") then
         inst:WatchWorldState("iscaveday", OnIsCaveDay)
     end
@@ -175,12 +212,17 @@ local function commonfn(isplanted)
     return inst
 end
 
-function plainfn()
+local function plainfn()
     -- NOTES(JBK): This is here to stop TheSim from appearing in the commonfn callback.
     return commonfn()
 end
 
-function rosefn()
+local function DoRoseBounceAnim(inst)
+	inst.AnimState:PlayAnimation("rose_bounce")
+	inst.AnimState:PushAnimation(inst.animname, false)
+end
+
+local function rosefn()
     local inst = commonfn()
 
     inst:SetPrefabName("flower")
@@ -195,11 +237,12 @@ function rosefn()
     end
 
     setflowertype(inst, ROSE_NAME)
+    inst.DoRoseBounceAnim = DoRoseBounceAnim
 
     return inst
 end
 
-function plantedflowerfn()
+local function plantedflowerfn()
     local inst = commonfn(true)
 
     inst:SetPrefabName("flower")
@@ -214,5 +257,5 @@ function plantedflowerfn()
 end
 
 return Prefab("flower", plainfn, assets, prefabs),
-       Prefab("flower_rose", rosefn, assets, prefabs),
-       Prefab("planted_flower", plantedflowerfn, assets, prefabs)
+	Prefab("flower_rose", rosefn, assets, prefabs),
+	Prefab("planted_flower", plantedflowerfn, assets, prefabs)

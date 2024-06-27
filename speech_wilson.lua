@@ -54,15 +54,16 @@ return {
 			GENERIC = "I can't do that.",
 			INUSE = "They're elbow deep in junk right now.",
             NOTMASTERCHEF = "I'm not a fancy enough chef for that.",
+            NOTAMERM = "I don't think the merms would be happy about that.",
 		},
 		UNLOCK =
         {
-        	WRONGKEY = "I can't do that.",
+            WRONGKEY = "I can't do that.",
         },
 		USEKLAUSSACKKEY =
         {
-        	WRONGKEY = "Whoops! That wasn't right.",
-        	KLAUS = "I'm a little preoccupied!!",
+            WRONGKEY = "Whoops! That wasn't right.",
+            KLAUS = "I'm a little preoccupied!!",
 			QUAGMIRE_WRONGKEY = "I'll just have to find another key.",
         },
 		ACTIVATE =
@@ -78,6 +79,9 @@ return {
             MANNEQUIN_EQUIPSWAPFAILED = "I don't think he can wear this.",
             PILLOWFIGHT_NO_HANDPILLOW = "I need a pillow to fight with!",
             NOTMYBERNIE = "My stuffed toy isn't so scary.",
+            NOTMERM = "It takes a merm to call a merm.",
+            NOKELP = "only_used_by_wurt",
+            HASMERMLEADER = "only_used_by_wurt",
 		},
 		OPEN_CRAFTING =
 		{
@@ -137,6 +141,7 @@ return {
             GHOSTHEART = "Perhaps this is a bad idea.",
             NOTGEM = "I'm not sticking that in there!",
             WRONGGEM = "This gem won't work here.",
+			NOGENERATORSKILL = "I'm not sticking that in there!",
             NOTSTAFF = "It's not quite the right shape.",
             MUSHROOMFARM_NEEDSSHROOM = "A mushroom would probably be of more use.",
             MUSHROOMFARM_NEEDSLOG = "A living log would probably be of more use.",
@@ -248,7 +253,7 @@ return {
         },
         SAIL =
         {
-        	REPAIR = "It doesn't need repairing.",
+            REPAIR = "It doesn't need repairing.",
         },
         ROW_FAIL =
         {
@@ -403,13 +408,46 @@ return {
 			NO_TOPHAT = "only_used_by_waxwell",
 		},
 
+        CASTSPELL =
+        {
+            TERRAFORM_TOO_SOON = "only_used_by_wurt",
+        },
+
 		CASTAOE =
 		{
 			NO_MAX_SANITY = "only_used_by_waxwell",
             NOT_ENOUGH_EMBERS = "only_used_by_willow",
             NO_TARGETS = "only_used_by_willow",
             CANT_SPELL_MOUNTED = "only_used_by_willow",
-            SPELL_ON_COOLDOWN = "only_used_by_willow", 
+            SPELL_ON_COOLDOWN = "only_used_by_willow",
+			NO_BATTERY = "only_used_by_winona",
+			NO_CATAPULTS = "only_used_by_winona",
+		},
+
+        PICK =
+        {
+            NOTHING_INSIDE = "It's empty.",
+        },
+
+        HEAL =
+        {
+            NOT_MERM = "I guess it only works on merms.",
+        },
+
+		LOOKAT = --fail strings for close inspection
+		{
+			-- Winona specific
+			ROSEGLASSES_INVALID = "only_used_by_winona",
+			ROSEGLASSES_COOLDOWN = "only_used_by_winona",
+            ROSEGLASSES_DISMISS = "only_used_by_winona",
+            ROSEGLASSES_STUMPED = "only_used_by_winona",
+			--
+		},
+
+		REMOTE_TELEPORT =
+		{
+			NOSKILL = "only_used_by_winona",
+			NODEST = "only_used_by_winona",
 		},
     },
 
@@ -480,6 +518,21 @@ return {
     --wx-78 specific
     ANNOUNCE_CHARGE = "only_used_by_wx78",
 	ANNOUNCE_DISCHARGE = "only_used_by_wx78",
+
+    -- Winona specific
+    ANNOUNCE_ROSEGLASSES = 
+    {
+        "only_used_by_winona",
+        "only_used_by_winona",
+        "only_used_by_winona",
+    },
+    ANNOUNCE_CHARLIESAVE = 
+    {
+        "only_used_by_winona",
+    },
+	ANNOUNCE_ENGINEERING_CAN_UPGRADE = "only_used_by_winona",
+	ANNOUNCE_ENGINEERING_CAN_DOWNGRADE = "only_used_by_winona",
+	ANNOUNCE_ENGINEERING_CAN_SIDEGRADE = "only_used_by_winona",
 
 	ANNOUNCE_EAT =
 	{
@@ -573,6 +626,7 @@ return {
 	ANNOUNCE_TRAP_WENT_OFF = "Oops.",
 	ANNOUNCE_UNIMPLEMENTED = "OW! I don't think it's ready yet.",
 	ANNOUNCE_WORMHOLE = "That was not a sane thing to do.",
+    ANNOUNCE_WORMHOLE_SAMESPOT = "only_used_by_winona",
 	ANNOUNCE_TOWNPORTALTELEPORT = "I'm not sure that was science.",
 	ANNOUNCE_CANFIX = "\nI think I can fix this!",
 	ANNOUNCE_ACCOMPLISHMENT = "I feel so accomplished!",
@@ -773,6 +827,7 @@ return {
         BOOK_RESEARCH_STATION = "only_used_by_wurt",
         BOOK_LIGHT_UPGRADED = "only_used_by_wurt",
     },
+
     ANNOUNCE_WEAK_RAT = "This carrat is in no shape to be training.",
 
     ANNOUNCE_CARRAT_START_RACE = "Let the experim- er, race begin!",
@@ -943,6 +998,11 @@ return {
     ANNOUNCE_YOTD_NOBOATS = "I'd better get my boat closer to the Start Tower.",
     ANNOUNCE_YOTD_NOCHECKPOINTS = "I should set up some checkpoints first.",
     ANNOUNCE_YOTD_NOTENOUGHBOATS = "There isn't enough room for anyone else to join in.",
+
+    ANNOUNCE_OTTERBOAT_OUTOFSHALLOWS = "I've got a sinking feeling this should've stayed in the shallows.",
+    ANNOUNCE_OTTERBOAT_DENBROKEN = "Getting rid of that den might have started a chain reaction...",
+
+    ANNOUNCE_GATHER_MERM = "Must be a Merm thing.",
 
 	BATTLECRY =
 	{
@@ -1739,7 +1799,7 @@ return {
             RARE = "It's REALLY scientific!",
         },
         SKETCH = "A picture of a sculpture. We'll need somewhere to make it.",
-		COOKINGRECIPECARD = 
+		COOKINGRECIPECARD =
 		{
 			GENERIC = "Science help me, I can't decipher this handwriting.",
 		},
@@ -1868,6 +1928,7 @@ return {
         CHESSPIECE_DEERCLOPS_MUTATED = "This sculpture is a bit of an eyesore.",
         CHESSPIECE_WARG_MUTATED = "It's just missing that horrible breath.",
         CHESSPIECE_BEARGER_MUTATED = "Somehow it seems crankier than the real one.",
+        CHESSPIECE_SHARKBOI = "There's just some-fin about it.",
 
         CHESSJUNK1 = "A pile of broken chess pieces.",
         CHESSJUNK2 = "Another pile of broken chess pieces.",
@@ -2853,13 +2914,13 @@ return {
         },
         CLAYWARG =
         {
-        	GENERIC = "A terror cotta monster!",
-        	STATUE = "Did it just move?",
+            GENERIC = "A terror cotta monster!",
+            STATUE = "Did it just move?",
         },
         CLAYHOUND =
         {
-        	GENERIC = "It's been unleashed!",
-        	STATUE = "It looks so real.",
+            GENERIC = "It's been unleashed!",
+            STATUE = "It looks so real.",
         },
         HOUNDWHISTLE = "This'd stop a dog in its tracks.",
         CHESSPIECE_CLAYHOUND = "That thing's the leashed of my worries.",
@@ -3461,6 +3522,7 @@ return {
         	OFF = "It needs some electricity.",
         	BURNING = "It's on fire!",
         	BURNT = "Science couldn't save it.",
+			SLEEP = "She's made a sort of automatic defense system.",
         },
         WINONA_SPOTLIGHT =
         {
@@ -3468,6 +3530,7 @@ return {
         	OFF = "It needs some electricity.",
         	BURNING = "It's on fire!",
         	BURNT = "Science couldn't save it.",
+			SLEEP = "What an ingenious idea!",
         },
         WINONA_BATTERY_LOW =
         {
@@ -3479,12 +3542,64 @@ return {
         },
         WINONA_BATTERY_HIGH =
         {
-        	GENERIC = "Hey! That's not science!",
-        	LOWPOWER = "It'll turn off soon.",
-        	OFF = "Science beats magic, every time.",
-        	BURNING = "It's on fire!",
-        	BURNT = "Science couldn't save it.",
+			GENERIC = "Hey! That's not science!",
+			LOWPOWER = "It'll turn off soon.",
+			OFF = "Science beats magic, every time.",
+			BURNING = "It's on fire!",
+			BURNT = "Science couldn't save it.",
+			OVERLOADED = "It's about to explode! ...Sorry, old habit from my lab days.",
         },
+		--v3 Winona
+		WINONA_REMOTE =
+		{
+			GENERIC = "I think she forgot to attach these buttons to her machine.",
+			OFF = "It needs some electricity.",
+			CHARGING = "I think she forgot to attach these buttons to her machine.",
+			CHARGED = "I think she forgot to attach these buttons to her machine.",
+		},
+		WINONA_TELEBRELLA =
+		{
+			GENERIC = "Winona's been brainstorming.",
+            MISSINGSKILL = "only_used_by_winona",
+			OFF = "It needs some electricity.",
+			CHARGING = "Winona's been brainstorming.",
+			CHARGED = "Winona's been brainstorming.",
+		},
+		WINONA_TELEPORT_PAD_ITEM =
+		{
+			GENERIC = "It uses displacement theory - things go from displace to datplace.",
+            MISSINGSKILL = "only_used_by_winona",
+			OFF = "It needs some electricity.",
+			BURNING = "It's on fire!",
+			BURNT = "Science couldn't save it.",
+		},
+		WINONA_STORAGE_ROBOT =
+		{
+			GENERIC = "Aren't you the cutest little bucket of bolts?",
+			OFF = "Taking a break? Winona must be going easy on you.",
+			SLEEP = "Aren't you the cutest little bucket of bolts?",
+			CHARGING = "Taking a break? Winona must be going easy on you.",
+			CHARGED = "Taking a break? Winona must be going easy on you.",
+		},
+		INSPECTACLESBOX = "only_used_by_winona",
+		INSPECTACLESBOX2 = "only_used_by_winona",
+		INSPECTACLESHAT = 
+        {
+            GENERIC = "Winona always struck me as someone with a vision for the future.",
+            MISSINGSKILL = "only_used_by_winona",
+        },
+		ROSEGLASSESHAT =
+        {
+            GENERIC = "They don't seem like Winona's usual style.",
+            MISSINGSKILL = "only_used_by_winona",
+        },
+		CHARLIERESIDUE = "only_used_by_winona",
+		CHARLIEROSE = "only_used_by_winona",
+        WINONA_MACHINEPARTS_1 = "only_used_by_winona",
+        WINONA_MACHINEPARTS_2 = "only_used_by_winona",
+		WINONA_RECIPESCANNER = "only_used_by_winona",
+		WINONA_HOLOTELEPAD = "only_used_by_winona",
+		WINONA_HOLOTELEBRELLA = "only_used_by_winona",
 
         --Wormwood
         COMPOSTWRAP = "Wormwood offered me a bite, but I respectfully declined.",
@@ -3966,12 +4081,17 @@ return {
         WEREITEM_GOOSE = "That thing's giving ME goosebumps!",
         WEREITEM_MOOSE = "A perfectly normal cursed moose thing.",
 
-        MERMHAT = "Finally, I can show my face in public.",
+        MERMHAT = "Finally, I can show my face in public.",        
         MERMTHRONE =
         {
             GENERIC = "Looks fit for a swamp king!",
             BURNT = "There was something fishy about that throne anyway.",
         },
+        MOSQUITOMUSK = "Those suckers will never get me!",
+        MOSQUITOBOMB = "I'm just itching to throw it.",
+        MOSQUITOFERTILIZER = "Apparently plants like it.",
+        MOSQUITOMERMSALVE = "It's the latest buzz among the merms.",
+
         MERMTHRONE_CONSTRUCTION =
         {
             GENERIC = "Just what is she planning?",
@@ -4725,6 +4845,9 @@ return {
         BOAT_BUMPER_KELP_KIT = "A soon-to-be boat bumper.",
 		BOAT_BUMPER_SHELL = "It gives the boat a little shellf defense.",
         BOAT_BUMPER_SHELL_KIT = "A soon-to-be boat bumper.",
+        BOAT_BUMPER_CRABKING = "It's my boat's crowning glory.",
+        BOAT_BUMPER_CRABKING_KIT = "A soon-to-be boat bumper.",
+
         BOAT_CANNON = {
             GENERIC = "I should load it with something.",
             AMMOLOADED = "The cannon is ready to fire!",
@@ -5152,6 +5275,84 @@ return {
         JUNK_PILE_BIG = "I think it could fall over any moment.",
 
         ARMOR_LUNARPLANT_HUSK = "That'll put a thorn in your side.",
+
+        -- Meta 4 / Ocean QoL
+
+        OTTER = "You should see the otter guy.",
+        OTTERDEN = {
+            GENERIC = "Otter den that, there's not much else there.",
+            HAS_LOOT = "I otter have a closer look.",
+        },
+        OTTERDEN_DEAD = "We are taking on a l'otter water.",
+
+        BOAT_ANCIENT_ITEM = "I guess I'm doing this the old-fashioned way.",
+        BOAT_ANCIENT_CONTAINER = "\"Cargo\" is sailor-lingo for \"stuff\".",
+        WALKINGPLANK_ANCIENT = "Couldn't we have just made a lifeboat?",
+
+        ANCIENTTREE_SEED = "There are no surprises, only incomplete data.",
+
+        ANCIENTTREE_GEM = {
+            GENERIC = "It's vegetable AND mineral. Fascinating.",
+            STUMP = "This tree has been mined.",
+        },
+
+        ANCIENTTREE_SAPLING_ITEM = "I need to plant this in the right place.",
+
+        ANCIENTTREE_SAPLING = {
+            GENERIC = "It's growing! I think?",
+            WRONG_TILE = "I don't think it's getting the required nutrients here.",
+            WRONG_SEASON = "It seems like it fits in, but it's not yet ready to grow.",
+        },
+ 
+        ANCIENTTREE_NIGHTVISION = {
+            GENERIC = "Tree-t with caution.",
+            STUMP = "It's a stump.",
+        },
+
+        ANCIENTFRUIT_GEM = "Hot and fresh off the tree.",
+        ANCIENTFRUIT_NIGHTVISION = "I just wish it was less... twitchy.",
+        ANCIENTFRUIT_NIGHTVISION_COOKED = "At least it stopped twitching.",
+
+        BOATPATCH_KELP = "It'll have to do for now.",
+
+        CRABKING_MOB = "Crabby much?",
+        CRABKING_MOB_KNIGHT = "This shell be quite the challenge.",
+        CRABKING_CANNONTOWER = "I knew there was mortar these crabs.",
+        CRABKING_ICEWALL = "This is between me and the crab.",
+
+        SALTLICK_IMPROVED = "Just looking at it makes me thirsty.",
+
+        OFFERING_POT =
+        {
+            GENERIC = "It's so sad and kelp-less...",
+            SOME_KELP = "I think I could fit some more kelp in there.",
+            LOTS_OF_KELP = "Kelpious amounts of seaweed!",
+        },
+
+        OFFERING_POT_UPGRADED =
+        {
+            GENERIC = "It's so sad and kelp-less...",
+            SOME_KELP = "I think I could fit some more kelp in there.",
+            LOTS_OF_KELP = "Kelpious amounts of seaweed!",
+        },
+
+        MERM_ARMORY = "It says \"Mermfolk Ownlee.\"",
+        MERM_ARMORY_UPGRADED = "It says \"Mermfolk Ownlee.\"",
+        MERM_TOOLSHED = "I don't think I'll find anything scientific in there.",
+        MERM_TOOLSHED_UPGRADED = "I don't think I'll find anything scientific in there.",
+        MERMARMORHAT = "It won’t fit me. It’s a merm helmet.",
+        MERMARMORUPGRADEDHAT = "It won’t fit me. It’s a merm helmet.",
+        MERM_TOOL = "It does so much, badly.",
+        MERM_TOOL_UPGRADED = "This tool looks a little fishy.",
+
+        WURT_SWAMPITEM_SHADOW = "Dreadful... but don't tell her I said that.",
+        WURT_SWAMPITEM_LUNAR = "Looking at it makes my head feel funny.",
+
+        MERM_SHADOW = "Just a shadow of their former self.",
+        MERMGUARD_SHADOW = "Just a shadow of their former self.",
+
+        MERM_LUNAR = "The next phase of merm evolution.",
+        MERMGUARD_LUNAR = "The next phase of merm evolution.",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

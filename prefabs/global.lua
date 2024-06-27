@@ -141,6 +141,9 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/qol1.fev"),     
     Asset("FILE", "sound/qol1.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/meta4.fev"),     
+    Asset("FILE", "sound/meta4.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods
@@ -441,7 +444,10 @@ local assets =
     Asset("IMAGE", "images/skilltree3.tex"),
 
     Asset("ATLAS", "images/skilltree4.xml"),
-    Asset("IMAGE", "images/skilltree4.tex"),    
+    Asset("IMAGE", "images/skilltree4.tex"),
+
+    Asset("ATLAS", "images/skilltree5.xml"),
+    Asset("IMAGE", "images/skilltree5.tex"),
 
     Asset("ATLAS", "images/skilltree_icons.xml"),
     Asset("IMAGE", "images/skilltree_icons.tex"),    

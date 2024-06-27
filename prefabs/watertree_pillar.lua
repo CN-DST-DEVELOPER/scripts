@@ -77,9 +77,7 @@ local UpdateShadowSize = function(shadow, height)
 end 
 
 local function spawnoverride(inst)
-    local pt = Vector3(inst.Transform:GetWorldPosition())
-
-    local theta = math.random() * 2* PI
+    local theta = math.random() * TWOPI
     local radius = math.random()* 10 + 6
 
     local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
@@ -91,10 +89,9 @@ local function onspawnchild( inst, child )
     child.AnimState:PlayAnimation("idle_loop",true)
     child.Transform:SetRotation(180)
 
-    local pt = Vector3(child.Transform:GetWorldPosition())
-    child.Physics:Teleport(pt.x, 35, pt.z)
+    local pt_x, pt_y, pt_z = child.Transform:GetWorldPosition()
+    child.Physics:Teleport(pt_x, 35, pt_z)
     child.UpdateShadowSize = UpdateShadowSize
-    --child.updatetask = child:DoPeriodicTask(FRAMES, _GroundDetectionUpdate, nil, override_density)
     child:PushEvent("startfalling")    
 
     local home = Vector3(inst.Transform:GetWorldPosition())
@@ -135,7 +132,7 @@ local function DropItems(inst)
     local item = SpawnPrefab(item_to_spawn)
 
     local dist = DROP_ITEMS_DIST_MIN + DROP_ITEMS_DIST_VARIANCE * math.random()
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
 
     local spawn_x, spawn_z
 
@@ -146,7 +143,7 @@ local function DropItems(inst)
             local blockers = TheSim:FindEntities(spawn_x, 0, spawn_z, ATTEMPT_DROP_OCEANTREENUT_RADIUS, OCEANTREENUT_BLOCKER_TAGS)
             if blockers ~= nil and next(blockers) ~= nil then
                 dist = DROP_ITEMS_DIST_MIN + DROP_ITEMS_DIST_VARIANCE * math.random()
-                theta = math.random() * 2 * PI
+                theta = math.random() * TWOPI
             else
                 break
             end
@@ -162,7 +159,7 @@ local function DropItems(inst)
     else
         spawn_x, spawn_z = x + math.cos(theta) * dist, z + math.sin(theta) * dist
     end
-    
+
     item.Transform:SetPosition(spawn_x, DROPPED_ITEMS_SPAWN_HEIGHT, spawn_z)
 
     if #inst.items_to_drop <= 1 then
@@ -203,7 +200,7 @@ local function cocoon_regrow_check(inst)
     local px, _, pz = inst.Transform:GetWorldPosition()
 
     local new_cocoon = SpawnPrefab("oceanvine_cocoon")
-    local angle = 2*PI*math.random()
+    local angle = TWOPI*math.random()
     local radius = (RESPAWN_DISC_WIDTH * math.sqrt(math.random())) + MIN_RESPAWN_DIST
 
     new_cocoon.Transform:SetPosition(px + radius * math.cos(angle), 0, pz + radius * math.sin(angle))
@@ -230,7 +227,7 @@ local function SpawnMissingVines(inst)
 
         for i=1,num_new_vines do
             local vine = SpawnPrefab("oceanvine")
-            local theta = math.random() * PI * 2
+            local theta = math.random() * TWOPI
             local offset = NEW_VINES_SPAWN_RADIUS_MIN + radius_variance * math.random()
             vine.Transform:SetPosition(x + math.cos(theta) * offset, 0, z + math.sin(theta) * offset)
             vine:fall_down_fn()
@@ -293,7 +290,7 @@ local function DropLightningItems(inst, items)
 
     for i, item_prefab in ipairs(items) do
         local dist = DROP_ITEMS_DIST_MIN + DROP_ITEMS_DIST_VARIANCE * math.random()
-        local theta = 2 * PI * math.random()
+        local theta = TWOPI * math.random()
 
         inst:DoTaskInTime(i * 5 * FRAMES, function(inst2)
             local item = SpawnPrefab(item_prefab)
@@ -381,13 +378,13 @@ local function OnPhaseChanged(inst, phase)
 
         if TheSim:CountEntities(x,y,z, TUNING.SHADE_CANOPY_RANGE, FIREFLY_MUST) < 10 then
             if math.random()<0.7 then
-                local pos = nil
+                local pos
                 local offset = nil
                 local count = 0
                 while offset == nil and count < 10 do
-                    local angle = 2*PI*math.random()
+                    local angle = TWOPI*math.random()
                     local radius = math.random() * (TUNING.SHADE_CANOPY_RANGE -4)
-                    offset = {x= math.cos(angle) * radius, y=0, z=math.sin(angle) * radius}   
+                    offset = {x= math.cos(angle) * radius, y=0, z=math.sin(angle) * radius}
                     count = count + 1
 
                     pos = {x=x+offset.x,y=0,z=z+offset.z}

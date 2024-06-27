@@ -238,6 +238,8 @@ local function commonfn(tags)
 
 	inst.ConcealForMinigame = ConcealForMinigame
 
+    MakeRoseTarget_CreateFuel(inst)
+
     return inst
 end
 

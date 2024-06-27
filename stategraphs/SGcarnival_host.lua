@@ -71,8 +71,8 @@ local states =
             inst.AnimState:PlayAnimation("fly_loop", true)
 
             local homepos = inst.components.knownlocations:GetLocation("home")
-            local offset = FindWalkableOffset(homepos, math.random() * 2 * PI, 4, 16)
-							or FindWalkableOffset(homepos, math.random() * 2 * PI, 6, 16)
+            local offset = FindWalkableOffset(homepos, math.random() * TWOPI, 4, 16)
+							or FindWalkableOffset(homepos, math.random() * TWOPI, 6, 16)
             if offset then
                 homepos = homepos + offset
             end

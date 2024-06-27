@@ -97,12 +97,12 @@ local function MakeFx(t)
         if t.fn ~= nil then
             if t.fntime ~= nil then
                 if t.update_while_paused then
-                    inst:DoStaticTaskInTime(t.fntime, t.fn)
+                    inst:DoStaticTaskInTime(t.fntime, t.fn, proxy)
                 else
-                    inst:DoTaskInTime(t.fntime, t.fn)
+                    inst:DoTaskInTime(t.fntime, t.fn, proxy)
                 end
             else
-                t.fn(inst)
+                t.fn(inst, proxy)
             end
         end
 

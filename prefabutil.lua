@@ -68,7 +68,7 @@ local function deployablekititem_ondeploy(inst, pt, deployer, rot)
     end
 end
 
-function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets, floatable_data, tags, burnable, deployable_data, stack_size)
+function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets, floatable_data, tags, burnable, deployable_data, stack_size, PostMasterSimfn)
 	deployable_data = deployable_data or {}
 
 	return Prefab(name, function(inst)
@@ -156,6 +156,10 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
         end
 
 		MakeHauntableLaunch(inst)
+
+        if PostMasterSimfn then
+            PostMasterSimfn(inst)
+        end
 
 		inst.OnSave = deployable_data.OnSave
 		inst.OnLoad = deployable_data.OnLoad

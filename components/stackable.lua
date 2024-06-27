@@ -101,7 +101,7 @@ function Stackable:Get(num)
         instance.components.stackable:SetStackSize(num_to_get)
 
         if self.ondestack ~= nil then
-            self.ondestack(instance)
+            self.ondestack(instance, self.inst)
         end
 
         if instance.components.perishable ~= nil then

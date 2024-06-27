@@ -130,6 +130,12 @@ end
 function Mast:SetRudder(obj)
     self.rudder = obj
     obj.entity:SetParent(self.inst.entity)
+
+    if self.inst.highlightchildren ~= nil then
+        table.insert(self.inst.highlightchildren, obj)
+    else
+        self.inst.highlightchildren = { obj }
+    end
 end
 
 function Mast:OnDeath()

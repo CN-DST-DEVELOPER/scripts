@@ -103,9 +103,9 @@ local function findnewcluelocation(currentpos, finalhunt, spawndist)
 		dist = nil
 		if finalhunt then
 			--pos isn't gotten directly from the function, as we want the best position closest to the moonstorm.
-			FindWalkableOffset(currentpos, math.random()*2*PI, SPAWNDIST, 16, true, nil, finalhuntcheckfn, nil, nil)
+			FindWalkableOffset(currentpos, math.random()*TWOPI, SPAWNDIST, 16, true, nil, finalhuntcheckfn, nil, nil)
 		else
-			pos = FindWalkableOffset(currentpos, math.random()*2*PI, SPAWNDIST, 16, true, nil, testfn, nil, nil)
+			pos = FindWalkableOffset(currentpos, math.random()*TWOPI, SPAWNDIST, 16, true, nil, testfn, nil, nil)
 		end
 
 		if pos then
@@ -611,8 +611,8 @@ function self:spawnGestaltWave()
 		local ents = TheSim:FindEntities(x, y, z, 30, MUTANT_BIRD_MUST_HAVE,MUTANT_BIRD_MUST_NOT_HAVE)
 
 		if #ents < 16 then
-			local currentpos = Vector3(self.wagstaff.Transform:GetWorldPosition())
-			local angle =  math.random()*2*PI
+			local currentpos = self.wagstaff:GetPosition()
+			local angle =  math.random()*TWOPI
 
 			for i=1,math.random(3,5) do
 				inst:DoTaskInTime(math.random()*0.5,function() self:SpawnGestalt(angle,"bird_mutant") end)
@@ -654,20 +654,11 @@ function self:spawnTool()
 					end
 				end
 			end)
-		local currentpos = Vector3(self.wagstaff.Transform:GetWorldPosition())
-		local pos = FindWalkableOffset(currentpos, math.random()*2*PI, 6+ (math.random()* 4), 16, nil, nil, customcheckfn, nil, nil) or Vector3(0,0,0)
+		local currentpos = self.wagstaff:GetPosition()
+		local pos = FindWalkableOffset(currentpos, math.random()*TWOPI, 6+ (math.random()* 4), 16, nil, nil, customcheckfn, nil, nil) or Vector3(0,0,0)
 		local newpos = currentpos + pos
 		tool.Transform:SetPosition(newpos.x,0,newpos.z)
 		table.insert(self.wagstaff_tools,tool)
-
-		--[[
-		if #self.wagstaff_tools >= 4 then
-			local oldtool = self.wagstaff_tools[1]
-			table.insert(self.wagstaff_tools_original,oldtool.prefab)
-			table.remove(self.wagstaff_tools, 1)
-			oldtool:Remove()
-		end
-		]]
 	end
 	self.tools_task = inst:DoTaskInTime(8,function() self:spawnTool() end)
 end
@@ -697,12 +688,12 @@ local MOONSTORM_SPARKS_CANT_HAVE= {"INLIMBO"}
 function self:DoTestForSparks()
 
 	for i, v in ipairs(_activeplayers) do
-		local pt = Vector3(v.Transform:GetWorldPosition())
+		local pt = v:GetPosition()
 		if TheWorld.net.components.moonstorms and TheWorld.net.components.moonstorms:IsPointInMoonstorm(pt) then
 			local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 30, MOONSTORM_SPARKS_MUST_HAVE,MOONSTORM_SPARKS_CANT_HAVE)
 
 			if #ents < SPARKLIMIT then
-				local pos = FindWalkableOffset(pt, math.random()*2*PI, 5 + math.random()* 20, 16, nil, nil, customcheckfn, nil, nil)
+				local pos = FindWalkableOffset(pt, math.random()*TWOPI, 5 + math.random()* 20, 16, nil, nil, customcheckfn, nil, nil)
 
 				if pos then
 					local spark = SpawnPrefab("moonstorm_spark")
@@ -716,7 +707,7 @@ end
 function self:DoTestForLightning()
 	local candidates = {}
 	for i, v in ipairs(_activeplayers) do
-		local pt = Vector3(v.Transform:GetWorldPosition())
+		local pt = v:GetPosition()
 		if TheWorld.net.components.moonstorms and TheWorld.net.components.moonstorms:IsPointInMoonstorm(pt) then
 			table.insert(candidates,v)
 		end
@@ -725,7 +716,7 @@ function self:DoTestForLightning()
 	if #candidates > 0 then
 		local candidate = candidates[math.random(1,#candidates)]
 		local pt = Vector3(candidate.Transform:GetWorldPosition())
-		local pos = FindWalkableOffset(pt, math.random()*2*PI, 5 + math.random()* 10, 16, nil, nil, customcheckfn, nil, nil)
+		local pos = FindWalkableOffset(pt, math.random()*TWOPI, 5 + math.random()* 10, 16, nil, nil, customcheckfn, nil, nil)
 		if pos then
 			local spark = SpawnPrefab("moonstorm_lightning")
 			spark.Transform:SetPosition(pt.x + pos.x,0,pt.z + pos.z)

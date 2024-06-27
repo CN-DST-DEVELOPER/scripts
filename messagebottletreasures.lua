@@ -96,7 +96,7 @@ local treasure_templates =
 				},
 				randomly_selected_loot =
 				{
-					{ boat_item = 1, anchor_item = 1, mast_item = 1, steeringwheel_item = 1, fish_box_blueprint = 1 },
+					{ boat_item = 1, anchor_item = 1, mast_item = 1, steeringwheel_item = 1, fish_box_blueprint = 1, boat_ancient_item = 5, },
 				},
 			},
 			---------------------------------------------------------------------------
@@ -202,27 +202,29 @@ local function GenerateTreasure(pt, overrideprefab, spawn_as_empty, postfn)
 				end
 			end
 
-
 			local item = nil
+			local _container = treasure.components.container or treasure.components.inventory
+
 			for i, itemprefab in ipairs(prefabstospawn) do
 				item = SpawnPrefab(itemprefab)
 				item.Transform:SetPosition(x, y, z)
-				if treasure.components.container ~= nil then
-					treasure.components.container:GiveItem(item)
-				else
-					treasure.components.inventory:GiveItem(item)
+
+				if _container ~= nil then
+					_container:GiveItem(item)
 				end
 			end
 
-			if math.random() < TRINKET_CHANCE then
-				if treasure.components.container ~= nil then
-					if not treasure.components.container:IsFull() then
-						treasure.components.container:GiveItem(SpawnPrefab(trinkets[math.random(#trinkets)]))
-					end
-				elseif treasure.components.inventory ~= nil then
-					if not treasure.components.inventory:IsFull() then
-						treasure.components.inventory:GiveItem(SpawnPrefab(trinkets[math.random(#trinkets)]))
-					end
+			if _container ~= nil and not _container:IsFull() then
+				if math.random() <= math.clamp(
+					TheWorld.state.cycles * TUNING.ANCIENT_TREE_SEED_CHANCE_RATE, TUNING.ANCIENT_TREE_SEED_MIN_CHANCE, TUNING.ANCIENT_TREE_SEED_MAX_CHANCE
+				) then
+					_container:GiveItem(SpawnPrefab("ancienttree_seed"))
+				end
+
+				if math.random() < TRINKET_CHANCE and not _container:IsFull() then
+					local trinket = SpawnPrefab(trinkets[math.random(#trinkets)])
+
+					_container:GiveItem(trinket)
 				end
 			end
 		end
@@ -236,7 +238,8 @@ local function GenerateTreasure(pt, overrideprefab, spawn_as_empty, postfn)
 end
 
 local function GetPrefabs()
-	local prefabscontain = {}
+	local prefabscontain = { ancienttree_seed = true }
+
 	for treasureprefab, weighted_lists in pairs(weighted_treasure_contents) do
 		prefabscontain[treasureprefab] = true -- Chests, etc
 

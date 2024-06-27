@@ -107,8 +107,8 @@ end
 
 local function teleport_override_fn(inst)
     local ipos = inst:GetPosition()
-    local offset = FindWalkableOffset(ipos, 2*PI*math.random(), 10, 8, true, false)
-        or FindWalkableOffset(ipos, 2*PI*math.random(), 14, 8, true, false)
+    local offset = FindWalkableOffset(ipos, TWOPI*math.random(), 10, 8, true, false)
+        or FindWalkableOffset(ipos, TWOPI*math.random(), 14, 8, true, false)
 
     return (offset ~= nil and ipos + offset) or ipos
 end
@@ -210,7 +210,7 @@ local function DoGestaltSummon(inst)
     local num_gestalts = GetRandomMinMax(MIN_GESTALTS, MAX_GESTALTS) + math.ceil((1 - inst.components.health:GetPercent()) * EXTRA_GESTALTS_BYHEALTH)
 
     local angle_increment = 3.75*PI / num_gestalts -- almost 2pi twice; loop 2 times, but slightly offset
-    local initial_angle = 2*PI*math.random()
+    local initial_angle = TWOPI*math.random()
 
     for i = 1, num_gestalts do
         -- Spawn a collection of gestalts in a haphazard ring around the boss.

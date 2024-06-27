@@ -98,6 +98,7 @@ local function fn()
 
     inst.Transform:SetTwoFaced()
 
+	inst:AddTag("character")
     inst:AddTag("charlie_npc")
 
     inst.AnimState:SetBank("charlie_basic")

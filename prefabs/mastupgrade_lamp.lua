@@ -58,8 +58,21 @@ end
 
 local function OnEntityReplicated(inst)
     local parent = inst.entity:GetParent()
-    if parent ~= nil and parent.prefab == "mast" or parent.prefab == "mast_malbatross" then
-        parent.highlightchildren = { inst }
+
+    if parent ~= nil and parent:HasTag("mast") then
+        if parent.highlightchildren ~= nil then
+            table.insert(parent.highlightchildren, inst)
+        else
+            parent.highlightchildren = { inst }
+        end
+    end
+end
+
+local function CLIENT_OnRemoveEntity(inst)
+    local parent = inst.entity:GetParent()
+
+    if parent ~= nil and parent.highlightchildren ~= nil then
+        table.removearrayvalue(parent.highlightchildren, inst)
     end
 end
 
@@ -82,6 +95,8 @@ local function fn()
     inst:AddTag("DECOR")
 
     inst.scrapbook_inspectonseen = true
+
+    inst.OnRemoveEntity = CLIENT_OnRemoveEntity
 
     inst.entity:SetPristine()
 
@@ -130,6 +145,8 @@ local function itemfn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_animoffsety = 65
 
     inst:AddComponent("tradable")
 

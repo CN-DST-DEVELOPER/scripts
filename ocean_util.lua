@@ -105,7 +105,7 @@ function FindLandBetweenPoints(p0x, p0y, p1x, p1y)
 	return nil
 end
 
-function FindRandomPointOnShoreFromOcean(x, y, z)
+function FindRandomPointOnShoreFromOcean(x, y, z, excludeclosest)
 	local nodes = {}
 
     for i, node in ipairs(TheWorld.topology.nodes) do
@@ -118,8 +118,9 @@ function FindRandomPointOnShoreFromOcean(x, y, z)
 	local num_rooms_to_pick = 4
 
 	local closest = {}
+    local i_offset = excludeclosest and 1 or 0
 	for i = 1, num_rooms_to_pick do
-		table.insert(closest, nodes[i])
+		closest[i] = nodes[i + i_offset]
 	end
 	shuffleArray(closest)
 

@@ -104,9 +104,8 @@ local function chop_tree(inst, chopper, chopsleft, numchops)
     end
 
     if math.random() < 0.58 then
-        local theta = math.random() * PI * 2
+        local theta = math.random() * TWOPI
         local offset = LEAF_FALL_FX_OFFSET_MIN + math.random() * LEAF_FALL_FX_OFFSET_VARIANCE
-        
         local x, _, z = inst.Transform:GetWorldPosition()
         SpawnPrefab("oceantree_leaf_fx_fall").Transform:SetPosition(x + math.cos(theta) * offset, 10, z + math.sin(theta) * offset)
     end
@@ -116,7 +115,7 @@ local function Dropleafitems(inst)
     local x, _, z = inst.Transform:GetWorldPosition()
     local item = SpawnPrefab("oceantree_pillar_leaves")
     local dist = DROP_ITEMS_DIST_MIN + DROP_ITEMS_DIST_VARIANCE * math.random()
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local spawn_x, spawn_z
     spawn_x, spawn_z = x + math.cos(theta) * dist, z + math.sin(theta) * dist
     item.Transform:SetPosition(spawn_x, 0, spawn_z)
@@ -147,13 +146,13 @@ local function DropItem(inst)
         local item = SpawnPrefab(item_to_spawn)
 
         local dist = DROP_ITEMS_DIST_MIN + DROP_ITEMS_DIST_VARIANCE * math.random()
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
 
         local spawn_x, spawn_z
 
         spawn_x, spawn_z = x + math.cos(theta) * dist, z + math.sin(theta) * dist
 
-        item.Transform:SetPosition(spawn_x, DROPPED_ITEMS_SPAWN_HEIGHT, spawn_z)    
+        item.Transform:SetPosition(spawn_x, DROPPED_ITEMS_SPAWN_HEIGHT, spawn_z)
         table.remove(inst.items_to_drop, ind)
     end
 end
@@ -179,7 +178,6 @@ end
 
 local function DropLog(inst)
     if inst.logs > 0 then
-     
         local item_to_spawn = "log"
 
         local x, _, z = inst.Transform:GetWorldPosition()
@@ -187,28 +185,27 @@ local function DropLog(inst)
         local item = SpawnPrefab(item_to_spawn)
 
         local dist = 0 + (math.random()*6)
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
 
         local spawn_x, spawn_z
 
         spawn_x, spawn_z = x + math.cos(theta) * dist, z + math.sin(theta) * dist
 
-        item.Transform:SetPosition(spawn_x, DROPPED_ITEMS_SPAWN_HEIGHT, spawn_z)    
+        item.Transform:SetPosition(spawn_x, DROPPED_ITEMS_SPAWN_HEIGHT, spawn_z)
         inst.logs = inst.logs -1
     end
 end
 
 local function DropLogs(inst)
-    
     DropLog(inst)
     DropLog(inst)
     if inst.logs < 1 then
         inst.logs = nil
         inst.drop_logs_task:Cancel()
-        inst.drop_logs_task = nil        
+        inst.drop_logs_task = nil
     else
         inst.drop_logs_task = inst:DoTaskInTime(0.05, function() DropLogs(inst) end)
-    end    
+    end
 end
 
 local function generate_items_to_drop(inst, itemnum)
@@ -239,10 +236,10 @@ local function spawnvine(inst)
     local radius_variance = MAX - NEW_VINES_SPAWN_RADIUS_MIN
     local vine = SpawnPrefab("oceanvine")
     vine.components.pickable:MakeEmpty()
-    local theta = math.random() * PI * 2
+    local theta = math.random() * TWOPI
     local offset = NEW_VINES_SPAWN_RADIUS_MIN + radius_variance * math.random()
     vine.Transform:SetPosition(x + math.cos(theta) * offset, 0, z + math.sin(theta) * offset)
-    vine:fall_down_fn()    
+    vine:fall_down_fn()
 
     vine.SoundEmitter:PlaySound("dontstarve/movement/foley/hidebush")
 end
@@ -350,7 +347,9 @@ local function chop_down_tree(inst, chopper)
     inst:DoTaskInTime(.5, function() ShakeAllCameras(CAMERASHAKE.FULL, 0.25, 0.03, 0.6, inst, 6) end)
 end
 
-local OCEANVINES_MUST = {"oceanvine"}
+local OCEANVINES_MUST_TAGS = {"oceanvine"}
+local SHADECANOPY_ONEOF_TAGS = { "shadecanopy", "shadecanopysmall" }
+
 local function OnRemoveEntity(inst)
     if inst.roots then
         inst.roots:Remove()
@@ -367,11 +366,46 @@ local function OnRemoveEntity(inst)
             end
         end
     end
-    local point = inst:GetPosition()
-    local oceanvines = TheSim:FindEntities(point.x, point.y, point.z, MAX+1, OCEANVINES_MUST)
-    if #oceanvines > 0 then
-        for i, ent in ipairs(oceanvines) do
-            ent.fall(ent)
+
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local oceanvines = TheSim:FindEntities(x, 0, z, MAX+1, OCEANVINES_MUST_TAGS)
+
+    local oceanvines_count = #oceanvines
+
+    if oceanvines_count <= 0 then
+        inst._hascanopy:set(false)
+        
+        return
+    end
+
+    -- First remove all vines that are not in range of other oceantree_pillars.
+
+    for i=oceanvines_count, 1, -1 do
+        local ent = oceanvines[i]
+
+        if ent ~= nil then
+            x, y, z = ent.Transform:GetWorldPosition()
+
+            local should_fall = TheSim:CountEntities(x, 0, z, MAX-5, nil, nil, SHADECANOPY_ONEOF_TAGS) <= 1 -- 1 because of us.
+            
+            if should_fall then
+                ent.fall(ent)
+                table.remove(oceanvines, i)
+            end
+        end
+    end
+
+    -- Then check if we've removed at least 3, if not, remove them.
+
+    local num_to_remove = 3 - (oceanvines_count - #oceanvines)
+
+    if num_to_remove > 0 then
+        for i=num_to_remove, 1, -1 do
+            local ent = oceanvines[i]
+
+            if ent ~= nil then
+                ent.fall(ent)
+            end
         end
     end
 
@@ -430,7 +464,7 @@ local function DropLightningItems(inst, items)
 
     for i, item_prefab in ipairs(items) do
         local dist = DROP_ITEMS_DIST_MIN + DROP_ITEMS_DIST_VARIANCE * math.random()
-        local theta = 2 * PI * math.random()
+        local theta = TWOPI * math.random()
 
         inst:DoTaskInTime(i * 5 * FRAMES, function(inst2)
             local item = SpawnPrefab(item_prefab)

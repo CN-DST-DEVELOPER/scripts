@@ -111,7 +111,9 @@ local function MakeKitcoonDecor(name, airborne_toy, num_play_states)
 		inst.entity:AddSoundEmitter()
 		inst.entity:AddNetwork()
 
-		MakeSmallObstaclePhysics(inst, .25)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --match kit item
+		--MakeSmallObstaclePhysics(inst, .25)
+		inst:SetPhysicsRadiusOverride(0.25)
 
 		inst.AnimState:SetBank(build_bank)
 		inst.AnimState:SetBuild(build_bank)
@@ -180,7 +182,7 @@ local function MakeKitcoonDecor(name, airborne_toy, num_play_states)
 	end
 
 	table.insert(decor_prefabs, Prefab(name, fn, assets, prefabs))
-	table.insert(decor_prefabs, MakeDeployableKitItem(name.."_kit", name, build_bank, build_bank, "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}))
+	table.insert(decor_prefabs, MakeDeployableKitItem(name.."_kit", name, build_bank, build_bank, "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, { deployspacing = DEPLOYSPACING.LESS }))
 	table.insert(decor_prefabs, MakePlacer(name.."_kit_placer", build_bank, build_bank, "placer"))
 end
 

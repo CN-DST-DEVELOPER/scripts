@@ -146,8 +146,8 @@ local function fn()
 
     MakeObstaclePhysics(inst, 0.66)
 
-    inst.entity:AddTag("statue")
-    inst.entity:AddTag("hedgespawner")
+    inst:AddTag("statue")
+    inst:AddTag("hedgespawner")
 
     inst.AnimState:SetBank("statue_small")
     inst.AnimState:SetBuild("statue_small")
@@ -192,6 +192,8 @@ local function fn()
 
     ----------------------------------------------------------------------------------
     MakeHauntableWork(inst)
+
+    MakeRoseTarget_CreateFuel(inst)
 
     return inst
 end

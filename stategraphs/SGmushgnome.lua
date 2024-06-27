@@ -17,7 +17,7 @@ local ANGLES = {
     9 * PI_BY_6,
     10 * PI_BY_6,
     11 * PI_BY_6,
-    2 * PI,
+    TWOPI,
 }
 
 local events =

@@ -13,9 +13,10 @@ local prefabs =
 
 local function ondeploy(inst, pt)
     inst.SoundEmitter:PlaySound("dontstarve/creatures/spider/spider_egg_sack")
-    local tree = SpawnPrefab("spiderden")
-    if tree ~= nil then
-        tree.Transform:SetPosition(pt:Get())
+	local den = SpawnPrefab("spiderden")
+	if den then
+		den.Transform:SetPosition(pt:Get())
+		PreventCharacterCollisionsWithPlacedObjects(den)
         inst.components.stackable:Get():Remove()
     end
 end

@@ -118,12 +118,12 @@ function self:FindWalkableOffsetInArena(sharkboi)
 
     local offset
     for i = math.floor(self.arena.radius), 1, -TILE_SCALE do
-        offset = FindWalkableOffset(self.arena.origin, math.random() * 2 * PI, i, 16, false, false)
+        offset = FindWalkableOffset(self.arena.origin, math.random() * TWOPI, i, 16, false, false)
         if offset then
             break
         end
     end
-    
+
     return offset ~= nil and (self.arena.origin + offset) or self.arena.origin
 end
 

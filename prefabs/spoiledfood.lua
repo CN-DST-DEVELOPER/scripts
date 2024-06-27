@@ -85,7 +85,7 @@ local function fn(common_init, mastersim_init, nutrients, kind)
 	inst:AddTag("saltbox_valid")
     inst:AddTag("show_spoiled")
 
-    MakeInventoryFloatable(inst, "med", nil, 0.73)
+    MakeInventoryFloatable(inst, "med", .04, 0.73)
     MakeDeployableFertilizerPristine(inst)
 
     inst:AddTag("fertilizerresearchable")
@@ -95,6 +95,9 @@ local function fn(common_init, mastersim_init, nutrients, kind)
 	end
 
     inst.GetFertilizerKey = GetFertilizerKey
+
+    --selfstacker (from selfstacker component) added to pristine state for optimization
+    inst:AddTag("selfstacker")
 
     inst.entity:SetPristine()
 
@@ -187,6 +190,8 @@ local function fish_init(inst)
     inst.AnimState:SetBuild("spoiled_fish")
     inst:AddTag("spoiled_fish")
 
+    inst.components.floater:SetScale(0.6)
+
     inst.Transform:SetScale(1.3, 1.3, 1.3)
 end
 
@@ -207,6 +212,8 @@ local function fish_small_init(inst)
     inst.AnimState:SetBank("spoiled_fish_small")
     inst.AnimState:SetBuild("spoiled_fish_small")
     inst:AddTag("spoiled_fish")
+
+    inst.components.floater:SetScale(0.35)
 
     inst.Transform:SetScale(1.3, 1.3, 1.3)
 end

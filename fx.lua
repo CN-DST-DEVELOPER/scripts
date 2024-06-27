@@ -28,13 +28,6 @@ local function Bloom(inst)
     inst.AnimState:SetFinalOffset(1)
 end
 
-local function BloomOrange(inst)
-    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
---    inst.AnimState:SetMultColour(204/255,131/255,57/255,1)
-    inst.AnimState:SetMultColour(219/255,168/255,117/255,1)
-    inst.AnimState:SetFinalOffset(1)
-end
-
 local function OceanTreeLeafFxFallUpdate(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     inst.Transform:SetPosition(x, y - inst.fall_speed * FRAMES, z)
@@ -217,6 +210,29 @@ local fx =
         transform = Vector3(1.5, 1.5, 1.5),
         fn = function(inst)
             inst.AnimState:Hide("front")
+        end,
+    },
+    {
+        name = "charlie_snap",
+        bank = "charliesnap",
+        build = "charliesnap",
+        anim = "snap",
+        tint = Vector3(0, 0, 0),
+        tintalpha = .7,
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst:DoTaskInTime(21 * FRAMES, function() inst.SoundEmitter:PlaySound("meta4/shadow_snap/snap") end)
+        end,
+    },
+    {
+        name = "charlie_snap_solid",
+        bank = "charliesnap",
+        build = "charliesnap",
+        anim = "snap",
+        tint = Vector3(0, 0, 0),
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst:DoTaskInTime(21 * FRAMES, function() inst.SoundEmitter:PlaySound("meta4/shadow_snap/snap") end)
         end,
     },
     {
@@ -1895,13 +1911,13 @@ local fx =
         anim = "idle",
         fn = GroundOrientation,
     },
-    {
+    --[[{
         name = "mushroomsprout_glow",
         bank = "mushroomsprout_glow",
         build ="mushroomsprout_glow",
         anim = "mushroomsprout_glow",
         fn = FinalOffset1,
-    },
+    },]]
     {
         name = "messagebottle_break_fx",
         bank = "bottle",
@@ -2490,10 +2506,38 @@ local fx =
         sound = "dontstarve/characters/woodie/moose/hit",
     },
     {
+        name = "boat_bumper_hit_crabking",
+        bank = "boat_bumper",
+        build = "boat_bumper_crabking",
+        anim = "fx_shell",
+        sound = "dontstarve/characters/woodie/moose/hit",
+    },    
+    {
         name = "cannonball_used",
         bank = "cannonball_rock",
         build = "cannonball_rock",
         anim = "used",
+    },
+    {
+        name = "mortarball_used",
+        bank = "cannonball_rock",
+        build = "cannonball_rock",
+        anim = "used",
+        sound = "meta4/mortars/cannonball_hit",
+    },
+    {
+        name = "mortarball_used_wood",
+        bank = "cannonball_rock",
+        build = "cannonball_rock",
+        anim = "used",
+        sound = "meta4/mortars/cannonball_hit_wood",
+    },
+    {
+        name = "mortarball_used_ice",
+        bank = "cannonball_rock",
+        build = "cannonball_rock",
+        anim = "used",
+        sound = "meta4/mortars/cannonball_hit_ice",
     },
     {
         name = "monkey_cursed_pre_fx",
@@ -2909,38 +2953,7 @@ local fx =
             end)
         end,
     },
-    {
-        name = "fx_ice_crackle",
-        bank = "fx_dock_crackleandpop",
-        build = "fx_dock_crackleandpop",
-        anim = "crackle",
-        sound = "turnoftides/common/together/boat/creak",
-        fn = function(inst)
-            inst.entity:AddSoundEmitter()
-            inst.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit")
-            inst:DoTaskInTime(2*FRAMES, function(i)
-                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
-            end)
-            inst:DoTaskInTime(14*FRAMES, function(i)
-                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
-            end)
-            inst:DoTaskInTime(25*FRAMES, function(i)
-                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
-            end)
-            inst:DoTaskInTime(29*FRAMES, function(i)
-                i.SoundEmitter:PlaySound("dontstarve_DLC001/common/iceboulder_hit")
-            end)
-            inst:DoTaskInTime(33*FRAMES, function(i)
-                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.2})
-            end)
-            inst:DoTaskInTime(45*FRAMES, function(i)
-                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.2})
-            end)
-            inst:DoTaskInTime(52*FRAMES, function(i)
-                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.3})
-            end)
-        end,
-    },
+
     {
         name = "fx_ice_pop",
         bank = "fx_dock_crackleandpop",
@@ -3057,6 +3070,167 @@ local fx =
 
         end,
     },
+    {
+        name = "repaired_kelp_timeout_fx",
+        bank = "boat_repair_kelp_fx",
+        build = "boat_repair_kelp_fx",
+        anim = "break",
+        fn = FinalOffset1,
+    },
+    {
+        name = "boat_otterden_erode",
+        bank = "boat_otterden",
+        build = "boat_otterden",
+        anim = "erode",
+        fn = function(inst)
+            inst.AnimState:SetScale(0.75,0.75,0.75)
+            inst.AnimState:SetSortOrder(ANIM_SORT_ORDER.OCEAN_BOAT)
+            inst.AnimState:SetFinalOffset(1)
+            inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+            inst.AnimState:SetLayer(LAYER_BACKGROUND)
+        end,
+        nofaced = true,
+    },
+    {
+        name = "boat_otterden_erode_water",
+        bank = "boat_otterden",
+        build = "boat_otterden",
+        anim = "erode_water",
+        fn = function(inst)
+            inst.AnimState:SetScale(0.75,0.75,0.75)
+            inst.AnimState:SetSortOrder(ANIM_SORT_ORDER.OCEAN_BOAT)
+            inst.AnimState:SetFinalOffset(1)
+            inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+            inst.AnimState:SetLayer(LAYER_BACKGROUND)
+            local length = 18
+            local alpha = 1
+            local delta = 1 / length
+            local task = inst:DoPeriodicTask(0, function(inst)
+                alpha = math.max(0, alpha - delta)
+                inst.AnimState:SetMultColour(1, 1, 1, alpha)
+            end)
+        end,
+        nofaced = true,
+    },
+    {
+        name = "fx_kelp_boat_fluff",
+        bank = "boat_repair_kelp_fx",
+        build = "boat_repair_kelp_fx",
+        anim = "break",
+        transform = Vector3(0.75, 0.75, 0.75),
+        fn = FinalOffsetNegative1,
+    },
+    {
+        name = "wurt_swamp_terraform_fx",
+        bank = "pond_splash_fx",
+        build = "pond_splash_fx",
+        anim = "swamp_splash",
+    },
+    {
+        name = "shadow_merm_spawn_poof_fx",
+        bank = "merm_shadow_fx",
+        build = "merm_shadow_fx",
+        anim = "spawn_poof",
+        sound = "meta4/shadow_merm/spawn_poof",
+        fn = function(inst)
+            inst.AnimState:SetFinalOffset(1)
+            inst.AnimState:SetMultColour(1, 1, 1, .5)
+        end,
+    },
+    {
+        name = "shadow_merm_smacked_poof_fx",
+        bank = "merm_shadow_fx",
+        build = "merm_shadow_fx",
+        anim = "smacked_poof",
+        sound = "meta4/shadow_merm/smacked_poof",
+        fn = function(inst)
+            inst.AnimState:SetFinalOffset(1)
+            inst.AnimState:SetFrame(14)
+            inst.AnimState:SetMultColour(1, 1, 1, .5)
+        end,
+    },
+    {
+        name = "wurt_water_splash_1",
+        bank = "splash_water_rot",
+        build = "wurt_splash_fx",
+        anim = "watershield_small",
+        sound = "meta4/wurt/water_shield",
+        fn = FinalOffset1,
+    },
+    {
+        name = "wurt_water_splash_2",
+        bank = "splash_water_rot",
+        build = "wurt_splash_fx",
+        anim = "watershield_medium",
+        sound = "meta4/wurt/water_shield",
+        fn = FinalOffset1,
+    },
+    {
+        name = "wurt_water_splash_3",
+        bank = "splash_water_rot",
+        build = "wurt_splash_fx",
+        anim = "watershield_large",
+        sound = "meta4/wurt/water_shield",
+        fn = FinalOffset1,
+    },
+    {
+        name = "wurt_terraformer_fx_shadow",
+        bank = "cane_shadow_fx",
+        build = "cane_shadow_fx",
+        anim = "shad1",
+        tintalpha = 0.5,
+        fn = function(inst)
+            inst.AnimState:PlayAnimation("shad"..math.random(3))
+        end,
+    },
+    {
+        name = "wurt_terraformer_fx_lunar",
+        bank = "moon_altar_link_fx",
+        build ="moon_altar_link_fx",
+        anim = "fx1",
+        tintalpha = 0.5,
+        fn = function(inst)
+            inst.AnimState:SetScale(0.5,0.5,0.5)
+
+            local rand = math.random()
+            inst.AnimState:PlayAnimation(
+                (rand < 0.33 and "fx1")
+                or (rand < 0.67 and "fx2")
+                or "fx3"
+            )
+        end
+    },
+    {
+        name = "fx_ice_crackle",
+        bank = "fx_ice_crackleandpop",
+        build = "fx_ice_crackleandpop",
+        anim = "crackle",
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit")
+            inst:DoTaskInTime(2*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
+            end)
+            inst:DoTaskInTime(14*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
+            end)
+            inst:DoTaskInTime(25*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.1})
+            end)
+            inst:DoTaskInTime(29*FRAMES, function(i)
+                i.SoundEmitter:PlaySound("dontstarve_DLC001/common/iceboulder_hit")
+            end)
+            inst:DoTaskInTime(33*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.2})
+            end)
+            inst:DoTaskInTime(45*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.2})
+            end)
+            inst:DoTaskInTime(52*FRAMES, function(i)
+                i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.3})
+            end)
+        end,
+    },    
 }
 
 for cratersteamindex = 1, 4 do

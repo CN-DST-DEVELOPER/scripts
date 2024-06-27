@@ -108,7 +108,8 @@ local data = {
         extra_tags = {"combatmount"},
         postinit = function(inst)
             inst.scrapbook_scale = 0.7
-            inst.scrapbook_animoffsetbgy = 60
+            inst.scrapbook_animoffsety = -50
+            inst.scrapbook_animoffsetbgy = 55
         end
     },
 }

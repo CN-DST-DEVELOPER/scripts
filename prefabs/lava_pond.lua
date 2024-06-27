@@ -47,7 +47,7 @@ local function SpawnRocks(inst)
     if inst.rocks == nil then
         inst.rocks = {}
         for i = 1, math.random(2, 4) do
-            local theta = math.random() * 2 * PI
+            local theta = math.random() * TWOPI
             local rocktype = math.random(NUM_ROCK_TYPES)
             table.insert(inst.rocks,
             {
@@ -185,7 +185,7 @@ local function fn()
 
     inst.no_wet_prefix = true
 
-    inst:SetDeployExtraSpacing(2)
+	inst:SetDeploySmartRadius(2)
 
     inst.entity:SetPristine()
 

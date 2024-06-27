@@ -1,4 +1,8 @@
 local easing = require("easing")
+local SourceModifierList = require("util/sourcemodifierlist")
+
+local STEERINGWHEEL_IN_USE_MUST_TAGS = { "steeringwheel", "occupied" }
+local STEERINGWHEEL_IN_USE_CANT_TAGS = { "INLIMBO", "FX", "DECOR" }
 
 local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a_y, world_position_on_a_z, world_position_on_b_x, world_position_on_b_y, world_position_on_b_z, world_normal_on_b_x, world_normal_on_b_y, world_normal_on_b_z, lifetime_in_frames)
     if other ~= nil and other:IsValid() and (other == TheWorld or other:HasTag("BLOCKER") or other.components.boatphysics) then
@@ -166,6 +170,8 @@ local BoatPhysics = Class(function(self, inst)
 
     self.turn_vel = 0
     self.turn_acc = PI
+
+    self.emergencybrakesources = SourceModifierList(inst, false, SourceModifierList.boolean)
 
     --self.startmovingfn = nil
     --self.stopmovingfn = nil
@@ -405,6 +411,7 @@ function BoatPhysics:GetRudderTurnSpeed()
     local velocity_length = VecUtil_Length(self.velocity_x, self.velocity_z)
 
     local speed = 0.6
+
     if velocity_length > 7 then
         speed = 0.1975
     elseif velocity_length > 5 then
@@ -413,6 +420,23 @@ function BoatPhysics:GetRudderTurnSpeed()
         speed = 0.37
     elseif velocity_length > 1.5 then
         speed = 0.48
+    end
+
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, 0, z, TUNING.BOAT.RADIUS, STEERINGWHEEL_IN_USE_MUST_TAGS, STEERINGWHEEL_IN_USE_CANT_TAGS)
+
+    if ents == nil or #ents <= 0 then
+        return speed
+    end
+
+    -- Look for the pirate hat.
+    for i, ent in ipairs(ents) do
+        local sailor = ent.components.steeringwheel ~= nil and ent.components.steeringwheel.sailor or nil
+        local platform = sailor ~= nil and sailor:GetCurrentPlatform() or nil
+
+        if platform ~= nil and platform == self.inst and sailor:HasTag("master_crewman") then
+            return speed * TUNING.MASTER_CREWMAN_MULT.RUDDER_TURN_SPEED
+        end
     end
 
     return speed
@@ -621,15 +645,29 @@ function BoatPhysics:OnUpdate(dt)
     self.inst.SoundEmitter:SetParameter("boat_movement", "speed", cur_velocity / TUNING.BOAT.MAX_ALLOWED_VELOCITY)
 end
 
-function BoatPhysics:SetHalting(halt)
-    if halt then
-        self.halting = true
-        self.inst.Physics:SetMass(0)
-        -- NOTES(JBK): Make sails deflate if we are applying heavy brakes.
-        self:CloseAllSails()
-    else
-        self.halting = nil
+local BOATBRAKE_REASON = "stoprightthere" -- NOTES(JBK): Do you know how fast you were going?
+function BoatPhysics:AddEmergencyBrakeSource(source)
+    self.emergencybrakesources:SetModifier(source, true, BOATBRAKE_REASON)
+    self.halting = true
+    self.inst.Physics:SetMass(0)
+end
+function BoatPhysics:RemoveEmergencyBrakeSource(source)
+    self.emergencybrakesources:RemoveModifier(source, BOATBRAKE_REASON)
+    self.halting = self.emergencybrakesources:Get() or nil
+    if not self.halting then
         self.inst.Physics:SetMass(TUNING.BOAT.MASS)
+    end
+end
+
+local HALTING_SOURCE = "boatinbadstate"
+function BoatPhysics:SetHalting(halt)
+    -- NOTES(JBK): This is handled by walkableplatform and should not be used for gameplay use AddEmergencyBrakeSource and RemoveEmergencyBrakeSource.
+    if halt then
+        -- NOTES(JBK): Make sails deflate if we are applying heavy brakes in this case because the boat is in a bad position.
+        self:CloseAllSails()
+        self:AddEmergencyBrakeSource(HALTING_SOURCE)
+    else
+        self:RemoveEmergencyBrakeSource(HALTING_SOURCE)
     end
 end
 

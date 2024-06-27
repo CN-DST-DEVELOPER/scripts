@@ -94,6 +94,7 @@ local function fn()
     inst:AddTag("boatmagnet")
     inst:AddTag("structure")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --match kit item
     MakeObstaclePhysics(inst, .2)
 	inst:SetPhysicsRadiusOverride(0.25)
     inst.Transform:SetEightFaced()

@@ -121,7 +121,7 @@ local function onworkfinished(inst, worker)
         end
 	else
 		local pos = inst:GetPosition()
-        local offset = FindWalkableOffset(pos, math.random() * 2 * PI, inst:GetPhysicsRadius(1) + 0.1, 60, false, false, NoHoles) or Vector3(2, 0, 0)
+        local offset = FindWalkableOffset(pos, math.random() * TWOPI, inst:GetPhysicsRadius(1) + 0.1, 60, false, false, NoHoles) or Vector3(2, 0, 0)
 		local piece = SpawnPrefab(PIECE_NAME[inst.prefab])
 		piece.Transform:SetPosition((pos + offset):Get())
     end
@@ -260,6 +260,8 @@ local function makesculpture(name, physics_radius, scale, second_piece_name, poi
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_adddeps = { "sculpture_"..name.."head" }
 
         inst:AddComponent("lootdropper")
         inst.components.lootdropper:SetChanceLootTable("sculptures_loot")

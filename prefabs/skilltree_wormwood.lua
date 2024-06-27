@@ -39,7 +39,8 @@ local function BuildSkillsData(SkillTreeFns)
                 "wormwood_mushroomplanter_ratebonus1",
                 "wormwood_blooming_speed1",
                 "wormwood_blooming_farmrange1",
-            }
+            },
+            defaultfocus = true,
         },
 
         wormwood_saplingcrafting = {

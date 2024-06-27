@@ -204,6 +204,7 @@ local function BuildSkillsData(SkillTreeFns)
             connects = {
                 "wilson_torch_5",
             },
+            defaultfocus = true,
         },
         wilson_torch_5 = {
             title = STRINGS.SKILLTREE.WILSON.WILSON_TORCH_5_TITLE,

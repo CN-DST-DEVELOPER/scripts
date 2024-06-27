@@ -112,17 +112,18 @@ local function FindSpawnLocationInTrail(trail)
 end
 
 local function FindSpawnLocation(x, y, z)
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = math.random(MIN_OFFSET, MAX_OFFSET)
     local steps = 40
+    local step_decrement = TWOPI/steps
     local validpos = {}
 
-    for i = 1, steps do
+    for _ = 1, steps do
         local pt = Vector3(x + radius * math.cos(theta), y, z - radius * math.sin(theta))
         if IsValidSpawnPoint(pt) then
             table.insert(validpos, pt)
         end
-        theta = theta - 2 * PI / steps
+        theta = theta - step_decrement
     end
 
     return #validpos > 0 and validpos[math.random(#validpos)] or nil

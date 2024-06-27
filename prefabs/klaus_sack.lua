@@ -93,7 +93,7 @@ local function onuseklauskey(inst, key, doer)
             local minplayers = math.huge
             local spawnx, spawnz
             FindWalkableOffset(pos,
-                math.random() * 2 * PI, 33, 16, true, true,
+                math.random() * TWOPI, 33, 16, true, true,
                 function(pt)
                     local count = #FindPlayersInRangeSq(pt.x, pt.y, pt.z, 625)
                     if count < minplayers then
@@ -106,7 +106,7 @@ local function onuseklauskey(inst, key, doer)
 
             if spawnx == nil then
                 --No spawn point (with or without players), so try closer
-                local offset = FindWalkableOffset(pos, math.random() * 2 * PI, 3, 8, false, true)
+                local offset = FindWalkableOffset(pos, math.random() * TWOPI, 3, 8, false, true)
                 if offset ~= nil then
                     spawnx, spawnz = pos.x + offset.x, pos.z + offset.z
                 end

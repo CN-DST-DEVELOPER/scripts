@@ -233,8 +233,8 @@ end
 local NO_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "notarget"}
 local function jumpland(inst)
     local hittarget = false
-    local pt = Vector3(inst.Transform:GetWorldPosition())
-    local ents = TheSim:FindEntities(pt.x,pt.y,pt.z,4,nil,NO_TAGS)
+    local pt_x, pt_y, pt_z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(pt_x,pt_y,pt_z,4,nil,NO_TAGS)
     if #ents > 0 then
         for i,ent in ipairs(ents)do
             if breakobjects(inst,ent) then
@@ -261,7 +261,6 @@ local function onothercollide(inst, other)
             inst.recentlycharged[other] = true
             inst:DoTaskInTime(20, ClearRecentlyCharged, other)
             cause_obstacle_quake(inst, other)
-            --ShakeAllCameras(CAMERASHAKE.FULL, .3, .025, .2, inst, 30)
             ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .02, 1.1, inst, 40)
             other:PushEvent("shake")
         else
@@ -296,9 +295,7 @@ end
 
 
 local function SpawnTentacle(inst, pt)
-    if not pt then
-        pt = Vector3(inst.Transform:GetWorldPosition())
-    end
+    pt = pt or inst:GetPosition()
     local tent = SpawnPrefab("bigshadowtentacle")
     tent.Transform:SetPosition(pt.x,pt.y,pt.z)
     tent:PushEvent("arrive")
@@ -306,11 +303,7 @@ end
 
 local TENTS_MUSTHAVE = {"shadow"}
 local function SpawnBigBloodDrop(inst, pt)
-    local mpt = Vector3(inst.Transform:GetWorldPosition())
-    local radius = 4
-    if not pt then
-        pt = mpt
-    end
+    pt = pt or inst:GetPosition()
 
     local count = TheSim:FindEntities(pt.x,pt.y,pt.z,5,TENTS_MUSTHAVE)
     for i=#count,1,-1 do
@@ -318,8 +311,10 @@ local function SpawnBigBloodDrop(inst, pt)
             table.remove(count,i)
         end
     end
+
+    local radius = 4
     if #count < 5 then
-        local theta = math.random() * 2* PI
+        local theta = math.random() * TWOPI
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         pt = pt+offset
 
@@ -331,19 +326,14 @@ local function SpawnBigBloodDrop(inst, pt)
 end
 
 local function SpawnShadowFX(inst)
-
-    local pt = Vector3(inst.Transform:GetWorldPosition())
+    local pt = inst:GetPosition()
     local radius = 1.5 + math.random()
   
-    local theta = math.random() * 2* PI
+    local theta = math.random() * TWOPI
     local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin(  theta ))
-    --pt = pt+offset
 
     local fx = SpawnPrefab("minotaur_blood"..math.random(1,3))
-    --local scale = 1 + (math.random()*1)
     fx.Transform:SetPosition(pt.x,pt.y,pt.z)
-    --fx.Transform:SetScale(scale,scale,scale)    
-    --fx.Transform:SetRotation(inst:GetAngleToPoint(pt))
     fx.Transform:SetRotation(math.random()*360)
 end
 
@@ -358,12 +348,11 @@ local function startobstacledrop(inst)
             local instpt = inst.spawnlocation
 
             for i=1, math.random(3,4) do
-                local pt = nil
                 local testpt = nil
                 local count = 0
                 while testpt == nil and count < 8 do
                     count = count + 1
-                    local theta = math.random()*2 * PI
+                    local theta = math.random()*TWOPI
                     local radius = math.sqrt(math.random())*20
                     testpt = Vector3(radius*math.cos(theta),0,radius*math.sin(theta))
                     testpt = testpt + instpt
@@ -377,7 +366,7 @@ local function startobstacledrop(inst)
                         if #ents > 0 then
                             testpt = nil
                         end
-                    end         
+                    end
                 end
 
                 if testpt then

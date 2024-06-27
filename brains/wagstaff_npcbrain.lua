@@ -17,6 +17,10 @@ local MAX_WANDER_DIST = 20
 local TRADE_DIST = 20
 
 local function GetTraderFn(inst)
+    if inst.components.trader == nil then
+        return nil
+    end
+
     local x, y, z = inst.Transform:GetWorldPosition()
     local players = FindPlayersInRange(x, y, z, TRADE_DIST, true)
     for i, v in ipairs(players) do
@@ -27,6 +31,10 @@ local function GetTraderFn(inst)
 end
 
 local function KeepTraderFn(inst, target)
+    if inst.components.trader == nil then
+        return false
+    end
+
     return inst.components.trader:IsTryingToTradeWithMe(target)
 end
 

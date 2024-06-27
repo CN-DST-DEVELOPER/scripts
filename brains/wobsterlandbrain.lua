@@ -23,7 +23,7 @@ end
 local function find_ocean_position(inst)
     if inst._ocean_escape_position == nil then
         local ip = inst:GetPosition()
-        local offset, c_angle, deflected = FindWalkableOffset(ip, math.random()*2*PI, OCEAN_SEARCH_DISTANCE, nil, true, false, not_land, true, false)
+        local offset, c_angle, deflected = FindWalkableOffset(ip, math.random()*TWOPI, OCEAN_SEARCH_DISTANCE, nil, true, false, not_land, true, false)
         if offset then
             inst._ocean_escape_position = ip + offset
         end

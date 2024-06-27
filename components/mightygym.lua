@@ -394,7 +394,7 @@ function MightyGym:CharacterExitGym(player)
     self.inst.AnimState:SetFinalOffset(-1)
 
 
-    local theta = self.inst.enterdirection and (self.inst.enterdirection *DEGREES)-PI or math.random() * PI * 2
+    local theta = self.inst.enterdirection and (self.inst.enterdirection *DEGREES)-PI or math.random() * TWOPI
     local offset = FindWalkableOffset(pos, theta, 3, 16, true, nil, nil, false, true) or Vector3(0,0,0)
     local teleport = false
 

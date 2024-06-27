@@ -40,16 +40,12 @@ end
 
 local function IsValidVictim(victim)
     return victim ~= nil
-        and not ((victim:HasTag("prey") and not victim:HasTag("hostile")) or
-                victim:HasTag("veggie") or
-                victim:HasTag("structure") or
-                victim:HasTag("wall") or
-                victim:HasTag("balloon") or
-                victim:HasTag("groundspike") or
-                victim:HasTag("smashable") or
-                victim:HasTag("companion"))
         and victim.components.health ~= nil
         and victim.components.combat ~= nil
+		and not (	(victim:HasTag("prey") and not victim:HasTag("hostile")) or
+					victim:HasAnyTag(NON_LIFEFORM_TARGET_TAGS) or
+					victim:HasTag("companion")
+				)
 end
 
 local function onkilled(inst, data)
@@ -133,26 +129,6 @@ end
 
 -------------------------------------------------------------------------------------------------------
 
-local function OnSave(inst, data)
-    data.shieldmaker = inst:HasTag("wathgrithrshieldmaker") or nil
-    data.spearlighting_upgradeuser = inst:HasTag(UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser") or nil
-end
-
--- To maintain restricted equipment equipped.
-local function OnPreLoad(inst, data)
-    if data == nil then return end
-
-    if data.shieldmaker ~= nil then
-        inst:AddTag("wathgrithrshieldmaker")
-    end
-
-    if data.spearlighting_upgradeuser ~= nil then
-        inst:AddTag(UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser")
-    end
-end
-
--------------------------------------------------------------------------------------------------------
-
 local function common_postinit(inst)
     inst:AddTag("valkyrie")
     inst:AddTag("battlesinger")
@@ -222,9 +198,6 @@ local function master_postinit(inst)
 
         inst.components.combat.damagemultiplier = TUNING.WATHGRITHR_DAMAGE_MULT
         inst.components.health:SetAbsorptionAmount(TUNING.WATHGRITHR_ABSORPTION)
-
-        inst.OnSave = OnSave
-        inst.OnPreLoad = OnPreLoad
 
         inst:ListenForEvent("killed", onkilled)
     end

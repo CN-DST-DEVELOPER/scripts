@@ -400,6 +400,13 @@ local function MakeLunarMutantsBanner_hallowednights(self, banner_root, anim)
     anim_front:SetScale(.667)
 end
 
+local function MakeWurtWinonaQOLBanner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_winona_wurt")
+    anim:GetAnimState():SetBank("dst_menu_winona_wurt")
+    anim:GetAnimState():PlayAnimation("loop", true)
+    anim:SetScale(.667)
+end
+
 
 local function MakeDefaultBanner(self, banner_root, anim)
 	local banner_height = 350
@@ -456,7 +463,7 @@ function MakeBanner(self)
 		--
 		--REMINDER: Check MakeBannerFront as well!
 		--
-        MakeRiftsMetaQoLBanner(self, banner_root, anim)
+        MakeWurtWinonaQOLBanner(self, banner_root, anim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTD) then
         MakeYOTDBanner(self, banner_root, anim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
@@ -476,7 +483,8 @@ function MakeBanner(self)
 		--*** !!! ***
 		--REMINDER: Check MakeBannerFront as well!
 		--
-        MakeRiftsMetaQoLBanner(self, banner_root, anim)
+        MakeWurtWinonaQOLBanner(self, banner_root, anim)
+        --MakeRiftsMetaQoLBanner(self, banner_root, anim)
 		--MakeMeta2Banner(self, banner_root, anim)
         --MakeDramaBanner(self, banner_root, anim)
         --MakeDefaultBanner(self, banner_root, anim)

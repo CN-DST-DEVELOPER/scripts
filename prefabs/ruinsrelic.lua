@@ -24,7 +24,7 @@ local function Chair_OnEntitySleep(inst)
 	end
 end
 
-local function item(name, animated, sound, radius)
+local function item(name, animated, sound, radius, deploy_smart_radius)
     local build = "ruins_"..name
     local assets =
     {
@@ -62,6 +62,8 @@ local function item(name, animated, sound, radius)
         inst.entity:AddAnimState()
         inst.entity:AddSoundEmitter()
         inst.entity:AddNetwork()
+
+		inst:SetDeploySmartRadius(deploy_smart_radius) --recipe min_spacing/2
 
         if radius > 0 then
             MakeObstaclePhysics(inst, radius)
@@ -116,12 +118,12 @@ local function item(name, animated, sound, radius)
 end
 
 -- These are the fake/replica versions the players can craft, see smashables.lua for ruins version
-return item("plate", false, "pot", 0),
-    item("bowl", false, "pot", .25),
-    item("chair", true, "rock", .25),
-    item("chipbowl", false, "pot", 0),
-    item("vase", true, "pot", .25),
-    item("table", true, "rock", .5),
+return item("plate", false, "pot", 0, 0.25),
+	item("bowl", false, "pot", .25, 1),
+	item("chair", true, "rock", .25, 1),
+	item("chipbowl", false, "pot", 0, 0.25),
+	item("vase", true, "pot", .25, 1),
+	item("table", true, "rock", .5, 1.6),
     MakePlacer("ruinsrelic_plate_placer", "ruins_plate", "ruins_plate", "idle"),
     MakePlacer("ruinsrelic_bowl_placer", "ruins_bowl", "ruins_bowl", "idle"),
     MakePlacer("ruinsrelic_chair_placer", "ruins_chair", "ruins_chair", "idle"),

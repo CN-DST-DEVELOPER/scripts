@@ -35,6 +35,7 @@ local Moisture = Class(function(self, inst)
     self.minDryingRate = 0
 
     self.maxPlayerTempDrying = 5
+    self.optimalPlayerTempDrying = 2
     self.minPlayerTempDrying = 0
 
     self.maxMoistureRate = .75
@@ -42,6 +43,7 @@ local Moisture = Class(function(self, inst)
 
     self.inherentWaterproofness = 0 -- DEPRECATED, USE THE SourceModifierList BELOW
     self.waterproofnessmodifiers = SourceModifierList(inst, 0, SourceModifierList.additive)
+    self.externalbonuses = SourceModifierList(inst, 0, SourceModifierList.additive)
 
     --self.waterproofinventory = false --DEPRECATED, USE forcedrysources BELOW
 	--self.forcedrysources = nil
@@ -280,9 +282,10 @@ function Moisture:GetDryingRate(moisturerate)
     end
 
     local heaterPower = self.inst.components.temperature ~= nil and math.clamp(self.inst.components.temperature.externalheaterpower, 0, 1) or 0
+    local playerTempDrying = self:GetSegs() < 3 and self.optimalPlayerTempDrying or self.maxPlayerTempDrying
 
     local rate = self.baseDryingRate
-        + easing.linear(heaterPower, self.minPlayerTempDrying, self:GetSegs() < 3 and 2 or 5, 1)
+        + easing.linear(heaterPower, self.minPlayerTempDrying, playerTempDrying, 1)
         + easing.linear(GetLocalTemperature(self.inst), self.minDryingRate, self.maxDryingRate, self.optimalDryingTemp)
         + easing.inExpo(self:GetMoisture(), 0, 1, self.maxmoisture)
 
@@ -302,6 +305,18 @@ function Moisture:GetRateScale()
     return self.ratescale
 end
 
+function Moisture:AddRateBonus(src, bonus, key)
+    self.externalbonuses:SetModifier(src, bonus, key)
+end
+
+function Moisture:RemoveRateBonus(src, key)
+    self.externalbonuses:RemoveModifier(src, key)
+end
+
+function Moisture:GetRateBonus()
+    return self.externalbonuses:Get()
+end
+
 function Moisture:OnUpdate(dt)
 	if self:IsForceDry() then
         --can still get here even if we're not in the update list
@@ -316,8 +331,9 @@ function Moisture:OnUpdate(dt)
         local moisturerate = self:GetMoistureRate()
         local dryingrate = self:GetDryingRate(moisturerate)
         local equippedmoisturerate = self:GetEquippedMoistureRate(dryingrate)
+        local externalbonuses = self:GetRateBonus()
 
-        self.rate = moisturerate + equippedmoisturerate - dryingrate
+        self.rate = moisturerate + equippedmoisturerate - dryingrate + externalbonuses
     end
 
     self.ratescale =

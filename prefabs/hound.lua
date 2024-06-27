@@ -259,7 +259,7 @@ end
 local function GetReturnPos(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local rad = 2
-    local angle = math.random() * 2 * PI
+    local angle = math.random() * TWOPI
     return x + rad * math.cos(angle), y, z - rad * math.sin(angle)
 end
 

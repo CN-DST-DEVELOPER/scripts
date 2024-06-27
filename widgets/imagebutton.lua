@@ -185,7 +185,9 @@ function ImageButton:OnControl(control, down)
                         self.image:ScaleToSize(self.size_x, self.size_y)
                     end
                 end
-                TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+                if not self.stopclicksound then
+                    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+                end
                 self.o_pos = self:GetLocalPosition()
                 if self.move_on_click then
                     self:SetPosition(self.o_pos + self.clickoffset)

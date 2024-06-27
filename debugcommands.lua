@@ -1,3 +1,5 @@
+local scrapbookprefabs = require("scrapbook_prefabs")
+
 function d_spawnlist(list, spacing, fn)
     local created = {}
 	spacing = spacing or 2
@@ -323,19 +325,32 @@ function d_resetskilltree()
     skilltreeupdater:AddSkillXP(9999999)
 end
 
+function d_reloadskilltreedefs()
+    require("prefabs/skilltree_defs").DEBUG_REBUILD()
+
+    if ThePlayer ~= nil and ThePlayer.HUD ~= nil then
+        ThePlayer.HUD:OpenPlayerInfoScreen()
+    end
+end
+
 function d_printskilltreestringsforcharacter(character)
-    local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS[character or ConsoleCommandPlayer().prefab]
+    character = character or ConsoleCommandPlayer().prefab
+    local strings = STRINGS.SKILLTREE[string.upper(character)]
+
+    local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS[character]
 
     local str = ""
 
     for name, data in orderedPairs(skilldefs) do
         local uppercase_name = string.upper(name)
         
-        if data.lock_open == nil then
-            str = string.format('%s%s_TITLE = "%s",\n', str, uppercase_name, STRINGS.SKILLTREE.WATHGRITHR[uppercase_name.."_TITLE"] or "TODO")
+        if data.lock_open == nil and strings[uppercase_name.."_TITLE"] == nil then
+            str = string.format('%s%s_TITLE = "%s",\n', str, uppercase_name, strings[uppercase_name.."_TITLE"] or "TODO")
         end
 
-        str = string.format('%s%s_DESC = "%s",\n', str, uppercase_name, STRINGS.SKILLTREE.WATHGRITHR[uppercase_name.."_DESC"] or "TODO")
+        if strings[uppercase_name.."_DESC"] == nil then
+            str = string.format('%s%s_DESC = "%s",\n', str, uppercase_name, strings[uppercase_name.."_DESC"] or "TODO")
+        end
     end
 
     print("\n\n"..str)
@@ -1009,26 +1024,58 @@ function d_turfs()
 	d_spawnlist(items)
 end
 
+local function _SpawnLayout_AddFn(prefab, points_x, points_y, current_pos_idx, entitiesOut, width, height, prefab_list, prefab_data, rand_offset)
+    local x = (points_x[current_pos_idx] - width/2.0)  * TILE_SCALE
+    local y = (points_y[current_pos_idx] - height/2.0) * TILE_SCALE
+
+    x = math.floor(x*100) / 100.0
+    y = math.floor(y*100) / 100.0
+    
+    local inst = SpawnPrefab(prefab)
+
+    if inst == nil then
+        --print(string.format("Prefab %s couldn't be spawned...", tostring(prefab)))
+
+        return
+    end
+
+    inst.Transform:SetPosition(x, 0, y)
+
+    if prefab_data then
+        if prefab_data.data ~= nil then
+            local data = FunctionOrValue(prefab_data.data)
+            
+            if data ~= nil then
+                -- Notes(DiogoW): not ideal, but it'll work for debugging purposes.
+                inst:SetPersistData(data, Ents)
+                inst:LoadPostPass(Ents, data)
+            end
+        end
+
+        if prefab_data.scenario ~= nil then
+            inst:AddComponent("scenariorunner")
+            inst.components.scenariorunner:SetScript(prefab_data.scenario)
+            inst.components.scenariorunner:Run()
+        end
+    end
+end
+
+local obj_layout = require("map/object_layout")
+
 function d_spawnlayout(name, offset)
-	local obj_layout = require("map/object_layout")
-	local entities = {}
+    offset = offset or 3
+
 	local map_width, map_height = TheWorld.Map:GetSize()
+	local entities = {}
+
 	local add_fn = {
-		fn=function(prefab, points_x, points_y, current_pos_idx, entitiesOut, width, height, prefab_list, prefab_data, rand_offset)
-		print("adding, ", prefab, points_x[current_pos_idx], points_y[current_pos_idx])
-			local x = (points_x[current_pos_idx] - width/2.0)*TILE_SCALE
-			local y = (points_y[current_pos_idx] - height/2.0)*TILE_SCALE
-			x = math.floor(x*100)/100.0
-			y = math.floor(y*100)/100.0
-			SpawnPrefab(prefab).Transform:SetPosition(x, 0, y)
-		end,
-		args={entitiesOut=entities, width=map_width, height=map_height, rand_offset = false, debug_prefab_list=nil}
+		fn = _SpawnLayout_AddFn,
+		args = {entitiesOut=entities, width=map_width, height=map_height, rand_offset = false, debug_prefab_list=nil}
 	}
 
-    local x, y, z = ConsoleWorldPosition():Get()
-	x, z = TheWorld.Map:GetTileCoordsAtPoint(x, y, z)
-	offset = offset or 3
-	obj_layout.Place({math.floor(x) - 3, math.floor(z) - 3}, name, add_fn, nil, TheWorld.Map)
+    local x, z = TheWorld.Map:GetTileCoordsAtPoint(ConsoleWorldPosition():Get())
+
+	obj_layout.Place({math.floor(x) - offset, math.floor(z) - offset}, name, add_fn, nil, TheWorld.Map)
 end
 
 function d_allfish()
@@ -1746,6 +1793,28 @@ function d_punchingbags()
     d_spawnlist(punchingbag_list, 3.0)
 end
 
+function d_skilltreestats()
+    local skilltreedata_all = require("prefabs/skilltree_defs")
+    local SKILLTREE_METAINFO = skilltreedata_all.SKILLTREE_METAINFO
+    local tosort = {}
+    for prefab, data in pairs(SKILLTREE_METAINFO) do
+        table.insert(tosort, {
+            prefab = prefab,
+            count = data.TOTAL_SKILLS_COUNT,
+            locks = data.TOTAL_LOCKS,
+        })
+    end
+    table.sort(tosort, function(a, b)
+        if a.count == b.count then
+            return a.prefab < b.prefab
+        end
+        return a.count < b.count
+    end)
+    for _, v in ipairs(tosort) do
+        print(string.format("%16s, Skill count: %2d, Locks count: %2d", v.prefab, v.count, v.locks))
+    end
+end
+
 local skiplist = {}
 skiplist["blossom_hit_fx"] = true
 skiplist["quagmire_parkspike"] = true
@@ -1901,63 +1970,27 @@ end
 --------------------------------------------------------------------------------------------------------------------
 
 local RECIPE_BUILDER_TAG_LOOKUP = {
-    alchemist = "wilson",
     balloonomancer = "wes",
+    basicengineer = "winona",
     battlesinger = "wathgrithr",
-    battlesongcontainermaker = "wathgrithr",
-    battlesonginstantrevivemaker = "wathgrithr",
-    battlesonglunaralignedmaker = "wathgrithr",
-    battlesongshadowalignedmaker = "wathgrithr",
-    berrybushcrafter = "wormwood",
     bookbuilder = "wickerbottom",
-    carratcrafter = "wormwood",
     clockmaker = "wanda",
     elixirbrewer = "wendy",
-    fire_mastery_1 = "willow",
-    fruitdragoncrafter = "wormwood",
-    gem_alchemistI = "wilson",
-    gem_alchemistII = "wilson",
-    gem_alchemistIII = "wilson",
     ghostlyfriend = "wendy",
     handyperson = "winona",
-    ick_alchemistI = "wilson",
-    ick_alchemistII = "wilson",
-    ick_alchemistIII = "wilson",
-    juicyberrybushcrafter = "wormwood",
-    leifidolcrafter = "woodie",
-    lightfliercrafter = "wormwood",
-    lunarplant_husk_crafter = "wormwood",
-    lureplantcrafter = "wormwood",
     masterchef = "warly",
     merm_builder = "wurt",
-    ore_alchemistI = "wilson",
-    ore_alchemistII = "wilson",
-    ore_alchemistIII = "wilson",
     pebblemaker = "walter",
     pinetreepioneer = "walter",
     plantkin = "wormwood",
     professionalchef = "warly",
     pyromaniac = "willow",
-    reedscrafter = "wormwood",
-    saddlewathgrithrmaker = "wathgrithr",
-    saplingcrafter = "wormwood",
     shadowmagic = "waxwell",
-    skill_wilson_allegiance_lunar = "wilson",
-    skill_wilson_allegiance_shadow = "wilson",
-    spearwathgrithrlightningmaker = "wathgrithr",
     spiderwhisperer = "webber",
     strongman = "wolfgang",
-    syrupcrafter = "wormwood",
     upgrademoduleowner = "wx78",
     valkyrie = "wathgrithr",
-    wathgrithrimprovedhatmaker = "wathgrithr",
-    wathgrithrshieldmaker = "wathgrithr",
     werehuman = "woodie",
-    wolfgang_coach = "wolfgang",
-    wolfgang_dumbbell_crafting = "wolfgang",
-    woodcarver1 = "woodie",
-    woodcarver2 = "woodie",
-    woodcarver3 = "woodie",
 }
 
 -- key: string
@@ -2151,30 +2184,24 @@ local function Scrapbook_DefineType(t, entry)
     elseif t:HasOneOfTags({"epic", "crabking"}) or t.prefab == "shadow_rook" or t.prefab == "shadow_bishop" or t.prefab == "shadow_knight" then
         thingtype = "giant"
 
-    elseif entry == "balloonvest" or entry == "balloonhat"  or entry == "balloonspeed" then
-        thingtype = "item"
-
-    elseif t.prefab == "pumpkin_lantern" then
+    elseif t.prefab == "pumpkin_lantern" or t.prefab == "eyeturret" then
         thingtype = "thing"
 
     elseif t.prefab == "fused_shadeling_bomb" or
         t.prefab == "smallghost" or
-        t.prefab == "mushgnome" or
         t.prefab == "wobybig" or
         t.prefab == "stagehand"
     then
         thingtype = "creature"
 
-    elseif t.components.health and
-        not t:HasOneOfTags({"structure", "farm_plant", "tree", "plant", "moonstorm_static", "wall", "boatbumper", "groundspike", "smashable", "boat"}) and
-        t.prefab ~= "hedgehound_bush" and
-        t.prefab ~= "eyeturret" and
-        t.prefab ~= "spiderhole" and
-        t.prefab ~= "slurtlehole"
-    then
+    elseif t:HasTag("NPCcanaggro") or (
+        t.components.health ~= nil and
+        t.sg ~= nil and
+        not t:HasOneOfTags({ "structure", "boatbumper", "boat" })
+    ) then
         thingtype = "creature"
 
-    elseif t.components.inventoryitem and not t.components.health then
+    elseif t.components.inventoryitem and (not t.components.health or t.components.equippable) then
         thingtype = "item"
     end
 
@@ -2200,7 +2227,7 @@ local function Scrapbook_DefineAnimation(t)
         anim = "kit"
     elseif t.prefab == "lunar_forge_kit" then
         anim = "kit"
-    elseif t:HasTag("tree") and not table.contains({"livingtree", "marsh_tree", "oceantree", "driftwood_tall", "driftwood_small1", "mushtree_tall_webbed"}, t.prefab) then
+    elseif t:HasTag("tree") and not t:HasTag("ancienttree") and not table.contains({"livingtree", "marsh_tree", "oceantree", "driftwood_tall", "driftwood_small1", "mushtree_tall_webbed"}, t.prefab) then
         anim = "idle_tall"
     elseif t.winter_ornamentid and t:HasTag("lightbattery") then
         anim = t.winter_ornamentid .. "_on"
@@ -2327,37 +2354,36 @@ local SKIP_SPECIALINFO_CHECK =
 local REPAIR_MATERIAL_DATA =
 {
     -- Repairers
-    stone = { "cutstone", "wall_stone_item", "rocks" },
-    fossil = { "fossil_piece" },
-    gears = { "wagpunk_bits", "gears" },
-    ice = { "ice" },
-    shell = { "slurtle_shellpieces" },
-    hay = { "cutgrass", "wall_hay_item" },
-    moonrock = { "moonrockcrater", "wall_moonrock_item", "moonrocknugget" },
-    kelp = { "kelp" },
-    wood = { "boatpatch", "treegrowthsolution", "wall_wood_item", "driftwood_log", "log", "livinglog", "twigs", "boards" },
-    scrap = { "wall_scrap_item" },
-    gem = { "opalpreciousgem", "yellowgem", "redgem", "greengem", "purplegem", "orangegem", "bluegem" },
-    thulecite = { "thulecite_pieces", "thulecite", "wall_ruins_item" },
-    sculpture = { "sculpture_bishophead", "sculpture_rooknose", "sculpture_knighthead" },
-    moon_altar = { "moon_altar_icon", "moon_altar_crown", "moon_altar_glass", "moon_altar_idol", "moon_altar_seed", "moon_altar_ward" },
-    nightmare = { "nightmarefuel", "horrorfuel" },
     dreadstone = { "wall_dreadstone_item", "dreadstone" },
+    fossil = { "fossil_piece" },
+    gears = { "wall_scrap_item", "wagpunk_bits", "gears" },
+    gem = { "opalpreciousgem", "yellowgem", "redgem", "greengem", "bluegem", "purplegem", "orangegem" },
+    hay = { "cutgrass", "wall_hay_item" },
+    ice = { "ice" },
+    kelp = { "boatpatch_kelp", "kelp" },
+    moon_altar = { "moon_altar_icon", "moon_altar_crown", "moon_altar_seed", "moon_altar_glass", "moon_altar_idol", "moon_altar_ward" },
+    moonrock = { "moonrockcrater", "wall_moonrock_item", "moonrocknugget" },
+    nightmare = { "nightmarefuel", "horrorfuel" },
+    salt = { "saltrock" },
+    sculpture = { "sculpture_bishophead", "sculpture_rooknose", "sculpture_knighthead" },
+    shell = { "slurtle_shellpieces" },
+    stone = { "cutstone", "wall_stone_item", "rocks" },
+    thulecite = { "thulecite_pieces", "thulecite", "wall_ruins_item" },
+    vitae = { "mosquitosack" },
+    wood = { "boatpatch", "treegrowthsolution", "wall_wood_item", "driftwood_log", "livinglog", "twigs", "log", "boards" },
 
     -- Repair Kits
+    lunarplant = { "lunarplant_kit" },
     voidcloth = { "voidcloth_kit" },
     wagpunk_bits = { "wagpunkbits_kit" },
-    lunarplant = { "lunarplant_kit" },
 
     -- Upgraders
     chest = { "chestupgrade_stacksize" },
-    spider = { "silk" },
-    waterplant = { "waterplant_planter" },
     mast = { "mastupgrade_lamp_item", "mastupgrade_lightningrod_item" },
     spear_lightning = { "moonstorm_static_item" },
+    spider = { "silk" },
+    waterplant = { "waterplant_planter" },
 }
-
-local scrapbookprefabs = require("scrapbook_prefabs")
 
 function d_printscrapbookrepairmaterialsdata()
     local repair_data = {}
@@ -2397,17 +2423,17 @@ function d_printscrapbookrepairmaterialsdata()
     local str = {}
 
     table.insert(str, "\n    -- Repairers")
-    for material, prefabs in pairs(repair_data) do
+    for _, material, prefabs in sorted_pairs(repair_data) do
         table.insert(str, string.format('    %s = { "%s" },', material, table.concat(prefabs, '", "')))
     end
-    
+
     table.insert(str, "\n    -- Repair Kits")
-    for material, prefabs in pairs(forgerepair_data) do
+    for _, material, prefabs in sorted_pairs(forgerepair_data) do
         table.insert(str, string.format('    %s = { "%s" },', material, table.concat(prefabs, '", "')))
     end
-    
+
     table.insert(str, "\n    -- Upgraders")
-    for type, prefabs in pairs(upgrader_data) do
+    for _, type, prefabs in sorted_pairs(upgrader_data) do
         table.insert(str, string.format('    %s = { "%s" },', type, table.concat(prefabs, '", "')))
     end
 
@@ -2483,6 +2509,11 @@ function d_createscrapbookdata(print_missing_icons, noreset)
     exporter_data_helper:write("return {\n")
 
     for entry, _ in pairs(scrapbookprefabs) do
+        if scrapbookdata[entry] ~= nil then
+            print(string.format("Duplicate scrapbook entry [ %s ] in scripts/scrapbook_prefabs.lua.", entry))
+            return
+        end
+
         currententry = entry
         scrapbookdata[entry] = {}
 
@@ -2490,6 +2521,11 @@ function d_createscrapbookdata(print_missing_icons, noreset)
 
         if t == nil then
             print(string.format("[!!!!]  Aborting data creation command! Entry [ %s ] is not a valid prefab!", entry))
+            return
+        end
+
+        if t.AnimState == nil then
+            print(string.format("[!!!!]  Aborting data creation command! Entry [ %s ] doesn't have an AnimState component!", entry))
             return
         end
 
@@ -2761,9 +2797,10 @@ function d_createscrapbookdata(print_missing_icons, noreset)
         AddInfo( "bank",  t.scrapbook_bank or t.AnimState:GetCurrentBankName() ) --see comments above
         AddInfo( "anim",  anim )
 
-        AddInfo( "facing",  t.scrapbook_facing )
+        AddInfo( "facing", t.scrapbook_facing )
 
-        AddInfo( "alpha",  t.scrapbook_alpha )
+        AddInfo( "multcolour", t.scrapbook_multcolour )
+        AddInfo( "alpha", t.scrapbook_alpha )
 
         if t.scrapbook_overridedata then
             if type(t.scrapbook_overridedata[1]) ~= "table" then
@@ -2890,10 +2927,6 @@ function d_createscrapbookdata(print_missing_icons, noreset)
         end
         if t.prefab == "eyeofterror_mini" then
             AddInfo( "animoffsety",  40 )
-        end
-        if t.prefab == "dug_trap_starfish" then
-            AddInfo( "animoffsetx",  160 )
-            AddInfo( "animoffsety",  10 )
         end
         if t.prefab == "bananajuice" then
             AddInfo( "animoffsety",  -20 )
@@ -3030,6 +3063,13 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             AddInfo( "burnable", true )
         end
 
+        -----------------------------::   OBSTACLE FLOATER   ::------------------------------
+
+        local _floater = t.components.floater
+        if _floater ~= nil and _floater.bob_percent == 0 then
+            AddInfo( "floater", {_floater.size, _floater.vert_offset or 0, _floater.xscale, _floater.yscale} )
+        end
+
         ---------------------------------::   DEPENDENCIES   ::---------------------------------
 
         local _deps = t.scrapbook_deps or shallowcopy(Prefabs[entry].deps)
@@ -3075,12 +3115,12 @@ function d_createscrapbookdata(print_missing_icons, noreset)
 
             if recipe.builder_tag then
                 ------  CRAFTING ICON  ------
-                local character = RECIPE_BUILDER_TAG_LOOKUP[recipe.builder_tag]
+                local character = RECIPE_BUILDER_TAG_LOOKUP[recipe.builder_tag] or TECH_SKILLTREE_BUILDER_TAG_OWNERS[recipe.builder_tag]
 
                 if character ~= nil then
                     AddInfo( "craftingprefab", character )
                 else
-                    print(string.format("[!!!!]  Recipe builder tag [ %s ] isn't in RECIPE_BUILDER_TAG_LOOKUP...", recipe.builder_tag))
+                    print(string.format("[!!!!]  Recipe builder tag [ %s ] isn't in TECH_SKILLTREE_BUILDER_TAG_OWNERS or RECIPE_BUILDER_TAG_LOOKUP ...", recipe.builder_tag))
                 end
             end
 
@@ -3285,6 +3325,16 @@ end
 
 function d_unlockscrapbook()
     TheScrapbookPartitions:DebugUnlockEverything()
+end
+
+function d_erasescrapbookentrydata(entry)
+    if scrapbookprefabs[entry] == nil then
+        print("!!!! Invalid scrapbook entry !!!!")
+
+        return
+    end
+
+    TheScrapbookPartitions:UpdateStorageData(hash(entry), -1)
 end
 
 local WAXED_PLANTS = require "prefabs/waxed_plant_common"
@@ -3599,4 +3649,10 @@ function d_stopsound(loopname)
 	if soundemitter then
 		soundemitter:KillSound(loopname)
 	end
+end
+
+function d_spell(spellnum, item)
+	item = item or c_sel()
+	item.components.spellbook:SelectSpell(spellnum)
+	item.components.spellbook.items[spellnum].execute(item)
 end

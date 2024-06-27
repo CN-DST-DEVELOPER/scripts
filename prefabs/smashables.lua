@@ -182,7 +182,7 @@ local function displaynamefn(inst)
     return STRINGS.NAMES[inst:HasTag("repairable_stone") and "RUINS_RUBBLE" or "RELIC"]
 end
 
-local function makefn(name, asset, animated, smashsound, rubble, chair)
+local function makefn(name, asset, animated, smashsound, rubble, chair, deploy_smart_radius)
     return function()
         local inst = CreateEntity()
 
@@ -191,6 +191,8 @@ local function makefn(name, asset, animated, smashsound, rubble, chair)
         inst.entity:AddSoundEmitter()
         inst.entity:AddMiniMapEntity()
         inst.entity:AddNetwork()
+
+		inst:SetDeploySmartRadius(deploy_smart_radius) --recipe min_spacing/2
 
         MakeObstaclePhysics(inst, .25)
 
@@ -285,25 +287,26 @@ local function makefn(name, asset, animated, smashsound, rubble, chair)
         inst.smashsound = smashsound
 
         MakeHauntableWork(inst)
+        MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
         return inst
     end
 end
 
-local function item(name, animated, sound)
-	return Prefab(name, makefn(name, name, animated, sound, false, string.sub(name, -5) == "chair"), makeassetlist(name), prefabs)
+local function item(name, animated, sound, deploy_smart_radius)
+	return Prefab(name, makefn(name, name, animated, sound, false, string.sub(name, -5) == "chair", deploy_smart_radius), makeassetlist(name), prefabs)
 end
 
-local function rubble(name, assetname, animated, sound)
-	return Prefab(name, makefn(name, assetname, animated, sound, true, string.sub(name, -5) == "chair"), makeassetlist(assetname), prefabs)
+local function rubble(name, assetname, animated, sound, deploy_smart_radius)
+	return Prefab(name, makefn(name, assetname, animated, sound, true, string.sub(name, -5) == "chair", deploy_smart_radius), makeassetlist(assetname), prefabs)
 end
 
-return item("ruins_plate", false),
-    item("ruins_bowl", false),
-    item("ruins_chair", true, "rock"),
-    item("ruins_chipbowl", false),
-    item("ruins_vase", true),
-    item("ruins_table", true, "rock"),
-    rubble("ruins_rubble_table", "ruins_table", true, "rock"),
-    rubble("ruins_rubble_chair", "ruins_chair", true, "rock"),
-    rubble("ruins_rubble_vase", "ruins_vase", true)
+return item("ruins_plate", false, nil, 0.25),
+	item("ruins_bowl", false, nil, 1),
+	item("ruins_chair", true, "rock", 1),
+	item("ruins_chipbowl", false, nil, 0.25),
+	item("ruins_vase", true, nil, 1),
+	item("ruins_table", true, "rock", 1.6),
+	rubble("ruins_rubble_table", "ruins_table", true, "rock", 1.6),
+	rubble("ruins_rubble_chair", "ruins_chair", true, "rock", 1),
+	rubble("ruins_rubble_vase", "ruins_vase", true, nil, 1)

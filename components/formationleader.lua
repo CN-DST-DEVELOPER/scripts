@@ -42,7 +42,7 @@ local FormationLeader = Class(function(self, inst)
     self.formation = {}
     self.target = nil
     self.searchradius = 50
-    self.theta = math.random() * 2 * PI
+    self.theta = math.random() * TWOPI
     self.thetaincrement = 1
     self.radius = 5
     self.reverse = false
@@ -204,7 +204,7 @@ function FormationLeader:GetFormationPositions()
         local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
         v.components.formationfollower.formationpos = pt + offset
 
-        theta = theta - (2 * PI/steps)
+        theta = theta - (TWOPI/steps)
     end
 end
 

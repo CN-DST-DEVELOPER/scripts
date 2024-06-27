@@ -44,20 +44,10 @@ local function DoHeal(inst)
 end
 
 local function HasSoul(victim)
-    return not (victim:HasTag("veggie") or
-                victim:HasTag("structure") or
-                victim:HasTag("wall") or
-                victim:HasTag("balloon") or
-                victim:HasTag("soulless") or
-                victim:HasTag("chess") or
-                victim:HasTag("shadow") or
-                victim:HasTag("shadowcreature") or
-                victim:HasTag("shadowminion") or
-                victim:HasTag("shadowchesspiece") or
-                victim:HasTag("groundspike") or
-                victim:HasTag("smashable"))
-        and (  (victim.components.combat ~= nil and victim.components.health ~= nil)
-            or victim.components.murderable ~= nil )
+	return (	(victim.components.combat ~= nil and victim.components.health ~= nil) or
+				victim.components.murderable ~= nil
+			)
+		and not victim:HasAnyTag(SOULLESS_TARGET_TAGS)
 end
 
 local function GetNumSouls(victim)
@@ -79,7 +69,7 @@ end
 local function SpawnSoulsAt(victim, numsouls)
     local x, y, z = victim.Transform:GetWorldPosition()
     if numsouls == 2 then
-        local theta = math.random() * 2 * PI
+        local theta = math.random() * TWOPI
         local radius = .4 + math.random() * .1
         fns.SpawnSoulAt(x + math.cos(theta) * radius, 0, z - math.sin(theta) * radius, victim, true)
         theta = GetRandomWithVariance(theta + PI, PI / 15)
@@ -88,8 +78,8 @@ local function SpawnSoulsAt(victim, numsouls)
         fns.SpawnSoulAt(x, y, z, victim, true)
         if numsouls > 1 then
             numsouls = numsouls - 1
-            local theta0 = math.random() * 2 * PI
-            local dtheta = 2 * PI / numsouls
+            local theta0 = math.random() * TWOPI
+            local dtheta = TWOPI / numsouls
             local thetavar = dtheta / 10
             local theta, radius
             for i = 1, numsouls do

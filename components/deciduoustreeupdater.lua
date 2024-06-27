@@ -216,7 +216,7 @@ function DeciduousTreeUpdater:OnUpdate(dt)
             elseif self.passive_drakes_spawned < self.num_passive_drakes then
                 local passdrake = SpawnPrefab("birchnutdrake")
                 local pos = self.inst:GetPosition()
-                local passoffset = FindWalkableOffset(pos, math.random() * 2 * PI, GetRandomMinMax(2, TUNING.DECID_MONSTER_TARGET_DIST * 1.5), 30, false, false, NoHoles)
+                local passoffset = FindWalkableOffset(pos, math.random() * TWOPI, GetRandomMinMax(2, TUNING.DECID_MONSTER_TARGET_DIST * 1.5), 30, false, false, NoHoles)
                 if passoffset ~= nil then
                     passdrake.Transform:SetPosition(pos.x + passoffset.x, 0, pos.z + passoffset.z)
                 else

@@ -111,6 +111,8 @@ local function sapling_common(inst, is_moon)
 
     inst.MiniMapEntity:SetIcon("sapling.png")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.MEDIUM] / 2) --plantables deployspacing/2
+
     inst.AnimState:SetRayTestOnBB(true)
     local anims_name = (is_moon and "sapling_moon") or "sapling"
     inst.AnimState:SetBank(anims_name)

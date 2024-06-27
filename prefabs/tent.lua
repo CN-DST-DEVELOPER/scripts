@@ -143,6 +143,7 @@ local function common_fn(bank, build, icon, tag, onbuiltfn)
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.6) --recipe min_spacing/2
     MakeObstaclePhysics(inst, 1)
 
     inst:AddTag("tent")

@@ -33,7 +33,7 @@ local function FindRelocatePoint(inst)
 		pt = home_pt
 	end
 
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
 	local offset = FindWalkableOffset(pt, theta, 10+math.random()*3, 16, true, true)
 					or FindWalkableOffset(pt, theta, 6+math.random()*3, 12, true, true)
 					or FindWalkableOffset(pt, theta, 3+math.random()*3, 12, true, true)

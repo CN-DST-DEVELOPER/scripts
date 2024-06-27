@@ -1,11 +1,18 @@
 local MapSpotRevealer = Class(function(self, inst)
     self.inst = inst
 
+	--V2C: Recommended to explicitly add tag to prefab pristine state
+	inst:AddTag("mapspotrevealer")
+
 	self.gettargetfn = nil
 	self.prerevealfn = nil
 
 	self.open_map_on_reveal = true
 end)
+
+function MapSpotRevealer:OnRemoveFromEntity()
+	self.inst:RemoveTag("mapspotrevealer")
+end
 
 function MapSpotRevealer:SetGetTargetFn(fn)
 	self.gettargetfn = fn

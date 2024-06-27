@@ -222,6 +222,7 @@ local function BuildSkillsData(SkillTreeFns)
 
             root = true,
             connects = { "wathgrithr_arsenal_spear_2" },
+            defaultfocus = true,
         },
 
         -- Inspiration gain rate will increase a fair amount when attacking using Battle Spears.

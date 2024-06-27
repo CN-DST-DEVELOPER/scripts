@@ -18,7 +18,7 @@ local loot =
 
 local function triggertrap(inst, scenariorunner, data)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
     local radius = 10
     local steps = 32
     local ground = TheWorld
@@ -40,6 +40,7 @@ local function triggertrap(inst, scenariorunner, data)
     end
 
     -- Walk the circle trying to find a valid spawn point
+    local step_decrement = (TWOPI / steps)
     for i = 1, steps do
         local x1 = x + radius * math.cos(theta)
         local z1 = z - radius * math.sin(theta)
@@ -50,7 +51,7 @@ local function triggertrap(inst, scenariorunner, data)
             rock:Hide()
             rock:DoTaskInTime(.05 * i, spawnrock)
         end
-        theta = theta - (2 * PI / steps)
+        theta = theta - step_decrement
     end
 end
 

@@ -19,10 +19,6 @@ local function onignite(inst)
     allanimalscanscream(inst)
 end
 
-local function oneaten(inst)
-    allanimalscanscream(inst)
-end
-
 local function fn()
     local inst = CreateEntity()
 
@@ -73,7 +69,7 @@ local function fn()
     inst.components.repairer.boatrepairsound = "turnoftides/common/together/boat/repair_with_wood"
 
     inst:ListenForEvent("onignite", onignite)
-    inst:ListenForEvent("oneaten", oneaten)
+    inst.eatensound = SOUND_TORMENTED_SCREAM
     inst.incineratesound = SOUND_TORMENTED_SCREAM -- NOTES(JBK): Pleasant orchestra.
 
     return inst

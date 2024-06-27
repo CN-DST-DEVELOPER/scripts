@@ -158,6 +158,7 @@ local function ondeploy(inst, pt, deployer)
         turret.Physics:SetCollides(false)
         turret.Physics:Teleport(pt.x, 0, pt.z)
         turret.Physics:SetCollides(true)
+		PreventCharacterCollisionsWithPlacedObjects(turret)
         turret:syncanim("place")
         turret:syncanimpush("idle_loop", true)
         turret.SoundEmitter:PlaySound("dontstarve/common/place_structure_stone")
@@ -223,7 +224,9 @@ local function fn()
     inst.entity:AddLight()
     inst.entity:AddNetwork()
 
-    MakeObstaclePhysics(inst, 1)
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --eyeturret_item deployspacing/2
+	inst:SetPhysicsRadiusOverride(1)
+	MakeObstaclePhysics(inst, inst.physicsradiusoverride)
 
     inst.Transform:SetFourFaced()
 

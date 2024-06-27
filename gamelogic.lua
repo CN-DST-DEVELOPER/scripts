@@ -361,6 +361,7 @@ local replace =
     ["farmplot3"] = "fast_farmplot",
     ["sinkhole"] = "cave_entrance",
     ["cave_stairs"] = "cave_entrance",
+    --["feather"] = "feather_crow", -- NOTES(JBK): This rename is so old no world around today should need this fixup. Leaving a comment here in case someone comes knocking later.
 }
 
 local function TryGetGemCoreTileData(savedata)

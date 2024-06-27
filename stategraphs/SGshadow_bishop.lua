@@ -156,7 +156,7 @@ local states =
                     local bestoffset = nil
                     local minplayerdistsq = math.huge
                     for i = 1, 4 do
-                        local offset = FindWalkableOffset(pos, math.random() * 2 * PI, 8 + math.random() * 2, 4, false, true)
+                        local offset = FindWalkableOffset(pos, math.random() * TWOPI, 8 + math.random() * 2, 4, false, true)
                         if offset ~= nil then
                             local player, distsq = FindClosestPlayerInRange(pos.x + offset.x, 0, pos.z + offset.z, 6, true)
                             if player == nil then

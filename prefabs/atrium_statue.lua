@@ -145,6 +145,7 @@ local function MakeStatue(name, rotate)
 
         inst:WatchWorldState("nightmarephase", OnNightmarePhaseChanged)
         OnNightmarePhaseChanged(inst, TheWorld.state.nightmarephase, true)
+        MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
         return inst
     end

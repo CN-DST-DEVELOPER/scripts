@@ -144,6 +144,7 @@ return
 	},
 	wathgrithr =
 	{
+		"body_wathgrithr_ancient",
 		"body_wathgrithr_cook",
 		"body_wathgrithr_deerclops",
 		"body_wathgrithr_deerclopsp",
@@ -167,6 +168,7 @@ return
 		"body_wathgrithr_victorian",
 		"body_wathgrithr_wrestler",
 		"body_wathgrithr_yule",
+		"feet_wathgrithr_ancient",
 		"feet_wathgrithr_gladiator",
 		"feet_wathgrithr_ice",
 		"feet_wathgrithr_masquerade",
@@ -192,6 +194,7 @@ return
 		"legs_wathgrithr_pirate",
 		"legs_wathgrithr_valkyrie",
 		"legs_wathgrithr_victorian",
+		"wathgrithr_ancient",
 		"wathgrithr_combatant",
 		"wathgrithr_cook",
 		"wathgrithr_deerclops",
@@ -550,6 +553,7 @@ return
 	},
 	willow =
 	{
+		"body_willow_ancient",
 		"body_willow_cook",
 		"body_willow_dowdy",
 		"body_willow_dragonfly",
@@ -574,6 +578,7 @@ return
 		"body_willow_yule",
 		"feet_formal_stiletto_black_scribble",
 		"feet_formal_stilettop_black_scribble",
+		"feet_willow_ancient",
 		"feet_willow_dowdy",
 		"feet_willow_gladiator",
 		"feet_willow_haunteddoll",
@@ -584,6 +589,7 @@ return
 		"feet_willow_pirate",
 		"feet_willow_victorian",
 		"feet_willow_yule",
+		"hand_willow_ancient",
 		"hand_willow_gladiator",
 		"hand_willow_haunteddoll",
 		"hand_willow_ice",
@@ -595,6 +601,7 @@ return
 		"hand_willow_yule",
 		"legs_willow_gladiator",
 		"legs_willow_magma",
+		"willow_ancient",
 		"willow_combatant",
 		"willow_cook",
 		"willow_dowdy",
@@ -696,6 +703,7 @@ return
 	},
 	winona =
 	{
+		"body_winona_ancient",
 		"body_winona_cook",
 		"body_winona_factory",
 		"body_winona_formal",
@@ -740,6 +748,7 @@ return
 		"legs_winona_victorian",
 		"legs_winona_wrestler",
 		"legs_winona_yule",
+		"winona_ancient",
 		"winona_combatant",
 		"winona_cook",
 		"winona_factory",
@@ -1019,6 +1028,7 @@ return
 	},
 	wurt =
 	{
+		"body_wurt_ancient",
 		"body_wurt_cave",
 		"body_wurt_formal",
 		"body_wurt_ice",
@@ -1032,6 +1042,7 @@ return
 		"body_wurt_toadstoolp",
 		"body_wurt_victorian",
 		"body_wurt_yule",
+		"hand_wurt_ancient",
 		"hand_wurt_cave",
 		"hand_wurt_formal",
 		"hand_wurt_nature",
@@ -1040,6 +1051,7 @@ return
 		"hand_wurt_shadow",
 		"hand_wurt_squid",
 		"hand_wurt_victorian",
+		"legs_wurt_ancient",
 		"legs_wurt_cave",
 		"legs_wurt_formal",
 		"legs_wurt_ice",
@@ -1049,6 +1061,7 @@ return
 		"legs_wurt_shadow",
 		"legs_wurt_victorian",
 		"legs_wurt_yule",
+		"wurt_ancient",
 		"wurt_cave",
 		"wurt_formal",
 		"wurt_ice",

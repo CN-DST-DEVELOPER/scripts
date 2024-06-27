@@ -29,12 +29,39 @@ local SkillTreeWidget = Class(Widget, function(self, prefabname, targetdata, fro
     self.bg_tree:SetPosition(2,-20)
     self.bg_tree:ScaleToSize(600, 460)
 
+    local defs = skilltreedefs.SKILLTREE_METAINFO[prefabname]
+    local tint_bright, tint_dim
+    local tint_bright_alpha, tint_dim_alpha
+    if defs and defs.BACKGROUND_SETTINGS then
+        local settings = defs.BACKGROUND_SETTINGS
+        tint_bright, tint_dim = settings.tint_bright, settings.tint_dim
+        tint_bright_alpha, tint_dim_alpha = settings.tint_bright_alpha, settings.tint_dim_alpha
+    end
+
     if self.fromfrontend then
-        local color = UICOLOURS.GOLD
-        self.bg_tree:SetTint(color[1],color[2],color[3],0.6)
+        local color
+        if tint_bright ~= nil then
+            if tint_bright ~= false then
+                color = tint_bright
+            end
+        else
+            color = UICOLOURS.GOLD
+        end
+        if color then
+            self.bg_tree:SetTint(color[1], color[2], color[3], tint_bright_alpha or 0.6)
+        end
     else
-        local color = UICOLOURS.BLACK
-        self.bg_tree:SetTint(color[1],color[2],color[3],1)
+        local color
+        if tint_dim ~= nil then
+            if tint_dim ~= false then
+                color = tint_dim
+            end
+        else
+            color = UICOLOURS.BLACK
+        end
+        if color then
+            self.bg_tree:SetTint(color[1], color[2], color[3], tint_dim_alpha or 1)
+        end
     end
 
     self.root.infopanel = self.root:AddChild(Widget("infopanel"))

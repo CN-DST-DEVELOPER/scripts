@@ -189,8 +189,15 @@ function PlayerActionPicker:GetPointActions(pos, useitem, right, target)
     return sorted_acts
 end
 
-function PlayerActionPicker:GetPointSpecialActions(pos, useitem, right)
-	return self.pointspecialactionsfn ~= nil and self:SortActionList(self.pointspecialactionsfn(self.inst, pos, useitem, right), pos, useitem) or {}
+function PlayerActionPicker:GetPointSpecialActions(pos, useitem, right, usereticulepos)
+	--V2C: usereticulepos is new
+	--     pos2 may be returned (when usereticulepos is true)
+	--     keep support for legacy pointspecialactionsfn, which won't have the pos2 return
+	if self.pointspecialactionsfn then
+		local actions, pos2 = self.pointspecialactionsfn(self.inst, pos, useitem, right, usereticulepos)
+		return self:SortActionList(actions, usereticulepos and pos2 or pos, useitem)
+	end
+	return {}
 end
 
 function PlayerActionPicker:GetEquippedItemActions(target, useitem, right)

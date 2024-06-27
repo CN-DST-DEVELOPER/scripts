@@ -219,13 +219,19 @@ local actionhandlers =
     ActionHandler(ACTIONS.DROP, "give"),
     ActionHandler(ACTIONS.PICKUP, "take"),
     ActionHandler(ACTIONS.CHECKTRAP, "take"),
-    ActionHandler(ACTIONS.PICK, 
+    ActionHandler(ACTIONS.PICK,
 		function(inst, action)
 			return action.target ~= nil
-				and action.target.components.pickable ~= nil
-				and ((action.target.components.pickable.jostlepick and "doshortaction") or -- Short action for jostling.
+				and (action.target.components.pickable ~= nil and (
+						(action.target.components.pickable.jostlepick and "doshortaction") or -- Short action for jostling.
 						(action.target.components.pickable.quickpick and "doshortaction") or
-						"dolongaction")
+						"dolongaction"
+					)) or
+					(action.target.components.searchable ~= nil and (
+						(action.target.components.searchable.jostlesearch and "doshortaction") or
+						(action.target.components.searchable.quicksearch and "doshortaction") or
+						"dolongaction"
+					))
 				or nil
 		end),
 }

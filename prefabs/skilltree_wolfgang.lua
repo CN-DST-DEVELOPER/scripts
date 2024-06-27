@@ -117,6 +117,7 @@ local function BuildSkillsData(SkillTreeFns)
             connects = {
                 "wolfgang_dumbbell_throwing_1",
             },             
+            defaultfocus = true,
         }, 
 
 

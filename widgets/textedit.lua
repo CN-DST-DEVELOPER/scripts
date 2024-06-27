@@ -136,6 +136,7 @@ function TextEdit:SetEditing(editing)
         if self.prediction_widget ~= nil then
 			self.prediction_widget:Dismiss()
 		end
+        TheInput:EnableDebugToggle(true)
 	end
 
 	-- Update the enable_accept_control flag
@@ -353,7 +354,6 @@ function TextEdit:OnControl(control, down)
 
     if self.editing and not down and control == CONTROL_CANCEL then
         self:SetEditing(false)
-        TheInput:EnableDebugToggle(true)
         return not self.pass_controls_to_screen[control]
     end
 

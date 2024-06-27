@@ -48,7 +48,7 @@ local function Player_GetDescription(inst, viewer)
         local cause =
             inst.cause == "nil"
             and (
-                viewer == "waxwell" and "charlie" or "darkness"
+                (viewer == "waxwell" or viewer == "winona") and "charlie" or "darkness"
             )
             or inst.cause
 

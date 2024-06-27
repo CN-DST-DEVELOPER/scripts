@@ -319,6 +319,7 @@ local function fn()
     inst.entity:AddLight()
     inst.entity:AddNetwork()
 
+	inst:SetDeploySmartRadius(1.6) --recipe min_spacing/2
 	MakeObstaclePhysics(inst, 0.8, 1.2)
 
     inst.MiniMapEntity:SetIcon("wintersfeastoven.png")

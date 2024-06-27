@@ -134,7 +134,11 @@ local function lamp_turnon(inst)
             inst._lamp._mast = inst
             lamp_fuelupdate(inst)
 
-            inst.highlightchildren = { inst._lamp }
+            if inst.highlightchildren ~= nil then
+                table.insert(inst.highlightchildren, inst._lamp)
+            else
+                inst.highlightchildren = { inst._lamp }
+            end
 
             inst._lamp.entity:SetParent(inst.entity)
             inst._lamp.entity:AddFollower():FollowSymbol(inst.GUID, "mastupgrade_lamp", 0, 0, 0)
@@ -193,7 +197,12 @@ local function upgrade_lightningrod(inst, no_built_callback)
     inst._lightningrod._mast = inst
     inst._lightningrod._top = top
 
-    inst.highlightchildren = { inst._lightningrod, inst._lightningrod._top }
+    if inst.highlightchildren ~= nil then
+        table.insert(inst.highlightchildren, inst._lightningrod)
+        table.insert(inst.highlightchildren, inst._lightningrod._top)
+    else
+        inst.highlightchildren = { inst._lightningrod, inst._lightningrod._top }
+    end
 
     inst.components.upgradeable.upgradetype = nil
 
@@ -342,6 +351,8 @@ local function fn_pre(inst)
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
     inst.entity:AddMiniMapEntity()
+
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.LESS] / 2) --item deployspacing/2
     MakeObstaclePhysics(inst, .2)
 
     inst.Light:Enable(false)
@@ -352,7 +363,6 @@ local function fn_pre(inst)
 
     inst.Transform:SetEightFaced()
 
-    inst:AddTag("NOBLOCK")
     inst:AddTag("structure")
     inst:AddTag("mast")
 	inst:AddTag("rotatableobject")

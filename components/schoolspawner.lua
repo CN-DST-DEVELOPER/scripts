@@ -42,7 +42,7 @@ local function testforgnarwail(comp, spawnpoint, chancemodifier)
     local ents = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.GNARWAIL_TEST_RADIUS, GNARWAIL_TAGS)
     local spawnchance = TUNING.GNARWAIL_SPAWN_CHANCE * (chancemodifier or 1)
     if #ents < 2 and math.random() < spawnchance then
-        local offset = FindSwimmableOffset(spawnpoint, math.random()*2*PI, GNARWAIL_SPAWN_RADIUS)
+        local offset = FindSwimmableOffset(spawnpoint, math.random()*TWOPI, GNARWAIL_SPAWN_RADIUS)
         if offset then
             comp.inst:DoTaskInTime(GetRandomMinMax(GNARWAIL_TIMING[1], GNARWAIL_TIMING[2]), function()
                 local spawn_x = spawnpoint.x + offset.x
@@ -66,7 +66,7 @@ local function testforshark(comp, spawnpoint, chancemodifier)
     local ents = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SHARK_TEST_RADIUS, SHARK_TAGS)
     local spawnchance = TUNING.SHARK_SPAWN_CHANCE * (chancemodifier or 1)
     if #ents < 2 and math.random() < spawnchance then
-        local offset = FindSwimmableOffset(spawnpoint, math.random()*2*PI, SHARK_SPAWN_RADIUS)
+        local offset = FindSwimmableOffset(spawnpoint, math.random()*TWOPI, SHARK_SPAWN_RADIUS)
         if offset then
             comp.inst:DoTaskInTime(GetRandomMinMax(SHARK_TIMING[1], SHARK_TIMING[2]), function()
                 local spawn_x = spawnpoint.x + offset.x
@@ -179,7 +179,7 @@ function self:GetSpawnPoint(pt)
         return PickSchool(pt + offset) and TheWorld.Map:IsOceanAtPoint((pt + offset):Get())
     end
 
-    local theta = math.random() * 2 * PI
+    local theta = math.random() * TWOPI
 	local resultoffset = FindValidPositionByFan(theta, 5 + math.random() * 4, 8, TestSpawnPoint)
 						or FindValidPositionByFan(theta, 10 + math.random() * 4, 12, TestSpawnPoint)
 						or FindValidPositionByFan(theta, 15 + math.random() * 4, 16, TestSpawnPoint)

@@ -89,7 +89,7 @@ local function fn()
 
     MakeObstaclePhysics(inst, 0.66)
 
-    inst.entity:AddTag("statue")
+    inst:AddTag("statue")
 
     inst.AnimState:SetBank("statue_small")
     inst.AnimState:SetBuild("statue_small")
@@ -124,6 +124,8 @@ local function fn()
     inst.OnSave = OnSave  
 
     MakeHauntableWork(inst)
+
+    MakeRoseTarget_CreateFuel(inst)
 
     return inst
 end

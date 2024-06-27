@@ -6,6 +6,10 @@ local Rooted = Class(function(self, inst)
 
 	if inst.Physics ~= nil then
 		inst.Physics:Stop()
+
+		--Generally, don't call SetTempMass0 outside of here.
+		--A prefab's own internal logic should just manage Physics:SetMass.
+		--Otherwise, just add and use the "rooted" component where needed.
 		inst.Physics:SetTempMass0(true)
 	end
 	if inst.components.locomotor ~= nil then
@@ -26,6 +30,9 @@ function Rooted:OnRemoveFromEntity()
 	self.inst:RemoveTag("rooted")
 
 	if self.inst.Physics ~= nil then
+		--Generally, don't call SetTempMass0 outside of here.
+		--A prefab's own internal logic should just manage Physics:SetMass.
+		--Otherwise, just add and use the "rooted" component where needed.
 		self.inst.Physics:SetTempMass0(false)
 	end
 	if self.inst.components.locomotor ~= nil then

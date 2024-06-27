@@ -161,7 +161,9 @@ local function makemound(name)
         inst.entity:AddSoundEmitter()
         inst.entity:AddNetwork()
 
-        MakeObstaclePhysics(inst, .45)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.PLACER_DEFAULT] / 2) --fossil_piece deployspacing/2
+		inst:SetPhysicsRadiusOverride(0.45)
+		MakeObstaclePhysics(inst, inst.physicsradiusoverride)
 
         inst.AnimState:SetBank(name)
         inst.AnimState:SetBuild(name)

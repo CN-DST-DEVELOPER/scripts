@@ -265,11 +265,11 @@ function SkillTreeUpdater:SendFromSkillTreeBlob(inst)
                 end
                 self:SetSkipValidation(false)
 
-                self.inst:PushEvent("onsetskillselection_server")
             end
             -- Do not use nor send skillxp here.
         end
     end
+    self.inst:PushEvent("onsetskillselection_server")
 end
 
 function SkillTreeUpdater:OnLoad(data)

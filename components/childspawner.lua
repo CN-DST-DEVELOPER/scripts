@@ -298,8 +298,8 @@ end
 
 function ChildSpawner:CountChildrenOutside(fn)
     local vacantchildren = 0
-    for k,v in pairs(self.childrenoutside) do
-        if v and v:IsValid() and (not fn or fn(v) ) then
+    for child in pairs(self.childrenoutside) do
+        if child and child:IsValid() and (not fn or fn(child)) then
             vacantchildren = vacantchildren + 1
         end
     end
@@ -327,25 +327,25 @@ function ChildSpawner:OnSave()
     local data = {}
     local references = {}
 
-    for k, v in pairs(self.childrenoutside) do
+    for child in pairs(self.childrenoutside) do
         if data.childrenoutside == nil then
-            data.childrenoutside = { v.GUID }
+            data.childrenoutside = { child.GUID }
         else
-            table.insert(data.childrenoutside, v.GUID)
+            table.insert(data.childrenoutside, child.GUID)
         end
 
-        table.insert(references, v.GUID)
+        table.insert(references, child.GUID)
     end
     data.childreninside = self.childreninside
 
-    for k, v in pairs(self.emergencychildrenoutside) do
+    for emergency_child in pairs(self.emergencychildrenoutside) do
         if data.emergencychildrenoutside == nil then
-            data.emergencychildrenoutside = { v.GUID }
+            data.emergencychildrenoutside = { emergency_child.GUID }
         else
-            table.insert(data.emergencychildrenoutside, v.GUID)
+            table.insert(data.emergencychildrenoutside, emergency_child.GUID)
         end
 
-        table.insert(references, v.GUID)
+        table.insert(references, emergency_child.GUID)
     end
     data.emergencychildreninside = self.emergencychildreninside
 
@@ -448,16 +448,16 @@ end
 function ChildSpawner:LoadPostPass(newents, savedata)
     --print(self.inst, "ChildSpawner:LoadPostPass")
     if savedata.childrenoutside ~= nil then
-        for i, v in ipairs(savedata.childrenoutside) do
-            local child = newents[v]
+        for _, child_guid in ipairs(savedata.childrenoutside) do
+            local child = newents[child_guid]
             if child ~= nil then
                 self:TakeOwnership(child.entity)
             end
         end
     end
     if savedata.emergencychildrenoutside ~= nil then
-        for i, v in ipairs(savedata.emergencychildrenoutside) do
-            local child = newents[v]
+        for _, emergencychild_guid in ipairs(savedata.emergencychildrenoutside) do
+            local child = newents[emergencychild_guid]
             if child ~= nil then
                 self:TakeEmergencyOwnership(child.entity)
             end
@@ -474,7 +474,6 @@ end
 -- This should only be called internally
 function ChildSpawner:DoSpawnChild(target, prefab, radius)
     local x, y, z = self.inst.Transform:GetWorldPosition()
-	local offset
 	local spawn_radius = radius
 	if spawn_radius == nil then
 		if self.spawnradius ~= nil then
@@ -487,14 +486,11 @@ function ChildSpawner:DoSpawnChild(target, prefab, radius)
 			spawn_radius = 0.5
 		end
 	end
-	if self.overridespawnlocation then
-      offset = self.overridespawnlocation(self.inst)
-    elseif self.wateronly then
-		offset = FindSwimmableOffset(Vector3(x, 0, z), math.random() * PI * 2, spawn_radius + self.inst:GetPhysicsRadius(0), 8, false, true, NoHoles)
-	else
-		offset = FindWalkableOffset(Vector3(x, 0, z), math.random() * PI * 2, spawn_radius + self.inst:GetPhysicsRadius(0), 8, false, true, NoHoles, self.allowwater, self.allowboats)
-	end
-    if offset == nil then
+
+	local offset = (self.overridespawnlocation ~= nil and self.overridespawnlocation(self.inst))
+        or (self.wateronly and FindSwimmableOffset(Vector3(x, 0, z), math.random() * TWOPI, spawn_radius + self.inst:GetPhysicsRadius(0), 8, false, true, NoHoles))
+        or (FindWalkableOffset(Vector3(x, 0, z), math.random() * TWOPI, spawn_radius + self.inst:GetPhysicsRadius(0), 8, false, true, NoHoles, self.allowwater, self.allowboats))
+    if not offset then
         return
     end
 
@@ -508,10 +504,10 @@ function ChildSpawner:DoSpawnChild(target, prefab, radius)
         )
     if child ~= nil then
         child.Transform:SetPosition(x + offset.x, self.spawn_height or 0, z + offset.z)
-		
-		if child.components.inventoryitem ~= nil then
-			child.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
-		end
+
+        if child.components.inventoryitem ~= nil then
+            child.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
+        end
 
         if target ~= nil and child.components.combat ~= nil then
             child.components.combat:SetTarget(target)

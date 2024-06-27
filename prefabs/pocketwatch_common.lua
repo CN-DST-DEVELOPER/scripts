@@ -73,7 +73,7 @@ local function common_fn(bank, build, DoCastSpell, cast_from_inventory, tags, co
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-		
+
 	inst:AddComponent("rechargeable")
 	inst.components.rechargeable:SetOnDischargedFn(OnDischarged)
 	inst.components.rechargeable:SetOnChargedFn(OnCharged)

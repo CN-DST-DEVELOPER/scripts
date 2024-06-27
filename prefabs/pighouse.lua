@@ -388,6 +388,7 @@ local function fn()
     inst.AnimState:PlayAnimation("idle", true)
 
     inst:AddTag("structure")
+    inst:AddTag("pig_house")    
 
     MakeSnowCoveredPristine(inst)
 

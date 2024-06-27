@@ -329,6 +329,8 @@ local function rock_avocado_fruit_sprout_sapling()
     inst.AnimState:SetBuild("rock_avocado_fruit_build")
     inst.AnimState:PlayAnimation("idle_buried_seed")
 
+	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --sprout deployspacing/2
+
     inst:SetPrefabNameOverride("ROCK_AVOCADO_FRUIT_SPROUT")
 
     inst.MiniMapEntity:SetIcon("rock_avocado.png")

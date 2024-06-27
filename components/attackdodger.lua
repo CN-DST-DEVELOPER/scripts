@@ -1,7 +1,8 @@
 local function OnCooldownOver(inst)
-    inst.components.attackdodger.cooldowntask = nil
-
-    inst.components.attackdodger.oncooldown = false
+    if inst.components.attackdodger ~= nil then
+        inst.components.attackdodger.cooldowntask = nil
+        inst.components.attackdodger.oncooldown = false
+    end
 end
 
 local AttackDodger = Class(function(self, inst)
@@ -33,9 +34,9 @@ function AttackDodger:CanDodge(attacker)
     return (candodge ~= nil and notincooldown ~= nil and (candodge and notincooldown)) or (candodge or notincooldown)
 end
 
-function AttackDodger:Dodge()
+function AttackDodger:Dodge(attacker)
     if self.ondodgefn ~= nil then
-        self.ondodgefn(self.inst)
+        self.ondodgefn(self.inst, attacker)
     end
 
     if self.cooldowntime ~= nil then

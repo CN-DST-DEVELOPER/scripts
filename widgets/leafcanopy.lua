@@ -6,20 +6,10 @@ local ROWS = 5
 local ANIM_IDLES = 7
 local POS_INDEX = {
     [1] = -5,
-    [2] = -3,
-    [3] = -1,
-    [4] = 1,
-    [5] = 3,
-    [6] = 5,
-}
-
-POS_INDEX = {
-    [1] = -5,
     [2] = -2.5,
     [3] = 0,
     [4] = 2.5,
     [5] = 5,
-
 }
 
 local function getxoffset()
@@ -30,7 +20,7 @@ local ROW_ANIMS = {}
 
 local function setnewanim(widget)
     local newnum = math.random(1,ANIM_IDLES)
-        
+
     local row1 = widget.anim_row + 1
     local row2 = widget.anim_row - 1
     if row1 > ROWS then row1 = 1 end
@@ -39,7 +29,7 @@ local function setnewanim(widget)
     while newnum == ROW_ANIMS[row1][widget.anim_pos] or
           newnum == ROW_ANIMS[row2][widget.anim_pos] do
         newnum = math.random(1,ANIM_IDLES)
-    end            
+    end
     widget.animnum = newnum
     widget:GetAnimState():PlayAnimation("idle"..newnum,true)
     widget:GetAnimState():SetTime(math.random()*2)
@@ -70,62 +60,60 @@ local function addcanopyrow(widget,row)
         ROW_ANIMS[row] = {}
     end
     local x,y = TheSim:GetWindowSize()
+    local new_widget
     for i=1,#POS_INDEX do
-        widget["leavesTop"..row.."_"..i] = widget:AddChild(UIAnim())
-        widget["leavesTop"..row.."_"..i]:SetClickable(false)
-        widget["leavesTop"..row.."_"..i]:SetHAnchor(ANCHOR_MIDDLE)
-        widget["leavesTop"..row.."_"..i]:SetVAnchor(ANCHOR_TOP)
-        widget["leavesTop"..row.."_"..i]:GetAnimState():SetDefaultEffectHandle("shaders/ui_anim_cc.ksh")
-        widget["leavesTop"..row.."_"..i]:GetAnimState():SetBank("leaves_canopy")
-        widget["leavesTop"..row.."_"..i]:GetAnimState():SetBuild("leaves_canopy")        
-        widget["leavesTop"..row.."_"..i]:SetScaleMode(SCALEMODE_PROPORTIONAL)
-        widget["leavesTop"..row.."_"..i]:GetAnimState():UseColourCube(true)
-        widget["leavesTop"..row.."_"..i]:GetAnimState():SetUILightParams(2.0, 4.0, 4.0, 20.0)
-        widget["leavesTop"..row.."_"..i]:GetAnimState():AnimateWhilePaused(false)
-        widget["leavesTop"..row.."_"..i]:Hide()
-        widget["leavesTop"..row.."_"..i].x_offset = getxoffset()
-        widget["leavesTop"..row.."_"..i]:SetPosition( widget["leavesTop"..row.."_"..i].x_offset + POS_INDEX[i]*x/8,0)        
-        widget["leavesTop"..row.."_"..i].depth = ((row-1)*2)/ROWS
-        local anim = math.random(1,ANIM_IDLES)
+        new_widget = widget:AddChild(UIAnim())
+        local new_widget_AnimState = new_widget:GetAnimState()
+        widget["leavesTop"..row.."_"..i] = new_widget
+        new_widget:SetClickable(false)
+        new_widget:SetHAnchor(ANCHOR_MIDDLE)
+        new_widget:SetVAnchor(ANCHOR_TOP)
+        new_widget_AnimState:SetDefaultEffectHandle("shaders/ui_anim_cc.ksh")
+        new_widget_AnimState:SetBank("leaves_canopy")
+        new_widget_AnimState:SetBuild("leaves_canopy")
+        new_widget:SetScaleMode(SCALEMODE_PROPORTIONAL)
+        new_widget_AnimState:UseColourCube(true)
+        new_widget_AnimState:SetUILightParams(2.0, 4.0, 4.0, 20.0)
+        new_widget_AnimState:AnimateWhilePaused(false)
+        new_widget:Hide()
+        new_widget.x_offset = getxoffset()
+        new_widget:SetPosition( new_widget.x_offset + POS_INDEX[i]*x/8,0 )
+        new_widget.depth = ((row-1)*2)/ROWS
 
+        local anim = math.random(ANIM_IDLES)
         if ROW_ANIMS[row-1] and ROW_ANIMS[row-1][i] then
             while anim == ROW_ANIMS[row-1][i] do
-                anim = math.random(1,ANIM_IDLES)
+                anim = math.random(ANIM_IDLES)
             end
         end
 
-        widget["leavesTop"..row.."_"..i].animnum = anim
-        widget["leavesTop"..row.."_"..i]:GetAnimState():PlayAnimation("idle"..widget["leavesTop"..row.."_"..i].animnum,true)
-        widget["leavesTop"..row.."_"..i]:GetAnimState():SetTime(math.random()*2)
-        widget["leavesTop"..row.."_"..i].anim_row = row
-        widget["leavesTop"..row.."_"..i].anim_pos = i
+        new_widget.animnum = anim
+        new_widget_AnimState:PlayAnimation("idle"..new_widget.animnum,true)
+        new_widget_AnimState:SetTime(math.random()*2)
+        new_widget.anim_row = row
+        new_widget.anim_pos = i
 
-        local num = Vector3(1,1,1)
-        
-        widget["leavesTop"..row.."_"..i]:GetAnimState():SetMultColour(num.x,num.y,num.z,1)
+        new_widget_AnimState:SetMultColour(1, 1, 1, 1)
 
-        ROW_ANIMS[row][i] = widget["leavesTop"..row.."_"..i].animnum
+        ROW_ANIMS[row][i] = new_widget.animnum
 
-        local scale = 1
-        if math.random() < 0.5 then
-            scale = -1
-        end
-        widget["leavesTop"..row.."_"..i]:SetScale(scale,0,1)
+        local scale = (math.random() < 0.5 and -1) or 1
+        new_widget:SetScale(scale, 0, 1)
 
-        widget["leavesTop"..row.."_"..i]:GetAnimState():Hide("flower01")
-        widget["leavesTop"..row.."_"..i]:GetAnimState():Hide("flower02")
-        widget["leavesTop"..row.."_"..i]:GetAnimState():Hide("flower03")
-        widget["leavesTop"..row.."_"..i]:GetAnimState():Hide("flower04")
-        widget["leavesTop"..row.."_"..i]:GetAnimState():Hide("flower05")
+        new_widget_AnimState:Hide("flower01")
+        new_widget_AnimState:Hide("flower02")
+        new_widget_AnimState:Hide("flower03")
+        new_widget_AnimState:Hide("flower04")
+        new_widget_AnimState:Hide("flower05")
     end
 end
 
-local Leafcanopy =  Class(Widget, function(self, owner)
+local Leafcanopy = Class(Widget, function(self, owner)
     self.owner = owner
     Widget._ctor(self, "Leafcanopy")
 
     for i=1,ROWS do
-        addcanopyrow(self,i)    
+        addcanopyrow(self,i)
     end
 
     self.leavestop_intensity = 0
@@ -134,42 +122,38 @@ local Leafcanopy =  Class(Widget, function(self, owner)
 end)
 
 local function calcdepthmod(depth)
-    local mod= 0
-    
     depth = depth -1
 
-    mod = math.sqrt(math.sqrt(1) - (depth*depth))    *0.5
-    return mod * -450  -- -300
+    local mod = 0.5 * math.sqrt(1 - (depth*depth))
+    return mod * -450
 end
 
 local function sortdepth(widget, mod)
     widget.depth = widget.depth - mod
-    
+
     if widget.depth > 2 then
         widget.depth = widget.depth -2
         widget:MoveToBack()
         widget:GetAnimState():PlayAnimation("idle"..math.random(1,4),true)
         widget:GetAnimState():SetTime(math.random()*2)
-        
+
         local x = widget:GetPosition().x - widget.x_offset
-        local modx = getxoffset()    
-        widget.x_offset = modx                   
+        local modx = getxoffset()
+        widget.x_offset = modx
         widget:SetPosition(x + widget.x_offset ,widget:GetPosition().y)
 
-
     elseif widget.depth < 0 then
-        widget.depth = widget.depth +2    
+        widget.depth = widget.depth +2
         widget:MoveToFront()
         widget:GetAnimState():PlayAnimation("idle"..math.random(1,4),true)
         widget:GetAnimState():SetTime(math.random()*2)
 
         local x = widget:GetPosition().x - widget.x_offset
-        local modx = getxoffset()    
-        widget.x_offset = modx                   
+        local modx = getxoffset()
+        widget.x_offset = modx
         widget:SetPosition(x + widget.x_offset ,widget:GetPosition().y)
-        
     end
-    
+
     return widget
 end
 
@@ -189,10 +173,14 @@ local function hideleaves(widget)
     end
 end
 
-
-
-local SHADECANOPY_MUST = {"shadecanopy"}
-local SHADECANOPY_SMALL_MUST = {"shadecanopysmall"}
+local Normal_1_0_1,  -- = Vector3(1,0,1):GetNormalized()
+    Normal_n1_0_1,  -- = Vector3(-1,0,1):GetNormalized()
+    Normal_1_0_n1,  -- = Vector3(1,0,-1):GetNormalized()
+    Normal_n1_0_n1,  -- = Vector3(-1,0,-1):GetNormalized()
+    Normal_0_0_1,  -- = Vector3(0, 0, 1)
+    Normal_0_0_n1,  -- = Vector3(0, 0, -1)
+    Normal_1_0_0,  -- = Vector3(1, 0, 0)
+    Normal_n1_0_0  -- = Vector3(-1, 0, 0)
 
 function Leafcanopy:OnUpdate(dt)
    if TheNet:IsServerPaused() then return end
@@ -200,96 +188,110 @@ function Leafcanopy:OnUpdate(dt)
     local zoomoffset = 0
     if TheCamera.distance and not TheCamera.dollyzoom then
         zoomoffset = Remap(TheCamera.distance,30,45,0,-75)
-        --print("TheCamera.distance",TheCamera.distance)
         if TheCamera.distance < 30 then
             zoomoffset = zoomoffset *1.6
         end
     end
 
+    local current_camera_x, current_camera_y, current_camera_z = TheCamera.currentpos:Get()
     for set=1,ROWS do
         for i=1,#POS_INDEX do
-            self["leavesTop"..set.."_"..i]:GetAnimState():SetWorldSpaceAmbientLightPos(TheCamera.currentpos:Get())
+            self["leavesTop"..set.."_"..i]:GetAnimState():SetWorldSpaceAmbientLightPos(current_camera_x, current_camera_y, current_camera_z)
         end
     end
 
     self.under_leaves = self.owner._underleafcanopy and self.owner._underleafcanopy:value()
 
     local SEC = 2
-    if self.under_leaves then
-        self.leavestop_intensity = math.min(1,self.leavestop_intensity+(1/(30 * SEC)) )
-    else
-        self.leavestop_intensity = math.max(0,self.leavestop_intensity-(1/(30 * SEC)) )
-    end    
+    self.leavestop_intensity = (self.under_leaves and math.min(1, self.leavestop_intensity+(1/(30 * SEC)) ))
+        or math.max(0, self.leavestop_intensity-(1/(30 * SEC)) )
 
     if self.leavestop_intensity == 0 then
-        hideleaves(self)           
+        hideleaves(self)
     else
         showleaves(self)
 
-        local ypos = 0
+        local ypos = ((1-self.leavestop_intensity) *500) + zoomoffset  +300
 
-        ypos = ((1-self.leavestop_intensity) *500) + zoomoffset  +300
-
-        local move = false
-        local thisframecoords = Vector3(TheCamera.currentpos.x,TheCamera.currentpos.y,TheCamera.currentpos.z)
+        local thisframecoords = Vector3(current_camera_x, current_camera_y, current_camera_z)
         local down = TheCamera:GetDownVec()
-        local diffcoords = Vector3(0,0,0)
-        if self.lastframecoords then
-            diffcoords = thisframecoords - self.lastframecoords
-            if math.abs(diffcoords.x) > 0.001 or math.abs(diffcoords.z) > 0.001 then
-                move = true
-            end
-        end
+        local down_x, down_z = down.x, down.z
+        local diffcoords = (self.lastframecoords ~= nil and (thisframecoords - self.lastframecoords))
+            or Vector3(0,0,0)
 
         local modx = 0
         local mody = 0
 
         --(0.71, 0.71)
-        if down.x < 0.8 and down.x > 0.6 and down.z < 0.8 and down.z > 0.6 then
-            modx = diffcoords:Dot(Vector3(-1,0,1):GetNormalized())
-            mody = diffcoords:Dot(Vector3(1,0,1):GetNormalized())
+        if down_x < 0.8 and down_x > 0.6 and down_z < 0.8 and down_z > 0.6 then
+            Normal_n1_0_1 = Normal_n1_0_1 or Vector3(-1, 0, 1):GetNormalized()
+            modx = diffcoords:Dot(Normal_n1_0_1)
+
+            Normal_1_0_1 = Normal_1_0_1 or Vector3(1, 0, 1):GetNormalized()
+            mody = diffcoords:Dot(Normal_1_0_1)
         end
 
         --(1.00, 0.00)
-        if down.x > 0.8 and down.z < 0.1 and down.z > -0.1 then
-            modx = diffcoords:Dot(Vector3(0,0,1):GetNormalized())
-            mody = diffcoords:Dot(Vector3(1,0,0):GetNormalized())
+        if down_x > 0.8 and down_z < 0.1 and down_z > -0.1 then
+            Normal_0_0_1 = Normal_0_0_1 or Vector3(0, 0, 1)
+            modx = diffcoords:Dot(Normal_0_0_1)
+
+            Normal_1_0_0 = Normal_1_0_0 or Vector3(1, 0, 0)
+            mody = diffcoords:Dot(Normal_1_0_0)
         end
 
         --(0.71,-0.71)
-        if down.x < 0.8 and down.x > 0.6 and down.z > -0.8 and down.z < -0.6 then
-            modx = diffcoords:Dot(Vector3(1,0,1):GetNormalized())
-            mody = diffcoords:Dot(Vector3(1,0,-1):GetNormalized())
+        if down_x < 0.8 and down_x > 0.6 and down_z > -0.8 and down_z < -0.6 then
+            Normal_1_0_1 = Normal_1_0_1 or Vector3(1, 0, 1):GetNormalized()
+            modx = diffcoords:Dot(Normal_1_0_1)
+
+            Normal_1_0_n1 = Normal_1_0_n1 or Vector3(1, 0, -1):GetNormalized()
+            mody = diffcoords:Dot(Normal_1_0_n1)
         end
 
         --(0.0,-1)
-        if down.x < 0.1 and down.x > -0.1 and down.z < -0.8 then
-            modx = diffcoords:Dot(Vector3(1,0,0):GetNormalized())
-            mody = diffcoords:Dot(Vector3(0,0,-1):GetNormalized())
+        if down_x < 0.1 and down_x > -0.1 and down_z < -0.8 then
+            Normal_1_0_0 = Normal_1_0_0 or Vector3(1, 0, 0)
+            modx = diffcoords:Dot(Normal_1_0_0)
+
+            Normal_0_0_n1 = Normal_0_0_n1 or Vector3(0, 0, -1)
+            mody = diffcoords:Dot(Normal_0_0_n1)
         end
 
         --(-0.71, -0.71)
-        if down.x > -0.8 and down.x < -0.6 and down.z > -0.8 and down.z < -0.6 then
-            modx = diffcoords:Dot(Vector3(1,0,-1):GetNormalized())
-            mody = diffcoords:Dot(Vector3(-1,0,-1):GetNormalized())
+        if down_x > -0.8 and down_x < -0.6 and down_z > -0.8 and down_z < -0.6 then
+            Normal_1_0_n1 = Normal_1_0_n1 or Vector3(1, 0, -1):GetNormalized()
+            modx = diffcoords:Dot(Normal_1_0_n1)
+
+            Normal_n1_0_n1 = Normal_n1_0_n1 or Vector3(-1, 0, -1):GetNormalized()
+            mody = diffcoords:Dot(Normal_n1_0_n1)
         end
 
         --(-1.00, 0.00)
-        if down.x < -0.8 and down.z < 0.1 and down.z > -0.1 then
-            modx = diffcoords:Dot(Vector3(0,0,-1):GetNormalized())
-            mody = diffcoords:Dot(Vector3(-1,0,0):GetNormalized())
+        if down_x < -0.8 and down_z < 0.1 and down_z > -0.1 then
+            Normal_0_0_n1 = Normal_0_0_n1 or Vector3(0, 0, -1)
+            modx = diffcoords:Dot(Normal_0_0_n1)
+
+            Normal_n1_0_0 = Normal_n1_0_0 or Vector3(-1, 0, 0)
+            mody = diffcoords:Dot(Normal_n1_0_0)
         end
 
         --(-0.71, 0.71)
-        if down.x > -0.8 and down.x < -0.6 and down.z < 0.8 and down.z > 0.6 then
-            modx = diffcoords:Dot(Vector3(-1,0,-1):GetNormalized())
-            mody = diffcoords:Dot(Vector3(-1,0,1):GetNormalized())
+        if down_x > -0.8 and down_x < -0.6 and down_z < 0.8 and down_z > 0.6 then
+            Normal_n1_0_n1 = Normal_n1_0_n1 or Vector3(-1, 0, -1):GetNormalized()
+            modx = diffcoords:Dot(Normal_n1_0_n1)
+
+            Normal_n1_0_1 = Normal_n1_0_1 or Vector3(-1, 0, 1):GetNormalized()
+            mody = diffcoords:Dot(Normal_n1_0_1)
         end
 
         --(0.00, 1.00)
-        if down.x < 0.1 and down.x > -0.1 and down.z > 0.9 then
-            modx = diffcoords:Dot(Vector3(-1,0,0):GetNormalized())
-            mody = diffcoords:Dot(Vector3(0,0,1):GetNormalized())
+        if down_x < 0.1 and down_x > -0.1 and down_z > 0.9 then
+            Normal_n1_0_0 = Normal_n1_0_0 or Vector3(-1, 0, 0)
+            modx = diffcoords:Dot(Normal_n1_0_0)
+
+            Normal_0_0_1 = Normal_0_0_1 or Vector3(0, 0, 1)
+            mody = diffcoords:Dot(Normal_0_0_1)
         end
 
         modx = modx * 100
@@ -298,26 +300,30 @@ function Leafcanopy:OnUpdate(dt)
         for set=1,ROWS do
             local depthmod = calcdepthmod(self["leavesTop"..set.."_1"].depth)
             for i=1,#POS_INDEX do
-                self["leavesTop"..set.."_"..i] = sortdepth(self["leavesTop"..set.."_"..i],mody)
+                local widget = sortdepth(self["leavesTop"..set.."_"..i], mody)
+                self["leavesTop"..set.."_"..i] = widget
 
-                local pos = self["leavesTop"..set.."_"..i]:GetPosition()
-                self["leavesTop"..set.."_"..i]:SetPosition(pos.x-modx, ypos + depthmod)
+                local widget_position = widget:GetPosition()
+                widget:SetPosition(widget_position.x-modx, ypos + depthmod)
+                widget_position = widget:GetPosition()
 
-                local sx,sy = TheSim:GetWindowSize()
-                if self["leavesTop"..set.."_"..i]:GetPosition().x > 5*sx/8 then
-                    local modx = getxoffset()
-                    local adjust = modx - self["leavesTop"..set.."_"..i].x_offset
-                    self["leavesTop"..set.."_"..i].x_offset = modx            
-                    self["leavesTop"..set.."_"..i]:SetPosition(adjust + self["leavesTop"..set.."_"..i]:GetPosition().x - (sx*5/4), self["leavesTop"..set.."_"..i]:GetPosition().y)
-                    setnewanim(self["leavesTop"..set.."_"..i])                    
+                local sx, _ = TheSim:GetWindowSize()
+                if widget_position.x > 5*sx/8 then
+                    local modx_offset = getxoffset()
+                    local adjust = modx_offset - widget.x_offset
+                    widget.x_offset = modx_offset
+
+                    widget:SetPosition(adjust + widget_position.x - (sx*5/4), widget_position.y)
+                    setnewanim(widget)
                 end
-                if self["leavesTop"..set.."_"..i]:GetPosition().x < -5*sx/8 then
-                    local modx = getxoffset()
-                    local adjust = modx - self["leavesTop"..set.."_"..i].x_offset   
-                    self["leavesTop"..set.."_"..i].x_offset = modx                   
-                    self["leavesTop"..set.."_"..i]:SetPosition(adjust + self["leavesTop"..set.."_"..i]:GetPosition().x + (sx*5/4), self["leavesTop"..set.."_"..i]:GetPosition().y)
-                    setnewanim(self["leavesTop"..set.."_"..i])
-                end                
+                if widget_position.x < -5*sx/8 then
+                    local modx_offset = getxoffset()
+                    local adjust = modx_offset - widget.x_offset
+                    widget.x_offset = modx_offset
+
+                    widget:SetPosition(adjust + widget_position.x + (sx*5/4), widget_position.y)
+                    setnewanim(widget)
+                end
             end
         end
 
@@ -329,7 +335,7 @@ function Leafcanopy:OnUpdate(dt)
             if self.leavespercent < 0 then
                 self.leavespercent = self.leavespercent +1
             end
-        else             
+        else
             self.leavesfullyin = true
         end
         self.lastframecoords = thisframecoords

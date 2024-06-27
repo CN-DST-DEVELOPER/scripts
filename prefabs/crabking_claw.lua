@@ -3,12 +3,14 @@ local brain = require "brains/crabkingclawbrain"
 local assets =
 {
     Asset("ANIM", "anim/crab_king_claw.zip"),
+    Asset("ANIM", "anim/crab_king_claw_actions.zip"),
     Asset("ANIM", "anim/crab_king_claw_build.zip"),
 }
 
 local prefabs =
 {
     "crabking_claw_shadow",
+	"crabking_claw_swipe_fx",
 }
 
 local shadow_assets =
@@ -17,78 +19,15 @@ local shadow_assets =
     Asset("ANIM", "anim/crab_king_claw_shadow_build.zip"),
 }
 
-local shadow_prefabs =
+local swipe_assets =
 {
-
+	Asset("ANIM", "anim/crabking_claw_swipe_fx.zip"),
 }
-
-local function releaseclamp(inst, immediate)
-	if inst.boat then
-		if inst.boat.components.boatphysics ~= nil then
-			inst.boat.components.boatphysics:RemoveBoatDrag(inst)
-		end
-
-        if inst._releaseclamp then
-            inst:RemoveEventCallback("onremove", inst._releaseclamp, inst.boat)
-            inst._releaseclamp = nil
-        end
-    end
-    inst.boat = nil
-    inst:PushEvent("releaseclamp", {immediate = immediate} )
-
-    if inst.clamptask then
-        inst.clamptask:Cancel()
-        inst.clamptask = nil
-    end
-end
-
-local function crunchboat(inst,boat)
-    inst:PushEvent("clamp_attack",boat)
-    if inst.clamptask then
-        inst.clamptask:Cancel()
-        inst.clamptask = nil
-    end
-    inst.clamptask = inst:DoTaskInTime(math.random()+3,function() inst.crunchboat(inst,inst.boat) end)
-end
-
-local CLAMPDAMAGE_CANT_TAGS = {"flying", "shadow", "ghost", "playerghost", "FX", "NOCLICK", "DECOR", "INLIMBO"}
-local function clamp(inst)
-    if inst.boat and not inst.boat.components.health:IsDead() then
-        inst.boat.components.health:DoDelta(-TUNING.CRABKING_CLAW_BOATDAMAGE)
-        ShakeAllCameras(CAMERASHAKE.VERTICAL, 0.3, 0.03, 0.5, inst.boat, inst.boat:GetPhysicsRadius(4))
-        local pos = Vector3(inst.Transform:GetWorldPosition())
-        local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 3, nil, CLAMPDAMAGE_CANT_TAGS)
-
-        for i, v in pairs(ents)do
-            if v ~= inst and v:IsValid() and not v:IsInLimbo() then
-                if      v.components.workable ~= nil and
-                        v.components.workable:CanBeWorked() and
-                        v.components.workable.action ~= ACTIONS.NET then
-                    v.components.workable:Destroy(inst)
-                end
-                if      v.components.health ~= nil and
-                        not v.components.health:IsDead() and
-                        inst.components.combat:CanTarget(v) then
-                    inst.components.combat:DoAttack(v)
-                end
-            end
-        end
-
-		ShakeAllCameras(CAMERASHAKE.VERTICAL, 0.3, 0.03, 0.5, inst.boat, inst.boat:GetPhysicsRadius(4))
-
-		if inst.boat.components.boatphysics ~= nil then
-			inst.boat.components.boatphysics:AddBoatDrag(inst)
-        end
-        inst._releaseclamp = function() inst:releaseclamp() end
-        inst:ListenForEvent("onremove", inst._releaseclamp, inst.boat)
-        inst.clamptask = inst:DoTaskInTime(math.random()+3,function() inst.crunchboat(inst,inst.boat) end)
-    end
-end
 
 local function teleport_override_fn(inst)
     local pt = inst.components.knownlocations ~= nil and inst.components.knownlocations:GetLocation("spawnpoint") or inst:GetPosition()
-    local offset = FindSwimmableOffset(pt, math.random() * 2 * PI, 3, 8, true, false) or
-					FindSwimmableOffset(pt, math.random() * 2 * PI, 8, 8, true, false)
+    local offset = FindSwimmableOffset(pt, math.random() * TWOPI, 3, 8, true, false) or
+					FindSwimmableOffset(pt, math.random() * TWOPI, 8, 8, true, false)
     if offset ~= nil then
 		pt = pt + offset
     end
@@ -96,22 +35,70 @@ local function teleport_override_fn(inst)
 	return pt
 end
 
-local function OnTeleported(inst)
-	inst:releaseclamp(true)
-end
-
 local function OnRemove(inst)
     if inst.shadow then
         inst.shadow:Remove()
     end
-    inst.releaseclamp(inst)
 end
 
 local function OnDead(inst)
     if inst.shadow then
         inst.shadow:Remove()
     end
-    inst.releaseclamp(inst)
+end
+
+local MAX_CHASEAWAY_DIST_SQ = 30*30
+local function KeepTarget(inst, target)
+    local pos = Vector3(target.Transform:GetWorldPosition())
+    local keep = inst.components.combat:CanTarget(target) --and  TheWorld.Map:IsOceanAtPoint(pos.x, 0, pos.z, true)
+            and target:GetDistanceSqToPoint(inst.Transform:GetWorldPosition()) < MAX_CHASEAWAY_DIST_SQ
+    return keep
+end
+
+local TARGET_DIST = TUNING.CRABKING_ATTACK_TARGETRANGE
+local RETARGET_MUST_TAGS = { "_combat" }
+local RETARGET_CANT_TAGS = { "INLIMBO", "playerghost", "crabking_ally"}
+local RETARGET_ONEOF_TAGS = { "character", "monster"}
+local function Retarget(inst)
+    local gx, gy, gz = inst.Transform:GetWorldPosition()
+    local potential_targets = TheSim:FindEntities(
+        gx, gy, gz, TARGET_DIST,
+        RETARGET_MUST_TAGS, RETARGET_CANT_TAGS, RETARGET_ONEOF_TAGS
+    )
+
+    local newtarget = nil
+    for _, target in ipairs(potential_targets)do
+        local pos =  Vector3(target.Transform:GetWorldPosition())
+        if target ~= inst and target.entity:IsVisible()
+                and inst.components.combat:CanTarget(target)
+                and TheWorld.Map:IsOceanAtPoint(pos.x, 0, pos.z, true) then
+            newtarget = target
+            break
+        end
+    end
+
+    if newtarget ~= nil and newtarget ~= inst.components.combat.target then
+        return newtarget, true
+    else
+        return nil
+    end
+end
+
+local function OnSave(inst, data)
+    local ents = {}
+
+    if inst.crabking then
+        data.crabking = inst.crabking.GUID
+        table.insert(ents, inst.crabking.GUID)
+    end
+
+    return ents
+end
+
+local function OnLoadPostPass(inst, newents, data)
+    if data.crabking then
+        inst.crabking =  newents[data.crabking].entity
+    end
 end
 
 SetSharedLootTable( 'crabking_claw',
@@ -127,7 +114,7 @@ local function fn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
-    MakeCharacterPhysics(inst, 1000, 0.1)
+    MakeCharacterPhysics(inst, 1000, 0.7)
     inst.Transform:SetSixFaced()
 
     inst:AddTag("ignorewalkableplatforms")
@@ -135,6 +122,7 @@ local function fn()
     inst:AddTag("scarytoprey")
     inst:AddTag("hostile")
     inst:AddTag("crabking_claw")
+    inst:AddTag("crabking_ally")
 	inst:AddTag("soulless")
     inst:AddTag("lunar_aligned")
 
@@ -168,15 +156,17 @@ local function fn()
     ------------------
 
     inst:AddComponent("health")
+    inst.components.health.save_maxhealth = true
     inst.components.health:SetMaxHealth(TUNING.CRABKING_CLAW_HEALTH)
 
     ------------------
 
     inst:AddComponent("combat")
     inst.components.combat:SetDefaultDamage(TUNING.CRABKING_CLAW_PLAYER_DAMAGE)
-    inst.components.combat:SetRange(0)
     inst.components.combat.hiteffectsymbol = "claw_parts_shoulder"
-    inst.components.combat:SetAttackPeriod(0)
+    inst.components.combat:SetRetargetFunction(3, Retarget)
+    inst.components.combat:SetKeepTargetFunction(KeepTarget)
+    inst.components.combat:SetRange(TUNING.CRABKING_CLAW_ATTACKRANGE)    
 
     ------------------------------------------
 
@@ -203,21 +193,19 @@ local function fn()
 
     inst:SetBrain(brain)
 
+    inst.OnSave = OnSave
+    inst.OnLoadPostPass = OnLoadPostPass
+
     inst:ListenForEvent("death", OnDead)
     inst:ListenForEvent("onremove", OnRemove)
     inst:ListenForEvent("entitysleep", OnEntitySleep)
     inst:ListenForEvent("entitywake", OnEntityWake)
-
-    inst.releaseclamp = releaseclamp
-    inst.clamp = clamp
-    inst.crunchboat = crunchboat
 
     MakeLargeBurnableCharacter(inst, "claw_parts_forearm")
     MakeHugeFreezableCharacter(inst, "claw_parts_forearm")
 
 	inst:AddComponent("teleportedoverride")
 	inst.components.teleportedoverride:SetDestPositionFn(teleport_override_fn)
-	inst:ListenForEvent("teleported", OnTeleported)
 
     inst.shadow = inst:SpawnChild("crabking_claw_shadow")
 
@@ -239,7 +227,7 @@ local function shadowfn()
     inst:AddTag("NOCLICK")
     inst:AddTag("NOBLOCK")
 
-     inst.persists = false
+    inst.persists = false
 
     inst.AnimState:SetSortOrder(ANIM_SORT_ORDER_BELOW_GROUND.UNDERWATER)
     inst.AnimState:SetLayer(LAYER_BELOW_GROUND)
@@ -260,6 +248,40 @@ local function shadowfn()
     return inst
 end
 
-return Prefab("crabking_claw",        fn, assets, prefabs),
-       Prefab("crabking_claw_shadow", shadowfn, shadow_assets, shadow_prefabs)
+local function swipefn()
+	local inst = CreateEntity()
 
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddNetwork()
+
+	inst:AddTag("FX")
+	inst:AddTag("NOCLICK")
+
+	--inst.Transform:SetEightFaced()
+
+	inst.AnimState:SetBank("crabking_claw_swipe_fx")
+	inst.AnimState:SetBuild("crabking_claw_swipe_fx")
+	inst.AnimState:PlayAnimation("atk1")
+	inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+	inst.AnimState:SetLayer(LAYER_BACKGROUND)
+	inst.AnimState:SetSortOrder(3)
+
+	local s  = 1 / 0.7
+	inst.AnimState:SetScale(s, s)
+
+	inst.entity:SetPristine()
+
+	if not TheWorld.ismastersim then
+		return inst
+	end
+
+	inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+
+	return inst
+end
+
+return Prefab("crabking_claw",        fn, assets, prefabs),
+       Prefab("crabking_claw_shadow", shadowfn, shadow_assets),
+       Prefab("crabking_claw_swipe_fx", swipefn, swipe_assets)

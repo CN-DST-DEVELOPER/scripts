@@ -252,7 +252,7 @@ local function FindMushroomBombTargets(inst)
     --ring with a random gap
     local maxbombs = inst.mushroombomb_variance > 0 and inst.mushroombomb_count + math.random(inst.mushroombomb_variance) or inst.mushroombomb_count
     local delta = (1 + math.random()) * PI / maxbombs
-    local offset = 2 * PI * math.random()
+    local offset = TWOPI * math.random()
     local angles = {}
     for i = 1, maxbombs do
         table.insert(angles, i * delta + offset)
@@ -321,8 +321,8 @@ end
 local function FindMushroomSproutAngles(inst)
     --evenly spaced ring
     local maxspawns = TUNING.TOADSTOOL_MUSHROOMSPROUT_NUM
-    local delta = 2 * PI / maxspawns
-    local offset = 2 * PI * math.random()
+    local delta = TWOPI / maxspawns
+    local offset = TWOPI * math.random()
     local angles = {}
     for i = 1, maxspawns do
         table.insert(angles, i * delta + offset)
@@ -340,7 +340,7 @@ local function SproutLaunch(inst, launcher, basespeed)
         local dist = math.sqrt(dsq)
         angle = math.atan2(dz / dist, dx / dist) + (math.random() * 20 - 10) * DEGREES
     else
-        angle = 2 * PI * math.random()
+        angle = TWOPI * math.random()
     end
     local speed = basespeed + math.random()
     inst.Physics:Teleport(x1, .1, z1)
@@ -372,7 +372,7 @@ local function DoMushroomSprout(inst, angles)
     local min_spacing_sq = min_spacing * min_spacing
     for i = 1, 12 do
         if i > 1 then
-            offset = FindWalkableOffset(pt, 2 * PI * math.random(), 2.5, 8, true, false, NoHoles)
+            offset = FindWalkableOffset(pt, TWOPI * math.random(), 2.5, 8, true, false, NoHoles)
         end
         if offset ~= nil then
             pt.x = pt.x + offset.x

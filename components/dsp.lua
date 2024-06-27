@@ -318,7 +318,7 @@ function self:GetDebugString()
     table.insert(str, lowdsplist)
 
     local highdsplist = nil
-    for k,v in pairs(_dsplowcomp) do
+    for k,v in pairs(_dsphighcomp) do
         if highdsplist == nil then
             highdsplist = "HIGH: "
         else

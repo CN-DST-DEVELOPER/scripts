@@ -231,7 +231,7 @@ end
 local function SpawnQueen(inst, should_duplicate)
     local map = TheWorld.Map
     local x, y, z = inst.Transform:GetWorldPosition()
-    local offs = FindValidPositionByFan(math.random() * 2 * PI, 1.25, 5, function(offset)
+    local offs = FindValidPositionByFan(math.random() * TWOPI, 1.25, 5, function(offset)
         local x1 = x + offset.x
         local z1 = z + offset.z
         return map:IsPassableAtPoint(x1, 0, z1)
@@ -559,9 +559,9 @@ end
 local function CanUpgrade(inst)
     if inst:HasTag("bedazzled") and not inst.shaving then
         return false, "BEDAZZLED"
-    else
-        return true
     end
+
+    return inst:GetCurrentPlatform() == nil
 end
 
 local growth_stages =
@@ -609,9 +609,14 @@ local function OnLoadPostPass(inst)
         if inst.components.growable then
             inst.components.growable:StopGrowing()
         end
+
         if inst.components.childspawner then
             inst.components.childspawner:StopRegen()
         end
+
+        inst.GroundCreepEntity:SetRadius(0)
+
+        inst.components.upgradeable:SetStage(1) -- Force update upgradeable tags.
     else
         if inst.components.childspawner then
             inst.components.childspawner:StartRegen()
@@ -689,7 +694,9 @@ local function MakeSpiderDenFn(den_level)
         inst.entity:AddMiniMapEntity()
         inst.entity:AddNetwork()
 
-        MakeObstaclePhysics(inst, .5)
+		inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT] / 2) --spidereggsack deployspacing/2
+		inst:SetPhysicsRadiusOverride(0.5)
+		MakeObstaclePhysics(inst, inst.physicsradiusoverride)
 
         inst.MiniMapEntity:SetIcon("spiderden_" .. tostring(den_level) .. ".png")
 
@@ -700,6 +707,7 @@ local function MakeSpiderDenFn(den_level)
 
         inst:AddTag("cavedweller")
         inst:AddTag("structure")
+		inst:AddTag("lifedrainable") -- by batbat (since it normally doesn't drain from structures)
         inst:AddTag("beaverchewable") -- by werebeaver
         inst:AddTag("hostile")
         inst:AddTag("spiderden")
