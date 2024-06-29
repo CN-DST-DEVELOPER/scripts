@@ -1035,7 +1035,7 @@ function PlayerHud:GetCurrentOpenSpellBook()
 	return self.controls.spellwheel.invobject
 end
 
-function PlayerHud:OpenSpellWheel(invobject, items, radius, focus_radius)
+function PlayerHud:OpenSpellWheel(invobject, items, radius, focus_radius, bgdata)
 	self:CloseCrafting()
 	if self:IsControllerInventoryOpen() then
 		self:CloseControllerInventory()
@@ -1053,12 +1053,28 @@ function PlayerHud:OpenSpellWheel(invobject, items, radius, focus_radius)
 				for j, v in ipairs(items) do
 					v.selected = i == j or nil
 				end
+				if invobject.components.spellbook.focussound then
+					TheFocalPoint.SoundEmitter:PlaySound(invobject.components.spellbook.focussound)
+				end
 			end
 		end
 	end
 	self.controls.spellwheel:SetScale(TheFrontEnd:GetProportionalHUDScale()) --instead of GetHUDScale(), because parent already has SCALEMODE_PROPORTIONAL
 	self.controls.spellwheel:SetItems(itemscpy, radius, focus_radius)
 	self.controls.spellwheel:Open()
+
+	if bgdata then
+		local bg = self.controls.spellwheel:AddChild(UIAnim())
+		bg:GetAnimState():SetBuild(bgdata.build)
+		bg:GetAnimState():SetBank(bgdata.bank)
+		bg:GetAnimState():PlayAnimation(bgdata.anim, bgdata.loop)
+		if bgdata.widget_scale then
+			bg:SetScale(bgdata.widget_scale)
+		end
+		bg:MoveToBack()
+		self.controls.spellwheel.bg = bg
+	end
+
 	local old = self.controls.spellwheel.invobject
 	self.controls.spellwheel.invobject = invobject
 	if old ~= nil and old:IsValid() then
@@ -1073,6 +1089,12 @@ end
 
 function PlayerHud:CloseSpellWheel(is_execute)
 	self.controls.spellwheel:Close()
+
+	if self.controls.spellwheel.bg then
+		self.controls.spellwheel.bg:Kill()
+		self.controls.spellwheel.bg = nil
+	end
+
 	local old = self.controls.spellwheel.invobject
 	if old ~= nil then
 		self.controls.spellwheel.invobject = nil

@@ -227,6 +227,7 @@ end
 
 local MERM_TAGS = { "_health", "merm" }
 local MERM_IGNORE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "player", "shadowminion" }
+local MERM_IGNORE_TAGS_NOGUARDS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "player", "shadowminion", "mermguard" }
 local function MermSort(a, b) -- Better than bubble!
     local ap = a.components.follower:GetLoyaltyPercent()
     local bp = b.components.follower:GetLoyaltyPercent()
@@ -236,9 +237,10 @@ local function MermSort(a, b) -- Better than bubble!
         return ap < bp
     end
 end
-local function GetOtherMerms(inst, radius, maxcount)
+local function GetOtherMerms(inst, radius, maxcount, giver)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local merms = TheSim:FindEntities(x, y, z, radius, MERM_TAGS, MERM_IGNORE_TAGS)
+    
+    local merms = TheSim:FindEntities(x, y, z, radius, MERM_TAGS, giver and giver:HasTag("playermerm") and MERM_IGNORE_TAGS or MERM_IGNORE_TAGS_NOGUARDS)
     local merms_highpriority = {}
     local merms_lowpriority = {}
 
@@ -320,7 +322,7 @@ local function dohiremerms(inst, giver, item)
     end
 
     if hiremoremerms then
-        local othermerms = GetOtherMerms(inst, loyalty_radius, loyalty_count) -- Only other merms, capped by count, and prioritized by necessity.
+        local othermerms = GetOtherMerms(inst, loyalty_radius, loyalty_count, giver) -- Only other merms, capped by count, and prioritized by necessity.
         for _, othermerm in ipairs(othermerms) do
             local effectdone = true
 
@@ -410,7 +412,6 @@ local function OnGetItemFromPlayer(inst, giver, item)
     if item.components.edible ~= nil then
          dohiremerms(inst, giver, item)
     end
-
 
     -- I also wear hats
     if item.components.equippable ~= nil and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
@@ -1325,7 +1326,7 @@ local function shadow_merm_common(inst)
 end
 
 local function OnChangedLeaderShadow(inst, new_leader)
-    if new_leader == nil then
+    if new_leader == nil and not inst.components.health:IsDead() then
         inst.sg:GoToState("hit_shadow")        
     end
 end
@@ -1427,7 +1428,7 @@ end
 -- LUNAR MERM DEFS
 
 local function OnChangedLeaderLunar(inst, new_leader)
-    if new_leader == nil then
+    if new_leader == nil and not inst.components.health:IsDead() then
         DoLunarRevert(inst)
     end
 end

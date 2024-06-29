@@ -277,9 +277,14 @@ local function gem_fruit_fn()
     inst.SpawnGem = GemFruit_SpawnGem
     inst.SpawnAndLaunchGems = GemFruit_SpawnAndLaunchGems
 
+    inst:AddComponent("bait")
     inst:AddComponent("inspectable")
     inst:AddComponent("lootdropper")
-    inst:AddComponent("bait")
+    inst:AddComponent("tradable")
+
+    inst:AddComponent("edible")
+    inst.components.edible.foodtype = FOODTYPE.ELEMENTAL
+    inst.components.edible.hungervalue = 3
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetSinks(true)
@@ -336,6 +341,20 @@ local function NightVision_PlayBeatingSound(inst)
     inst.SoundEmitter:PlaySound("meta4/ancienttree/nightvision/fruit_pulse", BEAT_SOUNDNAME)
 end
 
+local function NightVision_DoBeatingBounce(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+
+    if y >= .1 then
+        return -- We are mid air!
+    end
+
+    local angle = math.random() * TWOPI
+    local spd = math.random() * .5 + .5
+
+    inst.Physics:SetVel(math.cos(angle) * spd, 5, math.sin(angle) * spd)
+    inst.components.inventoryitem:SetLanded(false, true)
+end
+
 local function NightVision_OnEntityWake(inst)
     if inst._beatsoundtask ~= nil or inst:IsInLimbo() or inst:IsAsleep() then
         return
@@ -346,12 +365,18 @@ local function NightVision_OnEntityWake(inst)
         inst._beatsoundtask = nil
     end
 
+    if inst._beatbouncetask ~= nil then
+        inst._beatbouncetask:Cancel()
+        inst._beatbouncetask = nil
+    end
+
     local fulltime    = inst.AnimState:GetCurrentAnimationLength()
     local currenttime = inst.AnimState:GetCurrentAnimationTime()
 
     inst:PlayBeatingSound() -- This one might be out of sync, but that's fine!
 
-    inst._beatsoundtask = inst:DoPeriodicTask(fulltime, inst.PlayBeatingSound, fulltime - currenttime)
+    inst._beatsoundtask  = inst:DoPeriodicTask(fulltime, inst.PlayBeatingSound, fulltime - currenttime             )
+    inst._beatbouncetask = inst:DoPeriodicTask(fulltime, inst.DoBeatingBounce, (fulltime - currenttime) + 12*FRAMES)
 end
 
 local function NightVision_OnEntitySleep(inst)
@@ -360,6 +385,11 @@ local function NightVision_OnEntitySleep(inst)
     if inst._beatsoundtask ~= nil then
         inst._beatsoundtask:Cancel()
         inst._beatsoundtask = nil
+    end
+
+    if inst._beatbouncetask ~= nil then
+        inst._beatbouncetask:Cancel()
+        inst._beatbouncetask = nil
     end
 end
 
@@ -394,11 +424,13 @@ local function nightvision_fruit_fn()
     end
 
     inst.PlayBeatingSound = NightVision_PlayBeatingSound
+    inst.DoBeatingBounce = NightVision_DoBeatingBounce
 
     inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
+    inst:AddComponent("tradable")
 
     inst:AddComponent("edible")
     inst.components.edible.hungervalue =  TUNING.CALORIES_SMALL

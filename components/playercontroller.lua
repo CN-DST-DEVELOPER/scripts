@@ -2771,7 +2771,7 @@ local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 						dist = math.max(0, dist - phys_rad)
 						local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
 
-                        if isally then
+                        if isally and not v.controller_priority_override_is_ally then
                             score = score * .25
 						elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
                             score = score * 5

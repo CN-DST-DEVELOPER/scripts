@@ -81,7 +81,7 @@ function NightLightManager:UpdateNightLightPosition(nightlight)
     end
     nightlightdata.node_index = node_index
 
-    if node then
+    if node and node.tags then
         nightlightdata.node_tags = table.invert(node.tags)
     else
         nightlightdata.node_tags = nil

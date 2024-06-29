@@ -3,14 +3,21 @@ local FISH_DATA = require("prefabs/oceanfishdef")
 local function UpdateFishNetAnim(inst, data)
     -- Swap out the fish net anim depending on the number of fish caught
     local container = inst.components.container
+    local symbolname
     if inst.components.oceantrawler:HasFishEscaped() then
-        inst.AnimState:OverrideSymbol("net_empty", "ocean_trawler", "net_untied")
+        symbolname = "net_untied"
     elseif container:IsEmpty() then
-        inst.AnimState:OverrideSymbol("net_empty", "ocean_trawler", "net_empty")
+        symbolname = "net_empty"
     elseif container:IsFull() then
-        inst.AnimState:OverrideSymbol("net_empty", "ocean_trawler", "net_full")
+        symbolname = "net_full"
     else
-        inst.AnimState:OverrideSymbol("net_empty", "ocean_trawler", "net_medium")
+        symbolname = "net_medium"
+    end
+    local skinbuild = inst.AnimState:GetSkinBuild()
+    if skinbuild and skinbuild ~= "" then
+        inst.AnimState:OverrideItemSkinSymbol("net_empty", skinbuild, symbolname, inst.GUID, "ocean_trawler")
+    else
+        inst.AnimState:OverrideSymbol("net_empty", "ocean_trawler", symbolname)
     end
 end
 

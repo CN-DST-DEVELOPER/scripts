@@ -6,6 +6,7 @@ local assets =
 local prefabs =
 {
 	"trap_vines",
+	"crab_king_waterspout",
 }
 
 local ELEMENTS = { "shadow", "lunar", "hybrid" }
@@ -121,38 +122,63 @@ local COLLAPSIBLE_WORK_ACTIONS =
 	MINE = true,
 }
 local COLLAPSIBLE_TAGS = { "NPC_workable" }
+local COLLAPSIBLE_TAGS_OCEAN = { "kelp", "NPC_workable" }
 for k, v in pairs(COLLAPSIBLE_WORK_ACTIONS) do
-	table.insert(COLLAPSIBLE_TAGS, k.."_workable")
+	local tag = k.."_workable"
+	table.insert(COLLAPSIBLE_TAGS, tag)
+	table.insert(COLLAPSIBLE_TAGS_OCEAN, tag)
 end
 
-local NON_COLLAPSIBLE_TAGS = { "FX", --[["NOCLICK",]] "DECOR", "INLIMBO", --[["structure",]] "wall" }
+local NON_COLLAPSIBLE_TAGS = { "FX", --[["NOCLICK",]] "DECOR", "INLIMBO", --[["structure",]] "wall", "walkableperipheral" }
 
-local function DoAOEWork(inst, x, z)
-	for i, v in ipairs(TheSim:FindEntities(x, 0, z, inst.AOE_RADIUS + WORK_RADIUS_PADDING, nil, NON_COLLAPSIBLE_TAGS, COLLAPSIBLE_TAGS)) do
-		if v:IsValid() and not v:IsInLimbo() and
-			(	not v:HasTag("structure") or
-				(v.components.childspawner and not v:HasTag("playerowned")) or
-				(v:HasTag("statue") and not v:HasTag("sculpture")) or
-				v:HasTag("smashable")
-			)
-		then
-			local isworkable = false
-			if v.components.workable then
-				local work_action = v.components.workable:GetWorkAction()
-				--V2C: nil action for NPC_workable (e.g. campfires)
-				--     allow digging spawners (e.g. rabbithole)
-				isworkable = (
-					(work_action == nil and v:HasTag("NPC_workable")) or
-					(v.components.workable:CanBeWorked() and work_action and COLLAPSIBLE_WORK_ACTIONS[work_action.id])
-				)
-			end
-			if isworkable then
-				v.components.workable:Destroy(inst)
-				if v:IsValid() and v:HasTag("stump") and v.components.workable and v.components.workable:CanBeWorked() then
-					v.components.workable:Destroy(inst)
+local function DoAOEWork(inst, x, z, isocean)
+	for i, v in ipairs(TheSim:FindEntities(x, 0, z, inst.AOE_RADIUS + WORK_RADIUS_PADDING, nil, NON_COLLAPSIBLE_TAGS, isocean and COLLAPSIBLE_TAGS_OCEAN or COLLAPSIBLE_TAGS)) do
+		if v:IsValid() and not v:IsInLimbo() then
+			if v.prefab == "bullkelp_plant" then
+				--Spawn kelp roots along with kelp is a bullkelp plant is hit
+				local x1, y1, z1 = v.Transform:GetWorldPosition()
+
+				local loot = SpawnPrefab("bullkelp_root")
+				loot.Transform:SetPosition(x1, 0, z1)
+
+				if v.components.pickable and v.components.pickable:CanBePicked() then
+					loot = SpawnPrefab(v.components.pickable.product)
+					if loot then
+						loot.Transform:SetPosition(x1, 0, z1)
+						if loot.components.inventoryitem then
+							loot.components.inventoryitem:MakeMoistureAtLeast(TUNING.OCEAN_WETNESS)
+						end
+						if loot.components.stackable and v.components.pickable.numtoharvest > 1 then
+							loot.components.stackable:SetStackSize(v.components.pickable.numtoharvest)
+						end
+					end
 				end
-			elseif v.components.pickable and v.components.pickable:CanBePicked() and not v:HasTag("intense") then
-				v.components.pickable:Pick(inst)
+
+				v:Remove()
+			elseif (not v:HasTag("structure") or
+					(v.components.childspawner and not v:HasTag("playerowned")) or
+					(v:HasTag("statue") and not v:HasTag("sculpture")) or
+					v:HasTag("smashable")
+				)
+			then
+				local isworkable = false
+				if v.components.workable then
+					local work_action = v.components.workable:GetWorkAction()
+					--V2C: nil action for NPC_workable (e.g. campfires)
+					--     allow digging spawners (e.g. rabbithole)
+					isworkable = (
+						(work_action == nil and v:HasTag("NPC_workable")) or
+						(v.components.workable:CanBeWorked() and work_action and COLLAPSIBLE_WORK_ACTIONS[work_action.id])
+					)
+				end
+				if isworkable then
+					v.components.workable:Destroy(inst)
+					if v:IsValid() and v:HasTag("stump") and v.components.workable and v.components.workable:CanBeWorked() then
+						v.components.workable:Destroy(inst)
+					end
+				elseif v.components.pickable and v.components.pickable:CanBePicked() and not v:HasTag("intense") then
+					v.components.pickable:Pick(inst)
+				end
 			end
 		end
 	end
@@ -161,32 +187,69 @@ end
 local TOSSITEM_MUST_TAGS = { "_inventoryitem" }
 local TOSSITEM_CANT_TAGS = { "locomotor", "INLIMBO" }
 
-local function TossLaunch(inst, launcher, basespeed, startheight)
-	local x0, y0, z0 = launcher.Transform:GetWorldPosition()
-	local x1, y1, z1 = inst.Transform:GetWorldPosition()
+local function TossLaunch(obj, x0, z0, basespeed, startheight)
+	local x1, y1, z1 = obj.Transform:GetWorldPosition()
 	local dx, dz = x1 - x0, z1 - z0
 	local dsq = dx * dx + dz * dz
 	local angle
 	if dsq > 0 then
 		local dist = math.sqrt(dsq)
-		angle = math.atan2(dz / dist, dx / dist) + (math.random() * 20 - 10) * DEGREES
+		angle = math.atan2(dz / dist, dx / dist)
+		if obj.prefab == "bullkelp_root" then
+			--prevent overlap with pickable loot spawned at the same time
+			local rnd = math.random() * 40
+			angle = angle + (rnd < 20 and 60 + rnd or -(40 + rnd)) * DEGREES
+		else
+			angle = angle + (math.random() * 20 - 10) * DEGREES
+		end
 	else
 		angle = TWOPI * math.random()
 	end
 	local speed = basespeed + math.random()
-	inst.Physics:Teleport(x1, startheight, z1)
-	inst.Physics:SetVel(math.cos(angle) * speed, speed * 5 + math.random() * 2, math.sin(angle) * speed)
+	obj.Physics:Teleport(x1, startheight, z1)
+	obj.Physics:SetVel(math.cos(angle) * speed, speed * 5 + math.random() * 2, math.sin(angle) * speed)
 end
 
-local function TossItems(inst, x, z)
+local function TossItems(inst, x, z, isocean)
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, inst.AOE_RADIUS + WORK_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
 		if v.components.mine then
 			v.components.mine:Deactivate()
 		end
 		if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
-			TossLaunch(v, inst, 1, 0.4)
+			TossLaunch(v, x, z, 1, 0.4)
+			if isocean then
+				v.components.inventoryitem:SetLanded(false, true)
+			end
 		end
 	end
+end
+
+--------------------------------------------------------------------------
+
+local OCEAN_ONE_OF_TAGS = { "oceanfishable", "wave" }
+local OCEAN_NO_TAGS = { "INLIMBO", "noattack", "flight", "invisible" }
+
+local function DoOceanFishing(inst, x, z)
+	-- Set y to zero to look for objects floating on the ocean
+	for i, v in ipairs(TheSim:FindEntities(x, 0, z, inst.AOE_RADIUS + WORK_RADIUS_PADDING, nil, OCEAN_NO_TAGS, OCEAN_ONE_OF_TAGS)) do
+		-- Look for fish in the splash radius, kill and spawn their loot if hit
+		if v.components.oceanfishable then
+			if v.fish_def and v.fish_def.loot then
+				for j, product in ipairs(v.fish_def.loot) do
+					local loot = SpawnPrefab(product)
+					if loot then
+						local x1, y1, z1 = v.Transform:GetWorldPosition()
+						loot.Transform:SetPosition(x1, 0, z1)
+					end
+				end
+				v:Remove()
+			end
+		elseif v.waveactive then
+			v:DoSplash()
+		end
+	end
+
+	SpawnPrefab("crab_king_waterspout").Transform:SetPosition(x, 0, z)
 end
 
 --------------------------------------------------------------------------
@@ -324,10 +387,14 @@ local function OnHit(inst, attacker, target)
         inst.animent = nil
     end
 
+	local isocean = TheWorld.Map:IsOceanAtPoint(x, y, z)
 	if inst.mega and (element == "lunar" or element == "hybrid") then
 		inst:AddTag("toughworker")
+		DoAOEWork(inst, x, z, isocean)
 		ShakeAllCameras(CAMERASHAKE.FULL, 0.7, 0.02, 0.4, inst, 15 + inst.AOE_RADIUS)
-		DoAOEWork(inst, x, z)
+	end
+	if isocean then
+		DoOceanFishing(inst, x, z)
 	end
 	--if not (inst.mega and element == "shadow") then
 		DoAOEAttack(inst, x, z, attacker, inst.caster, element, inst.mega)
@@ -335,8 +402,8 @@ local function OnHit(inst, attacker, target)
 	if inst.mega and (element == "shadow" or element == "hybrid") then
 		SpawnAOETrap(inst, x, z, attacker, inst.caster)
 	end
-	if inst.mega and (element == "lunar" or element == "hybrid") then
-		TossItems(inst, x, z)
+	if inst.mega and (element == "lunar" or element == "hybrid") or isocean then
+		TossItems(inst, x, z, isocean)
 	end
 end
 

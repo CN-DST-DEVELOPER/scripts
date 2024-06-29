@@ -770,7 +770,7 @@ local function OnRespawnFromVineSave(inst)
 	inst.components.freezable:Reset()
 	inst.components.grogginess:ResetGrogginess()
 	inst.components.moisture:ForceDry(true, inst)
-	inst.components.temperature:SetTemp(TUNING.STARTING_TEMP)
+	inst.components.temperature:SetTemperature(TUNING.STARTING_TEMP)
 
 	inst.components.debuffable:Enable(false) --removes all debuffs
 	inst.components.debuffable:Enable(true)

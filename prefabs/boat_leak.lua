@@ -30,6 +30,13 @@ local function onrepairedleak(inst)
         inst:RemoveComponent("hauntable")
 
         inst.components.updatelooper:RemoveOnUpdateFn(inst.FindLeakBlocker)
+
+        for target in pairs(inst._wettargets) do
+            if target.components.moisture ~= nil then
+                target.components.moisture:RemoveRateBonus(inst)
+            end
+        end
+
         inst._wettargets = nil
     end
 
@@ -121,7 +128,9 @@ local function FindLeakBlocker(inst, dt)
         inst.components.boatleak:SetPlugged(false)
 
         for target in pairs(inst._wettargets) do
-            target.components.moisture:RemoveRateBonus(inst)
+            if target.components.moisture ~= nil then
+                target.components.moisture:RemoveRateBonus(inst)
+            end
         end
 
         inst._wettargets = {}
@@ -156,7 +165,10 @@ local function FindLeakBlocker(inst, dt)
             inst._wettargets[target] = nil
 
         elseif not table.contains(ents, target) then
-            target.components.moisture:RemoveRateBonus(inst)
+            if target.components.moisture ~= nil then
+                target.components.moisture:RemoveRateBonus(inst)
+            end
+
             inst._wettargets[target] = nil
         end
     end

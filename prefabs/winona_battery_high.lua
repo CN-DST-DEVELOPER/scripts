@@ -449,9 +449,20 @@ local function StopSoundLoop(inst)
 	inst.SoundEmitter:KillSound("pb_loop")
 end
 
+local function StartOverloadedSoundLoop(inst)
+	if not inst.SoundEmitter:PlayingSound("ol_loop") then
+		inst.SoundEmitter:PlaySound("meta4/winona_battery/purebrillance_overloaded_lp", "ol_loop")
+	end
+end
+
+local function StopOverloadedSoundLoop(inst)
+	inst.SoundEmitter:KillSound("ol_loop")
+end
+
 local function OnEntitySleep(inst)
     StopSoundLoop(inst)
     StopIdleChargeSounds(inst)
+	StopOverloadedSoundLoop(inst)
 end
 
 local function OnEntityWake(inst)
@@ -461,6 +472,9 @@ local function OnEntityWake(inst)
     if inst.AnimState:IsCurrentAnimation("idle_charge") then
         StartIdleChargeSounds(inst)
     end
+	if inst:IsOverloaded() then
+		StartOverloadedSoundLoop(inst)
+	end
 end
 
 --------------------------------------------------------------------------
@@ -578,6 +592,7 @@ local function OnBurnt(inst)
 	inst.components.timer:StopTimer("overloaded")
 	inst.components.timer:StopTimer("shardload")
 	StopUpdatingShardLoad(inst)
+	StopOverloadedSoundLoop(inst)
 	inst:RemoveComponent("portablestructure")
     inst.components.workable:SetOnWorkCallback(nil)
 	inst.components.workable:SetOnFinishCallback(OnWorkedBurnt)
@@ -636,6 +651,7 @@ local function SetOverloaded(inst, overloaded)
 			inst.AnimState:SetSymbolLightOverride("m2", 0.2)
 			inst.AnimState:SetSymbolBloom("m2")
 			inst.AnimState:ClearOverrideSymbol("plug")
+			StopOverloadedSoundLoop(inst)
 			if not inst.components.fueled.consuming then
 				inst.components.fueled:StartConsuming()
 				BroadcastCircuitChanged(inst)
@@ -674,9 +690,13 @@ local function SetOverloaded(inst, overloaded)
 		if not POPULATING then
 			PlayHitAnim(inst, "overload_pre")
 			inst.SoundEmitter:PlaySound("dontstarve/common/together/battery/down")
+			inst.SoundEmitter:PlaySound("meta4/winona_battery/purebrillance_overload")
 		else
 			inst.AnimState:PlayAnimation("overload_idle", true)
 			StopIdleChargeSounds(inst)
+		end
+		if not inst:IsAsleep() then
+			StartOverloadedSoundLoop(inst)
 		end
 	end
 end

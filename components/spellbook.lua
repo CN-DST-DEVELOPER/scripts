@@ -16,6 +16,7 @@ local SpellBook = Class(function(self, inst)
 	self.inst = inst
 	self.tag = nil
 	self.items = nil
+	self.bgdata = nil
 	self.radius = 175
 	self.focus_radius = 178
 	self.spell_id = nil
@@ -43,6 +44,10 @@ function SpellBook:SetFocusRadius(radius)
 	self.focus_radius = radius
 end
 
+function SpellBook:SetBgData(bgdata)
+	self.bgdata = bgdata
+end
+
 function SpellBook:SetItems(items)
 	self.items = items
 end
@@ -64,7 +69,7 @@ function SpellBook:OpenSpellBook(user)
 		if user.components.playercontroller ~= nil then
 			user.components.playercontroller:CancelAOETargeting()
 		end
-		user.HUD:OpenSpellWheel(self.inst, self.items, self.radius, self.focus_radius)
+		user.HUD:OpenSpellWheel(self.inst, self.items, self.radius, self.focus_radius, self.bgdata)
 	end
 end
 

@@ -42,7 +42,9 @@ function RoseInspectableUser:OnCharlieResidueActivated(residue)
             local will_cooldown = roseinspectable:WillInduceCooldownOnActivate(self.inst)
             if not will_cooldown or (will_cooldown and not self:IsInCooldown()) then
                 roseinspectable:DoRoseInspection(self.inst)
-                self:GoOnCooldown()
+                if will_cooldown then
+                    self:GoOnCooldown()
+                end
             else
                 self:DoQuip("ROSEGLASSES_COOLDOWN", true)
             end

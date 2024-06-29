@@ -117,7 +117,7 @@ local function OnHit(inst, attacker, target)
                 if loot ~= nil then
                     loot.Transform:SetPosition(ae_x, ae_y, ae_z)
                     if loot.components.inventoryitem ~= nil then
-                        loot.components.inventoryitem:InheritWorldWetnessAtTarget(affected_entity)
+                        loot.components.inventoryitem:MakeMoistureAtLeast(TUNING.OCEAN_WETNESS)
                     end
                     if loot.components.stackable ~= nil
                             and affected_entity.components.pickable.numtoharvest > 1 then

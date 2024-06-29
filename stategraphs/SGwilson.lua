@@ -20169,6 +20169,19 @@ local states =
 					inst.components.talker:ShutUp()
 					inst.components.talker:IgnoreAll("remote_teleporting")
 				end
+                local item = inst.sg.statemem.item
+                if item and item:IsValid() then
+                    local remoteteleporter = item.components.remoteteleporter
+                    if remoteteleporter then
+                        local nearbyitems = remoteteleporter:Teleport_GetNearbyItems(inst)
+                        if nearbyitems then
+                            inst.sg.statemem.nearbyitems = nearbyitems
+                            for _, nearbyitem in ipairs(nearbyitems) do
+                                nearbyitem:RemoveFromScene()
+                            end
+                        end
+                    end
+                end
 			end),
 		},
 
@@ -20177,15 +20190,34 @@ local states =
 			EventHandler("actionfailed", function(inst, data)
 				inst.sg.statemem.teleporting = true
 				inst.sg:GoToState("remote_teleport_in", {
+                    nearbyitems = inst.sg.statemem.nearbyitems,
 					item = inst.sg.statemem.item,
 					faildata = data,
 				})
 			end),
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+                    local item = inst.sg.statemem.item
+                    if inst.sg.statemem.nearbyitems then
+                        if item and item:IsValid() then
+                            local remoteteleporter = item.components.remoteteleporter
+                            if remoteteleporter then
+                                remoteteleporter:SetNearbyItems(inst.sg.statemem.nearbyitems)
+                            end
+                        end
+                    end
 					if inst:PerformBufferedAction() then
+                        if item and item:IsValid() then
+                            local remoteteleporter = item.components.remoteteleporter
+                            if remoteteleporter then
+                                remoteteleporter:SetNearbyItems(nil)
+                            end
+                        end
 						inst.sg.statemem.teleporting = true
-						inst.sg:GoToState("remote_teleport_in", { item = inst.sg.statemem.item })
+						inst.sg:GoToState("remote_teleport_in", {
+                            nearbyitems = inst.sg.statemem.nearbyitems,
+                            item = item,
+                        })
 					end
 				end
 			end),
@@ -20217,6 +20249,14 @@ local states =
 				if item and item:IsValid() and item.components.remoteteleporter then
 					item.components.remoteteleporter:OnStopTeleport(inst, false)
 				end
+                if inst.sg.statemem.nearbyitems then
+                    for _, nearbyitem in ipairs(inst.sg.statemem.nearbyitems) do
+                        if nearbyitem:IsValid() then
+                            nearbyitem:ReturnToScene()
+                        end
+                    end
+                    inst.sg.statemem.nearbyitems = nil
+                end
 			end
 		end,
 	},
@@ -20241,6 +20281,7 @@ local states =
 				inst.components.talker:IgnoreAll("remote_teleporting")
 			end
 			if data then
+                inst.sg.statemem.nearbyitems = data.nearbyitems
 				inst.sg.statemem.item = data.item
 				inst.sg.statemem.faildata = data.faildata
 			end
@@ -20248,6 +20289,16 @@ local states =
 
 		timeline =
 		{
+            FrameEvent(15, function(inst)
+                if inst.sg.statemem.nearbyitems then
+                    for _, item in ipairs(inst.sg.statemem.nearbyitems) do
+                        if item:IsValid() then
+                            item:ReturnToScene()
+                        end
+                    end
+                    inst.sg.statemem.nearbyitems = nil
+                end
+            end),
 			FrameEvent(18, function(inst)
 				inst.DynamicShadow:Enable(true)
 				inst.sg:RemoveStateTag("invisible")
@@ -20308,6 +20359,14 @@ local states =
 			if item and item:IsValid() and item.components.remoteteleporter then
 				item.components.remoteteleporter:OnStopTeleport(inst, inst.sg.statemem.faildata == nil)
 			end
+            if inst.sg.statemem.nearbyitems then
+                for _, item in ipairs(inst.sg.statemem.nearbyitems) do
+                    if item:IsValid() then
+                        item:ReturnToScene()
+                    end
+                end
+                inst.sg.statemem.nearbyitems = nil
+            end
 		end,
 	},
 }

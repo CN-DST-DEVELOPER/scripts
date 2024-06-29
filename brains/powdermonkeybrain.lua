@@ -581,7 +581,7 @@ local function monkeyinarc(inst, cannon, target)
     end
     local anglediff =  finddiff(angle_to_target,angle_to_monkey)
     
-    print(inst.GUID, anglediff)
+    --print(inst.GUID, anglediff)
 
     if anglediff < 90 then
         return true

@@ -268,6 +268,7 @@ function winch_clear_fn(inst)
 end
 
 function ocean_trawler_init_fn(inst, build_name)
+    inst.AnimState:OverrideSymbol("water_shadow", "ocean_trawler", "water_shadow")
     if inst.components.placer ~= nil then
         --Placers can run this on clients as well as servers
         inst.AnimState:SetSkin(build_name, "ocean_trawler")
@@ -278,6 +279,7 @@ function ocean_trawler_init_fn(inst, build_name)
     inst.AnimState:SetSkin(build_name, "ocean_trawler")
 end
 function ocean_trawler_clear_fn(inst)
+    inst.AnimState:ClearOverrideSymbol("water_shadow")
     inst.AnimState:SetBuild("ocean_trawler")
 end
 function ocean_trawler_kit_init_fn(inst, build_name)

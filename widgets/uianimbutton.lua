@@ -53,7 +53,7 @@ function UIAnimButton:OnControl(control, down)
             end
 
             if not self.stopclicksound then
-                TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+				TheFrontEnd:GetSound():PlaySound(self.overrideclicksound or "dontstarve/HUD/click_move")
             end
 
             self.down = true

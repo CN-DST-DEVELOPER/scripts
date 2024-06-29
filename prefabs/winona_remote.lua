@@ -306,6 +306,7 @@ local SPELLS =
 			down = { anim = "icon_target_pressed" },
 			disabled = { anim = "icon_target_disabled" },
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 		checkenabled = function(user)
 			--client safe
@@ -338,6 +339,7 @@ local SPELLS =
 			down = { anim = "icon_boost_pressed" },
 			disabled = { anim = "icon_boost_disabled" },
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 		checkenabled = function(user)
 			--client safe
@@ -370,6 +372,7 @@ local SPELLS =
 			down = { anim = "icon_wake_pressed" },
 			disabled = { anim = "icon_wake_disabled" },
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 	},
 	{
@@ -397,6 +400,7 @@ local SPELLS =
 			down = function(user) return ELEMENTAL_VOLLEY_ICONS[GetSkillElement(user)].down end,
 			disabled = function(user) return ELEMENTAL_VOLLEY_ICONS[GetSkillElement(user)].disabled end,
 		},
+		clicksound = "meta4/winona_UI/select",
 		widget_scale = ICON_SCALE,
 		checkenabled = function(user)
 			--client safe
@@ -406,6 +410,14 @@ local SPELLS =
 					)
 		end,
 	},
+}
+
+local SPELLBOOK_BG =
+{
+	bank = "spell_icons_winona",
+	build = "spell_icons_winona",
+	anim = "dpad",
+	widget_scale = ICON_SCALE,
 }
 
 --[[local function OnOpenSpellBook(inst)
@@ -655,11 +667,13 @@ local function fn()
 	inst.components.spellbook:SetRadius(SPELLBOOK_RADIUS)
 	inst.components.spellbook:SetFocusRadius(SPELLBOOK_FOCUS_RADIUS)
 	inst.components.spellbook:SetItems(SPELLS)
+	inst.components.spellbook:SetBgData(SPELLBOOK_BG)
 	--inst.components.spellbook:SetOnOpenFn(OnOpenSpellBook)
 	--inst.components.spellbook:SetOnCloseFn(OnCloseSpellBook)
-	inst.components.spellbook.opensound = "dontstarve/common/together/book_maxwell/use"
-	inst.components.spellbook.closesound = "dontstarve/common/together/book_maxwell/close"
-	--inst.components.spellbook.executesound = "dontstarve/common/together/book_maxwell/close"
+	inst.components.spellbook.opensound = "meta4/winona_UI/open"
+	inst.components.spellbook.closesound = "meta4/winona_UI/close"
+	--inst.components.spellbook.executesound = "meta4/winona_UI/select"	--use .clicksound for item buttons instead
+	inst.components.spellbook.focussound = "meta4/winona_UI/hover"		--item UIAnimButton don't have hover sound
 
 	inst:AddComponent("aoetargeting")
 	inst.components.aoetargeting:SetAllowWater(true)

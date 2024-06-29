@@ -460,7 +460,7 @@ ACTIONS =
     ATTACKPLANT = Action(),
     PLANTWEED = Action(),
     ADDCOMPOSTABLE = Action(),
-    WAX = Action({ encumbered_valid = true, distance=1.5 }),
+    WAX = Action({ encumbered_valid = true, mindistance=1.5 }),
     APPRAISE = Action(),
     UNLOAD_WINCH = Action({rmb=true, priority=3}),
     USE_HEAVY_OBSTACLE = Action({encumbered_valid=true, rmb=true, priority=1}),

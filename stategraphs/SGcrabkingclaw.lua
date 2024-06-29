@@ -235,6 +235,8 @@ local states =
 				inst.sg.statemem.targets = {}
 				--NOTE: range is about 6 in the art file, but this prefab is scaled by 70%!
 				DoArcAttack(inst, 4, 45, 67.5, inst.sg.statemem.targets)
+
+                inst.SoundEmitter:PlaySound("meta4/crabking/claw_swipe_f21")
 			end),
 			FrameEvent(22, function(inst)
 				DoArcAttack(inst, 4, 45 + 10, 22.5 + 5, inst.sg.statemem.targets)

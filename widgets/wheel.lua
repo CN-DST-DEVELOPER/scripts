@@ -69,6 +69,7 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 		if v.anims then
 			w = self:AddChild(UIAnimButton(v.bank, v.build))
 			w.animstate:Hide("mouseover")
+			w.overrideclicksound = v.clicksound
 			--helpers to basically do this:
 			--    w:SetIdleAnim(v.anims.idle.anim, v.anims.idle.anim.loop)
 			--(except the anim data might be nil!!!)

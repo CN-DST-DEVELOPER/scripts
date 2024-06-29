@@ -871,7 +871,7 @@ local function updatespells(inst,owner)
     inst.components.spellbook:SetItems(spells)
 end
 
-local function OnUpdateSpellsDirty(inst, force)
+local function DoClientUpdateSpells(inst, force)
 	--V2C: inst.replica.inventoryitem:IsHeldBy(ThePlayer) won't work for new ember
 	--     spawned directly in pocket, because inventory preview won't have been
 	--     resolved yet.
@@ -888,10 +888,14 @@ local function OnUpdateSpellsDirty(inst, force)
 	end
 end
 
+local function OnUpdateSpellsDirty(inst)
+	inst:DoTaskInTime(0, DoClientUpdateSpells)
+end
+
 local function DoOnClientInit(inst)
 	inst:ListenForEvent("willow_ember._tempdisablepickupsound", OnTempDisablePickupSound)
     inst:ListenForEvent("willow_ember._updatespells", OnUpdateSpellsDirty)
-    OnUpdateSpellsDirty(inst)
+	DoClientUpdateSpells(inst)
 end
 
 local function topocket(inst, owner)
@@ -960,7 +964,7 @@ local function fn()
 
     if not TheWorld.ismastersim then
         inst:DoTaskInTime(0,DoOnClientInit)
-		inst._onskillrefresh_client = function(owner) OnUpdateSpellsDirty(inst, true) end
+		inst._onskillrefresh_client = function(owner) DoClientUpdateSpells(inst, true) end
 
         return inst
     end

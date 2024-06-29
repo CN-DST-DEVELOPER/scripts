@@ -544,6 +544,7 @@ local function fn()
     inst:AddTag("mermking")
     inst:AddTag("wet")
     inst:AddTag("companion")
+    inst.controller_priority_override_is_ally = true
 
     inst:AddTag("trader")
     inst:AddTag("alltrader")

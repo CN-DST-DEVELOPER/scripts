@@ -65,7 +65,7 @@ function Button:OnControl(control, down)
 		if down then
 			if not self.down then
                 if not self.stopclicksound then
-    				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+					TheFrontEnd:GetSound():PlaySound(self.overrideclicksound or "dontstarve/HUD/click_move")
                 end
 				self.o_pos = self:GetLocalPosition()
 				self:SetPosition(self.o_pos + self.clickoffset)

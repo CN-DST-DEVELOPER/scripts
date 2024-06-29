@@ -40,32 +40,44 @@ end
 
 local ITEM_MUST_TAGS = {"_inventoryitem",}
 local ITEM_CANT_TAGS = {"INLIMBO", "FX", "NOCLICK", "DECOR",}
-function RemoteTeleporter:Teleport_Internal(target, from_x, from_z, to_x, to_z, doer)
-	local items
+function RemoteTeleporter:Teleport_GetNearbyItems(doer)
+    local from_x, _, from_z = doer.Transform:GetWorldPosition()
+    local items
     if self.itemteleportradius ~= nil then
-		items = TheSim:FindEntities(from_x, 0, from_z, self.itemteleportradius, ITEM_MUST_TAGS, ITEM_CANT_TAGS)
-		for i = #items, 1, -1 do
-			local item = items[i]
-			if item.components.inventoryitem.canbepickedup then
-				local ix, iy, iz = item.Transform:GetWorldPosition()
-				local dx, dz = ix - from_x, iz - from_z
-				local platform = item:GetCurrentPlatform()
-				if platform ~= nil then
-					platform.components.walkableplatform:RemoveObject(item) -- NOTES(JBK): Temporary workaround function for teleporting things off of a boat past entity sleep range. [TBTWARWB]
-				end
-				if item.Physics then
-					item.Physics:Teleport(to_x + dx, 0, to_z + dz)
-				else
-					item.Transform:SetPosition(to_x + dx, 0, to_z + dz)
-				end
-				item:PushEvent("teleported")
-                if item.components.inventoryitem ~= nil then
-                    item.components.inventoryitem:SetLanded(false, true)
-                end
-			else
-				items[i] = items[#items]
-				items[#items] = nil
-			end
+        items = TheSim:FindEntities(from_x, 0, from_z, self.itemteleportradius, ITEM_MUST_TAGS, ITEM_CANT_TAGS)
+        for i = #items, 1, -1 do
+            local item = items[i]
+            if not item.components.inventoryitem.canbepickedup then
+                items[i] = items[#items]
+                items[#items] = nil
+            end
+        end
+    end
+    return items
+end
+function RemoteTeleporter:SetNearbyItems(nearbyitems)
+    self.nearbyitems = nearbyitems
+end
+function RemoteTeleporter:Teleport_Internal(target, from_x, from_z, to_x, to_z, doer)
+    local items = self.nearbyitems
+    if items then
+        self:SetNearbyItems(nil)
+        for _, item in ipairs(items) do
+            local ix, iy, iz = item.Transform:GetWorldPosition()
+            local dx, dz = ix - from_x, iz - from_z
+            local platform = item:GetCurrentPlatform()
+            if platform ~= nil then
+                platform.components.walkableplatform:RemoveObject(item) -- NOTES(JBK): Temporary workaround function for teleporting things off of a boat past entity sleep range. [TBTWARWB]
+            end
+            if item.Physics then
+                item.Physics:Teleport(to_x + dx, 0, to_z + dz)
+            else
+                item.Transform:SetPosition(to_x + dx, 0, to_z + dz)
+            end
+            item:PushEvent("teleported")
+            if item.components.inventoryitem ~= nil then
+                item.components.inventoryitem:SetLanded(false, true)
+            end
         end
     end
 

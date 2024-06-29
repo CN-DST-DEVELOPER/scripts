@@ -722,8 +722,10 @@ local function ondeploy(inst, pt, deployer)
 
     local boat_hull = boat.components.hull
     if boat.skinname and boat_hull and boat_hull.plank then
-        if boat_hull.plank.prefab == "walkingplank" then
-            local plank_skinname = "walkingplank" .. string.sub(boat.skinname, 5)
+        local iswoodboat = boat_hull.plank.prefab == "walkingplank"
+        local isgrassboat = boat_hull.plank.prefab == "walkingplank_grass"
+        if iswoodboat or isgrassboat then
+            local plank_skinname = boat_hull.plank.prefab .. string.sub(boat.skinname, iswoodboat and 5 or isgrassboat and 11 or 0)
             TheSim:ReskinEntity( boat_hull.plank.GUID, nil, plank_skinname, boat.skin_id )
         end
     end
