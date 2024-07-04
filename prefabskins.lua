@@ -1257,6 +1257,7 @@ PREFAB_SKINS = {
 		"tent_ancient",
 		"tent_beach",
 		"tent_circus",
+		"tent_kid",
 		"tent_leaf",
 	},
 	tophat =
@@ -1341,6 +1342,10 @@ PREFAB_SKINS = {
 		"treasurechest_upgraded_traveltrunk",
 		"treasurechest_upgraded_vintage",
 		"treasurechest_vintage",
+	},
+	trident =
+	{
+		"trident_merm",
 	},
 	trophyscale_fish =
 	{
