@@ -28,7 +28,7 @@ local function ShouldRemoveItem(inst)
 end
 
 local function ProcessLoot(item, stash, owner)
-    if ShouldRemoveItem(item) then
+    if not item:HasTag("irreplaceable") and ShouldRemoveItem(item) then
         item:Remove()
 
         return
@@ -50,13 +50,7 @@ local function SendLootToStash(inst, stash, owner)
         return
     end
 
-    if inst.components.inventoryitem ~= nil then
-        ProcessLoot(inst, stash)
-
-    elseif inst.components.inventory ~= nil then
-        inst.components.inventory:ForEachItem(ProcessLoot, stash, inst)
-
-    elseif inst.components.container ~= nil then
+    if inst.components.container ~= nil then
         for i = 1, inst.components.container.numslots do
             local item = inst.components.container.slots[i]
 
@@ -68,6 +62,13 @@ local function SendLootToStash(inst, stash, owner)
                 ProcessLoot(item, stash)
             end
         end
+    end
+
+    if inst.components.inventoryitem ~= nil then
+        ProcessLoot(inst, stash)
+
+    elseif inst.components.inventory ~= nil then
+        inst.components.inventory:ForEachItem(ProcessLoot, stash, inst)
     end
 end
 
@@ -105,7 +106,7 @@ local function OnPirateBoatVanish(boat)
         elseif ent.components.health ~= nil then
             ent.components.health:Kill()
 
-        else
+        elseif not ent:HasTag("irreplaceable") then
             ent:Remove()
         end
     end

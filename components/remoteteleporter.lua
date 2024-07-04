@@ -65,10 +65,6 @@ function RemoteTeleporter:Teleport_Internal(target, from_x, from_z, to_x, to_z, 
         for _, item in ipairs(items) do
             local ix, iy, iz = item.Transform:GetWorldPosition()
             local dx, dz = ix - from_x, iz - from_z
-            local platform = item:GetCurrentPlatform()
-            if platform ~= nil then
-                platform.components.walkableplatform:RemoveObject(item) -- NOTES(JBK): Temporary workaround function for teleporting things off of a boat past entity sleep range. [TBTWARWB]
-            end
             if item.Physics then
                 item.Physics:Teleport(to_x + dx, 0, to_z + dz)
             else

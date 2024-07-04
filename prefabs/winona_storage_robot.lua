@@ -143,6 +143,7 @@ local function SetWasDeployed(inst, deployed)
 	if not deployed then
 		inst._waitforminbattery = false
 		StopWatchForReactivate(inst)
+		StorageRobotCommon.ClearSpawnPoint(inst)
 	end
 end
 
@@ -225,7 +226,6 @@ local function OnDeactivateRobot(inst)
 		inst.AnimState:PlayAnimation("idle_off")
 		inst.SoundEmitter:KillAllSounds()
 		ChangeToInventoryItemPhysics(inst, 1, PHYSICS_RADIUS)
-		StorageRobotCommon.ClearSpawnPoint(inst)
 		inst._isactive:set(false)
 		if not inst.components.inventoryitem:IsHeld() then
 			inst.components.circuitnode:ConnectTo("engineeringbattery")
@@ -235,7 +235,9 @@ local function OnDeactivateRobot(inst)
 			if inst.components.fueled:GetPercent() < TUNING.WINONA_STORAGE_ROBOT_LOW_FUEL_PCT then
 				inst._waitforminbattery = true
 			end
-			TryWatchForReactivate(inst)
+			if not inst:IsAsleep() then
+				TryWatchForReactivate(inst)
+			end
 		end
 	end
 end
@@ -324,7 +326,7 @@ local function OnSectionChanged(newsection, oldsection, inst)--, doer)
 			inst._waitforminbattery = true
 		end
 	end
-	if oldsection < 3 and newsection >= 3 then
+	if oldsection < 3 and newsection >= 3 and not inst:IsAsleep() then
 		TryWatchForReactivate(inst)
 	end
 end
@@ -388,7 +390,6 @@ local function OnLoad(inst, data)--, newents)
 	else
 		SetWasDeployed(inst, data and data.deployed or false)
 
-		StorageRobotCommon.ClearSpawnPoint(inst)
 		if data and data.power then
 			inst:AddBatteryPower(math.max(2 * FRAMES, data.power / 1000))
 		else

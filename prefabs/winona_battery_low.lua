@@ -174,13 +174,38 @@ end
 
 local BATTERY_COST = TUNING.WINONA_BATTERY_LOW_MAX_FUEL_TIME * 0.9
 local function CanBeUsedAsBattery(inst, user)
-	if inst.components.fueled and inst.components.fueled.currentfuel >= BATTERY_COST * CalcFuelRateRescale(inst) / TUNING.WINONA_BATTERY_LOW_FUEL_RATE_MULT then
-		return true
+	if inst.components.fueled then
+		local efficiency_mult
+		if not (user and user:HasTag("handyperson")) and IsEngineerOnline(inst) then
+			efficiency_mult = CalcEfficiencyMult(inst)
+		else
+			local skilltreeupdater = user and user.components.skilltreeupdater or nil
+			local efficiency = skilltreeupdater and
+				(	(skilltreeupdater:IsActivated("winona_battery_efficiency_3") and 3) or
+					(skilltreeupdater:IsActivated("winona_battery_efficiency_2") and 2) or
+					(skilltreeupdater:IsActivated("winona_battery_efficiency_1") and 1)
+				) or 0
+			efficiency_mult = CalcEfficiencyMult(inst, efficiency)
+		end
+
+		local actual_fuel =
+			(inst._horror_level + inst._nightmare_level) / TUNING.WINONA_BATTERY_LOW_SHADOW_FUEL_RATE_MULT +
+			inst._chemical_level / TUNING.WINONA_BATTERY_LOW_FUEL_RATE_MULT
+
+		if actual_fuel >= BATTERY_COST / TUNING.WINONA_BATTERY_LOW_FUEL_RATE_MULT * efficiency_mult then
+			return true
+		end
 	end
 	return false, "NOT_ENOUGH_CHARGE"
 end
 
 local function UseAsBattery(inst, user)
+	if not (user and user:HasTag("handyperson")) and IsEngineerOnline(inst) then
+		--original winona still online, don't de-level
+	elseif ConfigureSkillTreeUpgrades(inst, user) then
+		ApplyEfficiencyBonus(inst)
+		UpdateCircuitPower(inst)
+	end
 	inst:ConsumeBatteryAmount({ fuel = BATTERY_COST / TUNING.WINONA_BATTERY_LOW_FUEL_RATE_MULT }, 1, user)
 end
 
@@ -503,7 +528,18 @@ local function OnFuelSectionChange(new, old, inst)
 end
 
 local function ConsumeBatteryAmount(inst, cost, share, doer)
-	inst.components.fueled:DoDelta(-cost.fuel / (share or 1) * CalcFuelRateRescale(inst) * CalcEfficiencyMult(inst), doer)
+	local efficiency_mult = CalcEfficiencyMult(inst)
+	local fuelrate_mult = CalcFuelRateRescale(inst)
+	local amt = cost.fuel / (share or 1) * fuelrate_mult * efficiency_mult
+	local shadow_levels = inst._horror_level + inst._nightmare_level
+	if shadow_levels > 0 and amt > shadow_levels then
+		inst.components.fueled:DoDelta(-shadow_levels, doer)
+		inst._horror_level = 0
+		inst._nightmare_level = 0
+		inst._chemical_level = inst.components.fueled.currentfuel
+		amt = (amt - shadow_levels) / fuelrate_mult * CalcFuelRateRescale(inst)
+	end
+	inst.components.fueled:DoDelta(-amt, doer)
 	OnUpdateFueled(inst)
 end
 

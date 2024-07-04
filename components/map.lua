@@ -172,7 +172,7 @@ function Map:IsFarmableSoilAtPoint(x, y, z)
     return self:GetTileAtPoint(x, y, z) == WORLD_TILES.FARMING_SOIL
 end
 
-local DEPLOY_IGNORE_TAGS = { "NOBLOCK", "player", "FX", "INLIMBO", "DECOR", "walkableplatform", "walkableperipheral"}
+local DEPLOY_IGNORE_TAGS = { "NOBLOCK", "player", "FX", "INLIMBO", "DECOR", "walkableplatform", "walkableperipheral", "isdead"}
 
 local DEPLOY_IGNORE_TAGS_NOPLAYER = shallowcopy(DEPLOY_IGNORE_TAGS)
 table.removearrayvalue(DEPLOY_IGNORE_TAGS_NOPLAYER, "player")

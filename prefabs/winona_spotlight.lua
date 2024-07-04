@@ -364,9 +364,9 @@ local function SetTarget(inst, target)
     if inst._target ~= target then
         if inst._target ~= nil then
             local t = GLOBAL_TARGETS[inst._target]
-            t.lights[inst] = nil
             if t.count > 1 then
                 t.count = t.count - 1
+				t.lights[inst] = nil
             else
                 GLOBAL_TARGETS[inst._target] = nil
             end
@@ -709,6 +709,10 @@ end
 
 local function OnEntityWake(inst)
 	inst.components.updatelooper:AddOnUpdateFn(OnUpdateLightServer)
+end
+
+local function OnRemoveEntity(inst)
+	SetTarget(inst, nil)
 end
 
 --------------------------------------------------------------------------
@@ -1155,6 +1159,7 @@ local function fn()
     inst.OnSave = OnSave
     inst.OnEntitySleep = OnEntitySleep
     inst.OnEntityWake = OnEntityWake
+	inst.OnRemoveEntity = OnRemoveEntity
     inst.AddBatteryPower = AddBatteryPower
 
 	--skilltree

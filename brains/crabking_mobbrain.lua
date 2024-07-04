@@ -8,14 +8,18 @@ local BrainCommon = require "brains/braincommon"
 
 local MAX_WANDER_DIST = 32
 
+local ABANDON_PLATFORM_HEALTH_THRESHOLD = 2
+
 local function DoAbandonPlatform(inst)
     local platform = inst:GetCurrentPlatform()
 
-    if platform ~= nil and platform.components.health:IsDead() then
+    if platform ~= nil and platform.components.health.currenthealth <= ABANDON_PLATFORM_HEALTH_THRESHOLD then
         local x, y, z = platform.Transform:GetWorldPosition()
 
         local angle = platform:GetAngleToPoint(inst.Transform:GetWorldPosition()) * DEGREES
-        local radius = platform.components.walkableplatform.platform_radius - inst:GetPhysicsRadius(0) - 0.8
+        local radius = platform:GetSafePhysicsRadius() - inst:GetPhysicsRadius(0) - .3
+
+        radius = math.max(1, radius - .5)
 
         local theta, offset, jump_pos, test_pos
 

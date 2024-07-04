@@ -169,6 +169,7 @@ function BoatLeak:SetState(state, skip_open)
             AnimState:AddOverrideBuild(self.leak_build_override)
         end
 
+        self.inst.SoundEmitter:KillSound("small_leak")
         self.inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/fountain_small_LP", "small_leak")
 
         self.has_leaks = true
@@ -177,13 +178,17 @@ function BoatLeak:SetState(state, skip_open)
 			self.onsprungleak(self.inst, state)
 		end
 
-    elseif state == "small_leak_plugged" then        
+    elseif state == "small_leak_plugged" then
         local x,y,z = self.inst.Transform:GetWorldPosition()
         local fx = SpawnPrefab("splash")
         fx.Transform:SetPosition(x,y,z)
 
+        self.inst.SoundEmitter:PlaySound("meta4/boat_patch/plugged_thunk")
+
         self.inst.SoundEmitter:KillSound("small_leak")
-        AnimState:PushAnimation("leak_small_plugged",true)
+        self.inst.SoundEmitter:PlaySound("meta4/boat_patch/plugged_spray", "small_leak")
+
+        AnimState:PushAnimation("leak_small_plugged", true)
 
 	elseif state == "med_leak" then
         self.inst:RemoveTag("boat_repaired_patch")
@@ -203,6 +208,7 @@ function BoatLeak:SetState(state, skip_open)
             AnimState:AddOverrideBuild(self.leak_build_override)
         end
 
+        self.inst.SoundEmitter:KillSound("med_leak")
         self.inst.SoundEmitter:PlaySound("turnoftides/common/together/boat/fountain_medium_LP", "med_leak")
 
         if not self.has_leaks then
@@ -218,7 +224,11 @@ function BoatLeak:SetState(state, skip_open)
         local fx = SpawnPrefab("splash")
         fx.Transform:SetPosition(x,y,z)
 
+        self.inst.SoundEmitter:PlaySound("meta4/boat_patch/plugged_thunk")
+
         self.inst.SoundEmitter:KillSound("med_leak")
+        self.inst.SoundEmitter:PlaySound("meta4/boat_patch/plugged_spray", "med_leak")
+
         AnimState:PushAnimation("leak_med_plugged",true)
      
 	elseif state == "repaired" then

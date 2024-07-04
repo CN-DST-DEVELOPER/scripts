@@ -195,7 +195,7 @@ function Sanity:SetIsSane(sane)
 end
 
 function Sanity:IsSane()
-    return not self._issane:value()
+    return self._issane:value()
 end
 
 function Sanity:IsInsane()

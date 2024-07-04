@@ -760,7 +760,7 @@ local function LaunchCrabMob(inst, prefab)
 
             mob.components.sleeper:SetResistance(resistance)
 
-            mob.components.health:SetMaxHealth(mob.components.health.currenthealth + (math.floor(inst.gemcount.purple+1/2) * TUNING.CRABKING_MOB_HEALTH_BONUS) )
+            mob.components.health:SetMaxHealth(mob.components.health.currenthealth + (math.floor((inst.gemcount.purple+1)/2) * TUNING.CRABKING_MOB_HEALTH_BONUS) )
             mob.components.health:SetPercent(1) -- For pushing events?
 
             break

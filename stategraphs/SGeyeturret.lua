@@ -41,7 +41,10 @@ local states=
 
         onenter = function(inst)
             inst:syncanim("death")
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+
+            inst.components.lootdropper:DropLoot()
+
+            RemovePhysicsColliders(inst)
         end,
 
         timeline =

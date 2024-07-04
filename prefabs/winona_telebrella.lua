@@ -378,6 +378,7 @@ local function fn()
 
 	inst:AddTag("nopunch")
 	inst:AddTag("umbrella")
+	inst:AddTag("metal")
 	inst:AddTag("engineering")
 	inst:AddTag("engineeringbatterypowered")
 
@@ -401,7 +402,7 @@ local function fn()
 	inst:AddComponent("tradable")
 
 	inst:AddComponent("waterproofer")
-	inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_HUGE)
+	inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALLMED)
 
 	inst:AddComponent("inspectable")
 	inst.components.inspectable.getstatus = GetStatus
@@ -409,10 +410,6 @@ local function fn()
 	inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 	inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-
-	inst:AddComponent("insulator")
-	inst.components.insulator:SetSummer()
-	inst.components.insulator:SetInsulation(TUNING.INSULATION_MED)
 
 	MakeHauntableLaunch(inst)
 

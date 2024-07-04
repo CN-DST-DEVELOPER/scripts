@@ -37,11 +37,22 @@ local function OnUnequip(inst, owner)
     owner.AnimState:Show("ARM_normal")
 end
 
+local function getDamage(inst, attacker, target)
+    if attacker:HasTag("merm_npc") then
+        return inst.non_merm_damage < attacker.components.combat.defaultdamage and attacker.components.combat.defaultdamage or inst.non_merm_damage
+    else
+        return inst.non_merm_damage
+    end
+end
+    
+
 ---------------------------------------------------------------------------------------------------------------------------------
 
 local function CreateMermTool(data)
+    local swap_data = { sym_name = "swap_"..data.build, sym_build = data.build, bank = data.bank }
+
     local function fn()
-        local tuning = TUNING[data.tuning]
+        local tuning = TUNING[data.tuning] -- Inside prefab, mod friendly.
 
         local inst = CreateEntity()
 
@@ -56,7 +67,7 @@ local function CreateMermTool(data)
         inst.AnimState:SetBuild(data.build)
         inst.AnimState:PlayAnimation("idle")
 
-        MakeInventoryFloatable(inst, "med", 0.05, {0.7, 0.4, 0.7}, true, -13, {sym_build = data.build})
+        MakeInventoryFloatable(inst, "small", 0.05, {1.3, 0.75, 1.3}, true, -11, swap_data)
 
         inst:AddTag(data.prefab)
 
@@ -72,14 +83,16 @@ local function CreateMermTool(data)
             return inst
         end
 
-        inst._build = data.build
-        inst._swapsymbol = "swap_"..data.bank
+        inst._build = swap_data.sym_build
+        inst._swapsymbol = swap_data.sym_name
 
         inst:AddComponent("inspectable")
         inst:AddComponent("inventoryitem")
 
+        inst.non_merm_damage = tuning.DAMAGE
+
         inst:AddComponent("weapon")
-        inst.components.weapon:SetDamage(tuning.DAMAGE)
+        inst.components.weapon:SetDamage(getDamage)
 
         inst:AddComponent("tool")
         inst.components.tool:SetAction(ACTIONS.CHOP, tuning.EFFICIENCY)
@@ -92,6 +105,7 @@ local function CreateMermTool(data)
         inst:AddComponent("equippable")
         inst.components.equippable:SetOnEquip(OnEquip)
         inst.components.equippable:SetOnUnequip(OnUnequip)
+        inst.components.equippable.restrictedtag = "merm_npc"
 
         inst:AddComponent("finiteuses")
         inst.components.finiteuses:SetMaxUses(tuning.USES)

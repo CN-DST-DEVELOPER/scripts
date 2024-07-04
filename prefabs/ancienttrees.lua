@@ -355,13 +355,17 @@ local function _MakeEmpty(inst)
     end
 end
 
-local function Full_OnRegenFn(inst)
+local function Full_CanRegenFruits(inst)
     local constraints = TREE_DEFS[inst.type].GROW_CONSTRAINT
 
     local tile = TheWorld.Map:GetTileAtPoint(inst.Transform:GetWorldPosition())
 
     -- NOTES(DiogoW): Won't grow fruit on wrong tile!
-    if tile ~= constraints.TILE then
+    return tile == constraints.TILE
+end
+
+local function Full_OnRegenFn(inst)
+    if not inst:CanRegenFruits() then
         inst:DoTaskInTime(0, _MakeEmpty) -- Needs to be delayed because Pickable:Regen would mess with things set by MakeEmpty.
 
         return
@@ -500,6 +504,7 @@ local function MakeAncientTree(name, data)
 
         inst.TransferPlantData = TransferPlantData
         inst.UpdatePickableRegenTime = Full_UpdatePickableRegenTime
+        inst.CanRegenFruits = Full_CanRegenFruits
         inst.MakeStump = Full_MakeStump
         
         inst:AddComponent("inspectable")

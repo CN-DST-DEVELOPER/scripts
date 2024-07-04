@@ -167,8 +167,7 @@ local function OnAnimState_Client(inst)
 			--spawned in repaired
 			inst._anim.AnimState:PlayAnimation("idle_fixed_loop", true)
 			inst._anim.components.projectedeffects:Construct()
-            if not inst._anim._fixed then
-                inst._anim._fixed = true
+			if not inst._anim.SoundEmitter:PlayingSound("fixed") then
                 inst._anim.SoundEmitter:PlaySound("meta4/wires_minigame/machine_fixed_idle_LP", "fixed")
             end
 		elseif inst._animstate:value() == ANIM_STATE["repair"] then
@@ -182,12 +181,10 @@ local function OnAnimState_Client(inst)
 			inst._anim.AnimState:PushAnimation("open_loop")
 			inst._anim.components.projectedeffects:MakeOpaque()
 			inst._anim.components.projectedeffects:LockDecay(true)
-            if not inst._anim._fixed then
-                inst._anim._fixed = true
+			if not inst._anim.SoundEmitter:PlayingSound("fixed") then
                 inst._anim.SoundEmitter:PlaySound("meta4/wires_minigame/machine_fixed_idle_LP", "fixed")
             end
-            if not inst._anim._chuffing then
-                inst._anim._chuffing = true
+			if not inst._anim.SoundEmitter:PlayingSound("chuffing") then
                 inst._anim.SoundEmitter:PlaySound("meta4/wires_minigame/item_dispense_lp", "chuffing")
             end
 		elseif inst._animstate:value() == ANIM_STATE["open_loop"] then
@@ -195,12 +192,10 @@ local function OnAnimState_Client(inst)
 			inst._anim.AnimState:PlayAnimation("open_loop", true)
 			inst._anim.components.projectedeffects:MakeOpaque()
 			inst._anim.components.projectedeffects:LockDecay(true)
-            if not inst._anim._fixed then
-                inst._anim._fixed = true
+			if not inst._anim.SoundEmitter:PlayingSound("fixed") then
                 inst._anim.SoundEmitter:PlaySound("meta4/wires_minigame/machine_fixed_idle_LP", "fixed")
             end
-            if not inst._anim._chuffing then
-                inst._anim._chuffing = true
+			if not inst._anim.SoundEmitter:PlayingSound("chuffing") then
                 inst._anim.SoundEmitter:PlaySound("meta4/wires_minigame/item_dispense_lp", "chuffing")
             end
 		elseif inst._animstate:value() == ANIM_STATE["open_pst"] then
@@ -210,14 +205,8 @@ local function OnAnimState_Client(inst)
 			inst._anim.components.projectedeffects:MakeOpaque()
 			inst._anim.components.projectedeffects:SetDecayTime(1.5)
 			inst._anim.components.projectedeffects:LockDecay(false)
-            if inst._anim._fixed then
-                inst._anim._fixed = nil
-                inst._anim.SoundEmitter:KillSound("fixed")
-            end
-            if inst._anim._chuffing then
-                inst._anim._chuffing = nil
-                inst._anim.SoundEmitter:KillSound("chuffing")
-            end
+			inst._anim.SoundEmitter:KillSound("fixed")
+			inst._anim.SoundEmitter:KillSound("chuffing")
 			KillClientAnim(inst)
 		elseif inst._animstate:value() == ANIM_STATE["closed"] then
 			--close and decay after loot fling
@@ -225,14 +214,8 @@ local function OnAnimState_Client(inst)
 			inst._anim.components.projectedeffects:MakeOpaque()
 			inst._anim.components.projectedeffects:SetDecayTime(0.5)
 			inst._anim.components.projectedeffects:LockDecay(false)
-            if inst._anim._fixed then
-                inst._anim._fixed = nil
-                inst._anim.SoundEmitter:KillSound("fixed")
-            end
-            if inst._anim._chuffing then
-                inst._anim._chuffing = nil
-                inst._anim.SoundEmitter:KillSound("chuffing")
-            end
+			inst._anim.SoundEmitter:KillSound("fixed")
+			inst._anim.SoundEmitter:KillSound("chuffing")
 			KillClientAnim(inst)
 		end
 	end
@@ -276,6 +259,15 @@ local function OnIsProjected_Client(inst)
 end
 
 local function ToggleProjection(inst, enabled)
+	if not enabled and
+		(	inst._animstate:value() ~= ANIM_STATE["idle_broken_loop"] and
+			inst._animstate:value() ~= ANIM_STATE["idle_fixed_loop"]
+		)
+	then
+		--can no longer toggle off once the box is complete and loot sequence started
+		return
+	end
+
 	if inst._isprojected:value() ~= enabled then
 		inst._isprojected:set(enabled)
 
@@ -402,6 +394,10 @@ local function SetRepaired(inst)
 	SetAnimState(inst, "idle_fixed_loop")
 end
 
+local function OnInit_Client(inst)
+	inst:ListenForEvent("inspectaclesbox._chuffsndevent", OnChuffSnd_Client)
+end
+
 local function commonfn(build)
     local inst = CreateEntity()
 
@@ -419,7 +415,7 @@ local function commonfn(build)
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
-		inst:ListenForEvent("inspectaclesbox._chuffsndevent", OnChuffSnd_Client)
+		inst:DoTaskInTime(0, OnInit_Client)
 		inst:ListenForEvent("isprojecteddirty", OnIsProjected_Client)
 		inst:ListenForEvent("animstatedirty", OnAnimState_Client)
 

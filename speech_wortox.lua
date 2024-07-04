@@ -3563,7 +3563,7 @@ return{
 		},
 		WINONA_TELEPORT_PAD_ITEM =
 		{
-			GENERIC = "Imitation in the sincerest form of flattery, hyuyu!",
+			GENERIC = "Imitation is the sincerest form of flattery, hyuyu!",
 --fallback to speech_wilson.lua             MISSINGSKILL = "only_used_by_winona",
 			OFF = "Playtime's over!",
 			BURNING = "Hoohoohoo!",

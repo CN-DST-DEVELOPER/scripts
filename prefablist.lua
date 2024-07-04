@@ -513,6 +513,7 @@ PREFABFILES = {
   "icebox",
   "icebox_coffin_bat_fx",
   "icebox_crystal_fx",
+  "icebox_kitchen_fx",
   "icebox_porcelain_fx",
   "icebox_victorian_frost_fx",
   "icefishing_hole",

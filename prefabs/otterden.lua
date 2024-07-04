@@ -100,7 +100,7 @@ local function change_otter_sleeping_inside_state(inst, new_state)
     inst._is_sleeping_inside = new_state
     if new_state then
         inst.components.timer:ResumeTimer(SLEEP_TIMER_NAME)
-        inst.SoundEmitter:PlaySound("dontstarve/pig/pig_in_hut", "ottersound")
+        inst.SoundEmitter:PlaySound("meta4/otter_den/otter_in_den", "ottersound")
     else
         inst.components.timer:PauseTimer(SLEEP_TIMER_NAME)
         inst.SoundEmitter:KillSound("ottersound")

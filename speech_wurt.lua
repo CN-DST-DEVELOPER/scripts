@@ -606,7 +606,7 @@ return{
 	ANNOUNCE_PECKED = "Ow! OW! Ouchie!",
 	ANNOUNCE_QUAKE = "Ground shaking!",
 	ANNOUNCE_RESEARCH = "Head getting full of smarts, flurp!",
-	ANNOUNCE_SHELTER = "Why not play in rain, florp?",
+	ANNOUNCE_SHELTER = "Thanks tree, florp!",
 	ANNOUNCE_THORNS = "Ouchie!",
 	ANNOUNCE_BURNT = "Glorpt!! Hot!!",
 	ANNOUNCE_TORCH_OUT = "Hey, where fire go, florp?",

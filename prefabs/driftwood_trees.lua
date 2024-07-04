@@ -98,6 +98,8 @@ local function on_chopped_down(inst, chopper)
         inst.AnimState:PlayAnimation("fall")
         inst.components.lootdropper:DropLoot()
         inst:ListenForEvent("animover", inst.Remove)
+
+        RemovePhysicsColliders(inst)
     end
 end
 

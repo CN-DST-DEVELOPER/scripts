@@ -33,7 +33,7 @@ local function onunequip(inst, owner)
 end
 
 local function IsLifeDrainable(target)
-	return not target:HasAnyTag(SOULLESS_TARGET_TAGS) or target:HasTag("lifedrainable")
+	return not target:HasAnyTag(NON_LIFEFORM_TARGET_TAGS) or target:HasTag("lifedrainable")
 end
 
 local function onattack(inst, owner, target)

@@ -435,7 +435,7 @@ local states =
                     inst.Physics:SetLocalCollisionMask(COLLISION.GROUND)
                 end
 
-                inst.Physics:SetMotorVelOverride(5, 0, 0)
+                inst.Physics:SetMotorVelOverride(5 - inst.Transform:GetScale(), 0, 0)
             end),
 
             TimeEvent(30*FRAMES, function(inst)

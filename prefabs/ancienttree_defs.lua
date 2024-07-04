@@ -141,10 +141,7 @@ local function _MakeEmpty(inst)
 end
 
 local function NightVision_OnRegenFn(inst)
-    local tile = TheWorld.Map:GetTileAtPoint(inst.Transform:GetWorldPosition())
-
-    -- NOTES(DiogoW): Won't grow fruit on wrong tile!
-    if tile ~= WORLD_TILES.MARSH then
+    if not inst:CanRegenFruits() then
         inst:DoTaskInTime(0, _MakeEmpty) -- Needs to be delayed because Pickable:Regen would mess with things set by MakeEmpty.
 
         return

@@ -4703,9 +4703,12 @@ local function MakeHat(name)
     fns.mermarmor = function()
         local inst = simple(fns.mermarmor_custom_init)
 
-        if not TheWorld.ismastersim then
-            return inst
-        end
+		inst.components.floater:SetScale(.85)
+		inst.components.floater:SetVerticalOffset(.05)
+
+		if not TheWorld.ismastersim then
+			return inst
+		end
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_MERMARMORHAT, TUNING.ARMOR_MERMARMORHAT_ABSORPTION)
@@ -4738,9 +4741,12 @@ local function MakeHat(name)
     fns.mermarmorupgraded = function()
         local inst = simple(fns.mermarmorupgraded_custom_init)        
 
-        if not TheWorld.ismastersim then
-            return inst
-        end
+		inst.components.floater:SetScale(.85)
+		inst.components.floater:SetVerticalOffset(.05)
+
+		if not TheWorld.ismastersim then
+			return inst
+		end
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_MERMARMORUPGRADEDHAT, TUNING.ARMOR_MERMARMORUPGRADEDHAT_ABSORPTION)

@@ -200,9 +200,9 @@ return Class(function(self, inst)
     local _temperature = TUNING.STARTING_TEMP
 
     --Precipiation
-    local _rainsound = false
-    local _treerainsound = false
-    local _umbrellarainsound = false
+	local _rainsound = nil
+	local _treerainsound = nil
+	local _umbrellarainsound = nil
     local _barriersound = false
     local _barriernorainsound = false
     local _seasonprogress = 0
@@ -254,45 +254,76 @@ return Class(function(self, inst)
     --------------------------------------------------------------------------
 
     local function StartAmbientRainSound(intensity)
-        if not _rainsound then
-            _rainsound = true
-            _world.SoundEmitter:PlaySound(_preciptype:value() == PRECIP_TYPES.lunarhail and "rifts3/lunarhail/lunar_rainAMB" or "dontstarve/AMB/rain", "rain")
+		local sound =
+			_preciptype:value() == PRECIP_TYPES.lunarhail and
+			"rifts3/lunarhail/lunar_rainAMB" or
+			"dontstarve/AMB/rain"
+
+		if _rainsound ~= sound then
+			if _rainsound then
+				_world.SoundEmitter:KillSound("rain")
+			end
+			_rainsound = sound
+			_world.SoundEmitter:PlaySound(sound, "rain")
         end
         _world.SoundEmitter:SetParameter("rain", "intensity", intensity)
     end
 
     local function StopAmbientRainSound()
         if _rainsound then
-            _rainsound = false
+			_rainsound = nil
             _world.SoundEmitter:KillSound("rain")
         end
     end
 
     local function StartTreeRainSound(intensity)
-        if not _treerainsound then
-            _treerainsound = true
-            TheFocalPoint.SoundEmitter:PlaySound(_preciptype:value() == PRECIP_TYPES.lunarhail and "rifts3/lunarhail/lunarhail_on_tree" or "dontstarve_DLC001/common/rain_on_tree", "treerainsound")
+		local sound =
+			_preciptype:value() == PRECIP_TYPES.lunarhail and
+			"rifts3/lunarhail/lunarhail_on_tree" or
+			"dontstarve_DLC001/common/rain_on_tree"
+
+		if _treerainsound ~= sound then
+			if _treerainsound then
+				TheFocalPoint.SoundEmitter:KillSound("treerainsound")
+			end
+			_treerainsound = sound
+			TheFocalPoint.SoundEmitter:PlaySound(sound, "treerainsound")
         end
         TheFocalPoint.SoundEmitter:SetParameter("treerainsound", "intensity", intensity)
     end
 
     local function StopTreeRainSound()
         if _treerainsound then
-            _treerainsound = false
+			_treerainsound = nil
             TheFocalPoint.SoundEmitter:KillSound("treerainsound")
         end
     end
 
     local function StartUmbrellaRainSound()
-        if not _umbrellarainsound then
-            _umbrellarainsound = true
-            TheFocalPoint.SoundEmitter:PlaySound(_preciptype:value() == PRECIP_TYPES.lunarhail and "rifts3/lunarhail/hail_on_umbrella" or "dontstarve/rain/rain_on_umbrella", "umbrellarainsound")
+		local umbrella = _activatedplayer.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local sound =
+			umbrella and umbrella:HasTag("metal") and
+			(	_preciptype:value() == PRECIP_TYPES.lunarhail and
+				"meta4/winona_teleumbrella/hail_on_teleumbrella" or
+				"meta4/winona_teleumbrella/rain_on_teleumbrella"
+			) or
+			(	_preciptype:value() == PRECIP_TYPES.lunarhail and
+				"rifts3/lunarhail/hail_on_umbrella" or
+				"dontstarve/rain/rain_on_umbrella"
+			)
+
+		if _umbrellarainsound ~= sound then
+			if _umbrellarainsound then
+				TheFocalPoint.SoundEmitter:KillSound("umbrellarainsound")
+			end
+			_umbrellarainsound = sound
+			TheFocalPoint.SoundEmitter:PlaySound(sound, "umbrellarainsound")
         end
     end
 
     local function StopUmbrellaRainSound()
         if _umbrellarainsound then
-            _umbrellarainsound = false
+			_umbrellarainsound = nil
             TheFocalPoint.SoundEmitter:KillSound("umbrellarainsound")
         end
     end

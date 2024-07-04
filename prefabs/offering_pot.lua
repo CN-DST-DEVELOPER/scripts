@@ -326,6 +326,10 @@ local function MakeOfferingPot(name, build, large)
 
         inst._upgraded = large
 
+        inst.scrapbook_scale = large and .5 or nil
+        inst.scrapbook_animoffsetx = large and -50 or nil
+        inst.scrapbook_animoffsety = large and -70 or nil
+
         inst.UpdateDecor = UpdateDecor
         inst.RemoveMermCaller = RemoveMermCaller
         inst.ValidateMermGathering = ValidateMermGathering

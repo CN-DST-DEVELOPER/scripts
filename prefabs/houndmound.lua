@@ -75,6 +75,9 @@ local function OnKilled(inst)
     if inst.components.childspawner ~= nil then
         inst.components.childspawner:ReleaseAllChildren()
     end
+
+    RemovePhysicsColliders(inst)
+
     inst.AnimState:PlayAnimation("death", false)
     inst.SoundEmitter:KillSound("loop")
     inst.components.lootdropper:DropLoot(inst:GetPosition())

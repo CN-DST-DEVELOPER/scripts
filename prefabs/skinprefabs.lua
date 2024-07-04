@@ -4422,10 +4422,10 @@ table.insert(prefs, CreatePrefabSkin("icebox_kitchen",
 	type = "item",
 	rarity = "Elegant",
 	rarity_modifier = "Woven",
-	prefabs = { "icebox_porcelain_fx", },
+	prefabs = { "icebox_kitchen_fx", },
 	init_fn = function(inst) icebox_init_fn(inst, "icebox_kitchen") end,
 	skin_tags = { "ICEBOX", "COTTAGE", "CRAFTABLE", },
-	fx_prefab = { "icebox_porcelain_fx", },
+	fx_prefab = { "icebox_kitchen_fx", },
 	release_group = 156,
 }))
 

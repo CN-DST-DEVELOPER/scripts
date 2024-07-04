@@ -96,7 +96,13 @@ local function UpdateState(inst, workleft, loading_in)
         end
 
         if inst.workstage <= 1 then
-            RemovePhysicsColliders(inst)
+            if inst.boat_collided then -- NOTES(JBK): Hack workaround a physics callback calling another Physics mask clearing function will be a race condition if the physics engine crashes.
+                -- Delay a frame to get it off of a physics frame and into a game simulation frame.
+                inst:DoTaskInTime(0, RemovePhysicsColliders)
+            else
+                RemovePhysicsColliders(inst)
+            end
+
             inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
 
             inst.components.floater:OnNoLongerLandedServer()
@@ -153,7 +159,9 @@ local function OnCollide(inst, data)
         local damage_scale = 0.5
         local hit_velocity = math.floor(math.abs(boat_physics:GetVelocity() * data.hit_dot_velocity) * damage_scale / boat_physics.max_velocity + 0.5)
         if hit_velocity > 0 then
+            inst.boat_collided = true -- NOTES(JBK): Hack workaround a physics callback calling another Physics mask clearing function will be a race condition if the physics engine crashes.
             inst.components.workable:WorkedBy(data.other, hit_velocity * TUNING.SALTSTACK_WORK_REQUIRED)
+            inst.boat_collided = nil
         end
     end
 end

@@ -86,15 +86,12 @@ local function FindContainerWithItem(inst, item, count)
     local ents = TheSim:FindEntities(x, y, z, TUNING.STORAGE_ROBOT_WORK_RADIUS, CONTAINER_MUST_TAGS, CONTAINER_CANT_TAGS)
 
     local platform = inst:GetCurrentPlatform()
-    local function SamePrefabAndSkin(ent)
-        return ent.prefab == item.prefab and ent.skinname == item.skinname
-    end
 
     for i, ent in ipairs(ents) do
         if ent.components.container ~= nil and
             table.contains(ALLOWED_CONTAINER_TYPES, ent.components.container.type) and
             (ent.components.container.canbeopened or ent.components.container.canacceptgivenitems) and -- NOTES(JBK): canacceptgivenitems is a mod flag for now.
-            ent.components.container:HasItemThatMatches(SamePrefabAndSkin, 1) and
+            ent.components.container:Has(item.prefab, 1) and
             ent.components.container:CanAcceptCount(item, stack_maxsize) > count and
             ent:IsOnPassablePoint() and
             ent:GetCurrentPlatform() == platform

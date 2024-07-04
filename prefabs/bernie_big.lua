@@ -87,6 +87,12 @@ local function goinactive(inst)
         inactive.Transform:SetPosition(inst.Transform:GetWorldPosition())
         inactive.Transform:SetRotation(inst.Transform:GetRotation())
         inactive.components.timer:StartTimer("transform_cd", TUNING.BERNIE_BIG_COOLDOWN)
+        if inst.bernieleader and inst.bernieleader.bigbernies then
+            inst.bernieleader.bigbernies[inst] = nil
+            if next(inst.bernieleader.bigbernies) == nil then
+                inst.bernieleader.bigbernies = nil
+            end
+        end
         inst:Remove()
         return inactive
     end
