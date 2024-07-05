@@ -187,7 +187,7 @@ local function fn()
     combat:SetRetargetFunction(3, Retarget)
     combat:SetKeepTargetFunction(KeepTarget)
     combat:SetHurtSound("meta4/otter/vo_hit_f0")
-    combat:SetRange(TUNING.OTTER_ATTACK_RANGE, TUNING.OTTER_HIT_RANGE)
+    combat:SetRange(TUNING.OTTER_ATTACK_RANGE)
 
     --
     local eater = inst:AddComponent("eater")

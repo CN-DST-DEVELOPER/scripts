@@ -214,7 +214,7 @@ end
 
 local function OnAttacked(inst, data)
     local attacker = data and data.attacker
-    if attacker then
+    if attacker and inst:IsValid() then
         resolve_on_attacked(inst, attacker)
     end
 end
@@ -786,8 +786,7 @@ local function DoLunarRevert(inst)
     end
 
     merm.components.combat:SetTarget(inst.components.combat.target)
-    merm:PushEvent("demutated", {oldbuild=inst.AnimState:GetBuild()})    
-
+    merm:PushEvent("demutated", {oldbuild=inst.AnimState:GetBuild()})
     inst:Remove()
 
     return merm

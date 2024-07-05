@@ -239,8 +239,14 @@ function self:QueueDestroyForVineBridgeAtPoint(x, y, z, data)
 
         local fxtime = data and data.fxtime
         if fxtime then
+            local shaketime = math.max(data.shaketime or 0, 0)
+            _world:DoTaskInTime(shaketime, function()
+                local fx = self.bridge_anims_grid:GetDataAtPoint(tile_x, tile_y)
+                if fx and fx.ShakeIt then
+                    fx:ShakeIt()
+                end
+            end)
             _world:DoTaskInTime(data.fxtime, function()
-                SpawnPrefab("fx_ice_crackle").Transform:SetPosition(x, 0, z) -- FIXME(JBK): Presentation.
                 DoWarn()
             end)
         else
@@ -284,12 +290,12 @@ function self:SpawnDamagePrefab(tile_index, health)
     local damage_prefab = self.damage_prefabs_grid:GetDataAtIndex(tile_index)
 
     if health < TUNING.VINEBRIDGE_HEALTH then
-        if not damage_prefab then
-            damage_prefab = SpawnPrefab("oceanice_damage")
-            damage_prefab.Transform:SetPosition(dx, dy, dz)
-            self.damage_prefabs_grid:SetDataAtIndex(tile_index, damage_prefab)
-        end
-        damage_prefab:setdamagepecent( 1 - (health/TUNING.VINEBRIDGE_HEALTH) )
+        --if not damage_prefab then
+        --    damage_prefab = SpawnPrefab("oceanice_damage")
+        --    damage_prefab.Transform:SetPosition(dx, dy, dz)
+        --    self.damage_prefabs_grid:SetDataAtIndex(tile_index, damage_prefab)
+        --end
+        --damage_prefab:setdamagepecent( 1 - (health/TUNING.VINEBRIDGE_HEALTH) )
     else
         if damage_prefab then
             self.damage_prefabs_grid:SetDataAtIndex(tile_index, nil)

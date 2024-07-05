@@ -54,19 +54,19 @@ local function try_generate_loot_item(inst)
     local inventory = inst.components.inventory
     if inventory:IsFull() then
         local valid_options = nil
-        inventory:ForEachItem(function(item, options)
-            if POSSIBLE_LOOT_ITEMS[item.prefab] and item.components.stackable then
-                options = options or {}
-                table.insert(options, item)
+        inventory:ForEachItem(function(item)
+            if POSSIBLE_LOOT_ITEMS[item.prefab]
+                    and item.components.stackable
+                    and not item.components.stackable:IsFull() then
+                valid_options = valid_options or {}
+                table.insert(valid_options, item)
             end
-        end, valid_options)
+        end)
         if valid_options then
             local item = valid_options[math.random(#valid_options)]
             local item_stackable = item.components.stackable
-            if not item_stackable:IsFull() then
-                item_stackable:SetStackSize(item_stackable:StackSize() + 1)
-                return true
-            end
+            item_stackable:SetStackSize(item_stackable:StackSize() + 1)
+            return true
         end
     else
         local item_to_spawn = weighted_random_choice(POSSIBLE_LOOT_ITEMS)

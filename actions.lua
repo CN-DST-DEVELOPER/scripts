@@ -2493,9 +2493,7 @@ local function DoCharlieResidueMapAction(act, target, charlieresidue, residue_co
         end
         teleporterexit = teleporterexit or target -- Default back to itself because end node was not picked correctly.
         act.doer.sg:GoToState("jumpin", {teleporter = target, teleporterexit = teleporterexit,})
-        if teleporterexit ~= target then
-            DecayCharlieResidueAndGoOnCooldownIfItExists(act.doer)
-        end
+        DecayCharlieResidueIfItExists(act.doer)
         return true
     else
         DecayCharlieResidueAndGoOnCooldownIfItExists(act.doer)
@@ -3304,10 +3302,10 @@ end
 
 ACTIONS.UPGRADE.fn = function(act)
     if act.invobject and act.target and
+		act.target.components.upgradeable and
         act.invobject.components.upgrader and
-        act.invobject.components.upgrader:CanUpgrade(act.target, act.doer) and
-        act.target.components.upgradeable then
-
+		act.invobject.components.upgrader:CanUpgrade(act.target, act.doer)
+	then
         local can_upgrade, reason = act.target.components.upgradeable:CanUpgrade()
         if can_upgrade then
             return act.target.components.upgradeable:Upgrade(act.invobject, act.doer)

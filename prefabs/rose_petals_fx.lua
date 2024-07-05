@@ -8,6 +8,7 @@ local function fn()
 
 	inst.entity:AddTransform()
 	inst.entity:AddAnimState()
+	inst.entity:AddSoundEmitter() --some places might need an entity to play sfx on
 	inst.entity:AddNetwork()
 
 	inst:AddTag("FX")

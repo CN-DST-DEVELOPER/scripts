@@ -81,6 +81,7 @@ local function PullUpMap(inst, maptarget)
                 inst.HUD.controls:FocusMapOnWorldPosition(mapscreen, wx, wz)
             end
             -- Do not have to take into account max_dist because the map automatically centers on the player when opened.
+            mapscreen:ProcessStaticDecorations()
         end
     end
 end

@@ -57,6 +57,15 @@ local function StartSound(inst)
 	inst.SoundEmitter:PlaySound("meta4/charlie_residue/vine_bridge_pre")
 end
 
+local function ShakeIt(inst)
+	inst.AnimState:PlayAnimation("bridge"..tostring(inst.variation).."_shake", true)
+	for i, v in ipairs(inst.decor) do
+		if v:is_a(EntityScript) then
+			v.AnimState:PlayAnimation("extra_"..tostring(v.variation).."_shake", true)
+		end
+	end
+end
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -100,6 +109,7 @@ local function fn()
 
 	inst.SkipPre = SkipPre
 	inst.KillFX = KillFX
+    inst.ShakeIt = ShakeIt
 
 	return inst
 end

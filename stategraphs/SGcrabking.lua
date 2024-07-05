@@ -8,11 +8,35 @@ local function heal(inst)
 end
 
 local function testforlostrock(inst, rightarm)
+    if inst.sg:HasStateTag("loserock_window") and not inst.components.timer:TimerExists("regen_stun_cooldown") then
+        local frame = inst.AnimState:GetCurrentAnimationFrame()
 
-    if inst.sg:HasStateTag("loserock_window") then
-        inst.sg:GoToState("fix_lostrock", rightarm)
-    else
-        inst.sg:GoToState("hit")
+        local frameback = 20
+        if inst.gemcount.orange > 4 then
+            frameback = 13
+        end
+        if inst.gemcount.orange > 7 then
+            frameback = 8
+        end
+
+        frame = frame - frameback
+
+        local minframe = 1
+        if inst.sg:HasStateTag("fixpre") then
+            minframe = 14
+        end
+        
+        if frame <= minframe then
+            if inst.gemcount.orange < 5 then
+                 inst.sg:GoToState("fix_lostrock", rightarm)
+            else
+                inst.AnimState:SetFrame(minframe)
+                inst.components.timer:StartTimer("regen_stun_cooldown", 8*FRAMES)
+            end
+        else
+            inst.AnimState:SetFrame(frame)
+        end
+
     end
 end
 
@@ -339,7 +363,6 @@ local states =
             SoundFrameEvent(28, "turnoftides/common/together/water/submerge/large"),
         },
 
-
         events =
         {
             EventHandler("animqueueover", go_to_idle),
@@ -614,29 +637,41 @@ local states =
         },
     },
 
-
     --------------------------------------------------------
     -- HEAL
     --------------------------------------------------------
 
     State{
         name = "fix_pre",
-        tags = { "canrotate", "fixing"},
+        tags = { "canrotate", "fixing","fixpre"},
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("fix_pre")
         end,
 
-        timeline=
-        {
-            TimeEvent(13*FRAMES, function(inst)
-                inst.sg:AddStateTag("loserock_window")
-            end),
-            SoundFrameEvent(27, "hookline_2/creatures/boss/crabking/repair"),
-            TimeEvent(31*FRAMES, function(inst)
+        onupdate = function(inst,dt)
+            if inst.AnimState:GetCurrentAnimationFrame() == 14 and not inst.sg:HasStateTag("loserock_window") then
+                inst.sg:AddStateTag("loserock_window")             
+            end
+
+            if inst.AnimState:GetCurrentAnimationFrame() >= 27 and inst.sg:HasStateTag("loserock_window") then
+                inst.SoundEmitter:PlaySound("hookline_2/creatures/boss/crabking/repair")
                 inst.sg:RemoveStateTag("loserock_window")
                 inst:ShineSocketOfColor("orange")
-                heal(inst)
+
+                inst.fixhits = 0
+                heal(inst)                
+            end
+        end,
+
+        timeline=
+        {
+            TimeEvent(14*FRAMES, function(inst)
+
+            end),
+
+            TimeEvent(27*FRAMES, function(inst)
+
             end),
         },
 
@@ -665,31 +700,45 @@ local states =
             local arm = rightarm and "right" or "left"
             inst.sg.statemem.rightarm = rightarm
 
-            inst.AnimState:PlayAnimation("fix_"..arm.."_loop_"..randomchoice)
+            inst.AnimState:PlayAnimation("fix_"..arm.."_loop_"..randomchoice)      
+
+        end,
+
+        onupdate = function(inst,dt)
+
+
+            if inst.AnimState:GetCurrentAnimationFrame() >= 16 then
+                if inst.sg:HasStateTag("loserock_window") then
+                    inst.SoundEmitter:PlaySound("hookline_2/creatures/boss/crabking/repair")
+
+                    inst.sg:RemoveStateTag("loserock_window")
+                    inst:ShineSocketOfColor("orange")
+                    inst.fixhits = 0
+                    heal(inst)
+                end                
+            end
+
         end,
 
         timeline=
         {
-            TimeEvent(12*FRAMES, function(inst)
-                if inst.sg.statemem.rightarm then
-                    inst.SoundEmitter:PlaySound("hookline_2/creatures/boss/crabking/repair")
-                end
-             end),
-             TimeEvent(16*FRAMES, function(inst)
-                if not inst.sg.statemem.rightarm then
-                    inst.SoundEmitter:PlaySound("hookline_2/creatures/boss/crabking/repair")
-                end
-             end),
-            TimeEvent(29*FRAMES, function(inst)
-                inst.sg:RemoveStateTag("loserock_window")
-                inst:ShineSocketOfColor("orange")
-                heal(inst)
+
+            TimeEvent(8*FRAMES, function(inst)
+              --  inst.sg:AddStateTag("loserock_window")
+            end),
+
+            TimeEvent(13*FRAMES, function(inst)
+              
+            end),
+
+            TimeEvent(16*FRAMES, function(inst)
+
             end),
         },
 
         events =
         {
-            EventHandler("attacked", function(inst)
+            EventHandler("attacked", function(inst)                
                 testforlostrock(inst, inst.sg.statemem.rightarm)
             end),
             EventHandler("animover", function(inst)

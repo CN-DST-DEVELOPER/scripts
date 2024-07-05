@@ -98,6 +98,13 @@ function DecayCharlieResidueAndGoOnCooldownIfItExists(inst)
     roseinspectableuser:ForceDecayResidue()
     roseinspectableuser:GoOnCooldown()
 end
+function DecayCharlieResidueIfItExists(inst)
+    local roseinspectableuser = inst.components.roseinspectableuser
+    if roseinspectableuser == nil then
+        return
+    end
+    roseinspectableuser:ForceDecayResidue()
+end
 
 local function OnFuelPresentation3(inst)
     inst:ReturnToScene()
@@ -319,6 +326,7 @@ local function RosePoint_VineBridge_Do(inst, pt, spots)
         spawndata.base_time = 0.25 * i
         vinebridgemanager:QueueCreateVineBridgeAtPoint(spot.x, spot.y, spot.z, spawndata)
         breakdata.fxtime = duration + 0.25 * i
+        breakdata.shaketime = breakdata.fxtime - 1
         breakdata.destroytime = breakdata.fxtime + 70 * FRAMES
         vinebridgemanager:QueueDestroyForVineBridgeAtPoint(spot.x, spot.y, spot.z, breakdata)
     end

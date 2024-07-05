@@ -1941,6 +1941,7 @@ local states =
             DoTalkSound(inst)
             inst.sg:SetTimeout(TUNING.HERMITCRAB.SPEAKTIME - 0.5)
             inst.stoptalktask = inst:DoTaskInTime(2,function()
+                inst.stoptalktask = nil
                 StopTalkSound(inst)
                 inst.AnimState:PlayAnimation("idle")
             end)
@@ -1966,8 +1967,10 @@ local states =
         end,
 
         onexit = function(inst)
-            inst.stoptalktask:Cancel()
-            inst.stoptalktask = nil
+            if inst.stoptalktask ~= nil then
+                inst.stoptalktask:Cancel()
+                inst.stoptalktask = nil
+            end
             StopTalkSound(inst)
         end,
     },

@@ -11,6 +11,7 @@ local assets =
 	Asset("ANIM", "anim/winona_teleport.zip"),
 	Asset("ANIM", "anim/winona_mount_teleport.zip"),
     Asset("SCRIPT", "scripts/prefabs/skilltree_winona.lua"),
+	Asset("ANIM", "anim/roseglasses_minimap_indicator.zip"), -- From roseinspectableuser component.
 }
 
 local prefabs = {

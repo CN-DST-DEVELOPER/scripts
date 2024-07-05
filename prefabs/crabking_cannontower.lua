@@ -44,7 +44,18 @@ local COLLISION_DAMAGE_SCALE = 0.5
 local function OnCollide(inst, data)
     local boat_physics = data.other.components.boatphysics
     if boat_physics ~= nil then
+
+        local mult = 1
+        if inst.yellowgemcount >= 11 then
+            mult = 0.3
+        elseif inst.yellowgemcount > 7 then
+            mult = 0.6
+        elseif inst.yellowgemcount > 4 then
+            mult = 0.8
+        end
+
         local hit_velocity = math.floor(math.abs(boat_physics:GetVelocity() * data.hit_dot_velocity) * COLLISION_DAMAGE_SCALE / boat_physics.max_velocity + 0.5)
+        local damage = hit_velocity * TUNING.CRABKING_CANNONTOWER_HEALTH * mult
         inst.components.health:DoDelta(-hit_velocity * TUNING.CRABKING_CANNONTOWER_HEALTH)
     end
 end
@@ -94,10 +105,15 @@ local function LaunchProjectile(inst, target, projectile)
     projectile.components.complexprojectile:SetGravity(-25)
     projectile.components.complexprojectile:Launch(targetpos, inst)
     projectile.redgemcount = inst.redgemcount
-    projectile:setdamage(TUNING.CRABKING_MORTAR_DAMAGE + (inst.redgemcount and inst.redgemcount*TUNING.CRABKING_MORTAR_DAMAGE_BONUS or 0))
+
+    local damage = TUNING.CRABKING_MORTAR_DAMAGE + (inst.redgemcount and inst.redgemcount*TUNING.CRABKING_MORTAR_DAMAGE_BONUS or 0)
+    if inst.redgemcount >= 11 then
+        damage = damage + TUNING.CRABKING_MORTAR_MAXGEM_DAMAGE_BONUS
+    end
+    projectile:setdamage(damage)
 
     if inst.redgemcount ~= nil then
-        local scale = (inst.redgemcount > 7 and 1.3) or (inst.redgemcount < 4 and 0.65) or nil
+        local scale = (inst.redgemcount > 7 and 1.3) or (inst.redgemcount < 5 and 0.65) or nil
 
         if scale ~= nil then
             projectile.AnimState:SetScale(scale, scale)
@@ -192,10 +208,12 @@ end
 
 local function OnSave(inst, data)
     data.redgemcount = inst.redgemcount
+    data.yellowgemcount = inst.yellowgemcount
 end
 
 local function OnLoad(inst, data)
     inst.redgemcount = data ~= nil and data.redgemcount or nil
+    inst.yellowgemcount = data ~= nil and data.yellowgemcount or nil
 
     inst:UpdateMortarArt()
 end

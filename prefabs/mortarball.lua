@@ -68,7 +68,7 @@ local function OnHit(inst, attacker, target)
 
     -- Hit a boat? Cause a leak!
     if target ~= nil and target:HasTag("boat") then
-        if inst.redgemcount and inst.redgemcount > 3 then
+        if inst.redgemcount and inst.redgemcount > 4 then
             local hitpos = inst:GetPosition()
 
             local size = "small_leak"

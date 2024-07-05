@@ -2930,7 +2930,9 @@ local states =
 			rose.persists = false
 			inst.sg.statemem.rose = rose
 
-			SpawnPrefab("rose_petals_fx").Transform:SetPosition(x, 0, z)
+			local fx = SpawnPrefab("rose_petals_fx")
+			fx.Transform:SetPosition(x, 0, z)
+			fx.SoundEmitter:PlaySound("dontstarve/common/deathpoof")
 
 			--death_vinesave_pst is quite short, about 10 frames
 			--screen fade 2 seconds

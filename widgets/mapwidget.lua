@@ -5,9 +5,11 @@ local Image = require "widgets/image"
 local ZOOM_CLAMP_MIN = 1
 local ZOOM_CLAMP_MAX = 20
 
-local MapWidget = Class(Widget, function(self)
+local MapWidget = Class(Widget, function(self, mapscreen)
     Widget._ctor(self, "MapWidget") -- NOTES(JBK): Do not change this unless you also change MiniMap's "MapWidget"! Modders use a different name for your widget or take into account texture size changes.
 	self.owner = ThePlayer
+
+    self.mapscreen = mapscreen
 
     self.bg = self:AddChild(Image("images/hud.xml", "map.tex"))
     self.bg:SetVRegPoint(ANCHOR_MIDDLE)
@@ -69,6 +71,12 @@ function MapWidget:UpdateTexture()
 	self:SetTextureHandle( handle )
 end
 
+function MapWidget:UpdateMapscreenDecorations()
+    if self.mapscreen and self.mapscreen.decorationdata then
+        self.mapscreen.decorationdata.dirty = true
+    end
+end
+
 function MapWidget:OnUpdate(dt)
 
 	if not self.shown then return end
@@ -81,6 +89,7 @@ function MapWidget:OnUpdate(dt)
 			local dx = scale * ( pos.x - self.lastpos.x )
 			local dy = scale * ( pos.y - self.lastpos.y )
 			self.minimap:Offset( dx, dy )
+            self:UpdateMapscreenDecorations()
 		end
 
 		self.lastpos = pos
@@ -91,6 +100,7 @@ end
 
 function MapWidget:Offset(dx,dy)
 	self.minimap:Offset(dx,dy)
+    self:UpdateMapscreenDecorations()
 end
 
 
