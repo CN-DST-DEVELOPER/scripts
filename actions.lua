@@ -2479,25 +2479,45 @@ ACTIONS.JUMPIN_MAP.stroverridefn = function(act)
 end
 
 local WORMHOLE_MUST_TAGS = {"wormhole"}
+local TENTACLE_PILLAR_MUST_TAGS = { "tentacle_pillar" }
 local function DoCharlieResidueMapAction(act, target, charlieresidue, residue_context)
     if residue_context == CHARLIERESIDUE_MAP_ACTIONS.WORMHOLE then
         local residuetarget = charlieresidue:GetTarget()
         local pt = act:GetActionPoint()
-        local teleporterexit = nil
-        local wormholes = TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.SKILLS.WINONA.WORMHOLE_DETECTION_RADIUS, WORMHOLE_MUST_TAGS)
-        for _, wormhole in ipairs(wormholes) do
-            if wormhole.components.teleporter ~= nil and wormhole ~= residuetarget then
-                teleporterexit = wormhole
-                break
-            end
-        end
-        teleporterexit = teleporterexit or target -- Default back to itself because end node was not picked correctly.
-        act.doer.sg:GoToState("jumpin", {teleporter = target, teleporterexit = teleporterexit,})
-        DecayCharlieResidueIfItExists(act.doer)
-        return true
-    else
-        DecayCharlieResidueAndGoOnCooldownIfItExists(act.doer)
-    end
+		if residuetarget:HasTag("wormhole") then
+			local teleporterexit = nil
+			local wormholes = TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.SKILLS.WINONA.WORMHOLE_DETECTION_RADIUS, WORMHOLE_MUST_TAGS)
+			for _, wormhole in ipairs(wormholes) do
+				if wormhole.components.teleporter and wormhole ~= residuetarget then
+					teleporterexit = wormhole
+					break
+				end
+			end
+			teleporterexit = teleporterexit or target -- Default back to itself because end node was not picked correctly.
+			act.doer.sg:GoToState("jumpin", { teleporter = target, teleporterexit = teleporterexit })
+			DecayCharlieResidueIfItExists(act.doer)
+			return true
+		elseif residuetarget.prefab == "tentacle_pillar_hole" then
+			local teleporterexit = nil
+			local wormholes = TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.SKILLS.WINONA.WORMHOLE_DETECTION_RADIUS, TENTACLE_PILLAR_MUST_TAGS)
+			for _, wormhole in ipairs(wormholes) do
+				if wormhole.components.teleporter and wormhole ~= residuetarget then
+					teleporterexit = wormhole
+					break
+				end
+			end
+			teleporterexit = teleporterexit or target -- Default back to itself because end node was not picked correctly.
+			if teleporterexit.prefab == "tentacle_pillar" then
+				--If asleep, the exit is instantly converted to hole and returned
+				teleporterexit = teleporterexit:Overtake() or teleporterexit
+			end
+			act.doer.sg:GoToState("jumpin", { teleporter = target, teleporterexit = teleporterexit })
+			DecayCharlieResidueIfItExists(act.doer)
+			return true
+		end
+	end
+	DecayCharlieResidueAndGoOnCooldownIfItExists(act.doer)
+	return false
 end
 ACTIONS.JUMPIN_MAP.fn = function(act)
     if act.doer ~= nil and act.doer.sg ~= nil and act.doer.sg.currentstate.name == "jumpin_pre" then

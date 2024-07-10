@@ -23,10 +23,13 @@ function RecipeScanner:Scan(target, doer)
 		recipe = GetValidRecipe(target.SCANNABLE_RECIPENAME)
 	else
 		recipe = AllRecipes[target.prefab]
+		if recipe and recipe.source_recipename then --in case of deconstruction recipe for a deployed item
+			recipe = GetValidRecipe(recipe.source_recipename)
+		end
 	end
 	if recipe == nil then
 		return false, "CANTLEARN"
-	elseif doer.components.builder:KnowsRecipe(recipe) then
+	elseif doer.components.builder:KnowsRecipe(recipe, true) then
 		return false, "KNOWN"
 	elseif recipe.nounlock or FunctionOrValue(recipe.no_deconstruction, target) then
 		return false, "CANTLEARN"

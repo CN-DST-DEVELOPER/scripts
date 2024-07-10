@@ -310,6 +310,20 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
     return Prefab(name, fn, assets, prefabs)
 end
 
+local bundle =
+{
+	common_postinit = function(inst, setupdata)
+		inst.SCANNABLE_RECIPENAME = "bundlewrap"
+	end,
+}
+
+local gift =
+{
+	common_postinit = function(inst, setupdata)
+		inst.SCANNABLE_RECIPENAME = "giftwrap"
+	end,
+}
+
 local redpouch =
 {
     master_postinit = function(inst, setupdata)
@@ -563,10 +577,10 @@ return MakeContainer("bundle_container", "ui_bundle_2x2"),
 	MakeContainer("construction_repair_container", "ui_construction_4x1", "repairconstructionsite"),
 	MakeContainer("construction_rebuild_container", "ui_construction_4x1", "rebuildconstructionsite"),
     --"bundle", "bundlewrap"
-    MakeBundle("bundle", false, nil, { "waxpaper" }),
+	MakeBundle("bundle", false, nil, { "waxpaper" }, nil, bundle),
     MakeWrap("bundle", "bundle_container", nil, false),
     --"gift", "giftwrap"
-    MakeBundle("gift", false, 2),
+	MakeBundle("gift", false, 2, nil, nil, gift),
     MakeWrap("gift", "bundle_container", nil, true),
     --"redpouch"
     MakeBundle("redpouch", true, nil, { "lucky_goldnugget" }, true, redpouch),
@@ -582,4 +596,3 @@ return MakeContainer("bundle_container", "ui_bundle_2x2"),
     MakeBundle("hermit_bundle", true, nil, nil, true, hermit_bundle),
     MakeBundle("hermit_bundle_shells", true, nil, nil, true, hermit_bundle_shells, "hermit_bundle","hermit_bundle","hermit_bundle"),
     MakeBundle("wetpouch", true, nil, JoinArrays(table.getkeys(wetpouch.loottable), GetAllWinterOrnamentPrefabs()), false, wetpouch)
-

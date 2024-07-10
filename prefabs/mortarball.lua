@@ -272,7 +272,7 @@ local function setdamage(inst, damage)
     inst.damage = damage
     inst.components.combat:SetDefaultDamage(inst.damage)
 
-    if inst.redgemcount and inst.redgemcount > 3 then
+    if inst.redgemcount and inst.redgemcount > 4 then
         local build = "cannonball_rock_lvl2_build"
         if inst.redgemcount > 7 then
             build = "cannonball_rock_lvl3_build"

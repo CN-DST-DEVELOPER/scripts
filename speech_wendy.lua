@@ -5330,8 +5330,8 @@ return{
             LOTS_OF_KELP = "So, even the merms have their limits.",
         },
 
-        MERM_ARMORY = "\"Mermfok Ownlee\"... hmph. How childish.",
-        MERM_ARMORY_UPGRADED = "\"Mermfok Ownlee\"... hmph. How childish.",
+        MERM_ARMORY = "\"Mermfolk Ownlee\"... hmph. How childish.",
+        MERM_ARMORY_UPGRADED = "\"Mermfolk Ownlee\"... hmph. How childish.",
         MERM_TOOLSHED = "Father had a tool shed, though he hardly used it.",
         MERM_TOOLSHED_UPGRADED = "Father had a tool shed, though he hardly used it.",
         MERMARMORHAT = "I’m not a merm.",

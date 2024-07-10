@@ -142,6 +142,8 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
 
 	self.is_deconstruction_recipe = tab == nil
 
+    self.source_recipename = more_data.source_recipename -- NOTES(JBK): What the basis recipename is used to create this object useful for things like Winona scanner.
+
     num                = num + 1
     AllRecipes[name]   = self
     if self.builder_tag ~= nil and more_data.allowautopick == nil then -- NOTES(JBK): "donotautopick" filtered items should set allowautopick in the recipe if they are to be picked up by things for the player.
@@ -203,8 +205,8 @@ Recipe2 = Class(Recipe, function(self, name, ingredients, tech, config) -- add n
 	self.is_deconstruction_recipe = false
 end)
 
-DeconstructRecipe = Class(Recipe, function(self, name, return_ingredients)
-	Recipe._ctor(self, name, return_ingredients, nil, TECH.NONE)
+DeconstructRecipe = Class(Recipe, function(self, name, return_ingredients, config)
+	Recipe._ctor(self, name, return_ingredients, nil, TECH.NONE, config)
 	self.is_deconstruction_recipe = true
 	self.nounlock = true
 end)

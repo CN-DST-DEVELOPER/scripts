@@ -1409,6 +1409,9 @@ local COMPONENT_ACTIONS =
 				recipe = GetValidRecipe(target.SCANNABLE_RECIPENAME)
 			else
 				recipe = AllRecipes[target.prefab]
+				if recipe and recipe.source_recipename then --in case of deconstruction recipe for a deployed item
+					recipe = GetValidRecipe(recipe.source_recipename)
+				end
 			end
 			if recipe and not (recipe.nounlock or FunctionOrValue(recipe.no_deconstruction, target)) then
 				table.insert(actions, ACTIONS.TEACH)

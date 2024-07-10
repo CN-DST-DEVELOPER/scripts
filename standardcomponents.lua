@@ -1603,8 +1603,14 @@ local function OnStartRegrowth(inst, data)
     -- NOTES(JBK): inst will most likely be not valid right after this.
     TheWorld:PushEvent("beginregrowth", inst)
 end
+function RemoveFromRegrowthManager(inst)
+    inst:RemoveEventCallback("onremove", OnStartRegrowth)
+    inst:RemoveEventCallback("despawnedfromhaunt", RemoveFromRegrowthManager)
+    inst.OnStartRegrowth = nil
+end
 function AddToRegrowthManager(inst)
     inst:ListenForEvent("onremove", OnStartRegrowth)
+    inst:ListenForEvent("despawnedfromhaunt", RemoveFromRegrowthManager)
     inst.OnStartRegrowth = OnStartRegrowth -- For any special cases that need to call this.
 end
 

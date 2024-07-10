@@ -2924,6 +2924,7 @@ local states =
                 end
             end
 			local rose = SpawnPrefab("flower_rose")
+            rose.planted = true
 			rose.Transform:SetPosition(x, 0, z)
 			rose:DoRoseBounceAnim()
 			rose:AddTag("NOCLICK")
@@ -12865,7 +12866,8 @@ local states =
                         local teleporterexit = inst.sg.statemem.teleporterexit
                         if teleporterexit then
                             if not teleporterexit:IsValid() then
-                                teleporterexit = nil
+								teleporterexit = teleporterexit.overtakenhole
+								--this is just for an overtaken tentacle_pillar, otherwise nil
                             end
                             if inst.sg.statemem.target.components.teleporter:UseTemporaryExit(inst, teleporterexit) then
                                 should_teleport = true

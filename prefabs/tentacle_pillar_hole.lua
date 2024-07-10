@@ -29,10 +29,14 @@ local function DoEmerge(inst)
 end
 
 local function TryEmerge(inst)
-    if not (inst.components.teleporter:IsBusy() or
-            inst.components.teleporter:IsTargetBusy()) and
-        inst.emergetime <= GetTime() then
-        DoEmerge(inst)
+	if not (inst.components.teleporter:IsBusy() or inst.components.teleporter:IsTargetBusy()) then
+		local et = inst.emergetime
+		if inst.overtaken and GetTaskRemaining(inst.emergetask) <= 0 then
+			et = et - TUNING.TENTACLE_PILLAR_ARM_EMERGE_TIME + 1.5
+		end
+		if et <= GetTime() then
+			DoEmerge(inst)
+		end
     end
 end
 
@@ -102,6 +106,26 @@ local function OnLoadPostPass(inst)
     end
 end
 
+local function CanResidueBeSpawnedBy(inst, doer)
+	local skilltreeupdater = doer and doer.components.skilltreeupdater or nil
+	return skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") or false
+end
+
+local function OnResidueCreated(inst, residueowner, residue)
+	local skilltreeupdater = residueowner.components.skilltreeupdater
+	if skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") then
+		residue:SetMapActionContext(CHARLIERESIDUE_MAP_ACTIONS.WORMHOLE)
+	end
+end
+
+local function CreateHiddenGlobalIcon(inst)
+	inst.hiddenglobalicon = SpawnPrefab("globalmapiconseeable")
+	inst.hiddenglobalicon.MiniMapEntity:SetPriority(50) -- NOTES(JBK): This could be put to a constant for map actions that should go over everything as a reserved flag.
+	inst.hiddenglobalicon.MiniMapEntity:SetRestriction("wormholetracker")
+	inst.hiddenglobalicon:AddTag("wormholetrackericon")
+	inst.hiddenglobalicon:TrackEntity(inst)
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -156,6 +180,10 @@ local function fn()
     --------------------
     inst:AddComponent("inspectable")
 
+	inst:AddComponent("roseinspectable")
+	inst.components.roseinspectable:SetCanResidueBeSpawnedBy(CanResidueBeSpawnedBy)
+	inst.components.roseinspectable:SetOnResidueCreated(OnResidueCreated)
+
     --------------------
     inst:AddComponent("teleporter")
     inst.components.teleporter.onActivate = OnActivate
@@ -180,6 +208,8 @@ local function fn()
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
     inst.OnLoadPostPass = OnLoadPostPass
+
+	inst:DoTaskInTime(0, CreateHiddenGlobalIcon)
 
     return inst
 end

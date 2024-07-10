@@ -1461,7 +1461,7 @@ return{
         HOUNDSTOOTH = "I could have been eaten!",
         ARMORSNURTLESHELL = "It's not pleasant, but I do feel a bit safer.",
         BAT = "Stay out of my hair, it's enough of a bat's nest already!",
-        BATBAT = "I can take a bit of my enemy's lifespan and add it to my own.",
+        BATBAT = "The bat won't be needing it anymore, I might as well put it to good use.",
         BATWING = "That'll teach those bats.",
         BATWING_COOKED = "I don't know what flavor I expected, but it wasn't that.",
         BATCAVE = "Don't mind me... just passing through...",

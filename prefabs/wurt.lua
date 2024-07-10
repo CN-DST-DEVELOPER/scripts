@@ -722,6 +722,8 @@ local function OnAttached(inst, target)
             target:updateeyebuild()
             target.planarbuffed:set(true)
             target.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+            
+            target.SoundEmitter:PlaySound("meta4/lunar_merm/buff")
         end
     end
 end

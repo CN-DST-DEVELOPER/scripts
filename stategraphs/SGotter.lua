@@ -1,13 +1,16 @@
 require("stategraphs/commonstates")
 
+local function action_condition(inst)
+    return not inst.sg:HasStateTag("jumping")
+end
 local actionhandlers =
 {
-    ActionHandler(ACTIONS.DROP, "drop"),
-    ActionHandler(ACTIONS.EAT, "eat_pre"),
-    ActionHandler(ACTIONS.GOHOME, "gohome"),
-    ActionHandler(ACTIONS.PICK, "pickup"),
-    ActionHandler(ACTIONS.PICKUP, "pickup"),
-    ActionHandler(ACTIONS.STEAL, "steal"),
+    ActionHandler(ACTIONS.DROP, "drop", action_condition),
+    ActionHandler(ACTIONS.EAT, "eat_pre", action_condition),
+    ActionHandler(ACTIONS.GOHOME, "gohome", action_condition),
+    ActionHandler(ACTIONS.PICK, "pickup", action_condition),
+    ActionHandler(ACTIONS.PICKUP, "pickup", action_condition),
+    ActionHandler(ACTIONS.STEAL, "steal", action_condition),
 }
 
 local events =

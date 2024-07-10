@@ -472,6 +472,7 @@ local function MakeAncientTree(name, data)
         inst:AddTag("tree")
         inst:AddTag("no_force_grow")
         inst:AddTag("ancienttree")
+        inst:AddTag("event_trigger")
 
         if data.shelter then
             inst:AddTag("shelter")

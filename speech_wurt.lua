@@ -416,7 +416,7 @@ return{
 
         PICK =
         {
-            NOTHING_INSIDE = "No stuff",
+            NOTHING_INSIDE = "No stuff.",
         },
 
         HEAL =

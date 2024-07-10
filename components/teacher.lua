@@ -13,7 +13,7 @@ function Teacher:Teach(target)
         return false
     elseif target.components.builder == nil then
         return false
-    elseif target.components.builder:KnowsRecipe(self.recipe) then
+	elseif target.components.builder:KnowsRecipe(self.recipe, true) then
         return false, "KNOWN"
     elseif not target.components.builder:CanLearn(self.recipe) then
         return false, "CANTLEARN"

@@ -3089,7 +3089,7 @@ return {
 		WALL_WOOD_ITEM = "Pickets!",
 		WALL_MOONROCK = "Spacey and smooth!",
 		WALL_MOONROCK_ITEM = "Very light, but surprisingly tough.",
-		WALL_DREADSTONE = " I feel so... safe?",
+		WALL_DREADSTONE = "I feel so... safe?",
 		WALL_DREADSTONE_ITEM = "What could go wrong?",
         WALL_SCRAP = "It's made of garbage.",
         WALL_SCRAP_ITEM = "It's like a bundle wrap, of scrap.",

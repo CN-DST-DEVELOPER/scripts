@@ -362,8 +362,12 @@ function Map:CanDeployMastAtPoint(pt, inst, mouseover)
         and self:IsDeployPointClear(pt, nil, inst.replica.inventoryitem:DeploySpacingRadius())
 end
 
+local function IsNearOtherWalkablePeripheral(other, pt, min_spacing_sq, min_spacing)
+	return other:HasTag("walkableperipheral") and IsNearOther(other, pt, min_spacing_sq, min_spacing)
+end
+
 function Map:CanDeployWalkablePeripheralAtPoint(pt, inst)
-    return self:IsDeployPointClear(pt, nil, inst.replica.inventoryitem:DeploySpacingRadius(), nil, nil, nil, WALKABLEPERIPHERAL_DEPLOY_IGNORE_TAGS)
+	return self:IsDeployPointClear(pt, nil, inst.replica.inventoryitem:DeploySpacingRadius(), nil, IsNearOtherWalkablePeripheral, nil, WALKABLEPERIPHERAL_DEPLOY_IGNORE_TAGS)
 end
 
 local function IsDockNearOtherOnOcean(other, pt, min_spacing_sq, min_spacing)

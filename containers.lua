@@ -700,7 +700,7 @@ params.merm_toolshed =
         closesound = "meta4/mermery/close",
     },
     usespecificslotsforitems = true,
-    type = "chest",
+    type = "cooker",
 }
 
 function params.merm_toolshed.itemtestfn(container, item, slot)

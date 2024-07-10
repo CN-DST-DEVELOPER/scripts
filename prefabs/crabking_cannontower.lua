@@ -56,7 +56,7 @@ local function OnCollide(inst, data)
 
         local hit_velocity = math.floor(math.abs(boat_physics:GetVelocity() * data.hit_dot_velocity) * COLLISION_DAMAGE_SCALE / boat_physics.max_velocity + 0.5)
         local damage = hit_velocity * TUNING.CRABKING_CANNONTOWER_HEALTH * mult
-        inst.components.health:DoDelta(-hit_velocity * TUNING.CRABKING_CANNONTOWER_HEALTH)
+        inst.components.health:DoDelta(-damage)
     end
 end
 
@@ -225,7 +225,7 @@ local function onhit(inst)
 end
 
 local function UpdateMortarArt(inst)
-    if inst.redgemcount ~= nil and inst.redgemcount > 3 then
+    if inst.redgemcount ~= nil and inst.redgemcount > 4 then
         inst.AnimState:AddOverrideBuild(inst.redgemcount > 7 and "cannonball_rock_lvl3_build" or "cannonball_rock_lvl2_build")
     end
 end

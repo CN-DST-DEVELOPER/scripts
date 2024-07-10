@@ -23,6 +23,14 @@ local Placer = Class(function(self, inst)
     self.BOAT_MUST_TAGS = { "boat" } --probably don't want static, but still cached per placer at least
 end)
 
+function Placer:OnRemoveEntity()
+    if self.builder ~= nil and self.hide_inv_icon then
+        self.builder:PushEvent("onplacerhidden")
+    end
+end
+
+Placer.OnRemoveFromEntity = Placer.OnRemoveEntity
+
 function Placer:SetBuilder(builder, recipe, invobject)
     self.builder = builder
     self.recipe = recipe

@@ -36,6 +36,16 @@ local function makeassetlist(buildname)
     }
 end
 
+local function OnIsRubbleDirty(inst)
+	inst.SCANNABLE_RECIPENAME = not inst._isrubble:value() and "ruinsrelic_"..inst._recipename or nil
+end
+
+local function SetIsRubble(inst, isrubble)
+	inst.rubble = isrubble --for backward compatibility in case mods or anything else was using this flag
+	inst._isrubble:set(isrubble)
+	OnIsRubbleDirty(inst)
+end
+
 local function OnDeath(inst)
     local fx = SpawnPrefab("collapse_small")
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
@@ -105,7 +115,7 @@ local function OnRepaired(inst, doer)
             doer.components.sanity:DoDelta(TUNING.SANITY_TINY)
         end
         if inst.rubble then
-            inst.rubble = false
+			SetIsRubble(inst, false)
             if inst.animated then
                 inst.AnimState:PlayAnimation("hit")
             end
@@ -146,8 +156,8 @@ local function MakeRubble(inst)
 end
 
 local function OnHealthDelta(inst, oldpct, newpct)
-    if not inst.rubble and newpct < .5 and newpct < oldpct then
-        inst.rubble = true
+	if not inst.rubble and newpct < 0.5 and newpct < oldpct then
+		SetIsRubble(inst, true)
         if inst.animated then
             inst.AnimState:PlayAnimation("repair")
         end
@@ -168,11 +178,11 @@ local function OnPreLoad(inst, data)
 
         if data.rubble then
             if not inst.rubble then
-                inst.rubble = true
+				SetIsRubble(inst, true)
                 MakeRubble(inst)
             end
         elseif inst.rubble then
-            inst.rubble = false
+			SetIsRubble(inst, false)
             MakeRelic(inst)
         end
     end
@@ -211,6 +221,10 @@ local function makefn(name, asset, animated, smashsound, rubble, chair, deploy_s
         inst:AddTag(smashsound == "rock" and "stone" or "clay")
 		inst:AddTag("noauradamage")
 
+		inst._isrubble = net_bool(inst.GUID, name..".isrubble", "isrubbledirty")
+		inst._recipename = string.match(name, "%a+$")
+		inst.SCANNABLE_RECIPENAME = "ruinsrelic_"..inst._recipename --set/unset when isrubble changes
+
         inst.displaynamefn = displaynamefn
         if name ~= "ruins_chair" then
             inst.scrapbook_proxy = "ruins_chair"
@@ -219,10 +233,12 @@ local function makefn(name, asset, animated, smashsound, rubble, chair, deploy_s
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
+			inst:ListenForEvent("isrubbledirty", OnIsRubbleDirty)
+
             return inst
         end
 
-        inst.rubble = rubble
+		SetIsRubble(inst, rubble)
         inst.animated = animated
 		inst.chair = chair
 		inst.chair_shadeling_spawner = chair and TheWorld.components.ruinsshadelingspawner ~= nil

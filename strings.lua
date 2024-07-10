@@ -16570,15 +16570,15 @@ STRINGS.SCRAPBOOK = {
         BOATPATCH_KELP = "A temporary solution for leaks. Sprung a leak? Use a kelp patch... then another... and another...",
         MOSQUITOMUSK = "Containing \"essence de moustique\" making any holder seem friendly to wild mosquitos.",
         MOSQUITOBOMB = "Packed so tight with wriggling friends that the explosive release of bugs inflicts damage to targets nearby.",
-        MOSQUITOMERMSALVE = "A useful healing device but only for merm, after all, the Mosquitos are mostly full of Merm blood to begin with.",
+        MOSQUITOMERMSALVE = "A useful healing device but only for Merms, after all, the Mosquitos are mostly full of Merm blood to begin with.",
 
-        MERM_ARMORY = "While stocked with Cut Grass and Logs, Guard Merm will grab a Swamp Brawler Helmet from it, reducing its stores.\n\nSwamp Brawler Helmets are a cheap way for a merm to get 50% protection from damage for a short while.",
-        MERM_ARMORY_UPGRADED = "While stocked with Cut Grass and Logs, Guard Merm will grab a Swamp Warrior Helmet from it, reducing its stores.\n\nSwamp Warrior Helmets are a better design over their Brawler cousin, providing 70% resistance from damage for a longer period of time.",
-        MERM_TOOLSHED = "While stocked with twigs and rocks, regular Merm will grab a Shoddy Tool from it, reducing its stores.\n\nShoddy tools will increase the amount of work a merm does for a short time.\n\nWith a shoddy tool, follower Merm will help chop trees, mine rocks, dig in a garden and Till soil.",
-        MERM_TOOLSHED_UPGRADED = "While stocked with twigs and rocks, regular Merm will grab a Slightly Less Shoddy Tool from it, reducing its stores.\n\nSlightly Less Shoddy tools increase the amount of work a merm does a little more than their lesser sibling, the Shoddy Tool.\n\nWith a shoddy tool, follower Merm will help chop trees, mine rocks, dig in a garden and Till soil.",
+        MERM_ARMORY = "While stocked with Cut Grass and Logs, Merm Guards will grab a Swamp Brawler Helmet from it, reducing its stores.\n\nSwamp Brawler Helmets are a cheap way for a Merm to get 50% protection from damage for a short while.",
+        MERM_ARMORY_UPGRADED = "While stocked with Cut Grass and Logs, Merm Guards will grab a Swamp Warrior Helmet from it, reducing its stores.\n\nSwamp Warrior Helmets are a better design over their Brawler cousin, providing 70% resistance from damage for a longer period of time.",
+        MERM_TOOLSHED = "While stocked with twigs and rocks, regular Merms will grab a Shoddy Tool from it, reducing its stores.\n\nShoddy Tools will increase the amount of work a Merm does for a short time.\n\nWith a Shoddy Tool, follower Merms will help chop trees, mine rocks, dig in a garden and till soil.",
+        MERM_TOOLSHED_UPGRADED = "While stocked with twigs and rocks, regular Merms will grab a Slightly Less Shoddy Tool from it, reducing its stores.\n\nSlightly Less Shoddy tools increase the amount of work a Merm does a little more than their lesser sibling, the Shoddy Tool.\n\nWith a Slightly Less Shoddy Tool, follower Merms will help chop trees, mine rocks, dig in a garden and till soil.",
 
-        OFFERING_POT = "Speeds up the respawning of Merm in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby merm to come eat the kelp and follow the Merm who summoned them.",        
-        OFFERING_POT_UPGRADED = "Speeds up the respawning of Merm in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby merm to come eat the kelp and follow the Merm who summoned them.",        
+        OFFERING_POT = "Speeds up the respawning of Merms in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby Merms to come eat the kelp and follow the Merm who summoned them.",        
+        OFFERING_POT_UPGRADED = "Speeds up the respawning of Merms in Craftsmerm Houses, Merm Flort-ifications and Leaky Shacks.\n\nCan be used to call nearby Merms to come eat the kelp and follow the Merm who summoned them.",        
     },
 
     -- Full name: "{name} Scrapbook Page"

@@ -154,12 +154,21 @@ local function OnEmerge(inst)
     end
 end
 
-local function DoRetract(inst)
+local function DoRetract(inst, overtake)
     if not inst.components.health:IsDead() then
         inst:RemoveEventCallback("animover", OnEmergeOver)
+		inst.overtaken = overtake
         inst.components.health:SetInvincible(false)
         inst.components.health:Kill()
     end
+end
+
+local function Overtake(inst)
+	--Overtake THIS pillar to become a hole temporarily.
+	--Do not affect the other linked pillar.
+	--If we're naturally becoming a hole already, then no need to overtake.
+	DoRetract(inst, true)
+	return inst.overtakenhole --could already have turned into a hole if we were asleep
 end
 
 local function SwapToHole(inst)
@@ -168,31 +177,56 @@ local function SwapToHole(inst)
 
     inst:Remove()
 
-    inst = SpawnPrefab("tentacle_pillar_hole")
-    inst.Transform:SetPosition(x, y, z)
+	local hole = SpawnPrefab("tentacle_pillar_hole")
+	hole.Transform:SetPosition(x, y, z)
 
-    if other ~= nil then
-        inst.components.teleporter:Target(other)
-        other.components.teleporter:Target(inst)
-        if other.prefab == "tentacle_pillar" then
-            inst.components.teleporter:SetEnabled(false)
-            inst.components.trader:Disable()
-            DoRetract(other)
+	if other then
+		hole.components.teleporter:Target(other)
+		other.components.teleporter:Target(hole)
+
+		if inst.overtaken then
+			--we're open, but don't let things in, could let things out though
+			hole.components.teleporter:SetEnabled(false)
+			hole.components.trader:Disable()
+			hole.overtaken = true
         else
-            other.components.teleporter:SetEnabled(true)
-            other.components.trader:Enable()
-        end
+			--Unmark linked pillar/hole as overtaken, since it can become a natural hole now.
+			other.overtaken = nil
+
+			if other.prefab == "tentacle_pillar" then
+				hole.components.teleporter:SetEnabled(false)
+				hole.components.trader:Disable()
+				DoRetract(other)
+			else
+				other.components.teleporter:SetEnabled(true)
+				other.components.trader:Enable()
+			end
+		end
     else
-        inst.components.teleporter:SetEnabled(false)
-        inst.components.trader:Disable()
+		hole.components.teleporter:SetEnabled(false)
+		hole.components.trader:Disable()
+		hole.overtaken = inst.overtaken
     end
+
+	if hole.overtaken then
+		inst.overtakenhole = hole
+	end
+
+	if inst._tpqueue then
+		local t = GetTime()
+		for i, v in ipairs(inst._tpqueue) do
+			hole.components.teleporter:ReceivePlayer(v.doer, v.source, t - v.t)
+		end
+	end
 end
 
 local function OnDeath(inst)
     KillArms(inst, false)
 
-    local x, y, z = inst.Transform:GetWorldPosition()
-    inst.components.lootdropper:DropLoot(Vector3(x, 20, z))
+	if not inst.overtaken then
+		local x, y, z = inst.Transform:GetWorldPosition()
+		inst.components.lootdropper:DropLoot(Vector3(x, 20, z))
+	end
 
     if inst:IsAsleep() then
         SwapToHole(inst)
@@ -209,10 +243,14 @@ local function OnDeath(inst)
         inst:ListenForEvent("entitysleep", SwapToHole)
     end
 
-    local other = inst.components.teleporter.targetTeleporter
-    if other ~= nil and other.prefab == "tentacle_pillar" then
-        DoRetract(other)
-    end
+	if not inst.overtaken then
+		local other = inst.components.teleporter.targetTeleporter
+		if other and other.prefab == "tentacle_pillar" then
+			DoRetract(other)
+			--Unmark linked pillar as overtaken, since it can become a natural hole now.
+			other.overtaken = nil
+		end
+	end
 end
 
 local function OnEntityWake(inst)
@@ -225,12 +263,26 @@ local function OnEntitySleep(inst)
     inst.spawnLocal = nil
 end
 
+local function OnSave(inst, data)
+	data.overtaken = inst.overtaken or nil
+end
+
+local function OnPreLoad(inst, data, ents)
+	inst.overtaken = data and data.overtaken or nil
+end
+
 --NOTE: This can also be called directly from tentacle_pillar_hole:OnLoadPostPass
 local function OnLoadPostPass(inst)
+	if inst.overtaken and not inst.components.health:IsDead() then
+		inst.overtaken = nil
+	end
+
     local other = inst.components.teleporter.targetTeleporter
     if other ~= nil and
         other.prefab == "tentacle_pillar_hole" and
-        other.components.teleporter.targetTeleporter == inst then
+		other.components.teleporter.targetTeleporter == inst and
+		not other.overtaken
+	then
         DoRetract(inst)
     end
 end
@@ -243,6 +295,29 @@ local function CustomOnHaunt(inst, haunter)
         return true
     end
     return false
+end
+
+local function OnActivateByOvertake(inst, source, doer)
+	local data =
+	{
+		t = GetTime(),
+		doer = doer,
+		source = source,
+	}
+
+	if inst._tpqueue then
+		table.insert(inst._tpqueue, data)
+	else
+		inst._tpqueue = { data }
+	end
+end
+
+local function CreateHiddenGlobalIcon(inst)
+	inst.hiddenglobalicon = SpawnPrefab("globalmapiconseeable")
+	inst.hiddenglobalicon.MiniMapEntity:SetPriority(50) -- NOTES(JBK): This could be put to a constant for map actions that should go over everything as a reserved flag.
+	inst.hiddenglobalicon.MiniMapEntity:SetRestriction("wormholetracker")
+	inst.hiddenglobalicon:AddTag("wormholetrackericon")
+	inst.hiddenglobalicon:TrackEntity(inst)
 end
 
 local function fn()
@@ -304,13 +379,22 @@ local function fn()
     inst:AddComponent("teleporter")
     inst.components.teleporter:SetEnabled(false)
 
+	--for overtaken teleports (initiates while we are pillar, we transform to hole partway)
+	inst.components.teleporter.travelcameratime = 999
+	inst.components.teleporter.travelarrivetime = 999
+	inst.components.teleporter.onActivateByOther = OnActivateByOvertake
+	--
+
     --------------------
 
     AddHauntableCustomReaction(inst, CustomOnHaunt)
 
+	inst.Overtake = Overtake
     inst.OnEmerge = OnEmerge
     inst.OnEntitySleep = OnEntitySleep
     inst.OnEntityWake = OnEntityWake
+	inst.OnSave = OnSave
+	inst.OnPreLoad = OnPreLoad
     inst.OnLoadPostPass = OnLoadPostPass
 
     inst.numArms = 0
@@ -321,6 +405,8 @@ local function fn()
             inst.numArms = inst.numArms - 1
         end
     end
+
+	inst:DoTaskInTime(0, CreateHiddenGlobalIcon)
 
     return inst
 end

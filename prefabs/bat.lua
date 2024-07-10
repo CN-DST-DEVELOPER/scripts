@@ -66,7 +66,16 @@ local function KeepTarget(inst, target)
         or inst.components.teamattacker.orders == ORDERS.ATTACK
 end
 
+local function IsBat(dude)
+	return dude:HasTag("bat")
+end
+
 local function OnAttacked(inst, data)
+	local attacker = data and data.attacker or nil
+	if attacker == nil then
+		return
+	end
+
     if not inst.components.teamattacker.inteam and not inst.components.teamattacker:SearchForTeam() then
         MakeTeam(inst, data.attacker)
     elseif inst.components.teamattacker.teamleader then
@@ -74,9 +83,8 @@ local function OnAttacked(inst, data)
     end
 
     if inst.components.teamattacker.inteam and not inst.components.teamattacker.teamleader:CanAttack() then
-        local attacker = data and data.attacker
         inst.components.combat:SetTarget(attacker)
-        inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, function(dude) return dude:HasTag("bat") end, MAX_TARGET_SHARES)
+		inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsBat, MAX_TARGET_SHARES)
     end
 end
 

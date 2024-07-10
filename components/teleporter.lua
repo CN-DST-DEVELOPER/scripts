@@ -300,19 +300,28 @@ local function ondoerarrive(inst, self, doer)
     self:PushDoneTeleporting(doer)
 end
 
-function Teleporter:ReceivePlayer(doer, source)
+function Teleporter:ReceivePlayer(doer, source, skiptime)
     if self.onActivateByOther ~= nil then
         self.onActivateByOther(self.inst, source, doer)
     end
 
+	if skiptime then
+		skiptime = math.min(skiptime, self.travelarrivetime)
+		if not self.stopcamerafades then
+			skiptime = math.min(skiptime, self.travelcameratime)
+		end
+	else
+		skiptime = 0
+	end
+
     self.numteleporting = self.numteleporting + 1
     if not self.stopcamerafades then
         doer:ScreenFade(false)
-        self.inst:DoTaskInTime(self.travelcameratime, oncameraarrive, doer)
+		self.inst:DoTaskInTime(self.travelcameratime - skiptime, oncameraarrive, doer)
     else
         doer._failed_doneteleporting = true -- Hack for wisecracker to not change event parameters.
     end
-    self.inst:DoTaskInTime(self.travelarrivetime, ondoerarrive, self, doer)
+	self.inst:DoTaskInTime(self.travelarrivetime - skiptime, ondoerarrive, self, doer)
 end
 
 function Teleporter:Target(otherTeleporter)
