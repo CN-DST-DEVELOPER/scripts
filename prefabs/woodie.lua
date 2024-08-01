@@ -1537,7 +1537,7 @@ local function OnTakeDrowningDamage(inst, tuning)
     end
 end
 
-local function GetDowningDamgeTunings(inst)
+local function GetDrowningDamageTunings(inst)
     return TUNING.DROWNING_DAMAGE[IsWereMode(inst.weremode:value()) and "WEREWOODIE" or "WOODIE"]
 end
 
@@ -1776,7 +1776,7 @@ local function master_postinit(inst)
 
         if inst.components.drownable ~= nil then
             inst.components.drownable:SetOnTakeDrowningDamageFn(OnTakeDrowningDamage)
-            inst.components.drownable:SetCustomTuningsFn(GetDowningDamgeTunings)
+            inst.components.drownable:SetCustomTuningsFn(GetDrowningDamageTunings)
         end
 
         inst.IsWerebeaver = IsWerebeaver

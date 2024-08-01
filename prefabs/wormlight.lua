@@ -235,7 +235,7 @@ local function OnOwnerChange(inst)
                 inst:RemoveEventCallback("ondropped", inst._onownerchange, k)
             end
             if k.components.rideable then
-                inst:RemoveEventCallback("riderchanged", inst._riderchanged, k)
+                inst:RemoveEventCallback("riderchanged", inst._onownerchange, k)
             end
         end
     end

@@ -207,10 +207,13 @@ local function GenerateTreasure(pt, overrideprefab, spawn_as_empty, postfn)
 
 			for i, itemprefab in ipairs(prefabstospawn) do
 				item = SpawnPrefab(itemprefab)
-				item.Transform:SetPosition(x, y, z)
 
-				if _container ~= nil then
-					_container:GiveItem(item)
+				if item ~= nil then
+					item.Transform:SetPosition(x, y, z)
+
+					if _container ~= nil then
+						_container:GiveItem(item)
+					end
 				end
 			end
 

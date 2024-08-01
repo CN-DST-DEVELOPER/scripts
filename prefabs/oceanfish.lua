@@ -314,7 +314,7 @@ local function water_common(data)
     inst.AnimState:SetBuild(data.build)
     inst.AnimState:PlayAnimation("idle_loop")
 
-    inst.scrapbook_anim = "idle_ground"
+    inst.scrapbook_anim = "flop_pst"
 
     inst.AnimState:SetSortOrder(ANIM_SORT_ORDER_BELOW_GROUND.UNDERWATER)
 	inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
@@ -431,7 +431,7 @@ local function inv_common(fish_def)
     inst.AnimState:SetBuild(fish_def.build)
     inst.AnimState:PlayAnimation("flop_pst")
 
-    inst.scrapbook_anim = "idle_ground"
+    inst.scrapbook_anim = "flop_pst"
 
 	if fish_def.dynamic_shadow then
 	    inst.DynamicShadow:SetSize(fish_def.dynamic_shadow[1], fish_def.dynamic_shadow[2])

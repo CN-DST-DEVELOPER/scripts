@@ -125,9 +125,9 @@ local function OnConstructed(inst, doer)
     end
 
 	if concluded then
-		local child = inst.components.spawner.child
         local ishome =  inst.components.spawner:IsOccupied()
         inst.components.spawner:ReleaseChild()
+        local child = inst.components.spawner.child -- NOTES(JBK): This must be after ReleaseChild for entity safety because it will create a new one if it no longer exists.
 
         local new_house = ReplacePrefab(inst, inst._construction_product)
         new_house.SoundEmitter:PlaySound("hookline_2/characters/hermit/house/stage"..new_house.level.."_place")

@@ -33,7 +33,7 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    local swap_data = {sym_build = "swap_spike", bank = "tentacle_spike"}
+    local swap_data = {sym_build = "swap_spike", bank = "spike"}
     MakeInventoryFloatable(inst, "med", 0.05, {0.9, 0.5, 0.9}, true, -17, swap_data)
 
     inst.entity:SetPristine()

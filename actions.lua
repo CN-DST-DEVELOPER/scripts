@@ -1342,7 +1342,9 @@ end
 local function DoToolWork(act, workaction)
     if act.target.components.workable ~= nil and
         act.target.components.workable:CanBeWorked() and
-        act.target.components.workable:GetWorkAction() == workaction then
+        act.target.components.workable:GetWorkAction() == workaction and
+        (act.invobject == nil or act.doer == nil or act.invobject.components.equippable == nil or not act.invobject.components.equippable:IsRestricted(act.doer))
+    then
 
 		local numworks =
 			(	(	act.invobject ~= nil and
@@ -1382,7 +1384,11 @@ local function DoToolWork(act, workaction)
 end
 
 local function ValidToolWork(act, workaction)
-    return act.target.components.workable ~= nil and act.target.components.workable:CanBeWorked() and act.target.components.workable:GetWorkAction() == workaction
+    return
+        act.target.components.workable ~= nil and
+        act.target.components.workable:CanBeWorked() and
+        act.target.components.workable:GetWorkAction() == workaction and
+        (act.invobject == nil or act.doer == nil or act.invobject.components.equippable == nil or not act.invobject.components.equippable:IsRestricted(act.doer))
 end
 
 ACTIONS.CHOP.fn = function(act)

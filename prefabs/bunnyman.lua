@@ -290,6 +290,8 @@ local function OnLoad(inst)
 	end
 end
 
+local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry", "HAIR_HAT" }
+
 local function fn()
     local inst = CreateEntity()
 
@@ -333,13 +335,13 @@ local function fn()
     inst.components.talker.offset = Vector3(0, -500, 0)
     inst.components.talker:MakeChatter()
 
-    inst.scrapbook_hide = {"hat","ARM_carry","HAIR_HAT"}
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
 
     --Remove these tags so that they can be added properly when replicating components below
     inst:RemoveTag("_named")

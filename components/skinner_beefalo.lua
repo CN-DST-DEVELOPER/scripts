@@ -64,18 +64,14 @@ function Skinner_Beefalo:GetClothing()
 	}
 end
 
-function ClearClothing( anim_state, clothing_names )
-	for _,name in pairs(clothing_names) do
+function Skinner_Beefalo:HideAllClothing(anim_state)
+	for _,name in pairs(self.clothing) do
 		if name ~= nil and name ~= "" and BEEFALO_CLOTHING[name] ~= nil then
 			for _,sym in pairs(BEEFALO_CLOTHING[name].symbol_overrides) do
 				anim_state:ClearOverrideSymbol(sym)
 			end
 		end
 	end
-end
-
-function Skinner_Beefalo:HideAllClothing(anim_state)
-	ClearClothing(anim_state, self.clothing)
 end
 
 function Skinner_Beefalo:ClearAllClothing()
@@ -92,7 +88,7 @@ function Skinner_Beefalo:ClearClothing(type)
 end
 
 function Skinner_Beefalo:ApplyTargetSkins(skins,player)
-assert(player)
+	assert(player)
 
 	local doer_userid = player.userid
 

@@ -2804,8 +2804,8 @@ return{
 		TRINKET_12 = "I know of no recipe that calls for this.", --Dessicated Tentacle
 		TRINKET_13 = "You'd look so sweet in your own little garden.", --Gnomette
 		TRINKET_14 = "I could still use this for measuring.", --Leaky Teacup
-		TRINKET_15 = "Aren't we all, mon ami.", --Pawn
-		TRINKET_16 = "Aren't we all, mon ami.", --Pawn
+		TRINKET_15 = "What is your angle, mon ami?", --Pawn
+		TRINKET_16 = "What is your angle, mon ami?", --Pawn
 		TRINKET_17 = "A pity.", --Bent Spork
 		TRINKET_18 = "What could be inside?", --Trojan Horse
 		TRINKET_19 = "It's having a hard time staying upright.", --Unbalanced Top

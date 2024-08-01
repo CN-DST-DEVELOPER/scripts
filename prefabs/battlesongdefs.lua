@@ -190,7 +190,7 @@ local song_defs =
         LOOP_FX = "battlesong_lunaraligned_fx",
         DETACH_FX = "battlesong_detach",
         SOUND = "dontstarve_DLC001/characters/wathgrithr/song/lunar",
-        RESTRICTED_TAG = "battlesonglunaralignedmaker",
+        REQUIRE_SKILL = "wathgrithr_allegiance_lunar",
     },
 
     battlesong_shadowaligned =
@@ -219,7 +219,7 @@ local song_defs =
         LOOP_FX = "battlesong_shadowaligned_fx",
         DETACH_FX = "battlesong_detach",
         SOUND = "dontstarve_DLC001/characters/wathgrithr/song/shadow",
-        RESTRICTED_TAG = "battlesongshadowalignedmaker",
+        REQUIRE_SKILL = "wathgrithr_allegiance_shadow",
     },
 
     ------------------------------------------------
@@ -285,7 +285,7 @@ local song_defs =
         COOLDOWN = TUNING.SKILLS.WATHGRITHR.BATTLESONG_INSTANT_COOLDOWN_HIGH,
         ATTACH_FX = "battlesong_instant_electric_fx",
         SOUND = "dontstarve_DLC001/characters/wathgrithr/song/revive",
-        RESTRICTED_TAG = "battlesonginstantrevivemaker",
+        REQUIRE_SKILL = "wathgrithr_songs_revivewarrior",
     },
 }
 

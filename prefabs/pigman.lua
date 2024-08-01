@@ -559,6 +559,8 @@ local function CustomOnHaunt(inst)
     end
 end
 
+local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry_up" }
+
 local function common(moonbeast)
     local inst = CreateEntity()
 
@@ -616,6 +618,8 @@ local function common(moonbeast)
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
 
     inst.scrapbook_removedeps = { "strawhat", "tophat" }
     inst.scrapbook_adddeps = { "gargoyle_werepigdeath" }

@@ -4570,7 +4570,7 @@ local function MakeHat(name)
 		inst.components.inventoryitem:SetOnPutInInventoryFn(fns.inspectacles_updateinspectacles)
 		inst.components.inventoryitem:SetOnDroppedFn(fns.inspectacles_toground)
 
-        inst.components.equippable.restrictedtag = "wagstafft1maker"
+        inst.components.equippable.restrictedtag = "inspectacleshatuser"
         inst.components.equippable:SetOnEquip(fns.inspectacles_onequip)
         inst.components.equippable:SetOnUnequip(fns.inspectacles_onunequip)
 
@@ -5179,12 +5179,18 @@ end
 local function inspectacleshat_fx_ledstatedirty(inst)
 	if inst.fx then
 		if inst.ledstate:value() >= 2 then
+			local playsound = false
 			for i, v in ipairs(inst.fx) do
 				local anim = "activate"..v.animidx
 				if not v.AnimState:IsCurrentAnimation(anim) then
 					v.AnimState:PlayAnimation(anim)
+					playsound = true
 				end
 				inspectacleshat_fx_SetLedEnabled(v, true)
+			end
+			if playsound then
+				--NOTE: this is local fx on clients
+				inst.SoundEmitter:PlaySound("meta4/wires_minigame/inspectacles/activate")
 			end
 			if inst.ledstate:value() == 2 then
 				if inst.blinktask then
@@ -5195,11 +5201,17 @@ local function inspectacleshat_fx_ledstatedirty(inst)
 				inspectacleshat_fx_doblink(inst, inst.initledstate or false)
 			end
 		else
+			local playsound = false
 			for i, v in ipairs(inst.fx) do
 				--deactivated could be "off" or "deactivate", so easier to check that it's not "activate"
 				if v.AnimState:IsCurrentAnimation("activate"..v.animidx) then
 					v.AnimState:PlayAnimation("deactivate"..v.animidx)
+					playsound = true
 				end
+			end
+			if playsound then
+				--NOTE: this is local fx on clients
+				inst.SoundEmitter:PlaySound("meta4/wires_minigame/inspectacles/deactivate")
 			end
 			if inst.ledstate:value() == 0 then
 				if inst.blinktask then
@@ -5218,6 +5230,8 @@ local function inspectacleshat_fx_ledstatedirty(inst)
 end
 
 local function inspectacleshat_fx_common_postinit(inst)
+	inst.entity:AddSoundEmitter()
+
 	inst.ledstate = net_tinybyte(inst.GUID, "inspectacleshat_fx.ledstate", "ledstatedirty")
 	--0: off
 	--1: cooldown; dish down; blink

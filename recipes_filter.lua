@@ -1230,7 +1230,6 @@ CRAFTING_FILTERS.SUMMER.recipes =
 	"minifan",
 	"grass_umbrella",
 	"umbrella",
-	"winona_telebrella",
 	"featherfan",
 
 	"reflectivevest",

@@ -2348,7 +2348,7 @@ function Tune(overrides)
         MOSSLING_DAMAGE = 50,
         MOSSLING_ATTACK_PERIOD = 3,
         MOSSLING_ATTACK_RANGE = 2,
-        MOSSLING_WALK_SPEED = 5,
+        MOSSLING_WALK_SPEED = 8, --5
 
         TOADSTOOL_HEALTH = 52500,
         TOADSTOOL_ATTACK_RANGE = 7,
@@ -3192,6 +3192,7 @@ function Tune(overrides)
         ANTLION_SLOW_DOWN = .4,
         ANTLION_CAST_RANGE = 15,
         ANTLION_CAST_MAX_RANGE = 20,
+        ANTLION_DEAGGRO_DIST = 30, -- NOTES(JBK): This was never declared so this value is just an approximate.
         ANTLION_WALL_CD = 20,
         ANTLION_HIT_RECOVERY = 1,
         ANTLION_EAT_HEALING = 200,

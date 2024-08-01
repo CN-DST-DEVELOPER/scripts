@@ -53,7 +53,7 @@ local function PickUpFilter(inst, target, leader)
     return IsItemEdible(leader, target)
 end
 
-local NORMAL_RUNAWAY_DATA = {tags = {"scarytoprey"}, notags = {"carratcrafter"}, fn = ShouldRunFromScary}
+local NORMAL_RUNAWAY_DATA = {tags = {"scarytoprey"}, fn = ShouldRunFromScary}
 function CarratBrain:OnStart()
     local leader = GetLeader(self.inst)
     local ignorethese = nil

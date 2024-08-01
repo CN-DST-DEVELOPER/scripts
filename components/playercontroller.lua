@@ -4159,7 +4159,7 @@ function PlayerController:GetMapActions(position, maptarget)
     local pos = self.inst:GetPosition()
 
     self.inst.checkingmapactions = true -- NOTES(JBK): Workaround flag to not add function argument changes for this task and lets things opt-in to special handling.
-    local action_maptarget = maptarget and not maptarget:HasTag("INLIMBO") and maptarget or nil -- NOTES(JBK): Workaround passing the maptarget entity if it is out of scope for world actions.
+    local action_maptarget = maptarget and maptarget:IsValid() and not maptarget:HasTag("INLIMBO") and maptarget or nil -- NOTES(JBK): Workaround passing the maptarget entity if it is out of scope for world actions.
 
     local lmbact = self.inst.components.playeractionpicker:GetLeftClickActions(pos, action_maptarget)[1]
     if lmbact then

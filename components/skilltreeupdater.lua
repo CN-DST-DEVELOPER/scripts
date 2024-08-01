@@ -25,7 +25,7 @@ function SkillTreeUpdater:IsActivated(skill)
 end
 
 function SkillTreeUpdater:IsValidSkill(skill)
-return self.skilltree:IsValidSkill(self.inst.prefab, skill)
+return self.skilltree:IsValidSkill(skill, self.inst.prefab)
 end
 
 function SkillTreeUpdater:GetSkillXP()

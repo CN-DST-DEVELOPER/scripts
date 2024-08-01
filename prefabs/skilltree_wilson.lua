@@ -19,9 +19,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {1,0},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("alchemist")
-                end,
             root = true,
             connects = {
                 "wilson_alchemy_2",
@@ -37,9 +34,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-1},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("gem_alchemistI")
-                end,        
             connects = {
                 "wilson_alchemy_5",
             },
@@ -52,9 +46,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-2},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("gem_alchemistII")
-                end,
             connects = {
                 "wilson_alchemy_6",
             },
@@ -67,9 +58,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {0,-3},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("gem_alchemistIII")
-                end,
         },
 
         wilson_alchemy_3 = {
@@ -80,9 +68,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {1,-1},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("ore_alchemistI")
-                end,
             connects = {
                 "wilson_alchemy_7",
             },
@@ -95,9 +80,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {1,-2},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("ore_alchemistII")
-                end,        
             connects = {
                 "wilson_alchemy_8",
             },
@@ -110,9 +92,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {1,-3},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("ore_alchemistIII")
-                end,
         },
 
         wilson_alchemy_4 = {
@@ -123,9 +102,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {2,-1},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("ick_alchemistI")
-                end,         
             connects = {
                 "wilson_alchemy_9",
             },
@@ -138,9 +114,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {2,-2},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("ick_alchemistII")
-                end,        
             connects = {
                 "wilson_alchemy_10",
             },
@@ -153,9 +126,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {2,-3},
             group = "alchemy",
             tags = {"alchemy"},
-            onactivate = function(inst, fromload)
-                    inst:AddTag("ick_alchemistIII")
-                end,
         },
 
         wilson_torch_1 = {
@@ -414,7 +384,6 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"allegiance","shadow","shadow_favor"},
             locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_2", "wilson_allegiance_lock_4"},
             onactivate = function(inst, fromload)
-                inst:AddTag("skill_wilson_allegiance_shadow")
                 inst:AddTag("player_shadow_aligned")
                 local damagetyperesist = inst.components.damagetyperesist
                 if damagetyperesist then
@@ -426,7 +395,6 @@ local function BuildSkillsData(SkillTreeFns)
                 end
             end,
             ondeactivate = function(inst, fromload)
-                inst:RemoveTag("skill_wilson_allegiance_shadow")
                 inst:RemoveTag("player_shadow_aligned")
                 local damagetyperesist = inst.components.damagetyperesist
                 if damagetyperesist then
@@ -487,7 +455,6 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"allegiance","lunar","lunar_favor"},
             locks = {"wilson_allegiance_lock_1", "wilson_allegiance_lock_3","wilson_allegiance_lock_5"},
             onactivate = function(inst, fromload)
-                inst:AddTag("skill_wilson_allegiance_lunar")
                 inst:AddTag("player_lunar_aligned")
                 local damagetyperesist = inst.components.damagetyperesist
                 if damagetyperesist then
@@ -499,7 +466,6 @@ local function BuildSkillsData(SkillTreeFns)
                 end
             end,
             ondeactivate = function(inst, fromload)
-                inst:RemoveTag("skill_wilson_allegiance_lunar")
                 inst:RemoveTag("player_lunar_aligned")
                 local damagetyperesist = inst.components.damagetyperesist
                 if damagetyperesist then

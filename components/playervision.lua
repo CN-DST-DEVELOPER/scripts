@@ -217,6 +217,9 @@ end
 function PlayerVision:PushForcedNightVision(source, priority, customcctable, blend)
     priority = priority or 0
 
+    -- Only one entry per source!
+    self:PopForcedNightVision(source)
+
     local current = self.forcednightvisionstack[1]
 
     table.insert(self.forcednightvisionstack, { source=source, priority=priority, cctable=customcctable, blend=blend })

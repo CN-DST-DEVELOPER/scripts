@@ -44,7 +44,7 @@ To add a new language:
 
 STRINGS =
 {
-	PSN = "PlayStation\226\132\162Network",
+	PSN = "PlayStation™Network",
 
     CHARACTER_NAMES =
     {
@@ -7933,7 +7933,7 @@ STRINGS.UI =
         SCRIPTERROR_DEBUG = "Debug Console",
         SCRIPTERRORMODWARNING = "This error may have occurred due to a mod you have enabled!\nYou have the following mods enabled:\n",
         TESTING = "This is the testing branch!",
-        TESTINGDETAIL = "You may encounter bugs or broken features, and you may lose your save game when we update. Please report all problems in the forum.",
+        TESTINGDETAIL = "You may encounter bugs or broken features, and you may lose your saved game when we update. Please report all problems in the forum.",
         TESTINGNO = "No, thank you!",
         TESTINGYES = "I understand.",
         CONTINUE = "Continue",
@@ -8840,7 +8840,7 @@ STRINGS.UI =
         EULA = "Review the EULA",
         EULA_RESPONSE_CHANGED_TITLE = "Login Required",
         EULA_RESPONSE_CHANGED_BODY = "Your settings have changed and you must log in again to continue.",
-		PS4_SAVES = "Use PlayStation®4 save data",
+		PS4_SAVES = "Use PlayStation®4 system saved data",
 		BUGREPORT = "Submit a Bug Report",
         DYNAMICCONTENT_ENABLE = "Re-enable Dynamic Content",
         OFFLINE_MODE_TITLE = "Offline Mode",
@@ -8887,8 +8887,8 @@ STRINGS.UI =
 
             -- Settings
             INPUT = "Controller or Keyboard? Play Don't Starve Together your way.",
-            VIBRATION = "Make your controller rumble at key gameplay moments.",
-			VIBRATION_WIRELESS = "Make your wireless controller rumble at key gameplay moments.",
+            VIBRATION = "Make your controller vibrate at key gameplay moments.",
+			VIBRATION_WIRELESS = "Make your wireless controller vibrate at key gameplay moments.",
             FX = "Change how loud things are in the world.",
             MUSIC = "Tone up or down the musical fanfare in your adventures.",
             AMBIENT = "The environment makes noise too, luckily you can control how loudly it does.",
@@ -10144,8 +10144,8 @@ STRINGS.UI =
 
     CROSS_SAVE_DIALOG =
     {
-        TITLE = "Import save data?",
-        BODY = "PlayStation®4 save data has been found. Do you want to import it?",
+        TITLE = "Import saved data?",
+        BODY = "PlayStation®4 system saved data has been found. Do you want to import it?",
 
         YES = "Yes",
         NO = "No",
@@ -10153,8 +10153,8 @@ STRINGS.UI =
 
     CROSS_SAVE_DIALOG_CONFIRM =
     {
-        TITLE = "Overwrite save data?",
-        BODY = "Importing will overwrite any existing save data. Are you sure?",
+        TITLE = "Overwrite saved data?",
+        BODY = "Importing will overwrite any existing saved data. Are you sure?",
 
         YES = "Yes",
         NO = "No",
@@ -10431,6 +10431,7 @@ STRINGS.UI =
         NEWGAME = "New World",
         NEWGAME_SUFFIX = "'s World", --legacy for mods
         NEWGAME_FMT = "{name}'s World",
+        NEWGAME_GENERIC = "My World",
         CREATENEWGAME = "Create New World",
         DELETE = "Delete",
         CLONE = "Duplicate World",
@@ -10490,8 +10491,8 @@ STRINGS.UI =
         SORT_MOSTDAYS = "Days Played",
         SORT_DATECREATED = "Date Created",
         SEARCH = "Search",
-        SAVEFROMNEWERVERSION = "Not playable - save data from newer game version",
-		NO_MATCHING_SERVERS = "No save games match your search.",
+        SAVEFROMNEWERVERSION = "Not playable - saved data from newer game version",
+		NO_MATCHING_SERVERS = "No saved games match your search.",
         USECAVES_TITLE = "{server} or no {server}?",
         USECAVES_DESC_CAVE = "Play with {server}, requires more PC Power as it runs multiple servers",
         USECAVES_DESC_NOCAVE = "Play with no {server}, sad, but not as demanding on a computer",
@@ -12655,9 +12656,9 @@ STRINGS.UI =
             [9] = "Unknown",
             [10] = "Switch Controller",
             [11] = "Steam Deck",
-            [12] = "DualSense",
-            [13] = "Switch Controller (left)",
-            [14] = "Switch Controller (right)",
+            [12] = "DualSense™ wireless controller",
+            [13] = "Joy-Con™ (L)",
+            [14] = "Joy-Con™ (R)",
         },
 
         INPUTS =
@@ -13581,7 +13582,7 @@ STRINGS.UI =
         SAVE_FAILED = "An error occurred while saving your data.",
         LOAD_FAILED = "An error occurred while loading your data.",
         DELETE_FAILED = "An error occurred while deleting your data.",
-        DATA_DAMAGED = "Oh no! Your save data has become corrupt and cannot be used.",
+        DATA_DAMAGED = "Oh no! Your saved data has become corrupt and cannot be used.",
         DISABLE_AUTOSAVE = "Are you sure you want to\ndisable the auto-save feature?",
 
         OVERWRITE = "Overwrite",
@@ -13590,15 +13591,15 @@ STRINGS.UI =
         YES = "Yes",
         NO = "No",
 
-		DATA_DAMAGED_PS4 = "Damaged save data",
-        DATA_DAMAGED_BODY = "Your save data is damaged and cannot be used.",
+		DATA_DAMAGED_PS4 = "Damaged saved data",
+        DATA_DAMAGED_BODY = "Your saved data is damaged and cannot be used.",
 		DISABLE_AUTOSAVE_PS4 = "Are you sure you want to\ndisable the save feature?",
         DISABLE = "Disable Save",
         RESTORE_BACKUP = "Restore Backup",
 		RESTORE_BACKUP_BODY = "Are you sure you want to restore from the last available backup? This process can not be undone.",
         RESTOREBACKUP_FAILED = "An error occurred while\nrestoring your data.",
-		OVERWRITE_SAVEDATA_TITLE = "Overwrite save data",
-		OVERWRITE_SAVEDATA_BODY = "Are you sure you want to overwrite your save data? Your settings and worlds will be lost. This process can not be undone.",
+		OVERWRITE_SAVEDATA_TITLE = "Overwrite saved data",
+		OVERWRITE_SAVEDATA_BODY = "Are you sure you want to overwrite your saved data? Your settings and worlds will be lost. This process can not be undone.",
     },
 
     QUITTINGTITLE = "Quitting!",

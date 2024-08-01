@@ -78,14 +78,17 @@ local prefabs =
 local brain = require "brains/spiderbrain"
 
 local function ShouldAcceptItem(inst, item, giver)
+    if inst.components.health ~= nil and inst.components.health:IsDead() then
+        return false, "DEAD"
+    end
 
-    local in_inventory = inst.components.inventoryitem.owner ~= nil
-    if in_inventory and not inst.components.eater:CanEat(item) then
+    if inst.components.inventoryitem:IsHeld() and not inst.components.eater:CanEat(item) then
         return false, "SPIDERNOHAT"
     end
 
-    return (giver:HasTag("spiderwhisperer") and inst.components.eater:CanEat(item)) or
-           (item.components.equippable ~= nil and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
+    return
+        (giver:HasTag("spiderwhisperer") and inst.components.eater:CanEat(item)) or
+        (item.components.equippable ~= nil and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
 end
 
 local SPIDER_TAGS = { "spider" }

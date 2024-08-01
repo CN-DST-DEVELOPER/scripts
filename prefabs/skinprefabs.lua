@@ -1106,6 +1106,16 @@ table.insert(prefs, CreatePrefabSkin("beargervest_yule",
 	release_group = 138,
 }))
 
+table.insert(prefs, CreatePrefabSkin("bedroll_furry_catcoon",
+{
+	base_prefab = "bedroll_furry",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) bedroll_furry_init_fn(inst, "bedroll_furry_catcoon") end,
+	skin_tags = { "BEDROLL", "CRAFTABLE", },
+	release_group = 157,
+}))
+
 table.insert(prefs, CreatePrefabSkin("bedroll_furry_potato",
 {
 	base_prefab = "bedroll_furry",
@@ -6097,6 +6107,37 @@ table.insert(prefs, CreatePrefabSkin("pottedfern_cotl3",
 	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_cotl3") end,
 	skin_tags = { "POTTEDFERN", "C_UPDATE", "CRAFTABLE", },
 	release_group = 147,
+}))
+
+table.insert(prefs, CreatePrefabSkin("pottedfern_rose",
+{
+	base_prefab = "pottedfern",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_rose") end,
+	skin_tags = { "POTTEDFERN", "ROSE", "CRAFTABLE", },
+	release_group = 157,
+	granted_items = { "pottedfern_rose2", "pottedfern_rose3", },
+}))
+
+table.insert(prefs, CreatePrefabSkin("pottedfern_rose2",
+{
+	base_prefab = "pottedfern",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_rose2") end,
+	skin_tags = { "POTTEDFERN", "ROSE", "CRAFTABLE", },
+	release_group = 157,
+}))
+
+table.insert(prefs, CreatePrefabSkin("pottedfern_rose3",
+{
+	base_prefab = "pottedfern",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) pottedfern_init_fn(inst, "pottedfern_rose3") end,
+	skin_tags = { "POTTEDFERN", "ROSE", "CRAFTABLE", },
+	release_group = 157,
 }))
 
 table.insert(prefs, CreatePrefabSkin("premiumwateringcan_koalefant",

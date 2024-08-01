@@ -1811,7 +1811,10 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 	end
 
 ----------------------- DEPS -----------------------------------------
+
 	self.depsbuttons = {}
+	self.character_pannel_first = nil
+
     local DEPS_COLS = 9
     if data and data.deps and #data.deps>0 then
 
@@ -2019,7 +2022,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 				icon:ScaleToSize(STAT_ICONSIZE,STAT_ICONSIZE)
 				icon:SetPosition(STAT_PANEL_INDENT+(STAT_ICONSIZE/2), recipeheight-STAT_ICONSIZE/2)
 				local txt = recipewidget:AddChild(Text(CHATFONT, 15, text, UICOLOURS.BLACK))
-				txt:SetMultilineTruncatedString(text, 100, STAT_PANEL_WIDTH-(STAT_PANEL_INDENT*2))
+				txt:SetMultilineTruncatedString(text, 100, STAT_PANEL_WIDTH-(STAT_PANEL_INDENT*2) - STAT_ICONSIZE - STAT_GAP_SMALL)
 				local tw, th = txt:GetRegionSize()
 				txt:SetPosition(STAT_PANEL_INDENT+STAT_ICONSIZE + STAT_GAP_SMALL + (tw/2), recipeheight-STAT_ICONSIZE/2 )
 				txt:SetHAlign(ANCHOR_LEFT)
@@ -2085,8 +2088,6 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		local entry_upper = string.upper(data.speechname or data.prefab)
 
 		if data.knownlevel > 1 and STRINGS.CHARACTERS.GENERIC.DESCRIBE[entry_upper] and #viewed_characters > 0 then
-			self.character_pannel_first = nil
-
 			local row= 1
             local valid_index = 1
             local buttonorder = {}

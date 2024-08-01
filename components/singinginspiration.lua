@@ -174,7 +174,7 @@ function SingingInspiration:DoDelta(delta, forceupdate)
 end
 
 function SingingInspiration:CanAddSong(songdata, inst)
-    if songdata.RESTRICTED_TAG ~= nil and not self.inst:HasTag(songdata.RESTRICTED_TAG) then
+    if songdata.REQUIRE_SKILL ~= nil and not self.inst.components.skilltreeupdater:IsActivated(songdata.REQUIRE_SKILL) then
         return false
     end
 

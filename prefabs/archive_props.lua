@@ -994,6 +994,8 @@ local function ambientfn()
     inst.entity:AddNetwork()
     inst.entity:AddSoundEmitter()
 
+    inst:AddTag("NOBLOCK")
+    inst:AddTag("NOCLICK")
 
     inst.entity:SetPristine()
 

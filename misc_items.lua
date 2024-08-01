@@ -466,6 +466,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 92,
 	},
+	loading_charlie3 =
+	{
+		type = "loading",
+		skin_tags = { "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 157,
+	},
 	loading_critters =
 	{
 		type = "loading",
@@ -616,6 +624,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 92,
 	},
+	loading_lunar =
+	{
+		type = "loading",
+		skin_tags = { "LUNAR", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 157,
+	},
 	loading_magma =
 	{
 		type = "loading",
@@ -712,6 +728,22 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 116,
 	},
+	loading_shadow =
+	{
+		type = "loading",
+		skin_tags = { "SHADOW", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 157,
+	},
+	loading_shadowrift =
+	{
+		type = "loading",
+		skin_tags = { "SHADOW", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 157,
+	},
 	loading_terraria_trailer =
 	{
 		type = "loading",
@@ -719,6 +751,14 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 128,
+	},
+	loading_triplethreat =
+	{
+		type = "loading",
+		skin_tags = { "SHADOW", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 157,
 	},
 	loading_walter_trailer =
 	{
@@ -7302,6 +7342,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 147,
 	},
+	playerportrait_bg_pottedfernrose =
+	{
+		type = "playerportrait",
+		skin_tags = { "ROSE", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 157,
+	},
 	playerportrait_bg_pumpkinlantern =
 	{
 		type = "playerportrait",
@@ -8591,6 +8638,13 @@ MISC_ITEMS =
 		skin_tags = { "C_UPDATE", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 147,
+	},
+	profileflair_pottedfern_rose =
+	{
+		type = "profileflair",
+		skin_tags = { "ROSE", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 157,
 	},
 	profileflair_pumpkinlantern =
 	{

@@ -380,12 +380,6 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {ORIGIN_SHADOW_SHELF_X - 60, ORIGIN_SHADOW_SHELF_Y + 0},
             group = "charlie",
             tags = {"charlie"},
-            onactivate = function(inst)
-                inst:AddTag("charliet1maker")
-            end,
-            ondeactivate = function(inst)
-                inst:RemoveTag("charliet1maker")
-            end,
         },
         winona_charlie_2_lock = {
             desc = STRINGS.SKILLTREE.WINONA.WINONA_CHARLIE_2_LOCK_DESC,
@@ -473,8 +467,8 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {ORIGIN_LUNAR_SHELF_X + 60, ORIGIN_LUNAR_SHELF_Y + 0},
             group = "wagstaff",
             tags = {"wagstaff"},
-            onactivate = function(inst) inst:AddTag("wagstafft1maker") end,
-            ondeactivate = function(inst) inst:RemoveTag("wagstafft1maker") end,
+            onactivate = function(inst) inst:AddTag("inspectacleshatuser") end,
+            ondeactivate = function(inst) inst:RemoveTag("inspectacleshatuser") end,
         },
         winona_wagstaff_2_lock = {
             desc = STRINGS.SKILLTREE.WINONA.WINONA_WAGSTAFF_2_LOCK_DESC,
@@ -493,8 +487,6 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {ORIGIN_LUNAR_SHELF_X + 110, ORIGIN_LUNAR_SHELF_Y + SHELF_SKILL_HEIGHT},
             group = "wagstaff",
             tags = {"wagstaff"},
-            onactivate = function(inst) inst:AddTag("wagstafft2maker") end,
-            ondeactivate = function(inst) inst:RemoveTag("wagstafft2maker") end,
             locks = {
                 "winona_wagstaff_2_lock",
             },

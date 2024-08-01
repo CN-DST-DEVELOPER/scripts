@@ -670,7 +670,7 @@ local function ancient_container_common_postinit(inst)
     inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
 
     inst:AddTag("NOBLOCK")
-    inst:AddTag("monkeyproof")
+    inst:AddTag("outofreach")
 end
 
 local function ancient_onsink(inst, data)

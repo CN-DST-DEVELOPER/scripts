@@ -213,14 +213,15 @@ local function resolve_on_attacked(inst, attacker)
 end
 
 local function OnAttacked(inst, data)
-    local attacker = data and data.attacker
-    if attacker and inst:IsValid() then
+    local attacker = data ~= nil and data.attacker or nil
+
+    if attacker ~= nil and inst:IsValid() then
         resolve_on_attacked(inst, attacker)
     end
 end
 
 local function OnAttackDodged(inst, attacker)
-    if attacker then
+    if attacker ~= nil and inst:IsValid() then
         resolve_on_attacked(inst, attacker)
     end
 end
@@ -884,6 +885,8 @@ local function updateeyebuild(inst)
     end
 end
 
+local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry", "ARM_carry_up" }
+
 local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,data)
     local function fn()
         local inst = CreateEntity()
@@ -933,6 +936,8 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
 
         inst.ismerm = true
 

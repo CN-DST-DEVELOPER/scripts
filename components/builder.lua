@@ -756,6 +756,8 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus)
 		return true
 	elseif recipe.builder_tag ~= nil and not self.inst:HasTag(recipe.builder_tag) then -- builder_tag cehck is require due to character swapping
 		return false
+    elseif recipe.builder_skill ~= nil and not self.inst.components.skilltreeupdater:IsActivated(recipe.builder_skill) then -- builder_skill check is require due to character swapping
+        return false
 	elseif self.station_recipes[recipe.name] or table.contains(self.recipes, recipe.name) then
 		return true
 	end
@@ -812,8 +814,8 @@ end
 function Builder:CanLearn(recname)
     local recipe = GetValidRecipe(recname)
     return recipe ~= nil
-        and (recipe.builder_tag == nil or
-            self.inst:HasTag(recipe.builder_tag))
+        and (recipe.builder_tag == nil or self.inst:HasTag(recipe.builder_tag))
+        and (recipe.builder_skill == nil or self.inst.components.skilltreeupdater:IsActivated(recipe.builder_skill))
 end
 
 function Builder:LongUpdate(dt)

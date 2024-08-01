@@ -525,19 +525,14 @@ function Skinner:GetClothing()
 	}
 end
 
-
-function ClearClothing( anim_state, clothing_names )
-	for _,name in pairs(clothing_names) do
+function Skinner:HideAllClothing(anim_state)
+	for _,name in pairs(self.clothing) do
 		if name ~= nil and name ~= "" and CLOTHING[name] ~= nil then
 			for _,sym in pairs(CLOTHING[name].symbol_overrides) do
 				anim_state:ClearOverrideSymbol(sym)
 			end
 		end
 	end
-end
-
-function Skinner:HideAllClothing(anim_state)
-	ClearClothing(anim_state, self.clothing)
 end
 
 function Skinner:ClearAllClothing()

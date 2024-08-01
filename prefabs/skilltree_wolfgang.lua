@@ -111,8 +111,6 @@ local function BuildSkillsData(SkillTreeFns)
             --pos = {1,0},
             group = "training",
             tags = {"dumbbell_craft"},
-            onactivate = function(inst, fromload) inst:AddTag("wolfgang_dumbbell_crafting") end,
-            ondeactivate = function(inst, fromload) inst:RemoveTag("wolfgang_dumbbell_crafting") end,
             root = true,
             connects = {
                 "wolfgang_dumbbell_throwing_1",

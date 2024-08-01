@@ -196,7 +196,7 @@ local function fn()
     inst.components.armor:InitCondition(TUNING.WATHGRITHR_SHIELD_ARMOR, TUNING.WATHGRITHR_SHIELD_ABSORPTION)
 
     inst:AddComponent("equippable")
-    inst.components.equippable.restrictedtag = "wathgrithrshieldmaker"
+    inst.components.equippable.restrictedtag = "wathgrithrshielduser"
     inst.components.equippable:SetOnEquip(OnEquip)
     inst.components.equippable:SetOnUnequip(OnUnequip)
 

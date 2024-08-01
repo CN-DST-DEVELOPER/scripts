@@ -366,8 +366,6 @@ local function BuildSkillsData(SkillTreeFns)
             group = "human",
             tags = {"human", "lucy"},
             root = true,
-            onactivate   = CreateAddTagFn("woodcarver1"),
-            ondeactivate = CreateRemoveTagFn("woodcarver1"),
             connects = {
                 "woodie_human_lucy_2",
                 "woodie_human_lucy_3",
@@ -379,8 +377,6 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {LUCY_POS_X_2, HUMAN_POS_Y_5},
             group = "human",
             tags = {"human", "lucy"},
-            onactivate   = CreateAddTagFn("woodcarver2"),
-            ondeactivate = CreateRemoveTagFn("woodcarver2"),
         },
 
         -- Can use Lucy to carve a "walking_stick" for easy mobility.
@@ -388,8 +384,6 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {LUCY_POS_X_3, HUMAN_POS_Y_5},
             group = "human",
             tags = {"human", "lucy"},
-            onactivate   = CreateAddTagFn("woodcarver3"),
-            ondeactivate = CreateRemoveTagFn("woodcarver3"),
         },
 
         --------------------------------------------------------------------------
@@ -457,8 +451,6 @@ local function BuildSkillsData(SkillTreeFns)
             pos = {TREE_GUARD_POS_X, HUMAN_POS_Y_3},
             group = "human",
             tags = {"human", "treeguard"},
-            onactivate   = CreateAddTagFn("leifidolcrafter"),
-            ondeactivate = CreateRemoveTagFn("leifidolcrafter"),
         },
 
         --------------------------------------------------------------------------

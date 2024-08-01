@@ -378,7 +378,7 @@ end
 
 function MapScreen:ProcessRMBDecorations_TOSS_MAP(rmb, fresh)
     local equippedhands = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-    if equippedhands == nil then
+    if equippedhands == nil or not equippedhands:IsValid() then
         return
     end
     

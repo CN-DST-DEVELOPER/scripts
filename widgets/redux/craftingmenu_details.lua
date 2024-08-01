@@ -117,8 +117,8 @@ function CraftingMenuDetails:UpdateBuildButton(from_pin_slot)
 		elseif not builder:CanLearn(recipe.name) then
 			-- If our recipe's builder tag is a skilltree tag, check if we're the skill tree owner,
 			-- and choose a string based on that.
-			str = (recipe.builder_tag ~= nil and self.owner.prefab == TECH_SKILLTREE_BUILDER_TAG_OWNERS[recipe.builder_tag] and STRINGS.UI.CRAFTING.NEEDSCHARACTERSKILL)
-				or STRINGS.UI.CRAFTING.NEEDSCHARACTER
+			str = (recipe.builder_skill ~= nil and self.owner.components.skilltreeupdater:IsValidSkill(recipe.builder_skill)) and STRINGS.UI.CRAFTING.NEEDSCHARACTERSKILL
+				  or STRINGS.UI.CRAFTING.NEEDSCHARACTER
 		else
             local prototyper_tree = self:_GetHintTextForRecipe(self.owner, recipe)
             str = STRINGS.UI.CRAFTING[hint_text[prototyper_tree] or prototyper_tree]

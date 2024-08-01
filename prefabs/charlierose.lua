@@ -20,6 +20,10 @@ end
 local function OnPutInInventory(inst, owner)
 	if not (inst.persists or inst.AnimState:AnimDone()) then
 		inst.persists = true
+		if inst._soundtask then
+			inst._soundtask:Cancel()
+			inst._soundtask = nil
+		end
 		inst:RemoveEventCallback("animover", ErodeAway)
 		inst.AnimState:PlayAnimation("rose")
 		inst.OnEntitySleep = nil
@@ -28,9 +32,17 @@ local function OnPutInInventory(inst, owner)
 	end
 end
 
+local function DoFallShatterSound(inst)
+	inst._soundtask = nil
+	inst.SoundEmitter:PlaySound("meta4/charlie_residue/rose_fall_shatter")
+end
+
 local function OnDropped(inst)
 	inst.persists = false
 	inst.AnimState:PlayAnimation("rose_shatter")
+	if inst._soundtask == nil then
+		inst._soundtask = inst:DoTaskInTime(0, DoFallShatterSound)
+	end
 	inst:ListenForEvent("animover", ErodeAway)
 	inst.OnEntitySleep = OnEntitySleep
 	inst.OnEntityWake = OnEntityWake
@@ -44,6 +56,7 @@ local function fn()
 
 	inst.entity:AddTransform()
 	inst.entity:AddAnimState()
+	inst.entity:AddSoundEmitter()
 	inst.entity:AddNetwork()
 
 	MakeInventoryPhysics(inst)

@@ -115,7 +115,7 @@ local function chestcheck(ent)
         ent.components.container ~= nil and
         not ent.components.container:IsEmpty() and
         ent:HasTag("chest") and
-        not ent:HasTag("monkeyproof")
+        not ent:HasTag("outofreach")
 end
 
 local DOTINKER_MUST_HAVE = {"structure"}
@@ -181,7 +181,7 @@ local RETARGET_CANT_TAGS = { "playerghost" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
 
 local CHEST_MUST_TAGS = { "chest", "_container" }
-local CHEST_CANT_TAGS = { "monkeyproof" }
+local CHEST_CANT_TAGS = { "outofreach" }
 
 local function shouldsteal(inst)
 

@@ -75,11 +75,13 @@ function InspectaclesOver:Enable()
     local animstate = self:GetAnimState()
     animstate:PlayAnimation("over_pre")
     animstate:PushAnimation("over_idle", true)
+	TheFrontEnd:GetSound():PlaySound("meta4/wires_minigame/inspectacles/overlay_activate")
 end
 
 function InspectaclesOver:Disable()
     local animstate = self:GetAnimState()
     animstate:PlayAnimation("over_pst")
+	TheFrontEnd:GetSound():PlaySound("meta4/wires_minigame/inspectacles/overlay_deactivate")
 
     local duration = self.inst.AnimState:GetCurrentAnimationLength() + FRAMES
     if self.hidetask ~= nil then

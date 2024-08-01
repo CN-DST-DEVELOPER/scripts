@@ -888,7 +888,7 @@ function Container:OnUpdate(dt)
 					end
 				end
 			elseif (opener.components.rider and opener.components.rider:IsRiding())
-				or not (opener:IsNear(self.inst, 3) and CanEntitySeeTarget(opener, self.inst))
+				or not (opener:IsValid() and opener:IsNear(self.inst, 3) and CanEntitySeeTarget(opener, self.inst))
 			then
 				self:Close(opener)
             end

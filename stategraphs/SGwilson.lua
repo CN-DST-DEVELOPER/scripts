@@ -17343,13 +17343,13 @@ local states =
 
         onenter = function(inst)
             local buffaction = inst:GetBufferedAction()
-            local restricted_tag = buffaction and buffaction.invobject.songdata and buffaction.invobject.songdata.RESTRICTED_TAG or nil
+            local required_skill = buffaction and buffaction.invobject.songdata and buffaction.invobject.songdata.REQUIRE_SKILL or nil
 
             inst:ClearBufferedAction()
 
             local failstring =
-                restricted_tag ~= nil and
-                not inst:HasTag(restricted_tag) and
+                required_skill ~= nil and
+                not inst.components.skilltreeupdater:IsActivated(required_skill) and
                 "ANNOUNCE_NOTSKILLEDENOUGH" or
                 "ANNOUNCE_NOINSPIRATION"
 
@@ -20115,8 +20115,8 @@ local states =
 							inst.sg:GoToState("remote_teleport_out")
 							return
 						end
+						inst:PushEvent("actionfailed", { action = inst.bufferedaction, reason = reason })
 					end
-					inst:PushEvent("actionfailed", { action = inst.bufferedaction, reason = reason })
 					inst:ClearBufferedAction()
 					inst.sg:GoToState("idle")
 				end
@@ -20149,6 +20149,8 @@ local states =
 			inst.AnimState:SetSymbolBloom("lightning_parts")
 			inst.SoundEmitter:PlaySound("meta4/winona_teleumbrella/beep")
 			inst.SoundEmitter:PlaySound("meta4/winona_teleumbrella/telaumbrella_out")
+			inst.components.inventory:Hide()
+			inst:PushEvent("ms_closepopups")
 			if inst.components.playercontroller then
 				inst.components.playercontroller:RemotePausePrediction()
 				inst.components.playercontroller:Enable(false)
@@ -20231,6 +20233,7 @@ local states =
 			if not inst.sg.statemem.teleporting then
 				inst.DynamicShadow:Enable(true)
 				inst.components.health:SetInvincible(false)
+				inst.components.inventory:Show()
 				if inst.components.playercontroller then
 					inst.components.playercontroller:Enable(true)
 					inst.components.playercontroller:EnableMapControls(true)
@@ -20275,6 +20278,8 @@ local states =
 			inst.SoundEmitter:PlaySound("meta4/winona_teleumbrella/telaumbrella_in")
 			inst.DynamicShadow:Enable(false)
 			inst.components.health:SetInvincible(true)
+			inst.components.inventory:Hide()
+			inst:PushEvent("ms_closepopups")
 			if inst.components.playercontroller then
 				inst.components.playercontroller:Enable(false)
 				inst.components.playercontroller:EnableMapControls(false)
@@ -20341,6 +20346,7 @@ local states =
 		onexit = function(inst)
 			inst.DynamicShadow:Enable(true)
 			inst.components.health:SetInvincible(false)
+			inst.components.inventory:Show()
 			if inst.components.playercontroller then
 				inst.components.playercontroller:Enable(true)
 				inst.components.playercontroller:EnableMapControls(true)

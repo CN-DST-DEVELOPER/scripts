@@ -60,7 +60,7 @@ return{
 		{
 			LOCKED_GATE = "Thou shalt not keep me out!",
             HOSTBUSY = "His attention lies elsewhere.",
-            CARNIVAL_HOST_HERE = "Where art though, raven? Do show yourself!",
+            CARNIVAL_HOST_HERE = "Where art thou, raven? Do show yourself!",
             NOCARNIVAL = "It seems the ravens hath returned to Odin.",
 			EMPTY_CATCOONDEN = "Fie! There's naught to pillage!",
 			KITCOON_HIDEANDSEEK_NOT_ENOUGH_HIDERS = "This hunt will require more players.",

@@ -51,12 +51,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "crafting",
             tags = {"crafting"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("saplingcrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("saplingcrafter")
-            end,
             connects = {
                 "wormwood_berrybushcrafting",
             },
@@ -69,12 +63,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "crafting",
             tags = {"crafting"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("berrybushcrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("berrybushcrafter")
-            end,
             connects = {
                 "wormwood_reedscrafting",
                 "wormwood_juicyberrybushcrafting",
@@ -88,12 +76,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "crafting",
             tags = {"crafting"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("juicyberrybushcrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("juicyberrybushcrafter")
-            end,
         },
         wormwood_reedscrafting = {
             title = SKILLTREESTRINGS.REEDSCRAFTING_TITLE,
@@ -103,12 +85,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "crafting",
             tags = {"crafting"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("reedscrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("reedscrafter")
-            end,
             connects = {
                 "wormwood_lureplantbulbcrafting",
             },
@@ -121,12 +97,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "crafting",
             tags = {"crafting"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("lureplantcrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("lureplantcrafter")
-            end,
         },
 
         wormwood_mushroomplanter_ratebonus1 = {
@@ -183,12 +153,6 @@ local function BuildSkillsData(SkillTreeFns)
 
             group = "crafting",
             tags = {"crafting"},
-            onactivate = function(owner, from_load)
-                owner:AddTag("syrupcrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("syrupcrafter")
-            end,
         },
 
         wormwood_allegiance_lock_lunar_2 = SkillTreeFns.MakeCelestialChampionLock({
@@ -224,7 +188,6 @@ local function BuildSkillsData(SkillTreeFns)
                         owner.components.damagetypebonus:AddBonus("shadow_aligned", owner, TUNING.SKILLS.WILSON_ALLEGIANCE_VS_SHADOW_BONUS, "wormwood_allegiance_lunar")
                     end
                 end
-                owner:AddTag("lunarplant_husk_crafter")
             end,
             ondeactivate = function(owner, from_load)
                 if not owner.components.skilltreeupdater:IsActivated("wormwood_allegiance_lunar_mutations_1") then
@@ -236,7 +199,6 @@ local function BuildSkillsData(SkillTreeFns)
                         owner.components.damagetypebonus:RemoveBonus("shadow_aligned", owner, "wormwood_allegiance_lunar")
                     end
                 end
-                owner:RemoveTag("lunarplant_husk_crafter")
             end,
 
             group = "allegiance2",
@@ -440,8 +402,6 @@ local function BuildSkillsData(SkillTreeFns)
             locks = {"wormwood_allegiance_lock_lunar_1", "wormwood_allegiance_count_lock_1"},
 
             onactivate = function(owner, from_load)
-                owner:AddTag("carratcrafter")
-
                 if not owner.components.skilltreeupdater:IsActivated("wormwood_allegiance_lunar_plant_gear_1") then
                     owner:AddTag("player_lunar_aligned")
                     if owner.components.damagetyperesist then
@@ -453,8 +413,6 @@ local function BuildSkillsData(SkillTreeFns)
                 end
             end,
             ondeactivate = function(owner, from_load)
-                owner:RemoveTag("carratcrafter")
-
                 if not owner.components.skilltreeupdater:IsActivated("wormwood_allegiance_lunar_plant_gear_1") then
                     owner:RemoveTag("player_lunar_aligned")
                     if owner.components.damagetyperesist then
@@ -477,13 +435,6 @@ local function BuildSkillsData(SkillTreeFns)
             desc = SKILLTREESTRINGS.LUNAR_MUTATIONS_2_DESC,
             icon = "wormwood_lunar_mutations_2",
             pos = {UI_LEFT - 14, UI_TOP + 60},
-
-            onactivate = function(owner, from_load)
-                owner:AddTag("lightfliercrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("lightfliercrafter")
-            end,
             group = "allegiance1",
             tags = {"allegiance", "lunar", "lunar_favor"},
         },
@@ -492,13 +443,6 @@ local function BuildSkillsData(SkillTreeFns)
             desc = SKILLTREESTRINGS.LUNAR_MUTATIONS_3_DESC,
             icon = "wormwood_lunar_mutations_3",
             pos = {UI_LEFT + 40, UI_TOP + 60},
-
-            onactivate = function(owner, from_load)
-                owner:AddTag("fruitdragoncrafter")
-            end,
-            ondeactivate = function(owner, from_load)
-                owner:RemoveTag("fruitdragoncrafter")
-            end,
             group = "allegiance1",
             tags = {"allegiance", "lunar", "lunar_favor"},
         },

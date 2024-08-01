@@ -133,7 +133,7 @@ function Equippable:IsRestricted(target)
 end
 
 function Equippable:IsRestricted_FromLoad(target)
-    if TECH_SKILLTREE_BUILDER_TAG_OWNERS[self.restrictedtag] == target.prefab then
+    if SKILLTREE_EQUIPPABLE_RESTRICTED_TAGS[self.restrictedtag] == target.prefab then
         -- NOTES(JBK): If a player is resolving equipment from a snapshot load assume the player has the tag only if the tag is from a skill tree.
         return false
     end

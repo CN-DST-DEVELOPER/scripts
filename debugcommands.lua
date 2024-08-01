@@ -1972,6 +1972,7 @@ end
 local RECIPE_BUILDER_TAG_LOOKUP = {
     balloonomancer = "wes",
     basicengineer = "winona",
+    portableengineer = "winona",
     battlesinger = "wathgrithr",
     bookbuilder = "wickerbottom",
     clockmaker = "wanda",
@@ -2294,6 +2295,18 @@ local function Scrapbook_GetSanityAura(inst)
     end
 
     return sanity ~= 0 and sanity or nil
+end
+
+local function Scrapbook_GetSkillOwner(skill)
+    local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS
+
+    for character, skills in pairs(skilldefs) do
+        for name, def in pairs(skills) do
+            if skill == name then
+                return character
+            end
+        end
+    end
 end
 
 --[[
@@ -2780,6 +2793,7 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             for action, _ in pairs(t.components.tool.actions) do
                 table.insert(actions, action.id)
             end
+            table.sort(actions)
             AddInfo( "toolactions", actions )
         end
 
@@ -3113,14 +3127,14 @@ function d_createscrapbookdata(print_missing_icons, noreset)
                 print(string.format("[!!!!] [ %s ] is from a Chinese New Year event... These don't go into the scrapbook.", entry))
             end
 
-            if recipe.builder_tag then
+            if recipe.builder_tag or recipe.builder_skill then
                 ------  CRAFTING ICON  ------
-                local character = RECIPE_BUILDER_TAG_LOOKUP[recipe.builder_tag] or TECH_SKILLTREE_BUILDER_TAG_OWNERS[recipe.builder_tag]
+                local character = RECIPE_BUILDER_TAG_LOOKUP[recipe.builder_tag] or Scrapbook_GetSkillOwner(recipe.builder_skill)
 
                 if character ~= nil then
                     AddInfo( "craftingprefab", character )
                 else
-                    print(string.format("[!!!!]  Recipe builder tag [ %s ] isn't in TECH_SKILLTREE_BUILDER_TAG_OWNERS or RECIPE_BUILDER_TAG_LOOKUP ...", recipe.builder_tag))
+                    print(string.format("[!!!!]  Recipe builder tag/skill [ %s ] isn't in RECIPE_BUILDER_TAG_LOOKUP or isn't a skilltree skill...", recipe.builder_tag))
                 end
             end
 
@@ -3134,6 +3148,10 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             for dep, _ in pairs(t.components.lootdropper:GetAllPossibleLoot(true)) do
                 deps[dep] = true
             end
+        end
+
+        if t.components.erasablepaper ~= nil then
+            deps[t.components.erasablepaper.erased_prefab] = true
         end
 
         -- Deployable / Kits.

@@ -175,6 +175,7 @@ local function OnAnimState_Client(inst)
 			inst._anim.AnimState:PlayAnimation("repair")
 			inst._anim.components.projectedeffects:MakeOpaque()
 			inst._anim.components.projectedeffects:LockDecay(true)
+            inst._anim.SoundEmitter:PlaySound("meta4/wires_minigame/machine_repair")
 		elseif inst._animstate:value() == ANIM_STATE["open_pre"] then
 			--open for loot fling
 			inst._anim.AnimState:PlayAnimation("open_pre")

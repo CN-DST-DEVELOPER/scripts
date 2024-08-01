@@ -124,6 +124,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.numtogive     = numtogive or 1
 
     self.builder_tag   = builder_tag or nil
+    self.builder_skill = more_data.builder_skill or nil
 	self.sg_state      = more_data.sg_state or more_data.buildingstate or nil -- overrides the SG state to use when crafting the item (buildingstate is the old variable name)
 
     self.build_mode    = build_mode or BUILDMODE.LAND
@@ -146,8 +147,8 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
 
     num                = num + 1
     AllRecipes[name]   = self
-    if self.builder_tag ~= nil and more_data.allowautopick == nil then -- NOTES(JBK): "donotautopick" filtered items should set allowautopick in the recipe if they are to be picked up by things for the player.
-        AllBuilderTaggedRecipes[name] = self.builder_tag
+    if (self.builder_tag ~= nil or self.builder_skill ~= nil) and more_data.allowautopick == nil then -- NOTES(JBK): "donotautopick" filtered items should set allowautopick in the recipe if they are to be picked up by things for the player.
+        AllBuilderTaggedRecipes[name] = self.builder_tag or self.builder_skill
     end
 
     if ModManager then

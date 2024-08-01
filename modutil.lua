@@ -762,10 +762,10 @@ local function InsertPostInitFunctions(env, isworldgen, isfrontend)
 
 		local rec = Recipe2(name, ingredients, tech, config)
 
-		if config ~= nil and config.builder_tag ~= nil then
+		if config ~= nil and (config.builder_tag ~= nil or config.builder_skill ~= nil) then
 			env.AddRecipeToFilter(name, CRAFTING_FILTERS.CHARACTER.name)
 		else
-			initprint("Warning: AddCharacterRecipe called for recipe "..name.." without a builder_tag. This recipe will be added to the mods filter instead of the character filter.")
+			initprint("Warning: AddCharacterRecipe called for recipe "..name.." without a builder_tag or builder_skill. This recipe will be added to the mods filter instead of the character filter.")
 			env.AddRecipeToFilter(name, CRAFTING_FILTERS.MODS.name)
 		end
 
@@ -804,7 +804,7 @@ local function InsertPostInitFunctions(env, isworldgen, isfrontend)
 		--end
 
 
-		if rec.builder_tag ~= nil then
+		if rec.builder_tag ~= nil or rec.builder_skill ~= nil then
 			env.AddRecipeToFilter(arg1, CRAFTING_FILTERS.CHARACTER.name)
 		elseif not rec.is_deconstruction_recipe then
 			env.AddRecipeToFilter(arg1, CRAFTING_FILTERS.MODS.name)
