@@ -120,6 +120,8 @@ local function OnAnimOver(state)
     }
 end
 
+local WALK_SOUND_NAME = "footstepsound"
+
 ------------------------------------------------------------------------------------------------------------------------------------
 
 local states =
@@ -130,14 +132,14 @@ local states =
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("death")
-            
+
 
             inst.Physics:Stop()
 
             RemovePhysicsColliders(inst)
-            
+
             inst:PlaySound("death_vocal")
-            inst:PlaySound("death_fx")            
+            inst:PlaySound("death_fx")
 
             inst.components.lootdropper:DropLoot()
         end,
@@ -152,11 +154,6 @@ local states =
             inst.AnimState:PlayAnimation("walk_pre")
         end,
 
-        timeline=
-        {
-            --SoundFrameEvent(3, "dontstarve/creatures/spider/walk_spider"),
-        },
-
         events = OnAnimOver("moving"),
     },
 
@@ -167,17 +164,27 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:RunForward()
             inst.AnimState:PushAnimation("walk_loop")
+
+            if not inst.SoundEmitter:PlayingSound(WALK_SOUND_NAME) then
+                inst:PlaySound("walk", WALK_SOUND_NAME)
+            end
         end,
 
-        timeline=
+        events =
         {
-            --SoundFrameEvent(0, "dontstarve/creatures/spider/walk_spider"),
-            --SoundFrameEvent(3,  "dontstarve/creatures/spider/walk_spider"),
-            --SoundFrameEvent(7,  "dontstarve/creatures/spider/walk_spider"),
-            --SoundFrameEvent(12, "dontstarve/creatures/spider/walk_spider"),
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg.statemem.keepmoving = true
+                    inst.sg:GoToState("moving")
+                end
+            end),
         },
 
-        events = OnAnimOver("moving"),
+        onexit = function(inst)
+            if not inst.sg.statemem.keepmoving then
+                inst.SoundEmitter:KillSound(WALK_SOUND_NAME)
+            end
+        end,
     },
 
     State{
@@ -227,7 +234,7 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("atk1")
             inst:PlaySound("atk_vocal")
-            
+
 
             inst.components.combat:StartAttack()
             inst.sg.statemem.target = target
@@ -235,13 +242,10 @@ local states =
 
         timeline=
         {
-            --SoundFrameEvent(10, "dontstarve/creatures/spider/attack"),
-            --SoundFrameEvent(10, "dontstarve/creatures/spider/attack_grunt"),
-            FrameEvent(18, function(inst) 
-                    inst:PlaySound("f18_atk_fx")
-                    
-                    inst.components.combat:DoAttack(inst.sg.statemem.target) 
-                end),
+            FrameEvent(18, function(inst)
+                inst:PlaySound("f18_atk_fx")
+                inst.components.combat:DoAttack(inst.sg.statemem.target)
+            end),
         },
 
         events = OnAnimOver("idle"),
@@ -288,7 +292,7 @@ local states =
             inst.AnimState:PlayAnimation("atk_loop",true)
 
             inst.SoundEmitter:PlaySound("meta4/crabcritter/atk2_spin_lp","spin")
-            
+
             inst.sg.statemem.targets = targets or {}
         end,
 
@@ -326,7 +330,7 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("hit")
             inst:PlaySound("hit_vocal")
-            inst:PlaySound("hit")            
+            inst:PlaySound("hit")
         end,
 
         events = OnAnimOver("idle"),
@@ -407,7 +411,6 @@ local states =
         name = "dive",
         tags = {"busy", "nomorph", "nosleep", "nofreeze", "noattack"},
 
---dive_appear_vocal
         onenter = function(inst)
             local platform = inst:GetCurrentPlatform()
             if platform ~= nil then

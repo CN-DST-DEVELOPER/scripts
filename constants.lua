@@ -781,7 +781,7 @@ SPECIAL_EVENTS =
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -2005,6 +2005,7 @@ SKILLTREE_EQUIPPABLE_RESTRICTED_TAGS =
     -- Using quotes for searching purposes.
     ["inspectacleshatuser"]  = "winona",
     ["wathgrithrshielduser"] = "wathgrithr",
+    [UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser"] = "wathgrithr",
 }
 
 -- IngredientMod must be one of the following values

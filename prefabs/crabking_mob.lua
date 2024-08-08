@@ -87,8 +87,8 @@ local function KeepTargetFn(inst, target)
         not target.components.health:IsDead()
  end
 
-local function PlaySound(inst, event)
-    inst.SoundEmitter:PlaySound("meta4/crabcritter/" .. event)
+local function PlaySound(inst, event, name)
+    inst.SoundEmitter:PlaySound("meta4/crabcritter/" .. event, name)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------

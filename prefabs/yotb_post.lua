@@ -24,7 +24,7 @@ local assets_light =
 
 local assets_rug =
 {
-    Asset("ANIM", "anim/yotb_beefalo_rug.zip"),
+    Asset("ANIM", "anim/yotb_post_rug.zip"),
 }
 
 local assets_ribbon =

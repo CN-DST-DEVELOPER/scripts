@@ -122,7 +122,7 @@ local function Improved_OnRepaired(inst, doer)
 
     inst:AddTag("saltlick")
 
-    -- TODO(DiogoW): Sound!
+    inst.SoundEmitter:PlaySound("meta4/fancy_saltlick/repair")
 end
 
 -----------------------------------------------------------------------------------------------------------------------------

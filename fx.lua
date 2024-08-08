@@ -2793,6 +2793,7 @@ local fx =
         bank = "turf_smoke_fx",
         build = "turf_smoke_fx",
         anim = "fx",
+        sound = "meta4/turfraiser_helm/raise_turf",
     },
     {
         name = "pillowfight_confetti_fx",

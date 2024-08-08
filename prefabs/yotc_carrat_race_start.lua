@@ -211,7 +211,7 @@ end
 --------------------------------------------------------------------------
 
 return Prefab("yotc_carrat_race_start", fn, assets, prefabs),
-	MakeDeployableKitItem("yotc_carrat_race_start_item", "yotc_carrat_race_start", "yotc_carrat_racekit_start", "yotc_carrat_racekit_start", "idle", {Asset("ANIM", "anim/yotc_carrat_racekit_start.zip")}, {size = "med", scale = 0.77}, nil, {fuelvalue = TUNING.LARGE_FUEL}, carratrace_common.deployable_data),
+	MakeDeployableKitItem("yotc_carrat_race_start_item", "yotc_carrat_race_start", "yotc_carrat_racekit_start", "yotc_carrat_racekit_start", "idle", {Asset("ANIM", "anim/yotc_carrat_race_start_item.zip")}, {size = "med", scale = 0.77}, nil, {fuelvalue = TUNING.LARGE_FUEL}, carratrace_common.deployable_data),
 	MakePlacer("yotc_carrat_race_start_item_placer", "yotc_carrat_race_start", "yotc_carrat_race_start", "idle", nil, nil, nil, nil, nil, nil,
 	function(inst)
 		return carratrace_common.PlacerPostInit_AddCarpetAndPlacerRing(inst, "yotc_carrat_race_deploy_start")

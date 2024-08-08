@@ -332,7 +332,7 @@ function self:DestroyIceAtPoint(x, y, z, data)
         -- Behaviour pulled from walkableplatform's onremove/DestroyObjectsOnPlatform response.
         local entities_near_ice = TheSim:FindEntities(x, 0, z, tile_radius_plus_overhang, nil, IGNORE_ICE_DROWNING_ONREMOVE_TAGS)
         for _, ent in ipairs(entities_near_ice) do
-            if ent ~= icefloe then
+            if ent ~= icefloe and ent:IsValid() then
                 if icefloe and icefloe:GetDistanceSqToInst(ent) < (icefloe.components.walkableplatform.platform_radius)^2 then
 
                 else

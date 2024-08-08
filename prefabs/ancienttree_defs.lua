@@ -7,7 +7,7 @@ local NIGHTVISION_AMBIENCE_SOUND =
 }
 
 local function NightVision_HideFruitLayer(inst)
-    if not inst.components.pickable.caninteractwith then
+    if inst.components.pickable ~= nil and not inst.components.pickable.caninteractwith then
         inst.AnimState:Hide("fruit")
         inst.AnimState:SetLightOverride(0)
 
@@ -30,6 +30,10 @@ end
 local function NightVision_HideFruits(inst)
     inst._phasetask = nil
 
+    if inst.components.pickable == nil or not inst.components.pickable:CanBePicked() then
+        return
+    end
+
     if inst.components.pickable.caninteractwith then
         inst.AnimState:PlayAnimation("retract_fruit_full")
         inst.AnimState:PushAnimation(math.random() < .5 and "sway1_loop" or "sway2_loop", true)
@@ -42,6 +46,10 @@ end
 
 local function NightVision_ShowFruits(inst)
     inst._phasetask = nil
+
+    if inst.components.pickable == nil then
+        return
+    end
 
     inst.AnimState:Show("fruit")
     inst.AnimState:SetLightOverride(0.1)
