@@ -1920,6 +1920,7 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	local resize_root = nil
 	local resize_root_small = nil
 	local resize_root_small_higher = nil
+    local resize_root_thisisreallybig = nil
 
 	-- Decide how many columns there should be
 	if num_item_types == 1 then
@@ -1935,12 +1936,15 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	elseif num_item_types == 13 then
 		columns = 5
 		resize_root = true
+    elseif num_item_types == 20 then
+		columns = 5
+		resize_root_small = true
 	elseif num_item_types == 12 or num_item_types == 11 then
 		columns = 6
 	elseif num_item_types == 16 or num_item_types == 17 or num_item_types == 18 then
 		columns = 6
 		resize_root = true
-	elseif num_item_types == 19 then
+	elseif num_item_types == 19 or num_item_types == 14 then
 		columns = 7
 		resize_root = true
 	elseif num_item_types == 22 or num_item_types == 23 or num_item_types == 24 then
@@ -1955,12 +1959,15 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	elseif num_item_types == 41 then
 		columns = 10
 		resize_root_small_higher = true
+    elseif num_item_types == 64 then
+		columns = 11
+		resize_root_thisisreallybig = true
 	else
 		columns = 10
 		resize_root_small_higher = true
 		print("Warning: Found an unexpected number of items in a box.", num_item_types)
 	end
-	return columns, resize_root, resize_root_small, resize_root_small_higher
+	return columns, resize_root, resize_root_small, resize_root_small_higher, resize_root_thisisreallybig
 end
 
 -- Testing and viewing skins on a more close level.

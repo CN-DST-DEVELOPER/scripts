@@ -494,14 +494,15 @@ function ChildSpawner:DoSpawnChild(target, prefab, radius)
         return
     end
 
-    local child =
-        SpawnPrefab(
-            self.rarechild ~= nil and
-            math.random() < self.rarechildchance and
-            self.rarechild or
-            prefab or
-            self.childname
-        )
+    prefab =
+        self.rarechild ~= nil and
+        math.random() < self.rarechildchance and
+        self.rarechild or
+        prefab or
+        self.childname
+
+    local child = SpawnPrefab(FunctionOrValue(prefab, self.inst))
+
     if child ~= nil then
         child.Transform:SetPosition(x + offset.x, self.spawn_height or 0, z + offset.z)
 

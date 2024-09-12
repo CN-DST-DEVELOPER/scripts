@@ -781,7 +781,7 @@ SPECIAL_EVENTS =
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -1180,6 +1180,8 @@ TECH =
 	HERMITCRABSHOP_FIVE = { HERMITCRABSHOP = 5 },
     HERMITCRABSHOP_SEVEN = { HERMITCRABSHOP = 7 },
 
+    RABBITKINGSHOP_TWO = { RABBITKINGSHOP = 2 },
+
     TURFCRAFTING_ONE = { TURFCRAFTING = 1 },
     TURFCRAFTING_TWO = { TURFCRAFTING = 2 },
 	MASHTURFCRAFTING_TWO = { MASHTURFCRAFTING = 2},
@@ -1211,6 +1213,7 @@ TECH =
 	SHADOWFORGING_TWO = { SHADOWFORGING = 2 },
 
     CARPENTRY_TWO = { CARPENTRY = 2 },
+    CARPENTRY_THREE = { CARPENTRY = 3 },
 }
 
 -- See cell_data.h
@@ -1426,7 +1429,9 @@ RECIPETABS =
 	FISHING =				{ str = "FISHING",				sort = 100, icon = "tab_fishing.tex",			crafting_station = true },
 	WINTERSFEASTCOOKING =	{ str = "WINTERSFEASTCOOKING",	sort = 100, icon = "tab_feast_oven.tex",		crafting_station = true },
     HERMITCRABSHOP =		{ str = "HERMITCRABSHOP",		sort = 100, icon = "tab_hermitcrab_shop.tex",	crafting_station = true, shop = true},
+    RABBITKINGSHOP =		{ str = "RABBITKINGSHOP",		sort = 100, icon = "tab_rabbitking.tex",		crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
     TURFCRAFTING =		    { str = "TURFCRAFTING", 		sort = 100, icon = "tab_turfcrafting.tex",      crafting_station = true, icon_atlas = "images/hud2.xml" },
+    CARPENTRY =	    	    { str = "CARPENTRY",			sort = 100, icon = "station_carpentry.tex",     crafting_station = true, icon_atlas = "images/hud2.xml" },
 }
 
 CUSTOM_RECIPETABS =
@@ -1812,6 +1817,7 @@ MATERIALS =
     GEARS = "gears",
     MOONROCK = "moonrock",
     ICE = "ice",
+    CARROT = "carrot",
     SCULPTURE = "sculpture",
     FOSSIL = "fossil",
     MOON_ALTAR = "moon_altar",
@@ -2038,6 +2044,12 @@ TOOLACTIONS =
     UNSADDLE = true,
 	REACH_HIGH = true,
 	SCYTHE = true,
+}
+
+FALLINGREASON =
+{
+    OCEAN = "ocean",
+    VOID = "void",
 }
 
 EQUIPMENTSETNAMES =
@@ -2294,6 +2306,7 @@ HOUNDWARNINGTYPE =
     LVL2_WORM = 5,
     LVL3_WORM = 6,
     LVL4_WORM = 7,
+    WORM_BOSS = 8,
 }
 
 -- Domestication tendencies
@@ -2620,6 +2633,16 @@ HUNT_ACTIONS = {
     SLEEP = 2,
 }
 
+THRALL_TYPES = {
+    SHADOW = {
+        TRIO = "trio",
+        MOUTH = "mouth",
+    },
+    LUNAR = {
+        PLANT = "plant",
+    },
+}
+
 LOADING_SCREEN_TIP_OPTIONS =
 {
     ALL = 1,
@@ -2744,4 +2767,9 @@ CHARLIERESIDUE_MAP_ACTIONS = {
 -- Constants to reduce network overhead.
 CLIENTAUTHORITATIVESETTINGS = {
     PLATFORMHOPDELAY = 0,
+}
+
+NIGHTSWORD_FX_OFFSETS = {
+    RIGHT = -1,
+    DOWN = 2.6,
 }

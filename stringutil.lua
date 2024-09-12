@@ -451,7 +451,9 @@ function GetActionFailString(inst, action, reason)
     character = string.upper(character)
 
     return (STRINGS.CHARACTERS[character] ~= nil and getcharacterstring(STRINGS.CHARACTERS[character].ACTIONFAIL, action, reason))
+        or (STRINGS.CHARACTERS[character] ~= nil and getcharacterstring(STRINGS.CHARACTERS[character].ACTIONFAIL, "GENERIC", reason))
         or getcharacterstring(STRINGS.CHARACTERS.GENERIC.ACTIONFAIL, action, reason)
+        or getcharacterstring(STRINGS.CHARACTERS.GENERIC.ACTIONFAIL, "GENERIC", reason)
         or STRINGS.CHARACTERS.GENERIC.ACTIONFAIL_GENERIC
 end
 

@@ -256,27 +256,26 @@ local function fn()
 
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("inventoryitem")
-
-    inst.components.inventoryitem:SetOnDroppedFn(ondropped)
-    inst.components.inventoryitem:SetOnPutInInventoryFn(turnoff)
+    local inventoryitem = inst:AddComponent("inventoryitem")
+    inventoryitem:SetOnDroppedFn(ondropped)
+    inventoryitem:SetOnPutInInventoryFn(turnoff)
 
     inst:AddComponent("equippable")
 
-    inst:AddComponent("fueled")
+    local fueled = inst:AddComponent("fueled")
 
-    inst:AddComponent("machine")
-    inst.components.machine.turnonfn = turnon
-    inst.components.machine.turnofffn = turnoff
-    inst.components.machine.cooldowntime = 0
+    local machine = inst:AddComponent("machine")
+    machine.turnonfn = turnon
+    machine.turnofffn = turnoff
+    machine.cooldowntime = 0
 
-    inst.components.fueled.fueltype = FUELTYPE.CAVE
-    inst.components.fueled:InitializeFuelLevel(TUNING.LANTERN_LIGHTTIME)
-    inst.components.fueled:SetDepletedFn(nofuel)
-    inst.components.fueled:SetUpdateFn(fuelupdate)
-    inst.components.fueled:SetTakeFuelFn(ontakefuel)
-    inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
-    inst.components.fueled.accepting = true
+    fueled.fueltype = FUELTYPE.CAVE
+    fueled:InitializeFuelLevel(TUNING.LANTERN_LIGHTTIME)
+    fueled:SetDepletedFn(nofuel)
+    fueled:SetUpdateFn(fuelupdate)
+    fueled:SetTakeFuelFn(ontakefuel)
+    fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
+    fueled.accepting = true
 
     inst._light = nil
 

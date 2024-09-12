@@ -183,6 +183,8 @@ local function MakeCreatureCorpse(data)
 			inst:AddTag(data.tag)
 		end
 
+        inst:AddTag("deadcreature")
+
         inst.creature = creature
         inst.nameoverride = nameoverride
         inst.displaynamefn = DisplayNameFn
@@ -267,6 +269,8 @@ local function MakeCreatureCorpse_Prop(data)
 		if data.tag ~= nil then
 			inst:AddTag(data.tag)
 		end
+
+        inst:AddTag("deadcreature")
 
         inst.creature = creature
         inst.nameoverride = nameoverride

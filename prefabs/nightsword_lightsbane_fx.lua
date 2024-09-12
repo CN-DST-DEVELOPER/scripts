@@ -195,7 +195,7 @@ local function fn()
                     local adjust_vec = nil
                     if parent.AnimState:GetCurrentFacing() == 1 then
                         --Do custom positioning
-                        adjust_vec = TheCamera:GetRightVec() * 0.75 - TheCamera:GetDownVec() * 2.6
+                        adjust_vec = TheCamera:GetRightVec() * NIGHTSWORD_FX_OFFSETS.RIGHT - TheCamera:GetDownVec() * NIGHTSWORD_FX_OFFSETS.DOWN
                     end
 
                     while num_to_emit_smoke > 1 do

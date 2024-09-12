@@ -711,11 +711,18 @@ function EntityScript:GetAdjectivedName()
 		if self:HasTag("broken") then
 			return ConstructAdjectivedName(self, ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC), STRINGS.BROKENITEM)
 		end
+        --dead creatures
+		if self:HasTag("deadcreature") then
+			return ConstructAdjectivedName(self, ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC), STRINGS.DEADCREATURE)
+		end
         --generic
         return ConstructAdjectivedName(self, name, STRINGS.WET_PREFIX.GENERIC)
 	elseif self:HasTag("broken") then
 		return ConstructAdjectivedName(self, name, STRINGS.BROKENITEM)
+    elseif self:HasTag("deadcreature") then
+        return ConstructAdjectivedName(self, name, STRINGS.DEADCREATURE)
     end
+
     return name
 end
 
@@ -1788,6 +1795,9 @@ function EntityScript:GetPersistData()
             local t, refs = v:OnSave()
             if type(t) == "table" and not IsTableEmpty(t) then
                 data[k] = t
+				if t.add_component_if_missing then
+					data.add_component_if_missing = true
+				end
             end
 
             if refs then
@@ -1829,6 +1839,14 @@ function EntityScript:LoadPostPass(newents, savedata)
 end
 
 function EntityScript:SetPersistData(data, newents)
+	if data and data.add_component_if_missing then
+		for k, v in pairs(data) do
+			if self.components[k] == nil and type(v) == "table" and v.add_component_if_missing then
+				self:AddComponent(k)
+			end
+		end
+	end
+
     if self.OnPreLoad ~= nil then
         self:OnPreLoad(data, newents)
     end
@@ -1836,10 +1854,16 @@ function EntityScript:SetPersistData(data, newents)
     if data ~= nil then
         for k, v in pairs(data) do
             local cmp = self.components[k]
+
+			--V2C: -backward compatibility for add_component_if_missing
+			--     -the flag has since been added to the base data table as well so that we
+			--      can add the missing components before preload
             if cmp == nil and type(v) == "table" and v.add_component_if_missing then
 				self:AddComponent(k)
                 cmp = self.components[k]
             end
+			------
+
             if cmp ~= nil and cmp.OnLoad ~= nil then
                 cmp:OnLoad(v, newents)
             end

@@ -80,7 +80,7 @@ function StandardSleepChecks(inst)
         and not (inst.components.burnable ~= nil and inst.components.burnable:IsBurning())
         and not (inst.components.freezable ~= nil and inst.components.freezable:IsFrozen())
         and not (inst.components.teamattacker ~= nil and inst.components.teamattacker.inteam)
-        and not inst.sg:HasStateTag("busy")
+		and not (inst.sg and inst.sg:HasStateTag("busy"))
 end
 
 function StandardWakeChecks(inst)

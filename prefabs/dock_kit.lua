@@ -63,6 +63,7 @@ local function fn()
     MakeInventoryFloatable(inst, "med", 0.2, 0.75)
 
     inst:AddTag("groundtile")
+	inst:AddTag("deploykititem")
     inst:AddTag("usedeployspacingasoffset")
 
     inst._custom_candeploy_fn = CLIENT_CanDeployDockKit -- for DEPLOYMODE.CUSTOM

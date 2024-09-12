@@ -51,7 +51,7 @@ local function Retarget(inst, range)
 
                 local theirLeader = (guy.components.follower ~= nil and guy.components.follower.leader) or nil
                 local bothFollowingSamePlayer = (myLeader ~= nil and myLeader == theirLeader and myLeader.isplayer)
-                if bothFollowingSamePlayer or (guy:HasTag("chess") and theirLeader == nil) then
+                if bothFollowingSamePlayer or (theirLeader == nil and guy:HasTag("chess")) then
                     return false
                 end
 

@@ -2,60 +2,11 @@
 return{
 	ACTIONFAIL =
 	{
-        APPRAISE =
+        GENERIC =
         {
-            NOTNOW = "PRIORITIZE MY REQUEST, USELESS FLESHLING!",
+            ITEMMIMIC = "DECEPTION",
         },
-        REPAIR =
-        {
-            WRONGPIECE = "PLUGIN INCOMPATIBLE",
-        },
-        BUILD =
-        {
-            MOUNTED = "NON-OPTIMAL ALTITUDE FOR PLACING",
-            HASPET = "I ALREADY HAVE AN ORGANIC MINION",
-			TICOON = "THE MAXIMUM LIMIT HAS ALREADY BEEN REACHED",
-        },
-		SHAVE =
-		{
-			AWAKEBEEFALO = "DANGER! TARGET IS AWAKE",
-			GENERIC = "THAT IS NOT A VALID SHAVE TARGET",
-			NOBITS = "THERE IS NO STUBBLE TO SHAVE",
---fallback to speech_wilson.lua             REFUSE = "only_used_by_woodie",
-            SOMEONEELSESBEEFALO = "I WILL NOT PERFORM SOMEONE ELSE'S TASKS",
-		},
-		STORE =
-		{
-			GENERIC = "IT IS AT CAPACITY",
-			NOTALLOWED = "THAT INPUT IS NOT ALLOWED",
-			INUSE = "INFERIORS ARE USING IT RIGHT NOW",
-            NOTMASTERCHEF = "MAKE MY MINION DO IT",
-		},
-        CONSTRUCT =
-        {
-            INUSE = "INFERIORS ARE BUILDING IT",
-            NOTALLOWED = "INCOMPATIBLE HARDWARE",
-            EMPTY = "ERROR: NO INPUT SELECTED",
-            MISMATCH = "SOFTWARE IS NOT COMPATIBLE",
-            NOTREADY = "ERROR: AREA EXCEEDS DESTABILIZATION LIMITS",
-        },
-		RUMMAGE =
-		{
-			GENERIC = "ERROR: DON'T WANT TO",
-			INUSE = "I CAN HELP IF IT MAKES THIS GO FASTER",
-            NOTMASTERCHEF = "MAKE MY MINION DO IT",
-            NOTAMERM = "ACCESS DENIED. DON'T WANT ANYWAY",
-		},
-		UNLOCK =
-        {
---fallback to speech_wilson.lua             WRONGKEY = "I can't do that.",
-        },
-		USEKLAUSSACKKEY =
-        {
-            WRONGKEY = "INCORRECT UNLOCKING DEVICE",
-            KLAUS = "COMBAT PRIORITY: HIGH",
-			QUAGMIRE_WRONGKEY = "WRONG PASSWORD DETECTED",
-        },
+
 		ACTIVATE =
 		{
 			LOCKED_GATE = "REQUIRES PASSKEY",
@@ -73,54 +24,134 @@ return{
             NOKELP = "only_used_by_wurt",
 --fallback to speech_wilson.lua             HASMERMLEADER = "only_used_by_wurt",
 		},
-		OPEN_CRAFTING =
+        APPLYMODULE =
+        {
+            COOLDOWN = "SYSTEM RECALIBRATION IN PROGRESS",
+            NOTENOUGHSLOTS = "INSUFFICIENT SPACE",
+        },
+        APPRAISE =
+        {
+            NOTNOW = "PRIORITIZE MY REQUEST, USELESS FLESHLING!",
+        },
+        ATTUNE =
+        {
+            NOHEALTH = "I MUST MAKE REPAIRS BEFORE DOING THIS",
+        },
+        BATHBOMB =
+        {
+            GLASSED = "ERROR: MOON BARRIER ACTIVE",
+            ALREADY_BOMBED = "IT HAS ALREADY BEEN BOMBED",
+        },
+        BEDAZZLE =
+        {
+--fallback to speech_wilson.lua             BURNING = "only_used_by_webber",
+--fallback to speech_wilson.lua             BURNT = "only_used_by_webber",
+--fallback to speech_wilson.lua             FROZEN = "only_used_by_webber",
+--fallback to speech_wilson.lua             ALREADY_BEDAZZLED = "only_used_by_webber",
+        },
+        BEGIN_QUEST =
+        {
+            ONEGHOST = "only_used_by_wendy",
+        },
+        BUILD =
+        {
+            MOUNTED = "NON-OPTIMAL ALTITUDE FOR PLACING",
+            HASPET = "I ALREADY HAVE AN ORGANIC MINION",
+			TICOON = "THE MAXIMUM LIMIT HAS ALREADY BEEN REACHED",
+            BUSY_STATION = "YOU EXPECT ME TO WAIT?",
+        },
+        CARNIVALGAME_FEED =
+        {
+            TOO_LATE = "I MISSED THAT ON PURPOSE",
+        },
+		CAST_POCKETWATCH =
 		{
-            PROFESSIONALCHEF = "MAKE MY MINION DO IT",
-			SHADOWMAGIC = "GOOSEBUMPS ACTIVATED",
+--fallback to speech_wilson.lua 			GENERIC = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
 		},
+		CAST_SPELLBOOK =
+		{
+			NO_TOPHAT = "only_used_by_waxwell",
+		},
+		CASTAOE =
+		{
+			NO_MAX_SANITY = "only_used_by_waxwell",
+            NOT_ENOUGH_EMBERS = "only_used_by_willow",
+            NO_TARGETS = "only_used_by_willow",
+            CANT_SPELL_MOUNTED = "only_used_by_willow",
+            SPELL_ON_COOLDOWN = "only_used_by_willow",
+			NO_BATTERY = "only_used_by_winona",
+			NO_CATAPULTS = "only_used_by_winona",
+		},
+        CASTSPELL =
+        {
+            TERRAFORM_TOO_SOON = "only_used_by_wurt",
+        },
+        CHANGEIN =
+        {
+            GENERIC = "THERE ARE MORE IMPORTANT ISSUES TO ATTEND TO",
+            BURNING = "IT'S BURNING. OH WELL",
+            INUSE = "OCCUPIED",
+            NOTENOUGHHAIR = "TARGET REQUIRES MORE HAIR",
+            NOOCCUPANT = "NO TARGET ATTACHED",
+        },
+        CHARGE_FROM =
+        {
+            NOT_ENOUGH_CHARGE = "INSUFFICIENT CHARGE... I'M NOT MAD, JUST DISAPPOINTED",
+            CHARGE_FULL = "POWER LIMIT REACHED",
+        },
+		COMPARE_WEIGHABLE =
+		{
+            FISH_TOO_SMALL = "ERROR: TOO PUNY",
+            OVERSIZEDVEGGIES_TOO_SMALL = "ERROR: INSUFFICIENT HEFT",
+		},
+        CONSTRUCT =
+        {
+            INUSE = "INFERIORS ARE BUILDING IT",
+            NOTALLOWED = "INCOMPATIBLE HARDWARE",
+            EMPTY = "ERROR: NO INPUT SELECTED",
+            MISMATCH = "SOFTWARE IS NOT COMPATIBLE",
+            NOTREADY = "ERROR: AREA EXCEEDS DESTABILIZATION LIMITS",
+        },
         COOK =
         {
             GENERIC = "I DON'T WANT TO COOK",
             INUSE = "YOU MAY FEED ME, INFERIOR",
             TOOFAR = "NOT IN OPTIMAL RANGE",
         },
-        START_CARRAT_RACE =
-        {
-            NO_RACERS = "STARTUP POSTPONED UNTIL RACING ORGANICS ARE INSTALLED",
-        },
-
-		DISMANTLE = 
+		DISMANTLE =
 		{
 			COOKING = "COOK.EXE IS STILL RUNNING",
 			INUSE = "INFERIORS ARE USING IT RIGHT NOW",
 			NOTEMPTY = "I HAVE TO TAKE ITS INSIDES OUT",
         },
+        DISMANTLE_POCKETWATCH =
+        {
+--fallback to speech_wilson.lua             ONCOOLDOWN = "only_used_by_wanda",
+        },
+        DRAW =
+        {
+            NOIMAGE = "I REQUIRE SOMETHING REAL TO BASE THIS \"ART\" ON",
+        },
+        ENTER_GYM =
+        {
+--fallback to speech_wilson.lua             NOWEIGHT = "only_used_by_wolfang",
+--fallback to speech_wilson.lua             UNBALANCED = "only_used_by_wolfang",
+--fallback to speech_wilson.lua             ONFIRE = "only_used_by_wolfang",
+--fallback to speech_wilson.lua             SMOULDER = "only_used_by_wolfang",
+--fallback to speech_wilson.lua             HUNGRY = "only_used_by_wolfang",
+--fallback to speech_wilson.lua             FULL = "only_used_by_wolfang",
+        },
+        FILL_OCEAN =
+        {
+            UNSUITABLE_FOR_PLANTS = "EVEN THE PLANTS HATE SEAWATER",
+        },
         FISH_OCEAN =
 		{
 			TOODEEP = "ERROR: INSUFFICIENT FISHING LINE",
 		},
-        OCEAN_FISHING_POND =
-		{
-			WRONGGEAR = "ERROR: INCORRECT ROD",
-		},
-        --wickerbottom specific action
---fallback to speech_wilson.lua         READ =
---fallback to speech_wilson.lua         {
---fallback to speech_wilson.lua             GENERIC = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOBIRDS = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOFIRES =       "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOSILVICULTURE = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOHORTICULTURE = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOTENTACLEGROUND = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
---fallback to speech_wilson.lua         },
-
         GIVE =
         {
             GENERIC = "ABSOLUTELY NOT",
@@ -156,6 +187,10 @@ return{
             NOTAMONKEY = "CEASE YOUR RIDICULOUS MOUTH NOISES, LESSER HUMANOID",
             QUEENBUSY = "I WILL NOT BE IGNORED",
         },
+        GIVE_TACKLESKETCH =
+		{
+			DUPLICATE = "ERROR: DUPLICATE RECIPE DETECTED",
+        },
         GIVETOPLAYER =
         {
             FULL = "TARGET ALREADY OVER CAPACITY",
@@ -170,26 +205,44 @@ return{
             SLEEPING = "THAT UNIT IS BUSY RECHARGING",
             BUSY = "TARGET IS PREOCCUPIED",
         },
-        WRITE =
+        HARVEST =
         {
-            GENERIC = "WRITE ERROR",
-            INUSE = "PRIMITIVE MESSAGEBOARD OCCUPIED",
+            DOER_ISNT_MODULE_OWNER = "not_used_by_wx78",
         },
-        DRAW =
+        HEAL =
         {
-            NOIMAGE = "I REQUIRE SOMETHING REAL TO BASE THIS \"ART\" ON",
+            NOT_MERM = "ERROR: INCOMPATIBLE",
         },
-        CHANGEIN =
+        HERD_FOLLOWERS =
         {
-            GENERIC = "THERE ARE MORE IMPORTANT ISSUES TO ATTEND TO",
-            BURNING = "IT'S BURNING. OH WELL",
-            INUSE = "OCCUPIED",
-            NOTENOUGHHAIR = "TARGET REQUIRES MORE HAIR",
-            NOOCCUPANT = "NO TARGET ATTACHED",
+            WEBBERONLY = "AS THE MINIONS OF MY MINION YOU SHOULD OBEY ME!",
         },
-        ATTUNE =
+        HITCHUP =
         {
-            NOHEALTH = "I MUST MAKE REPAIRS BEFORE DOING THIS",
+            NEEDBEEF = "BEEFALO REQUIRED. RUN BELL.EXE TO TAME BEEFALO",
+            NEEDBEEF_CLOSER = "THE FOOLISH BEAST IS TOO FAR AWAY",
+            BEEF_HITCHED = "IT IS RESTRAINED",
+            INMOOD = "IT HAS TOO MANY FEELINGS TO RESTRAIN",
+        },
+		LOOKAT = --fail strings for close inspection
+		{
+			-- Winona specific
+--fallback to speech_wilson.lua 			ROSEGLASSES_INVALID = "only_used_by_winona",
+--fallback to speech_wilson.lua 			ROSEGLASSES_COOLDOWN = "only_used_by_winona",
+--fallback to speech_wilson.lua             ROSEGLASSES_DISMISS = "only_used_by_winona",
+--fallback to speech_wilson.lua             ROSEGLASSES_STUMPED = "only_used_by_winona",
+			--
+		},
+        LOWER_SAIL_FAIL =
+        {
+            "CURSE THIS OBSOLETE TECHNOLOGY",
+            "FAILURE DETECTED",
+            "OPERATION 'LOWER SAIL' FAILED TO EXECUTE; REBOOTING",
+        },
+        MARK =
+        {
+            ALREADY_MARKED = "I KNOW WHAT I'M DOING",
+            NOT_PARTICIPANT = "HOW DARE YOU START THE COMPETITION WITHOUT ME",
         },
         MOUNT =
         {
@@ -197,27 +250,18 @@ return{
             INUSE = "ERROR: MOUNT IN USE",
 			SLEEPING = "SLEEP MODE DISABLED",
         },
-        SADDLE =
+        OCEAN_FISHING_POND =
+		{
+			WRONGGEAR = "ERROR: INCORRECT ROD",
+		},
+		OPEN_CRAFTING =
+		{
+            PROFESSIONALCHEF = "MAKE MY MINION DO IT",
+			SHADOWMAGIC = "GOOSEBUMPS ACTIVATED",
+		},
+        PICK =
         {
-            TARGETINCOMBAT = "I'LL RIDE IT LATER. RIGHT NOW IT FIGHTS FOR MY AMUSEMENT",
-        },
-        TEACH =
-        {
-            --Recipes/Teacher
-            KNOWN = "ONLY A FLESHBRAIN WOULD NEED THAT EXPLAINED TO THEM",
-            CANTLEARN = "THE KNOWLEDGE WAS PROBABLY OBSOLETE ANYWAY",
-
-            --MapRecorder/MapExplorer
-            WRONGWORLD = "ERROR: INCORRECT LOCATION",
-
-			--MapSpotRevealer/messagebottle
-			MESSAGEBOTTLEMANAGER_NOT_FOUND = "INSUFFICIENT LIGHT, UNABLE TO ANALYZE",--Likely trying to read messagebottle treasure map in caves
-
-            STASH_MAP_NOT_FOUND = "INSUFFICIENT DATA. THIS IS WORTHLESS",-- Likely trying to read stash map  in world without stash                  
-        },
-        WRAPBUNDLE =
-        {
-            EMPTY = "ERROR: NO THINGS TO WRAP",
+            NOTHING_INSIDE = "NOTHING",
         },
         PICKUP =
         {
@@ -232,67 +276,10 @@ return{
 --fallback to speech_wilson.lua 			NO_HEAVY_LIFTING = "only_used_by_wanda",
             FULL_OF_CURSES = "IT WILL NOT FOOL ME AGAIN",
         },
-        SLAUGHTER =
-        {
-            TOOFAR = "STAND STILL AND LET ME KILL YOU",
-        },
-        REPLATE =
-        {
-            MISMATCH = "ERROR: UNEXPECTED DISH FORMAT",
-            SAMEDISH = "ERROR: FOOD DOES NOT REQUIRE TWO RECEPTACLES",
-        },
-        SAIL =
-        {
-            REPAIR = "THE WRETCHED THING DOES NOT NEED FIXING",
-        },
-        ROW_FAIL =
-        {
-            BAD_TIMING0 = "ERROR: RECALIBRATE ROWING SEQUENCE",
-            BAD_TIMING1 = "MY CALCULATIONS WERE OFF",
-            BAD_TIMING2 = "FRUSTRATION LEVELS RISING",
-        },
-        LOWER_SAIL_FAIL =
-        {
-            "CURSE THIS OBSOLETE TECHNOLOGY",
-            "FAILURE DETECTED",
-            "OPERATION 'LOWER SAIL' FAILED TO EXECUTE; REBOOTING",
-        },
-        BATHBOMB =
-        {
-            GLASSED = "ERROR: MOON BARRIER ACTIVE",
-            ALREADY_BOMBED = "IT HAS ALREADY BEEN BOMBED",
-        },
-		GIVE_TACKLESKETCH =
-		{
-			DUPLICATE = "ERROR: DUPLICATE RECIPE DETECTED",
-		},
-		COMPARE_WEIGHABLE =
-		{
-            FISH_TOO_SMALL = "ERROR: TOO PUNY",
-            OVERSIZEDVEGGIES_TOO_SMALL = "ERROR: INSUFFICIENT HEFT",
-		},
-        BEGIN_QUEST =
-        {
-            ONEGHOST = "only_used_by_wendy",
-        },
-		TELLSTORY =
-		{
-			GENERIC = "only_used_by_walter",
---fallback to speech_wilson.lua 			NOT_NIGHT = "only_used_by_walter",
---fallback to speech_wilson.lua 			NO_FIRE = "only_used_by_walter",
-		},
-        SING_FAIL =
-        {
---fallback to speech_wilson.lua             SAMESONG = "only_used_by_wathgrithr",
-        },
         PLANTREGISTRY_RESEARCH_FAIL =
         {
             GENERIC = "ALL RELEVANT INFORMATION HAS BEEN OBTAINED",
             FERTILIZER = "I REFUSE TO COMMIT ANY MORE INFORMATION ON THIS TO MY DATABANK",
-        },
-        FILL_OCEAN =
-        {
-            UNSUITABLE_FOR_PLANTS = "EVEN THE PLANTS HATE SEAWATER",
         },
         POUR_WATER =
         {
@@ -301,6 +288,113 @@ return{
         POUR_WATER_GROUNDTILE =
         {
             OUT_OF_WATER = "WONDERFULLY DRY",
+        },
+        --wickerbottom specific action
+--fallback to speech_wilson.lua         READ =
+--fallback to speech_wilson.lua         {
+--fallback to speech_wilson.lua             GENERIC = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOFIRES =       "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOSILVICULTURE = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOHORTICULTURE = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOTENTACLEGROUND = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOSLEEPTARGETS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua         },
+		REMOTE_TELEPORT =
+		{
+			NOSKILL = "only_used_by_winona",
+			NODEST = "only_used_by_winona",
+		},
+        REMOVEMODULES =
+        {
+            NO_MODULES = "ERROR: MODULE NOT FOUND",
+        },
+        REPAIR =
+        {
+            WRONGPIECE = "PLUGIN INCOMPATIBLE",
+        },
+        REPLATE =
+        {
+            MISMATCH = "ERROR: UNEXPECTED DISH FORMAT",
+            SAMEDISH = "ERROR: FOOD DOES NOT REQUIRE TWO RECEPTACLES",
+        },
+        ROW_FAIL =
+        {
+            BAD_TIMING0 = "ERROR: RECALIBRATE ROWING SEQUENCE",
+            BAD_TIMING1 = "MY CALCULATIONS WERE OFF",
+            BAD_TIMING2 = "FRUSTRATION LEVELS RISING",
+        },
+		RUMMAGE =
+		{
+			GENERIC = "ERROR: DON'T WANT TO",
+			INUSE = "I CAN HELP IF IT MAKES THIS GO FASTER",
+            NOTMASTERCHEF = "MAKE MY MINION DO IT",
+            NOTAMERM = "ACCESS DENIED. DON'T WANT ANYWAY",
+		},
+        SADDLE =
+        {
+            TARGETINCOMBAT = "I'LL RIDE IT LATER. RIGHT NOW IT FIGHTS FOR MY AMUSEMENT",
+        },
+		SHAVE =
+		{
+			AWAKEBEEFALO = "DANGER! TARGET IS AWAKE",
+			GENERIC = "THAT IS NOT A VALID SHAVE TARGET",
+			NOBITS = "THERE IS NO STUBBLE TO SHAVE",
+--fallback to speech_wilson.lua             REFUSE = "only_used_by_woodie",
+            SOMEONEELSESBEEFALO = "I WILL NOT PERFORM SOMEONE ELSE'S TASKS",
+		},
+        SING_FAIL =
+        {
+--fallback to speech_wilson.lua             SAMESONG = "only_used_by_wathgrithr",
+        },
+        SLAUGHTER =
+        {
+            TOOFAR = "STAND STILL AND LET ME KILL YOU",
+        },
+        START_CARRAT_RACE =
+        {
+            NO_RACERS = "STARTUP POSTPONED UNTIL RACING ORGANICS ARE INSTALLED",
+        },
+		STORE =
+		{
+			GENERIC = "IT IS AT CAPACITY",
+			NOTALLOWED = "THAT INPUT IS NOT ALLOWED",
+			INUSE = "INFERIORS ARE USING IT RIGHT NOW",
+            NOTMASTERCHEF = "MAKE MY MINION DO IT",
+		},
+        TEACH =
+        {
+            --Recipes/Teacher
+            KNOWN = "ONLY A FLESHBRAIN WOULD NEED THAT EXPLAINED TO THEM",
+            CANTLEARN = "THE KNOWLEDGE WAS PROBABLY OBSOLETE ANYWAY",
+
+            --MapRecorder/MapExplorer
+            WRONGWORLD = "ERROR: INCORRECT LOCATION",
+
+			--MapSpotRevealer/messagebottle
+			MESSAGEBOTTLEMANAGER_NOT_FOUND = "INSUFFICIENT LIGHT, UNABLE TO ANALYZE",--Likely trying to read messagebottle treasure map in caves
+
+            STASH_MAP_NOT_FOUND = "INSUFFICIENT DATA. THIS IS WORTHLESS",-- Likely trying to read stash map  in world without stash                  
+        },
+		TELLSTORY =
+		{
+			GENERIC = "only_used_by_walter",
+--fallback to speech_wilson.lua 			NOT_NIGHT = "only_used_by_walter",
+--fallback to speech_wilson.lua 			NO_FIRE = "only_used_by_walter",
+		},
+		UNLOCK =
+        {
+--fallback to speech_wilson.lua             WRONGKEY = "I can't do that.",
+        },
+        UPGRADE =
+        {
+--fallback to speech_wilson.lua             BEDAZZLED = "only_used_by_webber",
         },
         USEITEMON =
         {
@@ -311,17 +405,20 @@ return{
             BEEF_BELL_ALREADY_USED = "SOMEONE GOT TO THIS HAIRY FLESHBAG FIRST",
             BEEF_BELL_HAS_BEEF_ALREADY = "I HAVE ALREADY SELECTED A SATISFACTORY FLESHBAG",
         },
-        HITCHUP =
+		USEKLAUSSACKKEY =
         {
-            NEEDBEEF = "BEEFALO REQUIRED. RUN BELL.EXE TO TAME BEEFALO",
-            NEEDBEEF_CLOSER = "THE FOOLISH BEAST IS TOO FAR AWAY",
-            BEEF_HITCHED = "IT IS RESTRAINED",
-            INMOOD = "IT HAS TOO MANY FEELINGS TO RESTRAIN",
+            WRONGKEY = "INCORRECT UNLOCKING DEVICE",
+            KLAUS = "COMBAT PRIORITY: HIGH",
+			QUAGMIRE_WRONGKEY = "WRONG PASSWORD DETECTED",
         },
-        MARK =
+        WRAPBUNDLE =
         {
-            ALREADY_MARKED = "I KNOW WHAT I'M DOING",
-            NOT_PARTICIPANT = "HOW DARE YOU START THE COMPETITION WITHOUT ME",
+            EMPTY = "ERROR: NO THINGS TO WRAP",
+        },
+        WRITE =
+        {
+            GENERIC = "WRITE ERROR",
+            INUSE = "PRIMITIVE MESSAGEBOARD OCCUPIED",
         },
         YOTB_STARTCONTEST =
         {
@@ -332,113 +429,6 @@ return{
         {
             ALREADYKNOWN = "THIS PATTERN ALREADY EXISTS IN MY DATABANK",
         },
-        CARNIVALGAME_FEED =
-        {
-            TOO_LATE = "I MISSED THAT ON PURPOSE",
-        },
-        HERD_FOLLOWERS =
-        {
-            WEBBERONLY = "AS THE MINIONS OF MY MINION YOU SHOULD OBEY ME!",
-        },
-        BEDAZZLE =
-        {
---fallback to speech_wilson.lua             BURNING = "only_used_by_webber",
---fallback to speech_wilson.lua             BURNT = "only_used_by_webber",
---fallback to speech_wilson.lua             FROZEN = "only_used_by_webber",
---fallback to speech_wilson.lua             ALREADY_BEDAZZLED = "only_used_by_webber",
-        },
-        UPGRADE =
-        {
---fallback to speech_wilson.lua             BEDAZZLED = "only_used_by_webber",
-        },
-		CAST_POCKETWATCH =
-		{
---fallback to speech_wilson.lua 			GENERIC = "only_used_by_wanda",
---fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
---fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
---fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
-		},
-        DISMANTLE_POCKETWATCH =
-        {
---fallback to speech_wilson.lua             ONCOOLDOWN = "only_used_by_wanda",
-        },
-
-        ENTER_GYM =
-        {
---fallback to speech_wilson.lua             NOWEIGHT = "only_used_by_wolfang",
---fallback to speech_wilson.lua             UNBALANCED = "only_used_by_wolfang",
---fallback to speech_wilson.lua             ONFIRE = "only_used_by_wolfang",
---fallback to speech_wilson.lua             SMOULDER = "only_used_by_wolfang",
---fallback to speech_wilson.lua             HUNGRY = "only_used_by_wolfang",
---fallback to speech_wilson.lua             FULL = "only_used_by_wolfang",
-        },
-
-        APPLYMODULE =
-        {
-            COOLDOWN = "SYSTEM RECALIBRATION IN PROGRESS",
-            NOTENOUGHSLOTS = "INSUFFICIENT SPACE",
-        },
-        REMOVEMODULES =
-        {
-            NO_MODULES = "ERROR: MODULE NOT FOUND",
-        },
-        CHARGE_FROM =
-        {
-            NOT_ENOUGH_CHARGE = "INSUFFICIENT CHARGE... I'M NOT MAD, JUST DISAPPOINTED",
-            CHARGE_FULL = "POWER LIMIT REACHED",
-        },
-
-        HARVEST =
-        {
-            DOER_ISNT_MODULE_OWNER = "not_used_by_wx78",
-        },
-
-		CAST_SPELLBOOK =
-		{
-			NO_TOPHAT = "only_used_by_waxwell",
-		},
-
-        CASTSPELL =
-        {
-            TERRAFORM_TOO_SOON = "only_used_by_wurt",
-        },
-
-		CASTAOE =
-		{
-			NO_MAX_SANITY = "only_used_by_waxwell",
-            NOT_ENOUGH_EMBERS = "only_used_by_willow",
-            NO_TARGETS = "only_used_by_willow",
-            CANT_SPELL_MOUNTED = "only_used_by_willow",
-            SPELL_ON_COOLDOWN = "only_used_by_willow",
-			NO_BATTERY = "only_used_by_winona",
-			NO_CATAPULTS = "only_used_by_winona",
-		},
-
-        PICK =
-        {
-            NOTHING_INSIDE = "NOTHING",
-        },
-
-        HEAL =
-        {
-            NOT_MERM = "ERROR: INCOMPATIBLE",
-        },
-
-		LOOKAT = --fail strings for close inspection
-		{
-			-- Winona specific
---fallback to speech_wilson.lua 			ROSEGLASSES_INVALID = "only_used_by_winona",
---fallback to speech_wilson.lua 			ROSEGLASSES_COOLDOWN = "only_used_by_winona",
---fallback to speech_wilson.lua             ROSEGLASSES_DISMISS = "only_used_by_winona",
---fallback to speech_wilson.lua             ROSEGLASSES_STUMPED = "only_used_by_winona",
-			--
-		},
-
-		REMOTE_TELEPORT =
-		{
-			NOSKILL = "only_used_by_winona",
-			NODEST = "only_used_by_winona",
-		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -451,6 +441,7 @@ return{
 	ACTIONFAIL_GENERIC = "ERROR: ACTION UNAVAILABLE",
 	ANNOUNCE_BOAT_LEAK = "MY WORST NIGHTMARE IS REALIZED",
 	ANNOUNCE_BOAT_SINK = "HELP",
+    ANNOUNCE_PREFALLINVOID = "UNSTABLE SURFACE DETECTED",
 	ANNOUNCE_DIG_DISEASE_WARNING = "ANTIVIRAL PRECAUTIONS SUCCESSFUL", --removed
 	ANNOUNCE_PICK_DISEASE_WARNING = "VIRUS DETECTED", --removed
 	ANNOUNCE_ADVENTUREFAIL = "ABORT, RETRY, FAIL?",
@@ -576,6 +567,7 @@ return{
 	ANNOUNCE_HIGHRESEARCH = "INFORMATION OVERLOAD",
 	ANNOUNCE_HOUNDS = "SOMETHING IS COMING",
 	ANNOUNCE_WORMS = "SLIMY ORGANICS APPROACHING",
+    ANNOUNCE_WORMS_BOSS = "MASSIVE MEATTUBE INCOMING",
     ANNOUNCE_ACIDBATS = "FLYING RATS INCOMING",
 	ANNOUNCE_HUNGRY = "FUEL RESERVES LOW",
 	ANNOUNCE_HUNT_BEAST_NEARBY = "DISTANCE TO LIFEFORM: MINIMAL",
@@ -993,6 +985,15 @@ return{
     ANNOUNCE_OTTERBOAT_DENBROKEN = "STRUCTURAL INTEGRITY COMPROMISED. ABORT! ABORT!",
 
     ANNOUNCE_GATHER_MERM = "only_used_by_wurt",
+
+    -- rifts 4
+    ANNOUNCE_EXIT_GELBLOB = "NEARLY TERMINATED, BUT GEARS LUBRICATED",
+	ANNOUNCE_SHADOWTHRALL_STEALTH = "MUST DISABLE STEALH MECHANISM AND KILL IT",
+    ANNOUNCE_RABBITKING_AGGRESSIVE = "AGGRESSIVE DIGGING DETECTED",
+    ANNOUNCE_RABBITKING_PASSIVE = "NON-THREATENING ORGANIC MOVEMENT DETECTED BELOW SURFACE",
+    ANNOUNCE_RABBITKING_LUCKY = "UNIQUE RABBIT DETECTED",
+    ANNOUNCE_RABBITKING_LUCKYCAUGHT = "MINE",
+    ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "ERROR: INVALID LOCATION DETECTED",
 
 	BATTLECRY =
 	{
@@ -1644,7 +1645,8 @@ return{
                 "UNDEAD ALERT",
                 "UNDEAD ALERT",
             },
-		},
+        },
+
 		ADVENTURE_PORTAL = "HE IS NOT MUCH OF A CONVERSATIONALIST",
 		AMULET = "ANOMALY DETECTED",
 		ANIMAL_TRACK = "LIFEFORM DETECTED",
@@ -1728,6 +1730,8 @@ return{
             RIDER = "THIS ONE EXCELS AT ACCELERATION",
             PUDGY = "SO... MUCH... MEAT",
             MYPARTNER = "IT WORKS FOR ME AND IS THUS SUPERIOR TO THE REST",
+            DEAD = "HAHAHA",
+            DEAD_MYPARTNER = "HAHA... HA?",
 		},
 
 		BEEFALOHAT = "THERE ARE TRACES OF FECAL MATTER EMBEDDED IN THE FIBRES",
@@ -5043,6 +5047,7 @@ return{
 		SHADOWTHRALL_HANDS = "SUBMIT TO MY AUTHORITY!",
 		SHADOWTHRALL_HORNS = "YOUR EFFORTS ARE ILLOGICAL, I HOLD NO NUTRITIONAL VALUE",
 		SHADOWTHRALL_WINGS = "COME CLOSER SO I CAN PUNCH YOU",
+		SHADOWTHRALL_MOUTH = "KEEP SMILING...",
 
         CHARLIE_NPC = "ALL THAT POWER AND SHE STILL CLINGS TO THAT ORGANIC FORM",
         CHARLIE_HAND = "OFFERING REQUIRED",
@@ -5343,6 +5348,53 @@ return{
 
         MERM_LUNAR = "FISHFACE HAS REACHED NEW LEVEL OF DISGUSTING",
         MERMGUARD_LUNAR = "THIS VERSION IS MOST FOUL",
+
+        -- Rifts 4
+
+        SHADOW_BEEF_BELL = "I CAN REBOOT MY BEEFALO MINION",
+        SADDLE_SHADOW = "NOT BAD",
+        SHADOW_BATTLEAXE = "IT CRAVES FLESH. GROSS... BUT ACCEPTABLE.",
+        VOIDCLOTH_BOOMERANG = "THE MEATBAGS WILL NEVER KNOW WHAT HIT THEM",
+		ROPE_BRIDGE_KIT = "SO SIMPLE A FLESHLING CAN BUILD IT",
+		GELBLOB =
+		{
+			GENERIC = "IT WILL CAUSE LAG",
+			HAS_ITEM = "CONTAINS OBJECT",
+			HAS_CHARACTER = "CONTAINS SUBJECT",
+		},
+        RABBITKING_AGGRESSIVE = "HOSTILE OLD RABBIT",
+        RABBITKING_PASSIVE = "GIVE ME A REASON NOT TO DESTROY YOU",
+        RABBITKING_LUCKY = "MUST OBTAIN RABBIT",
+        RABBITKINGMINION_BUNNYMAN = "PATIENCE, BUNNY. I WILL KILL YOU SOON",
+        ARMOR_CARROTLURE = "FILTHY",
+        RABBITKINGHORN = "I HATE THE SOUND IT MAKES",
+        RABBITKINGHORN_CHEST = "NEVER TRUST A RABBIT",
+        RABBITKINGSPEAR = "THE FLESHLING FOUND ITS PURPOSE",
+        RABBITHAT = "OVER MY INANIMATE BODY",
+        WORM_BOSS = "SO MUCH PULSING VILE FLESH",
+
+        STONE_TABLE = -- Shared between the round and square tables.
+        {
+            GENERIC = "IT IS A TABLE",
+            HAS_ITEM = "CONGRATULATIONS TABLE, YOU HAVE FULFILLED YOUR PRIMARY FUNCTION",
+        },
+
+        STONE_CHAIR =
+        {
+            GENERIC = "MY CHAIR",
+            OCCUPIED = "I WAS GOING TO SIT THERE",
+        },
+
+        CARPENTRY_BLADE_MOONGLASS = "I LIKE IT",
+
+        CHEST_MIMIC_REVEALED = "CERTAINLY DISGUSTING",
+
+        GELBLOB_STORAGE = {
+            GENERIC  = "I HAVE NO USE FOR THIS",
+            FULL = "ONLY SENSITIVE FLESHBAGS NEED TO EAT UNSPOILED FOOD",
+        },
+        GELBLOB_STORAGE_KIT = "WHY SHOULD I HELP YOU?",
+        GELBLOB_BOTTLE = "THROW IT AWAY",
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

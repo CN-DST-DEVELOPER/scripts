@@ -12,6 +12,7 @@ local events =
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("doattack", function(inst, data)
         if not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy"))

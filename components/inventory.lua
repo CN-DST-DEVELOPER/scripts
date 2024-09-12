@@ -55,6 +55,7 @@ local Inventory = Class(function(self, inst)
     self.isexternallyinsulated = SourceModifierList(inst, false, SourceModifierList.boolean)
 
 	-- self.noheavylifting = false
+	--self.ignorecombat = false
 
     inst:ListenForEvent("player_despawn", OnOwnerDespawned)
 
@@ -1021,8 +1022,15 @@ function Inventory:GiveItem(inst, slot, src_pos)
             self.activeitem.prefab == inst.prefab and
             self.activeitem.skinname == inst.skinname and
             not self.activeitem.components.stackable:IsFull()
-            then
-            self.activeitem.components.stackable:Put(inst, Vector3(self.inst.Transform:GetWorldPosition()))
+        then
+            local leftovers = self.activeitem.components.stackable:Put(inst, self.inst:GetPosition())
+
+            if leftovers ~= nil then
+                self.silentfull = true
+                self:GiveItem(leftovers)
+                self.silentfull = false
+            end
+
             self.inst:PushEvent("gotnewitem", { item = inst, toactiveitem = true, })
             returnvalue = true
             shouldwisecrack = false

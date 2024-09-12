@@ -11,6 +11,7 @@ local events=
     CommonHandlers.OnLocomote(false,true),
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("attacked", function(inst) 
 		if not inst.components.health:IsDead()
 			and not CommonHandlers.HitRecoveryDelay(inst, TUNING.LEIF_HIT_RECOVERY)

@@ -38,6 +38,12 @@ local function SkipPre(inst)
 end
 
 local function KillFX(inst)
+	if inst:IsAsleep() then
+		inst:Remove()
+		return
+	end
+	inst.OnEntitySleep = inst.Remove
+
 	inst.AnimState:PlayAnimation("bridge"..tostring(inst.variation).."_pst")
 	inst:ListenForEvent("animover", inst.Remove)
 	for i, v in ipairs(inst.decor) do

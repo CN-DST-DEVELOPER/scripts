@@ -1,10 +1,23 @@
+local function SamePrefabAndSkin(inst, other)
+    return inst.prefab == other.prefab and inst.skinname == other.skinname
+end
+
 local function onitem(self, item)
     if item ~= nil then
         self.inst:AddTag("inventoryitemholder_take")
-        self.inst:RemoveTag("inventoryitemholder_give")
+
+        if not self.acceptstacks then
+            self.inst:RemoveTag("inventoryitemholder_give")
+        end
     else
         self.inst:AddTag("inventoryitemholder_give")
         self.inst:RemoveTag("inventoryitemholder_take")
+    end
+end
+
+local function onacceptstacks(self, acceptstacks)
+    if acceptstacks then
+        self.inst:AddTag("inventoryitemholder_give")
     end
 end
 
@@ -20,13 +33,17 @@ local InventoryItemHolder = Class(function(self, inst)
     self.item = nil
 
     self.allowed_tags = nil
+    self.acceptstacks = false
 
     self.onitemgivenfn = nil
     self.onitemtakenfn = nil
+
+    self._onitemremoved = function(item) self.item = nil end
 end,
 nil,
 {
     item = onitem,
+    acceptstacks = onacceptstacks,
 })
 
 ---------------------------------------------------------------------------------------------------------------
@@ -43,6 +60,10 @@ function InventoryItemHolder:SetOnItemTakenFn(fn)
     self.onitemtakenfn = fn
 end
 
+function InventoryItemHolder:SetAcceptStacks(bool)
+    self.acceptstacks = bool == true
+end
+
 ---------------------------------------------------------------------------------------------------------------
 
 function InventoryItemHolder:IsHolding()
@@ -52,12 +73,20 @@ end
 ---------------------------------------------------------------------------------------------------------------
 
 function InventoryItemHolder:CanGive(item, giver)
-    return
-            not self:IsHolding() and
-            item.components.inventoryitem ~= nil and
-            (
-                self.allowed_tags == nil or item:HasOneOfTags(self.allowed_tags)
-            )
+    if item.components.inventoryitem == nil then
+        return false
+    end
+
+    if self.allowed_tags == nil or item:HasOneOfTags(self.allowed_tags) then
+        if not self:IsHolding() then
+            return true
+        end
+
+        return self.acceptstacks and
+            self.item.components.stackable ~= nil and
+            not self.item.components.stackable:IsFull() and
+            SamePrefabAndSkin(self.item, item)
+    end
 end
 
 function InventoryItemHolder:CanTake(taker)
@@ -71,20 +100,37 @@ function InventoryItemHolder:GiveItem(item, giver)
         return false
     end
 
-    self.item = item.components.inventoryitem:RemoveFromOwner(false) or item
+    item = item.components.inventoryitem:RemoveFromOwner(self.acceptstacks) or item
 
-    if self.item ~= nil and self.item:IsValid() then
-        self.inst:AddChild(self.item)
-        self.item:RemoveFromScene()
-        self.item.Transform:SetPosition(0, 0, 0)
-        self.item.components.inventoryitem:HibernateLivingItem()
-        self.item:AddTag("outofreach")
+    if self.item ~= nil and self.item.components.stackable ~= nil then
+        item = self.item.components.stackable:Put(item)
 
-        if self.onitemgivenfn ~= nil then
-            self.onitemgivenfn(self.inst, self.item, giver)
+        if item ~= nil then
+            giver.components.inventory:GiveItem(item)
+
+            item = nil
         end
-    else
-        self.item = nil
+    end
+
+    if item ~= nil and item:IsValid() then
+        self.inst:AddChild(item)
+        item:RemoveFromScene()
+        item.Transform:SetPosition(0, 0, 0)
+        item.components.inventoryitem:HibernateLivingItem()
+        item:AddTag("outofreach")
+
+        self.inst:ListenForEvent("onremove", self._onitemremoved, item)
+
+        self.item = item
+    end
+
+    if self.item ~= nil and (self.item.components.stackable == nil or self.item.components.stackable:IsFull()) then
+        self.inst:RemoveTag("inventoryitemholder_give")
+    end
+
+    if self.onitemgivenfn ~= nil then
+        -- Be aware that the item might be nil at this point, in case it gets stacked on given.
+        self.onitemgivenfn(self.inst, item, giver)
     end
 
     return true
@@ -103,6 +149,8 @@ function InventoryItemHolder:TakeItem(taker)
 
     self.item:RemoveTag("outofreach")
 
+    self.inst:RemoveEventCallback("onremove", self._onitemremoved, self.item)
+
     if taker ~= nil and taker:IsValid() and taker.components.inventory ~= nil then
         taker.components.inventory:GiveItem(self.item, nil, pos)
     else
@@ -110,11 +158,12 @@ function InventoryItemHolder:TakeItem(taker)
         self.item.components.inventoryitem:OnDropped(true)
     end
 
-    self.item = nil
-
     if self.onitemtakenfn ~= nil then
+        -- Be aware that the item might be invalid at this point, in case it gets stacked on taken.
         self.onitemtakenfn(self.inst, self.item, taker)
     end
+
+    self.item = nil
 
     return true
 end

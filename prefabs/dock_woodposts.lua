@@ -120,6 +120,8 @@ local function itemfn()
 
     MakeInventoryPhysics(inst)
 
+	inst:AddTag("deploykititem")
+
     inst.AnimState:SetBank("dock_woodposts")
     inst.AnimState:SetBuild("dock_woodposts")
     inst.AnimState:PlayAnimation("item")

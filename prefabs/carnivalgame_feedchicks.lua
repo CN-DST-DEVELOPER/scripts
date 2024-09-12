@@ -427,7 +427,7 @@ local function fooditem_fn()
     inst.AnimState:SetBuild("carnivalgame_feedchicks_food")
     inst.AnimState:PlayAnimation("idle")
 
-    MakeInventoryFloatable(inst, "med", 0.05, {1.1, 0.5, 1.1}, true, -9)
+    MakeInventoryFloatable(inst, "med", 0.1, 0.9)
 
 	inst:AddTag("nopunch")
 	inst:AddTag("irreplaceable")

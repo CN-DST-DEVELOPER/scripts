@@ -64,7 +64,7 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("instrument")
-    inst.components.instrument.range = TUNING.HOUNDWHISTLE_RANGE
+    inst.components.instrument:SetRange(TUNING.HOUNDWHISTLE_RANGE)
     inst.components.instrument:SetOnHeardFn(HearHoundWhistle)
 
     inst:AddComponent("tool")

@@ -37,7 +37,7 @@ local RiftSpawner = Class(function(self, inst)
     self.inst:ListenForEvent("shadowrift_opened", function(...) self:EnableShadowRifts(...) end)
     self.inst:ListenForEvent("ms_lunarrift_maxsize", function(...) self:OnLunarRiftMaxSize(...) end)
     self.inst:ListenForEvent("ms_shadowrift_maxsize", function(...) self:OnShadowRiftMaxSize(...) end)
-    
+
     self._worldsettingstimer:AddTimer(
         RIFTSPAWN_TIMERNAME,
         TUNING.RIFTS_SPAWNDELAY + 1,
@@ -51,7 +51,7 @@ end)
 local MINIMUM_DSQ_FROM_PREVIOUS_RIFT = 15 * TILE_SCALE
 MINIMUM_DSQ_FROM_PREVIOUS_RIFT = MINIMUM_DSQ_FROM_PREVIOUS_RIFT * MINIMUM_DSQ_FROM_PREVIOUS_RIFT
 function RiftSpawner:IsPointNearPreviousSpawn(x, z)
-    for rift, rift_prefab in pairs(self.rifts) do
+    for rift in pairs(self.rifts) do
         local rx, _, rz = rift.Transform:GetWorldPosition()
         if distsq(x, z, rx, rz) < MINIMUM_DSQ_FROM_PREVIOUS_RIFT then
             return true
@@ -108,8 +108,14 @@ function RiftSpawner:SpawnRift(forced_pos)
         return nil
     end
 
+    local thrall_type = (rift_def.ThrallTypes ~= nil and GetRandomItem(rift_def.ThrallTypes))
+        or nil
+
     local rift = SpawnPrefab(rift_prefab)
     rift.Transform:SetPosition(x, 0, z)
+    if rift.components.riftthralltype then
+        rift.components.riftthralltype:SetThrallType(thrall_type)
+    end
 
     self:AddRiftToPool(rift, rift_prefab)
 
@@ -343,6 +349,24 @@ function RiftSpawner:GetNextRiftPrefab()
     end
 
     return potentials[math.random(#potentials)]
+end
+
+function RiftSpawner:RiftIsShadowAffinity(rift)
+    local rift_prefab = (rift and rift.prefab) or nil
+    if not rift_prefab then return nil end
+
+    local rift_def = RIFTPORTAL_DEFS[rift_prefab]
+    local affinity = (rift_def and rift_def.Affinity) or nil
+    return affinity == RIFTPORTAL_CONST.AFFINITY.SHADOW
+end
+
+function RiftSpawner:RiftIsLunarAffinity(rift)
+    local rift_prefab = (rift and rift.prefab) or nil
+    if not rift_prefab then return nil end
+
+    local rift_def = RIFTPORTAL_DEFS[rift_prefab]
+    local affinity = (rift_def and rift_def.Affinity) or nil
+    return affinity == RIFTPORTAL_CONST.AFFINITY.LUNAR
 end
 
 

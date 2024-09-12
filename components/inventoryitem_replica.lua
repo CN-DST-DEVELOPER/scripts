@@ -7,6 +7,7 @@ local InventoryItem = Class(function(self, inst)
     self._cannotbepickedup = net_bool(inst.GUID, "inventoryitem._cannotbepickedup")
     self._iswet = net_bool(inst.GUID, "inventoryitem._iswet", "iswetdirty")
     self._isacidsizzling = net_bool(inst.GUID, "inventoryitem._isacidsizzling", "isacidsizzlingdirty")
+    self._grabbableoverridetag = net_hash(inst.GUID, "inventoryitem._grabbableoverridetag")
 
     if TheWorld.ismastersim then
         self.classified = SpawnPrefab("inventoryitem_classified")
@@ -84,7 +85,11 @@ function InventoryItem:SetCanBePickedUp(canbepickedup)
     self._cannotbepickedup:set(not canbepickedup)
 end
 
-function InventoryItem:CanBePickedUp()
+function InventoryItem:CanBePickedUp(doer)
+    local restrictedtag = self._grabbableoverridetag:value()
+	if restrictedtag and restrictedtag ~= 0 and doer and doer:HasTag(restrictedtag) then
+		return true
+	end
     return not self._cannotbepickedup:value()
 end
 
@@ -420,6 +425,10 @@ end
 
 function InventoryItem:IsAcidSizzling()
     return self._isacidsizzling:value()
+end
+
+function InventoryItem:SetGrabbableOverrideTag(tag)
+    self._grabbableoverridetag:set(tag or 0)
 end
 
 return InventoryItem

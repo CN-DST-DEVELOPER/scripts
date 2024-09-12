@@ -1278,6 +1278,21 @@ function LocoMotor:StartHopping(x,z,target_platform)
     self.time_before_next_hop_is_allowed = 0.2
 end
 
+function LocoMotor:CheckDrownable()
+    local drownable = self.inst.components.drownable
+    if drownable then
+        local fallingreason = drownable:GetFallingReason()
+        if fallingreason == FALLINGREASON.OCEAN then
+            self.inst:PushEvent("onsink")
+            return true
+        elseif fallingreason == FALLINGREASON.VOID then
+            self.inst:PushEvent("onfallinvoid")
+            return true
+        end
+    end
+    return false
+end
+
 function LocoMotor:OnUpdate(dt, arrive_check_only)
     if self.hopping then
         --self:UpdateHopping(dt)
@@ -1553,22 +1568,24 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
                 end
             end
 
-            if (not can_hop and my_platform == nil and target_platform == nil and not self.inst.sg:HasStateTag("jumping")) and self.inst.components.drownable ~= nil and self.inst.components.drownable:ShouldDrown() then
-                self.inst:PushEvent("onsink")
+            if (not can_hop and my_platform == nil and target_platform == nil and not self.inst.sg:HasStateTag("jumping")) then
+                self:CheckDrownable()
             end
         else
-            local speed_mult = self:GetSpeedMultiplier()
-            local desired_speed = self.isrunning and self:RunSpeed() or self.walkspeed
-            if self.dest and self.dest:IsValid() then
-                local destpos_x, destpos_y, destpos_z = self.dest:GetPoint()
-                local mypos_x, mypos_y, mypos_z = self.inst.Transform:GetWorldPosition()
-                local dsq = distsq(destpos_x, destpos_z, mypos_x, mypos_z)
-                if dsq <= .25 then
-                    speed_mult = math.max(.33, math.sqrt(dsq))
+            if not self:CheckDrownable() then
+                local speed_mult = self:GetSpeedMultiplier()
+                local desired_speed = self.isrunning and self:RunSpeed() or self.walkspeed
+                if self.dest and self.dest:IsValid() then
+                    local destpos_x, destpos_y, destpos_z = self.dest:GetPoint()
+                    local mypos_x, mypos_y, mypos_z = self.inst.Transform:GetWorldPosition()
+                    local dsq = distsq(destpos_x, destpos_z, mypos_x, mypos_z)
+                    if dsq <= .25 then
+                        speed_mult = math.max(.33, math.sqrt(dsq))
+                    end
                 end
-            end
 
-			self:SetMotorSpeed(desired_speed * speed_mult)
+                self:SetMotorSpeed(desired_speed * speed_mult)
+            end
         end
     end
 

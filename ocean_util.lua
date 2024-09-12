@@ -87,7 +87,7 @@ function FindLandBetweenPoints(p0x, p0y, p1x, p1y)
     local e = 0;
     for i = 0, dx+dy - 1 do
         local tile_at_point = map:GetTileAtPoint(p0x, 0, p0y)
-        if tile_at_point ~= WORLD_TILES.MONKEY_DOCK and IsLandTile(tile_at_point) then
+        if not (TileGroupManager:IsTemporaryTile(tile_at_point) and tile_at_point ~= WORLD_TILES.FARMING_SOIL) and IsLandTile(tile_at_point) then
 			return map:GetTileCenterPoint(p0x, 0, p0y)
 		end
 
@@ -153,7 +153,7 @@ function LandFlyingCreature(creature)
     creature:RemoveTag("flying")
     creature:PushEvent("on_landed")
     if creature.Physics ~= nil then
-        if TheWorld.has_ocean then
+        if TheWorld:CanFlyingCrossBarriers() then
             creature.Physics:CollidesWith(COLLISION.LIMITS)
         end
         creature.Physics:ClearCollidesWith(COLLISION.FLYERS)
@@ -164,7 +164,7 @@ function RaiseFlyingCreature(creature)
     creature:AddTag("flying")
     creature:PushEvent("on_no_longer_landed")
     if creature.Physics ~= nil then
-        if TheWorld.has_ocean then
+        if TheWorld:CanFlyingCrossBarriers() then
             creature.Physics:ClearCollidesWith(COLLISION.LIMITS)
         end
         creature.Physics:CollidesWith(COLLISION.FLYERS)
@@ -177,6 +177,28 @@ function ShouldEntitySink(entity, entity_sinks_in_water)
         local px, _, pz = entity.Transform:GetWorldPosition()
         return not TheWorld.Map:IsPassableAtPoint(px, 0, pz, not entity_sinks_in_water)
     end
+end
+
+SINKENTITY_PREFABS = {
+    OCEAN = {"splash_sink"},
+    VOID = {"fallingswish_clouds", "fallingswish_lines"},
+    FALLBACK = {"splash_ocean"}, -- Old ocean FX.
+}
+function GetSinkEntityFXPrefabs(entity, px, py, pz)
+    if not TheWorld.Map:IsInMapBounds(px, py, pz) then
+        -- NOTES(JBK): We do not care what happens out of map bounds this goes into mod territory but we will still splash with the old style.
+        -- Mods can hook this function to detect this fallback case with the second return value to override it if desired.
+        return SINKENTITY_PREFABS.FALLBACK, true
+    end
+
+    local tile = TheWorld.Map:GetTileAtPoint(px, py, pz)
+    if TileGroupManager:IsOceanTile(tile) then
+        return SINKENTITY_PREFABS.OCEAN
+    elseif TileGroupManager:IsImpassableTile(tile) then
+        return SINKENTITY_PREFABS.VOID
+    end
+
+    return SINKENTITY_PREFABS.FALLBACK
 end
 
 function SinkEntity(entity)
@@ -197,11 +219,16 @@ function SinkEntity(entity)
         entity.components.container:DropEverything()
     end
 
-    local fx = SpawnPrefab((TheWorld.Map:IsValidTileAtPoint(px, py, pz) and "splash_sink") or "splash_ocean")
-    fx.Transform:SetPosition(px, py, pz)
+    local fx_prefabs = GetSinkEntityFXPrefabs(entity, px, py, pz)
+    if fx_prefabs then
+        for _, fx_prefab in pairs(fx_prefabs) do
+            local fx = SpawnPrefab(fx_prefab)
+            fx.Transform:SetPosition(px, py, pz)
+        end
+    end
 
     -- If the entity is irreplaceable, respawn it at the player
-    if entity:HasTag("irreplaceable") then
+    if entity:HasAnyTag("irreplaceable", "shoreonsink") then
         local sx, sy, sz = FindRandomPointOnShoreFromOcean(px, py, pz)
         if sx ~= nil then
             entity.Transform:SetPosition(sx, sy, sz)

@@ -116,6 +116,7 @@ local events =
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("death", function(inst)
         if not inst.sg:HasStateTag("delaydeath") then
             if inst.atriumstalker then

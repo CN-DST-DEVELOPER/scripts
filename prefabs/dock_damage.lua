@@ -12,13 +12,34 @@ local function setdamagepercent(inst,damage)
     inst.AnimState:PlayAnimation("idle"..idle_index)
 end
 
+local function RepairAdjacentRopeBridges(ropebridgemanager, x, y, z, health, dx, dz)
+    x, z = x + dx, z + dz
+    if ropebridgemanager:DamageRopeBridgeAtPoint(x, y, z, health) then
+        RepairAdjacentRopeBridges(ropebridgemanager, x, y, z, health, dx, dz)
+        return
+    end
+end
 local function OnRepaired(inst, doer, repair_item)
     local repairvalue = repair_item.components.repairer and repair_item.components.repairer.healthrepairvalue
     if repairvalue then
-        if TheWorld.components.dockmanager then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local dockmanager = TheWorld.components.dockmanager
+        if dockmanager then
             -- Repair the dock at our location if we are repaired.
-            local x, y, z = inst.Transform:GetWorldPosition()
-            TheWorld.components.dockmanager:DamageDockAtPoint(x, y, z, -repairvalue)
+            if dockmanager:DamageDockAtPoint(x, y, z, -repairvalue) then
+                return
+            end
+        end
+        local ropebridgemanager = TheWorld.components.ropebridgemanager
+        if ropebridgemanager then
+            -- Repair the rope bridge at our location if we are repaired and adjacents if they are also repairables.
+            if ropebridgemanager:DamageRopeBridgeAtPoint(x, y, z, -repairvalue) then
+                RepairAdjacentRopeBridges(ropebridgemanager, x, y, z, -repairvalue, -TILE_SCALE, 0)
+                RepairAdjacentRopeBridges(ropebridgemanager, x, y, z, -repairvalue, TILE_SCALE, 0)
+                RepairAdjacentRopeBridges(ropebridgemanager, x, y, z, -repairvalue, 0, -TILE_SCALE)
+                RepairAdjacentRopeBridges(ropebridgemanager, x, y, z, -repairvalue, 0, TILE_SCALE)
+                return
+            end
         end
     end
 end
@@ -31,6 +52,9 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst.entity:AddSoundEmitter()
+
+    inst:AddTag("NOBLOCK")
+    inst:AddTag("ignoremouseover")
 
     inst.AnimState:SetBank("dock_damage")
     inst.AnimState:SetBuild("dock_damage")

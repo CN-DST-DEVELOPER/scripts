@@ -285,6 +285,8 @@ local states =
             	inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
         		inst.SoundEmitter:PlaySound("dontstarve/creatures/together/lavae/death")
 			end
+
+			RemovePhysicsColliders(inst)
 		end,
 	},
 

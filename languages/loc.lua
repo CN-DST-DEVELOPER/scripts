@@ -4,7 +4,8 @@ local localizations =
 {
     {id = LANGUAGE.FRENCH,          alt_id = nil,                   strings = "french.po",         code = "fr",    scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },
     {id = LANGUAGE.SPANISH,         alt_id = LANGUAGE.SPANISH_LA,   strings = "spanish.po",        code = "es",    scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },
-  --{id = LANGUAGE.SPANISH_LA,      alt_id = nil,                   strings = "spanish_mex.po",    code = "mex",   scale = 1.0,  in_steam_menu = false, in_console_menu = false, shrink_to_fit_word = true },
+    {id = LANGUAGE.SPANISH_LA,      alt_id = nil,                   strings = "spanish_mex.po",    code = "mex",   scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },
+    {id = LANGUAGE.TURKISH,         alt_id = nil,                   strings = "turkish.po",        code = "tr",    scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },
     {id = LANGUAGE.GERMAN,          alt_id = nil,                   strings = "german.po",         code = "de",    scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },
     {id = LANGUAGE.ITALIAN,         alt_id = nil,                   strings = "italian.po",        code = "it",    scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },
     {id = LANGUAGE.PORTUGUESE_BR,   alt_id = LANGUAGE.PORTUGUESE,   strings = "portuguese_br.po",  code = "pt",    scale = 1.0,  in_steam_menu = false, in_console_menu = true,  shrink_to_fit_word = true },

@@ -138,11 +138,14 @@ local assets =
     Asset("FILE", "sound/yotd2024.fsb"),
     --Asset("FILE", "sound/yotd2024_music.fsb"),
 
-    Asset("SOUNDPACKAGE", "sound/qol1.fev"),     
+    Asset("SOUNDPACKAGE", "sound/qol1.fev"),
     Asset("FILE", "sound/qol1.fsb"),
 
-    Asset("SOUNDPACKAGE", "sound/meta4.fev"),     
+    Asset("SOUNDPACKAGE", "sound/meta4.fev"),
     Asset("FILE", "sound/meta4.fsb"),
+
+    Asset("SOUNDPACKAGE", "sound/rifts4.fev"),
+    Asset("FILE", "sound/rifts4.fsb"),
 
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
@@ -183,6 +186,10 @@ local assets =
     Asset("PKGREF", "anim/woodie.zip"),
     Asset("PKGREF", "anim/wx78.zip"),
 
+    -- Legacy for mods this file is positively dusty.
+    Asset("PKGREF", "anim/ui_krampusbag_2x5.zip"),
+
+    -- Core game.
     Asset("ATLAS", "images/global.xml"),
     Asset("IMAGE", "images/global.tex"),
     Asset("IMAGE", "images/visited.tex"),

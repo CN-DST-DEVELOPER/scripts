@@ -44,7 +44,6 @@ local function getDamage(inst, attacker, target)
         return inst.non_merm_damage
     end
 end
-    
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
@@ -82,6 +81,8 @@ local function CreateMermTool(data)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.scrapbook_weapondamage = tuning.DAMAGE
 
         inst._build = swap_data.sym_build
         inst._swapsymbol = swap_data.sym_name

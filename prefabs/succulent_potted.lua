@@ -15,7 +15,7 @@ local function SetupPlant(inst, plantid)
 		inst.plantid = plantid or math.random(5)
 	end
 
-    if inst.plantid == 1 then
+    if inst.plantid == 1 or inst:GetSkinBuild() ~= nil then
 		inst.AnimState:ClearOverrideSymbol("succulent")
 	else
 		inst.AnimState:OverrideSymbol("succulent", "succulent_potted", "succulent"..tostring(inst.plantid))
@@ -27,7 +27,7 @@ local function onsave(inst, data)
 end
 
 local function onload(inst, data)
-    SetupPlant(inst, data ~= nil and data.plantid or nil)
+    inst:SetupPlant(data ~= nil and data.plantid or nil)
 end
 
 local function onhammered(inst)
@@ -84,7 +84,8 @@ local function fn()
 
     inst:ListenForEvent("onbuilt", onbuilt)
 
-	inst:DoTaskInTime(0, SetupPlant)
+    inst.SetupPlant = SetupPlant
+	inst:DoTaskInTime(0, inst.SetupPlant)
 
     --------SaveLoad
     inst.OnSave = onsave

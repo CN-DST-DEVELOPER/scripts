@@ -126,6 +126,7 @@ AddCreatureScanDataDefinition("crawlingnightmare", "maxsanity", 6)
 AddCreatureScanDataDefinition("terrorbeak", "maxsanity", 3)
 AddCreatureScanDataDefinition("nightmarebeak", "maxsanity", 6)
 AddCreatureScanDataDefinition("oceanhorror", "maxsanity", 3)
+AddCreatureScanDataDefinition("ruinsnightmare", "maxsanity", 8)
 
 ---------------------------------------------------------------
 local function movespeed_activate(inst, wx)

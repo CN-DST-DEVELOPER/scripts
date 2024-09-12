@@ -54,6 +54,14 @@ local function onfiniteusesfinished(inst)
     inst:Remove()
 end
 
+local function UseModifier(uses, action, doer, target, item)
+    if (action == ACTIONS.ROW or action == ACTIONS.ROW_FAIL or action == ACTIONS.ROW_CONTROLLER)
+            and doer:HasTag("master_crewman") then
+        uses = uses * TUNING.MASTER_CREWMAN_MULT.OAR_CONSUMPTION
+    end
+    return uses
+end
+
 local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
     local inst = CreateEntity()
 
@@ -133,13 +141,7 @@ local function fn(data, build, swap_build, fuel_value, is_wooden, is_waterproof)
     finiteuses:SetConsumption(ACTIONS.ROW, 1)
     finiteuses:SetConsumption(ACTIONS.ROW_CONTROLLER, 1)
     finiteuses:SetConsumption(ACTIONS.ROW_FAIL, data.ROW_FAIL_WEAR)
-    finiteuses.modifyuseconsumption = function(uses, action, doer, target)
-        if (action == ACTIONS.ROW or action == ACTIONS.ROW_FAIL or action == ACTIONS.ROW_CONTROLLER)
-                and doer:HasTag("master_crewman") then
-            uses = uses * TUNING.MASTER_CREWMAN_MULT.OAR_CONSUMPTION
-        end
-        return uses
-    end
+    finiteuses:SetModifyUseConsumption(UseModifier)
 
     MakeHauntableLaunch(inst)
 

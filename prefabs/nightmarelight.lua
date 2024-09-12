@@ -9,6 +9,7 @@ local prefabs =
 {
     "nightmarebeak",
     "crawlingnightmare",
+    "ruinsnightmare",
     "nightmarelightfx",
 }
 
@@ -209,6 +210,13 @@ local function OnPreLoad(inst, data)
     WorldSettings_ChildSpawner_PreLoad(inst, data, TUNING.NIGHTMAREFISSURE_RELEASE_TIME, TUNING.NIGHTMAREFISSURE_REGEN_TIME)
 end
 
+local function GetRareChildFn(inst)
+    local rift_active = TheWorld.components.riftspawner ~= nil and TheWorld.components.riftspawner:IsShadowPortalActive()
+    local ruinsnightmare_chance = rift_active and TUNING.RUINSNIGHTMARE_SPAWN_CHANCE_RIFTS or TUNING.RUINSNIGHTMARE_SPAWN_CHANCE
+
+    return math.random() <= ruinsnightmare_chance and "ruinsnightmare" or "nightmarebeak"
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -270,7 +278,7 @@ local function fn()
     end
 
     inst.components.childspawner.childname = "crawlingnightmare"
-    inst.components.childspawner:SetRareChild("nightmarebeak", .35)
+    inst.components.childspawner:SetRareChild(GetRareChildFn, .35)
 
     inst:AddComponent("inspectable")
 

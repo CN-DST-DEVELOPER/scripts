@@ -1924,6 +1924,7 @@ local fx =
         build ="bottle",
         anim = "break",
         sound = "dontstarve/creatures/monkey/poopsplat",
+		fn = FinalOffset2,
     },
     {
         name = "messagebottle_bob_fx",
@@ -3231,7 +3232,84 @@ local fx =
                 i.SoundEmitter:PlaySoundWithParams("dontstarve_DLC001/common/iceboulder_hit", {intensity=0.3})
             end)
         end,
-    },    
+    },
+    {
+        name = "beef_bell_shadow_cursefx",
+        bank = "shadowcurse",
+        build = "cowbell_shadow_cursefx",
+        anim = "player_shadow",
+        sound = "rifts4/beefalo_revive/player_debuff",
+        fn = FinalOffset1,
+    },
+    {
+        name = "fallingswish_clouds",
+        bank = "fallingswish",
+        build ="falling_swish",
+        anim = "clouds",
+        fn = FinalOffset1,
+    },
+    {
+        name = "fallingswish_clouds_fast",
+        bank = "fallingswish",
+        build ="falling_swish",
+        anim = "clouds_fast",
+        fn = FinalOffset1,
+    },
+    {
+        name = "fallingswish_lines",
+        bank = "fallingswish",
+        build ="falling_swish",
+        anim = "lines",
+        fn = function(inst)
+            inst.AnimState:SetFinalOffset(1)
+            inst.AnimState:SetLayer(LAYER_BELOW_GROUND)
+        end,
+    },
+    {
+        name = "voidcloth_boomerang_launch_fx",
+        bank = "boomerang_voidcloth",
+        build ="boomerang_voidcloth",
+        anim = "launch_fx",
+        tintalpha = 0.85,
+        fn = function(inst)
+            inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+            inst.AnimState:SetLayer(LAYER_GROUND)
+            inst.AnimState:SetSortOrder(1)
+            inst.AnimState:SetFinalOffset(1)
+        end,
+    },
+    {
+        name = "voidcloth_boomerang_impact_fx",
+        bank = "boomerang_voidcloth",
+        build ="boomerang_voidcloth",
+        anim = "impact_fx",
+        transform = Vector3(1.3, 1.3, 1.3),
+        tintalpha = 0.85,
+        fn = FinalOffset1,
+    },
+    {
+        name = "beefalo_reviving_lightning_fx",
+        bank = "beefalo",
+        build ="beefalo_revive",
+        anim = "revive_lightning",
+        bloom = true,
+        fn = function(inst)
+           inst.AnimState:SetLightOverride(0.7)
+            inst.AnimState:SetFinalOffset(1)
+        end,
+    },
+    {
+        name = "itemmimic_puff",
+        bank = "sand_puff",
+        build = "sand_puff",
+        anim = "forage_out",
+        sound = "rifts4/mimic/item_become_poof",
+        tint = Vector3(0, 0, 0),
+        tintalpha = .5,
+        fn = function(inst)
+            inst.AnimState:SetFinalOffset(2)
+        end,
+    },
 }
 
 for cratersteamindex = 1, 4 do

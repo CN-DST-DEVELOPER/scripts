@@ -190,17 +190,6 @@ local function Sapling_CheckGrowConstraints(inst)
     end
 end
 
-local function Sapling_OnEntityWake(inst)
-    local growable = inst.components.growable
-
-    if growable ~= nil and growable.pausedremaining ~= nil and growable.pausedremaining <= 0 then
-        -- NOTES(DiogoW): It "grew" offscreen, but waited for Growable:OnEntityWake() to be called and then got paused because of the season change.
-        --                It might be worth fixing this in the component sometime.
-        growable:Resume(PAUSE_REASON.TILE)
-        growable:Resume(PAUSE_REASON.SEASON)
-    end
-end
-
 local function Sapling_DoMagicGrowthFn(inst, doer)
     inst.magic_growth_delay = nil
 
@@ -616,8 +605,6 @@ local function MakeAncientTree(name, data)
 
         inst.OnSave = PlantData_OnSave
         inst.OnLoad = PlantData_OnLoad
-
-        inst.OnEntityWake  = Sapling_OnEntityWake
 
         MakeHauntableWork(inst)
 

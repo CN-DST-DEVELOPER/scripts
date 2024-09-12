@@ -1333,6 +1333,8 @@ local function common_fn(bank, build, shadowsize, canfight, atriumstalker)
 		inst.controller_priority_override_is_epic = function()
 			return not inst._hasshield:value()
 		end
+    else
+        inst:AddTag("smallepic")
     end
 
     if canfight then

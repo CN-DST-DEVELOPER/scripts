@@ -163,6 +163,10 @@ local function fn()
 end
 
 return Prefab("bootleg", fn, assets, prefabs)
+
+	--@V2C If using MakeDeployableKitItem, make sure to REMOVE "deploykititem" tag since
+	--     this item is not really like a "kit"
+
 	--[[MakeDeployableKitItem("bootleg", "oceanwhirlportal", "bootleg", "bootleg", "idle", assets,
 		{ size = "med", scale = 0.62 }, --floatable_data
 		nil,--{ "action_pulls_up_map" },

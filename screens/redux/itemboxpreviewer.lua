@@ -116,7 +116,7 @@ function ItemBoxPreviewer:_OpenItemBox()
             table.insert(item_images, item_widget)
         end
         
-        columns, self.resize_root, self.resize_root_small, self.resize_root_small_higher = GetBoxPopupLayoutDetails( #item_types )
+        columns, self.resize_root, self.resize_root_small, self.resize_root_small_higher, self.resize_root_thisisreallybig = GetBoxPopupLayoutDetails( #item_types )
 
         self.opened_item_display:FillGrid(columns, COLUMN_WIDTH, COLUMN_HEIGHT, item_images)
     end
@@ -136,6 +136,10 @@ function ItemBoxPreviewer:_OpenItemBox()
         if self.resize_root_small_higher then
             self.bundle_root:SetPosition(0,185)
             self.bundle_root:SetScale(0.7,0.7)
+        end
+        if self.resize_root_thisisreallybig then
+            self.bundle_root:SetPosition(0,230)
+            self.bundle_root:SetScale(0.6,0.6)
         end
 
         -- update the background size

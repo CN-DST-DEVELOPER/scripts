@@ -60,6 +60,21 @@ function Leader:CountFollowers(tag)
 	return count
 end
 
+function Leader:GetFollowersByTag(tag)
+    local followers = {}
+    if tag == nil then
+        return followers
+    end
+
+    for k in pairs(self.followers) do
+        if k:HasTag(tag) then
+            table.insert(followers, k)
+        end
+    end
+
+    return followers
+end
+
 function Leader:IsTargetedByFollowers(target)
     for follower in pairs(self.followers) do
         if follower.combat ~= nil and follower.combat:TargetIs(target) then

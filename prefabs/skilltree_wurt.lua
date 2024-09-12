@@ -42,6 +42,14 @@ local function RefreshPathFinderSkill(inst)
     inst:RefreshPathFinderSkill()
 end
 
+local function CheckMosquitoCounts(inst)
+    if inst.components.inventory:HasItemWithTag("mosquitomusk", 1) then
+        inst:AddTag("mosquitograbber")
+    else
+        inst:RemoveTag("mosquitograbber")
+    end
+end
+
 --------------------------------------------------------------------------------------------------
 
 local ORDERS =
@@ -187,6 +195,16 @@ local function BuildSkillsData(SkillTreeFns)
             connects = {
                 "wurt_mosquito_craft_3",
             },
+            onactivate = function(inst, fromload)
+                inst:ListenForEvent("itemget", CheckMosquitoCounts)
+                inst:ListenForEvent("itemlose", CheckMosquitoCounts)
+                CheckMosquitoCounts(inst)
+            end,
+            ondeactivate = function(inst, fromload)
+                inst:RemoveEventCallback("itemget", CheckMosquitoCounts)
+                inst:RemoveEventCallback("itemlose", CheckMosquitoCounts)
+                inst:RemoveTag("mosquitograbber")
+            end,
         },
 
         -- Description.

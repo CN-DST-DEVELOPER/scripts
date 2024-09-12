@@ -145,6 +145,14 @@ local loop_descriptions = {
 	{ text = STRINGS.UI.SANDBOXMENU.LOOPALWAYS, data = "always" },
 }
 
+local loop_plus_descriptions = {
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPNEVER, data = "never" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPRARE, data = "rare" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPRANDOM, data = "default" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPOFTEN, data = "often" },
+	{ text = STRINGS.UI.SANDBOXMENU.LOOPALWAYS, data = "always" },
+}
+
 local complexity_descriptions = {
 	{ text = STRINGS.UI.SANDBOXMENU.SLIDEVERYSIMPLE, data = "verysimple" },
 	{ text = STRINGS.UI.SANDBOXMENU.SLIDESIMPLE, data = "simple" },
@@ -471,6 +479,8 @@ local WORLDSETTINGS_GROUP = {
 			["spider_spitter"] = {value = "default", image = "spider_spitter.tex", world={"cave"}},
 			["spider_dropper"] = {value = "default", image = "spider_dropper.tex", world={"cave"}},
 			["molebats"] = {value = "default", image = "molebats.tex", world={"cave"}},
+			["itemmimics"] = {value = "default", image = "itemmimics.tex", world={"cave"}},
+			["chest_mimics"] = {value = "default", image = "chest_mimics.tex", world={"cave"}},
 		}
 	},
 	["animals"] = {
@@ -571,6 +581,7 @@ local WORLDSETTINGS_GROUP = {
 
 			["earthquakes"] = {value = "default", image = "earthquakes.tex", desc = frequency_descriptions, world={"cave"}},
 			["wormattacks"] = {value = "default", image = "wormattacks.tex", desc = frequency_descriptions, world={"cave"}},
+			["wormattacks_boss"] = {value = "default", image = "wormattacks_boss.tex", desc = loop_plus_descriptions, world={"cave"}},
 			["atriumgate"] = {value = "default", image = "atriumgate.tex", desc = atrium_descriptions, world={"cave"}},
             ["rifts_frequency_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = frequency_descriptions, world={"cave"}},
             ["rifts_enabled_cave"] = {value = "default", image = "shadowrift_portal.tex", desc = riftsenabled_descriptions, world={"cave"}},

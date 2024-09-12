@@ -27,7 +27,7 @@ local function onunequip(inst, owner)
     owner.AnimState:Show("ARM_normal")
 end
 
-local function onequipgold(inst, owner)local skin_build = inst:GetSkinBuild()
+local function onequipgold(inst, owner)
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
         owner:PushEvent("equipskinneditem", inst:GetSkinName())

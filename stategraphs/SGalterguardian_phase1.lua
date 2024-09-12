@@ -20,6 +20,7 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("locomote", function(inst)
         if not inst.sg:HasStateTag("charge") then

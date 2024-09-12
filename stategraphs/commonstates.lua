@@ -16,8 +16,13 @@ end
 --------------------------------------------------------------------------
 local function onsleep(inst)
     if inst.components.health == nil or (inst.components.health ~= nil and not inst.components.health:IsDead()) then
-		if inst.sg:HasStateTag("jumping") and inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() then
-			inst.sg:GoToState("sink")
+        local fallingreason = inst.components.drownable and inst.components.drownable:GetFallingReason() or nil
+        if fallingreason ~= nil and inst.sg:HasStateTag("jumping") then
+            if fallingreason == FALLINGREASON.OCEAN then
+                inst.sg:GoToState("sink")
+            elseif fallingreason == FALLINGREASON.VOID then
+                inst.sg:GoToState("abyss_fall")
+            end
 		else
 		    inst.sg:GoToState(inst.sg:HasStateTag("sleeping") and "sleeping" or "sleep")
 		end
@@ -564,7 +569,7 @@ local function DoHopLandSound(inst, land_sound)
 	end
 end
 
-CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, land_sound, landed_in_water_state, data)
+CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, land_sound, landed_in_falling_state, data)
 	anims = anims or {}
     timelines = timelines or {}
 	data = data or {}
@@ -677,10 +682,9 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
             local nextstate = "hop_pst_complete"
 			if data ~= nil then
 				nextstate = (
-                                data.landed_in_water and landed_in_water_state ~= nil and
+                                data.landed_in_water and landed_in_falling_state ~= nil and
                                 (
-                                    type(landed_in_water_state) ~= "function" and landed_in_water_state or
-                                    landed_in_water_state(inst)
+                                    type(landed_in_falling_state) ~= "function" and landed_in_falling_state or landed_in_falling_state(inst)
                                 )
                             )
 							 or data.queued_post_land_state
@@ -1248,8 +1252,13 @@ end
 local function onsleepex(inst)
     inst.sg.mem.sleeping = true
 	if inst.components.health == nil or not inst.components.health:IsDead() then
-		if inst.sg:HasStateTag("jumping") and inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() then
-			inst.sg:GoToState("sink")
+        local fallingreason = inst.components.drownable and inst.components.drownable:GetFallingReason() or nil
+        if fallingreason ~= nil and inst.sg:HasStateTag("jumping") then
+            if fallingreason == FALLINGREASON.OCEAN then
+                inst.sg:GoToState("sink")
+            elseif fallingreason == FALLINGREASON.VOID then
+                inst.sg:GoToState("abyss_fall")
+            end
 		elseif not (inst.sg:HasStateTag("nosleep") or inst.sg:HasStateTag("sleeping")) then
 		    inst.sg:GoToState("sleep")
 		end
@@ -1894,6 +1903,172 @@ end
 
 --Backward compatibility for originally mispelt function name
 CommonStates.AddSinkAndWashAsoreStates = CommonStates.AddSinkAndWashAshoreStates
+
+------------ Void falling! ------------
+
+local function onfallinvoid(inst, data)
+    if (inst.components.health == nil or not inst.components.health:IsDead()) and not inst.sg:HasStateTag("falling") and (inst.components.drownable ~= nil and inst.components.drownable:ShouldFallInVoid()) then
+        inst.sg:GoToState("abyss_fall", data)
+    end
+end
+
+CommonHandlers.OnFallInVoid = function()
+    return EventHandler("onfallinvoid", onfallinvoid)
+end
+
+local function DoVoidFall(inst, skip_vfx)
+    if not skip_vfx then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        SpawnPrefab("fallingswish_clouds").Transform:SetPosition(x, y, z)
+        SpawnPrefab("fallingswish_lines").Transform:SetPosition(x, y, z)
+    end
+    inst.sg.statemem.isteleporting = true
+    inst:Hide()
+    if inst.components.health ~= nil then
+        inst.components.health:SetInvincible(true)
+    end
+    if inst.components.drownable ~= nil then
+        inst.components.drownable:VoidArrive()
+    else
+        inst:PutBackOnGround()
+    end
+end
+
+CommonStates.AddVoidFallStates = function(states, anims, timelines, fns)
+	anims = anims or {}
+	timelines = timelines or {}
+	fns = fns or {}
+
+    table.insert(states, State{
+        name = "abyss_fall",
+        tags = { "busy", "nopredict", "nomorph", "falling", "nointerrupt", "nowake" },
+
+        onenter = function(inst, data)
+            inst:ClearBufferedAction()
+
+            inst.components.locomotor:Stop()
+            inst.components.locomotor:Clear()
+
+			inst.sg.statemem.collisionmask = inst.Physics:GetCollisionMask()
+	        inst.Physics:SetCollisionMask(COLLISION.GROUND)
+
+			if data ~= nil and data.teleport_pt ~= nil then
+				inst.components.drownable:OnFallInVoid(data.teleport_pt:Get())
+			else
+				inst.components.drownable:OnFallInVoid()
+			end
+
+			if inst.DynamicShadow ~= nil then
+			    inst.DynamicShadow:Enable(false)
+			end
+
+		    if inst.brain ~= nil then
+				inst.brain:Stop()
+			end
+
+			local skip_anim = data ~= nil and data.noanim
+			if anims.fallinvoid ~= nil and not skip_anim then
+				inst.sg.statemem.has_anim = true
+	            inst.AnimState:PlayAnimation(anims.fallinvoid)
+                -- TODO(JBK): Add inst.AnimState:SetLayer(LAYER_BELOW_GROUND) and inst.AnimState:SetLayer(LAYER_WORLD) timing if overriding the animation.
+			else
+				DoVoidFall(inst, skip_anim)
+			end
+
+        end,
+
+		timeline = timelines.fallinvoid,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.sg.statemem.has_anim and inst.AnimState:AnimDone() then
+					DoVoidFall(inst)
+				end
+            end),
+
+            EventHandler("on_void_arrive", function(inst)
+				inst.sg:GoToState("abyss_drop")
+			end),
+        },
+
+        onexit = function(inst)
+			if inst.sg.statemem.collisionmask ~= nil then
+				inst.Physics:SetCollisionMask(inst.sg.statemem.collisionmask)
+			end
+
+            if inst.sg.statemem.isteleporting then
+				if inst.components.health ~= nil then
+					inst.components.health:SetInvincible(false)
+				end
+				inst:Show()
+			end
+
+			if inst.DynamicShadow ~= nil then
+				inst.DynamicShadow:Enable(true)
+			end
+
+			if inst.components.herdmember ~= nil then
+				inst.components.herdmember:Leave()
+			end
+
+			if inst.components.combat ~= nil then
+				inst.components.combat:DropTarget()
+			end
+
+		    if inst.brain ~= nil then
+				inst.brain:Start()
+			end
+        end,
+    })
+
+    table.insert(states, State{
+        name = "abyss_drop",
+        tags = { "doing", "busy", "nopredict", "silentmorph" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            if type(anims.voiddrop) == "table" then
+                for i, v in ipairs(anims.voiddrop) do
+                    if i == 1 then
+                        inst.AnimState:PlayAnimation(v)
+                    else
+                        inst.AnimState:PushAnimation(v, false)
+                    end
+                end
+            elseif anims.voiddrop ~= nil then
+                inst.AnimState:PlayAnimation(anims.voiddrop)
+            else
+                inst.AnimState:PlayAnimation("sleep_loop")
+                inst.AnimState:PushAnimation("sleep_pst", false)
+            end
+
+            if inst.brain ~= nil then
+                inst.brain:Stop()
+            end
+
+            local x, y, z = inst.Transform:GetWorldPosition()
+            SpawnPrefab("fallingswish_clouds_fast").Transform:SetPosition(x, y, z)
+        end,
+
+		timeline = timelines.fallinvoid,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+		    if inst.brain ~= nil then
+				inst.brain:Start()
+			end
+        end,
+	})
+end
 
 --------------------------------------------------------------------------
 

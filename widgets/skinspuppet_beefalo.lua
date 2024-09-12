@@ -33,7 +33,18 @@ function SkinsPuppet:AddShadow()
 	self.shadow:MoveToBack()
 end
 
-function SkinsPuppet:SetSkins(prefabname, base_item, clothing_names, skip_change_emote)
+local FACE_SWAP_SYMBOLS =
+{
+	"beefalo_beard",
+	"beefalo_eye",
+	"beefalo_jowls",
+	"beefalo_lip_crease",
+	"beefalo_mouthmouth",
+	"beefalo_nose",
+	"beffalo_lips",
+}
+
+function SkinsPuppet:SetSkins(prefabname, base_item, clothing_names, skip_change_emote, inst)
 
 	--[[
 		For mod character support, skinmode should be a table in the format of:
@@ -61,6 +72,16 @@ function SkinsPuppet:SetSkins(prefabname, base_item, clothing_names, skip_change
 	self.animstate:SetBuild(self.default_build)
 
 	SetBeefaloSkinsOnAnim( self.animstate, clothing_names )
+	
+	-- Beefalo tendency symbol overrides.
+	local build, sym
+	for i, symbol in ipairs(FACE_SWAP_SYMBOLS) do
+		build, sym = inst.AnimState:GetSymbolOverride(symbol)
+
+		if build ~= nil and sym ~= nil then
+			self.animstate:OverrideSymbol(symbol, build, sym)
+		end
+	end
 
 	local previousbank = self.currentanimbank
 	self.currentanimbank = "beefalo"

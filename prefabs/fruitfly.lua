@@ -209,6 +209,7 @@ local function fn()
     inst:AddTag("fruitfly")
     inst:AddTag("hostile")
     inst:AddTag("epic")
+    inst:AddTag("smallepic")
 
     inst.entity:SetPristine()
 

@@ -440,6 +440,7 @@ ShadowChess.CommonEventList =
     ShadowChess.Events.OnDespawn(),
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 }
 
 return ShadowChess

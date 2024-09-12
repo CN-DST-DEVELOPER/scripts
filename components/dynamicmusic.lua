@@ -143,6 +143,11 @@ local TRIGGERED_DANGER_MUSIC =
 		"dontstarve/music/music_epicfight_sharkboy",
 	},
 
+    worm_boss =
+    {
+        "dontstarve/music/music_epicfight_worm",
+    },
+
     default =
     {
         "dontstarve/music/music_epicfight_ruins",

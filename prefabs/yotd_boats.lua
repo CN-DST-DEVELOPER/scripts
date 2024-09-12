@@ -663,6 +663,7 @@ local function item_base_fn(data)
     inst.entity:AddNetwork()
 
     inst:AddTag("boatbuilder")
+	inst:AddTag("deploykititem")
     inst:AddTag("usedeployspacingasoffset")
 
     MakeInventoryPhysics(inst)

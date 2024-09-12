@@ -140,9 +140,10 @@ local function song_fn(songdata, prefabname)
         inst.components.rechargeable:SetOnChargedFn(oninspirationdelta)
     end
 
+    inst:AddComponent("erasablepaper")
+    inst:AddComponent("inspectable")
     inst:AddComponent("singable")
 
-    inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 

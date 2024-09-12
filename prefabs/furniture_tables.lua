@@ -42,7 +42,7 @@ end
 local function OnHammered(inst, worker)
     local collapse_fx = SpawnPrefab("collapse_small")
     collapse_fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
-    collapse_fx:SetMaterial("wood")
+    collapse_fx:SetMaterial(inst._burnable and "wood" or "stone")
 
     inst.components.lootdropper:DropLoot()
 
@@ -139,9 +139,12 @@ local function AddTable(results, prefab_name, data)
         inst:AddTag("structure")
 
         inst.entity:SetPristine()
+
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst._burnable = data.burnable
 
         --
         local furnituredecortaker = inst:AddComponent("furnituredecortaker")
@@ -152,7 +155,7 @@ local function AddTable(results, prefab_name, data)
         --
         local inspectable = inst:AddComponent("inspectable")
         inspectable.getstatus = GetStatus
-        inspectable.nameoverride = "WOOD_TABLE"
+        inspectable.nameoverride = data.inspection_override
 
         --
         inst:AddComponent("lootdropper")
@@ -168,21 +171,21 @@ local function AddTable(results, prefab_name, data)
         workable:SetOnWorkCallback(OnHammer)
         workable:SetOnFinishCallback(OnHammered)
 
-        --
         MakeHauntableWork(inst)
 
-        --
-        MakeMediumBurnable(inst, nil, nil, true)
-        inst.components.burnable:SetOnIgniteFn(on_ignite)
-        inst.components.burnable:SetOnExtinguishFn(on_extinguish)
-        MakeMediumPropagator(inst)
-
-        --
-        inst:ListenForEvent("onbuilt", OnBuilt)
-        inst:ListenForEvent("onburnt", OnBurnt)
         inst:ListenForEvent("ondeconstructstructure", TossDecorItem)
+        inst:ListenForEvent("onbuilt", OnBuilt)
 
-        --
+        if data.burnable then
+            MakeMediumBurnable(inst, nil, nil, true)
+            inst.components.burnable:SetOnIgniteFn(on_ignite)
+            inst.components.burnable:SetOnExtinguishFn(on_extinguish)
+
+            MakeMediumPropagator(inst)
+
+            inst:ListenForEvent("onburnt", OnBurnt)
+        end
+
         inst.OnSave = OnSave
         inst.OnLoad = OnLoad
         inst.OnLoadPostPass = OnLoadPostPass
@@ -195,18 +198,53 @@ local function AddTable(results, prefab_name, data)
 end
 
 local result_tables = {}
-local WOOD_TABLE_DATA = {
-    bank = "wood_table",
-    build = "wood_table_round",
-	deploy_smart_radius = 0.875,
-}
-AddTable(result_tables, "wood_table_round", WOOD_TABLE_DATA)
 
-local WOOD_TABLE_2_DATA = {
-    bank = "wood_table",
-    build = "wood_table_square",
-	deploy_smart_radius = 0.875,
-}
-AddTable(result_tables, "wood_table_square", WOOD_TABLE_2_DATA)
+AddTable(
+    result_tables,
+    "wood_table_round",
+    {
+        bank = "wood_table",
+        build = "wood_table_round",
+        deploy_smart_radius = 0.875,
+        burnable = true,
+        inspection_override = "WOOD_TABLE",
+    }
+)
+
+AddTable(
+    result_tables,
+    "wood_table_square",
+    {
+        bank = "wood_table",
+        build = "wood_table_square",
+        deploy_smart_radius = 0.875,
+        burnable = true,
+        inspection_override = "WOOD_TABLE",
+    }
+)
+
+AddTable(
+    result_tables,
+    "stone_table_round",
+    {
+        bank = "wood_table",
+        build = "stone_table_round",
+        deploy_smart_radius = 0.875,
+        burnable = false,
+        inspection_override = "STONE_TABLE",
+    }
+)
+
+AddTable(
+    result_tables,
+    "stone_table_square",
+    {
+        bank = "wood_table",
+        build = "stone_table_square",
+        deploy_smart_radius = 0.875,
+        burnable = false,
+        inspection_override = "STONE_TABLE",
+    }
+)
 
 return unpack(result_tables)

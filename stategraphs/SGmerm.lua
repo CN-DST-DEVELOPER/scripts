@@ -57,6 +57,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     --CommonHandlers.OnAttack(),
     EventHandler("doattack", function(inst)
@@ -955,6 +956,7 @@ CommonStates.AddSimpleState(states, "refuse", "pig_reject", { "busy" })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 CommonStates.AddSimpleActionState(states, "pickup", "pig_pickup", 10 * FRAMES, { "busy" })
 
 return StateGraph("merm", states, events, "idle", actionhandlers)

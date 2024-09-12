@@ -421,19 +421,32 @@ local function pandora_master_postinit(inst)
     inst.scrapbook_adddeps = pandora_scrapbook_adddeps
 
     inst:ListenForEvent("resetruins", function()
+        local is_asleep = inst:IsAsleep()
         local was_open = inst.components.container:IsOpen()
 
+        -- If chest mimics are live, we might want to turn into one. Let's check!
+        local become_mimic = TheWorld.components.shadowthrall_mimics ~= nil
+                and TheWorld.components.shadowthrall_mimics.IsEnabled()
+                and math.random() < TUNING.CHEST_MIMIC_CHANCE
+
+        if become_mimic then
+            inst = ReplacePrefab(inst, "chest_mimic")
+        end
+
         if inst.components.scenariorunner == nil then
-            inst.components.container:Close()
+            -- Forcing a close on a mimic will transform it... awkward.
+            if not become_mimic then
+                inst.components.container:Close()
+            end
             inst.components.container:DropEverythingWithTag("irreplaceable")
             inst.components.container:DestroyContents()
 
             inst:AddComponent("scenariorunner")
-            inst.components.scenariorunner:SetScript("chest_labyrinth")
+            inst.components.scenariorunner:SetScript((become_mimic and "chest_labyrinth_mimic") or "chest_labyrinth")
             inst.components.scenariorunner:Run()
         end
 
-        if not inst:IsAsleep() then
+        if not is_asleep then
             if not was_open then
                 inst.AnimState:PlayAnimation("hit")
                 inst.AnimState:PushAnimation("closed", false)
@@ -443,6 +456,44 @@ local function pandora_master_postinit(inst)
             SpawnPrefab("pandorachest_reset").Transform:SetPosition(inst.Transform:GetWorldPosition())
         end
     end, TheWorld)
+
+    inst:ListenForEvent("ms_riftaddedtopool", function(_, data)
+        -- A rift opened up! Let's check if we should turn into a chest mimic.
+
+        local is_asleep = inst:IsAsleep()
+        local was_open = inst.components.container:IsOpen()
+        local rift = data.rift
+
+        -- If chest mimics are live, we might want to turn into one. Let's check!
+        -- NOTE: We don't check for world component enabledness here (just existence), so that we don't rely on
+        -- event listener order; however, we do verify that the rift that got opened was a shadow one.
+        local become_mimic = TheWorld.components.shadowthrall_mimics ~= nil
+                and TheWorld.components.riftspawner ~= nil
+                and TheWorld.components.riftspawner:RiftIsShadowAffinity(rift)
+                and math.random() < TUNING.CHEST_MIMIC_CHANCE
+        if not become_mimic then return end
+
+        inst.components.container:Close()
+        inst.components.container:DropEverythingWithTag("irreplaceable")
+        inst.components.container:DestroyContents()
+
+        inst = ReplacePrefab(inst, "chest_mimic")
+
+        inst:AddComponent("scenariorunner")
+        inst.components.scenariorunner:SetScript("chest_labyrinth_mimic")
+        inst.components.scenariorunner:Run()
+
+        if not is_asleep then
+            if not was_open then
+                inst.AnimState:PlayAnimation("hit")
+                inst.AnimState:PushAnimation("closed", false)
+                inst.SoundEmitter:PlaySound("dontstarve/common/together/chest_retrap")
+            end
+
+            SpawnPrefab("pandorachest_reset").Transform:SetPosition(inst.Transform:GetWorldPosition())
+        end
+    end, TheWorld)
+
     MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 end
 

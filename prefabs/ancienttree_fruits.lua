@@ -485,6 +485,7 @@ local function cooked_nightvision_fruit_fn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
+    inst:AddComponent("tradable")
 
     inst:AddComponent("edible")
     inst.components.edible.hungervalue =  TUNING.CALORIES_MEDSMALL

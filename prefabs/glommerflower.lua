@@ -16,6 +16,8 @@ local function OnLoseChild(inst, child)
     inst.AnimState:PlayAnimation("idle_dead")
     inst:RefreshFlowerIcon()
 
+    inst.MiniMapEntity:SetEnabled(false)
+
     --V2C: I think this is trying to refresh the inventory tile
     --     because show_spoilage doesn't refresh automatically.
     --     Plz document hacks like this in the future -_ -""
@@ -84,9 +86,13 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
+
+    inst.MiniMapEntity:SetIcon("glommerflower.png")
+    inst.MiniMapEntity:SetPriority(5)
 
     inst.AnimState:SetBank("glommer_flower")
     inst.AnimState:SetBuild("glommer_flower")

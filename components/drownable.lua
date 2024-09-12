@@ -19,17 +19,81 @@ function Drownable:SetCustomTuningsFn(fn)
 	self.customtuningsfn = fn
 end
 
-function Drownable:IsOverWater()
+function Drownable:IsInDrownableMapBounds(x, y, z)
+    -- NOTES(JBK): This is here primarily for mods that have players go out of bounds if they want to override it for this component only.
+    -- The old check was to see if it was an invalid tile but this is too overbearing for in world applications for caves.
+    -- Instead we will check if the player is outside of the playable map because if they escape we should not care what the player does there.
+    return TheWorld.Map:IsInMapBounds(x, y, z)
+end
+
+function Drownable:IsSafeFromFalling()
+    if self.inst:GetCurrentPlatform() then
+        return true
+    end
+
     local x, y, z = self.inst.Transform:GetWorldPosition()
-    return not TheWorld.Map:IsVisualGroundAtPoint(x, y, z)
-        and not TileGroupManager:IsInvalidTile(TheWorld.Map:GetTileAtPoint(x, y, z)) -- allow players to be out of bounds so that a number of mods will still work
-        and self.inst:GetCurrentPlatform() == nil
+    if not self:IsInDrownableMapBounds(x, y, z) then
+        return true -- Do not handle out of map bounds.
+    end
+
+    if TheWorld.Map:IsVisualGroundAtPoint(x, y, z) then -- Expensive check last.
+        return true
+    end
+
+    return false
+end
+
+function Drownable:IsOverVoid()
+    if self:IsSafeFromFalling() then
+        return false
+    end
+
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    return TheWorld.Map:IsInvalidTileAtPoint(x, y, z)
+end
+
+function Drownable:IsOverWater()
+    if self:IsSafeFromFalling() then
+        return false
+    end
+
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    return TheWorld.Map:IsOceanTileAtPoint(x, y, z)
+end
+
+function Drownable:ShouldX_InternalCheck()
+    if not self.enabled then
+        return false
+    end
+    if self.inst.components.health and self.inst.components.health:IsInvincible() then -- Godmode check.
+        return false
+    end
+
+    return true
 end
 
 function Drownable:ShouldDrown()
-    return self.enabled
-        and self:IsOverWater()
-        and (self.inst.components.health == nil or not self.inst.components.health:IsInvincible()) -- god mode check
+    if not self:ShouldX_InternalCheck() then
+        return false
+    end
+
+    return self:IsOverWater()
+end
+
+function Drownable:ShouldFallInVoid()
+    if not self:ShouldX_InternalCheck() then
+        return false
+    end
+
+    return self:IsOverVoid()
+end
+
+function Drownable:GetFallingReason()
+    if self:ShouldDrown() then
+        return FALLINGREASON.OCEAN
+    elseif self:ShouldFallInVoid() then
+        return FALLINGREASON.VOID
+    end
 end
 
 local function NoHoles(pt)
@@ -144,6 +208,40 @@ function Drownable:OnFallInOcean(shore_x, shore_y, shore_z)
 			end
 		end
 	end
+end
+
+local function _onarrive_void(inst)
+	if inst.sg.statemem.teleportarrivestate ~= nil then
+		inst.sg:GoToState(inst.sg.statemem.teleportarrivestate)
+	end
+
+    inst:PushEvent("on_void_arrive")
+end
+
+function Drownable:VoidArrive()
+	self:Teleport()
+
+	if self.inst:HasTag("player") then
+	    self.inst:ScreenFade(false)
+		self.inst:DoTaskInTime(3, _oncameraarrive)
+	end
+    self.inst:DoTaskInTime(4, _onarrive_void)
+end
+
+function Drownable:OnFallInVoid(teleport_x, teleport_y, teleport_z)
+	self.src_x, self.src_y, self.src_z = self.inst.Transform:GetWorldPosition()
+
+	if teleport_x == nil then
+		teleport_x, teleport_y, teleport_z = FindRandomPointOnShoreFromOcean(self.src_x, self.src_y, self.src_z)
+	end
+
+	self.dest_x, self.dest_y, self.dest_z = teleport_x, teleport_y, teleport_z
+
+	if self.inst.components.sleeper ~= nil then
+		self.inst.components.sleeper:WakeUp()
+	end
+
+    -- FIXME(JBK): Penalties for falling in the void.
 end
 
 function Drownable:TakeDrowningDamage()

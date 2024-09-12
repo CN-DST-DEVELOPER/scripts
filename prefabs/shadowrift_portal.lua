@@ -19,10 +19,7 @@ local prefabs =
     "shadowrift_portal_fx",
     "fused_shadeling",
     "miasma_cloud",
-
-    "shadowthrall_hands",
-    "shadowthrall_wings",
-    "shadowthrall_horns",
+	"gelblob",
 }
 
 ------ Constants ---------------------------------------------------------------
@@ -38,8 +35,6 @@ local SHAKE_PARAMS_BY_STAGE = {
     {1.0, .03, .2, 100},
     {1.5, .06, .3, 200},
 }
-
-local SHADELINGS_BY_STAGE = {1, 2, 3}
 
 --------------------------------------------------------------------------------
 
@@ -355,7 +350,6 @@ local function show_minimap(inst)
     inst:DoPeriodicTask(TUNING.STORM_SWAP_TIME, do_marker_minimap_swap)
 end
 
-
 --------------------------------------------------------------------------------
 
 local function portalfn()
@@ -438,6 +432,9 @@ local function portalfn()
     childspawner.childname = "fused_shadeling"
     childspawner:SetSpawnedFn(OnChildSpawned)
 
+    ----------------------------------------------------------
+    inst:AddComponent("riftthralltype")
+
     --
     inst:ListenForEvent("timerdone", OnTimerDone)
     inst:ListenForEvent("onremove",  OnPortalRemoved)
@@ -504,6 +501,9 @@ rift_portal_defs = nil
 RIFTPORTAL_FNS.CreateRiftPortalDefinition("shadowrift_portal", {
     CustomAllowTest = function(_map, x, y, z)
         local id, index = _map:GetTopologyIDAtPoint(x, y, z)
+        if id == nil then
+            return false
+        end
         local r = (
             id:find("BigBatCave") or id:find("RockyLand") or id:find("SpillagmiteCaverns") or id:find("LichenLand") or
             id:find("BlueForest") or id:find("RedForest") or id:find("GreenForest")
@@ -511,6 +511,7 @@ RIFTPORTAL_FNS.CreateRiftPortalDefinition("shadowrift_portal", {
         return r
     end,
     Affinity = RIFTPORTAL_CONST.AFFINITY.SHADOW,
+    ThrallTypes = THRALL_TYPES.SHADOW,
 })
 
 --------------------------------------------------------------------------------

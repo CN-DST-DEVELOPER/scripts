@@ -143,9 +143,9 @@ local _activatedplayer = nil
 local _temperature = TUNING.STARTING_TEMP
 
 --Precipiation
-local _rainsound = false
+local _rainsound = nil
 local _treerainsound = nil
-local _umbrellarainsound = false
+local _umbrellarainsound = nil
 local _barriersound = false
 local _seasonprogress = 0
 local _groundoverlay = nil
@@ -184,52 +184,63 @@ local _wet = net_bool(inst.GUID, "weather._wet", "wetdirty")
 --------------------------------------------------------------------------
 
 local function StartAmbientRainSound(intensity)
-    if not _rainsound then
-        _rainsound = true
-        _world.SoundEmitter:PlaySound("dontstarve/AMB/caves/rain", "rain")
+	local sound = "dontstarve/AMB/caves/rain"
+
+	if _rainsound ~= sound then
+		if _rainsound then
+			_world.SoundEmitter:KillSound("rain")
+		end
+		_rainsound = sound
+		_world.SoundEmitter:PlaySound(sound, "rain")
     end
     _world.SoundEmitter:SetParameter("rain", "intensity", intensity)
 end
 
 local function StopAmbientRainSound()
     if _rainsound then
-        _rainsound = false
+		_rainsound = nil
         _world.SoundEmitter:KillSound("rain")
     end
 end
 
---V2C: hack to loop the tree rain sound without having to change the sound data :O
-local function DoTreeRainSound(inst, soundemitter)
-    --Intentionally (lazy) not caring if we kill a sound that isn't still playing.
-    --Log spams should also be disabled for that.
-    soundemitter:KillSound("treerainsound")
-    soundemitter:PlaySound("dontstarve_DLC001/common/rain_on_tree", "treerainsound")
-end
-
 local function StartTreeRainSound()
-    if _treerainsound == nil then
-        _treerainsound = inst:DoPeriodicTask(19, DoTreeRainSound, 0, TheFocalPoint.SoundEmitter)
-    end
+	local sound = "dontstarve_DLC001/common/rain_on_tree"
+
+	if _treerainsound ~= sound then
+		if _treerainsound then
+			TheFocalPoint.SoundEmitter:KillSound("treerainsound")
+		end
+		_treerainsound = sound
+		TheFocalPoint.SoundEmitter:PlaySound(sound, "treerainsound")
+	end
 end
 
 local function StopTreeRainSound()
     if _treerainsound ~= nil then
-        _treerainsound:Cancel()
         _treerainsound = nil
         TheFocalPoint.SoundEmitter:KillSound("treerainsound")
     end
 end
 
 local function StartUmbrellaRainSound()
-    if not _umbrellarainsound then
-        _umbrellarainsound = true
-        TheFocalPoint.SoundEmitter:PlaySound("dontstarve/cave/cave_rain_on_umbrella", "umbrellarainsound")
+	local umbrella = _activatedplayer.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+	local sound =
+		umbrella and umbrella:HasTag("metal") and
+		"meta4/winona_teleumbrella/rain_on_teleumbrella" or
+		"dontstarve/cave/cave_rain_on_umbrella"
+
+	if _umbrellarainsound ~= sound then
+		if _umbrellarainsound then
+			TheFocalPoint.SoundEmitter:KillSound("umbrellarainsound")
+		end
+		_umbrellarainsound = sound
+		TheFocalPoint.SoundEmitter:PlaySound(sound, "umbrellarainsound")
     end
 end
 
 local function StopUmbrellaRainSound()
     if _umbrellarainsound then
-        _umbrellarainsound = false
+		_umbrellarainsound = nil
         TheFocalPoint.SoundEmitter:KillSound("umbrellarainsound")
     end
 end

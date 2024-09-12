@@ -17,7 +17,7 @@ local function swoopcollision(inst)
 end
 
 local function resetcollision(inst)
-    inst.Physics:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    inst.Physics:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     inst.Physics:CollidesWith(COLLISION.FLYERS)
 end
 

@@ -571,7 +571,7 @@ end
 
 local function do_marker_minimap_swap(inst)
     inst.marker_index = inst.marker_index == nil and 0 or ((inst.marker_index + 1) % 4)
-    
+
     local max = ""
     if inst.icon_max then
         max = "_max"
@@ -663,7 +663,7 @@ local function portalfn()
     ----------------------------------------------------------
     local combat = inst:AddComponent("combat")
     combat:SetDefaultDamage(TUNING.RIFT_LUNAR1_GROUNDPOUND_DAMAGE)
-    combat.playerdamagepercent = 0.5    
+    combat.playerdamagepercent = 0.5
 
     ----------------------------------------------------------
     local groundpounder = inst:AddComponent("groundpounder")
@@ -678,6 +678,9 @@ local function portalfn()
 
     ----------------------------------------------------------
     inst:AddComponent("inspectable")
+
+    ----------------------------------------------------------
+    inst:AddComponent("riftthralltype")
 
     ----------------------------------------------------------
     local timer = inst:AddComponent("timer")
@@ -744,6 +747,7 @@ RIFTPORTAL_FNS.CreateRiftPortalDefinition("lunarrift_portal", {
         return _map:FindVisualNodeAtPoint(x, y, z, "not_mainland") == nil -- Only mainland.
     end,
     Affinity = RIFTPORTAL_CONST.AFFINITY.LUNAR,
+    ThrallTypes = THRALL_TYPES.LUNAR,
 })
 
 return Prefab("lunarrift_portal", portalfn, assets, prefabs),

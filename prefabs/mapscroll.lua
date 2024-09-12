@@ -57,6 +57,8 @@ local function fn()
     end
 
     inst:AddComponent("inspectable")
+    inst:AddComponent("erasablepaper")
+
     inst:AddComponent("maprecorder")
     inst.components.maprecorder:SetOnTeachFn(OnTeach)
     inst.components.maprecorder:SetOnDataChangedFn(OnDataChanged)

@@ -84,6 +84,7 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("glommer.png")
     inst.MiniMapEntity:SetPriority(5)
+    inst.MiniMapEntity:SetCanUseCache(false)
 
     inst.AnimState:SetBank("glommer")
     inst.AnimState:SetBuild("glommer")

@@ -397,6 +397,9 @@ function Combat:ShouldAggro(target, ignore_forbidden)
                 end
             end
         end
+		if target:HasTag("stealth") then
+			return false
+		end
 		if target.components.health ~= nil and (target.components.health.minhealth or 0) > 0 and not target:HasTag("hostile") then
 			target = target.components.follower ~= nil and target.components.follower:GetLeader() or target
 			if not target:HasTag("player") then
@@ -547,7 +550,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
             damage, spdamage = 0, nil
         end
 
-        if self.inst.components.inventory ~= nil then
+		if self.inst.components.inventory and not self.inst.components.inventory.ignorecombat then
 			if attacker ~= nil and attacker.components.planarentity ~= nil and not self.inst.components.inventory:EquipHasSpDefenseForType("planar") then
 				attacker.components.planarentity:OnPlanarAttackUndefended(self.inst)
 			end

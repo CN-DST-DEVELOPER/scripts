@@ -97,6 +97,7 @@ local function common_fn(build)
     inst.Transform:SetFourFaced()
 
     inst:AddTag("epic")
+    inst:AddTag("smallepic")
     inst:AddTag("monster")
     inst:AddTag("hostile")
     inst:AddTag("leif")

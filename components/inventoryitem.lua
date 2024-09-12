@@ -26,6 +26,10 @@ local function onisacidsizzling(self, isacidsizzling)
     self.inst.replica.inventoryitem:SetIsAcidSizzling(isacidsizzling)
 end
 
+local function ongrabbableoverridetag(self, tag)
+    self.inst.replica.inventoryitem:SetGrabbableOverrideTag(tag)
+end
+
 local function OnStackSizeChange(inst, data)
     local self = inst.components.inventoryitem
     if self.owner ~= nil then
@@ -61,6 +65,7 @@ local InventoryItem = Class(function(self, inst)
     self.sinks = false
     self.droprandomdir = false
     self.isacidsizzling = false
+    self.grabbableoverridetag = nil
 
     self.pushlandedevents = true
     self:SetLanded(false, true)
@@ -83,6 +88,7 @@ nil,
     cangoincontainer = oncangoincontainer,
     canonlygoinpocket = oncanonlygoinpocket,
     isacidsizzling = onisacidsizzling,
+    grabbableoverridetag = ongrabbableoverridetag,
 })
 
 function InventoryItem:OnRemoveFromEntity()

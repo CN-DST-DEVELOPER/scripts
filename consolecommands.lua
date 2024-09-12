@@ -583,7 +583,13 @@ function c_teleport(x, y, z, inst)
 		if x == nil then
 			x, y, z = ConsoleWorldPosition():Get()
 		end
-        inst.Transform:SetPosition(x, y, z)
+
+        if inst.Physics ~= nil then
+            inst.Physics:Teleport(x, y, z)
+        else
+            inst.Transform:SetPosition(x, y, z)
+        end
+
         SuUsed("c_teleport", true)
     end
 end
@@ -1007,9 +1013,7 @@ function c_selectnear(prefab, rad)
             end
         end
     end
-    if closest then
-        c_select(closest)
-    end
+    return (closest and c_select(closest)) or nil
 end
 
 

@@ -16,6 +16,7 @@ local events =
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 }
 
 local states =
@@ -106,5 +107,6 @@ CommonStates.AddSleepExStates(states,
 
 CommonStates.AddHopStates(states, true)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("SGcritter_perdling", states, events, "idle", actionhandlers)

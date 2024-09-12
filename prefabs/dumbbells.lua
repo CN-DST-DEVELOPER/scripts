@@ -187,7 +187,7 @@ local function OnThrownHit(inst, attacker, target)
             canfreeze = true -- NOTES(JBK): Allow the thrower to still freeze themselves for cooling benefits.
 	    end
         if canfreeze then
-            if inst.isiceattack and ent.components.freezable ~= nil then
+            if inst.isiceattack and ent.components.freezable ~= nil and ent:IsValid() then -- NOTES(JBK): We need to check if ent is still valid for freezable:AddColdness after being attacked.
                 ent.components.freezable:AddColdness(2)
             end
         end

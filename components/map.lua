@@ -83,6 +83,11 @@ function Map:IsOceanTileAtPoint(x, y, z)
     return TileGroupManager:IsOceanTile(tile)
 end
 
+function Map:IsInvalidTileAtPoint(x, y, z)
+    local tile = self:GetTileAtPoint(x, y, z)
+    return TileGroupManager:IsInvalidTile(tile)
+end
+
 function Map:IsTemporaryTileAtPoint(x, y, z)
     local tile = self:GetTileAtPoint(x, y, z)
     return TileGroupManager:IsTemporaryTile(tile)
@@ -414,6 +419,67 @@ function Map:CanDeployDockAtPoint(pt, inst, mouseover)
         and self:IsDeployPointClear(pt, nil, min_distance_from_entities, nil, IsDockNearOtherOnOcean)
 end
 
+function Map:CanDeployBridgeAtPointWithFilter(pt, inst, mouseover, tilefilterfn)
+    if tilefilterfn then
+        local tile = self:GetTileAtPoint(pt.x, pt.y, pt.z)
+        if not tilefilterfn(self, tile) then
+            return false
+        end
+    end
+
+    local id, index = self:GetTopologyIDAtPoint(pt.x, pt.y, pt.z)
+    if id and (id:find("Archive") or id:find("Labyrinth") or id:find("Atrium")) then
+        return false
+    end
+
+    -- TILE_SCALE is the dimension of a tile; 1.0 is the approximate overhang, but we overestimate for safety.
+    local min_distance_from_entities = (TILE_SCALE/2) + 1.2
+    local min_distance_from_boat = min_distance_from_entities + TUNING.MAX_WALKABLE_PLATFORM_RADIUS
+    local boat_entities = TheSim:FindEntities(pt.x, 0, pt.z, min_distance_from_boat, WALKABLE_PLATFORM_TAGS)
+    for _, v in ipairs(boat_entities) do
+        if v.components.walkableplatform ~= nil and
+                math.sqrt(v:GetDistanceSqToPoint(pt.x, 0, pt.z)) <= (v.components.walkableplatform.platform_radius + min_distance_from_entities) then
+            return false
+        end
+    end
+
+    for _, entity_on_tile in ipairs(TheWorld.Map:GetEntitiesOnTileAtPoint(pt.x, 0, pt.z)) do
+        if entity_on_tile:HasTag("dockjammer") then
+            return false
+        end
+    end
+
+    return (mouseover == nil or mouseover:HasTag("player"))
+        and self:IsDeployPointClear(pt, nil, min_distance_from_entities)
+end
+
+function Map:BridgeFilter_OceanAndVoid(tile)
+    return TileGroupManager:IsOceanTile(tile) or TileGroupManager:IsInvalidTile(tile)
+end
+function Map:BridgeFilter_Void(tile)
+    return TileGroupManager:IsInvalidTile(tile)
+end
+
+function Map:CanDeployRopeBridgeAtPoint(pt, inst, mouseover)
+    if not TheWorld:HasTag("cave") then -- Faster check than the CanDeploy check.
+        return false
+    end
+    return self:CanDeployBridgeAtPointWithFilter(pt, inst, mouseover, self.BridgeFilter_Void)
+end
+function Map:CanDeployVineBridgeAtPoint(pt, inst, mouseover)
+    return self:CanDeployBridgeAtPointWithFilter(pt, inst, mouseover, self.BridgeFilter_OceanAndVoid)
+end
+
+function Map:IsValidTileForRopeBridgeAtPoint(x, y, z)
+    local tile = self:GetTileAtPoint(x, y, z)
+    return self:BridgeFilter_Void(tile)
+end
+
+function Map:IsValidTileForVineBridgeAtPoint(x, y, z)
+    local tile = self:GetTileAtPoint(x, y, z)
+    return self:BridgeFilter_OceanAndVoid(tile)
+end
+
 function Map:IsDockAtPoint(x, y, z)
     local tile = self:GetTileAtPoint(x, y, z)
     return tile == WORLD_TILES.MONKEY_DOCK
@@ -734,6 +800,20 @@ function Map:CanCastAtPoint(pt, alwayspassable, allowwater, deployradius)
 		return deployradius == nil or deployradius <= 0 or self:IsDeployPointClear(pt, nil, deployradius, nil, nil, nil, CAST_DEPLOY_IGNORE_TAGS)
 	end
 	return false
+end
+
+function Map:IsInMapBounds(x, y, z)
+    local tx, tz = self:GetTileCoordsAtPoint(x, y, z)
+    if tx < 0 or tz < 0 then
+        return false
+    end
+
+    local w, h = self:GetSize()
+    if tx > w or tz > h then
+        return false
+    end
+
+    return true
 end
 
 function Map:IsTileLandNoDocks(tile)

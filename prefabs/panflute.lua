@@ -53,7 +53,7 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("instrument")
-    inst.components.instrument.range = TUNING.PANFLUTE_SLEEPRANGE
+    inst.components.instrument:SetRange(TUNING.PANFLUTE_SLEEPRANGE)
     inst.components.instrument:SetOnHeardFn(HearPanFlute)
 
     inst:AddComponent("tool")

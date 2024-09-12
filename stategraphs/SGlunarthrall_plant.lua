@@ -173,6 +173,8 @@ local states=
         onenter = function(inst)
             inst:customPlayAnimation("death_"..inst.targetsize)
             inst.SoundEmitter:PlaySound("rifts/lunarthrall/death")
+
+            RemovePhysicsColliders(inst)
         end,
     }, 
 

@@ -8,7 +8,7 @@ local WARNING_LEVEL_DISTANCE =
     SPAWN_DIST,
 }
 
-local function PlayWarningSound(inst, radius)
+local function PlayWarningSound(inst, radius, soundoveride)
 
     inst.entity:SetParent(TheFocalPoint.entity)
 
@@ -16,11 +16,12 @@ local function PlayWarningSound(inst, radius)
     local theta = math.random() * TWOPI
 
     inst.Transform:SetPosition(radius * math.cos(theta), 0, radius * math.sin(theta))
-    inst.SoundEmitter:PlaySound("dontstarve/creatures/worm/distant")
+    local sound = soundoveride or "dontstarve/creatures/worm/distant"
+    inst.SoundEmitter:PlaySound(sound)
     inst:Remove()
 end
 
-local function makewarning(distance)
+local function makewarning(distance, soundoveride)
     return function()
         local inst = CreateEntity()
 
@@ -30,7 +31,7 @@ local function makewarning(distance)
         inst:AddTag("FX")
 
         inst:DoTaskInTime(0, function()
-            PlayWarningSound(inst, distance)
+            PlayWarningSound(inst, distance, soundoveride)
         end)
 
         inst.entity:SetCanSleep(false)
@@ -44,4 +45,8 @@ local t = {}
 for level, distance in ipairs(WARNING_LEVEL_DISTANCE) do
     table.insert(t, Prefab("wormwarning_lvl"..level, makewarning(distance)))
 end
+
+table.insert(t,Prefab("wormwarning_worm_boss", makewarning(SPAWN_DIST, "rifts4/worm_boss/distant")))
+
 return unpack(t)
+        

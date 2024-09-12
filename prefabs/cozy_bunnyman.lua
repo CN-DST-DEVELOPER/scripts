@@ -20,7 +20,6 @@ local prefabs =
     "beardhair",
     "carrot",
     "hareball",
-    "carrot_spinner",
 }
 
 local beardlordloot = { "beardhair", "beardhair", "monstermeat" }

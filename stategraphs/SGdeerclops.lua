@@ -365,6 +365,7 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
 	EventHandler("attacked", function(inst, data)
 		--V2C: health check since corpse shares this SG
@@ -2051,5 +2052,6 @@ CommonStates.AddSleepExStates(states,
 })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("deerclops", states, events, "init", actionhandlers)

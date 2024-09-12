@@ -190,16 +190,18 @@ local function fn()
                     
                     local adjust_vec = nil
                     local smoke_angle = nil
+                    local flip_vertically = false
                     if fdir == 0 then
                         smoke_angle = 270
                     elseif fdir == 1 then
                         smoke_angle = 0
-                        adjust_vec = TheCamera:GetRightVec() * 0.75 - TheCamera:GetDownVec() * 2.9
+                        adjust_vec = TheCamera:GetRightVec() * NIGHTSWORD_FX_OFFSETS.RIGHT - TheCamera:GetDownVec() * NIGHTSWORD_FX_OFFSETS.DOWN
                     elseif fdir == 2 then
                         smoke_angle = 90
+                        flip_vertically = true
                     elseif fdir == 3 then
                         smoke_angle = 180
-                        adjust_vec = TheCamera:GetDownVec() * 0.75
+                        adjust_vec = TheCamera:GetDownVec() * NIGHTSWORD_FX_OFFSETS.RIGHT
                     end
 
                     if smoke_angle ~= nil then
@@ -214,7 +216,7 @@ local function fn()
                         smoke_angle = smoke_angle + TheCamera:GetHeadingTarget()
                         while num_to_emit_smoke > 0 do
                             local percent = num_to_emit_smoke / total_smoke
-                            local particle_angle = (smoke_angle + (2 * percent - 1) * SMOKE_FOV) * DEGREES
+                            local particle_angle = (smoke_angle + (flip_vertically and -1 or 1) * (2 * percent - 1) * SMOKE_FOV) * DEGREES
                             emit_smoke_fn(effect, px, py, pz, particle_angle, percent)
                             num_to_emit_smoke = num_to_emit_smoke - 1
                         end

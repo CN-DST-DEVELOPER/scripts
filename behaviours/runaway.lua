@@ -10,6 +10,7 @@ RunAway = Class(BehaviourNode, function(self, inst, hunterparams, see_dist, safe
         self.huntertags = hunterparams.tags
         self.hunternotags = hunterparams.notags
         self.hunteroneoftags = hunterparams.oneoftags
+        self.hunterseeequipped = hunterparams.seeequipped
     else
         self.hunterfn = hunterparams
     end
@@ -114,7 +115,25 @@ end
 
 function RunAway:Visit()
     if self.status == READY then
-        self.hunter = FindEntity(self.inst, self.see_dist, self.hunterfn, self.huntertags, self.hunternotags, self.hunteroneoftags)
+        if self.hunterseeequipped then
+            self.hunter = nil
+            local x, y, z = self.inst.Transform:GetWorldPosition()
+            local ents = TheSim:FindEntities(x, y, z, self.see_dist, self.huntertags, self.hunternotags, self.hunteroneoftags)
+            for _, ent in ipairs(ents) do
+                if ent ~= self.inst and (self.hunterfn == nil or self.hunterfn(ent, self.inst)) then
+                    if ent.entity:IsVisible() or ent.components.equippable and ent.components.equippable:IsEquipped() then
+                        local owner = ent.components.inventoryitem and ent.components.inventoryitem:GetGrandOwner() or nil
+                        local leader = self.inst.components.follower and self.inst.components.follower:GetLeader() or nil
+                        if owner == nil or leader == nil or owner ~= leader then
+                            self.hunter = ent
+                            break
+                        end
+                    end
+                end
+            end
+        else
+            self.hunter = FindEntity(self.inst, self.see_dist, self.hunterfn, self.huntertags, self.hunternotags, self.hunteroneoftags)
+        end
 
         if self.hunter ~= nil and self.shouldrunfn ~= nil and not self.shouldrunfn(self.hunter, self.inst) then
             self.hunter = nil

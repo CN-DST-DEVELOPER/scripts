@@ -22,6 +22,7 @@ local events =
     CommonHandlers.OnLocomote(false,true),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
 	EventHandler("ticoon_getattention", function(inst)
 		if not inst:HasTag("busy") and not inst.components.embarker:HasDestination() then
@@ -422,5 +423,6 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddHopStates(states, true)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("titcoon", states, events, "idle", actionhandlers)

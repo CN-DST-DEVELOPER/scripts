@@ -311,7 +311,7 @@ end
 --------------------------------------------------------------------------
 
 local function ChangeToItem(inst)
-	local item = SpawnPrefab("winona_battery_low_item")
+	local item = SpawnPrefab("winona_battery_low_item", inst:GetSkinBuild(), inst.skin_id)
 	item.Transform:SetPosition(inst.Transform:GetWorldPosition())
 	item.AnimState:PlayAnimation("collapse")
 	item.AnimState:PushAnimation("idle_ground", false)
@@ -523,6 +523,10 @@ local function OnFuelSectionChange(new, old, inst)
 		inst.AnimState:SetSymbolLightOverride("meter_bar", 0.2)
 		inst.AnimState:SetSymbolBloom("meter_bar")
         inst.AnimState:ClearOverrideSymbol("plug")
+        local skin_build = inst:GetSkinBuild()
+        if skin_build ~= nil then
+            inst.AnimState:OverrideItemSkinSymbol("plug", skin_build, "plug", inst.GUID, "winona_battery_low")
+        end
         UpdateSoundLoop(inst, new)
     end
 end
@@ -689,7 +693,11 @@ local function DoBuiltOrDeployed(inst, doer, anim, sound, powerupframe, connectf
     inst.components.circuitnode:Disconnect()
     inst:ListenForEvent("animover", OnBuilt3)
 	inst.AnimState:PlayAnimation(anim)
-    inst.AnimState:ClearAllOverrideSymbols()
+    inst.AnimState:ClearOverrideSymbol("plug")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        inst.AnimState:OverrideItemSkinSymbol("plug", skin_build, "plug", inst.GUID, "winona_battery_low")
+    end
 	inst.SoundEmitter:PlaySound(sound)
     inst:AddTag("NOCLICK")
     inst.components.fueled.accepting = false
@@ -702,7 +710,11 @@ local function DoBuiltOrDeployed(inst, doer, anim, sound, powerupframe, connectf
 	inst:DoTaskInTime(connectframe * FRAMES, OnBuilt2)
 
 	if inst.components.fueled:IsEmpty() then
-		inst.AnimState:OverrideSymbol("plug", "winona_battery_low", "plug_off")
+        if skin_build ~= nil then
+            inst.AnimState:OverrideItemSkinSymbol("plug", skin_build, "plug_off", inst.GUID, "winona_battery_low")
+        else
+            inst.AnimState:OverrideSymbol("plug", "winona_battery_low", "plug_off")
+        end
 		inst.AnimState:SetSymbolLightOverride("meter_bar", 0)
 		inst.AnimState:ClearSymbolBloom("meter_bar")
 	end
@@ -979,7 +991,7 @@ end
 --------------------------------------------------------------------------
 
 local function OnDeploy(inst, pt, deployer)
-	local obj = SpawnPrefab("winona_battery_low")
+	local obj = SpawnPrefab("winona_battery_low", inst:GetSkinBuild(), inst.skin_id)
 	if obj then
 		obj.Physics:SetCollides(false)
 		obj.Physics:Teleport(pt.x, 0, pt.z)

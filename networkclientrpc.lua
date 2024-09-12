@@ -964,17 +964,18 @@ local RPC_HANDLERS =
     end,
 
     -- NOTES(JBK): OnMap RPCs are always world relative.
-    DoActionOnMap = function(player, actioncode, x, z, maptarget)
+    DoActionOnMap = function(player, actioncode, x, z, maptarget, mod_name)
         if not (checknumber(actioncode) and
                 checknumber(x) and
                 checknumber(z) and
-                optentity(maptarget)) then
+                optentity(maptarget) and
+                optstring(mod_name)) then
             printinvalid("DoActionOnMap PARAMS", player)
             return
         end
 		local playercontroller = player.components.playercontroller
 		if playercontroller then
-			playercontroller:OnMapAction(actioncode, Vector3(x, 0, z), maptarget)
+			playercontroller:OnMapAction(actioncode, Vector3(x, 0, z), maptarget, mod_name)
         end
     end,
 

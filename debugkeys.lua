@@ -1099,7 +1099,7 @@ AddGameDebugKey(KEY_T, function()
             else
                 if TheWorld ~= nil and not TheWorld.ismastersim then
                     local x, y, z = ConsoleWorldPosition():Get()
-                    player.Transform:SetPosition(x, y, z)
+
                     if boat then
                         ConsoleRemote("d_teleportboat(%d, %d, %d)", {x, y, z})
                     else

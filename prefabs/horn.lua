@@ -88,7 +88,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
 
     inst:AddComponent("instrument")
-    inst.components.instrument.range = TUNING.HORN_RANGE
+    inst.components.instrument:SetRange(TUNING.HORN_RANGE)
     inst.components.instrument:SetOnHeardFn(HearHorn)
     inst.components.instrument:SetOnPlayedFn(OnPlayHorn)
 

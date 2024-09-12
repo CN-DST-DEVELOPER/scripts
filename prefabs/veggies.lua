@@ -159,7 +159,6 @@ local prefabs_seeds =
 {
     "plant_normal_ground",
     "seeds_placer",
-	"carrot_spinner",
 }
 
 local function can_plant_seed(inst, pt, mouseover, deployer)
@@ -337,6 +336,9 @@ local function MakeVeggie(name, has_seeds)
         name .."_cooked",
         "spoiled_food",
     }
+    if name == "carrot" then
+        table.insert(prefabs, "carrot_spinner")
+    end
 	local dryable = VEGGIES[name].dryable
 
     if has_seeds then
@@ -546,6 +548,12 @@ local function MakeVeggie(name, has_seeds)
         inst.components.perishable:SetPerishTime(VEGGIES[name].perishtime)
         inst.components.perishable:StartPerishing()
         inst.components.perishable.onperishreplacement = "spoiled_food"
+
+        if name == "carrot" then
+            inst:AddComponent("repairer")
+            inst.components.repairer.repairmaterial = MATERIALS.CARROT
+            inst.components.repairer.perishrepairpercent = 0.25
+        end
 
         inst:AddComponent("stackable")
         if name ~= "pumpkin" and

@@ -437,6 +437,13 @@ local function displaynamefn(inst)
     return inst:HasTag("inspectable") and STRINGS.NAMES.DREADSTONE_STACK or nil
 end
 
+local function GetRareChildFn(inst)
+    local rift_active = TheWorld.components.riftspawner ~= nil and TheWorld.components.riftspawner:IsShadowPortalActive()
+    local ruinsnightmare_chance = rift_active and TUNING.RUINSNIGHTMARE_SPAWN_CHANCE_RIFTS or TUNING.RUINSNIGHTMARE_SPAWN_CHANCE
+
+    return math.random() <= ruinsnightmare_chance and "ruinsnightmare" or "nightmarebeak"
+end
+
 local function Make(name, build, lightcolour, fxname, masterinit)
     local assets =
     {
@@ -447,6 +454,7 @@ local function Make(name, build, lightcolour, fxname, masterinit)
     {
         "nightmarebeak",
         "crawlingnightmare",
+        "ruinsnightmare",
         fxname,
     }
     
@@ -519,7 +527,7 @@ local function Make(name, build, lightcolour, fxname, masterinit)
             inst.components.childspawner.childreninside = 0
         end
         inst.components.childspawner.childname = "crawlingnightmare"
-        inst.components.childspawner:SetRareChild("nightmarebeak", .35)
+        inst.components.childspawner:SetRareChild(GetRareChildFn, .35)
 
         if AllowShadowThralls[name] then
             local lootdropper = inst:AddComponent("lootdropper")

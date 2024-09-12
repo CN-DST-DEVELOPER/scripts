@@ -8,6 +8,7 @@ local assets =
 local prefabs =
 {
     "rabbit",
+    "rabbitking_lucky",
 }
 
 local function OnIsCollapsedDirty(inst)
@@ -186,11 +187,59 @@ local function OnPreLoad(inst, data)
     WorldSettings_Spawner_PreLoad(inst, data, TUNING.RABBIT_RESPAWN_TIME)
 end
 
+local function AbleToAcceptTest(inst, item, giver, count)
+    if inst.iscollapsed:value() then
+        return false
+    end
+
+    if item.prefab ~= "carrot" then
+        return false
+    end
+
+    if not giver:HasTag("player") then
+        return false
+    end
+
+    local rabbitkingmanager = TheWorld.components.rabbitkingmanager
+    if rabbitkingmanager == nil or not rabbitkingmanager:CanFeedCarrot(giver) then
+        return false
+    end
+
+    return true
+end
+
+local function OnItemAccepted(inst, giver, item, count)
+    if item.prefab == "carrot" then
+        local rabbitkingmanager = TheWorld.components.rabbitkingmanager
+        if rabbitkingmanager then
+            rabbitkingmanager:AddCarrotFromPlayer(giver, inst)
+        end
+    end
+end
+
+local function OnVacated(inst, child)
+    stopspawning(inst) -- First stop the regular spawning stuff.
+    -- Then try your luck!
+    if math.random() < TUNING.RABBITKING_LUCKY_ODDS then -- This is a lot cheaper to roll than finding a close player do it first.
+        local rabbitkingmanager = TheWorld.components.rabbitkingmanager
+        if rabbitkingmanager and not rabbitkingmanager:ShouldStopActions() then -- Same with this.
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local player = FindClosestPlayerInRangeSq(x, y, z, TUNING.RABBITKING_TELEPORT_DISTANCE_SQ, true)
+            if player then
+                if rabbitkingmanager:CreateRabbitKingForPlayer(player, child:GetPosition(), "lucky", {home = inst}) then
+                    child:Remove()
+                end
+            end
+        end
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
     inst:AddTag("cattoy")
@@ -218,7 +267,7 @@ local function fn()
     inst.components.spawner:Configure("rabbit", TUNING.RABBIT_RESPAWN_TIME)
 
     inst.components.spawner:SetOnOccupiedFn(onoccupied)
-    inst.components.spawner:SetOnVacateFn(stopspawning)
+    inst.components.spawner:SetOnVacateFn(OnVacated)
 
     inst:AddComponent("lootdropper")
     inst:AddComponent("workable")
@@ -238,6 +287,10 @@ local function fn()
     inst:AddComponent("hauntable")
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_SMALL)
     inst.components.hauntable:SetOnHauntFn(OnHaunt)
+
+    local trader = inst:AddComponent("trader")
+    trader:SetAbleToAcceptTest(AbleToAcceptTest)
+    trader:SetOnAccept(OnItemAccepted)
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad

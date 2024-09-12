@@ -3,15 +3,25 @@ local assets =
     Asset("ANIM", "anim/hermit_pearl.zip"),
 }
 
-local function commonfn(anim)
+local function commonfn(anim, minimapicon)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
+
+    if minimapicon ~= nil then
+        inst.entity:AddMiniMapEntity()
+    end
+
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
+
+    if minimapicon ~= nil then
+        inst.MiniMapEntity:SetIcon(minimapicon..".png")
+        inst.MiniMapEntity:SetPriority(7)
+    end
 
     inst:AddTag("irreplaceable")
     inst:AddTag("hermitpearl")
@@ -38,7 +48,7 @@ local function commonfn(anim)
 end
 
 local function fn()
-    local inst = commonfn("idle")
+    local inst = commonfn("idle", "hermit_pearl")
 
     inst:AddTag("gem")
 

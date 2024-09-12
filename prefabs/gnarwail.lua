@@ -82,12 +82,13 @@ local function EndHornAttack(horn_inst)
     horn_inst:ListenForEvent("animqueueover", HornAttack_AnimOver)
 
     local boat = horn_inst:GetCurrentPlatform()
-
-    horn_inst:DoTaskInTime(7*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
-    horn_inst:DoTaskInTime(14*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.damage) end)
-    horn_inst:DoTaskInTime(16*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
-    horn_inst:DoTaskInTime(19*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/jump_small") end)
-    horn_inst:DoTaskInTime(25*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
+    if boat then
+        horn_inst:DoTaskInTime(7*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
+        horn_inst:DoTaskInTime(14*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.damage) end)
+        horn_inst:DoTaskInTime(16*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
+        horn_inst:DoTaskInTime(19*FRAMES, function(i) i.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/jump_small") end)
+        horn_inst:DoTaskInTime(25*FRAMES, function(i) i.SoundEmitter:PlaySound(boat.sounds.thunk) end)
+    end
 
     horn_inst._horn_attack_ending = true
     horn_inst:RemoveEventCallback("attacked", OnHornHit)

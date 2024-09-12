@@ -1409,7 +1409,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 		if data.weapondamage then
 			makeentry("icon_damage.tex", tostring(checknumber(data.weapondamage) and math.floor(data.weapondamage) or data.weapondamage))
 			if data.planardamage then
-				makesubentry("+"..math.floor(data.planardamage) .. STRINGS.SCRAPBOOK.DATA_PLANAR_DAMAGE)
+				makesubentry("+"..tostring(checknumber(data.planardamage) and math.floor(data.planardamage) or data.planardamage).. STRINGS.SCRAPBOOK.DATA_PLANAR_DAMAGE)
 			end
 
 			if data.areadamage then

@@ -94,21 +94,11 @@ function Container:GetWidget()
 end
 
 function Container:NumItems()
-    local num = 0
-    for k,v in pairs(self.slots) do
-        num = num + 1
-    end
-
-    return num
+    return GetTableSize(self.slots)
 end
 
 function Container:IsFull()
-    local items = 0
-    for k, v in pairs(self.slots) do
-        items = items + 1
-    end
-
-    return items >= self.numslots
+    return GetTableSize(self.slots) >= self.numslots
 end
 
 function Container:IsEmpty()
@@ -137,7 +127,7 @@ function Container:DropItemBySlot(slot, drop_pos, keepoverstacked)
 end
 
 function Container:DropEverythingWithTag(tag, drop_pos, keepoverstacked)
-    local containers = {}
+    local internal_containers = {}
 
     for i = 1, self.numslots do
         local item = self.slots[i]
@@ -145,12 +135,12 @@ function Container:DropEverythingWithTag(tag, drop_pos, keepoverstacked)
             if item:HasTag(tag) then
 				self:DropItemBySlot(i, drop_pos, keepoverstacked)
             elseif item.components.container ~= nil then
-                table.insert(containers, item)
+                table.insert(internal_containers, item)
             end
         end
     end
 
-    for i, v in ipairs(containers) do
+    for i, v in ipairs(internal_containers) do
 		v.components.container:DropEverythingWithTag(tag, drop_pos, keepoverstacked)
     end
 end
@@ -164,7 +154,7 @@ end
 function Container:DropEverythingUpToMaxStacks(maxstacks, drop_pos)
 	local stacks = 0
 	while next(self.slots) do
-		for k, v in pairs(self.slots) do
+		for k in pairs(self.slots) do
 			self:DropItemBySlot(k, drop_pos, true)
 			stacks = stacks + 1
 			if stacks >= maxstacks then
@@ -334,9 +324,7 @@ function Container:GiveItem(item, slot, src_pos, drop_on_fail)
     if item == nil then
         return false
     elseif item.components.inventoryitem ~= nil and self:CanTakeItemInSlot(item, slot) then
-        if slot == nil then
-            slot = self:GetSpecificSlotForItem(item)
-        end
+        slot = slot or self:GetSpecificSlotForItem(item)
 
         --try to burn off stacks if we're just dumping it in there
         if item.components.stackable ~= nil and self.acceptsstacks then
@@ -478,7 +466,7 @@ function Container:Open(doer)
         end
         local inventory = doer.components.inventory
         if inventory ~= nil then
-            for k, v in pairs(inventory.opencontainers) do
+            for k in pairs(inventory.opencontainers) do
                 if k.prefab == self.inst.prefab or k.components.container.type == self.type then
                     k.components.container:Close(doer)
                 end

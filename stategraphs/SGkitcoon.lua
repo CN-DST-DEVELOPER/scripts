@@ -35,6 +35,7 @@ local events =
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 }
 
 local states =
@@ -367,5 +368,6 @@ CommonStates.AddSleepExStates(states,
 
 CommonStates.AddHopStates(states, true)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("SGcritter_kitten", states, events, "idle", actionhandlers)

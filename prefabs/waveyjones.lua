@@ -33,20 +33,26 @@ local prefabs_arm =
 
 local handbrain = require("brains/waveyjoneshandbrain")
 
+local function remove_when_scared_ends(inst)
+    if inst.AnimState:IsCurrentAnimation("scared") then
+        inst:Remove()
+    end
+end
+
+local function scarearm(arm)
+    if arm then
+        if arm.hand then
+            if arm.hand.handart then
+                arm.hand.handart:PushEvent("onscared")
+            end
+            arm.hand:PushEvent("onscared")
+        end
+        arm:PushEvent("onscared")
+    end
+end
+
 local function scareaway(inst)
     inst.persists = false
-
-    local function scarearm(arm)
-        if arm then
-            if arm.hand then
-                if arm.hand.handart then
-                    arm.hand.handart:PushEvent("onscared")
-                end
-                arm.hand:PushEvent("onscared")
-            end
-            arm:PushEvent("onscared")
-        end
-    end
     if inst and inst:IsValid() then
         scarearm(inst.arm1)
 
@@ -56,11 +62,59 @@ local function scareaway(inst)
             inst.SoundEmitter:PlaySound("dangerous_sea/creatures/wavey_jones/scared")
             inst.AnimState:PlayAnimation("scared")
         end
-        inst:ListenForEvent("animover", function()
-            if inst.AnimState:IsCurrentAnimation("scared") then
-                inst:Remove()
-            end
-        end)
+        inst:ListenForEvent("animover", remove_when_scared_ends)
+    end
+end
+
+local function test_for_scared(inst, dt)
+    if not inst.AnimState:IsCurrentAnimation("scared") then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local players = FindPlayersInRange(x, y, z, 0.5)
+        if #players > 0 then
+            scareaway(inst)
+        end
+    end
+end
+
+local function spawnarm_on_initialize(inst, boat, spacing, entname, left)
+    if not boat or not boat:IsValid() then return end
+
+    local bx,by,bz = boat.Transform:GetWorldPosition()
+    local x,y,z = inst.Transform:GetWorldPosition()
+    local primeangle = boat:GetAngleToPoint(x, y, z) * DEGREES
+    local radius = boat.components.hull:GetRadius() - 0.5
+    local offset1 = Vector3(radius * math.cos( primeangle + spacing ), 0, -radius * math.sin( primeangle + spacing ))
+
+    local new_arm = SpawnPrefab("waveyjones_arm")
+    new_arm.Transform:SetPosition(bx+offset1.x,0,bz+offset1.z)
+    local arm_angle = new_arm:GetAngleToPoint(bx, by, bz)
+    new_arm.Transform:SetRotation(arm_angle)
+    new_arm.jones = inst
+    new_arm.left = left
+    inst[entname] = new_arm
+end
+
+local function waveyjones_initialize(inst)
+    local boat = inst.components.entitytracker:GetEntity("boat")
+    if not boat then
+        return
+    end
+
+    inst:DoTaskInTime(0.5, spawnarm_on_initialize, boat, 0.5, "arm1", false)
+    inst:DoTaskInTime(0.7, spawnarm_on_initialize, boat, -0.5, "arm2", true)
+end
+
+local function playlaugh_delay(inst)
+    if inst.AnimState:IsCurrentAnimation("laugh") then
+        inst.SoundEmitter:PlaySound("dangerous_sea/creatures/wavey_jones/laugh")
+    end
+end
+local function waveyjones_laugh(inst)
+    if not inst.components.timer:TimerExists("laughter") and not inst.AnimState:IsCurrentAnimation("scared") then
+        inst.components.timer:StartTimer("laughter", 5)
+
+        inst.AnimState:PlayAnimation("laugh")
+        inst:DoTaskInTime(15*FRAMES, playlaugh_delay)
     end
 end
 
@@ -84,7 +138,6 @@ local function fn()
     inst.no_wet_prefix = true
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -94,71 +147,20 @@ local function fn()
     inst:AddComponent("entitytracker")
 
     inst:AddComponent("updatelooper")
-    inst.components.updatelooper:AddOnUpdateFn(function()
-        if not inst.AnimState:IsCurrentAnimation("scared") then
-            local x, y, z = inst.Transform:GetWorldPosition()
-            local players = FindPlayersInRange(x, y, z, 0.5)
-            if #players > 0 then
-                scareaway(inst)
-            end
-        end
-    end)
-
-    inst:DoTaskInTime(0,function()
-        if inst.components.entitytracker:GetEntity("boat") then
-            local boat = inst.components.entitytracker:GetEntity("boat")
-
-            local function spawnarm(spacing,entname,left)
-                local bx,by,bz = boat.Transform:GetWorldPosition()
-                local x,y,z = inst.Transform:GetWorldPosition()
-                local primeangle = boat:GetAngleToPoint(x, y, z) * DEGREES
-                local radius = boat.components.hull:GetRadius() -0.5
-                local offset1 = Vector3(radius * math.cos( primeangle + spacing ), 0, -radius * math.sin( primeangle + spacing ))
-
-
-                inst[entname] = SpawnPrefab("waveyjones_arm")
-                inst[entname].Transform:SetPosition(bx+offset1.x,0,bz+offset1.z)
-                local arm1angle = inst[entname]:GetAngleToPoint(bx, by, bz)
-                inst[entname].Transform:SetRotation(arm1angle)
-                inst[entname].jones = inst
-                if left then
-                    inst[entname].left =true
-                end
-            end
-
-            inst:DoTaskInTime(0.5,function()
-                spawnarm(0.5,"arm1")
-            end)
-
-            inst:DoTaskInTime(0.7,function()
-                spawnarm(-0.5,"arm2",true)
-            end)
-
-        end
-    end)
-
-    inst:ListenForEvent("onremove", function()
-        scareaway(inst)
-    end)
+    inst.components.updatelooper:AddOnUpdateFn(test_for_scared)
 
     inst:AddComponent("timer")
 
-    inst:ListenForEvent("laugh", function()
-        if not inst.components.timer:TimerExists("laughter") and not inst.AnimState:IsCurrentAnimation("scared") then
-            inst.components.timer:StartTimer("laughter", 5)
+    inst:DoTaskInTime(0, waveyjones_initialize)
 
-            inst.AnimState:PlayAnimation("laugh")
-            inst:DoTaskInTime(15*FRAMES,function()
-                if inst.AnimState:IsCurrentAnimation("laugh") then
-                    inst.SoundEmitter:PlaySound("dangerous_sea/creatures/wavey_jones/laugh")
-                end
-            end)
-        end
-    end)
+    inst:ListenForEvent("onremove", scareaway)
+
+    inst:ListenForEvent("laugh", waveyjones_laugh)
 
     return inst
 end
 
+--
 local function ClearWaveyJonesTarget(inst)
     if inst.waveyjonestarget then
         TheWorld:removewaveyjonestarget(inst.waveyjonestarget)
@@ -167,35 +169,39 @@ local function ClearWaveyJonesTarget(inst)
 end
 
 local function resetposition(inst)
-    if inst.arm then
-        inst.Transform:SetPosition(inst.arm.Transform:GetWorldPosition())
-        inst.sg:GoToState("in")
-        inst.components.timer:StartTimer("reactiondelay", 2)
-        inst.Transform:SetRotation(inst.arm.Transform:GetRotation())
-        if inst.handart then
-            inst.handart.Transform:SetRotation(inst.arm.Transform:GetRotation())
-            inst.handart.Transform:SetPosition(inst.arm.Transform:GetWorldPosition())
-            inst.handart.pauserotation = true
-        end
+    if not inst.arm then return end
+
+    local ax, ay, az = inst.arm.Transform:GetWorldPosition()
+    local arm_rotation = inst.arm.Transform:GetRotation()
+
+    inst.Transform:SetPosition(ax, ay, az)
+    inst.sg:GoToState("in")
+    inst.components.timer:StartTimer("reactiondelay", 2)
+    inst.Transform:SetRotation(arm_rotation)
+    if inst.handart then
+        inst.handart.Transform:SetRotation(arm_rotation)
+        inst.handart.Transform:SetPosition(ax, ay, az)
+        inst.handart.pauserotation = true
     end
 end
 local rotatearthand = function(inst)
-    if inst.handart and inst.handart:IsValid() then
-        inst.handart.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    if not inst.handart or not inst.handart:IsValid() then
+        return
+    end
 
-        if not inst.handart.pauserotation and inst.arm then
+    inst.handart.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
-            local x,y,z = inst.Transform:GetWorldPosition()
+    if not inst.handart.pauserotation and inst.arm then
+        local x,y,z = inst.Transform:GetWorldPosition()
 
-            local dist = inst:GetDistanceSqToInst(inst.arm)
-            local rotation = nil
-            if dist < 0.5 * 0.5 then
-                 rotation = inst.arm.Transform:GetRotation()
-            else
-                 rotation = inst.arm:GetAngleToPoint(x,y,z)
-            end
-            inst.handart.Transform:SetRotation( rotation )
+        local dist = inst:GetDistanceSqToInst(inst.arm)
+        local rotation
+        if dist < 0.5 * 0.5 then
+            rotation = inst.arm.Transform:GetRotation()
+        else
+            rotation = inst.arm:GetAngleToPoint(x,y,z)
         end
+        inst.handart.Transform:SetRotation( rotation )
     end
 end
 
@@ -207,6 +213,22 @@ local function playerfar(inst)
     inst:PushEvent("released")
 end
 
+local function waveyjones_hand_initialize(inst)
+    local handart = SpawnPrefab("waveyjones_hand_art")
+    if inst.left then
+        handart.AnimState:SetScale(1,-1)
+    end
+    handart.sg:GoToState("in")
+    inst.handart = handart
+    inst.handart.parent = inst
+    inst.handart.pauserotation = true
+    inst.handart.Transform:SetRotation( inst.Transform:GetRotation() )
+
+    inst:AddComponent("updatelooper")
+    inst.components.updatelooper:AddOnWallUpdateFn(rotatearthand)
+
+    inst.components.timer:StartTimer("reactiondelay", 2)
+end
 
 local function handfn()
     local inst = CreateEntity()
@@ -242,35 +264,47 @@ local function handfn()
 
     inst.ClearWaveyJonesTarget = ClearWaveyJonesTarget
 
-    inst:ListenForEvent("onremove", function()
-        inst:ClearWaveyJonesTarget()
-    end)
+    inst:ListenForEvent("onremove", inst.ClearWaveyJonesTarget)
 
-    inst:ListenForEvent("onscared", function()
-        inst:Remove()
-    end)
+    inst:ListenForEvent("onscared", inst.Remove)
 
     inst.rotatearthand = rotatearthand
     inst.resetposition = resetposition
 
-    inst:DoTaskInTime(0,function()
-        local handart = SpawnPrefab("waveyjones_hand_art")
-        if inst.left then
-            handart.AnimState:SetScale(1,-1)
-        end
-        handart.sg:GoToState("in")
-        inst.handart = handart
-        inst.handart.parent = inst
-        inst.handart.pauserotation = true
-        inst.handart.Transform:SetRotation( inst.Transform:GetRotation() )
-
-        inst:AddComponent("updatelooper")
-        inst.components.updatelooper:AddOnWallUpdateFn(rotatearthand)
-
-        inst.components.timer:StartTimer("reactiondelay", 2)
-    end)
+    inst:DoTaskInTime(0, waveyjones_hand_initialize)
 
     return inst
+end
+
+--
+local HANDART_STATES = {
+    "in",
+    "idle",
+    "moving",
+    "premoving",
+    "loop_action_anchor_pst",
+    "loop_action_anchor",
+    "short_action",
+    "moving",
+    "premoving",
+    "trapped",
+    "trapped_pst",
+    "scared_relocate",
+    "scared",
+}
+local HANDART_GOTO_FNS = {}
+for _, state in pairs(HANDART_STATES) do
+    HANDART_GOTO_FNS["go_to_"..state] = function(inst)
+        inst.sg:GoToState(state)
+    end
+end
+
+local function spawn_shadowhand_fx(inst)
+    local fx = SpawnPrefab("shadowhand_fx")
+    fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+end
+local function periodic_fx_queue(inst)
+    inst:DoTaskInTime(math.random()*0.5, spawn_shadowhand_fx)
 end
 
 local function handartfn()
@@ -296,7 +330,6 @@ local function handartfn()
     inst.no_wet_prefix = true
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -305,31 +338,35 @@ local function handartfn()
 
     inst:SetStateGraph("SGwaveyjoneshand_art")
 
-    inst:ListenForEvent("onscared", function()
-        inst.sg:GoToState("scared")
-    end)
+    inst:ListenForEvent("onscared", HANDART_GOTO_FNS.go_to_scared)
 
-    inst:ListenForEvent("STATE_IN", function() inst.sg:GoToState("in")  end)
-    inst:ListenForEvent("STATE_IDLE", function() inst.sg:GoToState("idle")  end)
-    inst:ListenForEvent("STATE_MOVING", function() inst.sg:GoToState("moving")  end)
-    inst:ListenForEvent("STATE_PREMOVING", function() inst.sg:GoToState("premoving")  end)
-    inst:ListenForEvent("STATE_LOOP_ACTION_ANCHOR_PST", function() inst.sg:GoToState("loop_action_anchor_pst")  end)
-    inst:ListenForEvent("STATE_LOOP_ACTION_ANCHOR", function() inst.sg:GoToState("loop_action_anchor")  end)
-    inst:ListenForEvent("STATE_SHORT_ACTION", function() inst.sg:GoToState("short_action")  end)
-    inst:ListenForEvent("STATE_MOVING", function() inst.sg:GoToState("moving")  end)
-    inst:ListenForEvent("STATE_PREMOVING", function() inst.sg:GoToState("premoving")  end)
-    inst:ListenForEvent("STATE_TRAPPED", function() inst.sg:GoToState("trapped")  end)
-    inst:ListenForEvent("STATE_TRAPPED_PST", function() inst.sg:GoToState("trapped_pst")  end)
-    inst:ListenForEvent("STATE_SCARED_RELOCATE", function() inst.sg:GoToState("scared_relocate")  end)
+    inst:ListenForEvent("STATE_IN", HANDART_GOTO_FNS.go_to_in)
+    inst:ListenForEvent("STATE_IDLE", HANDART_GOTO_FNS.go_to_idle)
+    inst:ListenForEvent("STATE_MOVING", HANDART_GOTO_FNS.go_to_moving)
+    inst:ListenForEvent("STATE_PREMOVING", HANDART_GOTO_FNS.go_to_premoving)
+    inst:ListenForEvent("STATE_LOOP_ACTION_ANCHOR_PST", HANDART_GOTO_FNS.go_to_loop_action_anchor_pst)
+    inst:ListenForEvent("STATE_LOOP_ACTION_ANCHOR", HANDART_GOTO_FNS.go_to_loop_action_anchor)
+    inst:ListenForEvent("STATE_SHORT_ACTION", HANDART_GOTO_FNS.go_to_short_action)
+    inst:ListenForEvent("STATE_TRAPPED", HANDART_GOTO_FNS.go_to_trapped)
+    inst:ListenForEvent("STATE_TRAPPED_PST", HANDART_GOTO_FNS.go_to_trapped_pst)
+    inst:ListenForEvent("STATE_SCARED_RELOCATE", HANDART_GOTO_FNS.go_to_scared_relocate)
 
-    inst:DoPeriodicTask(2,function()
-        inst:DoTaskInTime(math.random()*0.5,function()
-            local fx = SpawnPrefab("shadowhand_fx")
-            fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
-        end)
-    end)
+    inst:DoPeriodicTask(2, periodic_fx_queue)
 
     return inst
+end
+
+--
+local function waveyjones_arm_initialize(inst)
+    local hand = SpawnPrefab("waveyjones_hand")
+    local x,y,z = inst.Transform:GetWorldPosition()
+    hand.Transform:SetRotation(inst.Transform:GetRotation())
+    hand.Transform:SetPosition(x,y,z)
+    hand.arm = inst
+    hand.sg:GoToState("in")
+    hand.left = inst.left
+
+    inst.hand = hand
 end
 
 local function armfn()
@@ -342,33 +379,21 @@ local function armfn()
     MakeInventoryPhysics(inst, 10, .5)
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst.persists = false
 
-    inst:DoTaskInTime(0,function()
-        inst.hand = SpawnPrefab("waveyjones_hand")
-        local x,y,z = inst.Transform:GetWorldPosition()
-        inst.hand.Transform:SetRotation(inst.Transform:GetRotation())
-        inst.hand.Transform:SetPosition(x,y,z)
-        inst.hand.arm = inst
-        inst.hand.sg:GoToState("in")
+    inst:DoTaskInTime(0, waveyjones_arm_initialize)
 
-        if inst.left then
-            inst.hand.left = true
-        end
-    end)
-
-    inst:ListenForEvent("onscared", function()
-        inst:Remove()
-    end)
+    inst:ListenForEvent("onscared", inst.Remove)
 
     return inst
 end
 
+--
+local function angles_sort(a, b) return a < b end
 local function spawnjones(inst,boat)
 
     local x,y,z = inst.Transform:GetWorldPosition()
@@ -378,14 +403,14 @@ local function spawnjones(inst,boat)
     local players = FindPlayersInRange(x, y, z, boat.components.hull:GetRadius(), true)
     local angles = {}
     if #players > 0 then
-        for i,player in pairs(players)do
+        for _,player in pairs(players)do
             local px,py,pz = player.Transform:GetWorldPosition()
             table.insert(angles,boat:GetAngleToPoint(px, py, pz))
         end
 
         local biggest = nil
 
-        table.sort(angles, function(a,b) return a < b end)
+        table.sort(angles, angles_sort)
         if #angles > 1 then
             for i,subangle in ipairs(angles)do
                 local diff = subangle - (angles[i-1] or angles[#angles])
@@ -405,24 +430,46 @@ local function spawnjones(inst,boat)
     angle = angle * DEGREES
     local radius = boat.components.hull:GetRadius() - 0.5
     local offset = Vector3(radius * math.cos( angle ), 0, -radius * math.sin( angle))
-    local x,y,z = boat.Transform:GetWorldPosition()
-    jones.Transform:SetPosition(x+offset.x,0,z+offset.z)
+
+    local bx, _, bz = boat.Transform:GetWorldPosition()
+    jones.Transform:SetPosition(bx + offset.x, 0, bz + offset.z)
     jones.components.entitytracker:TrackEntity("boat", boat)
 
     inst.jones = jones
 
-    inst:ListenForEvent("onremove", function()
-            inst.jones = nil
-            inst.components.timer:StartTimer("respawndelay", TUNING.WAVEYJONES.RESPAWN_TIMER)
-            if not inst.jonesremovedcount then
-                inst.jonesremovedcount = 0
+    inst:ListenForEvent("onremove", function(_)
+        inst.jones = nil
+        inst.components.timer:StartTimer("respawndelay", TUNING.WAVEYJONES.RESPAWN_TIMER)
+        if not inst.jonesremovedcount then
+            inst.jonesremovedcount = 0
+        end
+        inst.jonesremovedcount = inst.jonesremovedcount +1
+        if inst.jonesremovedcount >= 3 then
+            inst.SoundEmitter:KillSound("creeping")
+            inst:Remove()
+        end
+    end, jones)
+end
+
+local function marker_timer_done(inst, data)
+    if data.name == "respawndelay" then
+        if inst.components.entitytracker:GetEntity("boat") then
+            local boat = inst.components.entitytracker:GetEntity("boat")
+            local player = FindClosestPlayerToInst(boat,boat.components.hull:GetRadius(),true)
+            if player then
+                spawnjones(inst,boat)
+            else
+                inst.components.timer:StartTimer("respawndelay", 1)
             end
-            inst.jonesremovedcount = inst.jonesremovedcount +1
-            if inst.jonesremovedcount >= 3 then
-                inst.SoundEmitter:KillSound("creeping")
-                inst:Remove()
-            end
-        end,jones)
+        end
+    end
+end
+
+local function marker_wallupdate(inst, dt)
+    local intensity = (inst.components.timer:TimerExists("respawndelay")
+            and Remap(inst.components.timer:GetTimeLeft("respawndelay"), TUNING.WAVEYJONES.RESPAWN_TIMER, 0, 0, 1))
+        or 1
+    inst.SoundEmitter:SetParameter("creeping", "intensity", intensity)
 end
 
 local function markerfn()
@@ -458,28 +505,10 @@ local function markerfn()
         end
     end)
 
-    inst:ListenForEvent("timerdone", function(inst, data)
-        if data.name == "respawndelay" then
-            if inst.components.entitytracker:GetEntity("boat") then
-                local boat = inst.components.entitytracker:GetEntity("boat")
-                local player = FindClosestPlayerToInst(boat,boat.components.hull:GetRadius(),true)
-                if player then
-                    spawnjones(inst,boat)
-                else
-                    inst.components.timer:StartTimer("respawndelay", 1)
-                end
-            end
-        end
-    end)
+    inst:ListenForEvent("timerdone", marker_timer_done)
 
     inst:AddComponent("updatelooper")
-    inst.components.updatelooper:AddOnWallUpdateFn(function()
-        local intensity = 1
-        if inst.components.timer:TimerExists("respawndelay") then
-            intensity = Remap(inst.components.timer:GetTimeLeft("respawndelay"), TUNING.WAVEYJONES.RESPAWN_TIMER, 0, 0, 1)
-        end
-        inst.SoundEmitter:SetParameter("creeping", "intensity", intensity)
-    end)
+    inst.components.updatelooper:AddOnWallUpdateFn(marker_wallupdate)
 
     return inst
 end

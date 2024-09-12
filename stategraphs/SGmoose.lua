@@ -44,6 +44,7 @@ local events=
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
 	EventHandler("flyaway", function(inst)
 		if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
@@ -57,7 +58,7 @@ local function DisarmTarget(inst, target)
 	if target and target.components.inventory and not target:HasTag("stronggrip") then
 		item = target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	end
-	if item and item.Physics then
+	if item and not item:HasTag("nosteal") and item.Physics then
 		target.components.inventory:DropItem(item)
 		local x, y, z = item:GetPosition():Get()
 		y = .1
@@ -534,5 +535,6 @@ CommonStates.AddSleepStates(states,
 	},
 })
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("moose", states, events, "idle", actionhandlers)

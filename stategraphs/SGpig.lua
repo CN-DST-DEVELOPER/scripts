@@ -25,6 +25,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 	CommonHandlers.OnIpecacPoop(),
     EventHandler("transformnormal", function(inst)
         if not inst.components.health:IsDead() then
@@ -327,6 +328,7 @@ CommonStates.AddSimpleActionState(states, "pickup", "pig_pickup", 10 * FRAMES, {
 CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4 * FRAMES, { "busy" })
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 CommonStates.AddIpecacPoopState(states)
 
 return StateGraph("pig", states, events, "idle", actionhandlers)

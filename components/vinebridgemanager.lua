@@ -136,16 +136,12 @@ function self:DestroyVineBridgeAtPoint(x, y, z, data)
         damage_prefab:Remove()
     end
 
-    local old_tile = WORLD_TILES.OCEAN_COASTAL -- FIXME(JBK): Determine default fallback for forest vs caves.
     local undertile = _world.components.undertile
-
-    if undertile then
-        old_tile = undertile:GetTileUnderneath(tile_x, tile_y)
-        if old_tile then
-            undertile:ClearTileUnderneath(tile_x, tile_y)
-        else
-            old_tile = WORLD_TILES.OCEAN_COASTAL
-        end
+    local old_tile = undertile and undertile:GetTileUnderneath(tile_x, tile_y) or nil
+    if old_tile ~= nil then
+        undertile:ClearTileUnderneath(tile_x, tile_y)
+    else
+        old_tile = _world:HasTag("cave") and WORLD_TILES.IMPASSABLE or WORLD_TILES.OCEAN_COASTAL
     end
 
     _map:SetTile(tile_x, tile_y, old_tile)
@@ -160,48 +156,7 @@ function self:DestroyVineBridgeAtPoint(x, y, z, data)
 	end
 	self.bridge_anims_grid:SetDataAtIndex(grid_index, nil)
 
-    -- If we're swapping to an ocean tile, do like a broken boat would do and deal with everything in our tile bounds
-    if IsOceanTile(old_tile) then
-        -- Behaviour pulled from walkableplatform's onremove/DestroyObjectsOnPlatform response.
-        local tile_radius_plus_overhang = ((TILE_SCALE / 2) + 1.0) * 1.4142
-        local entities_near_tile = TheSim:FindEntities(x, 0, z, tile_radius_plus_overhang, nil, IGNORE_DROWNING_ONREMOVE_TAGS)
-
-        local shore_point = nil
-        for _, ent in ipairs(entities_near_tile) do
-            local has_drownable = (ent.components.drownable ~= nil)
-            if has_drownable and shore_point == nil then
-                shore_point = Vector3(FindRandomPointOnShoreFromOcean(x, y, z))
-            end
-            ent:PushEvent("onsink", {boat = nil, shore_pt = shore_point})
-
-            -- We're testing the overhang, so we need to verify that anything we find isn't
-            -- still on some adjacent dock or land tile after we remove ourself.
-            if ent ~= inst and ent:IsValid() and not has_drownable and ent.entity:GetParent() == nil
-                and ent.components.amphibiouscreature == nil
-                and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
-
-                if ent.components.inventoryitem ~= nil then
-                    ent.components.inventoryitem:SetLanded(false, true)
-                else
-                    DestroyEntity(ent, _world, true, true)
-                end
-            end
-        end
-    end
-
-    -- Throw out some loot for presentation.
-    --SpawnPrefab("fx_ice_pop").Transform:SetPosition(dx, 0, dz)
-    --toss_debris("ice", dx, dz)
-    --if math.random() > 0.40 then
-    --    toss_debris("ice", dx, dz)
-    --end
-
-    --local half_num_debris = 4
-    --local angle_per_debris = TWOPI/half_num_debris
-    --for i = 1, half_num_debris do
-    --    spawn_degrade_piece(dx, dz, (i + GetRandomWithVariance(0.50, 0.25)) * angle_per_debris)
-    --    spawn_degrade_piece(dx, dz, (i + GetRandomWithVariance(0.50, 0.25)) * angle_per_debris)
-    --end
+    TempTile_HandleTileChange(x, y, z, old_tile)
 
     return true
 end
@@ -213,33 +168,22 @@ function self:QueueDestroyForVineBridgeAtPoint(x, y, z, data)
         -- We assign this here because an external force could have manually queued this destroy.
         self.marked_for_delete_grid:SetDataAtPoint(tile_x, tile_y, true)
 
-        local time = data and data.destroytime or (70 + math.random(0, 10)) * FRAMES
+        local time = data and data.destroytime or 2 + (70 + math.random(0, 10)) * FRAMES
         _world:DoTaskInTime(time, destroy_vinebridge_at_point, x, z, self, data)
 
         local function DoWarn()
             -- Send a breaking message to all of the prefabs on this point.
-            local tile_at_point = (_world.components.undertile and _world.components.undertile:GetTileUnderneath(tile_x, tile_y)) or WORLD_TILES.OCEAN_COASTAL
-            if IsOceanTile(tile_at_point) then
-                -- Behaviour pulled from walkableplatform's onremove/DestroyObjectsOnPlatform response.
-                local tile_radius_plus_overhang = ((TILE_SCALE / 2) + 1.0) * 1.4142
-                local entities_near_tile = TheSim:FindEntities(x, 0, z, tile_radius_plus_overhang, nil, IGNORE_DROWNING_ONREMOVE_TAGS)
-
-                for _, ent in ipairs(entities_near_tile) do
-                    -- Only push these events on prefabs that are actually standing on ice.
-                    -- We use the VisualGround test because we're accounting for tile overhang.
-                    if _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
-                        ent:PushEvent("abandon_ship")
-                        if ent:HasTag("player") then
-                            ent:PushEvent("onpresink")
-                        end
-                    end
-                end
+            local undertile = _world.components.undertile
+            local old_tile = undertile and undertile:GetTileUnderneath(tile_x, tile_y) or nil
+            if old_tile == nil then
+                old_tile = _world:HasTag("cave") and WORLD_TILES.IMPASSABLE or WORLD_TILES.OCEAN_COASTAL
             end
+            TempTile_HandleTileChange_Warn(x, y, z, old_tile)
         end
 
         local fxtime = data and data.fxtime
         if fxtime then
-            local shaketime = math.max(data.shaketime or 0, 0)
+            local shaketime = math.max(data.shaketime or 1, 0)
             _world:DoTaskInTime(shaketime, function()
                 local fx = self.bridge_anims_grid:GetDataAtPoint(tile_x, tile_y)
                 if fx and fx.ShakeIt then
@@ -271,7 +215,7 @@ function self:DamageVineBridgeAtTile(tx, ty, damage)
     else
         -- We don't technically need this set here, but if somebody wants to inspect
         -- health and test for 0 elsewhere, it's useful to have an accurate representation.
-        local new_health = math.min(math.max(0, current_tile_health - damage), TUNING.VINEBRIDGE_HEALTH)
+        local new_health = math.min(math.max(0, tile_data[1] - damage), TUNING.VINEBRIDGE_HEALTH)
 		tile_data[1] = new_health
 
         self:SpawnDamagePrefab(tile_index, new_health)

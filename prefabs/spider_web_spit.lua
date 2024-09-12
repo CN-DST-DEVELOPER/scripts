@@ -14,7 +14,6 @@ local function OnThrown(inst)
 end
 
 local function AcidInfused_Explode(inst, fx_target)
-    --SpawnPrefab("cannonball_used").Transform:SetPosition(fx_target.Transform:GetWorldPosition()) -- TODO(DiogoW)
     SpawnPrefab("round_puff_fx_sm").Transform:SetPosition(fx_target.Transform:GetWorldPosition())
 
     inst:Remove()

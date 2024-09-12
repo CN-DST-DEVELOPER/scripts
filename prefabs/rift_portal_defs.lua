@@ -24,6 +24,7 @@ local FALLBACK_DEFS = {
         return true -- Return true to allow the point.
     end,
     Affinity = RIFTPORTAL_CONST.AFFINITY.NONE,
+    ThrallTypes = nil,
 }
 
 

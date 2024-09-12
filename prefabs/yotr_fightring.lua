@@ -748,6 +748,7 @@ local function kitfn()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
 
+	inst:AddTag("deploykititem")
     inst:AddTag("usedeployspacingasoffset")
 
     MakeInventoryPhysics(inst)

@@ -56,8 +56,7 @@ local function GetPickupAction(inst, target)
         return ACTIONS.CHECKTRAP
     end
 
-    local is_inventory = (target.replica.inventoryitem ~= nil and target.replica.inventoryitem:CanBePickedUp())
-            or (target.components.inventoryitem ~= nil and target.components.canbepickedup)
+    local is_inventory = target.replica.inventoryitem ~= nil and target.replica.inventoryitem:CanBePickedUp(inst)
 
     if is_inventory
             and not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasTag("lighter")) or target:HasTag("catchable") or target:HasTag("spider")) then

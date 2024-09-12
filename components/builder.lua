@@ -457,6 +457,19 @@ function Builder:GetIngredients(recname)
     end
 end
 
+function Builder:CheckIngredientsForMimic(ingredients)
+    for _, ents in pairs(ingredients) do
+        for item in pairs(ents) do
+            if item.components.itemmimic then
+                item.components.itemmimic:TurnEvil(self.inst)
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 function Builder:RemoveIngredients(ingredients, recname, discounted)
 	if self.freebuildmode then
 		return
@@ -592,7 +605,7 @@ function Builder:DoBuild(recname, pt, rotation, skin)
         end
 
         if recipe.canbuild ~= nil then
-			local success, msg = recipe.canbuild(recipe, self.inst, pt, rotation)
+			local success, msg = recipe.canbuild(recipe, self.inst, pt, rotation, self.current_prototyper)
 			if not success then
 				return false, msg
 			end
@@ -623,6 +636,10 @@ function Builder:DoBuild(recname, pt, rotation, skin)
 
 		if recipe.manufactured then
 			local materials, discounted = self:GetIngredients(recname)
+            if self:CheckIngredientsForMimic(materials) then
+                return false, "ITEMMIMIC"
+            end
+
 			self:RemoveIngredients(materials, recname, discounted)
 			   -- its up to the prototyper to implement onactivate and handle spawning the prefab
 		   return true
@@ -635,6 +652,9 @@ function Builder:DoBuild(recname, pt, rotation, skin)
             if prod.components.inventoryitem ~= nil then
                 if self.inst.components.inventory ~= nil then
 					local materials, discounted = self:GetIngredients(recname)
+                    if self:CheckIngredientsForMimic(materials) then
+                        return false, "ITEMMIMIC"
+                    end
 
 					local wetlevel = self:GetIngredientWetness(materials)
 					if wetlevel > 0 and prod.components.inventoryitem ~= nil then
@@ -706,6 +726,10 @@ function Builder:DoBuild(recname, pt, rotation, skin)
             else
 				if not is_buffered_build then -- items that have intermediate build items (like statues)
 					local materials, discounted = self:GetIngredients(recname)
+                    if self:CheckIngredientsForMimic(materials) then
+                        return false, "ITEMMIMIC"
+                    end
+
 					self:RemoveIngredients(materials, recname, discounted)
 				end
 
@@ -993,6 +1017,10 @@ function Builder:BufferBuild(recname)
 		end
 
         local materials, discounted = self:GetIngredients(recname)
+        if self:CheckIngredientsForMimic(materials) then
+            return
+        end
+
         self:RemoveIngredients(materials, recname, discounted)
         self.buffered_builds[recname] = true
         self.inst.replica.builder:SetIsBuildBuffered(recname, true)

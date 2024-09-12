@@ -289,7 +289,7 @@ function LoadoutSelect_beefalo:_ApplySkins(skins, skip_change_emote)
 
     local base_skin = self.currentcharacter_inst:GetBaseSkin()
 
-	self.puppet:SetSkins(self.currentcharacter, base_skin, skins, skip_change_emote)
+	self.puppet:SetSkins(self.currentcharacter, base_skin, skins, skip_change_emote, self.currentcharacter_inst)
 end
 
 function LoadoutSelect_beefalo:_UpdateMenu(skins)

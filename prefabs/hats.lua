@@ -2709,6 +2709,12 @@ local function MakeHat(name)
         return inst
     end
 
+    fns.merm_removefollowers = function(owner)
+        owner.mermhat_notamerm_task = nil
+        if owner.components.leader then
+            owner.components.leader:RemoveFollowersByTag("merm")
+        end
+    end
     local function merm_disable(inst)
         local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner
         if owner then
@@ -2719,10 +2725,12 @@ local function MakeHat(name)
 			if owner.mermhat_notamerm then
                 owner:RemoveTag("merm")
 	            owner:RemoveTag("mermdisguise")
-				if owner.components.leader then
-					owner.components.leader:RemoveFollowersByTag("merm")
-				end
                 owner.mermhat_notamerm = nil
+                if owner.mermhat_notamerm_task ~= nil then
+                    owner.mermhat_notamerm_task:Cancel()
+                    owner.mermhat_notamerm_task = nil
+                end
+                owner.mermhat_notamerm_task = owner:DoTaskInTime(0, fns.merm_removefollowers)
 			end
 		end
     end
@@ -2736,6 +2744,10 @@ local function MakeHat(name)
 
 			if not owner:HasTag("merm") then
 				owner.mermhat_notamerm = true
+                if owner.mermhat_notamerm_task ~= nil then
+                    owner.mermhat_notamerm_task:Cancel()
+                    owner.mermhat_notamerm_task = nil
+                end
 	            owner:AddTag("merm")
 	            owner:AddTag("mermdisguise")
 			end
@@ -4684,6 +4696,172 @@ local function MakeHat(name)
 	end
 
     -----------------------------------------------------------------------------
+
+    fns.rabbit_equip = function(inst, owner)
+        _onequip(inst, owner)
+        owner:AddTag("rabbitdisguise")
+		if inst.fx then
+			inst.fx:Remove()
+		end
+		inst.fx = SpawnPrefab("rabbithat_fx")
+		inst.fx:AttachToOwner(owner)
+		inst.fx.iswinter:set(inst._iswinter or false)
+    end
+    fns.rabbit_unequip = function(inst, owner)
+        _onunequip(inst, owner)
+        owner:RemoveTag("rabbitdisguise")
+		if inst.fx then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+    end
+    fns.rabbit_loot = {"smallmeat"}
+    fns.rabbit_oneat = function(inst)
+        if inst.components.perishable ~= nil then
+            inst.components.perishable:SetPercent(1)
+        end
+    end
+	fns.rabbit_BecomeRabbit = function(inst)
+		inst._wintertask = nil
+		inst._iswinter = nil
+		inst.AnimState:SetBuild("rabbit_build")
+		inst.components.inventoryitem:ChangeImageName(nil)
+		if inst.fx then
+			inst.fx.iswinter:set(false)
+		end
+	end
+	fns.rabbit_BecomeWinterRabbit = function(inst)
+		inst._wintertask = nil
+		inst._iswinter = true
+		inst.AnimState:SetBuild("rabbit_winter_build")
+		inst.components.inventoryitem:ChangeImageName("rabbithat_winter")
+		if inst.fx then
+			inst.fx.iswinter:set(true)
+		end
+	end
+	fns.rabbit_OnIsWinter = function(inst, iswinter)
+		if inst._wintertask then
+			inst._wintertask:Cancel()
+			inst._wintertask = nil
+		end
+		if iswinter then
+			if not inst._iswinter then
+				inst._wintertask = inst:DoTaskInTime(math.random() * 0.5, fns.rabbit_BecomeWinterRabbit)
+			end
+		elseif inst._iswinter then
+			inst._wintertask = inst:DoTaskInTime(math.random() * 0.5, fns.rabbit_BecomeRabbit)
+		end
+	end
+	fns.rabbit_ShouldSleep = function(inst)
+		return not inst.components.inventoryitem:IsHeld() and DefaultSleepTest(inst)
+	end
+	fns.rabbit_ShouldWake = function(inst)
+		return inst.components.inventoryitem:IsHeld() or DefaultWakeTest(inst)
+	end
+	fns.rabbit_gotosleep = function(inst)
+		if not inst.components.inventoryitem:IsHeld() and
+			not (	inst.AnimState:IsCurrentAnimation("sleep_pre") or
+					inst.AnimState:IsCurrentAnimation("sleep_loop")
+				)
+		then
+			inst.AnimState:PlayAnimation("sleep_pre")
+			inst.AnimState:PushAnimation("sleep_loop")
+		end
+	end
+	fns.rabbit_onwakeup = function(inst)
+		if not inst.components.inventoryitem:IsHeld() and
+			(	inst.AnimState:IsCurrentAnimation("sleep_pre") or
+				inst.AnimState:IsCurrentAnimation("sleep_loop")
+			)
+		then
+			inst.AnimState:PlayAnimation("sleep_pst")
+			inst.AnimState:PushAnimation("anim")
+		end
+	end
+	fns.rabbit_topocket = function(inst)
+		inst.components.sleeper:WakeUp()
+		if not inst.AnimState:IsCurrentAnimation("anim") then
+			inst.AnimState:PlayAnimation("anim", true)
+		end
+	end
+	fns.rabbit_OnEntityWake = function(inst)
+		inst:WatchWorldState("iswinter", fns.rabbit_OnIsWinter)
+		if inst._wintertask then
+			inst._wintertask:Cancel()
+			inst._wintertask = nil
+		end
+		if TheWorld.state.iswinter then
+			if not inst._iswinter then
+				fns.rabbit_BecomeWinterRabbit(inst)
+			end
+		elseif inst._iswinter then
+			fns.rabbit_BecomeRabbit(inst)
+		end
+	end
+	fns.rabbit_OnEntitySleep = function(inst)
+		inst:StopWatchingWorldState("iswinter", fns.rabbit_OnIsWinter)
+		if inst._wintertask then
+			inst._wintertask:Cancel()
+			inst._wintertask = nil
+		end
+	end
+	fns.rabbit_custom_init = function(inst)
+		inst.AnimState:SetBuild("rabbit_build")
+		inst.AnimState:AddOverrideBuild("hat_rabbit")
+		inst.AnimState:PlayAnimation("anim", true)
+
+		inst.AnimState:SetClientsideBuildOverride("insane", "rabbit_build", "beard_monster")
+		inst.AnimState:SetClientsideBuildOverride("insane", "rabbit_winter_build", "beard_monster")
+
+		inst:SetClientSideInventoryImageOverride("insane", "rabbithat.tex", "rabbithat_beard_monster.tex")
+		inst:SetClientSideInventoryImageOverride("insane", "rabbithat_winter.tex", "rabbithat_beard_monster.tex")
+	end
+
+    fns.rabbit = function()
+		local inst = simple(fns.rabbit_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.68)
+
+        MakeFeedableSmallLivestockPristine(inst)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst.scrapbook_overridebuild = "hat_rabbit"
+
+        inst.components.equippable.dapperness = TUNING.DAPPERNESS_TINY
+        inst.components.equippable:SetOnEquip(fns.rabbit_equip)
+        inst.components.equippable:SetOnUnequip(fns.rabbit_unequip)
+        -- NOTES(JBK): Intentionally keeping equip tag for model.
+
+        MakeHauntableLaunchAndPerish(inst)
+
+        inst:AddComponent("lootdropper")
+        inst.components.lootdropper:SetLoot(fns.rabbit_loot)
+        inst.components.lootdropper.droprecipeloot = false
+
+        inst:AddComponent("eater")
+        inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })
+        inst.components.eater:SetOnEatFn(fns.rabbit_oneat)
+        MakeSmallPerishableCreatureAlwaysPerishing(inst, TUNING.RABBIT_PERISH_TIME)
+
+		inst:AddComponent("sleeper")
+		inst.components.sleeper.watchlight = true
+		inst.components.sleeper:SetSleepTest(fns.rabbit_ShouldSleep)
+		inst.components.sleeper:SetWakeTest(fns.rabbit_ShouldWake)
+		inst:ListenForEvent("gotosleep", fns.rabbit_gotosleep)
+		inst:ListenForEvent("onwakeup", fns.rabbit_onwakeup)
+		inst:ListenForEvent("onputininventory", fns.rabbit_topocket)
+
+        inst.OnEntityWake = fns.rabbit_OnEntityWake
+        inst.OnEntitySleep = fns.rabbit_OnEntitySleep
+
+        return inst
+    end
+
+    -----------------------------------------------------------------------------
     fns.mermarmor_custom_init = function(inst)
         inst:AddTag("mermarmorhat")
     end
@@ -4936,6 +5114,14 @@ local function MakeHat(name)
 		table.insert(assets, Asset("INV_IMAGE", "inspectacleshat_equip_signal"))
 	elseif name == "roseglasses" then
 		fn = fns.roseglasses
+    elseif name == "rabbit" then
+        fn = fns.rabbit
+		prefabs = { "rabbithat_fx", "smallmeat" }
+		table.insert(assets, Asset("ANIM", "anim/rabbit_build.zip"))
+		table.insert(assets, Asset("ANIM", "anim/rabbit_winter_build.zip"))
+		table.insert(assets, Asset("ANIM", "anim/beard_monster.zip"))
+		table.insert(assets, Asset("INV_IMAGE", "rabbithat_winter"))
+		table.insert(assets, Asset("INV_IMAGE", "rabbithat_beard_monster"))
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -5242,6 +5428,47 @@ local function inspectacleshat_fx_common_postinit(inst)
 	end
 end
 
+local function rabbithat_CreateFxFollowFrame(i)
+	local inst = CreateEntity()
+
+	--[[Non-networked entity]]
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("rabbithat")
+	inst.AnimState:SetBuild("rabbit_build")
+	inst.AnimState:AddOverrideBuild("hat_rabbit")
+	inst.AnimState:PlayAnimation("idle"..tostring(i), true)
+
+	inst.AnimState:SetClientsideBuildOverride("insane", "rabbit_build", "beard_monster")
+	inst.AnimState:SetClientsideBuildOverride("insane", "rabbit_winter_build", "beard_monster")
+
+	inst:AddComponent("highlightchild")
+
+	inst.persists = false
+
+	return inst
+end
+
+local function rabbithat_fx_iswinterdirty(inst)
+	if inst.fx then
+		local build = inst.iswinter:value() and "rabbit_winter_build" or "rabbit_build"
+		for i, v in ipairs(inst.fx) do
+			v.AnimState:SetBuild(build)
+		end
+	end
+end
+
+local function rabbithat_fx_common_postinit(inst)
+	inst.iswinter = net_bool(inst.GUID, "rabbithat_fx.iswinter", "iswinterdirty")
+	if not TheNet:IsDedicated() then
+		inst:ListenForEvent("iswinterdirty", rabbithat_fx_iswinterdirty)
+	end
+end
+
 --------------------------------------------------------------------------
 
 local function FollowFx_OnRemoveEntity(inst)
@@ -5425,6 +5652,8 @@ return  MakeHat("straw"),
         MakeHat("inspectacles"),
 		MakeHat("roseglasses"),
 
+        MakeHat("rabbit"),
+
 		MakeFollowFx("lunarplanthat_fx", {
 			createfn = lunarplanthat_CreateFxFollowFrame,
 			framebegin = 1,
@@ -5457,6 +5686,19 @@ return  MakeHat("straw"),
 			framebegin = 1,
 			frameend = 3,
 			assets = { Asset("ANIM", "anim/hat_inspectacles.zip") },
+		}),
+		MakeFollowFx("rabbithat_fx", {
+			createfn = rabbithat_CreateFxFollowFrame,
+			common_postinit = rabbithat_fx_common_postinit,
+			framebegin = 1,
+			frameend = 3,
+			assets =
+			{
+				Asset("ANIM", "anim/hat_rabbit.zip"),
+				Asset("ANIM", "anim/rabbit_build.zip"),
+				Asset("ANIM", "anim/rabbit_winter_build.zip"),
+				Asset("ANIM", "anim/beard_monster.zip"),
+			},
 		}),
 
         Prefab("minerhatlight", minerhatlightfn),

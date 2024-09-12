@@ -232,7 +232,7 @@ end
 local function ShouldRunAway(target, inst)
 	if target.components.health ~= nil and target.components.health:IsDead() then
 		return false
-	elseif target:HasTag("shadowcreature") then
+	elseif target:HasAnyTag("shadowcreature", "nightmarecreature") then
 		if target.HostileToPlayerTest ~= nil then
 			local leader = GetLeader(inst)
 			return leader ~= nil and target:HostileToPlayerTest(leader)

@@ -25,6 +25,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("gobacktocave", function(inst, data)
         if not inst.sg:HasStateTag("sleeping") and not inst.sg:HasStateTag("busy") then
             inst.sg:GoToState("despawn")
@@ -985,6 +986,7 @@ CommonStates.AddFrozenStates(states)
 CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4 * FRAMES, { "busy" })
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 CommonStates.AddSimpleState(states, "attack_object_pre", "atk_object_pre", { "busy" }, "attack_object_pre_idle", nil,
 {
     onenter = function(inst, data)

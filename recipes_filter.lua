@@ -362,6 +362,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	----MOON_ALTAR-----
 	"moonglassaxe",
 	"glasscutter",
+	"carpentry_blade_moonglass",
 	"turf_meteor",
 	"turf_fungus_moon",
 	"bathbomb",
@@ -387,8 +388,15 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"voidclothhat",
 	"voidcloth_umbrella",
 	"voidcloth_scythe",
+	"voidcloth_boomerang",
 	"voidcloth_kit",
+	
+	"shadow_battleaxe",
+	"shadow_beef_bell",
+	"saddle_shadow",
+
 	"beeswax_spray",
+	"gelblob_storage_kit",
 
 	-- Hermit Crab
 	"hermitshop_hermit_bundle_shells",
@@ -410,6 +418,11 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"hermitshop_supertacklecontainer",
 	"hermitshop_winter_ornament_boss_hermithouse",
 	"hermitshop_winter_ornament_boss_pearl",
+
+    -- Rabbit King
+    "rabbitkingshop_armor_carrotlure",
+    "rabbitkingshop_rabbitkinghorn",
+    "rabbitkingshop_hat_rabbit",
 
 	-- waxwelljournal
 	"shadowlumber_builder",
@@ -627,6 +640,24 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"carnivalgame_shooting_kit",
 	"carnivalgame_wheelspin_kit",
 	"carnivalgame_puckdrop_kit",
+
+	---- CARPENTRY ----
+
+	"boards_bunch",
+	"cutstone_bunch",
+	"wood_chair",
+	"stone_chair",
+	"wood_stool",
+	"stone_stool",
+	"wood_table_round",
+	"stone_table_round",
+	"wood_table_square",
+	"stone_table_square",
+    "decor_centerpiece",
+	"decor_lamp",
+	"decor_flowervase",
+	"decor_pictureframe",
+	"decor_portraitframe",
 }
 
 
@@ -1134,6 +1165,8 @@ CRAFTING_FILTERS.STRUCTURES.recipes =
 	"arrowsign_post",
 	"minisign_item",
 
+	"rope_bridge_kit",
+
 	"support_pillar_scaffold",
 	"support_pillar_dreadstone_scaffold",
 }
@@ -1364,9 +1397,13 @@ CRAFTING_FILTERS.DECOR.recipes =
 	"record",
 
 	"wood_chair",
+	"stone_chair",
 	"wood_stool",
+	"stone_stool",
 	"wood_table_round",
+	"stone_table_round",
 	"wood_table_square",
+	"stone_table_square",
     "decor_centerpiece",
 	"decor_lamp",
 	"decor_flowervase",

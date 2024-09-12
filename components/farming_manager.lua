@@ -371,9 +371,12 @@ function self:GetTileNutrients(x, y)
 	if nutrients then
         return DecodeNutrients(nutrients)
 	end
-	nutrients = GetTileInfo(_map:GetTile(x, y)).nutrients
-    if nutrients then
-        return unpack(nutrients)
+    local tile_info = GetTileInfo(_map:GetTile(x, y))
+    if tile_info then
+        nutrients = tile_info.nutrients
+        if nutrients then
+            return unpack(nutrients)
+        end
     end
     return 0, 0, 0
 end

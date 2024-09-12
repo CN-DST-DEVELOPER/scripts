@@ -39,6 +39,11 @@ local function fn()
         return inst
     end
 
+    inst:AddComponent("erasablepaper")
+    inst:AddComponent("inspectable")
+    inst:AddComponent("inventoryitem")
+    inst:AddComponent("tradable")
+
     inst:AddComponent("mapspotrevealer")
     inst.components.mapspotrevealer:SetGetTargetFn(getrevealtargetpos)
     inst.components.mapspotrevealer.postreveal = function(inst) 
@@ -48,18 +53,13 @@ local function fn()
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
 
-    inst:AddComponent("inspectable")
-
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
 
-    inst:AddComponent("tradable")
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)
     MakeHauntableLaunchAndIgnite(inst)
-
-    inst:AddComponent("inventoryitem")
 
     return inst
 end

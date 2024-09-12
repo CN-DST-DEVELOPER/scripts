@@ -200,7 +200,7 @@ local function OnAttacked(inst, data)
 end
 
 local function ChangeToItem(inst)
-	local item = SpawnPrefab("winona_catapult_item")
+	local item = SpawnPrefab("winona_catapult_item", inst:GetSkinBuild(), inst.skin_id)
 	item.Transform:SetPosition(inst.Transform:GetWorldPosition())
 	item.AnimState:PlayAnimation("collapse")
 	item.AnimState:PushAnimation("idle_ground", false)
@@ -1223,7 +1223,7 @@ end
 --------------------------------------------------------------------------
 
 local function OnDeploy(inst, pt, deployer)
-	local obj = SpawnPrefab("winona_catapult")
+	local obj = SpawnPrefab("winona_catapult", inst:GetSkinBuild(), inst.skin_id)
 	if obj then
 		obj.Physics:SetCollides(false)
 		obj.Physics:Teleport(pt.x, 0, pt.z)

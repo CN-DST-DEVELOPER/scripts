@@ -25,10 +25,10 @@ local EMPTY = "EMPTY"
 
 local LOOT = {
     CRITTERS = {
-        { weight=4, prefab = "spider",         targetplayer=true, state="warrior_attack" }, -- 57.14%
-        { weight=1, prefab = "spider_warrior", targetplayer=true, state="warrior_attack" }, -- 14.29%
-        { weight=2, prefab = "catcoon",        targetplayer=true, state="pounceattack"   }, -- 28.57%
-        { weight=2, prefab = "mole",                              state="peek"           }, -- 28.57%
+        { weight=4, prefab = "spider",         targetplayer=true, state="warrior_attack", enabled_tuning = "SPIDERDEN_ENABLED" }, -- 57.14%
+        { weight=1, prefab = "spider_warrior", targetplayer=true, state="warrior_attack", enabled_tuning = "SPIDERDEN_ENABLED" }, -- 14.29%
+        { weight=2, prefab = "catcoon",        targetplayer=true, state="pounceattack"  , enabled_tuning = "CATCOONDEN_ENABLED"}, -- 28.57%
+        { weight=2, prefab = "mole",                              state="peek"          , enabled_tuning = "MOLE_ENABLED"      }, -- 28.57%
     },
 
     ITEMS = {
@@ -209,18 +209,22 @@ local function SpawnLoot(inst, digger, nopickup)
     if math.random() <= CRITTER_SPAWN_CHANCE then
         local choice = weighted_random_choice(WEIGHTED_CRITTER_TABLE)
 
-        if choice.prefab ~= nil and choice.prefab ~= EMPTY then
+        local enabled = choice.enabled_tuning and TUNING[choice.enabled_tuning]
+
+        if (enabled == nil or enabled) and choice.prefab ~= nil and choice.prefab ~= EMPTY then
             local critter = SpawnPrefab(choice.prefab)
+
+            local attackplayer = not (critter:HasTag("spider") and digger:HasOneOfTags("spiderwhisperer", "spiderdisguise"))
 
             inst.components.lootdropper:FlingItem(critter)
 
-            if choice.targetplayer and critter.components.combat ~= nil then
+            if attackplayer and choice.targetplayer and critter.components.combat ~= nil then
                 critter.components.combat:SetTarget(digger)
             end
 
             SpawnPrefab("junk_break_fx").Transform:SetPosition(critter.Transform:GetWorldPosition())
 
-            if choice.state ~= nil then
+            if choice.state ~= nil and (not choice.targetplayer or attackplayer) then
                 critter.sg:GoToState(choice.state, digger)
             end
         end

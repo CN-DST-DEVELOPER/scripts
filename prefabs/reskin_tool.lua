@@ -83,6 +83,7 @@ local reskin_fx_info =
 	wormhole = { scale = 1.3 },
 	yellowstaff = { offset = 0.4 },
     mighty_gym = {offset = 2, scale = 2.7},
+    eyeturret = {offset = 1, scalex = 1.4, scaley = 2.4},
 }
 local function GetReskinFXInfo(target)
     if target.prefab == "treasurechest" and target._chestupgrade_stacksize then
@@ -104,6 +105,9 @@ local function spellCB(tool, target, pos, caster)
     if target == nil then -- Bail.
         return
     end
+    if target.reskin_tool_target_redirect and target.reskin_tool_target_redirect:IsValid() then
+        target = target.reskin_tool_target_redirect
+    end
 
     local fx_prefab = "explode_reskin"
     local skin_fx = SKIN_FX_PREFAB[tool:GetSkinName()]
@@ -116,7 +120,9 @@ local function spellCB(tool, target, pos, caster)
     local fx_info = GetReskinFXInfo(target)
 
     local scale_override = fx_info.scale or 1
-    fx.Transform:SetScale(scale_override, scale_override, scale_override)
+    local scale_overridex = fx_info.scalex or scale_override
+    local scale_overridey = fx_info.scaley or scale_override
+    fx.Transform:SetScale(scale_overridex, scale_overridey, scale_overridex)
 
     local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
     fx_pos_y = fx_pos_y + (fx_info.offset or 0)
@@ -196,6 +202,9 @@ local function spellCB(tool, target, pos, caster)
 end
 
 local function can_cast_fn(doer, target, pos)
+    if target.reskin_tool_target_redirect and target.reskin_tool_target_redirect:IsValid() then
+        target = target.reskin_tool_target_redirect
+    end
     local prefab_to_skin = target.prefab
     local is_beard = false
 

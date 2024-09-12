@@ -100,7 +100,7 @@ function Floater:ShouldShowEffect()
 	local pos_x, pos_y, pos_z = self.inst.Transform:GetWorldPosition()
 
 	return
-        not TheWorld.Map:IsPassableAtPoint(pos_x, 0, pos_z, nil, self.is_obstable) and
+        TheWorld.Map:IsOceanAtPoint(pos_x, 0, pos_z, nil, self.is_obstable) and
         not TheWorld.Map:IsVisualGroundAtPoint(pos_x, 0, pos_z)
 end
 

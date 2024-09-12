@@ -60,7 +60,7 @@ local function OnCreate(inst, scenariorunner)
 end
 
 local function OnLoad(inst, scenariorunner)
-   	chestfunctions.InitializeChestTrap(inst, scenariorunner, GetRandomItem(chest_openfunctions))
+	chestfunctions.InitializeChestTrap(inst, scenariorunner, GetRandomItem(chest_openfunctions))
 end
 
 local function OnDestroy(inst)

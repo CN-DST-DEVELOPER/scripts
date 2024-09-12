@@ -72,7 +72,9 @@ local function Relocate(inst)
     inst._stolen_fish_count = 0
     inst.components.health:SetCurrentHealth(inst.components.health:GetMaxWithPenalty())
 
-    TheWorld.components.malbatrossspawner:Relocate(inst)
+    if TheWorld.components.malbatrossspawner ~= nil then
+        TheWorld.components.malbatrossspawner:Relocate(inst)
+    end
 end
 
 local TARGET_DIST = 16

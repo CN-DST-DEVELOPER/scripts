@@ -440,7 +440,7 @@ function Combat:CanBeAttacked(attacker)
         end
     end
 
-	if self.inst:HasTag("shadowcreature") and
+	if self.inst:HasAnyTag("shadowcreature", "nightmarecreature") and
 		(	self._target:value() == nil
 			--[[or (--See if we're targeting someone else, and attacker isn't insane enough to help
 				attacker ~= nil and

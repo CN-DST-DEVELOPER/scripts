@@ -656,7 +656,7 @@ function MapScreen:OnControl(control, down)
                 SetAutopaused(false)
                 self.quitting = true
             end
-			playercontroller:OnMapAction(LMBaction.action.code, Vector3(aax, aay, aaz), self.maptarget)
+			playercontroller:OnMapAction(LMBaction.action.code, Vector3(aax, aay, aaz), self.maptarget, LMBaction.action.mod_name)
             if LMBaction.action.closes_map then
                 self.maptarget = nil
                 TheFrontEnd:PopScreen()
@@ -668,7 +668,7 @@ function MapScreen:OnControl(control, down)
                 SetAutopaused(false)
                 self.quitting = true
             end
-			playercontroller:OnMapAction(RMBaction.action.code, Vector3(aax, aay, aaz), self.maptarget)
+			playercontroller:OnMapAction(RMBaction.action.code, Vector3(aax, aay, aaz), self.maptarget, RMBaction.action.mod_name)
             if RMBaction.action.closes_map then
                 self.maptarget = nil
                 TheFrontEnd:PopScreen()

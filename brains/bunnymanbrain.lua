@@ -30,6 +30,10 @@ local SEE_BURNING_HOME_DIST_SQ = 20*20
 
 local SEE_PLAYER_DIST = 6
 
+local SCARER_MUST_TAGS = {"manrabbitscarer"}
+local SEE_SCARER_DIST = TUNING.RABBITKINGSPEAR_SCARE_RADIUS
+local STOP_SCARER_DIST = SEE_SCARER_DIST + 6
+
 local GETTRADER_MUST_TAGS = { "player" }
 local FINDFOOD_CANT_TAGS = { "outofreach" }
 
@@ -123,10 +127,33 @@ local function GetNoLeaderHomePos(inst)
     end
 end
 
+local function FindNearbyScarer(inst)
+    local leader = inst.components.follower and inst.components.follower:GetLeader() or nil
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, SEE_SCARER_DIST, SCARER_MUST_TAGS)
+    for _, ent in ipairs(ents) do
+        if ent:HasTag("INLIMBO") then
+            print(ent, ent.components.equippable and ent.components.equippable:IsEquipped(), ent.components.inventoryitem == nil or ent.components.inventoryitem:GetGrandOwner() ~= leader)
+            if ent.components.equippable and ent.components.equippable:IsEquipped() then
+                if ent.components.inventoryitem == nil or ent.components.inventoryitem:GetGrandOwner() ~= leader then
+                    return ent
+                end
+            end
+        end
+        return ent
+    end
+    return nil
+end
+
 local BunnymanBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
+local hunterparams_scarer = {
+    tags = { "manrabbitscarer" },
+    notags = { "NOCLICK" },
+    seeequipped = true,
+}
 function BunnymanBrain:OnStart()
     local root =
         PriorityNode(
@@ -142,6 +169,8 @@ function BunnymanBrain:OnStart()
                 ChattyNode(self.inst, "RABBIT_RETREAT",
                     RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST))),
             ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
+            ChattyNode(self.inst, "RABBIT_RETREAT",
+                RunAway(self.inst, hunterparams_scarer, SEE_SCARER_DIST, STOP_SCARER_DIST)),
             WhileNode(function() return IsHomeOnFire(self.inst) end, "OnFire",
                 ChattyNode(self.inst, "RABBIT_PANICHOUSEFIRE",
                     Panic(self.inst))),

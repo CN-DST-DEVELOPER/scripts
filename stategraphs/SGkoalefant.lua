@@ -130,6 +130,8 @@ local states=
             inst.AnimState:PlayAnimation("death")
             inst.components.locomotor:StopMoving()
             inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+
+            RemovePhysicsColliders(inst)
         end,
 
     },

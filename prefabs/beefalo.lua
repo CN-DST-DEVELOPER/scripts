@@ -24,6 +24,7 @@ local assets =
 
     Asset("ANIM", "anim/beefalo_fx.zip"),
     Asset("ANIM", "anim/poop_cloud.zip"),
+    Asset("ANIM", "anim/beefalo_revive.zip"),
 
     Asset("SOUND", "sound/beefalo.fsb"),
 
@@ -175,6 +176,10 @@ fns.ClearBellOwner = function(inst)
     inst.components.follower:SetLeader(nil)
     inst.components.rideable:SetShouldSave(true)
 
+    if inst.components.burnable ~= nil then
+        inst.components.burnable.nocharring = false
+    end
+
     inst.persists = true
 
     inst:UpdateDomestication()
@@ -189,10 +194,18 @@ fns.GetBeefBellOwner = function(inst)
 end
 
 fns.SetBeefBellOwner = function(inst, bell, bell_user)
-    if inst.components.follower:GetLeader() == nil
-            and bell ~= nil and bell.components.leader ~= nil then
+    if inst.components.follower:GetLeader() == nil and bell ~= nil and bell.components.leader ~= nil then
         bell.components.leader:AddFollower(inst)
         inst.components.rideable:SetShouldSave(false)
+
+        if bell:HasTag("shadowbell") then
+            -- NOTES(DiogoW): Removing event callback set by leader:AddFollower
+            bell:RemoveEventCallback("death", bell.components.leader._onfollowerdied, inst)
+
+            if inst.components.burnable ~= nil then
+                inst.components.burnable.nocharring = true
+            end
+        end
 
         inst:ListenForEvent("onremove", inst._BellRemoveCallback, bell)
 
@@ -219,10 +232,11 @@ local function ClearBuildOverrides(inst, animstate)
 end
 
 local function getbasebuild(inst)
-    return (inst:HasTag("baby") and "beefalo_baby_build")
-            or (not inst:HasTag("has_beard") and "beefalo_shaved_build")
-            or (inst:HasTag("domesticated") and "beefalo_domesticated")
-            or "beefalo_build"
+    return
+           (inst:HasTag("baby")          and "beefalo_baby_build")
+        or (not inst:HasTag("has_beard") and "beefalo_shaved_build")
+        or (inst:HasTag("domesticated")  and "beefalo_domesticated")
+        or "beefalo_build"
 end
 
 function fns.GetMoodComponent(inst)
@@ -253,21 +267,20 @@ local function ApplyBuildOverrides(inst, animstate)
         animstate:Hide("HEAT")
     end
 
+    if inst.components.skinner_beefalo then
+        local clothing_names = inst.components.skinner_beefalo:GetClothing()
+        SetBeefaloSkinsOnAnim( animstate, clothing_names, animstate ~= inst.AnimState and inst.GUID or nil )
+    end
+
     if tendencies[inst.tendency].build ~= nil then
         animstate:AddOverrideBuild(tendencies[inst.tendency].build)
     elseif animstate == inst.AnimState then
         -- this presumes that all the face builds have the same symbols
         animstate:ClearOverrideBuild("beefalo_personality_docile")
     end
-
-    if inst.components.skinner_beefalo then
-        local clothing_names = inst.components.skinner_beefalo:GetClothing()
-        SetBeefaloSkinsOnAnim( animstate, clothing_names, inst.GUID )
-    end
 end
 
 local function OnEnterMood(inst)
-
     if inst.yotb_tempcontestbeefalo then
         return
     end
@@ -351,11 +364,14 @@ end
 
 local function GetStatus(inst, viewer)
     local leader = inst.components.follower:GetLeader()
+    local is_holding_bell = leader ~= nil and leader.components.inventoryitem ~= nil and leader.components.inventoryitem:GetGrandOwner() == viewer
+
+    if inst.components.health ~= nil and inst.components.health:IsDead() then
+        return is_holding_bell and "DEAD_MYPARTNER" or "DEAD"
+    end
+
     if leader ~= nil then
-        return (leader.components.inventoryitem ~= nil
-                and leader.components.inventoryitem:GetGrandOwner() == viewer
-                and "MYPARTNER")
-                or "FOLLOWER"
+        return is_holding_bell and "MYPARTNER" or "FOLLOWER"
     else
         return (inst.components.beard ~= nil and inst.components.beard.bits == 0 and "NAKED")
             or (inst.components.domesticatable ~= nil and
@@ -379,37 +395,49 @@ fns.testforskins = function(inst)
 end
 
 fns.UnSkin = function(inst)
-    if inst.components.skinner_beefalo then
-        if inst.components.sleeper:IsAsleep() then
+    if inst.components.skinner_beefalo == nil then
+        return
+    end
 
-            if fns.testforskins(inst) then
-                local fx = SpawnPrefab("explode_reskin")
-                fx.Transform:SetScale(2,2,2)
-                fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
-            end
+    if inst.sg:HasStateTag("nointerrupt") then
+        -- Do nothing!
 
-            inst.components.skinner_beefalo:ClearAllClothing()
-        else
-            if fns.testforskins(inst) then
-                inst.sg:GoToState("skin_change", function()
-                    inst.components.skinner_beefalo:ClearAllClothing()
-                end)
-            end
+    elseif inst.components.sleeper:IsAsleep() then
+        if fns.testforskins(inst) then
+            local fx = SpawnPrefab("explode_reskin")
+            fx.Transform:SetScale(2, 2, 2)
+            fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        end
+
+        inst.components.skinner_beefalo:ClearAllClothing()
+    else
+        if fns.testforskins(inst) then
+            inst.sg:GoToState("skin_change", function()
+                inst.components.skinner_beefalo:ClearAllClothing()
+            end)
         end
     end
 end
 
 local function OnResetBeard(inst)
-
     inst:RemoveTag("has_beard")
-    inst.sg:GoToState("shaved")
     inst.components.brushable:SetBrushable(false)
     inst.components.domesticatable:DeltaObedience(TUNING.BEEFALO_DOMESTICATION_SHAVED_OBEDIENCE)
 
     inst:UnSkin()
+
+    if inst.components.sleeper ~= nil and inst.components.sleeper:IsAsleep() then
+        inst.sg.statemem.continuesleeping = true
+    end
+
+    inst.sg:GoToState("shaved")
 end
 
 local function CanShaveTest(inst, shaver)
+    if inst.components.health:IsDead() then
+        return false
+    end
+
     if inst.components.sleeper:IsAsleep() then
         local partner = fns.GetBeefBellOwner(inst)
         if partner == nil or partner == shaver then
@@ -443,20 +471,31 @@ fns.RemoveName = function(inst)
 end
 
 local function OnBrushed(inst, doer, numprizes)
+    if inst.components.health:IsDead() then
+        return
+    end
+
     if numprizes > 0 and inst.components.domesticatable ~= nil then
         inst.components.domesticatable:DeltaDomestication(TUNING.BEEFALO_DOMESTICATION_BRUSHED_DOMESTICATION, doer)
         inst.components.domesticatable:DeltaObedience(TUNING.BEEFALO_DOMESTICATION_BRUSHED_OBEDIENCE)
     end
 end
 
-local function ShouldAcceptItem(inst, item)
-    return inst.components.eater:CanEat(item)
-        and not inst.components.combat:HasTarget()
+local function Dead_AbleToAcceptTest(inst, item, giver, count)
+    return inst.components.health:IsDead() and item.CanReviveTarget ~= nil and item:CanReviveTarget(inst, giver)
+end
+
+local function ShouldAcceptItem(inst, item, giver, count)
+    return (inst.components.eater:CanEat(item) and not inst.components.combat:HasTarget()) or inst.components.trader.abletoaccepttest ~= nil
 end
 
 local function OnGetItemFromPlayer(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item, giver)
+    end
+
+    if item.ReviveTarget ~= nil then
+        item:ReviveTarget(inst, giver)
     end
 end
 
@@ -552,7 +591,7 @@ local function SetTendency(inst, changedomestication)
 end
 
 local function GetBaseSkin(inst)
-    return inst.tendency and tendencies[inst.tendency].build or getbasebuild(inst)
+    return getbasebuild(inst)
 end
 
 local function ShouldBeg(inst)
@@ -610,8 +649,25 @@ local function OnObedienceDelta(inst, data)
 end
 
 local function OnDeath(inst, data)
+    local leader = inst.components.follower:GetLeader()
+
+    if data.cause == "file_load" or (leader ~= nil and leader:HasTag("shadowbell")) then
+        inst.components.trader:SetAbleToAcceptTest(Dead_AbleToAcceptTest)
+
+        inst.components.beard:EnableGrowth(false)
+        inst.components.hunger:Pause()
+
+        inst.components.follower.noleashing = true
+        inst.components.follower:StopLeashing()
+
+        inst:AddTag("deadcreature")
+        inst:AddTag("give_dolongaction")
+    else
+        inst:AddTag("NOCLICK")
+    end
+
     inst.persists = false
-    inst:AddTag("NOCLICK")
+
     if inst.components.rideable:IsBeingRidden() then
         --SG won't handle "death" event while we're being ridden
         --SG is forced into death state AFTER dismounting (OnRiderChanged)
@@ -627,6 +683,23 @@ local function OnDeath(inst, data)
         end
         carrat.Transform:SetPosition(x,y,z)
     end
+end
+
+function fns.OnRevived(inst, revive)
+    inst.components.health:SetPercent(1)
+    inst.sg:GoToState("revive")
+
+    inst.components.trader:SetAbleToAcceptTest(nil)
+
+    -- These are called when exiting the revive state.
+
+    -- inst.components.beard:EnableGrowth(true)
+    -- inst.components.hunger:Resume()
+
+    -- inst.components.follower.noleashing = false
+    -- inst.components.follower:StartLeashing()
+
+    -- inst:RemoveTag("deadcreature")
 end
 
 local function DomesticationTriggerFn(inst)
@@ -873,8 +946,13 @@ fns.OnLoadPostPass = function(inst,data)
 end
 
 local function CanSpawnPoop(inst)
+    if inst.components.health:IsDead() then
+        return false
+    end
 
-    if inst.components.hitchable and not inst.components.hitchable.canbehitched then return false end
+    if inst.components.hitchable ~= nil and not inst.components.hitchable.canbehitched then
+        return false
+    end
 
 	return inst.components.rideable == nil or not inst.components.rideable:IsBeingRidden()
 end
@@ -889,6 +967,51 @@ local function onclothingchanged(inst,data)
     end
 end
 
+local BLACK_COLOUR = {0, 0, 0, 1}
+
+function fns.OnShadowPoopTimeOver(inst)
+    if inst._timeovertask ~= nil then
+        inst._timeovertask:Cancel()
+        inst._timeovertask = nil
+    end
+
+    if inst:IsInLimbo() then
+        return
+    end
+
+    if inst:IsAsleep() then
+        inst:Remove()
+    else
+        inst.components.inventoryitem.canbepickedup = false
+
+        inst.AnimState:PlayAnimation("disappear")
+        inst.SoundEmitter:PlaySound("rifts4/beefalo_revive/poop_disappear")
+
+        inst:AddComponent("colourtweener")
+        inst.components.colourtweener:StartTween(BLACK_COLOUR, 6*FRAMES)
+
+        inst:AddTag("NOCLICK")
+        inst:ListenForEvent("animover", inst.Remove)
+        inst:ListenForEvent("entitysleep", inst.Remove)
+
+        if inst.flies ~= nil then
+            inst.flies:Remove()
+            inst.flies = nil
+        end
+    end
+end
+
+function fns.OnShadowPoopEnterLimbo(inst)
+    inst:RemoveEventCallback("enterlimbo", fns.OnShadowPoopEnterLimbo)
+
+    if inst._timeovertask ~= nil then
+        inst._timeovertask:Cancel()
+        inst._timeovertask = nil
+    end
+
+    inst.persists = true
+end
+
 local function PoopOnSpawned(inst, poop)
     local heading_angle = -(inst.Transform:GetRotation()) + 180
 
@@ -897,6 +1020,14 @@ local function PoopOnSpawned(inst, poop)
     pos.y = pos.y + 0.8
     pos.z = pos.z + (math.sin(heading_angle*DEGREES))
     poop.Transform:SetPosition(pos.x, pos.y, pos.z)
+
+    local leader = inst.components.follower:GetLeader()
+
+    if leader ~= nil and leader:HasTag("shadowbell") then
+        poop.persists = false
+        poop._timeovertask = poop:DoTaskInTime(TUNING.SHADOW_BEEF_BELL_POOP_DISAPPEAR_TIME, fns.OnShadowPoopTimeOver)
+        poop:ListenForEvent("enterlimbo", fns.OnShadowPoopEnterLimbo)
+    end
 end
 
 local function beefalo()
@@ -909,6 +1040,7 @@ local function beefalo()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
+    inst:SetPhysicsRadiusOverride(1.25)
     MakeCharacterPhysics(inst, 100, .5)
 
     inst.DynamicShadow:SetSize(6, 2)
@@ -1103,6 +1235,7 @@ local function beefalo()
     inst:AddComponent("uniqueid")
     inst:AddComponent("beefalometrics")
     inst:AddComponent("drownable")
+    inst:AddComponent("colouradder")
 
     inst:AddComponent("skinner_beefalo")
     inst:ListenForEvent("onclothingchanged", onclothingchanged)
@@ -1138,6 +1271,7 @@ local function beefalo()
     inst.GetMoodComponent = fns.GetMoodComponent
     inst.GetIsInMood = fns.GetIsInMood
     inst.UnSkin = fns.UnSkin
+    inst.OnRevived = fns.OnRevived
 
     inst._BellRemoveCallback = function(bell)
         fns.ClearBellOwner(inst)

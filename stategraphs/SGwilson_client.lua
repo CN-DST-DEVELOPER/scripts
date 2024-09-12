@@ -398,11 +398,8 @@ local actionhandlers =
             elseif obj:HasTag("soul") then
                 return "eat"
             end
-            for k, v in pairs(FOODTYPE) do
-                if obj:HasTag("edible_"..v) then
-                    return v == FOODTYPE.MEAT and "eat" or "quickeat"
-                end
-            end
+
+            return obj:HasTag("edible_"..FOODTYPE.MEAT) and "eat" or "quickeat"
         end),
     ActionHandler(ACTIONS.GIVE,
         function(inst, action)
@@ -747,6 +744,7 @@ local actionhandlers =
 	ActionHandler(ACTIONS.LOOKAT, "closeinspect"),
 
     ActionHandler(ACTIONS.INCINERATE, "doshortaction"),
+	ActionHandler(ACTIONS.BOTTLE, "dolongaction"),
 }
 
 local events =

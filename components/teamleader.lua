@@ -111,21 +111,18 @@ function TeamLeader:ValidMember(member)
 end
 
 function TeamLeader:DisbandTeam()
-    local team = shallowcopy(self.team)
-
-	for member in pairs(team) do
+	for member in pairs(self.team) do
 		self:OnLostTeammate(member)
 	end
+	--assert(next(self.team) == nil)
 	self.threat = nil
-	self.team = {}
 	self.inst:Remove()
 end
 
 function TeamLeader:TeamSizeControl()
 	if self:GetTeamSize() > self.max_team_size then
 		local teamcount = 0
-		local team = shallowcopy(self.team)
-		for member in pairs(team) do
+		for member in pairs(self.team) do
 			teamcount = teamcount + 1
 			if teamcount > self.max_team_size then
 				self:OnLostTeammate(member)
@@ -170,16 +167,18 @@ function TeamLeader:BroadcastDistress(member)
 end
 
 function TeamLeader:OnLostTeammate(member)
-	if member and member:IsValid() then
-		self.inst:RemoveEventCallback("death", member.deathfn, member)
-		self.inst:RemoveEventCallback("attacked", member.attackedfn, member)
-		self.inst:RemoveEventCallback("onattackother", member.attackedotherfn, member)
-		self.inst:RemoveEventCallback("onremove", member.deathfn, member)
+	if member then
+		if member:IsValid() then
+			self.inst:RemoveEventCallback("death", member.deathfn, member)
+			self.inst:RemoveEventCallback("attacked", member.attackedfn, member)
+			self.inst:RemoveEventCallback("onattackother", member.attackedotherfn, member)
+			self.inst:RemoveEventCallback("onremove", member.deathfn, member)
+			member.components.teamattacker.teamleader = nil
+			member.components.teamattacker.order = nil
+			member.components.teamattacker.inteam = false
+			member.components.combat.target = nil
+		end
 		self.team[member] = nil
-		member.components.teamattacker.teamleader = nil
-		member.components.teamattacker.order = nil
-		member.components.teamattacker.inteam = false
-		member.components.combat.target = nil
 	end
 end
 
@@ -270,11 +269,21 @@ function TeamLeader:IsTeamEmpty()
 end
 
 function TeamLeader:SetNewThreat(threat)
+	if self.threat then
+		self.inst:RemoveEventCallback("onremove", self._onthreatremoved, self.threat)
+		self._onthreatremoved = nil
+	end
+
 	self.threat = threat
-	self.inst:ListenForEvent("onremove", function()
-		self:DisbandTeam()
-		self.threat = nil
-	end, self.threat) --The threat has died
+
+	if threat then
+		self._onthreatremoved = function()
+			self:DisbandTeam()
+			self.threat = nil
+			self._onthreatremoved = nil
+		end
+		self.inst:ListenForEvent("onremove", self._onthreatremoved, threat) --The threat has died
+	end
 end
 
 function TeamLeader:GetTheta(dt)
@@ -301,8 +310,7 @@ function TeamLeader:ManageChase(dt)
 end
 
 function TeamLeader:ValidateTeam()
-    local team = shallowcopy(self.team)
-	for member in pairs(team) do
+	for member in pairs(self.team) do
 		if not member:IsValid() then
 			self:OnLostTeammate(member)
 		end

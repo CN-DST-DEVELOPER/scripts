@@ -307,6 +307,59 @@ function d_teleportboat(x, y, z)
     end
 end
 
+function d_breakropebridges(delaytime)
+    delaytime = type(delaytime) == "number" and delaytime or nil
+    local ropebridgemanager = TheWorld.components.ropebridgemanager
+    if not ropebridgemanager then
+        return
+    end
+
+    local _map = TheWorld.Map
+    local breakdata
+    if delaytime then
+        breakdata = {
+            fxtime = delaytime,
+        }
+        breakdata.shaketime = breakdata.fxtime - 1
+        breakdata.destroytime = breakdata.fxtime + 70 * FRAMES
+    end
+    for i, _ in pairs(ropebridgemanager.duration_grid.grid) do
+        local tile_x, tile_y = ropebridgemanager.duration_grid:GetXYFromIndex(i)
+        local x, y, z = _map:GetTileCenterPoint(tile_x, tile_y)
+        if delaytime then
+            ropebridgemanager:QueueDestroyForRopeBridgeAtPoint(x, y, z, breakdata)
+        else
+            ropebridgemanager:DestroyRopeBridgeAtPoint(x, y, z)
+        end
+    end
+end
+
+function d_rabbitking(kind)
+    local player = ConsoleCommandPlayer()
+    if not (player and TheWorld.ismastersim) then
+        return
+    end
+    local rabbitkingmanager = TheWorld.components.rabbitkingmanager
+    if not rabbitkingmanager then
+        return
+    end
+    if kind then
+        if type(kind) == "string" then
+            kind = kind:gsub("rabbitking", ""):gsub("_", "")
+            if Prefabs["rabbitking_" .. kind] == nil then
+                c_announce("Rabbit King kind is invalid: " .. kind)
+                kind = nil
+            end
+        else
+            kind = nil
+        end
+    end
+    local success, reason = rabbitkingmanager:CreateRabbitKingForPlayer(player, nil, kind)
+    if not success then
+        c_announce("Failed to create Rabbit King: " .. tostring(reason))
+    end
+end
+
 function d_resetskilltree()
     local player = ConsoleCommandPlayer()
 
@@ -343,7 +396,7 @@ function d_printskilltreestringsforcharacter(character)
 
     for name, data in orderedPairs(skilldefs) do
         local uppercase_name = string.upper(name)
-        
+
         if data.lock_open == nil and strings[uppercase_name.."_TITLE"] == nil then
             str = string.format('%s%s_TITLE = "%s",\n', str, uppercase_name, strings[uppercase_name.."_TITLE"] or "TODO")
         end
@@ -1030,7 +1083,7 @@ local function _SpawnLayout_AddFn(prefab, points_x, points_y, current_pos_idx, e
 
     x = math.floor(x*100) / 100.0
     y = math.floor(y*100) / 100.0
-    
+
     local inst = SpawnPrefab(prefab)
 
     if inst == nil then
@@ -1044,7 +1097,7 @@ local function _SpawnLayout_AddFn(prefab, points_x, points_y, current_pos_idx, e
     if prefab_data then
         if prefab_data.data ~= nil then
             local data = FunctionOrValue(prefab_data.data)
-            
+
             if data ~= nil then
                 -- Notes(DiogoW): not ideal, but it'll work for debugging purposes.
                 inst:SetPersistData(data, Ents)
@@ -1568,7 +1621,7 @@ function d_spawnfilelist(filename, spacing)
 end
 
 function d_spawnallhats()
-	d_spawnlist(ALL_HAT_PREFAB_NAMES)
+	return d_spawnlist(ALL_HAT_PREFAB_NAMES)
 end
 
 local function spawn_mannequin_and_equip_item(item)
@@ -1634,7 +1687,7 @@ function d_spawnallarmor_onstands()
 		"trunkvest_winter",
 	}
 
-	d_spawnlist(all_armor, 3.5, spawn_mannequin_and_equip_item)
+	return d_spawnlist(all_armor, 3.5, spawn_mannequin_and_equip_item)
 end
 
 function d_spawnallhandequipment_onstands()
@@ -1726,7 +1779,7 @@ function d_spawnallhandequipment_onstands()
         "whip",
     }
 
-	d_spawnlist(all_hand_equipment, 3.5, spawn_mannequin_and_equip_item)
+	return d_spawnlist(all_hand_equipment, 3.5, spawn_mannequin_and_equip_item)
 end
 
 function d_allpillows()
@@ -2041,6 +2094,8 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "costume"
     elseif t.scrapbook_specialinfo == "WINTERSFEASTCOOKEDFOODS" then
         subcat = "wintersfeastfood"
+    elseif t:HasTag("smallepic") then
+        subcat = "smallepic"
     elseif t:HasTag("haunted") then
         subcat = "hauntedtoy"
     elseif t:HasTag("singingshell") then
@@ -2095,7 +2150,7 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "hat"
     elseif t.components.oceanfishingtackle then
         subcat = "tackle"
-    elseif t.components.prototyper then
+    elseif t.components.prototyper and t.sg == nil then
         subcat = "craftingstation"
     elseif t:HasTag("shadow") then
         subcat = "shadow"
@@ -2117,7 +2172,7 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "tree"
     elseif (t.prefab:find("atrium_")) and not table.contains({"atrium_key"}, t.prefab) then
         subcat = "atrium"
-    elseif Scrapbook_IsOnCraftingFilter("RIDING", t.prefab) then
+    elseif Scrapbook_IsOnCraftingFilter("RIDING", t.prefab) or t.components.saddler or t:HasTag("bell") then
         subcat = "riding"
     elseif Scrapbook_IsOnCraftingFilter("SEAFARING", t.prefab) or
            Scrapbook_IsOnCraftingFilter("SEAFARING", t.prefab.."_item") or
@@ -2159,7 +2214,6 @@ local function Scrapbook_DefineName(t)
 
     return name
 end
-
 
 local function Scrapbook_DefineType(t, entry)
     local thingtype = "thing"
@@ -2335,7 +2389,7 @@ end
         scrapbook_nodamage: Hide weapon data (damage, planar damage, range) (boolean).
         scrapbook_overridedata: String array or string arrays of symbol override (symbol, build, symbol_in_build).
         scrapbook_persishable: Overrides components.perishable.perishtime (number).
-        scrapbook_planardamage: Planar damage, for creatures and weapons (number).
+        scrapbook_planardamage: Planar damage, for creatures and weapons (number, string or array with 2 numbers (value range).
         scrapbook_prefab: Used by "prefab" and "name" entries (string).
         scrapbook_removedeps: Remove dependencies (string array).
         scrapbook_sanityaura: Sanity Aura (number).
@@ -2352,6 +2406,11 @@ end
         scrapbook_alpha: AnimState alpha (number: 0-1).
         scrapbook_facing: Determines a facing (number: FACING_RIGHT, FACING_UPRIGHT...)
 ]]
+
+local SCRAPBOOK_IGNORE_UNLOCKABILITY =
+{
+    worm_boss = true,
+}
 
 local SKIP_SPECIALINFO_CHECK =
 {
@@ -2410,7 +2469,7 @@ function d_printscrapbookrepairmaterialsdata()
 
         if material ~= nil then
             repair_data[material] = repair_data[material] or {}
-            
+
             table.insert(repair_data[material], t.scrapbook_prefab or entry)
         end
 
@@ -2418,7 +2477,7 @@ function d_printscrapbookrepairmaterialsdata()
 
         if forge_material ~= nil then
             forgerepair_data[forge_material] = forgerepair_data[forge_material] or {}
-            
+
             table.insert(forgerepair_data[forge_material], t.scrapbook_prefab or entry)
         end
 
@@ -2426,7 +2485,7 @@ function d_printscrapbookrepairmaterialsdata()
 
         if upgradetype ~= nil then
             upgrader_data[upgradetype] = upgrader_data[upgradetype] or {}
-            
+
             table.insert(upgrader_data[upgradetype], t.scrapbook_prefab or entry)
         end
 
@@ -2537,12 +2596,12 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             return
         end
 
-        if t.AnimState == nil then
-            print(string.format("[!!!!]  Aborting data creation command! Entry [ %s ] doesn't have an AnimState component!", entry))
+        if t.AnimState == nil and (t.scrapbook_bank == nil or t.scrapbook_build == nil or t.scrapbook_anim == nil) then
+            print(string.format("[!!!!]  Aborting data creation command! Entry [ %s ] doesn't have an AnimState component, or bank, build, and anim defined!", entry))
             return
         end
 
-        if t:HasOneOfTags({"FX", "INLIMBO"}) then
+        if t:HasOneOfTags({"FX", "INLIMBO"}) and SCRAPBOOK_IGNORE_UNLOCKABILITY[t.prefab] == nil then
             print(string.format("[!!!!]  Prefab [ %s ] has one of these tags [ FX, INLIMBO ] and therefore cannot be unlocked by the scrapbook update function (UpdateScrapbook - player_common_extensions.lua)", entry))
         end
 
@@ -2582,7 +2641,7 @@ function d_createscrapbookdata(print_missing_icons, noreset)
                     local file = t.scrapbook_build or t.AnimState:GetBuild()
                     local icon = t.scrapbook_tex or entry
                     local hide = t.scrapbook_hide ~= nil and table.concat(t.scrapbook_hide, '", "') or nil
-                    
+
                     table.insert(icons_missing, { icon=icon, file=file, anim=anim, hide=hide })
                 else
                     print(string.format("[!!!!]  Atlas for texture [ %s ] not found in scrapbook_iconsX!", tex))
@@ -2658,8 +2717,14 @@ function d_createscrapbookdata(print_missing_icons, noreset)
         end
 
         local planardamage = t.scrapbook_planardamage or (t.components.planardamage ~= nil and t.components.planardamage.basedamage) or nil
-        if planardamage ~= nil and planardamage > 0 then
-            AddInfo( "planardamage", planardamage )
+        if planardamage ~= nil then
+            if type(planardamage) == "table" then
+                planardamage = string.format("%d-%d", planardamage[1] , planardamage[2])
+            end
+
+            if checkstring(planardamage) or planardamage > 0 then
+                AddInfo( "planardamage", planardamage )
+            end
         end
 
         AddInfo( "areadamage", t.scrapbook_areadamage )
@@ -2774,11 +2839,11 @@ function d_createscrapbookdata(print_missing_icons, noreset)
 
                 for i, mat in ipairs(REPAIR_MATERIAL_DATA[_repairmaterial]) do
                     local mat_inst = SpawnPrefab(mat)
-                    
+
                     if mat_inst ~= nil and t.components.repairable.checkmaterialfn(t, mat_inst) then
                         table.insert(valid_materials, mat)
                     end
-                    
+
                     if mat_inst ~= nil then
                         mat_inst:Remove()
                     end
@@ -2948,7 +3013,7 @@ function d_createscrapbookdata(print_missing_icons, noreset)
 
         AddInfo( "animoffsetx",  t.scrapbook_animoffsetx )
         AddInfo( "animoffsety",  t.scrapbook_animoffsety )
-        
+
         AddInfo( "animoffsetbgx",  t.scrapbook_animoffsetbgx )
         AddInfo( "animoffsetbgy",  t.scrapbook_animoffsetbgy )
 
@@ -3084,6 +3149,21 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             AddInfo( "floater", {_floater.size, _floater.vert_offset or 0, _floater.xscale, _floater.yscale} )
         end
 
+        ---------------------------------::   SADDLE   ::---------------------------------
+
+        local _saddler = t.components.saddler
+        if _saddler ~= nil then
+            if _saddler.bonusdamage > 0 or t.components.planardamage then
+                AddInfo( "weapondamage", _saddler.bonusdamage )
+            end
+
+            AddInfo( "absorb_percent", _saddler.absorbpercent )
+
+            if t.components.planardefense and t.components.planardefense.basedefense > 0 then
+                AddInfo( "armor_planardefense", t.components.planardefense.basedefense )
+            end
+        end
+
         ---------------------------------::   DEPENDENCIES   ::---------------------------------
 
         local _deps = t.scrapbook_deps or shallowcopy(Prefabs[entry].deps)
@@ -3101,7 +3181,7 @@ function d_createscrapbookdata(print_missing_icons, noreset)
                 for tech,level in pairs(recipedata.level) do
                     if level > 0 then
                         for tree, num in pairs(t.components.prototyper.trees) do
-                            if tech == tree and num >= level then
+                            if tech == tree and (num >= level or (t.prefab == "carpentry_station" and num > 0)) then
                                 deps[tostring(recipe)] = true
                                 found = true
                                 break
@@ -3114,7 +3194,7 @@ function d_createscrapbookdata(print_missing_icons, noreset)
                 end
             end
         end
-        
+
         local statue_sketch = AllRecipes[entry.."_sketch"]
         if statue_sketch ~= nil and NOT_ALLOWED_RECIPE_TECH[statue_sketch.level] then
             print(string.format("[!!!!] [ %s ] sketch is only available during a specific Chinese new year... So the statue don't go into the scrapbook.", entry))
@@ -3673,4 +3753,12 @@ function d_spell(spellnum, item)
 	item = item or c_sel()
 	item.components.spellbook:SelectSpell(spellnum)
 	item.components.spellbook.items[spellnum].execute(item)
+end
+
+function d_itemwithshadowmimic(item_prefab)
+    local mimic_worldcomponent = TheWorld.components.shadowthrall_mimics
+    if not mimic_worldcomponent then return end
+
+    local item = c_spawn(item_prefab)
+    item:AddComponent("itemmimic")
 end

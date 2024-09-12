@@ -14,6 +14,7 @@ local events=
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("locomote",
         function(inst)
@@ -266,5 +267,6 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddHopStates(states, true, {loop = "jump"})--, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("frog", states, events, "idle", actionhandlers)

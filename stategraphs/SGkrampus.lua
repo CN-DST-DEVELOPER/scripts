@@ -11,7 +11,8 @@ local events=
     EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("nointerrupt") and not inst.sg:HasStateTag("attack") and not CommonHandlers.HitRecoveryDelay(inst) then inst.sg:GoToState("hit") end end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then inst.sg:GoToState("attack") end end),
-    CommonHandlers.OnSleep(),
+    CommonHandlers.OnSleepEx(),
+    CommonHandlers.OnWakeEx(),
     CommonHandlers.OnLocomote(true,false),
     CommonHandlers.OnFreeze(),
 }
@@ -123,40 +124,59 @@ local states=
         onenter = function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/death")
             inst.AnimState:PlayAnimation("death")
-            inst.components.locomotor:StopMoving()
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
-        end,
 
+            inst.components.locomotor:StopMoving()
+            inst.components.lootdropper:DropLoot()
+
+            RemovePhysicsColliders(inst)
+        end,
     },
 
 
     State{
         name = "exit",
-        tags = {"busy", "nointerrupt"},
+        tags = {"busy", "nointerrupt", "nosleep", "nofreeze", "noattack"},
 
         onenter = function(inst)
-			--inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/death")
-			inst.components.health:SetInvincible(true)
-            inst.Physics:Stop()
-            RemovePhysicsColliders(inst)
             inst.AnimState:PlayAnimation("exit")
-            inst:SetBrain(nil)
+
+            inst.components.health:SetInvincible(true)
+            inst.components.locomotor:StopMoving()
+
+            RemovePhysicsColliders(inst)
+
+            inst:StopBrain()
         end,
 
-		timeline=
+        timeline =
         {
             TimeEvent(11*FRAMES, function(inst) inst:PerformBufferedAction() inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_drop") end),
             TimeEvent(30*FRAMES, function(inst) inst:PerformBufferedAction() inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_jumpinto") end),
-            TimeEvent(40*FRAMES, function(inst) inst:PerformBufferedAction() inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_dissappear") end),
+            TimeEvent(40*FRAMES, function(inst)
+                inst:PerformBufferedAction()
+                inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_dissappear")
 
+                inst.DynamicShadow:Enable(false)
+            end),
         },
 
-		events=
+        events =
         {
-			EventHandler("animover", function(inst) inst:Remove() end),
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst:Remove()
+                end
+            end),
         },
 
+        onexit = function(inst)
+            -- Safe guard in case we're not removed!
+            inst.components.health:SetInvincible(false)
 
+            ChangeToCharacterPhysics(inst)
+
+            inst:RestartBrain()
+        end,
     },
 
 	State{
@@ -186,7 +206,7 @@ local states=
     },
 }
 
-CommonStates.AddSleepStates(states,
+CommonStates.AddSleepExStates(states,
 {
 	sleeptimeline = {
         TimeEvent(30*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/sleep") end),

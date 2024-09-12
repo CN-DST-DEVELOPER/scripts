@@ -361,6 +361,8 @@ local function create_hutch()
     inst:AddTag("hutch")
     inst:AddTag("notraptrigger")
     inst:AddTag("noauradamage")
+    inst:AddTag("devourable")
+    
 
     inst.MiniMapEntity:SetIcon("hutch.png")
     inst.MiniMapEntity:SetCanUseCache(false)

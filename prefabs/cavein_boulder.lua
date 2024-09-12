@@ -557,6 +557,14 @@ end
 
 --------------------------------------------------------------------------
 
+local function Sink(inst)
+	if inst.components.inventoryitem.is_landed then
+		inst.components.inventoryitem:SetLanded(false, true)
+	end
+end
+
+--------------------------------------------------------------------------
+
 local function fn()
     local inst = CreateEntity()
 
@@ -629,6 +637,7 @@ local function fn()
 
     inst:ListenForEvent("onremove", OnRemoveFromScene)
     inst:ListenForEvent("enterlimbo", OnRemoveFromScene)
+	inst:ListenForEvent("abandon_ship", Sink)
 
     --inst._iconpos = nil
     --inst._basepos = nil

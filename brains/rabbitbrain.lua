@@ -43,13 +43,16 @@ local function EatFoodAction(inst)
     end
 end
 
-
+local HunterParams = {
+    tags = {"scarytoprey"},
+    notags = {"INLIMBO", "NOCLICK", "rabbitdisguise"},
+}
 function RabbitBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
-        RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
-        RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST, nil, true),
+        RunAway(self.inst, HunterParams, AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
+        RunAway(self.inst, HunterParams, SEE_PLAYER_DIST, STOP_RUN_DIST, nil, true),
         EventNode(self.inst, "gohome",
             DoAction(self.inst, GoHomeAction, "go home", true )),
         WhileNode(function() return not TheWorld.state.isday end, "IsNight",

@@ -70,19 +70,19 @@ local function OnOpenChestTrap(inst, openfn, scenariorunner, data, chance)
 			end
 		end
 
-    	inst.SoundEmitter:PlaySound("dontstarve/common/chest_trap")
+		inst.SoundEmitter:PlaySound("dontstarve/common/chest_trap")
 
-        local x, y, z = inst.Transform:GetWorldPosition()
-	    local fx = SpawnPrefab("statue_transition_2")
-	    if fx ~= nil then
-	        fx.Transform:SetPosition(x, y, z)
-	        fx.Transform:SetScale(1, 2, 1)
-	    end
-	    fx = SpawnPrefab("statue_transition")
-	    if fx ~= nil then
-	        fx.Transform:SetPosition(x, y, z)
-	        fx.Transform:SetScale(1, 1.5, 1)
-	    end
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local fx = SpawnPrefab("statue_transition_2")
+		if fx ~= nil then
+			fx.Transform:SetPosition(x, y, z)
+			fx.Transform:SetScale(1, 2, 1)
+		end
+		fx = SpawnPrefab("statue_transition")
+		if fx ~= nil then
+			fx.Transform:SetPosition(x, y, z)
+			fx.Transform:SetScale(1, 1.5, 1)
+		end
 
 		openfn(inst, scenariorunner, data)
 			--get the player, and get him to say oops

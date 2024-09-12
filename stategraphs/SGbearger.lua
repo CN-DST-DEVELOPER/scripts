@@ -388,6 +388,7 @@ local events =
 	CommonHandlers.OnFreeze(),
 	CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 	EventHandler("doattack", function(inst, data)
 		if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
 			ChooseAttack(inst, data ~= nil and data.target or nil)
@@ -2371,5 +2372,6 @@ local states =
 
 CommonStates.AddFrozenStates(states, function(inst) inst:SetStandState("bi") end)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("bearger", states, events, "init", actionhandlers)

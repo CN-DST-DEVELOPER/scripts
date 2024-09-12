@@ -49,7 +49,7 @@ end
 --     e.g. other players' shadow creatures
 --NOTE: Normally, non-hostile creatures still show "Attack" when you mouseover.
 function fns.TargetForceAttackOnly(inst, target)
-	return target.HostileToPlayerTest ~= nil and target:HasTag("shadowcreature") and not target:HostileToPlayerTest(inst)
+	return target.HostileToPlayerTest and target:HasAnyTag("shadowcreature", "nightmarecreature") and not target:HostileToPlayerTest(inst)
 end
 
 function fns.SetGymStartState(inst)
@@ -1751,6 +1751,18 @@ local function OnSharkSound(inst)
     end
 end
 
+local function OnWormDigestionSound(inst)
+    if ThePlayer ~= nil and  ThePlayer == inst then
+        if inst._wormdigestionsound:value() == true then
+            if not TheFocalPoint.SoundEmitter:PlayingSound("worm_boss_digest") then
+                TheFocalPoint.SoundEmitter:PlaySound("rifts4/worm_boss/beingdigested_lp" ,"worm_boss_digest")
+            end
+        else
+            TheFocalPoint.SoundEmitter:KillSound("worm_boss_digest")
+        end
+    end 
+end
+
 --------------------------------------------------------------------------
 
 --V2C: starting_inventory passed as a parameter here is now deprecated
@@ -1809,6 +1821,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_jump.zip"),
         Asset("ANIM", "anim/player_amulet_resurrect.zip"),
         Asset("ANIM", "anim/player_teleport.zip"),
+		Asset("ANIM", "anim/player_abyss_fall.zip"),
         Asset("ANIM", "anim/wilson_fx.zip"),
         Asset("ANIM", "anim/player_one_man_band.zip"),
 		Asset("ANIM", "anim/player_sit.zip"),
@@ -1855,6 +1868,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_wrap_bundle.zip"),
         Asset("ANIM", "anim/player_hideseek.zip"),
 		Asset("ANIM", "anim/player_slip.zip"),
+		Asset("ANIM", "anim/player_suspended.zip"),
 
         Asset("ANIM", "anim/player_wardrobe.zip"),
         Asset("ANIM", "anim/player_skin_change.zip"),
@@ -2305,6 +2319,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._lunarportalmax = net_event(inst.GUID, "localplayer._lunarportalmax")
         inst._shadowportalmax = net_event(inst.GUID, "localplayer._shadowportalmax")
         inst._skilltreeactivatedany = net_event(inst.GUID, "localplayer._skilltreeactivatedany")
+        inst._wormdigestionsound = net_bool(inst.GUID, "localplayer._wormdigestionsound","wormdigestionsounddirty")
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
             inst.yotb_skins_sets = net_shortint(inst.GUID, "player.yotb_skins_sets")
@@ -2322,6 +2337,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         end
 
         inst:ListenForEvent("sharksounddirty", OnSharkSound)
+        inst:ListenForEvent("wormdigestionsounddirty", OnWormDigestionSound)
         --inst:ListenForEvent("underleafcanopydirty", OnUnderLeafCanopy)
 
         inst:ListenForEvent("finishseamlessplayerswap", onfinishseamlessplayerswap)
@@ -2513,6 +2529,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst.components.trader:SetAcceptTest(ShouldAcceptItem)
         inst.components.trader.onaccept = OnGetItem
         inst.components.trader.deleteitemonaccept = false
+        inst.components.trader.acceptsmimics = true
 
         -------
 
@@ -2559,9 +2576,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
             inst:AddComponent("giftreceiver")
         end
 
-		if TheWorld.has_ocean then
-	        inst:AddComponent("drownable")
-		end
+		inst:AddComponent("drownable") -- NOTES(JBK): Now for caves too because void is a drown state.
 
         inst:AddComponent("steeringwheeluser")
 		inst:AddComponent("walkingplankuser")

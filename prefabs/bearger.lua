@@ -242,7 +242,7 @@ local function OnHitOther(inst, data)
 
 	if inst.sg:HasStateTag("weapontoss") and data.target ~= nil and data.target.components.inventory ~= nil and not data.target:HasTag("stronggrip") then
         local item = data.target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-        if item ~= nil then
+        if item ~= nil and not item:HasTag("nosteal") then
             data.target.components.inventory:DropItem(item)
             LaunchItem(inst, data.target, item)
         end

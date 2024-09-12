@@ -220,9 +220,13 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
+
+    inst.MiniMapEntity:SetIcon("chester_eyebone.png")
+    inst.MiniMapEntity:SetPriority(7)
 
     inst:AddTag("chester_eyebone")
     inst:AddTag("irreplaceable")

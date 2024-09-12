@@ -40,6 +40,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
 
     EventHandler("victory", function(inst, data)

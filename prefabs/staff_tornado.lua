@@ -17,7 +17,7 @@ local function getspawnlocation(inst, target)
 end
 
 local function spawntornado(staff, target, pos)
-    local tornado = SpawnPrefab("tornado")
+    local tornado = SpawnPrefab("tornado", staff.linked_skinname, staff.skin_id)
     tornado.WINDSTAFF_CASTER = staff.components.inventoryitem.owner
     tornado.WINDSTAFF_CASTER_ISPLAYER = tornado.WINDSTAFF_CASTER ~= nil and tornado.WINDSTAFF_CASTER:HasTag("player")
     tornado.Transform:SetPosition(getspawnlocation(staff, target))
@@ -32,12 +32,22 @@ local function spawntornado(staff, target, pos)
 end
 
 local function onequip(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_object", "swap_tornado_stick", "swap_tornado_stick")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_tornado_stick", inst.GUID, "swap_tornado_stick")
+    else
+        owner.AnimState:OverrideSymbol("swap_object", "swap_tornado_stick", "swap_tornado_stick")
+    end
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
 end
 
 local function onunequip(inst, owner)
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
     owner.AnimState:Hide("ARM_carry")
     owner.AnimState:Show("ARM_normal")
 end

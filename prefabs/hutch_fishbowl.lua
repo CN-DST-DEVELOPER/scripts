@@ -176,9 +176,13 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
+
+    inst.MiniMapEntity:SetIcon("hutch_fishbowl.png")
+    inst.MiniMapEntity:SetPriority(7)
 
     inst:AddTag("hutch_fishbowl")
     inst:AddTag("irreplaceable")

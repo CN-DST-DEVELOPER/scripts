@@ -528,6 +528,22 @@ local function TryResumePocketRummage(inst)
 	return false
 end
 
+local function HandleInstrumentAssets(inst, build, symbol)
+    local inv_obj = inst.bufferedaction ~= nil and inst.bufferedaction.invobject or nil
+    local override_build, override_symbol, override_sound
+    if inv_obj and inv_obj.components.instrument then
+        override_build, override_symbol, override_sound = inv_obj.components.instrument:GetAssetOverrides()
+        inst.sg.statemem.sound = override_sound
+    end
+    local skin_build = inv_obj and inv_obj:GetSkinBuild() or nil
+    if skin_build ~= nil then
+        inst.AnimState:OverrideItemSkinSymbol(symbol, skin_build, override_symbol or symbol, inv_obj.GUID, override_build or build)
+    else
+        inst.AnimState:OverrideSymbol(symbol, override_build or build, override_symbol or symbol)
+    end
+    return inv_obj
+end
+
 local actionhandlers =
 {
     ActionHandler(ACTIONS.CHOP,
@@ -1177,6 +1193,7 @@ local actionhandlers =
 	ActionHandler(ACTIONS.REMOTE_TELEPORT, "remote_teleport_pre"),
 
     ActionHandler(ACTIONS.INCINERATE, "doshortaction"),
+	ActionHandler(ACTIONS.BOTTLE, "dolongaction"),
 }
 
 local events =
@@ -1267,7 +1284,7 @@ local events =
                         isshield = inst.sg.statemem.isshield,
                     })
                 end
-			elseif inst.sg:HasStateTag("devoured") then
+			elseif inst.sg:HasStateTag("devoured") or inst.sg:HasStateTag("suspended") then
 				return --Do nothing
             elseif data.attacker ~= nil
                 and data.attacker:HasTag("groundspike")
@@ -1325,6 +1342,12 @@ local events =
         end
     end),
 
+    EventHandler("startled", function(inst)
+        if not inst.components.health:IsDead() then
+            inst.sg:GoToState("startle", false)
+        end
+    end),
+
     EventHandler("repelled", function(inst, data)
         if not inst.components.health:IsDead() then
             inst.sg:GoToState("repelled", data)
@@ -1378,7 +1401,17 @@ local events =
 
 	EventHandler("devoured", function(inst, data)
 		if not inst.components.health:IsDead() and data ~= nil and data.attacker ~= nil and data.attacker:IsValid() then
-			inst.sg:GoToState("devoured", data.attacker)
+			inst.sg:GoToState("devoured", data)
+		end
+	end),
+
+	EventHandler("suspended", function(inst, attacker)
+		if not inst.components.health:IsDead() and
+			not inst.components.rider:IsRiding() and
+			attacker and attacker:IsValid() and
+			not (attacker.components.health and attacker.components.health:IsDead())
+		then
+			inst.sg:GoToState("suspended", attacker)
 		end
 	end),
 
@@ -1557,6 +1590,21 @@ local events =
             else
                 inst.sg:GoToState("sink_fast")
             end
+        end
+    end),
+
+    EventHandler("onfallinvoid", function(inst, data)
+        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("falling") and
+                (inst.components.drownable ~= nil and inst.components.drownable:ShouldFallInVoid()) then
+			if inst:HasTag("weregoose") then
+				local pt = data and data.teleport_pt or nil
+				if pt == nil then
+					pt = Vector3(FindRandomPointOnShoreFromOcean(inst.Transform:GetWorldPosition()))
+				end
+				inst.sg:GoToState("weregoose_takeoff", pt)
+			else
+				inst.sg:GoToState("abyss_fall", data and data.teleport_pt or nil)
+			end
         end
     end),
 
@@ -3034,10 +3082,17 @@ local states =
 			end
 			inst:ClearBufferedAction()
 
-            if inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() then
-                inst.sg:GoToState("sink_fast")
-                return
-			end
+            local drownable = inst.components.drownable
+            if drownable then
+                local fallingreason = drownable:GetFallingReason()
+                if fallingreason == FALLINGREASON.OCEAN then
+                    inst.sg:GoToState("sink_fast")
+                    return
+                elseif fallingreason == FALLINGREASON.VOID then
+                    inst.sg:GoToState("abyss_fall")
+                    return
+                end
+            end
 
             inst.sg.statemem.ignoresandstorm = true
 
@@ -6428,6 +6483,11 @@ local states =
             inst:PerformBufferedAction()
 
             local dumbbell = inst.components.dumbbelllifter.dumbbell
+            if not dumbbell or not dumbbell:IsValid() then
+                inst.sg:GoToState("idle")
+                return
+            end
+
             inst.AnimState:OverrideSymbol("swap_dumbbell", dumbbell.swap_dumbbell, dumbbell.swap_dumbbell)
 
             if inst.components.mightiness then
@@ -7321,14 +7381,7 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("flute", false)
-
-            local inv_obj = inst.bufferedaction ~= nil and inst.bufferedaction.invobject or nil
-            local skin_build = inv_obj:GetSkinBuild()
-            if skin_build ~= nil then
-                inst.AnimState:OverrideItemSkinSymbol("pan_flute01", skin_build, "pan_flute01", inv_obj.GUID, "pan_flute" )
-            else
-                inst.AnimState:OverrideSymbol("pan_flute01", "pan_flute", "pan_flute01")
-            end
+            local inv_obj = HandleInstrumentAssets(inst, "pan_flute", "pan_flute01")
             inst.components.inventory:ReturnActiveActionItem(inv_obj)
         end,
 
@@ -7336,7 +7389,7 @@ local states =
         {
             TimeEvent(30 * FRAMES, function(inst)
                 if inst:PerformBufferedAction() then
-                    inst.SoundEmitter:PlaySound("dontstarve/wilson/flute_LP", "flute")
+                    inst.SoundEmitter:PlaySound(inst.sg.statemem.sound or "dontstarve/wilson/flute_LP", "flute")
                 else
 					inst.sg.statemem.action_failed = true
 					inst.AnimState:SetFrame(94)
@@ -7382,15 +7435,15 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("horn", false)
-            inst.AnimState:OverrideSymbol("horn01", "horn", "horn01")
-            inst.components.inventory:ReturnActiveActionItem(inst.bufferedaction ~= nil and inst.bufferedaction.invobject or nil)
+            local inv_obj = HandleInstrumentAssets(inst, "horn", "horn01")
+            inst.components.inventory:ReturnActiveActionItem(inv_obj)
         end,
 
         timeline =
         {
             TimeEvent(21 * FRAMES, function(inst)
                 if inst:PerformBufferedAction() then
-                    inst.SoundEmitter:PlaySound("dontstarve/common/horn_beefalo")
+                    inst.SoundEmitter:PlaySound(inst.sg.statemem.sound or "dontstarve/common/horn_beefalo")
                 else
 					inst.sg.statemem.action_failed = true
                 end
@@ -7434,14 +7487,14 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("bell", false)
-            inst.AnimState:OverrideSymbol("bell01", "bell", "bell01")
-            inst.components.inventory:ReturnActiveActionItem(inst.bufferedaction ~= nil and inst.bufferedaction.invobject or nil)
+            local inv_obj = HandleInstrumentAssets(inst, "bell", "bell01")
+            inst.components.inventory:ReturnActiveActionItem(inv_obj)
         end,
 
         timeline =
         {
             TimeEvent(15 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve_DLC001/common/glommer_bell")
+                inst.SoundEmitter:PlaySound(inst.sg.statemem.sound or "dontstarve_DLC001/common/glommer_bell")
             end),
             TimeEvent(60 * FRAMES, function(inst)
                 inst:PerformBufferedAction()
@@ -7473,15 +7526,8 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("whistle", false)
-			local item = inst.bufferedaction ~= nil and inst.bufferedaction.invobject or nil
-			local build, symbol
-			if item ~= nil then
-				build = item.whistle_build
-				symbol = item.whistle_symbol
-				inst.sg.statemem.sound = item.whistle_sound
-			end
-			inst.AnimState:OverrideSymbol("hound_whistle01", build or "houndwhistle", symbol or "hound_whistle01")
-			inst.components.inventory:ReturnActiveActionItem(item)
+            local inv_obj = HandleInstrumentAssets(inst, "houndwhistle", "hound_whistle01")
+			inst.components.inventory:ReturnActiveActionItem(inv_obj)
         end,
 
         timeline =
@@ -7606,29 +7652,38 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("action_uniqueitem_pre")
             inst.AnimState:PushAnimation("cowbell", false)
-            inst.AnimState:OverrideSymbol("cbell", "cowbell", "cbell")
 
-            local invitem = (inst.bufferedaction ~= nil and inst.bufferedaction.invobject) or nil
-            inst.components.inventory:ReturnActiveActionItem(invitem)
+            local item = inst.bufferedaction ~= nil and inst.bufferedaction.invobject or nil
+
+            inst.sg.statemem.sound = item ~= nil and item._sound or "yotb_2021/common/cow_bell"
+
+            if item == nil then
+                inst.AnimState:OverrideSymbol("cbell", "cowbell", "cbell")
+            else
+                inst.components.inventory:ReturnActiveActionItem(item)
+
+                local swap_build = item.AnimState:GetBuild() or "cowbell"
+                local skin_build = item:GetSkinBuild()
+
+                if skin_build ~= nil then
+                    inst.AnimState:OverrideItemSkinSymbol("cbell", skin_build, "cbell", item.GUID, swap_build)
+                else
+                    inst.AnimState:OverrideSymbol("cbell", swap_build, "cbell")
+                end
+            end
         end,
 
         timeline =
         {
-            TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(10*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(15 * FRAMES, function(inst)
-                inst:PerformBufferedAction()
-            end),
-			TimeEvent(30 * FRAMES, function(inst)
-				inst.sg:RemoveStateTag("busy")
-			end),
-
-            TimeEvent(15*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(25*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(35*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(46*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(56*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
-            TimeEvent(67*FRAMES, function(inst) inst.SoundEmitter:PlaySound("yotb_2021/common/cow_bell") end),
+            FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
+            FrameEvent(15, function(inst) inst:PerformBufferedAction() end),
+            FrameEvent(15, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
+            FrameEvent(25, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
+            FrameEvent(30, function(inst) inst.sg:RemoveStateTag("busy") end),
+            FrameEvent(35, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
+            FrameEvent(46, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
+            FrameEvent(56, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
+            FrameEvent(67, function(inst) inst.SoundEmitter:PlaySound(inst.sg.statemem.sound) end),
         },
 
         events =
@@ -7639,6 +7694,10 @@ local states =
                 end
             end),
         },
+
+        onexit = function(inst)
+            inst.AnimState:ClearOverrideSymbol("cbell")
+        end
     },
 
     State{
@@ -11030,7 +11089,6 @@ local states =
         end,
     },
 
-
     State{
         name = "abandon_ship_pre",
         tags = { "doing", "busy", "drowning" },
@@ -11157,9 +11215,185 @@ local states =
                 end
             end),
         },
-
-
     },
+
+	State{
+		name = "abyss_fall",
+		tags = { "busy", "nopredict", "nomorph", "noattack", "nointerrupt", "nodangle", "falling" },
+		onenter = function(inst, teleport_pt)
+			ForceStopHeavyLifting(inst)
+			inst.components.rider:ActualDismount()
+			inst.components.locomotor:Stop()
+			inst.components.locomotor:Clear()
+			inst:ClearBufferedAction()
+			inst:ShowHUD(false)
+
+			inst.AnimState:PlayAnimation("abyss_fall")
+            if inst.components.drownable then
+                local teleport_x, teleport_y, teleport_z
+                if teleport_pt then
+                    teleport_x, teleport_y, teleport_z = teleport_pt:Get()
+                end
+                inst.components.drownable:OnFallInVoid(teleport_x, teleport_y, teleport_z)
+            end
+			inst.DynamicShadow:Enable(false)
+			ToggleOffPhysics(inst)
+			if inst.components.playercontroller then
+				inst.components.playercontroller:Enable(false)
+			end
+			inst.components.health:SetInvincible(true)
+		end,
+
+		timeline =
+		{
+			FrameEvent(22, function(inst)
+				inst.AnimState:SetLayer(LAYER_BELOW_GROUND)
+			end),
+			FrameEvent(30, function(inst)
+				inst.sg:AddStateTag("invisible")
+				inst:Hide()
+				inst:ScreenFade(false, 0.5)
+			end),
+			TimeEvent(2.5, function(inst)
+				inst.sg.statemem.falling = true
+                if inst.components.drownable ~= nil then
+                    inst.components.drownable:Teleport()
+                else
+                    inst:PutBackOnGround()
+                end
+				inst:SnapCamera()
+				inst.sg:GoToState("abyss_drop")
+			end),
+		},
+
+		onexit = function(inst)
+			inst.AnimState:SetLayer(LAYER_WORLD)
+			inst.DynamicShadow:Enable(true)
+			inst:Show()
+			inst:ShowHUD(true)
+			if inst.sg:HasStateTag("invisible") then
+				inst:ScreenFade(true, 0.5)
+			end
+			if not inst.sg.statemem.falling then
+				ToggleOnPhysics(inst)
+				inst.components.health:SetInvincible(false)
+			end
+			if inst.components.playercontroller then
+				inst.components.playercontroller:Enable(true)
+			end
+		end,
+	},
+
+	State{
+		name = "abyss_drop",
+		tags = { "busy", "nopredict", "nomorph", "noattack", "nointerrupt", "nodangle", "overridelocomote", "falling" },
+
+		onenter = function(inst)
+			ForceStopHeavyLifting(inst)
+			inst.components.rider:ActualDismount()
+			inst.components.locomotor:Stop()
+			inst.components.locomotor:Clear()
+			inst:ClearBufferedAction()
+
+			inst.AnimState:PlayAnimation("fall_high")
+
+			ToggleOffPhysics(inst)
+			inst.components.health:SetInvincible(true)
+			inst.player_classified.busyremoteoverridelocomote:set(true)
+
+			inst.sg:SetTimeout(2)
+		end,
+
+		onupdate = function(inst)
+			if inst.HUD and inst.sg.statemem.trackcontrol and not inst.sg.statemem.getup then
+				local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+				if math.abs(TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)) >= deadzone or
+					math.abs(TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)) >= deadzone
+				then
+					if inst.AnimState:AnimDone() then
+						inst.sg:GoToState("abyss_drop_pst")
+					else
+						inst.sg.statemem.getup = true
+					end
+				end
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(12, function(inst)
+				inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
+			end),
+			FrameEvent(14, function(inst)
+				inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("nointerrupt")
+				ToggleOnPhysics(inst)
+				inst.components.health:SetInvincible(false)
+			end),
+			FrameEvent(15, function(inst)
+				inst.sg.statemem.trackcontrol = true
+			end),
+		},
+
+		ontimeout = function(inst)
+			inst.sg:GoToState("abyss_drop_pst")
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst, data)
+				if data and data.remoteoverridelocomote or inst.components.locomotor:WantsToMoveForward() then
+					if inst.AnimState:AnimDone() then
+						inst.sg:GoToState("abyss_drop_pst")
+					elseif inst.sg.statemem.trackcontrol then
+						inst.sg.statemem.getup = true
+					end
+				end
+				return true
+			end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					if inst.sg.statemem.getup then
+						inst.sg:GoToState("abyss_drop_pst")
+					end
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.isphysicstoggle then
+				ToggleOnPhysics(inst)
+			end
+			inst.components.health:SetInvincible(false)
+			inst.player_classified.busyremoteoverridelocomote:set(false)
+		end,
+	},
+
+	State{
+		name = "abyss_drop_pst",
+		tags = { "busy", "nomorph", "nodangle", "falling" },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("buck_pst")
+		end,
+
+		timeline =
+		{
+			TimeEvent(27 * FRAMES, function(inst)
+				inst.sg:RemoveStateTag("busy")
+				inst.sg:RemoveStateTag("nomorph")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+	},
 
     State{
         name = "cast_net",
@@ -12045,7 +12279,8 @@ local states =
 		name = "devoured",
 		tags = { "devoured", "invisible", "noattack", "notalking", "nointerrupt", "busy", "nopredict", "silentmorph" },
 
-		onenter = function(inst, attacker)
+		onenter = function(inst, data)
+            local attacker = data.attacker
 			ClearStatusAilments(inst)
 			ForceStopHeavyLifting(inst)
 			local mount = inst.components.rider:ActualDismount()
@@ -12053,7 +12288,11 @@ local states =
 			inst:ClearBufferedAction()
 			inst.AnimState:PlayAnimation("empty")
 			inst:ShowHUD(false)
-			inst:SetCameraDistance(14)
+
+            if not data.ignoresetcamdist then            
+                inst:SetCameraDistance(14)
+            end
+
 			inst:Hide()
 			inst.DynamicShadow:Enable(false)
 			ToggleOffPhysics(inst)
@@ -12090,7 +12329,7 @@ local states =
 
 		onupdate = function(inst)
 			local attacker = inst.sg.statemem.attacker
-			if attacker:IsValid() then
+			if attacker ~= nil and attacker:IsValid() then
 				inst.Transform:SetPosition(attacker.Transform:GetWorldPosition())
 				inst.Transform:SetRotation(attacker.Transform:GetRotation() + 180)
 			else
@@ -12103,8 +12342,8 @@ local states =
 			EventHandler("spitout", function(inst, data)
 				local attacker = data ~= nil and data.spitter or inst.sg.statemem.attacker
 				if attacker ~= nil and attacker:IsValid() then
-					local rot = attacker.Transform:GetRotation()
-					inst.Transform:SetRotation(rot + 180)
+					local rot = data.rot or attacker.Transform:GetRotation() + 180
+					inst.Transform:SetRotation(rot)
 					local physradius = attacker:GetPhysicsRadius(0)
 					if physradius > 0 then
 						local x, y, z = inst.Transform:GetWorldPosition()
@@ -12144,7 +12383,7 @@ local states =
 						end
 					end
 				end
-			end
+			end            
 			inst:ShowHUD(true)
 			inst:SetCameraDistance()
 			inst:Show()
@@ -12158,6 +12397,134 @@ local states =
 			end
 			if inst.components.talker ~= nil then
 				inst.components.talker:StopIgnoringAll("devoured")
+			end
+
+            inst._wormdigestionsound:set(false)
+		end,
+	},
+
+	State{
+		name = "suspended",
+		tags = { "suspended", "noattack", "notalking", "nointerrupt", "busy", "nopredict", "nomorph", "nodangle" },
+
+		onenter = function(inst, attacker)
+			ClearStatusAilments(inst)
+			ForceStopHeavyLifting(inst)
+			local mount = inst.components.rider:ActualDismount()
+			inst.components.locomotor:Stop()
+			inst:ClearBufferedAction()
+			ToggleOffPhysics(inst)
+			inst.Transform:SetNoFaced()
+			inst.AnimState:PlayAnimation("suspended_pre")
+			inst.AnimState:PushAnimation("suspended")
+			inst.components.inventory:Hide()
+			inst:PushEvent("ms_closepopups")
+			if inst.components.playercontroller then
+				inst.components.playercontroller:EnableMapControls(false)
+				inst.components.playercontroller:Enable(false)
+			end
+			StopTalkSound(inst, true)
+			if inst.components.talker then
+				inst.components.talker:ShutUp()
+				inst.components.talker:IgnoreAll("suspended")
+			end
+			if attacker and attacker:IsValid() then
+				inst.sg.statemem.attacker = attacker
+				if mount then
+					--use true physics radius if available
+					local radius = attacker.Physics and attacker.Physics:GetRadius() or attacker:GetPhysicsRadius(0)
+					if radius > 0 then
+						local dir = attacker:GetAngleToPoint(inst.Transform:GetWorldPosition()) * DEGREES
+						local x, y, z = attacker.Transform:GetWorldPosition()
+						x = x + radius * math.cos(dir)
+						z = z - radius * math.sin(dir)
+						if TheWorld.Map:IsPassableAtPoint(x, 0, z) then
+							if mount.Physics ~= nil then
+								mount.Physics:Teleport(x, 0, z)
+							else
+								mount.Transform:SetPosition(x, 0, z)
+							end
+						end
+					end
+				end
+				attacker:PushEvent("playersuspended", inst)
+			end
+		end,
+
+		onupdate = function(inst)
+			local attacker = inst.sg.statemem.attacker
+			if attacker and attacker:IsValid() then
+				inst.Transform:SetPosition(attacker.Transform:GetWorldPosition())
+			else
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		events =
+		{
+			EventHandler("attacked", function(inst)
+				inst.AnimState:PlayAnimation("suspended_hit")
+				inst.AnimState:PushAnimation("suspended")
+				DoHurtSound(inst)
+				return true
+			end),
+			EventHandler("abouttospit", function(inst)
+				inst.AnimState:PlayAnimation("suspended_spit")
+				inst.AnimState:PushAnimation("suspended")
+				DoHurtSound(inst)
+			end),
+			EventHandler("spitout", function(inst, data)
+				local attacker = data ~= nil and data.spitter or inst.sg.statemem.attacker
+				if attacker and attacker:IsValid() then
+					local rot = data.rot or attacker.Transform:GetRotation() + 180
+					inst.Transform:SetRotation(rot)
+					local x, y, z = inst.Transform:GetWorldPosition()
+					rot = rot * DEGREES
+					x = x + math.cos(rot) * 0.1
+					z = z - math.sin(rot) * 0.1
+					inst.Physics:Teleport(x, 0, z)
+					DoHurtSound(inst)
+					inst.sg:HandleEvent("knockback", {
+						knocker = attacker,
+						radius = data ~= nil and data.radius or physradius + 1,
+						strengthmult = data ~= nil and data.strengthmult or nil,
+					})
+				else
+					inst.sg:HandleEvent("knockback")
+				end
+				--NOTE: ignores heavy armor/body
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.isphysicstoggle then
+				ToggleOnPhysics(inst)
+			end
+			if inst.components.health:IsDead() then
+				local attacker = inst.sg.statemem.attacker
+				if attacker and attacker:IsValid() then
+					--use true physics radius if available
+					local radius = attacker.Physics and attacker.Physics:GetRadius() or attacker:GetPhysicsRadius(0)
+					if radius > 0 then
+						local x, y, z = inst.Transform:GetWorldPosition()
+						local theta = attacker.Transform:GetRotation() * DEGREES
+						x = x + math.cos(theta) * radius
+						z = z - math.sin(theta) * radius
+						if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
+							inst.Physics:Teleport(x, 0, z)
+						end
+					end
+				end
+				attacker:PushEvent("suspendedplayerdied", inst)
+			end
+			inst.Transform:SetFourFaced()
+			inst.components.inventory:Show()
+			if inst.components.playercontroller ~= nil then
+				inst.components.playercontroller:EnableMapControls(true)
+				inst.components.playercontroller:Enable(true)
+			end
+			if inst.components.talker then
+				inst.components.talker:StopIgnoringAll("suspended")
 			end
 		end,
 	},
@@ -17979,7 +18346,7 @@ local states =
         name = "weregoose_takeoff",
 		tags = { "busy", "flying", "pausepredict", "nomorph", "noattack", "nointerrupt" },
 
-        onenter = function(inst)
+		onenter = function(inst, teleport_pt)
             inst.components.locomotor:Stop()
             inst.components.health:SetInvincible(true)
 
@@ -17995,6 +18362,7 @@ local states =
             inst.sg.statemem.feather_fx = 7*FRAMES
             inst.sg.statemem.pos = inst:GetPosition()
 			inst.sg.statemem.pos.y = 0
+			inst.sg.statemem.teleport_pt = teleport_pt
 
             inst.SoundEmitter:PlaySound("meta2/woodie/weregoose_takeoff")
 
@@ -18021,7 +18389,11 @@ local states =
             end),
             FrameEvent(60, function(inst)
                 inst:Hide()
-                inst:PerformBufferedAction()
+				if inst.sg.statemem.teleport_pt then
+					inst.Physics:Teleport(inst.sg.statemem.teleport_pt.x, 0, inst.sg.statemem.teleport_pt.z)
+				else
+					inst:PerformBufferedAction()
+				end
             end),
             FrameEvent(100, function(inst)
 				inst.sg.statemem.landing = true
@@ -20397,8 +20769,23 @@ local hop_timelines =
     },
 }
 
-local function landed_in_water_state(inst)
-    return (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() and "sink") or nil
+local function landed_in_falling_state(inst)
+    if inst.components.drownable == nil then
+        return nil
+    end
+
+    local fallingreason = inst.components.drownable:GetFallingReason()
+    if fallingreason == nil then
+        return nil
+    end
+
+    if fallingreason == FALLINGREASON.OCEAN then
+        return "sink"
+    elseif fallingreason == FALLINGREASON.VOID then
+        return "abyss_fall"
+    end
+
+    return nil -- TODO(JBK): Fallback for unknown falling reason?
 end
 
 local hop_anims =
@@ -20409,7 +20796,7 @@ local hop_anims =
 }
 
 CommonStates.AddRowStates(states, false)
-CommonStates.AddHopStates(states, true, hop_anims, hop_timelines, "turnoftides/common/together/boat/jump_on", landed_in_water_state, {start_embarking_pre_frame = 4*FRAMES})
+CommonStates.AddHopStates(states, true, hop_anims, hop_timelines, "turnoftides/common/together/boat/jump_on", landed_in_falling_state, {start_embarking_pre_frame = 4*FRAMES})
 
 local GymStates = require("stategraphs/SGwilson_gymstates")
 GymStates.AddGymStates(states, actionhandlers, events)

@@ -178,7 +178,7 @@ local function MakeFloatingBallonPhysics(inst)
     phys:SetCollisionGroup(COLLISION.CHARACTERS)
 
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     phys:CollidesWith(COLLISION.OBSTACLES)
     phys:CollidesWith(COLLISION.SMALLOBSTACLES)
     phys:CollidesWith(COLLISION.CHARACTERS)

@@ -1934,7 +1934,7 @@ local function onfreeze(inst, target)
         target:PushEvent("attacked", { attacker = inst.crab, damage = 0, weapon = inst })
     end
 
-    if target.components.freezable ~= nil then
+    if target.components.freezable ~= nil and target:IsValid() then -- NOTES(JBK): We need to check if ent is still valid for freezable:AddColdness after being attacked.
         target.components.freezable:AddColdness(10,10 + Remap((inst.crab and inst.crab:IsValid() and inst.crab.gemcount.blue or 0),0,9,0,10) )
         target.components.freezable:SpawnShatterFX()
     end

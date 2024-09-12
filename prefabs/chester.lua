@@ -613,6 +613,8 @@ local function create_chester()
     inst:AddTag("chester")
     inst:AddTag("notraptrigger")
     inst:AddTag("noauradamage")
+    inst:AddTag("devourable")
+    
 
     inst.MiniMapEntity:SetIcon("chester.png")
     inst.MiniMapEntity:SetCanUseCache(false)

@@ -90,12 +90,9 @@ function Rider:Mount(target, instant)
     self.riding = true
 
     self.inst.AnimState:SetBank("wilsonbeefalo")
+
     if target.ApplyBuildOverrides ~= nil then
         target:ApplyBuildOverrides(self.inst.AnimState)
-        if target.components.skinner_beefalo then
-            local clothing_names = target.components.skinner_beefalo:GetClothing()
-            SetBeefaloSkinsOnAnim( self.inst.AnimState, clothing_names, target.GUID )
-        end
     end
 
     if saddler then
@@ -103,6 +100,10 @@ function Rider:Mount(target, instant)
             self.inst.AnimState:OverrideItemSkinSymbol("swap_saddle", saddler.swapbuild, saddler.swapsymbol, saddler.skin_guid, "saddle_basic" )
         else
             self.inst.AnimState:OverrideSymbol("swap_saddle", saddler.swapbuild, saddler.swapsymbol)
+        end
+
+        if rideable.saddle.fx ~= nil then
+            rideable.saddle.fx:SetOwner(self.inst)
         end
     end
 
@@ -178,10 +179,18 @@ function Rider:ActualDismount()
     end
 
     self.inst.AnimState:SetBank("wilson")
+
     if self.mount.ClearBuildOverrides ~= nil then
         self.mount:ClearBuildOverrides(self.inst.AnimState)
     end
+
     self.inst.AnimState:ClearOverrideSymbol("swap_saddle")
+
+    local rideable = self.mount.components.rideable
+    if rideable.saddle ~= nil and rideable.saddle.fx ~= nil then
+        rideable.saddle.fx:SetOwner(self.mount)
+    end
+
     self.inst.Transform:SetFourFaced()
 
     self.inst.DynamicShadow:SetSize(1.3, .6)

@@ -91,11 +91,11 @@ end
 
 --really this is TemperatureResistance, since it prevents cold from spreading also.
 function Propagator:GetHeatResistance()
-    local tile, data = self.inst:GetCurrentTileType()
-    return data ~= nil
-        and data.flashpoint_modifier ~= nil
-        and data.flashpoint_modifier ~= 0
-        and math.max(1, self.flashpoint) / math.max(1, self.flashpoint + data.flashpoint_modifier)
+    local tile, tile_info = self.inst:GetCurrentTileType()
+    return tile_info ~= nil
+        and tile_info.flashpoint_modifier ~= nil
+        and tile_info.flashpoint_modifier ~= 0
+        and math.max(1, self.flashpoint) / math.max(1, self.flashpoint + tile_info.flashpoint_modifier)
         or 1
 end
 

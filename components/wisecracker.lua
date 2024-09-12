@@ -206,6 +206,10 @@ local Wisecracker = Class(function(self, inst)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_BOAT_SINK"))
     end)
 
+    inst:ListenForEvent("onprefallinvoid", function(inst)
+        inst.components.talker:Say(GetString(inst, "ANNOUNCE_PREFALLINVOID"))
+    end)
+
     inst:ListenForEvent("on_standing_on_new_leak", function(inst)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_BOAT_LEAK"))
     end)
@@ -300,6 +304,34 @@ local Wisecracker = Class(function(self, inst)
     end
     inst:ListenForEvent("fishbuffattached", OnFishBuff)
     inst:ListenForEvent("fishbuffdetached", OnFishBuff)
+
+	local exitgelblobtask
+	local function doexitgelblob(inst)
+		exitgelblobtask = nil
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_EXIT_GELBLOB"))
+	end
+	inst:ListenForEvent("exit_gelblob", function(inst, gelblob)
+		if exitgelblobtask then
+			exitgelblobtask:Cancel()
+		end
+		exitgelblobtask = inst:DoTaskInTime(1.6, doexitgelblob)
+	end)
+
+	local last_shadowthrall_stealth_bite = -999
+	local shadowthrall_stealth_bite_task
+	local function dobitbyshadowthrallstealth(inst)
+		shadowthrall_stealth_bite_task = nil
+		inst.components.talker:Say(GetString(inst, "ANNOUNCE_SHADOWTHRALL_STEALTH"))
+	end
+	inst:ListenForEvent("bit_by_shadowthrall_stealth", function(inst, thrall)
+		if shadowthrall_stealth_bite_task == nil then
+			local t = GetTime()
+			if last_shadowthrall_stealth_bite + 10 < t then
+				last_shadowthrall_stealth_bite = t
+				shadowthrall_stealth_bite_task = inst:DoTaskInTime(2 + math.random(), dobitbyshadowthrallstealth)
+			end
+		end
+	end)
 
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "components/wisecracker").AddQuagmireEventListeners(inst)

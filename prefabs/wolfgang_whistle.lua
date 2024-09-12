@@ -67,10 +67,6 @@ local function fn()
         return inst
     end
 
-    inst.whistle_build = "wolfgang_whistle"
-    inst.whistle_symbol = "wolfgang_whistle01"
-    inst.whistle_sound = "meta2/wolfgang/whistle"
-
     inst:AddComponent("inventoryitem")
 
     inst:AddComponent("inspectable")
@@ -79,8 +75,9 @@ local function fn()
 	inst:AddComponent("tool")
 	inst.components.tool:SetAction(ACTIONS.PLAY)
 
-	inst:AddComponent("instrument")
-	inst.components.instrument:SetOnPlayedFn(OnPlayed)
+	local instrument = inst:AddComponent("instrument")
+	instrument:SetOnPlayedFn(OnPlayed)
+    instrument:SetAssetOverrides("wolfgang_whistle", "wolfgang_whistle01", "meta2/wolfgang/whistle")
 
     MakeHauntableLaunchAndIgnite(inst)
 

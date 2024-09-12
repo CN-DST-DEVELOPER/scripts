@@ -141,15 +141,6 @@ local function OnAttacked(inst, data)
     inst.components.combat:ShareTarget(data.attacker, SpringCombatMod(SHARE_TARGET_DIST), ShareTargetFn, MAX_TARGET_SHARES)
 end
 
-local function CanGrabFn(inst, doer)
-    if doer.components.skilltreeupdater == nil or not doer.components.skilltreeupdater:IsActivated("wurt_mosquito_craft_3") then
-        return false
-    end
-
-    return doer.components.inventory:HasItemWithTag("mosquitomusk", 1)
-end
-
-
 local function OnChangedLeader(inst, new_leader, prev_leader)
     if new_leader ~= nil then
         inst.lastleader = new_leader
@@ -176,9 +167,6 @@ local function mosquito()
     inst:AddTag("ignorewalkableplatformdrowning")
     inst:AddTag("smallcreature")
     inst:AddTag("cattoyairborne")
-
-    -- grabbable (from grabbable component) added to pristine state for optimization.
-    inst:AddTag("grabbable")
 
     inst.AnimState:SetBank("mosquito")
     inst.AnimState:SetBuild("mosquito")
@@ -217,6 +205,7 @@ local function mosquito()
     inst.components.inventoryitem.canbepickedup = false
     inst.components.inventoryitem.canbepickedupalive = true
     inst.components.inventoryitem.pushlandedevents = false
+    inst.components.inventoryitem.grabbableoverridetag = "mosquitograbber"
 
     ---------------------
 
@@ -230,9 +219,6 @@ local function mosquito()
     inst.components.workable:SetWorkAction(ACTIONS.NET)
     inst.components.workable:SetWorkLeft(1)
     inst.components.workable:SetOnFinishCallback(OnWorked)
-
-    inst:AddComponent("grabbable")
-    inst.components.grabbable:SetCanGrabFn(CanGrabFn)
 
     MakeSmallBurnableCharacter(inst, "body", Vector3(0, -1, 1))
     MakeTinyFreezableCharacter(inst, "body", Vector3(0, -1, 1))

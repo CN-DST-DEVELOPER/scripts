@@ -157,6 +157,16 @@ local function StartOrStopFindingGoodFissures()
     end
 end
 
+local function OnRiftAddedToPool(inst, data)
+    if data and data.rift ~= nil and data.rift.components.riftthralltype ~= nil then
+        local thralltype = data.rift.components.riftthralltype:GetThrallType()
+        if thralltype == THRALL_TYPES.SHADOW.TRIO or thralltype == THRALL_TYPES.SHADOW.MOUTH then
+            self.thralltype = thralltype
+            StartOrStopFindingGoodFissures()
+        end
+    end
+end
+
 function self:RegisterFissure(inst)
     _potential_fissures[inst] = true
 
@@ -168,34 +178,52 @@ function self:RegisterFissure(inst)
     end
 end
 
+local function TrackOtherThralls(thrall, other1name, other1, other2name, other2)
+	if thrall and thrall.components.entitytracker then
+		if other1 then
+			thrall.components.entitytracker:TrackEntity(other1name, other1)
+		end
+		if other2 then
+			thrall.components.entitytracker:TrackEntity(other2name, other2)
+		end
+	end
+end
+
 function self:OnSpawnThralls()
     if _fissure then
         local player = FindClosestPlayerToInst(_fissure, SPAWN_THRALL_DIST, true)
         if player then
-			local x, y, z = _fissure.Transform:GetWorldPosition()
-			local angle = player:GetAngleToPoint(x, y, z) + 180
-			local angles = { angle - 50 - math.random() * 10, angle - 5 + math.random() * 10, angle + 50 + math.random() * 10 }
-			local delays = { 0, .6, 1.2 }
-			_thrall_hands = self:SpawnThrallFromPoint("shadowthrall_hands", x, z, table.remove(angles, math.random(#angles)), table.remove(delays, math.random(#delays)))
-			_thrall_horns = self:SpawnThrallFromPoint("shadowthrall_horns", x, z, table.remove(angles, math.random(#angles)), table.remove(delays, math.random(#delays)))
-			_thrall_wings = self:SpawnThrallFromPoint("shadowthrall_wings", x, z, table.remove(angles, math.random(#angles)), table.remove(delays, math.random(#delays)))
-			if _thrall_hands.components.entitytracker ~= nil then
-				_thrall_hands.components.entitytracker:TrackEntity("horns", _thrall_horns)
-				_thrall_hands.components.entitytracker:TrackEntity("wings", _thrall_wings)
-			end
-			if _thrall_horns.components.entitytracker ~= nil then
-				_thrall_horns.components.entitytracker:TrackEntity("hands", _thrall_hands)
-				_thrall_horns.components.entitytracker:TrackEntity("wings", _thrall_wings)
-			end
-			if _thrall_wings.components.entitytracker ~= nil then
-				_thrall_wings.components.entitytracker:TrackEntity("hands", _thrall_hands)
-				_thrall_wings.components.entitytracker:TrackEntity("horns", _thrall_horns)
-			end
-			--Search strings:
-			-- SpawnPrefab("shadowthrall_hands")
-			-- SpawnPrefab("shadowthrall_horns")
-			-- SpawnPrefab("shadowthrall_wings")
-			self:StartEventListeners()
+            local x, y, z = _fissure.Transform:GetWorldPosition()
+            local angle = player:GetAngleToPoint(x, y, z) + 180
+            local angles = { angle - 50 - math.random() * 10, angle - 5 + math.random() * 10, angle + 50 + math.random() * 10 }
+            local delays = { 0, .6, 1.2 }
+            local prefab_hands, prefab_horns, prefab_wings
+            if self.thralltype == THRALL_TYPES.SHADOW.TRIO then
+                prefab_hands, prefab_horns, prefab_wings = "shadowthrall_hands", "shadowthrall_horns", "shadowthrall_wings"
+            elseif self.thralltype == THRALL_TYPES.SHADOW.MOUTH then
+                prefab_hands, prefab_horns, prefab_wings = "shadowthrall_mouth", "shadowthrall_mouth", "shadowthrall_mouth"
+            end
+
+            if prefab_hands then
+                _thrall_hands = self:SpawnThrallFromPoint(prefab_hands, x, z, table.remove(angles, math.random(#angles)), table.remove(delays, math.random(#delays)))
+            end
+            if prefab_horns then
+                _thrall_horns = self:SpawnThrallFromPoint(prefab_horns, x, z, table.remove(angles, math.random(#angles)), table.remove(delays, math.random(#delays)))
+            end
+            if prefab_wings then
+                _thrall_wings = self:SpawnThrallFromPoint(prefab_wings, x, z, table.remove(angles, math.random(#angles)), table.remove(delays, math.random(#delays)))
+            end
+
+			TrackOtherThralls(_thrall_hands, "horns", _thrall_horns, "wings", _thrall_wings)
+			TrackOtherThralls(_thrall_horns, "hands", _thrall_hands, "wings", _thrall_wings)
+			TrackOtherThralls(_thrall_wings, "hands", _thrall_hands, "horns", _thrall_horns)
+
+            --Search strings:
+            -- SpawnPrefab("shadowthrall_hands")
+            -- SpawnPrefab("shadowthrall_horns")
+            -- SpawnPrefab("shadowthrall_wings")
+            -- SpawnPrefab("shadowthrall_mouth")
+            self:StartEventListeners()
             if _spawn_thralls_task ~= nil then
                 _spawn_thralls_task:Cancel()
                 _spawn_thralls_task = nil
@@ -246,9 +274,17 @@ function self:SafeToReleaseFissure()
     return true
 end
 
+local function ReleaseFissureWithCombatCooldowns()
+    if _spawn_thralls_task == nil and (_thrall_hands == nil or _thrall_horns == nil or _thrall_wings == nil) then
+        -- One of the trio is dead combat must have happened.
+        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_DEFEATED_ANY_THRALLS)
+    else
+        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_WALKED_AWAY)
+    end
+end
 local function CheckIfSafeToReleaseFissure()
     if self:SafeToReleaseFissure() then
-        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_WALKED_AWAY) -- This was during combat.
+        ReleaseFissureWithCombatCooldowns()
         if _thrall_combatcheck_task ~= nil then
             _thrall_combatcheck_task:Cancel()
             _thrall_combatcheck_task = nil
@@ -260,12 +296,7 @@ function self:UnregisterFissure(inst)
     if _fissure == inst then
         -- All players ran away from the target fissure, try releasing it if possible.
         if self:SafeToReleaseFissure() then
-            if _spawn_thralls_task == nil and (_thrall_hands == nil or _thrall_horns == nil or _thrall_wings == nil) then
-                -- One of the trio is dead combat must have happened.
-                self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_DEFEATED_ANY_THRALLS)
-            else
-                self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_WALKED_AWAY)
-            end
+            ReleaseFissureWithCombatCooldowns()
         else
             _thrall_combatcheck_task = self.inst:DoPeriodicTask(CHECK_FISSURE_INTERVAL, CheckIfSafeToReleaseFissure)
         end
@@ -289,7 +320,7 @@ end
 --Register events
 inst:WatchWorldState("isnightmarewild", OnIsNightmareWild)
 OnIsNightmareWild(inst, _world.state.isnightmarewild)
-inst:ListenForEvent("ms_riftaddedtopool", StartOrStopFindingGoodFissures, _world)
+inst:ListenForEvent("ms_riftaddedtopool", OnRiftAddedToPool, _world)
 inst:ListenForEvent("ms_riftremovedfrompool", StartOrStopFindingGoodFissures, _world)
 
 function self:CheckForNoThralls()
@@ -355,7 +386,7 @@ function self:ReleaseFissure(cooldown)
         fissure:OnReleasedFromControl()
 
         if _miasmas then
-            for miasma, _ in pairs(_miasmas) do
+            for miasma in pairs(_miasmas) do
                 miasma:Remove()
             end
             _miasmas = nil
@@ -594,7 +625,7 @@ end
 
 function self:GetDebugString()
     local t = GetTime()
-    return string.format("Has Fissure: %s, Hands: %s, Horns: %s, Wings: %s, Spawn CD: %.1f, Dread CD: %.1f, SpawnThralls: %.1f, CombatTask: %.1f, Loading: %s",
+    return string.format("Has Fissure: %s, Hands: %s, Horns: %s, Wings: %s, Spawn CD: %.1f, Dread CD: %.1f, SpawnThralls: %.1f, CombatTask: %.1f, Loading: %s, ThrallType: %s",
         tostring(self:GetControlledFissure() ~= nil),
         tostring(_thrall_hands ~= nil),
         tostring(_thrall_horns ~= nil),
@@ -603,7 +634,8 @@ function self:GetDebugString()
         _dreadstone_regen_task == nil and 0 or GetTaskRemaining(_dreadstone_regen_task),
         _spawn_thralls_task == nil and 0 or GetTaskRemaining(_spawn_thralls_task),
         _thrall_combatcheck_task == nil and 0 or GetTaskRemaining(_thrall_combatcheck_task),
-        tostring(_loading ~= nil))
+        tostring(_loading ~= nil),
+        tostring(self.thralltype))
 end
 
 --------------------------------------------------------------------------

@@ -139,6 +139,8 @@ local states =
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("dissipate")
             inst.SoundEmitter:PlaySound(inst:HasTag("girl") and "dontstarve/ghost/ghost_girl_howl" or "dontstarve/ghost/ghost_howl")
+
+            RemovePhysicsColliders(inst)
         end,
 
         events =

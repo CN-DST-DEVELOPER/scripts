@@ -79,6 +79,6 @@ local function MakeWereItem(were_mode)
 end
 
 return
-    MakeWereItem("beaver"),
-    MakeWereItem("moose"),
-    MakeWereItem("goose")
+    MakeWereItem("beaver"), -- "wereitem_beaver", Search strings!
+    MakeWereItem("moose"), -- "wereitem_moose",
+    MakeWereItem("goose") -- "wereitem_goose",

@@ -50,7 +50,8 @@ function Skinner_Beefalo:SetClothing( name )
 	if IsValidBeefaloClothing(name) then
 		self.clothing[BEEFALO_CLOTHING[name].type] = name
 		self.inst:PushEvent("onclothingchanged",{type=BEEFALO_CLOTHING[name].type, name= name})
-		SetBeefaloSkinsOnAnim( self.inst.AnimState, self.clothing )
+		
+		self.inst:ApplyBuildOverrides(self.inst.AnimState)
 	end
 end
 
@@ -79,7 +80,8 @@ function Skinner_Beefalo:ClearAllClothing()
 		self.clothing[type] = ""
 		self.inst:PushEvent("onclothingchanged",{type=type, name= ""})
 	end
-	SetBeefaloSkinsOnAnim( self.inst.AnimState, self.clothing )
+
+	self.inst:ApplyBuildOverrides(self.inst.AnimState)
 end
 
 function Skinner_Beefalo:ClearClothing(type)
@@ -117,9 +119,9 @@ function Skinner_Beefalo:reloadclothing(clothing)
         for type,name in pairs(self.clothing)do
         	self.inst:PushEvent("onclothingchanged",{type=type, name= name})
         end
-        SetBeefaloSkinsOnAnim( self.inst.AnimState, self.clothing )
-    end
 
+        self.inst:ApplyBuildOverrides(self.inst.AnimState)
+    end
 end
 
 return Skinner_Beefalo

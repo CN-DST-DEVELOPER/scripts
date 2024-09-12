@@ -1,33 +1,17 @@
 local function onison(self, ison)
-    if ison then
-        self.inst:AddTag("turnedon")
-    else
-        self.inst:RemoveTag("turnedon")
-    end
+	self.inst:AddOrRemoveTag("turnedon", ison)
 end
 
 local function onenabled(self, enabled)
-    if enabled then
-        self.inst:AddTag("enabled")
-    else
-        self.inst:RemoveTag("enabled")
-    end
+	self.inst:AddOrRemoveTag("enabled", enabled)
 end
 
 local function ononcooldown(self, oncooldown)
-    if oncooldown then
-        self.inst:AddTag("cooldown")
-    else
-        self.inst:RemoveTag("cooldown")
-    end
+	self.inst:AddOrRemoveTag("cooldown", oncooldown)
 end
 
 local function ongroundonly(self, groundonly)
-	if groundonly then
-		self.inst:AddTag("groundonlymachine")
-	else
-		self.inst:RemoveTag("groundonlymachine")
-	end
+	self.inst:AddOrRemoveTag("groundonlymachine", groundonly)
 end
 
 local Machine = Class(function(self, inst)
@@ -81,16 +65,17 @@ function Machine:TurnOn()
 		self.turnonfn(self.inst)
 	end
 	self.ison = true
+	self.inst:PushEvent("machineturnedon")
 end
 
 function Machine:CanInteract()
-    return
-        not self.inst:HasTag("fueldepleted") and
-        not (self.inst.replica.equippable ~= nil and
-            not self.inst.replica.equippable:IsEquipped() and
-            self.inst.replica.inventoryitem ~= nil and
-            self.inst.replica.inventoryitem:IsHeld()) and
-        	self.enabled == true
+	return
+		not self.inst:HasTag("fueldepleted") and
+		not (self.inst.replica.equippable ~= nil and
+			not self.inst.replica.equippable:IsEquipped() and
+			self.inst.replica.inventoryitem ~= nil and
+			self.inst.replica.inventoryitem:IsHeld()) and
+			self.enabled == true
 end
 
 function Machine:TurnOff()
@@ -103,6 +88,7 @@ function Machine:TurnOff()
 		self.turnofffn(self.inst)
 	end
 	self.ison = false
+	self.inst:PushEvent("machineturnedoff")
 end
 
 function Machine:IsOn()
@@ -110,7 +96,10 @@ function Machine:IsOn()
 end
 
 function Machine:GetDebugString()
-    return string.format("on=%s, cooldowntime=%2.2f, oncooldown=%s", tostring(self.ison), self.cooldowntime, tostring(self.oncooldown) )
+    return string.format(
+		"on=%s, cooldowntime=%2.2f, oncooldown=%s",
+		tostring(self.ison), self.cooldowntime, tostring(self.oncooldown)
+	)
 end
 
 return Machine

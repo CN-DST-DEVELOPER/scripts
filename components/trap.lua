@@ -181,15 +181,31 @@ local function CheckTrappable(guy)
     return guy.components.health == nil or not guy.components.health:IsDead()
 end
 
+local function CanTargetBeTrapped(target)
+    return target.components.inventoryitem ~= nil and target.components.inventoryitem.trappable or
+        target.components.lootdropper ~= nil and target.components.lootdropper.trappable or
+        false
+end
+function Trap:DoTriggerOn(target)
+    local canbetrapped = CanTargetBeTrapped(target)
+    if canbetrapped then
+        self.target = target
+    end
+    self:StopUpdating()
+    self.inst:PushEvent("springtrap")
+    if canbetrapped then
+        self.target:PushEvent("trapped", {trap = self.inst})
+    else
+        target:PushEvent("safelydisarmedtrap", {trap = self.inst})
+    end
+end
+
 local TRAP_NO_TAGS = { "INLIMBO", "untrappable" }
 function Trap:OnUpdate(dt)
     if self.isset then
-        local guy = FindEntity(self.inst, self.range, CheckTrappable, { self.targettag }, TRAP_NO_TAGS)
-        if guy ~= nil then
-            self.target = guy
-            self:StopUpdating()
-            self.inst:PushEvent("springtrap")
-            self.target:PushEvent("trapped", {trap = self.inst})
+        local target = FindEntity(self.inst, self.range, CheckTrappable, { self.targettag }, TRAP_NO_TAGS)
+        if target ~= nil then
+            self:DoTriggerOn(target)
         end
     end
 end
@@ -408,11 +424,9 @@ function Trap:SetBait(bait)
     end
 end
 
-function Trap:BaitTaken(eater)
-    if eater ~= nil and (eater:HasTag(self.targettag) or eater:HasTag("baitstealer")) then
-        self.target = eater
-        self:StopUpdating()
-        self.inst:PushEvent("springtrap")
+function Trap:BaitTaken(target)
+    if target ~= nil and (target:HasTag(self.targettag) or target:HasTag("baitstealer")) then
+        self:DoTriggerOn(target)
     else
         self:RemoveBait()
     end

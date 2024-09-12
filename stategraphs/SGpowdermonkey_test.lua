@@ -25,6 +25,7 @@ local events=
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
     EventHandler("doattack", function(inst, data)
         if not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then

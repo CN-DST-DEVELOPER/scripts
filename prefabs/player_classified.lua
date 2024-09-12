@@ -973,6 +973,8 @@ local function OnHoundWarningDirty(inst)
             soundprefab = "wormwarning_lvl3"
         elseif inst._parent.player_classified.houndwarningevent:value() == HOUNDWARNINGTYPE.LVL4_WORM then
             soundprefab = "wormwarning_lvl4"
+        elseif inst._parent.player_classified.houndwarningevent:value() == HOUNDWARNINGTYPE.WORM_BOSS then
+            soundprefab = "wormwarning_worm_boss"            
         end
         if soundprefab then
             local sound = SpawnPrefab(soundprefab)

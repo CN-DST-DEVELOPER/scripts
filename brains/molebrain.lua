@@ -33,13 +33,18 @@ local function ShouldMakeHome(inst)
         and (inst.needs_home_time and (GetTime() - inst.needs_home_time > inst.make_home_delay))
 end
 
-local function NoHoles(pt)
+local function NoHolesNoInvisibleTiles(pt)
+    local tile = TheWorld.Map:GetTileAtPoint(pt:Get())
+    if GROUND_INVISIBLETILES[tile] then
+        return false
+    end
+
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
 local function MakeNewHomeAction(inst)
     local pos = inst:GetPosition()
-    local offset = FindWalkableOffset(pos, math.random() * TWOPI, math.random(5, 15), 120, false, false, NoHoles)
+    local offset = FindWalkableOffset(pos, math.random() * TWOPI, math.random(5, 15), 120, false, false, NoHolesNoInvisibleTiles)
     if offset ~= nil then
         pos.x = pos.x + offset.x
         pos.y = 0

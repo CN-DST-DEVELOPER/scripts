@@ -81,6 +81,12 @@ end
 function PlayFootstep(inst, volume, ispredicted)
     local sound = inst.SoundEmitter
     if sound ~= nil then
+		--override sounds
+		if inst:HasTag("gelblobbed") then
+			sound:PlaySound("dontstarve/movement/walk_goop", nil, volume or 1, ispredicted)
+			return
+		end
+
         local my_x, my_y, my_z = inst.Transform:GetWorldPosition()
         local map = TheWorld.Map
         local my_platform = inst:GetCurrentPlatform()
@@ -89,7 +95,8 @@ function PlayFootstep(inst, volume, ispredicted)
         local tileinfo = tile ~= nil and GetTileInfo(tile) or nil
 
         local size_inst = inst
-        if inst:HasTag("player") then
+		local isplayer = inst:HasTag("player")
+		if isplayer then
             local rider = inst.components.rider or inst.replica.rider
             if rider ~= nil and rider:IsRiding() then
                 size_inst = rider:GetMount() or inst
@@ -119,53 +126,63 @@ function PlayFootstep(inst, volume, ispredicted)
                     ispredicted
                     )
             end
-        elseif tileinfo ~= nil then
-            sound:PlaySound(
-                (   inst.sg ~= nil and inst.sg:HasStateTag("running") and tileinfo.runsound or tileinfo.walksound
-                )..
-                (   (size_inst:HasTag("smallcreature") and "_small") or
-                    (size_inst:HasTag("largecreature") and "_large" or "")
-                ),
-                nil,
-                volume or 1,
-                ispredicted
-            )
-        else
-            tile, tileinfo = inst:GetCurrentTileType()
-            if tile ~= nil and tileinfo ~= nil then
-                local x, y, z = inst.Transform:GetWorldPosition()
-                local oncreep = TheWorld.GroundCreep:OnCreep(x, y, z)
-				local onsnow = not tileinfo.nogroundoverlays and TheWorld.state.snowlevel > 0.15
-				local onmud = not tileinfo.nogroundoverlays and TheWorld.state.wetness > 15
+		else
+			local soundpath
 
-                local size_inst = inst
-                if inst:HasTag("player") then
-                    --this is only for players for the time being because isonroad is suuuuuuuper slow.
-                    if not oncreep and RoadManager ~= nil and RoadManager:IsOnRoad(x, 0, z) then
-                        tile = WORLD_TILES.ROAD
-                        tileinfo = GetTileInfo(WORLD_TILES.ROAD)
-                    end
-                    local rider = inst.components.rider or inst.replica.rider
-                    if rider ~= nil and rider:IsRiding() then
-                        size_inst = rider:GetMount() or inst
-                    end
-                end
+			if tileinfo == nil then
+				--no temp ground tile from locomotor
+				--see if we're walking on web/snow/mud
+				tile, tileinfo = inst:GetCurrentTileType()
+				if tile and tileinfo then
+					local x, y, z = inst.Transform:GetWorldPosition()
+					local oncreep = TheWorld.GroundCreep:OnCreep(x, y, z)
+					local onsnow = not tileinfo.nogroundoverlays and TheWorld.state.snowlevel > 0.15
+					local onmud = not tileinfo.nogroundoverlays and TheWorld.state.wetness > 15
 
-                sound:PlaySound(
-                    (   (oncreep and "dontstarve/movement/run_web") or
-                        (onsnow and tileinfo.snowsound) or
-                        (onmud and tileinfo.mudsound) or
-                        (inst.sg ~= nil and inst.sg:HasStateTag("running") and tileinfo.runsound or tileinfo.walksound)
-                    )..
-                    (   (size_inst:HasTag("smallcreature") and "_small") or
-                        (size_inst:HasTag("largecreature") and "_large" or "")
-                    ),
-                    nil,
-                    volume or 1,
-                    ispredicted
-                )
-            end
-        end
+					if isplayer and not oncreep and RoadManager and RoadManager:IsOnRoad(x, 0, z) then
+						--this is only for players for the time being because isonroad is suuuuuuuper slow.
+						tile = WORLD_TILES.ROAD
+						tileinfo = GetTileInfo(WORLD_TILES.ROAD) or tileinfo
+					end
+
+					soundpath =
+						(oncreep and "dontstarve/movement/run_web") or
+						(onsnow and tileinfo.snowsound) or
+						(onmud and tileinfo.mudsound) or
+						nil
+				end
+			end
+
+			local sizesuffix =
+				(size_inst:HasTag("smallcreature") and "_small") or
+				(size_inst:HasTag("largecreature") and "_large") or
+				""
+
+			if soundpath then
+				--web/snow/mud sounds
+				sound:PlaySound(soundpath..sizesuffix, nil, volume or 1, ispredicted)
+			elseif tileinfo then
+				--run/walk sounds
+				soundpath = inst.sg and inst.sg:HasStateTag("running") and tileinfo.runsound or tileinfo.walksound
+
+				--V2C: rope bridge no longer uses the param
+				--     leaving this commented here as example for future custom footstep code
+				--for rope bridge, we have a parameter as well
+				--[[if tile == WORLD_TILES.ROPE_BRIDGE and inst.sg then
+					local t = GetTime()
+					if (inst.sg.mem._rope_bridge_step_time or 0) < t - 1 then
+						inst.sg.mem._rope_bridge_steps = 1 --too long since last step => reset count
+					else
+						inst.sg.mem._rope_bridge_steps = (inst.sg.mem._rope_bridge_steps or 0) + 1
+					end
+					inst.sg.mem._rope_bridge_step_time = t
+					sound:PlaySoundWithParams(soundpath..sizesuffix, { param00 = math.min(9, inst.sg.mem._rope_bridge_steps - 1) * 0.1 }, volume or 1, ispredicted)
+				else]]
+					--default behaviour
+					sound:PlaySound(soundpath..sizesuffix, nil, volume or 1, ispredicted)
+				--end
+			end
+		end
     end
 end
 

@@ -140,6 +140,7 @@ local events =
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("doattack", function(inst)
         if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
             ChooseAttack(inst)
@@ -1105,5 +1106,6 @@ CommonStates.AddSleepExStates(states,
 
 CommonStates.AddFrozenStates(states, nil, StopLaughing)
 CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("SGklaus", states, events, "idle")

@@ -418,7 +418,7 @@ function MakeFlyingCharacterPhysics(inst, mass, rad)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.FLYERS)
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     phys:CollidesWith(COLLISION.FLYERS)
     phys:SetCapsule(rad, 1)
     return phys
@@ -431,7 +431,7 @@ function MakeTinyFlyingCharacterPhysics(inst, mass, rad)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.FLYERS)
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     phys:SetCapsule(rad, 1)
     return phys
 end
@@ -458,7 +458,7 @@ function MakeFlyingGiantCharacterPhysics(inst, mass, rad)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.GIANTS)
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     --phys:CollidesWith(COLLISION.OBSTACLES)
     phys:CollidesWith(COLLISION.CHARACTERS)
     phys:CollidesWith(COLLISION.GIANTS)
@@ -473,7 +473,7 @@ function MakeGhostPhysics(inst, mass, rad)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.CHARACTERS)
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     --phys:CollidesWith(COLLISION.OBSTACLES)
     phys:CollidesWith(COLLISION.CHARACTERS)
     phys:CollidesWith(COLLISION.GIANTS)
@@ -488,7 +488,7 @@ function MakeTinyGhostPhysics(inst, mass, rad)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.CHARACTERS)
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     phys:SetCapsule(rad, 1)
     return phys
 end
@@ -497,7 +497,7 @@ function ChangeToGhostPhysics(inst)
     local phys = inst.Physics
     phys:SetCollisionGroup(COLLISION.CHARACTERS)
     phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
+    phys:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
     --phys:CollidesWith(COLLISION.OBSTACLES)
     phys:CollidesWith(COLLISION.CHARACTERS)
     phys:CollidesWith(COLLISION.GIANTS)
@@ -766,6 +766,11 @@ local function onperish(inst)
 				container:GiveItem(v)
 			end
 		end
+    else
+        if inst.components.lootdropper ~= nil then
+            inst.components.lootdropper:DropLoot()
+        end
+        inst:Remove()
     end
 end
 
@@ -791,6 +796,28 @@ function MakeSmallPerishableCreature(inst, starvetime, oninventory, ondropped)
 
     inst.components.inventoryitem:SetOnDroppedFn(function(inst)
         inst.components.perishable:StopPerishing()
+        if ondropped ~= nil then
+            ondropped(inst)
+        end
+    end)
+end
+
+function MakeSmallPerishableCreatureAlwaysPerishing(inst, starvetime, oninventory, ondropped)
+    MakeSmallPerishableCreaturePristine(inst)
+
+    --We want to see the warnings for duplicating perishable
+    inst:AddComponent("perishable")
+    inst.components.perishable:SetPerishTime(starvetime)
+    inst.components.perishable:StartPerishing()
+    inst.components.perishable:SetOnPerishFn(onperish)
+
+    inst.components.inventoryitem:SetOnPutInInventoryFn(function(inst, owner)
+        if oninventory ~= nil then
+            oninventory(inst, owner)
+        end
+    end)
+
+    inst.components.inventoryitem:SetOnDroppedFn(function(inst)
         if ondropped ~= nil then
             ondropped(inst)
         end

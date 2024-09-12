@@ -42,6 +42,15 @@ BEEFALO_CLOTHING =
 		rarity = "Complimentary",
 		release_group = 112,
 	},
+	beefalo_body_lunar =
+	{
+		type = "beef_body",
+		skin_tags = { "BEEFALO_BODY", "BEEFALO", },
+		symbol_overrides = { "beefalo_body", "beefalo_body_heat", },
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 158,
+	},
 	beefalo_body_nature =
 	{
 		type = "beef_body",
@@ -57,6 +66,15 @@ BEEFALO_CLOTHING =
 		symbol_overrides = { "beefalo_body", "beefalo_body_heat", },
 		rarity = "Complimentary",
 		release_group = 112,
+	},
+	beefalo_body_shadow =
+	{
+		type = "beef_body",
+		skin_tags = { "BEEFALO_BODY", "BEEFALO", },
+		symbol_overrides = { "beefalo_body", "beefalo_body_heat", },
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 158,
 	},
 	beefalo_body_victorian =
 	{
@@ -114,6 +132,15 @@ BEEFALO_CLOTHING =
 		rarity = "Complimentary",
 		release_group = 112,
 	},
+	beefalo_feet_lunar =
+	{
+		type = "beef_feet",
+		skin_tags = { "BEEFALO_FEET", "BEEFALO", },
+		symbol_overrides = { "beefalo_hoof", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 158,
+	},
 	beefalo_feet_nature =
 	{
 		type = "beef_feet",
@@ -129,6 +156,15 @@ BEEFALO_CLOTHING =
 		symbol_overrides = { "beefalo_hoof", },
 		rarity = "Complimentary",
 		release_group = 112,
+	},
+	beefalo_feet_shadow =
+	{
+		type = "beef_feet",
+		skin_tags = { "BEEFALO_FEET", "BEEFALO", },
+		symbol_overrides = { "beefalo_hoof", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 158,
 	},
 	beefalo_feet_victorian =
 	{
@@ -187,6 +223,15 @@ BEEFALO_CLOTHING =
 		rarity = "Complimentary",
 		release_group = 112,
 	},
+	beefalo_head_lunar =
+	{
+		type = "beef_head",
+		skin_tags = { "BEEFALO_HEAD", "BEEFALO", },
+		symbol_overrides = { "beefalo_beard", "beefalo_facebase", "beefalo_headbase", "beefalo_jowls", "beefalo_lip_crease", "beefalo_mouthmouth", "beefalo_nose", "beffalo_lips", },
+		rarity = "Elegant",
+		rarity_modifier = "Woven",
+		release_group = 158,
+	},
 	beefalo_head_nature =
 	{
 		type = "beef_head",
@@ -203,6 +248,15 @@ BEEFALO_CLOTHING =
 		symbol_overrides = { "beefalo_beard", "beefalo_facebase", "beefalo_headbase", "beefalo_jowls", "beefalo_lip_crease", "beefalo_mouthmouth", "beefalo_nose", "beffalo_lips", },
 		rarity = "Complimentary",
 		release_group = 112,
+	},
+	beefalo_head_shadow =
+	{
+		type = "beef_head",
+		skin_tags = { "BEEFALO_HEAD", "BEEFALO", },
+		symbol_overrides = { "beefalo_beard", "beefalo_facebase", "beefalo_headbase", "beefalo_jowls", "beefalo_lip_crease", "beefalo_mouthmouth", "beefalo_nose", "beffalo_lips", },
+		rarity = "Elegant",
+		rarity_modifier = "Woven",
+		release_group = 158,
 	},
 	beefalo_head_victorian =
 	{
@@ -260,6 +314,15 @@ BEEFALO_CLOTHING =
 		rarity = "Complimentary",
 		release_group = 112,
 	},
+	beefalo_horn_lunar =
+	{
+		type = "beef_horn",
+		skin_tags = { "BEEFALO_HORN", "BEEFALO", },
+		symbol_overrides = { "beefalo_antler", },
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 158,
+	},
 	beefalo_horn_nature =
 	{
 		type = "beef_horn",
@@ -275,6 +338,15 @@ BEEFALO_CLOTHING =
 		symbol_overrides = { "beefalo_antler", },
 		rarity = "Complimentary",
 		release_group = 112,
+	},
+	beefalo_horn_shadow =
+	{
+		type = "beef_horn",
+		skin_tags = { "BEEFALO_HORN", "BEEFALO", },
+		symbol_overrides = { "beefalo_antler", },
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 158,
 	},
 	beefalo_horn_victorian =
 	{
@@ -332,6 +404,15 @@ BEEFALO_CLOTHING =
 		rarity = "Complimentary",
 		release_group = 112,
 	},
+	beefalo_tail_lunar =
+	{
+		type = "beef_tail",
+		skin_tags = { "BEEFALO_TAIL", "BEEFALO", },
+		symbol_overrides = { "beefalo_tail", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 158,
+	},
 	beefalo_tail_nature =
 	{
 		type = "beef_tail",
@@ -347,6 +428,15 @@ BEEFALO_CLOTHING =
 		symbol_overrides = { "beefalo_tail", },
 		rarity = "Complimentary",
 		release_group = 112,
+	},
+	beefalo_tail_shadow =
+	{
+		type = "beef_tail",
+		skin_tags = { "BEEFALO_TAIL", "BEEFALO", },
+		symbol_overrides = { "beefalo_tail", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 158,
 	},
 	beefalo_tail_victorian =
 	{

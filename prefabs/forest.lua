@@ -212,6 +212,9 @@ local assets =
     Asset("ATLAS", "images/lunacy_over_lunacy_over0042.xml"),
     Asset("ATLAS", "images/lunacy_over_lunacy_over0043.xml"),
     Asset("ATLAS", "images/lunacy_over_lunacy_over0044.xml"),
+
+    -- rabbitkingmanager
+    Asset("SOUND", "sound/rabbit.fsb"),
 }
 
 local prefabs =
@@ -478,9 +481,6 @@ local prefabs =
     "icefishing_hole",
     "sharkboi_ice_hazard",
 
-    -- Year of the Dragon
-
-
     -- Rifts / Meta QoL
 
     --"fishbone_shadow",
@@ -489,6 +489,15 @@ local prefabs =
     "junk_pile_big",
 
     "boat_otterden",
+
+    -- Rifts 4
+
+    -- rabbitkingmanager
+    "rabbitking_passive",
+    "rabbitking_aggressive",
+    "rabbitking_lucky",
+
+    "itemmimic_revealed",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -593,6 +602,7 @@ local function master_postinit(inst)
     inst:AddComponent("mermkingmanager")
     inst:AddComponent("malbatrossspawner")
     inst:AddComponent("crabkingspawner")
+    inst:AddComponent("rabbitkingmanager")
 
 	inst:AddComponent("flotsamgenerator")
 	inst:AddComponent("messagebottlemanager")
@@ -629,6 +639,13 @@ local function master_postinit(inst)
     if METRICS_ENABLED then
         inst:AddComponent("worldoverseer")
     end
+
+    -- We don't want to auto-spawn mimics, but they might be brought up from the caves,
+    -- so we might need to spawn them from existing mimics re-hiding.
+    inst:AddComponent("shadowthrall_mimics")
 end
 
-return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {tile_physics_init = tile_physics_init})
+return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {
+    tile_physics_init = tile_physics_init,
+    cancrossbarriers_flying = true,
+})

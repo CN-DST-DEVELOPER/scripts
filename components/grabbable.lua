@@ -1,3 +1,7 @@
+-- NOTES(JBK): This component is deprecated.
+-- Use inventoryitem.grabbableoverridetag instead.
+
+
 local Grabbable = Class(function(self, inst)
     self.inst = inst
 

@@ -1,6 +1,7 @@
 local prefabs =
 {
     "nightmarefuel",
+    "ruinsnightmare_horn_attack",
 }
 
 local brain = require( "brains/nightmarecreaturebrain")
@@ -36,10 +37,10 @@ local function retargetfn(inst)
     return target2
 end
 
-SetSharedLootTable('nightmare_creature',
+SetSharedLootTable("nightmare_creature",
 {
-    {'nightmarefuel', 1.0},
-    {'nightmarefuel', 0.5},
+    {"nightmarefuel", 1.0},
+    {"nightmarefuel", 0.5},
 })
 
 local function CanShareTargetWith(dude)
@@ -79,7 +80,10 @@ local function CLIENT_ShadowSubmissive_HostileToPlayerTest(inst, player)
 	if player:HasTag("shadowdominance") then
 		return false
 	end
-	local combat = inst.replica.combat
+	--V2C: nightmare creatures are always visible and hostile, unlike shadowcreatures
+	return true
+
+	--[[local combat = inst.replica.combat
 	if combat ~= nil and combat:GetTarget() == player then
 		return true
 	end
@@ -87,8 +91,79 @@ local function CLIENT_ShadowSubmissive_HostileToPlayerTest(inst, player)
 	if sanity ~= nil and sanity:IsCrazy() then
 		return true
 	end
-	return false
+	return false]]
 end
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+local RUINSNIGHTMARE_SCRAPBOOK_HIDE = { "red" }
+
+local WALK_SOUNDNAME = "WALK_SOUNDNAME"
+
+local function RuinsNightmare_OnNewState(inst, data)
+    if inst.sg:HasStateTag("moving") then
+        if not inst.SoundEmitter:PlayingSound(WALK_SOUNDNAME) then
+            inst.SoundEmitter:PlaySound("dontstarve/sanity/creature3/movement", WALK_SOUNDNAME)
+        end
+
+    elseif data ~= nil and data.statename == "walk_stop" then
+        inst.SoundEmitter:KillSound(WALK_SOUNDNAME)
+        inst.SoundEmitter:PlaySound("dontstarve/sanity/creature3/movement_pst")
+    else
+        inst.SoundEmitter:KillSound(WALK_SOUNDNAME)
+    end
+end
+
+SetSharedLootTable("ruinsnightmare",
+{
+    { "nightmarefuel", 1.00 },
+    { "nightmarefuel", 1.00 },
+    { "nightmarefuel", 0.50 },
+    { "nightmarefuel", 0.25 },
+})
+
+SetSharedLootTable("ruinsnightmare_rifts",
+{
+    { "horrorfuel",    1.00 },
+    { "horrorfuel",    1.00 },
+    { "horrorfuel",    0.50 },
+    { "nightmarefuel", 1.00 },
+    { "nightmarefuel", 0.67 },
+})
+
+
+local function RuinsNightmare_CheckRift(inst)
+    local riftspawner = TheWorld.components.riftspawner
+
+    if riftspawner ~= nil and riftspawner:IsShadowPortalActive() then
+        if inst.components.planarentity == nil then
+            inst:AddComponent("planarentity")
+
+            inst:AddComponent("planardamage")
+            inst.components.planardamage:SetBaseDamage(TUNING.RUINSNIGHTMARE_PLANAR_DAMAGE)
+
+            inst.components.lootdropper:SetChanceLootTable("ruinsnightmare_rifts")
+            inst.components.locomotor.walkspeed = TUNING.RUINSNIGHTMARE_SPEED_RIFTS
+
+            inst.AnimState:ShowSymbol("red")
+            inst.AnimState:SetLightOverride(1)
+            inst.AnimState:SetMultColour(1, 1, 1, 0.65)
+        end
+
+    elseif inst.components.planarentity ~= nil then
+        inst:RemoveComponent("planarentity")
+        inst:RemoveComponent("planardamage")
+
+        inst.components.lootdropper:SetChanceLootTable("ruinsnightmare")
+        inst.components.locomotor.walkspeed = TUNING.RUINSNIGHTMARE_SPEED
+
+        inst.AnimState:HideSymbol("red")
+        inst.AnimState:SetLightOverride(0)
+        inst.AnimState:SetMultColour(1, 1, 1, 0.5)
+    end
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
 
 local function MakeShadowCreature(data)
     local bank = data.bank
@@ -120,7 +195,7 @@ local function MakeShadowCreature(data)
 
         inst.Transform:SetFourFaced()
 
-        MakeCharacterPhysics(inst, 10, 1.5)
+        MakeCharacterPhysics(inst, 10, data.physics_rad or 1.5)
         RemovePhysicsColliders(inst)
         inst.Physics:SetCollisionGroup(COLLISION.SANITY)
         inst.Physics:CollidesWith(COLLISION.SANITY)
@@ -129,6 +204,7 @@ local function MakeShadowCreature(data)
         inst.AnimState:SetBuild(build)
         inst.AnimState:PlayAnimation("idle_loop")
         inst.AnimState:SetMultColour(1, 1, 1, 0.5)
+        inst.AnimState:UsePointFiltering(true)
 
         inst:AddTag("nightmarecreature")
         inst:AddTag("gestaltnoloot")
@@ -155,7 +231,7 @@ local function MakeShadowCreature(data)
         inst.components.locomotor.walkspeed = data.speed
         inst.sounds = sounds
 
-        inst:SetStateGraph("SGshadowcreature")
+        inst:SetStateGraph(data.stategraph or "SGshadowcreature")
         inst:SetBrain(brain)
 
         inst:AddComponent("sanityaura")
@@ -172,7 +248,7 @@ local function MakeShadowCreature(data)
         inst:AddComponent("shadowsubmissive")
 
         inst:AddComponent("lootdropper")
-        inst.components.lootdropper:SetChanceLootTable('nightmare_creature')
+        inst.components.lootdropper:SetChanceLootTable("nightmare_creature")
 
         inst:ListenForEvent("attacked", OnAttacked)
         inst:ListenForEvent("death", OnDeath)
@@ -180,6 +256,10 @@ local function MakeShadowCreature(data)
         inst:WatchWorldState("isnightmaredawn", OnNightmareDawn)
 
         inst:AddComponent("knownlocations")
+
+        if data.master_postinit ~= nil then
+            data.master_postinit(inst, data)
+        end
 
         return inst
     end
@@ -210,6 +290,37 @@ local data =
         damage = TUNING.TERRORBEAK_DAMAGE,
         attackperiod = TUNING.TERRORBEAK_ATTACK_PERIOD,
         sanityreward = TUNING.SANITY_LARGE,
+    },
+    {
+        name = "ruinsnightmare",
+        build = "shadow_insanity3_basic",
+        bank = "shadowcreature3",
+        num = 3,
+        speed = TUNING.RUINSNIGHTMARE_SPEED,
+        health = TUNING.RUINSNIGHTMARE_HEALTH,
+        damage = TUNING.RUINSNIGHTMARE_DAMAGE,
+        attackperiod = TUNING.RUINSNIGHTMARE_ATTACK_PERIOD,
+        sanityreward = TUNING.SANITY_HUGE,
+        physics_rad = 2,
+        stategraph = "SGruinsnightmare",
+        master_postinit = function(inst)
+            inst.scrapbook_hide = RUINSNIGHTMARE_SCRAPBOOK_HIDE
+
+            inst.AnimState:HideSymbol("red")
+
+            inst.components.combat:SetRange(TUNING.RUINSNIGHTMARE_ATTACK_RANGE)
+
+            inst.components.lootdropper:SetChanceLootTable("ruinsnightmare")
+
+            inst._onnewstate = RuinsNightmare_OnNewState
+            inst._onriftchanged = function(world) RuinsNightmare_CheckRift(inst) end
+
+            inst._onriftchanged(TheWorld)
+
+            inst:ListenForEvent("newstate", inst._onnewstate)
+            inst:ListenForEvent("ms_riftaddedtopool",     inst._onriftchanged, TheWorld)
+            inst:ListenForEvent("ms_riftremovedfrompool", inst._onriftchanged, TheWorld)
+        end
     },
 }
 

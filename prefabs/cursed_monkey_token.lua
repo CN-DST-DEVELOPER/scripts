@@ -89,6 +89,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.canonlygoinpocket = true
+    inst.components.inventoryitem.keepondrown = true
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM

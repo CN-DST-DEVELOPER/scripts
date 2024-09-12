@@ -132,7 +132,7 @@ local function BuildSkillsData(SkillTreeFns)
         woodie_curse_master = {
             pos = {WEREMETER_POS_X, POS_Y_5},
             group = "curse",
-            tags = {"curse"},
+            tags = {"cursemaster"},
             onactivate   = CreateAddTagFn("cursemaster"),
             ondeactivate = CreateRemoveTagFn("cursemaster"),
         },

@@ -319,6 +319,7 @@ local data =
         sanityreward = TUNING.SANITY_LARGE,
     },
 }
+
 local ret = {}
 for i, v in ipairs(data) do
     table.insert(ret, MakeShadowCreature(v))
