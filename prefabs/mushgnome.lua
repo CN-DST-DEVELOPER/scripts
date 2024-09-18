@@ -136,6 +136,8 @@ local function normal_fn()
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 2.0
 
+    inst:AddComponent("drownable")
+
     ------------------------------------------
     inst:SetStateGraph("SGmushgnome")
 

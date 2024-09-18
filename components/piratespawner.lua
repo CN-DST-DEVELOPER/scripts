@@ -35,7 +35,7 @@ local function ProcessLoot(item, stash, owner)
     end
 
     if owner ~= nil and owner.components.inventory ~= nil then
-        owner.components.inventory:DropItem(inst, true)
+        owner.components.inventory:DropItem(item, true)
     end
 
 	if not item:HasTag("irreplaceable") then

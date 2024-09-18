@@ -30,6 +30,8 @@ end
 local events =
 {
 	CommonHandlers.OnLocomote(true, true),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 	EventHandler("doattack", function(inst)
 		if not (inst.sg:HasStateTag("busy") or inst.defeated) then
 			ChooseAttack(inst)
@@ -1688,5 +1690,7 @@ SGDaywalkerCommon.AddRunStates(states, nil,
 		end
 	end,
 })
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "hit",})
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("daywalker", states, events, "idle")

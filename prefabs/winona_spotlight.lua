@@ -921,6 +921,10 @@ local function OnConnectCircuit(inst)--, node)
     if not inst._wired then
         inst._wired = true
         inst.AnimState:ClearOverrideSymbol("wire")
+        local skin_build = inst:GetSkinBuild()
+        if skin_build ~= nil then
+            inst.AnimState:OverrideItemSkinSymbol("wire", skin_build, "wire", inst.GUID, "winona_spotlight")
+        end
         if not POPULATING then
             DoWireSparks(inst)
         end

@@ -299,6 +299,7 @@ local assets_bunnyman = {
     Asset("ANIM", "anim/manrabbit_beard_build.zip"),
     Asset("ANIM", "anim/manrabbit_actions.zip"),
     Asset("SOUND", "sound/bunnyman.fsb"),
+    Asset("SOUND", "sound/mole.fsb"),
 }
 local prefabs_bunnyman = {
     "beardhair",

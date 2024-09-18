@@ -23,6 +23,78 @@ SetSharedLootTable("gelblob",
 
 --------------------------------------------------------------------------
 
+local LEFT_PROPS =
+{
+	"prop_eyes_L1",
+	"prop_eyes_L2",
+	"prop_horns_L1",
+	"prop_teeth_L1",
+	"prop_teeth_L2",
+	"prop_teeth_L3",
+}
+
+local RIGHT_PROPS =
+{
+	"prop_eyes_R1",
+	"prop_eyes_R2",
+	"prop_horns_R1",
+	"prop_horns_R2",
+	"prop_teeth_R1",
+	"prop_teeth_R2",
+	"prop_teeth_R3",
+}
+
+local function SetVariation(inst, leftvars, rightvars)
+	if leftvars == nil then
+		leftvars, rightvars = 0, 0
+
+		local num = math.random(5, 10)
+		local numleft = num / 2
+		numleft = math.random(math.floor(numleft), math.ceil(numleft))
+		local numright = num - numleft
+
+		local propids = {}
+		for i = 1, #LEFT_PROPS do
+			propids[i] = i
+		end
+		for i = 1, numleft do
+			local id = table.remove(propids, math.random(#propids))
+			leftvars = bit.bor(leftvars, bit.lshift(1, id - 1))
+		end
+
+		for i = 1, #RIGHT_PROPS do
+			propids[i] = i
+		end
+		for i = #RIGHT_PROPS + 1, #LEFT_PROPS do
+			propids[i] = nil
+		end
+		for i = 1, numright do
+			local id = table.remove(propids, math.random(#propids))
+			rightvars = bit.bor(rightvars, bit.lshift(1, id - 1))
+		end
+	end
+
+	inst.leftvars, inst.rightvars = leftvars, rightvars
+
+	for i, v in ipairs(LEFT_PROPS) do
+		if bit.band(leftvars, bit.lshift(1, i - 1)) ~= 0 then
+			inst.AnimState:ShowSymbol(v)
+		else
+			inst.AnimState:HideSymbol(v)
+		end
+	end
+
+	for i, v in ipairs(RIGHT_PROPS) do
+		if bit.band(rightvars, bit.lshift(1, i - 1)) ~= 0 then
+			inst.AnimState:ShowSymbol(v)
+		else
+			inst.AnimState:HideSymbol(v)
+		end
+	end
+end
+
+--------------------------------------------------------------------------
+
 local CHUNK_RETURN_ACCEL = 0.0825
 
 local NUM_SIZES = 3
@@ -354,10 +426,15 @@ end
 
 local function OnSave(inst, data)
 	data.level = inst.level < NUM_LEVELS and inst.level or nil
+	data.leftvars, data.rightvars = inst.leftvars, inst.rightvars
 end
 
 local function OnLoad(inst, data)--, ents)
 	inst.level = data.level or NUM_LEVELS
+
+	if data.leftvars and data.rightvars then
+		SetVariation(inst, data.leftvars, data.rightvars)
+	end
 
 	local size =
 		(inst.level <= LEVELS_PER_SIZE and "_small") or
@@ -454,6 +531,7 @@ local function fn()
 
 	inst.size = "_big"
 	inst.level = NUM_LEVELS
+	inst.leftvars, inst.rightvars = nil, nil
 	inst._contact_radius = 1.2
 	inst._uncontact_radius = 1.35
 	inst._suspend_radius = 0.5
@@ -465,6 +543,8 @@ local function fn()
 
 	inst.back = SpawnPrefab("gelblob_back_fx")
 	inst.back.entity:SetParent(inst.entity)
+
+	SetVariation(inst, nil, nil)
 
 	inst:AddComponent("health")
 	inst.components.health:SetMaxHealth(TUNING.GELBLOB_HEALTH)

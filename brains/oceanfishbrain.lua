@@ -87,7 +87,7 @@ local function GetFoodTargetPos(inst)
 	return target ~= nil and target:GetPosition() or nil
 end
 
-local FINDFOOD_CANT_TAGS = {"planted", "INLIMBO"}
+local FINDFOOD_CANT_TAGS = { "planted", "INLIMBO", "outofreach" }
 local FINDFOOD_ONEOF_TAGS = {"fishinghook", "oceantrawler"}
 local function FindFoodAction(inst)
 	if GetFoodTarget(inst) == nil then

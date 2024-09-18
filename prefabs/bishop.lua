@@ -147,6 +147,8 @@ local function common_fn(build, tag)
     local locomotor = inst:AddComponent("locomotor")
     locomotor.walkspeed = TUNING.BISHOP_WALK_SPEED
 
+
+    inst:AddComponent("drownable")
     --
     inst:AddComponent("lootdropper")
 

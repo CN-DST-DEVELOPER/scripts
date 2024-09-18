@@ -65,6 +65,22 @@ function Skinner_Beefalo:GetClothing()
 	}
 end
 
+function Skinner_Beefalo:IsClothingDifferent(newclothes)
+    newclothes = newclothes or {}
+    local oldclothes = self:GetClothing()
+    for k, v in pairs(oldclothes) do
+        if (newclothes[k] or "") ~= v then
+            return true
+        end
+    end
+    for k, v in pairs(newclothes) do
+        if (oldclothes[k] or "") ~= v then
+            return true
+        end
+    end
+    return false
+end
+
 function Skinner_Beefalo:HideAllClothing(anim_state)
 	for _,name in pairs(self.clothing) do
 		if name ~= nil and name ~= "" and BEEFALO_CLOTHING[name] ~= nil then

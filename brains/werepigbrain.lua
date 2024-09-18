@@ -13,8 +13,15 @@ local SEE_FOOD_DIST = 10
 local RUN_AWAY_DIST = 6
 local STOP_RUN_AWAY_DIST = 8
 
+local FINDFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
+
 local function FindFoodAction(inst)
-    local target = FindEntity(inst, SEE_FOOD_DIST, function(item) return inst.components.eater:CanEat(item) and item:IsOnValidGround() end)
+	local target = FindEntity(inst, SEE_FOOD_DIST,
+		function(item)
+			return inst.components.eater:CanEat(item) and item:IsOnValidGround()
+		end,
+		nil,
+		FINDFOOD_CANT_TAGS)
     if target then
         return BufferedAction(inst, target, ACTIONS.EAT)
     end

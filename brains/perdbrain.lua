@@ -51,7 +51,7 @@ local function GoHomeAction(inst)
 end
 
 local EATFOOD_MUST_TAGS = { "edible_"..FOODTYPE.VEGGIE }
-local EATFOOD_CANT_TAGS = { "INLIMBO" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local SCARY_TAGS = { "scarytoprey" }
 local function EatFoodAction(inst, checksafety)
     local target =

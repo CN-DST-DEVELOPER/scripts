@@ -4821,7 +4821,8 @@ local function MakeHat(name)
 		local inst = simple(fns.rabbit_custom_init)
 
         inst.components.floater:SetSize("med")
-        inst.components.floater:SetScale(0.68)
+        inst.components.floater:SetVerticalOffset(.1)
+        inst.components.floater:SetScale({.9, .6, .9})
 
         MakeFeedableSmallLivestockPristine(inst)
 

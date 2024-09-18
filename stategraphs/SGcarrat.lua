@@ -27,6 +27,8 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("locomote", function(inst)
         -- Just in case we get locomote messages while we're burrowed, or some other unexpected locomotor-less state.
@@ -930,5 +932,7 @@ CommonStates.AddRunStates(states,
         TimeEvent(0, PlayFootstep),
     },
 })
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("carrat", states, events, "emerge_fast", actionhandlers)

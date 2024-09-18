@@ -15,7 +15,7 @@ local SEE_STRUCTURE_DIST = 30
 
 local BASE_TAGS = {"structure"}
 local STEAL_TAGS = {"structure"}
-local NO_TAGS = {"FX", "NOCLICK", "DECOR","INLIMBO"}
+local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "outofreach" }
 
 local PICKABLE_FOODS =
 {

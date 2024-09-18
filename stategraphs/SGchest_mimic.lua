@@ -121,8 +121,8 @@ local states =
 
         timeline =
         {
-            FrameEvent(9, PlayFootstep),
-            FrameEvent(19, PlayFootstep),
+           SoundFrameEvent(8, "rifts4/mimic/mimic_chest/taunt_step"),
+           SoundFrameEvent(18, "rifts4/mimic/mimic_chest/taunt_step"),
         },
 
         events =
@@ -145,6 +145,7 @@ local states =
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("taunt_pst")
+            inst.SoundEmitter:PlaySound("rifts4/mimic/mimic_chest/taunt_pst")
         end,
 
         events =

@@ -7845,13 +7845,14 @@ function Tune(overrides)
 
         -- Rifts 4
         WORM_BOSS_HEALTH = 5000,
-        WORM_BOSS_DAMAGE = 20,
-        WORM_BOSS_SPINES = 20,        
+        WORM_BOSS_DAMAGE = 14,
+        WORM_BOSS_SPINES = 14,
         WORM_BOSS_MELEE_RANGE = 6,
         WORM_BOSS_TARGET_DIST = 40,
         WORM_BOSS_EAT_CREATURE_RANGE = 1.5,
         WORM_BOSS_EAT_RANGE = 2,
         WORM_BOSS_KNOCKBACK_RANGE = 2,
+        WORM_BOSS_DAYS = 25,
 
         SPAWN_GELBLOBS = true, -- For world settings.
         MIN_GELBLOBS_PER_SPAWNER = 5,
@@ -7881,13 +7882,14 @@ function Tune(overrides)
         SHADOW_BEEF_BELL_POOP_DISAPPEAR_TIME = 5,
         SHADOW_BEEF_BELL_CURSE_HEALTH_PENALTY = .5,
         SHADOW_BEEF_BELL_CURSE_SANITY_DELTA = -100,
+        SHADOW_BEEF_BELL_REVIVE_COOLDOWN = 15 * total_day_time,
 
         SHADOW_BATTLEAXE = {
             USES = 200,
             MAX_HUNGER = 500,
             HUNGER_GAIN_ONKILL = 500 * .1,
             DAMAGE = wilson_attack * 2 - 30,
-            LIFE_STEAL_SANITY_LOSS_SCALE = .25,
+            LIFE_STEAL_SANITY_LOSS_SCALE = .5,
             LEVEL_THRESHOLDS = { 0, 3, 6, 9},
 
             TALK_INTERVAL = {
@@ -7900,6 +7902,8 @@ function Tune(overrides)
                 CREATURE_KILLED = 5,
             },
 
+            RECENT_TARGET_TIME = 5,
+
             LEVEL = {
                 {
                     PLANAR_DAMAGE = 10,
@@ -7910,20 +7914,20 @@ function Tune(overrides)
                 {
                     PLANAR_DAMAGE = 14,
                     CHOPPING_EFFICIENCY = 1.75,
-                    LIFE_STEAL = wilson_attack * .1,
-                    HUNGER_RATE = 0.1, -- ~10.4 days.
+                    LIFE_STEAL = wilson_attack * .050,
+                    HUNGER_RATE = 0.05, -- ~20.8 days.
                 },
                 {
                     PLANAR_DAMAGE = 18,
                     CHOPPING_EFFICIENCY = 2.00,
-                    LIFE_STEAL = wilson_attack * .2,
-                    HUNGER_RATE = 0.2, -- ~5.2 days.
+                    LIFE_STEAL = wilson_attack * .075,
+                    HUNGER_RATE = 0.1, -- ~10.4 days.
                 },
                 {
                     PLANAR_DAMAGE = 22,
                     CHOPPING_EFFICIENCY = 2.25,
-                    LIFE_STEAL = wilson_attack * .3,
-                    HUNGER_RATE = 0.3, -- ~3.5 days.
+                    LIFE_STEAL = wilson_attack * .100,
+                    HUNGER_RATE = 0.2, -- ~5.2 days.
                 },
             },
         },

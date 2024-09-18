@@ -67,7 +67,7 @@ local function OnPlayerDespawned(inst)
 end
 
 local function IsLinkedBell(item, inst)
-    return item ~= inst and item:HasTag("bell") and inst.components.leader ~= nil and item:HasBeefalo()
+    return item ~= inst and item:HasTag("bell") and item.HasBeefalo ~= nil and item:HasBeefalo()
 end
 
 local function GetOtherPlayerLinkedBell(inst, other)
@@ -85,6 +85,15 @@ local function CleanUpBell(inst)
 
     inst.AnimState:PlayAnimation("idle1", false)
     inst.components.inventoryitem.nobounce = false
+    inst.components.floater.splash = true
+
+    if inst.isbonded ~= nil then
+        inst.isbonded:set(false)
+
+        if not TheNet:IsDedicated() then
+            inst:OnIsBondedDirty()
+        end
+    end
 end
 
 local function OnRemoveFollower(inst, beef)
@@ -97,7 +106,7 @@ local function OnRemoveFollower(inst, beef)
 end
 
 local function HasBeefalo(inst)
-    return inst.components.leader:CountFollowers() > 0
+    return inst.components.leader ~= nil and inst.components.leader:CountFollowers() > 0
 end
 
 local function GetBeefalo(inst)
@@ -164,8 +173,15 @@ local function OnUsedOnBeefalo(inst, target, user)
         inst.components.inventoryitem:ChangeImageName(basename.."_linked")
         inst.AnimState:PlayAnimation("idle2", true)
 
-        if inst:HasTag("shadowbell") then
+        if inst.isbonded ~= nil then
+            inst.isbonded:set(true)
+
             inst.components.inventoryitem.nobounce = true
+            inst.components.floater.splash = false
+
+            if not TheNet:IsDedicated() then
+                inst:OnIsBondedDirty()
+            end
         end
     end
 
@@ -182,7 +198,7 @@ local function OnStopUsing(inst, beefalo)
     inst.components.leader:RemoveAllFollowers()
     inst:CleanUpBell()
 
-    if beefalo ~= nil  and beefalo.components.health:IsDead() then
+    if inst:HasTag("shadowbell") and beefalo ~= nil and beefalo.components.health:IsDead() then
         beefalo.persists = false -- Beefalo's ClearBellOwner fn makes it persistent.
 
         if beefalo:HasTag("NOCLICK") then
@@ -263,7 +279,19 @@ local function ShadowBell_ReviveTarget(inst, target, doer)
 
     doer:AddDebuff("shadow_beef_bell_curse", "shadow_beef_bell_curse")
 
-    inst:Remove()
+    inst.components.rechargeable:Discharge(TUNING.SHADOW_BEEF_BELL_REVIVE_COOLDOWN)
+end
+
+local SHADOW_FLOAT_SCALE_BONDED = { 0, 0, 0 }
+local FLOAT_SCALE = { 1.2, 1, 1.2 }
+
+local function ShadowBell_OnIsBondedDirty(inst)
+    inst.components.floater:SetScale(inst.isbonded:value() and SHADOW_FLOAT_SCALE_BONDED or FLOAT_SCALE)
+
+    if inst.components.floater:IsFloating() then
+        inst.components.floater:OnNoLongerLandedClient()
+        inst.components.floater:OnLandedClient()
+    end
 end
 
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -281,7 +309,7 @@ local function CommonFn(data)
     inst.AnimState:SetBuild(data.build)
     inst.AnimState:PlayAnimation("idle1", false)
 
-    MakeInventoryFloatable(inst)
+    MakeInventoryFloatable(inst, nil, 0.05, FLOAT_SCALE)
 
     inst:AddTag("bell")
     inst:AddTag("donotautopick")
@@ -342,10 +370,22 @@ local function RegularFn()
 end
 
 local function ShadowCommonPostInit(inst, data)
+    inst.entity:AddDynamicShadow()
+    inst.DynamicShadow:SetSize(1.2, .8)
+
+    inst.AnimState:Hide("shadow")
+
     inst.AnimState:SetLightOverride(0.1)
     inst.AnimState:SetSymbolLightOverride("red", 0.5)
 
+    -- rechargeable (from rechargeable component) added to pristine state for optimization.
+    inst:AddTag("rechargeable")
+
     inst:AddTag("shadowbell")
+
+    inst.OnIsBondedDirty = ShadowBell_OnIsBondedDirty
+
+    inst.isbonded = net_bool(inst.GUID, "shadow_beef_bell.isbonded", "isbondeddirty")
 end
 
 local function ShadowFn()
@@ -357,10 +397,13 @@ local function ShadowFn()
     })
 
     if not TheWorld.ismastersim then
+        inst:ListenForEvent("isbondeddirty", inst.OnIsBondedDirty)
+
         return inst
     end
 
     inst:AddComponent("tradable")
+    inst:AddComponent("rechargeable")
 
     inst.CanReviveTarget = ShadowBell_CanReviveTarget
     inst.ReviveTarget = ShadowBell_ReviveTarget

@@ -519,6 +519,8 @@ local function common_fn(gem)
     inst.components.locomotor.walkspeed = TUNING.DEER_WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.DEER_RUN_SPEED
 
+    inst:AddComponent("drownable")
+
     if gem ~= "red" then
         MakeMediumBurnableCharacter(inst, "deer_torso")
         inst.components.burnable:SetBurnTime(TUNING.DEER_ICE_BURN_PANIC_TIME)

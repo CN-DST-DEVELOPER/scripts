@@ -466,6 +466,10 @@ local actionhandlers =
                     )
                 or "castspell"
         end),
+    ActionHandler(ACTIONS.STOKEFIRE,
+        function(inst, action)
+            return "castspellmind"
+        end),
     ActionHandler(ACTIONS.CAST_POCKETWATCH,
         function(inst, action)
             return action.invobject ~= nil

@@ -1736,13 +1736,13 @@ function EntityScript:GetCurrentTileType()
 
     if actual_tile ~= nil and tilecenter_x ~= nil and tilecenter_z ~= nil then
         if not TileGroupManager:IsLandTile(actual_tile) then
-            local xpercent = (tilecenter_x - ptx) / TILE_SCALE + .25
-            local ypercent = (tilecenter_z - ptz) / TILE_SCALE + .25
+			local xpercent = (tilecenter_x - ptx) / TILE_SCALE
+			local ypercent = (tilecenter_z - ptz) / TILE_SCALE
 
-            local x_min = xpercent > .666 and -1 or 0
-            local x_max = xpercent < .333 and 1 or 0
-            local y_min = ypercent > .666 and -1 or 0
-            local y_max = ypercent < .333 and 1 or 0
+			local x_min = xpercent > 0.166 and -1 or 0
+			local x_max = xpercent < -0.166 and 1 or 0
+			local y_min = ypercent > 0.166 and -1 or 0
+			local y_max = ypercent < -0.166 and 1 or 0
 
             --local x_off = 0 -- These are only calculated for debugging
             --local y_off = 0 -- These are only calculated for debugging

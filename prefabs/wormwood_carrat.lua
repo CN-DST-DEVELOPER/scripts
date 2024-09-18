@@ -126,6 +126,8 @@ local function fn()
     locomotor.walkspeed = TUNING.CARRAT.WALK_SPEED
     locomotor.runspeed = TUNING.CARRAT.RUN_SPEED
 
+    inst:AddComponent("drownable")
+
     inst:SetStateGraph("SGwormwood_carrat")
     inst:SetBrain(brain)
 

@@ -529,6 +529,8 @@ local function fn()
     inst.components.locomotor.walkspeed = TUNING.MINOTAUR_WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.MINOTAUR_RUN_SPEED
 
+    inst:AddComponent("drownable")
+
     inst:SetStateGraph("SGminotaur")
 
     inst:SetBrain(brain)

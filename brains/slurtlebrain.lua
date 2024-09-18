@@ -33,7 +33,7 @@ local function ShouldGoHome(inst)
     return GetTime() - inst.lastmeal > HUNGER_TOLERANCE
 end
 
-local EATFOOD_CANT_TAGS = { "outofreach" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return

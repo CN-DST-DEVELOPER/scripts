@@ -287,7 +287,9 @@ local function fn()
     inst.components.locomotor.walkspeed = 4
     inst.components.locomotor:SetSlowMultiplier( 1 )
     inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorecreep = true }
+    inst.components.locomotor.pathcaps = { ignorecreep = true, ignorebridges = true, }
+
+    inst:AddComponent("drownable")
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })

@@ -4204,6 +4204,7 @@ MISC_ITEMS =
 		type = "purchase",
 		skin_tags = { },
 		featured_pack = true,
+		steam_dlc_id = 3155070,
 		display_order = 2,
 		build_name_override = "pack_common",
 		display_atlas = "images/iap_images_rose_bundle.xml",

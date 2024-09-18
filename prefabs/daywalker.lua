@@ -1179,6 +1179,8 @@ local function fn()
 	inst.components.locomotor.walkspeed = TUNING.DAYWALKER_WALKSPEED
 	inst.components.locomotor.runspeed = TUNING.DAYWALKER_RUNSPEED
 
+    inst:AddComponent("drownable")
+
 	inst:AddComponent("health")
 	inst.components.health:SetMinHealth(1)
 	inst.components.health:SetMaxHealth(TUNING.DAYWALKER_HEALTH)

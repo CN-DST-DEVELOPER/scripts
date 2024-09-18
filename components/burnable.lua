@@ -38,6 +38,14 @@ local function onignorefuel(self, ignorefuel)
     end
 end
 
+local function onstokeablefire(self, stokeablefire)
+    if stokeablefire then
+        self.inst:AddTag("stokeablefire")
+    else
+        self.inst:RemoveTag("stokeablefire")
+    end
+end
+
 local Burnable = Class(function(self, inst)
     self.inst = inst
 
@@ -52,6 +60,7 @@ local Burnable = Class(function(self, inst)
     self.extinguishimmediately = true
     self.smoldertimeremaining = nil
     self.smoldering = false
+    self.stokeablefire = false
 
     self.onignite = nil
     self.onextinguish = nil
@@ -75,6 +84,7 @@ nil,
     canlight = oncanlight,
     smoldering = onsmoldering,
     ignorefuel = onignorefuel,
+    stokeablefire = onstokeablefire,
 })
 
 --- Set the function that will be called when the object stops smoldering
@@ -337,8 +347,14 @@ function Burnable:GetControlledBurn()
     return self.controlled_burn
 end
 
+function Burnable:StokeControlledBurn()
+    self.controlled_burn = nil
+    self.stokeablefire = false
+    self:SetFXLevel(self.fxlevel, 1)
+end
+
 function Burnable:Ignite(immediate, source, doer)
-    -- NOTE ON DAMAGE: Burning damage is done in the propagator component, not the burnable component.
+    -- NOTE ON DAMAGE: Burning damage is done in the propagator component going to Health:GetFireDamageScale(), not the burnable component.
     if not (self.burning or self.inst:HasTag("fireimmune")) then
 
         local controlled_burn_source = doer and doer:HasTag("controlled_burner") and doer or source and source:HasTag("controlled_burner") and source
@@ -348,8 +364,10 @@ function Burnable:Ignite(immediate, source, doer)
                 duration_creature = controlled_burn_source.components.skilltreeupdater:IsActivated("willow_controlled_burn_2") and TUNING.CONTROLLED_BURN_DURATION_CREATURE_MULT or nil,                
                 damage = controlled_burn_source.components.skilltreeupdater:IsActivated("willow_controlled_burn_3") and TUNING.CONTROLLED_BURN_DAMAGE_MULT or nil
             }
+            self.stokeablefire = self.inst.components.health == nil -- NOTES(JBK): There is no benefit to uncontrolled creature fires.
         else
             self.controlled_burn = nil
+            self.stokeablefire = false
         end
 
         self:StopSmoldering()
@@ -465,6 +483,7 @@ function Burnable:Extinguish(resetpropagator, heatpct, smotherer)
         end
 
         self.controlled_burn = nil
+        self.stokeablefire = false
 
         self.burning = false
         self:KillFX()

@@ -186,6 +186,8 @@ local function common_fn(build, tag)
     locomotor.walkspeed = TUNING.ROOK_WALK_SPEED
     locomotor.runspeed =  TUNING.ROOK_RUN_SPEED
 
+    inst:AddComponent("drownable")
+
     --
     local sleeper = inst:AddComponent("sleeper")
     sleeper:SetWakeTest(ShouldWake)

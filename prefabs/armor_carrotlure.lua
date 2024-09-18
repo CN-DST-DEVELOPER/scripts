@@ -77,6 +77,8 @@ local function onequiptomodel(inst, owner)
     DisableLure(inst)
 end
 
+local FLOAT_SCALE = {.9, .9, .9}
+
 local function fn()
     local inst = CreateEntity()
 
@@ -94,6 +96,8 @@ local function fn()
     inst:AddTag("show_spoilage")
     inst:AddTag("hidesmeats")
     inst.foleysound = "dontstarve/movement/foley/cactus_armor"
+
+    MakeInventoryFloatable(inst, nil, 0.2, FLOAT_SCALE)
 
     inst.entity:SetPristine()
 

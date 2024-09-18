@@ -255,6 +255,8 @@ local function fn()
 	inst.components.locomotor.walkspeed = TUNING.SHADOWTHRALL_HANDS_WALKSPEED
 	inst.components.locomotor.runspeed = TUNING.SHADOWTHRALL_HANDS_RUNSPEED
 
+    inst:AddComponent("drownable")
+
 	inst:AddComponent("health")
 	inst.components.health:SetMaxHealth(TUNING.SHADOWTHRALL_HANDS_HEALTH)
 	inst.components.health.nofadeout = true

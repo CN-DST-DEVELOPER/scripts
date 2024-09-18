@@ -28,7 +28,7 @@ local function GoHomeAction(inst)
     end
 end
 
-local EAT_CANT_TAGS = { "outofreach" }
+local EAT_CANT_TAGS = { "INLIMBO", "outofreach" }
 local EAT_ONEOF_TAGS = {
             "edible_GENERIC",
             "edible_VEGGIE",

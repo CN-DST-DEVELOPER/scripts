@@ -31,6 +31,8 @@ local events =
 {
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnHop(),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("death", function(inst, data)
         if not inst.sg:HasStateTag("deactivating") then
             inst.sg:GoToState("death", data)
@@ -482,5 +484,7 @@ CommonStates.AddRunStates(states,
 })
 
 CommonStates.AddHopStates(states, true, {pre = "run_pre", loop = "run_loop", pst = "run_pst"})
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "hit",})
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("berniebig", states, events, "activate")

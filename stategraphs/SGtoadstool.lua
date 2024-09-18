@@ -159,6 +159,7 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("doattack", function(inst)
         if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
             ChooseAttack(inst)
@@ -986,5 +987,6 @@ CommonStates.AddSleepExStates(states,
         inst.sg:AddStateTag("caninterrupt")
     end,
 })
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("SGtoadstool", states, events, "idle")

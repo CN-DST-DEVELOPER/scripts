@@ -13,6 +13,8 @@ local events=
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 }
 
 local states=
@@ -134,6 +136,8 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 
 return StateGraph("bishop", states, events, "idle", actionhandlers)

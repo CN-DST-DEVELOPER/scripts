@@ -229,7 +229,7 @@ local wormspawn =
 
         if wave_pre_upgraded then
             wave_override_chance = 0
-        else                
+        elseif TheWorld.state.cycles > TUNING.WORM_BOSS_DAYS then
             wave_override_chance = math.min(0.5, wave_override_chance + 0.05)
         end 
 

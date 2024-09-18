@@ -203,7 +203,7 @@ local function fn()
     locomotor.walkspeed = 2.75
     locomotor:SetSlowMultiplier(1)
     locomotor:SetTriggersCreep(false)
-    locomotor.pathcaps = {ignorecreep = true,}
+    locomotor.pathcaps = {ignorecreep = true, ignorebridges = true,}
 
     inst:SetStateGraph("SGmole")
     inst:SetBrain(brain)

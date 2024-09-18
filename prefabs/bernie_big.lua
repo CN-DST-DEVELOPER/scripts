@@ -673,6 +673,8 @@ local function fn()
     inst.components.locomotor.walkspeed = TUNING.BERNIE_BIG_WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.BERNIE_BIG_RUN_SPEED
 
+    inst:AddComponent("drownable")
+
     -- Enable boat hopping
     inst.components.locomotor:SetAllowPlatformHopping(true)
     inst:AddComponent("embarker")

@@ -144,7 +144,7 @@ local function ShadowSaddle_Fx_SpawnFxForOwner(inst, owner)
 
     for i = 1, 3 do
         local fx = inst.fx[i]
-        if fx == nil then
+        if fx == nil or not fx:IsValid() then -- These get removed on the client when changing parenting from beefalo -> player and player -> beefalo.
             fx = CreateFxFollowFrame(i)
             inst.fx[i] = fx
         end

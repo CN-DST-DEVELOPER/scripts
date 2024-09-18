@@ -433,6 +433,8 @@ local function fn()
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('fruit_dragon')
 
+    inst:AddComponent("drownable")
+
     inst:AddComponent("sleeper")
     inst.components.sleeper.testperiod = 3
     inst.components.sleeper:SetWakeTest(Sleeper_WakeTest)

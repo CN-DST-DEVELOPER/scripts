@@ -121,6 +121,8 @@ local function fn_common(build, tag)
     local locomotor = inst:AddComponent("locomotor")
     locomotor.walkspeed = TUNING.KNIGHT_WALK_SPEED
 
+    inst:AddComponent("drownable")
+
     --
     inst:AddComponent("lootdropper")
 

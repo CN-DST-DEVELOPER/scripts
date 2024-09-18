@@ -152,6 +152,8 @@ local function fn()
     inst.components.locomotor.runspeed = TUNING.GRASSGEKKO_RUN_SPEED
     inst.components.locomotor.walkspeed = TUNING.GRASSGEKKO_WALK_SPEED
 
+    inst:AddComponent("drownable")
+
     MakeSmallBurnableCharacter(inst, "grassgecko_body", Vector3(1,0,1))
     MakeSmallFreezableCharacter(inst)
 

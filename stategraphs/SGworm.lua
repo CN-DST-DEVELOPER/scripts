@@ -50,6 +50,7 @@ local events =
         end
     end),
     CommonHandlers.OnLocomote(false, true),
+    CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
@@ -470,5 +471,6 @@ local states =
 }
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("worm", states, events, "idle", actionhandlers)

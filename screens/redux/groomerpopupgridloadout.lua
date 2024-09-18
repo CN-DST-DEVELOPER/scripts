@@ -175,11 +175,16 @@ function GridGroomerPopupScreen:Close(cancel)
     end
 
 	if not data.base or data.base == self.loadout.currentcharacter or data.base == "" or not TheInventory:CheckOwnership(data["base"]) then data.base = (self.loadout.currentcharacter.."_none") end
-	if not self:YOTB_event_check(data.beef_body) or not IsValidBeefaloClothing( data.beef_body ) or not TheInventory:CheckOwnership(data["beef_body"]) then data.beef_body = "" end
-	if not self:YOTB_event_check(data.beef_horn) or not IsValidBeefaloClothing( data.beef_horn ) or not TheInventory:CheckOwnership(data["beef_horn"]) then data.beef_horn = "" end
-	if not self:YOTB_event_check(data.beef_head) or not IsValidBeefaloClothing( data.beef_head ) or not TheInventory:CheckOwnership(data["beef_head"]) then data.beef_head = "" end
-	if not self:YOTB_event_check(data.beef_feet) or not IsValidBeefaloClothing( data.beef_feet ) or not TheInventory:CheckOwnership(data["beef_feet"]) then data.beef_feet = "" end
-	if not self:YOTB_event_check(data.beef_tail) or not IsValidBeefaloClothing( data.beef_tail ) or not TheInventory:CheckOwnership(data["beef_tail"]) then data.beef_tail = "" end
+    local beef_body = data.beef_body or ""
+    local beef_horn = data.beef_horn or ""
+    local beef_head = data.beef_head or ""
+    local beef_feet = data.beef_feet or ""
+    local beef_tail = data.beef_tail or ""
+	if not self:YOTB_event_check(beef_body) and not IsValidBeefaloClothing(beef_body) and not TheInventory:CheckOwnership(beef_body) then data.beef_body = "" end
+	if not self:YOTB_event_check(beef_horn) and not IsValidBeefaloClothing(beef_horn) and not TheInventory:CheckOwnership(beef_horn) then data.beef_horn = "" end
+	if not self:YOTB_event_check(beef_head) and not IsValidBeefaloClothing(beef_head) and not TheInventory:CheckOwnership(beef_head) then data.beef_head = "" end
+	if not self:YOTB_event_check(beef_feet) and not IsValidBeefaloClothing(beef_feet) and not TheInventory:CheckOwnership(beef_feet) then data.beef_feet = "" end
+	if not self:YOTB_event_check(beef_tail) and not IsValidBeefaloClothing(beef_tail) and not TheInventory:CheckOwnership(beef_tail) then data.beef_tail = "" end
 
 	POPUPS.GROOMER:Close(self.owner_player, data.beef_body, data.beef_horn, data.beef_head, data.beef_feet, data.beef_tail, data.cancel)
 

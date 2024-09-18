@@ -85,6 +85,7 @@ end
 local events =
 {
     CommonHandlers.OnLocomote(true, true),
+    CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttack(),
@@ -694,5 +695,6 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("minotaur", states, events, "idle")

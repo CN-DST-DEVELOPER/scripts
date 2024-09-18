@@ -395,7 +395,15 @@ local function SummonSpawn(pt, upgrade, radius_override)
     if spawn_pt ~= nil then
         local spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
         if spawn ~= nil then
-        	if spawn.Physics then
+
+			if spawn.hounded_overridelocation then
+    			local new_spawn_pt = spawn:hounded_overridelocation(pt)
+    			if new_spawn_pt then
+    				spawn_pt = new_spawn_pt
+    			end
+    		end
+
+        	if spawn.Physics then        		
             	spawn.Physics:Teleport(spawn_pt:Get())
         	else
         		spawn.Transform:SetPosition(spawn_pt:Get())

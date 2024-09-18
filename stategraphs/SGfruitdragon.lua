@@ -14,6 +14,8 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnLocomote(true, true),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("doattack", function(inst, data)
 		if inst.components.health ~= nil and not inst.components.health:IsDead()
@@ -392,5 +394,7 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("fruit_dragon", states, events, "idle", actionhandlers)

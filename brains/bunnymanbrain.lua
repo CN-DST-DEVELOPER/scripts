@@ -35,7 +35,7 @@ local SEE_SCARER_DIST = TUNING.RABBITKINGSPEAR_SCARE_RADIUS
 local STOP_SCARER_DIST = SEE_SCARER_DIST + 6
 
 local GETTRADER_MUST_TAGS = { "player" }
-local FINDFOOD_CANT_TAGS = { "outofreach" }
+local FINDFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 
 local function GetTraderFn(inst)
     return FindEntity(inst, TRADE_DIST,

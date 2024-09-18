@@ -87,6 +87,8 @@ local function edible(inst, item)
             item:GetCurrentPlatform() == inst:GetCurrentPlatform()
 end
 
+local NO_TAGS = { "INLIMBO", "outofreach" }
+
 local function eat_food_action(inst)
     if inst == nil or not inst:IsValid() then
         return nil
@@ -94,7 +96,7 @@ local function eat_food_action(inst)
 
     local px, py, pz = inst.Transform:GetWorldPosition()
 
-    local ents_nearby = TheSim:FindEntities(px, py, pz, SEE_BAIT_DIST + AVOID_PLAYER_DIST)
+	local ents_nearby = TheSim:FindEntities(px, py, pz, SEE_BAIT_DIST + AVOID_PLAYER_DIST, nil, NO_TAGS)
 
     local foods = {}
     local scaries = {}

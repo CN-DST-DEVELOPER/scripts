@@ -70,6 +70,7 @@ local events =
             end
         end
     end),
+    CommonHandlers.OnFallInVoid(),
 }
 
 local function return_to_idle(inst)
@@ -376,6 +377,7 @@ CommonStates.AddSleepExStates(states,
         end),
     },
 })
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("mushgnome", states, events, "idle", actionhandlers)
 

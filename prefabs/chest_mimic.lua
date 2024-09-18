@@ -419,7 +419,8 @@ local function revealed_fn()
             return
         end
 
-        inst.components.inventory:DropEverything(false, false)
+        inst.components.inventory:DropEverythingWithTag("irreplaceable")
+        inst.components.inventory:DestroyContents()
 
         -- We might want to turn back into a non-mimic chest
         local stay_mimic = TheWorld.components.shadowthrall_mimics ~= nil

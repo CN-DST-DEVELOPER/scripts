@@ -402,7 +402,7 @@ function winona_battery_high_item_init_fn(inst, build_name)
     basic_init_fn(inst, build_name, "winona_battery_high_item", winona_battery_high_item_filter)
 end
 function winona_battery_high_item_clear_fn(inst)
-    basic_clear_fn(inst, "winona_battery_high_item")
+    basic_clear_fn(inst, "winona_battery_high")
 end
 
 local winona_battery_low_skin_symbols = {
@@ -449,7 +449,7 @@ function winona_battery_low_item_init_fn(inst, build_name)
     basic_init_fn(inst, build_name, "winona_battery_low_item", winona_battery_low_item_filter)
 end
 function winona_battery_low_item_clear_fn(inst)
-    basic_clear_fn(inst, "winona_battery_low_item")
+    basic_clear_fn(inst, "winona_battery_low")
 end
 
 local winona_catapult_skin_symbols = {
@@ -479,6 +479,9 @@ function winona_catapult_init_fn(inst, build_name)
     for _, symbol in ipairs(winona_catapult_skin_symbols) do
         inst.AnimState:OverrideItemSkinSymbol(symbol, build_name, symbol, inst.GUID, "winona_catapult")
     end
+    if TheWorld.ismastersim and not inst._wired then
+        inst.AnimState:OverrideSymbol("wire", "winona_catapult", "dummy")
+    end
 end
 function winona_catapult_clear_fn(inst)
     if inst.prefab == "winona_catapult_item" then
@@ -500,7 +503,7 @@ function winona_catapult_item_init_fn(inst, build_name)
     basic_init_fn(inst, build_name, "winona_catapult_item", winona_catapult_item_filter)
 end
 function winona_catapult_item_clear_fn(inst)
-    basic_clear_fn(inst, "winona_catapult_item")
+    basic_clear_fn(inst, "winona_catapult")
 end
 
 local winona_spotlight_skin_symbols = {
@@ -533,6 +536,9 @@ function winona_spotlight_init_fn(inst, build_name)
     for _, symbol in ipairs(winona_spotlight_skin_symbols) do
         inst.AnimState:OverrideItemSkinSymbol(symbol, build_name, symbol, inst.GUID, "winona_spotlight")
     end
+    if TheWorld.ismastersim and not inst._wired then
+        inst.AnimState:OverrideSymbol("wire", "winona_spotlight", "dummy")
+    end
     if inst._headinst then
         for _, symbol in ipairs(winona_spotlight_skin_symbols) do
             inst._headinst.AnimState:OverrideItemSkinSymbol(symbol, build_name, symbol, inst.GUID, "winona_spotlight")
@@ -564,7 +570,7 @@ function winona_spotlight_item_init_fn(inst, build_name)
     basic_init_fn(inst, build_name, "winona_spotlight_item", winona_spotlight_item_filter)
 end
 function winona_spotlight_item_clear_fn(inst)
-    basic_clear_fn(inst, "winona_spotlight_item")
+    basic_clear_fn(inst, "winona_spotlight")
 end
 
 function boat_grass_item_init_fn(inst, build_name)

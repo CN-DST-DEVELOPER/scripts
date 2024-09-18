@@ -103,10 +103,6 @@ function MosquitoBrain:OnStart()
     self.bt = BT(self.inst, root)
 end
 
-function MosquitoBrain:OnInitializationComplete()
-    self.inst.components.knownlocations:RememberLocation("home", self.inst:GetPosition(), true)
-end
-
 -------------------------------------------------------------------------------------------------------------
 
 return MosquitoBrain

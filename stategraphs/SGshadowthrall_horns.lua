@@ -37,6 +37,7 @@ local events =
 		end
 	end),
 	CommonHandlers.OnLocomote(false, true),
+    CommonHandlers.OnFallInVoid(),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
 }
@@ -801,5 +802,6 @@ local states =
 		end,
 	},
 }
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("shadowthrall_horns", states, events, "idle")

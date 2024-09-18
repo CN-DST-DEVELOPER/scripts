@@ -1,3 +1,6 @@
+--Unused, not maintained, don't copy from this file.
+--Keeping around in case of mods????
+
 require "behaviours/wander"
 require "behaviours/chaseandattack"
 require "behaviours/doaction"

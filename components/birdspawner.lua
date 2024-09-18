@@ -279,6 +279,8 @@ function self:GetSpawnPoint(pt)
     end
 end
 
+local BAIT_CANT_TAGS = { "INLIMBO", "outofreach" }
+
 function self:SpawnBird(spawnpoint, ignorebait)
     local prefab = PickBird(spawnpoint)
     if prefab == nil then
@@ -295,7 +297,7 @@ function self:SpawnBird(spawnpoint, ignorebait)
 
     --see if there's bait nearby that we might spawn into
     if bird.components.eater and not ignorebait then
-        local bait = TheSim:FindEntities(spawnpoint.x, 0, spawnpoint.z, 15)
+		local bait = TheSim:FindEntities(spawnpoint.x, 0, spawnpoint.z, 15, nil, BAIT_CANT_TAGS)
         for k, v in pairs(bait) do
             local x, y, z = v.Transform:GetWorldPosition()
             if bird.components.eater:CanEat(v) and not v:IsInLimbo() and

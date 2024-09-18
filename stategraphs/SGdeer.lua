@@ -33,6 +33,7 @@ end
 local events =
 {
     CommonHandlers.OnLocomote(true, true),
+    CommonHandlers.OnSink(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
@@ -677,5 +678,6 @@ CommonStates.AddSleepExStates(states,
         TimeEvent(24 * FRAMES, DoBellSound),
     },
 })
+CommonStates.AddSinkAndWashAshoreStates(states)
 
 return StateGraph("deer", states, events, "idle")

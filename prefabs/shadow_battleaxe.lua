@@ -74,6 +74,8 @@ local function OnUnequip(inst, owner)
 
     inst:RemoveEventCallback("working", inst._onownerworking, owner)
 
+    inst:ForgetAllTargets()
+
     owner.AnimState:ClearOverrideSymbol("swap_object")
 end
 
@@ -283,6 +285,7 @@ local function CheckForEpicCreatureKilled(inst, target)
         local levelup = inst:TryLevelingUp()
 
         inst:SayEpicKilledLine(levelup)
+        inst:ForgetTarget(target)
 
         return true
     end
@@ -316,6 +319,11 @@ local function OnAttack(inst, owner, target)
         if owner ~= nil and not is_epic then
             inst:SayRegularChatLine("creature_killed", owner)
         end
+
+    elseif inst:IsEpicCreature(target) and
+        inst.epic_kill_count < TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS[#TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS]
+    then
+        inst:TrackTarget(target)
     end
 
     if inst._lifesteal == nil or inst._lifesteal <= 0 then
@@ -323,6 +331,38 @@ local function OnAttack(inst, owner, target)
     end
 
     inst:DoLifeSteal(owner, target)
+end
+
+local function TrackTarget(inst, target)
+    if inst._trackedentities[target] then
+        inst._trackedentities[target] = GetTime()
+
+        return
+    end
+
+    if not target:IsValid() then
+        return
+    end
+
+    inst._trackedentities[target] = GetTime()
+
+    inst:ListenForEvent("death", inst._ontargetdeath, target)
+    inst:ListenForEvent("onremove", inst._ontargetremoved, target)
+end
+
+local function ForgetTarget(inst, target)
+    if inst._trackedentities[target] then
+        inst:RemoveEventCallback("death", inst._ontargetdeath, target)
+        inst:RemoveEventCallback("onremove", inst._ontargetremoved, target)
+
+        inst._trackedentities[target] = nil
+    end
+end
+
+local function ForgetAllTargets(inst)
+    for target, time in pairs(inst._trackedentities) do
+        inst:ForgetTarget(target)
+    end
 end
 
 ----------------------------------------------------------------------------------------------------------------
@@ -475,11 +515,18 @@ end
 ----------------------------------------------------------------------------------------------------------------
 
 local function GetDebugString(inst)
+    local trackedentities = {}
+
+    for target, time in pairs(inst._trackedentities) do
+        table.insert(trackedentities, tostring(target))
+    end
+
     return string.format(
-        "Level: %d/%d | Defeated Bosses: %d/%d | Life Steal: %.2f",
+        "Level: %d/%d | Defeated Bosses: %d/%d | Life Steal: %.2f | Tracked Bosses: [ %s ]",
         inst.level, #TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS,
         inst.epic_kill_count, TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS[#TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS],
-        inst._lifesteal
+        inst._lifesteal,
+        table.concat(trackedentities, ", ")
     )
 end
 
@@ -728,6 +775,7 @@ local function fn()
     inst._classified:SetTarget(nil)
 
     inst._talktime = {}
+    inst._trackedentities = {}
 
     inst.SetLevel = SetLevel
     inst.TryLevelingUp = TryLevelingUp
@@ -742,7 +790,20 @@ local function fn()
     inst.SayEpicKilledLine = SayEpicKilledLine
     inst.StartOvertimeChatTask = StartOvertimeChatTask
     inst.ToggleTalking = ToggleTalking
+    inst.TrackTarget = TrackTarget
+    inst.ForgetTarget = ForgetTarget
+    inst.ForgetAllTargets = ForgetAllTargets
     inst._onownerworking = function(owner, data) OnOwnerWorking(inst, owner, data) end
+    inst._ontargetremoved = function(epic, data) inst:ForgetTarget(epic) end
+    inst._ontargetdeath = function(epic, data)
+        if inst._trackedentities[epic] ~= nil and
+            (inst._trackedentities[epic] + TUNING.SHADOW_BATTLEAXE.RECENT_TARGET_TIME) >= GetTime()
+        then
+            inst:CheckForEpicCreatureKilled(epic)
+        end
+
+        inst:ForgetTarget(epic)
+    end
 
     -----------------------------------------------------------
 

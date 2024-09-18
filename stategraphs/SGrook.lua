@@ -8,6 +8,8 @@ local actionhandlers =
 local events=
 {
     CommonHandlers.OnLocomote(true, true),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttack(),
@@ -286,6 +288,8 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 
 return StateGraph("rook", states, events, "idle", actionhandlers)

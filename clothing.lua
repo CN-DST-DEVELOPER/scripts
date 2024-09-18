@@ -1730,7 +1730,7 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "MASQUERADE", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "arm_upper", "arm_lower", "arm_lower_cuff", "torso_pelvis", "torso", },
+		symbol_overrides = { "arm_upper", "arm_lower", "arm_lower_cuff", "torso", },
 		torso_tuck = "untucked",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",

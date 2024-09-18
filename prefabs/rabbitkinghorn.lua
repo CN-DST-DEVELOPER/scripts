@@ -1,5 +1,6 @@
 local assets = {
     Asset("ANIM", "anim/rabbitkinghorn.zip"),
+    Asset("SOUND", "sound/rifts4.fsb"),
 }
 
 local prefabs = {
@@ -104,7 +105,7 @@ local function fn()
     --tool (from tool component) added to pristine state for optimization
     inst:AddTag("tool")
 
-    MakeInventoryFloatable(inst, "small", 0.05, 0.8)
+    MakeInventoryFloatable(inst, "small", 0.3, 1.3)
 
     inst.entity:SetPristine()
 
@@ -117,7 +118,7 @@ local function fn()
     instrument:SetRange(TUNING.RABBITKINGHORN_RANGE)
     instrument:SetOnHeardFn(OnHeard)
     instrument:SetOnPlayedFn(OnPlayed)
-    instrument:SetAssetOverrides("rabbitkinghorn", "rabbitkinghorn01") -- FIXME(JBK): Sounds.
+    instrument:SetAssetOverrides("rabbitkinghorn", "rabbitkinghorn01", "rifts4/rabbit_horn/call")
 
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.PLAY)

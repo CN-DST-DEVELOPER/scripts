@@ -38,6 +38,8 @@ local events=
                 end
             end
         end),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned")
     end),
@@ -299,6 +301,8 @@ local states=
 }
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 
 return StateGraph("rabbit", states, events, "idle", actionhandlers)

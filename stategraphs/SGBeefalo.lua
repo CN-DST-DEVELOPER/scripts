@@ -618,9 +618,7 @@ local states=
                 inst.SoundEmitter:PlaySound(inst.sounds.yell)
             end
 
-            local leader = inst.components.follower:GetLeader()
-            
-            if load or (leader ~= nil and leader:HasTag("shadowbell")) then
+            if load or inst:ShouldKeepCorpse() then
                 if inst.components.freezable ~= nil then
                     inst.components.freezable:Unfreeze()
                 end

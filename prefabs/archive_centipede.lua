@@ -277,6 +277,8 @@ local function fn_common(tag)
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.ARCHIVE_CENTIPEDE.WALK_SPEED
 
+    inst:AddComponent("drownable")
+
     inst:SetStateGraph("SGcentipede")
 
     inst:SetBrain(brain)

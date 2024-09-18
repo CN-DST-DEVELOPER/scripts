@@ -892,6 +892,8 @@ local function common_fn(build)
     inst.components.locomotor.pathcaps = { ignorewalls = true }
     inst.components.locomotor.walkspeed = TUNING.TOADSTOOL_SPEED_LVL[0]
 
+    inst:AddComponent("drownable")
+
     inst:AddComponent("health")
     inst.components.health.nofadeout = true
 

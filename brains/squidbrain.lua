@@ -36,8 +36,15 @@ local TIREDOUT_WANDER_DATA = {wander_dist = 6, should_run = false}
 
 local FISHING_COMBAT_DIST = 8
 
+local FINDFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
+
 local function EatFoodAction(inst)
-    local target = FindEntity(inst, SEE_DIST, function(item) return inst.components.eater:CanEat(item) and item:IsOnPassablePoint(true) end)
+	local target = FindEntity(inst, SEE_DIST,
+		function(item)
+			return inst.components.eater:CanEat(item) and item:IsOnPassablePoint(true)
+		end,
+		nil,
+		FINDFOOD_CANT_TAGS)
     return target ~= nil and BufferedAction(inst, target, ACTIONS.EAT) or nil
 end
 
@@ -84,7 +91,8 @@ local function GetFoodTarget(inst)
     local target = inst.foodtarget or FindEntity(inst, SEE_FOOD_DIST, function(food)
                 return TheWorld.Map:IsOceanAtPoint(inst.Transform:GetWorldPosition())
             end,
-            OCEANFISH_TAGS)
+			OCEANFISH_TAGS,
+			FINDFOOD_CANT_TAGS)
 
     return target
 end
@@ -104,7 +112,7 @@ local function EatFishAction(inst)
                 return TheWorld.Map:IsOceanAtPoint(inst.Transform:GetWorldPosition())
             end,
             nil,
-            nil,
+			FINDFOOD_CANT_TAGS,
             OCEANFISH_TAGS)
 
         if target then

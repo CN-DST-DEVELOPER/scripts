@@ -369,6 +369,9 @@ local function fn()
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = TUNING.RABBIT_RUN_SPEED
+
+    inst:AddComponent("drownable")
+
     inst:SetStateGraph("SGrabbit")
 
     inst:SetBrain(brain)
@@ -392,7 +395,6 @@ local function fn()
 
     inst:AddComponent("knownlocations")
 	inst:AddComponent("timer")
-    inst:AddComponent("drownable")
 
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.RABBIT_HEALTH)

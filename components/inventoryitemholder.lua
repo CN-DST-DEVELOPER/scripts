@@ -100,7 +100,19 @@ function InventoryItemHolder:GiveItem(item, giver)
         return false
     end
 
-    item = item.components.inventoryitem:RemoveFromOwner(self.acceptstacks) or item
+	local owner = item.components.inventoryitem.owner
+	if owner then
+		if owner.components.inventory then
+			--Use DropItem
+			--RemoveItem should only be used when immediately giving back to inventory
+			item = owner.components.inventory:DropItem(item, self.acceptstacks) or item
+		elseif owner.components.container then
+			--V2C: containers DropItem only supports wholestack.
+			--     also, containers should not be able to perform a give action anyway.
+			assert(self.acceptstacks)
+			owner.components.container:DropItem(item)
+		end
+	end
 
     if self.item ~= nil and self.item.components.stackable ~= nil then
         item = self.item.components.stackable:Put(item)

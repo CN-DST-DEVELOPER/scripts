@@ -25,7 +25,7 @@ end)
 local SEE_FOOD_DIST = 15
 local SEE_THREAT_DIST = 7.5
 
-local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
+local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "outofreach" }
 local FOOD_TAGS = {}
 for i, v in ipairs(FOODGROUP.OMNI.types) do
     table.insert(FOOD_TAGS, "edible_"..v)

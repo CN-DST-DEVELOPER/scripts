@@ -99,7 +99,7 @@ local function KeepFaceTargetFn(inst, target)
 end
 
 local EATFOOD_MUST_TAGS = { "edible_VEGGIE" }
-local EATFOOD_CANT_TAGS = { "INLIMBO" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local SCARY_TAGS = { "scarytoprey" }
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("waking") then

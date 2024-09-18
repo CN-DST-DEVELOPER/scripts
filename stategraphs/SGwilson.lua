@@ -869,6 +869,10 @@ local actionhandlers =
                     )
                 or "castspell"
         end),
+    ActionHandler(ACTIONS.STOKEFIRE,
+        function(inst, action)
+            return "castspellmind"
+        end),
     ActionHandler(ACTIONS.CAST_POCKETWATCH,
         function(inst, action)
             return action.invobject ~= nil
@@ -11860,7 +11864,7 @@ local states =
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
-			inst.AnimState:PlayAnimation("knockback_high")
+			inst.AnimState:PlayAnimation(data and data.starthigh and "bucked" or "knockback_high")
 
             if data ~= nil then
                 if data.disablecollision then
@@ -12355,6 +12359,7 @@ local states =
 					DoHurtSound(inst)
 					inst.sg:HandleEvent("knockback", {
 						knocker = attacker,
+						starthigh = data and data.starthigh or nil,
 						radius = data ~= nil and data.radius or physradius + 1,
 						strengthmult = data ~= nil and data.strengthmult or nil,
 					})
@@ -12486,6 +12491,7 @@ local states =
 					DoHurtSound(inst)
 					inst.sg:HandleEvent("knockback", {
 						knocker = attacker,
+						starthigh = data and data.starthigh or nil,
 						radius = data ~= nil and data.radius or physradius + 1,
 						strengthmult = data ~= nil and data.strengthmult or nil,
 					})

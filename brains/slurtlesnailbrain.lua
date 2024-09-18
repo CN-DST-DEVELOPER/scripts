@@ -44,7 +44,7 @@ local function ShouldRunAway(guy)
     return guy:HasTag("character") and not guy:HasTag("notarget") and not guy:HasDebuff("healingsalve_acidbuff")
 end
 
-local EATFOOD_CANT_TAGS = { "outofreach" }
+local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then

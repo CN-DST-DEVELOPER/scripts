@@ -13,6 +13,7 @@ local events=
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("rollattack", function(inst)
                                 if inst:IsValid() and ( not inst.components.health or not inst.components.health:IsDead()) and (inst.sg:HasStateTag("canroll") or inst.sg:HasStateTag("moving") ) then
@@ -340,6 +341,7 @@ CommonStates.AddCombatStates(states,
 },nil,{attackexit= attackexit})
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddVoidFallStates(states)
 
 
 return StateGraph("centipede", states, events, "idle", actionhandlers)

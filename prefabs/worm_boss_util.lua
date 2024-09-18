@@ -86,6 +86,7 @@ local function SpawnDirt(inst, chunk, pt, start, instant)
 
     local state =
         (instant and "dirt_idle"    ) or
+        (start   and #inst.chunks == 1 and "dirt_emerge_loop_pre") or
         (start   and "dirt_pre_slow") or
         "dirt_emerge"
 
@@ -174,7 +175,7 @@ local function DoSpitOut(inst, target, spitfromhead, spitfromlocatoin)
             (spitfromhead     and inst.head) or
             inst.tail
 
-        target.sg.currentstate:HandleEvent(target.sg, "spitout", { spitter = source, radius = inst:GetPhysicsRadius(0) + 3, strengthmult = 1 , rot=math.random()*360 })
+		target.sg.currentstate:HandleEvent(target.sg, "spitout", { spitter = source, starthigh = true, radius = inst:GetPhysicsRadius(0) + 3, strengthmult = 1 , rot=math.random()*360 })
     elseif not target:HasTag("irreplaceable") then
         target:Remove()
     end
@@ -649,22 +650,10 @@ local function SetCreateChunkTask(inst, pt)
 end
 
 local function MoveSegmentUnderGround(inst, chunk, test_segment, percent, instant)
-    for i, segment in ipairs(chunk.segments) do
-        if segment == test_segment then
-            table.remove(chunk.segments, i)
+    table.removearrayvalue(chunk.segments, test_segment)
 
-            if #chunk.segments < 1 then
-                for j, testchunk in ipairs(inst.chunks) do
-                    if testchunk == chunk then
-                        table.remove(inst.chunks, j)
-
-                        break
-                    end
-                end
-            end
-
-            break
-        end
+    if #chunk.segments <= 0 then
+        table.removearrayvalue(inst.chunks, chunk)
     end
 
     if test_segment.head then
@@ -722,6 +711,11 @@ local function AddSegment(inst, chunk, tail, instant)
     local p0 = Vector3(chunk.groundpoint_start.x, 0, chunk.groundpoint_start.z)
     local p1 = Vector3(chunk.groundpoint_end.x,   0, chunk.groundpoint_end.z  )
 
+    segment._dirt_start_x:set(chunk.groundpoint_start.x)
+    segment._dirt_start_z:set(chunk.groundpoint_start.z)
+    segment._dirt_end_x:set(chunk.groundpoint_end.x)
+    segment._dirt_end_z:set(chunk.groundpoint_end.z)
+
     local pdelta = p1 - p0
 
     local t = segment.segtime/chunk.segtimeMax
@@ -734,6 +728,8 @@ local function AddSegment(inst, chunk, tail, instant)
 
     segment.Transform:SetPosition(pf:Get())
     segment.Transform:SetRotation(segment:GetAngleToPoint(chunk.groundpoint_end:Get()))
+
+    segment:UpdatePredictionData(chunk.ease, segment.segtime)  -- Prease update client prediction in worm_boss.lua in any calculation changes are made here.
 
     if ShouldDoSpikeDamage(chunk) then
         segment:DoThornDamage()
@@ -764,7 +760,6 @@ local function IsChunkMoving(inst, chunk)
 end
 
 local function SpawnAboveGroundHeadCorpse(inst, headchunk)
-
     for _, segment in ipairs(headchunk.segments) do
         for i=#headchunk.segments, 1, -1 do
             inst:ReturnSegmentToPool(headchunk.segments[i])
@@ -864,11 +859,15 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
     end
 
     -- MOVE SEGMENTS ALONG TOWARD ENDPOINT
-    for i, segment in ipairs(chunk.segments) do
+    for i = #chunk.segments, 1, -1 do
+        local segment = chunk.segments[i]
+
         local p1 = chunk.groundpoint_end
         local p0 = chunk.groundpoint_start
-
+        
         local pdelta = p1 - p0
+
+        segment:UpdatePredictionData(speed, segment.segtime) -- Prease update client prediction in worm_boss.lua in any calculation changes are made here.
 
         segment.segtime = math.min(segment.segtime + (dt * speed), chunk.segtimeMax)
 
@@ -880,7 +879,7 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
 
         segment.setheight = pf.y
 
-        segment.Transform:SetPosition(pf.x,pf.y,pf.z)
+        segment.Transform:SetPosition(pf:Get())
 
         -- REACHED JUST ABOUT TO THE END, TIME TO GO UNDERGROUND.
         if t > 0.98 then
@@ -1209,7 +1208,9 @@ local function UpdateRegularDeadChunk_Simplified(inst, chunk, dt, instant)
         end
     end
 
-    for i, segment in ipairs(chunk.segments) do
+    for i = #chunk.segments, 1, -1 do
+        local segment = chunk.segments[i]
+
         segment.percentdist = segment.segtime/chunk.segtimeMax
         UpdateSegmentAnimPosition(segment, segment.percentdist)
 
@@ -1222,13 +1223,15 @@ local function UpdateRegularDeadChunk_Simplified(inst, chunk, dt, instant)
 
         local t = segment.segtime/chunk.segtimeMax
 
+        segment:UpdatePredictionData(1, segment.segtime) -- Prease update client prediction in worm_boss.lua in any calculation changes are made here.
+
         local tmod = easing.inOutQuad(t, 0, 1, 1)
 
         local pf = (pdelta * tmod) + p0
 
         segment.setheight = pf.y
 
-        segment.Transform:SetPosition(pf.x,pf.y,pf.z)
+        inst.Transform:SetPosition(pf:Get())
 
         -- REACHED JUST ABOUT TO THE END, TIME TO GO UNDERGROUND.
         if t > 0.98 then
@@ -1306,6 +1309,7 @@ return {
     CHUNK_TEMPLATE = CHUNK_TEMPLATE,
     STATE = STATE,
     WORM_LENGTH = WORM_LENGTH,
+    MAX_SEGTIME = CHUNK_TEMPLATE.segtimeMax,
 
     ChewAll = ChewAll,
     CreateNewChunk = CreateNewChunk,

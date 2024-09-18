@@ -47,6 +47,7 @@ local events =
 			end
 		end
 	end),
+    CommonHandlers.OnFallInVoid(),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
 }
@@ -542,5 +543,6 @@ CommonStates.AddWalkStates(states,
 		end),
 	},
 })
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("shadowthrall_hands", states, events, "idle")

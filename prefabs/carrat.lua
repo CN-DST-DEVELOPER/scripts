@@ -223,6 +223,7 @@ local function go_to_submerged(inst)
 	end
 
     inst:RemoveComponent("locomotor")
+    inst:RemoveComponent("drownable")
     inst:RemoveComponent("cookable")
     inst:RemoveComponent("lootdropper")
     inst:RemoveComponent("combat")
@@ -472,6 +473,8 @@ local function go_to_emerged(inst)
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.CARRAT.WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.CARRAT.RUN_SPEED
+
+    inst:AddComponent("drownable")
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable("carrat")
@@ -751,6 +754,8 @@ local function fn()
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = TUNING.CARRAT.WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.CARRAT.RUN_SPEED
+
+    inst:AddComponent("drownable")
 
     inst:SetStateGraph("SGcarrat")
     inst:SetBrain(brain)

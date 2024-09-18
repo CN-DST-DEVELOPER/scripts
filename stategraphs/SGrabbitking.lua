@@ -254,7 +254,11 @@ local states = {
         tags = {"busy", "ability"},
         onenter = function(inst)
             inst.AnimState:PlayAnimation("stuck_loop", true)
+            inst.SoundEmitter:PlaySound("rifts4/rabbit_king/aggressive/stuck_lp", "stuck_lp")
             inst.sg:SetTimeout(TUNING.RABBITKING_STUN_DURATION)
+        end,
+        onexit = function(inst)
+            inst.SoundEmitter:KillSound("stuck_lp")
         end,
         ontimeout = function(inst)
             inst.sg:GoToState("ability_dropkick_miss_stuck_pst")
@@ -265,6 +269,7 @@ local states = {
         tags = {"busy", "ability"},
         onenter = function(inst)
             inst.AnimState:PlayAnimation("stuck_pst")
+            inst.SoundEmitter:PlaySound("rifts4/rabbit_king/dropkick_miss_pst")
         end,
         events = {
             EventHandler("animover", function(inst)
@@ -333,11 +338,20 @@ local states = {
                 inst.AnimState:PushAnimation("spawn_loop", false)
             end
             inst.AnimState:PushAnimation("spawn_pst", false)
-            inst.SoundEmitter:PlaySound("rifts4/rabbit_king/spawn_lp", "spawn_lp")
+
+            if inst.rabbitking_kind == "aggressive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/aggressive/spawn_lp", "spawn_lp")
+            elseif inst.rabbitking_kind == "passive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/spawn_lp", "spawn_lp")
+            end
         end,
         onexit = function(inst)
             inst.SoundEmitter:KillSound("spawn_lp")
-            inst.SoundEmitter:PlaySound("rifts4/rabbit_king/spawn_pst")
+            if inst.rabbitking_kind == "aggressive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/aggressive/spawn_pst")
+            elseif inst.rabbitking_kind == "passive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/spawn_pst")
+            end
         end,
         events = {
             EventHandler("animover", function(inst)
@@ -360,6 +374,12 @@ local states = {
             inst.Transform:SetSixFaced()
             inst.AnimState:PlayAnimation("dropkick_hit")
             inst.AnimState:PushAnimation("dropkick_hit_pst", false)
+
+            if inst.rabbitking_kind == "aggressive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/king_reveal_aggressive")
+            elseif inst.rabbitking_kind == "passive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/king_reveal_passive")
+            end
         end,
         timeline = {
             TimeEvent(3 * FRAMES, function(inst)
@@ -418,6 +438,7 @@ local states = {
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation("transition")
             inst.SoundEmitter:PlaySound("rifts4/rabbit_king/transition_pst")
+            inst.SoundEmitter:PlaySound("rifts4/rabbit_king/king_reveal_aggressive")
             inst.components.colouradder:PushColour("aggressiveswitch", 1, 1, 1, 0)
         end,
         timeline = {
@@ -580,7 +601,11 @@ local states = {
             if inst.sounds and inst.sounds.scream then
                 inst.SoundEmitter:PlaySound(inst.sounds.scream)
             else
-                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/death")
+                if inst.rabbitking_kind == "aggressive" then
+                    inst.SoundEmitter:PlaySound("rifts4/rabbit_king/aggressive/death")
+                elseif inst.rabbitking_kind == "passive" then
+                    inst.SoundEmitter:PlaySound("rifts4/rabbit_king/death")
+                end
             end
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
@@ -654,7 +679,11 @@ local states = {
             if inst.sounds and inst.sounds.hurt then
                 inst.SoundEmitter:PlaySound(inst.sounds.hurt)
             else
-                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/hit")
+                if inst.rabbitking_kind == "aggressive" then
+                    inst.SoundEmitter:PlaySound("rifts4/rabbit_king/aggressive/hit")
+                elseif inst.rabbitking_kind == "passive" then
+                    inst.SoundEmitter:PlaySound("rifts4/rabbit_king/hit")
+                end
             end
             inst.AnimState:PlayAnimation("hit")
             inst.Physics:Stop()
@@ -666,7 +695,22 @@ local states = {
         },
     },
 }
-CommonStates.AddSleepStates(states)
+CommonStates.AddSleepStates(states, nil, {
+    onsleep = function(inst)
+        if not inst.SoundEmitter:PlayingSound("sleep_lp") then
+            if inst.rabbitking_kind == "aggressive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/aggressive/sleep_lp", "sleep_lp")
+            elseif inst.rabbitking_kind == "passive" then
+                inst.SoundEmitter:PlaySound("rifts4/rabbit_king/sleep_lp", "sleep_lp")
+            end
+        end
+    end,
+    onwake = function(inst)
+        if inst.SoundEmitter:PlayingSound("sleep_lp") then
+            inst.SoundEmitter:KillSound("sleep_lp")
+        end
+    end,
+})
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

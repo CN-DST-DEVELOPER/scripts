@@ -48,6 +48,9 @@ local function StopBuzz(inst)
     inst.SoundEmitter:KillSound("buzz")
 end
 
+local function StoreHomePos(inst, allow_overwrite)
+    inst.components.knownlocations:RememberLocation("home", inst:GetPosition(), not allow_overwrite)
+end
 local function OnDropped(inst)
     inst.sg:GoToState("idle")
 
@@ -59,14 +62,6 @@ local function OnDropped(inst)
         inst.components.workable:SetWorkLeft(1)
     end
 
-    if inst.brain ~= nil then
-        inst.brain:Start()
-    end
-
-    if inst.sg ~= nil then
-        inst.sg:Start()
-    end
-
     if inst.components.stackable ~= nil and inst.components.stackable:IsStack() then
         local x, y, z = inst.Transform:GetWorldPosition()
         while inst.components.stackable:IsStack() do
@@ -76,9 +71,11 @@ local function OnDropped(inst)
                     item.components.inventoryitem:OnDropped()
                 end
                 item.Physics:Teleport(x, y, z)
+                StoreHomePos(item, true)
             end
         end
     end
+    StoreHomePos(inst)
 end
 
 local function OnPickedUp(inst)

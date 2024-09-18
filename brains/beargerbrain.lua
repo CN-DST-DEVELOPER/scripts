@@ -15,7 +15,7 @@ local SEE_FOOD_DIST = 15
 local SEE_STRUCTURE_DIST = 30
 
 local BASE_TAGS = { "structure" }
-local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "burnt" }
+local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "burnt", "outofreach" }
 
 --local OFFSCREEN_RANGE = 64
 

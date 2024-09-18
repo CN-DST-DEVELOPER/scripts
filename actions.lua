@@ -297,6 +297,7 @@ ACTIONS =
     ADDWETFUEL = Action({ mount_valid=true, paused_valid=true }),
     LIGHT = Action({ priority=-4 }),
     EXTINGUISH = Action({ priority=0 }),
+    STOKEFIRE = Action({ rmb=true, mount_valid=true, distance=8, invalid_hold_action=true }),
 	LOOKAT = Action({ priority=-3, instant=true, distance=3--[[for close inspection]], ghost_valid=true, mount_valid=true, encumbered_valid=true }),
     TALKTO = Action({ priority=3, instant=true, mount_valid=true, encumbered_valid=true }),
     WALKTO = Action({ priority=-4, ghost_valid=true, mount_valid=true, encumbered_valid=true, invalid_hold_action=true }),
@@ -2436,6 +2437,17 @@ ACTIONS.EXTINGUISH.fn = function(act)
         return true
     elseif act.target.components.fueled ~= nil and act.target.components.fueled.canbespecialextinguished and not act.target.components.fueled:IsEmpty() then
         act.target.components.fueled:ChangeSection(-1)
+    end
+end
+
+ACTIONS.STOKEFIRE.fn = function(act)
+    if act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning() and act.doer:HasTag("controlled_burner") then
+        if act.target:HasTag("stokeablefire") then
+            act.target.components.burnable:StokeControlledBurn()
+            return true
+        else
+            return false
+        end
     end
 end
 

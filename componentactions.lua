@@ -229,9 +229,11 @@ local COMPONENT_ACTIONS =
             end
         end,
 
-        burnable = function(inst, doer, actions)
+        burnable = function(inst, doer, actions, right)
             if inst:HasTag("smolder") then
                 table.insert(actions, ACTIONS.SMOTHER)
+            elseif right and doer:HasTag("controlled_burner") and inst:HasTag("stokeablefire") then
+                table.insert(actions, ACTIONS.STOKEFIRE)
             end
         end,
 

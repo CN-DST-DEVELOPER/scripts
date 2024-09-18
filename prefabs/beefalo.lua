@@ -482,24 +482,32 @@ local function OnBrushed(inst, doer, numprizes)
 end
 
 local function Dead_AbleToAcceptTest(inst, item, giver, count)
-    return inst.components.health:IsDead() and item.CanReviveTarget ~= nil and item:CanReviveTarget(inst, giver)
+    return inst.components.health:IsDead() and item.CanReviveTarget ~= nil and item:CanReviveTarget(inst, giver), "DEAD"
 end
 
 local function ShouldAcceptItem(inst, item, giver, count)
-    return (inst.components.eater:CanEat(item) and not inst.components.combat:HasTarget()) or inst.components.trader.abletoaccepttest ~= nil
+    if inst.components.trader.abletoaccepttest ~= nil then
+        return false -- Custom logic on refuse.
+    end
+    
+    return inst.components.eater:CanEat(item) and not inst.components.combat:HasTarget()
 end
 
 local function OnGetItemFromPlayer(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item, giver)
     end
-
-    if item.ReviveTarget ~= nil then
-        item:ReviveTarget(inst, giver)
-    end
 end
 
-local function OnRefuseItem(inst, item)
+local function OnRefuseItem(inst, giver, item)
+    if inst.components.health:IsDead() then
+        if item.ReviveTarget ~= nil then
+            item:ReviveTarget(inst, giver)
+        end
+
+        return -- Keep the item and revive the beefalo.
+    end
+
     inst.sg:GoToState("refuse")
     if inst.components.sleeper:IsAsleep() then
         inst.components.sleeper:WakeUp()
@@ -649,9 +657,7 @@ local function OnObedienceDelta(inst, data)
 end
 
 local function OnDeath(inst, data)
-    local leader = inst.components.follower:GetLeader()
-
-    if data.cause == "file_load" or (leader ~= nil and leader:HasTag("shadowbell")) then
+    if data.cause == "file_load" or inst:ShouldKeepCorpse() then
         inst.components.trader:SetAbleToAcceptTest(Dead_AbleToAcceptTest)
 
         inst.components.beard:EnableGrowth(false)
@@ -1030,6 +1036,16 @@ local function PoopOnSpawned(inst, poop)
     end
 end
 
+function fns.ShouldKeepCorpse(inst)
+    local leader = inst.components.follower:GetLeader()
+
+    return
+        leader ~= nil and
+        leader:HasTag("shadowbell") and
+        leader.components.rechargeable ~= nil and
+        leader.components.rechargeable:IsCharged()
+end
+
 local function beefalo()
     local inst = CreateEntity()
 
@@ -1040,7 +1056,6 @@ local function beefalo()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-    inst:SetPhysicsRadiusOverride(1.25)
     MakeCharacterPhysics(inst, 100, .5)
 
     inst.DynamicShadow:SetSize(6, 2)
@@ -1091,9 +1106,6 @@ local function beefalo()
     inst.skins.beef_feet = net_string(inst.GUID, "beefalo._beef_feet")
     inst.skins.beef_tail = net_string(inst.GUID, "beefalo._beef_tail")
     inst.GetBaseSkin = GetBaseSkin
-
-
-
 
     inst.entity:SetPristine()
 
@@ -1272,6 +1284,7 @@ local function beefalo()
     inst.GetIsInMood = fns.GetIsInMood
     inst.UnSkin = fns.UnSkin
     inst.OnRevived = fns.OnRevived
+    inst.ShouldKeepCorpse = fns.ShouldKeepCorpse
 
     inst._BellRemoveCallback = function(bell)
         fns.ClearBellOwner(inst)

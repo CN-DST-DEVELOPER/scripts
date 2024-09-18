@@ -82,9 +82,10 @@ function FireFX:SetPercentInLevel(percent)
 end
 
 function FireFX:SetLevel(lev, immediate, controlled_burn)
+    local stopcontrolled = self.controlled_burn ~= nil and controlled_burn == nil
     self.controlled_burn = controlled_burn
-    if lev > 0 and lev ~= self.level then
-        if self.playignitesound and (self.level == nil or lev > self.level) then
+    if lev > 0 and lev ~= self.level or stopcontrolled then
+        if self.playignitesound and (self.level == nil or lev > self.level or stopcontrolled) then
             self.inst.SoundEmitter:PlaySound(self.lightsound or (lev >= self.bigignitesoundthresh and "dontstarve/common/fireBurstLarge" or "dontstarve/common/fireBurstSmall"))
         end
 

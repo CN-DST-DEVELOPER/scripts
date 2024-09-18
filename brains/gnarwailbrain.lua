@@ -138,7 +138,7 @@ local function GetTrader(inst)
     return nil
 end
 
-local FINDFOOD_CANT_TAGS = {"outofreach"}
+local FINDFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 
 local function FindFoodAction(inst)
     -- Don't go looking for random ocean food if we're busy.

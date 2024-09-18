@@ -36,6 +36,8 @@ end
 local events =
 {
 	CommonHandlers.OnLocomote(true, true),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 	EventHandler("freeze", function(inst)
 		if not inst.defeated then
 			inst.sg:GoToState("frozen")
@@ -2471,5 +2473,7 @@ CommonStates.AddSleepExStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "hit",})
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("daywalker2", states, events, "idle")

@@ -11,7 +11,6 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
-    CommonHandlers.OnLocomote(false,true),
     EventHandler("locomote",
         function(inst)
             if not inst.sg:HasStateTag("idle") and not inst.sg:HasStateTag("moving") then return end
@@ -43,6 +42,8 @@ local events =
                 end
             end
         end),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 }
 
 local states=
@@ -298,5 +299,7 @@ CommonStates.AddSleepStates(states,
     },
 })
 CommonStates.AddFrozenStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("grassgekko", states, events, "idle", actionhandlers)
