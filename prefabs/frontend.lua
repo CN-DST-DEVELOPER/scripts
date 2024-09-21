@@ -138,6 +138,10 @@ local assets =
     Asset("ANIM", "anim/player_idles_wilson.zip"),    
     Asset("ANIM", "anim/bernie_build.zip"),
     Asset("ANIM", "anim/swap_lucy_axe.zip"),
+    -- Beefalo
+    Asset("ANIM", "anim/beefalo_basic.zip"),
+    Asset("ANIM", "anim/beefalo_build.zip"),
+    Asset("ANIM", "anim/beefalo_actions.zip"),
 
     -- Wardrobe
     Asset("ANIM", "anim/player_emotesxl.zip"), -- idle emote animations

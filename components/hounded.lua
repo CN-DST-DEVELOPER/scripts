@@ -175,6 +175,10 @@ local function PlanNextAttack()
 		_warnduration = _warndurationfn()
 		_attackplanned = true
 		_wave_pre_upgraded = nil
+
+    	if _spawndata.specialupgradecheck then
+    		_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings)
+    	end			
 	else
 		_attackplanned = false
 	end
@@ -931,10 +935,6 @@ function self:OnUpdate(dt)
     end
 
     if _timetoattack < 0 then
-    	if _spawndata.specialupgradecheck then
-    		_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings)
-    	end
-
         _warning = false
 
 		-- Okay, it's hound-day, get number of dogs for each player

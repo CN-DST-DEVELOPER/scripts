@@ -411,4 +411,14 @@ local function fn()
     return inst
 end
 
-return Prefab("tentacle_pillar", fn, assets, prefabs)
+local function atrium_fn() -- Proxy for world gen...
+    local inst = fn()
+
+    inst:SetPrefabName("tentacle_pillar")
+
+    return inst
+end
+
+return
+    Prefab("tentacle_pillar", fn, assets, prefabs),
+    Prefab("tentacle_pillar_atrium", atrium_fn, assets, prefabs)

@@ -657,7 +657,7 @@ local function OnObedienceDelta(inst, data)
 end
 
 local function OnDeath(inst, data)
-    if data.cause == "file_load" or inst:ShouldKeepCorpse() then
+    if data.cause == "file_load" or inst.ShouldKeepCorpse and inst:ShouldKeepCorpse() then
         inst.components.trader:SetAbleToAcceptTest(Dead_AbleToAcceptTest)
 
         inst.components.beard:EnableGrowth(false)

@@ -1230,7 +1230,7 @@ local function OnDecay(inst)
     if not inst.components.health:IsDead() then
         -- If we tried to decay while we're dunked in the ocean, we can't die to
         -- health:Kill(), so queue up the task until we finish washing ashore.
-        if inst.sg:HasStateTag("drowning") then
+        if inst.sg:HasStateTag("drowning") or inst.sg:HasStateTag("falling") then
             inst._decaytask = inst:DoTaskInTime(2 + math.random(), OnDecay)
         else
             --No chance fuel drops if decayed due to daylight

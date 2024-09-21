@@ -193,7 +193,9 @@ function BeefaloSkinPresetsPopup:_LoadPreset(i)
     TheFrontEnd:PopScreen(self)
 end
 function BeefaloSkinPresetsPopup:_SetPreset(i)
-    self.user_profile:SetSkinPresetForCharacter(self.character, i, self.selected_skins)
+    local localvalidated = shallowcopy(self.selected_skins)
+    ValidateItemsLocal(self.character, localvalidated)
+    self.user_profile:SetSkinPresetForCharacter(self.character, i, localvalidated)
     TheFrontEnd:PopScreen(self)
 end
 

@@ -129,6 +129,9 @@ function OldAger:LongUpdate(dt)
 	self:OnUpdate(dt)
 end
 
+function OldAger:FastForwardDamageOverTime()
+	self:OnUpdate(self.damage_remaining / self.damage_per_second)
+end
 
 function OldAger:GetDebugString()
 	return string.format("Year timer: %0.3f", self.year_timer) .. string.format(", Meter: %0.2f, DPS: %0.3f, Rate: %0.3f, delta %0.05f", self.damage_remaining, self.damage_per_second, self.rate, self.base_rate * self.rate)

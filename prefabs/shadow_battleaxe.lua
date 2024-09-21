@@ -285,7 +285,6 @@ local function CheckForEpicCreatureKilled(inst, target)
         local levelup = inst:TryLevelingUp()
 
         inst:SayEpicKilledLine(levelup)
-        inst:ForgetTarget(target)
 
         return true
     end
@@ -314,10 +313,12 @@ local function OnAttack(inst, owner, target)
     if target.components.health ~= nil and target.components.health:IsDead() then
         inst.components.hunger:DoDelta(TUNING.SHADOW_BATTLEAXE.HUNGER_GAIN_ONKILL, false)
 
-        local is_epic = inst:CheckForEpicCreatureKilled(target)
+        if inst._trackedentities[target] == nil then -- The tracking will give us the kill stack.
+            local is_epic = inst:CheckForEpicCreatureKilled(target)
 
-        if owner ~= nil and not is_epic then
-            inst:SayRegularChatLine("creature_killed", owner)
+            if owner ~= nil and not is_epic then
+                inst:SayRegularChatLine("creature_killed", owner)
+            end
         end
 
     elseif inst:IsEpicCreature(target) and
@@ -801,8 +802,6 @@ local function fn()
         then
             inst:CheckForEpicCreatureKilled(epic)
         end
-
-        inst:ForgetTarget(epic)
     end
 
     -----------------------------------------------------------

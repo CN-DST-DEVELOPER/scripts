@@ -6,8 +6,6 @@ local easing = require("easing")
 local assets =
 {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
-    Asset("ATLAS", "images/hud_wanda.xml"),
-    Asset("IMAGE", "images/hud_wanda.tex"),
 
     Asset("ANIM", "anim/status_oldage.zip"),
     Asset("ANIM", "anim/wanda_basics.zip"),

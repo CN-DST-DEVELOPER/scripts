@@ -2771,6 +2771,6 @@ CLIENTAUTHORITATIVESETTINGS = {
 }
 
 NIGHTSWORD_FX_OFFSETS = {
-    RIGHT = -1,
-    DOWN = 2.6,
+    RIGHT = 0.75,-- -1,
+    DOWN = 2.9,-- 2.6,
 }

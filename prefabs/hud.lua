@@ -13,9 +13,6 @@ local assets =
     Asset("ATLAS", "images/fx4.xml"),
     Asset("IMAGE", "images/fx4.tex"),
 
-    Asset("ATLAS", "images/fx5.xml"),
-    Asset("IMAGE", "images/fx5.tex"),
-
 	Asset("ATLAS", "images/rain_dome_over.xml"),
 	Asset("IMAGE", "images/rain_dome_over.tex"),
 

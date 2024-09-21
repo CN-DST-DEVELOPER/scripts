@@ -262,9 +262,6 @@ local prefabs =
 
 	-- vinebridgemanager
 	"vine_bridge_fx",
-
-
-    "worm_boss",
 }
 
 for _, v in pairs(require("prefabs/farm_plant_defs").PLANT_DEFS) do

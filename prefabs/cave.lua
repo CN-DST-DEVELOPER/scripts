@@ -27,6 +27,7 @@ local prefabs =
     "spiderhole",
     "ground_chunks_breaking",
     "tentacle_pillar",
+    "tentacle_pillar_atrium",
     "batcave",
     "rockyherd",
     "cave_fern",
@@ -160,6 +161,8 @@ local prefabs =
     "itemmimic_revealed",
 
     "chest_mimic",
+
+    "worm_boss",    
 }
 
 local monsters =
@@ -219,20 +222,19 @@ local wormspawn =
     },
 
     specialupgradecheck = function(wave_pre_upgraded, wave_override_chance, _wave_override_settings)
-        
-        wave_pre_upgraded = false
+        wave_pre_upgraded = nil
 
         local chance = wave_override_chance * (_wave_override_settings["worm_boss"] or 1)
         if _wave_override_settings["worm_boss"] ~= 0 and (math.random() < chance or _wave_override_settings["worm_boss"] == 9999) then
-            wave_pre_upgraded = true
+            wave_pre_upgraded = "available"
         end
 
-        if wave_pre_upgraded then
+        if wave_pre_upgraded == "available" then
             wave_override_chance = 0
         elseif TheWorld.state.cycles > TUNING.WORM_BOSS_DAYS then
             wave_override_chance = math.min(0.5, wave_override_chance + 0.05)
         end 
-
+        
         return wave_pre_upgraded, wave_override_chance
     end,
 
@@ -262,8 +264,8 @@ local wormspawn =
     end,
 
     ShouldUpgrade= function(amount, wave_pre_upgraded)
-        if wave_pre_upgraded then
-            wave_pre_upgraded = nil   -- We've got one for the wave now, clear this so there aren't more.
+        if wave_pre_upgraded == "available" then
+            wave_pre_upgraded = "used"   -- We've got one for the wave now, clear this so there aren't more.
             return true, amount, wave_pre_upgraded
         else
             return false, nil, wave_pre_upgraded

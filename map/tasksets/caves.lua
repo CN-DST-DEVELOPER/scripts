@@ -1,5 +1,5 @@
-
-AddTaskSet("cave_default", {
+local taskset_data =
+{
     name = STRINGS.UI.CUSTOMIZATIONSCREEN.TASKSETNAMES.CAVE_DEFAULT,
     location = "cave",
     tasks={
@@ -77,8 +77,12 @@ AddTaskSet("cave_default", {
         "CaveExitTask9",
         "CaveExitTask10",
     },
+    required_prefabs = {
+        "tentacle_pillar_atrium",
+        "tentacle_pillar_atrium",
+    },
     set_pieces = { -- if you add or remove tasks, don't forget to update this list!
-        ["TentaclePillar"] = { count = 11, tasks= { -- Note: An odd number because AtriumMaze contains one
+        ["TentaclePillar"] = { count = 10, tasks= {
             "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar",
         } },
         ["ResurrectionStone"] = { count = 2, tasks={
@@ -87,6 +91,8 @@ AddTaskSet("cave_default", {
         ["skeleton_notplayer"] = { count = 1, tasks={
             "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar",
         } },
+        ["TentaclePillarToAtrium"] = { count = 1, tasks={ "BigBatCave", "GreenForest" } }, -- This set piece data connects it to the atrium_start set piece.
     },
-})
+}
 
+AddTaskSet("cave_default", taskset_data)

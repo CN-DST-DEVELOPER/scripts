@@ -420,22 +420,25 @@ function ItemBoxOpenerPopup:SkipWaitOnNext()
     self.bundle_bg:GetAnimState():PlayAnimation("skin_out")
     TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/collectionscreen/mysterybox/outro")
     self.ui_state = "BUNDLE_CLOSING"
-    self.back_button:Kill()
-    self.back_button = nil
+    if self.back_button then
+        self.back_button:Kill()
+        self.back_button = nil
+    end
 end
 
 function ItemBoxOpenerPopup:GetHelpText()
     local controller_id = TheInput:GetControllerID()
     local t = {}
-
+    local has_stop = false
     if self.ui_state == "PENDING_OPEN" then
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.ITEM_SCREEN.OPEN_BUTTON)
     elseif self.ui_state == "WAIT_ON_NEXT" then
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.ITEM_SCREEN.OPEN_NEXT)
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.ITEM_SCREEN.SKIP_REST)
+        has_stop = true
     end
 
-    if self:CanExit() then
+    if not has_stop and self:CanExit() then
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.ITEM_SCREEN.BACK)
     end
 

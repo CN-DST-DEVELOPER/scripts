@@ -3,6 +3,7 @@ local CharacterSelect = require "widgets/redux/characterselect"
 local EmojiExplorerPanel = require "widgets/redux/emojiexplorerpanel"
 local EmotesExplorerPanel = require "widgets/redux/emotesexplorerpanel"
 local BeardsExplorerPanel = require "widgets/redux/beardsexplorerpanel"
+local BeefaloExplorerPanel = require("widgets/redux/beefaloexplorerpanel")
 local GameItemExplorerPanel = require "widgets/redux/gameitemexplorerpanel"
 local LoadersExplorerPanel = require "widgets/redux/loadersexplorerpanel"
 local ProfileFlairExplorerPanel = require "widgets/redux/profileflairexplorerpanel"
@@ -41,13 +42,13 @@ function CollectionScreen:DoInit()
     self.title = self.root:AddChild(TEMPLATES.ScreenTitle(STRINGS.UI.COLLECTIONSCREEN.TITLE, ""))
 
     self.doodad_count = self.root:AddChild(TEMPLATES.DoodadCounter(TheInventory:GetCurrencyAmount()))
-	self.doodad_count:SetPosition(-550, 215)
-	self.doodad_count:SetScale(0.4)
+	self.doodad_count:SetPosition(-550, 230)
+	self.doodad_count:SetScale(0.35)
 
     if IsSteam() or IsRail() then
         self.points_count = self.root:AddChild(TEMPLATES.KleiPointsCounter(TheInventory:GetKleiPointsAmount()))
-        self.points_count:SetPosition(-480, 215)
-        self.points_count:SetScale(0.4)
+        self.points_count:SetPosition(-480, 230)
+        self.points_count:SetScale(0.35)
     end
 
     self.subscreener = Subscreener(self,
@@ -57,6 +58,7 @@ function CollectionScreen:DoInit()
             skins               = self:_BuildCharacterSelect(),
             gameitem            = self.root:AddChild(GameItemExplorerPanel(self, self.user_profile)),
             beards              = self.root:AddChild(BeardsExplorerPanel(self, self.user_profile)),
+            beefalo             = self.root:AddChild(BeefaloExplorerPanel(self, self.user_profile)),
             emotes              = self.root:AddChild(EmotesExplorerPanel(self, self.user_profile)),
             emoji               = self.root:AddChild(EmojiExplorerPanel(self, self.user_profile)),
             portraitbackgrounds = self.root:AddChild(PortraitBackgroundExplorerPanel(self, self.user_profile)),
@@ -111,6 +113,7 @@ function CollectionScreen:MakeMenu(subscreener)
     local button_skins   = subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.SKINS,   "skins",    STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_SKINS,   self.tooltip)
     local button_gameitem= subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.GAMEITEM,"gameitem", STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_GAMEITEM,   self.tooltip)
     local button_beard   = subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.BEARD,   "beards",   STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_BEARD,   self.tooltip)
+    local button_beefalo = subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.BEEFALO, "beefalo",  STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_BEEFALO, self.tooltip)
     local button_emote   = subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.EMOTE,   "emotes",   STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_EMOTE,   self.tooltip)
     local button_emoji   = subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.EMOJI,   "emoji",    STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_EMOJI,   self.tooltip)
     local button_profileflair        = subscreener:MenuButton(STRINGS.UI.COLLECTIONSCREEN.PROFILEFLAIR,        "profileflair",        STRINGS.UI.COLLECTIONSCREEN.TOOLTIP_PROFILEFLAIR,        self.tooltip)
@@ -123,6 +126,7 @@ function CollectionScreen:MakeMenu(subscreener)
         {widget = button_portraitbackgrounds},
         {widget = button_emoji  },
         {widget = button_emote  },
+        {widget = button_beefalo  },
         {widget = button_beard  },
         {widget = button_gameitem  },
         {widget = button_skins  },

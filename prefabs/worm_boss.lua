@@ -1208,6 +1208,8 @@ local function dirt_ground_fx_fn()
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
 
+    inst.SoundEmitter:PlaySound("rifts4/worm_boss/ground_crack")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

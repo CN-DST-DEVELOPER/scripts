@@ -73,15 +73,17 @@ function SkinsPuppet:SetSkins(prefabname, base_item, clothing_names, skip_change
 
 	SetBeefaloSkinsOnAnim( self.animstate, clothing_names )
 	
-	-- Beefalo tendency symbol overrides.
-	local build, sym
-	for i, symbol in ipairs(FACE_SWAP_SYMBOLS) do
-		build, sym = inst.AnimState:GetSymbolOverride(symbol)
+    if inst and inst:IsValid() then
+        -- Beefalo tendency symbol overrides.
+        local build, sym
+        for i, symbol in ipairs(FACE_SWAP_SYMBOLS) do
+            build, sym = inst.AnimState:GetSymbolOverride(symbol)
 
-		if build ~= nil and sym ~= nil then
-			self.animstate:OverrideSymbol(symbol, build, sym)
-		end
-	end
+            if build ~= nil and sym ~= nil then
+                self.animstate:OverrideSymbol(symbol, build, sym)
+            end
+        end
+    end
 
 	local previousbank = self.currentanimbank
 	self.currentanimbank = "beefalo"

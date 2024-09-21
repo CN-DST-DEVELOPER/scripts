@@ -17,7 +17,7 @@ return {
       margin = 0,
       image = "../../../../../../tools/tiled/dont_starve/tiles.png",
       imagewidth = 512,
-      imageheight = 384,
+      imageheight = 512,
       properties = {},
       tiles = {}
     }
@@ -78,14 +78,17 @@ return {
       objects = {
         {
           name = "",
-          type = "wormhole_MARKER",
+          type = "tentacle_pillar_atrium",
           shape = "rectangle",
           x = 352,
           y = 320,
           width = 0,
           height = 0,
           visible = true,
-          properties = {}
+          properties = {
+            ["data.teleporter.target"] = "2400001",
+            ["id"] = "2400000"
+          }
         },
         {
           name = "",

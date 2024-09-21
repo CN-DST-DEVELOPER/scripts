@@ -554,7 +554,7 @@ function Builder:HasTechIngredient(ingredient)
 end
 
 function Builder:MakeRecipe(recipe, pt, rot, skin, onsuccess)
-    if recipe ~= nil and not self.inst.sg:HasStateTag("drowning") then -- TODO(JBK): Check if "drowning" can be replaced with "busy" instead with no side effects.
+    if recipe ~= nil and not self.inst.sg:HasStateTag("drowning") and not self.inst.sg:HasStateTag("falling") then -- TODO(JBK): Check if "drowning" can be replaced with "busy" instead with no side effects.
         self.inst:PushEvent("makerecipe", { recipe = recipe })
         if self:IsBuildBuffered(recipe.name) or self:HasIngredients(recipe) then
             self.inst.components.locomotor:Stop()

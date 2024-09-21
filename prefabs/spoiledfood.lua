@@ -152,35 +152,48 @@ local function food_init(inst)
 	inst:AddTag("oceanfishing_lure")
 end
 
-local function food_OnIsRaining(inst, israining)
-    if inst.components.inventoryitem.owner ~= nil then
-        -- NOTES(JBK): Do nothing if the item is in any inventory.
-        return
+--------------------------------------------------------------------------------------------------------------------------------
+
+local function food_IsExposedToRain(inst, israining)
+    if israining == nil then
+        israining = TheWorld.state.israining
     end
 
-    if israining then
+	return israining and inst.components.rainimmunity == nil and not inst.components.inventoryitem:IsHeld()
+end
+
+local function food_OnIsRaining(inst, israining)
+    if food_IsExposedToRain(inst, israining) then
         inst.components.disappears:PrepareDisappear()
     else
         inst.components.disappears:StopDisappear()
     end
 end
 
-local function food_OnPickup(inst)
+local function food_OnRainImmunity(inst)
     inst.components.disappears:StopDisappear()
 end
 
-local function food_OnDropped(inst)
+local function food_OnRainVulnerable(inst)
     food_OnIsRaining(inst, TheWorld.state.israining)
 end
+
+--------------------------------------------------------------------------------------------------------------------------------
 
 local function food_mastersim_init(inst)
 	inst:AddComponent("oceanfishingtackle")
 	inst.components.oceanfishingtackle:SetupLure({build = "oceanfishing_lure_mis", symbol = "hook_spoiledfood", single_use = true, lure_data = TUNING.OCEANFISHING_LURE.SPOILED_FOOD})
+
     local disappears = inst:AddComponent("disappears")
     disappears.sound = "dontstarve/common/dust_blowaway" -- FIXME(JBK): Audio path.
     disappears.anim = "dissolve"
-    inst:ListenForEvent("ondropped", food_OnDropped)
-    inst.components.inventoryitem:SetOnPutInInventoryFn(food_OnPickup)
+
+    inst:ListenForEvent("gainrainimmunity", food_OnRainImmunity)
+    inst:ListenForEvent("loserainimmunity", food_OnRainVulnerable)
+    inst:ListenForEvent("ondropped", food_OnRainVulnerable)
+
+    inst.components.inventoryitem:SetOnPutInInventoryFn(food_OnRainImmunity)
+
     inst:WatchWorldState("israining", food_OnIsRaining)
     food_OnIsRaining(inst, TheWorld.state.israining)
 end

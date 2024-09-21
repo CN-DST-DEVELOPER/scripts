@@ -257,7 +257,7 @@ local function OnEntityWake(inst)
 end
 
 local function OnEntitySleep(inst)
-    if inst:IsInLimbo() or inst.components.fueled:IsEmpty() or inst.sg:HasStateTag("drowning") then
+    if inst:IsInLimbo() or inst.components.fueled:IsEmpty() or inst.sg:HasStateTag("drowning") or inst.sg:HasStateTag("falling") then
         return
     end
 
