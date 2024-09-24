@@ -198,7 +198,8 @@ end
 function Growable:ExtendGrowTime(extra_time)
     if self.pausedremaining ~= nil then
         self.pausedremaining = self.pausedremaining + extra_time
-    else
+
+    elseif self:IsGrowing() then
         self:StartGrowingTask(self.targettime - GetTime() + extra_time)
     end
 end

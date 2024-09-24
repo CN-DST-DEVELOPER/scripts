@@ -29,6 +29,9 @@ local function StoryTellingDone(inst, story)
 		inst._story_proxy:Remove()
 		inst._story_proxy = nil
 	end
+    if inst.sg and inst.sg.currentstate.name == "dostorytelling" then -- NOTES(JBK): Workaround for stategraph handling to go to _pst.
+        inst.sg.statemem.started = true
+    end
 end
 
 local function StoryToTellFn(inst, story_prop)

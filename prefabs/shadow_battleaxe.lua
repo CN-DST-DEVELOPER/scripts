@@ -273,23 +273,23 @@ local function IsEpicCreature(inst, target)
 end
 
 local function CheckForEpicCreatureKilled(inst, target)
+    if not inst:IsEpicCreature(target) then
+        return false
+    end
+
     if inst.epic_kill_count >= TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS[#TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS] then
         inst:SayEpicKilledLine(false, true)
 
         return true
     end
 
-    if inst:IsEpicCreature(target) then
-        inst.epic_kill_count = inst.epic_kill_count + 1
+    inst.epic_kill_count = inst.epic_kill_count + 1
 
-        local levelup = inst:TryLevelingUp()
+    local levelup = inst:TryLevelingUp()
 
-        inst:SayEpicKilledLine(levelup)
+    inst:SayEpicKilledLine(levelup)
 
-        return true
-    end
-
-    return false
+    return true
 end
 
 local function DoLifeSteal(inst, owner, target)

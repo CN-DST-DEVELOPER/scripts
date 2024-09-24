@@ -49,19 +49,19 @@ function StoryTeller:IsTellingStory()
 end
 
 function StoryTeller:AbortStory(reason)
+    self:OnDone()
 	if self.inst.components.talker ~= nil then
 		if reason then
 			self.inst.components.talker:Say(reason)
 		else
 			self.inst.components.talker:ShutUp()
 		end
-	else
-		self:OnDone()
 	end
 end
 
 function StoryTeller:OnDone()
 	self.inst:RemoveEventCallback("donetalking", on_done_talking)
+    self.inst:RemoveEventCallback("onremove", self.storyprop_onremove, self.story.prop)
 
 	if self.onstoryticktask ~= nil then
 		self.onstoryticktask:Cancel()

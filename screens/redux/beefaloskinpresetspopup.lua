@@ -55,54 +55,43 @@ local BeefaloSkinPresetsPopup = Class(Screen, function(self, user_profile, chara
         item.row_label:SetColour(UICOLOURS.IVORY)
         item.row_label:SetHAlign(ANCHOR_RIGHT)
 
-        local x_start = -180
+        local x_start = -170
         local x_step = 50
 
-        if table.contains(DST_CHARACTERLIST, self.character) then --no base option for mod characters
-            item.base_icon = item.root:AddChild( AccountItemFrame() )
-            item.base_icon:SetStyle_Normal()
-            item.base_icon:SetScale(0.4)
-            item.base_icon:SetPosition(x_start + 0 * x_step,0)
-
-            item.row_label:SetPosition(-210,-1)
-            item.root:SetPosition(20,0)
-        else
-            item.row_label:SetPosition(-160,-1)
-            item.root:SetPosition(-20,0)
-        end
-
-        item.beef_body_icon = item.root:AddChild( AccountItemFrame() )
-        item.beef_body_icon:SetStyle_Normal()
-        item.beef_body_icon:SetScale(0.4)
-        item.beef_body_icon:SetPosition(x_start + 1 * x_step,0)
-
-        item.beef_horn_icon = item.root:AddChild( AccountItemFrame() )
-        item.beef_horn_icon:SetStyle_Normal()
-        item.beef_horn_icon:SetScale(0.4)
-        item.beef_horn_icon:SetPosition(x_start + 2 * x_step,0)
+        item.row_label:SetPosition(-210, -1)
+        item.root:SetPosition(20, 0)
 
         item.beef_head_icon = item.root:AddChild( AccountItemFrame() )
         item.beef_head_icon:SetStyle_Normal()
         item.beef_head_icon:SetScale(0.4)
-        item.beef_head_icon:SetPosition(x_start + 3 * x_step,0)
+        item.beef_head_icon:SetPosition(x_start + 0 * x_step,0)
+
+        item.beef_horn_icon = item.root:AddChild( AccountItemFrame() )
+        item.beef_horn_icon:SetStyle_Normal()
+        item.beef_horn_icon:SetScale(0.4)
+        item.beef_horn_icon:SetPosition(x_start + 1 * x_step,0)
+
+        item.beef_body_icon = item.root:AddChild( AccountItemFrame() )
+        item.beef_body_icon:SetStyle_Normal()
+        item.beef_body_icon:SetScale(0.4)
+        item.beef_body_icon:SetPosition(x_start + 2 * x_step,0)
 
         item.beef_feet_icon = item.root:AddChild( AccountItemFrame() )
         item.beef_feet_icon:SetStyle_Normal()
         item.beef_feet_icon:SetScale(0.4)
-        item.beef_feet_icon:SetPosition(x_start + 4 * x_step,0)
+        item.beef_feet_icon:SetPosition(x_start + 3 * x_step,0)
 
         item.beef_tail_icon = item.root:AddChild( AccountItemFrame() )
         item.beef_tail_icon:SetStyle_Normal()
         item.beef_tail_icon:SetScale(0.4)
-        item.beef_tail_icon:SetPosition(x_start + 5 * x_step,0)
-
+        item.beef_tail_icon:SetPosition(x_start + 4 * x_step,0)
 
         item.load_btn = item.root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "apply_skins.tex", nil, nil, nil, function(a) self:_LoadPreset(item.i) end, STRINGS.UI.SKIN_PRESETS.LOAD))
-        item.load_btn:SetPosition(125,-1)
+        item.load_btn:SetPosition(105,-1)
         item.load_btn:SetScale(0.7)
 
         item.save_btn = item.root:AddChild(TEMPLATES.IconButton("images/button_icons.xml", "save.tex", nil, nil, nil, function() self:_SetPreset(item.i) end, STRINGS.UI.SKIN_PRESETS.SAVE))
-        item.save_btn:SetPosition(175,-1)
+        item.save_btn:SetPosition(155,-1)
         item.save_btn:SetScale(0.7)
 
         item.load_btn:SetFocusChangeDir(MOVE_RIGHT, item.save_btn)
@@ -120,14 +109,6 @@ local BeefaloSkinPresetsPopup = Class(Screen, function(self, user_profile, chara
         if data then
             item.i = index
             item.row_label:SetString(tostring(index)..":")
-
-            if table.contains(DST_CHARACTERLIST, self.character) then --no base option for mod characters
-                if data.base then
-                    item.base_icon:SetItem(data.base)
-                else
-                    item.base_icon:SetItem(self.character.."_none")
-                end
-            end
 
             if data.beef_body then
                 item.beef_body_icon:SetItem(data.beef_body)

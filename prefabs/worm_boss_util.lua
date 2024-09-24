@@ -576,6 +576,20 @@ local function FindOffsetForNewChunk(inst, lastchunk)
 
         range = range + 1
     end
+
+    -- We don't a nearby point to go, reappear somewhere...
+
+    while range <= 30 do
+        local theta = TWOPI * math.random()
+
+        local offset = FindWalkableOffset(lastchunk.groundpoint_end, theta, range, 16, true, true, IsPointValid, false, false)
+
+        if offset ~= nil then
+            return offset
+        end
+
+        range = range + 1
+    end
 end
 
 local function PlotNextChunk(inst, lastchunk)

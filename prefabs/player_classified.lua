@@ -1382,7 +1382,7 @@ local function fn()
     inst.fadetime = net_smallbyte(inst.GUID, "frontend.fadetime", "playerfadedirty")
     inst.screenflash = net_tinybyte(inst.GUID, "frontend.screenflash", "playerscreenflashdirty")
     inst.wormholetravelevent = net_tinybyte(inst.GUID, "frontend.wormholetravel", "wormholetraveldirty")
-    inst.houndwarningevent = net_tinybyte(inst.GUID, "frontend.houndwarning", "houndwarningdirty")
+    inst.houndwarningevent = net_smallbyte(inst.GUID, "frontend.houndwarning", "houndwarningdirty")
     inst.idplantseedevent = net_event(inst.GUID, "idplantseedevent")
 
     -- busy theme music

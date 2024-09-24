@@ -74,7 +74,7 @@ local BeefaloExplorerPanel = Class(Widget, function(self, owner, user_profile)
                 self:_LoadSkinPresetsScreen()
             end
         ))
-        self.presetsbutton:SetPosition(-320, 440)
+        self.presetsbutton:SetPosition(-240, 440)
         self.presetsbutton:SetScale(0.77)
         --self.menu:SetFocusChangeDir(MOVE_UP, self.presetsbutton)
         --self.presetsbutton:SetFocusChangeDir(MOVE_DOWN, self.menu)
@@ -146,7 +146,7 @@ function BeefaloExplorerPanel:TryToClickSelected()
                 w:onclick()
                 fallback = nil
                 break
-            elseif w.data.item_key:find("default1") then
+            elseif w.data.item_key and w.data.item_key:find("default1") then
                 fallback = w
             end
         end

@@ -4697,6 +4697,26 @@ local function MakeHat(name)
 
     -----------------------------------------------------------------------------
 
+    fns.rabbit_idleanims = function(inst)
+        if inst.rabbithat_doidleanims then
+            local r = math.random(9)
+            if r < 7 then
+                inst.AnimState:PlayAnimation("anim")
+            elseif r == 8 then
+                inst.AnimState:PlayAnimation("lookdown_pre")
+                for i = 1, math.random(2) do
+                    inst.AnimState:PushAnimation("lookdown_loop", false)
+                end
+                inst.AnimState:PushAnimation("lookdown_pst", false)
+            else -- r == 9
+                inst.AnimState:PlayAnimation("lookup_pre")
+                for i = 1, math.random(2) do
+                    inst.AnimState:PushAnimation("lookup_loop", false)
+                end
+                inst.AnimState:PushAnimation("lookup_pst", false)
+            end
+        end
+    end
     fns.rabbit_equip = function(inst, owner)
         _onequip(inst, owner)
         owner:AddTag("rabbitdisguise")
@@ -4719,6 +4739,16 @@ local function MakeHat(name)
     fns.rabbit_oneat = function(inst)
         if inst.components.perishable ~= nil then
             inst.components.perishable:SetPercent(1)
+        end
+        if not inst.inlimbo then
+            if not inst.AnimState:IsCurrentAnimation("eat_pre") and not inst.AnimState:IsCurrentAnimation("eat_loop") and not inst.AnimState:IsCurrentAnimation("eat_pst") then
+                inst.AnimState:PlayAnimation("eat_pre")
+                for i = 1, math.random(2) do
+                    inst.AnimState:PushAnimation("eat_loop", false)
+                end
+                inst.AnimState:PushAnimation("eat_pst", false)
+            end
+            inst.SoundEmitter:PlaySound("dontstarve/HUD/feed")
         end
     end
 	fns.rabbit_BecomeRabbit = function(inst)
@@ -4766,6 +4796,7 @@ local function MakeHat(name)
 		then
 			inst.AnimState:PlayAnimation("sleep_pre")
 			inst.AnimState:PushAnimation("sleep_loop")
+            inst.rabbithat_doidleanims = false
 		end
 	end
 	fns.rabbit_onwakeup = function(inst)
@@ -4775,13 +4806,15 @@ local function MakeHat(name)
 			)
 		then
 			inst.AnimState:PlayAnimation("sleep_pst")
-			inst.AnimState:PushAnimation("anim")
+			inst.AnimState:PushAnimation("anim", false)
+            inst.rabbithat_doidleanims = true
 		end
 	end
 	fns.rabbit_topocket = function(inst)
 		inst.components.sleeper:WakeUp()
 		if not inst.AnimState:IsCurrentAnimation("anim") then
-			inst.AnimState:PlayAnimation("anim", true)
+			inst.AnimState:PlayAnimation("anim")
+            inst.rabbithat_doidleanims = true
 		end
 	end
 	fns.rabbit_OnEntityWake = function(inst)
@@ -4805,10 +4838,35 @@ local function MakeHat(name)
 			inst._wintertask = nil
 		end
 	end
+    fns.rabbit_onperishpre = function(inst)
+        if inst.inlimbo then
+            return false
+        end
+
+        local owner = inst.components.inventoryitem.owner
+        if owner then
+            return false
+        end
+
+        inst.rabbithat_doidleanims = false
+        inst.components.inventoryitem.canbepickedup = false
+        inst.components.inventoryitem.canbepickedupalive = false
+        inst.persists = false
+        inst.AnimState:PlayAnimation("death")
+        inst.SoundEmitter:PlaySound("dontstarve/rabbit/scream_short")
+        inst:ListenForEvent("animover", ErodeAway)
+
+        return true
+    end
 	fns.rabbit_custom_init = function(inst)
+        inst.entity:AddSoundEmitter()
+
+        inst:AddTag("handfed")
+        inst:AddTag("fedbyall")
+
 		inst.AnimState:SetBuild("rabbit_build")
 		inst.AnimState:AddOverrideBuild("hat_rabbit")
-		inst.AnimState:PlayAnimation("anim", true)
+		inst.AnimState:PlayAnimation("anim")
 
 		inst.AnimState:SetClientsideBuildOverride("insane", "rabbit_build", "beard_monster")
 		inst.AnimState:SetClientsideBuildOverride("insane", "rabbit_winter_build", "beard_monster")
@@ -4846,7 +4904,7 @@ local function MakeHat(name)
         inst:AddComponent("eater")
         inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })
         inst.components.eater:SetOnEatFn(fns.rabbit_oneat)
-        MakeSmallPerishableCreatureAlwaysPerishing(inst, TUNING.RABBIT_PERISH_TIME)
+        MakeSmallPerishableCreatureAlwaysPerishing(inst, TUNING.RABBIT_PERISH_TIME, nil, nil, fns.rabbit_onperishpre)
 
 		inst:AddComponent("sleeper")
 		inst.components.sleeper.watchlight = true
@@ -4855,6 +4913,8 @@ local function MakeHat(name)
 		inst:ListenForEvent("gotosleep", fns.rabbit_gotosleep)
 		inst:ListenForEvent("onwakeup", fns.rabbit_onwakeup)
 		inst:ListenForEvent("onputininventory", fns.rabbit_topocket)
+        inst.rabbithat_doidleanims = true
+        inst:ListenForEvent("animqueueover", fns.rabbit_idleanims)
 
         inst.OnEntityWake = fns.rabbit_OnEntityWake
         inst.OnEntitySleep = fns.rabbit_OnEntitySleep

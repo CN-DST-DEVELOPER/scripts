@@ -167,9 +167,9 @@ function LoadoutSelect_beefalo:_MakeMenu(subscreener)
     local menu_items = nil
     menu_items =
     {
-        {widget = self.button_beef_body },
-        {widget = self.button_beef_horn },
         {widget = self.button_beef_head },
+        {widget = self.button_beef_horn },
+        {widget = self.button_beef_body },
         {widget = self.button_beef_feet },
         {widget = self.button_beef_tail },
     }

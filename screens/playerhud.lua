@@ -792,6 +792,21 @@ function PlayerHud:SetMainCharacter(maincharacter)
     end
 end
 
+local GODMODEINDICATOR_HATS =
+{
+    "feather",
+    "goggles",
+    "green_mushroom",
+    "ice",
+    "merm",
+    "monkey_small",
+    "rain",
+    "scrap",
+    "skeleton",
+    "top",
+    "wathgrithr_improved",
+}
+
 function PlayerHud:OnUpdate(dt)
     if Profile ~= nil and self.vig ~= nil then
         if RENDER_QUALITY.LOW == Profile:GetRenderQuality() or TheConfig:IsEnabled("hide_vignette") then
@@ -825,19 +840,24 @@ function PlayerHud:OnUpdate(dt)
                 self.controls.godmodeindicator = self.controls.inv:AddChild(UIAnim())
                 self.controls.godmodeindicator:GetAnimState():SetBank("pigman")
                 self.controls.godmodeindicator:GetAnimState():SetBuild("pig_guard_build")
+                self.controls.godmodeindicator:GetAnimState():OverrideSymbol("swap_hat", "hat_"..GetRandomItem(GODMODEINDICATOR_HATS), "swap_hat")
+                self.controls.godmodeindicator:GetAnimState():Hide("ARM_carry_up")
                 self.controls.godmodeindicator:SetHAnchor(ANCHOR_LEFT)
                 self.controls.godmodeindicator:SetVAnchor(ANCHOR_BOTTOM)
                 self.controls.godmodeindicator:SetPosition(100, 50, 0)
                 self.controls.godmodeindicator:SetScale(0.2, 0.2, 0.2)
+                self.controls.godmodeindicator:SetFacing(FACING_DOWN)
+                self.controls.godmodeindicator:GetAnimState():MakeFacingDirty()
                 self.controls.godmodeindicator:GetAnimState():PlayAnimation("idle_happy")
                 self.controls.godmodeindicator:GetAnimState():PushAnimation("idle_loop")
             end
         elseif self.controls.godmodeindicator ~= nil then
             self.controls.godmodeindicator:GetAnimState():PlayAnimation("death")
-            self.controls.godmodeindicator.inst:DoTaskInTime(2, function(inst) inst.widget:Kill() end)
+            self.controls.godmodeindicator.inst:DoTaskInTime(1.5, function(inst) inst.widget:Kill() end)
             self.controls.godmodeindicator = nil
         end
     end
+
     if self.leafcanopy then
         self.leafcanopy:OnUpdate(dt)
     end

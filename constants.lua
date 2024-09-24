@@ -2296,7 +2296,7 @@ WORMHOLETYPE =
     OCEANWHIRLPORTAL = 2,
 }
 
--- Houndwarning level
+-- Houndwarning level, max value of 63 (net_smallbyte)
 HOUNDWARNINGTYPE =
 {
     LVL1 = 0,
