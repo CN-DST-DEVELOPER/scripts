@@ -400,7 +400,7 @@ return Class(function(self, inst)
     local function CalculatePrecipitationRate()
         if _precipmode:value() == PRECIP_MODES.always then
             return .1 + perlin(0, _noisetime:value() * .1, 0) * .9
-        elseif _preciptype:value() ~= PRECIP_TYPES.none and _preciptype:value() ~= PRECIP_TYPES.lunarhail and _precipmode:value() ~= PRECIP_MODES.never then
+        elseif _preciptype:value() ~= PRECIP_TYPES.none and _precipmode:value() ~= PRECIP_MODES.never then
             local p = math.max(0, math.min(1, (_moisture:value() - _moisturefloor:value()) / (_moistureceil:value() - _moisturefloor:value())))
             local rate = MIN_PRECIP_RATE + (1 - MIN_PRECIP_RATE) * math.sin(p * PI)
             return math.min(rate, _peakprecipitationrate:value())
@@ -427,16 +427,15 @@ return Class(function(self, inst)
     end or nil
 
     local StopPrecipitation = _ismastersim and function()
+        if _preciptype:value() == PRECIP_TYPES.lunarhail then return end
+
         _moisture:set(_moisturefloor:value())
         _moistureceil:set(RandomizeMoistureCeil())
 
-        if _preciptype:value() ~= PRECIP_TYPES.lunarhail then
-            _preciptype:set(PRECIP_TYPES.none)
-        end
+        _preciptype:set(PRECIP_TYPES.none)
     end or nil
 
     local StartLunarHail = _ismastersim and function()
-        StopPrecipitation()
         _lunarhaillevel:set(LUNAR_HAIL_CEIL)
         _preciptype:set(PRECIP_TYPES.lunarhail)
     end or nil
@@ -454,18 +453,10 @@ return Class(function(self, inst)
     end
 
     local function CalculateLight()
-        if _preciptype:value() == PRECIP_TYPES.lunarhail then
-            local dynrange = _daylight and SEASON_DYNRANGE_DAY[_season] or SEASON_DYNRANGE_NIGHT[_season]
-
-            local p = 1 - CalculateLunarHailRate()
-            p = easing.inQuad(p, 0, 1, 1)
-
-            return p * dynrange + 1 - dynrange
-        end
-
-        if _precipmode:value() == PRECIP_MODES.never then
+        if _precipmode:value() == PRECIP_MODES.never and _preciptype:value() ~= PRECIP_TYPES.lunarhail then
             return 1
         end
+
         local season = _season
         local snowlight = _preciptype:value() == PRECIP_TYPES.snow
         local dynrange = snowlight and (_daylight and SEASON_DYNRANGE_DAY["winter"] or SEASON_DYNRANGE_NIGHT["winter"])
@@ -474,10 +465,16 @@ return Class(function(self, inst)
         if _precipmode:value() == PRECIP_MODES.always then
             return 1 - dynrange
         end
-        local p = 1 - math.min(math.max((_moisture:value() - _moisturefloor:value()) / (_moistureceil:value() - _moisturefloor:value()), 0), 1)
+
+        local p = math.min(math.max((_moisture:value() - _moisturefloor:value()) / (_moistureceil:value() - _moisturefloor:value()), 0), 1)
+        local p2 = _preciptype:value() == PRECIP_TYPES.lunarhail and CalculateLunarHailRate() or 0
+
+        p = 1 - math.max(p, p2)
+
         if _preciptype:value() ~= PRECIP_TYPES.none then
             p = easing.inQuad(p, 0, 1, 1)
         end
+
         return p * dynrange + 1 - dynrange
     end
 
@@ -923,7 +920,7 @@ return Class(function(self, inst)
             _world.components.riftspawner:IsLunarPortalActive() and
             _preciptype:value() ~= PRECIP_TYPES.lunarhail
         then
-            -- Increave _lunarhaillevel
+            -- Increase _lunarhaillevel
             local lunarhail = _lunarhaillevel:value() + LUNAR_HAIL_EVENT_RATE.COOLDOWN * dt
             if lunarhail >= LUNAR_HAIL_CEIL then
                 if _ismastersim then

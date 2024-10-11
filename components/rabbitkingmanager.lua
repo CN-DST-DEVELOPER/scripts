@@ -147,7 +147,7 @@ function self:TryToBecomeAggressive(rabbitking, player)
     local players = FindPlayersInRangeSqSortedByDistance(x, y, z, TUNING.RABBITKING_MEATCHECK_DISTANCE_SQ, true)
     for _, testplayer in ipairs(players) do
         if HasMeatInInventoryFor(testplayer) then
-            return self:BecomeAggressive(rabbitking, player)
+            return self:BecomeAggressive(rabbitking, testplayer)
         end
     end
 

@@ -165,7 +165,7 @@ function ItemMimic:LongUpdate(dt)
             self._auto_reveal_task = self.inst:DoTaskInTime(remaining, on_timed_out)
         else
             self._auto_reveal_task = nil
-            on_timed_out(inst)
+            on_timed_out(self.inst)
         end
     end
 end

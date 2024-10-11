@@ -295,6 +295,7 @@ local function fn()
     inst:AddTag("plant")
     inst:AddTag("spidercocoon")
     inst:AddTag("webbed")
+    inst:AddTag("soulless")
 
     if not TheNet:IsDedicated() then
         inst:AddComponent("distancefade")

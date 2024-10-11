@@ -79,6 +79,7 @@ local function fn()
     inst.Light:Enable(false)
 
     inst:AddTag("moonstorm_static")
+    inst:AddTag("soulless")
 
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 

@@ -338,9 +338,16 @@ local actionhandlers =
         end),
     ActionHandler(ACTIONS.TAKEITEM,
         function(inst, action)
-            return action.target ~= nil
-                and action.target.takeitem ~= nil --added for quagmire
-                and "give"
+            return
+                   (action.target ~= nil and action.target:HasTag("inventoryitemholder_take") and "domediumaction")
+                or (action.target ~= nil and action.target.takeitem ~= nil and "give")
+                or "dolongaction"
+        end),
+    ActionHandler(ACTIONS.TAKESINGLEITEM,
+        function(inst, action)
+            return
+                   (action.target ~= nil and action.target:HasTag("inventoryitemholder_take") and "domediumaction")
+                or (action.target ~= nil and action.target.takeitem ~= nil and "give")
                 or "dolongaction"
         end),
     ActionHandler(ACTIONS.BUILD,

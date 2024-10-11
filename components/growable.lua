@@ -291,7 +291,7 @@ function Growable:LongUpdate(dt)
         end
     end
 
-    if self.inst:IsValid() and currentstage ~= self.stage then
+    if self.inst:IsValid() and (self.growonly or currentstage ~= self.stage) then
         local stagedata = self:GetCurrentStageData()
 
         if stagedata ~= nil and stagedata.growfn ~= nil then

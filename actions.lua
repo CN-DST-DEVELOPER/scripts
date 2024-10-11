@@ -363,6 +363,7 @@ ACTIONS =
     USEITEMON = Action({ distance=2, priority=1 }),
     STOPUSINGITEM = Action({ priority=1 }),
     TAKEITEM = Action(),
+    TAKESINGLEITEM = Action(),
     MAKEBALLOON = Action({ mount_valid=true }),
     CASTSPELL = Action({ priority=-1, rmb=true, distance=20, mount_valid=true }),
 	CAST_POCKETWATCH = Action({ priority=-1, rmb=true, mount_valid=true }), -- to actually use the mounted action, the pocket watch will need the pocketwatch_mountedcast tag
@@ -2919,12 +2920,28 @@ ACTIONS.TAKEITEM.strfn = function(act)
 end
 
 ACTIONS.TAKEITEM.stroverridefn = function(act)
-	if act.target.prefab == "table_winters_feast" or act.target:HasTag("inventoryitemholder_take") then
+	if act.target.prefab == "table_winters_feast" or (act.target:HasTag("inventoryitemholder_take") and act.target.takeitem == nil) then
 		return STRINGS.ACTIONS.TAKEITEM.GENERIC
     end
 
     local item = act.target.takeitem ~= nil and act.target.takeitem:value() or nil
-    return item ~= nil and subfmt(STRINGS.ACTIONS.TAKEITEM.ITEM, { item = item:GetBasicDisplayName() }) or nil
+    local str = item ~= nil and item:GetBasicDisplayName() or nil
+
+    if str ~= nil and item.replica.stackable ~= nil and item.replica.stackable:IsStack() then
+        str = str.." x"..tostring(item.replica.stackable:StackSize())
+    end
+
+    return str ~= nil and subfmt(STRINGS.ACTIONS.TAKEITEM.ITEM, { item = str }) or nil
+end
+
+ACTIONS.TAKESINGLEITEM.fn = function(act)
+    if act.target.components.inventoryitemholder ~= nil then
+        return act.target.components.inventoryitemholder:TakeItem(act.doer, false)
+    end
+end
+
+ACTIONS.TAKESINGLEITEM.stroverridefn = function(act)
+    return STRINGS.ACTIONS.TAKESINGLEITEM
 end
 
 ACTIONS.CASTSPELL.strfn = function(act)

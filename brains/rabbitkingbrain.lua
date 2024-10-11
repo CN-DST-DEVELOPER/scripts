@@ -156,6 +156,8 @@ function RabbitKingBrain:Create_Aggressive()
                     self.abilitydata = nil
                 end
             end)),
+        -- Keep away from other aggressives.
+        RunAway(self.inst, {fn=function(guy) return guy.components.combat and guy.components.combat:TargetIs(self.inst) and not self.inst.components.combat:TargetIs(guy) or false end, tags={"_combat"}}, IDEAL_TARGET_DISTANCE + 2, IDEAL_TARGET_DISTANCE - 2),
         -- Chase after target but maintain distance.
         FailIfSuccessDecorator(Leash(self.inst, GetAvoidTargetPos_Aggressive, 2, 0.5, true)),
         FailIfSuccessDecorator(Leash(self.inst, GetTargetPos_Aggressive, IDEAL_TARGET_DISTANCE + 2, IDEAL_TARGET_DISTANCE - 2, true)),

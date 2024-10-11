@@ -60,9 +60,6 @@ end
 
 function Saddler:ApplyDamage(damage, attacker, weapon, spdamage)
     local damagetypemult = 1
-    local absorbed_damage = 0
-
-    absorbed_damage = damage * self:GetAbsorption()
 
     if self.inst.components.damagetyperesist ~= nil then
         damagetypemult = damagetypemult * self.inst.components.damagetyperesist:GetResist(attacker, weapon)
@@ -70,7 +67,7 @@ function Saddler:ApplyDamage(damage, attacker, weapon, spdamage)
 
     damage = damage * damagetypemult
 
-    local leftover_damage = damage - absorbed_damage
+    local leftover_damage = damage - (damage * self:GetAbsorption())
 
     -- Apply special damage.
     if spdamage ~= nil then

@@ -294,6 +294,14 @@ local function ShadowBell_OnIsBondedDirty(inst)
     end
 end
 
+local function ShadowBell_OnDischarged(inst)
+    inst:AddTag("oncooldown")
+end
+
+local function ShadowBell_OnCharged(inst)
+    inst:RemovedTag("oncooldown")
+end
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 local function CommonFn(data)
@@ -403,7 +411,10 @@ local function ShadowFn()
     end
 
     inst:AddComponent("tradable")
+
     inst:AddComponent("rechargeable")
+    inst.components.rechargeable:SetOnDischargedFn(ShadowBell_OnDischarged)
+    inst.components.rechargeable:SetOnChargedFn(ShadowBell_OnCharged)
 
     inst.CanReviveTarget = ShadowBell_CanReviveTarget
     inst.ReviveTarget = ShadowBell_ReviveTarget

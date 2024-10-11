@@ -87,17 +87,29 @@ local function OnFoodGiven(inst, item, giver)
 	item:AddTag("NOCLICK")
 	item:ReturnToScene()
 
+    inst.takeitem:set(item)
+
 	if item.Follower == nil then
 		item.entity:AddFollower()
 	end
 	item.Follower:FollowSymbol(inst.GUID, "swap_object", 0, 0, 0, true)
 end
 
-local function OnFoodTaken(inst, item, taker)
+local function OnFoodTaken(inst, item, taker, wholestack)
+    inst.SoundEmitter:PlaySound("rifts4/gelblob_storage/store")
+
+    if not wholestack then
+        inst.AnimState:PlayAnimation("give")
+        inst.AnimState:PushAnimation("idle")
+        inst.AnimState:SetFrame(6)
+
+        return
+    end
+
     inst.AnimState:PlayAnimation("take")
     inst.AnimState:PushAnimation("idle")
 
-    inst.SoundEmitter:PlaySound("rifts4/gelblob_storage/store")
+    inst.takeitem:set(nil)
 
     if item == nil or not item:IsValid() then
         return
@@ -143,6 +155,8 @@ local function StorageFn()
     inst.AnimState:SetSymbolLightOverride("red", 1)
 
     inst:AddTag("structure")
+
+    inst.takeitem = net_entity(inst.GUID, "gelblob_storage.takeitem") -- For action string.
 
     inst.entity:SetPristine()
 

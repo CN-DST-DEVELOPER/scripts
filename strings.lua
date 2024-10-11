@@ -692,6 +692,7 @@ STRINGS =
             BIRDCAGE = "Muck Out",
             ITEM = "Take {item}",
         },
+        TAKESINGLEITEM = "Take Single Item",
         CASTSPELL =
         {
             GENERIC = "Cast Spell", --"Cast Spell on"
@@ -16614,7 +16615,7 @@ STRINGS.SCRAPBOOK = {
         SHELLCLUSTER = "Can be mined for Shell Bells.",
         SPIDERREPELLENT = "When used by webber, nearby aggressive spiders become passive and releases spiders following Webber.",
         SLURTLESLIME = "Will explode for 50 damage when lit. Also fuels Lanterns and Miner Hats.",
-        WORTOX_SOUL = "Wortox can eat these to restore 25 Hunger and lose 5 Sanity.\n\nThey can be released to heal all survivors nearby, max healing is 20 health which drops 2 points for each extra survivor to a minimum of 5 health.\n\nHe can also spend Souls to Soul Hop which teleports him.\n\nIf Wortox holds more than 20 Souls, he will release half and them and lose 20 Sanity.",
+        WORTOX_SOUL = "Wortox can eat these to restore 25 Hunger and lose 5 Sanity.\n\nThey can be released to heal all survivors nearby, max healing is 20 health which drops 2 points for each extra survivor to a minimum of 5 health.\n\nHe can also spend Souls to Soul Hop which teleports him.\n\nIf Wortox holds more than 20 Souls, he will release half of them and lose 20 Sanity.",
         SUPERTACKLECONTAINER = "A 15 slots container for holding Tackle.",
         TACKLECONTAINER = "A 6 slots container for holding Tackle.",
         SPEEDYBALLOON = "When held, it increases movement speed by 30% which drops to 20% and then 10% as it decays.\n\nIf dropped on the ground before completely decaying, it will float into the air after 1.5 seconds and its location will appear on the minimap to all survivors.",

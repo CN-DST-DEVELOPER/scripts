@@ -131,6 +131,7 @@ end
 
 function OldAger:FastForwardDamageOverTime()
 	self:OnUpdate(self.damage_remaining / self.damage_per_second)
+	self:StopDamageOverTime()
 end
 
 function OldAger:GetDebugString()

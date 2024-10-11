@@ -3,29 +3,51 @@ local assets =
     Asset("ANIM", "anim/shadowheart_infused.zip"),
 }
 
-local function beat(inst)
+
+local brain = require("brains/shadowheart_infusedbrain")
+
+----------------------------------------------------------------------------------------------------------------
+
+local function DoBeat(inst)
     inst.SoundEmitter:PlaySound("dontstarve/sanity/shadow_heart")
-    inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, beat)
+
+    inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, DoBeat)
 end
 
-local function ondropped(inst)
-    if inst.beattask then
+local function OnEntityWake(inst)
+    if inst:IsInLimbo() or inst:IsAsleep() then
+        return
+    end
+
+    if inst.beattask ~= nil then
         inst.beattask:Cancel()
     end
-    inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, beat)
 
-    inst.sg:GoToState("stunned")
+    inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, DoBeat)
 end
 
-local function onpickup(inst)
-    if inst.beattask then
+local function OnEntitySleep(inst)
+    if inst.beattask ~= nil then
         inst.beattask:Cancel()
         inst.beattask = nil
     end
 end
 
--- CLIENT-SIDE --------
-local function attach_shadow_fx(inst)
+----------------------------------------------------------------------------------------------------------------
+
+local function OnDropped(inst)
+    inst.sg:GoToState("stunned")
+end
+
+local function OnLanded(inst)
+    if inst.components.drownable:ShouldDrown() then
+        inst:PushEvent("onsink")
+    end
+end
+
+----------------------------------------------------------------------------------------------------------------
+
+local function CLIENT_AttachShadowFx(inst)
     local shadow_fx = CreateEntity("shadowheart_infused_dark_fx")
 
     --[[Non-networked entity]]
@@ -35,6 +57,8 @@ local function attach_shadow_fx(inst)
     shadow_fx.entity:AddTransform()
     shadow_fx.entity:AddAnimState()
     shadow_fx.entity:AddFollower()
+
+    shadow_fx.Transform:SetFourFaced()
 
     shadow_fx:AddTag("FX")
 
@@ -47,13 +71,17 @@ local function attach_shadow_fx(inst)
 
     shadow_fx:AddComponent("highlightchild")
 
-    shadow_fx.Follower:FollowSymbol(inst.GUID, "follow_symbol")
+    shadow_fx.Follower:FollowSymbol(inst.GUID, "follow_symbol", 0, 45, 0)
 
     return shadow_fx
 end
 
---
-local brain = require("brains/shadowheart_infusedbrain")
+----------------------------------------------------------------------------------------------------------------
+
+local STARVED_ONTRAP_LOOT = { "shadowheart_infused" }
+
+----------------------------------------------------------------------------------------------------------------
+
 local function fn()
     local inst = CreateEntity()
 
@@ -70,50 +98,53 @@ local function fn()
 
     inst:AddTag("canbetrapped")
     inst:AddTag("shadowheart")
-    inst:AddTag("shoreonsink")
 
     inst.Transform:SetFourFaced()
 
     if not TheNet:IsDedicated() then
-        attach_shadow_fx(inst)
+        CLIENT_AttachShadowFx(inst)
     end
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst.scrapbook_anim = "scrapbook"
 
-    --inst.beattask = nil
-
-    --
-    local inspectable = inst:AddComponent("inspectable")
-    inspectable:SetNameOverride("shadowheart")
-
-    --
-    local inventoryitem = inst:AddComponent("inventoryitem")
-    inventoryitem:SetOnDroppedFn(ondropped)
-    inventoryitem:SetOnPutInInventoryFn(onpickup)
-    inventoryitem:SetSinks(true)
-    inventoryitem.canbepickedup = false
-
-    --
-    local locomotor = inst:AddComponent("locomotor")
-    locomotor.walkspeed = TUNING.SHADOWHEART_HOP_SPEED
-
-    --
     inst:AddComponent("tradable")
+    inst:AddComponent("drownable")
 
-    --
-    MakeHauntable(inst)
+    inst:AddComponent("inspectable")
+    inst.components.inspectable:SetNameOverride("shadowheart")
 
-    --
+    inst:AddComponent("lootdropper")
+    inst.components.lootdropper:SetLoot(STARVED_ONTRAP_LOOT)
+
+    inst:AddComponent("sanityaura")
+    inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
+
+    local inventoryitem = inst:AddComponent("inventoryitem")
+    inventoryitem:SetOnDroppedFn(OnDropped)
+    inventoryitem.canbepickedup = false
+    inventoryitem.trappable = true
+
+    inst:AddComponent("locomotor")
+    inst.components.locomotor.walkspeed = TUNING.SHADOWHEART_HOP_SPEED
+
     inst:SetStateGraph("SGshadowheart_infused")
     inst:SetBrain(brain)
 
-    --
-    ondropped(inst)
+    inst.OnEntityWake  = OnEntityWake
+    inst.OnEntitySleep = OnEntitySleep
+
+    inst:ListenForEvent("exitlimbo", inst.OnEntityWake)
+    inst:ListenForEvent("enterlimbo", inst.OnEntitySleep)
+
+    inst:ListenForEvent("on_landed", OnLanded)
+
+    MakeHauntable(inst)
 
     return inst
 end

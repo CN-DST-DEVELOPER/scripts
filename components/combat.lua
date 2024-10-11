@@ -560,10 +560,6 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
 		if self.inst.components.rideable ~= nil then
 			local saddle = self.inst.components.rideable.saddle
 			if saddle ~= nil then
-                if saddle.components.damagetyperesist ~= nil then
-				    damagetypemult = saddle.components.damagetyperesist:GetResist(attacker, weapon)
-                end
-
                 if saddle.components.saddler ~= nil then
                     damage, spdamage = saddle.components.saddler:ApplyDamage(damage, attacker, weapon, spdamage)
                 end

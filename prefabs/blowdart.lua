@@ -132,14 +132,16 @@ local function sleepattack(inst, attacker, target)
 	end
 
     if target.components.sleeper ~= nil then
-        target.components.sleeper:AddSleepiness(1, 15, inst)
+        target.components.sleeper:AddSleepiness(TUNING.SLEEP_DART_SLEEPINESS, TUNING.SLEEP_DART_SLEEPTIME, inst)
+
     elseif target.components.grogginess ~= nil then
-        target.components.grogginess:AddGrogginess(1, 15)
+        target.components.grogginess:AddGrogginess(TUNING.SLEEP_DART_SLEEPINESS, TUNING.SLEEP_DART_SLEEPTIME)
     end
 
     if target.components.combat ~= nil and not target:HasTag("player") then
         target.components.combat:SuggestTarget(attacker)
     end
+
     target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst })
 end
 

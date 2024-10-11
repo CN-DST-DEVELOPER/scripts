@@ -15,17 +15,18 @@ local easing = require("easing")
 local AOE_DAMAGE_TARGET_MUST_TAGS = { "_combat", "player" }
 local AOE_DAMAGE_TARGET_CANT_TAGS = { "INLIMBO", "notarget", "noattack", "flight", "invisible", "playerghost" }
 
-local AOE_DAMAGE_RADIUS = 1.5
+local AOE_DAMAGE_RADIUS = 1.25
 local AOE_DAMAGE_RADIUS_PADDING = 3
 
-local DAMAGE_OFFSET_DIST = .5
+local DAMAGE_OFFSET_DIST = .4
 local COLLIDE_POINT_DIST_SQ = 3
 
-local INITIAL_SPEED = 6.5
-local INITIAL_SPEED_RIFTS = 8
+local INITIAL_SPEED = 5.5
 local FINAL_SPEED = 13.5
-local FINAL_SPEED_RIFTS = 15
-local FINAL_SPEED_TIME = .5
+local INITIAL_SPEED_RIFTS = INITIAL_SPEED + 1.5
+local FINAL_SPEED_RIFTS = FINAL_SPEED + 1.5
+
+local FINAL_SPEED_TIME = .7
 
 local INITIAL_DIST_FROM_TARGET = 10
 
@@ -60,10 +61,10 @@ local function OnUpdate(inst)
                 inst.owner:DoTaskInTime(OWNER_REAPPEAR_TIME, inst.owner.PushEvent, "reappear")
             end
 
-            if inst.spawnfx then
-                TurnIntoCollisionFx(inst)
-            else
-                inst:Remove()
+            TurnIntoCollisionFx(inst)
+
+            if inst._pair ~= nil then
+                inst._pair:Remove()
             end
 
             return
@@ -132,7 +133,11 @@ local function SetUp(inst, owner, target, other)
     inst.collision_z = z
 
     inst.owner = owner
-    inst.spawnfx = other == nil
+
+    if other ~= nil then
+        inst._pair = other
+        other._pair = inst
+    end
 
     inst.components.updatelooper:AddOnUpdateFn(inst._OnUpdateFn)
 

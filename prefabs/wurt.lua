@@ -29,7 +29,7 @@ local buff_prefabs =
     "wurt_lunar_merm_planar_fx",
 }
 
-local fxassets = 
+local fxassets =
 {
     Asset("ANIM", "anim/merm_shadow_fx.zip"),
     Asset("ANIM", "anim/merm_lunar_fx.zip"),
@@ -53,7 +53,7 @@ local function RemovePathFinderSkill(inst)
 
         if not next(player.wurt_pathfinders) then
             player.wurt_pathfinders = nil
-            
+
             if player:IsValid() and player.components.locomotor ~= nil then
                 for _, tile in ipairs(WURT_PATHFINDER_TILES) do
                     player.components.locomotor:SetFasterOnGroundTile(tile, false)
@@ -92,7 +92,7 @@ local function PathFinderScanForPlayers(inst)
 
             if not next(player.wurt_pathfinders) then
                 player.wurt_pathfinders = nil
-                
+
                 if player:IsValid() and player.components.locomotor ~= nil then
                     for _, tile in ipairs(WURT_PATHFINDER_TILES) do
                         player.components.locomotor:SetFasterOnGroundTile(tile, false)
@@ -267,7 +267,10 @@ local function additional_OnFollowerRemoved(inst, follower)
         follower:RemoveDebuff(PAULDRON_BUFF_NAME)
     end
 
-    if follower.ismerm and inst.components.skilltreeupdater ~= nil and inst.components.skilltreeupdater:IsActivated("wurt_shadow_allegiance_1") then
+    if follower.ismerm and
+        follower.components.health ~= nil and
+        follower.components.health:IsDead()
+    then
         follower.old_leader = inst
 
         follower:ListenForEvent("onremove", function() follower.old_leader = nil end, inst)
@@ -526,7 +529,7 @@ local function OnWetnessChanged(inst, data)
     local percent = inst.components.moisture:GetMoisturePercent()
     local skilltreeupdater = inst.components.skilltreeupdater
 
-    local valid = percent > 0 
+    local valid = percent > 0
 
     local sanity     = valid and skilltreeupdater:CountSkillTag("wetness_sanity" ) or 0
     local healing    = valid and skilltreeupdater:CountSkillTag("wetness_healing") or 0
@@ -612,6 +615,12 @@ local function RefreshWetnessSkills(inst)
     end
 end
 
+local function TryMermKingUpgradesOnRespawn(inst)
+    inst:TryTridentUpgrade()
+    inst:TryCrownUpgrade()
+    inst:TryPauldronUpgrade()
+end
+
 --
 local function master_postinit(inst)
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
@@ -669,6 +678,7 @@ local function master_postinit(inst)
     inst:ListenForEvent("onattackother", OnAttackOther)
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("ms_playerreroll", inst.RemovePathFinderSkill)
+    inst:ListenForEvent("ms_respawnedfromghost", TryMermKingUpgradesOnRespawn)
 
     inst.OnSave = OnSave
     inst.OnPreLoad = OnPreLoad
@@ -703,7 +713,8 @@ local function OnAttached(inst, target)
 
     if target ~= nil and target:IsValid() and target.components.combat ~= nil then
         target.components.planardamage:SetBaseDamage(TUNING.WURT_PLANAR_BUFF_DAMAGE)
-        target.components.combat:SetDefaultDamage(target:MermDamageCalculator())
+
+        target:UpdateDamageAndHealth()
 
         if target:HasTag("shadowminion") then
             local fx = SpawnPrefab("wurt_shadow_merm_planar_fx")
@@ -722,7 +733,7 @@ local function OnAttached(inst, target)
             target:updateeyebuild()
             target.planarbuffed:set(true)
             target.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-            
+
             target.SoundEmitter:PlaySound("meta4/lunar_merm/buff")
         end
     end
@@ -731,8 +742,10 @@ end
 local function OnDetached(inst, target)
     if target ~= nil and target:IsValid() and target.components.combat ~= nil then
         target.components.planardamage:SetBaseDamage(0)
-        target.components.combat:SetDefaultDamage(target:MermDamageCalculator())
+
+        target:UpdateDamageAndHealth()
     end
+
     if target:HasTag("shadowminion") then
         if inst.bufffx and inst.bufffx:IsValid() then
             local fx = inst.bufffx

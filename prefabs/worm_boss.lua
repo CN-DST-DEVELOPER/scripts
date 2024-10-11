@@ -185,13 +185,13 @@ local function OnDeath(inst, data)
             chunk.dirt_start.AnimState:PlayAnimation("dirt_idle")
             chunk.dirt_start.persists = false
         end
-    
+
         if chunk.dirt_end ~= nil and chunk.dirt_end:IsValid() then
             chunk.dirt_end:AddTag("notarget")
             chunk.dirt_end.AnimState:PlayAnimation("dirt_idle")
             chunk.dirt_end.persists = false
         end
-    
+
         for _, segment in ipairs(chunk.segments) do
             if segment.head then
                 headchunk = chunk
@@ -215,8 +215,8 @@ local function OnDeath(inst, data)
     if headchunk ~= nil then
        WORMBOSS_UTILS.SpawnAboveGroundHeadCorpse(inst, headchunk)
     elseif freehead and inst.head ~= nil then
-       inst.head:PushEvent("death")       
-       
+       inst.head:PushEvent("death")
+
     else
        WORMBOSS_UTILS.SpawnUnderGroundHeadCorpse(inst)
     end
@@ -327,9 +327,9 @@ local function OnLoad(inst, data)
     end
 
     inst:SetState(data.state)
-    
+
     if inst.state == WORMBOSS_UTILS.STATE.DEAD then
-        -- all the prefabs don't persist, just spawning the unspawned loot in post pass, then removing. 
+        -- all the prefabs don't persist, just spawning the unspawned loot in post pass, then removing.
         return
     end
 
@@ -388,7 +388,7 @@ local function OnLoadPostPass(inst, newents, data)
             end
         end
         if data.headlootdropped then
-            local pos = DeserializePosition(data.headlootdropped) 
+            local pos = DeserializePosition(data.headlootdropped)
             inst.Transform:SetPosition(pos.x,pos.y,pos.z)
             inst.components.lootdropper:DropLoot()
             inst.components.inventory:DropEverything(true)
@@ -524,7 +524,7 @@ local function PushMusic(inst)
     end
 end
 local function hounded_overridelocation(inst,pt)
-    local newpt = FindWalkableOffset(pt, math.random()* TWOPI, math.random()*6+8, 16, nil, true)    
+    local newpt = FindWalkableOffset(pt, math.random()* TWOPI, math.random()*6+8, 16, nil, true)
     return newpt + pt
 end
 -----------------------------------------------------------------------------------------------------------------------
@@ -827,8 +827,8 @@ end
 -----------------------------------------------------------------------------------------------------------------------
 
 local function Segment_Restart(inst)
-	--V2C: possible that client may get the same piece recycled back in on the same packet
-	inst.Transform:ClearTransformationHistory()
+    --V2C: possible that client may get the same piece recycled back in on the same packet
+    inst.Transform:ClearTransformationHistory()
 
     inst.Transform:SetScale(1, 1, 1)
 
@@ -886,6 +886,14 @@ end
 local SEGMENT_PREDICTED_FRAMES = 3
 
 local function CLIENT_Segment_OnUpdate(inst, dt)
+    if inst._hit and inst._hit > 0 then
+        local scale = Remap(inst._hit, 1, 0, 0.75, 1)
+
+        inst.Transform:SetScale(scale, scale, scale)
+
+        inst._hit = inst._hit - (dt * 5)
+    end
+
     if inst._predictionsleft <= 0 then
         return
     end
@@ -914,7 +922,7 @@ local function CLIENT_Segment_OnUpdate(inst, dt)
         (inst.AnimState:IsCurrentAnimation("tail") and "tail") or
         "segment"
 
-    local adjust = inst._segtime:value() < .98 and FRAMES or 0
+    local adjust = inst._segtime:value() < .98 and speed > .5 and FRAMES or 0
 
     inst.AnimState:SetPercent(anim, time - adjust)
 end
@@ -926,6 +934,10 @@ end
 local function OnDirtPositionDirty(inst)
     inst._groundpoint_start = Vector3(inst._dirt_start_x:value(), 0, inst._dirt_start_z:value())
     inst._groundpoint_end   = Vector3(inst._dirt_end_x:value(),   0, inst._dirt_end_z:value()  )
+end
+
+local function OnHitEvent(inst)
+    inst._hit = 1
 end
 
 local function segmentfn()
@@ -966,16 +978,20 @@ local function segmentfn()
     inst._dirt_end_x   = net_float(inst.GUID, "worm_boss_segment._dirt_end_x"  , "dirtpositiondirty")
     inst._dirt_end_z   = net_float(inst.GUID, "worm_boss_segment._dirt_end_z"  , "dirtpositiondirty")
 
+    inst.hitevent = net_event(inst.GUID, "worm_boss_segment.hitevent")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         inst._predictionsleft = 0
+        inst._hit = 0
 
         inst:AddComponent("updatelooper")
         inst.components.updatelooper:AddOnUpdateFn(CLIENT_Segment_OnUpdate)
-
+        
         inst:ListenForEvent("segtimedirty", OnSegTimeDirty)
         inst:ListenForEvent("dirtpositiondirty", OnDirtPositionDirty)
+        inst:ListenForEvent("worm_boss_segment.hitevent", OnHitEvent)
 
         return inst
     end
@@ -1021,7 +1037,7 @@ local function Dirt_OnAnimOver(inst)
     elseif inst.AnimState:IsCurrentAnimation("dirt_emerge_loop_pre") then
         inst:dirt_playanimation("dirt_emerge_loop", true)
         inst:DoTaskInTime(4,function() Dirt_EmergeHead(inst) end)
-        inst:DoTaskInTime(2,function() 
+        inst:DoTaskInTime(2,function()
             if inst.worm then
                 inst.worm.new_crack = SpawnPrefab("worm_boss_dirt_ground_fx")
                 local pt = Vector3(inst.Transform:GetWorldPosition())
@@ -1078,7 +1094,7 @@ local function Dirt_DamageRedirectFn(inst, attacker, damage, weapon, stimuli)
 end
 
 local function dirt_playanimation(inst, anim, loop)
-    inst.AnimState:PlayAnimation(anim, loop)  
+    inst.AnimState:PlayAnimation(anim, loop)
 
     if anim ~= "dirt_emerge_loop" and anim ~= "dirt_emerge_loop_pre" and inst.SoundEmitter:PlayingSound("roil") then
         inst.SoundEmitter:KillSound("roil")
@@ -1095,11 +1111,11 @@ local function dirt_playanimation(inst, anim, loop)
     elseif inst.AnimState:IsCurrentAnimation("dirt_pst_slow") then
         inst.SoundEmitter:PlaySound("rifts4/worm_boss/dirt_pst_slow")
     elseif inst.AnimState:IsCurrentAnimation("dirt_emerge_loop_pre") then
-        if not inst.SoundEmitter:PlayingSound("roil") then 
+        if not inst.SoundEmitter:PlayingSound("roil") then
             inst.SoundEmitter:PlaySound("rifts4/worm_boss/dirt_roil_lp", "roil")
-        end        
+        end
     elseif inst.AnimState:IsCurrentAnimation("dirt_emerge_loop") then
-        if not inst.SoundEmitter:PlayingSound("roil") then 
+        if not inst.SoundEmitter:PlayingSound("roil") then
             inst.SoundEmitter:PlaySound("rifts4/worm_boss/dirt_roil_lp", "roil")
         end
     end
@@ -1143,7 +1159,7 @@ local function dirtfn()
 
     inst.scrapbook_proxy = "worm_boss"
 
-    inst.dirt_playanimation = dirt_playanimation 
+    inst.dirt_playanimation = dirt_playanimation
 
     inst.entity:SetPristine()
 

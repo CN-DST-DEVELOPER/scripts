@@ -867,7 +867,25 @@ local COMPONENT_ACTIONS =
 
         inventoryitemholder = function(inst, doer, actions, right)
             if inst:HasTag("inventoryitemholder_take") and not inst:HasTag("fire") then
-                table.insert(actions, ACTIONS.TAKEITEM)
+                local item = inst.takeitem ~= nil and inst.takeitem:value() or nil
+
+                if item == nil then
+                    table.insert(actions, ACTIONS.TAKEITEM)
+
+                    return
+                end
+
+                local act = 
+                    item.replica.stackable ~= nil and
+                    item.replica.stackable:IsStack() and
+                    (
+                        doer.components.playercontroller ~= nil and
+                        doer.components.playercontroller:IsControlPressed(CONTROL_FORCE_STACK)
+                    ) and
+                    ACTIONS.TAKESINGLEITEM or
+                    ACTIONS.TAKEITEM
+
+                table.insert(actions, act)
             end
         end,
 

@@ -1121,12 +1121,20 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
         for i, segment in ipairs(chunk.segments) do
             segment.Transform:SetScale(scale, scale, scale)
 
+            if chunk.hit == 1 then
+                segment.hitevent:push()
+            end
+
             local x, y, z = segment.Transform:GetWorldPosition()
             segment.Transform:SetPosition(x, 0, z)
         end
 
         if chunk.lastsegment ~= nil then
             chunk.lastsegment.Transform:SetScale(scale, scale, scale)
+
+            if chunk.hit == 1 then
+                chunk.lastsegment.hitevent:push()
+            end
 
             local x, y, z = chunk.lastsegment.Transform:GetWorldPosition()
             chunk.lastsegment.Transform:SetPosition(x, 0, z)
