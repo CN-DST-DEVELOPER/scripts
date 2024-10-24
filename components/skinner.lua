@@ -602,10 +602,10 @@ function Skinner:OnLoad(data)
     if data.clothing ~= nil then
         self.clothing = data.clothing
 
-        if InGamePlay() then
+        if InGamePlay() and self.inst.userid then
             --it's possible that the clothing was traded away. Check to see if the player still owns it on load.
             for type,clothing in pairs( self.clothing ) do
-                if clothing ~= "" and not TheInventory:CheckClientOwnership(self.inst.userid, clothing) then
+                if clothing and clothing ~= "" and not TheInventory:CheckClientOwnership(self.inst.userid, clothing) then
                     self.clothing[type] = ""
                 end
             end
@@ -618,7 +618,8 @@ function Skinner:OnLoad(data)
 		local skin_name = self.inst.prefab.."_none"
 		if data.skin_name ~= nil and
 			data.skin_name ~= skin_name and
-			(not InGamePlay() or TheInventory:CheckClientOwnership(self.inst.userid, data.skin_name)) then
+            data.skin_name ~= "" and
+			(not InGamePlay() or self.inst.userid and TheInventory:CheckClientOwnership(self.inst.userid, data.skin_name)) then
 			--load base skin (check that it hasn't been traded away)
 			skin_name = data.skin_name
 		end
