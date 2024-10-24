@@ -22,6 +22,7 @@ local assets =
 	Asset("IMAGE", "images/colour_cubes/lunacy_regular_cc.tex"),
     Asset("IMAGE", "images/colour_cubes/purple_moon_cc.tex"),
     Asset("IMAGE", "images/colour_cubes/moonstorm_cc.tex"),
+    Asset("IMAGE", "images/colour_cubes/blackout_cc.tex"),
 
     Asset("ANIM", "anim/snow.zip"),
     Asset("ANIM", "anim/acidglob.zip"),
@@ -498,6 +499,7 @@ local prefabs =
     "rabbitking_lucky",
 
     "itemmimic_revealed",
+    
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")

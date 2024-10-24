@@ -71,10 +71,22 @@ local states =
             inst.SoundEmitter:PlaySound("dontstarve/creatures/bunnyman/death")
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
-            RemovePhysicsColliders(inst)
-            inst.causeofdeath = data ~= nil and data.afflicter or nil
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst.causeofdeath = data ~= nil and data.afflicter or nil            
+
+            if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
+                RemovePhysicsColliders(inst)
+                inst.components.lootdropper:DropLoot(inst:GetPosition())
+            end            
         end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
+                    TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                end
+            end),
+        },        
     },
 
     State{
@@ -188,6 +200,21 @@ local states =
             end),
         },
     },
+
+    State{
+        name = "parasite_revive",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("parasite_death_pst")
+            inst.Physics:Stop()
+        end,
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+        },
+    },    
 }
 
 CommonStates.AddWalkStates(states, {

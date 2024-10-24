@@ -984,12 +984,14 @@ PREFAB_SKINS = {
 	{
 		"mushroom_light_an",
 		"mushroom_light_festive",
+		"mushroom_light_hallowed",
 		"mushroom_light_tiffany",
 	},
 	mushroom_light2 =
 	{
 		"mushroom_light2_an",
 		"mushroom_light2_cawnival",
+		"mushroom_light2_hallowed",
 		"mushroom_light2_lily",
 		"mushroom_light2_victorian",
 	},
@@ -1119,6 +1121,7 @@ PREFAB_SKINS = {
 		"record_creepyforest",
 		"record_drstyle",
 		"record_efs",
+		"record_hallowednights",
 	},
 	reflectivevest =
 	{
@@ -1490,6 +1493,14 @@ PREFAB_SKINS = {
 	walkingplank_grass =
 	{
 		"walkingplank_grass_pirate",
+	},
+	wall_hay =
+	{
+		"wall_hay_corn",
+	},
+	wall_hay_item =
+	{
+		"wall_hay_cornitem",
 	},
 	wall_moonrock =
 	{

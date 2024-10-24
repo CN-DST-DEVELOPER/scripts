@@ -892,6 +892,137 @@ local states =
         },
     },
 
+    State{
+        name = "parasite_revive",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("parasite_death_pst")
+            inst.Physics:Stop()
+        end,
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+        },
+    },    
+
+
+
+
+
+
+
+
+    State{
+        name = "attack",
+        tags = { "attack", "busy" },
+
+        onenter = function(inst, target)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+            inst.AnimState:PlayAnimation("atk")
+            inst.components.combat:StartAttack()
+
+            --V2C: Cached to force the target to be the same one later in the timeline
+            --     e.g. combat:DoAttack(inst.sg.statemem.target)
+            inst.sg.statemem.target = target
+        end,
+
+        timeline =
+        {
+            TimeEvent(0, function(inst)
+                inst.SoundEmitter:PlaySound(inst.sounds.attack)
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh")
+            end),
+            TimeEvent(13*FRAMES, function(inst) inst.components.combat:DoAttack() end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "hit",
+        tags = { "hit", "busy" },
+
+        onenter = function(inst)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+
+            inst.AnimState:PlayAnimation("hit")
+
+            inst._last_hitreact_time = GetTime()
+        end,
+
+        timeline = {
+            TimeEvent(0*FRAMES, function(inst)
+                if inst:HasTag("lunarminion") then
+                   inst:DoThorns()
+                end
+                if inst:HasTag("shadowminion") then
+                    inst.sg:GoToState("hit_shadow")
+                end
+                inst.SoundEmitter:PlaySound(inst.sounds.hit)
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)    
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },  
+
+    State{
+        name = "death",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+            inst.AnimState:PlayAnimation("death")
+
+            if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
+                RemovePhysicsColliders(inst)
+                inst.components.lootdropper:DropLoot(inst:GetPosition())
+            end 
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
+                    TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                end
+            end),
+        },
+
+        timeline = {
+            TimeEvent(0, function(inst)
+                if inst.TestForShadowDeath then
+                    inst:TestForShadowDeath()
+                end
+                inst.SoundEmitter:PlaySound(inst.sounds.death)
+            end),
+        },
+       
+    },
+
+
+
 }
 
 CommonStates.AddWalkStates(states,
@@ -915,39 +1046,6 @@ CommonStates.AddSleepStates(states,
 	{
 		TimeEvent(35*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/merm/sleep") end ),
 	},
-})
-
-CommonStates.AddCombatStates(states,
-{
-    attacktimeline =
-    {
-        TimeEvent(0, function(inst)
-            inst.SoundEmitter:PlaySound(inst.sounds.attack)
-            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh")
-        end),
-        TimeEvent(13*FRAMES, function(inst) inst.components.combat:DoAttack() end),
-    },
-    hittimeline =
-    {
-        TimeEvent(0*FRAMES, function(inst)
-            if inst:HasTag("lunarminion") then
-               inst:DoThorns()
-            end
-            if inst:HasTag("shadowminion") then
-                inst.sg:GoToState("hit_shadow")
-            end
-            inst.SoundEmitter:PlaySound(inst.sounds.hit)
-        end),
-    },
-    deathtimeline =
-    {
-        TimeEvent(0, function(inst)
-            if inst.TestForShadowDeath then
-                inst:TestForShadowDeath()
-            end
-            inst.SoundEmitter:PlaySound(inst.sounds.death)
-        end),
-    },
 })
 
 CommonStates.AddIdle(states, "funnyidle", GetIdleAnim)

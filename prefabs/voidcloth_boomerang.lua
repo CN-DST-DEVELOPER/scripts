@@ -345,10 +345,8 @@ local function Projectile_OnRemoved(inst)
 end
 
 local function Projectile_ReturnToThrower(inst, thrower)
-    --inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_return")
-
     inst.scalingdata = {
-        start = inst.scale,
+        start = inst.scale or PROJECTILE_MAX_SIZE, -- In case inst.scale is nil.
         finish = PROJECTILE_MIN_SIZE,
         totaltime = TUNING.BOOMERANG_DISTANCE / TUNING.VOIDCLOTH_BOOMERANG_PROJECTILE.RETURN_SPEED,
         currenttime = 0,
@@ -356,7 +354,7 @@ local function Projectile_ReturnToThrower(inst, thrower)
 
     inst._returntarget = thrower
 
-    inst.Physics:ClearCollidesWith(COLLISION.LIMITS)
+    inst.Physics:ClearCollidesWith(COLLISION.LIMITS) -- Projectile:Stop() makes it collide with limits again.
     inst.Physics:SetMotorVel(TUNING.VOIDCLOTH_BOOMERANG_PROJECTILE.RETURN_SPEED, 0, 0)
 end
 

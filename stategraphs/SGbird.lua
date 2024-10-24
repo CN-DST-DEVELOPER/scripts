@@ -157,6 +157,7 @@ local states =
             inst:Hide()
             inst.Physics:SetActive(false)
             inst.sg:SetTimeout(delay)
+            inst.DynamicShadow:Enable(false)
         end,
 
         ontimeout = function(inst)
@@ -167,6 +168,7 @@ local states =
         onexit = function(inst)
             if not inst.sg.statemem.gliding then
                 inst:RemoveTag("NOCLICK")
+                inst.DynamicShadow:Enable(true)
             end
             inst:Show()
             inst.Physics:SetActive(true)

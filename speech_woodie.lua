@@ -996,6 +996,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Got'er!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Maybe we should try somewhere else.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Aw. That was my best one yet.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Get over here, eh!",
@@ -4920,6 +4923,7 @@ return{
         CHARLIE_HECKLER = "Birds... it's always the birds...",
 
         PLAYBILL_THE_DOLL = "The theater ain't really my sorta thing.",
+        PLAYBILL_THE_VEIL = "I might sleep through it.",
         STATUEHARP_HEDGESPAWNER = "Back to nature, eh?",
         HEDGEHOUND = "Ready to do some pruning, Luce?",
         HEDGEHOUND_BUSH = "Roses grow awfully fast around these parts.",
@@ -5172,14 +5176,15 @@ return{
         PHONOGRAPH = "Look at this phonograph.",
         RECORD = "Classic.",
         RECORD_CREEPYFOREST = "You can really swing an axe to this.",
-        RECORD_DANGER = "This gets me all fired up.",
-        RECORD_DAWN = "What a nifty number, eh Luce?",
+        RECORD_DANGER = "This gets me all fired up.", -- Unused.
+        RECORD_DAWN = "What a nifty number, eh Luce?", -- Unused.
         RECORD_DRSTYLE = "What a nifty number, eh Luce?",
-        RECORD_DUSK = "What a nifty number, eh Luce?",
+        RECORD_DUSK = "What a nifty number, eh Luce?", -- Unused.
         RECORD_EFS = "This gets me all fired up.",
-        RECORD_END = "This gets me all fired up.",
-        RECORD_MAIN = "What a nifty number, eh Luce?",
-        RECORD_WORKTOBEDONE = "You can really swing an axe to this.",
+        RECORD_END = "This gets me all fired up.", -- Unused.
+        RECORD_MAIN = "What a nifty number, eh Luce?", -- Unused.
+        RECORD_WORKTOBEDONE = "You can really swing an axe to this.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "You can really... swing an axe to this.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "That's one fancy floor, eh?",
 
@@ -5390,12 +5395,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "No! Noooo!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "It's supposed to keep our lunch from spoiling, eh?",
             FULL = "Who'd wanna eat that now?",
         },
         GELBLOB_STORAGE_KIT = "I have bad memories of that gunk.",
         GELBLOB_BOTTLE = "Looks potent.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "You're not yourself lately.",
+            ME = "That is throwin' me for a loop, Luce.",
+        },
+
+        MASK_SAGEHAT = "Think you're clever?",
+        MASK_HALFWITHAT = "Nice face.",
+        MASK_TOADYHAT = "I dunno about this.",
+
+        SHADOWTHRALL_PARASITE = "It makes me uncomfortable.",
+
+        PUMPKINCARVER = "Sure you can carve a pumpkin better, Luce. Sure.",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

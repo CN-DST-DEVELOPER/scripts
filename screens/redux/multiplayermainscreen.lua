@@ -420,6 +420,12 @@ local function MakeRift4Banner(self, banner_root, anim)
     anim:SetScale(.667)
 end
 
+local function MakeHallowedNights2024Banner(self, banner_root, anim)
+    anim:GetAnimState():SetBuild("dst_menu_halloween3")
+    anim:GetAnimState():SetBank("dst_menu_halloween3")
+    anim:GetAnimState():PlayAnimation("loop", true)
+    anim:SetScale(.667)
+end
 
 local function MakeDefaultBanner(self, banner_root, anim)
 	local banner_height = 350
@@ -476,8 +482,7 @@ function MakeBanner(self)
 		--
 		--REMINDER: Check MakeBannerFront as well!
 		--
-        MakeRift4Banner(self, banner_root, anim)
-        --MakeWurtWinonaQOLBanner(self, banner_root, anim)
+        MakeHallowedNights2024Banner(self, banner_root, anim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTD) then
         MakeYOTDBanner(self, banner_root, anim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
@@ -487,9 +492,8 @@ function MakeBanner(self)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
         MakeYOTCatcoonBanner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-		--MakeDramaBanner(self, banner_root, anim)
         --MakeHallowedNightsBanner(self, banner_root, anim)
-        MakeMeta3Banner(self, banner_root, anim)
+        MakeHallowedNights2024Banner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
 
         --MakeMeta2Banner(self, banner_root, anim)
@@ -599,14 +603,15 @@ local function MakeBannerFront(self)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
         return nil
     elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-        local banner_front = Widget("banner_front")
+        --[[ local banner_front = Widget("banner_front")
         banner_front:SetPosition(0, 0)
         banner_front:SetClickable(false)
         local anim = banner_front:AddChild(UIAnim())
 
         MakeDramaBannerFront(self, banner_front, anim)
 
-        return banner_front
+        return banner_front ]]
+        return nil
 
     elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
 

@@ -1743,10 +1743,12 @@ TheInventory:AddRestrictedBuildFromLua( "multitool_axe_pickaxe_pickaxeaxe", "mul
 TheInventory:AddRestrictedBuildFromLua( "mushroom_farm_handmade", "mushroom_farm_handmade", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light2_an", "mushroom_light2_an", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light2_cawnival", "mushroom_light2_cawnival", false )
+TheInventory:AddRestrictedBuildFromLua( "mushroom_light2_hallowed", "mushroom_light2_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light2_lily", "mushroom_light2_lily", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light2_victorian", "mushroom_light2_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light_an", "mushroom_light_an", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light_festive", "mushroom_light_festive", false )
+TheInventory:AddRestrictedBuildFromLua( "mushroom_light_hallowed", "mushroom_light_hallowed", false )
 TheInventory:AddRestrictedBuildFromLua( "mushroom_light_tiffany", "mushroom_light_tiffany", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_beards", "mysterybox_beards", false )
 TheInventory:AddRestrictedBuildFromLua( "mysterybox_beards2", "mysterybox_beards2", false )
@@ -2623,6 +2625,7 @@ TheInventory:AddRestrictedBuildFromLua( "razor_straight", "razor_straight", fals
 TheInventory:AddRestrictedBuildFromLua( "record_creepyforest", "record_creepyforest", false )
 TheInventory:AddRestrictedBuildFromLua( "record_drstyle", "record_drstyle", false )
 TheInventory:AddRestrictedBuildFromLua( "record_efs", "record_efs", false )
+TheInventory:AddRestrictedBuildFromLua( "record_hallowednights", "record_hallowednights", false )
 TheInventory:AddRestrictedBuildFromLua( "reflectivevest_cawnival", "reflectivevest_cawnival", false )
 TheInventory:AddRestrictedBuildFromLua( "researchlab2_alchemytable", "researchlab2_alchemytable", false )
 TheInventory:AddRestrictedBuildFromLua( "researchlab2_crystal", "researchlab2_crystal", false )
@@ -2851,6 +2854,8 @@ TheInventory:AddRestrictedBuildFromLua( "boat_grass_pirate", "walkingplank_grass
 TheInventory:AddRestrictedBuildFromLua( "boat_nautical", "walkingplank_nautical", false )
 TheInventory:AddRestrictedBuildFromLua( "boat_pirate_skin", "walkingplank_pirate_skin", false )
 TheInventory:AddRestrictedBuildFromLua( "boat_wagstaff", "walkingplank_wagstaff", false )
+TheInventory:AddRestrictedBuildFromLua( "wall_hay_corn", "wall_hay_corn", false )
+TheInventory:AddRestrictedBuildFromLua( "wall_hay_corn", "wall_hay_cornitem", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_moonrock_victorian", "wall_moonrock_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_moonrock_victorian", "wall_moonrock_victorianitem", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_ruins_thulecite", "wall_ruins_thulecite", false )
@@ -3972,6 +3977,7 @@ TheInventory:AddSkinLinkInput( "walkingplank_grass_pirate", "boat_grass_pirate" 
 TheInventory:AddSkinLinkInput( "walkingplank_nautical", "boat_nautical" )
 TheInventory:AddSkinLinkInput( "walkingplank_pirate_skin", "boat_pirate_skin" )
 TheInventory:AddSkinLinkInput( "walkingplank_wagstaff", "boat_wagstaff" )
+TheInventory:AddSkinLinkInput( "wall_hay_cornitem", "wall_hay_corn" )
 TheInventory:AddSkinLinkInput( "wall_moonrock_victorianitem", "wall_moonrock_victorian" )
 TheInventory:AddSkinLinkInput( "wall_ruins_thulecite_alt_item", "wall_ruins_thulecite_alt" )
 TheInventory:AddSkinLinkInput( "wall_ruins_thuleciteitem", "wall_ruins_thulecite" )
@@ -4247,7 +4253,7 @@ TheInventory:AddGenericKVKey( "wathgrithr_container_unlocked" )
 TheInventory:AddGenericKVKey( "wathgrithr_horn_played" )
 
 if TheInventory.AddScrapbook0Key == nil then
-    TheInventory:ValidateWithSignature( "8f0f8c2e3c6b2fd640b340cbb6b1700942a36edd36fa109375aaac35b297dd60f85ad19bd2d447096b1388c41d5bff444a9f0dd8517e1c0e6a65c422145d1665803e5fffff0f74a43e2988599d6a4d349a5c857dd057c11ee93243a571664db3bcf4dceebccf398ef14a30c3ace424b1b0288d1d02b1a1199ed5c7f4eb657e39c18f479bc1707328e4614fe70871927ccacae9cca5f2ea19744a0f73b7b9aee7f8541b79bed67b34ac75be9a62b8b318ec8d6af7414e36828ecbc452331c4aa69906d9416319fc586ecf71c31f008d314d2a41cd458e997163a96901e9110239bf40fceec49975702348e4406c0bf66791c7b3aef4571a46ebf4ab692f608911d66fd614d36278d3c32744629802659618825096c5a83b42feda0cf605ebd98a3f4279d17282d04fe886c57af33b587c3e8ef113a4a843aa33eee8b01c6ffddf18e42706972cf46143f9cb8abae6b4f94c547cfa0a91de3de51020bede785b966eace06c103057a3954025193e62911d97e421ac17e08416f1329ef7d309a3043611147e83b61179712e2a337798230dd41dd27b359ae395524a46ad2a75477ab453bbaa5228d737745e644ad726009d90d953f6bfe712119381f1bf9e0512ace7f3f009050bd4a890f22b60df1d91e29ee50a75fef54ae4c0e8f2cc5e5fe02efb44fa418307d87b49e16231023c0dc458efb3bdbf00326a6fccacc8a018efa1" )
+    TheInventory:ValidateWithSignature( "0bf2b67a74fc9b49d9e98b42c2b3c936c43725a1f4ffa7f8f313dd00ff91256f4b66ed9bc856d17ff099f1a4fa043734a5942bd0bad7348dd0c03a3cc08fb36de0deae69b60374a02d79a0de3a0a7d82451bfe7b86a8b29447adc082d941821c035aa83a5db2e7ed9755d019e5fbce6f80821511e4fbca3943d191c6f68d1bb66053c927826548aee943a5c3a46d8e1bb58808a1934528f04cc08404631282304560aa06ced16b1242c468a8d3e980d307164a2738f061e50e2b54e5f8c55e77c6e5facb5b559ba16a1fa49a02cdd6efda82d9805c92c870ced0d78df869eee63b3fbbcb60925c48e8aff8734297e3417c774238c93189eb0911b586bfd8b6d8195c0476852ae1074c7d92bae6cc8b04a98784a29a2790bf7a7e1c359ad993d90eda0eab41bee124dd3df01f4b6068bed11702bccbd8a2c16b94acd65e82e12176e195766be5ffa01fd90b8951a9bb21b4e84421fcb801291a88188ae76f234bd1dba29b11f893c77e8e3463dd199f2facaca0845c507bf9221c2b84fe7454daf2cd3085f7d14960cf30c26787bb1cc74c324b8c611ae4e17895b934311fcd3217bf10d857f9c108e2e0663013741051eeecf513ac7f770756589967f266a04439aacc6b1d9fd5c6523e10dbe3745a31f2b9c1dfaab651a78daf8774599b6ef44da4d74cdb648a79414ba874e081f5fdcb17054ce6945046cf8c80130ab0200d" )
 else -- Temporary protection guard for platforms missing the engine change 1.
 
 TheInventory:AddScrapbook5Key( "679F8765" ) -- abigail
@@ -4998,9 +5004,12 @@ TheInventory:AddScrapbook8Key( "D9859768" ) -- mask_dollbrokenhat
 TheInventory:AddScrapbook13Key( "A022DA3D" ) -- mask_dollhat
 TheInventory:AddScrapbook1Key( "3D931D51" ) -- mask_dollrepairedhat
 TheInventory:AddScrapbook2Key( "183DD442" ) -- mask_foolhat
+TheInventory:AddScrapbook15Key( "D1C580DF" ) -- mask_halfwithat
 TheInventory:AddScrapbook1Key( "957BC291" ) -- mask_kinghat
 TheInventory:AddScrapbook9Key( "36CBC1C9" ) -- mask_mirrorhat
 TheInventory:AddScrapbook4Key( "33935DC4" ) -- mask_queenhat
+TheInventory:AddScrapbook12Key( "5CEBF21C" ) -- mask_sagehat
+TheInventory:AddScrapbook3Key( "7AF3F033" ) -- mask_toadyhat
 TheInventory:AddScrapbook10Key( "243097CA" ) -- mask_treehat
 TheInventory:AddScrapbook5Key( "FF9DDDF5" ) -- mast
 TheInventory:AddScrapbook13Key( "709673BD" ) -- mast_item
@@ -5314,6 +5323,9 @@ TheInventory:AddScrapbook14Key( "B267F53E" ) -- pumpkin_cooked
 TheInventory:AddScrapbook15Key( "8CC766EF" ) -- pumpkin_lantern
 TheInventory:AddScrapbook8Key( "898837B8" ) -- pumpkin_oversized
 TheInventory:AddScrapbook11Key( "2D99608B" ) -- pumpkin_seeds
+TheInventory:AddScrapbook10Key( "ED4864FA" ) -- pumpkincarver1
+TheInventory:AddScrapbook11Key( "ED4864FB" ) -- pumpkincarver2
+TheInventory:AddScrapbook12Key( "ED4864FC" ) -- pumpkincarver3
 TheInventory:AddScrapbook12Key( "4AD6EF2C" ) -- pumpkincookie
 TheInventory:AddScrapbook4Key( "88070A44" ) -- pumpkinpie
 TheInventory:AddScrapbook4Key( "E67EAEB4" ) -- punchingbag
@@ -5448,6 +5460,7 @@ TheInventory:AddScrapbook2Key( "1AF6B572" ) -- shadowtentacle
 TheInventory:AddScrapbook8Key( "1E0D6848" ) -- shadowthrall_hands
 TheInventory:AddScrapbook4Key( "AB6F1334" ) -- shadowthrall_horns
 TheInventory:AddScrapbook11Key( "8D1E2B" ) -- shadowthrall_mouth
+TheInventory:AddScrapbook3Key( "B00DBC83" ) -- shadowthrall_parasite
 TheInventory:AddScrapbook12Key( "8D20800C" ) -- shadowthrall_wings
 TheInventory:AddScrapbook5Key( "9A297765" ) -- shark
 TheInventory:AddScrapbook7Key( "8B812F77" ) -- sharkboi
@@ -8095,9 +8108,13 @@ TheInventory:AddScrapbook12Key( "4374C56C" ) -- yellowstaff
 --TheInventory:AddItemIDPairing(2265, "wood_chair_western")
 --TheInventory:AddItemIDPairing(2266, "wood_table_western")
 --TheInventory:AddItemIDPairing(2267, "wortox_rose")
+--TheInventory:AddItemIDPairing(2268, "mushroom_light2_hallowed")
+--TheInventory:AddItemIDPairing(2269, "mushroom_light_hallowed")
+--TheInventory:AddItemIDPairing(2270, "wall_hay_corn")
+--TheInventory:AddItemIDPairing(2271, "record_hallowednights")
 
 if TheInventory.AddFreeItemForEveryone == nil then
-    TheInventory:ValidateWithSignature( "b0ee3f00f746e7f84ae7e3cc9476e43a2324c4f8fe1ff0a6910cf30e5c20d49cd9cc23630ebfa3338ed8cca872e6d566b5a89026950e6ba289a3fd15dc40096a3e55886dbe26a3e7efaed603f3e67cf39c89067e188bf52c4ddc7defe8c2e42ce26a3ae50b9a50bf769ca1851cda16330a35e008b6824a6fbcbd48f7486fa6335c8386b19fb6e3a5ba0d138461c5af190be9e98e596baf4abff6e03878b8237c8a92f8390d7bf3d97ebaaa3198d47754a5d80487a39f44ff66758be06ce53b9ecd6085d8056df84c2eae9f9efe67572c381d2ce2cd904d267dc72c75652f5ee7496ee8d589d10c6c0d786989bc23142c3b2250b5152ac51008798359ff482414756cb9837d8e0998d46dcbeb8d173402d0696d7df557e898ee22b07a613e1254dde1aab38d4772df92d8ba5d0eb746d12e31452d57b9b87de46753b27edd5c586265f9791ab5f9acac8149bc28d3471c4c179eb4e1bb4cafd8e7b21d7207cc05b8d9d9c5bb5aca05e811215fce7be25f939ef0d8a7a7adff46c2630ce8a25fa12636465047213230ec236a1a459d091822a146784f8c5c51bb50bb2872ea29dee7e5fa706a2faa0e83a8c339e33f39506b5883ae2a295aa646ef9acbfdd04d521c346e6e38b8f901db688baadbb8c06e798aa903f0523999caa4d557adc88629437041858a8b2e422153509e0f5d9109862e4fec57b83cf9c4afc1b36a34d060" )
+    TheInventory:ValidateWithSignature( "5ac39aeae15cb9b03a3c608bf2a784e2198788a557e32d85f8b353b952e6dbb8cbca90a274bcce80d1ca5d4ed641f08dfd917d08ec7f1d14fb141b81ebc256be47c1e1e40df15eea41ef582c937c0532a88c617a1306bb41e18ed1dbf59884c64f3a811469129ec057148341402a597413889377eaf8c3d82f5ae386dae0b9998de9c2c7caa1a5936d8825936d7fb74487a9559e5517ec55cd6e754a363359b7ac0bf6d3f5cce24afb6ff42efbfb268497473920d7170247d8f2b53324733b24efc6b71d84694ee23e0a005e484e822d3cc7675c22de205f3e9a4403d3e842db30f5dc8838cb09f377f48fc6eef7a8c1c224b7831fa0f47261076c690d64f5651b4cab635a8b855107d83204bcc29b06120cd891a8d7b5067bdd50fd61dbea0d79caf0f216d8afc3000fbb3bba27699d60ef17e809a693d0304833dbff597efc97d25412729159ab83c32ab691c272120034caf972d0d96aeaeb52765a765214789f9ca89210c0409978560104fef8a06244d67af3c1afa4b15e716f81f70adeb30e3228127b8e78a20f3e1afd4c8247935b2b7a954c3804112cfce1259a3830c298034ccf05ff7424ea902b1b148f2e0d52478d07434c44db3c4ee3213cbaa501da2e45d251e10c4dd69cb0dfaaf2f4682eb175edd1fe557dc78974839123f87bd587709b7b9efbbe94bdf97eb6cbb1627c8ff56a661755adfe5304bfeab015" )
 else -- Temporary protection guard for platforms missing the engine change 2.
 
 -- These are free items for everyone and are not networked.
@@ -8152,7 +8169,7 @@ TheInventory:AddFreeItemForEveryone("record_creepyforest") -- 148
 TheInventory:AddFreeItemForEveryone("record_drstyle") -- 148
 TheInventory:AddFreeItemForEveryone("record_efs") -- 148
 
-TheInventory:ValidateWithSignature( "a9d7d22af63de03dcb774b58510259f9e86e2254850f05196ab9c0607b9543d95d494bdafe648cc43ac7b1da14710ad4cd9b836dec462bd0ca3efbfe539407e1957263712afb0ef11d1cc6abd4a9c7f155d2b65abf1d5ec134cf7ca2a5fc6b39957b3990aeb8a74a12c0c8ebec4816194840f14d0bd54538c46fc6a1a0073d0661cee0c46159bc936d8cb9057baa4104cfda945c8160e63ad02f0085388e2ecfd724125a602bd9cdd88946a1ab2684fe6cbcf80e59a63a79c4d1132126904d6e1eb511baf4a1c6cf4dc3cd91703014be8336dd4b9fff17086f513a81b841b5e5d23f7904a7b6cb822eebb0644beb580076e4b33187920a32805df76e65d610f921a61e5c233efd0ca5d27ff16f5cb5101a68b029d3916151b2e83ceba31bc5785b8fb9deaddd79d44ee76d495ad739448f0a95c6dbd746152d087d8ca7951692767485b2a902a33e0a59ff146f157ef9bffc478fd5d87a0ef8fedc5f6ae14efb041f4a1b942fd89757d4e87d54d681577e7013c453bb26230ccacb9b98ed1d998226c8d4d71a51b9a80c99aface905b05dcb0ce197cfc27bee4a228a136838d78f3aea9160e867ac966c29a567bc01fc8f14191f65a601a6002aac3ebc7d9a8222b8ddcf360268538dcce1b5006e05b5da0787845dc4947c273fa15f73174c2c8e3f17c9f68fa7127e60bfe1149afc3ffeeb38df84333407d54a1b7576813939" )
+TheInventory:ValidateWithSignature( "95aee98c98f4dc15d5aa317db8aba90dcde226e0da7f00262197c226662950a15ad5e57cde9aa8a188b610e9956f8ef2bf258e127b258d0438dfba74585268bd2c8a20025ab8935f1c97b301b1c2a2f96ea9b48c5cd873412e653f5a98cab3ceeb525ec11496fd88ed0b4f923a4b177109876717629af8faa3cdb405ec0c8f0b4995ce94af45f1ce9e45d1bcba6853eeeaa2362e76a73b77260df236979a4b21555fe00e311bb7f73c1ee46119ceb91f09fad0f35e7c1c363bc0e8350e947d3263cbf7e3a4979569663bd6b976cbb165404a81ce81e93193f5cac92d493e8e9575132e5417c595a8c75932d22559b23f14624c75cca050e828f6056be0058f07053c922cd1da73eb63d7878cac5cef52c100c00d7cc1314cdbe2791a4e82e0937fbd16dee2b3a3df8669d3b843823246e54393ab5ddf15b6fd05b6280fc53a077f5a2c3f98052f7745c965204ea02d7294f3ecf02389a007db4a9193edc1c33370ff223536f9a86c74b60526e63ba43a322908c96c45650937c4b60757b7f677f7c3afff8c88826aa68f415fe8694eee4b90bfd6df2ad8e230e45f5f13253c975f8cb86a115b4e36806cae04e3232b0f520348002f6b8909d0bfc04cd4f0d753181db26667d835fcfbb244d1fd9cab34e0e9b592c71f63dacd3208fcee2065204ed8f0b639b4cd3c88343c9a5e30bcfadf65bec6d12247152ac265133c0b22da" )
 
 end -- Temporary protection guard for platforms missing the engine change 2.
 

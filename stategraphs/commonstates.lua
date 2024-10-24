@@ -1184,8 +1184,6 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns)
                 inst.components.locomotor:StopMoving()
             end
             inst.AnimState:PlayAnimation(anims ~= nil and anims.death or "death")
-            RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
         end,
 
         timeline = timelines ~= nil and timelines.deathtimeline or nil,

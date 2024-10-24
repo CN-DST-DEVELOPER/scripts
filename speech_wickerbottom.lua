@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Got you!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "This is obviously not the correct place for it.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "A hot mess indeed.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Combat!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "I wouldn't classify their criticism as constructive.",
 
         PLAYBILL_THE_DOLL = "I suspect there's a deeper meaning to its storyline.",
+        PLAYBILL_THE_VEIL = "Rather on-the-nose, if you ask me.",
         STATUEHARP_HEDGESPAWNER = "Someone has let that poor statue become overgrown with vines.",
         HEDGEHOUND = "Ah. That would explain the respiration.",
         HEDGEHOUND_BUSH = "How odd. This rose bush appears to be... breathing.",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "The music was better back in my day.",
         RECORD = "I could see it getting a tad repetitive.",
         RECORD_CREEPYFOREST = "I can't imagine where one would find a record press out here.",
-        RECORD_DANGER = "I can't imagine where one would find a record press out here.",
-        RECORD_DAWN = "I can't imagine where one would find a record press out here.",
+        RECORD_DANGER = "I can't imagine where one would find a record press out here.", -- Unused.
+        RECORD_DAWN = "I can't imagine where one would find a record press out here.", -- Unused.
         RECORD_DRSTYLE = "The music was better back in my day.",
-        RECORD_DUSK = "The music was better back in my day.",
+        RECORD_DUSK = "The music was better back in my day.", -- Unused.
         RECORD_EFS = "The music was better back in my day.",
-        RECORD_END = "The music was better back in my day.",
-        RECORD_MAIN = "I can't imagine where one would find a record press out here.",
-        RECORD_WORKTOBEDONE = "I can't imagine where one would find a record press out here.",
+        RECORD_END = "The music was better back in my day.", -- Unused.
+        RECORD_MAIN = "I can't imagine where one would find a record press out here.", -- Unused.
+        RECORD_WORKTOBEDONE = "I can't imagine where one would find a record press out here.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Tsk. This type of music inspires all manner of mischief.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "There must be a manual somewhere.",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "This creature mimics an artifact.",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "The dark gelatinous substance, colloquially known as Icker, will preserve our food items.",
             FULL = "The contents are perfectly safe to consume.",
         },
         GELBLOB_STORAGE_KIT = "A simple food preservation method.",
         GELBLOB_BOTTLE = "This will do nicely.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "An unsubtle reminder of one's own mortality.",
+            ME = "How undignified.",
+        },
+
+        MASK_SAGEHAT = "There are times one must take the helm.",
+        MASK_HALFWITHAT = "There are no small parts.",
+        MASK_TOADYHAT = "We all have our role to play.",
+
+        SHADOWTHRALL_PARASITE = "A sort of parasite hailing from another realm.",
+
+        PUMPKINCARVER = "I have carved many pumpkins in my day, and I was quite skilled.",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

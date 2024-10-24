@@ -490,7 +490,7 @@ function Health:SetVal(val, cause, afflicter)
         if not self.nofadeout then
             self.inst:AddTag("NOCLICK")
             self.inst.persists = false
-            self.inst:DoTaskInTime(self.destroytime or 2, ErodeAway)
+            self.inst.erode_task = self.inst:DoTaskInTime(self.destroytime or 2, ErodeAway)
         end
     end
 end

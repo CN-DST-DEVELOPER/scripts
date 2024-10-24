@@ -162,7 +162,9 @@ local prefabs =
 
     "chest_mimic",
 
-    "worm_boss",    
+    "worm_boss",
+
+	"shadowthrall_parasite",
 }
 
 local monsters =
@@ -445,6 +447,7 @@ local function master_postinit(inst)
     inst:AddComponent("grottowarmanager")
     inst:AddComponent("acidbatwavemanager")
     inst:AddComponent("rabbitkingmanager")
+    inst:AddComponent("shadowparasitemanager")    
 
     --gameplay
     inst:AddComponent("caveins")

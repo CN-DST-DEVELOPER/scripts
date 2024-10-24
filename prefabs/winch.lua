@@ -241,6 +241,11 @@ local function MakeEmpty(inst)
 	end
 
 	inst.AnimState:ClearOverrideSymbol("swap_body")
+
+	if inst.pumpkincarving_fx then
+		inst.pumpkincarving_fx:Remove()
+		inst.pumpkincarving_fx = nil
+	end
 end
 
 local function OnActivate(inst, doer)
@@ -269,6 +274,19 @@ local function onitemget(inst, data)
 			inst.AnimState:OverrideItemSkinSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol, item.GUID, "swap_cavein_boulder" ) --default should never be used
 		else
 			inst.AnimState:OverrideSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol)
+		end
+	end
+
+	if inst.pumpkincarving_fx then
+		inst.pumpkincarving_fx:Remove()
+		inst.pumpkincarving_fx = nil
+	end
+	if item.components.pumpkincarvable then
+		local cutdata = item.components.pumpkincarvable:GetCutData()
+		if string.len(cutdata) > 0 then
+			inst.pumpkincarving_fx = SpawnPrefab("pumpkincarving_swap_fx")
+			inst.pumpkincarving_fx.entity:SetParent(inst.entity)
+			inst.pumpkincarving_fx:SetCutData(cutdata)
 		end
 	end
 
@@ -393,6 +411,15 @@ local function OnLoadPostPass(inst)
 					inst.AnimState:OverrideItemSkinSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol, item.GUID, "swap_cavein_boulder" ) --default should never be used
 				else
 					inst.AnimState:OverrideSymbol("swap_body", item.components.symbolswapdata.build, item.components.symbolswapdata.symbol)
+				end
+			end
+
+			if item.components.pumpkincarvable then
+				local cutdata = item.components.pumpkincarvable:GetCutData()
+				if string.len(cutdata) > 0 then
+					inst.pumpkincarving_fx = SpawnPrefab("pumpkincarving_swap_fx")
+					inst.pumpkincarving_fx.entity:SetParent(inst.entity)
+					inst.pumpkincarving_fx:SetCutData(cutdata)
 				end
 			end
 		end

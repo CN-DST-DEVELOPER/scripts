@@ -581,6 +581,9 @@ ACTIONS =
 
 	-- Rifts 4
 	BOTTLE = Action({ mount_valid=true }),
+
+	-- Hallowed Nights 2024
+	CARVEPUMPKIN = Action({ distance=1.5 }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -5336,5 +5339,20 @@ end
 ACTIONS.BOTTLE.fn = function(act)
 	if act.invobject and act.invobject.components.bottler then
 		return act.invobject.components.bottler:Bottle(act.target, act.doer)
+	end
+end
+
+ACTIONS.CARVEPUMPKIN.fn = function(act)
+	if act.doer and act.target and act.target.components.pumpkincarvable then
+		local success, reason = act.target.components.pumpkincarvable:CanBeginCarving(act.doer)
+		if not success then
+			return false, reason
+		end
+
+		--Silent fail for carving in the dark
+		if CanEntitySeeTarget(act.doer, act.target) then
+			act.target.components.pumpkincarvable:BeginCarving(act.doer)
+		end
+		return true
 	end
 end

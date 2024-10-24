@@ -348,7 +348,7 @@ function LoadoutSelect_beefalo:OnControl(control, down)
             return true
         else
             ]]
-        if control == CONTROL_MENU_MISC_1 and AllowSkins() then
+        if control == CONTROL_SKIN_PRESETS and AllowSkins() then
             self:_LoadSkinPresetsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
@@ -369,7 +369,7 @@ function LoadoutSelect_beefalo:GetHelpText()
 
 --        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_3) .. " " .. STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW)
 
-        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_SKIN_PRESETS) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
 
 		return table.concat(t, "  ")
 	else

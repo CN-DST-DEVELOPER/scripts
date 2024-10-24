@@ -214,6 +214,130 @@ local states =
             EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end ),
         },
     },
+
+    State{
+        name = "attack",
+        tags = { "attack", "busy" },
+
+        onenter = function(inst, target)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+            inst.AnimState:PlayAnimation("atk")
+            inst.components.combat:StartAttack()
+
+            --V2C: Cached to force the target to be the same one later in the timeline
+            --     e.g. combat:DoAttack(inst.sg.statemem.target)
+            inst.sg.statemem.target = target
+        end,
+
+        timeline =
+        {
+            TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
+            TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/attack") end),
+            TimeEvent(5*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
+            TimeEvent(8*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/clawsnap_small") end),
+            TimeEvent(12*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/clawsnap_small") end),
+            TimeEvent(13*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/attack_whoosh") end),
+            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/clawsnap") end),
+            TimeEvent(20*FRAMES, function(inst) inst.components.combat:DoAttack() end),
+            TimeEvent(25*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
+            TimeEvent(30*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "hit",
+        tags = { "hit", "busy" },
+
+        onenter = function(inst)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+
+            local hitanim = "hit"   
+            if inst:HasTag("hiding") then
+                hitanim = "hide_hit"    
+            end
+
+            inst.AnimState:PlayAnimation(hitanim)
+
+            inst._last_hitreact_time = GetTime()
+        end,
+
+        timeline = {
+            TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/hurt") end),
+            TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)    
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },  
+
+    State{
+        name = "death",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+            inst.AnimState:PlayAnimation("death")
+
+            if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
+                RemovePhysicsColliders(inst)
+                inst.components.lootdropper:DropLoot(inst:GetPosition())
+            end 
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
+                    TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                end
+            end),
+        },
+
+        timeline = {
+            TimeEvent(0*FRAMES, function(inst)
+                PlayLobSound(inst, "dontstarve/creatures/rocklobster/death")
+                PlayLobSound(inst, "dontstarve/creatures/rocklobster/explode")
+            end),
+        },
+       
+    },
+
+    State{
+        name = "parasite_revive",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("parasite_death_pst")
+            inst.Physics:Stop()
+        end,
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+        },
+    },      
+
 }
 
 CommonStates.AddWalkStates(states,
@@ -248,50 +372,6 @@ CommonStates.AddSleepStates(states,
         TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
         },
 })
-
-
-local function hitanim(inst)
-    if inst:HasTag("hiding") then
-        return "hide_hit"
-    else
-        return "hit"
-    end
-end
-
-local combatanims =
-{
-    hit = hitanim,
-}
-
-CommonStates.AddCombatStates(states,
-{
-    attacktimeline =
-    {
-        TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
-        TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/attack") end),
-        TimeEvent(5*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
-        TimeEvent(8*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/clawsnap_small") end),
-        TimeEvent(12*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/clawsnap_small") end),
-        TimeEvent(13*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/attack_whoosh") end),
-        TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/rocklobster/clawsnap") end),
-        TimeEvent(20*FRAMES, function(inst) inst.components.combat:DoAttack() end),
-        TimeEvent(25*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
-        TimeEvent(30*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
-    },
-    hittimeline = {
-        TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/hurt") end),
-        TimeEvent(0*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
-    },
-    deathtimeline = {
-        TimeEvent(0*FRAMES, function(inst)
-            PlayLobSound(inst, "dontstarve/creatures/rocklobster/death")
-            PlayLobSound(inst, "dontstarve/creatures/rocklobster/explode")
-        end),
-
-
-    },
-},
-combatanims)
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddIdle(states, "idle_tendril", nil ,

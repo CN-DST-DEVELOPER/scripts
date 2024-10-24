@@ -6550,7 +6550,7 @@ CLOTHING =
 		type = "feet",
 		skin_tags = { "HALLOWED", "CLOTHING_FEET", "CLOTHING", },
 		symbol_overrides = { "foot", },
-		symbol_overrides_by_character = { default = { foot = "foot_wilson", },walter = { foot = "foot_walter", },wanda = { foot = "foot_wanda", },warly = { foot = "foot_warly", },webber = { foot = "foot_webber", },wormwood = { foot = "foot_wormwood", },wortox = { foot = "foot_wortox", },wurt = { foot = "foot_wurt", },wx78 = { foot = "foot_wx78", },},
+		symbol_overrides_by_character = { default = { foot = "foot_wilson", },walter = { foot = "foot_walter", },wanda = { foot = "foot_wanda", },warly = { foot = "foot_warly", },waxwell = { foot = "foot_waxwell", },webber = { foot = "foot_webber", },wormwood = { foot = "foot_wormwood", },wortox = { foot = "foot_wortox", },wurt = { foot = "foot_wurt", },wx78 = { foot = "foot_wx78", },},
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		feet_cuff_size = 2,

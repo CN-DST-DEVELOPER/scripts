@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "I have you, fateful rabbit!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Are you not satisfied with the place?!",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Curses! I was not done with that!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Valhalla awaits!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "Begone, critics!",
 
         PLAYBILL_THE_DOLL = "I am not familiar with the playwright.",
+        PLAYBILL_THE_VEIL = "Hmm. 'Tis avant-garde.",
         STATUEHARP_HEDGESPAWNER = "'Tis surrounded by a thorny thicket.",
         HEDGEHOUND = "Deceiver! Thou art a prickly pox upon my stage!",
         HEDGEHOUND_BUSH = "A thorny bramble.",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "A mechanical songstress.",
         RECORD = "T'would be a kindness to keep it from reaching the ears of my ally.",
         RECORD_CREEPYFOREST = "Music is nourishment for thy soul!",
-        RECORD_DANGER = "Let us play a rousing war song!",
-        RECORD_DAWN = "Thy melody is most soothing.",
+        RECORD_DANGER = "Let us play a rousing war song!", -- Unused.
+        RECORD_DAWN = "Thy melody is most soothing.", -- Unused.
         RECORD_DRSTYLE = "The musicians play with such passion!",
-        RECORD_DUSK = "Thy melody is most soothing.",
+        RECORD_DUSK = "Thy melody is most soothing.", -- Unused.
         RECORD_EFS = "Doth the tempo not make one's heart race with excitement?",
-        RECORD_END = "The showstopper!",
-        RECORD_MAIN = "Music is nourishment for thy soul!",
-        RECORD_WORKTOBEDONE = "Music is nourishment for thy soul!",
+        RECORD_END = "The showstopper!", -- Unused.
+        RECORD_MAIN = "Music is nourishment for thy soul!", -- Unused.
+        RECORD_WORKTOBEDONE = "Music is nourishment for thy soul!", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "A serenade for the ghosts and ghouls.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "What if I just stab it?",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "It contained not a mystery, but a curse!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "Once a mighty deathtrap, now a pantry.",
             FULL = "Thy morsels, it doth preserveth.",
         },
         GELBLOB_STORAGE_KIT = "Peasant's work.",
         GELBLOB_BOTTLE = "The goo hath been contained.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "I shall take no pleasure in destroying you, friend.",
+            ME = "'Tis an abomination!",
+        },
+
+        MASK_SAGEHAT = "Only a craven hides their face.",
+        MASK_HALFWITHAT = "Only a craven hides their face.",
+        MASK_TOADYHAT = "Only a craven hides their face.",
+
+        SHADOWTHRALL_PARASITE = "Keep away thy cursed embrace.",
+
+        PUMPKINCARVER = "A child's toy.",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

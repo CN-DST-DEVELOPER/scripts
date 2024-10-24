@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Gotcha!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Why won't it work here?",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Do I still get the badge?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Sorry!!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "What mean birds! At least I think they're birds.",
 
         PLAYBILL_THE_DOLL = "It's like a radio play you can watch!",
+        PLAYBILL_THE_VEIL = "Oooh, this looks spooky.",
         STATUEHARP_HEDGESPAWNER = "It's all overgrown with vines.",
         HEDGEHOUND = "Maybe he just has a thorn stuck in his paw?",
         HEDGEHOUND_BUSH = "Woby, what's wrong? It's just a rose bush!",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "It's almost as good as a radio. Almost.",
         RECORD = "I could listen to this forever!",
         RECORD_CREEPYFOREST = "It's no Midnight Broadcast, but it's still pretty good.",
-        RECORD_DANGER = "Woby likes to howl along, don't you girl?",
-        RECORD_DAWN = "It's no Midnight Broadcast, but it's still pretty good.",
+        RECORD_DANGER = "Woby likes to howl along, don't you girl?", -- Unused.
+        RECORD_DAWN = "It's no Midnight Broadcast, but it's still pretty good.", -- Unused.
         RECORD_DRSTYLE = "Woby likes to howl along, don't you girl?",
-        RECORD_DUSK = "Woby likes to howl along, don't you girl?",
+        RECORD_DUSK = "Woby likes to howl along, don't you girl?", -- Unused.
         RECORD_EFS = "It's no Midnight Broadcast, but it's still pretty good.",
-        RECORD_END = "Oh, that's a good one!",
-        RECORD_MAIN = "Woby likes to howl along, don't you girl?",
-        RECORD_WORKTOBEDONE = "It's no Midnight Broadcast, but it's still pretty good.",
+        RECORD_END = "Oh, that's a good one!", -- Unused.
+        RECORD_MAIN = "Woby likes to howl along, don't you girl?", -- Unused.
+        RECORD_WORKTOBEDONE = "It's no Midnight Broadcast, but it's still pretty good.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Instant classic!",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Wanna solve a puzzle, Woby?",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "And I was right! It's a box monster, Woby!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "What should we put in there, Woby?",
             FULL = "It's floating in that gloop!",
         },
         GELBLOB_STORAGE_KIT = "This might be messy to build.",
         GELBLOB_BOTTLE = "We really should label that.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Don't you recognize me?",
+            ME = "Dead me walking! Ha... ha?",
+        },
+
+        MASK_SAGEHAT = "It's pointy.",
+        MASK_HALFWITHAT = "Heh, what a goofy face.",
+        MASK_TOADYHAT = "Should I try it on, Woby?",
+
+        SHADOWTHRALL_PARASITE = "I think it just wants a friend.",
+
+        PUMPKINCARVER = "Safety first, Woby!",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

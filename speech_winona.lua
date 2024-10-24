@@ -1001,6 +1001,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Gotcha, rabbit!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Nope, ain't the right spot.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "You're supposed to light it after it's been carved.",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'll demolish you!",
@@ -4925,6 +4928,7 @@ return{
         CHARLIE_HECKLER = "You can't please everyone.",
 
         PLAYBILL_THE_DOLL = "Somehow I think there's more to the story.",
+        PLAYBILL_THE_VEIL = "Who the heck is Herald?",
         STATUEHARP_HEDGESPAWNER = "Yeesh, this place needs a good pruning.",
         HEDGEHOUND = "You're gettin' to be a real thorn in my side!",
         HEDGEHOUND_BUSH = "Why am I gettin' a bad feeling...",
@@ -5177,14 +5181,15 @@ return{
         PHONOGRAPH = "Nothin' like some music to get through the workday faster.",
         RECORD = "Just plain unsettlin'.",
         RECORD_CREEPYFOREST = "That's a real toe-tapper!",
-        RECORD_DANGER = "This ain't at all relaxin'.",
-        RECORD_DAWN = "Here we go.",
+        RECORD_DANGER = "This ain't at all relaxin'.", -- Unused.
+        RECORD_DAWN = "Here we go.", -- Unused.
         RECORD_DRSTYLE = "She's a doozy.",
-        RECORD_DUSK = "Rather somber, ain't it?",
+        RECORD_DUSK = "Rather somber, ain't it?", -- Unused.
         RECORD_EFS = "Here we go.",
-        RECORD_END = "Not my cupa.",
-        RECORD_MAIN = "Here we go.",
-        RECORD_WORKTOBEDONE = "Work up a sweat with this one.",
+        RECORD_END = "Not my cupa.", -- Unused.
+        RECORD_MAIN = "Here we go.", -- Unused.
+        RECORD_WORKTOBEDONE = "Work up a sweat with this one.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Gives me the heebie jeebies.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Some mighty complicated engineering went into this.",
 
@@ -5395,12 +5400,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Didn't I tell ya?!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "At least we found some use for that muck.",
             FULL = "And just like that, I ain't hungry no more.",
         },
         GELBLOB_STORAGE_KIT = "Guess I should put'er together.",
         GELBLOB_BOTTLE = "We can take it to go!",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Ain't nothin' right about that.",
+            ME = "No, thank you.",
+        },
+
+        MASK_SAGEHAT = "Like wearin' a sculpture on your face.",
+        MASK_HALFWITHAT = "Kinda idiotic.",
+        MASK_TOADYHAT = "One size fits all!",
+
+        SHADOWTHRALL_PARASITE = "Looks like a real headache.",
+
+        PUMPKINCARVER = "A pumpkin carver is only as good as their tools.",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

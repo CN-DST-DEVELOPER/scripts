@@ -30,8 +30,10 @@ end
 function Playbill_Lecturn:UpdateText()
     if self.playbill_item then
         local pb = self.playbill_item.components.playbill
+
         local script = pb.scripts[pb.current_act] 
         local text = script.playbill.."\nCast:"
+
         for _, cast_member in ipairs(script.cast) do
             text=text .."\n"..pb.costumes[cast_member].name
         end
@@ -42,6 +44,7 @@ function Playbill_Lecturn:UpdateText()
 end
 
 function Playbill_Lecturn:SwapPlayBill(playbill, doer)
+    
     if doer then
         playbill.components.playbill:SetCurrentAct(playbill.components.playbill.starting_act)
         doer.components.inventory:RemoveItem(playbill)
@@ -56,13 +59,13 @@ function Playbill_Lecturn:SwapPlayBill(playbill, doer)
     end
 
     self.playbill_item = playbill
-
     if self.stage then
         local play_data =
         {
             costumes    =   self.playbill_item.components.playbill.costumes,
             scripts     =   self.playbill_item.components.playbill.scripts,
-            current_act =   self.playbill_item.components.playbill.current_act,
+            current_act =   self.playbill_item.components.playbill.starting_act,
+            starting_act =  self.playbill_item.components.playbill.starting_act,
         }
         self.stage.components.stageactingprop:AddPlay(play_data)
 
@@ -92,6 +95,7 @@ function Playbill_Lecturn:LoadPostPass(newents, data)
     if data.playbill_item_id then
         local playbill_data = newents[data.playbill_item_id]
         if playbill_data then
+
             self.inst:DoTaskInTime(0, loadplaybill_postpass, self, playbill_data.entity)
         end
     end

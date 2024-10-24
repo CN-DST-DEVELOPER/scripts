@@ -1352,6 +1352,15 @@ local COMPONENT_ACTIONS =
 			end
         end,
 
+		pumpkincarver = function(inst, doer, target, actions)
+			if target.components.pumpkincarvable then --component exists on clients
+				local rider = doer.replica.rider
+				if not (rider and rider:IsRiding()) then
+					table.insert(actions, ACTIONS.CARVEPUMPKIN)
+				end
+			end
+		end,
+
         quagmire_installable = function(inst, doer, target, actions)
             if target:HasTag("installations") then
                 table.insert(actions, ACTIONS.INSTALL)

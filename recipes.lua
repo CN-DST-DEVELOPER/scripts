@@ -1188,6 +1188,10 @@ DeconstructRecipe("eyeturret",						{Ingredient("deerclops_eyeball", 1), Ingredi
 DeconstructRecipe("scrap_monoclehat",				{Ingredient("wagpunk_bits", 2), Ingredient("transistor", 1), Ingredient("trinket_6", 1)})
 DeconstructRecipe("scraphat",						{Ingredient("wagpunk_bits", 3)})
 
+for k = 1, NUM_HALLOWEEN_PUMPKINCARVERS do
+	DeconstructRecipe("pumpkincarver"..tostring(k),	{Ingredient("pumpkin_seeds", 1), Ingredient("flint", 1)})
+end
+
 -- NOTES(DiogoW): Changing the amount for these is fine. However, changing the resource requires changing the container widget definition for the merm_supply_structures.
 DeconstructRecipe("mermarmorhat",					{Ingredient("log",   1), Ingredient("cutgrass", 1)})
 DeconstructRecipe("mermarmorupgradedhat",			{Ingredient("log",   1), Ingredient("cutgrass", 1)})

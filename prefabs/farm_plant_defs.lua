@@ -5,7 +5,7 @@ local PLANT_DEFS = {}
 PLANT_DEFS.randomseed	= {build = "farm_soil", bank = "farm_soil"}
 PLANT_DEFS.asparagus	= {}
 PLANT_DEFS.garlic		= {}
-PLANT_DEFS.pumpkin		= {}
+PLANT_DEFS.pumpkin		= {iscarvable = true}
 PLANT_DEFS.corn			= {build = "farm_plant_corn_build", bank = "farm_plant_pumpkin"}
 PLANT_DEFS.onion		= {build = "farm_plant_onion_build", bank = "farm_plant_pumpkin"}
 PLANT_DEFS.potato		= {}

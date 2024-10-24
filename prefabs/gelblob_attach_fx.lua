@@ -39,6 +39,12 @@ local function KillConnector(inst, mainblob)
 	inst._x, inst._y, inst._z = inst.Transform:GetWorldPosition()
 	inst.entity:SetParent(nil)
 	inst.Transform:SetPosition(inst._x, inst._y, inst._z)
+
+	if inst:IsAsleep() then
+		inst:Remove()
+		return
+	end
+
 	inst.AnimState:PlayAnimation("blob_attach_middle_pst")
 	inst:ListenForEvent("animover", inst.Remove)
 	inst.OnEntitySleep = inst.Remove
@@ -292,6 +298,12 @@ local function KillFX(inst)
 		inst.entity:SetParent(nil)
 	end
 	inst.Transform:SetPosition(x, y, z)
+
+	if inst:IsAsleep() then
+		inst:Remove()
+		return
+	end
+
 	inst.AnimState:PlayAnimation("splash")
 	inst:ListenForEvent("animover", inst.Remove)
 	inst.OnEntitySleep = inst.Remove

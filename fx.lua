@@ -3306,10 +3306,30 @@ local fx =
         sound = "rifts4/mimic/item_become_poof",
         tint = Vector3(0, 0, 0),
         tintalpha = .5,
-        fn = function(inst)
-            inst.AnimState:SetFinalOffset(2)
-        end,
+		fn = FinalOffset2,
     },
+	{
+		name = "pumpkincarving_shatter_fx",
+		bank = "farm_plant_pumpkin",
+		build = "farm_plant_pumpkin",
+		anim = "fx_cut",
+		fn = function(inst)
+			inst.AnimState:SetFinalOffset(2)
+			inst.AnimState:SetScale(0.5, 0.5)
+		end,
+	},
+    {
+        name = "shadowthrall_parasite_attach_poof_fx",
+        bank = "shadow_thrall_parasite_transition_fx",
+        build = "shadow_thrall_parasite_transition_fx",
+        anim = "transition",
+        --sound = "hallowednights2024/thrall_parasite/possess_monster",
+        fn = function(inst)
+           inst.entity:AddSoundEmitter()
+           inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/possess_monster","soundfx")
+           inst:DoTaskInTime(35*FRAMES, function() inst.SoundEmitter:KillSound("soundfx") end)
+        end,        
+    },    
 }
 
 for cratersteamindex = 1, 4 do

@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Flort!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Glorp. Not here.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Haha! Burning.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "Hey! No make fun of scale-less, that job mine!",
 
         PLAYBILL_THE_DOLL = "Too many words to remember, florp.",
+        PLAYBILL_THE_VEIL = "Dunno. Ask Wicker-lady.",
         STATUEHARP_HEDGESPAWNER = "It look broken. Didn't do it!",
         HEDGEHOUND = "Sneaky doggy! Bad!",
         HEDGEHOUND_BUSH = "Glurgh, it full of ugly flowers.",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "Music come out of it, florp!",
         RECORD = "Again.",
         RECORD_CREEPYFOREST = "Boring. Next one.",
-        RECORD_DANGER = "Next.",
-        RECORD_DAWN = "What else?",
+        RECORD_DANGER = "Next.", -- Unused.
+        RECORD_DAWN = "What else?", -- Unused.
         RECORD_DRSTYLE = "Too long.",
-        RECORD_DUSK = "Next.",
+        RECORD_DUSK = "Next.", -- Unused.
         RECORD_EFS = "Don't like. Next.",
-        RECORD_END = "Next.",
-        RECORD_MAIN = "Boring. Next one.",
-        RECORD_WORKTOBEDONE = "Don't like. Next.",
+        RECORD_END = "Next.", -- Unused.
+        RECORD_MAIN = "Boring. Next one.", -- Unused.
+        RECORD_WORKTOBEDONE = "Don't like. Next.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Like this one.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Why floor make weird sounds, florp?",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Mouth box! Glorp!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "What we pre-save?",
             FULL = "Wow. Wicker-lady right! It pre-saved!",
         },
         GELBLOB_STORAGE_KIT = "Me make!",
         GELBLOB_BOTTLE = "Cute!",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Weird game.",
+            ME = "Look familiar.",
+        },
+
+        MASK_SAGEHAT = "Nice horns. Me wear.",
+        MASK_HALFWITHAT = "Haha, silly.",
+        MASK_TOADYHAT = "For play pretend?",
+
+        SHADOWTHRALL_PARASITE = "Aww. Just wants a hug. Florp!",
+
+        PUMPKINCARVER = "Florp! Pumpkin poker.",
     },
 
     DESCRIBE_GENERIC = "What that?",

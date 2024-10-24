@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "We meet again!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "I should have known this was the wrong place.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "What a waste of time.",
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "I don't remember asking for their opinion.",
 
         PLAYBILL_THE_DOLL = "What an odd little play.",
+        PLAYBILL_THE_VEIL = "Rather disturbing if you ask me.",
         STATUEHARP_HEDGESPAWNER = "There's just something about it...",
         HEDGEHOUND = "Fool me once, shame on you. Fool me twice, shame on you again!",
         HEDGEHOUND_BUSH = "Was that rosebush there a second ago?",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "Shall we play something new or something old?",
         RECORD = "Is this that newfangled ragtime music the youth are raving about?",
         RECORD_CREEPYFOREST = "Do I look like I have time to sit around listening to records?",
-        RECORD_DANGER = "I prefer their earlier work.",
-        RECORD_DAWN = "I prefer their later work.",
+        RECORD_DANGER = "I prefer their earlier work.", -- Unused.
+        RECORD_DAWN = "I prefer their later work.", -- Unused.
         RECORD_DRSTYLE = "I prefer their earlier work.",
-        RECORD_DUSK = "I prefer their earlier work.",
+        RECORD_DUSK = "I prefer their earlier work.", -- Unused.
         RECORD_EFS = "I prefer their later work.",
-        RECORD_END = "Do I look like I have time to sit around listening to records?",
-        RECORD_MAIN = "I prefer their earlier work.",
-        RECORD_WORKTOBEDONE = "I prefer their later work.",
+        RECORD_END = "Do I look like I have time to sit around listening to records?", -- Unused.
+        RECORD_MAIN = "I prefer their earlier work.", -- Unused.
+        RECORD_WORKTOBEDONE = "I prefer their later work.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "This takes me back.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "What an intricate design.",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Totally not worth the peek!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "It'll extend the expiration date.",
             FULL = "Suspended in time.",
         },
         GELBLOB_STORAGE_KIT = "Best get to it then.",
         GELBLOB_BOTTLE = "What should we do with this?",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "A horrid way to go.",
+            ME = "Better luck this time.",
+        },
+
+        MASK_SAGEHAT = "Who has time for masquerading?",
+        MASK_HALFWITHAT = "Who has time for masquerading?",
+        MASK_TOADYHAT = "Who has time for masquerading?",
+
+        SHADOWTHRALL_PARASITE = "Wondered when you'd be showing up.",
+
+        PUMPKINCARVER = "No time for fun... Well, maybe this once.",
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

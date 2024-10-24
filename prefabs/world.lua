@@ -50,8 +50,13 @@ local assets =
 
     Asset("ANIM", "anim/poi_marker.zip"),
     Asset("ANIM", "anim/poi_stand.zip"),    
-}
 
+	Asset("DYNAMIC_ATLAS", "images/pumpkin_carving.xml"),
+	Asset("PKGREF", "images/pumpkin_carving.tex"),
+
+	Asset("DYNAMIC_ATLAS", "images/pumpkin_carving2.xml"),
+	Asset("PKGREF", "images/pumpkin_carving2.tex"),
+}
 
 for k, v in pairs(GroundTiles.assets) do
     table.insert(assets, v)

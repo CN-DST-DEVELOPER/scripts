@@ -1002,6 +1002,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Gotcha!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Picky, picky.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "It's perfect.",
+
 	BATTLECRY =
 	{
 		GENERIC = "It's you or me!",
@@ -4926,6 +4929,7 @@ return{
         CHARLIE_HECKLER = "Heh. I kinda like them.",
 
         PLAYBILL_THE_DOLL = "What a weird story.",
+        PLAYBILL_THE_VEIL = "There's so much talking in this one.",
         STATUEHARP_HEDGESPAWNER = "That poor statue's covered in flammable vines! Whatever should I do?",
         HEDGEHOUND = "Ugh, you sneaky jerk!!",
         HEDGEHOUND_BUSH = "Those roses will look so pretty as they're burning.",
@@ -5178,14 +5182,15 @@ return{
         PHONOGRAPH = "Oh, Maxwell will love this.",
         RECORD = "Hey Max, it's your favorite!",
         RECORD_CREEPYFOREST = "It's always nice to have some music while you're busy burning stuff.",
-        RECORD_DANGER = "There's something so nostalgic about the way it pops and crackles.",
-        RECORD_DAWN = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_DANGER = "There's something so nostalgic about the way it pops and crackles.", -- Unused.
+        RECORD_DAWN = "It's always nice to have some music while you're busy burning stuff.", -- Unused.
         RECORD_DRSTYLE = "There's something so nostalgic about the way it pops and crackles.",
-        RECORD_DUSK = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_DUSK = "It's always nice to have some music while you're busy burning stuff.", -- Unused.
         RECORD_EFS = "There's something so nostalgic about the way it pops and crackles.",
-        RECORD_END = "It's always nice to have some music while you're busy burning stuff.",
-        RECORD_MAIN = "There's something so nostalgic about the way it pops and crackles.",
-        RECORD_WORKTOBEDONE = "It's always nice to have some music while you're busy burning stuff.",
+        RECORD_END = "It's always nice to have some music while you're busy burning stuff.", -- Unused.
+        RECORD_MAIN = "There's something so nostalgic about the way it pops and crackles.", -- Unused.
+        RECORD_WORKTOBEDONE = "It's always nice to have some music while you're busy burning stuff.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "This track makes me feel... mischievous.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "It won't burn? Well, I'm out of ideas.",
 
@@ -5396,12 +5401,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Kinda nasty.",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "There's nothing in goop.",
             FULL = "I guess it's working?",
         },
         GELBLOB_STORAGE_KIT = "Talk about re-purposing.",
         GELBLOB_BOTTLE = "I won't mistake that for jam.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Let's get you cremated.",
+            ME = "Definitely cremation.",
+        },
+
+        MASK_SAGEHAT = "Creepy.",
+        MASK_HALFWITHAT = "Looks dopey.",
+        MASK_TOADYHAT = "Not my thing.",
+
+        SHADOWTHRALL_PARASITE = "Feed it to the flames!",
+
+        PUMPKINCARVER = "Who's the lucky pumpkin?",
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

@@ -30,11 +30,13 @@ local function makeplay(name, _assets, prefabs)
         inst.AnimState:SetBuild("playbill")
         inst.AnimState:PlayAnimation("idle")
 
-        MakeInventoryFloatable(inst, "med", 0.05, 0.68)
+        MakeInventoryFloatable(inst, "med", 0.15, 0.6)
 
         if name == "the_doll" then
             inst.scrapbook_specialinfo = "PLAYBILL_THEDOLL"
         end
+
+        inst:AddTag("playbill")
 
         inst.entity:SetPristine()
 
@@ -68,4 +70,5 @@ local function makeplay(name, _assets, prefabs)
     return Prefab("playbill_"..name, fn, assets, prefabs)
 end
 
-return makeplay("the_doll", thedoll_assets, thedoll_prefabs)
+return makeplay("the_doll", thedoll_assets, thedoll_prefabs),
+        makeplay("the_veil", thedoll_assets, thedoll_prefabs)

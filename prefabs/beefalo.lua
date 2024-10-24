@@ -77,16 +77,19 @@ local tendencies =
     ORNERY =
     {
         build = "beefalo_personality_ornery",
+        build_short = "_ornery",
     },
 
     RIDER =
     {
         build = "beefalo_personality_docile",
+        build_short = "_docile",
     },
 
     PUDGY =
     {
         build = "beefalo_personality_pudgy",
+        build_short = "_pudgy",
         customactivatefn = function(inst)
             inst:AddComponent("sanityaura")
             inst.components.sanityaura.aura = TUNING.SANITYAURA_TINY
@@ -267,9 +270,9 @@ local function ApplyBuildOverrides(inst, animstate)
         animstate:Hide("HEAT")
     end
 
-    if inst.components.skinner_beefalo then
-        local clothing_names = inst.components.skinner_beefalo:GetClothing()
-        SetBeefaloSkinsOnAnim( animstate, clothing_names, animstate ~= inst.AnimState and inst.GUID or nil )
+    local clothing_names = inst.components.skinner_beefalo and inst.components.skinner_beefalo:GetClothing() or nil
+    if clothing_names then
+        SetBeefaloSkinsOnAnim(animstate, clothing_names, animstate ~= inst.AnimState and inst.GUID or nil)
     end
 
     if tendencies[inst.tendency].build ~= nil then
@@ -277,6 +280,11 @@ local function ApplyBuildOverrides(inst, animstate)
     elseif animstate == inst.AnimState then
         -- this presumes that all the face builds have the same symbols
         animstate:ClearOverrideBuild("beefalo_personality_docile")
+    end
+
+    if clothing_names then
+        -- NOTES(JBK): Skinning of face tendencies needs to be last.
+        SetBeefaloFaceSkinsOnAnim(animstate, clothing_names, animstate ~= inst.AnimState and inst.GUID or nil, tendencies[inst.tendency].build_short or "")
     end
 end
 
@@ -709,8 +717,9 @@ function fns.OnRevived(inst, revive)
 end
 
 local function DomesticationTriggerFn(inst)
-    return inst.components.hunger:GetPercent() > 0
-        or inst.components.rideable:IsBeingRidden() == true
+    return
+        (inst.components.hunger:GetPercent() > 0 and not inst.components.hunger:IsPaused()) or
+        inst.components.rideable:IsBeingRidden() == true
 end
 
 local function OnStarving(inst, dt)

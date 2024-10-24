@@ -1804,6 +1804,18 @@ local PREFABS =
     ["shadowheart_infused"] = true,
     ["gelblob_bottle"] = true,
 
+    -- HallowedNights2024
+
+    ["pumpkincarver1"] = true,
+    ["pumpkincarver2"] = true,
+    ["pumpkincarver3"] = true,
+
+    ["mask_sagehat"] = true,
+    ["mask_toadyhat"] = true,
+    ["mask_halfwithat"] = true,
+
+    ["shadowthrall_parasite"] = true,
+
     --[[POI]]
     ["charlie_stage_post"] = true,
     ["beequeenhivegrown"] = true,

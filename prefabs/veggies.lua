@@ -271,6 +271,7 @@ end
 
 local function dowaxfn(inst, doer, waxitem)
     local waxedveggie = SpawnPrefab(inst.prefab.."_waxed")
+
     if doer.components.inventory and doer.components.inventory:IsHeavyLifting() and doer.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY) == inst then
         doer.components.inventory:Unequip(EQUIPSLOTS.BODY)
         doer.components.inventory:Equip(waxedveggie)
@@ -279,7 +280,13 @@ local function dowaxfn(inst, doer, waxitem)
         waxedveggie.AnimState:PlayAnimation("wax_oversized", false)
         waxedveggie.AnimState:PushAnimation("idle_oversized")
     end
+
+    if inst.components.pumpkincarvable ~= nil then
+        inst.components.pumpkincarvable:TransferComponent(waxedveggie)
+    end
+
     inst:Remove()
+
     return true
 end
 
@@ -351,7 +358,9 @@ local function MakeVeggie(name, has_seeds)
         table.insert(assets_dried, Asset("ANIM", "anim/"..dryable.build..".zip"))
 	end
 
+	local plant_def = PLANT_DEFS[name]
 	local seeds_prefabs = has_seeds and { "farm_plant_"..name } or nil
+	local oversized_prefabs = plant_def and plant_def.iscarvable and { "pumpkincarving_swap_fx" } or nil
 
     local assets_oversized = {}
     if has_seeds then
@@ -360,7 +369,7 @@ local function MakeVeggie(name, has_seeds)
         table.insert(prefabs, name.."_oversized_rotten")
         table.insert(prefabs, "splash_green")
 
-        table.insert(assets_oversized, Asset("ANIM", "anim/"..PLANT_DEFS[name].build..".zip"))
+        table.insert(assets_oversized, Asset("ANIM", "anim/"..plant_def.build..".zip"))
     end
 
     local function spin(inst, time)
@@ -420,7 +429,7 @@ local function MakeVeggie(name, has_seeds)
 
         inst.overridedeployplacername = "seeds_placer"
 
-		inst.plant_def = PLANT_DEFS[name]
+		inst.plant_def = plant_def
 		inst.displaynamefn = Seed_GetDisplayName
 
 		inst._custom_candeploy_fn = can_plant_seed -- for DEPLOYMODE.CUSTOM
@@ -772,8 +781,6 @@ local function MakeVeggie(name, has_seeds)
         inst.entity:AddAnimState()
         inst.entity:AddNetwork()
 
-        local plant_def = PLANT_DEFS[name]
-
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
         inst.AnimState:PlayAnimation("idle_oversized")
@@ -784,6 +791,12 @@ local function MakeVeggie(name, has_seeds)
         inst:AddTag("oversized_veggie")
 	    inst:AddTag("show_spoilage")
         inst.gymweight = 4
+
+		if plant_def.iscarvable then
+			inst:AddComponent("pumpkincarvable")
+
+			inst.highlightchildren = {}
+		end
 
         MakeHeavyObstaclePhysics(inst, OVERSIZED_PHYSICS_RADIUS)
         inst:SetPhysicsRadiusOverride(OVERSIZED_PHYSICS_RADIUS)
@@ -861,8 +874,6 @@ local function MakeVeggie(name, has_seeds)
         inst.entity:AddAnimState()
         inst.entity:AddNetwork()
 
-        local plant_def = PLANT_DEFS[name]
-
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
         inst.AnimState:PlayAnimation("idle_oversized")
@@ -870,6 +881,12 @@ local function MakeVeggie(name, has_seeds)
 
         inst:AddTag("heavy")
         inst:AddTag("oversized_veggie")
+
+		if plant_def.iscarvable then
+			inst:AddComponent("pumpkincarvable")
+
+			inst.highlightchildren = {}
+		end
 
         inst.gymweight = 4
 
@@ -936,8 +953,6 @@ local function MakeVeggie(name, has_seeds)
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
         inst.entity:AddNetwork()
-
-        local plant_def = PLANT_DEFS[name]
 
         inst.AnimState:SetBank(plant_def.bank)
         inst.AnimState:SetBuild(plant_def.build)
@@ -1012,8 +1027,8 @@ local function MakeVeggie(name, has_seeds)
 
 	if has_seeds then
 		table.insert(exported_prefabs, Prefab(name.."_seeds", fn_seeds, assets_seeds, seeds_prefabs))
-        table.insert(exported_prefabs, Prefab(name.."_oversized", fn_oversized, assets_oversized))
-        table.insert(exported_prefabs, Prefab(name.."_oversized_waxed", fn_oversized_waxed, assets_oversized))
+        table.insert(exported_prefabs, Prefab(name.."_oversized", fn_oversized, assets_oversized, oversized_prefabs))
+        table.insert(exported_prefabs, Prefab(name.."_oversized_waxed", fn_oversized_waxed, assets_oversized, oversized_prefabs))
         table.insert(exported_prefabs, Prefab(name.."_oversized_rotten", fn_oversized_rotten, assets_oversized))
 	end
 	if dryable ~= nil then

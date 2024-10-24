@@ -130,8 +130,10 @@ function Groomer:CanBeginChanging(doer)
         return false
     elseif self.shareable then
         return true
-    elseif self.inst.burnable ~= nil and self.inst.burnable:IsBurning() then
+	elseif self.inst.components.burnable and self.inst.components.burnable:IsBurning() then
         return false, "BURNING"
+	elseif not self.canbeshared and next(self.changers) then
+		return false, "INUSE"
     elseif not self.occupant then
         return false, "NOOCCUPANT"
     elseif self.occupant and self.occupant.components.beard and self.occupant.components.beard.bits < TUNING.BEEFALO_BEARD_BITS then

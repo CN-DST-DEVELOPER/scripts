@@ -85,19 +85,16 @@ local function Retarget(inst)
 end
 
 local function OnSave(inst, data)
-    local ents = {}
-
-    if inst.crabking then
+    if inst.crabking ~= nil and inst.crabking:IsValid() then
         data.crabking = inst.crabking.GUID
-        table.insert(ents, inst.crabking.GUID)
-    end
 
-    return ents
+        return { data.crabking }
+    end
 end
 
 local function OnLoadPostPass(inst, newents, data)
-    if data.crabking then
-        inst.crabking =  newents[data.crabking].entity
+    if data ~= nil and data.crabking ~= nil and newents[data.crabking] ~= nil then
+        inst.crabking = newents[data.crabking].entity
     end
 end
 

@@ -20,6 +20,7 @@ local MoonstormOver_Lightning = require "widgets/moonstormover_lightning"
 local RainDomeOver = require("widgets/raindomeover")
 local Leafcanopy = require "widgets/leafcanopy"
 local MindControlOver = require "widgets/mindcontrolover"
+local ParasiteThrallOver = require "widgets/parasitethrallover"
 local InkOver = require "widgets/inkover"
 local WagpunkUI = require "widgets/wagpunkui"
 local GogglesOver = require "widgets/gogglesover"
@@ -43,6 +44,7 @@ local PlantRegistryPopupScreen = require "screens/plantregistrypopupscreen"
 local PlayerInfoPopupScreen = require "screens/playerinfopopupscreen"
 local ScrapbookScreen = require "screens/redux/scrapbookscreen"
 local InspectaclesScreen = require("screens/redux/inspectaclesscreen")
+local PumpkinCarvingScreen = require("screens/redux/pumpkincarvingscreen")
 
 local TargetIndicator = require "widgets/targetindicator"
 
@@ -166,6 +168,7 @@ function PlayerHud:CreateOverlays(owner)
 	self.miasmaclouds = self.storm_overlays:AddChild(MiasmaCloudsOver(owner))
 
     self.mindcontrolover = self.over_root:AddChild(MindControlOver(owner))
+    self.parasitethrallover = self.over_root:AddChild(ParasiteThrallOver(owner))
 
     if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
         self.batover = self.overlayroot:AddChild(BatOver(owner))
@@ -667,6 +670,22 @@ function PlayerHud:CloseInspectaclesScreen()
         end
         self.inspectaclesscreen = nil
     end
+end
+
+function PlayerHud:OpenPumpkinCarvingScreen(target)
+	self:ClosePumpkinCarvingScreen()
+	self.pumpkincarvingscreen = PumpkinCarvingScreen(self.owner, target)
+	self:OpenScreenUnderPause(self.pumpkincarvingscreen)
+	return true
+end
+
+function PlayerHud:ClosePumpkinCarvingScreen()
+	if self.pumpkincarvingscreen then
+		if self.pumpkincarvingscreen.inst:IsValid() then
+			TheFrontEnd:PopScreen(self.pumpkincarvingscreen)
+		end
+		self.pumpkincarvingscreen = nil
+	end
 end
 
 --Helper for transferring data between screens when transitioning from giftitempopup to wardrobepopup

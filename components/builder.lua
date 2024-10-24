@@ -20,8 +20,8 @@ local function metafn()
 		current_prototyper = on_current_prototyper,
 	}
     for i, v in ipairs(TechTree.BONUS_TECH) do
-        t[string.lower(v).."_bonus"] = function(self, bonus) self.inst.replica.builder:SetTechBonus(string.lower(v), bonus) end
-        t[string.lower(v).."_tempbonus"] = function(self, bonus) self.inst.replica.builder:SetTempTechBonus(string.lower(v), (bonus or 0)) end
+        t[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] = function(self, bonus) self.inst.replica.builder:SetTechBonus(string.lower(v), bonus) end
+        t[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"] = function(self, bonus) self.inst.replica.builder:SetTempTechBonus(string.lower(v), (bonus or 0)) end
     end
 	return t
 end
@@ -39,7 +39,7 @@ local Builder = Class(function(self, inst)
     self.buffered_builds = {}
 
     for i, v in ipairs(TechTree.BONUS_TECH) do
-        self[string.lower(v).."_bonus"] = 0
+        self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] = 0
     end
     self.ingredientmod = 1
     --self.last_hungry_build = nil
@@ -161,9 +161,9 @@ end
 function Builder:GetTechBonuses()
 	local bonus = {}
     for i, v in ipairs(TechTree.BONUS_TECH) do
-        bonus[v] = self[string.lower(v).."_bonus"] or nil
+        bonus[v] = self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] or nil
         
-        local tempbonus = self[string.lower(v).."_tempbonus"]
+        local tempbonus = self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"]
         if tempbonus ~= nil then
             if bonus[v] ~= nil then
                 bonus[v] = bonus[v] + tempbonus
@@ -180,7 +180,7 @@ function Builder:GetTempTechBonuses()
     local bonus = {}
     for i, v in ipairs(TechTree.BONUS_TECH) do
         
-        local tempbonus = self[string.lower(v).."_tempbonus"]
+        local tempbonus = self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"]
         if tempbonus ~= nil then
             bonus[v] = tempbonus
         end
@@ -191,7 +191,7 @@ end
 
 function Builder:GiveTempTechBonus(tech)
     for k, v in pairs(tech) do
-        self[string.lower(k).."_tempbonus"] = v
+        self[TechTree.AVAILABLE_TECH_TEMPBONUS[k] or string.lower(k).."_tempbonus"] = v
     end
 
     if self.temptechbonus_count ~= nil then
@@ -211,8 +211,8 @@ function Builder:ConsumeTempTechBonuses()
     self.temptechbonus_count = self.temptechbonus_count - 1
     if self.temptechbonus_count < 1 then
         for i, v in ipairs(TechTree.BONUS_TECH) do
-            if self[string.lower(v).."_tempbonus"] ~= nil then
-                self[string.lower(v).."_tempbonus"] = nil
+            if self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"] ~= nil then
+                self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"] = nil
             end
         end
 
@@ -301,15 +301,15 @@ function Builder:EvaluateTechTrees()
 	CopyTechTrees(self.accessible_tech_trees, self.accessible_tech_trees_no_temp)
     if not prototyper_active then
         for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-            self.accessible_tech_trees_no_temp[v] = (self[string.lower(v).."_bonus"] or 0)
-            self.accessible_tech_trees[v] = (self[string.lower(v).."_tempbonus"] or 0) + (self[string.lower(v).."_bonus"] or 0)
+            self.accessible_tech_trees_no_temp[v] = (self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] or 0)
+            self.accessible_tech_trees[v] = (self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"] or 0) + (self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] or 0)
         end
     else
 		for i, v in ipairs(TechTree.BONUS_TECH) do
-            self.accessible_tech_trees_no_temp[v] = self.accessible_tech_trees_no_temp[v] + (self[string.lower(v).."_bonus"] or 0)
+            self.accessible_tech_trees_no_temp[v] = self.accessible_tech_trees_no_temp[v] + (self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] or 0)
 			self.accessible_tech_trees[v] = self.accessible_tech_trees[v] + 
-                                            (self[string.lower(v).."_tempbonus"] or 0) + 
-                                            (self[string.lower(v).."_bonus"] or 0)
+                                            (self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"] or 0) + 
+                                            (self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] or 0)
 		end
 	end
 
@@ -768,11 +768,10 @@ function Builder:DoBuild(recname, pt, rotation, skin)
     end
 end
 
-function Builder:KnowsRecipe(recipe, ignore_tempbonus)
+function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
     if type(recipe) == "string" then
 		recipe = GetValidRecipe(recipe)
 	end
-
     if recipe == nil then
         return false
     end
@@ -786,19 +785,25 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus)
 		return true
 	end
 
-    local has_tech = true
+    if cached_tech_trees and cached_tech_trees[recipe.level] ~= nil then
+        return cached_tech_trees[recipe.level]
+    end
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-        if ignore_tempbonus then
-            if recipe.level[v] > (self[string.lower(v).."_bonus"] or 0) then
-                return false
+        local bonusvalue = (self[TechTree.AVAILABLE_TECH_BONUS[v] or string.lower(v).."_bonus"] or 0)
+        if not ignore_tempbonus then
+            bonusvalue = bonusvalue + (self[TechTree.AVAILABLE_TECH_TEMPBONUS[v] or string.lower(v).."_tempbonus"] or 0)
+        end
+        if recipe.level[v] > bonusvalue then
+            if cached_tech_trees then
+                cached_tech_trees[recipe.level] = false
             end
-        else
-            if recipe.level[v] > ((self[string.lower(v).."_bonus"] or 0) + (self[string.lower(v).."_tempbonus"] or 0)) then
-                return false
-            end
+            return false
         end
     end
 
+    if cached_tech_trees then
+        cached_tech_trees[recipe.level] = true
+    end
     return true
 end
 

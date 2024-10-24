@@ -28,7 +28,7 @@ local states =
         tags = { "idle", "canrotate" },
 
         onenter = function(inst)
-            if inst.exit then
+            if inst.exited_stage then
                 inst.sg:GoToState("leave")
             else
                 inst.AnimState:PlayAnimation("idle")
@@ -48,7 +48,7 @@ local states =
         tags = { "idle" },
 
         onenter = function(inst)
-            if inst.exit then
+            if inst.exited_stage then
                 inst.sg:GoToState("leave")
             else
                 inst.AnimState:PlayAnimation((math.random() < 0.2 and "idle2_arrived") or "idle_arrived")
@@ -96,7 +96,7 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                inst.exit = nil
+                inst.exited_stage = nil
                 inst.sg:GoToState("away")
             end),
         },
@@ -108,7 +108,7 @@ local states =
 
     State{
         name = "away",
-        tags = {"busy"},
+        tags = {"busy", "away"},
 
         onenter = function(inst)
             inst:Hide()

@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Voilà! Got you!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Perhaps the accoustics are not ideal here.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "You were too beautiful for this world.",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'm also an accomplished butcher!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "What a rude bird!",
 
         PLAYBILL_THE_DOLL = "I wonder who will play the lead?",
+        PLAYBILL_THE_VEIL = "Seems a little dark, no?",
         STATUEHARP_HEDGESPAWNER = "That poor statue seems to have been left alone for a long time.",
         HEDGEHOUND = "Alors, some things in life are not as rosy as they seem.",
         HEDGEHOUND_BUSH = "Ah, la vie en rose.",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "One song can evoke many memories. Perhaps too many.",
         RECORD = "Now where have I heard that before?",
         RECORD_CREEPYFOREST = "A feast for the ears!",
-        RECORD_DANGER = "A feast for the ears!",
-        RECORD_DAWN = "A feast for the ears!",
+        RECORD_DANGER = "A feast for the ears!", -- Unused.
+        RECORD_DAWN = "A feast for the ears!", -- Unused.
         RECORD_DRSTYLE = "What a sweet sound it makes.",
-        RECORD_DUSK = "What a sweet sound it makes.",
+        RECORD_DUSK = "What a sweet sound it makes.", -- Unused.
         RECORD_EFS = "A feast for the ears!",
-        RECORD_END = "A feast for the ears!",
-        RECORD_MAIN = "What a sweet sound it makes.",
-        RECORD_WORKTOBEDONE = "What a sweet sound it makes.",
+        RECORD_END = "A feast for the ears!", -- Unused.
+        RECORD_MAIN = "What a sweet sound it makes.", -- Unused.
+        RECORD_WORKTOBEDONE = "What a sweet sound it makes.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "It really sets the mood.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "It's a mystery to me.",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "It's quite horrible!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "What a... interesting way to store food.",
             FULL = "It looks most unappetizing.",
         },
         GELBLOB_STORAGE_KIT = "Some assembly is required.",
         GELBLOB_BOTTLE = "I would not spread that on any toast.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Rest in peace... please!",
+            ME = "My mind is scrambled!",
+        },
+
+        MASK_SAGEHAT = "Fancy. What is the occasion?",
+        MASK_HALFWITHAT = "Bouffon.",
+        MASK_TOADYHAT = "It has a strange expression.",
+
+        SHADOWTHRALL_PARASITE = "It is one bad customer.",
+
+        PUMPKINCARVER = "Ah yes. I can use this.",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

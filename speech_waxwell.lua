@@ -995,6 +995,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "I've got you now, Simon!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Typical rabbit. Never there when you need them.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "That's what I get for engaging in foolery.",
+
 	BATTLECRY =
 	{
 		GENERIC = "To arms!",
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "Tough crowd.",
 
         PLAYBILL_THE_DOLL = "I think she's enjoying this a bit too much.",
+        PLAYBILL_THE_VEIL = "It's a unique take, I'll admit.",
         STATUEHARP_HEDGESPAWNER = "This place is really going to seed.",
         HEDGEHOUND = "The critics here will really eat you alive.",
         HEDGEHOUND_BUSH = "Nice try.",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "That accursed thing!",
         RECORD = "Destroy it!",
         RECORD_CREEPYFOREST = "Forgive me if I've lost my taste for music.",
-        RECORD_DANGER = "Silence would be preferable.",
-        RECORD_DAWN = "Forgive me if I've lost my taste for music.",
+        RECORD_DANGER = "Silence would be preferable.", -- Unused.
+        RECORD_DAWN = "Forgive me if I've lost my taste for music.", -- Unused.
         RECORD_DRSTYLE = "Silence would be preferable.",
-        RECORD_DUSK = "Silence would be preferable.",
+        RECORD_DUSK = "Silence would be preferable.", -- Unused.
         RECORD_EFS = "Silence would be preferable.",
-        RECORD_END = "Forgive me if I've lost my taste for music.",
-        RECORD_MAIN = "Silence would be preferable.",
-        RECORD_WORKTOBEDONE = "Forgive me if I've lost my taste for music.",
+        RECORD_END = "Forgive me if I've lost my taste for music.", -- Unused.
+        RECORD_MAIN = "Silence would be preferable.", -- Unused.
+        RECORD_WORKTOBEDONE = "Forgive me if I've lost my taste for music.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Ugh, no more.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Rather devious.",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "It's a trap!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "I don't trust that infernal jelly.",
             FULL = "Somebody taste it first!",
         },
         GELBLOB_STORAGE_KIT = "Pass. I don't do sticky.",
         GELBLOB_BOTTLE = "Wilson can take it on a picnic.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "You've changed.",
+            ME = "Jack? Wait, no.",
+        },
+
+        MASK_SAGEHAT = "I'd prefer not to put that on my face.",
+        MASK_HALFWITHAT = "I'd prefer not to put that on my face.",
+        MASK_TOADYHAT = "I'd prefer not to put that on my face.",
+
+        SHADOWTHRALL_PARASITE = "An unwelcome guest.",
+
+        PUMPKINCARVER = "Delightful.",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

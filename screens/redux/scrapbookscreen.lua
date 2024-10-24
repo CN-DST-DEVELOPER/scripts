@@ -1429,12 +1429,21 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 
 		if data.toolactions then
 			local actions = ""
-			for i,action in ipairs(data.toolactions)do
-				actions = actions .. action
+
+			for i, act in ipairs(data.toolactions) do
+				local string = STRINGS.ACTIONS[act]
+
+				if type(string) == "table" and string.GENERIC then
+					string = string.GENERIC
+				end
+
+				actions = actions .. string.upper(string or act)
+
 				if i ~= #data.toolactions then
 					actions = actions .. ", "
 				end
 			end
+
 			makesubentry(actions)
 		end
 

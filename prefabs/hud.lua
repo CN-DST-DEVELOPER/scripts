@@ -22,6 +22,7 @@ local assets =
     Asset("ANIM", "anim/moonstorm_over_static.zip"),
     Asset("ANIM", "anim/mind_control_overlay.zip"),
     Asset("ANIM", "anim/screenlightning.zip"),
+    Asset("ANIM", "anim/thrall_parasite_overlay.zip"),   
 
     Asset("ANIM", "anim/clock_transitions.zip"),
     Asset("ANIM", "anim/moon_phases_clock.zip"),

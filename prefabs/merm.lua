@@ -29,6 +29,8 @@ local assets =
 
     Asset("ANIM", "anim/merm_actions_skills.zip"),
 
+    Asset("ANIM", "anim/ds_pig_parasite_death.zip"),    
+
     Asset("SOUND", "sound/merm.fsb"),
 }
 
@@ -174,27 +176,37 @@ local function IsNonPlayerMerm(this)
     return not this.isplayer and this:HasTag("merm")
 end
 
+local function IsHost(dude)
+    return dude:HasTag("shadowthrall_parasite_hosted")
+end 
+
 local function resolve_on_attacked(inst, attacker)
     if attacker.prefab == "deciduous_root" and attacker.owner ~= nil then
         OnAttackedByDecidRoot(inst, attacker.owner)
 
     elseif attacker.prefab ~= "deciduous_root" and inst.components.combat:CanTarget(attacker) then
-        local isguard = inst:HasTag("mermguard")
 
-        local share_target_dist = (isguard and TUNING.MERM_GUARD_SHARE_TARGET_DIST) or TUNING.MERM_SHARE_TARGET_DIST
-        local max_target_shares = (isguard and TUNING.MERM_GUARD_MAX_TARGET_SHARES) or TUNING.MERM_MAX_TARGET_SHARES
+        if inst:HasTag("shadowthrall_parasite_hosted") then
+            inst.components.combat:ShareTarget(attacker, TUNING.MERM_SHARE_TARGET_DIST, IsHost, TUNING.MERM_MAX_TARGET_SHARES)
+        else
+            local isguard = inst:HasTag("mermguard")
 
-        inst.components.combat:SetTarget(attacker)
-        if inst.components.combat:HasTarget() then
-            local home = inst.components.homeseeker and inst.components.homeseeker.home
-            if home and home.components.childspawner and inst:GetDistanceSqToInst(home) <= share_target_dist*share_target_dist then
-                max_target_shares = max_target_shares - home.components.childspawner.childreninside
-                home.components.childspawner:ReleaseAllChildren(attacker)
+            local share_target_dist = (isguard and TUNING.MERM_GUARD_SHARE_TARGET_DIST) or TUNING.MERM_SHARE_TARGET_DIST
+            local max_target_shares = (isguard and TUNING.MERM_GUARD_MAX_TARGET_SHARES) or TUNING.MERM_MAX_TARGET_SHARES
+
+            if inst.components.combat:HasTarget() then
+                local home = inst.components.homeseeker and inst.components.homeseeker.home
+                if home and home.components.childspawner and inst:GetDistanceSqToInst(home) <= share_target_dist*share_target_dist then
+                    max_target_shares = max_target_shares - home.components.childspawner.childreninside
+                    home.components.childspawner:ReleaseAllChildren(attacker)
+                end
             end
+            inst.components.combat:ShareTarget(attacker, share_target_dist, IsNonPlayerMerm, max_target_shares)
         end
-        inst.components.combat:ShareTarget(attacker, share_target_dist, IsNonPlayerMerm, max_target_shares)
+        inst.components.combat:SetTarget(attacker)  
     end
 end
+
 
 local function OnAttacked(inst, data)
     local attacker = data ~= nil and data.attacker or nil

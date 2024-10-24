@@ -3,6 +3,7 @@ local assets =
     Asset("ANIM", "anim/ds_spider_basic.zip"),
     Asset("ANIM", "anim/spider_build.zip"),
     Asset("ANIM", "anim/ds_spider_boat_jump.zip"),
+    Asset("ANIM", "anim/ds_spider_parasite_death.zip"),
     Asset("SOUND", "sound/spider.fsb"),
 }
 
@@ -11,6 +12,7 @@ local warrior_assets =
     Asset("ANIM", "anim/ds_spider_basic.zip"),
     Asset("ANIM", "anim/ds_spider_warrior.zip"),
     Asset("ANIM", "anim/spider_warrior_build.zip"),
+    Asset("ANIM", "anim/ds_spider_parasite_death.zip"),    
     Asset("SOUND", "sound/spider.fsb"),
 }
 
@@ -19,6 +21,7 @@ local hiderassets =
     Asset("ANIM", "anim/ds_spider_basic.zip"),
     Asset("ANIM", "anim/ds_spider_caves.zip"),
     Asset("ANIM", "anim/ds_spider_caves_boat_jump.zip"),
+    Asset("ANIM", "anim/ds_spider_parasite_death.zip"),
     Asset("SOUND", "sound/spider.fsb"),
 }
 
@@ -27,6 +30,7 @@ local spitterassets =
     Asset("ANIM", "anim/ds_spider_basic.zip"),
     Asset("ANIM", "anim/ds_spider2_caves.zip"),
     Asset("ANIM", "anim/ds_spider2_caves_boat_jump.zip"),
+    Asset("ANIM", "anim/ds_spider_parasite_death.zip"),
     Asset("SOUND", "sound/spider.fsb"),
 }
 
@@ -35,6 +39,7 @@ local dropperassets =
     Asset("ANIM", "anim/ds_spider_basic.zip"),
     Asset("ANIM", "anim/ds_spider_warrior.zip"),
     Asset("ANIM", "anim/spider_white.zip"),
+    Asset("ANIM", "anim/ds_spider_parasite_death.zip"),
     Asset("SOUND", "sound/spider.fsb"),
 }
 
@@ -50,13 +55,14 @@ local healer_assets =
 {
     Asset("ANIM", "anim/ds_spider_cannon.zip"),
     Asset("ANIM", "anim/spider_wolf_build.zip"),
+    Asset("ANIM", "anim/ds_spider_parasite_death.zip"),
     Asset("SOUND", "sound/spider.fsb"),
 }
 
 local water_assets =
 {
     Asset("ANIM", "anim/spider_water.zip"),
-    Asset("ANIM", "anim/spider_water_water.zip"),
+    Asset("ANIM", "anim/spider_water_water.zip"),    
     Asset("SOUND", "sound/spider.fsb"),
 }
 
@@ -317,6 +323,10 @@ local function SummonFriends(inst, attacker)
     end
 end
 
+local function IsHost(dude)
+    return dude:HasTag("shadowthrall_parasite_hosted")
+end 
+
 local function OnAttacked(inst, data)
     if inst.no_targeting then
         return
@@ -324,18 +334,23 @@ local function OnAttacked(inst, data)
 
     inst.defensive = false
     inst.components.combat:SetTarget(data.attacker)
-    inst.components.combat:ShareTarget(data.attacker, 30, function(dude)
-        local should_share = dude:HasTag("spider")
-            and not dude.components.health:IsDead()
-            and dude.components.follower ~= nil
-            and dude.components.follower.leader == inst.components.follower.leader
 
-        if should_share and dude.defensive and not dude.no_targeting then
-            dude.defensive = false
-        end
+    if inst:HasTag("shadowthrall_parasite_hosted") then
+        inst.components.combat:ShareTarget(data.attacker, 30, IsHost, 10)
+    else
+        inst.components.combat:ShareTarget(data.attacker, 30, function(dude)
+                local should_share = dude:HasTag("spider")
+                    and not dude.components.health:IsDead()
+                    and dude.components.follower ~= nil
+                    and dude.components.follower.leader == inst.components.follower.leader
 
-        return should_share
-    end, 10)
+                if should_share and dude.defensive and not dude.no_targeting then
+                    dude.defensive = false
+                end
+
+                return should_share
+            end, 10)
+    end
 end
 
 local function SetHappyFace(inst, is_happy)

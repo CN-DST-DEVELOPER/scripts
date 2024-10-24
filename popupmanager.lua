@@ -29,6 +29,7 @@ POPUPS = {
     PLAYERINFO = PopupManagerWidget(),
     SCRAPBOOK = PopupManagerWidget(),
     INSPECTACLES = PopupManagerWidget(),
+	PUMPKINCARVING = PopupManagerWidget(),
 }
 
 POPUPS_BY_POPUP_CODE = {}
@@ -154,4 +155,18 @@ POPUPS.INSPECTACLES.fn = function(inst, show)
             POPUPS.INSPECTACLES:Close(inst)
         end
     end
+end
+
+POPUPS.PUMPKINCARVING.validaterpcfn = function(cutdata)
+    return optstring(cutdata)
+end
+
+POPUPS.PUMPKINCARVING.fn = function(inst, show, target)
+	if inst.HUD then
+		if not show then
+			inst.HUD:ClosePumpkinCarvingScreen()
+		elseif not inst.HUD:OpenPumpkinCarvingScreen(target) then
+			POPUPS.PUMPKINCARVING.Close(inst)
+		end
+	end
 end

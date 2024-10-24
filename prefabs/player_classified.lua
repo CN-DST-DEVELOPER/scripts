@@ -550,8 +550,8 @@ end
 
 local function OnTechTreesDirty(inst)
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-        local level = inst[string.lower(v).."level"]:value()
-        local bonus = inst[string.lower(v).."tempbonus"]
+        local level = inst[TechTree.AVAILABLE_TECH_LEVEL_CLASSIFIED[v] or string.lower(v).."level"]:value()
+        local bonus = inst[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[v] or string.lower(v).."tempbonus"]
         inst.techtrees[v] = level
         inst.techtrees_no_temp[v] = math.max(0, level - (bonus ~= nil and bonus:value() or 0))
     end
@@ -1399,14 +1399,14 @@ local function fn()
     inst.ingredientmod = net_tinybyte(inst.GUID, "builder.ingredientmod", "ingredientmoddirty")
     for i, v in ipairs(TechTree.BONUS_TECH) do
         local bonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."bonus")
-        inst[string.lower(v).."bonus"] = bonus
+        inst[TechTree.AVAILABLE_TECH_BONUS_CLASSIFIED[v] or string.lower(v).."bonus"] = bonus
         local tempbonus = net_tinybyte(inst.GUID, "builder."..string.lower(v).."tempbonus", "techtreesdirty")
-        inst[string.lower(v).."tempbonus"] = tempbonus
+        inst[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[v] or string.lower(v).."tempbonus"] = tempbonus
     end
     for i, v in ipairs(TechTree.AVAILABLE_TECH) do
         local level = net_tinybyte(inst.GUID, "builder.accessible_tech_trees."..v, "techtreesdirty")
         level:set(inst.techtrees[v])
-        inst[string.lower(v).."level"] = level
+        inst[TechTree.AVAILABLE_TECH_LEVEL_CLASSIFIED[v] or string.lower(v).."level"] = level
     end
     inst.isfreebuildmode = net_bool(inst.GUID, "builder.freebuildmode", "recipesdirty")
     inst.current_prototyper = net_entity(inst.GUID, "builder.current_prototyper", "current_prototyper_dirty")

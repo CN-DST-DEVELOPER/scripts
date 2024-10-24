@@ -7,6 +7,10 @@ local TEMPLATES = require "widgets/redux/templates"
 
 local SCREEN_OFFSET = -.38 * RESOLUTION_X
 
+local function _IsUsingController()
+	return TheInput:ControllerAttached() and not TheFrontEnd.tracking_mouse
+end
+
 local GridWardrobePopupScreen = Class(Screen, function(self, owner_player, profile, recent_item_types, recent_item_ids)
 	Screen._ctor(self, "GridWardrobePopupScreen")
 
@@ -100,6 +104,12 @@ local GridWardrobePopupScreen = Class(Screen, function(self, owner_player, profi
 
 	self.loadout:SetPosition(-306, 0)
 	self.menu:SetPosition(493, -260, 0)
+		
+	-- hide the menu if the player is using a controller; we'll control this with button presses that are listed in the helpbar
+	if _IsUsingController() then
+		self.menu:Hide()
+		self.menu:Disable()
+	end  
 
 	self.default_focus = self.loadout
 
@@ -143,7 +153,7 @@ function GridWardrobePopupScreen:OnBecomeActive()
 		end
 	end
 
-    if TheInput:ControllerAttached() then
+    if _IsUsingController() then
         self.default_focus:SetFocus()
     end
 end
@@ -173,6 +183,10 @@ function GridWardrobePopupScreen:OnControl(control, down)
         self:Cancel()
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         return true
+	elseif control == CONTROL_MENU_START and not down then  
+		self:Close()
+		TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+		return true
     end
 end
 
@@ -211,8 +225,8 @@ function GridWardrobePopupScreen:GetHelpText()
 	local controller_id = TheInput:GetControllerID()
 	local t = {}
     table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.CANCEL)
+	table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_START) .. " " .. STRINGS.UI.WARDROBE_POPUP.SET)
 	return table.concat(t, "  ")
-
 end
 
 function GridWardrobePopupScreen:OnUpdate(dt)

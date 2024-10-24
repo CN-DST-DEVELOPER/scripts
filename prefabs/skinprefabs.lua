@@ -5915,6 +5915,16 @@ table.insert(prefs, CreatePrefabSkin("mushroom_light2_cawnival",
 	release_group = 132,
 }))
 
+table.insert(prefs, CreatePrefabSkin("mushroom_light2_hallowed",
+{
+	base_prefab = "mushroom_light2",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) mushroom_light2_init_fn(inst, "mushroom_light2_hallowed") end,
+	skin_tags = { "HALLOWED", "MUSHROOM_LIGHT2", "CRAFTABLE", },
+	release_group = 159,
+}))
+
 table.insert(prefs, CreatePrefabSkin("mushroom_light2_lily",
 {
 	base_prefab = "mushroom_light2",
@@ -5956,6 +5966,16 @@ table.insert(prefs, CreatePrefabSkin("mushroom_light_festive",
 	init_fn = function(inst) mushroom_light_init_fn(inst, "mushroom_light_festive") end,
 	skin_tags = { "MUSHROOM_LIGHT", "YULE", "CRAFTABLE", },
 	release_group = 82,
+}))
+
+table.insert(prefs, CreatePrefabSkin("mushroom_light_hallowed",
+{
+	base_prefab = "mushroom_light",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) mushroom_light_init_fn(inst, "mushroom_light_hallowed") end,
+	skin_tags = { "HALLOWED", "MUSHROOM_LIGHT", "CRAFTABLE", },
+	release_group = 159,
 }))
 
 table.insert(prefs, CreatePrefabSkin("mushroom_light_tiffany",
@@ -6796,6 +6816,16 @@ table.insert(prefs, CreatePrefabSkin("record_efs",
 	init_fn = function(inst) record_init_fn(inst, "record_efs", "dontstarve/music/gramaphone_efs") end,
 	skin_tags = { },
 	release_group = 148,
+}))
+
+table.insert(prefs, CreatePrefabSkin("record_hallowednights",
+{
+	base_prefab = "record",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) record_init_fn(inst, "record_hallowednights", "dontstarve/music/gramaphone_hallowednights") end,
+	skin_tags = { "HALLOWED", "CRAFTABLE", },
+	release_group = 159,
 }))
 
 table.insert(prefs, CreatePrefabSkin("reflectivevest_cawnival",
@@ -9153,6 +9183,27 @@ table.insert(prefs, CreatePrefabSkin("walkingplank_wagstaff",
 	init_fn = function(inst) walkingplank_init_fn(inst, "boat_wagstaff") end,
 	skin_tags = { "WALKINGPLANK", "WAGSTAFF", "CRAFTABLE", },
 	release_group = 133,
+}))
+
+table.insert(prefs, CreatePrefabSkin("wall_hay_corn",
+{
+	base_prefab = "wall_hay",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst) wall_hay_init_fn(inst, "wall_hay_corn") end,
+	skin_tags = { "WALL_HAY", "HALLOWED", "CRAFTABLE", },
+	release_group = 159,
+}))
+
+table.insert(prefs, CreatePrefabSkin("wall_hay_cornitem",
+{
+	base_prefab = "wall_hay_item",
+	type = "item",
+	build_name_override = "wall_hay_corn",
+	rarity = "Loyal",
+	init_fn = function(inst) wall_hay_item_init_fn(inst, "wall_hay_corn") end,
+	skin_tags = { },
+	release_group = 159,
 }))
 
 table.insert(prefs, CreatePrefabSkin("wall_moonrock_victorian",

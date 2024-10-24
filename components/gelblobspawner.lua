@@ -118,6 +118,13 @@ function GelBlobSpawner:SpawnGelBlobFromSpawner(spawner, player)
         return false
     end
 
+    if TheWorld.components.shadowparasitemanager then
+        if TheWorld.components.shadowparasitemanager:OverrideBlobSpawn(player) then
+            self.cooldownspawners[spawner] = self.COOLDOWN_GELBLOB_SPAWNER_TIME
+            return true
+        end
+    end
+
     local spawncount = math.random(self.MIN_GELBLOBS_PER_SPAWNER, self.MAX_GELBLOBS_PER_SPAWNER)
     if self:GetGelBlobCount() + spawncount > self.MAX_GELBLOBS_TOTAL_IN_WORLD then
         return false

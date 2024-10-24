@@ -192,6 +192,7 @@ AddRoom("MagicalDeciduous", {
 					                },
 									countstaticlayouts={
 										["DeciduousPond"] = 1,
+										["HalloweenPumpkinCarving"] = function() return IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and 1 or 0 end,
 									},
 
 					                distributepercent = .3,

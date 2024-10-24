@@ -590,7 +590,7 @@ function LoadoutSelect:OnControl(control, down)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                 return true
             end
-        elseif control == CONTROL_MENU_MISC_1 and AllowSkins() and not self.skilltree then
+        elseif control == CONTROL_SKIN_PRESETS and AllowSkins() and not self.skilltree then
             self:_LoadSkinPresetsScreen()
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
             return true
@@ -621,7 +621,7 @@ function LoadoutSelect:GetHelpText()
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_3) .. " " .. STRINGS.UI.WARDROBESCREEN.CYCLE_VIEW)
         end
         if not self.skilltree then
-            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_1) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
+            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_SKIN_PRESETS) .. " " .. STRINGS.UI.SKIN_PRESETS.TITLE)
         end
         if self:_ShouldShowStartingItemSkinsButton() then
 		    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_4) .. " " .. STRINGS.UI.ITEM_SKIN_DEFAULTS.TITLE)

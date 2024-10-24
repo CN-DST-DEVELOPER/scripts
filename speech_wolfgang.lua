@@ -996,6 +996,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Wolfgang!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Wolfgang in wrong place.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "No! Wolfgang's pumpkin!",
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -4920,6 +4923,7 @@ return{
         CHARLIE_HECKLER = "Wolfgang is thinking about hitting two birds with one stone...",
 
         PLAYBILL_THE_DOLL = "Is very hard to remember so many words.",
+        PLAYBILL_THE_VEIL = "Wolfgang not afraid watch, just don't feel like it.",
         STATUEHARP_HEDGESPAWNER = "Wolfgang could rip vines off with one mighty pull.",
         HEDGEHOUND = "Is plant or puppy? Wolfgang is confused!",
         HEDGEHOUND_BUSH = "Full of prickles.",
@@ -5172,14 +5176,15 @@ return{
         PHONOGRAPH = "Is box that sings!",
         RECORD = "This give Wolfgang bad feelings.",
         RECORD_CREEPYFOREST = "No. Wolfgang don't like.",
-        RECORD_DANGER = "Terrible!",
-        RECORD_DAWN = "Ah yes. Soothing Wolfgang soul.",
+        RECORD_DANGER = "Terrible!", -- Unused.
+        RECORD_DAWN = "Ah yes. Soothing Wolfgang soul.", -- Unused.
         RECORD_DRSTYLE = "Watch Wolfgang dance!",
-        RECORD_DUSK = "Is make Wolfgang sad.",
+        RECORD_DUSK = "Is make Wolfgang sad.", -- Unused.
         RECORD_EFS = "Terrible!",
-        RECORD_END = "Eh. Is okay.",
-        RECORD_MAIN = "Eh. Is okay.",
-        RECORD_WORKTOBEDONE = "Music for make big muscles.",
+        RECORD_END = "Eh. Is okay.", -- Unused.
+        RECORD_MAIN = "Eh. Is okay.", -- Unused.
+        RECORD_WORKTOBEDONE = "Music for make big muscles.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "We listen together, yes?",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Floor is making sounds!",
 
@@ -5390,12 +5395,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Wolfgang knew box too fancy to be true!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "Good place for Wolfgang snacks.",
             FULL = "Hungry Wolfgang is not picky Wolfgang.",
         },
         GELBLOB_STORAGE_KIT = "Easy job for Wolfgang.",
         GELBLOB_BOTTLE = "This not edible.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Hello? Do you remember Wolfgang?",
+            ME = "Poor Wolfgang!",
+        },
+
+        MASK_SAGEHAT = "Not Wolfgang style.",
+        MASK_HALFWITHAT = "Silly face!",
+        MASK_TOADYHAT = "It will hide handsome face of Wolfgang.",
+
+        SHADOWTHRALL_PARASITE = "Just stay away from Wolfgang, okay?",
+
+        PUMPKINCARVER = "Wolfgang is best pumpkin carver. Best.",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

@@ -4,9 +4,10 @@ local fns = {}
 local function bird_arrive(inst, bird_property, bird_castname)
 	local stageactingprop = inst.components.stageactingprop
 	if stageactingprop and stageactingprop.cast then
-		local stageactor = stageactingprop[bird_property]
+		local stageactor = stageactingprop[bird_property]		
 		stageactingprop.cast[bird_castname] = {castmember = stageactor}
 		stageactor:PushEvent("arrive")
+		stageactor.exited_stage = nil
 	end
 end
 
@@ -21,18 +22,19 @@ end
 --------------------------------------------------------------------------------
 
 local function bird_exit(bird)
-	bird.exit = true
+	bird.exited_stage = true
 end
 
 fns.exitbirds = function(inst, line, cast)
 	if cast ~= nil then
 		local bird1_castdata = cast["BIRD1"]
-		if bird1_castdata ~= nil and bird1_castdata.castmember ~= nil then
+		if bird1_castdata ~= nil and bird1_castdata.castmember ~= nil and not bird1_castdata.castmember.sg:HasStateTag("away") then
 			bird1_castdata.castmember:DoTaskInTime(0.1, bird_exit)
 		end
 
+		
 		local bird2_castdata = cast["BIRD2"]
-		if bird2_castdata ~= nil and bird2_castdata.castmember ~= nil then
+		if bird2_castdata ~= nil and bird2_castdata.castmember ~= nil and not bird2_castdata.castmember.sg:HasStateTag("away")  then
 			bird2_castdata.castmember:DoTaskInTime(0.3, bird_exit)
 		end
 	end
@@ -58,6 +60,16 @@ fns.actorsbow = function(inst, line, cast)
 		data.castmember:DoTaskInTime(0.1 + 0.4*math.random(), push_acting, BOW_DATA)
 	end
 end
+--------------------------------------------------------------------------------
+
+fns.do_mask_blink = function(inst, line, cast)
+  	for i, costume in ipairs(line.roles) do
+  		local actor = cast[costume].castmember
+		actor.fx = SpawnPrefab("mask_halfwit_fx")
+		actor.fx:AttachToOwner(actor)
+	end
+end
+
 --------------------------------------------------------------------------------
 
 local function spawn_timed_fx_onme(inst, fxname, time)
@@ -165,6 +177,44 @@ fns.maskflash = function(inst, line, cast)
 	end
 end
 
+local BLACKOUT_COLOURCUBES =
+{
+    day = "images/colour_cubes/blackout_cc.tex",
+    dusk = "images/colour_cubes/blackout_cc.tex",
+    night = "images/colour_cubes/blackout_cc.tex",
+    full_moon = "images/colour_cubes/blackout_cc.tex",
+}
+
+local PLAYERS_MUST = {"player"}
+
+fns.enableblackout = function(inst)
+
+	inst.blackoutviewers = {}
+
+	local pt = Vector3(inst.Transform:GetWorldPosition())
+	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 25, PLAYERS_MUST)
+
+	if #ents > 0 then
+		for i, ent in ipairs(ents) do	
+		 	if ent.components.playervision ~= nil then
+		        ent.components.playervision:PushForcedNightVision(inst, 1, BLACKOUT_COLOURCUBES, true)
+		        table.insert(inst.blackoutviewers, ent)
+		    end
+		end
+	end
+end
+
+fns.disableblackout = function(inst)
+	if inst.blackoutviewers and #inst.blackoutviewers > 0 then
+		for i, ent in ipairs(inst.blackoutviewers)do
+			if ent.components.playervision ~= nil then
+        		ent.components.playervision:PopForcedNightVision(inst)
+    		end
+		end
+	end 	
+    inst.blackoutviewers = nil
+end
+
 local function cleanup_waxwell_dancer(inst, dancer)
 	if dancer ~= nil and dancer:IsValid() then
 		if dancer.sg ~= nil then
@@ -267,6 +317,8 @@ local POSITIONS = {
 	[6] = {theta = -PI/4,		radius = 2.3},	-- FORE
 	[7] = {theta = 0,			radius = 0},	-- CENTER
 	[8] = {theta = (3/4)*PI,	radius = 3},	-- BACK
+	[9] = {theta = 0,			radius = 2.8},	-- LEFT WIDE
+	[10] = {theta = 1.5*PI,		radius = 2.8},	-- RIGHT WIDE
 }
 
 local function on_findposition_timeout(castmember)

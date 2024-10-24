@@ -124,6 +124,11 @@ function MightyGym:SwapWeight(item,swapitem)
 end
 
 function MightyGym:SetWeightSymbol(weight, slot)
+	local pumpkincarving_fx_id = "pumpkincarving_fx"..tostring(slot)
+	if self[pumpkincarving_fx_id] then
+		self[pumpkincarving_fx_id]:Remove()
+		self[pumpkincarving_fx_id] = nil
+	end
     if weight.components.symbolswapdata ~= nil then
         if weight.components.symbolswapdata.is_skinned then
             self.inst.AnimState:OverrideItemSkinSymbol(slot_ids[slot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol, weight.GUID, "swap_cavein_boulder" ) --default should never be used
@@ -138,8 +143,17 @@ function MightyGym:SetWeightSymbol(weight, slot)
                 self.strongman.AnimState:OverrideSymbol(slot_ids[slot], weight.components.symbolswapdata.build, weight.components.symbolswapdata.symbol)
             end
         end
-    end
 
+		if weight.components.pumpkincarvable then
+			local cutdata = weight.components.pumpkincarvable:GetCutData()
+			if string.len(cutdata) > 0 then
+				local fx = SpawnPrefab("pumpkincarving_swap_fx")
+				fx.entity:SetParent(self.inst.entity)
+				fx:SetCutData(cutdata, slot == 2)
+				self[pumpkincarving_fx_id] = fx
+			end
+		end
+    end
 end
 
 function MightyGym:LoadWeight(weight, slot)
@@ -198,6 +212,14 @@ function MightyGym:UnloadWeight()
     self.inst.components.inventory:DropEverything()
     self.inst.AnimState:ClearOverrideSymbol("swap_item")
     self.inst.AnimState:ClearOverrideSymbol("swap_item2")
+	if self.pumpkincarving_fx1 then
+		self.pumpkincarving_fx1:Remove()
+		self.pumpkincarving_fx1 = nil
+	end
+	if self.pumpkincarving_fx2 then
+		self.pumpkincarving_fx2:Remove()
+		self.pumpkincarving_fx2 = nil
+	end
     self.full_drop_slot = 1
     self.inst:RemoveTag("loaded")
 

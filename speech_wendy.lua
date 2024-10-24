@@ -999,6 +999,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Got it!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Not here.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Oh well.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -4923,6 +4926,7 @@ return{
         CHARLIE_HECKLER = "Their words can't hurt me. Well, maybe just a little...",
 
         PLAYBILL_THE_DOLL = "What a strange little story.",
+        PLAYBILL_THE_VEIL = "Fun!",
         STATUEHARP_HEDGESPAWNER = "Overgrown and abandoned.",
         HEDGEHOUND = "Its beauty hid the beast within.",
         HEDGEHOUND_BUSH = "They're... beautiful.",
@@ -5175,14 +5179,15 @@ return{
         PHONOGRAPH = "Shall we have a danse macabre?",
         RECORD = "I wondered if I'd ever hear that song again.",
         RECORD_CREEPYFOREST = "Does this music lift your spirits, Abigail?",
-        RECORD_DANGER = "Does this music lift your spirits, Abigail?",
-        RECORD_DAWN = "Does this music lift your spirits, Abigail?",
+        RECORD_DANGER = "Does this music lift your spirits, Abigail?", -- Unused.
+        RECORD_DAWN = "Does this music lift your spirits, Abigail?", -- Unused.
         RECORD_DRSTYLE = "Does this music lift your spirits, Abigail?",
-        RECORD_DUSK = "I wonder if father still listens to his record collection.",
+        RECORD_DUSK = "I wonder if father still listens to his record collection.", -- Unused.
         RECORD_EFS = "A song of sweet foreboding.",
-        RECORD_END = "I wonder if father still listens to his record collection.",
-        RECORD_MAIN = "I wonder if father still listens to his record collection.",
-        RECORD_WORKTOBEDONE = "I wonder if father still listens to his record collection.",
+        RECORD_END = "I wonder if father still listens to his record collection.", -- Unused.
+        RECORD_MAIN = "I wonder if father still listens to his record collection.", -- Unused.
+        RECORD_WORKTOBEDONE = "I wonder if father still listens to his record collection.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Love it.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Abigail was better at these things.",
 
@@ -5393,12 +5398,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "I did not expect that.",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "Not so dangerous now...",
             FULL = "Some things can't be preserved.",
         },
         GELBLOB_STORAGE_KIT = "Child's play.",
         GELBLOB_BOTTLE = "I have an urge to toss it.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "A souless existence.",
+            ME = "I don't need another dead twin.",
+        },
+
+        MASK_SAGEHAT = "I already mask my emotions.",
+        MASK_HALFWITHAT = "I already mask my emotions.",
+        MASK_TOADYHAT = "I already mask my emotions.",
+
+        SHADOWTHRALL_PARASITE = "Parasite.",
+
+        PUMPKINCARVER = "I love a pumpkin gutting contest.",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

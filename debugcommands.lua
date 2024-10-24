@@ -3001,9 +3001,6 @@ function d_createscrapbookdata(print_missing_icons, noreset)
         if t.prefab == "smallghost" then
             AddInfo( "animoffsety",  60 )
         end
-        if t.prefab == "wx78_scanner_item" then
-            AddInfo( "animoffsety",  90 )
-        end
         if t.prefab == "eyeofterror_mini" then
             AddInfo( "animoffsety",  40 )
         end

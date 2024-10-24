@@ -214,6 +214,7 @@ ITEM_DISPLAY_BLACKLIST =
 	walkingplank_nautical = true,
 	walkingplank_pirate_skin = true,
 	walkingplank_wagstaff = true,
+	wall_hay_cornitem = true,
 	wall_moonrock_victorianitem = true,
 	wall_ruins_thulecite_alt_item = true,
 	wall_ruins_thuleciteitem = true,

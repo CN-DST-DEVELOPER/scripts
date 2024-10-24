@@ -217,6 +217,9 @@ CONTROL_TARGET_LOCK = CONTROL_MENU_MISC_2
 CONTROL_TARGET_CYCLE_BACK = CONTROL_ROTATE_LEFT
 CONTROL_TARGET_CYCLE_FORWARD = CONTROL_ROTATE_RIGHT
 
+-- a constant used in place of hardcoding the CONTROL_ for the skin presets popup. This is overridden to a different CONTROL_ in the console branch (currently CONTROL_MENU_L2)
+CONTROL_SKIN_PRESETS = CONTROL_MENU_MISC_1
+
 KEY_TAB = 9
 KEY_KP_0			= 256
 KEY_KP_1			= 257
@@ -781,7 +784,7 @@ SPECIAL_EVENTS =
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.HALLOWED_NIGHTS
 --WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
 WORLD_EXTRA_EVENTS = {}
 
@@ -1081,7 +1084,8 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_rifts4"
+    "dontstarve/music/music_FE_hallowednights2024"
+    --"dontstarve/music/music_FE_rifts4"
     --"dontstarve/music/music_FE_winonawurt"
     --"dontstarve/music/music_FE_junkyardhog"
     --"dontstarve/music/music_FE_riftsthree"
@@ -1120,6 +1124,7 @@ PICKUPSOUNDS = {
 ---------------------------------------------------------
 NUM_HALLOWEENCANDY = 14
 NUM_HALLOWEEN_ORNAMENTS = 6
+NUM_HALLOWEEN_PUMPKINCARVERS = 3
 NUM_WINTERFOOD = 9
 
 SANITY_MODE_INSANITY = 0

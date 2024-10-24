@@ -33,7 +33,7 @@ function SkinsPuppet:AddShadow()
 	self.shadow:MoveToBack()
 end
 
-local FACE_SWAP_SYMBOLS =
+local FACE_SWAP_SYMBOLS = -- NOTES(JBK): Keep this in sync with the skinner_beefalo file. [SBMFF]
 {
 	"beefalo_beard",
 	"beefalo_eye",
@@ -74,13 +74,16 @@ function SkinsPuppet:SetSkins(prefabname, base_item, clothing_names, skip_change
 	SetBeefaloSkinsOnAnim( self.animstate, clothing_names )
 	
     if inst and inst:IsValid() then
-        -- Beefalo tendency symbol overrides.
-        local build, sym
-        for i, symbol in ipairs(FACE_SWAP_SYMBOLS) do
-            build, sym = inst.AnimState:GetSymbolOverride(symbol)
+        local skinbuild = inst.AnimState:GetSkinBuild() -- FIXME(JBK): Skin support for this tendency needs to be networked.
+        if skinbuild ~= "" then
+            -- Beefalo tendency symbol overrides.
+            local build, sym
+            for i, symbol in ipairs(FACE_SWAP_SYMBOLS) do
+                build, sym = inst.AnimState:GetSymbolOverride(symbol)
 
-            if build ~= nil and sym ~= nil then
-                self.animstate:OverrideSymbol(symbol, build, sym)
+                if build ~= nil and sym ~= nil then
+                    self.animstate:OverrideSymbol(symbol, build, sym)
+                end
             end
         end
     end

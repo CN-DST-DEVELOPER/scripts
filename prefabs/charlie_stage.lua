@@ -348,6 +348,36 @@ local function on_stage_sleep(inst)
     end
 end
 
+local PLAYBILL_MUST = {"playbill"}
+local function onplayernear(inst, player)
+    local hat = player.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+    if hat then
+        if hat.prefab == "mask_toadyhat" or 
+            hat.prefab == "mask_sagehat" or 
+            hat.prefab == "mask_halfwithat" then
+
+            local x,y,z = inst.Transform:GetWorldPosition()
+            local playbills = TheSim:FindEntities(x, y, z, 20, PLAYBILL_MUST)
+            for i=#playbills,1, -1 do
+                local bill = playbills[i]
+                if bill.prefab ~= "playbill_the_veil" then
+                    table.remove(playbills,i)
+                end
+            end
+
+            if #playbills < 1 then
+                local newplaybill = SpawnPrefab("playbill_the_veil")
+                local radius = 0.3
+                local theta = math.random()* TWOPI
+                local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
+                newplaybill.Transform:SetPosition(x+offset.x,y,z+offset.z)
+                local fx = SpawnPrefab("shadow_puff_solid")
+                fx.Transform:SetPosition(x+offset.x,y,z+offset.z)
+            end
+        end
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -476,6 +506,11 @@ local function postfn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("entitytracker")
+
+    inst:AddComponent("playerprox")
+    inst.components.playerprox:SetDist(8,10)
+    inst.components.playerprox:SetOnPlayerNear(onplayernear)
+
 
     inst:SetStateGraph("SGcharlie_stage_post")
 

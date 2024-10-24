@@ -1203,6 +1203,7 @@ local actionhandlers =
 
     ActionHandler(ACTIONS.INCINERATE, "doshortaction"),
 	ActionHandler(ACTIONS.BOTTLE, "dolongaction"),
+	ActionHandler(ACTIONS.CARVEPUMPKIN, "pumpkincarving_pre"),
 }
 
 local events =
@@ -1503,7 +1504,18 @@ local events =
         if data ~= nil and data.cause == "file_load" and inst.components.revivablecorpse ~= nil then
             inst.sg:GoToState("corpse", true)
         elseif not inst.sg:HasStateTag("dead") then
-            inst.sg:GoToState("death")
+
+            if inst.shadowthrall_parasite_hosted_death and 
+                not inst.components.rider:IsRiding() and
+                not inst:HasTag("beaver") and 
+                not inst:HasTag("weremoose") and 
+                not inst:HasTag("weregoose") and
+                not inst.charlie_vinesave and
+                not inst.components.revivablecorpse then
+                inst.sg:GoToState("death_hosted")                
+            else
+                inst.sg:GoToState("death")
+            end
         end
     end),
 
@@ -2763,8 +2775,12 @@ local states =
         name = "death",
         tags = { "busy", "dead", "pausepredict", "nomorph" },
 
-        onenter = function(inst)
+        onenter = function(inst, data)        
             assert(inst.deathcause ~= nil, "Entered death state without cause.")
+
+            if data and data.hosted then
+                inst.sg.statemem.hosted = true
+            end
 
             ClearStatusAilments(inst)
             ForceStopHeavyLifting(inst)
@@ -2855,6 +2871,14 @@ local states =
         {
             EventHandler("animover", function(inst)
                 if inst.AnimState:AnimDone() then
+
+                    local skeleton = TheWorld.Map:IsPassableAtPoint(inst.Transform:GetWorldPosition())
+
+                    if inst.sg.statemem.hosted and TheWorld.components.shadowparasitemanager then
+                        skeleton = nil
+                        TheWorld.components.shadowparasitemanager:SpawnHostedPlayer(inst)
+                    end
+
                     if inst.sg:HasStateTag("dismounting") then
                         inst.sg:RemoveStateTag("dismounting")
                         inst.components.rider:ActualDismount()
@@ -2895,10 +2919,10 @@ local states =
                         if inst:HasTag("wonkey") then
                             inst:ChangeFromMonkey()
                         else
-                            inst:PushEvent("makeplayerghost", { skeleton = TheWorld.Map:IsPassableAtPoint(inst.Transform:GetWorldPosition()) }) -- if we are not on valid ground then don't drop a skeleton
+                            inst:PushEvent("makeplayerghost", { skeleton = skeleton }) -- if we are not on valid ground then don't drop a skeleton
                         end
                     else
-                        inst:PushEvent("playerdied", { skeleton = TheWorld.Map:IsPassableAtPoint(inst.Transform:GetWorldPosition()) }) -- if we are not on valid ground then don't drop a skeleton
+                        inst:PushEvent("playerdied", { skeleton = skeleton }) -- if we are not on valid ground then don't drop a skeleton
                     end
                 end
             end),
@@ -2923,6 +2947,86 @@ local states =
     },
 
     State{
+        name = "death_hosted",
+        tags = { "busy", "dead", "pausepredict", "nomorph" },
+
+        onenter = function(inst)
+            assert(inst.deathcause ~= nil, "Entered death state without cause.")
+
+            inst.AnimState:AddOverrideBuild("shadow_thrall_parasite")            
+
+            ClearStatusAilments(inst)
+            ForceStopHeavyLifting(inst)
+
+            inst.components.locomotor:Stop()
+            inst.components.locomotor:Clear()
+            inst:ClearBufferedAction()
+
+            inst.AnimState:PlayAnimation("parasite_death")
+            inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/possess_kill_player")
+
+            inst.components.burnable:Extinguish()
+
+            if inst.components.playercontroller ~= nil then
+                inst.components.playercontroller:RemotePausePrediction()
+                inst.components.playercontroller:Enable(false)
+            end
+
+
+            inst.components.inventory:DropEverything(true)
+            --Don't process other queued events if we died this frame
+            inst.sg:ClearBufferedEvents()
+
+            
+        end,
+
+        timeline =
+        {
+            FrameEvent(12, function(inst)
+                inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/posses_f38")
+            end),
+            FrameEvent(30, function(inst)
+                inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/possess_whoosh")
+            end),
+
+            FrameEvent(35, function(inst)
+                inst._parasiteoverlay:set(true)
+            end),
+
+            FrameEvent(40, function(inst)
+                inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/posses_f38")
+            end),  
+            FrameEvent(74, function(inst)
+                inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/possess_whoosh")
+            end),
+            FrameEvent(95, function(inst)
+                inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/mask_slap")
+            end),                                  
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+
+                    local mask = SpawnPrefab("shadow_thrall_parasitehat")
+                    inst.components.inventory:GiveItem(mask)
+                    inst.components.inventory:Equip(mask)
+
+                    inst.sg:GoToState("death",{hosted=true})
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            inst._parasiteoverlay:set(false)
+        end,
+
+
+    },
+
+
+    State{
         name = "seamlessplayerswap_death",
         tags = { "busy", "dead", "noattack", "nopredict", "nomorph", "nodangle" },
 
@@ -2941,7 +3045,7 @@ local states =
             --You should never leave this state once you enter it!
             if inst.components.revivablecorpse == nil then
                 assert(false, "Left death state.")
-            end
+            end            
         end,
     },
 
@@ -5829,6 +5933,94 @@ local states =
             inst.sg:GoToState(inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil and "item_out" or "idle")
         end,
     },
+
+	State{
+		name = "pumpkincarving_pre",
+		tags = { "doing", "busy", "nodangle" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
+			inst.AnimState:PlayAnimation("build_pre")
+			inst.AnimState:PushAnimation("build_pst", false)
+		end,
+
+		timeline =
+		{
+			TimeEvent(7 * FRAMES, function(inst)
+				inst.SoundEmitter:KillSound("make")
+				inst.sg:RemoveStateTag("busy")
+				inst:PerformBufferedAction()
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animqueueover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.SoundEmitter:KillSound("make")
+		end,
+	},
+
+	State{
+		name = "pumpkincarving",
+		tags = { "pumpkincarving", "busy", "pausepredict" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+			inst.components.locomotor:Clear()
+			inst:ClearBufferedAction()
+
+			inst.AnimState:PlayAnimation("build_loop", true)
+
+			if inst.components.playercontroller then
+				inst.components.playercontroller:RemotePausePrediction()
+				inst.components.playercontroller:EnableMapControls(false)
+				inst.components.playercontroller:Enable(false)
+			end
+			inst.components.inventory:Hide()
+			inst:PushEvent("ms_closepopups")
+			inst:ShowActions(false)
+			inst:ShowPopUp(POPUPS.PUMPKINCARVING, true, data and data.target or nil)
+		end,
+
+		events =
+		{
+			EventHandler("firedamage", function(inst)
+				inst.sg:GoToState("idle")
+				if inst.components.talker then
+					inst.components.talker:Say(GetString(inst, "ANNOUNCE_NOPUMPKINCARVINGONFIRE"))
+				end
+			end),
+			EventHandler("ms_endpumpkincarving", function(inst)
+				if not inst.sg.statemem.isclosingpumpkin then
+					inst.sg.statemem.isclosingpumpkin = true
+					inst.AnimState:PlayAnimation("build_pst")
+					inst.sg:GoToState("idle", true)
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst:ShowPopUp(POPUPS.PUMPKINCARVING, false)
+			if inst.components.playercontroller then
+				inst.components.playercontroller:EnableMapControls(true)
+				inst.components.playercontroller:Enable(true)
+			end
+			inst.components.inventory:Show()
+			inst:ShowActions(true)
+			if not inst.sg.statemem.isclosingpumpkin then
+				inst.sg.statemem.isclosingpumpkin = true
+				POPUPS.PUMPKINCARVING:Close(inst)
+			end
+		end,
+	},
 
     State{
         name = "inspectacles_open",
@@ -19225,7 +19417,7 @@ local states =
         name = "acting_idle",
         tags = { "idle", "forcedangle", "acting"},
 
-        onenter = function(inst, pre)
+        onenter = function(inst, data)
             local function getidle()
                 if math.random() < 0.5 then
                     return "acting_idle1"
@@ -19234,8 +19426,11 @@ local states =
                 end
             end
 
-            if pre then
-                inst.AnimState:PlayAnimation(pre, false)
+            if data and data.endidleanim then
+                inst.AnimState:PlayAnimation(data.endidleanim,false)
+                inst.sg.statemem.endidleanim = data.endidleanim
+            elseif type(data) == "string" then
+                inst.AnimState:PlayAnimation(data, false)
                 inst.AnimState:PushAnimation(getidle(),false)
             else
                 inst.AnimState:PlayAnimation(getidle(),false)
@@ -19245,7 +19440,7 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState("acting_idle")
+                inst.sg:GoToState("acting_idle",{endidleanim = inst.sg.statemem.endidleanim })
             end),
         },
     },
@@ -19345,6 +19540,7 @@ local states =
         tags = { "talking", "acting" },
 
         onenter = function(inst, data)
+            inst.sg.statemem.endidleanim = data.endidleanim
             local loop = false
             if data.animtype == "loop" then
                 loop = true
@@ -19382,20 +19578,20 @@ local states =
             EventHandler("donetalking", function(inst)
                 StopTalkSound(inst)
                 if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
-                    inst.sg:GoToState("acting_idle")
+                    inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim})
                 end
             end),
             EventHandler("animover", function(inst)
                 if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
                     if not inst.sg.statemem.queue then
-                        inst.sg:GoToState("acting_idle")
+                        inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim})
                     end
                 end
             end),  
             EventHandler("animqueueover", function(inst)
                 if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
                     if inst.sg.statemem.queue then
-                        inst.sg:GoToState("acting_idle")
+                        inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim})
                     end
                 end
             end),

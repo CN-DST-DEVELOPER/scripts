@@ -1763,6 +1763,12 @@ local function OnWormDigestionSound(inst)
     end 
 end
 
+local function OnParasiteOverlayDirty(inst)
+    if ThePlayer ~= nil and  ThePlayer == inst then
+        ThePlayer:PushEvent("parasitethralllevel", inst._parasiteoverlay:value())
+    end
+end
+
 --------------------------------------------------------------------------
 
 --V2C: starting_inventory passed as a parameter here is now deprecated
@@ -1955,6 +1961,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 		Asset("ANIM", "anim/player_closeinspect.zip"),
 
         Asset("ANIM", "anim/player_attack_pillows.zip"),
+
+        Asset("ANIM", "anim/player_shadow_thrall_parasite.zip"),
 
         Asset("INV_IMAGE", "skull_"..name),
 
@@ -2200,7 +2208,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         inst.AnimState:AddOverrideBuild("player_actions_fishing_ocean_new")
         inst.AnimState:AddOverrideBuild("player_actions_farming")
-        inst.AnimState:AddOverrideBuild("player_actions_cowbell")        
+        inst.AnimState:AddOverrideBuild("player_actions_cowbell")
+
+        inst.AnimState:AddOverrideBuild("player_shadow_thrall_parasite")        
 
         inst.DynamicShadow:SetSize(1.3, .6)
 
@@ -2320,6 +2330,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._shadowportalmax = net_event(inst.GUID, "localplayer._shadowportalmax")
         inst._skilltreeactivatedany = net_event(inst.GUID, "localplayer._skilltreeactivatedany")
         inst._wormdigestionsound = net_bool(inst.GUID, "localplayer._wormdigestionsound","wormdigestionsounddirty")
+        inst._parasiteoverlay = net_bool(inst.GUID, "localplayer._parasiteoverlay","parasiteoverlaydirty")
+        inst._parasiteoverlay:set(false)
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
             inst.yotb_skins_sets = net_shortint(inst.GUID, "player.yotb_skins_sets")
@@ -2331,13 +2343,14 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
             inst:ListenForEvent("localplayer._lunarportalmax", OnLunarPortalMax)
             inst:ListenForEvent("localplayer._shadowportalmax", OnShadowPortalMax)
             inst:ListenForEvent("localplayer._hermit_music", OnHermitMusic)
+            
 
             inst:AddComponent("hudindicatable")
             inst.components.hudindicatable:SetShouldTrackFunction(ShouldTrackfn)
         end
 
         inst:ListenForEvent("sharksounddirty", OnSharkSound)
-        inst:ListenForEvent("wormdigestionsounddirty", OnWormDigestionSound)
+        inst:ListenForEvent("wormdigestionsounddirty", OnWormDigestionSound)        
         --inst:ListenForEvent("underleafcanopydirty", OnUnderLeafCanopy)
 
         inst:ListenForEvent("finishseamlessplayerswap", onfinishseamlessplayerswap)
@@ -2346,6 +2359,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._piratemusicstate = net_bool(inst.GUID, "player.piratemusicstate", "piratemusicstatedirty")
         inst._piratemusicstate:set(false)
         inst:ListenForEvent("piratemusicstatedirty", OnPirateMusicStateDirty)
+
+        
+        inst:ListenForEvent("parasiteoverlaydirty", OnParasiteOverlayDirty)
 
 
         inst.PostActivateHandshake = ex_fns.PostActivateHandshake

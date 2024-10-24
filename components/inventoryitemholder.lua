@@ -100,17 +100,15 @@ function InventoryItemHolder:GiveItem(item, giver)
         return false
     end
 
-	local owner = item.components.inventoryitem.owner
+	local owner = item.components.inventoryitem:GetGrandOwner()
 	if owner then
 		if owner.components.inventory then
 			--Use DropItem
 			--RemoveItem should only be used when immediately giving back to inventory
 			item = owner.components.inventory:DropItem(item, self.acceptstacks) or item
-		elseif owner.components.container then
-			--V2C: containers DropItem only supports wholestack.
-			--     also, containers should not be able to perform a give action anyway.
-			assert(self.acceptstacks)
-			owner.components.container:DropItem(item)
+		else--if owner.components.container then
+			--V2C: containers should not be able to perform a give action anyway.
+			return false
 		end
 	end
 
@@ -165,6 +163,9 @@ function InventoryItemHolder:TakeItem(taker, wholestack)
         self.item:RemoveTag("outofreach")
 
         self.inst:RemoveEventCallback("onremove", self._onitemremoved, self.item)
+
+    elseif self.item.components.stackable ~= nil and not self.item.components.stackable:IsFull() then
+        self.inst:AddTag("inventoryitemholder_give")
     end
 
     item.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)

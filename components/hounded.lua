@@ -178,7 +178,7 @@ local function PlanNextAttack()
 
     	if _spawndata.specialupgradecheck then
     		_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings)
-    	end			
+    	end
 	else
 		_attackplanned = false
 	end

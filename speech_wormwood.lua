@@ -999,6 +999,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Hug Squee Hopper!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Wrong here!",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Naughty fire!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -4923,6 +4926,7 @@ return{
         CHARLIE_HECKLER = "Mean tweeters, hurt friends' feelings!",
 
         PLAYBILL_THE_DOLL = "Sad story",
+        PLAYBILL_THE_VEIL = "Scare show",
         STATUEHARP_HEDGESPAWNER = "Friends giving statue a hug",
         HEDGEHOUND = "Why friends mad?",
         HEDGEHOUND_BUSH = "Friends?",
@@ -5175,14 +5179,15 @@ return{
         PHONOGRAPH = "Singing box",
         RECORD = "Forever song",
         RECORD_CREEPYFOREST = "Friend song!",
-        RECORD_DANGER = "Scary time",
-        RECORD_DAWN = "Good Morning!",
+        RECORD_DANGER = "Scary time", -- Unused.
+        RECORD_DAWN = "Good Morning!", -- Unused.
         RECORD_DRSTYLE = "Bouncy!",
-        RECORD_DUSK = "Night night",
+        RECORD_DUSK = "Night night", -- Unused.
         RECORD_EFS = "Bouncy!",
-        RECORD_END = "Bye bye",
-        RECORD_MAIN = "Happy sad",
-        RECORD_WORKTOBEDONE = "Busy busy",
+        RECORD_END = "Bye bye", -- Unused.
+        RECORD_MAIN = "Happy sad", -- Unused.
+        RECORD_WORKTOBEDONE = "Busy busy", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Spooky spooky",
 
         ARCHIVE_ORCHESTRINA_MAIN = "Singing floor",
 
@@ -5393,12 +5398,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Bad stuff! Bad!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "Good Sticky now?",
             FULL = "Thanks Good Sticky!",
         },
         GELBLOB_STORAGE_KIT = "What make with Bad Sticky?",
         GELBLOB_BOTTLE = "Bad Sticky trapped!",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Dead friend",
+            ME = "Dead me!",
+        },
+
+        MASK_SAGEHAT = "Smarty face",
+        MASK_HALFWITHAT = "Cute face",
+        MASK_TOADYHAT = "Friend face?",
+
+        SHADOWTHRALL_PARASITE = "What Grabby Face want? Face?",
+
+        PUMPKINCARVER = "Make pumpkin friend face",
     },
 
     DESCRIBE_GENERIC = "Friend?",

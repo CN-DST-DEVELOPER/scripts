@@ -86,7 +86,7 @@ function StageActingProp:FindCostume(head,body)
 			return costume
 		end
 
-		if data.head == head or data.body == body  then
+		if (data.head == head or data.body == body) then
 			partial_match = true
 		end
 	end
@@ -210,7 +210,9 @@ local function do_endofperformance_talk(castmember)
     if castmember:HasTag("player") then
         castmember.components.talker:Say(GetString(castmember, "ANNOUNCE_OFF_SCRIPT"))
     else
-        castmember.components.talker:Say(STRINGS.HECKLERS_OFF_SCRIPT[math.random(1, #STRINGS.HECKLERS_OFF_SCRIPT)])
+    	if castmember.sg and not castmember.sg:HasStateTag("away")  then
+        	castmember.components.talker:Say(STRINGS.HECKLERS_OFF_SCRIPT[math.random(1, #STRINGS.HECKLERS_OFF_SCRIPT)])
+    	end
     end
 end
 
@@ -242,6 +244,8 @@ function StageActingProp:EndPerformance(doer)
 			end
         end
 	end
+
+	play_commonfns.disableblackout(self.inst)
 
 	play_commonfns.exitbirds(self.inst, nil, self.cast)
 
@@ -332,7 +336,7 @@ function StageActingProp:DoLines()
                         or (self.cast["MONOLOGUE"] and self.cast["MONOLOGUE"].castmember)
 
 					if line.anim or line.line then
-                        local next_line_data = { anim = line.anim, line = line.line, animtype = line.animtype }
+                        local next_line_data = { anim = line.anim, line = line.line, animtype = line.animtype,  endidleanim = line.endidleanim}
 						actor:PushEvent("perform_do_next_line", next_line_data)
 
                         if line.line then

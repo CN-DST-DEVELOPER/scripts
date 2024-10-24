@@ -180,7 +180,9 @@ local function OnUpdateProximity(inst, fast)
 end
 
 local function OnSpawnLanded(inst)
-	OnUpdateProximity(inst, nil) --nil will force it to restart the periodic task timer
+	if inst._proximitytask then
+		OnUpdateProximity(inst, nil) --nil will force it to restart the periodic task timer
+	end
 end
 
 local function OnContactChanged(inst, contacted, uncontacted)

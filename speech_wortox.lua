@@ -1000,6 +1000,9 @@ return{
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Got it!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Not quite the site.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "I weren't done, this burnt one!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Let's have some fun.",
@@ -4925,6 +4928,7 @@ return{
         CHARLIE_HECKLER = "Hyuyu, what a funny pair!",
 
         PLAYBILL_THE_DOLL = "A curious tale of friendship and betrayal.",
+        PLAYBILL_THE_VEIL = "More of a controversial commercial.",
         STATUEHARP_HEDGESPAWNER = "The poor cherub and harp, lost in vines thorny sharp.",
         HEDGEHOUND = "You wouldn't eat a fellow trickster, would you?",
         HEDGEHOUND_BUSH = "Did those vines just whine? I'm sure it's fine.",
@@ -5177,14 +5181,15 @@ return{
         PHONOGRAPH = "Ooo, music! I'm practically giddy!",
         RECORD = "Encore!",
         RECORD_CREEPYFOREST = "What a cheeky little tune.",
-        RECORD_DANGER = "Oh dear, what have we here?",
-        RECORD_DAWN = "A delight at first light!",
+        RECORD_DANGER = "Oh dear, what have we here?", -- Unused.
+        RECORD_DAWN = "A delight at first light!", -- Unused.
         RECORD_DRSTYLE = "I think I heard this in a dream.",
-        RECORD_DUSK = "That's it?",
+        RECORD_DUSK = "That's it?", -- Unused.
         RECORD_EFS = "Oh dear, what have we here?",
-        RECORD_END = "That's it?",
-        RECORD_MAIN = "What a cheeky little tune.",
-        RECORD_WORKTOBEDONE = "Oh dear, what have we here?",
+        RECORD_END = "That's it?", -- Unused.
+        RECORD_MAIN = "What a cheeky little tune.", -- Unused.
+        RECORD_WORKTOBEDONE = "Oh dear, what have we here?", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Thrilling and chilling!",
 
         ARCHIVE_ORCHESTRINA_MAIN = "This floor is soundly built, hyuyu!",
 
@@ -5395,12 +5400,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "Why did we open it?!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "I do declare, there's nothing there.",
             FULL = "Congealed and sealed!",
         },
         GELBLOB_STORAGE_KIT = "Grrr... Not on the fur!",
         GELBLOB_BOTTLE = "Bottled abomination.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Can't you see, you're dead to me?",
+            ME = "As such, I've seen too much. Hyuyu...",
+        },
+
+        MASK_SAGEHAT = "Hard to despise this disguise!",
+        MASK_HALFWITHAT = "Who's down to clown?",
+        MASK_TOADYHAT = "A mask fit for the task!",
+
+        SHADOWTHRALL_PARASITE = "That thingy looks clingy.",
+
+        PUMPKINCARVER = "My turn to carve the lantern!",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

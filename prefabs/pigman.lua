@@ -12,6 +12,7 @@ local assets =
     Asset("ANIM", "anim/werepig_basic.zip"),
     Asset("ANIM", "anim/werepig_actions.zip"),
     Asset("ANIM", "anim/pig_token.zip"),
+    Asset("ANIM", "anim/ds_pig_parasite_death.zip"),
     Asset("SOUND", "sound/pig.fsb"),
     Asset("ANIM", "anim/merm_actions.zip"),
 }
@@ -169,6 +170,10 @@ local function IsGuardPig(dude)
     return dude:HasTag("guard") and dude:HasTag("pig")
 end
 
+local function IsHost(dude)
+    return dude:HasTag("shadowthrall_parasite_hosted")
+end
+
 local function OnAttacked(inst, data)
     --print(inst, "OnAttacked")
     local attacker = data.attacker
@@ -180,7 +185,9 @@ local function OnAttacked(inst, data)
 		elseif attacker.prefab ~= "deciduous_root" and not attacker:HasTag("pigelite") then
 			inst.components.combat:SetTarget(attacker)
 
-			if inst:HasTag("werepig") then
+            if inst:HasTag("shadowthrall_parasite_hosted") then
+                inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
+			elseif inst:HasTag("werepig") then
 				inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsWerePig, MAX_TARGET_SHARES)
 			elseif inst:HasTag("guard") then
 				inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, attacker:HasTag("pig") and IsGuardPig or IsPig, MAX_TARGET_SHARES)

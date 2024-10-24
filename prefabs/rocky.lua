@@ -1,6 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/rocky.zip"),
+    Asset("ANIM", "anim/rocky_parasite_death.zip"),
     Asset("SOUND", "sound/rocklobster.fsb"),
 }
 
@@ -29,13 +30,21 @@ local function ShouldWake(inst)
     return inst.components.sleeper:GetTimeAsleep() > (TUNING.TOTAL_DAY_TIME * .5)
 end
 
+local function IsHost(dude)
+    return dude:HasTag("shadowthrall_parasite_hosted")
+end 
+
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
 
-    inst._target_sharing_test = inst._target_sharing_test or function(dude)
-        return dude.prefab == inst.prefab
+    if inst:HasTag("shadowthrall_parasite_hosted") then
+        inst.components.combat:ShareTarget(data.attacker, 20, IsHost, 10)
+    else
+        inst._target_sharing_test = inst._target_sharing_test or function(dude)
+            return dude.prefab == inst.prefab
+        end
+        inst.components.combat:ShareTarget(data.attacker, 20, inst._target_sharing_test, 2)
     end
-    inst.components.combat:ShareTarget(data.attacker, 20, inst._target_sharing_test, 2)
 end
 
 local function grow(inst, dt)

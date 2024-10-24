@@ -991,9 +991,12 @@ return{
 	ANNOUNCE_SHADOWTHRALL_STEALTH = "Ouch! No fair! We can't see you!",
     ANNOUNCE_RABBITKING_AGGRESSIVE = "We hear something coming! And it sounds grouchy!",
     ANNOUNCE_RABBITKING_PASSIVE = "Something's burrowing around us!",
-    ANNOUNCE_RABBITKING_LUCKY = "We see a wierd rabbit!",
+    ANNOUNCE_RABBITKING_LUCKY = "We see a weird rabbit!",
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "We caught it!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Aw, wrong spot!",
+
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Haha! Again!",
 
 	BATTLECRY =
 	{
@@ -4919,6 +4922,7 @@ return{
         CHARLIE_HECKLER = "We don't like those birds very much.",
 
         PLAYBILL_THE_DOLL = "What a funny play!",
+        PLAYBILL_THE_VEIL = "It's not scary. We won't cover our eyes.",
         STATUEHARP_HEDGESPAWNER = "This place is making our spider-hairs tingle...",
         HEDGEHOUND = "Did we say something wrong?!",
         HEDGEHOUND_BUSH = "Look at all those pretty red roses.",
@@ -5171,14 +5175,15 @@ return{
         PHONOGRAPH = "We could listen to that forever.",
         RECORD = "It's a real earworm!",
         RECORD_CREEPYFOREST = "It's his favorite song!",
-        RECORD_DANGER = "It's his favorite song!",
-        RECORD_DAWN = "It makes us want to do a little dance!",
+        RECORD_DANGER = "It's his favorite song!", -- Unused.
+        RECORD_DAWN = "It makes us want to do a little dance!", -- Unused.
         RECORD_DRSTYLE = "It makes us want to do a little dance!",
-        RECORD_DUSK = "It makes us want to do a little dance!",
+        RECORD_DUSK = "It makes us want to do a little dance!", -- Unused.
         RECORD_EFS = "This one's kind of scary.",
-        RECORD_END = "It makes us want to do a little dance!",
-        RECORD_MAIN = "It makes us want to do a little dance!",
-        RECORD_WORKTOBEDONE = "It makes us want to do a little dance!",
+        RECORD_END = "It makes us want to do a little dance!", -- Unused.
+        RECORD_MAIN = "It makes us want to do a little dance!", -- Unused.
+        RECORD_WORKTOBEDONE = "It makes us want to do a little dance!", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "We want candy.",
 
         ARCHIVE_ORCHESTRINA_MAIN = "We love puzzles!",
 
@@ -5389,12 +5394,26 @@ return{
 
         CHEST_MIMIC_REVEALED = "We didn't touch it!",
 
-        GELBLOB_STORAGE = {
+        GELBLOB_STORAGE = { 
             GENERIC  = "Looks like jelly.",
             FULL = "Yummy!",
         },
         GELBLOB_STORAGE_KIT = "We can build it!",
         GELBLOB_BOTTLE = "It's sticky like our webs!",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "Remember me?",
+            ME = "Gonna be our own best friend!",
+        },
+
+        MASK_SAGEHAT = "Ooooh, they'll never guess it's us!",
+        MASK_HALFWITHAT = "Hehe, what a funny face.",
+        MASK_TOADYHAT = "We wanna try this one.",
+
+        SHADOWTHRALL_PARASITE = "Maybe it just wants a friend to play with.",
+
+        PUMPKINCARVER = "Fun fun fun fun fun.",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

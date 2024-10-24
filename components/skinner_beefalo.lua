@@ -5,9 +5,47 @@ end,
 nil,
 {})
 
-local clothing_order = { "beef_tail", "beef_body", "beef_feet", "beef_head", "beef_horn" }
+local FACE_SWAP_SYMBOLS = -- NOTES(JBK): Keep this in sync with the skinpuppet_beefalo file. [SBMFF]
+{
+	"beefalo_beard",
+	"beefalo_eye",
+	"beefalo_jowls",
+	--"beefalo_lip_crease", -- Does not have face data use no build_short for this.
+	"beefalo_mouthmouth",
+	"beefalo_nose",
+	"beffalo_lips",
+}
+function SetBeefaloFaceSkinsOnAnim(anim_state, clothing_names, linked_beef_guid, build_short)
+    if BRANCH ~= "dev" then -- FIXME(JBK): Move out of dev when done.
+        return
+    end
+    local name = clothing_names["beef_head"]
+    if BEEFALO_CLOTHING[name] ~= nil then
+        local skin_build = GetBuildForItem(name)
+        if skin_build ~= "beefalo_head_festive" then -- FIXME(JBK): Move out of dev when done.
+            return
+        end
+        for _, symbol in ipairs(FACE_SWAP_SYMBOLS) do
+            if linked_beef_guid == nil then
+                -- nil means we're applying directly to the beefalo
+                anim_state:OverrideSkinSymbol(symbol, skin_build, symbol .. build_short)
+            else
+                --linked_beef_guid means we're applying to a player
+                anim_state:OverrideItemSkinSymbol(symbol, skin_build, symbol .. build_short, linked_beef_guid, "beefalo_build")
+            end
+        end
+        if linked_beef_guid == nil then
+            -- nil means we're applying directly to the beefalo
+            anim_state:OverrideSkinSymbol("beefalo_lip_crease", skin_build, "beefalo_lip_crease")
+        else
+            --linked_beef_guid means we're applying to a player
+            anim_state:OverrideItemSkinSymbol("beefalo_lip_crease", skin_build, "beefalo_lip_crease", linked_beef_guid, "beefalo_build")
+        end
+    end
+end
 
-function SetBeefaloSkinsOnAnim( anim_state, clothing_names, linked_beef_guid )
+local clothing_order = { "beef_tail", "beef_body", "beef_feet", "beef_head", "beef_horn" }
+function SetBeefaloSkinsOnAnim( anim_state, clothing_names, linked_beef_guid, build_short )
 	if linked_beef_guid == nil then
 		-- nil means we're applying directly to the beefalo
 
@@ -25,11 +63,11 @@ function SetBeefaloSkinsOnAnim( anim_state, clothing_names, linked_beef_guid )
 	for _,type in pairs( clothing_order ) do
 		local name = clothing_names[type]
 		if BEEFALO_CLOTHING[name] ~= nil then
+            local skin_build = GetBuildForItem(name)
             if BEEFALO_CLOTHING[name].symbol_overrides then
                 for _,sym in pairs(BEEFALO_CLOTHING[name].symbol_overrides) do
                     anim_state:ShowSymbol(sym)
 
-                    local skin_build = GetBuildForItem(name)
                     if linked_beef_guid == nil then
                         -- nil means we're applying directly to the beefalo
                         anim_state:OverrideSkinSymbol(sym, skin_build, sym )

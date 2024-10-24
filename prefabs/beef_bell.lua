@@ -299,7 +299,7 @@ local function ShadowBell_OnDischarged(inst)
 end
 
 local function ShadowBell_OnCharged(inst)
-    inst:RemovedTag("oncooldown")
+    inst:RemoveTag("oncooldown")
 end
 
 -----------------------------------------------------------------------------------------------------------------------------------------

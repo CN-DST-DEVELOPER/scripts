@@ -1005,6 +1005,9 @@ return {
     ANNOUNCE_RABBITKING_LUCKYCAUGHT = "Got you!",
     ANNOUNCE_RABBITKINGHORN_BADSPAWNPOINT = "Maybe the rabbits don't dig this spot.",
 
+	-- Hallowed Nights 2024
+	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "This pumpkin is cooked.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Go for the eyes!",
@@ -4929,6 +4932,7 @@ return {
         CHARLIE_HECKLER = "They're just here to stir up drama.",
 
         PLAYBILL_THE_DOLL = "\"Authored by C.W.\"",
+        PLAYBILL_THE_VEIL = "\"Brought to you by the Heralds of Tenebrau.\"",
         STATUEHARP_HEDGESPAWNER = "The flowers grew back, but the head didn't.",
         HEDGEHOUND = "It's an ambush!",
         HEDGEHOUND_BUSH = "It's a bush.",
@@ -5181,14 +5185,15 @@ return {
         PHONOGRAPH = "Oh no, I've seen THAT before.",
         RECORD = "Drat, I just got that song out of my head!",
         RECORD_CREEPYFOREST = "A whole song on one record? Technology has come so far.",
-        RECORD_DANGER = "Not my favorite.",
-        RECORD_DAWN = "Needs more trumpet.",
+        RECORD_DANGER = "Not my favorite.", -- Unused.
+        RECORD_DAWN = "Needs more trumpet.", -- Unused.
         RECORD_DRSTYLE = "A whole song on one record? Technology has come so far.",
-        RECORD_DUSK = "Needs more trumpet.",
+        RECORD_DUSK = "Needs more trumpet.", -- Unused.
         RECORD_EFS = "One of their more experimental tracks.",
-        RECORD_END = "A whole song on one record? Technology has come so far.",
-        RECORD_MAIN = "Needs more trumpet.",
-        RECORD_WORKTOBEDONE = "One of their more experimental tracks.",
+        RECORD_END = "A whole song on one record? Technology has come so far.", -- Unused.
+        RECORD_MAIN = "Needs more trumpet.", -- Unused.
+        RECORD_WORKTOBEDONE = "One of their more experimental tracks.", -- Unused.
+        RECORD_HALLOWEDNIGHTS = "Spooktacular!",
 
         ARCHIVE_ORCHESTRINA_MAIN = "It's like they made it puzzling on purpose.",
 
@@ -5405,6 +5410,20 @@ return {
         },
         GELBLOB_STORAGE_KIT = "I'll preserve my judgement.",
         GELBLOB_BOTTLE = "I tend to keep things bottled up.",
+
+        PLAYER_HOSTED =
+        {        
+            GENERIC = "They're occupied.",
+            ME = "I'm beside myself.",
+        },
+
+        MASK_SAGEHAT = "Looking sharp.",
+        MASK_HALFWITHAT = "Seems a bit dull.",
+        MASK_TOADYHAT = "Should I just play along?",
+
+        SHADOWTHRALL_PARASITE = "It makes my brain itch.",
+
+        PUMPKINCARVER = "Who's up for a gourd time?",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

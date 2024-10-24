@@ -240,9 +240,13 @@ local ExampleLayout =
 					},
 			}),
 
-		["LivingTree"] = StaticLayout.Get("map/static_layouts/livingtree", {
+		["LivingTree"] = StaticLayout.Get("map/static_layouts/livingtree", {}),
 
-						}),
+		["HalloweenPumpkinCarving"] = StaticLayout.Get("map/static_layouts/pumpkin_carving", {
+			areas = {
+				pumpkincarver = function() return { "pumpkincarver"..math.random(NUM_HALLOWEEN_PUMPKINCARVERS) } end,
+			},
+		}),
 
 
 --------------------------------------------------------------------------------

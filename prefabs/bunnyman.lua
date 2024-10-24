@@ -5,6 +5,7 @@ local assets =
     Asset("ANIM", "anim/manrabbit_attacks.zip"),
     Asset("ANIM", "anim/manrabbit_build.zip"),
     Asset("ANIM", "anim/manrabbit_boat_jump.zip"),
+    Asset("ANIM", "anim/manrabbit_parasite_death.zip"),
 
     Asset("ANIM", "anim/manrabbit_beard_build.zip"),
     Asset("ANIM", "anim/manrabbit_beard_basic.zip"),
@@ -209,9 +210,17 @@ local function OnRefuseItem(inst, item)
     end
 end
 
+local function IsHost(dude)
+    return dude:HasTag("shadowthrall_parasite_hosted")
+end
+
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
-    inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    if inst:HasTag("shadowthrall_parasite_hosted") then
+        inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
+    else
+        inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    end
 end
 
 local function OnNewTarget(inst, data)

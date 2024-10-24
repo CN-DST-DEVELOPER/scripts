@@ -47,10 +47,10 @@ function Builder:GetTechBonuses()
     elseif self.classified ~= nil then
 		local bonus = {}
         for i, v in ipairs(TechTree.BONUS_TECH) do
-            local bonus_netvar = self.classified[string.lower(v).."bonus"]
+            local bonus_netvar = self.classified[TechTree.AVAILABLE_TECH_BONUS_CLASSIFIED[v] or string.lower(v).."bonus"]
 			bonus[v] = bonus_netvar ~= nil and bonus_netvar:value() or nil
 
-            local tempbonus_netvar = self.classified[string.lower(v).."tempbonus"]
+            local tempbonus_netvar = self.classified[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[v] or string.lower(v).."tempbonus"]
             if tempbonus_netvar ~= nil then
                 if bonus[v] ~= nil then
                     bonus[v] = bonus[v] + tempbonus_netvar:value()
@@ -66,7 +66,7 @@ end
 
 function Builder:SetTechBonus(tech, bonus)
 	if self.classified ~= nil  then
-		local netvar = self.classified[string.lower(tech).."bonus"]
+		local netvar = self.classified[TechTree.AVAILABLE_TECH_BONUS_CLASSIFIED[tech] or string.lower(tech).."bonus"]
 		if netvar ~= nil then
 			netvar:set(bonus)
 		end
@@ -75,7 +75,7 @@ end
 
 function Builder:SetTempTechBonus(tech, bonus)
     if self.classified ~= nil  then
-		local netvar = self.classified[string.lower(tech).."tempbonus"]
+		local netvar = self.classified[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[tech] or string.lower(tech).."tempbonus"]
 		if netvar ~= nil then
 			netvar:set(bonus)
 		end
@@ -133,7 +133,7 @@ end
 function Builder:SetTechTrees(techlevels)
     if self.classified ~= nil then
         for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-            self.classified[string.lower(v).."level"]:set(techlevels[v] or 0)
+            self.classified[TechTree.AVAILABLE_TECH_LEVEL_CLASSIFIED[v] or string.lower(v).."level"]:set(techlevels[v] or 0)
         end
     end
 end
@@ -243,13 +243,13 @@ function Builder:HasTechIngredient(ingredient)
     return false, 0
 end
 
-function Builder:KnowsRecipe(recipe, ignore_tempbonus)
+function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
     if type(recipe) == "string" then
 		recipe = GetValidRecipe(recipe)
 	end
 
     if self.inst.components.builder ~= nil then
-        return self.inst.components.builder:KnowsRecipe(recipe, ignore_tempbonus)
+        return self.inst.components.builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
     elseif self.classified ~= nil then
         if recipe ~= nil then
 			if self.classified.isfreebuildmode:value() then
@@ -262,15 +262,23 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus)
 				return true
 			end
 
-            local has_tech = true
+            if cached_tech_trees and cached_tech_trees[recipe.level] ~= nil then
+                return cached_tech_trees[recipe.level]
+            end
             for i, v in ipairs(TechTree.AVAILABLE_TECH) do
-                local bonus = self.classified[string.lower(v).."bonus"]
-                local tempbonus = not ignore_tempbonus and self.classified[string.lower(v).."tempbonus"] or nil
+                local bonus = self.classified[TechTree.AVAILABLE_TECH_BONUS_CLASSIFIED[v] or string.lower(v).."bonus"]
+                local tempbonus = not ignore_tempbonus and self.classified[TechTree.AVAILABLE_TECH_TEMPBONUS_CLASSIFIED[v] or string.lower(v).."tempbonus"] or nil
                 if recipe.level[v] > (bonus ~= nil and bonus:value() or 0) + (tempbonus ~= nil and tempbonus:value() or 0) then
+                    if cached_tech_trees then
+                        cached_tech_trees[recipe.level] = false
+                    end
                     return false
                 end
             end
 
+            if cached_tech_trees then
+                cached_tech_trees[recipe.level] = true
+            end
 			return true
         end
     end
