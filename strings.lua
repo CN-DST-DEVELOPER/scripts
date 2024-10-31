@@ -14961,7 +14961,7 @@ STRINGS.PLAYS = {
         "Act 3 - Scene 3",
         "- The Reunion -",
     },
-    THEVEIL = "The Veil",           
+    THEVEIL = "The Pall",           
 }
 
 STRINGS.SPELLS = {

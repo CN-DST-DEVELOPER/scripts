@@ -611,7 +611,8 @@ local ExampleLayout =
 			},
 		}),
         ["TentaclePillar"] = StaticLayout.Get("map/static_layouts/tentacle_pillar"),
-		["TentaclePillarToAtrium"] = StaticLayout.Get("map/static_layouts/tentacle_pillar_atrium"),
+		["TentaclePillarToAtrium"] = StaticLayout.Get("map/static_layouts/tentacle_pillar_atrium", { disable_transform = true }),
+		["TentaclePillarToAtriumOuter"] = StaticLayout.Get("map/static_layouts/tentacle_pillar_atrium_outer"),
 
 --------------------------------------------------------------------------------
 -- Eyebone

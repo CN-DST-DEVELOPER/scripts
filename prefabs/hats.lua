@@ -5034,7 +5034,14 @@ local function MakeHat(name)
             inst,
             TUNING.SHADOWTHRALL_PARASITE_TARGET_DIST,
             function(guy)
-                return inst.components.combat:CanTarget(guy)
+                return inst.components.combat:CanTarget(guy) and 
+                       not guy:HasTag("shadowthrall") and 
+                       not guy:HasTag("shadow") and 
+                       (guy:HasTag("smallcreature") or 
+                        guy:HasTag("animal") or
+                        guy:HasTag("largecreature") or
+                        guy:HasTag("monster") or 
+                        guy:HasTag("character"))
             end,
             nil,
             SHADOWTHRALL_PARASITE_RETARGET_CANT_TAGS
@@ -5046,7 +5053,15 @@ local function MakeHat(name)
     end
 
     fns.shadowthrall_parasite_onkilledsomething = function(owner, data)
+        if TheWorld.components.shadowparasitemanager == nil then
+            return
+        end
+
         if data.victim == nil or not data.victim:IsValid() then
+            return
+        end
+
+        if data.victim.sg == nil or not (data.victim.sg:HasState("parasite_revive") or data.victim.sg:HasState("death_hosted")) then
             return
         end
 

@@ -1084,51 +1084,44 @@ local function _SpawnLayout_AddFn(prefab, points_x, points_y, current_pos_idx, e
     x = math.floor(x*100) / 100.0
     y = math.floor(y*100) / 100.0
 
-    local inst = SpawnPrefab(prefab)
+    prefab_data.x = x
+    prefab_data.z = y
 
-    if inst == nil then
-        --print(string.format("Prefab %s couldn't be spawned...", tostring(prefab)))
+    prefab_data.prefab = prefab
 
-        return
-    end
+    local ent = SpawnSaveRecord(prefab_data)
 
-    inst.Transform:SetPosition(x, 0, y)
+    ent:LoadPostPass(Ents, FunctionOrValue(prefab_data.data))
 
-    if prefab_data then
-        if prefab_data.data ~= nil then
-            local data = FunctionOrValue(prefab_data.data)
-
-            if data ~= nil then
-                -- Notes(DiogoW): not ideal, but it'll work for debugging purposes.
-                inst:SetPersistData(data, Ents)
-                inst:LoadPostPass(Ents, data)
-            end
-        end
-
-        if prefab_data.scenario ~= nil then
-            inst:AddComponent("scenariorunner")
-            inst.components.scenariorunner:SetScript(prefab_data.scenario)
-            inst.components.scenariorunner:Run()
-        end
+    if ent.components.scenariorunner ~= nil then
+        ent.components.scenariorunner:Run()
     end
 end
 
 local obj_layout = require("map/object_layout")
 
-function d_spawnlayout(name, offset)
-    offset = offset or 3
+function d_spawnlayout(name)
+    local layout  = obj_layout.LayoutForDefinition(name)
+    local map_width, map_height = TheWorld.Map:GetSize()
 
-	local map_width, map_height = TheWorld.Map:GetSize()
-	local entities = {}
+    local add_fn = {
+        fn = _SpawnLayout_AddFn,
+        args = {entitiesOut={}, width=map_width, height=map_height, rand_offset=false}
+    }
 
-	local add_fn = {
-		fn = _SpawnLayout_AddFn,
-		args = {entitiesOut=entities, width=map_width, height=map_height, rand_offset = false, debug_prefab_list=nil}
-	}
+    local offset = layout.ground ~= nil and (#layout.ground / 2) or 0
+    local size = layout.ground ~= nil and (#layout.ground * TILE_SCALE) or nil
 
-    local x, z = TheWorld.Map:GetTileCoordsAtPoint(ConsoleWorldPosition():Get())
+    local pos  = ConsoleWorldPosition()
+    local x, z = TheWorld.Map:GetTileCoordsAtPoint(pos:Get())
 
-	obj_layout.Place({math.floor(x) - offset, math.floor(z) - offset}, name, add_fn, nil, TheWorld.Map)
+    if size ~= nil then
+        for i, ent in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, size, nil, { "player", "INLIMBO", "FX" })) do -- Not a square, but that's fine for now.
+            ent:Remove()
+        end
+    end
+
+    obj_layout.Place({x-offset, z-offset}, name, add_fn, nil, TheWorld.Map)
 end
 
 function d_allfish()
@@ -3759,3 +3752,12 @@ function d_itemwithshadowmimic(item_prefab)
     local item = c_spawn(item_prefab)
     item:AddComponent("itemmimic")
 end
+
+function d_shadowparasite(host_prefab)
+    local host = c_spawn(host_prefab or "bunnyman")
+    local mask = SpawnPrefab("shadow_thrall_parasitehat")
+
+    host.components.inventory:GiveItem(mask)
+    host.components.inventory:Equip(mask)
+end
+

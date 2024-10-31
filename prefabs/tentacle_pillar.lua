@@ -411,10 +411,118 @@ local function fn()
     return inst
 end
 
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+--[[
+    tentacle_pillar_atrium is spawned by a small set piece (6x6) called TentaclePillarToAtrium, this prefab then spawn the outer part of the
+    set piece (TentaclePillarToAtriumOuter), if it has space. This is done because placing a big set piece fails A LOT.
+]]
+
+local obj_layout = require("map/object_layout")
+
+local CLEANUP_CANT_TAGS = { "INLIMBO", "irreplaceable", "event_trigger" }
+
+local CLEANUP_CANT_PREFABS = {}
+
+local tentacle_layout = obj_layout.LayoutForDefinition("TentaclePillarToAtrium")
+local layout_prefabs  = obj_layout.ConvertLayoutToEntitylist(tentacle_layout)
+
+for i, data in ipairs(layout_prefabs) do
+    CLEANUP_CANT_PREFABS[data.prefab] = true
+end
+
+local function CleanUpPoint(x, z)
+    for i, ent in ipairs(TheSim:FindEntities(x, 0, z, 2.5, nil, CLEANUP_CANT_TAGS)) do
+        if not CLEANUP_CANT_PREFABS[ent.prefab] then
+            ent:Remove()
+        end
+    end
+end
+
+local function PlaceLayout(layout, prefabs, position)
+    local rcx = math.floor(position[1] - #layout.ground/2) - 1 -- Not sure about this 1, it's magic.
+    local rcy = math.floor(position[2] - #layout.ground/2) - 1
+
+    local size = #layout.ground
+
+    if layout.ground ~= nil then
+        for column = 1, size do
+            for row = 1, size do
+                local rw = row
+                local clmn = column
+
+                clmn = size - (clmn-1)
+
+                if layout.ground[rw][clmn] ~= 0 then
+                    local x, y = rcx + column, rcy + row
+
+                    if TileGroupManager:IsLandTile(TheWorld.Map:GetTile(x, y)) then
+                        TheWorld.Map:SetTile(x, y, layout.ground_types[layout.ground[rw][clmn]])
+                    end
+                end
+            end
+        end
+
+        size = size / 2.0
+    end
+
+    local width, height = TheWorld.Map:GetSize()
+
+    if rcx ~= nil then
+        rcx = rcx + size + 0.5
+        rcy = rcy + size + 0.5
+
+        for idx=1, #prefabs do
+            local x = prefabs[idx].x * -1 -- Flipping x because that's the set piece default transform. Actually it's the oposite or the default transform...
+            local y = prefabs[idx].y
+
+            local points_x = rcx + x * layout.scale
+            local points_y = rcy + y * layout.scale
+
+            x = (points_x - width/2.0)  * TILE_SCALE
+            y = (points_y - height/2.0) * TILE_SCALE
+
+            x = math.floor(x*100) / 100.0
+            y = math.floor(y*100) / 100.0
+
+            if TheWorld.Map:IsLandTileAtPoint(x, 0, y) then
+                local ent = SpawnPrefab(prefabs[idx].prefab)
+
+                if ent ~= nil then
+                    CleanUpPoint(x, y)
+
+                    ent.Transform:SetPosition(x, 0, y)
+                end
+            end
+        end
+    end
+end
+
+local function AtriumTentacle_OnLoad(inst, data)
+    if data == nil or not data.spawn_outer then -- spawn_outer comes from the set piece properties.
+        return
+    end
+
+    local layout  = obj_layout.LayoutForDefinition("TentaclePillarToAtriumOuter")
+    local prefabs = obj_layout.ConvertLayoutToEntitylist(layout)
+
+    local position = { TheWorld.Map:GetTileCoordsAtPoint(inst.Transform:GetWorldPosition()) }
+
+    PlaceLayout(layout, prefabs, position)
+end
+
 local function atrium_fn() -- Proxy for world gen...
     local inst = fn()
 
     inst:SetPrefabName("tentacle_pillar")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    assert(inst.Load == nil, "OnLoad is being overridden...")
+
+    inst.OnLoad = AtriumTentacle_OnLoad -- Doing an on load to have spawn_outer data flag.
 
     return inst
 end

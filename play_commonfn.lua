@@ -177,14 +177,6 @@ fns.maskflash = function(inst, line, cast)
 	end
 end
 
-local BLACKOUT_COLOURCUBES =
-{
-    day = "images/colour_cubes/blackout_cc.tex",
-    dusk = "images/colour_cubes/blackout_cc.tex",
-    night = "images/colour_cubes/blackout_cc.tex",
-    full_moon = "images/colour_cubes/blackout_cc.tex",
-}
-
 local PLAYERS_MUST = {"player"}
 
 fns.enableblackout = function(inst)
@@ -195,11 +187,11 @@ fns.enableblackout = function(inst)
 	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 25, PLAYERS_MUST)
 
 	if #ents > 0 then
-		for i, ent in ipairs(ents) do	
-		 	if ent.components.playervision ~= nil then
-		        ent.components.playervision:PushForcedNightVision(inst, 1, BLACKOUT_COLOURCUBES, true)
-		        table.insert(inst.blackoutviewers, ent)
-		    end
+		for i, ent in ipairs(ents) do
+			if ent._blackout then
+	        	ent._blackout:set(true)
+	        	table.insert(inst.blackoutviewers, ent)
+	    	end
 		end
 	end
 end
@@ -207,11 +199,11 @@ end
 fns.disableblackout = function(inst)
 	if inst.blackoutviewers and #inst.blackoutviewers > 0 then
 		for i, ent in ipairs(inst.blackoutviewers)do
-			if ent.components.playervision ~= nil then
-        		ent.components.playervision:PopForcedNightVision(inst)
-    		end
+			if ent._blackout then
+				ent._blackout:set(false)
+			end
 		end
-	end 	
+	end
     inst.blackoutviewers = nil
 end
 

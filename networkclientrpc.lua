@@ -498,7 +498,7 @@ local RPC_HANDLERS =
             else
                 container = container.components.container
                 if container ~= nil and container:IsOpenedBy(player) then
-                    container:TakeActiveItemFromHalfOfSlot(slot, player, player)
+                    container:TakeActiveItemFromHalfOfSlot(slot, player)
                 end
             end
         end

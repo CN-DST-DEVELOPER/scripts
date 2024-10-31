@@ -108,10 +108,14 @@ local HostedBrain = Class(Brain, function(self, inst)
 end)
 
 function HostedBrain:OnStart()
-    PARASITES[self.inst] = true
+    -- NOTES(DiogoW): Inventory items (spiders use this brain) call brain:OnStart when being removed in an inventory,
+    -- before turning invalid, that's why we need to check Ents instead of IsValid...
+    if Ents[self.inst.GUID] ~= nil then
+        PARASITES[self.inst] = true
 
-    self.inst:ListenForEvent("attacked", OnAttacked)
-    self.inst:ListenForEvent("onremove", OnRemoved)
+        self.inst:ListenForEvent("attacked", OnAttacked)
+        self.inst:ListenForEvent("onremove", OnRemoved)
+    end
 
     local root =
         PriorityNode(

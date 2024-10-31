@@ -260,11 +260,11 @@ end
 local function TargetFollowTargetDistFn(inst)
     local target = inst.components.target
 
-    if target == nil or target.compoponents.combat == nil then
+    if target == nil or target.components.combat == nil then
         return DEFAULT_FOLLOW_TARGET_DIST
     end
 
-    return math.max(math.sqrt(target.compoponents.combat:CalcAttackRangeSq()) + MIN_FOLLOW_TARGET_DIST, DEFAULT_FOLLOW_TARGET_DIST)
+    return math.max(math.sqrt(target.components.combat:CalcAttackRangeSq()) + MIN_FOLLOW_TARGET_DIST, DEFAULT_FOLLOW_TARGET_DIST)
 end
 
 

@@ -5403,7 +5403,7 @@ return{
 
         PLAYER_HOSTED =
         {        
-            GENERIC = "Remember me?",
+            GENERIC = "Remember us?",
             ME = "Gonna be our own best friend!",
         },
 

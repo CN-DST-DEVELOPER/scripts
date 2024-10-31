@@ -1711,6 +1711,7 @@ local PREFABS =
     ["scrap_monoclehat"] = true,
     ["scraphat"] = true,
     ["armor_lunarplant_husk"] = true,
+    ["shroombait"] = true,
 
     -- Meta 4 / Ocean QoL
 

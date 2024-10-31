@@ -32,7 +32,7 @@ end
 
 local function IsHost(dude)
     return dude:HasTag("shadowthrall_parasite_hosted")
-end 
+end
 
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
@@ -210,6 +210,8 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_loop", true)
 
     inst.DynamicShadow:SetSize(1.75, 1.75)
+
+    inst:AddComponent("spawnfader")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

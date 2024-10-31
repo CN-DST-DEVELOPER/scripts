@@ -2,7 +2,7 @@ require("stategraphs/commonstates")
 
 local actionhandlers =
 {
-    ActionHandler(ACTIONS.EAT, 
+    ActionHandler(ACTIONS.EAT,
         function(inst, action)
             if action.target:HasTag("spidermutator") and action.target.components.spidermutator:CanMutate(inst) then
                 action.target.components.spidermutator:Mutate(inst, true)
@@ -119,12 +119,12 @@ local states =
         onenter = function(inst)
             inst.SoundEmitter:PlaySound(SoundPath(inst, "die"))
             inst.AnimState:PlayAnimation("death")
-            inst.Physics:Stop()            
+            inst.Physics:Stop()
 
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
                 inst.components.lootdropper:DropLoot(inst:GetPosition())
-            end            
+            end
         end,
 
         events =
@@ -134,7 +134,7 @@ local states =
                     TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
                 end
             end),
-        },        
+        },
     },
 
     State{
@@ -475,7 +475,7 @@ local states =
         timeline=
         {
             TimeEvent(30*FRAMES, function(inst)
-                
+
                 -- DANY
                 --inst.SoundEmitter:PlaySound("SPIDER SMOKE SOUND")
 
@@ -596,20 +596,20 @@ local states =
 
         timeline=
         {
-            TimeEvent(15*FRAMES, function(inst) 
+            TimeEvent(15*FRAMES, function(inst)
                 inst.SoundEmitter:KillSound("eating")
-                inst.SoundEmitter:PlaySound("webber2/common/mutate") 
+                inst.SoundEmitter:PlaySound("webber2/common/mutate")
             end),
         },
 
         events=
         {
-            EventHandler("animover", function(inst) 
-                local x,y,z = inst.Transform:GetWorldPosition()        
+            EventHandler("animover", function(inst)
+                local x,y,z = inst.Transform:GetWorldPosition()
                 local fx = SpawnPrefab("spider_mutate_fx")
                 fx.Transform:SetPosition(x,y,z)
 
-                inst:DoTaskInTime(0.25, function() 
+                inst:DoTaskInTime(0.25, function()
 
                     inst.components.inventory:DropEverything()
 
@@ -657,8 +657,18 @@ local states =
         tags = {"busy"},
 
         onenter = function(inst)
+            inst.sg.statemem.bank = inst.AnimState:GetBankHash()
+
+            inst.AnimState:SetBank("spider") -- To play parasite_death_pst...
+
             inst.AnimState:PlayAnimation("parasite_death_pst")
             inst.Physics:Stop()
+        end,
+
+        onexit = function(inst)
+            if inst.sg.statemem.bank ~= nil then
+                inst.AnimState:SetBank(inst.sg.statemem.bank)
+            end
         end,
 
         events=

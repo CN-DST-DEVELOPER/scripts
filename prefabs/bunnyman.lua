@@ -381,6 +381,8 @@ local function fn()
     inst.components.talker.offset = Vector3(0, -500, 0)
     inst.components.talker:MakeChatter()
 
+    inst:AddComponent("spawnfader")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

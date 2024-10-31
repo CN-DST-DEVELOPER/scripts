@@ -287,12 +287,16 @@ function Growable:LongUpdate(dt)
         else
             dt = dt - timeleft
 
-            self:DoGrowth(true)
+            local grew = self:DoGrowth(true)
+
+            if grew and self.growonly then
+                currentstage = math.min(currentstage + 1, #self.stages) -- Increase this for the sake of running growfn below for growonly things.
+            end
         end
     end
 
-    if self.inst:IsValid() and (self.growonly or currentstage ~= self.stage) then
-        local stagedata = self:GetCurrentStageData()
+    if self.inst:IsValid() and currentstage ~= self.stage then
+        local stagedata = self.stages[self.growonly and currentstage or self.stage]
 
         if stagedata ~= nil and stagedata.growfn ~= nil then
             stagedata.growfn(self.inst)
@@ -337,10 +341,19 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------
 
 function Growable:GetDebugString()
+    local sleeptime = self.sleeptime ~= nil and (GetTime() - self.sleeptime) or 0
+
     return
-        (self:IsGrowing() and self.stage ~= self:GetNextStage() and string.format("Growing! stage %d, timeleft %2.2fs", self.stage, self.targettime - GetTime()))
-        or (self:IsPaused() and string.format("Paused! stage %d, timeleft %2.2fs", self.stage, self.pausedremaining))
-        or "Not Growing"
+        (
+            self:IsGrowing() and self.stage ~= self:GetNextStage() and
+            string.format("Growing! stage %d, timeleft %2.2fs", self.stage, self.targettime - GetTime() - sleeptime)
+        )
+        or
+        (
+            self:IsPaused() and
+            string.format("Paused! stage %d, timeleft %2.2fs", self.stage, self.pausedremaining))
+        or
+            "Not Growing"
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------

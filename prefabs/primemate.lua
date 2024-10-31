@@ -281,6 +281,8 @@ local function OnDeath(inst,data)
     inst.components.inventory:DropItem(item, nil, true)
 end
 
+local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry_up" }
+
 local function fn()
     local inst = CreateEntity()
 
@@ -329,6 +331,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
 
     inst.soundtype = ""
 

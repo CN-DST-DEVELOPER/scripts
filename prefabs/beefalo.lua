@@ -705,6 +705,9 @@ function fns.OnRevived(inst, revive)
 
     inst.components.trader:SetAbleToAcceptTest(nil)
 
+    -- Set up this again since it's stopped on death.
+    inst.components.saltlicker:SetUp(TUNING.SALTLICK_BEEFALO_USES)
+
     -- These are called when exiting the revive state.
 
     -- inst.components.beard:EnableGrowth(true)

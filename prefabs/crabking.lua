@@ -682,15 +682,6 @@ local function OnLoadPostPass(inst, newents, data)
         inst.AnimState:Show("water")
         inst:DoTaskInTime(0, function() inst.Physics:SetCapsule(ICEHOLE_PHYSICS_RADIUS, 2) end)
 
-
-        local keystonecount = 0
-
-        for i,stone in ipairs(inst.keystones) do
-            if stone then
-                keystonecount = keystonecount + 1
-            end
-        end
-
         if inst.keystones ~= nil and #inst.keystones < #KEYSTONE_POSITIONS then
             startendicetask(inst)
             inst:AddTag("notarget")

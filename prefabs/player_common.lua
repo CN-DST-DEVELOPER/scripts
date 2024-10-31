@@ -1763,6 +1763,24 @@ local function OnWormDigestionSound(inst)
     end 
 end
 
+local BLACKOUT_COLOURCUBES =
+{
+    day = "images/colour_cubes/blackout_cc.tex",
+    dusk = "images/colour_cubes/blackout_cc.tex",
+    night = "images/colour_cubes/blackout_cc.tex",
+    full_moon = "images/colour_cubes/blackout_cc.tex",
+}
+
+local function OnBlackoutDirty(inst)
+    if ThePlayer ~= nil and  ThePlayer == inst and inst.components.playervision then
+        if inst._blackout:value(true) then
+            inst.components.playervision:PushForcedNightVision("vision", 1, BLACKOUT_COLOURCUBES, true) 
+        else
+            inst.components.playervision:PopForcedNightVision("vision")
+        end
+    end
+end
+
 local function OnParasiteOverlayDirty(inst)
     if ThePlayer ~= nil and  ThePlayer == inst then
         ThePlayer:PushEvent("parasitethralllevel", inst._parasiteoverlay:value())
@@ -2332,6 +2350,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         inst._wormdigestionsound = net_bool(inst.GUID, "localplayer._wormdigestionsound","wormdigestionsounddirty")
         inst._parasiteoverlay = net_bool(inst.GUID, "localplayer._parasiteoverlay","parasiteoverlaydirty")
         inst._parasiteoverlay:set(false)
+        inst._blackout = net_bool(inst.GUID, "localplayer._blackout","blackoutdirty")
+        inst._blackout:set(false)        
 
         if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
             inst.yotb_skins_sets = net_shortint(inst.GUID, "player.yotb_skins_sets")
@@ -2362,6 +2382,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
 
         
         inst:ListenForEvent("parasiteoverlaydirty", OnParasiteOverlayDirty)
+        inst:ListenForEvent("blackoutdirty", OnBlackoutDirty)
+        
 
 
         inst.PostActivateHandshake = ex_fns.PostActivateHandshake

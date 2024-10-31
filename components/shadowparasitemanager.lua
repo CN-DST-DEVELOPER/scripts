@@ -144,13 +144,21 @@ function ShadowParasiteManager:ChoseHostCreature()
     return weighted_random_choice(self._WEIGHTED_HOSTS_TABLE)
 end
 
-function ShadowParasiteManager:SpawnHostCreature(creature)
+function ShadowParasiteManager:SpawnHostCreature()
     local choice = self:ChoseHostCreature()
+
+    if choice == nil then
+        return
+    end
 
     local host = SpawnPrefab(choice)
 
     if host ~= nil then
         self:AddParasiteToHost(host)
+
+        if host.components.spawnfader ~= nil then
+            host.components.spawnfader:FadeIn()
+        end
     end
 
     return host
@@ -182,15 +190,17 @@ function ShadowParasiteManager:SpawnParasiteWaveForPlayer(player, joining)
         if offset ~= nil then
             local host = self:SpawnHostCreature()
 
-            local np = pt + offset
+            if host ~= nil then
+                local np = pt + offset
 
-            host.Transform:SetPosition(np:Get())
-            host.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/appear_taunt_offscreen")
+                host.Transform:SetPosition(np:Get())
+                host.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/appear_taunt_offscreen")
 
-            if joining then
-                host:DoTaskInTime(JOIN_TARGET_DELAY, SuggestTarget, player)
-            else
-                SuggestTarget(host, player)
+                if joining then
+                    host:DoTaskInTime(JOIN_TARGET_DELAY, SuggestTarget, player)
+                else
+                    SuggestTarget(host, player)
+                end
             end
         end
     end
@@ -328,7 +338,11 @@ end
 
 function ShadowParasiteManager:OverrideBlobSpawn(player)
     if self:GetShadowRift() == nil then
-        return
+        return false
+    end
+
+    if not next(self._WEIGHTED_HOSTS_TABLE) then
+        return false -- All creatures are disabled in world settings...
     end
 
     if self.num_waves > 0 and math.random() <= TUNING.SHADOWTHRALL_PARASITE_BLOBOVERRIDE then
@@ -371,6 +385,10 @@ function ShadowParasiteManager:ReviveHosted(inst)
 
     if inst.components.combat ~= nil then
         inst.components.combat:DropTarget()
+    end
+
+    if inst.components.herdmember ~= nil then
+        inst.components.herdmember:Enable(false)
     end
 
     -- FIXME(DiogoW): Things targetting us don't lose target... so parasites can attack each other in this case.
