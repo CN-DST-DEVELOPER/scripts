@@ -258,9 +258,7 @@ function Freezable:Freeze(freezetime)
         self:StartWearingOff(freezetime)
         self:UpdateTint()
 
-        if self.inst.brain ~= nil then
-            self.inst.brain:Stop()
-        end
+		self.inst:StopBrain("frozen")
 
         if self.inst.components.combat ~= nil then
             self.inst.components.combat:SetTarget(nil)
@@ -289,10 +287,7 @@ function Freezable:Unfreeze()
         self:UpdateTint()
 
         if not (self.inst.components.health ~= nil and self.inst.components.health:IsDead()) then
-            if self.inst.brain ~= nil then
-                self.inst.brain:Start()
-            end
-
+			self.inst:RestartBrain("frozen")
             self.inst:PushEvent("unfreeze")
 
             -- prevent going from unfreeze immediately into an attack, it looks weird

@@ -65,6 +65,7 @@ require("map/rooms/cave/sinkhole")
 require("map/rooms/cave/spillagmites")
 require("map/rooms/cave/swamp")
 require("map/rooms/cave/toadstoolarena")
+require("map/rooms/cave/vents")
 
 require("map/rooms/cave/ruins")
 

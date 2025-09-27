@@ -35,6 +35,7 @@ local events =
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnDeath(),
@@ -558,6 +559,7 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
 return StateGraph("powdermonkey", states, events, "idle", actionhandlers)

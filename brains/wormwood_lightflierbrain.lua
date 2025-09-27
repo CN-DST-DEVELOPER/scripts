@@ -20,6 +20,7 @@ function Wormwood_LightFlierBrain:OnStart()
                         WaitNode(6),
                     }),
 				BrainCommon.PanicTrigger(self.inst),
+                BrainCommon.ElectricFencePanicTrigger(self.inst),
 
                 -- Else no need to do anything from here, movement is handled on update from outside sources.
                 ActionNode(function()

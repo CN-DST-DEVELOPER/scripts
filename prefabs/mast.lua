@@ -43,7 +43,7 @@ local prefabs =
 {
 	"boat_mast_sink_fx",
 	"collapse_small",
-    "mast_item", -- deprecated but kept for existing worlds and mods
+    "mast_item",
     "mastupgrade_lamp",
     "mastupgrade_lightningrod",
 }
@@ -52,7 +52,7 @@ local malbatross_prefabs =
 {
 	"boat_malbatross_mast_sink_fx",
 	"collapse_small",
-    "mast_malbatross_item", -- deprecated but kept for existing worlds and mods
+    "mast_malbatross_item",
     "mastupgrade_lamp",
     "mastupgrade_lightningrod",
 }

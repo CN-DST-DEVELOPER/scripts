@@ -122,6 +122,8 @@ local WaveManager = Class(function(self, inst)
 
 	self.shimmer_per_sec_mod = 1.0
 
+    self.blockers = {} --[inst] = dist
+
 	self.inst:StartUpdatingComponent(self)
 end)
 
@@ -135,6 +137,28 @@ local function calcPerSecMult(min, max)
 	local percent = (math.clamp(TheCamera:GetDistance(), 30, 100) - 30) / (70)
 	local mult = (1.5 - 1) * percent + 1 -- 1x to 1.5x
 	return mult
+end
+
+local function canSpawn(self, map, x, y, z, g)
+    if map:GetTileAtPoint(x, y, z) ~= g then
+        return false
+    end
+
+    for inst, dist in pairs(self.blockers) do
+        if inst:GetDistanceSqToPoint(x, y, z) < dist * dist then
+            return false
+        end
+    end
+    --
+    return true
+end
+
+function WaveManager:RegisterBlocker(inst, dist)
+    self.blockers[inst] = dist
+end
+
+function WaveManager:UnregisterBlocker(inst)
+    self.blockers[inst] = nil
 end
 
 function WaveManager:OnUpdate(dt)
@@ -154,7 +178,7 @@ function WaveManager:OnUpdate(dt)
 			local x, y, z = px + dx, py, pz + dz
 
 			if shimmer.tryspawn then
-				if map:GetTileAtPoint(x, y, z) == g then
+				if canSpawn(self, map, x, y, z, g) then
 					shimmer.tryspawn(self, map, x, y, z)
 				end
 			elseif shimmer.checkfn(self, map, x, y, z, g) then

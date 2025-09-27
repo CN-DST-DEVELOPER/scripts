@@ -174,8 +174,8 @@ local Boons = {
 }
 
 local layouts = {}
-for k,area in pairs(Boons) do
-	if GetTableSize(area) >0 then
+for _, area in pairs(Boons) do
+	if GetTableSize(area) > 0 then
 		for name, layout in pairs(area) do
 			layouts[name] = layout
 		end

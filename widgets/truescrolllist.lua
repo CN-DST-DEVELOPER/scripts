@@ -344,6 +344,8 @@ function TrueScrollList:OnUpdate(dt)
     else
         self.itemfocus = nil
 	end
+
+	self:RefreshVirtualScrollButtonHints()
 end
 
 function TrueScrollList:ResetScroll()
@@ -556,14 +558,41 @@ function TrueScrollList:OnFocusMove(dir, down)
     return did_parent_move
 end
 
+function TrueScrollList:RefreshVirtualScrollButtonHints()
+	local controller_id
+	if self.up_button_controllerhint.shown and self.control_up >= VIRTUAL_CONTROL_START then
+		local up_ctrl = TheInput:ResolveVirtualControls(self.control_up)
+		if up_ctrl then
+			controller_id = TheInput:GetControllerID()
+			up_ctrl = TheInput:GetLocalizedControl(controller_id, up_ctrl)
+		end
+		self.up_button_controllerhint:SetString(up_ctrl or "")
+	end
+	if self.down_button_controllerhint.shown and self.control_down >= VIRTUAL_CONTROL_START then
+		local down_ctrl = TheInput:ResolveVirtualControls(self.control_down)
+		if down_ctrl then
+			controller_id = controller_id or TheInput:GetControllerID()
+			down_ctrl = TheInput:GetLocalizedControl(controller_id, down_ctrl)
+		end
+		self.down_button_controllerhint:SetString(down_ctrl or "")
+	end
+end
+
 function TrueScrollList:OverrideControllerButtons(control_up, control_down, hints_enabled)
 	self.control_up = control_up or self.control_up
 	self.control_down = control_down or self.control_down
 	self.control_scroll_repeat_time = -1
 
 	if hints_enabled then
-		self.up_button_controllerhint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_up))
-		self.down_button_controllerhint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_down))
+		local controller_id
+		if self.control_up < VIRTUAL_CONTROL_START then
+			controller_id = TheInput:GetControllerID()
+			self.up_button_controllerhint:SetString(TheInput:GetLocalizedControl(controller_id, self.control_up))
+		end
+		if self.control_down < VIRTUAL_CONTROL_START then
+			controller_id = controller_id or TheInput:GetControllerID()
+			self.down_button_controllerhint:SetString(TheInput:GetLocalizedControl(controller_id, self.control_down))
+		end
 
 		self.up_button_controllerhint:Show()
 		self.down_button_controllerhint:Show()
@@ -581,7 +610,9 @@ function TrueScrollList:ClearOverrideControllerButtons()
 	self.up_button:Show()
 	self.down_button:Show()
 
+	self.up_button_controllerhint:SetString("")
 	self.up_button_controllerhint:Hide()
+	self.down_button_controllerhint:SetString("")
 	self.down_button_controllerhint:Hide()
 end
 
@@ -589,7 +620,7 @@ function TrueScrollList:OnControl(control, down)
 	if TrueScrollList._base.OnControl(self, control, down) then return true end
 
     if down and (self.focus or FunctionOrValue(self.custom_focus_check)) and self.scroll_bar:IsVisible() then
-        if control == self.control_up then
+		if control == TheInput:ResolveVirtualControls(self.control_up) then
             local scroll_amt = -self.scroll_per_click
             if TheInput:ControllerAttached() then
                 scroll_amt = scroll_amt / 2
@@ -598,7 +629,7 @@ function TrueScrollList:OnControl(control, down)
                 TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_mouseover", nil, ClickMouseoverSoundReduction())
             end
             return true
-        elseif control == self.control_down then
+		elseif control == TheInput:ResolveVirtualControls(self.control_down) then
             local scroll_amt = self.scroll_per_click
             if TheInput:ControllerAttached() then
                 scroll_amt = scroll_amt / 2
@@ -616,11 +647,20 @@ function TrueScrollList:GetHelpText()
 
 	local t = {}
 	if self:CanScroll() then
-	    table.insert(t, TheInput:GetLocalizedControl(controller_id, self.control_up) .. "/" .. TheInput:GetLocalizedControl(controller_id, self.control_down) .. " " .. STRINGS.UI.HELP.SCROLL)
+		local up_ctrl = TheInput:ResolveVirtualControls(self.control_up)
+		local down_ctrl = TheInput:ResolveVirtualControls(self.control_down)
+		if up_ctrl then
+			up_ctrl = TheInput:GetLocalizedControl(controller_id, up_ctrl)
+		end
+		if down_ctrl then
+			down_ctrl = TheInput:GetLocalizedControl(controller_id, down_ctrl)
+		end
+		if up_ctrl or down_ctrl then
+			table.insert(t, (up_ctrl or "")..(up_ctrl and down_ctrl and "/" or "")..(down_ctrl or "").." "..STRINGS.UI.HELP.SCROLL)
+		end
 	end
 
 	return table.concat(t, "  ")
 end
 
 return TrueScrollList
-

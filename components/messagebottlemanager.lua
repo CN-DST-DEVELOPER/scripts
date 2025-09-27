@@ -24,6 +24,13 @@ local WATER_RADIUS_CHECK_BIAS = -4
 local SHORE_CHECK_RADIUS = 2
 local SHORE_CHECK_ATTEMPTS = 12
 
+local BLOCKER_TAGS = {"blocker"}
+
+local WHIRL_PORTAL_TAGS = {"oceanwhirlbigportal"}
+local WHIRL_PORTAL_RADIUS = 16 -- Perfectly matching the spatial cell radius!
+
+local BLOCKER_RADIUS = 1
+
 --------------------------------------------------------------------------
 --[[ Member variables ]]
 --------------------------------------------------------------------------
@@ -79,6 +86,19 @@ local function getoffsetfromtreasurespawnpoint(point_ind, radius, attempts, doer
 	-- If a point was found a check is also made to make sure it's not right next to land
 	if FindSwimmableOffset(Vector3(x, y, z), 0, SHORE_CHECK_RADIUS, SHORE_CHECK_ATTEMPTS) == nil then
 		return nil
+	end
+	
+	-- Don't spawn close to a big whirl portal
+	if TheSim:CountEntities(x, y, z, WHIRL_PORTAL_RADIUS, WHIRL_PORTAL_TAGS) > 0 then
+		return nil
+	end
+
+	-- Don't spawn close to a blocker
+	for _, ent in ipairs(TheSim:FindEntities(x, y, z, BLOCKER_RADIUS + MAX_PHYSICS_RADIUS, nil, nil, BLOCKER_TAGS)) do
+		local range = BLOCKER_RADIUS + ent:GetPhysicsRadius(0)
+		if ent:GetDistanceSqToPoint(x, 0, z) < range * range then
+			return nil
+		end
 	end
 
 	for _, v in ipairs(AllPlayers) do

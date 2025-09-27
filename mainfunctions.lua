@@ -274,6 +274,28 @@ function LoadAchievements( filename )
     return ret
 end
 
+function LoadHapticEffects( filename )
+    local fn, r = loadfile(filename)
+    assert(fn, "Could not load file ".. filename)
+    if type(fn) == "string" then
+        assert(false, "Error loading file "..filename.."\n"..fn)
+    end
+    assert( type(fn) == "function", "Haptics file doesn't return a callable chunk: "..filename)
+    local ret = {fn()}
+
+    if ret then
+        for i,val in ipairs(ret) do
+            if type(val)=="table" then
+                for i, effect in ipairs(val) do
+                    TheHaptics:RegisterEffect(effect)
+                end
+            end
+        end
+    end
+
+    return ret
+end
+
 function AwardFrontendAchievement( name )
     if IsConsole() then
 	    TheGameService:AwardAchievement(name, nil)
@@ -329,6 +351,10 @@ function SpawnPrefabFromSim(name)
     local prefab = Prefabs[name]
     if prefab == nil then
         print( "Can't find prefab " .. tostring(name) )
+        if not AreAnyModsEnabled() and not TheNet:GetServerModsEnabled() then
+            print("This is bug reportable if found please send the following stack trace.")
+            print(_TRACEBACK())
+        end
         return -1
     end
 
@@ -650,23 +676,23 @@ function OnEntitySleep(guid)
             inst:OnEntitySleep()
         end
 
-        inst:StopBrain()
+		inst:_DisableBrain_Internal()
 
         if inst.sg then
             SGManager:Hibernate(inst.sg)
         end
+
+		inst.sleepstatepending = nil
 
         if inst.emitter then
             EmitterManager:Hibernate(inst.emitter)
         end
 
         for k,v in pairs(inst.components) do
-
             if v.OnEntitySleep then
                 v:OnEntitySleep()
             end
         end
-
     end
 end
 
@@ -684,11 +710,13 @@ function OnEntityWake(guid)
         --     :HasTag("INLIMBO").  But there should be no networked
         --     entities on clients that can go to sleep.
         if not inst:IsInLimbo() then
-            inst:RestartBrain()
+			inst:_EnableBrain_Internal()
             if inst.sg then
                 SGManager:Wake(inst.sg)
             end
         end
+
+		inst.sleepstatepending = nil
 
         if inst.emitter then
             EmitterManager:Wake(inst.emitter)
@@ -779,6 +807,8 @@ function OnServerPauseDirty(pause, autopause, gameautopause, source)
     if TheWorld then
         TheWorld:PushEvent("serverpauseddirty", {pause = pause, autopause = autopause, gameautopause = gameautopause, source = source})
     end
+
+    TheHaptics:PauseEffects(IsNormalPaused)
 end
 
 function ReplicateEntity(guid)
@@ -1582,7 +1612,7 @@ function DisplayError(error)
                                                                 SimReset()
                                                             end)
                                                         end},
-                {text=STRINGS.UI.MAINSCREEN.MODFORUMS, nopop=true, cb = function() VisitURL("http://forums.kleientertainment.com/forum/79-dont-starve-together-beta-mods-and-tools/") end }
+                {text=STRINGS.UI.MAINSCREEN.MODFORUMS, nopop=true, cb = function() VisitURL("https://forums.kleientertainment.com/forum/79-dont-starve-together-beta-mods-and-tools/") end }
             }
 
             -- Add reload save button if we're on dev
@@ -1631,7 +1661,7 @@ function DisplayError(error)
             end
 
             if known_error_key == nil or ERRORS[known_error_key] == nil then
-                table.insert(buttons, {text=STRINGS.UI.MAINSCREEN.ISSUE, nopop=true, cb = function() VisitURL("http://forums.kleientertainment.com/klei-bug-tracker/dont-starve-together/") end })
+                table.insert(buttons, {text=STRINGS.UI.MAINSCREEN.ISSUE, nopop=true, cb = function() VisitURL("https://forums.kleientertainment.com/klei-bug-tracker/dont-starve-together/") end })
             elseif known_error.url ~= nil then
                 table.insert(buttons, {text=STRINGS.UI.MAINSCREEN.GETHELP, nopop=true, cb = function() VisitURL(known_error.url) end })
             end
@@ -2044,6 +2074,12 @@ function ResumeExistingUserSession(data, guid)
 
             -- Spawn the player to last known location
 			local x, y, z, platform = ResolveSaveRecordPosition(data)
+            if TheWorld.Map:IsPointInVaultRoom(x, y, z) then
+                local vault_lobby_center = TheWorld.components.vaultroommanager:GetVaultLobbyCenterMarker()
+                if vault_lobby_center then
+                    x, y, z = vault_lobby_center.Transform:GetWorldPosition()
+                end
+            end
 			TheWorld.components.playerspawner:SpawnAtLocation(TheWorld, player, x, y, z, true)
 			if platform ~= nil then
 				player.components.walkableplatformplayer:TestForPlatform()
@@ -2155,6 +2191,175 @@ function NotifyLoadingState(loading_state, match_results)
     end
 end
 
+
+local BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+local BASE64_LOOKUP = {}
+for i = 1, #BASE64_CHARS do
+    BASE64_LOOKUP[BASE64_CHARS:sub(i, i)] = i - 1
+end
+local WORLDSTATE_NAMESPACES = {}
+function CreateWorldStateTag(namespace, atlas)
+    if WORLDSTATE_NAMESPACES[namespace] or not namespace:find(":") then
+        return nil
+    end
+
+    local object
+    local namespacelen = #namespace
+
+    local TAGS = {}
+    local WORDS = {[1] = {},}
+    local wordindex = 1
+    local wordbit = 1
+    local function DeclareTag(tag)
+        if TAGS[tag] == nil then
+            TAGS[tag] = {bit = wordbit, enabled = false}
+            table.insert(WORDS[wordindex], tag)
+            wordbit = bit.lshift(wordbit, 1)
+            if wordbit == 64 then
+                wordbit = 1
+                wordindex = wordindex + 1
+                WORDS[wordindex] = {}
+            end
+        end
+    end
+    local function Lock() -- Makes the object read only.
+        object.DeclareTag = nil
+        object.Lock = nil
+    end
+
+    local function EncodeTags() -- Returns stored stated into encoded string.
+        local encoded = {namespace}
+        for word = 1, wordindex do
+            local wordvalue = 0
+            for _, tag in ipairs(WORDS[word]) do
+                local tagdata = TAGS[tag]
+                if tagdata.enabled then
+                    wordvalue = wordvalue + tagdata.bit
+                end
+            end
+            table.insert(encoded, BASE64_CHARS:sub(wordvalue + 1, wordvalue + 1))
+        end
+        return table.concat(encoded)
+    end
+    local function IsTagEncoded(encoded_maybe)
+        return encoded_maybe:sub(1, namespacelen) == namespace
+    end
+    local function DecodeTags(encoded, merge) -- Writes encoded string into stored state with an optional merging of the current state.
+        if object.IsTagEncoded(encoded) then
+            for word = 1, wordindex do
+                local wordvalue = BASE64_LOOKUP[encoded:sub(word + namespacelen, word + namespacelen)] or 0
+                local tags = WORDS[word]
+                local wordbit = 1
+                for i = 1, 6 do
+                    local tag = tags[i]
+                    if tag then
+                        local enabled = bit.band(wordvalue, wordbit) ~= 0
+                        object.SetTagEnabled(tag, enabled or (merge and object.GetTagEnabled(tag)) or false)
+                        wordbit = bit.lshift(wordbit, 1)
+                    else
+                        break
+                    end
+                end
+            end
+            if TheNet:GetIsHosting() then
+                UpdateServerTagsString()
+            end
+        end
+    end
+    local function SetTagEnabled(tag, enabled, donotupdate)
+        if TAGS[tag].enabled ~= enabled then
+            TAGS[tag].enabled = enabled
+            if TheNet:GetIsHosting() then
+                if not donotupdate then
+                    UpdateServerTagsString()
+                end
+                if not Shard_IsMaster() then -- Always update the master shard so tags can be updated on the server listing.
+                    SendRPCToShard(SHARD_RPC.SyncWorldStateTag, SHARDID.MASTER, namespace, tag, enabled)
+                end
+            end
+        end
+    end
+    local function GetTagEnabled(tag)
+        return TAGS[tag].enabled
+    end
+    local function ClearAllTags()
+        object.DecodeTags(namespace)
+    end
+    local function ForEachTag(fn)
+        for word = 1, wordindex do
+            for _, tag in ipairs(WORDS[word]) do
+                fn(tag)
+            end
+        end
+    end
+
+    local function DebugPrintTags()
+        print("WorldStateTags for namespace", namespace)
+        object.ForEachTag(function(tag)
+            print(">", tag, object.GetTagEnabled(tag))
+        end)
+    end
+
+    object = {
+        namespace = namespace, -- Read only reference.
+        namespace_nocolon = namespace:sub(1, -2), -- For STRINGS use.
+        atlas = atlas,
+        -- Functions.
+        DeclareTag = DeclareTag,
+        Lock = Lock,
+        -- Safe from Lock functions.
+        EncodeTags = EncodeTags,
+        IsTagEncoded = IsTagEncoded,
+        DecodeTags = DecodeTags,
+        SetTagEnabled = SetTagEnabled,
+        GetTagEnabled = GetTagEnabled,
+        ClearAllTags = ClearAllTags,
+        ForEachTag = ForEachTag,
+        -- Debug.
+        DebugPrintTags = DebugPrintTags,
+    }
+    WORLDSTATE_NAMESPACES[namespace] = object
+    table.insert(WORLDSTATE_NAMESPACES, namespace)
+
+    return object
+end
+function GetWorldStateTagObjectFromNamespace(namespace)
+    return WORLDSTATE_NAMESPACES[namespace]
+end
+function GetWorldStateTagObjectFromTag(tag)
+    for _, namespace in ipairs(WORLDSTATE_NAMESPACES) do
+        local worldstatetagobject = GetWorldStateTagObjectFromNamespace(namespace)
+        if worldstatetagobject.IsTagEncoded(tag) then
+            return worldstatetagobject
+        end
+    end
+    return nil
+end
+function ForEachWorldStateTagObject(fn, ...)
+    for _, namespace in ipairs(WORLDSTATE_NAMESPACES) do
+        local worldstatetagobject = GetWorldStateTagObjectFromNamespace(namespace)
+        fn(worldstatetagobject, ...)
+    end
+end
+
+-- NOTES(JBK): World state tags are combined into one tag string that is parsed.
+-- Since server tags has a maximum of 1024 characters total this should be compact to support many tags.
+-- For this we will use a bit field and encode the tag with a fake base64 encoding of 6 bits per word max.
+-- For mods that want to add their own world state tag system they should use their own namespace token.
+WORLDSTATETAGS = CreateWorldStateTag("WS:", "images/worldprogressionfilters.xml") -- This namespace is reserved for the base game.
+-- Forest.
+WORLDSTATETAGS.DeclareTag("CELESTIAL_ORB_FOUND")
+WORLDSTATETAGS.DeclareTag("CELESTIAL_PORTAL_BUILT")
+WORLDSTATETAGS.DeclareTag("CRABBY_HERMIT_HAPPY")
+WORLDSTATETAGS.DeclareTag("LUNAR_RIFTS_ACTIVE")
+-- Caves.
+WORLDSTATETAGS.DeclareTag("ATRIUM_KEY_FOUND")
+--WORLDSTATETAGS.DeclareTag("") -- FIXME(JBK): It would be nice for a CELESTIAL_PORTAL_BUILT thing here for caves.
+WORLDSTATETAGS.DeclareTag("ARCHIVES_ENERGIZED")
+WORLDSTATETAGS.DeclareTag("SHADOW_RIFTS_ACTIVE")
+WORLDSTATETAGS.Lock()
+
+
 function BuildTagsStringCommon(tagsTable)
     -- Vote command tags (controlled by master server only)
     if not TheShard:IsSecondary() and TheNet:GetDefaultVoteEnabled() then
@@ -2166,7 +2371,9 @@ function BuildTagsStringCommon(tagsTable)
         for k, v in pairs(Shard_GetConnectedShards()) do
             if v.tags ~= nil then
                 for i, tag in ipairs(v.tags:split(",")) do
-                    table.insert(tagsTable, tag)
+                    if not GetWorldStateTagObjectFromTag(tag) then
+                        table.insert(tagsTable, tag)
+                    end
                 end
             end
         end
@@ -2195,6 +2402,13 @@ function BuildTagsStringCommon(tagsTable)
         if v:len() > 0 and not tagged[v] then
             tagged[v] = true
             tagsString = tagsString:len() > 0 and (tagsString..","..v) or v
+        end
+    end
+
+    if Shard_IsMaster() then
+        for _, namespace in ipairs(WORLDSTATE_NAMESPACES) do
+            local worldstatetagobject = GetWorldStateTagObjectFromNamespace(namespace)
+            tagsString = worldstatetagobject.EncodeTags() .. "," .. tagsString
         end
     end
 

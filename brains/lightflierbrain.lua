@@ -100,6 +100,7 @@ function LightFlierBrain:OnStart()
                         WaitNode(6),
                     }),
 				BrainCommon.PanicTrigger(self.inst),
+                BrainCommon.ElectricFencePanicTrigger(self.inst),
 
                 WhileNode(function() return GetTime() - self.inst._time_since_formation_attacked < TUNING.LIGHTFLIER.ON_ATTACKED_ALERT_DURATION end, "Recently Attacked",
                     RunAway(self.inst, hunterparams_alert, SEE_THREAT_DIST_ALERT, STOP_RUN_DIST_ALERT)),

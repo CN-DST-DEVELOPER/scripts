@@ -4,7 +4,8 @@ local assets =
 }
 
 local function OnEntityWake(inst)
-    inst.SoundEmitter:PlaySound("grotto/common/chandelier_LP", "loop")
+    -- Don't play any sound. This is a 'fake' opening.
+    --inst.SoundEmitter:PlaySound("dontstarve/AMB/caves/forest_spot", "loop")
 end
 
 local function OnEntitySleep(inst)
@@ -13,28 +14,35 @@ end
 
 local function SetDuration(inst, duration)
     inst.duration = duration
-    inst.kill_task = inst:DoTaskInTime(duration, inst.Remove)
+    inst.kill_task = inst:DoTaskInTime(duration, inst.FadeOut)
 end
 
 local function FadeOut(inst)
-    local radius = 3
-    local intensity = 0.85
+    if inst:IsAsleep() then
+        inst:Remove()
+    else
+        local radius = 3
+        local intensity = 0.85
+        local falloff = 0.3
 
-    inst.AnimState:PlayAnimation("off")
+        inst.AnimState:PlayAnimation("off")
+        inst.persists = false
 
-    inst:DoPeriodicTask(21 * FRAMES, function() 
-        radius = radius - (3/21)
-        intensity = intensity - (0.85/21)
-        inst.Light:SetRadius(radius)
-        inst.Light:SetIntensity(intensity)
-    end)
+        inst:DoPeriodicTask(FRAMES, function()
+            radius = radius - (3/7)
+            intensity = intensity - (0.85/7)
+            falloff = falloff + (0.3/7)
+            inst.Light:SetRadius(radius)
+            inst.Light:SetIntensity(intensity)
+            inst.Light:SetFalloff(falloff)
+        end)
 
-    --inst:DoTaskInTime(7 * FRAMES, inst.Remove)
+        inst:ListenForEvent("animover", inst.Remove)
+    end
 end
 
 local function onsave(inst, data)
-    local time_remaining = GetTaskRemaining(inst.kill_task)
-    data.time_remaining = time_remaining
+    data.time_remaining = GetTaskRemaining(inst.kill_task)
 end
 
 local function onload(inst, data)

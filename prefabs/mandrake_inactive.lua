@@ -11,7 +11,7 @@ local prefabs =
     "mandrake_active",
 }
 
-local function onpickup(inst)
+local function onputininventory(inst)
     inst.AnimState:PlayAnimation("object")
 end
 
@@ -109,6 +109,9 @@ local function commonfn(anim, cookable)
         inst.components.cookable:SetOnCookedFn(oncooked)
     end
 
+	MakeSmallBurnable(inst)
+	MakeSmallPropagator(inst)
+
     return inst
 end
 
@@ -123,7 +126,7 @@ local function rawfn()
     inst.components.edible.hungervalue = TUNING.CALORIES_HUGE
     inst.components.edible:SetOnEatenFn(oneaten_raw)
 
-    inst.components.inventoryitem:SetOnPickupFn(onpickup)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(onputininventory)
 
     return inst
 end

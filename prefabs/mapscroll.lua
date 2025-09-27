@@ -31,11 +31,15 @@ local function OnDataChanged(inst)
         inst.components.inventoryitem:ChangeImageName("mapscroll_cave")
     else
         inst.AnimState:SetBuild("mapscroll")
-        inst.components.inventoryitem:ChangeImageName()
+        if inst.prefab == "mapscroll" then
+            inst.components.inventoryitem:ChangeImageName()
+        else
+            inst.components.inventoryitem:ChangeImageName("mapscroll")
+        end
     end
 end
 
-local function fn()
+local function common_clientfn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -50,12 +54,13 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.85)
 
-    inst.entity:SetPristine()
+    inst:AddTag("mapscroll")
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
+    return inst
+end
 
+local function common_serverfn(inst)
+    inst:AddComponent("tradable")
     inst:AddComponent("inspectable")
     inst:AddComponent("erasablepaper")
 
@@ -77,8 +82,33 @@ local function fn()
     MakeHauntableLaunch(inst)
 
     inst.OnBuiltFn = OnBuilt
+end
+
+local function fn()
+    local inst = common_clientfn()
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+    common_serverfn(inst)
 
     return inst
 end
 
-return Prefab("mapscroll", fn, assets)
+local function fn_tricker()
+    local inst = common_clientfn()
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+    common_serverfn(inst)
+    inst.components.inspectable.nameoverride = "mapscroll"
+    inst.components.inventoryitem:ChangeImageName("mapscroll")
+
+    return inst
+end
+
+return Prefab("mapscroll", fn, assets),
+    Prefab("mapscroll_tricker", fn_tricker, assets)

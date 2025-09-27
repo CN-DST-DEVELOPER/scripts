@@ -30,6 +30,15 @@ function Unwrappable:SetOnUnwrappedFn(fn)
     self.onunwrappedfn = fn
 end
 
+function Unwrappable:SetPeekContainer(peekcontainer)
+    self.peekcontainer = peekcontainer
+    if self.peekcontainer then
+        self.inst:AddTag("canpeek")
+    else
+        self.inst:RemoveTag("canpeek")
+    end
+end
+
 function Unwrappable:WrapItems(items, doer)
     if #items > 0 then
         self.origin = TheWorld.meta.session_identifier
@@ -105,6 +114,48 @@ function Unwrappable:Unwrap(doer)
     if self.onunwrappedfn ~= nil then
         self.onunwrappedfn(self.inst, pos, doer)
     end
+end
+
+-- NOTES(JBK): Unwrappable:PeekInContainer is similar to Bundler:StartBundling and these two functions should be refactored at some point.
+function Unwrappable:PeekInContainer(doer)
+    if self.itemdata and self.peekcontainer then
+        local peekcontainer = SpawnPrefab(self.peekcontainer)
+        if peekcontainer then
+            if peekcontainer.components.container then
+                peekcontainer.components.container:Open(doer)
+                if peekcontainer.components.container:IsOpenedBy(doer) then
+                    peekcontainer.entity:SetParent(doer.entity)
+                    peekcontainer.persists = false
+                    local creator = self.origin ~= nil and TheWorld.meta.session_identifier ~= self.origin and { sessionid = self.origin } or nil
+                    local failed = false
+                    for slot, v in ipairs(self.itemdata) do
+                        local item = SpawnPrefab(v.prefab, v.skinname, v.skin_id, creator)
+                        if item and item:IsValid() then
+                            item:SetPersistData(v.data)
+                            item.persists = false
+                            if not peekcontainer.components.container:GiveItem(item, slot, nil, false) then
+                                item:Remove()
+                                item = nil
+                                failed = true
+                                break
+                            end
+                        end
+                    end
+                    if not failed then
+                        peekcontainer.components.container:EnableReadOnlyContainer(true)
+                        doer.sg.statemem.bundling = true -- Stops sound from being killed.
+                        doer.sg:GoToState("bundling")
+                        doer.sg.statemem.peeksourceinst = self.inst
+                        doer.sg.statemem.peekcontainer = peekcontainer
+                        return true
+                    end
+                end
+            end
+            peekcontainer:Remove()
+            peekcontainer = nil
+        end
+    end
+    return false
 end
 
 function Unwrappable:OnSave()

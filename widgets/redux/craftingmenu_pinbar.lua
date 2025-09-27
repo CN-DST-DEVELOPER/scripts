@@ -211,10 +211,10 @@ function CraftingMenuPinBar:MakePageSpinner()
 		self:GoToNextPage(true)
 	end)
 
-	w.page_left_control = w:AddChild(Text(DEFAULTFONT, 22, TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_USEONSCENE)))
+	w.page_left_control = w:AddChild(Text(DEFAULTFONT, 22))
 	w.page_left_control:Hide()
 	w.page_left_control:SetPosition(page_x-20, 1)
-	w.page_right_control = w:AddChild(Text(DEFAULTFONT, 22, TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_USEONSELF)))
+	w.page_right_control = w:AddChild(Text(DEFAULTFONT, 22))
 	w.page_right_control:Hide()
 	w.page_right_control:SetPosition(page_x + 15, 1)
 
@@ -243,10 +243,10 @@ function CraftingMenuPinBar:MakePageSpinner()
 		if Image._base.OnControl(s, control, down) then return true end
 
 		if down then
-			if control == CONTROL_INVENTORY_USEONSCENE or (control == CONTROL_SCROLLBACK and not TheInput:ControllerAttached()) then
+			if control == TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_LEFT) or (control == CONTROL_SCROLLBACK and not TheInput:ControllerAttached()) then
 				self:GoToPrevPage()
 				return true
-			elseif control == CONTROL_INVENTORY_USEONSELF or (control == CONTROL_SCROLLFWD and not TheInput:ControllerAttached()) then
+			elseif control == TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_RIGHT) or (control == CONTROL_SCROLLFWD and not TheInput:ControllerAttached()) then
 				self:GoToNextPage()
 				return true
 			end
@@ -257,21 +257,13 @@ function CraftingMenuPinBar:MakePageSpinner()
 
 	w.OnGainFocus = function(s)
 		if self.crafting_hud:IsCraftingOpen() and TheInput:ControllerAttached() then
-			s.page_left:Hide()
-			s.page_right:Hide()
-
-			s.page_left_control:Show()
-			s.page_right_control:Show()
+			self:ShowPageControls()
 		end
 	end
 
 	w.OnLoseFocus = function(s)
 		if self.crafting_hud:IsCraftingOpen() then
-			s.page_left:Show()
-			s.page_right:Show()
-
-			s.page_left_control:Hide()
-			s.page_right_control:Hide()
+			self:HidePageControls()
 		end
 	end
 
@@ -287,9 +279,56 @@ function CraftingMenuPinBar:RefreshPinnedRecipes()
 	end
 end
 
+function CraftingMenuPinBar:RefreshPageControls()
+	if not self.page_spinner.focus and self.crafting_hud:IsCraftingOpen() then
+		self.page_spinner.page_left_control:Hide()
+		self.page_spinner.page_right_control:Hide()
+		self.page_spinner.page_left:Show()
+		self.page_spinner.page_right:Show()
+		return
+	end
+
+	local controller_id = TheInput:GetControllerID()
+	local prev_ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_LEFT)
+	local next_ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_RIGHT)
+
+	if prev_ctrl then
+		self.page_spinner.page_left:Hide()
+		self.page_spinner.page_left_control:SetString(TheInput:GetLocalizedControl(controller_id, prev_ctrl))
+		self.page_spinner.page_left_control:Show()
+	else
+		self.page_spinner.page_left:Show()
+		self.page_spinner.page_left_control:Hide()
+	end
+
+	if next_ctrl then
+		self.page_spinner.page_right:Hide()
+		self.page_spinner.page_right_control:SetString(TheInput:GetLocalizedControl(controller_id, next_ctrl))
+		self.page_spinner.page_right_control:Show()
+	else
+		self.page_spinner.page_right:Show()
+		self.page_spinner.page_right_control:Hide()
+	end
+end
+
+function CraftingMenuPinBar:ShowPageControls()
+	self:StartUpdating()
+end
+
+function CraftingMenuPinBar:HidePageControls()
+	self.page_spinner.page_left:Show()
+	self.page_spinner.page_right:Show()
+	self.page_spinner.page_left_control:Hide()
+	self.page_spinner.page_right_control:Hide()
+	self:StopUpdating()
+end
+
+function CraftingMenuPinBar:OnUpdate(dt)
+	self:RefreshPageControls()
+end
+
 function CraftingMenuPinBar:RefreshControllers(controller_mode)
-	self.page_spinner.page_left_control:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_USEONSCENE))
-	self.page_spinner.page_right_control:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_USEONSELF))
+	--self:RefreshPageControls()
 
 	if TheCraftingMenuProfile:GetCurrentPage() > Profile:GetCraftingNumPinnedPages() then
 		if self.page_spinner ~= nil then
@@ -407,10 +446,10 @@ function CraftingMenuPinBar:OnControl(control, down)
     if CraftingMenuPinBar._base.OnControl(self, control, down) then return true end
 
 	if down and not self.crafting_hud:IsCraftingOpen() then
-		if control == CONTROL_INVENTORY_USEONSCENE then
+		if control == TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_LEFT) then
 			self:GoToPrevPage()
 			return true
-		elseif control == CONTROL_INVENTORY_USEONSELF then
+		elseif control == TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_RIGHT) then
 			self:GoToNextPage()
 			return true
 		end
@@ -447,17 +486,9 @@ end
 function CraftingMenuPinBar:OnGainFocus()
 	if self.page_spinner ~= nil then
 		if not self.crafting_hud:IsCraftingOpen() and TheInput:ControllerAttached() then
-			self.page_spinner.page_left:Hide()
-			self.page_spinner.page_right:Hide()
-
-			self.page_spinner.page_left_control:Show()
-			self.page_spinner.page_right_control:Show()
+			self:ShowPageControls()
 		else
-			self.page_spinner.page_left:Show()
-			self.page_spinner.page_right:Show()
-
-			self.page_spinner.page_left_control:Hide()
-			self.page_spinner.page_right_control:Hide()
+			self:HidePageControls()
 		end
 	end
 end
@@ -465,11 +496,7 @@ end
 function CraftingMenuPinBar:OnLoseFocus()
 	if self.page_spinner ~= nil then
 		if not self.crafting_hud:IsCraftingOpen() then
-			self.page_spinner.page_left:Show()
-			self.page_spinner.page_right:Show()
-
-			self.page_spinner.page_left_control:Hide()
-			self.page_spinner.page_right_control:Hide()
+			self:HidePageControls()
 		end
 	end
 end

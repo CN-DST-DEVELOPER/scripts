@@ -90,6 +90,10 @@ local function MakePortal(name, bank, build, assets, prefabs, common_postinit, m
             return inst
         end
 
+        if name == "multiplayer_portal_moonrock" then
+            WORLDSTATETAGS.SetTagEnabled("CELESTIAL_PORTAL_BUILT", true)
+        end
+
         inst.scrapbook_adddeps = { "moonrockidol", "multiplayer_portal_moonrock_constr_plans" }
 
         inst:SetStateGraph("SGmultiplayerportal")

@@ -41,6 +41,7 @@ rarityList["Elegant"] = true
 rarityList["Timeless"] = true
 rarityList["Reward"] = true
 rarityList["Loyal"] = true
+rarityList["Resurrected"] = true
 rarityList["ProofOfPurchase"] = true
 rarityList["Event"] = true
 

@@ -43,17 +43,28 @@ local function ShouldGoHome(inst)
     return homePos ~= nil and inst:GetDistanceSqToPoint(homePos:Get()) > GO_HOME_DIST * GO_HOME_DIST
 end
 
+local function ShouldDodge(inst)
+	if inst.components.combat:HasTarget() and inst.components.combat:InCooldown() then
+		inst.hit_recovery = TUNING.KNIGHT_DODGE_HIT_RECOVERY
+		return true
+	end
+	inst.hit_recovery = nil
+	return false
+end
+
+local function ShouldAttack(inst)
+	inst.hit_recovery = nil
+	return not ShouldDodge(inst)
+end
+
 function KnightBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
-        WhileNode(function()
-                        return self.inst.components.combat.target == nil
-                            or not self.inst.components.combat:InCooldown()
-                    end,
-                    "AttackMomentarily",
-                    ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST)),
-        WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Dodge",
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
+		WhileNode(function() return ShouldAttack(self.inst) end, "AttackMomentarily",
+			ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST)),
+		WhileNode(function() return ShouldDodge(self.inst) end, "Dodge",
             RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, GoHomeAction, "Go Home", true)),

@@ -363,23 +363,24 @@ local events =
 	CommonHandlers.OnSleepEx(),
 	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
 
 	EventHandler("attacked", function(inst, data)
 		--V2C: health check since corpse shares this SG
-		if inst.components.health ~= nil and not inst.components.health:IsDead() and (
-			not inst.sg:HasStateTag("busy") or
-			inst.sg:HasStateTag("caninterrupt") or
-			inst.sg:HasStateTag("frozen")
-		) then
-			if inst.sg:HasStateTag("staggered") then
-				inst.sg.statemem.staggered = true
-				inst.sg:GoToState("stagger_hit")
-			elseif not CommonHandlers.HitRecoveryDelay(inst) then
-				--hit out of struggle state lowers priority for chain re-entering struggle state
-				inst.sg:GoToState("hit", inst.sg:HasStateTag("struggle"))
+		if inst.components.health and not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen") then
+				if inst.sg:HasStateTag("staggered") then
+					inst.sg.statemem.staggered = true
+					inst.sg:GoToState("stagger_hit")
+				elseif not CommonHandlers.HitRecoveryDelay(inst) then
+					--hit out of struggle state lowers priority for chain re-entering struggle state
+					inst.sg:GoToState("hit", inst.sg:HasStateTag("struggle"))
+				end
 			end
 		end
 	end),
@@ -1012,7 +1013,7 @@ local states =
 	--Transitions from corpse_mutate after prefab switch
 	State{
 		name = "mutate_pst",
-		tags = { "busy", "noattack", "temp_invincible" },
+		tags = { "busy", "noattack", "temp_invincible", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -1604,7 +1605,7 @@ local states =
 
 	State{
 		name = "struggle_pre",
-		tags = { "struggle", "busy" },
+		tags = { "struggle", "busy", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -1634,7 +1635,7 @@ local states =
 
 	State{
 		name = "struggle_loop",
-		tags = { "struggle", "busy" },
+		tags = { "struggle", "busy", "noelectrocute" },
 
 		onenter = function(inst, loops)
 			inst.components.locomotor:Stop()
@@ -1718,7 +1719,7 @@ local states =
 
 	State{
 		name = "stagger_pre",
-		tags = { "staggered", "busy", "nosleep" },
+		tags = { "staggered", "busy", "nosleep", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.sg.mem.dostagger = nil
@@ -1770,6 +1771,7 @@ local states =
 				ShakeAllCameras(CAMERASHAKE.FULL, .7, .02, 2, inst, SHAKE_DIST)
 			end),
 			FrameEvent(46, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
 				inst.sg:AddStateTag("caninterrupt")
 			end),
 		},
@@ -1904,7 +1906,9 @@ local states =
 			end
 			inst.sg.mem.noice = 1
 			inst.sg.mem.noeyeice = true
-			if not nohit then
+			if nohit then
+				inst.sg:AddStateTag("noelectrocute")
+			else
 				inst.sg:AddStateTag("caninterrupt")
 			end
 			if inst.components.sleeper ~= nil then
@@ -1918,6 +1922,7 @@ local states =
 			FrameEvent(33, function(inst)
 				inst.sg:RemoveStateTag("staggered")
 				inst.sg:RemoveStateTag("caninterrupt")
+				inst.sg:RemoveStateTag("noelectrocute")
 				inst.SoundEmitter:PlaySound("rifts3/mutated_deerclops/ice_crackling_LP", "loop")
 			end),
 			FrameEvent(51, function(inst)
@@ -2051,6 +2056,44 @@ CommonStates.AddSleepExStates(states,
     end,
 })
 CommonStates.AddFrozenStates(states)
+
+CommonStates.AddElectrocuteStates(states,
+nil, --timeline
+{	--anims
+	loop = function(inst)
+		if inst.sg.lasttags["staggered"] then
+			inst.sg:AddStateTag("staggered")
+			inst.override_combat_fx_height = "low"
+			return "staggered_shock_loop"
+		end
+	end,
+	pst = function(inst)
+		if inst.sg.lasttags["staggered"] then
+			inst.sg:AddStateTag("staggered")
+			return "staggered_shock_pst"
+		end
+	end,
+},
+{	--fns
+	loop_onenter = function(inst)
+		if inst.sg:HasStateTag("staggered") then
+			--V2C: can change this back since fx is already spawned at this point
+			inst.override_combat_fx_height = nil
+		end
+	end,
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if not inst.sg:HasStateTag("staggered") then
+				inst.sg:GoToState("idle")
+			elseif inst.components.timer:TimerExists("stagger") then
+				inst.sg:GoToState("stagger_idle")
+			else
+				inst.sg:GoToState("stagger_pst", true)
+			end
+		end
+	end,
+})
+
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

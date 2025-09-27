@@ -213,7 +213,7 @@ end
 
 local function OnProjectileCountChanged(inst)
     if #inst._projectiles >= inst.max_projectiles then
-        inst.components.rechargeable:Discharge(math.huge)
+        inst.components.rechargeable:Discharge(999999) -- NOTES(JBK): This is saved so do not make it math.huge.
     else
         inst.components.rechargeable:SetPercent(1)
     end

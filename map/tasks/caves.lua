@@ -188,6 +188,52 @@ AddTask("ToadStoolTask3", {
 ------------------------------------------------------------
 -- Main Caves Branches
 ------------------------------------------------------------
+
+--[[
+Room or setpieces concepts
+
+"TutorialSmash" - bunch of spiders, rock trees, destroy trees to kill spiders, awesome.
+]]
+
+-- Centipede Cave
+AddTask("CentipedeCaveTask", {
+    locks={ LOCKS.CAVE, LOCKS.TIER4, },
+    keys_given={ KEYS.CAVE, KEYS.TIER5, KEYS.CENTIPEDE },
+    room_choices={
+        ["VentsRoom"] = 2 + math.random(2),
+        ["RockTreeRoom"] = 1 + math.random(2),
+        ["VentsRoom_exit"] = 3,
+        ["CentipedeNest"] = 1,
+    },
+    --entrance_room = "MilitaryEntrance",
+    background_room="BGVentsRoom", --BGVentsRoom
+    room_bg=WORLD_TILES.VENT,
+    colour={r=0.8,g=0.8,b=0.8,a=0.9},
+
+    --Trying out a large amount of coves to really make the generation interesting.
+	cove_room_name = "Blank",
+    make_loop = true,
+	cove_room_chance = 1,
+	cove_room_max_edges = 50,
+})
+
+AddTask("CentipedeCaveIslandTask",{
+    locks={ LOCKS.CENTIPEDE },
+    keys_given={ },
+    room_tags = { },
+    level_set_piece_blocker = true,
+    room_choices={
+        ["RuinsIsland"] = 1,
+		["RuinsIsland_entrance"] = 1,
+
+        --["Empty_Cove"] = 2,
+    },
+    region_id = "ruins_island",
+    background_room="BGImpassableRock",
+    room_bg=WORLD_TILES.TILES,
+    colour={r=0.3,g=0.3,b=0.3,a=0.9},
+})
+
 -- Big Bat Cave
 AddTask("BigBatCave", {
     locks={ LOCKS.CAVE, LOCKS.TIER2 },

@@ -75,8 +75,7 @@ local function fn()
 	inst.Physics:SetFriction(0)
 	inst.Physics:SetDamping(0)
 	inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-	inst.Physics:ClearCollisionMask()
-	inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
 	inst.Physics:SetCapsule(.2, .2)
 
 	inst:AddTag("FX")
@@ -92,6 +91,7 @@ local function fn()
 
 	--projectile (from complexprojectile component) added to pristine state for optimization
 	inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
 	inst.entity:SetPristine()
 

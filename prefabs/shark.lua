@@ -127,7 +127,7 @@ local function testfooddist(inst)
     if inst.foodtoeat then
         if inst.foodtoeat:IsValid() then
             if inst.foodtoeat:GetDistanceSqToInst(inst) < 6*6 then
-                inst:PushEvent("dive_eat")
+				inst:PushEventImmediate("dive_eat")
             end
         else
             inst.foodtoeat = nil
@@ -278,6 +278,7 @@ local function fn()
             inst.components.locomotor.runspeed = TUNING.SHARK.RUN_SPEED
             inst.components.locomotor.walkspeed = TUNING.SHARK.WALK_SPEED
             inst.DynamicShadow:Enable(false)
+			inst.override_combat_fx_size = "small"
         end)
 
     inst.components.amphibiouscreature:SetExitWaterFn(
@@ -289,6 +290,7 @@ local function fn()
                 inst.components.locomotor.walkspeed = inst.landspeedwalk
             end
             inst.DynamicShadow:Enable(true)
+			inst.override_combat_fx_size = nil
 			if inst.sg:HasStateTag("moving") then
 				--land shark has no walk or run anims and will crash if we don't force them out of those states
 				inst.sg:GoToState("leap")

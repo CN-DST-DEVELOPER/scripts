@@ -160,8 +160,7 @@ local function MakeSpikeTrailPhysics(inst)
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.SMALLOBSTACLES)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.WORLD)
+	phys:SetCollisionMask(COLLISION.WORLD)
     phys:SetCapsule(0.1, 1)
 end
 

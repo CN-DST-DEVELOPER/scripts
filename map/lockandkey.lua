@@ -60,6 +60,8 @@ LOCKS_ARRAY =
 	"MOONMUSH",
 	"ARCHIVE",
 
+	"CENTIPEDE",
+
 	"QUAGMIRE_GATEWAY",
 	"QUAGMIRE_PARK_L1",
 	"QUAGMIRE_FOOD_L1",
@@ -146,6 +148,8 @@ KEYS_ARRAY =
 
 	"MOONMUSH",
 	"ARCHIVE",
+
+	"CENTIPEDE",
 
 	"QUAGMIRE_GATEWAY",
 	"QUAGMIRE_PARK_L1",
@@ -463,6 +467,11 @@ LOCKS_KEYS =
 	{
 		KEYS.ARCHIVE,
 	},
+
+	[LOCKS.CENTIPEDE] =
+	{
+		KEYS.CENTIPEDE,
+	},
 }
 
 
@@ -477,6 +486,47 @@ for lock,keyset in pairs(LOCKS_KEYS) do
 	-- NOTE: This wil **NOT** catch it if the typo is in the last key in the list. ... But it's better than nothing...
 end
 
+
+--[[
+NOTE:
+There already are some missing locks and keys that we will explitcly skip in our check for now.
+These have been missing for along while and warped the world gen, we could fix these cases now
+but they'll change world generation drastically, changing how players experience the game.
+We can leave it for another time when/if we're ready to tackle world generation and update it accordingly and fix these issues in an active development period
+]]
+
+local SKIP_THESE_MISSING_KEYS_AND_LOCKS = {
+	-- Keys
+	["SILK"] = true,
+	["ROCKS"] = true,
+	["TALLBIRDS"] = true,
+	["SWAMP"] = true,
+
+	-- Locks
+	["SPIDERDEN"] = true,
+
+	-- Both a lock and key
+	["ROCKY"] = true,
+}
+local CRASH_ON_MISSING_KEY_OR_LOCK = BRANCH == "dev"
+
+if CRASH_ON_MISSING_KEY_OR_LOCK then
+	setmetatable(LOCKS, {
+		__index = function(k, n)
+			if not SKIP_THESE_MISSING_KEYS_AND_LOCKS[n] then
+				error("Lock '"..n.."' is not declared", 2)
+			end
+		end
+	})
+
+	setmetatable(KEYS, {
+		__index = function(k, n)
+			if not SKIP_THESE_MISSING_KEYS_AND_LOCKS[n] then
+				error("Key '"..n.."' is not declared", 2)
+			end
+		end
+	})
+end
 
 --print("LOCKS")
 --dumptable(LOCKS,1)

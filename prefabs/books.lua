@@ -283,6 +283,9 @@ local book_defs =
             end
 
             local pt = reader:GetPosition()
+            if TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(pt.x, pt.y, pt.z) then
+                return false, "BIRDSBLOCKED"
+            end
 
             --we can actually run out of command buffer memory if we allow for infinite birds
             local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 10, BIRDSMAXCHECK_MUST_TAGS)
@@ -291,9 +294,30 @@ local book_defs =
             elseif #ents > 20 then
                 return false, "TOOMANYBIRDS"
             end
+
             local num = math.random(10, 20)
+
+            if TheWorld.state.islunarhailing then
+                local function SpawnCorpse()
+                    local corpse = birdspawner:SpawnCorpseForPlayer(reader)
+                    if corpse ~= nil then
+                        corpse:StartFadeTimer(GetRandomWithVariance(5, 2))
+                    end
+                end
+                for k = 1, num do
+                    inst:DoTaskInTime(0.34 + 0.33 * math.random() * k, SpawnCorpse)
+                end
+                inst.components.book:DoReadPenalties(reader) --We still want the penalties even if we 'failed' the read
+                return false, "DEADBIRDS"
+            end
+
             if #ents <= 10 then
                 num = num + 10
+            end
+
+            local post_hail_mult = birdspawner:GetPostHailEasingMult()
+            if post_hail_mult < 1 then
+                num = math.ceil(num * post_hail_mult)
             end
 
             local success = false

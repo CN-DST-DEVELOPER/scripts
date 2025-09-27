@@ -8,18 +8,30 @@ local actionhandlers =
 
 local events=
 {
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("nointerrupt") and not inst.sg:HasStateTag("attack") and not CommonHandlers.HitRecoveryDelay(inst) then inst.sg:GoToState("hit") end end),
+	EventHandler("attacked", function(inst, data)
+		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("nointerrupt")) then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not (inst.sg:HasStateTag("attack") or CommonHandlers.HitRecoveryDelay(inst)) then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
-    EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then inst.sg:GoToState("attack") end end),
+	EventHandler("doattack", function(inst)
+		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
+			inst.sg:GoToState("attack")
+		end
+	end),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnLocomote(true,false),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
 }
 
 local states=
 {
-
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -135,7 +147,7 @@ local states=
 
     State{
         name = "exit",
-        tags = {"busy", "nointerrupt", "nosleep", "nofreeze", "noattack"},
+		tags = { "busy", "nointerrupt", "nosleep", "nofreeze", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("exit")
@@ -145,7 +157,7 @@ local states=
 
             RemovePhysicsColliders(inst)
 
-            inst:StopBrain()
+			inst:StopBrain("SGkrampus_exit")
         end,
 
         timeline =
@@ -175,7 +187,7 @@ local states=
 
             ChangeToCharacterPhysics(inst)
 
-            inst:RestartBrain()
+			inst:RestartBrain("SGkrampus_exit")
         end,
     },
 
@@ -198,7 +210,6 @@ local states=
 			TimeEvent(14*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_swing") end),
         },
 
-
 		events=
         {
 			EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
@@ -213,7 +224,6 @@ CommonStates.AddSleepExStates(states,
 	},
 })
 
-
 CommonStates.AddRunStates(states,
 {
 	runtimeline = {
@@ -223,12 +233,9 @@ CommonStates.AddRunStates(states,
 		TimeEvent(2*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_foley") end),
 		TimeEvent(4*FRAMES, function(inst) PlayFootstep(inst) end),
 		TimeEvent(6*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/bag_foley") end),
-
 	},
 })
 CommonStates.AddFrozenStates(states)
-
-
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("krampus", states, events, "taunt", actionhandlers)
-

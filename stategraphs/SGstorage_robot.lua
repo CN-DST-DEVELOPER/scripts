@@ -122,7 +122,7 @@ local states =
         timeline =
         {
             FrameEvent(27, function(inst)
-                ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .02, .12, inst, 30)
+                ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .02, .12, inst, 15)
 
                 inst:PerformBufferedAction()
             end),

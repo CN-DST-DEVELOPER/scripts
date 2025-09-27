@@ -170,7 +170,7 @@ end
 local function PropCreationFn(inst)
     local corpse = SpawnPrefab("koalefantcorpse_prop")
     if TheWorld.state.iswinter then
-        corpse:SetAltBuild()
+		corpse:SetAltBuild("winter")
     end
     corpse.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
@@ -360,15 +360,20 @@ local function projectilefn()
     inst.Physics:SetFriction(10)
     inst.Physics:SetDamping(5)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.CHARACTERS
+	)
     inst.Physics:SetCapsule(0.02, 0.02)
 
     inst.AnimState:SetBank("spat_bomb")
     inst.AnimState:SetBuild("spat_bomb")
     inst.AnimState:PlayAnimation("spin_loop", true)
+
+	--projectile (from complexprojectile component) added to pristine state for optimization
+	inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.entity:SetPristine()
 

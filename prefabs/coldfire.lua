@@ -101,11 +101,7 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
-    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
-
-    inst.MiniMapEntity:SetIcon("coldfire.png")
-    inst.MiniMapEntity:SetPriority(1)
 
     inst.AnimState:SetBank("coldfire")
     inst.AnimState:SetBuild("coldfire")

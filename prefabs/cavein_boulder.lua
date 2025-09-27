@@ -299,7 +299,7 @@ local function OnSave(inst, data)
 end
 
 local function OnPreLoad(inst, data)
-    local variation = math.floor(data ~= nil and data.variation or 1)
+    local variation = math.floor(data ~= nil and data.variation or math.random(NUM_VARIATIONS))
     if inst.skinname ~= nil then
         inst.variation = variation
     else

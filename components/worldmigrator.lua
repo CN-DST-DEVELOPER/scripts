@@ -1,3 +1,5 @@
+local SourceModifierList = require("util/sourcemodifierlist")
+
 local STATUS = {
     ACTIVE = 0,
     INACTIVE = 1,
@@ -5,7 +7,7 @@ local STATUS = {
 }
 
 local function onstatus(self, val)
-    if val == STATUS.ACTIVE then
+    if not self.hiddenaction and val == STATUS.ACTIVE then
         self.inst:AddTag("migrator")
     else
         self.inst:RemoveTag("migrator")
@@ -16,6 +18,14 @@ local nextPortalID = 1 -- Start at 1
 local function init(inst, self)
     if self.id == nil then
         self:SetID(nextPortalID)
+    else
+        for i, v in ipairs(ShardPortals) do
+            local worldmigrator = v.components.worldmigrator
+            if worldmigrator and (worldmigrator.id == self.id) then
+                print(string.format("MIGRATION PORTAL FAILURE: worldmigrator has two portals(%s, %s) that have the same ID(%s)!", tostring(inst), tostring(v), tostring(self.id)))
+                return
+            end
+        end
     end
     TheWorld:PushEvent("ms_registermigrationportal", inst)
     Shard_UpdatePortalState(inst)
@@ -26,6 +36,7 @@ local WorldMigrator = Class(function(self, inst)
 
     self.auto = true
     self.enabled = true
+    self.disabledsources = SourceModifierList(inst, false, SourceModifierList.boolean)
     self._status = -1
 
     self.id = nil
@@ -40,6 +51,15 @@ nil,
     _status = onstatus,
 })
 
+function WorldMigrator:SetHideActions(hidden)
+    self.hiddenaction = hidden and true or nil
+    if not self.hiddenaction and self._status == STATUS.ACTIVE then
+        self.inst:AddTag("migrator")
+    else
+        self.inst:RemoveTag("migrator")
+    end
+end
+
 function WorldMigrator:SetDestinationWorld(world, permanent)
     self.auto = true
     if permanent ~= nil then
@@ -49,8 +69,16 @@ function WorldMigrator:SetDestinationWorld(world, permanent)
     self:ValidateAndPushEvents()
 end
 
-function WorldMigrator:SetEnabled(t)
-    self.enabled = t
+function WorldMigrator:SetDisabledWithReason(reason)
+    self.disabledsources:SetModifier(self.inst, true, reason)
+end
+
+function WorldMigrator:ClearDisabledWithReason(reason)
+    self.disabledsources:RemoveModifier(self.inst, reason)
+end
+
+function WorldMigrator:SetEnabled(enabled) -- NOTES(JBK): Should only be called by the owning inst for visuals.
+    self.enabled = enabled
     self:ValidateAndPushEvents()
 end
 
@@ -68,11 +96,12 @@ function WorldMigrator:GetStatusString()
 end
 
 function WorldMigrator:ValidateAndPushEvents()
-    if self.enabled == false then
+    local enabled = self.enabled and not self.disabledsources:Get()
+    if not enabled then
         self._status = STATUS.INACTIVE
         self.inst:PushEvent("migration_unavailable")
-        if InGamePlay() then
-            print(string.format("Validating portal[%d] <-> %s[%d] (%s)", self.id or -1, self.linkedWorld or "<nil>", self.receivedPortal or 0, self.linkedWorld ~= nil and Shard_IsWorldAvailable(self.linkedWorld) and "disabled" or "inactive"))
+        if InGamePlay() and not self.disabledsources:HasModifier(self.inst, "MISSINGSHARD") then
+            print(string.format("Validating portal[%s] <-> %s[%s] (%s)", tostring(self.id or -1), self.linkedWorld or "<nil>", tostring(self.receivedPortal or 0), self.linkedWorld ~= nil and Shard_IsWorldAvailable(self.linkedWorld) and "disabled" or "inactive"))
         end
         return
     end
@@ -87,8 +116,8 @@ function WorldMigrator:ValidateAndPushEvents()
         self._status = STATUS.INACTIVE
         self.inst:PushEvent("migration_unavailable")
     end
-    if InGamePlay() then
-        print(string.format("Validating portal[%d] <-> %s[%d] (%s)", self.id or -1, self.linkedWorld or "<nil>", self.receivedPortal or 0, self:GetStatusString()))
+    if InGamePlay() and not self.disabledsources:HasModifier(self.inst, "MISSINGSHARD") then
+        print(string.format("Validating portal[%s] <-> %s[%s] (%s)", tostring(self.id or -1), self.linkedWorld or "<nil>", tostring(self.receivedPortal or 0), self:GetStatusString()))
     end
 end
 
@@ -102,7 +131,7 @@ function WorldMigrator:SetID(id)
     -- TEMP HACK! the received portal should be negotiated between servers
     self.receivedPortal = id
 
-    if id >= nextPortalID then
+    if type(id) == "number" and (id >= nextPortalID) then
         nextPortalID = id + 1
     end
 end
@@ -127,19 +156,73 @@ function WorldMigrator:IsFull()
     return self._status == STATUS.FULL
 end
 
+function WorldMigrator:CanInventoryItemMigrate(item)
+    if item:HasTag("irreplaceable") then
+        return false
+    end
+
+    if item.components.migrationpetowner and item.components.migrationpetowner:GetPet() then
+        return false
+    end
+
+    return true
+end
+
+function WorldMigrator:TryToMakeItemMigrateable(item)
+    if item.components.migrationpetowner and item.components.migrationpetowner:GetPet() then
+        if item.OnStopUsing then -- beef_bell unpairing.
+            item:OnStopUsing()
+        end
+    end
+end
+
+function WorldMigrator:DropThingsThatShouldNotMigrate(doer)
+    local filterfn = function(owner, item) -- Return true to drop.
+        self:TryToMakeItemMigrateable(item)
+        return not self:CanInventoryItemMigrate(item)
+    end
+    if doer.components.inventory then
+        doer.components.inventory:DropEverythingByFilter(filterfn)
+    end
+    if doer.components.container then
+        doer.components.container:DropEverythingByFilter(filterfn)
+    end
+end
+
 function WorldMigrator:Activate(doer)
-    print("Activating portal["..self.id.."] to "..(self.linkedWorld or "<nil>"))
     if self.linkedWorld == nil then
-        -- TODO
-        --if not doer.admin then print("NOT ADMIN")return end
-        -- ui popup
-        -- inst.destWorldId = ???
         return false, "NODESTINATION"
     end
 
-    self.inst:PushEvent("migration_activate")
-    TheWorld:PushEvent("ms_playerdespawnandmigrate", { player = doer, portalid = self.id, worldid = self.linkedWorld })
-    return true
+    if doer:HasTag("player") then
+        if not doer._despawning then
+            print("Activating portal["..self.id.."] to "..(self.linkedWorld or "<nil>").." by "..tostring(doer))
+            self.inst:PushEvent("migration_activate", {doer = doer})
+            TheWorld:PushEvent("ms_playerdespawnandmigrate", { player = doer, portalid = self.id, worldid = self.linkedWorld })
+        end
+        return true
+    end
+
+    if doer.components.inventoryitem then
+        self:TryToMakeItemMigrateable(doer)
+        if self:CanInventoryItemMigrate(doer) then
+            self:DropThingsThatShouldNotMigrate(doer)
+            self.inst:PushEvent("migration_activate", {doer = doer})
+            local shardid, item = self.linkedWorld, doer
+            local migrationdata = {
+                worldid = TheShard:GetShardId(), -- The world's own id.
+                portalid = self.id,
+                sessionid = TheWorld.meta.session_identifier,
+                --dest_x = x,
+                --dest_y = y,
+                --dest_z = z,
+            }
+            Shard_CreateTransaction_TransferInventoryItem(shardid, item, migrationdata)
+            return true
+        end
+    end
+
+    return false, "NODESTINATION"
 end
 
 function WorldMigrator:ActivatedByOther()

@@ -121,6 +121,8 @@ local function common(anim, cookable, oceanfishing_lure)
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
 
+	inst:AddComponent("snowmandecor")
+
     inst.scrapbook_removedeps = scrapbook_removedeps
 
     return inst

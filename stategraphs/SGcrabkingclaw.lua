@@ -54,29 +54,7 @@ end
 
 --------------------------------------------------------------------------
 
-local function removeboat(inst)
-    inst.boat = nil
-    inst:PushEvent("releaseclamp")
-end
-
-local function removeshadow(inst)
-    if inst.shadow then
-        inst.shadow:Remove()
-        inst.shadow = nil
-    end
-end
-
-local function addshadow(inst)
-    if not inst.shadow then
-        inst.shadow = SpawnPrefab("crabking_claw_shadow")
-        local pos = Vector3(inst.Transform:GetWorldPosition())
-        inst.shadow.Transform:SetPosition(pos.x,pos.y,pos.z)
-        inst.shadow.Transform:SetRotation(inst.Transform:GetRotation())
-    end
-end
-
 local function play_shadow_animation(inst, anim, loop)
-    --addshadow(inst)
     inst.AnimState:PlayAnimation(anim,loop)
     if inst.shadow then
         inst.shadow.AnimState:PlayAnimation(anim,loop)
@@ -84,7 +62,6 @@ local function play_shadow_animation(inst, anim, loop)
 end
 
 local function push_shadow_animation(inst, anim, loop)
-    --addshadow(inst)
     inst.AnimState:PushAnimation(anim,loop)
     if inst.shadow then
         inst.shadow.AnimState:PushAnimation(anim,loop)
@@ -100,41 +77,38 @@ local actionhandlers =
 local events =
 {
     CommonHandlers.OnLocomote(true,true),
-    CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnDeath(),
 
     EventHandler("attacked", function(inst, data)
-        if inst.components.health ~= nil and not inst.components.health:IsDead()
-            and (not inst.sg:HasStateTag("busy") or
-                inst.sg:HasStateTag("caninterrupt") or
-                inst.sg:HasStateTag("frozen")) then
-
-            if inst.sg:HasStateTag("clampped") then
-                inst.sg.statemem.keepclamp = true
-                inst.sg:GoToState("clamp_hit")
-            else
-                inst.sg:GoToState("hit")
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen") then
+				inst.sg:GoToState("hit")
             end
         end
     end),
     EventHandler("doattack", function(inst, data)
-        inst.sg:GoToState("attack")
+		if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
+			inst.sg:GoToState("attack")
+		end
     end),
     EventHandler("emerge", function(inst, data)
-        inst.sg:GoToState("emerge")
+		if not (inst.sg:HasStateTag("nointerrupt") or inst.components.health:IsDead()) then
+			inst.sg:GoToState("emerge")
+		end
     end),
     EventHandler("submerge", function(inst, data)
-        inst.sg:GoToState("submerge")
-    end),    
-    EventHandler("clamp", function(inst, data)
-        inst.sg:GoToState("clamp_pre",data.target)
-    end),
-    EventHandler("releaseclamp", function(inst, data)
-        if inst.components.health ~= nil and not inst.components.health:IsDead() and inst.sg:HasStateTag("clampped") then
-            inst.sg:GoToState((data ~= nil and data.immediate) and "idle" or "clamp_pst")
-        end
-    end),
+		if not inst.components.health:IsDead() then
+			if not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("frozen") then
+				inst.sg:GoToState("submerge")
+			else
+				inst.sg.mem.wantstosubmerge = true
+			end
+		end
+	end),
 }
 
 local states =
@@ -143,19 +117,12 @@ local states =
         name = "idle",
         tags = { "idle", "canrotate" },
 
-        onenter = function(inst, pushanim)
-            --pushanim could be bool or string?
-            if pushanim then
-                if type(pushanim) == "string" then
-                    play_shadow_animation(inst, pushanim)
-                    --inst.AnimState:PlayAnimation(pushanim)
-                end
-                push_shadow_animation(inst, "dile")
-                --inst.AnimState:PushAnimation("idle")
-            else
-                play_shadow_animation(inst, "idle")
-                --inst.AnimState:PlayAnimation("idle")
-            end
+		onenter = function(inst)
+			if inst.sg.mem.wantstosubmerge then
+				inst.sg:GoToState("submerge")
+				return
+			end
+			play_shadow_animation(inst, "idle")
         end,
 
         events =
@@ -173,14 +140,31 @@ local states =
 
     State{
         name = "emerge",
-        tags = { "busy", "canrotate" },
+		tags = { "busy", "canrotate", "nointerrupt", "noattack", "invisible", "temp_invincible" },
 
         onenter = function(inst, pushanim)
+			if inst.components.freezable:IsFrozen() then
+				inst.components.freezable:Unfreeze()
+			end
             play_shadow_animation(inst, "emerge")
             --inst.AnimState:PlayAnimation("emerge")
             inst.SoundEmitter:PlaySound("turnoftides/common/together/water/emerge/medium")
 
         end,
+
+		timeline =
+		{
+			FrameEvent(14, function(inst)
+				inst.sg:RemoveStateTag("invisible")
+			end),
+			FrameEvent(16, function(inst)
+				inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("temp_invincible")
+			end),
+			FrameEvent(32, function(inst)
+				inst.sg:RemoveStateTag("nointerrupt")
+			end),
+		},
 
         events =
         {
@@ -192,9 +176,12 @@ local states =
 
     State{
         name = "submerge",
-        tags = { "busy", "canrotate" },
+		tags = { "busy", "canrotate", "nointerrupt" },
 
         onenter = function(inst, pushanim)
+			if inst.components.freezable:IsFrozen() then
+				inst.components.freezable:Unfreeze()
+			end
             play_shadow_animation(inst, "submerge")
             inst.SoundEmitter:PlaySound("turnoftides/common/together/water/emerge/medium")
 
@@ -202,6 +189,17 @@ local states =
 
             inst.persists = false
         end,
+
+		timeline =
+		{
+			FrameEvent(31, function(inst)
+				inst.sg:AddStateTag("noattack")
+				inst.sg:AddStateTag("temp_invincible")
+			end),
+			FrameEvent(33, function(inst)
+				inst.sg:AddStateTag("invisible")
+			end),
+		},
 
         ontimeout = function(inst)
             inst:Remove()
@@ -315,8 +313,7 @@ CommonStates.AddRunStates(states,
     walk = "walk_loop",
     stopwalk = "walk_pst",
 })
---CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
-
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("crabkingclaw", states, events, "idle", actionhandlers)

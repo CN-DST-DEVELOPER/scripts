@@ -314,7 +314,8 @@ function FrontEnd:GetHelpText()
 	local widget = self:GetFocusWidget()
     local active_screen = self:GetActiveScreen()
 
-	if active_screen ~= widget and active_screen ~= nil then
+    local active_screen_exclusivehelp = active_screen and active_screen.HasExclusiveHelpText and active_screen:HasExclusiveHelpText() or false
+	if active_screen_exclusivehelp or active_screen and active_screen ~= widget then
 		local str = active_screen:GetHelpText()
 		if str ~= nil and str ~= "" then
 			table.insert(t, str)
@@ -323,7 +324,7 @@ function FrontEnd:GetHelpText()
 
 	-- Show the help text for secondary widgets, like scroll bars
 	local intermediate_widgets = self:GetIntermediateFocusWidgets()
-	if intermediate_widgets then
+	if not active_screen_exclusivehelp and intermediate_widgets then
 		for i,v in ipairs(intermediate_widgets) do
 			if v and v ~= widget and v.GetHelpText then
 				local str = v:GetHelpText()
@@ -342,7 +343,7 @@ function FrontEnd:GetHelpText()
 	end
 
 	-- Show the help text for the focused widget
-	if widget and widget.GetHelpText then
+	if not active_screen_exclusivehelp and widget and widget.GetHelpText then
 		if widget.HasExclusiveHelpText and widget:HasExclusiveHelpText() then
 			-- Only use this widgets help text, clear all other help text
 			t = {}
@@ -407,6 +408,7 @@ function FrontEnd:OnFocusMove(dir, down)
 	end
 end
 
+ValidateLineNumber(411)
 function FrontEnd:OnControl(control, down)
     -- if there is a textedit that is currently editing, stop editing if the player clicks somewhere else
     if self.textProcessorWidget ~= nil and not self.textProcessorWidget.focus and not down and control == CONTROL_PRIMARY then
@@ -423,8 +425,21 @@ function FrontEnd:OnControl(control, down)
     -- while editing a text box and hovering over something else, consume the accept button (the raw key handlers will deal with it).
     elseif #self.screenstack > 0
         and not (self.textProcessorWidget ~= nil and not self.textProcessorWidget.focus and self.textProcessorWidget:OnControl(control == CONTROL_PRIMARY and CONTROL_ACCEPT or control, down))
-        and self.screenstack[#self.screenstack]:OnControl(control == CONTROL_PRIMARY and CONTROL_ACCEPT or control, down) then
-            self.isprimary = false
+		and self.screenstack[#self.screenstack]:OnControl(control == CONTROL_PRIMARY and CONTROL_ACCEPT or control, down)
+	then
+		self.isprimary = false
+
+		--@V2C: #FIX_LEFT_CLICK_UI_TRIGGERS_AUTO_ATTACK (see playercontroller.lua)
+		--@V2C: #HACK fix auto repeat attack bug in playercontroller where clicking down on
+		--      UI elements still triggers attacks
+		local player = ThePlayer
+		if player and player.sg and player.sg.statemem.retarget and
+			not (TheInput:IsControlPressed(CONTROL_ATTACK) or
+				TheInput:IsControlPressed(CONTROL_CONTROLLER_ATTACK))
+		then
+			player.sg.statemem.retarget = nil
+		end
+		--
         return true
 
     elseif CONSOLE_ENABLED and not down and control == CONTROL_OPEN_DEBUG_CONSOLE then
@@ -472,6 +487,7 @@ function FrontEnd:OnControl(control, down)
     end
     self.isprimary = false
 end
+ValidateLineNumber(490)
 
 function FrontEnd:ShowTitle(text,subtext)
 	self.title:SetString(text)
@@ -791,10 +807,10 @@ function FrontEnd:Update(dt)
             self.repeat_time = self.repeat_time - dt
 
 			if self.crafting_navigation_mode then
-				if not (   TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_LEFT))
-						or TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT))
-						or TheInput:IsControlPressed(CONTROL_INVENTORY_UP) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_UP))
-						or TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_DOWN)) ) then
+				if not (   TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_LEFT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_LEFT))
+						or TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_RIGHT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT))
+						or TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_UP) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_UP))
+						or TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_DOWN) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_DOWN)) ) then
 
             		self.repeat_time = 0
 					self.repeat_reps = 0
@@ -813,17 +829,17 @@ function FrontEnd:Update(dt)
             self.repeat_reps = self.repeat_reps and (self.repeat_reps + 1) or 1
 
 			if self.crafting_navigation_mode then
-				if TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_LEFT)) then
-					self:_RefreshRepeatDelay(CONTROL_INVENTORY_LEFT)
+				if TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_LEFT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_LEFT)) then
+					self:_RefreshRepeatDelay(VIRTUAL_CONTROL_INV_LEFT)
 					self:OnFocusMove(MOVE_LEFT, true)
-				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT)) then
-					self:_RefreshRepeatDelay(CONTROL_INVENTORY_RIGHT)
+				elseif TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_RIGHT) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_RIGHT)) then
+					self:_RefreshRepeatDelay(VIRTUAL_CONTROL_INV_RIGHT)
 					self:OnFocusMove(MOVE_RIGHT, true)
-				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_UP) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_UP)) then
-					self:_RefreshRepeatDelay(CONTROL_INVENTORY_UP)
+				elseif TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_UP) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_UP)) then
+					self:_RefreshRepeatDelay(VIRTUAL_CONTROL_INV_UP)
 					self:OnFocusMove(MOVE_UP, true)
-				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_DOWN)) then
-					self:_RefreshRepeatDelay(CONTROL_INVENTORY_DOWN)
+				elseif TheInput:IsControlPressed(VIRTUAL_CONTROL_INV_DOWN) or (not controller and TheInput:IsControlPressed(CONTROL_FOCUS_DOWN)) then
+					self:_RefreshRepeatDelay(VIRTUAL_CONTROL_INV_DOWN)
 					self:OnFocusMove(MOVE_DOWN, true)
 				else
 					self.repeat_time = 0
@@ -869,7 +885,7 @@ function FrontEnd:Update(dt)
 	end
 
 	self.helptext:Hide()
-	if controller
+	if (controller or self.showhelptextforeverything)
         and self:GetFadeLevel() < 1
 		and not self.crafting_navigation_mode
         and not (self.fadedir == FADE_OUT and self.fade_type ~= "black") then
@@ -886,6 +902,17 @@ function FrontEnd:Update(dt)
 	end
 
 	TheSim:ProfilerPop()
+end
+
+function FrontEnd:PushShowHelpTextForEverything()
+    self.showhelptextforeverything = (self.showhelptextforeverything or 0) + 1
+end
+
+function FrontEnd:PopShowHelpTextForEverything()
+    self.showhelptextforeverything = self.showhelptextforeverything - 1
+    if self.showhelptextforeverything <= 0 then
+        self.showhelptextforeverything = nil
+    end
 end
 
 function FrontEnd:DoHoverFocusUpdate(manual_update)

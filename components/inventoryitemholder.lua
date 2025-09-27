@@ -39,6 +39,24 @@ local InventoryItemHolder = Class(function(self, inst)
     self.onitemtakenfn = nil
 
     self._onitemremoved = function(item) self.item = nil end
+
+    self._onitemmissing = function(item)
+        if self.item.parent == self.inst then
+            return -- We are fine!
+        end
+
+        self.item:RemoveTag("outofreach")
+
+        self.inst:RemoveEventCallback("onremove", self._onitemremoved, self.item)
+        self.inst:RemoveEventCallback("ondropped", self._onitemmissing, self.item)
+        self.inst:RemoveEventCallback("onputininventory", self._onitemmissing, self.item)
+
+        if self.onitemtakenfn ~= nil then
+            self.onitemtakenfn(self.inst, self.item, nil, true)
+        end
+
+        self.item = nil
+    end
 end,
 nil,
 {
@@ -130,6 +148,8 @@ function InventoryItemHolder:GiveItem(item, giver)
         item:AddTag("outofreach")
 
         self.inst:ListenForEvent("onremove", self._onitemremoved, item)
+        self.inst:ListenForEvent("ondropped", self._onitemmissing, item)
+        self.inst:ListenForEvent("onputininventory", self._onitemmissing, item)
 
         self.item = item
     end
@@ -163,6 +183,8 @@ function InventoryItemHolder:TakeItem(taker, wholestack)
         self.item:RemoveTag("outofreach")
 
         self.inst:RemoveEventCallback("onremove", self._onitemremoved, self.item)
+        self.inst:RemoveEventCallback("ondropped", self._onitemmissing, self.item)
+        self.inst:RemoveEventCallback("onputininventory", self._onitemmissing, self.item)
 
     elseif self.item.components.stackable ~= nil and not self.item.components.stackable:IsFull() then
         self.inst:AddTag("inventoryitemholder_give")

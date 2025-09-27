@@ -9,57 +9,77 @@ local prefabs =
     "firefx_light",
 }
 
-local heats = { 70, 85, 100, 115 }
+local LIGHT_COLOUR = RGB(255, 255, 192)
 
-local function GetHeatFn(inst)
-    return heats[inst.components.firefx.level] or 20
-end
+--------------------------------------------------------------------------
+local heats = { 70, 85, 100, 115 }
 
 local firelevels =
 {
-    {anim="level1", sound="dontstarve/common/campfire", radius=2, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.1},
-    {anim="level2", sound="dontstarve/common/campfire", radius=3, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.3},
-    {anim="level3", sound="dontstarve/common/campfire", radius=4, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=.6},
-    {anim="level4", sound="dontstarve/common/campfire", radius=5, intensity=.8, falloff=.33, colour = {255/255,255/255,192/255}, soundintensity=1},
+	{anim="level1", sound="dontstarve/common/campfire", radius=2, intensity=.8, falloff=.33, colour=LIGHT_COLOUR, soundintensity=.1},
+	{anim="level2", sound="dontstarve/common/campfire", radius=3, intensity=.8, falloff=.33, colour=LIGHT_COLOUR, soundintensity=.3},
+	{anim="level3", sound="dontstarve/common/campfire", radius=4, intensity=.8, falloff=.33, colour=LIGHT_COLOUR, soundintensity=.6},
+	{anim="level4", sound="dontstarve/common/campfire", radius=5, intensity=.8, falloff=.33, colour=LIGHT_COLOUR, soundintensity=1},
 }
 
-local function fn()
-    local inst = CreateEntity()
+--------------------------------------------------------------------------
+local portable_heats = { 70, 77.5, 85 }
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-    inst.entity:AddNetwork()
+local portable_firelevels =
+{
+	{anim="level1",		sound="dontstarve/common/campfire", radius=2.5,	intensity=0.8, falloff=0.33, colour=LIGHT_COLOUR, soundintensity=0.1},
+	{anim="level1a",	sound="dontstarve/common/campfire", radius=3,	intensity=0.8, falloff=0.33, colour=LIGHT_COLOUR, soundintensity=0.2},
+	{anim="level2",		sound="dontstarve/common/campfire", radius=3.5,	intensity=0.8, falloff=0.33, colour=LIGHT_COLOUR, soundintensity=0.3},
+}
 
-    inst.AnimState:SetBank("campfire_fire")
-    inst.AnimState:SetBuild("campfire_fire")
-    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-    inst.AnimState:SetRayTestOnBB(true)
-    inst.AnimState:SetFinalOffset(3)
+--------------------------------------------------------------------------
 
-    inst:AddTag("FX")
+local function MakeFire(name, fxlevels, heatlevels)
+	local function GetHeatFn(inst)
+		return heatlevels[inst.components.firefx.level] or 20
+	end
 
-    --HASHEATER (from heater component) added to pristine state for optimization
-    inst:AddTag("HASHEATER")
+	local function fn()
+		local inst = CreateEntity()
 
-    inst.entity:SetPristine()
+		inst.entity:AddTransform()
+		inst.entity:AddAnimState()
+		inst.entity:AddSoundEmitter()
+		inst.entity:AddNetwork()
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
+		inst.AnimState:SetBank("campfire_fire")
+		inst.AnimState:SetBuild("campfire_fire")
+		inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+		inst.AnimState:SetRayTestOnBB(true)
+		inst.AnimState:SetFinalOffset(3)
 
-    inst:AddComponent("heater")
-    inst.components.heater.heatfn = GetHeatFn
+		inst:AddTag("FX")
 
-    inst:AddComponent("firefx")
-    inst.components.firefx.levels = firelevels
-    if TheNet:GetServerGameMode() == "quagmire" then
-        event_server_data("quagmire", "prefabs/campfirefire").master_postinit(inst)
-    end
-    inst.components.firefx:SetLevel(1)
-    inst.components.firefx.usedayparamforsound = true
+		--HASHEATER (from heater component) added to pristine state for optimization
+		inst:AddTag("HASHEATER")
 
-    return inst
+		inst.entity:SetPristine()
+
+		if not TheWorld.ismastersim then
+			return inst
+		end
+
+		inst:AddComponent("heater")
+		inst.components.heater.heatfn = GetHeatFn
+
+		inst:AddComponent("firefx")
+		inst.components.firefx.levels = fxlevels
+		if TheNet:GetServerGameMode() == "quagmire" then
+			event_server_data("quagmire", "prefabs/campfirefire").master_postinit(inst)
+		end
+		inst.components.firefx:SetLevel(1)
+		inst.components.firefx.usedayparamforsound = true
+
+		return inst
+	end
+
+	return Prefab(name, fn, assets, prefabs)
 end
 
-return Prefab("campfirefire", fn, assets, prefabs)
+return MakeFire("campfirefire", firelevels, heats),
+	MakeFire("portable_campfirefire", portable_firelevels, portable_heats)

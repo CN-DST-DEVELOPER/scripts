@@ -211,7 +211,10 @@ local function MakeShadowCreature(data)
         RemovePhysicsColliders(inst)
         inst.Physics:SetCollisionGroup(COLLISION.SANITY)
         inst.Physics:CollidesWith(COLLISION.SANITY)
-        --inst.Physics:CollidesWith(COLLISION.WORLD)
+		--[[inst.Physics:CollidesWith(bit.bor(
+			COLLISION.SANITY,
+			COLLISION.WORLD
+		))]]
 
         inst.Transform:SetFourFaced()
 
@@ -222,6 +225,7 @@ local function MakeShadowCreature(data)
         inst:AddTag("shadow")
         inst:AddTag("notraptrigger")
         inst:AddTag("shadow_aligned")
+        inst:AddTag("NOBLOCK")
 
 		--shadowsubmissive (from shadowsubmissive component) added to pristine state for optimization
 		inst:AddTag("shadowsubmissive")
@@ -278,7 +282,7 @@ local function MakeShadowCreature(data)
         inst:ListenForEvent("newcombattarget", OnNewCombatTarget)
         inst:ListenForEvent("death", OnDeath)
 
-        if data.name == "terrorbeak" then
+		if data.name == "terrorbeak" and TheWorld.has_ocean then
             inst.followtosea = true
             inst.ExchangeWithOceanTerror = ExchangeWithOceanTerror
         end

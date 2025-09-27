@@ -58,7 +58,7 @@ local function GetLevelForTarget(target)
 
 		local sanity_rep = target.replica.sanity
 		if sanity_rep ~= nil then
-			local sanity = sanity_rep:GetPercentWithPenalty() or 0
+			local sanity = sanity_rep:IsLunacyMode() and sanity_rep:GetPercentWithPenalty() or 0
 			local level = sanity > 0.33 and 1
 					or 2
 			return level, sanity
@@ -152,6 +152,10 @@ local function onkilledtarget(inst, data)
 	end
 end
 
+local function OnCaptured(inst, obj, doer)
+	inst:Remove()
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -167,8 +171,7 @@ local function fn()
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.FLYERS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.GROUND)
+	phys:SetCollisionMask(COLLISION.GROUND)
     phys:SetCapsule(0.5, 1)
 
 	inst:AddTag("brightmare")
@@ -179,12 +182,17 @@ local function fn()
 	inst:AddTag("soulless") -- no wortox souls
 	inst:AddTag("lunar_aligned")
 
+	--gestaltcapturable (from gestaltcapturable component) added to pristine state for optimization
+	inst:AddTag("gestaltcapturable")
+
     inst.Transform:SetFourFaced()
     inst.Transform:SetScale(0.8, 0.8, 0.8)
 
     inst.AnimState:SetBuild("brightmare_gestalt_evolved")
     inst.AnimState:SetBank("brightmare_gestalt_evolved")
     inst.AnimState:PlayAnimation("idle", true)
+	inst.AnimState:Hide("mouseover")
+    inst.AnimState:Hide("angry")
 
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
@@ -194,7 +202,7 @@ local function fn()
 	if not TheNet:IsDedicated() then
 		inst.blobhead = SpawnPrefab("gestalt_guard_head")
 		inst.blobhead.entity:SetParent(inst.entity) --prevent 1st frame sleep on clients
-		inst.blobhead.Follower:FollowSymbol(inst.GUID, "brightmare_gestalt_head_evolved", 0, 0, 0)
+		inst.blobhead.Follower:FollowSymbol(inst.GUID, "head_fx_big", 0, 0, 0)
 
 		inst.blobhead.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 		inst.blobhead.persists = false
@@ -212,6 +220,8 @@ local function fn()
 	end
 
 	inst.scrapbook_inspectonseen = true
+    inst.scrapbook_hide = {"angry"}
+	inst.scrapbook_overridedata = {"head_fx_big", "brightmare_gestalt_head_evolved", "head_fx_big"}
 
     inst.entity:SetPristine()
 
@@ -252,6 +262,10 @@ local function fn()
 	inst:ListenForEvent("killed", onkilledtarget)
 
 	inst:AddComponent("knownlocations")
+
+	inst:AddComponent("gestaltcapturable")
+	inst.components.gestaltcapturable:SetLevel(2)
+	inst.components.gestaltcapturable:SetOnCapturedFn(OnCaptured)
 
     inst:SetStateGraph("SGbrightmare_gestalt")
     inst:SetBrain(brain)

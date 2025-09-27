@@ -50,6 +50,8 @@ local function fn()
     inst:AddComponent("drawingtool")
     inst.components.drawingtool:SetOnDrawFn(OnDrawFn)
 
+	inst:AddComponent("snowmandecor")
+
     return inst
 end
 

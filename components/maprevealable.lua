@@ -43,6 +43,27 @@ function MapRevealable:SetIconPrefab(prefab)
     end
 end
 
+function MapRevealable:SetIconTag(tag)
+    if self.icontag ~= tag then
+        if self.icontag ~= nil then
+            if self.icon ~= nil then
+                self.icon:RemoveTag(self.icontag)
+            end
+            self.icontag = nil
+        end
+        self.icontag = tag
+        if self.icontag ~= nil then
+            if self.icon ~= nil then
+                self.icon:AddTag(self.icontag)
+            end
+        end
+    end
+end
+
+function MapRevealable:SetOnIconCreatedFn(fn)
+    self.oniconcreatedfn = fn
+end
+
 function MapRevealable:AddRevealSource(source, restriction)
     if self.revealsources[source] == nil then
         self.revealsources[source] = { restriction = restriction }
@@ -87,8 +108,14 @@ end
 function MapRevealable:StartRevealing(restriction)
     if self.icon == nil then
         self.icon = SpawnPrefab(self.iconprefab)
+        if self.icontag ~= nil then
+            self.icon:AddTag(self.icontag)
+        end
         if self.iconpriority ~= nil then
             self.icon.MiniMapEntity:SetPriority(self.iconpriority)
+        end
+        if self.oniconcreatedfn ~= nil then -- Keep before TrackEntity but after anything else used to setup the prefab.
+            self.oniconcreatedfn(self.inst, self.icon)
         end
         self.icon:TrackEntity(self.inst, restriction, self.iconname)
     else
@@ -112,6 +139,13 @@ function MapRevealable:Refresh()
             self:RemoveRevealSource("maprevealer")
         end
     end
+    if self.onrefreshfn ~= nil then
+        self.onrefreshfn(self.inst)
+    end
+end
+
+function MapRevealable:SetOnRefreshFn(onrefreshfn)
+    self.onrefreshfn = onrefreshfn
 end
 
 local function Refresh(inst, self)

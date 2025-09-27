@@ -191,8 +191,7 @@ local function common_fn(bank, build, anim, tag, isinventoryitem)
         inst.Physics:SetFriction(0)
         inst.Physics:SetDamping(0)
         inst.Physics:SetRestitution(0)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.GROUND)
+		inst.Physics:SetCollisionMask(COLLISION.GROUND)
         inst.Physics:SetSphere(TUNING.CANNONBALL_RADIUS)
         inst.Physics:SetCollides(false) -- The cannonball hitting targets will be handled in OnUpdateProjectile() with FindEntities()
 
@@ -213,6 +212,7 @@ local function common_fn(bank, build, anim, tag, isinventoryitem)
 
     --projectile (from complexprojectile component) added to pristine state for optimization
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.AnimState:SetBank(bank)
     inst.AnimState:SetBuild(build)

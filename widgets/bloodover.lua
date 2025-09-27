@@ -1,5 +1,6 @@
 local Widget = require "widgets/widget"
 local Image = require "widgets/image"
+local WagBossUtil = require("prefabs/wagboss_util")
 
 local BloodOver =  Class(Widget, function(self, owner)
     self.owner = owner
@@ -27,7 +28,7 @@ local BloodOver =  Class(Widget, function(self, owner)
     local function _UpdateState() self:UpdateState() end
 
     self.inst:ListenForEvent("badaura", _Flash, owner)
-    self.inst:ListenForEvent("attacked", function(owner, data)
+    self.inst:ListenForEvent("attacked", function(_, data)
         if not data.redirected then
             self:Flash()
         end
@@ -39,21 +40,35 @@ local BloodOver =  Class(Widget, function(self, owner)
     self.inst:ListenForEvent("stopfreezing", _UpdateState, owner)
     self.inst:ListenForEvent("startoverheating", _UpdateState, owner)
     self.inst:ListenForEvent("stopoverheating", _UpdateState, owner)
+	self.inst:ListenForEvent("startlunarburn", _UpdateState, owner)
+	self.inst:ListenForEvent("stoplunarburn", _UpdateState, owner)
     self.inst:DoTaskInTime(0, _UpdateState)
 end)
 
 function BloodOver:UpdateState()
-    if (self.owner.IsFreezing ~= nil and self.owner:IsFreezing()) or
-        (self.owner.IsOverheating ~= nil and self.owner:IsOverheating()) or
-        (self.owner.replica.hunger ~= nil and self.owner.replica.hunger:IsStarving()) then
-        self:TurnOn()
-    else
-        self:TurnOff()
-    end
+	if (self.owner.IsFreezing and self.owner:IsFreezing()) or
+		(self.owner.IsOverheating and self.owner:IsOverheating())
+	then
+		self:TurnOn()
+		return
+	end
+
+	local hunger = self.owner.replica.hunger
+	if hunger and hunger:IsStarving() then
+		self:TurnOn()
+		return
+	end
+
+	local health = self.owner.replica.health
+	if health and WagBossUtil.HasLunarBurnDamage(health:GetLunarBurnFlags()) then
+		self:TurnOn()
+		return
+	end
+
+	self:TurnOff()
 end
 
 function BloodOver:TurnOn()
-    --TheInputProxy:AddVibration(VIBRATION_BLOOD_FLASH, .2, .7, true)
     self:StartUpdating()
     self.base_level = .5
     self.k = 5
@@ -86,10 +101,6 @@ function BloodOver:OnUpdate(dt)
         self.time_since_pulse = self.time_since_pulse + dt
         if self.time_since_pulse > self.pulse_period then
             self.time_since_pulse = 0
-
-            if not IsEntityDead(self.owner) then
-                TheInputProxy:AddVibration(VIBRATION_BLOOD_OVER, .2, .3, false)
-            end
         end
     end
 
@@ -103,7 +114,6 @@ function BloodOver:OnUpdate(dt)
 end
 
 function BloodOver:Flash()
-    TheInputProxy:AddVibration(VIBRATION_BLOOD_FLASH, .2, .7, false)
     self:StartUpdating()
     self.level = 1
     self.k = 1.33

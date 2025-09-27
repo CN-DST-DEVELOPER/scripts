@@ -1,11 +1,11 @@
 local assets =
 {
-	Asset("ANIM", "anim/trap_vines.zip"),
+	Asset("ANIM", "anim/trap_vines.zip", ALT_RENDERPATH),
 }
 
 local assets_base =
 {
-	Asset("ANIM", "anim/shadow_pillar_fx.zip"),
+	Asset("ANIM", "anim/shadow_pillar_fx.zip", ALT_RENDERPATH),
 }
 
 local prefabs =

@@ -26,6 +26,9 @@ end
 
 function FiniteUses:SetConsumption(action, uses)
     self.consumption[action] = uses
+    if action == ACTIONS.MINE then
+        self.consumption[ACTIONS.REMOVELUNARBUILDUP] = uses
+    end
 end
 
 function FiniteUses:GetDebugString()

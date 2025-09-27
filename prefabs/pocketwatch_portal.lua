@@ -80,12 +80,12 @@ local function DoCastSpell(inst, doer, target, pos)
 		return true
 	else
 		local x, y, z = doer.Transform:GetWorldPosition()
-		recallmark:MarkPosition(x, y, z)
-		inst.SoundEmitter:PlaySound("wanda2/characters/wanda/watch/MarkPosition")
-
-		doer:DoTaskInTime(12 * FRAMES, DelayedMarkTalker) 
-
-		return true
+		local success, reason = recallmark:MarkPosition(x, y, z)
+		if success then
+			inst.SoundEmitter:PlaySound("wanda2/characters/wanda/watch/MarkPosition")
+			doer:DoTaskInTime(12 * FRAMES, DelayedMarkTalker) 
+		end
+		return success, reason
 	end
 end
 

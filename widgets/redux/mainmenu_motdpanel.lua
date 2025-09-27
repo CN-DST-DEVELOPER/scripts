@@ -168,7 +168,7 @@ function MotdPanel:OnMotdLoaded()
  		local title_size = 22 * (font_scale or 1)
 		local body_size = 18 * (font_scale or 1)
 
-        local w = Widget("recipe-cell-".. index)
+        local w = Widget("motd-cell-".. index)
 
 		w.box_scale = box_scale
 

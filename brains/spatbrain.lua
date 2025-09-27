@@ -77,6 +77,7 @@ function Spatbrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function() return CanMeleeNow(self.inst) end, "Hit Stuck Target or Creature",
             SequenceNode({
                 ActionNode(function() EquipMeleeAndResetCooldown(self.inst) end, "Equip melee"),

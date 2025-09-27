@@ -217,11 +217,12 @@ local function CreatePhysicsPush(parent)
 	inst.entity:AddPhysics()
 	inst.Physics:SetMass(999999)
 	inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-	inst.Physics:ClearCollisionMask()
-	inst.Physics:CollidesWith(COLLISION.ITEMS)
-	inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-	inst.Physics:CollidesWith(COLLISION.GIANTS)
-	inst.Physics:CollidesWith(COLLISION.WORLD)
+	inst.Physics:SetCollisionMask(
+		COLLISION.ITEMS,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS,
+		COLLISION.WORLD
+	)
 	inst.Physics:SetCapsule(parent.islarge:value() and RADIUS_LARGE or RADIUS, 2)
 
 	inst:DoTaskInTime(0, inst.Remove)

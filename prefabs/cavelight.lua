@@ -4,7 +4,7 @@ local assets =
 }
 
 local function OnEntityWake(inst)
-    inst.SoundEmitter:PlaySound("grotto/common/chandelier_LP", "loop")
+    inst.SoundEmitter:PlaySound("dontstarve/AMB/caves/forest_spot", "loop")
 end
 
 local function OnEntitySleep(inst)

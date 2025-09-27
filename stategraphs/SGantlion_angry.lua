@@ -116,6 +116,7 @@ local events =
 {
     CommonHandlers.OnDeath(),
     CommonHandlers.OnFreezeEx(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     EventHandler("doattack", function(inst)
@@ -123,12 +124,16 @@ local events =
             ChooseAttack(inst)
         end
     end),
-    EventHandler("attacked", function(inst)
+	EventHandler("attacked", function(inst, data)
         inst.sg.mem.wantstoeat = nil
-        if not inst.components.health:IsDead() and
-            (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
-            not CommonHandlers.HitRecoveryDelay(inst, TUNING.ANTLION_HIT_RECOVERY) then
-            inst.sg:GoToState("hit")
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
+				not CommonHandlers.HitRecoveryDelay(inst, TUNING.ANTLION_HIT_RECOVERY)
+			then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("eatrocks", function(inst)
@@ -533,5 +538,6 @@ CommonStates.AddSleepExStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("antlion_angry", states, events, "idle")

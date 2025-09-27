@@ -54,6 +54,25 @@ kinds["beefalo"] =
     },
 }
 
+kinds["wendy_recipe_gravestone"] =
+{
+    prompt = STRINGS.SIGNS.MENU.PROMPT_GRAVESTONE,
+    animbank = "ui_board_5x3",
+    animbuild = "ui_board_5x3",
+    menuoffset = Vector3(6, -70, 0),
+
+    defaulttext = function(inst, doer)
+        return STRINGS.WENDY_EPITAPHS[math.random(#STRINGS.WENDY_EPITAPHS)]
+    end,
+
+    cancelbtn = { text = STRINGS.SIGNS.MENU.CANCEL, cb = nil, control = CONTROL_CANCEL },
+    middlebtn = { text = STRINGS.SIGNS.MENU.RANDOM, cb = function(inst, doer, widget)
+            local epitaph_index = math.random(#STRINGS.WENDY_EPITAPHS)
+            widget:OverrideText( STRINGS.WENDY_EPITAPHS[epitaph_index] )
+        end, control = CONTROL_MENU_MISC_2 },
+    acceptbtn = { text = STRINGS.SIGNS.MENU.ACCEPT, cb = nil, control = CONTROL_ACCEPT },
+}
+
 writeables.makescreen = function(inst, doer)
     local data = kinds[inst.prefab]
 

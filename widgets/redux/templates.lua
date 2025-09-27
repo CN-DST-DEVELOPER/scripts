@@ -244,7 +244,7 @@ function TEMPLATES.ScreenTitle(title_text, subtitle_text)
         root = Widget("title root")
         root:AddChild(title)
 
-        -- subtitle accessed with self.title.small
+        -- subtitle accessed with self.small
         root.small = root:AddChild(Text(CHATFONT, 28, subtitle_text))
         root.small:SetColour(UICOLOURS.GREY)
         root.small:SetPosition(0, -35)
@@ -254,8 +254,8 @@ function TEMPLATES.ScreenTitle(title_text, subtitle_text)
 
     root:SetPosition(titleX, titleY)
 
-    -- Don't call Text methods on the return value! Use self.title.big or
-    -- self.title.small to ensure code works with subtitles.
+    -- Don't call Text methods on the return value! Use self.big or
+    -- self.small to ensure code works with subtitles.
     root.big = title
 
     return root

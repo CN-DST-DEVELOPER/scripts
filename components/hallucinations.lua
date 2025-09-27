@@ -115,7 +115,7 @@ HALLUCINATION_TYPES.shadowwatcher.spawnfn = function(inst, hallucination)
     if hallucination.count < maxcount then
         local fire = FindEntity(_player, 60, nil, NEARFIRE_MUST_TAGS, NEARFIRE_CANT_TAGS, _fueltags)
         if fire ~= nil then
-            local angle = math.random() * 360
+            local angle = math.random() * TWOPI
             local x, y, z = fire.Transform:GetWorldPosition()
             local result_offset = FindValidPositionByFan(angle, 27, 12, function(offset)
                 return TheSim:GetLightAtPoint(x + offset.x, 0, z + offset.z) <= TUNING.DARK_SPAWNCUTOFF

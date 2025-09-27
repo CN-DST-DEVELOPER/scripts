@@ -31,7 +31,7 @@ function UseableItem:SetOnStopUseFn(fn)
 end
 
 function UseableItem:CanInteract(doer)
-    return not self.inuse and (doer:HasTag("upgrademoduleowner") or (self.inst.replica.equippable ~= nil and self.inst.replica.equippable:IsEquipped()))
+    return not self.inuse and self.inst.replica.equippable ~= nil and self.inst.replica.equippable:IsEquipped()
 end
 
 function UseableItem:StartUsingItem()

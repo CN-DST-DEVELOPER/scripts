@@ -129,6 +129,7 @@ local function fn()
     inst:AddComponent("inspectable")
 
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     MakeSmallBurnable(inst, nil, nil, true)
     MakeMediumPropagator(inst)

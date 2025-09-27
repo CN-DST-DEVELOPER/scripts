@@ -151,6 +151,7 @@ local function fn()
     inst.components.locomotor.pathcaps = { allowocean = true }
 
     inst:SetStateGraph("SGwormwood_lightflier")
+    inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
     inst:AddComponent("combat")

@@ -238,9 +238,9 @@ local TREE_DEFS =
 
         common_postinit = function(inst)
             inst.AnimState:SetLightOverride(0.1)
-            inst.AnimState:SetSymbolLightOverride("fire_parts", 0.5)
+            inst.AnimState:SetSymbolLightOverride("fire_loop", 0.5)
             inst.AnimState:SetSymbolLightOverride("fire_glow", 0.5)
-            inst.AnimState:SetSymbolBloom("fire_parts")
+            inst.AnimState:SetSymbolBloom("fire_loop")
         end,
 
         --master_postinit = function(inst)

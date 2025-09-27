@@ -53,6 +53,7 @@ function WerePigBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         BrainCommon.IpecacsyrupPanicTrigger(self.inst),
         WhileNode(function() return not TargetIsAggressive(self.inst) end, "SafeToEat",
             DoAction(self.inst, function() return FindFoodAction(self.inst) end, "EatMeat", true)

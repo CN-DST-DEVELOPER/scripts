@@ -386,7 +386,7 @@ end
 local function MakeDeviceStage(name, client_postinit, master_postinit, construction_data)
 	local function fn()
 
-   		local inst = CreateEntity()
+        local inst = CreateEntity()
 
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
@@ -442,8 +442,13 @@ local function MakeDeviceStage(name, client_postinit, master_postinit, construct
 			return inst
 		end
 
+        if name == "moon_device_construction2" or name == "moon_device" then
+            WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Recipes and products that use "moonrockseed".
+        end
+
         inst._construction_product = construction_data ~= nil and construction_data.construction_product or nil
 
+        MakeSnowCovered(inst)
         playlinkanimation(inst, inst.level)
 
         if inst.level >= 2 then
@@ -503,9 +508,10 @@ local function MakeDeviceStage(name, client_postinit, master_postinit, construct
 	return Prefab(name, fn, assets, prefabs, product)
 end
 
+local LINK_MUST_TAGS = { "moon_altar_link" }
 local function placer_onupdatetransform(inst)
     local pos = inst:GetPosition()
-    local ents = TheSim:FindEntities(pos.x, 0, pos.z, PLACER_SNAP_DISTANCE, { "moon_altar_link" })
+    local ents = TheSim:FindEntities(pos.x, 0, pos.z, PLACER_SNAP_DISTANCE, LINK_MUST_TAGS)
 
     if #ents > 0 then
         local targetpos = ents[1]:GetPosition()

@@ -25,7 +25,15 @@ local SkillTreeWidget = Class(Widget, function(self, prefabname, targetdata, fro
 
     self.midlay = self.root:AddChild(Widget())
 
-    self.bg_tree = self.root:AddChild(Image(GetSkilltreeBG(self.target.."_background.tex"), self.target.."_background.tex"))
+    local bg_tree_imagename = self.target .. "_background.tex"
+    local bg_tree_atlas = GetSkilltreeBG(bg_tree_imagename)
+    if bg_tree_atlas == nil then
+        print(string.format("FIXME: Skill tree background %s image is missing!", bg_tree_imagename))
+        self.bg_tree = self.root:AddChild(Image("images/skilltree.xml", "fallbackbackground.tex"))
+        self.bg_tree:SetTint(0, 0, 0, 1) -- Black box for missing asset.
+    else
+        self.bg_tree = self.root:AddChild(Image(bg_tree_atlas, bg_tree_imagename))
+    end
     self.bg_tree:SetPosition(2,-20)
     self.bg_tree:ScaleToSize(600, 460)
 
@@ -108,7 +116,7 @@ local SkillTreeWidget = Class(Widget, function(self, prefabname, targetdata, fro
             self:RespecSkills()
         end, STRINGS.SKILLTREE.RESPEC, {200, 50}))
     if TheInput:ControllerAttached() then
-        self.root.infopanel.respec_button:SetText(TheInput:GetLocalizedControl(TheInput:GetControllerID(),  CONTROL_MENU_MISC_1).." "..STRINGS.SKILLTREE.RESPEC)
+        self.root.infopanel.respec_button:SetText(TheInput:GetLocalizedControl(TheInput:GetControllerID(),  CONTROL_MENU_MISC_2).." "..STRINGS.SKILLTREE.RESPEC)
     end
 
     self.root.infopanel.respec_button:SetPosition(0,-120)
@@ -156,8 +164,9 @@ function SkillTreeWidget:RespecSkills()
         graphics.status = {}
     end
 
-    self.root.tree:RefreshTree()
+    self.root.tree:RefreshTree(true)
 end
+
 
 function SkillTreeWidget:SpawnFavorOverlay(pre)
     if not self.fromfrontend and (self.midlay ~= nil and self.midlay.splash == nil) then
@@ -217,16 +226,24 @@ function SkillTreeWidget:SpawnFavorOverlay(pre)
         end
     end
 end
+--[[
+function SkillTreeWidget:OnUpdate()
+    if self.root.infopanel.puck then
+
+    end
+end
+]]
 
 function SkillTreeWidget:Kill()
-    --ThePlantRegistry:Save() -- for saving filter settings
+    self.root.tree:Kill()
+
     SkillTreeWidget._base.Kill(self)
 end
 
 function SkillTreeWidget:OnControl(control, down)
     if SkillTreeWidget._base.OnControl(self, control, down) then return true end
 
-    if not down and control ==  CONTROL_MENU_MISC_1 and self.root.infopanel.respec_button:IsVisible() then
+    if not down and control ==  CONTROL_MENU_MISC_2 and self.root.infopanel.respec_button:IsVisible() then
         self:RespecSkills()
         return true
     end
@@ -258,7 +275,7 @@ function SkillTreeWidget:GetHelpText()
     local t = {}
 
     if self.root.infopanel.respec_button:IsVisible() then
-        table.insert(t, TheInput:GetLocalizedControl(controller_id,  CONTROL_MENU_MISC_1).. " " .. STRINGS.SKILLTREE.RESPEC)
+        table.insert(t, TheInput:GetLocalizedControl(controller_id,  CONTROL_MENU_MISC_2).. " " .. STRINGS.SKILLTREE.RESPEC)
     end
 
     return table.concat(t, "  ")

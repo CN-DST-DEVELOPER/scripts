@@ -1,4 +1,7 @@
 
+--NOTE (Omar): Our sunkenchest capacity is 15 slots, watch out if our GenerateTreasure can generate a chest with more items.
+-- Currently our potential max is 11
+
 local treasure_templates =
 {
 --	TREASUREPREFAB1 = -- Prefab to spawn at point

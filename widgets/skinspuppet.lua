@@ -158,8 +158,12 @@ function SkinsPuppet:DoIdleEmote()
 				self.item_equip = true
 
 			elseif self.prefabname == "woodie" then
-				self.animstate:OverrideSymbol("swap_object", "swap_lucy_axe", "swap_lucy_axe")
-
+				local skin_build = Profile:GetLastUsedSkinForItem("lucy")
+				if skin_build ~= nil then
+					self.animstate:OverrideItemSkinSymbol("swap_object", skin_build, "swap_lucy_axe", 0, "swap_lucy_axe")
+				else
+					self.animstate:OverrideSymbol("swap_object", "swap_lucy_axe", "swap_lucy_axe")
+				end
 				self.animstate:Show("ARM_carry")
 				self.animstate:Hide("ARM_normal")
 

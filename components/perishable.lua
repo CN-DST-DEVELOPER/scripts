@@ -252,7 +252,12 @@ end
 
 function Perishable:LongUpdate(dt)
     if self.updatetask ~= nil then
+		self.start_dt = nil
+		local remaining = GetTaskRemaining(self.updatetask)
         Update(self.inst, dt or 0)
+		if self.updatetask and self.start_dt == nil and remaining >= 0 then
+			self.start_dt = remaining
+		end
     end
 end
 

@@ -109,7 +109,7 @@ local function fn()
 	end
 
     inst.scrapbook_anim = "eye_idle"
-    inst.scrapbook_inspectonseen = true
+    --inst.scrapbook_inspectonseen = true --No need for inspect on seen they can die
 
     --
     local health = inst:AddComponent("health")

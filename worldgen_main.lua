@@ -72,6 +72,10 @@ function IsPS4()
 	return (PLATFORM == "PS4")
 end
 
+function IsPS5()
+	return (PLATFORM == "PS5")
+end
+
 function IsXB1()
 	return (PLATFORM == "XBONE")
 end
@@ -90,6 +94,11 @@ end
 
 function IsSteamDeck()
 	return IS_STEAM_DECK
+end
+
+
+function ValidateLineNumber(num)
+	--do nothing
 end
 
 require("stacktrace")

@@ -155,6 +155,7 @@ function PerdBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function() return not TheWorld.state.isday end, "IsNight",
             DoAction(self.inst, GoHomeAction, "Go Home", true)),
         IfNode(function() return self.inst.seekshrine end, "Seek Shrine",

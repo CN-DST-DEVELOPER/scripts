@@ -89,6 +89,7 @@ local function FindContainerWithItem(inst, item, count)
 
     for i, ent in ipairs(ents) do
         if ent.components.container ~= nil and
+			ent.components.dryingrack == nil and
             table.contains(ALLOWED_CONTAINER_TYPES, ent.components.container.type) and
             (ent.components.container.canbeopened or ent.components.container.canacceptgivenitems) and -- NOTES(JBK): canacceptgivenitems is a mod flag for now.
             ent.components.container:Has(item.prefab, 1) and
@@ -113,6 +114,10 @@ local function FindItemToPickupAndStore_filter(inst, item, match_item)
         not item.components.inventoryitem:IsHeld())
     then
         return
+    end
+
+    if item.Physics ~= nil and item.Physics:IsActive() and checkbit(item.Physics:GetCollisionMask(), inst.Physics:GetCollisionGroup()) then
+        return -- No items with physics and that we collide with, like pickable creatures, moles...
     end
 
     if not item:IsOnPassablePoint() or item:GetCurrentPlatform() ~= inst:GetCurrentPlatform() then

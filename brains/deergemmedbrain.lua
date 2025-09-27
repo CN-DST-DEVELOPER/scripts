@@ -108,6 +108,11 @@ function DeerGemmedBrain:OnStart()
                 Leash(self.inst, GetSlavePos, 15, 5, true),
                 Panic(self.inst),
             }, .5)),
+        WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "Panic",
+            PriorityNode({
+                Leash(self.inst, GetSlavePos, 15, 5, true),
+                AvoidElectricFence(self.inst),
+            }, .5)),
         AttackWall(self.inst),
         WhileNode(function() return GetKeeper(self.inst) == nil end, "NotEnslaved",
             ChaseAndAttack(self.inst, MAX_CHASE_TIME)),

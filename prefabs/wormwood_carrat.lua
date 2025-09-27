@@ -129,6 +129,7 @@ local function fn()
     inst:AddComponent("drownable")
 
     inst:SetStateGraph("SGwormwood_carrat")
+    inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
     local health = inst:AddComponent("health")

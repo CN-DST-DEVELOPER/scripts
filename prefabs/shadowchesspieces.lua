@@ -349,7 +349,10 @@ local function commonfn(name, sixfaced)
     MakeCharacterPhysics(inst, 10, PHYS_RADIUS[name])
     RemovePhysicsColliders(inst)
     inst.Physics:SetCollisionGroup(COLLISION.SANITY)
-    --inst.Physics:CollidesWith(COLLISION.SANITY)
+	--[[inst.Physics:CollidesWith(bit.bor(
+		COLLISION.WORLD,
+		COLLISION.SANITY
+	))]]
     inst.Physics:CollidesWith(COLLISION.WORLD)
 
     if sixfaced then

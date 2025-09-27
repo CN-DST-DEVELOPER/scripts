@@ -46,8 +46,12 @@ local function GemFruit_OnUpdate(inst, dt)
     local heatindex = 0
 
     for _, ent in ipairs(ents) do
-        if ent.components.heater ~= nil and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
-            heatindex = heatindex + (ent.components.heater:GetHeat(inst) or 0) -- Cold fires produce negative heat.
+		if ent.components.heater then
+			--V2C: GetHeat first. Some heaters update thermics in their heatfn.
+			local heat = ent.components.heater:GetHeat(inst)
+			if heat and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
+				heatindex = heatindex + heat -- Cold fires produce negative heat.
+			end
 
             if heatindex >= TUNING.ANCIENTFRUIT_GEM_MIN_HEAT then
                 inst._temperature = math.min(inst._temperature + dt, TUNING.ANCIENTFRUIT_GEM_TEMPERATURE_THRESHOLD.MAX)
@@ -256,6 +260,7 @@ local function gem_fruit_fn()
     inst.pickupsound = "rock"
 
     inst:AddTag("molebait")
+    -- NOTES(JBK): Do not add the gem tag to this it is not a socketable gem.
 
     MakeInventoryPhysics(inst)
 
@@ -321,6 +326,12 @@ local ANCIENTFRUIT_NIGHTVISION_COLOURCUBES =
     full_moon = "images/colour_cubes/nightvision_fruit_cc.tex",
 
     nightvision_fruit = true, -- NOTES(DiogoW): Here for convinience.
+}
+
+local ANCIENTFRUIT_NIGHTVISION_AMBIENT_COLOURS =
+{
+	default = { colour = Vector3(255/255, 175/255, 255/255) },
+	fixedcolour = true,
 }
 
 local BEAT_SOUNDNAME = "BEAT_SOUND"
@@ -519,7 +530,7 @@ local function buff_OnAttached(inst, target)
     end, target)
 
     if target.components.playervision ~= nil then
-        target.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true)
+		target.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true, ANCIENTFRUIT_NIGHTVISION_AMBIENT_COLOURS)
         inst._enabled:set(true)
     end
 
@@ -599,7 +610,7 @@ end
 local function buff_OnEnabledDirty(inst)
     if ThePlayer ~= nil and inst.entity:GetParent() == ThePlayer and ThePlayer.components.playervision ~= nil then
         if inst._enabled:value() then
-            ThePlayer.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true)
+			ThePlayer.components.playervision:PushForcedNightVision(inst, 1, ANCIENTFRUIT_NIGHTVISION_COLOURCUBES, true, ANCIENTFRUIT_NIGHTVISION_AMBIENT_COLOURS)
         else
             ThePlayer.components.playervision:PopForcedNightVision(inst)
         end

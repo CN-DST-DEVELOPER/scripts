@@ -481,7 +481,7 @@ function ModsScreen:UpdateForWorkshop()
 		local function alphasort(moda, modb)
 			if not moda then return false end
 			if not modb then return true end
-			return string.lower(KnownModIndex:GetModFancyName(moda.modname)) < string.lower(KnownModIndex:GetModFancyName(modb.modname))
+			return stringidsorter(string.lower(KnownModIndex:GetModFancyName(moda.modname)), string.lower(KnownModIndex:GetModFancyName(modb.modname)))
 		end
 		table.sort(curr_modnames_client, alphasort)
 		table.sort(curr_modnames_server, alphasort)
@@ -1052,7 +1052,6 @@ function ModsScreen:ShowModDetails(idx, client_mod)
     local nameLines = self.detailtitle:GetString():split("\n")
     if #nameLines > 1 then
         self.detailtitle:SetString(nameLines[1])
-        print(self.detailtitle:GetString():len())
         local w = self.detailtitle:GetRegionSize()
         self.detailtitle:SetPosition(title_x + w * .5, 189)
         self.detailtitle2:SetString(nameLines[2])
@@ -1215,11 +1214,11 @@ function ModsScreen:ModLinkCurrent()
 end
 
 function ModsScreen:MoreMods()
-	VisitURL("http://forums.kleientertainment.com/files/")
+	VisitURL("https://forums.kleientertainment.com/files/")
 end
 
 function ModsScreen:MoreWorkshopMods()
-	VisitURL("http://steamcommunity.com/app/322330/workshop/")
+	VisitURL("https://steamcommunity.com/app/322330/workshop/")
 end
 
 function ModsScreen:MakeDirty()

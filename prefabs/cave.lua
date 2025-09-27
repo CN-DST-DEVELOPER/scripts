@@ -165,6 +165,35 @@ local prefabs =
     "worm_boss",
 
 	"shadowthrall_parasite",
+
+    -- Meta 5
+    "graveguard_ghost",
+
+	-- Rifts 6
+    "shadowthrall_centipede_controller",
+    "shadowthrall_centipede_head",
+    "shadowthrall_centipede_body",
+
+    "tree_rock1",
+    "tree_rock2",
+    "cave_vent_rock",
+    "retrofit_fumaroleteleporter",
+
+    "flower_cave_withered",
+
+    --   vault
+    "vaultmarker_lobby_center",
+    "vaultmarker_lobby_to_vault",
+    "vaultmarker_lobby_to_archive",
+    "vaultmarker_vault_center",
+    "vaultmarker_vault_north",
+    "vaultmarker_vault_east",
+    "vaultmarker_vault_south",
+    "vaultmarker_vault_west",
+    "oceanwhirlbigportalexit",
+    "vault_lobby_exit",
+    "vault_chandelier",
+    "vault_teleporter",
 }
 
 local monsters =
@@ -207,11 +236,11 @@ local wormspawn =
 
     attack_levels =
     {
-        intro   = { warnduration = function() return 120 end, numspawns = function() return 1 end },                     -- 1
-        light   = { warnduration = function() return 60 end, numspawns = function() return 1 + math.random(0,1) end },   -- 1-2
-        med     = { warnduration = function() return 45 end, numspawns = function() return 1 + math.random(0,1) end },   -- 1-2 
-        heavy   = { warnduration = function() return 30 end, numspawns = function() return 2 + math.random(0,1) end },   -- 2-3
-        crazy   = { warnduration = function() return 30 end, numspawns = function() return 3 + math.random(0,2) end },   -- 3-5
+        intro   = { warnduration = function(preupgraded) return 120 end, numspawns = function() return 1 end },                     -- 1
+        light   = { warnduration = function(preupgraded) return preupgraded and 90 or 60 end, numspawns = function() return 1 + math.random(0,1) end },   -- 1-2
+        med     = { warnduration = function(preupgraded) return preupgraded and 90 or 45 end, numspawns = function() return 1 + math.random(0,1) end },   -- 1-2 
+        heavy   = { warnduration = function(preupgraded) return preupgraded and 60 or 30 end, numspawns = function() return 2 + math.random(0,1) end },   -- 2-3
+        crazy   = { warnduration = function(preupgraded) return preupgraded and 60 or 30 end, numspawns = function() return 3 + math.random(0,2) end },   -- 3-5
     },
 
     attack_delays =
@@ -227,45 +256,47 @@ local wormspawn =
         wave_pre_upgraded = nil
 
         local chance = wave_override_chance * (_wave_override_settings["worm_boss"] or 1)
+
         if _wave_override_settings["worm_boss"] ~= 0 and (math.random() < chance or _wave_override_settings["worm_boss"] == 9999) then
             wave_pre_upgraded = "available"
-        end
+        end        
 
         if wave_pre_upgraded == "available" then
             wave_override_chance = 0
         elseif TheWorld.state.cycles > TUNING.WORM_BOSS_DAYS then
             wave_override_chance = math.min(0.5, wave_override_chance + 0.05)
-        end 
-        
+        end
+
         return wave_pre_upgraded, wave_override_chance
     end,
 
-    warning_speech = function(wave_pre_upgraded)        
+    warning_speech = function(wave_pre_upgraded)    
         if wave_pre_upgraded then
-            return "ANNOUNCE_WORMS_BOSS", wave_pre_upgraded
+            return "ANNOUNCE_WORMS_BOSS"
+        else
+            return "ANNOUNCE_WORMS"
         end
-        return "ANNOUNCE_WORMS", wave_pre_upgraded
-    end,    
+    end,
 
-    warning_sound_thresholds = function(wave_pre_upgraded, wave_override_chance)
+    warning_sound_thresholds = function(wave_pre_upgraded, wave_override_chance)    
         if wave_pre_upgraded then
             return {
-                { time = 30, sound = "WORM_BOSS" },
-                { time = 60, sound = "WORM_BOSS" },
-                { time = 90, sound = "WORM_BOSS" },
-                { time = 500, sound = "WORM_BOSS" },
-            }, wave_pre_upgraded
+                { time = 90, sound = "WORM_BOSS", quake = true },
+                { time = 90, sound = "WORM_BOSS", quake = true },
+                { time = 90, sound = "WORM_BOSS", quake = true },
+                { time = 500, sound = "WORM_BOSS", quake = true },
+            }
         else
             return {
                 { time = 30, sound = "LVL4_WORM" },
                 { time = 60, sound = "LVL3_WORM" },
                 { time = 90, sound = "LVL2_WORM" },
                 { time = 500, sound = "LVL1_WORM" },
-            }, wave_pre_upgraded 
+            }
         end
     end,
 
-    ShouldUpgrade= function(amount, wave_pre_upgraded)
+    ShouldUpgrade= function(amount, wave_pre_upgraded)    
         if wave_pre_upgraded == "available" then
             wave_pre_upgraded = "used"   -- We've got one for the wave now, clear this so there aren't more.
             return true, amount, wave_pre_upgraded
@@ -454,6 +485,7 @@ local function master_postinit(inst)
     inst:AddComponent("kramped")
     inst:AddComponent("chessunlocks")
     inst:AddComponent("townportalregistry")
+    inst:AddComponent("linkeditemmanager")
 
     --world management
     inst:AddComponent("forestresourcespawner") -- a cave version of this would be nice, but it serves it's purpose...
@@ -491,6 +523,12 @@ local function master_postinit(inst)
     inst:AddComponent("shadowthrallmanager")
 	inst:AddComponent("ruinsshadelingspawner")
     inst:AddComponent("shadowthrall_mimics")
+
+    -- Meta 5
+    inst:AddComponent("decoratedgrave_ghostmanager")
+
+    -- Rifts 6
+    inst:AddComponent("vaultroommanager")
 
     return inst
 end

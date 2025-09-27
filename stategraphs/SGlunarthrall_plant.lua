@@ -48,17 +48,17 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
     inst.components.combat.ignorehitrange = false
 end
 
-local actionhandlers =
-{
-}
-
 local events =
 {
     CommonHandlers.OnFreeze(),
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and 
-            not inst.sg:HasStateTag("busy") then
+	CommonHandlers.OnElectrocute(),
+	EventHandler("attacked", function(inst, data)
+        if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("busy") then
                 inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
@@ -84,12 +84,19 @@ local states=
 
     State{
         name = "spawn",
-        tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst:customPlayAnimation("spawn_"..inst.targetsize)
             inst.SoundEmitter:PlaySound("rifts/lunarthrall/spawn")
         end,
+
+		timeline =
+		{
+			FrameEvent(50, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
+		},
 
         events =
         {
@@ -99,15 +106,15 @@ local states=
 
     State{
         name = "hit",
-        tags = {"busy","nointerrupt"},
+		tags = { "busy" },
 
         onenter = function(inst)
 			inst.SoundEmitter:PlaySound("rifts/lunarthrall/hit")
             if inst.tired then
 				if not inst.SoundEmitter:PlayingSound("wakeLP") then
 					inst.SoundEmitter:PlaySound("rifts/lunarthrall/rustle_wakeup_LP", "wakeLP")
-					inst:customPlayAnimation("tired_hit_"..inst.targetsize)
 				end
+				inst:customPlayAnimation("tired_hit_"..inst.targetsize)
             else
 				--inst:customPlayAnimation("hit_"..inst.targetsize)
 				inst.sg:GoToState("attack")
@@ -168,7 +175,7 @@ local states=
 
     State{
         name = "death",
-        tags = {"busy"},
+		tags = { "dead", "busy" },
 
         onenter = function(inst)
             inst:customPlayAnimation("death_"..inst.targetsize)
@@ -189,14 +196,21 @@ local states=
             inst.SoundEmitter:PlaySound("rifts/lunarthrall/tired_pre")
         end,
 
-        onexit = function(inst)
-            inst:AddTag("retaliates")
-        end,
-        
         events =
         {
-            EventHandler("animover", function(inst) if inst.AnimState:AnimDone() then inst.sg:GoToState("tired") end end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.tired = true
+					inst.sg:GoToState("tired")
+				end
+			end),
         },
+
+		onexit = function(inst)
+			if not inst.sg.statemem.tired then
+				inst:AddTag("retaliates")
+			end
+		end,
     },
 
     State{
@@ -209,14 +223,21 @@ local states=
             inst:customPlayAnimation("tired_loop_"..inst.targetsize)
         end,
 
-        onexit = function(inst)
-            inst:AddTag("retaliates")
-        end,
-
         events =
         {
-            EventHandler("animover", function(inst) if inst.AnimState:AnimDone() then inst.sg:GoToState("tired") end end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.tired = true
+					inst.sg:GoToState("tired")
+				end
+			end),
         },
+
+		onexit = function(inst)
+			if not inst.sg.statemem.tired then
+				inst:AddTag("retaliates")
+			end
+		end,
     },
 
     State{
@@ -243,9 +264,9 @@ local states=
         },
 
         onexit = function(inst)
-            inst:AddTag("retaliates")
             if not inst.sg.statemem.tired_wake then
-                inst.SoundEmitter:KillSound("wakeLP")                
+				inst.SoundEmitter:KillSound("wakeLP")
+				inst:AddTag("retaliates")
             end
         end,
     },
@@ -272,7 +293,6 @@ local states=
             EventHandler("animover", function(inst) if inst.AnimState:AnimDone() then inst.sg:GoToState("attack") end end),
         },
     },
-
 
     State{
         name = "frozen",
@@ -364,5 +384,82 @@ local states=
     },
 }
 
+CommonStates.AddElectrocuteStates(states,
+nil, --timelines
+{	--anims
+	loop = function(inst)
+		local anim = (inst.tired and "tired_shock_loop_" or "shock_loop_")..inst.targetsize
+		if inst.back then
+			inst.back.AnimState:PlayAnimation(anim, true)
+		end
+		return anim
+	end,
+	pst = function(inst)
+		local anim = (inst.tired and "tired_shock_pst_" or "shock_pst_")..inst.targetsize
+		if inst.back then
+			inst.back.AnimState:PlayAnimation(anim)
+		end
+		return anim
+	end,
+},
+{	--fns
+	loop_onenter = function(inst)
+		inst.SoundEmitter:PlaySound("rifts/lunarthrall/hit")
+		if inst.tired and not inst.SoundEmitter:PlayingSound("wakeLP") then
+			inst.SoundEmitter:PlaySound("rifts/lunarthrall/rustle_wakeup_LP", "wakeLP")
+		end
 
-return StateGraph("lunarthrall_plant", states, events, "idle", actionhandlers)
+		local data = inst.sg.statemem.data
+		local syncdata =
+		{
+			duration = data and data.duration,
+			noburn = true,
+			synced = true,
+		}
+
+		for i, v in ipairs(inst.vines) do
+			if not v.sg:HasStateTag("electrocute") then
+				v:PushEventImmediate("electrocute", syncdata)
+			end
+			--V2C: colouradder will sync our flash to all children, so cancel their own
+			if v.sg:HasStateTag("electrocute") and v.sg.statemem.fx then
+				v.sg.statemem.fx:CancelFlash()
+			end
+		end
+		if inst.sg.statemem.data and inst.sg.statemem.data.synced then
+			--V2C: only retaliate if we were the main target of the electrocute
+			inst.sg:AddStateTag("noretaliate")
+		end
+	end,
+	loop_onexit = function(inst)
+		if not inst.sg.statemem.not_interrupted then
+			inst.SoundEmitter:KillSound("wakeLP")
+		end
+	end,
+	pst_onenter = function(inst)
+		if not (inst.tired or inst.sg.lasttags["noretaliate"]) then
+			inst.sg:GoToState("attack")
+		end
+	end,
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if inst.tired then
+				if inst.wake then
+					inst.sg.statemem.tired_wake = true
+					inst.sg:GoToState("tired_wake")
+				else
+					inst.sg:GoToState("tired")
+				end
+			else
+				inst.sg:GoToState("idle")
+			end
+		end
+	end,
+	pst_onexit = function(inst)
+		if not inst.sg.statemem.tired_wake then
+			inst.SoundEmitter:KillSound("wakeLP")
+		end
+	end,
+})
+
+return StateGraph("lunarthrall_plant", states, events, "idle")

@@ -21,23 +21,39 @@ end
 
 function Commander:GetNumSoldiers(prefab)
     if prefab then
-        return #self:GetAllSoldiers(prefab)
+		local num = 0
+		for k in pairs(self.soldiers) do
+			if k.prefab == prefab then
+				num = num + 1
+			end
+		end
+		return num
     end
     return self.numsoldiers
 end
 
+function Commander:CollectSoldiers(tbl, prefab)
+	for k in pairs(self.soldiers) do
+		if prefab == nil or k.prefab == prefab then
+			table.insert(tbl, k)
+		end
+	end
+end
+
 function Commander:GetAllSoldiers(prefab)
     local soldiers = {}
-    for k, _ in pairs(self.soldiers) do
-        if prefab == nil or k.prefab == prefab then
-            table.insert(soldiers, k)
-        end
-    end
+	self:CollectSoldiers(soldiers, prefab)
     return soldiers
 end
 
 function Commander:IsSoldier(ent)
     return self.soldiers[ent] ~= nil
+end
+
+function Commander:ForEachSoldier(fn, ...)
+	for k in pairs(self.soldiers) do
+		fn(self.inst, ...)
+	end
 end
 
 function Commander:ShareTargetToAllSoldiers(target)

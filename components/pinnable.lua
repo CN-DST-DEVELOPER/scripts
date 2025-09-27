@@ -110,9 +110,7 @@ function Pinnable:Stick(goo_build, splashfxlist)
         local prevState = self.stuck
         self.stuck = true
 
-        if self.inst.brain ~= nil then
-            self.inst.brain:Stop()
-        end
+		self.inst:StopBrain("pinned")
 
         if self.inst.components.combat ~= nil then
             self.inst.components.combat:SetTarget(nil)
@@ -161,9 +159,7 @@ function Pinnable:Unstick()
 
         self:SpawnShatterFX()
 
-        if self.inst.brain ~= nil then
-            self.inst.brain:Start()
-        end
+		self.inst:RestartBrain("pinned")
 
         if self.wearofftask ~= nil then
             self.wearofftask:Cancel()

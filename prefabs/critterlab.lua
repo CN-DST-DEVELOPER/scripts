@@ -55,6 +55,9 @@ local function fn()
         return inst
     end
 
+    MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
+
     inst:AddComponent("inspectable")
 
     inst:AddComponent("prototyper")

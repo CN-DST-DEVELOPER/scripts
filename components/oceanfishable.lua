@@ -122,6 +122,15 @@ function OceanFishable:CalcStaminaDrainRate()
 	return -(self.stamina_def.drain_rate + extra_stamina_drain)
 end
 
+function OceanFishable:IsCloseEnoughToCatch()
+    if self.rod == nil then
+        return false
+    end
+
+    local owner = self.rod.components.inventoryitem and self.rod.components.inventoryitem:GetGrandOwner() or self.rod
+    return self.inst:IsNear(owner, self.catch_distance + owner:GetPhysicsRadius(0) + 0.25) -- Add a small fudge factor here.
+end
+
 function OceanFishable:OnUpdate(dt)
 	if self.stamina ~= nil then
 		local delta = dt * ((self.rod == nil or self.rod.components.oceanfishingrod == nil) and 0
@@ -138,7 +147,7 @@ function OceanFishable:OnUpdate(dt)
 		end
 	end
 
-	if self.rod ~= nil and self.inst:IsValid() and self.inst:IsNear(self.rod, self.catch_distance) then
+	if self.inst:IsValid() and self:IsCloseEnoughToCatch() then
 		self.inst:AddTag("oceanfishing_catchable")
 	else
 		self.inst:RemoveTag("oceanfishing_catchable")

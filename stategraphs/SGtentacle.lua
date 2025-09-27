@@ -2,9 +2,18 @@ require("stategraphs/commonstates")
 
 local events=
 {
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("hit", "attack") then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     EventHandler("newcombattarget", function(inst,data)
 
             if inst.sg:HasStateTag("idle") and data.target then
@@ -52,7 +61,7 @@ local states=
 
     State{
         name = "rumble",
-        tags = {"idle", "invisible"},
+		tags = { "idle", "invisible", "noelectrocute" },
         onenter = function(inst)
             StartRumbleSound(inst, 0)
             inst.AnimState:PlayAnimation("ground_pre")
@@ -69,7 +78,7 @@ local states=
 
     State{
         name = "idle",
-        tags = {"idle", "invisible"},
+		tags = { "idle", "invisible", "noelectrocute" },
         onenter = function(inst)
             inst.AnimState:PushAnimation("idle", true)
             inst.sg:SetTimeout(GetRandomWithVariance(10, 5) )
@@ -83,7 +92,7 @@ local states=
 
     State{
         name = "taunt",
-        tags = {"taunting"},
+		tags = { "taunting", "noelectrocute" },
         onenter = function(inst)
             StartRumbleSound(inst, 0)
 
@@ -159,6 +168,7 @@ local states=
 
     State{
         name ="attack_post",
+		tags = { "noelectrocute" },
         onenter = function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/tentacle/tentacle_disappear")
             inst.AnimState:PlayAnimation("atk_pst")
@@ -203,11 +213,15 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("attack") end),
         },
-
     },
-
 }
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states, nil, nil, {
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			inst.sg:GoToState("attack")
+		end
+	end,
+})
 
 return StateGraph("tentacle", states, events, "idle")
-

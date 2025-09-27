@@ -95,7 +95,6 @@ local function OnSeekOblivion(inst)
 		--reschedule
 		inst.components.timer:StartTimer("obliviate", .5)
 	else
-		inst:StopBrain()
 		inst:SetBrain(nil)
 		inst.components.health:Kill()
 	end

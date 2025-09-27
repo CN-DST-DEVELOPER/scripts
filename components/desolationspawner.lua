@@ -18,6 +18,10 @@ local BASE_RADIUS = 20
 local EXCLUDE_RADIUS = 3
 local MIN_PLAYER_DISTANCE = 64 * 1.2 -- this is our "outer" sleep radius
 
+local SKIP_PLANT_CHECK = {
+    ["tree_rock_sapling"] = true,
+}
+
 --------------------------------------------------------------------------
 --[[ Member variables ]]
 --------------------------------------------------------------------------
@@ -60,7 +64,8 @@ local function TestForRegrow(x, y, z, prefab, searchtags)
         return false
     end
 
-    if not (_map:CanPlantAtPoint(x, y, z) and
+    if not SKIP_PLANT_CHECK[prefab]
+        and not (_map:CanPlantAtPoint(x, y, z) and
             _map:CanPlacePrefabFilteredAtPoint(x, y, z, prefab))
         or (RoadManager ~= nil and RoadManager:IsOnRoad(x, 0, z)) then
         -- Not ground we can grow on
@@ -119,7 +124,7 @@ local function PopulateAreaData(prefab)
                     if _areadata[i][prefab] == nil then
                         _areadata[i][prefab] =
                         {
-                            denstiy = densities[prefab],
+                            density = densities[prefab],
                             regrowtime = _internaltimes[prefab] + math.random() * _replacementdata[prefab].regrowtime, -- initial offset is randomized
                         }
                     -- else this was already populated by Load
@@ -198,6 +203,10 @@ end)
 
 self:SetSpawningForType("palmconetree", "palmcone_sapling", TUNING.PALMCONETREE_REGROWTH.DESOLATION_RESPAWN_TIME, {"palmconetree"}, function()
     return (_worldstate.iswinter and 0) or TUNING.PALMCONETREE_REGROWTH_TIME_MULT
+end)
+
+self:SetSpawningForType("tree_rock", "tree_rock_sapling", TUNING.TREE_ROCK_REGROWTH.DESOLATION_RESPAWN_TIME, {"rock_tree"}, function()
+    return TUNING.TREE_ROCK_REGROWTH_TIME_MULT
 end)
 
 inst:DoTaskInTime(0, PopulateAreaDataFromReplacements)

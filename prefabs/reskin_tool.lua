@@ -84,6 +84,7 @@ local reskin_fx_info =
 	yellowstaff = { offset = 0.4 },
     mighty_gym = {offset = 2, scale = 2.7},
     eyeturret = {offset = 1, scalex = 1.4, scaley = 2.4},
+    wobybig = {offset = 1, scalex = 2.0, scaley = 1.6},
 }
 local function GetReskinFXInfo(target)
     if target.prefab == "treasurechest" and target._chestupgrade_stacksize then
@@ -98,8 +99,6 @@ if CAN_USE_DBUI then
     require("dbui_no_package/debug_skins_data/hooks").Hooks("fxinfo", reskin_fx_info)
 end
 
-
-
 local function spellCB(tool, target, pos, caster)
 	target = target or caster --if no target, then self target for beards
     if target == nil then -- Bail.
@@ -107,6 +106,11 @@ local function spellCB(tool, target, pos, caster)
     end
     if target.reskin_tool_target_redirect and target.reskin_tool_target_redirect:IsValid() then
         target = target.reskin_tool_target_redirect
+    end
+
+    -- NOTES(DiogoW): Expand this into a target function in case more cases are added.
+    if target._playerlink ~= nil and target._playerlink ~= caster then
+        return -- Only our owner is allowed to change our skin.
     end
 
     local fx_prefab = "explode_reskin"
@@ -142,14 +146,20 @@ local function spellCB(tool, target, pos, caster)
             local userid = tool.parent.userid or ""
             local cached_skin = tool._cached_reskinname[prefab_to_skin]
             local search_for_skin = cached_skin ~= nil --also check if it's owned
-            if curr_skin == cached_skin or (search_for_skin and not TheInventory:CheckClientOwnership(userid, cached_skin)) then
+            local force_change_cache
+            local must_have, must_not_have
+            if target.ReskinToolFilterFn ~= nil then
+                must_have, must_not_have = target:ReskinToolFilterFn()
+                if cached_skin then
+                    if must_have ~= nil and not StringContainsAnyInArray(cached_skin, must_have) or must_not_have ~= nil and StringContainsAnyInArray(cached_skin, must_not_have) then
+                        force_change_cache = cached_skin
+                    end
+                end
+            end
+            if force_change_cache or curr_skin == cached_skin or (search_for_skin and not TheInventory:CheckClientOwnership(userid, cached_skin)) then
                 local new_reskinname = nil
 
                 if PREFAB_SKINS[prefab_to_skin] ~= nil then
-                    local must_have, must_not_have
-                    if target.ReskinToolFilterFn ~= nil then
-                        must_have, must_not_have = target:ReskinToolFilterFn()
-                    end
                     for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
                         local skip_this = PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] or false
                         if not skip_this then
@@ -173,6 +183,10 @@ local function spellCB(tool, target, pos, caster)
                 end
                 tool._cached_reskinname[prefab_to_skin] = new_reskinname
                 cached_skin = new_reskinname
+            end
+            if force_change_cache and force_change_cache == cached_skin then
+                cached_skin = nil
+                tool._cached_reskinname[prefab_to_skin] = nil
             end
 
             if is_beard then
@@ -205,6 +219,12 @@ local function can_cast_fn(doer, target, pos)
     if target.reskin_tool_target_redirect and target.reskin_tool_target_redirect:IsValid() then
         target = target.reskin_tool_target_redirect
     end
+
+    -- NOTES(DiogoW): Expand this into a target function in case more cases are added.
+    if target._playerlink ~= nil and target._playerlink ~= doer then
+        return false -- Only our owner is allowed to change our skin.
+    end
+
     local prefab_to_skin = target.prefab
     local is_beard = false
 

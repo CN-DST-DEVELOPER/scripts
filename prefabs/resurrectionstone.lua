@@ -30,8 +30,9 @@ end
 
 local function OnHaunt(inst, haunter)
     if inst._task == nil and
-        haunter:CanUseTouchStone(inst) and
-        inst.AnimState:IsCurrentAnimation("idle_activate") then
+            haunter.CanUseTouchStone ~= nil and
+            haunter:CanUseTouchStone(inst) and
+            inst.AnimState:IsCurrentAnimation("idle_activate") then
         inst.AnimState:PlayAnimation("resurrect")
         inst.AnimState:PushAnimation("idle_broken", false)
         inst.SoundEmitter:PlaySound("dontstarve/common/resurrectionstone_break")
@@ -50,9 +51,7 @@ local function OnStartCharging(inst)
         inst._enablelights:set(false)
 
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.WORLD)
-        inst.Physics:CollidesWith(COLLISION.ITEMS)
+		inst.Physics:ClearCollidesWith(COLLISION.CHARACTERS)
 
         if inst.components.hauntable ~= nil then
             inst:RemoveComponent("hauntable")
@@ -341,10 +340,11 @@ local function fn()
 
     MakeObstaclePhysics(inst, 1)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.ITEMS,
+		COLLISION.CHARACTERS
+	)
 
     inst.AnimState:SetBank("resurrection_stone")
     inst.AnimState:SetBuild("resurrection_stone")

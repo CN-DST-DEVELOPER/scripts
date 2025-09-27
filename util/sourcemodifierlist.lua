@@ -147,6 +147,16 @@ function SourceModifierList:CalculateModifierFromKey(key)
     return m
 end
 
+-------------------------------------------------------------------------------
+--
+function SourceModifierList:HasModifier(source, key)
+    local src_params = self._modifiers[source]
+    if src_params == nil then
+        return false
+    end
+    return src_params.modifiers[key] ~= nil
+end
+
 
 
 -------------------------------------------------------------------------------

@@ -15,11 +15,14 @@ local events =
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnDeath(),
     EventHandler("dustmothsearch", function(inst)
-        inst.sg:GoToState("search")
+		if not inst.sg:HasStateTag("electrocute") then
+			inst.sg:GoToState("search")
+		end
     end),
     EventHandler("onrefuseitem", function(inst, giver)
         if not inst.sg:HasStateTag("busy") then
@@ -59,6 +62,11 @@ local states =
         tags = { "idle", "canrotate" },
 
         onenter = function(inst, playanim)
+            if inst._giveblueprint then
+                inst._giveblueprint = nil
+                inst.sg:GoToState("sneeze", {dropblueprint = true,})
+                return
+            end
             inst.Physics:Stop()
             if playanim then
                 inst.AnimState:PlayAnimation(playanim)
@@ -95,7 +103,8 @@ local states =
         name = "sneeze",
         tags = { "busy" },
 
-        onenter = function(inst)
+        onenter = function(inst, data)
+            inst.sg.statemem.dropblueprint = data and data.dropblueprint or nil
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("sneeze")
         end,
@@ -104,6 +113,10 @@ local states =
         {
             TimeEvent(36*FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound(inst._sounds.sneeze)
+                if inst.sg.statemem.dropblueprint then
+                    inst.sg.statemem.dropblueprint = nil
+                    inst:TryToDropBlueprint()
+                end
             end),
         },
 
@@ -520,6 +533,7 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSleepStates(states)
 
 return StateGraph("dustmoth", states, events, "idle", actionhandlers)

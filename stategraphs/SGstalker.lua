@@ -179,7 +179,9 @@ local events =
                 if inst.hasshield and data.attacker ~= nil and data.attacker:IsValid() then
                     inst:ForceFacePoint(data.attacker.Transform:GetWorldPosition())
                 end
-                inst.sg:GoToState("hit", inst.hasshield)
+				if inst.hasshield or not inst.sg:HasStateTag("usinggate") or inst.components.combat:HasTarget() then
+					inst.sg:GoToState("hit", inst.hasshield)
+				end
             end
         end
     end),
@@ -1443,7 +1445,7 @@ local states =
 
     State{
         name = "idle_gate",
-        tags = { "busy", "caninterrupt" },
+		tags = { "usinggate", "busy", "caninterrupt" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -1475,7 +1477,7 @@ local states =
 
     State{
         name = "idle_gate_loop",
-        tags = { "busy", "caninterrupt" },
+		tags = { "usinggate", "busy", "caninterrupt" },
 
         onenter = function(inst)
             inst.Physics:Stop()

@@ -15,6 +15,20 @@ local events =
     EventHandler("death", function(inst)
         inst.sg:GoToState("dissipate")
     end),
+    EventHandler("ghostplaywithme", function(inst, data)
+        -- Don't play if we're on a quest right now.
+        if inst._toys == nil or next(inst._toys) == nil then
+            local target = data.target
+            if target and target:IsValid() and not inst.sg.mem.queued_play_target then
+                inst.sg.mem.queued_play_target = target
+
+                -- Since our idle is the kind that anim-loops instead of re-entering itself,
+                -- let's just "kick" it if we're idling right now (otherwise we sort of expect to
+                -- end up back there eventually anyway)
+                if inst.sg:HasStateTag("idle") then inst.sg:GoToState("idle") end
+            end
+        end
+    end),
 }
 
 local function get_idle_anim(inst)
@@ -42,7 +56,13 @@ local states =
         tags = { "idle", "canrotate", "canslide" },
 
         onenter = function(inst)
-            inst.AnimState:PlayAnimation(get_idle_anim(inst), true)
+            if inst.sg.mem.queued_play_target then
+                inst.sg.mem.lastplaytime = GetTime()
+                inst.sg:GoToState("play", inst.sg.mem.queued_play_target)
+                inst.sg.mem.queued_play_target = nil
+            else
+                inst.AnimState:PlayAnimation(get_idle_anim(inst), true)
+            end
         end,
     },
 
@@ -182,7 +202,6 @@ local states =
             TimeEvent(3*FRAMES, play_joy),
         },
 
-
         events =
         {
             EventHandler("animover", return_to_idle),
@@ -263,6 +282,31 @@ local states =
                     end
                 end
             end),
+        },
+    },
+
+    State{
+        name = "play",
+        tags = {"busy", "canrotate", "noattack", "playful"},
+
+        onenter = function(inst, target)
+            inst.Physics:Stop()
+
+            if target and target:IsValid() then
+                inst:ForceFacePoint(target.Transform:GetWorldPosition())
+            end
+
+            inst.AnimState:PlayAnimation("small_happy")
+        end,
+
+        timeline =
+        {
+            TimeEvent(3*FRAMES, play_joy),
+        },
+
+        events =
+        {
+            EventHandler("animover", return_to_idle),
         },
     },
 }

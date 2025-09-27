@@ -123,6 +123,7 @@ function WalrusBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         Leash(self.inst, GetNoLeaderLeashPos, LEASH_MAX_DIST, LEASH_RETURN_DIST),
 

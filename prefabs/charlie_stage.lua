@@ -26,6 +26,8 @@ local prefabs =
     "hedgehound_bush",
     "mask_dollhat",
     "playbill_the_doll",
+    "playbill_the_veil",
+    "playbill_the_vault",
     "sewing_mannequin",
 }
 
@@ -117,6 +119,8 @@ local function SetStagePostMusicType(inst, music_type)
         new_value = 2
     elseif music_type == "drama" or music_type == 3 then
         new_value = 3
+    elseif music_type == "confession" or music_type == 4 then
+        new_value = 4
     end
     inst._musictype:set(new_value)
 end

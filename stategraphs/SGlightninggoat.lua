@@ -6,13 +6,18 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttack(),
-    CommonHandlers.OnAttacked(),
+	--CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
-    -- EventHandler("attacked", function(inst)
-    --     if inst.components.health and not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
-    --         inst.sg:GoToState("hit")
-    --     end
-    -- end),
+	EventHandler("attacked", function(inst)
+		--@V2C: #HACK use custom handler that DOESN'T handle electrocute
+		--      prefab has another "attacked" handler that forces "shocked" state
+		if not (inst.components.health:IsDead() or
+				inst.sg:HasStateTag("busy") or
+				CommonHandlers.HitRecoveryDelay(inst))
+		then
+			inst.sg:GoToState("hit")
+		end
+	end),
 }
 
 local states=
@@ -193,6 +198,13 @@ local states=
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
         },
     },
+
+	--New electrocute mechanics depend on this state name existing.
+	--Forward to old state for backward compatibility.
+	State{
+		name = "electrocute",
+		onenter = function(inst) inst.sg:GoToState("shocked") end,
+	},
 
     State{
         name = "shocked",

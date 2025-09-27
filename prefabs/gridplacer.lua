@@ -63,6 +63,30 @@ local function tile_outline_fn()
     return inst
 end
 
+local function axisalignedplacement_outline_fn()
+    local inst = CreateEntity()
+
+    inst:AddTag("CLASSIFIED")
+    inst:AddTag("NOCLICK")
+    inst:AddTag("placer")
+    --[[Non-networked entity]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+
+    inst.AnimState:SetBank("gridplacer")
+    inst.AnimState:SetBuild("gridplacer")
+    inst.AnimState:PlayAnimation("tileunit")
+    inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+    inst.AnimState:SetSortOrder(3)
+    inst.AnimState:SetFinalOffset(7)
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+
+    return inst
+end
+
 local function turfhat_update(inst)
     local tx, ty, tz = TheWorld.Map:GetTileCenterPoint(inst.player.Transform:GetWorldPosition())
     if not tx then
@@ -153,5 +177,6 @@ end
 
 return Prefab("gridplacer", fn, assets),
     Prefab("tile_outline", tile_outline_fn, assets),
+    Prefab("axisalignedplacement_outline", axisalignedplacement_outline_fn, assets),
     Prefab("gridplacer_turfhat", turfhat_fn, assets),
     Prefab("gridplacer_farmablesoil", farmablesoil_fn, assets)

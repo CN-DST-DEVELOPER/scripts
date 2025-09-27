@@ -1,7 +1,7 @@
 local EquipSlot = require("equipslotutil")
 
 local function OnEquip(inst, data)
-    inst.Network:SetPlayerEquip(EquipSlot.ToID(data.eslot), data.item:GetSkinName() or data.item.prefab)
+	inst.Network:SetPlayerEquip(EquipSlot.ToID(data.eslot), data.item:GetSkinName() or data.item.playerinspectable_override or data.item.prefab)
 end
 
 local function OnUnequip(inst, data)

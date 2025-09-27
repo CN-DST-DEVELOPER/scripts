@@ -91,7 +91,7 @@ GymStates.AddGymStates = function(states, actionhandlers, events)
     table.insert(states, State{
         name = "mighty_gym_workout_loop",
         onenter = function(inst)
-			if not inst:IsInLight() then
+			if not CanEntitySeeTarget(inst, inst.components.strongman.gym) then
                exitgym(inst)
 			else
 				inst.AnimState:PlayAnimation("mighty_gym_active_loop"..getfull(inst))

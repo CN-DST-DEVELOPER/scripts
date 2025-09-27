@@ -149,7 +149,7 @@ function MightyGym:SetWeightSymbol(weight, slot)
 			if string.len(cutdata) > 0 then
 				local fx = SpawnPrefab("pumpkincarving_swap_fx")
 				fx.entity:SetParent(self.inst.entity)
-				fx:SetCutData(cutdata, slot == 2)
+				fx:SetData(cutdata, slot == 2)
 				self[pumpkincarving_fx_id] = fx
 			end
 		end

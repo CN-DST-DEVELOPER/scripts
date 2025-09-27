@@ -69,7 +69,7 @@ local function EnableBoatCamera(inst, enabled)
     local self = inst.components.walkableplatformplayer
     if self then
         self.boat_camera_enabled = enabled
-        if self.platform then
+        if self.platform and self.platform.components.walkableplatform:HasPlatformCamera() then
             if enabled then
                 self:StartBoatCamera()
                 self:StartBoatCameraZooms()
@@ -124,7 +124,8 @@ end
 
 local function DoStartBoatCamera(inst)
     local self = inst.components.walkableplatformplayer
-    if self and self.platform and not TheNet:IsDedicated() and self.inst == ThePlayer and self.boat_camera_enabled then
+    if self and self.platform and not TheNet:IsDedicated() and self.inst == ThePlayer and self.boat_camera_enabled
+        and self.platform.components.walkableplatform:HasPlatformCamera() then
         self:StartBoatCamera()
     end
 end
@@ -179,10 +180,12 @@ function WalkablePlatformPlayer:StopBoatCamera()
 end
 
 function WalkablePlatformPlayer:StartBoatCameraZooms()
-    self.inst:ListenForEvent("doplatformcamerazoomdirty", self._doplatformcamerazoomdirty, self.platform)
-    if self.platform.doplatformcamerazoom:value() then
-        OnDoPlatformCameraZoomDirty(self, true)
-    end
+	if self.platform.components.walkableplatform:HasPlatformCamera() then
+		self.inst:ListenForEvent("doplatformcamerazoomdirty", self._doplatformcamerazoomdirty, self.platform)
+		if self.platform.doplatformcamerazoom:value() then
+			OnDoPlatformCameraZoomDirty(self, true)
+		end
+	end
 end
 
 function WalkablePlatformPlayer:StopBoatCameraZooms()
@@ -208,7 +211,7 @@ function WalkablePlatformPlayer:GetOnPlatform(platform)
         self.inst:PushEvent("got_on_platform", platform)
 
         self:StartBoatMusicTest()
-        if self.boat_camera_enabled then
+        if self.boat_camera_enabled and platform.components.walkableplatform:HasPlatformCamera() then
             self:StartBoatCameraZooms()
             self:StartBoatCamera()
         end

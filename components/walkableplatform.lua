@@ -4,14 +4,22 @@ local WalkablePlatform = Class(function(self, inst)
     self.players_on_platform = {}
     self.objects_on_platform = {}
     self.platform_radius = 4
+	--self.max_hop_distance = nil
+	--self.player_only = false
+	--self.no_mounts = false
 
     self.inst:AddTag("walkableplatform")
 
     if TheWorld.ismastersim then
+		--self.isfull = false
         self.inst:DoTaskInTime(0, function() self:SpawnPlayerCollision() end)
         self:StartUpdating()
     end
 end)
+
+function WalkablePlatform:HasPlatformCamera()
+    return self.inst.doplatformcamerazoom --This should really be part of the component, but it's attached to the inst itself currently.
+end
 
 function WalkablePlatform:OnRemoveEntity()
     if TheWorld.ismastersim then
@@ -69,12 +77,17 @@ end
 local IGNORE_WALKABLE_PLATFORM_TAGS_ON_REMOVE = { "ignorewalkableplatforms", "ignorewalkableplatformdrowning", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO", "player" }
 local IGNORE_WALKABLE_PLATFORM_TAGS = { "ignorewalkableplatforms", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO", "herd" }
 
-function WalkablePlatform:DestroyObjectsOnPlatform()
+function WalkablePlatform:DestroyObjectsOnPlatform(excluding)
     if not TheWorld.ismastersim then return end
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
     for i, v in ipairs(TheSim:FindEntities(x, y, z, self.platform_radius, nil, IGNORE_WALKABLE_PLATFORM_TAGS_ON_REMOVE)) do
-        if v ~= self.inst and v.entity:GetParent() == nil and v.components.amphibiouscreature == nil and v.components.drownable == nil then
+		if v ~= self.inst and
+			v.entity:GetParent() == nil and
+			v.components.amphibiouscreature == nil and
+			v.components.drownable == nil and
+			not (excluding and excluding[v])
+		then
             if v.components.inventoryitem ~= nil then
                 v.components.inventoryitem:SetLanded(false, true)
             else
@@ -98,6 +111,25 @@ end
 
 function WalkablePlatform:RemovePlayerOnPlatform(player)
     self.players_on_platform[player] = nil
+end
+
+--V2C: whether it allows anymore locomotors to hop on or not
+--server only.
+function WalkablePlatform:SetIsFull(isfull)
+	if isfull then
+		if not self.isfull then
+			self.isfull = true
+			self.inst:AddTag("walkableplatform_full")
+		end
+	elseif self.isfull then
+		self.isfull = nil
+		self.inst:RemoveTag("walkableplatform_full")
+	end
+end
+
+--server only. clients check for "walkableplatform_full" tag
+function WalkablePlatform:IsFull()
+	return self.isfull == true
 end
 
 function WalkablePlatform:GetEmbarkPosition(embarker_x, embarker_z, embarker_min_dist)

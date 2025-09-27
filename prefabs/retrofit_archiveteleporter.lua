@@ -1,13 +1,7 @@
 
-local prefabs =
-{
-	"wormhole",
-	"homesign",
+local prefabs = {
+    "wormhole",
 }
-
-local STRUCTURE_TAGS = {"structure"}
-local ALTAR_TAGS = {"altar"}
-local LOCOMOTOR_TAGS = {"locomotor"}
 
 local function can_spawn_here(x, z)
 	local min_space = .5
@@ -101,4 +95,4 @@ local function fn()
     return inst
 end
 
-return Prefab("retrofit_archiveteleporter", fn)
+return Prefab("retrofit_archiveteleporter", fn, nil, prefabs)

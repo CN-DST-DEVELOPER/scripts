@@ -126,8 +126,12 @@ local function ComputeTargetColour(targetsettings, timeoverride)
     local col = _overridefixedcolour
         or (_iscave and targetsettings.currentcolourset.CAVE_COLOUR)
         or (_isfullmoon and targetsettings.currentcolourset.FULL_MOON_COLOUR)
-        or (targetsettings.currentcolourset.PHASE_COLOURS[_season] and targetsettings.currentcolourset.PHASE_COLOURS[_season][_phase])
-        or targetsettings.currentcolourset.PHASE_COLOURS.default[_phase]
+		or (targetsettings.currentcolourset.PHASE_COLOURS and (
+				targetsettings.currentcolourset.PHASE_COLOURS[_season] and
+				targetsettings.currentcolourset.PHASE_COLOURS[_season][_phase] or
+				targetsettings.currentcolourset.PHASE_COLOURS.default[_phase]
+			))
+		or targetsettings.currentcolourset.default
     if col == nil then
         return
     end
@@ -175,8 +179,18 @@ end
 local function OnNightVision(player, enabled)
     _nightvision = enabled
     _overridecolour.currentcolourset = enabled and NIGHTVISION_COLOURS or NORMAL_COLOURS
+	_overridecolour.lightpercent = _realcolour.lightpercent
     ComputeTargetColour(_overridecolour, 0.25)
     PushCurrentColour()
+end
+
+local function OnNightVisionAmbientOverrides(player, ambienttable)
+	if _nightvision and _overridecolour.currentcolourset ~= ambienttable then
+		_overridecolour.currentcolourset = ambienttable or NIGHTVISION_COLOURS
+		_overridecolour.lightpercent = ambienttable and ambienttable.fixedcolour and 1 or _realcolour.lightpercent
+		ComputeTargetColour(_overridecolour, 0.25)
+		PushCurrentColour()
+	end
 end
 
 local function clac_flash(x)
@@ -211,6 +225,7 @@ end
 
 local function OnPlayerDeactivated(inst, player)
     inst:RemoveEventCallback("nightvision", OnNightVision, player)
+	inst:RemoveEventCallback("nightvisionambientoverrides", OnNightVisionAmbientOverrides, player)
     OnNightVision(player, false)
     if player == _activatedplayer then
         _activatedplayer = nil
@@ -225,7 +240,9 @@ local function OnPlayerActivated(inst, player)
     end
     _activatedplayer = player
     inst:ListenForEvent("nightvision", OnNightVision, player)
+	inst:ListenForEvent("nightvisionambientoverrides", OnNightVisionAmbientOverrides, player)
     OnNightVision(player, CanEntitySeeInDark(player))
+	OnNightVisionAmbientOverrides(player, player.components.playervision and player.components.playervision:GetNightVisionAmbientOverrides() or nil)
 end
 
 local OnSeasonTick = not _iscave and function(inst, data)
@@ -262,7 +279,7 @@ end
 
 inst:ListenForEvent("playeractivated", OnPlayerActivated)
 inst:ListenForEvent("playerdeactivated", OnPlayerDeactivated)
-inst:ListenForEvent("overrideambientlighting", OnOverrideAmbientLighting)
+inst:ListenForEvent("overrideambientlighting", OnOverrideAmbientLighting) --V2C: NOT safe to use!
 inst:ListenForEvent("continuefrompause", OnContinueFromPause)
 
 --------------------------------------------------------------------------

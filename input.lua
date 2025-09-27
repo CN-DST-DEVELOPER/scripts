@@ -159,6 +159,7 @@ function Input:UpdatePosition(x, y)
 end
 
 -- Is for all the button devices (mouse, joystick (even the analog parts), keyboard as well, keyboard
+ValidateLineNumber(162)
 function Input:OnControl(control, digitalvalue, analogvalue)
     if (self.mouse_enabled or
         (control ~= CONTROL_PRIMARY and control ~= CONTROL_SECONDARY)) and
@@ -167,6 +168,7 @@ function Input:OnControl(control, digitalvalue, analogvalue)
         self.oncontrol:HandleEvent("oncontrol", control, digitalvalue, analogvalue)
     end
 end
+ValidateLineNumber(171)
 
 function Input:OnMouseMove(x, y)
     if self.mouse_enabled then
@@ -296,12 +298,208 @@ function Input:IsKeyDown(key)
     return TheSim:IsKeyDown(key)
 end
 
+local RemapTo_CONTROL_INVENTORY =
+{
+	[0] = CONTROL_INVENTORY_UP,
+	[1] = CONTROL_INVENTORY_DOWN,
+	[2] = CONTROL_INVENTORY_LEFT,
+	[3] = CONTROL_INVENTORY_RIGHT,
+}
+
+local RemapTo_CONTROL_INVENTORY_ACTIONS =
+{
+	[0] = CONTROL_INVENTORY_EXAMINE,
+	[1] = CONTROL_INVENTORY_DROP,
+	[2] = CONTROL_INVENTORY_USEONSCENE,
+	[3] = CONTROL_INVENTORY_USEONSELF,
+}
+
+local function IsVCtrlCamera(control)	return control >= VIRTUAL_CONTROL_CAMERA_ZOOM_IN	and control <= VIRTUAL_CONTROL_CAMERA_ROTATE_RIGHT	end
+local function IsVCtrlAiming(control)	return control >= VIRTUAL_CONTROL_AIM_UP			and control <= VIRTUAL_CONTROL_AIM_RIGHT			end
+local function IsVCtrlInvNav(control)	return control >= VIRTUAL_CONTROL_INV_UP			and control <= VIRTUAL_CONTROL_INV_RIGHT			end
+local function IsVCtrlInvAct(control)	return control >= VIRTUAL_CONTROL_INV_ACTION_UP		and control <= VIRTUAL_CONTROL_INV_ACTION_RIGHT		end
+local function IsVCtrlStrafe(control)	return control >= VIRTUAL_CONTROL_STRAFE_UP			and control <= VIRTUAL_CONTROL_STRAFE_RIGHT			end
+
+local function IsCamAndInvCtrlScheme1(scheme) return scheme < 2 or scheme > 7 end
+
+local function IsTwinStickAiming(player, scheme)
+	if player.components.playercontroller and player.components.playercontroller:IsTwinStickAiming() then
+		if scheme < 4 or scheme > 7 then
+			return player.components.playercontroller:IsAOETargeting()
+		end
+		return true
+	end
+	return false
+end
+
+local function IsStrafing(player)
+	return player.components.strafer and player.components.strafer:IsAiming()
+end
+
+function Input:ResolveVirtualControls(control)
+	if control == nil then
+		return
+	elseif control < VIRTUAL_CONTROL_START then
+		if control == CONTROL_CAM_AND_INV_MODIFIER then
+			--Modifier button is not used in control scheme 1
+			local scheme = self:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+			return not IsCamAndInvCtrlScheme1(scheme) and control or nil
+		end
+		return control
+	end
+
+	local player = ThePlayer
+	if player and player.HUD and player.HUD:IsSpellWheelOpen() then
+		--Spell wheel is treated as "ishudblocking" in playercontroller,
+		--which allows some controls to continue working, but we do want
+		--to block all virtual directional controls instead.
+		return
+	end
+
+	local scheme = self:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+
+	--Scheme 1 is classic style, where we have no modifier button, and everyhting is remappable.
+	if IsCamAndInvCtrlScheme1(scheme) then
+		if IsVCtrlInvNav(control) then
+			--Handle CONTROL_INVENTORY priorities
+			if player and not (player.HUD and player.HUD:IsCraftingOpen()) then
+				if IsTwinStickAiming(player, scheme) or IsStrafing(player) then
+					return
+				end
+			end
+			return RemapTo_CONTROL_INVENTORY[control - VIRTUAL_CONTROL_INV_UP]
+		elseif IsVCtrlInvAct(control) then
+			return RemapTo_CONTROL_INVENTORY_ACTIONS[control - VIRTUAL_CONTROL_INV_ACTION_UP]
+		elseif IsVCtrlAiming(control) then
+			--Twin stick aiming outside of AOE targeting is only supported by schemes 4 to 7
+			if not (player and player.components.playercontroller and player.components.playercontroller:IsAOETargeting()) then
+				return
+			end
+			--Handle CONTROL_INVENTORY priorities
+			if player and player.HUD and player.HUD:IsCraftingOpen() then
+				return
+			end
+			return RemapTo_CONTROL_INVENTORY[control - VIRTUAL_CONTROL_AIM_UP]
+		elseif IsVCtrlStrafe(control) then
+			--Handle CONTROL_INVENTORY priorities
+			if player and player.HUD and player.HUD:IsCraftingOpen() then
+				return
+			end
+			return RemapTo_CONTROL_INVENTORY[control - VIRTUAL_CONTROL_STRAFE_UP]
+		end
+		return
+	end
+
+	--Now handle all the new schemes (2 to 7) for each control category
+
+	if IsVCtrlCamera(control) then
+		--R.Stick for all schemes, modifier button for even number schemes
+		local ismodified = TheSim:GetDigitalControl(CONTROL_CAM_AND_INV_MODIFIER)
+		local needsmodifier = bit.band(scheme, 1) == 0
+		if ismodified ~= needsmodifier then
+			return
+		end
+		--Handle unmodified R.Stick priorities
+		if not needsmodifier and player then
+			if scheme ~= 5 and scheme ~= 7 and IsTwinStickAiming(player, scheme) or IsStrafing(player) then
+				return
+			end
+		end
+		return control - VIRTUAL_CONTROL_CAMERA_ZOOM_IN + CONTROL_PRESET_RSTICK_UP
+	elseif IsVCtrlInvNav(control) then
+		--R.Stick for 2 and 3, DPad for 4 to 7, modifier button for 3 to 5
+		if scheme <= 3 and player.HUD and player.HUD:IsControllerInventoryOpen() then
+			--In controller inventory screen, we can ignore R.stick modifier
+			return control - VIRTUAL_CONTROL_INV_UP + CONTROL_PRESET_RSTICK_UP
+		end
+		local ismodified = TheSim:GetDigitalControl(CONTROL_CAM_AND_INV_MODIFIER)
+		local needsmodifier = scheme >= 3 and scheme <= 5
+		if ismodified ~= needsmodifier then
+			return
+		elseif scheme <= 3 then
+			--Handle unmodified R.Stick priorities
+			if not needsmodifier and player then
+				if not (player.HUD and player.HUD:IsCraftingOpen()) then
+					if IsTwinStickAiming(player, scheme) or IsStrafing(player) then
+						return
+					end
+				end
+			end
+			return control - VIRTUAL_CONTROL_INV_UP + CONTROL_PRESET_RSTICK_UP
+		else
+			return control - VIRTUAL_CONTROL_INV_UP + CONTROL_PRESET_DPAD_UP
+		end
+	elseif IsVCtrlInvAct(control) then
+		--Classic mapping for 2 and 3, DPad for 4 to 7, modifier button for 6 and 7
+		if scheme <= 3 then
+			return RemapTo_CONTROL_INVENTORY_ACTIONS[control - VIRTUAL_CONTROL_INV_ACTION_UP]
+		end
+		local ismodified = TheSim:GetDigitalControl(CONTROL_CAM_AND_INV_MODIFIER)
+		local needsmodifier = scheme == 6 or scheme == 7
+		if ismodified ~= needsmodifier then
+			return
+		else
+			return control - VIRTUAL_CONTROL_INV_ACTION_UP + CONTROL_PRESET_DPAD_UP
+		end
+	elseif IsVCtrlAiming(control) then
+		--R.Stick for all schemes, modifier button for 5 and 7
+		local ismodified = TheSim:GetDigitalControl(CONTROL_CAM_AND_INV_MODIFIER)
+		local needsmodifier = scheme == 5 or scheme == 7
+		if ismodified ~= needsmodifier then
+			return
+		end
+		--Twin stick aiming outside of AOE targeting is only supported by schemes 4 to 7
+		if scheme <= 3 and not (player and player.components.playercontroller and player.components.playercontroller:IsAOETargeting()) then
+			return
+		end
+		--Handle unmodified R.Stick priorities
+		if not needsmodifier and player then
+			if scheme == 2 and player.HUD and player.HUD:IsCraftingOpen() then
+				return
+			end
+		end
+		return control - VIRTUAL_CONTROL_AIM_UP + CONTROL_PRESET_RSTICK_UP
+	elseif IsVCtrlStrafe(control) then
+		--Unmodified R.Stick for all schemes
+		local ismodified = TheSim:GetDigitalControl(CONTROL_CAM_AND_INV_MODIFIER)
+		local needsmodifier = false
+		if ismodified ~= needsmodifier then
+			return
+		end
+		--Handle unmodified R.Stick priorities
+		if not needsmodifier and player then
+			if scheme == 2 and player.HUD and player.HUD:IsCraftingOpen() then
+				return
+			end
+		end
+		return control - VIRTUAL_CONTROL_STRAFE_UP + CONTROL_PRESET_RSTICK_UP
+	end
+end
+
 function Input:IsControlPressed(control)
-    return TheSim:GetDigitalControl(control)
+	control = self:ResolveVirtualControls(control)
+	return control ~= nil and TheSim:GetDigitalControl(control)
 end
 
 function Input:GetAnalogControlValue(control)
-    return TheSim:GetAnalogControl(control)
+	control = self:ResolveVirtualControls(control)
+	return control and TheSim:GetAnalogControl(control) or 0
+end
+
+function Input:GetActiveControlScheme(schemeId)
+	--V2C: This check is simplified (assumes all control schemes are for controllers only).
+	--     It's also unlikely that we'd ever need to set up control schemes for kybd/mouse.
+	return self:ControllerAttached() and Profile:GetControlScheme(schemeId) or 1
+end
+
+function Input:SupportsControllerFreeAiming()
+	local scheme = self:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+	return scheme >= 4 and scheme <= 7
+end
+
+function Input:SupportsControllerFreeCamera()
+	local scheme = self:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+	return scheme >= 2 and scheme <= 7
 end
 
 function Input:IsPasteKey(key)
@@ -372,7 +570,31 @@ function Input:OnUpdate()
     end
 end
 
+function Input:IsControlMapped(deviceId, controlId)
+	local device, numInputs = TheInputProxy:GetLocalizedControl(deviceId, controlId, false, true)
+	return device and device ~= 9 and numInputs >= 1
+end
+
+function Input:ControlsHaveSameMapping(deviceId, controlId_1, controlId_2)
+	local device_1, numInputs_1, input1_1, input2_1, input3_1, input4_1, intParam_1 = TheInputProxy:GetLocalizedControl(deviceId, controlId_1, false, true)
+	if device_1 == nil or device_1 == 9 or numInputs_1 < 1 then
+		return false --don't match unmapped controls
+	end
+	local device_2, numInputs_2, input1_2, input2_2, input3_2, input4_2, intParam_2 = TheInputProxy:GetLocalizedControl(deviceId, controlId_2, false, true)
+	return device_1 == device_2
+		and numInputs_1 == numInputs_2
+		and input1_1 == input1_2
+		and input2_1 == input2_2
+		and input3_1 == input3_2
+		and input4_1 == input4_2
+		and intParam_1 == intParam_2
+end
+
 function Input:GetLocalizedControl(deviceId, controlId, use_default_mapping, use_control_mapper)
+	if controlId >= VIRTUAL_CONTROL_START then
+		return self:GetLocalizedVirtualControl(deviceId, controlId, use_default_mapping, use_control_mapper)
+	end
+
     local device, numInputs, input1, input2, input3, input4, intParam = TheInputProxy:GetLocalizedControl(deviceId, controlId, use_default_mapping == true, use_control_mapper ~= false)
 
     if device == nil then
@@ -390,6 +612,101 @@ function Input:GetLocalizedControl(deviceId, controlId, use_default_mapping, use
 
     -- process string format params if there are any
     return intParam ~= nil and string.format(text, intParam) or text
+end
+
+function Input:GetLocalizedVirtualControl(deviceId, controlId, use_default_mapping, use_control_mapper)
+	local scheme = Profile:GetControlScheme(CONTROL_SCHEME_CAM_AND_INV) or 1 --ignores controller active or not
+
+	--Scheme 1 is classic style, where we have no modifier button, and everyhting is remappable.
+	if IsCamAndInvCtrlScheme1(scheme) then
+		if IsVCtrlInvNav(controlId) then
+			return self:GetLocalizedControl(deviceId, RemapTo_CONTROL_INVENTORY[controlId - VIRTUAL_CONTROL_INV_UP])
+		elseif IsVCtrlInvAct(controlId) then
+			return self:GetLocalizedControl(deviceId, RemapTo_CONTROL_INVENTORY_ACTIONS[controlId - VIRTUAL_CONTROL_INV_ACTION_UP])
+		elseif IsVCtrlAiming(controlId) then
+			return self:GetLocalizedControl(deviceId, RemapTo_CONTROL_INVENTORY[controlId - VIRTUAL_CONTROL_AIM_UP])
+		elseif IsVCtrlStrafe(controlId) then
+			return self:GetLocalizedControl(deviceId, RemapTo_CONTROL_INVENTORY[controlId - VIRTUAL_CONTROL_STRAFE_UP])
+		end
+		return ""
+	end
+
+	--Now handle all the new schemes (2 to 7) for each control category
+
+	local needsmodifier
+	if IsVCtrlCamera(controlId) then
+		--R.Stick for all schemes, modifier button for even number schemes
+		needsmodifier = bit.band(scheme, 1) == 0
+		controlId = controlId - VIRTUAL_CONTROL_CAMERA_ZOOM_IN + CONTROL_PRESET_RSTICK_UP
+	elseif IsVCtrlAiming(controlId) then
+		--R.Stick for all schemes, modifier button for 5 and 7
+		needsmodifier = scheme == 5 or scheme == 7
+		controlId = controlId - VIRTUAL_CONTROL_AIM_UP + CONTROL_PRESET_RSTICK_UP
+	elseif IsVCtrlInvNav(controlId) then
+		--R.Stick for 2 and 3, DPad for 4 to 7, modifier button for 3 to 5
+		needsmodifier = scheme >= 3 and scheme <= 5
+		if scheme <= 3 then
+			if needsmodifier and player.HUD and player.HUD:IsControllerInventoryOpen() then
+				--In controller inventory screen, we can ignore R.stick modifier
+				needsmodifier = false
+			end
+			controlId = controlId - VIRTUAL_CONTROL_INV_UP + CONTROL_PRESET_RSTICK_UP
+		else
+			controlId = controlId - VIRTUAL_CONTROL_INV_UP + CONTROL_PRESET_DPAD_UP
+		end
+	elseif IsVCtrlInvAct(controlId) then
+		--Classic mapping for 2 and 3, DPad for 4 to 7, modifier button for 6 and 7
+		needsmodifier = scheme == 6 or scheme == 7
+		if scheme <= 3 then
+			controlId = RemapTo_CONTROL_INVENTORY_ACTIONS[controlId - VIRTUAL_CONTROL_INV_ACTION_UP]
+		else
+			controlId = controlId - VIRTUAL_CONTROL_INV_ACTION_UP + CONTROL_PRESET_DPAD_UP
+		end
+	elseif IsVCtrlStrafe(controlId) then
+		--Unmodified R.Stick for all schemes
+		needsmodifier = false
+		controlId = controlId - VIRTUAL_CONTROL_STRAFE_UP + CONTROL_PRESET_RSTICK_UP
+	else
+		return ""
+	end
+
+	local text = self:GetLocalizedControl(deviceId, controlId, use_default_mapping, use_control_mapper)
+	if needsmodifier then
+		text = self:GetLocalizedControl(deviceId, CONTROL_CAM_AND_INV_MODIFIER, use_default_mapping, use_control_mapper).." + "..text
+	end
+	return text
+end
+
+--V2C: used for rstick/dpad virtual controls with or without modifier button held
+function Input:GetLocalizedVirtualDirectionalControl(deviceId, controlIdStr, modifierId, use_modifier)
+	local device, numInputs, input1, input2, input3, input4, intParam = TheInputProxy:GetLocalizedControl(deviceId, modifierId, false, true)
+	if device == nil then
+		return ""
+	elseif numInputs < 1 and use_modifier then
+		return ""
+	end
+
+	local text = STRINGS.UI.CONTROLSSCREEN.INPUTS[device][controlIdStr]
+	if text == nil then
+		return ""
+	end
+
+	if use_modifier then
+		local inputs = { input1, input2, input3, input4 }
+		local modifiertext = STRINGS.UI.CONTROLSSCREEN.INPUTS[device][input1]
+		-- concatenate the inputs
+		for idx = 2, numInputs do
+			modifiertext = modifiertext.." + "..STRINGS.UI.CONTROLSSCREEN.INPUTS[device][inputs[idx]]
+		end
+
+		-- process string format params if there are any
+		if intParam then
+			modifiertext = string.format(modifiertext, intParam)
+		end
+
+		text = modifiertext.." + "..text
+	end
+	return text
 end
 
 function Input:GetControlIsMouseWheel(controlId)
@@ -430,9 +747,11 @@ function OnPosition(x, y)
     TheInput:UpdatePosition(x, y)
 end
 
+ValidateLineNumber(750)
 function OnControl(control, digitalvalue, analogvalue)
     TheInput:OnControl(control, digitalvalue, analogvalue)
 end
+ValidateLineNumber(754)
 
 function OnMouseButton(button, is_up, x, y)
     TheInput:OnMouseButton(button, is_up, x, y)

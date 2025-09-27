@@ -318,6 +318,7 @@ local function fn()
     MakeMediumBurnable(inst, nil, nil, true)
     MakeLargePropagator(inst)
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountLarge(inst)
 
     inst.UpdateSpawningTime = UpdateSpawningTime
     inst.kelpofferings = {}

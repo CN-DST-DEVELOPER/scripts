@@ -339,7 +339,10 @@ local function DoHarvestBerries(inst)
 end
 
 local FISHING_MARKER_TAGS = {"hermitcrab_marker_fishing"}
-local FISH_TAGS = {"oceanfish"}
+
+local FISH_TAGS = {"oceanfish", "oceanfishable"}
+local FISH_NO_TAGS = {"INLIMBO"}
+
 local function DoFishingAction(inst)
     if not using_umbrella(inst) then
         local source = inst.CHEVO_marker
@@ -350,7 +353,7 @@ local function DoFishingAction(inst)
             for i,ent in ipairs(ents)do
                 local x1,y1,z1 = ent.Transform:GetWorldPosition()
 
-                local fish = TheSim:FindEntities(x1,y1,z1, 8, FISH_TAGS)
+                local fish = TheSim:FindEntities(x1,y1,z1, 8, FISH_TAGS, FISH_NO_TAGS)
                 if #fish > mostfish.total then
                     mostfish = {total=#fish,idx=i}
                 end
@@ -399,21 +402,23 @@ local function DoBottleToss(inst)
             local x,y,z = source.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x,y,z, inst.island_radius, FISHING_MARKER_TAGS)
             if #ents > 0 then
-                local pos = ents[math.random(1,#ents)]:GetPosition()
+                for attempt = 1, 3 do
+                    local pos = ents[math.random(1,#ents)]:GetPosition()
 
-                if pos then
-                    local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                    local bottle = inst.components.inventory:FindItem(function(item) return item.prefab == "messagebottle_throwable" end) or (equipped and  equipped.prefab == "messagebottle_throwable" and equipped )
-                    if not bottle  then
-                        bottle = SpawnPrefab("messagebottle_throwable")
-                        inst.components.inventory:GiveItem(bottle)
-                    end
-                    if not bottle.components.equippable.isequipped then
-                        inst.components.inventory:Equip(bottle)
-                    end
+                    if pos and TheWorld.Map:IsOceanTileAtPoint(pos.x, 0, pos.z) then
+                        local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                        local bottle = inst.components.inventory:FindItem(function(item) return item.prefab == "messagebottle_throwable" end) or (equipped and  equipped.prefab == "messagebottle_throwable" and equipped )
+                        if not bottle  then
+                            bottle = SpawnPrefab("messagebottle_throwable")
+                            inst.components.inventory:GiveItem(bottle)
+                        end
+                        if not bottle.components.equippable.isequipped then
+                            inst.components.inventory:Equip(bottle)
+                        end
 
-                    inst.dotalkingtimers(inst)
-                    return BufferedAction(inst, nil, ACTIONS.WATER_TOSS, bottle, pos)
+                        inst.dotalkingtimers(inst)
+                        return BufferedAction(inst, nil, ACTIONS.WATER_TOSS, bottle, pos)
+                    end
                 end
             end
         end
@@ -514,7 +519,12 @@ function HermitBrain:OnStart()
     local root =
         PriorityNode(
         {
-
+            WhileNode(function() return self.inst.sg.mem.teleporting end, "Teleporting",
+                PriorityNode({
+                    DoAction(self.inst, DoTalkQueue, "finish talking", true),
+                    WaitNode(1),
+                })
+            ),
             WhileNode( function() return BrainCommon.ShouldTriggerPanic(self.inst) end, "PanicHaunted",
                 ChattyNode(self.inst, { name = "HERMITCRAB_PANICHAUNT", chatterparams = CHATTERPARAMS_LOW },
                     Panic(self.inst))),

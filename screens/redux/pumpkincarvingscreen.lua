@@ -42,12 +42,14 @@ local BOUNDARY_X2 = 40
 local BOUNDARY_Y = -55
 local BOUNDARY_R = 65
 --keep in sync @pumpkincarvable.lua
-local function _IsOnPumpkin(x, y)
+local function _IsOnPumpkin(x, y, padding)
 	local x1 = BOUNDARY_X1 * IMG_SCALE
 	local x2 = BOUNDARY_X2 * IMG_SCALE
 	local y1 = BOUNDARY_Y * IMG_SCALE
-	local r = BOUNDARY_R * IMG_SCALE
-	if x > x1 and x < x2 and y > y1 - r and y < y1 + r then
+	padding = padding or 0
+	local r = (BOUNDARY_R + padding) * IMG_SCALE
+	padding = padding * IMG_SCALE
+	if x > x1 - padding and x < x2 + padding and y > y1 - r and y < y1 + r then
 		return true
 	end
 	r = r * r
@@ -228,9 +230,15 @@ local PumpkinCarvingScreen = Class(Screen, function(self, owner, target)
 			for i = 1, #cutdata, 4 do
 				local shape = PumpkinCarvable.SHAPE_NAMES[cutdata[i] ]
 				local rot = cutdata[i + 1]
-				local x = cutdata[i + 2] * IMG_SCALE
-				local y = -cutdata[i + 3] * IMG_SCALE
-				self:DoAddCutAt(x, y, shape, rot)
+				local x = cutdata[i + 2]
+				local y = cutdata[i + 3]
+				if shape and rot and x and y then
+					x = x * IMG_SCALE
+					y = -y * IMG_SCALE
+					if _IsOnPumpkin(x, y, 1) then
+						self:DoAddCutAt(x, y, shape, rot)
+					end
+				end
 			end
 		end
 	end

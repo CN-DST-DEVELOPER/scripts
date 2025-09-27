@@ -49,6 +49,8 @@ local function makefeather(name)
 
         inst:AddComponent("tradable")
 
+		inst:AddComponent("snowmandecor")
+
         return inst
     end
     return Prefab( assetname, fn, assets)

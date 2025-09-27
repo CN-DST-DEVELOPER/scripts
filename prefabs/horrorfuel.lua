@@ -180,6 +180,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_anim = "scrapbook"
+
     inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst:AddComponent("stackable")

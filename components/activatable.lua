@@ -1,41 +1,21 @@
 local function oninactive(self, inactive)
-    if inactive then
-        self.inst:AddTag("inactive")
-    else
-        self.inst:RemoveTag("inactive")
-    end
+    self.inst:AddOrRemoveTag("inactive", inactive)
 end
 
 local function onstandingaction(self, standingaction)
-    if standingaction then
-        self.inst:AddTag("standingactivation")
-    else
-        self.inst:RemoveTag("standingactivation")
-    end
+    self.inst:AddOrRemoveTag("standingactivation", standingaction)
 end
 
 local function onquickaction(self, quickaction)
-    if quickaction then
-        self.inst:AddTag("quickactivation")
-    else
-        self.inst:RemoveTag("quickactivation")
-    end
+    self.inst:AddOrRemoveTag("quickactivation", quickaction)
 end
 
 local function onforcerightclickaction(self, forcerightclickaction)
-    if forcerightclickaction then
-        self.inst:AddTag("activatable_forceright")
-    else
-        self.inst:RemoveTag("activatable_forceright")
-    end
+    self.inst:AddOrRemoveTag("activatable_forceright", forcerightclickaction)
 end
 
 local function onforcenopickupaction(self, forcenopickupaction)
-    if forcenopickupaction then
-        self.inst:AddTag("activatable_forcenopickup")
-    else
-        self.inst:RemoveTag("activatable_forcenopickup")
-    end
+    self.inst:AddOrRemoveTag("activatable_forcenopickup", forcenopickupaction)
 end
 
 local Activatable = Class(function(self, inst, activcb)
@@ -67,7 +47,7 @@ end
 
 function Activatable:CanActivate(doer)
     local success, msg = self.inactive, nil
-    
+
     if self.CanActivateFn then
         success, msg = self.CanActivateFn(self.inst, doer)
     end
@@ -76,15 +56,16 @@ function Activatable:CanActivate(doer)
 end
 
 function Activatable:DoActivate(doer)
-    if self.OnActivate ~= nil then
-        self.inactive = false
-        local success, msg = self.OnActivate(self.inst, doer)
-		if success then
-			self.inst:PushEvent("onactivated", {doer = doer})
-		end
-		return success, msg
+    if not self.OnActivate then
+        return nil
     end
-	return nil
+
+    self.inactive = false
+    local success, msg = self.OnActivate(self.inst, doer)
+    if success then
+        self.inst:PushEvent("onactivated", {doer = doer})
+    end
+    return success, msg
 end
 
 function Activatable:GetDebugString()

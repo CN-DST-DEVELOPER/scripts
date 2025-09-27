@@ -87,9 +87,8 @@ local function UpdateFossileMound(inst, size, checkforwrong)
         --reset case, not really used tho
         inst.form = 1
     elseif checkforwrong and inst.moundsize < MOUND_WRONG_START_SIZE then
-        -- NOTES(JBK): If the mound is in the atrium, the key is in the gate, and there is a shadow heart nearby make the odds 100%.
-        -- The first check is wrapped in ActiveStargate because this can only happen in the Atrium with the key in it.
-        if FindEntity(inst, ATRIUM_RANGE, ActiveStargate, STARGET_TAGS) ~= nil and CountAllEntities(inst, ATRIUM_RANGE, SHADOWHEART_TAGS) > 0 then
+        -- NOTES(JBK): If there is a shadow heart nearby make the odds 100% regardless of location.
+        if CountAllEntities(inst, ATRIUM_RANGE, SHADOWHEART_TAGS) > 0 then
             inst.form = 1
         else
             -- 3/5 = 60% chance of form 1 (correct form)

@@ -81,9 +81,9 @@ local PauseScreen = Class(Screen, function(self)
     end })
     table.insert(buttons, {text=STRINGS.UI.PAUSEMENU.DISCONNECT, cb=function() self:doconfirmquit()	end})
     if IsRail() then
-	    table.insert(buttons, {text=STRINGS.UI.PAUSEMENU.ISSUE, cb = function() VisitURL("http://plat.tgp.qq.com/forum/index.html#!/2000004/detail/115888") end })
+	    table.insert(buttons, {text=STRINGS.UI.PAUSEMENU.ISSUE, cb = function() VisitURL("https://plat.tgp.qq.com/forum/index.html#!/2000004/detail/115888") end })
 	else
-		table.insert(buttons, {text=STRINGS.UI.PAUSEMENU.ISSUE, cb = function() VisitURL("http://forums.kleientertainment.com/klei-bug-tracker/dont-starve-together/") end })
+		table.insert(buttons, {text=STRINGS.UI.PAUSEMENU.ISSUE, cb = function() VisitURL("https://forums.kleientertainment.com/klei-bug-tracker/dont-starve-together/") end })
 	end
 
     self.menu = self.proot:AddChild(Menu(buttons, -button_h, false))

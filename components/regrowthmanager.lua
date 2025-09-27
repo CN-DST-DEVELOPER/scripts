@@ -211,6 +211,12 @@ self:SetRegrowthForType("red_mushroom", TUNING.MUSHROOM_REGROWTH_TIME, "red_mush
 self:SetRegrowthForType("green_mushroom", TUNING.MUSHROOM_REGROWTH_TIME, "green_mushroom", GreenMushroomRegrowth)
 self:SetRegrowthForType("blue_mushroom", TUNING.MUSHROOM_REGROWTH_TIME, "blue_mushroom", BlueMushroomRegrowth)
 
+local function MandrakePlantedRegrowth()
+    return TUNING.MANDRAKE_PLANTED_REGROWTH_TIME_MULT
+end
+
+self:SetRegrowthForType("mandrake_planted", TUNING.MANDRAKE_PLANTED_REGROWTH_TIME, "mandrake_planted", MandrakePlantedRegrowth)
+
 --------------------------------------------------------------------------
 --[[ Update ]]
 --------------------------------------------------------------------------

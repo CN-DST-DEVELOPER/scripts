@@ -169,7 +169,6 @@ end
 
 local function common_postinit(inst)
     inst:AddTag("handyperson")
-	inst:AddTag("basicengineer") --tag for non-portable machines so we can forget these when we unlock portable recipes
     inst:AddTag("fastbuilder")
     inst:AddTag("hungrybuilder")
 

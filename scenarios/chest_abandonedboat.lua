@@ -111,9 +111,6 @@ local function TriggerTrap(inst, scenariorunner, data)
         if data.player.components.sanity ~= nil then
             data.player.components.sanity:DoDelta(-TUNING.SANITY_HUGE)
         end
-
-        inst.SoundEmitter:PlaySound("dontstarve/ghost/ghost_howl_LP", "howl")
-
     else
         if platform ~= nil and platform.components.health ~= nil then
             platform.components.health:Kill()

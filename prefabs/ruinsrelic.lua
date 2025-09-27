@@ -1,3 +1,5 @@
+require("prefabutil")
+
 local prefabs =
 {
     "collapse_small",

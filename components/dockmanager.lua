@@ -40,13 +40,9 @@ local HEIGHT = nil
 --------------------------------------------------------------------------
 --[[ Private functions ]]
 --------------------------------------------------------------------------
-local function land_test(tile)
-    return (tile ~= WORLD_TILES.MONKEY_DOCK) and (TileGroupManager:IsLandTile(tile))
-end
-
 local function tile_is_a_root(x, y)
     local tile_to_test = _map:GetTile(x, y)
-    return TileGroupManager:IsLandTile(tile_to_test) and tile_to_test ~= WORLD_TILES.MONKEY_DOCK
+    return TileGroupManager:IsLandTile(tile_to_test) and tile_to_test ~= WORLD_TILES.MONKEY_DOCK and not (TileGroupManager:IsTemporaryTile(tile_to_test) and tile_to_test ~= WORLD_TILES.FARMING_SOIL)
 end
 
 local function generate_dock_data(tile_x, tile_y)

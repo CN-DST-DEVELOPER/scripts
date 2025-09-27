@@ -22,6 +22,7 @@ local events =
         OnExit(inst, nil)
     end),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     EventHandler("doattack", function(inst, data)
         if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
             --target CAN go invalid because SG events are buffered
@@ -66,7 +67,7 @@ local states =
 
     State{
         name = "spawn",
-        tags = { "busy", "hidden", "invisible", "noattack" },
+		tags = { "busy", "hidden", "invisible", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -88,7 +89,7 @@ local states =
 
     State{
         name = "ground_idle",
-        tags = { "idle", "hidden", "invisible", "noattack" },
+		tags = { "idle", "hidden", "invisible", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -105,7 +106,7 @@ local states =
 
     State{
         name = "enter",
-        tags = { "busy", "hidden", "invisible", "noattack" },
+		tags = { "busy", "hidden", "invisible", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -114,7 +115,16 @@ local states =
 
         timeline =
         {
+			FrameEvent(2, function(inst)
+				inst.sg:RemoveStateTag("invisible")
+			end),
+			FrameEvent(12, function(inst)
+				inst.sg:RemoveStateTag("noattack")
+			end),
             TimeEvent(FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/deciduous/drake_pop_large") end),
+			FrameEvent(27, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
         },
 
         events =
@@ -127,7 +137,7 @@ local states =
 
     State{
         name = "exit_pre",
-        tags = { "busy", "hidden", "invisible", "noattack", "exit" },
+		tags = { "busy", "hidden", "noattack", "exit", "noelectrocute" },
 
         onenter = function(inst, idleanim)
             inst.sg.mem.exit = nil
@@ -145,7 +155,7 @@ local states =
 
     State{
         name = "exit",
-        tags = { "busy", "hidden", "invisible", "noattack", "exit" },
+		tags = { "busy", "hidden", "noattack", "exit", "noelectrocute" },
 
         onenter = function(inst)
             inst.sg.mem.exit = nil
@@ -154,12 +164,18 @@ local states =
             inst.AnimState:PlayAnimation("exit")
             inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/deciduous/drake_jump")
             inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/deciduous/drake_run_voice")
+			if inst.components.burnable and inst.components.burnable:IsBurning() then
+				inst.components.burnable:Extinguish()
+			end
         end,
 
         timeline =
         {
             TimeEvent(15 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/deciduous/drake_intoground") end),
             TimeEvent(20 * FRAMES, RemovePhysicsColliders),
+			FrameEvent(43, function(inst)
+				inst.sg:AddStateTag("invisible")
+			end),
         },
 
         events =
@@ -243,5 +259,6 @@ CommonStates.AddWalkStates(states,
 })
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("birchnutdrake", states, events, "spawn", actionhandlers)

@@ -16,8 +16,8 @@ end
 
 local LAVA_TAGS = {"lava"}
 local function FindHome(inst)
-    local pos = inst:GetPosition()
-    local lavae_ponds = TheSim:FindEntities(pos.x, pos.y, pos.z, 50, LAVA_TAGS)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local lavae_ponds = TheSim:FindEntities(x, y, z, 50, LAVA_TAGS)
     return GetRandomItem(lavae_ponds or {})
 end
 

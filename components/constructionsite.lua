@@ -201,12 +201,22 @@ function ConstructionSite:GetSlotCount(slot)
 end
 
 function ConstructionSite:IsComplete()
-    for i, v in ipairs(CONSTRUCTION_PLANS[self.inst.prefab] or {}) do
+    for i, v in ipairs(CONSTRUCTION_PLANS[self.inst.prefab] or EMPTY_TABLE) do
         if self.inst.components.constructionsite:GetMaterialCount(v.type) < v.amount then
             return false
         end
     end
 	return true
+end
+
+function ConstructionSite:ForceCompletion(doer)
+    for i, v in ipairs(CONSTRUCTION_PLANS[self.inst.prefab] or EMPTY_TABLE) do
+        local count = self.inst.components.constructionsite:GetMaterialCount(v.type)
+        if count < v.amount then
+            self:AddMaterial(v.type, v.amount - count)
+        end
+    end
+    self:OnConstruct(doer, EMPTY_TABLE)
 end
 
 function ConstructionSite:OnSave()

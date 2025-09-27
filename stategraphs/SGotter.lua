@@ -23,6 +23,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
     CommonHandlers.OnFreezeEx(),
+	CommonHandlers.OnElectrocute(),
 }
 
 local function go_to_idle(inst)
@@ -231,5 +232,6 @@ CommonStates.AddAmphibiousCreatureHopStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("otter", states, events, "idle", actionhandlers)

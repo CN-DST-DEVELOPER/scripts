@@ -6,9 +6,14 @@ end)
 
 function RecallMark:MarkPosition(recall_x, recall_y, recall_z, recall_worldid)
 	if recall_x ~= nil then
-		self.recall_x = recall_x or 0
-		self.recall_y = recall_y or 0
-		self.recall_z = recall_z or 0
+		recall_x, recall_y, recall_z = recall_x or 0, recall_y or 0, recall_z or 0
+		--V2C: this (instead of IsTeleportLinkingPermittedFromPoint) will still allow within arena
+		if not IsTeleportingPermittedFromPointToPoint(recall_x, recall_y, recall_z, recall_x, recall_y, recall_z) then
+			return false, "NO_TELEPORT_ZONE"
+		end
+		self.recall_x = recall_x
+		self.recall_y = recall_y
+		self.recall_z = recall_z
 		self.inst:RemoveTag("recall_unmarked")
 
 		self.recall_worldid = recall_worldid or TheShard:GetShardId()
@@ -17,6 +22,7 @@ function RecallMark:MarkPosition(recall_x, recall_y, recall_z, recall_worldid)
 	if self.onMarkPosition ~= nil then
 		self.onMarkPosition(self.inst, recall_x, recall_y, recall_z, recall_worldid)
 	end
+	return true
 end
 
 function RecallMark:Copy(rhs)

@@ -187,6 +187,7 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_height = "high"
     inst._last_attacker = nil
     inst._last_attacked_time = nil
 

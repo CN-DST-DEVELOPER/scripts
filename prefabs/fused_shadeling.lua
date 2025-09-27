@@ -84,19 +84,21 @@ end
 ----
 local function remove_character_physics(inst)
     local physics = inst.Physics
-    physics:ClearCollisionMask()
-    physics:CollidesWith(COLLISION.WORLD)
-    physics:CollidesWith(COLLISION.GIANTS)
+	physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.GIANTS
+	)
 end
 
 local function reset_character_physics(inst)
     local physics = inst.Physics
-    physics:ClearCollisionMask()
-    physics:CollidesWith(COLLISION.WORLD)
-    physics:CollidesWith(COLLISION.OBSTACLES)
-    physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-    physics:CollidesWith(COLLISION.CHARACTERS)
-    physics:CollidesWith(COLLISION.GIANTS)
+	physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS
+	)
 end
 
 ----
@@ -115,7 +117,7 @@ end
 local MIN_TRANSPARENCY = 0.4
 local function CLIENT_CalculateSanityTransparencyForPlayer(inst, player)
     local player_sanity_replica = player.replica.sanity
-    return (not player_sanity_replica and MIN_TRANSPARENCY) or
+	return (not (player_sanity_replica and player_sanity_replica:IsInsanityMode()) and MIN_TRANSPARENCY) or
         math.clamp(1 - player_sanity_replica:GetPercent(), MIN_TRANSPARENCY, 1.0)
 end
 
@@ -154,6 +156,7 @@ local function fn()
     inst:AddTag("notraptrigger")
     inst:AddTag("shadow")
     inst:AddTag("shadow_aligned")
+    inst:AddTag("NOBLOCK")
 
     inst.AnimState:SetBank("fused_shadeling")
     inst.AnimState:SetBuild("fused_shadeling")
@@ -161,10 +164,10 @@ local function fn()
     inst.AnimState:SetSymbolLightOverride("red_art", 1.0)
 
     if not TheNet:IsDedicated() then
-        local transparentonsanity_cmp = inst:AddComponent("transparentonsanity")
-        transparentonsanity_cmp.most_alpha = 1.0
-        transparentonsanity_cmp.calc_percent_fn = CLIENT_CalculateSanityTransparencyForPlayer
-        transparentonsanity_cmp:ForceUpdate()
+        local transparentonsanity = inst:AddComponent("transparentonsanity")
+        transparentonsanity.most_alpha = 1.0
+        transparentonsanity.calc_percent_fn = CLIENT_CalculateSanityTransparencyForPlayer
+        transparentonsanity:ForceUpdate()
     end
 
     inst.entity:SetPristine()

@@ -13,6 +13,9 @@ end
 local function FinalOffsetNegative1(inst)
     inst.AnimState:SetFinalOffset(-1)
 end
+local function FinalOffsetNegative2(inst)
+    inst.AnimState:SetFinalOffset(-2)
+end
 
 local function UsePointFiltering(inst)
 	inst.AnimState:UsePointFiltering(true)
@@ -674,6 +677,14 @@ local fx =
         fn = FinalOffset1,
     },
     {
+        name = "shock_arc_fx",
+        bank = "shock_fx",
+        build = "shock_fx",
+        anim = "arc",
+        eightfaced = true,
+        fn = FinalOffset1,
+    },
+    {
         name = "weregoose_shock_fx",
         bank = "shock_fx",
         build = "shock_fx",
@@ -1090,6 +1101,7 @@ local fx =
         anim = "transform",
         --#TODO: this one
         sound = "dontstarve/ghost/ghost_haunt",
+        fn = FinalOffset1,
     },
     {
         name = "ghostflower_spirit1_fx",
@@ -1155,6 +1167,22 @@ local fx =
         fn = FinalOffset3,
     },
     {
+        name = "ghostlyelixir_shadow_fx",
+        bank = "abigail_vial_fx",
+        build = "abigail_vial_fx",
+        anim = "buff_shadow",
+        --sound = "dontstarve/characters/wendy/abigail/buff/shadow", --[[TODO]]
+        fn = FinalOffset3,
+    }, 
+    {
+        name = "ghostlyelixir_lunar_fx",
+        bank = "abigail_vial_fx",
+        build = "abigail_vial_fx",
+        anim = "buff_lunar",
+        --sound = "dontstarve/characters/wendy/abigail/buff/lunar", --[[TODO]]
+        fn = FinalOffset3,
+    },        
+    {
         name = "ghostlyelixir_slowregen_dripfx",
         bank = "abigail_buff_drip",
         build = "abigail_vial_fx",
@@ -1214,6 +1242,175 @@ local fx =
 		    inst.AnimState:SetFinalOffset(3)
 		end,
     },
+    {
+        name = "ghostlyelixir_shadow_dripfx",
+        bank = "abigail_buff_drip",
+        build = "abigail_vial_fx",
+        anim = "abigail_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_shadow_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_lunar_dripfx",
+        bank = "abigail_buff_drip",
+        build = "abigail_vial_fx",
+        anim = "abigail_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_lunar_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },        
+
+-- PLAYER ELIXIR
+    {
+        name = "ghostlyelixir_player_slowregen_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_regen",
+        sound = "dontstarve/characters/wendy/abigail/buff/gen",
+        fn = FinalOffset3,
+    },
+    {
+        name = "ghostlyelixir_player_fastregen_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_heal",
+        sound = "dontstarve/characters/wendy/abigail/buff/gen",
+        fn = FinalOffset3,
+    },
+    {
+        name = "ghostlyelixir_player_shield_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_shield",
+        sound = "dontstarve/characters/wendy/abigail/buff/shield",
+        fn = FinalOffset3,
+    },
+    {
+        name = "ghostlyelixir_player_attack_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_attack",
+        sound = "dontstarve/characters/wendy/abigail/buff/attack",
+        fn = FinalOffset3,
+    },
+    {
+        name = "ghostlyelixir_player_speed_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_speed",
+        sound = "dontstarve/characters/wendy/abigail/buff/speed",
+        fn = FinalOffset3,
+    },
+    {
+        name = "ghostlyelixir_player_retaliation_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_retaliation",
+        sound = "dontstarve/characters/wendy/abigail/buff/retaliation",
+        fn = FinalOffset3,
+    },
+    {
+        name = "ghostlyelixir_player_shadow_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_shadow",
+        --sound = "dontstarve/characters/wendy/abigail/buff/shadow", --[[TODO]]
+        fn = FinalOffset3,
+    }, 
+    {
+        name = "ghostlyelixir_player_lunar_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_lunar",
+        --sound = "dontstarve/characters/wendy/abigail/buff/lunar", --[[TODO]]
+        fn = FinalOffset3,
+    },        
+    {
+        name = "ghostlyelixir_player_slowregen_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_regen_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_fastregen_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_heal_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_shield_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_shield_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_attack_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_attack_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_speed_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_speed_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_retaliation_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_retaliation_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_shadow_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_shadow_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_lunar_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_lunar_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },        
+    --------
+
+
     {
         name = "disease_puff",
         bank = "flies",
@@ -1669,6 +1866,30 @@ local fx =
             inst.AnimState:SetOceanBlendParams(TUNING.OCEAN_SHADER.EFFECT_TINT_AMOUNT)
         end,
     },
+	{
+		name = "ocean_splash_swim1",
+		bank = "splash_weregoose_fx",
+		build = "splash_water_drop",
+		anim = "no_splash",
+		sound = "turnoftides/common/together/water/splash/bird",
+		fn = function(inst)
+			inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+			inst.AnimState:SetDeltaTimeMultiplier(0.7)
+			inst.SoundEmitter:OverrideVolumeMultiplier(0.6)
+		end,
+	},
+	{
+		name = "ocean_splash_swim2",
+		bank = "splash_weregoose_fx",
+		build = "splash_water_drop",
+		anim = "no_splash2",
+		sound = "turnoftides/common/together/water/splash/bird",
+		fn = function(inst)
+			inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+			inst.AnimState:SetDeltaTimeMultiplier(0.7)
+			inst.SoundEmitter:OverrideVolumeMultiplier(0.6)
+		end,
+	},
     {
         name = "washashore_puddle_fx",
         bank = "water_puddle",
@@ -3266,6 +3487,81 @@ local fx =
         end,
     },
     {
+        name = "wortox_teleport_reviver_top",
+        bank = "wortox_teleport_reviver_fx",
+        build = "wortox_teleport_reviver_fx",
+        anim = "reviver_teleport",
+        sound = "meta5/wortox/ttheart_in_f31",
+        fn = FinalOffset1,
+    },
+    {
+        name = "wortox_teleport_reviver_bottom",
+        bank = "wortox_teleport_reviver_fx",
+        build = "wortox_teleport_reviver_fx",
+        anim = "reviver_jumpout",
+        fn = FinalOffset1,
+    },
+    {
+        name = "wortox_soul_spawn_fx",
+        bank = "wortox_teleport_reviver_fx",
+        build = "wortox_teleport_reviver_fx",
+        anim = "soul_spawn_poof",
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wortox/soul/hop_out")
+        end,
+    },
+    {
+        name = "wortox_decoy_explode_fx",
+        bank = "wortox_teleport_reviver_fx",
+        build = "wortox_teleport_reviver_fx",
+        anim = "decoy_laughsplode", -- Ha, ha, ha..
+        nofaced = true,
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wortox/soul/hop_out")
+            inst.AnimState:SetFinalOffset(1)
+        end,
+    },
+    {
+        name = "wortox_decoy_fizzle_fx",
+        bank = "wortox_teleport_reviver_fx",
+        build = "wortox_teleport_reviver_fx",
+        anim = "decoy_deathfade",
+        nofaced = true,
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wortox/soul/hop_out")
+            inst.AnimState:SetFinalOffset(1)
+        end,
+    },
+    {
+        name = "wortox_decoy_expire_fx",
+        bank = "wortox_teleport_reviver_fx",
+        build = "wortox_teleport_reviver_fx",
+        anim = "decoy_expirefade",
+        nofaced = true,
+        fn = function(inst)
+            inst.entity:AddSoundEmitter()
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wortox/soul/hop_out")
+            inst.AnimState:SetFinalOffset(1)
+        end,
+    },
+    {
+        name = "wortox_resist_fx",
+        bank = "planar_resist_fx",
+        build = "planar_resist_fx",
+        anim = "deflect",
+        sound = "dontstarve/characters/wortox/soul/hop_out",
+        fn = function(inst)
+            local scale = .8 + math.random() * .4
+            inst.AnimState:SetScale(math.random() < .5 and scale or -scale, scale)
+            local WORTOX_LUNAR_OFFSET = 0.1
+            inst.AnimState:SetMultColour(0, 0, 0, 1)
+            inst.AnimState:SetAddColour(154 / 255 + WORTOX_LUNAR_OFFSET, 23 / 255 + WORTOX_LUNAR_OFFSET, 19 / 255 + WORTOX_LUNAR_OFFSET, 0)
+        end,
+    },
+    {
         name = "voidcloth_boomerang_launch_fx",
         bank = "boomerang_voidcloth",
         build ="boomerang_voidcloth",
@@ -3319,6 +3615,13 @@ local fx =
 		end,
 	},
     {
+        name = "snowball_shatter_fx",
+        bank = "snowball",
+        build = "snowball",
+        anim = "fx_place",
+		fn = FinalOffset2,
+    },
+    {
         name = "shadowthrall_parasite_attach_poof_fx",
         bank = "shadow_thrall_parasite_transition_fx",
         build = "shadow_thrall_parasite_transition_fx",
@@ -3330,6 +3633,195 @@ local fx =
            inst:DoTaskInTime(35*FRAMES, function() inst.SoundEmitter:KillSound("soundfx") end)
         end,        
     },    
+
+    {
+        name = "wendy_sanityaura_buff_on_fx",
+        bank = "wendy_sanityaura_buff_fx",
+        build = "wendy_sanityaura_buff_fx",
+        anim = "on",
+    },
+    
+    {
+        name = "wendy_sanityaura_buff_off_fx",
+        bank = "wendy_sanityaura_buff_fx",
+        build = "wendy_sanityaura_buff_fx",
+        anim = "off",
+    },           
+
+    {
+        name = "abigail_attack_shadow_fx",
+        bank = "abigail_attack_fx",
+        build = "abigail_attack_fx",
+        anim = "attack3_ground_pre",
+        animqueue = true,
+        --sound = "hallowednights2024/thrall_parasite/possess_monster",
+        fn = function(inst)
+            inst.AnimState:PushAnimation("attack3_ground_loop",false)  
+            inst.AnimState:PushAnimation("attack3_ground_pst",false)
+            inst.AnimState:SetMultColour(0,0,0,1)
+
+            inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+            inst.AnimState:SetLayer(LAYER_GROUND)
+            inst.AnimState:SetSortOrder(1)
+            inst.AnimState:SetFinalOffset(1)
+        end,        
+    },
+
+    {
+        name = "abigail_rising_twinkles_fx",
+        bank = "abigail_rising_twinkles",
+        build = "abigail_rising_twinkles",
+        anim = "abigail_rising_twinkles",
+    }, 
+
+    {
+        name = "abigail_gestalt_hit_fx",
+        bank = "abigail_meta5_fx",
+        build = "abigail_meta5_fx",
+        anim = "ghostalt_atk",
+        bloom = true,
+    },   
+    {
+        name = "abigail_shadow_buff_fx",
+        bank = "abigail_meta5_fx",
+        build = "abigail_meta5_fx",
+        anim = "sacrifice_boost",
+    },
+    {
+		name = "purebrilliance_mark_hit_fx",
+		bank = "slingshotammo_purebrilliance_mark_fx",
+		build = "slingshotammo_purebrilliance_mark_fx",
+		anim = "fx_hit",
+		fn = function(inst)
+			local scale = 1.2 + math.random() * .2
+			inst.AnimState:SetScale(math.random() < .5 and scale or -scale, scale)
+			inst.AnimState:SetFinalOffset(7)
+		end,
+	},
+	{
+		name = "slingshot_ice_aoe_fx",
+		bank = "slingshotammo",
+		build = "slingshotammo",
+		anim = "slingshot_aoe",
+		tint = Vector3(163/255, 185/255, 203/255),
+		fn = function(inst)
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetLayer(LAYER_BACKGROUND)
+			inst.AnimState:SetSortOrder(3)
+		end,
+	},
+	{
+		name = "slingshot_slow_aoe_fx",
+		bank = "slingshotammo",
+		build = "slingshotammo",
+		anim = "slingshot_aoe",
+		tint = Vector3(73/255, 28/255, 85/255),
+		fn = function(inst)
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetLayer(LAYER_BACKGROUND)
+			inst.AnimState:SetSortOrder(3)
+		end,
+	},
+	{
+		name = "slingshot_shadow_aoe_fx",
+		bank = "slingshotammo",
+		build = "slingshotammo",
+		anim = "slingshot_aoe",
+		tint = Vector3(0, 0, 0),
+		fn = function(inst)
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetLayer(LAYER_BACKGROUND)
+			inst.AnimState:SetSortOrder(3)
+		end,
+	},
+	{
+		name = "slingshot_lunar_aoe_fx",
+		bank = "slingshotammo",
+		build = "slingshotammo",
+		anim = "slingshot_aoe",
+		fn = function(inst)
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetLayer(LAYER_BACKGROUND)
+			inst.AnimState:SetSortOrder(3)
+		end,
+	},
+    {
+        name = "elixir_player_forcefield",
+        bank = "abigail_shield",
+        build = "abigail_shield",
+        anim = "player_shield",
+    },
+	{
+		name = "wagdrone_rolling_collide_small_fx",
+		bank = "hits_sparks",
+		build = "lavaarena_hit_sparks_fx",
+		anim = "hit_1",
+		sound = "rifts5/wagdrone_rolling/collide",
+		fn = function(inst)
+			inst.AnimState:Hide("glow")
+		end,
+	},
+	{
+		name = "wagdrone_rolling_collide_med_fx",
+		bank = "hits_sparks",
+		build = "lavaarena_hit_sparks_fx",
+		anim = "hit_2",
+		sound = "rifts5/wagdrone_rolling/collide",
+		fn = function(inst)
+			inst.AnimState:Hide("glow")
+		end,
+	},
+    {
+        name = "hermitcrab_fx_small",
+        bank = "hermitcrab_fx",
+        build = "hermitcrab_fx",
+        anim = "hermitcrab_fx_small",
+        sound = "rifts5/hermit_island/whirlpool_up_s",
+        fn = FinalOffset3,
+    },
+    {
+        name = "hermitcrab_fx_med",
+        bank = "hermitcrab_fx",
+        build = "hermitcrab_fx",
+        anim = "hermitcrab_fx_med",
+        sound = "rifts5/hermit_island/whirlpool_up_m",
+        fn = FinalOffset3,
+    },
+    {
+        name = "hermitcrab_fx_tall",
+        bank = "hermitcrab_fx",
+        build = "hermitcrab_fx",
+        anim = "hermitcrab_fx_tall",
+        sound = "rifts5/hermit_island/whirlpool_up_l",
+        fn = FinalOffset3,
+    },
+	{
+		name = "missile_explosion_fx",
+		bank = "missile_fx",
+		build = "missile_fx",
+		anim = "impact",
+		sound = "rifts5/wagstaff_boss/missile_explode",
+	},
+    {
+        name = "tree_rock_chop",
+        bank = "tree_rock_fx",
+        build = "tree_rock_fx",
+        anim = "chop",
+        --sound = "dontstarve_DLC001/fall/leaf_rustle",
+    },
+    {
+        name = "tree_rock_fall",
+        bank = "tree_rock_fx",
+        build = "tree_rock_fx",
+        anim = "fall",
+        --sound = "dontstarve_DLC001/fall/leaf_rustle",
+    },
+	{
+		name = "vault_portal_fx",
+		bank = "vault_portal_fx",
+		build = "vault_portal_fx",
+		anim = "activate",
+	},
 }
 
 for cratersteamindex = 1, 4 do
@@ -3366,17 +3858,55 @@ for j = 0, 3, 3 do
     end
 end
 
-local shot_types = {"rock", "gold", "marble", "thulecite", "freeze", "slow", "poop", "trinket_1"}
-for _, shot_type in ipairs(shot_types) do
+local SHOT_TYPES =
+{
+    "rock",
+    "gold",
+    "marble",
+    "thulecite",
+	"honey",
+    "freeze",
+    "slow",
+    "poop",
+    "moonglass",
+    "dreadstone",
+    "gunpowder",
+    "lunarplanthusk",
+    "purebrilliance",
+	"horrorfuel",
+	"gelblob",
+    "scrapfeather",
+    "stinger",
+    "trinket_1",
+}
+
+local SPECIFIC_HITFX_ANIM =
+{
+    stinger = "used_stinger",
+    moonglass = "used_moonglass",
+    gunpowder = "used_gunpowder",
+}
+
+for _, shot_type in ipairs(SHOT_TYPES) do
     table.insert(fx, {
         name = "slingshotammo_hitfx_"..shot_type,
         bank = "slingshotammo",
         build = "slingshotammo",
-        anim = "used",
+        anim = SPECIFIC_HITFX_ANIM[shot_type] or "used",
         sound = "dontstarve/characters/walter/slingshot/"..shot_type,
         fn = function(inst)
 			if shot_type ~= "rock" then
 		        inst.AnimState:OverrideSymbol("rock", "slingshotammo", shot_type)
+
+				if shot_type == "horrorfuel" then
+					inst.AnimState:SetLightOverride(1)
+                elseif shot_type == "purebrilliance" then
+                    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+                    inst.AnimState:SetLightOverride(.1)
+                elseif shot_type == "gunpowder" then
+                    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+                    inst.AnimState:SetLightOverride(.1)
+				end
 			end
 		    inst.AnimState:SetFinalOffset(3)
 		end,

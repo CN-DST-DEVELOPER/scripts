@@ -214,9 +214,14 @@ local function reticule_target_function(inst)
         local pos = Vector3(inst.Transform:GetWorldPosition())
 
         local dir = Vector3()
-        dir.x = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
-        dir.y = 0
-        dir.z = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
+		dir.y = 0
+		if TheInput:SupportsControllerFreeAiming() then
+			dir.x = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_AIM_RIGHT) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_AIM_LEFT)
+			dir.z = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_AIM_UP) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_AIM_DOWN)
+		else
+			dir.x = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
+			dir.z = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
+		end
 		local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
 
         local reticule = inst.components.reticule.reticule

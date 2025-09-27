@@ -21,26 +21,47 @@ local YOTB_StageManager = Class(function(self, inst)
     	self:OnContestEnded()
 	end)
 	self.inst:WatchWorldState("cycles", function() self:OnNewDay() end)
+
+    self.wanderingtraders = {} -- NOTES(JBK): There should only be one in the world but mods.
+    self.inst:ListenForEvent("wanderingtrader_created", function(inst, data)
+        if data and data.wanderingtrader then
+            self:RegisterWanderingTrader(data.wanderingtrader)
+        end
+    end)
 end)
 
+local function UnregisterWanderingTrader_Bridge(wanderingtrader)
+	local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+    yotb_stagemanager:UnregisterWanderingTrader(wanderingtrader)
+end
+
+function YOTB_StageManager:RegisterWanderingTrader(wanderingtrader)
+    self.wanderingtraders[wanderingtrader] = true
+    self.inst:ListenForEvent("onremove", UnregisterWanderingTrader_Bridge, wanderingtrader)
+end
+
+function YOTB_StageManager:UnregisterWanderingTrader(wanderingtrader)
+    self.wanderingtraders[wanderingtrader] = nil
+end
+
 local function conteststarted(stage)
-	local manager = TheWorld.components.yotb_stagemanager
-	manager:OnContestBegun(stage)
+	local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+	yotb_stagemanager:OnContestBegun(stage)
 end
 
 local function contestfinished(stage)
-	local manager = TheWorld.components.yotb_stagemanager
-	manager:OnContestEnded(stage)
+	local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+	yotb_stagemanager:OnContestEnded(stage)
 end
 
 local function stageremoved(stage)
-	local manager = TheWorld.components.yotb_stagemanager
-	manager:OnStageDestroyed(stage)
+	local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+	yotb_stagemanager:OnStageDestroyed(stage)
 end
 
 local function contestcheckpoint(stage)
-	local manager = TheWorld.components.yotb_stagemanager
-	manager:OnContestCheckPoint(stage)
+	local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+	yotb_stagemanager:OnContestCheckPoint(stage)
 end
 
 function YOTB_StageManager:OnNewDay()
@@ -85,6 +106,20 @@ function YOTB_StageManager:IsContestActive()
 	return self.contest_active
 end
 
+function YOTB_StageManager:GetHostVisible()
+	return self.host_visible
+end
+
+function YOTB_StageManager:SetHostVisible(visible)
+	if self.host_visible ~= visible then
+        self.host_visible = visible
+        local eventname = visible and "wanderingtrader_hide" or "wanderingtrader_show"
+        for wanderingtrader, _ in pairs(self.wanderingtraders) do
+            wanderingtrader:PushEvent(eventname)
+        end
+    end
+end
+
 function YOTB_StageManager:IsContestEnabled()
 	return self.contest_enabled
 end
@@ -96,7 +131,6 @@ end
 function YOTB_StageManager:EnableContest()
 
 	if self.contest_active then
-		print ("TRYING TO ENABLE CONTEST WHILE A CONTEST IS ALREADY ACTIVE. NOT ALLOWED")
 		return
 	end
 

@@ -1,3 +1,11 @@
+local function GetTileForVentNoise(noise)
+	if noise < 0.35 then
+		return WORLD_TILES.CAVE
+	end
+
+	return WORLD_TILES.VENT
+end
+
 local function GetTileForFungusMoonNoise(noise)
 	if noise < 0.25 then
 		return WORLD_TILES.FUNGUS
@@ -106,6 +114,7 @@ end
 
 return
 {
+	[WORLD_TILES.VENT_NOISE] = GetTileForVentNoise,
     [WORLD_TILES.FUNGUSMOON_NOISE] = GetTileForFungusMoonNoise,
     [WORLD_TILES.DIRT_NOISE] = GetTileForDirtNoise,
     [WORLD_TILES.ABYSS_NOISE] = GetTileForAbyssNoise,

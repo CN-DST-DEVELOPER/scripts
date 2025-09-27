@@ -33,8 +33,8 @@ local SingingInspiration = Class(function(self, inst)
 
     self.gainratemultipliers = SourceModifierList(self.inst) -- Only used in SingingInspiration:OnHitOther.
 
-    self.inst:ListenForEvent("onhitother", function(inst, data) self:OnHitOther(data)   end)
-    self.inst:ListenForEvent("attacked",   function(inst, data) self:OnAttacked(data) end)
+    self.inst:ListenForEvent("onhitother", function(_, data) self:OnHitOther(data) end)
+    self.inst:ListenForEvent("attacked",   function(_, data) self:OnAttacked(data) end)
 
     self.inst:ListenForEvent("death", function() self:SetInspiration(0) end)
 end,
@@ -386,7 +386,7 @@ function SingingInspiration:InstantInspire(songdata)
             for _, ent in ipairs(entities_near_me) do
                 if self.inst.components.combat:CanTarget(ent)
                     and not HasFriendlyLeader(ent, self.inst, PVP_enabled)
-                    and (not ent:HasTag("prey") or (ent:HasTag("prey") and ent:HasTag("hostile")))
+                    and (not ent:HasTag("prey") or ent:HasTag("hostile"))
                     then
 
                     fn(self.inst, ent)

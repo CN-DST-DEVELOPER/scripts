@@ -355,6 +355,8 @@ local function fn()
         return inst
     end
 
+    WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Will drop when the boss is fully defeated.
+
     inst.DoSpikeAttack = do_spike_attack
     inst.SetNoMusic = SetNoMusic
 
@@ -405,9 +407,6 @@ local function fn()
     inst.components.teleportedoverride:SetDestPositionFn(teleport_override_fn)
 
     inst:AddComponent("drownable")
-
-    MakeLargeFreezableCharacter(inst)
-    inst.components.freezable:SetResistance(8)
 
 	inst:AddComponent("hauntable")
 	inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)

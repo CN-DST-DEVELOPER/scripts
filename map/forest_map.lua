@@ -249,6 +249,8 @@ local TRANSLATE_TO_PREFABS = {
 	["stageplays"] =		{"charlie_stage_post", "statueharp_hedgespawner"},
 	-- Allow for the junk piles to be required world gen prefabs, but still disable-able via World Gen settings
 	["junkyard"] =		    {"junk_pile", "junk_pile_big"},
+	-- Allow for the balatro machine to be required world gen prefabs, but still disable-able via World Gen settings
+	["balatro"] =		    {"balatro_machine"},
 }
 
 local TRANSLATE_TO_CLUMP = {
@@ -494,10 +496,21 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
 
 	WorldSim:WorldGen_VoronoiPass(100)
 
-	storygen:AddRegionsToMainland(function()
+	local function on_region_added_fn()
 		WorldSim:WorldGen_AddNewPositions()
 		WorldSim:WorldGen_VoronoiPass(50)
-	end)
+	end
+
+	storygen:AddRegionsToMainland(on_region_added_fn)
+
+	local ISLAND_EXPERIMENT_IDEA = false
+	if prefab == "cave" then
+        if ISLAND_EXPERIMENT_IDEA then
+            print("Creating the ripped off ruins island from centipede cave...")
+            storygen:AddRegionToTasksNodes(storygen.region_tasksets["ruins_island"], "CentipedeCaveTask", "VentsRoom_exit", 2, on_region_added_fn)
+            print("... ruins island created")
+        end
+	end
 
     print("... story created")
 
@@ -546,6 +559,17 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
 	local nodes = topology_save.root:GetNodes(true)
 	for k,node in pairs(nodes) do
 		node:SetTilesViaFunction(entities, map_width, map_height)
+
+		if node.data.SafeFromDisconnect then
+			local points_x, points_y, points_type = WorldSim:GetPointsForSite(node.id)
+			if #points_x ~= 0 then
+				for i = 1, #points_x do
+					WorldSim:MakeSafeFromDisconnect(points_x[i], points_y[i])
+				end
+			else
+				print(self.id.." Cant process points")
+			end
+		end
 	end
 
     print("Encoding...")
@@ -616,6 +640,7 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
 			args={entitiesOut=entities, width=map_width, height=map_height, rand_offset = false, debug_prefab_list=nil}
 		}
 
+    print("Tag: Labyrinth")
    	if topology_save.GlobalTags["Labyrinth"] ~= nil and GetTableSize(topology_save.GlobalTags["Labyrinth"]) >0 then
    		for task, labyrinth_nodes in pairs(topology_save.GlobalTags["Labyrinth"]) do
 
@@ -665,6 +690,7 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
         end
     end
 
+    print("Tag: Maze")
    	if topology_save.GlobalTags["Maze"] ~= nil and GetTableSize(topology_save.GlobalTags["Maze"]) >0 then
 
    		for task, nodes in pairs(topology_save.GlobalTags["Maze"]) do
@@ -683,7 +709,6 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
 				table.sort(distances, function(a,b) return a.dist < b.dist end)
 
 				if choices.archive ~= nil then
-
 					local ends = {}
 					for _,d in ipairs(distances) do
 						local maze_room = math.abs(types[d.idx])
@@ -701,63 +726,57 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
 					local startidx = ends[choice]
 					obj_layout.Place({xs[startidx], ys[startidx]}, MAZE_CELL_EXITS_INV[math.abs(types[startidx])], add_fn, choices.special.start)
 
-					local reservedindex = math.random(1,#xs)
-					while reservedindex == endidx or reservedindex == startidx do
-						reservedindex = math.random(1,#xs)
-					end
-
-					for idx = 1,#xs do
-						if idx ~= reservedindex and idx ~= endidx and idx ~= startidx then
-							if types[idx] > 0 then
-								obj_layout.Place({xs[idx], ys[idx]}, MAZE_CELL_EXITS_INV[types[idx] ], add_fn, choices.rooms)
-							else
-								obj_layout.Place({xs[idx], ys[idx]}, MAZE_CELL_EXITS_INV[-types[idx] ], add_fn, choices.bosses)
-							end
-						end
-					end
-					if choices.archive.keyroom then
-						obj_layout.Place({xs[reservedindex], ys[reservedindex]}, "SINGLE_NORTH", add_fn, choices.archive.keyroom)
-					end
-
-					local closest_index = distances[1].idx
-					local x, y = xs[closest_index], ys[closest_index]
-					local s_x, s_y = WorldSim:GetSite(topology_save.GlobalTags["MazeEntrance"][task][1])
-
-					WorldSim:DrawGroundLine( x, y, s_x, s_y, WORLD_TILES.DIRT, true, true)
-					WorldSim:DrawGroundLine( x+2, y+2, x-2, y-2, WORLD_TILES.DIRT, true, true)
-					WorldSim:DrawGroundLine( x-2, y+2, x+2, y-2, WORLD_TILES.DIRT, true, true)
-
- 					-- ARCHIVE SEALS
-					local x_diff = s_x - x
-					local y_diff = s_y - y
-					local incx = (x_diff/2) *TILE_SCALE
-					local incz = (y_diff/2) *TILE_SCALE
-
-					local newx = x
-					local newz = y
-
-					newx = (newx - map_width/2.0)*TILE_SCALE --gjans: note the +1.5 instead of +0.5... RunMaze points are in a strange position.
-					newz = (newz - map_height/2.0)*TILE_SCALE
-
-					if not entities["rubble1"] then
-						entities["rubble1"] = {}
-					end
-					if not entities["rubble2"] then
-						entities["rubble2"] = {}
-					end
-
-					newx = newx + incx/2 -- /10
-					newz = newz + incz/2 -- /10
-					table.insert(entities["rubble1"],{ x = newx, z = newz })
-					table.insert(entities["rubble2"],{ x = newx, z = newz })
---[[
-					--for i=1,10 do
-						newx = newx + incx -- /10
-						newz = newz + incz -- /10
-						table.insert(entities["rubble1"],{ x = newx, z = newz })
-						table.insert(entities["rubble2"],{ x = newx, z = newz })
-					--end
-	]]
+                    if #xs > 2 then
+                        local reservedindex = math.random(1,#xs)
+                        while reservedindex == endidx or reservedindex == startidx do
+                            reservedindex = math.random(1,#xs)
+                        end
+    
+                        for idx = 1,#xs do
+                            if idx ~= reservedindex and idx ~= endidx and idx ~= startidx then
+                                if types[idx] > 0 then
+                                    obj_layout.Place({xs[idx], ys[idx]}, MAZE_CELL_EXITS_INV[types[idx] ], add_fn, choices.rooms)
+                                else
+                                    obj_layout.Place({xs[idx], ys[idx]}, MAZE_CELL_EXITS_INV[-types[idx] ], add_fn, choices.bosses)
+                                end
+                            end
+                        end
+                        if choices.archive.keyroom then
+                            obj_layout.Place({xs[reservedindex], ys[reservedindex]}, "SINGLE_NORTH", add_fn, choices.archive.keyroom)
+                        end
+    
+                        local closest_index = distances[1].idx
+                        local x, y = xs[closest_index], ys[closest_index]
+                        local s_x, s_y = WorldSim:GetSite(topology_save.GlobalTags["MazeEntrance"][task][1])
+    
+                        WorldSim:DrawGroundLine( x, y, s_x, s_y, WORLD_TILES.DIRT, true, true)
+                        WorldSim:DrawGroundLine( x+2, y+2, x-2, y-2, WORLD_TILES.DIRT, true, true)
+                        WorldSim:DrawGroundLine( x-2, y+2, x+2, y-2, WORLD_TILES.DIRT, true, true)
+    
+                         -- ARCHIVE SEALS
+                        local x_diff = s_x - x
+                        local y_diff = s_y - y
+                        local incx = (x_diff/2) *TILE_SCALE
+                        local incz = (y_diff/2) *TILE_SCALE
+    
+                        local newx = x
+                        local newz = y
+    
+                        newx = (newx - map_width/2.0)*TILE_SCALE --gjans: note the +1.5 instead of +0.5... RunMaze points are in a strange position.
+                        newz = (newz - map_height/2.0)*TILE_SCALE
+    
+                        if not entities["rubble1"] then
+                            entities["rubble1"] = {}
+                        end
+                        if not entities["rubble2"] then
+                            entities["rubble2"] = {}
+                        end
+    
+                        newx = newx + incx/2 -- /10
+                        newz = newz + incz/2 -- /10
+                        table.insert(entities["rubble1"],{ x = newx, z = newz })
+                        table.insert(entities["rubble2"],{ x = newx, z = newz })
+                    end
 				elseif choices.special ~= nil then
 					local ends = {}
 					for _,d in ipairs(distances) do
@@ -822,7 +841,15 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
     topology_save.root:ConvertGround(SpawnFunctions, entities, map_width, map_height)
 	WorldSim:ReplaceSingleNonLandTiles()
 
+	--[[
+	NOTE:
+	Sigh, so the "ForceDisconnected" tag does not actually keep something in the void disconnected from the mainland (e.g. Atrium)
+	It instead relies on this FAKE_GROUND tile to connect it to the main land during world generation, that is then cleaned up afterwards....
+
+	Now you can set SafeFromDisconnect on room or static layouts to exclude their tiles from being disconnected!
+	]]
 	if not story_gen_params.keep_disconnected_tiles then
+        print("DetectDisconnect")
 	    local replace_count = WorldSim:DetectDisconnect()
 		--allow at most 5% of tiles to be disconnected
 		if replace_count > math.floor(map_width * map_height * 0.05) then
@@ -836,6 +863,7 @@ local function Generate(prefab, map_width, map_height, tasks, level, level_type)
 	else
 		print("Not checking for disconnected tiles.")
 	end
+    WorldSim:ClearSafeFromDisconnect()
 
     save.map.generated = {}
     save.map.generated.densities = {}

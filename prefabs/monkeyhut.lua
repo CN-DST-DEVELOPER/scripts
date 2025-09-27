@@ -366,6 +366,7 @@ local function fn()
 
     -----------------------------------------------------------
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountLarge(inst)
 
     -----------------------------------------------------------
     --inst:ListenForEvent("childgoinghome", onchildgoinghome)

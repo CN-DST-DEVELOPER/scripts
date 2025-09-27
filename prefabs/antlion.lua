@@ -309,11 +309,7 @@ local function StartCombat(inst, target, trigger)
 
         inst:SetStateGraph("SGantlion_angry")
 
-        --After loading, replacing an empty brain with a new
-        --one doesn't automatically restart itself properly.
-        inst:StopBrain()
         inst:SetBrain(brain)
-        inst:RestartBrain()
 
         inst:AddTag("scarytoprey")
         inst:AddTag("hostile")
@@ -444,6 +440,7 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_height = "low"
     inst.scrapbook_maxhealth  = TUNING.ANTLION_HEALTH
     inst.scrapbook_sanityaura = -TUNING.SANITYAURA_MED
 

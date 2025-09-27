@@ -102,12 +102,13 @@ local function fn()
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(5)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    --inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES,
+		COLLISION.CHARACTERS
+		--COLLISION.GIANTS
+	)
     inst.Physics:SetCapsule(.5, 1)
     ----------------------------------------------------
 
@@ -118,6 +119,7 @@ local function fn()
     inst:AddTag("lavae")
     inst:AddTag("monster")
     inst:AddTag("hostile")
+	inst:AddTag("electricdamageimmune")
 
     inst.Light:SetRadius(2)
     inst.Light:SetFalloff(0.5)

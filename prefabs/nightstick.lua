@@ -21,7 +21,15 @@ end
 
 local function onequip(inst, owner)
     inst.components.burnable:Ignite()
-    owner.AnimState:OverrideSymbol("swap_object", "swap_nightstick", "swap_nightstick")
+
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_nightstick", inst.GUID, "swap_nightstick")
+    else
+        owner.AnimState:OverrideSymbol("swap_object", "swap_nightstick", "swap_nightstick")
+    end
+
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
 
@@ -37,6 +45,11 @@ local function onequip(inst, owner)
 end
 
 local function onunequip(inst, owner)
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
+
     if inst.fire ~= nil then
         inst.fire:Remove()
     end
@@ -88,9 +101,7 @@ local function onfuelchange(newsection, oldsection, inst)
 end
 
 local function onattack(inst, attacker, target)
-    if target ~= nil and target:IsValid() and attacker ~= nil and attacker:IsValid() then
-        SpawnPrefab("electrichitsparks"):AlignToTarget(target, attacker, true)
-    end
+    SpawnElectricHitSparks(attacker, target, true)
 end
 
 local function fn()

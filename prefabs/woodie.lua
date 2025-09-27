@@ -135,7 +135,9 @@ local BEAVER_LMB_ACTIONS =
     "DIG",
 }
 
-local BEAVER_ACTION_TAGS = {}
+local BEAVER_ACTION_TAGS = {
+    "LunarBuildup",
+}
 
 for i, v in ipairs(BEAVER_LMB_ACTIONS) do
     table.insert(BEAVER_ACTION_TAGS, v.."_workable")
@@ -151,6 +153,7 @@ local function BeaverActionString(inst, action)
     return (action.action == ACTIONS.MOUNT_PLANK and STRINGS.ACTIONS.MOUNT_PLANK)
         or (action.action == ACTIONS.ABANDON_SHIP and STRINGS.ACTIONS.ABANDON_SHIP)
         or (action.action == ACTIONS.USE_WEREFORM_SKILL and STRINGS.ACTIONS.USE_WEREFORM_SKILL.BEAVER)
+        or (action.action == ACTIONS.REMOVELUNARBUILDUP and STRINGS.ACTIONS.REMOVELUNARBUILDUP)
         or STRINGS.ACTIONS.GNAW
         ,
         (action.action == ACTIONS.ABANDON_SHIP)
@@ -159,6 +162,9 @@ local function BeaverActionString(inst, action)
 end
 
 local function GetBeaverAction(inst, target)
+    if target:HasTag("LunarBuildup") then
+        return ACTIONS.REMOVELUNARBUILDUP
+    end
     for i, v in ipairs(BEAVER_LMB_ACTIONS) do
         if target:HasTag(v.."_workable") then
             return not target:HasTag("sign") and ACTIONS[v] or nil
@@ -194,6 +200,16 @@ local function BeaverActionButton(inst, force_target)
     end
 end
 
+local function BeaverGetLMBActions(inst, target)
+    for i, v in ipairs(BEAVER_LMB_ACTIONS) do
+        if target:HasTag(v.."_workable") then
+            return not target:HasTag("sign")
+                and inst.components.playeractionpicker:SortActionList({ ACTIONS[v] }, target, nil)
+                or nil
+        end
+    end
+end
+
 local function BeaverLeftClickPicker(inst, target)
     if target ~= nil and target ~= inst then
         if inst.replica.combat:CanTarget(target) then
@@ -201,12 +217,12 @@ local function BeaverLeftClickPicker(inst, target)
                 and inst.components.playeractionpicker:SortActionList({ ACTIONS.ATTACK }, target, nil)
                 or nil
         end
-        for i, v in ipairs(BEAVER_LMB_ACTIONS) do
-            if target:HasTag(v.."_workable") then
-                return not target:HasTag("sign")
-                    and inst.components.playeractionpicker:SortActionList({ ACTIONS[v] }, target, nil)
-                    or nil
-            end
+        if target:HasTag("LunarBuildup") then
+            return inst.components.playeractionpicker:SortActionList({ ACTIONS.REMOVELUNARBUILDUP }, target, nil)
+        end
+        local actions = BeaverGetLMBActions(inst, target)
+        if actions then
+            return actions
         end
 
         if target:HasTag("walkingplank") and target:HasTag("interactable") and target:HasTag("plank_extended") then
@@ -216,22 +232,29 @@ local function BeaverLeftClickPicker(inst, target)
 end
 
 local function BeaverRightClickPicker(inst, target, pos)
-    return target ~= nil
-        and target ~= inst
-        and (   (   inst:HasTag("on_walkable_plank") and
-                    target:HasTag("walkingplank") and
-                    inst.components.playeractionpicker:SortActionList({ ACTIONS.ABANDON_SHIP }, target, nil)
-                ) or
-                (   target:HasTag("HAMMER_workable") and
-                    inst.components.playeractionpicker:SortActionList({ ACTIONS.HAMMER }, target, nil)
-                ) or
-                (   target:HasTag("DIG_workable") and
-                    target:HasTag("sign") and
-                    inst.components.playeractionpicker:SortActionList({ ACTIONS.DIG }, target, nil)
-                )
-            )
-        or
-        (   not inst.components.playercontroller.isclientcontrollerattached and
+    if target ~= nil and target ~= inst then
+        local actions = (   inst:HasTag("on_walkable_plank") and
+            target:HasTag("walkingplank") and
+            inst.components.playeractionpicker:SortActionList({ ACTIONS.ABANDON_SHIP }, target, nil)
+        ) or
+        (   target:HasTag("HAMMER_workable") and
+            inst.components.playeractionpicker:SortActionList({ ACTIONS.HAMMER }, target, nil)
+        ) or
+        (   target:HasTag("DIG_workable") and
+            target:HasTag("sign") and
+            inst.components.playeractionpicker:SortActionList({ ACTIONS.DIG }, target, nil)
+        ) or nil
+        if actions then
+            return actions
+        end
+        if target:HasTag("LunarBuildup") then
+            actions = BeaverGetLMBActions(inst, target)
+            if actions then
+                return actions
+            end
+        end
+    end
+    return (   not inst.components.playercontroller.isclientcontrollerattached and
             inst.components.skilltreeupdater:HasSkillTag("beaver_epic") and
             inst.components.playeractionpicker:SortActionList({ ACTIONS.USE_WEREFORM_SKILL },target or pos, nil)
         )
@@ -326,6 +349,8 @@ local function EnableReticule(inst, enable)
             inst.components.reticule.reticuleprefab = "reticuleline2"
             inst.components.reticule.targetfn = ReticuleTargetFn
             inst.components.reticule.updatepositionfn = ReticuleUpdatePositionFn
+            inst.components.reticule.twinstickcheckscheme = true
+            inst.components.reticule.twinstickmode = 1
             inst.components.reticule.ease = true
             if inst.components.playercontroller ~= nil and inst == ThePlayer then
                 inst.components.playercontroller:RefreshReticule()
@@ -713,23 +738,25 @@ local function SetWereDrowning(inst, mode)
         if mode == WEREMODES.GOOSE and not TheWorld:HasTag("cave") then
             if inst.components.drownable.enabled ~= false then
                 inst.components.drownable.enabled = false
-                inst.Physics:ClearCollisionMask()
-                inst.Physics:CollidesWith(COLLISION.GROUND)
-                inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-                inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-                inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-                inst.Physics:CollidesWith(COLLISION.GIANTS)
+				inst.Physics:SetCollisionMask(
+					COLLISION.GROUND,
+					COLLISION.OBSTACLES,
+					COLLISION.SMALLOBSTACLES,
+					COLLISION.CHARACTERS,
+					COLLISION.GIANTS
+				)
                 inst.Physics:Teleport(inst.Transform:GetWorldPosition())
             end
         elseif inst.components.drownable.enabled == false then
             inst.components.drownable.enabled = true
             if not inst:HasTag("playerghost") then
-                inst.Physics:ClearCollisionMask()
-                inst.Physics:CollidesWith(COLLISION.WORLD)
-                inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-                inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-                inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-                inst.Physics:CollidesWith(COLLISION.GIANTS)
+				inst.Physics:SetCollisionMask(
+					COLLISION.WORLD,
+					COLLISION.OBSTACLES,
+					COLLISION.SMALLOBSTACLES,
+					COLLISION.CHARACTERS,
+					COLLISION.GIANTS
+				)
                 inst.Physics:Teleport(inst.Transform:GetWorldPosition())
             end
         end
@@ -1628,7 +1655,10 @@ end
 
 --------------------------------------------------------------------------
 
-local function IsNotArchives(map, x, y, z)
+local function CanTeleportLinkFromPoint(map, x, y, z)
+    if not IsTeleportLinkingPermittedFromPoint(x, y, z) then
+        return false
+    end
     -- Don't land inside the archives, but you can fly from inside the archives.
     return map:IsLandTileAtPoint(x, y, z) and not map:NodeAtPointHasTag(x, y, z, "nocavein")
 end
@@ -1647,7 +1677,11 @@ local function UseWereFormSkill(inst, act)
         end
 
     elseif inst:HasTag("weregoose") and TheWorld ~= nil then
-        local pos = TheWorld.Map:FindRandomPointWithFilter(50, IsNotArchives)
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local pos
+        if IsTeleportLinkingPermittedFromPoint(x, y, z) then
+            pos = TheWorld.Map:FindRandomPointWithFilter(50, CanTeleportLinkFromPoint)
+        end
 
         if pos ~= nil then
             inst.Physics:Teleport(pos.x, 0, pos.z)
@@ -1667,6 +1701,34 @@ end
 
 local function IsWeregoose(inst)
     return inst.weremode:value() == WEREMODES.GOOSE
+end
+
+local function OnInventoryStateChanged(inst, data)
+    inst:AddOrRemoveTag("cancarveboards", inst.components.inventory:Has("lucy", 1, true))
+end
+
+local function OnSkillSelectionChange(inst, data)
+    local has_skill = inst.components.skilltreeupdater:IsActivated("woodie_human_lucy_1")
+
+    if has_skill then
+        if inst._oninventorystatechanged == nil then
+            inst._oninventorystatechanged = OnInventoryStateChanged
+
+            inst:ListenForEvent("itemget",  inst._oninventorystatechanged)
+            inst:ListenForEvent("itemlose", inst._oninventorystatechanged)
+        end
+
+        OnInventoryStateChanged(inst)
+    else
+        if inst._oninventorystatechanged ~= nil then
+            inst:RemoveEventCallback("itemget",  inst._oninventorystatechanged)
+            inst:RemoveEventCallback("itemlose", inst._oninventorystatechanged)
+
+            inst._oninventorystatechanged = nil
+        end
+
+        inst:RemoveTag("cancarveboards")
+    end
 end
 
 --------------------------------------------------------------------------
@@ -1792,6 +1854,10 @@ local function master_postinit(inst)
 
         inst:ListenForEvent("ms_respawnedfromghost", onrespawnedfromghost)
         inst:ListenForEvent("ms_becameghost", onbecameghost)
+
+		inst:ListenForEvent("onactivateskill_server", OnSkillSelectionChange)
+		inst:ListenForEvent("ondeactivateskill_server", OnSkillSelectionChange)
+		inst:ListenForEvent("ms_skilltreeinitialized", OnSkillSelectionChange)
 
         onrespawnedfromghost(inst, nil, true)
 

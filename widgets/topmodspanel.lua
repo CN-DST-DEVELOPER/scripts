@@ -215,7 +215,7 @@ function TopModsPanel:SetModsTab(tab)
 end
 
 function TopModsPanel:MoreWorkshopMods()
-    VisitURL("http://steamcommunity.com/app/322330/workshop/")
+    VisitURL("https://steamcommunity.com/app/322330/workshop/")
 end
 
 return TopModsPanel

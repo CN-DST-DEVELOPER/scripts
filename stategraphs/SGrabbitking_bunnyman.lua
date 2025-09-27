@@ -5,6 +5,7 @@ local events = {
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(nil, TUNING.BUNNYMAN_MAX_STUN_LOCKS),
     CommonHandlers.OnDeath(),
@@ -32,7 +33,7 @@ local states =
 {
     State{
         name = "burrowaway",
-        tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
         onenter = function(inst)
             inst.Physics:Stop()
             inst.persists = false
@@ -44,6 +45,15 @@ local states =
             TimeEvent(5 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge")
             end),
+			FrameEvent(20, function(inst)
+				inst.sg:AddStateTag("noattack")
+				inst.sg:AddStateTag("nointerrupt")
+			end),
+			FrameEvent(26, function(inst)
+				inst.sg:AddStateTag("invisible")
+				inst.sg:AddStateTag("temp_invincible")
+				inst.components.burnable:Extinguish()
+			end),
         },
         onexit = function(inst)
             inst.SoundEmitter:KillSound("move")
@@ -58,7 +68,7 @@ local states =
     },
     State{
         name = "burrowto",
-        tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
         onenter = function(inst, data)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("despawn")
@@ -70,6 +80,15 @@ local states =
             TimeEvent(5 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/emerge")
             end),
+			FrameEvent(20, function(inst)
+				inst.sg:AddStateTag("noattack")
+				inst.sg:AddStateTag("nointerrupt")
+			end),
+			FrameEvent(26, function(inst)
+				inst.sg:AddStateTag("invisible")
+				inst.sg:AddStateTag("temp_invincible")
+				inst.components.burnable:Extinguish()
+			end),
         },
         onexit = function(inst)
             inst.SoundEmitter:KillSound("move")
@@ -89,7 +108,7 @@ local states =
     },
     State{
         name = "burrowarrive",
-        tags = {"busy"},
+		tags = { "busy", "invisible", "nointerrupt", "noattack", "temp_invincible" },
         onenter = function(inst, data)
             inst.sg.mem.queued_burrowto_data = nil
             inst.Physics:Stop()
@@ -116,12 +135,22 @@ local states =
     },
     State{
         name = "burrowarrive_pst",
-        tags = {"busy"},
+		tags = { "busy", "invisible", "nointerrupt", "noattack", "temp_invincible" },
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation("spawn_pst")
         end,
         timeline =
         {
+			FrameEvent(20, function(inst)
+				inst.sg:RemoveStateTag("invisible")
+				inst.sg:RemoveStateTag("temp_invincible")
+			end),
+			FrameEvent(32, function(inst)
+				inst.sg:RemoveStateTag("noattack")
+			end),
+			FrameEvent(33, function(inst)
+				inst.sg:RemoveStateTag("nointerrupt")
+			end),
             TimeEvent(34 * FRAMES, function(inst)
                 inst.sg.statemem.donotquietsound = true
                 inst.SoundEmitter:KillSound("move")
@@ -269,6 +298,7 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

@@ -27,7 +27,9 @@ local function UpdateFade(inst, dframes)
     end
 
     if inst._ice ~= nil and inst._ice:IsValid() then
-        inst._ice.AnimState:SetErosionParams(math.min(1, inst.fadeval:value() / FADE_FRAMES), .1, 1)
+		local actualfadeval = math.min(1, inst.fadeval:value() / FADE_FRAMES)
+		inst._ice.AnimState:SetErosionParallax(actualfadeval == 0)
+		inst._ice.AnimState:SetErosionParams(math.min(1, inst.fadeval:value() / FADE_FRAMES), .1, 1)
     end
 end
 

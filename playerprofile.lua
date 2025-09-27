@@ -10,6 +10,7 @@ local PlayerProfile = Class(function(self)
         render_quality = RENDER_QUALITY.DEFAULT,
         -- Controlls should be a seperate file
         controls = {},
+		controlschemes = {},
         starts = 0,
         saw_display_adjustment_popup = false,
         device_caps_a = 0,
@@ -18,6 +19,7 @@ local PlayerProfile = Class(function(self)
         collection_name = nil,
         saw_new_user_popup = false,
         saw_new_host_picker = false,
+        saw_control_scheme_popup = false,
         install_id = os.time(),
 		play_instance = 0,
 		favorite_mods = {},
@@ -42,6 +44,7 @@ local PlayerProfile = Class(function(self)
         self.persistdata.vibration = true
         self.persistdata.showpassword = false
         self.persistdata.movementprediction = true
+		self.persistdata.targetlocking = true
         self.persistdata.wathgrithrfont = true
 		self.persistdata.InvertCameraRotation = false
         self.persistdata.screenshake = true
@@ -62,6 +65,7 @@ local PlayerProfile = Class(function(self)
 		self.persistdata.usezipfilefornormalsaves = false
 		self.persistdata.defaultcloudsaves = false
 		self.persistdata.scrapbookhuddisplay = true
+		self.persistdata.command_wheel_allows_gameplay = true
     end
 
     self.dirty = true
@@ -75,6 +79,7 @@ function PlayerProfile:Reset()
     self.persistdata.customizationpresets = {}
     self.persistdata.saw_new_user_popup = false
     self.persistdata.saw_new_host_picker = false
+    self.persistdata.saw_control_scheme_popup = false
     self.persistdata.install_id = os.time()
 	self.persistdata.play_instance = 0
 	self.persistdata.favorite_mods = {}
@@ -95,6 +100,7 @@ function PlayerProfile:Reset()
         self.persistdata.vibration = true
         self.persistdata.showpassword = false
         self.persistdata.movementprediction = true
+		self.persistdata.targetlocking = true
         self.persistdata.wathgrithrfont = true
 		self.persistdata.InvertCameraRotation = false
         self.persistdata.screenshake = true
@@ -114,6 +120,7 @@ function PlayerProfile:Reset()
 		self.persistdata.usezipfilefornormalsaves = false
 		self.persistdata.defaultcloudsaves = true
 		self.persistdata.scrapbookhuddisplay = true
+		self.persistdata.command_wheel_allows_gameplay = true
     end
 
     --self.persistdata.starts = 0 -- save starts?
@@ -129,6 +136,7 @@ function PlayerProfile:SoftReset()
     self.persistdata.customizationpresets = {}
     self.persistdata.saw_new_user_popup = false
     self.persistdata.saw_new_host_picker = false
+    self.persistdata.saw_control_scheme_popup = false
     self.persistdata.install_id = os.time()
 	self.persistdata.play_instance = 0
 	self.persistdata.favorite_mods = {}
@@ -149,6 +157,7 @@ function PlayerProfile:SoftReset()
         self.persistdata.vibration = true
         self.persistdata.showpassword = false
         self.persistdata.movementprediction = true
+		self.persistdata.targetlocking = true
         self.persistdata.wathgrithrfont = true
 		self.persistdata.InvertCameraRotation = false
         self.persistdata.screenshake = true
@@ -488,8 +497,10 @@ function PlayerProfile:IsModFavorited(modname)
 end
 
 function PlayerProfile:SetValue(name, value)
-    self.dirty = true
-    self.persistdata[name] = value
+	if self.persistdata[name] ~= value then
+		self.persistdata[name] = value
+		self.dirty = true
+	end
 end
 
 function PlayerProfile:GetValue(name)
@@ -505,7 +516,6 @@ function PlayerProfile:SetVolume(ambient, sfx, music)
 	    self:SetValue("volume_ambient", ambient)
 	    self:SetValue("volume_sfx", sfx)
 	    self:SetValue("volume_music", music)
-	    self.dirty = true
 	end
 end
 
@@ -514,7 +524,6 @@ function PlayerProfile:SetMuteOnFocusLost(value)
 		TheSim:SetSetting("audio", "volume_muteonfocuslost", tostring(value))
 	else
 		self:SetValue("volume_muteonfocuslost", value)
-		self.dirty = true
 	end
 end
 
@@ -523,7 +532,6 @@ function PlayerProfile:SetScreenFlash(value)
 		TheSim:SetSetting("graphics", "screenflash", tostring(value))
 	else
 		self:SetValue("screenflash", value)
-		self.dirty = true
 	end
 end
 function PlayerProfile:GetScreenFlash()
@@ -539,7 +547,6 @@ function PlayerProfile:SetBloomEnabled(enabled)
 		TheSim:SetSetting("graphics", "bloom", tostring(enabled))
 	else
 		self:SetValue("bloom", enabled)
-		self.dirty = true
 	end
 end
 
@@ -556,7 +563,6 @@ function PlayerProfile:SetHUDSize(size)
 		TheSim:SetSetting("graphics", "HUDSize", tostring(size))
 	else
 		self:SetValue("HUDSize", size)
-		self.dirty = true
 	end
 end
 
@@ -573,7 +579,6 @@ function PlayerProfile:SetCraftingMenuSize(size)
 		TheSim:SetSetting("graphics", "CraftingMenuSize", tostring(size))
 	else
 		self:SetValue("CraftingMenuSize", size)
-		self.dirty = true
 	end
 end
 
@@ -590,7 +595,6 @@ function PlayerProfile:SetCraftingMenuNumPinPages(size)
 		TheSim:SetSetting("misc", "CraftingMenuNumPinPages", tostring(size))
 	else
 		self:SetValue("CraftingMenuNumPinPages", size)
-		self.dirty = true
 	end
 end
 
@@ -615,7 +619,6 @@ function PlayerProfile:SetScrapbookHudDisplay(enabled)
 		TheSim:SetSetting("misc", "scrapbookhuddisplay", tostring(enabled))
 	else
 		self:SetValue("scrapbookhuddisplay", enabled)
-		self.dirty = true
 	end
 end
 
@@ -632,7 +635,6 @@ function PlayerProfile:SetPOIDisplay(enabled)
 		TheSim:SetSetting("misc", "poidisplay", tostring(enabled))
 	else
 		self:SetValue("poidisplay", enabled)
-		self.dirty = true
 	end
 end
 
@@ -642,7 +644,6 @@ end
 
 function PlayerProfile:SetScrapbookColumnsSetting(setting)
 	self:SetValue("scrapbookcolumnssetting", setting)
-	self.dirty = true
 	self:Save()
 end
 
@@ -651,7 +652,6 @@ function PlayerProfile:SetCraftingMenuSensitivity(sensitivity)
 		TheSim:SetSetting("misc", "craftingmenusensitivity", tostring(sensitivity))
 	else
 		self:SetValue("craftingmenusensitivity", sensitivity)
-		self.dirty = true
 	end
 end
 
@@ -668,7 +668,6 @@ function PlayerProfile:SetInventorySensitivity(sensitivity)
 		TheSim:SetSetting("misc", "inventorysensitivity", tostring(sensitivity))
 	else
 		self:SetValue("inventorysensitivity", sensitivity)
-		self.dirty = true
 	end
 end
 
@@ -685,7 +684,6 @@ function PlayerProfile:SetMiniMapZoomSensitivity(sensitivity)
 		TheSim:SetSetting("misc", "minimapzoomsensitivity", tostring(sensitivity))
 	else
 		self:SetValue("minimapzoomsensitivity", sensitivity)
-		self.dirty = true
 	end
 end
 
@@ -710,7 +708,6 @@ function PlayerProfile:SetBoatHopDelay(delay)
 		TheSim:SetSetting("misc", "boathopdelay", tostring(delay))
 	else
 		self:SetValue("boathopdelay", delay)
-		self.dirty = true
 	end
     if ThePlayer then
         ThePlayer:SynchronizeOneClientAuthoritativeSetting(CLIENTAUTHORITATIVESETTINGS.PLATFORMHOPDELAY, Profile:GetBoatHopDelay())
@@ -722,7 +719,6 @@ function PlayerProfile:SetDistortionEnabled(enabled)
 		TheSim:SetSetting("graphics", "distortion", tostring(enabled))
 	else
 		self:SetValue("distortion", enabled)
-		self.dirty = true
 	end
 end
 
@@ -739,7 +735,6 @@ function PlayerProfile:SetDistortionModifier(modifier)
 	   TheSim:SetSetting("graphics", "distortion_modifier", tostring(modifier))
    else
 	   self:SetValue("distortion_modifier", modifier)
-	   self.dirty = true
    end
 end
 
@@ -756,7 +751,6 @@ function PlayerProfile:SetScreenShakeEnabled(enabled)
 		TheSim:SetSetting("graphics", "screenshake", tostring(enabled))
 	else
 		self:SetValue("screenshake", enabled)
-		self.dirty = true
 	end
 end
 
@@ -781,7 +775,6 @@ function PlayerProfile:SetWathgrithrFontEnabled(enabled)
 		TheSim:SetSetting("misc", "wathgrithrfont", tostring(enabled))
 	else
 		self:SetValue("wathgrithrfont", enabled)
-		self.dirty = true
 	end
 end
 
@@ -806,7 +799,6 @@ function PlayerProfile:SetInvertCameraRotation(enabled) -- console only
 		TheSim:SetSetting("misc", "InvertCameraRotation", tostring(enabled))
 	else
 		self:SetValue("InvertCameraRotation", enabled)
-		self.dirty = true
 	end
 end
 
@@ -824,7 +816,6 @@ function PlayerProfile:SetBoatCameraEnabled(enabled)
 		TheSim:SetSetting("misc", "boatcamera", tostring(enabled))
 	else
 		self:SetValue("boatcamera", enabled)
-		self.dirty = true
 	end
 end
 
@@ -849,7 +840,6 @@ function PlayerProfile:SetCampfireStoryCameraEnabled(enabled)
 		TheSim:SetSetting("misc", "campfirestorycamera", tostring(enabled))
 	else
 		self:SetValue("campfirestorycamera", enabled)
-		self.dirty = true
 	end
 end
 
@@ -868,7 +858,6 @@ function PlayerProfile:SetMinimapZoomCursorEnabled(enabled)
 		TheSim:SetSetting("misc", "minimapzoomcursor", tostring(enabled))
 	else
 		self:SetValue("minimapzoomcursor", enabled)
-		self.dirty = true
 	end
 end
 
@@ -886,7 +875,6 @@ function PlayerProfile:SetHaveWarnedDifficultyRoG()
 		TheSim:SetSetting("misc", "warneddifficultyrog", "true")
 	else
 		self:SetValue("warneddifficultyrog", true)
-		self.dirty = true
 	end
 end
 
@@ -903,7 +891,6 @@ function PlayerProfile:SetVibrationEnabled(enabled)
 		TheSim:SetSetting("misc", "vibration", tostring(enabled))
 	else
 		self:SetValue("vibration", enabled)
-		self.dirty = true
 	end
 end
 
@@ -920,7 +907,6 @@ function PlayerProfile:SetShowPasswordEnabled(enabled)
 		TheSim:SetSetting("misc", "showpassword", tostring(enabled))
 	else
 		self:SetValue("showpassword", enabled)
-		self.dirty = true
 	end
 end
 
@@ -937,7 +923,6 @@ function PlayerProfile:SetMovementPredictionEnabled(enabled)
         TheSim:SetSetting("misc", "movementprediction", tostring(enabled))
     else
         self:SetValue("movementprediction", enabled)
-        self.dirty = true
     end
 end
 
@@ -946,7 +931,6 @@ function PlayerProfile:SetTextureStreamingEnabled(enabled)
         TheSim:SetSetting("misc", "texture_streaming", tostring(enabled))
     else
         self:SetValue("texturestreaming", enabled)
-        self.dirty = true
     end
 end
 
@@ -955,7 +939,6 @@ function PlayerProfile:SetThreadedRenderEnabled(enabled)
         TheSim:SetSetting("misc", "use_threaded_renderer", tostring(enabled))
     else
         self:SetValue("threaded_renderer", enabled)
-        self.dirty = true
     end
 end
 
@@ -964,7 +947,6 @@ function PlayerProfile:SetDynamicTreeShadowsEnabled(enabled)
         TheSim:SetSetting("misc", "dynamic_tree_shadows", tostring(enabled))
     else
         self:SetValue("dynamic_tree_shadows", enabled)
-        self.dirty = true
     end
 end
 
@@ -973,7 +955,6 @@ function PlayerProfile:SetAutopauseEnabled(enabled)
         TheSim:SetSetting("misc", "autopause", tostring(enabled))
     else
         self:SetValue("autopause", enabled)
-        self.dirty = true
     end
 end
 
@@ -982,7 +963,6 @@ function PlayerProfile:SetConsoleAutopauseEnabled(enabled)
         TheSim:SetSetting("misc", "consoleautopause", tostring(enabled))
     else
         self:SetValue("consoleautopause", enabled)
-        self.dirty = true
     end
 end
 
@@ -991,7 +971,6 @@ function PlayerProfile:SetCraftingAutopauseEnabled(enabled)
         TheSim:SetSetting("misc", "craftingautopause", tostring(enabled))
     else
         self:SetValue("craftingautopause", enabled)
-        self.dirty = true
     end
 end
 
@@ -1010,7 +989,6 @@ function PlayerProfile:SetCraftingMenuBufferedBuildAutoClose(enabled)
 		TheSim:SetSetting("misc", "craftingmenu_bufferedbuild_autoclose", tostring(enabled))
 	else
 		self:SetValue("craftingmenu_bufferedbuild_autoclose", enabled)
-		self.dirty = true
 	end
 end
 
@@ -1028,7 +1006,6 @@ function PlayerProfile:SetCraftingHintAllRecipesEnabled(enabled)
         TheSim:SetSetting("misc", "craftinghintallrecipes", tostring(enabled))
     else
         self:SetValue("craftinghintallrecipes", enabled)
-        self.dirty = true
     end
 end
 
@@ -1047,7 +1024,6 @@ function PlayerProfile:SetLoadingTipsOption(setting)
         TheSim:SetSetting("misc", "loadingtips", tostring(setting))
     else
         self:SetValue("loadingtips", setting)
-        self.dirty = true
     end
 end
 
@@ -1056,7 +1032,6 @@ function PlayerProfile:SetDefaultCloudSaves(enabled)
         TheSim:SetSetting("misc", "defaultcloudsaves", tostring(enabled))
     else
         self:SetValue("defaultcloudsaves", enabled)
-        self.dirty = true
     end
 end
 
@@ -1065,7 +1040,6 @@ function PlayerProfile:SetUseZipFileForNormalSaves(enabled)
         TheSim:SetSetting("misc", "usezipfilefornormalsaves", tostring(enabled))
     else
         self:SetValue("usezipfilefornormalsaves", enabled)
-        self.dirty = true
     end
 end
 
@@ -1074,7 +1048,6 @@ function PlayerProfile:SetHidePauseUnderlay(hide)
         TheSim:SetSetting("misc", "hide_pause_underlay", tostring(hide))
     else
         self:SetValue("hide_pause_underlay", hide)
-        self.dirty = true
     end
 end
 
@@ -1092,7 +1065,6 @@ function PlayerProfile:SetProfanityFilterServerNamesEanbled(enabled)
         TheSim:SetSetting("misc", "profanityfilterservernames", tostring(enabled))
     else
         self:SetValue("profanityfilterservernames", enabled)
-        self.dirty = true
     end
 end
 
@@ -1110,7 +1082,6 @@ function PlayerProfile:SetProfanityFilterChatEanbled(enabled)
         TheSim:SetSetting("misc", "profanityfilter_chat", tostring(enabled))
     else
         self:SetValue("profanityfilter_chat", enabled)
-        self.dirty = true
     end
 end
 
@@ -1123,12 +1094,29 @@ function PlayerProfile:GetProfanityFilterChatEnabled()
     end
 end
 
+function PlayerProfile:SetTargetLockingEnabled(enabled)
+    if USE_SETTINGS_FILE then
+        TheSim:SetSetting("misc", "targetlocking", tostring(enabled))
+    else
+        self:SetValue("targetlocking", enabled)
+        self.dirty = true
+    end
+end
+
+function PlayerProfile:GetTargetLockingEnabled()
+    -- an undefined movementprediction is considered to be enabled
+    if USE_SETTINGS_FILE then
+        return TheSim:GetSetting("misc", "targetlocking") ~= "false"
+    else
+        return self:GetValue("targetlocking") ~= false
+    end
+end
+
 function PlayerProfile:SetAutoSubscribeModsEnabled(enabled)
  	if USE_SETTINGS_FILE then
 		TheSim:SetSetting("misc", "autosubscribemods", tostring(enabled))
 	else
 		self:SetValue("autosubscribemods", enabled)
-		self.dirty = true
 	end
 end
 
@@ -1145,7 +1133,6 @@ function PlayerProfile:SetAutoLoginEnabled(enabled)
 	   TheSim:SetSetting("misc", "autologin", tostring(enabled))
    else
 	   self:SetValue("autologin", enabled)
-	   self.dirty = true
    end
 end
 
@@ -1161,12 +1148,48 @@ function PlayerProfile:GetAutoLoginEnabled()
 	end
 end
 
+function PlayerProfile:GetAxisAlignedPlacement()
+    if USE_SETTINGS_FILE then
+        local axisalignedplacement = TheSim:GetSetting("misc", "axisalignedplacement")
+        if axisalignedplacement == nil then
+            return false
+        end
+        return axisalignedplacement == "true"
+    else
+        return GetValueOrDefault( self.persistdata.axisalignedplacement, true )
+    end
+end
+
+function PlayerProfile:SetAxisAlignedPlacement(enabled)
+    if USE_SETTINGS_FILE then
+        TheSim:SetSetting("misc", "axisalignedplacement", tostring(enabled))
+    else
+        self:SetValue("axisalignedplacement", enabled)
+    end
+end
+
+function PlayerProfile:GetAxisAlignedPlacementIntervals()
+    if USE_SETTINGS_FILE then
+        return tonumber(TheSim:GetSetting("misc", "axisalignedplacementintervals") or 1)
+    else
+        return tonumber(self:GetValue("axisalignedplacementintervals") or 1)
+    end
+end
+
+function PlayerProfile:SetAxisAlignedPlacementIntervals(intervals)
+    if USE_SETTINGS_FILE then
+        TheSim:SetSetting("misc", "axisalignedplacementintervals", tostring(intervals))
+    else
+        self:SetValue("axisalignedplacementintervals", intervals)
+    end
+    UpdateAxisAlignmentValues(intervals)
+end
+
 function PlayerProfile:SetNPCChatLevel(level)
     if USE_SETTINGS_FILE then
         TheSim:SetSetting("misc", "npcchat", tostring(level))
     else
         self:SetValue("npcchat", level)
-        self.dirty = true
     end
 end
 
@@ -1194,7 +1217,6 @@ function PlayerProfile:SetAnimatedHeadsEnabled(enabled)
 	   TheSim:SetSetting("misc", "animatedheads", tostring(enabled))
    else
 	   self:SetValue("animatedheads", enabled)
-	   self.dirty = true
    end
 end
 
@@ -1215,7 +1237,6 @@ function PlayerProfile:SetAutoCavesEnabled(enabled)
 	   TheSim:SetSetting("misc", "autocaves", tostring(enabled))
    else
 	   self:SetValue("autocaves", enabled)
-	   self.dirty = true
    end
 end
 
@@ -1232,7 +1253,6 @@ function PlayerProfile:SetCavesStateRemembered()
 	   TheSim:SetSetting("misc", "cavesstateremembered", "true")
     else
 	   self:SetValue("cavesstateremembered", true)
-	   self.dirty = true
     end
 end
 
@@ -1250,7 +1270,6 @@ function PlayerProfile:SetModsWarning(enabled)
 	   TheSim:SetSetting("misc", "modswarning", tostring(enabled))
    else
 	   self:SetValue("modswarning", enabled)
-	   self.dirty = true
    end
 end
 
@@ -1267,7 +1286,6 @@ function PlayerProfile:SetPresetMode(mode)
 	   TheSim:SetSetting("misc", "presetmode", mode)
    else
 	   self:SetValue("presetmode", mode)
-	   self.dirty = true
    end
 end
 
@@ -1284,7 +1302,6 @@ function PlayerProfile:SetIntegratedBackpack(enabled)
 		TheSim:SetSetting("misc", "integratedbackpack", tostring(enabled))
 	else
 		self:SetValue("integratedbackpack", enabled)
-		self.dirty = true
 	end
 end
 
@@ -1454,7 +1471,6 @@ function PlayerProfile:AddWorldCustomizationPreset(preset, index)
     local data = DataDumper(presets, nil, false)
 
     self:SetValue("customizationpresets", data)
-    self.dirty = true
 end
 
 function PlayerProfile:GetSavedFilters()
@@ -1464,20 +1480,37 @@ function PlayerProfile:GetSavedFilters()
 		local success, filters = RunInSandbox(filters_string)
 		if success then
 			return filters
-		else
-			return {}
 		end
-	else
-		return {}
 	end
+    return {}
 end
 
-function PlayerProfile:SaveFilters(filters)
+function PlayerProfile:SetFilters(filters)
 	local data = DataDumper(filters, nil, false)
 
 	self:SetValue("serverfilters", data)
-	self.dirty = true
-	self:Save()
+end
+
+function PlayerProfile:SaveFilters(filters) -- DEPRECATED for SetFilters + Save.
+    self:SetFilters(filters)
+    self:Save()
+end
+
+function PlayerProfile:GetSavedWorldProgressionFilters()
+    local filters_string = self:GetValue("worldprogressionfilters")
+
+    if filters_string ~= nil and type(filters_string) == "string" then
+        local success, filters = RunInSandbox(filters_string)
+        if success and type(filters) == "table" then
+            return filters
+        end
+    end
+    return {}
+end
+
+function PlayerProfile:SetWorldProgressionFilters(filters)
+    local data = DataDumper(filters, nil, false)
+    self:SetValue("worldprogressionfilters", data)
 end
 
 function PlayerProfile:GetVolume()
@@ -1506,7 +1539,6 @@ end
 
 function PlayerProfile:SetRenderQuality(quality)
 	self:SetValue("render_quality", quality)
-	self.dirty = true
 end
 
 function PlayerProfile:GetRenderQuality()
@@ -1621,6 +1653,10 @@ function PlayerProfile:Set(str, callback, minimal_load)
             self.persistdata.saw_new_host_picker = false
         end
 
+        if self.persistdata.saw_control_scheme_popup == nil then
+            self.persistdata.saw_control_scheme_popup = false
+        end
+
 		if self.persistdata.autosave == nil then
 		    self.persistdata.autosave = true
 		end
@@ -1635,6 +1671,10 @@ function PlayerProfile:Set(str, callback, minimal_load)
 
 		if self.persistdata.favorite_mods == nil then
 			self.persistdata.favorite_mods = {}
+		end
+
+		if self.persistdata.controlschemes == nil then
+			self.persistdata.controlschemes = {}
 		end
 
  	    if USE_SETTINGS_FILE then
@@ -1666,6 +1706,9 @@ function PlayerProfile:Set(str, callback, minimal_load)
                 self.persistdata.movementprediction = true
                 self.persistdata.scrapbookhuddisplay = true
 		    end
+			if self.persistdata.targetlocking == nil then
+				self.persistdata.targetlocking = true
+			end
 		end
 
         if minimal_load then
@@ -1681,7 +1724,9 @@ function PlayerProfile:Set(str, callback, minimal_load)
 		TheMixer:SetLevel("set_ambience", amb / 10)
 		TheMixer:SetLevel("set_music", music / 10)
 
-		TheInputProxy:EnableVibration(self:GetVibrationEnabled())
+		TheInputProxy:EnableVibration(self:GetVibrationEnabled())		
+		TheHaptics:EnableVibration(self:GetVibrationEnabled())
+        UpdateAxisAlignmentValues(self:GetAxisAlignedPlacementIntervals())
 
 		if TheFrontEnd then
 			local bloom_enabled = GetValueOrDefault( self.persistdata.bloom, true )
@@ -1716,7 +1761,7 @@ function PlayerProfile:Set(str, callback, minimal_load)
 		if nil == self.persistdata.controls then
 		    self.persistdata.controls = {}
 		end
-
+				
 	    for idx,entry in pairs(self.persistdata.controls) do
 	        local enabled = true
 			if entry.enabled == nil then
@@ -1726,6 +1771,7 @@ function PlayerProfile:Set(str, callback, minimal_load)
 			end
 	        TheInputProxy:LoadControls(entry.guid, entry.data, enabled)
 	    end
+		TheHaptics:UpdateDevice()
 
 		if nil == self.persistdata.device_caps_a then
             self.persistdata.device_caps_a = 0
@@ -1784,6 +1830,17 @@ function PlayerProfile:SetControls(guid, data, enabled)
     self.dirty = true
 end
 
+function PlayerProfile:SetControlScheme(id, value)
+	if self.persistdata.controlschemes[id] ~= value then
+		self.persistdata.controlschemes[id] = value
+		self.dirty = true
+	end
+end
+
+function PlayerProfile:GetControlScheme(id)
+	return self.persistdata.controlschemes[id]
+end
+
 function PlayerProfile:SawDisplayAdjustmentPopup()
     return self.persistdata.saw_display_adjustment_popup
 end
@@ -1809,7 +1866,6 @@ function PlayerProfile:ShowedControllerPopup()
 		TheSim:SetSetting("misc", "controller_popup", tostring(true))
 	else
 		self:SetValue("controller_popup", true)
-		self.dirty = true
 	end
 end
 
@@ -1834,7 +1890,6 @@ function PlayerProfile:SetWarnModsEnabled(do_warning)
 		TheSim:SetSetting("misc", "warn_mods_enabled", tostring(do_warning))
 	else
 		self:SetValue("warn_mods_enabled", do_warning)
-		self.dirty = true
 	end
 end
 
@@ -1852,7 +1907,6 @@ end
 
 function PlayerProfile:SetEntitlementReceived(entitlement)
 	self:SetValue(_EntitlementKey(entitlement), true)
-	self.dirty = true
     self:Save()
 end
 
@@ -1863,6 +1917,17 @@ end
 function PlayerProfile:ShowedNewUserPopup()
     if not self.persistdata.saw_new_user_popup then
         self.persistdata.saw_new_user_popup = true
+        self.dirty = true
+    end
+end
+
+function PlayerProfile:SawControlSchemePopup()
+    return self.persistdata.saw_control_scheme_popup
+end
+
+function PlayerProfile:ShowedControlSchemePopup()
+    if not self.persistdata.saw_control_scheme_popup then
+        self.persistdata.saw_control_scheme_popup= true
         self.dirty = true
     end
 end
@@ -1927,7 +1992,6 @@ end
 
 function PlayerProfile:SetRedbirdGameHighScore(score, score_version)
 	self:SetValue("redbird_game_high_score"..score_version, score)
-	self.dirty = true
     self:Save()
 end
 
@@ -1940,7 +2004,6 @@ end
 
 function PlayerProfile:SetSnowbirdGameHighScore(score, score_version)
 	self:SetValue("snowbird_game_high_score"..score_version, score)
-	self.dirty = true
     self:Save()
 end
 
@@ -1953,7 +2016,6 @@ end
 
 function PlayerProfile:SetCrowGameHighScore(score, score_version)
 	self:SetValue("crow_game_high_score"..score_version, score)
-	self.dirty = true
     self:Save()
 end
 
@@ -1966,7 +2028,6 @@ function PlayerProfile:GetKitSize()
 end
 function PlayerProfile:SetKitSize(size)
 	self:SetValue("kit_size", size)
-	self.dirty = true
     self:Save()
 end
 
@@ -1978,7 +2039,6 @@ function PlayerProfile:GetKitBuild()
 end
 function PlayerProfile:SetKitBuild(build)
 	self:SetValue("kit_build", build)
-	self.dirty = true
     self:Save()
 end
 
@@ -1990,7 +2050,6 @@ function PlayerProfile:GetKitLastTime()
 end
 function PlayerProfile:SetKitLastTime(last_time)
 	self:SetValue("kit_last_time", last_time)
-	self.dirty = true
     self:Save()
 end
 
@@ -2002,7 +2061,6 @@ function PlayerProfile:GetKitHunger()
 end
 function PlayerProfile:SetKitHunger(hunger)
 	self:SetValue("kit_hunger", hunger)
-	self.dirty = true
     self:Save()
 end
 
@@ -2014,7 +2072,6 @@ function PlayerProfile:GetKitHappiness()
 end
 function PlayerProfile:SetKitHappiness(happiness)
 	self:SetValue("kit_happiness", happiness)
-	self.dirty = true
     self:Save()
 end
 
@@ -2026,7 +2083,6 @@ function PlayerProfile:GetKitBirthTime()
 end
 function PlayerProfile:SetKitBirthTime(birth_time)
 	self:SetValue("kit_birth", birth_time)
-	self.dirty = true
     self:Save()
 end
 
@@ -2038,7 +2094,6 @@ function PlayerProfile:GetKitName()
 end
 function PlayerProfile:SetKitName(name)
 	self:SetValue("kit_name", name)
-	self.dirty = true
     self:Save()
 end
 
@@ -2050,7 +2105,6 @@ function PlayerProfile:GetKitPoops()
 end
 function PlayerProfile:SetKitPoops(poops)
 	self:SetValue("kit_poops", poops)
-	self.dirty = true
     self:Save()
 end
 
@@ -2062,7 +2116,6 @@ function PlayerProfile:GetKitAbandonedMessage()
 end
 function PlayerProfile:SetKitAbandonedMessage(abandoned)
 	self:SetValue("kit_abandoned_message", abandoned)
-	self.dirty = true
     self:Save()
 end
 
@@ -2074,7 +2127,6 @@ function PlayerProfile:GetKitIsHibernating()
 end
 function PlayerProfile:SetKitIsHibernating(hibernating)
 	self:SetValue("kit_hibernating", hibernating)
-	self.dirty = true
     self:Save()
 end
 
@@ -2086,14 +2138,8 @@ function PlayerProfile:GetKitHibernationStart()
 end
 function PlayerProfile:SetKitHibernationStart(time)
 	self:SetValue("kit_hibernation_start_time", time)
-	self.dirty = true
     self:Save()
 end
-
-
-
-
-
 
 function PlayerProfile:GetLanguageID()
 	if self:GetValue("language_id") ~= nil then
@@ -2107,8 +2153,36 @@ end
 
 function PlayerProfile:SetLanguageID(language_id, cb)
 	self:SetValue("language_id", language_id)
-	self.dirty = true
     self:Save(cb)
+end
+
+function PlayerProfile:GetWobyIsLocked()
+	return not self:GetValue("woby_unlocked")
+end
+
+function PlayerProfile:SetWobyIsLocked(locked)
+	self:SetValue("woby_unlocked", not locked or nil)
+	self:Save()
+end
+
+function PlayerProfile:GetCommandWheelAllowsGameplay()
+	if USE_SETTINGS_FILE then
+		local allow_motion = TheSim:GetSetting("misc", "command_wheel_allows_gameplay")
+		if allow_motion == nil then
+			return false
+		end
+		return allow_motion == "true"
+	else
+		return GetValueOrDefault(self.persistdata.command_wheel_allows_gameplay, true)
+	end
+end
+
+function PlayerProfile:SetCommandWheelAllowsGameplay(enabled)
+    if USE_SETTINGS_FILE then
+        TheSim:SetSetting("misc", "command_wheel_allows_gameplay", tostring(enabled))
+    else
+        self:SetValue("command_wheel_allows_gameplay", enabled)
+    end
 end
 
 return PlayerProfile

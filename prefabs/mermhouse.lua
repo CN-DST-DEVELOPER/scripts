@@ -264,6 +264,7 @@ local function MakeMermHouse(name, common_postinit, master_postinit)
         inst:AddComponent("inspectable")
 
         MakeSnowCovered(inst)
+        SetLunarHailBuildupAmountLarge(inst)
 
         inst.OnSave = onsave
         inst.OnLoad = onload

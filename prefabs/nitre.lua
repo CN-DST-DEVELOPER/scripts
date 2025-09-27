@@ -49,6 +49,8 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetSinks(true)
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunchAndSmash(inst)
 
     return inst

@@ -95,6 +95,8 @@ local hint_text =
 	["NEEDSSHADOW_FORGE"] = "NEEDSSHADOWFORGING_TWO",
 	["NEEDSCARPENTRY_STATION"] = "NEEDSCARPENTRY_TWO",
 	["NEEDSCARPENTRY_STATION_STONE"] = "NEEDSCARPENTRY_THREE",
+	["NEEDSMOONORB_LOW"] = "NEEDSCELESTIAL_ONE",
+	["NEEDSMOON_ALTAR_FULL"] = "NEEDSCELESTIAL_THREE",
 }
 
 function CraftingMenuDetails:UpdateBuildButton(from_pin_slot)
@@ -238,6 +240,19 @@ function CraftingMenuDetails:RefreshControllers(controller_mode)
 	end
 end
 
+function CraftingMenuDetails:UpdateNameString()
+    local recipe = self.data.recipe
+    local meta = self.data.meta
+
+    local namestr = STRINGS.NAMES[string.upper(recipe.nameoverride or recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)]
+    if meta.limitedamount then
+        namestr = subfmt(STRINGS.UI.CRAFTING.LIMITEDAMOUNTFMT, {name = namestr, number = meta.limitedamount})
+    end
+
+    local title_width = self.panel_width / 2 - 30
+    self.namestring:SetMultilineTruncatedString(namestr, 1, title_width, nil, nil, true)
+end
+
 function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	if data == nil then
 		self.data = nil
@@ -258,6 +273,7 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	if self.data == data and self.skins_spinner:GetItem() == skin_name then
 		self.ingredients:SetRecipe(recipe)
 		self:UpdateBuildButton()
+        self:UpdateNameString()
 		return
 	end
 
@@ -280,15 +296,15 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 		return recipe.custom_craftingmenu_details_fn(self, data, self, top, left)
 	end
 
-	local root_left = self:AddChild(Widget("left_root"))
-	root_left:SetPosition(-self.panel_width / 4, 0)
+	self.root_left = self:AddChild(Widget("left_root"))
+	self.root_left:SetPosition(-self.panel_width / 4, 0)
 
 	local y = top
 	local name_font_size = 30
 
 	-- Favorite Button
 	local is_favorite = TheCraftingMenuProfile:IsFavorite(recipe.name)
-	local fav_button = root_left:AddChild(ImageButton(atlas, is_favorite and "favorite_checked.tex" or "favorite_unchecked.tex", is_favorite and "favorite_checked.tex" or "favorite_unchecked.tex", nil, is_favorite and "favorite_unchecked.tex" or "favorite_checked.tex", nil, { .81, .81 }, { 0, 0 }))
+	local fav_button = self.root_left:AddChild(ImageButton(atlas, is_favorite and "favorite_checked.tex" or "favorite_unchecked.tex", is_favorite and "favorite_checked.tex" or "favorite_unchecked.tex", nil, is_favorite and "favorite_unchecked.tex" or "favorite_checked.tex", nil, { .81, .81 }, { 0, 0 }))
     fav_button.focus_scale = {1, 1}
     fav_button.normal_scale = {.81, .81}
 	fav_button:SetPosition(-width/2 + 2, y - name_font_size/2)
@@ -309,17 +325,16 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	self.fav_button = fav_button
 
 	-- Name
-	local title_width = width - 30
-	local name = root_left:AddChild(Text(UIFONT, name_font_size))
-	name:SetMultilineTruncatedString(STRINGS.NAMES[string.upper(recipe.nameoverride or recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)], 1, title_width, nil, nil, true)
-	name:SetPosition(0, y - name_font_size/2)
+    self.namestring = self.root_left:AddChild(Text(UIFONT, name_font_size))
+    self.namestring:SetPosition(0, y - name_font_size/2)
+    self:UpdateNameString()
 
 	y = y - name_font_size
 
 	-- Divider
 	y = y - 5
 	local line_height = 4
-	local line = root_left:AddChild(Image("images/ui.xml", "line_horizontal_white.tex"))
+	local line = self.root_left:AddChild(Image("images/ui.xml", "line_horizontal_white.tex"))
 	line:SetPosition(0, y - line_height/2)
     line:SetTint(unpack(BROWN))
 	line:ScaleToSize(width, line_height)
@@ -329,7 +344,7 @@ function CraftingMenuDetails:PopulateRecipeDetailPanel(data, skin_name)
 	-- Description
 	y = y - 5
 	local desc_font_size = 25
-	local desc = root_left:AddChild(Text(BODYTEXTFONT, desc_font_size))
+	local desc = self.root_left:AddChild(Text(BODYTEXTFONT, desc_font_size))
 	desc:SetMultilineTruncatedString(STRINGS.RECIPE_DESC[string.upper(recipe.description or recipe.product)], 2, width, nil, false, true)
 	desc:SetPosition(0, y - desc_font_size)
 	y = y - desc_font_size * 2 -- 2 lines

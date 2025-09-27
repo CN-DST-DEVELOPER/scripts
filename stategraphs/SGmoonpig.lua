@@ -6,11 +6,16 @@ local events =
     CommonHandlers.OnLocomote(true, false),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnIpecacPoop(),
     EventHandler("death", function(inst) inst.sg:GoToState("death", inst.sg.statemem.dead) end),
-    EventHandler("giveuptarget", function(inst, data) if data.target then inst.sg:GoToState("howl") end end),
+	EventHandler("giveuptarget", function(inst, data)
+		if data.target and not inst.sg:HasStateTag("electrocute") then
+			inst.sg:GoToState("howl")
+		end
+	end),
     EventHandler("newcombattarget", function(inst, data)
         if data.target and not inst.sg:HasStateTag("busy") then
             if math.random() < 0.3 then
@@ -237,7 +242,7 @@ local states =
 
     State{
         name = "reanimate",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst, data)
             inst.sg.statemem.howled = data.anim == "howl"
@@ -285,6 +290,7 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddIpecacPoopState(states)
 
 return StateGraph("moonpig", states, events, "idle")

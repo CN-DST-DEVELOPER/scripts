@@ -49,12 +49,19 @@ function Trader:OnRemoveFromEntity()
 end
 
 function Trader:IsTryingToTradeWithMe(inst)
+	local target
     local act = inst:GetBufferedAction()
-    return act ~= nil
-        and act.target == self.inst
-        and (act.action == ACTIONS.GIVETOPLAYER or
-            act.action == ACTIONS.GIVEALLTOPLAYER or
-            act.action == ACTIONS.GIVE)
+	if act then
+		target = act.target
+		act = act.action
+	elseif inst.components.playercontroller then
+		act, target = inst.components.playercontroller:GetRemoteInteraction()
+	end
+	return target == self.inst
+		and (	act == ACTIONS.GIVE or
+				act == ACTIONS.GIVEALLTOPLAYER or
+				act == ACTIONS.GIVETOPLAYER
+			)
 end
 
 function Trader:IsAcceptingStacks()

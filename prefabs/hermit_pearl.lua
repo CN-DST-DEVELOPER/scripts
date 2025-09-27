@@ -38,6 +38,8 @@ local function commonfn(anim, minimapicon)
         return inst
     end
 
+    WORLDSTATETAGS.SetTagEnabled("CRABBY_HERMIT_HAPPY", true) -- NOTES(JBK): Placing it on the pearl itself instead of the hermitcrab since this is the key for game logic.
+
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
     inst:AddComponent("tradable")

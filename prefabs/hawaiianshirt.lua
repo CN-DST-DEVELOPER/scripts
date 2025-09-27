@@ -4,11 +4,21 @@ local assets =
 }
 
 local function onequip(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "torso_hawaiian", "swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "torso_hawaiian")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "torso_hawaiian", "swap_body")
+    end
 end
 
 local function onunequip(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
 end
 
 local function create()

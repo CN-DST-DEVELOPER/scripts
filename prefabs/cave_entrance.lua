@@ -159,6 +159,7 @@ local function closed_fn()
     inst.components.workable:SetWorkLeft(TUNING.ROCKS_MINE)
     inst.components.workable:SetOnWorkCallback(OnWork)
 
+    inst.components.worldmigrator.shard_name = "Caves" -- SERVER_LEVEL_SHARDS
     inst.components.worldmigrator:SetEnabled(false)
     inst:ListenForEvent("migration_activate_other", activatebyother)
 
@@ -214,6 +215,7 @@ local function open_fn()
 
     inst.components.inspectable.getstatus = GetStatus
 
+    inst.components.worldmigrator.shard_name = "Caves" -- SERVER_LEVEL_SHARDS
     inst:ListenForEvent("migration_available", open)
     inst:ListenForEvent("migration_unavailable", close)
     inst:ListenForEvent("migration_full", full)

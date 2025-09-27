@@ -38,14 +38,14 @@ end
 
 local actionhandlers =
 {
-  
+
     ActionHandler(ACTIONS.EAT,
         function(inst, action)
             if inst.sg:HasStateTag("busy") then
                 return "eat"
             end
         end),
- 
+
 }
 
 local events =
@@ -53,6 +53,9 @@ local events =
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnLocomote(true, false),
+    CommonHandlers.OnDeath(),
+    CommonHandlers.OnHop(),
+
     EventHandler("intro", function(inst, data)
         if not inst.components.health:IsDead() then
             inst.sg:GoToState("intro")
@@ -64,16 +67,6 @@ local events =
             inst.sg:GoToState("hit")
         end
     end),
-
-    EventHandler("death", function(inst, data)
-        if not inst.sg:HasStateTag("dead") then
-            inst.sg:GoToState("death")
-        end
-    end),
-
-
-
-    CommonHandlers.OnHop(),
 }
 
 local states =
@@ -103,17 +96,19 @@ local states =
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("idle")
             end),
-        },        
-    },    
+        },
+    },
 
     State{
         name = "death",
-        tags = { "busy", "dead"},
+        tags = { "busy", "dead", "nomorph" },
 
-        onenter = function(inst)
-
+        onenter = function(inst, data)
             inst.components.locomotor:Stop()
             inst.components.locomotor:Clear()
+            inst:ClearBufferedAction()
+
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
 
             inst.components.inventory:DropEverything(true)
             inst.AnimState:PlayAnimation("death")
@@ -122,25 +117,61 @@ local states =
 
             inst.components.burnable:Extinguish()
 
-            --Don't process other queued events if we died this frame
-            inst.sg:ClearBufferedEvents()
-        end,
+            inst.persists = false
 
-        timeline =
-        {
-          
-        },
+            inst.sg.statemem.data = data
+        end,
 
         events =
         {
             EventHandler("animover", function(inst)
-                -- Spawn a skeleton
-                if inst.skeleton_prefab ~= nil and TheSim:HasPlayerSkeletons() then
-                    local skel = SpawnPrefab(inst.skeleton_prefab)
+                if not inst.AnimState:AnimDone() then
+                    return
+                end
+
+                local x, y, z = inst.Transform:GetWorldPosition()
+                local has_skeleton = TheWorld.Map:IsPassableAtPoint(x, y, z)
+
+                if has_skeleton and inst.skeleton_prefab ~= nil then
+                    local skel = TheSim:HasPlayerSkeletons() and SpawnPrefab(inst.skeleton_prefab) or SpawnPrefab("shallow_grave_player")
+
                     if skel ~= nil then
-                        skel.Transform:SetPosition(inst.Transform:GetWorldPosition())
+                        skel.Transform:SetPosition(x, y, z)
+   
+                        local host_userid = inst.hosted_userid:value()
+                        local deathclientobj = TheNet:GetClientTableForUser(host_userid)
+
+                        if deathclientobj ~= nil then
+                            local deathcause = inst.sg.statemem.data ~= nil and inst.sg.statemem.data.cause or "unknown"
+                            local afflicter = inst.sg.statemem.data ~= nil and inst.sg.statemem.data.afflicter or nil
+                            local deathpkname = nil
+
+                            if afflicter ~= nil then
+                                if afflicter.overridepkname ~= nil then
+                                    deathpkname = afflicter.overridepkname
+                                else
+                                    local killer = afflicter.components.follower ~= nil and afflicter.components.follower:GetLeader() or nil
+
+                                    if not (killer ~= nil and
+                                        killer.components.petleash ~= nil and
+                                        killer.components.petleash:IsPet(afflicter)
+                                    ) then
+                                        killer = afflicter
+                                    end
+
+                                    deathpkname = killer:HasTag("player") and killer:GetDisplayName() or nil
+                                end
+                            end
+
+                            skel:SetSkeletonDescription(deathclientobj.prefab, deathclientobj.name, deathcause, deathpkname, host_userid)
+                            skel:SetSkeletonAvatarData(deathclientobj)
+                        end
                     end
                 end
+
+                SpawnPrefab("die_fx").Transform:SetPosition(x, y, z)
+
+                inst:Remove()
             end),
         },
     },
@@ -266,7 +297,7 @@ local states =
         tags = { "moving", "running", "canrotate"},
 
         onenter = function(inst)
-            
+
             inst.components.locomotor:RunForward()
             inst.AnimState:PlayAnimation("run_pre")
         end,
@@ -299,7 +330,7 @@ local states =
         tags = { "moving", "running", "canrotate"},
 
         onenter = function(inst)
-          
+
             inst.components.locomotor:RunForward()
 
             if not inst.AnimState:IsCurrentAnimation("run_loop") then
@@ -397,7 +428,7 @@ local states =
 		name = "abyss_fall",
 		tags = { "busy", "nopredict", "nomorph", "noattack", "nointerrupt", "nodangle", "falling" },
 		onenter = function(inst, teleport_pt)
-		
+
 			inst.components.locomotor:Stop()
 			inst.components.locomotor:Clear()
 			inst:ClearBufferedAction()

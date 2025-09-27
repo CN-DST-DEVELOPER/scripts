@@ -181,6 +181,7 @@ function HoundBrain:OnStart()
             WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "NotJumpingBehaviour",
                 PriorityNode({
 					BrainCommon.PanicTrigger(self.inst),
+                    BrainCommon.ElectricFencePanicTrigger(self.inst),
                     WhileNode(function() return GetLeader(self.inst) == nil end, "NoLeader", AttackWall(self.inst)),
 
 					--Eat carcass behaviour (for non-mutated hounds)

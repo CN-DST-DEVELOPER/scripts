@@ -24,8 +24,11 @@ end
 
 local function onspawned(inst, child)
     local x, y, z = child.Transform:GetWorldPosition()
+
     child.Transform:SetPosition(x, 20, z)
     child.sg:GoToState("land")
+
+    child.components.knownlocations:RememberLocation("spawnpoint", Vector3(x, 0, z))
 end
 
 local function Disengage(inst, dfly)

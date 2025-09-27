@@ -180,6 +180,9 @@ local function wurt_terraformer_fn(anim)
 
     local reticule = inst:AddComponent("reticule")
     reticule.targetfn = CLIENT_BombReticuleTargetFn
+	reticule.twinstickcheckscheme = true
+	reticule.twinstickmode = 1
+	reticule.twinstickrange = 8
     reticule.ease = true
 
     inst.spelltype = "TERRAFORM"
@@ -346,8 +349,7 @@ local function terraform_projectile()
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(0)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
     inst.Physics:SetDontRemoveOnSleep(true)
 
     inst.AnimState:SetBank("wurt_swampbomb")
@@ -355,7 +357,10 @@ local function terraform_projectile()
     inst.AnimState:PlayAnimation("blob_loop", true)
 
     inst:AddTag("NOCLICK")
-    inst:AddTag("projectile") -- from 'complexprojectile'
+
+	--projectile (from complexprojectile component) added to pristine state for optimization
+	inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     if not TheNet:IsDedicated() then
         local groundshadowhandler = inst:AddComponent("groundshadowhandler")

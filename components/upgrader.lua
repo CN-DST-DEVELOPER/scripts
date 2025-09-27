@@ -19,7 +19,7 @@ nil,
 })
 
 function Upgrader:CanUpgrade(target, doer)
-	if not self.upgradetype == target.components.upgradeable.upgradetype then
+	if self.upgradetype ~= target.components.upgradeable.upgradetype then
 		return false
 	end
 	if not doer:HasTag(self.upgradetype.."_upgradeuser") then

@@ -91,18 +91,18 @@ end
 
 local function ToggleOffPhysics(inst)
     inst.sg.statemem.isphysicstoggle = true
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
 end
 
 local function ToggleOnPhysics(inst)
     inst.sg.statemem.isphysicstoggle = nil
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS
+	)
 end
 
 local function StartTeleporting(inst)
@@ -278,7 +278,8 @@ local actionhandlers =
                 inst:PushEvent("wonteatfood", { food = obj })
             end
 
-            return (soul and "eat")
+			return (obj:HasTag("quickeat") and "quickeat")
+				or (obj:HasTag("sloweat") and "eat")
                 or (edible.foodtype == FOODTYPE.MEAT and "eat")
                 or "quickeat"
         end),
@@ -513,6 +514,7 @@ local events =
         end),
 
     CommonHandlers.OnHop(),
+	CommonHandlers.OnElectrocute(),
 }
 
 local statue_symbols =
@@ -533,76 +535,17 @@ local states =
     --------------------------------------------------------------------------
 
     State{
-        name = "electrocute",
-        tags = { "busy", "pausepredict" },
-
-        onenter = function(inst)
-            ClearStatusAilments(inst)
-            ForceStopHeavyLifting(inst)
-
-            inst.components.locomotor:Stop()
-            inst:ClearBufferedAction()
-
-            inst.fx = SpawnPrefab("shock_fx")
-
-            inst.fx.entity:SetParent(inst.entity)
-            inst.fx.entity:AddFollower()
-            inst.fx.Follower:FollowSymbol(inst.GUID, "swap_shock_fx", 0, 0, 0)
-
-            inst.components.bloomer:PushBloom("electrocute", "shaders/anim.ksh", -2)
-            inst.Light:Enable(true)
-
-            inst.AnimState:PlayAnimation("shock")
-            inst.AnimState:PushAnimation("shock_pst", false)
-
-            DoHurtSound(inst)
-
-            inst.sg:SetTimeout(8 * FRAMES + inst.AnimState:GetCurrentAnimationLength())
-        end,
-
-        events =
-        {
-            EventHandler("animover", function(inst)
-                if inst.fx ~= nil then
-                    if not inst:HasTag("electricdamageimmune") then
-                        inst.Light:Enable(false)
-                        inst.components.bloomer:PopBloom("electrocute")
-                    end
-                    inst.fx:Remove()
-                    inst.fx = nil
-                end
-            end),
-
-            EventHandler("animqueueover", function(inst)
-                if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle")
-                end
-            end),
-        },
-
-        ontimeout = function(inst)
-            inst.sg:GoToState("idle", true)
-        end,
-
-        onexit = function(inst)
-            if inst.fx ~= nil then
-                if not inst:HasTag("electricdamageimmune") then
-                    inst.Light:Enable(false)
-                    inst.components.bloomer:PopBloom("electrocute")
-                end
-                inst.fx:Remove()
-                inst.fx = nil
-            end
-        end,
-    },
-
-    State{
         name = "idle",
         tags = { "idle", "canrotate" },
 
         onenter = function(inst, pushanim)
             inst.components.locomotor:Stop()
             inst.components.locomotor:Clear()
+
+            if inst.sg.mem.teleporting and not inst.components.npc_talker:haslines() then
+                inst.sg:GoToState("dancebusy")
+                return
+            end
 
             if inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown() then
                 inst.sg:GoToState("sink_fast")
@@ -851,7 +794,8 @@ local states =
 
             inst.AnimState:PushAnimation("idle_clack_loop")
 
-            inst.sg:SetTimeout(math.random(2,4) * (31 * FRAMES))
+            local duration = (inst.sg.mem.teleporting and 4 or math.random(2, 4)) * (31 * FRAMES)
+            inst.sg:SetTimeout(duration)
         end,
 
         timeline = ----jason
@@ -986,6 +930,75 @@ local states =
         },
     },
     -- end idles
+
+    
+    State{
+        name = "dancebusy",
+        tags = { "idle", "canrotate", "alert", "busy" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("idle_clack_pre")
+            if inst.sg.mem.teleporting then
+                local hermitcrab_relocation_manager = TheWorld.components.hermitcrab_relocation_manager
+                if hermitcrab_relocation_manager then
+                    hermitcrab_relocation_manager:InitiatePearlTeleport()
+                end
+            end
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("dancebusy_clack")
+            end),
+        },
+    },
+
+    State{
+        name = "dancebusy_clack",
+        tags = { "idle", "canrotate", "alert", "busy" },
+
+        onenter = function(inst)
+
+            inst.AnimState:PushAnimation("idle_clack_loop")
+
+            local duration = (inst.sg.mem.teleporting and 4 or math.random(2, 4)) * (31 * FRAMES)
+            inst.sg:SetTimeout(duration)
+        end,
+
+        timeline = ----jason
+        {
+            TimeEvent(13*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent(29*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent((13+31)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent((29+31)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent((13+62)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent((29+62)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent((13+93)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+            TimeEvent((29+93)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
+        },
+
+        ontimeout = function(inst)
+            inst.sg:GoToState("dancebusy_pst")
+        end,
+    },
+
+    State{
+        name = "dancebusy_pst",
+        tags = { "idle", "canrotate", "alert" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("idle_clack_pst")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
 
     State{
         name = "bow",
@@ -2482,6 +2495,11 @@ local states =
 
         onenter = function(inst, data)
             inst.components.locomotor:Stop()
+            local player = inst:GetNearestPlayer(true)
+            if player then
+                inst:ForceFacePoint(player.Transform:GetWorldPosition())
+                inst.sg.statemem.flingpoint = player:GetPosition()
+            end
             inst.AnimState:PlayAnimation("give")
             inst.AnimState:PushAnimation("give_pst", false)
         end,
@@ -2491,18 +2509,16 @@ local states =
             TimeEvent(12 * FRAMES, function(inst)
 
                 if inst.itemstotoss then
-                    local player = inst:GetNearestPlayer(true)
-                    if player then
-                        inst:FacePoint(player.Transform:GetWorldPosition())
-                        inst.components.lootdropper:SetFlingTarget(player:GetPosition(), 20)
+                    if inst.sg.statemem.flingpoint then
+                        inst.components.lootdropper:SetFlingTarget(inst.sg.statemem.flingpoint, 20)
                     end
-
-                    for i,gift in ipairs(inst.itemstotoss) do
-                        if gift and gift:IsValid() then
-                            inst.components.inventory:DropItem(gift)
-                            inst.components.lootdropper:FlingItem(gift)
+                    for _, item in ipairs(inst.itemstotoss) do
+                        if item and item:IsValid() then
+                            inst.components.inventory:DropItem(item)
+                            inst.components.lootdropper:FlingItem(item)
                         end
                     end
+                    inst.components.lootdropper:SetFlingTarget(nil, nil)
                     inst.itemstotoss = nil
                 end
             end),
@@ -4490,5 +4506,6 @@ local states =
 CommonStates.AddSimpleState(states, "refuse", "idle_loop", { "busy" })
 CommonStates.AddSimpleActionState(states, "gohome", "pickup", 4 * FRAMES, { "busy", "ishome" })
 CommonStates.AddSimpleActionState(states, "pickup", "pickup", 10 * FRAMES, { "busy" })
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("hermit", states, events, "idle", actionhandlers)

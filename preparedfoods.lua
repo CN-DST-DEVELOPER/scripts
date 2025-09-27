@@ -859,16 +859,17 @@ local foods =
         overridebuild = "cook_pot_food6",
         floater = {"med", 0.05, 1.0},
 
-        prefabs = { "buff_sleepresistance" },
+        prefabs = { "buff_sleepresistance", "buff_sleepimmunity" },
         oneat_desc = STRINGS.UI.COOKBOOK.FOOD_EFFECTS_SLEEP_RESISTANCE,
         oneatenfn = function(inst, eater)
             if eater.components.grogginess ~= nil and
-			not (eater.components.health ~= nil and eater.components.health:IsDead()) and
-			not eater:HasTag("playerghost") then
+					not (eater.components.health ~= nil and eater.components.health:IsDead()) and
+					not eater:HasTag("playerghost") then
 				eater.components.grogginess:ResetGrogginess()
             end
 
 			eater:AddDebuff("shroomsleepresist", "buff_sleepresistance")
+			eater:AddDebuff("shroomsleepimmunity", "buff_sleepimmunity")
         end,
     },
 

@@ -281,7 +281,11 @@ local function OnDeath(inst,data)
     inst.components.inventory:DropItem(item, nil, true)
 end
 
-local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry_up" }
+local SCRAPBOOK_HIDE_SYMBOLS = { "ARM_carry_up" }
+local SCRAPBOOK_OVERRIDEDATA = {
+    --{"swap_object", "swap_oar_monkey", "swap_oar_monkey"},
+    {"swap_hat", "hat_monkey_medium", "swap_hat"}
+}
 
 local function fn()
     local inst = CreateEntity()
@@ -333,6 +337,7 @@ local function fn()
     end
 
     inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
+    inst.scrapbook_overridedata = SCRAPBOOK_OVERRIDEDATA
 
     inst.soundtype = ""
 

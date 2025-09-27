@@ -71,12 +71,29 @@ local function gobig(inst,leader)
     end
 end
 
-local function onpickup(inst, owner)
+local function ReplaceOnPickup(inst, container, src_pos)
     local inactive = goinactive(inst)
+
     if inactive ~= nil then
-        owner.components.inventory:GiveItem(inactive, nil, owner:GetPosition())
+        container:GiveItem(inactive, nil, src_pos)
     end
-    return true
+
+	return true -- True because inst was removed.
+end
+
+local function onpickup(inst, pickupguy, src_pos)
+	ReplaceOnPickup(inst, pickupguy.components.inventory, src_pos)
+
+	return true -- True because inst was removed.
+end
+
+local function onputininventory(inst, owner)
+	--V2C: -backup if we made it into a container and skipped OnPickup.
+	--     -this happens if Woby picks things up since she doesn't have
+	--      inventory component.
+	--NOTE: won't reach here if we did reach OnPickup, as we would have
+	--      been removed already.
+	ReplaceOnPickup(inst, owner.components.container or owner.components.inventory, inst:GetPosition())
 end
 
 local function OnSleepTask(inst)
@@ -139,7 +156,8 @@ local function fn()
     inst:AddComponent("combat")
     inst:AddComponent("timer")
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnPickupFn(onpickup)
+	inst.components.inventoryitem:SetOnPickupFn(onpickup)
+	inst.components.inventoryitem:SetOnPutInInventoryFn(onputininventory)
     inst.components.inventoryitem:SetSinks(true)
 
     inst:AddComponent("hauntable")

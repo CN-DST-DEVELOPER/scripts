@@ -83,7 +83,7 @@ local function fn()
     inst.AnimState:PlayAnimation(inst.animname)
 
     inst:AddComponent("edible")
-    inst.components.edible.foodtype = "GENERIC"
+    inst.components.edible.foodtype = FOODTYPE.GENERIC
     inst.components.edible.healthvalue = TUNING.HEALING_TINY/2
     inst.components.edible.hungervalue = TUNING.CALORIES_TINY/4
     inst.components.edible.degrades_with_spoilage = false
@@ -109,7 +109,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "ice"
-    inst.components.inventoryitem:SetOnPickupFn(onstopfiremelt)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(onstopfiremelt)
 
     inst:AddComponent("repairer")
     inst.components.repairer.repairmaterial = MATERIALS.ICE
@@ -118,6 +118,8 @@ local function fn()
     inst:AddComponent("watersource")
     inst.components.watersource.onusefn = onuseaswatersource
     inst.components.watersource.override_fill_uses = 1
+
+	inst:AddComponent("snowmandecor")
 
     inst:AddComponent("bait")
     inst:AddTag("molebait")

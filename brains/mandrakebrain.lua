@@ -22,6 +22,7 @@ function MandrakeBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetLeader, KeepFaceTargetFn),
         Wander(self.inst),

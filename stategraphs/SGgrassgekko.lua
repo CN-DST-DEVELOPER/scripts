@@ -9,6 +9,7 @@ local events =
 {
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     EventHandler("locomote",
@@ -224,7 +225,7 @@ local states=
 
     State{
         name = "emerge",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -247,6 +248,9 @@ local states=
             TimeEvent(32 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve/creatures/together/grass_gekko/emerge")
             end),
+			FrameEvent(45, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
         },
 
         events =
@@ -301,5 +305,15 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
+
+CommonStates.AddElectrocuteStates(states,
+{
+	pst =
+	{
+		FrameEvent(4, function(inst)
+			inst.sg:GoToState("scare")
+		end),
+	},
+})
 
 return StateGraph("grassgekko", states, events, "idle", actionhandlers)

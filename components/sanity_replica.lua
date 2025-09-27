@@ -48,6 +48,10 @@ local function OnModeDirty(inst)
             self._oldisinsanitymode = not self._oldisinsanitymode
             inst:PushEvent("sanitymodechanged", {mode = self._oldisinsanitymode})
 
+			if not self._oldissane then
+				inst:PushEvent(self._oldisinsanitymode and "goinsane" or "goenlightened")
+			end
+
 			if self.classified ~= nil then
 				-- force the client to update its sanity state
 				self.classified:PushEvent("sanitydirty")

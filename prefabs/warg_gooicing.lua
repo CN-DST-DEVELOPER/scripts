@@ -81,10 +81,11 @@ local function projectilefn()
 	inst.Physics:SetDamping(0)
 	inst.Physics:SetRestitution(.5)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.GROUND,
+		COLLISION.OBSTACLES,
+		COLLISION.CHARACTERS
+	)
     inst.Physics:SetSphere(0.25)
 
     inst.AnimState:SetBank("warg_gingerbread_bomb")

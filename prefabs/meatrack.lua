@@ -10,7 +10,6 @@ local assets =
     Asset("ANIM", "anim/meat_small.zip"),
     Asset("ANIM", "anim/meat_human.zip"),
     Asset("ANIM", "anim/drumstick.zip"),
-    Asset("ANIM", "anim/meat_rack_food.zip"),
     Asset("ANIM", "anim/batwing.zip"),
     Asset("ANIM", "anim/plant_meat.zip"),
     Asset("ANIM", "anim/eel.zip"),
@@ -217,14 +216,14 @@ local function meatrack_master(inst)
 end
 
 local function meatrack_hermit_master(inst)
-
+    TheWorld:PushEvent("ms_register_pearl_entity", inst) -- NOTES(JBK): This function was a stub and now it has a use!
 end
 
-
-return MakeMeatrack("meatrack", meatrack_common, meatrack_master),
+--V2C: new version of meatrack in "meatrack2.lua"
+return --[[MakeMeatrack("meatrack", meatrack_common, meatrack_master),
         MakePlacer("meatrack_placer", "meat_rack", "meat_rack", "idle_empty",
         nil, nil, nil, nil, nil, nil,
         function(inst)
             inst.AnimState:Hide("mouseover")
-        end),
+        end),]]
         MakeMeatrack("meatrack_hermit", meatrack_hermit, meatrack_hermit_master)

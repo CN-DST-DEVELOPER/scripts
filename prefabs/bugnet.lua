@@ -82,4 +82,88 @@ local function fn()
     return inst
 end
 
-return Prefab("bugnet", fn, assets)
+local assets_thulecite =
+{
+    Asset("ANIM", "anim/thulecitebugnet.zip"),
+}
+
+local function onequip_thulecite(inst, owner)
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_object", inst.GUID, "thulecitebugnet")
+    else
+        owner.AnimState:OverrideSymbol("swap_object", "thulecitebugnet", "swap_object")
+    end
+    owner.AnimState:Show("ARM_carry")
+    owner.AnimState:Hide("ARM_normal")
+end
+
+local function onunequip_thulecite(inst, owner)
+    owner.AnimState:Hide("ARM_carry")
+    owner.AnimState:Show("ARM_normal")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
+end
+
+local function fn_thulecite()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+    MakeInventoryPhysics(inst)
+
+    inst.AnimState:SetBank("thulecitebugnet")
+    inst.AnimState:SetBuild("thulecitebugnet")
+    inst.AnimState:PlayAnimation("idle")
+
+    --tool (from tool component) added to pristine state for optimization
+    inst:AddTag("tool")
+
+    --weapon (from weapon component) added to pristine state for optimization
+    inst:AddTag("weapon")
+
+	local swap_data = { sym_build = "thulecitebugnet", sym_name = "swap_object" }
+    MakeInventoryFloatable(inst, "med", 0.09, {0.9, 0.4, 0.9}, true, -14.5, swap_data)
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst:AddComponent("weapon")
+    inst.components.weapon:SetDamage(TUNING.THULECITEBUGNET_DAMAGE)
+    inst.components.weapon.attackwear = 3
+
+    -----
+    inst:AddComponent("tool")
+    inst.components.tool:SetAction(ACTIONS.NET)
+    -------
+
+    inst:AddComponent("finiteuses")
+    inst.components.finiteuses:SetMaxUses(TUNING.THULECITEBUGNET_USES)
+    inst.components.finiteuses:SetUses(TUNING.THULECITEBUGNET_USES)
+    inst.components.finiteuses:SetOnFinished(inst.Remove)
+
+    inst.components.finiteuses:SetConsumption(ACTIONS.NET, 1)
+
+    inst:AddComponent("inspectable")
+
+    inst:AddComponent("inventoryitem")
+
+    inst:AddComponent("equippable")
+    inst.components.equippable:SetOnEquip(onequip_thulecite)
+    inst.components.equippable:SetOnUnequip(onunequip_thulecite)
+
+    MakeHauntableLaunch(inst)
+
+    return inst
+end
+
+return Prefab("bugnet", fn, assets),
+Prefab("thulecitebugnet", fn_thulecite, assets_thulecite)

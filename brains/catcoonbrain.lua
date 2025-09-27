@@ -132,6 +132,7 @@ function CatcoonBrain:OnStart()
     {
         BrainCommon.PanicWhenScared(self.inst, 1),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         IfNode(function() return ShouldHairball(self.inst) end, "hairball",
             DoAction(self.inst, HairballAction, "hairballact", true)),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),

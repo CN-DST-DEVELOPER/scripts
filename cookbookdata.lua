@@ -25,17 +25,44 @@ end
 
 function CookbookData:Load()
 	self.preparedfoods = {}
+    self.filters = {}
+    local needs_save = false
+    local really_bad_state = false
 	TheSim:GetPersistentString("cookbook", function(load_success, data)
 		if load_success and data ~= nil then
 			local status, recipe_book = pcall( function() return json.decode(data) end )
 		    if status and recipe_book then
-				self.preparedfoods = recipe_book.preparedfoods or {}
-				self.filters = recipe_book.filters or {}
+                if type(recipe_book.preparedfoods) == "table" then
+                    self.preparedfoods = recipe_book.preparedfoods
+                    if type(recipe_book.filters) == "table" then -- Optional data that does not matter.
+                        self.filters = recipe_book.filters
+                    end
+                else
+                    really_bad_state = true
+                    print("Failed to load preparedfoods table in cookbook!")
+                end
 			else
-				print("Faild to load the cookbook!", status, recipe_book)
+                really_bad_state = true
+				print("Failed to load the cookbook!", status, recipe_book)
 			end
 		end
 	end)
+    if really_bad_state then
+        print("Trying to apply online cache of cookbook data..")
+        if self:ApplyOnlineProfileData() then
+            print("Was a success, using preparedfoods values of:")
+            dumptable(self.preparedfoods)
+            print("Also using old stored filters values of:")
+            dumptable(self.filters)
+            needs_save = true
+        else
+            print("Which also failed. This error is unrecoverable. Cookbook will be cleared.")
+        end
+    end
+    if needs_save then
+        print("Saving cookbook file as a fixup.")
+        self:Save(true)
+    end
 end
 
 local function DecodeCookbookEntry(value)

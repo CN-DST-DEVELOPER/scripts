@@ -60,10 +60,11 @@ local function fn()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+	inst.Physics:SetCollisionMask(
+		COLLISION.GROUND,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES
+	)
 
     inst.AnimState:SetBank("cursedbeads")
     inst.AnimState:SetBuild("cursed_beads")

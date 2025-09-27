@@ -34,6 +34,7 @@ local Container = Class(function(self, inst)
     --self.skipautoclose = false
     self.acceptsstacks = true
 	makereadonly(self, "infinitestacksize")
+	makereadonly(self, "readonlycontainer")
     self.usespecificslotsforitems = false
     self.issidewidget = false
     self.type = nil
@@ -44,7 +45,10 @@ local Container = Class(function(self, inst)
     self.openlist = {}
     self.opencount = 0
 
+	--self.isexposed = false --flag to disable protection from rain
+
 	--self.droponopen = false
+    --self.restrictedtag = nil -- Only entities with this tag can interact.
 
     inst:ListenForEvent("player_despawn", OnOwnerDespawned)
 
@@ -145,6 +149,25 @@ function Container:DropEverythingWithTag(tag, drop_pos, keepoverstacked)
     end
 end
 
+function Container:DropEverythingByFilter(filterfn)
+    local internal_containers = {}
+
+    for i = 1, self.numslots do
+        local item = self.slots[i]
+        if item ~= nil then
+            if filterfn(self.inst, item) then
+                self:DropItemBySlot(i)
+            elseif item.components.container ~= nil then
+                table.insert(internal_containers, item)
+            end
+        end
+    end
+
+    for i, v in ipairs(internal_containers) do
+        v.components.container:DropEverythingByFilter(filterfn)
+    end
+end
+
 function Container:DropEverything(drop_pos, keepoverstacked)
     for i = 1, self.numslots do
 		self:DropItemBySlot(i, drop_pos, keepoverstacked)
@@ -205,6 +228,7 @@ function Container:DropItemAt(itemtodrop, x, y, z)
         item.prevslot = nil
         self.inst:PushEvent("dropitem", {item = item})
     end
+    return item
 end
 
 function Container:CanTakeItemInSlot(item, slot)
@@ -212,13 +236,15 @@ function Container:CanTakeItemInSlot(item, slot)
         and item.components.inventoryitem ~= nil
         and item.components.inventoryitem.cangoincontainer
         and not item.components.inventoryitem.canonlygoinpocket
+        and (not item.components.inventoryitem.canonlygoinpocketorpocketcontainers or self.inst.components.inventoryitem and self.inst.components.inventoryitem.canonlygoinpocket)
+        and not self.readonlycontainer
         and (slot == nil or (slot >= 1 and slot <= self.numslots))
         and not (GetGameModeProperty("non_item_equips") and item.components.equippable ~= nil)
         and (self.itemtestfn == nil or self:itemtestfn(item, slot))
 end
 
 function Container:GetSpecificSlotForItem(item)
-    if self.usespecificslotsforitems and self.itemtestfn ~= nil then
+    if self.usespecificslotsforitems and not self.readonlycontainer and self.itemtestfn ~= nil then
         for i = 1, self:GetNumSlots() do
             if self:itemtestfn(item, i) then
                 return i
@@ -235,6 +261,8 @@ function Container:ShouldPrioritizeContainer(item)
         and item.components.inventoryitem ~= nil
         and item.components.inventoryitem.cangoincontainer
         and not item.components.inventoryitem.canonlygoinpocket
+        and (not item.components.inventoryitem.canonlygoinpocketorpocketcontainers or self.inst.components.inventoryitem and self.inst.components.inventoryitem.canonlygoinpocket)
+        and not self.readonlycontainer
         and not (GetGameModeProperty("non_item_equips") and item.components.equippable ~= nil)
         and (self:priorityfn(item))
 end
@@ -286,6 +314,10 @@ end
 
 -- Check how many of an item we can accept from its stack.
 function Container:CanAcceptCount(item, maxcount)
+    if self.readonlycontainer then
+        return 0
+    end
+
     local stacksize = math.max(maxcount or 0, item.components.stackable ~= nil and item.components.stackable.stacksize or 1)
 
     if stacksize <= 0 then
@@ -418,6 +450,8 @@ function Container:RemoveItemBySlot(slot, keepoverstacked)
 	if item then
 		return self:RemoveItem_Internal(item, slot, true, keepoverstacked)
 	end
+
+    return nil
 end
 
 function Container:RemoveAllItems()
@@ -770,7 +804,7 @@ local function tryconsume(self, v, amount)
 end
 
 function Container:ConsumeByName(item, amount)
-    if amount <= 0 then
+    if amount <= 0 or self.readonlycontainer then
         return
     end
 
@@ -826,6 +860,9 @@ end
 
 function Container:RemoveItem_Internal(item, slot, wholestack, keepoverstacked)
 	--assert(item == self.slots[slot])
+    if self.readonlycontainer then
+        return nil
+    end
 
 	local stackable = item.components.stackable
 	if stackable and stackable:IsStack() then
@@ -866,20 +903,24 @@ function Container:OnUpdate(dt)
         self.inst:StopUpdatingComponent(self)
     else
         --attempt to close the chest for all players who have the chest opened who meet the requirements for closing it.
+		local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem:GetGrandOwner() or nil
+		local nonownerparent = owner == nil and self.inst.entity:GetParent() or nil
         for opener, _ in pairs(self.openlist) do
-			if self.inst.components.inventoryitem and self.inst.components.inventoryitem:GetGrandOwner() == opener then
+			local mount = opener.components.rider and opener.components.rider:GetMount() or nil
+			local ismount = mount == self.inst
+			if owner and (owner == opener or owner == mount) or ismount then
 				--V2C: special case handling for players who can open "portablestorage" containers from inventory without dropping
-				if self.inst:HasTag("portablestorage") and not (opener.sg and opener.sg:HasStateTag("keep_pocket_rummage")) then
+				--     pocket_rummage is now used for:
+				--       "portablestorage" in your inventory
+				--       "portablestorage" in your mount's inventory while mounted
+				--       your mount's container (e.g. Woby)
+				if (ismount or self.inst:HasTag("portablestorage")) and not (opener.sg and opener.sg:HasStateTag("keep_pocket_rummage")) then
 					self:Close(opener)
-					if opener.sg then
-						opener.sg:HandleEvent("ms_closeportablestorage", { item = self.inst })
-					end
+					opener:PushEventImmediate("ms_closeportablestorage", { item = self.inst })
 				end
-			elseif (opener.components.rider and opener.components.rider:IsRiding())
-				or not (opener:IsValid() and opener:IsNear(self.inst, 3) and CanEntitySeeTarget(opener, self.inst))
-			then
+			elseif mount or not (opener:IsValid() and opener:IsNear(self.inst, CONTAINER_AUTOCLOSE_DISTANCE) and CanEntitySeeTarget(opener, self.inst)) then
 				self:Close(opener)
-            end
+			end
         end
     end
 end
@@ -898,6 +939,9 @@ local function QueryActiveItem(self, opener)
 end
 
 function Container:PutOneOfActiveItemInSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     if active_item ~= nil and
         self:GetItemInSlot(slot) == nil and
@@ -916,6 +960,9 @@ function Container:PutOneOfActiveItemInSlot(slot, opener)
 end
 
 function Container:PutAllOfActiveItemInSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
     if active_item ~= nil then
@@ -939,6 +986,9 @@ function Container:PutAllOfActiveItemInSlot(slot, opener)
 end
 
 function Container:TakeActiveItemFromHalfOfSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
     if item ~= nil and
@@ -959,7 +1009,37 @@ function Container:TakeActiveItemFromHalfOfSlot(slot, opener)
     end
 end
 
+function Container:TakeActiveItemFromCountOfSlot(slot, count, opener)
+    if self.readonlycontainer then
+        return
+    end
+    local inventory, active_item = QueryActiveItem(self, opener)
+    local item = self:GetItemInSlot(slot)
+    if item ~= nil and
+        active_item == nil and
+        inventory ~= nil then
+        self.currentuser = opener
+        local stackable = item.components.stackable
+        local fullstacksize = stackable and (stackable:IsOverStacked() and stackable.originalmaxsize or stackable:StackSize()) or 1
+        count = math.clamp(count, 1, fullstacksize)
+        if stackable and stackable:StackSize() > count then
+            local countedstack = stackable:Get(count)
+            countedstack.prevslot = slot
+            countedstack.prevcontainer = self
+            inventory:GiveActiveItem(countedstack)
+        else
+            self:RemoveItemBySlot(slot)
+            inventory:GiveActiveItem(item)
+        end
+
+        self.currentuser = nil
+    end
+end
+
 function Container:TakeActiveItemFromAllOfSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
     if item ~= nil and
@@ -983,6 +1063,9 @@ function Container:TakeActiveItemFromAllOfSlot(slot, opener)
 end
 
 function Container:AddOneOfActiveItemToSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
     if active_item ~= nil and
@@ -1004,6 +1087,9 @@ function Container:AddOneOfActiveItemToSlot(slot, opener)
 end
 
 function Container:AddAllOfActiveItemToSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
     if active_item ~= nil and
@@ -1023,6 +1109,9 @@ function Container:AddAllOfActiveItemToSlot(slot, opener)
 end
 
 function Container:SwapActiveItemWithSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
     if active_item ~= nil then
@@ -1052,6 +1141,9 @@ function Container:SwapActiveItemWithSlot(slot, opener)
 end
 
 function Container:SwapOneOfActiveItemWithSlot(slot, opener)
+    if self.readonlycontainer then
+        return
+    end
     local inventory, active_item = QueryActiveItem(self, opener)
     local item = self:GetItemInSlot(slot)
 
@@ -1074,6 +1166,9 @@ function Container:SwapOneOfActiveItemWithSlot(slot, opener)
 end
 
 function Container:MoveItemFromAllOfSlot(slot, container, opener)
+    if self.readonlycontainer then
+        return
+    end
     local item = self:GetItemInSlot(slot)
     if item ~= nil and container ~= nil then
         container = container.components.container or container.components.inventory
@@ -1101,29 +1196,31 @@ function Container:MoveItemFromAllOfSlot(slot, container, opener)
 					item = item.components.stackable:Get(item.components.stackable.originalmaxsize)
 					shouldignoresound = true
 				end
-                item.prevcontainer = nil
-                item.prevslot = nil
+                if item ~= nil then
+                    item.prevcontainer = nil
+                    item.prevslot = nil
 
-                --Hacks for altering normal inventory:GiveItem() behaviour
-                if container.ignoreoverflow ~= nil and container:GetOverflowContainer() == self then
-                    container.ignoreoverflow = true
-                end
-                if container.ignorefull ~= nil then
-                    container.ignorefull = true
-                end
+                    --Hacks for altering normal inventory:GiveItem() behaviour
+                    if container.ignoreoverflow ~= nil and container:GetOverflowContainer() == self then
+                        container.ignoreoverflow = true
+                    end
+                    if container.ignorefull ~= nil then
+                        container.ignorefull = true
+                    end
 
-                if not container:GiveItem(item, targetslot, nil, false) then
-					self.ignoresound = shouldignoresound
-                    self:GiveItem(item, slot, nil, true)
-					self.ignoresound = false
-                end
+                    if not container:GiveItem(item, targetslot, nil, false) then
+                        self.ignoresound = shouldignoresound
+                        self:GiveItem(item, slot, nil, true)
+                        self.ignoresound = false
+                    end
 
-                --Hacks for altering normal inventory:GiveItem() behaviour
-                if container.ignoreoverflow then
-                    container.ignoreoverflow = false
-                end
-                if container.ignorefull then
-                    container.ignorefull = false
+                    --Hacks for altering normal inventory:GiveItem() behaviour
+                    if container.ignoreoverflow then
+                        container.ignoreoverflow = false
+                    end
+                    if container.ignorefull then
+                        container.ignorefull = false
+                    end
                 end
             end
 
@@ -1134,6 +1231,9 @@ function Container:MoveItemFromAllOfSlot(slot, container, opener)
 end
 
 function Container:MoveItemFromHalfOfSlot(slot, container, opener)
+    if self.readonlycontainer then
+        return
+    end
     local item = self:GetItemInSlot(slot)
     if item ~= nil and container ~= nil then
         container = container.components.container or container.components.inventory
@@ -1168,6 +1268,66 @@ function Container:MoveItemFromHalfOfSlot(slot, container, opener)
                 if not container:GiveItem(halfstack, targetslot) then
                     self.ignoresound = true
                     self:GiveItem(halfstack, slot, nil, true)
+                    self.ignoresound = false
+                end
+
+                --Hacks for altering normal inventory:GiveItem() behaviour
+                if container.ignoreoverflow then
+                    container.ignoreoverflow = false
+                end
+                if container.ignorefull then
+                    container.ignorefull = false
+                end
+            end
+
+            self.currentuser = nil
+            container.currentuser = nil
+        end
+    end
+end
+
+function Container:MoveItemFromCountOfSlot(slot, container, count, opener)
+    if self.readonlycontainer then
+        return
+    end
+    local item = self:GetItemInSlot(slot)
+    if item ~= nil and container ~= nil then
+        container = container.components.container or container.components.inventory
+        if container ~= nil and container:IsOpenedBy(opener) then
+
+            self.currentuser = opener
+            container.currentuser = opener
+
+            local targetslot =
+                opener.components.constructionbuilderuidata ~= nil and
+                opener.components.constructionbuilderuidata:GetContainer() == container.inst and
+                opener.components.constructionbuilderuidata:GetSlotForIngredient(item.prefab) or
+                nil
+
+            if container:CanTakeItemInSlot(item, targetslot) then
+                local stackable = item.components.stackable
+                local fullstacksize = stackable and (stackable:IsOverStacked() and stackable.originalmaxsize or stackable:StackSize()) or 1
+                count = math.clamp(count, 1, fullstacksize)
+                local countedstack
+                if stackable and stackable:StackSize() > count then
+                    countedstack = stackable:Get(count)
+                else
+                    countedstack = self:RemoveItemBySlot(slot)
+                end
+                countedstack.prevcontainer = nil
+                countedstack.prevslot = nil
+
+                --Hacks for altering normal inventory:GiveItem() behaviour
+                if container.ignoreoverflow ~= nil and container:GetOverflowContainer() == self then
+                    container.ignoreoverflow = true
+                end
+                if container.ignorefull ~= nil then
+                    container.ignorefull = true
+                end
+
+                if not container:GiveItem(countedstack, targetslot) then
+                    self.ignoresound = true
+                    self:GiveItem(countedstack, slot, nil, true)
                     self.ignoresound = false
                 end
 
@@ -1221,6 +1381,60 @@ function Container:EnableInfiniteStackSize(enable)
 			self.inst.replica.container:EnableInfiniteStackSize(false)
 		end
 	end
+end
+
+local function ReadOnlyContainerAssert_in(item, data)
+    print("__ DATA __")
+    dumptable(data)
+    print("Time to assert, please report this.")
+    assert(false, string.format("VERY BAD! Item %s was transferred into a read only container.", tostring(item)))
+end
+
+local function ReadOnlyContainerAssert_out(item, data)
+    print("__ DATA __")
+    dumptable(data)
+    print("Time to assert, please report this.")
+    assert(false, string.format("VERY BAD! Item %s was transferred out of a read only container.", tostring(item)))
+end
+
+function Container:EnableReadOnlyContainer(enable)
+    local _ = rawget(self, "_") --see class.lua for property setters implementation
+    if enable then
+        if not _.readonlycontainer[1] then
+            _.readonlycontainer[1] = true
+            if not self.inst.components.preserver then
+                self.readonlycontainer_addedpreserver = true
+                self.inst:AddComponent("preserver")
+                self.inst.components.preserver:SetPerishRateMultiplier(0)
+            end
+
+            self.inst:ListenForEvent("itemget", ReadOnlyContainerAssert_in)
+            self.inst:ListenForEvent("itemlose", ReadOnlyContainerAssert_out)
+            self.inst.replica.container:EnableReadOnlyContainer(true)
+        end
+    elseif _.readonlycontainer[1] then
+        _.readonlycontainer[1] = nil
+        self.inst:RemoveEventCallback("itemget", ReadOnlyContainerAssert_in)
+        self.inst:RemoveEventCallback("itemlose", ReadOnlyContainerAssert_out)
+        self.inst.replica.container:EnableReadOnlyContainer(false)
+        if self.readonlycontainer_addedpreserver then
+            if self.inst.components.preserver then
+                self.inst:RemoveComponent("preserver")
+            end
+            self.readonlycontainer_addedpreserver = nil
+        end
+    end
+end
+
+function Container:IsRestricted(target)
+    if not target:HasTag("player") then
+        -- Restricted tags only apply to players.
+        return false
+    end
+
+    return self.restrictedtag ~= nil
+        and self.restrictedtag:len() > 0
+        and not target:HasTag(self.restrictedtag)
 end
 
 return Container

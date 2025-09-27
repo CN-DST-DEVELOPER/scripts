@@ -4,6 +4,20 @@ local assets =
     Asset("ANIM", "anim/alterguardian_spawn_death.zip"),
 }
 
+local assets_rift =
+{
+	Asset("ANIM", "anim/alterguardian_phase1.zip"),
+	Asset("ANIM", "anim/alterguardian_spawn_death.zip"),
+	Asset("ANIM", "anim/alterguardian_phase1_lunar.zip"), -- New death anims
+	Asset("ANIM", "anim/alterguardian_phase1_lunarrift.zip"), -- New build w/ lunar crystals
+}
+
+local assets_riftgestalt =
+{
+	Asset("ANIM", "anim/alterguardian_phase1_lunar.zip"), -- New death anims
+	Asset("ANIM", "anim/wagboss_lunar.zip"),
+}
+
 local prefabs =
 {
     "alterguardian_phase2",
@@ -11,6 +25,13 @@ local prefabs =
     "gestalt_alterguardian_projectile",
     "mining_moonglass_fx",
     "moonrocknugget",
+}
+
+local prefabs_rift =
+{
+	"mining_moonglass_fx",
+	"moonrocknugget",
+	"alterguardian_phase1_lunarrift_gestalt",
 }
 
 SetSharedLootTable("alterguardian_phase1",
@@ -49,11 +70,7 @@ local function OnMusicDirty(inst)
 end
 
 local function SetNoMusic(inst, val)
-    if val then
-        inst:AddTag("nomusic")
-    else
-        inst:RemoveTag("nomusic")
-    end
+    inst:AddOrRemoveTag("nomusic", val)
     inst._musicdirty:push()
     OnMusicDirty(inst)
 end
@@ -114,6 +131,7 @@ local function teleport_override_fn(inst)
 end
 
 local function OnAttacked(inst, data)
+	inst.components.health:RemoveRegenSource(inst, "lunarriftregen")
     inst.components.combat:SuggestTarget(data.attacker)
     play_custom_hit(inst)
 end
@@ -265,7 +283,8 @@ end
 
 local function OnSave(inst, data)
     data.loot_dropped = inst._loot_dropped
-    data.prespawn_idling = (inst.sg.currentstate.name == "prespawn_idle")
+    local current_state_name = inst.sg.currentstate.name
+    data.prespawn_idling = (current_state_name == "prespawn_idle")
 end
 
 local function OnLoad(inst, data)
@@ -319,17 +338,6 @@ local function on_timer_finished(inst, data)
     end
 end
 
-local function hauntchancefn(inst)
-    local statename = inst.sg.currentstate.name
-    if statename == "prespawn_idle"
-            or statename == "spawn"
-            or statename == "death" then
-        return 0
-    else
-        return TUNING.HAUNT_CHANCE_OCCASIONAL
-    end
-end
-
 local scrapbook_adddeps = {
     "moonglass",
     "moonglass_charged",
@@ -338,7 +346,7 @@ local scrapbook_adddeps = {
 }
 
 local BURN_OFFSET = Vector3(0, 1.5, 0)
-local function fn()
+local function commonfn(common_postinit, server_postinit)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -352,7 +360,6 @@ local function fn()
     inst.DynamicShadow:SetSize(5.00, 1.50)
 
     inst.AnimState:SetBank("alterguardian_phase1")
-    inst.AnimState:SetBuild("alterguardian_phase1")
 
     MakeGiantCharacterPhysics(inst, 500, 1.25)
 
@@ -372,12 +379,19 @@ local function fn()
     --inst._musictask = nil
     OnMusicDirty(inst)
 
+	if common_postinit then
+		common_postinit(inst)
+	end
+
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         inst:ListenForEvent("musicdirty", OnMusicDirty)
 
         return inst
     end
+
+    WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Will drop when the boss is fully defeated.
 
     inst.scrapbook_adddeps = scrapbook_adddeps
 
@@ -440,23 +454,267 @@ local function fn()
 
     inst:AddComponent("drownable")
 
-    MakeLargeFreezableCharacter(inst)
-    inst.components.freezable:SetResistance(8)
-
 	inst:AddComponent("hauntable")
 	inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("phasetransition", OnPhaseTransition)
 
-    inst.SoundEmitter:PlaySound("moonstorm/creatures/boss/alterguardian1/idle_LP", "idle_LP")
-
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
     inst.OnEntitySleep = OnEntitySleep
     inst.OnEntityWake = OnEntityWake
 
+	if server_postinit then
+		server_postinit(inst)
+	end
+
     return inst
 end
 
-return Prefab("alterguardian_phase1", fn, assets, prefabs)
+--------------------------------------------------------------------------
+
+local function common_postinit_basic(inst)
+	inst.AnimState:SetBuild("alterguardian_phase1")
+end
+
+local function server_postinit_basic(inst)
+	inst.SoundEmitter:PlaySound("moonstorm/creatures/boss/alterguardian1/idle_LP", "idle_LP")
+end
+
+local function fn()
+	return commonfn(common_postinit_basic, server_postinit_basic)
+end
+
+--------------------------------------------------------------------------
+
+local function CreatePlanarFx()
+	local inst = CreateEntity()
+
+	inst:AddTag("FX")
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(false)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst.AnimState:SetBank("alterguardian_phase1")
+	inst.AnimState:SetBuild("alterguardian_phase1_lunarrift")
+	inst.AnimState:PlayAnimation("planar_loop", true)
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	inst.AnimState:SetLightOverride(0.5)
+
+	return inst
+end
+
+local function rift_OnAddColourChanged(inst, r, g, b, a)
+	inst.fx.AnimState:SetAddColour(r, g, b, a)
+end
+
+local function rift_OnCameraFocusDirty(inst)
+	if inst.camerafocus:value() then
+		TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, 3, 20, 3)
+	else
+		TheFocalPoint.components.focalpoint:StopFocusSource(inst)
+	end
+end
+
+local function rift_EnableCameraFocus(inst, enable)
+	if enable ~= inst.camerafocus:value() then
+		inst.camerafocus:set(enable)
+
+		--Dedicated server does not need to focus camera
+		if not TheNet:IsDedicated() then
+			rift_OnCameraFocusDirty(inst)
+		end
+	end
+end
+
+local function common_postinit_rift(inst)
+    inst.entity:AddLight()
+    inst.Light:SetIntensity(0)
+    inst.Light:SetRadius(0)
+    inst.Light:SetFalloff(0)
+    inst.Light:SetColour(0, 0.35, 1)
+
+	inst.AnimState:SetBuild("alterguardian_phase1_lunarrift")
+	inst.AnimState:SetSymbolBloom("fx_white")
+	inst.AnimState:SetSymbolLightOverride("fx_white", 0.5)
+	inst.AnimState:SetSymbolLightOverride("moonglass_parts", 0.1)
+	inst.AnimState:SetSymbolLightOverride("moonglass_parts2", 0.1)
+    inst.AnimState:SetLightOverride(0)
+
+	inst.camerafocus = net_bool(inst.GUID, "alterguardian_phase1_lunarrift.camerafocus", "camerafocusdirty")
+
+	inst:AddComponent("colouraddersync")
+
+	if not TheNet:IsDedicated() then
+		--NOTE: this one fx, will render at multiple follow symbols in sync, which is ok.
+		inst.fx = CreatePlanarFx()
+		inst.fx.entity:SetParent(inst.entity)
+		inst.fx.Follower:FollowSymbol(inst.GUID, "fx_planar_follow", nil, nil, nil, true)
+
+		inst.highlightchildren = { inst.fx }
+
+		inst.components.colouraddersync:SetColourChangedFn(rift_OnAddColourChanged)
+	end
+
+	if not TheWorld.ismastersim then
+		inst:ListenForEvent("camerafocusdirty", rift_OnCameraFocusDirty)
+	end
+end
+
+local function rift_OnSave(inst, data)
+    data.is_spawning = inst.sg:HasStateTag("spawn_lunar")
+end
+
+local function rift_OnLoad(inst, data)
+	OnLoad(inst, data)
+	if inst.components.health.currenthealth <= inst.components.health.minhealth and not inst.sg:HasStateTag("dead") then
+		inst.sg:GoToState("death_lunar_loop")
+    elseif data.is_spawning then
+        inst.sg:GoToState("spawn_lunar")
+	end
+end
+
+local function rift_OnRemoveEntity(inst)
+	if inst.sg.statemem.gestalt then
+		inst.sg.statemem.gestalt:Remove()
+	end
+end
+
+local function server_postinit_rift(inst)
+	inst:AddComponent("planarentity")
+	inst:AddComponent("planardamage")
+	inst.components.planardamage:SetBaseDamage(TUNING.ALTERGUARDIAN_PHASE1_LUNARRIFT_PLANAR_DAMAGE)
+
+	inst.components.health:SetMaxHealth(TUNING.ALTERGUARDIAN_PHASE1_LUNARRIFT_HEALTH)
+    -- We regenerate from death, so...
+	inst.components.health:SetMinHealth(1)
+
+	inst:AddComponent("colouradder")
+
+	inst.SoundEmitter:PlaySound("moonstorm/creatures/boss/alterguardian1/idle_wagboss_LP", "idle_LP")
+
+	inst.EnableCameraFocus = rift_EnableCameraFocus
+    inst.OnSave = rift_OnSave
+	inst.OnLoad = rift_OnLoad
+	inst.OnRemoveEntity = rift_OnRemoveEntity
+end
+
+local function riftfn()
+	return commonfn(common_postinit_rift, server_postinit_rift)
+end
+
+--------------------------------------------------------------------------
+
+local function riftgestalt_OnCaptured(inst)
+	if inst.PARENT then
+		inst.PARENT.perists = false
+		inst.PARENT.sg:GoToState("captured")
+	end
+end
+
+local function riftgestalt_OnRemoveEntity(fx)
+	table.removearrayvalue(fx.highlightparent.highlightchildren, fx)
+end
+
+local function riftgestalt_AddFollowFx(inst, anim, symbol)
+	local fx = CreateEntity()
+
+	fx:AddTag("FX")
+	--[[Non-networked entity]]
+	--inst.entity:SetCanSleep(false)
+	fx.persists = false
+
+	fx.entity:AddTransform()
+	fx.entity:AddAnimState()
+	fx.entity:AddFollower()
+
+	fx.AnimState:SetBank("wagboss_lunar")
+	fx.AnimState:SetBuild("wagboss_lunar")
+	fx.AnimState:PlayAnimation(anim, true)
+	fx.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	fx.AnimState:SetMultColour(1, 1, 1, 0.5)
+	fx.AnimState:SetFrame(math.random(fx.AnimState:GetCurrentAnimationNumFrames()) - 1)
+	fx.AnimState:SetLightOverride(0.5)
+
+	fx.entity:SetParent(inst.entity)
+	fx.Follower:FollowSymbol(inst.GUID, symbol, nil, nil, nil, true)
+
+	table.insert(inst.highlightchildren, fx)
+	fx.highlightparent = inst
+	fx.OnRemoveEntity = riftgestalt_OnRemoveEntity
+end
+
+local SCRAPBOOK_OVERRIDEBUILDS = {"alterguardian_phase1_lunar", "wagboss_lunar"}
+local SCRAPBOOK_SYMBOLCOLOURS = { 
+    {"lb_glow", 1, 1, 1, 0.375},
+    {"scrapbook_art", 1, 1, 1, 0.75},
+    {"lb_flame_loop", 1, 1, 1, 0.75}, 
+}
+local function riftgestaltfn()
+	local inst = CreateEntity()
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddNetwork()
+
+	inst.Transform:SetFourFaced()
+	inst.AnimState:SetBank("alterguardian_phase1")
+	inst.AnimState:SetBuild("wagboss_lunar")
+	inst.AnimState:PlayAnimation("collapse_pre")
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	inst.AnimState:SetMultColour(1, 1, 1, 0.5)
+	inst.AnimState:SetLightOverride(0.5)
+	inst.AnimState:UsePointFiltering(true)
+
+	inst:AddTag("brightmare")
+	inst:AddTag("lunar_aligned")
+	inst:AddTag("NOCLICK")
+	inst:AddTag("nointerpolate")
+
+	inst.no_wet_prefix = true
+
+	--Dedicated server does not need to spawn the local fx
+	if not TheNet:IsDedicated() then
+		inst.highlightchildren = {}
+
+		--from alterguardian_phase4_lunarrift
+		riftgestalt_AddFollowFx(inst, "flame_loop", "lb_flame_loop_follow_1")
+		riftgestalt_AddFollowFx(inst, "body_loop", "lb_head_loop_follow_2")
+		riftgestalt_AddFollowFx(inst, "body_loop", "lb_head_loop_follow_3")
+	end
+
+	inst.entity:SetPristine()
+
+	if not TheWorld.ismastersim then
+		return inst
+	end
+
+	inst.scrapbook_bank = "alterguardian_phase1"
+	inst.scrapbook_build = "alterguardian_phase1_lunarrift"
+    inst.scrapbook_overridebuild = SCRAPBOOK_OVERRIDEBUILDS
+    inst.scrapbook_symbolcolours = SCRAPBOOK_SYMBOLCOLOURS
+    inst.scrapbook_anim = "scrapbook"
+
+	inst:AddComponent("inspectable")
+
+	inst:AddComponent("gestaltcapturable")
+	inst.components.gestaltcapturable:SetLevel(3)
+	inst.components.gestaltcapturable:SetOnCapturedFn(riftgestalt_OnCaptured)
+	inst.components.gestaltcapturable:SetEnabled(false)
+
+	--inst.PARENT --set by SGalterguardian_phase1.lua
+	inst.persists = false
+
+	return inst
+end
+
+--------------------------------------------------------------------------
+
+return Prefab("alterguardian_phase1", fn, assets, prefabs),
+	Prefab("alterguardian_phase1_lunarrift", riftfn, assets_rift, prefabs_rift),
+	Prefab("alterguardian_phase1_lunarrift_gestalt", riftgestaltfn, assets_riftgestalt)

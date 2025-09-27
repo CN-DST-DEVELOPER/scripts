@@ -405,7 +405,7 @@ function CookbookPageCrockPot:BuildRecipeBook()
 	local icon_size = 20 / (cell_size/base_size)
 
     local function ScrollWidgetsCtor(context, index)
-        local w = Widget("recipe-cell-".. index)
+        local w = Widget("cookbook-cell-".. index)
 
 		----------------
 		w.cell_root = w:AddChild(ImageButton("images/quagmire_recipebook.xml", "cookbook_unknown.tex", "cookbook_unknown_selected.tex"))

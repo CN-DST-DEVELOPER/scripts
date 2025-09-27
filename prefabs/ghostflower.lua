@@ -1,6 +1,8 @@
 local assets =
 {
     Asset("ANIM", "anim/ghostflower.zip"),
+
+    Asset("ANIM", "anim/spell_icons_wendy.zip"),
 }
 
 local prefabs =
@@ -50,6 +52,8 @@ local function fn()
     inst.AnimState:SetBank("ghostflower")
     inst.AnimState:SetBuild("ghostflower")
     inst.AnimState:PlayAnimation("idle", true)
+
+    inst:AddTag("ghostflower")
 
     MakeInventoryFloatable(inst)
 

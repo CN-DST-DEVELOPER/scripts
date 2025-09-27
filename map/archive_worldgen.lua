@@ -35,16 +35,18 @@ function AncientArchivePass(entities, map_width, map_height, world, add_entity_f
                 for i,dat in pairs(entities["archive_lockbox_dispencer_temp"]) do
                     table.insert(list,i)
                 end
-                local random = math.random(1,#list)
+                if list[1] then
+                    local random = math.random(1,#list)
 
-                local newprop = entities["archive_lockbox_dispencer_temp"][list[random]]
-                if newprop and not newprop.data then
-                    newprop.data = {}
+                    local newprop = entities["archive_lockbox_dispencer_temp"][list[random]]
+                    if newprop and not newprop.data then
+                        newprop.data = {}
+                    end
+                    newprop.data.product_orchestrina = products[index]
+                    index = index > 2 and 1 or index + 1
+                    table.insert(entities["archive_lockbox_dispencer"],newprop)
+                    entities["archive_lockbox_dispencer_temp"][list[random]] = nil
                 end
-                newprop.data.product_orchestrina = products[index]
-                index = index > 2 and 1 or index + 1
-                table.insert(entities["archive_lockbox_dispencer"],newprop)
-                entities["archive_lockbox_dispencer_temp"][list[random]] = nil
             end
         end
     end

@@ -140,6 +140,7 @@ local function fn()
     inst:AddTag("show_spoilage")
     inst:AddTag("small_livestock")
     inst:AddTag("deployedplant")
+    inst:AddTag("lunar_aligned")
 
     inst:DoPeriodicTask(.1, OnUpdateFlicker, nil, GetTime())
     OnUpdateFlicker(inst)
@@ -206,6 +207,7 @@ local function fn()
     inst.components.perishable:SetOnPerishFn(onperish)
 
     inst:SetStateGraph("SGbutterfly")
+	inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
 	inst:ListenForEvent("death", ondeath)

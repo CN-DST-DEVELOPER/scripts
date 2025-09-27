@@ -10,41 +10,49 @@ local prefabs =
 
 local brain = require "brains/sporebrain"
 
+local SPARK_MUST_TAGS = { "_combat" }
+local SPARK_CANT_TAGS = { "playerghost", "INLIMBO", "flight", "invisible", "notarget", "noattack", "moonstorm_static", "wall", "structure" }
+local CHARGE_MUST_TAGS = { "moonsparkchargeable" }
 
-local SPARK_CANT_TAGS = { "playerghost", "INLIMBO", "moonstorm_static","wall","structure"}
-local SPARK_MUST_TAGS = { "moonsparkchargeable" }
+local function dospark2(inst)
+	inst.Light:SetRadius(1.5)
+end
+
+local function dospark1(inst, dospark)
+	inst.Light:SetRadius(2)
+
+	local x, y, z = inst.Transform:GetWorldPosition()
+	for i, ent in ipairs(TheSim:FindEntities(x, y, z, 4, SPARK_MUST_TAGS, SPARK_CANT_TAGS)) do
+		if ent:IsValid() and not ent:IsInLimbo() and
+			not (ent.components.inventory and ent.components.inventory:IsInsulated()) and
+			not (ent.components.health and ent.components.health:IsDead()) and
+			ent.components.combat and ent.components.combat:CanBeAttacked()
+		then
+			local damage_mult = 1
+			if not IsEntityElectricImmune(ent) then
+				damage_mult = TUNING.ELECTRIC_DAMAGE_MULT + TUNING.ELECTRIC_WET_DAMAGE_MULT * ent:GetWetMultiplier()
+			end
+			ent.components.combat:GetAttacked(inst, damage_mult * TUNING.MOONSTORM_SPARK_DAMAGE, nil, "electric")
+			if ent.components.hauntable and ent.components.hauntable.panicable then
+				ent.components.hauntable:Panic(2)
+			end
+		end
+	end
+
+	for i, ent in ipairs(TheSim:FindEntities(x, y, z, 4, CHARGE_MUST_TAGS)) do
+		ent.components.fueled:SetPercent(math.min(1, ent.components.fueled:GetPercent() + 0.1))
+	end
+
+	inst:DoTaskInTime(0.5, dospark2)
+	inst.sparktask = inst:DoTaskInTime(5 + math.random() * 10, dospark)
+end
 
 local function dospark(inst)
     if inst:IsInLimbo() then
         print(debugstack())
     end
-    local fx = inst:SpawnChild("moonstorm_spark_shock_fx")
-    inst.sparktask = inst:DoTaskInTime(5/30, function()
-        inst.Light:SetRadius(2)
-        local pos = Vector3(inst.Transform:GetWorldPosition())
-        local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 4, nil, SPARK_CANT_TAGS)
-        if #ents > 0 then
-            for i, ent in ipairs(ents)do
-                if ent.components.combat ~= nil and (ent.components.inventory == nil or not ent.components.inventory:IsInsulated()) then
-                    ent.components.combat:GetAttacked(inst, TUNING.LIGHTNING_DAMAGE, nil, "electric")
-                    if ent.components.hauntable ~= nil and ent.components.hauntable.panicable then
-                        ent.components.hauntable:Panic(2)
-                    end
-                end
-            end
-        end
-        ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 4, SPARK_MUST_TAGS)
-        if #ents > 0 then
-            for i, ent in ipairs(ents)do
-                ent.components.fueled:SetPercent(math.min(1,ent.components.fueled:GetPercent()+0.1))
-            end
-        end
-        inst:DoTaskInTime(0.5,function()
-            inst.Light:SetRadius(1.5)
-        end)
-        inst.sparktask = inst:DoTaskInTime(5 + math.random()* 10, dospark)
-    end)
-
+	inst:SpawnChild("moonstorm_spark_shock_fx")
+	inst.sparktask = inst:DoTaskInTime(5/30, dospark1, dospark)
 end
 
 local function depleted(inst)
@@ -184,7 +192,7 @@ local function fn()
     inst:AddTag("show_spoilage")
     inst:AddTag("moonstorm_spark")
 
-    inst.scrapbook_damage = TUNING.LIGHTNING_DAMAGE
+	inst.scrapbook_damage = TUNING.MOONSTORM_SPARK_DAMAGE * TUNING.ELECTRIC_DAMAGE_MULT --show dry damage, not immune damage
     inst.scrapbook_animpercent = 0.5
     inst.scrapbook_anim = "idle_flight_loop"
     inst.scrapbook_animoffsetx = 20
@@ -221,6 +229,9 @@ local function fn()
     inst.components.perishable:SetOnPerishFn(depleted)
 
     inst:AddComponent("stackable")
+
+	inst:AddComponent("electricattacks")
+	inst.components.electricattacks:AddSource(inst)
 
     MakeHauntablePerish(inst, .5)
 

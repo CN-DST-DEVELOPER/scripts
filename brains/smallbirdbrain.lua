@@ -81,6 +81,7 @@ function SmallBirdBrain:OnStart()
     local root =
     PriorityNode({
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         FaceEntity(self.inst, GetTraderFn, KeepTraderFn),
         -- when starving prefer finding food over fighting
         SequenceNode{

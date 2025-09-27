@@ -12,8 +12,15 @@ function InvSlot:OnControl(control, down)
     if not down then
         return false
     end
+
+    local isreadonlycontainer = self.container.IsReadOnlyContainer and self.container:IsReadOnlyContainer()
+
     if control == CONTROL_ACCEPT then
         --generic click, with possible modifiers
+        if isreadonlycontainer then
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+            return true
+        end
         if TheInput:IsControlPressed(CONTROL_FORCE_INSPECT) then
             self:Inspect()
         elseif TheInput:IsControlPressed(CONTROL_FORCE_TRADE) then
@@ -27,6 +34,10 @@ function InvSlot:OnControl(control, down)
         end
     elseif control == CONTROL_SECONDARY then
         --alt use (usually RMB)
+        if isreadonlycontainer then
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+            return true
+        end
         if TheInput:IsControlPressed(CONTROL_FORCE_TRADE) then
             self:DropItem(TheInput:IsControlPressed(CONTROL_FORCE_STACK))
         else
@@ -34,20 +45,36 @@ function InvSlot:OnControl(control, down)
         end
         --the rest are explicit control presses for controllers
     elseif control == CONTROL_SPLITSTACK then
+        if isreadonlycontainer then
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+            return true
+        end
         self:Click(true)
     elseif control == CONTROL_TRADEITEM then
+        if isreadonlycontainer then
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+            return true
+        end
         if self:CanTradeItem() then
             self:TradeItem(false)
         else
             return false
         end
     elseif control == CONTROL_TRADESTACK then
+        if isreadonlycontainer then
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+            return true
+        end
         if self:CanTradeItem() then
             self:TradeItem(true)
         else
             return false
         end
     elseif control == CONTROL_INSPECT then
+        if isreadonlycontainer then
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+            return true
+        end
         self:Inspect()
     else
         return false
@@ -82,16 +109,36 @@ function InvSlot:Click(stack_mod)
             end
         elseif active_item == nil then
             --Take active item from slot
-            if stack_mod and
+            local takecount
+            if inventory and inventory ~= container then -- Variable character cannot be nil from above.
+                local maxtakecountfunction = GetDesiredMaxTakeCountFunction(container_item.prefab)
+                if maxtakecountfunction then
+                    takecount = maxtakecountfunction(character, inventory, container_item, container)
+                end
+            end
+            if takecount then
+                if takecount > 0 then
+                    -- Take a set number from a slot if possible.
+                    if stack_mod then
+                        takecount = math.max(math.floor(takecount / 2), 1)
+                    end
+                    container:TakeActiveItemFromCountOfSlot(slot_number, takecount)
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
+                else
+                    -- Block taking anything if this override exists.
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+                end
+            elseif stack_mod and
                 container_item.replica.stackable ~= nil and
                 container_item.replica.stackable:IsStack() then
                 --Take one only
                 container:TakeActiveItemFromHalfOfSlot(slot_number)
+                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
             else
                 --Take entire stack
                 container:TakeActiveItemFromAllOfSlot(slot_number)
+                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
             end
-            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
         elseif container:CanTakeItemInSlot(active_item, slot_number) then
             if container_item.prefab == active_item.prefab and container_item:StackableSkinHack(active_item) and container_item.replica.stackable ~= nil and container:AcceptsStacks() then
                 --Add active item to slot stack
@@ -201,8 +248,8 @@ local function FindBestContainer(self, item, containers, exclude_containers)
 end
 
 function InvSlot:CanTradeItem()
-    local item = self.container and self.container:GetItemInSlot(self.num) or nil
-    return not (item ~= nil and item.replica.inventoryitem ~= nil and item.replica.inventoryitem:CanOnlyGoInPocket())
+    local item = self.container and (self.container.IsReadOnlyContainer == nil or not self.container:IsReadOnlyContainer()) and self.container:GetItemInSlot(self.num) or nil
+    return not (item ~= nil and item.replica.inventoryitem ~= nil and item.replica.inventoryitem:CanOnlyGoInPocket()) -- Do not handle CanOnlyGoInPocketOrPocketContainers let TradeItem do this.
 end
 
 --moves items between open containers
@@ -211,11 +258,18 @@ function InvSlot:TradeItem(stack_mod)
     local character = ThePlayer
     local inventory = character and character.replica.inventory or nil
     local container = self.container
-    local container_item = container and container:GetItemInSlot(slot_number) or nil
+    local container_item = container and (container.IsReadOnlyContainer == nil or not container:IsReadOnlyContainer()) and container:GetItemInSlot(slot_number) or nil
 
     if character ~= nil and inventory ~= nil and container_item ~= nil then
         local opencontainers = inventory:GetOpenContainers()
-        if next(opencontainers) == nil then
+        local haswriteablecontainer = false
+        for opencontainer, _ in pairs(opencontainers) do
+            if opencontainer.replica.container and not opencontainer.replica.container:IsReadOnlyContainer() then
+                haswriteablecontainer = true
+                break
+            end
+        end
+        if not haswriteablecontainer then
             return
         end
 
@@ -253,14 +307,34 @@ function InvSlot:TradeItem(stack_mod)
 
         --if a destination container/inv is found...
         if dest_inst ~= nil then
-            if stack_mod and
+            local takecount
+            if inventory and inventory ~= container then -- Variable character cannot be nil from above.
+                local maxtakecountfunction = GetDesiredMaxTakeCountFunction(container_item.prefab)
+                if maxtakecountfunction then
+                    takecount = maxtakecountfunction(character, inventory, container_item, container)
+                end
+            end
+            if takecount then
+                if takecount > 0 then
+                    -- Take a set number from a slot if possible.
+                    if stack_mod then
+                        takecount = math.max(math.floor(takecount / 2), 1)
+                    end
+                    container:MoveItemFromCountOfSlot(slot_number, dest_inst, takecount)
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
+                else
+                    -- Block taking anything if this override exists.
+                    TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
+                end
+            elseif stack_mod and
                 container_item.replica.stackable ~= nil and
                 container_item.replica.stackable:IsStack() then
                 container:MoveItemFromHalfOfSlot(slot_number, dest_inst)
+                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
             else
                 container:MoveItemFromAllOfSlot(slot_number, dest_inst)
+                TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
             end
-            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
         else
             TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
         end

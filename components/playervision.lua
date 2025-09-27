@@ -122,6 +122,7 @@ local PlayerVision = Class(function(self, inst)
 
     self.blendcctable = nil
     self.forcednightvisionstack = {}
+	self.forcednightvisionambienttable = nil
 
     inst:DoTaskInTime(0, OnInit, self)
     inst:ListenForEvent("changearea", OnAreaChanged)
@@ -214,7 +215,7 @@ function PlayerVision:ForceNightVision(force)
     end
 end
 
-function PlayerVision:PushForcedNightVision(source, priority, customcctable, blend)
+function PlayerVision:PushForcedNightVision(source, priority, customcctable, blend, customambienttable)
     priority = priority or 0
 
     -- Only one entry per source!
@@ -222,13 +223,14 @@ function PlayerVision:PushForcedNightVision(source, priority, customcctable, ble
 
     local current = self.forcednightvisionstack[1]
 
-    table.insert(self.forcednightvisionstack, { source=source, priority=priority, cctable=customcctable, blend=blend })
+	table.insert(self.forcednightvisionstack, { source=source, priority=priority, cctable=customcctable, blend=blend, ambienttable=customambienttable })
     table.sort(self.forcednightvisionstack, function(l, r) return l.priority > r.priority end)
 
     local new = self.forcednightvisionstack[1]
 
     if current == nil or current ~= new then
         self:ForceNightVision(true)
+		self:SetForcedNightVisionAmbientOverrides(new.ambienttable)
         self:SetCustomCCTable(new.cctable, new.blend)
     end
 end
@@ -242,20 +244,32 @@ function PlayerVision:PopForcedNightVision(source)
 
             if #self.forcednightvisionstack == 0 then
                 self:ForceNightVision(false)
+				self:SetForcedNightVisionAmbientOverrides(nil)
                 self:SetCustomCCTable(nil)
-
                 return
             end
 
             local new = self.forcednightvisionstack[1]
 
             if current ~= new then
+				self:SetForcedNightVisionAmbientOverrides(new.ambienttable)
                 self:SetCustomCCTable(new.cctable, new.blend)
             end
 
             break 
         end
     end
+end
+
+function PlayerVision:SetForcedNightVisionAmbientOverrides(ambienttable)
+	if self.forcednightvisionambienttable ~= ambienttable then
+		self.forcednightvisionambienttable = ambienttable
+		self.inst:PushEvent("nightvisionambientoverrides", ambienttable)
+	end
+end
+
+function PlayerVision:GetNightVisionAmbientOverrides()
+	return self.forcednightvisionambienttable
 end
 
 function PlayerVision:ForceGoggleVision(force)

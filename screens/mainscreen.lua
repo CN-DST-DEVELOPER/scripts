@@ -271,7 +271,7 @@ function MainScreen:OnLoginButton(push_mp_main_screen)
                                     cb = function()
                                         onCancel()
                                         TheFrontEnd:PopScreen()
-                                        VisitURL("http://forums.kleientertainment.com/forum/86-check-for-latest-steam-build/")
+                                        VisitURL("https://forums.kleientertainment.com/forum/86-check-for-latest-steam-build/")
                                     end },
                          {text=STRINGS.UI.MAINSCREEN.VERSION_OUT_OF_DATE_CANCEL,
                                     cb = function()
@@ -353,7 +353,7 @@ function MainScreen:EmailSignup()
 end
 
 function MainScreen:Forums()
-	VisitURL("http://forums.kleientertainment.com/forum/73-dont-starve-together-beta/")
+	VisitURL("https://forums.kleientertainment.com/forum/73-dont-starve-together-beta/")
 end
 
 function MainScreen:Quit()

@@ -3040,11 +3040,25 @@ local applyoverrides_pre = {
         local tuning_vars =
         {
             none = {
-                ACIDRAIN_ENALBED = false
+                ACIDRAIN_ENABLED = false
             },
             --[[
             always = {
-                ACIDRAIN_ENALBED = true,
+                ACIDRAIN_ENABLED = true,
+            },
+            ]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    wanderingtrader_enabled = function(difficulty)
+        local tuning_vars =
+        {
+            none = {
+                WANDERINGTRADER_ENABLED = false
+            },
+            --[[
+            always = {
+                WANDERINGTRADER_ENABLED = true,
             },
             ]]
         }
@@ -3670,6 +3684,9 @@ local function areaambientdefault(prefab)
         world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES_GLOW, override = "ROCKY" })
         world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM, override = "ROCKY" })
         world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM_GLOW, override = "ROCKY" })
+		world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ARCHIVE, override = "ROCKY" })
+		world:PushEvent("overrideambientsound", { tile = WORLD_TILES.VAULT_CLEAN, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.VENT, override = "ROCKY" })
     end
 end
 

@@ -4,6 +4,7 @@ local events =
 {
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+    CommonHandlers.OnElectrocute(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnSink(),
@@ -11,18 +12,19 @@ local events =
 
     EventHandler("doattack", function(inst, data)
         if inst.components.health ~= nil and not inst.components.health:IsDead()
-            and (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("hit")) then
+            and (not inst.sg:HasStateTag("busy") or (inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute"))) then
 
             inst.sg:GoToState("attack")
         end
     end),
 
 	EventHandler("attacked", function(inst, data)
-		if inst.components.health ~= nil and not inst.components.health:IsDead()
-			and (not inst.sg:HasStateTag("busy") or
-				inst.sg:HasStateTag("caninterrupt") or
-				inst.sg:HasStateTag("frozen")) then
-			inst.sg:GoToState("hit")
+		if inst.components.health and not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen") then
+				inst.sg:GoToState("hit")
+			end
 		end
 	end),
 }
@@ -133,6 +135,7 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

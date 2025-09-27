@@ -152,7 +152,7 @@ function UserCommandPickerScreen:UpdateActions()
         end
     end
 
-    table.sort(self.actions, function(a,b) return a.prettyname < b.prettyname end)
+    table.sort(self.actions, function(a,b) return stringidsorter(a.prettyname, b.prettyname) end)
 end
 
 function UserCommandPickerScreen:OnControl(control, down)

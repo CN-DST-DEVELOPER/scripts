@@ -19,6 +19,7 @@ local events=
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(1),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
@@ -367,6 +368,6 @@ CommonStates.AddCombatStates(states,
 end})
 
 CommonStates.AddFrozenStates(states)
-
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("primemate", states, events, "idle", actionhandlers)

@@ -251,7 +251,9 @@ function Moisture:GetWaterproofness()
 end
 
 function Moisture:GetMoistureRate()
-    if not TheWorld.state.israining then
+	if self.inst.components.inventory and self.inst.components.inventory:IsFloaterHeld() then
+		return self.maxMoistureRate
+	elseif not TheWorld.state.israining then
         return 0
     end
 

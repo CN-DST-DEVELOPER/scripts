@@ -51,6 +51,13 @@ function Book:OnPeruse(reader)
 	return success
 end
 
+--For bird_book to call directly during a lunar hail fail even if the read 'failed'
+function Book:DoReadPenalties(reader)
+	if reader.components.sanity then
+		reader.components.sanity:DoDelta( (self.read_sanity or 0) * reader.components.reader:GetSanityPenaltyMultiplier() )
+	end
+end
+
 function Book:OnRead(reader)
 	local success, reason = self:Interact(self.onread, reader)
 	if success and reader.components.sanity then
@@ -66,7 +73,7 @@ function Book:OnRead(reader)
 			fx.Transform:SetRotation(reader.Transform:GetRotation())
 		end
 
-		reader.components.sanity:DoDelta( (self.read_sanity or 0) * reader.components.reader:GetSanityPenaltyMultiplier() )
+		self:DoReadPenalties(reader)
 	end
 
 	return success, reason

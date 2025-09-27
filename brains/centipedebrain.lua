@@ -59,6 +59,7 @@ function CentipedeBrain:OnStart()
         WhileNode(function() return not self.inst.sg:HasStateTag("charge") end, "no charging",
             PriorityNode({
 				BrainCommon.PanicTrigger(self.inst),
+
                 DoAction(self.inst, ShouldRoll, "Roll", true ),
                 WhileNode(function()
                                 return self.inst.components.combat.target == nil

@@ -13,6 +13,10 @@ function Instrument:SetOnPlayedFn(fn)
     self.onplayed = fn
 end
 
+function Instrument:SetOnFinishedPlayingFn(fn)
+    self.onfinishedplaying = fn
+end
+
 function Instrument:SetRange(range)
     self.range = range
 end
@@ -39,6 +43,9 @@ function Instrument:Play(musician)
                 self.onheard(listener, musician, self.inst)
             end
         end
+    end
+    if self.onfinishedplaying ~= nil then
+        self.onfinishedplaying(self.inst, musician)
     end
     return true
 end

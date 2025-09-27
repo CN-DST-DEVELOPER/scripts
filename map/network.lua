@@ -576,6 +576,18 @@ function Graph:GetRandomNodeForEntrance()
 	return self.nodes[weighted_random_choice(picks)]
 end
 
+function Graph:GetNodesByName(node_name)
+	local nodes = {}
+	--
+	for n_id, n in pairs(self.nodes) do
+		if n.data.name == node_name then
+			table.insert(nodes, {node = n})
+		end
+	end
+	--
+	return nodes
+end
+
 -- Each increment is one more link ie: a triangle would be factor 1, a line factor 0, a tree factor 0, a square -> 1
 function Graph:CrosslinkRandom(crossLinkFactor)
 	if GetTableSize(self.nodes)<=2 then

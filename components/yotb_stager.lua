@@ -388,8 +388,8 @@ end
 
 function YOTB_Stager:EnableContest()
 
-	local manager = TheWorld.components.yotb_stagemanager
-	if manager and (manager:IsContestActive() or not manager:IsContestEnabled()) then
+	local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+	if yotb_stagemanager and (yotb_stagemanager:IsContestActive() or not yotb_stagemanager:IsContestEnabled() or yotb_stagemanager:GetHostVisible()) then
 		return
 	end
 
@@ -485,8 +485,8 @@ function YOTB_Stager:Start_fail(result)
 	end
 
 	local task = self.inst:DoTaskInTime(4, function()
-		--self.inst:resetworkable()
 		self.inst:PushEvent("trader_leaves")
+        self.inst.components.workable:SetWorkable(true)
 	end)
 
 	table.insert(self.tasks,task)
@@ -532,7 +532,7 @@ function YOTB_Stager:StartContest(starter)
 end
 
 local function onplayerbeefattacked(inst)
-	local stage = TheWorld.components.yotb_stagemanager and TheWorld.components.yotb_stagemanager:GetActiveStage()
+	local stage = TheWorld.components.yotb_stagemanager and TheWorld.components.yotb_stagemanager:GetActiveStage() or nil
 	if stage then
 		stage.components.yotb_stager:AbortContest({reason="attack"})
 	end
@@ -977,12 +977,12 @@ end
 local function LaunchGameItem(inst, item, angle, minorspeedvariance, target)
     local x, y, z = inst.Transform:GetWorldPosition()
     local spd = 3.5 + math.random() * (minorspeedvariance and 1 or 3.5)
-    item.Physics:ClearCollisionMask()
-    item.Physics:CollidesWith(COLLISION.WORLD)
-    item.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+	if bit.band(item.Physics:GetCollisionMask(), COLLISION.OBSTACLES) ~= 0 then
+		item.Physics:ClearCollidesWith(COLLISION.OBSTACLES)
+		item:DoTaskInTime(0.6, OnRestoreItemPhysics)
+	end
     item.Physics:Teleport(x, 2.5, z)
     item.Physics:SetVel(math.cos(angle) * spd, 11.5, math.sin(angle) * spd)
-    item:DoTaskInTime(.6, OnRestoreItemPhysics)
     item:PushEvent("knockbackdropped", { owner = inst, knocker = inst, delayinteraction = .75, delayplayerinteraction = .5 })
    	item:ListenForEvent("onland")
 end

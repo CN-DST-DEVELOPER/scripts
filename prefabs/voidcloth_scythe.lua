@@ -242,11 +242,79 @@ local function DoScythe(inst, target, doer)
 end
 
 local hitsparks_fx_colouroverride = {1, 0, 0}
-local function OnAttack(inst, attacker, target)
+local function TryToSparkOn(target, attacker)
     if target ~= nil and target:IsValid() then
         local spark = SpawnPrefab("hitsparks_fx")
         spark:Setup(attacker, target, nil, hitsparks_fx_colouroverride)
         spark.black:set(true)
+    end
+end
+
+--see winona_catapult_projectile
+local NO_TAGS_PVP = { "INLIMBO", "playerghost", "FX", "NOCLICK", "DECOR", "notarget", "companion", "decoy" }
+local NO_TAGS = shallowcopy(NO_TAGS_PVP)
+table.insert(NO_TAGS, "player")
+table.insert(NO_TAGS, "wall")
+
+local function HasFriendlyLeader(target, attacker)
+    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+
+    if target_leader ~= nil then
+
+        if target_leader.components.inventoryitem then
+            target_leader = target_leader.components.inventoryitem:GetGrandOwner()
+        end
+
+        local PVP_enabled = TheNet:GetPVPEnabled()
+        return (target_leader ~= nil 
+                and (target_leader:HasTag("player") 
+                and not PVP_enabled)) or
+                (target.components.domesticatable and target.components.domesticatable:IsDomesticated() 
+                and not PVP_enabled) or
+                (target.components.saltlicker and target.components.saltlicker.salted
+                and not PVP_enabled)
+    end
+
+    return false
+end
+
+local function ShadowAoEValidFn(target, attacker)
+    if target:HasTag("playerghost") then
+        return false
+    end
+
+    if target:HasTag("monster") and not TheNet:GetPVPEnabled() and 
+        ((target.components.follower and target.components.follower.leader ~= nil and 
+            target.components.follower.leader:HasTag("player")) or target.bedazzled) then
+        return false
+    end
+
+    if HasFriendlyLeader(target, attacker) then
+        return false
+    end
+
+    TryToSparkOn(target, attacker)
+    return true
+end
+
+local function DoShadowAoE(inst, attacker, target)
+    if attacker.components.combat then
+        local range = TUNING.SKILLS.WORTOX.VOIDCLOTHSCYTHE_AOE_RANGE
+        local weapon = inst
+        local excludetags = TheNet:GetPVPEnabled() and NO_TAGS_PVP or NO_TAGS
+        local hitcount = attacker.components.combat:DoAreaAttack(target, range, weapon, ShadowAoEValidFn, nil, excludetags)
+        if hitcount == 0 and target:IsValid() then
+            attacker.components.combat:DoAreaAttack(target, range, weapon, ShadowAoEValidFn, nil, excludetags, true)
+        end
+    end
+end
+
+local function OnAttack(inst, attacker, target)
+    TryToSparkOn(target, attacker)
+    if attacker.components.skilltreeupdater and attacker.components.skilltreeupdater:IsActivated("wortox_allegiance_shadow") then
+        if attacker.finishportalhoptask ~= nil and attacker:TryToPortalHop(1, false) then
+            inst:DoShadowAoE(attacker, target)
+        end
     end
 end
 
@@ -431,6 +499,7 @@ local function ScytheFn()
     inst.DoScythe = DoScythe
     inst.IsEntityInFront = IsEntityInFront
     inst.HarvestPickable = HarvestPickable
+    inst.DoShadowAoE = DoShadowAoE
 
     return inst
 end

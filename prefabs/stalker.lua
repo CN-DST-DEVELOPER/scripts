@@ -305,11 +305,18 @@ end
 
 local function OnAttacked(inst, data)
     if data.attacker ~= nil then
-        if inst._recentattackers ~= nil and data.attacker:HasTag("player") then
-            if inst._recentattackers[data.attacker] ~= nil then
-                inst._recentattackers[data.attacker]:Cancel()
+		local shouldtrackplayerhit
+        if data.attacker:HasTag("player") then
+            if inst._recentattackers ~= nil then
+                if inst._recentattackers[data.attacker] ~= nil then
+                    inst._recentattackers[data.attacker]:Cancel()
+                end
+                inst._recentattackers[data.attacker] = inst:DoTaskInTime(6, ClearRecentAttacker, data.attacker)
             end
-            inst._recentattackers[data.attacker] = inst:DoTaskInTime(6, ClearRecentAttacker, data.attacker)
+            if inst.atriumstalker then
+				shouldtrackplayerhit = true
+                --inst._lastplayerhittime = GetTime()
+            end
         end
         local target = inst.components.combat.target
         if target ~= data.attacker and
@@ -321,6 +328,9 @@ local function OnAttacked(inst, data)
                 inst:IsNearAtrium()) then
             inst.components.combat:SetTarget(data.attacker)
         end
+		if shouldtrackplayerhit and inst.components.combat:HasTarget() then
+			inst._lastplayerhittime = GetTime()
+		end
     end
 end
 
@@ -372,14 +382,14 @@ local function AtriumSetEngaged(inst, engaged)
         inst.engaged = engaged
         inst.components.timer:StopTimer("snare_cd")
         inst.components.timer:StopTimer("spikes_cd")
-        inst.components.timer:StopTimer("channelers_cd")
-        inst.components.timer:StopTimer("minions_cd")
+		--inst.components.timer:StopTimer("channelers_cd")
+		--inst.components.timer:StopTimer("minions_cd")
         inst.components.timer:StopTimer("mindcontrol_cd")
         if engaged then
             inst.components.timer:StartTimer("snare_cd", TUNING.STALKER_FIRST_SNARE_CD)
             inst.components.timer:StartTimer("spikes_cd", TUNING.STALKER_FIRST_SPIKES_CD)
-            inst.components.timer:StartTimer("channelers_cd", TUNING.STALKER_FIRST_CHANNELERS_CD)
-            inst.components.timer:StartTimer("minions_cd", TUNING.STALKER_FIRST_MINIONS_CD)
+			--inst.components.timer:StartTimer("channelers_cd", TUNING.STALKER_FIRST_CHANNELERS_CD)
+			--inst.components.timer:StartTimer("minions_cd", TUNING.STALKER_FIRST_MINIONS_CD)
             inst.components.timer:StartTimer("mindcontrol_cd", TUNING.STALKER_FIRST_MINDCONTROL_CD)
             inst:RemoveEventCallback("newcombattarget", OnNewTarget)
         else

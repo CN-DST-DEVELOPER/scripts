@@ -245,7 +245,7 @@ BEEFALO_CLOTHING =
 	{
 		type = "beef_head",
 		skin_tags = { "BEEFALO_HEAD", "BEEFALO", },
-		symbol_overrides = { "beefalo_beard", "beefalo_facebase", "beefalo_headbase", "beefalo_jowls", "beefalo_lip_crease", "beefalo_mouthmouth", "beefalo_nose", "beffalo_lips", },
+		symbol_overrides = { "beefalo_beard", "beefalo_eye", "beefalo_facebase", "beefalo_headbase", "beefalo_jowls", "beefalo_lip_crease", "beefalo_mouthmouth", "beefalo_nose", "beffalo_lips", },
 		rarity = "Complimentary",
 		release_group = 112,
 	},

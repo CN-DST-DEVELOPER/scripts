@@ -22,10 +22,10 @@ local EncountersPanel = Class(Widget, function(self)
 	self.can_view_profile = not IsPS4()
 
 	self.root = self:AddChild(Widget("ROOT"))
-    self.root:SetPosition(0,0)
+    self.root:SetPosition(0, 10)
 
 	self.dialog = self.root:AddChild(TEMPLATES.RectangleWindow(dialog_size_x, dialog_size_y))
-    self.dialog:SetPosition(0, 10)
+    self.dialog:SetPosition(0, 0)
 
 	self:DoInit()
     self.encounters_scroll_list:SetPosition(-15, 0)

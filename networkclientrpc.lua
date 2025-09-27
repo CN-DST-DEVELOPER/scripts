@@ -128,16 +128,19 @@ local RPC_HANDLERS =
         end
     end,
 
-    AttackButton = function(player, target, forceattack, noforce)
+	--V2C: isleftmouse & isreleased at the end because added a lot later
+	AttackButton = function(player, target, forceattack, noforce, isleftmouse, isreleased)
         if not (optentity(target) and
                 optbool(forceattack) and
-                optbool(noforce)) then
+				optbool(noforce) and
+				optbool(isleftmouse) and
+				optbool(isreleased)) then
             printinvalid("AttackButton", player)
             return
         end
         local playercontroller = player.components.playercontroller
         if playercontroller ~= nil then
-            playercontroller:OnRemoteAttackButton(target, forceattack, noforce)
+			playercontroller:OnRemoteAttackButton(target, forceattack, noforce, isleftmouse, isreleased)
         end
     end,
 
@@ -158,6 +161,17 @@ local RPC_HANDLERS =
             playercontroller:OnRemoteResurrectButton()
         end
     end,
+
+	CharacterCommandWheelButton = function(player, target)
+		if not checkentity(target) then
+			printinvalid("CharacterCommandWheelButton", player)
+			return
+		end
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			playercontroller:OnRemoteCharacterCommandWheelButton(target)
+		end
+	end,
 
     ControllerActionButton = function(player, action, target, isreleased, noforce, mod_name)
         if not (checknumber(action) and
@@ -339,23 +353,24 @@ local RPC_HANDLERS =
         end
     end,
 
-    PredictWalking = function(player, x, z, isdirectwalking, isstart, platform, platform_relative)
+	PredictWalking = function(player, x, z, isdirectwalking, isstart, platform, platform_relative, overridemovetime)
         if not (checknumber(x) and
                 checknumber(z) and
                 checkbool(isdirectwalking) and
                 checkbool(isstart) and
 				optentity(platform) and
-				checkbool(platform_relative)) then
+				checkbool(platform_relative) and
+				optnumber(overridemovetime)) then
             printinvalid("PredictWalking", player)
             return
         end
         local playercontroller = player.components.playercontroller
         if playercontroller ~= nil then
 			printinvalidplatform("PredictWalking", player, nil, x, z, platform, platform_relative)
-			x, z = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
-			if x ~= nil then
-				if IsPointInRange(player, x, z) then
-					playercontroller:OnRemotePredictWalking(x, z, isdirectwalking, isstart)
+			local x1, z1 = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
+			if x1 then
+				if IsPointInRange(player, x1, z1) then
+					playercontroller:OnRemotePredictWalking(x, z, isdirectwalking, isstart, platform_relative and platform or nil, overridemovetime)
 				else
 					print("Remote predict walking out of range")
 				end
@@ -499,6 +514,26 @@ local RPC_HANDLERS =
                 container = container.components.container
                 if container ~= nil and container:IsOpenedBy(player) then
                     container:TakeActiveItemFromHalfOfSlot(slot, player)
+                end
+            end
+        end
+    end,
+
+    TakeActiveItemFromCountOfSlot = function(player, slot, container, count)
+        if not (checkuint(slot) and
+                optentity(container) and
+                checkuint(count)) then
+            printinvalid("TakeActiveItemFromCountOfSlot", player)
+            return
+        end
+        local inventory = player.components.inventory
+        if inventory ~= nil then
+            if container == nil then
+                inventory:TakeActiveItemFromCountOfSlot(slot, count)
+            else
+                container = container.components.container
+                if container ~= nil and container:IsOpenedBy(player) then
+                    container:TakeActiveItemFromCountOfSlot(slot, count, player)
                 end
             end
         end
@@ -758,6 +793,19 @@ local RPC_HANDLERS =
         end
     end,
 
+    MoveInvItemFromCountOfSlot = function(player, slot, destcontainer, count)
+        if not (checkuint(slot) and
+                checkentity(destcontainer) and
+                checkuint(count)) then
+            printinvalid("MoveInvItemFromCountOfSlot", player)
+            return
+        end
+        local inventory = player.components.inventory
+        if inventory ~= nil then
+            inventory:MoveItemFromCountOfSlot(slot, destcontainer, count)
+        end
+    end,
+
     MoveItemFromAllOfSlot = function(player, slot, srccontainer, destcontainer)
         if not (checkuint(slot) and
                 checkentity(srccontainer) and
@@ -781,6 +829,20 @@ local RPC_HANDLERS =
         local container = srccontainer.components.container
         if container ~= nil and container:IsOpenedBy(player) then
             container:MoveItemFromHalfOfSlot(slot, destcontainer or player, player)
+        end
+    end,
+
+    MoveItemFromCountOfSlot = function(player, slot, srccontainer, destcontainer, count)
+        if not (checkuint(slot) and
+                checkentity(srccontainer) and
+                optentity(destcontainer) and
+                checkuint(count)) then
+            printinvalid("MoveItemFromCountOfSlot", player)
+            return
+        end
+        local container = srccontainer.components.container
+        if container ~= nil and container:IsOpenedBy(player) then
+            container:MoveItemFromCountOfSlot(slot, destcontainer or player, count, player)
         end
     end,
 
@@ -935,6 +997,17 @@ local RPC_HANDLERS =
         popup:Close(player, ...)
     end,
 
+    RecievePopupMessage = function(player, popupcode, mod_name, ...)
+        if not (checkuint(popupcode) and
+                optstring(mod_name) and
+                GetPopupFromPopupCode(popupcode, mod_name)) then
+            printinvalid("RecievePopupMessage", player)
+            return
+        end
+
+        GetPopupFromPopupCode(popupcode, mod_name):SendMessageToServer(player, ...)
+    end,
+
     RepeatHeldAction = function(player)
         local playercontroller = player.components.playercontroller
         if playercontroller then
@@ -1041,6 +1114,71 @@ local RPC_HANDLERS =
         player:SetClientAuthoritativeSetting(variable, value)
     end,
 
+	AOECharging = function(player, rotation, startflag)
+		if not (checknumber(rotation) and
+				optuint(startflag)) then
+			printinvalid("AOECharging", player)
+			return
+		end
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			playercontroller:OnRemoteAOECharging(rotation, startflag)
+		end
+	end,
+
+	DoubleTapAction = function(player, action, x, z, noforce, mod_name, platform, platform_relative)
+		if not (checknumber(action) and
+				checknumber(x) and
+				checknumber(z) and
+				optbool(noforce) and
+				optstring(mod_name) and
+				optentity(platform) and
+				checkbool(platform_relative)) then
+			printinvalid("DoubleTapAction", player)
+			return
+		end
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			printinvalidplatform("DoubleTapAction", player, action, x, z, platform, platform_relative)
+			x, z = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
+			if x then
+				if IsPointInRange(player, x, z) then
+					playercontroller:OnRemoteDoubleTapAction(action, Vector3(x, 0, z), noforce, mod_name)
+				else
+					print("Remote left click out of range")
+				end
+			end
+		end
+	end,
+
+	WobyCommand = function(player, cmd)
+		if not checkuint(cmd) then
+			printinvalid("WobyCommand", player)
+			return
+		end
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			if player.woby_commands_classified then
+				player.woby_commands_classified:ExecuteCommand(cmd)
+			else
+				print("Player cannot use Woby commands")
+			end
+		end
+	end,
+
+	InteractionTarget = function(player, action, target)
+		if not (optnumber(action) and
+				optentity(target))
+		then
+			printinvalid("InteractionTarget", player)
+			return
+		end
+		local playercontroller = player.components.playercontroller
+		if playercontroller then
+			playercontroller:OnRemoteInteractionTarget(action, target)
+		end
+	end,
+
     -- NOTES(JBK): RPC limit is at 128, with 1-127 usable.
 }
 
@@ -1070,6 +1208,14 @@ local CLIENT_RPC_HANDLERS =
 
         if popup then
             popup.fn(ThePlayer, show, ...)
+        end
+    end,
+
+    RecievePopupMessage = function(popupcode, mod_name, ...)
+        local popup = GetPopupFromPopupCode(popupcode, mod_name)
+
+        if popup then
+            popup:SendMessageToClient(ThePlayer, ...)
         end
     end,
 
@@ -1189,6 +1335,24 @@ end
 local WorldSettings_Overrides = require("worldsettings_overrides")
 local SHARD_RPC_HANDLERS =
 {
+    ShardTransactionSteps = function(shardid, shardpayload_string)
+        shardid = tostring(shardid) -- shardid is converted to an integer and must be back to string.
+        local shardtransactionsteps = TheWorld and TheWorld.components.shardtransactionsteps or nil
+        if shardtransactionsteps then
+            local success, shardpayload = RunInSandboxSafe(shardpayload_string)
+            if success and (shardid == shardpayload.originshardid or shardid == shardpayload.receivershardid) then
+                shardtransactionsteps:OnShardTransactionSteps(shardpayload)
+            end
+        end
+    end,
+    PruneShardTransactionSteps = function(shardid, newfinalizedid)
+        shardid = tostring(shardid) -- shardid is converted to an integer and must be back to string.
+        local shardtransactionsteps = TheWorld and TheWorld.components.shardtransactionsteps or nil
+        if shardtransactionsteps then
+            shardtransactionsteps:OnPruneShardTransactionSteps(shardid, newfinalizedid)
+        end
+    end,
+
     ReskinWorldMigrator = function(shardid, migrator, skin_theme, skin_id, sessionid)
         for i,v in ipairs(ShardPortals) do
             if v.components.worldmigrator.id == migrator then
@@ -1224,6 +1388,11 @@ local SHARD_RPC_HANDLERS =
 
     ResyncWorldSettings = function(shardid)
         Shard_SyncWorldSettings(shardid, true)
+    end,
+
+    SyncWorldStateTag = function(shardid, namespace, tag, enabled)
+        local worldstatetagobject = GetWorldStateTagObjectFromNamespace(namespace)
+        worldstatetagobject.SetTagEnabled(tag, enabled)
     end,
 
     SyncBossDefeated = function(shardid, bossprefab) -- NOTES(JBK): This should not be called often enough to warrant a lookup table for bossprefab as an enum.

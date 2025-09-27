@@ -39,9 +39,18 @@ local SkillTreeToast = require "widgets/skilltreetoast"
 local ScrapbookToast = require "widgets/scrapbooktoast"
 local VoteDialog = require "widgets/votedialog"
 local TEMPLATES = require "widgets/templates"
+local UserCommandPickerScreen = require "screens/redux/usercommandpickerscreen"
+local UserCommands = require "usercommands"
+local Wheel = require "widgets/wheel"
+local WheelItem = require "widgets/wheelitem"
+
 local easing = require("easing")
 local TeamStatusBars = require("widgets/teamstatusbars")
-local Wheel = require "widgets/wheel"
+
+local WHEEL_RADIUS = 175
+local WHEEL_FOCUS_RADIUS = 178      
+local NESTED_WHEEL_RADIUS_INCREMENT = 10
+local NESTED_WHEEL_FOCUS_RADIUS_INCREMENT = 1
 
 local Controls = Class(Widget, function(self, owner)
     Widget._ctor(self, "Controls")
@@ -82,6 +91,7 @@ local Controls = Class(Widget, function(self, owner)
     self.blackoverlay:SetTint(0,0,0,.5)
     self.blackoverlay:Hide()
 
+	self.containerroot_under = self:AddChild(Widget(""))
     self.containerroot = self:AddChild(Widget(""))
     self.containerroot_side_behind = self:AddChild(Widget(""))
     self:MakeScalingNodes()
@@ -95,18 +105,23 @@ local Controls = Class(Widget, function(self, owner)
         {pos=Vector3(315, 150, 0)},
         {pos=Vector3(415, 150, 0)},        
     }
+	self.toastitems = {}
 
     self.item_notification = self.topleft_root:AddChild(GiftItemToast(self.owner, self))
     self.item_notification:SetPosition(115, 150, 0)
+	table.insert(self.toastitems, self.item_notification)
 
     self.yotb_notification = self.topleft_root:AddChild(YotbToast(self.owner, self))
     self.yotb_notification:SetPosition(215, 150, 0)
+	table.insert(self.toastitems, self.yotb_notification)
 
     self.skilltree_notification = self.topleft_root:AddChild(SkillTreeToast(self.owner, self))
     self.skilltree_notification:SetPosition(315, 150, 0)
+	table.insert(self.toastitems, self.skilltree_notification)
 
     self.scrapbook_notification = self.topleft_root:AddChild(ScrapbookToast(self.owner, self))
     self.scrapbook_notification:SetPosition(415, 0, 0)
+	table.insert(self.toastitems, self.scrapbook_notification)
 
     --self.worldresettimer = self.bottom_root:AddChild(WorldResetTimer(self.owner))
     self.worldresettimer = self.bottom_root:AddChild(PlayerDeathNotification(self.owner))
@@ -206,8 +221,8 @@ local Controls = Class(Widget, function(self, owner)
 
         self.votedialog = self.topright_root:AddChild(VoteDialog(self.owner))
         self.votedialog:SetPosition(-330, 0, 0)
-    end
-
+	end
+	
     local twitch_options = TheFrontEnd:GetTwitchOptions()
     if twitch_options ~= nil and twitch_options:SupportedByPlatform() then
         if twitch_options:IsInitialized() and twitch_options:GetBroadcastingEnabled() and twitch_options:GetVisibleChatEnabled() then
@@ -248,6 +263,12 @@ local Controls = Class(Widget, function(self, owner)
     self.containerroot:SetMaxPropUpscale(MAX_HUD_SCALE)
     self.containerroot = self.containerroot:AddChild(Widget(""))
 
+	self.containerroot_under:SetHAnchor(ANCHOR_MIDDLE)
+	self.containerroot_under:SetVAnchor(ANCHOR_MIDDLE)
+	self.containerroot_under:SetScaleMode(SCALEMODE_PROPORTIONAL)
+	self.containerroot_under:SetMaxPropUpscale(MAX_HUD_SCALE)
+	self.containerroot_under = self.containerroot_under:AddChild(Widget("containerroot_under"))
+
     self.containerroot_side_behind:SetHAnchor(ANCHOR_RIGHT)
     self.containerroot_side_behind:SetVAnchor(ANCHOR_MIDDLE)
     self.containerroot_side_behind:SetScaleMode(SCALEMODE_PROPORTIONAL)
@@ -278,7 +299,7 @@ local Controls = Class(Widget, function(self, owner)
 
     self.hover = self:AddChild(HoverText(self.owner))
     self.hover:SetScaleMode(SCALEMODE_PROPORTIONAL)
-
+	
 	if is_player1 then
 	    self.craftingmenu = self.left_root:AddChild(CraftingMenu(self.owner, true))
 	else
@@ -294,7 +315,87 @@ local Controls = Class(Widget, function(self, owner)
 	self.spellwheel = self.commandwheelroot:AddChild(Wheel("SpellWheel", owner, {ignoreleftstick = true,}))
 	self.spellwheel.selected_label:SetSize(26)
 	self.spellwheel.OnCancel = function() owner.HUD:CloseSpellWheel() end
-	self.spellwheel.OnExecute = function() owner.HUD:CloseSpellWheel(true) end
+	self.spellwheel.OnExecute = function(spellwheel)
+		if not (spellwheel.invobject and spellwheel.invobject.components.spellbook and not spellwheel.invobject.components.spellbook.closeonexecute) then
+			owner.HUD:CloseSpellWheel(true)
+		end
+	end
+
+
+	self.commandwheel = self.commandwheelroot:AddChild(Wheel("CommandWheel", owner, {ignoreleftstick = Profile:GetCommandWheelAllowsGameplay(),}))
+	self.commandwheel.OnCancel = function() owner.HUD:CloseCommandWheel() end
+	self.commandwheel.OnExecute = self.commandwheel.OnCancel
+
+	local character_name = self.owner.prefab
+    if not kleifileexists("images/emotes_"..character_name..".xml") then -- TODO(JBK): This would be best done as SkinsPuppet and to do this when time permits. [SPCEWI]
+        character_name = "generic"
+    end
+    self.character_name = character_name
+    
+    local emote_groups_template = {}	
+	emote_groups_template[EMOTE_TYPE.EMOTION] = 
+	{
+        label= STRINGS.UI.EMOTES.EMOTIONS,
+        image = "gesture_"..self.character_name.."_wave.tex",
+        emotes = 
+        {
+        },
+    }         
+	emote_groups_template[EMOTE_TYPE.ACTION] = 
+    {
+        label= STRINGS.UI.EMOTES.ACTIONS,
+        image = "gesture_"..self.character_name.."_pose.tex",
+        emotes = 
+        {
+        },
+    }  
+	emote_groups_template[EMOTE_TYPE.UNLOCKABLE] = 
+    {
+        label= STRINGS.UI.EMOTES.UNLOCKABLES,
+        image = "gesture_"..self.character_name.."_cheer.tex",
+        emotes = 
+        {
+        },
+    }
+
+	local emote_groups_standing = deepcopy(emote_groups_template)
+	local emote_groups_mounted = deepcopy(emote_groups_template)
+	local common_emotes = GetCommonEmotes()	
+	for name, emote in pairs(common_emotes) do
+		--print("Emote:" .. name)
+		if emote.type then	-- ignore unclassified emotes
+			if emote.data.mounted then
+				--print("...added to Mounted emote group:" .. tostring(emote.type))
+				table.insert(emote_groups_mounted[emote.type].emotes, name)
+			end
+		
+			if not emote.data.mountonly then
+				--print("...added to Standing emote group:" .. tostring(emote.type))
+				table.insert(emote_groups_standing[emote.type].emotes, name)
+			end
+		end
+	end
+        
+    -- check and add unlockable emotes
+    for item_type, emote in pairs(EMOTE_ITEMS) do
+       if TheInventory:CheckOwnership(item_type) then      
+	   		--print("Unlockable Emote:" .. emote.cmd_name)
+			if emote.data.mounted then
+				--print("...added to Mounted emotes")
+				table.insert(emote_groups_mounted[EMOTE_TYPE.UNLOCKABLE].emotes, emote.cmd_name)
+			end
+		
+			if not emote.data.mountedonly then
+				--print("...added to Standing emotes")				
+				table.insert(emote_groups_standing[EMOTE_TYPE.UNLOCKABLE].emotes, emote.cmd_name)
+			end
+		end
+    end
+    
+	self.emote_wheel_standing = self:BuildEmoteWheel(self.character_name, emote_groups_standing)
+	self.emote_wheel_mounted = self:BuildEmoteWheel(self.character_name, emote_groups_mounted)
+
+	self:BuildCommandWheel()     
 
     if TheNet:GetIsClient() then
         --Not using topleft_root because we need to be on top of containerroot
@@ -311,6 +412,7 @@ local Controls = Class(Widget, function(self, owner)
 
     self.dismounthintdelay = 0
     self.craftingandinventoryshown = false
+	self.craftingshown = true
 
     self:SetHUDSize()
 
@@ -440,7 +542,7 @@ function Controls:MakeScalingNodes()
     self.topright_over_root:SetHAnchor(ANCHOR_RIGHT)
     self.topright_over_root:SetVAnchor(ANCHOR_TOP)
     self.topright_over_root:SetMaxPropUpscale(MAX_HUD_SCALE)
-
+	
     --these are for introducing user-configurable hud scale
     self.topleft_root = self.topleft_root:AddChild(Widget("tl_scale_root"))
     self.topright_root = self.topright_root:AddChild(Widget("tr_scale_root"))
@@ -462,6 +564,7 @@ function Controls:SetHUDSize()
     self.top_root:SetScale(scale)
     self.bottomright_root:SetScale(scale)
     self.containerroot:SetScale(scale)
+	self.containerroot_under:SetScale(scale)
     self.containerroot_side:SetScale(scale)
     self.containerroot_side_behind:SetScale(scale)
 
@@ -469,7 +572,14 @@ function Controls:SetHUDSize()
     self.topright_over_root:SetScale(scale)
 
     self.mousefollow:SetScale(scale)
-
+    
+    local consoleScale = 1.0
+    if IsPS5() then
+        consoleScale = .65
+    end
+    if not IsConsole() or not TheSim:GetIsSplitScreen() then
+		self.commandwheel:SetScale(consoleScale * scale)
+	end
     if self.desync ~= nil then
         self.desync:SetScale(scale)
     end
@@ -526,7 +636,7 @@ function Controls:OnUpdate(dt)
     local shownItemIndex = nil
     local itemInActions = false     -- the item is either shown through the actionhint or the groundaction
 
-    if controller_mode and not (self.inv.open or self.craftingmenu:IsCraftingOpen() or self.spellwheel:IsOpen()) and self.owner:IsActionsVisible() then
+    if controller_mode and not (self.inv.open or self.commandwheel.isopen or self.craftingmenu:IsCraftingOpen() or self.spellwheel:IsOpen()) and self.owner:IsActionsVisible() then
         local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
         local ground_cmds = {}
         local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil
@@ -537,16 +647,26 @@ function Controls:OnUpdate(dt)
                 self.groundactionhint:Show()
                 self.groundactionhint:SetTarget(self.owner.components.playercontroller.deployplacer)
 
-                if self.owner.components.playercontroller.deployplacer.components.placer.can_build then
-                    self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. self.owner.components.playercontroller.deployplacer.components.placer:GetDeployAction():GetActionString().."\n"..TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
-                else
-                    self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                local strs = {}
+                if self.owner.components.playercontroller:IsAxisAlignedPlacement() then
+                    table.insert(strs, TheInput:GetLocalizedControl(controller_id, CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID).." "..STRINGS.UI.HUD.CYCLE_AXIS_ALIGNED_PLACEMENT)
                 end
+                if self.owner.components.playercontroller.deployplacer.components.placer.can_build then
+                    table.insert(strs, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. self.owner.components.playercontroller.deployplacer.components.placer:GetDeployAction():GetActionString())
+                end
+                table.insert(strs, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                self.groundactionhint.text:SetString(table.concat(strs, "\n"))
 
             elseif self.owner.components.playercontroller.placer ~= nil then
                 self.groundactionhint:Show()
                 self.groundactionhint:SetTarget(self.owner)
-                self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. STRINGS.UI.HUD.BUILD.."\n" .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
+                local strs = {}
+                if self.owner.components.playercontroller:IsAxisAlignedPlacement() then
+                    table.insert(strs, TheInput:GetLocalizedControl(controller_id, CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID).." "..STRINGS.UI.HUD.CYCLE_AXIS_ALIGNED_PLACEMENT)
+                end
+                table.insert(strs, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. STRINGS.UI.HUD.BUILD)
+                table.insert(strs, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL)
+                self.groundactionhint.text:SetString(table.concat(strs, "\n"))
             end
         else
             local aoetargeting = self.owner.components.playercontroller:IsAOETargeting()
@@ -621,10 +741,15 @@ function Controls:OnUpdate(dt)
             if controller_target == controller_attack_target then
                 table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
                 attack_shown = true
+                
+			    if self.owner.components.playercontroller:CanLockTargets() and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_TARGET_LOCK) .. " " .. STRINGS.UI.HUD.LOCK_TARGET)
+			    end
             end
             if (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                 --V2C: Closing the avatar popup takes priority
                 not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
+                not self.owner.components.playercontroller:IsControllerTargetLocked() and
 				(self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
 				(self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                 controller_target:HasTag("inspectable") then
@@ -641,7 +766,8 @@ function Controls:OnUpdate(dt)
                 table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. r:GetActionString())
             end
 			if self.owner.components.playercontroller:IsControllerTargetLocked() then
-                table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_TARGET_LOCK) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_TARGET_CYCLE) .. " " .. STRINGS.UI.HUD.NEXT_TARGET)
 			end
             if controller_target.quagmire_shoptab ~= nil then
                 for k, v in pairs(self.craftingmenu.tabs.shown) do
@@ -668,12 +794,26 @@ function Controls:OnUpdate(dt)
                 textblock:SetString(table.concat(cmds, "\n"))
             end
 		elseif not self.groundactionhint.shown then
-			if self.dismounthintdelay <= 0
-				and self.owner.replica.rider ~= nil
-				and self.owner.replica.rider:IsRiding() then
-				self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+				local rider = self.owner.replica.rider
+			local mount = rider and rider:GetMount() or nil
+			local container = mount and mount.replica.container or nil
+			if container and container:IsOpenedBy(self.owner) then
+				self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..BufferedAction(self.owner, self.owner, ACTIONS.RUMMAGE):GetActionString())
 				self.playeractionhint:Show()
 				self.playeractionhint:SetTarget(self.owner)
+			elseif self.dismounthintdelay <= 0 then
+				if self.owner.components.spellbook and self.owner.components.spellbook:CanBeUsedBy(self.owner) then
+					self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..BufferedAction(self.owner, self.owner, ACTIONS.USESPELLBOOK):GetActionString())
+					self.playeractionhint:Show()
+					self.playeractionhint:SetTarget(self.owner)
+				elseif mount and not (self.owner.components.playercontroller and self.owner.components.playercontroller:HasAOETargeting()) then
+					self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+					self.playeractionhint:Show()
+					self.playeractionhint:SetTarget(self.owner)
+				else
+					self.playeractionhint:Hide()
+					self.playeractionhint:SetTarget(nil)
+				end
 			else
 				self.playeractionhint:Hide()
 				self.playeractionhint:SetTarget(nil)
@@ -702,7 +842,7 @@ function Controls:OnUpdate(dt)
         self.groundactionhint:SetTarget(nil)
     end
 
-    if not self.owner:HasTag("idle") then
+	if self.owner.sg and not self.owner.sg:HasStateTag("idle") or not self.owner:HasTag("idle") then
         self.dismounthintdelay = .5
     elseif self.dismounthintdelay > 0 then
         self.dismounthintdelay = self.dismounthintdelay - dt
@@ -748,6 +888,10 @@ function Controls:OnUpdate(dt)
     end
 
     self:HighlightActionItem(shownItemIndex, itemInActions)
+end
+
+function Controls:DelayControllerSpellWheelHint()
+	self.dismounthintdelay = 0.5
 end
 
 function Controls:HighlightActionItem(itemIndex, itemInActions)
@@ -856,22 +1000,52 @@ function Controls:ToggleMap()
     end
 end
 
+function Controls:DoShowCrafting_Internal()
+	if not GetGameModeProperty("no_crafting") then
+		self.craftingmenu:Show()
+	end
+end
+
+function Controls:DoHideCrafting_Internal()
+	self.owner.HUD:CloseCrafting(true)
+	self.craftingmenu:Hide()
+end
+
+function Controls:ShowCrafting()
+	if not self.craftingshown then
+		self.craftingshown = true
+		if self.craftingandinventoryshown then
+			self:DoShowCrafting_Internal()
+		end
+	end
+end
+
+function Controls:HideCrafting()
+	if self.craftingshown then
+		self.craftingshown = false
+		if self.craftingandinventoryshown then
+			self:DoHideCrafting_Internal()
+		end
+		self.inv:OnCraftingHidden()
+	end
+end
+
 -- NOTES(JBK): .stay_open_on_hide containers must be hidden and shown in ShowCraftingAndInventory and HideCraftingAndInventory!
 function Controls:ShowCraftingAndInventory()
     if not self.craftingandinventoryshown then
         self.craftingandinventoryshown = true
-        if not GetGameModeProperty("no_crafting") then
-            self.craftingmenu:Show()
-        end
+		if self.craftingshown then
+			self:DoShowCrafting_Internal()
+		end
         self.inv:Show()
         self.containerroot_side:Show()
         self.containerroot_side_behind:Show()
         if self.secondary_status and self.secondary_status.side_inv then
             self.secondary_status.side_inv:Show()
         end
-        self.item_notification:ToggleCrafting(false)
-        self.yotb_notification:ToggleCrafting(false)
-        self.skilltree_notification:ToggleCrafting(false)
+		for i, v in ipairs(self.toastitems) do
+			v:ToggleCrafting(false)
+		end
         if self.status.ToggleCrafting ~= nil then
             self.status:ToggleCrafting(false)
         end
@@ -880,23 +1054,90 @@ end
 
 function Controls:HideCraftingAndInventory()
     if self.craftingandinventoryshown then
+        self.inv:CloseControllerInventory()
         self.craftingandinventoryshown = false
-        self.craftingmenu:Close()
-        self.craftingmenu:Hide()
+		if self.craftingshown then
+			self:DoHideCrafting_Internal()
+		end
         self.inv:Hide()
         self.containerroot_side:Hide()
         self.containerroot_side_behind:Hide()
         if self.secondary_status and self.secondary_status.side_inv then
             self.secondary_status.side_inv:Hide()
         end
-        self.item_notification:ToggleCrafting(true)
-        self.yotb_notification:ToggleCrafting(true)
-        self.skilltree_notification:ToggleCrafting(true)
+		for i, v in ipairs(self.toastitems) do
+			v:ToggleCrafting(true)
+		end
         if self.status.ToggleCrafting ~= nil then
             self.status:ToggleCrafting(true)
         end
 		self.spellwheel:Close()
     end
+end
+
+function Controls:BuildEmoteWheel(character_name, emote_groups)
+	-- build the emote wheel
+	local emote_wheel = {}    
+    for name, details in pairs(emote_groups) do
+        local nested_wheel_radius = WHEEL_RADIUS -- 0 if auto incrementing
+        local nested_wheel_focus_radius = WHEEL_FOCUS_RADIUS -- 0 if auto incrementing
+        local nested_wheel_items = {}      
+		local num_emotes = 0  
+        for i, emote in ipairs(details.emotes) do
+            --nested_wheel_radius = nested_wheel_radius + NESTED_WHEEL_RADIUS_INCREMENT
+            --nested_wheel_focus_radius = nested_wheel_focus_radius + NESTED_WHEEL_FOCUS_RADIUS_INCREMENT
+		    table.insert(nested_wheel_items, WheelItem.EmoteItem(emote, character_name))
+			num_emotes = num_emotes + 1
+        end
+
+		if 8 < num_emotes then
+			local num_over = num_emotes - 8 
+			nested_wheel_radius = nested_wheel_radius + (num_over * NESTED_WHEEL_RADIUS_INCREMENT)
+			nested_wheel_focus_radius = nested_wheel_radius + (num_over * NESTED_WHEEL_FOCUS_RADIUS_INCREMENT)
+		end
+
+		-- don't insert a nested wheel if it's empty
+		if 0 < num_emotes then
+			local nested_wheel = {name=name, items=nested_wheel_items, r=nested_wheel_radius, f=nested_wheel_focus_radius}
+			table.insert(emote_wheel, {label=details.label, atlas="images/emotes_" .. character_name .. ".xml", normal=details.image, nestedwheel=nested_wheel})
+		end
+    end
+
+	return emote_wheel
+end
+
+function Controls:BuildCommandWheel(is_splitscreen)
+	self.can_invite = IsConsole() and TheNet:CanSendInvitation() or false
+	self.is_mounted = self.owner.replica.rider and self.owner.replica.rider:IsRiding()	
+
+	local emote_wheel = self.is_mounted and self.emote_wheel_mounted or self.emote_wheel_standing
+	local base_wheel = {}
+    table.insert(base_wheel, {label=STRINGS.UI.COMMANDWHEEL.EMOTES,	checkenabled=function() return not self.owner:HasTag("playerghost") end, nestedwheel={name="emotes", items=emote_wheel, r=WHEEL_RADIUS, f=WHEEL_FOCUS_RADIUS}, atlas="images/emotes_"..self.character_name..".xml", normal="gesture_"..self.character_name.."_kiss.tex"})
+	if PLATFORM ~= "SWITCH" and IsConsole() then
+		table.insert(base_wheel, WheelItem.TextChatItem( true, "command_whisper.tex" ))		
+	end
+
+	table.insert(base_wheel, {label=STRINGS.UI.COMMANDWHEEL.PLAYERLIST,	execute=function() self.owner.HUD:ShowPlayerStatusScreen() end, atlas="images/command_wheel.xml", normal="command_playerlisting.tex"})
+    table.insert(base_wheel, {label=STRINGS.UI.COMMANDWHEEL.USERCOMMANDS, execute=function() TheFrontEnd:PushScreen(UserCommandPickerScreen(self.owner, nil)) end, atlas="images/command_wheel.xml", normal="command_usercommands.tex"})
+
+    if self.can_invite then	
+		table.insert(base_wheel, {label=STRINGS.UI.COMMANDWHEEL.INVITE,	execute=function() if PLATFORM == "XBONE" then TheNet:StartInvite() else TheNet:SendInvitation() end end, atlas="images/command_wheel.xml", normal="command_playerinvite.tex"})
+	end
+	if PLATFORM ~= "SWITCH" and IsConsole() then
+		table.insert(base_wheel, WheelItem.TextChatItem( false, "command_talk.tex" ))
+	end
+
+	
+	self.commandwheel:SetItems( base_wheel, WHEEL_RADIUS, WHEEL_FOCUS_RADIUS)
+    local consoleScale = 1.0
+    if IsPS5() then
+        consoleScale = .65
+    end
+	if is_splitscreen then
+		self.commandwheel:SetScale(TheFrontEnd:GetHUDScale() * 1.6 * consoleScale)
+	else
+        self.commandwheel:SetScale(TheFrontEnd:GetHUDScale() * consoleScale)
+	end
 end
 
 return Controls

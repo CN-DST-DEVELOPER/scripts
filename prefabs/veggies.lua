@@ -1,7 +1,7 @@
 require "tuning"
 local PLANT_DEFS = require("prefabs/farm_plant_defs").PLANT_DEFS
 
-local function MakeVegStats(seedweight, hunger, health, perish_time, sanity, cooked_hunger, cooked_health, cooked_perish_time, cooked_sanity, float_settings, cooked_float_settings, dryable, secondary_foodtype, halloweenmoonmutable_settings, lure_data)
+local function MakeVegStats(seedweight, hunger, health, perish_time, sanity, cooked_hunger, cooked_health, cooked_perish_time, cooked_sanity, float_settings, cooked_float_settings, dryable, secondary_foodtype, halloweenmoonmutable_settings, lure_data, issnowmandecor)
     return {
         health = health,
         hunger = hunger,
@@ -18,6 +18,7 @@ local function MakeVegStats(seedweight, hunger, health, perish_time, sanity, coo
 		halloweenmoonmutable_settings = halloweenmoonmutable_settings,
 		secondary_foodtype = secondary_foodtype,
         lure_data = lure_data,
+		issnowmandecor = issnowmandecor,
     }
 end
 
@@ -45,7 +46,9 @@ VEGGIES =
                                     TUNING.CALORIES_SMALL,  TUNING.HEALING_SMALL,   TUNING.PERISH_FAST, 0,
                                     {"med", 0.05, 0.8},    {"small", 0.1, nil},
 									nil, nil,
-                                    {prefab = "carrat"}),
+									{prefab = "carrat"},
+									nil,
+									true--[[snowmandecor]]),
 
     corn = MakeVegStats(COMMON, TUNING.CALORIES_MED,    TUNING.HEALING_SMALL,   TUNING.PERISH_MED, 0,
                                 TUNING.CALORIES_SMALL,  TUNING.HEALING_SMALL,   TUNING.PERISH_SLOW, 0),
@@ -55,7 +58,12 @@ VEGGIES =
                                         nil,    {"small", 0.1, nil}),
 
     eggplant = MakeVegStats(UNCOMMON,   TUNING.CALORIES_MED,    TUNING.HEALING_MEDSMALL,    TUNING.PERISH_MED, 0,
-                                        TUNING.CALORIES_MED,    TUNING.HEALING_MED,     TUNING.PERISH_FAST, 0),
+										TUNING.CALORIES_MED,    TUNING.HEALING_MED,     TUNING.PERISH_FAST, 0,
+										nil, nil,
+										nil, nil,
+										nil,
+										nil,
+										true--[[snowmandecor]]),
 
     durian = MakeVegStats(RARE, TUNING.CALORIES_MED,    -TUNING.HEALING_SMALL,  TUNING.PERISH_MED, -TUNING.SANITY_TINY,
                                 TUNING.CALORIES_MED,    0,                      TUNING.PERISH_FAST, -TUNING.SANITY_TINY,
@@ -80,7 +88,8 @@ VEGGIES =
 								nil,
 								FOODTYPE.BERRY,
 								nil,
-                                {lure_data = TUNING.OCEANFISHING_LURE.BERRY, single_use = true, build = "oceanfishing_lure_mis", symbol = "hook_berries"}),
+								{lure_data = TUNING.OCEANFISHING_LURE.BERRY, single_use = true, build = "oceanfishing_lure_mis", symbol = "hook_berries"},
+								true--[[snowmandecor]]),
 
     berries_juicy = MakeVegStats(0, TUNING.CALORIES_SMALL,  TUNING.HEALING_TINY,  TUNING.PERISH_TWO_DAY, 0,
                                     TUNING.CALORIES_MEDSMALL,  TUNING.HEALING_SMALL,    TUNING.PERISH_ONE_DAY, 0,
@@ -88,7 +97,8 @@ VEGGIES =
 									nil,
 									FOODTYPE.BERRY,
 									nil,
-                                    {lure_data = TUNING.OCEANFISHING_LURE.BERRY, single_use = true, build = "oceanfishing_lure_mis", symbol = "hook_juiceberries"}),
+									{lure_data = TUNING.OCEANFISHING_LURE.BERRY, single_use = true, build = "oceanfishing_lure_mis", symbol = "hook_juiceberries"},
+									true--[[snowmandecor]]),
 
     fig = MakeVegStats(0,   TUNING.CALORIES_SMALL,   0,  TUNING.PERISH_FAST, 0,
                                     TUNING.CALORIES_MEDSMALL,  TUNING.HEALING_TINY,    TUNING.PERISH_SUPERFAST, 0,
@@ -121,7 +131,11 @@ VEGGIES =
 
     asparagus = MakeVegStats(UNCOMMON, TUNING.CALORIES_SMALL, TUNING.HEALING_SMALL, TUNING.PERISH_FAST, 0,
                                      TUNING.CALORIES_MED, TUNING.HEALING_SMALL, TUNING.PERISH_SUPERFAST, 0,
-                                     {"med", nil, 0.7}),
+									{"med", nil, 0.7}, nil,
+									nil, nil,
+									nil,
+									nil,
+									true--[[snowmandecor]]),
 
     onion = MakeVegStats(RARE, TUNING.CALORIES_TINY, 0, TUNING.PERISH_SLOW, -TUNING.SANITY_SMALL,
                                    TUNING.CALORIES_TINY, TUNING.HEALING_TINY, TUNING.PERISH_MED, -TUNING.SANITY_TINY,
@@ -133,7 +147,11 @@ VEGGIES =
 
     pepper = MakeVegStats(RARE, TUNING.CALORIES_TINY, -TUNING.HEALING_MED, TUNING.PERISH_SLOW, -TUNING.SANITY_MED,
                                     TUNING.CALORIES_TINY, -TUNING.HEALING_SMALL, TUNING.PERISH_SLOW, -TUNING.SANITY_SMALL,
-                                    {nil, 0.1, 0.75}),
+									{nil, 0.1, 0.75}, nil,
+									nil, nil,
+									nil,
+									nil,
+									true--[[snowmandecor]]),
 }
 
 VEGGIES.cave_banana.extra_tags_fresh = {"monkeyqueenbribe"}
@@ -310,6 +328,66 @@ PlayWaxAnimation = function(inst)
     inst.AnimState:PushAnimation("idle_oversized")
 end
 
+----------------------------------------------------------------------------------------------------------
+
+local function Carrot_StartSpinning(inst, time)
+    if inst._spinnerfx ~= nil and inst._spinnerfx:IsValid() then
+        inst._spinnerfx:FadeOut()
+        inst._spinnerfx = nil
+    end
+
+    inst.AnimState:PlayAnimation("spin_pre")
+    inst.AnimState:PushAnimation("spin_loop", true)
+    inst.components.timer:StartTimer("spin", time or 2)
+    inst.SoundEmitter:PlaySound("yotr_2023/common/carrot_spin", "spin_lp")
+end
+
+local function Carrot_StopSpinning(inst)
+    if inst._spinnerfx ~= nil and inst._spinnerfx:IsValid() then
+        inst._spinnerfx:FadeOut()
+        inst._spinnerfx = nil
+    end
+
+    inst.Transform:SetNoFaced()
+    inst.Transform:SetRotation(0)
+
+    inst.AnimState:PlayAnimation("idle")
+
+    inst.components.timer:StopTimer("spin")
+
+    inst.SoundEmitter:KillAllSounds()
+
+    inst.components.activatable.inactive = true
+end
+
+local function Carrot_TimerDone(inst, data)
+    if data == nil or data.name ~= "spin" then
+        return
+    end
+
+    inst.Transform:SetEightFaced()
+    inst.Transform:SetRotation(math.random()*360)
+    inst.AnimState:PlayAnimation("spin_pst")
+
+    inst.components.activatable.inactive = true
+
+    inst.SoundEmitter:PlaySound("yotr_2023/common/carrot_spin_pst")
+    inst.SoundEmitter:KillSound("spin_lp")
+
+    inst._spinnerfx = SpawnPrefab("carrot_spinner")
+    inst._spinnerfx:AttachTo(inst)
+end
+
+local function Carrot_GetActivateVerb()
+    return "SPIN"
+end
+
+local function Carrot_OnActivated(inst)
+    inst:Spin()
+end
+
+----------------------------------------------------------------------------------------------------------
+
 local function MakeVeggie(name, has_seeds)
     local assets =
     {
@@ -360,7 +438,7 @@ local function MakeVeggie(name, has_seeds)
 
 	local plant_def = PLANT_DEFS[name]
 	local seeds_prefabs = has_seeds and { "farm_plant_"..name } or nil
-	local oversized_prefabs = plant_def and plant_def.iscarvable and { "pumpkincarving_swap_fx" } or nil
+	local oversized_prefabs = plant_def and plant_def.iscarvable and { "pumpkincarving_swap_fx", "pumpkincarving_shatter_fx" } or nil
 
     local assets_oversized = {}
     if has_seeds then
@@ -370,38 +448,6 @@ local function MakeVeggie(name, has_seeds)
         table.insert(prefabs, "splash_green")
 
         table.insert(assets_oversized, Asset("ANIM", "anim/"..plant_def.build..".zip"))
-    end
-
-    local function spin(inst, time)
-        inst.entity:AddSoundEmitter()
-        inst.AnimState:PlayAnimation("spin_pre")
-        inst.AnimState:PushAnimation("spin_loop",true)
-        inst.components.timer:StartTimer("spin",time or 2)
-        inst.SoundEmitter:PlaySound("yotr_2023/common/carrot_spin", "spin_lp")
-    end
-
-    local function timerdone(inst,data)
-        if data and data.name then
-            if data.name == "spin" then
-                inst.Transform:SetEightFaced()
-                inst.Transform:SetRotation(math.random()*360)
-                inst.AnimState:PlayAnimation("spin_pst")
-                inst.components.activatable.inactive = true
-                inst.SoundEmitter:PlaySound("yotr_2023/common/carrot_spin_pst")
-                inst.SoundEmitter:KillSound("spin_lp")
-
-                local fx = SpawnPrefab("carrot_spinner")
-                inst:AddChild(fx)
-            end
-        end
-    end
-
-    local function GetActivateVerb()
-        return "SPIN"
-    end    
-
-    local function OnActivateSpin(inst)
-        inst:Spin()
     end
 
     local function fn_seeds()
@@ -499,7 +545,7 @@ local function MakeVeggie(name, has_seeds)
 
         if name == "carrot" then
             inst.entity:AddSoundEmitter()
-            inst.GetActivateVerb = GetActivateVerb
+            inst.GetActivateVerb = Carrot_GetActivateVerb
         end
 
         MakeInventoryPhysics(inst)
@@ -630,6 +676,10 @@ local function MakeVeggie(name, has_seeds)
 			inst.components.halloweenmoonmutable:SetOnMutateFn(halloweenmoonmutable_settings.onmutatefn)
 		end
 
+		if VEGGIES[name].issnowmandecor then
+			inst:AddComponent("snowmandecor")
+		end
+
         if TheNet:GetServerGameMode() == "quagmire" then
             event_server_data("quagmire", "prefabs/veggies").master_postinit(inst)
         end
@@ -637,15 +687,18 @@ local function MakeVeggie(name, has_seeds)
         MakeHauntableLaunchAndPerish(inst)
 
         if name == "carrot" then
-            inst.Spin = spin
+            --TODO: Disallow this when it's not the actual event -__-
+            inst.Spin = Carrot_StartSpinning
+
             inst:AddComponent("timer")
-            inst:ListenForEvent("timerdone", timerdone)
+
             inst:AddComponent("activatable")
-            inst.components.activatable.OnActivate = OnActivateSpin
+            inst.components.activatable.OnActivate = Carrot_OnActivated
             inst.components.activatable.quickaction = true
-            inst.components.inventoryitem:SetOnPickupFn(function()
-                inst.Transform:SetNoFaced()
-            end)
+
+            inst.components.inventoryitem:SetOnPutInInventoryFn(Carrot_StopSpinning)
+
+            inst:ListenForEvent("timerdone", Carrot_TimerDone)
         end
 
         return inst

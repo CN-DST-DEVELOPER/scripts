@@ -439,6 +439,13 @@ local function SetGrowth(inst)
 
     inst.components.workable:SetWorkAction(ACTIONS[inst.statedata.workaction])
     inst.components.workable:SetWorkLeft(inst.statedata.workleft)
+    if new_size <= 3 then
+        SetLunarHailBuildupAmountSmall(inst)
+    elseif new_size <= 4 then
+        SetLunarHailBuildupAmountMedium(inst)
+    else
+        SetLunarHailBuildupAmountLarge(inst)
+    end
 
     inst.components.burnable:SetFXLevel(inst.statedata.burnfxlevel)
     inst.components.burnable:SetBurnTime(inst.statedata.burntree and TUNING.TREE_BURN_TIME or 20)

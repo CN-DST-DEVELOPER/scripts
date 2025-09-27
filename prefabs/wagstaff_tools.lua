@@ -7,7 +7,7 @@ local function OnDropped(inst)
     inst.Light:Enable(true)
 end
 
-local function OnPickup(inst)
+local function OnPutInInventory(inst)
     inst.Light:Enable(false)
 end
 
@@ -115,7 +115,7 @@ local function maketool(name, build, bank, state ,erodeparam)
 
         inst:AddComponent("inventoryitem")
         inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-        inst.components.inventoryitem:SetOnPickupFn(OnPickup)
+        inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
         inst:AddComponent("stackable")
         inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM

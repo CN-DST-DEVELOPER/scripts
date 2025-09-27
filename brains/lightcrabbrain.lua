@@ -51,6 +51,7 @@ function LightCrabBrain:OnStart()
             ActionNode(function() --[[do nothing]] end)),
 
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
         DoAction(self.inst, EatFoodAction),
         Wander(self.inst, nil, nil, WANDER_TIMING),

@@ -4,8 +4,8 @@ local Playbill = Class(function(self, inst)
     self.costumes = {}
     self.starting_act = nil
     self.current_act = nil
+	self.book_build = nil
 end)
-
 
 function Playbill:SetCurrentAct(act)
 	self.current_act = act

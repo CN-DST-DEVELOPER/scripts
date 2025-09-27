@@ -8,6 +8,10 @@ SetSharedLootTable('dustmoth',
     {'smallmeat',  1.0},
 })
 
+local BLUEPRINT_LOOTS = { -- NOTES(JBK): Another knowledge source in the Archives add more thulecite themed things here if more mid to late game recipes are created.
+    "thulecitebugnet",
+}
+
 local sounds =
 {
     slide_in = "grotto/creatures/dust_moth/slide_in",
@@ -37,7 +41,10 @@ end
 
 local function OnEat(inst, data)
     if data.food ~= nil and data.food.prefab == CHARGED_BY_PREFAB then
-        inst._charged = true
+        if not inst._charged then
+            inst._charged = true
+            inst._giveblueprint = true
+        end
     end
 end
 
@@ -98,6 +105,62 @@ local function StartCheckStuckTask(inst)
     if not inst._check_stuck_task then
         inst._check_stuck_task = inst:DoPeriodicTask(CHECK_STUCK_FREQUENCY, CheckIsStuck, 0.25)
     end
+end
+
+local BLUEPRINTLOOTS_MUSTTAGS = {"_inventoryitem"}
+local function FindBlueprintLootsIndex(x, y, z)
+    local lootsindex = nil
+    local ents = TheSim:FindEntities(x, y, z, 16, BLUEPRINTLOOTS_MUSTTAGS)
+    for _, ent in ipairs(ents) do
+        if ent.prefab == "blueprint" then
+            for index, lootname in ipairs(BLUEPRINT_LOOTS) do
+                if ent.recipetouse == lootname then
+                    if lootsindex == nil then
+                        lootsindex = index
+                    elseif index > lootsindex then
+                        lootsindex = index
+                    end
+                end
+            end
+        end
+    end
+    return lootsindex
+end
+
+local function TryToDropBlueprint(inst)
+    local player = inst:GetNearestPlayer(true)
+    if player == nil then
+        return false
+    end
+
+    local builder = player.components.builder
+    if builder == nil then
+        return false
+    end
+
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local lootsindex = FindBlueprintLootsIndex(x, y, z)
+
+    local lootname
+    for index, recipename in ipairs(BLUEPRINT_LOOTS) do
+        if lootsindex == nil or lootsindex < index then
+            if builder == nil or not builder:KnowsRecipe(recipename) then
+                lootname = recipename
+                break
+            end
+        end
+    end
+
+    if not lootname then
+        if math.random() > TUNING.DUSTMOTH.BLUEPRINT_DROP_CHANCE_REPEAT then
+            return false
+        end
+        lootname = BLUEPRINT_LOOTS[math.random(#BLUEPRINT_LOOTS)]
+    end
+
+    local loot = SpawnPrefab(lootname .. "_blueprint")
+    inst.components.lootdropper:FlingItem(loot)
+    return true
 end
 
 local function OnEntityWake(inst)
@@ -207,6 +270,8 @@ local function fn()
     inst:ListenForEvent("dustmothden_repaired", OnFinishRepairingDen)
 
     MakeHauntablePanic(inst)
+
+    inst.TryToDropBlueprint = TryToDropBlueprint
 
     inst.OnEntitySleep = OnEntitySleep
     inst.OnEntityWake = OnEntityWake

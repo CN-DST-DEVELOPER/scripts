@@ -61,17 +61,17 @@ local function Knockback(source, target)
 end
 
 local function ToggleOffPhysics(inst)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
 end
 
 local function ToggleOnPhysics(inst)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS
+	)
 end
 
 ----------------------------------------------------------------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ local function CollectThingsToEat(inst, source)
                         end
 
                         if ent:HasOneOfTags("player", "devourable") then
-                            ent.sg:HandleEvent("devoured", { attacker = inst, ignoresetcamdist = true })
+							ent:PushEventImmediate("devoured", { attacker = inst, ignoresetcamdist = true })
 
                             local minhealth = ent.components.health ~= nil and ent.components.health.minhealth or nil
 
@@ -708,7 +708,7 @@ local function MoveSegmentUnderGround(inst, chunk, test_segment, percent, instan
 
     chunk.segmentstotal = chunk.segmentstotal - 1
 
-    if #chunk.segments <= 0 and chunk.dirt_end:IsValid() then
+    if #chunk.segments <= 0 and chunk.dirt_end and chunk.dirt_end:IsValid() then
         chunk.dirt_end.AnimState:PlayAnimation("dirt_pst_slow")
     end
 
@@ -1115,8 +1115,42 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
         chunk.idlesegment = nil
     end
 
-    if chunk.hit and chunk.hit > 0 then
-        local scale = Remap(chunk.hit, 1, 0, 0.75, 1)
+	if chunk._electrocuteframes and chunk._electrocuteframes > 0 then
+		local frames = chunk._electrocuteframes - 1
+		local scale = Remap(frames % 5, 4, 0, 0.85, 1)
+		chunk._electrocuteframes = frames
+
+		for i, segment in ipairs(chunk.segments) do
+			segment.Transform:SetScale(scale, scale, scale)
+
+			--netvar limit 63
+			if frames > segment.electrocuteframes:value() then
+				segment.electrocuteframes:set(math.min(63, frames))
+			else
+				segment.electrocuteframes:set_local(frames)
+			end
+
+			local x, y, z = segment.Transform:GetWorldPosition()
+			segment.Transform:SetPosition(x, 0, z)
+		end
+
+		if chunk.lastsegment then
+			chunk.lastsegment.Transform:SetScale(scale, scale, scale)
+
+			--netvar limit 63
+			if frames > chunk.lastsegment.electrocuteframes:value() then
+				chunk.lastsegment.electrocuteframes:set(math.min(63, frames))
+			else
+				chunk.lastsegment.electrocuteframes:set_local(frames)
+			end
+
+			local x, y, z = chunk.lastsegment.Transform:GetWorldPosition()
+			chunk.lastsegment.Transform:SetPosition(x, 0, z)
+		end
+
+		chunk.hit = nil
+	elseif chunk.hit then
+		local scale = chunk.hit > 0 and Remap(chunk.hit, 1, 0, 0.75, 1) or 1
 
         for i, segment in ipairs(chunk.segments) do
             segment.Transform:SetScale(scale, scale, scale)
@@ -1140,7 +1174,7 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
             chunk.lastsegment.Transform:SetPosition(x, 0, z)
         end
 
-        chunk.hit = chunk.hit - (dt * 5)
+		chunk.hit = chunk.hit > 0 and chunk.hit - (dt * 5) or nil
     end
 
     if chunk.nextseg <= 0 then

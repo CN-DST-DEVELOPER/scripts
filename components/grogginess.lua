@@ -1,6 +1,7 @@
 local easing = require("easing")
 
-local SOURCE_MODIFIER_LIST_KEY = "groggyresistance"
+local RESISTANCE_MODIFIER_LIST_KEY = "groggyresistance"
+local IMMUNITY_MODIFIER_LIST_KEY = "groggyimmunity"
 
 local Grogginess = Class(function(self, inst)
     self.inst = inst
@@ -19,6 +20,7 @@ local Grogginess = Class(function(self, inst)
     self.knockedout = false
 
     self._resistance_sources = SourceModifierList(inst, 0, SourceModifierList.additive)
+    self._immunity_sources = SourceModifierList(inst, false, SourceModifierList.boolean)
 
     --self._disable_task = nil
     --self._disable_finish = nil
@@ -107,7 +109,7 @@ function Grogginess:SetResistance(resist)
 end
 
 function Grogginess:GetResistance()
-    return self.resistance + self._resistance_sources:CalculateModifierFromKey(SOURCE_MODIFIER_LIST_KEY)
+    return self.resistance + self._resistance_sources:CalculateModifierFromKey(RESISTANCE_MODIFIER_LIST_KEY)
 end
 
 function Grogginess:SetDecayRate(rate)
@@ -159,7 +161,7 @@ function Grogginess:GetDebugString()
 end
 
 function Grogginess:AddGrogginess(grogginess, knockoutduration)
-    if grogginess <= 0 then
+    if grogginess <= 0 or self._immunity_sources:CalculateModifierFromKey(IMMUNITY_MODIFIER_LIST_KEY) then
         return
     end
 
@@ -206,7 +208,7 @@ function Grogginess:MakeGrogginessAtLeast(min)
 end
 
 function Grogginess:SubtractGrogginess(grogginess)
-    if grogginess <= 0 then
+    if grogginess <= 0 or self._immunity_sources:CalculateModifierFromKey(IMMUNITY_MODIFIER_LIST_KEY) then
         return
     end
 
@@ -252,15 +254,27 @@ function Grogginess:ComeTo()
 end
 
 function Grogginess:AddResistanceSource(source, resistance)
-    self._resistance_sources:SetModifier(source, resistance, SOURCE_MODIFIER_LIST_KEY)
+    self._resistance_sources:SetModifier(source, resistance, RESISTANCE_MODIFIER_LIST_KEY)
 end
 
 function Grogginess:RemoveResistanceSource(source)
-    self._resistance_sources:RemoveModifier(source, SOURCE_MODIFIER_LIST_KEY)
+    self._resistance_sources:RemoveModifier(source, RESISTANCE_MODIFIER_LIST_KEY)
+end
+
+function Grogginess:AddImmunitySource(source)
+    self._immunity_sources:SetModifier(source, true, IMMUNITY_MODIFIER_LIST_KEY)
+end
+
+function Grogginess:RemoveImmunitySource(source)
+    self._immunity_sources:RemoveModifier(source, IMMUNITY_MODIFIER_LIST_KEY)
 end
 
 function Grogginess:OnUpdate(dt)
-    self.grog_amount = math.max(0, self.grog_amount - self.decayrate)
+    if self._immunity_sources:CalculateModifierFromKey(IMMUNITY_MODIFIER_LIST_KEY) then
+        self.grog_amount = 0
+    else
+        self.grog_amount = math.max(0, self.grog_amount - self.decayrate)
+    end
 
     if self:IsKnockedOut() then
         self.knockouttime = self.knockouttime + dt

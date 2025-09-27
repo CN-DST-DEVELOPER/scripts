@@ -53,7 +53,7 @@ local all_controls =
     -- communication
     {name=CONTROL_TOGGLE_SAY, keyboard=CONTROL_TOGGLE_SAY, controller=CONTROL_TOGGLE_SAY},
     {name=CONTROL_TOGGLE_WHISPER, keyboard=CONTROL_TOGGLE_WHISPER, controller=CONTROL_TOGGLE_WHISPER},
-    {name=CONTROL_SHOW_PLAYER_STATUS, keyboard=CONTROL_SHOW_PLAYER_STATUS, controller=CONTROL_TOGGLE_PLAYER_STATUS},
+    {name=CONTROL_SHOW_PLAYER_STATUS, keyboard=CONTROL_SHOW_PLAYER_STATUS, controller=nil},
     {name=CONTROL_PAUSE, keyboard=CONTROL_PAUSE, controller=CONTROL_PAUSE},
     {name=CONTROL_INSPECT_SELF, keyboard=CONTROL_INSPECT_SELF, controller=nil},
 

@@ -28,6 +28,7 @@ function ChesterBrain:OnStart()
     local root =
     PriorityNode({
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),

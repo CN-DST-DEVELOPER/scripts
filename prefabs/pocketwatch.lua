@@ -237,12 +237,12 @@ local function Recall_DoCastSpell(inst, doer, target, pos)
 		end
 	else
 		local x, y, z = doer.Transform:GetWorldPosition()
-		inst.components.recallmark:MarkPosition(x, y, z)
-		inst.SoundEmitter:PlaySound("wanda2/characters/wanda/watch/MarkPosition")
-
-		doer:DoTaskInTime(12 * FRAMES, DelayedMarkTalker) 
-
-		return true
+		local success, reason = inst.components.recallmark:MarkPosition(x, y, z)
+		if success then
+			inst.SoundEmitter:PlaySound("wanda2/characters/wanda/watch/MarkPosition")
+			doer:DoTaskInTime(12 * FRAMES, DelayedMarkTalker)
+		end
+		return success, reason
 	end
 end
 
@@ -373,6 +373,11 @@ local function Warp_DoCastSpell(inst, doer)
 		return true
 	end
 
+	tx, ty, tz = doer.Transform:GetWorldPosition()
+	--V2C: this (instead of IsTeleportLinkingPermittedFromPoint) will still allow within arena
+	if not IsTeleportingPermittedFromPointToPoint(tx, ty, tz, tx, ty, tz) then
+		return false, "NO_TELEPORT_ZONE"
+	end
 	return false, "WARP_NO_POINTS_LEFT"
 end
 

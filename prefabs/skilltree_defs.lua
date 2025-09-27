@@ -1,5 +1,6 @@
 local SKILLTREE_DEFS = {}
 local SKILLTREE_METAINFO = {}
+local CUSTOM_FUNCTIONS = {}
 
 -- Wrapper function to help modders with their strange prefab names and tree validation process.
 local function PrintFixMe(error_message)
@@ -17,7 +18,18 @@ local function CreateSkillTreeFor(characterprefab, skills)
             end
             hasdefaultfocus = true
         end
-        if skill.lock_open == nil then -- NOTES(JBK): Only include skills for this.
+        if skill.infographic then
+            if skill.connects then
+                PrintFixMe(string.format("Skill Tree for %s [skill %s] has an infographic that connects! This is undefined behaviour.", characterprefab, skill_name))
+            end
+            if skill.locks then
+                PrintFixMe(string.format("Skill Tree for %s [skill %s] has an infographic that locks! This is undefined behaviour.", characterprefab, skill_name))
+            end
+            if not skill.root then
+                PrintFixMe(string.format("Skill Tree for %s [skill %s] has an infographic that is not a root! This is undefined behaviour.", characterprefab, skill_name))
+            end
+        end
+        if skill.lock_open == nil and skill.infographic == nil then -- NOTES(JBK): Only include skills for this.
             skill.rpc_id = rpc_id
             RPC_LOOKUP[rpc_id] = skill_name
             rpc_id = rpc_id + 1
@@ -27,7 +39,7 @@ local function CreateSkillTreeFor(characterprefab, skills)
                 -- It will not be networked during initial skill selection.
                 PrintFixMe(string.format("Skill Tree for %s has TOO MANY skills! This will break networking.", characterprefab))
             end
-        else
+        elseif skill.lock_open then
             total_locks = total_locks + 1
         end
         if skill.connects then -- NOTES(JBK): These skills unlock as an 'or' gate.
@@ -38,6 +50,8 @@ local function CreateSkillTreeFor(characterprefab, skills)
                 local next_skill = skills[next_skill_name]
                 if next_skill == nil then
                     PrintFixMe(string.format("Skill Tree for %s [skill %s] has a bad 'connects' to unknown skill %s! Remove this or add a good connection.", characterprefab, skill_name, next_skill_name))
+                elseif next_skill.infographic then
+                    PrintFixMe(string.format("Skill Tree for %s [skill %s] has an infographic as part of its connects [%s]! This is undefined behaviour.", characterprefab, skill_name, next_skill_name))
                 end
                 local must_have_one_of = next_skill.must_have_one_of or {}
                 next_skill.must_have_one_of = must_have_one_of
@@ -55,6 +69,8 @@ local function CreateSkillTreeFor(characterprefab, skills)
                 local lock = skills[lock_name]
                 if lock == nil then
                     PrintFixMe(string.format("Skill Tree for %s [skill %s] has a bad 'locks' name %s!", characterprefab, skill_name, lock_name))
+                elseif lock.infographic then
+                    PrintFixMe(string.format("Skill Tree for %s [skill %s] has an infographic as part of its locks [%s]! This is undefined behaviour.", characterprefab, skill_name, lock_name))
                 end
                 local must_have_all_of = skill.must_have_all_of or {}
                 skill.must_have_all_of = must_have_all_of
@@ -261,27 +277,37 @@ local FN = {
 local SKILLTREE_ORDERS = {}
 
 local SKILLTREE_CHARACTERS = {
-    "wilson",
-    "woodie",
-    "wolfgang",
-    "wormwood",
-    "willow",
+    "walter",
+    --"wanda",
+    --"warly",
     "wathgrithr",
+    --"waxwell",
+    --"webber",
+    "wendy",
+    --"wickerbottom",
+    "willow",
+    "wilson",
     "winona",
+    "wolfgang",
+    "woodie",
+    "wormwood",
+    "wortox",
     "wurt",
+    --"wx78",
 }
 
 local function BuildAllData()
     for _, character in ipairs(SKILLTREE_CHARACTERS) do
         local BuildSkillsData = require("prefabs/skilltree_" .. character)
-    
+
         if BuildSkillsData then
             local data = BuildSkillsData(FN)
-    
+
             if data then
                 CreateSkillTreeFor(character, data.SKILLS)
                 SKILLTREE_ORDERS[character] = data.ORDERS
                 SKILLTREE_METAINFO[character].BACKGROUND_SETTINGS = data.BACKGROUND_SETTINGS
+                CUSTOM_FUNCTIONS[character] = data.CUSTOM_FUNCTIONS
             end
         end
     end
@@ -301,6 +327,7 @@ local function DEBUG_REBUILD()
         package.loaded["prefabs/skilltree_" .. character] = nil
     end
     BuildAllData()
+    TheGlobalInstance:PushEvent("debug_rebuild_skilltreedata")
 end
 
 
@@ -310,5 +337,6 @@ return {
     CreateSkillTreeFor = CreateSkillTreeFor,
     SKILLTREE_ORDERS = SKILLTREE_ORDERS,
     FN = FN,
+    CUSTOM_FUNCTIONS = CUSTOM_FUNCTIONS,
     DEBUG_REBUILD = DEBUG_REBUILD,
 }

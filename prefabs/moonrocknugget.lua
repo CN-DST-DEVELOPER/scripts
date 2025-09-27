@@ -44,6 +44,8 @@ local function fn()
     inst.components.repairer.healthrepairvalue = TUNING.REPAIR_MOONROCK_NUGGET_HEALTH
     inst.components.repairer.workrepairvalue = TUNING.REPAIR_MOONROCK_NUGGET_WORK
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunchAndSmash(inst)
 
     return inst

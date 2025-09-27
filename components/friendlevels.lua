@@ -74,6 +74,12 @@ function Friendlevels:CompleteTask(task, doer)
     self.inst:PushEvent("friend_task_complete", defaulttask)
 end
 
+function Friendlevels:CompleteAllTasks(doer)
+    for task, taskdata in pairs(self.friendlytasks) do
+        self:CompleteTask(task, doer)
+    end
+end
+
 function Friendlevels:GetLevel()
     return self.level
 end

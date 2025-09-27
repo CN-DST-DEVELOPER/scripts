@@ -18,6 +18,14 @@ function IsPS4()
 	return PLATFORM == "PS4"
 end
 
+function IsPS5()
+	return PLATFORM == "PS5"
+end
+
+function IsPSN()
+	return (PLATFORM == "PS4") or (PLATFORM == "PS5")
+end
+
 function IsXB1()
 	return PLATFORM == "XBONE"
 end
@@ -40,6 +48,13 @@ end
 
 function IsSteamDeck()
 	return IS_STEAM_DECK
+end
+
+
+function ValidateLineNumber(num)
+	if TheSim then
+		TheSim:ValidateLineNumber(num)
+	end
 end
 
 --defines
@@ -82,11 +97,11 @@ end
 
 local servers =
 {
-	release = "http://dontstarve-release.appspot.com",
-	dev = "http://dontstarve-dev.appspot.com",
-	--staging = "http://dontstarve-staging.appspot.com",
+	release = "https://dontstarve-release.appspot.com",
+	dev = "https://dontstarve-dev.appspot.com",
+	--staging = "https://dontstarve-staging.appspot.com",
     --staging is now the live preview branch
-    staging = "http://dontstarve-release.appspot.com",
+    staging = "https://dontstarve-release.appspot.com",
 }
 GAME_SERVER = servers[BRANCH]
 
@@ -386,6 +401,7 @@ local function ModSafeStartup()
     LoadPrefabFile("prefabs/global", async_batch_validation)
     LoadPrefabFile("prefabs/event_deps", async_batch_validation)
     LoadAchievements("achievements.lua")
+    LoadHapticEffects("haptics.lua")
     EventAchievements = require("eventachievements")()
     EventAchievements:LoadAchievementsForEvent(require("lavaarena_achievements"))
     EventAchievements:LoadAchievementsForEvent(require("quagmire_achievements"))

@@ -32,11 +32,11 @@ function Debuff:Stop()
 end
 
 --Should only be called by debuffable component
-function Debuff:AttachTo(name, target, followsymbol, followoffset, data)
+function Debuff:AttachTo(name, target, followsymbol, followoffset, data, buffer)
     self.name = name
     self.target = target
     if self.onattachedfn ~= nil then
-        self.onattachedfn(self.inst, target, followsymbol, followoffset, data)
+        self.onattachedfn(self.inst, target, followsymbol, followoffset, data, buffer)
     end
 end
 
@@ -50,9 +50,9 @@ function Debuff:OnDetach()
     end
 end
 
-function Debuff:Extend(followsymbol, followoffset, data)
+function Debuff:Extend(followsymbol, followoffset, data, buffer)
     if self.onextendedfn ~= nil then
-        self.onextendedfn(self.inst, self.target, followsymbol, followoffset, data)
+        self.onextendedfn(self.inst, self.target, followsymbol, followoffset, data, buffer)
     end
 end
 

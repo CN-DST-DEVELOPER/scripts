@@ -45,6 +45,10 @@ AddModReleaseID( "R32_ST_WATHGRITHRWILLOW" )
 AddModReleaseID( "R33_QOL_SPRINGCLEANING" )
 AddModReleaseID( "R34_OCEANQOL_WINONAWURT" )
 AddModReleaseID( "R35_SANITYTROUBLES" )
+AddModReleaseID( "R36_ST_WENDWALTWORT" )
+AddModReleaseID( "R37_LUNAR_CAGE" )
+AddModReleaseID( "R38_ELECTROCUTE" )
+AddModReleaseID( "R39_WHIRL_VAULT" )
 
 -----------------------------------------------------------------------------------------------
 
@@ -53,7 +57,7 @@ MOD_CRAFTING_AVATAR_LOCATIONS = { Default = "images/crafting_menu_avatars/" }
 --Add your avatar atlas locations for each prefab if you don't want to use the default mod avatar location
 
 local function VisitModForums()
-    VisitURL("http://forums.kleientertainment.com/forum/79-dont-starve-together-beta-mods-and-tools/")
+    VisitURL("https://forums.kleientertainment.com/forum/79-dont-starve-together-beta-mods-and-tools/")
 end
 
 function AreServerModsEnabled()
@@ -520,16 +524,40 @@ function ModWrangler:LoadMods(worldgen)
 	KnownModIndex:ApplyConfigOptionOverrides(mod_overrides)
 
 	-- Sort the mods by priority, so that "library" mods can load first
-	local function modPrioritySort(a,b)
-		local apriority = (a.modinfo and a.modinfo.priority) or 0
-		local bpriority = (b.modinfo and b.modinfo.priority) or 0
-		if apriority == bpriority then
-			return tostring(a.modinfo and a.modinfo.name) > tostring(b.modinfo and b.modinfo.name)
-		else
-			return apriority  > bpriority
-		end
-	end
+    local function sanitizepriority(priority)
+        local prioritytype = type(priority)
+        if prioritytype == "string" then
+            return tonumber(priority) or 0
+        elseif prioritytype == "number" then
+            return priority
+        end
+        return 0
+    end
+    local function modPrioritySort(a, b)
+        -- NOTES(JBK): Mac OS changed locale sorting so we have to do this using stringidsorter to avoid locale issues.
+        -- I am also changing how it is sorted if the modinfo is not present to use the mod's modname instead.
+        -- All priority fields are going to be converted to a number.
+        if a.modinfo and b.modinfo then
+            local apriority = sanitizepriority(a.modinfo.priority)
+            local bpriority = sanitizepriority(b.modinfo.priority)
+            if apriority == bpriority then
+                local aname = a.modinfo.name
+                if type(aname) ~= "string" then
+                    aname = a.modname
+                end
+                local bname = b.modinfo.name
+                if type(bname) ~= "string" then
+                    bname = b.modname
+                end
+                return stringidsorter(aname, bname)
+            end
+            return apriority > bpriority
+        end
+        return stringidsorter(a.modname, b.modname)
+    end
 	table.sort(self.mods, modPrioritySort)
+
+	kleiregistermods(self.mods)
 
 	for i,mod in ipairs(self.mods) do
 		table.insert(self.enabledmods, mod.modname)
@@ -936,16 +964,16 @@ function ModWrangler:GetLinkForMod(mod_name)
 		local thread = is_known and KnownModIndex:GetModInfo(mod_name).forumthread or nil
 
 		if thread and thread ~= "" then
-			url = "http://forums.kleientertainment.com/index.php?%s"
+			url = "https://forums.kleientertainment.com/index.php?%s"
 			url = string.format(url, thread)
 		elseif IsWorkshopMod(mod_name) then
-			url = "http://steamcommunity.com/sharedfiles/filedetails/?id="..GetWorkshopIdNumber(mod_name)
+			url = "https://steamcommunity.com/sharedfiles/filedetails/?id="..GetWorkshopIdNumber(mod_name)
 		else
 			-- Presumably if known and not workshop, it was downloaded from the forum?
 			if is_known then
-				url = "http://forums.kleientertainment.com/forum/79-dont-starve-together-beta-mods-and-tools/"
+				url = "https://forums.kleientertainment.com/forum/79-dont-starve-together-beta-mods-and-tools/"
 			else
-				url = "http://steamcommunity.com/app/322330/workshop/"
+				url = "https://steamcommunity.com/app/322330/workshop/"
 			end
 			is_generic_url = true
 		end
@@ -956,9 +984,9 @@ end
 
 function ModWrangler:ShowMoreMods()
     if PLATFORM == "WIN32_STEAM" or PLATFORM == "LINUX_STEAM" or PLATFORM == "OSX_STEAM" then
-        VisitURL("http://steamcommunity.com/app/322330/workshop/")
+        VisitURL("https://steamcommunity.com/app/322330/workshop/")
     else
-        VisitURL("http://forums.kleientertainment.com/files/")
+        VisitURL("https://forums.kleientertainment.com/files/")
     end
 end
 

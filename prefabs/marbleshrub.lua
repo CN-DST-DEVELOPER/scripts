@@ -202,6 +202,7 @@ local function MakeShrub(name, growthstage)
 
 		MakeHauntableWork(inst)
 		MakeSnowCovered(inst)
+        SetLunarHailBuildupAmountSmall(inst)
 
 		MakeWaxablePlant(inst)
 

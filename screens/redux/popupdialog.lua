@@ -73,11 +73,13 @@ local PopupDialogScreen = Class(Screen, function(self, title, text, buttons, spa
 	self.default_focus = self.dialog
 end)
 
+ValidateLineNumber(76)
 function PopupDialogScreen:OnControl(control, down)
     if PopupDialogScreen._base.OnControl(self,control, down) then return true end
 
     return self.oncontrol_fn(control, down)
 end
+ValidateLineNumber(82)
 
 
 function PopupDialogScreen:Close()

@@ -19,7 +19,12 @@ local function Configure(inst, data)
     if data.build then
         inst.savedata.build = data.build
 
-        inst.AnimState:SetBuild(data.build)
+        if data.skin_build then
+            inst.savedata.skin_build = data.skin_build
+            inst.AnimState:SetSkin(data.skin_build, data.build)
+        else
+            inst.AnimState:SetBuild(data.build)
+        end
     end
 
     if data.scale then
@@ -155,7 +160,7 @@ local function Disappear(inst, worker)
 end
 
 local function SpawnDugWaxedPlant(inst, worker)
-    local plant = inst.components.lootdropper:SpawnLootPrefab(FunctionOrValue(inst.dug_prefab, inst))
+    local plant = inst.components.lootdropper:SpawnLootPrefab(FunctionOrValue(inst.dug_prefab, inst), nil, inst.linked_skinname, inst.skin_id)
 
     plant:CopySaveData(inst)
 
@@ -378,7 +383,7 @@ end
 -------------------------------------------------------------------------------------------------
 
 local function DugWaxedPlant_OnDeploy(inst, pt, deployer)
-    local plant = SpawnPrefab(inst.plantprefab)
+    local plant = SpawnPrefab(inst.plantprefab, inst.linked_skinname, inst.skin_id)
 
     if plant == nil then
         return
@@ -542,7 +547,13 @@ local function WaxPlant(plant, doer, waxitem)
         return false
     end
 
-    local waxed = SpawnPrefab(prefab)
+    local skin_build, skin_id = plant:GetSkinBuild(), plant.skin_id
+
+    if skin_build == nil or skin_build == "" or skin_id == 0 then
+        skin_build, skin_id = nil, nil
+    end
+
+    local waxed = SpawnPrefab(prefab, skin_build, skin_id)
 
     local bank  = plant.AnimState:GetBankHash()
     local build = plant.AnimState:GetBuild()
@@ -563,6 +574,7 @@ local function WaxPlant(plant, doer, waxitem)
         build = waxed.build ~= build and build or nil, -- Saved
         multcolor = {plant.AnimState:GetMultColour()},
         scale = scale ~= 1 and scale or nil,  -- Saved
+        skin_build = skin_build, -- Saved
     }
 
     waxed:Configure(data)

@@ -1275,10 +1275,8 @@ end
 local SCROLL_REPEAT_TIME = .15
 local MOUSE_SCROLL_REPEAT_TIME = 0
 local STICK_SCROLL_REPEAT_TIME = .25
-local reset_control = CONTROL_MENU_BACK
-if IsConsole() then
-	reset_control = CONTROL_MENU_MISC_2
-end
+local reset_control = CONTROL_MENU_MISC_2
+local steam_show_market_link = CONTROL_MENU_L2
 
 function TradeScreen:OnControl(control, down)
 	if self.quitting then
@@ -1311,7 +1309,7 @@ function TradeScreen:OnControl(control, down)
 					self:Reset()
 				end
 				return true
-			elseif control == CONTROL_MENU_MISC_2 then -- Y button
+			elseif control == steam_show_market_link then
 				if IsNotConsole() and PLATFORM ~= "WIN32_RAIL" then
 					VisitURL("https://steamcommunity.com/market/search?appid=322330")
 					return true
@@ -1425,7 +1423,7 @@ function TradeScreen:GetHelpText()
     end
 
 	if not IsRail() and IsNotConsole() then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.TRADESCREEN.MARKET)
+		table.insert(t, TheInput:GetLocalizedControl(controller_id, steam_show_market_link) .. " " .. STRINGS.UI.TRADESCREEN.MARKET)
 	end
 
     return table.concat(t, "  ")

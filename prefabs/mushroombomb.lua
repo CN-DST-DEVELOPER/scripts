@@ -291,8 +291,7 @@ local function MakeProjectile(name, bombname)
         inst.Physics:SetFriction(0)
         inst.Physics:SetDamping(0)
         inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.WORLD)
+		inst.Physics:SetCollisionMask(COLLISION.WORLD)
         inst.Physics:SetCapsule(.2, .2)
 
         inst.AnimState:SetBank("mushroombomb")
@@ -300,6 +299,10 @@ local function MakeProjectile(name, bombname)
         inst.AnimState:PlayAnimation("projectile_loop", true)
 
         inst:AddTag("NOCLICK")
+
+		-- Projectile (from complexprojectile component) added to pristine state for optimization.
+		inst:AddTag("projectile")
+		inst:AddTag("complexprojectile")
 
         inst.entity:SetPristine()
 

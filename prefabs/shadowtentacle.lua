@@ -41,6 +41,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_hidehealth = true
+
 	--inst.owner is set when spawned from ruins_bat, slingshotammo
 
     inst:AddComponent("health")

@@ -142,10 +142,11 @@ local function OnThrown(inst, attacker)
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(0)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.GROUND,
+		COLLISION.OBSTACLES,
+		COLLISION.ITEMS
+	)
     inst.Physics:SetCapsule(.2, .2)
 end
 
@@ -253,6 +254,9 @@ local function fn()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = ReticuleTargetFn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 8
     inst.components.reticule.ease = true
 
     MakeInventoryFloatable(inst, "small", 0.23, 1.15)
@@ -262,6 +266,7 @@ local function fn()
 
     -- Projectile (from complexprojectile component) added to pristine state for optimization.
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.entity:SetPristine()
 

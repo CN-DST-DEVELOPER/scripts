@@ -51,7 +51,7 @@ local function SetLightRange(inst,value)
     end
 end
 
-local function MakeTorchFire(name, customassets, customprefabs, common_postinit, master_postinit)
+local function MakeTorchFire(name, customassets, customprefabs, common_postinit, master_postinit, overridedata)
     local assets =
     {
         Asset("SCRIPT", "scripts/prefabs/torchfire_common.lua"),
@@ -67,12 +67,15 @@ local function MakeTorchFire(name, customassets, customprefabs, common_postinit,
         local inst = CreateEntity()
 
         inst.entity:AddTransform()
+        if overridedata and overridedata.hasanimstate then
+            inst.entity:AddAnimState()
+        end
         inst.entity:AddSoundEmitter()
         inst.entity:AddNetwork()
 
         inst:AddTag("FX")
 
-        inst.SoundEmitter:PlaySound("dontstarve/wilson/torch_LP", "torch")
+        inst.SoundEmitter:PlaySound(overridedata and overridedata.sfx_torchloop or "dontstarve/wilson/torch_LP", "torch")
         inst.SoundEmitter:SetParameter("torch", "intensity", 1)
 
         inst._light = CreateLight()

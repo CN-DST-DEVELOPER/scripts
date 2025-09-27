@@ -792,6 +792,10 @@ function CozyBunnymanBrain:OnStart()
                 ChattyNode(self.inst, PanicChat,
                     Panic(self.inst))),
 
+            WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "Shocked",
+                ChattyNode(self.inst, "RABBIT_PANICELECTRICITY",
+                    AvoidElectricFence(self.inst))),
+
             DoAction(self.inst, shouldgobacktocave, "should leave", true ),
 
             FailIfSuccessDecorator(ConditionWaitNode(function() return not self.inst.isleaveing end, "Block While Leaving")),

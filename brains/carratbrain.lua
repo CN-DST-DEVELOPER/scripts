@@ -4,6 +4,7 @@ require "behaviours/leash"
 require "behaviours/panic"
 require "behaviours/runaway"
 require "behaviours/wander"
+local BrainCommon = require("brains/braincommon")
 
 local AVOID_PLAYER_DIST = 3
 local AVOID_PLAYER_DIST_SQ = AVOID_PLAYER_DIST * AVOID_PLAYER_DIST
@@ -211,6 +212,9 @@ function CarratBrain:OnStart()
     {
         WhileNode( function() return (self.inst.components.health ~= nil and self.inst.components.health.takingfiredamage) or (self.inst.components.burnable ~= nil and self.inst.components.burnable:IsBurning()) end, "OnFire",
 			Panic(self.inst)),
+
+        WhileNode( function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "AvoidElectricFence",
+			AvoidElectricFence(self.inst)),
 
         race_brain,
 

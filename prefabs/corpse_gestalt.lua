@@ -16,6 +16,8 @@ end
 
 local function GeSpawnPoint(inst, target)
     local pos = target:GetPosition()
+    pos.y = 0
+
     local offset = FindWalkableOffset(pos, TWOPI*math.random(), 30, 12, true, false, nil, true, true)
 
     return pos + (offset or Vector3(0,0,0))
@@ -45,8 +47,7 @@ local function fn()
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.FLYERS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.GROUND)
+	phys:SetCollisionMask(COLLISION.GROUND)
     phys:SetCapsule(0.5, 1)
 
     inst:AddTag("brightmare")
@@ -81,7 +82,7 @@ local function fn()
     inst.components.locomotor.runspeed = TUNING.CORPSE_GESTALT_RUN_SPEED
     inst.components.locomotor:EnableGroundSpeedMultiplier(false)
     inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorecreep = true }
+    inst.components.locomotor.pathcaps = { ignorecreep = true, allowocean = true }
 
     inst.Spawn = Spawn
     inst.SetTarget = SetTarget

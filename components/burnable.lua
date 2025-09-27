@@ -4,46 +4,26 @@ local SourceModifierList = require("util/sourcemodifierlist")
 local willow_ember_common = require("prefabs/willow_ember_common")
 
 local function oncanlight(self)
-    if not self.burning and self.canlight then
-        self.inst:AddTag("canlight")
-        self.inst:RemoveTag("nolight")
-    else
-        self.inst:RemoveTag("canlight")
-        self.inst:AddTag("nolight")
-    end
+    local can_light_state = not self.burning and self.canlight
+    self.inst:AddOrRemoveTag("canlight", can_light_state)
+    self.inst:AddOrRemoveTag("nolight", not can_light_state)
 end
 
 local function onburning(self, burning)
-    if burning then
-        self.inst:AddTag("fire")
-    else
-        self.inst:RemoveTag("fire")
-    end
+    self.inst:AddOrRemoveTag("fire", burning)
     oncanlight(self)
 end
 
 local function onsmoldering(self, smoldering)
-    if smoldering then
-        self.inst:AddTag("smolder")
-    else
-        self.inst:RemoveTag("smolder")
-    end
+    self.inst:AddOrRemoveTag("smolder", smoldering)
 end
 
 local function onignorefuel(self, ignorefuel)
-    if ignorefuel then
-        self.inst:AddTag("burnableignorefuel")
-    else
-        self.inst:RemoveTag("burnableignorefuel")
-    end
+    self.inst:AddOrRemoveTag("burnableignorefuel", ignorefuel)
 end
 
 local function onstokeablefire(self, stokeablefire)
-    if stokeablefire then
-        self.inst:AddTag("stokeablefire")
-    else
-        self.inst:RemoveTag("stokeablefire")
-    end
+    self.inst:AddOrRemoveTag("stokeablefire", stokeablefire)
 end
 
 local Burnable = Class(function(self, inst)
@@ -102,9 +82,25 @@ function Burnable:SetOnIgniteFn(fn)
     self.onignite = fn
 end
 
+function Burnable:OnBurnt_Internal()
+    self.inst:RemoveComponent("lunarhailbuildup")
+end
+
 --- Set the function that will be called when the object has burned completely
 function Burnable:SetOnBurntFn(fn)
-    self.onburnt = fn
+    -- NOTES(JBK): Because most of the game has been calling burnable.onburnt in loading and other places directly
+    -- we will wrap this function with our own so that we get our internal part called whenever onburnt is called.
+    -- Mods can hook the internal function to get similar customizability.
+    if fn then
+        self.onburnt = function(inst)
+            fn(inst)
+            if inst:IsValid() then
+                self:OnBurnt_Internal()
+            end
+        end
+    else
+        self.onburnt = nil
+    end
 end
 
 --- Set the function that will be called when the object stops burning

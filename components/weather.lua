@@ -232,7 +232,7 @@ return Class(function(self, inst)
     local _maxlightningdelay
     local _nextlightningtime
     local _lightningtargets
-    local _lightningexcludetags
+    local _lightningexcludetags -- NOTE(Omar): Deprecated, leaving this here in case any mods were upvalue hacking this variable. 
 
     --Network
     local _noisetime = net_float(inst.GUID, "weather._noisetime")
@@ -659,20 +659,32 @@ return Class(function(self, inst)
             end
         end
 
-        local strike_position = pos
-        local prefab_type = "lightning"
+        local strike_position = nil
+        local prefab_type = nil
+
+        local function SetStrikePositionAndPrefab(new_pos, new_prefab_type)
+            strike_position = new_pos       or strike_position
+            prefab_type = new_prefab_type   or prefab_type
+
+            -- Lunar lightning should always override thunder or lightning (for now)
+            if TheWorld.net.components.moonstorms and TheWorld.net.components.moonstorms:IsPointInMoonstorm(strike_position) then
+                prefab_type = "moonstorm_lightning"
+            end
+        end
+
+        SetStrikePositionAndPrefab(pos, "lightning") --Default initialize
 
         if closest_blocker ~= nil then
             closest_blocker.components.lightningblocker:DoLightningStrike(strike_position)
-            prefab_type = "thunder"
+            SetStrikePositionAndPrefab(strike_position, "thunder")
         elseif closest_rod ~= nil then
-            strike_position = closest_rod:GetPosition()
+            SetStrikePositionAndPrefab(closest_rod:GetPosition(), prefab_type)
 
             -- Check if we just redirected into a lightning blocker's range.
             if blockers ~= nil then
                 for _, blocker in ipairs(blockers) do
                     if blocker:GetDistanceSqToPoint(strike_position:Get()) < (blocker.components.lightningblocker.block_rsq + 0.0001) then
-                        prefab_type = "thunder"
+                        SetStrikePositionAndPrefab(strike_position, "thunder")
                         blocker.components.lightningblocker:DoLightningStrike(strike_position)
                         break
                     end
@@ -680,18 +692,20 @@ return Class(function(self, inst)
             end
 
             -- If we didn't get blocked, push the event that does all the fx and behaviour.
-            if prefab_type == "lightning" then
+            -- NOTE: Let moon lightning still strike rods so we can get the charged rod visuals and sounds
+            if prefab_type == "lightning" or prefab_type == "moonstorm_lightning" then
                 closest_rod:PushEvent("lightningstrike")
             end
         else
+            local hit_player = false
             if closest_generic ~= nil then
-                strike_position = closest_generic:GetPosition()
+                SetStrikePositionAndPrefab(closest_generic:GetPosition(), prefab_type)
 
                 -- Check if we just redirected into a lightning blocker's range.
                 if blockers ~= nil then
                     for _, blocker in ipairs(blockers) do
                         if blocker:GetDistanceSqToPoint(strike_position:Get()) < (blocker.components.lightningblocker.block_rsq + 0.0001) then
-                            prefab_type = "thunder"
+                            SetStrikePositionAndPrefab(strike_position, "thunder")
                             blocker.components.lightningblocker:DoLightningStrike(strike_position)
                             break
                         end
@@ -702,19 +716,13 @@ return Class(function(self, inst)
                 if prefab_type == "lightning" then
                     if closest_generic.components.playerlightningtarget ~= nil then
                         closest_generic.components.playerlightningtarget:DoStrike()
+                        hit_player = true
                     end
                 end
             end
 
-            -- If we're doing lightning, light nearby unprotected objects on fire.
-            if prefab_type == "lightning" then
-                ents = TheSim:FindEntities(strike_position.x, strike_position.y, strike_position.z, 3, nil, _lightningexcludetags)
-                for _, v in pairs(ents) do
-                    if v.components.burnable ~= nil then
-                        v.components.burnable:Ignite()
-                    end
-                end
-            end
+            -- If we're doing lightning, shock creatures, andlight nearby unprotected objects on fire.
+            StrikeLightningAtPoint(prefab_type, hit_player, strike_position)
         end
 
         SpawnPrefab(prefab_type).Transform:SetPosition(strike_position:Get())
@@ -791,13 +799,6 @@ return Class(function(self, inst)
         _maxlightningdelay = nil
         _nextlightningtime = 5
         _lightningtargets = {}
-        _lightningexcludetags = { "player", "INLIMBO", "lightningblocker" }
-
-        for k, v in pairs(FUELTYPE) do
-            if v ~= FUELTYPE.USAGE then --Not a real fuel
-                table.insert(_lightningexcludetags, v.."_fueled")
-            end
-        end
 
         for i, v in ipairs(AllPlayers) do
             table.insert(_lightningtargets, v)
@@ -820,6 +821,7 @@ return Class(function(self, inst)
         inst:ListenForEvent("ms_setlightningdelay", OnSetLightningDelay, _world)
         inst:ListenForEvent("ms_sendlightningstrike", OnSendLightningStrike, _world)
         inst:ListenForEvent("ms_simunpaused", OnSimUnpaused, _world)
+        inst:ListenForEvent("ms_startlunarhail", StartLunarHail, _world)
     end
 
     PushWeather()

@@ -33,6 +33,7 @@ function ButterflyBrain:OnStart()
         PriorityNode(
         {
 			BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
             RunAway(self.inst, RUN_AWAY_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
             Wander(self.inst, GetHomePos, MAX_WANDER_DIST)
         },1)

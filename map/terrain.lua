@@ -149,6 +149,8 @@ local TERRAIN_FILTER=
 -- nothing can grow on these tiles:
 for terrain, tiles in pairs(TERRAIN_FILTER) do
 	table.insert(tiles, WORLD_TILES.ARCHIVE)
+	table.insert(tiles, WORLD_TILES.VAULT)
+	table.insert(tiles, WORLD_TILES.VAULT_CLEAN)
 end
 
 TERRAIN_FILTER.Print = function (filter)

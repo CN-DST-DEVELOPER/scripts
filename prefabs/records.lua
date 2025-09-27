@@ -1,10 +1,13 @@
 local assets = {
     Asset("ANIM", "anim/records.zip"),
+    Asset("ANIM", "anim/record_balatro.zip"),
     Asset("INV_IMAGE", "record"),
+    Asset("INV_IMAGE", "record_balatro"),
 }
 
 local RECORDS = {
-    default = {song = "dontstarve/music/gramaphone_ragtime", imageicon = nil,},
+    default = {song = "dontstarve/music/gramaphone_ragtime", build = nil, displayname = nil, imageicon = nil,},
+    balatro = {song = "dontstarve/music/gramaphone_balatro", build = "record_balatro", displayname = "record_balatro", imageicon = "record_balatro",},
 }
 
 local function SetRecord(inst, name)
@@ -19,10 +22,20 @@ local function SetRecord(inst, name)
     end
 
     inst.recordname = name
+    inst.recorddata = recorddata
 
-    inst.songToPlay = recorddata.song
-    if inst.songToPlay_skin == nil then -- FIXME(JBK): Manage inventory image names for other records that are not skins.
-        inst.components.inventoryitem:ChangeImageName(recorddata.imageicon)
+    inst.songToPlay = recorddata.song -- Keep for mods.
+    if not inst.linked_skinname then
+        if inst.recorddata.build then
+            inst.AnimState:SetBuild(inst.recorddata.build)
+        end
+        inst.record_displayname:set(inst.recorddata.displayname or "")
+        if inst.components.inspectable then
+            inst.components.inspectable:SetNameOverride(inst.recorddata.displayname)
+        end
+        if inst.components.inventoryitem then
+            inst.components.inventoryitem:ChangeImageName(inst.recorddata.imageicon)
+        end
     end
 end
 
@@ -37,6 +50,16 @@ local function OnLoad(inst, data)
     if data then
         if data.name then
             inst:SetRecord(data.name)
+        end
+    end
+end
+
+local function DisplayNameFn(inst)
+    local name = inst.record_displayname:value()
+    if name ~= "" then
+        name = STRINGS.NAMES[string.upper(name)]
+        if name then
+            return name
         end
     end
 end
@@ -60,6 +83,9 @@ local function fn()
     inst:AddTag("phonograph_record")
 
     MakeInventoryFloatable(inst, "med", 0.02, 0.7)
+
+    inst.record_displayname = net_string(inst.GUID, "record.record_displayname")
+    inst.displaynamefn = DisplayNameFn
 
     inst.entity:SetPristine()
 

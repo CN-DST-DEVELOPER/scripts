@@ -168,8 +168,6 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_small", true)
     inst.scrapbook_anim = "idle_big"
 
-    MakeSnowCoveredPristine(inst)
-
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
@@ -221,7 +219,6 @@ local function fn()
     inst:AddComponent("witherable")
 
     --------------------------------------------------------------------------
-    MakeSnowCovered(inst)
     MakeNoGrowInWinter(inst)
 
     --------------------------------------------------------------------------

@@ -103,10 +103,29 @@ function CraftingMenuIngredients:SetRecipe(recipe)
 	local allow_ingredient_crafting = self.hint_tech_ingredient == nil and recipe_data ~= nil and recipe_data.meta.build_state ~= "hint" and recipe_data.meta.build_state ~= "hide"
 
     for i, v in ipairs(recipe.ingredients) do
-        local has, num_found = inventory:Has(v.type, math.max(1, RoundBiasedUp(v.amount * builder:IngredientMod())), true)
-		local ingredient_recipe_data = allow_ingredient_crafting and owner.HUD.controls.craftingmenu:GetRecipeState(v.type) or nil
+		local ing_prefab = v.type
+		local has, num_found = inventory:Has(ing_prefab, math.max(1, RoundBiasedUp(v.amount * builder:IngredientMod())), true)
 
-        local ing = root:AddChild(IngredientUI(v:GetAtlas(), v:GetImage(), v.amount ~= 0 and v.amount or nil, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner, v.type, quant_text_scale, ingredient_recipe_data))
+		local ingredient_recipe_data
+		if allow_ingredient_crafting then
+			ingredient_recipe_data = owner.HUD.controls.craftingmenu:GetRecipeState(ing_prefab)
+			if ingredient_recipe_data and
+				ingredient_recipe_data.meta.build_state == "hide" and
+				ingredient_recipe_data.recipe.forward_ingredients
+			then
+				--V2C: skill tree might've locked basic ingredient recipe. try the forwarded ingredient recipes.
+				for _, v1 in ipairs(ingredient_recipe_data.recipe.forward_ingredients) do
+					local data1 = owner.HUD.controls.craftingmenu:GetRecipeState(v1)
+					if data1 and data1.meta.build_state ~= "hide" then
+						ing_prefab = v1
+						ingredient_recipe_data = data1
+						break
+					end
+				end
+			end
+		end
+
+        local ing = root:AddChild(IngredientUI(v:GetAtlas(), v:GetImage(), v.amount ~= 0 and v.amount or nil, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner, ing_prefab, quant_text_scale, ingredient_recipe_data))
         if GetGameModeProperty("icons_use_cc") then
             ing.ing:SetEffect("shaders/ui_cc.ksh")
         end

@@ -214,6 +214,22 @@ return
 			"webber_yule",
 			"body_webber_yule",
 		},
+		{
+			"wortox_yule",
+			"body_wortox_yule",
+			"legs_wortox_yule",
+		},
+		{
+			"warly_yule",
+			"body_warly_yule",
+			"legs_warly_yule",
+		},
+		{
+			"wolfgang_yule",
+			"body_wolfgang_yule",
+			"legs_wolfgang_yule",
+			"feet_wolfgang_yule",
+		},
 	},
 	emote_fistshake =
 	{
@@ -309,6 +325,32 @@ return
 			"body_pj_red_redbird",
 			"legs_pj_red_redbird",
 			"bedroll_furry_quilt_red_redbird",
+		},
+		{
+			"body_pj_grey",
+			"legs_pj_grey",
+			"bedroll_furry_quilt_grey",
+		},
+	},
+	emote_tiphat =
+	{
+		{
+			"wanda_western",
+			"body_wanda_western",
+			"hand_wanda_western",
+			"legs_wanda_western",
+		},
+		{
+			"wathgrithr_western",
+			"body_wathgrithr_western",
+			"legs_wathgrithr_western",
+		},
+		{
+			"wes_western",
+			"body_wes_western",
+			"hand_wes_western",
+			"legs_wes_western",
+			"feet_wes_western",
 		},
 	},
 	emote_yawn =

@@ -1,17 +1,17 @@
 local SourceModifierList = require("util/sourcemodifierlist")
 
-local DOZE_OFF_TIME = 2
+--local DOZE_OFF_TIME = 2
 
-local PATHFIND_PERIOD = 1
-local PATHFIND_MAX_RANGE = 40
+--local PATHFIND_PERIOD = 1
+--local PATHFIND_MAX_RANGE = 40
 
 local STATUS_CALCULATING = 0
 local STATUS_FOUNDPATH = 1
-local STATUS_NOPATH = 2
+--local STATUS_NOPATH = 2
 
 local ARRIVE_STEP = .15
 
-local MOVE_TIMER_STOP_THRESHOLD = .1 --seconds
+local MOVE_TIMER_STOP_THRESHOLD = 0.3 --seconds
 
 local INVALID_PLATFORM_ID = "INVALID PLATFORM"
 
@@ -73,6 +73,18 @@ end
 local function onexternalspeedmultiplier(self, externalspeedmultiplier)
     if self.inst.player_classified ~= nil then
         self.inst.player_classified.externalspeedmultiplier:set(externalspeedmultiplier)
+    end
+end
+
+local function onexternalvelocityvectorx(self, externalvelocityvectorx)
+    if self.inst.player_classified ~= nil then
+        self.inst.player_classified.externalvelocityvectorx:set(externalvelocityvectorx)
+    end
+end
+
+local function onexternalvelocityvectorz(self, externalvelocityvectorz)
+    if self.inst.player_classified ~= nil then
+        self.inst.player_classified.externalvelocityvectorz:set(externalvelocityvectorz)
     end
 end
 
@@ -145,6 +157,22 @@ end
 
 local function ClientExternalSpeedMultiplier(self)
 	return (self.inst.player_classified and self.inst.player_classified.externalspeedmultiplier:value() or self.externalspeedmultiplier) * self:GetPredictExternalSpeedMultipler()
+end
+
+local function ServerExternalVelocityVectorX(self)
+    return self.externalvelocityvectorx
+end
+
+local function ServerExternalVelocityVectorZ(self)
+    return self.externalvelocityvectorz
+end
+
+local function ClientExternalVelocityVectorX(self)
+    return self.inst.player_classified and self.inst.player_classified.externalvelocityvectorx:value() or self.externalvelocityvectorx
+end
+
+local function ClientExternalVelocityVectorZ(self)
+    return self.inst.player_classified and self.inst.player_classified.externalvelocityvectorz:value() or self.externalvelocityvectorz
 end
 
 local function ServerGetSpeedMultiplier(self)
@@ -245,6 +273,8 @@ local LocoMotor = Class(function(self, inst)
         self.FasterOnRoad = ServerFasterOnRoad
         self.FasterOnCreep = ServerFasterOnCreep
         self.ExternalSpeedMultiplier = ServerExternalSpeedMutliplier
+        self.ExternalVelocityVectorX = ServerExternalVelocityVectorX
+        self.ExternalVelocityVectorZ = ServerExternalVelocityVectorZ
         self.GetSpeedMultiplier = ServerGetSpeedMultiplier
 		self.IsFasterOnGroundTile = ServerIsFasterOnGroundTile
     else
@@ -252,10 +282,14 @@ local LocoMotor = Class(function(self, inst)
         self.FasterOnRoad = ClientFasterOnRoad
         self.FasterOnCreep = ClientFasterOnCreep
         self.ExternalSpeedMultiplier = ClientExternalSpeedMultiplier
+        self.ExternalVelocityVectorX = ClientExternalVelocityVectorX
+        self.ExternalVelocityVectorZ = ClientExternalVelocityVectorZ
         self.GetSpeedMultiplier = ClientGetSpeedMultiplier
 		self.IsFasterOnGroundTile = ClientIsFasterOnGroundTile
         removesetter(self, "runspeed")
         removesetter(self, "externalspeedmultiplier")
+        removesetter(self, "externalvelocityvectorx")
+        removesetter(self, "externalvelocityvectorz")
     end
 
     self.dest = nil
@@ -271,6 +305,7 @@ local LocoMotor = Class(function(self, inst)
     self.fastmultiplier = 1.3
     self.movestarttime = -1
     self.movestoptime = -1
+	--self.movetimeoverride = nil
     --self.predictmovestarttime = nil
 	--self.no_predict_fastforward = nil --see PlayerController:RepeatHeldAction()
 
@@ -283,6 +318,10 @@ local LocoMotor = Class(function(self, inst)
 
     self._externalspeedmultipliers = {}
     self.externalspeedmultiplier = 1
+
+    self._externalvelocityvectors = {}
+    self.externalvelocityvectorx = 0
+    self.externalvelocityvectorz = 0
 
     self.wasoncreep = false
     self.triggerscreep = true
@@ -304,6 +343,8 @@ nil,
 {
     runspeed = onrunspeed,
     externalspeedmultiplier = onexternalspeedmultiplier,
+    externalvelocityvectorx = onexternalvelocityvectorx,
+    externalvelocityvectorz = onexternalvelocityvectorz,
 })
 
 function LocoMotor:EnableHopDelay(enable)
@@ -367,6 +408,10 @@ function LocoMotor:StartMoveTimerInternal()
     if self.movestoptime ~= nil then
         local t = GetTime()
         if t - self.movestoptime >= MOVE_TIMER_STOP_THRESHOLD then
+			if self.movetimeoverride then
+				self.movetimeoverride:Cancel()
+				self.movetimeoverride = nil
+			end
             self.movestarttime = t
         end
         self.movestoptime = nil
@@ -379,12 +424,43 @@ function LocoMotor:StopMoveTimerInternal()
     end
 end
 
+local function ClearOverrideMoveTimer(inst, self)
+	self.movetimeoverride = nil
+end
+
+function LocoMotor:OverrideMoveTimer(movetime)
+	local t = GetTime()
+	self.movestoptime = nil
+	self.movestarttime = t - movetime
+	if not self.ismastersim then
+		if self.movetimeoverride then
+			self.movetimeoverride:Cancel()
+		end
+		self.movetimeoverride = self.inst:DoTaskInTime(2 * FRAMES, ClearOverrideMoveTimer, self)
+		self.movetimeoverride._movetime = movetime
+	end
+end
+
+--only used by clients for sending to server
+function LocoMotor:PopOverrideTimeMoving()
+	if self.movetimeoverride then
+		local movetime = self.movetimeoverride._movetime
+		self.movetimeoverride:Cancel()
+		self.movetimeoverride = nil
+		return movetime
+	end
+end
+
 function LocoMotor:RestartPredictMoveTimer()
     self.predictmovestarttime = GetTime()
 end
 
 function LocoMotor:CancelPredictMoveTimer()
     self.predictmovestarttime = nil
+end
+
+function LocoMotor:OverridePredictTimer(t)
+	self.predictmovestarttime = t
 end
 
 function LocoMotor:StopMoving()
@@ -533,7 +609,10 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
             self.inst:PushEvent("walkoncreep", eventdata)
             self.wasoncreep = true
         end
-        self.groundspeedmultiplier = self.slowmultiplier
+
+        if not self.inst:HasTag("vigorbuff") then
+            self.groundspeedmultiplier = self.slowmultiplier
+        end
     else
         if self.wasoncreep and self.triggerscreep then
             self.inst:PushEvent("walkoffcreep")
@@ -541,7 +620,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
         self.wasoncreep = false
 
         local current_ground_tile = TheWorld.Map:GetTileAtPoint(x, 0, z)
-        self.groundspeedmultiplier = (self:IsFasterOnGroundTile(current_ground_tile) or 
+        self.groundspeedmultiplier = (self:IsFasterOnGroundTile(current_ground_tile) or
                                      (self:FasterOnRoad() and ((RoadManager ~= nil and RoadManager:IsOnRoad(x, 0, z)) or GROUND_ROADWAYS[current_ground_tile])) or
                                      (oncreep and self:FasterOnCreep()))
 									 and self.fastmultiplier
@@ -664,7 +743,7 @@ function LocoMotor:Clear()
     self.atdestfn = nil
     self.wantstomoveforward = nil
     self.wantstorun = nil
-    self.bufferedaction = nil
+	self:SetBufferedAction(nil)
     --self:ResetPath()
 end
 
@@ -833,7 +912,7 @@ function LocoMotor:PushAction(bufferedaction, run, try_instant)
 			end
 		end
 		if not closeinspect then
-			local pos = self.inst.components.playercontroller:GetRemotePredictPosition()
+			local pos = self.inst.components.playercontroller:GetRemotePredictPositionExternal()
 			if pos and not self.inst.components.playercontroller.directwalking then
 				self:GoToPoint(pos, bufferedaction, run)
 			else
@@ -1130,17 +1209,38 @@ function LocoMotor:GetHopDistance(speed_mult)
 	return self.hop_distance_fn ~= nil and self.hop_distance_fn(self.inst, speed_mult or 1) or self.hop_distance
 end
 
+function LocoMotor:IsValidDestinationPlatform(my_platform, dest_platform)
+	if dest_platform == my_platform then
+		return true
+	elseif dest_platform.components.walkableplatform.player_only and not self.inst.isplayer then
+		return false
+	elseif dest_platform.components.walkableplatform.no_mounts then
+		local rider = self.inst.replica.rider
+		if rider and rider:IsRiding() then
+			return false
+		end
+	end
+
+	if self.ismastersim then
+		return not dest_platform.components.walkableplatform:IsFull()
+	end
+	return not dest_platform:HasTag("walkableplatform_full")
+end
+
 local WALL_TAGS = { "wall" }
-function LocoMotor:ScanForPlatformInDir(my_platform, map, my_x, my_z, dir_x, dir_z, steps, step_size)
-    local is_at_edge = self:IsAtEdge(my_platform, map, my_x, my_z, dir_x, dir_z)
+--steps_to_land is optional: used when hopping from floating, to scan a bit further for land
+function LocoMotor:ScanForPlatformInDir_Internal(my_platform, map, my_x, my_z, dir_x, dir_z, steps, steps_to_land, step_size, nodelay, from_floating)
     local is_first_hop_point = true
-    for i = 1,steps do
+	for i = 1, steps_to_land or steps do
         local pt_x, pt_z = my_x + dir_x * i * step_size, my_z + dir_z * i * step_size
         local platform = map:GetPlatformAtPoint(pt_x, pt_z)
+		if platform and not self:IsValidDestinationPlatform(my_platform, platform) then
+			platform = nil
+		end
 
         -- prevent jumping back onto the same platform because if you click an action and land near the edge of a platform
         -- you would sometimes turn around and jump right back
-        if not (self.last_platform_visited == platform) then
+		if from_floating or not (self.last_platform_visited == platform) then
             local is_water = not map:IsVisualGroundAtPoint(pt_x, 0, pt_z)
             if not is_water then
                 --search for nearby walls and fences with active physics.
@@ -1154,31 +1254,43 @@ function LocoMotor:ScanForPlatformInDir(my_platform, map, my_x, my_z, dir_x, dir
                     end
                 end
             end
-            --print(i, is_at_edge, my_platform, platform, pt_x - my_x, pt_z - my_z, is_water, step_size)
-            if is_at_edge and platform ~= my_platform then
+			--print(i, my_platform, platform, pt_x - my_x, pt_z - my_z, is_water, step_size)
+			if from_floating or platform ~= my_platform and
+				(i <= steps or platform == nil) --extra distance when jumping to land from floating
+			then
                 if platform ~= nil or not is_water then
-					if self.hop_delay and self.dest == nil then
+					if self.hop_delay and self.dest == nil and not nodelay then
 						--keep pushing toward the same direction during the delay before the hop is actually triggered
-                        local platform_delay = math.max(
-							platform and platform.components.platformhopdelay and platform.components.platformhopdelay:GetDelayTicks() or 0,
-							my_platform and my_platform.components.platformhopdelay and my_platform.components.platformhopdelay:GetDelayTicks() or 0
-						)
-						local delay = platform_delay > 0 and platform_delay or self.inst.forced_platformhopdelay or TUNING.PLATFORM_HOP_DELAY_TICKS
+						local delay
+						if is_water then
+							delay = self.inst.forced_platformhopdelay or TUNING.PLATFORM_FLOATING_HOP_DELAY_TICKS
+						else
+							local platform_delay = math.max(
+								platform and platform.components.platformhopdelay and platform.components.platformhopdelay:GetDelayTicks() or 0,
+								my_platform and my_platform.components.platformhopdelay and my_platform.components.platformhopdelay:GetDelayTicks() or 0
+							)
+							delay = platform_delay > 0 and platform_delay or self.inst.forced_platformhopdelay or TUNING.PLATFORM_HOP_DELAY_TICKS
+						end
 						if delay > 0 then
-							--detect boat bridges (only from boat->boat)
-							local is_boat_bridge = false
-							if platform and my_platform then
-								--boatringdata is available on clients!
-								local vx, vy, vz = platform.Physics:GetVelocity()
-								if vx == 0 and vy == 0 and vz == 0 and not (platform.components.boatringdata and platform.components.boatringdata:IsRotating()) then
-									vx, vy, vz = my_platform.Physics:GetVelocity()
-									if vx == 0 and vy == 0 and vz == 0 and not (my_platform.components.boatringdata and my_platform.components.boatringdata:IsRotating()) then
-										is_boat_bridge = true
+							local skip_delay = false
+							if my_platform then
+								if my_platform.Physics == nil then
+									--detect if we are jumping off a fixed platform (e.g. abysspillar)
+									skip_delay = true
+								elseif platform and platform.Physics then
+									--detect boat bridges (only from boat->boat)
+									--boatringdata is available on clients!
+									local vx, vy, vz = platform.Physics:GetVelocity()
+									if vx == 0 and vy == 0 and vz == 0 and not (platform.components.boatringdata and platform.components.boatringdata:IsRotating()) then
+										vx, vy, vz = my_platform.Physics:GetVelocity()
+										if vx == 0 and vy == 0 and vz == 0 and not (my_platform.components.boatringdata and my_platform.components.boatringdata:IsRotating()) then
+											skip_delay = true
+										end
 									end
 								end
 							end
 
-							if not is_boat_bridge then
+							if not skip_delay then
 								local tick = GetTick()
 								if platform ~= self.hop_delay.toplatform or my_platform ~= self.hop_delay.fromplatform or tick > self.hop_delay.lasttick + 1 then
 									self.hop_delay.toplatform = platform
@@ -1203,6 +1315,17 @@ function LocoMotor:ScanForPlatformInDir(my_platform, map, my_x, my_z, dir_x, dir
         end
     end
     return false, 0, 0, nil
+end
+
+function LocoMotor:ScanForPlatformInDir(my_platform, map, my_x, my_z, dir_x, dir_z, steps, step_size)
+	if self:IsAtEdge(my_platform, map, my_x, my_z, dir_x, dir_z) then
+		return self:ScanForPlatformInDir_Internal(my_platform, map, my_x, my_z, dir_x, dir_z, steps, nil, step_size, false, false)
+	end
+	return false, 0, 0, nil
+end
+
+function LocoMotor:ScanForPlatformInDirFromFloating(map, my_x, my_z, dir_x, dir_z, steps_to_platform, steps_to_land, step_size, nodelay)
+	return self:ScanForPlatformInDir_Internal(nil, map, my_x, my_z, dir_x, dir_z, steps_to_platform, steps_to_land, step_size, nodelay, true)
 end
 
 local PLATFORM_SCAN_STEP_SIZE = 0.5
@@ -1231,7 +1354,7 @@ function LocoMotor:ScanForPlatform(my_platform, target_x, target_z, hop_distance
 
     local can_hop, px, pz, found_platform = self:ScanForPlatformInDir(my_platform, TheWorld.Map, my_x, my_z, dir_x, dir_z, step_count, PLATFORM_SCAN_STEP_SIZE)
     local blocked = false
-    if can_hop then
+    --[[if can_hop then
         -- If we found a place to hop to, we need to check that our path is clear of obstacles.
         local path_x, path_z = px - my_x, pz - my_z
 
@@ -1247,13 +1370,11 @@ function LocoMotor:ScanForPlatform(my_platform, target_x, target_z, hop_distance
             platform_dir_x, platform_dir_z = path_x / p_length, path_z / p_length
         end
 
-        --[[
-        if self:TestForBlocked(my_x, my_z, platform_dir_x, platform_dir_z, self.inst:GetPhysicsRadius(0), p_length) then
-            can_hop = false
-            blocked = true
-        end
-        ]]--
-    end
+        --if self:TestForBlocked(my_x, my_z, platform_dir_x, platform_dir_z, self.inst:GetPhysicsRadius(0), p_length) then
+        --    can_hop = false
+        --    blocked = true
+        --end
+    end]]--
 
     return can_hop, px, pz, found_platform, blocked
 end
@@ -1361,6 +1482,7 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
         if invalid then
             self:Stop()
             self:Clear()
+			return
         elseif reached_dest then
         	--I think this is fine? we might need to make OnUpdateFinish() function that we can run to finish up the OnUpdate so we don't duplicate code
             if in_cooldown then return end
@@ -1379,14 +1501,17 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 						self:FaceMovePoint(act_pos:Get())
                     end
                 end
+				local bufferedaction = self.bufferedaction
+				self.bufferedaction = nil --so it doesn't get Failed at Clear()
                 if self.ismastersim then
-                    self.inst:PushBufferedAction(self.bufferedaction)
+					self.inst:PushBufferedAction(bufferedaction)
                 else
-                    self.inst:PreviewBufferedAction(self.bufferedaction)
+					self.inst:PreviewBufferedAction(bufferedaction)
                 end
             end
             self:Stop()
             self:Clear()
+			return
 		elseif not arrive_check_only then
             --Print(VERBOSITY.DEBUG, "LOCOMOTING")
             if self:WaitingForPathSearch() then
@@ -1525,17 +1650,32 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 			local hop_distance = self:GetHopDistance(self:GetSpeedMultiplier())
 
             local my_platform = self.inst:GetCurrentPlatform()
+			if my_platform and my_platform.components.walkableplatform.max_hop_distance then
+				hop_distance = math.min(hop_distance, my_platform.components.walkableplatform.max_hop_distance)
+			end
+
             local other_platform = nil
             local destpos_x, destpos_y, destpos_z
-            if self.dest and self.dest:IsValid() then
-				if my_platform == self.dest:GetPlatform() then
-				    destpos_x, destpos_y, destpos_z = self.dest:GetPoint()
-					other_platform = my_platform
-				end
+			if self.dest and self.dest:IsValid() and my_platform == self.dest:GetPlatform() then
+				destpos_x, destpos_y, destpos_z = self.dest:GetPoint()
+				other_platform = my_platform
 			end
 			if other_platform == nil then
-                destpos_x, destpos_z = forward_x * hop_distance + mypos_x, forward_z * hop_distance + mypos_z
-				other_platform = TheWorld.Map:GetPlatformAtPoint(destpos_x, destpos_z)
+				if self.inst.isplayer then
+					other_platform, destpos_x, destpos_z = TheWorld.Map:GetNearestPlatformInDirection(mypos_x, mypos_z, forward_x, forward_z, hop_distance)
+					if other_platform and self:IsValidDestinationPlatform(my_platform, other_platform) then
+						destpos_y = 0
+					else
+						destpos_x, destpos_z = forward_x * hop_distance + mypos_x, forward_z * hop_distance + mypos_z
+						other_platform = nil
+					end
+				else
+					destpos_x, destpos_z = forward_x * hop_distance + mypos_x, forward_z * hop_distance + mypos_z
+					other_platform = TheWorld.Map:GetPlatformAtPoint(destpos_x, destpos_z)
+					if other_platform and not self:IsValidDestinationPlatform(my_platform, other_platform) then
+						other_platform = nil
+					end
+				end
 			end
 
             local can_hop = false

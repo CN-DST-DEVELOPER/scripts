@@ -28,8 +28,7 @@ local function fn()
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.FLYERS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.GROUND)
+	phys:SetCollisionMask(COLLISION.GROUND)
     phys:SetCapsule(0.5, 1)
 
 	inst:AddTag("brightmare")
@@ -48,6 +47,8 @@ local function fn()
 
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
+    inst.scrapbook_inspectonseen = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -64,7 +65,7 @@ local function fn()
     inst.components.locomotor.runspeed = TUNING.LUNARTHRALL_PLANT_GESTALT_RUN_SPEED
     inst.components.locomotor:EnableGroundSpeedMultiplier(false)
     inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorecreep = true }
+    inst.components.locomotor.pathcaps = { ignorecreep = true, allowocean = true }
 
     inst.Spawn = Spawn
 

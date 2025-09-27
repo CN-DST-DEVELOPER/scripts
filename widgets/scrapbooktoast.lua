@@ -36,10 +36,11 @@ local ScrapbookToast = Class(Widget, function(self, owner, controls)
     self.tab_gift:SetTooltip(STRINGS.SCRAPBOOK.NEW_SCRAPBOOK_ENTRY)
     self.tab_gift:SetTooltipPos(0, -40, 0)
 
+	self.hasnewupdate = false
     self.inst:ListenForEvent("scrapbookupdated", function(player, data)        
+		self.hasnewupdate = true
         self:UpdateElements()
     end, ThePlayer)
-
 
     self.controller_hide = false
     self.craft_hide = false
@@ -47,9 +48,13 @@ local ScrapbookToast = Class(Widget, function(self, owner, controls)
 
     self.hud_focus = owner.HUD.focus
     self.shownotification = Profile:GetScrapbookHudDisplay()
-    self.inst:StartUpdatingComponent(self)
+	self.inst:ListenForEvent("continuefrompause", function()
+		self.shownotification = Profile:GetScrapbookHudDisplay()
+		self:UpdateElements()
+	end, TheWorld)
 
     self.inst:ListenForEvent("scrapbookopened", function(player, data)        
+		self.hasnewupdate = false
         if self.opened then
             self.tab_gift:Hide()
             self.controls:ManageToast(self,true)
@@ -58,22 +63,25 @@ local ScrapbookToast = Class(Widget, function(self, owner, controls)
     end, ThePlayer)
 end)
 
-
 function ScrapbookToast:UpdateElements()
-
-    if not self.opened and self.shownotification then        
-        self.controls:ManageToast(self)
-        TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/scrapbook_dropdown")
-        self.tab_gift:Show()
-        self.opened = true
-        self.tab_gift.animstate:PlayAnimation("pre")
+	if self.hasnewupdate and not (self.controller_hide or self.craft_hide) and self.shownotification then
+		if not self.opened then
+			self.controls:ManageToast(self)
+			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/scrapbook_dropdown")
+			self.tab_gift:Show()
+			self.opened = true
+			self.tab_gift.animstate:PlayAnimation("pre")
+		end
+	elseif self.opened then
+		self.tab_gift:Hide()
+		self.controls:ManageToast(self, true)
+		self.opened = false
     end
-
 end
 
 function ScrapbookToast:ToggleHUDFocus(focus)
     self.hud_focus = focus
-    self:UpdateControllerHelp()
+	--self:UpdateControllerHelp()
 end
 
 function ScrapbookToast:ToggleController(hide)
@@ -90,18 +98,6 @@ end
 function ScrapbookToast:CheckControl(control, down)
     if self.shown and down and control == CONTROL_INSPECT_SELF then
         return true
-    end
-end
-
-function ScrapbookToast:OnUpdate()
-    if self.shownotification ~= Profile:GetScrapbookHudDisplay() then
-        self.shownotification = Profile:GetScrapbookHudDisplay()
-
-        if self.shownotification == false then
-            self.tab_gift:Hide()
-            self.controls:ManageToast(self,true)
-            self.opened = false
-        end
     end
 end
 

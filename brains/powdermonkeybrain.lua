@@ -608,6 +608,7 @@ function PowderMonkeyBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 		WhileNode(
 			function()
 				return self.inst.components.homeseeker ~= nil

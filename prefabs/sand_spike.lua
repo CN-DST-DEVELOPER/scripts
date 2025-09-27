@@ -41,10 +41,11 @@ local function ChangeToObstacle(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     inst.Physics:Stop()
     inst.Physics:SetMass(0)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.ITEMS,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS
+	)
     inst.Physics:Teleport(x, 0, z)
 end
 
@@ -258,11 +259,12 @@ local function MakeSpikeFn(shape, size)
 
         inst.Physics:SetMass(999999)
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.ITEMS)
-        inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-        inst.Physics:CollidesWith(COLLISION.GIANTS)
-        inst.Physics:CollidesWith(COLLISION.WORLD)
+		inst.Physics:SetCollisionMask(
+			COLLISION.ITEMS,
+			COLLISION.CHARACTERS,
+			COLLISION.GIANTS,
+			COLLISION.WORLD
+		)
         inst.Physics:SetActive(false)
         inst.Physics:SetCapsule(inst.spikeradius, 2)
 

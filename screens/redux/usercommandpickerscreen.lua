@@ -13,11 +13,11 @@ local MIN_HEIGHT = 20
 local TITLE_HEIGHT = 46
 local SUBTITLE_HEIGHT = 22
 local BUTTON_HEIGHT = 36
-local CANCEL_OFFSET = 20
+local CANCEL_OFFSET = 15
 
 local DESC_FONT_SIZE = 22
 local DESC_MAX_LINES = 3
-local DESC_MAX_HEIGHT = DESC_FONT_SIZE * (DESC_MAX_LINES +  1)
+local DESC_MAX_HEIGHT = DESC_FONT_SIZE * (DESC_MAX_LINES +  1) + 10
 
 local UserCommandPickerScreen = Class(Screen, function(self, owner, targetuserid, onclosefn)
     Screen._ctor(self, "UserCommandPickerScreen")
@@ -79,7 +79,7 @@ local UserCommandPickerScreen = Class(Screen, function(self, owner, targetuserid
         button:SetOnClick(function() TheFrontEnd:PopScreen() self:RunAction(action.commandname) end)
 		button.ongainfocus = function(is_enabled)
 			command_desc_text._command = action.commandname
-			command_desc_text:SetMultilineTruncatedString(action.desc or "", DESC_MAX_LINES, 250)
+			command_desc_text:SetMultilineTruncatedString(action.desc or "", DESC_MAX_LINES, 240)
 		end
 		button.onlosefocus = function(is_enabled)
 			if command_desc_text._command == action.commandname then
@@ -135,7 +135,7 @@ local UserCommandPickerScreen = Class(Screen, function(self, owner, targetuserid
         height = height + BUTTON_HEIGHT + CANCEL_OFFSET
     end
 
-    local top = (height/2 + max_height/2)/2
+    local top = (max_height/2) - MIN_HEIGHT/2
     --self.subtitle:SetPosition(0, top - SUBTITLE_HEIGHT/2, 0)
     top = top - SUBTITLE_HEIGHT
     --self.title:SetPosition(0, top - TITLE_HEIGHT/2, 0)
@@ -147,7 +147,7 @@ local UserCommandPickerScreen = Class(Screen, function(self, owner, targetuserid
 	command_desc_text:SetPosition(0, top - DESC_MAX_HEIGHT/2)
 
     if self.cancelbutton then
-        local bottom = (-max_height/2)+BUTTON_HEIGHT
+        local bottom = (-max_height/2)+BUTTON_HEIGHT+CANCEL_OFFSET
         self.cancelbutton:SetPosition(0, bottom) -- note: max_height, not max_top, to push it downwards
         top = top - CANCEL_OFFSET - BUTTON_HEIGHT
     end
@@ -175,7 +175,7 @@ function UserCommandPickerScreen:UpdateActions()
             table.remove(self.actions, i)
         end
     end
-    table.sort(self.actions, function(a,b) return (a.menusort or 100) < (b.menusort or 100) or (a.menusort == b.menusort and a.prettyname < b.prettyname) end)
+    table.sort(self.actions, function(a,b) return (a.menusort or 100) < (b.menusort or 100) or (a.menusort == b.menusort and stringidsorter(a.prettyname, b.prettyname)) end)
 end
 
 function UserCommandPickerScreen:OnControl(control, down)

@@ -91,10 +91,9 @@ function SteeringWheelUser:SteerInDir(dir_x, dir_z)
 
 	self.boat.components.boatphysics:SetTargetRudderDirection(dir_x, dir_z)
 
-	local tx,tz = self.boat.components.boatphysics:GetTargetRudderDirection()
 	local rx, rz = self.boat.components.boatphysics:GetRudderDirection()
 	local TOLERANCE = 0.1
-	local dontsteer = math.abs(tx - rx) < TOLERANCE and math.abs(tz - rz) < TOLERANCE	-- if you are on a boat and the target heading is close enough to the current heading, don't play the animation.
+	local dontsteer = math.abs(dir_x - rx) < TOLERANCE and math.abs(dir_z - rz) < TOLERANCE	-- if you are on a boat and the target heading is close enough to the current heading, don't play the animation.
 	if not dontsteer then
 		self.should_play_left_turn_anim = (rz * dir_x - rx * dir_z) > 0
 		self.inst:PushEvent("set_heading")

@@ -21,12 +21,45 @@ local assets =
     Asset("SCRIPT", "scripts/prefabs/ruinsrespawner.lua"),
 }
 
+local yots_assets =
+{
+    Asset("ANIM", "anim/worm.zip"),
+    Asset("ANIM", "anim/yots_worm_build.zip"),
+    Asset("SOUND", "sound/worm.fsb"),
+}
+
 local prefabs =
 {
     "monstermeat",
     "wormlight",
     "worm_ruinsrespawner_inst",
 }
+
+local yots_prefabs =
+{
+    "monstermeat",
+    "wormlight",
+    "yots_redlantern",
+}
+
+SetSharedLootTable('yots_worm',
+{
+    {'monstermeat', 1},
+    {'monstermeat', 1},
+    {'log', 1},
+    {'log', 1},
+    {'yots_redlantern', 0.5},
+    {'lightbulb', 0.5},
+})
+
+SetSharedLootTable('worm',
+{
+    {'monstermeat', 1},
+    {'monstermeat', 1},
+    {'monstermeat', 1},
+    {'monstermeat', 1},
+    {'wormlight', 1},
+})
 
 local brain = require("brains/wormbrain")
 
@@ -224,7 +257,13 @@ local function CustomOnHaunt(inst, haunter)
     return false
 end
 
-local function fn()
+local function lootsetfn(lootdropper)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+end
+
+local function fncommon(override_build, extra_tag)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -239,6 +278,9 @@ local function fn()
 
     inst.AnimState:SetBank("worm")
     inst.AnimState:SetBuild("worm")
+    if override_build then
+        inst.AnimState:AddOverrideBuild(override_build)
+    end
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.scrapbook_anim = "atk"
     inst.scrapbook_animpercent = 0.37
@@ -248,6 +290,8 @@ local function fn()
     inst:AddTag("wet")
     inst:AddTag("worm")
     inst:AddTag("cavedweller")
+
+    if extra_tag then inst:AddTag(extra_tag) end
 
     inst.Light:SetRadius(0)
     inst.Light:SetIntensity(.8)
@@ -311,7 +355,7 @@ local function fn()
     inst.components.inspectable.getstatus = getstatus
 
     inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetLoot({ "monstermeat", "monstermeat", "monstermeat", "monstermeat", "wormlight" })
+    inst.components.lootdropper:SetChanceLootTable('worm')
 
     inst:AddComponent("acidinfusible")
     inst.components.acidinfusible:SetFXLevel(1)
@@ -330,6 +374,11 @@ local function fn()
     inst:SetStateGraph("SGworm")
     inst:SetBrain(brain)
 
+
+    if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
+        inst.components.lootdropper:SetLootSetupFn(lootsetfn)
+    end
+
     return inst
 end
 
@@ -337,5 +386,126 @@ local function onruinsrespawn(inst)
 	inst.sg:GoToState("lure_enter")
 end
 
-return Prefab("worm", fn, assets, prefabs),
+local function default_fn()
+    local inst = fncommon()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    return inst
+end
+
+-- Year of the Snake
+local function yots_retargetfn(inst)
+    if inst.sg:HasStateTag("lure") then
+        return nil
+    end
+
+    local ix, iy, iz = inst.Transform:GetWorldPosition()
+    local potential_targets = TheSim:FindEntities(
+        ix, iy, iz, TUNING.WORM_TARGET_DIST,
+        RETARGET_MUST_TAGS, RETARGET_CANT_TAGS, RETARGET_ONEOF_TAGS
+    )
+    local nearest_target, nearest_lantern_holder
+    for _, target in ipairs(potential_targets) do
+        if target ~= inst and target.entity:IsVisible() and IsAlive(target) then
+            nearest_target = nearest_target or target
+            if target.components.inventory then
+                local hand_item = target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                if hand_item and hand_item:HasTag("redlantern") then
+                    nearest_lantern_holder = target
+                    break
+                end
+            end
+        end
+    end
+
+    if nearest_lantern_holder then
+        return nearest_lantern_holder, true
+    else
+        return nearest_target
+    end
+end
+
+local function yots_shouldKeepTarget(inst, target)
+    if inst.sg:HasStateTag("lure") or
+            not target or
+            not target:IsValid() or
+            not target.components.health or
+            target.components.health:IsDead() then
+        return false
+    end
+
+    local home = inst.components.knownlocations:GetLocation("home")
+    if home and target:GetDistanceSqToPoint(home) > (TUNING.WORM_CHASE_DIST * TUNING.WORM_CHASE_DIST) then
+        return false
+    end
+
+    if target.components.inventory then
+        local target_hand_item = target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        if target_hand_item ~= nil and target_hand_item:HasTag("redlantern") then
+            return true
+        end
+    end
+
+    local ix, iy, iz = inst.Transform:GetWorldPosition()
+    local potential_targets = TheSim:FindEntities(
+        ix, iy, iz, TUNING.WORM_TARGET_DIST,
+        RETARGET_MUST_TAGS, RETARGET_CANT_TAGS, RETARGET_ONEOF_TAGS
+    )
+    local lantern_nearby
+    for _, potential_target in ipairs(potential_targets) do
+        if potential_target ~= inst
+                and potential_target.entity:IsVisible()
+                and IsAlive(potential_target)
+                and potential_target.components.inventory ~= nil then
+            local hand_item = potential_target.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+            if hand_item and hand_item:HasTag("redlantern") then
+                lantern_nearby = potential_target
+                break
+            end
+        end
+    end
+
+    -- If there's a lantern holder nearby, let's drop target and try to target them.
+    if lantern_nearby ~= nil and lantern_nearby ~= target then
+        return false
+    else
+        return target:IsNear(inst, TUNING.WORM_CHASE_DIST)
+    end
+end
+
+local function yots_onnewstate(inst, data)
+    local underground = inst.sg:HasStateTag("invisible")
+
+    inst:AddOrRemoveTag("fireimmune", underground)
+end
+
+local function yots_fn()
+    local inst = fncommon("yots_worm_build", "wooden")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.loop_sound = "rifts4/rope_bridge/shake_lp"
+
+    inst.components.health:SetMaxHealth(TUNING.YOTS_WORM_HEALTH)
+
+    inst.components.lootdropper:SetChanceLootTable('yots_worm')
+
+    inst.components.combat:SetRetargetFunction(GetRandomWithVariance(2, 0.5), yots_retargetfn)
+    inst.components.combat:SetKeepTargetFunction(yots_shouldKeepTarget)
+
+    inst:ListenForEvent("newstate", yots_onnewstate)
+
+    MakeLargeBurnableCharacter(inst, "wormmouth")
+
+    return inst
+end
+
+
+return Prefab("worm", default_fn, assets, prefabs),
+    Prefab("yots_worm", yots_fn, yots_assets, yots_prefabs),
     RuinsRespawner.Inst("worm", onruinsrespawn), RuinsRespawner.WorldGen("worm", onruinsrespawn)

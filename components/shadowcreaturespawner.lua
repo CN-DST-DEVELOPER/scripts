@@ -100,7 +100,7 @@ function self:SpawnShadowCreature(player, params)
 
     local x, y, z = player.Transform:GetWorldPosition()
     local boat = player:GetCurrentPlatform()
-    if player.components.sanity:GetPercent() < .1 and boat ~= nil then
+	if boat and boat:HasTag("boat") and player.components.sanity:GetPercent() < 0.1 then
         local boat_x, boat_y, boat_z = boat.Transform:GetWorldPosition()
 
         local angle = math.random() * TWOPI

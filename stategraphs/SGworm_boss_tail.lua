@@ -1,11 +1,6 @@
 require("stategraphs/commonstates")
 local WORMBOSS_UTILS = require("prefabs/worm_boss_util")
 
-local actionhandlers =
-{
-
-}
-
 local events=
 {
     --CommonHandlers.OnLocomote(false, true),
@@ -29,8 +24,13 @@ local events=
             inst.sg:GoToState("hit")
         end
     end),
-}
 
+	EventHandler("sync_electrocute", function(inst, data)
+		if not inst.sg:HasStateTag("busy") or (inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) then
+			inst.sg:GoToState("sync_electrocute", data)
+		end
+	end),
+}
 
 local states =
 {
@@ -41,11 +41,6 @@ local states =
         onenter = function(inst, playanim)
             inst.AnimState:PlayAnimation("tail_idle_pre")
         end,
-
-        timeline =
-        {
-           -- TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/flap") end ),
-        },
 
         events=
         {
@@ -60,11 +55,6 @@ local states =
         onenter = function(inst, playanim)
             inst.AnimState:PlayAnimation("tail_idle_loop")
         end,
-
-        timeline =
-        {
-           -- TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/bat/flap") end ),
-        },
 
         events=
         {
@@ -113,6 +103,28 @@ local states =
         },
     },
 
+	State{
+		name = "sync_electrocute",
+		tags = { "electrocute", "hit", "busy", "noelectrocute" },
+
+		onenter = function(inst, data)
+			inst.AnimState:PlayAnimation("tail_shock_loop", true)
+			inst.sg:SetTimeout(CalcEntityElectrocuteDuration(inst, data and data.duration))
+		end,
+
+		ontimeout = function(inst)
+			inst.AnimState:PlayAnimation("tail_shock_pst")
+		end,
+
+		events =
+		{
+			EventHandler("animqueueover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+	},
 
     State{
 
@@ -133,7 +145,6 @@ local states =
             end),
         },
     },
-
 }
 
-return StateGraph("worm_boss_tail", states, events, "idle", actionhandlers)
+return StateGraph("worm_boss_tail", states, events, "idle")

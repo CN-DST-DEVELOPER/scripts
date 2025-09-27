@@ -9,6 +9,7 @@ local function custom_postinit(inst)
     inst:AddComponent("caveweather")
     inst:AddComponent("quaker")
     inst:AddComponent("nightmareclock")
+    inst:AddComponent("vault_floor_helper")
 
     inst.components.worldtemperature:SetTemperatureMod(TUNING.CAVES_TEMP_MULT, TUNING.CAVES_TEMP_LOCUS)
 end

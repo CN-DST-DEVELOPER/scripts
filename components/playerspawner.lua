@@ -132,6 +132,7 @@ end
 --------------------------------------------------------------------------
 
 local function OnPlayerDespawn(inst, player, cb)
+    player._despawning = true
     player.components.playercontroller:Enable(false)
     player.components.locomotor:StopMoving()
     player.components.locomotor:Clear()
@@ -148,11 +149,11 @@ local function OnPlayerDespawn(inst, player, cb)
 end
 
 local function OnPlayerDespawnAndDelete(inst, player)
-    OnPlayerDespawn(inst, player, function(player) PlayerRemove(player, true) end)
+    OnPlayerDespawn(inst, player, function(player) player._despawning = nil PlayerRemove(player, true) end)
 end
 
 local function OnPlayerDespawnAndMigrate(inst, data)
-    OnPlayerDespawn(inst, data.player, function(player) PlayerRemove(player, false, data) end)
+    OnPlayerDespawn(inst, data.player, function(player) player._despawning = nil PlayerRemove(player, false, data) end)
 end
 
 local function OnSetSpawnMode(inst, mode)
@@ -203,46 +204,6 @@ local function OnRegisterMigrationPortal(inst, portal)
     inst:ListenForEvent("onremove", UnregisterMigrationPortal, portal)
 end
 
-local function NoHoles(pt)
-    return not TheWorld.Map:IsPointNearHole(pt)
-end
-
-local function GetDestinationPortalLocation(player)
-    local portal = nil
-    if player.migration.worldid ~= nil and player.migration.portalid ~= nil then
-        for i, v in ipairs(ShardPortals) do
-            local worldmigrator = v.components.worldmigrator
-            if worldmigrator ~= nil and worldmigrator:IsDestinationForPortal(player.migration.worldid, player.migration.portalid) then
-                portal = v
-                break
-            end
-        end
-    end
-
-    if portal ~= nil then
-        print("Player will spawn close to portal #"..tostring(portal.components.worldmigrator.id))
-        local x, y, z = portal.Transform:GetWorldPosition()
-        local offset = FindWalkableOffset(Vector3(x, 0, z), math.random() * TWOPI, portal:GetPhysicsRadius(0) + .5, 8, false, true, NoHoles)
-
-        --V2C: Do this after caching physical values, since it might remove itself
-        --     and spawn in a new "opened" version, making "portal" invalid.
-        portal.components.worldmigrator:ActivatedByOther()
-
-        if offset ~= nil then
-            return x + offset.x, 0, z + offset.z
-        end
-        return x, 0, z
-    elseif player.migration.dest_x ~= nil and player.migration.dest_y ~= nil and player.migration.dest_z ~= nil then
-		local pt = Vector3(player.migration.dest_x, player.migration.dest_y, player.migration.dest_z)
-        print("Player will spawn near ".. tostring(pt))
-        pt = pt + (FindWalkableOffset(pt, math.random() * TWOPI, 2, 8, false, true, NoHoles) or Vector3(0,0,0))
-        return pt:Get()
-	else
-        print("Player will spawn at default location")
-        return GetNextSpawnPosition()
-    end
-end
-
 --------------------------------------------------------------------------
 --[[ Initialization ]]
 --------------------------------------------------------------------------
@@ -280,7 +241,7 @@ function self:SpawnAtLocation(inst, player, x, y, z, isloading)
         -- make sure we're not just back in our
         -- origin world from a failed migration
         if player.migration.worldid ~= TheShard:GetShardId() then
-            x, y, z = GetDestinationPortalLocation(player)
+            x, y, z = GetMigrationPortalLocation(player, player.migration)
             for i, v in ipairs(player.migrationpets) do
                 if v:IsValid() then
                     if v.Physics ~= nil then

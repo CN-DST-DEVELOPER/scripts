@@ -24,6 +24,14 @@ local function ontargetprefab(self, newprefab, oldprefab)
     end
 end
 
+local function onuseablemounted(self, newuseablemounted, olduseablemounted)
+	if newuseablemounted then
+		self.inst:AddTag("useabletargeteditem_mounted")
+	else
+		self.inst:RemoveTag("useabletargeteditem_mounted")
+	end
+end
+
 local UseableTargetedItem = Class(function(self, inst)
     self.inst = inst
 
@@ -31,6 +39,7 @@ local UseableTargetedItem = Class(function(self, inst)
     self.inventory_disableable = false
 
     self.useabletargetprefab = nil
+	--self.useablemounted = nil
 
     --self.onusefn = nil
     --self.onstopusefn = nil
@@ -40,6 +49,7 @@ nil,
     inuse_targeted = oninuse_targeted,
     inventory_disableable = on_inventory_disableable,
     useabletargetprefab = ontargetprefab,
+	useablemounted = onuseablemounted,
 })
 
 function UseableTargetedItem:OnRemoveFromEntity()
@@ -54,10 +64,18 @@ function UseableTargetedItem:OnRemoveFromEntity()
     if self.useabletargetprefab ~= nil then
         self.inst:RemoveTag(self.useabletargetprefab.."_targeter")
     end
+
+	if self.useablemounted then
+		self.inst:RemoveTag("useabletargeteditem_mounted")
+	end
 end
 
 function UseableTargetedItem:SetTargetPrefab(prefab_name)
     self.useabletargetprefab = prefab_name
+end
+
+function UseableTargetedItem:SetUseableMounted(enable)
+	self.useablemounted = enable
 end
 
 function UseableTargetedItem:SetOnUseFn(fn)

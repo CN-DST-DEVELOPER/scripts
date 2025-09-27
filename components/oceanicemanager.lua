@@ -270,20 +270,6 @@ function self:DestroyIceAtPoint(x, y, z, data)
 
     local dx, dy, dz = _map:GetTileCenterPoint(tile_x, tile_y)
 
-                -- THIS IS HACKED IN TO SAVE THE PLAYER FOR NOW!
-                local hypotenuseSq = 8 + 1-- buffer.
-                local players = FindPlayersInRangeSq(dx, 0, dz, hypotenuseSq, true)
-                if players and #players >0 then
-                    for i, player in ipairs(players)do
-                        local px,py,pz = player.Transform:GetWorldPosition()
-                        local ptile_x, ptile_y = _map:GetTileCoordsAtPoint(px, py, pz)
-                        local ptile = _map:GetTile(ptile_x, ptile_y)
-                        if ptile == tile then
-                            player.Physics:Teleport(dx, dy, dz)
-                        end
-                    end
-                end
-
     removecrackedicefx(dx, dz)
 
     _map:SetTile(tile_x, tile_y, old_tile)
@@ -333,8 +319,21 @@ function self:DestroyIceAtPoint(x, y, z, data)
         local entities_near_ice = TheSim:FindEntities(x, 0, z, tile_radius_plus_overhang, nil, IGNORE_ICE_DROWNING_ONREMOVE_TAGS)
         for _, ent in ipairs(entities_near_ice) do
             if ent ~= icefloe and ent:IsValid() then
-                if icefloe and icefloe:GetDistanceSqToInst(ent) < (icefloe.components.walkableplatform.platform_radius)^2 then
+                local radius = icefloe ~= nil and icefloe.components.walkableplatform.platform_radius - .25 or nil -- Reduce it a bit to make sure we don't clip out.
+    
+                if icefloe ~= nil and icefloe:GetDistanceSqToInst(ent) < (radius*radius) then
+                    -- Do nothing, we're in the ice floe!
 
+                elseif icefloe ~= nil and ent:HasTag("player") and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) and not ent:GetCurrentPlatform() then
+                    -- Save ent if it's a player, put it in the ice floe!
+
+                    local pt = ent:GetPositionAdjacentTo(icefloe, radius)
+
+                    if ent.Physics ~= nil then
+                        ent.Physics:Teleport(pt:Get())
+                    else
+                        ent.Transform:SetPosition(pt:Get())
+                    end
                 else
                     local has_drownable = (ent.components.drownable ~= nil)
                     local shore_point = (has_drownable and Vector3(FindRandomPointOnShoreFromOcean(x, y, z)))

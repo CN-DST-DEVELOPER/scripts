@@ -21,6 +21,7 @@ local prefabs =
 	"bootleg",
 	"chesspiece_sharkboi_sketch",
 	"sharkboi_water",
+	"winter_ornament_boss_sharkboi",
 }
 
 local brain = require("brains/sharkboibrain")
@@ -155,7 +156,7 @@ local function UpdatePlayerTargets(inst)
 	end
 
 	local sharkboimanager = TheWorld.components.sharkboimanager
-	if sharkboimanager and sharkboimanager:IsPointInArena(inst.Transform:GetWorldPosition()) then
+	if sharkboimanager and sharkboimanager:IsPointInArena(x, y, z) then
 		for i, v in ipairs(AllPlayers) do
 			if not (v.components.health:IsDead() or v:HasTag("playerghost")) and
 				v.entity:IsVisible() and
@@ -196,7 +197,7 @@ local function RetargetFn(inst)
 	local target = inst.components.combat.target
 	local inrange = target and inst:IsNear(target, TUNING.SHARKBOI_ATTACK_RANGE + target:GetPhysicsRadius(0))
 
-	if target and target:HasTag("player") then
+	if target and target.isplayer then
 		local newplayer = inst.components.grouptargeter:TryGetNewTarget()
 		return newplayer
 			and newplayer:IsNear(inst, inrange and TUNING.SHARKBOI_ATTACK_RANGE + newplayer:GetPhysicsRadius(0) or TUNING.SHARKBOI_KEEP_AGGRO_DIST)
@@ -216,11 +217,13 @@ end
 
 local function KeepTargetFn(inst, target)
 	if inst:HasTag("hostile") and inst.components.combat:CanTarget(target) then
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local x1, y1, z1 = target.Transform:GetWorldPosition()
 		local sharkboimanager = TheWorld.components.sharkboimanager
-		if sharkboimanager and sharkboimanager:IsPointInArena(inst.Transform:GetWorldPosition()) then
-			return sharkboimanager:IsPointInArena(target.Transform:GetWorldPosition())
+		if sharkboimanager and sharkboimanager:IsPointInArena(x, y, z) then
+			return sharkboimanager:IsPointInArena(x1, y1, z1)
 		end
-		return inst:IsNear(target, TUNING.SHARKBOI_DEAGGRO_DIST)
+		return distsq(x, z, x1, z1) < TUNING.SHARKBOI_DEAGGRO_DIST * TUNING.SHARKBOI_DEAGGRO_DIST
 	end
 	return false
 end
@@ -247,7 +250,7 @@ local function OnAttacked(inst, data)
 	if data.attacker and inst.components.trader == nil then
 		local target = inst.components.combat.target
 		if not (target and
-				target:HasTag("player") and
+				target.isplayer and
 				target:IsNear(inst, TUNING.SHARKBOI_ATTACK_RANGE + target:GetPhysicsRadius(0))
 		) then
 			if inst.components.health.currenthealth > inst.components.health.minhealth then
@@ -327,6 +330,25 @@ local function MakeTrader(inst)
 	end
 end
 
+local function GiveSpecialReward(inst, target)
+	if not IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
+		LaunchAt(SpawnPrefab("chesspiece_sharkboi_sketch"), inst, target, 1.5, 2, 1.25)
+
+		return
+	end
+
+	local gift = SpawnPrefab("gift")
+
+	gift.components.unwrappable:WrapItems({
+		"chesspiece_sharkboi_sketch",
+		"winter_ornament_boss_sharkboi",
+		math.random() <= .4 and GetRandomLightWinterOrnament() or "winter_food"..math.random(NUM_WINTERFOOD),
+		"winter_food"..math.random(NUM_WINTERFOOD),
+	})
+
+	LaunchAt(gift, inst, target, 1.5, 2, 1.25)
+end
+
 local function GiveReward(inst, target)
 	if inst.pendingreward then
 		if target and not target:IsValid() then
@@ -334,14 +356,14 @@ local function GiveReward(inst, target)
 		end
 		inst.stock = inst.stock - 1
 
-		-- If we got a good item, give them a picture of ourselves, to remember.
+		-- If we got a good item, give them a picture of ourselves (or a gift), to remember.
 		if inst.sketchgiven == nil and inst.pendingreward == MAX_REWARDS then
+			GiveSpecialReward(inst, target)
 			inst.sketchgiven = true
-			LaunchAt(SpawnPrefab("chesspiece_sharkboi_sketch"), inst, target, 1, 2, 1)
 		end
 
 		for i = 1, inst.pendingreward do
-			LaunchAt(SpawnPrefab("bootleg"), inst, target, 1, 2, 1)
+			LaunchAt(SpawnPrefab("bootleg"), inst, target, 1.35, 2, 1.25)
 		end
 
 		inst.SoundEmitter:PlaySound("dontstarve/common/dropGeneric")
@@ -748,6 +770,7 @@ local function fn()
 
 	inst:AddComponent("timer")
 	inst:AddComponent("grouptargeter")
+	inst:AddComponent("explosiveresist")
 
 	local teleportedoverride = inst:AddComponent("teleportedoverride")
     teleportedoverride:SetDestPositionFn(teleport_override_fn)

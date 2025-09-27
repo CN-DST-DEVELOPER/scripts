@@ -1103,4 +1103,4 @@ end
 
 return Prefab("winona_battery_low", fn, assets, prefabs),
 	MakePlacer("winona_battery_low_item_placer", "winona_battery_placement", "winona_battery_placement", "idle", true, nil, nil, nil, nil, nil, placer_postinit_fn),
-	Prefab("winona_battery_low_item", itemfn, assets_item)
+	Prefab("winona_battery_low_item", itemfn, assets_item, prefabs_item)

@@ -25,9 +25,9 @@ local BeefBloodOver =  Class(Widget, function(self, owner)
 
     local function _UpdateState() self:UpdateState() end
 
-    self.inst:ListenForEvent("attacked", function(owner, data)
+    self.inst:ListenForEvent("attacked", function(owner2, data)
         if data.redirected then
-            local rider = owner.replica.rider
+            local rider = owner2.replica.rider
             if rider ~= nil and rider:IsRiding() then
                 self:Flash()
             end
@@ -48,7 +48,6 @@ function BeefBloodOver:UpdateState()
 end
 
 function BeefBloodOver:TurnOn()
-    --TheInputProxy:AddVibration(VIBRATION_BLOOD_FLASH, .2, .7, true)
     self:StartUpdating()
     self.base_level = .5
     self.k = 5
@@ -81,10 +80,6 @@ function BeefBloodOver:OnUpdate(dt)
         self.time_since_pulse = self.time_since_pulse + dt
         if self.time_since_pulse > self.pulse_period then
             self.time_since_pulse = 0
-
-            if not IsEntityDead(self.owner) then
-                TheInputProxy:AddVibration(VIBRATION_BLOOD_OVER, .2, .3, false)
-            end
         end
     end
 
@@ -98,7 +93,6 @@ function BeefBloodOver:OnUpdate(dt)
 end
 
 function BeefBloodOver:Flash()
-    TheInputProxy:AddVibration(VIBRATION_BLOOD_FLASH, .2, .7, false)
     self:StartUpdating()
     self.level = 1
     self.k = 1.33

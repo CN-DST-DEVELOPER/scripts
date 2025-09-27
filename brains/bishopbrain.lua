@@ -47,6 +47,7 @@ function BishopBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, GoHomeAction, "Go Home", true )),

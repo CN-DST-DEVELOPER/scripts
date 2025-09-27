@@ -302,16 +302,11 @@ local function taser_onblockedorattacked(wx, data, inst)
             SpawnPrefab("electrichitsparks"):AlignToTarget(data.attacker, wx, true)
 
             local damage_mult = 1
-            if not (data.attacker:HasTag("electricdamageimmune") or
-                    (data.attacker.components.inventory ~= nil and data.attacker.components.inventory:IsInsulated())) then
-                damage_mult = TUNING.ELECTRIC_DAMAGE_MULT
-
-                local wetness_mult = (data.attacker.components.moisture ~= nil and data.attacker.components.moisture:GetMoisturePercent())
-                    or (data.attacker:GetIsWet() and 1)
-                    or 0
-                damage_mult = damage_mult + wetness_mult
+            if not IsEntityElectricImmune(data.attacker) then
+				damage_mult = TUNING.ELECTRIC_DAMAGE_MULT + TUNING.ELECTRIC_WET_DAMAGE_MULT * data.attacker:GetWetMultiplier()
             end
 
+			data.attacker:PushEvent("electrocute", { attacker = wx, stimuli = "electric" })
             data.attacker.components.combat:GetAttacked(wx, damage_mult * TUNING.WX78_TASERDAMAGE, nil, "electric")
         end
     end
@@ -348,7 +343,7 @@ local TASER_MODULE_DATA =
     activatefn = taser_activate,
     deactivatefn = taser_deactivate,
 
-    extra_prefabs = { "electrichitsparks", },
+    extra_prefabs = { "electrichitsparks", "electrichitsparks_electricimmune", },
 }
 table.insert(module_definitions, TASER_MODULE_DATA)
 

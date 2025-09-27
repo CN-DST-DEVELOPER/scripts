@@ -152,9 +152,10 @@ local function OnSnowLevel(inst, snowlevel)
             inst.components.fishable:Freeze()
 
             inst.Physics:SetCollisionGroup(COLLISION.LAND_OCEAN_LIMITS)
-            inst.Physics:ClearCollisionMask()
-            inst.Physics:CollidesWith(COLLISION.WORLD)
-            inst.Physics:CollidesWith(COLLISION.ITEMS)
+			inst.Physics:SetCollisionMask(
+				COLLISION.WORLD,
+				COLLISION.ITEMS
+			)
 
             DespawnPlants(inst)
 
@@ -169,10 +170,11 @@ local function OnSnowLevel(inst, snowlevel)
         inst.components.fishable:Unfreeze()
 
 		inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.ITEMS)
-        inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-        inst.Physics:CollidesWith(COLLISION.GIANTS)
+		inst.Physics:SetCollisionMask(
+			COLLISION.ITEMS,
+			COLLISION.CHARACTERS,
+			COLLISION.GIANTS
+		)
 
         SpawnPlants(inst)
 

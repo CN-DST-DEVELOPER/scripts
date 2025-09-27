@@ -121,8 +121,9 @@ local function NewObject(inst, obj)
 
     inst:ListenForEvent("trade", OnGemChangeProxy, obj)
     inst:ListenForEvent("picked", OnGemChangeProxy, obj)
-
     OnGemChange(inst)
+
+    --obj.proxy_destroy_entity = inst --FIXME(Omar): uncomment for next time.
 end
 
 local function RevealPart(v)

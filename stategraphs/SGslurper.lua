@@ -1,15 +1,10 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
-    -- ActionHandler(ACTIONS.GOHOME, "action"),
-    -- ActionHandler(ACTIONS.EAT, "eat"),
-}
-
 local events=
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
@@ -19,7 +14,6 @@ local events=
 local states =
 {
     State{
-
         name = "idle",
         tags = {"idle", "canrotate"},
         onenter = function(inst, playanim)
@@ -46,7 +40,6 @@ local states =
     },
 
     State{
-
         name = "rumble",
         onenter = function(inst, playanim)
             inst.Physics:Stop()
@@ -333,7 +326,7 @@ local states =
 
     State{
 			name = "ruinsrespawn",
-			tags = {"idle"},
+			tags = { "idle", "noelectrocute" },
 
 			onenter = function(inst)
 				inst.AnimState:PlayAnimation("spawn")
@@ -365,8 +358,7 @@ CommonStates.AddSleepStates(states,
     },
 })
 
-
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
-
-return StateGraph("slurper", states, events, "idle", actionhandlers)
+return StateGraph("slurper", states, events, "idle")

@@ -6,16 +6,10 @@ local actionhandlers =
     ActionHandler(ACTIONS.TAKEITEM, "pickup"),
 }
 
-
 local function DoTalkSound(inst)
-    if inst.talksoundoverride ~= nil then
-        inst.SoundEmitter:PlaySound(inst.talksoundoverride, "talk")
-        return true
-    else
-
-        inst.SoundEmitter:PlaySound("moonstorm/characters/wagstaff/talk_LP", "talk")
-        return true
-    end
+    local sound = inst.talksoundoverride or "moonstorm/characters/wagstaff/talk_LP"
+    inst.SoundEmitter:PlaySound(sound, "talk")
+    return true
 end
 
 local function StopTalkSound(inst, instant)
@@ -24,7 +18,6 @@ local function StopTalkSound(inst, instant)
     end
     inst.SoundEmitter:KillSound("talk")
 end
-
 
 local events =
 {
@@ -36,7 +29,11 @@ local events =
         inst.sg:GoToState("idle")
     end),
     EventHandler("doexperiment", function(inst)
-        inst.sg:GoToState("idle_experiment")
+        if inst.sg.currentstate.name == "idle_wagpunk_arena" then
+            inst.sg:GoToState("idle_wagpunk_arena_pst", "idle_experiment")
+        elseif inst.sg.currentstate.name ~= "idle_experiment" then
+            inst.sg:GoToState("idle_experiment")
+        end
     end),
     EventHandler("doneexperiment", function(inst)
         inst.sg:GoToState("idle")
@@ -53,6 +50,14 @@ local events =
     EventHandler("continuework", function(inst)
         inst.sg:GoToState("capture_appearandwork", "continuework")
     end),
+    EventHandler("tossitem", function(inst)
+        if inst.sg.currentstate.name ~= "tossitem" then
+            inst.sg:GoToState("tossitem")
+        end
+    end),
+	EventHandler("startled", function(inst)
+		inst.sg:GoToState("startled")
+	end),
 }
 
 local ERODEOUT_DATA =
@@ -70,6 +75,10 @@ local states =
         tags = { "idle", "canrotate" },
 
         onenter = function(inst, anim)
+            if inst.defaultidlestate then
+                inst.sg:GoToState(inst.defaultidlestate)
+                return
+            end
             if inst.components.locomotor ~= nil then
                 inst.components.locomotor:StopMoving()
             end
@@ -102,7 +111,7 @@ local states =
             inst.AnimState:PlayAnimation("dial_loop",true)
 
             DoTalkSound(inst)
-            inst.sg:SetTimeout(2.0 + math.random() * .5)
+            inst.sg:SetTimeout(inst.forcedtalktime or (2.0 + math.random() * .5))
         end,
 
         ontimeout = function(inst)
@@ -145,18 +154,120 @@ local states =
             end
 
             inst.AnimState:PlayAnimation("build_loop", true)
+
+            if inst.wagstaff_experimenttime then
+                inst.sg:SetTimeout(inst.wagstaff_experimenttime)
+                inst.wagstaff_experimenttime = nil
+            end
+        end,
+
+        onexit = function(inst)
+            inst.wagstaff_experimentcallback = nil
+        end,
+
+        ontimeout = function(inst)
+            if inst.wagstaff_experimentcallback then
+                local callbackdata = inst.wagstaff_experimentcallback
+                callbackdata.callback(inst, unpack(callbackdata.arguments))
+            end
+            inst.sg:GoToState("idle")
+        end,
+    },
+
+    State{
+        name = "idle_wagpunk_arena",
+        tags = { "idle", "canrotate" },
+
+        onenter = function(inst)
+            if inst.wagstaff_experimenttime then
+                inst.sg:GoToState("idle_experiment")
+                return
+            end
+
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+
+
+			if inst.sg.lasttags and inst.sg.lasttags["talking"] and
+				TheWorld.components.lunaralterguardianspawner and
+				TheWorld.components.lunaralterguardianspawner:HasGuardianOrIsPending()
+			then
+				inst.AnimState:PlayAnimation("idle_wardrobe1_pre")
+				inst.AnimState:PushAnimation("idle_wardrobe1_loop")
+			else
+				inst.AnimState:PlayAnimation("notes_pre")
+				inst.AnimState:PushAnimation("notes_loop")
+			end
+        end,
+
+        events =
+        {
+            EventHandler("ontalk", function(inst)
+                inst.sg:GoToState("talk", "idle_wagpunk_arena")
+            end),
+        },
+    },
+
+    State{
+        name = "idle_wagpunk_arena_pst",
+        tags = { "idle", "canrotate" },
+
+        onenter = function(inst, nextstate)
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:StopMoving()
+            end
+
+            inst.AnimState:PlayAnimation("notes_pst")
+            inst.sg.statemem.nextstate = nextstate
         end,
 
         events =
         {
             EventHandler("animover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle_experiment")
+                    if inst.sg.statemem.nextstate then
+                        inst.sg:GoToState(inst.sg.statemem.nextstate)
+                    else
+                        inst.sg:GoToState("idle")
+                    end
                 end
             end),
         },
     },
 
+	State{
+		name = "startled",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			if inst.components.locomotor then
+				inst.components.locomotor:StopMoving()
+			end
+
+			inst.AnimState:PlayAnimation("distress_pre")
+			inst.AnimState:PushAnimation("distress_loop")
+			inst.AnimState:PushAnimation("distress_pst", false)
+		end,
+
+		timeline =
+		{
+			FrameEvent(15, function(inst)
+				inst.sg:RemoveStateTag("busy")
+				inst.sg:AddStateTag("idle")
+				inst.sg:AddStateTag("canrotate")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animqueueover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+	},
 
     State{
         name = "death",
@@ -525,6 +636,54 @@ local states =
                     local data = shallowcopy(ERODEOUT_DATA)
                     data.norelocate = true
                     inst:PushEvent("doerode", data)
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "tossitem",
+        tags = { "doing", "busy", "canrotate" },
+
+        onenter = function(inst, data)
+            inst.components.locomotor:Stop()
+            local player = inst:GetNearestPlayer(true)
+            if player then
+                inst:ForceFacePoint(player.Transform:GetWorldPosition())
+                inst.sg.statemem.flingpoint = player:GetPosition()
+            end
+            inst.AnimState:PlayAnimation("give")
+            inst.AnimState:PushAnimation("give_pst", false)
+        end,
+
+        timeline =
+        {
+            TimeEvent(12 * FRAMES, function(inst)
+
+                if inst.itemstotoss then
+                    if inst.sg.statemem.flingpoint then
+                        inst.components.lootdropper:SetFlingTarget(inst.sg.statemem.flingpoint, 20)
+                    end
+                    for _, item in ipairs(inst.itemstotoss) do
+                        if item and item:IsValid() then
+                            inst.components.inventory:DropItem(item)
+                            inst.components.lootdropper:FlingItem(item)
+                        end
+                    end
+                    inst.components.lootdropper:SetFlingTarget(nil, nil)
+                    inst.itemstotoss = nil
+                end
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.components.npc_talker:haslines() then
+                    inst.components.npc_talker:donextline()
+                    inst.sg:GoToState("talkto")
+                else
+                    inst.sg:GoToState("idle")
                 end
             end),
         },

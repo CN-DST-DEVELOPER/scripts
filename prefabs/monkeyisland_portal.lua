@@ -437,6 +437,8 @@ local function fn()
 	inst.Test = try_portal_spawn
     inst._TestPortalEvent = start_portal_event
 
+    TheWorld:PushEvent("ms_register_monkeyisland_portal", inst)
+
     return inst
 end
 

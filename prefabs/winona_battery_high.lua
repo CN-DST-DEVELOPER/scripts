@@ -1125,7 +1125,7 @@ local function ItemTradeTest(inst, item, doer)
 			return true
 		end
 		return false, "NOGENERATORSKILL"
-    elseif string.sub(item.prefab, -3) ~= "gem" then
+    elseif string.sub(item.prefab, -3) ~= "gem" or not item:HasTag("gem") then
         return false, "NOTGEM"
     elseif string.sub(item.prefab, -11, -4) == "precious" then
         return false, "WRONGGEM"

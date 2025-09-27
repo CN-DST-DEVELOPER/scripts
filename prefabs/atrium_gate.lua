@@ -148,6 +148,7 @@ local function ItemTradeTest(inst, item)
 end
 
 local function OnKeyGiven(inst, giver)
+    WORLDSTATETAGS.SetTagEnabled("ATRIUM_KEY_FOUND", true)
     --Disable trading, enable picking.
     inst.components.trader:Disable()
     inst.components.pickable:SetUp("atrium_key", 1000000)

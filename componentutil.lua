@@ -19,6 +19,10 @@ function IsEntityDeadOrGhost(inst, require_health)
     return IsEntityDead(inst, require_health)
 end
 
+function IsEntityElectricImmune(inst)
+    return inst:HasTag("electricdamageimmune") or (inst.components.inventory and inst.components.inventory:IsInsulated())
+end
+
 function GetStackSize(inst)
 	local stackable = inst.replica.stackable
 	return stackable and stackable:StackSize() or 1
@@ -59,10 +63,46 @@ function FindVirtualOceanEntity(x, y, z, r)
     return nil
 end
 
+-- Use in your boats ondeploy
+local ITEM_LAUNCHSPEED = 2
+local ITEM_LAUNCHMULT = 1
+local ITEM_STARTHEIGHT = 0.1
+local ITEM_VERTICALSPEED = 0.1
+local TIME_FOR_BOAT = .6
+local IGNORE_WALKABLE_PLATFORM_TAGS = { "ignorewalkableplatforms", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO", "herd", "walkableplatform" }
+function PushAwayItemsOnBoatPlace(inst)
+    local function launch_with_delay(item)
+        Launch2(item, inst, ITEM_LAUNCHSPEED, ITEM_LAUNCHMULT, ITEM_STARTHEIGHT, inst.components.walkableplatform.platform_radius + item:GetPhysicsRadius(0.25), ITEM_VERTICALSPEED)
+
+        if item.components.inventoryitem then
+            item.components.inventoryitem:SetLanded(false, true)
+        end
+    end
+
+    local pos = inst:GetPosition()
+    local platform_radius_sq = inst.components.walkableplatform.platform_radius * inst.components.walkableplatform.platform_radius
+    for i, v in ipairs(TheSim:FindEntities(pos.x, pos.y, pos.z, inst.components.walkableplatform.platform_radius, nil, IGNORE_WALKABLE_PLATFORM_TAGS)) do
+        if v ~= inst and v.entity:GetParent() == nil and v.components.amphibiouscreature == nil and v.components.drownable == nil then
+            local time = Remap(v:GetDistanceSqToPoint(pos),
+                0, platform_radius_sq,
+                0, TIME_FOR_BOAT)
+
+            if v.special_item_boat_push_case then --Mods.
+                v.special_item_boat_push_case(v, inst, time)
+            elseif v:HasTag("bird") then
+                v:PushEvent("flyaway")
+            else
+                v:DoTaskInTime(time, launch_with_delay)
+            end
+        end
+    end
+end
+
 --------------------------------------------------------------------------
 --Tags useful for testing against combat targets that you can hit,
 --but aren't really considered "alive".
 
+-- Lifedrain (Batbat, mauler) uses this list
 NON_LIFEFORM_TARGET_TAGS =
 {
 	"structure",
@@ -71,12 +111,12 @@ NON_LIFEFORM_TARGET_TAGS =
 	"groundspike",
 	"smashable",
 	"veggie", --stuff like lureplants... not considered life?
+    "deck_of_cards",
 }
 
 --Shadows and Gestalts don't have souls.
 --NOTE: -Adding "soulless" tag to entities is preferred over expanding this list.
 --      -Gestalts should already be using "soulless" tag.
---Lifedrain (batbat) also uses this list.
 SOULLESS_TARGET_TAGS = ConcatArrays(
 	{
 		"soulless",
@@ -679,6 +719,390 @@ function HasMeatInInventoryFor(inst)
         return false
     end
     return inventory:FindItem(HasMeatInInventoryFor_Checker) ~= nil
+end
+
+--------------------------------------------------------------------------
+-- These may be used on both client and server so have the callbacks acceptable for both uses.
+-- Return nil for no count logic and go back to default logic.
+
+-- For items going into a player's inventory.
+-- TODO(JBK): Logic for swapping items is not handled.
+DesiredMaxTakeCountFunctions = {}
+function SetDesiredMaxTakeCountFunction(prefab, callback)
+    DesiredMaxTakeCountFunctions[prefab] = callback
+end
+function GetDesiredMaxTakeCountFunction(prefab)
+    return DesiredMaxTakeCountFunctions[prefab]
+end
+
+-- For items going out of a player's inventory they need their own support added.
+--DesiredMaxPutCountFunctions = {}
+--function SetDesiredMaxPutCountFunction(prefab, callback)
+--    DesiredMaxPutCountFunctions[prefab] = callback
+--end
+--function GetDesiredMaxPutCountFunction(prefab)
+--    return DesiredMaxPutCountFunctions[prefab]
+--end
+
+--------------------------------------------------------------------------
+
+PICKABLE_FOOD_PRODUCTS =
+{
+    ancientfruit_nightvision = true,
+    berries = true,
+    berries_juicy = true,
+    blue_cap = true,
+    cactus_meat = true,
+    carrot = true,
+    cave_banana = true,
+    cutlichen = true,
+    green_cap = true,
+    red_cap = true,
+    wormlight_lesser = true,
+}
+
+function IsFoodSourcePickable(inst)
+    return inst.components.pickable ~= nil and PICKABLE_FOOD_PRODUCTS[inst.components.pickable.product]
+end
+
+--------------------------------------------------------------------------
+-- wobycourier
+
+function GetWobyCourierChestPosition(inst)
+    if inst.woby_commands_classified then
+        local x = inst.woby_commands_classified.chest_posx:value()
+        local z = inst.woby_commands_classified.chest_posz:value()
+        if x ~= WOBYCOURIER_NO_CHEST_COORD and z ~= WOBYCOURIER_NO_CHEST_COORD then
+            return x, z
+        end
+    end
+    return nil, nil
+end
+
+--------------------------------------------------------------------------
+-- Placer
+
+HAS_AXISALIGNED_MOD_ENABLED = nil
+KNOWN_AXISALIGNED_MODS = {
+    "workshop-351325790",
+}
+
+function UpdateAxisAlignmentValues(intervals)
+    TUNING.AXISALIGNEDPLACEMENT_INTERVALS = intervals
+    TUNING.AXISALIGNEDPLACEMENT_CIRCLESIZE = math.min(8 / intervals, 4)
+    if ThePlayer then
+        ThePlayer:PushEvent("refreshaxisalignedplacementintervals")
+    end
+end
+
+local DEFAULT_AXISALIGNMENT_VALUE = 1
+AXISALIGNMENT_VALUES = {
+    {text = STRINGS.UI.OPTIONS.AXISALIGNEDPLACEMENT_SIZE_HALFWALL, data = 2},
+    {text = STRINGS.UI.OPTIONS.AXISALIGNEDPLACEMENT_SIZE_WALL, data = DEFAULT_AXISALIGNMENT_VALUE},
+    {text = STRINGS.UI.OPTIONS.AXISALIGNEDPLACEMENT_SIZE_HALFTILE, data = 0.5},
+    {text = STRINGS.UI.OPTIONS.AXISALIGNEDPLACEMENT_SIZE_TILE, data = 0.25},
+}
+function CycleAxisAlignmentValues() -- Do not save with Profile.
+    local closestdiff
+    local closestindex
+    local intervals = TUNING.AXISALIGNEDPLACEMENT_INTERVALS
+    local defaultindex
+    for i, v in ipairs(AXISALIGNMENT_VALUES) do
+        local diff = math.abs(v.data - intervals)
+        if closestdiff == nil or diff < closestdiff then
+            closestdiff = diff
+            closestindex = i
+        end
+        if v.data == DEFAULT_AXISALIGNMENT_VALUE then
+            defaultindex = i
+        end
+    end
+    if not closestindex then
+        closestindex = defaultindex or 1 -- Default got eliminated somewhere.
+    end
+
+    closestindex = closestindex + 1
+    if closestindex > #AXISALIGNMENT_VALUES then
+        closestindex = 1
+    end
+
+    UpdateAxisAlignmentValues(AXISALIGNMENT_VALUES[closestindex].data)
+end
+
+--------------------------------------------------------------------------
+-- wagpunk_arena_manager
+WAGPUNK_ARENA_COLLISION_DATA = { -- x, z, rotation, sfxlooper
+    {-28, -20, 315, false},
+    {-28, -10, 0, false},
+    {-28, 0, 0, true},
+    {-28, 10, 0, false},
+    {-28, 20, 45, false},
+    {-24, 20, 45, false},
+    {-24, 24, 45, true},
+    {-20, 24, 45, false},
+    {-20, 28, 45, false},
+    {-10, 28, 90, false},
+    {0, 28, 90, true},
+    {10, 28, 90, false},
+    {20, 28, 135, false},
+    {20, 24, 135, false},
+    {24, 24, 135, true},
+    {24, 20, 135, false},
+    {28, 20, 135, false},
+    {28, 10, 180, false},
+    {28, 0, 180, true},
+    {28, -10, 180, false},
+    {28, -20, 225, false},
+    {24, -20, 225, false},
+    {24, -24, 225, true},
+    {20, -24, 225, false},
+    {20, -28, 225, false},
+    {10, -28, 270, false},
+    {0, -28, 270, true},
+    {-10, -28, 270, false},
+    {-20, -28, 315, false},
+    {-20, -24, 315, false},
+    {-24, -24, 315, true},
+    {-24, -20, 315, false},
+}
+
+--------------------------------------------------------------------------
+
+local CLEARSPOT_CANT_TAGS = {"INLIMBO", "NOCLICK", "FX", "irreplaceable"}
+function ClearSpotForRequiredPrefabAtXZ(x, z, r)
+    local _world = TheWorld
+    local ents = TheSim:FindEntities(x, 0, z, MAX_PHYSICS_RADIUS, nil, CLEARSPOT_CANT_TAGS)
+    for _, ent in ipairs(ents) do
+        if ent:IsValid() then
+            local radius = ent:GetPhysicsRadius(0) + r
+            if ent:GetDistanceSqToPoint(x, 0, z) < radius * radius then
+                DestroyEntity(ent, _world)
+            end
+        end
+    end
+end
+
+--------------------------------------------------------------------------
+--For visual fx
+--e.g. used by electrocute_fx
+
+function GetCombatFxSize(ent)
+	local r = ent.override_combat_fx_radius
+	local sz = ent.override_combat_fx_size
+	local ht = ent.override_combat_fx_height
+
+	local r1 = r or ent:GetPhysicsRadius(0)
+	if ent:HasTag("smallcreature") then
+		r = r or math.min(0.5, r1)
+		sz = sz or "tiny"
+	elseif r1 >= 1.5 or ent:HasTag("epic") then
+		r = r or math.max(1.5, r1)
+		sz = sz or "large"
+	elseif r1 >= 0.9 or ent:HasTag("largecreature") then
+		r = r or math.max(1, r1)
+		sz = sz or "med"
+	else
+		r = r or math.max(0.5, r1)
+		sz = sz or "small"
+	end
+
+	if ht == nil then
+		ht = (ent.components.amphibiouscreature and ent.components.amphibiouscreature.in_water and "low") or
+			(ent:HasTag("flying") and "high") or
+			(not (ent.sg and ent.sg:HasState("electrocute")) and "low") or --ground plants with no electrocute state
+			nil
+	elseif string.len(ht) == 0 then
+		ht = nil
+	end
+
+	return r, sz, ht
+end
+
+function GetElectrocuteFxAnim(sz, ht)
+	return string.format(ht and "shock_%s_%s" or "shock_%s", sz or "small", ht)
+end
+
+--Returns true if entity supports electrocution at all, even if it's in a state that currently doesn't allow it
+function CanEntityBeElectrocuted(inst)
+	return inst.sg
+		and (inst.sg:HasState("electrocute") or inst.sg.mem.burn_on_electrocute)
+		and not inst.sg.mem.noelectrocute
+end
+
+function CalcEntityElectrocuteDuration(inst, override)
+	local default = TUNING.ELECTROCUTE_DEFAULT_DURATION
+	local duration =
+		inst.electrocute_duration or
+		(inst.sg and inst.sg.mem.burn_on_electrocute and TUNING.ELECTROCUTE_SHORT_DURATION) or
+		default
+
+	if override then
+		if override > default then
+			return math.max(duration, override)
+		elseif override < default then
+			return math.min(duration, override)
+		end
+	end
+	return duration
+end
+
+--------------------------------------------------------------------------
+
+function SpawnElectricHitSparks(inst, target, flash)
+    --target or inst might be removed
+    if not inst or not target or not inst:IsValid() or not target:IsValid() then
+        return
+    end
+
+    local fx_prefab = IsEntityElectricImmune(target) and "electrichitsparks_electricimmune" or "electrichitsparks"
+    SpawnPrefab(fx_prefab):AlignToTarget(target, inst, flash)
+end
+
+function LightningStrikeAttack(inst)
+    if IsEntityElectricImmune(inst) or (inst.sg and inst.sg:HasStateTag("noelectrocute")) then
+        return false
+    end
+
+    if inst.components.health then
+        local wetness_mult = TUNING.ELECTRIC_WET_DAMAGE_MULT * inst:GetWetMultiplier()
+        local damage = TUNING.LIGHTNING_DAMAGE + wetness_mult * TUNING.LIGHTNING_DAMAGE
+        inst.components.health:DoDelta(-damage, false, "lightning")
+    end
+	--V2C: -switched to stategraph event instead of GoToState
+	--     -use Immediate to preserve legacy timing
+	inst:PushEventImmediate("electrocute")
+
+    -- NOTE(Omar): I really wanted to improve lightning damage technicals to use GetAttacked, but weather.lua is set up a bit awkwardly with the spawning of the entity,
+    -- and it's prefab is to be determined during logic, so whatever, health:DoDelta and PushEvent, you're here to stay -__-
+    --inst.components.combat:GetAttacked(lightning, damage, nil, "electric")
+    return true
+end
+
+local LIGHTNING_EXCLUDE_TAGS = { "player", "INLIMBO", "lightningblocker", "FX" }
+local LIGHTNING_BURNING_ONEOF_TAGS = {"wall", "fence", "plant", "structure", "_inventoryitem", "bush", "pickable"}
+
+for k, v in pairs(FUELTYPE) do
+    if v ~= FUELTYPE.USAGE then --Not a real fuel
+        table.insert(LIGHTNING_EXCLUDE_TAGS, v.."_fueled")
+    end
+end
+
+-- If we hit a player, do the aoe burn
+-- If we hit just the ground, do a aoe shock and aoe burn.
+-- If something is already shocked, it shouldnt burnt!
+
+function StrikeLightningAtPoint(strike_prefab, hit_player, x, y, z)
+    if y == nil and z == nil then --support Vector3 passed as x
+        x, y, z = x:Get()
+    end
+
+    -- NO aoe shock or burn on moon lightning! Maybe a new effect?
+    if strike_prefab == "lightning" then
+        local data = {hit_player = hit_player, pos = Vector3(x,y,z)}
+        local ents = TheSim:FindEntities(x, y, z, TUNING.LIGHTNING_STRIKE_RADIUS, nil, LIGHTNING_EXCLUDE_TAGS)
+        for _, ent in pairs(ents) do
+            if not IsEntityElectricImmune(ent) then
+                if CanEntityBeElectrocuted(ent) then
+                    if not hit_player then
+                        LightningStrikeAttack(ent)
+                    end
+                elseif ent.components.burnable and ent:HasAnyTag(LIGHTNING_BURNING_ONEOF_TAGS) then
+                    ent.components.burnable:Ignite()
+                end
+
+                if ent.lightning_strike_cb then --Mods, if they want any unique behaviour for themselves
+                    ent.lightning_strike_cb(ent, data)
+                end
+            end
+        end
+    end
+end
+
+--------------------------------------------------------------------------
+-- worldmigrator
+local function NoHoles(pt)
+    return not TheWorld.Map:IsPointNearHole(pt)
+end
+function GetMigrationPortalFromMigrationData(migrationdata)
+    if migrationdata.worldid ~= nil and migrationdata.portalid ~= nil then
+        for i, v in ipairs(ShardPortals) do
+            local worldmigrator = v.components.worldmigrator
+            if worldmigrator ~= nil and worldmigrator:IsDestinationForPortal(migrationdata.worldid, migrationdata.portalid) then
+                return v
+            end
+        end
+    end
+
+    return nil
+end
+function GetMigrationPortalLocation(ent, migrationdata, portaloverride)
+    local isplayer = ent:HasTag("player")
+    local portal = portaloverride or GetMigrationPortalFromMigrationData(migrationdata)
+
+    if portal ~= nil then
+        if isplayer then
+            print("Migrating prefab " .. (ent.prefab or "n/a") .. " will spawn close to portal ID: " .. tostring(portal.components.worldmigrator.id))
+        end
+        local x, y, z = portal.Transform:GetWorldPosition()
+        local offset = FindWalkableOffset(Vector3(x, 0, z), math.random() * TWOPI, portal:GetPhysicsRadius(0) + .5, 8, false, true, NoHoles)
+
+        --V2C: Do this after caching physical values, since it might remove itself
+        --     and spawn in a new "opened" version, making "portal" invalid.
+        portal.components.worldmigrator:ActivatedByOther()
+
+        if offset ~= nil then
+            return x + offset.x, 0, z + offset.z
+        end
+        return x, 0, z
+    elseif migrationdata.dest_x ~= nil and migrationdata.dest_y ~= nil and migrationdata.dest_z ~= nil then
+        local pt = Vector3(migrationdata.dest_x, migrationdata.dest_y, migrationdata.dest_z)
+        if isplayer then
+            print("Migrating prefab " .. (ent.prefab or "n/a") .. " will spawn near " .. tostring(pt))
+        end
+        pt = pt + (FindWalkableOffset(pt, math.random() * TWOPI, 2, 8, false, true, NoHoles) or Vector3(0,0,0))
+        return pt:Get()
+    else
+        if isplayer then
+            print("Migrating prefab " .. (ent.prefab or "n/a") .. " will spawn at default location")
+        end
+        return TheWorld.components.playerspawner:GetAnySpawnPoint()
+    end
+end
+
+--------------------------------------------------------------------------
+--Custom passable ground tests useful for stategraph actions like dashing etc.
+
+local function _ispassable(x, y, z, allow_water, exclude_boats)
+	return TheWorld.Map:IsPassableAtPoint(x, y, z, allow_water, exclude_boats)
+end
+
+local function _ispassable_inarena(x, y, z)--, allow_water, exclude_boats)
+	return TheWorld.Map:IsPointInWagPunkArena(x, y, z)
+end
+
+local function _ispassable_vault(x, y, z)--, allow_water, exclude_boats)
+	local map = TheWorld.Map
+	return map:IsPointInAnyVault(x, y, z)
+		and map:IsPassableAtPoint(x, y, z, false, true)
+end
+
+function GetActionPassableTestFnAt(x, y, z)
+	local map = TheWorld.Map
+	local platform = map:GetPlatformAtPoint(x, y, z)
+	if platform and platform:HasTag("teeteringplatform") then
+		return function(x1, y1, z1)--, allow_water, exclude_boats)
+			return map:GetPlatformAtPoint(x1, y1, z1) == platform
+		end, true
+	elseif map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) then
+		return _ispassable_inarena, true
+	elseif map:IsPointInAnyVault(x, y, z) then
+		return _ispassable_vault, true
+	end
+	return _ispassable--, false --false because it's the default passable check
+end
+
+function GetActionPassableTestFn(inst)
+	return GetActionPassableTestFnAt(inst.Transform:GetWorldPosition())
 end
 
 --------------------------------------------------------------------------

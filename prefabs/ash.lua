@@ -99,6 +99,8 @@ local function fn()
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
     inst.components.hauntable:SetOnHauntFn(OnHaunt)
 
+	inst:AddComponent("snowmandecor")
+
     return inst
 end
 

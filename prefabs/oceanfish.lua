@@ -21,6 +21,15 @@ local function flopsoundcheck(inst)
 end
 
 local function Flop(inst)
+	if not inst.components.inventoryitem.canbepickedup then
+		if inst.flop_task ~= nil then
+			inst.flop_task:Cancel()
+			inst.flop_task = nil
+		end
+
+		return -- Don't flop if we can't be picked up, this likely means we're in a special place/state.
+	end
+
 	if inst.flopsnd1 then inst.flopsnd1:Cancel() inst.flopsnd1 = nil end
 	if inst.flopsnd2 then inst.flopsnd2:Cancel() inst.flopsnd2 = nil end
 	if inst.flopsnd3 then inst.flopsnd3:Cancel() inst.flopsnd3 = nil end
@@ -87,7 +96,7 @@ local function OnProjectileLand(inst)
 		inst.leaving = true
 		inst.persists = false
 		inst.sg:GoToState("idle")
-		inst:RestartBrain()
+		inst:RestartBrain("fish_out_of_water")
 	    SpawnPrefab("splash").Transform:SetPosition(x, y, z)
 	else
 		local fish = SpawnPrefab(inst.fish_def.prefab.."_inv")
@@ -112,7 +121,7 @@ local function OnMakeProjectile(inst)
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(OnProjectileLand)
 
-	inst:StopBrain()
+	inst:StopBrain("fish_out_of_water")
 	inst.sg:GoToState("launched_out_of_water")
 
 	inst.Physics:SetCollisionMask(PROJECTILE_COLLISION_MASK)

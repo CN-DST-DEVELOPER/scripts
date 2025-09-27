@@ -108,11 +108,11 @@ local _missingplayerspawninfo = {}
 --------------------------------------------------------------------------
 
 local function GetAveragePlayerAgeInDays()
-    local sum = 0
-    for i, v in ipairs(_activeplayers) do
-        sum = sum + v.components.age:GetAgeInDays()
-    end
-    return sum > 0 and sum / #_activeplayers or 0
+	local sum = 0
+	for i, v in ipairs(_activeplayers) do
+		sum = sum + v.components.age:GetAgeInDays()
+	end
+	return sum > 0 and sum / #_activeplayers or 0
 end
 
 local function CalcEscalationLevel()
@@ -138,22 +138,27 @@ local function CalcEscalationLevel()
 end
 
 local function CalcPlayerAttackSize(player)
-    local day = player.components.age:GetAgeInDays()
-    return (day < 10 and _spawndata.attack_levels.intro.numspawns())
-        or (day < 25 and _spawndata.attack_levels.light.numspawns())
-        or (day < 50 and _spawndata.attack_levels.med.numspawns())
-        or (day < 100 and _spawndata.attack_levels.heavy.numspawns())
-        or _spawndata.attack_levels.crazy.numspawns()
+	local day = player.components.age:GetAgeInDays()
+	return (day < 10 and _spawndata.attack_levels.intro.numspawns())
+		or (day < 25 and _spawndata.attack_levels.light.numspawns())
+		or (day < 50 and _spawndata.attack_levels.med.numspawns())
+		or (day < 100 and _spawndata.attack_levels.heavy.numspawns())
+		or _spawndata.attack_levels.crazy.numspawns()
 end
 
-local function ClearWaterImunity()
-	for GUID,data in pairs(_targetableplayers) do
-		_targetableplayers[GUID] = nil
+local function ClearLocationImmunity()
+	for GUID, data in pairs(_targetableplayers) do
+		local player = Ents[GUID]
+		
+		-- Players in _delayedplayerspawninfo are handled separately, don't clear it for them.
+		if player == nil or not _delayedplayerspawninfo[player] then
+			_targetableplayers[GUID] = nil
+		end
 	end
 end
 
 local function PlanNextAttack()
-	ClearWaterImunity()
+	ClearLocationImmunity()
 	if _timetoattack > 0 then
 		-- we came in through a savegame that already had an attack scheduled
 		return
@@ -170,19 +175,19 @@ local function PlanNextAttack()
 	end
 
 	if _spawnmode ~= "never" then
-		local timetoattackbase, timetoattackvariance = _attackdelayfn()
-		_timetoattack = timetoattackbase + timetoattackvariance
-		_warnduration = _warndurationfn()
-		_attackplanned = true
 		_wave_pre_upgraded = nil
+		if _spawndata.specialupgradecheck then
+			_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings)
+		end			
+		local timetoattackbase, timetoattackvariance = _attackdelayfn()
+		_timetoattack = timetoattackbase + timetoattackvariance	
+		_warnduration = _warndurationfn(_wave_pre_upgraded)
+		_attackplanned = true
 
-    	if _spawndata.specialupgradecheck then
-    		_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings)
-    	end
 	else
 		_attackplanned = false
 	end
-    _warning = false
+	_warning = false
 end
 
 local GROUP_DIST = 20
@@ -190,14 +195,22 @@ local EXP_PER_PLAYER = 0.05
 local ZERO_EXP = 1 - EXP_PER_PLAYER -- just makes the math a little easier
 
 local function GetWaveAmounts()
-
 	-- first bundle up the players into groups based on proximity
 	-- we want to send slightly reduced hound waves when players are clumped so that
 	-- the numbers aren't overwhelming
 	local groupindex = {}
 	local nextgroup = 1
-	for i, playerA in ipairs(_activeplayers) do
-		for j, playerB in ipairs(_activeplayers) do
+	local available_players = {}
+
+	-- Players in _delayedplayerspawninfo are handled separately, ignore them since they are not being targered by this attack.
+	for i, player in ipairs(_activeplayers) do
+		if not _delayedplayerspawninfo[player] then
+			table.insert(available_players, player)
+		end
+	end
+
+	for i, playerA in ipairs(available_players) do
+		for j, playerB in ipairs(available_players) do
 			if i == 1 and j == 1 then
 				groupindex[playerA] = 1
 				nextgroup = 2
@@ -221,6 +234,7 @@ local function GetWaveAmounts()
 
 	-- calculate the hound attack for each player
 	_spawninfo = {}
+
 	local thieves = {}
 	local groupmap = {}
 	for player, group in pairs(groupindex) do
@@ -229,7 +243,7 @@ local function GetWaveAmounts()
 
 		-- amount of hounds relative to our age
 		-- if we never saw a warning or have lived shorter than the minimum wave delay then don't spawn hounds to us
-        local playerInGame = GetTime() - player.components.age.spawntime
+		local playerInGame = GetTime() - player.components.age.spawntime
 		local spawnsToRelease = (playerInGame > _warnduration and playerAge >= attackdelaybase) and CalcPlayerAttackSize(player) or 0
 
 		if spawnsToRelease > 0 then
@@ -307,7 +321,6 @@ local function GetWaveAmounts()
 			end
 		end
 	end
-
 end
 
 local function GetDelayedPlayerWaveAmounts(player, data)
@@ -328,13 +341,13 @@ local function GetDelayedPlayerWaveAmounts(player, data)
 end
 
 local function NoHoles(pt)
-    return not TheWorld.Map:IsPointNearHole(pt)
+	return not TheWorld.Map:IsPointNearHole(pt)
 end
 
 local function GetSpawnPoint(pt, radius_override)
-    if radius_override == nil then
-        radius_override = SPAWN_DIST
-    end
+	if radius_override == nil then
+		radius_override = SPAWN_DIST
+	end
 	if TheWorld.has_ocean then
 		local function OceanSpawnPoint(offset)
 			local x = pt.x + offset.x
@@ -363,16 +376,16 @@ local function GetSpawnPoint(pt, radius_override)
 end
 
 local function GetSpecialSpawnChance()
-    local day = GetAveragePlayerAgeInDays()
-    local chance = 0
-    for i, v in ipairs(TUNING.HOUND_SPECIAL_CHANCE) do
-        if day > v.minday then
-            chance = v.chance
-        elseif day <= v.minday then
-            return chance
-        end
-    end
-    return TheWorld.state.issummer and chance * 1.5 or chance
+	local day = GetAveragePlayerAgeInDays()
+	local chance = 0
+	for i, v in ipairs(TUNING.HOUND_SPECIAL_CHANCE) do
+		if day > v.minday then
+			chance = v.chance
+		elseif day <= v.minday then
+			return chance
+		end
+	end
+	return TheWorld.state.issummer and chance * 1.5 or chance
 end
 
 local function GetSpawnPrefab(upgrade)
@@ -395,51 +408,51 @@ local function GetSpawnPrefab(upgrade)
 end
 
 local function SummonSpawn(pt, upgrade, radius_override)
-    local spawn_pt = GetSpawnPoint(pt, radius_override)
-    if spawn_pt ~= nil then
-        local spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
-        if spawn ~= nil then
+	local spawn_pt = GetSpawnPoint(pt, radius_override)
+	if spawn_pt ~= nil then
+		local spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
+		if spawn ~= nil then
 
 			if spawn.hounded_overridelocation then
-    			local new_spawn_pt = spawn:hounded_overridelocation(pt)
-    			if new_spawn_pt then
-    				spawn_pt = new_spawn_pt
-    			end
-    		end
+				local new_spawn_pt = spawn:hounded_overridelocation(pt)
+				if new_spawn_pt then
+					spawn_pt = new_spawn_pt
+				end
+			end
 
-        	if spawn.Physics then        		
-            	spawn.Physics:Teleport(spawn_pt:Get())
-        	else
-        		spawn.Transform:SetPosition(spawn_pt:Get())
-        	end
-            spawn:FacePoint(pt)
-            if spawn.components.spawnfader ~= nil then
-                spawn.components.spawnfader:FadeIn()
-            end
-            return spawn
-        end
-    end
+			if spawn.Physics then        		
+				spawn.Physics:Teleport(spawn_pt:Get())
+			else
+				spawn.Transform:SetPosition(spawn_pt:Get())
+			end
+			spawn:FacePoint(pt)
+			if spawn.components.spawnfader ~= nil then
+				spawn.components.spawnfader:FadeIn()
+			end
+			return spawn
+		end
+	end
 end
 
 local function ReleaseSpawn(target, upgrade)
 	if not _targetableplayers[target.GUID] or _targetableplayers[target.GUID] == "land" then
-	    local spawn = SummonSpawn(target:GetPosition(), upgrade)
-	    if spawn ~= nil then
-	        spawn.components.combat:SuggestTarget(target)
-	        return true
-	    end
+		local spawn = SummonSpawn(target:GetPosition(), upgrade)
+		if spawn ~= nil then
+			spawn.components.combat:SuggestTarget(target)
+			return true
+		end
 	end
 
-    return false
+	return false
 end
 
 local function RemovePendingSpawns(player)
-    if _spawninfo ~= nil then
-        for i, info in ipairs(_spawninfo) do
+	if _spawninfo ~= nil then
+		for i, info in ipairs(_spawninfo) do
 			if info.players[player] ~= nil then
 				info.players[player] = nil
 				if next(info.players) == nil then
-					 table.remove(_spawninfo, i)
+						table.remove(_spawninfo, i)
 				end
 				return
 			end
@@ -455,8 +468,10 @@ local function GenerateSaveDataFromDelayedSpawnInfo(player, savedata, delayedspa
 		_warnduration = delayedspawninfo._warnduration,
 		_timetonextwarningsound = delayedspawninfo._timetonextwarningsound,
 		_announcewarningsoundinterval = delayedspawninfo._announcewarningsoundinterval,
-		_targetstatus =  _targetableplayers[player.GUID]
+		_targetstatus =  _targetableplayers[player.GUID],
+		_wave_pre_upgraded = delayedspawninfo._wave_pre_upgraded,
 	}
+
 	if delayedspawninfo._spawninfo then
 		local spawninforec = delayedspawninfo._spawninfo
 		savedata[player.userid]._spawninfo = {
@@ -475,7 +490,9 @@ local function GenerateSaveDataFromSpawnInfo(player, savedata)
 		_warnduration = _warnduration,
 		_timetonextwarningsound = _timetonextwarningsound,
 		_announcewarningsoundinterval = _announcewarningsoundinterval,
+		_wave_pre_upgraded = _wave_pre_upgraded,
 	}
+
 	if _spawninfo then
 		for i, spawninforec in ipairs(_spawninfo) do
 			if spawninforec.players[player] then
@@ -492,6 +509,11 @@ local function GenerateSaveDataFromSpawnInfo(player, savedata)
 end
 
 local function LoadSaveDataFromMissingSpawnInfo(player, missingspawninfo)
+
+	if _warning and missingspawninfo._spawninfo == nil then
+		return -- Currently in warning phase and player record had no spawns set, let this player be included in the current wave by CheckForLocationImmunityAllPlayers.
+	end
+
 	_delayedplayerspawninfo[player] =
 	{
 		_warning = missingspawninfo._warning,
@@ -499,6 +521,7 @@ local function LoadSaveDataFromMissingSpawnInfo(player, missingspawninfo)
 		_warnduration = missingspawninfo._warnduration,
 		_timetonextwarningsound = missingspawninfo._timetonextwarningsound,
 		_announcewarningsoundinterval = missingspawninfo._announcewarningsoundinterval,
+		_wave_pre_upgraded = missingspawninfo._wave_pre_upgraded,
 	}
 	if missingspawninfo._targetstatus then
 		_targetableplayers[player.GUID] = missingspawninfo._targetstatus
@@ -540,12 +563,12 @@ end
 --------------------------------------------------------------------------
 
 local function OnPlayerJoined(src, player)
-    for i, v in ipairs(_activeplayers) do
-        if v == player then
-            return
-        end
-    end
-    table.insert(_activeplayers, player)
+	for i, v in ipairs(_activeplayers) do
+		if v == player then
+			return
+		end
+	end
+	table.insert(_activeplayers, player)
 
 	LoadPlayerSpawnInfo(player)
 end
@@ -555,41 +578,48 @@ local function OnPlayerLeft(src, player)
 
 	_targetableplayers[player.GUID] = nil
 
-    for i, v in ipairs(_activeplayers) do
-        if v == player then
-            table.remove(_activeplayers, i)
-            return
-        end
-    end
+	for i, v in ipairs(_activeplayers) do
+		if v == player then
+			table.remove(_activeplayers, i)
+			return
+		end
+	end
 end
 
 local function OnPauseHounded(src, data)
-    if data ~= nil and data.source ~= nil then
-        _pausesources:SetModifier(data.source, true, data.reason)
-    end
+	if data ~= nil and data.source ~= nil then
+		_pausesources:SetModifier(data.source, true, data.reason)
+	end
 end
 
 local function OnUnpauseHounded(src, data)
-    if data ~= nil and data.source ~= nil then
-        _pausesources:RemoveModifier(data.source, data.reason)
-    end
+	if data ~= nil and data.source ~= nil then
+		_pausesources:RemoveModifier(data.source, data.reason)
+	end
 end
 
-local function CheckForWaterImunity(player)
-    if not _targetableplayers[player.GUID] then
+local function CheckForLocationImmunity(player)
+	if not _targetableplayers[player.GUID] then
 		-- block hound wave targeting when target is on water.. for now.
 		local x,y,z = player.Transform:GetWorldPosition()
-		if TheWorld.Map:IsVisualGroundAtPoint(x,y,z) then
+		if TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x,y,z) then
+			_targetableplayers[player.GUID] = "arena"
+        elseif TheWorld.Map:IsPointInAnyVault(x,y,z) then
+            _targetableplayers[player.GUID] = "vault"
+		elseif TheWorld.Map:IsVisualGroundAtPoint(x,y,z) then
 			_targetableplayers[player.GUID] = "land"
 		else
 			_targetableplayers[player.GUID] = "water"
 		end
-    end
+	end
 end
 
-local function CheckForWaterImunityAllPlayers()
+local function CheckForLocationImmunityAllPlayers()
 	for i, v in ipairs(_activeplayers) do
-		CheckForWaterImunity(v)
+		-- Players in _delayedplayerspawninfo are handled separately, don't check it for them.
+		if not _delayedplayerspawninfo[v] then
+			CheckForLocationImmunity(v)
+		end
 	end
 end
 
@@ -643,7 +673,7 @@ end
 
 --Initialize variables
 for i, v in ipairs(AllPlayers) do
-    table.insert(_activeplayers, v)
+	table.insert(_activeplayers, v)
 end
 
 --Register events
@@ -680,6 +710,24 @@ end
 
 function self:SetSpawnData(data)
 	_spawndata = data
+end
+
+-- Not for any actual hounded mechanics (yet?), for tree rock loot data
+-- Keep in sync with CalcEscalationLevel
+function self:GetWorldEscalationLevel()
+	local cycles = TheWorld.state.cycles
+
+	if cycles < 8 then
+		return _spawndata.attack_levels.intro
+	elseif cycles < 25 then
+		return _spawndata.attack_levels.light
+	elseif cycles < 50 then
+		return _spawndata.attack_levels.med
+	elseif cycles < 100 then
+		return _spawndata.attack_levels.heavy
+	else
+		return _spawndata.attack_levels.crazy
+	end
 end
 
 --------------------------------------------------------------------------
@@ -740,7 +788,7 @@ end
 
 -- Creates a hound near 'pt' with optional radius 'radius_override'
 function self:SummonSpawn(pt, radius_override)
-    return pt ~= nil and SummonSpawn(pt, nil, radius_override) or nil
+	return pt ~= nil and SummonSpawn(pt, nil, radius_override) or nil
 end
 
 -- Spawns the next wave for debugging
@@ -754,29 +802,44 @@ end
 local function _DoWarningSpeech(player)
 	local speech = ""
 
+	local local_wave_pre_upgraded = _wave_pre_upgraded
+
+	if _delayedplayerspawninfo[player] then
+		local_wave_pre_upgraded = _delayedplayerspawninfo[player]._wave_pre_upgraded
+	end
+
 	if type(_spawndata.warning_speech) == "function" then
-		speech, _wave_pre_upgraded = _spawndata.warning_speech(_wave_pre_upgraded)
+		speech = _spawndata.warning_speech(local_wave_pre_upgraded)
 	else
 		speech = _spawndata.warning_speech
 	end
 	
-    player.components.talker:Say(GetString(player, speech))
+	player.components.talker:Say(GetString(player, speech))
 end
 
 function self:DoWarningSpeech()
-    for GUID,data in pairs(_targetableplayers) do
-    	if data == "land" then
-    		local player = Ents[GUID]
-        	player:DoTaskInTime(math.random() * 2, _DoWarningSpeech)
-    	end
-    end
+	for GUID,data in pairs(_targetableplayers) do
+		if data == "land" then
+			local player = Ents[GUID]
+
+			-- Players in _delayedplayerspawninfo are handled separately, OnUpdate will call DoDelayedWarningSpeech.
+			if player ~= nil and not _delayedplayerspawninfo[player] then
+				player:DoTaskInTime(math.random() * 2, _DoWarningSpeech)
+			end
+		end
+	end
 end
 
-function self:GetWarningSoundList()
+function self:GetWarningSoundList(player)
 	local warning_sound_thresholds = {}
 
+	local local_wave_pre_upgraded = _wave_pre_upgraded	
+	if player and _delayedplayerspawninfo[player] then
+		local_wave_pre_upgraded = _delayedplayerspawninfo[player]._wave_pre_upgraded
+	end
+
 	if type(_spawndata.warning_sound_thresholds) == "function" then
-		warning_sound_thresholds, _wave_pre_upgraded = _spawndata.warning_sound_thresholds(_wave_pre_upgraded)
+		warning_sound_thresholds = _spawndata.warning_sound_thresholds(local_wave_pre_upgraded)
 	else
 		warning_sound_thresholds = _spawndata.warning_sound_thresholds
 	end
@@ -785,17 +848,23 @@ function self:GetWarningSoundList()
 end
 
 function self:DoWarningSound()
-    for k,v in pairs(self:GetWarningSoundList()) do
-    	if _timetoattack <= v.time or _timetoattack == nil then
-    		for GUID,data in pairs(_targetableplayers)do
-    			local player = Ents[GUID]
-    			if player and data == "land" then
-    				player:PushEvent("houndwarning",HOUNDWARNINGTYPE[v.sound])
-    			end
-    		end
-    		break
-    	end
-    end
+	for k,v in pairs(self:GetWarningSoundList()) do
+		if _timetoattack <= v.time or _timetoattack == nil then
+			for GUID, data in pairs(_targetableplayers)do
+				local player = Ents[GUID]
+				
+				-- Players in _delayedplayerspawninfo are handled separately, OnUpdate will call DoDelayedWarningSound.
+				if data == "land" and player ~= nil and not _delayedplayerspawninfo[player] then
+					player:PushEvent("houndwarning", HOUNDWARNINGTYPE[v.sound])
+
+					if v.quake then
+						TheWorld:PushEvent("ms_miniquake", { rad = 20, num = 20, duration = 1.5, target = player })
+					end
+				end
+			end
+			break
+		end
+	end
 end
 
 function self:DoDelayedWarningSpeech(player, data)
@@ -805,20 +874,21 @@ function self:DoDelayedWarningSpeech(player, data)
 end
 
 function self:DoDelayedWarningSound(player, data)
-    for k,v in pairs(self:GetWarningSoundList()) do
-    	if data._timetoattack <= v.time or data._timetoattack == nil then
+	for k,v in pairs(self:GetWarningSoundList(player)) do
+		if data._timetoattack <= v.time or data._timetoattack == nil then
 			if _targetableplayers[player.GUID] == "land" then
-				player:PushEvent("houndwarning",HOUNDWARNINGTYPE[v.sound])
+				player:PushEvent("houndwarning", HOUNDWARNINGTYPE[v.sound])
 			end
-    		break
-    	end
-    end
+			break
+		end
+	end
 end
 
 local function HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
+
 	spawninforec.timetonext = spawninforec.timetonext - dt
 	if next(spawninforec.players) ~= nil and spawninforec.timetonext < 0 then
-		local target = weighted_random_choice(spawninforec.players)
+		local target = weighted_random_choice(spawninforec.players)		
 
 		if spawninforec.players[target] <= 0 then
 			spawninforec.players[target] = nil
@@ -828,11 +898,26 @@ local function HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 			return
 		end
 
-		-- TEST IF GROUPS IF HOUNDS SHOULD BE TURNED INTO A VARG (or other)
+		-- TESTS GROUPS IF HOUNDS SHOULD BE TURNED INTO A VARG (or other)
 		local upgrade, houndcount = nil, nil
 
 		if _spawndata.upgrade_spawn and _spawndata.ShouldUpgrade then
-		 	upgrade, houndcount, _wave_pre_upgraded = _spawndata.ShouldUpgrade(spawninforec.players[target], _wave_pre_upgraded )
+
+				local local_wave_pre_upgraded = _wave_pre_upgraded	
+				if _delayedplayerspawninfo[target] then
+					local_wave_pre_upgraded = _delayedplayerspawninfo[target]._wave_pre_upgraded
+				end
+
+				upgrade, houndcount, local_wave_pre_upgraded = _spawndata.ShouldUpgrade(spawninforec.players[target], local_wave_pre_upgraded )
+
+				if local_wave_pre_upgraded == "used" then
+					for key, data in pairs(_delayedplayerspawninfo) do
+						data._wave_pre_upgraded = nil
+					end
+					for key, data in pairs(_missingplayerspawninfo) do
+						data._wave_pre_upgraded = nil
+					end					
+				end
 		end
 
 		if upgrade then
@@ -872,7 +957,7 @@ function self:OnUpdate(dt)
 	for player, data in pairs (_delayedplayerspawninfo) do
 		data._timetoattack = data._timetoattack - dt
 		if data._timetoattack < 0 then
-			_warning = false
+			data._warning = false
 
 			-- Okay, it's hound-day, get number of dogs for each player
 			if data._spawninfo == nil then
@@ -880,7 +965,7 @@ function self:OnUpdate(dt)
 			end
 
 			local groupsdone = {}
-			CheckForWaterImunity(player)
+			CheckForLocationImmunity(player)
 			for i, spawninforec in ipairs(data._spawninfo) do
 				HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 			end
@@ -891,7 +976,7 @@ function self:OnUpdate(dt)
 
 			if #data._spawninfo <= 0 then
 				_delayedplayerspawninfo[player] = nil
-				_targetableplayers[player] = nil
+				_targetableplayers[player.GUID] = nil
 			end
 		elseif not data._warning and data._timetoattack < data._warnduration then
 			data._warning = true
@@ -902,7 +987,7 @@ function self:OnUpdate(dt)
 			data._timetonextwarningsound = data._timetonextwarningsound - dt
 
 			if data._timetonextwarningsound <= 0 then
-				CheckForWaterImunity(player)
+				CheckForLocationImmunity(player)
 				data._announcewarningsoundinterval = data._announcewarningsoundinterval - 1
 				if data._announcewarningsoundinterval <= 0 then
 					data._announcewarningsoundinterval = 10 + math.random(5)
@@ -925,25 +1010,26 @@ function self:OnUpdate(dt)
 		return
 	end
 
-    _timetoattack = _timetoattack - dt
+	_timetoattack = _timetoattack - dt
 
-    if _pausesources:Get() and not _warning and (_timetoattack >= 0 or _spawninfo == nil) then
-        if _timetoattack < 0 then
-            PlanNextAttack()
-        end
-        return
-    end
+	if _pausesources:Get() and not _warning and (_timetoattack >= 0 or _spawninfo == nil) then
+		if _timetoattack < 0 then
+			PlanNextAttack()
+		end
+		return
+	end
 
-    if _timetoattack < 0 then
-        _warning = false
+	if _timetoattack < 0 then
+		_warning = false
 
 		-- Okay, it's hound-day, get number of dogs for each player
+
 		if _spawninfo == nil then
 			GetWaveAmounts()
 		end
 
 		local groupsdone = {}
-		CheckForWaterImunityAllPlayers()
+		CheckForLocationImmunityAllPlayers()
 		for i, spawninforec in ipairs(_spawninfo) do
 			HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 		end
@@ -962,26 +1048,30 @@ function self:OnUpdate(dt)
 		_timetonextwarningsound = 0
 	end
 
-    if _warning then
-        _timetonextwarningsound	= _timetonextwarningsound - dt
+	if _warning then
+		_timetonextwarningsound	= _timetonextwarningsound - dt
 
-        if _timetonextwarningsound <= 0 then
-        	CheckForWaterImunityAllPlayers()
-            _announcewarningsoundinterval = _announcewarningsoundinterval - 1
-            if _announcewarningsoundinterval <= 0 then
-                _announcewarningsoundinterval = 10 + math.random(5)
-                self:DoWarningSpeech()
-            end
+		if _timetonextwarningsound <= 0 then
+			CheckForLocationImmunityAllPlayers()
+			_announcewarningsoundinterval = _announcewarningsoundinterval - 1
+			if _announcewarningsoundinterval <= 0 then
+				_announcewarningsoundinterval = 10 + math.random(5)
+				self:DoWarningSpeech()
+			end
 
-            _timetonextwarningsound =
-                (_timetoattack < 30 and .3 + math.random(1)) or
-                (_timetoattack < 60 and 2 + math.random(1)) or
-                (_timetoattack < 90 and 4 + math.random(2)) or
-                                        5 + math.random(4)
+			_timetonextwarningsound =
+				(_timetoattack < 30 and .3 + math.random(1)) or
+				(_timetoattack < 60 and 2 + math.random(1)) or
+				(_timetoattack < 90 and 4 + math.random(2)) or
+										5 + math.random(4)
 
-            self:DoWarningSound()
-        end
-    end
+			if _wave_pre_upgraded then
+				_timetonextwarningsound = _timetonextwarningsound + 4
+			end
+
+			self:DoWarningSound()
+		end
+	end
 end
 
 self.LongUpdate = self.OnUpdate
@@ -1004,6 +1094,7 @@ function self:OnSave()
 		attackplanned = _attackplanned,
 		missingplayerspawninfo = missingspawninfo,
 		wave_override_chance = _wave_override_chance,
+		wave_pre_upgraded = _wave_pre_upgraded,
 	}
 end
 
@@ -1014,6 +1105,7 @@ function self:OnLoad(data)
 	_attackplanned = data.attackplanned  or false
 	_missingplayerspawninfo = data.missingplayerspawninfo or {}
 	_wave_override_chance = data.wave_override_chance or 0
+	_wave_pre_upgraded = data.wave_pre_upgraded or nil
 
 	if _timetoattack > _warnduration then
 		-- in case everything went out of sync
@@ -1034,11 +1126,11 @@ end
 --------------------------------------------------------------------------
 
 function self:GetDebugString()
-    if _timetoattack > 0 then
-        return string.format("%s spawns are coming in %2.2f", (_warning and "WARNING") or (_pausesources:Get() and "BLOCKED") or "WAITING", _timetoattack)
-    end
+	if _timetoattack > 0 then
+		return string.format("%s spawns are coming in %2.2f  _wave_override_chance: %2f, _wave_pre_upgraded: %s", (_warning and "WARNING") or (_pausesources:Get() and "BLOCKED") or "WAITING", _timetoattack, _wave_override_chance, _wave_pre_upgraded or "NO")
+	end
 
-    local s = "DORMANT"
+	local s = "DORMANT"
 	if _spawnmode ~= "never" then
 		s = "ATTACKING"
 		for i, spawninforec in ipairs(_spawninfo) do
@@ -1049,7 +1141,8 @@ function self:GetDebugString()
 			s = s.."} - spawns left:"..tostring(spawninforec.spawnstorelease).." next spawn:"..tostring(spawninforec.timetonext)
 		end
 	end
-    return s
+
+	return s
 end
 
 end)

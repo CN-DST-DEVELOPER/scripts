@@ -156,6 +156,7 @@ local function CustomCombatDamage(inst, target, weapon, multiplier, mount)
 end
 
 local function master_postinit(inst)
+    inst.refusestobowtoroyalty = true
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
 
     inst.customidleanim = customidleanimfn

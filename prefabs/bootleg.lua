@@ -42,8 +42,7 @@ local function onthrown(inst, attacker, targetpos)
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(0)
     inst.Physics:SetCollisionGroup(COLLISION.WORLD)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
 
     inst._oceanwhirlportal_spawnpos = Vector3(targetpos.x, 0, targetpos.z)
 end

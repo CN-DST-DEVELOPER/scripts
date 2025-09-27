@@ -181,6 +181,7 @@ function RiftSpawner:TryToStartTimer(src)
 end
 
 function RiftSpawner:EnableLunarRifts(src)
+    WORLDSTATETAGS.SetTagEnabled("LUNAR_RIFTS_ACTIVE", true)
     self.lunar_rifts_enabled = true
     self:TryToStartTimer(src)
 
@@ -190,6 +191,7 @@ function RiftSpawner:EnableLunarRifts(src)
 end
 
 function RiftSpawner:EnableShadowRifts(src)
+    WORLDSTATETAGS.SetTagEnabled("SHADOW_RIFTS_ACTIVE", true)
     self.shadow_rifts_enabled = true
     self:TryToStartTimer(src)
 end
@@ -224,6 +226,7 @@ end
 
 function RiftSpawner:SetEnabledSetting(src, enabled_difficulty)
     if enabled_difficulty == "never" then
+        WORLDSTATETAGS.SetTagEnabled("LUNAR_RIFTS_ACTIVE", false)
         self.lunar_rifts_enabled = false
         self._worldsettingstimer:StopTimer(RIFTSPAWN_TIMERNAME)
 
@@ -238,6 +241,7 @@ end
 
 function RiftSpawner:SetEnabledSettingCave(src, enabled_difficulty)
     if enabled_difficulty == "never" then
+        WORLDSTATETAGS.SetTagEnabled("SHADOW_RIFTS_ACTIVE", false)
         self.shadow_rifts_enabled = false
         self._worldsettingstimer:StopTimer(RIFTSPAWN_TIMERNAME)
     elseif enabled_difficulty == "always" then

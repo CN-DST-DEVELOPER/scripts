@@ -1,13 +1,17 @@
 local easing = require("easing")
 
 local function PlayWarningSound(proxy, sound, playanywhere)
-    if not playanywhere then
-        local player = ThePlayer
-        if not (player ~= nil and
-                player.components.areaaware ~= nil and
-                player.components.areaaware:CurrentlyInTag("Nightmare")) then
-            return
-        end
+	local player = ThePlayer
+	if playanywhere then
+		--anywhere except vault =)
+		if player and TheWorld.Map:IsPointInAnyVault(player.Transform:GetWorldPosition()) then
+			return
+		end
+	elseif not (player and
+				player.components.areaaware and
+				player.components.areaaware:CurrentlyInTag("Nightmare"))
+	then
+		return
     end
 
     local inst = CreateEntity()

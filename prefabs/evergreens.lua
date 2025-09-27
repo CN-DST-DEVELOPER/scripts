@@ -241,6 +241,7 @@ local function SetShort(inst)
     if inst.components.workable then
         inst.components.workable:SetWorkLeft(TUNING.EVERGREEN_CHOPS_SMALL)
     end
+    SetLunarHailBuildupAmountSmall(inst)
 
     inst.components.lootdropper:SetLoot(GetBuild(inst).short_loot)
 
@@ -264,6 +265,7 @@ local function SetNormal(inst)
     if inst.components.workable then
         inst.components.workable:SetWorkLeft(TUNING.EVERGREEN_CHOPS_NORMAL)
     end
+    SetLunarHailBuildupAmountMedium(inst)
 
     inst.components.lootdropper:SetLoot(GetBuild(inst).normal_loot)
 
@@ -285,6 +287,7 @@ local function SetTall(inst)
     if inst.components.workable then
         inst.components.workable:SetWorkLeft(TUNING.EVERGREEN_CHOPS_TALL)
     end
+    SetLunarHailBuildupAmountLarge(inst)
 
     inst.components.lootdropper:SetLoot(GetBuild(inst).tall_loot)
 
@@ -447,6 +450,7 @@ local function make_stump(inst)
     inst:RemoveComponent("propagator")
     MakeSmallPropagator(inst)
     inst:RemoveComponent("workable")
+    inst:RemoveComponent("lunarhailbuildup")
     inst:RemoveTag("shelter")
     inst:RemoveComponent("hauntable")
     MakeHauntableIgnite(inst)
@@ -940,6 +944,7 @@ local function tree(name, build, stage, data)
             inst:RemoveComponent("burnable")
             MakeSmallBurnable(inst)
             inst:RemoveComponent("workable")
+            inst:RemoveComponent("lunarhailbuildup")
             inst:RemoveComponent("propagator")
             MakeSmallPropagator(inst)
             inst:RemoveComponent("growable")

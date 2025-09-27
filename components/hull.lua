@@ -57,6 +57,10 @@ local function do_plank_deploy(plank)
 end
 
 function Hull:OnDeployed()
+	if self.inst.components.walkableplatform then
+		PushAwayItemsOnBoatPlace(self.inst)
+	end
+
 	if self.boat_lip then
 		self.boat_lip.AnimState:PlayAnimation("place_lip")
 		self.boat_lip.AnimState:PushAnimation("lip", true)

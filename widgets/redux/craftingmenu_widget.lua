@@ -150,11 +150,13 @@ function CraftingMenuWidget:PopulateRecipeDetailPanel(recipe, skin_name)
 	self.details_root:PopulateRecipeDetailPanel(recipe, skin_name)
 end
 
-local function search_exact_match(search, str)
-    str = str:gsub(" ", "")
+local function trim_spaces_and_periods(str)
+    return str:gsub("[ %.]", "")
+end
 
+local function search_exact_match(search, str)
     --Simple find in strings for multi word search
-	return string.find( str, search, 1, true ) ~= nil
+	return string.find( trim_spaces_and_periods(str), search, 1, true ) ~= nil
 end
 
 local function text_filter(recipe, search_str)
@@ -209,9 +211,18 @@ function CraftingMenuWidget:ApplyFilters()
 
 	local show_hidden = current_filter == CRAFTING_FILTERS.EVERYTHING.name
 
+	--Forced hints are mainly used for hinting character skilltree recipe unlocks that also require
+	--a crafting station, so we should make sure they do not show up on the wrong crafting station.
+	local show_forced_hints = current_filter ~= CRAFTING_FILTERS.CRAFTING_STATION.name
+
 	for i, recipe_name in metaipairs(self.sort_class) do
 		local data = self.crafting_hud.valid_recipes[recipe_name]
-		if data and (show_hidden or data.meta.build_state ~= "hide") and IsRecipeValidForFilter(self, recipe_name, filter_recipes) and IsRecipeValidForStation(self, data.recipe, station, current_filter) then
+		if data and
+			(show_hidden or data.meta.build_state ~= "hide") and
+			(show_forced_hints or data.meta.build_state ~= "hint" or not data.recipe.force_hint) and
+			IsRecipeValidForFilter(self, recipe_name, filter_recipes) and
+			IsRecipeValidForStation(self, data.recipe, station, current_filter)
+		then
 			table.insert(self.filtered_recipes, data)
 		end
 	end
@@ -362,7 +373,7 @@ function CraftingMenuWidget:RefreshControllers(controller_mode)
 	self.details_root:RefreshControllers(controller_mode)
 
     if controller_mode then
-		self.recipe_grid:OverrideControllerButtons(CONTROL_INVENTORY_EXAMINE, CONTROL_INVENTORY_DROP, true)
+		self.recipe_grid:OverrideControllerButtons(VIRTUAL_CONTROL_INV_ACTION_UP, VIRTUAL_CONTROL_INV_ACTION_DOWN, true)
     else
 		self.recipe_grid:ClearOverrideControllerButtons()
 	end
@@ -631,7 +642,7 @@ function CraftingMenuWidget:IsRecipeValidForSearch(name)
 end
 
 function CraftingMenuWidget:SetSearchText(search_text)
-	search_text = TrimString(string.lower(search_text)):gsub(" ", "")
+	search_text = trim_spaces_and_periods(TrimString(string.lower(search_text)))
 
 	if search_text == self.last_search_text then
 		return
@@ -900,6 +911,20 @@ function CraftingMenuWidget:MakeFilterPanel(width)
 	return w
 end
 
+local FGCOUNT_OFFSET_X = 0
+local FGCOUNT_OFFSET_Y = -5
+local function UpdateFGCount(fgcount, meta)
+    if meta.limitedamount then
+        fgcount:SetString(tostring(meta.limitedamount))
+        local parentwidth, parentheight = fgcount.parent:GetSize()
+        local fgwidth, fgheight = fgcount:GetRegionSize()
+        fgcount:SetPosition((fgwidth - parentwidth) * 0.5 + FGCOUNT_OFFSET_X, (parentheight - fgheight) * 0.5 - FGCOUNT_OFFSET_Y)
+        fgcount:Show()
+    else
+        fgcount:Hide()
+    end
+end
+
 function CraftingMenuWidget:MakeRecipeList(width, height)
     local cell_size = 60
     local row_w = cell_size
@@ -909,7 +934,7 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
 	local atlas = resolvefilepath(CRAFTING_ATLAS)
 
     local function ScrollWidgetsCtor(context, index)
-        local w = Widget("recipe-cell-".. index)
+        local w = Widget("crafting-cell-".. index)
 
 		w:SetScale(0.475)
 
@@ -1005,6 +1030,8 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
 		w.bg = w.cell_root:AddChild(Image(atlas, "slot_bg.tex"))
         w.item_img = w.bg:AddChild(Image("images/global.xml", "square.tex"))
         w.fg = w.bg:AddChild(Image("images/global.xml", "square.tex"))
+        w.fgcount = w.item_img:AddChild(Text(NUMBERFONT, 32))
+        w.fgcount:Hide()
 		w.bg:MoveToBack()
 
 		return w
@@ -1033,27 +1060,33 @@ function CraftingMenuWidget:MakeRecipeList(width, height)
 			if meta.build_state == "buffered" then
 				widget.bg:SetTexture(atlas, "slot_bg_buffered.tex")
 				widget.fg:Hide()
+                UpdateFGCount(widget.fgcount, meta)
 			elseif meta.build_state == "prototype" and meta.can_build then
 				widget.bg:SetTexture(atlas, "slot_bg_prototype.tex")
 				widget.fg:SetTexture(atlas, "slot_fg_prototype.tex")
 				widget.fg:Show()
+                widget.fgcount:Hide()
 			elseif meta.can_build then
 				widget.bg:SetTexture(atlas, "slot_bg.tex")
 				widget.fg:Hide()
+                UpdateFGCount(widget.fgcount, meta)
 			elseif meta.build_state == "hint" then
 				widget.bg:SetTexture(atlas, "slot_bg_missing_mats.tex")
 				tint = .7
 				widget.fg:SetTexture(atlas, "slot_fg_lock.tex")
                 widget.fg:Show()
+                widget.fgcount:Hide()
 			elseif meta.build_state == "no_ingredients" or meta.build_state == "prototype" then
 				widget.bg:SetTexture(atlas, "slot_bg_missing_mats.tex")
 				tint = .7
                 widget.fg:Hide()
+                UpdateFGCount(widget.fgcount, meta)
 			else
 				widget.bg:SetTexture(atlas, "slot_bg_missing_mats.tex")
 				tint = .7
 				widget.fg:SetTexture(atlas, "slot_fg_lock.tex")
                 widget.fg:Show()
+                widget.fgcount:Hide()
 			end
 
 			widget.item_img:SetTint(tint, tint, tint, 1)

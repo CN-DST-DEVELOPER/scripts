@@ -1,10 +1,5 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
-}
-
-
 local events=
 {
     CommonHandlers.OnLocomote(true, true),
@@ -12,10 +7,10 @@ local events=
     CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
-
 
     EventHandler("doattack", function(inst)
                                 local nstate = "attack"
@@ -134,6 +129,7 @@ local states=
                     inst.AnimState:PlayAnimation("atk", true)
                 end
                 inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+				inst.hit_recovery = TUNING.ROOK_RUN_HIT_RECOVERY
             end,
 
             timeline=
@@ -145,8 +141,15 @@ local states=
             },
 
             ontimeout = function(inst)
+				inst.sg.statemem.running = true
                 inst.sg:GoToState("run")
             end,
+
+			onexit = function(inst)
+				if not inst.sg.statemem.running then
+					inst.hit_recovery = nil
+				end
+			end,
         },
 
     State{  name = "run_stop",
@@ -213,7 +216,7 @@ local states=
         },
 
     State{  name = "ruinsrespawn",
-            tags = {"busy"},
+			tags = { "busy", "noelectrocute" },
 
             onenter = function(inst)
                 inst.AnimState:PlayAnimation("spawn")
@@ -232,7 +235,6 @@ local states=
                 EventHandler("animover", function(inst) inst.sg:GoToState("sleeping") end),
             },
         },
-
 }
 
 CommonStates.AddWalkStates(states,
@@ -288,8 +290,8 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-
-return StateGraph("rook", states, events, "idle", actionhandlers)
+return StateGraph("rook", states, events, "idle")

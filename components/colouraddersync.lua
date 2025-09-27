@@ -27,6 +27,11 @@ function ColourAdderSync:SetColourChangedFn(fn)
 	OnColourDirty(self.inst)
 end
 
+--Can call this if you want to force it to trigger colourchangedfn again
+function ColourAdderSync:ForceRefresh()
+	OnColourDirty(self.inst)
+end
+
 --Called from colouradder component
 function ColourAdderSync:SyncColour(r, g, b, a)
 	self.colour:set(

@@ -9,7 +9,7 @@ local prefabs =
     "spoiled_food",
 }
 
-local function OnPickup(inst, pickupguy, src_pos)
+local function OnPutInInventory(inst)
     inst.components.perishable:StartPerishing()
 end
 
@@ -42,7 +42,7 @@ local function bathbomb()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
-	inst.components.inventoryitem:SetOnPickupFn(OnPickup)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_MEDITEM

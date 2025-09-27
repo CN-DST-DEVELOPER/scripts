@@ -356,6 +356,8 @@ local function capcommonfn(data)
     inst:AddComponent("cookable")
     inst.components.cookable.product = data.pickloot.."_cooked"
 
+	inst:AddComponent("snowmandecor")
+
     return inst
 end
 

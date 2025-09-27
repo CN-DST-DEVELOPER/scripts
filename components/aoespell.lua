@@ -28,12 +28,24 @@ function AOESpell:CanCast(doer, pos)
 		return false
 	end
 
-	-- NOTES(DiogoW): Keep in sync with COMPONENT_ACTIONS.INVENTORY.spellbook
-	if self.inst.components.spellbook ~= nil and (
-		not self.inst.components.spellbook:CanBeUsedBy(doer) or
-		self.inst:HasTag("fueldepleted")
-	) then
-		return false
+	if self.inst.components.spellbook then
+		if not self.inst.components.spellbook:CanBeUsedBy(doer) then
+			return false
+		elseif self.inst.components.inventoryitem then
+			--Keep in sync with COMPONENT_ACTIONS.INVENTORY.spellbook
+			if self.inst.components.inventoryitem:GetGrandOwner() ~= doer then
+				return false
+			elseif self.inst.components.fueled and self.inst.components.fueled:IsEmpty() then
+				return false
+			end
+		elseif self.inst.isplayer then
+			--Keep in sync with COMPONENT_ACTIONS.SCENE.spellbook
+			if self.inst ~= doer then
+				return false
+			end
+		else
+			return false --unsupported
+		end
 	end
 
 	local alwayspassable, allowwater, deployradius, allowriding

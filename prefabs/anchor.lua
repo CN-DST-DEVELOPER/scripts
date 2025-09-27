@@ -45,7 +45,7 @@ end
 
 local function onburnt(inst)
     inst.SoundEmitter:KillSound("mooring")
-    inst.sg:Stop()
+	inst:ClearStateGraph()
 end
 
 local function onbuilt(inst)

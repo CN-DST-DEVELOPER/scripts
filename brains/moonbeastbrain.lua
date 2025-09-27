@@ -86,6 +86,7 @@ function MoonBeastBrain:OnStart()
     {
 		BrainCommon.PanicTrigger(self.inst),
         BrainCommon.IpecacsyrupPanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         --Teleported away, or moonbase got removed
         WhileNode(function() return LostMoonBase(self) end, "Lost Moonbase",

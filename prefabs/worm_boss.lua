@@ -13,12 +13,15 @@ local prefabs =
     "worm_boss_dirt_ground_fx",
     "worm_boss_head",
     "worm_boss_segment",
+    "chesspiece_wormboss_sketch",
+    "winter_ornament_boss_wormboss",
 }
 
 -----------------------------------------------------------------------------------------------------------------------
 
 local WORMBOSS_UTILS = require("prefabs/worm_boss_util")
 local easing = require("easing")
+require("stategraphs/commonstates")
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -30,20 +33,23 @@ SetSharedLootTable("worm_boss",
     { "monstermeat",  0.66 },
     { "monstermeat",  0.66 },
     { "wormlight",    1.00 },
+
+    { "chesspiece_wormboss_sketch", 1.00 },
 })
 
 -----------------------------------------------------------------------------------------------------------------------
 
-local function GenerateLoot(inst, pos)
+local function GenerateLoot(inst, pos, loot)
     local loottable = {
-        boneshard = 25,
-        rocks = 20,
-        flint = 15,
-        nitre = 15,
-        monstermeat = 15,
+        boneshard = 15,
+        rocks = 10,
+        flint = 10,
+        nitre = 10,
+        monstermeat = 10,
         goldnugget = 4,
         slurtle_shellpieces = 2,
         tentaclespots = 2,
+        tree_rock_seed = 2,
         lightbulb = 2,
         wormlight = 2,
         guano = 2,
@@ -61,10 +67,16 @@ local function GenerateLoot(inst, pos)
 
     local choice = weighted_random_choice(loottable)
 
+    if loot then
+        choice = loot
+    end
+
     if choice ~= nil then
         inst.components.lootdropper:FlingItem(SpawnPrefab(choice), pos)
     end
 end
+
+local LUCY_NUGGET_CHANCE = 0.3
 
 local SHAKE_DIST = 40
 
@@ -225,7 +237,9 @@ local function OnDeath(inst, data)
 end
 
 local function _PlayDirstPstSlowAnim(dirt)
-    dirt.AnimState:PlayAnimation("dirt_pst_slow")
+    if dirt and dirt:IsValid() then
+        dirt.AnimState:PlayAnimation("dirt_pst_slow")
+    end
 end
 
 local SEGMENT_ERODE_TIME = 6
@@ -385,6 +399,9 @@ local function OnLoadPostPass(inst, newents, data)
                 GenerateLoot(inst, pos)
                 GenerateLoot(inst, pos)
                 GenerateLoot(inst, pos)
+                if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() < LUCY_NUGGET_CHANCE then
+                    GenerateLoot(inst, pos, "lucky_goldnugget")
+                end
             end
         end
         if data.headlootdropped then
@@ -872,7 +889,9 @@ local function Segment_OnAnimOver(inst)
         GenerateLoot(inst)
         GenerateLoot(inst)
         GenerateLoot(inst)
-
+        if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() < LUCY_NUGGET_CHANCE then
+            GenerateLoot(inst,nil,"lucky_goldnugget")
+        end
     elseif inst.AnimState:IsCurrentAnimation("segment_death_pst") then
         ErodeAway(inst, SEGMENT_ERODE_TIME)
     end
@@ -886,12 +905,20 @@ end
 local SEGMENT_PREDICTED_FRAMES = 3
 
 local function CLIENT_Segment_OnUpdate(inst, dt)
-    if inst._hit and inst._hit > 0 then
-        local scale = Remap(inst._hit, 1, 0, 0.75, 1)
+	if inst.electrocuteframes:value() > 0 then
+		local frames = inst.electrocuteframes:value() - 1
+		local scale = Remap(frames % 5, 4, 0, 0.85, 1)
+		inst.electrocuteframes:set_local(frames)
+
+		inst.Transform:SetScale(scale, scale, scale)
+
+		inst._hit = nil
+	elseif inst._hit then
+		local scale = inst._hit > 0 and Remap(inst._hit, 1, 0, 0.75, 1) or 1
 
         inst.Transform:SetScale(scale, scale, scale)
 
-        inst._hit = inst._hit - (dt * 5)
+		inst._hit = inst._hit > 0 and inst._hit - (dt * 5) or nil
     end
 
     if inst._predictionsleft <= 0 then
@@ -979,12 +1006,13 @@ local function segmentfn()
     inst._dirt_end_z   = net_float(inst.GUID, "worm_boss_segment._dirt_end_z"  , "dirtpositiondirty")
 
     inst.hitevent = net_event(inst.GUID, "worm_boss_segment.hitevent")
+	inst.electrocuteframes = net_smallbyte(inst.GUID, "worm_boss_segment.electrocuteframes")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         inst._predictionsleft = 0
-        inst._hit = 0
+		inst._hit = nil
 
         inst:AddComponent("updatelooper")
         inst.components.updatelooper:AddOnUpdateFn(CLIENT_Segment_OnUpdate)
@@ -1056,13 +1084,61 @@ local function Dirt_OnAnimOver(inst)
     end
 end
 
-local function Dirt_OnAttacked(inst)
+local function DoElectrocute(inst, data)
+	local duration = CalcEntityElectrocuteDuration(inst, data and data.duration)
+
+	for _, chunk in ipairs(inst.worm.chunks) do
+		chunk._electrocuteframes = math.ceil(duration / FRAMES)
+
+		local syncdata = data and data.duration and { duration = data.duration } or nil
+
+		local otherfx
+		if chunk.dirt_start and chunk.dirt_start:IsValid() then
+			CommonHandlers.UpdateElectrocuteRecoveryDelay(chunk.dirt_start)
+			if chunk.dirt_start == inst then
+				otherfx = CommonHandlers.SpawnElectrocuteFx(inst, data)
+			else
+				otherfx = CommonHandlers.SpawnElectrocuteFx(chunk.dirt_start, syncdata)
+			end
+		end
+		if chunk.dirt_end and chunk.dirt_end:IsValid() then
+			CommonHandlers.UpdateElectrocuteRecoveryDelay(chunk.dirt_end)
+			if otherfx then
+				otherfx:CancelFlash()
+			end
+			if chunk.dirt_end == inst then
+				CommonHandlers.SpawnElectrocuteFx(inst, data)
+			else
+				CommonHandlers.SpawnElectrocuteFx(chunk.dirt_end, syncdata)
+			end
+		end
+		if chunk.head and chunk.head:IsValid() then
+			chunk.head:PushEventImmediate("sync_electrocute", syncdata)
+		end
+		if chunk.tail and chunk.tail:IsValid() then
+			chunk.tail:PushEventImmediate("sync_electrocute", syncdata)
+		end
+	end
+end
+
+local function Dirt_OnAttacked(inst, data)
     if inst.chunk ~= nil and inst.worm.state ~= WORMBOSS_UTILS.STATE.DEAD then
         inst.chunk.hit = 1
+
+		if CommonHandlers.AttackCanElectrocute(inst, data) and not CommonHandlers.ElectrocuteRecoveryDelay(inst) then
+			DoElectrocute(inst, { attackdata = data })
+		end
+
         if inst.chunk.tail then
             inst.chunk.tail:PushEvent("attacked")
         end
     end
+end
+
+local function Dirt_OnElectrocute(inst, data)
+	if inst._last_electrocute_time == nil or inst._last_electrocute_time + TUNING.ELECTROCUTE_DEFAULT_DURATION < GetTime() then
+		DoElectrocute(inst, data)
+	end
 end
 
 local function Dirt_DamageRedirectFn(inst, attacker, damage, weapon, stimuli)
@@ -1086,7 +1162,7 @@ local function Dirt_DamageRedirectFn(inst, attacker, damage, weapon, stimuli)
         end
     end
 
-    if inst.chunk.head ~= nil then
+	if inst.chunk and inst.chunk.head then
         inst.chunk.head:PushEvent("attacked")
     end
 
@@ -1193,6 +1269,7 @@ local function dirtfn()
     inst.components.sanityaura.aurafn = CalcSanityAura
 
     inst:ListenForEvent("attacked", Dirt_OnAttacked)
+	inst:ListenForEvent("electrocute", Dirt_OnElectrocute)
     inst:ListenForEvent("animover", Dirt_OnAnimOver)
 
     inst.persists = false

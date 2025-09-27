@@ -43,7 +43,7 @@ local SHOP_LEVELS =
     "HERMITCRABSHOP_L4",
 }
 
-local TASKS = {
+local TASKS = { -- TODO(JBK): The current save data for this assumes these tasks will not be removed and must be in order as an enum. This should be changed in friendlevels component at some point.
     FIX_HOUSE_1 = 1,
     FIX_HOUSE_2 = 2,
     FIX_HOUSE_3 = 3,
@@ -149,6 +149,10 @@ local function ShouldAcceptItem(inst, item)
         end
     end
 
+    if item:HasTag("mapscroll") and TheWorld.components.wagpunk_arena_manager and TheWorld.components.wagpunk_arena_manager:ShouldPearlAcceptMaps() then
+        return true
+    end
+
     return false
 end
 
@@ -181,7 +185,127 @@ local function OnRefuseItem(inst, giver, item)
     if item.components.insulator and item.components.insulator:GetInsulation() >= TUNING.INSULATION_LARGE and item.components.insulator:GetType() == SEASONS.WINTER and item.components.equippable.equipslot == EQUIPSLOTS.BODY and not TheWorld.state.issnowing then
         inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_VEST", 1)
     end
+    if item:HasTag("mapscroll") then
+        inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_MAPSCROLL", 1)
+    end
     inst.sg:GoToState("refuse")
+end
+
+local function OnAcceptItem(inst, giver, item, count)
+    if item:HasTag("oceanfish") then
+
+        local str = nil
+        local completetask = nil
+        local keepitem = false
+         -- IN CASE OF PREVIOUS ERROR
+
+        if inst.itemstotoss then
+            for _, gift in ipairs(inst.itemstotoss) do
+                inst.components.inventory:DropItem(gift)
+                inst.components.lootdropper:FlingItem(gift)
+            end
+            inst.itemstotoss = nil
+        end
+
+        if item.components.weighable:GetWeightPercent() >= TUNING.HERMITCRAB.HEAVY_FISH_THRESHHOLD then
+
+            local is_special_fish = false
+
+            local dospecialfish = function(task, tacklesketch)
+                is_special_fish = true
+                completetask = task
+                inst.extrareward = inst.extrareward or {}
+                table.insert(inst.extrareward, tacklesketch)
+            end
+
+            if item.prefab == "oceanfish_small_6_inv" then
+                dospecialfish(TASKS.GIVE_BIG_AUTUM, "oceanfishinglure_hermit_drowsy_tacklesketch")
+            elseif item.prefab == "oceanfish_small_7_inv" then
+                dospecialfish(TASKS.GIVE_BIG_SPRING, "oceanfishinglure_hermit_rain_tacklesketch")
+            elseif item.prefab == "oceanfish_small_8_inv" then
+                dospecialfish(TASKS.GIVE_BIG_SUMMER, "oceanfishinglure_hermit_heavy_tacklesketch")
+            elseif item.prefab == "oceanfish_medium_8_inv" then
+                dospecialfish(TASKS.GIVE_BIG_WINTER, "oceanfishinglure_hermit_snow_tacklesketch")
+            end
+
+            if not is_special_fish then
+                inst.heavyfish = (inst.heavyfish or 0) + 1
+                if inst.heavyfish == 5 then
+                    completetask = TASKS.GIVE_HEAVY_FISH
+                    inst.heavyfish = nil
+                end
+            end
+
+            str = "HERMITCRAB_GETFISH_BIG"
+        else
+            local weight = item.components.weighable:GetWeight()
+            str = subfmt(STRINGS.HERMITCRAB_REFUSE_SMALL_FISH[math.random(#STRINGS.HERMITCRAB_REFUSE_SMALL_FISH)], {weight = string.format("%0.2f", weight)})
+
+            inst.itemstotoss = inst.itemstotoss or {}
+            table.insert(inst.itemstotoss, item)
+
+            keepitem = true
+        end
+
+        if str then
+            inst:PushEvent("use_pocket_scale", {str=str, target=item})
+        end
+
+        if completetask then
+            inst.delayfriendtask = completetask
+        end
+
+        if not keepitem then
+            item:Remove()
+        end
+    elseif item:HasTag("umbrella") and TheWorld.state.israining then
+        inst.components.inventory:Equip(item)
+        inst.components.friendlevels:CompleteTask(TASKS.GIVE_UMBRELLA)
+
+    elseif iscoat(item) and TheWorld.state.issnowing then
+        inst.components.inventory:Equip(item)
+        inst.components.friendlevels:CompleteTask(TASKS.GIVE_PUFFY_VEST)
+    elseif is_flowersalad(item) then
+        inst.components.friendlevels:CompleteTask(TASKS.GIVE_FLOWER_SALAD)
+        inst.components.timer:StartTimer("salad", TUNING.TOTAL_DAY_TIME * 10 )
+        inst:PushEvent("eat_food")
+        item:Remove()
+    elseif item.prefab == "hermit_cracked_pearl" then
+        inst.components.npc_talker:Chatter("HERMITCRAB_GOT_PEARL")
+        item:RemoveTag("irreplaceable")
+        item:Remove()
+    elseif item:HasTag("mapscroll") then
+        local badmap
+        local wagpunk_arena_manager = TheWorld.components.wagpunk_arena_manager
+        if wagpunk_arena_manager then
+            if wagpunk_arena_manager:HasPearlAcceptedAGoodMap() then
+                inst.itemstotoss = inst.itemstotoss or {}
+                table.insert(inst.itemstotoss, item)
+            elseif wagpunk_arena_manager:IsPearlMapValidToPearl(giver, item) then
+                inst.components.npc_talker:Chatter("HERMITCRAB_GOT_MAPSCROLL_GOOD")
+                item:Remove()
+                wagpunk_arena_manager:PearlMapCompleted()
+            else
+                badmap = true
+            end
+        else
+            badmap = true
+        end
+        if badmap then
+            inst.components.npc_talker:Chatter("HERMITCRAB_GOT_MAPSCROLL_BAD")
+            inst.itemstotoss = inst.itemstotoss or {}
+            table.insert(inst.itemstotoss, item)
+        end
+    elseif item.components.edible then
+        if inst.driedthings then
+            inst.driedthings = inst.driedthings + 1
+            if inst.driedthings == 6 then
+                inst.driedthings = nil
+            end
+        end
+        inst:PushEvent("eat_food")
+        item:Remove()
+    end
 end
 
 local normalbrain = require "brains/hermitcrabbrain"
@@ -191,10 +315,21 @@ local function OnActivatePrototyper(inst, doer, recipe)
     inst.components.npc_talker:Chatter("HERMITCRAB_TALK_ONPURCHASE."..gfl, 1)
 end
 
+local function OnTurnOnPrototyper(inst)
+    local wagpunk_arena_manager = TheWorld.components.wagpunk_arena_manager
+    if wagpunk_arena_manager and wagpunk_arena_manager:CanPearlShowRelocationItem() and not inst.components.craftingstation:KnowsItem("hermitcrab_relocation_kit") then
+        local gfl = inst.getgeneralfriendlevel(inst)
+        inst.components.craftingstation:LearnItem("hermitcrab_relocation_kit", "hermitshop_hermitcrab_relocation_kit")
+        inst.components.npc_talker:Chatter("HERMITCRAB_ANNOUNCE_ADDED_RELOCATION_KIT."..gfl)
+        return
+    end
+end
+
 local function EnableShop(inst, shop_level)
     if inst.components.prototyper == nil then
         inst:AddComponent("prototyper")
         inst.components.prototyper.onactivate = OnActivatePrototyper
+        inst.components.prototyper.onturnon = OnTurnOnPrototyper
     end
 
     inst._shop_level = math.min(shop_level or inst._shop_level or 1, 5)
@@ -1037,103 +1172,6 @@ local function initfriendlevellisteners(inst)
         end
     end, TheWorld)
 
-    -- ITEMS
-    inst:ListenForEvent("itemget", function(world,data)
-        local item = data.item
-        if item:HasTag("oceanfish") then
-
-            local str = nil
-            local completetask = nil
-            local keepitem = false
-             -- IN CASE OF PREVIOUS ERROR
-
-            if inst.itemstotoss then
-                for _, gift in ipairs(inst.itemstotoss) do
-                    inst.components.inventory:DropItem(gift)
-                    inst.components.lootdropper:FlingItem(gift)
-                end
-                inst.itemstotoss = nil
-            end
-
-            if item.components.weighable:GetWeightPercent() >= TUNING.HERMITCRAB.HEAVY_FISH_THRESHHOLD then
-
-                local is_special_fish = false
-
-                local dospecialfish = function(task, tacklesketch)
-                    is_special_fish = true
-                    completetask = task
-                    inst.extrareward = inst.extrareward or {}
-                    table.insert(inst.extrareward, tacklesketch)
-                end
-
-                if item.prefab == "oceanfish_small_6_inv" then
-                    dospecialfish(TASKS.GIVE_BIG_AUTUM, "oceanfishinglure_hermit_drowsy_tacklesketch")
-                elseif item.prefab == "oceanfish_small_7_inv" then
-                    dospecialfish(TASKS.GIVE_BIG_SPRING, "oceanfishinglure_hermit_rain_tacklesketch")
-                elseif item.prefab == "oceanfish_small_8_inv" then
-                    dospecialfish(TASKS.GIVE_BIG_SUMMER, "oceanfishinglure_hermit_heavy_tacklesketch")
-                elseif item.prefab == "oceanfish_medium_8_inv" then
-                    dospecialfish(TASKS.GIVE_BIG_WINTER, "oceanfishinglure_hermit_snow_tacklesketch")
-                end
-
-                if not is_special_fish then
-                    inst.heavyfish = (inst.heavyfish or 0) + 1
-                    if inst.heavyfish == 5 then
-                        completetask = TASKS.GIVE_HEAVY_FISH
-                        inst.heavyfish = nil
-                    end
-                end
-
-				str = "HERMITCRAB_GETFISH_BIG"
-            else
-                local weight = item.components.weighable:GetWeight()
-                str = subfmt(STRINGS.HERMITCRAB_REFUSE_SMALL_FISH[math.random(#STRINGS.HERMITCRAB_REFUSE_SMALL_FISH)], {weight = string.format("%0.2f", weight)})
-
-                inst.itemstotoss = inst.itemstotoss or {}
-                table.insert(inst.itemstotoss, item)
-
-                keepitem = true
-            end
-
-            if str then
-                inst:PushEvent("use_pocket_scale", {str=str, target=item})
-            end
-
-            if completetask then
-                inst.delayfriendtask = completetask
-            end
-
-            if not keepitem then
-                item:Remove()
-            end
-        elseif item:HasTag("umbrella") and TheWorld.state.israining then
-            inst.components.inventory:Equip(item)
-            inst.components.friendlevels:CompleteTask(TASKS.GIVE_UMBRELLA)
-
-        elseif iscoat(item) and TheWorld.state.issnowing then
-            inst.components.inventory:Equip(item)
-            inst.components.friendlevels:CompleteTask(TASKS.GIVE_PUFFY_VEST)
-        elseif is_flowersalad(item) then
-            inst.components.friendlevels:CompleteTask(TASKS.GIVE_FLOWER_SALAD)
-            inst.components.timer:StartTimer("salad", TUNING.TOTAL_DAY_TIME * 10 )
-            inst:PushEvent("eat_food")
-            item:Remove()
-        elseif item.prefab == "hermit_cracked_pearl" then
-            inst.components.npc_talker:Chatter("HERMITCRAB_GOT_PEARL")
-            item:RemoveTag("irreplaceable")
-            item:Remove()
-        elseif item.components.edible then
-            if inst.driedthings then
-                inst.driedthings = inst.driedthings + 1
-                if inst.driedthings == 6 then
-                    inst.driedthings = nil
-                end
-            end
-            inst:PushEvent("eat_food")
-            item:Remove()
-        end
-    end)
-
     -- Friend level deltas.
     inst:ListenForEvent("friend_level_changed", function(inst, data)
         local worldmeteorshower = TheWorld.components.worldmeteorshower
@@ -1442,6 +1480,7 @@ local function fn()
     inst:AddComponent("trader")
     inst.components.trader:SetAcceptTest(ShouldAcceptItem)
     inst.components.trader.onrefuse = OnRefuseItem
+    inst.components.trader:SetOnAccept(OnAcceptItem)
     inst.components.trader.deleteitemonaccept = false
 
     ------------------------------------------
@@ -1534,17 +1573,25 @@ local function fn()
 
 	inst.retrofitconstuctiontasks = retrofitconstuctiontasks
 
+    TheWorld:PushEvent("ms_register_hermitcrab", inst)
+    TheWorld:PushEvent("ms_register_pearl_entity", inst)
+
     return inst
 end
 
 local function markerfn()
     local inst = CreateEntity()
     inst.entity:AddTransform()
-    inst.entity:AddNetwork()
+    --[[Non-networked entity]]
 
     inst:AddTag("NOBLOCK")
     inst:AddTag("NOCLICK")
     inst:AddTag("hermitcrab_marker")
+    inst:AddTag("ignorewalkableplatforms")
+	inst:AddTag("ignorewalkableplatformdrowning")
+
+    TheWorld:PushEvent("ms_register_hermitcrab_marker", inst)
+    TheWorld:PushEvent("ms_register_pearl_entity", inst)
 
     return inst
 end
@@ -1552,11 +1599,15 @@ end
 local function markerfishingfn()
     local inst = CreateEntity()
     inst.entity:AddTransform()
-    inst.entity:AddNetwork()
+    --[[Non-networked entity]]
 
     inst:AddTag("NOBLOCK")
     inst:AddTag("NOCLICK")
     inst:AddTag("hermitcrab_marker_fishing")
+    inst:AddTag("ignorewalkableplatforms")
+	inst:AddTag("ignorewalkableplatformdrowning")
+
+    TheWorld:PushEvent("ms_register_pearl_entity", inst)
 
     return inst
 end
@@ -1564,11 +1615,15 @@ end
 local function luremarkerfn()
     local inst = CreateEntity()
     inst.entity:AddTransform()
-    inst.entity:AddNetwork()
+    --[[Non-networked entity]]
 
     inst:AddTag("NOBLOCK")
     inst:AddTag("NOCLICK")
     inst:AddTag("hermitcrab_lure_marker")
+    inst:AddTag("ignorewalkableplatforms")
+	inst:AddTag("ignorewalkableplatformdrowning")
+
+    TheWorld:PushEvent("ms_register_pearl_entity", inst)
 
     return inst
 end

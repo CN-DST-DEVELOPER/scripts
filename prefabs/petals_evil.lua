@@ -62,6 +62,8 @@ local function fn()
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunchAndPerish(inst)
     inst:ListenForEvent("spawnedfromhaunt", OnSpawnedFromHaunt)
 

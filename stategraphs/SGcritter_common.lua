@@ -266,6 +266,10 @@ SGCritterStates.AddPetEmote = function(states, timeline, onexit)
 		tags = {"busy"},
 
 		onenter = function(inst)
+			if inst.components.locomotor ~= nil then
+				inst.components.locomotor:StopMoving()
+			end
+
             inst.AnimState:PlayAnimation("emote_pet")
 		end,
 

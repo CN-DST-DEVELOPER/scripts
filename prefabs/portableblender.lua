@@ -18,7 +18,7 @@ local prefabs_item =
 }
 
 local function ChangeToItem(inst)
-    local item = SpawnPrefab("portableblender_item")
+    local item = SpawnPrefab("portableblender_item", inst.linked_skinname, inst.skin_id)
     item.Transform:SetPosition(inst.Transform:GetWorldPosition())
     item.AnimState:PlayAnimation("collapse")
     item.SoundEmitter:PlaySound("dontstarve/common/together/portable/blender/collapse")
@@ -185,7 +185,7 @@ end
 ---------------------------------------------------------------
 
 local function ondeploy(inst, pt, deployer)
-    local blender = SpawnPrefab("portableblender")
+    local blender = SpawnPrefab("portableblender", inst.linked_skinname, inst.skin_id)
     if blender ~= nil then
         blender.Physics:SetCollides(false)
         blender.Physics:Teleport(pt.x, 0, pt.z)

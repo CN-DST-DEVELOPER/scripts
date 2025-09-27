@@ -153,6 +153,16 @@ local function CanMouseThrough(inst)
 	return inst:HasTag("stealth"), true
 end
 
+
+local function lootsetfn(lootdropper)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)
+    lootdropper:AddChanceLoot("lucky_goldnugget", 1)    
+end
+
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -248,6 +258,11 @@ local function fn()
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
 
+
+    if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
+        inst.components.lootdropper:SetLootSetupFn(lootsetfn)
+    end
+
 	return inst
 end
 
@@ -270,8 +285,7 @@ local function dupefxfn()
 	inst.Physics:SetFriction(0)
 	inst.Physics:SetDamping(5)
 	inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-	inst.Physics:ClearCollisionMask()
-	inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
 	inst.Physics:SetCapsule(PHYSICS_RADIUS, 1)
 
 	inst.DynamicShadow:SetSize(2, 1)

@@ -60,7 +60,7 @@ function TransparentOnSanity:CalcaulteTargetAlpha()
 
 	if pct == nil then
 		local sanity = player.replica.sanity
-		if sanity ~= nil then
+		if sanity and sanity:IsInsanityMode() then
 			pct = 1 - sanity:GetPercent()
 		end
 	end

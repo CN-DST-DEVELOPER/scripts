@@ -22,8 +22,7 @@ local function fn()
         
     inst.entity:AddPhysics()
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
     inst.Physics:SetMass(1)
     inst.Physics:SetSphere(1)
 

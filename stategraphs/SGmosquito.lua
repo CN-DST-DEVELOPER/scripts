@@ -19,12 +19,20 @@ local actionhandlers =
 
 local events=
 {
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() then inst.sg:GoToState("hit") end end),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("electrocute") then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then inst.sg:GoToState("attack") end end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
-
+	CommonHandlers.OnElectrocute(),
 
     EventHandler("locomote", function(inst)
         if not inst.sg:HasStateTag("busy") then
@@ -204,6 +212,7 @@ CommonStates.AddSleepStates(states,
     onwake = RaiseFlyingCreature,
 })
 CommonStates.AddFrozenStates(states, LandFlyingCreature, RaiseFlyingCreature)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("mosquito", states, events, "idle", actionhandlers)
 

@@ -1,13 +1,6 @@
 local function onshowoceanaction(self)
-    if self.showoceanaction then
-        if not self.inst:HasTag("fillable_showoceanaction") then
-            self.inst:AddTag("fillable_showoceanaction")
-        end
-    else
-        if self.inst:HasTag("fillable_showoceanaction") then
-            self.inst:RemoveTag("fillable_showoceanaction")
-        end
-    end
+    self.inst:AddOrRemoveTag("fillable_showoceanaction", self.showoceanaction)
+    self.inst:AddOrRemoveTag("allow_action_on_impassable", self.showoceanaction) -- For point action on the ocean.
 end
 
 local Fillable = Class(function(self, inst)
@@ -25,6 +18,12 @@ end, nil,
 {
     showoceanaction = onshowoceanaction,
 })
+
+function Fillable:OnRemoveFromEntity()
+    self.inst:RemoveTag("fillable")
+    self.inst:RemoveTag("fillable_showoceanaction")
+    self.inst:RemoveTag("allow_action_on_impassable")
+end
 
 function Fillable:Fill(from_object)
     if from_object ~= nil and from_object.components.watersource ~= nil then

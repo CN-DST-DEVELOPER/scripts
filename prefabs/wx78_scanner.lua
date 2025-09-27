@@ -134,7 +134,7 @@ local function OnChangedLeader(inst, new_leader, old_leader)
 end
 
 local function OnScannerDeployed(inst, pt, deployer)
-    local scanner = SpawnPrefab("wx78_scanner")
+    local scanner = SpawnPrefab("wx78_scanner", inst.linked_skinname, inst.skin_id)
     if scanner ~= nil then
         scanner.Physics:SetCollides(false)
         scanner.Physics:Teleport(pt.x, 0, pt.z)
@@ -155,11 +155,11 @@ local function item_owner_fn(inst)
 end
 
 local function image_on(inst)
-    inst.components.inventoryitem:ChangeImageName("wx78_scanner_item_on")
+    inst.components.inventoryitem:ChangeImageName((inst.linked_skinname or "wx78_scanner") .. "_item_on")
 end
 
 local function image_off(inst)
-    inst.components.inventoryitem:ChangeImageName("wx78_scanner_item")
+    inst.components.inventoryitem:ChangeImageName((inst.linked_skinname or "wx78_scanner") .. "_item")
 end
 
 local function item_loop_fn(inst, target)
@@ -672,7 +672,6 @@ local function DoTurnOff(inst)
 
         inst._turned_off = true
 
-        inst:StopBrain()
         inst:SetBrain(nil)
     end
 end
@@ -876,7 +875,7 @@ local function on_harvested(inst, picker, produce)
             inst.components.teacher:Teach(picker)
         end
 
-        local scanner_item = SpawnPrefab("wx78_scanner_item")
+        local scanner_item = SpawnPrefab("wx78_scanner_item", inst.linked_skinname, inst.skin_id)
         if scanner_item ~= nil then
             picker.components.inventory:GiveItem(scanner_item)
 
@@ -934,7 +933,7 @@ local function on_succeeded_timeout(inst)
     -- that other players cannot interact with.
     inst._module_recipe = nil
 
-    local scanner_item = SpawnPrefab("wx78_scanner_item")
+    local scanner_item = SpawnPrefab("wx78_scanner_item", inst.linked_skinname, inst.skin_id)
     scanner_item.Transform:SetPosition(inst.Transform:GetWorldPosition())
     scanner_item.Transform:SetRotation(inst.Transform:GetRotation())
 

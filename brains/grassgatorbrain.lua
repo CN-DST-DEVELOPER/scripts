@@ -54,6 +54,7 @@ function GrassgatorBrain:OnStart()
             PriorityNode(
             {
 				BrainCommon.PanicTrigger(self.inst),
+                BrainCommon.ElectricFencePanicTrigger(self.inst),
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME),
                 SequenceNode{
                     RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),

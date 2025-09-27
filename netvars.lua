@@ -1,5 +1,6 @@
 --V2C: TODO: work
 --     Keep this file up to date with luanetworkvariable.cpp
+-- NOTES(JBK): Keep this up to date with GetIdealUnsignedNetVarForCount below if more unsigned integers are created.
 --[[
 
     net_bool                1-bit boolean
@@ -88,4 +89,22 @@ end)
 function net_event:push()
     self._bool:set_local(true)
     self._bool:set(true)
+end
+
+
+-- NOTES(JBK): This should be used sparingly but it will return a networked variable integer that best holds the count requirement.
+-- Caller should assign this as a variable with a suffix of _net_enum for file searches.
+function GetIdealUnsignedNetVarForCount(count)
+    if count <= 7 then
+        return net_tinybyte
+    elseif count <= 63 then
+        return net_smallbyte
+    elseif count <= 255 then
+        return net_byte
+    elseif count <= 65535 then
+        return net_ushortint
+    elseif count <= 4294967295 then
+        return net_uint
+    end
+    return nil -- Intentional in case something is trying to have an integer net var way out of spec.
 end

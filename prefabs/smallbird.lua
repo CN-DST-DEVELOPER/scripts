@@ -161,13 +161,11 @@ local function SmallRetarget(inst)
         return nil
     end
 end
+]]
 
 local function SmallKeepTarget(inst, target)
-    if not inst:HasTag("companion") then
-        return false
-    end
+    return inst.components.combat:CanTarget(target)
 end
-]]
 
 local RETARGET_ONEOF_TAGS = {"player", "monster"}
 local function TeenRetarget(inst)
@@ -286,10 +284,11 @@ local function create_common(inst, physicscylinder)
     MakeCharacterPhysics(inst, 10, .25)
 
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.CHARACTERS
+	)
     if physicscylinder then
         inst.Physics:SetCylinder(.5, 1)
     end
@@ -415,7 +414,7 @@ local function create_smallbird()
     inst.components.combat:SetDefaultDamage(TUNING.SMALLBIRD_DAMAGE)
     inst.components.combat:SetAttackPeriod(TUNING.SMALLBIRD_ATTACK_PERIOD)
     --inst.components.combat:SetRetargetFunction(3, SmallRetarget)
-    --inst.components.combat:SetKeepTargetFunction(SmallKeepTarget)
+    inst.components.combat:SetKeepTargetFunction(SmallKeepTarget)
 
     inst.components.lootdropper:SetLoot({"smallmeat"})
 

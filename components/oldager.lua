@@ -130,6 +130,10 @@ function OldAger:LongUpdate(dt)
 end
 
 function OldAger:FastForwardDamageOverTime()
+	if self.damage_per_second <= 0 or self.damage_remaining <= 0 then
+		return -- Not taking damage!
+	end
+
 	self:OnUpdate(self.damage_remaining / self.damage_per_second)
 	self:StopDamageOverTime()
 end

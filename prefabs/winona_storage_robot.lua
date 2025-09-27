@@ -97,6 +97,15 @@ local function OnUpdateChargingFuel(inst)
 	end
 end
 
+local function NotifyCircuitChanged(inst, node)
+	node:PushEvent("engineeringcircuitchanged")
+end
+
+local function OnCircuitChanged(inst)
+	--Notify other connected batteries
+	inst.components.circuitnode:ForEachNode(NotifyCircuitChanged)
+end
+
 local function SetCharging(inst, powered, duration)
 	if not powered then
 		if inst._powertask then
@@ -107,6 +116,7 @@ local function SetCharging(inst, powered, duration)
 			inst.components.fueled:SetUpdateFn(nil)
 			inst.components.powerload:SetLoad(0)
 			RefreshLedStatus(inst)
+			OnCircuitChanged(inst)
 		end
 	else
 		local waspowered = inst._powertask ~= nil
@@ -122,6 +132,7 @@ local function SetCharging(inst, powered, duration)
 				inst.components.fueled:StartConsuming()
 				inst.components.powerload:SetLoad(TUNING.WINONA_STORAGE_ROBOT_POWER_LOAD_CHARGING)
 				RefreshLedStatus(inst)
+				OnCircuitChanged(inst)
 			end
 		end
 	end
@@ -129,6 +140,19 @@ end
 
 local function OnTeleported(inst)
 	StorageRobotCommon.UpdateSpawnPoint(inst)
+end
+
+local function OnOffScreenDeactivate(inst)
+	inst._offscreendeactivatetask = nil
+	if inst.sg then
+		inst.Physics:Teleport(StorageRobotCommon.GetSpawnPoint(inst):Get())
+
+		-- Teleporting might wake us up
+		if not inst:IsAsleep() then
+			return
+		end
+	end
+	inst:OnDeactivateRobot()
 end
 
 local function StopWatchForReactivate(inst)
@@ -164,14 +188,13 @@ local function OnDeploy(inst, pt)--, deployer)
 	inst:SetBrain(brain)
 	SetCharging(inst, false)
 	RefreshLedStatus(inst)
+	inst.components.circuitnode:Disconnect()
 	inst.components.fueled:StartConsuming()
 	if pt then
 		StorageRobotCommon.UpdateSpawnPoint(inst)
 	end
-	if not inst:IsAsleep() then
-		inst:RestartBrain()
-	elseif inst._offscreendeactivatetask == nil then
-		inst._offscreendeactivatetask = inst:DoTaskInTime(OFFSCREEN_DEACTIVATE_DELAY, inst.OnDeactivateRobot)
+	if inst:IsAsleep() and inst._offscreendeactivatetask == nil then
+		inst._offscreendeactivatetask = inst:DoTaskInTime(OFFSCREEN_DEACTIVATE_DELAY, OnOffScreenDeactivate)
 	end
 	inst:ListenForEvent("teleported", OnTeleported)
 
@@ -342,7 +365,7 @@ local function OnEntitySleep(inst)
 	end
 	StopWatchForReactivate(inst)
 	if inst.sg and inst._offscreendeactivatetask == nil then
-		inst._offscreendeactivatetask = inst:DoTaskInTime(OFFSCREEN_DEACTIVATE_DELAY, inst.OnDeactivateRobot)
+		inst._offscreendeactivatetask = inst:DoTaskInTime(OFFSCREEN_DEACTIVATE_DELAY, OnOffScreenDeactivate)
 	end
 end
 
@@ -598,15 +621,6 @@ local function DoWireSparks(inst)
 	end
 end
 
-local function NotifyCircuitChanged(inst, node)
-	node:PushEvent("engineeringcircuitchanged")
-end
-
-local function OnCircuitChanged(inst)
-	--Notify other connected batteries
-	inst.components.circuitnode:ForEachNode(NotifyCircuitChanged)
-end
-
 local function OnConnectCircuit(inst)--, node)
 	if not inst._wired then
 		inst._wired = true
@@ -628,6 +642,18 @@ local function OnDisconnectCircuit(inst)--, node)
 		DoWireSparks(inst)
 		SetCharging(inst, false)
 	end
+end
+
+local function OnItemGet(inst, data)
+    if inst.components.inventory:HasItemWithTag("nobundling", 1) then
+        inst:AddTag("nobundling")
+    end
+end
+
+local function OnItemLose(inst, data)
+    if not inst.components.inventory:HasItemWithTag("nobundling", 1) then
+        inst:RemoveTag("nobundling")
+    end
 end
 
 local function fn()
@@ -722,6 +748,8 @@ local function fn()
 	inst:ListenForEvent("on_no_longer_landed", OnNoLongerLanded)
 	inst:ListenForEvent("on_landed", OnLanded)
 	inst:ListenForEvent("floater_startfloating", OnStartFloating)
+    inst:ListenForEvent("itemget", OnItemGet)
+    inst:ListenForEvent("itemlose", OnItemLose)
 
 	MakeHauntable(inst)
 

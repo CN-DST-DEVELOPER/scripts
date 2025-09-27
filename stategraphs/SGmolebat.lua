@@ -13,12 +13,13 @@ local events =
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
 
     EventHandler("summon", function(inst)
-        if inst.components.health ~= nil and not inst.components.health:IsDead() then
+		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
             inst.sg:GoToState("summon_ally")
         end
     end),
@@ -152,7 +153,7 @@ local states =
 
     State{
         name = "fall",
-        tags = { "busy", "noattack" },
+		tags = { "busy", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:SetActive(false)
@@ -178,6 +179,7 @@ local states =
                 inst.Physics:SetActive(true)
                 inst.sg.statemem.physics_disabled = false
                 inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
         },
 
@@ -370,5 +372,6 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("molebat", states, events, "idle", actionhandlers)

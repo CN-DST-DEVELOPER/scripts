@@ -57,12 +57,16 @@ end
 function ItemSlot:SetTile(tile)
     if self.tile ~= tile then
         if self.tile ~= nil then
-            self.tile = self.tile:Kill()
+            self.tile:Kill()
+            self.tile = nil
         end
         if tile ~= nil then
             self.tile = self:AddChild(tile)
             if self.label ~= nil then
                 self.label:MoveToFront()
+            end
+            if self.readonlyvisual ~= nil then
+                self.readonlyvisual:MoveToFront()
             end
         end
         if self.ontilechangedfn ~= nil then
@@ -87,12 +91,16 @@ function ItemSlot:SetBGImage2(atlas, img, tint)
             if self.label ~= nil then
                 self.label:MoveToFront()
             end
+            if self.readonlyvisual ~= nil then
+                self.readonlyvisual:MoveToFront()
+            end
         end
         if tint ~= nil then
             self.bgimage2:SetTint(unpack(tint))
         end
     elseif self.bgimage2 ~= nil then
-        self.bgimage2 = self.bgimage2:Kill()
+        self.bgimage2:Kill()
+        self.bgimage2 = nil
     end
 end
 
@@ -106,7 +114,27 @@ function ItemSlot:SetLabel(msg, colour)
             self.label:SetPosition(3, -36)
         end
     elseif self.label ~= nil then
-        self.label = self.label:Kill()
+        self.label:Kill()
+        self.label = nil
+    end
+end
+
+local READONLYCONTAINER_DARKNESS_SCALE = 0.4
+
+function ItemSlot:SetReadOnlyVisuals(enabled)
+    if enabled then
+        if not self.readonlyvisual then
+            self.readonlyvisual = self:AddChild(Image("images/ui.xml", "white.tex"))
+            local w, h = self.bgimage:GetSize()
+            self.readonlyvisual:SetSize(w, h)
+            self.readonlyvisual:SetTint(0, 0, 0, READONLYCONTAINER_DARKNESS_SCALE)
+            self.readonlyvisual:SetClickable(false)
+        end
+    else
+        if self.readonlyvisual then
+            self.readonlyvisual:Kill()
+            self.readonlyvisual = nil
+        end
     end
 end
 

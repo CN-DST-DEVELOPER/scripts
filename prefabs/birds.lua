@@ -213,6 +213,7 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
         "seeds",
         "smallmeat",
         "cookedsmallmeat",
+        "birdcorpse",
 
         --mercy items
         "flint",
@@ -234,6 +235,13 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
 		soundname = soundname.name
 	end
 
+    local BIRD_SOUNDS = {
+        takeoff = soundbank.."/birds/takeoff_"..soundname,
+        chirp = soundbank.."/birds/chirp_"..soundname,
+        flyin = "dontstarve/birds/flyin",
+        death = soundbank.."/birds/death_"..soundname,
+    }
+
     local function fn()
         local inst = CreateEntity()
 
@@ -247,12 +255,11 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
 
         --Initialize physics
         inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-        inst.Physics:ClearCollisionMask()
         if water_bank ~= nil then
             -- Birds that float can pass through LIMITS walls, i.e. when hopping.
-            inst.Physics:CollidesWith(COLLISION.GROUND)
+			inst.Physics:SetCollisionMask(COLLISION.GROUND)
         else
-            inst.Physics:CollidesWith(COLLISION.WORLD)
+			inst.Physics:SetCollisionMask(COLLISION.WORLD)
         end
         inst.Physics:SetMass(1)
         inst.Physics:SetSphere(1)
@@ -288,12 +295,7 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
             return inst
         end
 
-        inst.sounds =
-        {
-            takeoff = soundbank.."/birds/takeoff_"..soundname,
-            chirp = soundbank.."/birds/chirp_"..soundname,
-            flyin = "dontstarve/birds/flyin",
-        }
+        inst.sounds = BIRD_SOUNDS
 
         inst.trappedbuild = name.."_build"
 

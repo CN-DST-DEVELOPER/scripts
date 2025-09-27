@@ -121,6 +121,7 @@ local function fn()
     inst.AnimState:PlayAnimation("mutated_hound_reviving_pre")
 
 	inst:AddTag("blocker")
+	inst:AddTag("deadcreature")
 
     inst:SetPhysicsRadiusOverride(.5)
 
@@ -132,6 +133,9 @@ local function fn()
 
     inst:AddComponent("inspectable")
 	inst.components.inspectable.getstatus = getstatus
+
+	inst:AddComponent("sanityaura")
+    inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
 
 	inst:AddComponent("entitytracker")
 

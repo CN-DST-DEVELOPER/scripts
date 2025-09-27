@@ -105,7 +105,7 @@ function PlayerStatusScreen:OnControl(control, down)
         return true
     elseif not down then
         if control == CONTROL_SHOW_PLAYER_STATUS
-			or (control == CONTROL_TOGGLE_PLAYER_STATUS and not TheInput:IsControlPressed(CONTROL_SHOW_PLAYER_STATUS))
+			--or (control == CONTROL_TOGGLE_PLAYER_STATUS and not TheInput:IsControlPressed(CONTROL_SHOW_PLAYER_STATUS)) DEPRECATED
 			or (self.click_to_close and (control == CONTROL_PAUSE or control == CONTROL_CANCEL))
              then
             self:Close()

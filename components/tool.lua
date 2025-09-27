@@ -21,7 +21,7 @@ end)
 function Tool:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("percentusedchange", PercentChanged)
     self.inst:RemoveTag("tool")
-    for k, v in pairs(self.actions) do
+    for k in pairs(self.actions) do
         self.inst:RemoveTag(k.id.."_tool")
     end
 end

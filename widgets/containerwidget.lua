@@ -27,6 +27,7 @@ function ContainerWidget:Open(container, doer)
 
     local widget = container.replica.container:GetWidget()
     local isinfinitestacksize = container.replica.container:IsInfiniteStackSize()
+    local isreadonlycontainer = container.replica.container:IsReadOnlyContainer()
 
     if widget.bgatlas ~= nil and widget.bgimage ~= nil then
         self.bgimage:SetTexture(widget.bgatlas, widget.bgimage)
@@ -87,12 +88,13 @@ function ContainerWidget:Open(container, doer)
             end
         end
 
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() or isreadonlycontainer then
             self.button:Hide()
         end
 
         self.button.inst:ListenForEvent("continuefrompause", function()
-            if TheInput:ControllerAttached() then
+            local isreadonlycontainer = container and container:IsValid() and container.replica.container and container.replica.container:IsReadOnlyContainer() or false
+            if TheInput:ControllerAttached() or isreadonlycontainer then
                 self.button:Hide()
             else
                 self.button:Show()
@@ -132,6 +134,17 @@ function ContainerWidget:Open(container, doer)
             self.owner,
             container.replica.container
         )
+		if widget.slotscale then
+			local newscale = slot.base_scale * widget.slotscale
+			if widget.slothighlightscale == nil then
+				slot.highlight_scale = newscale + slot.highlight_scale - slot.base_scale
+			end
+			slot.base_scale = newscale
+			slot:SetScale(newscale)
+		end
+		if widget.slothighlightscale then
+			slot.highlight_scale = widget.slothighlightscale
+		end
         self.inv[i] = self:AddChild(slot)
 
         slot:SetPosition(v)
@@ -157,17 +170,36 @@ function ContainerWidget:Open(container, doer)
     self:Refresh()
 end
 
+local READONLYCONTAINER_BRIGHTNESS_SCALE = 0.6
+
 function ContainerWidget:Refresh()
     local items = self.container.replica.container:GetItems()
+    local isreadonlycontainer = self.container.replica.container:IsReadOnlyContainer()
+    if self.button then
+        if TheInput:ControllerAttached() or isreadonlycontainer then
+            self.button:Hide()
+        else
+            self.button:Show()
+        end
+    end
+    if isreadonlycontainer then
+        self.bganim:GetAnimState():SetMultColour(READONLYCONTAINER_BRIGHTNESS_SCALE, READONLYCONTAINER_BRIGHTNESS_SCALE, READONLYCONTAINER_BRIGHTNESS_SCALE, 1)
+    else
+        self.bganim:GetAnimState():SetMultColour(1, 1, 1, 1)
+    end
     for k, v in pairs(self.inv) do
+        v:SetReadOnlyVisuals(isreadonlycontainer)
         local item = items[k]
         if item == nil then
             if v.tile ~= nil then
                 v:SetTile(nil)
             end
         elseif v.tile == nil or v.tile.item ~= item then
-            v:SetTile(ItemTile(item))
+            local tile = ItemTile(item)
+            tile.readonlycontainer = isreadonlycontainer
+            v:SetTile(tile)
         else
+            v.tile.readonlycontainer = isreadonlycontainer
             v.tile:Refresh()
         end
     end
@@ -189,13 +221,26 @@ end
 function ContainerWidget:OnItemGet(data)
     if data.slot and self.inv[data.slot] then
         local tile = ItemTile(data.item)
+        local isreadonlycontainer = self.container.replica.container:IsReadOnlyContainer()
+        tile.readonlycontainer = isreadonlycontainer
         self.inv[data.slot]:SetTile(tile)
         tile:Hide()
         tile.ignore_stacksize_anim = data.ignore_stacksize_anim
 
         if data.src_pos ~= nil then
             local dest_pos = self.inv[data.slot]:GetWorldPosition()
-            local im = Image(data.item.replica.inventoryitem:GetAtlas(), data.item.replica.inventoryitem:GetImage())
+			local im = ItemTile.sSetImageFromItem(Image(), data.item)
+			if GetGameModeProperty("icons_use_cc") then
+				im:SetEffect("shaders/ui_cc.ksh")
+			end
+			if data.item.inv_image_bg then
+				local bg = Image(data.item.inv_image_bg.atlas, data.item.inv_image_bg.image)
+				bg:AddChild(im)
+				im = bg
+				if GetGameModeProperty("icons_use_cc") then
+					im:SetEffect("shaders/ui_cc.ksh")
+				end
+			end
             im:MoveTo(Vector3(TheSim:GetScreenPos(data.src_pos:Get())), dest_pos, .3, function() tile:Show() im:Kill() end)
         else
             tile:Show()

@@ -85,6 +85,13 @@ function self:IsInMoonstorm(ent)
         and _active_moonstorm_nodes[ent.components.areaaware.current_area]
 end
 
+function self:IsXZInMoonstorm(x, z)
+    local node_index = TheWorld.Map:GetNodeIdAtPoint(x, 0, z)
+    return node_index ~= nil
+        and _active_moonstorm_nodes[node_index]
+        or false
+end
+
 function self:IsPointInMoonstorm(pt)
 	local node_index = TheWorld.Map:GetNodeIdAtPoint(pt.x, 0, pt.z)
     return node_index ~= nil

@@ -54,6 +54,8 @@ local AMBIENT_SOUNDS =
     [WORLD_TILES.FUNGUSGREEN] = { sound = "dontstarve/AMB/caves/fungus_forest" },
 
     [WORLD_TILES.ARCHIVE] = {sound = "grotto/amb/archive"},
+	[WORLD_TILES.VAULT] = {sound = "grotto/amb/archive"},
+	[WORLD_TILES.VAULT_CLEAN] = {sound = "grotto/amb/archive"},
     [WORLD_TILES.FUNGUSMOON] = {sound = "grotto/amb/grotto"},
 
     [WORLD_TILES.RIFT_MOON] = {sound = "rifts/ambience/rift_tile_amb", rainsound = "dontstarve_DLC001/AMB/chess_summer"},
@@ -69,6 +71,8 @@ local AMBIENT_SOUNDS =
     [WORLD_TILES.TILES_GLOW] = { sound = "dontstarve/AMB/caves/civ_ruins" },
     [WORLD_TILES.TRIM] = { sound = "dontstarve/AMB/caves/ruins" },
     [WORLD_TILES.TRIM_GLOW] = { sound = "dontstarve/AMB/caves/ruins" },
+
+    [WORLD_TILES.VENT] = { sound = "dontstarve/AMB/caves/main" },
 
 	[WORLD_TILES.OCEAN_COASTAL] =       { sound = "hookline_2/amb/sea_shore", rainsound = "hookline_2/amb/sea_shore" },
 	[WORLD_TILES.OCEAN_SWELL] =         { sound = "turnoftides/together_amb/ocean/shallow", rainsound = "turnoftides/together_amb/ocean/shallow_rain" },
@@ -111,6 +115,13 @@ local DAYTIME_PARAMS =
     night = 2,
 }
 
+local NO_BIRDS_DAYTIME_PARAMS = 
+{
+    day = 0.5,
+    dusk = 1.6,
+    night = 2.5,
+}
+
 --------------------------------------------------------------------------
 --[[ Member variables ]]
 --------------------------------------------------------------------------
@@ -135,12 +146,31 @@ local _wavesvolume = 0
 local _ambientvolume = 1
 local _tileoverrides = {}
 
+-- The param to use when we want birdless ambience
+local _nobirddaytimeparam = 0.5
+local SUPPORTS_NO_BIRD_AMBIENCE = {
+    ["dontstarve/AMB/meadow"] = true,
+    ["dontstarve/AMB/forest"] = true,
+    --TODO check in with Andy for other supported birdless ambiences
+}
+
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
 --------------------------------------------------------------------------
 
 local function SortByCount(a, b)
     return a.count > b.count
+end
+
+local function GetDayTimeParam(sound)
+    local lunarhailbirdsoundmanager = inst.net and inst.net.components.lunarhailbirdsoundmanager
+    return 
+        (
+            lunarhailbirdsoundmanager
+            and lunarhailbirdsoundmanager:GetIsBirdlessAmbience()
+            and SUPPORTS_NO_BIRD_AMBIENCE[sound]
+        ) and _nobirddaytimeparam
+        or _daytimeparam
 end
 
 --------------------------------------------------------------------------
@@ -156,7 +186,7 @@ end
 
 local function OnWeatherTick(src, data)
     -- We don't want to play rain ambients if it's just trickling down
-    if _heavyrainmix  ~= (data.precipitationrate > 0.5) then
+    if _heavyrainmix ~= (data.precipitationrate > 0.5) then
         _heavyrainmix = not _heavyrainmix
         _lastplayerpos = nil
     end
@@ -166,13 +196,22 @@ local function OnOverrideAmbientSound(src, data)
     _tileoverrides[data.tile] = data.override
 end
 
-local function OnSetAmbientSoundDaytime(src, daytime)
+local function OnSetAmbientSoundDaytime(src, daytime, nobirddaytime)
+    local dirty = false
     if _daytimeparam ~= daytime and daytime ~= nil then
         _daytimeparam = daytime
+        dirty = true
+    end
 
+    if _nobirddaytimeparam ~= nobirddaytime and nobirddaytime ~= nil then
+        _nobirddaytimeparam = nobirddaytime
+        dirty = true
+    end
+
+    if dirty then
         for k, v in pairs(_soundvolumes) do
             if v > 0 then
-                inst.SoundEmitter:SetParameter(k, "daytime", daytime)
+                inst.SoundEmitter:SetParameter(k, "daytime", GetDayTimeParam(k))
             end
         end
     end
@@ -180,7 +219,15 @@ end
 
 local function OnPhaseChanged(src, phase)
     _lightattenuation = phase ~= "day"
-    OnSetAmbientSoundDaytime(src, DAYTIME_PARAMS[phase])
+    OnSetAmbientSoundDaytime(src, DAYTIME_PARAMS[phase], NO_BIRDS_DAYTIME_PARAMS[phase])
+end
+
+local function OnUpdateAmbientSoundParams()
+    for k, v in pairs(_soundvolumes) do
+        if v > 0 then
+            inst.SoundEmitter:SetParameter(k, "daytime", GetDayTimeParam(k))
+        end
+    end
 end
 
 local function OnPhaseChange(src, phase)
@@ -220,6 +267,7 @@ inst:ListenForEvent("setambientsounddaytime", OnSetAmbientSoundDaytime)
 inst:ListenForEvent("seasontick", OnSeasonTick)
 inst:ListenForEvent("weathertick", OnWeatherTick)
 inst:ListenForEvent("precipitationchanged", OnPrecipitationChanged)
+inst:ListenForEvent("updateambientsoundparams", OnUpdateAmbientSoundParams)
 
 inst:WatchWorldState("phase", OnPhaseChange)
 
@@ -390,7 +438,7 @@ function self:OnUpdate(dt)
             local newvol = v / totalsoundcount
             if oldvol == nil then
                 inst.SoundEmitter:PlaySound(k, k)
-                inst.SoundEmitter:SetParameter(k, "daytime", _daytimeparam)
+                inst.SoundEmitter:SetParameter(k, "daytime", GetDayTimeParam(k))
                 inst.SoundEmitter:SetVolume(k, newvol * ambientvolume)
             elseif oldvol ~= newvol then
                 inst.SoundEmitter:SetVolume(k, newvol * ambientvolume)
@@ -435,10 +483,10 @@ function self:GetDebugString()
     local str = {}
 
     table.insert(str, string.format("AMBIENT SOUNDS: raining:%s heavy:%s season:%s", tostring(_rainmix), tostring(_heavyrainmix), _seasonmix))
-    table.insert(str, string.format("    atten=%2.2f, day=%2.2f, waves=%2.2f", _ambientvolume, _daytimeparam, _wavesvolume))
+    table.insert(str, string.format("    atten=%2.2f, day=%2.2f, nobirdday=%2.2f, waves=%2.2f", _ambientvolume, _daytimeparam, _nobirddaytimeparam, _wavesvolume))
 
     for k, v in pairs(_soundvolumes) do
-        table.insert(str, string.format("\t%s = %2.2f", k, v))
+        table.insert(str, string.format("\t%s = %2.2f, %2.2f", k, v, GetDayTimeParam(k)))
     end
 
     return table.concat(str, "\n")

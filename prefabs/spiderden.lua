@@ -715,8 +715,6 @@ local function MakeSpiderDenFn(den_level)
         inst:AddTag("hive")
 		inst:AddTag("NPC_workable")
 
-        MakeSnowCoveredPristine(inst)
-
         inst:SetPrefabName("spiderden")
 
         inst.scrapbook_anim = "cocoon_large"
@@ -810,8 +808,6 @@ local function MakeSpiderDenFn(den_level)
         inst:AddComponent("hauntable")
         inst.components.hauntable.cooldown = TUNING.HAUNT_COOLDOWN_MEDIUM
         inst.components.hauntable:SetOnHauntFn(OnHaunt)
-
-        MakeSnowCovered(inst)
 
         inst:AddComponent("shaveable")
         inst.components.shaveable:SetPrize("silk", 1)

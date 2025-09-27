@@ -26,7 +26,6 @@ local NutrientsOver =  Class(Widget, function(self, owner)
 end)
 
 function NutrientsOver:ToggleNutrients(show)
-    print(show, self.shown)
     if show and not self.shown then
         self:Show()
     elseif not show and self.shown then

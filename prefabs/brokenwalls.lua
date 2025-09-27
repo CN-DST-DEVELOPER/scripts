@@ -57,8 +57,6 @@ function MakeWallType(data)
 			inst.AnimState:SetSymbolLightOverride("wall_segment_red", 1)
 		end
 
-        MakeSnowCoveredPristine(inst)
-
         --Sneak these into pristine state for optimization
         inst:AddTag("_named")
 
@@ -84,8 +82,6 @@ function MakeWallType(data)
         inst.components.workable:SetWorkLeft(3)
         inst.components.workable:SetOnFinishCallback(onhammered)
         inst.components.workable:SetOnWorkCallback(onhit)
-
-        MakeSnowCovered(inst)
 
         return inst
     end

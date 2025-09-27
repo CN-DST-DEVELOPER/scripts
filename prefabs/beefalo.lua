@@ -523,7 +523,6 @@ local function OnRefuseItem(inst, giver, item)
 end
 
 local function OnDomesticated(inst, data)
-    inst.components.rideable:Buck()
     inst.domesticationPending = true
 end
 
@@ -671,8 +670,7 @@ local function OnDeath(inst, data)
         inst.components.beard:EnableGrowth(false)
         inst.components.hunger:Pause()
 
-        inst.components.follower.noleashing = true
-        inst.components.follower:StopLeashing()
+        inst.components.follower:DisableLeashing()
 
         inst:AddTag("deadcreature")
         inst:AddTag("give_dolongaction")
@@ -713,8 +711,7 @@ function fns.OnRevived(inst, revive)
     -- inst.components.beard:EnableGrowth(true)
     -- inst.components.hunger:Resume()
 
-    -- inst.components.follower.noleashing = false
-    -- inst.components.follower:StartLeashing()
+    -- inst.components.follower:EnableLeashing()
 
     -- inst:RemoveTag("deadcreature")
 end
@@ -798,6 +795,9 @@ local function OnRiderChanged(inst, data)
         end
         inst._bucktask = inst:DoTaskInTime(CalculateBuckDelay(inst), OnBuckTime)
         inst.components.knownlocations:RememberLocation("loiteranchor", inst:GetPosition())
+        if inst.sg ~= nil then
+            inst.sg:GoToState("idle")
+        end
     elseif inst.components.health:IsDead() then
         if inst.sg.currentstate.name ~= "death" then
             inst.sg:GoToState("death")

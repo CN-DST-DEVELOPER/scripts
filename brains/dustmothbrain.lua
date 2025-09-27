@@ -110,6 +110,7 @@ function DustMothBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function() return self.inst.components.inventory:GetItemInSlot(1) == nil end, "RunAwayAll",
             RunAway(self.inst, "scarytoprey", SEE_THREAT_DIST, STOP_RUN_DIST)),
         RunAway(self.inst, HUNTERPARAMS_NOPLAYER, SEE_THREAT_DIST, STOP_RUN_DIST),

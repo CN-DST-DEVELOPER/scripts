@@ -81,7 +81,21 @@ local SkinSelector = Class(Widget, function(self, recipe, owner, skin_name)
 	self.spinner.text:Hide()
     self.spinner.background:ScaleToSize(spinner_width + 2, spinner_height)
     self.spinner.background:SetPosition(0, 6)
-	self.spinner:AddControllerHints(CONTROL_INVENTORY_USEONSCENE, CONTROL_INVENTORY_USEONSELF, true)
+	self.spinner:AddControllerHints(VIRTUAL_CONTROL_INV_ACTION_LEFT, VIRTUAL_CONTROL_INV_ACTION_RIGHT, true)
+
+	self.spinner.virtual_hints_enabled_fn = function()
+		if self.spinner.focus or self.focus then
+			return true
+		end
+		local root = self:GetParent()
+		local crafting_details = root and root:GetParent() or nil
+		local crafting_hud = crafting_details and crafting_details.crafting_hud or nil
+		if crafting_hud and crafting_hud.pinbar.focus then
+			local pinslot = crafting_hud.pinbar:GetFocusSlot()
+			return pinslot ~= nil and self.recipe ~= nil and pinslot.recipe_name == self.recipe.name
+		end
+		return true
+	end
 
 	self.spinner:SetOnChangedFn(function()
 		local which = self.spinner:GetSelectedIndex()
@@ -150,6 +164,10 @@ end
 
 function SkinSelector:SelectSkin(skin_name)
 	self.spinner:SetSelectedIndex(skin_name == nil and 1 or self:GetIndexForSkin(skin_name) or 1)
+end
+
+function SkinSelector:HasSkins()
+	return #self.skins_options > 1
 end
 
 function SkinSelector:GetSkinsList()
@@ -223,9 +241,6 @@ function SkinSelector:OnControl(control, down)
 	if self.spinner:OnControl(control, down) then
 		return true
 	end
-
-
 end
-
 
 return SkinSelector

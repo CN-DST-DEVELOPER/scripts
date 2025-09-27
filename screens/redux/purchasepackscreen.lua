@@ -441,7 +441,7 @@ local PurchasePackPopup = Class(Screen, function(self, iap_def, screen_self)
 				{
 					{text=STRINGS.UI.PURCHASEPACKSCREEN.OK, cb = function()
 							TheFrontEnd:PopScreen()
-							VisitURL("http://store.steampowered.com/app/"..tostring(self.button_dlc.steam_dlc_id))
+							VisitURL("https://store.steampowered.com/app/"..tostring(self.button_dlc.steam_dlc_id))
 						end
 					},
 				}

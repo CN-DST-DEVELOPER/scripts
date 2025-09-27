@@ -146,10 +146,11 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
             inst.Physics:SetFriction(0)
             inst.Physics:SetDamping(5)
             inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-            inst.Physics:ClearCollisionMask()
-            inst.Physics:CollidesWith((TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND) or COLLISION.WORLD)
-            inst.Physics:CollidesWith(COLLISION.FLYERS)
-            inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+			inst.Physics:SetCollisionMask(
+				TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND or COLLISION.WORLD,
+				COLLISION.FLYERS,
+				COLLISION.CHARACTERS
+			)
             inst.Physics:SetCapsule(.5, 1)
 
             inst:AddTag("flying")

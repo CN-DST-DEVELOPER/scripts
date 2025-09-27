@@ -51,6 +51,12 @@ local TimeMultipliers = {
     ["palmconetree"] = function()
         return TUNING.PALMCONETREE_REGROWTH_TIME_MULT * ((TheWorld.state.iswinter and 0) or 1)
     end,
+    ["tree_rock1"] = function()
+        return TUNING.TREE_ROCK_REGROWTH_TIME_MULT
+    end,
+    ["tree_rock2"] = function()
+        return TUNING.TREE_ROCK_REGROWTH_TIME_MULT
+    end,
 }
 
 local function DoUpdate()
@@ -136,6 +142,8 @@ local PlantRegrowth = Class(function(self, inst)
     self.nextregrowth = 0
 
     self.area = nil -- defer this until we try regrowing, to spread out the cost
+
+    -- self.skip_plant_check = nil
 end)
 
 PlantRegrowth.TimeMultipliers = TimeMultipliers
@@ -160,6 +168,10 @@ function PlantRegrowth:SetSearchTag(tag)
     self.searchtag = tag
 end
 
+function PlantRegrowth:SetSkipCanPlantCheck(bool)
+    self.skip_plant_check = bool
+end
+
 function PlantRegrowth:OnRemoveFromEntity()
     UnregisterUpdate(self)
 end
@@ -169,7 +181,7 @@ function PlantRegrowth:OnRemoveEntity()
 end
 
 local SPAWN_BLOCKER_TAGS = { "structure", "wall" }
-local function GetSpawnPoint(from_pt, radius, prefab)
+local function GetSpawnPoint(from_pt, radius, prefab, skip_plant_check)
     local map = TheWorld.Map
     if map == nil then
         return
@@ -181,7 +193,7 @@ local function GetSpawnPoint(from_pt, radius, prefab)
     for _ = 1, steps do
         local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
         local try_pos = from_pt + offset
-        if map:CanPlantAtPoint(try_pos:Get())
+        if (skip_plant_check or map:CanPlantAtPoint(try_pos:Get()))
             and map:CanPlacePrefabFilteredAtPoint(try_pos.x, try_pos.y, try_pos.z, prefab)
             and not (RoadManager ~= nil and RoadManager:IsOnRoad(try_pos.x, 0, try_pos.z))
             and #TheSim:FindEntities(try_pos.x, try_pos.y, try_pos.z, 3) <= 0
@@ -214,7 +226,7 @@ function PlantRegrowth:TrySpawnNearby()
         end
     end
 
-    local spawnpoint = GetSpawnPoint(Point(x,y,z), self.fiveradius, self.product or self.inst.prefab)
+    local spawnpoint = GetSpawnPoint(Point(x,y,z), self.fiveradius, self.product or self.inst.prefab, self.skip_plant_check)
     if spawnpoint ~= nil then
         local targetradius = GetFiveRadius(spawnpoint.x, spawnpoint.z, self.inst.prefab)
         if targetradius then

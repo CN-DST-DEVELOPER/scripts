@@ -270,6 +270,14 @@ function ShakeAllCameras(mode, duration, speed, scale, source_or_pt, maxDist)
     end
 end
 
+function ShakeAllCamerasWithFilter(filterfn, mode, duration, speed, scale, source_or_pt, maxDist)
+    for i, v in ipairs(AllPlayers) do
+        if filterfn(v) then
+            v:ShakeCamera(mode, duration, speed, scale, source_or_pt, maxDist)
+        end
+    end
+end
+
 function ShakeAllCamerasOnPlatform(mode, duration, speed, scale, platform)
     local walkableplatform = platform and platform.components.walkableplatform or nil
 	if walkableplatform == nil then return end
@@ -325,6 +333,7 @@ function FindWalkableOffset(position, start_angle, radius, attempts, check_los, 
                 local y = position.y + offset.y
                 local z = position.z + offset.z
                 return (TheWorld.Map:IsAboveGroundAtPoint(x, y, z, allow_water) or (allow_boats and TheWorld.Map:GetPlatformAtPoint(x,z) ~= nil))
+                    and (IsTeleportingPermittedFromPointToPoint(position.x, position.y, position.z, x, y, z))
                     and (not check_los or
                         TheWorld.Pathfinder:IsClear(
                             position.x, position.y, position.z,
@@ -398,7 +407,9 @@ local PICKUP_CANT_TAGS = {
     -- Either
     "donotautopick",
 }
-local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker, extra_filter)
+local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker, extra_filter, inventoryoverride)
+    local inventory = inventoryoverride or owner.components.inventory
+
     if extra_filter ~= nil and not extra_filter(worker, v, owner) then
         return false
     end
@@ -443,7 +454,7 @@ local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, po
     if v.components.trap ~= nil and not (v.components.trap:IsSprung() and v.components.trap:HasLoot()) then -- Only interact with traps that have something in it to take.
         return false
     end
-    if not ispickable and owner.components.inventory:CanAcceptCount(v, 1) <= 0 then -- TODO(JBK): This is not correct for traps nor pickables but they do not have real prefabs made yet to check against.
+    if not ispickable and inventory:CanAcceptCount(v, 1) <= 0 then -- TODO(JBK): This is not correct for traps nor pickables but they do not have real prefabs made yet to check against.
         return false
     end
     if ba ~= nil and ba.target == v and (ba.action == ACTIONS.PICKUP or ba.action == ACTIONS.CHECKTRAP or ba.action == ACTIONS.PICK) then
@@ -452,9 +463,9 @@ local function FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, po
 
     return v, ispickable
 end
--- This function looks for an item on the ground that could be ACTIONS.PICKUP (or ACTIONS.CHECKTRAP if a trap) by the owner and subsequently put into the owner's inventory.
-function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, worker, extra_filter)
-    if owner == nil or owner.components.inventory == nil then
+-- This function looks for an item on the ground that could be ACTIONS.PICKUP (or ACTIONS.CHECKTRAP if a trap) by the owner and subsequently put into the owner's inventory or inventoryoverride, if specified.
+function FindPickupableItem(owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, worker, extra_filter, inventoryoverride)
+    if owner == nil or (inventoryoverride or owner.components.inventory) == nil then
         return nil
     end
     local ba = owner:GetBufferedAction()
@@ -472,7 +483,7 @@ function FindPickupableItem(owner, radius, furthestfirst, positionoverride, igno
     for i = istart, iend, idiff do
         local v = ents[i]
         local ispickable = v:HasTag("pickable")
-        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker, extra_filter) then
+        if FindPickupableItem_filter(v, ba, owner, radius, furthestfirst, positionoverride, ignorethese, onlytheseprefabs, allowpickables, ispickable, worker, extra_filter, inventoryoverride) then
             return v, ispickable
         end
     end
@@ -545,11 +556,9 @@ end
 
 function TemporarilyRemovePhysics(obj, time)
     local origmask = obj.Physics:GetCollisionMask()
-    obj.Physics:ClearCollisionMask()
-    obj.Physics:CollidesWith(COLLISION.WORLD)
+	obj.Physics:SetCollisionMask(COLLISION.WORLD)
     obj:DoTaskInTime(time, function(obj)
-        obj.Physics:ClearCollisionMask()
-        obj.Physics:SetCollisionMask(origmask)
+		obj.Physics:SetCollisionMask(origmask)
     end)
 end
 
@@ -829,6 +838,48 @@ function GetSkilltreeIconAtlas(imagename)
 	end
 
 	return atlas
+end
+
+----------------------------------------------------------------------------------------------
+-- NOTES(JBK): These are used to pool together the global map icons for use in interactions with them as a fast access lookup to iterate over.
+GlobalMapIconsDB = {
+    insts = {},
+    prefabs = {},
+}
+function UnregisterGlobalMapIcon(inst)
+    if GlobalMapIconsDB.insts[inst] == nil then
+        print("UnregisterGlobalMapIcon called for a missing inst", inst)
+        print(_TRACEBACK())
+        return
+    end
+    GlobalMapIconsDB.insts[inst] = nil
+    if GlobalMapIconsDB.prefabs[inst.prefab] then
+        GlobalMapIconsDB.prefabs[inst.prefab][inst] = nil
+        if next(GlobalMapIconsDB.prefabs[inst.prefab]) == nil then
+            GlobalMapIconsDB.prefabs[inst.prefab] = nil
+        end
+    end
+    inst:RemoveEventCallback("onremove", UnregisterGlobalMapIcon)
+end
+function RegisterGlobalMapIcon(inst)
+    if GlobalMapIconsDB.insts[inst] ~= nil then
+        print("RegisterGlobalMapIcon called for a second time for inst", inst)
+        print(_TRACEBACK())
+        return
+    end
+    GlobalMapIconsDB.insts[inst] = true
+    GlobalMapIconsDB.prefabs[inst.prefab] = GlobalMapIconsDB.prefabs[inst.prefab] or {}
+    GlobalMapIconsDB.prefabs[inst.prefab][inst] = true
+    inst:ListenForEvent("onremove", UnregisterGlobalMapIcon)
+end
+
+----------------------------------------------------------------------------------------------
+
+function DeclareLimitedCraftingRecipe(recipename)
+    assert(CRAFTINGSTATION_LIMITED_RECIPES_LOOKUPS[recipename] == nil, "Already declared limited crafting recipe: " .. recipename)
+    CRAFTINGSTATION_LIMITED_RECIPES_COUNT = CRAFTINGSTATION_LIMITED_RECIPES_COUNT + 1
+    CRAFTINGSTATION_LIMITED_RECIPES[CRAFTINGSTATION_LIMITED_RECIPES_COUNT] = recipename -- Used for network serialization order as an enum value [1, CRAFTINGSTATION_LIMITED_RECIPES_COUNT].
+    CRAFTINGSTATION_LIMITED_RECIPES_LOOKUPS[recipename] = CRAFTINGSTATION_LIMITED_RECIPES_COUNT
 end
 
 ----------------------------------------------------------------------------------------------

@@ -32,6 +32,7 @@ function FriendlyFruitFlyBrain:OnStart()
     PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         FindFarmPlant(self.inst, ACTIONS.INTERACT_WITH, true, GetFollowPos),
         Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),

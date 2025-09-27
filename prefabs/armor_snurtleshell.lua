@@ -89,6 +89,7 @@ local function fn()
     inst.AnimState:PlayAnimation("anim")
 
     inst:AddTag("shell")
+	inst:AddTag("hardarmor")
 
     inst.foleysound = "dontstarve/movement/foley/shellarmour"
 

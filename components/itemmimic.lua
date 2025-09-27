@@ -1,6 +1,5 @@
 local function on_equipped(inst, data)
     local self = inst.components.itemmimic
-    self.fail_as_invobject = true
 
     local owner = data.owner
     if not owner then return end
@@ -21,7 +20,6 @@ end
 
 local function on_unequipped(inst, data)
     local self = inst.components.itemmimic
-    self.fail_as_invobject = nil
 
     local owner = data.owner
     if not owner then return end
@@ -93,7 +91,6 @@ local ACCEPTABLE_ACTIONS =
 
 local ItemMimic = Class(function(self, inst)
     self.inst = inst
-    --self.fail_as_invobject = nil
 
     -- Machine reactions (to cover "free" light sources, mostly)
     self._on_interacted_with = function(inst2)

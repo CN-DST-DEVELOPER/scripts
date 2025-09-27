@@ -56,6 +56,8 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 
 	local cell_size_rad = CalcCellSize(#dataset)
 
+	self.numspacers = 0
+
 	for i, v in ipairs(dataset) do
 		v.pos_dir = Vector3(math.sin((i-1) * cell_size_rad), math.cos((i-1) * cell_size_rad), 0)  -- Note: these are rotated 90 degrees so that item 1 is at the top, and the items are clockwise
 		v.pos		= v.pos_dir * radius
@@ -108,13 +110,17 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 					self:Close()
 					self:Open(v.nestedwheel.name)
 				elseif v.execute then
+					if v.execute() then
+						return --callback returned true: halt operation
+					end
 					self:OnExecute()
-					v.execute()
 				end
 			end
 		
 		w.ondown = function()
-				if self.iscontroller then
+				if v.ondown and v.ondown() then
+					return --callback returned true: halt operation
+				elseif self.iscontroller then
 					self:StopUpdating()
 					for j, k in ipairs(dataset) do
 						if i ~= j then
@@ -126,6 +132,9 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 		
 		w.ongainfocus = function()
 				if w:IsEnabled() and not (w:IsSelected() or w:IsDisabledState()) then
+					if v.onfocus and v.onfocus() then
+						return --callback returned true: halt operation
+					end
 					w:MoveTo(v.pos, v.focus_pos, 0.1)
 					self.selected_label:SetString(v.label)
 					self.selected_label._currentwidget = w
@@ -135,9 +144,6 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 					local newfocuspos = v.focus_pos + offset
 
 					self.selected_label:MoveTo(newpos, newfocuspos, 0.1)
-					if v.onfocus ~= nil then
-						v.onfocus()
-					end
 				end
 			end
 			
@@ -156,6 +162,14 @@ function Wheel:SetItems( dataset, radius, focus_radius, dataset_name )
 				
 		v.widget = w
 		v.widget:Hide()
+
+		if v.postinit then
+			v.postinit(w)
+		end
+
+		if v.spacer then
+			self.numspacers = self.numspacers + 1
+		end
 	end
 
 	self.selected_label:MoveToFront()
@@ -307,30 +321,52 @@ function Wheel:OnUpdate(dt)
 		ydir = ydir + TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
 	end
 	if not self.ignorerightstick then
-		xdir = xdir + TheInput:GetAnalogControlValue(CONTROL_INVENTORY_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_LEFT)
-		ydir = ydir + TheInput:GetAnalogControlValue(CONTROL_INVENTORY_UP) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_DOWN)
+		--V2C: wheel ignores CONTROL_CAM_AND_INV_MODIFIER by not using the virtual controls
+		xdir = xdir + TheInput:GetAnalogControlValue(CONTROL_PRESET_RSTICK_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_PRESET_RSTICK_LEFT)
+		ydir = ydir + TheInput:GetAnalogControlValue(CONTROL_PRESET_RSTICK_UP) - TheInput:GetAnalogControlValue(CONTROL_PRESET_RSTICK_DOWN)
 	end
-    local xmag = xdir * xdir + ydir * ydir
+	local magsq = math.min(1, xdir * xdir + ydir * ydir)
     local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
-	if xmag < deadzone * deadzone then
+	if magsq < deadzone * deadzone then
+		self.lastmagsq = nil
+		return
+	elseif self.lastxmagsq and magsq < self.lastmagsq then
+		self.lastmagsq = magsq
 		return
 	end
-	xmag = math.sqrt(xmag)
-	xdir = xdir / xmag
-	ydir = ydir / xmag
-	
-	local cell_size_rad = CalcCellSize(self.activeitemscount)
+	self.lastmagsq = magsq
+
+	--V2C: quick implementation of "spacers" only supports:
+	--     -same (odd) number of spacers on top and bottom
+	--     -they are centered and mirrored, basically splitting the wheel into L/R halves
+	assert(self.numspacers <= 0 or (
+		bit.band(self.numspacers, 3) == 2 and
+		bit.band(self.activeitemscount, 1) == 0
+	))
+	local non_spacer_count = self.activeitemscount - self.numspacers
+	local cell_size_rad = CalcCellSize(non_spacer_count)
 
 	-- intentionally inverted to make life easier
- 	local angle =  math.atan2( xdir, ydir ) + cell_size_rad * 0.5
- 	local base_angle = angle
+	local angle = math.atan2(xdir, ydir)
+	if self.numspacers <= 0 then
+		angle = angle + cell_size_rad * 0.5
+	end
 	if angle < 0 then
-		angle = (2 * math.pi) + angle 
+		angle = TWOPI + angle 
 	end
 
 	local cell_index =  math.floor(angle / cell_size_rad) + 1
+	if self.numspacers > 0 then
+		local spaceroffset = math.ceil(self.numspacers / 4)
+		local halfcount = non_spacer_count / 2
+		if cell_index <= halfcount then
+			cell_index = cell_index + spaceroffset
+		else
+			cell_index = cell_index - halfcount + self.activeitemscount / 2 + spaceroffset
+		end
+	end
 
-	if self.cur_cell_index ~= cell_index then
+	if self.cur_cell_index ~= cell_index and not (cell_index <= self.activeitemscount and self.activeitems[cell_index].noselect) then
 		if self.cur_cell_index > 0 then
 			self.activeitems[self.cur_cell_index].widget:ClearFocus()
 			self.cur_cell_index = 0

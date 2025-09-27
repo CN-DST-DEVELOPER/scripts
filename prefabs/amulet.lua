@@ -54,7 +54,13 @@ end
 
 ---BLUE
 local function onequip_blue(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "blueamulet")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "torso_amulets")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "blueamulet")
+    end
 
     inst.freezefn = function(attacked, data)
         if data and data.attacker and data.attacker.components.freezable then
@@ -75,6 +81,11 @@ end
 local function onunequip_blue(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
 
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
+
     inst:RemoveEventCallback("attacked", inst.freezefn, owner)
 
     if inst.components.fueled then
@@ -92,7 +103,13 @@ end
 
 ---PURPLE
 local function onequip_purple(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "purpleamulet")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "torso_amulets")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "purpleamulet")
+    end
     if inst.components.fueled then
         inst.components.fueled:StartConsuming()
     end
@@ -103,6 +120,10 @@ end
 
 local function onunequip_purple(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
     if inst.components.fueled then
         inst.components.fueled:StopConsuming()
     end
@@ -123,7 +144,13 @@ end
 ---GREEN
 
 local function onequip_green(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "greenamulet")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "torso_amulets")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "greenamulet")
+    end
     if owner.components.builder ~= nil then
         owner.components.builder.ingredientmod = TUNING.GREENAMULET_INGREDIENTMOD
     end
@@ -140,6 +167,10 @@ end
 
 local function onunequip_green(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
     if owner.components.builder ~= nil then
         owner.components.builder.ingredientmod = 1
     end
@@ -189,12 +220,22 @@ local function pickup(inst, owner)
 end
 
 local function onequip_orange(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "orangeamulet")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "torso_amulets")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "orangeamulet")
+    end
     inst.task = inst:DoPeriodicTask(TUNING.ORANGEAMULET_ICD, pickup, nil, owner)
 end
 
 local function onunequip_orange(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
     if inst.task ~= nil then
         inst.task:Cancel()
         inst.task = nil
@@ -255,7 +296,6 @@ local function onunequip_yellow(inst, owner)
     end
 
     owner.AnimState:ClearOverrideSymbol("swap_body")
-
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
         owner:PushEvent("unequipskinneditem", inst:GetSkinName())

@@ -200,6 +200,7 @@ function SquidBrain:OnStart()
             WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "NotJumpingBehaviour",
                 PriorityNode({
 					BrainCommon.PanicTrigger(self.inst),
+                    BrainCommon.ElectricFencePanicTrigger(self.inst),
 
                     IfNode(function() return findwall(self.inst) end, "nearwall", AttackWall(self.inst)),
 

@@ -247,6 +247,7 @@ local SPELLS =
 		label = STRINGS.SPELLS.SHADOW_WORKER,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_WORKER)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastWorker)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
@@ -267,6 +268,7 @@ local SPELLS =
 		label = STRINGS.SPELLS.SHADOW_PROTECTOR,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_PROTECTOR)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastProtector)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
@@ -287,6 +289,7 @@ local SPELLS =
 		label = STRINGS.SPELLS.SHADOW_TRAP,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_TRAP)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(1)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1_6"
@@ -307,6 +310,7 @@ local SPELLS =
 		label = STRINGS.SPELLS.SHADOW_PILLARS,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_PILLARS)
+			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(nil)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe"
@@ -327,6 +331,7 @@ local SPELLS =
 		label = STRINGS.SPELLS.SHADOW_TOPHAT,
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_TOPHAT)
+			inst.components.spellbook:SetSpellAction(nil)
 			if TheWorld.ismastersim then
 				inst.components.aoespell:SetSpellFn(nil)
 				inst.components.spellbook:SetSpellFn(TopHatSpellFn)

@@ -52,6 +52,7 @@ function SpiderQueenBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+		BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         IfNode(function() return self:CanPlantNest() end, "can plant nest",
 			ActionNode(function() self.inst.sg:GoToState("makenest") end)),

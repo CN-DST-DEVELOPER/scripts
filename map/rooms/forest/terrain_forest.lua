@@ -123,7 +123,7 @@ AddRoom("CrappyDeepForest", {
 AddRoom("DeepForest", {
 					colour={r=0,g=.9,b=0,a=.50},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone","Junkyard_Spawner"},
+					tags = {"ExitPiece", "Chester_Eyebone","Junkyard_Spawner", "Balatro_Spawner"},
 					contents =  {
 									countstaticlayouts=
 									{
@@ -155,7 +155,7 @@ AddRoom("DeepForest", {
 AddRoom("Forest", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone"},
+					tags = {"ExitPiece", "Chester_Eyebone", "Balatro_Spawner"},
 					contents =  {
 									countprefabs = {
     										spawnpoint_multiplayer = 1,
@@ -237,7 +237,7 @@ AddRoom("ForestMole", {
 AddRoom("CrappyForest", {
 					colour={r=.5,g=0.6,b=.080,a=.10},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone"},
+					tags = {"ExitPiece", "Chester_Eyebone", "Balatro_Spawner"},
 					contents =  {
 									countprefabs = {
     										spawnpoint_multiplayer = 1,
@@ -309,7 +309,7 @@ AddRoom("BurntClearing", {
 AddRoom("Clearing", {
 					colour={r=.8,g=0.5,b=.6,a=.50},
 					value = WORLD_TILES.FOREST,
-					tags = {"ExitPiece", "Chester_Eyebone", "StagehandGarden"},
+					tags = {"ExitPiece", "Chester_Eyebone", "StagehandGarden", "Balatro_Spawner"},
 					contents =  {
 									countprefabs = {
     										spawnpoint_multiplayer = 1,

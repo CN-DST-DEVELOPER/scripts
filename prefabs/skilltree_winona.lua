@@ -131,12 +131,10 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"lowshelf"},
             root = true,
 			onactivate = function(inst)
-				inst:RemoveTag("basicengineer")
 				inst:AddTag("portableengineer")
 			end,
 			ondeactivate = function(inst)
 				inst:RemoveTag("portableengineer")
-				inst:AddTag("basicengineer")
 			end,
             connects = {
                 "winona_gadget_recharge",

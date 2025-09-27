@@ -15,7 +15,7 @@ local function make_plantable(data)
     end
 
     local function ondeploy(inst, pt, deployer)
-        local tree = SpawnPrefab(data.name)
+        local tree = SpawnPrefab(data.name, inst.linked_skinname, inst.skin_id)
         if tree ~= nil then
             tree.Transform:SetPosition(pt:Get())
             inst.components.stackable:Get():Remove()

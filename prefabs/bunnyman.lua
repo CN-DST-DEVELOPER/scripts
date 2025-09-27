@@ -224,7 +224,11 @@ local function OnAttacked(inst, data)
 end
 
 local function OnNewTarget(inst, data)
-    inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    if inst:HasTag("shadowthrall_parasite_hosted") then
+        inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
+    else
+        inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+    end
 end
 
 local RETARGET_MUST_TAGS = { "_combat", "_health" }

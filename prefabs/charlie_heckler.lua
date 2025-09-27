@@ -9,11 +9,9 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
-    inst.entity:AddDynamicShadow()
     inst.entity:AddNetwork()
     inst.entity:AddFollower()
 
-    inst.DynamicShadow:SetSize(1.50, 0.75)
     inst.Transform:SetSixFaced()
 
     inst.AnimState:SetBank("charlie_heckler2")

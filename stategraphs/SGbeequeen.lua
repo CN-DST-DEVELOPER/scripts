@@ -67,11 +67,19 @@ end
 
 --------------------------------------------------------------------------
 
+local function hit_recovery_skip_cooldown_fn(inst, last_t, delay)
+	--no skipping when we're dodging (hit_recovery increased)
+	return inst.hit_recovery == TUNING.BEEQUEEN_HIT_RECOVERY
+		and inst.components.combat:InCooldown()
+		and inst.sg:HasStateTag("idle")
+end
+
 local events =
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     EventHandler("doattack", function(inst)
@@ -79,11 +87,15 @@ local events =
             ChooseAttack(inst)
         end
     end),
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and
-            (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
-            not CommonHandlers.HitRecoveryDelay(inst, nil, TUNING.BEEQUEEN_MAX_STUN_LOCKS) then
-            inst.sg:GoToState("hit")
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
+				not CommonHandlers.HitRecoveryDelay(inst, nil, TUNING.BEEQUEEN_MAX_STUN_LOCKS, hit_recovery_skip_cooldown_fn)
+			then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("screech", function(inst)
@@ -224,7 +236,7 @@ local states =
 
     State{
         name = "emerge",
-        tags = { "busy", "nosleep", "nofreeze", "noattack" },
+		tags = { "busy", "nosleep", "nofreeze", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             StopFlapping(inst)
@@ -247,6 +259,7 @@ local states =
                 inst.sg:RemoveStateTag("nosleep")
                 inst.sg:RemoveStateTag("nofreeze")
                 inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
         },
 
@@ -264,7 +277,7 @@ local states =
 
     State{
         name = "flyaway",
-        tags = { "busy", "nosleep", "nofreeze", "flight" },
+		tags = { "busy", "nosleep", "nofreeze", "flight", "noelectrocute" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -408,7 +421,7 @@ local states =
 
     State{
         name = "screech",
-        tags = { "screech", "busy", "nosleep", "nofreeze" },
+		tags = { "screech", "busy", "nosleep", "nofreeze" },
 
         onenter = function(inst)
             FaceTarget(inst)
@@ -856,5 +869,6 @@ local function OnClearFrozenSymbols(inst)
     RaiseFlyingCreature(inst)
 end
 CommonStates.AddFrozenStates(states, OnOverrideFrozenSymbols, OnClearFrozenSymbols)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("SGbeequeen", states, events, "idle")

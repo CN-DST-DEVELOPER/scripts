@@ -87,6 +87,8 @@ local function fn()
         return inst
     end
 
+    WORLDSTATETAGS.SetTagEnabled("ATRIUM_KEY_FOUND", true)
+
     inst:AddComponent("inventoryitem")
 
     inst:AddComponent("inspectable")

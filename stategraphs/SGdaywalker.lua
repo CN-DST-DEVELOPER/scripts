@@ -27,6 +27,24 @@ local function IsPlayerMelee(data) --"attacked" event data
 			))
 end
 
+local function hit_recovery_skip_cooldown_fn(inst, last_t, delay)
+	--no skipping when we're stalking or dodging (hit_recovery increased)
+	return inst.hit_recovery == TUNING.DAYWALKER_HIT_RECOVERY
+		and inst.components.combat:InCooldown()
+		and inst.sg:HasStateTag("idle")
+end
+
+local function _transfer_statemem_to_electrocute(inst, playermelee)
+	if inst.sg:HasStateTag("struggle") then
+		inst.sg.statemem.struggling = true
+	elseif inst.sg:HasStateTag("tired") then
+		inst.sg.statemem.tired = true
+		inst.sg.mem.transfer_loops = inst.sg.statemem.loops
+	elseif inst.sg:HasStateTag("pounce_recovery") and inst:IsFatigued() or playermelee or inst.sg.statemem.trytired then
+		inst.sg.mem.transfer_trytired = true
+	end
+end
+
 local events =
 {
 	CommonHandlers.OnLocomote(true, true),
@@ -37,14 +55,33 @@ local events =
 			ChooseAttack(inst)
 		end
 	end),
+	EventHandler("electrocute", function(inst, data)
+		CommonHandlers.TryElectrocuteOnEvent(inst, data, nil, nil,
+			_transfer_statemem_to_electrocute)
+	end),
 	EventHandler("attacked", function(inst, data)
-		if inst.sg:HasStateTag("tired") then
-			if not inst.sg:HasStateTag("notiredhit") then
+		if inst.sg:HasStateTag("struggle") then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+				_transfer_statemem_to_electrocute)
+			then
+				return
+			end
+		elseif inst.sg:HasStateTag("tired") then
+			--special case for bypassing "nointerrupt" state tag
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+				_transfer_statemem_to_electrocute)
+			then
+				return
+			elseif not inst.sg:HasStateTag("notiredhit") then
 				inst.sg.statemem.tired = true
 				inst.sg:GoToState("tired_hit", inst.sg.statemem.loops)
 			end
 		elseif inst.defeated then
-			if not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt") then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+				_transfer_statemem_to_electrocute)
+			then
+				return
+			elseif not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
 		else
@@ -52,12 +89,23 @@ local events =
 			if playermelee then
 				inst:DeltaFatigue(0) --reset fatigue regen timers
 				if inst.sg:HasStateTag("pounce_recovery") and inst:IsFatigued() then
+					if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+						_transfer_statemem_to_electrocute)
+					then
+						return
+					end
 					inst.sg:GoToState("hit", true)
 					return
 				end
 			end
-			if (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
-				not CommonHandlers.HitRecoveryDelay(inst) then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+				function(inst)
+					_transfer_statemem_to_electrocute(inst, playermelee)
+				end)
+			then
+				return
+			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
+				not CommonHandlers.HitRecoveryDelay(inst, nil, nil, hit_recovery_skip_cooldown_fn) then
 				inst.sg:GoToState("hit", playermelee or inst.sg.statemem.trytired)
 			end
 		end
@@ -222,32 +270,81 @@ for k, v in pairs(COLLAPSIBLE_WORK_ACTIONS) do
 	table.insert(COLLAPSIBLE_TAGS, k.."_workable")
 end
 local NON_COLLAPSIBLE_TAGS = { "FX", --[["NOCLICK",]] "DECOR", "INLIMBO" }
+local FOOTSTEP_NON_COLLAPSIBLE_TAGS = { "FX", --[["NOCLICK",]] "DECOR", "INLIMBO", "event_trigger" }
 
-local function DoAOEWork(inst, dist, radius, targets)
+--Each step a bit under 1 second.
+--The timeout is for resetting the counter to reach threshold, in case he's
+--not stuck stationary, but is still trapped bouncing around in small area.
+--Also could be stunlocked while trying to run through, slowing down steps.
+local TRAMPLE_TIMEOUT = 5 --seconds
+local TRAMPLE_THRESHOLD = 5 --steps
+
+local function _OnTrampleTimeout(inst, trampledelays, target)
+	trampledelays[target] = nil
+end
+
+local function DoAOEWork(inst, dist, radius, targets, overridenontags, trampledelays)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	if dist ~= 0 then
 		local rot = inst.Transform:GetRotation() * DEGREES
 		x = x + dist * math.cos(rot)
 		z = z - dist * math.sin(rot)
 	end
-	for i, v in ipairs(TheSim:FindEntities(x, y, z, radius, nil, NON_COLLAPSIBLE_TAGS, COLLAPSIBLE_TAGS)) do
-		if not (targets ~= nil and targets[v]) and v:IsValid() and not v:IsInLimbo() and v.components.workable ~= nil then
-			local work_action = v.components.workable:GetWorkAction()
-			--V2C: nil action for NPC_workable (e.g. campfires)
-			if (work_action == nil and v:HasTag("NPC_workable")) or
-				(v.components.workable:CanBeWorked() and work_action ~= nil and COLLAPSIBLE_WORK_ACTIONS[work_action.id])
+	for i, v in ipairs(TheSim:FindEntities(x, y, z, radius + AOE_RANGE_PADDING, nil, overridenontags or NON_COLLAPSIBLE_TAGS, COLLAPSIBLE_TAGS)) do
+		if not (targets ~= nil and targets[v]) and v:IsValid() and not v:IsInLimbo() then
+			local range = radius + v:GetPhysicsRadius(0)
+			if v:GetDistanceSqToPoint(x, 0, z) < range * range and v.components.workable then
+				local work_action = v.components.workable:GetWorkAction()
+				--V2C: nil action for NPC_workable (e.g. campfires)
+				if (work_action == nil and v:HasTag("NPC_workable")) or
+					(v.components.workable:CanBeWorked() and work_action ~= nil and COLLAPSIBLE_WORK_ACTIONS[work_action.id])
 				then
-				if v:HasTag("daywalker_pillar") then
-					v:OnCollided(inst)
-				else
-					v.components.workable:Destroy(inst)
-					--[[if v:IsValid() and v:HasTag("stump") then
-						v:Remove()
-					end]]
+					if v:HasTag("daywalker_pillar") then
+						v:OnCollided(inst)
+					else
+						--obstacles take a few footsteps b4 getting destroyed by regular running
+						local shoulddelaytrample
+						if trampledelays and v:HasTag("blocker") then
+							local data = trampledelays[v]
+							if data == nil then
+								trampledelays[v] =
+								{
+									n = 1,
+									task = inst:DoTaskInTime(TRAMPLE_TIMEOUT, _OnTrampleTimeout, trampledelays, v),
+								}
+								shoulddelaytrample = true
+							else
+								data.n = data.n + 1
+								data.task:Cancel()
+								if data.n < TRAMPLE_THRESHOLD then
+									data.task = inst:DoTaskInTime(TRAMPLE_TIMEOUT, _OnTrampleTimeout, trampledelays, v)
+									shoulddelaytrample = true
+								else
+									trampledelays[v] = nil
+								end
+							end
+						end
+
+						if shoulddelaytrample then
+							v.components.workable:WorkedBy(inst, 0)
+						else
+							v.components.workable:Destroy(inst)
+						end
+						--[[if v:IsValid() and v:HasTag("stump") then
+							v:Remove()
+						end]]
+						if targets then
+							targets[v] = true
+						end
+					end
 				end
 			end
 		end
 	end
+end
+
+local function DoFootstepAOE(inst)
+	DoAOEWork(inst, 0.3, 1.5, nil, FOOTSTEP_NON_COLLAPSIBLE_TAGS, inst._trampledelays)
 end
 
 --------------------------------------------------------------------------
@@ -330,7 +427,7 @@ local states =
 
 	State{
 		name = "tired_pre",
-		tags = { "tired", "busy", "nointerrupt", "canattach", "notiredhit" },
+		tags = { "tired", "busy", "nointerrupt", "canattach", "notiredhit", "canelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -380,7 +477,7 @@ local states =
 
 	State{
 		name = "tired",
-		tags = { "tired", "busy", "nointerrupt", "canattach" },
+		tags = { "tired", "busy", "nointerrupt", "canattach", "canelectrocute" },
 
 		onenter = function(inst, loops)
 			inst.components.locomotor:Stop()
@@ -461,7 +558,7 @@ local states =
 
 	State{
 		name = "tired_hit",
-		tags = { "tired", "busy", "nointerrupt", "canattach", "notalksound", "notiredhit" },
+		tags = { "tired", "busy", "nointerrupt", "canattach", "notalksound", "notiredhit", "canelectrocute" },
 
 		onenter = function(inst, loops)
 			inst.sg.statemem.isincombat = inst.hostile and not inst.defeated
@@ -634,7 +731,7 @@ local states =
 
 	State{
 		name = "struggle1",
-		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach", "canelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -697,7 +794,7 @@ local states =
 
 	State{
 		name = "struggle1_pst",
-		tags = { "struggle", "busy", "nointerrupt", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "canattach", "canelectrocute" },
 
 		onenter = function(inst)
 			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
@@ -719,7 +816,7 @@ local states =
 
 	State{
 		name = "struggle2",
-		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach", "canelectrocute" },
 
 		onenter = function(inst, targets)
 			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
@@ -756,7 +853,7 @@ local states =
 
 	State{
 		name = "shrug1",
-		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach", "canelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -828,7 +925,7 @@ local states =
 
 	State{
 		name = "shrug2",
-		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach", "canelectrocute" },
 
 		onenter = function(inst)
 			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
@@ -890,7 +987,7 @@ local states =
 
 	State{
 		name = "shrug_pst",
-		tags = { "struggle", "busy", "nointerrupt", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "canattach", "canelectrocute" },
 
 		onenter = function(inst)
 			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
@@ -912,7 +1009,7 @@ local states =
 
 	State{
 		name = "collide",
-		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach", "canelectrocute" },
 
 		onenter = function(inst, speedmult)
 			inst.components.locomotor:Stop()
@@ -955,7 +1052,7 @@ local states =
 
 	State{
 		name = "attach",
-		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach" },
+		tags = { "struggle", "busy", "nointerrupt", "notalksound", "canattach", "canelectrocute" },
 
 		onenter = function(inst, attachpos)
 			inst.components.locomotor:Stop()
@@ -1133,6 +1230,7 @@ local states =
 			FrameEvent(11, SGDaywalkerCommon.DoPounceShake),
 			FrameEvent(12, function(inst)
 				inst.sg:AddStateTag("pounce_recovery")
+				inst.sg:AddStateTag("canelectrocute")
 				inst.components.combat:SetDefaultDamage(TUNING.DAYWALKER_XCLAW_DAMAGE)
 				local targets = {}
 				inst.sg.statemem.targets = targets
@@ -1678,8 +1776,22 @@ local states =
 	},
 }
 
+local function DoFootstep(inst, volume)
+	inst.sg.mem.lastfootstep = GetTime()
+	inst.SoundEmitter:PlaySound(inst.footstep, nil, volume)
+end
+
 SGDaywalkerCommon.AddWalkStates(states)
-SGDaywalkerCommon.AddRunStates(states, nil,
+SGDaywalkerCommon.AddRunStates(states,
+{
+	runtimeline =
+	{
+		FrameEvent(9, DoFootstep),
+		FrameEvent(10, DoFootstepAOE),
+		FrameEvent(22, DoFootstep),
+		FrameEvent(23, DoFootstepAOE),
+	},
+},
 {
 	runonenter = function(inst)
 		if not inst.components.combat:InCooldown() then
@@ -1692,5 +1804,138 @@ SGDaywalkerCommon.AddRunStates(states, nil,
 })
 CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "hit",})
 CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
+CommonStates.AddElectrocuteStates(states,
+{	--timeline
+	pst =
+	{
+		FrameEvent(2, function(inst)
+			if inst.sg:HasStateTag("tired") then
+				inst.sg:AddStateTag("canattach")
+			end
+		end),
+		FrameEvent(4, function(inst)
+			if inst.sg:HasStateTag("struggle") then
+				inst.sg.statemem.struggling = true
+				inst.sg:GoToState("struggle_idle")
+			elseif not inst.sg:HasStateTag("tired") then
+				if inst.sg.mem.transfer_trytired and inst:IsFatigued() or inst.defeated then
+					inst.sg:GoToState("tired_pre")
+				end
+			end
+		end),
+	},
+},
+{	--anims
+	loop = function(inst)
+		inst.sg:AddStateTag("notalksound")
+		if inst.sg.lasttags["struggle"] then
+			inst.sg:AddStateTag("struggle")
+			inst.sg:AddStateTag("nointerrupt")
+			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
+			return "struggle_shock_loop"
+		elseif inst.sg.lasttags["tired"] then
+			inst.sg:AddStateTag("tired")
+			inst.sg:AddStateTag("notiredhit")
+			inst.sg:AddStateTag("nointerrupt")
+			inst:SwitchToFacingModel(0) --inst.Transform:SetNoFaced()
+			return "chained_shock_loop"
+		end
+	end,
+	pst = function(inst)
+		if inst.sg.lasttags["struggle"] then
+			inst.sg:AddStateTag("struggle")
+			inst.sg:AddStateTag("nointerrupt")
+			inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
+			return "struggle_shock_pst"
+		elseif inst.sg.lasttags["tired"] then
+			inst.sg:AddStateTag("tired")
+			inst.sg:AddStateTag("notiredhit")
+			inst.sg:AddStateTag("nointerrupt")
+			inst:SwitchToFacingModel(0) --inst.Transform:SetNoFaced()
+			return "chained_shock_pst"
+		end
+	end,
+},
+{	--fns
+	loop_onenter = function(inst)
+		if not inst.sg:HasAnyStateTag("struggle", "tired") then
+			if inst:IsStalking() then
+				inst:SetStalking(nil)
+				if inst.nostalkcd then
+					inst.components.combat:ResetCooldown()
+				end
+			end
+		end
+	end,
+	loop_onexit = function(inst)
+		if not inst.sg.statemem.not_interrupted then
+			inst.sg.mem.transfer_loops = nil
+			inst.sg.mem.transfer_trytired = nil
+
+			if inst.sg:HasStateTag("struggle") then
+				inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
+			elseif inst.sg:HasStateTag("tired") then
+				inst.sg.mem.last_tired_hit = nil
+				inst.sg.mem.tired_start = nil
+				inst.sg.mem.tired_hit_alt_count = nil
+				if not inst.hostile then
+					inst.components.health:SetAbsorptionAmount(0)
+					inst.components.health:StopRegen()
+				end
+				if inst.sg.statemem.struggling then
+					inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
+				else
+					inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
+				end
+			end
+		end
+	end,
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if inst.sg:HasStateTag("struggle") then
+				inst.sg.statemem.struggling = true
+				inst.sg:GoToState("struggle_idle")
+			elseif inst.sg:HasStateTag("tired") then
+				inst.sg.statemem.tired = true
+				if not inst.hostile then
+					inst.sg:GoToState("tired", inst.sg.mem.transfer_loops)
+				elseif inst.sg.mem.tired_start + TUNING.DAYWALKER_FATIGUE_TIRED_MIN_TIME < GetTime() then
+					inst.sg:GoToState("tired_stand")
+				else
+					inst.sg:GoToState("tired", -1) --delayed hp regen
+				end
+			elseif inst.sg.mem.transfer_trytired and inst:IsFatigued() or inst.defeated then
+				inst.sg:GoToState("tired_pre")
+			else
+				inst.sg:GoToState("idle")
+			end
+		end
+	end,
+	pst_onexit = function(inst)
+		inst.sg.mem.transfer_loops = nil
+		inst.sg.mem.transfer_trytired = nil
+
+		if inst.sg:HasStateTag("struggle") then
+			if not inst.sg.statemem.struggling then
+				inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
+			end
+		elseif inst.sg:HasStateTag("tired") then
+			if not inst.sg.statemem.tired then
+				inst.sg.mem.last_tired_hit = nil
+				inst.sg.mem.tired_start = nil
+				inst.sg.mem.tired_hit_alt_count = nil
+				if not inst.hostile then
+					inst.components.health:SetAbsorptionAmount(0)
+					inst.components.health:StopRegen()
+				end
+				if inst.sg.statemem.struggling then
+					inst:SwitchToFacingModel(6) --inst.Transform:SetSixFaced()
+				else
+					inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
+				end
+			end
+		end
+	end,
+})
 
 return StateGraph("daywalker", states, events, "idle")

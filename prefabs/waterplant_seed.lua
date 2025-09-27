@@ -89,10 +89,11 @@ local function set_thrown_physics(inst)
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(0)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.GROUND,
+		COLLISION.OBSTACLES,
+		COLLISION.ITEMS
+	)
     inst.Physics:SetCapsule(0.2, 0.2)
 end
 
@@ -160,6 +161,7 @@ local function fn()
 
     --projectile (from complexprojectile component) added to pristine state for optimization
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
@@ -171,6 +173,9 @@ local function fn()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = reticule_target_fn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 8
     inst.components.reticule.ease = true
 
     MakeInventoryFloatable(inst, "small", 0.1, 0.8)
@@ -252,8 +257,9 @@ local function projectile_fn()
     inst:AddTag("notarget")
     inst:AddTag("noattack")
 
-    -- Pristine state optimization tags
-    inst:AddTag("projectile")   -- complexprojectile
+	--projectile (from complexprojectile component) added to pristine state for optimization
+	inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.AnimState:SetBank("barnacle_burr")
     inst.AnimState:SetBuild("barnacle_burr")

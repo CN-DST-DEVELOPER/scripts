@@ -57,6 +57,7 @@ end
 
 local function make_stump(inst, is_burnt)
     inst:RemoveComponent("workable")
+    inst:RemoveComponent("lunarhailbuildup")
     inst:RemoveComponent("burnable")
     inst:RemoveComponent("propagator")
     inst:RemoveComponent("hauntable")
@@ -244,6 +245,11 @@ local function fn(type_name, is_large)
     inst.OnLoad = onload
 
     MakeSnowCovered(inst)
+    if is_large then
+        SetLunarHailBuildupAmountLarge(inst)
+    else
+        SetLunarHailBuildupAmountSmall(inst)
+    end
 
 	return inst
 end

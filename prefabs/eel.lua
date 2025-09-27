@@ -101,7 +101,7 @@ local function rawfn(build)
     inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERFAST)
 
     inst:DoTaskInTime(2 + math.random() * 2, stopkicking)
-    inst.components.inventoryitem:SetOnPickupFn(stopkicking)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(stopkicking)
     inst.OnLoad = stopkicking
 
     return inst

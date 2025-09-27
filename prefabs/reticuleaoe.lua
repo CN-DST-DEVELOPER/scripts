@@ -320,9 +320,11 @@ return MakeReticule("reticuleaoe", "idle", true),
 	MakePing("reticuleaoesummonping", "idle_summon", true, 1.0667),
 	MakePing("reticuleaoeping_1_6", "idle_1_6", true, 1.1),
 	MakePing("reticuleaoeping_1d2_12", "idle_1d2_12", true, 1.08333),
-	MakePing("reticuleaoeping5line", "idle_5live", false, 1.08333),    
+	MakePing("reticuleaoeping5line", "idle_5live", false, 1.08333),
 
-	MakePing("reticuleaoefiretarget_1ping", "idle_summon_target", true, 1.08333),    
+	MakePing("reticuleaoefiretarget_1ping", "idle_summon_target", true, 1.08333),
+
+    MakePing("reticuleaoeghosttarget_ping", "idle_summon_target", true, 1.08333),
 
 	MakePing("reticuleaoecatapultvolleyping", {
 			bank = "winona_catapult_placement",
@@ -349,6 +351,7 @@ return MakeReticule("reticuleaoe", "idle", true),
 	MakeTarget("reticuleaoesummontarget_1d2", "idle_target_1d2", false, { .3, .5, .2, 1 }),
 	MakeTarget("reticuleaoeshadowtarget_6", "idle_target_6", false, { .1, .1, .1, 1 }),
 	MakeTarget("reticuleaoefiretarget_1", "idle_summon_target", false, { 255/255, 161/255, 61/255, 1 }),
+	MakeTarget("reticuleaoeghosttarget", "idle_summon_target", false, { 255/255, 161/255, 61/255, 1 }),
 	MakeTarget("reticuleaoehostiletarget_1d25", {
 			bank = "winona_catapult_placement",
 			build = "winona_catapult_placement",

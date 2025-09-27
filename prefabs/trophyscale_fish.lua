@@ -357,6 +357,7 @@ local function fn()
 	MakeLargePropagator(inst)
 
 	MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountLarge(inst)
 
 	inst.OnSave = onsave
 	inst.OnLoad = onload

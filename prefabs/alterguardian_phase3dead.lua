@@ -122,13 +122,17 @@ local function start_wag_sequence(inst)
         ipos = ipos + offset
     end
 
-    local wagstaff = SpawnPrefab("wagstaff_npc_pstboss")
-    wagstaff.Transform:SetPosition(ipos:Get())
-    wagstaff:PushEvent("doerode", ERODEIN)
-    wagstaff:PushEvent("spawndevice", ERODEIN)
-    wagstaff:DoTaskInTime(ERODEIN.time - 5*FRAMES, function(w)
-        w:PushEvent("startwork", inst)
-    end)
+    if (TheWorld.components.wagboss_tracker and TheWorld.components.wagboss_tracker:IsWagbossDefeated()) then
+        inst:DoTaskInTime(3, function(d) d:PushEvent("orbtaken") end)
+    else
+        local wagstaff = SpawnPrefab("wagstaff_npc_pstboss")
+        wagstaff.Transform:SetPosition(ipos:Get())
+        wagstaff:PushEvent("doerode", ERODEIN)
+        wagstaff:PushEvent("spawndevice", ERODEIN)
+        wagstaff:DoTaskInTime(ERODEIN.time - 5*FRAMES, function(w)
+            w:PushEvent("startwork", inst)
+        end)
+    end
 end
 
 local function orbfn()
@@ -153,6 +157,8 @@ local function orbfn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Will drop when the dead boss is mined.
 
     inst:AddComponent("inspectable")
 
@@ -239,6 +245,8 @@ local function deadfn()
         return inst
     end
 
+    WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Will drop when the dead boss is mined.
+
     inst:AddComponent("inspectable")
 
     inst:AddComponent("workable")
@@ -253,6 +261,7 @@ local function deadfn()
     inst.components.lootdropper.max_speed = 4.5
 
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountLarge(inst)
 
     MakeHauntableWork(inst)
 

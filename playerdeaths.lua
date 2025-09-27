@@ -41,7 +41,7 @@ function PlayerDeaths:Sort(field)
 	if field ~= nil then
 		-- print(type(self.persistdata[1][field]))
 		if type(self.persistdata[1][field]) == "string" then
-			sort_function =  function(a,b) return (a[field] or "") < (b[field] or "") end
+			sort_function =  function(a,b) return stringidsorter((a[field] or ""), (b[field] or "")) end
 		else
 			sort_function =  function(a,b) return (a[field] or 0) > (b[field] or 0) end
 		end

@@ -4,10 +4,17 @@ local events =
 {
     CommonHandlers.OnStep(),
     CommonHandlers.OnLocomote(false, true),
-    EventHandler("attacked", function(inst)
+	CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
+	EventHandler("attacked", function(inst, data)
         if inst.components.health and not inst.components.health:IsDead() then
-            inst.sg:GoToState("hit")
-            inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/hit")
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/hit")
+				return
+			elseif not inst.sg:HasStateTag("electrocute") then
+				inst.sg:GoToState("hit")
+				inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/hit")
+			end
         end
     end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
@@ -42,19 +49,33 @@ local states =
 
         onenter = function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/death")
+			inst.Transform:SetNoFaced()
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
+			if inst.components.burnable:IsBurning() then
+				inst.components.burnable:Extinguish()
+				inst.sg:SetTimeout(21 * FRAMES)
+			end
         end,
+
+		ontimeout = function(inst)
+			inst:oncooked()
+		end,
 
         events =
         {
             EventHandler("animover", function(inst) inst:ondeath() end),
         },
+
+		onexit = function(inst)
+			--shouldn't reach here
+			inst.Transform:SetFourFaced()
+		end,
     },
 
     State{
         name = "item",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("object")
@@ -63,7 +84,7 @@ local states =
 
     State{
         name = "ground",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("ground", true)
@@ -72,7 +93,7 @@ local states =
 
     State{
         name = "picked",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/pullout")
@@ -94,7 +115,7 @@ local states =
 
     State{
         name = "plant",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -134,5 +155,8 @@ CommonStates.AddWalkStates(states,
         TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/footstep") end),
     }
 })
+
+CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("mandrake", states, events, "idle")

@@ -148,8 +148,7 @@ local function CreateBuildingBlocker()
     inst.entity:AddPhysics()
     inst.Physics:SetMass(0)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(COLLISION.GIANTS)
     inst.Physics:SetCylinder(DEPLOY_BLOCKER_RADIUS, 1)
 ]]
     inst:AddTag("NOCLICK")
@@ -310,12 +309,12 @@ end
 local function LaunchGameItem(inst, item, angle, minorspeedvariance)
     local x, y, z = inst.Transform:GetWorldPosition()
     local spd = 3.5 + math.random() * (minorspeedvariance and 1 or 3.5)
-    item.Physics:ClearCollisionMask()
-    item.Physics:CollidesWith(COLLISION.WORLD)
-    item.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+	if bit.band(item.Physics:GetCollisionMask(), COLLISION.OBSTACLES) ~= 0 then
+		item.Physics:ClearCollidesWith(COLLISION.OBSTACLES)
+		item:DoTaskInTime(0.6, OnRestoreItemPhysics)
+	end
     item.Physics:Teleport(x, 2.5, z)
     item.Physics:SetVel(math.cos(angle) * spd, 11.5, math.sin(angle) * spd)
-    item:DoTaskInTime(.6, OnRestoreItemPhysics)
     item:PushEvent("knockbackdropped", { owner = inst, knocker = inst, delayinteraction = .75, delayplayerinteraction = .5 })
 
     --#WARNING: you probably don't want this last part if you copy pasta this function!--
@@ -596,12 +595,13 @@ local function AcceptTest(inst, item, giver)
     return item.components.tradable.goldvalue > 0 or is_event_item or item.prefab == "pig_token"
 end
 
-local function OnHaunt(inst, haunter)
+local function OnHaunt(inst)
     if inst.components.trader ~= nil and inst.components.trader.enabled then
         OnRefuseItem(inst)
         return true
+    else
+        return false
     end
-    return false
 end
 
 local function teletopos(inst)

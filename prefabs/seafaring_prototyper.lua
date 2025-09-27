@@ -113,8 +113,6 @@ local function fn()
     --prototyper (from prototyper component) added to pristine state for optimization
     inst:AddTag("prototyper")
 
-    MakeSnowCoveredPristine(inst)
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -136,7 +134,6 @@ local function fn()
     inst.components.workable:SetWorkLeft(4)
     inst.components.workable:SetOnFinishCallback(onhammered)
     inst.components.workable:SetOnWorkCallback(onhit)
-    MakeSnowCovered(inst)
 
     MakeLargeBurnable(inst, nil, nil, true)
     MakeLargePropagator(inst)

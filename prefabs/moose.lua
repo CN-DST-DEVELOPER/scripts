@@ -187,6 +187,8 @@ local function fn()
     --Remove these tags so that they can be added properly when replicating components below
     inst:RemoveTag("_named")
 
+	inst.override_combat_fx_height = "high"
+
     ------------------
 
     inst:AddComponent("playerprox")

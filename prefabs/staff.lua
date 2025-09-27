@@ -373,7 +373,7 @@ local function teleport_func(inst, target, pos, caster)
 
     local x, y, z = target.Transform:GetWorldPosition()
 	local target_in_ocean = target.components.locomotor ~= nil and target.components.locomotor:IsAquatic()
-	local no_teleport = target:HasTag("noteleport") --targetable by spell, but don't actually teleport
+	local no_teleport = target:HasTag("noteleport") or not IsTeleportLinkingPermittedFromPoint(x, y, z) --targetable by spell, but don't actually teleport
 	local loctarget
 	if not no_teleport then
 		loctarget = (target.components.minigame_participator ~= nil and target.components.minigame_participator:GetMinigame())
@@ -537,7 +537,7 @@ local function destroystructure(staff, target)
     end
 
     local ingredient_percent =
-        (   (target.components.finiteuses ~= nil and target.components.finiteuses:GetPercent()) or
+        (   (target.components.finiteuses ~= nil and not FunctionOrValue(recipe.decon_ignores_finiteuses, target) and target.components.finiteuses:GetPercent()) or
             (target.components.fueled ~= nil and target.components.inventoryitem ~= nil and target.components.fueled:GetPercent()) or
             (target.components.armor ~= nil and target.components.inventoryitem ~= nil and target.components.armor:GetPercent()) or
             1
@@ -892,6 +892,9 @@ local function yellow()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
 
@@ -953,6 +956,9 @@ local function orange()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = blinkstaff_reticuletargetfn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
 
     if not TheWorld.ismastersim then
@@ -986,6 +992,9 @@ local function opal()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
 

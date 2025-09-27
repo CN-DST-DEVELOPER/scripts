@@ -65,6 +65,8 @@ local function fn()
     inst:AddComponent("stackable")
     inst:AddComponent("bait")
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunchAndSmash(inst)
 
     shine(inst)

@@ -5,6 +5,7 @@ local InputDialogScreen = require "screens/inputdialog"
 local PopupDialogScreen = require "screens/redux/popupdialog"
 local TextListPopup = require "screens/redux/textlistpopup"
 local PlaystylePicker = require "widgets/redux/playstylepicker"
+local WorldProgressionFilterPicker = require("widgets/redux/worldprogressionfilterpicker")
 local TEMPLATES = require "widgets/redux/templates"
 local Text = require "widgets/text"
 local Image = require "widgets/image"
@@ -176,6 +177,15 @@ local ServerListingScreen = Class(Screen, function(self, prev_screen, filters, c
     self.grid_root.server_list_rows = self.grid_root:AddChild(Widget("server_list_rows"))
     self:MakeServerListWidgets()
 
+    self.worldprogressionfilters = self:_GetWorldProgressionFilters()
+    self.worldprogressionfilters_overlay = self.server_list_frame:AddChild(WorldProgressionFilterPicker(self.worldprogressionfilters))
+    self.worldprogressionfilters_overlay:SetCallback(function()
+        self:SetWorldProgressionFilters(self.worldprogressionfilters)
+    end)
+    self.worldprogressionfilters_overlay:Hide()
+    self.worldprogressionfilters_overlay.hidden = true
+    self.worldprogressionfilters_overlay.wasshown = false
+
     local function GetCentreFocus()
         return self:CurrentCenterFocus()
     end
@@ -196,6 +206,7 @@ local ServerListingScreen = Class(Screen, function(self, prev_screen, filters, c
     self:UpdateServerInformation(false)
     self:ToggleShowFilters()
     self:SetServerPlaystyle(self:_GetServerPlaystyle())
+    self:SetWorldProgressionFilters(self.worldprogressionfilters)
 
     if self.offlinemode then
         assert(not self.forced_settings.online)
@@ -221,6 +232,7 @@ local ServerListingScreen = Class(Screen, function(self, prev_screen, filters, c
     self.server_details_additional:SetFocusChangeDir(MOVE_LEFT, GetCentreFocus)
 
     self.playstyle_overlay:SetFocusChangeDir(MOVE_RIGHT, GetRightFocus)
+    self.worldprogressionfilters_overlay:SetFocusChangeDir(MOVE_RIGHT, GetRightFocus)
 
     self.default_focus = GetBottomFocus()
 end)
@@ -267,9 +279,36 @@ function ServerListingScreen:SetServerPlaystyle(playstyle_id)
     self:DoFiltering()
 end
 
+function ServerListingScreen:UpdateWorldProgressionFiltersButtonText()
+    if next(self.worldprogressionfilters) ~= nil then
+        self.worldprogressionfilters_button.button:SetText(STRINGS.UI.SERVERLISTINGSCREEN.WORLDPROGRESSION_BUTTON_CUSTOM)
+    else
+        self.worldprogressionfilters_button.button:SetText(STRINGS.UI.SERVERLISTINGSCREEN.WORLDPROGRESSION_BUTTON_ANY)
+    end
+end
+
+function ServerListingScreen:_GetWorldProgressionFilters() -- NOTES(JBK): This is expensive and should be cached at all times possible.
+    if self.forced_settings.worldprogressionfilters then
+        return self.forced_settings.worldprogressionfilters
+    end
+    return Profile:GetSavedWorldProgressionFilters()
+end
+
+function ServerListingScreen:SetWorldProgressionFilters(filters)
+    if self.should_save then
+        Profile:SetWorldProgressionFilters(filters)
+    end
+end
+
 function ServerListingScreen:ShowPlaystylePicker()
     if self.view_online then
         if self.server_playstyle.id == nil then
+            self.worldprogressionfilters_overlay.wasshown = not self.worldprogressionfilters_overlay.hidden
+            self.worldprogressionfilters_overlay:ClearFocus()
+            self.worldprogressionfilters_overlay:Hide()
+            self.worldprogressionfilters_overlay.hidden = true
+            self.worldprogressionfilters_button.button:Select()
+            self.heading.big:SetString(STRINGS.UI.SERVERLISTINGSCREEN.PLAYSTYLE_TITLE)
             self.playstyle_overlay:Show()
             self.grid_root:Hide()
             self.server_list_titles:Hide()
@@ -277,11 +316,20 @@ function ServerListingScreen:ShowPlaystylePicker()
             self.server_playstyle.button:Select()
         else
             self.playstyle_overlay:Hide()
-            self.grid_root:Show()
-            self.server_list_titles:Show()
-            --server_playstyle:Show()
+            if self.worldprogressionfilters_overlay.wasshown then
+                self.worldprogressionfilters_overlay:Show()
+                self.worldprogressionfilters_overlay.hidden = false
+                self.worldprogressionfilters_overlay.wasshown = false
+                self.heading.big:SetString(STRINGS.UI.SERVERLISTINGSCREEN.WORLDPROGRESSION_TITLE)
+            else
+                self.grid_root:Show()
+                self.server_list_titles:Show()
+                --server_playstyle:Show()
+                self.heading.big:SetString(STRINGS.UI.MAINSCREEN.BROWSE)
+            end
             self.title:SetString(string.format(STRINGS.UI.SERVERLISTINGSCREEN.SERVER_LIST_TITLE_PLAYSTYLE, self.playstyle_defs[self.server_playstyle.id].name))
             self.server_playstyle.button:Unselect()
+            self.worldprogressionfilters_button.button:Unselect()
         end
     else
         self.playstyle_overlay:Hide()
@@ -289,6 +337,7 @@ function ServerListingScreen:ShowPlaystylePicker()
         self.server_list_titles:Show()
         --self.server_playstyle:Hide()
         self.title:SetString(STRINGS.UI.SERVERLISTINGSCREEN.SERVER_LIST_TITLE)
+        self.worldprogressionfilters_button.button:Unselect()
     end
 
     if self:CurrentRightFocus() ~= nil then
@@ -431,8 +480,9 @@ function ServerListingScreen:Join(warnedOffline, warnedLanguage, warnedPaused)
                 end
             end
             if self.should_save then
+                Profile:SetFilters(filters)
                 Profile:SetValue("serverlistingsort", self.sorting_spinner.spinner:GetSelectedData())
-                Profile:SaveFilters(filters)
+                Profile:Save()
             end
 			ServerPreferences:RefreshLastSeen(self.servers)
             JoinServer( self.selected_server )
@@ -531,9 +581,11 @@ function ServerListingScreen:ViewServerTags()
     if self.selected_server ~= nil and self.selected_server.tags ~= nil then
         local tags = {}
         for i,v in ipairs(self.selected_server.tags:split(",")) do
-            table.insert(tags, {
+            if not GetWorldStateTagObjectFromTag(v) then
+                table.insert(tags, {
                     text = v,
-            })
+                })
+            end
         end
         TheFrontEnd:PushScreen(TextListPopup(tags, STRINGS.UI.SERVERLISTINGSCREEN.TAGSTITLE))
     end
@@ -1338,7 +1390,7 @@ function ServerListingScreen:DoSorting()
         elseif a.ping >= 0 and b.ping < 0 then
             return true
         elseif a.ping == b.ping then
-            return string.lower(a.name) < string.lower(b.name)
+            return stringidsorter(string.lower(a.name), string.lower(b.name))
         else
             return a.ping < b.ping
         end
@@ -1384,9 +1436,9 @@ function ServerListingScreen:DoSorting()
     if self.viewed_servers then
         table.sort(self.viewed_servers, function(a,b)
             if self.sort_column == "SERVER_NAME_AZ" then
-                return string.lower(a.name) < string.lower(b.name)
+                return stringidsorter(string.lower(a.name), string.lower(b.name))
             elseif self.sort_column == "SERVER_NAME_ZA" then
-                return string.lower(a.name) > string.lower(b.name)
+                return stringidsorter(string.lower(a.name), string.lower(b.name))
             elseif self.sort_column == "RELEVANCE" then
                 local social = has_bestsocial(a,b)
                 if social ~= nil then
@@ -1556,6 +1608,41 @@ function ServerListingScreen:IsValidWithFilters(server)
         end
     end
 
+    -- Only show servers that work with the world progression preferences.
+    if type(server.tags) == "string" and next(self.worldprogressionfilters) ~= nil then
+        local needsfiltersfor = shallowcopy(self.worldprogressionfilters)
+        for i, v in ipairs(server.tags:split(",")) do
+            local worldstateobject = GetWorldStateTagObjectFromTag(v)
+            if worldstateobject then
+                local settings = self.worldprogressionfilters[worldstateobject.namespace]
+                if settings then -- No settings means everything is ANY.
+                    needsfiltersfor[worldstateobject.namespace] = nil
+                    worldstateobject.DecodeTags(v)
+                    local shouldfilter = false
+                    worldstateobject.ForEachTag(function(tag)
+                        local setting = settings[tag]
+                        if setting == WORLDPROGRESSIONTAG_MUST then
+                            if not worldstateobject.GetTagEnabled(tag) then
+                                shouldfilter = true
+                            end
+                        elseif setting == WORLDPROGRESSIONTAG_CANT then
+                            if worldstateobject.GetTagEnabled(tag) then
+                                shouldfilter = true
+                            end
+                        --else No else because that means setting is nil/ANY and we do not filter this for this tag.
+                        end
+                    end)
+                    if shouldfilter then
+                        return false
+                    end
+                end
+            end
+        end
+        if next(needsfiltersfor) ~= nil then -- Specified filters for servers and the servers are missing the world state tag namespace tags.
+            return false
+        end
+    end
+
     -- Then check with the search box (but only if it hasn't already been invalidated)
     if #self.queryTokens > 0 then
         -- Then check if our servers' names and tags contain any of those tokens
@@ -1592,6 +1679,7 @@ function ServerListingScreen:ResetFilters()
 end
 
 function ServerListingScreen:DoFiltering(doneSearching, keepScrollFocusPos)
+    if not self.worldprogressionfilters_overlay.hidden then return end
     if not self.filters then return end
 
     local function FindDisplayIndexForServer(unfiltered_index)
@@ -1738,8 +1826,9 @@ function ServerListingScreen:Cancel()
             end
         end
 		if self.should_save then
-		    Profile:SaveFilters(filters)
+		    Profile:SetFilters(filters)
 			Profile:SetValue("serverlistingsort", self.sorting_spinner.spinner:GetSelectedData())
+            Profile:Save()
 		end
         if self.cb then
             self.cb(filters)
@@ -1877,6 +1966,34 @@ function ServerListingScreen:MakeFiltersPanel(filter_data, details_height)
     else
         table.insert(self.filters, self.server_playstyle)
     end
+
+    self.worldprogressionfilters_button = CreateButtonFilter(self, nil, STRINGS.UI.SERVERLISTINGSCREEN.WORLDPROGRESSION_BUTTON_LABEL, nil, function(data)
+        self.worldprogressionfilters_overlay.hidden = not self.worldprogressionfilters_overlay.hidden
+        if self.worldprogressionfilters_overlay.hidden then
+            self.worldprogressionfilters_overlay:ClearFocus()
+            self.worldprogressionfilters_overlay:Hide()
+            self.worldprogressionfilters_overlay.last_focused_radiobuttons = nil
+            self.worldprogressionfilters_overlay.scroll_list:ResetScroll()
+            self:UpdateWorldProgressionFiltersButtonText()
+            self:DoFiltering()
+            self.grid_root:Show()
+            self.server_list_titles:Show()
+            self.heading.big:SetString(STRINGS.UI.MAINSCREEN.BROWSE)
+        else
+            self.worldprogressionfilters_overlay:Show()
+            self.worldprogressionfilters_button.button:SetText(STRINGS.UI.SERVERLISTINGSCREEN.WORLDPROGRESSION_BUTTON_CHOOSING)
+            self.grid_root:Hide()
+            self.server_list_titles:Hide()
+            self.worldprogressionfilters_overlay.scroll_list:SetFocus()
+            self.heading.big:SetString(STRINGS.UI.SERVERLISTINGSCREEN.WORLDPROGRESSION_TITLE)
+        end
+    end)
+    if self:_GetServerPlaystyle() == nil then
+        self.worldprogressionfilters_button.button:Select()
+    end
+    self:UpdateWorldProgressionFiltersButtonText()
+    table.insert(self.filters, self.worldprogressionfilters_button)
+
     table.insert(self.filters, CreateSpinnerFilter( self, "GAMEMODE", STRINGS.UI.SERVERLISTINGSCREEN.GAMEMODE, game_modes, false ))
     table.insert(self.filters, CreateSpinnerFilter( self, "SEASON", STRINGS.UI.SERVERLISTINGSCREEN.SEASONFILTER, seasons, false ))
     table.insert(self.filters, CreateSpinnerFilter( self, "HASPVP", STRINGS.UI.SERVERLISTINGSCREEN.HASPVP, any_on_off, false ))
@@ -2312,6 +2429,8 @@ end
 function ServerListingScreen:CurrentCenterFocus()
     if self.view_online and self.server_playstyle.id == nil then
         return self.playstyle_overlay
+    elseif not self.worldprogressionfilters_overlay.hidden then
+        return self.worldprogressionfilters_overlay.last_focused_radiobuttons or self.worldprogressionfilters_overlay.scroll_list
     else
         if #self.servers_scroll_list.items > 0 then
             return self.servers_scroll_list

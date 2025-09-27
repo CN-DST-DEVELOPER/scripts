@@ -217,7 +217,10 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_size = "med"
+
     inst:SetStateGraph("SGfruitfly")
+	inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
     common_server(inst)
@@ -314,6 +317,9 @@ local function minifn()
         return inst
     end
 
+	inst.override_combat_fx_size = "tiny"
+	inst.override_combat_fx_height = "low"
+
     common_server(inst)
 
     inst:AddComponent("follower")
@@ -345,6 +351,7 @@ local function minifn()
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGfruitfly")
+	inst.sg.mem.burn_on_electrocute = true
 
     inst:ListenForEvent("attacked", MiniOnAttacked)
 
@@ -416,6 +423,9 @@ local function friendlyfn()
         return inst
     end
 
+	inst.override_combat_fx_size = "tiny"
+	inst.override_combat_fx_height = ""
+
     common_server(inst)
 
     inst:AddComponent("follower")
@@ -438,6 +448,7 @@ local function friendlyfn()
 
     inst:SetBrain(friendlybrain)
     inst:SetStateGraph("SGfruitfly")
+	inst.sg.mem.burn_on_electrocute = true
 
     return inst
 end
@@ -556,7 +567,6 @@ local function fruitfn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
     inst:AddComponent("inventoryitem")
-
 
     MakeHauntableLaunch(inst)
 

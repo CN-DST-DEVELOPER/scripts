@@ -526,6 +526,20 @@ function AddUserCommand(name, data)
     end
 end
 
+function RemoveUserCommand(name)
+	local hash = smallhash(name)
+	local data = usercommands[hash]
+	if data then
+		if data.aliases then
+			for _, alias in ipairs(data.aliases) do
+				local alias_hash = smallhash(alias)
+				usercommands[alias_hash] = nil
+			end
+		end
+		usercommands[hash] = nil
+	end
+end
+
 if PLATFORM == "WIN32_RAIL" then
 	function RailUserCommandInject( name, displayname, displayparams, extra_alias )
 		local hash = smallhash(name)
@@ -546,13 +560,15 @@ if PLATFORM == "WIN32_RAIL" then
 	function RailUserCommandRemove( name )
 		local hash = smallhash(name)
 		local data = usercommands[hash]
-		if data.aliases ~= nil then
-			for _,alias in ipairs(data.aliases) do
-				local alias_hash = smallhash(alias)
-				usercommands[alias_hash] = nil
+		if data then
+			if data.aliases then
+				for _,alias in ipairs(data.aliases) do
+					local alias_hash = smallhash(alias)
+					usercommands[alias_hash] = nil
+				end
 			end
+			usercommands[hash] = nil
 		end
-		usercommands[hash] = nil
 	end
 end
 

@@ -269,6 +269,7 @@ end
 -- @return table, int The scanned array as a table, and the position of the next character to scan.
 function decode_scanArray(s,startPos)
   local array = {}	-- The return value
+  local arraypos = 0 -- NOTES(JBK): Modified from source here to avoid use of table.insert for arrays with nil holes.
   local stringLen = string.len(s)
   if not (string.sub(s,startPos,startPos)=='[') then
     base.tracked_assert(string.sub(s,startPos,startPos)=='[','decode_scanArray called but array does not start at position ' .. startPos .. ' in string:\n'..s )
@@ -291,7 +292,9 @@ function decode_scanArray(s,startPos)
       base.tracked_assert(startPos<=stringLen, 'JSON String ended unexpectedly scanning array.')
     end
     object, startPos = decode(s,startPos)
-    table.insert(array,object)
+    --table.insert(array,object) -- NOTES(JBK): Modified from source here to avoid use of table.insert for arrays with nil holes.
+    arraypos = arraypos + 1 -- NOTES(JBK): Modified from source here to avoid use of table.insert for arrays with nil holes.
+    array[arraypos] = object -- NOTES(JBK): Modified from source here to avoid use of table.insert for arrays with nil holes.
   until false
 end
 

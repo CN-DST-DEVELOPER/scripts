@@ -195,8 +195,6 @@ local function fn()
 
     inst:ListenForEvent("death", OnDead)
     inst:ListenForEvent("onremove", OnRemove)
-    inst:ListenForEvent("entitysleep", OnEntitySleep)
-    inst:ListenForEvent("entitywake", OnEntityWake)
 
     MakeLargeBurnableCharacter(inst, "claw_parts_forearm")
     MakeHugeFreezableCharacter(inst, "claw_parts_forearm")

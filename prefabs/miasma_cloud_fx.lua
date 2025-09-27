@@ -15,6 +15,7 @@ local prefabs =
 {
     "miasmadebuff",
     "miasma_cloud_fx",
+    "miasma_ember_fx",
 }
 
 local assets_fx =
@@ -24,7 +25,6 @@ local assets_fx =
 	Asset("SHADER", SMOKE_SHADER),
 	Asset("SHADER", EMBER_SHADER),
 }
-
 
 local SMOKE_SIZE = 0.8
 local SMOKE_MAX_LIFETIME = 5.0
@@ -38,7 +38,6 @@ local MIASMA_PARTICLE_RADIUS = MIASMA_SPACING_RADIUS / 2
 -- Small overlap is good to make sure players are always in a fog when all squares are in one.
 local MIASMA_RADIUS = math.ceil(MIASMA_SPACING_RADIUS)
 local SMOKE_RADIUS = MIASMA_RADIUS - SMOKE_SIZE * 1.3-- 1.3 is scale factor for texture size and is constant to the smoke cloud.
-
 
 local _MiasmaCloudCount = 0 -- Tracking amount of miasma_cloud entities for miasmawatcher; server side.
 local function GetMiasmaCloudCount(world)
@@ -60,9 +59,52 @@ local function OnCameraUpdate_Client(dt)
         _OldHeading_sin = math.sin(_OldHeading * DEGREES)
         local ox, oz = _OldHeading_cos * MIASMA_PARTICLE_RADIUS, _OldHeading_sin * MIASMA_PARTICLE_RADIUS
         for miasmacloud, _ in pairs(_MiasmaCloudEntities) do
-            miasmacloud._front_cloud_fx.Transform:SetPosition(ox, 0, oz)
-            miasmacloud._back_cloud_fx.Transform:SetPosition(-ox, 0, -oz)
+            if miasmacloud._front_cloud_fx then --NOTE: Only need to check one
+                miasmacloud._front_cloud_fx.Transform:SetPosition(ox, 0, oz)
+                miasmacloud._back_cloud_fx.Transform:SetPosition(-ox, 0, -oz)
+            end
         end
+    end
+end
+-- This is just so players using larger camera mod don't run into issues with emitter limit
+local MAX_CAMERA_DIST = PLAYER_CAMERA_MAX_DIST_CAVES
+local function GetRadiusSqAllow()
+    local radius = math.min(MAX_CAMERA_DIST, TheCamera.maxdist) + 10 --Padding
+    return radius*radius
+end
+local function OnCameraUpdate_LargeDist_Client(dt) -- Camera moved at least a good chunk, do an update.
+    local radius_sq_allow = GetRadiusSqAllow()
+    local to_attach = {}
+    local to_detach = {}
+    --
+    for miasmacloud, _ in pairs(_MiasmaCloudEntities) do
+        if
+            miasmacloud.entity:FrustumCheckWithAABB(10, 10) and
+            ThePlayer:GetDistanceSqToInst(miasmacloud) < radius_sq_allow
+        then
+            table.insert(to_attach, miasmacloud)
+        else
+            table.insert(to_detach, miasmacloud)
+        end
+    end
+    -- 
+    for _, miasmacloud in ipairs(to_detach) do --Detach first
+        miasmacloud:DetachParticles()
+    end
+    for _, miasmacloud in ipairs(to_attach) do --Now we can attach!
+        miasmacloud:AttachParticles(true)
+    end
+end
+
+local function OnCameraUpdate_LargeDist_Targeted_Client(miasmacloud)
+    local radius_sq_allow = GetRadiusSqAllow()
+    if
+        miasmacloud.entity:FrustumCheckWithAABB(10, 10) and
+        (ThePlayer and ThePlayer:GetDistanceSqToInst(miasmacloud) < radius_sq_allow)
+    then
+        miasmacloud:AttachParticles()
+    else
+        miasmacloud:DetachParticles()
     end
 end
 local function OnCameraUpdate_Targeted_Client(miasmacloud)
@@ -73,8 +115,10 @@ local function OnCameraUpdate_Targeted_Client(miasmacloud)
         _OldHeading_sin = math.sin(_OldHeading * DEGREES)
     end
     local ox, oz = _OldHeading_cos * MIASMA_PARTICLE_RADIUS, _OldHeading_sin * MIASMA_PARTICLE_RADIUS
-    miasmacloud._front_cloud_fx.Transform:SetPosition(ox, 0, oz)
-    miasmacloud._back_cloud_fx.Transform:SetPosition(-ox, 0, -oz)
+    if miasmacloud._front_cloud_fx then --NOTE: Only need to check one
+        miasmacloud._front_cloud_fx.Transform:SetPosition(ox, 0, oz)
+        miasmacloud._back_cloud_fx.Transform:SetPosition(-ox, 0, -oz)
+    end
 end
 
 local function IntColour(r, g, b, a)
@@ -130,22 +174,33 @@ local function InitEnvelope()
 end
 
 --------------------------------------------------------------------------
-local RADIUS_SQ_DENY = 4 * 4
-local RADIUS_SQ_ALLOW = 40 * 40
+
+local function AttachEmberEffect(inst)
+    if inst._front_cloud_fx and not inst._front_cloud_fx.ember_fx then
+        local front = SpawnPrefab("miasma_ember_fx")
+        front.entity:SetParent(inst._front_cloud_fx.entity)
+
+        local back = SpawnPrefab("miasma_ember_fx")
+        back.entity:SetParent(inst._back_cloud_fx.entity)
+
+        inst._front_cloud_fx.ember_fx = front
+        inst._back_cloud_fx.ember_fx = back
+    end
+end
 
 local function emit_ember_fn(effect, ember_sphere_emitter, px, py, pz, vx, vy, vz) -- To be called in emit_smoke_fn!
     local ox, oy, oz = ember_sphere_emitter()
     local ovx, ovy, ovz = .06 * UnitRand(), 0.2 + 0.3 * math.random(), .06 * UnitRand()
 
     effect:AddParticle(
-        1,
+        0,
         EMBER_MAX_LIFETIME * (math.random() * 0.5 + 0.5), -- lifetime
         px + ox, 0 - oy, pz + oz,   -- position
         vx + ovx, vy + ovy, vz + ovz -- velocity
     )
 end
 
-local function emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter, px, pz, ex, ez, isdiminishing, isfront, _world, _sim)
+local function emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter, px, pz, ex, ez, isdiminishing, isfront, _world, ember_effect)
 	local ox, oz = smoke_circle_emitter() -- Offset.
     if isfront then -- Flip circle coordinates to make it a semicircle.
         if ox < 0 then
@@ -164,13 +219,6 @@ local function emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter,
     end
     ex, ez = ex + oz, ez + oz -- World position of particle.
 
-    local dx, dz = px - ex, pz - ez -- Delta from player to particle.
-    local dsq = dx * dx + dz * dz
-    if dsq > RADIUS_SQ_ALLOW then
-        -- Hide ones too far from the player.
-        return
-    end
-
     if not _world.Map:IsVisualGroundAtPoint(ex, 0, ez) then
         -- Hide ones over void.
         return
@@ -183,7 +231,7 @@ local function emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter,
     if isdiminishing then
         -- Emit ember particles to help show the effect of fire.
         for i = 1, 8 do
-            emit_ember_fn(effect, ember_sphere_emitter, ox, oy, oz, vx, vy, vz)
+            emit_ember_fn(ember_effect, ember_sphere_emitter, ox, oy, oz, vx, vy, vz)
         end
 
         if math.random() < 0.75 then
@@ -207,14 +255,24 @@ local function emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter,
 	)
 end
 
+local function ClearParticles(inst)
+    local effect = inst.VFXEffect
+    effect:ClearAllParticles(0)
+end
 
+local function FastForwardParticles(inst, fast_forward)
+    local effect = inst.VFXEffect
+    effect:FastForward(0, fast_forward)
+end
+
+local INSTANT_NUM_SPAWN = 10
 local function SetupParticles(inst)
 	if InitEnvelope ~= nil then
 		InitEnvelope()
 	end
 
 	local effect = inst.entity:AddVFXEffect()
-	effect:InitEmitters(2)
+	effect:InitEmitters(1)
 
 	-- SMOKE
 	effect:SetRenderResources(0, ANIM_SMOKE_TEXTURE, SMOKE_SHADER)
@@ -230,28 +288,38 @@ local function SetupParticles(inst)
 	effect:SetRadius(0, SMOKE_RADIUS) --only needed on a single emitter
 	effect:SetDragCoefficient(0, .1)
 
-    -- EMBER
-    effect:SetRenderResources(1, EMBER_TEXTURE, EMBER_SHADER)
-    effect:SetMaxNumParticles(1, 128)
-    effect:SetMaxLifetime(1, EMBER_MAX_LIFETIME)
-    effect:SetColourEnvelope(1, COLOUR_ENVELOPE_NAME_EMBER)
-    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_EMBER)
-    effect:SetBlendMode(1, BLENDMODE.Additive)
-    effect:EnableBloomPass(1, true)
-	effect:SetSortOrder(1, 0)
-    effect:SetSortOffset(1, 0)
-    effect:SetDragCoefficient(1, 0.07)
+    inst.ClearParticles = ClearParticles
+    inst.FastForwardParticles = FastForwardParticles
 
 	-----------------------------------------------------
     -- Local cache for when FX are emitted.
     local _world = TheWorld
-    local _sim = TheSim
 
     local smoke_circle_emitter = CreateCircleEmitter(SMOKE_RADIUS)
     local ember_sphere_emitter = CreateSphereEmitter(SMOKE_SIZE)
 
     local particles_per_tick = 2 * TheSim:GetTickTime() -- Half intensity with particle placement folding.
     local num_to_emit = 0
+
+    function inst:SpawnInstantParticles()
+        local _player = ThePlayer
+        if _player then
+            local parent = inst.entity:GetParent()
+            if parent and (parent.IsCloudEnabled == nil or parent:IsCloudEnabled()) then
+                local px, _, pz = _player.Transform:GetWorldPosition()
+                local ex, _, ez = parent.Transform:GetWorldPosition()
+                local isdiminishing = parent._diminishing:value()
+                local isfront = inst._frontsemicircle
+                local ember_effect = inst.ember_fx and inst.ember_fx.VFXEffect
+
+                --NOTE: Usually 17-19 particles are alive at once, spit out 10 immediately and rely on usual update for the rest
+                for i = 1, INSTANT_NUM_SPAWN do
+                    emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter, px, pz, ex, ez, isdiminishing, isfront, _world, ember_effect)
+                end
+            end
+        end
+    end
+
     EmitterManager:AddEmitter(inst, nil, function()
         local _player = ThePlayer
         if _player then
@@ -262,9 +330,17 @@ local function SetupParticles(inst)
                 local isdiminishing = parent._diminishing:value()
                 local isfront = inst._frontsemicircle
 
+                --NOTE: Dumb hack.
+                -- The dirty event is sometimes not pushed til a bit after, but _diminishing is still set, but ember effect doesn't exist yet. So make sure it exists!
+                if isdiminishing and not inst.ember_fx then
+                    AttachEmberEffect(parent)
+                end
+
+                local ember_effect = inst.ember_fx and inst.ember_fx.VFXEffect
+
                 num_to_emit = num_to_emit + particles_per_tick
                 while num_to_emit > 1 do
-                    emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter, px, pz, ex, ez, isdiminishing, isfront, _world, _sim)
+                    emit_smoke_fn(effect, smoke_circle_emitter, ember_sphere_emitter, px, pz, ex, ez, isdiminishing, isfront, _world, ember_effect)
                     num_to_emit = num_to_emit - 1
                 end
             end
@@ -369,7 +445,48 @@ local function OnEntitySleep(inst)
     inst:StopAllWatchers()
 end
 
-local function AttachParticles(inst)
+local AttachParticles
+local function DetachParticles(inst)
+    if inst._front_cloud_fx then
+        inst._front_cloud_fx:ClearParticles()
+        inst._front_cloud_fx:Remove()
+        inst._front_cloud_fx = nil
+    end
+
+    if inst._back_cloud_fx then
+        inst._back_cloud_fx:ClearParticles()
+        inst._back_cloud_fx:Remove()
+        inst._back_cloud_fx = nil
+    end
+end
+
+local function DetachEmberEffect(inst)
+    if inst._front_cloud_fx then
+        if inst._front_cloud_fx.ember_fx then
+            inst._front_cloud_fx.ember_fx:Remove()
+            inst._front_cloud_fx.ember_fx = nil
+
+            inst._back_cloud_fx.ember_fx:Remove()
+            inst._back_cloud_fx.ember_fx = nil
+        end
+    end
+end
+
+local function OnDiminishingDirty(inst)
+    local diminishing = inst._diminishing:value()
+    if diminishing then
+        AttachEmberEffect(inst)
+    else
+        DetachEmberEffect(inst)
+    end
+end
+
+local FAST_FORWARD_ON_FRUSTUM_IN = SMOKE_MAX_LIFETIME * 0.11 -- This should match a bit after the moment miasma is fulling opaque (255)
+AttachParticles = function(inst, do_fast_forward)
+    if inst._front_cloud_fx then
+        return
+    end
+
     local front = SpawnPrefab("miasma_cloud_fx")
     front.entity:SetParent(inst.entity)
     front.Transform:SetPosition(MIASMA_PARTICLE_RADIUS, 0, 0)
@@ -381,6 +498,16 @@ local function AttachParticles(inst)
 
     inst._front_cloud_fx = front
     inst._back_cloud_fx = back
+
+    OnDiminishingDirty(inst)
+
+    if do_fast_forward then
+        front:SpawnInstantParticles()
+        back:SpawnInstantParticles()
+
+        front:FastForwardParticles(FAST_FORWARD_ON_FRUSTUM_IN)
+        back:FastForwardParticles(FAST_FORWARD_ON_FRUSTUM_IN)
+    end
 end
 
 --------------------------------------------------------------------------
@@ -398,19 +525,25 @@ local function fn()
 
 	--Dedicated server does not need to spawn local particle fx
 	if not TheNet:IsDedicated() then
-		AttachParticles(inst)
+        inst.AttachParticles = AttachParticles
+        inst.DetachParticles = DetachParticles
+
         if _MiasmaCloudEntities == nil then
             -- Initialize.
             _MiasmaCloudEntities = {}
             if TheCamera then
                 TheCamera:AddListener("MiasmaClouds", OnCameraUpdate_Client)
+                TheCamera:AddLargeUpdateListener("MiasmaClouds", OnCameraUpdate_LargeDist_Client)
             end
         end
+
         if TheCamera then
+            inst:DoTaskInTime(0, OnCameraUpdate_LargeDist_Targeted_Client) --For it to be placed first before we do frustum check
             OnCameraUpdate_Targeted_Client(inst)
         end
         _MiasmaCloudEntities[inst] = true
         inst:ListenForEvent("onremove", OnRemove_Client)
+        inst:ListenForEvent("diminishingdirty", OnDiminishingDirty)
 	end
 
 	inst.entity:SetPristine()
@@ -418,6 +551,12 @@ local function fn()
 	if not TheWorld.ismastersim then
 		return inst
 	end
+
+    inst:AddComponent("edible")
+    inst.components.edible.foodtype = FOODTYPE.MIASMA
+    inst.components.edible.healthvalue = 0
+    inst.components.edible.hungervalue = TUNING.CALORIES_LARGE
+    inst.components.edible.sanityvalue = -TUNING.SANITY_LARGE
 
 	inst.watchers = {}
 	inst.watchers_exiting = {}
@@ -458,5 +597,44 @@ local function fn_fx()
     return inst
 end
 
+-------------------------------------------------------------------------
+
+local function SetupEmberParticles(inst)
+	if InitEnvelope ~= nil then
+		InitEnvelope()
+	end
+
+	local effect = inst.entity:AddVFXEffect()
+	effect:InitEmitters(1)
+
+    -- EMBER
+    effect:SetRenderResources(0, EMBER_TEXTURE, EMBER_SHADER)
+    effect:SetMaxNumParticles(0, 128)
+    effect:SetMaxLifetime(0, EMBER_MAX_LIFETIME)
+    effect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_EMBER)
+    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_EMBER)
+    effect:SetBlendMode(0, BLENDMODE.Additive)
+    effect:EnableBloomPass(0, true)
+	effect:SetSortOrder(0, 0)
+    effect:SetSortOffset(0, 0)
+    effect:SetDragCoefficient(0, 0.07)
+end
+
+local function fn_fx_ember()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+
+    inst:AddTag("FX")
+    --[[Non-networked entity]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    SetupEmberParticles(inst)
+
+    return inst
+end
+
 return Prefab("miasma_cloud", fn, nil, prefabs),
-    Prefab("miasma_cloud_fx", fn_fx, assets_fx)
+    Prefab("miasma_cloud_fx", fn_fx, assets_fx),
+    Prefab("miasma_ember_fx", fn_fx_ember, assets_fx)

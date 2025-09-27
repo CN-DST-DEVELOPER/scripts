@@ -14,6 +14,28 @@ local spawner_prefabs =
     "collapse_small",
 }
 
+local _storyprogress = 0
+local NUM_STORY_LINES = 5
+
+local function rune_AdvanceStory(inst)
+	if inst.storyprogress == nil then
+		_storyprogress = (_storyprogress % NUM_STORY_LINES) + 1
+		inst.storyprogress = _storyprogress
+	end
+end
+
+local function rune_getstatus(inst)
+	rune_AdvanceStory(inst)
+    return nil
+end
+
+local function rune_getdescription(inst, viewer)
+	if viewer.components.inventory and viewer.components.inventory:EquipHasTag("ancient_reader") then
+		rune_AdvanceStory(inst)
+		return STRINGS.NIGHTMARE_OVERGROWTH["LINE_"..tostring(inst.storyprogress)]
+	end
+end
+
 local SPAWN_DELAY = 2.5
 local SPAWN_DELAY_VARIANCE = 3
 
@@ -71,11 +93,20 @@ local function OnSave(inst, data)
     if inst._crack ~= nil and inst._crack:IsValid() then
         data.crack_rotation = inst._crack.Transform:GetRotation()
     end
+    if inst.storyprogress then
+        data.storyprogress = inst.storyprogress
+    end
 end
 
 local function OnLoad(inst, data)
-    if data ~= nil and data.crack_rotation ~= nil then
-        inst._crack_rotation = data.crack_rotation
+    if data ~= nil then
+        if data.crack_rotation ~= nil then
+            inst._crack_rotation = data.crack_rotation
+        end
+        if data.storyprogress then
+			inst.storyprogress = data.storyprogress
+			_storyprogress = math.max(_storyprogress, inst.storyprogress)
+		end
     end
 end
 
@@ -87,6 +118,8 @@ local function fn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
+
+	inst:AddTag("ancient_text")
 
     inst.AnimState:SetBuild("nightmaregrowth")
     inst.AnimState:SetBank("nightmaregrowth")
@@ -109,6 +142,8 @@ local function fn()
     inst.components.sanityaura.aura = -TUNING.SANITYAURA_SUPERHUGE
 
     inst:AddComponent("inspectable")
+    inst.components.inspectable.getstatus = rune_getstatus
+    inst.components.inspectable.descriptionfn = rune_getdescription
 
     inst.growfn = grow
 

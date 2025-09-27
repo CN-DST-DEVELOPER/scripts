@@ -9,7 +9,7 @@ local SHIELD_DURATION = 10 * FRAMES
 local SHIELD_VARIATIONS = 3
 local MAIN_SHIELD_CD = 1.2
 
-local RESISTANCES =
+local RESISTANCES = -- NOTES(JBK): Keep in sync in skilltree_wortox. [ASRPS]
 {
     "_combat",
     "explosive",
@@ -17,6 +17,7 @@ local RESISTANCES =
     "lunarhaildebris",
     "caveindebris",
     "trapdamage",
+    "rock_tree",
 }
 
 for j = 0, 3, 3 do

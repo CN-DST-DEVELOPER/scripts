@@ -186,6 +186,7 @@ function MosslingBrain:OnStart()
 	PriorityNode(
 	{
 		BrainCommon.PanicTrigger(self.inst),
+		BrainCommon.ElectricFencePanicTrigger(self.inst),
 
 		WhileNode(function() return self.inst.shouldGoAway end, "Go Away",
 			DoAction(self.inst, GoHome)),

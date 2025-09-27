@@ -9,18 +9,33 @@ local function groundsound(inst)
     end
 end
 
-local actionhandlers =
-{
-
-}
-
 local events =
 {
-    EventHandler("leap", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("leap") end end),
-    EventHandler("dobite", function(inst) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) and not inst.sg:HasStateTag("attack") and not inst.sg:HasStateTag("jumping") then inst.sg:GoToState("bite") end end),
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") and not inst.sg:HasStateTag("jumping") then inst.sg:GoToState("hit") end end),
+	EventHandler("leap", function(inst)
+		if not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("attack", "electrocute")) then
+			inst.sg:GoToState("leap")
+		end
+	end),
+	EventHandler("dobite", function(inst)
+		if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) and not inst.sg:HasAnyStateTag("attack", "jumping", "electrocute") then
+			inst.sg:GoToState("bite")
+		end
+	end),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("attack", "jumping", "electrocute") then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("death", function(inst) inst.sg:GoToState("death", inst.sg.statemem.dead) end),
-    EventHandler("doattack", function(inst, data) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then inst.sg:GoToState("attack", data.target) end end),
+	EventHandler("doattack", function(inst, data)
+		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
+			inst.sg:GoToState("attack", data.target)
+		end
+	end),
     EventHandler("dive_eat", function(inst)
         if inst.foodtoeat then
             local x,y,z = inst.foodtoeat.Transform:GetWorldPosition()
@@ -33,15 +48,8 @@ local events =
     CommonHandlers.OnHop(),
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
 }
-
-local function startleap(inst)
-
-end
-
-local function endleap(inst)
-
-end
 
 local AOE_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "notarget"}
 
@@ -65,7 +73,6 @@ local function  DoAttack(inst)
         ShakeAllCamerasOnPlatform(CAMERASHAKE.VERTICAL, 0.2, 0.05, 0.10, inst:GetCurrentPlatform())
     end
 end
-
 
 local function findwater(inst)
     local foundwater = false
@@ -265,7 +272,7 @@ local states =
 
     State{
         name = "leap",
-        tags = { "busy","jumping" },
+		tags = { "busy", "jumping", "leap_electrocute" },
 
         onenter = function(inst)
             if not inst.readytoswim then
@@ -284,7 +291,6 @@ local states =
             inst.components.locomotor:Stop()
             inst.components.locomotor:EnableGroundSpeedMultiplier(false)
 
-
             inst.AnimState:PlayAnimation("jump")
             inst.AnimState:PushAnimation("jump_loop",true)
 
@@ -296,7 +302,6 @@ local states =
             end
             inst.components.timer:StartTimer("minleaptime", 0.5)
             inst.sg:SetTimeout(0.65)
-            startleap()
         end,
 
         timeline =
@@ -340,7 +345,7 @@ local states =
 
     State{
         name = "leap_pst",
-        tags = { "busy" },
+		tags = { "busy", "leap_electrocute" },
 
         onenter = function(inst)
             inst.components.locomotor:RunForward()
@@ -361,6 +366,8 @@ local states =
                     end
                     groundsound(inst)
                 end
+				inst.sg:RemoveStateTag("leap_electrocute")
+				inst.override_combat_fx_size = inst.components.amphibiouscreature.in_water and "small" or nil
             end),
         },
 
@@ -565,7 +572,6 @@ CommonStates.AddRunStates(states,
         end
     end,
     runonupdate = function(inst)
-
         inst:testfooddist()
     end,
 })
@@ -603,6 +609,56 @@ CommonStates.AddWalkStates(states,
     end,
 })
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states,
+{--timeline
+	pst =
+	{
+		FrameEvent(2, function(inst)
+			if inst.sg:HasStateTag("leap_electrocute") then
+				inst.sg:RemoveStateTag("leap_electrocute")
+				if inst.components.amphibiouscreature.in_water then				
+					inst.AnimState:SetBank("shark_water")
+					SpawnPrefab("splash_green_large").Transform:SetPosition(inst.Transform:GetWorldPosition())
+				end
+			end
+		end),
+	},
+},
+{--anims
+	loop = function(inst)
+		--@V2C: #HACK! using this because loop_onenter happens after fx is spawned
+		if inst.sg.lasttags["leap_electrocute"] and inst.components.amphibiouscreature.in_water then
+			inst.sg:AddStateTag("leap_electrocute")
+			inst.AnimState:SetBank("shark")
+			inst.override_combat_fx_size = "med"
+			inst.override_combat_fx_height = ""
+		end
+	end,
+},
+{--fns
+	loop_onenter = function(inst)
+		if inst.sg:HasStateTag("leap_electrocute") and inst.components.amphibiouscreature.in_water then
+			--V2C: can change this back to in_water size since fx is already spawned at this point
+			inst.override_combat_fx_size = "small"
+			inst.override_combat_fx_height = nil
+		end
+	end,
+	loop_onexit = function(inst)
+		if not inst.sg.statemem.not_interrupted and inst.sg:HasStateTag("leap_electrocute") and inst.components.amphibiouscreature.in_water then
+			inst.AnimState:SetBank("shark_water")
+		end
+	end,
+	pst_onenter = function(inst)
+		if inst.sg.lasttags["leap_electrocute"] and inst.components.amphibiouscreature.in_water then
+			inst.sg:AddStateTag("leap_electrocute")
+			inst.AnimState:SetBank("shark")
+		end
+	end,
+	pst_onexit = function(inst)
+		if inst.sg:HasStateTag("leap_electrocute") and inst.components.amphibiouscreature.in_water then
+			inst.AnimState:SetBank("shark_water")
+		end
+	end,
+})
 
-return StateGraph("shark", states, events, "idle", actionhandlers)
-
+return StateGraph("shark", states, events, "idle")

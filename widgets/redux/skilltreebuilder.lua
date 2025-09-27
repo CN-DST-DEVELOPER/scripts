@@ -9,7 +9,11 @@ local UIAnim = require "widgets/uianim"
 require("util")
 
 local TILESIZE = 32
-local TILESIZE_FRAME = 40
+local TILESIZE_FRAME = TILESIZE + 8
+local INFOGRAPHIC_RATIO = 80 / 64 -- frame size / background size
+local TILESIZE_INFOGRAPHIC = TILESIZE - 5
+local TILESIZE_INFOGRAPHIC_CIRCLE = TILESIZE_INFOGRAPHIC * SQRT2
+local TILESIZE_INFOGRAPHIC_FRAME = TILESIZE_INFOGRAPHIC_CIRCLE * INFOGRAPHIC_RATIO - 4 -- Small overlap for icon frame to cover edges.
 local LOCKSIZE = 24
 local SPACE = 5 
 
@@ -31,6 +35,15 @@ local IMAGE_SELECTABLE_OVER = "selectable_over.tex"
 local IMAGE_X = "locked.tex"
 local IMAGE_FRAME = "frame.tex"
 local IMAGE_FRAME_LOCK = "frame_octagon.tex"
+
+local IMAGE_INFOGRAPHIC = "infographic.tex"
+local IMAGE_INFOGRAPHIC_OVER = "infographic_over.tex"
+local IMAGE_INFOGRAPHIC_ON = "infographic_on.tex"
+local IMAGE_INFOGRAPHIC_ON_OVER = "infographic_on_over.tex"
+local IMAGE_INFOGRAPHIC_OFF = "infographic_off.tex"
+local IMAGE_INFOGRAPHIC_OFF_OVER = "infographic_off_over.tex"
+local IMAGE_INFOGRAPHIC_FRAME = "frame_infographic.tex"
+
 local TEMPLATES = require "widgets/redux/templates"
 
 local function getSizeOfList(list)
@@ -91,8 +104,182 @@ local SkillTreeBuilder = Class(Widget, function(self, infopanel, fromfrontend, s
         local w, h = self.sync_status:GetRegionSize()
         self.sync_status:SetPosition(-w/2 - 2, -h/2 - 2) -- 2 Pixel padding, top right screen justification.
     end
+
+    
 end)
 
+local function _ScreenToLocal(x, y, xoffs, yoffs, centerjustifed)
+    local w, h = TheSim:GetScreenSize()
+    --print("MOUSE",x,y,w,h,RESOLUTION_X, RESOLUTION_Y)
+    if w > 0 and h > 0 then
+        local propscale = math.max(RESOLUTION_X / w, RESOLUTION_Y / h)
+
+        if centerjustifed then 
+        	return (x - w/2) * propscale - xoffs, (y - h / 2) * propscale - yoffs
+        else	-- THIS ONE IS RIGHT JUSTIFIED
+			return (x - w) * propscale - xoffs, (y - h / 2) * propscale - yoffs
+		end
+    end
+    return 0, 0
+end
+
+function SkillTreeBuilder:UpdatePosition(x, y)
+	local x1, y1 = 0, 0
+	local parent = self.root:GetParent()
+	while parent do
+		local x2, y2 = parent:GetPositionXYZ()
+		x1 = x1 + x2
+		y1 = y1 + y2
+		parent = parent:GetParent()
+	end
+	x1, y1 = _ScreenToLocal(x, y, x1, y1, self.fromfrontend)
+
+    local xnew = math.clamp(x1, -230,230 )
+    local ynew = math.clamp(y1, -12,213)  
+
+	--print(xnew, ynew)
+    if xnew > -230 and xnew < 230 and ynew > -12 and ynew < 213 then
+    	self.root.puck.pucktarget = {x=xnew,y=ynew} --root.puck:SetPosition(xnew,ynew,0)
+	end
+end
+
+function SkillTreeBuilder:PuckFollowMouse()
+    if self.followhandler == nil then
+        self.followhandler = TheInput:AddMoveHandler(function(x, y) self:UpdatePosition(x, y) end)
+        local pos = TheInput:GetScreenPosition()
+        self:UpdatePosition(pos.x,pos.y)
+    end
+end
+
+function SkillTreeBuilder:SpawnPuck()
+    self.root.puck = self:AddChild(Image("images/skilltree4.xml", "wendy_puck.tex"))
+    self.root.puck.idletime = 0
+    self.root.puck.lastpos = {x=0,y=0}
+    self.root.puck:SetClickable(false)
+
+  	if TheInput:ControllerAttached() then
+  		self.root.puck:SetPosition(0,0,0)  		
+  		self:StartUpdating()
+    else
+    	self:PuckFollowMouse()
+    	self:StartUpdating()
+    end
+
+    self.root.dialogue = self:AddChild(Text(TALKINGFONT, 32))
+    self.root.dialogue:SetPosition(-123,-30)
+    self.root.dialogue:SetMultilineTruncatedString(STRINGS.CHARACTERS.WENDY.WENDY_SKILLTREE_EASTEREGG,1, 200, 40, nil, true)
+    self.root.dialogue:SetHAlign(ANCHOR_MIDDLE)
+    self.root.dialogue:Hide() 
+end
+
+function SkillTreeBuilder:OnUpdate(dt)
+	self.root.puck.idletime = self.root.puck.idletime and self.root.puck.idletime + dt or 0
+
+	if TheInput:ControllerAttached() then
+		self.root.puck.controlpos = self.root.puck.buttonpos or {x=0,y=0}
+	else
+		self.root.puck.controlpos = TheInput:GetScreenPosition()
+	end
+	
+	local dist = distsq(self.root.puck.controlpos.x, self.root.puck.controlpos.y, self.root.puck.lastpos.x, self.root.puck.lastpos.y)
+
+	if dist > 1 then
+		self.root.puck.idletime = 0
+		if self.root.puck.override then
+			self:clearwendyeasteregg()
+		end
+	end 
+
+	self.root.puck.lastpos = self.root.puck.controlpos
+
+	if self.root.puck.idletime > 5 then
+		self:triggerwendyeasteregg()
+	end
+
+	local newx, newy = nil, nil
+	if TheInput:ControllerAttached() then
+		for i,item in pairs(self.skillgraphics)do
+			if item.button.focus == true then
+				
+				local pos = self.root.puck:GetPosition()
+				local post = item.button:GetPosition()
+				self.root.puck.buttonpos = item.button:GetPosition()
+
+				newx = pos.x + ((post.x-pos.x) *(5*dt))
+				newy = pos.y + ((post.y-pos.y) *(5*dt))
+			end
+		end
+	else
+		if self.root.puck.pucktarget then
+			local pos = self.root.puck:GetPosition()
+			local post = Vector3(self.root.puck.pucktarget.x,self.root.puck.pucktarget.y,0)
+
+			newx = pos.x + ((post.x-pos.x) *(15*dt))
+			newy = pos.y + ((post.y-pos.y) *(15*dt))
+			--print(newx,newy)
+		end
+	end
+	if not self.root.puck.override and newx and newy then	
+		self.root.puck:SetPosition(newx,newy,0)
+	end
+	if self.root.puck.override then
+		local pos = self.root.puck:GetPosition()
+		local post = Vector3(self.root.puck.override.x,self.root.puck.override.y,0)
+
+		local newx = pos.x + ((post.x-pos.x) *(2*dt))
+		local newy = pos.y + ((post.y-pos.y) *(2*dt))
+		--print(newx,newy)
+		self.root.puck:SetPosition(newx,newy,0)
+	end
+end
+
+function SkillTreeBuilder:triggerwendyeasteregg()
+	if self.root.puck and not self.root.puck.easteregg then
+		self.root.puck.override = {x=2,y=213}
+		self.root.puck.easteregg = true
+		
+		self.inst.wendyeasteregg = {}
+
+
+		local task1 = self.inst:DoTaskInTime(2.5, function()  				
+			self.root.dialogue:Show()
+			TheFrontEnd:GetSound():PlaySound("dontstarve/characters/wendy/talk_LP_HUD", "HUD_talk")
+		end)
+		
+		local task2 = self.inst:DoTaskInTime(5.5, function()
+			self.root.puck.override = {x=-123,y=173}
+		end)
+		
+		local task3 = self.inst:DoTaskInTime(6.3, function()  			
+			self.root.dialogue:Hide()
+			TheFrontEnd:GetSound():KillSound("HUD_talk")
+		end)
+
+		local task4 = self.inst:DoTaskInTime(10, function()  			
+			self.root.puck.override = nil
+			self.inst.wendyeasteregg = nil
+		end)	
+
+		table.insert(self.inst.wendyeasteregg, task1)
+		table.insert(self.inst.wendyeasteregg, task2)
+		table.insert(self.inst.wendyeasteregg, task3)
+		table.insert(self.inst.wendyeasteregg, task4)
+	end
+end
+
+function SkillTreeBuilder:clearwendyeasteregg()
+	self.root.puck.override = nil
+	TheFrontEnd:GetSound():KillSound("HUD_talk")
+	self.root.dialogue:Hide()
+	if self.inst.wendyeasteregg then
+		for i,task in ipairs(self.inst.wendyeasteregg)do
+			if task then
+				task:Cancel()
+			end
+		end
+        self.inst.wendyeasteregg = nil
+	end	
+end
 
 function SkillTreeBuilder:countcols(cols, data)
 	for i,branch in pairs(data)do
@@ -203,6 +390,14 @@ function SkillTreeBuilder:SetFocusChangeDirs()
 	end
 end
 
+function SkillTreeBuilder:Kill()
+	if self.root.puck ~= nil then
+		self:clearwendyeasteregg()
+	end
+
+    self._base.Kill(self)
+end
+
 function SkillTreeBuilder:buildbuttons(panel, pos, data, offset, root)	
 	for skill,subdata in pairs(data)do
 
@@ -213,7 +408,11 @@ function SkillTreeBuilder:buildbuttons(panel, pos, data, offset, root)
 		local skillimage = nil
 
 		skillbutton = self:AddChild(ImageButton(ATLAS,IMAGE_SELECTED,IMAGE_SELECTED,IMAGE_SELECTED,IMAGE_SELECTED,IMAGE_SELECTED))
-		skillbutton:ForceImageSize(TILESIZE, TILESIZE)
+        if subdata.infographic then
+            skillbutton:ForceImageSize(TILESIZE_INFOGRAPHIC_CIRCLE, TILESIZE_INFOGRAPHIC_CIRCLE)
+        else
+            skillbutton:ForceImageSize(TILESIZE, TILESIZE)
+        end
 		skillbutton:Hide()
 		skillbutton:SetOnGainFocus(function()
 			if TheInput:ControllerAttached() then
@@ -245,16 +444,27 @@ function SkillTreeBuilder:buildbuttons(panel, pos, data, offset, root)
 		if subdata.icon then
 			local tex = subdata.icon..".tex"
 			skillicon = skillbutton:AddChild(Image( GetSkilltreeIconAtlas(tex), tex ))
-			skillicon:ScaleToSize(TILESIZE-4, TILESIZE-4)
+            if subdata.infographic then
+                skillicon:ScaleToSize(TILESIZE_INFOGRAPHIC, TILESIZE_INFOGRAPHIC)
+            else
+                skillicon:ScaleToSize(TILESIZE-4, TILESIZE-4)
+            end
 			skillicon:MoveToFront()
 		end
 
 		local frame = IMAGE_FRAME
-		if subdata.lock_open then
-			frame = IMAGE_FRAME_LOCK
-		end
-		skillimage = self:AddChild(Image(ATLAS,frame)) 
-		skillimage:ScaleToSize(TILESIZE_FRAME, TILESIZE_FRAME)
+        if subdata.infographic then -- Higher priority than lock_open.
+            frame = IMAGE_INFOGRAPHIC_FRAME
+        elseif subdata.lock_open then
+            frame = IMAGE_FRAME_LOCK
+            skillbutton:SetScale(0.8, 0.8, 1)
+        end
+		skillimage = self:AddChild(Image(ATLAS,frame))
+        if subdata.infographic then
+            skillimage:ScaleToSize(TILESIZE_INFOGRAPHIC_FRAME, TILESIZE_INFOGRAPHIC_FRAME)
+        else
+            skillimage:ScaleToSize(TILESIZE_FRAME, TILESIZE_FRAME)
+        end
 		skillimage:Hide()
 
 		local newpos = Vector3(subdata.pos[1],subdata.pos[2]+ offset,0)
@@ -267,11 +477,6 @@ function SkillTreeBuilder:buildbuttons(panel, pos, data, offset, root)
 		self.skillgraphics[skill].button = skillbutton
 		self.skillgraphics[skill].frame = skillimage
         self.skillgraphics[skill].button_decorations = subdata.button_decorations
-        if subdata.button_decorations ~= nil then
-            if subdata.button_decorations.init ~= nil then
-                subdata.button_decorations.init(skillbutton, root, self.fromfrontend)
-            end
-        end
 		table.insert(self.buttongrid,{button=skillbutton,x=newpos.x,y=newpos.y,skill=skill,forced_focus=subdata.forced_focus,defaultfocus=subdata.defaultfocus,})
 	end	
 end
@@ -312,6 +517,7 @@ function SkillTreeBuilder:CreatePanel(data, offset)
 
 	panel.c_height = maxrows * TILESIZE + ((maxrows -1) * SPACE)
 
+
 	return panel
 end
 
@@ -333,7 +539,7 @@ end
 
 function gettitle(skill, prefabname, skillgraphics)
 	local skilldata = skilltreedefs.SKILLTREE_DEFS[prefabname][skill]
-	if skilldata.lock_open then
+	if skilldata.lock_open and not skilldata.infographic then
 		local lockstatus = skillgraphics[skill].status.lock_open
 		if lockstatus then
 			if lockstatus == "question"  then
@@ -354,7 +560,7 @@ function getdesc(skill, prefabname)
 	return skilldata.desc
 end
 
-function SkillTreeBuilder:RefreshTree()
+function SkillTreeBuilder:RefreshTree(skillschanged)
     local characterprefab, availableskillpoints, activatedskills, skilltreeupdater
     local frontend = self.fromfrontend
     local readonly = self.readonly
@@ -387,6 +593,17 @@ function SkillTreeBuilder:RefreshTree()
         activatedskills = TheSkillTree:GetActivatedSkills(characterprefab)
     end
     
+    if not self.button_decorations_init then
+        self.button_decorations_init = true
+        for _, graphics in pairs(self.skillgraphics) do
+            if graphics.button_decorations ~= nil then
+                if graphics.button_decorations.init ~= nil then
+                    graphics.button_decorations.init(graphics.button, self.skilltreewidget.midlay, self.fromfrontend, characterprefab, activatedskills)
+                end
+            end
+        end
+    end
+    
 	local function make_connected_clickable(skill)
 		if self.skilltreedef[skill].connects then
 			for i,connected_skill in ipairs(self.skilltreedef[skill].connects)do
@@ -404,9 +621,18 @@ function SkillTreeBuilder:RefreshTree()
 
 	for skill,graphics in pairs(self.skillgraphics) do
 		-- ROOT ITEMS ARE ACTIVATABLE
+        -- NOTES(JBK): But only if they have an rpc_id.
 		if self.skilltreedef[skill].root then
-			graphics.status.activatable = true
+			graphics.status.activatable = self.skilltreedef[skill].rpc_id ~= nil
 		end
+        -- NOTES(JBK): All infographics are highlighted.
+        if self.skilltreedef[skill].infographic then
+            graphics.status.activated = true
+            graphics.status.infographic = true
+            -- Make them not resize or move when hovering or clicking.
+            graphics.button.scale_on_focus = false
+            graphics.button.move_on_click = false
+        end
 	end
 
 	for skill,graphics in pairs(self.skillgraphics) do
@@ -438,16 +664,12 @@ function SkillTreeBuilder:RefreshTree()
 
 	for skill,graphics in pairs(self.skillgraphics) do
 		if self.skilltreedef[skill].locks then
-			local activatable = true
+			graphics.status.activatable = self.skilltreedef[skill].rpc_id ~= nil
 			for i,lock in ipairs(self.skilltreedef[skill].locks) do
 				if not self.skillgraphics[lock].status.lock_open then
-					activatable = false
+					graphics.status.activatable = false
 					break
 				end
-			end
-			graphics.status.activatable = false
-			if activatable then
-				graphics.status.activatable = true
 			end
 		end
 	end
@@ -461,19 +683,26 @@ function SkillTreeBuilder:RefreshTree()
 		end
 
 		if graphics.status.lock then
-			graphics.button:SetScale(0.8,0.8,1)
 			graphics.button:Show()
 			if graphics.status.lock_open then
 				if graphics.status.lock_open == "question" then
 					graphics.button:SetTextures(ATLAS, IMAGE_QUESTION, IMAGE_QUESTION_OVER,IMAGE_QUESTION,IMAGE_QUESTION,IMAGE_QUESTION)
 				else
-					graphics.button:SetTextures(ATLAS, IMAGE_UNLOCKED, IMAGE_UNLOCKED_OVER,IMAGE_UNLOCKED,IMAGE_UNLOCKED,IMAGE_UNLOCKED)
+                    if graphics.status.infographic then
+                        graphics.button:SetTextures(ATLAS, IMAGE_INFOGRAPHIC_ON, IMAGE_INFOGRAPHIC_ON_OVER, IMAGE_INFOGRAPHIC_ON, IMAGE_INFOGRAPHIC_ON, IMAGE_INFOGRAPHIC_ON)
+                    else
+                        graphics.button:SetTextures(ATLAS, IMAGE_UNLOCKED, IMAGE_UNLOCKED_OVER, IMAGE_UNLOCKED, IMAGE_UNLOCKED, IMAGE_UNLOCKED)
+                    end
 				end
 
 				
 				if graphics.oldstatus and graphics.oldstatus.lock_open == nil then
 
-					graphics.button:SetTextures(ATLAS, IMAGE_LOCKED, IMAGE_LOCKED_OVER,IMAGE_LOCKED,IMAGE_LOCKED,IMAGE_LOCKED)
+                    if graphics.status.infographic then
+                        graphics.button:SetTextures(ATLAS, IMAGE_INFOGRAPHIC_OFF, IMAGE_INFOGRAPHIC_OFF_OVER, IMAGE_INFOGRAPHIC_OFF, IMAGE_INFOGRAPHIC_OFF, IMAGE_INFOGRAPHIC_OFF)
+                    else
+                        graphics.button:SetTextures(ATLAS, IMAGE_LOCKED, IMAGE_LOCKED_OVER, IMAGE_LOCKED, IMAGE_LOCKED, IMAGE_LOCKED)
+                    end
 					self.inst:DoTaskInTime(0.5, function()
 						TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/unlock_gatedskill")
 						local pos = graphics.button:GetPosition()
@@ -487,7 +716,11 @@ function SkillTreeBuilder:RefreshTree()
 					    end)
 					end)
 					self.inst:DoTaskInTime(13/30, function()
-						graphics.button:SetTextures(ATLAS, IMAGE_UNLOCKED, IMAGE_UNLOCKED_OVER,IMAGE_UNLOCKED,IMAGE_UNLOCKED,IMAGE_UNLOCKED)
+                        if graphics.status.infographic then
+                            graphics.button:SetTextures(ATLAS, IMAGE_INFOGRAPHIC_ON, IMAGE_INFOGRAPHIC_ON_OVER, IMAGE_INFOGRAPHIC_ON, IMAGE_INFOGRAPHIC_ON, IMAGE_INFOGRAPHIC_ON)
+                        else
+                            graphics.button:SetTextures(ATLAS, IMAGE_UNLOCKED, IMAGE_UNLOCKED_OVER, IMAGE_UNLOCKED, IMAGE_UNLOCKED, IMAGE_UNLOCKED)
+                        end
 					end)
                     if graphics.button_decorations ~= nil then
                         if graphics.button_decorations.onunlocked ~= nil then
@@ -502,7 +735,11 @@ function SkillTreeBuilder:RefreshTree()
                     end
 				end
 			else
-				graphics.button:SetTextures(ATLAS, IMAGE_LOCKED, IMAGE_LOCKED_OVER,IMAGE_LOCKED,IMAGE_LOCKED,IMAGE_LOCKED)
+                if graphics.status.infographic then
+                    graphics.button:SetTextures(ATLAS, IMAGE_INFOGRAPHIC_OFF, IMAGE_INFOGRAPHIC_OFF_OVER, IMAGE_INFOGRAPHIC_OFF, IMAGE_INFOGRAPHIC_OFF, IMAGE_INFOGRAPHIC_OFF)
+                else
+                    graphics.button:SetTextures(ATLAS, IMAGE_LOCKED, IMAGE_LOCKED_OVER, IMAGE_LOCKED, IMAGE_LOCKED, IMAGE_LOCKED)
+                end
                 if graphics.button_decorations ~= nil then
                     if graphics.button_decorations.onlocked ~= nil then
                         graphics.button_decorations.onlocked(graphics.button, graphics.oldstatus == nil or graphics.oldstatus.lock_open == graphics.status.lock_open, self.fromfrontend)
@@ -511,7 +748,11 @@ function SkillTreeBuilder:RefreshTree()
 			end
 		elseif graphics.status.activated then
 			graphics.button:Show()
-			graphics.button:SetTextures(ATLAS, IMAGE_SELECTED, IMAGE_SELECTED_OVER,IMAGE_SELECTED,IMAGE_SELECTED,IMAGE_SELECTED)
+            if graphics.status.infographic then
+                graphics.button:SetTextures(ATLAS, IMAGE_INFOGRAPHIC, IMAGE_INFOGRAPHIC_OVER, IMAGE_INFOGRAPHIC, IMAGE_INFOGRAPHIC, IMAGE_INFOGRAPHIC)
+            else
+                graphics.button:SetTextures(ATLAS, IMAGE_SELECTED, IMAGE_SELECTED_OVER, IMAGE_SELECTED, IMAGE_SELECTED, IMAGE_SELECTED)
+            end
             if graphics.button_decorations ~= nil then
                 if graphics.button_decorations.onunlocked ~= nil then
                     graphics.button_decorations.onunlocked(graphics.button, true, self.fromfrontend)
@@ -535,6 +776,16 @@ function SkillTreeBuilder:RefreshTree()
             end
 		end
 	end
+
+    if skillschanged then
+        for _, graphics in pairs(self.skillgraphics) do
+            if graphics.button_decorations ~= nil then
+                if graphics.button_decorations.onskillschanged ~= nil then
+                    graphics.button_decorations.onskillschanged(graphics.button, self.selectedskill, self.fromfrontend, characterprefab, activatedskills)
+                end
+            end
+        end
+    end
 
 	self.root.xptotal:SetString(availableskillpoints)
 	if availableskillpoints <= 0 and TheSkillTree:GetSkillXP(characterprefab) >= TUNING.FIXME_DO_NOT_USE_FOR_MODS_NEW_MAX_XP_VALUE then -- >= TheSkillTree:GetMaximumExperiencePoints() then
@@ -582,7 +833,7 @@ function SkillTreeBuilder:RefreshTree()
 			self.infopanel.intro:Hide()
 			
             if not readonly then
-                if availableskillpoints > 0 and self.skillgraphics[self.selectedskill].status.activatable and not skilltreeupdater:IsActivated(self.selectedskill, characterprefab) and not self.skilltreedef[self.selectedskill].lock_open then
+                if availableskillpoints > 0 and self.skillgraphics[self.selectedskill].status.activatable and not skilltreeupdater:IsActivated(self.selectedskill, characterprefab) then
 
                 	self.infopanel.activatedbg:Hide()
                     self.infopanel.activatebutton:Show()                    
@@ -596,7 +847,7 @@ function SkillTreeBuilder:RefreshTree()
                 end
             end
 
-			if self.skillgraphics[self.selectedskill].status.activated then
+			if self.skillgraphics[self.selectedskill].status.activated and not self.skilltreedef[self.selectedskill].infographic then
 				self.infopanel.activatedtext:Show()
 				self.infopanel.activatedbg:Show()
 			end
@@ -635,12 +886,13 @@ function SkillTreeBuilder:LearnSkill(skilltreeupdater, characterprefab)
 	    	self.skilltreewidget:SpawnFavorOverlay(true)
 		end
 
-	    self:RefreshTree()
+	    self:RefreshTree(true)
 	end
 end
 
 function SkillTreeBuilder:CreateTree(prefabname, targetdata, readonly)
 	self.skilltreedef = skilltreedefs.SKILLTREE_DEFS[prefabname]
+
 	self.target = prefabname
 	self.targetdata = targetdata
 	self.readonly = readonly
@@ -656,11 +908,19 @@ function SkillTreeBuilder:CreateTree(prefabname, targetdata, readonly)
 
 	--for i,panel in ipairs(self.root.panels)do
 	for i,paneldata in ipairs(skilltreedefs.SKILLTREE_ORDERS[self.target]) do
+        local panelname = paneldata[1]
+        local panel = self.root.panels[panelname]
+        if panel then
+            current_x = current_x + last_width + TILESIZE
+            last_width = panel.c_width
+            panel:SetPosition(current_x , 170 )
+        else
+            print(string.format("FIXME: Skill tree order named %s has no skill data!", panelname))
+        end
+	end
 
-		local panel = self.root.panels[paneldata[1]]
-		current_x = current_x + last_width + TILESIZE
-		last_width = panel.c_width
-		panel:SetPosition(current_x , 170 )
+	if prefabname == "wendy" then
+		self:SpawnPuck()
 	end
 
 	self:RefreshTree()

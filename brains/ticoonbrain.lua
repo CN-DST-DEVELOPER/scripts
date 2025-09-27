@@ -67,6 +67,7 @@ function TicoonBrain:OnStart()
             PriorityNode({
 				BrainCommon.PanicWhenScared(self.inst),
 				BrainCommon.PanicTrigger(self.inst),
+				BrainCommon.ElectricFencePanicTrigger(self.inst),
 				ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
 
 				WhileNode(function() return self.inst.components.entitytracker:GetEntity("tracking") ~= nil end, "Tracking Kitcoon",

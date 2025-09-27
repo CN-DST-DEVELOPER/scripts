@@ -56,10 +56,11 @@ local function SetPhysicsState(inst, set_to_standing)
             inst:AddTag("notarget")
             inst.Physics:SetMass(0)
             inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-            inst.Physics:ClearCollisionMask()
-            inst.Physics:CollidesWith(COLLISION.ITEMS)
-            inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-            inst.Physics:CollidesWith(COLLISION.GIANTS)
+			inst.Physics:SetCollisionMask(
+				COLLISION.ITEMS,
+				COLLISION.CHARACTERS,
+				COLLISION.GIANTS
+			)
         end
     end
 end
@@ -193,9 +194,11 @@ local function fn()
     inst.AnimState:OverrideSymbol("stagehand_fingers", "stagehand", "stagehand_fingers")
 
     inst:AddTag("antlion_sinkhole_blocker")
+	inst:AddTag("electricdamageimmune")
     inst:AddTag("notarget")
     inst:AddTag("notraptrigger")
     inst:AddTag("stageusher")
+    inst:AddTag("shadow_aligned")
 
     MakeSnowCoveredPristine(inst)
 
@@ -205,6 +208,9 @@ local function fn()
     end
 
     inst.scrapbook_hidehealth = true
+
+    MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     ----------------------------------------------------------------------------
     inst:AddComponent("burnable")
@@ -463,6 +469,7 @@ local function handfn()
     inst:AddTag("ignorewalkableplatforms")
     inst:AddTag("NOCLICK")
     inst:AddTag("shadowhand")
+    inst:AddTag("shadow_aligned")
 
     inst.AnimState:SetBank("stagehand_sts_arm")
     inst.AnimState:SetBuild("stagehand_sts_arm")

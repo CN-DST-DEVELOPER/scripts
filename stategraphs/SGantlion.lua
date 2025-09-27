@@ -100,6 +100,7 @@ end
 local events =
 {
     CommonHandlers.OnFreezeEx(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     EventHandler("onacceptfighttribute", function(inst, data)
@@ -197,7 +198,7 @@ local states =
 
     State{
         name = "rocktribute",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation("eat")
@@ -260,7 +261,7 @@ local states =
 
     State{
         name = "refusetribute",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("unimpressed")
@@ -284,7 +285,7 @@ local states =
 
     State{
         name = "trinkettribute",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("eat_talisman")
@@ -298,6 +299,7 @@ local states =
             TimeEvent(80 * FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("dontstarve/creatures/together/antlion/spit")
                 inst:GiveReward()
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
             _OnNoSleepTimeEvent(98 * FRAMES, function(inst)
                 inst.sg:RemoveStateTag("busy")
@@ -314,7 +316,7 @@ local states =
 
     State{
         name = "fighttribute",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation("eat_talisman")
@@ -332,16 +334,18 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                inst.components.sleeper:WakeUp()
-                inst.components.freezable:Unfreeze()
-                inst:StartCombat(inst.sg.statemem.target, inst.sg.statemem.trigger)
+				if inst.AnimState:AnimDone() then
+					inst.components.sleeper:WakeUp()
+					inst.components.freezable:Unfreeze()
+					inst:StartCombat(inst.sg.statemem.target, inst.sg.statemem.trigger)
+				end
             end),
         },
     },
 
     State{
         name = "enterworld",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("enter")
@@ -394,17 +398,18 @@ local states =
 
         onexit = function(inst)
             inst.Physics:SetMass(0)
-            inst.Physics:ClearCollisionMask()
-            inst.Physics:CollidesWith(COLLISION.ITEMS)
-            inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-            inst.Physics:CollidesWith(COLLISION.GIANTS)
+			inst.Physics:SetCollisionMask(
+				COLLISION.ITEMS,
+				COLLISION.CHARACTERS,
+				COLLISION.GIANTS
+			)
             inst.Physics:Teleport(inst.sg.statemem.spawnpos:Get())
         end,
     },
 
     State{
         name = "leaveworld",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("out")
@@ -435,7 +440,7 @@ local states =
 
     State{
         name = "sinkhole_pre",
-        tags = { "busy", "attack", "nosleep", "nofreeze" },
+		tags = { "busy", "attack", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("cast_pre")
@@ -461,7 +466,7 @@ local states =
 
     State{
         name = "sinkhole_loop",
-        tags = { "busy", "attack", "nosleep", "nofreeze" },
+		tags = { "busy", "attack", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst, lastloop)
             inst.AnimState:PlayAnimation("cast_loop_active")
@@ -498,7 +503,7 @@ local states =
 
     State{
         name = "sinkhole_pst",
-        tags = { "busy", "attack", "nosleep", "nofreeze" },
+		tags = { "busy", "attack", "nosleep", "nofreeze" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("cast_pst")
@@ -577,5 +582,6 @@ CommonStates.AddSleepExStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("antlion", states, events, "idle")

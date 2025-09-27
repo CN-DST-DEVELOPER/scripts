@@ -33,6 +33,19 @@ local function ChooseAttack(inst)
 	end
 end
 
+local function hit_recovery_skip_cooldown_fn(inst, last_t, delay)
+	--no skipping when we're stalking or dodging (hit_recovery increased)
+	return inst.hit_recovery == TUNING.DAYWALKER_HIT_RECOVERY
+		and inst.components.combat:InCooldown()
+		and inst.sg:HasStateTag("idle")
+end
+
+local function _transfer_statemem_to_electrocute(inst)
+	if inst.sg:HasStateTag("rummaging") then
+		inst.sg.mem.transfer_data = inst.sg.statemem.data
+	end
+end
+
 local events =
 {
 	CommonHandlers.OnLocomote(true, true),
@@ -74,11 +87,19 @@ local events =
 			ChooseAttack(inst)
 		end
 	end),
+	EventHandler("electrocute", function(inst, data)
+		CommonHandlers.TryElectrocuteOnEvent(inst, data, nil, nil,
+			_transfer_statemem_to_electrocute)
+	end),
 	EventHandler("attacked", function(inst, data)
-		if not (inst.sg:HasStateTag("busy") or inst.defeated) or inst.sg:HasStateTag("caninterrupt") then
+		if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+			_transfer_statemem_to_electrocute)
+		then
+			return
+		elseif not (inst.sg:HasStateTag("busy") or inst.defeated) or inst.sg:HasStateTag("caninterrupt") then
 			if inst.sg:HasStateTag("rummaging") then
 				inst.sg:GoToState("rummage_hit", inst.sg.statemem.data)
-			elseif not CommonHandlers.HitRecoveryDelay(inst) then
+			elseif not CommonHandlers.HitRecoveryDelay(inst, nil, nil, hit_recovery_skip_cooldown_fn) then
 				inst.sg:GoToState("hit")
 			end
 		end
@@ -561,7 +582,7 @@ local states =
 
 	State{
 		name = "emerge",
-		tags = { "busy", "nosleep" },
+		tags = { "busy", "nosleep", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -575,6 +596,9 @@ local states =
 			FrameEvent(4, function(inst)
 				ToggleOnCharacterCollisions(inst)
 				SGDaywalkerCommon.DoDefeatShake(inst)
+			end),
+			FrameEvent(26, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
 			end),
 		},
 
@@ -828,6 +852,7 @@ local states =
 				inst.AnimState:PushAnimation("rummage_loop")
 				inst.SoundEmitter:PlaySound("daywalker/voice/speak_short")
 				timeout = timeout or 2
+				inst.sg:AddStateTag("noelectrocute")
 			end
 
 			inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "rummage")
@@ -842,12 +867,19 @@ local states =
 
 			if timeout > 1 then
 				inst.sg.statemem.caninterrupt = true
+			else
+				inst.sg:AddStateTag("noelectrocute")
 			end
 			inst.sg:SetTimeout(timeout)
 		end,
 
 		timeline =
 		{
+			FrameEvent(7, function(inst)
+				if inst.sg.statemem.caninterrupt then
+					inst.sg:RemoveStateTag("noelectrocute")
+				end
+			end),
 			FrameEvent(8, function(inst)
 				if inst.sg.statemem.caninterrupt then
 					inst.sg:AddStateTag("caninterrupt")
@@ -2470,6 +2502,66 @@ CommonStates.AddSleepExStates(states,
 		inst.Transform:SetNoFaced()
 	end,
 	onexitwake = CleanupIfSleepInterrupted,
+})
+
+CommonStates.AddElectrocuteStates(states,
+nil, --timeline
+{	--anims
+	loop = function(inst)
+		inst.sg:AddStateTag("notalksound")
+		if inst.sg.lasttags["rummaging"] then
+			inst.sg:AddStateTag("rummaging")
+			return "rummage_shock_loop"
+		end
+		inst.Transform:SetNoFaced()
+	end,
+	pst = function(inst)
+		if inst.sg.lasttags["rummaging"] then
+			inst.sg:AddStateTag("rummaging")
+			return "rummage_shock_pst"
+		end
+		inst.Transform:SetNoFaced()
+		inst.sg:AddStateTag("canrotate")
+	end,
+},
+{	--fns
+	loop_onenter = function(inst)
+		if inst.sg:HasStateTag("rummaging") then
+			local data = inst.sg.mem.transfer_data
+			if data == nil then
+				inst.sg.mem.transfer_data = { hits = 1 }
+			elseif data.hits then
+				data.hits = data.hits + 1
+			else
+				data = shallowcopy(data)
+				data.hits = 1
+				inst.sg.mem.transfer_data = data
+			end
+		end
+	end,
+	loop_onexit = function(inst)
+		if not inst.sg.statemem.not_interrupted then
+			inst.sg.mem.transfer_data = nil
+			if not inst.sg:HasStateTag("rummaging") then
+				inst.Transform:SetFourFaced()
+			end
+		end
+	end,
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if inst.sg:HasStateTag("rummaging") then
+				inst.sg:GoToState("rummage", inst.sg.mem.transfer_data)
+			else
+				inst.sg:GoToState("idle")
+			end
+		end
+	end,
+	pst_onexit = function(inst)
+		inst.sg.mem.transfer_data = nil
+		if not inst.sg:HasStateTag("rummaging") then
+			inst.Transform:SetFourFaced()
+		end
+	end,
 })
 
 CommonStates.AddFrozenStates(states)

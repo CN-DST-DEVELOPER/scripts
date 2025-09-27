@@ -18,12 +18,17 @@ local function UpdatePing(inst, s0, s1, t0, duration, multcolour, addcolour)
     local k = 1 - math.max(0, t - PAD_DURATION) / duration
     k = 1 - k * k
     local c = Lerp(1, 0, k)
-    inst.AnimState:SetScale(SCALE * Lerp(s0[1], s1[1], k), SCALE * Lerp(s0[2], s1[2], k))
+	inst.AnimState:SetScale(inst.chargescale * SCALE * Lerp(s0[1], s1[1], k), SCALE * Lerp(s0[2], s1[2], k))
     inst.AnimState:SetMultColour(multcolour[1], multcolour[2], multcolour[3], c * multcolour[4])
 
     k = math.min(FLASH_TIME, t) / FLASH_TIME
     c = math.max(0, 1 - k * k)
     inst.AnimState:SetAddColour(c * addcolour[1], c * addcolour[2], c * addcolour[3], c * addcolour[4])
+end
+
+local function SetChargeScale(inst, chargescale)
+	inst.chargescale = chargescale
+	inst.AnimState:SetScale(chargescale * SCALE, SCALE)
 end
 
 local function MakeReticule(name, anim, ping)
@@ -53,6 +58,9 @@ local function MakeReticule(name, anim, ping)
             local duration = .4
             inst:DoPeriodicTask(0, UpdatePing, nil, { 1, 1 }, { 1.04, 1.3 }, GetTime(), duration, {}, {})
             inst:DoTaskInTime(duration, inst.Remove)
+
+			inst.chargescale = 1
+			inst.SetChargeScale = SetChargeScale
         end
 
         return inst

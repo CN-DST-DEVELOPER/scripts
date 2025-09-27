@@ -118,7 +118,7 @@ local function OnHit(inst, worker, workleft)
     end
 end
 
-local function OnBuilt(inst)
+local function OnBuiltFn(inst)
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("idle", false)
 
@@ -358,7 +358,7 @@ local function MakeOfferingPot(name, build, large)
         inst:ListenForEvent("itemget",  inst.UpdateDecor)
         inst:ListenForEvent("itemlose", inst.UpdateDecor)
 
-        inst.OnBuilt = OnBuilt
+        inst.OnBuiltFn = OnBuiltFn
         inst.OnRemoveEntity = OnRemoved
 
         inst.OnSave = OnSave

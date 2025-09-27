@@ -262,6 +262,47 @@ function d_oceanarena()
     sharkboimanager:FindAndPlaceOceanArenaOverTime()
 end
 
+local function d_exploreX(filterfn, precision)
+    precision = math.floor(precision or 5)
+    local player = ConsoleCommandPlayer()
+    if not player then
+        c_announce("Not playing as a character.")
+        return
+    end
+    local map = TheWorld.Map
+    local TileGroupManager = TileGroupManager
+    local w, h = map:GetSize()
+    for tx = 0, w, precision do
+        for ty = 0, h, precision do
+            local tile = map:GetTile(tx, ty)
+            if filterfn(tile, tx, ty) then
+                local x, y, z = map:GetTileCenterPoint(tx, ty)
+                player.player_classified.MapExplorer:RevealArea(x, 0, z)
+            end
+        end
+    end
+end
+function d_exploreland()
+    d_exploreX(function(tile, tx, ty)
+        return TileGroupManager:IsLandTile(tile)
+    end)
+end
+function d_exploreocean()
+    d_exploreX(function(tile, tx, ty)
+        return TileGroupManager:IsOceanTile(tile)
+    end)
+end
+function d_explore_printunseentiles()
+    local player = ConsoleCommandPlayer()
+    d_exploreX(function(tile, tx, ty)
+        if not TileGroupManager:IsInvalidTile(tile) and not TileGroupManager:IsOceanTile(tile) and not player:CanSeeTileOnMiniMap(tx, ty) then -- Same logic from engine with search tag [STMSTCC]
+            local x, y, z = TheWorld.Map:GetTileCenterPoint(tx, ty)
+            print("Unseen tile at", x, z)
+        end
+        return false
+    end, 1)
+end
+
 local TELEPORTBOAT_ITEM_MUST_TAGS = {"_inventoryitem",}
 local TELEPORTBOAT_ITEM_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO",}
 local TELEPORTBOAT_BLOCKER_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "_inventoryitem",}
@@ -360,6 +401,23 @@ function d_rabbitking(kind)
     end
 end
 
+function d_fullmoon()
+    if TheWorld.ismastersim then
+        TheWorld:PushEvent("ms_setmoonphase", {moonphase = "full", iswaxing = false})
+    end
+end
+
+function d_newmoon()
+    if TheWorld.ismastersim then
+        TheWorld:PushEvent("ms_setmoonphase", {moonphase = "new", iswaxing = true})
+    end
+end
+
+function d_unlockaffinities()
+    TheGenericKV:SetKV("fuelweaver_killed", "1")
+    TheGenericKV:SetKV("celestialchampion_killed", "1")
+end
+
 function d_resetskilltree()
     local player = ConsoleCommandPlayer()
 
@@ -370,8 +428,21 @@ function d_resetskilltree()
     local skilltreeupdater = player.components.skilltreeupdater
     local skilldefs = require("prefabs/skilltree_defs").SKILLTREE_DEFS[player.prefab]
     if skilldefs ~= nil then
-        for skill, data in pairs(skilldefs) do
-            skilltreeupdater:DeactivateSkill(skill)
+        local attempts = 50
+        while attempts > 0 do -- FIXME(JBK): This needs to be done in skilltreeupdater and carefully handled for server and client sync.
+            local keepgoing = false
+            for skill, data in pairs(skilldefs) do
+                if data.rpc_id then
+                    if skilltreeupdater:IsActivated(skill) then
+                        keepgoing = true
+                        skilltreeupdater:DeactivateSkill(skill)
+                    end
+                end
+            end
+            if not keepgoing then
+                break
+            end
+            attempts = attempts - 1
         end
     end
 
@@ -380,10 +451,6 @@ end
 
 function d_reloadskilltreedefs()
     require("prefabs/skilltree_defs").DEBUG_REBUILD()
-
-    if ThePlayer ~= nil and ThePlayer.HUD ~= nil then
-        ThePlayer.HUD:OpenPlayerInfoScreen()
-    end
 end
 
 function d_printskilltreestringsforcharacter(character)
@@ -622,6 +689,22 @@ end
 function d_test_skins_gift(param)
 	local GiftItemPopUp = require "screens/giftitempopup"
 	TheFrontEnd:PushScreen( GiftItemPopUp(ThePlayer, { param or TEST_ITEM_NAME }, { 0 }) )
+end
+
+function d_test_mystery_box(params)
+    local params = params or {}
+    local ItemBoxOpenerPopup = require "screens/redux/itemboxopenerpopup"
+
+    local options = {
+        allow_cancel = params.allow_cancel,
+        box_build = params.box_build or "box_mystery_classic",
+    }
+
+    if options.allow_cancel == nil then
+        options.allow_cancel = true
+    end
+
+    TheFrontEnd:PushScreen(ItemBoxOpenerPopup(options, function(success_cb) success_cb(GetPurchasePackDisplayItems(params.skin_pack or "pack_container_items")) end))
 end
 
 function d_print_skin_info()
@@ -1100,9 +1183,49 @@ end
 
 local obj_layout = require("map/object_layout")
 
-function d_spawnlayout(name)
+local function AddTopologyData(topology, left, top, width, height, room_id, tags)
+	local index = #topology.ids + 1
+	topology.ids[index] = room_id
+	topology.story_depths[index] = 0
+
+	local node = {}
+	node.area = width * height
+	node.c = 1 -- colour index
+	node.cent = {left + (width / 2), top + (height / 2)}
+	node.neighbours = {}
+	node.poly = { {left, top},
+				  {left + width, top},
+				  {left + width, top + height},
+				  {left, top + height}
+				}
+	node.tags  = tags
+	node.type = NODE_TYPE.Default
+	node.x = node.cent[1]
+	node.y = node.cent[2]
+
+	node.validedges = {}
+
+	topology.nodes[index] = node
+
+	return index
+end
+
+local function AddTileNodeIdsForArea(world_map, node_index, left, top, width, height)
+	for x = left, left + width do
+		for y = top, top + height do
+            SpawnPrefab("researchlab").Transform:SetPosition(world_map:GetTileCenterPoint(x, y))
+			world_map:SetTileNodeId(x, y, node_index)
+		end
+	end
+end
+
+function d_spawnlayout(name, data)
+    local world_map = TheWorld.Map
     local layout  = obj_layout.LayoutForDefinition(name)
-    local map_width, map_height = TheWorld.Map:GetSize()
+    local map_width, map_height = world_map:GetSize()
+
+    local topology = TheWorld.topology
+    local generated = TheWorld.generated
 
     local add_fn = {
         fn = _SpawnLayout_AddFn,
@@ -1110,10 +1233,11 @@ function d_spawnlayout(name)
     }
 
     local offset = layout.ground ~= nil and (#layout.ground / 2) or 0
+    local tile_size = layout.ground ~= nil and (#layout.ground)
     local size = layout.ground ~= nil and (#layout.ground * TILE_SCALE) or nil
 
     local pos  = ConsoleWorldPosition()
-    local x, z = TheWorld.Map:GetTileCoordsAtPoint(pos:Get())
+    local x, z = world_map:GetTileCoordsAtPoint(pos:Get())
 
     if size ~= nil then
         for i, ent in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, size, nil, { "player", "INLIMBO", "FX" })) do -- Not a square, but that's fine for now.
@@ -1121,7 +1245,19 @@ function d_spawnlayout(name)
         end
     end
 
-    obj_layout.Place({x-offset, z-offset}, name, add_fn, nil, TheWorld.Map)
+    local left, top = x-offset, z-offset
+
+    if data and data.id then
+        local tags = data.tags or {}
+        local topology_node_index = AddTopologyData(topology, left * TILE_SCALE - (map_width * 0.5 * TILE_SCALE), top * TILE_SCALE - (map_height * 0.5 * TILE_SCALE), size, size, data.id, tags)
+        AddTileNodeIdsForArea(world_map, topology_node_index, left + 1, top + 1, tile_size - 1, tile_size - 1)
+    end
+
+    if data and data.populate_prefab_densities and data.id then
+        obj_layout.PlaceAndPopulatePrefabDensities({left, top}, name, add_fn, nil, world_map, data.id, generated.densities)
+    else
+        obj_layout.Place({left, top}, name, add_fn, nil, world_map)
+    end
 end
 
 function d_allfish()
@@ -1359,7 +1495,6 @@ function d_fish(swim, r,g,b)
 	local fish
 	fish = c_spawn "oceanfish_medium_4"
 	if not swim then
-		fish:StopBrain()
 		fish:SetBrain(nil)
 	end
 	fish.Transform:SetPosition(x, y, z)
@@ -1367,7 +1502,6 @@ function d_fish(swim, r,g,b)
 
 	fish = c_spawn "oceanfish_medium_3"
 	if not swim then
-		fish:StopBrain()
 		fish:SetBrain(nil)
 	end
 	fish.Transform:SetPosition(x+2, y, z)
@@ -1375,7 +1509,6 @@ function d_fish(swim, r,g,b)
 
 	fish = c_spawn "oceanfish_medium_8"
 	if not swim then
-		fish:StopBrain()
 		fish:SetBrain(nil)
 	end
 	fish.Transform:SetPosition(x, y, z+2)
@@ -1384,7 +1517,6 @@ function d_fish(swim, r,g,b)
 
 	fish = c_spawn "oceanfish_medium_3"
 	if not swim then
-		fish:StopBrain()
 		fish:SetBrain(nil)
 	end
 	fish.Transform:SetPosition(x+2, y, z+2)
@@ -2095,11 +2227,11 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "shell"
     elseif t:HasTag("bird") then
         subcat = "bird"
-    elseif t:HasTag("pig") and not t:HasTag("manrabbit") then
+    elseif t:HasAnyTag("pig", "pigtype") and not t:HasTag("manrabbit") then
         subcat = "pig"
     elseif t:HasTag("merm") then
         subcat = "merm"
-    elseif t:HasTag("hound") then
+    elseif t:HasAnyTag("hound", "warg") then
         subcat = "hound"
     elseif t:HasTag("chess") then
         subcat = "clockwork"
@@ -2127,6 +2259,10 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "weapon"
     elseif t:HasTag("spidermutator") then
         subcat = "mutator"
+    elseif t:HasTag("slingshotammo") then
+        subcat = "slingshotammo"
+    elseif t.slingshot_slot ~= nil then
+        subcat = "slingshotpart"
     elseif foodtype ~= nil and
         foodtype ~= FOODTYPE.GENERIC and foodtype ~= FOODTYPE.GOODIES and foodtype ~= FOODTYPE.MEAT and
         foodtype ~= FOODTYPE.VEGGIE and foodtype ~= FOODTYPE.HORRIBLE and foodtype ~= FOODTYPE.INSECT and
@@ -2145,7 +2281,9 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "tackle"
     elseif t.components.prototyper and t.sg == nil then
         subcat = "craftingstation"
-    elseif t:HasTag("shadow") then
+    elseif t:HasAnyTag("brightmare", "brightmare_gestalt", "brightmareboss") then
+        subcat = "gestalt"
+    elseif t:HasAnyTag("shadow", "shadowminion", "shadowchesspiece", "stalker", "stalkerminion", "shadowthrall", "shadowhand") then
         subcat = "shadow"
     elseif t:HasTag("book") then
         subcat = "book"
@@ -2196,6 +2334,9 @@ local SCRAPBOOK_NAME_LOOKUP =
     sketch = "sketch_scrapbook",
     tacklesketch = "tacklesketch_scrapbook",
     cookingrecipecard = "cookingrecipecard_scrapbook",
+
+	snowman = "snowball_large",
+    gingerdeadpig = "gingerbreadpig",
 }
 
 local function Scrapbook_DefineName(t)
@@ -2238,14 +2379,15 @@ local function Scrapbook_DefineType(t, entry)
     elseif t.prefab == "fused_shadeling_bomb" or
         t.prefab == "smallghost" or
         t.prefab == "wobybig" or
-        t.prefab == "stagehand"
+        t.prefab == "stagehand" or
+        t.prefab == "wagdrone_flying"
     then
         thingtype = "creature"
 
     elseif t:HasTag("NPCcanaggro") or (
         t.components.health ~= nil and
         t.sg ~= nil and
-        not t:HasOneOfTags({ "structure", "boatbumper", "boat" })
+        not t:HasOneOfTags({ "structure", "boatbumper", "boat", "wall", "fence" })
     ) then
         thingtype = "creature"
 
@@ -2365,11 +2507,13 @@ end
         scrapbook_animoffsety: Image position Y offset (number).
         scrapbook_animoffsetbgx: Image background position X offset (number).
         scrapbook_animoffsetbgy: Image background position Y offset (number).
+        scrapbook_bb_x_extra: Image background extra X space (number).
+        scrapbook_bb_y_extra: Image background extra Y space (number).
         scrapbook_animpercent: Animation percent (number).
         scrapbook_areadamage: Area damage (number).
         scrapbook_bank: Overrides bank (string).
         scrapbook_build: Overrides build (string).
-        scrapbook_overridebuild: Build override (string).
+        scrapbook_overridebuild: Build override (string) or table of strings.
         scrapbook_damage: Damage, for creatures (number, string or array with 2 numbers (value range)).
         scrapbook_deps: Overrides default prefab dependencies (string array).
         scrapbook_fueled_max: Overrides components.fueled.maxfuel (number).
@@ -2397,6 +2541,7 @@ end
         scrapbook_weaponrange: Hit range (number).
         scrapbook_workable: Overrides components.workable.action (action).
         scrapbook_alpha: AnimState alpha (number: 0-1).
+        scrapbook_usepointfiltering: enable point filtering (bool)
         scrapbook_facing: Determines a facing (number: FACING_RIGHT, FACING_UPRIGHT...)
 ]]
 
@@ -2419,10 +2564,11 @@ local SKIP_SPECIALINFO_CHECK =
 local REPAIR_MATERIAL_DATA =
 {
     -- Repairers
+    carrot = { "carrot" },
     dreadstone = { "wall_dreadstone_item", "dreadstone" },
     fossil = { "fossil_piece" },
     gears = { "wall_scrap_item", "wagpunk_bits", "gears" },
-    gem = { "opalpreciousgem", "yellowgem", "redgem", "greengem", "bluegem", "purplegem", "orangegem" },
+    gem = { "opalpreciousgem", "yellowgem", "redgem", "bluegem", "greengem", "purplegem", "orangegem" },
     hay = { "cutgrass", "wall_hay_item" },
     ice = { "ice" },
     kelp = { "boatpatch_kelp", "kelp" },
@@ -2444,6 +2590,7 @@ local REPAIR_MATERIAL_DATA =
 
     -- Upgraders
     chest = { "chestupgrade_stacksize" },
+    gravestone = { "petals" },
     mast = { "mastupgrade_lamp_item", "mastupgrade_lightningrod_item" },
     spear_lightning = { "moonstorm_static_item" },
     spider = { "silk" },
@@ -2526,6 +2673,7 @@ local NOT_ALLOWED_RECIPE_TECH =
     [TechTree.Create(TECH.CATCOONOFFERING_THREE)] = true,
     [TechTree.Create(TECH.RABBITOFFERING_THREE)] = true,
     [TechTree.Create(TECH.DRAGONOFFERING_THREE)] = true,
+    [TechTree.Create(TECH.SNAKEOFFERING_THREE)] = true,
 
     [TechTree.Create(TECH.YOTG)] = true,
     [TechTree.Create(TECH.YOTV)] = true,
@@ -2535,9 +2683,10 @@ local NOT_ALLOWED_RECIPE_TECH =
     [TechTree.Create(TECH.YOT_CATCOON)] = true,
     [TechTree.Create(TECH.YOTR)] = true,
     [TechTree.Create(TECH.YOTD)] = true,
+    [TechTree.Create(TECH.YOTS)] = true,
 }
 
-function d_createscrapbookdata(print_missing_icons, noreset)
+function d_createscrapbookdata(print_missing_icons)
     if not TheWorld.state.isautumn or TheWorld.state.israining then
         -- Force the season (many entities change the build/animation during certain seasons).
         TheWorld:PushEvent("ms_setseason", "autumn")
@@ -2573,7 +2722,7 @@ function d_createscrapbookdata(print_missing_icons, noreset)
     exporter_data_helper:write("-- AUTOGENERATED FROM d_createscrapbookdata()\n")
     exporter_data_helper:write("return {\n")
 
-    for entry, _ in pairs(scrapbookprefabs) do
+    for entry in pairs(scrapbookprefabs) do
         if scrapbookdata[entry] ~= nil then
             print(string.format("Duplicate scrapbook entry [ %s ] in scripts/scrapbook_prefabs.lua.", entry))
             return
@@ -2899,6 +3048,24 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             AddInfo( "overridesymbol", override)
         end
 
+        if t.scrapbook_symbolcolours then
+            if type(t.scrapbook_symbolcolours[1]) ~= "table" then
+                AddInfo( "symbolcolours", t.scrapbook_symbolcolours )
+            else
+                local overrides = {}
+
+                for _, tbl in ipairs(t.scrapbook_symbolcolours) do
+                    table.insert(overrides, string.format('{"%s"}', table.concat(tbl, '", "')))
+                end
+
+                AddInfo( "symbolcolours", string.format("{%s}", table.concat(overrides, ", ")))
+            end
+        end
+
+        if t.scrapbook_usepointfiltering then
+            AddInfo( "usepointfiltering", true)
+        end
+
         -- TODO(DiogoW): Refactor this.
 
         if t.prefab == "robin" then
@@ -3006,6 +3173,11 @@ function d_createscrapbookdata(print_missing_icons, noreset)
 
         AddInfo( "animoffsetbgx",  t.scrapbook_animoffsetbgx )
         AddInfo( "animoffsetbgy",  t.scrapbook_animoffsetbgy )
+
+        if t.scrapbook_bb_x_extra or t.scrapbook_bb_y_extra then
+            AddInfo( "bb_x_extra",  t.scrapbook_bb_x_extra or 0 )
+            AddInfo( "bb_y_extra",  t.scrapbook_bb_y_extra or 0 )
+        end
 
         ---------------------------------::   WATERPROOFER   ::---------------------------------
 
@@ -3132,6 +3304,12 @@ function d_createscrapbookdata(print_missing_icons, noreset)
             AddInfo( "burnable", true )
         end
 
+        ---------------------------------::   SNOWMAN DECO   ::---------------------------------
+
+        if t.components.snowmandecor ~= nil then                    
+            AddInfo( "snowmandecor", true )
+        end
+
         -----------------------------::   OBSTACLE FLOATER   ::------------------------------
 
         local _floater = t.components.floater
@@ -3151,6 +3329,18 @@ function d_createscrapbookdata(print_missing_icons, noreset)
 
             if t.components.planardefense and t.components.planardefense.basedefense > 0 then
                 AddInfo( "armor_planardefense", t.components.planardefense.basedefense )
+            end
+        end
+
+        -----------------------------::   SLINGSHOT AMMO   ::--------------------------------
+
+        if t.ammo_def ~= nil then
+            if t.ammo_def.damage ~= nil and t.ammo_def.damage > 0 then
+                AddInfo( "weapondamage", t.ammo_def.damage )
+            end
+
+            if t.ammo_def.planar ~= nil and t.ammo_def.planar > 0 then
+                AddInfo( "planardamage", t.ammo_def.planar )
             end
         end
 
@@ -3403,12 +3593,13 @@ function d_createscrapbookdata(print_missing_icons, noreset)
     exporter_data_helper:write("}\n")
     exporter_data_helper:close()
 
-    print(prettyline)
+    d_unlockscrapbook()
 
-    if not print_missing_icons and not noreset then
-        d_unlockscrapbook()
-        c_reset()
-    end
+    ThePlayer.HUD:OpenScrapbookScreen()
+    ThePlayer.HUD.scrapbookscreen:DEBUG_REIMPORT_DATASET()
+    ThePlayer.HUD:OpenScrapbookScreen() -- Reopen to rebuild screen.
+
+    print(prettyline)
 end
 
 function d_unlockscrapbook()
@@ -3550,6 +3741,202 @@ function d_testhashes_prefabs(bitswanted)
 
     local bins = _getbins(bitswanted, results)
     _printbins(bins, total, collisions)
+end
+
+function d_testworldstatetags()
+    print("Testing 6 set.")
+    WORLDSTATETAGS.DecodeTags("WS:/")
+    WORLDSTATETAGS.DebugPrintTags()
+
+    print("Testing 2 set.")
+    WORLDSTATETAGS.DecodeTags("WS:D")
+    WORLDSTATETAGS.DebugPrintTags()
+
+    print("Testing all set.")
+    WORLDSTATETAGS.DecodeTags("WS://////////////////")
+    WORLDSTATETAGS.DebugPrintTags()
+
+    WORLDSTATETAGS.ClearAllTags()
+    WORLDSTATETAGS.SetTagEnabled("SHADOW_RIFTS_ACTIVE", true)
+
+    print("Testing 6 blank with merge.")
+    WORLDSTATETAGS.DecodeTags("WS:A", true)
+    WORLDSTATETAGS.DebugPrintTags()
+
+    print("Testing all blank with merge.")
+    WORLDSTATETAGS.DecodeTags("WS:AAAAAAAAAAAAAAAAAA", true)
+    WORLDSTATETAGS.DebugPrintTags()
+
+    print("Testing 1 set with merge.")
+    WORLDSTATETAGS.DecodeTags("WS:B", true)
+    WORLDSTATETAGS.DebugPrintTags()
+
+    print("Testing all set with merge.")
+    WORLDSTATETAGS.DecodeTags("WS://////////////////", true)
+    WORLDSTATETAGS.DebugPrintTags()
+end
+
+local function worldtopology_createent(worldtopologyvisuals, x, z, icon, labelstr)
+    local inst = CreateEntity()
+    table.insert(worldtopologyvisuals, inst)
+    --[[Non-networked entity]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddMiniMapEntity()
+
+    inst:AddTag("CLASSIFIED")
+    inst:AddTag("NOCLICK")
+
+    inst.MiniMapEntity:SetCanUseCache(false)
+    inst.MiniMapEntity:SetIsProxy(true)
+    inst.MiniMapEntity:SetDrawOverFogOfWar(true)
+    inst.MiniMapEntity:SetIcon(icon)
+
+    inst.AnimState:SetBank("razor")
+    inst.AnimState:SetBuild("swap_razor")
+    inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:SetLightOverride(1)
+    inst.AnimState:SetAddColour(.2, .5, .2, 0)
+
+    inst.Transform:SetPosition(x, 0, z)
+
+    if labelstr then
+        local label = inst.entity:AddLabel()
+        label:SetFontSize(32)
+        label:SetFont(BODYTEXTFONT)
+        label:SetWorldOffset(0, 0, 0)
+        label:SetText(labelstr)
+        label:SetColour(1, 1, 1)
+        label:Enable(true)
+    end
+
+    return inst
+end
+function d_gotoworldtopologyindex(nodexindex)
+    if not TheWorld or not ThePlayer then
+        return
+    end
+    local node = TheWorld.topology.nodes[nodexindex]
+    ThePlayer.Transform:SetPosition(node.cent[1], 0, node.cent[2])
+end
+function d_drawworldtopology()
+    if not TheWorld then
+        return
+    end
+    local worldtopologyvisuals = TheWorld.debug_worldtopologyvisuals
+    if worldtopologyvisuals then
+        for _, v in ipairs(worldtopologyvisuals) do
+            if v:IsValid() then
+                v:Remove()
+            end
+        end
+        worldtopologyvisuals = nil
+    else
+        worldtopologyvisuals = {}
+        local nodes = TheWorld.topology.nodes
+        for i, node in ipairs(nodes) do
+            local node_x = node.cent[1]
+            local node_z = node.cent[2]
+            worldtopology_createent(worldtopologyvisuals, node.x, node.y, "greenmooneye.png", nil)
+            worldtopology_createent(worldtopologyvisuals, node_x, node_z, "bluemooneye.png", tostring(i))
+            for i = 1, #node.poly do
+                local v1 = node.poly[(i == 1 and #node.poly) or (i - 1)]
+                local v2 = node.poly[i]
+                local distmod = math.ceil(math.sqrt(distsq(v1[1], v1[2], v2[1], v2[2])) / 8)
+                for j = 0, distmod - 1 do
+                    local x = Lerp(v1[1], v2[1], j / distmod)
+                    local z = Lerp(v1[2], v2[2], j / distmod)
+                    worldtopology_createent(worldtopologyvisuals, x, z, (j == 0 and "yellowmooneye.png") or "redmooneye.png", nil)
+                end
+            end
+            for _, neighbourid in ipairs(node.neighbours) do
+                local neighbour = nodes[neighbourid]
+                local neighbour_x = neighbour.cent[1]
+                local neighbour_z = neighbour.cent[2]
+                local dx, dz = neighbour_x - node_x, neighbour_z - node_z
+                local dist = math.sqrt(dx * dx + dz * dz)
+                if dist > 0 then
+                    dx, dz = dx / dist, dz / dist
+                else
+                    local theta = PI2 * math.random()
+                    dx, dz = math.cos(theta), math.sin(theta)
+                end
+                worldtopology_createent(worldtopologyvisuals, node_x + dx * 8, node_z + dz * 8, "orangemooneye.png", tostring(neighbourid))
+            end
+        end
+    end
+    TheWorld.debug_worldtopologyvisuals = worldtopologyvisuals
+end
+local wandertopology
+function d_drawworldroute(routename)
+    if not TheWorld then
+        return
+    end
+
+    local wandertopologyvisuals = TheWorld.debug_wandertopologyvisuals
+    if wandertopologyvisuals then
+        for _, v in ipairs(wandertopologyvisuals) do
+            if v:IsValid() then
+                v:Remove()
+            end
+        end
+        wandertopologyvisuals = nil
+    else
+        local worldroutes = TheWorld.components.worldroutes
+        if not worldroutes then
+            return
+        end
+
+        local route = worldroutes:GetRoute(routename)
+        if not route then
+            return
+        end
+
+        wandertopologyvisuals = {}
+        for i = 1, #route do
+            local pt1 = route[(i == 1 and #route) or (i - 1)]
+            local pt2 = route[i]
+            local distmod = math.ceil(math.sqrt(distsq(pt1.x, pt1.z, pt2.x, pt2.z)) / 2)
+            for j = 0, distmod - 1 do
+                local x = Lerp(pt1.x, pt2.x, j / distmod)
+                local z = Lerp(pt1.z, pt2.z, j / distmod)
+                worldtopology_createent(wandertopologyvisuals, x, z, "purplemooneye.png")
+            end
+        end
+    end
+    TheWorld.debug_wandertopologyvisuals = wandertopologyvisuals
+end
+
+function d_printworldroutetime(routename, speed, bonus)
+    if not TheWorld then
+        return
+    end
+    local worldroutes = TheWorld.components.worldroutes
+    if not worldroutes then
+        return
+    end
+    local route = worldroutes:GetRoute(routename)
+    if not route then
+        return
+    end
+    local dist = 0
+    local pt = route[1]
+    local pt2
+    for i = 2, #route do
+        pt2 = route[i]
+        dist = dist + (pt - pt2):Length()
+        pt = pt2
+    end
+    pt2 = route[1]
+    dist = dist + (pt - pt2):Length()
+    print(dist, dist / speed, dist / (speed * bonus))
+end
+
+function d_wagpunkarena_nexttask()
+    TheWorld.components.wagpunk_arena_manager:DebugSkipState()
 end
 
 function d_require(file)
@@ -3761,3 +4148,126 @@ function d_shadowparasite(host_prefab)
     host.components.inventory:Equip(mask)
 end
 
+function d_tweak_floater(size, offset, scale, swap_bank, float_index, swap_data)
+    local floater = c_select().components.floater
+
+    if size ~= nil then
+        floater:SetSize(size)
+    end
+
+    if offset then
+        floater:SetVerticalOffset(offset)
+    end
+
+    if scale then
+        floater:SetScale(scale)
+    end
+
+    if swap_bank then
+        floater:SetBankSwapOnFloat(swap_bank, float_index, swap_data)
+    elseif swap_data then
+        floater:SetSwapData(swap_data)
+    end
+
+    local scale = floater.xscale == floater.yscale and tostring(floater.xscale) or string.format('{ %s }', table.concat({floater.xscale, floater.yscale, floater.zscale}, ', '))
+
+    print(string.format('MakeInventoryFloatable(inst, "%s", %s, %s, %s, %s, swap_data)', floater.size, tostring(floater.vert_offset), scale, tostring(floater.do_bank_swap), tostring(floater.float_index ~= 1 and floater.float_index or nil)))
+end
+
+function d_startlunarhail()
+    TheWorld:PushEvent("ms_startlunarhail")
+end
+
+function d_testbirdattack()
+    local player = ConsoleCommandPlayer()
+    local x, y, z = player.Transform:GetWorldPosition()
+    local angle = math.random() * TWOPI
+    local radius = 25 + math.random() * 5
+
+    local bird = SpawnPrefab("mutatedbird")
+    bird.Transform:SetPosition(x + math.cos(angle) * radius, 15, z - math.sin(angle) * radius)
+    bird.sg:GoToState("glide_attack_in", player)
+end
+
+function d_testbirdclearhail()
+    local inst = c_select()
+    if not inst then
+        return
+    end
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local angle = math.random() * TWOPI
+    local radius = 15 + math.random() * 5
+
+    local bird = SpawnPrefab("mutatedbird")
+    bird.Transform:SetPosition(x + math.cos(angle) * radius, 14 + math.random() * 4, z - math.sin(angle) * radius)
+    bird:PushBufferedAction(BufferedAction(bird, inst, ACTIONS.REMOVELUNARBUILDUP))
+end
+
+function d_spawncentipede(num)
+    c_spawn("shadowthrall_centipede_controller").components.centipedebody.num_torso = num or 5
+end
+
+function d_movementon()
+    local inst = c_select()
+    if not inst then
+        return
+    end
+
+    inst.components.locomotor:WalkForward(true)
+end
+
+function d_followplayer()
+    local inst = c_select()
+    if not inst then
+        return
+    end
+
+    inst.follow_task = inst:DoPeriodicTask(FRAMES, function() inst:ForceFacePoint(ThePlayer:GetPosition()) end)
+end
+
+function d_stopcentipedemovement()
+    for k, v in pairs(Ents) do
+        if v.HasTag and v:HasTag("shadowthrall_centipede") then
+            v.components.locomotor:Stop()
+        end
+    end
+end
+
+local DARK = true
+function d_lightworld()
+    TheWorld:PushEvent("overrideambientlighting", DARK and Point(1,1,1) or nil)
+    DARK = not DARK
+end
+
+function d_activatearchives()
+    for _, v in pairs(Ents) do
+        if v.prefab == "archive_switch" and v.components.trader.enabled then
+            local opal = SpawnPrefab("opalpreciousgem")
+            v.components.trader:AcceptGift(nil, opal, 1)
+            break
+        end
+    end
+end
+
+function d_vaultroom(id)
+	local center
+	for i, v in ipairs(TheSim:FindEntities(0, 0, 0, 9001, { "CLASSIFIED" })) do
+		if v.components.vaultroom then
+			v.components.vaultroom:UnloadRoom()
+			v.components.vaultroom:LoadRoom(id)
+			break
+		end
+	end
+end
+
+function d_spawnvaultactors()
+    c_give("mask_ancient_handmaidhat")
+
+    local wilson = SpawnPrefab("wilson")
+    wilson.Transform:SetPosition(c_findnext("charlie_stage").Transform:GetWorldPosition())
+    wilson.components.inventory:Equip(SpawnPrefab("mask_ancient_masonhat"))
+
+    wilson = SpawnPrefab("wilson")
+    wilson.Transform:SetPosition(c_findnext("charlie_stage").Transform:GetWorldPosition())
+    wilson.components.inventory:Equip(SpawnPrefab("mask_ancient_architecthat"))
+end

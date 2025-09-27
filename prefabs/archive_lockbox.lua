@@ -15,9 +15,13 @@ local assetsdispencer =
     Asset("ANIM", "anim/archive_knowledge_dispensary.zip"),
     Asset("ANIM", "anim/archive_knowledge_dispensary_b.zip"),
     Asset("ANIM", "anim/archive_knowledge_dispensary_c.zip"),
+	Asset("ANIM", "anim/archive_knowledge_dispensary_d.zip"),
+	Asset("ANIM", "anim/archive_knowledge_dispensary_e.zip"),
     Asset("MINIMAP_IMAGE", "archive_knowledge_dispensary"),
     Asset("MINIMAP_IMAGE", "archive_knowledge_dispensary_b"),
     Asset("MINIMAP_IMAGE", "archive_knowledge_dispensary_c"),
+	Asset("MINIMAP_IMAGE", "archive_knowledge_dispensary_d"),
+	Asset("MINIMAP_IMAGE", "archive_knowledge_dispensary_e"),
 }
 
 local OCHESTRINA_MAIN_MUST = {"archive_orchestrina_main"}
@@ -45,8 +49,15 @@ local function teach(inst)
     local recipe = inst.product_orchestrina
     if recipe == "archive_resonator" then
         recipe = "archive_resonator_item"
+	elseif recipe == "vaultrelic" then
+		recipe = "vaultrelic_bowl"
     end
-	local recipe2 = inst.product_orchestrina == "turfcraftingstation" and "turf_archive" or nil
+	local recipe2 =
+		(inst.product_orchestrina == "turfcraftingstation" and "turf_archive") or
+		(inst.product_orchestrina == "turf_vault" and "turfcraftingstation") or
+		(inst.product_orchestrina == "vaultrelic" and "vaultrelic_vase") or
+		nil
+	local recipe3 = inst.product_orchestrina == "vaultrelic" and "vaultrelic_planter" or nil
 
     local pos = Vector3(inst.Transform:GetWorldPosition())
     local players = FindPlayersInRange( pos.x, pos.y, pos.z, 20, true )
@@ -60,12 +71,25 @@ local function teach(inst)
 
 			local got_new_blueprint = false
             if not player.components.builder:KnowsRecipe(recipe) then
-				got_new_blueprint = true
-                player.components.inventory:GiveItem(SpawnPrefab(recipe .. "_blueprint"))
+				local loot = SpawnPrefab(recipe.."_blueprint")
+				if loot then
+					got_new_blueprint = true
+					player.components.inventory:GiveItem(loot, nil, pos)
+				end
 			end
             if recipe2 and not player.components.builder:KnowsRecipe(recipe2) then
-				got_new_blueprint = true
-                player.components.inventory:GiveItem(SpawnPrefab(recipe2 .. "_blueprint"))
+				local loot = SpawnPrefab(recipe2.."_blueprint")
+				if loot then
+					got_new_blueprint = true
+					player.components.inventory:GiveItem(loot, nil, pos)
+				end
+			end
+			if recipe3 and not player.components.builder:KnowsRecipe(recipe3) then
+				local loot = SpawnPrefab(recipe3.."_blueprint")
+				if loot then
+					got_new_blueprint = true
+					player.components.inventory:GiveItem(loot, nil, pos)
+				end
 			end
 
             if player.components.talker then
@@ -82,6 +106,10 @@ local function OnTeach(inst)
         inst.SoundEmitter:PlaySound("grotto/common/archive_lockbox/open")
         inst:DoTaskInTime(174/30, function() teach(inst) end)
     end
+end
+
+local function OnPutInInventory(inst)
+    inst.removewhenspawned = nil
 end
 
 local function fn()
@@ -121,7 +149,7 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnPickupFn(function() inst.removewhenspawned = nil end)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
     inst.product_orchestrina = nil
 
     inst.OnSave = OnSave
@@ -146,7 +174,6 @@ local function fn()
 end
 
 local function movesound(inst, baseangle, pos)
-
     local sound = {angle = 0, dist=0}
     if inst.soundlist and inst.soundlist[1] then
         sound = inst.soundlist[1]
@@ -162,8 +189,14 @@ local function movesound(inst, baseangle, pos)
 end
 
 local function OnActivate(inst, doer)
-    local archive = TheWorld.components.archivemanager
-    if (not archive or archive:GetPowerSetting() ) then
+	local powered
+	if inst.vaultpowered then
+		powered = true
+	else
+		local archivemanager = TheWorld.components.archivemanager
+		powered = archivemanager == nil or archivemanager:GetPowerSetting()
+	end
+	if powered then
         if not inst.AnimState:IsCurrentAnimation("use_pre") and not inst.AnimState:IsCurrentAnimation("use_loop") and not inst.AnimState:IsCurrentAnimation("use_post") then
             inst.AnimState:PlayAnimation("use_pre",false)
 
@@ -197,35 +230,56 @@ local function OnActivate(inst, doer)
     end
 end
 
+local function getstatus(inst)
+	local archive = TheWorld.components.archivemanager
+	return archive and not archive:GetPowerSetting() and "POWEROFF" or nil
+end
+
 local function OnSaveDispencer(inst, data)
     data.product_orchestrina = inst.product_orchestrina
 end
 
 local function updateart(inst)
-    if inst.product_orchestrina == "archive_resonator_item" then
-        inst.AnimState:AddOverrideBuild("archive_knowledge_dispensary_b")
-        inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary_b.png")
-    elseif inst.product_orchestrina == "refined_dust" then
-        inst.AnimState:AddOverrideBuild("archive_knowledge_dispensary_c")
-        inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary_c.png")
-    end
+	if inst.product_orchestrina == "turf_vault" then
+		inst.AnimState:AddOverrideBuild("archive_knowledge_dispensary_d")
+		inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary_d.png")
+		inst.vaultpowered = true
+	elseif inst.product_orchestrina == "vaultrelic" then
+		inst.AnimState:AddOverrideBuild("archive_knowledge_dispensary_e")
+		inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary_e.png")
+		inst.vaultpowered = true
+	else
+		inst.vaultpowered = nil
+		if inst.product_orchestrina == "archive_resonator_item" then
+			inst.AnimState:AddOverrideBuild("archive_knowledge_dispensary_b")
+			inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary_b.png")
+		elseif inst.product_orchestrina == "refined_dust" then
+			inst.AnimState:AddOverrideBuild("archive_knowledge_dispensary_c")
+			inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary_c.png")
+		else
+			inst.AnimState:ClearAllOverrideSymbols()
+			inst.MiniMapEntity:SetIcon("archive_knowledge_dispensary.png")
+		end
+	end
+
+	if inst.vaultpowered then
+		inst.AnimState:Show("moss")
+		inst.components.inspectable.getstatus = nil
+	else
+		inst.AnimState:Hide("moss")
+		inst.components.inspectable.getstatus = getstatus
+	end
+end
+
+local function SetProductOrchestrina(inst, product)
+	inst.product_orchestrina = product == "archive_resonator" and "archive_resonator_item" or product
+	updateart(inst)
 end
 
 local function OnLoadDispencer(inst, data)
     if data ~= nil and data.product_orchestrina ~= nil then
-        inst.product_orchestrina = data.product_orchestrina
-        if inst.product_orchestrina == "archive_resonator" then
-            inst.product_orchestrina = "archive_resonator_item"
-        end
+		inst:SetProductOrchestrina(data.product_orchestrina)
     end
-   -- updateart(inst)
-end
-
-
-local function getstatus(inst)
-    local archive = TheWorld.components.archivemanager
-
-    return archive and not archive:GetPowerSetting() and "POWEROFF"
 end
 
 local function dispencerfn()
@@ -242,7 +296,8 @@ local function dispencerfn()
 
     inst.AnimState:SetBank("knowledge_dispensary")
     inst.AnimState:SetBuild("archive_knowledge_dispensary")
-    inst.AnimState:PlayAnimation("idle",false)
+	inst.AnimState:PlayAnimation("idle")
+	inst.AnimState:Hide("moss")
 
     inst:ListenForEvent("animover", function()
 
@@ -314,13 +369,12 @@ local function dispencerfn()
     inst.components.activatable.quickaction = true
 
     inst.product_orchestrina = ""
+	inst.SetProductOrchestrina = SetProductOrchestrina
 
     inst.OnSave = OnSaveDispencer
     inst.OnLoad = OnLoadDispencer
 
-    inst.updateart = updateart
-
-    inst:DoTaskInTime(0,function() updateart(inst) end)
+    inst.updateart = updateart --deprecated; use SetProductOrchestrina; do not set .product_orchestrina externally!
 
     return inst
 end
@@ -361,10 +415,7 @@ local function worldgenitemfn()
     return inst
 end
 
-
-
 return Prefab("archive_lockbox", fn, assets),
        Prefab("archive_lockbox_dispencer", dispencerfn, assetsdispencer, prefabs),
        Prefab("archive_dispencer_sfx", archive_dispencer_sfxfn),
        Prefab("archive_lockbox_dispencer_temp",worldgenitemfn)
-

@@ -160,6 +160,10 @@ function StorageRobotBrain:OnStart()
     self.bt = BT(self.inst, root)
 end
 
+function StorageRobotBrain:OnStop()
+	self:UnignoreItem()
+end
+
 function StorageRobotBrain:OnInitializationComplete()
     StorageRobotCommon.UpdateSpawnPoint(self.inst, true)
 end

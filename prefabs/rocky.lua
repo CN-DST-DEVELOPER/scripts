@@ -198,6 +198,7 @@ local function fn()
     inst:AddTag("rocky")
     inst:AddTag("character")
     inst:AddTag("animal")
+	inst:AddTag("electricdamageimmune")
 
     --trader (from trader component) added to pristine state for optimization
     inst:AddTag("trader")

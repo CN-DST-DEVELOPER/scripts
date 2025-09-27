@@ -55,7 +55,6 @@ local function SetOccupied(inst, occupied)
     inst.data.occupied = occupied
 
     if occupied then
-
         anim:SetBank("walrus_house")
         anim:SetBuild("walrus_house")
 
@@ -65,7 +64,11 @@ local function SetOccupied(inst, occupied)
         anim:SetLayer(LAYER_WORLD)
         anim:SetSortOrder(0)
 
-        MakeObstaclePhysics(inst, 3)
+		inst.Physics:SetCollisionMask(
+			COLLISION.ITEMS,
+			COLLISION.CHARACTERS,
+			COLLISION.GIANTS
+		)
     else
         UpdateLight(inst, false)
 
@@ -77,7 +80,6 @@ local function SetOccupied(inst, occupied)
         anim:SetSortOrder(3)
 
         inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.WORLD)
     end
 end
 

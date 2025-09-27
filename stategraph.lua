@@ -102,8 +102,8 @@ function StateGraphWrangler:RemoveInstance(inst)
     self.haveEvents[inst] = nil
 end
 
-function StateGraphWrangler:AddInstance(inst)
-    self:SendToList(inst, self.updaters)
+function StateGraphWrangler:AddInstance(inst, hibernate)
+	self:SendToList(inst, hibernate and self.hibernaters or self.updaters)
 end
 
 function StateGraphWrangler:Update(current_tick)
@@ -262,7 +262,7 @@ State = Class(
 	end)
 
 function State:HandleEvent(sg, eventname, data)
-    if not data or not data.state or data.state == self.name then
+	if type(data) ~= "table" or data.state == nil or data.state == self.name then
         local handler = self.events[eventname]
         if handler ~= nil then
             return handler.fn(sg.inst, data)
@@ -519,6 +519,7 @@ local SGTagsToEntTags =
     ["sleeping"] = true,
     ["working"] = true,
     ["boathopping"] = true,
+	["shouldautopausecontrollerinventory"] = true, --autopause even if "doing", see "openslingshotmods" state
 }
 
 function StateGraphInstance:HasState(statename)
@@ -535,7 +536,7 @@ function StateGraphInstance:GoToState(statename, params)
     --assert(state ~= nil, "State not found: " ..tostring(self.sg.name).."."..tostring(statename) )
 
     if self.currentstate ~= nil and self.currentstate.onexit ~= nil then
-        self.currentstate.onexit(self.inst)
+        self.currentstate.onexit(self.inst, statename)
     end
 
     -- Record stats
@@ -617,11 +618,23 @@ function StateGraphInstance:HasStateTag(tag)
 end
 
 function StateGraphInstance:HasAnyStateTag(...)
-	for i = 1, select("#", ...) do
-		if self.tags[select(i, ...)] then
-            return true
-        end
-    end
+	local tags = select(1, ...)
+	if type(tags) == "table" then
+		for i, v in ipairs(tags) do
+			if self.tags[v] then
+				return true
+			end
+		end
+	else
+		if self.tags[tags] then
+			return true
+		end
+		for i = 2, select("#", ...) do
+			if self.tags[select(i, ...)] then
+				return true
+			end
+		end
+	end
     return false
 end
 
@@ -676,15 +689,24 @@ function StateGraphInstance:UpdateState(dt)
     end
 end
 
-function StateGraphInstance:Start()
-    if self.OnStart then
+--@V2C: should only be called from EntityScript:ReturnToScene (legacy behaviour)
+--      this means OnStart is only triggered when exiting limbo
+function StateGraphInstance:Start(hibernate)
+	if not self.stopped then
+		return
+	elseif self.OnStart then
         self:OnStart()
     end
-    self.stopped = false
-    SGManager:AddInstance(self)
+	self.stopped = nil
+	SGManager:AddInstance(self, hibernate)
 end
 
+--@V2C: should only be called from EntityScript:RemoveFromScene (legacy behaviour)
+--      this means OnStop is only triggered when entering limbo
 function StateGraphInstance:Stop()
+	if self.stopped then
+		return
+	end
     self:HandleEvents()
     if self.OnStop then
         self:OnStop()

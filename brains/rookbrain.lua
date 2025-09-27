@@ -81,6 +81,7 @@ function RookBrain:OnStart()
                     return self.inst.components.combat.target
                 end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, GoHomeAction, "Go Home", false)),
 

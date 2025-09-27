@@ -22,6 +22,10 @@ local function oncanonlygoinpocket(self, canonlygoinpocket)
     self.inst.replica.inventoryitem:SetCanOnlyGoInPocket(canonlygoinpocket)
 end
 
+local function oncanonlygoinpocketorpocketcontainers(self, canonlygoinpocketorpocketcontainers)
+    self.inst.replica.inventoryitem:SetCanOnlyGoInPocketOrPocketContainers(canonlygoinpocketorpocketcontainers)
+end
+
 local function onisacidsizzling(self, isacidsizzling)
     self.inst.replica.inventoryitem:SetIsAcidSizzling(isacidsizzling)
 end
@@ -57,7 +61,8 @@ local InventoryItem = Class(function(self, inst)
     self.isnew = true
     self.nobounce = false
     self.cangoincontainer = true
-    self.canonlygoinpocket = false
+    self.canonlygoinpocket = false -- Only pocket mutually exclusive from canonlygoinpocketorpocketcontainers.
+    self.canonlygoinpocketorpocketcontainers = false -- Only pocket AND containers that are also only pocket mutually exclusive from canonlygoinpocket.
     self.keepondeath = false
     self.atlasname = nil
     self.imagename = nil
@@ -87,6 +92,7 @@ nil,
     canbepickedup = oncanbepickedup,
     cangoincontainer = oncangoincontainer,
     canonlygoinpocket = oncanonlygoinpocket,
+    canonlygoinpocketorpocketcontainers = oncanonlygoinpocketorpocketcontainers,
     isacidsizzling = onisacidsizzling,
     grabbableoverridetag = ongrabbableoverridetag,
 })
@@ -110,6 +116,11 @@ end
 
 function InventoryItem:GetMoisture()
     return self.inst.components.inventoryitemmoisture ~= nil and self.inst.components.inventoryitemmoisture.moisture or 0
+end
+
+function InventoryItem:GetMoisturePercent()
+    local inventoryitemmoisture = self.inst.components.inventoryitemmoisture
+    return inventoryitemmoisture and inventoryitemmoisture.moisture / TUNING.MAX_WETNESS
 end
 
 function InventoryItem:IsWet()

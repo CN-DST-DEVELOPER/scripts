@@ -109,14 +109,14 @@ local states =
         {
             EventHandler("animover", function(inst)
                 if inst.sg.statemem.changetoitem then
-                    local scanner_item = SpawnPrefab("wx78_scanner_item")
+                    local scanner_item = SpawnPrefab("wx78_scanner_item", inst.linked_skinname, inst.skin_id)
                     scanner_item.Transform:SetPosition(inst.Transform:GetWorldPosition())
                     scanner_item.Transform:SetRotation(inst.Transform:GetRotation())
 
                     inst:Remove()
 
                 elseif inst.sg.statemem.changetosuccess then
-                    local success_item = SpawnPrefab("wx78_scanner_succeeded")
+                    local success_item = SpawnPrefab("wx78_scanner_succeeded", inst.linked_skinname, inst.skin_id)
                     success_item:SetUpFromScanner(inst)
 
                     inst:Remove()

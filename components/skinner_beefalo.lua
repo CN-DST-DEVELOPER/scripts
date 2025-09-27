@@ -22,7 +22,7 @@ function SetBeefaloFaceSkinsOnAnim(anim_state, clothing_names, linked_beef_guid,
     local name = clothing_names["beef_head"]
     if BEEFALO_CLOTHING[name] ~= nil then
         local skin_build = GetBuildForItem(name)
-        if skin_build ~= "beefalo_head_festive" then -- FIXME(JBK): Move out of dev when done.
+        if skin_build ~= "beefalo_head_festive" and skin_build ~= "beefalo_head_robot" then -- FIXME(JBK): Move out of dev when done.
             return
         end
         for _, symbol in ipairs(FACE_SWAP_SYMBOLS) do

@@ -144,9 +144,15 @@ end
 --------------------------------------------------------------------------
 
 local function GetHeat(inst)
-    return (inst.components.bathbombable.is_bathbombed and TUNING.HOTSPRING_HEAT.ACTIVE)
-			or (inst.components.bathbombable.can_be_bathbombed and TUNING.HOTSPRING_HEAT.PASSIVE)
-			or 0
+	if inst.components.bathbombable.is_bathbombed then
+		inst.components.heater:SetThermics(true, false)
+		return TUNING.HOTSPRING_HEAT.ACTIVE
+	elseif inst.components.bathbombable.can_be_bathbombed then
+		inst.components.heater:SetThermics(true, false)
+		return TUNING.HOTSPRING_HEAT.PASSIVE
+	end
+	inst.components.heater:SetThermics(false, false)
+	return 0
 end
 
 --------------------------------------------------------------------------
@@ -254,6 +260,9 @@ local function hotspring()
     inst:AddTag("watersource")
     inst:AddTag("antlion_sinkhole_blocker")
     inst:AddTag("birdblocker")
+
+    --HASHEATER (from heater component) added to pristine state for optimization
+	inst:AddTag("HASHEATER")
 
     inst.Light:Enable(false)
     inst.Light:SetRadius(TUNING.HOTSPRING_GLOW.RADIUS)

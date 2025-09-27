@@ -43,6 +43,8 @@ local function OnSayDirty(inst)
         local string = list ~= nil and list[inst.string_id:value()] or nil
 
         if string ~= nil then
+            string = subfmt(string, { mortal = GetMortalityStringFor(ThePlayer) })
+
             local duration = math.max(3, #string/10)
             inst._parent.components.talker:Say(string, duration, SHAKE_TEXT[list] ~= nil, nil, true)
         end

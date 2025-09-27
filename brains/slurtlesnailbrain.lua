@@ -139,6 +139,7 @@ function SlurtleSnailBrain:OnStart()
     {
         UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         DoAction(self.inst, EatFoodAction),
         DoAction(self.inst, StealFoodAction),

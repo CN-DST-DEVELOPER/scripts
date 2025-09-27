@@ -32,6 +32,7 @@ function FrogBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
             DoAction(self.inst, function() return GoHomeAction(self.inst) end, "go home", true )),

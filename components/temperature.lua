@@ -384,13 +384,10 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
         --print(self.delta + self.current, "after shelter")
         if not inside_pocket_container then
             for i, v in ipairs(ents) do
-                if v ~= self.inst and
-                    not v:IsInLimbo() and
-                    v.components.heater ~= nil and
-                    (v.components.heater:IsExothermic() or v.components.heater:IsEndothermic()) then
-
+				if v ~= self.inst and not v:IsInLimbo() and v.components.heater then
                     local heat = v.components.heater:GetHeat(self.inst)
-                    if heat ~= nil then
+					--V2C: GetHeat first. Some heaters update thermics in their heatfn.
+					if heat and (v.components.heater:IsExothermic() or v.components.heater:IsEndothermic()) then
                         local heatfactor, dsqtoinst
                         if v.components.heater:ShouldFalloff() then
                             -- This produces a gentle falloff from 1 to zero.

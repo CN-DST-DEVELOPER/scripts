@@ -364,6 +364,8 @@ function self:KillThrall(thrall)
     if thrall.components.lootdropper then
         thrall.components.lootdropper:SetLoot({})
         thrall.components.lootdropper:SetChanceLootTable(nil)
+        thrall.components.lootdropper:SetLootSetupFn(nil)
+        thrall.components.lootdropper:ClearRandomLoot()
     end
 
     if thrall.components.health then

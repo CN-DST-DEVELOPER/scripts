@@ -11,11 +11,11 @@ function WalkingPlank:OnRemoveFromEntity()
 end
 
 function WalkingPlank:Extend()
-	self.inst:PushEvent("start_extending")
+	self.inst:PushEventImmediate("start_extending")
 end
 
 function WalkingPlank:Retract()
-	self.inst:PushEvent("start_retracting")
+	self.inst:PushEventImmediate("start_retracting")
 end
 
 function WalkingPlank:MountPlank(doer)
@@ -25,7 +25,7 @@ function WalkingPlank:MountPlank(doer)
 
 	self.doer = doer
 	doer.Physics:Teleport(self.inst.Transform:GetWorldPosition())
-	self.inst:PushEvent("start_mounting")
+	self.inst:PushEventImmediate("start_mounting")
 	doer.components.walkingplankuser:SetCurrentPlank(self.inst)
 
     return true
@@ -33,7 +33,7 @@ end
 
 function WalkingPlank:StopMounting()
     self.doer = nil
-	self.inst:PushEvent("stop_mounting")
+	self.inst:PushEventImmediate("stop_mounting")
 end
 
 function WalkingPlank:AbandonShip(doer)
@@ -42,7 +42,7 @@ function WalkingPlank:AbandonShip(doer)
     end
 
     self.doer.components.walkingplankuser:Dismount()
-	self.inst:PushEvent("start_abandoning")
+	self.inst:PushEventImmediate("start_abandoning")
 
     return true
 end

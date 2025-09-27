@@ -135,7 +135,7 @@ local function OnHit(inst)
     inst:PlayEyeballHitAnim()
 end
 
-local function OnBuilt(inst)
+local function OnBuiltFn(inst)
     inst.SoundEmitter:PlaySound("rifts3/oculus_ice_radius/place")
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("idle_loop", false)
@@ -151,7 +151,7 @@ local function CreateGlobalIcon(inst)
 end
 
 local function OnEyeballGiven(inst, item, giver)
-    if not POPULATING then
+    if not (POPULATING or inst:IsAsleep()) then
         inst.SoundEmitter:PlaySound("rifts3/oculus_ice_radius/eyeball_place")
     end
 
@@ -236,6 +236,20 @@ local function OnRemoveEntity(inst)
     if inst.ice ~= nil then
         inst.ice:KillFX()
     end
+end
+
+local function OnEntityWake(inst)
+    if inst:IsAsleep() then
+        return
+    end
+
+    if inst._active:value() and not inst.SoundEmitter:PlayingSound(AMB_SOUNDNAME) then
+        inst.SoundEmitter:PlaySound("rifts3/oculus_ice_radius/ambient_lp", AMB_SOUNDNAME)
+    end
+end
+
+local function OnEntitySleep(inst)
+    inst.SoundEmitter:KillSound(AMB_SOUNDNAME)
 end
 
 ---------------------------------------------------------------------------------------------------------------
@@ -453,8 +467,8 @@ local function sentrywardfn()
     inst.OnEyeballTaken = OnEyeballTaken
     inst.CreateGlobalIcon = CreateGlobalIcon
 
-    inst.OnBuilt = OnBuilt
-    inst:ListenForEvent("onbuilt", inst.OnBuilt)
+    inst.OnBuiltFn = OnBuiltFn
+    inst:ListenForEvent("onbuilt", inst.OnBuiltFn)
 
     inst:AddComponent("maprevealer")
     inst:AddComponent("lootdropper")
@@ -489,6 +503,9 @@ local function sentrywardfn()
     -----------------------------
 
     inst.OnRemoveEntity = OnRemoveEntity
+
+    inst.OnEntityWake  = OnEntityWake
+    inst.OnEntitySleep = OnEntitySleep
 
     MakeHauntableWork(inst)
 
@@ -606,7 +623,7 @@ local function fxfn()
 
     inst._task = inst:DoTaskInTime(0, OnInitIceCircle)
 
-    if not POPULATING then
+    if not (POPULATING or inst:IsAsleep()) then
         inst.SoundEmitter:PlaySound("dontstarve/creatures/together/deer/fx/ice_circle_LP", ICE_SOUNDNAME)
         inst.SoundEmitter:SetVolume(ICE_SOUNDNAME, 0.8)
 

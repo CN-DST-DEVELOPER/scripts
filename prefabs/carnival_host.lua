@@ -166,6 +166,9 @@ local function fn()
 
     inst:AddTag("character")
 
+    --prototyper (from prototyper component) added to pristine state for optimization
+    inst:AddTag("prototyper")
+
 	inst.MiniMapEntity:SetIcon("carnival_host.png")
 	inst.MiniMapEntity:SetPriority(5)
 

@@ -59,4 +59,14 @@ function ResurrectButton:DoResurrect()
     end
 end
 
+function ResurrectButton:SetType(effigy_type)
+    if not effigy_type then
+        self:SetTooltip(STRINGS.UI.HUD.ACTIVATE_RESURRECTION)
+        self.button:SetTextures("images/hud.xml", "effigy_button_mouseover.tex", nil, "effigy_button.tex")
+    elseif effigy_type == "grave" then
+        self:SetTooltip(STRINGS.UI.HUD.ACTIVATE_GRAVE_RESURRECTION)
+        self.button:SetTextures("images/hud2.xml", "wendy_gravestone_button_mouseover.tex", nil, "wendy_gravestone_button.tex")
+    end
+end
+
 return ResurrectButton

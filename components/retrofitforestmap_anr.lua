@@ -1224,6 +1224,70 @@ local function SkilltreeSpotlightWinonaWurtRetrofitting_PopulateOtterDens()
 	print("Retrofitting for Skilltree Spotlight: Winona & Wurt - Added " .. tostring(count) .. " Otter Dens.")
 end
 
+--------------------------------------------------------------------------
+
+local function Balatro_NewContent_Retrofitting()
+	if TheWorld.topology.overrides ~= nil and TheWorld.topology.overrides.balatro == "never" then
+		print("Retrofitting for Balatro: Skipping due to overrides.balatro == never")
+		return
+	end
+
+	-- Find appropriate biomes
+	local VALID_BALATRO_BACKGROUNDS = {
+		"BGBadlands",
+		"BGCrappyForest",
+		"BGDeciduous",
+		"BGDeepForest",
+		"BGForest",
+		"BGGrass",
+		"BGGrassBurnt",
+		"BGMarsh",
+		"BGRocky",
+		"BGSavanna",
+	}
+
+	local node_indices, balatro_candidate_nodes, statue_candidate_nodes = {}, {}, {}
+	for node_index, id_string in ipairs(TheWorld.topology.ids) do
+		for _, bg_string in ipairs(VALID_BALATRO_BACKGROUNDS) do
+			if id_string:find(bg_string) then
+				table.insert(balatro_candidate_nodes, TheWorld.topology.nodes[node_index])
+			end
+		end
+	end
+
+	if #balatro_candidate_nodes == 0 or #balatro_candidate_nodes == 0 then
+		print("Retrofitting for Balatro: Failed to find any appropriate nodes to spawn in.")
+		return
+	end
+
+	print("Retrofitting for Balatro: Adding missing balatro objects.")
+
+	local VALID_BALATRO_WORLDTILES = {
+		WORLD_TILES.DIRT_NOISE,
+		WORLD_TILES.DECIDUOUS,
+		WORLD_TILES.FOREST,
+		WORLD_TILES.GRASS,
+		WORLD_TILES.MARSH,
+		WORLD_TILES.ROCKY,
+		WORLD_TILES.SAVANNA,
+	}
+	local is_valid_balatro_turf = function(x, y, z, prefab)
+		local tile = TheWorld.Map:GetTileAtPoint(x, y, z)
+		for _, tile_type in ipairs(VALID_BALATRO_WORLDTILES) do
+			if tile_type == tile then
+				return true
+			end
+		end
+		return false
+	end
+	if not RetrofitNewContentPrefab(inst, "balatro_machine", 10.5, 11, is_valid_balatro_turf, balatro_candidate_nodes)
+			and not RetrofitNewContentPrefab(inst, "balatro_machine", 10.5, 11, nil, balatro_candidate_nodes) then
+		print("Retrofitting for Balatro: Failed to place a JIMBO in the world.")
+	end
+end
+
+--------------------------------------------------------------------------
+
 
 --------------------------------------------------------------------------
 --[[ Post initialization ]]
@@ -1533,6 +1597,11 @@ function self:OnPostInit()
 		ALittleDrama_NewContent_Retrofitting()
 	end
 
+	if self.retrofit_balatro_content then
+		print ("Retrofitting for Balatro: Adding important prefabs normally found in new setpieces.")
+		Balatro_NewContent_Retrofitting()
+	end
+
 	---------------------------------------------------------------------------
 
     if self.retrofit_daywalker_content then
@@ -1617,10 +1686,178 @@ function self:OnPostInit()
         end
     end
 
+	---------------------------------------------------------------------------
+
 	if self.retrofit_otterdens then
         print("Retrofitting for Skilltree Spotlight: Winona & Wurt: Adding Otter Dens.")
 		SkilltreeSpotlightWinonaWurtRetrofitting_PopulateOtterDens()
 	end
+
+	---------------------------------------------------------------------------
+
+    if self.sharkboi_ice_hazard_fix then
+        print("Removing sharkboi_ice_hazard entities off of the world's edge.")
+        self.sharkboi_ice_hazard_fix = nil
+        -- NOTES(JBK): This fixup exists from an issue with sharkboimanager spawning ice without checking for ocean first.
+        local removedcount = 0
+        for _, v in pairs(Ents) do
+            if v.prefab == "sharkboi_ice_hazard" then
+                if not TheWorld.Map:IsOceanAtPoint(v.Transform:GetWorldPosition()) then
+                    v:Remove()
+                    removedcount = removedcount + 1
+                end
+            end
+        end
+        print("Removed", removedcount, "sharkboi_ice_hazard entities!")
+    end
+
+    if self.rifts6_add_whirlpool then
+        print("Retrofitting a big whirlpool to the forest shard..")
+        self.rifts6_add_whirlpool = nil
+        local width, height = TheWorld.Map:GetSize()
+
+        local function IsHazardous(tileid)
+            return tileid == WORLD_TILES.OCEAN_HAZARDOUS
+        end
+        local function IsRough(tileid)
+            return tileid == WORLD_TILES.OCEAN_ROUGH or tileid == WORLD_TILES.OCEAN_HAZARDOUS
+        end
+        local function IsSwell(tileid)
+            return tileid == WORLD_TILES.OCEAN_SWELL or tileid == WORLD_TILES.OCEAN_ROUGH or tileid == WORLD_TILES.OCEAN_HAZARDOUS
+        end
+        local function FindSpotForWhirlpool(filterfn)
+            local tileid = WORLD_TILES.OCEAN_HAZARDOUS
+            local map = TheWorld.Map
+            for y = OCEAN_POPULATION_EDGE_DIST, height - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
+                for x = OCEAN_POPULATION_EDGE_DIST, width - OCEAN_POPULATION_EDGE_DIST - 1, 1 do
+                    if map:IsAreaTilesFiltered(x, y, 3, 3, filterfn) then
+                        local cx, cy, cz = map:GetTileCenterPoint(x + 1, y + 1)
+                        return cx, cy, cz
+                    end
+                end
+            end
+        end
+        local cx, cy, cz = FindSpotForWhirlpool(IsHazardous)
+        if not cx then
+            cx, cy, cz = FindSpotForWhirlpool(IsRough)
+        end
+        if not cx then
+            cx, cy, cz = FindSpotForWhirlpool(IsSwell)
+        end
+        if cx then
+            local ent = SpawnPrefab("oceanwhirlbigportal")
+            ent.Transform:SetPosition(cx, cy, cz)
+            print("Succeeded in spawning a big whirlpool.")
+        else
+            print("..Failed! Not enough OCEAN_HAZARDOUS, OCEAN_ROUGH, nor OCEAN_SWELL around?")
+        end
+    end
+
+	---------------------------------------------------------------------------
+
+    if self.fix_pearl_eating_everything then
+        print("Retrofitting Pearl fixups for eaten rewards..")
+        local hermitcrab, pearl
+        for _, v in pairs(Ents) do
+            if v.prefab == "hermitcrab" then
+                hermitcrab = v
+				if pearl then
+					break
+				end
+            elseif v.prefab == "hermit_pearl" or v.prefab == "hermit_cracked_pearl" then
+                pearl = v
+				if hermitcrab then
+					break
+				end
+            end
+        end
+        if not hermitcrab then
+            print("Cannot do yet because Pearl is missing will try next world load.")
+            return
+        end
+
+        local x, y, z = hermitcrab.Transform:GetWorldPosition()
+        if hermitcrab.pearlgiven and not pearl then
+            print("Letting Pearl give a new pearl.")
+            hermitcrab.pearlgiven = nil
+        end
+        local friendlevels = hermitcrab.components.friendlevels
+        if friendlevels then
+            local torecomplete = {}
+            for task, v in ipairs(friendlevels.friendlytasks) do
+                if v.complete then
+                    table.insert(torecomplete, task)
+                    v.complete = nil
+                    friendlevels.level = math.max(friendlevels.level - 1, 0)
+                end
+            end
+            for _, task in ipairs(torecomplete) do
+                friendlevels:CompleteTask(task, nil)
+            end
+        end
+        self.fix_pearl_eating_everything = nil
+    end
+
+	---------------------------------------------------------------------------
+
+	if self.floating_heavyobstaclephysics_fix then
+		self.floating_heavyobstaclephysics_fix = nil
+
+		for _, v in pairs(Ents) do
+			if v.components.heavyobstaclephysics then
+				v.components.heavyobstaclephysics.deprecated_floating_exploit = true
+			end
+		end
+	end
+
+	---------------------------------------------------------------------------
+
+	if self.retrofit_missing_retrofits_generated_densities then
+		self.retrofit_missing_retrofits_generated_densities = nil
+
+		local prefab_densities = TheWorld.generated.densities
+
+		-- Fix up density populations on lunar island retrofit and pearl island retrofit
+		local obj_layout = require("map/object_layout")
+
+		local retrofit_densities = {
+			["MoonIslandRetrofit:0:MoonIslandRetrofitRooms"] = "retrofit_moonisland_large", -- Just assume the largest layout
+		}
+
+		for topology_id, static_layout in pairs(retrofit_densities) do
+			local topology_id_index
+			for i, v in pairs(TheWorld.topology.ids) do
+				if topology_id == v then
+					topology_id_index = i
+					break
+				end
+			end
+
+			if topology_id_index and TheWorld.topology.ids[topology_id_index] then
+				local layout = obj_layout.LayoutForDefinition(static_layout)
+				local prefabs = obj_layout.ConvertLayoutToEntitylist(layout)
+
+				local prefab_list = {} --[prefab] = num
+
+				for i, prefab_data in ipairs(prefabs) do
+					if not prefab_list[prefab_data.prefab] then
+						prefab_list[prefab_data.prefab] = 0
+					end
+					prefab_list[prefab_data.prefab] = prefab_list[prefab_data.prefab] + 1
+				end
+
+				prefab_densities[topology_id] = {}
+
+				local num_ground = obj_layout.GetLayoutLandCount(layout)
+				--prefab_list[prefab] = prefab_list[prefab] + 1
+				for prefab, v in pairs(prefab_list) do
+					-- convererts from actual numbers to a percentage of the distribute percent
+					prefab_densities[topology_id][prefab] = v / num_ground
+				end
+			end
+		end
+	end
+
 
 	---------------------------------------------------------------------------
 
@@ -1673,6 +1910,7 @@ function self:OnLoad(data)
         self.retrofit_removeextraaltarpieces = data.retrofit_removeextraaltarpieces or false
         self.retrofit_terraria_terrarium = data.retrofit_terraria_terrarium or false
 		self.retrofit_alittledrama_content = data.retrofit_alittledrama_content or false
+		self.retrofit_balatro_content = data.retrofit_balatro_content or false		
         self.retrofit_daywalker_content = data.retrofit_daywalker_content or false
         self.console_beard_turf_fix = data.console_beard_turf_fix or false
         self.retrofit_junkyard_content = data.retrofit_junkyard_content or false
@@ -1680,9 +1918,13 @@ function self:OnLoad(data)
         self.retrofit_junkyardv3_content = data.retrofit_junkyardv3_content or false
         self.remove_rift_terraformers_fix = data.remove_rift_terraformers_fix or false
 		self.retrofit_otterdens = data.retrofit_otterdens or false
+        self.sharkboi_ice_hazard_fix = data.sharkboi_ice_hazard_fix or false
+        self.rifts6_add_whirlpool = data.rifts6_add_whirlpool or false
+        self.fix_pearl_eating_everything = data.fix_pearl_eating_everything or false
+		self.floating_heavyobstaclephysics_fix = data.floating_heavyobstaclephysics_fix or false
+		self.retrofit_missing_retrofits_generated_densities = data.retrofit_missing_retrofits_generated_densities or false
     end
 end
-
 
 --------------------------------------------------------------------------
 end)

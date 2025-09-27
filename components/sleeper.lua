@@ -286,9 +286,7 @@ function Sleeper:GoToSleep(sleeptime)
             self.wearofftask = nil
         end
 
-        if self.inst.brain ~= nil then
-            self.inst.brain:Stop()
-        end
+		self.inst:StopBrain("sleeper")
 
         if self.inst.components.combat ~= nil then
             self.inst.components.combat:SetTarget(nil)
@@ -329,9 +327,7 @@ function Sleeper:WakeUp()
         self.isasleep = false
         self.sleepiness = 0
 
-        if self.inst.brain ~= nil then
-            self.inst.brain:Start()
-        end
+		self.inst:RestartBrain("sleeper")
 
         self.inst:PushEvent("onwakeup")
         self:SetSleepTest(self.sleeptestfn)

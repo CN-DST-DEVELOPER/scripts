@@ -40,7 +40,7 @@ function Shard_SyncWorldSettings(world_id, is_resync)
     end
 end
 
-function Shard_OnShardConnected(world_id, tags, world_data)
+function Shard_OnShardConnected(world_id, tags, world_data, shard_name)
     -- NOTES(JBK): Only should be called when the shard state is REMOTESHARDSTATE.READY.
     if Shard_IsMaster() then
         Shard_SyncWorldSettings(world_id)
@@ -55,14 +55,19 @@ function Shard_OnShardConnected(world_id, tags, world_data)
             end
         end
     end
+    local shardtransactionsteps = TheWorld and TheWorld.components.shardtransactionsteps or nil
+    if shardtransactionsteps then
+        shardtransactionsteps:OnShardConnected(world_id)
+    end
 end
 --Called from ShardManager whenever a shard is connected or
 --disconnected, to automatically update known portal states
---On master server, secondary tags and worldgen options are also passed through here
+--tags and worldgen options are also passed through here for all shards
 --NOTE: should never be called with for our own world_id
-function Shard_UpdateWorldState(world_id, state, tags, world_data)
+-- shard_name on default worldgen will be either "Master" or "Caves"
+function Shard_UpdateWorldState(world_id, state, tags, world_data, shard_name)
     local ready = state == REMOTESHARDSTATE.READY
-    print("World "..world_id.." is now "..(ready and 'connected' or 'disconnected'))
+    print("World "..world_id.."("..(shard_name or "n/a")..") is now "..(ready and 'connected' or 'disconnected'))
 
     if ready then
         if world_data ~= nil and #world_data > 0 then
@@ -84,10 +89,10 @@ function Shard_UpdateWorldState(world_id, state, tags, world_data)
         else
             world_data = {}
         end
-        ShardConnected[world_id] = { ready = true, tags = tags, world = world_data }
+        ShardConnected[world_id] = { ready = true, tags = tags, world = world_data, shard_name = shard_name }
         ShardList[world_id] = true
 
-        Shard_OnShardConnected(world_id, tags, world_data)
+        Shard_OnShardConnected(world_id, tags, world_data, shard_name)
     else
         ShardConnected[world_id] = nil
         ShardList[world_id] = nil
@@ -96,12 +101,18 @@ function Shard_UpdateWorldState(world_id, state, tags, world_data)
     for k, v in pairs(ShardPortals) do
         if ready and (v.components.worldmigrator.linkedWorld == nil
                     or v.components.worldmigrator.auto == true) then
-            -- Bind unused portals to this new server, mm-mm!
-            v.components.worldmigrator:SetDestinationWorld(world_id)
+            if v.components.worldmigrator.shard_name == nil or v.components.worldmigrator.shard_name == shard_name then
+                -- Bind unused portals to this new server, mm-mm!
+                v.components.worldmigrator:ClearDisabledWithReason("MISSINGSHARD")
+                v.components.worldmigrator:SetDestinationWorld(world_id)
+            end
         elseif v.components.worldmigrator.linkedWorld == world_id then
+            v.components.worldmigrator:ClearDisabledWithReason("MISSINGSHARD")
             v.components.worldmigrator:ValidateAndPushEvents()
         else
-            print(string.format("Skipping portal[%d] (different permanent world)", v.components.worldmigrator.id))
+            print(string.format("Skipping portal[%s] (different permanent world)", tostring(v.components.worldmigrator.id)))
+            v.components.worldmigrator:SetDisabledWithReason("MISSINGSHARD")
+            v.components.worldmigrator:ValidateAndPushEvents()
         end
     end
 
@@ -114,11 +125,20 @@ end
 function Shard_UpdatePortalState(inst)
     if inst.components.worldmigrator.linkedWorld == nil then
         for k, v in pairs(ShardConnected) do
-            -- Bind to first available shard
-            inst.components.worldmigrator:SetDestinationWorld(k)
-            return
+            -- Bind to first available shard that can be
+            if inst.components.worldmigrator.shard_name == nil or inst.components.worldmigrator.shard_name == v.shard_name then
+                -- Bind unused portals to this new server, mm-mm!
+                inst.components.worldmigrator:ClearDisabledWithReason("MISSINGSHARD")
+                inst.components.worldmigrator:SetDestinationWorld(k)
+                return
+            end
         end
+        print(string.format("Skipping portal[%s] (no available shard [%s] connected)", tostring(inst.components.worldmigrator.id), inst.components.worldmigrator.shard_name or "n/a"))
+        inst.components.worldmigrator:SetDisabledWithReason("MISSINGSHARD")
+        inst.components.worldmigrator:ValidateAndPushEvents()
+        return
     end
+    inst.components.worldmigrator:ClearDisabledWithReason("MISSINGSHARD")
     inst.components.worldmigrator:ValidateAndPushEvents()
 end
 
@@ -269,3 +289,19 @@ function Shard_SyncMermKingPauldron(exists, shardid)
         end)
     end
 end
+
+---------------------------------
+-- ShardTransactionSteps wrappers
+
+function Shard_CreateTransaction_TransferInventoryItem(shardid, item, migrationdata)
+    TheWorld.components.shardtransactionsteps:CreateTransaction(
+        shardid,
+        SHARDTRANSACTIONTYPES.TRANSFERINVENTORYITEM,
+        {
+            item = item,
+            migrationdata = migrationdata,
+        }
+    )
+end
+
+---------------------------------

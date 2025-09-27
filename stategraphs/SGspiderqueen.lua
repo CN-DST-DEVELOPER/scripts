@@ -1,24 +1,34 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
-}
-
 local events=
 {
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("nointerrupt") and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not (inst.sg:HasAnyStateTag("nointerrupt", "attack", "electrocute") or
+						CommonHandlers.HitRecoveryDelay(inst, nil, math.huge)) --hit delay only for projectiles
+			then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
-    EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then inst.sg:GoToState("attack") end end),
+	EventHandler("doattack", function(inst)
+		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
+			inst.sg:GoToState("attack")
+		end
+	end),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnLocomote(false,true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
 }
 
 local states=
 {
-
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -38,7 +48,7 @@ local states=
 
     State{
         name = "attack",
-        tags = {"attack", "nointerrupt"},
+		tags = { "attack", "busy" },
 
         onenter = function(inst, cb)
             inst.Physics:Stop()
@@ -68,6 +78,7 @@ local states=
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("hit")
             inst.SoundEmitter:PlaySound("dontstarve/creatures/spiderqueen/hurt")
+			CommonHandlers.UpdateHitRecoveryDelay(inst)
         end,
 
         events=
@@ -231,9 +242,7 @@ local states=
             RemovePhysicsColliders(inst)
             inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
         end,
-
     },
-
 }
 
 CommonStates.AddSleepStates(states,
@@ -252,7 +261,6 @@ CommonStates.AddSleepStates(states,
 	}
 )
 
-
 CommonStates.AddWalkStates(states,
 {
 	walktimeline = {
@@ -268,9 +276,8 @@ CommonStates.AddWalkStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-
-return StateGraph("spiderqueen", states, events, "idle", actionhandlers)
-
+return StateGraph("spiderqueen", states, events, "idle")

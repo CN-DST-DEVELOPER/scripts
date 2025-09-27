@@ -168,7 +168,5 @@ local function FullCageFn(full)
     return inst
 end
 
-
-return
-        Prefab("security_pulse_cage",      EmptyCageFn, assets, prefabs_empty),
-        Prefab("security_pulse_cage_full", FullCageFn,  assets, prefabs_full )
+return Prefab("security_pulse_cage", EmptyCageFn, assets, prefabs_empty),
+    Prefab("security_pulse_cage_full", FullCageFn,  assets, prefabs_full )

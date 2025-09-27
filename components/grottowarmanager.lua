@@ -273,12 +273,15 @@ end
 --[[ Private event handlers ]]
 --------------------------------------------------------------------------
 local GROTTO_WAR_WALL_HAS_TAGS = {"grotto_war_wall"}
+local function OnlyTrackedFilterFn(player)
+    return _players[player]
+end
 local function StartTheWar()
 	if not _enabled then
 		self:SpawnFrontLines()
 		TheWorld:PushEvent("ms_setnightmarephase", "wild")
 		self.inst:DoTaskInTime(5,function()
-			ShakeAllCameras(CAMERASHAKE.FULL, 10, .02, .2, nil, 40)
+			ShakeAllCamerasWithFilter(OnlyTrackedFilterFn, CAMERASHAKE.FULL, 10, .02, .2, nil, 40)
 		end)
 	end
 

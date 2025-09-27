@@ -100,7 +100,7 @@ end
 local HAUNTTARGET_MUST_TAGS = { "_combat" }
 local HAUNTTARGET_CANT_TAGS = { "wall", "playerghost", "houndmound", "hound", "houndfriend", "INLIMBO" }
 
-local function OnHaunt(inst, haunter)
+local function OnHaunt(inst)
     if inst.components.childspawner == nil or
         not inst.components.childspawner:CanSpawn() or
         math.random() > TUNING.HAUNT_CHANCE_HALF then

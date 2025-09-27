@@ -450,8 +450,12 @@ function GetActionFailString(inst, action, reason)
 
     character = string.upper(character)
 
-    return (STRINGS.CHARACTERS[character] ~= nil and getcharacterstring(STRINGS.CHARACTERS[character].ACTIONFAIL, action, reason))
-        or (STRINGS.CHARACTERS[character] ~= nil and getcharacterstring(STRINGS.CHARACTERS[character].ACTIONFAIL, "GENERIC", reason))
+	local character_tbl = STRINGS.CHARACTERS[character]
+	return character_tbl
+		and (	getcharacterstring(character_tbl.ACTIONFAIL, action, reason) or
+				getcharacterstring(character_tbl.ACTIONFAIL, "GENERIC", reason) or
+				character_tbl.ACTIONFAIL_GENERIC
+			)
         or getcharacterstring(STRINGS.CHARACTERS.GENERIC.ACTIONFAIL, action, reason)
         or getcharacterstring(STRINGS.CHARACTERS.GENERIC.ACTIONFAIL, "GENERIC", reason)
         or STRINGS.CHARACTERS.GENERIC.ACTIONFAIL_GENERIC
@@ -612,4 +616,8 @@ end
 
 function do_search_subwords(...)
     return string_search_subwords(...)
+end
+
+function GetMortalityStringFor(target)
+    return target ~= nil and STRINGS.UI.MORTALITYSTRINGS[string.upper(target.prefab)] or STRINGS.UI.MORTALITYSTRINGS.DEFAULT
 end

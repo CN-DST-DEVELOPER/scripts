@@ -59,6 +59,7 @@ function PollyRogerBrain:OnStart()
         WhileNode( function() return not self.inst.sg:HasStateTag("busy") end, "NO BRAIN WHEN BUSY",
             PriorityNode({
 				BrainCommon.PanicTrigger(self.inst),
+                BrainCommon.ElectricFencePanicTrigger(self.inst),
                 RunAway(self.inst, ShouldRunAway, AVOID_MONSTER_DIST, AVOID_MONSTER_STOP),
                 RunAway(self.inst, ShouldRunAway, SEE_MONSTER_DIST, STOP_RUN_DIST), -- NOTES(JBK): Polly Rogers has an atypical home to go back to so do not use typical home run logic!
                 WhileNode( function() return closetoleader(self.inst) end, "Stayclose", BrainCommon.NodeAssistLeaderPickUps(self, pickupparams)),

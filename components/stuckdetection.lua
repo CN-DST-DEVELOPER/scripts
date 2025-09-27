@@ -25,6 +25,14 @@ function StuckDetection:IsStuck()
 	return self.starttime + self.timetostuck < t
 end
 
+function StuckDetection:GetRemainingTime()
+    if self.starttime == nil then
+        return -1
+    end
+
+    return (self.timetostuck + self.starttime) - GetTime()
+end
+
 function StuckDetection:Reset()
 	if self.starttime ~= nil then
 		local y

@@ -10,18 +10,20 @@ local FAR_DIST_SQ = 8 * 8
 
 local function setclosedphysics(inst)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.ITEMS,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS
+	)
 end
 
 local function setopenedphysics(inst)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.ITEMS
+	)
 end
 
 local function transitionclosed(inst)

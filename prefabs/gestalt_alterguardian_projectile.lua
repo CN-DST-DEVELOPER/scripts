@@ -23,10 +23,9 @@ local function SetTargetPosition(inst, target_pos)
 end
 
 local function Client_CalcSanityForTransparency(inst, observer)
-    if observer ~= nil and observer.replica.sanity ~= nil then
-        local observer_sanity = observer.replica.sanity:GetPercentWithPenalty()
-        local x = (observer_sanity - TUNING.GESTALT_MIN_SANITY_TO_SPAWN) / (1 - TUNING.GESTALT_MIN_SANITY_TO_SPAWN)
-
+	local sanity = observer and observer.replica.sanity
+	if sanity then
+		local x = math.max(0, sanity:GetPercentWithPenalty() - TUNING.GESTALT_MIN_SANITY_TO_SPAWN) / (1 - TUNING.GESTALT_MIN_SANITY_TO_SPAWN)
         return math.min(0.4*x*x*x + 0.3, 0.75)
     else
         return 0.3
@@ -58,6 +57,8 @@ local function attack_behaviour(inst, target)
         else
             return false
         end
+	elseif target.components.combat and not target.components.combat:CanBeAttacked() then
+		return false
     else
         if target.components.sanity ~= nil then
             target.components.sanity:DoDelta(TUNING.GESTALT_ATTACK_DAMAGE_SANITY)
@@ -192,13 +193,13 @@ local function commonfn(buildbank, headdata, tags, common_postinit, master_posti
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.FLYERS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.GROUND)
+	phys:SetCollisionMask(COLLISION.GROUND)
     phys:SetCapsule(0.5, 1)
 
     inst:AddTag("brightmare")
     inst:AddTag("NOBLOCK")
     inst:AddTag("NOCLICK")
+    inst:AddTag("lunar_aligned")
 
     if tags ~= nil then
         for _, tag in ipairs(tags) do
@@ -211,6 +212,7 @@ local function commonfn(buildbank, headdata, tags, common_postinit, master_posti
     inst.AnimState:SetBuild(buildbank)
     inst.AnimState:SetBank(buildbank)
     inst.AnimState:PlayAnimation("emerge")
+	inst.AnimState:Hide("mouseover")
 
 	local colour_mult = TUNING.GESTALT_COMBAT_TRANSPERENCY
 	inst.AnimState:SetMultColour(1, 1, 1, colour_mult)
@@ -288,10 +290,11 @@ local function gestaltfn()
 end
 
 ----------- smallguard_alterguardian_projectile -----------
+local SPIKE_LAYER = {"angry"}
 local GUARD_HEADDATA =
 {
     name = "gestalt_guard_head",
-    followsymbol = "brightmare_gestalt_head_evolved",
+	followsymbol = "head_fx_big",
 }
 local GUARD_TAGS = { "brightmare_guard", "crazy", "extinguisher" }
 
@@ -310,9 +313,13 @@ local SMALLGUARD_DAMAGE = 0.75 * TUNING.GESTALTGUARD_DAMAGE
 local function smallguardfn()
     local inst = commonfn("brightmare_gestalt_evolved", GUARD_HEADDATA, GUARD_TAGS, smallguard_common_postinit)
 
+    inst.AnimState:Hide("angry")
+
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SPIKE_LAYER
 
     inst.attack_speed = TUNING.ALTERGUARDIAN_PROJECTILE_SPEED / SMALLGUARD_SCALE
 
@@ -352,9 +359,13 @@ end
 local function hatguardfn()
     local inst = commonfn("brightmare_gestalt_evolved", GUARD_HEADDATA, GUARD_TAGS, hatguard_common_postinit, nil, true)
 
+    inst.AnimState:Hide("angry")
+
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SPIKE_LAYER
 
     inst.attack_speed = TUNING.ALTERGUARDIAN_PROJECTILE_SPEED / HATGUARD_SCALE
     inst.find_attack_victim = hatguard_find_attack_victim
@@ -376,7 +387,7 @@ end
 local GUARD_HEADDATA =
 {
     name = "gestalt_guard_head",
-    followsymbol = "brightmare_gestalt_head_evolved",
+	followsymbol = "head_fx_big",
 }
 local GUARD_TAGS = { "brightmare_guard", "crazy", "extinguisher" }
 ]]
@@ -384,9 +395,13 @@ local GUARD_TAGS = { "brightmare_guard", "crazy", "extinguisher" }
 local function largeguardfn()
     local inst = commonfn("brightmare_gestalt_evolved", GUARD_HEADDATA, GUARD_TAGS)
 
+    inst.AnimState:Hide("angry")
+
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_hide = SPIKE_LAYER
 
     inst.attack_speed = TUNING.ALTERGUARDIAN_PROJECTILE_SPEED
 

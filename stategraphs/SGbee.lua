@@ -10,9 +10,13 @@ local actionhandlers =
 
 local events =
 {
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() then
-            inst.sg:GoToState("hit")
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("electrocute") then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("doattack", function(inst)
@@ -26,6 +30,7 @@ local events =
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     EventHandler("locomote", function(inst)
         if not (inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("attack")) and
             inst.sg:HasStateTag("moving") ~= inst.components.locomotor:WantsToMoveForward() then
@@ -361,5 +366,7 @@ CommonStates.AddFrozenStates(states,
         RaiseFlyingCreature(inst)
         StartBuzz(inst)
     end)
+
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("bee", states, events, "idle", actionhandlers)

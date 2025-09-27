@@ -355,8 +355,6 @@ local function fn()
     inst:AddTag("pickable_rummage_str")
 	inst:AddTag("NPC_workable")
 
-    MakeSnowCoveredPristine(inst)
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -401,7 +399,6 @@ local function fn()
 
     inst:UpdateArt()
 
-    MakeSnowCovered(inst)
     MakeHauntableWork(inst)
 
     inst.OnSave = OnSave

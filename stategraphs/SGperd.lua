@@ -13,9 +13,22 @@ local events=
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("transform") then inst.sg:GoToState("hit") end end),
+	CommonHandlers.OnElectrocute(),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("electrocute") then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
-    EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("transform") then inst.sg:GoToState("attack") end end),
+	EventHandler("doattack", function(inst)
+		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+			inst.sg:GoToState("attack")
+		end
+	end),
 }
 
 local function Gobble(inst)
@@ -225,5 +238,6 @@ CommonStates.AddIdle(states, "gobble_idle")
 CommonStates.AddSimpleActionState(states, "gohome", "hit", 4 * FRAMES, { "busy" })
 CommonStates.AddSimpleActionState(states, "pick", "take", 9 * FRAMES, { "busy" })
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("perd", states, events, "idle", actionhandlers)

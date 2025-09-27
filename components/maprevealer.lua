@@ -65,6 +65,10 @@ function MapRevealer:Stop()
 end
 
 function MapRevealer:RevealMapToPlayer(player)
+    if player._PostActivateHandshakeState_Server ~= POSTACTIVATEHANDSHAKE.READY then
+        return -- Wait until the player client is ready and has received the world size info.
+    end
+
     if player.player_classified ~= nil then
         player.player_classified.MapExplorer:RevealArea(self.inst.Transform:GetWorldPosition())
     end

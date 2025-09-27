@@ -18,17 +18,65 @@ function HungerBadge:OnUpdate(dt)
     if TheNet:IsServerPaused() then return end
 
     local anim = "neutral"
-    if  self.owner ~= nil and
-        self.owner:HasTag("sleeping") and
-        self.owner.replica.hunger ~= nil and
-        self.owner.replica.hunger:GetPercent() > 0 then
+	local hunger = self.owner and self.owner.replica.hunger
+	if hunger then
+		local gain, drain
+		if self.owner:HasTag("wintersfeastbuff") then
+			gain = true
+			--no drain
+		else
+			if self.owner:HasTag("hungerregenbuff") then
+				gain = true
+			end
 
-        anim = "arrow_loop_decrease"
-    end
+			if self.owner:HasAnyTag("sleeping", "swimming_floater", "wonkey_run") or
+				(self.owner.sg and self.owner.sg:HasAnyStateTag("floating_predict_move", "monkey_predict_run"))
+			then
+				drain = true
+			end
+		end
 
-    if self.owner:HasDebuff("wintersfeastbuff") or self.owner:HasDebuff("hungerregenbuff") then
-        anim = "arrow_loop_increase"
-    end
+		if gain and drain then
+			--has both, we don't know the rates, so we'll have to track it
+			local tick = GetTick()
+			if self.tracking == nil then
+				self.tracking =
+				{
+					i1 = 1,
+					i2 = 1,
+					t = tick,
+					history = { hunger:GetPercent() },
+				}
+			elseif self.tracking.t ~= tick then
+				local maxn = 150
+				self.tracking.i2 = (self.tracking.i2 % maxn) + 1
+				if self.tracking.i2 == self.tracking.i1 then
+					self.tracking.i1 = (self.tracking.i1 % maxn) + 1
+				end
+				self.tracking.history[self.tracking.i2] = hunger:GetPercent()
+				self.tracking.t = tick
+			end
+			local pct1 = self.tracking.history[self.tracking.i1]
+			local pct2 = self.tracking.history[self.tracking.i2]
+			if pct1 > pct2 then
+				gain = false
+			elseif pct1 < pct2 then
+				drain = false
+			else
+				gain, drain = false, false
+			end
+		else
+			self.tracking = nil
+		end
+
+		if gain then
+			if hunger:GetPercent() < 1 then
+				anim = "arrow_loop_increase"
+			end
+		elseif drain and hunger:GetPercent() > 0 then
+			anim = "arrow_loop_decrease"
+		end
+	end
 
     if self.arrowdir ~= anim then
         self.arrowdir = anim

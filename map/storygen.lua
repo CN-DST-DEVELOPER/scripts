@@ -762,25 +762,28 @@ function Story:FindMainlandNodesForNewRegion()
 end
 
 
-function Story:LinkRegions(n1, n2)
+function Story:LinkRegions(n1, n2, num_links, link_tile)
+	num_links = num_links or 4
+	link_tile = link_tile or WORLD_TILES.OCEAN_COASTAL
+
 	local task_id = "REGION_LINK_"..tostring(self.region_link_tasks)
-	local node_task = Graph(task_id, {parent=self.rootNode, default_bg=WORLD_TILES.IMPASSABLE, colour = {r=0,g=0,b=0,a=1}, background="BGImpassable" })
+	local node_task = Graph(task_id, {parent=self.rootNode, default_bg=WORLD_TILES.IMPASSABLE, colour = {r=0,g=0,b=0,a=1}, background="MoonIsland_Meadows" })
 	WorldSim:AddChild(self.rootNode.id, task_id, WORLD_TILES.IMPASSABLE, 0, 0, 0, 1, "blank")
 
 	local nodes = {}
-	local prev_node = nil
-	for i = 1, 4 do
+	for i = 1, num_links do
 		WorldSim:AddChild(self.rootNode.id, task_id, WORLD_TILES.IMPASSABLE, 0, 0, 0, 1, "blank")
 		table.insert(nodes, node_task:AddNode({
-												id=task_id..":REGION_LINK_SUB_"..tostring(i),
-												data={
-														type=NODE_TYPE.Background,
-														name="REGION_LINK_SUB",
-														tags = {"RoadPoison", "ForceDisconnected"},
-														colour={r=0.3,g=.8,b=.5,a=.50},
-														value = WORLD_TILES.OCEAN_COASTAL
-														}
-											}))
+			id = task_id..":REGION_LINK_SUB_"..tostring(i),
+			data =
+			{
+				type=NODE_TYPE.Background,
+				name="REGION_LINK_SUB",
+				tags = {"RoadPoison", "ForceDisconnected"},
+				colour={r=0.3,g=.8,b=.5,a=.50},
+				value = link_tile,
+			}
+		}))
 		if i > 1 then
 			node_task:AddEdge({node1id=nodes[#nodes-1].id, node2id=nodes[#nodes].id})
 		end
@@ -788,14 +791,14 @@ function Story:LinkRegions(n1, n2)
 	node_task:AddEdge({node1id=nodes[1].id, node2id=nodes[#nodes].id})
 
 	self.rootNode:LockGraph(n1.node.data.task..'->'..nodes[1].id, 	n1.node, nodes[1], {type="none", key=KEYS.NONE, node=nil})
-	self.rootNode:LockGraph(task_id..'->'..n2.id, 	                nodes[3], n2, {type="none", key=KEYS.NONE, node=nil})
+	self.rootNode:LockGraph(task_id..'->'..n2.id, 	                nodes[math.floor(num_links * 0.5) + 1], n2, {type="none", key=KEYS.NONE, node=nil})
 
 	self.region_link_tasks = self.region_link_tasks + 1
 end
 
 function Story:AddRegionsToMainland(on_region_added_fn)
 	for region_id, region_taskset in pairs(self.region_tasksets) do
-		if region_id ~= "mainland" then
+		if region_id ~= "mainland" and region_id ~= "ruins_island" and region_id ~= "vault_island" then
 			local c1, c2 = self:FindMainlandNodesForNewRegion()
 			local new_region = self:GenerateNodesForRegion(region_taskset, "RestrictNodesByKey")
 
@@ -813,6 +816,33 @@ function Story:AddRegionsToMainland(on_region_added_fn)
 				on_region_added_fn()
 			end
 		end
+	end
+end
+
+-- Links up to all the nodes of a specific name in task
+function Story:AddRegionToTasksNodes(region_taskset, task_name, node_name, links, on_region_added_fn)
+	local task = self.TERRAIN[task_name]
+	if not task then
+		print("[Story Gen] We couldn't add this region taskset to "..task_name.." and it's nodes of name: "..node_name)
+		return
+	end
+
+	local new_region = self:GenerateNodesForRegion(region_taskset, "LinkNodesByKey")
+	local nodes = task:GetNodesByName(node_name)
+
+	local new_task_nodes = {}
+	for k, v in pairs(region_taskset) do
+		new_task_nodes[k] = self.TERRAIN[k]
+	end
+	self:AddCoveNodes(new_task_nodes)
+	self:InsertAdditionalSetPieces(new_task_nodes)
+
+	for i, node in ipairs(nodes) do
+		self:LinkRegions(node, new_region.entranceNode, links or 2, WORLD_TILES.FAKE_GROUND)
+	end
+
+	if on_region_added_fn ~= nil then
+		on_region_added_fn()
 	end
 end
 
@@ -1007,7 +1037,9 @@ function Story:AddBGNodes(min_count, max_count, task_nodes)
 												terrain_contents_extra = extra_contents,
 												terrain_filter = self.terrain.filter,
 												entrance = new_room.entrance,
-												required_prefabs = new_room.required_prefabs
+												required_prefabs = new_room.required_prefabs,
+
+												SafeFromDisconnect = new_room.SafeFromDisconnect,
 											  }
 										})
 
@@ -1040,7 +1072,9 @@ function Story:AddBGNodes(min_count, max_count, task_nodes)
 													terrain_contents_extra = extra_contents,
 													terrain_filter = self.terrain.filter,
 													blocker_blank = true,
-													required_prefabs = new_room.required_prefabs
+													required_prefabs = new_room.required_prefabs,
+
+													SafeFromDisconnect = new_room.SafeFromDisconnect,
 												  }
 										})
 
@@ -1101,7 +1135,9 @@ function Story:AddCoveNodes(task_nodes)
 												terrain_contents_extra = extra_contents,
 												terrain_filter = self.terrain.filter,
 												entrance = new_room.entrance,
-												required_prefabs = new_room.required_prefabs
+												required_prefabs = new_room.required_prefabs,
+
+												SafeFromDisconnect = new_room.SafeFromDisconnect,
 												}
 										})
 
@@ -1295,6 +1331,8 @@ function Story:GenerateNodesFromTask(task, crossLinkFactor, starting_node_name)
 								required_prefabs = next_room.required_prefabs,
 								random_node_exit_weight = next_room.random_node_exit_weight,
 								random_node_entrance_weight = next_room.random_node_entrance_weight,
+
+								SafeFromDisconnect = next_room.SafeFromDisconnect,
 							  }
 
 		if is_starting_room then

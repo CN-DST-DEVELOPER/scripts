@@ -35,6 +35,7 @@ function GrassgekkoBrain:OnStart()
     PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP , function() return true end ),
         RunAway(self.inst, "player", AVOID_DIST, AVOID_STOP, nil, nil, NO_TAGS),
         --Wander(self.inst, function() return self.inst:GetPosition() end, MAX_WANDER_DIST),

@@ -146,8 +146,7 @@ local function projectilefn()
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(0)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
+	inst.Physics:SetCollisionMask(COLLISION.WORLD)
     inst.Physics:SetCapsule(.2, .2)
 
     inst:AddTag("NOCLICK")
@@ -157,6 +156,7 @@ local function projectilefn()
 
     --projectile (from complexprojectile component) added to pristine state for optimization
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.AnimState:SetBank("gooball_fx")
     inst.AnimState:SetBuild("gooball_fx")

@@ -46,6 +46,8 @@ local function fn()
 
     inst:AddComponent("selfstacker")
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunchAndSmash(inst)
 
     inst:ListenForEvent("floater_startfloating", function(inst) inst.AnimState:PlayAnimation("float") end)

@@ -3,7 +3,7 @@ local Text = require "widgets/text"
 local easing = require "easing"
 local Widget = require "widgets/widget"
 
-local Badge = Class(Widget, function(self, anim, owner, tint, iconbuild, circular_meter, use_clear_bg, dont_update_while_paused)
+local Badge = Class(Widget, function(self, anim, owner, tint, iconbuild, circular_meter, use_clear_bg, dont_update_while_paused, bonustint)
     Widget._ctor(self, "Badge")
     self:UpdateWhilePaused(not dont_update_while_paused)
     self.owner = owner
@@ -54,6 +54,17 @@ local Badge = Class(Widget, function(self, anim, owner, tint, iconbuild, circula
             self.anim:GetAnimState():SetMultColour(unpack(tint))
         end
 
+        --self.frame clashes with existing mods
+        self.anim_bonus = self:AddChild(UIAnim())
+        self.anim_bonus:GetAnimState():SetBank("status_meter")
+        self.anim_bonus:GetAnimState():SetBuild("status_meter")
+        self.anim_bonus:GetAnimState():SetPercent("anim", 1)
+        self.anim_bonus:GetAnimState():AnimateWhilePaused(not dont_update_while_paused)
+        self.anim_bonus:Show()
+        if bonustint ~= nil then
+            self.anim_bonus:GetAnimState():SetMultColour(unpack(bonustint))
+        end
+
         if circular_meter then
             --self.circular_meter = self.underNumber:AddChild(UIAnim())
             self.circular_meter = self:AddChild(UIAnim())
@@ -75,6 +86,7 @@ local Badge = Class(Widget, function(self, anim, owner, tint, iconbuild, circula
         self.circleframe:GetAnimState():SetBuild("status_meter")
         self.circleframe:GetAnimState():PlayAnimation("frame")
         self.circleframe:GetAnimState():AnimateWhilePaused(not dont_update_while_paused)
+
 		--self.dont_animate_circleframe = false
         if iconbuild ~= nil then
             self.circleframe:GetAnimState():OverrideSymbol("icon", iconbuild, "icon")
@@ -112,7 +124,7 @@ function Badge:OnLoseFocus()
     self.num:Hide()
 end
 
-function Badge:SetPercent(val, max)
+function Badge:SetPercent(val, max, bonusval)
     val = val or self.percent
     max = max or 100
 
@@ -121,13 +133,22 @@ function Badge:SetPercent(val, max)
     else
         self.anim:GetAnimState():SetPercent("anim", 1 - val)
         if self.circleframe ~= nil and not self.dont_animate_circleframe then
-            self.circleframe:GetAnimState():SetPercent("frame", 1 - val)
+            self.circleframe:GetAnimState():SetPercent("frame", 1 -val)
+        end
+    end
+
+    if self.anim_bonus then
+        if bonusval then
+            self.anim_bonus:GetAnimState():SetPercent("anim", 1 - bonusval)
+            self.anim_bonus:Show()
+        else
+            self.anim_bonus:Hide()
         end
     end
 
     --print(val, max, val * max)
     self.num:SetString(tostring(math.ceil(val * max)))
-    self.percent = val
+    self.percent = bonusval or val
 end
 
 local function CheckWarning(inst, self)

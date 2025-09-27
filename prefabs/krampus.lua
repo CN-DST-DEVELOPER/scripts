@@ -78,6 +78,9 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_radius = 1
+	inst.override_combat_fx_size = "med"
+
     inst:AddComponent("inventory")
     inst.components.inventory.ignorescangoincontainer = true
 

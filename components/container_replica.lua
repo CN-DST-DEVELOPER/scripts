@@ -312,17 +312,48 @@ function Container:IsInfiniteStackSize()
     return self.classified.infinitestacksize:value()
 end
 
+local function RefreshLocalPlayerUI(self) -- Call from server handles server is client case.
+    for player, opener in pairs(self.openers) do
+        if player.HUD then
+            player:PushEvent("refreshcrafting")
+            if player.HUD.controls then
+                local widget = player.HUD.controls.containers[self.inst]
+                if widget then
+                    widget:Refresh()
+                end
+            end
+        end
+    end
+end
+
+function Container:EnableReadOnlyContainer(enable)
+    if self.classified then
+        self.classified.readonlycontainer:set(enable)
+        RefreshLocalPlayerUI(self)
+    end
+end
+
+function Container:IsReadOnlyContainer()
+    if not self.classified then
+        return false
+    end
+
+    return self.classified.readonlycontainer:value()
+end
+
 function Container:CanTakeItemInSlot(item, slot)
     return item ~= nil
         and item.replica.inventoryitem ~= nil
         and item.replica.inventoryitem:CanGoInContainer()
         and not item.replica.inventoryitem:CanOnlyGoInPocket()
+        and (not item.replica.inventoryitem:CanOnlyGoInPocketOrPocketContainers() or self.inst.replica.inventoryitem and self.inst.replica.inventoryitem:CanOnlyGoInPocket())
+        and not self:IsReadOnlyContainer()
         and not (GetGameModeProperty("non_item_equips") and item.replica.equippable ~= nil)
         and (self.itemtestfn == nil or self:itemtestfn(item, slot))
 end
 
 function Container:GetSpecificSlotForItem(item)
-    if self.usespecificslotsforitems and self.itemtestfn ~= nil then
+    if self.usespecificslotsforitems and not self:IsReadOnlyContainer() and self.itemtestfn ~= nil then
         for i = 1, self:GetNumSlots() do
             if self:itemtestfn(item, i) then
                 return i
@@ -339,6 +370,8 @@ function Container:ShouldPrioritizeContainer(item)
         and item.replica.inventoryitem ~= nil
         and item.replica.inventoryitem:CanGoInContainer()
         and not item.replica.inventoryitem:CanOnlyGoInPocket()
+        and (not item.replica.inventoryitem:CanOnlyGoInPocketOrPocketContainers() or self.inst.replica.inventoryitem and self.inst.replica.inventoryitem:CanOnlyGoInPocket())
+        and not self:IsReadOnlyContainer()
         and not (GetGameModeProperty("non_item_equips") and item.replica.equippable ~= nil)
         and (self:priorityfn(item))
 end
@@ -367,6 +400,14 @@ function Container:IsHolding(item, checkcontainer)
     else
         return self.opener ~= nil and self.classified ~= nil and self.classified:IsHolding(item, checkcontainer)
     end
+end
+
+function Container:FindItem(fn)
+	if self.inst.components.container then
+		return self.inst.components.container:FindItem(fn)
+	elseif self.opener and self.classified then
+		return self.classified:FindItem(fn)
+	end
 end
 
 function Container:GetItemInSlot(slot)
@@ -508,6 +549,14 @@ function Container:TakeActiveItemFromHalfOfSlot(slot)
     end
 end
 
+function Container:TakeActiveItemFromCountOfSlot(slot, count)
+    if self.inst.components.container ~= nil then
+        self.inst.components.container:TakeActiveItemFromCountOfSlot(slot, count, ThePlayer)
+    elseif self.classified ~= nil then
+        self.classified:TakeActiveItemFromCountOfSlot(slot, count)
+    end
+end
+
 function Container:TakeActiveItemFromAllOfSlot(slot)
     if self.inst.components.container ~= nil then
         self.inst.components.container:TakeActiveItemFromAllOfSlot(slot, ThePlayer)
@@ -561,6 +610,14 @@ function Container:MoveItemFromHalfOfSlot(slot, container)
         self.inst.components.container:MoveItemFromHalfOfSlot(slot, container, ThePlayer)
     elseif self.classified ~= nil then
         self.classified:MoveItemFromHalfOfSlot(slot, container)
+    end
+end
+
+function Container:MoveItemFromCountOfSlot(slot, container, count)
+    if self.inst.components.container ~= nil then
+        self.inst.components.container:MoveItemFromCountOfSlot(slot, container, count, ThePlayer)
+    elseif self.classified ~= nil then
+        self.classified:MoveItemFromCountOfSlot(slot, container, count)
     end
 end
 

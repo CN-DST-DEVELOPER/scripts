@@ -24,7 +24,10 @@ local function OnSayDirty(inst)
     if inst._parent ~= nil and IsStringDirty(inst) then
         local list = STRING_LISTS[inst.string_list:value()]
         local string = list ~= nil and list[inst.string_id:value()] or nil
+
         if string ~= nil then
+            string = subfmt(string, { mortal = GetMortalityStringFor(ThePlayer) })
+
             inst._parent.components.talker:Say(string, nil, nil, nil, true)
         end
     end

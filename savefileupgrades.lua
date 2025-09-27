@@ -1301,6 +1301,67 @@ t = {
                 FlagForRetrofitting_Forest(savedata, "retrofit_otterdens")
             end,
         },
+        
+        {
+            version = 5.155, -- Add Balatro Machine to the world.
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_balatro_content")
+            end,
+        },
+        {
+            version = 5.156, -- Remove ice off of the world's edge.
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "sharkboi_ice_hazard_fix")
+            end,
+        },
+        {
+            version = 5.157, -- Add the big whirlpool.
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "rifts6_add_whirlpool")
+            end,
+        },
+        {
+            version = 5.158, -- Fixup for Pearl's drops for a time period where everything was being eaten.
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "fix_pearl_eating_everything")
+            end,
+        },
+        {
+            version = 5.159, -- Add Fumarole area
+            fn = function(savedata)
+                if savedata and savedata.map and savedata.map.topology and savedata.map.prefab == "cave" then
+                    local hascentipedetask = false
+                    local topology = savedata.map.topology
+                    for i, node in ipairs(topology.nodes) do
+                        local idname = topology.ids[i]
+                        if idname and idname:find("CentipedeCaveTask") then
+                            hascentipedetask = true
+                            break
+                        end
+                    end
+                    if not hascentipedetask then
+                        FlagForRetrofitting_Cave(savedata, "retrofit_rifts6_add_fumarole")
+                        savedata.retrofit_rifts6_add_fumarole = true -- static layouts need to be done before the map is finalized
+                    end
+                end
+            end,
+        },
+		{
+			version = 5.16, -- Deprecate floating heavyobstaclephysics exploit
+			fn = function(savedata)
+				FlagForRetrofitting_Forest(savedata, "floating_heavyobstaclephysics_fix")
+				FlagForRetrofitting_Cave(savedata, "floating_heavyobstaclephysics_fix")
+			end,
+		},
+        {
+            version = 5.17,
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_missing_retrofits_generated_densities")
+                FlagForRetrofitting_Cave(savedata, "retrofit_missing_retrofits_generated_densities")
+
+                --FlagForRetrofitting_Cave(savedata, "retrofit_fix_mismatched_fumarole_node_id_map")
+            end,
+        },
     },
 }
 

@@ -14,6 +14,7 @@ local events =
     CommonHandlers.OnSleepEx(),
 	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
+    CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
 
@@ -192,6 +193,7 @@ CommonStates.AddSleepExStates(states,
     },
 })
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHitState(states)
 CommonStates.AddWalkStates(states,
 {

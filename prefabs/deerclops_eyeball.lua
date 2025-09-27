@@ -39,6 +39,8 @@ local function fn()
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunch(inst)
 
     return inst

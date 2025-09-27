@@ -330,7 +330,7 @@ local StartPrecipitation = _ismastersim and function(temperature)
     _moisturefloor:set(RandomizeMoistureFloor(_season))
     _peakprecipitationrate:set(RandomizePeakPrecipitationRate(_season))
     local riftspawner = _world.components.riftspawner
-    if TUNING.ACIDRAIN_ENALBED and riftspawner and riftspawner:IsShadowPortalActive() then
+    if TUNING.ACIDRAIN_ENABLED and riftspawner and riftspawner:IsShadowPortalActive() then
         _preciptype:set(PRECIP_TYPES.acidrain)
     else
         _preciptype:set(PRECIP_TYPES.rain)
@@ -400,11 +400,9 @@ local function OnPhaseChanged(src, phase)
 end
 
 local function OnChangeArea_fx(inst, area)
-    if area == nil or area.tags == nil then
-        _acidrainfx_allowsfx = false
-    else
-        _acidrainfx_allowsfx = _map:CanAreaTagsHaveAcidRain(area.tags)
-    end
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local canacidrain = _map:CanPointHaveAcidRain(x, y, z)
+    _acidrainfx_allowsfx = canacidrain
 end
 
 local function OnPlayerActivated(src, player)
@@ -431,11 +429,9 @@ if _ismastersim then
     local function OnChangeArea_logic(inst, area)
         local acidlevel = inst.components.acidlevel
         if acidlevel then
-            if area == nil or area.tags == nil then
-                acidlevel:SetIgnoreAcidRainTicks(false)
-            else
-                acidlevel:SetIgnoreAcidRainTicks(not _map:CanAreaTagsHaveAcidRain(area.tags))
-            end
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local canacidrain = _map:CanPointHaveAcidRain(x, y, z)
+            acidlevel:SetIgnoreAcidRainTicks(not canacidrain)
         end
     end
     local function OnPlayerJoined(world, player)

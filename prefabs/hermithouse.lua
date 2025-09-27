@@ -281,8 +281,6 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, house
 
 		inst:AddTag("antlion_sinkhole_blocker")
 
-        MakeSnowCoveredPristine(inst)
-
         inst.scrapbook_proxy = "hermithouse"
 
         if client_postinit then
@@ -340,6 +338,8 @@ local function MakeHermitCrabHouse(name, client_postinit, master_postinit, house
         if master_postinit then
            master_postinit(inst)
         end
+
+        TheWorld:PushEvent("ms_register_pearl_entity", inst)
 
         return inst
 	end

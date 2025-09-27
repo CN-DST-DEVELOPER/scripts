@@ -466,7 +466,7 @@ function QuagmireRecipeBook:BuildRecipeBook()
 	local coin_size = 24 / (cell_size/base_size)
 
     local function ScrollWidgetsCtor(context, index)
-        local w = Widget("recipe-cell-".. index)
+        local w = Widget("quagmire-cell-".. index)
 
 		----------------
 		w.cell_root = w:AddChild(ImageButton("images/quagmire_recipebook.xml", "recipe_known.tex", "recipe_known_selected.tex"))

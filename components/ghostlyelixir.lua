@@ -6,6 +6,12 @@ local GhostlyElixir = Class(function(self, inst)
 end)
 
 function GhostlyElixir:Apply(doer, target)
+	if target:HasTag("elixir_drinker") then
+		target = target.components.inventoryitem.owner
+		if not target then
+			return false
+		end
+	end
 	target = target.components.ghostlyelixirable:GetApplyToTarget(doer, self.inst)
 
 	if target ~= nil and self.doapplyelixerfn ~= nil then

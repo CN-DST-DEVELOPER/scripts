@@ -134,6 +134,7 @@ local NON_COLLAPSIBLE_TAGS = { "FX", --[["NOCLICK",]] "DECOR", "INLIMBO", --[["s
 local function DoAOEWork(inst, x, z, isocean)
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, inst.AOE_RADIUS + WORK_RADIUS_PADDING, nil, NON_COLLAPSIBLE_TAGS, isocean and COLLAPSIBLE_TAGS_OCEAN or COLLAPSIBLE_TAGS)) do
 		if v:IsValid() and not v:IsInLimbo() then
+            local workabledestroyed = false
 			if v.prefab == "bullkelp_plant" then
 				--Spawn kelp roots along with kelp is a bullkelp plant is hit
 				local x1, y1, z1 = v.Transform:GetWorldPosition()
@@ -172,6 +173,7 @@ local function DoAOEWork(inst, x, z, isocean)
 					)
 				end
 				if isworkable then
+                    workabledestroyed = true
 					v.components.workable:Destroy(inst)
 					if v:IsValid() and v:HasTag("stump") and v.components.workable and v.components.workable:CanBeWorked() then
 						v.components.workable:Destroy(inst)
@@ -180,6 +182,11 @@ local function DoAOEWork(inst, x, z, isocean)
 					v.components.pickable:Pick(inst)
 				end
 			end
+            if not workabledestroyed and v:IsValid() then
+                if v.components.lunarhailbuildup then
+                    v.components.lunarhailbuildup:DoAllRemainingWorkToRemoveBuildup(inst)
+                end
+            end
 		end
 	end
 end
@@ -498,7 +505,7 @@ local function fn()
     inst.Physics:SetDamping(0)
 	inst.Physics:SetRestitution(0)
     inst.Physics:SetCollisionGroup(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.GROUND)
+	inst.Physics:SetCollisionMask(COLLISION.GROUND)
     inst.Physics:SetSphere(.4)
 
     inst:AddTag("NOCLICK")
@@ -506,6 +513,7 @@ local function fn()
 
     --projectile (from complexprojectile component) added to pristine state for optimization
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 
     inst.hideanim = net_bool(inst.GUID, "winona_catapult_projectile.hideanim", "hideanimdirty")
 	inst.element = net_tinybyte(inst.GUID, "winona_catapult_projectile.element", "elementdirty")

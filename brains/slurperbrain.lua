@@ -12,6 +12,7 @@ function SlurperBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         ChaseAndAttack(self.inst, 60, 100),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, 20),
     }, .25)

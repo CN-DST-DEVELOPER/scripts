@@ -45,6 +45,21 @@ local events =
 			inst.sg:GoToState("melt")
 		end
 	end),
+	EventHandler("captured", function(inst)
+		if not inst.sg:HasAnyStateTag("debris", "invisible") then
+			inst.sg:GoToState("hit", true)
+		end
+	end),
+	EventHandler("captured_despawn", function(inst)
+		if inst.sg:HasStateTag("invisible") then
+			inst:Remove()
+			return
+		end
+		inst.sg.mem.force_despawn = true
+		if not inst.sg:HasStateTag("debris") then
+			inst.sg:GoToState("captured_despawn")
+		end
+	end),
 }
 
 local function PlayFootstepDown(inst)
@@ -86,7 +101,7 @@ local states =
 		events =
 		{
 			EventHandler("locomote", function(inst)
-				if inst.components.locomotor:WantsToMoveForward() then
+				if inst.components.locomotor:WantsToMoveForward() and not inst.components.gestaltcapturable:IsTargeted() then
 					inst.sg:GoToState("walk_start")
 				end
 			end),
@@ -112,6 +127,7 @@ local states =
 			inst:Hide()
 			inst:AddTag("NOCLICK")
 			inst:HideDebris()
+			inst.components.gestaltcapturable:SetEnabled(false)
 			inst.sg:SetTimeout(delay or 0)
 		end,
 
@@ -126,6 +142,7 @@ local states =
 				inst:EnableCloud(true)
 				inst:Show()
 				inst:RemoveTag("NOCLICK")
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 		end,
 	},
@@ -154,6 +171,7 @@ local states =
 			else
 				inst.components.health:StartRegen(TUNING.LUNAR_GRAZER_HEALTH_REGEN, 1, false)
 			end
+			inst.components.gestaltcapturable:SetEnabled(false)
 		end,
 
 		events =
@@ -182,6 +200,7 @@ local states =
 				inst:EnableCloud(true)
 				inst:Show()
 				inst:RemoveTag("NOCLICK")
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 			inst.components.health:StopRegen()
 		end,
@@ -218,6 +237,7 @@ local states =
 				v.AnimState:SetDeltaTimeMultiplier(0.8 + math.random() * 1.1)
 			end
 			inst.SoundEmitter:PlaySound("rifts/grazer/rock_gather")
+			inst.components.gestaltcapturable:SetEnabled(false)
 			inst.sg.statemem.delay = 1
 			inst.sg:SetTimeout(inst.sg.statemem.delay)
 		end,
@@ -243,6 +263,7 @@ local states =
 		onexit = function(inst)
 			if not inst.sg.statemem.spawn then
 				inst:EnableCloud(true)
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 			inst.Physics:SetActive(true)
 			inst:Show()
@@ -269,6 +290,7 @@ local states =
 				end
 			end
 			inst:EnableCloud(false)
+			inst.components.gestaltcapturable:SetEnabled(false)
 		end,
 
 		onupdate = function(inst)
@@ -295,6 +317,7 @@ local states =
 				inst.sg:RemoveStateTag("noattack")
 				inst.sg:RemoveStateTag("temp_invincible")
 				inst:EnableCloud(true)
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end),
 			FrameEvent(90, function(inst) inst:SpawnTrail(GetRandomMinMax(.8, .9), GetRandomMinMax(.4, .6)) end),
 			FrameEvent(96, function(inst)
@@ -319,6 +342,7 @@ local states =
 				v.AnimState:SetSymbolMultColour("rock_blob", 1, 1, 1, 0.4)
 			end
 			inst:EnableCloud(true)
+			inst.components.gestaltcapturable:SetEnabled(true)
 		end,
 	},
 
@@ -360,6 +384,7 @@ local states =
 			inst:EnableCloud(false)
 			inst:ShowDebris()
 			inst:TossDebris()
+			inst.components.gestaltcapturable:SetEnabled(false)
 		end,
 
 		timeline =
@@ -385,6 +410,7 @@ local states =
 				inst:RemoveTag("NOCLICK")
 				inst.Physics:SetActive(true)
 				inst:EnableCloud(true)
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 		end,
 	},
@@ -410,6 +436,7 @@ local states =
 					v.AnimState:PlayAnimation("rock_0"..tostring(v.variation))
 				end
 			end
+			inst.components.gestaltcapturable:SetEnabled(false)
 			inst.sg.statemem.erode = -1
 		end,
 
@@ -452,6 +479,7 @@ local states =
 				inst:EnableCloud(true)
 				inst:Show()
 				inst:RemoveTag("NOCLICK")
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 		end,
 	},
@@ -469,6 +497,7 @@ local states =
 			if inst.last_trail ~= nil and inst.last_trail:IsValid() then
 				inst.last_trail:Dissipate()
 			end
+			inst.components.gestaltcapturable:SetEnabled(false)
 		end,
 
 		timeline =
@@ -495,6 +524,7 @@ local states =
 				inst:RemoveTag("NOCLICK")
 				inst.Physics:SetActive(true)
 				inst:EnableCloud(true)
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 		end,
 	},
@@ -515,6 +545,7 @@ local states =
 			inst:ShowDebris()
 			inst:DropDebris()
 			inst:AddTag("NOCLICK")
+			inst.components.gestaltcapturable:SetEnabled(false)
 			inst.sg.statemem.erode = -1
 		end,
 
@@ -557,6 +588,41 @@ local states =
 				inst:EnableCloud(true)
 				inst:Show()
 				inst:RemoveTag("NOCLICK")
+				inst.components.gestaltcapturable:SetEnabled(true)
+			end
+		end,
+	},
+
+	State{
+		name = "captured_despawn",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "invisible", "debris" },
+
+		onenter = function(inst)
+			inst:Hide()
+			inst:AddTag("NOCLICK")
+			inst.Physics:SetActive(false)
+			inst:EnableCloud(false)
+			inst:ShowDebris()
+			inst:TossDebris()
+			for i, v in ipairs(inst.debris) do
+				v.AnimState:PlayAnimation("rock_0"..tostring(v.variation))
+			end
+			inst.components.gestaltcapturable:SetEnabled(false)
+			inst.sg:SetTimeout(1)
+		end,
+
+		ontimeout = function(inst)
+			inst.sg.statemem.dissipated = true
+			inst.sg:GoToState("dissipated")
+		end,
+
+		onexit = function(inst)
+			if not inst.sg.statemem.dissipated then
+				inst:Show()
+				inst:RemoveTag("NOCLICK")
+				inst.Physics:SetActive(true)
+				inst:EnableCloud(true)
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 		end,
 	},
@@ -565,10 +631,12 @@ local states =
 		name = "hit",
 		tags = { "hit", "busy" },
 
-		onenter = function(inst)
+		onenter = function(inst, nosound)
 			inst.components.locomotor:Stop()
 			inst.AnimState:PlayAnimation("hit")
-			inst.SoundEmitter:PlaySound("rifts/grazer/hit")
+			if not nosound then
+				inst.SoundEmitter:PlaySound("rifts/grazer/hit")
+			end
 		end,
 
 		timeline =
@@ -626,12 +694,18 @@ local states =
 		events =
 		{
 			EventHandler("locomote", function(inst)
-				if inst.components.locomotor:WantsToMoveForward() then
+				if inst.components.locomotor:WantsToMoveForward() and not inst.components.gestaltcapturable:IsTargeted() then
 					if inst.sg.statemem.stop then
 						inst.sg.statemem.stop = false
 						inst.sg:AddStateTag("canrotate")
 					end
 				elseif not inst.sg.statemem.stop then
+					inst.sg.statemem.stop = true
+					inst.sg:RemoveStateTag("canrotate")
+				end
+			end),
+			EventHandler("gestaltcapturable_targeted", function(inst)
+				if not inst.sg.statemem.stop then
 					inst.sg.statemem.stop = true
 					inst.sg:RemoveStateTag("canrotate")
 				end
@@ -695,12 +769,18 @@ local states =
 		events =
 		{
 			EventHandler("locomote", function(inst)
-				if inst.components.locomotor:WantsToMoveForward() then
+				if inst.components.locomotor:WantsToMoveForward() and not inst.components.gestaltcapturable:IsTargeted() then
 					if inst.sg.statemem.stop then
 						inst.sg.statemem.stop = false
 						inst.sg:AddStateTag("canrotate")
 					end
 				elseif not inst.sg.statemem.stop then
+					inst.sg.statemem.stop = true
+					inst.sg:RemoveStateTag("canrotate")
+				end
+			end),
+			EventHandler("gestaltcapturable_targeted", function(inst)
+				if not inst.sg.statemem.stop then
 					inst.sg.statemem.stop = true
 					inst.sg:RemoveStateTag("canrotate")
 				end
@@ -750,11 +830,11 @@ local states =
 
 		timeline =
 		{
-			FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound("rifts/grazer/devour_scream") end),
+			SoundFrameEvent(0, "rifts/grazer/devour_scream"),
 			FrameEvent(12, function(inst)
 				inst.components.combat:StartAttack()
 			end),
-			FrameEvent(14, function(inst) inst.SoundEmitter:PlaySound("rifts/grazer/devour_chomp") end),
+			SoundFrameEvent(14, "rifts/grazer/devour_chomp"),
 			FrameEvent(32, function(inst)
 				local target = inst.sg.statemem.target or inst.components.combat.target
 				if inst.components.combat:CanHitTarget(target) then

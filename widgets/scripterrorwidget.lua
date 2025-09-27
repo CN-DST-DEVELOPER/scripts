@@ -125,7 +125,7 @@ function ScriptErrorWidget:OnUpdate( dt )
     end
 
     -- DebugKeys are disabled at this point, so check manually
-	if TheInput:IsKeyDown(KEY_R) and TheInput:IsKeyDown(KEY_CTRL) then
+	if TheInput:IsKeyDown(KEY_R) and TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsControlPressed(CONTROL_OPEN_DEBUG_MENU) or TheInput:IsControlPressed(CONTROL_INSPECT) then
         TheSim:ResetError()
         c_reset()
     end

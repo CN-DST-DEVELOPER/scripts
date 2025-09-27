@@ -10,6 +10,10 @@ local prefabs =
     "dock_damage",
 }
 
+local function IsPermanentOrDockFilterFn(tileid)
+    return IsLandTile(tileid) and not (TileGroupManager:IsTemporaryTile(tileid) and tileid ~= WORLD_TILES.FARMING_SOIL and tileid ~= WORLD_TILES.MONKEY_DOCK)
+end
+
 local function CLIENT_CanDeployDockKit(inst, pt, mouseover, deployer, rotation)
     local x, y, z = pt:Get()
     local tile = TheWorld.Map:GetTileAtPoint(x, 0, z)
@@ -18,7 +22,7 @@ local function CLIENT_CanDeployDockKit(inst, pt, mouseover, deployer, rotation)
     end
 
     local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(x, 0, z)
-    if not TheWorld.Map:HasAdjacentLandTile(tx, ty) then
+    if not TheWorld.Map:HasAdjacentTileFiltered(tx, ty, IsPermanentOrDockFilterFn) then
         return false
     end
 

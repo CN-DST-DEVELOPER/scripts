@@ -1,3 +1,10 @@
+require("stategraphs/commonstates")
+
+local events =
+{
+	CommonHandlers.OnElectrocute(),
+}
+
 local function GetLevelAnim(inst, anim)
 	return anim..(inst.sg.mem.level == 2 and "_small" or "_full")
 end
@@ -83,6 +90,7 @@ local states =
 
 	State{
 		name = "tryemerge",
+		tags = { "noelectrocute" },
 
 		onenter = function(inst)
 			PlayAnimation(inst, "buried_stagger")
@@ -110,4 +118,57 @@ local states =
 	},
 }
 
-return StateGraph("daywalker2_buried", states, {}, "idle")
+local function TryElectrocuteShakeJunk(inst)
+	local junk = inst.components.entitytracker:GetEntity("junk")
+	if junk then
+		junk:PushEvent("shake")
+	end
+end
+
+local function TryElectrocuteShakeJunk2(inst)
+	if inst.sg.mem.level == 2 then
+		TryElectrocuteShakeJunk(inst)
+	end
+end
+
+CommonStates.AddElectrocuteStates(states,
+{	--timeline
+	loop =
+	{
+		FrameEvent(0, TryElectrocuteShakeJunk2),
+		FrameEvent(8, TryElectrocuteShakeJunk2),
+		FrameEvent(16, TryElectrocuteShakeJunk2),
+		FrameEvent(24, TryElectrocuteShakeJunk2),
+		FrameEvent(32, TryElectrocuteShakeJunk2),
+	},
+	pst =
+	{
+		FrameEvent(0, function(inst)
+			if inst.sg.mem.level ~= 2 then
+				TryElectrocuteShakeJunk(inst)
+			end
+		end),
+	},
+},
+{	--anims
+	loop = function(inst)
+		local anim = inst.sg.mem.level == 2 and "buried_stagger_loop_small" or "buried_full_shock_loop"
+		if inst.junkfx then
+			for i, v in ipairs(inst.junkfx) do
+				v.AnimState:PlayAnimation(anim, true)
+			end
+		end
+		return anim
+	end,
+	pst = function(inst)
+		local anim = inst.sg.mem.level == 2 and "buried_stagger_pst_small" or "buried_full_shock_pst"
+		if inst.junkfx then
+			for i, v in ipairs(inst.junkfx) do
+				v.AnimState:PlayAnimation(anim)
+			end
+		end
+		return anim
+	end,
+})
+
+return StateGraph("daywalker2_buried", states, events, "idle")

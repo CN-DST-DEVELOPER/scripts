@@ -1,21 +1,16 @@
 require("stategraphs/commonstates")
 
-
 -- abandon reaction
 -- waiting for leader idle
 -- returned to leader reaction
 -- at tracking target idle
 -- kitcoon found reaction
 
-
-local actionhandlers =
-{
-}
-
 local events =
 {
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
 	CommonHandlers.OnAttack(),
     CommonHandlers.OnDeath(),
@@ -381,7 +376,6 @@ local states=
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
         },
     },
-
 }
 
 CommonStates.AddCombatStates(states,
@@ -421,8 +415,9 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("titcoon", states, events, "idle", actionhandlers)
+return StateGraph("titcoon", states, events, "idle")

@@ -137,7 +137,7 @@ function MotdManager:MakeSortedKeys(motd_info)
 		if true or a.meta.is_new == b.meta.is_new then -- disabling is_new for the sort
 			if category_order[a.data.category] == category_order[b.data.category] then
 				if a.data.group_order == b.data.group_order then
-					return a.data.title < b.data.title
+					return stringidsorter(a.data.title, b.data.title)
 				else
 					return a.data.group_order < b.data.group_order
 				end

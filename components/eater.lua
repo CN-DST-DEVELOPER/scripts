@@ -270,12 +270,17 @@ function Eater:Eat(food, feeder)
             self.inst.components.sanity:DoDelta(sanity_delta * stack_mult)
         end
 
-        if feeder ~= self.inst and self.inst.components.inventoryitem ~= nil then
-            local owner = self.inst.components.inventoryitem:GetGrandOwner()
-            if owner ~= nil and (owner == feeder or (owner.components.container ~= nil and owner.components.container:IsOpenedBy(feeder))) then
-                feeder:PushEvent("feedincontainer")
-            end
-        end
+		if feeder ~= self.inst then
+			if self.inst.components.inventoryitem then
+				local owner = self.inst.components.inventoryitem:GetGrandOwner()
+				if owner and (owner == feeder or (owner.components.container and owner.components.container:IsOpenedBy(feeder))) then
+					feeder:PushEvent("feedincontainer")
+				end
+			end
+			if self.inst.components.rideable and feeder == self.inst.components.rideable:GetRider() then
+				feeder:PushEvent("feedmount", { food = food, eater = self.inst })
+			end
+		end
 
         self.inst:PushEvent("oneat", { food = food, feeder = feeder })
         if self.oneatfn ~= nil then

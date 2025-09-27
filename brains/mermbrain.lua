@@ -40,26 +40,33 @@ local function GetHealerFn(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local players = FindPlayersInRange(x, y, z, TRADE_DIST, true)
     for _, v in ipairs(players) do
-        if (v == inst.components.follower:GetLeader() or v:HasTag("merm")) and inst.components.combat.target ~= v then
-            local act = v:GetBufferedAction()    
-            if act
-            and act.target == inst
-            and act.action == ACTIONS.HEAL then
-                return v
-            end  
+		if (v == inst.components.follower:GetLeader() or v:HasTag("merm")) and not inst.components.combat:TargetIs(v) then
+			local target
+			local act = v:GetBufferedAction()
+			if act then
+				target = act.target
+				act = act.action
+			elseif v.components.playercontroller then
+				act, target = v.components.playercontroller:GetRemoteInteraction()
+			end
+			if target == inst and act == ACTIONS.HEAL then
+				return v
+			end
         end
-    end     
+	end
 end
 
 local function KeepHealerFn(inst, target)
-    if (target == inst.components.follower:GetLeader() or target:HasTag("merm")) and inst.components.combat.target ~= target then
+	if (target == inst.components.follower:GetLeader() or target:HasTag("merm")) and not inst.components.combat:TargetIs(target) then
         local act = target:GetBufferedAction()
-        if act
-        and act.target == inst
-        and act.action == ACTIONS.HEAL then
-            return true
-        end
+		if act then
+			return act.target == inst and act.action == ACTIONS.HEAL
+		elseif target.components.playercontroller then
+			act, target = target.components.playercontroller:GetRemoteInteraction()
+			return target == inst and act == ACTIONS.HEAL
+		end
     end
+	return false
 end
 
 local function GetTraderFn(inst)
@@ -573,6 +580,10 @@ function MermBrain:OnStart()
         IfNode(function() return not TheWorld.components.mermkingmanager or not TheWorld.components.mermkingmanager.king end, "Panic, With No King",
             BrainCommon.PanicWhenScared(self.inst, .25, "MERM_TALK_PANICBOSS")),
 		BrainCommon.PanicTrigger(self.inst),
+
+        WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "Shocked",
+            ChattyNode(self.inst, "MERM_TALK_PANICELECTRICITY",
+                AvoidElectricFence(self.inst))),
 
         ChattyNode(self.inst, "MERM_TALK_GET_HEALED", 
             FaceEntity(self.inst, GetHealerFn, KeepHealerFn)),

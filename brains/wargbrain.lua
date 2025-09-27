@@ -70,6 +70,9 @@ function WargBrain:OnStart()
 		IfNode(function() return not ismutated end, "NormalPanic",
 			BrainCommon.PanicTrigger(self.inst)),
 
+        IfNode(function() return not ismutated end, "NormalElectricPanic",
+            BrainCommon.ElectricFencePanicTrigger(self.inst)),
+
         MinPeriod(self.inst, TUNING.WARG_SUMMONPERIOD, true,
             IfNode(function() return CanSpawnChild(self.inst) end, "needs follower",
                 ActionNode(function()

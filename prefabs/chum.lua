@@ -66,6 +66,10 @@ local function ReticuleTargetFn()
     return pos
 end
 
+local function ReticuleValidFn(inst, reticule, targetpos, alwayspassable, allowwater, deployradius)
+	return TheWorld.Map:IsOceanAtPoint(targetpos:Get()) or FindVirtualOceanEntity(targetpos:Get()) ~= nil
+end
+
 local function OnAddProjectile(inst)
     inst.components.complexprojectile:SetHorizontalSpeed(15)
     inst.components.complexprojectile:SetGravity(-35)
@@ -93,7 +97,12 @@ local function fn()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = ReticuleTargetFn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 8
     inst.components.reticule.ease = true
+	inst.components.reticule.ispassableatallpoints = true
+	inst.components.reticule.validfn = ReticuleValidFn
 
     inst:AddTag("allow_action_on_impassable")
 

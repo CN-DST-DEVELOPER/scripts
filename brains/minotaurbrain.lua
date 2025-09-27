@@ -145,7 +145,7 @@ local function dojumpAttack(inst)
     if inst.components.combat.target and not inst.sg:HasStateTag("leapattack") then
         local target = inst.components.combat.target
         inst:FacePoint(target.Transform:GetWorldPosition())
-        inst:PushEvent("doleapattack")
+		inst:PushEventImmediate("doleapattack")
     end
 end
 

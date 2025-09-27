@@ -1,13 +1,19 @@
 local function StopSizzle(item)
+	item._acidsizzlingtimer:Cancel()
     item._acidsizzlingtimer = nil
+	item:RemoveEventCallback("onputininventory", StopSizzle)
     item.components.inventoryitem.isacidsizzling = false
 end
 
 local function MakeSizzle(item)
     item.components.inventoryitem.isacidsizzling = true
-    if item._acidsizzlingtimer ~= nil then
+	if item._acidsizzlingtimer == nil then
+		--cancel our sizzling when put into another inventory/container
+		--"ondropped" doesn't cover cases where we're moved directly to a container
+		--task does cover dropping
+		item:ListenForEvent("onputininventory", StopSizzle)
+	else
         item._acidsizzlingtimer:Cancel()
-        item._acidsizzlingtimer = nil
     end
     item._acidsizzlingtimer = item:DoTaskInTime(TUNING.ACIDRAIN_DAMAGE_TIME * 1.1, StopSizzle)
 end

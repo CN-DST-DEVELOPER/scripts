@@ -117,9 +117,11 @@ local function SpawnHand(player, params)
         return
     end
 
-    if player:GetCurrentPlatform() and testfortinkerthings(player:GetCurrentPlatform()) then
-
-        local boat = player:GetCurrentPlatform()
+	local boat = player:GetCurrentPlatform()
+	if boat and not boat:HasTag("boat") then
+		boat = nil
+	end
+	if boat and testfortinkerthings(boat) then
         if _boats[boat.GUID] ~= nil then
             -- boat has a jones already
             Reschedule(player, params)

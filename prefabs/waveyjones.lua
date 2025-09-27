@@ -135,12 +135,17 @@ local function fn()
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
 
+    inst:AddTag("shadow")
+
     inst.no_wet_prefix = true
+    inst.scrapbook_inspectonseen = true
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.scrapbook_anim = "idle"
 
     inst.persists = false
 
@@ -148,6 +153,9 @@ local function fn()
 
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(test_for_scared)
+
+    inst:AddComponent("sanityaura")
+    inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
 
     inst:AddComponent("timer")
 

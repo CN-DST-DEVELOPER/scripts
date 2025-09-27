@@ -21,6 +21,7 @@ local Weapon = Class(function(self, inst)
     --self.overridestimulifn = nil
     --self.electric_damage_mult = nil
     --self.electric_wet_damage_mult = nil
+    --self.tough = false
 
     self.attackwearmultipliers = SourceModifierList(self.inst)
 
@@ -151,6 +152,14 @@ function Weapon:LaunchProjectile(attacker, target)
             self.onprojectilelaunched(self.inst, attacker, target, proj)
         end
     end
+end
+
+function Weapon:EnableToughFight(tough)
+	self.tough = tough ~= false
+end
+
+function Weapon:CanDoToughFight()
+	return self.tough == true
 end
 
 return Weapon

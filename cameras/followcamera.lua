@@ -37,6 +37,7 @@ local FollowCamera = Class(function(self, inst)
     self.extramaxdist = 0
     self.screenoffsetstack = {}
     self.updatelisteners = {}
+    self.largeupdatelisteners = {}
     self:SetDefault()
     self:Snap()
     self.time_since_zoom = nil
@@ -67,6 +68,7 @@ function FollowCamera:SetDefault()
     self.pangain = 4
     self.headinggain = 20
     self.distancegain = 1
+	self.continuousdistancegain = 6
 
     self.zoomstep = 4
     self.distancetarget = 30
@@ -190,7 +192,6 @@ function FollowCamera:Shake(type, duration, speed, scale)
     if Profile:IsScreenShakeEnabled() then
         self.shake = CameraShake(type, duration, speed, scale)
     end
-    TheInputProxy:AddVibration(VIBRATION_CAMERA_SHAKE, duration, math.max(0, math.min(scale * .25, 1)), false)
 end
 
 function FollowCamera:SetTarget(inst)
@@ -206,6 +207,7 @@ function FollowCamera:MaximizeDistance()
     self.distancetarget = (self.maxdist - self.mindist) * 0.7 + self.mindist
 end
 
+local DELTA_DIST_SQ_UPDATE = 4
 function FollowCamera:Apply()
     --dir
     local pitch = self.pitch * DEGREES
@@ -230,13 +232,19 @@ function FollowCamera:Apply()
         zoffs = hoffs * cos_heading * screen_heights
     end
 
+
+
     --pos
-    TheSim:SetCameraPos(
+
+    self.camera_pos = Vector3(
         self.currentpos.x - dx * self.distance + xoffs,
         self.currentpos.y - dy * self.distance,
         self.currentpos.z - dz * self.distance + zoffs
     )
-    TheSim:SetCameraDir(dx, dy, dz)
+    self.camera_dir = Vector3(dx, dy, dz)
+
+    TheSim:SetCameraPos(self.camera_pos:Get())
+    TheSim:SetCameraDir(self.camera_dir:Get())
 
     --right
     local right = (self.heading + 90) * DEGREES
@@ -249,8 +257,26 @@ function FollowCamera:Apply()
     local uy = dz * rx - dx * rz
     local uz = dx * ry - dy * rx
 
-    TheSim:SetCameraUp(ux, uy, uz)
+    self.camera_up = Vector3(ux, uy, uz)
+
+    TheSim:SetCameraUp(self.camera_up:Get())
     TheSim:SetCameraFOV(self.fov)
+
+    local old_camera_pos = self.last_update_camera_pos
+    local old_camera_dir = self.last_update_camera_dir
+    local old_camera_up = self.last_update_camera_up
+
+    if old_camera_pos == nil or
+        old_camera_pos:DistSq(self.camera_pos) >= DELTA_DIST_SQ_UPDATE or
+        old_camera_dir:DistSq(self.camera_dir) >= DELTA_DIST_SQ_UPDATE or
+        old_camera_up:DistSq(self.camera_up) >= DELTA_DIST_SQ_UPDATE
+    then
+        self.last_update_camera_pos = self.camera_pos
+        self.last_update_camera_dir = self.camera_dir
+        self.last_update_camera_up = self.camera_up
+
+        self.large_dist_update = true
+    end
 
     --listen dist
     local listendist = -.1 * self.distance
@@ -288,16 +314,42 @@ function FollowCamera:GetHeadingTarget()
 end
 
 function FollowCamera:SetHeadingTarget(r)
-    self.headingtarget = r
+	self.headingtarget = normalize(r)
+	self.headingdelta = nil
+	self.lastheadingdelta = nil
+end
+
+--V2C: Added for controller camera modifer rotation, where we rotate
+--     smoothly instead of periodically snapping 45 degrees. "delta"
+--     controls the speed of rotation based on analog control.
+function FollowCamera:SetContinuousHeadingTarget(r, delta)
+	self.headingtarget = normalize(r)
+
+	if self.lastheadingdelta and (self.lastheadingdelta > 0) == (delta > 0) then
+		self.headingdelta = (delta + self.lastheadingdelta) / 2
+	else
+		self.headingdelta = delta
+	end
+end
+
+function FollowCamera:ContinuousZoomDelta(delta)
+	if self.lastzoomdelta and (self.lastzoomdelta > 0) == (delta > 0) then
+		delta = (delta + self.lastzoomdelta) / 2
+	end
+	self.distancetarget = math.clamp(self.distancetarget + delta, self.mindist, self.maxdist)
+	self.lastzoomdelta = delta
+	self.time_since_zoom = 0
 end
 
 function FollowCamera:ZoomIn(step)
     self.distancetarget = math.max(self.mindist, self.distancetarget - (step or self.zoomstep))
+	self.lastzoomdelta = nil
     self.time_since_zoom = 0
 end
 
 function FollowCamera:ZoomOut(step)
     self.distancetarget = math.min(self.maxdist, self.distancetarget + (step or self.zoomstep))
+	self.lastzoomdelta = nil
     self.time_since_zoom = 0
 end
 
@@ -314,8 +366,11 @@ function FollowCamera:Snap()
     self.currentscreenxoffset = #self.screenoffsetstack > 0 and self.screenoffsetstack[1].xoffset or 0
     self.currentpos.x, self.currentpos.y, self.currentpos.z = self.targetpos:Get()
     self.heading = self.headingtarget
+	self.headingdelta = nil
+	self.lastheadingdelta = nil
     if not self.lockdistance then
         self.distance = self.distancetarget
+		self.lastzoomdelta = nil
     end
 
     self.pitch = lerp(self.mindistpitch, self.maxdistpitch, (self.distance - self.mindist) / (self.maxdist - self.mindist))
@@ -399,22 +454,53 @@ function FollowCamera:Update(dt, dontupdatepos)
         end
     end
 
-    self.heading = normalize(self.heading)
-    self.headingtarget = normalize(self.headingtarget)
+	if self.headingdelta then
+		--continuous rotation (no 45 degree snapping) using camera control modifier + analog
+		self.heading = normalize(self.heading + self.headingdelta)
+		self.lastheadingdelta = self.headingdelta
+		self.headingdelta = nil
+	else
+		local diffheading = math.abs(self.heading - self.headingtarget)
+		if diffheading <= 0.01 or diffheading >= 359.99 then
+			self.heading = self.headingtarget
+			self.lastheadingdelta = nil
+		else
+			local newheading =
+				normalize(lerp(
+					self.heading,
+					diffheading <= 180 and
+					self.headingtarget or
+					self.headingtarget + (self.heading > self.headingtarget and 360 or -360),
+					dt * self.headinggain
+				))
 
-    local diffheading = math.abs(self.heading - self.headingtarget)
+			if self.lastheadingdelta then
+				--continous rotation stopped; finish lerping to headingtarget at our last speed
 
-    self.heading =
-        diffheading <= .01 and
-        self.headingtarget or
-        lerp(self.heading,
-            diffheading <= 180 and
-            self.headingtarget or
-            self.headingtarget + (self.heading > self.headingtarget and 360 or -360),
-            dt * self.headinggain)
+				--DiffAngle is [0, 180], whereas normalize is [0, 360]
+				diffheading = DiffAngle(newheading, self.heading)
+				if math.abs(self.lastheadingdelta) < diffheading then 
+					self.heading = self.heading + self.lastheadingdelta
+					local min = self.lastheadingdelta < 0 and -0.1 or 0.1
+					self.lastheadingdelta = min * 0.1 + self.lastheadingdelta * 0.95
+				else
+					self.heading = newheading
+					self.lastheadingdelta = nil
+				end
+			else
+				--default 45 degree step camera rotation; i.e. fixed lerp speed
+				self.heading = newheading
+			end
+		end
+	end
 
-    self.distance = math.abs(self.distance - self.distancetarget) > .01 and lerp(self.distance, self.distancetarget, dt * self.distancegain)
-					or self.distancetarget
+	if math.abs(self.distance - self.distancetarget) <= 0.01 then
+		self.distance = self.distancetarget
+		self.lastzoomdelta = nil
+	else
+		--lerp much faster when doing continuous zoom (using camera control modifier + analog)
+		self.distance = lerp(self.distance, self.distancetarget, dt * (self.lastzoomdelta and self.continuousdistancegain or self.distancegain))
+	end
 
     self.pitch = lerp(self.mindistpitch, self.maxdistpitch, (self.distance - self.mindist) / (self.maxdist - self.mindist))
 
@@ -429,11 +515,25 @@ function FollowCamera:UpdateListeners(dt)
             fn(dt)
         end
     end
+
+    if self.large_dist_update then
+        for src, cbs in pairs(self.largeupdatelisteners) do
+            for _, fn in ipairs(cbs) do
+                fn(dt)
+            end
+        end
+    end
+
+    self.large_dist_update = false
 end
 
 function FollowCamera:SetOnUpdateFn(fn)
     self.onupdatefn = fn or dummyfn
 end
+
+--NOTES:
+-- 'regular listener' every Update of FollowCamera
+-- 'large update listener' every Update of FollowCamera if pos, dir or up had a delta dist sq of 4 from their last change
 
 function FollowCamera:AddListener(src, cb)
     if self.updatelisteners[src] ~= nil then
@@ -452,6 +552,26 @@ function FollowCamera:RemoveListener(src, cb)
             end
         end
         self.updatelisteners[src] = nil
+    end
+end
+
+function FollowCamera:AddLargeUpdateListener(src, cb)
+    if self.largeupdatelisteners[src] ~= nil then
+        table.insert(self.largeupdatelisteners[src], cb)
+    else
+        self.largeupdatelisteners[src] = { cb }
+    end
+end
+
+function FollowCamera:RemoveLargeUpdateListener(src, cb)
+    if self.largeupdatelisteners[src] ~= nil then
+        if cb ~= nil then
+            table.removearrayvalue(self.largeupdatelisteners[src], cb)
+            if #self.largeupdatelisteners[src] > 0 then
+                return
+            end
+        end
+        self.largeupdatelisteners[src] = nil
     end
 end
 

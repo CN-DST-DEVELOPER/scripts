@@ -159,6 +159,7 @@ local function fn()
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGgrassgekko")
+	inst.sg.mem.burn_on_electrocute = true
 
     MakeHauntablePanicAndIgnite(inst)
 

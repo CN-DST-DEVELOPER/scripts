@@ -4,7 +4,7 @@ local assets =
 }
 
 local HONEYTRAILSLOWDOWN_MUST_TAGS = { "locomotor" }
-local HONEYTRAILSLOWDOWN_CANT_TAGS = { "flying", "playerghost", "INLIMBO" }
+local HONEYTRAILSLOWDOWN_CANT_TAGS = { "flying", "playerghost", "INLIMBO", "honey_ammo_afflicted", "vigorbuff" }
 
 local function OnUpdate(inst, x, y, z, rad)
     for i, v in ipairs(TheSim:FindEntities(x, y, z, rad, HONEYTRAILSLOWDOWN_MUST_TAGS, HONEYTRAILSLOWDOWN_CANT_TAGS)) do

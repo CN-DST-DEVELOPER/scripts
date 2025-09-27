@@ -119,9 +119,10 @@ end
 local function OnChangeToObstacle(inst)
     inst.Physics:SetMass(0)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.ITEMS,
+		COLLISION.GIANTS
+	)
     
     inst.ischaracterpassthrough = true
     inst.task = inst:DoPeriodicTask(.5, OnUpdateObstacleSize)
@@ -227,9 +228,7 @@ local function fall(inst, pt)
         UpdateShadowSize(inst.shadow, 35)
         inst.updatetask = inst:DoPeriodicTask(FRAMES, _GroundDetectionUpdate)
 
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.WORLD)
-
+		inst.Physics:SetCollisionMask(COLLISION.WORLD)
 
         inst.Physics:SetMass(1)
         inst.Physics:SetDamping(0) --might have been changed by quaker

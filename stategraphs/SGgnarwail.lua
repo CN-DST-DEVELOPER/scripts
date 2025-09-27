@@ -12,6 +12,7 @@ local events =
 {
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnFreezeEx(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
@@ -22,7 +23,7 @@ local events =
 
     EventHandler("doattack", function(inst, data)
         if inst.components.health ~= nil and not inst.components.health:IsDead() and
-                (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("hit")) and
+				(not inst.sg:HasStateTag("busy") or (inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute"))) and
                 data.target and data.target:IsValid() then
 
             local target_platform = data.target:GetCurrentPlatform()
@@ -111,7 +112,7 @@ local states =
 
     State {
         name = "emerge",
-        tags = {"busy", "noattack"},
+		tags = { "busy", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst:PlayAnimation("emerge")
@@ -127,6 +128,7 @@ local states =
             TimeEvent(3*FRAMES, function(inst) inst.SoundEmitter:PlaySound("turnoftides/common/together/water/emerge/medium") end),
             TimeEvent(6*FRAMES, function(inst)
                 inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
         },
     },
@@ -285,6 +287,9 @@ local states =
             TimeEvent(15*FRAMES, function(inst)
                 inst.SoundEmitter:PlaySound("hookline/creatures/gnarwail/run")
             end),
+			FrameEvent(28, function(inst)
+				inst.sg:AddStateTag("noelectrocute")
+			end),
             TimeEvent(43*FRAMES, function(inst)
                 inst.sg:AddStateTag("noattack")
             end),
@@ -369,13 +374,16 @@ local states =
         timeline =
         {
             TimeEvent(15*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline/creatures/gnarwail/run") end),
+			FrameEvent(28, function(inst)
+				inst.sg:AddStateTag("noelectrocute")
+			end),
             TimeEvent(43*FRAMES, function(inst) inst.sg:AddStateTag("noattack") end),
         },
     },
 
     State {
         name = "body_slam",
-        tags = {"attack", "busy", "longattack", "moving", "running", "diving", "jumping"},
+		tags = { "attack", "busy", "longattack", "moving", "running", "diving", "jumping", "noelectrocute" },
 
         onenter = function(inst, target_position)
             inst:ForceFacePoint(target_position)
@@ -528,6 +536,9 @@ local states =
         timeline =
         {
             TimeEvent(15*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline/creatures/gnarwail/run") end),
+			FrameEvent(28, function(inst)
+				inst.sg:AddStateTag("noelectrocute")
+			end),
             TimeEvent(43*FRAMES, function(inst)
                 inst.sg:AddStateTag("noattack")
             end),
@@ -544,7 +555,7 @@ local states =
 
     State {
         name = "toss",
-        tags = {"busy", "noattack"},
+		tags = { "busy", "noattack", "noelectrocute" },
 
         onenter = function(inst, target_data)
             inst.components.locomotor:Stop()
@@ -584,6 +595,7 @@ local states =
             end),
             TimeEvent(6*FRAMES, function(inst)
                 inst.sg:RemoveStateTag("noattack")
+				inst.sg:RemoveStateTag("noelectrocute")
                 if inst.sg.statemem.do_toss then
                     inst.SoundEmitter:PlaySound("turnoftides/common/together/water/emerge/medium")
                 end
@@ -817,6 +829,7 @@ local function frozen_onoverridesymbols(inst)
 end
 
 CommonStates.AddFrozenStates(states, frozen_onoverridesymbols)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSleepExStates(states,
 {
     starttimeline =

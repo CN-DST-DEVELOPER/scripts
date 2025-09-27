@@ -8,9 +8,22 @@ local assets =
     Asset("MINIMAP_IMAGE", "bulb_plant"),
 }
 
+local withered_assets = ConcatArrays({
+    Asset("ANIM", "anim/bulb_plant_single_withered_build.zip"),
+    Asset("ANIM", "anim/bulb_plant_double_withered_build.zip"),
+    Asset("ANIM", "anim/bulb_plant_triple_withered_build.zip"),
+    Asset("ANIM", "anim/bulb_plant_springy_withered_build.zip"),
+    Asset("MINIMAP_IMAGE", "bulb_plant_withered"),
+}, assets)
+
 local prefabs =
 {
     "lightbulb",
+}
+
+local withered_prefabs =
+{
+    "spoiled_food",
 }
 
 local LIGHT_STATES =
@@ -97,9 +110,11 @@ local function CanTurnOn(inst)
     return inst.light_state == LIGHT_STATES.CHARGED -- and not inst.components.pickable.picked
 end
 
-local function ForceOff(inst)
+local function ForceOff(inst, on_load)
     if inst.light_state == LIGHT_STATES.ON then
         inst:SetLightState(LIGHT_STATES.RECHARGING)
+    elseif on_load then
+        inst.AnimState:PlayAnimation(STATE_ANIMS[inst.light_state][#STATE_ANIMS[inst.light_state]])
     end
     inst._islighton:set(false)
     EndLight(inst)
@@ -118,7 +133,9 @@ end
 local function TurnOff(inst)
     --Light turns off and starts to charge.
     local tween_time = math.random(LIGHT_MIN_TIME, LIGHT_MAX_TIME)
-    inst.components.timer:StartTimer("recharge", TUNING.FLOWER_CAVE_RECHARGE_TIME + tween_time)
+    local recharge_time = inst.light_params.recharge_time and FunctionOrValue(inst.light_params.recharge_time, inst, tween_time) or TUNING.FLOWER_CAVE_RECHARGE_TIME + tween_time
+
+    inst.components.timer:StartTimer("recharge", recharge_time)
     inst:SetLightState(LIGHT_STATES.RECHARGING)
     inst._islighton:set(false)
     inst._lightframe:set(0)
@@ -142,7 +159,8 @@ local function TurnOn(inst)
     inst._lighttime:set(tween_time - LIGHT_MIN_TIME)
     OnLightDirty(inst)
 
-    inst.components.timer:StartTimer("turnoff", TUNING.FLOWER_CAVE_LIGHT_TIME + tween_time + (math.random() * 10))
+    local turn_off_time = inst.light_params.turnoff_time and FunctionOrValue(inst.light_params.turnoff_time, inst, tween_time) or TUNING.FLOWER_CAVE_LIGHT_TIME + tween_time + (math.random() * 10)
+    inst.components.timer:StartTimer("turnoff", turn_off_time)
 end
 
 local function Recharge(inst)
@@ -182,12 +200,14 @@ local function onpickedfn(inst)
     inst.components.timer:StopTimer("recharge")
 
     inst.SoundEmitter:PlaySound("dontstarve/wilson/pickup_lightbulb")
-    inst.AnimState:PlayAnimation("picking")
 
-    if inst.components.pickable:IsBarren() then
-        inst.AnimState:PushAnimation("idle_dead")
+    if inst.is_bulb_withered then
+        inst.AnimState:PlayAnimation("picked_wilt")
+        inst.persists = false
+        inst:ListenForEvent("animover", inst.Remove)
     else
-        inst.AnimState:PushAnimation("picked")
+        inst.AnimState:PlayAnimation("picking")
+        inst.AnimState:PushAnimation(inst.components.pickable:IsBarren() and "idle_dead" or "picked")
     end
 end
 
@@ -213,7 +233,7 @@ local function OnLoad(inst, data)
             ForceOn(inst)
         elseif inst.light_state == LIGHT_STATES.CHARGED
             or inst.light_state == LIGHT_STATES.RECHARGING then
-            ForceOff(inst)
+            ForceOff(inst, true)
         end
     else
         ForceOff(inst)
@@ -243,7 +263,9 @@ local function OnMoonMutate(inst, new_inst)
     end
 end
 
-local function commonfn(bank, build, light_params)
+local LIGHT_COLOUR = {237/255, 237/255, 209/255}
+local WITHERED_COLOUR = {201/255, 93/255, 10/255}
+local function commonfn(bank, build, light_params, is_withered)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -262,7 +284,7 @@ local function commonfn(bank, build, light_params)
     inst.Light:SetFalloff(1)
     inst.Light:SetIntensity(0)
     inst.Light:SetRadius(0)
-    inst.Light:SetColour(237/255, 237/255, 209/255)
+    inst.Light:SetColour(unpack(is_withered and WITHERED_COLOUR or LIGHT_COLOUR))
     inst.Light:Enable(false)
     inst.Light:EnableClientModulation(true)
 
@@ -270,7 +292,7 @@ local function commonfn(bank, build, light_params)
     inst.AnimState:SetBuild(build)
     inst.AnimState:PlayAnimation("off")
 
-    inst.MiniMapEntity:SetIcon("bulb_plant.png")
+    inst.MiniMapEntity:SetIcon(is_withered and "bulb_plant_withered.png" or "bulb_plant.png")
 
     inst.light_params = light_params
     inst._lighttime = net_tinybyte(inst.GUID, "flower_cave._lighttime", "lightdirty")
@@ -280,7 +302,7 @@ local function commonfn(bank, build, light_params)
     inst._lightframe:set(inst._lightmaxframe)
     inst._lighttask = nil
 
-    inst:SetPrefabNameOverride("flower_cave")
+    inst:SetPrefabNameOverride(is_withered and "flower_cave_withered" or "flower_cave")
 
     inst.entity:SetPristine()
 
@@ -290,6 +312,7 @@ local function commonfn(bank, build, light_params)
         return inst
     end
 
+    inst.is_bulb_withered = is_withered
     inst.light_state = LIGHT_STATES.CHARGED
 
     local color = 0.75 + math.random() * 0.25
@@ -309,14 +332,17 @@ local function commonfn(bank, build, light_params)
     inst:AddComponent("lootdropper")
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("halloweenmoonmutable")
-    inst.components.halloweenmoonmutable:SetPrefabMutated("lightflier_flower")
-    inst.components.halloweenmoonmutable:SetOnMutateFn(OnMoonMutate)
-
     ---------------------
     MakeMediumBurnable(inst)
-    AddToRegrowthManager(inst)
     MakeSmallPropagator(inst)
+
+    if not is_withered then
+        inst:AddComponent("halloweenmoonmutable") --TODO special case? maybe light bug immediately dies? haha.
+        inst.components.halloweenmoonmutable:SetPrefabMutated("lightflier_flower")
+        inst.components.halloweenmoonmutable:SetOnMutateFn(OnMoonMutate)
+
+        AddToRegrowthManager(inst)
+    end
     ---------------------
 
     inst.CanTurnOn = CanTurnOn
@@ -344,12 +370,25 @@ local function onsave_single(inst, data)
     data.plantname = inst.plantname
 end
 
-local function onload_single(inst,data)
+local function onload_single(inst, data)
     OnLoad(inst, data)
     if data ~= nil and data.plantname ~= nil then
         inst.plantname = data.plantname
-        inst.AnimState:SetBank("bulb_plant"..inst.plantname)
-        inst.AnimState:SetBuild("bulb_plant"..inst.plantname)
+        if inst.plantname ~= "_single" then
+            inst.AnimState:SetBank("bulb_plant"..inst.plantname)
+            inst.AnimState:SetBuild("bulb_plant"..inst.plantname)
+        end
+    end
+end
+
+local function onload_withered_single(inst, data)
+    OnLoad(inst, data)
+    if data ~= nil and data.plantname ~= nil then
+        inst.plantname = data.plantname
+        if inst.plantname ~= "_single" then
+            inst.AnimState:SetBank("bulb_plant"..inst.plantname)
+            inst.AnimState:SetBuild("bulb_plant"..inst.plantname.."_withered_build")
+        end
     end
 end
 
@@ -368,8 +407,10 @@ local function single()
     end
 
     inst.plantname = plantnames[math.random(1, #plantnames)]
-    inst.AnimState:SetBank("bulb_plant"..inst.plantname)
-    inst.AnimState:SetBuild("bulb_plant"..inst.plantname)
+    if inst.plantname ~= "_single" then
+        inst.AnimState:SetBank("bulb_plant"..inst.plantname)
+        inst.AnimState:SetBuild("bulb_plant"..inst.plantname)
+    end
 
     inst.scrapbook_bank  = "bulb_plant_double"
     inst.scrapbook_build = "bulb_plant_double"
@@ -394,7 +435,7 @@ local function double()
     local inst = commonfn("bulb_plant_double", "bulb_plant_double", lightparams_double)
 
     inst.scrapbook_proxy = "flower_cave"
-    
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -425,6 +466,97 @@ local function triple()
     return inst
 end
 
+-- Withered prefabs
+
+local function withered_turnoff_time(inst, tween_time)
+    return TUNING.FLOWER_CAVE_WITHERED_LIGHT_TIME + tween_time + (math.random() * 3)
+end
+
+local function withered_recharge_time(inst, tween_time)
+    return TUNING.FLOWER_CAVE_WITHERED_RECHARGE_TIME + tween_time
+end
+
+local lightparams_withered_single =
+{
+    falloff = 1.5,
+    intensity = .2,
+    radius = 2,
+    --
+    turnoff_time = withered_turnoff_time,
+    recharge_time = withered_recharge_time,
+}
+
+local function withered_single()
+    local inst = commonfn("bulb_plant_single", "bulb_plant_single_withered_build", lightparams_withered_single, true)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.plantname = plantnames[math.random(1, #plantnames)]
+    if inst.plantname ~= "_single" then
+        inst.AnimState:SetBank("bulb_plant"..inst.plantname)
+        inst.AnimState:SetBuild("bulb_plant"..inst.plantname.."_withered_build")
+    end
+
+    inst.scrapbook_bank  = "bulb_plant_double"
+    inst.scrapbook_build = "bulb_plant_double_withered_build"
+    inst.scrapbook_anim  = "idle"
+
+    inst.components.pickable:SetUp("spoiled_food", TUNING.FLOWER_CAVE_REGROW_TIME)
+
+    inst.OnSave = onsave_single
+    inst.OnLoad = onload_withered_single
+
+    return inst
+end
+
+local lightparams_withered_double =
+{
+    falloff = 1.5,
+    intensity = .2,
+    radius = 2.5,
+}
+
+local function withered_double()
+    local inst = commonfn("bulb_plant_double", "bulb_plant_double_withered_build", lightparams_withered_double, true)
+
+    inst.scrapbook_proxy = "flower_cave_withered"
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.pickable:SetUp("spoiled_food", TUNING.FLOWER_CAVE_REGROW_TIME * 1.5, 2)
+
+    return inst
+end
+
+local lightparams_withered_triple =
+{
+    falloff = 1.5,
+    intensity = .2,
+    radius = 2.5,
+}
+
+local function withered_triple()
+    local inst = commonfn("bulb_plant_triple", "bulb_plant_triple_withered_build", lightparams_withered_triple, true)
+
+    inst.scrapbook_proxy = "flower_cave_withered"
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.pickable:SetUp("spoiled_food", TUNING.FLOWER_CAVE_REGROW_TIME * 2, 3)
+
+    return inst
+end
+
 return Prefab("flower_cave", single, assets, prefabs),
     Prefab("flower_cave_double", double, assets, prefabs),
-    Prefab("flower_cave_triple", triple, assets, prefabs)
+    Prefab("flower_cave_triple", triple, assets, prefabs),
+    -- Withered prefabs
+    Prefab("flower_cave_withered", withered_single, withered_assets, withered_prefabs),
+    Prefab("flower_cave_double_withered", withered_double, withered_assets, withered_prefabs),
+    Prefab("flower_cave_triple_withered", withered_triple, withered_assets, withered_prefabs)

@@ -117,6 +117,8 @@ end
 
 local function OnGlowFXReplicated(inst)
     local parent = inst.entity:GetParent()
+    -- Technically could check for the reviver tag instead,
+    -- but this is fx for a specific skin, so... eh. If needed.
     if parent ~= nil and parent.prefab == "reviver" then
         parent.highlightchildren = { inst }
     end

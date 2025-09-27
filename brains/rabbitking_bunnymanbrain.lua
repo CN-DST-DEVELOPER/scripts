@@ -42,6 +42,9 @@ function RabbitKing_BunnymanBrain:OnStart()
             WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire",
                 ChattyNode(self.inst, "RABBIT_PANICFIRE",
                     Panic(self.inst))),
+            WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "Shocked",
+                ChattyNode(self.inst, "RABBIT_PANICELECTRICITY",
+                    AvoidElectricFence(self.inst))),
             ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
             Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
             ParallelNode{

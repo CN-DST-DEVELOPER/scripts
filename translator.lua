@@ -68,7 +68,7 @@ function Translator:LoadPOFile(fname,lang)
 
 	local strings = {}
 	print("Translator:LoadPOFile - loading file: "..resolvefilepath(fname))
-	local file = io.open(resolvefilepath(fname))
+	local file = io.open(resolvefilepath(fname), "r")
 	if not file then print("Translator:LoadPOFile - Specified language file "..fname.." not found.") return end
 
 	local newformat_flag = false

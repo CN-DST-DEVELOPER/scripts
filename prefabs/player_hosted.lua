@@ -111,6 +111,7 @@ local function fn()
     inst:AddComponent("inventory")
 
     inst:AddComponent("health")
+    inst.components.health.nofadeout = true
     inst.components.health:SetMaxHealth(TUNING.WILSON_HEALTH)
 
     inst:AddComponent("combat")

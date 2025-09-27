@@ -29,6 +29,8 @@ local taskset_data =
         "CaveExitTask9",
         "CaveExitTask10",
 
+        "CentipedeCaveTask",
+
 		"ToadStoolTask1",
 		"ToadStoolTask2",
 		"ToadStoolTask3",
@@ -83,15 +85,15 @@ local taskset_data =
     },
     set_pieces = { -- if you add or remove tasks, don't forget to update this list!
         ["TentaclePillar"] = { count = 10, tasks= {
-            "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar",
+            "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar", "CentipedeCaveTask",
         } },
         ["ResurrectionStone"] = { count = 2, tasks={
-            "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar",
+            "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar", "CentipedeCaveTask",
         } },
         ["skeleton_notplayer"] = { count = 1, tasks={
-            "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar",
+            "MudWorld", "MudCave", "MudLights", "MudPit", "BigBatCave", "RockyLand", "RedForest", "GreenForest", "BlueForest", "SpillagmiteCaverns", "SwampySinkhole", "CaveSwamp", "UndergroundForest", "PleasantSinkhole", "FungalNoiseForest", "FungalNoiseMeadow", "BatCloister", "RabbitTown", "RabbitCity", "SpiderLand", "RabbitSpiderWar", "CentipedeCaveTask",
         } },
-        ["TentaclePillarToAtrium"] = { count = 1, tasks={ "BigBatCave", "GreenForest" } }, -- This set piece data connects it to the atrium_start set piece.
+        ["TentaclePillarToAtrium"] = { count = 1, tasks={ "BigBatCave", "GreenForest", "CentipedeCaveTask" } }, -- This set piece data connects it to the atrium_start set piece.
     },
 }
 

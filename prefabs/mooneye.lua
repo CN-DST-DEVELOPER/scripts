@@ -82,9 +82,6 @@ local function buildeye(colour)
         inst:ListenForEvent("onputininventory", topocket)
         inst:ListenForEvent("ondropped", toground)
         inst:DoTaskInTime(0, init)
-
-        inst.OnRemoveEntity = OnRemoveEntity
-
         inst:DoTaskInTime(0, Sparkle, colour)
 
         return inst

@@ -11,8 +11,15 @@ local prefabs =
 }
 
 local function onequip(inst, owner)
-    owner.AnimState:OverrideSymbol("backpack", "swap_chefpack", "backpack")
-    owner.AnimState:OverrideSymbol("swap_body", "swap_chefpack", "swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("backpack", skin_build, "backpack", inst.GUID, "swap_chefpack" )
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "swap_chefpack" )
+    else
+        owner.AnimState:OverrideSymbol("backpack", "swap_chefpack", "backpack")
+        owner.AnimState:OverrideSymbol("swap_body", "swap_chefpack", "swap_body")
+    end
 
     if inst.components.container ~= nil then
         inst.components.container:Open(owner)
@@ -20,6 +27,10 @@ local function onequip(inst, owner)
 end
 
 local function onunequip(inst, owner)
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
     owner.AnimState:ClearOverrideSymbol("swap_body")
     owner.AnimState:ClearOverrideSymbol("backpack")
     if inst.components.container ~= nil then

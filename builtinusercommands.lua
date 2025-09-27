@@ -103,7 +103,7 @@ AddUserCommand("bug", {
     params = {},
     vote = false,
     localfn = function(params, caller)
-        VisitURL("http://forums.kleientertainment.com/klei-bug-tracker/dont-starve-together/")
+        VisitURL("https://forums.kleientertainment.com/klei-bug-tracker/dont-starve-together/")
     end,
 })
 

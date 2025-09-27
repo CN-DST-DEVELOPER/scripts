@@ -120,7 +120,7 @@ local function rawfn(build)
     inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERFAST)
 
     inst:DoTaskInTime(5, stopkicking)
-    inst.components.inventoryitem:SetOnPickupFn(stopkicking)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(stopkicking)
     inst.OnLoad = stopkicking
 
     inst:ListenForEvent("animover", function()

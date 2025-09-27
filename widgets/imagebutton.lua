@@ -170,12 +170,13 @@ function ImageButton:OnLoseFocus()
     end
 end
 
+ValidateLineNumber(173)
 function ImageButton:OnControl(control, down)
     if not self:IsEnabled() or not self.focus then return end
 
 	if self:IsSelected() and not self.AllowOnControlWhenSelected then return false end
 
-	if control == self.control and (not self.mouseonly or TheFrontEnd.isprimary) then
+	if control == TheInput:ResolveVirtualControls(self.control) and (not self.mouseonly or TheFrontEnd.isprimary) then
         if down then
             if not self.down then
                 if self.has_image_down then
@@ -220,6 +221,7 @@ function ImageButton:OnControl(control, down)
         return true
     end
 end
+ValidateLineNumber(224)
 
 --------------------------------------------------------------------------
 --V2C: IsEnabled() checks hierarchy, but OnEnable()/OnDisable() don't notify children.

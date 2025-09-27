@@ -23,6 +23,7 @@ function NightmareMonkeyBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         SequenceNode({
             ActionNode(function() EquipWeapon(self.inst, self.inst.weaponitems.hitter) end, "Equip hitter"),
             ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),

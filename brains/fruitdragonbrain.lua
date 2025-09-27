@@ -42,6 +42,7 @@ function FruitDragonBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+		BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode(function() return self.inst.components.timer:TimerExists("panicing") end, "LostChallenge",
 			RunAway(self.inst, "fruitdragon", CHALLENGE_LOST_RUN_AWAY_DIST, CHALLENGE_LOST_STOP_RUN_AWAY_DIST)),
         ChaseAndAttack(self.inst, nil, MAX_CHASE_DIST),

@@ -1374,6 +1374,7 @@ local function shadow_merm_master(inst)
     common_master(inst)
 
     inst.scrapbook_multcolour = { 0, 0, 0 }
+    inst.sg.mem.noelectrocute = true --sg is shared by other merms that support electrocute
 
     inst:RemoveComponent("sleeper")
 
@@ -1439,6 +1440,7 @@ local function shadow_mermguard_master(inst)
     guard_master(inst)
 
     inst.scrapbook_multcolour = { 0, 0, 0 }
+	inst.sg.mem.noelectrocute = true --sg is shared by other merms that support electrocute
 
     inst.components.locomotor:SetTriggersCreep(false)
     inst.components.locomotor.pathcaps = { ignorecreep = true }

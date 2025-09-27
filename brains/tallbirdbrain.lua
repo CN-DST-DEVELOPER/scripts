@@ -65,6 +65,7 @@ function TallbirdBrain:OnStart()
         PriorityNode(
         {
 			BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
 			ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME)),
 			WhileNode(function() return self.inst.components.homeseeker and self.inst.components.homeseeker:HasHome() and GetNearbyThreatFn(self.inst.components.homeseeker.home) end, "ThreatNearNest",
 				DoAction(self.inst, function() return DefendHomeAction(self.inst) end, "GoHome", true)

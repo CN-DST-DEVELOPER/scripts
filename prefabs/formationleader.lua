@@ -10,6 +10,8 @@ local function fn()
 
     --[[Non-networked entity]]
 
+	inst.persists = false
+
 	return inst
 end
 

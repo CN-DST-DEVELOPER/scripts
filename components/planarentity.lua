@@ -1,5 +1,7 @@
 local PlanarEntity = Class(function(self, inst)
 	self.inst = inst
+
+	--self.spawn_effect_on = nil --For centipede
 end)
 
 function PlanarEntity:AbsorbDamage(damage, attacker, weapon, spdmg)
@@ -11,9 +13,11 @@ function PlanarEntity:AbsorbDamage(damage, attacker, weapon, spdmg)
 end
 
 function PlanarEntity:OnResistNonPlanarAttack(attacker)
+	local inst = self.spawn_effect_on ~= nil and self.spawn_effect_on(self.inst, attacker) or self.inst
+
 	local fx = SpawnPrefab("planar_resist_fx")
-	local radius = self.inst:GetPhysicsRadius(0) + .2 + math.random() * .5
-	local x, y, z = self.inst.Transform:GetWorldPosition()
+	local radius = inst:GetPhysicsRadius(0) + .2 + math.random() * .5
+	local x, y, z = inst.Transform:GetWorldPosition()
 	local theta
 	if attacker ~= nil then
 		local x1, y1, z1 = attacker.Transform:GetWorldPosition()

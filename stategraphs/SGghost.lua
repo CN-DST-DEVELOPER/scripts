@@ -41,6 +41,31 @@ local events =
     EventHandler("death", function(inst)
         inst.sg:GoToState("dissipate")
     end),
+
+    EventHandler("start_playwithghost", function(inst, data)
+        local target = data.target
+        if target and target:IsValid() and not inst.sg:HasStateTag("playing")
+                and (GetTime() - (inst.sg.mem.lastplaytime or 0)) > TUNING.GHOSTGUARD_PLAYFUL_DELAY then
+            inst.sg.mem.queued_play_target = target
+            target:PushEvent("ghostplaywithme", { target = inst })
+
+            -- Since the ghost idle is the kind that anim-loops instead of re-entering itself,
+            -- let's just "kick" it if we're idling right now (otherwise we sort of expect to
+            -- end up back there eventually anyway)
+            if inst.sg:HasStateTag("idle") then inst.sg:GoToState("idle") end
+        end
+    end),
+    EventHandler("ghostplaywithme", function(inst, data)
+        local target = data.target
+        if target and target:IsValid() and not inst.sg.mem.queued_play_target then
+            inst.sg.mem.queued_play_target = target
+
+            -- Since the ghost idle is the kind that anim-loops instead of re-entering itself,
+            -- let's just "kick" it if we're idling right now (otherwise we sort of expect to
+            -- end up back there eventually anyway)
+            if inst.sg:HasStateTag("idle") then inst.sg:GoToState("idle") end
+        end
+    end),
 }
 
 local function getidleanim(inst)
@@ -58,6 +83,10 @@ local states =
         onenter = function(inst)
             if inst.sg.mem.queuelevelchange then
                 inst.sg:GoToState("levelup")
+            elseif inst.sg.mem.queued_play_target then
+                inst.sg.mem.lastplaytime = GetTime()
+                inst.sg:GoToState("play", inst.sg.mem.queued_play_target)
+                inst.sg.mem.queued_play_target = nil
             else
                 inst.AnimState:PlayAnimation(getidleanim(inst), true)
             end
@@ -252,6 +281,28 @@ local states =
                 inst.components.aura:Enable(true)
             end
         end,
+    },
+
+    State {
+        name = "play",
+		tags = {"busy", "canrotate", "playful"},
+
+        onenter = function(inst, target)
+            inst.components.locomotor:StopMoving()
+
+            if target and target:IsValid() then
+                inst:ForceFacePoint(target.Transform:GetWorldPosition())
+            end
+
+            inst.AnimState:PlayAnimation("dance_bop")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end)
+        },
     },
 }
 

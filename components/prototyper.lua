@@ -21,6 +21,12 @@ function Prototyper:OnRemoveFromEntity()
     for k, v in pairs(self.doers) do
         self.inst:RemoveEventCallback("onremove", self.onremovedoer, k)
     end
+    if self.on then
+        if self.onturnoff ~= nil then
+            self.onturnoff(self.inst)
+        end
+        self.on = false
+    end
     self.doers = nil
 end
 
@@ -55,6 +61,9 @@ function Prototyper:GetTechTrees()
 end
 
 function Prototyper:Activate(doer, recipe)
+    if self.inst.components.craftingstation then
+        self.inst.components.craftingstation:RecipeCrafted(self.doers, recipe.name)
+    end
     if self.onactivate ~= nil then
         self.onactivate(self.inst, doer, recipe)
     end

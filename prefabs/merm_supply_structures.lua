@@ -228,7 +228,7 @@ local function OnHit(inst, worker, workleft)
     end
 end
 
-local function OnBuilt(inst)
+local function OnBuiltFn(inst)
     inst.SoundEmitter:PlaySound(inst.sounds.place)
 
     inst.AnimState:PlayAnimation("place")
@@ -422,7 +422,7 @@ local function CreateMermSupplyStructure(data)
         inst:AddComponent("container")
         inst.components.container:WidgetSetup(data.prefab)
 
-        inst.OnBuilt = OnBuilt
+        inst.OnBuiltFn = OnBuiltFn
 
         inst.OnSave = OnSave
         inst.OnLoad = OnLoad

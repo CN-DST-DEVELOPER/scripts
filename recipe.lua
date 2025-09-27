@@ -122,24 +122,37 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.nounlock      = nounlock or false
 
     self.numtogive     = numtogive or 1
+	self.override_numtogive_fn = more_data.override_numtogive_fn
 
     self.builder_tag   = builder_tag or nil
     self.builder_skill = more_data.builder_skill or nil
+	self.no_builder_tag		= more_data.no_builder_tag
+	self.no_builder_skill	= more_data.no_builder_skill
+	self.forward_ingredients = more_data.forward_ingredients --skill trees may swap out some basic ingredient recipes; this will let crafting know which alternate recipes to forward to
 	self.sg_state      = more_data.sg_state or more_data.buildingstate or nil -- overrides the SG state to use when crafting the item (buildingstate is the old variable name)
 
     self.build_mode    = build_mode or BUILDMODE.LAND
     self.build_distance= build_distance or 1
 
     self.no_deconstruction = more_data.no_deconstruction -- function or bool
+    self.decon_ignores_finiteuses = more_data.decon_ignores_finiteuses -- function or bool
     self.require_special_event = more_data.require_special_event
 
 	self.dropitem      = more_data.dropitem
 
 	self.actionstr     = more_data.actionstr
 	self.hint_msg      = more_data.hint_msg
+	self.force_hint    = more_data.force_hint -- show locked recipe (i.e. missing +1 tech level) even if we are "nounlock"
 
 	self.manufactured = more_data.manufactured -- if true, then it is up to the crafting station to handle creating the item, not the builder component
     self.station_tag  = more_data.station_tag -- If set to a tag this will only show up in CRAFTING_FILTERS.CRAFTING_STATION when the prototyper machine has this tag.
+
+    self.limitedamount = more_data.limitedamount
+    if self.limitedamount then
+        if TheSim then -- updateprefabs guard
+            DeclareLimitedCraftingRecipe(self.name)
+        end
+    end
 
 	self.is_deconstruction_recipe = tab == nil
 

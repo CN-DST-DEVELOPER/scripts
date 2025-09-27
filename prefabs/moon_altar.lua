@@ -581,6 +581,7 @@ local function MakeAltar(name, bank, build, anim, common_postinit, master_postin
         inst.AnimState:PlayAnimation(anim)
 
         inst:AddTag("structure")
+		inst:AddTag("celestial_station") --used when prototyper gets added, turning this into a crafting station
 
         if common_postinit ~= nil then
             common_postinit(inst)

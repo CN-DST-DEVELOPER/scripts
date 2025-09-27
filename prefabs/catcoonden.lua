@@ -286,6 +286,7 @@ local function fn()
     inst.components.inspectable.getstatus = getstatus
 
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     inst.OnEntityWake = OnEntityWake
 	inst.OnEntitySleep = OnEntitySleep

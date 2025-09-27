@@ -692,11 +692,11 @@ stageactor = {
     SAGE_SOLILOQUY = {
         
         -- SAGE
-        "Ye haven’t a clue what’s coming",
+        "Ye haven't a clue what's coming",
         "Something special, no doubt!",
         "Shall I spoil it for ye?",
-        "I mustn’t!",
-        "Ye’ll have to wait ‘til we’re complete!",
+        "I mustn't!",
+        "Ye'll have to wait 'til we're complete!",
         "Patience, friends!",
         "PATIENCE.",
 
@@ -714,7 +714,7 @@ stageactor = {
         -- HALFWIT
         "Hath ye seen me chums?",
         "We came as three.",
-        "Now ‘tis just me.",
+        "Now 'tis just me.",
         "Hath ye seen me chums?",
 
 
@@ -728,7 +728,7 @@ stageactor = {
         LINE1_SAGE = "Salutations, friends!",
         LINE2_SAGE = "We three be heralds of our tenebrous provider.",
 
-        LINE3_TOADY = "Ooooh… tenebrous!",
+        LINE3_TOADY = "Ooooh... tenebrous!",
 
         LINE4_SAGE = "Dark!",
 
@@ -748,9 +748,9 @@ stageactor = {
 
         LINE12_HALFWIT = "Terrified!",
 
-       -- LINE13_SAGE_TOADY = "…",
+       -- LINE13_SAGE_TOADY = "...",
 
-        LINE14_SAGE = "There is nothing to fear…",
+        LINE14_SAGE = "There is nothing to fear...",
 
         LINE15_TOADY = "From the dark, at least.",
 
@@ -758,7 +758,7 @@ stageactor = {
 
         LINE17_HALFWIT = "The dark!",
 
-        --LINE18_SAGE_TOADY = "…",
+        --LINE18_SAGE_TOADY = "...",
 
         LINE19_SAGE = "No.",
         LINE20_SAGE = "Why, the accursed gleam of lumin, of course!",
@@ -805,12 +805,212 @@ stageactor = {
 
         LINE42_TOADY = "Forever in the sweet, dim embrace!",
 
-        LINE43_SAGE = "Forever…",
-        LINE44_SAGE = "in…",
+        LINE43_SAGE = "Forever...",
+        LINE44_SAGE = "in...",
 
         LINE45_HALFWIT = "Darkness.",
     },
 
+    -- Ancients
+
+    ARTIFICER_SOLILOQUY = {
+        -- Birds
+        "The Artificer!",
+        "You mean the one that did all the work?",
+        "Yeah...",
+        "What a sucker!",
+        "HA HA HA HA HA!",
+
+        --
+        "How many lifetimes would it take",
+        "to hew such a structure,",
+        "even with my mastery?",
+        "The Shieldbearer keeps much to her thorax.",
+        "Even if I see this impossible design through,",
+        "I doubt I shall ever leave this place.",
+        "I only pray my brood be granted a chance to survive,",
+        "safe from the Other,",
+        "by what we've wrought here.",
+        "That small hope is all that drives me",
+        "through these dark times.",
+        --
+
+        "So did his brood survive after all that?", 
+        "Nope.",
+        "HA HA HA HA HA!",
+    },
+
+    VISIONIST_SOLILOQUY = {
+        -- Birds
+        "And now, the Visionist...",
+        "Visionist? Can he see that we're bored?",
+        "HA HA HA HA HA!",
+
+        --
+        "'Tis a formidable task set before us,",
+        "yet I shall design the most impossibly intricate,",
+        "unsolvable structure this realm has ever known.",
+        "For the glory of our King and Queen,",
+        "for our Kingdom,",
+        "and for the survival of our kind.",
+        "Our Overseer is steadfast in the cause,",
+        "and I place my full trust in her",
+        "to lead us through this enduring endeavor.",
+        "The Other shall not prevail.",
+        --
+
+        -- Birds
+        "Oh, but it shall!",
+        "Guess he didn't see that coming.",
+        "HA HA HA HA HA!",
+    },
+
+    ELYTRA_SOLILOQUY = {
+        -- Birds
+        "Please welcome, Elytra!",
+        "Did you hear what They say about her performance?",
+        "Yeah! She killed!",
+        "HA HA HA HA HA!",
+
+        --
+        "If these words reach thine ears, foolhardy explorer,",
+        "then all our labors have been for naught.",
+        "Mercy upon those already consumed,",
+        "and upon those yet to be taken by the Other.",
+        "...",
+        "To Thee, Metheus, my Queen,",
+        "my heart is riven to know I have failed Thee.",
+        "Cast Thy curse upon me,",
+        "that I may bear an eternity of sorrow.",
+        --
+
+        -- Birds
+        "How much more sorrow is left for her to bear?",
+        "Let's see... it's been a while now, so an eternity more?",
+        "HA HA HA HA HA!",
+    },
+
+    THEVAULT = {
+        BIRD1_1 = "\"A Task Complete\"",
+        BIRD2_2 = "It's a confession...",
+        BIRD1_3 = "Ooooh scandalous!",
+        
+        LINE1_ARTIFICER = "'Twas the last stone, cut and set.",
+        LINE2_ARTIFICER = "Worn down to the tarsals,",
+        LINE3_ARTIFICER = "countless times over,",
+        LINE4_ARTIFICER = "in servitude.",
+
+        LINE5_VISIONIST = "My dear Artificer,",
+        LINE6_VISIONIST = "'tis the finest work you have ever done,",
+        LINE7_VISIONIST = "bringing my vision to its fruition.",
+
+        -- Visionist emotes kiss.
+
+        LINE8_ELYTRA = "And never has there been a grander vision",
+        LINE9_ELYTRA = "than yours within these chambers, dear Visionist.",
+        LINE10_ELYTRA = "I scarce would believe it,",
+        LINE11_ELYTRA = "had I not witnessed the raising",
+        LINE12_ELYTRA = "of this impenetrable labyrinth myself.",
+
+        LINE13_VISIONIST = "Ever kind, Elytra, Queen's Shieldbearer",
+        LINE14_VISIONIST = "and our sagacious Overseer.",
+        LINE15_VISIONIST = "We thank thee for thy guidance",
+        LINE16_VISIONIST = "through these many years we have been so blessed to serve",
+
+        LINE17_ARTIFICER = "How many molts have passed in this service?",
+
+        -- Artificer emotes annoyed.
+
+        LINE18_ELYTRA = "...",
+
+        LINE19_VISIONIST = "Not near enough for so worthy a task.",
+
+        LINE20_ELYTRA = "An arduous and clandestine charge,",
+        LINE21_ELYTRA = "from the very pharynx of our Queen Herself.",
+        LINE22_ELYTRA = "Hail Metheus!",
+
+        -- Elytra emotes happy
+
+        LINE23_VISIONIST = "Hail Metheus!",
+
+        -- Visionist emotes happy
+
+        LINE24_ARTIFICER = "... Yes, hail Metheus.",
+
+        LINE25_ELYTRA = "Ever may She reign.",
+        LINE26_ELYTRA = "My dear friends, for your sacrifice,",
+        LINE27_ELYTRA = "you have Her thanks, and mine as well.",
+
+        LINE28_VISIONIST = "No thanks are needed,",
+        LINE29_VISIONIST = "save the privilege of the task completed,",
+        LINE30_VISIONIST = "and a swift return home to my brood.",
+
+        LINE31_ARTIFICER = "If hive and home are naught but dust and ashes now.",
+
+        LINE32_ELYTRA = "A joyous homecoming awaits you both.",
+        LINE33_ELYTRA = "But first,",
+        LINE34_ELYTRA = "allow me the honor of raising a chalice to you,",
+        LINE35_ELYTRA = "and to the impossible task you have completed.",
+
+        -- Elytra toasts
+
+        LINE36_VISIONIST = "You honor us too greatly, Elytra.",
+        LINE37_VISIONIST = "Permit us to raise a chalice to you first.",
+
+        -- Visionist toasts and drinks
+
+        LINE38_VISIONIST = "The vintage...",
+        LINE39_VISIONIST = "'tis strong...",
+        LINE40_VISIONIST = "it burns...",
+
+        -- Visionist staggers, SIT2
+
+        LINE41_ARTIFICER = "Visionist!",
+
+        -- Artificer rushes to visionist.
+
+        LINE42_VISIONIST = "... my brood.",
+
+        -- Visionist DIES.
+
+        LINE43_ARTIFICER = "What have you done, Shieldbearer?",
+
+        -- Elytra stabs Artificer,
+        -- Artificer collapses, SQUAT.
+
+        LINE44_ARTIFICER = "Ah-!!",
+        LINE45_ARTIFICER = "So... a lifetime of loyalty is rewarded with a blade in my carapace...",
+        LINE46_ARTIFICER = "With my final breath, I curse you, and your Queen!",
+        LINE47_ARTIFICER = "May your brood rot...",
+        LINE48_ARTIFICER = "May all you hold dear be drowned in shadow...",
+        LINE49_ARTIFICER = "Let the unending Darkness... take you... all...",
+
+        -- Artificer DIES
+        
+        LINE54_ELYTRA = "Dear Artificer, you ask what I have done.",
+        LINE55_ELYTRA = "Unlike our beloved Visionist,",
+        LINE56_ELYTRA = "I drank from the chalice of duty",
+        LINE57_ELYTRA = "with full knowing of its bitter contents.",
+        LINE58_ELYTRA = "Now, with brethren lying dead before me,",
+        LINE59_ELYTRA = "I shall keep vigil over our work",
+        LINE60_ELYTRA = "until I too join them in oblivion.",
+        LINE61_ELYTRA = "My only consolation is this:",
+        LINE62_ELYTRA = "that I served Her,",
+        LINE63_ELYTRA = "and fulfilled what was required.",
+        LINE64_ELYTRA = "Hail Metheus.",
+        LINE65_ELYTRA = "Ever may She reign.",
+        
+        -- Elytra sits
+
+        -- Fade to black
+
+        -- masks dropped
+
+        BIRD1_4 = "Well that was tragic...",
+        BIRD2_5 = "Yeah, only two of them died!",
+        BIRD_6 = "HA HA HA HA HA!",
+
+    },
 }
 
 return stageactor

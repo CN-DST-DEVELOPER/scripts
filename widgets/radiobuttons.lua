@@ -29,7 +29,7 @@ function RadioButtons:MakeRadioButton()
     end
     local radiosz_x, radiosz_y = wdg.radio:GetSize()
 
-    wdg.background = wdg:AddChild(Image("images/ui.xml", "spinner_focus.tex"))
+    wdg.background = wdg:AddChild(Image(self.buttonsettings.background_atlas or "images/ui.xml", self.buttonsettings.background_image or "spinner_focus.tex"))
     wdg.background:SetTint(1,1,1,0)
     wdg.background:ScaleToSize(self.buttonsettings.width, self.buttonsettings.height)
     wdg.background:MoveToBack()

@@ -463,7 +463,7 @@ local AlphaSort = MetaClass(function(self, widget)
 		local recipe_b = AllRecipes[b]
 		local a_name = STRINGS.NAMES[string.upper(a)] or STRINGS.NAMES[string.upper(recipe_a.product)] or ""
 		local b_name = STRINGS.NAMES[string.upper(b)] or STRINGS.NAMES[string.upper(recipe_b.product)] or ""
-		return a_name < b_name
+		return stringidsorter(a_name, b_name)
 	end
 
 	self.alpha_sorted = {}

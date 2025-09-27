@@ -67,6 +67,12 @@ function TileGroupManager__index:IsTemporaryTile(tile)
     return GROUND_ISTEMPTILE[tile]
 end
 
+function TileGroupManager__index:IsShallowOceanTile(tile)
+    return tile == WORLD_TILES.OCEAN_COASTAL_SHORE
+        or tile == WORLD_TILES.OCEAN_COASTAL
+        or tile == WORLD_TILES.OCEAN_WATERLOG
+end
+
 local is_worldgen = rawget(_G, "WORLDGEN_MAIN") ~= nil
 if is_worldgen then return end
 
@@ -133,3 +139,8 @@ TileGroups.OceanIceTiles = TileGroupManager:AddTileGroup()
 TileGroupManager:AddValidTile(TileGroups.OceanIceTiles, WORLD_TILES.OCEAN_ICE)
 
 TileGroups.LandTilesInvisible = TileGroupManager:AddTileGroup(TileGroups.LandTiles)
+
+TileGroups.ShallowOceanTiles = TileGroupManager:AddTileGroup()
+TileGroupManager:AddValidTile(TileGroups.ShallowOceanTiles, WORLD_TILES.OCEAN_COASTAL_SHORE)
+TileGroupManager:AddValidTile(TileGroups.ShallowOceanTiles, WORLD_TILES.OCEAN_COASTAL)
+TileGroupManager:AddValidTile(TileGroups.ShallowOceanTiles, WORLD_TILES.OCEAN_WATERLOG)

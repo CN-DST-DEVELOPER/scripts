@@ -353,6 +353,7 @@ function PenguinBrain:OnStart()
             ActionNode(function() return FlyAway(self.inst) end)),
 
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         -- Penguins will panic and pick up eggs if player comes too close
 		DoAction(self.inst, function() return StealAction(self.inst) end, "PickUp Egg Action", true ),

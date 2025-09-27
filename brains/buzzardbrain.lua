@@ -96,11 +96,22 @@ local function GoHome(inst)
     return inst.shouldGoAway and BufferedAction(inst, nil, ACTIONS.GOHOME) or nil
 end
 
+local function ShouldFlyAwayFromFire(inst)
+    if not (inst.sg:HasStateTag("sleeping") or inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("flight"))
+        and (inst.components.health ~= nil and inst.components.health.takingfiredamage and not (inst.components.burnable and inst.components.burnable:IsBurning())) then
+        inst.shouldGoAway = true
+        return true
+    end
+end
+
 function BuzzardBrain:OnStart()
     local root = PriorityNode(
     {
         WhileNode(function() return not self.inst.sg:HasStateTag("flight") end, "Not Flying",
         PriorityNode{
+            WhileNode(function() return ShouldFlyAwayFromFire(self.inst) end, "Go Away From Fire",
+                DoAction(self.inst, GoHome)),
+
             WhileNode(function() return self.inst.shouldGoAway end, "Go Away",
                 DoAction(self.inst, GoHome)),
 

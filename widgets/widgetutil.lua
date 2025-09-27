@@ -23,14 +23,30 @@ function CanPrototypeRecipe(recipetree, buildertree)
     return true
 end
 
+local function BuilderCanAccessIngredientRecipe(builder, ing_prefab, ing_recipe, tech_level)
+	return builder:KnowsRecipe(ing_recipe) or (CanPrototypeRecipe(ing_recipe.level, tech_level) and builder:CanLearn(ing_prefab))
+end
+
 local function CanCraftIngredient(owner, ing, tech_level)
+	local builder = owner.replica.builder
+	if owner.replica.inventory:Has(ing.type, math.max(1, RoundBiasedUp(ing.amount * builder:IngredientMod())), true) then
+		return false
+	end
 	local ing_recipe = GetValidRecipe(ing.type)
-	return ing_recipe ~= nil
-		and not owner.replica.inventory:Has(ing.type, math.max(1, RoundBiasedUp(ing.amount * owner.replica.builder:IngredientMod())), true)
-		and (	owner.replica.builder:KnowsRecipe(ing_recipe) or
-				(CanPrototypeRecipe(ing_recipe.level, tech_level) and owner.replica.builder:CanLearn(ing.type))
-			)
-		and owner.replica.builder:HasIngredients(ing_recipe)
+	if ing_recipe == nil then
+		return false
+	elseif BuilderCanAccessIngredientRecipe(builder, ing.type, ing_recipe, tech_level) then
+		return builder:HasIngredients(ing_recipe)
+	elseif ing_recipe.forward_ingredients then
+		--V2C: skill tree might've locked basic ingredient recipe. try the forwarded ingredient recipes.
+		for i, v in ipairs(ing_recipe.forward_ingredients) do
+			ing_recipe = GetValidRecipe(v)
+			if ing_recipe and BuilderCanAccessIngredientRecipe(builder, v, ing_recipe, tech_level) then
+				return builder:HasIngredients(ing_recipe)
+			end
+		end
+	end
+	return false
 end
 
 local lastsoundtime = nil

@@ -55,6 +55,8 @@ local function fn()
     inst.components.repairer.repairmaterial = MATERIALS.HAY
     inst.components.repairer.healthrepairvalue = TUNING.REPAIR_CUTGRASS_HEALTH
 
+	inst:AddComponent("snowmandecor")
+
     return inst
 end
 

@@ -57,8 +57,10 @@ local actionhandlers =
 local events =
 {
     CommonHandlers.OnHop(),
-    CommonHandlers.OnSleep(),
+    CommonHandlers.OnSleepEx(),
+	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
 
     EventHandler("onsink", function(inst, data)
         if (inst.components.health == nil or not inst.components.health:IsDead()) and not inst.sg:HasStateTag("drowning") and (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown()) then
@@ -66,9 +68,11 @@ local events =
         end
     end),
 
-    EventHandler("attacked", function(inst)
+	EventHandler("attacked", function(inst, data)
         if not inst.components.health:IsDead() then
-            if not inst.sg:HasAnyStateTag("attack", "moving") then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("attack", "moving", "electrocute") then
                 inst.sg:GoToState("hit")
             end
         end
@@ -110,16 +114,6 @@ local events =
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-local function PlaySound(inst, event)
-    inst:PlaySound(event)
-end
-
-local function OnAnimOver(state)
-    return {
-        EventHandler("animover", function(inst) inst.sg:GoToState(state) end),
-    }
-end
-
 local WALK_SOUND_NAME = "footstepsound"
 
 ------------------------------------------------------------------------------------------------------------------------------------
@@ -132,7 +126,6 @@ local states =
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("death")
-
 
             inst.Physics:Stop()
 
@@ -154,7 +147,14 @@ local states =
             inst.AnimState:PlayAnimation("walk_pre")
         end,
 
-        events = OnAnimOver("moving"),
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("moving")
+				end
+			end),
+		},
     },
 
     State{
@@ -219,11 +219,20 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("taunt")
         end,
+
         timeline=
         {
-            FrameEvent(14, function(inst)  inst:PlaySound("taunt_fx_f14") end),
+            FrameEvent(14, function(inst) inst:PlaySound("taunt_fx_f14") end),
         },
-        events = OnAnimOver("idle"),
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
     },
 
     State{
@@ -234,7 +243,6 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("atk1")
             inst:PlaySound("atk_vocal")
-
 
             inst.components.combat:StartAttack()
             inst.sg.statemem.target = target
@@ -248,7 +256,14 @@ local states =
             end),
         },
 
-        events = OnAnimOver("idle"),
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
     },
 
     State{
@@ -291,7 +306,7 @@ local states =
             inst.components.combat:StartAttack()
             inst.AnimState:PlayAnimation("atk_loop",true)
 
-            inst.SoundEmitter:PlaySound("meta4/crabcritter/atk2_spin_lp","spin")
+            inst.SoundEmitter:PlaySound("meta4/crabcritter/atk2_spin_lp", "spin")
 
             inst.sg.statemem.targets = targets or {}
         end,
@@ -320,7 +335,14 @@ local states =
             inst.AnimState:PlayAnimation("atk_pst")
         end,
 
-        events = OnAnimOver("taunt"),
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("taunt")
+				end
+			end),
+		},
     },
 
     State{
@@ -333,12 +355,19 @@ local states =
             inst:PlaySound("hit")
         end,
 
-        events = OnAnimOver("idle"),
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
     },
 
     State{
         name = "break",
-        tags = { "busy", "nosleep", "nofreeze", "noattack" },
+		tags = { "busy", "nosleep", "nofreeze", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("break")
@@ -357,7 +386,7 @@ local states =
 
     State{
         name = "break_water",
-        tags = { "busy", "nosleep", "nofreeze", "noattack" },
+		tags = { "busy", "nosleep", "nofreeze", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -376,6 +405,9 @@ local states =
 
         timeline =
         {
+			FrameEvent(3, function(inst)
+				inst.sg:AddStateTag("invisible")
+			end),
             TimeEvent(22*FRAMES, function(inst)
                 inst:PlaySound("break_water_fx_f22")
             end),
@@ -389,7 +421,7 @@ local states =
 
     State{
         name = "break_land",
-        tags = { "busy" },
+        tags = { "busy", "nosleep" },
 
         onenter = function(inst)
             inst:PlaySound("break_land_vocal")
@@ -404,12 +436,15 @@ local states =
             end),
         },
 
-        events = OnAnimOver("idle"),
+        events =
+        {
+            CommonHandlers.OnNoSleepAnimOver("idle"),
+        },
     },
 
     State{
         name = "dive",
-        tags = {"busy", "nomorph", "nosleep", "nofreeze", "noattack"},
+		tags = { "busy", "nomorph", "nosleep", "nofreeze", "noattack", "noelectrocute" },
 
         onenter = function(inst)
             local platform = inst:GetCurrentPlatform()
@@ -472,7 +507,7 @@ local states =
 
     State{
         name = "dive_pst_land",
-        tags = {"busy"},
+        tags = {"busy", "nomorph", "nosleep"},
 
         onenter = function(inst)
             if inst.components.locomotor then
@@ -482,12 +517,15 @@ local states =
             inst.AnimState:PlayAnimation("dive_pst_land")
         end,
 
-        events = OnAnimOver("idle"),
+        events =
+        {
+            CommonHandlers.OnNoSleepAnimOver("idle"),
+        },
     },
 
     State{
         name = "dive_pst_water",
-        tags = { "busy", "nopredict", "nomorph", "drowning", "nointerrupt", "nowake" },
+		tags = { "busy", "nopredict", "nomorph", "drowning", "nointerrupt", "nosleep", "noelectrocute" },
 
         onenter = function(inst, data)
             inst.Physics:Stop()
@@ -502,6 +540,13 @@ local states =
             end
         end,
 
+		timeline =
+		{
+			FrameEvent(3, function(inst)
+				inst.sg:AddStateTag("invisible")
+			end),
+		},
+
         events=
         {
             EventHandler("animover", function(inst) inst:Remove() end),
@@ -511,26 +556,67 @@ local states =
     -- NOTES(DiogoW): Used by boat hop states.
     State{
         name = "sink",
-        tags = { "busy", "nopredict", "nomorph", "drowning", "nointerrupt", "nowake" },
-
         onenter = function(inst)
             inst.sg:GoToState("dive_pst_water")
         end,
-    }
+    },
+
+    State{
+        name = "flying",
+		tags = { "doing", "nointerrupt", "busy", "jumping", "nomorph", "nosleep", "noelectrocute" },
+
+        onenter = function(inst)
+            inst:PlaySound("dive_appear_vocal")
+
+            inst.AnimState:PlayAnimation("boat_jump_loop", true)
+        end,
+
+        events =
+        {
+            EventHandler("hit_ground", function(inst)
+                local px, _, pz = inst.Transform:GetWorldPosition()
+                local on_land = TheWorld.Map:IsPassableAtPoint(px, 0, pz)
+
+                inst.sg:GoToState(on_land and "flying_pst_land" or "flying_pst_water")
+            end),
+        },
+    },
+
+    State{
+        name = "flying_pst_land",
+		tags = { "doing", "nointerrupt", "busy", "jumping", "nomorph", "nosleep" },
+
+        onenter = function(inst)
+            inst.components.locomotor:StopMoving()
+
+            inst.AnimState:PlayAnimation("boat_jump_pst")
+        end,
+
+        events =
+        {
+            CommonHandlers.OnNoSleepAnimOver("idle"),
+        },
+    },
+
+    State{
+        name = "flying_pst_water",
+        onenter = function(inst)
+            inst.sg:GoToState("dive_pst_water")
+        end,
+    },
 }
 
-CommonStates.AddSleepStates(states,
+CommonStates.AddSleepExStates(states,
 {
     starttimeline = {
         SoundFrameEvent(0, "meta4/crabcritter/sleep_pre_vocal"),
         SoundFrameEvent(14, "meta4/crabcritter/sleep_pre_fx_f14"),
-
-
-
     },
+
     sleeptimeline ={
         SoundFrameEvent(35, "meta4/crabcritter/sleep_lp_vocal"),
     },
+
     waketimeline = {
         SoundFrameEvent(0, "meta4/crabcritter/sleep_pst_vocal"),
         SoundFrameEvent(8, "meta4/crabcritter/sleep_pst_fx_f8"),
@@ -538,6 +624,7 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
 return StateGraph("crabking_mob", states, events, "idle", actionhandlers)

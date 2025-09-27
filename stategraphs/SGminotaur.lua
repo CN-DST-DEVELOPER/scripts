@@ -51,36 +51,18 @@ local function BounceStuff(inst)
     end
 end
 
-local function hit_recovery_delay(inst, delay, max_hitreacts, skip_cooldown_fn)
-    local on_cooldown = false
-    if (inst._last_hitreact_time ~= nil and inst._last_hitreact_time + (delay or inst.hit_recovery or TUNING.DEFAULT_HIT_RECOVERY) >= GetTime()) then   -- is hit react is on cooldown?
-        max_hitreacts = max_hitreacts or inst._max_hitreacts
-        if max_hitreacts then
-            if inst._hitreact_count == nil then
-                inst._hitreact_count = 2
-                return false
-            elseif inst._hitreact_count < max_hitreacts then
-                inst._hitreact_count = inst._hitreact_count + 1
-                return false
-            end
-        end
-
-        skip_cooldown_fn = skip_cooldown_fn or inst._hitreact_skip_cooldown_fn
-        if skip_cooldown_fn ~= nil then
-            on_cooldown = not skip_cooldown_fn(inst, inst._last_hitreact_time, delay)
-        elseif inst.components.combat ~= nil then
-            on_cooldown = not (inst.components.combat:InCooldown() and inst.sg:HasStateTag("idle"))     -- skip the hit react cooldown if the creature is ready to attack
-        else
-            on_cooldown = true
-        end
-    end
-
-    if inst._hitreact_count ~= nil and not on_cooldown then
-        inst._hitreact_count = 1
-    end
-    return on_cooldown
+local function checkinterruptstun(inst)
+	if not inst.sg.statemem.not_interrupted and inst.components.timer:TimerExists("endstun") then
+		inst.components.timer:StopTimer("endstun")
+		inst:RestartBrain("SGminotaur_stun")
+	end
 end
 
+local function dontinterruptstun(inst)
+	if inst.sg:HasStateTag("stunned") then
+		inst.sg.statemem.not_interrupted = true
+	end
+end
 
 local events =
 {
@@ -88,12 +70,11 @@ local events =
     CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnDeath(),
 
-
     EventHandler("collision_stun", function(inst,data)
-        
         if data.light_stun == true then
             inst.sg:GoToState("hit")
         elseif data.land_stun == true then
@@ -108,19 +89,22 @@ local events =
     end),
 
     EventHandler("attacked", function(inst,data)    
-        if inst.components.health ~= nil and not inst.components.health:IsDead()
-            and not hit_recovery_delay(inst)
-            and (not inst.sg:HasStateTag("busy")
-            or inst.sg:HasStateTag("caninterrupt")
-            or inst.sg:HasStateTag("frozen")) then    
-                inst.sg:GoToState("hit")
-        elseif inst.sg:HasStateTag("stunned") then
-            inst:PushEvent("stunned_hit")
+		--NOTE: stunned states override attacked handler
+		if inst.components.health and not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil, dontinterruptstun) then
+				return
+			elseif inst.sg:HasStateTag("stunned") then
+				if not inst.sg:HasStateTag("hit") then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg:GoToState("stun_hit")
+				end
+			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen")) and not CommonHandlers.HitRecoveryDelay(inst) then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     
     EventHandler("doattack", function(inst)
-
         if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
             inst.sg:GoToState(inst.sg:HasStateTag("running") and "runningattack" or "attack")
         end
@@ -133,11 +117,17 @@ local events =
     end), 
 
     EventHandler("doleapattack", function(inst,data)
+		--V2C: brain already checks state tags, and uses PushEventImmediate
         if inst.components.health and not inst.components.health:IsDead()  then -- and not inst.sg:HasStateTag("busy")
             inst.sg:GoToState("leap_attack_pre", data.target)
         end
     end), 
 
+	EventHandler("endstun", function(inst)
+		if inst.sg:HasStateTag("stunned") and not inst.sg:HasStateTag("hit") then
+			inst.sg:GoToState("stun_pst")
+		end
+	end),
 }
 
 local states =
@@ -197,7 +187,9 @@ local states =
         tags = { "moving", "running" },
 
         onenter = function(inst)
-            inst.components.timer:StartTimer("rammed", 3)
+            if not inst.components.timer:TimerExists("rammed") then
+                inst.components.timer:StartTimer("rammed", 3)
+            end
             inst.components.locomotor:RunForward()
             if not inst.AnimState:IsCurrentAnimation("atk") then
                 inst.AnimState:PlayAnimation("atk", true)
@@ -394,11 +386,17 @@ local states =
 
         timeline =
         {
+			FrameEvent(47, function(inst)
+				inst.sg:AddStateTag("noelectrocute")
+			end),
 			FrameEvent(52, function(inst) inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound") end),
 			FrameEvent(58, function(inst)
                 inst.components.groundpounder:GroundPound()
                 BounceStuff(inst)
             end),
+			FrameEvent(59, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
         },
 
         events =
@@ -466,10 +464,6 @@ local states =
             inst.sg:SetTimeout(1.5)
         end,
 
-        onexit = function(inst)
-            
-        end,
-
         ontimeout = function(inst, target)
             inst.sg:GoToState("leap_attack",{targetpos = inst.sg.statemem.targetpos}) 
         end,
@@ -511,12 +505,14 @@ local states =
             inst.components.locomotor:EnableGroundSpeedMultiplier(false)
             inst.Physics:SetMotorVelOverride(vel,0,0)
 
-            inst.Physics:ClearCollisionMask()
-            inst.Physics:CollidesWith(COLLISION.WORLD)
+			inst.Physics:SetCollisionMask(COLLISION.WORLD)
         end,
 
 		timeline =
 		{
+			FrameEvent(3, function(inst)
+				inst.sg:AddStateTag("noelectrocute")
+			end),
 			FrameEvent(8, function(inst) inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/groundpound") end),
 			FrameEvent(14, function(inst)
 				inst.components.groundpounder:GroundPound()
@@ -548,7 +544,6 @@ local states =
     },
 
     State{
-
         name = "leap_attack_pst",
         tags = {"busy"},
         
@@ -577,7 +572,7 @@ local states =
             end
             local stuntime = math.max(1.5,Remap(inst.chargecount,0, 1, 0, 6 ) )
             inst.components.timer:StartTimer("endstun", stuntime)
-            inst:StopBrain()
+			inst:StopBrain("SGminotaur_stun")
         end,
 
         timeline=
@@ -591,9 +586,15 @@ local states =
 
         events=
         {
-            EventHandler("stunned_hit", function(inst) inst.sg:GoToState("stun_hit") end),
-            EventHandler("animover", function(inst) inst.sg:GoToState("stun_loop") end),
-        },    
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg:GoToState("stun_loop")
+				end
+			end),
+		},
+
+		onexit = checkinterruptstun,
     },
 
     State{
@@ -601,7 +602,14 @@ local states =
         tags = {"busy","stunned"},
         
         onenter = function(inst)
-            inst.AnimState:PlayAnimation("stun_loop")
+			if not inst.components.timer:TimerExists("endstun") then
+				inst.sg:GoToState("stun_pst")
+				return
+			end
+			if not inst.AnimState:IsCurrentAnimation("stun_loop") then
+				inst.AnimState:PlayAnimation("stun_loop", true)
+			end
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
         
         timeline=
@@ -611,16 +619,17 @@ local states =
              end), 
         },
 
-        events=
-        {
-            EventHandler("stunned_hit", function(inst) inst.sg:GoToState("stun_hit") end),
-            EventHandler("animover", function(inst) inst.sg:GoToState("stun_loop") end),
-        },
+		ontimeout = function(inst)
+			inst.sg.statemem.not_interrupted = true
+			inst.sg:GoToState("stun_loop")
+		end,
+
+		onexit = checkinterruptstun,
     },
 
     State{
         name = "stun_hit",
-        tags = {"busy","stunned"},
+		tags = { "busy", "stunned", "hit" },
         
         onenter = function(inst)
             inst.AnimState:PlayAnimation("stun_hit")
@@ -628,8 +637,15 @@ local states =
 
         events=
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("stun_loop") end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg:GoToState("stun_loop")
+				end
+			end),
         },
+
+		onexit = checkinterruptstun,
     },
 
     State{
@@ -695,6 +711,46 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+
+CommonStates.AddElectrocuteStates(states,
+nil, --timeline
+{	--anims
+	loop = function(inst)
+		if inst.sg.lasttags["stunned"] then
+			inst.sg:AddStateTag("stunned")
+			return "stun_shock_loop"
+		end
+	end,
+	pst = function(inst)
+		if inst.sg.lasttags["stunned"] then
+			inst.sg:AddStateTag("stunned")
+			return "stun_shock_pst"
+		end
+	end,
+},
+{	--fns
+	loop_onexit = function(inst)
+		if inst.sg:HasStateTag("stunned") then
+			checkinterruptstun(inst)
+		end
+	end,
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if inst.sg:HasStateTag("stunned") then
+				inst.sg.statemem.not_interrupted = true
+				inst.sg:GoToState("stun_loop")
+			else
+				inst.sg:GoToState("idle")
+			end
+		end
+	end,
+	pst_onexit = function(inst)
+		if inst.sg:HasStateTag("stunned") then
+			checkinterruptstun(inst)
+		end
+	end,
+})
+
 CommonStates.AddVoidFallStates(states, {voiddrop = "hit",})
 
 return StateGraph("minotaur", states, events, "idle")

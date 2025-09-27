@@ -60,9 +60,9 @@ local function retargetfn(inst)
         local cant_tags   = inst.islunar and LUNAR_RETARGET_CANT_TAGS or RETARGET_CANT_TAGS
 
         return FindEntity(inst, target_dist, function(guy)
-            if not guy.components.health:IsDead() then
-                return guy.components.inventory ~= nil
-            end
+			return not guy.components.health:IsDead()
+				and guy.components.inventory ~= nil
+				and inst.components.combat:CanTarget(guy)
         end,
         RETARGET_MUST_TAGS, -- see entityreplica.lua
         cant_tags

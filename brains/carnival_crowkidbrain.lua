@@ -40,10 +40,12 @@ local function IsHomeless(inst)
 	return inst.ShouldFlyAway
 end
 
+-- Keep consistent with carnival_plaza.lua check
 local SHOULDFLYAWAY_CANT_TAGS = { "notarget", "INLIMBO" }
 local SHOULDFLYAWAY_ONEOF_TAGS = { "hostile" }
 local function ShouldFlyAway(inst)
     inst.ShouldFlyAway = inst.ShouldFlyAway
+						or TheWorld.state.islunarhailing
 						or (not (inst.sg:HasStateTag("sleeping") or inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("flight"))
 							and (FindEntity(inst, 8, nil, nil, SHOULDFLYAWAY_CANT_TAGS, SHOULDFLYAWAY_ONEOF_TAGS) ~= nil
 								))

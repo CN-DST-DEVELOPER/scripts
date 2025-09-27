@@ -90,6 +90,9 @@ function InventoryItem:CanBePickedUp(doer)
 	if restrictedtag and restrictedtag ~= 0 and doer and doer:HasTag(restrictedtag) then
 		return true
 	end
+    if self.inst:HasTag("spider") and doer and not doer:HasTag("spiderwhisperer") then
+        return false
+    end
     return not self._cannotbepickedup:value()
 end
 
@@ -105,8 +108,16 @@ function InventoryItem:SetCanOnlyGoInPocket(canonlygoinpocket)
     self.classified.canonlygoinpocket:set(canonlygoinpocket)
 end
 
+function InventoryItem:SetCanOnlyGoInPocketOrPocketContainers(canonlygoinpocketorpocketcontainers)
+    self.classified.canonlygoinpocketorpocketcontainers:set(canonlygoinpocketorpocketcontainers)
+end
+
 function InventoryItem:CanOnlyGoInPocket()
     return self.classified ~= nil and self.classified.canonlygoinpocket:value()
+end
+
+function InventoryItem:CanOnlyGoInPocketOrPocketContainers()
+    return self.classified ~= nil and self.classified.canonlygoinpocketorpocketcontainers:value()
 end
 
 function InventoryItem:SetImage(imagename)
@@ -250,6 +261,15 @@ function InventoryItem:SetDeployMode(deploymode)
     self.classified.deploymode:set(deploymode)
 end
 
+function InventoryItem:GetDeployMode()
+    if self.inst.components.deployable then
+        return self.inst.components.deployable:GetDeployMode()
+    elseif self.classified then
+        return self.classified.deploymode:value()
+    end
+    return DEPLOYMODE.NONE
+end
+
 function InventoryItem:IsDeployable(deployer)
     if self.inst.components.deployable ~= nil then
         return self.inst.components.deployable:IsDeployable(deployer)
@@ -259,11 +279,17 @@ function InventoryItem:IsDeployable(deployer)
     local restrictedtag = self.classified.deployrestrictedtag:value()
 	if restrictedtag and restrictedtag ~= 0 and not (deployer and deployer:HasTag(restrictedtag)) then
 		return false
-	end
-	local rider = deployer and deployer.replica.rider or nil
-	if rider and rider:IsRiding() then
-		--can only deploy tossables while mounted
-		return self.inst:HasTag("projectile")
+	elseif deployer then
+		local rider = deployer.replica.rider
+		if rider and rider:IsRiding() then
+			--can only deploy tossables while mounted
+			return self.inst:HasTag("complexprojectile")
+		end
+		local inventory = deployer.replica.inventory
+		if inventory and inventory:IsFloaterHeld() then
+			--can only deploy boats while floating
+			return self.inst:HasTag("boatbuilder")
+		end
 	end
 	return true
 end
@@ -381,7 +407,8 @@ end
 
 function InventoryItem:GetEquipRestrictedTag()
     if self.inst.components.equippable ~= nil then
-        return self.inst.components.equippable:GetRestrictedTag()
+		local tag = self.inst.components.equippable.restrictedtag
+		return tag and tag:len() > 0 and tag or nil
     end
     return self.classified ~= nil
         and self.classified.equiprestrictedtag:value() ~= 0
@@ -400,6 +427,16 @@ function InventoryItem:GetMoisture()
         return self.inst.components.inventoryitemmoisture.moisture
     elseif self.classified ~= nil then
         return self.classified.moisture:value()
+    else
+        return 0
+    end
+end
+
+function InventoryItem:GetMoisturePercent()
+    if self.inst.components.inventoryitemmoisture ~= nil then
+        return self.inst.components.inventoryitemmoisture.moisture / TUNING.MAX_WETNESS
+    elseif self.classified ~= nil then
+        return self.classified.moisture:value() / TUNING.MAX_WETNESS
     else
         return 0
     end

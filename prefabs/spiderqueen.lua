@@ -145,6 +145,8 @@ local function fn()
         return inst
     end
 
+	inst.override_combat_fx_size = "med"
+
     inst:SetStateGraph("SGspiderqueen")
 
     inst:AddComponent("lootdropper")
@@ -217,6 +219,8 @@ local function fn()
     ------------------
 
     inst:SetBrain(brain)
+
+	inst.hit_recovery = TUNING.SPIDERQEEN_HIT_RECOVERY
 
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDead)

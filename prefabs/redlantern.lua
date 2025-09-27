@@ -6,6 +6,15 @@ local assets =
     Asset("INV_IMAGE", "redlantern_lit"),
 }
 
+local yots_assets =
+{
+    Asset("ANIM", "anim/redlantern.zip"),
+    Asset("ANIM", "anim/redlantern_water.zip"),
+    Asset("ANIM", "anim/yots_redlantern.zip"),
+    Asset("ANIM", "anim/yots_swap_redlantern.zip"),
+    Asset("INV_IMAGE", "yots_redlantern_lit"),
+}
+
 local prefabs =
 {
     "redlanternlight",
@@ -70,7 +79,7 @@ local function turnon(inst)
             inst.components.inventoryitem.owner.AnimState:Show("LANTERN_OVERLAY")
         end
 
-        inst.components.inventoryitem:ChangeImageName("redlantern_lit")
+        inst.components.inventoryitem:ChangeImageName(inst._invimagename.."_lit")
     end
 end
 
@@ -93,7 +102,7 @@ local function turnoff(inst)
         inst.components.inventoryitem.owner.AnimState:Hide("LANTERN_OVERLAY")
     end
 
-    inst.components.inventoryitem:ChangeImageName("redlantern")
+    inst.components.inventoryitem:ChangeImageName(inst._invimagename)
 end
 
 local function OnRemove(inst)
@@ -114,13 +123,13 @@ local function ToggleOverrideSymbols(inst, owner)
     if owner.sg ~= nil and (owner.sg:HasStateTag("nodangle")
             or (owner.components.rider ~= nil and owner.components.rider:IsRiding()
                 and not owner.sg:HasStateTag("forcedangle"))) then
-        owner.AnimState:OverrideSymbol("swap_object", "swap_redlantern", "swap_redlantern")
+        owner.AnimState:OverrideSymbol("swap_object", inst._swapfile or "swap_redlantern", "swap_redlantern")
         if not inst.components.fueled:IsEmpty() then
             owner.AnimState:Show("LANTERN_OVERLAY")
         end
         inst._body:Hide()
     else
-        owner.AnimState:OverrideSymbol("swap_object", "swap_redlantern", "swap_redlantern_stick")
+        owner.AnimState:OverrideSymbol("swap_object", inst._swapfile or "swap_redlantern", "swap_redlantern_stick")
         owner.AnimState:Hide("LANTERN_OVERLAY")
         inst._body:Show()
     end
@@ -133,13 +142,17 @@ end
 local function onequip(inst, owner)
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
-    owner.AnimState:OverrideSymbol("lantern_overlay", "swap_redlantern", "redlantern_overlay")
+    owner.AnimState:OverrideSymbol("lantern_overlay", inst._swapfile or "swap_redlantern", "redlantern_overlay")
 
     if inst._body ~= nil then
         inst._body:Remove()
     end
     inst._body = SpawnPrefab("redlanternbody")
     inst._body._lantern = inst
+    -- Ostensibly we could always do this, but let's assume we only need to if there's a custom swap.
+    if inst._swapfile then
+        inst._body.AnimState:SetBuild(inst.AnimState:GetBuild())
+    end
     inst:ListenForEvent("onremove", onremovebody, inst._body)
 
     inst._body.entity:SetParent(owner.entity)
@@ -151,10 +164,10 @@ local function onequip(inst, owner)
 
     ToggleOverrideSymbols(inst, owner)
 
-    if owner.components.bloomer ~= nil then
+    if owner.components.bloomer then
         owner.components.bloomer:AttachChild(inst._body)
     end
-    if owner.components.colouradder ~= nil then
+    if owner.components.colouradder then
         owner.components.colouradder:AttachChild(inst._body)
     end
 
@@ -175,7 +188,7 @@ local function onunequip(inst, owner)
     if inst._body ~= nil then
         if inst._body.entity:IsVisible() then
             --need to see the lantern when animating putting away the object
-            owner.AnimState:OverrideSymbol("swap_object", "swap_redlantern", "swap_redlantern")
+            owner.AnimState:OverrideSymbol("swap_object", inst._swapfile or "swap_redlantern", "swap_redlantern")
         end
         if inst._light ~= nil then
             inst._light.entity:SetParent((inst.components.inventoryitem.owner or inst).entity)
@@ -197,7 +210,7 @@ local function onequiptomodel(inst, owner, from_ground)
     if inst._body ~= nil then
         if inst._body.entity:IsVisible() then
             --need to see the lantern when animating putting away the object
-            owner.AnimState:OverrideSymbol("swap_object", "swap_redlantern", "swap_redlantern")
+            owner.AnimState:OverrideSymbol("swap_object", inst._swapfile or "swap_redlantern", "swap_redlantern")
         end
         if inst._light ~= nil then
             inst._light.entity:SetParent((inst.components.inventoryitem.owner or inst).entity)
@@ -250,6 +263,11 @@ local function OnLoad(inst, data)
     end
 end
 
+--
+local function start_floating(inst) inst.AnimState:PlayAnimation("float") end
+local function stop_floating(inst) inst.AnimState:PlayAnimation("idle_loop", true) end
+
+--
 local function lanternlightfn()
     local inst = CreateEntity()
 
@@ -269,7 +287,6 @@ local function lanternlightfn()
     OnUpdateFlicker(inst)
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -279,7 +296,7 @@ local function lanternlightfn()
     return inst
 end
 
-local function fn()
+local function common_fn(build, invimagename, client_pre)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -289,15 +306,19 @@ local function fn()
     MakeInventoryPhysics(inst)
 
     inst.AnimState:SetBank("redlantern")
-    inst.AnimState:SetBuild("redlantern")
+    inst.AnimState:SetBuild(build)
     inst.AnimState:PlayAnimation("idle_loop", true)
 
     inst:AddTag("light")
+    inst:AddTag("redlantern")
 
     MakeInventoryFloatable(inst, "med", nil, {0.775, 0.5, 0.775})
 
-    inst.entity:SetPristine()
+    if client_pre then
+        client_pre(inst)
+    end
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
@@ -324,8 +345,8 @@ local function fn()
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL -- so people can toss depleted lanterns into a firepit
 
-    inst:ListenForEvent("floater_startfloating", function(inst) inst.AnimState:PlayAnimation("float") end)
-    inst:ListenForEvent("floater_stopfloating", function(inst) inst.AnimState:PlayAnimation("idle_loop", true) end)
+    inst:ListenForEvent("floater_startfloating", start_floating)
+    inst:ListenForEvent("floater_stopfloating", stop_floating)
 
     inst:WatchWorldState("israining", onisraining)
     onisraining(inst, TheWorld.state.israining)
@@ -339,6 +360,9 @@ local function fn()
     inst.OnRemoveEntity = OnRemove
     inst.OnLoad = OnLoad
 
+    -- Annoyingly, we can't just use inst.prefab, because this turnon call
+    -- happens before that's set by SpawnPrefab (which is calling us, here, now)
+    inst._invimagename = invimagename
     inst._light = nil
     turnon(inst)
 
@@ -352,6 +376,10 @@ local function fn()
     end
 
     return inst
+end
+
+local function fn()
+    return common_fn("redlantern", "redlantern")
 end
 
 local function lanternbodyfn()
@@ -368,18 +396,30 @@ local function lanternbodyfn()
     inst:AddTag("FX")
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
 
-	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
+    inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 
     inst.persists = false
 
     return inst
 end
 
+-- YOTS Lantern
+local function yots_fn_client(inst)
+    inst._swapfile = "yots_swap_redlantern"
+    inst:SetPrefabNameOverride("redlantern")
+
+    inst.components.floater:SetScale({.55, .4, .55})
+end
+
+local function yots_fn()
+    return common_fn("yots_redlantern", "yots_redlantern", yots_fn_client)
+end
+
 return Prefab("redlantern", fn, assets, prefabs),
     Prefab("redlanternlight", lanternlightfn),
-    Prefab("redlanternbody", lanternbodyfn)
+    Prefab("redlanternbody", lanternbodyfn),
+    Prefab("yots_redlantern", yots_fn, yots_assets, prefabs)

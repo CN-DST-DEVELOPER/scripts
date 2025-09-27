@@ -285,6 +285,7 @@ fns.swapmask = function(inst, line, cast)
     if cast == nil then return end
 	for _, costume in ipairs(line.roles) do
 		local player = cast[costume].castmember
+        player.stageactingprop_ignorecostumecheck_hack = true
 		if line.mask then
 			local mask = player.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
 			mask:Remove()
@@ -297,6 +298,7 @@ fns.swapmask = function(inst, line, cast)
 			local newbody = SpawnPrefab(line.body)
 			player.components.inventory:Equip(newbody)
 		end
+        player.stageactingprop_ignorecostumecheck_hack = nil
 	end
 end
 
@@ -311,6 +313,8 @@ local POSITIONS = {
 	[8] = {theta = (3/4)*PI,	radius = 3},	-- BACK
 	[9] = {theta = 0,			radius = 2.8},	-- LEFT WIDE
 	[10] = {theta = 1.5*PI,		radius = 2.8},	-- RIGHT WIDE
+	--
+	[11] = {theta = 1.5*PI,		radius = 1.2}, --Special case for A Task Complete, right behind position 3
 }
 
 local function on_findposition_timeout(castmember)
@@ -360,6 +364,34 @@ fns.findpositions = function(inst, line, cast)
                 castmember:DoTaskInTime((line.duration or (2*FRAMES))/2, teleport_to_position, inst_pos+offset)
             end
         end
+	end
+end
+
+fns.override_with_chalice = function(inst, line, cast)
+	for costume, data in pairs(cast) do
+		local player = data.castmember
+		player.AnimState:OverrideSymbol("ghostly_elixirs_swap", "chalice_swap", "chalice_swap_comp")
+	end
+end
+
+fns.clear_chalice_symbol = function(inst, line, cast)
+	for costume, data in pairs(cast) do
+		local player = data.castmember
+		player.AnimState:ClearOverrideSymbol("ghostly_elixirs_swap")
+	end
+end
+
+fns.override_with_dagger = function(inst, line, cast)
+	for costume, data in pairs(cast) do
+		local player = data.castmember
+		player.AnimState:AddOverrideBuild("player_ancient_handmaid")
+	end
+end
+
+fns.clear_dagger_symbol = function(inst, line, cast)
+	for costume, data in pairs(cast) do
+		local player = data.castmember
+		player.AnimState:ClearOverrideBuild("player_ancient_handmaid")
 	end
 end
 

@@ -27,9 +27,14 @@ end
 local events =
 {
     CommonHandlers.OnFreeze(),
-    EventHandler("attacked", function(inst)
-        if not (inst.components.health:IsDead() or inst.sg:HasStateTag("noattack") or inst.sg:HasStateTag("nohit")) then
-            inst.sg:GoToState("hit")
+	CommonHandlers.OnElectrocute(),
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("noattack", "nohit", "electrocute") then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("death", function(inst)
@@ -161,7 +166,7 @@ local states =
 
     State{
         name = "fall",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.DynamicShadow:Enable(false)
@@ -234,7 +239,7 @@ local states =
 
     State{
         name = "explode",
-        tags = { "busy", "nofreeze", "noattack", "nopickup", "nodeath" },
+		tags = { "busy", "nofreeze", "noattack", "nopickup", "nodeath", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("struggle_explode")
@@ -329,7 +334,7 @@ local states =
 
     State{
         name = "recover_transform",
-        tags = { "busy", "nofreeze", "nopickup", "nohit" },
+		tags = { "busy", "nofreeze", "nopickup", "nohit", "noelectrocute" },
 
         onenter = function(inst)
             if not inst.AnimState:IsCurrentAnimation("struggle_recovery") then
@@ -363,5 +368,10 @@ local states =
 }
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states, nil,
+{
+	loop = "struggle_shock_loop",
+	pst = "struggle_shock_pst",
+})
 
 return StateGraph("canarypoisoned", states, events, "idle_loop")

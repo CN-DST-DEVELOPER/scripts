@@ -164,8 +164,8 @@ Brain = Class(function(self)
     self.thinkperiod = nil
     self.lastthinktime = nil
     self.paused = false
+	self.stopped = true
 end)
-
 
 function Brain:ForceUpdate()
     if self.bt then
@@ -195,16 +195,24 @@ function Brain:GetSleepTime()
     return 0
 end
 
-function Brain:Start()
-    if self.paused then
-        return
-    end
+--V2C: deprecated; use EntityScript:RestartBrain
+function Brain:Start(reason)
+	if self.inst then
+		self.inst:RestartBrain(reason)
+	end
+end
 
-    if self.OnStart then
+--V2C: should only be called from EntityScript
+function Brain:_Start_Internal()
+	if not self.stopped then
+		return
+	elseif self.OnStart then
         self:OnStart()
     end
     self.stopped = false
-    BrainManager:AddInstance(self)
+	if not self.paused then
+		BrainManager:AddInstance(self)
+	end
 	if self.OnInitializationComplete then
 		self:OnInitializationComplete()
 	end
@@ -218,7 +226,6 @@ function Brain:Start()
 end
 
 function Brain:OnUpdate()
-
     if self.DoUpdate then
 		self:DoUpdate()
     end
@@ -228,20 +235,27 @@ function Brain:OnUpdate()
     end
 end
 
+--V2C: deprecated; use EntityScript:StopBrain
+function Brain:Stop(reason)
+	if self.inst then
+		self.inst:StopBrain(reason)
+	end
+end
 
-function Brain:Stop()
-    if self.paused then
-        return
-    end
-
-    if self.OnStop then
+--V2C: should only be called from EntityScript
+function Brain:_Stop_Internal()
+	if self.stopped then
+		return
+	elseif self.OnStop then
         self:OnStop()
     end
     if self.bt then
         self.bt:Stop()
     end
     self.stopped = true
-    BrainManager:RemoveInstance(self)
+	if not self.paused then --already removed if paused
+		BrainManager:RemoveInstance(self)
+	end
 end
 
 function Brain:PushEvent(event, data)
@@ -253,11 +267,19 @@ function Brain:PushEvent(event, data)
 end
 
 function Brain:Pause()
-	self.paused = true
-	BrainManager:RemoveInstance(self)
+	if not self.paused then
+		self.paused = true
+		if not self.stopped then
+			BrainManager:RemoveInstance(self)
+		end
+	end
 end
 
 function Brain:Resume()
-    self.paused = false
-	BrainManager:AddInstance(self)
+	if self.paused then
+		self.paused = false
+		if not self.stopped then
+			BrainManager:AddInstance(self)
+		end
+	end
 end

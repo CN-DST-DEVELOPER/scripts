@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/lunarhaildrop.zip"),
+    Asset("ANIM", "anim/lunarhaildrop.zip", ALT_RENDERPATH),
 }
 
 local function PlayPstAnim(inst, anim)

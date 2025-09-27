@@ -160,7 +160,7 @@ local function onbuilt(inst)
     inst.SoundEmitter:PlaySound(inst.data.sounds.ontakefuel)
 end
 
-local function OnHaunt(inst, haunter)
+local function OnHaunt(inst)
     if math.random() <= TUNING.HAUNT_CHANCE_RARE and
         inst.components.fueled ~= nil and
         not inst.components.fueled:IsEmpty() then
@@ -252,6 +252,8 @@ local function fn(data)
     if not TheWorld.ismastersim then
         return inst
     end
+
+    MakeSnowCovered(inst)
 
     inst.scrapbook_anim    = "idle_3"
     inst.scrapbook_adddeps = scrapbook_adddeps

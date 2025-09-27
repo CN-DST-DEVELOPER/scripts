@@ -19,7 +19,7 @@ local function onrestrictedtag(self, restrictedtag)
 end
 
 local function onpreventunequipping(self, prevent)
-    self.inst.replica.equippable:SetPreventUnequipping(prevent)
+	self.inst.replica.equippable:SetPreventUnequipping(prevent == true)
 end
 
 local Equippable = Class(function(self, inst)
@@ -53,6 +53,7 @@ nil,
 })
 
 function Equippable:OnRemoveFromEntity()
+	self:SetPreventUnequipping(false)
     local inventoryitem = self.inst.replica.inventoryitem
     if inventoryitem ~= nil then
         inventoryitem:SetWalkSpeedMult(1)
@@ -122,14 +123,33 @@ function Equippable:Unequip(owner)
 end
 
 function Equippable:GetWalkSpeedMult()
-    return self.walkspeedmult or 1.0
+
+    local speed = self.walkspeedmult or 1.0
+
+    local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem.owner
+    if speed < 1 and self.isequipped and owner and owner:HasTag("vigorbuff") then
+        speed = math.min(1, speed + 0.25)
+    end
+
+    return speed
 end
 
+--V2C: reminder to update replica version as well XD
 function Equippable:IsRestricted(target)
+	if not target:HasTag("player") then
+		--restricted tags and links only apply to players
+		return false
+	end
+    local linkeditem = self.inst.components.linkeditem
+    if linkeditem and linkeditem:IsEquippableRestrictedToOwner() then
+        local owneruserid = linkeditem:GetOwnerUserID()
+        if owneruserid and owneruserid ~= target.userid then
+            return true
+        end
+    end
     return self.restrictedtag ~= nil
         and self.restrictedtag:len() > 0
         and not target:HasTag(self.restrictedtag)
-        and target:HasTag("player") --restricted tags only apply to players
 end
 
 function Equippable:IsRestricted_FromLoad(target)
@@ -141,25 +161,23 @@ function Equippable:IsRestricted_FromLoad(target)
 end
 
 function Equippable:ShouldPreventUnequipping()
-    return self.preventunequipping
+	return self.preventunequipping == true
 end
 
-local function OnRemove(inst, data)
+local function OnRemove(inst)
     inst.components.equippable:SetPreventUnequipping(false)
 end
 
 function Equippable:SetPreventUnequipping(shouldprevent)
     if shouldprevent then
-        if self._onremovelistener == nil then
-            self._onremovelistener = self.inst:ListenForEvent("onremove", OnRemove)
+		if not self.preventunequipping then
+			self.inst:ListenForEvent("onremove", OnRemove)
+			self.preventunequipping = true
         end
-    else
-        if self._onremovelistener ~= nil then
-            self.inst:RemoveEventCallback("onremove", OnRemove)
-            self._onremovelistener = nil
-        end
+	elseif self.preventunequipping then
+		self.inst:RemoveEventCallback("onremove", OnRemove)
+		self.preventunequipping = nil
     end
-    self.preventunequipping = shouldprevent
 end
 
 function Equippable:GetDapperness(owner, ignore_wetness)

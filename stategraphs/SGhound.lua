@@ -20,17 +20,22 @@ end
 
 local events =
 {
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then
-            inst.sg:GoToState("hit")
-        end
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
+				inst.sg:GoToState("hit")
+			end
+		end
     end),
     EventHandler("death", function(inst)
         inst.sg:GoToState("death", inst.sg.statemem.dead)
     end),
     EventHandler("doattack", function(inst, data)
         if not inst.components.health:IsDead() and
-                (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then
+			((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy"))
+		then
             inst.sg:GoToState("attack", data.target)
         end
     end),
@@ -50,6 +55,7 @@ local events =
     CommonHandlers.OnHop(),
     CommonHandlers.OnLocomote(true, false),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
 
     EventHandler("startle", function(inst)
         if not (inst.sg:HasStateTag("startled") or
@@ -956,7 +962,7 @@ local states =
 
     State{
         name = "mutated_spawn",
-        tags = { "busy" },
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst, data)
             inst.Physics:Stop()
@@ -1040,5 +1046,6 @@ CommonStates.AddRunStates(states,
     },
 })
 CommonStates.AddFrozenStates(states, HideEyeFX, ShowEyeFX)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("hound", states, events, "taunt", actionhandlers)

@@ -500,25 +500,29 @@ function ChildSpawner:DoSpawnChild(target, prefab, radius)
         self.rarechild or
         prefab or
         self.childname
+    prefab = FunctionOrValue(prefab, self.inst)
 
-    local child = SpawnPrefab(FunctionOrValue(prefab, self.inst))
+    if prefab and prefab ~= "" then
+        local child = SpawnPrefab(prefab)
 
-    if child ~= nil then
-        child.Transform:SetPosition(x + offset.x, self.spawn_height or 0, z + offset.z)
+        if child ~= nil then
+            child.Transform:SetPosition(x + offset.x, self.spawn_height or 0, z + offset.z)
 
-        if child.components.inventoryitem ~= nil then
-            child.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
-        end
+            if child.components.inventoryitem ~= nil then
+                child.components.inventoryitem:InheritWorldWetnessAtTarget(self.inst)
+            end
 
-        if target ~= nil and child.components.combat ~= nil then
-            child.components.combat:SetTarget(target)
-        end
+            if target ~= nil and child.components.combat ~= nil then
+                child.components.combat:SetTarget(target)
+            end
 
-        if self.onspawned ~= nil then
-            self.onspawned(self.inst, child)
+            if self.onspawned ~= nil then
+                self.onspawned(self.inst, child)
+            end
+            return child
         end
     end
-    return child
+    return nil
 end
 
 function ChildSpawner:QueueSpawnChild()

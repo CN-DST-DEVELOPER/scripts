@@ -220,6 +220,7 @@ local function makefn(name, asset, animated, smashsound, rubble, chair, deploy_s
         inst:AddTag("object")
         inst:AddTag(smashsound == "rock" and "stone" or "clay")
 		inst:AddTag("noauradamage")
+		inst:AddTag("electricdamageimmune")
 
 		inst._isrubble = net_bool(inst.GUID, name..".isrubble", "isrubbledirty")
 		inst._recipename = string.match(name, "%a+$")

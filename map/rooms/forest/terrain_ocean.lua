@@ -60,6 +60,7 @@ AddRoom("OceanRough", {
                         "hermithouse_construction1",
                         "waterplant",
 						"monkeyqueen",
+                        "oceanwhirlbigportal",
                     },
 					contents =  {
 						distributepercent = 0.01,
@@ -72,7 +73,9 @@ AddRoom("OceanRough", {
 						countstaticlayouts =
 						{
 							["HermitcrabIsland"] = 1,
-							["MonkeyIsland"] = 1,
+							["MonkeyIsland"]      = function() return WorldSim:GetWorldSize() >= 425 and 1 or 0 end,
+							["MonkeyIslandSmall"] = function() return WorldSim:GetWorldSize() < 425  and 1 or 0 end,
+                            ["OceanWhirlBigPortal"] = 1,
 						},
 					}})
 

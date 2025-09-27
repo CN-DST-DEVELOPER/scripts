@@ -353,6 +353,7 @@ local function fn()
     inst:AddTag("notraptrigger")
     inst:AddTag("ignorewalkableplatforms")
     inst:AddTag("shadow_aligned")
+    inst:AddTag("NOBLOCK")
 
 	--shadowsubmissive (from shadowsubmissive component) added to pristine state for optimization
 	inst:AddTag("shadowsubmissive")

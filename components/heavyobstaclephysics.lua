@@ -47,11 +47,12 @@ local function ChangeToItem(inst)
             inst.Physics:SetMass(1)
             inst.Physics:SetDamping(0) --might have been changed when falling
             inst.Physics:SetCollisionGroup(COLLISION.ITEMS)
-            inst.Physics:ClearCollisionMask()
         end
-        inst.Physics:CollidesWith(COLLISION.WORLD)
-        inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-        inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+		inst.Physics:SetCollisionMask(
+			COLLISION.WORLD,
+			COLLISION.OBSTACLES,
+			COLLISION.SMALLOBSTACLES
+		)
         SetPhysicsState(self, PHYSICS_STATE.ITEM)
     end
 end
@@ -89,13 +90,15 @@ end
 
 local function OnChangeToObstacle(inst, self)
     inst.Physics:SetMass(0)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
     if self.issmall then
         inst.Physics:SetCollisionGroup(COLLISION.SMALLOBSTACLES)
+		inst.Physics:SetCollisionMask(COLLISION.ITEMS)
     else
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-        inst.Physics:CollidesWith(COLLISION.GIANTS)
+		inst.Physics:SetCollisionMask(
+			COLLISION.ITEMS,
+			COLLISION.GIANTS
+		)
     end
     SetPhysicsState(self, PHYSICS_STATE.OBSTACLE)
     if not inst:IsValid() then
@@ -155,6 +158,30 @@ local function OnStopFalling(inst)
     OnChangeToObstacle(inst, self)
 end
 
+local function OnStartPushing(inst)
+	local self = inst.components.heavyobstaclephysics
+	if self.onstartpushingfn then
+		self.onstartpushingfn(inst)
+		if not inst:IsValid() then
+			return
+		end
+	end
+	ChangeToItem(inst)
+end
+
+local function OnStopPushing(inst)
+	local self = inst.components.heavyobstaclephysics
+	if self.onstoppushingfn then
+		self.onstoppushingfn(inst)
+		if not inst:IsValid() then
+			return
+		end
+	end
+	if not (inst.components.inventoryitem and inst.components.inventoryitem:IsHeld()) then
+		ChangeToObstacle(inst)
+	end
+end
+
 --------------------------------------------------------------------------
 
 local HeavyObstaclePhysics = Class(function(self, inst)
@@ -171,6 +198,8 @@ local HeavyObstaclePhysics = Class(function(self, inst)
     self.onchangetoobstaclefn = nil
     self.onstartfallingfn = nil
     self.onstopfallingfn = nil
+	self.onstartpushingfn = nil
+	self.onstoppushingfn = nil
 end)
 
 function HeavyObstaclePhysics:OnRemoveFromEntity()
@@ -178,6 +207,19 @@ function HeavyObstaclePhysics:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("ondropped", ChangeToObstacle)
     self.inst:RemoveEventCallback("startfalling", OnStartFalling)
     self.inst:RemoveEventCallback("stopfalling", OnStopFalling)
+	self.inst:RemoveEventCallback("startpushing", OnStartPushing)
+	self.inst:RemoveEventCallback("stoppushing", OnStopPushing)
+end
+
+function HeavyObstaclePhysics:OnEntityWake()
+    -- NOTES(JBK): If an object is floating even a little it will be stuck in the air so we will make it drop down.
+	if not (self.inst.components.inventoryitem and self.inst.components.inventoryitem:IsHeld() or self.deprecated_floating_exploit) then
+        local x, y, z = self.inst.Transform:GetWorldPosition()
+        if y > 0.01 then
+            self:ForceDropPhysics()
+            self.inst.Physics:SetVel(0, 0, 0) -- Let gravity deal with this.
+        end
+    end
 end
 
 function HeavyObstaclePhysics:SetRadius(radius)
@@ -195,6 +237,11 @@ end
 function HeavyObstaclePhysics:AddFallingStates()
     self.inst:ListenForEvent("startfalling", OnStartFalling)
     self.inst:ListenForEvent("stopfalling", OnStopFalling)
+end
+
+function HeavyObstaclePhysics:AddPushingStates()
+	self.inst:ListenForEvent("startpushing", OnStartPushing)
+	self.inst:ListenForEvent("stoppushing", OnStopPushing)
 end
 
 function HeavyObstaclePhysics:GetPhysicsState()
@@ -231,6 +278,30 @@ end
 
 function HeavyObstaclePhysics:SetOnStopFallingFn(fn)
     self.onstopfallingfn = fn
+end
+
+function HeavyObstaclePhysics:Setonstartpushingfn(fn)
+	self.onstartpushingfn = fn
+end
+
+function HeavyObstaclePhysics:Setonstoppushingfn(fn)
+	self.onstoppushingfn = fn
+end
+
+--Use this if you want to spawn a heavy object and fling it immediately (e.g. lootdropper:SpawnLootPrefab)
+function HeavyObstaclePhysics:ForceDropPhysics()
+	ChangeToItem(self.inst)
+	ChangeToObstacle(self.inst)
+end
+
+function HeavyObstaclePhysics:OnSave()
+	return self.deprecated_floating_exploit and { deprecated_floating_exploit = true } or nil
+end
+
+function HeavyObstaclePhysics:OnLoad(data)
+	if data.deprecated_floating_exploit then
+		self.deprecated_floating_exploit = true
+	end
 end
 
 return HeavyObstaclePhysics

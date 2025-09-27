@@ -55,6 +55,8 @@ local function OnAttached(inst, target)
     inst.SoundEmitter:SetParameter("loop", "intensity", 0)
     target.components.hunger.burnratemodifiers:SetModifier(inst, 0)
     target.components.sanity.externalmodifiers:SetModifier(inst, TUNING.WINTERSFEASTBUFF.SANITY_GAIN)
+	target:AddTag("wintersfeastbuff")
+	target:ListenForEvent("onremove", function() target:RemoveTag("wintersfeastbuff") end, inst)
 end
 
 local function OnDetached(inst, target)

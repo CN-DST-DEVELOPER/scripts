@@ -140,35 +140,39 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
 								return true
 							end
 						end
-					elseif control == CONTROL_INVENTORY_USEONSELF or control == CONTROL_INVENTORY_USEONSCENE then
-						-- if it is selected, pass the controls off to the details panel skin spinner to update the skin, otherwise it will be done here
-						local recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
-						if self.recipe_name ~= nil and self.recipe_name == recipe_name and self.craftingmenu.craftingmenu.details_root.skins_spinner:OnControl(control, down) then 
-							recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
-							self:SetRecipe(recipe_name, skin_name)
-							self.craftingmenu.craftingmenu.details_root:UpdateBuildButton(self)
-							return true 
-						elseif control == CONTROL_INVENTORY_USEONSELF then
-							if self.recipe_name ~= nil then
-								local new_skin = self:GetPrevSkin(self.skin_name)
-								if new_skin ~= self.skin_name then
-									self:SetRecipe(self.recipe_name, new_skin)
-									TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-								else
-									TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative", nil, .1)
+					else
+						local prev_ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_LEFT)
+						local next_ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_RIGHT)
+						if control == next_ctrl or control == prev_ctrl then
+							-- if it is selected, pass the controls off to the details panel skin spinner to update the skin, otherwise it will be done here
+							local recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
+							if self.recipe_name ~= nil and self.recipe_name == recipe_name and self.craftingmenu.craftingmenu.details_root.skins_spinner:OnControl(control, down) then 
+								recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
+								self:SetRecipe(recipe_name, skin_name)
+								self.craftingmenu.craftingmenu.details_root:UpdateBuildButton(self)
+								return true 
+							elseif control == prev_ctrl then
+								if self.recipe_name ~= nil then
+									local new_skin = self:GetPrevSkin(self.skin_name)
+									if new_skin ~= self.skin_name then
+										self:SetRecipe(self.recipe_name, new_skin)
+										TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+									else
+										TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative", nil, .1)
+									end
+									return true
 								end
-								return true
-							end
-						elseif control == CONTROL_INVENTORY_USEONSCENE then
-							if self.recipe_name ~= nil then
-								local new_skin = self:GetNextSkin(self.skin_name)
-								if new_skin ~= self.skin_name then
-									self:SetRecipe(self.recipe_name, new_skin)
-									TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-								else
-									TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative", nil, .1)
+							elseif control == next_ctrl then
+								if self.recipe_name ~= nil then
+									local new_skin = self:GetNextSkin(self.skin_name)
+									if new_skin ~= self.skin_name then
+										self:SetRecipe(self.recipe_name, new_skin)
+										TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+									else
+										TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative", nil, .1)
+									end
+									return true
 								end
-								return true
 							end
 						end
 					end
@@ -234,6 +238,8 @@ local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_
     self.fg = self.craft_button.image:AddChild(Image("images/global.xml", "square.tex"))
 	self.fg:SetScale(0.92)
 	self.fg:Hide()
+    self.fgcount = self.craft_button.image:AddChild(Text(NUMBERFONT, 32/self.base_scale))
+    self.fgcount:Hide()
 
 	----------------
 	self:Hide()
@@ -249,6 +255,10 @@ function PinSlot:GetNextSkin(cur_skin)
 	local data = self.craftingmenu:GetRecipeState(self.recipe_name)
 	local prefab = data ~= nil and data.recipe ~= nil and data.recipe.product or self.recipe_name
 	return GetNextOwnedSkin(prefab, cur_skin)
+end
+
+function PinSlot:HasSkins()
+	return self.recipe_name ~= nil and self:GetNextSkin(self.skin_name) ~= self.skin_name
 end
 
 function PinSlot:Highlight() -- called from inventorybar
@@ -287,8 +297,12 @@ function PinSlot:MakeRecipePopup(is_left)
 
 			local hint_x = x * popup_self._scale * 0.5 + 6/self.base_scale
 			popup_self.openhint:SetPosition(is_left and hint_x or -hint_x, 0)
+			if popup_self.openhint.shown then
+				popup_self.openhint:StartUpdating()
+			end
 		else
 			popup_self:Hide()
+			popup_self.openhint:StopUpdating()
 		end
 	end
 
@@ -298,11 +312,16 @@ function PinSlot:MakeRecipePopup(is_left)
 			popup_self.ingredients = nil
 		end
 		popup_self:Hide()
+		popup_self.openhint:StopUpdating()
 	end
 
 	root.background = root:AddChild(ThreeSlice(atlas, "popup_end.tex", "popup_short.tex"))
 
 	root.openhint = root:AddChild(Text(UIFONT, 32))
+	root.openhint.OnUpdate = function(openhint, dt)
+		local ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_DOWN)
+		openhint:SetString(ctrl and TheInput:GetLocalizedControl(TheInput:GetControllerID(), ctrl) or "")
+	end
 
 	root:SetScale(root._scale)
 
@@ -341,6 +360,20 @@ function PinSlot:OnPageChanged(data)
 	self:Refresh()
 end
 
+local FGCOUNT_OFFSET_X = 25
+local FGCOUNT_OFFSET_Y = 5
+local function UpdateFGCount(fgcount, meta)
+    if meta.limitedamount then
+        fgcount:SetString(tostring(meta.limitedamount))
+        local parentwidth, parentheight = fgcount.parent:GetSize()
+        local fgwidth, fgheight = fgcount:GetRegionSize()
+        fgcount:SetPosition((fgwidth - parentwidth) * 0.5 + FGCOUNT_OFFSET_X, (parentheight - fgheight) * 0.5 - FGCOUNT_OFFSET_Y)
+        fgcount:Show()
+    else
+        fgcount:Hide()
+    end
+end
+
 function PinSlot:Refresh()
 	local data = self.craftingmenu:GetRecipeState(self.recipe_name) 
 
@@ -373,27 +406,33 @@ function PinSlot:Refresh()
 		if meta.build_state == "buffered" then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_buffered.tex", nil, nil, nil, "pinslot_bg_buffered.tex")
 			self.fg:Hide()
+            UpdateFGCount(self.fgcount, meta)
 		elseif meta.build_state == "prototype" and meta.can_build then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_prototype.tex", nil, nil, nil, "pinslot_bg_prototype.tex")
 			self.fg:SetTexture(atlas, "pinslot_fg_prototype.tex")
 			self.fg:Show()
+            self.fgcount:Hide()
 		elseif meta.can_build then
 			self.craft_button:SetTextures(atlas, "pinslot_bg.tex", nil, nil, nil, "pinslot_bg.tex")
 			self.fg:Hide()
+            UpdateFGCount(self.fgcount, meta)
 		elseif meta.build_state == "hint" then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
 			tint = .7
 			self.fg:SetTexture(atlas, "pinslot_fg_lock.tex")
             self.fg:Show()
+            self.fgcount:Hide()
 		elseif meta.build_state == "no_ingredients" or meta.build_state == "prototype" then
 			self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
 			tint = .7
             self.fg:Hide()
+            UpdateFGCount(self.fgcount, meta)
 		else
 			self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
 			tint = .7
 			self.fg:SetTexture(atlas, "pinslot_fg_lock.tex")
             self.fg:Show()
+            self.fgcount:Hide()
 		end
 
 		self.item_img:SetTint(tint, tint, tint, 1)
@@ -418,11 +457,15 @@ function PinSlot:Refresh()
 		self.craft_button:SetHelpTextMessage(details_recipe_name ~= self.recipe_name and STRINGS.UI.HUD.SELECT
 											 or meta.build_state == "buffered" and STRINGS.UI.HUD.DEPLOY 
 											 or STRINGS.UI.HUD.BUILD)
+		self.craft_button.GetHelpText = function(craft_button)
+			return self.craftingmenu:IsVisible() and craft_button._base.GetHelpText(craft_button) or nil
+		end
 
 		self:Show()
 	else
 		self.craft_button:SetTextures(atlas, "pinslot_bg_missing_mats.tex", nil, nil, nil, "pinslot_bg_missing_mats.tex")
         self.fg:Hide()
+        self.fgcount:Hide()
 		self.item_img:SetTexture(atlas, "pinslot_fg_pin.tex")
 		self.item_img:ScaleToSize(is_left and item_size or -item_size, item_size)
 
@@ -506,6 +549,8 @@ function PinSlot:RefreshControllers(controller_mode, for_open_crafting_menu)
 			self.craft_button:SetControl(CONTROL_ACCEPT)
 
 			self.recipe_popup.openhint:Hide()
+			self.recipe_popup.openhint:SetString("")
+			self.recipe_popup.openhint:StopUpdating()
 			self.unpin_button:Hide()
 			if self.focus then
 				self.unpin_button_bg:Show()
@@ -513,15 +558,19 @@ function PinSlot:RefreshControllers(controller_mode, for_open_crafting_menu)
 			end
 			self:SetUnpinControllerHintString()
 		else
-			self.craft_button:SetControl(CONTROL_INVENTORY_DROP)
+			self.craft_button:SetControl(VIRTUAL_CONTROL_INV_ACTION_DOWN)
 
 			self.recipe_popup.openhint:Show()
-			self.recipe_popup.openhint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_DROP))
+			if self.recipe_popup.shown then
+				self.recipe_popup.openhint:StartUpdating()
+			end
 			self.unpin_controllerhint:Hide()
 		end
     else
 		self.craft_button:SetControl(CONTROL_PRIMARY)
         self.recipe_popup.openhint:Hide()
+		self.recipe_popup.openhint:SetString("")
+		self.recipe_popup.openhint:StopUpdating()
 
 		if self.craftingmenu:IsCraftingOpen() then
 			if self.recipe_name ~= nil and self.focus then

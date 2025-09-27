@@ -59,8 +59,9 @@ local function fn()
     inst.AnimState:SetBuild("bloodpump")
     inst.AnimState:PlayAnimation("idle")
 
-    inst.entity:SetPristine()
+    inst:AddTag("reviver")
 
+    inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end

@@ -1,7 +1,7 @@
 require "util"
 local TechTree = require("techtree")
 
-local IS_BETA = BRANCH == "staging" --or BRANCH == "dev"
+local IS_BETA = BRANCH == "staging" or BRANCH == "dev"
 
 PI = math.pi
 PI2 = PI*2
@@ -18,10 +18,14 @@ RESOLUTION_X = 1280
 RESOLUTION_Y = 720
 
 PLAYER_REVEAL_RADIUS = 30.0 -- NOTES(JBK): Keep in sync with MiniMapRenderer.cpp!
+PLAYER_REVEAL_RADIUS_SQ = PLAYER_REVEAL_RADIUS * PLAYER_REVEAL_RADIUS
 PLAYER_CAMERA_SEE_DISTANCE = 40.0 -- NOTES(JBK): Based off of an approximation of the maximum default camera distance before seeing clouds and is the screen diagonal.
 PLAYER_CAMERA_SEE_DISTANCE_SQ = PLAYER_CAMERA_SEE_DISTANCE * PLAYER_CAMERA_SEE_DISTANCE -- Helper.
 PLAYER_CAMERA_SHOULD_SNAP_DISTANCE = 20.0 -- NOTES(JBK): This is an approximate distance traveled where the camera should snap and fade out to not cause disorientations.
 PLAYER_CAMERA_SHOULD_SNAP_DISTANCE_SQ = PLAYER_CAMERA_SHOULD_SNAP_DISTANCE * PLAYER_CAMERA_SHOULD_SNAP_DISTANCE -- Helper.
+--NOTE if we ever have other ways of increasing camera in-game, increase this!
+PLAYER_CAMERA_MAX_DIST = 65 -- 50 maxdist in forest world + 15 maxdist from scrap_monoclehat
+PLAYER_CAMERA_MAX_DIST_CAVES = 50 -- 35 maxdist in caves world + 15 maxdist from scrap_monoclehat
 
 MAX_FE_SCALE = 3 --Default if you don't call SetMaxPropUpscale
 MAX_HUD_SCALE = 1.25
@@ -73,6 +77,7 @@ SCALEMODE_FIXEDSCREEN_NONDYNAMIC = 4 --scale same amount as window scaling from 
 PHYSICS_TYPE_ANIMATION_CONTROLLED = 0
 PHYSICS_TYPE_PHYSICS_CONTROLLED = 1
 
+ALT_RENDERPATH = 1	-- You should really not use this unless you know what it is and how it works. Otherwise it can crash things, consume lots of memory, reduce performance, you name it.
 
 MOVE_UP = 1
 MOVE_DOWN = 2
@@ -166,12 +171,12 @@ CONTROL_USE_ITEM_ON_ITEM = 59
 CONTROL_MAP_ZOOM_IN = 60
 CONTROL_MAP_ZOOM_OUT = 61
 
-CONTROL_OPEN_DEBUG_MENU = 70 --62 steam deck is 70
+CONTROL_OPEN_DEBUG_MENU = IsConsole() and 70 or -1 --62 steam deck is 70
 
 CONTROL_TOGGLE_SAY = 63
 CONTROL_TOGGLE_WHISPER = 64
 CONTROL_TOGGLE_SLASH_COMMAND = 65
-CONTROL_TOGGLE_PLAYER_STATUS = 66
+CONTROL_TOGGLE_PLAYER_STATUS = 66 -- Deprecated for CONTROL_OPEN_COMMAND_WHEEL.
 CONTROL_SHOW_PLAYER_STATUS = 67
 
 CONTROL_MENU_MISC_1 = 68  -- X
@@ -207,15 +212,61 @@ CONTROL_OPEN_COMMAND_WHEEL = 87
 CONTROL_TARGET_LOCK = 88
 CONTROL_TARGET_CYCLE = 89
 
-CONTROL_CUSTOM_START = 100
+CONTROL_CAM_AND_INV_MODIFIER = 90
+CONTROL_CHARACTER_COMMAND_WHEEL = 91
+
+--Preset directional controls (used with CameraModifier) (cannot be remapped)
+CONTROL_PRESET_RSTICK_UP = 92
+CONTROL_PRESET_RSTICK_DOWN = 93
+CONTROL_PRESET_RSTICK_LEFT = 94
+CONTROL_PRESET_RSTICK_RIGHT = 95
+CONTROL_PRESET_DPAD_UP = 96
+CONTROL_PRESET_DPAD_DOWN = 97
+CONTROL_PRESET_DPAD_LEFT = 98
+CONTROL_PRESET_DPAD_RIGHT = 99
+
+CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD = 100
+CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID = 101
+
+CONTROL_CUSTOM_START = 102 -- NOTES(JBK): This might not be used for anything keep it above our last control in case mods are using it for something.
+
+-- virtual controls
+VIRTUAL_CONTROL_START = 10000
+
+-- Used in conjunction with CONTROL_CAM_AND_INV_MODIFIER and CONTROL_SCHEME_CAM_AND_INV
+--NOTE: these must be listed in order: up, down, left, right
+VIRTUAL_CONTROL_CAMERA_ZOOM_IN = 10001
+VIRTUAL_CONTROL_CAMERA_ZOOM_OUT = 10002
+VIRTUAL_CONTROL_CAMERA_ROTATE_LEFT = 10003
+VIRTUAL_CONTROL_CAMERA_ROTATE_RIGHT = 10004
+--
+VIRTUAL_CONTROL_AIM_UP = 10005
+VIRTUAL_CONTROL_AIM_DOWN = 10006
+VIRTUAL_CONTROL_AIM_LEFT = 10007
+VIRTUAL_CONTROL_AIM_RIGHT = 10008
+--
+VIRTUAL_CONTROL_INV_UP = 10009
+VIRTUAL_CONTROL_INV_DOWN = 10010
+VIRTUAL_CONTROL_INV_LEFT = 10011
+VIRTUAL_CONTROL_INV_RIGHT = 10012
+--
+VIRTUAL_CONTROL_INV_ACTION_UP = 10013
+VIRTUAL_CONTROL_INV_ACTION_DOWN = 10014
+VIRTUAL_CONTROL_INV_ACTION_LEFT = 10015
+VIRTUAL_CONTROL_INV_ACTION_RIGHT = 10016
+--
+VIRTUAL_CONTROL_STRAFE_UP = 10017
+VIRTUAL_CONTROL_STRAFE_DOWN = 10018
+VIRTUAL_CONTROL_STRAFE_LEFT = 10019
+VIRTUAL_CONTROL_STRAFE_RIGHT = 10020
+--
+
+-- Control Schemes:
+-- Must match STRINGS.UI.CONTROLSSCREEN.SCHEMES
+
+CONTROL_SCHEME_CAM_AND_INV = 1
 
 XBOX_CONTROLLER_ID = 17
-
--- controller targetting er... controls
-CONTROL_TARGET_MODIFIER = CONTROL_MENU_MISC_2
-CONTROL_TARGET_LOCK = CONTROL_MENU_MISC_2
-CONTROL_TARGET_CYCLE_BACK = CONTROL_ROTATE_LEFT
-CONTROL_TARGET_CYCLE_FORWARD = CONTROL_ROTATE_RIGHT
 
 -- a constant used in place of hardcoding the CONTROL_ for the skin presets popup. This is overridden to a different CONTROL_ in the console branch (currently CONTROL_MENU_L2)
 CONTROL_SKIN_PRESETS = CONTROL_MENU_MISC_1
@@ -442,6 +493,7 @@ require("beefalo_clothing")
 require("misc_items")
 require("emote_items")
 require("item_blacklist")
+require("entitlementlookups")
 
 CLOTHING.body_default1 =
 {
@@ -783,9 +835,10 @@ SPECIAL_EVENTS =
     YOT_CATCOON = "year_of_the_catcoon",
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
+    YOTS = "year_of_the_snake",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.HALLOWED_NIGHTS
---WORLD_SPECIAL_EVENT = IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.YOTR
+--WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE --IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.CARNIVAL
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -813,6 +866,7 @@ IS_YEAR_OF_THE_SPECIAL_EVENTS =
 	[SPECIAL_EVENTS.YOT_CATCOON] = true,
     [SPECIAL_EVENTS.YOTR] = true,
     [SPECIAL_EVENTS.YOTD] = true,
+    [SPECIAL_EVENTS.YOTS] = true,
 }
 
 
@@ -902,6 +956,16 @@ SPECIAL_EVENT_MUSIC =
         bank = "music_frontend.fsb",
         sound = "dontstarve/music/music_FE_summerevent",
     },
+    
+    --year of the depths worm
+    -- THE BETA HAS THIS EVENT TURNED ON, BUT IS USING THE META 5 BANNER AND MUSIC
+    --[[
+    [SPECIAL_EVENTS.YOTS] =
+    {
+        bank = "music_frontend_yotg.fsb",
+        sound = "dontstarve/music/music_FE_yotg",
+    },  
+    ]]  
 }
 
 FESTIVAL_EVENT_MUSIC =
@@ -1084,7 +1148,10 @@ end
 FE_MUSIC =
     (FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT] ~= nil and FESTIVAL_EVENT_MUSIC[WORLD_FESTIVAL_EVENT].sound) or
     (SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT] ~= nil and SPECIAL_EVENT_MUSIC[WORLD_SPECIAL_EVENT].sound) or
-    "dontstarve/music/music_FE_hallowednights2024"
+    "dontstarve/music/music_FE_cavepuzzle"
+    --"dontstarve/music/music_FE_wagboss"
+    --"dontstarve/music/music_FE_balatro"
+    --"dontstarve/music/music_FE_hallowednights2024"
     --"dontstarve/music/music_FE_rifts4"
     --"dontstarve/music/music_FE_winonawurt"
     --"dontstarve/music/music_FE_junkyardhog"
@@ -1171,6 +1238,7 @@ TECH =
     CATCOONOFFERING_THREE = { CATCOONOFFERING = 3 },
     RABBITOFFERING_THREE = { RABBITOFFERING = 3 },
     DRAGONOFFERING_THREE = { DRAGONOFFERING = 3 },
+    WORMOFFERING_THREE = { WORMOFFERING = 3 },
 
     MADSCIENCE_ONE = { MADSCIENCE = 1 },
 	CARNIVAL_PRIZESHOP_ONE = { CARNIVAL_PRIZESHOP = 1 },
@@ -1188,6 +1256,8 @@ TECH =
 
     RABBITKINGSHOP_TWO = { RABBITKINGSHOP = 2 },
 
+    WAGPUNK_WORKSTATION_TWO = { WAGPUNK_WORKSTATION = 2 },
+
     TURFCRAFTING_ONE = { TURFCRAFTING = 1 },
     TURFCRAFTING_TWO = { TURFCRAFTING = 2 },
 	MASHTURFCRAFTING_TWO = { MASHTURFCRAFTING = 2},
@@ -1204,6 +1274,7 @@ TECH =
     YOT_CATCOON = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTR = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTD = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
+    YOTS = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
 
     LOST = { MAGIC = 10, SCIENCE = 10, ANCIENT = 10 },
 
@@ -1436,6 +1507,8 @@ RECIPETABS =
 	WINTERSFEASTCOOKING =	{ str = "WINTERSFEASTCOOKING",	sort = 100, icon = "tab_feast_oven.tex",		crafting_station = true },
     HERMITCRABSHOP =		{ str = "HERMITCRABSHOP",		sort = 100, icon = "tab_hermitcrab_shop.tex",	crafting_station = true, shop = true},
     RABBITKINGSHOP =		{ str = "RABBITKINGSHOP",		sort = 100, icon = "tab_rabbitking.tex",		crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
+    WANDERINGTRADERSHOP =	{ str = "WANDERINGTRADERSHOP",	sort = 100, icon = "tab_wanderingtrader.tex",	crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
+    WAGPUNK_WORKSTATION =	{ str = "WAGPUNK_WORKSTATION",	sort = 100, icon = "tab_wagpunk_workstation.tex",crafting_station = true, shop = true, icon_atlas = "images/hud2.xml"},
     TURFCRAFTING =		    { str = "TURFCRAFTING", 		sort = 100, icon = "tab_turfcrafting.tex",      crafting_station = true, icon_atlas = "images/hud2.xml" },
     CARPENTRY =	    	    { str = "CARPENTRY",			sort = 100, icon = "station_carpentry.tex",     crafting_station = true, icon_atlas = "images/hud2.xml" },
 }
@@ -1850,6 +1923,7 @@ UPGRADETYPES = -- NOTES(JBK): Keep this table updated in export_accountitems.lua
     MAST = "mast",
     SPEAR_LIGHTNING = "spear_lightning",
     CHEST = "chest",
+    GRAVESTONE = "gravestone",
 }
 
 SPELLTYPES = -- NOTES(JBK): Keep this table updated in export_accountitems.lua [EAITAB]
@@ -1858,6 +1932,7 @@ SPELLTYPES = -- NOTES(JBK): Keep this table updated in export_accountitems.lua [
     WURT_LUNAR = "wurt_lunar",
     SHADOW_SWAMP_BOMB = "shadow_swamp_bomb",
     LUNAR_SWAMP_BOMB = "lunar_swamp_bomb",
+    WORTOX_REVIVER_LOCK = "wortox_reviver_lock", -- Inverted and stops allowing to cast.
 }
 
 LOCKTYPE =
@@ -1915,6 +1990,9 @@ FOODTYPE =
 	WOOD = "WOOD",
     GOODIES = "GOODIES",
     MONSTER = "MONSTER", -- Added in for woby, uses the secondary foodype originally added for the berries
+    LUNAR_SHARDS = "LUNAR_SHARDS", -- For rift birds, yummy glass
+    CORPSE = "CORPSE", -- For rift buzzards potentially
+    MIASMA = "MIASMA", -- For the centipede thrall
 }
 
 FOODGROUP =
@@ -1986,6 +2064,14 @@ FARM_PLANT_STRESS = {
 	HIGH = 4,
 }
 
+-- NOTES(JBK): After initial game load this is a constant of some value.
+-- This is the maximum number of offerings a craftingstation:SetRecipeCraftingLimit can have.
+-- For each recipe that is designed for this it will be added to the list.
+-- This table is declared in constants used by simutil through recipes and is what is used by a player_classified.
+CRAFTINGSTATION_LIMITED_RECIPES = {}
+CRAFTINGSTATION_LIMITED_RECIPES_LOOKUPS = {}
+CRAFTINGSTATION_LIMITED_RECIPES_COUNT = 0
+
 CHARACTER_INGREDIENT =
 {
     --NOTE: Value is used as key for NAME string and inventory image
@@ -2018,6 +2104,7 @@ SKILLTREE_EQUIPPABLE_RESTRICTED_TAGS =
     ["inspectacleshatuser"]  = "winona",
     ["wathgrithrshielduser"] = "wathgrithr",
     [UPGRADETYPES.SPEAR_LIGHTNING.."_upgradeuser"] = "wathgrithr",
+    ["nabbaguser"] = "wortox",
 }
 
 -- IngredientMod must be one of the following values
@@ -2048,7 +2135,6 @@ TOOLACTIONS =
     NET = true,
     PLAY = true,
     UNSADDLE = true,
-	REACH_HIGH = true,
 	SCYTHE = true,
 }
 
@@ -2095,6 +2181,8 @@ DEPLOYSPACING =
     NONE = 3,
 	PLACER_DEFAULT = 4,
     LARGE = 5,
+	--V2C: late additions
+	ONEPOINTFIVE = 6,
 }
 
 --V2C: Deploy spacing is a legacy system where this is actually the distance
@@ -2111,6 +2199,7 @@ DEPLOYSPACING_RADIUS =
     [DEPLOYSPACING.NONE] = 0,
 	[DEPLOYSPACING.PLACER_DEFAULT] = 3.2,
     [DEPLOYSPACING.LARGE] = 4.0,
+	[DEPLOYSPACING.ONEPOINTFIVE] = 1.5,
 }
 
 TROPHYSCALE_TYPES =
@@ -2159,6 +2248,7 @@ SCREEN_FADE_TIME = .2
 BACK_BUTTON_X = 60
 BACK_BUTTON_Y = 60
 DOUBLE_CLICK_TIMEOUT = .5
+DOUBLE_CLICK_POS_THRESHOLD = 3 --how far ur mouse can move and still count as dbl click
 
 GOLD = {202/255, 174/255, 118/255, 255/255}
 GREY = {.57, .57, .57, 1}
@@ -2212,6 +2302,7 @@ DST_NPCCHATTERLIST =
     "sharkboi",
     "stalker",
     "wagstaff",
+    "wanderingtrader",
 }
 
 CHATPRIORITIES =
@@ -2299,6 +2390,7 @@ WORMHOLETYPE =
     WORM = 0,
     TENTAPILLAR = 1,
     OCEANWHIRLPORTAL = 2,
+    VAULTLOBBYEXIT = 3,
 }
 
 -- Houndwarning level, max value of 63 (net_smallbyte)
@@ -2356,6 +2448,9 @@ INTENTIONS =
 
 PLAYSTYLE_ANY = "ANY"
 PLAYSTYLE_DEFAULT = "survival"
+
+WORLDPROGRESSIONTAG_MUST = "must"
+WORLDPROGRESSIONTAG_CANT = "cant"
 
 LEVELTYPE = {
     SURVIVAL = "SURVIVAL",
@@ -2542,7 +2637,7 @@ BETA_INFO =
 		NAME = "ANRBETA",
 		SERVERTAG = "a_new_reign_beta",
 		VERSION_MISMATCH_STRING = "VERSION_MISMATCH_ARNBETA",
-		URL = "http://forums.kleientertainment.com/topic/69487-how-to-opt-in-to-a-new-reign-beta-for-dont-starve-together/",
+		URL = "https://forums.kleientertainment.com/topic/69487-how-to-opt-in-to-a-new-reign-beta-for-dont-starve-together/",
 	},
 
 	-- THE GENERIC PUBLIC BETA INFO MUST BE LAST --
@@ -2551,7 +2646,7 @@ BETA_INFO =
 		NAME = "PUBLIC_BETA",
 		SERVERTAG = "public_beta",
 		VERSION_MISMATCH_STRING = "VERSION_MISMATCH_PUBLIC_BETA",
-		URL = "http://forums.kleientertainment.com/forum/66-dont-starve-together-general-discussion/",
+		URL = "https://forums.kleientertainment.com/forum/66-dont-starve-together-general-discussion/",
 	},
 }
 PUBLIC_BETA = #BETA_INFO
@@ -2770,6 +2865,12 @@ CHARLIERESIDUE_MAP_ACTIONS = {
     WORMHOLE = 1,
 }
 
+MINIMAP_DECORATION_PRIORITY = 50 -- NOTES(JBK): Nothing should go above this to maintain the minimap UI space.
+
+WOBYCOURIER_NO_CHEST_COORD = -32767 -- Way off of any normal sized map.
+WOBYCOURIER_MIN_DIST_TO_PLAYER_SQ = 16 -- 4 * 4
+CONTAINER_AUTOCLOSE_DISTANCE = 3
+
 -- Constants to reduce network overhead.
 CLIENTAUTHORITATIVESETTINGS = {
     PLATFORMHOPDELAY = 0,
@@ -2778,4 +2879,33 @@ CLIENTAUTHORITATIVESETTINGS = {
 NIGHTSWORD_FX_OFFSETS = {
     RIGHT = 0.75,-- -1,
     DOWN = 2.9,-- 2.6,
+}
+
+SHARDTRANSACTIONSTEPS = {
+    INITIATE = 0,
+    ACCEPTED = 1,
+    FINALIZED = 2,
+}
+SHARDTRANSACTIONTYPES = {
+    TRANSFERINVENTORYITEM = 0,
+}
+
+-- Tag pairs in this list behave mutually exclusively,
+-- when trying to attune to different objects.
+EQUIVALENT_ATTUNABLE_TAGS =
+{
+    ["remoteresurrector"] = "gravestoneresurrector",
+    ["gravestoneresurrector"] = "remoteresurrector",
+}
+
+-- This must match the Categories enum in HapticsManager
+HAPTICS = 
+{
+    Category_Default     = 1,       -- 0x01
+    Category_UI          = 2,       -- 0x02
+    Category_Danger 	 = 4,       -- 0x04
+    Category_Player      = 8,       -- 0x08
+    Category_Environment = 16,      -- 0x10
+    Category_Boss        = 32,      -- 0x20
+    Category_All         = 255,     -- 0xFF
 }

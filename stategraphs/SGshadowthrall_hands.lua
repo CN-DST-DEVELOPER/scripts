@@ -400,8 +400,10 @@ local states =
 					inst.sg.statemem.walk = data.walk
 				end
 				inst.AnimState:Hide("fx")
-				inst.Physics:ClearCollidesWith(COLLISION.OBSTACLES)
-				inst.Physics:ClearCollidesWith(COLLISION.SMALLOBSTACLES)
+				inst.Physics:ClearCollidesWith(bit.bor(
+					COLLISION.OBSTACLES,
+					COLLISION.SMALLOBSTACLES
+				))
 				SetTeamAttackCooldown(inst, true)
 			else
 				inst.sg.statemem.loops = data
@@ -478,8 +480,10 @@ local states =
 			if not inst.sg.statemem.running then
 				inst.SoundEmitter:KillSound("running")
 				inst.components.combat:SetRange(TUNING.SHADOWTHRALL_HANDS_ATTACK_RANGE)
-				inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-				inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+				inst.Physics:CollidesWith(bit.bor(
+					COLLISION.OBSTACLES,
+					COLLISION.SMALLOBSTACLES
+				))
 			end
 		end,
 	},

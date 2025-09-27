@@ -24,10 +24,14 @@ local ComplexProjectile = Class(function(self, inst)
     --      exclusive because they share this tag!
     --V2C: Recommended to explicitly add tag to prefab pristine state
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
 end)
 
 function ComplexProjectile:OnRemoveFromEntity()
-    self.inst:RemoveTag("projectile")
+	self.inst:RemoveTag("complexprojectile")
+	if self.inst.components.projectile == nil then
+		self.inst:RemoveTag("projectile")
+	end
 end
 
 function ComplexProjectile:GetDebugString()
@@ -145,7 +149,7 @@ function ComplexProjectile:Launch(targetPos, attacker, owningweapon)
 
 	-- if the attacker is standing on a moving platform, then inherit it's velocity too
 	local attacker_platform = attacker ~= nil and attacker:GetCurrentPlatform() or nil
-	if attacker_platform ~= nil then
+	if attacker_platform and attacker_platform.Physics then
 		local theta = self.inst.Transform:GetRotation() * DEGREES
 		local sintheta = math.sin(theta)
 		local costheta = math.cos(theta)

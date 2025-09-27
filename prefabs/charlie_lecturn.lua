@@ -3,6 +3,8 @@ require "prefabutil"
 local assets =
 {
     Asset("ANIM", "anim/charlie_lectern.zip"),
+    Asset("ANIM", "anim/charlie_lectern_ancient.zip"),
+    Asset("ANIM", "anim/charlie_lectern_void.zip"),
     --Asset("ANIM", "anim/ui_board_5x3.zip"),
     Asset("MINIMAP_IMAGE", "charlie_lectern"),
 }
@@ -13,7 +15,6 @@ local prefabs =
 }
 
 local function flippage(inst)
-    inst.entity:AddSoundEmitter()
     local anim = (math.random() < 0.5 and "pageturn_extra") or "pageturn"
     inst.AnimState:PlayAnimation(anim, false)
     inst.SoundEmitter:PlaySound("stageplay_set/stage/lecturn_pageturn")
@@ -85,6 +86,7 @@ local function fn()
     inst.components.playbill_lecturn.onstageset = on_playbill_stage_set
 
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     inst.checkidleanim = checkidleanim
 

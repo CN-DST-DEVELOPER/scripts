@@ -19,6 +19,7 @@ local events =
 {
     CommonHandlers.OnAttack(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
 
@@ -44,8 +45,10 @@ local events =
         end
     end),
     EventHandler("attacked", function(inst, data)
-        if not inst.components.health:IsDead() and
-            (   inst.sg:HasStateTag("frozen") or
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif inst.sg:HasStateTag("frozen") or
                 (   (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
                     (   data ~= nil and
                         data.weapon ~= nil and
@@ -53,8 +56,9 @@ local events =
                         (inst.sg.mem.last_hit_time or 0) + TUNING.PIG_ELITE_HIT_RECOVERY < GetTime()
                     )
                 )
-            ) then
-            inst.sg:GoToState("hit")
+			then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("knockback", function(inst, data)
@@ -254,7 +258,7 @@ local states =
 
     State{
         name = "knockback",
-        tags = { "knockback", "busy", "nosleep", "nofreeze", "jumping" },
+		tags = { "knockback", "busy", "nosleep", "nofreeze", "noelectrocute", "jumping" },
 
         onenter = function(inst, data)
             inst.components.locomotor:Stop()
@@ -329,6 +333,7 @@ local states =
             TimeEvent(12 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt") end),
             TimeEvent(14 * FRAMES, function(inst)
                 inst.sg:RemoveStateTag("nofreeze")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
             TimeEvent(32 * FRAMES, function(inst)
                 inst.components.sleeper:WakeUp()
@@ -447,7 +452,7 @@ local states =
 
     State{
         name = "dive",
-        tags = { "busy", "jumping", "nosleep", "nofreeze" },
+		tags = { "busy", "jumping", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst, item)
             if CanTakeItem(inst, item, GOLD_DIVE_RANGE) then
@@ -513,6 +518,7 @@ local states =
             end),
             TimeEvent(7 * FRAMES, function(inst)
                 inst.sg:RemoveStateTag("nofreeze")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
             TimeEvent(8 * FRAMES, function(inst)
                 inst.sg.statemem.pick = true
@@ -548,7 +554,7 @@ local states =
 
     State{
         name = "flipout",
-        tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping" },
+		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation(inst.sg.mem.variation == "3" and "side_lob" or "front_lob")
@@ -623,7 +629,7 @@ local states =
 
     State{
         name = "pose",
-        tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping" },
+		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -643,6 +649,7 @@ local states =
                     inst.sg:RemoveStateTag("nosleep")
                     inst.sg:RemoveStateTag("noattack")
                     inst.sg:RemoveStateTag("jumping")
+					inst.sg:RemoveStateTag("noelectrocute")
                     inst.sg:AddStateTag("idle")
                 end
             end),
@@ -655,7 +662,7 @@ local states =
 
     State{
         name = "endpose_pre",
-        tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -709,7 +716,7 @@ local states =
 
     State{
         name = "endpose_loop",
-        tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -733,7 +740,7 @@ local states =
 
     State{
         name = "endpose_jump",
-        tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -802,5 +809,14 @@ CommonStates.AddFrozenStates(states,
         inst:SetCheatFlag()
     end
 )
+
+CommonStates.AddElectrocuteStates(states,
+nil, --timeline
+nil, --anims
+{	--fns
+	loop_onenter = function(inst)
+		inst:SetCheatFlag()
+	end,
+})
 
 return StateGraph("pigelite", states, events, "idle")

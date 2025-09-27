@@ -325,6 +325,11 @@ local function OnAttacked(inst, data)
 	end
 end
 
+local function OnCaptured(inst, obj, doer)
+	inst.persists = false
+	inst:PushEventImmediate("captured_despawn")
+end
+
 --------------------------------------------------------------------------
 
 local function OnEntitySleep(inst)
@@ -385,6 +390,10 @@ local function fn()
 	inst:AddTag("hostile")
 	inst:AddTag("notraptrigger")
 	inst:AddTag("lunar_aligned")
+	inst:AddTag("brightmare")
+
+	--gestaltcapturable (from gestaltcapturable component) added to pristine state for optimization
+	inst:AddTag("gestaltcapturable")
 
 	MakeCharacterPhysics(inst, 10, .5)
 
@@ -409,6 +418,9 @@ local function fn()
 	if not TheWorld.ismastersim then
 		return inst
 	end
+
+    inst.scrapbook_animoffsety = 0
+    inst.scrapbook_bb_y_extra = 75
 
 	inst.cloud = SpawnPrefab("lunar_goop_cloud_fx")
 	inst.cloud.entity:SetParent(inst.entity)
@@ -448,6 +460,10 @@ local function fn()
 
 	inst:AddComponent("knownlocations")
 	inst:AddComponent("entitytracker")
+
+	inst:AddComponent("gestaltcapturable")
+	inst.components.gestaltcapturable:SetLevel(2)
+	inst.components.gestaltcapturable:SetOnCapturedFn(OnCaptured)
 
 	inst.debris = nil
 	inst.debrisshown = false

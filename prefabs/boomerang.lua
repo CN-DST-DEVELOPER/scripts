@@ -56,7 +56,7 @@ local function OnCaught(inst, catcher)
 end
 
 local function ReturnToOwner(inst, owner)
-    if owner ~= nil and not (inst.components.finiteuses ~= nil and inst.components.finiteuses:GetUses() < 1) then
+    if owner ~= nil and not (inst.components.finiteuses ~= nil and inst.components.finiteuses:GetUses() <= 0) then
         owner.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_return")
         inst.components.projectile:Throw(owner, owner)
     end

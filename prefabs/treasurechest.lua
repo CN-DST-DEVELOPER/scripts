@@ -94,6 +94,9 @@ local function onload(inst, data)
     end
 end
 
+local ChestsWithoutIcons = { -- These containers do not have minimap icons.
+    ["boat_ancient_container"] = true,
+}
 local function MakeChest(name, bank, build, indestructible, master_postinit, prefabs, assets, common_postinit, force_non_burnable)
     local default_assets =
     {
@@ -109,10 +112,14 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
         inst.entity:AddSoundEmitter()
-        inst.entity:AddMiniMapEntity()
+        if not ChestsWithoutIcons[name] then
+            inst.entity:AddMiniMapEntity()
+        end
         inst.entity:AddNetwork()
 
-        inst.MiniMapEntity:SetIcon(name..".png")
+        if not ChestsWithoutIcons[name] then
+            inst.MiniMapEntity:SetIcon(name..".png")
+        end
 
         inst:AddTag("structure")
         inst:AddTag("chest")
@@ -168,6 +175,7 @@ local function MakeChest(name, bank, build, indestructible, master_postinit, pre
 
         inst:ListenForEvent("onbuilt", onbuilt)
         MakeSnowCovered(inst)
+        SetLunarHailBuildupAmountSmall(inst)
 
 		-- Save / load is extended by some prefab variants
         inst.OnSave = onsave
@@ -272,6 +280,9 @@ local function regular_Upgrade_OnHammered(inst, worker)
 			inst:Remove()
 			return
 		end
+	elseif inst.components.container ~= nil then
+        --If not burnt, we might still have some overstacks, just not enough to "collapse"
+        inst.components.container:DropEverything()
 	end
 
 	--fallback to default
@@ -343,6 +354,9 @@ local function regular_OnBurnt(inst)
 			regular_ConvertToCollapsed(inst, true, true)
 			return
 		end
+	elseif inst.components.container ~= nil then
+        --We might still have some overstacks, just not enough to "collapse"
+        inst.components.container:DropEverything()
 	end
 
 	--fallback to default
@@ -370,6 +384,9 @@ local function regular_OnDecontructStructure(inst, caster)
 			inst.no_delete_on_deconstruct = true
 			return
 		end
+	elseif inst.components.container ~= nil then
+        --If not burnt, we might still have some overstacks, just not enough to "collapse"
+        inst.components.container:DropEverything()
 	end
 
 	--fallback to default

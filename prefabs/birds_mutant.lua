@@ -142,14 +142,16 @@ local function commonPreMain(inst)
         chirp = "moonstorm/creatures/mutated_crow/chirp",
         takeoff = "moonstorm/creatures/mutated_crow/take_off",
         attack = "moonstorm/creatures/mutated_crow/attack",
+        death = "moonstorm/creatures/mutated_crow/death",
     }
 
     --Initialize physics
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES
+	)
     inst.Physics:SetMass(1)
     inst.Physics:SetSphere(1)
 
@@ -177,6 +179,8 @@ end
 
 
 local function commonPostMain(inst)
+	inst.override_combat_fx_size = "tiny"
+
     inst:AddComponent("occupier")
 
     inst:AddComponent("eater")
@@ -271,6 +275,7 @@ local function spitterfn()
         takeoff = "moonstorm/creatures/mutated_robin/take_off",
         attack = "moonstorm/creatures/mutated_robin/attack",
         spit_pre = "moonstorm/creatures/mutated_robin/bile_shoot_spin_pre",
+        death = "moonstorm/creatures/mutated_robin/death",
     }
 
 	inst:AddTag("bird_mutant_spitter")

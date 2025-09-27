@@ -52,6 +52,7 @@ function RabbitBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, HunterParams, AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
         RunAway(self.inst, HunterParams, SEE_PLAYER_DIST, STOP_RUN_DIST, nil, true),
         EventNode(self.inst, "gohome",

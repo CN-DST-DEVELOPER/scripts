@@ -14,9 +14,10 @@ local events=
 {
 	CommonHandlers.OnSleep(),
 	CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
 	EventHandler("doattack", function(inst)
 		if inst.components.health and not inst.components.health:IsDead()
-			and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then
+			and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
 			if not inst.mother_dead then
 				inst.sg:GoToState("attack")
 			else
@@ -235,7 +236,7 @@ local states=
 
 	State{
 		name = "flyaway",
-		tags = {"flight", "busy"},
+		tags = { "flight", "busy", "noelectrocute" },
 		onenter = function(inst)
 			inst.Physics:Stop()
 			inst.DynamicShadow:Enable(false)
@@ -270,7 +271,7 @@ local states=
 
 	State{
 		name = "hatch",
-		tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
 
 		onenter = function(inst)
 			local angle = math.random()*TWOPI
@@ -317,7 +318,7 @@ local states=
 
 	State{
 		name = "spin_loop",
-		tags = {"busy", "spinning"},
+		tags = { "busy", "spinning", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.DynamicShadow:SetSize(2.5,1.25)
@@ -425,6 +426,7 @@ local states=
 }
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddWalkStates(states,
 {
 	walktimeline =
@@ -467,4 +469,3 @@ CommonStates.AddSleepStates(states,
 })
 
 return StateGraph("mossling", states, events, "idle", actionhandlers)
-

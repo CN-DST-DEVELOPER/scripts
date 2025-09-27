@@ -32,11 +32,12 @@ local function CreatePhysicsEntity(rad)
     inst.entity:AddPhysics()
     inst.Physics:SetMass(999999)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.ITEMS,
+		COLLISION.CHARACTERS,
+		COLLISION.GIANTS
+	)
     inst.Physics:SetCapsule(rad, 2)
 
     inst:DoTaskInTime(0, inst.Remove)
@@ -511,10 +512,11 @@ local function base_fn()
     inst.entity:AddPhysics()
     inst.Physics:SetMass(0)
     inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-    --inst.Physics:CollidesWith(COLLISION.GIANTS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.ITEMS,
+		COLLISION.CHARACTERS
+		--COLLISION.GIANTS
+	)
     inst.Physics:SetCapsule(PHYS_RAD_SML, 2)
     ----------------------------------------------------
 

@@ -3,6 +3,15 @@ local function OnEnabledDirty(inst)
     if not self.enabled:value() then
         self:StopTargeting()
     end
+    local owner = ThePlayer
+	--V2C: owner.replica.inventory added because on clients this can be triggered on spawn/load ahead of owner replica
+	--     (IsGrandOwner will ref owner.replica.inventory)
+	if owner and owner.components.playercontroller and owner.replica.inventory then
+        local inventoryitem = self.inst.replica.inventoryitem
+        if inventoryitem ~= nil and inventoryitem:IsGrandOwner(owner) then
+            owner.components.playercontroller:RefreshReticule(self.inst)
+        end
+    end
 end
 
 local AOETargeting = Class(function(self, inst)

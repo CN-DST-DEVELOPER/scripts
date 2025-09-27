@@ -86,9 +86,10 @@ local function fn()
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.OBSTACLES)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.WORLD)
-    phys:CollidesWith(COLLISION.OBSTACLES)
+	phys:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES
+	)
     phys:SetCylinder(0.70, 2)
 
     local waterphysics = inst:AddComponent("waterphysics")
@@ -178,9 +179,10 @@ local function monkeyfn()
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.OBSTACLES)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.WORLD)
-    phys:CollidesWith(COLLISION.OBSTACLES)
+	phys:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES
+	)
     phys:SetCylinder(0.70, 2)
 
     local waterphysics = inst:AddComponent("waterphysics")

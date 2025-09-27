@@ -212,6 +212,10 @@ local function onremove(inst)
     inst:ClearTinkerTarget()
 end
 
+local SCRAPBOOK_OVERRIDEDATA = {
+    {"swap_object", "cutless", "swap_cutless"},
+    {"swap_hat", "hat_monkey_small", "swap_hat"}
+}
 local function fn()
     local inst = CreateEntity()
 
@@ -238,8 +242,6 @@ local function fn()
     inst.AnimState:OverrideSymbol("fx_water_spray", "splash_water_rot", "fx_water_spray")
 
     inst.AnimState:Hide("ARM_carry")
-    inst.scrapbook_hide = {"ARM_carry"}
-    inst.scrapbook_specialinfo = "POWDERMONKEY"
 
     inst:AddTag("character")
     inst:AddTag("monkey")
@@ -256,12 +258,16 @@ local function fn()
 
     inst.speech_override_fn = speech_override_fn
 
-    inst.scrapbook_removedeps = {"oar_monkey"}
-
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    --inst.scrapbook_hide = {"ARM_carry"}
+    inst.scrapbook_bb_y_extra = 25
+    inst.scrapbook_specialinfo = "POWDERMONKEY"
+    inst.scrapbook_removedeps = {"oar_monkey"}
+    inst.scrapbook_overridedata = SCRAPBOOK_OVERRIDEDATA
 
     inst.soundtype = ""
 

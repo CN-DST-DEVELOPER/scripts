@@ -89,6 +89,34 @@ function MapRecorder:TeachMap(target)
     return true
 end
 
+function MapRecorder:IsTileSeeableInRecordedMap(target, tx, ty)
+    if not self:HasData() then
+        return false
+    end
+
+    local MapExplorer = GetMapExplorer(target)
+    if MapExplorer == nil then
+        return false
+    end
+
+    -- NOTES(JBK): This function is expensive and if multiple points are needed to be checked refactor into a table of points.
+    return MapExplorer:IsTileSeeableInRecordedMap(self.mapdata, tx, ty)
+end
+
+function MapRecorder:TransferComponent(newinst)
+    local maprecorder = newinst.components.maprecorder
+    maprecorder.mapdata = self.mapdata
+    maprecorder.mapsession = self.mapsession
+    maprecorder.maplocation = self.maplocation
+    maprecorder.mapauthor = self.mapauthor
+    maprecorder.mapday = self.mapday
+    if maprecorder:HasData() then
+        if maprecorder.ondatachangedfn ~= nil then
+            maprecorder.ondatachangedfn(newinst)
+        end
+    end
+end
+
 function MapRecorder:OnSave()
     return {
         mapdata = self.mapdata,

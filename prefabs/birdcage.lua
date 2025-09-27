@@ -21,6 +21,10 @@ local prefabs =
     "canary",
     "guano",
     "rottenegg",
+    "mutatedbird",
+    "bird_mutant",
+    "bird_mutant_spitter",
+    "purebrilliance",
 }
 
 local invalid_foods =
@@ -31,6 +35,7 @@ local invalid_foods =
     -- "monstermeat",
     -- "cookedmonstermeat",
     -- "monstermeat_dried",
+	"woby_treat",
 }
 
 local CAGE_STATES =
@@ -46,7 +51,12 @@ local CAGE_STATES =
 local BUILD_OVERRIDES =
 {
     canary_poisoned = "canary",
+    mutatedbird = "bird_lunar",
 }
+
+local function GetBird(inst)
+    return (inst.components.occupiable and inst.components.occupiable:GetOccupant()) or nil
+end
 
 local function SetBirdType(inst, bird)
     if inst.bird_type then
@@ -54,10 +64,23 @@ local function SetBirdType(inst, bird)
     end
     inst.bird_type = BUILD_OVERRIDES[bird] or bird
     inst.AnimState:AddOverrideBuild(inst.bird_type.."_build")
+
+    local bird_inst = GetBird(inst)
+    if bird_inst then
+        if bird_inst.UpdateBrillianceVisual then
+            bird_inst:UpdateBrillianceVisual(inst)
+        end
+    end
 end
 
 local function SetCageState(inst, state)
     inst.CAGE_STATE = state
+
+    if state ~= CAGE_STATES.FULL then
+        inst.AnimState:ClearSymbolBloom("bird_gem")
+        inst.AnimState:SetSymbolLightOverride("bird_gem", 0)
+        inst.AnimState:SetSymbolLightOverride("crow_beak", 0)
+    end
 end
 
 --Only use for hit and idle anims
@@ -70,27 +93,38 @@ local function PushStateAnim(inst, anim, loop)
     inst.AnimState:PushAnimation(anim..inst.CAGE_STATE, loop)
 end
 
-local function GetBird(inst)
-    return (inst.components.occupiable and inst.components.occupiable:GetOccupant()) or nil
-end
-
 local function GetHunger(bird)
     return (bird and bird.components.perishable and bird.components.perishable:GetPercent()) or 1
 end
 
 local function DigestFood(inst, food)
-    if food.components.edible.foodtype == FOODTYPE.MEAT then
+    --NOTE (Omar): 
+    -- Reminder that food is not valid at this point.
+    -- So don't call any engine functions or any other functions that check for validity
+    local bird = GetBird(inst)
+
+    if bird and bird:HasTag("bird_mutant_rift") then
+        if food.components.edible.foodtype == FOODTYPE.LUNAR_SHARDS then
+            if food.prefab == "moonglass_charged" then --Can't be a tag check
+                if bird.do_drop_brilliance then
+                    inst.components.lootdropper:SpawnLootPrefab("purebrilliance")
+                    bird.do_drop_brilliance = nil
+                end
+            else
+                --inst.components.lootdropper:SpawnLootPrefab("")
+            end
+        end
+    elseif food.components.edible.foodtype == FOODTYPE.MEAT then
         --If the food is meat:
             --Spawn an egg.
-        if inst.components.occupiable and inst.components.occupiable:GetOccupant() and inst.components.occupiable:GetOccupant():HasTag("bird_mutant") then
+        if bird and bird:HasTag("bird_mutant") then
             inst.components.lootdropper:SpawnLootPrefab("rottenegg")
         else
             inst.components.lootdropper:SpawnLootPrefab("bird_egg")
         end
     else
-        if inst.components.occupiable and inst.components.occupiable:GetOccupant() and inst.components.occupiable:GetOccupant():HasTag("bird_mutant") then
+        if bird and bird:HasTag("bird_mutant") then
             inst.components.lootdropper:SpawnLootPrefab("spoiled_food")
-
         else
             local seed_name = string.lower(food.prefab .. "_seeds")
             if Prefabs[seed_name] ~= nil then
@@ -107,29 +141,41 @@ local function DigestFood(inst, food)
     end
 
     --Refill bird stomach.
-    local bird = GetBird(inst)
     if bird and bird:IsValid() and bird.components.perishable then
         bird.components.perishable:SetPercent(1)
     end
 end
 
 local function ShouldAcceptItem(inst, item)
+    local bird = GetBird(inst)
+
     local seed_name = string.lower(item.prefab .. "_seeds")
 
-    local can_accept = item.components.edible
+    local item_edible = item.components.edible
+
+    local can_accept = item_edible
         and (Prefabs[seed_name]
         or item.prefab == "seeds"
         or string.match(item.prefab, "_seeds")
-        or item.components.edible.foodtype == FOODTYPE.MEAT)
+        or item_edible.foodtype == FOODTYPE.MEAT)
 
     if table.contains(invalid_foods, item.prefab) then
         can_accept = false
+    end
+
+    if bird and bird:HasTag("bird_mutant_rift") then
+        can_accept = (item_edible and item_edible.foodtype == FOODTYPE.LUNAR_SHARDS) or false -- We only accept shards here.
+
+        if bird:IsOnBrillianceCooldown() and item.prefab == "moonglass_charged" then --But no infused if we're on cd. Bit too full for any more!
+            can_accept = false
+        end
     end
 
     return can_accept
 end
 
 local function OnGetItem(inst, giver, item)
+    local bird = GetBird(inst)
     --If you're sleeping, wake up.
     if inst.components.sleeper and inst.components.sleeper:IsAsleep() then
         inst.components.sleeper:WakeUp()
@@ -137,6 +183,7 @@ local function OnGetItem(inst, giver, item)
 
     if item.components.edible ~= nil and
         (   item.components.edible.foodtype == FOODTYPE.MEAT
+            or item.components.edible.foodtype == FOODTYPE.LUNAR_SHARDS
             or item.prefab == "seeds"
             or string.match(item.prefab, "_seeds")
             or Prefabs[string.lower(item.prefab .. "_seeds")] ~= nil
@@ -148,6 +195,16 @@ local function OnGetItem(inst, giver, item)
         inst.AnimState:PushAnimation("peck")
         inst.AnimState:PushAnimation("hop")
         PushStateAnim(inst, "idle", true)
+
+        -- We have to do this logic instantly so the player doesn't feed too many shards before the task in time
+        if bird and bird:HasTag("bird_mutant_rift") and item.prefab == "moonglass_charged" then
+            bird._infused_eaten = bird._infused_eaten + 1
+            
+            if bird._infused_eaten >= TUNING.RIFT_BIRD_EAT_COUNT_FOR_BRILLIANCE then
+                bird:PutOnBrillianceCooldown(inst)
+                bird.do_drop_brilliance = true
+            end
+        end
         --Digest Food in 60 frames.
         inst:DoTaskInTime(60 * FRAMES, DigestFood, item)
     end
@@ -261,10 +318,13 @@ local function OnOccupied(inst, bird)
     SetCageState(inst, CAGE_STATES.FULL)
 
     --Add the sleeper component & initialize
-    inst:AddComponent("sleeper")
-    inst.components.sleeper.watchlight = true
-    inst.components.sleeper:SetSleepTest(ShouldSleep)
-    inst.components.sleeper:SetWakeTest(ShouldWake)
+    -- Only if the bird can actually sleep!
+    if bird.components.sleeper then
+        inst:AddComponent("sleeper")
+        inst.components.sleeper.watchlight = true
+        inst.components.sleeper:SetSleepTest(ShouldSleep)
+        inst.components.sleeper:SetWakeTest(ShouldWake)
+    end
 
     --Enable the trader component
     inst.components.trader:Enable()
@@ -360,6 +420,9 @@ local function OnBirdStarve(inst, bird)
     SetCageState(inst, CAGE_STATES.DEAD)
 
     inst.AnimState:PlayAnimation("death")
+    if bird.sounds and bird.sounds.death then
+        inst.SoundEmitter:PlaySound(bird.sounds.death)
+    end
     PushStateAnim(inst, "idle", false)
 
     -- NOTES(JBK): Needed here because OnEmptied is called before this callback which clears the build override.
@@ -438,6 +501,11 @@ local function OnLoseShelfItem(inst, taker, item)
     end
 end
 
+local function GetBirdSanityAura(inst, observer)
+    local bird = GetBird(inst)
+    return bird and bird.components.sanityaura and bird.components.sanityaura:GetBaseAura(observer) or 0
+end
+
 local function OnSave(inst, data)
     data.CAGE_STATE = inst.CAGE_STATE
     data.bird_type = inst.bird_type
@@ -514,6 +582,9 @@ local function fn()
     --trader (from trader component) added to pristine state for optimization
     --inst:AddTag("trader")
 
+    --sanityaura (from sanityaura component) added to pristine state for optimization
+    inst:AddTag("sanityaura")
+
     MakeSnowCoveredPristine(inst)
 
     inst.entity:SetPristine()
@@ -545,6 +616,9 @@ local function fn()
     inst.components.trader.onrefuse = OnRefuseItem
     inst.components.trader:Disable()
 
+    inst:AddComponent("sanityaura")
+    inst.components.sanityaura.aurafn = GetBirdSanityAura
+
     inst:AddComponent("inventory")
     inst.components.inventory.maxslots = 1
 
@@ -553,6 +627,7 @@ local function fn()
     inst.components.shelf:SetOnTakeItem(OnLoseShelfItem)
 
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountLarge(inst)
 
     inst:ListenForEvent("onbuilt", OnBuilt)
     inst:ListenForEvent("gotosleep", GoToSleep)

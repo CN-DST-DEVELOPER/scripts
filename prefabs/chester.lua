@@ -79,7 +79,10 @@ local function OnOpen(inst)
 end
 
 local function OnClose(inst)
-    if not inst.components.health:IsDead() and inst.sg.currentstate.name ~= "transition" then
+	if not inst.components.health:IsDead() and
+		inst.sg.currentstate.name ~= "transition" and
+		not inst.sg:HasStateTag("electrocute")
+	then
 		inst.sg.statemem.closing = true
         inst.sg:GoToState("close")
     end
@@ -602,10 +605,11 @@ local function create_chester()
 
     MakeCharacterPhysics(inst, 75, .5)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.WORLD)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.CHARACTERS
+	)
 
     inst:AddTag("companion")
     inst:AddTag("character")
@@ -614,6 +618,7 @@ local function create_chester()
     inst:AddTag("notraptrigger")
     inst:AddTag("noauradamage")
     inst:AddTag("devourable")
+    inst:AddTag("NOBLOCK")
     
 
     inst.MiniMapEntity:SetIcon("chester.png")
@@ -687,7 +692,6 @@ local function create_chester()
     inst.sounds = sounds
 
     inst:SetStateGraph("SGchester")
-    inst.sg:GoToState("idle")
 
     inst:SetBrain(brain)
 

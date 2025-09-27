@@ -3,6 +3,7 @@ require "behaviours/chaseandattack"
 require "behaviours/runaway"
 require "behaviours/leash"
 require "behaviours/wander"
+require "behaviours/avoidelectricfence"
 local BrainCommon = require("brains/braincommon")
 
 local BeeGuardBrain = Class(Brain, function(self, inst)
@@ -33,6 +34,14 @@ end
 
 local function ShouldPanic(self)
     if BrainCommon.ShouldTriggerPanic(self.inst) then
+        self._shouldchase = false
+        return true
+    end
+    return false
+end
+
+local function ShouldAvoidElectricFence(self)
+    if BrainCommon.ShouldAvoidElectricFence(self.inst) then
         self._shouldchase = false
         return true
     end
@@ -85,6 +94,8 @@ function BeeGuardBrain:OnStart()
     {
         WhileNode(function() return ShouldPanic(self) end, "Panic",
             Panic(self.inst)),
+        WhileNode(function() return ShouldAvoidElectricFence(self) end, "AvoidElectricFence",
+            AvoidElectricFence(self.inst)),
         WhileNode(function() return ShouldChase(self) end, "BreakFormation",
             PriorityNode({
                 WhileNode(function() return ShouldDodge(self.inst) end, "Dodge",

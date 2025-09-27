@@ -342,7 +342,9 @@ local function OnWorked(inst)
 end
 
 local function OnWorkFinished(inst)
-	if inst.components.burnable then
+	if inst.pendingremoval then
+		return
+	elseif inst.components.burnable then
 		if inst.components.burnable:IsBurning() then
 			inst.components.burnable:Extinguish()
 		end
@@ -367,6 +369,7 @@ local function OnWorkFinished(inst)
 	inst.components.powerload:SetLoad(0)
 	inst.components.workable:SetWorkable(false)
 	inst:AddTag("NOCLICK")
+	inst.pendingremoval = true
 	inst.persists = false
 	SetPowered(inst, false)
 
@@ -405,6 +408,9 @@ local function OnBurnt(inst)
 end
 
 local function OnDismantle(inst)--, doer)
+	if inst.pendingremoval then
+		return
+	end
 	ChangeToItem(inst)
 
 	if inst:IsAsleep() then
@@ -426,6 +432,7 @@ local function OnDismantle(inst)--, doer)
 		end
 		inst.components.burnable.canlight = false
 	end
+	inst.pendingremoval = true
 	inst.persists = false
 	SetPowered(inst, false)
 

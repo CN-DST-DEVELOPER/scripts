@@ -26,6 +26,15 @@ local function CalcNewSize()
 end
 
 local function flop(inst)
+    if not inst.components.inventoryitem.canbepickedup then
+		if inst.flop_task ~= nil then
+			inst.flop_task:Cancel()
+			inst.flop_task = nil
+		end
+
+		return -- Don't flop if we can't be picked up, this likely means we're in a special place/state.
+	end
+
 	local num = math.random(2)
 	for i = 1, num do
 		inst.AnimState:PushAnimation("idle", false)

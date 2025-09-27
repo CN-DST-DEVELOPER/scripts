@@ -35,7 +35,6 @@ local function fn()
     inst.components.edible.healthvalue = TUNING.HEALING_SMALL
     inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
     inst.components.edible.sanityvalue = TUNING.SANITY_SMALL
-    -- inst.components.edible.foodtype = "MEAT"
 
     inst:AddComponent("tradable")
 

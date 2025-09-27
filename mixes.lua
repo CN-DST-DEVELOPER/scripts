@@ -139,6 +139,20 @@ TheMixer:AddNewMix("moonstorm", 2, 8,
     [slurp] = 0,
 })
 
+TheMixer:AddNewMix("minigamescreen", 1, 4,
+{
+	[amb] = 0.1,
+	[cloud] = 0.1,
+	[music] = 1,
+	[voice] = 0.3,
+	[movement] = 0.3,
+	[creature] = 0.3,
+	[player] = 0.3,
+	[HUD] = 1,
+	[sfx] = 0.3,
+	[slurp] = 0,
+})
+
 --------------------------------------------------------------------------
 
 --quagmire uses the same one as lavaarena
@@ -197,3 +211,36 @@ TheMixer:AddNewMix("flying", 2, 3,
     [sfx] = .2,
     [slurp] = 0,
 })
+
+--------------------------------------------------------------------------
+--Celestial Scion
+
+TheMixer:AddNewMix("supernova_charging", 0.6, 2,
+{
+	[amb] = 0.25,
+	[cloud] = 0,
+	[music] = 0.25,
+	[voice] = 1,
+	[movement] = 1,
+	[creature] = 1,
+	[player] = 1,
+	[HUD] = 1,
+	[sfx] = 1,
+	[slurp] = 1,
+})
+
+TheMixer:AddNewMix("supernova", 0, 3,
+{
+	[amb] = 0.1,
+	[cloud] = 0,
+	[music] = 0,
+	[voice] = 1,
+	[movement] = 1,
+	[creature] = 1,
+	[player] = 1,
+	[HUD] = 1,
+	[sfx] = 1,
+	[slurp] = 1,
+})
+
+--------------------------------------------------------------------------

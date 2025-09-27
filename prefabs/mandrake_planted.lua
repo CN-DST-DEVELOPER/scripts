@@ -63,6 +63,13 @@ local function fn()
 
 	inst.replant = replant
 
+	MakeSmallBurnable(inst)
+	MakeSmallPropagator(inst)
+
+	AddToRegrowthManager(inst)
+	inst:RemoveEventCallback("onremove", inst.OnStartRegrowth) --No regrowth on remove!
+	inst:ListenForEvent("onburnt", inst.OnStartRegrowth) --Regrowth on burn is fine!
+
 	return inst
 end
 

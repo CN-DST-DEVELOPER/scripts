@@ -21,9 +21,6 @@ local HUNT_UPDATE = 2
 local MIN_TRACKS = 6
 local MAX_TRACKS = 12
 
-local MONSTER_ANGLE_MIN = PI / 10
-local MONSTER_ANGLE_MAX = PI / 14
-
 local MONSTER_PRINTS_ANGLE_DEVIATION = PI / 7
 
 --------------------------------------------------------------------------
@@ -37,6 +34,7 @@ self.inst = inst
 local _activeplayers = {}
 local _activehunts = {}
 local _wargshrines = SourceModifierList(inst, false, SourceModifierList.boolean)
+local _snakeshrines = SourceModifierList(inst, false, SourceModifierList.boolean)
 
 --------------------------------------------------------------------------
 --[[ Private member functions ]]
@@ -204,7 +202,7 @@ local function SpawnDirt(pt, hunt)
         end
         hunt.lastdirt = dirt
         hunt.lastdirttime = GetTime()
-        
+
         if hunt.ambush_track_num ~= nil and hunt.ambush_track_num == hunt.trackspawned then
             local day = TheWorld.state.cycles
             local num_bats = math.min(3 + math.floor(day/35), 6)
@@ -213,7 +211,7 @@ local function SpawnDirt(pt, hunt)
             end
             hunt.ambush_track_num = nil
         end
-        
+
         local function ondirtremove()
             hunt.lastdirt = nil
             ResetHunt(hunt)
@@ -369,8 +367,14 @@ end
 
 local ALTERNATE_BEASTS = {"warg", "spat"}
 local function GetHuntedBeast(hunt, spawn_pt)
-    if self:IsWargShrineActive() then
+    local wargs_active = self:IsWargShrineActive()
+    local worms_active = self:IsSnakeShrineActive()
+    if wargs_active and worms_active then
+        return (math.random() > 0.5 and "claywarg") or "yots_worm_lantern_spawner"
+    elseif wargs_active then
         return "claywarg"
+    elseif worms_active then
+        return "yots_worm_lantern_spawner"
     end
 
     -- NOTES(JBK): Very high priority for goats with all of the random elements in play.
@@ -379,18 +383,12 @@ local function GetHuntedBeast(hunt, spawn_pt)
     end
 
     if hunt.monster_track_num then
-        if ShouldDoHuntedWargTrack() then
-            return "warg"
-        end
-
-        return GetRandomItem(ALTERNATE_BEASTS)
+        return (ShouldDoHuntedWargTrack() and "warg")
+            or GetRandomItem(ALTERNATE_BEASTS)
+    else
+        return (TheWorld.state.iswinter and "koalefant_winter")
+            or "koalefant_summer"
     end
-
-    if TheWorld.state.iswinter then
-        return "koalefant_winter"
-    end
-
-    return "koalefant_summer"
 end
 
 local function SpawnHuntedBeast(hunt, pt, doer)
@@ -427,7 +425,12 @@ local function SpawnHuntedBeast(hunt, pt, doer)
 
     local beastprefab = GetHuntedBeast(hunt, spawn_pt)
     local huntedbeast = SpawnPrefab(beastprefab)
-    huntedbeast.Physics:Teleport(spawn_pt:Get())
+    if huntedbeast.Physics then
+        huntedbeast.Physics:Teleport(spawn_pt:Get())
+    elseif huntedbeast.Transform then
+        huntedbeast.Transform:SetPosition(spawn_pt:Get())
+    end
+
     -- NOTES(JBK): Let each prefab handle the action in the event specifically.
     huntedbeast:PushEvent("spawnedforhunt", {beast = beastprefab, pt = spawn_pt, action = action, score = hunt.score})
 
@@ -490,6 +493,14 @@ local function OnWargShrineDeactivated(src, shrine)
     _wargshrines:RemoveModifier(shrine)
 end
 
+local function OnSnakeShrineActivated(src, shrine)
+    _snakeshrines:SetModifier(shrine, true)
+end
+
+local function OnSnakeShrineDeactivated(src, shrine)
+    _snakeshrines:RemoveModifier(shrine)
+end
+
 --------------------------------------------------------------------------
 --[[ Initialization ]]
 --------------------------------------------------------------------------
@@ -502,6 +513,8 @@ inst:ListenForEvent("ms_playerjoined", OnPlayerJoined, TheWorld)
 inst:ListenForEvent("ms_playerleft", OnPlayerLeft, TheWorld)
 inst:ListenForEvent("wargshrineactivated", OnWargShrineActivated, TheWorld)
 inst:ListenForEvent("wargshrinedeactivated", OnWargShrineDeactivated, TheWorld)
+inst:ListenForEvent("ms_snakeshrineactivated", OnSnakeShrineActivated, TheWorld)
+inst:ListenForEvent("ms_snakeshrinedeactivated", OnSnakeShrineDeactivated, TheWorld)
 
 --------------------------------------------------------------------------
 --[[ Public member functions ]]
@@ -555,6 +568,10 @@ end
 
 function self:IsWargShrineActive()
     return _wargshrines:Get() and IsSpecialEventActive(SPECIAL_EVENTS.YOTV)
+end
+
+function self:IsSnakeShrineActive()
+    return _snakeshrines:Get() and IsSpecialEventActive(SPECIAL_EVENTS.YOTS)
 end
 
 --------------------------------------------------------------------------

@@ -9,7 +9,6 @@ function Custombuildmanager:refreshart()
         for s,symbol in ipairs(self.groups[g])do
             local build = self.current[g]
             if build then
-                print(symbol,build)
                 if not self.canswapsymbol or self.canswapsymbol(self.inst) then
                     self.inst.AnimState:OverrideSymbol(symbol, build, symbol)
                 end

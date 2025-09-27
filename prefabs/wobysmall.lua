@@ -1,4 +1,212 @@
-local brain = require("brains/crittersbrain")
+local WobyCommon = require("prefabs/wobycommon")
+
+local assets =
+{
+	Asset("ANIM", "anim/woby_big_shadow_build.zip"),
+	Asset("ANIM", "anim/pupington_basic.zip"),
+	Asset("ANIM", "anim/pupington_emotes.zip"),
+	Asset("ANIM", "anim/pupington_traits.zip"),
+	Asset("ANIM", "anim/pupington_jump.zip"),
+	Asset("ANIM", "anim/pupington_action.zip"),
+
+	Asset("ANIM", "anim/pupington_woby_build.zip"),
+	Asset("ANIM", "anim/pupington_woby_lunar_build.zip"),
+	Asset("ANIM", "anim/pupington_woby_shadow_build.zip"),
+	Asset("ANIM", "anim/pupington_transform.zip"),
+	Asset("ANIM", "anim/woby_big_build.zip"),
+	Asset("ANIM", "anim/woby_big_lunar_build.zip"),
+	Asset("ANIM", "anim/woby_big_shadow_build.zip"),
+
+	Asset("ANIM", "anim/spell_icons_woby.zip"),
+	Asset("ANIM", "anim/ui_woby_3x3.zip"),
+
+	Asset("ANIM", "anim/woby_rack.zip"),
+	Asset("ANIM", "anim/wilson_fx.zip"),
+
+	Asset("SCRIPT", "scripts/prefabs/wobycommon.lua"),
+}
+
+local prefabs =
+{
+	"wobybig",
+	"woby_rack_container",
+	"pet_hunger_classified",
+	"woby_commands_classified",
+}
+
+local brain = require("brains/wobysmallbrain")
+
+-------------------------------------------------------------------------------
+
+--This applies wobysmall alignment build or overrides
+local function _ApplyAlignmentOverrides_Internal(inst, alignment, skin_build)
+	local base_name = "pupington_woby"
+	if alignment then
+		base_name = base_name.."_"..alignment
+	end
+	local base_build = base_name.."_build"
+	if skin_build then
+		if alignment then
+			for _, symbol in ipairs(WobyCommon.SMALL_SYMBOLS) do
+				inst.AnimState:OverrideItemSkinSymbol(symbol, skin_build, symbol, inst.GUID, base_build)
+			end
+		else
+			--Lunar/shadow builds have the same symbols as the base build
+			inst.AnimState:ClearOverrideBuild(base_build)
+		end
+	else
+        inst.AnimState:ClearOverrideBuild(base_build)
+		inst.AnimState:SetBuild(base_build)
+	end
+end
+
+--This applies wobybig normal/alignment overrides
+local function _ApplyBigBuildOverrides_Internal(inst, alignment, skin_build)
+	local base_name = "woby_big"
+	if alignment then
+		base_name = base_name.."_"..alignment
+	end
+	local base_build = base_name.."_build"
+	if skin_build then
+		skin_build = skin_build:gsub("pupington_woby", "woby_big")
+		for _, symbol in ipairs(WobyCommon.BIG_SYMBOLS) do
+			inst.AnimState:OverrideItemSkinSymbol(symbol, skin_build, symbol, inst.GUID, base_build)
+		end
+	else
+		inst.AnimState:AddOverrideBuild(base_build)
+	end
+end
+
+local function ShowRackItem(inst, slot, name, build)
+	inst.AnimState:OverrideSymbol("swap_dried"..tostring(slot), build, name)
+	inst.AnimState:OverrideSymbol("rope"..tostring(slot), "woby_rack", "rope")
+end
+
+local function HideRackItem(inst, slot)
+	inst.AnimState:ClearOverrideSymbol("swap_dried"..tostring(slot))
+	inst.AnimState:OverrideSymbol("rope"..tostring(slot), "woby_rack", "rope_empty")
+end
+
+--Used by sg: this applies wobybig normal/alignment overrides during transform state
+local function ApplyBigBuildOverrides(inst)
+	if not inst._hasbigbuild then
+		_ApplyBigBuildOverrides_Internal(inst, inst.alignment, inst:GetSkinBuild())
+		if inst.components.wobyrack then
+			inst.components.wobyrack:SetShowItemFn(ShowRackItem)
+			inst.components.wobyrack:SetHideItemFn(HideRackItem)
+			inst.AnimState:AddOverrideBuild("woby_rack")
+			for i = 1, 3 do
+				local item, name, build = inst.components.wobyrack:GetItemInSlot(i)
+				if item then
+					inst.AnimState:OverrideSymbol("swap_dried"..tostring(i), build, name)
+					inst.AnimState:OverrideSymbol("rope"..tostring(i), "woby_rack", "rope")
+				else
+					inst.AnimState:OverrideSymbol("rope"..tostring(i), "woby_rack", "rope_empty")
+				end
+			end
+		end
+		inst._hasbigbuild = true
+	end
+end
+
+--Used by prefabskin.lua
+local function OnWobySkinChanged(inst, skin_build)
+	if inst._hasbigbuild then
+		_ApplyBigBuildOverrides_Internal(inst, inst.alignment, skin_build)
+	end
+	_ApplyAlignmentOverrides_Internal(inst, inst.alignment, skin_build)
+
+	if inst.pet_hunger_classified then
+		inst.pet_hunger_classified:SetBuild(skin_build and skin_build:gsub("pupington_woby", "status_woby"):gsub("_shadow", ""):gsub("_lunar", "") or nil)
+	end
+end
+
+local function SetAlignmentBuild(inst, alignment, showfx)
+	if inst.alignment ~= alignment then
+		if inst.pet_hunger_classified then
+			inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.LUNAR, alignment == "lunar")
+			inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.SHADOW, alignment == "shadow")
+		end
+		inst.alignment = alignment
+        local skin_build = inst:GetSkinBuild()
+        if skin_build then
+            skin_build = skin_build:gsub("_lunar", ""):gsub("_shadow", "")
+            if inst.alignment then
+                skin_build = skin_build .. "_" .. inst.alignment
+            end
+        end
+        TheSim:ReskinEntity(inst.GUID, inst.skinname, skin_build, nil, inst._playerlink.userid)
+        inst:OnWobySkinChanged(skin_build)
+		if showfx and alignment then
+			if alignment == "lunar" then
+				WobyCommon.DoLunarAlignFx(inst)
+			elseif alignment == "shadow" then
+				WobyCommon.DoShadowAlignFx(inst)
+			end
+			inst.sg:HandleEvent("showalignmentchange")
+		end
+	end
+end
+
+-------------------------------------------------------------------------------
+--Rack
+
+local function OnAnyOpen(inst, data)
+	if data and data.doer and data.doer == inst._playerlink then
+		inst.components.wobyrack:GetContainer():Open(data.doer)
+	end
+end
+
+local function OnAnyClose(inst, data)
+	if data and data.doer then
+		inst.components.wobyrack:GetContainer():Close(data.doer)
+	end
+end
+
+local function EnableRack(inst, enable, showanim)
+	if enable then
+		if inst.components.wobyrack == nil then
+			inst:AddComponent("wobyrack")
+			inst.components.container.onanyopenfn = OnAnyOpen
+			inst.components.container.onanyclosefn = OnAnyClose
+			inst.AnimState:OverrideSymbol("swap_rack", "woby_rack", "swap_rack")
+			if inst._hasbigbuild then
+				inst.AnimState:AddOverrideBuild("woby_rack")
+				for i = 1, 3 do
+					inst.AnimState:OverrideSymbol("rope"..tostring(i), "woby_rack", "rope_empty")
+				end
+				inst.components.wobyrack:SetShowItemFn(ShowRackItem)
+				inst.components.wobyrack:SetHideItemFn(HideRackItem)
+			end
+			if inst.components.container:IsOpenedBy(inst._playerlink) then
+				inst.components.wobyrack:GetContainer():Open(inst._playerlink)
+			end
+			if showanim then
+				inst.sg:HandleEvent("showrack")
+			end
+		end
+	elseif inst.components.wobyrack then
+		inst.components.container.onanyopenfn = nil
+		inst.components.container.onanyclosefn = nil
+		inst:RemoveComponent("wobyrack")
+		inst.AnimState:ClearOverrideSymbol("swap_rack")
+		if inst._hasbigbuild then
+			inst.AnimState:ClearOverrideBuild("woby_rack")
+			for i = 1, 3 do
+				inst.AnimState:ClearOverrideSymbol("rope"..tostring(i))
+				inst.AnimState:ClearOverrideSymbol("swap_dried"..tostring(i))
+			end
+		end
+	end
+end
+
+local function OnPreLoad(inst, data, newents)
+	if data and data.wobyrack then
+		EnableRack(inst, true, false)
+	end
+end
+
+-------------------------------------------------------------------------------
 
 local WAKE_TO_FOLLOW_DISTANCE = 6
 local SLEEP_NEAR_LEADER_DISTANCE = 5
@@ -45,26 +253,100 @@ local function IsSuperCute(inst)
 	return true
 end
 
-local assets =
-{
-    Asset("ANIM", "anim/pupington_build.zip"),
-    Asset("ANIM", "anim/pupington_basic.zip"),
-    Asset("ANIM", "anim/pupington_emotes.zip"),
-    Asset("ANIM", "anim/pupington_traits.zip"),
-    Asset("ANIM", "anim/pupington_jump.zip"),
+local function HasEndurance(inst)
+	return inst._playerlink ~= nil
+		and inst._playerlink.components.skilltreeupdater ~= nil
+		and inst._playerlink.components.skilltreeupdater:IsActivated("walter_woby_endurance")
+end
 
-    Asset("ANIM", "anim/pupington_woby_build.zip"),
-    Asset("ANIM", "anim/pupington_transform.zip"),
-    Asset("ANIM", "anim/woby_big_build.zip"),
+local function RefreshAttunedSkills(inst, player, data)
+	--NOTE: could be activate or deactivate
+	--      data can be nil when called from LinkToPlayer or _onlostplayerlink
+	--      player can be nil when called from _onlostplayerlink
 
-    Asset("ANIM", "anim/ui_woby_3x3.zip"),
-}
+	local skilltreeupdater = player and player.components.skilltreeupdater
 
-local prefabs = {}
+	if data == nil or data.skill == "walter_woby_endurance" then
+		local hasendurance = skilltreeupdater ~= nil and skilltreeupdater:IsActivated("walter_woby_endurance")
+		if player then
+			--if player is nil (from _onlostplayerlink), these modifiers will already remove themselves
+			if hasendurance then
+				inst.components.hunger.burnratemodifiers:SetModifier(player, TUNING.SKILLS.WALTER.WOBY_ENDURANCE_HUNGER_RATE_MOD, "walter_woby_endurance")
+			else
+				inst.components.hunger.burnratemodifiers:RemoveModifier(player, "walter_woby_endurance")
+			end
+		end
+		if inst.pet_hunger_classified then
+			inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.ENDURANCE, hasendurance)
+		end
+	end
 
-local function LinkToPlayer(inst, player)
+	if player and (data == nil or data.skill == "walter_woby_lunar" or data.skill == "walter_woby_shadow") then
+		--if player is nil (from _onlostplayerlink), don't update woby's alignment since she is likely being despawned as well
+		local alignment = skilltreeupdater and (
+				(skilltreeupdater:IsActivated("walter_woby_lunar") and "lunar") or
+				(skilltreeupdater:IsActivated("walter_woby_shadow") and "shadow")
+			) or nil
+		local showfx = data ~= nil and player._PostActivateHandshakeState_Server == POSTACTIVATEHANDSHAKE.READY
+		SetAlignmentBuild(inst, alignment, showfx)
+	end
+
+	if player and (data == nil or data.skill == "walter_camp_wobyholder") then
+		--if player is nil (from _onlostplayerlink), don't update woby's rack since she is likely being despawned as well
+		local showanim = data ~= nil and player._PostActivateHandshakeState_Server == POSTACTIVATEHANDSHAKE.READY
+		EnableRack(inst, skilltreeupdater ~= nil and skilltreeupdater:IsActivated("walter_camp_wobyholder"), showanim)
+	end
+
+	if player and (data == nil or data.skill == "walter_woby_foraging") then
+		inst:UpdateOwnerNewStateListener(player)
+	end
+
+	WobyCommon.RefreshCommands(inst, player)
+end
+
+local function LinkToPlayer(inst, player, containerrestrictedoverride)
     inst._playerlink = player
     inst.components.follower:SetLeader(player)
+
+	if inst.pet_hunger_classified == nil then
+		inst.pet_hunger_classified = SpawnPrefab("pet_hunger_classified")
+		inst.pet_hunger_classified:InitializePetInst(inst)
+		inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.BIG, false)
+		inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.SPRINT_DRAIN, false)
+		inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.ENDURANCE, HasEndurance(inst))
+		inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.LUNAR, inst.alignment == "lunar")
+		inst.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.SHADOW, inst.alignment == "shadow")
+		local skin_build = inst:GetSkinBuild()
+		if skin_build then
+			inst.pet_hunger_classified:SetBuild(skin_build:gsub("pupington_woby", "status_woby"):gsub("_shadow", ""):gsub("_lunar", ""))
+		end
+		inst.pet_hunger_classified:AttachClassifiedToPetOwner(player)
+	else
+		assert(inst.pet_hunger_classified._parent == player)
+	end
+
+	if inst.woby_commands_classified == nil then
+		inst.woby_commands_classified = SpawnPrefab("woby_commands_classified")
+		inst.woby_commands_classified:InitializePetInst(inst)
+		inst.woby_commands_classified:AttachClassifiedToPetOwner(player)
+	else
+		assert(inst.woby_commands_classified._parent == player)
+	end
+
+	if containerrestrictedoverride ~= nil then --could be true or false
+		WobyCommon.RestrictContainer(inst, containerrestrictedoverride)
+	else
+		WobyCommon.RestrictContainer(inst, inst.woby_commands_classified:ShouldLockBag())
+	end
+
+	inst:ListenForEvent("onactivateskill_server", inst._onskillrefresh, player)
+	inst:ListenForEvent("ondeactivateskill_server", inst._onskillrefresh, player)
+
+	if player._PostActivateHandshakeState_Server == POSTACTIVATEHANDSHAKE.READY then
+		RefreshAttunedSkills(inst, player, nil)
+	else
+		inst:ListenForEvent("ms_skilltreeinitialized", inst._onskilltreeinitialized, player)
+	end
 
     inst:ListenForEvent("onremove", inst._onlostplayerlink, player)
 end
@@ -78,6 +360,14 @@ local function OnPlayerLinkDespawn(inst, forcedrop)
 			inst.components.container:DropEverything()
 		else
 			inst.components.container:DropEverythingWithTag("irreplaceable")
+		end
+	end
+
+	if inst.components.wobyrack then
+		if forcedrop or GetGameModeProperty("drop_everything_on_despawn") then
+			inst.components.wobyrack:GetContainer():DropEverything()
+		else
+			inst.components.wobyrack:GetContainer():DropEverythingWithTag("irreplaceable")
 		end
 	end
 
@@ -96,24 +386,106 @@ local function OnPlayerLinkDespawn(inst, forcedrop)
 end
 
 local function FinishTransformation(inst)
-    local items = inst.components.container:RemoveAllItems()
-	local player = inst._playerlink
-    local new_woby = ReplacePrefab(inst, "wobybig")
+	local x, y, z = inst.Transform:GetWorldPosition()
 
-    for i,v in ipairs(items) do
-        new_woby.components.container:GiveItem(v)
+	local items = {}
+	local numslots = inst.components.container:GetNumSlots()
+	for i = 1, numslots do
+		items[i] = inst.components.container:RemoveItemBySlot(i)
+	end
+
+	local rackitems, racknumslots, dryinginfo
+	if inst.components.wobyrack then
+		local container = inst.components.wobyrack:GetContainer()
+		dryinginfo = inst.components.wobyrack:GetDryingInfoSnapshot()
+		rackitems = {}
+		racknumslots = container:GetNumSlots()
+		for i = 1, racknumslots do
+			rackitems[i] = container:RemoveItemBySlot(i)
+		end
+	end
+
+	local wascontainerrestricted = inst.components.container.restrictedtag ~= nil
+
+	local player = inst._playerlink
+    local skin_build = inst:GetSkinBuild()
+    if skin_build then
+        skin_build = skin_build:gsub("pupington_woby", "woby_big")
+    end
+
+	if inst.pet_hunger_classified then
+		inst.pet_hunger_classified:DetachClassifiedFromPet(inst)
+	end
+	if inst.woby_commands_classified then
+		inst.woby_commands_classified:DetachClassifiedFromPet(inst)
+	end
+
+	local rot = inst.Transform:GetRotation()
+    local new_woby = ReplacePrefab(inst, "wobybig", skin_build, inst.skin_id)
+	new_woby.Transform:SetRotation(rot)
+	if new_woby.sg.currentstate.name == "idle" and new_woby.AnimState:IsCurrentAnimation("idle_loop") then
+		new_woby.sg.mem.recentlytransformed = true
+		new_woby.sg:GoToState("idle")
+	else
+		new_woby.AnimState:MakeFacingDirty() -- Not needed for clients.
+	end
+
+	--transfer pet_hunger_classified to the new prefab
+	if inst.pet_hunger_classified then
+		new_woby.pet_hunger_classified = inst.pet_hunger_classified
+		new_woby.pet_hunger_classified:InitializePetInst(new_woby)
+		new_woby.pet_hunger_classified:SetFlagBit(WobyCommon.FLAGBITS.BIG, true)
+	end
+	--transfer woby_commands_classified to the new prefab
+	if inst.woby_commands_classified then
+		new_woby.woby_commands_classified = inst.woby_commands_classified
+		new_woby.woby_commands_classified:InitializePetInst(new_woby)
+	end
+
+	for i = 1, numslots do
+		local item = items[i]
+		if item then
+			item.prevcontainer = nil
+			item.prevslot = nil
+
+			if not new_woby.components.container:GiveItem(item, i, nil, false) then
+				item.Transform:SetPosition(x, y, z)
+				if item.components.inventoryitem then
+					item.components.inventoryitem:OnDropped(true)
+				end
+			end
+		end
+    end
+
+    if inst.components.timer ~= nil then
+        inst.components.timer:TransferComponent(new_woby)
     end
 
 	if player ~= nil then
-		new_woby:LinkToPlayer(player)
+		new_woby:LinkToPlayer(player, wascontainerrestricted)
 	    player:OnWobyTransformed(new_woby)
 	end
-end
 
-local function OnOpen(inst)
-end
+	if rackitems then
+		local container = new_woby.components.wobyrack and new_woby.components.wobyrack:GetContainer() or nil
+		for i = 1, racknumslots do
+			local item = rackitems[i]
+			if item then
+				item.prevcontainer = nil
+				item.prevslot = nil
 
-local function OnClose(inst)
+				if not (container and container:GiveItem(item, i, nil, false)) then
+					item.Transform:SetPosition(x, y, z)
+					if item.components.inventoryitem then
+						item.components.inventoryitem:OnDropped(true)
+					end
+				end
+			end
+		end
+		if dryinginfo and new_woby.components.wobyrack then
+			new_woby.components.wobyrack:ApplyDryingInfoSnapshot(dryinginfo)
+		end
+	end
 end
 
 local function OnStarving(inst)
@@ -139,6 +511,165 @@ local function OnHungerDelta(inst, data)
     end
 end
 
+local function CustomFoodStatsMod(inst, health_delta, hunger_delta, sanity_delta, food, feeder)
+	if food and food.prefab == "woby_treat" and hunger_delta and hunger_delta > 0 then
+		hunger_delta = hunger_delta * 3
+	end
+	return health_delta, hunger_delta, sanity_delta
+end
+
+----------------------------------------------------------------------------------------------------------
+
+-- Please note the forager queueing code is also at prefabs/wobybig.lua for now.
+
+local function TimeoutForageTarget(inst, target)
+	inst:RemoveForagerTarget(target)
+end
+
+local function IsAllowedToQueueForaging(inst, target)
+	if inst.woby_commands_classified == nil or not inst.woby_commands_classified:ShouldForage() then
+		return false
+	end
+
+	if inst.woby_commands_classified:ShouldSit() then
+		return false
+	end
+
+	if inst.woby_commands_classified:IsRecalled() then
+		return inst._playerlink ~= nil and inst._playerlink:IsNear(target, TUNING.SKILLS.WALTER.FORAGER_MAX_DISTANCE)
+	end
+
+	return true
+end
+
+local function OnPlayerNewState(inst, player, data)
+	local buffaction = player.bufferedaction -- No locomotor action, server wouldn't know it.
+
+	if buffaction ~= nil and buffaction.target ~= nil and buffaction.action == ACTIONS.PICK then
+		if not IsFoodSourcePickable(buffaction.target) or buffaction.target.components.pickable.quickpick then
+			return -- Woby is not interested :P
+		end
+
+		if not IsAllowedToQueueForaging(inst, buffaction.target) then
+			return
+		end
+
+		inst:QueueForagerTarget(buffaction.target)
+
+		player:PushEvent("tellwobyforage", inst)
+	else
+		local lasttarget = inst._forager_targets[#inst._forager_targets]
+
+		if lasttarget ~= nil and lasttarget.components.pickable ~= nil and lasttarget.components.pickable:CanBePicked() then
+			-- If it can be picked, Walter didn't finish it!
+			inst:RemoveForagerTarget(lasttarget)
+		end
+	end
+
+	inst:PushEvent("playernewstate", data)
+end
+
+local MAX_FORAGING_TARGETS = 5
+local FORAGE_TARGET_TIMEOUT = 15
+
+local function QueueForagerTarget(inst, target)
+	if table.contains(inst._forager_targets, target) then
+		return
+	end
+
+	table.insert(inst._forager_targets, target)
+
+	inst._forager_timeout_tasks[target] = inst:DoTaskInTime(FORAGE_TARGET_TIMEOUT, TimeoutForageTarget, target)
+
+	inst:ListenForEvent("onremove", inst._onforagertargetremoved, target)
+
+	if #inst._forager_targets > MAX_FORAGING_TARGETS then
+		inst:RemoveCurrentForagerTarget()
+	end
+end
+
+local function RemoveForagerTarget(inst, target)
+	table.removearrayvalue(inst._forager_targets, target)
+
+	inst:RemoveEventCallback("onremove", inst._onforagertargetremoved, target)
+
+	if inst._forager_timeout_tasks[target] ~= nil then
+		inst._forager_timeout_tasks[target]:Cancel()
+		inst._forager_timeout_tasks[target] = nil
+	end
+end
+
+local function RemoveCurrentForagerTarget(inst)
+	inst:RemoveForagerTarget(inst._forager_targets[1])
+end
+
+local function GetForagerTarget(inst)
+	local targets = shallowcopy(inst._forager_targets)
+
+	for i, target in ipairs(targets) do
+		if inst._playerlink ~= nil and not inst._playerlink:IsNear(target, TUNING.SKILLS.WALTER.FORAGER_MAX_DISTANCE) then
+			inst:RemoveForagerTarget(target) -- Drop far away targets.
+		else
+			return target
+		end
+	end
+end
+
+local function UpdateOwnerNewStateListener(inst, player)
+	local skilltreeupdater = player ~= nil and player.components.skilltreeupdater or nil
+
+	if skilltreeupdater ~= nil and skilltreeupdater:IsActivated("walter_woby_foraging") then
+		inst:ListenForEvent("newstate", inst._onplayernewstate, player)
+	else
+		if player ~= nil then
+			inst:RemoveEventCallback("newstate", inst._onplayernewstate, player)
+		end
+
+		inst:ClearForagerQueue()
+	end
+end
+
+local function ClearForagerQueue(inst)
+	for i, target in ipairs(inst._forager_targets) do
+		inst:RemoveEventCallback("onremove", inst._onforagertargetremoved, target)
+
+		if inst._forager_timeout_tasks[target] ~= nil then
+			inst._forager_timeout_tasks[target]:Cancel()
+			inst._forager_timeout_tasks[target] = nil
+		end
+	end
+
+	inst._forager_targets = {}
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+local function OnSuccessfulPraisableAction(inst)
+	if inst._playerlink ~= nil then
+		inst._playerlink:PushEvent("praisewoby", inst)
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+local function OnEat(inst, food, feeder)
+	if food:HasTag("pet_treat") then
+		feeder:PushEvent("treatwoby", inst)
+	end
+end
+
+local function OnPet(inst, petter)
+	if petter then
+		petter:PushEvent("treatwoby", inst)
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+local function RestoreCharacterCollisions(inst)
+	inst.Physics:CollidesWith(COLLISION.CHARACTERS)
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -146,14 +677,20 @@ local function fn()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
     inst.entity:AddDynamicShadow()
+    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-    inst.DynamicShadow:SetSize(1, .33)
+    inst.MiniMapEntity:SetIcon("wobysmall.png")
+    inst.MiniMapEntity:SetCanUseCache(false)
+
+    inst.DynamicShadow:SetSize(1.75, 1)
     inst.Transform:SetFourFaced()
 
     inst.AnimState:SetBank("pupington")
     inst.AnimState:SetBuild("pupington_woby_build")
     inst.AnimState:PlayAnimation("idle_loop")
+
+	inst.AnimState:OverrideSymbol("fx_wipe", "wilson_fx", "fx_wipe")
 
     MakeCharacterPhysics(inst, 1, .5)
 
@@ -169,13 +706,25 @@ local function fn()
     inst:AddTag("noabandon")
     inst:AddTag("NOBLOCK")
 
+	--Sneak these into pristine state for optimization
+	inst:AddTag("_hunger")
+
     inst:AddComponent("spawnfader")
+
+	WobyCommon.SetupCommandWheel(inst)
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+		--@V2C: #HACK during transformation, replacing prefab collides with itself, causing flicker
+		inst.Physics:ClearCollidesWith(COLLISION.CHARACTERS)
+		inst:DoStaticTaskInTime(0, RestoreCharacterCollisions)
+
         return inst
     end
+
+	--Remove these tags so that they can be added properly when replicating components below
+	inst:RemoveTag("_hunger")
 
 	inst.favoritefood = "monsterlasagna"
 
@@ -203,6 +752,8 @@ local function fn()
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODTYPE.MONSTER }, { FOODTYPE.MONSTER })
+	inst.components.eater.custom_stats_mod_fn = CustomFoodStatsMod
+	inst.components.eater:SetOnEatFn(OnEat)
 
     inst:AddComponent("hunger")
     inst.components.hunger:SetMax(TUNING.WOBY_SMALL_HUNGER)
@@ -225,12 +776,12 @@ local function fn()
 	inst:AddComponent("colourtweener")
 
     inst:AddComponent("crittertraits")
+    inst.components.crittertraits:SetOnPetFn(OnPet)
+
     inst:AddComponent("timer")
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("wobysmall")
-    inst.components.container.onopenfn = OnOpen
-    inst.components.container.onclosefn = OnClose
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGwobysmall")
@@ -239,10 +790,49 @@ local function fn()
 
     inst.LinkToPlayer = LinkToPlayer
 	inst.OnPlayerLinkDespawn = OnPlayerLinkDespawn
-	inst._onlostplayerlink = function(player) inst._playerlink = nil end
+	inst._onlostplayerlink = function(player)
+		WobyCommon.RestrictContainer(inst, false)
+		inst._playerlink = nil
+		RefreshAttunedSkills(inst, nil, nil)
+	end
+	inst._onskillrefresh = function(player, data)
+		RefreshAttunedSkills(inst, player, data)
+	end
+	inst._onskilltreeinitialized = function(player)
+		inst:RemoveEventCallback("ms_skilltreeinitialized", inst._onskilltreeinitialized, player)
+		RefreshAttunedSkills(inst, player)
+	end
+	inst._onplayernewstate = function(player, data)
+		OnPlayerNewState(inst, player, data)
+	end
+	inst._onforagertargetremoved = function(ent)
+		table.removearrayvalue(inst._forager_targets, ent)
+
+		if inst._forager_timeout_tasks[ent] ~= nil then
+			inst._forager_timeout_tasks[ent]:Cancel()
+			inst._forager_timeout_tasks[ent] = nil
+		end
+	end
+	inst._onsuccessfulpraisableaction = function()
+		OnSuccessfulPraisableAction(inst)
+	end
+
+	inst._forager_targets = {}
+	inst._forager_timeout_tasks = {}
 
     inst.FinishTransformation = FinishTransformation
+	inst.GetForagerTarget = GetForagerTarget
+	inst.QueueForagerTarget = QueueForagerTarget
+	inst.ClearForagerQueue = ClearForagerQueue
+	inst.RemoveForagerTarget = RemoveForagerTarget
+	inst.RemoveCurrentForagerTarget = RemoveCurrentForagerTarget
+	inst.UpdateOwnerNewStateListener = UpdateOwnerNewStateListener
 
+	inst.ApplyBigBuildOverrides = ApplyBigBuildOverrides
+	inst.OnWobySkinChanged = OnWobySkinChanged
+    inst.ReskinToolFilterFn = WobyCommon.ReskinToolFilterFn
+
+	inst.OnPreLoad = OnPreLoad
     inst.persists = false
 
 	inst.spawnfx = "spawn_fx_small"

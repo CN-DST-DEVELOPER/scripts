@@ -49,15 +49,16 @@ function Strafer:OnRemoveFromEntity()
 end
 
 function Strafer:OnUpdate(dt)
-	if not self.playercontroller:IsEnabled() or (self.inst.sg and self.inst.sg:HasStateTag("busy")) then
+	local isenabled, ishudblocking = self.playercontroller:IsEnabled()
+	if not (isenabled or ishudblocking) or (self.inst.sg and self.inst.sg:HasStateTag("busy")) then
 		self.lastdir = nil
 		return
 	end
 
 	local dir
 	if TheInput:ControllerAttached() then
-		local xdir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_LEFT)
-		local ydir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_UP) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_DOWN)
+		local xdir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_STRAFE_RIGHT) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_STRAFE_LEFT)
+		local ydir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_STRAFE_UP) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_STRAFE_DOWN)
 		local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
 		if math.abs(xdir) >= deadzone or math.abs(ydir) >= deadzone then
 			dir = TheCamera:GetRightVec() * xdir - TheCamera:GetDownVec() * ydir

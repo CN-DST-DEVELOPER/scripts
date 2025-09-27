@@ -54,6 +54,8 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 
+	inst:AddComponent("snowmandecor")
+
     return inst
 end
 

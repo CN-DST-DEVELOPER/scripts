@@ -251,6 +251,7 @@ local function fn()
     inst:AddTag("soulless")
     inst:AddTag("lunar_aligned")
     inst:AddTag("ignorewalkableplatformdrowning")
+	inst:AddTag("electricdamageimmune")
 
     inst.AnimState:SetBank("crab_king_mortar")
     inst.AnimState:SetBuild("crab_king_mortar")

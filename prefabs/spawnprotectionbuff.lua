@@ -85,19 +85,23 @@ local function OnEnableProtectionFn(inst, target, enable)
 		target:AddTag("notarget")
 		target:AddTag("spawnprotection")
 
-		target.Physics:ClearCollidesWith(COLLISION.OBSTACLES)
-		target.Physics:ClearCollidesWith(COLLISION.SMALLOBSTACLES)
-		target.Physics:ClearCollidesWith(COLLISION.CHARACTERS)
-		target.Physics:ClearCollidesWith(COLLISION.FLYERS)
+		target.Physics:ClearCollidesWith(bit.bor(
+			COLLISION.OBSTACLES,
+			COLLISION.SMALLOBSTACLES,
+			COLLISION.CHARACTERS,
+			COLLISION.FLYERS
+		))
 		target.AnimState:SetHaunted(true)
 	else
 		target:RemoveTag("notarget")
 		target:RemoveTag("spawnprotection")
 
-		target.Physics:CollidesWith(COLLISION.OBSTACLES)
-		target.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
-		target.Physics:CollidesWith(COLLISION.CHARACTERS)
-		target.Physics:CollidesWith(COLLISION.FLYERS)
+		target.Physics:CollidesWith(bit.bor(
+			COLLISION.OBSTACLES,
+			COLLISION.SMALLOBSTACLES,
+			COLLISION.CHARACTERS,
+			COLLISION.FLYERS
+		))
 		target.AnimState:SetHaunted(false)
 
 		inst.AnimState:PushAnimation("buff_pst", false)

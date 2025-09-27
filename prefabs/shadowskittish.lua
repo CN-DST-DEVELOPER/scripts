@@ -17,6 +17,7 @@ local function fn()
 
     inst:AddTag("NOCLICK")
     inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
     --[[Non-networked entity]]
     inst.entity:SetCanSleep(false)
     inst.persists = false

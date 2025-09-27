@@ -7,7 +7,7 @@ local function OnDropped(inst)
     inst.Light:Enable(true)
 end
 
-local function OnPickup(inst)
+local function OnPutInInventory(inst)
     inst.Light:Enable(false)
 end
 
@@ -74,7 +74,7 @@ local function fn()
     inst.components.perishable.onperishreplacement = "spoiled_food"
 
     inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-    inst.components.inventoryitem:SetOnPickupFn(OnPickup)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
 	inst:AddComponent("halloweenmoonmutable")
 	inst.components.halloweenmoonmutable:SetPrefabMutated("lightflier")

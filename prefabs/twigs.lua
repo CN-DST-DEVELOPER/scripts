@@ -70,6 +70,8 @@ local function fn()
 	inst:AddComponent("oceanfishingtackle")
 	inst.components.oceanfishingtackle:SetCastingData(TUNING.OCEANFISHING_TACKLE.BOBBER_TWIG, "oceanfishingbobber_twig_projectile")
 
+	inst:AddComponent("snowmandecor")
+
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "prefabs/twigs").master_postinit(inst)
     end

@@ -2,6 +2,17 @@ local rift_portal_defs = require("prefabs/rift_portal_defs")
 local RIFTPORTAL_CONST = rift_portal_defs.RIFTPORTAL_CONST
 rift_portal_defs = nil
 
+--[[
+Cave vents should also spread miasma like rifts (currently code is set up to see if miasma is close enough to a rift to spread)
+
+But we should also make sure to not take too many 'rolls' away from miasma near the rift, otherwise rift will be pathetic if it has to compete with 10 other vents, so rift should have heavy priority too
+(or they can both spread)
+
+Miasma's max strength should go even higher in this biome. This should be a ROUGH biome to drudge through, 
+
+Miasma should LINGER onto a creature/entity for a bit after entering, to attract the centipede
+]]
+
 local MiasmaManager = Class(function(self, inst)
     local _world = TheWorld
     assert(_world.ismastersim, "Component MiasmaManager should not exist on the client.")
@@ -19,6 +30,8 @@ local MiasmaManager = Class(function(self, inst)
     local _lastupdate_diminish = 0
     local enabled = false
     local KILL_MIASMA_RADIUS = SQRT2 * TUNING.MIASMA_SPACING * TILE_SCALE / 2 -- Half to have no overlap on adjacent miasma grid squares.
+
+    local VENTER_MUST_TAGS = { "miasma_venter" }
 
     local function initialize_grids()
         if _miasma_grid ~= nil then
@@ -210,6 +223,30 @@ local MiasmaManager = Class(function(self, inst)
         self:SetMiasmaActive(true)
     end
 
+    function self:IsValidForMiasmaCreationAt(mtx, mty)
+        local x, y, z = _map:GetTileCenterPoint(mtx, mty)
+        -- Rift
+        local rifts = _world.components.riftspawner:GetRiftsOfAffinity(RIFTPORTAL_CONST.AFFINITY.SHADOW)
+        local mindistsq = TUNING.MIASMA_MIN_DISTSQ_FROM_RIFT
+        local maxdistsq = TUNING.MIASMA_MAX_DISTSQ_FROM_RIFT
+        for _, rift in ipairs(rifts) do
+            local rx, ry, rz = rift.Transform:GetWorldPosition()
+            local dx, dz = x - rx, z - rz
+            local dsq = dx * dx + dz * dz
+            -- If too far away or too close from/to a nearby portal do not spawn one.
+            if dsq >= mindistsq and dsq <= maxdistsq then
+                return true
+            end
+        end
+
+        -- Venters
+        local venter_count = TheSim:CountEntities(x, y, z, TUNING.MIASMA_MAX_DIST_FROM_VENTER, VENTER_MUST_TAGS)
+        if venter_count > 0 then
+            return true
+        end
+
+        return false
+    end
 
     -- Actions are all in miasma tile space.
     -- Create a new miasma location.
@@ -226,21 +263,8 @@ local MiasmaManager = Class(function(self, inst)
             return
         end
 
-        local mindistsq = TUNING.MIASMA_MIN_DISTSQ_FROM_RIFT
-        local maxdistsq = TUNING.MIASMA_MAX_DISTSQ_FROM_RIFT
-        for _, rift in ipairs(rifts) do
-            local rx, ry, rz = rift.Transform:GetWorldPosition()
-            local x, y, z = _map:GetTileCenterPoint(mtx, mty)
-            local dx, dz = x - rx, z - rz
-            local dsq = dx * dx + dz * dz
-            if dsq < mindistsq then
-                -- Too close to a nearby portal do not spawn one.
-                return
-            end
-            if dsq > maxdistsq then
-                -- Too far away from a nearby portal do not spawn one.
-                return
-            end
+        if not self:IsValidForMiasmaCreationAt(mtx, mty) then
+            return
         end
 
         self:CreateMiasmaAtTile(mtx, mty)

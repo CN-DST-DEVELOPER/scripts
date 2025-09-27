@@ -99,6 +99,7 @@ local function fn()
 	inst.AnimState:PlayAnimation("anim")
 
 	inst:AddTag("dreadstone")
+	inst:AddTag("hardarmor")
 	inst:AddTag("shadow_item")
 
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization

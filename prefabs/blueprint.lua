@@ -82,8 +82,11 @@ local function OnHaunt(inst, haunter)
                 old ~= v and
                 (old == nil or old.tab == v.tab) and
                 CanBlueprintRandomRecipe(v) and
-                not haunter.components.builder:KnowsRecipe(v) and
-                haunter.components.builder:CanLearn(v.name) then
+                (
+                    haunter.components.builder == nil or
+                    (not haunter.components.builder:KnowsRecipe(v) and haunter.components.builder:CanLearn(v.name))
+                )
+            then
                 table.insert(recipes, v)
             end
         end

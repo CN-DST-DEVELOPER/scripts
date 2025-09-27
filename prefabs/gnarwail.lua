@@ -492,6 +492,8 @@ local function gnarwail()
         return inst
     end
 
+	inst.override_combat_fx_height = "low"
+
     ------------------------------------------
 
     inst:AddComponent("health")

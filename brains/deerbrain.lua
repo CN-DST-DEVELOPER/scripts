@@ -95,6 +95,7 @@ function DeerBrain:OnStart()
                 RunAway(self.inst, {fn=function(guy) return self.inst.components.combat:TargetIs(guy) end, tags={"player"}}, TUNING.DEER_ATTACKER_REMEMBER_DIST, TUNING.DEER_ATTACKER_REMEMBER_DIST),
             }),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         FaceEntity(self.inst, GetNonHerdingFaceTargetFn, KeepNonHerdingFaceTargetFn),
         BrainCommon.AnchorToSaltlick(self.inst),

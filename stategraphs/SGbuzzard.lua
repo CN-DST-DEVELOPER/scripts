@@ -1,5 +1,7 @@
 require("stategraphs/commonstates")
 
+local easing = require("easing")
+
 local actionhandlers =
 {
     ActionHandler(ACTIONS.EAT, "eat"),
@@ -14,6 +16,7 @@ local events=
 {
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
@@ -24,10 +27,12 @@ local events=
         end
     end),
 
-    EventHandler("onignite", function(inst) if not inst.components.health:IsDead() then inst.sg:GoToState("distress_pre") end end),
-
-    EventHandler("locomote",
-    function(inst)
+	EventHandler("onignite", function(inst)
+		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+			inst.sg:GoToState("distress_pre")
+		end
+	end),
+	EventHandler("locomote", function(inst)
         if (not inst.sg:HasStateTag("idle") and not inst.sg:HasStateTag("moving")) then return end
 
         if not inst.components.locomotor:WantsToMoveForward() or inst.components.combat.target then
@@ -42,8 +47,19 @@ local events=
     end),
 }
 
-local states=
+local function IsStuck(inst)
+	return inst:HasAnyTag("honey_ammo_afflicted", "gelblob_ammo_afflicted") and TheWorld.Map:IsPassableAtPoint(inst.Transform:GetWorldPosition())
+end
+
+local states =
 {
+    State{
+		name = "init",
+		onenter = function(inst)
+			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
+		end,
+	},
+
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -60,7 +76,7 @@ local states=
             inst.sg:SetTimeout(3 + math.random()*1)
         end,
 
-        ontimeout= function(inst)
+        ontimeout = function(inst)
 			if inst.bufferedaction and inst.bufferedaction.action == ACTIONS.EAT then
 				inst.sg:GoToState("eat")
 			else
@@ -71,7 +87,7 @@ local states=
                     if inst.components.combat.target then
                         inst.sg:GoToState("taunt")
                     else
-					   inst.sg:GoToState("caw")
+					    inst.sg:GoToState("caw")
                     end
 				end
 			end
@@ -157,13 +173,27 @@ local states=
         events=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("distress") end ),
-            EventHandler("onextinguish", function(inst) if not inst.components.health:IsDead() then inst.sg:GoToState("idle", "flap_pst") end end ),
+			EventHandler("stop_honey_ammo_afflicted", function(inst)
+				if not (inst.components.health:IsDead() or (inst.components.burnable and inst.components.burnable:IsBurning()) or IsStuck(inst)) then
+					inst.sg:GoToState("flyaway")
+				end
+			end),
+			EventHandler("stop_gelblob_ammo_afflicted", function(inst)
+				if not (inst.components.health:IsDead() or (inst.components.burnable and inst.components.burnable:IsBurning()) or IsStuck(inst)) then
+					inst.sg:GoToState("flyaway")
+				end
+			end),
+			EventHandler("onextinguish", function(inst)
+				if not (inst.components.health:IsDead() or IsStuck(inst)) then
+					inst.sg:GoToState("idle", "flap_pst")
+				end
+			end),
         },
     },
 
     State{
         name = "glide",
-        tags = {"idle", "flight", "busy"},
+		tags = { "idle", "flight", "busy", "noelectrocute" },
         onenter= function(inst)
             inst.AnimState:PlayAnimation("glide", true)
 			inst.DynamicShadow:Enable(false)
@@ -269,8 +299,13 @@ local states=
 
     State{
         name = "flyaway",
-        tags = {"flight", "busy", "canrotate"},
+		tags = { "flight", "busy", "canrotate", "noelectrocute" },
         onenter = function(inst)
+			if IsStuck(inst) then
+				inst.sg:GoToState("distress_pre")
+				return
+			end
+
             inst.Physics:Stop()
             inst.sg:SetTimeout(.1+math.random()*.2)
             inst.sg.statemem.vert = math.random() > .5
@@ -412,6 +447,125 @@ local states=
 
         ontimeout = function(inst) inst.sg:GoToState("flyaway") end,
     },
+
+    State{
+		name = "corpse_idle",
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("corpse")
+		end,
+	},
+
+	State{
+		name = "corpse_mutate_pre",
+		tags = { "mutating" },
+
+		onenter = function(inst, mutantprefab)
+			inst.AnimState:PlayAnimation("twitch", true)
+			inst.sg:SetTimeout(3)
+			inst.sg.statemem.mutantprefab = mutantprefab
+
+            --inst.SoundEmitter:PlaySound("rifts3/mutated_deerclops/twitching_LP", "loop")
+		end,
+
+		ontimeout = function(inst)
+			inst.sg:GoToState("corpse_mutate", inst.sg.statemem.mutantprefab)
+		end,
+
+		onexit = function(inst)
+			inst.SoundEmitter:KillSound("loop")
+		end,
+	},
+
+	State{
+		name = "corpse_mutate",
+		tags = { "mutating" },
+
+		onenter = function(inst, mutantprefab)
+			inst.AnimState:OverrideSymbol("lunar_parts", "buzzard_lunar_build", "lunar_parts")
+			inst.AnimState:OverrideSymbol("fx_puff_hi", "buzzard_lunar_build", "fx_puff_hi")
+			inst.AnimState:OverrideSymbol("fx_puff2", "buzzard_lunar_build", "fx_puff2")
+
+			inst.AnimState:PlayAnimation("mutate_pre")
+
+			--inst.SoundEmitter:PlaySound("rifts3/mutated_deerclops/ice_crackling_LP", "loop")
+			inst.sg.statemem.mutantprefab = mutantprefab
+		end,
+
+		timeline =
+		{
+			FrameEvent(0, function(inst)
+
+            end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					local rot = inst.Transform:GetRotation()
+					local creature = ReplacePrefab(inst, inst.sg.statemem.mutantprefab)
+					creature.Transform:SetRotation(rot)
+					creature.AnimState:MakeFacingDirty() --not needed for clients
+					creature.sg:GoToState("mutate_pst")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			--Shouldn't reach here!
+			inst.AnimState:ClearAllOverrideSymbols()
+			inst.AnimState:SetAddColour(0, 0, 0, 0)
+			inst.AnimState:SetLightOverride(0)
+			inst.SoundEmitter:KillSound("loop")
+			inst.components.burnable:SetBurnTime(TUNING.MED_BURNTIME)
+			inst.components.burnable.fastextinguish = false
+		end,
+	},
+
+	--------------------------------------------------------------------------
+	--Transitions from corpse_mutate after prefab switch
+	State{
+		name = "mutate_pst",
+		tags = { "busy", "noattack", "temp_invincible", "noelectrocute" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("mutate")
+			inst.sg.statemem.flash = 24
+		end,
+
+		onupdate = function(inst)
+			local c = inst.sg.statemem.flash
+			if c >= 0 then
+				inst.sg.statemem.flash = c - 1
+				c = easing.inOutQuad(math.min(20, c), 0, 1, 20)
+				inst.AnimState:SetAddColour(c, c, c, 0)
+				inst.AnimState:SetLightOverride(c)
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(16, function(inst)
+
+            end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("caw")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.AnimState:SetAddColour(0, 0, 0, 0)
+			inst.AnimState:SetLightOverride(0)
+		end,
+	},
 }
 
 CommonStates.AddCombatStates(states,
@@ -428,6 +582,17 @@ CommonStates.AddCombatStates(states,
 
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states, nil, nil,
+{
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if inst.components.burnable and inst.components.burnable:IsBurning() then
+				inst.sg:GoToState("distress_pre")
+			else
+				inst.sg:GoToState("flyaway")
+			end
+		end
+	end,
+})
 
-return StateGraph("buzzard", states, events, "idle", actionhandlers)
-
+return StateGraph("buzzard", states, events, "init", actionhandlers)

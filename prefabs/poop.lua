@@ -38,7 +38,7 @@ local function OnDropped(inst)
     end
 end
 
-local function OnPickup(inst)
+local function OnPutInInventory(inst)
     if inst.flies ~= nil then
         inst.flies:Remove()
         inst.flies = nil
@@ -101,8 +101,7 @@ local function fn()
     inst:AddComponent("smotherer")
 
     inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-    inst.components.inventoryitem:SetOnPickupFn(OnPickup)
-    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPickup)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
     inst.flies = inst:SpawnChild("flies")
 

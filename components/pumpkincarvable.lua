@@ -195,7 +195,9 @@ local function _IsOnPumpkin(x, y)
 end
 
 local function _DoCut(shape, rot, x, y, pass, tbl, owner, swapsymbol, swapframe, offsetx, offsety, rnd1, rnd2, rnd3)
-	if not _IsOnPumpkin(x, y) then
+	if not (shape and rot and x and y) then
+		return
+	elseif not _IsOnPumpkin(x, y) then
 		print(string.format("PumpkinCarvable::_DoCut(\"%s\", %d, %d, %d) dropped out of range.", shape, rot, x, y))
 		return
 	end
@@ -282,7 +284,7 @@ local function OnEquipped_Server(inst, data)
 		if string.len(cutdata) > 0 then
 			self.swapinst = SpawnPrefab("pumpkincarving_swap_fx")
 			self.swapinst.entity:SetParent(data.owner.entity)
-			self.swapinst:SetCutData(cutdata)
+			self.swapinst:SetData(cutdata)
 		end
 	end
 end
@@ -414,7 +416,7 @@ function PumpkinCarvable:EndCarving(doer)
 
 		self.carver = nil
 
-		doer.sg:HandleEvent("ms_endpumpkincarving")
+		doer:PushEventImmediate("ms_endpumpkincarving")
 
 		self.inst:StopUpdatingComponent(self)
 

@@ -397,17 +397,6 @@ return {
           height = 272,
           visible = true,
           properties = {}
-        },
-        {
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = -77,
-          y = 15,
-          width = 0,
-          height = 0,
-          visible = true,
-          properties = {}
         }
       }
     }

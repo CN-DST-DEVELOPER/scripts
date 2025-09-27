@@ -44,6 +44,7 @@ local mutated_prefabs =
 	"purebrilliance",
 	"chesspiece_bearger_mutated_sketch",
 	"winter_ornament_boss_mutatedbearger",
+    "coolant",
 }
 
 local brain = require("brains/beargerbrain")
@@ -713,10 +714,17 @@ local mutated_scrapbook_overridedata = {
     { "flameR", "lunar_flame", "flameanim", 0.6 },
 }
 
+local COOLANT_LOOT = {"coolant"}
+local function LootSetupFn_mutated(lootdropper)
+    lootdropper:SetLoot(TheWorld.components.wagboss_tracker and TheWorld.components.wagboss_tracker:IsWagbossDefeated() and COOLANT_LOOT or nil)
+    lootdropper:SetChanceLootTable("mutatedbearger")
+end
+
 local function mutatedcommonfn(inst)
     inst:AddTag("lunar_aligned")
 	inst:AddTag("bearger_blocker")
 	inst:AddTag("noepicmusic")
+    inst:AddTag("soulless") -- no wortox souls
 
 	inst.temp8faced = net_bool(inst.GUID, "mutatedbearger.temp8faced", "temp8faceddirty")
 
@@ -775,7 +783,7 @@ local function mutatedfn()
 	inst:AddComponent("planardamage")
 	inst.components.planardamage:SetBaseDamage(TUNING.MUTATED_BEARGER_PLANAR_DAMAGE)
 
-    inst.components.lootdropper:SetChanceLootTable("mutatedbearger")
+    inst.components.lootdropper:SetLootSetupFn(LootSetupFn_mutated)
 
     inst:ListenForEvent("death", Mutated_OnDead)
 

@@ -122,7 +122,7 @@ end
 
 local function onattack_moonglass(inst, attacker, target)
 	inst.components.weapon.attackwear = target ~= nil and target:IsValid()
-		and (target:HasTag("shadow") or target:HasTag("shadowminion") or target:HasTag("shadowchesspiece") or target:HasTag("stalker") or target:HasTag("stalkerminion"))
+		and (target:HasAnyTag("shadow", "shadowminion", "shadowchesspiece", "stalker", "stalkerminion", "shadowthrall"))
 		and TUNING.MOONGLASSAXE.SHADOW_WEAR
 		or TUNING.MOONGLASSAXE.ATTACKWEAR
 end
@@ -174,6 +174,9 @@ local function moonglass()
 	if inst.components.weapon ~= nil then
 		inst.components.weapon:SetDamage(TUNING.MOONGLASSAXE.DAMAGE)
 		inst.components.weapon:SetOnAttack(onattack_moonglass)
+
+        local damagetypebonus = inst:AddComponent("damagetypebonus")
+        damagetypebonus:AddBonus("shadowsubmissive", inst, TUNING.MOONGLASSAXE.DAMAGE_VS_SHADOW_BONUS)
 	end
     inst.components.equippable:SetOnEquip(onequip_moonglass)
 

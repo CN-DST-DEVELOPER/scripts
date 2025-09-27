@@ -243,9 +243,7 @@ end
 local function StartOffscreenPickupTask(inst, time)
     if inst._sleeptask ~= nil then
         inst._sleeptask:Cancel()
-        inst._sleeptask = nil
     end
-
     inst._sleeptask = inst:DoTaskInTime(time, inst.DoOffscreenPickup)
 end
 
@@ -254,40 +252,58 @@ local function OnEntityWake(inst)
         inst._sleeptask:Cancel()
         inst._sleeptask = nil
     end
+	if inst._sleepteleporttask then
+		inst._sleepteleporttask:Cancel()
+		inst._sleepteleporttask = nil
+	end
+end
+
+local function DoSleepTeleport(inst)
+	inst._sleepteleporttask = nil
+
+	if inst:IsInLimbo() or inst.components.fueled:IsEmpty() or inst.sg:HasAnyStateTag("drowning", "falling") then
+		return
+	end
+
+	inst.Physics:Teleport(StorageRobotCommon.GetSpawnPoint(inst):Get())
+
+	-- Teleporting might wake us.
+	if not inst:IsAsleep() then
+		return
+	end
+
+	-- First store the item we are holding.
+	local item = inst.components.inventory:GetFirstItemInAnySlot() or inst.components.inventory:GetActiveItem() -- This is intentionally backwards to give the bigger stacks first.
+	if item then
+		local container = StorageRobotCommon.FindContainerWithItem(inst, item)
+		if container then
+			BufferedAction(inst, container, ACTIONS.STORE, item):Do()
+			inst.components.inventory:CloseAllChestContainers()
+		else
+			inst.components.inventory:DropItem(item, true, true)
+		end
+	end
+
+	-- Then start pickuping others.
+	inst:StartOffscreenPickupTask(1.5)
 end
 
 local function OnEntitySleep(inst)
-    if inst:IsInLimbo() or inst.components.fueled:IsEmpty() or inst.sg:HasStateTag("drowning") or inst.sg:HasStateTag("falling") then
+	if inst:IsInLimbo() or inst.components.fueled:IsEmpty() or inst.sg:HasAnyStateTag("drowning", "falling") then
         return
     end
 
     inst.components.fueled:StopConsuming()
     inst.SoundEmitter:KillAllSounds()
 
-    inst.Physics:Teleport(StorageRobotCommon.GetSpawnPoint(inst):Get())
-
     if inst.brain ~= nil then
         inst.brain:UnignoreItem()
     end
 
-    -- First store the item we are holding.
-
-    local item = inst.components.inventory:GetFirstItemInAnySlot() or inst.components.inventory:GetActiveItem() -- This is intentionally backwards to give the bigger stacks first.
-
-    if item ~= nil then
-        local container = StorageRobotCommon.FindContainerWithItem(inst, item)
-
-        if container ~= nil then
-            BufferedAction(inst, container, ACTIONS.STORE, item):Do()
-            inst.components.inventory:CloseAllChestContainers()
-        else
-            inst.components.inventory:DropItem(item, true, true)
-        end
+	-- Delayed teleport, since it might wake us again
+	if inst._sleepteleporttask == nil then
+		inst._sleepteleporttask = inst:DoTaskInTime(0, DoSleepTeleport)
     end
-
-    -- Then start pickuping others.
-
-    inst:StartOffscreenPickupTask(1.5)
 end
 
 ---------------------------------------------------------------------------------------------------

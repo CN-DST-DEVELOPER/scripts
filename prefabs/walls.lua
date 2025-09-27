@@ -286,6 +286,7 @@ function MakeWallType(data)
 
         inst:AddTag("wall")
         inst:AddTag("noauradamage")
+		inst:AddTag("electricdamageimmune")
 
 		inst.AnimState:SetBank(bank)
         inst.AnimState:SetBuild("wall_"..data.name)
@@ -298,8 +299,6 @@ function MakeWallType(data)
         for i, v in ipairs(data.tags) do
             inst:AddTag(v)
         end
-
-        MakeSnowCoveredPristine(inst)
 
         inst._pfpos = nil
         inst._ispathfinding = net_bool(inst.GUID, "_ispathfinding", "onispathfindingdirty")
@@ -371,8 +370,6 @@ function MakeWallType(data)
         MakeHauntableWork(inst)
 
         inst.OnLoad = onload
-
-        MakeSnowCovered(inst)
 
         return inst
     end

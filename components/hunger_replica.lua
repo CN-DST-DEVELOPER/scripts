@@ -1,10 +1,11 @@
 local Hunger = Class(function(self, inst)
     self.inst = inst
 
+	local classified = inst.player_classified or inst.pet_hunger_classified
     if TheWorld.ismastersim then
-        self.classified = inst.player_classified
-    elseif self.classified == nil and inst.player_classified ~= nil then
-        self:AttachClassified(inst.player_classified)
+		self.classified = classified
+	elseif classified and self.classified == nil then
+		self:AttachClassified(classified)
     end
 end)
 

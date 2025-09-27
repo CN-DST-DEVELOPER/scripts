@@ -25,7 +25,7 @@ local function TrackEntity(inst, target, restriction, icon)
     UpdatePosition(inst, target)
 end
 
-local function fn()
+local function common_fn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -40,36 +40,70 @@ local function fn()
 
     inst.entity:SetCanSleep(false)
 
-    inst.entity:SetPristine()
+    inst:DoTaskInTime(0, RegisterGlobalMapIcon)
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
+    return inst
+end
+local function common_server(inst)
     inst._target = nil
     inst.TrackEntity = TrackEntity
 
     inst.persists = false
-
-    return inst
 end
 
 local function overfog_fn()
-    local inst = fn()
-
+    local inst = common_fn()
     inst.MiniMapEntity:SetDrawOverFogOfWar(true)
 
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    common_server(inst)
+    return inst
+end
+
+local function overfog_named_fn()
+    local inst = common_fn()
+    inst.MiniMapEntity:SetDrawOverFogOfWar(true)
+    inst._target_displayname = net_string(inst.GUID, "globalmapiconnamed._target_displayname")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    common_server(inst)
+    return inst
+end
+
+local function underfog_fn()
+    local inst = common_fn()
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    common_server(inst)
     return inst
 end
 
 local function overfog_seeable_fn()
-    local inst = fn()
-
+    local inst = common_fn()
     inst.MiniMapEntity:SetDrawOverFogOfWar(true, true)
 
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    common_server(inst)
     return inst
 end
 
 return Prefab("globalmapicon", overfog_fn),
-    Prefab("globalmapiconunderfog", fn),
+    Prefab("globalmapiconnamed", overfog_named_fn),
+    Prefab("globalmapiconunderfog", underfog_fn),
     Prefab("globalmapiconseeable", overfog_seeable_fn)

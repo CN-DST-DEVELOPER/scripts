@@ -29,10 +29,12 @@ local events=
     end),
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleepEx(),
+    CommonHandlers.OnWakeEx(),
 }
 
 local function DoChewSound(inst)
@@ -97,7 +99,7 @@ local states =
 
     State{
         name = "flyaway",
-        tags = {"flight", "busy"},
+		tags = { "flight", "busy", "noelectrocute" },
         onenter = function(inst)
             inst.Physics:Stop()
 
@@ -127,7 +129,7 @@ local states =
 
     State{
         name = "flyback",
-        tags = {"flight", "busy"},
+		tags = { "flight", "busy", "noelectrocute" },
         onenter = function(inst)
             inst.Physics:Stop()
 
@@ -378,5 +380,6 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states, LandFlyingCreature, RaiseFlyingCreature)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("bat", states, events, "idle", actionhandlers)

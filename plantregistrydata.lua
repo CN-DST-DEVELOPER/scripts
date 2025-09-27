@@ -107,10 +107,16 @@ function PlantRegistryData:Save(force_save)
 end
 
 function PlantRegistryData:Load()
+	self.plants = {}
+	self.fertilizers = {}
+	self.pictures = {}
+	self.filters = {}
+	self.last_selected_card = {}
+    local failed = false
 	TheSim:GetPersistentString("plantregistry", function(load_success, data)
 		if load_success and data ~= nil then
-            local success, plant_registry = RunInSandbox(data)
-		    if success and plant_registry then
+            local success, plant_registry = RunInSandboxSafeCatchInfiniteLoops(data)
+		    if success and plant_registry and type(plant_registry) == "table" then
 				self.plants = plant_registry.plants or {}
 				self.fertilizers = plant_registry.fertilizers or {}
 				self.pictures = plant_registry.pictures or {}
@@ -118,9 +124,14 @@ function PlantRegistryData:Load()
 				self.last_selected_card = plant_registry.last_selected_card or {}
 			else
 				print("Failed to load the plantregistry!", plant_registry)
+                failed = true
 			end
 		end
 	end)
+    if failed then
+        print("Erasing bad plantregistrydata.")
+        self:Save(true)
+    end
 end
 
 local function DecodePlantRegistryStages(value)
@@ -157,7 +168,7 @@ function PlantRegistryData:ApplyOnlineProfileData()
 			elseif string.sub(k, 1, 10) == "oversized_" then
 				local success, savedata
 				if v and type(v) == "string" then
-					success, savedata = RunInSandbox(TheSim:DecodeAndUnzipString(v))
+					success, savedata = RunInSandboxSafe(TheSim:DecodeAndUnzipString(v))
 				end
 				self.pictures[string.sub(k, 11)] = success and savedata or nil
 			end

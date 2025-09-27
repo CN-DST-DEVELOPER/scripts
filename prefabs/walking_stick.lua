@@ -15,7 +15,11 @@ local function OnEquip(inst, owner)
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
 
-    inst.components.fueled:StartConsuming()
+    if inst._owner ~= nil then
+        inst:RemoveEventCallback("locomote", inst._onlocomote, inst._owner)
+    end
+    inst._owner = owner
+    inst:ListenForEvent("locomote", inst._onlocomote, owner)
 end
 
 local function OnUnequip(inst, owner)
@@ -26,6 +30,11 @@ local function OnUnequip(inst, owner)
 
     owner.AnimState:Hide("ARM_carry")
     owner.AnimState:Show("ARM_normal")
+
+    if inst._owner ~= nil then
+        inst:RemoveEventCallback("locomote", inst._onlocomote, inst._owner)
+        inst._owner = nil
+    end
 
     inst.components.fueled:StopConsuming()
 end
@@ -81,6 +90,16 @@ local function fn()
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
+
+    inst._onlocomote = function(owner)
+        if owner.components.locomotor.wantstomoveforward then
+            if not inst.components.fueled.consuming then
+                inst.components.fueled:StartConsuming()
+            end
+        elseif inst.components.fueled.consuming then
+            inst.components.fueled:StopConsuming()
+        end
+    end
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)

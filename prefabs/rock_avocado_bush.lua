@@ -319,6 +319,7 @@ local function rock_avocado_bush()
     inst.OnLoad = on_load
 
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     return inst
 end

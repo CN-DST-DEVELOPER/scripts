@@ -150,7 +150,7 @@ function MultiplayerMainScreen:DoInit()
 	self.motd.button:SetPosition(0,-160)
     self.motd.button:SetScale(.8*.9)
     self.motd.button:SetText(STRINGS.UI.MAINSCREEN.MOTDBUTTON)
-    self.motd.button:SetOnClick( function() VisitURL("http://store.kleientertainment.com/") end )
+    self.motd.button:SetOnClick( function() VisitURL("https://store.kleientertainment.com/") end )
 	self.motd.motdtext:EnableWordWrap(true)
 
 
@@ -331,6 +331,24 @@ function MultiplayerMainScreen:DoInit()
 
     --V2C: This is so the first time we become active will trigger OnShow to UpdatePuppets
     self:Hide()
+end
+
+
+function MultiplayerMainScreen:HandleNewControlSchemePopup()
+    -- Do we need to show the new control scheme popup?
+    -- If we have a joystick and the setting isn't set, show the popup and handle it
+    if not self.popped then
+        self.popped = true
+        TheFrontEnd:PushScreen(
+            PopupDialogScreen("This is my test", --STRINGS.UI.MAINSCREEN.ASKQUIT, 
+                STRINGS.UI.MAINSCREEN.ASKQUITDESC, 
+                { 
+                    {text=STRINGS.UI.MAINSCREEN.YES, cb = function() print("clicked yes") end },
+                    {text=STRINGS.UI.MAINSCREEN.NO, cb = function() print("no") end}  
+                }
+            )
+        )
+    end
 end
 
 function MultiplayerMainScreen:UpdatePuppets()
@@ -575,7 +593,7 @@ function MultiplayerMainScreen:EmailSignup()
 end
 
 function MultiplayerMainScreen:Forums()
-	VisitURL("http://forums.kleientertainment.com/forum/73-dont-starve-together-beta/")
+	VisitURL("https://forums.kleientertainment.com/forum/73-dont-starve-together-beta/")
 end
 
 function MultiplayerMainScreen:Quit()
@@ -828,7 +846,7 @@ function MultiplayerMainScreen:MakeSubMenu()
 
     if PLATFORM == "WIN32_STEAM" or PLATFORM == "LINUX_STEAM" or PLATFORM == "OSX_STEAM" then
 
-        local more_games_button = TEMPLATES.IconButton("images/button_icons.xml", "more_games.tex", STRINGS.UI.MAINSCREEN.MOREGAMES, false, true, function() VisitURL("http://store.steampowered.com/search/?developer=Klei%20Entertainment") end, {font=NEWFONT_OUTLINE, focus_colour={1,1,1,1}})
+        local more_games_button = TEMPLATES.IconButton("images/button_icons.xml", "more_games.tex", STRINGS.UI.MAINSCREEN.MOREGAMES, false, true, function() VisitURL("https://store.steampowered.com/search/?developer=Klei%20Entertainment") end, {font=NEWFONT_OUTLINE, focus_colour={1,1,1,1}})
 
         if TheFrontEnd:GetAccountManager():HasSteamTicket() then
 
@@ -935,7 +953,7 @@ function MultiplayerMainScreen:FinishedFadeIn()
 							if lang_popup.collection ~= "" then
 								local popup_screen = PopupDialogScreen( lang_popup.title, lang_popup.body,
 										{
-											{text=lang_popup.yes, cb = function() VisitURL("http://steamcommunity.com/workshop/filedetails/?id="..lang_popup.collection) TheFrontEnd:PopScreen() self:OnModsButton() end },
+											{text=lang_popup.yes, cb = function() VisitURL("https://steamcommunity.com/workshop/filedetails/?id="..lang_popup.collection) TheFrontEnd:PopScreen() self:OnModsButton() end },
 											{text=lang_popup.no, cb = function() TheFrontEnd:PopScreen() end}
 										}
 									)
@@ -971,6 +989,8 @@ local anims =
 }
 
 function MultiplayerMainScreen:OnUpdate(dt)
+    self:HandleNewControlSchemePopup()
+
 	if self.bg.anim_root.portal:GetAnimState():AnimDone() and not self.leaving then
     	if math.random() < .33 then
 			self.bg.anim_root.portal:GetAnimState():PlayAnimation("portal_idle_eyescratch", false)

@@ -154,7 +154,7 @@ local function cactusflowerfn()
     inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
     inst.components.edible.healthvalue = TUNING.HEALING_MEDSMALL
     inst.components.edible.sanityvalue = TUNING.SANITY_TINY
-    inst.components.edible.foodtype = "VEGGIE"
+    inst.components.edible.foodtype = FOODTYPE.VEGGIE
 
     inst:AddComponent("perishable")
     inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERFAST)

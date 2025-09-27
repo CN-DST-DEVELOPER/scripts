@@ -263,12 +263,6 @@ local function OnDropped(inst)
     if inst.components.workable ~= nil then
         inst.components.workable:SetWorkLeft(1)
     end
-    if inst.brain ~= nil then
-        inst.brain:Start()
-    end
-    if inst.sg ~= nil then
-        inst.sg:Start()
-    end
     if inst.components.stackable ~= nil and inst.components.stackable:IsStack() then
         local x, y, z = inst.Transform:GetWorldPosition()
         while inst.components.stackable:IsStack()do
@@ -456,6 +450,7 @@ local function fn()
     inst.components.locomotor.pathcaps = { allowocean = true }
 
     inst:SetStateGraph("SGlightflier")
+	inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
     inst:AddComponent("stackable")

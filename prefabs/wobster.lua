@@ -98,7 +98,7 @@ local function on_projectile_landed(inst)
         inst.AnimState:SetLayer(LAYER_WIP_BELOW_OCEAN)
 
         inst.sg:GoToState("idle", "jump_pst")
-        inst:RestartBrain()
+		inst:RestartBrain("wobster_out_of_water")
 
         SpawnPrefab("splash").Transform:SetPosition(x, y, z)
 
@@ -112,7 +112,7 @@ local function on_make_projectile(inst)
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(on_projectile_landed)
 
-    inst:StopBrain()
+	inst:StopBrain("wobster_out_of_water")
     inst.sg:GoToState("launched_out_of_water")
 
     inst.Physics:SetCollisionMask(PROJECTILE_COLLISION_MASK)
@@ -308,10 +308,11 @@ local function base_land_wobster(build_name, nameoverride, fish_def, fadeout, co
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.CHARACTERS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith((TheWorld.has_ocean and COLLISION.GROUND) or COLLISION.WORLD)
-    phys:CollidesWith(COLLISION.OBSTACLES)
-    phys:CollidesWith(COLLISION.SMALLOBSTACLES)
+	phys:SetCollisionMask(
+		TheWorld.has_ocean and COLLISION.GROUND or COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES
+	)
     phys:SetCapsule(0.5, 1)
 
     inst.Transform:SetFourFaced()
@@ -346,6 +347,7 @@ local function base_land_wobster(build_name, nameoverride, fish_def, fadeout, co
         return inst
     end
 
+	inst.override_combat_fx_height = "high"
     inst.fish_def = fish_def
 
     inst:AddComponent("locomotor")

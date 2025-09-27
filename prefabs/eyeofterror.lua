@@ -341,6 +341,8 @@ local function common_fn(data)
         return inst
     end
 
+	inst.override_combat_fx_size = "med"
+
     ------------------------------------------
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 4.5
@@ -588,6 +590,8 @@ local function twin1fn()
 
     inst:AddTag("mech")
     inst:AddTag("soulless")
+	inst:AddTag("electricdamageimmune")
+    inst:AddTag("shadow_aligned")
 
     if not TheWorld.ismastersim then
         return inst
@@ -595,6 +599,7 @@ local function twin1fn()
 
     ------------------------------------------
     inst.components.sleeper:SetResistance(2*TUNING.EYEOFTERROR_SLEEPRESIST)
+    inst.sg.mem.noelectrocute = true
 
     return inst
 end
@@ -654,6 +659,8 @@ local function twin2fn()
 
     inst:AddTag("mech")
     inst:AddTag("soulless")
+	inst:AddTag("electricdamageimmune")
+    inst:AddTag("shadow_aligned")
 
     if not TheWorld.ismastersim then
         return inst
@@ -664,6 +671,7 @@ local function twin2fn()
 
     ------------------------------------------
     inst.components.sleeper:SetResistance(2*TUNING.EYEOFTERROR_SLEEPRESIST)
+    inst.sg.mem.noelectrocute = true
 
     return inst
 end

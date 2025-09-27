@@ -190,7 +190,7 @@ end
 function MapScreen:UpdateMapActions(x, y, z)
     local playercontroller = ThePlayer and ThePlayer.components.playercontroller or nil
     if playercontroller and ThePlayer.components.playeractionpicker then
-        return playercontroller:UpdateActionsToMapActions(Vector3(x, y, z), self.maptarget)
+        return playercontroller:UpdateActionsToMapActions(Vector3(x, y, z), self.maptarget, self.forced_actiondef)
     end
     return nil, nil
 end
@@ -201,48 +201,141 @@ function MapScreen:ProcessStaticDecorations()
     local w, h = TheSim:GetScreenSize()
     w, h = w * 0.5, h * 0.5
 
-    if self.maptarget then
-        local charlieresidue = nil
-        if self.maptarget then -- From local client map.
-            if self.maptarget.prefab == "charlieresidue" then
-                charlieresidue = self.maptarget
-            end
+    local charlieresidue, courierdirector
+    if self.maptarget then -- From local client map.
+        if self.maptarget.prefab == "charlieresidue" then
+            charlieresidue = self.maptarget
+        elseif self.maptarget.prefab == "wobysmall" or self.maptarget.prefab == "wobybig" then
+            courierdirector = self.owner
         end
-        if charlieresidue and charlieresidue:IsValid() then
-            local residuetarget = charlieresidue:GetTarget()
-            local rx, ry, rz = residuetarget.Transform:GetWorldPosition()
-            local context = charlieresidue:GetMapActionContext()
-            if context > CHARLIERESIDUE_MAP_ACTIONS.NONE then
-                if context == CHARLIERESIDUE_MAP_ACTIONS.WORMHOLE then
-                    local minzoomscale = 0.18
-                    local maxzoomscale = 0.55
-                    local overallzoomscaler = 3.6
-                    local zoomradius = TUNING.SKILLS.WINONA.WORMHOLE_DETECTION_RADIUS
-                    local zoomscale_clamped = math.clamp(zoomscale, minzoomscale or zoomscale, maxzoomscale or zoomscale) * overallzoomscaler
-                    local ents = TheSim:FindEntities(rx, ry, rz, 9001, MAP_SELECT_WORMHOLE_MUST) -- FIXME(JBK): Collect these types of entities into a pool to iterate over.
-                    for _, ent in ipairs(ents) do
-                        local ex, ey, ez = ent.Transform:GetWorldPosition()
-                        if ex ~= rx and ez ~= rz and self.owner.CanSeePointOnMiniMap and self.owner:CanSeePointOnMiniMap(ex, ey, ez) then
-                            local decoration = self.decorationrootstatic:AddChild(UIAnim())
-                            staticdecorations[ent.GUID .. "_WORMHOLE"] = {
+    end
+    if charlieresidue and charlieresidue:IsValid() then
+        local residuetarget = charlieresidue:GetTarget()
+        local rx, ry, rz = residuetarget.Transform:GetWorldPosition()
+        local context = charlieresidue:GetMapActionContext()
+        if context > CHARLIERESIDUE_MAP_ACTIONS.NONE then
+            if context == CHARLIERESIDUE_MAP_ACTIONS.WORMHOLE then
+                local ents_bin = GlobalMapIconsDB.prefabs["globalmapiconseeable"]
+                if ents_bin then
+                    local entdatas = {}
+                    for ent, _ in pairs(ents_bin) do
+                        if ent:HasTag("wormholetrackericon") then
+                            table.insert(entdatas, {
                                 ent = ent,
-                                decoration = decoration,
-                                minzoomscale = minzoomscale,
-                                maxzoomscale = maxzoomscale,
-                                overallzoomscaler = overallzoomscaler,
-                                zoomradius = zoomradius,
-                                animgainfocus = { "proximity_pre", "proximity_loop" },
-                                animlosefocus = { "proximity_pst", "idle" },
-                            }
-                            local animstate = decoration:GetAnimState()
-                            animstate:SetBank("roseglasses_minimap_indicator")
-                            animstate:SetBuild("roseglasses_minimap_indicator")
-                            animstate:PlayAnimation("idle", true)
-                            local x, y = self.minimap:WorldPosToMapPos(ex, ez, 0)
-                            decoration:SetPosition(x * w, y * h)
-                            decoration:SetScale(zoomscale_clamped, zoomscale_clamped, 1)
+                                dsq = residuetarget:GetDistanceSqToInst(ent),
+                            })
                         end
                     end
+                    if entdatas[2] then
+                        table.sort(entdatas, function(a, b) return a.dsq == b.dsq and a.ent.GUID < b.ent.GUID or a.dsq < b.dsq end)
+                    end
+                    if entdatas[1] then
+                        local minzoomscale = 0.18
+                        local maxzoomscale = 0.55
+                        local overallzoomscaler = 3.6
+                        local zoomradius = TUNING.SKILLS.WINONA.WORMHOLE_DETECTION_RADIUS
+                        local zoomscale_clamped = math.clamp(zoomscale, minzoomscale or zoomscale, maxzoomscale or zoomscale) * overallzoomscaler
+                        for _, entdata in ipairs(entdatas) do
+                            local ent = entdata.ent
+                            local ex, ey, ez = ent.Transform:GetWorldPosition()
+                            if ex ~= rx and ez ~= rz and self.owner.CanSeePointOnMiniMap and self.owner:CanSeePointOnMiniMap(ex, ey, ez) then
+                                if staticdecorations[ent.GUID .. "_WORMHOLE"] == nil then
+                                    local decoration = self.decorationrootstatic:AddChild(UIAnim())
+                                    staticdecorations[ent.GUID .. "_WORMHOLE"] = {
+                                        ent = ent,
+                                        decoration = decoration,
+                                        minzoomscale = minzoomscale,
+                                        maxzoomscale = maxzoomscale,
+                                        overallzoomscaler = overallzoomscaler,
+                                        zoomradius = zoomradius,
+                                        animgainfocus = { "proximity_pre", "proximity_loop" },
+                                        animlosefocus = { "proximity_pst", "idle" },
+                                    }
+                                    local animstate = decoration:GetAnimState()
+                                    animstate:SetBank("roseglasses_minimap_indicator")
+                                    animstate:SetBuild("roseglasses_minimap_indicator")
+                                    animstate:PlayAnimation("idle", true)
+                                    local x, y = self.minimap:WorldPosToMapPos(ex, ez, 0)
+                                    decoration:SetPosition(x * w, y * h)
+                                    decoration:SetScale(zoomscale_clamped, zoomscale_clamped, 1)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    elseif courierdirector and courierdirector:IsValid() then
+        local entdatas = {}
+        local ents_bin = GlobalMapIconsDB.prefabs["globalmapiconnamed"]
+        if ents_bin then
+            for ent, _ in pairs(ents_bin) do
+                if ent:HasTag("globalmapicon_player") then
+                    table.insert(entdatas, {
+                        ent = ent,
+                        dsq = courierdirector:GetDistanceSqToInst(ent),
+                        isplayer = true,
+                    })
+                end
+            end
+        end
+        ents_bin = GlobalMapIconsDB.prefabs["wobycourier_marker"]
+        if ents_bin then
+            for ent, _ in pairs(ents_bin) do
+                table.insert(entdatas, {
+                    ent = ent,
+                    dsq = courierdirector:GetDistanceSqToInst(ent),
+                })
+            end
+        end
+        if entdatas[1] then
+            if entdatas[2] then
+                table.sort(entdatas, function(a, b) return a.dsq == b.dsq and a.ent.GUID < b.ent.GUID or a.dsq < b.dsq end)
+            end
+            local rx, ry, rz = courierdirector.Transform:GetWorldPosition()
+            local minzoomscale = 0.18
+            local maxzoomscale = 0.55
+            local overallzoomscaler = 3.6
+            local zoomradius = TUNING.SKILLS.WALTER.COURIER_DETECTION_RADIUS
+            local zoomscale_clamped = math.clamp(zoomscale, minzoomscale or zoomscale, maxzoomscale or zoomscale) * overallzoomscaler
+            for _, entdata in ipairs(entdatas) do
+                local ent = entdata.ent
+                if staticdecorations[ent.GUID .. "_COURIER"] == nil then
+                    local ex, ey, ez = ent.Transform:GetWorldPosition()
+                    local decoration = self.decorationrootstatic:AddChild(UIAnim())
+                    self.decorationdata.alwaysdirty = true
+                    local decorationdata = {
+                        ent = ent,
+                        decoration = decoration,
+                        minzoomscale = minzoomscale,
+                        maxzoomscale = maxzoomscale,
+                        overallzoomscaler = overallzoomscaler,
+                        zoomradius = zoomradius,
+                        animgainfocus = { "proximity_pre", "proximity_loop" },
+                        animlosefocus = { "proximity_pst", "idle" },
+                        animhidedistsq = entdata.isplayer and WOBYCOURIER_MIN_DIST_TO_PLAYER_SQ or nil,
+                        donotautoaim = entdata.isplayer,
+                    }
+                    staticdecorations[ent.GUID .. "_COURIER"] = decorationdata
+                    local animstate = decoration:GetAnimState()
+                    animstate:SetBank("courier_minimap_indicator")
+                    animstate:SetBuild("courier_minimap_indicator")
+                    animstate:PlayAnimation("idle", true)
+                    local shouldhide
+                    if ThePlayer then
+                        if not ent.MiniMapEntity:EntityHasRestriction(ThePlayer.GUID) then
+                            shouldhide = true
+                        elseif decorationdata.animhidedistsq and ThePlayer:GetDistanceSqToInst(ent) < decorationdata.animhidedistsq then
+                            shouldhide = true
+                        end
+                    end
+                    if shouldhide then
+                        decoration:Hide()
+                        decorationdata.mapicon_hidden = true
+                    end
+                    local x, y = self.minimap:WorldPosToMapPos(ex, ez, 0)
+                    decoration:SetPosition(x * w, y * h)
+                    decoration:SetScale(zoomscale_clamped, zoomscale_clamped, 1)
                 end
             end
         end
@@ -258,9 +351,21 @@ function MapScreen:UpdateStaticDecorations()
     for _, decorationdata in pairs(staticdecorations) do
         local ent = decorationdata.ent
         local decoration = decorationdata.decoration
-        if ent:IsValid() then
-            local ex, ey, ez = ent.Transform:GetWorldPosition()
+        local shouldhide = not ent:IsValid()
+        if not shouldhide and ThePlayer then
+            if not ent.MiniMapEntity:EntityHasRestriction(ThePlayer.GUID) then
+                shouldhide = true
+            elseif decorationdata.animhidedistsq and ThePlayer:GetDistanceSqToInst(ent) < decorationdata.animhidedistsq then
+                shouldhide = true
+            end
+        end
+        if shouldhide then
+            decoration:Hide()
+            decorationdata.mapicon_hidden = true
+        else
             decoration:Show()
+            decorationdata.mapicon_hidden = nil
+            local ex, ey, ez = ent.Transform:GetWorldPosition()
             local zoomscale_clamped = math.clamp(zoomscale, decorationdata.minzoomscale or zoomscale, decorationdata.maxzoomscale or zoomscale) * (decorationdata.overallzoomscaler or 1)
             local x, y = self.minimap:WorldPosToMapPos(ex, ez, 0)
             decoration:SetPosition(x * w, y * h)
@@ -272,8 +377,6 @@ function MapScreen:UpdateStaticDecorations()
                 end
                 decorationdata.mapfocus = nil
             end
-        else
-            decoration:Hide()
         end
     end
 end
@@ -480,6 +583,64 @@ function MapScreen:ProcessRMBDecorations_JUMPIN_MAP(rmb, fresh)
     end
 end
 
+function MapScreen:ProcessRMBDecorations_DIRECTCOURIER_MAP(rmb, fresh)
+    local rmb_pos = rmb:GetActionPoint()
+    local courierdirector
+    if self.maptarget then -- From local client map.
+        if self.maptarget.prefab == "wobysmall" or self.maptarget.prefab == "wobybig" then
+            courierdirector = self.owner
+        end
+    end
+    if courierdirector and courierdirector:IsValid() then
+        local entdatas = {}
+        local ents_bin = GlobalMapIconsDB.prefabs["globalmapiconnamed"]
+        if ents_bin then
+            for ent, _ in pairs(ents_bin) do
+                if ent:HasTag("globalmapicon_player") then
+                    table.insert(entdatas, {
+                        ent = ent,
+                        dsq = ent:GetDistanceSqToPoint(rmb_pos.x, rmb_pos.y, rmb_pos.z),
+                    })
+                end
+            end
+        end
+        ents_bin = GlobalMapIconsDB.prefabs["wobycourier_marker"]
+        if ents_bin then
+            for ent, _ in pairs(ents_bin) do
+                table.insert(entdatas, {
+                    ent = ent,
+                    dsq = ent:GetDistanceSqToPoint(rmb_pos.x, rmb_pos.y, rmb_pos.z),
+                })
+            end
+        end
+        if entdatas[1] then
+            if entdatas[2] then
+                table.sort(entdatas, function(a, b) return a.dsq == b.dsq and a.ent.GUID < b.ent.GUID or a.dsq < b.dsq end)
+            end
+            local maxdsq = TUNING.SKILLS.WALTER.COURIER_DETECTION_RADIUS
+            maxdsq = maxdsq * maxdsq
+            for _, entdata in ipairs(entdatas) do
+                local dsq = entdata.dsq
+                if dsq < maxdsq then
+                    local ent = entdata.ent
+                    local decorationdata = self.decorationdata.staticdecorations[ent.GUID .. "_COURIER"]
+                    if decorationdata and not decorationdata.mapicon_hidden then
+                        local decoration = decorationdata.decoration
+                        if not decorationdata.mapfocus then
+                            decoration:GetAnimState():PlayAnimation(decorationdata.animgainfocus[1], true)
+                            for i = 2, #decorationdata.animgainfocus do
+                                decoration:GetAnimState():PushAnimation(decorationdata.animgainfocus[i])
+                            end
+                        end
+                        decorationdata.mapfocus = TheSim:GetStep() --screens use wallupdate and don't pause like simtick
+                        break
+                    end
+                end
+            end
+        end
+    end
+end
+
 function MapScreen:ProcessRMBDecorations(rmb, fresh)
     if fresh then
         self.decorationdata.rmbents = {}
@@ -490,6 +651,8 @@ function MapScreen:ProcessRMBDecorations(rmb, fresh)
         self:ProcessRMBDecorations_TOSS_MAP(rmb, fresh)
     elseif rmb.action == ACTIONS.JUMPIN_MAP then
         self:ProcessRMBDecorations_JUMPIN_MAP(rmb, fresh)
+    elseif rmb.action == ACTIONS.DIRECTCOURIER_MAP then
+        self:ProcessRMBDecorations_DIRECTCOURIER_MAP(rmb, fresh)
     end
 end
 
@@ -497,8 +660,11 @@ function MapScreen:UpdateMapActionsDecorations(x, y, z, LMBaction, RMBaction)
     local lmb = LMBaction and LMBaction.action or nil
     local rmb = RMBaction and RMBaction.action or nil
     local dd = self.decorationdata
-    if dd.dirty or dd.x ~= x or dd.y ~= y or dd.z ~= z or dd.lmb ~= lmb or dd.rmb ~= rmb then
+    if dd.dirty or dd.alwaysdirty or dd.x ~= x or dd.y ~= y or dd.z ~= z or dd.lmb ~= lmb or dd.rmb ~= rmb then
         dd.dirty = nil
+        if dd.alwaysdirty then
+            self:ProcessStaticDecorations()
+        end
         dd.x, dd.y, dd.z = x, y, z
         local lmbfresh = dd.lmb ~= lmb
         if lmbfresh then
@@ -526,15 +692,17 @@ function MapScreen:AutoAimToStaticDecorations(x, y, z)
         local closestdsq, rx, ry, rz
         local zoomscale = 0.75 / self.minimap:GetZoom()
         for _, decorationdata in pairs(staticdecorations) do
-            local ent = decorationdata.ent
-            if ent:IsValid() then
-                local ex, ey, ez = ent.Transform:GetWorldPosition()
-                local zoomscale_clamped = math.clamp(zoomscale, decorationdata.minzoomscale or zoomscale, decorationdata.maxzoomscale or zoomscale) * (decorationdata.overallzoomscaler or 1)
-                local radius = ((decorationdata.zoomradius or 1) * zoomscale_clamped) * self.minimap:GetZoom() * 0.5
-                local dsq = distsq(x, z, ex, ez)
-                if (closestdsq == nil or dsq < closestdsq) and dsq < radius * radius then
-                    closestdsq = dsq
-                    rx, ry, rz = ex, ey, ez
+            if not decorationdata.donotautoaim then
+                local ent = decorationdata.ent
+                if ent:IsValid() then
+                    local ex, ey, ez = ent.Transform:GetWorldPosition()
+                    local zoomscale_clamped = math.clamp(zoomscale, decorationdata.minzoomscale or zoomscale, decorationdata.maxzoomscale or zoomscale) * (decorationdata.overallzoomscaler or 1)
+                    local radius = ((decorationdata.zoomradius or 1) * zoomscale_clamped) * self.minimap:GetZoom() * 0.5
+                    local dsq = distsq(x, z, ex, ez)
+                    if (closestdsq == nil or dsq < closestdsq) and dsq < radius * radius then
+                        closestdsq = dsq
+                        rx, ry, rz = ex, ey, ez
+                    end
                 end
             end
         end

@@ -1246,7 +1246,7 @@ function ServerListingScreen:DoSorting()
         table.sort(self.viewed_servers, function(a,b)
             if self.sort_ascending then
                 if self.sort_column == "NAME" then
-                    return string.lower(a.name) < string.lower(b.name)
+                    return stringidsorter(string.lower(a.name), string.lower(b.name))
                 elseif self.sort_column == "DETAILS" then
                     if a.friend_playing and not b.friend_playing then
                         return true
@@ -1263,7 +1263,7 @@ function ServerListingScreen:DoSorting()
                     elseif a.ping >= 0 and b.ping < 0 then
                         return true
                     elseif a.ping == b.ping then
-                        return string.lower(a.name) < string.lower(b.name)
+                        return stringidsorter(string.lower(a.name), string.lower(b.name))
                     else
                         return a.ping < b.ping
                     end
@@ -1275,14 +1275,14 @@ function ServerListingScreen:DoSorting()
                     elseif a.ping >= 0 and b.ping < 0 then
                         return true
                     elseif a.ping == b.ping then
-                        return string.lower(a.name) < string.lower(b.name)
+                        return stringidsorter(string.lower(a.name), string.lower(b.name))
                     else
                         return a.ping < b.ping
                     end
                 end
             else
                 if self.sort_column == "NAME" then
-                    return string.lower(a.name) > string.lower(b.name)
+                    return stringidsorter(string.lower(a.name), string.lower(b.name))
                 elseif self.sort_column == "DETAILS" then
                     if a.friend_playing and not b.friend_playing then
                         return false
@@ -1299,7 +1299,7 @@ function ServerListingScreen:DoSorting()
                     elseif a.ping >= 0 and b.ping < 0 then
                         return true
                     elseif a.ping == b.ping then
-                        return string.lower(a.name) > string.lower(b.name)
+                        return stringidsorter(string.lower(a.name), string.lower(b.name))
                     else
                         return a.ping > b.ping
                     end
@@ -1311,7 +1311,7 @@ function ServerListingScreen:DoSorting()
                     elseif a.ping >= 0 and b.ping < 0 then
                         return true
                     elseif a.ping == b.ping then
-                        return string.lower(a.name) > string.lower(b.name)
+                        return stringidsorter(string.lower(a.name), string.lower(b.name))
                     else
                         return a.ping > b.ping
                     end

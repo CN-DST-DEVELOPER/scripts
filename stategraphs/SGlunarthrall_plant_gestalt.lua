@@ -107,15 +107,20 @@ local states =
 		tags = { "busy", "noattack" },
 
 		onenter = function(inst)
-			inst.AnimState:SetFinalOffset(3)
-			inst.components.locomotor:Stop()
-			inst.AnimState:PlayAnimation("infest_corpse")
-			inst.SoundEmitter:PlaySound("rifts/lunarthrall/gestalt_infest")
-
-			inst.sg.statemem.corpse = inst.components.entitytracker ~= nil and inst.components.entitytracker:GetEntity("corpse") or nil
+            inst.sg.statemem.corpse = inst.components.entitytracker ~= nil and inst.components.entitytracker:GetEntity("corpse") or nil
 			if inst.sg.statemem.corpse == nil then
 				inst.persists = false
 			end
+
+			inst.AnimState:SetFinalOffset(3)
+			inst.components.locomotor:Stop()
+			inst.SoundEmitter:PlaySound("rifts/lunarthrall/gestalt_infest")
+
+            if inst.sg.statemem.corpse and inst.sg.statemem.corpse:HasTag("small_corpse") then
+                inst.AnimState:PlayAnimation("infest_corpse_small")
+            else
+                inst.AnimState:PlayAnimation("infest_corpse")
+            end
 		end,
 
 		timeline =
@@ -131,7 +136,7 @@ local states =
 				elseif inst.sg.statemem.corpse ~= nil and inst.sg.statemem.corpse:IsValid() then
                     inst.sg.statemem.corpse:StartMutation()
 
-                    if TheWorld.components.lunarthrall_plantspawner ~= nil then
+                    if TheWorld.components.lunarthrall_plantspawner ~= nil and not inst.sg.statemem.corpse:HasTag("small_corpse") then
                         TheWorld.components.lunarthrall_plantspawner:RemoveWave()
                     end
 				end

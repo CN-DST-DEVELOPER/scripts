@@ -22,6 +22,8 @@ local function OnAttached(inst, target)
     inst:ListenForEvent("death", function()
         inst.components.debuff:Stop()
     end, target)
+	target:AddTag("hungerregenbuff")
+	target:ListenForEvent("onremove", function() target:RemoveTag("hungerregenbuff") end, inst)
 end
 
 local function fn()

@@ -82,6 +82,12 @@ end
 
 local function discharge(inst)
     inst:RemoveTag("charged")
+	inst:RemoveTag("electricdamageimmune")
+
+	if inst.components.electricattacks then
+		inst.components.electricattacks:RemoveSource(inst)
+	end
+
     inst.components.lootdropper:SetChanceLootTable('lightninggoat')
     inst.sg:GoToState("discharge")
     inst.AnimState:ClearBloomEffectHandle()
@@ -101,6 +107,13 @@ end
 
 local function setcharged(inst, instant)
     inst:AddTag("charged")
+	inst:AddTag("electricdamageimmune")
+
+	if inst.components.electricattacks == nil then
+		inst:AddComponent("electricattacks")
+	end
+	inst.components.electricattacks:AddSource(inst)
+
     inst.components.lootdropper:SetChanceLootTable('chargedlightninggoat')
     inst.AnimState:SetBuild("lightning_goat_shocked_build")
     inst.AnimState:Show("fx")
@@ -122,13 +135,16 @@ local function OnAttacked(inst, data)
     if data ~= nil and data.attacker ~= nil then
         if inst.charged then
             if data.attacker.components.health ~= nil and not data.attacker.components.health:IsDead() and
+                data.stimuli ~= "soul" and
                 (data.weapon == nil or ((data.weapon.components.weapon == nil or data.weapon.components.weapon.projectile == nil) and data.weapon.components.projectile == nil)) and
-                not (data.attacker.components.inventory ~= nil and data.attacker.components.inventory:IsInsulated()) then
-
-                data.attacker.components.health:DoDelta(-TUNING.LIGHTNING_GOAT_DAMAGE, nil, inst.prefab, nil, inst)
-                if data.attacker:HasTag("player") and not data.attacker.sg:HasStateTag("dead") then
-                    data.attacker.sg:GoToState("electrocute")
-                end
+				not (data.attacker.components.inventory ~= nil and data.attacker.components.inventory:IsInsulated()) and
+				not data.attacker:HasTag("catapult")
+			then
+				local damage_mult = 1
+				if not IsEntityElectricImmune(data.attacker) then
+					damage_mult = TUNING.ELECTRIC_DAMAGE_MULT + TUNING.ELECTRIC_WET_DAMAGE_MULT * data.attacker:GetWetMultiplier()
+				end
+				data.attacker.components.combat:GetAttacked(inst, damage_mult * TUNING.LIGHTNING_GOAT_DAMAGE, nil, "electric")
             end
         elseif data.stimuli == "electric" or (data.weapon ~= nil and data.weapon.components.weapon ~= nil and data.weapon.components.weapon.stimuli == "electric") then
             setcharged(inst)
@@ -137,6 +153,10 @@ local function OnAttacked(inst, data)
         inst.components.combat:SetTarget(data.attacker)
         inst.components.combat:ShareTarget(data.attacker, 20, IsChargedGoat, 3)
     end
+end
+
+local function OnElectrocute(inst)--, data)
+	setcharged(inst) --don't accidentally pass data as 2nd param to setcharged
 end
 
 local function onspawnedforhunt(inst, data)
@@ -259,6 +279,7 @@ local function fn()
 
 	inst:ListenForEvent("spawnedforhunt", onspawnedforhunt)
 
+	inst:ListenForEvent("electrocute", OnElectrocute)
     inst:ListenForEvent("lightningstrike", setcharged)
     inst.setcharged = setcharged
 

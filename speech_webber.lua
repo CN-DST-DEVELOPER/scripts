@@ -24,6 +24,11 @@ return{
             NOKELP = "only_used_by_wurt",
 --fallback to speech_wilson.lua             HASMERMLEADER = "only_used_by_wurt",
 		},
+        APPLYELIXIR =
+        {
+            TOO_SUPER = "That's too much for us.",
+            NO_ELIXIRABLE = "only_used_by_wendy",
+        },
         APPLYMODULE =
         {
             COOLDOWN = "only_used_by_wx78",
@@ -120,6 +125,13 @@ return{
             GENERIC = "I don't want to. Mom always said the kitchen was dangerous!",
             INUSE = "Ooo, make something tasty!",
             TOOFAR = "Let's scurry closer!",
+        },
+        DEPLOY = {
+            HERMITCRAB_RELOCATE = "Oh no, it's dry! We'll try again later.",
+        },
+        DIRECTCOURIER_MAP =
+        {
+--fallback to speech_wilson.lua             NOTARGET = "only_used_by_walter",
         },
 		DISMANTLE =
 		{
@@ -262,6 +274,7 @@ return{
         PICK =
         {
             NOTHING_INSIDE = "We found nothing inside!",
+			STUCK = "Aw! It's stuck!",
         },
         PICKUP =
         {
@@ -297,6 +310,7 @@ return{
 --fallback to speech_wilson.lua             NOWATERNEARBY = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             TOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             WAYTOOMANYBIRDS = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             BIRDSBLOCKED = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOFIRES =       "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOSILVICULTURE = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOHORTICULTURE = "only_used_by_waxwell_and_wicker",
@@ -305,6 +319,8 @@ return{
 --fallback to speech_wilson.lua             TOOMANYBEES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             NOMOONINCAVES = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua             ALREADYFULLMOON = "only_used_by_waxwell_and_wicker",
+--fallback to speech_wilson.lua             -- rifts5.1
+--fallback to speech_wilson.lua             DEADBIRDS = "only_used_by_waxwell_and_wicker",
 --fallback to speech_wilson.lua         },
 		REMOTE_TELEPORT =
 		{
@@ -336,6 +352,8 @@ return{
 			INUSE = "It's okay, we can wait for you to finish!",
             NOTMASTERCHEF = "Warly gets upset when we play with his things.",
             NOTAMERM = "We don't think we're allowed.",
+            NOTSOULJARHANDLER = "We promised not to play with the souls.",
+            RESTRICTED = "We're not allowed.",
 		},
         SADDLE =
         {
@@ -367,6 +385,8 @@ return{
 			NOTALLOWED = "That's against the rules.",
 			INUSE = "Are you finding everything okay in there?",
             NOTMASTERCHEF = "Warly gets upset when we play with his things.",
+            NOTSOULJARHANDLER = "We promised not to play with the souls.",
+            RESTRICTED = "We're not allowed.",
 		},
         TEACH =
         {
@@ -404,6 +424,10 @@ return{
             BEEF_BELL_INVALID_TARGET = "We're pretty sure it's not meant for that.",
             BEEF_BELL_ALREADY_USED = "That's someone else's friend.",
             BEEF_BELL_HAS_BEEF_ALREADY = "We already have a beefalo of our own!",
+
+			NOT_MINE = "We aren't allowed to play with that.",
+
+			CANNOT_FIX_DRONE = "We can't fix it.",
         },
 		USEKLAUSSACKKEY =
         {
@@ -424,10 +448,44 @@ return{
         {
             DOESNTWORK = "Anybody there? Guess not...",
             ALREADYACTIVE = "Maybe there's another contest going on somewhere else?",
+            NORESPONSE = "We can't find him.",
+            RIGHTTHERE = "He's ignoring us.",
         },
         YOTB_UNLOCKSKIN =
         {
             ALREADYKNOWN = "Hey, we already have that one!",
+        },
+		CARVEPUMPKIN =
+		{
+			INUSE = "Aww, we have to wait our turn.",
+			BURNING = "Ouch! Fire!",
+		},
+		DECORATESNOWMAN =
+		{
+			INUSE = "We have to wait our turn.",
+			HASHAT = "We can't cover the hat.",
+			STACKEDTOOHIGH = "It's so tall already!",
+			MELTING = "Aww. It's going to melt!",
+		},
+        MUTATE = 
+        {
+            NOGHOST = "only_used_by_wendy",
+            NONEWMOON = "only_used_by_wendy",
+            NOFULLMOON = "only_used_by_wendy",
+            NOTNIGHT = "only_used_by_wendy",
+            CAVE = "only_used_by_wendy",
+        },
+		MODSLINGSHOT =
+		{
+--fallback to speech_wilson.lua 			NOSLINGSHOT = "only_used_by_walter",
+		},
+		POUNCECAPTURE =
+		{
+			MISSED = "Aww, we missed!",
+		},
+        DIVEGRAB =
+        {
+            MISSED = "Aww, we missed!",
         },
     },
 
@@ -703,7 +761,23 @@ return{
 --fallback to speech_wilson.lua     {
 --fallback to speech_wilson.lua         "only_used_by_wortox",
 --fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_EMPTY_NICE =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_EMPTY_NAUGHTY =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
 --fallback to speech_wilson.lua     ANNOUNCE_SOUL_FEW =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_FEW_NICE =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_FEW_NAUGHTY =
 --fallback to speech_wilson.lua     {
 --fallback to speech_wilson.lua         "only_used_by_wortox",
 --fallback to speech_wilson.lua     },
@@ -711,17 +785,52 @@ return{
 --fallback to speech_wilson.lua     {
 --fallback to speech_wilson.lua         "only_used_by_wortox",
 --fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_MANY_NICE =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_MANY_NAUGHTY =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
 --fallback to speech_wilson.lua     ANNOUNCE_SOUL_OVERLOAD =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_OVERLOAD_NICE =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_OVERLOAD_NAUGHTY =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_OVERLOAD_WARNING =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_SOUL_OVERLOAD_AVOIDED =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_PANFLUTE_BUFF_ACTIVE =
+--fallback to speech_wilson.lua     {
+--fallback to speech_wilson.lua         "only_used_by_wortox",
+--fallback to speech_wilson.lua     },
+--fallback to speech_wilson.lua     ANNOUNCE_PANFLUTE_BUFF_USED =
 --fallback to speech_wilson.lua     {
 --fallback to speech_wilson.lua         "only_used_by_wortox",
 --fallback to speech_wilson.lua     },
 
     --walter specfic
+--fallback to speech_wilson.lua 	ANNOUNCE_AMMO_SLOT_OVERSTACKED = "only_used_by_walter",
 --fallback to speech_wilson.lua 	ANNOUNCE_SLINGHSOT_OUT_OF_AMMO =
 --fallback to speech_wilson.lua 	{
 --fallback to speech_wilson.lua 		"only_used_by_walter",
 --fallback to speech_wilson.lua 		"only_used_by_walter",
 --fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_SLINGHSOT_NO_AMMO_SKILL = "only_used_by_walter",
+--fallback to speech_wilson.lua 	ANNOUNCE_SLINGHSOT_NO_PARTS_SKILL = "only_used_by_walter",
 --fallback to speech_wilson.lua 	ANNOUNCE_STORYTELLING_ABORT_FIREWENTOUT =
 --fallback to speech_wilson.lua 	{
 --fallback to speech_wilson.lua         "only_used_by_walter",
@@ -729,6 +838,38 @@ return{
 --fallback to speech_wilson.lua 	ANNOUNCE_STORYTELLING_ABORT_NOT_NIGHT =
 --fallback to speech_wilson.lua 	{
 --fallback to speech_wilson.lua         "only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_RETURN =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_SIT =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_FOLLOW =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_PRAISE =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_FORAGE =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_WORK =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_COURIER =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
+--fallback to speech_wilson.lua 	},
+--fallback to speech_wilson.lua 	ANNOUNCE_WOBY_REMEMBERCHEST_FAIL =
+--fallback to speech_wilson.lua 	{
+--fallback to speech_wilson.lua 		"only_used_by_walter",
 --fallback to speech_wilson.lua 	},
 
     -- wx specific
@@ -741,12 +882,18 @@ return{
     QUAGMIRE_ANNOUNCE_LOSE = "Don't eat us!",
     QUAGMIRE_ANNOUNCE_WIN = "I'm ready to go home now!",
 
---fallback to speech_wilson.lua     ANNOUNCE_ROYALTY =
---fallback to speech_wilson.lua     {
---fallback to speech_wilson.lua         "Your majesty.",
---fallback to speech_wilson.lua         "Your highness.",
---fallback to speech_wilson.lua         "My liege!",
---fallback to speech_wilson.lua     },
+    ANNOUNCE_ROYALTY =
+    {
+        "Our Liege!",
+        "Nice crown!",
+        "Your wish is our command!",
+    },
+    ANNOUNCE_ROYALTY_JOKER =
+    {
+        "Our \"Liege\"!",
+        "Nice \"crown\"!",
+        "Tell us a joke!",
+    },
 
     ANNOUNCE_ATTACH_BUFF_ELECTRICATTACK    = "With great lightning powers comes great responsibility!",
     ANNOUNCE_ATTACH_BUFF_ATTACK            = "We feel so strong!",
@@ -828,6 +975,8 @@ return{
 --fallback to speech_wilson.lua         "only_used_by_wendy",
 --fallback to speech_wilson.lua     },
 --fallback to speech_wilson.lua 	ANNOUNCE_SISTURN_FULL = "only_used_by_wendy",
+    ANNOUNCE_SISTURN_FULL_EVIL = "only_used_by_wendy",
+    ANNOUNCE_SISTURN_FULL_BLOSSOM = "only_used_by_wendy",
 --fallback to speech_wilson.lua     ANNOUNCE_ABIGAIL_DEATH = "only_used_by_wendy",
 --fallback to speech_wilson.lua     ANNOUNCE_ABIGAIL_RETRIEVE = "only_used_by_wendy",
 --fallback to speech_wilson.lua 	ANNOUNCE_ABIGAIL_LOW_HEALTH = "only_used_by_wendy",
@@ -997,6 +1146,40 @@ return{
 
 	-- Hallowed Nights 2024
 	ANNOUNCE_NOPUMPKINCARVINGONFIRE = "Haha! Again!",
+
+	-- Winter's Feast 2024
+	ANNOUNCE_SNOWBALL_TOO_BIG = "We can't roll it any bigger!",
+	ANNOUNCE_SNOWBALL_NO_SNOW = "Where's more snow?",
+
+    -- Meta 5
+    ANNOUNCE_WENDY_BABYSITTER_SET = "only_used_by_wendy", 
+    ANNOUNCE_WENDY_BABYSITTER_STOP = "only_used_by_wendy",
+
+	ANNOUNCE_WORTOX_REVIVER_FAILTELEPORT = "Weeeee! Huh?",
+
+    ANNOUNCE_NO_ABIGAIL_FLOWER = "only_used_by_wendy",
+
+    ANNOUNCE_ELIXIR_BOOSTED = "Mmmm, we feel better.",
+    ANNOUNCE_ELIXIR_GHOSTVISION = "Like what Abby sees!",
+    ANNOUNCE_ELIXIR_PLAYER_SPEED = "We can help carry heavy stuff!",
+
+    ANNOUNCE_ELIXIR_TOO_SUPER = "That's too much for us.",
+
+    -- Rift 5
+
+    ANNOUNCE_LUNARGUARDIAN_INCOMING = "The giant ball is back.",
+    ANNOUNCE_FLOATER_HELD = "We float!",
+    ANNOUNCE_FLOATER_LETGO = "Weeee!",
+
+    -- rifts5.1
+    ANNOUNCE_LUNARHAIL_BIRD_SOUNDS = "Those birds don't sound happy.",
+    ANNOUNCE_LUNARHAIL_BIRD_CORPSES = "Maybe they're coming down for a rest.",
+    ANNOUNCE_FLOAT_SWIM_TIRED = "We're tired!",
+    ANOUNCE_MUTATED_BIRD_ATTACK = "Watch out for the birds!",
+
+    -- Rift 6
+    ANNOUNCE_WEAPON_TOOWEAK = "We need something stronger!",
+    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Hey, we're still here!",
 
 	BATTLECRY =
 	{
@@ -1581,6 +1764,8 @@ return{
 		TURF_FUNGUS="Some pretty average earth.",
 		TURF_FUNGUS_MOON = "Some pretty average earth.",
 		TURF_ARCHIVE = "Some very old stones.",
+        TURF_VAULT = "Some very old stones.",
+        TURF_VENT = "Some pretty average earth.",
 		TURF_SINKHOLE="Some pretty average earth.",
 		TURF_UNDERROCK="Some pretty average earth.",
 		TURF_MUD="Some pretty average earth.",
@@ -1922,10 +2107,15 @@ return{
         CHESSPIECE_EYEOFTERROR = "We think we could've been friends.",
         CHESSPIECE_TWINSOFTERROR = "Now they'll always be together.",
         CHESSPIECE_DAYWALKER = "He wasn't very nice to us...",
+        CHESSPIECE_DAYWALKER2 = "This guy keeps coming back!",
         CHESSPIECE_DEERCLOPS_MUTATED = "It looks so real, it gives us the shivers!",
         CHESSPIECE_WARG_MUTATED = "We thought only cats had nine lives!",
         CHESSPIECE_BEARGER_MUTATED = "Those teeth look just as sharp as we remember.",
         CHESSPIECE_SHARKBOI = "They weren't so bad after we got to know them.",
+        CHESSPIECE_WORMBOSS = "That big worm had a big mouth.",
+        CHESSPIECE_YOTS = "We can play with this worm!",
+        CHESSPIECE_WAGBOSS_ROBOT = "Can we keep it?",
+        CHESSPIECE_WAGBOSS_LUNAR = "Yes! Three-legged space spider!",
 
         CHESSJUNK1 = "A mess of chess.",
         CHESSJUNK2 = "A mess of chess.",
@@ -3147,6 +3337,7 @@ return{
         WINTER_ORNAMENTBOSS = "Wow, that one looks great!",
 		WINTER_ORNAMENTFORGE = "Not so scary when they're like this.",
 		WINTER_ORNAMENTGORGE = "Huh. It kinda looks...goaty!",
+        WINTER_ORNAMENTPEARL = "We like Ms. Pearl.",
 
         WINTER_FOOD1 = "I won't eat it. It's our friend now.", --gingerbread cookie
         WINTER_FOOD2 = "Icy icy icing!", --sugar cookie
@@ -3955,14 +4146,28 @@ return{
             "We have eight arms for petting!",
         },
 		WALTERHAT = "Can we be a Pioneer too?",
-		SLINGSHOT = "Can we play with it?",
+		SLINGSHOT =
+		{
+			GENERIC = "Can we play with it?",
+--fallback to speech_wilson.lua 			NOT_MINE = "only_used_by_walter",
+		},
 		SLINGSHOTAMMO_ROCK = "Do you want us to help clean up?",
 		SLINGSHOTAMMO_MARBLE = "Do you want us to help clean up?",
 		SLINGSHOTAMMO_THULECITE = "Do you want us to help clean up?",
         SLINGSHOTAMMO_GOLD = "Do you want us to help clean up?",
+		SLINGSHOTAMMO_HONEY = "Do you want us to help clean up?",
         SLINGSHOTAMMO_SLOW = "Do you want us to help clean up?",
         SLINGSHOTAMMO_FREEZE = "Do you want us to help clean up?",
 		SLINGSHOTAMMO_POOP = "Haha, ew!",
+		SLINGSHOTAMMO_STINGER = "Do you want us to help clean up?",
+		SLINGSHOTAMMO_MOONGLASS = "Do you want us to help clean up?",
+		SLINGSHOTAMMO_GELBLOB = "Do you want us to help clean up?",
+		SLINGSHOTAMMO_SCRAPFEATHER = "Do you want us to help clean up?",
+        SLINGSHOTAMMO_DREADSTONE = "Do you want us to help clean up?",
+        SLINGSHOTAMMO_GUNPOWDER = "Do you want us to help clean up?",
+        SLINGSHOTAMMO_LUNARPLANTHUSK = "Do you want us to help clean up?",
+        SLINGSHOTAMMO_PUREBRILLIANCE = "Do you want us to help clean up?",
+        SLINGSHOTAMMO_HORRORFUEL = "Do you want us to help clean up?",
         PORTABLETENT = "Yay, we're camping!",
         PORTABLETENT_ITEM = "Let us help!",
 
@@ -3989,21 +4194,28 @@ return{
         SPIDER_HEALER_ITEM = "It's good for fixing spider booboos.",
 
 		-- Wendy
-		GHOSTLYELIXIR_SLOWREGEN = "Hey, you didn't tell me you were making crafts!",
-		GHOSTLYELIXIR_FASTREGEN = "Hey, you didn't tell me you were making crafts!",
-		GHOSTLYELIXIR_SHIELD = "Hey, you didn't tell me you were making crafts!",
-		GHOSTLYELIXIR_ATTACK = "Hey, you didn't tell me you were making crafts!",
-		GHOSTLYELIXIR_SPEED = "Hey, you didn't tell me you were making crafts!",
-		GHOSTLYELIXIR_RETALIATION = "Hey, you didn't tell me you were making crafts!",
+		GHOSTLYELIXIR_SLOWREGEN = "Hey, you didn't tell us you were making crafts!",
+		GHOSTLYELIXIR_FASTREGEN = "Hey, you didn't tell us you were making crafts!",
+		GHOSTLYELIXIR_SHIELD = "Hey, you didn't tell us you were making crafts!",
+		GHOSTLYELIXIR_ATTACK = "Hey, you didn't tell us you were making crafts!",
+		GHOSTLYELIXIR_SPEED = "Hey, you didn't tell us you were making crafts!",
+		GHOSTLYELIXIR_RETALIATION = "Hey, you didn't tell us you were making crafts!",
+        GHOSTLYELIXIR_REVIVE = "Hey, you didn't tell us you were making crafts!",
 		SISTURN =
 		{
 			GENERIC = "It's a little Abigail house!",
 			SOME_FLOWERS = "We can find more flowers!",
 			LOTS_OF_FLOWERS = "We feel warm and fuzzy... well, more than usual.",
+            LOTS_OF_FLOWERS_EVIL = "Feels like webs in our head.",
+            LOTS_OF_FLOWERS_BLOSSOM = "Is someone talking to us?",   
 		},
 
         --Wortox
 --fallback to speech_wilson.lua         WORTOX_SOUL = "only_used_by_wortox", --only wortox can inspect souls
+        --WORTOX_DECOY is not needed because it uses the default WORTOX inspection.
+        WORTOX_NABBAG = "Is it stealing if the thing is just on the ground?",
+        WORTOX_REVIVER = "In case something bad happens.",
+        WORTOX_SOULJAR = "Are there spider souls in there?",
 
         PORTABLECOOKPOT_ITEM =
         {
@@ -4222,6 +4434,13 @@ return{
             LINE_4 = "It's very pretty.",
             LINE_5 = "We sure wish we knew what it says!",
         },
+		VAULT_RUNE = "Nice drawings.",
+		VAULT_STATUE =
+		{
+			LORE1 = "He's not okay.",
+			LORE2 = "Oh no...",
+			LORE3 = "They look mean!",
+		},
 
         ARCHIVE_RESONATOR = {
             GENERIC = "It's taking us on a treasure hunt!",
@@ -4610,6 +4829,7 @@ return{
 
         MOONSTORM_STATIC = "That looks kinda dangerous...",
         MOONSTORM_STATIC_ITEM = "It's like a big lightning bug stuck in a jar.",
+        MOONSTORM_STATIC_ROAMER = "We can catch it!",
         MOONSTORM_SPARK = "It makes all our spider hairs stand on end!",
 
         BIRD_MUTANT = "We think there might be something wrong with that bird...",
@@ -4923,6 +5143,7 @@ return{
 
         PLAYBILL_THE_DOLL = "What a funny play!",
         PLAYBILL_THE_VEIL = "It's not scary. We won't cover our eyes.",
+        PLAYBILL_THE_VAULT = "It's so heavy!",
         STATUEHARP_HEDGESPAWNER = "This place is making our spider-hairs tingle...",
         HEDGEHOUND = "Did we say something wrong?!",
         HEDGEHOUND_BUSH = "Look at all those pretty red roses.",
@@ -5184,6 +5405,7 @@ return{
         RECORD_MAIN = "It makes us want to do a little dance!", -- Unused.
         RECORD_WORKTOBEDONE = "It makes us want to do a little dance!", -- Unused.
         RECORD_HALLOWEDNIGHTS = "We want candy.",
+        RECORD_BALATRO = "It makes us happy!",
 
         ARCHIVE_ORCHESTRINA_MAIN = "We love puzzles!",
 
@@ -5272,8 +5494,11 @@ return{
 
         FENCE_JUNK = "It's not the nicest-looking fence.",
         JUNK_PILE = "There might be something fun to play with in there!",
-        JUNK_PILE_BIG = "We don't want to get squashed!",
-
+        JUNK_PILE_BIG = {
+            BLUEPRINT = "Ooh! We see a prize at the top!",
+            GENERIC = "We don't want to get squashed!",
+        },
+        
         ARMOR_LUNARPLANT_HUSK = "We aren't allowed to play with that. It's just for Wormwood.",
 
         -- Meta 4 / Ocean QoL
@@ -5394,7 +5619,7 @@ return{
 
         CHEST_MIMIC_REVEALED = "We didn't touch it!",
 
-        GELBLOB_STORAGE = { 
+        GELBLOB_STORAGE = {
             GENERIC  = "Looks like jelly.",
             FULL = "Yummy!",
         },
@@ -5402,7 +5627,7 @@ return{
         GELBLOB_BOTTLE = "It's sticky like our webs!",
 
         PLAYER_HOSTED =
-        {        
+        {
             GENERIC = "Remember us?",
             ME = "Gonna be our own best friend!",
         },
@@ -5414,6 +5639,200 @@ return{
         SHADOWTHRALL_PARASITE = "Maybe it just wants a friend to play with.",
 
         PUMPKINCARVER = "Fun fun fun fun fun.",
+		SNOWMAN =
+		{
+			GENERIC = "We love it!",
+			SNOWBALL = "It's so... round!",
+		},
+        SNOWBALL_ITEM = "Snowball fight!",
+
+        -- Year of the Snake
+        YOTS_SNAKESHRINE =
+        {
+            GENERIC = "A surprise for us!",
+            EMPTY = "What do we give it?",
+            BURNT = "It wasn't us.",
+        },
+        YOTS_WORM = "You'll never catch us, worm!",
+        YOTS_LANTERN_POST = 
+        {
+            GENERIC = "Fancy!",
+            BURNT = "Aw. It burned.",
+        },
+        YOTS_LANTERN_POST_ITEM = "We can build it!",
+        CHESSPIECE_DEPTHWORM  = "Can we play with this worm?",
+
+        -- Meta 5
+        GHOSTLYELIXIR_LUNAR = "Hey, you didn't tell me you were making crafts!",
+        GHOSTLYELIXIR_SHADOW = "Hey, you didn't tell me you were making crafts!",
+
+		SLINGSHOTMODKIT = "Walter has the best toys.",
+		SLINGSHOT_BAND_PIGSKIN = "Walter has the best toys.",
+		SLINGSHOT_BAND_TENTACLE = "Walter has the best toys.",
+		SLINGSHOT_BAND_MIMIC = "Walter has the best toys.",
+		SLINGSHOT_FRAME_BONE = "Walter has the best toys.",
+		SLINGSHOT_FRAME_GEMS = "Walter has the best toys.",
+		SLINGSHOT_FRAME_WAGPUNK_0 = "Walter has the best toys.",
+		SLINGSHOT_FRAME_WAGPUNK = "Walter has the best toys.",
+		SLINGSHOT_HANDLE_STICKY = "Walter has the best toys.",
+		SLINGSHOT_HANDLE_JELLY = "Walter has the best toys.",
+		SLINGSHOT_HANDLE_SILK = "Walter has the best toys.",
+		SLINGSHOT_HANDLE_VOIDCLOTH = "Walter has the best toys.",
+
+		WOBY_TREAT = "One for Woby, one for us!",
+		BANDAGE_BUTTERFLYWINGS = "Sticker!",
+		PORTABLEFIREPIT_ITEM = "We can stay warm and cozy on our adventures!",
+        SLINGSHOTAMMO_CONTAINER = "Walter is the best shot.",
+
+        ELIXIR_CONTAINER = "Will Abigail mind if we try some?",
+        GHOSTFLOWERHAT = "We wanna wear it!",
+        WENDY_RESURRECTIONGRAVE = "Oooh, we want one!",
+        GRAVEURN =
+        {
+            GENERIC = "We don't think anyone's inside.",
+            HAS_SPIRIT = "We got a ghost!",
+        },
+
+        SHALLOW_GRAVE = "Aww. Did we know them?",
+        THULECITEBUGNET = "We can make that with our beard!",
+
+        -- Deck of Cards
+        DECK_OF_CARDS = "We know many games!",
+        PLAYING_CARD = "Is this the one we lost?",
+        BALATRO_MACHINE = "Prizes!",
+
+		-- Rifts 5
+		GESTALT_CAGE =
+		{
+			GENERIC = "Nobody home.",
+			FILLED = "We got one!",
+		},
+		WAGBOSS_ROBOT_SECRET = "We love surprises!",
+        WAGBOSS_ROBOT = "Does it give rides?",
+        WAGBOSS_ROBOT_POSSESSED = "We just wanted to play!",
+		WAGBOSS_ROBOT_LEG = "Luckily we have more than three legs!",
+		ALTERGUARDIAN_PHASE1_LUNARRIFT = "It seems crankier than before!",
+		ALTERGUARDIAN_PHASE1_LUNARRIFT_GESTALT = "So bright!",
+        ALTERGUARDIAN_PHASE4_LUNARRIFT = "Three-legged space spider?",
+		WAGDRONE_ROLLING =
+        {
+            GENERIC = "Nasty little robots.",
+            INACTIVE = "Can we play with it?",
+            DAMAGED = "We can fix it, or take its insides!",
+            FRIENDLY = "We love how it spins and spins and spins.",
+        },
+        WAGDRONE_FLYING =
+        {
+            GENERIC = "No fair! We can't fly!",
+            INACTIVE = "Can we play with it?",
+            DAMAGED = "We can't fix it, but we can take its insides.",
+        },
+		WAGDRONE_PARTS = "Can we use that to fix a broken one?",
+		WAGDRONE_BEACON = "It makes a make-believe wall!",
+
+        WAGPUNK_WORKSTATION = "Can we build something fun?",
+        WAGPUNK_LEVER = "It's our turn to pull it!",
+        WAGPUNK_FLOOR_KIT = "We'll have more room to play.",
+        WAGPUNK_CAGEWALL = "Now we can't cross the line?",
+
+		WAGSTAFF_ITEM_1 = "We can touch the glove!",
+		WAGSTAFF_ITEM_2 = "It's real? We don't understand.",
+
+        HERMITCRAB_RELOCATION_KIT = "We get to help Ms. Pearl find a new home!",
+
+        WANDERINGTRADER =
+        {
+            REVEALED = "What does he have for us?",
+            GENERIC = "It looks weird.",
+        },
+
+        GESTALT_GUARD_EVOLVED = "Why are they mad at us?",
+        FLOTATIONCUSHION = "Promise we won't splash...",
+        LUNAR_SEED = "So pretty! Can we keep it?",
+
+        -- rifts5.1
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE = "Maybe it won't be so cranky this time.",
+        WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "A fun and dangerous toy to build!",
+        WAGBOSS_ROBOT_CREATION_PARTS = "More parts!",
+        MOONSTORM_STATIC_CATCHER = "Let's catch something!",
+        COOLANT = "We like bubbles.",
+
+        FENCE_ELECTRIC = {
+            LINKED = "We're not afraid of zaps.",      --NOTE: the fence post is fully linked to two other posts
+            GENERIC = "It's not doing anything!",           --NOTE: no links or electricity, just boring ol fence post
+        },
+        FENCE_ELECTRIC_ITEM = "Where should we put it?",
+
+        MUTATEDBIRD = "Hello, weird bird!",
+
+        BIRDCORPSE =
+        {
+            GENERIC  = "Poke it!", --witnessing the corpse
+            BURNING  = "We love that smell!", --when its burning
+            REVIVING = "What's happening to it?", --when its mutating and being revived
+        },
+
+        BUZZARDCORPSE = {
+            GENERIC  = "Poke it!", --witnessing the corpse
+            BURNING  = "We love that smell!", --when its burning
+            REVIVING = "What's happening to it?", --when its mutating and being revived
+        },
+
+        MUTATEDBUZZARD = {
+            GENERIC = "What do you want?", -- Generic string
+            EATING_CORPSE = "Kinda makes us hungry.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
+        },
+
+        -- Rifts 6
+
+        SHADOWTHRALL_CENTIPEDE = {
+            HEAD = "It's staring at us!", --The head segment
+            BODY = "It has more legs than us!", --The body segment
+            FLIPPED = "Aww, poor guy.", --When it's flipped over (either head or body segment)
+        },
+
+        TREE_ROCK =
+		{
+			BURNING = "Get out of the way!", --It's vines are burning, it will collapse
+			CHOPPED = "We'll mine it!", --It's 'chopped', so the rock fell
+			GENERIC = "When the bough breaks...", --Rock is still on tree
+		},
+
+        -- NOTE: Unsure about HOT and COLD, just do GENERIC, GAS, MIASMA for now!
+        CAVE_VENT_ROCK =
+        {
+            GENERIC = "What's in there?", -- Not ventilating anything
+            HOT     = "It's too hot!", -- Ventiliating hot air, making the area warm
+            GAS     = "We don't like that smell.", -- Ventiliating Toadstools gas fumes and spores
+            MIASMA  = "It makes us feel sick.", -- Ventiliating the shadow rift miasma
+        },
+        CAVE_FERN_WITHERED = "Aww, it's dead.",
+        FLOWER_CAVE_WITHERED = "It's not glowing much.",
+
+		ABYSSPILLAR_MINION =
+		{
+			GENERIC = "We're glad it's just a statue!", --off, looks like decor/statue
+			ACTIVATED = "Hey! No fair!", --turned on and hopping over puzzle pillars
+		},
+		ABYSSPILLAR_TRIAL = "We'll pull it!",
+
+        VAULT_TELEPORTER =
+        {
+            GENERIC = "We like this game.",
+            BROKEN = "Aw, it's broken!",
+            UNPOWERED = "Why won't it turn on?",
+        },
+		VAULT_ORB = "Ooh, a ball!",
+        VAULT_LOBBY_EXIT = "We're first!",
+		VAULT_CHANDELIER_BROKEN = "We'll catch the next one!",
+
+		ANCIENT_HUSK = "Were they mad at each other?",
+		MASK_ANCIENT_HANDMAIDHAT = "If we put it on, will we look tough too?",
+		MASK_ANCIENT_ARCHITECTHAT = "Do we have a smart face too?",
+		MASK_ANCIENT_MASONHAT = "It must have been worn by someone big and strong.",
+
+        TREE_ROCK_SEED = "What a cute little seed!",
+        TREE_ROCK_SAPLING = "They grow up so fast!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",
@@ -5436,4 +5855,8 @@ return{
         TALLBIRDEGG_CRACKED = "What if it hatches in our belly?",
 		WINTERSFEASTFUEL = "It... reminds me of mom's cooking...",
     },
+
+    WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
+
+
 }

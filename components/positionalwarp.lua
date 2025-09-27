@@ -105,6 +105,11 @@ function PositionalWarp:CachePosition()
 	local recent_x, recent_y, recent_z = self.history_x[self.history_cur + 1], self.history_y[self.history_cur + 1], self.history_z[self.history_cur + 1]
 
 	if Vec3Util_DistSq(x, y, z, recent_x, recent_y, recent_z) > self.update_dist_sq then
+		--V2C: this (instead of IsTeleportLinkingPermittedFromPoint) will still allow within arena
+		if not IsTeleportingPermittedFromPointToPoint(x, y, z, x, y, z) then
+			return
+		end
+
 		self.history_cur = (self.history_cur + 1) % self.history_max
 		if self.history_cur == self.history_back then
 			self.history_back = (self.history_back + 1) % self.history_max
@@ -139,7 +144,13 @@ function PositionalWarp:GetHistoryPosition(rewind)
 end
 
 function PositionalWarp:Reset()
-	self.history_x[1], self.history_y[1], self.history_z[1] = self.inst.Transform:GetWorldPosition() 
+	local x, y, z = self.inst.Transform:GetWorldPosition() 
+	--V2C: this (instead of IsTeleportLinkingPermittedFromPoint) will still allow within arena
+	if IsTeleportingPermittedFromPointToPoint(x, y, z, x, y, z) then
+		self.history_x[1], self.history_y[1], self.history_z[1] = x, y, z
+	else
+		self.history_x[1], self.history_y[1], self.history_z[1] = 0, 0, 0
+	end
 	self.history_cur = 0
 	self.history_back = 0
 	self:UpdateMarker()

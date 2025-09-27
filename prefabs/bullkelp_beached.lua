@@ -12,21 +12,40 @@ local prefabs =
     "bullkelp_root",
 }
 
-local function ReplaceOnPickup(inst, pickupguy, src_pos)
-    inst:Remove()
+local function ReplaceOnPickup(inst, container, src_pos)
+    local moisture, wet = inst.components.inventoryitem:GetMoisture(), inst.components.inventoryitem:IsWet()
 
-    local x, y, z = pickupguy.Transform:GetWorldPosition()
+	inst:Remove()
 
-    local kelp = SpawnPrefab("kelp")
-    local root = SpawnPrefab("bullkelp_root")
+	if container then
+		local kelp = SpawnPrefab("kelp")
+		local root = SpawnPrefab("bullkelp_root")
 
-    kelp.Transform:SetPosition(x, 0, z)
-    root.Transform:SetPosition(x, 0, z)
+		kelp.components.inventoryitem:InheritMoisture(moisture, wet)
+		root.components.inventoryitem:InheritMoisture(moisture, wet)
 
-    pickupguy.components.inventory:GiveItem(kelp, nil, src_pos)
-    pickupguy.components.inventory:GiveItem(root, nil, src_pos)
+		if src_pos then
+			kelp.Transform:SetPosition(src_pos:Get())
+			root.Transform:SetPosition(src_pos:Get())
+		end
 
-    return true -- True because inst was removed.
+		container:GiveItem(kelp, nil, src_pos)
+		container:GiveItem(root, nil, src_pos)
+	end
+end
+
+local function onpickup(inst, pickupguy, src_pos)
+	ReplaceOnPickup(inst, pickupguy.components.inventory, src_pos)
+	return true -- True because inst was removed.
+end
+
+local function onputininventory(inst, owner)
+	--V2C: -backup if we made it into a container and skipped OnPickup.
+	--     -this happens if Woby picks things up since she doesn't have
+	--      inventory component.
+	--NOTE: won't reach here if we did reach OnPickup, as we would have
+	--      been removed already.
+	ReplaceOnPickup(inst, owner.components.container or owner.components.inventory, inst:GetPosition())
 end
 
 local function fn()
@@ -55,7 +74,8 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnPickupFn(ReplaceOnPickup)
+	inst.components.inventoryitem:SetOnPickupFn(onpickup)
+	inst.components.inventoryitem:SetOnPutInInventoryFn(onputininventory)
 
     MakeMediumBurnable(inst, TUNING.LARGE_BURNTIME)
     MakeSmallPropagator(inst)

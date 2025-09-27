@@ -125,6 +125,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx, pre, pst
             inst:AddTag("cooker")
 
             inst:AddTag("daylight")
+			inst:AddTag("heatstar")
 
             inst.SoundEmitter:PlaySound("dontstarve/common/staff_star_LP", "staff_star_loop", nil, not inst._ismastersim)
         else

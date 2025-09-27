@@ -4,20 +4,23 @@ local events=
 {
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     EventHandler("doattack", function(inst)
-        if not inst.components.health:IsDead() and (inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy")) then
+		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
             inst.sg:GoToState("attack")
-
         end
     end),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     --CommonHandlers.OnAttacked(),
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and not
-            inst.sg:HasStateTag("attack") then
-            inst.sg:GoToState("hit")
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
+				inst.sg:GoToState("hit")
+			end
         end
-    end)
+	end),
 }
 
 local states=
@@ -89,5 +92,6 @@ local states=
     },
 }
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("eyeturret", states, events, "idle")

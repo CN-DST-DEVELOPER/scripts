@@ -194,6 +194,7 @@ function BeefaloBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         BrainCommon.IpecacsyrupPanicTrigger(self.inst),
         IfNode(function() return self.inst.components.combat.target ~= nil end, "hastarget",
             AttackWall(self.inst)),

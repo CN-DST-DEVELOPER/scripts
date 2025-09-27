@@ -86,6 +86,7 @@ local function fn()
     MakeMediumPropagator(inst)
     MakeHauntableWork(inst)
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     inst.OnSave = onsave
     inst.OnLoad = onload

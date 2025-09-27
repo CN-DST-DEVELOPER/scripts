@@ -286,6 +286,7 @@ local function fn()
     inst.components.workable:SetOnFinishCallback(onhammered)
     inst.components.workable:SetOnWorkCallback(onhit)
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     MakeMediumBurnable(inst, nil, nil, true)
     MakeMediumPropagator(inst)

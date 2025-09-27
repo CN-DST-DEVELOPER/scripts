@@ -150,6 +150,8 @@ local function BuildStartupContextTable() -- includes a bit more metadata about 
 
     sendstats.platform = PLATFORM
     sendstats.branch = BRANCH
+	sendstats.architecture = APP_ARCHITECTURE
+	sendstats.os_architecture = APP_OS_ARCHITECTURE
 
     local modnames = KnownModIndex:GetModNames()
     for i, name in ipairs(modnames) do

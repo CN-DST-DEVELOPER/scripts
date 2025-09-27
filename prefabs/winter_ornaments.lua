@@ -38,48 +38,10 @@ local FANCY_FLOATER_SCALES =
 local PLAIN_FLOATER_SCALE = 0.65
 local LIGHT_FLOATER_SCALE = 0.70
 
+local WINTERORNAMENT_PREFAB_LIST = {} -- Populated by MakeOrnament fn.
+
 function GetAllWinterOrnamentPrefabs()
-    local decor =
-    {
-        "winter_ornament_boss_antlion",
-        "winter_ornament_boss_bearger",
-        "winter_ornament_boss_beequeen",
-        "winter_ornament_boss_deerclops",
-        "winter_ornament_boss_dragonfly",
-        "winter_ornament_boss_fuelweaver",
-        "winter_ornament_boss_klaus",
-        "winter_ornament_boss_krampus",
-        "winter_ornament_boss_moose",
-        "winter_ornament_boss_noeyeblue",
-        "winter_ornament_boss_noeyered",
-        "winter_ornament_boss_toadstool",
-		"winter_ornament_boss_toadstool_misery",
-        "winter_ornament_boss_minotaur",
-		"winter_ornament_boss_crabking",
-		"winter_ornament_boss_crabkingpearl",
-		"winter_ornament_boss_hermithouse",
-		"winter_ornament_boss_pearl",
-        "winter_ornament_boss_celestialchampion1",
-        "winter_ornament_boss_celestialchampion2",
-        "winter_ornament_boss_celestialchampion3",
-        "winter_ornament_boss_celestialchampion4",
-        "winter_ornament_boss_eyeofterror1",
-        "winter_ornament_boss_eyeofterror2",
-        "winter_ornament_boss_wagstaff",    
-    }
-    for i = 1, NUM_BASIC_ORNAMENT do
-        table.insert(decor, "winter_ornament_plain" .. tostring(i))
-    end
-    for i = 1, NUM_FANCY_ORNAMENT do
-        table.insert(decor, "winter_ornament_fancy" .. tostring(i))
-    end
-    for i = 1, NUM_LIGHT_ORNAMENT do
-        table.insert(decor, "winter_ornament_light" .. tostring(i))
-    end
-    for i = 1, NUM_FESTIVALEVENTS_ORNAMENT do
-        table.insert(decor, "winter_ornament_festivalevents" .. tostring(i))
-    end
-    return decor
+    return WINTERORNAMENT_PREFAB_LIST
 end
 
 function GetRandomBasicWinterOrnament()
@@ -229,7 +191,7 @@ local function MakeOrnament(ornamentid, overridename, lightdata, build, float_sc
             inst.scrapbook_anim = tostring(ornamentid)
         end
 
-        MakeInventoryFloatable(inst)
+        MakeInventoryFloatable(inst, nil, .075, float_scale)
 
         inst.entity:SetPristine()
 
@@ -242,10 +204,6 @@ local function MakeOrnament(ornamentid, overridename, lightdata, build, float_sc
 
         inst:AddComponent("inspectable")
         inst:AddComponent("inventoryitem")
-
-        if float_scale ~= nil then
-            inst.components.floater:SetScale(float_scale)
-        end
 
         inst:AddComponent("tradable")
         inst.components.tradable.goldvalue = ORNAMENT_GOLD_VALUE[string.sub(ornamentid, 1, 5)] or 1
@@ -287,7 +245,11 @@ local function MakeOrnament(ornamentid, overridename, lightdata, build, float_sc
         return inst
     end
 
-    return Prefab("winter_ornament_"..tostring(ornamentid), fn, assets)
+    local name = "winter_ornament_"..tostring(ornamentid)
+
+    table.insert(WINTERORNAMENT_PREFAB_LIST, name)
+
+    return Prefab(name, fn, assets)
 end
 
 local ornament =
@@ -322,19 +284,23 @@ local ornament =
     MakeOrnament("boss_hermithouse", "winter_ornamentpearl", nil, "winter_ornaments2020", 0.8),
     MakeOrnament("boss_pearl", "winter_ornamentpearl", nil, "winter_ornaments2020", 0.6),
 
-    MakeOrnament("boss_celestialchampion1", "winter_ornamentboss", nil, "winter_ornaments2021", 0.8),
-    MakeOrnament("boss_celestialchampion2", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
-    MakeOrnament("boss_celestialchampion3", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
-    MakeOrnament("boss_celestialchampion4", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
-    MakeOrnament("boss_eyeofterror1", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
-    MakeOrnament("boss_eyeofterror2", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
-    MakeOrnament("boss_wagstaff", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
+    MakeOrnament("boss_celestialchampion1", "winter_ornamentboss", nil, "winter_ornaments2021", 0.6),
+    MakeOrnament("boss_celestialchampion2", "winter_ornamentboss", nil, "winter_ornaments2021", 0.7),
+    MakeOrnament("boss_celestialchampion3", "winter_ornamentboss", nil, "winter_ornaments2021", 0.75),
+    MakeOrnament("boss_celestialchampion4", "winter_ornamentboss", nil, "winter_ornaments2021", 0.75),
+    MakeOrnament("boss_eyeofterror1", "winter_ornamentboss", nil, "winter_ornaments2021", 1.15),
+    MakeOrnament("boss_eyeofterror2", "winter_ornamentboss", nil, "winter_ornaments2021", 1.15),
+    MakeOrnament("boss_wagstaff", "winter_ornamentboss", nil, "winter_ornaments2021", 0.9),
 
     MakeOrnament("boss_daywalker",        "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
     MakeOrnament("shadowthralls",         "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
     MakeOrnament("boss_mutateddeerclops", "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
     MakeOrnament("boss_mutatedbearger",   "winter_ornamentboss", nil, "winter_ornaments2023", 0.8),
     MakeOrnament("boss_mutatedwarg",      "winter_ornamentboss", nil, "winter_ornaments2023", 1.3),
+
+    MakeOrnament("boss_daywalker2",       "winter_ornamentboss", nil, "winter_ornaments2024", 0.8),
+    MakeOrnament("boss_sharkboi",         "winter_ornamentboss", nil, "winter_ornaments2024", 1.1),
+    MakeOrnament("boss_wormboss",         "winter_ornamentboss", nil, "winter_ornaments2024", 1.2),
 }
 
 for i = 1, NUM_BASIC_ORNAMENT do

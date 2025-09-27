@@ -68,7 +68,9 @@ local function StartTrackingDelayOwner(self, owner)
 end
 
 function Projectile:OnRemoveFromEntity()
-    self.inst:RemoveTag("projectile")
+	if self.inst.components.complexprojectile == nil then
+		self.inst:RemoveTag("projectile")
+	end
     self.inst:RemoveTag("catchable")
     if self.dozeOffTask ~= nil then
         self.dozeOffTask:Cancel()
@@ -87,6 +89,9 @@ end
 
 function Projectile:SetSpeed(speed)
     self.speed = speed
+	if self:IsThrown() then
+		self.inst.Physics:SetMotorVel(self.speed, 0, 0)
+	end
 end
 
 function Projectile:SetStimuli(stimuli)
@@ -140,6 +145,9 @@ end
 function Projectile:Throw(owner, target, attacker)
     self.owner = owner
     self.target = target
+	if self.inst:IsAsleep() then
+		self:DelayOffscreenMiss_Internal()
+	end
 	self.start = self.overridestartpos or owner:GetPosition()
     self.dest = target:GetPosition()
     self.inst.Physics:ClearCollidesWith(COLLISION.LIMITS)
@@ -195,6 +203,10 @@ function Projectile:Stop()
     self.target = nil
     self.owner = nil
     self.delaypos = nil
+	if self.dozeOffTask then
+		self.dozeOffTask:Cancel()
+		self.dozeOffTask = nil
+	end
 end
 
 function Projectile:Hit(target)
@@ -228,13 +240,20 @@ end
 
 local function DozeOff(inst, self)
     self.dozeOffTask = nil
-    self:Stop()
+	--assert(self.target ~= nil)
+	self:Miss(self.target)
+end
+
+function Projectile:DelayOffscreenMiss_Internal()
+	if self.dozeOffTask == nil then
+		self.dozeOffTask = self.inst:DoTaskInTime(DOZE_OFF_TIME, DozeOff, self)
+	end
 end
 
 function Projectile:OnEntitySleep()
-    if self.dozeOffTask == nil then
-   	    self.dozeOffTask = self.inst:DoTaskInTime(DOZE_OFF_TIME, DozeOff, self)
-    end
+	if self.target then
+		self:DelayOffscreenMiss_Internal()
+	end
 end
 
 function Projectile:OnEntityWake()

@@ -413,6 +413,28 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 	end
 end
 
+function Skinner:HasSpinnableTail()
+    local has_spinnable_tail
+    if self.skin_name then
+        has_spinnable_tail = self.skin_name:find("wortox") ~= nil and self.skin_name ~= "wortox_noeyeddeer" -- Hack workaround until heads with skins can flag if they overwrite tails.
+    else
+        has_spinnable_tail = self.inst.prefab == "wortox" -- All base Wortox heads have a spinnable tail.
+    end
+    if self.clothing then
+        for _, cloth_slot in pairs(clothing_order) do
+            local cloth_name = self.clothing[cloth_slot]
+            if cloth_name and CLOTHING[cloth_name] then
+                if CLOTHING[cloth_name].spinnable_tail then
+                    has_spinnable_tail = true
+                elseif table.contains(CLOTHING[cloth_name].symbol_overrides, "tail") then
+                    has_spinnable_tail = false
+                end
+            end
+        end
+    end
+    return has_spinnable_tail
+end
+
 function Skinner:GetSkinMode()
     return self.skintype
 end

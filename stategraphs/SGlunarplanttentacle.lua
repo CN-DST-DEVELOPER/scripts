@@ -79,6 +79,28 @@ CommonStates.AddSimpleState(states, "attack", "atk", {"attack"}, "attack_pst",
 {
     onenter = function(inst) inst.components.combat:StartAttack() end,
 })
+
+CommonStates.AddSimpleState(states, "quickattack", "quick_atk", { "attack" }, "attack_pst",
+{
+	FrameEvent(8, function(inst)
+		local target = inst.components.combat.target
+		inst.components.combat:DoAttack()
+		if inst.owner and
+			target and
+			target.components.combat and
+			target.components.combat:TargetIs(inst) and
+			target.components.combat:CanTarget(inst.owner)
+		then
+			--forward aggro back to our owner
+			target.components.combat:SetTarget(inst.owner)
+		end
+	end),
+	FrameEvent(11, function(inst) inst.sg:RemoveStateTag("attack") end),
+},
+{
+	onenter = function(inst) inst.components.combat:StartAttack() end,
+})
+
 CommonStates.AddSimpleState(states, "attack_pst", "breach_pst", nil, nil, nil,
 {
     onexit = function(inst) inst:Remove() end,

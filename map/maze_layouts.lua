@@ -47,7 +47,10 @@ local archive_areas =
 	end,
 }
 
-local function GetLayoutsForType( name, sub_dir, params, areas )
+local function GetLayoutsForType( name, sub_dir, params, areas, INVALID_FIELD)
+    if INVALID_FIELD then
+        print("INVALID_FIELD defined in GetLayoutsForType! Fix this!", name)
+    end
 	sub_dir = "map/static_layouts/" .. (sub_dir or "rooms") .. "/"
 	params = params or {}
 	local layouts =
@@ -124,7 +127,10 @@ local function GetLayoutsForType( name, sub_dir, params, areas )
 end
 
 
-local function GetSpecialLayoutsForType( layout_dir, name, sub_dir, areas )
+local function GetSpecialLayoutsForType( layout_dir, name, sub_dir, areas, INVALID_FIELD)
+    if INVALID_FIELD then
+        print("INVALID_FIELD defined in GetLayoutsForType! Fix this!", name)
+    end
 	local path = "map/static_layouts/" .. (sub_dir or "rooms") .. "/" .. layout_dir .. "/" .. name
 	local layouts =
 		{
@@ -168,13 +174,13 @@ return {
 			["atrium_hallway"] = GetLayoutsForType("atrium_hallway", nil, nil, ruins_areas),
 			["atrium_hallway_two"] = GetLayoutsForType("atrium_hallway_two", nil, nil, ruins_areas),
 			["atrium_hallway_three"] = GetLayoutsForType("atrium_hallway_three", nil, nil, ruins_areas),
-			["atrium_end"] = GetSpecialLayoutsForType("atrium_end", "atrium_end", nil, nil, ruins_areas),
-			["atrium_start"] = GetSpecialLayoutsForType("atrium_start", "atrium_start", nil, nil, ruins_areas),
+			["atrium_end"] = GetSpecialLayoutsForType("atrium_end", "atrium_end", nil, ruins_areas),
+			["atrium_start"] = GetSpecialLayoutsForType("atrium_start", "atrium_start", nil, ruins_areas),
 
 			["archive_hallway"] = GetLayoutsForType("archive_hallway", nil, nil, archive_areas),
 			["archive_hallway_two"] = GetLayoutsForType("archive_hallway_two", nil, nil, archive_areas),
-			["archive_keyroom"] = GetSpecialLayoutsForType("archive_keyroom","keyroom_1", nil, nil, archive_areas),
-			["archive_end"] = GetSpecialLayoutsForType("archive_end", "archive_end", nil, nil, archive_areas),
-			["archive_start"] = GetSpecialLayoutsForType("archive_start", "archive_start", nil, nil, archive_areas),
+			["archive_keyroom"] = GetSpecialLayoutsForType("archive_keyroom","keyroom_1", nil, archive_areas),
+			["archive_end"] = GetSpecialLayoutsForType("archive_end", "archive_end", nil, archive_areas),
+			["archive_start"] = GetSpecialLayoutsForType("archive_start", "archive_start", nil, archive_areas),
 		},
 	}

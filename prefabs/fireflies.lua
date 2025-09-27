@@ -138,7 +138,7 @@ local function ondropped(inst)
     inst:DoTaskInTime(2 + math.random(), updatelight)
 end
 
-local function onpickup(inst)
+local function onputininventory(inst)
     if inst._fadetask ~= nil then
         inst._fadetask:Cancel()
         inst._fadetask = nil
@@ -224,7 +224,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetOnDroppedFn(ondropped)
-    inst.components.inventoryitem:SetOnPickupFn(onpickup)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(onputininventory)
     inst.components.inventoryitem.canbepickedup = false
     inst.components.inventoryitem.canbepickedupalive = true
 

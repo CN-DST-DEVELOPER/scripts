@@ -44,8 +44,12 @@ local BoatMagnet = Class(function(self, inst)
     end
 
     self._setup_boat_task = self.inst:DoTaskInTime(0, function()
-        self:SetBoat(self.inst:GetCurrentPlatform())
-        self._setup_boat_task = nil
+		self._setup_boat_task = nil
+		local boat = self.inst:GetCurrentPlatform()
+		if boat and not boat:HasTag("boat") then
+			boat = nil
+		end
+		self:SetBoat(boat)
     end)
 end)
 

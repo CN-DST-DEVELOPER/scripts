@@ -14,7 +14,7 @@ local prefabs =
 }
 
 local SCALE = .8
-local SPEED = 10
+local SOUL_SPEAR_TICK_TIME = 0.1
 
 local function CreateTail()
     local inst = CreateEntity()
@@ -57,7 +57,8 @@ local function OnUpdateProjectileTail(inst)--, dt)
         local hoffset = math.cos(offsangle) * offsradius
         local voffset = math.sin(offsangle) * offsradius
         tail.Transform:SetPosition(x + math.sin(rot) * hoffset, y + voffset, z + math.cos(rot) * hoffset)
-        tail.Physics:SetMotorVel(SPEED * (.2 + math.random() * .3), 0, 0)
+        local speed = TUNING.WORTOX_SOUL_PROJECTILE_SPEED
+        tail.Physics:SetMotorVel(speed * (.2 + math.random() * .3), 0, 0)
         inst._tails[tail] = true
         inst:ListenForEvent("onremove", function(tail) inst._tails[tail] = nil end, tail)
         tail:ListenForEvent("onremove", function(inst)
@@ -100,11 +101,18 @@ local function OnThrownTimeout(inst)
     inst.components.projectile:Miss(inst.components.projectile.target)
 end
 
-local function OnThrown(inst)
+local function OnThrown(inst, owner, target, attacker)
     if inst._timeouttask ~= nil then
         inst._timeouttask:Cancel()
+        inst._timeouttask = nil
     end
-    inst._timeouttask = inst:DoTaskInTime(6, OnThrownTimeout)
+    local duration = TUNING.WORTOX_SOUL_PROJECTILE_LIFETIME
+    if target and target.components.skilltreeupdater then
+        if target.components.skilltreeupdater:IsActivated("wortox_thief_2") then
+            duration = duration + TUNING.SKILLS.WORTOX.SOUL_PROJECTILE_LIFETIME_BONUS
+        end
+    end
+    inst._timeouttask = inst:DoTaskInTime(duration, OnThrownTimeout)
     if inst._seektask ~= nil then
         inst._seektask:Cancel()
         inst._seektask = nil
@@ -120,9 +128,77 @@ local function ThiefSort(a, b) -- Better than bogo!
     return a.distsq < b.distsq
 end
 
+local function RethrowProjectile(inst, speed, soulthiefreceiver)
+    if soulthiefreceiver:IsValid() then
+        inst.components.projectile:SetSpeed(speed)
+        inst.components.projectile:SetHoming(true)
+
+        local x, y, z = inst.Transform:GetWorldPosition()
+        inst.components.projectile:SetBounced(true)
+        inst.components.projectile.overridestartpos = Vector3(x, 0, z)
+        inst.components.projectile:Throw(inst, soulthiefreceiver, soulthiefreceiver)
+    end
+end
+
+local COMBAT_MUSTHAVE_TAGS = { "_combat", "_health" }
+local COMBAT_CANTHAVE_TAGS = { "INLIMBO", "soul", "noauradamage", "companion" }
+local function SoulSpearTick(inst, owner)
+    if not owner:IsValid() then
+        return
+    end
+
+    if inst.soul_spear_cooldown then
+        inst.soul_spear_cooldown = inst.soul_spear_cooldown - 1
+        if inst.soul_spear_cooldown <= 0 then
+            inst.soul_spear_cooldown = nil
+        else
+            return
+        end
+    end
+
+    local damage = TUNING.SKILLS.WORTOX.SOUL_SPEAR_DAMAGE
+    if owner and owner.components.skilltreeupdater and owner.components.skilltreeupdater:IsActivated("wortox_souljar_3") then
+        local souls_max = TUNING.SKILLS.WORTOX.SOUL_DAMAGE_MAX_SOULS
+        local damage_percent = math.min(owner.soulcount or 0, souls_max) / souls_max
+        damage = damage * (1 + (TUNING.SKILLS.WORTOX.SOUL_DAMAGE_SOULS_BONUS_MULT - 1) * damage_percent)
+    end
+
+
+    local hitsomething = false
+    local r = inst:GetPhysicsRadius(0) + 0.5 -- Extra padding for visual ambiguity.
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, MAX_PHYSICS_RADIUS, COMBAT_MUSTHAVE_TAGS, COMBAT_CANTHAVE_TAGS)
+    for _, ent in ipairs(ents) do
+        if ent.components.combat then
+            local r2 = ent:GetPhysicsRadius(0)
+            local x2, y2, z2 = ent.Transform:GetWorldPosition()
+            local dx, dz = x2 - x, z2 - z
+            local dsq = dx * dx + dz * dz
+            local dr = r2 + r
+            if dsq < dr * dr and wortox_soul_common.SoulDamageTest(inst, ent, owner) then
+                local damagetoent = damage
+                local explosiveresist = ent.components.explosiveresist
+                if explosiveresist then
+                    damagetoent = damagetoent * (1 - explosiveresist:GetResistance())
+                    explosiveresist:OnExplosiveDamage(damagetoent, owner)
+                end
+                ent.components.combat:GetAttacked(owner, damagetoent, nil, "soul")
+                hitsomething = true
+            end
+        end
+    end
+
+    if hitsomething then
+        inst.soul_spear_cooldown = TUNING.SKILLS.WORTOX.SOUL_SPEAR_HIT_COOLDOWN / SOUL_SPEAR_TICK_TIME
+    end
+end
+
 local function SeekSoulStealer(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local rangesq = TUNING.WORTOX_SOULSTEALER_RANGE * TUNING.WORTOX_SOULSTEALER_RANGE
+    local range_small = TUNING.WORTOX_SOULSTEALER_RANGE
+    local range_large = range_small + TUNING.SKILLS.WORTOX.SOULSTEALER_RANGE_BONUS
+    local rangesq_small = range_small * range_small
+    local rangesq_large = range_large * range_large
     local soulthieves = {}
     local soulthiefreceiver = nil
     local hasthief = false
@@ -132,6 +208,7 @@ local function SeekSoulStealer(inst)
             not (v.sg ~= nil and (v.sg:HasStateTag("nomorph") or v.sg:HasStateTag("silentmorph"))) and
             v.entity:IsVisible() then
             local distsq = v:GetDistanceSqToPoint(x, y, z)
+            local rangesq = v.components.skilltreeupdater and v.components.skilltreeupdater:IsActivated("wortox_thief_1") and rangesq_large or rangesq_small
             if distsq < rangesq then
                 hasthief = true
                 if inst._soulsource == v then
@@ -147,7 +224,24 @@ local function SeekSoulStealer(inst)
             table.sort(soulthieves, ThiefSort)
             soulthiefreceiver = soulthieves[1].thief
         end
-        inst.components.projectile:Throw(inst, soulthiefreceiver, inst)
+        local speed = TUNING.WORTOX_SOUL_PROJECTILE_SPEED
+        local skilltreeupdater = soulthiefreceiver.components.skilltreeupdater
+        if skilltreeupdater then
+            if skilltreeupdater:IsActivated("wortox_thief_4") then
+                inst.soul_control = true
+            end
+            if skilltreeupdater:IsActivated("wortox_thief_3") then
+                inst.soul_spear_task = inst:DoPeriodicTask(SOUL_SPEAR_TICK_TIME, inst.SoulSpearTick, 0, soulthiefreceiver)
+            end
+        end
+        if inst.soul_control then
+            inst.components.projectile:SetSpeed(-speed)
+            inst.components.projectile:SetHoming(false)
+            inst:DoTaskInTime(TUNING.SKILLS.WORTOX.SOUL_PROJECTILE_REPEL_DURATION, RethrowProjectile, speed, soulthiefreceiver)
+        else
+            inst.components.projectile:SetSpeed(speed)
+        end
+        inst.components.projectile:Throw(inst, soulthiefreceiver, soulthiefreceiver)
     end
 end
 
@@ -248,8 +342,8 @@ local function fn()
     --projectile (from projectile component) added to pristine state for optimization
     inst:AddTag("projectile")
 
-    inst._target = net_entity(inst.GUID, "wortox_soul._target", "targetdirty")
-    inst._hastail = net_bool(inst.GUID, "wortox_soul._hastail", "hastaildirty")
+    inst._target = net_entity(inst.GUID, "wortox_soul_spawn._target", "targetdirty")
+    inst._hastail = net_bool(inst.GUID, "wortox_soul_spawn._hastail", "hastaildirty")
 
     inst.entity:SetPristine()
 
@@ -260,20 +354,21 @@ local function fn()
         return inst
     end
 
+    inst.SoulSpearTick = SoulSpearTick
+
     inst.AnimState:PushAnimation("idle_loop", true)
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(0)
 
     inst:AddComponent("projectile")
-    inst.components.projectile:SetSpeed(SPEED)
     inst.components.projectile:SetHitDist(.5)
     inst.components.projectile:SetOnThrownFn(OnThrown)
     inst.components.projectile:SetOnHitFn(OnHit)
     inst.components.projectile:SetOnMissFn(inst.Remove)
 
     inst._seektask = inst:DoPeriodicTask(.5, SeekSoulStealer, 1)
-    inst._timeouttask = inst:DoTaskInTime(10, OnTimeout)
+    inst._timeouttask = inst:DoTaskInTime(TUNING.WORTOX_SOUL_TIMEOUT, OnTimeout)
 
     inst.persists = false
     inst.Setup = Setup

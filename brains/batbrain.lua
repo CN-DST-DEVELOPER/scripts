@@ -175,6 +175,7 @@ function BatBrain:OnStart()
                 WaitNode(6),
             }),
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         AttackWall(self.inst),
         IfNode(function()
                     self.inst.components.teamattacker:JoinFormation() -- Always try to rejoin the formation if possible.

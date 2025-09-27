@@ -86,13 +86,15 @@ function DragonflyBrain:OnStart()
 				}),
             ChaseAndAttack(self.inst),
             Leash(self.inst, HomePoint, 20, 10),
-            Wander(self.inst, HomePoint, 15)
+            -- FIXME(DiogoW): Wander node wasn't running properly before the spawnpoint fixes - because spawnpoint.y was 20 -, but now it does.
+            -- So a wander node would more of an addition than the fix, at this point.
+            --Wander(self.inst, HomePoint, 15)
         }, .25)
     self.bt = BT(self.inst, root)
 end
 
 function DragonflyBrain:OnInitializationComplete()
-    self.inst.components.knownlocations:RememberLocation("spawnpoint", self.inst:GetPosition())
+    self.inst.components.knownlocations:RememberLocation("spawnpoint", self.inst:GetPosition(), true)
 end
 
 return DragonflyBrain

@@ -3,33 +3,56 @@ local assets =
     Asset("ANIM", "anim/carrot_spinner.zip"),
 }
 
-local function timerdone(inst, data)
-    if data.name == "begin_delay" then
-        inst.fadein = true
-    end
+------------------------------------------------------------------------------------------------------
 
-    if data.name == "end_delay" then
-        inst.fadeout = true
-    end
-end
+local FADEIN_TIMERNAME  = "begin_delay"
+local FADEOUT_TIMERNAME = "end_delay"
+
+local FADEIN_DURATION  = 0.5
+local FADEOUT_DURATION = 3.0
 
 local FADEIN_ALPHA = 2/30
 local FADEOUT_ALPHA = 1/30
-local function looperupdate(inst)
+
+------------------------------------------------------------------------------------------------------
+
+local function OnTimerDone(inst, data)
+    inst.fadein  = data.name == FADEIN_TIMERNAME
+    inst.fadeout = data.name == FADEOUT_TIMERNAME
+end
+
+local function OnUpdate(inst)
     if inst.fadein then
         inst.alpha = inst.alpha + FADEIN_ALPHA
+
         if inst.alpha > 0.6 then
             inst.alpha = 0.6
             inst.fadein = nil
         end
-        inst.AnimState:SetMultColour(1,1,1,inst.alpha)
+
+        inst.AnimState:SetMultColour(1, 1, 1, inst.alpha)
+
     elseif inst.fadeout then
         inst.alpha = inst.alpha - FADEOUT_ALPHA
-        inst.AnimState:SetMultColour(1,1,1,inst.alpha)
+        inst.AnimState:SetMultColour(1, 1, 1, inst.alpha)
+
         if inst.alpha < 0 then
             inst:Remove()
         end
     end
+end
+
+local function AttachTo(inst, owner)
+    inst.Transform:SetPosition(owner.Transform:GetWorldPosition())
+    inst.Transform:SetRotation(owner.Transform:GetRotation())
+
+    inst:ListenForEvent("onremove", function(owner) inst:FadeOut() end, owner)
+end
+
+local function FadeOut(inst)
+    inst:RemoveComponent("timer")
+
+    inst.fadeout = true
 end
 
 local function fn()
@@ -43,6 +66,8 @@ local function fn()
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
 
+    inst.AnimState:SetMultColour(1, 1, 1, 0)
+
     inst.AnimState:SetBank("carrot_spinner")
     inst.AnimState:SetBuild("carrot_spinner")
     inst.AnimState:PlayAnimation("idle_smear")
@@ -51,24 +76,27 @@ local function fn()
     inst:AddTag("NOCLICK")
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         return inst
     end
 
     inst.alpha = 0
-    inst.AnimState:SetMultColour(1,1,1,0)
 
-    ------------------------------------------------------------
-    local timer = inst:AddComponent("timer")
-    timer:StartTimer("begin_delay", 0.5)
-    timer:StartTimer("end_delay", 3)
+    inst.OnTimerDone = OnTimerDone
+    inst.AttachTo = AttachTo
+    inst.FadeOut = FadeOut
 
-    ------------------------------------------------------------
-    local updatelooper = inst:AddComponent("updatelooper")
-    updatelooper:AddOnUpdateFn(looperupdate)
+    inst:AddComponent("timer")
+    inst.components.timer:StartTimer(FADEIN_TIMERNAME,  FADEIN_DURATION )
+    inst.components.timer:StartTimer(FADEOUT_TIMERNAME, FADEOUT_DURATION)
 
-    ------------------------------------------------------------
-    inst:ListenForEvent("timerdone", timerdone)
+    inst:AddComponent("updatelooper")
+    inst.components.updatelooper:AddOnUpdateFn(OnUpdate)
+
+    inst:ListenForEvent("timerdone", inst.OnTimerDone)
+
+    inst.persists = false
 
     return inst
 end

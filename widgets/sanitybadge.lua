@@ -141,14 +141,18 @@ function SanityBadge:PulseRed()
 	end
 end
 
-local RATE_SCALE_ANIM =
+local INCREASE_RATE_SCALE_ANIM =
 {
     [RATE_SCALE.INCREASE_HIGH] = "arrow_loop_increase_most",
-    [RATE_SCALE.INCREASE_MED] = "arrow_loop_increase_more",
-    [RATE_SCALE.INCREASE_LOW] = "arrow_loop_increase",
+    [RATE_SCALE.INCREASE_MED]  = "arrow_loop_increase_more",
+    [RATE_SCALE.INCREASE_LOW]  = "arrow_loop_increase",
+}
+
+local DECREASE_RATE_SCALE_ANIM =
+{
     [RATE_SCALE.DECREASE_HIGH] = "arrow_loop_decrease_most",
-    [RATE_SCALE.DECREASE_MED] = "arrow_loop_decrease_more",
-    [RATE_SCALE.DECREASE_LOW] = "arrow_loop_decrease",
+    [RATE_SCALE.DECREASE_MED]  = "arrow_loop_decrease_more",
+    [RATE_SCALE.DECREASE_LOW]  = "arrow_loop_decrease",
 }
 
 function SanityBadge:OnUpdate(dt)
@@ -160,26 +164,32 @@ function SanityBadge:OnUpdate(dt)
 
     if sanity ~= nil then
         if self.owner:HasTag("sleeping") then
-            --Special case for sleeping: at night, sanity will ping between .9999 and 1 of max, so make an exception for the arrow
+            --Special case for sleeping: at night, sanity will ping between .9999 and 1 of max, so make an exception for the arrow.
             if sanity:GetPercentWithPenalty() < 1 then
-                anim = "arrow_loop_increase"
+                local rate = TUNING.SLEEP_SANITY_PER_TICK / TUNING.SLEEP_TICK_PERIOD -- Using base sleeping values for this, accurate for now.
+
+                local ratescale =
+                    (rate > .2 and RATE_SCALE.INCREASE_HIGH) or
+                    (rate > .1 and RATE_SCALE.INCREASE_MED) or
+                    (rate > .01 and RATE_SCALE.INCREASE_LOW) or
+                    RATE_SCALE.NEUTRAL
+
+                anim = INCREASE_RATE_SCALE_ANIM[ratescale]
             end
         else
             local ratescale = sanity:GetRateScale()
-            if ratescale == RATE_SCALE.INCREASE_LOW or
-                ratescale == RATE_SCALE.INCREASE_MED or
-                ratescale == RATE_SCALE.INCREASE_HIGH then
+
+            if INCREASE_RATE_SCALE_ANIM[ratescale] then
                 if sanity:GetPercentWithPenalty() < 1 then
-                    anim = RATE_SCALE_ANIM[ratescale]
+                    anim = INCREASE_RATE_SCALE_ANIM[ratescale]
                 end
-            elseif ratescale == RATE_SCALE.DECREASE_LOW or
-                ratescale == RATE_SCALE.DECREASE_MED or
-                ratescale == RATE_SCALE.DECREASE_HIGH then
+            elseif DECREASE_RATE_SCALE_ANIM[ratescale] then
                 if sanity:GetPercentWithPenalty() > 0 then
-                    anim = RATE_SCALE_ANIM[ratescale]
+                    anim = DECREASE_RATE_SCALE_ANIM[ratescale]
                 end
             end
         end
+
         ghost = sanity:IsGhostDrain()
     end
 

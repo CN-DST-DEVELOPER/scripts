@@ -101,7 +101,6 @@ local states =
         tags = {"ready"},
 
         onenter = function(inst, data)
-        print(debugstack())
             inst.SoundEmitter:PlaySound("yotb_2021/common/stagebooth/idle_closed_ready_pre")
             inst.AnimState:PlayAnimation("idle_closed_ready_pre")
         end,
@@ -120,6 +119,10 @@ local states =
         tags = {"busy","open"},
 
         onenter = function(inst, data)
+            local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+            if yotb_stagemanager then
+                yotb_stagemanager:SetHostVisible(inst)
+            end
             inst.AnimState:PlayAnimation("host_arriving")
             inst.SoundEmitter:PlaySound("yotb_2021/common/stagebooth/host_arriving")
         end,
@@ -327,12 +330,13 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                print("LEAVE OVER")
-                if TheWorld.components.yotb_stagemanager and TheWorld.components.yotb_stagemanager:IsContestEnabled() then
-                    print("CONTEST ENABLED")
+                local yotb_stagemanager = TheWorld.components.yotb_stagemanager
+                if yotb_stagemanager then
+                    yotb_stagemanager:SetHostVisible(nil)
+                end
+                if yotb_stagemanager and yotb_stagemanager:IsContestEnabled() then
                     inst.sg:GoToState("idle_closed_ready_reset")
                 else
-                    print("CONTEST DISABLED")
                     inst.sg:GoToState("idle_closed_ready_pst")
                 end
             end),

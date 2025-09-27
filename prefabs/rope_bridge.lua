@@ -114,8 +114,22 @@ local function GetAnimDataForState(inst, state)
 	return bit.bor(bit.band(inst.animdata:value(), HIGH_BITS), ANIM_ID[state])
 end
 
+local function DoPlaceSound(inst)
+	inst.soundtask = nil
+	inst.SoundEmitter:PlaySound("rifts4/rope_bridge/place")
+end
+
+local function CancelSounds(inst)
+	if inst.soundtask then
+		inst.soundtask:Cancel()
+		inst.soundtask = nil
+	end
+	inst.SoundEmitter:KillSound("shake_lp")
+end
+
 local function SkipPre(inst)
 	if not inst.killed then
+		CancelSounds(inst)
 		inst.AnimState:PlayAnimation("bridge_idle")
 		inst.animdata:set(GetAnimDataForState(inst, "idle"))
 		OnAnimData(inst)
@@ -124,6 +138,10 @@ end
 
 local function ShakeIt(inst)
 	if not inst.killed then
+		CancelSounds(inst)
+		if not inst:IsAsleep() then
+			inst.SoundEmitter:PlaySound("rifts4/rope_bridge/shake_lp", "shake_lp")
+		end
 		inst.AnimState:PlayAnimation("bridge_shake", true)
 		inst.animdata:set(GetAnimDataForState(inst, "shake"))
 		OnAnimData(inst)
@@ -136,6 +154,8 @@ local function KillFX(inst)
 		if inst:IsAsleep() then
 			inst:Remove()
 		else
+			CancelSounds(inst)
+			inst.SoundEmitter:PlaySound("rifts4/rope_bridge/break")
 			inst.AnimState:PlayAnimation("break_"..tostring(math.random(3)))
 			inst.AnimState:SetOrientation(ANIM_ORIENTATION.BillBoard)
 			inst.AnimState:SetLayer(LAYER_BELOW_GROUND)
@@ -144,6 +164,16 @@ local function KillFX(inst)
 			OnAnimData(inst)
 			inst.OnEntitySleep = inst.Remove
 		end
+	end
+end
+
+local function OnEntitySleep(inst)
+	inst.SoundEmitter:KillSound("shake_lp")
+end
+
+local function OnEntityWake(inst)
+	if inst.AnimState:IsCurrentAnimation("bridge_shake") then
+		inst.SoundEmitter:PlaySound("rifts4/rope_bridge/shake_lp", "shake_lp")
 	end
 end
 
@@ -229,6 +259,7 @@ local function fn()
 		return inst
 	end
 
+	inst.soundtask = inst:DoTaskInTime(0, DoPlaceSound)
 	inst:ListenForEvent("animover", OnAnimOver)
 
 	local rope1 = math.random(0, 3)
@@ -245,6 +276,8 @@ local function fn()
 	inst.SkipPre = SkipPre
 	inst.ShakeIt = ShakeIt
 	inst.KillFX = KillFX
+	inst.OnEntitySleep = OnEntitySleep
+	inst.OnEntityWake = OnEntityWake
 
 	return inst
 end
@@ -300,9 +333,9 @@ local function OnDeploy(inst, pt, deployer)
                 return
             end
 
-            if deployer ~= nil and deployer.SoundEmitter ~= nil then
+            --[[if deployer ~= nil and deployer.SoundEmitter ~= nil then
                 deployer.SoundEmitter:PlaySoundWithParams("turnoftides/common/together/boat/damage", { intensity = 0.8 })
-            end
+            end]]
 
             local spawndata = {
                 base_time = 0.5,

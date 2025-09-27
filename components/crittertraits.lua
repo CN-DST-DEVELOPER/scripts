@@ -11,6 +11,7 @@ local CritterTraits = Class(function(self, inst)
 	self.traitscore = {}
 	self.dominanttrait = nil
 	self.dominanttraitlocked = nil
+	--self.onpetfn = nil
 
 	for k,v in pairs(TUNING.CRITTER_TRAITS) do
 		self.traitscore[k] = 0
@@ -19,8 +20,15 @@ local CritterTraits = Class(function(self, inst)
     inst:DoTaskInTime(0, function() self:StartTracking() end)
 end)
 
+function CritterTraits:SetOnPetFn(fn)
+	self.onpetfn = fn
+end
+
 function CritterTraits:OnPet(petter)
 	self.inst.sg:GoToState("emote_pet")
+	if self.onpetfn then
+		self.onpetfn(self.inst, petter)
+	end
 end
 
 local function oneat(inst, data)

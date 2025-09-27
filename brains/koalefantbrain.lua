@@ -39,6 +39,7 @@ function KoalefantBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         SequenceNode{
             FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn, 0.5),

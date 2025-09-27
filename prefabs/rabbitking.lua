@@ -103,10 +103,10 @@ local loot_passive = {
 }
 
 local function OnTurnOn_passive(inst)
-    inst.rabbitking_trading = true
+    inst.sg.mem.trading = true
 end
 local function OnTurnOff_passive(inst)
-    inst.rabbitking_trading = nil
+    inst.sg.mem.trading = nil
 end
 local function OnActivate_passive(inst)
     inst:PushEvent("dotrade")
@@ -115,6 +115,9 @@ local function fn_passive()
     local inst = fn_common("passive", "rabbitking_passive_build")
 
     inst:AddTag("companion")
+
+    --prototyper (from prototyper component) added to pristine state for optimization
+    inst:AddTag("prototyper")
 
     inst.AnimState:SetScale(KING_SCALE, KING_SCALE)
 

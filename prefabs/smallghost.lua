@@ -40,11 +40,10 @@ local function can_talk_to_client(inst, doer)
 end
 
 local function AbleToAcceptTest(inst, item)
-    return false, item.prefab == "reviver" and "GHOSTHEART" or nil
+    return false, (item:HasTag("reviver") and "GHOSTHEART") or nil
 end
 
-local MIN_FX_SIZE = 0.20
-local MAX_FX_SIZE = 0.90
+local MIN_FX_SIZE, MAX_FX_SIZE = 0.20, 0.90
 local MAX_HUNT_HOT_DSQ = TUNING.GHOST_HUNT.MINIMUM_HINT_DIST * TUNING.GHOST_HUNT.MINIMUM_HINT_DIST
 local function hot_cold_update(inst)
     if inst._toys ~= nil and next(inst._toys) ~= nil then
@@ -54,20 +53,16 @@ local function hot_cold_update(inst)
             inst._hotcold_fx.entity:AddFollower():FollowSymbol(inst.GUID, "smallghost_hair", 0, 0.2, 0)
         end
 
-        local leader = inst.components.follower:GetLeader()
+        local distance_test_inst = inst.components.follower:GetLeader() or inst
+        local dtx, dty, dtz = distance_test_inst.Transform:GetWorldPosition()
 
         local closest_toy_dsq = MAX_HUNT_HOT_DSQ + 1
-        for toy, _ in pairs(inst._toys) do
-            closest_toy_dsq = math.min(closest_toy_dsq, (leader or inst):GetDistanceSqToInst(toy))
+        for toy in pairs(inst._toys) do
+            closest_toy_dsq = math.min(closest_toy_dsq, toy:GetDistanceSqToPoint(dtx, dty, dtz))
         end
 
-        local percent = MIN_FX_SIZE
-
-        if closest_toy_dsq < MAX_HUNT_HOT_DSQ then
-            percent = math.clamp(1 - math.sqrt(closest_toy_dsq / MAX_HUNT_HOT_DSQ), MIN_FX_SIZE, MAX_FX_SIZE)
-        else
-            percent = 0
-        end
+        local percent = (closest_toy_dsq >= MAX_HUNT_HOT_DSQ and 0)
+            or math.clamp(1 - math.sqrt(closest_toy_dsq / MAX_HUNT_HOT_DSQ), MIN_FX_SIZE, MAX_FX_SIZE)
 
         inst._hotcold_fx.AnimState:SetScale(percent, percent)
     end
@@ -92,7 +87,7 @@ local function check_for_quest_finished(inst)
     -- The toys array was initialized (i.e. a quest was started),
     -- but all of the actual targets have been removed from the list.
     -- So, our quest is over.
-    if inst._toys == nil or next(inst._toys) ~= nil then
+    if not inst._toys or next(inst._toys) ~= nil then
         return false
     end
 
@@ -107,11 +102,7 @@ local function check_for_quest_finished(inst)
 
     unlink_from_player(inst)
 
-    if inst._cancelled then
-        inst.sg:GoToState("quest_abandoned")
-    else
-        inst.sg:GoToState("quest_finished")
-    end
+    inst.sg:GoToState((inst._cancelled and "quest_abandoned") or "quest_finished")
 
     return true
 end
@@ -138,13 +129,15 @@ end
 local function link_to_home(inst, home)
     inst.UnlinkFromGravestone = function()
 		if home:IsValid() then
-			home:RemoveEventCallback("onremove", inst.UnlinkFromGravestone, inst)
+			home:RemoveEventCallback("onremove", inst.UnlinkFromGravestone)
 			home.ghost = nil
+
+            inst.components.knownlocations:ForgetLocation("home")
 		end
         inst.UnlinkFromGravestone = nil
     end
 
-    home:ListenForEvent("onremove", inst.UnlinkFromGravestone, inst)
+    home:ListenForEvent("onremove", inst.UnlinkFromGravestone)
 
     if not inst.components.playerprox:IsPlayerClose() then
         inst:RemoveFromScene()
@@ -163,23 +156,40 @@ local function on_begin_quest(inst, doer)
     end
 
     -- Spawn toys if we didn't have any already.
-    if inst._toys == nil then
+    if not inst._toys then
         inst._toys = {}
 
         local ghost_position = inst:GetPosition()
 
-        local toy_center_offset = FindWalkableOffset(ghost_position, math.random()*TWOPI, TUNING.GHOST_HUNT.TOY_DIST.BASE, nil, false)
+        -- We can kind of just recycle this for both the offset test and the spawn tests.
+        local initial_angle = math.random() * TWOPI
+
+        local spawn_distance = (doer.isplayer and doer.components.skilltreeupdater:IsActivated("wendy_smallghost_1")
+            and TUNING.GHOST_HUNT.TOY_DIST.WENDY_UPGRADE_BASE)
+            or TUNING.GHOST_HUNT.TOY_DIST.BASE
+        local toy_center_offset = FindWalkableOffset(ghost_position, initial_angle, spawn_distance, nil, false)
         if toy_center_offset then
             ghost_position = ghost_position + toy_center_offset
         end
 
-        local toy_count = GetRandomMinMax(TUNING.GHOST_HUNT.TOY_COUNT.MIN, TUNING.GHOST_HUNT.TOY_COUNT.MAX)
-        local angle_increment = TWOPI / toy_count
+        inst._toy_center_position = ghost_position
 
-        local initial_angle = math.random() * TWOPI
+        local toy_count = GetRandomMinMax(TUNING.GHOST_HUNT.TOY_COUNT.MIN, TUNING.GHOST_HUNT.TOY_COUNT.MAX)
+        if doer.isplayer and doer.components.skilltreeupdater:IsActivated("wendy_smallghost_2") then
+            toy_count = toy_count + TUNING.GHOST_HUNT.TOY_COUNT.WENDYSKILL_ADDITION
+        end
+
+        local angle_increment = TWOPI / toy_count
 
         -- Do a shuffle instead of random selection so that we don't get duplicates.
         local chosen_toys = shuffleArray(toy_types)
+
+        local function on_toy_removed(t)
+            if inst._toys then
+                inst._toys[t] = nil
+            end
+            check_for_quest_finished(inst)
+        end
 
         for i = 1, toy_count do
             local toy = SpawnPrefab(chosen_toys[i])
@@ -193,24 +203,19 @@ local function on_begin_quest(inst, doer)
                 nil,
                 false
             )
-            if offset == nil then
-                toy.Transform:SetPosition(ghost_position:Get())
-            else
+            if offset then
                 toy.Transform:SetPosition((ghost_position + offset):Get())
+            else
+                toy.Transform:SetPosition(ghost_position:Get())
             end
 
             inst._toys[toy] = true
 
-            inst:ListenForEvent("onremove", function(t)
-                if inst._toys ~= nil and next(inst._toys) ~= nil and inst._toys[t] ~= nil then
-                    inst._toys[t] = nil
-                end
-                check_for_quest_finished(inst)
-            end, toy)
+            inst:ListenForEvent("onremove", on_toy_removed, toy)
         end
     end
 
-    if doer.components.talker ~= nil then
+    if doer.components.talker then
         doer.components.talker:Say(GetString(doer, "ANNOUNCE_GHOST_QUEST"))
     end
 
@@ -223,7 +228,9 @@ local function on_begin_quest(inst, doer)
 end
 
 local function can_abandon_quest(inst, doer)
-    return doer ~= nil and doer.components.leader ~= nil and inst.components.follower:GetLeader() == doer
+    return doer ~= nil
+        and doer.components.leader ~= nil
+        and inst.components.follower:GetLeader() == doer
 end
 
 local function on_abandon_quest(inst, doer)
@@ -234,25 +241,26 @@ local function on_abandon_quest(inst, doer)
     return true
 end
 
+local function go_to_appear(inst) inst.sg:GoToState("appear") end
 local function on_player_near_fn(inst, player)
-    if inst:IsInLimbo() then
-        inst:ReturnToScene()
+    if not inst:IsInLimbo() then return end
 
-        local home_position = inst.components.knownlocations:GetLocation("home")
-        if home_position ~= nil then
-            inst.Transform:SetPosition(home_position.x + 0.3, home_position.y, home_position.z + 0.3)
-        else
-            inst.components.knownlocations:RememberLocation("home", inst:GetPosition())
-        end
+    inst:ReturnToScene()
 
-        inst:DoTaskInTime(0, function(i) i.sg:GoToState("appear") end)
+    local home_position = inst.components.knownlocations:GetLocation("home")
+    if home_position then
+        inst.Transform:SetPosition(home_position.x + 0.3, home_position.y, home_position.z + 0.3)
+    else
+        inst.components.knownlocations:RememberLocation("home", inst:GetPosition())
     end
+
+    inst:DoTaskInTime(0, go_to_appear)
 end
 
 local function on_smallghost_removed(inst)
-    if inst._toys ~= nil and next(inst._toys) ~= nil then
+    if inst._toys and next(inst._toys) ~= nil then
         inst._cancelled = true
-        for t, _ in pairs(inst._toys) do
+        for t in pairs(inst._toys) do
             ErodeAway(t)
         end
     end
@@ -268,33 +276,48 @@ local function on_player_far_fn(inst)
 end
 
 local function spawn_ghostflower(tx, ty, tz, angle)
+    local x_offset = (angle and math.cos(angle)) or 0
+    local z_offset = (angle and math.sin(angle)) or 0
     local ghostflower = SpawnPrefab("ghostflower")
-    if angle ~= nil then
-        ghostflower.Transform:SetPosition(tx + math.cos(angle), ty, tz - math.sin(angle))
-    else
-        ghostflower.Transform:SetPosition(tx, ty, tz)
-    end
+    ghostflower.Transform:SetPosition(tx + x_offset, ty, tz - z_offset)
     ghostflower:DelayedGrow()
 end
 
 local function pickup_toy(inst, toy)
-    if inst._toys ~= nil and next(inst._toys) ~= nil and inst._toys[toy] ~= nil then
-        inst._toys[toy] = nil
+    if not inst._toys or not next(inst._toys) or not inst._toys[toy] then
+        return
+    end
 
-        local tx, ty, tz = toy.Transform:GetWorldPosition()
+    inst._toys[toy] = nil
 
-        spawn_ghostflower(tx, ty, tz, math.random(0, 89) * DEGREES)
+    local leader = inst.components.follower:GetLeader()
+    local leader_gets_extra_flowers = (
+        leader ~= nil and leader.isplayer
+        and leader.components.skilltreeupdater:IsActivated("wendy_smallghost_3")
+    )
 
-        if next(inst._toys) == nil then
+    local tx, ty, tz = toy.Transform:GetWorldPosition()
+
+    spawn_ghostflower(tx, ty, tz, math.random(0, 89) * DEGREES)
+    if leader_gets_extra_flowers then
+        spawn_ghostflower(tx, ty, tz, math.random(180, 269) * DEGREES)
+    end
+
+    if not next(inst._toys) then
+        spawn_ghostflower(tx, ty, tz, math.random(90, 179) * DEGREES)
+
+        spawn_ghostflower(tx, ty, tz, math.random(180, 269) * DEGREES)
+
+        spawn_ghostflower(tx, ty, tz, math.random(270, 359) * DEGREES)
+
+        if leader_gets_extra_flowers then
             spawn_ghostflower(tx, ty, tz, math.random(90, 179) * DEGREES)
-
             spawn_ghostflower(tx, ty, tz, math.random(180, 269) * DEGREES)
-
             spawn_ghostflower(tx, ty, tz, math.random(270, 359) * DEGREES)
         end
-
-        ErodeAway(toy)
     end
+
+    ErodeAway(toy)
 end
 
 local function sethairstyle(inst, hairstyle)
@@ -307,7 +330,7 @@ end
 local function onsave(inst, data)
     if inst._toys ~= nil and next(inst._toys) ~= nil then
         data.toy_datas = {}
-        for t, _ in pairs(inst._toys) do
+        for t in pairs(inst._toys) do
             -- toy_references should be empty!!
             -- But calling out here in case that changes and someone has to find it.
             local toy_save_record, toy_references = t:GetSaveRecord()
@@ -317,47 +340,49 @@ local function onsave(inst, data)
         data.toy_datas = inst._toy_datas
     end
 
+    data.toy_center_position = inst._toy_center_position
+
     data.shard_id = inst._shard_id
 
     data.hairstyle = inst._hairstyle
 end
 
 local function onload(inst, data, newents)
-    sethairstyle(inst, data ~= nil and data.hairstyle or nil)
+    sethairstyle(inst, (data and data.hairstyle) or nil)
 
-    if data ~= nil then
-        if data.toy_datas ~= nil then
-            if data.shard_id ~= nil and inst._shard_id ~= data.shard_id then
-                -- If we're not in the shard we spawned in and we have toy data,
-                -- we don't want to spawn the toys (we probably migrated),
-                -- but we do need to track them still for when we migrate back.
-                inst._toy_datas = data.toy_datas
-                inst._shard_id = data.shard_id
-            else
-                inst._toys = {}
-                for _, t in ipairs(data.toy_datas) do
-                    local toy = SpawnSaveRecord(t)
-                    if toy ~= nil then
-                        inst._toys[toy] = true
-
-                        inst:ListenForEvent("onremove", function(t)
-                            if inst._toys ~= nil and next(inst._toys) ~= nil and inst._toys[t] ~= nil then
-                                inst._toys[t] = nil
-                            end
-                            check_for_quest_finished(inst)
-                        end, toy)
-                    end
+    if data and data.toy_datas then
+        if data.shard_id ~= nil and data.shard_id ~= inst._shard_id then
+            -- If we're not in the shard that we spawned in, and we have toy data,
+            -- we don't want to spawn the toys (we probably migrated).
+            -- BUT, we do need to continue to track them, in case we migrate back.
+            inst._toy_datas = data.toy_datas
+            inst._shard_id = data.shard_id
+        else
+            inst._toys = {}
+            local function on_parent_removed(toy)
+                if inst._toys then
+                    inst._toys[toy] = nil
                 end
+                check_for_quest_finished(inst)
+            end
+            for _, t in pairs(data.toy_datas) do
+                local toy = SpawnSaveRecord(t)
+                if toy then
+                    inst._toys[toy] = true
 
-                if inst._hotcold_task == nil then
-                    inst._hotcold_task = inst:DoPeriodicTask(0.25, hot_cold_update)
+                    inst:ListenForEvent("onremove", on_parent_removed, toy)
                 end
             end
+
+            inst._hotcold_task = inst._hotcold_task or inst:DoPeriodicTask(0.25, hot_cold_update)
         end
+
+        inst._toy_center_position = data.toy_center_position
     end
 end
 
-local SMALL_GHOST_TRANSPARENCY = 0.6
+local SMALLGHOST_TALKER_OFFSET = Vector3(0, -600, 0)
+local SMALLGHOST_PATHCAPS = { allowocean = true }
 local function fn()
     local inst = CreateEntity()
 
@@ -394,51 +419,6 @@ local function fn()
         return inst
     end
 
-    inst:SetBrain(brain)
-
-    inst:AddComponent("locomotor")
-    inst.components.locomotor.walkspeed = TUNING.GHOST_SPEED
-    inst.components.locomotor.runspeed = TUNING.GHOST_SPEED * 3
-    inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { allowocean = true }
-
-    inst:SetStateGraph("SGsmallghost")
-
-    inst:AddComponent("sanityaura")
-    inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
-
-    inst:AddComponent("inspectable")
-
-    --Added so you can attempt to give hearts to trigger flavour text when the action fails
-    inst:AddComponent("trader")
-    inst.components.trader:SetAbleToAcceptTest(AbleToAcceptTest)
-
-    -- For gravestone-spawned ghosts to maintain their point (and not dissipate when they have no target)
-    inst:AddComponent("knownlocations")
-
-    inst:AddComponent("questowner")
-    inst.components.questowner.CanBeginFn = can_begin_quest
-    inst.components.questowner:SetOnBeginQuest(on_begin_quest)
-    inst.components.questowner.CanAbandonFn = can_abandon_quest
-    inst.components.questowner:SetOnAbandonQuest(on_abandon_quest)
-
-    inst:AddComponent("follower")
-    inst.components.follower:KeepLeaderOnAttacked()
-    inst.components.follower.keepdeadleader = true
-	inst.components.follower.keepleaderduringminigame = true
-
-    inst:AddComponent("talker")
-    inst.components.talker.fontsize = 35
-    inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0,-600,0)
-
-    inst:AddComponent("playerprox")
-    inst.components.playerprox:SetDist(15, 17)
-    inst.components.playerprox:SetOnPlayerNear(on_player_near_fn)
-    inst.components.playerprox:SetOnPlayerFar(on_player_far_fn)
-
-    inst:ListenForEvent("onremove", on_smallghost_removed)
-
     --inst._playerlink = nil
     --inst._toys = nil
     --inst._toy_datas = nil
@@ -458,24 +438,79 @@ local function fn()
             end
         end
     end
-    inst._on_leader_death = function(leader)
+    inst._on_leader_death = function(_)
         unlink_from_player(inst)
     end
 
+    --
+    local follower = inst:AddComponent("follower")
+    follower:KeepLeaderOnAttacked()
+    follower.keepdeadleader = true
+	follower.keepleaderduringminigame = true
+
+    --
+    inst:AddComponent("inspectable")
+
+    --
+    -- For gravestone-spawned ghosts to maintain their point (and not dissipate when they have no target)
+    inst:AddComponent("knownlocations")
+
+    --
+    local locomotor = inst:AddComponent("locomotor")
+    locomotor.walkspeed = TUNING.GHOST_SPEED
+    locomotor.runspeed = TUNING.GHOST_SPEED * 3
+    locomotor:SetTriggersCreep(false)
+    locomotor.pathcaps = SMALLGHOST_PATHCAPS
+
+    --
+    local playerprox = inst:AddComponent("playerprox")
+    playerprox:SetDist(15, 17)
+    playerprox:SetOnPlayerNear(on_player_near_fn)
+    playerprox:SetOnPlayerFar(on_player_far_fn)
+
+    --
+    local questowner = inst:AddComponent("questowner")
+    questowner.CanBeginFn = can_begin_quest
+    questowner:SetOnBeginQuest(on_begin_quest)
+    questowner.CanAbandonFn = can_abandon_quest
+    questowner:SetOnAbandonQuest(on_abandon_quest)
+
+    --
+    local sanityaura = inst:AddComponent("sanityaura")
+    sanityaura.aura = -TUNING.SANITYAURA_MED
+
+    --
+    local talker = inst:AddComponent("talker")
+    talker.fontsize = 35
+    talker.font = TALKINGFONT
+    talker.offset = SMALLGHOST_TALKER_OFFSET
+
+    --
+    --Added so you can attempt to give hearts to trigger flavour text when the action fails
+    local trader = inst:AddComponent("trader")
+    trader:SetAbleToAcceptTest(AbleToAcceptTest)
+
+    --
+    inst:ListenForEvent("onremove", on_smallghost_removed)
+
+    --
     inst.OnSave = onsave
     inst.OnLoad = onload
 
-    ------------------
+    --
+    inst:SetBrain(brain)
+    inst:SetStateGraph("SGsmallghost")
 
+    --
     if not POPULATING then
         sethairstyle(inst, nil)
     end
 
-    ------------------
-
+    --
     return inst
 end
 
+-- HOT/COLD GAME FX --
 local function on_hotcold_fx_animover(inst)
     inst.AnimState:PlayAnimation("idle"..math.random(1, 3), true)
 end

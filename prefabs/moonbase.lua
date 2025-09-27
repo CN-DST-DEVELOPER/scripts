@@ -367,7 +367,7 @@ local function OnStaffTaken(inst, picker, loot)
 
     HideColdStar(inst)
 
-    if inst._staffinst ~= nil then
+	if inst._staffinst ~= nil then --staffinst used to handle skinned items
         if loot ~= nil then
             --Shouldn't happen
             loot:Remove()
@@ -377,7 +377,12 @@ local function OnStaffTaken(inst, picker, loot)
 		inst._staffinst.components.inventoryitem:InheritWorldWetnessAtTarget(inst)
         if picker ~= nil then
             picker:PushEvent("picksomething", { object = inst, loot = inst._staffinst })
-            picker.components.inventory:GiveItem(inst._staffinst, nil, inst:GetPosition())
+			if picker.components.inventory then
+				picker.components.inventory:GiveItem(inst._staffinst, nil, inst:GetPosition())
+			elseif not inst._staffinst.components.inventoryitem:IsHeld() then
+				local x, y, z = inst.Transform:GetWorldPosition()
+				inst._staffinst.components.inventoryitem:DoDropPhysics(x, y, z, true)
+			end
         end
         inst._staffinst = nil
         inst._staffuse = nil

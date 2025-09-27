@@ -57,8 +57,6 @@ function NightVisionFruitOver:Enable()
     self:GetAnimState():PushAnimation("over_idle", true)
 
     TheFocalPoint.SoundEmitter:PlaySound("meta4/ancienttree/nightvision/effect_LP", SOUND_NAME)
-
-    TheWorld:PushEvent("overrideambientlighting", Point(255/255, 175/255, 255/255))
 end
 
 function NightVisionFruitOver:Disable()
@@ -74,8 +72,6 @@ function NightVisionFruitOver:Disable()
     self.hidetask = self.inst:DoTaskInTime(time, function(inst) self:Hide() end)
 
     TheFocalPoint.SoundEmitter:KillSound(SOUND_NAME)
-
-    TheWorld:PushEvent("overrideambientlighting", nil)
 end
 
 return NightVisionFruitOver

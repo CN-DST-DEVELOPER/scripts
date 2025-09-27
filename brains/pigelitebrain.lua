@@ -3,6 +3,7 @@ require("behaviours/leashandavoid")
 require("behaviours/panicandavoid")
 require("behaviours/standstill")
 require("behaviours/wander")
+local BrainCommon = require("brains/braincommon")
 
 local MAX_WANDER_DIST = 8
 local MIN_PANIC_DIST_SQ = 2 * 2
@@ -199,6 +200,9 @@ function PigEliteBrain:OnStart()
                 PanicAndAvoid(self.inst, GetPigKing, AVOID_KING_DIST))),
         WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire",
             ChattyNode(self.inst, "PIG_TALK_PANICFIRE",
+                PanicAndAvoid(self.inst, GetPigKing, AVOID_KING_DIST))),
+        WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "Shocked",
+            ChattyNode(self.inst, "PIG_TALK_PANICELECTRICITY",
                 PanicAndAvoid(self.inst, GetPigKing, AVOID_KING_DIST))),
         ChattyNode(self.inst, "PIG_ELITE_SMACK",
             WhileNode(function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",

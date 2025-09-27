@@ -506,7 +506,8 @@ RIFTPORTAL_FNS.CreateRiftPortalDefinition("shadowrift_portal", {
         end
         local r = (
             id:find("BigBatCave") or id:find("RockyLand") or id:find("SpillagmiteCaverns") or id:find("LichenLand") or
-            id:find("BlueForest") or id:find("RedForest") or id:find("GreenForest")
+            id:find("BlueForest") or id:find("RedForest") or id:find("GreenForest") or
+            id:find("CentipedeCaveTask")
         ) and true or false
         return r
     end,

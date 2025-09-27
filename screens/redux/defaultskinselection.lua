@@ -31,10 +31,10 @@ local DefaultSkinSelectionPopup = Class(Screen, function(self, user_profile, cha
     }
     
     local scroll_height = 250--460
-    local content_width = 390
+    local content_width = 490
     local item_height = 60
 
-    self.dialog = self.proot:AddChild(TEMPLATES.CurlyWindow(470,
+    self.dialog = self.proot:AddChild(TEMPLATES.CurlyWindow(550,
         scroll_height,
         STRINGS.UI.ITEM_SKIN_DEFAULTS.TITLE,
         self.buttons,
@@ -67,19 +67,19 @@ local DefaultSkinSelectionPopup = Class(Screen, function(self, user_profile, cha
     local function ScrollWidgetsCtor(context, i)
         local item = Widget("item-" .. i)
         item.root = item:AddChild(Widget("root"))
-        item.root:SetPosition(-180, 0)
+        item.root:SetPosition(-190, 0)
 
         local row = item.root
         local slot = row:AddChild(Image("images/hud.xml", "inv_slot.tex"))
 
         local front_img = slot:AddChild(Image("images/global.xml", "square.tex"))
+        slot:SetPosition(400, 0)
         slot:SetScale(0.85)
-        slot:SetPosition(360, 0)
 
-        local width_label = 250
-        local width_spinner = 200
+        local width_label = 285
+        local width_spinner = 235
         local height = 40
-        local spin_spacing = 0 
+        local spin_spacing = 2.5
         local font = HEADERFONT
         local font_size = 24
         local horiz_offset = 100
@@ -99,7 +99,9 @@ local DefaultSkinSelectionPopup = Class(Screen, function(self, user_profile, cha
         ))
         spinner.front_img = front_img
 
-        spinner.spinner.fgimage:SetPosition( 150, 0 )
+        spinner.spinner.fgimage:SetPosition(150, 0 )
+
+        spinner.spinner.textsize.width = width_spinner - 15 -- Small offset to have some space beetween the buttons when the skin name is truncated.
 
         item.spinner = item.root:AddChild(spinner)
 
@@ -144,7 +146,7 @@ local DefaultSkinSelectionPopup = Class(Screen, function(self, user_profile, cha
                 item_ctor_fn = ScrollWidgetsCtor,
                 apply_fn     = ScrollWidgetApply,
                 scrollbar_height_offset = -60,
-                scrollbar_offset = 20,
+                scrollbar_offset = 10,
             }
         )
     )

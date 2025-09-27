@@ -876,7 +876,10 @@ local function MakeChained(inst)
 		inst.AnimState:OverrideSymbol("chain_set_break", "daywalker_pillar", "chain_set_break")
 		inst:SwitchToFacingModel(0) --inst.Transform:SetNoFaced()
 		inst.SoundEmitter:PlaySound("daywalker/pillar/chain_idle", "chainloop")
+
 		ChangeToObstaclePhysics(inst)
+		MakeCollidesWithElectricField(inst)
+
 		EnableChains(inst, true)
 		PHASES[0].fn(inst)
 		inst:SetBrain(nil)
@@ -905,7 +908,10 @@ local function MakeUnchained(inst)
 		inst.AnimState:ClearAllOverrideSymbols()
 		inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
 		inst.SoundEmitter:KillSound("chainloop")
+
+		ClearCollidesWithElectricField(inst)
 		ChangeToGiantCharacterPhysics(inst, MASS)
+
 		EnableChains(inst, false)
 		inst:SetStateGraph("SGdaywalker")
 		inst.sg:GoToState("tired")
@@ -944,9 +950,6 @@ local function MakeHostile(inst)
 			PHASES[0].fn(inst)
 		end
 		inst:SetBrain(brain)
-		if inst.brain == nil and not inst:IsAsleep() then
-			inst:RestartBrain()
-		end
 		inst:SetEngaged(inst.components.combat:HasTarget())
 	end
 end
@@ -1117,6 +1120,7 @@ local function fn()
 	inst:AddTag("scarytoprey")
 	inst:AddTag("largecreature")
 	inst:AddTag("shadow_aligned")
+    inst:AddTag("pigtype") -- For scrapbook
 
 	inst.AnimState:SetBank("daywalker")
 	inst.AnimState:SetBuild("daywalker_build")
@@ -1166,6 +1170,9 @@ local function fn()
 		return inst
 	end
 
+	inst.scrapbook_damage = TUNING.DAYWALKER_XCLAW_DAMAGE * .5 -- playerdamagepercent
+
+	inst.override_combat_fx_height = "low"
 	inst.footstep = "daywalker/action/step"
 
 	inst.components.talker.ontalk = OnTalk
@@ -1244,6 +1251,7 @@ local function fn()
 	inst.looted = false
 	inst.fatigue = 0
 	inst._fatiguetask = nil
+	inst._trampledelays = {}
 
 	--ability unlocks
 	inst.canfatigue = false

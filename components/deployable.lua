@@ -65,6 +65,10 @@ function Deployable:SetDeployMode(mode)
     self.mode = mode
 end
 
+function Deployable:GetDeployMode()
+    return self.mode
+end
+
 function Deployable:SetDeploySpacing(spacing)
     self.spacing = spacing
 end
@@ -85,11 +89,14 @@ end
 function Deployable:IsDeployable(deployer)
 	if self.restrictedtag and self.restrictedtag:len() > 0 and not (deployer and deployer:HasTag(self.restrictedtag)) then
 		return false
-	end
-	local rider = deployer and deployer.components.rider or nil
-	if rider and rider:IsRiding() then
-		--can only deploy tossables while mounted
-		return self.inst.components.complexprojectile ~= nil
+	elseif deployer then
+		if deployer.components.rider and deployer.components.rider:IsRiding() then
+			--can only deploy tossables while mounted
+			return self.inst.components.complexprojectile ~= nil
+		elseif deployer.components.inventory and deployer.components.inventory:IsFloaterHeld() then
+			--can only deploy boats while floating
+			return self.inst:HasTag("boatbuilder")
+		end
 	end
 	return true
 end
@@ -123,8 +130,9 @@ function Deployable:CanDeploy(pt, mouseover, deployer, rot)
 end
 
 function Deployable:Deploy(pt, deployer, rot)
-    if not self:CanDeploy(pt, nil, deployer, rot) then
-        return
+    local success, reason = self:CanDeploy(pt, nil, deployer, rot)
+    if not success then
+        return false, reason
     end
     local isplant = self.inst:HasTag("deployedplant")
     if self.ondeploy ~= nil then

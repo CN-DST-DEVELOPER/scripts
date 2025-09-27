@@ -23,7 +23,7 @@ function Explosive:SetPvpAttacker(attacker)
 	self.pvpattacker = attacker
 end
 
-local CANT_TAGS = { "INLIMBO" }
+local CANT_TAGS = { "INLIMBO", "notarget" }
 function Explosive:OnBurnt()
 	if not self.skip_camera_flash then
 		for i, v in ipairs(AllPlayers) do
@@ -88,7 +88,9 @@ function Explosive:OnBurnt()
                     v.components.burnable:Ignite()
                 end
 
-                if v.components.combat ~= nil and not (v.components.health ~= nil and v.components.health:IsDead()) then
+				if not (v.components.health and v.components.health:IsDead()) and
+					v.components.combat and v.components.combat:CanBeAttacked()
+				then
 					local dmg = totaldamage * damagetypemult
                     if v.components.explosiveresist ~= nil then
                         dmg = dmg * (1 - v.components.explosiveresist:GetResistance())

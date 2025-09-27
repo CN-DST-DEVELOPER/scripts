@@ -24,6 +24,11 @@ function DamageTypeResist:RemoveResist(tag, src, key)
 	end
 end
 
+function DamageTypeResist:GetResistForTag(tag)
+	local v = self.tags[tag]
+	return v and v:Get() or 1
+end
+
 function DamageTypeResist:GetResist(attacker, weapon)
 	local mult = 1
 	if attacker ~= nil then

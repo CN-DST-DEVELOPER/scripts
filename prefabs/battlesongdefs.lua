@@ -24,12 +24,7 @@ end
 
 local function DoRevive(target, singer)
     target:PushEvent("respawnfromghost", { user = singer })
-
-    local x, y, z = target.Transform:GetWorldPosition()
-    local fx = SpawnPrefab("lightning")
-    if fx then
-        fx.Transform:SetPosition(x, y, z)
-    end
+    TheWorld:PushEvent("ms_sendlightningstrike", target:GetPosition())
 end
 
 local function CheckValidAttackData(attacker, data)

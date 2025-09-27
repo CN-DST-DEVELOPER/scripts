@@ -185,6 +185,8 @@ local function fn()
     inst.OnEntitySleep = OnEntitySleep
     inst.OnEntityWake = OnEntityWake
 
+    TheWorld:PushEvent("ms_register_monkeyqueen", inst)
+
     return inst
 end
 

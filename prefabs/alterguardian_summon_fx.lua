@@ -95,22 +95,12 @@ local PST_LIGHTMODULATION =
 local function periodic_light_update(inst)
     local frame_num = inst.AnimState:GetCurrentAnimationFrame()
 
-    if not inst._pre_finished then
-        local val = PRE_LIGHTMODULATION[frame_num]
-        if val ~= nil then
-            set_lightvalues(inst, val)
-        end
-    elseif inst._pst_started then
-        local val = PST_LIGHTMODULATION[frame_num]
-        if val ~= nil then
-            set_lightvalues(inst, val)
-        end
-    else -- in the loop
-        frame_num = RoundBiasedUp(frame_num - math.floor(frame_num / 16) * 16)
-        local val = LOOP_LIGHTMODULATION[frame_num]
-        if val ~= nil then
-            set_lightvalues(inst, val)
-        end
+    local lv_table = (not inst._pre_finished and PRE_LIGHTMODULATION)
+        or (inst._pst_started and PST_LIGHTMODULATION)
+        or LOOP_LIGHTMODULATION
+    local val = lv_table[frame_num]
+    if val then
+        set_lightvalues(inst, val)
     end
 end
 

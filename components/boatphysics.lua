@@ -221,6 +221,9 @@ end
 
 function BoatPhysics:AddBoatDrag(boatdraginst)
 	self.boatdraginstances[boatdraginst] = boatdraginst.components.boatdrag
+    if self.inst.components.physicsmodifiedexternally then
+        self.inst.components.physicsmodifiedexternally:RecalculateExternalVelocity()
+    end
 
 	self.inst:ListenForEvent("onremove", on_boatdrag_removed, boatdraginst)
 	self.inst:ListenForEvent("death", on_boatdrag_removed, boatdraginst)
@@ -229,6 +232,9 @@ end
 
 function BoatPhysics:RemoveBoatDrag(boatdraginst)
 	self.boatdraginstances[boatdraginst] = nil
+    if self.inst.components.physicsmodifiedexternally then
+        self.inst.components.physicsmodifiedexternally:RecalculateExternalVelocity()
+    end
 
 	self.inst:RemoveEventCallback("onremove", on_boatdrag_removed, boatdraginst)
 	self.inst:RemoveEventCallback("death", on_boatdrag_removed, boatdraginst)
@@ -410,32 +416,24 @@ end
 function BoatPhysics:GetRudderTurnSpeed()
     local velocity_length = VecUtil_Length(self.velocity_x, self.velocity_z)
 
-    local speed = 0.6
-
-    if velocity_length > 7 then
-        speed = 0.1975
-    elseif velocity_length > 5 then
-        speed = 0.255
-    elseif velocity_length > 3 then
-        speed = 0.37
-    elseif velocity_length > 1.5 then
-        speed = 0.48
-    end
+    local speed = (velocity_length > 7 and 0.1975)
+        or (velocity_length > 5 and 0.255)
+        or (velocity_length > 3 and 0.37)
+        or (velocity_length > 1.5 and 0.48)
+        or 0.6
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, 0, z, TUNING.BOAT.RADIUS, STEERINGWHEEL_IN_USE_MUST_TAGS, STEERINGWHEEL_IN_USE_CANT_TAGS)
 
-    if ents == nil or #ents <= 0 then
-        return speed
-    end
+    if ents and #ents > 0 then
+        -- Look for the pirate hat.
+        for _, ent in ipairs(ents) do
+            local sailor = ent.components.steeringwheel ~= nil and ent.components.steeringwheel.sailor or nil
+            local platform = sailor ~= nil and sailor:GetCurrentPlatform() or nil
 
-    -- Look for the pirate hat.
-    for i, ent in ipairs(ents) do
-        local sailor = ent.components.steeringwheel ~= nil and ent.components.steeringwheel.sailor or nil
-        local platform = sailor ~= nil and sailor:GetCurrentPlatform() or nil
-
-        if platform ~= nil and platform == self.inst and sailor:HasTag("master_crewman") then
-            return speed * TUNING.MASTER_CREWMAN_MULT.RUDDER_TURN_SPEED
+            if platform ~= nil and platform == self.inst and sailor:HasTag("master_crewman") then
+                return speed * TUNING.MASTER_CREWMAN_MULT.RUDDER_TURN_SPEED
+            end
         end
     end
 
@@ -443,11 +441,12 @@ function BoatPhysics:GetRudderTurnSpeed()
 end
 
 function BoatPhysics:SetCanSteeringRotate(can_rotate)
-    if self.steering_rotate == can_rotate then return end
-    self.steering_rotate = can_rotate
+    if self.steering_rotate ~= can_rotate then
+        self.steering_rotate = can_rotate
 
-    if can_rotate then
-        self.boat_rotation_offset = self.inst.Transform:GetRotation() - -VecUtil_GetAngleInDegrees(self.rudder_direction_x, self.rudder_direction_z)
+        if can_rotate then
+            self.boat_rotation_offset = self.inst.Transform:GetRotation() - -VecUtil_GetAngleInDegrees(self.rudder_direction_x, self.rudder_direction_z)
+        end
     end
 end
 
@@ -505,7 +504,7 @@ function BoatPhysics:ApplyMagnetForce(dt, magnet_force, magnet_direction, cur_ve
 end
 
 function BoatPhysics:OnUpdate(dt)
--- TURNING
+    -- TURNING
     local stop = false
 
     local p1_angle = VecUtil_GetAngleInRads(self.rudder_direction_x, self.rudder_direction_z)
@@ -522,24 +521,16 @@ function BoatPhysics:OnUpdate(dt)
         stop = true
     end
 
-    local target_vel = self:GetRudderTurnSpeed()
-    if stop then
-        target_vel = 0
-    end
-
+    local target_vel = (stop and 0) or self:GetRudderTurnSpeed()
     if target_vel > self.turn_vel then
-        self.turn_vel = math.min(self.turn_vel + (dt * self.turn_acc),self:GetRudderTurnSpeed())
+        self.turn_vel = math.min(self.turn_vel + (dt * self.turn_acc), (not stop and target_vel) or self:GetRudderTurnSpeed())
     else
-        self.turn_vel = math.max(self.turn_vel - (dt * self.turn_acc),0)
+        self.turn_vel = math.max(self.turn_vel - (dt * self.turn_acc), 0)
     end
 
     if self.turn_vel > 0 then
-        local newangle = nil
-        if p1_angle < p2_angle then
-            newangle = p1_angle + (dt *self.turn_vel)
-        else
-            newangle = p1_angle - (dt * self.turn_vel)
-        end
+        local newangle = (p1_angle < p2_angle and (p1_angle + (dt * self.turn_vel)))
+            or (p1_angle - (dt * self.turn_vel))
         self.rudder_direction_x = math.cos(newangle)
         self.rudder_direction_z = math.sin(newangle)
     end
@@ -551,30 +542,29 @@ function BoatPhysics:OnUpdate(dt)
         self.inst:PushEvent("stopturning")
     end
 
-
     local sail_force_modifier = self:GetAnchorSailForceModifier()
     local sail_force = 0
-    for k,v in pairs(self.masts) do
+    for k in pairs(self.masts) do
         sail_force = sail_force + k:CalcSailForce() * sail_force_modifier
     end
 
-    -- Calculate magnet forces
-    local magnet_force = Vector3(0, 0, 0)
-    local magnet_direction = Vector3(0, 0, 0)
-    for k,v in pairs(self.magnets) do
+    -- MAGNETS - Calculate magnet forces
+    local magnet_force, magnet_direction
+    for k in pairs(self.magnets) do
         if k:PairedBeacon() ~= nil and not k:PairedBeacon().components.boatmagnetbeacon:IsTurnedOff() then
-            magnet_direction = magnet_direction + k:CalcMagnetDirection()
-            magnet_force = magnet_force + magnet_direction * k:CalcMagnetForce()
+            magnet_direction = (magnet_direction or Vector3(0,0,0)) + k:CalcMagnetDirection()
+            magnet_force = (magnet_force or Vector3(0,0,0)) + magnet_direction * k:CalcMagnetForce()
         end
     end
 
     local velocity_normal_x, velocity_normal_z, cur_velocity = VecUtil_NormalAndLength(self.velocity_x, self.velocity_z)
     local max_velocity = self:GetMaxVelocity()
 
-    cur_velocity = self:ApplyMagnetForce(dt, magnet_force, magnet_direction, cur_velocity, max_velocity)
+    cur_velocity = self:ApplyMagnetForce(dt, magnet_force or Vector3(0,0,0), magnet_direction or Vector3(0,0,0), cur_velocity, max_velocity)
+    -- MAGNETS
 
+    -- ANCHORS
     local total_anchor_drag = self:GetTotalAnchorDrag()
-
     if total_anchor_drag > 0 and sail_force > 0 then
         cur_velocity = self:ApplySailForce(dt, sail_force, cur_velocity, max_velocity)
         cur_velocity = self:ApplyDrag(dt, self:GetBoatDrag(cur_velocity, total_anchor_drag), cur_velocity, VecUtil_NormalizeNoNaN(self.velocity_x, self.velocity_z))
@@ -582,6 +572,7 @@ function BoatPhysics:OnUpdate(dt)
         cur_velocity = self:ApplyDrag(dt, self:GetBoatDrag(cur_velocity, total_anchor_drag), cur_velocity, velocity_normal_x, velocity_normal_z)
         cur_velocity = self:ApplySailForce(dt, sail_force, cur_velocity, max_velocity)
     end
+    -- ANCHORS
 
     local is_moving = cur_velocity > 0
     if self.was_moving and not is_moving then
@@ -617,9 +608,10 @@ function BoatPhysics:OnUpdate(dt)
     if self.lastzoomtime == nil or time - self.lastzoomtime > 1.0 then
         local should_zoom_out = sail_force > 0 and total_anchor_drag <= 0
         if self.inst.doplatformcamerazoom then
-            if not self.inst.doplatformcamerazoom:value() and should_zoom_out then
+            local dozoomvalue = self.inst.doplatformcamerazoom:value()
+            if not dozoomvalue and should_zoom_out then
                 self.inst.doplatformcamerazoom:set(true)
-            elseif self.inst.doplatformcamerazoom:value() and not should_zoom_out then
+            elseif dozoomvalue and not should_zoom_out then
                 self.inst.doplatformcamerazoom:set(false)
             end
         end

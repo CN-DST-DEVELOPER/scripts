@@ -42,6 +42,7 @@ function MushGnomeBrain:OnStart()
                 }, 1.0)
             ),
 			BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
             RunAway(self.inst, THREAT_PARAMS, 5, 10),
             Wander(self.inst),
         }, 1)

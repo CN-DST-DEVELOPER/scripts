@@ -63,9 +63,39 @@ function GenericKV:ApplyOnlineProfileData()
     if not self.synced and
         (TheInventory:HasSupportForOfflineSkins() or not (TheFrontEnd ~= nil and TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode())) and
         TheInventory:HasDownloadedInventory() then
-        self.kvs = TheInventory:GetLocalGenericKV()
+        local merged = false
+        local storedkvs = TheInventory:GetLocalGenericKV()
+        -- First merge online cache into local.
+        for k, v in pairs(storedkvs) do
+            local v2 = self.kvs[k]
+            if v2 then
+                if v2 ~= v then
+                    merged = true
+                    if stringidsorter(string.lower(v), string.lower(v2)) then
+                        self.kvs[k] = v2
+                        if not TheNet:IsDedicated() then
+                            TheInventory:SetGenericKVValue(k, v2)
+                        end
+                    else
+                        self.kvs[k] = v
+                    end
+                end
+            else
+                self.kvs[k] = v
+            end
+        end
+        -- Then apply local to online cache.
+        for k, v in pairs(self.kvs) do
+            local v2 = storedkvs[k]
+            if not v2 then
+                -- Apply local value to online cache.
+                if not TheNet:IsDedicated() then
+                    TheInventory:SetGenericKVValue(k, v)
+                end
+            end
+        end
         self.synced = true
-        if not self.loaded then -- We loaded a file from the player's profile but there is no save data on disk save it now.
+        if not self.loaded or merged then -- We loaded a file from the player's profile but there is no save data on disk save it now or if we got new data from the online storage.
             self.loaded = true
             self:Save(true)
         end

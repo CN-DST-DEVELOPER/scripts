@@ -137,6 +137,7 @@ local events =
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnSink(),
@@ -146,11 +147,13 @@ local events =
             ChooseAttack(inst)
         end
     end),
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and
-            (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
-            not CommonHandlers.HitRecoveryDelay(inst) then
-            inst.sg:GoToState("hit")
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and not CommonHandlers.HitRecoveryDelay(inst) then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("chomp", function(inst)
@@ -315,9 +318,6 @@ local states =
             TimeEvent(3, function(inst)
                 if not inst:IsUnchained() then
                     inst.sg.statemem.resurrecting = true
-					if inst.brain.stopped then
-						inst.brain:Start()
-					end
                     inst.sg:GoToState("resurrect")
                 end
             end),
@@ -348,7 +348,7 @@ local states =
 
     State{
         name = "resurrect",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -390,7 +390,7 @@ local states =
 
     State{
         name = "resurrect_pst",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -876,7 +876,7 @@ local states =
 
     State{
         name = "transition",
-        tags = { "transition", "busy", "nosleep", "nofreeze" },
+		tags = { "transition", "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst, transition)
             inst.components.locomotor:StopMoving()
@@ -910,7 +910,7 @@ local states =
 
     State{
         name = "transition_loop",
-        tags = { "transition", "busy", "nosleep", "nofreeze" },
+		tags = { "transition", "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst, transition)
             if not inst.AnimState:IsCurrentAnimation("transform_loop") then
@@ -943,7 +943,7 @@ local states =
 
     State{
         name = "transition_pst",
-        tags = { "busy", "nosleep", "nofreeze" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("transform_pst2")
@@ -966,6 +966,7 @@ local states =
                 inst.sg:RemoveStateTag("busy")
                 inst.sg:RemoveStateTag("nosleep")
                 inst.sg:RemoveStateTag("nofreeze")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
         },
 
@@ -977,7 +978,7 @@ local states =
 
     State{
         name = "transition_enrage",
-        tags = { "enrage", "busy", "nosleep", "nofreeze" },
+		tags = { "enrage", "busy", "nosleep", "nofreeze", "noelectrocute" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("transform_pst")
@@ -998,6 +999,7 @@ local states =
                 inst.sg:RemoveStateTag("busy")
                 inst.sg:RemoveStateTag("nosleep")
                 inst.sg:RemoveStateTag("nofreeze")
+				inst.sg:RemoveStateTag("noelectrocute")
             end),
         },
 
@@ -1105,6 +1107,7 @@ CommonStates.AddSleepExStates(states,
 })
 
 CommonStates.AddFrozenStates(states, nil, StopLaughing)
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

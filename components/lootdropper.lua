@@ -347,6 +347,10 @@ function LootDropper:SpawnLootPrefab( lootprefab, pt, linked_skinname, skin_id, 
                 end
             end
 
+			if loot.components.heavyobstaclephysics then
+				loot.components.heavyobstaclephysics:ForceDropPhysics()
+			end
+
             -- here? so we can run a full drop loot?
             self:FlingItem(loot, pt)
 
@@ -363,6 +367,7 @@ function LootDropper:SpawnLootPrefab( lootprefab, pt, linked_skinname, skin_id, 
     end
 end
 
+local DONT_BURN_LOOT_TAGS = {"tree", "boulder"}
 function LootDropper:DropLoot(pt)
     local prefabs = self:GenerateLoot()
     if self.inst:HasTag("burnt")
@@ -385,7 +390,7 @@ function LootDropper:DropLoot(pt)
             --     ingredients (wood), but we'll let them have this one :O
             elseif self.inst.components.burnable and self.inst.components.burnable:GetControlledBurn() then
                 -- Leave it be, but we will drop it smouldering.
-            elseif (not isstructure and not self.inst:HasTag("tree")) or self.inst:HasTag("hive") then -- because trees have specific burnt loot and "hive"s are structures...
+            elseif (not isstructure and not self.inst:HasAnyTag(DONT_BURN_LOOT_TAGS)) or self.inst:HasTag("hive") then -- because trees have specific burnt loot and "hive"s are structures...
                 prefabs[k] = "ash"
             end
         end

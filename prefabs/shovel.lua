@@ -6,6 +6,7 @@ local assets =
     Asset("ANIM", "anim/swap_goldenshovel.zip"),
 }
 
+--
 local function onequip(inst, owner)
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
@@ -52,7 +53,6 @@ local function common_fn(bank, build)
     MakeInventoryFloatable(inst, "med", 0.05, {0.8, 0.4, 0.8})
 
     inst.entity:SetPristine()
-
     if not TheWorld.ismastersim then
         return inst
     end
@@ -63,11 +63,11 @@ local function common_fn(bank, build)
 
     if TheNet:GetServerGameMode() ~= "quagmire" then
         -------
-        inst:AddComponent("finiteuses")
-        inst.components.finiteuses:SetMaxUses(TUNING.SHOVEL_USES)
-        inst.components.finiteuses:SetUses(TUNING.SHOVEL_USES)
-        inst.components.finiteuses:SetOnFinished(inst.Remove)
-        inst.components.finiteuses:SetConsumption(ACTIONS.DIG, 1)
+        local finiteuses = inst:AddComponent("finiteuses")
+        finiteuses:SetMaxUses(TUNING.SHOVEL_USES)
+        finiteuses:SetUses(TUNING.SHOVEL_USES)
+        finiteuses:SetOnFinished(inst.Remove)
+        finiteuses:SetConsumption(ACTIONS.DIG, 1)
 
         -------
         inst:AddComponent("weapon")

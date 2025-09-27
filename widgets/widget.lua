@@ -120,6 +120,7 @@ end
 function Widget:OnStopForceProcessTextInput()
 end
 
+ValidateLineNumber(123)
 function Widget:OnControl(control, down)
 --    print("oncontrol", self, control, down, self.focus)
 
@@ -135,6 +136,7 @@ function Widget:OnControl(control, down)
 
     return false
 end
+ValidateLineNumber(139)
 
 function Widget:SetParentScrollList(list)
     self.parent_scroll_list = list

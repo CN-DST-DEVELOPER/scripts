@@ -91,6 +91,7 @@ function MoleBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         WhileNode( function() return ShouldMakeHome(self.inst) end, "Home Dug Up",
             DoAction(self.inst, MakeNewHomeAction, "Make Home", false)),
         WhileNode(function() return self.inst.flee == true end, "Flee",

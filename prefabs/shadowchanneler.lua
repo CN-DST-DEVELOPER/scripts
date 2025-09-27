@@ -87,6 +87,7 @@ local function fn()
     inst:AddTag("notraptrigger")
     inst:AddTag("notarget")
     inst:AddTag("shadow_aligned")
+    inst:AddTag("NOBLOCK")
 
     inst.AnimState:SetBank("shadow_channeler")
     inst.AnimState:SetBuild("shadow_channeler")

@@ -3,11 +3,7 @@ local function DefaultOnHauntFn(inst, haunter)
 end
 
 local function onhaunted(self, haunted)
-    if haunted then
-        self.inst:AddTag("haunted")
-    else
-        self.inst:RemoveTag("haunted")
-    end
+    self.inst:AddOrRemoveTag("haunted", haunted)
 end
 
 local Hauntable = Class(function(self, inst)
@@ -85,6 +81,10 @@ end
 
 function Hauntable:DoHaunt(doer)
     if self.onhaunt ~= nil then
+        if self.inst.components.itemmimic then
+            self.inst.components.itemmimic:TurnEvil(doer)
+            return
+        end
         self.haunted = self.onhaunt(self.inst, doer)
         if self.haunted then
             if doer ~= nil then
@@ -111,6 +111,7 @@ function Hauntable:DoHaunt(doer)
 			end
         end
     end
+	self.inst:PushEvent("haunted")
 end
 
 function Hauntable:StartShaderFx()

@@ -39,9 +39,8 @@ local function OnPutInInventory(inst)
 end
 
 local function OnDropped(inst)
-	if inst._shardcolour then
-		inst.Light:Enable(true)
-	end
+	--V2C: Enable(false) is NOT redundant because ReturnToScene re-enables all lights.
+	inst.Light:Enable(inst._shardcolour ~= nil)
 end
 
 local COLOUR_TINT = { 0.4, 0.2 }

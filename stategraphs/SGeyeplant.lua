@@ -14,11 +14,16 @@ local events=
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnDeath(),
-    EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then
-            inst.sg:GoToState("hit")
+	EventHandler("attacked", function(inst, data)
+		if not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("attack") then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
 }
@@ -187,12 +192,18 @@ local states=
 
         events =
         {
-            EventHandler("attacked", function(inst) inst.components.inventory:DropEverything() inst.sg:GoToState("idle") end) --drop food
+			--drop food
+			EventHandler("attacked", function(inst)
+				inst.components.inventory:DropEverything()
+				inst.sg:GoToState("idle")
+			end),
+			EventHandler("electrocute", function(inst)
+				inst.components.inventory:DropEverything()
+			end),
         },
     },
 
     State{
-
         name = "walk_start",
         tags = {"idle", "canrotate"},
         onenter = function(inst, playanim)
@@ -217,7 +228,16 @@ local states=
     },
 }
 
-
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states,
+nil, --timeline
+nil, --anims
+{	--fns
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			inst.sg:GoToState(inst.components.combat:HasTarget() and "alert" or "idle")
+		end
+	end,
+})
 
 return StateGraph("eyeplant", states, events, "idle", actionhandlers)

@@ -3,12 +3,14 @@ require("stategraphs/commonstates")
 local events =
 {
     EventHandler("attacked", function(inst, data)
-        if inst.components.health ~= nil and not inst.components.health:IsDead()
-                and (not inst.sg:HasStateTag("busy")
-                    or not inst.sg:HasStateTag("attack")
-                    or inst.sg:HasStateTag("caninterrupt")
-                    or inst.sg:HasStateTag("frozen")) then
-            inst.sg:GoToState("hit")
+		if inst.components.health and not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasAnyStateTag("busy", "attack") or
+				inst.sg:HasAnyStateTag("caninterrupt", "frozen")
+			then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     EventHandler("newcombattarget", function(inst, data)
@@ -40,6 +42,7 @@ local events =
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreezeEx(),
+	CommonHandlers.OnElectrocute(),
 }
 
 local function return_to_idle(inst)
@@ -159,7 +162,7 @@ local states =
 
     State{
         name = "switch_to_flower",
-        tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst:PlaySyncAnimation("growth2")
@@ -171,6 +174,9 @@ local states =
                 inst:GoToStage(3)
             end),
             TimeEvent(10*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dangerous_sea/creatures/water_plant/grow") end),
+			FrameEvent(13, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
         },
 
         events =
@@ -181,7 +187,7 @@ local states =
 
     State{
         name = "switch_to_bud",
-        tags = {"busy"},
+		tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst:PlaySyncAnimation("growth3")
@@ -193,6 +199,9 @@ local states =
                 inst:GoToStage(2)
             end),
             TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dangerous_sea/creatures/water_plant/close") end),
+			FrameEvent(10, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
         },
 
         events =
@@ -434,5 +443,7 @@ local states =
         end,
     },
 }
+
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("waterplant", states, events, "idle")

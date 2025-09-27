@@ -144,9 +144,10 @@ local function dragonboat_common(inst, boat_data)
     Physics:SetFriction(0)
     Physics:SetDamping(5)
     Physics:SetCollisionGroup(COLLISION.OBSTACLES)
-    Physics:ClearCollisionMask()
-    Physics:CollidesWith(COLLISION.WORLD)
-    Physics:CollidesWith(COLLISION.OBSTACLES)
+	Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES
+	)
     Physics:SetCylinder(radius, 3)
     Physics:SetDontRemoveOnSleep(true)
 
@@ -616,6 +617,16 @@ end
 
 local EXTRA_SPACING = 0.2
 local function CLIENT_CanDeployDragonBoat(inst, pt, mouseover, deployer, rotation)
+	local inventory = deployer and deployer.replica.inventory
+	if inventory and inventory:IsFloaterHeld() then
+		local hop_range = TUNING.FLOATING_HOP_DISTANCE_PLATFORM - 0.01 --make sure we're close enough to hop at max range
+		local max_range = TUNING.DRAGON_BOAT_RADIUS + hop_range
+		local min_range = TUNING.DRAGON_BOAT_RADIUS + 0.5
+		local dsq = deployer:GetDistanceSqToPoint(pt)
+		if dsq > max_range * max_range or dsq < min_range * min_range then
+			return false
+		end
+	end
     return TheWorld.Map:CanDeployBoatAtPointInWater(pt, inst, mouseover,
     {
         boat_radius = TUNING.DRAGON_BOAT_RADIUS + EXTRA_SPACING,
@@ -725,6 +736,20 @@ local function item_fn()
     return item_base_fn(DRAGONBOAT_KIT_DATA)
 end
 
+local function boat_placer_postinit(inst)
+	inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+	inst.AnimState:SetSortOrder(2)
+	inst.AnimState:SetFinalOffset(7)
+
+	local inventory = ThePlayer and ThePlayer.replica.inventory
+	if inventory and inventory:IsFloaterHeld() then
+		local hop_range = TUNING.FLOATING_HOP_DISTANCE_PLATFORM - 0.01 --see CLIENT_CanDeployBoat
+		local offset_range = hop_range - 0.01 --make sure placer stays within valid range of CLIENT_CanDeployBoat
+		inst.components.placer.offset = math.min(inst.components.placer.offset, TUNING.DRAGON_BOAT_RADIUS + offset_range)
+	end
+	ControllerPlacer_Boat_SpotFinder(inst, TUNING.DRAGON_BOAT_RADIUS)
+end
+
 -- Dragonboat pack, with a boat and other things in it.
 local DRAGONBOAT_PACK_DATA = {
     bank = "dragonboat_race_pack",
@@ -803,9 +828,10 @@ local function dragonboat_player_collision_fn()
     physics:SetFriction(0)
     physics:SetDamping(5)
     physics:SetCollisionGroup(COLLISION.BOAT_LIMITS)
-    physics:ClearCollisionMask()
-    physics:CollidesWith(COLLISION.CHARACTERS)
-    physics:CollidesWith(COLLISION.WORLD)
+	physics:SetCollisionMask(
+		COLLISION.CHARACTERS,
+		COLLISION.WORLD
+	)
     physics:SetTriangleMesh(build_boat_collision_mesh(radius + 0.1, 3))
     physics:SetDontRemoveOnSleep(true)
 
@@ -837,10 +863,11 @@ local function dragonboat_item_collision_fn()
     physics:SetFriction(0)
     physics:SetDamping(5)
     physics:SetCollisionGroup(COLLISION.BOAT_LIMITS)
-    physics:ClearCollisionMask()
-    physics:CollidesWith(COLLISION.ITEMS)
-    physics:CollidesWith(COLLISION.FLYERS)
-    physics:CollidesWith(COLLISION.WORLD)
+	physics:SetCollisionMask(
+		COLLISION.ITEMS,
+		COLLISION.FLYERS,
+		COLLISION.WORLD
+	)
     physics:SetTriangleMesh(build_boat_collision_mesh(radius + 0.2, 3))
 
     -- Boats currently need to not go to sleep because constraints will cause a crash
@@ -887,10 +914,10 @@ end
 --
 return Prefab("dragonboat_body", body_fn, assets, prefabs),
     Prefab("dragonboat_kit", item_fn, item_assets, item_prefabs),
-    MakePlacer("dragonboat_kit_placer", "boat_yotd", "boat_yotd", "idle_full", true, false, false, nil, nil, nil, ControllerPlacer_Boat_SpotFinder, 6),
+	MakePlacer("dragonboat_kit_placer", "boat_yotd", "boat_yotd", "idle_full", true, false, false, nil, nil, nil, boat_placer_postinit, 6),
 
     Prefab("dragonboat_pack", pack_fn, pack_assets, pack_prefabs),
-    MakePlacer("dragonboat_pack_placer", "boat_yotd", "boat_yotd", "idle_full", true, false, false, nil, nil, nil, ControllerPlacer_Boat_SpotFinder, 6),
+	MakePlacer("dragonboat_pack_placer", "boat_yotd", "boat_yotd", "idle_full", true, false, false, nil, nil, nil, boat_placer_postinit, 6),
 
     Prefab("dragonboat_shadowboat", shadowboat_fn, assets, shadowboat_prefabs),
     Prefab("dragonboat_shadowboat_deploy_blocker", shadowboat_deploy_blocker_fn),

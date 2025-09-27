@@ -57,12 +57,27 @@ end
 
 --------------------------------------------------------------------------
 
+local function _transfer_statemem_to_electrocute(inst)
+	if inst.sg:HasStateTag("defeated") then
+		inst.sg.statemem.defeat = true
+		inst.sg.mem.transfer_hits = inst.sg.statemem.hits
+	elseif inst.sg:HasStateTag("dizzy") then
+		inst.sg.mem.transfer_hits = inst.sg.statemem.hits
+	elseif inst.sg:HasStateTag("torpedoready") then
+		inst.sg.mem.transfer_target = inst.sg.statemem.target
+	end
+end
+
 local events =
 {
 	CommonHandlers.OnFreeze(),
 	CommonHandlers.OnSleepEx(),
 	CommonHandlers.OnWakeEx(),
 
+	EventHandler("electrocute", function(inst, data)
+		CommonHandlers.TryElectrocuteOnEvent(inst, data, nil, nil,
+			_transfer_statemem_to_electrocute)
+	end),
 	EventHandler("locomote", function(inst, data)
 		if inst.components.locomotor:WantsToMoveForward() then
 			if inst.sg:HasStateTag("idle") then
@@ -92,11 +107,12 @@ local events =
 			end
 		end
 	end),
-	EventHandler("attacked", function(inst)
-		if not inst.sg:HasStateTag("busy") or
-			inst.sg:HasStateTag("caninterrupt") or
-			inst.sg:HasStateTag("frozen")
+	EventHandler("attacked", function(inst, data)
+		if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
+			_transfer_statemem_to_electrocute)
 		then
+			return
+		elseif not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen") then
 			if inst.sg:HasStateTag("defeated") then
 				inst.sg.statemem.defeat = true
 				inst.sg:GoToState("defeat_hit", inst.sg.statemem.hits)
@@ -106,8 +122,8 @@ local events =
 				local hits = (inst.sg.statemem.hits or 0) + 1
 				inst.sg:GoToState("hit", { hits > 2 and "torpedo_pst" or "torpedo_dizzy", hits })
 			elseif inst.sg:HasStateTag("torpedoready") then
-				inst.sg:GoToState("hit", { "torpedo_pre", inst.sg.statemem.target })
-			elseif not CommonHandlers.HitRecoveryDelay(inst) then
+				inst.sg:GoToState("hit", inst.sg.statemem.nextstateparams or { "torpedo_pre", inst.sg.statemem.target })
+			elseif not CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) then --hit delay only for projectiles
 				inst.sg:GoToState("hit")
 			end
 		end
@@ -115,9 +131,7 @@ local events =
 	EventHandler("minhealth", function(inst)
 		if not (inst.components.trader or inst.sg:HasStateTag("defeated")) and (
 			not inst.sg:HasStateTag("busy") or
-			inst.sg:HasStateTag("caninterrupt") or
-			inst.sg:HasStateTag("candefeat") or
-			inst.sg:HasStateTag("frozen")
+			inst.sg:HasAnyStateTag("caninterrupt", "candefeat", "frozen")
 		) then
 			inst.sg:GoToState(inst.sg:HasStateTag("digging") and "dive_dig_hit" or "hit")
 		end
@@ -682,7 +696,7 @@ local states =
 
 	State{
 		name = "spawn",
-		tags = { "busy", "jumping", "nosleep", "noattack", "temp_invincible", "notalksound" },
+		tags = { "busy", "jumping", "nosleep", "noattack", "temp_invincible", "notalksound", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -723,6 +737,7 @@ local states =
 				inst.sg:RemoveStateTag("nosleep")
 				inst.sg:RemoveStateTag("noattack")
 				inst.sg:RemoveStateTag("temp_invincible")
+				inst.sg:RemoveStateTag("noelectrocute")
 			end),
 		},
 
@@ -754,9 +769,14 @@ local states =
 			inst.components.locomotor:Stop()
 			inst.AnimState:PlayAnimation("hit")
 			inst.SoundEmitter:PlaySound("meta3/sharkboi/hit")
+			CommonHandlers.UpdateHitRecoveryDelay(inst)
 			inst.sg.statemem.nextstateparams = nextstateparams
-			if inst.sg.lasttags and inst.sg.lasttags["dizzy"] then
-				inst.sg:AddStateTag("dizzy")
+			if inst.sg.lasttags then
+				if inst.sg.lasttags["dizzy"] then
+					inst.sg:AddStateTag("dizzy")
+				elseif inst.sg.lasttags["torpedoready"] then
+					inst.sg:AddStateTag("torpedoready")
+				end
 			end
 		end,
 
@@ -1055,7 +1075,7 @@ local states =
 
 	State{
 		name = "ice_summon",
-		tags = { "busy", "candefeat", "torpedoready" },
+		tags = { "busy", "candefeat", "torpedoready", "noelectrocute" },
 
 		onenter = function(inst, target)
 			inst.components.locomotor:Stop()
@@ -1104,6 +1124,9 @@ local states =
 				inst.sg.statemem.fx.Transform:SetPosition(x, 0, z)
 				inst.sg.statemem.fx.Transform:SetRotation(inst.Transform:GetRotation())
 			end),
+			FrameEvent(42, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
 			FrameEvent(58, function(inst)
 				inst.sg:AddStateTag("caninterrupt")
 			end),
@@ -1132,14 +1155,20 @@ local states =
 
 	State{
 		name = "torpedo_pre",
-		tags = { "attack", "busy", "candefeat" },
+		tags = { "attack", "busy", "candefeat", "torpedoready" },
 
 		onenter = function(inst, target)
 			inst.components.locomotor:Stop()
 			inst.AnimState:PlayAnimation("torpedo_pre")
-			if inst.sg.lasttags and inst.sg.lasttags["hit"] then
-				inst.sg.statemem.quick = true
-				inst.AnimState:SetFrame(16)
+			if inst.sg.lasttags then
+				if inst.sg.lasttags["electrocute"] then
+					inst.sg:AddStateTag("noelectrocute")
+					inst.sg.statemem.slightlyquick = true
+					inst.AnimState:SetFrame(10)
+				elseif inst.sg.lasttags["hit"] then
+					inst.sg.statemem.quick = true
+					inst.AnimState:SetFrame(16)
+				end
 			end
 			inst.SoundEmitter:PlaySound(inst.voicepath.."attack_small")
 
@@ -1177,8 +1206,13 @@ local states =
 					PlayFootstep(inst)
 				end
 			end),
+			FrameEvent(30 - 10, function(inst)
+				if inst.sg.statemem.slightlyquick then
+					PlayFootstep(inst)
+				end
+			end),
 			FrameEvent(30, function(inst)
-				if not inst.sg.statemem.quick then
+				if not (inst.sg.statemem.quick or inst.sg.statemem.slightlyquick) then
 					PlayFootstep(inst)
 				end
 			end),
@@ -1302,7 +1336,7 @@ local states =
 
 	State{
 		name = "torpedo_climb",
-		tags = { "busy", "dizzy", "nosleep" },
+		tags = { "busy", "dizzy", "nosleep", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
@@ -1318,6 +1352,7 @@ local states =
 					return
 				end
 				inst.sg:RemoveStateTag("nosleep")
+				inst.sg:RemoveStateTag("noelectrocute")
 				inst.sg:AddStateTag("caninterrupt")
 			end),
 		},
@@ -1488,7 +1523,7 @@ local states =
 
 	State{
 		name = "dive_jump_delay",
-		tags = { "fin", "busy", "nosleep", "noattack", "invisible", "temp_invincible", "jumping" },
+		tags = { "fin", "busy", "nosleep", "noattack", "invisible", "temp_invincible", "jumping", "noelectrocute" },
 
 		onenter = function(inst, target)
 			inst.components.locomotor:Stop()
@@ -1552,7 +1587,7 @@ local states =
 
 	State{
 		name = "dive_jump_pre",
-		tags = { "busy", "nosleep", "noattack", "invisible", "temp_invincible" },
+		tags = { "busy", "nosleep", "noattack", "invisible", "temp_invincible", "noelectrocute" },
 
 		onenter = function(inst, data)
 			inst.components.locomotor:Stop()
@@ -1643,7 +1678,7 @@ local states =
 
 	State{
 		name = "dive_jump",
-		tags = { "busy", "jumping", "nosleep" },
+		tags = { "busy", "jumping", "nosleep", "noelectrocute" },
 
 		onenter = function(inst, pos)
 			inst.components.locomotor:Stop()
@@ -1924,7 +1959,7 @@ local states =
 
 	State{
 		name = "fin_idle",
-		tags = { "fin", "idle", "canrotate", "nosleep", "noattack", "invisible" },
+		tags = { "fin", "idle", "canrotate", "nosleep", "noattack", "invisible", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:StopMoving()
@@ -1946,7 +1981,7 @@ local states =
 
 	State{
 		name = "fin_start",
-		tags = { "fin", "moving", "running", "canrotate", "nosleep", "noattack" },
+		tags = { "fin", "moving", "running", "canrotate", "nosleep", "noattack", "noelectrocute" },
 
 		onenter = function(inst)
 			inst.components.locomotor:RunForward()
@@ -1961,6 +1996,9 @@ local states =
 			FrameEvent(2, SpawnIcePlowFX),
 			FrameEvent(2, SpawnIceTrailFX),
 			FrameEvent(4, DoFinWork),
+			FrameEvent(4, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
 		},
 
 		events =
@@ -2050,7 +2088,10 @@ local states =
 
 		timeline =
 		{
-			FrameEvent(5, function(inst) inst.SoundEmitter:KillSound("loop") end),
+			FrameEvent(5, function(inst)
+				inst.SoundEmitter:KillSound("loop")
+				inst.sg:AddStateTag("noelectrocute")
+			end),
 		},
 
 		events =
@@ -2328,5 +2369,109 @@ CommonStates.AddSleepExStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
+
+CommonStates.AddElectrocuteStates(states,
+{	--timeline
+	pst =
+	{
+		FrameEvent(4, function(inst)
+			if inst.sg:HasStateTag("dizzy") then
+				local hits = (inst.sg.mem.transfer_hits or 0) + 1
+				inst.sg:GoToState(hits > 2 and "torpedo_pst" or "torpedo_dizzy", hits)
+			elseif inst.sg:HasStateTag("torpedoready") then
+				inst.sg:GoToState("torpedo_pre", inst.sg.mem.transfer_target)
+			end
+		end),
+	},
+},
+{	--anims
+	loop = function(inst)
+		if inst.sg.lasttags["defeated"] then
+			inst.sg:AddStateTag("defeated")
+			inst.override_combat_fx_height = "low"
+			return "defeated_shock_loop"
+		elseif inst.sg.lasttags["digging"] then
+			inst.sg:AddStateTag("digging")
+			inst.override_combat_fx_size = "med"
+			inst.override_combat_fx_height = "low"
+			return "icedive_shock_loop"
+		elseif inst.sg.lasttags["dizzy"] then
+			inst.sg:AddStateTag("dizzy")
+		elseif inst.sg.lasttags["torpedoready"] then
+			inst.sg:AddStateTag("torpedoready")
+		elseif inst.sg.lasttags["fin"] then
+			inst.sg:AddStateTag("fin")
+			inst.override_combat_fx_size = "small"
+			inst.override_combat_fx_height = "low"
+			return "fin_shock_loop"
+		end
+	end,
+	pst = function(inst)
+		if inst.sg.lasttags["defeated"] then
+			inst.sg:AddStateTag("defeated")
+			return "defeated_shock_pst"
+		elseif inst.sg.lasttags["digging"] then
+			inst.sg:AddStateTag("digging")
+			--no anim, see pst_onenter (still need the statetag for newstate event in sharkboi.lua)
+		elseif inst.sg.lasttags["dizzy"] then
+			inst.sg:AddStateTag("dizzy")
+		elseif inst.sg.lasttags["torpedoready"] then
+			inst.sg:AddStateTag("torpedoready")
+		elseif inst.sg.lasttags["fin"] then
+			inst.sg:AddStateTag("fin")
+			inst.sg:AddStateTag("canrotate")
+			return "fin_shock_pst"
+		end
+	end,
+},
+{	--fns
+	loop_onenter = function(inst)
+		--V2C: can change this back since fx is already spawned at this point
+		inst.override_combat_fx_size = nil
+		inst.override_combat_fx_height = nil
+	end,
+	loop_onexit = function(inst)
+		if not inst.sg.statemem.not_interrupted then
+			inst.sg.mem.transfer_hits = nil
+			inst.sg.mem.transfer_target = nil
+
+			if inst.sg:HasStateTag("defeated") and ShouldBeDefeated(inst) then
+				inst:MakeTrader()
+			end
+		end
+	end,
+	pst_onenter = function(inst)
+		if inst.sg.lasttags["digging"] then
+			inst.sg:GoToState("dive_dig_stun")
+		end
+	end,
+	onanimover = function(inst)
+		if inst.AnimState:AnimDone() then
+			if inst.sg:HasStateTag("defeated") then
+				inst.sg.statemem.defeat = true
+				inst.sg:GoToState("defeat_loop", (inst.sg.mem.transfer_hits or 0) + 1)
+			elseif inst.sg:HasStateTag("dizzy") then
+				local hits = (inst.sg.mem.transfer_hits or 0) + 1
+				inst.sg:GoToState(hits > 2 and "torpedo_pst" or "torpedo_dizzy", hits)
+			elseif inst.sg:HasStateTag("torpedoready") then
+				inst.sg:GoToState("torpedo_pre", inst.sg.mem.transfer_target)
+			elseif inst.sg:HasStateTag("fin") then
+				inst.sg:GoToState(inst.components.locomotor:WantsToMoveForward() and "fin" or "fin_stop")
+			else
+				inst.sg:GoToState("idle")
+			end
+		end
+	end,
+	pst_onexit = function(inst)
+		inst.sg.mem.transfer_hits = nil
+		inst.sg.mem.transfer_target = nil
+
+		if inst.sg:HasStateTag("defeated") then
+			if not inst.sg.statemem.defeat and ShouldBeDefeated(inst) then
+				inst:MakeTrader()
+			end
+		end
+	end,
+})
 
 return StateGraph("sharkboi", states, events, "idle")

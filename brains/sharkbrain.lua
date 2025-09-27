@@ -198,6 +198,7 @@ function SharkBrain:OnStart()
                     WhileNode(function() return isOnWater(self.inst) end, "on water",
                         PriorityNode({
 							BrainCommon.PanicTrigger(self.inst),
+                            BrainCommon.ElectricFencePanicTrigger(self.inst),
                             RunAway(self.inst, function() return self.inst.components.timer:TimerExists("getdistance") and self.inst.components.combat.target end, 10, 20),
                             ChaseAndAttack(self.inst, 100),
                             DoAction(self.inst, isfoodnearby, "gotofood", true),

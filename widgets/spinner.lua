@@ -202,11 +202,17 @@ function Spinner:GetHelpText()
 
 	local t = {}
 	if self.leftimage.enabled then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, self.control_prev, false, false) .. " " .. STRINGS.UI.HELP.PREVVALUE)
+		local prev_ctrl = TheInput:ResolveVirtualControls(self.control_prev)
+		if prev_ctrl then
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, prev_ctrl, false, false).." "..STRINGS.UI.HELP.PREVVALUE)
+		end
 	end
 
 	if self.rightimage.enabled then
-		table.insert(t, TheInput:GetLocalizedControl(controller_id, self.control_next, false, false) .. " " .. STRINGS.UI.HELP.NEXTVALUE)
+		local next_ctrl = TheInput:ResolveVirtualControls(self.control_next)
+		if next_ctrl then
+			table.insert(t, TheInput:GetLocalizedControl(controller_id, next_ctrl, false, false).." "..STRINGS.UI.HELP.NEXTVALUE)
+		end
 	end
 
 	return table.concat(t, "  ")
@@ -228,16 +234,42 @@ function Spinner:AddControllerHints(control_prev, control_next, mute_negative_so
 	self.right_hint:SetPosition( self.width/2 - w/2 - 27, 0, 0 )
 
 	if TheInput:ControllerAttached() then
-		self.right_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_next))
-		self.left_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_prev))
+		local controller_id
+		if self.control_next < VIRTUAL_CONTROL_START then
+			controller_id = TheInput:GetControllerID()
+			self.right_hint:SetString(TheInput:GetLocalizedControl(controller_id, self.control_next))
+		end
+		if self.control_prev < VIRTUAL_CONTROL_START then
+			controller_id = controller_id or TheInput:GetControllerID()
+			self.left_hint:SetString(TheInput:GetLocalizedControl(controller_id, self.control_prev))
+		end
+		if self.control_next >= VIRTUAL_CONTROL_START or self.control_prev >= VIRTUAL_CONTROL_START then
+			self:StartUpdating()
+		else
+			self:StopUpdating()
+		end
 	else
-		self.left_hint:Hide()
-		self.right_hint:Hide()
+		self:HideHints()
 	end
 
 	self.hints_enabled = true
+	self.virtual_hints_enabled_fn = nil
 end
 
+function Spinner:ShowHints()
+	self.left_hint:Show()
+	self.right_hint:Show()
+	if self.control_next >= VIRTUAL_CONTROL_START or self.control_prev >= VIRTUAL_CONTROL_START then
+		self:StartUpdating()
+		self:RefreshVirtualControllerHints()
+	end
+end
+
+function Spinner:HideHints()
+	self.left_hint:Hide()
+	self.right_hint:Hide()
+	self:StopUpdating()
+end
 
 function Spinner:OnLoseFocus()
 	Spinner._base.OnLoseFocus(self)
@@ -249,10 +281,10 @@ function Spinner:OnControl(control, down)
 	if Spinner._base.OnControl(self, control, down) then return true end
 
 	if down then
-		if control == self.control_prev then
+		if control == TheInput:ResolveVirtualControls(self.control_prev) then
 			self:Prev()
 			return true
-		elseif control == self.control_next then
+		elseif control == TheInput:ResolveVirtualControls(self.control_next) then
 			self:Next()
 			return true
 		end
@@ -555,12 +587,38 @@ end
 
 function Spinner:RefreshControllers(controller_mode)
 	if controller_mode and self.hints_enabled then
-		self.left_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_prev))
-		self.right_hint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), self.control_next))
+		self:RefreshVirtualControllerHints()
 		self:UpdateState()
 	else
-		self.left_hint:Hide()
-		self.right_hint:Hide()
+		self:HideHints()
+	end
+end
+
+function Spinner:RefreshVirtualControllerHints()
+	if self.virtual_hints_enabled_fn and not self.virtual_hints_enabled_fn() then
+		self.left_hint:SetString("")
+		self.right_hint:SetString("")
+		return
+	end
+
+	local controller_id
+
+	if self.left_hint.shown then
+		local prev_ctrl = TheInput:ResolveVirtualControls(self.control_prev)
+		if prev_ctrl then
+			controller_id = TheInput:GetControllerID()
+			prev_ctrl = TheInput:GetLocalizedControl(controller_id, prev_ctrl)
+		end
+		self.left_hint:SetString(prev_ctrl or "")
+	end
+
+	if self.right_hint.shown then
+		local next_ctrl = TheInput:ResolveVirtualControls(self.control_next)
+		if next_ctrl then
+			controller_id = controller_id or TheInput:GetControllerID()
+			next_ctrl = TheInput:GetLocalizedControl(controller_id, next_ctrl)
+		end
+		self.right_hint:SetString(next_ctrl or "")
 	end
 end
 
@@ -571,11 +629,9 @@ function Spinner:UpdateState()
 
 		if self.hints_enabled then
 			if TheInput:ControllerAttached() then
-				self.left_hint:Show()
-				self.right_hint:Show()
+				self:ShowHints()
 			else
-				self.left_hint:Hide()
-				self.right_hint:Hide()
+				self:HideHints()
 			end
 		end
 
@@ -598,12 +654,10 @@ function Spinner:UpdateState()
 		self.rightimage:Disable()
 
 		if self.hints_enabled then
-			self.left_hint:Hide()
-			self.right_hint:Hide()
+			self:HideHints()
 		end
 	end
 end
-
 
 function Spinner:SetOptions( options )
 	self.options = options
@@ -614,6 +668,10 @@ function Spinner:SetOptions( options )
 		self:SetSelectedIndex(self.selectedIndex)
 	end
 	self:UpdateState()
+end
+
+function Spinner:OnUpdate(dt)
+	self:RefreshVirtualControllerHints()
 end
 
 return Spinner

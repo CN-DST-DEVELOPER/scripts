@@ -394,6 +394,9 @@ local function BuildSkillsData(SkillTreeFns)
         -- Quote battle songs now no longer consume Inspiration, and instead have a cooldown.
         wathgrithr_songs_container = {
             group = "songs",
+
+            onactivate   = CreateAddTagFn("battlesongcontaineruser"),
+            ondeactivate = CreateRemoveTagFn("battlesongcontaineruser"),
         },
 
         -- Play a Beefalo Horn to unlock.

@@ -11,12 +11,6 @@ local prefabs =
 	"balloon_pop_body",
 }
 
-local function OnOwnerAttacked(inst, owner)
-	if inst:IsValid() then
-		inst.components.poppable:Pop()
-	end
-end
-
 local function onownerattackedfn(inst, data)
     local balloon = inst.components.inventory ~= nil and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY) or nil
     if balloon ~= nil and balloon.components.poppable ~= nil then

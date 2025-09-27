@@ -25,6 +25,7 @@ EMOTE_ITEMS =
 			sounddelay = 0.8,
 			soundlooped = true,
 			soundoverride = "carol",
+			tags = { "nodangle", },
 		},
 		release_group = 36,
 	},
@@ -256,6 +257,24 @@ EMOTE_ITEMS =
 			mountsound = "curious",
 		},
 		release_group = 24,
+	},
+	emote_tiphat =
+	{
+		rarity = "Reward",
+		cmd_name = "tiphat",
+		type = "emote",
+		skin_tags = { "WESTERN", "EMOTE", },
+		data =
+		{
+			item_type = "emote_tiphat",
+			requires_validation = true,
+			anim = "emote_hat_tip",
+			fx = false,
+			loop = false,
+			mounted = true,
+			needshat = true,
+		},
+		release_group = 167,
 	},
 	emote_yawn =
 	{

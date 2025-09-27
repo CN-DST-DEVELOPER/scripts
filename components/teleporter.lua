@@ -16,6 +16,7 @@ local Teleporter = Class(function(self, inst)
     self.numteleporting = 0
     self.teleportees = {}
     self.saveenabled = true -- this only toggles saving targetTeleporter
+    --self.selfmanaged = nil -- If set the same teleporter instance sending players is also the one that handles receiving players.
 
     self.travelcameratime = 3
     self.travelarrivetime = 4
@@ -33,6 +34,10 @@ nil,
 
 function Teleporter:OnRemoveFromEntity()
     self.inst:RemoveTag("teleporter")
+end
+
+function Teleporter:SetSelfManaged(selfmanaged)
+    self.selfmanaged = selfmanaged
 end
 
 function Teleporter:IsActive()
@@ -109,7 +114,7 @@ function Teleporter:Activate(doer)
 
     self:Teleport(doer)
 
-    local targetTeleporter = self.targetTeleporterTemporary or self.targetTeleporter
+    local targetTeleporter = self.targetTeleporterTemporary or (self.selfmanaged and self.inst) or self.targetTeleporter
 
     if targetTeleporter.components.teleporter ~= nil then
         if doer:HasTag("player") then
@@ -167,9 +172,10 @@ end
 
 -- You probably don't want this, call Activate instead.
 function Teleporter:Teleport(obj)
-    local targetTeleporter = self.targetTeleporterTemporary or self.targetTeleporter
+    local targetDesination = self.targetTeleporterTemporary or self.targetTeleporter -- Do not adjust destination for selfmanaged.
+    local targetTeleporter = self.targetTeleporterTemporary or (self.selfmanaged and self.inst) or self.targetTeleporter
     if targetTeleporter ~= nil then
-        local target_x, target_y, target_z = targetTeleporter.Transform:GetWorldPosition()
+        local target_x, target_y, target_z = targetDesination.Transform:GetWorldPosition()
         local offset = targetTeleporter.components.teleporter ~= nil and targetTeleporter.components.teleporter.offset or 0
 
         local is_aquatic = obj.components.locomotor ~= nil and obj.components.locomotor:IsAquatic()

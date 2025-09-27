@@ -236,7 +236,6 @@ local function OnLoad(inst, data)
     end
 end
 
-
 local function fn()
     local inst = CreateEntity()
 
@@ -254,6 +253,7 @@ local function fn()
 
     inst:AddTag("irreplaceable")
     inst:AddTag("nonpotatable")
+	inst:AddTag("celestial_station")
 
     inst._fx = net_event(inst.GUID, "moonrockseed._fx")
 
@@ -272,6 +272,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true)
 
     inst._tasks = {}
     inst._light = 0

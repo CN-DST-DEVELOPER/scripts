@@ -56,6 +56,7 @@ function CrabkingMobBrain:OnStart()
         PriorityNode(
         {
             BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
             DoAction(self.inst, DoAbandonPlatform, "Abandoning Platform", true),
             ChaseAndAttack(self.inst, TUNING.CRABKING_MOB_CHASE_TIME),
             Wander(self.inst, GetWanderPoint, MAX_WANDER_DIST)

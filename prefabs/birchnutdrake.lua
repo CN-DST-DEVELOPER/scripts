@@ -136,6 +136,7 @@ local function fn()
     inst:AddComponent("knownlocations")
 
     inst:SetStateGraph("SGbirchnutdrake")
+	inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
     MakeSmallBurnableCharacter(inst, "treedrake_root", Vector3(0, -1, .1))

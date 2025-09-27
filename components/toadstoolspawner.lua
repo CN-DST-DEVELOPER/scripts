@@ -66,7 +66,9 @@ end
 --[[ Private event handlers ]]
 --------------------------------------------------------------------------
 
-local function OnToadstoolStateChanged()
+local function OnToadstoolStateChanged(spawner, state)
+    TheWorld:PushEvent("toadstoolstatechanged", {spawner = spawner, state = state})
+    
     if GetSpawnedToadstool() ~= nil then
         StopRespawnTimer()
     elseif not _worldsettingstimer:ActiveTimerExists(TOADSTOOL_TIMERNAME) then
@@ -74,7 +76,9 @@ local function OnToadstoolStateChanged()
     end
 end
 
-local function OnToadstoolKilled()
+local function OnToadstoolKilled(spawner, toadstool)
+    TheWorld:PushEvent("toadstoolkilled", {spawner = spawner, toadstool = toadstool})
+
     if GetSpawnedToadstool() ~= nil then
         StopRespawnTimer()
     else --force restart

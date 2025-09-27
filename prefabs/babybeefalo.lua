@@ -178,6 +178,7 @@ local function fn()
     inst:AddComponent("drownable")
 
     MakeMediumBurnableCharacter(inst, "beefalo_body")
+    MakeMediumFreezableCharacter(inst, "beefalo_body")
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.walkspeed = 2

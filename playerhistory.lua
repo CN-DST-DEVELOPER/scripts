@@ -114,7 +114,7 @@ function PlayerHistory:GetRows() -- sort by last seen
 			return false
 		end
 
-		return a.name < b.name
+		return stringidsorter(a.name, b.name)
 	end)
 	return history
 end
@@ -137,7 +137,7 @@ function PlayerHistory:GetRowsMostTime()
 		elseif (a.last_seen_date or 0) < (b.last_seen_date or 0) then
 			return false
 		end
-		return a.name < b.name
+		return stringidsorter(a.name, b.name)
 	end)
 	return history
 end

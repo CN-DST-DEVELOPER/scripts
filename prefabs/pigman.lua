@@ -200,7 +200,11 @@ end
 
 local function OnNewTarget(inst, data)
     if inst:HasTag("werepig") then
-        inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsWerePig, MAX_TARGET_SHARES)
+        if inst:HasTag("shadowthrall_parasite_hosted") then
+            inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
+        else
+            inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsWerePig, MAX_TARGET_SHARES)
+        end
     end
 end
 

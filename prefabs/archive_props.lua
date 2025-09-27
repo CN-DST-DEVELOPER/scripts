@@ -12,11 +12,6 @@ local assets =
     Asset("MINIMAP_IMAGE", "archive_moon_statue4"),
 }
 
-local prefabs =
-{
-
-}
-
 local assets_desk =
 {
     Asset("ANIM", "anim/archive_security_desk.zip"),
@@ -120,20 +115,18 @@ end
 local function statuefn()
 
     local inst = CreateEntity()
-    inst.anim = math.random(1,4)
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
     inst.entity:AddMiniMapEntity()
-    inst.entity:AddLight()
     inst.entity:AddNetwork()
 
     MakeObstaclePhysics(inst, 0.66)
 
     inst.AnimState:SetBank("archive_moon_statue")
     inst.AnimState:SetBuild("archive_moon_statue")
-    inst.AnimState:PlayAnimation("idle_full_"..inst.anim)
+	inst.AnimState:PlayAnimation("idle_full_1")
     inst.scrapbook_anim = "idle_full_1"
 
     inst:AddTag("structure")
@@ -147,6 +140,11 @@ local function statuefn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.anim = math.random(4)
+	if inst.anim ~= 1 then
+		inst.AnimState:PlayAnimation("idle_full_"..tostring(inst.anim))
+	end
 
     inst:AddComponent("inspectable")
 
@@ -172,40 +170,45 @@ end
 local _storyprogress = 0
 local NUM_STORY_LINES = 5
 
-local function getstatus(inst)
-    if inst.storyprogress == nil then
-        _storyprogress = (_storyprogress % NUM_STORY_LINES) + 1
-        inst.storyprogress = _storyprogress
-    end
+local function rune_AdvanceStory(inst)
+	if inst.storyprogress == nil then
+		_storyprogress = (_storyprogress % NUM_STORY_LINES) + 1
+		inst.storyprogress = _storyprogress
+	end
+end
 
+local function getstatus(inst)
+	rune_AdvanceStory(inst)
     return "LINE_"..tostring(inst.storyprogress)
+end
+
+local function rune_getdescription(inst, viewer)
+	if viewer.components.inventory and viewer.components.inventory:EquipHasTag("ancient_reader") then
+		rune_AdvanceStory(inst)
+		return STRINGS.ARCHIVE_RUNE_STATUE["LINE_"..tostring(inst.storyprogress)]
+	end
 end
 
 local function onsaveRune(inst, data)
     data.storyprogress = inst.storyprogress
-    data.animid = inst.animid
     data.anim = inst.anim
 end
 
-local function setruneanimation(inst)
-    if inst.anim == 1 then
-        inst.AnimState:PlayAnimation("idle")        
-    else
-        inst.AnimState:PlayAnimation("idle"..inst.anim)
-    end
-    inst.scrapbook_anim = "idle"
-end
-
 local function onloadRune(inst, data)
-    if data ~= nil and data.storyprogress ~= nil then
-        inst.storyprogress = data.storyprogress
-        _storyprogress = (_storyprogress % NUM_STORY_LINES) + 1
-    end
+	if data then
+		if data.storyprogress then
+			inst.storyprogress = data.storyprogress
+			_storyprogress = math.max(_storyprogress, inst.storyprogress)
+		end
 
-    if data ~= nil and data.anim ~= nil then
-        inst.anim = data.anim
-        setruneanimation(inst)
-    end
+		if data.anim then
+			inst.anim = data.anim
+			local anim = inst.anim == 1 and "idle" or ("idle"..tostring(inst.anim))
+			if not inst.AnimState:IsCurrentAnimation(anim) then
+				inst.AnimState:PlayAnimation(anim)
+			end
+		end
+	end
 end
 
 local function runefn()
@@ -215,25 +218,24 @@ local function runefn()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
     inst.entity:AddMiniMapEntity()
-    inst.entity:AddLight()
     inst.entity:AddNetwork()
 
     MakeObstaclePhysics(inst, 0.66)
 
-    inst.anim = math.random(1,3)
-
     inst.AnimState:SetBank("archive_rune")
     inst.AnimState:SetBuild("archive_runes")
-    setruneanimation(inst)
+	inst.AnimState:PlayAnimation("idle")
 
     inst.MiniMapEntity:SetIcon("archive_runes.png")
 
     inst:AddTag("structure")
     inst:AddTag("statue")
     inst:AddTag("dustable")
+	inst:AddTag("ancient_text")
 
     inst:SetPrefabNameOverride("archive_rune_statue")
 
+	inst.scrapbook_anim = "idle"
     inst.scrapbook_specialinfo = "ARCHIVERUNESTATUE"
 
     inst.entity:SetPristine()
@@ -242,8 +244,14 @@ local function runefn()
         return inst
     end
 
+	inst.anim = math.random(3)
+	if inst.anim ~= 1 then
+		inst.AnimState:PlayAnimation("idle"..tostring(inst.anim))
+	end
+
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
+	inst.components.inspectable.descriptionfn = rune_getdescription
 
     inst.OnLoad = onloadRune
     inst.OnSave = onsaveRune
@@ -984,6 +992,8 @@ local function portalfn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatusportal
 
+    TheWorld:PushEvent("ms_register_vault_lobby_exit_target", inst)
+
     return inst
 end
 
@@ -1031,8 +1041,8 @@ local function worldgenitemfn()
 end
 
 
-return Prefab("archive_moon_statue",statuefn, assets, prefabs),
-       Prefab("archive_rune_statue", runefn, assets, prefabs),
+return Prefab("archive_moon_statue",statuefn, assets),
+       Prefab("archive_rune_statue", runefn, assets),
        Prefab("archive_security_desk", securityfn, assets_desk, prefabs_desk),
        Prefab("archive_security_pulse", securitypulsefn, assets_security, prefabs_security),
        Prefab("archive_security_pulse_sfx", securitypulse_sfxfn),

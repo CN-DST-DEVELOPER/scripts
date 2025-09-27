@@ -48,6 +48,8 @@ local function fn()
 
     inst.entity:SetCanSleep(false)
 
+    inst:AddTag("NOBLOCK")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

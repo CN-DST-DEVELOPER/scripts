@@ -1,23 +1,35 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
-}
-
 local events =
 {
-    CommonHandlers.OnLocomote(false, true),
+	EventHandler("locomote", function(inst)
+		if inst.components.locomotor:WantsToMoveForward() and not inst.components.gestaltcapturable:IsTargeted() then
+			if inst.sg:HasStateTag("idle") then
+				inst.sg:GoToState("walk_start")
+			end
+		elseif inst.sg:HasStateTag("moving") then
+			inst.sg:GoToState("walk_stop")
+		end
+	end),
+	EventHandler("gestaltcapturable_targeted", function(inst)
+		if inst.sg:HasStateTag("moving") then
+			inst.sg:GoToState("walk_stop")
+		end
+	end),
 
     EventHandler("death", function(inst)
 		inst.sg:GoToState("death", "death")
 	end),
-
     EventHandler("doattack", function(inst)
         if not (inst.sg:HasStateTag("busy")) then
             inst.sg:GoToState(inst.isguard and "guardattack"
 								or "attack")
         end
     end),
+	EventHandler("captured", function(inst)
+		--can interrupt ANY state
+		inst.sg:GoToState("captured")
+	end),
 }
 
 local function FindBestAttackTarget(inst)
@@ -68,7 +80,11 @@ local states=
 
         events =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
         },
     },
 
@@ -79,17 +95,21 @@ local states=
         onenter = function(inst)
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("emerge")
+			inst.components.gestaltcapturable:SetEnabled(false)
         end,
 
-        timeline=
+		events =
         {
-            --TimeEvent(5*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/rabbit/hop") end ),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
         },
 
-        events =
-        {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
-        },
+		onexit = function(inst)
+			inst.components.gestaltcapturable:SetEnabled(true)
+		end,
     },
 
     State{
@@ -97,18 +117,32 @@ local states=
         tags = {"busy", "noattack"},
 
         onenter = function(inst)
+			if inst:IsAsleep() then
+				inst:Remove()
+				return
+			end
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("melt")
             inst.persists = false
+			inst.components.gestaltcapturable:SetEnabled(false)
         end,
 
         events =
         {
-            EventHandler("animover", function(inst) inst:Remove() end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst:Remove()
+				end
+			end),
+			EventHandler("entitysleep", function(inst)
+				inst:Remove()
+			end),
         },
 
-        onexit = function(inst)
-        end,
+		onexit = function(inst)
+			--Shouldn't reach here
+			inst.components.gestaltcapturable:SetEnabled(true)
+		end,
     },
 
     State{
@@ -118,19 +152,24 @@ local states=
         onenter = function(inst)
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("melt")
+			inst.components.gestaltcapturable:SetEnabled(false)
         end,
-
-        timeline=
-        {
-            --TimeEvent(5*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/rabbit/hop") end ),
-        },
 
         events =
         {
             EventHandler("animover", function(inst)
-				inst.sg:GoToState("relocating")
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.relocating = true
+					inst.sg:GoToState("relocating")
+				end
 			end),
         },
+
+		onexit = function(inst)
+			if not inst.sg.statemem.relocating then
+				inst.components.gestaltcapturable:SetEnabled(true)
+			end
+		end,
     },
 
     State{
@@ -140,24 +179,29 @@ local states=
         onenter = function(inst)
             inst.components.locomotor:Stop()
 			inst:Hide()
+			inst.components.gestaltcapturable:SetEnabled(false)
             inst.sg:SetTimeout(math.random() * 0.5 + 0.25)
         end,
 
         ontimeout = function(inst)
-			inst.sg.statemem.dest = inst:FindRelocatePoint()
-			if inst.sg.statemem.dest ~= nil then
-				inst.sg:GoToState("emerge")
-			else
+			if inst._can_despawn then
 				inst:Remove()
+			else
+				inst.sg.statemem.dest = inst:FindRelocatePoint()
+				if inst.sg.statemem.dest ~= nil then
+					inst.sg:GoToState("emerge")
+				else
+					inst:Remove()
+				end
 			end
 		end,
 
 		onexit = function(inst)
+			inst:Show()
 			if inst.sg.statemem.dest ~= nil then
 				inst.Transform:SetPosition(inst.sg.statemem.dest:Get())
-				inst:Show()
 			else
-				inst:Remove()
+				inst.components.gestaltcapturable:SetEnabled(true)
 			end
 		end
     },
@@ -204,8 +248,10 @@ local states=
 
         events =
         {
-            EventHandler("animover", function(inst)
-				inst.sg:GoToState("idle")
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
 			end),
         },
 
@@ -262,8 +308,10 @@ local states=
 
         events =
         {
-            EventHandler("animover", function(inst)
-				inst.sg:GoToState("idle")
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
 			end),
         },
 
@@ -283,19 +331,44 @@ local states=
 			inst.persists = false
         end,
 
-        timeline=
-        {
-            --TimeEvent(5*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/rabbit/hop") end ),
-        },
-
         events =
         {
             EventHandler("animover", function(inst)
-				inst:Remove()
+				if inst.AnimState:AnimDone() then
+					inst:Remove()
+				end
 			end),
         },
-
     },
+
+	State{
+		name = "captured",
+		tags = { "busy", "noattack", "nointerrupt" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("melt")
+			inst.AnimState:SetFrame(1)
+			inst.AnimState:SetDeltaTimeMultiplier(2)
+			inst:AddTag("NOCLICK")
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					--shouldn't reach here
+					inst.sg:GoToState("emerge")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			--shouldn't reach here
+			inst.AnimState:SetDeltaTimeMultiplier(1)
+			inst:RemoveTag("NOCLICK")
+		end,
+	},
 }
 
 local function SpawnTrail(inst)
@@ -323,4 +396,4 @@ CommonStates.AddWalkStates(states,
 , nil, nil, true)
 
 
-return StateGraph("gestalt", states, events, "idle", actionhandlers)
+return StateGraph("gestalt", states, events, "idle")

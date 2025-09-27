@@ -388,9 +388,10 @@ local function create_common_pre(inst, bank, build, data)
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.OBSTACLES)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.WORLD)
-    phys:CollidesWith(COLLISION.OBSTACLES)
+	phys:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES
+	)
     phys:SetCylinder(radius, 3)
 
     inst.AnimState:SetBank(bank)
@@ -662,9 +663,10 @@ local function boat_player_collision_template(radius)
     phys:SetDamping(5)
 	phys:SetRestitution(0)
     phys:SetCollisionGroup(COLLISION.BOAT_LIMITS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.CHARACTERS)
-    phys:CollidesWith(COLLISION.WORLD)
+	phys:SetCollisionMask(
+		COLLISION.CHARACTERS,
+		COLLISION.WORLD
+	)
     phys:SetTriangleMesh(build_boat_collision_mesh(radius + 0.1, 3))
 
     inst:AddTag("NOBLOCK")
@@ -693,10 +695,11 @@ local function boat_item_collision_template(radius)
     phys:SetFriction(0)
     phys:SetDamping(5)
     phys:SetCollisionGroup(COLLISION.BOAT_LIMITS)
-    phys:ClearCollisionMask()
-    phys:CollidesWith(COLLISION.ITEMS)
-    phys:CollidesWith(COLLISION.FLYERS)
-    phys:CollidesWith(COLLISION.WORLD)
+	phys:SetCollisionMask(
+		COLLISION.ITEMS,
+		COLLISION.FLYERS,
+		COLLISION.WORLD
+	)
     phys:SetTriangleMesh(build_boat_collision_mesh(radius + 0.2, 3))
     --Boats currently need to not go to sleep because
     --constraints will cause a crash if either the target object or the source object is removed from the physics world
@@ -1434,6 +1437,16 @@ end
 -- ITEMS
 
 function CLIENT_CanDeployBoat(inst, pt, mouseover, deployer, rotation)
+	local inventory = deployer and deployer.replica.inventory
+	if inventory and inventory:IsFloaterHeld() then
+		local hop_range = TUNING.FLOATING_HOP_DISTANCE_PLATFORM - 0.01 --make sure we're close enough to hop at max range
+		local max_range = inst._boat_radius + hop_range
+		local min_range = inst._boat_radius + 0.5
+		local dsq = deployer:GetDistanceSqToPoint(pt)
+		if dsq > max_range * max_range or dsq < min_range * min_range then
+			return false
+		end
+	end
     return TheWorld.Map:CanDeployBoatAtPointInWater(pt, inst, mouseover,
     {
         boat_radius = inst._boat_radius,
@@ -1587,8 +1600,39 @@ local function boat_otterden_item_collision_fn()
     return boat_item_collision_template(TUNING.BOAT.OTTERDEN_BOAT.RADIUS)
 end
 
+-- Placer post init
+local function _set_placer_layer(inst)
+	inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+	inst.AnimState:SetSortOrder(2)
+	inst.AnimState:SetFinalOffset(7)
+end
+
+local function _check_placer_offset(inst, boat_radius)
+	local inventory = ThePlayer and ThePlayer.replica.inventory
+	if inventory and inventory:IsFloaterHeld() then
+		local hop_range = TUNING.FLOATING_HOP_DISTANCE_PLATFORM - 0.01 --see CLIENT_CanDeployBoat
+		local offset_range = hop_range - 0.01 --make sure placer stays within valid range of CLIENT_CanDeployBoat
+		inst.components.placer.offset = math.min(inst.components.placer.offset, boat_radius + offset_range)
+	end
+end
+
+local function wood_placer_postinit(inst)
+	_set_placer_layer(inst)
+	_check_placer_offset(inst, TUNING.BOAT.RADIUS)
+	ControllerPlacer_Boat_SpotFinder(inst, TUNING.BOAT.RADIUS)
+end
+
 local function ancient_placer_postinit(inst)
     inst.AnimState:SetScale(ANCIENT_BOAT_SCALE, ANCIENT_BOAT_SCALE)
+	_set_placer_layer(inst)
+	_check_placer_offset(inst, TUNING.BOAT.ANCIENT_BOAT.RADIUS)
+	ControllerPlacer_Boat_SpotFinder(inst, TUNING.BOAT.ANCIENT_BOAT.RADIUS)
+end
+
+local function grass_placer_postinit(inst)
+	_set_placer_layer(inst)
+	_check_placer_offset(inst, TUNING.BOAT.GRASS_BOAT.RADIUS)
+	ControllerPlacer_Boat_SpotFinder(inst, TUNING.BOAT.GRASS_BOAT.RADIUS)
 end
 
 --
@@ -1596,7 +1640,7 @@ return Prefab("boat", wood_fn, wood_assets, prefabs),
        Prefab("boat_player_collision", boat_player_collision_fn),
        Prefab("boat_item_collision", boat_item_collision_fn),
        Prefab("boat_item", item_fn, item_assets, item_prefabs),
-       MakePlacer("boat_item_placer", "boat_01", "boat_test", "idle_full", true, false, false, nil, nil, nil, ControllerPlacer_Boat_SpotFinder, 6),
+       MakePlacer("boat_item_placer", "boat_01", "boat_test", "idle_full", true, false, false, nil, nil, nil, wood_placer_postinit, 6),
 
        Prefab("boat_pirate", pirate_fn, pirate_assets, prefabs),
 
@@ -1619,4 +1663,4 @@ return Prefab("boat", wood_fn, wood_assets, prefabs),
        Prefab("boat_ice_deploy_blocker", ice_floe_deploy_blocker_fn),
 
        Prefab("boat_grass_item", grass_item_fn, grass_item_assets, grass_item_prefabs),
-       MakePlacer("boat_grass_item_placer", "boat_grass", "boat_grass", "idle_full", true, false, false, 0.85, nil, nil, ControllerPlacer_Boat_SpotFinder, 4.5)
+       MakePlacer("boat_grass_item_placer", "boat_grass", "boat_grass", "idle_full", true, false, false, 0.85, nil, nil, grass_placer_postinit, 4.5)

@@ -92,11 +92,21 @@ end
 --really this is TemperatureResistance, since it prevents cold from spreading also.
 function Propagator:GetHeatResistance()
     local tile, tile_info = self.inst:GetCurrentTileType()
-    return tile_info ~= nil
-        and tile_info.flashpoint_modifier ~= nil
-        and tile_info.flashpoint_modifier ~= 0
-        and math.max(1, self.flashpoint) / math.max(1, self.flashpoint + tile_info.flashpoint_modifier)
-        or 1
+
+    if tile_info ~= nil then
+        if tile_info.no_fire_spread then --This also prevents cold from spreading, but we don't have anything that spreads cold (in terms of fire), so it's OK
+            return 0
+        elseif tile_info.flashpoint_modifier ~= nil and tile_info.flashpoint_modifier ~= 0 then
+            return math.max(1, self.flashpoint) / math.max(1, self.flashpoint + tile_info.flashpoint_modifier)
+        end
+    end
+
+    return 1
+end
+
+function Propagator:CanSpreadHeat()
+    local _, tile_info = self.inst:GetCurrentTileType()
+    return tile_info == nil or not tile_info.no_fire_spread
 end
 
 function Propagator:AddHeat(amount,source)

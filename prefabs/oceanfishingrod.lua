@@ -71,6 +71,7 @@ local OCEANFISHINGFOCUS_MUST_TAGS = {"oceanfishingfocus"}
 
 local function reticuletargetfn(inst)
 	local cast_distance = inst.replica.oceanfishingrod ~= nil and inst.replica.oceanfishingrod:GetMaxCastDist() or TUNING.OCEANFISHING_TACKLE.BASE.dist_max
+	inst.components.reticule.twinstickrange = cast_distance
 
     local rotation = ThePlayer.Transform:GetRotation()
     local pos = ThePlayer:GetPosition()
@@ -88,6 +89,10 @@ local function reticuletargetfn(inst)
     end
 
     return Vector3(ThePlayer.entity:LocalToWorldSpace(cast_distance, 0.001, 0)) -- raised this off the ground a touch so it wont have any z-fighting with the ground biome transition tiles.
+end
+
+local function ReticuleValidFn(inst, reticule, targetpos, alwayspassable, allowwater, deployradius)
+	return TheWorld.Map:IsOceanAtPoint(targetpos:Get()) or FindVirtualOceanEntity(targetpos:Get()) ~= nil
 end
 
 local function reticuleshouldhidefn(inst)
@@ -158,9 +163,13 @@ local function fn()
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = reticuletargetfn
     inst.components.reticule.shouldhidefn = reticuleshouldhidefn
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = TUNING.OCEANFISHING_TACKLE.BASE.dist_max
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
-    
+	inst.components.reticule.validfn = ReticuleValidFn
+
     inst.scrapbook_subcat = "tool"
 
     inst.entity:SetPristine()

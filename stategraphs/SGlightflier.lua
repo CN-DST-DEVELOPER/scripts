@@ -9,13 +9,16 @@ local events=
 {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
 
     EventHandler("startled", function(inst)
-        inst.sg:GoToState("startled")
+		if not inst.sg:HasStateTag("electrocute") then
+			inst.sg:GoToState("startled")
+		end
     end),
 }
 
@@ -157,5 +160,6 @@ CommonStates.AddCombatStates(states,
 })
 
 CommonStates.AddFrozenStates(states, Land, Liftoff)
+CommonStates.AddElectrocuteStates(states)
 
 return StateGraph("lightflier", states, events, "idle", actionhandlers)

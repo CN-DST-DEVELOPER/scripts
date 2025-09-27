@@ -793,14 +793,17 @@ local function projectilefn()
 	inst.Physics:SetFriction(0)
 	inst.Physics:SetDamping(0)
 	inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-	inst.Physics:ClearCollisionMask()
-	inst.Physics:CollidesWith(COLLISION.GROUND)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.GROUND,
+		COLLISION.OBSTACLES,
+		COLLISION.ITEMS
+	)
 	inst.Physics:SetCapsule(0.2, 0.2)
 
 	--projectile (from complexprojectile component) added to pristine state for optimization
     inst:AddTag("projectile")
+	inst:AddTag("complexprojectile")
+
     --inst:AddTag("weapon")
     inst:AddTag("NOCLICK")
 

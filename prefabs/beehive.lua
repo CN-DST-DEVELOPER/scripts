@@ -225,6 +225,7 @@ local function fn()
     ---------------------
     MakeLargePropagator(inst)
     MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountSmall(inst)
 
     inst:AddComponent("hauntable")
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_SMALL)

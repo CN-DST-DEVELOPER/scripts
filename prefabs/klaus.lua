@@ -383,6 +383,8 @@ local function Enrage(inst, warning)
         inst.Physics:Teleport(inst.Transform:GetWorldPosition())
         SetPhysicalScale(inst, TUNING.KLAUS_ENRAGE_SCALE)
         SetStatScale(inst, TUNING.KLAUS_ENRAGE_SCALE)
+		inst.override_combat_fx_size = nil
+		inst.override_combat_fx_height = nil
         inst.components.sanityaura.aura = inst:IsUnchained() and -TUNING.SANITYAURA_HUGE or -TUNING.SANITYAURA_LARGE
         if warning then
             PushWarning(inst, "ANNOUNCE_KLAUS_ENRAGE")
@@ -528,6 +530,9 @@ local function fn()
 
         return inst
     end
+
+	inst.override_combat_fx_size = "med"
+	inst.override_combat_fx_height = "high"
 
     local scale = TUNING.KLAUS_ENRAGE_SCALE
     scale = scale * scale * scale

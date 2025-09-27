@@ -8,7 +8,7 @@ local prefabs =
 	"moon_tree_blossom_worldgen",
 }
 
-local function OnPickup(inst, pickupguy, src_pos)
+local function OnPutInInventory(inst, pickupguy, src_pos)
     inst.components.perishable:StartPerishing()
 end
 
@@ -42,7 +42,7 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
-	inst.components.inventoryitem:SetOnPickupFn(OnPickup)
+	inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
     inst:AddComponent("tradable")
     inst:AddComponent("vasedecoration")

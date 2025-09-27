@@ -91,6 +91,7 @@ function MosquitoBrain:OnStart()
     local root = PriorityNode(
     {
         BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         Leash(self.inst, GetNoLeaderHomePos, MAX_LEASH_DIST, MAX_WANDER_DIST),
         WhileNode(function() return ShouldChaseAndAttack(self.inst) end, "AttackMomentarily", ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)) ),

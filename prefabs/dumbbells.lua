@@ -117,10 +117,11 @@ local function ResetPhysics(inst)
 	inst.Physics:SetFriction(0.1)
 	inst.Physics:SetRestitution(0.5)
 	inst.Physics:SetCollisionGroup(COLLISION.ITEMS)
-	inst.Physics:ClearCollisionMask()
-	inst.Physics:CollidesWith(COLLISION.WORLD)
-	inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-	inst.Physics:CollidesWith(COLLISION.SMALLOBSTACLES)
+	inst.Physics:SetCollisionMask(
+		COLLISION.WORLD,
+		COLLISION.OBSTACLES,
+		COLLISION.SMALLOBSTACLES
+	)
 end
 
 local function onthrown(inst)
@@ -139,10 +140,11 @@ local function onthrown(inst)
     inst.Physics:SetFriction(0)
     inst.Physics:SetDamping(0)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-    inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(COLLISION.GROUND)
-    inst.Physics:CollidesWith(COLLISION.OBSTACLES)
-    inst.Physics:CollidesWith(COLLISION.ITEMS)
+	inst.Physics:SetCollisionMask(
+		COLLISION.GROUND,
+		COLLISION.OBSTACLES,
+		COLLISION.ITEMS
+	)
 end
 
 local AOE_ATTACK_MUST_TAGS = {"_combat", "_health"}
@@ -348,7 +350,7 @@ end
 local emitted_temperatures = { -10, 10, 25, 40, 60 }
 
 local function HeatFn(inst, observer)
-    local range = GetRangeForTemperature(inst.components.temperature:GetCurrent(), TheWorld.state.temperature)
+	local range = GetRangeForTemperature(inst.components.temperature:GetCurrent(), GetLocalTemperature(inst))
     if range <= 2 then
         inst.components.heater:SetThermics(false, true)
     elseif range >= 4 then
@@ -416,7 +418,7 @@ local function UpdateImages(inst, range)
 end
 
 local function TemperatureChange(inst, data)
-    local ambient_temp = TheWorld.state.temperature
+	local ambient_temp = GetLocalTemperature(inst)
     local cur_temp = inst.components.temperature:GetCurrent()
     local range = GetRangeForTemperature(cur_temp, ambient_temp)
 
@@ -536,6 +538,9 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
         inst:AddComponent("reticule")
         inst.components.reticule.targetfn = ReticuleTargetFn
 		inst.components.reticule.shouldhidefn = ReticuleShouldHideFn
+		inst.components.reticule.twinstickcheckscheme = true
+		inst.components.reticule.twinstickmode = 1
+		inst.components.reticule.twinstickrange = 8
         inst.components.reticule.ease = true
 
         inst.entity:SetPristine()
@@ -561,11 +566,13 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
 
         inst:AddComponent("finiteuses")
         inst.components.finiteuses:SetOnFinished(function() 
-            if inst.components.inventoryitem:GetGrandOwner() == nil then
+			if not inst.components.inventoryitem:IsHeld() then
                 inst.components.inventoryitem.canbepickedup = false
+				inst.persists = false
+				inst:AddTag("NOCLICK")
                 inst:DoTaskInTime(1, ErodeAway)
             else
-                inst:Remove()        
+                inst:Remove()
             end
         end)
 

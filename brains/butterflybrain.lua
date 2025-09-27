@@ -47,6 +47,7 @@ function ButterflyBrain:OnStart()
         PriorityNode(
         {
 			BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
             RunAway(self.inst, RUN_AWAY_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
             IfNode(function() return not TheWorld.state.isday end, "IsNight",
                 DoAction(self.inst, GoHomeAction, "go home", true )),

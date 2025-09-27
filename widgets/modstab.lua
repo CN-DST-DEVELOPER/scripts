@@ -966,11 +966,11 @@ function ModsTab:ModLinkCurrent()
 end
 
 function ModsTab:MoreMods()
-    VisitURL("http://forums.kleientertainment.com/files/")
+    VisitURL("https://forums.kleientertainment.com/files/")
 end
 
 function ModsTab:MoreWorkshopMods()
-    VisitURL("http://steamcommunity.com/app/322330/workshop/")
+    VisitURL("https://steamcommunity.com/app/322330/workshop/")
 end
 
 function ModsTab:SetTopModsPanel(panel)

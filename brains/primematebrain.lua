@@ -202,6 +202,7 @@ function PrimemateBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
 
         ChattyNode(self.inst, "MONKEY_TALK_ABANDON",
             DoAction(self.inst, DoAbandon, "abandon", true )),

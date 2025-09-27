@@ -388,7 +388,11 @@ local function ReserveAndPlaceLayout(node_id, layout, prefabs, add_entity, posit
                             print(_TRACEBACK())
                             print("<<< Please add a bug report with this log file to help diagnose what went wrong!")
                         end
-						world:SetTile(position[1] + column, position[2] + row, layout.ground_types[layout.ground[rw][clmn]], 1)
+                        local x, y = position[1] + column, position[2] + row
+						world:SetTile(x, y, layout.ground_types[layout.ground[rw][clmn]], 1)
+                        if layout.SafeFromDisconnect and world.MakeSafeFromDisconnect then
+                            world:MakeSafeFromDisconnect(x, y)
+                        end
 					else
 						table.insert(tiles, layout.ground_types[layout.ground[rw][clmn]])
 					end
@@ -410,6 +414,21 @@ local function ReserveAndPlaceLayout(node_id, layout, prefabs, add_entity, posit
 	local rcy = 0
 	if position == nil then
 		rcx, rcy = world:ReserveSpace(node_id, size, layout.start_mask, layout.fill_mask, layout.layout_position, tiles)
+        if rcx then
+            if layout.SafeFromDisconnect and world.MakeSafeFromDisconnect then
+                local tileindex = 0
+                for column = 1, size*2 do -- size*2 because of the /2.0 above.
+                    for row = 1, size*2 do
+                        tileindex = tileindex + 1
+                        local tileid = tiles[tileindex]
+                        if tileid ~= 0 then
+                            local x, y = rcx + column, rcy + row
+                            world:MakeSafeFromDisconnect(x, y)
+                        end
+                    end
+                end
+            end
+        end
 	else
 		rcx = position[1]
 		rcy = position[2]
@@ -467,6 +486,25 @@ local function ReserveAndPlaceLayout(node_id, layout, prefabs, add_entity, posit
 
 end
 
+local function GetLayoutLandCount(layout) -- We could cache the result if needed?
+	local num_land = 0
+	--
+	if layout.ground ~= nil then
+		local size = #layout.ground
+		for column = 1, size do
+			for row = 1, size do
+				local rw = row
+				local clmn = column
+				if layout.ground_types[layout.ground[rw][clmn]] and TileGroupManager:IsLandTile(layout.ground_types[layout.ground[rw][clmn]]) then
+					num_land = num_land + 1
+				end
+			end
+		end
+	end
+	--
+	return num_land
+end
+
 -- Convenience function does all three steps at once.
 local function Convert(node_id, item, addEntity)
 	assert(item and item ~= "", "Must provide a valid layout name, got nothing.")
@@ -482,10 +520,38 @@ local function Place(position, item, addEntity, choices, world)
 	ReserveAndPlaceLayout("POSITIONED", layout, prefabs, addEntity, position, world)
 end
 
+local function PlaceAndPopulatePrefabDensities(position, item, addEntity, choices, world, id, prefab_densities)
+	assert(item and item ~= "", "Must provide a valid layout name, got nothing.")
+	local layout = LayoutForDefinition(item, choices)
+	local prefabs = ConvertLayoutToEntitylist(layout)
+	ReserveAndPlaceLayout("POSITIONED", layout, prefabs, addEntity, position, world)
+
+	id = id or layout.add_topology.room_id
+	local prefab_list = {} --[prefab] = num
+
+	for i, prefab_data in ipairs(prefabs) do
+		if not prefab_list[prefab_data.prefab] then
+			prefab_list[prefab_data.prefab] = 0
+		end
+		prefab_list[prefab_data.prefab] = prefab_list[prefab_data.prefab] + 1
+	end
+
+	prefab_densities[id] = {}
+
+	local num_ground = GetLayoutLandCount(layout)
+	--prefab_list[prefab] = prefab_list[prefab] + 1
+	for prefab, v in pairs(prefab_list) do
+		-- convererts from actual numbers to a percentage of the distribute percent
+		prefab_densities[id][prefab] = v / num_ground
+	end
+end
+
 return {
 		ConvertLayoutToEntitylist = ConvertLayoutToEntitylist,
 		LayoutForDefinition = LayoutForDefinition,
 		ReserveAndPlaceLayout = ReserveAndPlaceLayout,
 		Convert = Convert,
 		Place = Place,
+		PlaceAndPopulatePrefabDensities = PlaceAndPopulatePrefabDensities,
+		GetLayoutLandCount = GetLayoutLandCount,
 	}

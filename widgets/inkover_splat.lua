@@ -34,7 +34,6 @@ end)
 function InkOver_splat:Flash(anim)
     self.time = GetTime()
     self:Show()
-    print(anim)
     anim = anim or "ink"
 
     --[[

@@ -10,29 +10,24 @@ require "behaviours/standandattack"
 require "behaviours/leashandavoid"
 
 local WAMDER_DIST = 2
-local LEASH_DIST = 18
 local TARGET_LEASH_DIST = 3
 local CRABKING_RADIUS = 5
 
 local function findavoidanceobjectfn(inst)
-    if inst.crabking then
-        return inst.crabking
-    end
+    return inst.crabking
 end
 
 local function AttackTarget(inst)
-    if inst.components.combat:InCooldown() then 
+    if inst.components.combat:InCooldown() then
         return nil
     end
+
     local target = inst.components.combat.target
     if not target then
         return nil
     end
 
-    local x, y, z = inst.Transform:GetWorldPosition()
-    local tx, ty, tz = target.Transform:GetWorldPosition()
     local range = inst.components.combat.attackrange
-
     if inst:GetDistanceSqToInst(target) > range * range then
         return nil
     end
@@ -45,7 +40,8 @@ local function CircleBoat(inst)
     local target = inst.components.combat.target
     if not target then
         return nil
-    end    
+    end
+
     local platform = target:GetCurrentPlatform()
     if not platform then
         return nil
@@ -58,11 +54,11 @@ local function CircleBoat(inst)
 
     local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
 
-    local pos = offset and Vector3(px,py,pz) + offset
+    local pos = (offset and Vector3(px,py,pz) + offset)
 
     if pos and inst:GetDistanceSqToPoint(pos) > 1 then
         return pos
-    end    
+    end
 end
 
 local CrabkingClawBrain = Class(Brain, function(self, inst)

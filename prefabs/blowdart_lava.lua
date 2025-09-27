@@ -81,6 +81,7 @@ local function fn()
 
     inst:AddComponent("aoetargeting")
     inst.components.aoetargeting:SetAlwaysValid(true)
+	inst.components.aoetargeting:SetAllowRiding(false)
     inst.components.aoetargeting.reticule.reticuleprefab = "reticulelongmulti"
     inst.components.aoetargeting.reticule.pingprefab = "reticulelongmultiping"
     inst.components.aoetargeting.reticule.targetfn = ReticuleTargetFn

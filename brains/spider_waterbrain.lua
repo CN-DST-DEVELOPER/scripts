@@ -116,6 +116,7 @@ function SpiderWaterBrain:OnStart()
         {
             BrainCommon.PanicWhenScared(self.inst, .3),
 			BrainCommon.PanicTrigger(self.inst),
+            BrainCommon.ElectricFencePanicTrigger(self.inst),
             IfNode(function()
                     return not self.inst.bedazzled and self.inst.components.follower.leader == nil
                 end, "AttackWall",

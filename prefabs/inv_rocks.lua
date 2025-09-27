@@ -65,6 +65,8 @@ local function fn()
     inst.components.repairer.repairmaterial = MATERIALS.STONE
     inst.components.repairer.healthrepairvalue = TUNING.REPAIR_ROCKS_HEALTH
 
+	inst:AddComponent("snowmandecor")
+
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "prefabs/inv_rocks").master_postinit(inst)
     end

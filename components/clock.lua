@@ -146,7 +146,7 @@ local function SetDefaultSegs()
 end
 
 local function GetMoonPhase()
-    local waxing = _mooomphasecycle < #MOON_PHASE_CYCLES / 2
+	local waxing = _mooomphasecycle <= #MOON_PHASE_CYCLES / 2
     return MOON_PHASE_CYCLES[_mooomphasecycle], waxing
 end
 

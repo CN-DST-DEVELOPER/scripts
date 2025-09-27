@@ -16,7 +16,7 @@ local function CanMouseThrough(inst)
 end
 
 local function DisplayNameFn(inst)
-    return TheInput:ControllerAttached() and TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_USEONSCENE).." "..GetActionString(ACTIONS.PLANTSOIL.id) or ""
+	return TheInput:ControllerAttached() and TheInput:GetLocalizedControl(TheInput:GetControllerID(), VIRTUAL_CONTROL_INV_ACTION_LEFT).." "..GetActionString(ACTIONS.PLANTSOIL.id) or ""
 end
 
 local function fn()

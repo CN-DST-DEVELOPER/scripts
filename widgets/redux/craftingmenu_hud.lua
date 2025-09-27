@@ -266,6 +266,7 @@ function CraftingMenuHUD:RebuildRecipes()
         local cached_tech_trees = {}
         local cached_tech_trees_temp = {}
         local cached_should_hint_trees = {}
+        local craftinglimits = builder:GetAllRecipeCraftingLimits()
         for k, recipe in pairs(AllRecipes) do
             if IsRecipeValid(recipe.name) then
 				local knows_recipe = builder:KnowsRecipe(recipe, nil, cached_tech_trees)
@@ -284,10 +285,13 @@ function CraftingMenuHUD:RebuildRecipes()
 				local meta = self.valid_recipes[recipe.name].meta
 				--meta.can_build = true/false
 				--meta.build_state = string
+                --meta.limitedamount = # or nil
+
+                meta.limitedamount = craftinglimits[recipe.name]
 
 				local is_build_tag_restricted = not builder:CanLearn(recipe.name) -- canlearn is "not build tag restricted"
 
-				if knows_recipe or should_hint_recipe or freecrafting then --Knows enough to see it
+				if knows_recipe or should_hint_recipe or recipe.force_hint or freecrafting then --Knows enough to see it
 				--and (self.filter == nil or self.filter(recipe.name, builder, nil)) -- Has no filter or passes the filter in place
 
 					if builder:IsBuildBuffered(recipe.name) and not is_build_tag_restricted then
@@ -311,6 +315,9 @@ function CraftingMenuHUD:RebuildRecipes()
 					elseif CanPrototypeRecipe(recipe.level, tech_trees) then
 						meta.can_build = builder:HasIngredients(recipe)
 						meta.build_state = recipe.nounlock and (meta.can_build and "has_ingredients" or "no_ingredients") or "prototype"
+					elseif recipe.force_hint then
+						meta.can_build = false
+						meta.build_state = "hint"
 					elseif recipe.nounlock then
 						meta.can_build = false
 						meta.build_state = "hide"
@@ -362,11 +369,54 @@ function CraftingMenuHUD:RefreshCraftingHelpText()
 		if TheInput:ControllerAttached() then
 			local controller_id = TheInput:GetControllerID()
 
-			local hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_UP).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_RIGHT).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DOWN).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_LEFT).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+			--local scheme = TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+			--Check Profile directly since this code here is specifically for controller ui.
+			local scheme = Profile:GetControlScheme(CONTROL_SCHEME_CAM_AND_INV) or 1
+			local hint_text
+
+			if scheme == 2 then
+				hint_text = TheInput:GetLocalizedVirtualDirectionalControl(controller_id, "rstick", CONTROL_CAM_AND_INV_MODIFIER, false).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+			elseif scheme == 3 then
+				hint_text = TheInput:GetLocalizedVirtualDirectionalControl(controller_id, "rstick", CONTROL_CAM_AND_INV_MODIFIER, true).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+			elseif scheme == 4 or scheme == 5 then
+				hint_text = TheInput:GetLocalizedVirtualDirectionalControl(controller_id, "dpad", CONTROL_CAM_AND_INV_MODIFIER, true).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+			elseif scheme == 6 or scheme == 7 then
+				if self.pinbar.focus then
+					local pinslot = self.pinbar:GetFocusSlot()
+					if pinslot then
+						if pinslot:HasSkins() then
+							hint_text = STRINGS.UI.CRAFTING_MENU.SKIN_SELECT
+						end
+					else
+						hint_text = STRINGS.UI.CRAFTING_MENU.PINBAR_PAGE
+					end
+				else
+					local skins_spinner = self.craftingmenu.details_root.skins_spinner
+					if skins_spinner and skins_spinner:HasSkins() then
+						hint_text = STRINGS.UI.CRAFTING_MENU.SKIN_SELECT
+					end
+				end
+				if hint_text then
+					if TheInput:IsControlPressed(CONTROL_CAM_AND_INV_MODIFIER) then
+						hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_CAM_AND_INV_MODIFIER)
+							.." + "..TheInput:GetLocalizedControl(controller_id, CONTROL_PRESET_DPAD_LEFT)
+							.." "..TheInput:GetLocalizedControl(controller_id, CONTROL_PRESET_DPAD_RIGHT)
+							.." "..hint_text
+					else
+						hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_CAM_AND_INV_MODIFIER).." "..STRINGS.UI.CRAFTING_MENU.MORE
+						hint_text = hint_text.."  "..TheInput:GetLocalizedVirtualDirectionalControl(controller_id, "dpad", CONTROL_CAM_AND_INV_MODIFIER, false).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+					end
+				else
+					hint_text = TheInput:GetLocalizedVirtualDirectionalControl(controller_id, "dpad", CONTROL_CAM_AND_INV_MODIFIER, false).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+				end
+			else
+				hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_UP).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_RIGHT).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DOWN).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_LEFT).." "..STRINGS.UI.CRAFTING_MENU.NAVIGATION
+			end
+
 			if self.craftingmenu.focus then
-				hint_text = hint_text .. "  " .. self.craftingmenu:RefreshCraftingHelpText(TheInput:GetControllerID())
+				hint_text = hint_text.."  "..self.craftingmenu:RefreshCraftingHelpText(controller_id)
 			elseif self.pinbar.focus then
-				hint_text = hint_text .. "  " .. self.pinbar:RefreshCraftingHelpText(TheInput:GetControllerID())
+				hint_text = hint_text.."  "..self.pinbar:RefreshCraftingHelpText(controller_id)
 			end
 
 			self.nav_hint:SetString(hint_text)

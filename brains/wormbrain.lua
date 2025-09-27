@@ -100,6 +100,7 @@ function WormBrain:OnStart()
             --Worm has found hunting grounds at this point.
             PriorityNode{
 				BrainCommon.PanicTrigger(self.inst),
+                BrainCommon.ElectricFencePanicTrigger(self.inst),
                 Leash(self.inst, self.inst.components.knownlocations:GetLocation("home"), TUNING.WORM_CHASE_DIST, TUNING.WORM_CHASE_DIST - 15), -- Don't go too far from your hunting grounds.
                 ChaseAndAttack(self.inst, TUNING.WORM_CHASE_TIME, TUNING.WORM_CHASE_DIST),
                 DoAction(self.inst, GoHomeAction), --Go home and set up your lure if conditions are met.

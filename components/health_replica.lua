@@ -175,6 +175,20 @@ function Health:IsTakingFireDamageFull()
     end
 end
 
+function Health:SetLunarBurnFlags(flags)
+	if self.classified then
+		self.classified.lunarburnflags:set(flags)
+	end
+end
+
+function Health:GetLunarBurnFlags()
+	if self.inst.components.health then
+		return self.inst.components.health:GetLunarBurnFlags()
+	else
+		return self.classified and self.classified.lunarburnflags:value() or 0
+	end
+end
+
 function Health:SetCanHeal(canheal)
     if not canheal then
         self.inst:AddTag("cannotheal")

@@ -153,6 +153,10 @@ function WagpunkManager:StartSpawnMachinesTimer(timeoverride)
 end
 
 function WagpunkManager:StartHintTimer(timeoverride)
+    if self.inst.components.wagboss_tracker and self.inst.components.wagboss_tracker:IsWagbossDefeated() then
+        return
+    end
+
     self.nexthinttime = timeoverride or Lerp(TUNING.WAGSTAFF_MACHINE_HINT_TIME.min, TUNING.WAGSTAFF_MACHINE_HINT_TIME.max, self.hintcount/MAX_NUM_HINTS)
 
     self.nextspawntime = nil
@@ -293,7 +297,7 @@ function WagpunkManager:TryToSpawnFences()
     if not self.appliedfencerotationtransformation then
         self.appliedfencerotationtransformation = true
         local x2, y2, z2 = self.machinemarker.Transform:GetWorldPosition()
-        local anglefromjunktomachine = math.atan2(x2 - x1, z2 - z1) * RADIANS
+        local anglefromjunktomachine = math.atan2(x2 - x1, z2 - z1) * RADIANS -- NOTES(JBK): This atan2 is incorrectly ordered do not copy elsewhere.
         self:ApplyFenceRotationTransformation_Internal(anglefromjunktomachine)
     end
 
@@ -327,24 +331,24 @@ function WagpunkManager:IsWerepigInCharge(pos)
 end
 
 function WagpunkManager:FindSpotForMachines()
-
-    if self.machinemarker and not self:IsWerepigInCharge(Vector3(self.machinemarker.Transform:GetWorldPosition())) then        
-        local pos = Vector3(self.machinemarker.Transform:GetWorldPosition())
-
-        if not IsAnyPlayerInRange(pos.x, 0, pos.z, PLAYER_CAMERA_SEE_DISTANCE) then 
-            return pos, true
+    local machinepos = (self.machinemarker ~= nil and self.machinemarker:GetPosition()) or nil
+    if machinepos and not self:IsWerepigInCharge(machinepos) then
+        if not IsAnyPlayerInRange(machinepos.x, 0, machinepos.z, PLAYER_CAMERA_SEE_DISTANCE) then
+            return machinepos, true
         else
-            if not TheWorld.components.timer:TimerExists("junkwagpunk") then
-                TheWorld.components.timer:StartTimer("junkwagpunk", math.random(240 + math.random()*240))
+            local wagboss_tracker = TheWorld.components.wagboss_tracker
+            local timer = TheWorld.components.timer
+            if not (wagboss_tracker and wagboss_tracker:IsWagbossDefeated()) and not timer:TimerExists("junkwagpunk") then
+                timer:StartTimer("junkwagpunk", math.random(240 + math.random()*240))
 
-                local offset = FindWalkableOffset(pos, math.random()*TWOPI, 30, 16, true)
-                local finalpos = pos + offset
+                local offset = FindWalkableOffset(machinepos, math.random()*TWOPI, 30, 16, true)
+                local finalpos = machinepos + offset
 
                 local radius = 16
                 local theta = self.machinemarker:GetAngleToPoint(finalpos.x, 0, finalpos.z)*DEGREES
                 local offsetclose = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
 
-                self:SpawnJunkWagstaff(pos+offset, pos+offsetclose)
+                self:SpawnJunkWagstaff(machinepos+offset, machinepos+offsetclose)
             end
         end
     else
@@ -405,9 +409,10 @@ end
 local WAGSTAFF_MAY = { "wagstaff_npc", "wagstaff_machine" }
 
 function WagpunkManager:TryHinting(debug)
-    local player = #self._activeplayers > 0 and self._activeplayers[math.random(#self._activeplayers)] or nil
+    local active_player_count = #self._activeplayers
+    local player = (active_player_count > 0 and self._activeplayers[math.random(active_player_count)]) or nil
 
-    if player == nil then
+    if not player then
         self:StartHintTimer()
         return
     end
@@ -420,13 +425,15 @@ function WagpunkManager:TryHinting(debug)
     local pos
     local machinepos
 
-    local playerpos = player:GetPosition()
+    local px, py, pz = player.Transform:GetWorldPosition()
 
-    local is_valid_pos = TheSim:CountEntities(playerpos.x, playerpos.y, playerpos.z, 50, nil, nil, WAGSTAFF_MAY) <= 0
+    local is_valid_pos = (not TheWorld.Map:IsPointInWagPunkArena(px, py, pz))
+        and (TheSim:CountEntities(px, py, pz, 50, nil, nil, WAGSTAFF_MAY) <= 0)
 
     local machine = Ents[next(self.machineGUIDS)]
 
     if is_valid_pos and machine ~= nil and machine:IsValid() then
+        local playerpos = Vector3(px, py, pz)
         machinepos = machine:GetPosition()
 
         local angle = ((player:GetAngleToPoint(machinepos:Get()) - 180) + ( (math.random() * 60) -30 )) * DEGREES
@@ -439,7 +446,6 @@ function WagpunkManager:TryHinting(debug)
     elseif debug then
         print(string.format("Machine: %s  ||  Is position valid: %s", tostring(machine), tostring(is_valid_pos)))
     end
-
 
     if pos ~= nil and machinepos ~= nil then
         self:SpawnWagstaff(pos, machinepos)
@@ -485,14 +491,12 @@ function WagpunkManager:FindMachineSpawnPointOffset(pos)
 end
 
 function WagpunkManager:PlaceMachinesAround(pos)
-    --local ids = PickSome(NUM_MACHINES_PER_SPAWN, { 1, 2, 3, 4, 5 } ) -- NOTE(DiogoW): For later!
     for i = 1, NUM_MACHINES_PER_SPAWN do
         local offset = self:FindMachineSpawnPointOffset(pos)
         if offset ~= nil then
             local machine = SpawnPrefab("wagstaff_machinery")
             machine.Transform:SetPosition(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z)
             machine:SetDebrisType(i)
-            --machine:SetDebrisType(ids[i]) -- NOTE(DiogoW): For later!
 
             self:AddMachine(machine.GUID)
         end
@@ -595,7 +599,9 @@ function WagpunkManager:OnUpdate(dt)
         end
     end
 
-    if self.nexthinttime ~= nil then
+    if self.nexthinttime ~= nil and
+            not (self.inst.components.wagboss_tracker
+                and self.inst.components.wagboss_tracker:IsWagbossDefeated()) then
         self.nexthinttime = self.nexthinttime - dt
 
         if self.nexthinttime <= 0 then

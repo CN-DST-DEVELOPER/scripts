@@ -16,6 +16,7 @@ function BirchNutDrakeBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         Leash(self.inst, GetHomePos, 20, 5),
         ChaseAndAttack(self.inst, 12, 21),
         ActionNode(function() self.inst:PushEvent("exit", { force = true, idleanim = true }) end),

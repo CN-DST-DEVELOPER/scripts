@@ -38,6 +38,8 @@ local function fn()
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.TINY_FUEL
 
+	inst:AddComponent("snowmandecor")
+
     MakeSmallBurnable(inst, TUNING.TINY_BURNTIME)
     MakeSmallPropagator(inst)
     MakeHauntableLaunch(inst)

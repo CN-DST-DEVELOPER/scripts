@@ -1,27 +1,20 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
-
-}
-
 local events =
 {
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
 
     CommonHandlers.OnFreezeEx(),
+	CommonHandlers.OnElectrocute(),
 
     EventHandler("attacked", function(inst, data)
-        if inst.components.health ~= nil and not inst.components.health:IsDead()
-                and (not inst.sg:HasStateTag("busy") or
-                    inst.sg:HasStateTag("caninterrupt") or
-                    inst.sg:HasStateTag("frozen")) then
-            if data ~= nil and data.weapon ~= nil and data.weapon:HasTag("hammer") then
-                inst.sg:GoToState("stunned")
-            else
-                inst.sg:GoToState("hit")
-            end
+		if inst.components.health and not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen") then
+				inst.sg:GoToState("hit")
+			end
         end
     end),
     CommonHandlers.OnDeath(),
@@ -191,6 +184,7 @@ local states =
 CommonStates.AddSleepExStates(states)
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states)
 
 CommonStates.AddHitState(states,
 {
@@ -222,4 +216,4 @@ CommonStates.AddRunStates(states,
     },
 })
 
-return StateGraph("wobster_land", states, events, "idle", actionhandlers)
+return StateGraph("wobster_land", states, events, "idle")

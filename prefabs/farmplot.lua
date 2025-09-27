@@ -259,7 +259,7 @@ local function getstatus(inst)
         or nil
 end
 
-local function OnHaunt(inst, haunter)
+local function OnHaunt(inst)
     if inst.components.grower ~= nil and
         inst.components.grower.cycles_left > 0 and
         math.random() <= TUNING.HAUNT_CHANCE_ALWAYS then

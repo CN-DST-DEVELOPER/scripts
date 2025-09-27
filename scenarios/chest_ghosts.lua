@@ -47,7 +47,6 @@ local function triggertrap(inst, scenariorunner, data)
         player.components.sanity:DoDelta(-TUNING.SANITY_HUGE)
     end
     TheWorld:PushEvent("ms_forceprecipitation", true)
-    inst.SoundEmitter:PlaySound("dontstarve/ghost/ghost_howl_LP", "howl")
 end
 
 local function OnCreate(inst, scenariorunner)

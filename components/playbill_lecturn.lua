@@ -56,9 +56,17 @@ function Playbill_Lecturn:SwapPlayBill(playbill, doer)
     if self.playbill_item then
         self.playbill_item:ReturnToScene()
         self.inst.components.lootdropper:FlingItem(self.playbill_item)
+
+        if self.playbill_item.components.playbill.book_build then
+            self.inst.AnimState:ClearOverrideBuild(self.playbill_item.components.playbill.book_build)
+        end
     end
 
     self.playbill_item = playbill
+
+    if self.playbill_item.components.playbill.book_build then
+        self.inst.AnimState:AddOverrideBuild(self.playbill_item.components.playbill.book_build)
+    end
     if self.stage then
         local play_data =
         {

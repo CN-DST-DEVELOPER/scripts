@@ -60,7 +60,8 @@ function RabbitKingBrain:Create_Passive()
     -- Offers a selection of tradables.
     return PriorityNode({
         BrainCommon.PanicTrigger(self.inst),
-        WhileNode(function() return self.inst.rabbitking_trading end, "Trading",
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
+        WhileNode(function() return self.inst.sg.mem.trading end, "Trading",
             FaceEntity(self.inst, GetFaceTargetFn_Passive, KeepFaceTargetFn_Passive)),
 
         DoAction(self.inst, EatFoodAction),
@@ -148,6 +149,7 @@ function RabbitKingBrain:Create_Aggressive()
     -- Dropkick target leash.
     return PriorityNode({
         BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst), --NOTE (Omar): The one boss who's scared of the fence, He's kinda tiny, and it'd be neat to have one boss who fears it. We'll see if we go back on it.
         WhileNode(function() return ShouldUseAbility_Aggressive(self) end, "Ability",
             ActionNode(function()
                 if self.abilityname then
@@ -179,6 +181,7 @@ function RabbitKingBrain:Create_Lucky()
     -- Is large and slow.
     return PriorityNode({
         BrainCommon.PanicTrigger(self.inst),
+        BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, "scarytoprey", LUCKY_AVOID_PLAYER_DIST, LUCKY_AVOID_PLAYER_STOP),
         RunAway(self.inst, "scarytoprey", LUCKY_PLAYER_DIST, LUCKY_STOP_RUN_DIST, nil, true),
         EventNode(self.inst, "gohome",

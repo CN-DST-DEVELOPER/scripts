@@ -5,11 +5,11 @@ local actionhandlers =
     ActionHandler(ACTIONS.EAT, "eat"),
 }
 
-
 local events=
 {
     CommonHandlers.OnLocomote(true,true),
     CommonHandlers.OnSleep(),
+	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
 
@@ -174,6 +174,7 @@ local states=
     }
 }
 
+CommonStates.AddElectrocuteStates(states)
 CommonStates.AddCombatStates(states,
 {
     hittimeline =

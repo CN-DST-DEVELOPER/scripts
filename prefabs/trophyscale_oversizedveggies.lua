@@ -230,7 +230,7 @@ local function comparepostfn(inst, item_data, new_inst)
 
 			inst.pumpkincarving_fx = SpawnPrefab("pumpkincarving_swap_fx")
 			inst.pumpkincarving_fx.entity:SetParent(inst.entity)
-			inst.pumpkincarving_fx:SetCutData(cutdata)
+			inst.pumpkincarving_fx:SetData(cutdata)
 		end
 	end
 end
@@ -345,7 +345,7 @@ local function onload(inst, data)
 				if item_data.pumpkincarvable_cutdata then
 					inst.pumpkincarving_fx = SpawnPrefab("pumpkincarving_swap_fx")
 					inst.pumpkincarving_fx.entity:SetParent(inst.entity)
-					inst.pumpkincarving_fx:SetCutData(item_data.pumpkincarvable_cutdata)
+					inst.pumpkincarving_fx:SetData(item_data.pumpkincarvable_cutdata)
 				end
 			end
 		end
@@ -422,6 +422,7 @@ local function fn()
 	MakeLargePropagator(inst)
 
 	MakeSnowCovered(inst)
+    SetLunarHailBuildupAmountLarge(inst)
 
 	inst.OnSave = onsave
 	inst.OnLoad = onload

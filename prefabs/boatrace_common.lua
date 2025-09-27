@@ -223,7 +223,9 @@ local function MakeThrowableBoatRaceKitPrefabs(data)
     }
 
     local function ThrowableKit_CommonPostInit(inst)
+		--projectile (from complexprojectile component) added to pristine state for optimization
         inst:AddTag("projectile")
+		inst:AddTag("complexprojectile")
 
 		inst.CanTossInWorld = data.extradeploytest
 

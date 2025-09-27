@@ -6,6 +6,7 @@ end
 local HighlightChild = Class(function(self, inst)
 	self.inst = inst
 	self.owner = nil
+	--self.onchangeownerfn = nil
 	if inst.Network ~= nil then
 		self.syncowner = net_entity(inst.GUID, "highlightchild.syncowner", "syncownerdirty")
 		if not TheWorld.ismastersim then
@@ -27,6 +28,10 @@ function HighlightChild:SetOwner(owner)
 	self:OnChangeOwner(owner)
 end
 
+function HighlightChild:SetOnChangeOwnerFn(fn)
+	self.onchangeownerfn = fn
+end
+
 function HighlightChild:OnChangeOwner(owner)
 	--Dedicated server does not need highlighting
 	if not TheNet:IsDedicated() then
@@ -42,6 +47,10 @@ function HighlightChild:OnChangeOwner(owner)
 				table.insert(owner.highlightchildren, self.inst)
 			end
 		end
+	end
+
+	if self.onchangeownerfn then
+		self.onchangeownerfn(self.inst, owner)
 	end
 end
 

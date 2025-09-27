@@ -24,8 +24,8 @@ SetSharedLootTable('fruit_dragon_ripe',
 })
 
 local function IsBetterHeatSource(heat_source, inst, cur_heat)
-	local heat = heat_source.components.heater ~= nil and heat_source.components.heater:GetHeat(inst) or 0
-	return heat > cur_heat
+	local heat = heat_source.components.heater and heat_source.components.heater:GetHeat(inst)
+	return heat and heat_source.components.heater:IsExothermic() and heat > cur_heat
 end
 
 local HEATSOURCE_MUST_TAGS = {"HASHEATER"}
@@ -39,9 +39,16 @@ local function FindNewHome(inst)
 	end
 
 	local home = inst.components.entitytracker:GetEntity("home")
-	local new_home = (home ~= nil and home.components.heater ~= nil and inst:IsNear(home, TUNING.FRUITDRAGON.KEEP_HOME_RANGE) and home.components.heater:GetHeat(inst) > 0 and home:IsOnValidGround()) and home or nil
+	local new_home
+	local cur_heat = 0
+	if home and home.components.heater and inst:IsNear(home, TUNING.FRUITDRAGON.KEEP_HOME_RANGE) then
+		local heat = home.components.heater:GetHeat(inst)
+		if heat and home.components.heater:IsExothermic() and heat > 0 and home:IsOnValidGround() then
+			new_home = home
+			cur_heat = heat
+		end
+	end
 
-	local cur_heat = new_home ~= nil and new_home.components.heater:GetHeat(inst) or 0
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local heat_sources = TheSim:FindEntities(x, y, z, inst:IsAsleep() and TUNING.FRUITDRAGON.ENTITY_SLEEP_FIND_HOME_RANGE or TUNING.FRUITDRAGON.FIND_HOME_RANGE, HEATSOURCE_MUST_TAGS, HEATSOURCE_CANT_TAGS)
 	for i, v in ipairs(heat_sources) do
@@ -204,9 +211,11 @@ end
 
 local function IsHomeGoodEnough(inst, dist, min_temp)
 	local home = inst.components.entitytracker:GetEntity("home")
-	return home ~= nil and home.components.heater ~= nil
-			and inst:IsNear(home, dist)
-			and home.components.heater:GetHeat(inst) >= min_temp
+	if home and home.components.heater and inst:IsNear(home, dist) then
+		local heat = home.components.heater:GetHeat(inst)
+		return heat and home.components.heater:IsExothermic() and heat >= min_temp
+	end
+	return false
 end
 
 local function Sleeper_SleepTest(inst)
@@ -455,6 +464,7 @@ local function fn()
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGfruitdragon")
+	inst.sg.mem.burn_on_electrocute = true --it's plant-based. will have the short stun, but won't actually burn though.
 
     MakeHauntablePanicAndIgnite(inst)
 

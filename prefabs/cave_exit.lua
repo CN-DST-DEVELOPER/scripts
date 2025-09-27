@@ -69,6 +69,7 @@ local function fn()
     inst.components.inspectable.getstatus = GetStatus
 
     inst:AddComponent("worldmigrator")
+    inst.components.worldmigrator.shard_name = "Master" -- SERVER_LEVEL_SHARDS
     inst:ListenForEvent("migration_available", open)
     inst:ListenForEvent("migration_unavailable", close)
     inst:ListenForEvent("migration_full", full)

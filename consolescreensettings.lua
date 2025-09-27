@@ -96,7 +96,7 @@ function ConsoleScreenSettings:Load(callback)
 end
 
 function ConsoleScreenSettings:OnLoad(str, callback)
-	if str == nil or string.len(str) == 0 then
+	if str == nil or type(str) ~= "string" or string.len(str) == 0 then
 		print ("ConsoleScreenSettings could not load ".. self:GetSaveName())
 		if callback then
 			callback(false)

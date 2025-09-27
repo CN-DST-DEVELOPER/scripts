@@ -82,11 +82,13 @@ function BoatMeter:Enable(platform)
 end
 
 function BoatMeter:Disable(instant)
-    self.inst:PushEvent("close_meter", {instant = instant})
+    if self.boat then
+        self.inst:PushEvent("close_meter", {instant = instant})
 
-    self.boat = nil
+        self.boat = nil
 
-    self:StopUpdating()
+        self:StopUpdating()
+    end
 end
 
 function BoatMeter:OnUpdate(dt)

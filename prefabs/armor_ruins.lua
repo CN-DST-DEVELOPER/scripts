@@ -46,6 +46,7 @@ local function fn()
 
     inst:AddTag("ruins")
     inst:AddTag("metal")
+	inst:AddTag("hardarmor")
 
 	--shadowlevel (from shadowlevel component) added to pristine state for optimization
 	inst:AddTag("shadowlevel")

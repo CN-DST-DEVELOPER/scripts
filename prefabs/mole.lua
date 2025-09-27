@@ -92,9 +92,10 @@ local function SetUnderPhysics(inst)
         inst.isunder = true
 		inst:AddTag("notdrawable")
         inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
-        inst.Physics:ClearCollisionMask()
-        inst.Physics:CollidesWith(COLLISION.WORLD)
-        inst.Physics:CollidesWith(COLLISION.OBSTACLES)
+		inst.Physics:SetCollisionMask(
+			COLLISION.WORLD,
+			COLLISION.OBSTACLES
+		)
     end
 end
 

@@ -96,8 +96,7 @@ local function testforlockbox(inst)
         end
     end
 
-    if inst.failed then
-
+	if inst.failed or inst.rollback then
         -- reset if player is not on a socket
         local close = false
         local sockets = TheSim:FindEntities(x,y,z, 10, SOCKETTEST_MUST)
@@ -109,6 +108,7 @@ local function testforlockbox(inst)
         end
         if not close then
             inst.failed = nil
+			inst.rollback = nil
         end
     end
     inst.oldlockboxes = #lockboxes
@@ -138,7 +138,12 @@ local function testforcompletion(inst)
         local puzzle = lockboxents[1].puzzle
         if puzzle then
             blank = false
-            inst.AnimState:PlayAnimation("big_on",true)
+			if not (inst.AnimState:IsCurrentAnimation("big_on") or inst.AnimState:IsCurrentAnimation("big_on_pre")) then
+				inst.AnimState:PlayAnimation("big_on", true)
+				if not inst.SoundEmitter:PlayingSound("machine0") then
+					inst.SoundEmitter:PlaySound("grotto/common/archive_orchestrina/0", "machine0")
+				end
+			end
 
             local lock = deepcopy(puzzle)
             local key = {9,9,9,9,9,9,9,9}
@@ -203,7 +208,36 @@ local function testforcompletion(inst)
                 inst:DoTaskInTime(5,function() inst.busy = nil end)
             end
 
-            if pass and #order == 8 then
+			if not pass then
+				if #order > 2 and inst.numcount == #order then
+					local numrollback = #order > 5 and 2 or 1
+					for i, socket in ipairs(sockets) do
+						if socket.set then
+							if socket.order == #order then
+								socket:smallOff(true)
+							elseif socket.order >= #order - numrollback then
+								socket:smallOff(false)
+							end
+						end
+					end
+					for i = #order - numrollback, #order - 1 do
+						inst.SoundEmitter:KillSound("machine"..tostring(i))
+					end
+					inst.numcount = inst.numcount - numrollback - 1
+					inst.rollback = true
+				else
+					for i = 1, #order - 1 do
+						inst.SoundEmitter:KillSound("machine"..tostring(i))
+					end
+					inst.SoundEmitter:PlaySound("grotto/common/archive_orchestrina/stop")
+					inst.failed = true
+				end
+			elseif #order == 8 then
+				for i = 1, 7 do
+					inst.SoundEmitter:KillSound("machine"..tostring(i))
+				end
+				inst.SoundEmitter:PlaySound("grotto/common/archive_orchestrina/stop")
+
                 if lockboxents[1].product_orchestrina then
                     inst:DoTaskInTime(1/3,function()
                         lockboxents[1]:PushEvent("onteach")
@@ -211,16 +245,9 @@ local function testforcompletion(inst)
                 end
 
                 pass = false
-            end
+                inst.failed = true
+			end
         end
-    end
-
-    if pass == false then
-        for i=1,7 do
-            inst.SoundEmitter:KillSound("machine"..i)
-        end
-        inst.SoundEmitter:PlaySound("grotto/common/archive_orchestrina/stop")
-        inst.failed = true
     end
 end
 
@@ -283,7 +310,7 @@ local function testforplayers(inst)
     local x,y,z = inst.Transform:GetWorldPosition()
     local main = TheSim:FindEntities(x,y,z, 10, OCHESTRINA_MAIN_MUST)[1]
 
-    if main and not main.busy then
+	if main and not main.busy then
         local failed = main.failed
         local lockboxents = findlockbox( main )
         local dist = inst:GetDistanceSqToClosestPlayer(true)
@@ -291,7 +318,7 @@ local function testforplayers(inst)
             inst.close = true
         end
 
-        if #lockboxents == 1 and inst.close and not main.failed and not inst.set then
+		if #lockboxents == 1 and inst.close and not (main.failed or inst.set or main.rollback) then
             if not main.numcount then
                 main.numcount = 0
             end

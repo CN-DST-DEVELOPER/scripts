@@ -1,6 +1,7 @@
 local assets =
 {
    Asset("ANIM", "anim/abigail_attack_fx.zip"),
+   Asset("ANIM", "anim/abigail_attack_fx_shadow_build.zip"),
 }
 
 local function normal_kill_fx(inst, attack_level)

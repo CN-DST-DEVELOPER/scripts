@@ -13,6 +13,10 @@ local function reticuletargetfunction(inst)
     return Vector3(ThePlayer.entity:LocalToWorldSpace(3.5, 0.001, 0))
 end
 
+local function ReticuleValidFn(inst, reticule, targetpos, alwayspassable, allowwater, deployradius)
+	return TheWorld.Map:IsOceanAtPoint(targetpos.x, targetpos.y, targetpos.z, false) and not TheWorld.Map:IsGroundTargetBlocked(targetpos)
+end
+
 local function onusesfinished(inst)
     if inst.components.inventoryitem.owner ~= nil then
         inst.components.inventoryitem.owner:PushEvent("toolbroke", { tool = inst })
@@ -91,8 +95,12 @@ local function fn()
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = reticuletargetfunction
+	inst.components.reticule.twinstickcheckscheme = true
+	inst.components.reticule.twinstickmode = 1
+	inst.components.reticule.twinstickrange = 15
     inst.components.reticule.ease = true
     inst.components.reticule.ispassableatallpoints = true
+	inst.components.reticule.validfn = ReticuleValidFn
 
     inst.AnimState:SetBank("gnarwail_horn")
     inst.AnimState:SetBuild("gnarwail_horn")

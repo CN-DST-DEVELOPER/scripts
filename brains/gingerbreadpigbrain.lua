@@ -47,6 +47,7 @@ function GingerBreadPigBrain:OnStart()
     local root = PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        --BrainCommon.ElectricFencePanicTrigger(self.inst), --NOTE (Omar): Cookies can be frozen, burnt, haunted but not shocked!
     	RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST, function(hunter) return self.inst.chased_by_player end, nil, true),
 
     	IfNode(function() return self.inst.leash_target ~= nil and not self.inst.chased end, "shouldapproach",

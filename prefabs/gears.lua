@@ -49,6 +49,8 @@ local function fn()
     inst.components.repairer.workrepairvalue = TUNING.REPAIR_GEARS_WORK
     inst.components.repairer.healthrepairvalue = TUNING.REPAIR_GEARS_HEALTH
 
+	inst:AddComponent("snowmandecor")
+
     MakeHauntableLaunchAndSmash(inst)
 
     return inst

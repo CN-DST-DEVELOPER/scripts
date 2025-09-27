@@ -33,8 +33,10 @@ function Healer:Heal(target, doer)
         end
     end
 
+    local delta = self.health * (doer.components.efficientuser ~= nil and doer.components.efficientuser:GetMultiplier(ACTIONS.HEAL) or 1)
+
     if health.canheal then -- NOTES(JBK): Tag healerbuffs can make this heal function be invoked but we do not want to apply health to things that can not be healed.
-        health:DoDelta(self.health, false, self.inst.prefab)
+        health:DoDelta(delta, false, self.inst.prefab)
     end
 
     if self.onhealfn ~= nil then

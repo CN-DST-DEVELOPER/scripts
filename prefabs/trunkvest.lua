@@ -5,17 +5,33 @@ local assets =
 }
 
 local function onequip_summer(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "armor_trunkvest_summer", "swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "armor_trunkvest_summer")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "armor_trunkvest_summer", "swap_body")
+    end
     inst.components.fueled:StartConsuming()
 end
 
 local function onequip_winter(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_body", "armor_trunkvest_winter", "swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+        owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "armor_trunkvest_winter")
+    else
+        owner.AnimState:OverrideSymbol("swap_body", "armor_trunkvest_winter", "swap_body")
+    end
     inst.components.fueled:StartConsuming()
 end
 
 local function onunequip(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
+    local skin_build = inst:GetSkinBuild()
+    if skin_build ~= nil then
+        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
+    end
     inst.components.fueled:StopConsuming()
 end
 

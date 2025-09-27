@@ -54,6 +54,7 @@ local distortionLevelOptions = {
 	{ text = STRINGS.UI.OPTIONS.STRONG, data = 0.75 },
 	{ text = STRINGS.UI.OPTIONS.MAX, data = 1 }
 }
+local axisalignedplacementintervalsOptions = AXISALIGNMENT_VALUES
 
 local loadingtipsOptions =
 {
@@ -88,6 +89,15 @@ local function FindDistortionLevelOptionsIndex(value)
 	return 4
 end
 
+local function FindAxisAlignedPlacementIntervalsOptionsIndex(value)
+    for i = 1, #axisalignedplacementintervalsOptions do
+		if axisalignedplacementintervalsOptions[i].data == value then
+			return i
+		end
+    end
+    return 2
+end
+
 local function FindNPCChatOptionsIndex(value)
     for i = 1, #npcChatOptions do
 		if npcChatOptions[i].data == value then
@@ -95,6 +105,31 @@ local function FindNPCChatOptionsIndex(value)
 		end
 	end
 	return 1
+end
+
+local function PresetControl(id, modifier, ismodified)
+	return {
+		id = id,
+		modifier = modifier,
+		ismodified = ismodified,
+	}
+end
+
+local function IsPresetControl(control)
+	return type(control) == "table"
+end
+
+local function IsCameraControlScheme1(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 1 end
+local function IsCameraControlScheme2(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 2 end
+local function IsCameraControlScheme3(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 3 end
+local function IsCameraControlScheme4(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 4 end
+local function IsCameraControlScheme5(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 5 end
+local function IsCameraControlScheme6(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 6 end
+local function IsCameraControlScheme7(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] == 7 end
+local function NotCameraControlScheme1(self) return self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] ~= 1 end
+local function NotCameraControlScheme4to7(self)
+	local schemeId = self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV]
+	return schemeId < 4 or schemeId > 7
 end
 
 local all_controls =
@@ -117,22 +152,81 @@ local all_controls =
     {name=CONTROL_MOVE_LEFT, keyboard=CONTROL_MOVE_LEFT, controller=CONTROL_MOVE_LEFT},
     {name=CONTROL_MOVE_RIGHT, keyboard=CONTROL_MOVE_RIGHT, controller=CONTROL_MOVE_RIGHT},
 
+	-- targetting
+	{name=CONTROL_TARGET_LOCK, keyboard=nil, controller=CONTROL_TARGET_LOCK},
+	{name=CONTROL_TARGET_CYCLE, keyboard=nil, controller=CONTROL_TARGET_CYCLE},
+
     -- view
     {name=CONTROL_MAP, keyboard=CONTROL_MAP, controller=CONTROL_MAP},
     {name=CONTROL_MAP_ZOOM_IN, keyboard=CONTROL_MAP_ZOOM_IN, controller=CONTROL_MAP_ZOOM_IN},
     {name=CONTROL_MAP_ZOOM_OUT, keyboard=CONTROL_MAP_ZOOM_OUT, controller=CONTROL_MAP_ZOOM_OUT},
-    {name=CONTROL_ROTATE_LEFT, keyboard=CONTROL_ROTATE_LEFT, controller=CONTROL_ROTATE_LEFT},
-    {name=CONTROL_ROTATE_RIGHT, keyboard=CONTROL_ROTATE_RIGHT, controller=CONTROL_ROTATE_RIGHT},
-    {name=CONTROL_ZOOM_IN, keyboard=CONTROL_ZOOM_IN, controller=CONTROL_ZOOM_IN},
-    {name=CONTROL_ZOOM_OUT, keyboard=CONTROL_ZOOM_OUT, controller=CONTROL_ZOOM_OUT},
+	--"Rotate" when Camera Control scheme 1; "Map Rotate" for Camera Control scheme > 1
+	{name=CONTROL_ROTATE_LEFT, keyboard=CONTROL_ROTATE_LEFT, controller=CONTROL_ROTATE_LEFT, filterfn=IsCameraControlScheme1},
+	{name=CONTROL_ROTATE_RIGHT, keyboard=CONTROL_ROTATE_RIGHT, controller=CONTROL_ROTATE_RIGHT, filterfn=IsCameraControlScheme1},
+	{overridename="MAP_ROTATE_LEFT", keyboard=CONTROL_ROTATE_LEFT, controller=CONTROL_ROTATE_LEFT, filterfn=NotCameraControlScheme1},
+	{overridename="MAP_ROTATE_RIGHT", keyboard=CONTROL_ROTATE_RIGHT, controller=CONTROL_ROTATE_RIGHT, filterfn=NotCameraControlScheme1},
+	--
+	{	name = CONTROL_SCHEME_CAM_AND_INV,
+		keyboard = nil,
+		controller = CONTROL_SCHEME_CAM_AND_INV,
+		scheme_options =
+		{
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE1, data = 1 },
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE2, data = 2 },
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE3, data = 3 },
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE4, data = 4 },
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE5, data = 5 },
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE6, data = 6 },
+			{ text = STRINGS.UI.CONTROLSSCREEN.SCHEME_OPTIONS.TYPE7, data = 7 },
+		},
+	},
+	--These are shown when using Camera Control scheme 1
+	{name=CONTROL_ZOOM_IN, indent=2, keyboard=CONTROL_ZOOM_IN, controller=CONTROL_ZOOM_IN, filterfn=IsCameraControlScheme1},
+	{name=CONTROL_ZOOM_OUT, indent=2, keyboard=CONTROL_ZOOM_OUT, controller=CONTROL_ZOOM_OUT, filterfn=IsCameraControlScheme1},
+	--These are shown when using Camera Control scheme > 1
+	{name=CONTROL_CAM_AND_INV_MODIFIER, indent=2, keyboard=nil, controller=CONTROL_CAM_AND_INV_MODIFIER, filterfn=NotCameraControlScheme1},
+	--Camera Control scheme 2
+	{overridename="CAMERA", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme2},
+	{overridename="INV_NAVI", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme2},
+	--Camera Control scheme 3
+	{overridename="CAMERA", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme3},
+	{overridename="INV_NAVI", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme3},
+	--Camera Control scheme 4
+	{overridename="CAMERA", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme4},
+	{overridename="AIMING", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme4},
+	{overridename="INV_NAVI", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme4},
+	{overridename="INV_ACTIONS", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme4},
+	--Camera Control scheme 5
+	{overridename="CAMERA", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme5},
+	{overridename="AIMING", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme5},
+	{overridename="INV_NAVI", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme5},
+	{overridename="INV_ACTIONS", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme5},
+	--Camera Control scheme 6
+	{overridename="CAMERA", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme6},
+	{overridename="AIMING", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme6},
+	{overridename="INV_NAVI", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme6},
+	{overridename="INV_ACTIONS", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme6},
+	--Camera Control scheme 7
+	{overridename="CAMERA", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme7},
+	{overridename="AIMING", indent=3, keyboard=nil, controller=PresetControl("rstick", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme7},
+	{overridename="INV_NAVI", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, false), filterfn=IsCameraControlScheme7},
+	{overridename="INV_ACTIONS", indent=3, keyboard=nil, controller=PresetControl("dpad", CONTROL_CAM_AND_INV_MODIFIER, true), filterfn=IsCameraControlScheme7},
+	--
+
+	{name=CONTROL_CHARACTER_COMMAND_WHEEL, keyboard=CONTROL_CHARACTER_COMMAND_WHEEL, controller=CONTROL_CHARACTER_COMMAND_WHEEL},
 
     -- communication
+	{name=CONTROL_OPEN_COMMAND_WHEEL, keyboard=nil, controller=CONTROL_OPEN_COMMAND_WHEEL},
     {name=CONTROL_TOGGLE_SAY, keyboard=CONTROL_TOGGLE_SAY, controller=CONTROL_TOGGLE_SAY},
     {name=CONTROL_TOGGLE_WHISPER, keyboard=CONTROL_TOGGLE_WHISPER, controller=CONTROL_TOGGLE_WHISPER},
-    {name=CONTROL_SHOW_PLAYER_STATUS, keyboard=CONTROL_SHOW_PLAYER_STATUS, controller=CONTROL_TOGGLE_PLAYER_STATUS},
+    {name=CONTROL_SHOW_PLAYER_STATUS, keyboard=CONTROL_SHOW_PLAYER_STATUS, controller=nil},
     {name=CONTROL_PAUSE, keyboard=CONTROL_PAUSE, controller=CONTROL_PAUSE},
 	{name=CONTROL_SERVER_PAUSE, keyboard=CONTROL_SERVER_PAUSE, controller=nil},
     {name=CONTROL_INSPECT_SELF, keyboard=CONTROL_INSPECT_SELF, controller=nil},
+
+    -- axisalignedplacement
+    {name=CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD, keyboard=CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD, controller=CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD},
+    {name=CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID, keyboard=CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID, controller=CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID},
 
     -- inventory
     {name=CONTROL_OPEN_CRAFTING, keyboard=CONTROL_OPEN_CRAFTING, controller=CONTROL_OPEN_CRAFTING},
@@ -140,14 +234,17 @@ local all_controls =
     {name=CONTROL_CRAFTING_PINLEFT, keyboard=CONTROL_CRAFTING_PINLEFT, controller=nil},
     {name=CONTROL_CRAFTING_PINRIGHT, keyboard=CONTROL_CRAFTING_PINRIGHT, controller=nil},
     {name=CONTROL_OPEN_INVENTORY, keyboard=nil, controller=CONTROL_OPEN_INVENTORY},
-    {name=CONTROL_INVENTORY_UP, keyboard=nil, controller=CONTROL_INVENTORY_UP},
-    {name=CONTROL_INVENTORY_DOWN, keyboard=nil, controller=CONTROL_INVENTORY_DOWN},
-    {name=CONTROL_INVENTORY_LEFT, keyboard=nil, controller=CONTROL_INVENTORY_LEFT},
-    {name=CONTROL_INVENTORY_RIGHT, keyboard=nil, controller=CONTROL_INVENTORY_RIGHT},
-    {name=CONTROL_INVENTORY_EXAMINE, keyboard=nil, controller=CONTROL_INVENTORY_EXAMINE},
-    {name=CONTROL_INVENTORY_USEONSELF, keyboard=nil, controller=CONTROL_INVENTORY_USEONSELF},
-    {name=CONTROL_INVENTORY_USEONSCENE, keyboard=nil, controller=CONTROL_INVENTORY_USEONSCENE},
-    {name=CONTROL_INVENTORY_DROP, keyboard=nil, controller=CONTROL_INVENTORY_DROP},
+	--These are shown when using Camera Control scheme 1
+	{name=CONTROL_INVENTORY_UP, keyboard=nil, controller=CONTROL_INVENTORY_UP, filterfn=IsCameraControlScheme1},
+	{name=CONTROL_INVENTORY_DOWN, keyboard=nil, controller=CONTROL_INVENTORY_DOWN, filterfn=IsCameraControlScheme1},
+	{name=CONTROL_INVENTORY_LEFT, keyboard=nil, controller=CONTROL_INVENTORY_LEFT, filterfn=IsCameraControlScheme1},
+	{name=CONTROL_INVENTORY_RIGHT, keyboard=nil, controller=CONTROL_INVENTORY_RIGHT, filterfn=IsCameraControlScheme1},
+	--These are shown when using Camera Control scheme 1-3
+	{name=CONTROL_INVENTORY_EXAMINE, keyboard=nil, controller=CONTROL_INVENTORY_EXAMINE, filterfn=NotCameraControlScheme4to7},
+	{name=CONTROL_INVENTORY_USEONSELF, keyboard=nil, controller=CONTROL_INVENTORY_USEONSELF, filterfn=NotCameraControlScheme4to7},
+	{name=CONTROL_INVENTORY_USEONSCENE, keyboard=nil, controller=CONTROL_INVENTORY_USEONSCENE, filterfn=NotCameraControlScheme4to7},
+	{name=CONTROL_INVENTORY_DROP, keyboard=nil, controller=CONTROL_INVENTORY_DROP, filterfn=NotCameraControlScheme4to7},
+	--
     {name=CONTROL_PUTSTACK, keyboard=nil, controller=CONTROL_PUTSTACK},
     {name=CONTROL_USE_ITEM_ON_ITEM, keyboard=nil, controller=CONTROL_USE_ITEM_ON_ITEM},
     {name=CONTROL_SPLITSTACK, keyboard=CONTROL_SPLITSTACK, controller=nil},
@@ -195,6 +292,11 @@ local all_controls =
     {name=CONTROL_OPEN_DEBUG_CONSOLE, keyboard=CONTROL_OPEN_DEBUG_CONSOLE, controller=nil},
     {name=CONTROL_TOGGLE_LOG, keyboard=CONTROL_TOGGLE_LOG, controller=nil},
     {name=CONTROL_TOGGLE_DEBUGRENDER, keyboard=CONTROL_TOGGLE_DEBUGRENDER, controller=nil},
+}
+
+local REFRESH_ON_MAP =
+{
+	[CONTROL_CAM_AND_INV_MODIFIER] = true
 }
 
 local function GetResolutionString( w, h )
@@ -309,6 +411,8 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 		inventorysensitivity = Profile:GetInventorySensitivity(),
 		minimapzoomsensitivity = Profile:GetMiniMapZoomSensitivity(),
 		boathopdelay = Profile:GetBoatHopDelay(),
+        axisalignedplacement = Profile:GetAxisAlignedPlacement(),
+        axisalignedplacementintervals = Profile:GetAxisAlignedPlacementIntervals(),
 		netbookmode = TheSim:IsNetbookMode(),
 		vibration = Profile:GetVibrationEnabled(),
 		showpassword = Profile:GetShowPasswordEnabled(),
@@ -319,6 +423,7 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 		autologin = Profile:GetAutoLoginEnabled(),
         npcchat = Profile:GetNPCChatLevel(),
 		animatedheads = Profile:GetAnimatedHeadsEnabled(),
+        targetlocking = Profile:GetTargetLockingEnabled(),
 		wathgrithrfont = Profile:IsWathgrithrFontEnabled(),
 		boatcamera = Profile:IsBoatCameraEnabled(),
 		InvertCameraRotation = Profile:GetInvertCameraRotation(),
@@ -337,6 +442,11 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 		defaultcloudsaves = Profile:GetDefaultCloudSaves(),
 		scrapbookhuddisplay = Profile:GetScrapbookHudDisplay(),
 		poidisplay = Profile:GetPOIDisplay(),
+		command_wheel_allows_gameplay = Profile:GetCommandWheelAllowsGameplay(),
+		controlschemes =
+		{
+			[CONTROL_SCHEME_CAM_AND_INV] = Profile:GetControlScheme(CONTROL_SCHEME_CAM_AND_INV) or 1,
+		},
 	}
 
 	if IsWin32() then
@@ -446,6 +556,8 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
 	if default_section == "LANG" then
 		self.subscreener.menu.items[1]:onclick() --index 1 should be the Languages button
 	end
+
+    self.default_section = default_section
 end)
 
 function OptionsScreen:_BuildMenu(subscreener)
@@ -639,11 +751,14 @@ function OptionsScreen:Save(cb)
 	Profile:SetInventorySensitivity( self.options.inventorysensitivity )
 	Profile:SetMiniMapZoomSensitivity( self.options.minimapzoomsensitivity )
     Profile:SetBoatHopDelay( self.options.boathopdelay )
+    Profile:SetAxisAlignedPlacement( self.options.axisalignedplacement )
+    Profile:SetAxisAlignedPlacementIntervals( self.options.axisalignedplacementintervals )
 	Profile:SetScreenFlash( self.options.screenflash )
 	Profile:SetVibrationEnabled( self.options.vibration )
 	Profile:SetShowPasswordEnabled( self.options.showpassword )
 	Profile:SetProfanityFilterServerNamesEanbled( self.options.profanityfilterservernames )
 	Profile:SetProfanityFilterChatEanbled( self.options.profanityfilterchat )
+	Profile:SetTargetLockingEnabled(self.options.targetlocking)
     Profile:SetMovementPredictionEnabled(self.options.movementprediction)
 	Profile:SetAutoSubscribeModsEnabled( self.options.automods )
 	Profile:SetAutoLoginEnabled( self.options.autologin )
@@ -665,6 +780,7 @@ function OptionsScreen:Save(cb)
 	Profile:SetDefaultCloudSaves( self.options.defaultcloudsaves )
 	Profile:SetScrapbookHudDisplay( self.options.scrapbookhuddisplay )
 	Profile:SetPOIDisplay( self.options.poidisplay )	
+	Profile:SetCommandWheelAllowsGameplay( self.options.command_wheel_allows_gameplay ) 
 
 	if self.integratedbackpackSpinner:IsEnabled() then
 		Profile:SetIntegratedBackpack( self.options.integratedbackpack )
@@ -681,6 +797,7 @@ function OptionsScreen:RevertChanges()
             TheInputProxy:EnableInputDevice(v.data, v.data == self._deviceSaved)
         end
     end
+	TheHaptics:UpdateDevice(self._deviceSaved)
 	self.working = deepcopy(self.options)
 	self:LoadCurrentControls()
 	self:Apply()
@@ -700,7 +817,14 @@ end
 
 function OptionsScreen:IsDirty()
 	for k,v in pairs(self.working) do
-		if v ~= self.options[k] then
+		if type(v) == "table" then
+			local v1 = self.options[k]
+			for k2, v2 in pairs(v) do
+				if v2 ~= v1[k2] then
+					return true
+				end
+			end
+		elseif v ~= self.options[k] then
 			return true
 		end
 	end
@@ -724,7 +848,6 @@ function OptionsScreen:ChangeGraphicsMode()
 end
 
 function OptionsScreen:ConfirmGraphicsChanges(fn)
-
 	if not self.applying then
 		self:ChangeGraphicsMode()
 
@@ -765,6 +888,7 @@ function OptionsScreen:Apply()
 	self:ApplyVolume()
 
 	TheInputProxy:EnableVibration(self.working.vibration)
+	TheHaptics:EnableVibration(self.working.vibration)
 
 	local gopts = TheFrontEnd:GetGraphicsOptions()
 	PostProcessor:SetBloomEnabled( self.working.bloom )
@@ -789,9 +913,10 @@ function OptionsScreen:Apply()
 	Profile:SetCraftingMenuBufferedBuildAutoClose( self.working.craftingmenubufferedbuildautoclose )
 	Profile:SetCraftingHintAllRecipesEnabled( self.working.craftinghintallrecipes )
 	Profile:SetLoadingTipsOption( self.working.loadingtips )
-	Profile:SetDefaultCloudSaves( self.options.defaultcloudsaves )
-	Profile:SetScrapbookHudDisplay( self.options.scrapbookhuddisplay )
-	Profile:SetPOIDisplay( self.options.poidisplay )
+	Profile:SetDefaultCloudSaves( self.working.defaultcloudsaves )
+	Profile:SetScrapbookHudDisplay( self.working.scrapbookhuddisplay )
+	Profile:SetPOIDisplay( self.working.poidisplay )
+	Profile:SetCommandWheelAllowsGameplay( self.working.command_wheel_allows_gameplay )
 	
 	DoAutopause()
 	local pausescreen = TheFrontEnd:GetOpenScreenOfType("PauseScreen")
@@ -813,9 +938,15 @@ function OptionsScreen:Apply()
         end
     end
 
+	for k, v in pairs(self.options.controlschemes) do
+		Profile:SetControlScheme(k, v ~= 1 and v or nil)
+	end
+
     if ThePlayer ~= nil then
         ThePlayer:EnableMovementPrediction(self.working.movementprediction)
 		ThePlayer:EnableBoatCamera(self.working.boatcamera)
+		ThePlayer:EnableTargetLocking(self.working.targetlocking)
+		ThePlayer:CommandWheelAllowsGameplay(self.working.command_wheel_allows_gameplay)
     end
 
     if self.working.lang_id ~= Profile:GetLanguageID() then
@@ -827,6 +958,14 @@ end
 
 function OptionsScreen:LoadDefaultControls()
 	TheInputProxy:LoadDefaultControlMapping()
+
+	if not self.is_mapping and self.working.controlschemes[CONTROL_SCHEME_CAM_AND_INV] ~= 1 then
+		for i = 2, #self.deviceSpinner.options do
+			local deviceId = self.deviceSpinner.options[i].data
+			TheInputProxy:CopyControlMapping(deviceId, CONTROL_ROTATE_RIGHT, CONTROL_CHARACTER_COMMAND_WHEEL)
+		end
+	end
+
 	self:MakeDirty()
 	self:RefreshControls()
 end
@@ -845,13 +984,16 @@ end
     end
 end--]]
 
-function OptionsScreen:MapControl(deviceId, controlId)
+function OptionsScreen:MapControl(deviceId, controlId, controlName)
     --print("Mapping control [" .. controlId .. "] on device [" .. deviceId .. "]")
-    local controlIndex = controlId + 1      -- C++ control id is zero-based, we were passed a 1-based (lua) array index
+	if controlName == nil then
+		-- C++ control id is zero-based, we were passed a 1-based (lua) array index
+		controlName = STRINGS.UI.CONTROLSSCREEN.CONTROLS[controlId + 1] or ""
+	end
     local loc_text = TheInput:GetLocalizedControl(deviceId, controlId, true)
     local default_text = string.format(STRINGS.UI.CONTROLSSCREEN.DEFAULT_CONTROL_TEXT, loc_text)
     local body_text = STRINGS.UI.CONTROLSSCREEN.CONTROL_SELECT .. "\n\n" .. default_text
-    local popup = PopupDialogScreen(STRINGS.UI.CONTROLSSCREEN.CONTROLS[controlIndex], body_text, {})
+	local popup = PopupDialogScreen(controlName, body_text, {})
 
     -- Better position within dialog.
     popup.dialog.body:SetPosition(0, 0)
@@ -894,9 +1036,20 @@ function OptionsScreen:OnControlMapped(deviceId, controlId, inputId, hasChanged)
             end
         end
 
-        -- set the dirty flag (if something changed) if it hasn't yet been set
-        if not self:IsDirty() and hasChanged then
-            self:MakeDirty()
+		if hasChanged then
+			if REFRESH_ON_MAP[controlId] then
+				self:RefreshControls()
+				for i, v in ipairs(self.active_list.items) do
+					if v.controlId == controlId then
+						v:SetFocus()
+						break
+					end
+				end
+			end
+			-- set the dirty flag (if something changed) if it hasn't yet been set
+			if not self:IsDirty() then
+				self:MakeDirty()
+			end
         end
 
 	    self.is_mapping = false
@@ -964,7 +1117,6 @@ function OptionsScreen:OnDestroy()
 end
 
 function OptionsScreen:RefreshControls()
-
 	if IsConsoleLayout() then
 		return
 	end
@@ -981,14 +1133,23 @@ function OptionsScreen:RefreshControls()
     --print("Current controller device is ["..(controllerDeviceId or "none").."]")
 
 	for i,v in pairs(self.active_list.items) do
-		local hasChanged = TheInputProxy:HasMappingChanged(deviceId, v.controlId)
-		if hasChanged then
-		    v.changed_image:Show()
-		else
-		    v.changed_image:Hide()
+		if v.changed_image then
+			local hasChanged
+			if v.controlId then
+				hasChanged = TheInputProxy:HasMappingChanged(deviceId, v.controlId)
+			elseif v.schemeId then
+				hasChanged = self.working.controlschemes[v.schemeId] ~= self.options.controlschemes[v.schemeId]
+			end
+			if hasChanged then
+				v.changed_image:Show()
+			else
+				v.changed_image:Hide()
+			end
 		end
 
-        if v.device_type == "keyboard" and v.control.keyboard and v.binding_btn then
+		if v.scheme then
+			--Scheme spinner, not a control
+		elseif v.device_type == "keyboard" and v.control.keyboard and v.binding_btn then
             local kbString = TheInput:GetLocalizedControl(0, v.control.keyboard)
             v.binding_btn:SetText(kbString)
 
@@ -996,8 +1157,15 @@ function OptionsScreen:RefreshControls()
 			self.integratedbackpackSpinner:SetSelectedIndex(self.integratedbackpackSpinner.selectedIndex)
 
         elseif v.control.controller and self.deviceSpinner:GetSelectedData() and v.binding_btn then
-            local controllerString = controllerDeviceId ~= nil and TheInput:GetLocalizedControl(controllerDeviceId, v.control.controller) or ""
-            v.binding_btn:SetText(controllerString)
+			local controllerString
+			if controllerDeviceId then
+				if IsPresetControl(v.control.controller) then
+					controllerString = TheInput:GetLocalizedVirtualDirectionalControl(controllerDeviceId, v.control.controller.id, v.control.controller.modifier, v.control.controller.ismodified)
+				else
+					controllerString = TheInput:GetLocalizedControl(controllerDeviceId, v.control.controller)
+				end
+			end
+			v.binding_btn:SetText(controllerString or "")
 
 			self.integratedbackpackSpinner:Disable()
 			self.integratedbackpackSpinner:UpdateText(STRINGS.UI.OPTIONS.INTEGRATEDBACKPACK_ENABLED)
@@ -1006,7 +1174,12 @@ function OptionsScreen:RefreshControls()
 
 	if self.selected_tab == "controls" then
 		if old_idx then
-			self.active_list.items[math.min(#self.active_list.items, old_idx)].button:SetFocus()
+			local item = self.active_list.items[math.min(#self.active_list.items, old_idx)]
+			if item.button then
+				item.button:SetFocus()
+			else
+				item:SetFocus()
+			end
 		end
 	end
 
@@ -1700,6 +1873,13 @@ function OptionsScreen:_BuildSettings()
 			end,
 			TheSim:GetDataCollectionSetting(), STRINGS.UI.OPTIONS.TOOLTIPS.DATACOLLECTION)
 	end
+	
+    self.targetlockingSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.TARGETLOCKING, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.TARGETLOCKING)
+    self.targetlockingSpinner.OnChanged =
+        function(_, data)
+			self.working.targetlocking = data
+            self:UpdateMenu()
+        end
 
 	self.deviceSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.INPUT, self.devices, STRINGS.UI.OPTIONS.TOOLTIPS.INPUT)
 	self.deviceSpinner.OnChanged =
@@ -1709,6 +1889,7 @@ function OptionsScreen:_BuildSettings()
                     TheInputProxy:EnableInputDevice(v.data, v.data == self.deviceSpinner:GetSelectedData())
                 end
             end
+			TheHaptics:UpdateDevice(self.deviceSpinner:GetSelectedData())
 
             self.controls_header:SetString(self.deviceSpinner:GetSelectedText())
 
@@ -1771,6 +1952,7 @@ function OptionsScreen:_BuildSettings()
 	    table.insert( self.right_spinners, self.profanityfilterchatSpinner )
 	end
     table.insert( self.right_spinners, self.profanityfilterSpinner )
+    table.insert( self.right_spinners, self.targetlockingSpinner )
     table.insert( self.right_spinners, self.autopauseSpinner )
 	table.insert( self.right_spinners, self.craftingautopauseSpinner )
 	table.insert( self.right_spinners, self.craftingmenunumpinpagesSpinner )
@@ -1868,6 +2050,12 @@ function OptionsScreen:_BuildAdvancedSettings()
             self:UpdateMenu()
         end
 
+		self.commandwheelSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.COMMANDWHEEL, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.COMMANDWHEEL)
+		self.commandwheelSpinner.OnChanged =
+			function( _, data )
+				self.working.command_wheel_allows_gameplay = data
+				self:UpdateMenu()
+			end
 	self.automodsSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.AUTOMODS, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.AUTOMODS)
 	self.automodsSpinner.OnChanged =
 		function( _, data )
@@ -1936,6 +2124,17 @@ function OptionsScreen:_BuildAdvancedSettings()
             self:UpdateMenu()
         end
 
+    self.axisalignedplacementSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.AXISALIGNEDPLACEMENT, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.AXISALIGNEDPLACEMENT)
+    self.axisalignedplacementSpinner.OnChanged = function( _, data )
+        self.working.axisalignedplacement = data
+        self:UpdateMenu()
+    end
+    self.axisalignedplacementintervalsSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.AXISALIGNEDPLACEMENTINTERVALS, axisalignedplacementintervalsOptions, STRINGS.UI.OPTIONS.TOOLTIPS.AXISALIGNEDPLACEMENTINTERVALS)
+    self.axisalignedplacementintervalsSpinner.OnChanged = function( _, data )
+        self.working.axisalignedplacementintervals = data
+        self:UpdateMenu()
+    end
+
 	if IsSteam() then
 		self.defaultcloudsavesSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.DEFAULTCLOUDSAVES, steamCloudLocalOptions, STRINGS.UI.OPTIONS.TOOLTIPS.DEFAULTCLOUDSAVES)
 		self.defaultcloudsavesSpinner.OnChanged =
@@ -1953,6 +2152,7 @@ function OptionsScreen:_BuildAdvancedSettings()
 		table.insert( self.left_spinners, self.defaultcloudsavesSpinner )
 	end
     table.insert( self.left_spinners, self.movementpredictionSpinner )
+	table.insert( self.left_spinners, self.commandwheelSpinner )
     table.insert( self.left_spinners, self.automodsSpinner )
 	table.insert( self.left_spinners, self.animatedHeadsSpinner )
     table.insert( self.left_spinners, self.wathgrithrfontSpinner)
@@ -1968,6 +2168,8 @@ function OptionsScreen:_BuildAdvancedSettings()
 	table.insert( self.right_spinners, self.minimapzoomcursorSpinner )
 	table.insert( self.right_spinners, self.minimapzoomsensitivitySpinner )
 	table.insert( self.right_spinners, self.boathopdelaySpinner )
+	table.insert( self.right_spinners, self.axisalignedplacementSpinner )
+    table.insert( self.right_spinners, self.axisalignedplacementintervalsSpinner )
 	
 	self.grid_advanced:UseNaturalLayout()
 	self.grid_advanced:InitSize(2, math.max(#self.left_spinners, #self.right_spinners), 440, 40)
@@ -2221,6 +2423,244 @@ function OptionsScreen:_BuildController()
     return controlsroot
 end
 
+function OptionsScreen:_BuildControlGroup(is_valid_fn, device_type, initial_device_id, control, index)
+	if control and control[device_type] then
+		local button_x = -371 -- x coord of the left edge
+		local button_width = controls_ui.action_btn_width
+		local button_height = controls_ui.action_height
+		local spacing = 15
+
+		local group = Widget("control"..index)
+		group.bg = group:AddChild(TEMPLATES.ListItemBackground(700, button_height))
+		group.bg:SetPosition(-60,0)
+		if device_type == "keyboard" then
+			group.bg:SetScale(1.025, 1)
+		end
+		group:SetScale(1, 1, 0.75)
+
+		group.device_type = device_type
+		group.control = control
+		if IsPresetControl(control[device_type]) then
+			group.controlPreset = control[device_type]
+		else
+			group.controlId = control[device_type]
+		end
+		group.controlName =
+			control.overridename and
+			STRINGS.UI.CONTROLSSCREEN.OVERRIDE_CONTROL_NAMES[control.overridename] or
+			STRINGS.UI.CONTROLSSCREEN.CONTROLS[control.name + 1] or --c++ enums are 0-based, string table is 1-based
+			""
+
+		local x = button_x
+		local indent = (control.indent or 0) * 12
+		x = x + indent
+
+		group.label = group:AddChild(Text(CHATFONT, 28))
+		group.label:SetString(group.controlName)
+		group.label:SetHAlign(ANCHOR_LEFT)
+		group.label:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
+		group.label:SetRegionSize(controls_ui.action_label_width - indent, 50)
+		x = x + controls_ui.action_label_width / 2
+		group.label:SetPosition(x, 0)
+		x = x + controls_ui.action_label_width / 2 + spacing - indent
+		group.label:SetClickable(false)
+
+		x = x + button_width / 2
+		if group.controlId then
+			group.changed_image = group:AddChild(Image("images/global_redux.xml", "wardrobe_spinner_bg.tex"))
+			group.changed_image:SetTint(1, 1, 1, 0.3)
+			group.changed_image:ScaleToSize(button_width, button_height)
+			group.changed_image:SetPosition(x, 0)
+			group.changed_image:Hide()
+		end
+
+		group.binding_btn = group:AddChild(ImageButton("images/global_redux.xml", "blank.tex", "spinner_focus.tex"))
+		group.binding_btn:ForceImageSize(button_width, button_height)
+		group.binding_btn:SetTextColour(UICOLOURS.GOLD_CLICKABLE)
+		group.binding_btn:SetFont(CHATFONT)
+		group.binding_btn:SetTextSize(30)
+		group.binding_btn:SetPosition(x, 0)
+		group.binding_btn.idx = index
+		if group.controlId then
+			group.binding_btn:SetOnClick(
+				function()
+					local device_id = self.deviceSpinner:GetSelectedData()
+					if is_valid_fn(device_id) then
+						self:MapControl(device_id, group.controlId, group.controlName)
+					end
+				end)
+			group.binding_btn:SetTextFocusColour(UICOLOURS.GOLD_FOCUS)
+			group.binding_btn:SetHelpTextMessage(STRINGS.UI.CONTROLSSCREEN.CHANGEBIND)
+		else
+			group.binding_btn:SetTextFocusColour(UICOLOURS.GOLD_CLICKABLE)
+			group.binding_btn:SetHelpTextMessage("")
+			group.binding_btn.move_on_click = false
+			group.binding_btn.stopclicksound = true
+		end
+		x = x + button_width / 2 + spacing
+
+		group.binding_btn:SetDisabledFont(CHATFONT)
+		if group.controlId then
+			group.binding_btn:SetText(initial_device_id and TheInput:GetLocalizedControl(initial_device_id, group.controlId) or "")
+		elseif group.controlPreset then
+			group.binding_btn:SetText(initial_device_id and TheInput:GetLocalizedVirtualDirectionalControl(initial_device_id, group.controlPreset.id, group.controlPreset.modifier, group.controlPreset.ismodified) or "")
+		end
+
+		if device_type == "keyboard" and group.controlId then
+			group.unbinding_btn = group:AddChild(ImageButton("images/global_redux.xml", "close.tex", "close.tex"))
+			group.unbinding_btn:SetOnClick(
+				function()
+					local device_id = self.deviceSpinner:GetSelectedData()
+					if is_valid_fn(device_id) then
+						self.is_mapping = true
+						if not TheInputProxy:UnMapControl(device_id, group.control.keyboard) then
+							self.is_mapping = false
+						end
+					end
+				end)
+			group.unbinding_btn:SetPosition(x - 5, 0)
+			group.unbinding_btn:SetScale(0.4, 0.4)
+			group.unbinding_btn:SetHoverText(STRINGS.UI.CONTROLSSCREEN.UNBIND)
+		end
+
+		group.focus_forward = group.binding_btn
+
+		return group
+	end
+end
+
+function OptionsScreen:_BuildSchemeGroup(is_valid_fn, device_type, initial_device_id, scheme, index)
+	local button_x = -371 -- x coord of the left edge
+	local button_width = controls_ui.action_btn_width
+	local button_height = controls_ui.action_height
+	local spacing = 15
+
+	if scheme and scheme[device_type] then
+		local group = Widget("scheme"..index)
+		group.bg = group:AddChild(TEMPLATES.ListItemBackground(700, button_height))
+		group.bg:SetPosition(-60, 0)
+		if device_type == "keyboard" then
+			group.bg:SetScale(1.025, 1)
+		end
+		group:SetScale(1, 1, 0.75)
+
+		group.device_type = device_type
+		group.scheme = scheme
+		group.schemeName = scheme.name
+		group.schemeId = scheme[device_type]
+
+		local x = button_x
+		local indent = (scheme.indent or 0) * 12
+		x = x + indent
+
+		group.label = group:AddChild(Text(CHATFONT, 28))
+		group.label:SetString(STRINGS.UI.CONTROLSSCREEN.SCHEMES[group.schemeName]) --schemes enums are defined in lua and 1-based
+		group.label:SetHAlign(ANCHOR_LEFT)
+		group.label:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
+		group.label:SetRegionSize(controls_ui.action_label_width - indent, 50)
+		x = x + controls_ui.action_label_width / 2
+		group.label:SetPosition(x,0)
+		x = x + controls_ui.action_label_width / 2 + spacing - indent
+		group.label:SetClickable(false)
+
+		x = x + button_width / 2
+		group.changed_image = group:AddChild(Image("images/global_redux.xml", "wardrobe_spinner_bg.tex"))
+		group.changed_image:SetTint(1, 1, 1, 0.3)
+		group.changed_image:ScaleToSize(button_width, button_height)
+		group.changed_image:SetPosition(x, 0)
+		group.changed_image:Hide()
+
+		group.spinner = group:AddChild(TEMPLATES.StandardSpinner(scheme.scheme_options, spinner_width, spinner_height))
+		group.spinner.OnChanged = function(_, data)
+			self:ChangeControlScheme(group.schemeId, data)
+		end
+		group.spinner:SetSelectedIndex(self.working.controlschemes[group.schemeId])
+		group.spinner:SetPosition(x, 0)
+
+		group.focus_forward = group.spinner
+
+		return group
+	end
+end
+
+function OptionsScreen:_CollectKeyboardControlWidgets()
+	self.kb_controlwidgets = {}
+
+	for i, v in ipairs(all_controls) do
+		if v.filterfn == nil or v.filterfn(self) then
+			local function is_valid_keyboard(device_id)
+				return device_id == 0 and v.keyboard and (v.filterfn == nil or v.filterfn(self))
+			end
+			local group
+			if v.scheme_options then
+				group = self:_BuildSchemeGroup(is_valid_keyboard, "keyboard", 0, v, i)
+			else
+				group = self:_BuildControlGroup(is_valid_keyboard, "keyboard", 0, v, i)
+			end
+			if group then
+				if group.binding_btn then
+					group.binding_btn:SetHelpTextMessage(STRINGS.UI.CONTROLSSCREEN.CHANGEBIND)
+				end
+				table.insert(self.kb_controlwidgets, group)
+			end
+		end
+	end
+end
+
+function OptionsScreen:_CollectControllerControlWidgets()
+	self.controller_controlwidgets = {}
+
+	-- Try really hard to find a good initial value for gamepad device.
+	local deviceId = self.deviceSpinner:GetSelectedData()
+	local controllerDeviceId =
+		(deviceId ~= 0 and deviceId) or
+		(self.deviceSpinner.options[2] ~= nil and self.deviceSpinner.options[2].data) or
+		nil
+
+	for i, v in ipairs(all_controls) do
+		if v.filterfn == nil or v.filterfn(self) then
+			local function is_valid_controller(device_id)
+				return device_id and device_id ~= 0 and v.controller and (v.filterfn == nil or v.filterfn(self))
+			end
+			local group
+			if v.scheme_options then
+				group = self:_BuildSchemeGroup(is_valid_controller, "controller", controllerDeviceId, v, i)
+			else
+				group = self:_BuildControlGroup(is_valid_controller, "controller", controllerDeviceId, v, i)
+			end
+			if group then
+				if group.binding_btn and group.controlId then
+					group.binding_btn.OnControl =
+						function( _, control, down)
+							if group.binding_btn._base.OnControl(group.binding_btn, control, down) then return true end
+
+							local device_id = self.deviceSpinner:GetSelectedData()
+							if not self.is_mapping and device_id ~= 0 then
+								if not down and control == CONTROL_MENU_MISC_2 then
+									-- Unbind the game control
+									self.is_mapping = true
+									if not TheInputProxy:UnMapControl(device_id, group.control.controller) then
+										self.is_mapping = false
+									end
+									return true
+								end
+							end
+						end
+					group.binding_btn.GetHelpText =
+						function()
+							local controller_id = TheInput:GetControllerID()
+							local t = {}
+							table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2, false, false).." "..STRINGS.UI.CONTROLSSCREEN.UNBIND)
+							table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT, false, false).." "..STRINGS.UI.CONTROLSSCREEN.CHANGEBIND)
+							return table.concat(t, "  ")
+						end
+				end
+				table.insert(self.controller_controlwidgets, group)
+			end
+		end
+	end
+end
+
 -- This is the "controls" tab
 function OptionsScreen:_BuildControls()
     local controlsroot = Widget("ROOT")
@@ -2231,153 +2671,13 @@ function OptionsScreen:_BuildControls()
     self.controls_horizontal_line:SetScale(.9)
     self.controls_horizontal_line:SetPosition(-210, 175)
 
-	--------------
-	--------------
-	-- CONTROLS --
-	--------------
-	--------------
-
 	local button_x = -371 -- x coord of the left edge
     local button_width = controls_ui.action_btn_width
     local button_height = controls_ui.action_height
     local spacing = 15
-    local function BuildControlGroup(is_valid_fn, device_type, initial_device_id, control, index)
 
-        if control and control[device_type] then
-
-            local group = Widget("control"..index)
-            group.bg = group:AddChild(TEMPLATES.ListItemBackground(700, button_height))
-            group.bg:SetPosition(-60,0)
-			if device_type == "keyboard" then
-	            group.bg:SetScale(1.025, 1)
-			end
-            group:SetScale(1,1,0.75)
-
-            group.device_type = device_type
-            group.control = control
-            group.controlName = control.name
-            group.controlId = control[device_type]
-
-            local x = button_x
-
-            group.label = group:AddChild(Text(CHATFONT, 28))
-            local ctrlString = STRINGS.UI.CONTROLSSCREEN.CONTROLS[group.controlName+1]
-            group.label:SetString(ctrlString)
-            group.label:SetHAlign(ANCHOR_LEFT)
-            group.label:SetColour(UICOLOURS.GOLD_UNIMPORTANT)
-            group.label:SetRegionSize(controls_ui.action_label_width, 50)
-            x = x + controls_ui.action_label_width/2
-            group.label:SetPosition(x,0)
-            x = x + controls_ui.action_label_width/2 + spacing
-            group.label:SetClickable(false)
-
-            x = x + button_width/2
-            group.changed_image = group:AddChild(Image("images/global_redux.xml", "wardrobe_spinner_bg.tex"))
-            group.changed_image:SetTint(1,1,1,0.3)
-            group.changed_image:ScaleToSize(button_width, button_height)
-            group.changed_image:SetPosition(x,0)
-            group.changed_image:Hide()
-
-            group.binding_btn = group:AddChild(ImageButton("images/global_redux.xml", "blank.tex", "spinner_focus.tex"))
-            group.binding_btn:ForceImageSize(button_width, button_height)
-            group.binding_btn:SetTextColour(UICOLOURS.GOLD_CLICKABLE)
-            group.binding_btn:SetTextFocusColour(UICOLOURS.GOLD_FOCUS)
-            group.binding_btn:SetFont(CHATFONT)
-            group.binding_btn:SetTextSize(30)
-            group.binding_btn:SetPosition(x,0)
-            group.binding_btn.idx = index
-            group.binding_btn:SetOnClick(
-                function()
-                    local device_id = self.deviceSpinner:GetSelectedData()
-                    if is_valid_fn(device_id) then
-                        self:MapControl(device_id, group.controlId)
-                    end
-                end)
-            x = x + button_width/2 + spacing
-
-            group.binding_btn:SetHelpTextMessage(STRINGS.UI.CONTROLSSCREEN.CHANGEBIND)
-            group.binding_btn:SetDisabledFont(CHATFONT)
-            if group.controlId then
-                group.binding_btn:SetText(initial_device_id and TheInput:GetLocalizedControl(initial_device_id, group.controlId) or "")
-            end
-
-			if device_type == "keyboard" then
-				group.unbinding_btn = group:AddChild(ImageButton("images/global_redux.xml", "close.tex", "close.tex"))
-				group.unbinding_btn:SetOnClick(
-					function()
-						local device_id = self.deviceSpinner:GetSelectedData()
-						if is_valid_fn(device_id) then
-							self.is_mapping = true
-							if not TheInputProxy:UnMapControl(device_id, group.control.keyboard) then
-								self.is_mapping = false
-							end
-						end
-					end)
-				group.unbinding_btn:SetPosition(x - 5,0)
-				group.unbinding_btn:SetScale(0.4, 0.4)
-				group.unbinding_btn:SetHoverText(STRINGS.UI.CONTROLSSCREEN.UNBIND)
-			end
-
-            group.focus_forward = group.binding_btn
-
-            return group
-        end
-    end
-
-    self.kb_controlwidgets = {}
-    self.controller_controlwidgets = {}
-
-    for i,v in ipairs(all_controls) do
-		local function is_valid_keyboard(device_id) return device_id == 0 and all_controls[i] and all_controls[i].keyboard end
-        local group = BuildControlGroup(is_valid_keyboard, "keyboard", 0, all_controls[i], i)
-        if group then
-            group.binding_btn:SetHelpTextMessage(STRINGS.UI.CONTROLSSCREEN.CHANGEBIND)
-
-            table.insert(self.kb_controlwidgets, group)
-        end
-    end
-
-
-    -- Try really hard to find a good initial value for gamepad device.
-    local deviceId = self.deviceSpinner:GetSelectedData()
-    local controllerDeviceId =
-        (deviceId ~= 0 and deviceId) or
-        (self.deviceSpinner.options[2] ~= nil and self.deviceSpinner.options[2].data) or
-        nil
-
-    for i,v in ipairs(all_controls) do
-        local function is_valid_controller(device_id) return device_id and device_id ~= 0 and all_controls[i] and all_controls[i].controller end
-        local group = BuildControlGroup(is_valid_controller, "controller", controllerDeviceId, all_controls[i], i)
-        if group then
-            group.binding_btn.OnControl =
-                function( _, control, down)
-					if group.binding_btn._base.OnControl(group.binding_btn, control, down) then return true end
-
-                    local device_id = self.deviceSpinner:GetSelectedData()
-					if not self.is_mapping and device_id ~= 0 then
-						if not down and control == CONTROL_MENU_MISC_2 then
-							-- Unbind the game control
-                            self.is_mapping = true
-							if not TheInputProxy:UnMapControl(device_id, group.control.controller) then
-								self.is_mapping = false
-							end
-
-							return true
-						end
-					end
-                end
-           group.binding_btn.GetHelpText =
-				function()
-					local controller_id = TheInput:GetControllerID()
-					local t = {}
-					table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2, false, false ) .. " " .. STRINGS.UI.CONTROLSSCREEN.UNBIND)
-					table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT, false, false ) .. " " .. STRINGS.UI.CONTROLSSCREEN.CHANGEBIND)
-					return table.concat(t, "  ")
-				end
-
-            table.insert(self.controller_controlwidgets, group)
-        end
-    end
+	self:_CollectKeyboardControlWidgets()
+	self:_CollectControllerControlWidgets()
 
     local align_to_scroll = controlsroot:AddChild(Widget(""))
     align_to_scroll:SetPosition(-160, 200) -- hand-tuned amount that aligns with scrollablelist
@@ -2420,6 +2720,29 @@ function OptionsScreen:_BuildControls()
     return controlsroot
 end
 
+function OptionsScreen:_RebuildControllerControls(focusschemeid)
+	local scrolldelta --try to keep the focus item in the same physical position after rebuilding
+	for i, v in ipairs(self.active_list.items) do
+		if v.schemeId == focusschemeid then
+			scrolldelta = self.active_list.view_offset - i
+			break
+		end
+	end
+
+	self:_CollectControllerControlWidgets()
+	self.controller_controllist:SetList(self.controller_controlwidgets)
+	self:RefreshControls()
+
+	for i, v in ipairs(self.active_list.items) do
+		if v.schemeId == focusschemeid then
+			if scrolldelta then
+				self.active_list:Scroll(i - self.active_list.view_offset + scrolldelta, true)
+			end
+			v:SetFocus()
+			break
+		end
+	end
+end
 
 function OptionsScreen:InitializeSpinners(first)
 	if show_graphics then
@@ -2443,6 +2766,7 @@ function OptionsScreen:InitializeSpinners(first)
 
 	self.bloomSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.bloom ) )
 	self.distortionSpinner:SetSelectedIndex( FindDistortionLevelOptionsIndex( self.working.distortion_modifier ) )
+    self.axisalignedplacementintervalsSpinner:SetSelectedIndex( FindAxisAlignedPlacementIntervalsOptionsIndex( self.working.axisalignedplacementintervals ) )
 	self.screenshakeSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.screenshake ) )
 
 	for i,v in ipairs(self.devices) do
@@ -2464,6 +2788,7 @@ function OptionsScreen:InitializeSpinners(first)
 	self.inventorysensitivitySpinner:SetSelectedIndex( self.working.inventorysensitivity or 16)
 	self.minimapzoomsensitivitySpinner:SetSelectedIndex( self.working.minimapzoomsensitivity or 15)
 	self.boathopdelaySpinner:SetSelectedIndex( self.working.boathopdelay or 8)
+	self.axisalignedplacementSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.axisalignedplacement ) )
 	self.screenFlashSpinner:SetSelectedIndex( FindEnableScreenFlashOptionsIndex( self.working.screenflash ) )
 	self.vibrationSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.vibration ) )
 	self.passwordSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.showpassword ) )
@@ -2473,6 +2798,7 @@ function OptionsScreen:InitializeSpinners(first)
 	end
 	self.scrapbookhuddisplaySpinner:SetSelectedIndex( EnabledOptionsIndex(self.working.scrapbookhuddisplay))
     self.movementpredictionSpinner:SetSelectedIndex(EnabledOptionsIndex(self.working.movementprediction))
+    self.targetlockingSpinner:SetSelectedIndex(EnabledOptionsIndex(self.working.targetlocking))
 	self.wathgrithrfontSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.wathgrithrfont ) )
 	self.waltercameraSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.waltercamera ) )
 	self.poidisplaySpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.poidisplay ) )
@@ -2493,6 +2819,7 @@ function OptionsScreen:InitializeSpinners(first)
 		--self.datacollectionCheckbox: -- the current behaviour does not reuqire this to be (re)initialized at any point after construction
 	end
 
+	self.commandwheelSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.command_wheel_allows_gameplay) )
 	self.automodsSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.automods ) )
 	self.autologinSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.autologin ) )
 	self.animatedHeadsSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.animatedheads ) )
@@ -2578,7 +2905,7 @@ function OptionsScreen:UpdateResolutionsSpinner()
 			local spinner_idx = 1
 			if self.working.mode_idx then
 				local gOpts = TheFrontEnd:GetGraphicsOptions()
-				local mode_idx = gOpts:GetCurrentDisplayModeID( self.options.display )
+				local mode_idx = gOpts:GetCurrentDisplayModeID( self.working.display )
 				local w, h, hz = GetDisplayModeInfo( self.working.display, mode_idx )
 
 				for idx, option in pairs( self.resolutionSpinner.options ) do
@@ -2597,8 +2924,67 @@ function OptionsScreen:UpdateResolutionsSpinner()
 	end
 end
 
+function OptionsScreen:ChangeControlScheme(schemeId, value)
+	local old = self.working.controlschemes[schemeId]
+	if old ~= value then
+		self.working.controlschemes[schemeId] = value
+
+		if schemeId == CONTROL_SCHEME_CAM_AND_INV and not self.is_mapping then
+			local dirty = false
+			if old == 1 then
+				--Switching off Type 1 changes one bumper to [Camera Control Modifier], freeing up
+				--the other bumper, which we can try to auto-map as the [Character Command Wheel].
+				for i = 2, #self.deviceSpinner.options do
+					local deviceId = self.deviceSpinner.options[i].data
+					if not TheInput:IsControlMapped(deviceId, CONTROL_CHARACTER_COMMAND_WHEEL) then
+						if TheInput:ControlsHaveSameMapping(deviceId, CONTROL_ROTATE_RIGHT, CONTROL_CAM_AND_INV_MODIFIER) then
+							dirty = TheInputProxy:CopyControlMapping(deviceId, CONTROL_ROTATE_LEFT, CONTROL_CHARACTER_COMMAND_WHEEL) or dirty
+						else
+							dirty = TheInputProxy:CopyControlMapping(deviceId, CONTROL_ROTATE_RIGHT, CONTROL_CHARACTER_COMMAND_WHEEL) or dirty
+						end
+					end
+				end
+			elseif value == 1 then
+				--Switching back to Type 1, auto-unmap [Character Command Wheel]
+				--if there is a conflict with [Camera Rotate] (default bumpers).
+				for i = 2, #self.deviceSpinner.options do
+					local deviceId = self.deviceSpinner.options[i].data
+					if TheInput:ControlsHaveSameMapping(deviceId, CONTROL_ROTATE_LEFT, CONTROL_CHARACTER_COMMAND_WHEEL) or
+						TheInput:ControlsHaveSameMapping(deviceId, CONTROL_ROTATE_RIGHT, CONTROL_CHARACTER_COMMAND_WHEEL)
+					then
+						dirty = TheInputProxy:UnMapControl(deviceId, CONTROL_CHARACTER_COMMAND_WHEEL) or dirty
+					end
+				end
+			end
+
+			if dirty and not self:IsDirty() then
+				self:MakeDirty()
+			end
+		end
+
+		self:_RebuildControllerControls(schemeId) --assume control schemes are only for controllers
+	end
+end
+
 function OptionsScreen:OnBecomeActive()
     OptionsScreen._base.OnBecomeActive(self)
+
+    if (self.default_section == "CONTROLSCHEME") then
+       self.subscreener:OnMenuButtonSelected("controls")
+        local activeIndex = 0
+        for i,v in pairs(self.controller_controlwidgets) do
+            if v.label:GetString() == STRINGS.UI.CONTROLSSCREEN.SCHEMES[1] then
+                activeIndex = i
+            end
+        end
+        local item = self.active_list.items[math.min(#self.active_list.items, activeIndex)]
+        self.active_list:Scroll(activeIndex - 3, true) -- we want to keep two items above alive as well
+        if item.button then
+            item.button:SetFocus()
+        else
+            item:SetFocus()
+        end
+    end
 
     if self.kit_puppet then
         self.kit_puppet:Enable()

@@ -3,11 +3,12 @@ local UIAnim = require "widgets/uianim"
 
 -------------------------------------------------------------------------------------------------------
 
-local PetHealthBadge = Class(Badge, function(self, owner, colour, iconbuild)
-    Badge._ctor(self, nil, owner, colour, iconbuild, nil, nil, true)
+local PetHealthBadge = Class(Badge, function(self, owner, colour, iconbuild, bonuscolor)
+    Badge._ctor(self, nil, owner, colour, iconbuild, nil, nil, true, bonuscolor)
 
 	self.OVERRIDE_SYMBOL_BUILD = {} -- modders can add symbols-build pairs to this table by calling SetBuildForSymbol
 	self.default_symbol_build = iconbuild
+	self.default_symbol_build2 = iconbuild
 
     self.arrow = self.underNumber:AddChild(UIAnim())
     self.arrow:GetAnimState():SetBank("sanity_arrow")
@@ -23,6 +24,15 @@ local PetHealthBadge = Class(Badge, function(self, owner, colour, iconbuild)
 	self.bufficon:GetAnimState():AnimateWhilePaused(false)
     self.bufficon:SetClickable(false)
 	self.buffsymbol = 0
+
+    self.bufficon2 = self.underNumber:AddChild(UIAnim())
+    self.bufficon2:GetAnimState():SetBank("status_abigail")
+    self.bufficon2:GetAnimState():SetBuild("status_abigail")
+    self.bufficon2:GetAnimState():PlayAnimation("buff_none")
+	self.bufficon2:GetAnimState():AnimateWhilePaused(false)
+    self.bufficon2:SetClickable(false)
+    self.bufficon2:SetScale(-1,1,1)
+	self.buffsymbol2 = 0	
 
     self:StartUpdating()
 end)
@@ -47,8 +57,25 @@ function PetHealthBadge:ShowBuff(symbol)
 	self.buffsymbol = symbol
 end
 
-function PetHealthBadge:SetValues(symbol, percent, arrowdir, max_health, pulse)
+function PetHealthBadge:ShowBuff2(symbol)
+	if symbol == 0 then
+		if self.buffsymbol2 ~= 0 then
+			self.bufficon2:GetAnimState():PlayAnimation("buff_deactivate")
+			self.bufficon2:GetAnimState():PushAnimation("buff_none", false)
+		end
+	elseif symbol ~= self.buffsymbol2 then
+        self.bufficon2:GetAnimState():OverrideSymbol("buff_icon", self.OVERRIDE_SYMBOL_BUILD[symbol] or self.default_symbol_build2, symbol)
+
+        self.bufficon2:GetAnimState():PlayAnimation("buff_activate")
+        self.bufficon2:GetAnimState():PushAnimation("buff_idle", false)
+    end
+
+	self.buffsymbol2 = symbol
+end
+
+function PetHealthBadge:SetValues(symbol, symbol2, percent, arrowdir, max_health, pulse, bonusmax, bonuspercent)
 	self:ShowBuff(symbol)
+	self:ShowBuff2(symbol2)
 
     if self.arrowdir ~= arrowdir then
         self.arrowdir = arrowdir
@@ -69,7 +96,8 @@ function PetHealthBadge:SetValues(symbol, percent, arrowdir, max_health, pulse)
 		self:PulseRed()
 	end
 
-    self:SetPercent(percent, max_health)
+	self:SetPercent(percent, max_health, bonuspercent)
+
 end
 
 function PetHealthBadge:OnUpdate(dt)

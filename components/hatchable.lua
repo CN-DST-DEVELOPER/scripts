@@ -116,8 +116,12 @@ function Hatchable:OnUpdate(dt)
     local ents = TheSim:FindEntities(x, y, z, TUNING.HATCH_CAMPFIRE_RADIUS, FIRE_MUST_TAGS, FIRE_MUST_NOT_TAGS)
     local heatindex = 0
     for _, ent in ipairs(ents) do
-        if ent.components.heater ~= nil and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
-            heatindex = heatindex + (ent.components.heater:GetHeat(self.inst) or 0) -- Cold fires produce negative heat.
+		if ent.components.heater then
+			--V2C: GetHeat first. Some heaters update thermics in their heatfn.
+			local heat = ent.components.heater:GetHeat(self.inst)
+			if heat and (ent.components.heater:IsExothermic() or ent.components.heater:IsEndothermic()) then -- Make sure they emit temperature.
+				heatindex = heatindex + heat -- Cold fires produce negative heat.
+			end
         end
     end
 

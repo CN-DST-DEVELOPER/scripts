@@ -3,6 +3,7 @@ require("behaviours/leashandavoid")
 require("behaviours/panicandavoid")
 require("behaviours/standstill")
 require("behaviours/wander")
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW_DIST = 0
 local TARGET_FOLLOW_DIST = 4
@@ -27,6 +28,9 @@ function PigEliteFighterBrain:OnStart()
         WhileNode(function() return self.inst.components.health.takingfiredamage end, "OnFire",
             ChattyNode(self.inst, "PIG_TALK_PANICFIRE",
                 Panic(self.inst))),
+        WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "Shocked",
+            ChattyNode(self.inst, "PIG_TALK_PANICELECTRICITY",
+                AvoidElectricFence(self.inst))),
         WhileNode(function() return self.inst._should_despawn end, "Standby",
             ParallelNode{
                 StandStill(self.inst),

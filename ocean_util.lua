@@ -122,7 +122,11 @@ function FindRandomPointOnShoreFromOcean(x, y, z, excludeclosest)
 	for i = 1, num_rooms_to_pick do
 		closest[i] = nodes[i + i_offset]
 	end
-	shuffleArray(closest)
+
+	--if we're in shallow water, don't randomze, and just try for closest in order
+	if excludeclosest or not TileGroupManager:IsShallowOceanTile(TheWorld.Map:GetTileAtPoint(x, y, z)) then
+		shuffleArray(closest)
+	end
 
 	local dest_x, dest_y, dest_z
 	for _, c in ipairs(closest) do
@@ -153,10 +157,10 @@ function LandFlyingCreature(creature)
     creature:RemoveTag("flying")
     creature:PushEvent("on_landed")
     if creature.Physics ~= nil then
-        if TheWorld:CanFlyingCrossBarriers() then
-            creature.Physics:CollidesWith(COLLISION.LIMITS)
-        end
-        creature.Physics:ClearCollidesWith(COLLISION.FLYERS)
+		CollisionMaskBatcher(creature)
+			:CollidesWith(TheWorld:CanFlyingCrossBarriers() and COLLISION.LIMITS or 0)
+			:ClearCollidesWith(COLLISION.FLYERS)
+			:CommitTo(creature)
     end
 end
 
@@ -164,10 +168,10 @@ function RaiseFlyingCreature(creature)
     creature:AddTag("flying")
     creature:PushEvent("on_no_longer_landed")
     if creature.Physics ~= nil then
-        if TheWorld:CanFlyingCrossBarriers() then
-            creature.Physics:ClearCollidesWith(COLLISION.LIMITS)
-        end
-        creature.Physics:CollidesWith(COLLISION.FLYERS)
+		CollisionMaskBatcher(creature)
+			:ClearCollidesWith(TheWorld:CanFlyingCrossBarriers() and COLLISION.LIMITS or 0)
+			:CollidesWith(COLLISION.FLYERS)
+			:CommitTo(creature)
     end
 end
 
@@ -239,6 +243,9 @@ function SinkEntity(entity)
                     entity.Transform:SetPosition(v.Transform:GetWorldPosition())
                 end
             end
+        end
+        if entity.components.inventoryitem then
+            entity.components.inventoryitem:SetLanded(false, true)
         end
     else
         entity:Remove()

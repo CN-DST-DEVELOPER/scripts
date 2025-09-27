@@ -2,6 +2,7 @@ require("stategraphs/commonstates")
 
 local events =
 {
+	CommonHandlers.OnElectrocute(),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
 	EventHandler("jiggle", function(inst)
@@ -47,7 +48,7 @@ local states =
 
 	State{
 		name = "spawndelay",
-		tags = { "spawning", "busy", "noattack", "temp_invincible", "invisible" },
+		tags = { "spawning", "busy", "noattack", "temp_invincible", "invisible", "noelectrocute" },
 
 		onenter = function(inst, delay)
 			inst:Hide()
@@ -72,7 +73,7 @@ local states =
 
 	State{
 		name = "spawn",
-		tags = { "spawning", "busy", "noattack", "temp_invincible" },
+		tags = { "spawning", "busy", "noattack", "temp_invincible", "noelectrocute" },
 
 		onenter = function(inst)
 			_PlayAnimation(inst, "spawn")
@@ -100,6 +101,7 @@ local states =
 				inst.sg:RemoveStateTag("noattack")
 				inst.sg:RemoveStateTag("temp_invincible")
 				inst.sg:RemoveStateTag("spawning")
+				inst.sg:RemoveStateTag("noelectrocute")
 				inst:OnSpawnLanded()
 			end),
 		},
@@ -330,5 +332,33 @@ local states =
 		end,
 	},
 }
+
+CommonStates.AddElectrocuteStates(states,
+{--timeline
+	pst =
+	{
+		FrameEvent(4, function(inst)
+			local targethp = inst.components.health.maxhealth / 9
+			if inst.components.health.currenthealth > targethp then
+				local temp = inst.components.health.maxdamagetakenperhit
+				inst.components.health:SetMaxDamageTakenPerHit(nil)
+				inst.components.health:DoDelta(targethp - inst.components.health.currenthealth)
+				inst.components.health:SetMaxDamageTakenPerHit(temp)
+			end
+		end),
+	},
+},
+{--anims
+	loop = function(inst) return "shock_loop"..inst.size end,
+	pst = function(inst) return "shock_pst"..inst.size end,
+},
+{--fns
+	loop_onenter = function(inst)
+		inst.back.AnimState:PlayAnimation("shock_loop"..inst.size, true)
+	end,
+	pst_onenter = function(inst)
+		inst.back.AnimState:PlayAnimation("shock_pst"..inst.size)
+	end,
+})
 
 return StateGraph("gelblob", states, events, "idle")

@@ -31,7 +31,7 @@ end
 
 local function onattack(inst, attacker, target)
 	inst.components.weapon.attackwear = target ~= nil and target:IsValid()
-		and (target:HasTag("shadow") or target:HasTag("shadowminion") or target:HasTag("shadowchesspiece") or target:HasTag("stalker") or target:HasTag("stalkerminion") or target:HasTag("shadowthrall"))
+		and (target:HasAnyTag("shadow", "shadowminion", "shadowchesspiece", "stalker", "stalkerminion", "shadowthrall"))
 		and TUNING.GLASSCUTTER.SHADOW_WEAR
 		or 1
 end
@@ -64,6 +64,9 @@ local function fn()
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(TUNING.GLASSCUTTER.DAMAGE)
 	inst.components.weapon:SetOnAttack(onattack)
+
+    local damagetypebonus = inst:AddComponent("damagetypebonus")
+	damagetypebonus:AddBonus("shadowsubmissive", inst, TUNING.GLASSCUTTER.DAMAGE_VS_SHADOW_BONUS)
 
     -------
 
