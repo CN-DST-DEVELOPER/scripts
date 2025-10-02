@@ -777,6 +777,8 @@ function MakeSnowCovered(inst)
 end
 
 function UpdateLunarHailBuildup(inst)
+    inst.updatelunarhailbuilduptask = nil
+
     local issnowcovered = TheWorld.state.issnowcovered
     local isbuildupworkable = inst.components.lunarhailbuildup and inst.components.lunarhailbuildup:IsBuildupWorkable()
     local shouldshowsymbol = issnowcovered or isbuildupworkable
@@ -807,7 +809,15 @@ end
 function MakeLunarHailBuildup(inst) -- Integrated into MakeSnowCovered.
     local lunarhailbuildup = inst:AddComponent("lunarhailbuildup")
     inst:ListenForEvent("lunarhailbuildupworkablestatechanged", OnLunarHailBuildupWorkableStateChanged)
-    inst:DoTaskInTime(0, UpdateLunarHailBuildup)
+    inst.updatelunarhailbuilduptask = inst:DoTaskInTime(0, UpdateLunarHailBuildup)
+end
+function RemoveLunarHailBuildup(inst)
+    inst:RemoveComponent("lunarhailbuildup")
+    inst:RemoveEventCallback("lunarhailbuildupworkablestatechanged", OnLunarHailBuildupWorkableStateChanged)
+    if inst.updatelunarhailbuilduptask then
+        inst.updatelunarhailbuilduptask:Cancel()
+        inst.updatelunarhailbuilduptask = nil
+    end
 end
 
 function SetLunarHailBuildupAmountSmall(inst)

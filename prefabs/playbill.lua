@@ -61,9 +61,9 @@ local function makeplay(name, _assets, prefabs, data)
 
         MakeInventoryFloatable(inst, "med", 0.15, 0.6)
 
-        if name == "the_doll" then
-            inst.scrapbook_specialinfo = "PLAYBILL_THEDOLL"
-        end
+        --if name == "the_doll" then
+        --    inst.scrapbook_specialinfo = "PLAYBILL_THEDOLL"
+        --end
 
         inst:AddTag("playbill")
 

@@ -207,9 +207,14 @@ local function RestartIdleTask(inst)
 	inst.idletask = inst:DoTaskInTime(math.random() * 30, SwitchIdleAnim)
 end
 
+local function PreRestartIdleTask(inst)
+	inst.SoundEmitter:KillSound("loop")
+	RestartIdleTask(inst)
+end
+
 local function SetState(inst, state)
 	if inst.state ~= state then
-		if inst.state == PillarStates.OCCUPIED then
+		if inst.state == PillarStates.OCCUPIED and not state == PillarStates.EMPTY then
 			inst.SoundEmitter:KillSound("loop")
 		end
 
@@ -225,10 +230,24 @@ local function SetState(inst, state)
 		end
 
 		if state == PillarStates.EMPTY then
-			inst.AnimState:PlayAnimation(math.random() < 0.5 and "idle_a" or "idle_b")
-			inst.components.walkableplatform:SetIsFull(false)
-			if not inst:IsAsleep() then
-				RestartIdleTask(inst)
+			if inst.components.walkableplatform:IsFull() then
+				inst.components.walkableplatform:SetIsFull(false)
+				if not inst:IsAsleep() then
+					local suffix = math.random() < 0.5 and "_a" or "_b"
+					inst.AnimState:PlayAnimation("place"..suffix)
+					inst.AnimState:SetFrame(34)
+					inst.AnimState:PushAnimation("idle"..suffix)
+					inst.idletask = inst:DoTaskInTime(inst.AnimState:GetCurrentAnimationLength() - 34 * FRAMES, PreRestartIdleTask)
+				else
+					inst.AnimState:PlayAnimation(math.random() < 0.5 and "idle_a" or "idle_b")
+					inst.SoundEmitter:KillSound("loop")
+				end
+			else
+				inst.AnimState:PlayAnimation(math.random() < 0.5 and "idle_a" or "idle_b")
+				inst.SoundEmitter:KillSound("loop")
+				if not inst:IsAsleep() then
+					RestartIdleTask(inst)
+				end
 			end
 		elseif state == PillarStates.OCCUPIED then
 			if not inst:IsAsleep() then
@@ -301,7 +320,7 @@ local function OnAddPlatformFollower(inst, child)
 		if inst.state == PillarStates.EMPTY then
 			SetState(inst, PillarStates.OCCUPIED)
 			if child.isplayer then
-				if inst.occupiedtask == nil then
+				if inst.occupiedtask == nil and not inst.nocollapse then
 					inst.occupiedtask = inst:DoTaskInTime(OCCUPIED_TO_WARNING_TIME, DoPlayerCollapseImminent)
 				end
 				inst:PushEvent("abysspillar_playeroccupied", child)
@@ -316,8 +335,13 @@ local function OnRemovePlatformFollower(inst, child)
 		if inst.state == PillarStates.OCCUPIED then
 			if inst.occupiedtask then
 				inst.occupiedtask:Cancel()
+				inst.occupiedtask = nil
 			end
-			inst.occupiedtask = inst:DoTaskInTime(0, SetState, PillarStates.COLLAPSE)
+			if inst.nocollapse then
+				SetState(inst, PillarStates.EMPTY)
+			else
+				inst.occupiedtask = inst:DoTaskInTime(0, SetState, PillarStates.COLLAPSE)
+			end
 			if child.isplayer then
 				inst:PushEvent("abysspillar_playervacated", child)
 			end
@@ -335,6 +359,10 @@ end
 
 local function CollapsePillar(inst)
 	SetState(inst, PillarStates.COLLAPSE)
+end
+
+local function MakeNonCollapsible(inst)
+	inst.nocollapse = true
 end
 
 --------------------------------------------------------------------------
@@ -376,10 +404,14 @@ local function OnSleepTask_Server(inst)
 	if inst.idletask then
 		inst.idletask:Cancel()
 		inst.idletask = nil
+		--if going from Occupied -> Empty, we use part of the place anim as the transition back to idle
+		if inst.AnimState:IsCurrentAnimation("place_a") then
+			inst.AnimState:PlayAnimation("idle_a")
+		elseif inst.AnimState:IsCurrentAnimation("place_b") then
+			inst.AnimState:PlayAnimation("idle_b")
+		end
 	end
-	if inst.state == PillarStates.OCCUPIED then
-		inst.SoundEmitter:KillSound("loop")
-	end
+	inst.SoundEmitter:KillSound("loop")
 end
 
 local function OnEntitySleep_Server(inst)
@@ -407,6 +439,7 @@ end
 
 local function OnSave(inst, data)
 	data.collapse = inst.state ~= PillarStates.EMPTY or nil
+	data.nocollapse = inst.nocollapse or nil
 end
 
 local function OnLoad(inst, data)--, ents)
@@ -416,9 +449,12 @@ local function OnLoad(inst, data)--, ents)
 	if math.random() < 0.5 then
 		inst.AnimState:PlayAnimation("idle_b")
 	end
-	if data and data.collapse then
-		inst:Hide()
-		inst:DoTaskInTime(0, SetState, PillarStates.COLLAPSE)
+	if data then
+		if data.collapse then
+			inst:Hide()
+			inst:DoTaskInTime(0, SetState, PillarStates.COLLAPSE)
+		end
+		inst.nocollapse = data.nocollapse or inst.nocollapse
 	end
 end
 
@@ -462,6 +498,7 @@ local function fn()
 	end
 
 	inst.state = PillarStates.EMPTY
+	--inst.nocollapse = nil
 
 	inst.OnEntityWake = OnEntityWake_Server
 	inst.OnEntitySleep = OnEntitySleep_Server
@@ -471,6 +508,7 @@ local function fn()
 	inst.OnRemovePlatformFollower = OnRemovePlatformFollower
 	inst.TryReserveForMinion = TryReserveForMinion
 	inst.CollapsePillar = CollapsePillar
+	inst.MakeNonCollapsible = MakeNonCollapsible
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
 

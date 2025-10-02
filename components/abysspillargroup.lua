@@ -79,6 +79,10 @@ function AbyssPillarGroup:SpawnPillarAtXZ(x, z, instant)
 	end
 end
 
+function AbyssPillarGroup:AddPillarSpawnPointXZ(x, z)
+	_push_pt(self.spawnpts, x, 0, z)
+end
+
 function AbyssPillarGroup:RespawnAllPillars()
 	while #self.spawnpts > 0 do
 		self:SpawnPillarAtXZ(_pop_pt(self.spawnpts))

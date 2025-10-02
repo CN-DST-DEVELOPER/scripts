@@ -184,6 +184,7 @@ local function MakeTags()
             ["not_mainland"] =        function(tagdata) return "TAG", "not_mainland" end,
             ["lunacyarea"] =          function(tagdata) return "TAG", "lunacyarea" end,
             ["GrottoWarEntrance"] =   function(tagdata) return "TAG", "GrottoWarEntrance" end,
+            ["fumarolearea"] =        function(tagdata) return "TAG", "fumarolearea" end,
 		}
 	return {Tag = map_tags, TagData = map_data }
 end

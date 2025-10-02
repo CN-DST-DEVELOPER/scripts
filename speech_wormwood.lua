@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1184,6 +1185,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "Need more stronger!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Same?",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Bad hand friend! Why doing that?",
+
 
 	BATTLECRY =
 	{
@@ -5826,6 +5831,7 @@ return{
             BROKEN = "Broken?",
             UNPOWERED = "No spark",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Who friend lose ball?",
         VAULT_LOBBY_EXIT = "Jump!",
 		VAULT_CHANDELIER_BROKEN = "Ball fall down.",
@@ -5837,6 +5843,23 @@ return{
 
         TREE_ROCK_SEED = "Baby friend!",
         TREE_ROCK_SAPLING = "Hey kid",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Good stuff", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Torch friend",
+			BROKEN = "Torch friend broke?", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Gassy friend not sleeping",
+			GENERIC = "Hello gassy friend",
+			SLEEPING = "Dream rock friends or bug friends?",
+            VENTING = "Gassy friend gassing!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "Friend?",

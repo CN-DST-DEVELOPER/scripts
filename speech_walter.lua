@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1222,6 +1223,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "We need something stronger, Woby!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "I don't know, Woby! Must be a bad connection!",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Woby, did you see that hand? It's cheating!",
+
 
 	BATTLECRY =
 	{
@@ -5864,6 +5869,7 @@ return{
             BROKEN = "We have to fix it first, Woby girl!",
             UNPOWERED = "I don't think there's power.",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "That's not your ball, silly girl!",
         VAULT_LOBBY_EXIT = "You think this is the way out, Woby?",
 		VAULT_CHANDELIER_BROKEN = "Wonder what caused that.",
@@ -5875,6 +5881,23 @@ return{
 
         TREE_ROCK_SEED = "Where should we plant this little one, Woby?",
         TREE_ROCK_SAPLING = "It's going to grow up big and strong!",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "You smell anything in there, Woby?", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "There's a neat little switch that turns it on and off!",
+			BROKEN = "The switch looks broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Yup. It's dead.",
+			GENERIC = "Careful Woby! It's gassy.",
+			SLEEPING = "Shh... don't wake it, Woby.",
+            VENTING = "It's blowing off steam! Get it, Woby?", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

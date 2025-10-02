@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1199,6 +1200,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "I need stronger arms to do any harms!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Ahem! What's the problem!",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "And a hand came to snuff the flame!",
+
 
 	BATTLECRY =
 	{
@@ -5842,6 +5847,7 @@ return{
             BROKEN = "Don't despair, we can repair!",
             UNPOWERED = "No power? At this hour?",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "The ball took a fall!",
         VAULT_LOBBY_EXIT = "The way out, no doubt!",
 		VAULT_CHANDELIER_BROKEN = "Oh dear, the chandelier.",
@@ -5853,6 +5859,23 @@ return{
 
         TREE_ROCK_SEED = "A seed, indeed!",
         TREE_ROCK_SAPLING = "What's happening, sapling?",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Lots of flotsam.", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "That light's alright!",
+			BROKEN = "What a joke! The switch is broke!", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "It's gassed its last!",
+			GENERIC = "Don't make light of that mite!",
+			SLEEPING = "Not a peep, it's fast asleep.",
+            VENTING = "Heehee! How crass to pester with gas!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

@@ -2265,8 +2265,12 @@ function Tune(overrides)
         TARGET_SLEEP_TEMP = 35,
         MIN_ENTITY_TEMP = -20,
         MAX_ENTITY_TEMP = 90,
+
         WARM_DEGREES_PER_SEC = 1,
         THAW_DEGREES_PER_SEC = 5,
+
+        COOL_DEGREES_PER_SEC = -1,
+        SUPER_COOL_DEGREES_PER_SEC = -5,
 
         -- Ice Flingomatic emergency mode
         EMERGENCY_BURNT_NUMBER = 2,
@@ -8684,7 +8688,7 @@ function Tune(overrides)
 
         -- Rock trees only have desolation regrowth
         TREE_ROCK_REGROWTH = {
-            OFFSPRING_TIME = total_day_time * 0.0001,
+            OFFSPRING_TIME = total_day_time * 8,
             DESOLATION_RESPAWN_TIME = total_day_time * 50,
             DEAD_DECAY_TIME = total_day_time * 30, --NOTE: no decay.
         },
@@ -8726,8 +8730,52 @@ function Tune(overrides)
         OCEANWHIRLBIGPORTAL_RADIALSTRENGTH = 20,
         OCEANWHIRLBIGPORTAL_BOAT_PERCENT_DAMAGE_PER_TICK = 0.1,
 
+        OCEANWHILRBIGPORTALEXIT_LOOT_PER_PICK = 3,
+        OCEANWHILRBIGPORTALEXIT_ITEMS_TO_MAKE_BIG = 30,
+
         FLOWER_CAVE_WITHERED_LIGHT_TIME = 20,
         FLOWER_CAVE_WITHERED_RECHARGE_TIME = 200,
+
+        CAVE_MITE_HEALTH = 200 * 2, -- harder for multiplayer
+        CAVE_MITE_WALK_SPEED = 2,
+        CAVE_MITE_RUN_SPEED = 3,
+        CAVE_MITE_DAMAGE = 25,
+        CAVE_MITE_PLANAR_DAMAGE = 10,
+        CAVE_MITE_ATTACK_PERIOD = 4,
+        CAVE_MITE_ATTACK_RANGE = 3,
+        CAVE_MITE_HIT_RANGE = 4,
+        CAVE_MITE_TARGET_DIST = 8,
+        CAVE_MITE_SHELL_ABSORB = 0.05, --95%
+        CAVE_MITE_HEAT_ACTIVE = 120,
+        CAVE_MITE_BLOW_COOLDOWN = 8,
+        CAVE_MITE_BLOW_DISTANCE = 4,
+        CAVE_MITE_BLOW_DISTANCE_SQ = 4*4,
+        CAVE_MITE_BLOW_DISTANCE_SQ_MIN = 2*2,
+
+        CAVE_MITE_BLOW_HEAT_RATE = {
+            COLD = 5,
+            NORMAL = 15,
+            HOT = 40, --This is essentially the default.
+        },
+
+        CAVE_MITE_SHIELD_COOLDOWN = 30,
+        CAVE_MITE_SHIELD_COOLDOWN_VARIANCE = 20,
+
+        CAVE_MITE_SHIELD_TIME = 10,
+        CAVE_MITE_SHIELD_TIME_VARIANCE = 140,
+
+        CAVE_MITE_MAX_CHASE_TIME = 16,
+        CAVE_MITE_SEE_FOOD_DIST = 10,
+        CAVE_MITE_MAX_WANDER_DIST = 32,
+        CAVE_MITE_DAMAGE_UNTIL_SHIELD = 25,
+        CAVE_MITE_SHIELD_ATTACK_TIME = 5,
+
+        CAVE_MITE_RELEASE_TIME = 20,
+        CAVE_MITE_REGEN_TIME = total_day_time,
+        CAVE_MITE_MAX_CHILDREN = 3,
+        CAVE_MITE_ENABLED = true,
+
+        CAVE_MITE_SPAWN_RADIUSSQ = 16 * 16,
     }
 
     TUNING_MODIFIERS = {}

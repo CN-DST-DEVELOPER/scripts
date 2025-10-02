@@ -66,7 +66,8 @@ local function ConsumeFire(inst, fire)
             inst._distance_test_task:Cancel()
             inst._distance_test_task = nil
         end
-        inst:RemoveEventCallback("onextinguish", inst.dissipatefn, fire)
+		inst:RemoveEventCallback("onextinguish", inst.dissipatefn, fire)
+		inst:RemoveEventCallback("machineturnedoff", inst.dissipatefn, fire)
         inst:RemoveEventCallback("onremove", inst.dissipatefn, fire)
         if inst.components.playerprox ~= nil then
             inst:RemoveComponent("playerprox")
@@ -78,7 +79,7 @@ end
 local function DoCreeping(inst)
     inst.task = nil
     inst.components.locomotor.walkspeed = 2
-    inst.components.locomotor:PushAction(BufferedAction(inst, inst.fire, ACTIONS.EXTINGUISH), false)
+	inst.components.locomotor:PushAction(BufferedAction(inst, inst.fire, inst.overrideaction or ACTIONS.EXTINGUISH), false)
 end
 
 local function StartCreeping(inst, delay)
@@ -113,7 +114,7 @@ end
 
 local function HandleAction(inst, data)
     if data.action ~= nil then
-        if data.action.action == ACTIONS.EXTINGUISH then
+		if data.action.action == (inst.overrideaction or ACTIONS.EXTINGUISH) then
             ConsumeFire(inst, data.action.target)
         elseif data.action.action == ACTIONS.GOHOME then
             Dissipate(inst)
@@ -135,11 +136,12 @@ local function FireDistanceTest(inst)
     end
 end
 
-local function SetTargetFire(inst, fire)
+local function SetTargetFire(inst, fire, overrideaction)
     if inst.fire ~= nil or fire == nil or inst.dissipating then
         return
     end
     inst.fire = fire
+	inst.overrideaction = overrideaction
 
     local pos = inst:GetPosition()
     inst:AddComponent("knownlocations")
@@ -157,7 +159,7 @@ local function SetTargetFire(inst, fire)
 
     inst.dissipatefn = function() Dissipate(inst) end
     inst:ListenForEvent("enterlight", inst.dissipatefn, inst.arm)
-    inst:ListenForEvent("onextinguish", inst.dissipatefn, fire)
+	inst:ListenForEvent(inst.overrideaction == ACTIONS.TURNOFF and "machineturnedoff" or "onextinguish", inst.dissipatefn, fire)
     inst:ListenForEvent("onremove", inst.dissipatefn, fire)
     inst:ListenForEvent("startaction", HandleAction)
 

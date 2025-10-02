@@ -197,7 +197,7 @@ local states =
 
     State{
         name = "shield_end",
-        tags = {"busy", "hiding"},
+        tags = { "busy", "hiding", "shield_end" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("unhide")

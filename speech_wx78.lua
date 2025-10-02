@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1180,6 +1181,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "INSUFFICIENT POWER. OFFENSIVE UPGRADE REQUIRED",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "UNIT NON-OPERATIONAL",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "WARNING: UNAUTHORIZED INTERFERANCE! SHADOW APPLICATION DETECTED!",
+
 
 	BATTLECRY =
 	{
@@ -5822,6 +5827,7 @@ return{
             BROKEN = "NONFUNCTIONAL",
             UNPOWERED = "IT NEEDS POWER!!!",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "ESSENTIAL HARDWARE IDENTIFIED",
         VAULT_LOBBY_EXIT = "ESC",
 		VAULT_CHANDELIER_BROKEN = "MUST HAVE BEEN MOUNTED BY A FLESHBAG",
@@ -5833,6 +5839,23 @@ return{
 
         TREE_ROCK_SEED = "MUST BE INSTALLED",
         TREE_ROCK_SAPLING = "INSTALLED",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "POSSIBLE SALVAGE DETECTED", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "INTERCONNECTED LIGHTING UNIT",
+			BROKEN = "SWITCH NOT OPERATIONAL", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "HAHAHA. DEAD",
+			GENERIC = "YOU ANNOY ME. PREPARE TO DIE",
+			SLEEPING = "UNIT SLEEPING. PERFECT...",
+            VENTING = "UNIT VENTING", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

@@ -1869,108 +1869,72 @@ end
 
 --------------------------------------------------------------------------
 
+local function GetRowHandAndFacing(inst)
+	local boat = inst:GetCurrentPlatform()
+	if boat then
+		local target_x, _, target_z
+		local buffaction = inst:GetBufferedAction()
+		if buffaction then
+			local target_pos = buffaction:GetActionPoint()
+			if target_pos then
+				target_x, _, target_z = target_pos:Get()
+			elseif buffaction.target then
+				target_x, _, target_z = buffaction.target.Transform:GetWorldPosition()
+				inst:ForceFacePoint(target_x, 0, target_z)
+			end
+		end
+		if target_x == nil then
+			target_x, _, target_z = inst.Transform:GetWorldPosition()
+		end
+
+		local x, _, z = inst.Transform:GetWorldPosition()
+		local dir = boat:GetAngleToPoint(x, 0, z)
+		local delta = dir / 45
+		local seg = math.floor(delta)
+		delta = delta - seg
+		local lefthand = delta < 0.5
+		seg = (lefthand and seg or seg + 1) * 45
+		if not (inst.components.playercontroller and inst.components.playercontroller.isclientcontrollerattached) and
+			(x ~= target_x or z ~= target_z)
+		then
+			local dir2 = math.atan2(z - target_z, target_x - x) * RADIANS
+			local diff = ReduceAngle(dir2 - dir)
+			if diff > 0 then
+				if not lefthand then
+					lefthand = true
+					dir = seg + 1
+				end
+			elseif diff < 0 and lefthand then
+				lefthand = false
+				dir = seg - 1
+			end
+		end
+		if dir == seg then
+			dir = seg + (lefthand and 1 or -1)
+		end
+		return dir, lefthand
+	end
+end
+
 CommonStates.AddRowStates = function(states, is_client)
     table.insert(states, State{
         name = "row",
         tags = { "rowing", "doing" },
 
         onenter = function(inst)
-            local locomotor = inst.components.locomotor
-            local target_pos = nil
-            if locomotor.bufferedaction then
-                target_pos = locomotor.bufferedaction:GetActionPoint()
-                if target_pos == nil then
-                    target_pos = locomotor.bufferedaction.target:GetPosition()
-                    inst:ForceFacePoint(target_pos:Get())
-                end
-            else
-                target_pos = Vector3(inst.Transform:GetWorldPosition())
-            end
+			local dir, lefthand = GetRowHandAndFacing(inst)
             inst:AddTag("is_rowing")
             inst.AnimState:PlayAnimation("row_pre")
-            locomotor:Stop()
-
-            local my_x, my_y, my_z = inst.Transform:GetWorldPosition()
-            local boat_x, boat_y, boat_z = 0, 0, 0
-            local boat = inst:GetCurrentPlatform()
-            if boat ~= nil then
-                boat_x, boat_y, boat_z = boat.Transform:GetWorldPosition()
-            end
+			inst.components.locomotor:Stop()
 
             if is_client then
                 inst:PerformPreviewBufferedAction()
             end
 
-            local target_x, target_z = nil,nil
-
-            if inst.components.playercontroller.isclientcontrollerattached then
-                local dir_x, dir_z = VecUtil_Normalize(my_x - boat_x, my_z - boat_z)
-                target_x, target_z = my_x + dir_x, my_z + dir_z
-            else
-                target_x, target_z = target_pos.x, target_pos.z
-            end
-
-            local delta_target_x, delta_target_z = target_x- my_x, target_z - my_z
-            local delta_boat_x, delta_boat_z = my_x - boat_x, my_z - boat_z
-
-            local camera_down_vec = TheCamera:GetDownVec()
-            local camera_right_vec = TheCamera:GetRightVec()
-
-            local camera_up_x, camera_up_z = -camera_down_vec.x, -camera_down_vec.z
-            local camera_right_x, camera_right_z = camera_right_vec.x, camera_right_vec.z
-
-            local delta_target_x_camera, delta_target_z_camera = delta_target_x * camera_right_x + delta_target_z * camera_right_z, delta_target_x * camera_up_x + delta_target_z * camera_up_z
-            local delta_boat_x_camera, delta_boat_z_camera = delta_boat_x * camera_right_x + delta_boat_z * camera_right_z, delta_boat_x * camera_up_x + delta_boat_z * camera_up_z
-
-            local target_anim = "row_medium"
-            local debug_id = ""
-            local is_facing_horizontal = math.abs(delta_target_x_camera) > math.abs(delta_target_z_camera)
-            local is_on_upper_half = delta_boat_z_camera > 0
-            local is_on_right_side = delta_boat_x_camera > 0
-            local is_facing_right = delta_target_x_camera > 0
-            local is_facing_up = delta_target_z_camera > 0
-
-            if is_facing_horizontal then
-                if is_on_upper_half then
-                    if is_facing_right then
-                        target_anim = "row_medium_off"
-                        debug_id = "is_facing_horizontal, is_on_upper_half, is_facing_right"
-                    else
-                        target_anim = "row_medium_off"
-                        debug_id = "is_facing_horizontal, is_on_upper_half, is_facing_left"
-                    end
-                else
-                    if is_facing_right then
-                        target_anim = "row_medium"
-                        debug_id = "is_facing_horizontal, is_on_lower_half, is_facing_right"
-                    else
-                        target_anim = "row_medium"
-                        debug_id = "is_facing_horizontal, is_on_lower_half, is_facing_left"
-                    end
-                end
-            else
-                if is_on_right_side then
-                    if is_facing_up then
-                        target_anim = "row_medium"
-                        debug_id = "is_facing_vertical, is_on_right_side, is_facing_up"
-                    else
-                        target_anim = "row_medium_off"
-                        debug_id = "is_facing_vertical, is_on_right_side, is_facing_down"
-                    end
-                else
-                    if is_facing_up then
-                        target_anim = "row_medium_off"
-                        debug_id = "is_facing_vertical, is_on_left_side, is_facing_up"
-                    else
-                        target_anim = "row_medium"
-                        debug_id = "is_facing_vertical, is_on_left_side, is_facing_down"
-                    end
-                end
-            end
-
-            inst.AnimState:PushAnimation(target_anim, false)
-
-            inst:ForceFacePoint(target_x, 0, target_z)
+			if dir then
+				inst.Transform:SetRotation(dir)
+			end
+			inst.AnimState:PushAnimation(lefthand and "row_medium_off" or "row_medium", false)
         end,
 
         onexit = function(inst)
@@ -2000,7 +1964,9 @@ CommonStates.AddRowStates = function(states, is_client)
         {
             EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
             EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState("row_idle")
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("row_idle")
+				end
             end),
         },
 
@@ -2017,16 +1983,20 @@ CommonStates.AddRowStates = function(states, is_client)
         tags = { "busy", "row_fail" },
 
         onenter = function(inst)
+			local dir, lefthand = GetRowHandAndFacing(inst)
             if is_client then
                 inst:PerformPreviewBufferedAction()
             else
                 inst:PerformBufferedAction()
             end
-
             inst:AddTag("is_row_failing")
             inst.components.locomotor:Stop()
+
+			if dir then
+				inst.Transform:SetRotation(dir)
+			end
             inst.AnimState:PlayAnimation("row_fail_pre")
-            inst.AnimState:PushAnimation("row_fail", false)
+			inst.AnimState:PushAnimation(lefthand and "row_fail_off" or "row_fail", false)
         end,
 
         onexit = function(inst)
@@ -2052,7 +2022,9 @@ CommonStates.AddRowStates = function(states, is_client)
         {
             EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
             EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState("row_idle")
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("row_idle")
+				end
             end),
         },
 

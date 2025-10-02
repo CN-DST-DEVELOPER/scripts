@@ -97,11 +97,6 @@ local function spawner()
     --[[Non-networked entity]]
     inst:AddTag("CLASSIFIED")
 
-    inst.entity:SetPristine()
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
     inst:AddComponent("childspawner")
     inst.components.childspawner:SetSpawnPeriod(TUNING.MUSHGNOME_RELEASE_TIME)
     inst.components.childspawner:SetRegenPeriod(TUNING.MUSHGNOME_REGEN_TIME)

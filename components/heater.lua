@@ -9,6 +9,9 @@ local Heater = Class(function(self, inst)
 	self.carriedheatmultiplier = 1
 	self.exothermic = true
 	self.endothermic = false
+	
+	--self.heatrate = nil
+	--self.heatratefn = nil
 
     --V2C: Recommended to explicitly add tag to prefab pristine state
 	inst:AddTag("HASHEATER")
@@ -50,6 +53,12 @@ end
 function Heater:GetHeat(observer)
     return (self.heatfn ~= nil and self.heatfn(self.inst, observer))
         or self.heat
+end
+
+function Heater:GetHeatRate(observer)
+	return (self.heatratefn ~= nil and self.heatratefn(self.inst, observer))
+        or self.heatrate
+		or 1
 end
 
 function Heater:GetEquippedHeat(observer)

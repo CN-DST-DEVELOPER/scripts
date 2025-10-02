@@ -843,6 +843,12 @@ function Map:NodeAtPointHasTag(x, y, z, tag)
 	return node ~= nil and node.tags ~= nil and table.contains(node.tags, tag)
 end
 
+function Map:NodeAtTileHasTag(x, y, tag)
+    local node_index = self:GetTileNodeId(x, y)
+    local node = TheWorld.topology.nodes[node_index]
+    return node ~= nil and node.tags ~= nil and table.contains(node.tags, tag)
+end
+
 function Map:CanAreaTagsHaveAcidRain(tags)
     return not table.contains(tags, "lunacyarea") and not table.contains(tags, "nocavein")
 end

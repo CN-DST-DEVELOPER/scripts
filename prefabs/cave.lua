@@ -181,6 +181,8 @@ local prefabs =
 
     "flower_cave_withered",
 
+    "cave_vent_mite_spawner",
+
     --   vault
     "vaultmarker_lobby_center",
     "vaultmarker_lobby_to_vault",

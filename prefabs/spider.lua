@@ -501,6 +501,7 @@ end
 
 local function DoHeal(inst)
     local scale = 1.35
+    inst.SoundEmitter:PlaySound(inst:SoundPath("heal_fartcloud"))
     SpawnHealFx(inst, "spider_heal_ground_fx", scale)
     SpawnHealFx(inst, "spider_heal_fx", scale)
 

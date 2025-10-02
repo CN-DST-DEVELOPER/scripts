@@ -1949,34 +1949,39 @@ local PREFABS =
     ["gingerbreadwarg"] = true,
     --["dreadstone_stack"] = true, --Not a seperate prefab
 
-    -- [[ Rifts 6 ]]
+    -- [[ Rifts 6 and Rifts 6.1 ]]
 
-    --["tree_rock"] = true,
-    --["shadowthrall_centipede_head"] = true,
-    --["cave_vent_rock"] = true,
-    --["cave_fern_withered"] = true,
-    --["flower_cave_withered"] = true,
+    -- fumarole biome
+    ["tree_rock"] = true,
+    ["shadowthrall_centipede_head"] = true,
+    ["cave_vent_rock"] = true,
+    ["cave_vent_mite"] = true,
+    ["cave_fern_withered"] = true,
+    ["flower_cave_withered"] = true,
 
-    --["oceanwhirlbigportal"] = true,
-    --["oceanwhirlbigportalexit"] = true,
-    --["vault_lobby_exit"] = true,
-    --["vault_teleporter"] = true,
+    -- sanctum
+    ["oceanwhirlbigportal"] = true,
+    ["oceanwhirlbigportalexit"] = true, -- Item collector for the big whirlpool.
+    ["vault_lobby_exit"] = true, -- Hole to jump in.
+    ["vault_teleporter"] = true,
+    ["vault_orb"] = true,
+    ["vault_chandelier_broken"] = true,
+    ["vault_rune"] = true, -- Lore stones.
+    ["vault_statue"] = true,
+    ["vault_torch"] = true,
+    ["ancient_husk"] = true, -- Skeleton remains.
+    ["vaultrelic_vase"] = true,
 
-    --["abysspillar_minion"] = true,
-    --["abysspillar_trial"] = true,
-    --["ancient_husk"] = true,
+    ["abysspillar_minion"] = true,
+    ["abysspillar_trial"] = true,
 
-    --["mask_ancient_handmaidhat"] = true,
-    --["mask_ancient_architecthat"] = true,
-    --["mask_ancient_masonhat"] = true,
+    ["mask_ancient_handmaidhat"] = true,
+    ["mask_ancient_architecthat"] = true,
+    ["mask_ancient_masonhat"] = true,
 
-    --["playbill_the_doll"] = true,
-    --["playbill_the_veil"] = true,
-    --["playbill_the_vault"] = true,
-
-    --["vault_chandelier_broken"] = true,
-    --["vault_rune"] = true,
-    --["vault_statue"] = true,
+    ["playbill_the_doll"] = true,
+    ["playbill_the_veil"] = true,
+    ["playbill_the_vault"] = true,
 
     -----------------------------------------------
 

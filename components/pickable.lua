@@ -299,7 +299,7 @@ function Pickable:OnSave()
         picked = not self.canbepicked and true or nil,
         transplanted = self.transplanted and true or nil,
         paused = self.paused and true or nil,
-        caninteractwith = self.caninteractwith and true or nil,
+        caninteractwith = not self.donotsavecaninteractwithstate and self.caninteractwith and true or nil,
 		stuck = self.stuck or nil,
     }
 

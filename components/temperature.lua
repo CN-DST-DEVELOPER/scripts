@@ -255,10 +255,12 @@ function Temperature:GetInsulation()
         summerInsulation = summerInsulation + self.shelterinsulation
     end
 
-    if TheWorld.state.isdusk then
-        summerInsulation = summerInsulation + TUNING.DUSK_INSULATION_BONUS
-    elseif TheWorld.state.isnight then
-        summerInsulation = summerInsulation + TUNING.NIGHT_INSULATION_BONUS
+    if not TheWorld:HasTag("cave") then
+        if TheWorld.state.isdusk then
+            summerInsulation = summerInsulation + TUNING.DUSK_INSULATION_BONUS
+        elseif TheWorld.state.isnight then
+            summerInsulation = summerInsulation + TUNING.NIGHT_INSULATION_BONUS
+        end
     end
 
     return math.max(0, winterInsulation), math.max(0, summerInsulation)

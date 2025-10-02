@@ -77,6 +77,10 @@ local events =
             end
         end
     end),
+
+    EventHandler("vault_teleport", function(inst, data)
+        inst.sg:GoToState("vault_teleport", data)
+    end),
 }
 
 local states =
@@ -503,6 +507,80 @@ local states =
             end),
         },
     },
+
+    State{
+        name = "abyss_drop",
+        tags = { "doing", "busy", "canrotate", "nopredict" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("appear")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+    
+	State{
+		name = "vault_teleport",
+		tags = { "doing", "busy", "canrotate", "nopredict" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+
+			SpawnPrefab("vault_portal_fx").Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+			if inst.components.playercontroller then
+				inst.components.playercontroller:Enable(false)
+			end
+
+			if data then
+				inst.sg.statemem.data = data
+				if data.onplayerpending then
+					data.onplayerpending(inst)
+				end
+			end
+		end,
+
+		timeline =
+		{
+			TimeEvent(0.3, function(inst)
+				inst:ScreenFade(false, 0.5)
+			end),
+			TimeEvent(1.3, function(inst)
+				local data = inst.sg.statemem.data
+				if data and data.onplayerready then
+					data.onplayerready(inst)
+				end
+				inst:ScreenFade(true, 1)
+			end),
+			TimeEvent(1.5, function(inst)
+                inst.sg.statemem.not_interrupted = true
+				inst.sg:GoToState("appear")
+			end),
+		},
+
+		onexit = function(inst)
+            if inst.components.playercontroller then
+				inst.components.playercontroller:Enable(true)
+			end
+            if not inst.sg.statemem.not_interrupted then
+                local data = inst.sg.statemem.data
+                if data and data.onplayerready then
+                    data.onplayerready(inst)
+                    inst:ScreenFade(true, 1)
+                else
+                    inst:ScreenFade(true, 0)
+                end
+            end
+		end,
+	},
 
     State{
         name = "forcetele",

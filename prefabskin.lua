@@ -189,12 +189,34 @@ end
 armor_bramble_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_bramble") end
 armor_bramble_clear_fn = function(inst) basic_clear_fn(inst, "armor_bramble") end
 
-wood_table_round_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_round") end
-wood_table_round_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_round") end
+local function _set_round_furniture_facings(inst, facings)
+	if facings == 8 then
+		inst.Transform:SetEightFaced()
+	elseif facings == 4 then
+		inst.Transform:SetFourFaced()
+	else
+		inst.Transform:SetNoFaced()
+	end
+end
+
+wood_table_round_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "wood_table_round")
+	_set_round_furniture_facings(inst, facings)
+end
+wood_table_round_clear_fn = function(inst)
+	basic_clear_fn(inst, "wood_table_round")
+	inst.Transform:SetNoFaced()
+end
 wood_table_square_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_square") end
 wood_table_square_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_square") end
-wood_stool_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_chair_stool") end
-wood_stool_clear_fn = function(inst) basic_clear_fn(inst, "wood_chair_stool") end
+wood_stool_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "wood_chair_stool")
+	_set_round_furniture_facings(inst, facings)
+end
+wood_stool_clear_fn = function(inst)
+	basic_clear_fn(inst, "wood_chair_stool")
+	inst.Transform:SetNoFaced()
+end
 wood_chair_init_fn = function(inst, build_name)
     basic_init_fn(inst, build_name, "wood_chair_chair")
     if not TheWorld.ismastersim then
@@ -213,12 +235,24 @@ wood_chair_clear_fn = function(inst)
         inst.back.AnimState:ClearOverrideSymbol("chair01_parts")
     end
 end
-stone_table_round_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "stone_table_round") end
-stone_table_round_clear_fn = function(inst) basic_clear_fn(inst, "stone_table_round") end
+stone_table_round_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "stone_table_round")
+	_set_round_furniture_facings(inst, facings)
+end
+stone_table_round_clear_fn = function(inst)
+	basic_clear_fn(inst, "stone_table_round")
+	inst.Transform:SetNoFaced()
+end
 stone_table_square_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "stone_table_square") end
 stone_table_square_clear_fn = function(inst) basic_clear_fn(inst, "stone_table_square") end
-stone_stool_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "stone_chair_stool") end
-stone_stool_clear_fn = function(inst) basic_clear_fn(inst, "stone_chair_stool") end
+stone_stool_init_fn = function(inst, build_name, facings)
+	basic_init_fn(inst, build_name, "stone_chair_stool")
+	_set_round_furniture_facings(inst, facings)
+end
+stone_stool_clear_fn = function(inst)
+	basic_clear_fn(inst, "stone_chair_stool")
+	inst.Transform:SetFourFaced() --yes! base is 4-faced
+end
 stone_chair_init_fn = function(inst, build_name)
 	basic_init_fn(inst, build_name, "stone_chair")
     if not TheWorld.ismastersim then

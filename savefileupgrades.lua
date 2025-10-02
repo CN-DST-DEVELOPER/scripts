@@ -1362,6 +1362,24 @@ t = {
                 --FlagForRetrofitting_Cave(savedata, "retrofit_fix_mismatched_fumarole_node_id_map")
             end,
         },
+        {
+            version = 5.18,
+            fn = function(savedata)
+                if savedata and savedata.map and savedata.map.topology and savedata.map.prefab == "cave" then
+                    local topology = savedata.map.topology
+                    for i, node in ipairs(topology.nodes) do
+                        local idname = topology.ids[i]
+                        if node.tags and idname and (idname:find("CentipedeCaveTask") or idname:find("FumaroleRetrofit")) then
+                            if not table.contains(node.tags, "fumarolearea") then -- Patch up existing areas with fumarolearea tag
+                                table.insert(node.tags, "fumarolearea")
+                            end
+                        end
+                    end
+                end
+
+                FlagForRetrofitting_Cave(savedata, "retrofit_cave_mite_spawners")
+            end,
+        },
     },
 }
 

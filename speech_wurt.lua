@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1180,6 +1181,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "Grrr... need stronger weapon, florp!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Grrr... why not work?",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Grrr... go away, Shadowfolk!",
+
 
 	BATTLECRY =
 	{
@@ -5822,6 +5827,7 @@ return{
             BROKEN = "Not work. Glurgh.",
             UNPOWERED = "Grrr... why not?",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Mine!",
         VAULT_LOBBY_EXIT = "Me jump!",
 		VAULT_CHANDELIER_BROKEN = "Not me, florp.",
@@ -5833,6 +5839,23 @@ return{
 
         TREE_ROCK_SEED = "A sweet baby, florpt!",
         TREE_ROCK_SAPLING = "Grow, grow grow!",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Ocean poop?", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "We switch!",
+			BROKEN = "Florp! Broke!", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Bye stink bug!",
+			GENERIC = "Stink bug!",
+			SLEEPING = "Stink bug sleeping.",
+            VENTING = "So stinky, flort!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "What that?",

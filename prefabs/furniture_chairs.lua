@@ -64,7 +64,7 @@ local function OnLoad(inst, data)
 	end
 end
 
-local function AddChair(ret, name, bank, build, hasback, deploy_smart_radius, burnable, inspection_override)
+local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_radius, burnable, inspection_override)
 	local assets =
 	{
 		Asset("ANIM", "anim/"..build..".zip"),
@@ -93,7 +93,13 @@ local function AddChair(ret, name, bank, build, hasback, deploy_smart_radius, bu
 			inst.entity:AddAnimState()
 			inst.entity:AddNetwork()
 
-			inst.Transform:SetFourFaced()
+			if facings == 0 then
+				inst.Transform:SetNoFaced()
+			elseif facings == 8 then
+				inst.Transform:SetEightFaced()
+			else
+				inst.Transform:SetFourFaced()
+			end
 
 			inst:AddTag("FX")
 
@@ -132,7 +138,13 @@ local function AddChair(ret, name, bank, build, hasback, deploy_smart_radius, bu
 
 		MakeObstaclePhysics(inst, 0.25)
 
-		inst.Transform:SetFourFaced()
+		if facings == 0 then
+			inst.Transform:SetNoFaced()
+		elseif facings == 8 then
+			inst.Transform:SetEightFaced()
+		else
+			inst.Transform:SetFourFaced()
+		end
 
 		inst:AddTag("structure")
 		inst:AddTag("faced_chair")
@@ -200,9 +212,9 @@ end
 local ret = {}
 
 --       ret,     name,          bank,          build,         hasback, deploy_smart_radius, burnable
-AddChair(ret, "wood_chair",  "wood_chair", "wood_chair_chair",  true,  0.875, true,  "WOOD_CHAIR" )
-AddChair(ret, "wood_stool",  "wood_chair", "wood_chair_stool",  false, 0.875, true,  "WOOD_CHAIR" )
-AddChair(ret, "stone_chair", "wood_chair", "stone_chair",       true,  0.875, false, "STONE_CHAIR")
-AddChair(ret, "stone_stool", "wood_chair", "stone_chair_stool", false, 0.875, false, "STONE_CHAIR")
+AddChair(ret, "wood_chair",  "wood_chair", "wood_chair_chair",  4, true,  0.875, true,  "WOOD_CHAIR" )
+AddChair(ret, "wood_stool",  "wood_stool", "wood_stool",		0, false, 0.875, true,  "WOOD_CHAIR" )
+AddChair(ret, "stone_chair", "wood_chair", "stone_chair",       4, true,  0.875, false, "STONE_CHAIR")
+AddChair(ret, "stone_stool", "wood_stool", "stone_chair_stool", 4, false, 0.875, false, "STONE_CHAIR")
 
 return unpack(ret)

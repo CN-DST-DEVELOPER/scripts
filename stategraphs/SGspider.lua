@@ -88,7 +88,7 @@ local events =
                 if wants_to_move then
                     inst.sg:GoToState("premoving")
                 else
-                    inst.sg:GoToState("idle")
+                    inst.sg:GoToState("idle", "walk_pst")
                 end
             end
         end
@@ -477,15 +477,10 @@ local states =
             inst.AnimState:PlayAnimation("heal")
         end,
 
-        timeline=
+        timeline =
         {
-            TimeEvent(30*FRAMES, function(inst)
-
-                -- DANY
-                --inst.SoundEmitter:PlaySound("SPIDER SMOKE SOUND")
-
-                inst:DoHeal()
-            end ),
+            TimeEvent(6*FRAMES, function(inst) inst.SoundEmitter:PlaySound(SoundPath(inst, "heal")) end),
+            TimeEvent(30*FRAMES, function(inst) inst:DoHeal() end),
         },
 
         events=

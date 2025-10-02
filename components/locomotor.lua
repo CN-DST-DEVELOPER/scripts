@@ -1760,7 +1760,7 @@ function LocoMotor:FindPath()
 
     local p0 = Vector3(self.inst.Transform:GetWorldPosition())
     local p1 = Vector3(self.dest:GetPoint())
-    local dist = math.sqrt(distsq(p0, p1))
+    -- local dist = math.sqrt(distsq(p0, p1))
     --Print(VERBOSITY.DEBUG, string.format("    %s -> %s distance %2.2f", tostring(p0), tostring(p1), dist))
 
     -- if dist > PATHFIND_MAX_RANGE then

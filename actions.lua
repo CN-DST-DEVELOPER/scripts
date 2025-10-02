@@ -4029,7 +4029,7 @@ ACTIONS.DRAW.fn = function(act)
             act.invobject.components.drawingtool ~= nil and
             act.target.components.drawable ~= nil and
             act.target.components.drawable:CanDraw() then
-        local image, src, atlas, bgimage, bgatlas = act.invobject.components.drawingtool:GetImageToDraw(act.target)
+        local image, src, atlas, bgimage, bgatlas = act.invobject.components.drawingtool:GetImageToDraw(act.target, act.doer)
         if image == nil then
             return false, "NOIMAGE"
         end

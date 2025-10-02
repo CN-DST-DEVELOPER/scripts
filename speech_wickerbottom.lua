@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1180,6 +1181,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "This calls for something more formidable.",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "It must be an issue with the receiving end.",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "That insufferable hand appears to be impeding the puzzle's resolution!",
+
 
 	BATTLECRY =
 	{
@@ -5822,6 +5827,7 @@ return{
             BROKEN = "The device is in need of repair.",
             UNPOWERED = "As it is unpowered, this mechanism cannot operate.",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "This orb constitutes an essential component of a particle transfer apparatus.",
         VAULT_LOBBY_EXIT = "This must indeed be the point of egress from these chambers.",
 		VAULT_CHANDELIER_BROKEN = "It would appear substandard workmanship has permitted this chandelier to fall from its mounting.",
@@ -5833,6 +5839,23 @@ return{
 
         TREE_ROCK_SEED = "The seed of the great Boulderbough.",
         TREE_ROCK_SAPLING = "The Boulderbough gradually accumulates minerals from its surroundings, maturing until it may be harvested.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "It appears to be sea debris and remnants from our watercraft.", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "A finely crafted ancient torch.",
+			BROKEN = "The switch appears to be broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "This one is deceased.",
+			GENERIC = "This creature is a hybrid of insect and mineral, possessing the ability to store gas under considerable pressure.",
+			SLEEPING = "It is dormant at the moment.",
+            VENTING = "It is venting gas as a form of attack.", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

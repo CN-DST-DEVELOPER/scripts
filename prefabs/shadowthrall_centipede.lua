@@ -333,6 +333,7 @@ local BODY_DATA = {
 }
 local function torsofn()
     local inst = commonfn(BODY_DATA)
+    inst.scrapbook_proxy = "shadowthrall_centipede_head"
 
     return inst
 end

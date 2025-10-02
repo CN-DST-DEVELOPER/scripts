@@ -429,3 +429,77 @@ function DrawLine(pos1,pos2)
 --]]
 end
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Helper: draws a thick line by offsetting it sideways.
+local function DrawThickLine(draw, x1, z1, x2, z2, a, r, g, b, thickness)
+    -- Direction of the line
+    local dx, dz = x2 - x1, z2 - z1
+    -- Normalize perpendicular
+    local len = math.sqrt(dx * dx + dz * dz)
+    if len == 0 then return end
+    local px, pz = -(dz / len) * thickness, (dx / len) * thickness
+
+    -- Center line
+    draw:Line(x1, z1, x2, z2, a, r, g, b)
+    -- Offset lines
+    draw:Line(x1 + px, z1 + pz, x2 + px, z2 + pz, a, r, g, b)
+    draw:Line(x1 - px, z1 - pz, x2 - px, z2 - pz, a, r, g, b)
+end
+
+local function FlushDebugRender(inst, draw)
+    draw:Flush()
+end
+
+local attack_hitbox_task = nil
+
+function DebugArcAttackHitBox(inst, arc_span, forward_offset, arc_radius, lifetime)
+    SetDebugEntity(inst)
+
+    local draw = inst.DebugRender or inst.entity:AddDebugRender()
+    draw:SetZ(0.1)
+    draw:Flush()
+
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local facing = inst.Transform:GetRotation() * DEGREES
+    local half_angle = (arc_span * 0.5) * DEGREES -- Arc half-angle (arc_span / 2)
+
+    -- Arc center (pushed forward by forward_offset)
+    if forward_offset ~= 0 then
+        x = x + forward_offset * math.cos(facing)
+        z = z - forward_offset * math.sin(facing)
+    end
+
+    local step = 10 * DEGREES -- Resolution of arc (smaller = smoother)
+    local lastx, lastz = nil, nil
+    local thickness = 0.01
+
+    for angle = -half_angle, half_angle + step, step do
+        local theta = facing + angle
+        local px = x + math.cos(theta) * arc_radius
+        local pz = z - math.sin(theta) * arc_radius
+
+        if lastx ~= nil then
+            -- Arc curve
+            DrawThickLine(draw, lastx, lastz, px, pz, 255, 255, 255, 255, thickness)
+        else
+            -- First line
+            DrawThickLine(draw, x, z, px, pz, 255, 50, 50, 255, thickness)
+        end
+
+        lastx, lastz = px, pz
+    end
+
+    -- Last line
+    if lastx ~= nil then
+        DrawThickLine(draw, lastx, lastz, x, z, 255, 50, 50, 255, thickness)
+    end
+
+    if attack_hitbox_task ~= nil then
+        attack_hitbox_task:Cancel()
+    end
+
+    if lifetime ~= nil then
+        attack_hitbox_task = inst:DoTaskInTime(lifetime, FlushDebugRender, draw)
+    end
+end

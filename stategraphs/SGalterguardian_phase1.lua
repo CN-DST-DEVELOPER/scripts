@@ -126,9 +126,7 @@ local events =
             if inst.sg:HasStateTag("shield") then
                 inst.sg:GoToState("shield_hit")
 			elseif not CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) and --hit delay only for projectiles
-					(not inst.sg:HasStateTag("busy") or
-                    inst.sg:HasStateTag("caninterrupt") or
-                    inst.sg:HasStateTag("frozen")) then
+					(not inst.sg:HasStateTag("busy") or inst.sg:HasAnyStateTag("caninterrupt", "frozen")) then
                 inst.sg:GoToState("hit")
             end
         end
@@ -725,7 +723,7 @@ local states =
 
     State{
         name = "shield_end",
-        tags = {"busy"},
+        tags = { "busy", "shield_end" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("shield_pst")

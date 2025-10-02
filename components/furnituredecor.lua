@@ -1,9 +1,5 @@
 local function onenabled(self, enabled)
-    if enabled then
-        self.inst:AddTag("furnituredecor")
-    else
-        self.inst:RemoveTag("furnituredecor")
-    end
+	self.inst:AddOrRemoveTag("furnituredecor", enabled)
 end
 
 local FurnitureDecor = Class(function(self, inst)
@@ -15,7 +11,7 @@ local FurnitureDecor = Class(function(self, inst)
     --self.onputonfurniture = nil
 
     -- NOTE: Recommended to add to pristine state, for optimization.
-    self.inst:AddTag("furnituredecor")
+	--self.inst:AddTag("furnituredecor")
 end,
 nil,
 {
@@ -36,6 +32,12 @@ function FurnitureDecor:PutOnFurniture(furniture)
     if self.onputonfurniture then
         self.onputonfurniture(self.inst, furniture)
     end
+end
+
+function FurnitureDecor:TakeOffFurniture(furniture)
+	if self.ontakeofffurniture then
+		self.ontakeofffurniture(self.inst, furniture)
+	end
 end
 
 return FurnitureDecor

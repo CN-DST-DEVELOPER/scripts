@@ -20,6 +20,7 @@ local Machine = Class(function(self, inst)
 	self.turnofffn = nil
     self.ison = false
 	self.cooldowntime = 3
+	--self.cooldowntask = nil
     self.oncooldown = false
     self.enabled = true
 	--self.groundonly = false
@@ -36,6 +37,10 @@ function Machine:OnRemoveFromEntity()
     self.inst:RemoveTag("turnedon")
     self.inst:RemoveTag("cooldown")
 	self.inst:RemoveTag("groundonlymachine")
+	if self.cooldowntask then
+		self.cooldowntask:Cancel()
+		self.cooldowntask = nil
+	end
 end
 
 function Machine:SetGroundOnlyMachine(groundonly)
@@ -55,12 +60,31 @@ function Machine:OnLoad(data)
 	end
 end
 
-function Machine:TurnOn()
+local function OnCooldownOver(inst)
+	inst.components.machine.oncooldown = false
+end
+
+function Machine:StartCooldown()
 	if self.cooldowntime > 0 then
 		self.oncooldown = true
-		self.inst:DoTaskInTime(self.cooldowntime, function() self.oncooldown = false end)
+		if self.cooldowntask then
+			self.cooldowntask:Cancel()
+		end
+		self.cooldowntask = self.inst:DoTaskInTime(self.cooldowntime, OnCooldownOver)
+		--V2C: don't need to LongUpdate this, is more likely a UX cooldown
 	end
+end
 
+function Machine:StopCooldown()
+	if self.cooldowntask then
+		self.cooldowntask:Cancel()
+		self.cooldowntask = nil
+		self.oncooldown = false
+	end
+end
+
+function Machine:TurnOn()
+	self:StartCooldown()
 	if self.turnonfn then
 		self.turnonfn(self.inst)
 	end
@@ -79,11 +103,7 @@ function Machine:CanInteract()
 end
 
 function Machine:TurnOff()
-	if self.cooldowntime > 0 then
-		self.oncooldown = true
-		self.inst:DoTaskInTime(self.cooldowntime, function() self.oncooldown = false end)
-	end
-
+	self:StartCooldown()
 	if self.turnofffn then
 		self.turnofffn(self.inst)
 	end

@@ -988,6 +988,26 @@ function self:OnPostInit()
 	end
 
 	---------------------------------------------------------------------------
+
+	if self.retrofit_cave_mite_spawners then
+		self.retrofit_cave_mite_spawners = nil
+
+		print("Retrofitting for Cave Vent Mite spawners.")
+		local topology = TheWorld.topology
+		for k = 1, #topology.nodes do
+			local idname = topology.ids[k]
+			if idname:find("BGVentsRoom") or idname:find("VentsRoom") or idname:find("VentsRoom_exit") then
+				RetrofitNewCaveContentPrefab(inst, "cave_vent_mite_spawner", 1, 2, nil, { k })
+			elseif idname:find("FumaroleRetrofit") then
+				for _ = 1, 3 do
+					RetrofitNewCaveContentPrefab(inst, "cave_vent_mite_spawner", 1, 2, nil, { k })
+				end
+			end
+		end
+	end
+
+	---------------------------------------------------------------------------
+
 	if self.requiresreset then
 		print ("Retrofitting: Worldgen retrofitting requires the server to save and restart to fully take effect.")
 		print ("Restarting server in 45 seconds...")
@@ -1034,6 +1054,7 @@ function self:OnLoad(data)
         self.retrofit_rifts6_add_fumarole = data.retrofit_rifts6_add_fumarole or false
 		self.floating_heavyobstaclephysics_fix = data.floating_heavyobstaclephysics_fix or false
 		self.retrofit_missing_retrofits_generated_densities = data.retrofit_missing_retrofits_generated_densities or false
+		self.retrofit_cave_mite_spawners = data.retrofit_cave_mite_spawners or false
     end
 end
 

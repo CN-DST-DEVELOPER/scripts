@@ -1213,7 +1213,6 @@ end
 local function AddTileNodeIdsForArea(world_map, node_index, left, top, width, height)
 	for x = left, left + width do
 		for y = top, top + height do
-            SpawnPrefab("researchlab").Transform:SetPosition(world_map:GetTileCenterPoint(x, y))
 			world_map:SetTileNodeId(x, y, node_index)
 		end
 	end
@@ -2417,7 +2416,7 @@ local function Scrapbook_DefineAnimation(t)
         anim = "kit"
     elseif t.prefab == "lunar_forge_kit" then
         anim = "kit"
-    elseif t:HasTag("tree") and not t:HasTag("ancienttree") and not table.contains({"livingtree", "marsh_tree", "oceantree", "driftwood_tall", "driftwood_small1", "mushtree_tall_webbed"}, t.prefab) then
+    elseif t:HasTag("tree") and not t:HasAnyTag("ancienttree", "rock_tree") and not table.contains({"livingtree", "marsh_tree", "oceantree", "driftwood_tall", "driftwood_small1", "mushtree_tall_webbed"}, t.prefab) then
         anim = "idle_tall"
     elseif t.winter_ornamentid and t:HasTag("lightbattery") then
         anim = t.winter_ornamentid .. "_on"
@@ -4270,4 +4269,10 @@ function d_spawnvaultactors()
     wilson = SpawnPrefab("wilson")
     wilson.Transform:SetPosition(c_findnext("charlie_stage").Transform:GetWorldPosition())
     wilson.components.inventory:Equip(SpawnPrefab("mask_ancient_architecthat"))
+end
+
+function d_debug_arc_attack_hitbox(arc_span, forward_offset, arc_radius, lifetime)
+    local inst = c_select(c_sel(), true)
+
+    DebugArcAttackHitBox(inst, arc_span, forward_offset, arc_radius, lifetime)
 end

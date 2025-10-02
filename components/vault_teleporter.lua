@@ -33,6 +33,7 @@ end
 
 function VaultTeleporter:SetTargetRoomID(roomid)
     self.roomid = roomid
+    self.inst:PushEvent("newvaultteleporterroomid", roomid)
 end
 
 function VaultTeleporter:GetTargetRoomID()

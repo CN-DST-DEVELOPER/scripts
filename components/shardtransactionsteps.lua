@@ -147,14 +147,18 @@ function ShardTransactionSteps:HandleTransactionFinalization(shardpayload)
 
         shardpayload.data.item_record, shardpayload.data.migrationdata = nil, nil
         -- FIXME(JBK): rifts6 if the portal is the ocean exit make it a bundle to stuff this prefab into like a broken elastispaced chest.
-        local creator = { sessionid = migrationdata.sessionid }
-        local item = SpawnPrefab(item_record.prefab, item_record.skinname, item_record.skin_id, creator)
-        item:SetPersistData(item_record.data)
-        local x, y, z = GetMigrationPortalLocation(item, migrationdata, portal)
-        if item.Physics then
-            item.Physics:Teleport(x, y, z)
-        elseif item.Transform then
-            item.Transform:SetPosition(x, y, z)
+        if portal and portal.components.itemstore then
+            portal.components.itemstore:AddItemRecordAndMigrationData(item_record, migrationdata)
+        else
+            local creator = { sessionid = migrationdata.sessionid }
+            local item = SpawnPrefab(item_record.prefab, item_record.skinname, item_record.skin_id, creator)
+            item:SetPersistData(item_record.data)
+            local x, y, z = GetMigrationPortalLocation(item, migrationdata, portal)
+            if item.Physics then
+                item.Physics:Teleport(x, y, z)
+            elseif item.Transform then
+                item.Transform:SetPosition(x, y, z)
+            end
         end
     end
 

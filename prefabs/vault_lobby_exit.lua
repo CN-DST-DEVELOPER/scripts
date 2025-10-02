@@ -77,6 +77,8 @@ local function fn()
         return inst
     end
 
+    inst.scrapbook_facing = FACING_LEFT
+
     inst:AddComponent("inspectable")
 
     local teleporter = inst:AddComponent("teleporter")

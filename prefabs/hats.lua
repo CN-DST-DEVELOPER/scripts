@@ -2604,7 +2604,7 @@ local function MakeHat(name)
 
     ------------------ MASKS
 
-	fns.mask_common = function(custom_init)
+	fns.mask_common = function(custom_init, noburn)
         local inst = simple(custom_init)
 
         inst.components.floater:SetSize("med")
@@ -2619,8 +2619,10 @@ local function MakeHat(name)
         inst:AddComponent("fuel")
         inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
 
-        MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
-        MakeSmallPropagator(inst)
+        if not noburn then
+            MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
+            MakeSmallPropagator(inst)
+        end
 
         return inst
     end
@@ -2640,7 +2642,7 @@ local function MakeHat(name)
 	end
 
 	fns.mask_shadowthrall = function()
-		local inst = fns.mask_common()
+		local inst = fns.mask_common(nil, true)
 
 		if not TheWorld.ismastersim then
 			return inst
@@ -2660,7 +2662,9 @@ local function MakeHat(name)
 	end
 
 	fns.mask_ancient = function()
-		return fns.mask_common(fns.mask_ancient_custom_init)
+		local inst = fns.mask_common(fns.mask_ancient_custom_init, true)
+        inst.scrapbook_specialinfo = nil -- Let the prefab override these ones.
+        return inst
 	end
 
     ---------------------- MONKEY SMALL

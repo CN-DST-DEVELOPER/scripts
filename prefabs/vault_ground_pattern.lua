@@ -19,9 +19,27 @@ local function HideCenter(inst)
 	return inst
 end
 
+local function SetOrientation(inst, orientation)
+	if orientation > 2 and inst.variation < 3 and not inst.nocenter then
+		orientation = orientation - 2
+	end
+	if inst.orientation ~= orientation then
+		inst.orientation = orientation
+		if orientation <= 2 then
+			inst.AnimState:SetScale(1, 1)
+			inst.Transform:SetRotation(orientation == 1 and 0 or 180)
+		else
+			inst.AnimState:SetScale(-1, 1)
+			inst.Transform:SetRotation(orientation == 1 and 90 or -90)
+		end
+	end
+	return inst
+end
+
 local function OnSave(inst, data)
 	data.variation = inst.variation ~= 1 and inst.variation or nil
 	data.nocenter = inst.nocenter or nil
+	data.orientation = inst.orientation ~= 1 and inst.orientation or nil
 end
 
 local function OnLoad(inst, data)--, ents)
@@ -31,6 +49,9 @@ local function OnLoad(inst, data)--, ents)
 		end
 		if data.nocenter then
 			inst:HideCenter()
+		end
+		if data.orientation then
+			inst:SetOrientation(data.orientation)
 		end
 	end
 end
@@ -60,8 +81,10 @@ local function fn()
 	end
 
 	inst.variation = 1
+	inst.orientation = 1
 	inst.SetVariation = SetVariation
 	inst.HideCenter = HideCenter
+	inst.SetOrientation = SetOrientation
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
 

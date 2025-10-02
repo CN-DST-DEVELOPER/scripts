@@ -83,7 +83,7 @@ function Burnable:SetOnIgniteFn(fn)
 end
 
 function Burnable:OnBurnt_Internal()
-    self.inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(self.inst)
 end
 
 --- Set the function that will be called when the object has burned completely

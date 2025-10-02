@@ -154,7 +154,7 @@ local function panelfn()
 
     MakeSnowCovered(inst)
     -- TODO(JBK): The panel needs the workable transfer and so we will not want to have lunarhailbuildup here.
-    inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(inst)
 
     inst.OnSave = onsave
     inst.OnLoad = onload

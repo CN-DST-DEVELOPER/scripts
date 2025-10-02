@@ -382,6 +382,8 @@ local skin_assets =
 	Asset("PKGREF", "anim/dynamic/beargervest_rose.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/beargervest_yule.zip"),
 	Asset("PKGREF", "anim/dynamic/beargervest_yule.dyn"),
+	Asset("DYNAMIC_ANIM", "anim/dynamic/bedroll_furry_bearger.zip"),
+	Asset("PKGREF", "anim/dynamic/bedroll_furry_bearger.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/bedroll_furry_catcoon.zip"),
 	Asset("PKGREF", "anim/dynamic/bedroll_furry_catcoon.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/bedroll_furry_potato.zip"),

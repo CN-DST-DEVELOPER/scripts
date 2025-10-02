@@ -5,6 +5,7 @@ local assets =
 
 local assets_big = {
 	Asset("ANIM", "anim/scrappile.zip"),
+    Asset("SCRIPT", "scripts/prefabs/junk_pile_common.lua"),
 	Asset("MINIMAP_IMAGE", "junk_pile_big"),
 }
 
@@ -16,97 +17,20 @@ local prefabs =
 	"daywalker2",
 }
 
+local junk_common = require("prefabs/junk_pile_common")
+junk_common.AddPrefabDeps(prefabs)
+
 local SIDE_SPAWN_RADIUS = 2
 local SIDE_ANGLE_OFFSET = 36--degrees
 local HEAD_SPAWN_RADIUS = 1.8
 local HEAD_ANGLE_OFFSET = 45--degrees
 
--- Loot copy paste from junk_pile this should be in its own common if they are to remain the same.
-local CRITTER_SPAWN_CHANCE = 0.1
-local LOOT_PERISHABLE_PERCENT = 0.25
-
-local EMPTY = "EMPTY"
-
-local LOOT = {
-    CRITTERS = {
-        { weight=4, prefab = "spider",         targetplayer=true, state="warrior_attack" }, -- 57.14%
-        { weight=1, prefab = "spider_warrior", targetplayer=true, state="warrior_attack" }, -- 14.29%
-        { weight=2, prefab = "catcoon",        targetplayer=true, state="pounceattack"   }, -- 28.57%
-        { weight=2, prefab = "mole",                              state="peek"           }, -- 28.57%
-    },
-
-    ITEMS = {
-        { weight=8, prefab = EMPTY          }, -- 25%
-        { weight=8, prefab = "wagpunk_bits" }, -- 25%
-        { weight=4, prefab = "rocks"        }, -- 12.5%
-        { weight=4, prefab = "log"          }, -- 12.5%
-        { weight=2, prefab = "boards"       }, -- 6.25%
-        { weight=2, prefab = "potato"       }, -- 6.25%
-        { weight=1, prefab = "transistor"   }, -- 3.125%
-        { weight=1, prefab = "trinket_6"    }, -- 3.125%
-        { weight=1, prefab = "blueprint"    }, -- 3.125%
-        { weight=1, prefab = "gears"        }, -- 3.125%
-    },
-}
-
 local FENCE_BLUEPRINT_LOOT = "fence_electric_item_blueprint"
-
-local WEIGHTED_CRITTER_TABLE = {}
-local WEIGHTED_ITEM_TABLE = {}
 
 table.insert(prefabs, FENCE_BLUEPRINT_LOOT)
 
-for _, critter in ipairs(LOOT.CRITTERS) do
-    WEIGHTED_CRITTER_TABLE[critter] = critter.weight
-
-    if critter.prefab ~= EMPTY then
-        table.insert(prefabs, critter.prefab)
-    end
-end
-
-for _, item in ipairs(LOOT.ITEMS) do
-    WEIGHTED_ITEM_TABLE[item] = item.weight
-
-    if item.prefab ~= EMPTY then
-        table.insert(prefabs, item.prefab)
-    end
-end
 local function SpawnLoot(inst, digger, nopickup)
-    if math.random() <= CRITTER_SPAWN_CHANCE then
-        local choice = weighted_random_choice(WEIGHTED_CRITTER_TABLE)
-
-        if choice.prefab ~= nil and choice.prefab ~= EMPTY then
-            local critter = SpawnPrefab(choice.prefab)
-
-            inst.components.lootdropper:FlingItem(critter)
-
-            if choice.targetplayer and critter.components.combat ~= nil then
-                critter.components.combat:SetTarget(digger)
-            end
-
-            SpawnPrefab("junk_break_fx").Transform:SetPosition(critter.Transform:GetWorldPosition())
-
-            if choice.state ~= nil then
-                critter.sg:GoToState(choice.state, digger)
-            end
-        end
-    end
-
-    local choice = weighted_random_choice(WEIGHTED_ITEM_TABLE)
-
-    if choice.prefab ~= nil and choice.prefab ~= EMPTY then
-        local item = SpawnPrefab(choice.prefab)
-
-        if item.components.perishable ~= nil then
-            item.components.perishable:SetPercent(LOOT_PERISHABLE_PERCENT)
-        end
-
-		if not nopickup and digger.components.inventory and digger.components.inventory:IsOpenedBy(digger) then
-            digger.components.inventory:GiveItem(item, nil, inst:GetPosition())
-        else
-            inst.components.lootdropper:FlingItem(item)
-        end
-    end
+    junk_common.SpawnJunkLoot(inst, digger, nopickup)
 end
 
 local LAUNCHSPEED = 3

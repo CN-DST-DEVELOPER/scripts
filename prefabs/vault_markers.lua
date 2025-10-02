@@ -9,6 +9,7 @@ local prefabs =
 	"abysspillar_trial",
 	"ancient_husk",
 	"archive_lockbox_dispencer",
+	"lightsout_trial",
 	"mask_ancient_architecthat",
 	"mask_ancient_handmaidhat",
 	"mask_ancient_masonhat",
@@ -24,6 +25,8 @@ local prefabs =
 	"vault_stool",
 	"vault_switch_base",
 	"vault_table_round",
+    "vaultcollision_lobby",
+    "vaultcollision_vault",
 }
 
 local function UpdateNetvars(inst)

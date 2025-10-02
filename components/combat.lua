@@ -752,6 +752,7 @@ function Combat:GetImpactSound(target, weapon)
             (target:HasTag("veggie") and "vegetable_") or
             (target:HasTag("shell") and "shell_") or
 			(target:HasAnyTag("rocky", "fossil") and "stone_") or
+            target.override_combat_impact_sound or
             nil
         return
             hitsound..(
@@ -799,11 +800,6 @@ function Combat:CanAttack(target)
                 self.ignorehitrange or
                 distsq(target:GetPosition(), self.inst:GetPosition()) <= self:CalcAttackRangeSq(target)
             )
-        and not (   -- gjans: Some specific logic so the birchnutter doesn't attack it's spawn with it's AOE
-                    -- This could possibly be made more generic so that "things" don't attack other things in their "group" or something
-                    self.inst:HasTag("birchnutroot") and
-					target:HasAnyTag("birchnutroot", "birchnut", "birchnutdrake")
-                )
 end
 
 function Combat:LocomotorCanAttack(reached_dest, target)
@@ -821,11 +817,6 @@ function Combat:LocomotorCanAttack(reached_dest, target)
                 not self.inst.sg:HasStateTag("busy") or
                 self.inst.sg:HasStateTag("hit")
             )
-        and not (   -- gjans: Some specific logic so the birchnutter doesn't attack it's spawn with it's AOE
-                    -- This could possibly be made more generic so that "things" don't attack other things in their "group" or something
-                    self.inst:HasTag("birchnutroot") and
-					target:HasAnyTag("birchnutroot", "birchnut", "birchnutdrake")
-                )
 
 	if attackrangesq > 4 and self.inst.isplayer then
         local weapon = self:GetWeapon()

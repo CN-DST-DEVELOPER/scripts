@@ -13,13 +13,17 @@ local SpiderWaterBrain = Class(Brain, function(self, inst)
 end)
 
 local TRADE_DIST = 20
-local GETTRADER_MUST_TAGS = { "player" }
+local TRADE_DIST_SQ = TRADE_DIST * TRADE_DIST
 local function GetTraderFn(inst)
-    return inst.components.trader ~= nil
-        and FindEntity(inst, TRADE_DIST, function(target)
-                return inst.components.trader:IsTryingToTradeWithMe(target)
-            end, GETTRADER_MUST_TAGS)
-        or nil
+    if inst.components.trader ~= nil then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local players = FindPlayersInRangeSq(x, y, z, TRADE_DIST_SQ, true)
+        for _, player in ipairs(players) do
+            if inst.components.trader:IsTryingToTradeWithMe(player) then
+                return player
+            end
+        end
+    end
 end
 
 local function KeepTraderFn(inst, target)

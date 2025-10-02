@@ -1,7 +1,7 @@
 local defs = require("prefabs/vaultroom_defs")
 
 local SAVE_RADIUS = 28
-local SAVE_NO_TAGS = { "INLIMBO", "vault_teleporter" }
+local SAVE_NO_TAGS = { "INLIMBO" }
 local SAVE_CONTAINER_TAGS = { "_inventory", "_container" }
 
 local VaultRoom = Class(function(self, inst)
@@ -51,7 +51,7 @@ local _SKIP = 1
 local _SAVE = 2
 local _KEEP = 3
 local function _getunloadaction(ent, map, tile_x, tile_y)
-	if not ent:IsValid() or ent.entity:GetParent() then
+	if not ent:IsValid() or ent.entity:GetParent() or ent:HasTag("staysthroughvirtualrooms") then
 		return _SKIP
 	end
 

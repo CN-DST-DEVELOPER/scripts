@@ -61,23 +61,20 @@ end
 
 local SHELTERED_MUST_TAGS = { "shelter" }
 local SHELTERED_CANT_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "stump", "burnt" }
-local SHADECANOPY_MUST_TAGS = {"shadecanopy"}
-local SHADECANOPY_SMALL_MUST_TAGS = {"shadecanopysmall"}
 function Sheltered:OnUpdate(dt)
-    local sheltered = false
-    local level = 1    
     self.announcecooldown = math.max(0, self.announcecooldown - dt)
-    local x, y, z = self.inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, 2, SHELTERED_MUST_TAGS, SHELTERED_CANT_TAGS)
-    if #ents > 0 then        
-        sheltered = true
-    end
 
-    local canopy = TheSim:FindEntities(x,y,z, TUNING.SHADE_CANOPY_RANGE, SHADECANOPY_MUST_TAGS)
-    local canopy_small = TheSim:FindEntities(x,y,z, TUNING.SHADE_CANOPY_RANGE_SMALL, SHADECANOPY_SMALL_MUST_TAGS)
-    if #canopy > 0 or #canopy_small > 0 then
+    local sheltered = false
+    local level = 1
+
+    --NOTE: canopytrees is player specific, which is ok for now because sheltered is a player specific component too
+    if self.inst.canopytrees and self.inst.canopytrees > 0 then
         sheltered = true
         level = 2
+    else
+        local x, y, z = self.inst.Transform:GetWorldPosition()
+        local num_sheltered = TheSim:CountEntities(x, y, z, 2, SHELTERED_MUST_TAGS, SHELTERED_CANT_TAGS)
+        sheltered = num_sheltered > 0
     end
 
     self:SetSheltered(sheltered, level)

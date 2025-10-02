@@ -175,14 +175,6 @@ function Combat:CanAttack(target)
         -- V2C: this is 3D distsq
         --      client does not support ignorehitrange for players
         return distsq(target:GetPosition(), self.inst:GetPosition()) <= range * range
-            and not (   -- gjans: Some specific logic so the birchnutter doesn't attack it's spawn with it's AOE
-                        -- This could possibly be made more generic so that "things" don't attack other things in their "group" or something
-                        self.inst:HasTag("birchnutroot") and
-                        (   target:HasTag("birchnutroot") or
-                            target:HasTag("birchnut") or
-                            target:HasTag("birchnutdrake")
-                        )
-                    )
     else
         return false
     end
@@ -204,11 +196,6 @@ function Combat:LocomotorCanAttack(reached_dest, target)
                     not self.inst.sg:HasStateTag("busy") or
                     self.inst.sg:HasStateTag("hit")
                 )
-            and not (   -- gjans: Some specific logic so the birchnutter doesn't attack it's spawn with it's AOE
-                        -- This could possibly be made more generic so that "things" don't attack other things in their "group" or something
-                        self.inst:HasTag("birchnutroot") and
-						target:HasAnyTag("birchnutroot", "birchnut", "birchnutdrake")
-                    )
 
 		if range > 2 and self.inst.isplayer then
             local weapon = self:GetWeapon()
@@ -308,9 +295,6 @@ function Combat:IsValidTarget(target)
             not target:HasTag("spawnprotection") and
             not (target:HasTag("shadow") and self.inst.replica.sanity == nil and not self.inst:HasTag("crazy")) and
             not (target:HasTag("playerghost") and (self.inst.replica.sanity == nil or self.inst.replica.sanity:IsSane()) and not self.inst:HasTag("crazy")) and
-            -- gjans: Some specific logic so the birchnutter doesn't attack it's spawn with it's AOE
-            -- This could possibly be made more generic so that "things" don't attack other things in their "group" or something
-			not (self.inst:HasTag("birchnutroot") and target:HasAnyTag("birchnutroot", "birchnut", "birchnutdrake")) and
 			(TheNet:GetPVPEnabled() or not (self.inst.isplayer and target.isplayer) or (weapon and weapon:HasTag("propweapon"))) and
             target:GetPosition().y <= self._attackrange:value())
 end
@@ -394,10 +378,7 @@ function Combat:CanBeAttacked(attacker)
 
 	if attacker ~= nil then
         --Attacker checks
-		if self.inst:HasTag("birchnutdrake") and attacker:HasAnyTag("birchnutdrake", "birchnutroot", "birchnut") then
-            --Birchnut check
-            return false
-        elseif attacker.isplayer and self.inst:HasTag("noplayertarget") then
+		if attacker.isplayer and self.inst:HasTag("noplayertarget") then
             --Can't be attacked by players
             return false
         elseif attacker ~= self.inst and self.inst.isplayer then

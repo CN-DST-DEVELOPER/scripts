@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1180,6 +1181,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "This foe demands something mightier!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Curses! Why can I not simply march there?",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Curses! I shall hew off thy dark meddling hand!",
+
 
 	BATTLECRY =
 	{
@@ -5822,6 +5827,7 @@ return{
             BROKEN = "Curses! 'Tis stricken!",
             UNPOWERED = "This infernal contraption hath no spark!",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "What purpose hath this blasted bauble?",
         VAULT_LOBBY_EXIT = "I hath no fear in hurling myself headlong into the abyss.",
 		VAULT_CHANDELIER_BROKEN = "Who hath cast thee down from the heavens, little star?",
@@ -5833,6 +5839,23 @@ return{
 
         TREE_ROCK_SEED = "'Tis said this humble seed holds mighty potential.",
         TREE_ROCK_SAPLING = "A greenling that may be of some worth, or so the tale goes.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Sea spoils!", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "A flame to banish the shadows!",
+			BROKEN = "'Tis broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "I shall remember thy foul fumes.",
+			GENERIC = "Come, stinking beast!",
+			SLEEPING = "To slay it in its sleep is simple, swift and without honor.",
+            VENTING = "Spew not they noxious vapors upon me, vile insect!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

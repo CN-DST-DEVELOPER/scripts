@@ -18,6 +18,8 @@ local function fn()
 
     inst:AddTag("molebait")
 
+	inst.pickupsound = "rock"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

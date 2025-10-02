@@ -314,7 +314,8 @@ local POSITIONS = {
 	[9] = {theta = 0,			radius = 2.8},	-- LEFT WIDE
 	[10] = {theta = 1.5*PI,		radius = 2.8},	-- RIGHT WIDE
 	--
-	[11] = {theta = 1.5*PI,		radius = 1.2}, --Special case for A Task Complete, right behind position 3
+	[11] = {theta = 1.5*PI,		radius = 1.2}, 	-- Special case for A Task Complete, right behind position 3
+	[12] = {theta = -PI/8,		radius = 2.2},	-- Special case for A Task Complete, right behind position 2
 }
 
 local function on_findposition_timeout(castmember)
@@ -382,16 +383,62 @@ fns.clear_chalice_symbol = function(inst, line, cast)
 end
 
 fns.override_with_dagger = function(inst, line, cast)
-	for costume, data in pairs(cast) do
-		local player = data.castmember
-		player.AnimState:AddOverrideBuild("player_ancient_handmaid")
+	for i, costume in ipairs(line.roles) do
+		local actor = cast[costume].castmember
+		actor._stage_old_swap_build, actor._stage_old_swap_sym = actor.AnimState:GetSymbolOverride("swap_object")
+		actor.AnimState:OverrideSymbol("swap_object", "vault_dagger", "vault_dagger01")
+        actor.AnimState:Show("ARM_carry")
+        actor.AnimState:Hide("ARM_normal")
 	end
 end
 
 fns.clear_dagger_symbol = function(inst, line, cast)
-	for costume, data in pairs(cast) do
-		local player = data.castmember
-		player.AnimState:ClearOverrideBuild("player_ancient_handmaid")
+	for i, costume in ipairs(line.roles) do
+		local actor = cast[costume].castmember
+		actor.AnimState:ClearOverrideSymbol("swap_object")
+        actor.AnimState:Hide("ARM_carry")
+        actor.AnimState:Show("ARM_normal")
+
+		if actor._stage_old_swap_build then
+			actor.AnimState:OverrideSymbol("swap_object", actor._stage_old_swap_build, actor._stage_old_swap_sym)
+			actor._stage_old_swap_build = nil
+			actor._stage_old_swap_sym = nil
+		end
+	end
+end
+
+fns.do_emote_fx = function(inst, line, cast)
+	for i, costume in ipairs(line.roles) do
+		local actor = cast[costume].castmember
+
+		local fx = SpawnPrefab("emote_fx")
+    	if fx ~= nil then
+    	    if actor.components.rider:IsRiding() then
+    	        fx.Transform:SetSixFaced()
+    	    end
+    	    fx.entity:SetParent(actor.entity)
+    	    fx.entity:AddFollower()
+    	    fx.Follower:FollowSymbol(actor.GUID, "emotefx", 0, 0, 0)
+    	end
+  	end
+end
+
+fns.play_sound_with_delay_fn_constructor = function(delay, sound_name) -- CALL this to create a function!
+    return function(inst, line, cast)
+	    for i, costume in ipairs(line.roles) do
+	    	local actor = cast[costume].castmember
+
+	    	actor:DoTaskInTime(delay, function()
+                actor.SoundEmitter:PlaySound(sound_name)
+            end)
+  	    end
+    end
+end
+
+fns.apply_vault_dagger = function(inst, line, cast)
+	for i, costume in ipairs(line.roles) do
+		local actor = cast[costume].castmember
+		actor.AnimState:OverrideSymbol("vault_dagger01", "vault_dagger", "vault_dagger01")
 	end
 end
 

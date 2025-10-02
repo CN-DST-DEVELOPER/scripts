@@ -21503,8 +21503,9 @@ local states =
             end
 
             if data and data.endidleanim then
-                inst.AnimState:PlayAnimation(data.endidleanim,false)
+                inst.AnimState:PlayAnimation(data.endidleanim, data.loopendidleanim)
                 inst.sg.statemem.endidleanim = data.endidleanim
+                inst.sg.statemem.loopendidleanim = data.loopendidleanim
             elseif type(data) == "string" then
                 inst.AnimState:PlayAnimation(data, false)
                 inst.AnimState:PushAnimation(getidle(),false)
@@ -21516,7 +21517,7 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState("acting_idle",{endidleanim = inst.sg.statemem.endidleanim })
+                inst.sg:GoToState("acting_idle",{endidleanim = inst.sg.statemem.endidleanim, loopendidleanim = inst.sg.statemem.loopendidleanim })
             end),
         },
     },
@@ -21617,6 +21618,7 @@ local states =
 
         onenter = function(inst, data)
             inst.sg.statemem.endidleanim = data.endidleanim
+            inst.sg.statemem.loopendidleanim = data.loopendidleanim
             local loop = false
             if data.animtype == "loop" then
                 loop = true
@@ -21656,7 +21658,10 @@ local states =
             else
                 PlayAnim(data.anim, loop)
             end
-            if data.line then
+
+            if data.do_emote_sound then
+                DoEmoteSound(inst)
+            elseif data.line then
                 DoTalkSound(inst)
             end
         end,
@@ -21666,20 +21671,20 @@ local states =
             EventHandler("donetalking", function(inst)
                 StopTalkSound(inst)
                 if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
-                    inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim})
+                    inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim, loopendidleanim = inst.sg.statemem.loopendidleanim})
                 end
             end),
             EventHandler("animover", function(inst)
                 if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
                     if not inst.sg.statemem.queue then
-                        inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim})
+                        inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim, loopendidleanim = inst.sg.statemem.loopendidleanim})
                     end
                 end
             end),  
             EventHandler("animqueueover", function(inst)
                 if not inst.sg.statemem.loop and not inst.sg.statemem.hold then
                     if inst.sg.statemem.queue then
-                        inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim})
+                        inst.sg:GoToState("acting_idle", {endidleanim=inst.sg.statemem.endidleanim, loopendidleanim = inst.sg.statemem.loopendidleanim})
                     end
                 end
             end),

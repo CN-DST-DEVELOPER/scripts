@@ -201,9 +201,9 @@ local function GetStatus(inst)
 
 	local hasrain = TheWorld.state.israining and inst.components.rainimmunity == nil
 	if prioritystatus == 3 then
-		return hasrain and "DRYINGRAIN" or "DRYING"
+		return hasrain and "DRYINGINRAIN" or "DRYING"
 	elseif prioritystatus == 2 then
-		return hasrain and "DRYINGRAIN_NOTMEAT" or "DRYING_NOTMEAT"
+		return hasrain and "DRYINGINRAIN_NOTMEAT" or "DRYING_NOTMEAT"
 	end
 end
 

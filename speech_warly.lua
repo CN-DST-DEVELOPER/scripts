@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1180,6 +1181,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "I need something... beefier!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Perhaps something is lost in translation.",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "There are too many cooks in this kitchen!",
+
 
 	BATTLECRY =
 	{
@@ -5822,6 +5827,7 @@ return{
             BROKEN = "It is in need of repair.",
             UNPOWERED = "There is no juice.",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Is it a part of something?",
         VAULT_LOBBY_EXIT = "Oh dear, are we meant to jump?",
 		VAULT_CHANDELIER_BROKEN = "Lucky I was not standing under when it fell!",
@@ -5833,6 +5839,23 @@ return{
 
         TREE_ROCK_SEED = "First we plant, then we harvest.",
         TREE_ROCK_SAPLING = "A fine young sapling.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Never know what I might find!", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Mood lighting!",
+			BROKEN = "I'm afraid the switch is broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "It is dead.",
+			GENERIC = "A walking pressure cooker!",
+			SLEEPING = "Perhaps a good time to harvest?",
+            VENTING = "Most unappetizing!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

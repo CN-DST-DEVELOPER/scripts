@@ -4395,6 +4395,15 @@ STRINGS =
 
         CAVE_FERN_WITHERED = "Withered Fern",
         FLOWER_CAVE_WITHERED = "Withered Light Flower",
+
+        -- Rifts 6.1
+
+        OCEANWHIRLBIGPORTAL = "Big Whirlpool",
+        OCEANWHIRLBIGPORTALEXIT = "Ocean Detritus", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH = "Flummoxing Flame",
+
+        CAVE_VENT_MITE = "Geothermite",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -15801,6 +15810,7 @@ STRINGS.VAULT_RUNE = {
 	LORE2 = "\"Through the Keystone, all kin and kind shall fall.\"",
 	LORE3 = "\"Let the cursed Keystone never cross this threshold.\"",
 	PUZZLE1 = "\"Paths are taken but once. Leap wisely, tarry not, or the abyss claims all.\"",
+	PUZZLE2 = "\"Only when all torches burn shall the way be revealed.\"",
 }
 STRINGS.NIGHTMARE_OVERGROWTH = {
     LINE_1 = "\"Forsaken wretches of the one who turned away.\"",
@@ -17655,6 +17665,27 @@ STRINGS.SCRAPBOOK = {
 
         FENCE_ELECTRIC = "\"Transdermal Induction Neurological Galvanic Learning Experience\" Uses electrolunetic technology to deliver shocks to conductive entities.\n\nOnce toggled, the T.I.N.G.L.E. node will search for another nearby node to link to, establishing an electric field between the two.\n\nNo physical harm is done (mental harm is up for debate). Most subjects will flee away after the brief shock.\n\nThe tester is recommended to use insulative gear to avoid this special learning experience!",
         FENCE_ELECTRIC_ITEM = "\"Transdermal Induction Neurological Galvanic Learning Experience\" Uses electrolunetic technology to deliver shocks to conductive entities.\n\nOnce toggled, the T.I.N.G.L.E. node will search for another nearby node to link to, establishing an electric field between the two.\n\nNo physical harm is done (mental harm is up for debate). Most subjects will flee away after the brief shock.\n\nThe tester is recommended to use insulative gear to avoid this special learning experience!",
+
+        -- Rifts 6 and Rifts6.1
+        TREE_ROCK = "The vines uproot more than boulders, depending on where they are planted.",
+        SHADOWTHRALL_CENTIPEDE_HEAD = "Dense and unyielding, it will take great effort to crack its shell.",
+        CAVE_VENT_ROCK = "These vents can billow out more than mere heat.",
+        CAVE_VENT_MITE = "The Fumarole's cycle begins with the Geothermite.",
+        OCEANWHIRLBIGPORTAL = "Hypnotically swirling, ever-drawing, it swallows all caught within its eye.\nHighly destructive to boats and structures alike.",
+        OCEANWHIRLBIGPORTALEXIT = "A heap of sludge. Best dig in!",
+        VAULT_LOBBY_EXIT = "The longer you gaze, the stronger the urge to leap.",
+        VAULT_TELEPORTER = "Flashy transportation. Keep your gaze on the floor if you feel dizzy or disoriented.",
+        VAULT_ORB = "A focus of intent for the Sanctum Waymark, drawing together those beyond.",
+        VAULT_RUNE = "Engraved markings, enduring through eternity. Perhaps decipherable.",
+        VAULT_TORCH = "The flame is calming. If only it would stay lit.",
+        ABYSSPILLAR_MINION = "They block your path. Are they following a pattern?",
+        ABYSSPILLAR_TRIAL = "The urge to pull this lever is... unusually strong.",
+        MASK_ANCIENT_HANDMAIDHAT = "Costume piece used in stage plays.\nShe did what was necessary in service of her Queen.",
+        MASK_ANCIENT_ARCHITECTHAT = "Costume piece used in stage plays.\nIs it better to face the bitter truth or embrace sweet ignorance?",
+        MASK_ANCIENT_MASONHAT = "Costume piece used in stage plays.\nBetrayal begets the darkest of curses.",
+        PLAYBILL_THE_DOLL = "Charlie's version of events.",
+        PLAYBILL_THE_VEIL = "Shady promotional material.",
+        PLAYBILL_THE_VAULT = "A grim testimony from the past, and a foreshadowing of what awaits.",
     },
 
     -- Full name: "{name} Scrapbook Page"

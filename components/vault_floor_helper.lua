@@ -17,7 +17,7 @@ self.vault_origin_z:set(0)
 local scale = TILE_SCALE
 local SIZE_WIDE = 5.75 * scale
 local SIZE_SQUARE = 4.75 * scale
-local SIZE_SKINNY = 1.75 * scale
+local SIZE_SKINNY = 2 * scale -- Extra 0.25 to cover internal corners. Makes the outside nubs a bit bigger but fine.
 
 -- Common.
 

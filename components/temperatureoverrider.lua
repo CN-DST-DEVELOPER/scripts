@@ -26,8 +26,8 @@ function GetTemperatureAtXZ(x, z)
 		end
 	end
 
-	return closest_ent ~= nil
-		and closest_ent.components.temperatureoverrider:GetTemperature()
+	return closest_ent and closest_ent.components.temperatureoverrider:GetTemperature()
+        or TheWorld.net.components.fumarolelocaltemperature and TheWorld.net.components.fumarolelocaltemperature:GetTemperatureAtXZ(x, z)
 		or TheWorld.state.temperature
 end
 

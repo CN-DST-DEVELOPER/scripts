@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1180,6 +1181,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "Pathetic! I need something stronger!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "It's always something with that moon magic.",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Hmm... could you be... trying to help?",
+
 
 	BATTLECRY =
 	{
@@ -5822,6 +5827,7 @@ return{
             BROKEN = "Obviously broken.",
             UNPOWERED = "Figures.",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "It's part of a thing.",
         VAULT_LOBBY_EXIT = "If I must.",
 		VAULT_CHANDELIER_BROKEN = "This place is falling apart.",
@@ -5833,6 +5839,23 @@ return{
 
         TREE_ROCK_SEED = "Do I have to dig in the dirt? With my hands?",
         TREE_ROCK_SAPLING = "These things take forever.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "I'd rather not pick through that.", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "On or off? Make up your mind.",
+			BROKEN = "Of course it's broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Great.",
+			GENERIC = "Leave me alone!",
+			SLEEPING = "Quickly, while it sleeps.",
+            VENTING = "Ugh, I think I swallowed some.", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "You tell me.",

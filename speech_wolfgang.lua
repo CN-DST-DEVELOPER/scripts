@@ -75,6 +75,7 @@ return{
 --fallback to speech_wilson.lua 			REVIVE_FAILED = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 --fallback to speech_wilson.lua 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+--fallback to speech_wilson.lua 			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1181,6 +1182,10 @@ return{
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "Gah! Wolfgang needs something mightier!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Wolfgang confused.",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Get out of here, big shadow hand!",
+
 
 	BATTLECRY =
 	{
@@ -5823,6 +5828,7 @@ return{
             BROKEN = "Maybe we leave it like this.",
             UNPOWERED = "It lacks power!",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "It is not ball for fun.",
         VAULT_LOBBY_EXIT = "Maybe Wolfgang jump last to make sure nobody left behind.",
 		VAULT_CHANDELIER_BROKEN = "That belong on ceiling.",
@@ -5834,6 +5840,23 @@ return{
 
         TREE_ROCK_SEED = "Hello little baby seed. Wolfgang plant you somewhere nice.",
         TREE_ROCK_SAPLING = "One day, you grow big and mighty like Wolfgang!",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Any goodies for Wolfgang in sea garbage pile?", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Oh good, bright light for Wolfgang.",
+			BROKEN = "It is broken?", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Gassy bug is dead.",
+			GENERIC = "Is mitey, not mighty!",
+			SLEEPING = "Shh, gassy bug is sleeping.",
+            VENTING = "Is bad gas!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

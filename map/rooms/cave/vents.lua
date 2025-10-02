@@ -45,7 +45,12 @@ AddRoom("BGVentsRoom", {
     value = WORLD_TILES.VENT,
     type = NODE_TYPE.Background,
     random_node_exit_weight = 1,
+    tags = {"fumarolearea"},
     contents =  {
+        countprefabs =
+        {
+            cave_vent_mite_spawner = 1,
+        },
         distributepercent = .24,
         distributeprefabs =
         {
@@ -71,7 +76,12 @@ AddRoom("VentsRoom", {
     value = WORLD_TILES.VENT,
     random_node_exit_weight = 1,
     --type = NODE_TYPE.Room,
+    tags = {"fumarolearea"},
     contents =  {
+        countprefabs =
+        {
+            cave_vent_mite_spawner = 1,
+        },
         distributepercent = .22,
         distributeprefabs=
         {
@@ -96,6 +106,7 @@ AddRoom("CentipedeNest", {
     random_node_entrance_weight = 0,
     type = NODE_TYPE.Room,
     required_prefabs = {"shadowthrall_centipede_spawner"},
+    tags = {"fumarolearea"},
     contents =  {
         countstaticlayouts =
         {
@@ -126,6 +137,7 @@ AddRoom("RockTreeRoom", {
     value = WORLD_TILES.VENT,
     random_node_exit_weight = 0,
     type = NODE_TYPE.Room,
+    tags = {"fumarolearea"},
     contents =  {
         countprefabs = {
             tree_rock1      = function() return math.random(SIZE_VARIATION) end,
@@ -156,8 +168,12 @@ AddRoom("VentsRoom_exit", {
     value = WORLD_TILES.VENT_NOISE,
 	random_node_entrance_weight = 0,
     --type = NODE_TYPE.Room,
-    tags = {"ExitPiece"},
+    tags = {"ExitPiece", "fumarolearea"},
     contents =  {
+        countprefabs =
+        {
+            cave_vent_mite_spawner = 1,
+        },
 		distributepercent = 0.23,
         distributeprefabs =
         {

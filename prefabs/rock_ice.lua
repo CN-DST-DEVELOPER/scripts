@@ -135,6 +135,21 @@ local function SetStage(inst, stage, source, snap_to_stage)
     inst.stage = STAGES[targetstage].name
     SerializeStage(inst, targetstage, source)
 
+    if inst.stage == "dryup" or inst.stage == "empty" then
+        RemoveLunarHailBuildup(inst)
+    else
+        if not inst.components.lunarhailbuildup then
+            MakeLunarHailBuildup(inst)
+        end
+        if inst.stage == "short" then
+            SetLunarHailBuildupAmountSmall(inst)
+        elseif inst.stage == "medium" then
+            SetLunarHailBuildupAmountMedium(inst)
+        elseif inst.stage == "tall" then
+            SetLunarHailBuildupAmountLarge(inst)
+        end
+    end
+
 	if STAGES[targetstage].isdriedup then
 		if inst.remove_on_dryup then
 			inst.persists = false
@@ -398,7 +413,7 @@ local function rock_ice_fn()
     inst.OnLoad = onload
 
     MakeSnowCovered(inst)
-    SetLunarHailBuildupAmountSmall(inst)
+    --SetLunarHailBuildupAmountSmall(inst) NOTES(JBK): Handled in the SetStage above.
 
     MakeHauntableWork(inst)
 

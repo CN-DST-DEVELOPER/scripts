@@ -173,7 +173,7 @@ local function makestump(inst, instant)
 
     inst:RemoveComponent("sanityaura")
     inst:RemoveComponent("workable")
-    inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(inst)
     inst:RemoveComponent("burnable")
     MakeMediumBurnable(inst)
     inst:RemoveComponent("propagator")

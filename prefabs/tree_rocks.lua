@@ -47,6 +47,19 @@ SetSharedLootTable( 'tree_rock1_mine',
     {'tree_rock_seed', 1.00},
 })
 
+SetSharedLootTable( 'tree_rock1_mine_break',
+{
+    {'rocks',  1.00},
+    {'rocks',  0.50},
+    {'rocks',  0.50},
+    {'nitre',  0.25},
+    {'flint',  1.00},
+    {'nitre',  0.10},
+    {'flint',  0.20},
+    --
+    {'tree_rock_seed', 1.00},
+})
+
 local NUM_VINE_LOOT = 5
 
 local TREE_ROCK_DATA = require("prefabs/tree_rock_data")
@@ -64,7 +77,9 @@ local function GetLootKey(id)
     local task_name, _, room_name = id:match("(.*):(.*):(.*)")
     local loot_key
 
-    if static_layout_name and STATIC_LAYOUTS_TO_LOOT_KEY[static_layout_name] then
+    if id == "START" then
+        loot_key = "FOREST_AREA" -- Default to FOREST_AREA for now.
+    elseif static_layout_name and STATIC_LAYOUTS_TO_LOOT_KEY[static_layout_name] then
         loot_key = STATIC_LAYOUTS_TO_LOOT_KEY[static_layout_name]
     elseif room_name and ROOMS_TO_LOOT_KEY[room_name] then
         loot_key = ROOMS_TO_LOOT_KEY[room_name]
@@ -101,8 +116,6 @@ local function GetLootWeightedTable(inst)
             end
             --
             return weighted_table
-        elseif BRANCH == "dev" then --TODO crash for now!
-            assert(false, "We didn't get a loot key?")
         end
     end
 
@@ -205,14 +218,14 @@ local function ResetSwaySoundTasks(inst)
         inst.sway2_sound_task = inst:DoTaskInTime(SWAY2_TIME, PlaySwaySound)
         inst.AnimState:PlayAnimation(inst.anims.sway1)
     else
-        inst:RemoveEventCallback("animoverqueue", ResetSwaySoundTasks)
+        inst:RemoveEventCallback("animqueueover", ResetSwaySoundTasks)
         inst:RemoveEventCallback("animover", ResetSwaySoundTasks)
     end
 end
 
 local function PushSway(inst)
     inst.AnimState:PushAnimation(inst.anims.sway1, true)
-    --inst:ListenForEvent("animoverqueue", ResetSwaySoundTasks)
+    --inst:ListenForEvent("animqueueover", ResetSwaySoundTasks)
 end
 
 local function Sway(inst)
@@ -521,6 +534,9 @@ local function OnAnimOver(inst)
                     ent:PushEvent("broke_tree_rock", { tree_rock = inst })
                 end
             end
+            --
+            inst.components.lootdropper:SetChanceLootTable("tree_rock1_mine_break")
+            inst.components.lootdropper:DropLoot(inst:GetPosition())
             --
             inst.persists = false
             inst:ListenForEvent("animover", inst.Remove)

@@ -55,6 +55,8 @@ self.players = {}
 self.playersinvault = 0
 self.updateaccumulator = 0
 self.UPDATE_TICK_TIME = 1
+self.UPDATE_ROTATE_ROOMS_COOLDOWN_TICKS_COUNT = 10
+self.updaterotatecooldownticks = self.UPDATE_ROTATE_ROOMS_COOLDOWN_TICKS_COUNT
 
 
 function self:DeclareRoom(roomid, roomindex)
@@ -105,120 +107,255 @@ function self:MakeLinkUnderConstruction(roomid, direction)
 end
 
 ------------------
--- NOTES(JBK): Always declare new rooms with a new roomindex!
--- This is for PRNG use so you do not shift the layout after players have mapped out previous rooms.
--- If a room is to be removed declare the room with an "_unused" suffix to the name but keep the index!
-self:DeclareRoom("mask1", 1) -- Root room always picked first on new world.
-self:DeclareRoom("teleport1", 2)
-self:DeclareRoom("hall3", 3)
-self:DeclareRoom("puzzle1", 4)
-self:DeclareRoom("lore3", 5)
-self:DeclareRoom("key1", 6)
-self:DeclareRoom("hall1", 7)
-self:DeclareRoom("lore1", 8)
-self:DeclareRoom("hall4", 9)
-self:DeclareRoom("hall6", 10)
-self:DeclareRoom("hall2", 11)
-self:DeclareRoom("lore2", 12)
-self:DeclareRoom("hall5", 13)
-self:DeclareRoom("hall7", 14)
-self:DeclareRoom("fountain2", 15)
-self:DeclareRoom("generator1", 16)
-self:DeclareRoom("playbill1", 17)
-self:DeclareRoom("fountain1", 18)
-------------------
-self:LinkRooms("mask1", DIRECTIONS.N, "teleport1", DIRECTIONS.S)
-self:LinkRooms("mask1", DIRECTIONS.S, "lobby", nil)
-self:MakeLinkRigid("mask1", DIRECTIONS.N)
-self:MakeLinkRigid("mask1", DIRECTIONS.S)
+function self:CreateLayoutV1()
+    -- NOTES(JBK): Always declare new rooms with a new roomindex!
+    -- This is for PRNG use so you do not shift the layout after players have mapped out previous rooms.
+    -- If a room is to be removed declare the room with an "_unused" suffix to the name but keep the index!
+    self:DeclareRoom("mask1", 1) -- Root room always picked first on new world.
+    self:DeclareRoom("teleport1", 2)
+    self:DeclareRoom("hall3", 3)
+    self:DeclareRoom("puzzle1", 4)
+    self:DeclareRoom("lore3", 5)
+    self:DeclareRoom("key1", 6)
+    self:DeclareRoom("hall1", 7)
+    self:DeclareRoom("lore1", 8)
+    self:DeclareRoom("hall4", 9)
+    self:DeclareRoom("hall6", 10)
+    self:DeclareRoom("hall2", 11)
+    self:DeclareRoom("lore2", 12)
+    self:DeclareRoom("hall5", 13)
+    self:DeclareRoom("hall7", 14)
+    self:DeclareRoom("fountain2", 15)
+    self:DeclareRoom("generator1", 16)
+    self:DeclareRoom("playbill1", 17)
+    self:DeclareRoom("fountain1", 18)
+    ------------------
+    self:LinkRooms("mask1", DIRECTIONS.N, "teleport1", DIRECTIONS.S)
+    self:LinkRooms("mask1", DIRECTIONS.S, "lobby", nil)
+    self:MakeLinkRigid("mask1", DIRECTIONS.N)
+    self:MakeLinkRigid("mask1", DIRECTIONS.S)
 
-self:LinkRooms("teleport1", DIRECTIONS.N, "hall3", DIRECTIONS.S)
-self:LinkRooms("teleport1", DIRECTIONS.E, "hall2", DIRECTIONS.W)
-self:LinkRooms("teleport1", DIRECTIONS.S, "mask1", DIRECTIONS.N)
-self:LinkRooms("teleport1", DIRECTIONS.W, "hall1", DIRECTIONS.E)
-self:MakeLinkRigid("teleport1", DIRECTIONS.S)
+    self:LinkRooms("teleport1", DIRECTIONS.N, "hall3", DIRECTIONS.S)
+    self:LinkRooms("teleport1", DIRECTIONS.E, "hall2", DIRECTIONS.W)
+    self:LinkRooms("teleport1", DIRECTIONS.S, "mask1", DIRECTIONS.N)
+    self:LinkRooms("teleport1", DIRECTIONS.W, "hall1", DIRECTIONS.E)
+    self:MakeLinkRigid("teleport1", DIRECTIONS.S)
 
-self:LinkRooms("hall3", DIRECTIONS.N, "puzzle1", DIRECTIONS.S)
-self:LinkRooms("hall3", DIRECTIONS.E, "lore2", DIRECTIONS.W)
-self:LinkRooms("hall3", DIRECTIONS.S, "teleport1", DIRECTIONS.N)
-self:LinkRooms("hall3", DIRECTIONS.W, "lore1", DIRECTIONS.E)
+    self:LinkRooms("hall3", DIRECTIONS.N, "puzzle1", DIRECTIONS.S)
+    self:LinkRooms("hall3", DIRECTIONS.E, "lore2", DIRECTIONS.W)
+    self:LinkRooms("hall3", DIRECTIONS.S, "teleport1", DIRECTIONS.N)
+    self:LinkRooms("hall3", DIRECTIONS.W, "lore1", DIRECTIONS.E)
 
-self:LinkRooms("puzzle1", DIRECTIONS.N, "lore3", DIRECTIONS.S)
-self:LinkRooms("puzzle1", DIRECTIONS.E, "hall6", DIRECTIONS.W)
-self:LinkRooms("puzzle1", DIRECTIONS.S, "hall3", DIRECTIONS.N)
-self:LinkRooms("puzzle1", DIRECTIONS.W, "hall5", DIRECTIONS.E)
-self:MakeLinkRigid("puzzle1", DIRECTIONS.N)
-self:MakeLinkRigid("puzzle1", DIRECTIONS.S)
+    self:LinkRooms("puzzle1", DIRECTIONS.N, "lore3", DIRECTIONS.S)
+    self:LinkRooms("puzzle1", DIRECTIONS.E, "hall6", DIRECTIONS.W)
+    self:LinkRooms("puzzle1", DIRECTIONS.S, "hall3", DIRECTIONS.N)
+    self:LinkRooms("puzzle1", DIRECTIONS.W, "hall5", DIRECTIONS.E)
+    self:MakeLinkRigid("puzzle1", DIRECTIONS.N)
+    self:MakeLinkRigid("puzzle1", DIRECTIONS.S)
 
-self:LinkRooms("lore3", DIRECTIONS.N, "key1", DIRECTIONS.S)
-self:LinkRoomsBroken("lore3", DIRECTIONS.E, "generator1", DIRECTIONS.W)
-self:LinkRooms("lore3", DIRECTIONS.S, "puzzle1", DIRECTIONS.N)
-self:LinkRooms("lore3", DIRECTIONS.W, "fountain2", DIRECTIONS.E)
-self:MakeLinkRigid("lore3", DIRECTIONS.N)
-self:MakeLinkRigid("lore3", DIRECTIONS.S)
-self:MakeLinkUnderConstruction("lore3", DIRECTIONS.N) -- TODO(JBK): Remove this when no longer under construction.
+    self:LinkRooms("lore3", DIRECTIONS.N, "key1", DIRECTIONS.S)
+    self:LinkRoomsBroken("lore3", DIRECTIONS.E, "generator1", DIRECTIONS.W)
+    self:LinkRooms("lore3", DIRECTIONS.S, "puzzle1", DIRECTIONS.N)
+    self:LinkRooms("lore3", DIRECTIONS.W, "fountain2", DIRECTIONS.E)
+    self:MakeLinkRigid("lore3", DIRECTIONS.N)
+    self:MakeLinkRigid("lore3", DIRECTIONS.S)
+    self:MakeLinkUnderConstruction("lore3", DIRECTIONS.N) -- TODO(JBK): Remove this when no longer under construction.
 
-self:LinkRoomsBroken("key1", DIRECTIONS.S, "lore3", DIRECTIONS.N)
+    self:LinkRoomsBroken("key1", DIRECTIONS.S, "lore3", DIRECTIONS.N)
 
-self:LinkRooms("hall1", DIRECTIONS.N, "lore1", DIRECTIONS.S)
-self:LinkRooms("hall1", DIRECTIONS.E, "teleport1", DIRECTIONS.W)
-self:LinkRooms("hall1", DIRECTIONS.S, "fountain2", DIRECTIONS.N)
-self:LinkRooms("hall1", DIRECTIONS.W, "playbill1", DIRECTIONS.E)
+    self:LinkRooms("hall1", DIRECTIONS.N, "lore1", DIRECTIONS.S)
+    self:LinkRooms("hall1", DIRECTIONS.E, "teleport1", DIRECTIONS.W)
+    self:LinkRooms("hall1", DIRECTIONS.S, "fountain2", DIRECTIONS.N)
+    self:LinkRooms("hall1", DIRECTIONS.W, "playbill1", DIRECTIONS.E)
 
-self:LinkRooms("lore1", DIRECTIONS.N, "hall5", DIRECTIONS.S)
-self:LinkRooms("lore1", DIRECTIONS.E, "hall3", DIRECTIONS.W)
-self:LinkRooms("lore1", DIRECTIONS.S, "hall1", DIRECTIONS.N)
-self:LinkRooms("lore1", DIRECTIONS.W, "hall4", DIRECTIONS.E)
+    self:LinkRooms("lore1", DIRECTIONS.N, "hall5", DIRECTIONS.S)
+    self:LinkRooms("lore1", DIRECTIONS.E, "hall3", DIRECTIONS.W)
+    self:LinkRooms("lore1", DIRECTIONS.S, "hall1", DIRECTIONS.N)
+    self:LinkRooms("lore1", DIRECTIONS.W, "hall4", DIRECTIONS.E)
 
-self:LinkRooms("hall5", DIRECTIONS.N, "fountain2", DIRECTIONS.S)
-self:LinkRooms("hall5", DIRECTIONS.E, "puzzle1", DIRECTIONS.W)
-self:LinkRooms("hall5", DIRECTIONS.S, "lore1", DIRECTIONS.N)
-self:LinkRooms("hall5", DIRECTIONS.W, "fountain1", DIRECTIONS.E)
+    self:LinkRooms("hall5", DIRECTIONS.N, "fountain2", DIRECTIONS.S)
+    self:LinkRooms("hall5", DIRECTIONS.E, "puzzle1", DIRECTIONS.W)
+    self:LinkRooms("hall5", DIRECTIONS.S, "lore1", DIRECTIONS.N)
+    self:LinkRooms("hall5", DIRECTIONS.W, "fountain1", DIRECTIONS.E)
 
-self:LinkRoomsBroken("fountain2", DIRECTIONS.N, "hall1", DIRECTIONS.S)
-self:LinkRooms("fountain2", DIRECTIONS.E, "lore3", DIRECTIONS.W)
-self:LinkRoomsBroken("fountain2", DIRECTIONS.S, "hall5", DIRECTIONS.N)
-self:LinkRoomsBroken("fountain2", DIRECTIONS.W, "hall7", DIRECTIONS.E)
+    self:LinkRoomsBroken("fountain2", DIRECTIONS.N, "hall1", DIRECTIONS.S)
+    self:LinkRooms("fountain2", DIRECTIONS.E, "lore3", DIRECTIONS.W)
+    self:LinkRoomsBroken("fountain2", DIRECTIONS.S, "hall5", DIRECTIONS.N)
+    self:LinkRoomsBroken("fountain2", DIRECTIONS.W, "hall7", DIRECTIONS.E)
 
-self:LinkRooms("hall2", DIRECTIONS.N, "lore2", DIRECTIONS.S)
-self:LinkRooms("hall2", DIRECTIONS.E, "playbill1", DIRECTIONS.W)
-self:LinkRooms("hall2", DIRECTIONS.S, "generator1", DIRECTIONS.N)
-self:LinkRooms("hall2", DIRECTIONS.W, "teleport1", DIRECTIONS.E)
+    self:LinkRooms("hall2", DIRECTIONS.N, "lore2", DIRECTIONS.S)
+    self:LinkRooms("hall2", DIRECTIONS.E, "playbill1", DIRECTIONS.W)
+    self:LinkRooms("hall2", DIRECTIONS.S, "generator1", DIRECTIONS.N)
+    self:LinkRooms("hall2", DIRECTIONS.W, "teleport1", DIRECTIONS.E)
 
-self:LinkRooms("lore2", DIRECTIONS.N, "hall6", DIRECTIONS.S)
-self:LinkRooms("lore2", DIRECTIONS.E, "hall4", DIRECTIONS.W)
-self:LinkRooms("lore2", DIRECTIONS.S, "hall2", DIRECTIONS.N)
-self:LinkRooms("lore2", DIRECTIONS.W, "hall3", DIRECTIONS.E)
+    self:LinkRooms("lore2", DIRECTIONS.N, "hall6", DIRECTIONS.S)
+    self:LinkRooms("lore2", DIRECTIONS.E, "hall4", DIRECTIONS.W)
+    self:LinkRooms("lore2", DIRECTIONS.S, "hall2", DIRECTIONS.N)
+    self:LinkRooms("lore2", DIRECTIONS.W, "hall3", DIRECTIONS.E)
 
-self:LinkRooms("hall6", DIRECTIONS.N, "generator1", DIRECTIONS.S)
-self:LinkRooms("hall6", DIRECTIONS.E, "fountain1", DIRECTIONS.W)
-self:LinkRooms("hall6", DIRECTIONS.S, "lore2", DIRECTIONS.N)
-self:LinkRooms("hall6", DIRECTIONS.W, "puzzle1", DIRECTIONS.E)
+    self:LinkRooms("hall6", DIRECTIONS.N, "generator1", DIRECTIONS.S)
+    self:LinkRooms("hall6", DIRECTIONS.E, "fountain1", DIRECTIONS.W)
+    self:LinkRooms("hall6", DIRECTIONS.S, "lore2", DIRECTIONS.N)
+    self:LinkRooms("hall6", DIRECTIONS.W, "puzzle1", DIRECTIONS.E)
 
-self:LinkRooms("generator1", DIRECTIONS.N, "hall2", DIRECTIONS.S)
-self:LinkRooms("generator1", DIRECTIONS.E, "hall7", DIRECTIONS.W)
-self:LinkRooms("generator1", DIRECTIONS.S, "hall6", DIRECTIONS.N)
-self:LinkRooms("generator1", DIRECTIONS.W, "lore3", DIRECTIONS.E)
+    self:LinkRooms("generator1", DIRECTIONS.N, "hall2", DIRECTIONS.S)
+    self:LinkRooms("generator1", DIRECTIONS.E, "hall7", DIRECTIONS.W)
+    self:LinkRooms("generator1", DIRECTIONS.S, "hall6", DIRECTIONS.N)
+    self:LinkRooms("generator1", DIRECTIONS.W, "lore3", DIRECTIONS.E)
 
-self:LinkRooms("playbill1", DIRECTIONS.N, "hall4", DIRECTIONS.S)
-self:LinkRooms("playbill1", DIRECTIONS.E, "hall1", DIRECTIONS.W)
-self:LinkRooms("playbill1", DIRECTIONS.S, "hall7", DIRECTIONS.N)
-self:LinkRooms("playbill1", DIRECTIONS.W, "hall2", DIRECTIONS.E)
+    self:LinkRooms("playbill1", DIRECTIONS.N, "hall4", DIRECTIONS.S)
+    self:LinkRooms("playbill1", DIRECTIONS.E, "hall1", DIRECTIONS.W)
+    self:LinkRooms("playbill1", DIRECTIONS.S, "hall7", DIRECTIONS.N)
+    self:LinkRooms("playbill1", DIRECTIONS.W, "hall2", DIRECTIONS.E)
 
-self:LinkRooms("hall4", DIRECTIONS.N, "fountain1", DIRECTIONS.S)
-self:LinkRooms("hall4", DIRECTIONS.E, "lore1", DIRECTIONS.W)
-self:LinkRooms("hall4", DIRECTIONS.S, "playbill1", DIRECTIONS.N)
-self:LinkRooms("hall4", DIRECTIONS.W, "lore2", DIRECTIONS.E)
+    self:LinkRooms("hall4", DIRECTIONS.N, "fountain1", DIRECTIONS.S)
+    self:LinkRooms("hall4", DIRECTIONS.E, "lore1", DIRECTIONS.W)
+    self:LinkRooms("hall4", DIRECTIONS.S, "playbill1", DIRECTIONS.N)
+    self:LinkRooms("hall4", DIRECTIONS.W, "lore2", DIRECTIONS.E)
 
-self:LinkRooms("fountain1", DIRECTIONS.N, "hall7", DIRECTIONS.S)
-self:LinkRooms("fountain1", DIRECTIONS.E, "hall5", DIRECTIONS.W)
-self:LinkRooms("fountain1", DIRECTIONS.S, "hall4", DIRECTIONS.N)
-self:LinkRooms("fountain1", DIRECTIONS.W, "hall6", DIRECTIONS.E)
+    self:LinkRooms("fountain1", DIRECTIONS.N, "hall7", DIRECTIONS.S)
+    self:LinkRooms("fountain1", DIRECTIONS.E, "hall5", DIRECTIONS.W)
+    self:LinkRooms("fountain1", DIRECTIONS.S, "hall4", DIRECTIONS.N)
+    self:LinkRooms("fountain1", DIRECTIONS.W, "hall6", DIRECTIONS.E)
 
-self:LinkRooms("hall7", DIRECTIONS.N, "playbill1", DIRECTIONS.S)
-self:LinkRooms("hall7", DIRECTIONS.E, "fountain2", DIRECTIONS.W)
-self:LinkRooms("hall7", DIRECTIONS.S, "fountain1", DIRECTIONS.N)
-self:LinkRooms("hall7", DIRECTIONS.W, "generator1", DIRECTIONS.E)
+    self:LinkRooms("hall7", DIRECTIONS.N, "playbill1", DIRECTIONS.S)
+    self:LinkRooms("hall7", DIRECTIONS.E, "fountain2", DIRECTIONS.W)
+    self:LinkRooms("hall7", DIRECTIONS.S, "fountain1", DIRECTIONS.N)
+    self:LinkRooms("hall7", DIRECTIONS.W, "generator1", DIRECTIONS.E)
+end
+function self:CreateLayoutV2()
+    -- NOTES(JBK): Always declare new rooms with a new roomindex!
+    -- This is for PRNG use so you do not shift the layout after players have mapped out previous rooms.
+    -- If a room is to be removed declare the room with an "_unused" suffix to the name but keep the index!
+    self:DeclareRoom("mask1", 1) -- Root room always picked first on new world.
+    self:DeclareRoom("teleport1", 2)
+    self:DeclareRoom("hall3", 3)
+    self:DeclareRoom("puzzle1", 4)
+    self:DeclareRoom("lore3", 5)
+    self:DeclareRoom("key1", 6)
+    self:DeclareRoom("hall1", 7)
+    self:DeclareRoom("lore1", 8)
+    self:DeclareRoom("puzzle2", 9)
+    self:DeclareRoom("hall6", 10)
+    self:DeclareRoom("hall2", 11)
+    self:DeclareRoom("lore2", 12)
+    self:DeclareRoom("hall5", 13)
+    self:DeclareRoom("hall7", 14)
+    self:DeclareRoom("fountain2", 15)
+    self:DeclareRoom("generator1", 16)
+    self:DeclareRoom("playbill1", 17)
+    self:DeclareRoom("fountain1", 18)
+    ------------------
+    self:LinkRooms("mask1", DIRECTIONS.N, "teleport1", DIRECTIONS.S)
+    self:LinkRooms("mask1", DIRECTIONS.S, "lobby", nil)
+    self:MakeLinkRigid("mask1", DIRECTIONS.N)
+    self:MakeLinkRigid("mask1", DIRECTIONS.S)
+
+    self:LinkRooms("teleport1", DIRECTIONS.N, "hall3", DIRECTIONS.S)
+    self:LinkRooms("teleport1", DIRECTIONS.E, "hall2", DIRECTIONS.W)
+    self:LinkRooms("teleport1", DIRECTIONS.S, "mask1", DIRECTIONS.N)
+    self:LinkRooms("teleport1", DIRECTIONS.W, "hall1", DIRECTIONS.E)
+    self:MakeLinkRigid("teleport1", DIRECTIONS.S)
+
+    self:LinkRooms("hall3", DIRECTIONS.N, "puzzle1", DIRECTIONS.S)
+    self:LinkRooms("hall3", DIRECTIONS.E, "lore2", DIRECTIONS.W)
+    self:LinkRooms("hall3", DIRECTIONS.S, "teleport1", DIRECTIONS.N)
+    self:LinkRooms("hall3", DIRECTIONS.W, "lore1", DIRECTIONS.E)
+
+    self:LinkRooms("puzzle1", DIRECTIONS.N, "lore3", DIRECTIONS.S)
+    self:LinkRooms("puzzle1", DIRECTIONS.E, "hall6", DIRECTIONS.W)
+    self:LinkRooms("puzzle1", DIRECTIONS.S, "hall3", DIRECTIONS.N)
+    self:LinkRooms("puzzle1", DIRECTIONS.W, "hall5", DIRECTIONS.E)
+    self:MakeLinkRigid("puzzle1", DIRECTIONS.N)
+    self:MakeLinkRigid("puzzle1", DIRECTIONS.S)
+
+    self:LinkRooms("lore3", DIRECTIONS.N, "key1", DIRECTIONS.S)
+    self:LinkRoomsBroken("lore3", DIRECTIONS.E, "generator1", DIRECTIONS.W)
+    self:LinkRooms("lore3", DIRECTIONS.S, "puzzle1", DIRECTIONS.N)
+    self:LinkRooms("lore3", DIRECTIONS.W, "fountain2", DIRECTIONS.E)
+    self:MakeLinkRigid("lore3", DIRECTIONS.N)
+    self:MakeLinkRigid("lore3", DIRECTIONS.S)
+    self:MakeLinkUnderConstruction("lore3", DIRECTIONS.N) -- TODO(JBK): Remove this when no longer under construction.
+
+    self:LinkRoomsBroken("key1", DIRECTIONS.S, "lore3", DIRECTIONS.N)
+
+    self:LinkRooms("hall1", DIRECTIONS.N, "lore1", DIRECTIONS.S)
+    self:LinkRooms("hall1", DIRECTIONS.E, "teleport1", DIRECTIONS.W)
+    self:LinkRooms("hall1", DIRECTIONS.S, "fountain2", DIRECTIONS.N)
+    self:LinkRooms("hall1", DIRECTIONS.W, "playbill1", DIRECTIONS.E)
+
+    self:LinkRooms("lore1", DIRECTIONS.N, "hall5", DIRECTIONS.S)
+    self:LinkRooms("lore1", DIRECTIONS.E, "hall3", DIRECTIONS.W)
+    self:LinkRooms("lore1", DIRECTIONS.S, "hall1", DIRECTIONS.N)
+    self:LinkRooms("lore1", DIRECTIONS.W, "puzzle2", DIRECTIONS.E)
+
+    self:LinkRooms("hall5", DIRECTIONS.N, "fountain2", DIRECTIONS.S)
+    self:LinkRooms("hall5", DIRECTIONS.E, "puzzle1", DIRECTIONS.W)
+    self:LinkRooms("hall5", DIRECTIONS.S, "lore1", DIRECTIONS.N)
+    self:LinkRooms("hall5", DIRECTIONS.W, "fountain1", DIRECTIONS.E)
+
+    self:LinkRoomsBroken("fountain2", DIRECTIONS.N, "hall1", DIRECTIONS.S)
+    self:LinkRooms("fountain2", DIRECTIONS.E, "lore3", DIRECTIONS.W)
+    self:LinkRoomsBroken("fountain2", DIRECTIONS.S, "hall5", DIRECTIONS.N)
+    self:LinkRoomsBroken("fountain2", DIRECTIONS.W, "hall7", DIRECTIONS.E)
+
+    self:LinkRooms("hall2", DIRECTIONS.N, "lore2", DIRECTIONS.S)
+    self:LinkRooms("hall2", DIRECTIONS.E, "playbill1", DIRECTIONS.W)
+    self:LinkRooms("hall2", DIRECTIONS.S, "generator1", DIRECTIONS.N)
+    self:LinkRooms("hall2", DIRECTIONS.W, "teleport1", DIRECTIONS.E)
+
+    self:LinkRooms("lore2", DIRECTIONS.N, "hall6", DIRECTIONS.S)
+    self:LinkRooms("lore2", DIRECTIONS.E, "puzzle2", DIRECTIONS.W)
+    self:LinkRooms("lore2", DIRECTIONS.S, "hall2", DIRECTIONS.N)
+    self:LinkRooms("lore2", DIRECTIONS.W, "hall3", DIRECTIONS.E)
+
+    self:LinkRooms("hall6", DIRECTIONS.N, "generator1", DIRECTIONS.S)
+    self:LinkRooms("hall6", DIRECTIONS.E, "fountain1", DIRECTIONS.W)
+    self:LinkRooms("hall6", DIRECTIONS.S, "lore2", DIRECTIONS.N)
+    self:LinkRooms("hall6", DIRECTIONS.W, "puzzle1", DIRECTIONS.E)
+
+    self:LinkRooms("generator1", DIRECTIONS.N, "hall2", DIRECTIONS.S)
+    self:LinkRooms("generator1", DIRECTIONS.E, "hall7", DIRECTIONS.W)
+    self:LinkRooms("generator1", DIRECTIONS.S, "hall6", DIRECTIONS.N)
+    self:LinkRooms("generator1", DIRECTIONS.W, "lore3", DIRECTIONS.E)
+
+    self:LinkRooms("playbill1", DIRECTIONS.N, "puzzle2", DIRECTIONS.S)
+    self:LinkRooms("playbill1", DIRECTIONS.E, "hall1", DIRECTIONS.W)
+    self:LinkRooms("playbill1", DIRECTIONS.S, "hall7", DIRECTIONS.N)
+    self:LinkRooms("playbill1", DIRECTIONS.W, "hall2", DIRECTIONS.E)
+
+    self:LinkRooms("puzzle2", DIRECTIONS.N, "fountain1", DIRECTIONS.S)
+    self:LinkRooms("puzzle2", DIRECTIONS.E, "lore1", DIRECTIONS.W)
+    self:LinkRooms("puzzle2", DIRECTIONS.S, "playbill1", DIRECTIONS.N)
+    self:LinkRooms("puzzle2", DIRECTIONS.W, "lore2", DIRECTIONS.E)
+    self:MakeLinkRigid("puzzle2", DIRECTIONS.S)
+
+    self:LinkRoomsBroken("fountain1", DIRECTIONS.N, "hall7", DIRECTIONS.S)
+    self:LinkRoomsBroken("fountain1", DIRECTIONS.E, "hall5", DIRECTIONS.W)
+    self:LinkRooms("fountain1", DIRECTIONS.S, "puzzle2", DIRECTIONS.N)
+    self:LinkRoomsBroken("fountain1", DIRECTIONS.W, "hall6", DIRECTIONS.E)
+
+    self:LinkRooms("hall7", DIRECTIONS.N, "playbill1", DIRECTIONS.S)
+    self:LinkRooms("hall7", DIRECTIONS.E, "fountain2", DIRECTIONS.W)
+    self:LinkRooms("hall7", DIRECTIONS.S, "fountain1", DIRECTIONS.N)
+    self:LinkRooms("hall7", DIRECTIONS.W, "generator1", DIRECTIONS.E)
+end
+
+function self:DeleteLayout()
+    self.maxroomindex = 0
+    self.rooms = {}
+end
+local CURRENT_VERSION = 2
+self.version = CURRENT_VERSION
+function self:CreateLayout(version)
+    self:DeleteLayout()
+    if version == 1 then
+        self:CreateLayoutV1()
+    else--if version == 2 then
+        self:CreateLayoutV2()
+    end
+end
+self:CreateLayout(self.version)
 ------------------
 
 
@@ -297,9 +434,27 @@ function self:HideRoom()
     end
 end
 
-function self:CreateTeleporter(shuffleddirection, direction, rigid, underconstruction)
+function self:CreateTeleporter(shuffleddirection, direction, rigid)
     local marker = self.markers[DIRECTIONS_TO_MARKER[shuffleddirection]]
     local x, y, z = marker.Transform:GetWorldPosition()
+    local cx, cy, cz = _map:GetTileCenterPoint(x, y, z)
+    if shuffleddirection == DIRECTIONS.N then
+        if _map:IsImpassableTileAtPoint(cx, cy, cz - TILE_SCALE) then
+            z = z + 0.4
+        end
+    elseif shuffleddirection == DIRECTIONS.E then
+        if _map:IsImpassableTileAtPoint(cx - TILE_SCALE, cy, cz) then
+            x = x + 0.4
+        end
+    elseif shuffleddirection == DIRECTIONS.S then
+        if _map:IsImpassableTileAtPoint(cx, cy, cz + TILE_SCALE) then
+            z = z - 0.4
+        end
+    elseif shuffleddirection == DIRECTIONS.W then
+        if _map:IsImpassableTileAtPoint(cx + TILE_SCALE, cy, cz) then
+            x = x - 0.4
+        end
+    end
 
     local teleporter = SpawnPrefab("vault_teleporter")
     self.teleporters[shuffleddirection] = teleporter
@@ -316,9 +471,6 @@ function self:CreateTeleporter(shuffleddirection, direction, rigid, underconstru
         end
     end
     teleporter:OnPlaced()
-    if underconstruction then
-        teleporter:DoTaskInTime(0, function(inst) inst:MakeUnderConstruction() end) -- Task for network serialization.
-    end
     return teleporter
 end
 
@@ -541,7 +693,7 @@ function self:SetExit(roomdata, direction, link)
 
     local teleporter = self.teleporters[shuffleddirection]
     if not teleporter then
-        teleporter = self:CreateTeleporter(shuffleddirection, direction, link.rigid, link.underconstruction)
+        teleporter = self:CreateTeleporter(shuffleddirection, direction, link.rigid)
     end
     teleporter.components.vault_teleporter:SetTargetMarkerName(markername)
     teleporter.components.vault_teleporter:SetTargetRoomID(roomid)
@@ -583,7 +735,7 @@ end
 function self:GetLobbyToVaultTeleporter()
     local lobby_to_vault_teleporter = self.teleporters["lobby"]
     if not lobby_to_vault_teleporter then
-        lobby_to_vault_teleporter = self:CreateTeleporter("lobby", "lobby", true, nil)
+        lobby_to_vault_teleporter = self:CreateTeleporter("lobby", "lobby", true)
         lobby_to_vault_teleporter.components.vault_teleporter:SetTargetMarkerName(DIRECTIONS_TO_MARKER["vault"])
         lobby_to_vault_teleporter.components.vault_teleporter:SetTargetRoomID(LOBBY_TO_OR_FROM_VAULT)
     end
@@ -594,7 +746,9 @@ function self:SetAllExits(roomdata)
         local link = roomdata.links[direction]
         if link then
             local teleporter = self:SetExit(roomdata, direction, link)
-            if self:IsLinkBroken(roomdata, DIRECTIONS[teleporter.components.vault_teleporter:GetUnshuffledDirectionName()], link) then
+            if link.underconstruction then
+                teleporter:MakeUnderConstruction()
+            elseif self:IsLinkBroken(roomdata, DIRECTIONS[teleporter.components.vault_teleporter:GetUnshuffledDirectionName()], link) then
                 self:BreakTeleporter(teleporter)
                 if not roomdata.vaultroomdata and not self.loadingroom then
                     teleporter:SpawnOrb()
@@ -644,7 +798,7 @@ function self:TeleportEntities(toteleportents, targetteleportmarkername)
 end
 function self:ShowRoom()
     local toteleportents = self._toteleportents
-    local targetteleportmarkername = self._hack_override_dest or self._targetteleportmarkername or DIRECTIONS_TO_MARKER["vault"]
+    local targetteleportmarkername = self._targetteleportmarkername or DIRECTIONS_TO_MARKER["vault"]
     self._toteleportents = nil
     self._targetteleportmarkername = nil
 
@@ -683,23 +837,21 @@ end
 
 
 function self:OnValidMarkers()
-    if not self.PRNG then
-        self.PRNG = PRNG_Uniform(hash(_world.meta.session_identifier))
-        -- NOTES(JBK): Always call the same number of PRNG random if a field does not exist so it is deterministic.
-        for i = 1, self.maxroomindex do
-            local roomdata = self.rooms[i]
-            roomdata.shuffleddirections = shallowcopy(DIRECTIONS_INDEX)
-            for i = DIRECTIONS_INDEX_SIZE, 2, -1 do
-                local j = self.PRNG:RandInt(1, i)
-                if not DEBUG_STATIC_LAYOUT then
-                    local link1 = roomdata.links[i]
-                    local link2 = roomdata.links[j]
-                    if (link1 == nil or not link1.rigid) and (link2 == nil or not link2.rigid) then
-                        roomdata.shuffleddirections[i], roomdata.shuffleddirections[j] = roomdata.shuffleddirections[j], roomdata.shuffleddirections[i]
-                    end
-                end
-            end
-        end
+    local lobbycenter = self:GetVaultLobbyCenterMarker()
+    if not lobbycenter.vaultcollision then
+        local vaultcollision = SpawnPrefab("vaultcollision_lobby")
+        lobbycenter.vaultcollision = vaultcollision
+        local x, y, z = lobbycenter.Transform:GetWorldPosition()
+        vaultcollision.Transform:SetPosition(x, y, z)
+        vaultcollision:ListenForEvent("onremove", function() vaultcollision:Remove() end, lobbycenter)
+    end
+    local vaultcenter = self:GetVaultCenterMarker()
+    if not vaultcenter.vaultcollision then
+        local vaultcollision = SpawnPrefab("vaultcollision_vault")
+        vaultcenter.vaultcollision = vaultcollision
+        local x, y, z = vaultcenter.Transform:GetWorldPosition()
+        vaultcollision.Transform:SetPosition(x, y, z)
+        vaultcollision:ListenForEvent("onremove", function() vaultcollision:Remove() end, vaultcenter)
     end
 
     if self.roomindex == 0 then
@@ -777,7 +929,7 @@ function self:StopTrackingPlayer(player)
     player:RemoveEventCallback("onremove", self.OnPlayerRemove)
     _world:PushEvent("ms_vaultroom_vault_playerleft", player)
     if self.playersinvault == 0 then
-        self._hack_needsreloaded = true
+        self._needsreloaded = true
     end
 end
 function self:TrackPlayer(player)
@@ -789,22 +941,63 @@ function self:TrackPlayer(player)
     self.playersinvault = self.playersinvault + 1
     player:ListenForEvent("onremove", self.OnPlayerRemove)
     _world:PushEvent("ms_vaultroom_vault_playerentered", player)
-    self._hack_needsreloaded = nil
+    self._needsreloaded = nil
 end
 for _, player in ipairs(AllPlayers) do
     self.OnPlayerJoined(_world, player)
 end
 self.inst:ListenForEvent("ms_playerjoined", self.OnPlayerJoined)
 
+------------------
+
+local INITIAL_SEED = hash(TheNet:GetSessionIdentifier())
+self.PRNG = PRNG_Uniform()
+function self:GetPRNGSeed()
+    return self.seed
+end
+function self:SetPRNGSeed(seed)
+    self.seed = seed
+    self.PRNG:SetSeed(seed)
+    self:SetupPRNG()
+end
+function self:SetupPRNG()
+    -- NOTES(JBK): Always call the same number of PRNG random if a field does not exist so it is deterministic.
+    for i = 1, self.maxroomindex do
+        local roomdata = self.rooms[i]
+        roomdata.shuffleddirections = shallowcopy(DIRECTIONS_INDEX)
+        for i = DIRECTIONS_INDEX_SIZE, 2, -1 do
+            local j = self.PRNG:RandInt(1, i)
+            if not DEBUG_STATIC_LAYOUT then
+                local link1 = roomdata.links[i]
+                local link2 = roomdata.links[j]
+                if (link1 == nil or not link1.rigid) and (link2 == nil or not link2.rigid) then
+                    roomdata.shuffleddirections[i], roomdata.shuffleddirections[j] = roomdata.shuffleddirections[j], roomdata.shuffleddirections[i]
+                end
+            end
+        end
+    end
+end
+self:SetPRNGSeed(INITIAL_SEED)
+
+------------------
+
 
 function self:OnUpdate(dt)
     self.updateaccumulator = self.updateaccumulator + dt
     if self.updateaccumulator > self.UPDATE_TICK_TIME then
         self.updateaccumulator = 0
+
+        local aplayerisinanyvault = false
         for _, player in ipairs(AllPlayers) do
             self:TryToAdjustTrackingPlayer(player)
+            if not aplayerisinanyvault then
+                local x, y, z = player.Transform:GetWorldPosition()
+                aplayerisinanyvault = _map:IsPointInAnyVault(x, y, z)
+            end
         end
-        if self.playersinvault == 0 and (self._hack_needsreloaded or self.roomindex ~= 1 or self.resetting) then
+
+        if self.playersinvault == 0 then
+            local targetroom = nil
             if self.resetting then
                 self:SetRoom(nil)
                 for roomindex = 1, self.maxroomindex do
@@ -813,12 +1006,34 @@ function self:OnUpdate(dt)
                         roomdata.vaultroomdata = nil
                     end
                 end
+                if self.version ~= CURRENT_VERSION then
+                    self.version = CURRENT_VERSION
+                    self:CreateLayout(self.version)
+                end
+                self:SetPRNGSeed(self:GetPRNGSeed() + 1)
+                targetroom = 1
+            elseif self._needsreloaded then
+                targetroom = self.roomindex
+            elseif not aplayerisinanyvault then
+                local cooldownticks = self.updaterotatecooldownticks - 1
+                if cooldownticks <= 0 then
+                    self.updaterotatecooldownticks = self.UPDATE_ROTATE_ROOMS_COOLDOWN_TICKS_COUNT
+                    targetroom = math.random(1, self.maxroomindex)
+                    if targetroom == 6 then -- FIXME(JBK): Rifts6.1 super hack room "key1" is not defined yet.
+                        targetroom = 1
+                    end
+                else
+                    self.updaterotatecooldownticks = cooldownticks
+                end
+            elseif self.roomindex ~= 1 then
+                targetroom = 1
             end
-            self._hack_needsreloaded = nil
-            self._hack_override_dest = DIRECTIONS_TO_MARKER["lobby"]
-            self:SetRoom(1)
-            self._hack_override_dest = nil
+            if targetroom then
+                self._targetteleportmarkername = DIRECTIONS_TO_MARKER["lobby"]
+                self:SetRoom(targetroom)
+            end
             self.resetting = nil
+            self._needsreloaded = nil
         end
     end
 end
@@ -828,6 +1043,7 @@ function self:OnSave()
     local data = {
         spawnedlayouts = self.spawnedlayouts,
         resetting = self.resetting,
+        version = self.version,
     }
     local vaultroomdata = {}
     for roomindex = 1, self.maxroomindex do
@@ -842,6 +1058,9 @@ function self:OnSave()
     if next(self.repairedlinks) then
         data.repairedlinks = self.repairedlinks
     end
+    if self.seed ~= INITIAL_SEED then
+        data.seed = self.seed
+    end
     return data
 end
 
@@ -850,19 +1069,29 @@ function self:OnLoad(data)
         return
     end
 
-    if data.vaultroomdata then
-        for roomindex, vaultroomdata in pairs(data.vaultroomdata) do
-            local roomdata = self.rooms[roomindex]
-            roomdata.vaultroomdata = vaultroomdata
-        end
-    end
-
     if data.repairedlinks then
         self.repairedlinks = data.repairedlinks
     end
 
     self.spawnedlayouts = data.spawnedlayouts
     self.resetting = data.resetting
+    if data.seed then
+        self:SetPRNGSeed(data.seed)
+    end
+    self.version = data.version or 1
+    if self.version ~= CURRENT_VERSION then
+        self:CreateLayout(self.version)
+        self:SetPRNGSeed(self:GetPRNGSeed())
+    end
+
+    if data.vaultroomdata then
+        for roomindex, vaultroomdata in pairs(data.vaultroomdata) do
+            local roomdata = self.rooms[roomindex]
+            if roomdata then
+                roomdata.vaultroomdata = vaultroomdata
+            end
+        end
+    end
 end
 
 function self:PlaceStaticLayout(layout, tx, ty)

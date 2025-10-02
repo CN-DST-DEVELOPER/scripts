@@ -11,8 +11,10 @@ UseShield = Class(BehaviourNode, function(self, inst, damageforshield, shieldtim
 
     if data then
         self.dontupdatetimeonattack = data.dontupdatetimeonattack
-        self.dontusecustomanims = not data.usecustomanims
+        self.usecustomanims = data.usecustomanims
         self.dontshieldforfire = data.dontshieldforfire
+        self.checkstategraph = data.checkstategraph
+        self.shouldshieldfn = data.shouldshieldfn -- shouldshieldfn CAN optionally return a time to shield for.
     end
 
     if hidewhenscared then
@@ -47,11 +49,26 @@ function UseShield:TimeToEmerge()
     local t = GetTime()
     return t - self.timelastattacked > self.shieldtime
         and t >= self.scareendtime
+        and (self.shieldendtime == nil or t >= self.shieldendtime)
 end
 
 function UseShield:ShouldShield()
-    return not self.inst.components.health:IsDead()
-        and (self.damagetaken > self.damageforshield or
+    if self.inst.components.health:IsDead() then
+        return false
+    end
+
+    if self.checkstategraph and (self.inst.sg:HasStateTag("busy") and not self.inst.sg:HasStateTag("caninterrupt")) then
+        return false
+    end
+
+    if self.shouldshieldfn then
+        local should_shield, time_to_shield = self.shouldshieldfn(self.inst)
+        if should_shield then
+            return should_shield, time_to_shield or nil
+        end
+    end
+
+    return (self.damagetaken > self.damageforshield or
             (not self.dontshieldforfire and self.inst.components.health.takingfiredamage) or
             self.projectileincoming or
             GetTime() < self.scareendtime)
@@ -61,9 +78,10 @@ function UseShield:OnAttacked(attacker, damage, projectile)
     if not self.inst.sg:HasStateTag("frozen") then
         if not self.dontupdatetimeonattack then
             self.timelastattacked = GetTime()
+            self.shieldendtime = nil -- If we we had a custom shield end time, clear it and rely on time last attacked now.
         end
 
-        if not self.dontusecustomanims and
+        if not self.usecustomanims and
                 self.inst.sg.currentstate.name == "shield" and not projectile then
             self.inst.AnimState:PlayAnimation("hit_shield")
             self.inst.AnimState:PushAnimation("hide_loop")
@@ -82,13 +100,15 @@ function UseShield:OnAttacked(attacker, damage, projectile)
 end
 
 function UseShield:Visit()
-    local combat = self.inst.components.combat
-    local statename = self.inst.sg.currentstate.name
-
     if self.status == READY  then
-		if (self:ShouldShield() or self.inst.sg:HasStateTag("shield")) and not self.inst.sg:HasStateTag("electrocute") then
+        local should_shield, time_to_shield = self:ShouldShield()
+		if (should_shield or self.inst.sg:HasStateTag("shield")) and not self.inst.sg:HasAnyStateTag("electrocute", "shield_end") then
             self.damagetaken = 0
             self.projectileincoming = false
+
+            if time_to_shield then
+                self.shieldendtime = GetTime() + time_to_shield
+            end
 
             if self.dontupdatetimeonattack then
                 -- If we're not updating on attack, we have to update when we

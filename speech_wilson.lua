@@ -85,6 +85,7 @@ return {
 			REVIVE_FAILED = "only_used_by_wanda",
 			WARP_NO_POINTS_LEFT = "only_used_by_wanda",
 			SHARD_UNAVAILABLE = "only_used_by_wanda",
+			NO_TELEPORT_ZONE = "only_used_by_wanda",
 		},
 		CAST_SPELLBOOK =
 		{
@@ -1190,6 +1191,10 @@ return {
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "I need something stronger!",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Maybe there's something wrong on the other side?",
+
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Wait a minute, what is that doing down here?",
+
 
 	BATTLECRY =
 	{
@@ -5844,6 +5849,23 @@ return {
 
         TREE_ROCK_SEED = "It's a seed.",
         TREE_ROCK_SAPLING = "It had a rocky start.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "I sea debris.", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Is that a light switch?",
+			BROKEN = "The switch looks broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "Out of gas!",
+			GENERIC = "What mite it be?",
+			SLEEPING = "Careful, it mite wake up.",
+            VENTING = "It's fuming mad!", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

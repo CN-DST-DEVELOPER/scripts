@@ -135,7 +135,6 @@ local function commonfn()
     inst.Physics:SetSphere(0.25) --FIXME (Omar): Change back to 1 after new behaviours
 
 	inst:AddTag("soulless") -- no wortox souls
-    inst:AddTag("canbetrapped")
     inst:AddTag("bird")
     inst:AddTag("lunar_aligned")
     inst:AddTag("smallcreature")

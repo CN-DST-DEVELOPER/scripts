@@ -120,6 +120,20 @@ local function SetStage(inst, stage, source, snap_to_stage)
     end
 
     inst.stage = STAGES[targetstage].name
+    if inst.stage == "dryup" or inst.stage == "empty" then
+        RemoveLunarHailBuildup(inst)
+    else
+        if not inst.components.lunarhailbuildup then
+            MakeLunarHailBuildup(inst)
+        end
+        if inst.stage == "short" then
+            SetLunarHailBuildupAmountSmall(inst)
+        elseif inst.stage == "medium" then
+            SetLunarHailBuildupAmountMedium(inst)
+        elseif inst.stage == "tall" then
+            SetLunarHailBuildupAmountLarge(inst)
+        end
+    end
 
     if inst.components.workable ~= nil then
         if source == "work" then
@@ -370,7 +384,7 @@ local function fn()
     inst.OnLoad = OnLoad
 
     MakeSnowCovered(inst)
-    SetLunarHailBuildupAmountSmall(inst)
+    --SetLunarHailBuildupAmountSmall(inst) NOTES(JBK): Handled in the SetStage above.
     MakeHauntableWork(inst)
 
     inst:ListenForEvent("timerdone", inst.OnTimerDone)

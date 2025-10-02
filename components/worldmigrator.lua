@@ -251,7 +251,7 @@ function WorldMigrator:OnLoad(data)
 end
 
 function WorldMigrator:GetDebugString()
-    return string.format("ID: %d world: %s (%s) available: %s receives: %d status: %s enabled: %s", self.id or -1, self.linkedWorld or "<nil>", self.auto and "auto" or "manual", tostring(self.linkedWorld and Shard_IsWorldAvailable(self.linkedWorld) or false), self.receivedPortal or -1, self:GetStatusString(), tostring(self.enabled))
+    return string.format("ID: %s world: %s (%s) available: %s receives: %s status: %s enabled: %s", tostring(self.id or "n/a"), self.linkedWorld or "<nil>", self.auto and "auto" or "manual", tostring(self.linkedWorld and Shard_IsWorldAvailable(self.linkedWorld) or false), tostring(self.receivedPortal or "n/a"), self:GetStatusString(), tostring(self.enabled))
 end
 
 return WorldMigrator

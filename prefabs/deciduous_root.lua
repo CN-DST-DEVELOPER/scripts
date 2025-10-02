@@ -31,6 +31,10 @@ local function GiveTarget(inst, data)
     end
 end
 
+local function IsValidAOETarget(guy, inst)
+    return not guy:HasAnyTag("birchnutroot", "birchnut", "birchnutdrake")
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -68,7 +72,7 @@ local function fn()
     inst:ListenForEvent("givetarget", GiveTarget)
 
     inst:AddComponent("combat")
-    inst.components.combat:SetAreaDamage(TUNING.DECID_MONSTER_ROOT_ATTACK_RADIUS)
+    inst.components.combat:SetAreaDamage(TUNING.DECID_MONSTER_ROOT_ATTACK_RADIUS, nil, IsValidAOETarget)
     inst.components.combat:SetDefaultDamage(TUNING.DECID_MONSTER_DAMAGE)
 
     inst:DoTaskInTime(29*FRAMES, function(inst)

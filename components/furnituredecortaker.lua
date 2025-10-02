@@ -34,6 +34,9 @@ local FurnitureDecorTaker = Class(function(self, inst)
         if self.decor_item then
             self.inst:RemoveEventCallback("onremove", self._on_decor_item_removed, self.decor_item)
             self.inst:RemoveEventCallback("onpickup", self._on_decor_item_picked_up, self.decor_item)
+			if self.decor_item.components.furnituredecor then
+				self.decor_item.components.furnituredecor:TakeOffFurniture(self.inst)
+			end
         end
         if self.ondecortaken then
             self.ondecortaken(self.inst, self.decor_item)
@@ -101,6 +104,10 @@ function FurnitureDecorTaker:TakeItem()
         self.enabled = true
         self.inst:RemoveEventCallback("onremove", self._on_decor_item_removed, decor_item)
         self.inst:RemoveEventCallback("onpickup", self._on_decor_item_picked_up, decor_item)
+
+		if decor_item.components.furnituredecor and decor_item:IsValid() then
+			decor_item.components.furnituredecor:TakeOffFurniture(self.inst)
+		end
 
         if self.ondecortaken then
             self.ondecortaken(self.inst, decor_item)

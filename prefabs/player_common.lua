@@ -2083,6 +2083,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("SCRIPT", "scripts/prefabs/skilltree_defs.lua"),
 
         Asset("ANIM", "anim/chalice_swap.zip"),
+        Asset("ANIM", "anim/vault_dagger.zip"),
 
         Asset("ANIM", "anim/player_ancient_handmaid.zip"),
         Asset("ANIM", "anim/player_ancient_architect.zip"),

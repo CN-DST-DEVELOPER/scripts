@@ -195,7 +195,11 @@ local TREE_DEFS =
 
         GROW_CONSTRAINT =
         {
-            TILE = WORLD_TILES.ROCKY,
+            TILE = {
+                [WORLD_TILES.ROCKY] = true,
+                [WORLD_TILES.UNDERROCK] = true,
+                [WORLD_TILES.VENT] = true,
+            },
             SEASON = SEASONS.SUMMER,
         },
 
@@ -258,7 +262,10 @@ local TREE_DEFS =
 
         GROW_CONSTRAINT =
         {
-            TILE = WORLD_TILES.MARSH,
+            TILE = {
+                [WORLD_TILES.MARSH] = true,
+                [WORLD_TILES.MUD] = true,
+            },
             SEASON = SEASONS.WINTER,
         },
 

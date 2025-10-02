@@ -412,6 +412,15 @@ local Wisecracker = Class(function(self, inst)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING"))
     end)
 
+	local lastlightsoutshadowhand
+	inst:ListenForEvent("see_lightsout_shadowhand", function(inst)
+		local t = GetTime()
+		if lastlightsoutshadowhand == nil or lastlightsoutshadowhand + 15 < t then
+			lastlightsoutshadowhand = t
+			inst.components.talker:Say(GetString(inst, "ANNOUNCE_LIGHTSOUT_SHADOWHAND"))
+		end
+	end)
+
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "components/wisecracker").AddQuagmireEventListeners(inst)
     end

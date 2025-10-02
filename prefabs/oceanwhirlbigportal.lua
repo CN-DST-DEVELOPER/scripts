@@ -247,7 +247,6 @@ local function fn()
     inst:AddTag("ignorewalkableplatforms")
     inst:AddTag("oceanwhirlportal")
     inst:AddTag("oceanwhirlbigportal") -- for messagebottlemanager.lua
-    inst:AddTag("FX")
     inst:AddTag("NOCLICK")
 
     inst:SetDeployExtraSpacing(TUNING.OCEANWHIRLBIGPORTAL_RADIUS)
@@ -325,12 +324,15 @@ local function fn()
     return inst
 end
 
+------------------------------------------------------------------------------------
+
 local assets_exit = {
     Asset("ANIM", "anim/bigwaterfall.zip"),
     Asset("ANIM", "anim/moonglass_bigwaterfall_steam.zip"),
+    Asset("ANIM", "anim/flotsam_pickable.zip"),
 }
 
-local function makebigmist(proxy)
+local function makewaterfall(proxy)
     if not proxy then
         return nil
     end
@@ -354,21 +356,140 @@ local function makebigmist(proxy)
 
     inst.Transform:SetFromProxy(proxy.GUID)
 
-    inst.AnimState:SetBuild("moonglass_bigwaterfall_steam")
-    inst.AnimState:SetBank("moonglass_bigwaterfall_steam")
-    inst.AnimState:PlayAnimation("steam_small"..math.random(1,2), true)
-    inst.AnimState:SetLightOverride(0.5)
+    inst.AnimState:SetBuild("bigwaterfall")
+    inst.AnimState:SetBank("bigwaterfall")
+    inst.AnimState:PlayAnimation("idle", true)
 
     proxy:ListenForEvent("onremove", function() inst:Remove() end)
 
     return inst
 end
+local function makebigmist(proxy)
+    if not proxy then
+        return nil
+    end
+
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddFollower()
+    --[[Non-networked entity]]
+
+    local parent = proxy.entity:GetParent()
+    if parent ~= nil then
+        inst.entity:SetParent(parent.entity)
+    end
+
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.Transform:SetFromProxy(proxy.GUID)
+    inst.Follower:SetOffset(0, 5, 0)
+
+    inst.AnimState:SetBuild("moonglass_bigwaterfall_steam")
+    inst.AnimState:SetBank("moonglass_bigwaterfall_steam")
+    inst.AnimState:PlayAnimation("steam_small"..math.random(1,2), true)
+    inst.AnimState:SetLightOverride(0.5)
+    inst.AnimState:SetFinalOffset(2)
+
+    proxy:ListenForEvent("onremove", function() inst:Remove() end)
+
+    return inst
+end
+local function makeflotsam_pool(proxy)
+    if not proxy then
+        return nil
+    end
+
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    --[[Non-networked entity]]
+
+    local parent = proxy.entity:GetParent()
+    if parent ~= nil then
+        inst.entity:SetParent(parent.entity)
+    end
+
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.Transform:SetFromProxy(proxy.GUID)
+
+    inst.AnimState:SetBuild("flotsam_pickable")
+    inst.AnimState:SetBank("flotsam_pickable")
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+    inst.AnimState:SetLayer(LAYER_BACKGROUND)
+    inst.AnimState:PlayAnimation("puddle", true)
+
+    proxy:ListenForEvent("onremove", function() inst:Remove() end)
+
+    return inst
+end
+
 local function initclientfx(inst)
+    makewaterfall(inst)
     makebigmist(inst)
+    makeflotsam_pool(inst)
     TheWorld:PushEvent("ms_registergrottopool", {pool = inst, small = false}) -- Register into the waterfall sound system.
 end
 
 
+
+local function GiveLoot(inst, picker, item)
+    if picker.components.inventory and picker.components.inventory:IsOpenedBy(picker) then
+        picker.components.inventory:GiveItem(item, nil, inst:GetPosition())
+    else
+        inst.components.lootdropper:FlingItem(item)
+    end
+end
+
+local FLOTSAM_SIZES = {
+    [1] = "empty",
+    [2] = "small",
+    [3] = "big",
+}
+local function GetAnimIndex(inst)
+    local numberofitems = inst.components.itemstore:GetNumberOfItems()
+    local animindex = 1
+    if numberofitems >= TUNING.OCEANWHILRBIGPORTALEXIT_ITEMS_TO_MAKE_BIG then
+        animindex = 3
+    elseif numberofitems > 0 then
+        animindex = 2
+    end
+    return animindex
+end
+local function GetAnim(inst)
+    local animindex = GetAnimIndex(inst)
+    local anim = FLOTSAM_SIZES[animindex]
+    return anim
+end
+local function onpickedfn(inst, picker, loot)
+    local items = inst.components.itemstore:GetFirstItems(TUNING.OCEANWHILRBIGPORTALEXIT_LOOT_PER_PICK)
+    if items[1] then
+        local anim = GetAnim(inst)
+        if anim ~= FLOTSAM_SIZES[1] and inst.AnimState:IsCurrentAnimation(anim .. "_idle") then
+            inst.AnimState:PlayAnimation(anim .. "_jiggle", false)
+            inst.AnimState:PushAnimation(anim .. "_idle", true)
+        end
+        for _, item in ipairs(items) do
+            inst:GiveLoot(picker, item)
+        end
+    end
+end
+local function OnItemStoreChangedCount(inst)
+    local anim = GetAnim(inst)
+    inst.components.pickable.caninteractwith = anim ~= FLOTSAM_SIZES[1]
+    inst.AnimState:PlayAnimation(anim .. "_idle", true)
+end
 local function fn_exit()
     local inst = CreateEntity()
 
@@ -379,9 +500,12 @@ local function fn_exit()
 
     inst.MiniMapEntity:SetIcon("oceanwhirlbigportalexit.png")
 
-    inst.AnimState:SetBuild("bigwaterfall")
-    inst.AnimState:SetBank("bigwaterfall")
-    inst.AnimState:PlayAnimation("idle", true)
+    inst.AnimState:SetBuild("flotsam_pickable")
+    inst.AnimState:SetBank("flotsam_pickable")
+    inst.AnimState:SetFinalOffset(1)
+    inst.AnimState:PlayAnimation(FLOTSAM_SIZES[1] .. "_idle", true)
+
+    inst:AddTag("pickable_rummage_str")
 
     if not TheNet:IsDedicated() then
         inst:DoTaskInTime(0, initclientfx)
@@ -392,10 +516,27 @@ local function fn_exit()
         return inst
     end
 
+    inst.scrapbook_anim = "big_idle"
+
     local worldmigrator = inst:AddComponent("worldmigrator")
     worldmigrator.shard_name = "Master" -- SERVER_LEVEL_SHARDS
     worldmigrator:SetID("oceanwhirlbigportal")
     worldmigrator:SetEnabled(false) -- Always closed, one way.
+
+    inst:AddComponent("inspectable")
+
+    local pickable = inst:AddComponent("pickable")
+    pickable.picksound = "dontstarve/wilson/pickup_reeds"
+    pickable.onpickedfn = onpickedfn
+    pickable.caninteractwith = false
+    pickable.donotsavecaninteractwithstate = true
+    pickable:SetUp(nil, 0)
+
+    inst:AddComponent("lootdropper")
+    inst.GiveLoot = GiveLoot
+
+    inst:AddComponent("itemstore")
+    inst:ListenForEvent("itemstore_changedcount", OnItemStoreChangedCount)
 
     return inst
 end

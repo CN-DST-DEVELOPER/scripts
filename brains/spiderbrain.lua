@@ -11,6 +11,7 @@ local BrainCommon = require "brains/braincommon"
 local SEE_FOOD_DIST = 10
 
 local TRADE_DIST = 20
+local TRADE_DIST_SQ = TRADE_DIST * TRADE_DIST
 
 local MAX_WANDER_DIST = 32
 
@@ -23,11 +24,16 @@ local SpiderBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
-local GETTRADER_MUST_TAGS = { "player" }
 local function GetTraderFn(inst)
-    return inst.components.trader ~= nil
-        and FindEntity(inst, TRADE_DIST, function(target) return inst.components.trader:IsTryingToTradeWithMe(target) end, GETTRADER_MUST_TAGS)
-        or nil
+    if inst.components.trader ~= nil then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local players = FindPlayersInRangeSq(x, y, z, TRADE_DIST_SQ, true)
+        for _, player in ipairs(players) do
+            if inst.components.trader:IsTryingToTradeWithMe(player) then
+                return player
+            end
+        end
+    end
 end
 
 local function KeepTraderFn(inst, target)
@@ -36,17 +42,14 @@ local function KeepTraderFn(inst, target)
 end
 
 local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
+local function IsFoodValid(item, inst)
+    return inst.components.eater:CanEat(item)
+        and item:IsOnValidGround()
+        and item:GetTimeAlive() > TUNING.SPIDER_EAT_DELAY
+end
+
 local function EatFoodAction(inst)
-    local target = FindEntity(inst,
-        SEE_FOOD_DIST,
-        function(item)
-            return inst.components.eater:CanEat(item)
-                and item:IsOnValidGround()
-                and item:GetTimeAlive() > TUNING.SPIDER_EAT_DELAY
-        end,
-        nil,
-        EATFOOD_CANT_TAGS
-    )
+    local target = FindEntity(inst, SEE_FOOD_DIST, IsFoodValid, nil, EATFOOD_CANT_TAGS, inst.components.eater:GetEdibleTags())
     return target ~= nil and BufferedAction(inst, target, ACTIONS.EAT) or nil
 end
 

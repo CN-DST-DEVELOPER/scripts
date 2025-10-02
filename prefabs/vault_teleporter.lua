@@ -11,6 +11,8 @@ local prefabs =
 
 --------------------------------------------------------------------------
 
+local LOBBY_TO_OR_FROM_VAULT = "lobby_or_vault"
+
 local DIRS =
 {
 	N = 0,
@@ -102,6 +104,87 @@ local function OnStopChanneling(inst, aborted, channeler)
     TheWorld:PushEvent("ms_vault_teleporter_channel_stop", {inst = inst, doer = channeler})
 end
 
+local function CheckForNearbyGhosts(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local players = FindPlayersInRange(x, y, z, 12, false)
+    for _, player in ipairs(players) do
+        if not inst.nearbyghosts[player] then
+            inst.nearbyghosts[player] = true
+            OnStartChanneling(inst, player)
+        end
+    end
+    for player, _ in pairs(inst.nearbyghosts) do
+        if not table.contains(players, player) then
+            inst.nearbyghosts[player] = nil
+            OnStopChanneling(inst, true, player)
+        end
+    end
+end
+
+local function OnHaunt(inst, doer)
+    if not inst.ghostcountstask then
+        inst.nearbyghosts = {}
+        inst.ghostcountstask = inst:DoPeriodicTask(0.25, inst.CheckForNearbyGhosts)
+        inst:CheckForNearbyGhosts()
+    end
+    return true
+end
+
+local function OnUnHaunt(inst)
+    if inst.ghostcountstask then
+        inst.ghostcountstask:Cancel()
+        inst.ghostcountstask = nil
+    end
+    if inst.nearbyghosts then
+        for player, _ in pairs(inst.nearbyghosts) do
+            inst.nearbyghosts[player] = nil
+            OnStopChanneling(inst, true, player)
+        end
+        inst.nearbyghosts = nil
+    end
+end
+
+local function OnHaunt_ToOrFromVault(inst, doer)
+    inst.nearbyghost = doer
+    OnStartChanneling(inst, inst.nearbyghost)
+    return true
+end
+
+local function OnUnHaunt_ToOrFromVault(inst)
+    if inst.nearbyghost then
+        OnStopChanneling(inst, true, inst.nearbyghost)
+        inst.nearbyghost = nil
+    end
+end
+
+local function UpdateHauntable(inst)
+    if not inst.components.hauntable then
+        return
+    end
+
+    local roomid = inst.components.vault_teleporter:GetTargetRoomID()
+    if roomid == LOBBY_TO_OR_FROM_VAULT then
+        inst.components.hauntable.cooldown = 0.01
+        inst.components.hauntable:SetOnHauntFn(OnHaunt_ToOrFromVault)
+        inst.components.hauntable:SetOnUnHauntFn(OnUnHaunt_ToOrFromVault)
+    else
+        inst.components.hauntable.cooldown = TUNING.HAUNT_COOLDOWN_HUGE
+        inst.components.hauntable:SetOnHauntFn(OnHaunt)
+        inst.components.hauntable:SetOnUnHauntFn(OnUnHaunt)
+    end
+end
+
+local function OnNewVaultTeleporterRoomID(inst, data)
+    inst:UpdateHauntable()
+end
+
+local function AddHauntable(inst)
+    if not inst.components.hauntable then
+        inst:AddComponent("hauntable")
+        inst:UpdateHauntable()
+    end
+end
+
 local function ItemTradeTest(inst, item)
 	return item ~= nil and item.prefab == "vault_orb"
 end
@@ -109,6 +192,7 @@ end
 local function OnAnimOver(inst)
 	inst:RemoveEventCallback("animover", OnAnimOver)
 	inst.components.channelable:SetEnabled(true)
+    inst:AddHauntable()
 	inst.AnimState:PlayAnimation("idle_off", true)
 end
 
@@ -122,6 +206,7 @@ local function OnRepair(inst, giver, item)
 		OnAnimOver(inst)
 	else
 		inst.components.channelable:SetEnabled(false)
+        inst:RemoveComponent("hauntable")
 		inst.AnimState:PlayAnimation("repair")
 		inst.SoundEmitter:PlaySound("rifts6/vault_portal/repair")
 		inst:ListenForEvent("animover", OnAnimOver)
@@ -139,6 +224,7 @@ local function MakeBroken(inst)
 	inst.SoundEmitter:KillSound("loop")
 
 	inst.components.channelable:SetEnabled(false)
+    inst:RemoveComponent("hauntable")
 
 	if inst.components.trader == nil then
 		inst:AddComponent("trader")
@@ -156,6 +242,7 @@ local function MakeUnderConstruction(inst)
 	inst:RemoveTag("trader_repair")
 	inst:RemoveComponent("trader")
 	inst.components.channelable:SetEnabled(false)
+    inst:RemoveComponent("hauntable")
 
 	inst.components.inspectable:SetNameOverride("vault_teleporter_underconstruction")
 	inst.components.inspectable.getstatus = nil
@@ -223,6 +310,11 @@ local function SetPowered(inst, powered)
 		inst.AnimState:PlayAnimation("unpowered")
 	end
     inst.components.channelable:SetEnabled(powered)
+    if powered then
+        inst:AddHauntable()
+    else
+        inst:RemoveComponent("hauntable")
+    end
 end
 
 --V2C: doing this instead of putting the sound on the fx, so we don't have so many sound instances.
@@ -253,6 +345,7 @@ local function fn()
     inst.AnimState:PlayAnimation("idle_off", true)
 
     inst:AddTag("vault_teleporter")
+    inst:AddTag("staysthroughvirtualrooms")
 
 	inst.dircode = net_tinybyte(inst.GUID, "vault_teleporter.dircode", "dircodedirty")
 
@@ -282,6 +375,10 @@ local function fn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus
 
+    inst.AddHauntable = AddHauntable
+    inst.UpdateHauntable = UpdateHauntable
+    inst:AddHauntable()
+
     inst.MakeFixed = MakeFixed
 	inst.MakeBroken = MakeBroken
 	inst.MakeUnderConstruction = MakeUnderConstruction
@@ -290,6 +387,10 @@ local function fn()
     inst.SetPowered = SetPowered
 	inst.OnDepartFx = OnDepartFx
 	inst.OnArriveFx = OnArriveFx
+    inst.CheckForNearbyGhosts = CheckForNearbyGhosts
+
+    inst.OnNewVaultTeleporterRoomID = OnNewVaultTeleporterRoomID
+    inst:ListenForEvent("newvaultteleporterroomid", inst.OnNewVaultTeleporterRoomID)
 
     return inst
 end

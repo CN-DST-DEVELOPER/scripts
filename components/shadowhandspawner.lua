@@ -104,12 +104,20 @@ local NEARFIRE_MUST_TAGS = { "fire" }
 local NEARFIRE_CANT_TAGS = { "_equippable" }
 
 local function SpawnHand(player, params)
-
     if #params.ents > 0 or player.components.age:GetAge() < INITIAL_SPAWN_THRESHOLD then
         --Already spawned, or player is too young, try again next time
         Reschedule(player, params)
         return
-    end
+	elseif _map:IsPointInVaultRoom(player.Transform:GetWorldPosition()) then
+		local vaultroommanager = TheWorld.components.vaultroommanager
+		local room = vaultroommanager and vaultroommanager:GetVaultCenterMarker()
+		if room and room.components.vaultroom and room.components.vaultroom:GetCurrentRoomId() == "puzzle2" then
+			--lights out puzzle room has it's own shadow hand
+			Reschedule(player, params)
+			return
+		end
+	end
+
     local sanity = player.replica.sanity:IsInsanityMode() and player.replica.sanity:GetPercent() or 1
     if sanity > 0.75 then
         --Sanity too high, retry with delay

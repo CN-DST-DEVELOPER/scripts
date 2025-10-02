@@ -197,6 +197,7 @@ PREFAB_SKINS = {
 	},
 	bedroll_furry =
 	{
+		"bedroll_furry_bearger",
 		"bedroll_furry_catcoon",
 		"bedroll_furry_potato",
 		"bedroll_furry_quilt_blue_frost",

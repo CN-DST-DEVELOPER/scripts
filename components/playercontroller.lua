@@ -4537,7 +4537,7 @@ function PlayerController:OnLeftClick(down)
 
     if act.action == ACTIONS.WALKTO then
         local entity_under_mouse = TheInput:GetWorldEntityUnderMouse()
-        if act.target == nil and (entity_under_mouse == nil or entity_under_mouse:HasTag("walkableplatform")) then
+        if act.target == nil and (entity_under_mouse == nil or entity_under_mouse:HasAnyTag("walkableplatform", "walkableperipheral")) then
 			self.startdragtime = t
         end
 	elseif act.action == ACTIONS.DASH then

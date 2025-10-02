@@ -7,11 +7,11 @@ local assets =
     Asset("INV_IMAGE", "decor_flowervase_wilted"),
 }
 
-local function RefreshImage(inst)
+local function DoRefreshImage(inst, hasflower, fresh)
 	local skinname = inst:GetSkinName()
 	local imagename =
-		inst._flower_id and
-		((skinname or "decor_flowervase")..(inst._wilttask and "_flowers" or "_wilted")) or
+		hasflower and
+		((skinname or "decor_flowervase")..(fresh and "_flowers" or "_wilted")) or
 		skinname
 		--nil if it's default empty and unskinned
 
@@ -20,131 +20,67 @@ local function RefreshImage(inst)
 	end
 end
 
-local function flower_vase_updatelight(inst)
-    if inst._wilttask then
-        local remaining = GetTaskRemaining(inst._wilttask) / TUNING.ENDTABLE_FLOWER_WILTTIME
-        inst.Light:SetRadius(1.5 + (1.5 * remaining))
-        inst.Light:SetIntensity(0.4 + (0.4 * remaining))
-        inst.Light:SetFalloff(0.8 + (1 - 1 * remaining))
-    end
+local function RefreshImage(inst)
+	DoRefreshImage(inst, inst.components.vase:HasFlower(), inst.components.vase:HasFreshFlower())
 end
 
-local function flower_vase_lightoff(inst)
-    inst.Light:Enable(false)
+local function OnUpdateLight(inst, radius, intensity, falloff)
+	if radius > 0 then
+		inst.AnimState:SetLightOverride(0.3)
+		inst.Light:SetRadius(radius)
+		inst.Light:SetIntensity(intensity)
+		inst.Light:SetFalloff(falloff)
+		inst.Light:Enable(true)
+	else
+		inst.AnimState:SetLightOverride(0)
+		inst.Light:Enable(false)
+	end
 end
 
-local function flower_vase_ondropped(inst)
-    if inst._flower_id and inst._wilttask and TUNING.VASE_FLOWER_SWAPS[inst._flower_id].lightsource then
-        inst.AnimState:SetLightOverride(0.3)
-        inst.Light:Enable(true)
-        inst._lighttask = inst:DoPeriodicTask(TUNING.ENDTABLE_LIGHT_UPDATE + math.random(), flower_vase_updatelight, 0)
-    else
-        inst.AnimState:SetLightOverride(0)
-        inst.Light:Enable(false)
-    end
-end
-
--- FLOWER WILT/SET
-local function flower_vase_wilt_flower(inst)
-    if inst._hack_do_not_wilt then
-        if inst._wilttask ~= nil then
-            inst._wilttask:Cancel()
-            inst._wilttask = nil
-        end
-        inst._wilttask = inst:DoTaskInTime(inst._hack_do_not_wilt, flower_vase_wilt_flower)
-        return
-    end
-
-    inst.AnimState:ShowSymbol("swap_flower")
-    inst.AnimState:OverrideSymbol("swap_flower", "swap_flower", "f"..tostring(inst._flower_id).."_wilt")
-    inst.AnimState:PlayAnimation("hit")
-    inst.AnimState:PushAnimation("idle")
-
-    if inst._lighttask then
-        inst.Light:Enable(false)
-        inst._lighttask:Cancel()
-        inst._lighttask = nil
-    end
-
-    if inst._wilttask then
-        inst._wilttask:Cancel()
-        inst._wilttask = nil
-    end
-
-	RefreshImage(inst)
-end
-
-local function flower_vase_set_flower(inst, flower_id, wilt_time, giver)
-    if giver and giver.components.sanity and (not inst._flower_id or not inst._wilttask) then
-        local sanity_boost = TUNING.VASE_FLOWER_SWAPS[flower_id].sanityboost
-        if sanity_boost ~= 0 then
-            giver.components.sanity:DoDelta(sanity_boost)
-        end
-    end
-
-    inst._flower_id = flower_id
-
-    inst.AnimState:ShowSymbol("swap_flower")
-    inst.AnimState:OverrideSymbol("swap_flower", "swap_flower", "f"..tostring(flower_id))
-    inst.AnimState:PlayAnimation("hit")
-    inst.AnimState:PushAnimation("idle")
-
-    if inst._lighttask then
-        inst._lighttask:Cancel()
-        inst._lighttask = nil
-    end
-    if not inst.components.inventoryitem:IsHeld() and TUNING.VASE_FLOWER_SWAPS[flower_id].lightsource then
-        inst.AnimState:SetLightOverride(0.3)
-        inst.Light:Enable(true)
-        inst._lighttask = inst:DoPeriodicTask(TUNING.ENDTABLE_LIGHT_UPDATE + math.random(), flower_vase_updatelight, 0)
-        inst._hack_do_not_wilt = nil
-    else
-        inst.AnimState:SetLightOverride(0)
-        inst.Light:Enable(false)
-        inst._hack_do_not_wilt = wilt_time
-    end
-
-    if wilt_time then
-        if inst._wilttask then
-            inst._wilttask:Cancel()
-        end
-        inst._wilttask = inst:DoTaskInTime(wilt_time, flower_vase_wilt_flower)
-    end
-
-	RefreshImage(inst)
+local function OnUpdateFlower(inst, flowerid, fresh)
+	if flowerid then
+		inst.AnimState:ShowSymbol("swap_flower")
+		inst.AnimState:OverrideSymbol("swap_flower", "swap_flower", string.format("f%d%s", flowerid, fresh and "" or "_wilt"))
+	else
+		inst.AnimState:HideSymbol("swap_flower")
+	end
+	if not (POPULATING or inst:IsAsleep()) then
+		inst.AnimState:PlayAnimation("hit")
+		inst.AnimState:PushAnimation("idle", false)
+	end
+	DoRefreshImage(inst, flowerid ~= nil, fresh)
 end
 
 --
-local function flower_vase_ondecorate(inst, giver, item)
-    local item_perishable = item.components.perishable
-    local wilt_time = (item_perishable and item_perishable:GetPercent() or 1) * TUNING.ENDTABLE_FLOWER_WILTTIME
-    local flower_id = GetRandomItem(TUNING.VASE_FLOWER_MAP[item.prefab])
-    flower_vase_set_flower(inst, flower_id, wilt_time, giver)
+local function OnDecorate(inst, giver, item, flowerid)
+	local sanityboost = TUNING.VASE_FLOWER_SWAPS[flowerid].sanityboost
+	if sanityboost ~= 0 and giver and giver.components.sanity and not inst.components.vase:HasFreshFlower() then
+		giver.components.sanity:DoDelta(sanityboost)
+	end
 end
 
 local function flower_vase_lootsetfn(lootdropper)
-    if lootdropper.inst._flower_id then
+	if lootdropper.inst.components.vase:HasFlower() then
         lootdropper:SetLoot({"spoiled_food"})
     end
 end
 
 local function flower_vase_getstatus(inst)
-    return (not inst._flower_id and "EMPTY")
-        or (not inst._wilttask and "WILTED")
-        or (TUNING.VASE_FLOWER_SWAPS[inst._flower_id].lightsource and
-            ((GetTaskRemaining(inst._wilttask) / TUNING.ENDTABLE_FLOWER_WILTTIME) < 0.1 and "OLDLIGHT"
-            or "FRESHLIGHT"))
-        or nil
+	if not inst.components.vase:HasFlower() then
+		return "EMPTY"
+	elseif not inst.components.vase:HasFreshFlower() then
+		return "WILTED"
+	end
+	local wilttime = inst.components.vase:GetTimeToWilt()
+	if wilttime then
+		return wilttime / TUNING.ENDTABLE_FLOWER_WILTTIME < 0.1 and "OLDLIGHT" or "FRESHLIGHT"
+	end
 end
 
 -- BURNABLE
 local function onignite(inst)
     inst.components.vase:Disable()
-    if inst._flower_id then
-        inst._hack_do_not_wilt = nil
-        flower_vase_wilt_flower(inst)
-    end
-
+	inst.components.vase:WiltFlower()
     DefaultBurnFn(inst)
 end
 
@@ -155,62 +91,27 @@ end
 
 local function onburnt(inst)
     inst.components.vase:Disable()
-    if inst._flower_id then
+	if inst.components.vase:HasFlower() then
+		inst.components.vase:ClearFlower()
         inst.components.lootdropper:SpawnLootPrefab("ash")
     end
-    inst._flower_id = nil
-
-    if inst._wilttask then
-        inst._wilttask:Cancel()
-        inst._wilttask = nil
-    end
-
-    inst.Light:Enable(false)
-    if inst._lighttask then
-        inst._lighttask:Cancel()
-        inst._lighttask = nil
-    end
-
-    inst.AnimState:HideSymbol("swap_flower")
-    inst.AnimState:SetLightOverride(0)
 
     -- This will also spawn an ash, so we spawn 2 if there was a flower in the vase.
     DefaultBurntFn(inst)
 end
 
---
-local function OnLongUpdate(inst, dt)
-    if inst._wilttask then
-        local time_remaining = GetTaskRemaining(inst._wilttask) - dt
-        inst._wilttask:Cancel()
-
-        if time_remaining > 0 then
-            inst._wilttask = inst:DoTaskInTime(time_remaining, flower_vase_wilt_flower)
-        else
-            flower_vase_wilt_flower(inst)
-        end
-    end
+local function OnDeconstruct(inst)
+	if inst.components.vase and inst.components.vase:HasFlower() then
+		inst.components.lootdropper:SpawnLootPrefab("spoiled_food")
+	end
 end
 
 -- SAVE/LOAD
-local function OnSave(inst, data)
-    data.flower_id = inst._flower_id
-    if inst._wilttask then
-        data.wilt_time = GetTaskRemaining(inst._wilttask)
-    end
-end
-
 local function OnLoad(inst, data)
-    if not data then return end
-
-    if data.flower_id then
-        if data.wilt_time then
-            flower_vase_set_flower(inst, data.flower_id, data.wilt_time)
-        else
-            inst._flower_id = data.flower_id
-            flower_vase_wilt_flower(inst)
-        end
-    end
+	--backward compatible savedata
+	if data and data.flower_id then
+		inst.components.vase:SetFlower(data.flower_id, data.wilt_time or 0)
+	end
 end
 
 --
@@ -231,7 +132,11 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:HideSymbol("swap_flower")
 
-    inst:AddTag("furnituredecor") -- From "furnituredecor", for optimization
+	--furnituredecor (from furnituredecor component) added to pristine state for optimization
+	inst:AddTag("furnituredecor")
+
+	--vase (from vase component) added to pristine state for optimization
+	inst:AddTag("vase")
 
     inst.Light:SetFalloff(0.9)
     inst.Light:SetIntensity(.5)
@@ -246,13 +151,8 @@ local function fn()
         return inst
     end
 
-    --inst._flower_id = nil
-    --inst._wilttask = nil
-    --inst._lighttask = nil
-
     --
     local furnituredecor = inst:AddComponent("furnituredecor")
-    furnituredecor.onputonfurniture = flower_vase_ondropped
 
     --
     local inspectable = inst:AddComponent("inspectable")
@@ -260,8 +160,6 @@ local function fn()
 
     --
     local inventoryitem = inst:AddComponent("inventoryitem")
-    inventoryitem:SetOnDroppedFn(flower_vase_ondropped)
-    inventoryitem:SetOnPutInInventoryFn(flower_vase_lightoff)
 
     --
     local lootdropper = inst:AddComponent("lootdropper")
@@ -269,7 +167,9 @@ local function fn()
 
     --
     local vase = inst:AddComponent("vase")
-    vase.ondecorate = flower_vase_ondecorate
+	vase:SetOnUpdateFlowerFn(OnUpdateFlower)
+	vase:SetOnUpdateLightFn(OnUpdateLight)
+	vase:SetOnDecorateFn(OnDecorate)
 
     --
     MakeHauntable(inst)
@@ -282,9 +182,9 @@ local function fn()
 
     MakeSmallPropagator(inst)
 
+	inst:ListenForEvent("ondeconstructstructure", OnDeconstruct)
+
     --
-    inst.OnLongUpdate = OnLongUpdate
-    inst.OnSave = OnSave
     inst.OnLoad = OnLoad
 
 	inst.RefreshImage = RefreshImage --used by prefabskin.lua as well, to support reskin_tool

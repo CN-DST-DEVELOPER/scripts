@@ -78,13 +78,15 @@ local function OnCameraUpdate_LargeDist_Client(dt) -- Camera moved at least a go
     local to_detach = {}
     --
     for miasmacloud, _ in pairs(_MiasmaCloudEntities) do
-        if
-            miasmacloud.entity:FrustumCheckWithAABB(10, 10) and
-            ThePlayer:GetDistanceSqToInst(miasmacloud) < radius_sq_allow
-        then
-            table.insert(to_attach, miasmacloud)
-        else
-            table.insert(to_detach, miasmacloud)
+        if not miasmacloud.camera_update_task then
+            if
+                miasmacloud.entity:FrustumCheckWithAABB(10, 10) and
+                ThePlayer:GetDistanceSqToInst(miasmacloud) < radius_sq_allow
+            then
+                table.insert(to_attach, miasmacloud)
+            else
+                table.insert(to_detach, miasmacloud)
+            end
         end
     end
     -- 
@@ -106,6 +108,8 @@ local function OnCameraUpdate_LargeDist_Targeted_Client(miasmacloud)
     else
         miasmacloud:DetachParticles()
     end
+
+    miasmacloud.camera_update_task = nil
 end
 local function OnCameraUpdate_Targeted_Client(miasmacloud)
     local heading = TheCamera:GetHeading()
@@ -538,7 +542,7 @@ local function fn()
         end
 
         if TheCamera then
-            inst:DoTaskInTime(0, OnCameraUpdate_LargeDist_Targeted_Client) --For it to be placed first before we do frustum check
+            inst.camera_update_task = inst:DoTaskInTime(0, OnCameraUpdate_LargeDist_Targeted_Client) --For it to be placed first before we do frustum check
             OnCameraUpdate_Targeted_Client(inst)
         end
         _MiasmaCloudEntities[inst] = true

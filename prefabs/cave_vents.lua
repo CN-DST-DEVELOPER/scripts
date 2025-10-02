@@ -1,6 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/cave_vent.zip"),
+    Asset("ANIM", "anim/cave_vent_fx.zip"),
     Asset("MINIMAP_IMAGE", "cave_vent_rock"),
 }
 
@@ -154,12 +155,18 @@ local function GetSpewTime(inst)
     return GetRandomWithVariance(data.spew_time_base, data.spew_time_variance)
 end
 
+local STATES_TO_SOUNDS = {
+    ["low"] = "rifts6/creatures/rockspider/spew_1_mite",
+    ["med"] = "rifts6/fissure/spew_2",
+    ["full"] = "rifts6/fissure/spew_3",
+}
+
 local function PlaySpewAnimation(inst)
     if not inst:IsAsleep() then
         local state = GetWorkState(inst)
         inst.AnimState:PlayAnimation(state.."_geyser")
         inst.AnimState:PushAnimation(state)
-        inst.SoundEmitter:PlaySound("rifts6/fissure/spew")
+        inst.SoundEmitter:PlaySound(STATES_TO_SOUNDS[state])
     end
 end
 
@@ -368,7 +375,7 @@ local function rock_fn()
     inst.AnimState:PlayAnimation("full")
     inst.AnimState:HideSymbol("red_vents")
     inst.AnimState:SetSymbolLightOverride("red_vents", 1)
-    --inst.AnimState:SetSymbolBloom("red_vents") -- To allow it to pass through the miasma visual? But shadow stuff doesn't have bloom.
+    inst.AnimState:AddOverrideBuild("cave_vent_fx")
 
     inst:SetPrefabNameOverride("cave_vent_rock")
 
@@ -387,7 +394,7 @@ local function rock_fn()
     inst.ventilation_type = VENT_TYPES.NONE
 
     local color = 0.5 + math.random() * 0.5
-    inst.AnimState:SetSymbolMultColour("vents_base", color, color, color, 1)
+    inst.AnimState:SetSymbolMultColour("vent_part", color, color, color, 1)
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('cave_vent_rock')
@@ -395,6 +402,7 @@ local function rock_fn()
     inst:AddComponent("heater")
     inst.components.heater:SetShouldFalloff(false)
     inst.components.heater.heatfn = GetHeat
+    inst.components.heater.heatrate = 5
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus

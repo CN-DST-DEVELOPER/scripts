@@ -133,7 +133,13 @@ local function AddTable(results, prefab_name, data)
         inst.AnimState:PlayAnimation("idle")
         inst.AnimState:SetFinalOffset(-1)
 
-        inst.Transform:SetFourFaced()
+		if data.facings == 0 then
+			inst.Transform:SetNoFaced()
+		elseif data.facings == 8 then
+			inst.Transform:SetEightFaced()
+		else
+			inst.Transform:SetFourFaced()
+		end
 
         inst:AddTag("decortable")
         inst:AddTag("structure")
@@ -205,6 +211,7 @@ AddTable(
     {
         bank = "wood_table",
         build = "wood_table_round",
+		facings = 0,
         deploy_smart_radius = 0.875,
         burnable = true,
         inspection_override = "WOOD_TABLE",
@@ -229,6 +236,7 @@ AddTable(
     {
         bank = "wood_table",
         build = "stone_table_round",
+		facings = 0,
         deploy_smart_radius = 0.875,
         burnable = false,
         inspection_override = "STONE_TABLE",

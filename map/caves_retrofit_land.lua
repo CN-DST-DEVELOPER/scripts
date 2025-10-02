@@ -191,7 +191,7 @@ local function FromBeyondRetrofitting_Fumarole(world_map, savedata)
     local foundarea, top, left = FindOpenArea(world_map, map_width, map_height, main_area_size, main_area_size)
     if foundarea then
 		local FUMAROLE_ID = "FumaroleRetrofit:0:Chasm"
-        local tags = {}
+        local tags = { "fumarolearea" }
         local topology_node_index = AddTopologyData(topology, left * TILE_SCALE - (map_width * 0.5 * TILE_SCALE), top * TILE_SCALE - (map_height * 0.5 * TILE_SCALE), main_area_size * TILE_SCALE, main_area_size * TILE_SCALE, FUMAROLE_ID, tags)
         AddTileNodeIdsForArea(world_map, topology_node_index, left + main_area_size + 1, top + main_area_size + 1, main_area_size - 1, main_area_size - 1)
 

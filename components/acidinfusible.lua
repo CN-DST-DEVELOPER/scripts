@@ -123,6 +123,10 @@ end
 
 function AcidInfusible:SetFXLevel(level)
     self.fxlevel = level
+
+    if self._fx ~= nil then
+        self._fx:SetLevel(self.fxlevel)
+    end
 end
 
 --------------------------------------------------------------------------

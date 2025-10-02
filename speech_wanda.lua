@@ -1182,6 +1182,10 @@ return{
     ANNOUNCE_WEAPON_TOOWEAK = "Oh botheration! I'll need something stronger than this...",
     ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Now this is rather annoying.",
 
+	-- Rift 6.1
+	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "That's strange. You don't belong down here.",
+
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -5823,17 +5827,35 @@ return{
             BROKEN = "It's plain to see it's broken.",
             UNPOWERED = "I knew I forgot something.",
         },
+--fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "This is the functional piece.",
         VAULT_LOBBY_EXIT = "Sure, why not?",
 		VAULT_CHANDELIER_BROKEN = "I'm surprised it stayed up that long in the first place.",
 
-		ANCIENT_HUSK = "Some scenes I'd rather forget.",
+		ANCIENT_HUSK = "How awful.",
 		MASK_ANCIENT_HANDMAIDHAT = "It reminds me of someone with authority.",
 		MASK_ANCIENT_ARCHITECTHAT = "Looks rather familiar.",
 		MASK_ANCIENT_MASONHAT = "A mask like this is earned through years of hard labor.",
 
         TREE_ROCK_SEED = "I could plant this anywhere.",
         TREE_ROCK_SAPLING = "It has its whole life ahead of it.",
+
+        -- Rifts 6.1
+        OCEANWHIRLBIGPORTALEXIT = "Not how I want to spend my time.", -- The flotsam pickable not the waterfall.
+
+		VAULT_TORCH =
+		{
+			GENERIC = "Is there an order to this.",
+			BROKEN = "It's broken.", --the torch still functions, just the lever is broken
+		},
+
+        CAVE_VENT_MITE =
+		{
+			DEAD = "That's the end of that.",
+			GENERIC = "I was hoping not to see or smell you again.",
+			SLEEPING = "That's one way to pass the time.",
+            VENTING = "Disgusting.", -- in the shield state and venting out gasses
+        },
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

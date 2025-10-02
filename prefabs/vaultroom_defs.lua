@@ -149,6 +149,70 @@ end
 
 --------------------------------------------------------------------------
 
+defs["puzzle2"] = {}
+
+defs.puzzle2.TerraformRoomAtXZ = function(inst, x, z)
+	local terraformer = Terraformer()
+	for row = -4, 4 do
+		for col = -4, 4 do
+			if row >= 3 or math.abs(col) >= (row <= -3 and 2 or 3) then
+				terraformer:EraseTile(col, row)
+			end
+		end
+	end
+	terraformer:ApplyAtXZ(x, z)
+end
+
+defs.puzzle2.LayoutNewRoomAtXZ = function(inst, x, z)
+	--runes
+	local rune = SpawnPrefab("vault_rune")
+	rune:SetId("puzzle2")
+	rune.Transform:SetPosition(x, 0, z - 3 * TILE_SIZE)
+
+	--torches
+	local trial = SpawnPrefab("lightsout_trial")
+	trial.Transform:SetPosition(x, 0, z)
+	trial:SetupPuzzle()
+
+	--variations
+	local brokenvar = math.random(4)
+	local i = 1
+
+	--columns
+	for dx = -1.5, 1.5, 3 do
+		SpawnPrefab("vault_pillar"):MakeCapped(2):AttachRelic().Transform:SetPosition(x + dx * TILE_SIZE, 0, z + 3.5 * TILE_SIZE)
+		SpawnPrefab("vault_pillar"):MakeCapped(1):AttachRelic().Transform:SetPosition(x - 3.5 * TILE_SIZE, 0, z + dx * TILE_SIZE)
+		SpawnPrefab("vault_pillar"):MakeCapped(1):AttachRelic().Transform:SetPosition(x + 3.5 * TILE_SIZE, 0, z + dx * TILE_SIZE)
+	end
+	for zsign = -1, 1, 2 do
+		for xsign = -1, 1, 2 do
+			if brokenvar < i then
+				brokenvar = math.random(i, i + 2)
+			end
+			for dx = 2.5, 3.5, 1 do
+				local dz = 6 - dx
+				SpawnPrefab("vault_pillar"):MakeBroken(i == brokenvar).Transform:SetPosition(x + dx * xsign * TILE_SIZE, 0, z + dz * zsign * TILE_SIZE)
+				i = i + 1
+			end
+		end
+		brokenvar = math.random(i, i + 3)
+	end
+
+	--ground
+	local groundvars = { 3, 4, 5, 3, 4, 5, 3, 4, 5 }
+	local groundorientations = { 1, 2, 3, 4, 1, 2, 3, 4, math.random(4) }
+	for dx = -1.5, 1.5, 1.5 do
+		for dz = -1.5, 1.5, 1.5 do
+			SpawnPrefab("vault_ground_pattern_fx"):SetVariation(table.remove(groundvars, math.random(#groundvars))):SetOrientation(table.remove(groundorientations, math.random(#groundorientations))).Transform:SetPosition(x + dx * TILE_SIZE, 0, z + dz * TILE_SIZE)
+		end
+	end
+
+	--lights
+	SpawnPrefab("vault_chandelier"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+end
+
+--------------------------------------------------------------------------
+
 local halldef = {}
 
 halldef.TerraformRoomAtXZ = function(inst, x, z)
@@ -165,7 +229,7 @@ end
 
 halldef.LayoutNewRoomAtXZ = function(inst, x, z)
 	--variations
-	local seed = hash(TheWorld.meta.session_identifier) --change to grab seed from vaultroommanager when we have vault regen
+	local seed = TheWorld.components.vaultroommanager and TheWorld.components.vaultroommanager:GetPRNGSeed() or hash(TheNet:GetSessionIdentifier())
 	local groundvar = bit.band(seed, 1) == 1
 	local lightvar = math.random(3)
 	local brokenvar = math.random(8)
@@ -207,10 +271,10 @@ halldef.LayoutNewRoomAtXZ = function(inst, x, z)
 	end
 	if roomid then
 		if (roomid == 1 or roomid == 4 or roomid == 7) == groundvar then
-			SpawnPrefab("vault_ground_pattern_fx"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+			SpawnPrefab("vault_ground_pattern_fx"):SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 		end
 	elseif math.random() < 0.5 then
-		SpawnPrefab("vault_ground_pattern_fx"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+		SpawnPrefab("vault_ground_pattern_fx"):SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 	end
 end
 
@@ -252,7 +316,7 @@ defs.lore1.LayoutNewRoomAtXZ = function(inst, x, z)
 	local rune = SpawnPrefab("vault_rune")
 	rune:SetId("lore1")
 	rune.Transform:SetPosition(x - 2.5 * TILE_SIZE, 0, z)
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 1 and 2 or 1).Transform:SetPosition(x - 2.5 * TILE_SIZE, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 1 and 2 or 1):SetOrientation(math.random(4)).Transform:SetPosition(x - 2.5 * TILE_SIZE, 0, z)
 	SpawnPrefab("vault_chandelier"):SetVariation(math.random(2)).Transform:SetPosition(x - 2.5 * TILE_SIZE, 0, z)
 
 	--statues
@@ -260,7 +324,7 @@ defs.lore1.LayoutNewRoomAtXZ = function(inst, x, z)
 	statue:SetId("king")
 	statue:SetScene("lore1")
 	statue.Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 2 and 2 or 1).Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 2 and 2 or 1):SetOrientation(math.random(4)).Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
 	local theta = math.random() * TWOPI
 	SpawnPrefab("vault_chandelier_broken").Transform:SetPosition(x + 2.5 * TILE_SIZE + 2.5 * math.cos(theta), 0, z - 2.5 * math.sin(theta))
 	SpawnPrefab("vault_chandelier_decor"):SetVariation(math.random() < 0.5 and 1 or 3).Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
@@ -371,7 +435,7 @@ defs.lore2.LayoutNewRoomAtXZ = function(inst, x, z)
 	SpawnPrefab("vault_chandelier"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
 
 	--ground
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 end
 
 --------------------------------------------------------------------------
@@ -450,7 +514,7 @@ defs.lore3.LayoutNewRoomAtXZ = function(inst, x, z)
 	SpawnPrefab("vault_chandelier"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
 
 	--ground
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 
 	--beta
 	--SpawnPrefab("temp_beta_msg").Transform:SetPosition(x + 0.55 * TILE_SIZE, 0, z + 4.6 * TILE_SIZE)
@@ -515,7 +579,7 @@ defs.teleport1.LayoutNewRoomAtXZ = function(inst, x, z)
 	SpawnPrefab("vault_chandelier"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
 
 	--ground
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 end
 
 --------------------------------------------------------------------------
@@ -562,6 +626,10 @@ defs.mask1.LayoutNewRoomAtXZ = function(inst, x, z)
 	SpawnPrefab("mask_ancient_architecthat").Transform:SetPosition(x + 2.5 * TILE_SIZE - 1.5, 0, z - 1.85)
 
 	--variations
+	local groundvar = math.random(2)
+	local groundvar1 = math.random(4)
+	local groundvar2 = math.random(3)
+	groundvar2 = groundvar2 >= groundvar1 and groundvar2 + 1 or groundvar2
 	local lightvar = math.random(3)
 	local lightvar1 = math.random(2)
 	local lightvar2 = lightvar1 == 1 and 2 or 1
@@ -603,9 +671,9 @@ defs.mask1.LayoutNewRoomAtXZ = function(inst, x, z)
 	SpawnPrefab("vault_chandelier"):SetVariation(lightvar == 3 and lightvar1 or lightvar2).Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
 
 	--ground
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x, 0, z + TILE_SIZE)
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x - 2.5 * TILE_SIZE, 0, z)
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 1 and 1 or 2):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z + TILE_SIZE)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 2 and 1 or 2):SetOrientation(groundvar1).Transform:SetPosition(x - 2.5 * TILE_SIZE, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(groundvar == 2 and 1 or 2):SetOrientation(groundvar2).Transform:SetPosition(x + 2.5 * TILE_SIZE, 0, z)
 end
 
 --------------------------------------------------------------------------
@@ -689,7 +757,7 @@ defs.generator1.LayoutNewRoomAtXZ = function(inst, x, z)
 	end
 
 	--ground
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 end
 
 --------------------------------------------------------------------------
@@ -759,7 +827,7 @@ local function fountain_LayoutNewRoomAtXZ(inst, x, z, product)
 	SpawnPrefab("vault_chandelier"):SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
 
 	--ground
-	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)).Transform:SetPosition(x, 0, z)
+	SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(math.random(2)):SetOrientation(math.random(4)).Transform:SetPosition(x, 0, z)
 end
 
 defs["fountain1"] = {}
@@ -820,7 +888,7 @@ defs.playbill1.LayoutNewRoomAtXZ = function(inst, x, z)
 		local spread = j > 1 and -1 or 1
 		local x1 = x - spread * TILE_SIZE
 		local z1 = z + spread * TILE_SIZE
-		SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(j == groundvar and 2 or 1).Transform:SetPosition(x1, 0, z1)
+		SpawnPrefab("vault_ground_pattern_fx"):HideCenter():SetVariation(j == groundvar and 2 or 1):SetOrientation(math.random(4)).Transform:SetPosition(x1, 0, z1)
 		local decortable = SpawnPrefab("vault_table_round")
 		decortable:SetVariation(j == tablevar and 3 or 2)
 		decortable.Transform:SetPosition(x1, 0, z1)
