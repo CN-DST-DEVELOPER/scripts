@@ -724,9 +724,10 @@ Recipe2("ruinsrelic_bowl",					{Ingredient("cutstone", 2)},																			TE
 Recipe2("ruinsrelic_vase",					{Ingredient("cutstone", 2)},																			TECH.LOST)
 Recipe2("ruinsrelic_chair",					{Ingredient("cutstone", 1)},																			TECH.LOST,					{placer="ruinsrelic_chair_placer", min_spacing=2})
 Recipe2("ruinsrelic_table",					{Ingredient("cutstone", 1)},																			TECH.LOST,					{placer="ruinsrelic_table_placer"})
-Recipe2("vaultrelic_bowl",					{Ingredient("thulecite_pieces", 1), Ingredient("cutstone", 1)},											TECH.LOST)
-Recipe2("vaultrelic_vase",					{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 1)},									TECH.LOST)
-Recipe2("vaultrelic_planter",				{Ingredient("cutstone", 1)},																			TECH.LOST)
+local function vaultrelic_nodecon(inst) return inst.replica.inventoryitem == nil end
+Recipe2("vaultrelic_bowl",					{Ingredient("thulecite_pieces", 1), Ingredient("cutstone", 1)},											TECH.LOST,					{no_deconstruction=vaultrelic_nodecon})
+Recipe2("vaultrelic_vase",					{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 1)},									TECH.LOST,					{no_deconstruction=vaultrelic_nodecon})
+Recipe2("vaultrelic_planter",				{Ingredient("cutstone", 1)},																			TECH.LOST,					{no_deconstruction=vaultrelic_nodecon})
 
 -- WX78 Items
 Recipe2("wx78module_maxhealth",				{Ingredient("scandata", 2), Ingredient("spidergland", 1)},													TECH.ROBOTMODULECRAFT_ONE,	{builder_tag="upgrademoduleowner"})

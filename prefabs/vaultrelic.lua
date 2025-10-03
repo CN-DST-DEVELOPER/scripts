@@ -104,6 +104,8 @@ local function AttachToVaultPillar(inst, pillar)
 	inst:RemoveComponent("lootdropper")
 	inst:RemoveComponent("hauntable")
 
+	inst:RemoveEventCallback("ondeconstructstructure", OnDeconstruct)
+
 	inst.components.inspectable.getstatus = nil
 	inst.components.inspectable:SetNameOverride("relic")
 

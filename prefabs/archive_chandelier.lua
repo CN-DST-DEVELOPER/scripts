@@ -9,11 +9,6 @@ local assets_vault =
 	Asset("ANIM", "anim/chandelier_vault.zip"),
 }
 
-local prefabs =
-{
-    "chandelier_fire",
-}
-
 local ON = 1
 local OFF = 2
 
@@ -69,6 +64,30 @@ local FLAMEDATA = {
     "flame3",
     "flame4",
 }
+
+--------------------------------------------------------------------------
+
+local function CreateFireFx()
+	local inst = CreateEntity()
+
+	inst:AddTag("NOCLICK")
+	inst:AddTag("FX")
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	inst.AnimState:SetBank("chandelier_fire")
+	inst.AnimState:SetBuild("chandelier_fire")
+	inst.AnimState:PlayAnimation("idle", true)
+	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
+
+	return inst
+end
 
 --------------------------------------------------------------------------
 
@@ -169,12 +188,30 @@ local function lerpparams(pout, pstart, pend, lerpk)
     end
 end
 
+local function UpdateFlames(inst)
+	if inst.flamedata and not TheNet:IsDedicated() then
+		for k, v in pairs(inst.flamedata) do
+			local val = Remap(inst._currentlight.intensity, inst.light_params[OFF].intensity, inst.light_params[ON].intensity, 0, 1)
+			local fx = inst[v]
+			if val > 0 then
+				if fx == nil then
+					fx = CreateFireFx()
+					fx.entity:SetParent(inst.entity)
+					fx.Follower:FollowSymbol(inst.GUID, v)
+					inst[v] = fx
+				end
+				fx.AnimState:SetLightOverride(val)
+				fx.AnimState:SetScale(val, val, val)
+			elseif fx then
+				fx:Remove()
+				inst[v] = nil
+			end
+		end
+	end
+end
+
 local function OnUpdateLight(inst, dt)
     inst._currentlight.time = inst._currentlight.time + dt
-	if TheWorld.ismastersim then
-		--only used by clients construction/oninit, so just use set_local
-		inst._lightlerp:set_local(math.min(7, math.ceil(inst._currentlight.time / inst._endlight.time * 7)))
-	end
     if inst._currentlight.time >= inst._endlight.time then
         inst._currentlight.time = inst._endlight.time
         inst._lighttask:Cancel()
@@ -183,28 +220,15 @@ local function OnUpdateLight(inst, dt)
 
     lerpparams(inst._currentlight, inst._startlight, inst._endlight, inst._endlight.time > 0 and inst._currentlight.time / inst._endlight.time or 1)
     pushparams(inst, inst._currentlight)
-	inst.AnimState:SetLightOverride(Remap(inst._currentlight.intensity, inst.light_params[OFF].intensity, inst.light_params[ON].intensity, 0,1))
 
-    if inst.flamedata then
-		for k, v in pairs(inst.flamedata) do
-			if inst[v] then
-				local val = Remap(inst._currentlight.intensity, inst.light_params[OFF].intensity, inst.light_params[ON].intensity, 0,1)
-				inst[v].AnimState:SetLightOverride(val)
-				inst[v].Transform:SetScale(val,val,val)
-				if inst._currentlight.intensity == 0 and val == 0 then
-					inst[v]:Remove()
-					inst[v] = nil
-				end
-			elseif inst._currentlight.intensity > 0 then
-				local fx = SpawnPrefab("chandelier_fire")
-				inst:AddChild(fx)
-				fx.entity:AddFollower()
-				fx.Follower:FollowSymbol(inst.GUID, v, 0, 0, 0)
-				inst[v] = fx
-				fx.Transform:SetScale(0, 0, 0)
-			end
-		end
+	if TheWorld.ismastersim then
+		--only used by clients construction/oninit, so just use set_local
+		inst._lightlerp:set_local(math.min(7, math.ceil(inst._currentlight.time / inst._endlight.time * 7)))
+
+		inst.AnimState:SetLightOverride(Remap(inst._currentlight.intensity, inst.light_params[OFF].intensity, inst.light_params[ON].intensity, 0,1))
 	end
+
+	UpdateFlames(inst)
 end
 
 local function OnLightPhaseDirty(inst)
@@ -279,6 +303,7 @@ local function OnInit(inst)
 			inst._lighttask = nil
 		end
 		pushparams(inst, inst._currentlight)
+		UpdateFlames(inst)
 	end
 end
 
@@ -389,31 +414,5 @@ local function vault_master_postinit(inst)
 	updatelight(inst)
 end
 
-local function firefxfn()
-    local inst = CreateEntity()
-
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddNetwork()
-    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-    inst.AnimState:SetBank("chandelier_fire")
-    inst.AnimState:SetBuild("chandelier_fire")
-    inst.AnimState:PlayAnimation("idle", true)
-
-    inst:AddTag("NOCLICK")
-    inst:AddTag("FX")
-
-    inst.persists = false
-
-    inst.entity:SetPristine()
-
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
-    return inst
-end
-
-return MakeChandelier("archive_chandelier", "chandelier_archives", LIGHT_PARAMS, FLAMEDATA, 8, archive_master_postinit, assets, prefabs),
-       Prefab("chandelier_fire", firefxfn, assets),
+return MakeChandelier("archive_chandelier", "chandelier_archives", LIGHT_PARAMS, FLAMEDATA, 8, archive_master_postinit, assets),
 	MakeChandelier("vault_chandelier", "chandelier_vault", LIGHT_PARAMS_VAULT, nil, 6, vault_master_postinit, assets_vault)

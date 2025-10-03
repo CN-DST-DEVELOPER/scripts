@@ -37,10 +37,12 @@ local function SetVentPhysics(inst)
     if inst.isvent ~= true then
         inst.isvent = true
         inst.Physics:SetMass(0)
-        inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
+        inst.Physics:SetCapsule(0.5, 1)
+        inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
 		inst.Physics:SetCollisionMask(
-			COLLISION.WORLD,
-			COLLISION.OBSTACLES
+            COLLISION.ITEMS,
+		    COLLISION.CHARACTERS,
+		    COLLISION.GIANTS
 		)
     end
 end
@@ -48,7 +50,7 @@ end
 local function SetCharacterPhysics(inst)
     if inst.isvent ~= false then
         inst.isvent = false
-        ChangeToCharacterPhysics(inst, 50)
+        ChangeToCharacterPhysics(inst, 50, 0.75)
     end
 end
 
@@ -116,7 +118,7 @@ local function fn()
     inst.entity:AddDynamicShadow()
     inst.entity:AddNetwork()
 
-    MakeCharacterPhysics(inst, 50, .5)
+    MakeCharacterPhysics(inst, 50, .75)
 
     inst.DynamicShadow:SetSize(1.5, .5)
     inst.Transform:SetFourFaced()

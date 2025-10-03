@@ -199,6 +199,8 @@ local prefabs =
     --"spawn_fx_huge",
     --"spawn_fx_large",
     "spawn_fx_medium",
+	"spawn_fx_medium_static",
+	"spawn_fx_ocean_static",
     "spawn_fx_small",
     "spawn_fx_tiny",
     "spawn_fx_small_high",

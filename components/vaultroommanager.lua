@@ -987,13 +987,10 @@ function self:OnUpdate(dt)
     if self.updateaccumulator > self.UPDATE_TICK_TIME then
         self.updateaccumulator = 0
 
-        local aplayerisinanyvault = false
+        local aplayerisonshard = false
         for _, player in ipairs(AllPlayers) do
             self:TryToAdjustTrackingPlayer(player)
-            if not aplayerisinanyvault then
-                local x, y, z = player.Transform:GetWorldPosition()
-                aplayerisinanyvault = _map:IsPointInAnyVault(x, y, z)
-            end
+            aplayerisonshard = true
         end
 
         if self.playersinvault == 0 then
@@ -1014,7 +1011,7 @@ function self:OnUpdate(dt)
                 targetroom = 1
             elseif self._needsreloaded then
                 targetroom = self.roomindex
-            elseif not aplayerisinanyvault then
+            elseif not aplayerisonshard then
                 local cooldownticks = self.updaterotatecooldownticks - 1
                 if cooldownticks <= 0 then
                     self.updaterotatecooldownticks = self.UPDATE_ROTATE_ROOMS_COOLDOWN_TICKS_COUNT

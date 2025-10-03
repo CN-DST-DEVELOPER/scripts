@@ -8754,7 +8754,7 @@ function Tune(overrides)
 
         CAVE_MITE_BLOW_HEAT_RATE = {
             COLD = 5,
-            NORMAL = 15,
+            NORMAL = 25,
             HOT = 40, --This is essentially the default.
         },
 

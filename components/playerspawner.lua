@@ -131,14 +131,14 @@ end
 --[[ Private event handlers ]]
 --------------------------------------------------------------------------
 
-local function OnPlayerDespawn(inst, player, cb)
+local function OnPlayerDespawn(inst, player, cb, fxoverride)
     player._despawning = true
     player.components.playercontroller:Enable(false)
     player.components.locomotor:StopMoving()
     player.components.locomotor:Clear()
 
     --Portal FX
-    local fx = SpawnPrefab("spawn_fx_medium_static")
+    local fx = SpawnPrefab(fxoverride or "spawn_fx_medium_static")
     if fx ~= nil then
         fx.Transform:SetPosition(player.Transform:GetWorldPosition())
     end
@@ -153,7 +153,7 @@ local function OnPlayerDespawnAndDelete(inst, player)
 end
 
 local function OnPlayerDespawnAndMigrate(inst, data)
-    OnPlayerDespawn(inst, data.player, function(player) player._despawning = nil PlayerRemove(player, false, data) end)
+    OnPlayerDespawn(inst, data.player, function(player) player._despawning = nil PlayerRemove(player, false, data) end, data.fxoverride)
 end
 
 local function OnSetSpawnMode(inst, mode)

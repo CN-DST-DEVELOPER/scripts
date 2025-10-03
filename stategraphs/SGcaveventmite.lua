@@ -20,7 +20,7 @@ local function GetHeatRate(inst)
         (world_temp < 10 or coldness >= 0.5) and TUNING.CAVE_MITE_BLOW_HEAT_RATE.COLD or
         world_temp > 60 and TUNING.CAVE_MITE_BLOW_HEAT_RATE.HOT or
         TUNING.CAVE_MITE_BLOW_HEAT_RATE.NORMAL
-    ) * wet_multiplier
+    ) * (1 - wet_multiplier)
 end
 
 local function DoBlowUpdate(inst, dt)
@@ -242,13 +242,16 @@ local states =
             inst.SoundEmitter:PlaySound("rifts6/creatures/rockspider/eat", "eating")
         end,
 
+        onexit = function(inst, new_state)
+            if new_state ~= "eat_loop" then
+                inst.SoundEmitter:KillSound("eating")
+            end
+        end,
+
         events =
         {
             EventHandler("animover", function(inst)
                 local state = (inst:PerformBufferedAction() or inst.sg.statemem.forced) and "eat_loop" or "idle"
-                if state == "idle" then
-                    inst.SoundEmitter:KillSound("eating")
-                end
                 inst.sg:GoToState(state)
             end),
         },
@@ -262,6 +265,12 @@ local states =
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("eat_loop", true)
             inst.sg:SetTimeout(1+math.random()*1)
+        end,
+
+        onexit = function(inst, new_state)
+            if new_state ~= "eat_loop" then
+                inst.SoundEmitter:KillSound("eating")
+            end
         end,
 
         ontimeout = function(inst)
@@ -386,12 +395,14 @@ local states =
 
         onexit = function(inst)
             inst:SetShield(false)
+            inst:SetCharacterPhysics()
         end,
 
         timeline =
         {
             FrameEvent(22, function(inst)
                 inst:SetShield(true)
+                inst:SetVentPhysics()
                 inst.sg:AddStateTag("shield")
                 inst.sg:AddStateTag("noelectrocute")
             end),
@@ -411,6 +422,7 @@ local states =
 
         onenter = function(inst)
             inst:SetShield(true)
+            inst:SetVentPhysics()
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("mite_vent_idle", false)
             inst.sg:SetTimeout(15 + 5 * math.random())
@@ -421,6 +433,7 @@ local states =
         end,
 
         onexit = function(inst)
+            inst:SetCharacterPhysics()
             inst:SetShield(false)
         end,
     },
@@ -431,6 +444,7 @@ local states =
 
         onenter = function(inst)
             inst:SetShield(true)
+            inst:SetVentPhysics()
             CheckSpawnMiasma(inst)
             inst.sg.statemem.blowing = true
             inst.SoundEmitter:PlaySound("rifts6/creatures/rockspider/spew_1_mite")
@@ -440,6 +454,7 @@ local states =
 
         onexit = function(inst)
             inst:SetShield(false)
+            inst:SetCharacterPhysics()
         end,
 
         events =
@@ -462,12 +477,14 @@ local states =
 
         onenter = function(inst)
             inst:SetShield(true)
+            inst:SetVentPhysics()
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("mite_vent_hit")
         end,
         
         onexit = function(inst)
             inst:SetShield(false)
+            inst:SetCharacterPhysics()
         end,
 
         events =
@@ -482,6 +499,7 @@ local states =
 
         onenter = function(inst)
             inst:SetShield(true)
+            inst:SetVentPhysics()
             inst.AnimState:PlayAnimation("mite_appear")
         end,
 
@@ -489,6 +507,7 @@ local states =
         {
             FrameEvent(17, function(inst)
                 inst:SetShield(false)
+                inst:SetCharacterPhysics()
                 inst.sg:RemoveStateTag("shield")
                 inst.sg:RemoveStateTag("noelectrocute")
 

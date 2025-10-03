@@ -587,6 +587,18 @@ local fx =
         fn = FinalOffset1,
         update_while_paused = true
     },
+	{
+		name = "spawn_fx_ocean_static",
+		bank = "pond_splash_fx",
+		build = "pond_splash_fx",
+		anim = "pond_splash",
+		sound = "turnoftides/common/together/water/splash/medium",
+		fn = function(inst)
+			inst.Transform:SetScale(2, 2, 2)
+			inst.AnimState:SetFinalOffset(1)
+		end,
+		update_while_paused = true,
+	},
     --[[{
         name = "spawn_fx_large",
         bank = "spawn_fx",
