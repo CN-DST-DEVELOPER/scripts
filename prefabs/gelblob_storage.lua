@@ -84,6 +84,10 @@ local function OnFoodGiven(inst, item, giver)
         item.components.perishable:StopPerishing()
     end
 
+	if item.components.propagator then
+		item.components.propagator.acceptsheat = false
+	end
+
 	item:AddTag("NOCLICK")
 	item:ReturnToScene()
 
@@ -120,6 +124,10 @@ local function OnFoodTaken(inst, item, taker, wholestack)
     if item.components.perishable ~= nil then
         item.components.perishable:StartPerishing()
     end
+
+	if item.components.propagator then
+		item.components.propagator.acceptsheat = true
+	end
 
     item.components.inventoryitem.canbepickedup = true
 

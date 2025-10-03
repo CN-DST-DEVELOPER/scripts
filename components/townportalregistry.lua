@@ -28,13 +28,15 @@ local linkedportals = {}
 --[[ Private event handlers ]]
 --------------------------------------------------------------------------
 local function OnTownPortalActivated(inst, townportal)
-	if _activetownportal == nil then
+    local x2, y2, z2 = townportal.Transform:GetWorldPosition()
+	if _activetownportal == nil and IsTeleportLinkingPermittedFromPoint(x2, y2, z2) then
 		_activetownportal = townportal
         linkedportals[_activetownportal] = true
 		for i, v in ipairs(_townportals) do
 			if v ~= townportal then
                 local posent = v.components.inventoryitem and v.components.inventoryitem:GetGrandOwner() or v
-                if IsTeleportLinkingPermittedFromPoint(posent.Transform:GetWorldPosition()) then
+                local x1, y1, z1 = posent.Transform:GetWorldPosition()
+                if IsTeleportingPermittedFromPointToPoint(x1, y1, z1, x2, y2, z2) then
                     if not linkedportals[v] then
                         linkedportals[v] = true
                         v:PushEvent("linktownportals", townportal)
@@ -46,7 +48,7 @@ local function OnTownPortalActivated(inst, townportal)
 end
 
 local function OnTownPortalDeactivated(inst, portal)
-	if _activetownportal ~= nil then
+	if _activetownportal ~= nil and _activetownportal == portal then
 		_activetownportal = nil
 		for i, v in ipairs(_townportals) do
             if linkedportals[v] then
@@ -54,6 +56,8 @@ local function OnTownPortalDeactivated(inst, portal)
                 v:PushEvent("linktownportals")
             end
 		end
+    else
+        portal:PushEvent("linktownportals", _activetownportal)
 	end
 end
 
@@ -68,7 +72,7 @@ local function OnRemoveTownPortal(townportal)
     end
 
     if townportal == _activetownportal then
-	    OnTownPortalDeactivated()
+	    OnTownPortalDeactivated(TheWorld, townportal)
 	end
 end
 
@@ -82,9 +86,13 @@ local function OnRegisterTownPortal(inst, townportal)
     table.insert(_townportals, townportal)
     inst:ListenForEvent("onremove", OnRemoveTownPortal, townportal)
     local posent = townportal.components.inventoryitem and townportal.components.inventoryitem:GetGrandOwner() or townportal
-    if _activetownportal ~= nil and IsTeleportLinkingPermittedFromPoint(posent.Transform:GetWorldPosition()) then
-	    townportal:PushEvent("linktownportals", _activetownportal)
-        linkedportals[townportal] = true
+    if _activetownportal ~= nil then
+        local x1, y1, z1 = posent.Transform:GetWorldPosition()
+        local x2, y2, z2 = _activetownportal.Transform:GetWorldPosition()
+        if IsTeleportingPermittedFromPointToPoint(x1, y1, z1, x2, y2, z2) then
+            townportal:PushEvent("linktownportals", _activetownportal)
+            linkedportals[townportal] = true
+        end
 	end
 end
 

@@ -478,7 +478,7 @@ function Map:CanDeployBridgeAtPointWithFilter(pt, inst, mouseover, tilefilterfn)
         return false
     end
 
-    if self:IsPointInAnyVault(pt.x, pt.y, pt.z) then
+    if self:IsPointInOrAdjacentToAnyVault(pt.x, pt.y, pt.z) then
         return false
     end
 
@@ -1430,6 +1430,16 @@ function Map:IsPointInAnyVault(x, y, z)
         if self:IsVisualGroundAtPoint(x, y, z) then
             return true
         end
+    end
+    -- Room
+    return self:IsPointInVaultRoom(x, y, z)
+end
+function Map:IsPointInOrAdjacentToAnyVault(x, y, z)
+    -- Optimizations for not caring which vault section the point is in.
+    -- Lobby
+    local tx, ty = self:GetTileCoordsAtPoint(x, 0, z)
+    if self:HasAdjacentTileFiltered(tx, ty, IsVaultTile) then
+        return true
     end
     -- Room
     return self:IsPointInVaultRoom(x, y, z)

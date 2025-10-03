@@ -197,6 +197,7 @@ end
 local function stump_onload(inst, data)
     if data ~= nil and data.burnt then
         stump_burnt(inst)
+        RemoveLunarHailBuildup(inst)
     end
 end
 

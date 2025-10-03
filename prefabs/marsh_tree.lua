@@ -121,6 +121,7 @@ local function onload(inst, data)
             inst.AnimState:PlayAnimation("stump", false)
             if data.burnt or inst:HasTag("burnt") then
                 DefaultBurntFn(inst)
+                RemoveLunarHailBuildup(inst)
             else
                 inst:AddComponent("workable")
                 inst.components.workable:SetWorkAction(ACTIONS.DIG)
@@ -129,6 +130,7 @@ local function onload(inst, data)
             end
         elseif data.burnt and not inst:HasTag("burnt") then
             OnBurnt(inst)
+            RemoveLunarHailBuildup(inst)
         end
     end
 end

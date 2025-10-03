@@ -1109,9 +1109,11 @@ local function onload(inst, data)
             make_stump(inst)
             if data.burnt or inst:HasTag("burnt") then
                 DefaultBurntFn(inst)
+                RemoveLunarHailBuildup(inst)
             end
         elseif data.burnt then
             inst._wasonfire = true--OnEntityWake will handle it actually doing burnt logic
+            RemoveLunarHailBuildup(inst)
         end
     end
 

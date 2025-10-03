@@ -12,7 +12,7 @@ return Class(function(self, inst)
 --------------------------------------------------------------------------
 
 local NOISE_SYNC_PERIOD = 30
-local TILE_SEARCH_RADIUS = 4
+local TILE_SEARCH_HALF_SIZE = 4
 
 --------------------------------------------------------------------------
 --[[ Temperature constants ]]
@@ -140,29 +140,29 @@ end
 function self:GetTemperatureAtXZ(x, z)
     local tx, ty = _map:GetTileCoordsAtPoint(x, 0, z)
     local index = _cachetemperature:GetIndex(tx, ty)
-    local _cachedtemp = _cachetemperature:GetDataAtIndex(index)
-    if _cachedtemp then
-        return _cachedtemp ~= 0 and Lerp(_state.temperature, _currenttemperature, _cachedtemp)
-    end
+    local temp_perc = _cachetemperature:GetDataAtIndex(index)
 
-    local num_fumarole = 0
-    local tile_area = 0
-    for off_tx = -TILE_SEARCH_RADIUS, TILE_SEARCH_RADIUS do
-        for off_ty = -TILE_SEARCH_RADIUS, TILE_SEARCH_RADIUS do
-            local ptx, pty = tx + off_tx, ty + off_ty
-            if not TileGroupManager:IsImpassableTile(_map:GetTile(ptx, pty)) then
-                tile_area = tile_area + 1
-                if _map:NodeAtTileHasTag(ptx, pty, "fumarolearea") then
-                    num_fumarole = num_fumarole + 1
+    if not temp_perc then
+        local num_fumarole = 0
+        local tile_area = 0
+
+        for off_tx = -TILE_SEARCH_HALF_SIZE, TILE_SEARCH_HALF_SIZE do
+            for off_ty = -TILE_SEARCH_HALF_SIZE, TILE_SEARCH_HALF_SIZE do
+                local ptx, pty = tx + off_tx, ty + off_ty
+                if not TileGroupManager:IsImpassableTile(_map:GetTile(ptx, pty)) then
+                    tile_area = tile_area + 1
+                    if _map:NodeAtTileHasTag(ptx, pty, "fumarolearea") then
+                        num_fumarole = num_fumarole + 1
+                    end
                 end
             end
         end
+
+        temp_perc = num_fumarole == 0 and 0 or num_fumarole / tile_area
+        _cachetemperature:SetDataAtIndex(index, temp_perc)
     end
 
-    local perc_fumarole = num_fumarole / tile_area
-
-    _cachetemperature:SetDataAtIndex(index, perc_fumarole)
-    return _currenttemperature * perc_fumarole
+    return temp_perc ~= 0 and Lerp(_state.temperature, _currenttemperature, temp_perc) or nil
 end
 
 --------------------------------------------------------------------------

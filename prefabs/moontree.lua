@@ -500,6 +500,9 @@ local function on_load(inst, data)
     else
         sway(inst)
     end
+    if is_burnt then
+        RemoveLunarHailBuildup(inst)
+    end
 end
 
 local function on_sleep(inst)

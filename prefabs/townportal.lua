@@ -66,7 +66,7 @@ local function OnStartChanneling(inst, channeler)
 end
 
 local function OnStopChanneling(inst, aborted)
-    TheWorld:PushEvent("townportaldeactivated")
+    TheWorld:PushEvent("townportaldeactivated", inst)
 
     inst.MiniMapEntity:SetIcon("townportal.png")
     inst.MiniMapEntity:SetPriority(0)
@@ -131,7 +131,7 @@ local function onhit(inst)
         inst.AnimState:PlayAnimation("hit_on")
     else
         if inst.components.teleporter.targetTeleporter ~= nil then
-            TheWorld:PushEvent("townportaldeactivated")
+            TheWorld:PushEvent("townportaldeactivated", inst)
             inst.AnimState:PlayAnimation("hit_on")
         else
             inst.AnimState:PlayAnimation("hit_off")

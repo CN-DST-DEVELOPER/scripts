@@ -206,6 +206,7 @@ local function onload(inst, data)
     if data then
         if data.burnt then
             tree_burnt(inst)
+            RemoveLunarHailBuildup(inst)
         else
             if data.acidrecoveryremaining then
                 acid_initialize(inst)

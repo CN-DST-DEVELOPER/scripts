@@ -243,6 +243,7 @@ end
 local function OnLoad(inst, data)
     if data ~= nil and data.burnt then
         cocoon_burnt(inst)
+        RemoveLunarHailBuildup(inst)
     end
 end
 

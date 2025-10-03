@@ -324,6 +324,7 @@ local function OnLoad(inst, data)
 	if data ~= nil then
         if data.burnt and not inst:HasTag("burnt") then
             OnBurnt(inst)
+            RemoveLunarHailBuildup(inst)
         end
 	end
 end

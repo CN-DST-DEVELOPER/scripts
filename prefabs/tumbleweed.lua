@@ -315,7 +315,7 @@ end
 
 local function OnLoad(inst, data)
     if data ~= nil and data.burnt then
-        onburnt(inst)
+        inst.components.burnable.onburnt(inst)
     end
 end
 

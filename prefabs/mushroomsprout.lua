@@ -184,6 +184,7 @@ local function OnLoad(inst, data)
 
     if data ~= nil and data.burnt then
         OnBurnt(inst)
+        RemoveLunarHailBuildup(inst)
     else
         inst._fade:set(FADE_FRAMES)
         OnFadeDirty(inst)

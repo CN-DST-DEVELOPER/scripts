@@ -237,6 +237,7 @@ local function maketree(name, data, state)
                 else
                     tree_burnt(inst)
                 end
+                RemoveLunarHailBuildup(inst)
             elseif loaddata.stump then
                 makestump(inst)
             else
